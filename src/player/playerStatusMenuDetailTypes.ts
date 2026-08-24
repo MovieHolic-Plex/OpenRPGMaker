@@ -31,6 +31,14 @@ export type StatusMenuDetail = {
   readonly entries: readonly StatusMenuDetailEntry[];
   readonly emptyLabel?: string;
   readonly hint?: string;
+  readonly artwork?: { readonly src: string; readonly alt: string };
+  readonly tabs?: readonly {
+    readonly id: string;
+    readonly label: string;
+    readonly selected: boolean;
+    readonly testId: string;
+    readonly onActivate?: () => void;
+  }[];
 };
 
 export type StatusMenuDetailOptions = {
@@ -64,6 +72,9 @@ export type StatusMenuDetailOptions = {
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView?: () => void;
   readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
+  readonly lifeLedgerTab?: import("@/player/lifeLedger").LifeLedgerTabId;
+  readonly onSelectLifeLedgerTab?: (tab: import("@/player/lifeLedger").LifeLedgerTabId) => void;
+  readonly onLifeLedgerMutation?: (ok: boolean, message: string) => void;
   /** 접힌 그룹 목록에서 실제 명령으로 들어갈 때 쓴다. */
   readonly onCommand?: (commandId: StatusMenuCommandId) => void;
 };

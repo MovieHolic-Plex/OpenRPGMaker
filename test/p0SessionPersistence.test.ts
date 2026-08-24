@@ -61,6 +61,7 @@ describe("P0 save snapshot regression", () => {
     session.energy = 72;
     session.shippingQueue = { item_turnip: 4 };
     session.shippingLastSettledDayKey = "1:spring:11";
+    session.dayTransitionLastDayKey = "1:spring:11";
     session.shippingHistory = [{
       dayKey: "1:spring:11",
       entries: [{ itemId: "item_turnip", count: 2, unitPrice: 10, subtotal: 20 }],
@@ -98,6 +99,7 @@ describe("P0 save snapshot regression", () => {
     expect(restored.energy).toBe(72);
     expect(restored.shippingQueue).toEqual(session.shippingQueue);
     expect(restored.shippingLastSettledDayKey).toBe("1:spring:11");
+    expect(restored.dayTransitionLastDayKey).toBe("1:spring:11");
     expect(restored.shippingHistory).toEqual(session.shippingHistory);
     expect(restored.bundleContributions).toEqual(session.bundleContributions);
     expect(restored.completedBundleIds).toEqual(["bundle_mine"]);
@@ -124,6 +126,7 @@ describe("P0 save snapshot regression", () => {
       "energy",
       "shippingQueue",
       "shippingLastSettledDayKey",
+      "dayTransitionLastDayKey",
       "shippingHistory",
       "bundleContributions",
       "completedBundleIds",
@@ -144,6 +147,7 @@ describe("P0 save snapshot regression", () => {
     expect(restored.shopMileagePoints).toBeUndefined();
     expect(restored.shippingQueue).toEqual({});
     expect(restored.shippingHistory).toEqual([]);
+    expect(restored.dayTransitionLastDayKey).toBeUndefined();
     expect(restored.bundleContributions).toEqual({});
     expect(restored.completedBundleIds).toEqual([]);
     expect(restored.bundleRewardAppliedIds).toEqual([]);
@@ -160,6 +164,7 @@ describe("P0 save snapshot regression", () => {
     session.lifeSkills = { skill_farming: { xp: 420, level: 4 } };
     session.energy = 48;
     session.shippingQueue = { item_turnip: 3 };
+    session.dayTransitionLastDayKey = "1:spring:4";
     session.completedBundleIds = ["bundle_spring"];
     session.unlockedRecipeIds = ["recipe_preserves"];
     session.makerInstances = {
@@ -182,6 +187,7 @@ describe("P0 save snapshot regression", () => {
       lifeSkills: session.lifeSkills,
       energy: 48,
       shippingQueue: { item_turnip: 3 },
+      dayTransitionLastDayKey: "1:spring:4",
       completedBundleIds: ["bundle_spring"],
       unlockedRecipeIds: ["recipe_preserves"],
       makerInstances: session.makerInstances,
@@ -190,6 +196,7 @@ describe("P0 save snapshot regression", () => {
     saveSessionCheckpoint(project, session);
     session.energy = 0;
     session.shippingQueue = {};
+    session.dayTransitionLastDayKey = undefined;
     session.completedBundleIds = [];
     session.unlockedRecipeIds = [];
     session.makerInstances = {};
@@ -198,6 +205,7 @@ describe("P0 save snapshot regression", () => {
       lifeSkills: { skill_farming: { xp: 420, level: 4 } },
       energy: 48,
       shippingQueue: { item_turnip: 3 },
+      dayTransitionLastDayKey: "1:spring:4",
       completedBundleIds: ["bundle_spring"],
       unlockedRecipeIds: ["recipe_preserves"],
       makerInstances: {

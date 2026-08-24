@@ -15,6 +15,7 @@ import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import type { LifeLedgerTabId } from "@/player/lifeLedger";
 import { moveMonster } from "@/project/monsterCollection";
 import { currentStatusMenu, statusMenuDetailActionButtons, wrapStatusMenuIndex } from "@/player/playerStatusMenuControllerDom";
 import type { PlayerStatusMenuController, PlayerStatusMenuControllerOptions } from "@/player/playerStatusMenuControllerTypes";
@@ -41,6 +42,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let monsterView: "party" | "box" = "party";
+  let lifeLedgerTab: LifeLedgerTabId = "shipping";
   let confirmSaveSlot: SaveSlotIndex | undefined;
   let waitModeEnabled = true;
 
@@ -63,6 +65,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     monsterView = "party";
+    lifeLedgerTab = "shipping";
     confirmSaveSlot = undefined;
   };
 
@@ -93,6 +96,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentSlotId,
       formationActorId,
       monsterView,
+      lifeLedgerTab,
       confirmSaveSlot,
       saveEnabled: isSaveEnabled(session),
       waitModeEnabled,
@@ -142,6 +146,17 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onMoveFormationActor: moveFormationActor,
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
+        onSelectLifeLedgerTab: (tab) => {
+          rememberDetailCursorFromTestId(`life-ledger-tab-${tab}`);
+          lifeLedgerTab = tab;
+          options.emitMenuJuice("menu-select", renderMenu(undefined, "life-ledger"));
+        },
+        onLifeLedgerMutation: (ok, message) => {
+          const scene = options.getActiveScene();
+          scene?.refreshRuntimeSurfaces();
+          scene?.syncRuntimeState();
+          options.emitMenuJuice(ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "life-ledger"));
+        },
         onToggleWait: toggleWaitMode,
         onToTitle: confirmToTitle,
       },
@@ -338,6 +353,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "formation":
       case "quests":
       case "relationships":
+      case "life-ledger":
         resetSubscreenState();
         mode = "function";
         options.emitMenuJuice("menu-confirm", renderMenu(undefined, commandId));
@@ -429,6 +445,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "load":
       case "quests":
       case "relationships":
+      case "life-ledger":
       case "row":
       case "status":
       case "to-title":
@@ -522,11 +539,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "load":
       case "quests":
       case "relationships":
+      case "life-ledger":
       case "row":
       case "status":
       case "to-title":
       case "wait":
-        return selectedCommand;
+        return selectedCommand === "life-ledger" ? `life-ledger:${lifeLedgerTab}` : selectedCommand;
     }
   }
 

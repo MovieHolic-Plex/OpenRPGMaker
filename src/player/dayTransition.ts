@@ -1,0 +1,127 @@
+import { restoreEnergy, type EnergyChangeResult } from "@/project/energy";
+import {
+  advanceGameTime,
+  calendarDayKey,
+  minutesUntilDayEnd,
+  resolveTimeSystem,
+  sleepGameTimeUntilMorning,
+  type GameTime,
+} from "@/project/gameTime";
+import { absoluteGameMinutes, advanceMakers, type MakerAdvanceResult } from "@/project/makers";
+import type { PlaySession } from "@/project/session";
+import { settleShipping, type ShippingSettlementResult } from "@/project/shipping";
+import type { Project } from "@/project/types";
+import { syncFarmPlotsToDate } from "@/player/farming";
+
+export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "farm", "energy", "makers"] as const;
+export type DayTransitionStage = (typeof DAY_TRANSITION_STAGES)[number];
+
+export type DayTransitionReceipt = {
+  readonly sourceDayKey: string;
+  readonly destinationDayKey: string;
+  readonly stages: readonly DayTransitionStage[];
+  readonly shipping: ShippingSettlementResult;
+  readonly energy: EnergyChangeResult;
+  readonly makers: MakerAdvanceResult;
+};
+
+export type DayTransitionResult =
+  | { readonly ok: true; readonly receipt: DayTransitionReceipt }
+  | {
+      readonly ok: false;
+      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "shipping" | "energy" | "makers";
+      readonly stage?: DayTransitionStage;
+    };
+
+export type AdvanceTimeAcrossDayBoundariesResult =
+  | { readonly ok: true; readonly time: GameTime; readonly receipts: readonly DayTransitionReceipt[] }
+  | { readonly ok: false; readonly reason: "disabled" | "missing-time" | "invalid-minutes" | "transition-failed" };
+
+/** Advances ordinary clock minutes while delegating every crossed boundary to transitionToNextDay. */
+export function advanceTimeAcrossDayBoundaries(
+  project: Project,
+  session: PlaySession,
+  minutes: number,
+): AdvanceTimeAcrossDayBoundariesResult {
+  const system = resolveTimeSystem(project);
+  if (!system) return { ok: false, reason: "disabled" };
+  if (!session.gameTime) return { ok: false, reason: "missing-time" };
+  if (!Number.isSafeInteger(minutes) || minutes < 0) return { ok: false, reason: "invalid-minutes" };
+
+  const draft = structuredClone(session);
+  const receipts: DayTransitionReceipt[] = [];
+  let remaining = minutes;
+  while (remaining > 0) {
+    const untilBoundary = minutesUntilDayEnd(draft.gameTime!, system);
+    if (remaining < untilBoundary) {
+      draft.gameTime = advanceGameTime(draft.gameTime!, remaining, system).time;
+      remaining = 0;
+      break;
+    }
+    const sourceDayKey = calendarDayKey(draft.gameTime!);
+    const transition = transitionToNextDay(project, draft, sourceDayKey);
+    if (!transition.ok) return { ok: false, reason: "transition-failed" };
+    receipts.push(transition.receipt);
+    remaining -= untilBoundary;
+  }
+  replaceSession(session, draft);
+  return { ok: true, time: structuredClone(draft.gameTime!), receipts };
+}
+
+/**
+ * Advances one authored day as a transaction. Every stage runs on a draft and
+ * the live session is replaced only after the final maker validation succeeds.
+ */
+export function transitionToNextDay(
+  project: Project,
+  session: PlaySession,
+  sourceDayKey: string,
+): DayTransitionResult {
+  const system = resolveTimeSystem(project);
+  if (!system) return { ok: false, reason: "disabled" };
+  if (!session.gameTime) return { ok: false, reason: "missing-time" };
+  const normalizedSource = sourceDayKey.trim();
+  if (session.dayTransitionLastDayKey === normalizedSource) {
+    return { ok: false, reason: "already-transitioned" };
+  }
+  if (!normalizedSource || calendarDayKey(session.gameTime) !== normalizedSource) {
+    return { ok: false, reason: "stale-day-key" };
+  }
+
+  const draft = structuredClone(session);
+  const shipping = settleShipping(project, draft, normalizedSource);
+  if (!shipping.ok && shipping.reason !== "disabled" && shipping.reason !== "already-settled") {
+    return { ok: false, reason: "shipping", stage: "shipping" };
+  }
+
+  draft.gameTime = sleepGameTimeUntilMorning(draft.gameTime!, system).time;
+  syncFarmPlotsToDate(project, draft, system);
+
+  const energy = restoreEnergy(project, draft, project.system.energy?.restorePerDay);
+  if (!energy.ok && energy.reason !== "disabled") {
+    return { ok: false, reason: "energy", stage: "energy" };
+  }
+
+  const makers = advanceMakers(project, draft, absoluteGameMinutes(draft.gameTime, system));
+  if (!makers.ok && makers.reason !== "disabled") {
+    return { ok: false, reason: "makers", stage: "makers" };
+  }
+
+  draft.dayTransitionLastDayKey = normalizedSource;
+  replaceSession(session, draft);
+  return {
+    ok: true,
+    receipt: {
+      sourceDayKey: normalizedSource,
+      destinationDayKey: calendarDayKey(draft.gameTime),
+      stages: DAY_TRANSITION_STAGES,
+      shipping,
+      energy,
+      makers,
+    },
+  };
+}
+
+function replaceSession(target: PlaySession, source: PlaySession): void {
+  Object.assign(target, source);
+}

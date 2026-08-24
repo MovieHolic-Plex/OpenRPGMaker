@@ -207,7 +207,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateFieldSpawns(deltaMs: number): void;
   actionCombatState?: import("@/player/actionCombatTypes").ActionCombatSceneState | null;
   updateActionCombat?(deltaMs: number): void;
-  sleepUntilMorning(): Promise<void>;
+  sleepUntilMorning(): Promise<boolean>;
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
   showGameOverScreen(message?: string): void;

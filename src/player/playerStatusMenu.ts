@@ -55,6 +55,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     equipmentSlotId: options.equipmentSlotId,
     formationActorId: options.formationActorId,
     monsterView: options.monsterView,
+    lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
     saveEnabled: options.saveEnabled,
     onSaveSlot: options.actions.onSaveSlot,
@@ -72,6 +73,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onMoveFormationActor: options.actions.onMoveFormationActor,
     onToggleMonsterView: options.actions.onToggleMonsterView,
     onMoveMonster: options.actions.onMoveMonster,
+    onSelectLifeLedgerTab: options.actions.onSelectLifeLedgerTab,
+    onLifeLedgerMutation: options.actions.onLifeLedgerMutation,
     onCommand: options.actions.onCommand,
   });
   panel.append(
@@ -158,6 +161,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "formation":
     case "quests":
     case "relationships":
+    case "life-ledger":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:

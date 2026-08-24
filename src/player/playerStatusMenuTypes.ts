@@ -2,6 +2,7 @@ import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, Project } from "@/project/types";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
+import type { LifeLedgerTabId } from "@/player/lifeLedger";
 
 export type PlayerStatusMenuActions = {
   readonly onCommand: (commandId: StatusMenuCommandId) => void;
@@ -22,6 +23,8 @@ export type PlayerStatusMenuActions = {
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView: () => void;
   readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
+  readonly onSelectLifeLedgerTab?: (tab: LifeLedgerTabId) => void;
+  readonly onLifeLedgerMutation?: (ok: boolean, message: string) => void;
   readonly onToggleWait: () => void;
   readonly onToTitle: () => void;
 };
@@ -42,6 +45,7 @@ export type PlayerStatusMenuOptions = {
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
   readonly monsterView?: "party" | "box";
+  readonly lifeLedgerTab?: LifeLedgerTabId;
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly saveEnabled?: boolean;
   readonly waitModeEnabled?: boolean;
