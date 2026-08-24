@@ -58,6 +58,7 @@ describe("Gen1 monster battle command DOM", () => {
     expect(fight.querySelector("[data-testid='actor-skill-skill_move_1']")).toBeNull();
     expect(button(fight, "actor-skill-skill_move_2").disabled).toBe(true);
     expect(button(fight, "actor-skill-skill_move_4").disabled).toBe(false);
+    expect(button(fight, "actor-skill-skill_move_5").disabled).toBe(false);
   });
 
   it("offers Struggle when every finite move is out of PP", () => {
