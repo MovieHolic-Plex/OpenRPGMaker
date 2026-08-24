@@ -386,8 +386,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     });
   }
 
-  async sleepUntilMorning(): Promise<void> {
-    await sleepUntilMorningScene(this, async (commands) => {
+  async sleepUntilMorning(): Promise<boolean> {
+    return sleepUntilMorningScene(this, async (commands) => {
       const { runCommands } = await import("@/player/playSceneInterpreter");
       await runCommands(this, commands, undefined, { allowNested: true });
     });

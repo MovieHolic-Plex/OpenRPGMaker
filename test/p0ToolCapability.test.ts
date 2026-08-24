@@ -46,5 +46,13 @@ describe("P0 upgraded tool capabilities", () => {
       capability: { areaWidth: 0, areaHeight: Number.NaN, energyMultiplier: -1 },
     }];
     expect(resolveToolCapability(project, "c")).toEqual({ areaWidth: 1, areaHeight: 1, energyMultiplier: 1 });
+
+    project.system.itemUpgrades = [{
+      id: "oversized",
+      fromItemId: "a",
+      toItemId: "d",
+      capability: { areaWidth: 10, areaHeight: 9, energyMultiplier: 1 },
+    }];
+    expect(resolveToolCapability(project, "d")).toEqual({ areaWidth: 1, areaHeight: 1, energyMultiplier: 1 });
   });
 });

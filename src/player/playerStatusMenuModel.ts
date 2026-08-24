@@ -4,6 +4,7 @@ import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionA
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
+import { hasLifeLedgerData } from "@/player/lifeLedger";
 
 export const STATUS_MENU_COMMAND_IDS = [
   "items",
@@ -17,6 +18,7 @@ export const STATUS_MENU_COMMAND_IDS = [
   "formation",
   "quests",
   "relationships",
+  "life-ledger",
   "wait",
   "to-title",
 ] as const;
@@ -36,7 +38,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["quests", "relationships"] },
+  { id: "record", label: "기록", commandIds: ["quests", "relationships", "life-ledger"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "to-title"] },
 ];
@@ -177,6 +179,7 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   return STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds).filter((id) => {
     if (id === "relationships") return showRelationships;
+    if (id === "life-ledger") return hasLifeLedgerData(project);
     if (id === "save") return !saveDisabled;
     return true;
   });
@@ -266,6 +269,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "formation": return "진형";
     case "quests": return "임무";
     case "relationships": return "관계";
+    case "life-ledger": return "생활 장부";
     // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
     // 상세 패널 제목("전투 대기")과 설명이 알려준다.

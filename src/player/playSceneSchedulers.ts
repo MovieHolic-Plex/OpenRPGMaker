@@ -20,7 +20,7 @@ import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { applyWeatherStep } from "@/player/playSceneWeather";
-import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -194,13 +194,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       applyTimerStep(scene, step);
       return true;
     case "advanceTime":
-      void applyAdvanceTimeStep(scene, step);
+      observeScheduledTimeTransition(scene, applyAdvanceTimeStep(scene, step), "scheduled-advance");
       return true;
     case "setTime":
       applySetTimeStep(scene, step);
       return true;
     case "sleepUntilMorning":
-      void scene.sleepUntilMorning();
+      observeScheduledTimeTransition(scene, scene.sleepUntilMorning(), "scheduled-sleep");
       return true;
     case "showPicture":
       showPictureState(scene.session, step);

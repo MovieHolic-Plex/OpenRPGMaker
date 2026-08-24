@@ -1,4 +1,5 @@
 import { isGenrePackId } from "@/project/genrePackId";
+import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 
 export function validateDatabase(value: unknown): void {
@@ -96,8 +97,14 @@ function validateItemUpgrades(value: unknown): void {
     if (upgrade.ingredients !== undefined) validateItemAmounts(`${label}.ingredients`, upgrade.ingredients, false);
     if (upgrade.capability !== undefined) {
       const capability = requireRecord(`${label}.capability`, upgrade.capability);
-      assertPositiveNumber(`${label}.capability.areaWidth`, capability.areaWidth);
-      assertPositiveNumber(`${label}.capability.areaHeight`, capability.areaHeight);
+      const areaWidth = requireNumber(`${label}.capability.areaWidth`, capability.areaWidth);
+      const areaHeight = requireNumber(`${label}.capability.areaHeight`, capability.areaHeight);
+      assert(Number.isSafeInteger(areaWidth) && areaWidth > 0 && areaWidth <= TOOL_CAPABILITY_AXIS_MAX,
+        `${label}.capability.areaWidth must be an integer from 1 to ${TOOL_CAPABILITY_AXIS_MAX}.`);
+      assert(Number.isSafeInteger(areaHeight) && areaHeight > 0 && areaHeight <= TOOL_CAPABILITY_AXIS_MAX,
+        `${label}.capability.areaHeight must be an integer from 1 to ${TOOL_CAPABILITY_AXIS_MAX}.`);
+      assert(areaWidth * areaHeight <= TOOL_CAPABILITY_TILE_MAX,
+        `${label}.capability area must contain at most ${TOOL_CAPABILITY_TILE_MAX} tiles.`);
       const multiplier = requireNumber(`${label}.capability.energyMultiplier`, capability.energyMultiplier);
       assert(multiplier > 0, `${label}.capability.energyMultiplier must be positive.`);
     }

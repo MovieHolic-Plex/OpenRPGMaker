@@ -20,7 +20,7 @@ export function restoreEnergy(project: Project, session: PlaySession, amount?: n
   const resolved = resolveEnergy(project, session);
   if (!resolved.ok) return resolved;
   const requested = amount ?? resolved.max;
-  if (!isPositiveInteger(requested)) return { ok: false, reason: "invalid-amount" };
+  if (!isNonNegativeInteger(requested)) return { ok: false, reason: "invalid-amount" };
   const after = Math.min(resolved.max, resolved.current + requested);
   session.energy = after;
   return { ok: true, before: resolved.current, after, restored: after - resolved.current };

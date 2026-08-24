@@ -79,7 +79,7 @@ export function isLifeSkillsRecord(value: unknown): value is NonNullable<PlaySes
   if (!isRecord(value)) return false;
   return Object.values(value).every((progress) => {
     if (!isRecord(progress)) return false;
-    return isNonNegativeInteger(progress.xp) && isPositiveInteger(progress.level);
+    return isNonNegativeSafeInteger(progress.xp) && isPositiveSafeInteger(progress.level);
   });
 }
 
@@ -148,8 +148,8 @@ export function isMakerInstancesRecord(value: unknown): value is NonNullable<Pla
     if (!isRecord(instance) || instance.instanceId !== instanceId || typeof instance.makerId !== "string") return false;
     if (instance.status !== "idle" && instance.status !== "processing" && instance.status !== "ready") return false;
     if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
-    return isNonNegativeInteger(instance.startedAtMinute) &&
-      isNonNegativeInteger(instance.readyAtMinute) &&
+    return isNonNegativeSafeInteger(instance.startedAtMinute) &&
+      isNonNegativeSafeInteger(instance.readyAtMinute) &&
       instance.readyAtMinute >= instance.startedAtMinute;
   });
 }
@@ -482,6 +482,14 @@ function isNonNegativeInteger(value: unknown): value is number {
 
 function isPositiveInteger(value: unknown): value is number {
   return isFiniteInteger(value) && value >= 1;
+}
+
+function isNonNegativeSafeInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isPositiveSafeInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 1;
 }
 
 function isDirection(value: unknown): value is "down" | "left" | "right" | "up" {

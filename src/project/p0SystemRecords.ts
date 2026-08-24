@@ -7,8 +7,9 @@ import type {
   ShippingSystemConfig,
   WorldUnlockDefinition,
 } from "@/project/types";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 
-const CONFIG_AMOUNT_MAX = 9_999_999;
+const CONFIG_AMOUNT_MAX = ITEM_QUANTITY_MAX;
 const SHIPPING_HISTORY_MAX = 365;
 
 export function normalizeEnergySystemConfig(value: EnergySystemConfig | undefined): EnergySystemConfig | undefined {

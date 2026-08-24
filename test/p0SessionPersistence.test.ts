@@ -42,6 +42,11 @@ function configureP0PersistenceProject(project: ReturnType<typeof createBlankPro
     outputs: [{ itemId: "item_turnip", count: 1 }],
     durationMinutes: 1_440,
   }];
+  project.system.skillSystem = { enabled: true };
+  project.database.lifeSkills = [
+    { id: "skill_farming", name: "Farming", skillType: "farming", maxLevel: 5, levelUpRewards: [] },
+    { id: "skill_mining", name: "Mining", skillType: "mining", maxLevel: 5, levelUpRewards: [] },
+  ];
 }
 
 describe("P0 save snapshot regression", () => {
@@ -49,6 +54,7 @@ describe("P0 save snapshot regression", () => {
     // Break caught: createSaveSnapshot/parse/apply silently omits live progression fields.
     const project = createBlankProject();
     configureP0PersistenceProject(project);
+    project.system.timeSystem = { enabled: true };
     const session = startSession(project, 17);
     session.lifeSkills = { skill_farming: { xp: 275, level: 3 } };
     session.shopLoyaltySpend = { shop_seed: 450 };
@@ -59,8 +65,10 @@ describe("P0 save snapshot regression", () => {
     };
     session.shopLastRestockDayKey = { shop_seed: "1:spring:12" };
     session.energy = 72;
+    session.gameTime = { year: 1, season: "spring", day: 12, hour: 9, minute: 30 };
     session.shippingQueue = { item_turnip: 4 };
     session.shippingLastSettledDayKey = "1:spring:11";
+    session.dayTransitionLastDayKey = "1:spring:11";
     session.shippingHistory = [{
       dayKey: "1:spring:11",
       entries: [{ itemId: "item_turnip", count: 2, unitPrice: 10, subtotal: 20 }],
@@ -98,6 +106,7 @@ describe("P0 save snapshot regression", () => {
     expect(restored.energy).toBe(72);
     expect(restored.shippingQueue).toEqual(session.shippingQueue);
     expect(restored.shippingLastSettledDayKey).toBe("1:spring:11");
+    expect(restored.dayTransitionLastDayKey).toBe("1:spring:11");
     expect(restored.shippingHistory).toEqual(session.shippingHistory);
     expect(restored.bundleContributions).toEqual(session.bundleContributions);
     expect(restored.completedBundleIds).toEqual(["bundle_mine"]);
@@ -124,6 +133,7 @@ describe("P0 save snapshot regression", () => {
       "energy",
       "shippingQueue",
       "shippingLastSettledDayKey",
+      "dayTransitionLastDayKey",
       "shippingHistory",
       "bundleContributions",
       "completedBundleIds",
@@ -144,6 +154,7 @@ describe("P0 save snapshot regression", () => {
     expect(restored.shopMileagePoints).toBeUndefined();
     expect(restored.shippingQueue).toEqual({});
     expect(restored.shippingHistory).toEqual([]);
+    expect(restored.dayTransitionLastDayKey).toBeUndefined();
     expect(restored.bundleContributions).toEqual({});
     expect(restored.completedBundleIds).toEqual([]);
     expect(restored.bundleRewardAppliedIds).toEqual([]);
@@ -152,14 +163,34 @@ describe("P0 save snapshot regression", () => {
     expect(restored.makerInstances).toEqual({});
   });
 
+  it("removes a cursor that does not match the canonical day-key grammar at parse time", () => {
+    const project = createBlankProject();
+    configureP0PersistenceProject(project);
+    const session = startSession(project, 181);
+    session.gameTime = { year: 1, season: "spring", day: 2, hour: 6, minute: 0 };
+    const snapshot = createSaveSnapshot(project, session);
+    const wireSession = snapshot.session as unknown as Record<string, unknown>;
+    wireSession.dayTransitionLastDayKey = "1:spring:1:forged";
+    const storage = new MemoryStorage();
+    saveToSlot(storage, 2, snapshot);
+
+    const read = readSaveSlot(storage, 2);
+    expect(read.kind).toBe("present");
+    if (read.kind !== "present") throw new Error("expected a parsed save slot");
+    expect(read.snapshot.session.dayTransitionLastDayKey).toBeUndefined();
+  });
+
   it("uses the same P0 snapshot state for autosave and checkpoints", () => {
     // Break caught: a second save writer preserves manual slots but drops new state in auto/checkpoint flows.
     const project = createBlankProject();
     configureP0PersistenceProject(project);
+    project.system.timeSystem = { enabled: true };
     const session = startSession(project, 19);
-    session.lifeSkills = { skill_farming: { xp: 420, level: 4 } };
+    session.lifeSkills = { skill_farming: { xp: 500, level: 4 } };
     session.energy = 48;
+    session.gameTime = { year: 1, season: "spring", day: 5, hour: 8, minute: 0 };
     session.shippingQueue = { item_turnip: 3 };
+    session.dayTransitionLastDayKey = "1:spring:4";
     session.completedBundleIds = ["bundle_spring"];
     session.unlockedRecipeIds = ["recipe_preserves"];
     session.makerInstances = {
@@ -182,6 +213,7 @@ describe("P0 save snapshot regression", () => {
       lifeSkills: session.lifeSkills,
       energy: 48,
       shippingQueue: { item_turnip: 3 },
+      dayTransitionLastDayKey: "1:spring:4",
       completedBundleIds: ["bundle_spring"],
       unlockedRecipeIds: ["recipe_preserves"],
       makerInstances: session.makerInstances,
@@ -190,14 +222,16 @@ describe("P0 save snapshot regression", () => {
     saveSessionCheckpoint(project, session);
     session.energy = 0;
     session.shippingQueue = {};
+    session.dayTransitionLastDayKey = undefined;
     session.completedBundleIds = [];
     session.unlockedRecipeIds = [];
     session.makerInstances = {};
     const checkpointRestored = restoreSessionCheckpoint(project, session);
     expect(checkpointRestored).toMatchObject({
-      lifeSkills: { skill_farming: { xp: 420, level: 4 } },
+      lifeSkills: { skill_farming: { xp: 500, level: 4 } },
       energy: 48,
       shippingQueue: { item_turnip: 3 },
+      dayTransitionLastDayKey: "1:spring:4",
       completedBundleIds: ["bundle_spring"],
       unlockedRecipeIds: ["recipe_preserves"],
       makerInstances: {
@@ -275,5 +309,38 @@ describe("P0 save snapshot regression", () => {
     expect(restored.unlockedRegionIds).toEqual([]);
     expect(restored.unlockedRecipeIds).toEqual([]);
     expect(restored.makerInstances).toEqual({});
+  });
+
+  it("normalizes hostile skill, maker, and bundle receipt state against the current project", () => {
+    // Break caught: direct snapshot apply trusts stale skill ids, inconsistent
+    // levels, unsafe maker deadlines, and one-sided completion receipts.
+    const project = createBlankProject();
+    configureP0PersistenceProject(project);
+    const snapshot = createSaveSnapshot(project, startSession(project, 22));
+    const hostile = snapshot.session as unknown as Record<string, unknown>;
+    hostile.lifeSkills = {
+      skill_farming: { xp: 275, level: 99 },
+      skill_mining: { xp: 1e300, level: 2 },
+      skill_deleted: { xp: 100, level: 2 },
+    };
+    hostile.bundleContributions = { bundle_spring: { item_turnip: 2 } };
+    hostile.completedBundleIds = ["bundle_spring"];
+    hostile.bundleRewardAppliedIds = [];
+    hostile.makerInstances = {
+      "farm:unsafe": {
+        instanceId: "farm:unsafe",
+        makerId: "maker_preserves",
+        status: "processing",
+        startedAtMinute: 100,
+        readyAtMinute: 1e300,
+      },
+    };
+
+    const restored = applySaveSnapshot(project, snapshot);
+
+    expect(restored.lifeSkills).toEqual({ skill_farming: { xp: 275, level: 3 } });
+    expect(restored.makerInstances).toEqual({});
+    expect(restored.completedBundleIds).toEqual(["bundle_spring"]);
+    expect(restored.bundleRewardAppliedIds).toEqual(["bundle_spring"]);
   });
 });

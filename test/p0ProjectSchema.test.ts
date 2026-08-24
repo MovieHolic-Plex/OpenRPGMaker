@@ -151,6 +151,13 @@ describe("P0 authored system records", () => {
       capability: { areaWidth: 0, areaHeight: 3, energyMultiplier: 0.75 },
     }];
     expect(() => deserialize(JSON.stringify(wire))).toThrow(/capability\.areaWidth/i);
+
+    ((wire.system as Record<string, unknown>).itemUpgrades as Array<Record<string, unknown>>)[0]!.capability = {
+      areaWidth: 10,
+      areaHeight: 9,
+      energyMultiplier: 0.75,
+    };
+    expect(() => deserialize(JSON.stringify(wire))).toThrow(/capability\.areaWidth/i);
   });
 
   it("rejects malformed sell-price rows used by shipping settlement", () => {

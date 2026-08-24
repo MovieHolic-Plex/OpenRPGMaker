@@ -19,8 +19,9 @@ import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
 import { normalizeLightingState } from "@/project/lightingRules";
-import { transitionItemState } from "@/project/itemTransitions";
+import { transitionItemStates, type ItemTransitionAction } from "@/project/itemTransitions";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
+import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -174,6 +175,8 @@ export interface PlaySession {
   energy?: number;
   shippingQueue?: Record<string, number>;
   shippingLastSettledDayKey?: string;
+  /** Source calendar day consumed by the most recent atomic day transition. */
+  dayTransitionLastDayKey?: string;
   shippingHistory?: ShippingSettlement[];
   bundleContributions?: Record<string, Record<string, number>>;
   completedBundleIds?: string[];
@@ -472,17 +475,33 @@ export function changeItem(
   itemId: string,
   op: "=" | "+=" | "-=",
   amount: number
-): void {
-  const current = session.inventory[itemId] ?? 0;
-  const next = Math.max(0, applyAmount(current, op, amount));
-  const action = op === "+="
-    ? { kind: "grant" as const, itemId, amount: next - current }
-    : op === "-="
-      ? { kind: "remove" as const, itemId, amount: current - next }
-      : { kind: "assign" as const, itemId, count: next };
-  const transitioned = transitionItemState(session, [], action);
+): boolean {
+  return changeItemsAtomically(session, [{ itemId, op, amount }]);
+}
+
+/** Validates a batch against one evolving inventory and commits it once. */
+export function changeItemsAtomically(
+  session: PlaySessionLike,
+  operations: readonly ItemQuantityOperation[],
+): boolean {
+  if (operations.length === 0) return true;
+  const nextCounts = new Map<string, number>();
+  const actions: ItemTransitionAction[] = [];
+  for (const operation of operations) {
+    const current = nextCounts.get(operation.itemId) ?? session.inventory[operation.itemId] ?? 0;
+    const next = resolveItemQuantity(current, operation.op, operation.amount);
+    if (next === undefined) return false;
+    nextCounts.set(operation.itemId, next);
+    actions.push(operation.op === "+="
+      ? { kind: "grant", itemId: operation.itemId, amount: operation.amount }
+      : operation.op === "-="
+        ? { kind: "remove", itemId: operation.itemId, amount: current - next }
+        : { kind: "assign", itemId: operation.itemId, count: next });
+  }
+  const transitioned = transitionItemStates(session, [], actions);
   session.inventory = transitioned.inventory;
   session.itemUseCharges = transitioned.itemUseCharges;
+  return true;
 }
 
 export function changeParty(

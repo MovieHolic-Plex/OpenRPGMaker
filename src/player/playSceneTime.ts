@@ -1,10 +1,9 @@
 import {
-  advanceGameTime,
+  calendarDayKey,
   initialGameTime,
   minutesUntilDayEnd,
   resolveTimeSystem,
   setGameTimeClock,
-  sleepGameTimeUntilMorning,
   timePhaseFor,
   type TimePhase,
 } from "@/project/gameTime";
@@ -12,7 +11,7 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { StepResult } from "@/player/interpreter";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
-import { syncFarmPlotsToDate } from "@/player/farming";
+import { advanceTimeAcrossDayBoundaries, transitionToNextDay } from "@/player/dayTransition";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { fadeCamera, TRANSFER_FADE_DURATION_MS } from "@/player/playSceneMapCommands";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
@@ -57,12 +56,17 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
     if (wholeMinutes <= 0) continue;
     scene.timeMinuteAccumulator -= wholeMinutes;
     if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= wholeMinutes) {
-      void scene.sleepUntilMorning();
+      observeScheduledTimeTransition(scene, scene.sleepUntilMorning(), "forced-sleep");
       return;
     }
-    const advanced = advanceGameTime(scene.session.gameTime, wholeMinutes, system);
-    scene.session.gameTime = advanced.time;
-    if (advanced.dayEnds > 0) syncFarmPlotsToDate(project, scene.session, system);
+    const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, wholeMinutes);
+    if (!advanced.ok) {
+      scene.timeFixedAccumulatorMs = 0;
+      scene.timeMinuteAccumulator = 0;
+      showDayTransitionFailure(scene, advanced.reason);
+      return;
+    }
+    scene.clearRuntimeOverlay("day-transition-error");
   }
 }
 
@@ -108,25 +112,43 @@ export function updateTimeTint(scene: PlaySceneContext, deltaMs: number): void {
 export async function sleepUntilMorningScene(
   scene: PlaySceneContext,
   runDayEndCommands: (commands: readonly Command[]) => Promise<void>
-): Promise<void> {
+): Promise<boolean> {
   const project = store.getCurrent();
   const system = resolveTimeSystem(project);
-  if (!system) return;
+  if (!system) return false;
   scene.session.gameTime ??= initialGameTime(system);
-  if (!scene.session.gameTime || scene.timeSleepInProgress) return;
+  if (!scene.session.gameTime || scene.timeSleepInProgress) return false;
   scene.timeSleepInProgress = true;
   try {
+    const sourceDayKey = calendarDayKey(scene.session.gameTime);
+    const preflight = transitionToNextDay(project, structuredClone(scene.session), sourceDayKey);
+    if (!preflight.ok) {
+      showDayTransitionFailure(scene, preflight.reason);
+      return false;
+    }
     await fadeCamera(scene, "out", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
+    const beforeHook = structuredClone(scene.session);
     const hook = system.onDayEnd ? project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
-    if (hook?.commands.length) await runDayEndCommands(hook.commands);
-    scene.session.gameTime = sleepGameTimeUntilMorning(scene.session.gameTime, system).time;
+    try {
+      if (hook?.commands.length) await runDayEndCommands(hook.commands);
+      const transition = transitionToNextDay(project, scene.session, sourceDayKey);
+      if (!transition.ok) {
+        await recoverFailedSleep(scene, beforeHook, transition.reason);
+        return false;
+      }
+    } catch (cause) {
+      const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
+      await recoverFailedSleep(scene, beforeHook, `day-end-hook${detail}`);
+      return false;
+    }
+    scene.clearRuntimeOverlay("day-transition-error");
     // 커서 산술이 하루치 틱을 만들어 준다. 여기서 advanceFarmPlotsForDay 를 또 부르면 이중 계산이다.
-    syncFarmPlotsToDate(project, scene.session, system);
     scene.timeFixedAccumulatorMs = 0;
     scene.timeMinuteAccumulator = 0;
     scene.refreshRuntimeSurfaces();
     scene.syncRuntimeState();
     await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
+    return true;
   } finally {
     scene.timeSleepInProgress = false;
   }
@@ -143,16 +165,20 @@ export async function applyAdvanceTimeStep(
   if (!scene.session.gameTime) return;
   const days = Math.max(0, Math.trunc(step.days ?? 0));
   for (let index = 0; index < days; index += 1) {
-    await scene.sleepUntilMorning();
+    if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during authored day advance");
   }
   const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
   if (minutes <= 0) return;
   if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= minutes) {
-    await scene.sleepUntilMorning();
+    if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during forced sleep");
     return;
   }
-  scene.session.gameTime = advanceGameTime(scene.session.gameTime, minutes, system).time;
-  syncFarmPlotsToDate(project, scene.session, system);
+  const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, minutes);
+  if (!advanced.ok) {
+    showDayTransitionFailure(scene, advanced.reason);
+    throw new Error(`Day transition failed: ${advanced.reason}`);
+  }
+  scene.clearRuntimeOverlay("day-transition-error");
   scene.syncRuntimeState();
 }
 
@@ -163,6 +189,19 @@ export function applySetTimeStep(scene: PlaySceneContext, step: Extract<StepResu
   if (!scene.session.gameTime) return;
   scene.session.gameTime = setGameTimeClock(scene.session.gameTime, step.hour, step.minute, system);
   scene.syncRuntimeState();
+}
+
+export function observeScheduledTimeTransition(
+  scene: Pick<PlaySceneContext, "showRuntimeOverlay">,
+  task: Promise<boolean | void>,
+  reason: "forced-sleep" | "scheduled-sleep" | "scheduled-advance",
+): void {
+  void task.then((result) => {
+    if (result === false) showDayTransitionFailure(scene, reason);
+  }).catch((cause: unknown) => {
+    const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
+    showDayTransitionFailure(scene, `${reason}${detail}`);
+  });
 }
 
 export function isGameTimePausedForRuntime(scene: Pick<PlaySceneContext, "game" | "session" | "timeSleepInProgress">): boolean {
@@ -226,4 +265,25 @@ function interpolateColor(from: number, to: number, progress: number): number {
   const g = Math.round(fg + (tg - fg) * progress);
   const b = Math.round(fb + (tb - fb) * progress);
   return (r << 16) | (g << 8) | b;
+}
+
+function showDayTransitionFailure(scene: Pick<PlaySceneContext, "showRuntimeOverlay">, reason: string): void {
+  scene.showRuntimeOverlay("day-transition-error", `새날 처리를 완료하지 못했습니다 (${reason})`);
+}
+
+async function recoverFailedSleep(
+  scene: PlaySceneContext,
+  beforeHook: PlaySceneContext["session"],
+  reason: string,
+): Promise<void> {
+  restoreSession(scene.session, beforeHook);
+  showDayTransitionFailure(scene, reason);
+  scene.refreshRuntimeSurfaces();
+  scene.syncRuntimeState();
+  await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
+}
+
+function restoreSession(target: PlaySceneContext["session"], source: PlaySceneContext["session"]): void {
+  for (const key of Object.keys(target)) Reflect.deleteProperty(target, key);
+  Object.assign(target, source);
 }
