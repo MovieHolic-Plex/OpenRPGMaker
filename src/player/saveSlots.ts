@@ -531,11 +531,17 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
   }
-  const weather = session.gameTime || project.system.dailyWeather?.enabled !== true
-    ? applyDailyWeatherForDate(project, session, session.gameTime)
-    : savedDailyWeather;
-  if (weather) ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
-  else if (session.m2Runtime) session.m2Runtime.screen.weather = "none";
+  if (project.system.dailyWeather?.enabled === true) {
+    const weather = session.gameTime
+      ? applyDailyWeatherForDate(project, session, session.gameTime)
+      : savedDailyWeather;
+    session.dailyWeather = weather;
+    if (weather) ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
+  } else {
+    // Authored daily weather and event-command screen weather are independent packages.
+    // Disabling the former clears its HUD state but must not erase a saved setWeather effect.
+    session.dailyWeather = undefined;
+  }
   syncMonsterPartyFollowers(project, session);
   return session;
 }

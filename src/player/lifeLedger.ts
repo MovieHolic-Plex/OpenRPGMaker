@@ -34,7 +34,7 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   skills: FARMING_LIFE_UI_ASSETS.fishing,
   makers: FARMING_LIFE_UI_ASSETS.makers,
   animals: FARMING_LIFE_UI_ASSETS.animals,
-  spaces: "/assets/farming/life-ui/decorating-card.png",
+  spaces: FARMING_LIFE_UI_ASSETS.decorating,
   collections: FARMING_LIFE_UI_ASSETS.foraging,
   museum: FARMING_LIFE_UI_ASSETS.museum,
 };
