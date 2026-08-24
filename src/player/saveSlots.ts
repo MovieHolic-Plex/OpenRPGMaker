@@ -8,6 +8,7 @@ import {
 } from "@/project/session";
 import { normalizeItemTransitionState } from "@/project/itemTransitions";
 import { syncMonsterPartyFollowers } from "@/project/followers";
+import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { normalizeGameTime } from "@/project/gameTime";
@@ -109,6 +110,7 @@ export type SaveSnapshot = {
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly monsterCareSteps?: number;
+    readonly monsterFieldPoisonSteps?: number;
     readonly monsterCareDaily?: PlaySession["monsterCareDaily"];
     readonly equippedToolItemId?: PlaySession["equippedToolItemId"];
     readonly chests?: PlaySession["chests"];
@@ -231,6 +233,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       monsterCareSteps: session.monsterCareSteps,
+      monsterFieldPoisonSteps: session.monsterFieldPoisonSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
       chests: structuredClone(session.chests ?? {}),
@@ -319,7 +322,12 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
-  if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
+  if (snapshot.session.monsterInstances) {
+    session.monsterInstances = {};
+    for (const [instanceId, instance] of Object.entries(snapshot.session.monsterInstances)) {
+      session.monsterInstances[instanceId] = normalizeMonsterInstanceBattleState(project, structuredClone(instance));
+    }
+  }
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
@@ -342,6 +350,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (typeof snapshot.session.monsterCareSteps === "number") {
     session.monsterCareSteps = Math.max(0, Math.trunc(snapshot.session.monsterCareSteps));
+  }
+  if (typeof snapshot.session.monsterFieldPoisonSteps === "number") {
+    session.monsterFieldPoisonSteps = snapshot.session.monsterFieldPoisonSteps;
   }
   if (snapshot.session.monsterCareDaily) {
     session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
@@ -445,6 +456,17 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isBooleanRecord(session.flags)) return { ok: false, message: "Invalid flags" };
   if (!isRecord(session.audio)) return { ok: false, message: "Invalid audio" };
   if (!isPictureRecord(session.pictures)) return { ok: false, message: "Invalid pictures" };
+  if (session.monsterInstances !== undefined && !isMonsterInstancesRecord(session.monsterInstances)) {
+    return { ok: false, message: "Invalid monster instances" };
+  }
+  if (session.monsterFieldPoisonSteps !== undefined && (
+    typeof session.monsterFieldPoisonSteps !== "number"
+    || !Number.isInteger(session.monsterFieldPoisonSteps)
+    || session.monsterFieldPoisonSteps < 0
+    || session.monsterFieldPoisonSteps > 3
+  )) {
+    return { ok: false, message: "Invalid monster field poison steps" };
+  }
   const battleResult = parseBattleResult(session.battleResult);
   if (battleResult === "invalid") return { ok: false, message: "Invalid battle result" };
   const audio = parseAudioState(session.audio);
@@ -484,6 +506,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
       monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)
         ? Math.max(0, Math.trunc(session.monsterCareSteps))
+        : undefined,
+      monsterFieldPoisonSteps: typeof session.monsterFieldPoisonSteps === "number"
+        ? session.monsterFieldPoisonSteps
         : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,

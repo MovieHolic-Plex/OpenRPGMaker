@@ -630,7 +630,7 @@ export function executeCommand(
       changeActorVital(state.session, command);
       return resumeNext(frame);
     case "recoverAll":
-      recoverAll(state.session, command.actorId);
+      recoverAll(state.session, command.actorId, state.project);
       return resumeNext(frame);
     case "enterHeroName": {
       const actor = state.project?.database.actors.find((record) => record.id === command.actorId);

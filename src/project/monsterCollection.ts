@@ -21,6 +21,7 @@ import { syncMonsterPartyFollowers } from "@/project/followers";
 import { transitionItemState } from "@/project/itemTransitions";
 
 export const MONSTER_PARTY_MAX = 6;
+export const MONSTER_SKILL_MAX = 4;
 
 export type GiveMonsterInput = {
   readonly speciesId: MonsterSpeciesId;
@@ -71,6 +72,10 @@ export type MonsterExperienceResult = {
   readonly learnedSkillIds: readonly SkillId[];
   readonly evolution?: EvolveMonsterResult;
 };
+
+export type MonsterSkillChoiceResult =
+  | { readonly ok: true; readonly instance: MonsterInstance }
+  | { readonly ok: false; readonly reason: "missingPendingSkill" | "missingActiveSkill" };
 
 export const DEFAULT_MONSTER_EXP_CURVE: ActorExperienceCurve = { base: 30, extra: 20, acceleration: 30 };
 
@@ -190,12 +195,10 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     caughtAt: input.caughtAt ?? { mapId: session.currentMapId, x: session.x, y: session.y },
   };
   const maxHp = monsterMaxHpFor(project, species, instance);
-  const skills = monsterSkillIdsForSpecies(species, instance.level);
-  const hydrated: MonsterInstance = {
+  const hydrated = normalizeMonsterInstanceBattleState(project, {
     ...instance,
     currentHp: maxHp,
-    skillIds: skills.length > 0 ? skills : undefined,
-  };
+  });
   session.monsterInstances[instanceId] = hydrated;
   if (session.monsterParty.length < MONSTER_PARTY_MAX) {
     session.monsterParty.push(instanceId);
@@ -250,7 +253,118 @@ export function monsterCurrentHp(project: Project, instance: MonsterInstance | u
 export function monsterSkillIds(project: Project, instance: MonsterInstance | undefined): SkillId[] {
   if (!instance) return [];
   const species = monsterSpeciesById(project, instance.speciesId);
-  return mergeSkillIds(instance.skillIds ?? [], species ? monsterSkillIdsForSpecies(species, instance.level) : []);
+  if (instance.skillIds !== undefined) return uniqueSkillIds(instance.skillIds).slice(-MONSTER_SKILL_MAX);
+  return species ? latestMonsterSkillIdsForSpecies(species, instance.level) : [];
+}
+
+/**
+ * Hydrates optional legacy monster battle fields without mutating the source instance.
+ * An authored empty skillIds list remains empty; only a missing list derives the latest four moves.
+ */
+export function normalizeMonsterInstanceBattleState(project: Project, instance: MonsterInstance): MonsterInstance {
+  const skillIds = monsterSkillIds(project, instance);
+  const pendingSkillIds = uniqueSkillIds(instance.pendingSkillIds ?? []).filter((skillId) => !skillIds.includes(skillId));
+  const skillPp = normalizedMonsterSkillPp(project, skillIds, instance.skillPp);
+  return {
+    ...instance,
+    skillIds: instance.skillIds !== undefined || skillIds.length > 0 ? skillIds : undefined,
+    skillPp: Object.keys(skillPp).length > 0 ? skillPp : undefined,
+    pendingSkillIds: pendingSkillIds.length > 0 ? pendingSkillIds : undefined,
+  };
+}
+
+/** Returns a fully-restored copy for Pokemon-center/recover-all paths. */
+export function recoverMonsterInstance(project: Project, instance: MonsterInstance): MonsterInstance {
+  const normalized = normalizeMonsterInstanceBattleState(project, instance);
+  return {
+    ...normalized,
+    currentHp: monsterMaxHp(project, normalized),
+    stateIds: [],
+    stateTurns: {},
+    skillPp: fullMonsterSkillPp(project, normalized.skillIds ?? []),
+  };
+}
+
+export type Gen1FieldPoisonStepResult = {
+  readonly ticked: boolean;
+  readonly damagedInstanceIds: readonly string[];
+};
+
+/** Applies the Red/Blue field rule after one completed player step. */
+export function applyGen1FieldPoisonStep(project: Project, session: PlaySession): Gen1FieldPoisonStepResult {
+  const monsterPartyMode = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+  if (!monsterPartyMode) return { ticked: false, damagedInstanceIds: [] };
+
+  const poisonStateIds = new Set(
+    project.database.states
+      .filter((state) => state.gen1MajorStatus === "poison")
+      .map((state) => state.id),
+  );
+  const poisonedParty = session.monsterParty.flatMap((instanceId) => {
+    const instance = session.monsterInstances[instanceId];
+    if (!instance || !(instance.stateIds ?? []).some((stateId) => poisonStateIds.has(stateId))) return [];
+    return [{ instanceId, instance }];
+  });
+  if (poisonedParty.length === 0) {
+    session.monsterFieldPoisonSteps = 0;
+    return { ticked: false, damagedInstanceIds: [] };
+  }
+
+  const nextStep = (Math.max(0, Math.trunc(session.monsterFieldPoisonSteps ?? 0)) + 1) % 4;
+  session.monsterFieldPoisonSteps = nextStep;
+  if (nextStep !== 0) return { ticked: false, damagedInstanceIds: [] };
+
+  const damagedInstanceIds: string[] = [];
+  for (const { instanceId, instance } of poisonedParty) {
+    const currentHp = monsterCurrentHp(project, instance);
+    if (currentHp <= 1) continue;
+    session.monsterInstances[instanceId] = { ...instance, currentHp: currentHp - 1 };
+    damagedInstanceIds.push(instanceId);
+  }
+  return { ticked: true, damagedInstanceIds };
+}
+
+export function replacePendingMonsterSkill(
+  project: Project,
+  instance: MonsterInstance,
+  pendingSkillId: SkillId,
+  replacedSkillId: SkillId,
+): MonsterSkillChoiceResult {
+  const normalized = normalizeMonsterInstanceBattleState(project, instance);
+  if (!(normalized.pendingSkillIds ?? []).includes(pendingSkillId)) {
+    return { ok: false, reason: "missingPendingSkill" };
+  }
+  const skillIds = [...(normalized.skillIds ?? [])];
+  const replaceIndex = skillIds.indexOf(replacedSkillId);
+  if (replaceIndex < 0) return { ok: false, reason: "missingActiveSkill" };
+  skillIds[replaceIndex] = pendingSkillId;
+  const previousPp = { ...(normalized.skillPp ?? {}) };
+  delete previousPp[replacedSkillId];
+  delete previousPp[pendingSkillId];
+  const next: MonsterInstance = {
+    ...normalized,
+    skillIds,
+    pendingSkillIds: normalized.pendingSkillIds?.filter((skillId) => skillId !== pendingSkillId),
+    skillPp: previousPp,
+  };
+  return { ok: true, instance: normalizeMonsterInstanceBattleState(project, next) };
+}
+
+export function rejectPendingMonsterSkill(
+  instance: MonsterInstance,
+  pendingSkillId: SkillId,
+): MonsterSkillChoiceResult {
+  if (!(instance.pendingSkillIds ?? []).includes(pendingSkillId)) {
+    return { ok: false, reason: "missingPendingSkill" };
+  }
+  const pendingSkillIds = instance.pendingSkillIds?.filter((skillId) => skillId !== pendingSkillId) ?? [];
+  return {
+    ok: true,
+    instance: {
+      ...instance,
+      pendingSkillIds: pendingSkillIds.length > 0 ? pendingSkillIds : undefined,
+    },
+  };
 }
 
 /**
@@ -299,21 +413,26 @@ export function applyMonsterExperienceAndEvolution(
   const results: MonsterExperienceResult[] = [];
   for (const instanceId of session.monsterParty) {
     if (eligible && !eligible.has(instanceId)) continue;
-    const before = session.monsterInstances[instanceId];
+    const rawBefore = session.monsterInstances[instanceId];
+    const before = rawBefore ? normalizeMonsterInstanceBattleState(project, rawBefore) : undefined;
     if (!before) continue;
     const species = monsterSpeciesById(project, before.speciesId);
     if (!species) continue;
     const fromLevel = before.level;
     const nextExp = Math.max(0, Math.trunc(before.exp ?? 0)) + exp;
     const toLevel = monsterLevelForExp(species, fromLevel, nextExp);
-    const learned = newSkillsForLevelRange(species, fromLevel, toLevel, before.skillIds ?? []);
-    session.monsterInstances[instanceId] = {
+    const learned = newSkillsForLevelRange(
+      species,
+      fromLevel,
+      toLevel,
+      [...(before.skillIds ?? []), ...(before.pendingSkillIds ?? [])],
+    );
+    session.monsterInstances[instanceId] = applyLearnedMonsterSkills(project, {
       ...before,
       exp: nextExp,
       level: toLevel,
-      skillIds: mergeSkillIds(before.skillIds ?? [], learned),
       currentHp: monsterCurrentHp(project, before),
-    };
+    }, learned);
     const evolution = toLevel > fromLevel ? evolveMonster(project, session, { instanceId, allowItemEvolution: false }) : undefined;
     results.push({ instanceId, fromLevel, toLevel, learnedSkillIds: learned, evolution });
   }
@@ -355,7 +474,12 @@ export function previewMonsterExperience(
       name: monsterDisplayName(project, instance),
       fromLevel,
       toLevel,
-      learnedSkillIds: newSkillsForLevelRange(species, fromLevel, toLevel, instance.skillIds ?? []),
+      learnedSkillIds: newSkillsForLevelRange(
+        species,
+        fromLevel,
+        toLevel,
+        [...monsterSkillIds(project, instance), ...(instance.pendingSkillIds ?? [])],
+      ),
     });
   }
   return results;
@@ -363,7 +487,8 @@ export function previewMonsterExperience(
 
 export function evolveMonster(project: Project, session: PlaySession, input: EvolveMonsterInput): EvolveMonsterResult {
   ensureMonsterSessionFields(session);
-  const instance = session.monsterInstances[input.instanceId];
+  const rawInstance = session.monsterInstances[input.instanceId];
+  const instance = rawInstance ? normalizeMonsterInstanceBattleState(project, rawInstance) : undefined;
   if (!instance) return { ok: false, reason: "missingInstance", instanceId: input.instanceId, toSpeciesId: input.toSpeciesId };
   const fromSpecies = monsterSpeciesById(project, instance.speciesId);
   if (!fromSpecies) return { ok: false, reason: "missingSpecies", instanceId: input.instanceId, toSpeciesId: input.toSpeciesId };
@@ -382,13 +507,17 @@ export function evolveMonster(project: Project, session: PlaySession, input: Evo
   const hpRatio = previousMaxHp > 0 ? currentHp / previousMaxHp : 1;
   const nextMaxHp = monsterMaxHpFor(project, toSpecies, instance);
   const nextCurrentHp = currentHp <= 0 ? 0 : clampInteger(Math.round(nextMaxHp * hpRatio), 1, nextMaxHp);
-  const learnedSkillIds = newSkillsForLevelRange(toSpecies, 0, instance.level, instance.skillIds ?? []);
-  const evolved: MonsterInstance = {
+  const learnedSkillIds = newSkillsForLevelRange(
+    toSpecies,
+    0,
+    instance.level,
+    [...(instance.skillIds ?? []), ...(instance.pendingSkillIds ?? [])],
+  );
+  const evolved = applyLearnedMonsterSkills(project, {
     ...instance,
     speciesId: toSpecies.id,
     currentHp: nextCurrentHp,
-    skillIds: mergeSkillIds(instance.skillIds ?? [], learnedSkillIds),
-  };
+  }, learnedSkillIds);
   const consumedItemId = evolution.requires.itemId;
   const itemTransition = consumedItemId
     ? transitionItemState(session, project.database.items, { kind: "remove", itemId: consumedItemId, amount: 1 })
@@ -548,6 +677,10 @@ function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number)
     .map((entry) => entry.skillId);
 }
 
+function latestMonsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {
+  return uniqueSkillIds(monsterSkillIdsForSpecies(species, level)).slice(-MONSTER_SKILL_MAX);
+}
+
 function newSkillsForLevelRange(
   species: MonsterSpeciesRecord,
   fromLevel: number,
@@ -560,10 +693,57 @@ function newSkillsForLevelRange(
     .map((entry) => entry.skillId);
 }
 
-function mergeSkillIds(first: readonly SkillId[], second: readonly SkillId[]): SkillId[] {
+function uniqueSkillIds(skillIds: readonly SkillId[]): SkillId[] {
   const result: SkillId[] = [];
-  for (const skillId of [...first, ...second]) {
+  for (const skillId of skillIds) {
     if (!result.includes(skillId)) result.push(skillId);
+  }
+  return result;
+}
+
+function applyLearnedMonsterSkills(
+  project: Project,
+  instance: MonsterInstance,
+  learnedSkillIds: readonly SkillId[],
+): MonsterInstance {
+  const normalized = normalizeMonsterInstanceBattleState(project, instance);
+  const skillIds = [...(normalized.skillIds ?? [])];
+  const pendingSkillIds = [...(normalized.pendingSkillIds ?? [])];
+  for (const skillId of uniqueSkillIds(learnedSkillIds)) {
+    if (skillIds.includes(skillId) || pendingSkillIds.includes(skillId)) continue;
+    if (skillIds.length < MONSTER_SKILL_MAX) skillIds.push(skillId);
+    else pendingSkillIds.push(skillId);
+  }
+  return normalizeMonsterInstanceBattleState(project, {
+    ...normalized,
+    skillIds,
+    pendingSkillIds,
+  });
+}
+
+function normalizedMonsterSkillPp(
+  project: Project,
+  skillIds: readonly SkillId[],
+  previous: Readonly<Record<SkillId, number>> | undefined,
+): Record<SkillId, number> {
+  const result: Record<SkillId, number> = {};
+  for (const skillId of skillIds) {
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    if (skill?.maxPp === undefined) continue;
+    const maxPp = Math.max(1, Math.trunc(skill.maxPp));
+    const current = previous?.[skillId];
+    result[skillId] = typeof current === "number" && Number.isFinite(current)
+      ? Math.max(0, Math.min(maxPp, Math.trunc(current)))
+      : maxPp;
+  }
+  return result;
+}
+
+function fullMonsterSkillPp(project: Project, skillIds: readonly SkillId[]): Record<SkillId, number> {
+  const result: Record<SkillId, number> = {};
+  for (const skillId of skillIds) {
+    const maxPp = project.database.skills.find((record) => record.id === skillId)?.maxPp;
+    if (maxPp !== undefined) result[skillId] = Math.max(1, Math.trunc(maxPp));
   }
   return result;
 }

@@ -85,9 +85,15 @@ function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonl
     if (!instanceId) continue;
     const instance = session.monsterInstances[instanceId];
     if (!instance) continue;
+    if (session.actorStateIds) delete session.actorStateIds[instanceId];
     session.monsterInstances[instanceId] = {
       ...instance,
       currentHp: Math.max(0, Math.min(actor.maxHp, actor.hp)),
+      stateIds: [...actor.stateIds],
+      stateTurns: actor.stateTurns
+        ? { ...actor.stateTurns }
+        : Object.fromEntries(Object.entries(instance.stateTurns ?? {}).filter(([stateId]) => actor.stateIds.includes(stateId))),
+      skillPp: actor.skillPp ? { ...actor.skillPp } : instance.skillPp,
     };
   }
 }
@@ -95,6 +101,7 @@ function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonl
 function applyBattleStatesToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
   session.actorStateIds ??= {};
   for (const actor of actors) {
+    if (actor.monsterInstanceId) continue;
     session.actorStateIds[actor.recordId] = [...actor.stateIds];
   }
 }

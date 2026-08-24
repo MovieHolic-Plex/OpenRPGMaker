@@ -204,6 +204,8 @@ export interface PlaySession {
   dailyTalks?: DailyTalkLog;
   /** Accumulated player steps toward the next monster walk-care tick. */
   monsterCareSteps?: number;
+  /** Completed Gen1 monster-party field steps modulo the four-step poison tick. */
+  monsterFieldPoisonSteps?: number;
   /** Friendship points granted by walk care ticks, keyed by giftDayKey. */
   monsterCareDaily?: Record<string, number>;
   /** Opt-in: currently equipped tool item id (hand). */
