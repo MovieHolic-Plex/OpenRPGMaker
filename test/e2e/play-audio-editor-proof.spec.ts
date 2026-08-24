@@ -68,12 +68,14 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
 
   await page.getByTestId("play-audio-channel-se").click();
   await expect(page.getByTestId("play-audio-resource-picker")).toContainText("효과음 라이브러리");
-  await page.getByTestId("play-audio-search").fill("구매");
+  await page.getByTestId("play-audio-search").fill("잔디 발소리");
   await expect(page.getByTestId("play-audio-result-count")).toContainText(/전체 \d+개 중 \d+개/);
-  await page.getByTestId("play-audio-resource-select").selectOption("cc0-se-orp-inventory-coin");
+  await page.getByTestId("play-audio-resource-select").selectOption("cc0-se-kis-footstep-grass-000");
   await page.getByTestId("play-audio-preview").click();
   await expect(page.getByTestId("play-audio-status")).toContainText("재생 중");
-  await expect(page.getByTestId("play-audio-meta")).toContainText("/assets/se/oga-rpg-pack/inventory/coin.wav");
+  await expect(page.getByTestId("play-audio-meta")).toContainText(
+    "/assets/se/kenney-impact/footstep-grass-000.ogg",
+  );
   const formSeShot = join(EVIDENCE_DIR, "04-event-play-audio-form-se.png");
   await page.screenshot({ path: formSeShot, fullPage: true });
   await testInfo.attach("play-audio-form-se", { path: formSeShot, contentType: "image/png" });

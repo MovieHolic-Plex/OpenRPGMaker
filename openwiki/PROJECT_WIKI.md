@@ -38,7 +38,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - State system (authored definition, ontology, runtime application, editor surface): `openwiki/state-system.md`
    - Boot flow, mode switching, module boundaries: `openwiki/architecture.md`
    - CC0 BGM catalog (281 tracks, CDN wiring, audio defaults): `openwiki/bgm-catalog.md`
-   - CC0 SE catalog (456 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`
+   - CC0 SE catalog (635 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`
    - Test and evidence strategy: `openwiki/testing.md`
    - CPEN/OpenWiki refresh behavior: `openwiki/cpen-openwiki.md`
    - Community site (Next.js asset/game sharing, Supabase tables `openrpg_*`): `openwiki/community-site.md`

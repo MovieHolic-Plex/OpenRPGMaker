@@ -1,4 +1,4 @@
-// CC0 효과음 카탈로그(456개) 배선 가드.
+// CC0 효과음 카탈로그(635개) 배선 가드.
 //
 // 이 파일이 지키는 것은 네 가지다.
 //  1) 카탈로그 자체가 줄거나 깨지지 않는다(생성 스크립트 회귀).
@@ -24,8 +24,8 @@ import { searchResources } from "@/assets/resourceSearch";
 import { createBlankProject } from "@/project/defaults";
 
 describe("CC0 효과음 카탈로그", () => {
-  it("456개가 실려 있고 런타임/메타데이터 목록이 일치한다", () => {
-    expect(SE_CATALOG_COUNT).toBe(456);
+  it("635개가 실려 있고 런타임/메타데이터 목록이 일치한다", () => {
+    expect(SE_CATALOG_COUNT).toBe(635);
     expect(SE_CATALOG).toHaveLength(SE_CATALOG_COUNT);
     expect(new Set(seCatalogResourceIds())).toEqual(new Set(SE_CATALOG.map((e) => e.id)));
   });
@@ -39,11 +39,15 @@ describe("CC0 효과음 카탈로그", () => {
     expect(new Set(SE_CATALOG.map((e) => findSeRuntimePath(e.id))).size).toBe(SE_CATALOG.length);
   });
 
+  it("같은 오디오 바이트를 이름만 바꿔 두 번 노출하지 않는다", () => {
+    expect(new Set(SE_CATALOG.map((entry) => entry.sha256)).size).toBe(SE_CATALOG.length);
+  });
+
   it("라이선스가 CC0 이고 총 길이가 유지된다", () => {
     expect(SE_CATALOG_LICENSE).toBe("CC0-1.0");
     // 개수만 세면 놓치는 "파일이 바뀐" 회귀를 잡는다.
-    expect(SE_CATALOG_TOTAL_SECONDS).toBeGreaterThan(250);
-    expect(SE_CATALOG_TOTAL_SECONDS).toBeLessThan(270);
+    expect(SE_CATALOG_TOTAL_SECONDS).toBeGreaterThan(330);
+    expect(SE_CATALOG_TOTAL_SECONDS).toBeLessThan(340);
   });
 
   it("모든 파일이 레포에 실제로 존재한다 — SE 는 CDN 이 없어 부재가 곧 무음이다", () => {
@@ -79,8 +83,8 @@ describe("CC0 효과음 카탈로그", () => {
     expect(unregistered).toEqual([]);
   });
 
-  it("카테고리가 12개이고 모든 항목이 그 안에 든다", () => {
-    expect(SE_CATALOG_CATEGORIES).toHaveLength(12);
+  it("카테고리가 13개이고 모든 항목이 그 안에 든다", () => {
+    expect(SE_CATALOG_CATEGORIES).toHaveLength(13);
     const set = new Set(SE_CATALOG_CATEGORIES);
     for (const entry of SE_CATALOG) expect(set.has(entry.category)).toBe(true);
     // 카탈로그 순서가 곧 피커 그룹 순서다 — 카테고리가 뒤섞이면 그룹 헤더가 반복된다.
@@ -106,6 +110,19 @@ describe("CC0 효과음 카탈로그", () => {
       expect(hits.length, `"${query}" 검색 결과 없음`).toBeGreaterThan(0);
       expect(hits.some((h) => h.id.startsWith("se:cc0-se-"))).toBe(true);
     }
+  });
+
+  it("RPG 발소리와 재질 충돌음을 한국어로 찾아 이벤트에 넣을 수 있다", () => {
+    const expected = [
+      "se:cc0-se-kra-footstep00",
+      "se:cc0-se-kis-footstep-grass-000",
+      "se:cc0-se-kis-impactmining-000",
+    ];
+    for (const id of expected) {
+      expect(searchResources("se", "*").some((hit) => hit.id === id), `${id} 없음`).toBe(true);
+    }
+    expect(searchResources("se", "발소리").some((hit) => hit.id === expected[1])).toBe(true);
+    expect(searchResources("se", "채굴").some((hit) => hit.id === expected[2])).toBe(true);
   });
   // 징글 이름은 원본이 숫자뿐이다(`jingles_NES12`). 음향 방향은 삼중 검산을 통과해
   // `scripts/se/accepted-contours.json` 에 남은 것만 제목에 달린다 — 그 배선이 사라지면

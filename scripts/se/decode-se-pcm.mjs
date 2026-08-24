@@ -3,7 +3,7 @@
  *
  *   node scripts/se/decode-se-pcm.mjs [--staging dist/se-staging] [--filter <부분문자열>]
  *
- * 왜 브라우저인가: 6팩 중 5팩이 Ogg Vorbis 인데 이 환경엔 ffmpeg 이 없고 python 에도
+ * 왜 브라우저인가: 8팩 중 7팩이 Ogg Vorbis 인데 이 환경엔 ffmpeg 이 없고 python 에도
  * 디코더가 없다. Chromium 의 `decodeAudioData` 는 ogg/wav 를 네이티브로 디코딩하고
  * playwright 는 이미 이 레포의 의존성이다 — 새 설치 없이 해결된다.
  *

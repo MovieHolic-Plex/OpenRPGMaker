@@ -1,4 +1,4 @@
-"""CC0 효과음 원본 6팩을 스테이징에 내려받고 목록/메타데이터를 만든다.
+"""CC0 효과음 원본 8팩을 스테이징에 내려받고 목록/메타데이터를 만든다.
 
     python scripts/se/fetch-se-packs.py [--staging dist/se-staging]
 
@@ -21,7 +21,10 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 UA = {'User-Agent': 'rpg-zzu-se-fetch/1.0 (+CC0 asset pipeline)'}
 
 # Kenney: 팩 페이지에서 zip 링크를 추출한다(해시 경로가 회전한다).
-KENNEY_SLUGS = ['interface-sounds', 'ui-audio', 'music-jingles']
+KENNEY_SLUGS = [
+    'interface-sounds', 'ui-audio', 'music-jingles',
+    'rpg-audio', 'impact-sounds',
+]
 # OpenGameArt: 안정적인 직접 링크.
 OGA_URLS = {
     'rpg_sound_pack':  'https://opengameart.org/sites/default/files/rpg_sound_pack.zip',
