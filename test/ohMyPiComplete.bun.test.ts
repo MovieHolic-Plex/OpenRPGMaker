@@ -163,4 +163,70 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
     expect(urls.some((url) => url.includes("cloudcode-pa.googleapis.com"))).toBe(true);
     expect(publicProviderStatus("google-antigravity").connected).toBe(true);
   });
+
+  test("Antigravity follow-up sends prior tool-call arguments as an object", async () => {
+    // Break caught: openaiToContext forwarded OpenAI's JSON-string function
+    // arguments verbatim, but Gemini requires functionCall.args to be an object.
+    seedOAuthForTests("google-antigravity", {
+      access: "complete-access",
+      refresh: "complete-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "complete-project",
+    });
+    let requestBody: Record<string, any> | undefined;
+
+    try {
+      await completeProvider(
+        "google-antigravity",
+        {
+          model: "gemini-3.7-flash",
+          messages: [
+            { role: "user", content: "Read the current map." },
+            {
+              role: "assistant",
+              content: null,
+              tool_calls: [{
+                id: "call_probe",
+                type: "function",
+                function: { name: "read_editor_probe", arguments: '{"probe":"current_map"}' },
+              }],
+            },
+            {
+              role: "tool",
+              tool_call_id: "call_probe",
+              name: "read_editor_probe",
+              content: '{"width":20,"height":15}',
+            },
+          ],
+          tools: [{
+            type: "function",
+            function: {
+              name: "read_editor_probe",
+              description: "Read the current editor map.",
+              parameters: {
+                type: "object",
+                properties: { probe: { type: "string" } },
+                required: ["probe"],
+              },
+            },
+          }],
+        },
+        {
+          fetch: async (_input, init) => {
+            requestBody = JSON.parse(String(init?.body ?? "{}"));
+            return new Response("upstream test stop", { status: 400 });
+          },
+        },
+      );
+    } catch {
+      // The mocked upstream intentionally stops after request serialization.
+    }
+
+    const contents = requestBody?.request?.contents as Array<{ parts?: Array<Record<string, any>> }> | undefined;
+    const functionCall = contents
+      ?.flatMap((content) => content.parts ?? [])
+      .find((part) => part.functionCall)?.functionCall;
+    expect(functionCall?.name).toBe("read_editor_probe");
+    expect(functionCall?.args).toEqual({ probe: "current_map" });
+  });
 });
