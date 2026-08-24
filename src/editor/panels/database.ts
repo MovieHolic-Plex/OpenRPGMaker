@@ -22,6 +22,7 @@ import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { uiLabel } from "@/editor/uiCopy";
 import { store } from "@/project/store";
+import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
@@ -128,6 +129,16 @@ const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
 
+type DatabaseTabRenderCache = {
+  readonly project: Project;
+  readonly views: Map<DatabaseTab, readonly Node[]>;
+};
+
+// Each mounted Database panel owns detached DOM for tabs it has already rendered.
+// ProjectStore replaces the Project object on every mutation, which gives the cache
+// a cheap and exact invalidation boundary without hashing large database records.
+const tabRenderCaches = new WeakMap<HTMLElement, DatabaseTabRenderCache>();
+
 export function setDatabaseActiveTab(tab: DatabaseTab): void {
   activeTab = tab;
   if (typeof window === "undefined") return;
@@ -152,6 +163,7 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
+  tabRenderCaches.delete(container);
   const header = el("div", { class: "db-tabs" });
   const body = el("div", { class: "db-body" });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
@@ -190,7 +202,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
 export function refreshDatabasePanel(container: HTMLElement): void {
   const body = container.querySelector(".db-body");
   if (body instanceof HTMLElement) {
-    renderActiveTab(body, container);
+    renderActiveTab(body, container, { forceFresh: true });
     refreshTabCounts(container);
     return;
   }
@@ -331,14 +343,34 @@ function revealActiveTab(header: HTMLElement): void {
   active.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
-function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
-  clearChildren(body);
-  const rerender = (): void => renderActiveTab(body, container);
-  if (activeTab === "enemies" || activeTab === "monsterSpecies" || activeTab === "troops") {
+function renderActiveTab(
+  body: HTMLElement,
+  container: HTMLElement,
+  options: { readonly forceFresh?: boolean } = {},
+): void {
+  const tab = activeTab;
+  let cache = tabRenderCacheFor(container);
+  const cached = options.forceFresh ? undefined : cache.views.get(tab);
+  if (cached) {
+    body.replaceChildren(...cached);
+    return;
+  }
+
+  body.replaceChildren();
+  const rerender = (): void => {
+    // A debounced callback from a tab that has since been detached must not repaint
+    // whichever tab is currently visible. Its cache entry is simply made cold.
+    if (activeTab !== tab) {
+      tabRenderCacheFor(container).views.delete(tab);
+      return;
+    }
+    renderActiveTab(body, container, { forceFresh: true });
+  };
+  if (tab === "enemies" || tab === "monsterSpecies" || tab === "troops") {
     const banner = collectionGateBanner(container);
     if (banner) body.append(banner);
   }
-  switch (activeTab) {
+  switch (tab) {
     case "actors":
     case "classes":
     case "skills":
@@ -347,57 +379,71 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
     case "enemies":
     case "troops":
     case "states":
-      renderRecordTab(body, activeTab, rerender);
-      return;
+      renderRecordTab(body, tab, rerender);
+      break;
     case "animations":
       renderRecordTab(body, "battleAnimations", rerender);
-      return;
+      break;
     case "elements":
       renderElementsTab(body);
-      return;
+      break;
     case "terrain":
       renderTerrainTab(body);
-      return;
+      break;
     case "battleScreen":
       renderBattleScreenTab(body);
-      return;
+      break;
     case "battleCommands":
       renderBattleCommandsTab(body);
-      return;
+      break;
     case "monsterSpecies":
       renderMonsterSpeciesTab(body, rerender);
-      return;
+      break;
     case "crops":
       renderCropTab(body, rerender);
-      return;
+      break;
     case "characters":
       renderCharactersTab(body, rerender);
-      return;
+      break;
     case "switches":
       renderSwitchesTab(body, rerender);
-      return;
+      break;
     case "variables":
       renderVariablesTab(body, rerender);
-      return;
+      break;
     case "commonEvents":
       renderCommonEventsTab(body, rerender);
-      return;
+      break;
     case "tilesets":
       renderTilesetsTab(body, rerender);
-      return;
+      break;
     case "structureKits":
       renderStructureKitsTab(body, rerender);
-      return;
+      break;
     case "system":
       renderSystemTab(body, rerender);
-      return;
+      break;
     case "terms":
       renderTermsTab(body);
-      return;
+      break;
     case "overview":
       renderOverviewTab(body, rerender);
-      return;
+      break;
   }
+
+  // A renderer may update the store while normalizing its own view. Re-read the
+  // project after rendering so such a mutation invalidates every older tab entry.
+  cache = tabRenderCacheFor(container);
+  cache.views.set(tab, Array.from(body.childNodes));
+}
+
+function tabRenderCacheFor(container: HTMLElement): DatabaseTabRenderCache {
+  const project = store.getCurrent();
+  const current = tabRenderCaches.get(container);
+  if (current?.project === project) return current;
+  const next: DatabaseTabRenderCache = { project, views: new Map() };
+  tabRenderCaches.set(container, next);
+  return next;
 }
 
 /**

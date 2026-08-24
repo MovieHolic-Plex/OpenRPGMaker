@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { addDatabaseRecord } from "@/editor/databaseActions";
-import { refreshDatabasePanel, renderDatabasePanel } from "@/editor/panels/database";
+import {
+  refreshDatabasePanel,
+  renderDatabasePanel,
+  setDatabaseActiveTab,
+} from "@/editor/panels/database";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { createBlankProject } from "@/project/defaults";
@@ -40,6 +44,7 @@ beforeEach(() => {
     },
   });
   store.replace(createBlankProject());
+  setDatabaseActiveTab("terms");
   resetDatabaseRecordViewSession();
   // 스킬 탭은 갤러리 기본값이지만 이 테스트는 리스트 행 부분 렌더 계약을 검증한다 — 명시적으로 list.
   setViewModeForCollection("skills", "list");
@@ -127,6 +132,38 @@ describe("Database panel partial refresh (undo/redo path)", () => {
     expect(container.querySelector(".db-body")).toBe(bodyBefore);
     expect(container.querySelectorAll(".db-tabs").length).toBe(1);
     expect(bodyBefore?.childNodes.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Database tab render cache", () => {
+  it("Given an unchanged project When a previously visited tab is reopened Then its rendered view is reused", () => {
+    // Break caught: sidebar tab clicks discard a complete tab view and rebuild its list, thumbnails, and form.
+    setDatabaseActiveTab("terms");
+    const container = document.createElement("div") as unknown as FakeElement;
+    renderDatabasePanel(container as unknown as HTMLElement);
+    const termsViewBefore = container.querySelector(".db-body")?.firstChild;
+
+    findByTestId(container, "db-tab-variables")?.click();
+    findByTestId(container, "db-tab-terms")?.click();
+
+    expect(container.querySelector(".db-body")?.firstChild).toBe(termsViewBefore);
+  });
+
+  it("Given a cached tab When project data changes Then reopening the tab renders fresh data", () => {
+    // Break caught: a tab cache survives a project mutation and shows stale record data.
+    setDatabaseActiveTab("terms");
+    const container = document.createElement("div") as unknown as FakeElement;
+    renderDatabasePanel(container as unknown as HTMLElement);
+    const termsViewBefore = container.querySelector(".db-body")?.firstChild;
+
+    findByTestId(container, "db-tab-variables")?.click();
+    store.update((project) => {
+      project.meta.terms.gold = "Cache invalidated gold";
+    }, { scope: "database", collection: "terms" });
+    findByTestId(container, "db-tab-terms")?.click();
+
+    expect(container.querySelector(".db-body")?.firstChild).not.toBe(termsViewBefore);
+    expect(findByTestId(container, "db-field-gold")?.value).toBe("Cache invalidated gold");
   });
 });
 
