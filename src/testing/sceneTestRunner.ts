@@ -58,19 +58,20 @@ import {
 } from "@/player/fieldSpawns";
 import {
   advanceGameTime,
+  calendarDayKey,
   initialGameTime,
   minutesUntilDayEnd,
   resolveTimeSystem,
   setGameTimeClock,
-  sleepGameTimeUntilMorning,
   timePhaseFor,
   type GameTime,
   type TimePhase,
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
-import { cropStageAt, interactWithFarmPlot, syncFarmPlotsToDate } from "@/player/farming";
+import { cropStageAt, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
+import { transitionToNextDay } from "@/player/dayTransition";
 
 const TICK_MS = 16;
 
@@ -870,10 +871,8 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     }
     if (system.forceSleep) return sleepUntilMorningForRunner(state);
     remaining -= untilEnd;
-    const hookFailure = runDayEndHookForRunner(state);
-    if (hookFailure) return hookFailure;
-    state.session.gameTime = sleepGameTimeUntilMorning(currentTime, system).time;
-    syncFarmPlotsToDate(state.project, state.session, system);
+    const transitionFailure = transitionToNextDayForRunner(state);
+    if (transitionFailure) return transitionFailure;
     applyNpcSchedulesForRunner(state);
     if (untilEnd <= 0) remaining = 0;
   }
@@ -894,15 +893,29 @@ function sleepUntilMorningForRunner(state: RunnerState): string | null {
   if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
   if (!state.session.gameTime) return null;
-  const hookFailure = runDayEndHookForRunner(state);
-  if (hookFailure) return hookFailure;
-  state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
-  syncFarmPlotsToDate(state.project, state.session, system);
+  const transitionFailure = transitionToNextDayForRunner(state);
+  if (transitionFailure) return transitionFailure;
   applyNpcSchedulesForRunner(state);
   state.timeFixedAccumulatorMs = 0;
   state.timeMinuteAccumulator = 0;
   state.log.push(`sleep until morning: ${state.session.gameTime.season} ${state.session.gameTime.day} ${state.session.gameTime.hour}:00`);
   return null;
+}
+
+function transitionToNextDayForRunner(state: RunnerState): string | null {
+  const currentTime = state.session.gameTime;
+  if (!currentTime) return "day transition: missing-time";
+  const sourceDayKey = calendarDayKey(currentTime);
+  const beforeHook = structuredClone(state.session);
+  const hookFailure = runDayEndHookForRunner(state);
+  if (hookFailure) {
+    state.session = beforeHook;
+    return hookFailure;
+  }
+  const transition = transitionToNextDay(state.project, state.session, sourceDayKey);
+  if (transition.ok) return null;
+  state.session = beforeHook;
+  return `day transition: ${transition.reason}`;
 }
 
 function applyNpcSchedulesForRunner(state: RunnerState): void {

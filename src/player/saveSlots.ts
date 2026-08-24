@@ -11,7 +11,14 @@ import { normalizeItemTransitionState } from "@/project/itemTransitions";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import { normalizeGameTime } from "@/project/gameTime";
+import {
+  advanceGameDays,
+  calendarDayKey,
+  normalizeGameTime,
+  resolveTimeSystem,
+  type GameTime,
+  type Season,
+} from "@/project/gameTime";
 import {
   isActorEquipmentRecord,
   isActorParamBonusRecord,
@@ -373,7 +380,6 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     ? restoreShippingQueue(project, snapshot.session.shippingQueue)
     : {};
   session.shippingLastSettledDayKey = shippingEnabled ? snapshot.session.shippingLastSettledDayKey : undefined;
-  session.dayTransitionLastDayKey = snapshot.session.dayTransitionLastDayKey;
   session.shippingHistory = shippingEnabled
     ? structuredClone((snapshot.session.shippingHistory ?? []).slice(-shippingHistoryLimit(project)))
     : [];
@@ -442,6 +448,13 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.gameTime) {
     session.gameTime = normalizeGameTime(snapshot.session.gameTime, project.system.timeSystem);
   }
+  session.dayTransitionLastDayKey = snapshot.session.gameTime && isPreviousCalendarDayKey(
+    project,
+    session.gameTime,
+    snapshot.session.dayTransitionLastDayKey,
+  )
+    ? snapshot.session.dayTransitionLastDayKey
+    : undefined;
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   if (snapshot.session.access) {
@@ -547,8 +560,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       shippingLastSettledDayKey: typeof session.shippingLastSettledDayKey === "string" && session.shippingLastSettledDayKey.trim()
         ? session.shippingLastSettledDayKey
         : undefined,
-      dayTransitionLastDayKey: typeof session.dayTransitionLastDayKey === "string" && session.dayTransitionLastDayKey.trim()
-        ? session.dayTransitionLastDayKey
+      dayTransitionLastDayKey: parseCalendarDayKey(session.dayTransitionLastDayKey)
+        ? session.dayTransitionLastDayKey as string
         : undefined,
       shippingHistory: isShippingSettlementArray(session.shippingHistory) ? session.shippingHistory : undefined,
       bundleContributions: isNestedNonNegativeIntegerRecord(session.bundleContributions) ? session.bundleContributions : undefined,
@@ -650,6 +663,34 @@ function nonNegativeIntegerOrUndefined(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value) && value >= 0
     ? value
     : undefined;
+}
+
+const CALENDAR_DAY_KEY_PATTERN = /^([1-9]\d*):(spring|summer|fall|winter):([1-9]\d*)$/;
+
+function parseCalendarDayKey(value: unknown): Pick<GameTime, "year" | "season" | "day"> | undefined {
+  if (typeof value !== "string") return undefined;
+  const match = CALENDAR_DAY_KEY_PATTERN.exec(value);
+  if (!match) return undefined;
+  const year = Number(match[1]);
+  const day = Number(match[3]);
+  if (!Number.isSafeInteger(year) || !Number.isSafeInteger(day)) return undefined;
+  return { year, season: match[2] as Season, day };
+}
+
+function isPreviousCalendarDayKey(
+  project: Project,
+  currentTime: GameTime | undefined,
+  candidate: string | undefined,
+): candidate is string {
+  const system = resolveTimeSystem(project);
+  const parsed = parseCalendarDayKey(candidate);
+  if (!system || !currentTime || !parsed || parsed.day > system.daysPerSeason) return false;
+  const previous = {
+    ...parsed,
+    hour: system.dayStartHour,
+    minute: 0,
+  } satisfies GameTime;
+  return calendarDayKey(advanceGameDays(previous, 1, system).time) === calendarDayKey(currentTime);
 }
 
 function uniqueStrings(values: readonly string[] | undefined): string[] {

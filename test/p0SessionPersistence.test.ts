@@ -49,6 +49,7 @@ describe("P0 save snapshot regression", () => {
     // Break caught: createSaveSnapshot/parse/apply silently omits live progression fields.
     const project = createBlankProject();
     configureP0PersistenceProject(project);
+    project.system.timeSystem = { enabled: true };
     const session = startSession(project, 17);
     session.lifeSkills = { skill_farming: { xp: 275, level: 3 } };
     session.shopLoyaltySpend = { shop_seed: 450 };
@@ -59,6 +60,7 @@ describe("P0 save snapshot regression", () => {
     };
     session.shopLastRestockDayKey = { shop_seed: "1:spring:12" };
     session.energy = 72;
+    session.gameTime = { year: 1, season: "spring", day: 12, hour: 9, minute: 30 };
     session.shippingQueue = { item_turnip: 4 };
     session.shippingLastSettledDayKey = "1:spring:11";
     session.dayTransitionLastDayKey = "1:spring:11";
@@ -156,13 +158,32 @@ describe("P0 save snapshot regression", () => {
     expect(restored.makerInstances).toEqual({});
   });
 
+  it("removes a cursor that does not match the canonical day-key grammar at parse time", () => {
+    const project = createBlankProject();
+    configureP0PersistenceProject(project);
+    const session = startSession(project, 181);
+    session.gameTime = { year: 1, season: "spring", day: 2, hour: 6, minute: 0 };
+    const snapshot = createSaveSnapshot(project, session);
+    const wireSession = snapshot.session as unknown as Record<string, unknown>;
+    wireSession.dayTransitionLastDayKey = "1:spring:1:forged";
+    const storage = new MemoryStorage();
+    saveToSlot(storage, 2, snapshot);
+
+    const read = readSaveSlot(storage, 2);
+    expect(read.kind).toBe("present");
+    if (read.kind !== "present") throw new Error("expected a parsed save slot");
+    expect(read.snapshot.session.dayTransitionLastDayKey).toBeUndefined();
+  });
+
   it("uses the same P0 snapshot state for autosave and checkpoints", () => {
     // Break caught: a second save writer preserves manual slots but drops new state in auto/checkpoint flows.
     const project = createBlankProject();
     configureP0PersistenceProject(project);
+    project.system.timeSystem = { enabled: true };
     const session = startSession(project, 19);
     session.lifeSkills = { skill_farming: { xp: 420, level: 4 } };
     session.energy = 48;
+    session.gameTime = { year: 1, season: "spring", day: 5, hour: 8, minute: 0 };
     session.shippingQueue = { item_turnip: 3 };
     session.dayTransitionLastDayKey = "1:spring:4";
     session.completedBundleIds = ["bundle_spring"];

@@ -9,6 +9,7 @@ import { farmPlotAt, interactWithFarmPlot } from "@/player/farming";
 import { advanceTimeAcrossDayBoundaries, transitionToNextDay } from "@/player/dayTransition";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { settleShipping } from "@/project/shipping";
+import { runSceneTest } from "@/testing/sceneTestRunner";
 
 function runtimeProject() {
   const project = createFarmingDemoProject();
@@ -167,6 +168,96 @@ describe("P0 day transition integration", () => {
     });
     expect(session.dayTransitionLastDayKey).toBe(key);
     expect(session.gameTime?.day).toBe(2);
+  });
+
+  it("continues the day transition when authored daily energy restore is zero", () => {
+    const project = runtimeProject();
+    project.system.energy = { max: 100, initial: 25, restorePerDay: 0 };
+    const session = startSession(project, 107);
+    const sourceDayKey = calendarDayKey(session.gameTime!);
+
+    expect(transitionToNextDay(project, session, sourceDayKey)).toMatchObject({
+      ok: true,
+      receipt: { energy: { ok: true, before: 25, after: 25, restored: 0 } },
+    });
+    expect(session.gameTime?.day).toBe(2);
+    expect(session.dayTransitionLastDayKey).toBe(sourceDayKey);
+  });
+
+  it("drops malformed, current-day, and non-adjacent save cursors while retaining the previous day", () => {
+    const project = runtimeProject();
+    const session = startSession(project, 108);
+    session.gameTime = { year: 1, season: "spring", day: 8, hour: 12, minute: 0 };
+    const snapshot = createSaveSnapshot(project, session);
+
+    const restoreWithCursor = (dayTransitionLastDayKey: string) => applySaveSnapshot(project, {
+      ...snapshot,
+      session: { ...snapshot.session, dayTransitionLastDayKey },
+    }).dayTransitionLastDayKey;
+
+    expect(restoreWithCursor("1:spring:7")).toBe("1:spring:7");
+    expect(restoreWithCursor("1:spring:8")).toBeUndefined();
+    expect(restoreWithCursor("1:spring:6")).toBeUndefined();
+    expect(restoreWithCursor("01:spring:7")).toBeUndefined();
+    expect(restoreWithCursor("1:monsoon:7")).toBeUndefined();
+    expect(restoreWithCursor("1:spring:7:poison")).toBeUndefined();
+  });
+
+  it("restores a cursor across a project-specific season boundary", () => {
+    const project = runtimeProject();
+    project.system.timeSystem = { ...project.system.timeSystem!, daysPerSeason: 40 };
+    const session = startSession(project, 109);
+    session.gameTime = { year: 1, season: "summer", day: 1, hour: 6, minute: 0 };
+    const snapshot = createSaveSnapshot(project, session);
+    const restored = applySaveSnapshot(project, {
+      ...snapshot,
+      session: { ...snapshot.session, dayTransitionLastDayKey: "1:spring:40" },
+    });
+
+    expect(restored.dayTransitionLastDayKey).toBe("1:spring:40");
+  });
+
+  it("gives the scene test runner the same day-transition authority at exact boundaries", () => {
+    const project = runtimeProject();
+    project.system.energy = { max: 100, initial: 10, restorePerDay: 40 };
+
+    const result = runSceneTest(project, {
+      mapId: project.startMapId,
+      start: { x: project.startX, y: project.startY },
+      steps: [{ kind: "advanceDays", days: 2 }],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.session.gameTime).toMatchObject({ year: 1, season: "spring", day: 3, hour: 6, minute: 0 });
+    expect(result.session.shippingLastSettledDayKey).toBe("1:spring:2");
+    expect(result.session.shippingHistory?.map((entry) => entry.dayKey)).toEqual(["1:spring:1", "1:spring:2"]);
+    expect(result.session.energy).toBe(90);
+    expect(result.session.makerInstances).toEqual({});
+    expect(result.session.dayTransitionLastDayKey).toBe("1:spring:2");
+  });
+
+  it("routes the scene test runner's natural exact clock boundary through the authority", () => {
+    const project = runtimeProject();
+    project.system.timeSystem = {
+      enabled: true,
+      dayStartHour: 6,
+      dayEndHour: 26,
+      daysPerSeason: 28,
+      minutesPerRealSecond: 1_200,
+    };
+    project.system.energy = { max: 100, initial: 15, restorePerDay: 20 };
+
+    const result = runSceneTest(project, {
+      mapId: project.startMapId,
+      start: { x: project.startX, y: project.startY },
+      steps: [{ kind: "wait", ticks: 63 }],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.session.gameTime).toMatchObject({ year: 1, season: "spring", day: 2, hour: 6, minute: 0 });
+    expect(result.session.shippingLastSettledDayKey).toBe("1:spring:1");
+    expect(result.session.energy).toBe(35);
+    expect(result.session.dayTransitionLastDayKey).toBe("1:spring:1");
   });
 });
 

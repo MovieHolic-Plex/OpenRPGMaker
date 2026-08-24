@@ -15,6 +15,21 @@ describe("P0 energy rules", () => {
     expect(session.energy).toBe(100);
   });
 
+  it("accepts an authored zero daily restore as a successful no-op", () => {
+    // Break caught: restorePerDay=0 aborts the entire transactional day transition.
+    const project = createBlankProject();
+    project.system.energy = { max: 100, initial: 35, restorePerDay: 0 };
+    const session = startSession(project, 11);
+
+    expect(restoreEnergy(project, session, 0)).toEqual({
+      ok: true,
+      before: 35,
+      after: 35,
+      restored: 0,
+    });
+    expect(session.energy).toBe(35);
+  });
+
   it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY, 1.5])(
     "rejects invalid spend %s without mutation",
     (amount) => {
