@@ -2,46 +2,44 @@ import { describe, expect, it } from "vitest";
 import {
   ASSISTANT_TEMPERATURES,
   DEFAULT_ASSISTANT_TEMPERATURE,
-  EDITOR_LAYOUT_STORAGE_KEY,
   assistantTemperatureMenuLabel,
   parseAssistantTemperature,
   persistAssistantTemperature,
 } from "@/editor/assistantTemperature";
 
-describe("assistantTemperature", () => {
-  it("defaults to Quiet Gold and rejects unknown storage", () => {
+describe("assistant temperature copy", () => {
+  it("uses concrete idle-screen names instead of internal art-direction names", () => {
+    // Break: the menu exposed "조용한 골드 / 잉크만 / 맵 우선" and A/B/C codes.
     expect(DEFAULT_ASSISTANT_TEMPERATURE).toBe("quiet-gold");
-    expect(parseAssistantTemperature(undefined)).toBe("quiet-gold");
-    expect(parseAssistantTemperature("glass")).toBe("quiet-gold");
-    expect(parseAssistantTemperature("quiet-gold")).toBe("quiet-gold");
-    expect(parseAssistantTemperature("ink-only")).toBe("ink-only");
-    expect(parseAssistantTemperature("map-first")).toBe("map-first");
+    expect(ASSISTANT_TEMPERATURES.map((item) => item.label)).toEqual([
+      "추천 함께 보기",
+      "조수만 보기",
+      "입력창만 보기",
+    ]);
+    expect(ASSISTANT_TEMPERATURES.map((item) => item.icon)).toEqual(["✦", "◫", "⌨"]);
+    expect(ASSISTANT_TEMPERATURES.map((item) => assistantTemperatureMenuLabel(item.id))).not.toEqual(
+      expect.arrayContaining([expect.stringContaining("골드"), expect.stringContaining("잉크"), expect.stringContaining("맵 우선")]),
+    );
   });
 
-  it("labels A/B/C for the picker", () => {
-    expect(ASSISTANT_TEMPERATURES.map((row) => row.id)).toEqual(["quiet-gold", "ink-only", "map-first"]);
-    expect(assistantTemperatureMenuLabel("quiet-gold")).toBe("A 조용한 골드");
-    expect(assistantTemperatureMenuLabel("ink-only")).toBe("B 잉크만");
-    expect(assistantTemperatureMenuLabel("map-first")).toBe("C 맵 우선");
-  });
-
-  it("merges the temperature into the layout JSON next to chatDock", () => {
-    const storage = new Map<string, string>();
+  it("keeps stored ids compatible and merges the choice into the editor layout", () => {
+    const values = new Map<string, string>();
     Object.defineProperty(globalThis, "localStorage", {
       configurable: true,
       value: {
-        getItem: (key: string) => storage.get(key) ?? null,
-        setItem: (key: string, value: string) => void storage.set(key, String(value)),
-        removeItem: (key: string) => void storage.delete(key),
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => void values.set(key, String(value)),
       },
     });
-    storage.set(EDITOR_LAYOUT_STORAGE_KEY, JSON.stringify({ chatDock: "side", leftWidth: 240 }));
+    values.set("oprn:editor-layout:v4", JSON.stringify({ chatDock: "side", leftWidth: 320 }));
 
+    expect(parseAssistantTemperature("ink-only")).toBe("ink-only");
+    expect(parseAssistantTemperature("unknown")).toBe("quiet-gold");
     persistAssistantTemperature("map-first");
 
-    expect(JSON.parse(storage.get(EDITOR_LAYOUT_STORAGE_KEY) ?? "{}")).toMatchObject({
+    expect(JSON.parse(values.get("oprn:editor-layout:v4") ?? "{}")).toEqual({
       chatDock: "side",
-      leftWidth: 240,
+      leftWidth: 320,
       assistantTemperature: "map-first",
     });
     Reflect.deleteProperty(globalThis, "localStorage");

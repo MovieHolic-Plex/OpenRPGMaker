@@ -30,7 +30,7 @@ import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
-import { planRequiredToolSchemas } from "./planToolExposure";
+import { mentionedToolSchemas, planRequiredToolSchemas } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
 import {
   calibratedBudgetChars,
@@ -1899,11 +1899,15 @@ export class AssistantSession {
     // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
     // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
     const baseTools = toOpenAiTools(undefined, { domains });
+    const mentioned = mentionedToolSchemas(this.currentTurnRequestText ?? "");
     const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
-    const planRequiredNames = new Set(planRequired.map((tool) => tool.function.name));
+    const requiredByName = new Map(
+      [...mentioned, ...planRequired].map((tool) => [tool.function.name, tool] as const),
+    );
+    const requiredNames = new Set(requiredByName.keys());
     const tools = [
-      ...baseTools.filter((tool) => !planRequiredNames.has(tool.function.name)),
-      ...planRequired,
+      ...baseTools.filter((tool) => !requiredNames.has(tool.function.name)),
+      ...requiredByName.values(),
       SET_BUILD_SPEC_TOOL,
       ...(planToolsOn ? WORK_PLAN_TOOLS : []),
     ];

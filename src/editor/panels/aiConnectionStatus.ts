@@ -19,6 +19,8 @@ import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 // 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.
 import type { ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
 import { getAiModelDemotion, getAiTransportHealth, isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
 import { openAiSettingsModal, type AiSettingsFocus } from "./aiSettingsModal";
 import { el } from "@/util/dom";
 
@@ -41,6 +43,9 @@ const AI_CONNECTION_ICON: Record<AiConnectionKind, string> = {
 export interface AiConnectionStatus {
   readonly kind: AiConnectionKind;
   readonly authMode: AiConfig["authMode"];
+  /** 현재 선택된 oh-my-pi 제공자. 상태 캐시와 화면 라벨이 같은 대상을 가리키게 한다. */
+  readonly providerId: string;
+  readonly providerLabel: string;
   /** 사용자에게 보일 짧은 라벨(아이콘 제외). */
   readonly label: string;
   /** 칩 hover/title 용 상세 문구. */
@@ -48,6 +53,7 @@ export interface AiConnectionStatus {
 }
 
 interface CachedOAuthStatus {
+  readonly providerId: string;
   readonly connected: boolean;
   readonly planType?: string;
   /** 자격의 출처가 셸 환경 변수인가 — 에디터가 만들지도 지우지도 못한다. */
@@ -71,29 +77,45 @@ function isStoredCredential(status: CachedOAuthStatus): boolean {
 }
 
 let aiOAuthCachedStatus: CachedOAuthStatus | null = null;
-let refreshInFlight = false;
+let refreshInFlightProviderId: string | null = null;
+
+type AiConnectionStatusCore = Omit<AiConnectionStatus, "providerId" | "providerLabel">;
+
+function providerIdentity(config: AiConfig): Pick<AiConnectionStatus, "providerId" | "providerLabel"> {
+  const providerId = parseOhMyPiProvider(config.providerId);
+  return {
+    providerId,
+    providerLabel: getOhMyPiProvider(providerId)?.label ?? providerId,
+  };
+}
+
+function statusFor(config: AiConfig, status: AiConnectionStatusCore): AiConnectionStatus {
+  return { ...status, ...providerIdentity(config) };
+}
 
 /**
  * 실제 요청이 실패하고 있으면(설정 모양과 무관하게) 그 사실을 우선 보고한다.
  * 404 = 엔드포인트 없음/프록시 미등록, 401·403 = 인증, 5xx·네트워크 = 게이트웨이 다운.
  * "AI 연결됨"인데 모든 턴이 404 나던 거짓말(2026-08-19 적대 평가 P0)의 수정.
  */
-function transportFailureStatus(authMode: AiConfig["authMode"]): AiConnectionStatus | null {
+function transportFailureStatus(config: AiConfig): AiConnectionStatus | null {
   const health = getAiTransportHealth();
   if (!health || health.ok) return null;
   const s = health.status;
   const connectivity = s === undefined || s === 401 || s === 403 || s === 404 || s >= 500;
   if (!connectivity) return null;
-  return {
+  const provider = providerIdentity(config);
+  return statusFor(config, {
     kind: "offline",
-    authMode,
-    label: `AI 응답 오류${s ? `(${s})` : ""}`,
-    title: `마지막 AI 요청이 실패했습니다 — ${health.message ?? "원인 미상"}. 이 칩을 눌러 연결 설정(엔드포인트·키)을 확인하세요. 요청이 다시 성공하면 자동으로 "AI 연결됨"으로 돌아옵니다.`,
-  };
+    authMode: config.authMode,
+    label: `${provider.providerLabel} 응답 오류${s ? `(${s})` : ""}`,
+    title: `마지막 ${provider.providerLabel} 요청이 실패했습니다 — ${health.message ?? "원인 미상"}. 이 칩을 눌러 연결 설정(엔드포인트·키)을 확인하세요. 요청이 다시 성공하면 자동으로 연결됨 상태로 돌아옵니다.`,
+  });
 }
 
 /** apiKey 모드 동기 평가. config 가 주어지지 않으면 loadAiConfig(). */
 export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConnectionStatus {
+  const provider = providerIdentity(config);
   if (config.authMode === "apiKey") {
     // 상대 baseUrl(/api/ai 등) = 동일 오리진 프록시: 서버가 Authorization 을 주입하므로
     // 클라이언트에 키가 없어도 ready 이다(proxyAuth). 보안: 키를 클라이언트 번들에 두지 않는다.
@@ -102,105 +124,105 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
     // baseUrl 을 **먼저** 본다. 예전에는 키를 먼저 봐서, 둘 다 빈 신규 설정에 "AI 키 없음" 이
     // 뜨고 "AI 엔드포인트 없음" 은 사실상 도달 불가였다 — 더 흔한 원인이 가려졌다.
     if (!config.baseUrl || !config.baseUrl.trim()) {
-      return {
+      return statusFor(config, {
         kind: "disconnected",
         authMode: "apiKey",
-        label: "AI 엔드포인트 없음",
+        label: `${provider.providerLabel} 엔드포인트 없음`,
         title: "주입된 게이트웨이 설정에 서버 주소(baseUrl)가 없습니다. 이 경로는 노드 스크립트·벤치마크 전용이며 에디터 UI 에는 없습니다.",
-      };
+      });
     }
     if (!proxyAuth && (!config.apiKey || !config.apiKey.trim())) {
-      return {
+      return statusFor(config, {
         kind: "disconnected",
         authMode: "apiKey",
-        label: "AI 키 없음",
+        label: `${provider.providerLabel} 키 없음`,
         title: "주입된 게이트웨이 설정에 키가 없습니다. 이 경로는 노드 스크립트·벤치마크 전용입니다.",
-      };
+      });
     }
-    const failure = transportFailureStatus("apiKey");
+    const failure = transportFailureStatus(config);
     if (failure) return failure;
-    return {
+    return statusFor(config, {
       kind: "ready",
       authMode: "apiKey",
-      label: "AI 연결됨",
+      label: `${provider.providerLabel} 연결됨`,
       title: proxyAuth
-        ? `프록시로 연결됨 · ${config.baseUrl} (서버가 키를 주입)`
-        : `API 키로 연결됨 · ${config.baseUrl}`,
-    };
+        ? `${provider.providerLabel} 프록시로 연결됨 · ${config.baseUrl} (서버가 키를 주입)`
+        : `${provider.providerLabel} API 키로 연결됨 · ${config.baseUrl}`,
+    });
   }
   // chatgpt OAuth 모드 — 캐시된 companion 상태로 동기 평가.
-  if (!aiOAuthCachedStatus) {
-    return {
+  if (!aiOAuthCachedStatus || aiOAuthCachedStatus.providerId !== provider.providerId) {
+    return statusFor(config, {
       kind: "checking",
       authMode: "chatgpt",
-      label: "AI 확인 중…",
-      title: "ChatGPT 로그인 상태를 확인하는 중입니다. 잠시만 기다려주세요.",
-    };
+      label: `${provider.providerLabel} 확인 중…`,
+      title: `${provider.providerLabel} 로그인 상태를 확인하는 중입니다. 잠시만 기다려주세요.`,
+    });
   }
   // (B) 응답했지만 내부 오류 — "보조 프로그램이 켜져 있지 않아요" 안내는 사실과 다르다.
   // dev 서버와 단독 동반 서비스는 같은 pi-ai 워커를 쓰므로 npm run ai:oauth 는 해결책이 아니다.
   if (aiOAuthCachedStatus.serverMessage) {
-    return {
+    return statusFor(config, {
       kind: "error",
       authMode: "chatgpt",
-      label: "AI 보조 오류",
-      title: `AI 보조 프로그램이 응답했지만 오류가 났어요. 개발 서버를 껐다 켜 보세요. 오류 내용: ${aiOAuthCachedStatus.serverMessage}`,
-    };
+      label: `${provider.providerLabel} 보조 오류`,
+      title: `${provider.providerLabel} 보조 프로그램이 응답했지만 오류가 났어요. 개발 서버를 껐다 켜 보세요. 오류 내용: ${aiOAuthCachedStatus.serverMessage}`,
+    });
   }
   // (A) 아예 닿지 못함 — 켜져 있지 않거나 응답이 없다는 뜻.
   if (aiOAuthCachedStatus.unreachable) {
-    return {
+    return statusFor(config, {
       kind: "offline",
       authMode: "chatgpt",
-      label: "AI 보조 프로그램 꺼짐",
-      title: "AI 로그인을 도와줄 보조 프로그램이 응답하지 않아요. 명령어 창(터미널)에서 'npm run ai:oauth'를 실행하거나 개발 서버를 껐다 켜 보세요. 이 칩을 누르면 설정이 열려요.",
-    };
+      label: `${provider.providerLabel} 보조 프로그램 꺼짐`,
+      title: `${provider.providerLabel} 로그인을 도와줄 보조 프로그램이 응답하지 않아요. 명령어 창(터미널)에서 'npm run ai:oauth'를 실행하거나 개발 서버를 껐다 켜 보세요. 이 칩을 누르면 설정이 열려요.`,
+    });
   }
   if (isStoredCredential(aiOAuthCachedStatus)) {
-    const failure = transportFailureStatus("chatgpt");
+    const failure = transportFailureStatus(config);
     if (failure) return failure;
     // 연결은 됐는데 요청한 모델이 아닌 것이 답하고 있으면 그 사실을 라벨에 올린다 — 예전에는
     // 아무 신호도 없어서 감독이 고른 모델이 답하는지 알 방법이 없었다.
     const demotion = getAiModelDemotion();
     if (demotion) {
-      return {
+      return statusFor(config, {
         kind: "error",
         authMode: "chatgpt",
-        label: "AI 다른 모델 응답",
+        label: `${provider.providerLabel} 다른 모델 응답`,
         title: `요청한 모델 '${demotion.requested}' 대신 '${demotion.served}' 이(가) 답했습니다. 제공자가 모르는 모델 ID 를 조용히 바꿔치기한 것입니다 — 이 칩을 눌러 목록에서 모델을 고르세요.`,
-      };
+      });
     }
-    return {
+    return statusFor(config, {
       kind: "ready",
       authMode: "chatgpt",
-      label: `AI 연결됨${aiOAuthCachedStatus.planType ? ` · ${aiOAuthCachedStatus.planType.toUpperCase()}` : ""}`,
-      title: "구독 로그인으로 연결됨 · 로그인 정보는 이 PC 의 보조 프로그램이 보관·갱신해요.",
-    };
+      label: `${provider.providerLabel} 연결됨${aiOAuthCachedStatus.planType ? ` · ${aiOAuthCachedStatus.planType.toUpperCase()}` : ""}`,
+      title: `${provider.providerLabel} 구독 로그인으로 연결됨 · 로그인 정보는 이 PC 의 보조 프로그램이 보관·갱신해요.`,
+    });
   }
   // env 자격만 있는 상태를 "연결됨"이라 말하지 않는다(감독 결정) — 에디터가 지울 수 없는
   // 자격이라, 연결로 세면 연결 해제 버튼이 거짓이 되고 감독은 제어 못 하는 상태를 보게 된다.
   if (aiOAuthCachedStatus.env === true) {
-    return {
+    return statusFor(config, {
       kind: "disconnected",
       authMode: "chatgpt",
-      label: "AI 로그인 필요",
+      label: `${provider.providerLabel} 로그인 필요`,
       title: "환경 변수로 들어온 자격만 있어요. 에디터가 관리하는 로그인이 아니라서 연결로 세지 않습니다. 이 칩을 눌러 로그인하세요.",
-    };
+    });
   }
   if (aiOAuthCachedStatus.expired === true) {
-    return {
+    return statusFor(config, {
       kind: "disconnected",
       authMode: "chatgpt",
-      label: "AI 로그인 필요",
+      label: `${provider.providerLabel} 로그인 필요`,
       title: "로그인이 만료됐어요. 이 칩을 눌러 다시 로그인하세요.",
-    };
+    });
   }
-  return {
+  return statusFor(config, {
     kind: "disconnected",
     authMode: "chatgpt",
-    label: "AI 로그인 필요",
+    label: `${provider.providerLabel} 로그인 필요`,
     title: "AI 기능을 쓰려면 로그인이 필요해요. 이 칩을 눌러 로그인하면 마을 만들기·NPC 배치·AI 채팅을 모두 쓸 수 있어요.",
-  };
+  });
 }
 
 /**
@@ -219,11 +241,14 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     }
     return;
   }
-  if (refreshInFlight) return;
-  refreshInFlight = true;
+  const providerId = parseOhMyPiProvider(config.providerId);
+  if (refreshInFlightProviderId === providerId) return;
+  refreshInFlightProviderId = providerId;
   try {
-    const auth = await fetchChatGptAuthStatus(config.providerId);
+    const auth = await fetchChatGptAuthStatus(providerId);
+    if (parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
     const next: CachedOAuthStatus = {
+      providerId,
       connected: auth.connected,
       planType: auth.planType,
       env: auth.env,
@@ -231,6 +256,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     };
     const changed =
       !aiOAuthCachedStatus ||
+      aiOAuthCachedStatus.providerId !== next.providerId ||
       aiOAuthCachedStatus.connected !== next.connected ||
       aiOAuthCachedStatus.planType !== next.planType ||
       aiOAuthCachedStatus.env !== next.env ||
@@ -240,6 +266,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     aiOAuthCachedStatus = next;
     if (changed) onChange?.();
   } catch (error) {
+    if (parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
     // (B) 서버가 응답했지만 실패(4xx/5xx) — 서버가 알려준 원인을 캐시에 담아 툴팁에 노출한다.
     // instanceof 대신 오류 이름으로 판별한다: 테스트가 이 모듈을 vi.mock 으로 통째 교체하면
     // 클래스 정체성이 달라질 수 있기 때문. 일반 Error(= 닿지 못함, (A))는 이 이름이 아니다.
@@ -248,6 +275,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
         ? (error as ChatGptCompanionResponseError).serverMessage
         : undefined;
     const next: CachedOAuthStatus = {
+      providerId,
       connected: false,
       // (B) 는 serverMessage 로, (A) 는 unreachable 로 구분한다 — 칩 라벨·이모지·색이 갈린다.
       unreachable: serverMessage === undefined,
@@ -255,13 +283,14 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     };
     const changed =
       !aiOAuthCachedStatus ||
+      aiOAuthCachedStatus.providerId !== next.providerId ||
       aiOAuthCachedStatus.unreachable !== next.unreachable ||
       aiOAuthCachedStatus.serverMessage !== serverMessage ||
       aiOAuthCachedStatus.connected !== false;
     aiOAuthCachedStatus = next;
     if (changed) onChange?.();
   } finally {
-    refreshInFlight = false;
+    if (refreshInFlightProviderId === providerId) refreshInFlightProviderId = null;
   }
 }
 
@@ -309,4 +338,19 @@ export function renderAiConnectionStatus(onRefresh: () => void): HTMLElement {
     void refreshAiConnectionStatus(onRefresh);
   });
   return button;
+}
+
+/** 상태 칩(연결 설정)과 분리된, 실제 저작 패널로 가는 명시적인 진입점. */
+export function renderAiAuthoringEntry(): HTMLElement {
+  return el("button", {
+    class: "editor-statusbar-cell ai-authoring-entry strong",
+    text: "✨ AI로 만들기",
+    attrs: {
+      type: "button",
+      title: "AI 패널을 열어 길·NPC·상점·상자·집·퀘스트를 만듭니다",
+      "aria-label": "AI로 만들기",
+    },
+    dataset: { testid: "ai-authoring-entry" },
+    on: { click: () => void openAiAssistantPanel() },
+  });
 }

@@ -131,9 +131,13 @@ function mockEditorDependencies(): void {
     takeoverMapLock,
   }));
   vi.doMock("@/editor/panels/aiChatPanel", () => ({
-    renderAiChatPanel: (options?: { readonly onChatDockToggle?: () => void }) => {
+    renderAiChatPanel: (options?: {
+      readonly onChatDockToggle?: () => void;
+      readonly getAssistantTemperature?: () => string;
+    }) => {
       const panel = document.createElement("aside");
       panel.dataset.testid = "ai-panel";
+      panel.dataset.temperature = options?.getAssistantTemperature?.() ?? "";
       panel.className = "ai-chat-panel";
       const log = document.createElement("div");
       log.dataset.testid = "ai-chat-log";
@@ -300,7 +304,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     expect(editorState.get().chatDock).toBe("side");
   });
 
-  it("저장된 조수 온도를 레이아웃과 함께 복원한다", async () => {
+  it("저장된 조수 대기 화면을 도크 설정과 함께 복원한다", async () => {
     storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
     storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
       leftWidth: 526,

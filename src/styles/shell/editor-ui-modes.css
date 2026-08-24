@@ -1037,6 +1037,35 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   outline: none;
 }
 
+.workspace-assistant-dock-picker {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 2px 6px 6px;
+}
+
+.workspace-assistant-dock-option {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
+  border-radius: var(--radius-s, 2px);
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.workspace-assistant-dock-option:hover,
+.workspace-assistant-dock-option:focus-visible,
+.workspace-assistant-dock-option[aria-checked="true"] {
+  background: var(--accent-muted, rgba(138, 107, 47, 0.12));
+  border-color: var(--accent-border, rgba(138, 107, 47, 0.45));
+  color: var(--text-1, #2E2A24);
+  outline: none;
+}
+
 .workspace-density-item.is-active,
 .workspace-layout-item.is-active {
   font-weight: 700;

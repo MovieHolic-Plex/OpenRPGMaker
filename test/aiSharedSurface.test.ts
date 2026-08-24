@@ -66,11 +66,32 @@ describe("AI shared surface", () => {
     const modeBtn = findByTestId(panel, "ai-dock-mode-btn");
     // 헤더 뱃지는 제거 — 커맨드 바 토글 + 더보기 메뉴만 유지.
     expect(findByTestId(panel, "ai-dock-mode-btn-header")).toBeNull();
-    expect(modeBtn?.textContent).toBe("왼쪽 유리");
+    expect(modeBtn?.textContent).toBe("왼쪽 카드로 열기");
     expect(modeBtn?.dataset.dockMode).toBe("float");
 
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreDock = findByTestId(panel, "ai-more-dock");
-    expect(moreDock?.textContent).toContain("왼쪽 유리");
+    expect(moreDock?.textContent).toContain("왼쪽 카드로 열기");
+  });
+
+  it("keeps dock escape and idle-screen choices reachable from every assistant menu", () => {
+    editorState.set({ chatDock: "side", assistantTemperature: "quiet-gold" });
+    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
+
+    const menu = findByTestId(panel, "ai-more-menu");
+    // FakeElement does not reflect the HTML hidden attribute onto .hidden automatically.
+    if (menu) menu.hidden = true;
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    expect(menu?.hidden).toBe(false);
+    expect(menu?.classList.contains("is-viewport-anchored")).toBe(true);
+    expect(findByTestId(panel, "ai-temperature-quiet-gold")).toBeTruthy();
+    expect(findByTestId(panel, "ai-command-temperature-quiet-gold")).toBeTruthy();
+
+    findByTestId(panel, "ai-temperature-ink-only")?.click();
+    expect(editorState.get().assistantTemperature).toBe("ink-only");
+    expect(panel.dataset.temperature).toBe("ink-only");
+
+    findByTestId(panel, "ai-chat-detach")?.click();
+    expect(editorState.get().chatDock).toBe("float");
   });
 });

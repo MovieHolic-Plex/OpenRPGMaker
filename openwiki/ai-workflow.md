@@ -75,8 +75,10 @@ Use this when an external agent should drive the **in-editor AI chat panel** so 
 
 1. Start bridge MCP: `npm run mcp:assistant` (HTTP `http://127.0.0.1:17831` + MCP stdio).
 2. Start the editor: `npm run dev` (DEV auto-connects the bridge; force with `?aiBridge=1`, disable with `?aiBridge=0`, port with `?aiBridgePort=17831`).
-3. Ensure AI settings have an API key in the editor.
-4. Point the MCP client at `scripts/rpgzzu-assistant-mcp.mjs` (stdio).
+3. Ensure the editor's selected AI provider is connected (OAuth or API key).
+4. Point the MCP client at `scripts/rpgzzu-assistant-mcp.mjs` (stdio). For AGY: `agy mcp add rpgzzu-assistant node scripts/rpgzzu-assistant-mcp.mjs`.
+
+The stdio bridge accepts both newline-delimited MCP JSON-RPC (AGY 1.1.x) and legacy `Content-Length` framing and replies using the format detected from the first request. After registration, verify `assistant_ping` and `assistant_status`; `agy mcp list` only proves configuration, not a live browser connection.
 
 MCP tools:
 

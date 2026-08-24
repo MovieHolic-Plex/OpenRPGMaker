@@ -160,6 +160,41 @@
   margin: 0;
 }
 
+.ai-authoring-examples {
+  display: grid;
+  gap: 7px;
+}
+
+.ai-authoring-examples-title {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ai-authoring-example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-authoring-example-chip {
+  background: color-mix(in srgb, var(--surface-1) 82%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui);
+  padding: 7px 9px;
+}
+
+.ai-authoring-example-chip:hover,
+.ai-authoring-example-chip:focus-visible {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+  outline: none;
+}
+
 .ai-next-steps .ai-start-visual-gallery,
 .ai-next-steps-list {
   display: grid;
@@ -192,6 +227,38 @@
 
 .ai-chat-panel.chat-dock-side .ai-next-steps {
   padding: 16px 12px 8px;
+}
+
+/* 입력창만 보기: 대기 중에는 맵을 가리는 카드 본문을 접되, 하단 ⋯ 메뉴로 언제든
+   다른 대기 화면을 고를 수 있게 한다. */
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-header,
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-body,
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-toolbar,
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-resize-handle {
+  display: none;
+}
+
+.ai-chat-panel.is-map-first-idle .ai-command-menu-toggle {
+  display: inline-grid;
+}
+
+.ai-chat-panel.chat-dock-glass.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+  background: transparent;
+  backdrop-filter: none;
+  border: 0;
+  box-shadow: none;
+  inset: auto 12px 12px 12px;
+  max-width: none;
+  overflow: visible;
+  padding: 0;
+  pointer-events: none;
+  width: auto;
+  z-index: 43;
+}
+
+.ai-chat-panel.is-map-first-idle .ai-command-bar {
+  max-width: 460px;
+  pointer-events: auto;
 }
 
 .ai-chat-panel.chat-dock-glass.is-collapsed {

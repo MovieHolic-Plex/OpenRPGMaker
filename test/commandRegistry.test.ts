@@ -111,11 +111,17 @@ describe("commandRegistry", () => {
     for (const density of ["guided", "comfortable", "dense"]) {
       expect(ids.filter((id) => id === `workspace-density-${density}`)).toHaveLength(1);
     }
-    for (const panel of allPanels()) {
+    for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
       expect(ids).toContain(`workspace-panel-${panel.id}`);
       expect(ids).toContain(`workspace-panel-${panel.id}-left`);
       expect(ids).toContain(`workspace-panel-${panel.id}-right`);
     }
+    expect(ids).not.toContain("workspace-panel-assistant-left");
+    expect(ids).toEqual(expect.arrayContaining([
+      "assistant-dock-glass",
+      "assistant-dock-side",
+      "assistant-dock-float",
+    ]));
   });
 
   it("공통 저작 작업 네 개가 명령 팔레트에도 정확히 한 번 등록된다", () => {

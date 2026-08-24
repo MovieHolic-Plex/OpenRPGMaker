@@ -239,6 +239,17 @@ describe("friendship and shop tools", () => {
     const event = ctx.project.maps[map.id].events.find((entry) => entry.id === "ev_seed_seller");
     expect(event?.giftPrefs).toEqual({ liked: ["item_strawberry"] });
     expect(event?.pages?.[0]?.commands.some((command) => command.kind === "shop")).toBe(true);
+    const scene = runSceneTest(ctx.project, {
+      mapId: map.id,
+      start: { x: 1, y: 2 },
+      steps: [
+        {
+          kind: "expect",
+          shopStock: { eventId: "ev_seed_seller", itemIds: ["item_spring_seed"] },
+        },
+      ],
+    });
+    expect(scene.ok, scene.failureReason).toBe(true);
   });
 });
 

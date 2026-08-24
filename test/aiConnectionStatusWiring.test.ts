@@ -194,7 +194,11 @@ describe("AI 연동 칩 상태바 배선", () => {
     renderEditor(main);
 
     const chip = findByTestId(fakeElement(main), "ai-connection-status");
+    const authoringEntry = findByTestId(fakeElement(main), "ai-authoring-entry");
     expect(chip).not.toBeNull();
+    expect(authoringEntry).not.toBeNull();
+    expect(authoringEntry?.textContent).toContain("AI로 만들기");
+    expect(authoringEntry?.tagName.toLowerCase()).toBe("button");
     // 칩은 클릭 가능한 버튼이어야 한다(설정 모달 진입점).
     expect(chip?.tagName.toLowerCase()).toBe("button");
     // 저장값이 apiKey 여도 OAuth 로 승격되므로, 동반 서비스 조회 전에는 "확인 중" 이 정상이다.

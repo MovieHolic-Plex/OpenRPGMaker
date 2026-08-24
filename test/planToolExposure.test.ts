@@ -2,7 +2,7 @@
 // 자율 런 계획 요구 툴 노출 — 도메인 게이트·40툴 상한과 무관하게 successTools/지시문 툴을 보장.
 
 import { describe, expect, it } from "vitest";
-import { planRequiredToolNames, planRequiredToolSchemas } from "@/ai/planToolExposure";
+import { mentionedToolSchemas, planRequiredToolNames, planRequiredToolSchemas } from "@/ai/planToolExposure";
 import type { WorkPlan } from "@/ai/workPlan";
 
 function plan(items: Array<{ successTools?: readonly string[]; instruction?: string }>): WorkPlan {
@@ -99,5 +99,18 @@ describe("planRequiredToolSchemas", () => {
       expect(schema.type).toBe("function");
       expect(schema.function.description.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("mentionedToolSchemas", () => {
+  it("사용자가 정확히 지목한 활성 도구는 도메인 상한과 무관하게 스키마로 복원한다", () => {
+    const schemas = mentionedToolSchemas(
+      "먼저 get_event로 읽고 set_shop_stock으로 재고를 고쳐. get_events_extra는 도구가 아니다.",
+    );
+    const names = schemas.map((schema) => schema.function.name);
+
+    expect(names).toContain("get_event");
+    expect(names).toContain("set_shop_stock");
+    expect(names).not.toContain("get_events_extra");
   });
 });

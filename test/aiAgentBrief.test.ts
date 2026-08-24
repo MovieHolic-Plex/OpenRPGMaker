@@ -85,6 +85,20 @@ describe("readAgentBrief", () => {
     expect(nextStepHint(readAgentBrief())).toBe("빈 맵이에요. 아래 중 하나를 누르면 바로 시작합니다.");
   });
 
+  it("흙길 오토타일 외곽만 있어도 실제 길로 인식한다", () => {
+    const project = store.getCurrent();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.lowerTiles[7 * map.width + 2] = 390;
+    map.lowerTiles[7 * map.width + 3] = 391;
+    map.lowerTiles[7 * map.width + 4] = 392;
+    store.replace(structuredClone(project));
+
+    const brief = readAgentBrief();
+    expect(brief.hasPath).toBe(true);
+    expect(nextStepHint(brief)).not.toContain("길이 없어요");
+  });
+
   it("선택이 있으면 그 칸을 고르라고 안내한다", () => {
     const mapId = store.getCurrent().startMapId;
     editorState.set({

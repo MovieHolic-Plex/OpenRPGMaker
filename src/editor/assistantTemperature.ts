@@ -1,20 +1,18 @@
-// 조수 대기 온도 — 도크(위치)와 독립. 레이아웃 JSON에 chatDock 과 함께 저장한다.
+// 조수의 대기 화면 밀도. 저장 ID는 기존 배포와 호환하고, 사용자에게는 동작을 설명한다.
 
 export type AssistantTemperature = "quiet-gold" | "ink-only" | "map-first";
 
 export const DEFAULT_ASSISTANT_TEMPERATURE: AssistantTemperature = "quiet-gold";
-
 export const EDITOR_LAYOUT_STORAGE_KEY = "oprn:editor-layout:v4";
 
 export const ASSISTANT_TEMPERATURES = [
-  { id: "quiet-gold", code: "A", label: "조용한 골드", english: "Quiet Gold" },
-  { id: "ink-only", code: "B", label: "잉크만", english: "Ink Only" },
-  { id: "map-first", code: "C", label: "맵 우선", english: "Map First" },
+  { id: "quiet-gold", icon: "✦", label: "추천 함께 보기" },
+  { id: "ink-only", icon: "◫", label: "조수만 보기" },
+  { id: "map-first", icon: "⌨", label: "입력창만 보기" },
 ] as const satisfies readonly {
   readonly id: AssistantTemperature;
-  readonly code: "A" | "B" | "C";
+  readonly icon: string;
   readonly label: string;
-  readonly english: string;
 }[];
 
 export function parseAssistantTemperature(
@@ -26,22 +24,25 @@ export function parseAssistantTemperature(
 }
 
 export function assistantTemperatureMenuLabel(id: AssistantTemperature): string {
-  const row = ASSISTANT_TEMPERATURES.find((item) => item.id === id);
-  return row ? `${row.code} ${row.label}` : id;
+  const item = ASSISTANT_TEMPERATURES.find((candidate) => candidate.id === id);
+  return item ? `${item.icon} ${item.label}` : id;
 }
 
+/** 다른 레이아웃 필드를 보존한 채 대기 화면 선택만 저장한다. */
 export function persistAssistantTemperature(next: AssistantTemperature): void {
-  const value = parseAssistantTemperature(next);
   try {
-    const ls = typeof localStorage === "undefined" ? null : localStorage;
-    if (!ls) return;
-    const raw = ls.getItem(EDITOR_LAYOUT_STORAGE_KEY);
+    const storage = typeof localStorage === "undefined" ? null : localStorage;
+    if (!storage) return;
+    const raw = storage.getItem(EDITOR_LAYOUT_STORAGE_KEY);
     const parsed: unknown = raw ? JSON.parse(raw) : {};
     const base = parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)
       ? parsed as Record<string, unknown>
       : {};
-    ls.setItem(EDITOR_LAYOUT_STORAGE_KEY, JSON.stringify({ ...base, assistantTemperature: value }));
+    storage.setItem(EDITOR_LAYOUT_STORAGE_KEY, JSON.stringify({
+      ...base,
+      assistantTemperature: parseAssistantTemperature(next),
+    }));
   } catch {
-    // layout cache is best-effort
+    // UI 환경설정은 best-effort다. 저장 실패가 편집을 막아서는 안 된다.
   }
 }

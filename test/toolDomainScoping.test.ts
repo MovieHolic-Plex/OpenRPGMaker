@@ -191,6 +191,15 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     expect(exposed.has("paint_road")).toBe(true);
   });
 
+  it("상점 재고 수정 의도는 event 도메인을 열고 조회·재고 툴을 함께 노출한다", () => {
+    const domains = computeActiveToolDomains("상점 재고를 읽고 수정해");
+    expect(domains.has("event")).toBe(true);
+
+    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+    expect(exposed.has("get_event")).toBe(true);
+    expect(exposed.has("set_shop_stock")).toBe(true);
+  });
+
   it("새 프로젝트와 밤 분위기 요청은 system 도메인의 canonical 툴을 cap 안에서 노출한다", () => {
     const resetDomains = computeActiveToolDomains("Start a new project from scratch");
     const resetExposed = toOpenAiTools(undefined, { domains: resetDomains });

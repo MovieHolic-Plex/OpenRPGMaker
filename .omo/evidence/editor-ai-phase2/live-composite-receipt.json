@@ -1,0 +1,18 @@
+{
+  "projectId": "oprn-97906517a7",
+  "providerLabel": "🤖 OpenAI Codex 연결됨",
+  "prompt": "현재 원격 프로젝트의 상점 런타임 회귀를 고쳐. 먼저 map_blank_start의 npc_mina_merchant를 get_event로 읽어. 그 다음 set_shop_stock 도구로 item_ether와 item_antidote 두 재고를 다시 설정해. 기존 이벤트와 다른 프로젝트 콘텐츠는 모두 보존해. 마지막에 get_event로 다시 읽어 상점 커맨드가 보존됐는지 확인하고 적용 가능한 제안으로 끝내.",
+  "turnOk": true,
+  "toolNames": [
+    "get_event",
+    "set_shop_stock",
+    "get_event"
+  ],
+  "assistantFinal": "상인 미나의 기존 이벤트를 먼저 확인한 뒤, 재고를 에테르와 해독제로 다시 설정했습니다. 재조회 결과 두 이벤트 페이지 모두 기존 얼굴·대사·판매 설정과 상점 명령이 그대로 보존되어 있습니다. 다른 이벤트나 프로젝트 콘텐츠는 변경하지 않았으며, 현재 결과는 그대로 적용 가능한 제안 상태입니다.",
+  "proposalApplied": true,
+  "pageShopCoverage": [
+    true,
+    true
+  ],
+  "saveClicked": true
+}

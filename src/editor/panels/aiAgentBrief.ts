@@ -8,7 +8,7 @@ import {
   type AiVisualStartPrompt,
 } from "@/editor/panels/aiStartScreenCards";
 import { editorWorkingEvents } from "@/project/eventDrafts";
-import { TILE } from "@/project/defaults/constants";
+import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 
@@ -50,7 +50,7 @@ export function toolShortLabel(tool: Tool): string {
 }
 
 function mapHasPath(map: GameMap): boolean {
-  return map.lowerTiles.some((tile) => tile === TILE.PATH);
+  return map.lowerTiles.some((tile) => isRoadTile(tile));
 }
 
 function mapHasEntrance(map: GameMap): boolean {

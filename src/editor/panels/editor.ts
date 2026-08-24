@@ -35,7 +35,11 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import {
+  refreshAiConnectionStatus,
+  renderAiAuthoringEntry,
+  renderAiConnectionStatus,
+} from "@/editor/panels/aiConnectionStatus";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
@@ -196,6 +200,7 @@ export function renderEditor(main: HTMLElement): void {
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
     onChatDockToggle: toggleChatDock,
+    onChatDockChange: setChatDock,
     getAssistantTemperature: () => assistantTemperature,
     onAssistantTemperatureChange: setAssistantTemperature,
   });
@@ -478,7 +483,11 @@ export function isLeftCollapsed(): boolean {
 }
 
 export function toggleChatDock(): void {
-  chatDock = cycleChatDock(chatDock);
+  setChatDock(cycleChatDock(chatDock));
+}
+
+export function setChatDock(next: ChatDock): void {
+  chatDock = parseChatDock(next, chatDock);
   applyChatDockLayout();
   applyLayout();
   saveEditorLayout();
@@ -486,7 +495,7 @@ export function toggleChatDock(): void {
 }
 
 export function setAssistantTemperature(next: AssistantTemperature): void {
-  assistantTemperature = parseAssistantTemperature(next);
+  assistantTemperature = parseAssistantTemperature(next, assistantTemperature);
   editorState.set({ assistantTemperature });
   if (aiChatPanelRoot) aiChatPanelRoot.dataset.temperature = assistantTemperature;
   saveEditorLayout();
@@ -856,7 +865,7 @@ function renderEditorStatusbar(container: HTMLElement): void {
       on: { click: () => toggleLayoutBboxes() },
     })
   );
-  cells.push(renderAiConnectionStatus(refreshStatusbar));
+  cells.push(renderAiAuthoringEntry(), renderAiConnectionStatus(refreshStatusbar));
   container.append(...cells);
 }
 

@@ -251,7 +251,7 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "tile_erase", // transform 가이드 대표 도구(regionIntentExposure) — clear_region 폐기 후 유일한 지우기 경로
   ])],
   ["event", new Set([
-    "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event",
+    "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event", "set_shop_stock",
     // 영역 작업 quest-trigger/mood/door-transfer 가이드 대표 도구(2026-07-10 라이브 실측 수정) —
     // event 도메인 안에서도 EVENT_TOOLS/LIGHTING_TOOLS 뒤쪽 정의라 상한(40) 슬라이스에서 밀려
     // place_chest 등이 노출 안 되던 문제.

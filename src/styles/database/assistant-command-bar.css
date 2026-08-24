@@ -168,6 +168,14 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   z-index: 60;
 }
 
+/* 사이드 호스트는 레이아웃 경계를 위해 overflow:hidden 이다. 메뉴만 뷰포트에 고정해
+   호스트 밖에서도 잘리지 않게 한다(aiChatPanel 이 앵커 좌표를 인라인으로 넣는다). */
+.ai-more-menu.is-viewport-anchored {
+  bottom: auto;
+  position: fixed;
+  right: auto;
+}
+
 .ai-more-menu[hidden] {
   display: none;
 }
@@ -187,6 +195,52 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 .ai-more-menu-item:hover,
 .ai-more-menu-item:focus-visible {
   background: color-mix(in srgb, var(--accent, var(--accent)) 16%, transparent);
+}
+
+.ai-temperature-section {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 5px;
+}
+
+.ai-temperature-label {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 2px 4px;
+}
+
+.ai-temperature-picker {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ai-temperature-option.ai-more-menu-item,
+.ai-temperature-option.ai-command-menu-item {
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  display: inline-flex;
+  font-size: 16px;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px;
+  text-align: center;
+}
+
+.ai-temperature-option[aria-checked="true"] {
+  background: color-mix(in srgb, var(--accent, var(--gold, #8a6b2f)) 15%, transparent);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+}
+
+.ai-chat-detach-btn {
+  display: none;
+}
+
+.ai-chat-panel.chat-dock-side .ai-chat-detach-btn {
+  display: inline-grid;
 }
 
 .ai-chat-toolbar.is-empty,
