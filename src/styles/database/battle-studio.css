@@ -1,0 +1,971 @@
+/* Battle Studio — the four battle utility surfaces share one modern, canvas-first
+ * authoring language while continuing to consume the Database modal's cream tokens. */
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-surface {
+  --db-studio-dark: #1d2024;
+  --db-studio-dark-2: #262a2f;
+  --db-studio-dark-3: #30353b;
+  --db-studio-line: rgba(255, 255, 255, 0.12);
+  --db-studio-text: #f4f0e8;
+  --db-studio-muted: #b9b3aa;
+  --db-studio-live: #c2e85b;
+  --db-studio-timing: #e0a648;
+  align-content: start;
+  background: var(--db-light-bg-base);
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  display: grid;
+  gap: 14px;
+  grid-auto-flow: row;
+  grid-template-columns: minmax(0, 1fr);
+  height: auto;
+  max-height: none;
+  min-height: 100%;
+  overflow: visible;
+  padding: 0 0 24px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-heading {
+  align-items: end;
+  border-bottom: 1px solid var(--db-light-border-subtle);
+  display: grid;
+  gap: 12px 24px;
+  grid-template-columns: minmax(210px, 1fr) auto;
+  padding: 16px 18px 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-title-block {
+  display: grid;
+  gap: 3px;
+  padding-bottom: 13px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-kicker {
+  color: var(--db-light-accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-title-block h3 {
+  color: var(--db-light-text-1);
+  font-size: clamp(19px, 2vw, 25px);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-title-block p {
+  color: var(--db-light-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-nav {
+  align-self: end;
+  display: flex;
+  gap: 18px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-nav-button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: var(--db-light-text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 700 12px/1.3 var(--font-ui);
+  min-height: 36px;
+  padding: 8px 2px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-nav-button:hover {
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-nav-button.active {
+  border-bottom-color: var(--db-light-accent);
+  color: var(--db-light-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-section-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-height: 28px;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-section-header strong {
+  color: inherit;
+  font-size: 13px;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-section-header span {
+  color: var(--db-light-text-3);
+  font-size: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-dark-stage {
+  background-color: var(--db-studio-dark);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-position: center;
+  background-repeat: repeat;
+  background-size: 24px 24px;
+  border: 1px solid rgba(21, 24, 27, 0.72);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  color: var(--db-studio-text);
+  min-height: 280px;
+  overflow: hidden;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-stage-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 48px 48px;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-live-chip {
+  background: rgba(16, 18, 20, 0.72);
+  border: 1px solid rgba(194, 232, 91, 0.45);
+  border-radius: 999px;
+  color: var(--db-studio-live);
+  font: 800 9px/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  padding: 4px 7px;
+  width: fit-content;
+}
+
+/* Animation: the existing record list remains the asset browser; this form owns
+ * the viewport, inspector, and integrated timeline. */
+.database-modal-backdrop .database-modal-window .animation-detail-form.db-battle-studio-surface {
+  grid-auto-rows: auto;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-editor {
+  display: grid;
+  gap: 10px;
+  grid-template-areas:
+    "stage inspector"
+    "timeline timeline";
+  grid-template-columns: minmax(340px, 1fr) minmax(310px, 0.52fr);
+  grid-template-rows: minmax(300px, auto) minmax(185px, auto);
+  height: auto;
+  min-height: 0;
+  padding: 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-stage {
+  grid-area: stage;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-stage > .db-animation-stage-panel {
+  background: var(--db-studio-dark);
+  border: 1px solid rgba(21, 24, 27, 0.8);
+  border-radius: 6px;
+  display: grid;
+  gap: 0;
+  grid-template-rows: auto minmax(210px, 1fr) auto;
+  height: 100%;
+  max-height: none;
+  min-height: 300px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-command-grid {
+  align-items: center;
+  background: var(--db-studio-dark-2);
+  border-bottom: 1px solid var(--db-studio-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 7px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-command-grid button,
+.database-modal-backdrop .database-modal-window .db-animation-command-grid label {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--db-studio-line);
+  border-radius: 4px;
+  color: var(--db-studio-text);
+  font-size: 10px;
+  min-height: 27px;
+  padding: 4px 7px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-command-grid .db-animation-play-button {
+  background: var(--db-studio-live);
+  border-color: var(--db-studio-live);
+  color: #171a1d;
+  font-weight: 850;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-stage-surface {
+  background-color: #171a1d;
+  background-image:
+    radial-gradient(circle at 50% 54%, rgba(194, 232, 91, 0.12), transparent 38%),
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: auto, 32px 32px, 32px 32px;
+  border: 0;
+  min-height: 210px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-stage-panel .db-animation-stat-grid {
+  background: var(--db-studio-dark-2);
+  border-top: 1px solid var(--db-studio-line);
+  color: var(--db-studio-muted);
+  padding: 7px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector {
+  align-content: start;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  display: grid;
+  gap: 10px;
+  grid-auto-rows: max-content;
+  grid-area: inspector;
+  max-height: 540px;
+  min-width: 0;
+  overflow: auto;
+  padding: 11px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector > .db-animation-top-grid,
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector > [data-testid="db-animation-cell-table"],
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector > [data-testid="db-animation-references"] {
+  grid-area: auto;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-top-grid {
+  display: grid;
+  gap: 8px;
+  grid-auto-rows: max-content;
+  grid-template-columns: minmax(0, 1fr);
+  height: max-content;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-sheet-fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-top-grid > :is(.field, .db-field),
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel :is(.field, .db-field) {
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel,
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-setup-panel {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--db-light-border-subtle);
+  border-radius: 0;
+  margin: 0;
+  max-height: none;
+  min-height: 0;
+  padding: 10px 0 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-setup-panel {
+  display: grid;
+  gap: 7px;
+  grid-auto-rows: max-content;
+  height: max-content;
+  overflow: visible;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel input[type="checkbox"] {
+  justify-self: start;
+  min-height: 16px;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel h4 {
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-table {
+  min-width: 620px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector [data-testid="db-animation-cell-table"] {
+  max-height: 230px;
+  min-height: 140px;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline {
+  background: var(--db-studio-dark);
+  border: 1px solid rgba(21, 24, 27, 0.8);
+  border-radius: 6px;
+  color: var(--db-studio-text);
+  display: grid;
+  gap: 0;
+  grid-area: timeline;
+  grid-template-areas:
+    "frames frames"
+    "timing strip";
+  grid-template-columns: minmax(280px, 0.82fr) minmax(220px, 1fr);
+  min-height: 185px;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-list-panel {
+  background: var(--db-studio-dark-2);
+  border: 0;
+  border-bottom: 1px solid var(--db-studio-line);
+  border-radius: 0;
+  display: grid;
+  gap: 6px;
+  grid-area: frames;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  max-height: none;
+  min-height: 82px;
+  padding: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-list-panel h4 {
+  color: var(--db-studio-muted);
+  font-size: 10px;
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-list {
+  display: flex;
+  gap: 4px;
+  max-height: 42px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-row {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--db-studio-line);
+  border-radius: 3px;
+  color: var(--db-studio-muted);
+  flex: 0 0 40px;
+  font: 700 10px/1 var(--font-mono);
+  min-height: 34px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-row.active {
+  border-color: var(--db-studio-live);
+  box-shadow: inset 0 -2px 0 var(--db-studio-live);
+  color: var(--db-studio-text);
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline button {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--db-studio-line);
+  border-radius: 4px;
+  color: var(--db-studio-text);
+  min-height: 28px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-timing-panel {
+  background: var(--db-studio-dark);
+  border: 0;
+  border-radius: 0;
+  grid-area: timing;
+  max-height: 150px;
+  min-height: 130px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-timing-panel h4 {
+  color: var(--db-studio-muted);
+  font-size: 10px;
+  margin: 0 0 7px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-timing-panel :is(th, td),
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .empty-hint {
+  color: var(--db-studio-muted);
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-pattern-strip-panel {
+  align-items: center;
+  background: var(--db-studio-dark-2);
+  border: 0;
+  border-left: 1px solid var(--db-studio-line);
+  border-radius: 0;
+  display: flex;
+  gap: 5px;
+  grid-area: strip;
+  max-height: 150px;
+  min-height: 130px;
+  overflow-x: auto;
+  padding: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-pattern-cell {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: var(--db-studio-line);
+  color: var(--db-studio-muted);
+  flex: 0 0 54px;
+}
+
+/* Terrain */
+.database-modal-backdrop .database-modal-window .db-terrain-studio-workspace {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 176px minmax(300px, 1fr) minmax(310px, 0.72fr);
+  padding: 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-gallery,
+.database-modal-backdrop .database-modal-window .db-terrain-inspector,
+.database-modal-backdrop .database-modal-window .db-battle-screen-inspector,
+.database-modal-backdrop .database-modal-window .db-battle-command-inspector,
+.database-modal-backdrop .database-modal-window .db-battle-command-palette,
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-strip {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-gallery {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+  max-height: 460px;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-card {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--db-light-text-1);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 42px minmax(0, 1fr);
+  min-height: 52px;
+  padding: 5px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-card:hover {
+  background: var(--db-light-bg-surface);
+  border-color: var(--db-light-border-subtle);
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-card.active {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-thumb {
+  background: linear-gradient(135deg, #7a8c62, #353b31);
+  background-position: center;
+  background-size: cover;
+  border-radius: 4px;
+  height: 40px;
+  width: 42px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy strong,
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy strong { font-size: 12px; }
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy small { color: var(--db-light-text-3); font-size: 9px; }
+
+.database-modal-backdrop .database-modal-window .db-terrain-preview-stage {
+  background-position: center;
+  background-size: cover;
+  min-height: 460px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-stage-overlay,
+.database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta,
+.database-modal-backdrop .database-modal-window .db-command-preview-copy {
+  display: grid;
+  gap: 5px;
+  left: 12px;
+  position: absolute;
+  top: 12px;
+  z-index: 2;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-stage-overlay strong,
+.database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta strong,
+.database-modal-backdrop .database-modal-window .db-command-preview-copy strong {
+  font-size: 16px;
+  text-shadow: 0 1px 4px #000;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-stage-overlay small,
+.database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta small {
+  color: var(--db-studio-muted);
+  font: 10px/1.35 var(--font-mono);
+  text-shadow: 0 1px 3px #000;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-stage-actors {
+  align-items: end;
+  bottom: 19%;
+  display: flex;
+  gap: 36px;
+  left: 23%;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-stage-actors span {
+  color: var(--db-studio-live);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+  font-size: 23px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-inspector {
+  max-height: 460px;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-record-stack {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-record {
+  background: var(--db-light-bg-surface);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 5px;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-record .db-readonly-row {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(62px, 0.42fr) minmax(0, 1fr);
+  margin: 0;
+}
+
+/* Battle screen */
+.database-modal-backdrop .database-modal-window .db-battle-screen-workspace,
+.database-modal-backdrop .database-modal-window .db-battle-command-workspace {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(380px, 1fr) minmax(280px, 0.38fr);
+  padding: 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-preview-stage {
+  background-position: center;
+  background-size: cover;
+  min-height: 390px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-inspector {
+  align-content: start;
+  display: grid;
+  gap: 9px;
+  min-height: 390px;
+}
+
+.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector, .db-animation-studio-inspector) .field {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(88px, 0.42fr) minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector, .db-animation-studio-inspector) :is(input, select, button) {
+  box-sizing: border-box;
+  min-height: 30px;
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-party-markers {
+  bottom: 15%;
+  display: grid;
+  gap: 8px;
+  position: absolute;
+  right: 12%;
+  z-index: 2;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-party-markers span {
+  align-items: center;
+  background: rgba(17, 20, 22, 0.72);
+  border: 1px solid rgba(194, 232, 91, 0.5);
+  border-radius: 50%;
+  color: var(--db-studio-live);
+  display: flex;
+  font: 700 9px/1 var(--font-mono);
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-enemy-sprite,
+.database-modal-backdrop .database-modal-window .db-battle-screen-enemy-fallback {
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.55));
+  max-height: 94px;
+  max-width: 112px;
+  object-fit: contain;
+  position: absolute;
+  z-index: 2;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-enemy-fallback {
+  align-items: center;
+  background: rgba(17, 20, 22, 0.74);
+  border: 1px solid var(--db-studio-line);
+  border-radius: 50%;
+  display: flex;
+  height: 52px;
+  justify-content: center;
+  width: 52px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-strip {
+  margin: 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-cards {
+  display: flex;
+  gap: 7px;
+  margin-top: 7px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card {
+  background: var(--db-light-bg-surface);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 5px;
+  display: grid;
+  flex: 0 0 178px;
+  gap: 3px;
+  padding: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card strong { font-size: 11px; }
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card small { color: var(--db-light-text-3); font-size: 9px; }
+
+/* Battle commands */
+.database-modal-backdrop .database-modal-window .db-battle-command-preview {
+  min-height: 280px;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-preview-menu {
+  background: rgba(17, 20, 22, 0.82);
+  border: 1px solid var(--db-studio-line);
+  bottom: 18px;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+  left: 18px;
+  padding: 7px;
+  position: absolute;
+  width: min(390px, calc(100% - 36px));
+  z-index: 2;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-preview-menu button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--db-studio-muted);
+  font: 650 11px/1.3 var(--font-ui);
+  min-height: 28px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-preview-menu button.active {
+  background: rgba(194, 232, 91, 0.12);
+  border-color: rgba(194, 232, 91, 0.5);
+  color: var(--db-studio-live);
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-inspector {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-inspector p {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-secondary-action {
+  background: var(--db-light-accent-muted);
+  border: 1px solid var(--db-light-accent-border);
+  border-radius: 5px;
+  color: var(--db-light-accent);
+  font-weight: 750;
+  min-height: 34px;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-kind-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-kind-legend span {
+  background: var(--db-light-bg-inset);
+  border-radius: 999px;
+  color: var(--db-light-text-2);
+  font-size: 9px;
+  padding: 4px 7px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-palette {
+  margin: 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-card-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-card {
+  background: var(--db-light-bg-surface);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 5px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-card > header {
+  align-items: center;
+  border-bottom: 1px solid var(--db-light-border-subtle);
+  display: grid;
+  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding-bottom: 7px;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-card-index {
+  color: var(--db-light-accent);
+  font: 800 10px/1 var(--font-mono);
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-card > header strong {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-card-kind {
+  background: var(--db-light-accent-muted);
+  border-radius: 999px;
+  color: var(--db-light-accent);
+  font: 700 9px/1 var(--font-mono);
+  padding: 4px 6px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-card .db-readonly-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 68px minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-command-card :is(input, select) {
+  box-sizing: border-box;
+  min-height: 30px;
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-summary-strip {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin: 0 14px;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-summary-metric {
+  background: var(--db-light-bg-inset);
+  border-left: 2px solid var(--db-light-accent-border);
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-summary-metric small {
+  color: var(--db-light-text-3);
+  font-size: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-summary-metric strong {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-empty {
+  color: var(--db-light-text-3);
+  font-size: 12px;
+  padding: 16px;
+}
+
+@media (max-width: 1240px) {
+  .database-modal-backdrop .database-modal-window .db-battle-studio-heading {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .db-battle-studio-title-block {
+    padding-bottom: 0;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-editor {
+    grid-template-areas:
+      "stage"
+      "inspector"
+      "timeline";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(340px, auto) auto auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-inspector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: none;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-top-grid {
+    grid-column: 1;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-studio-workspace {
+    grid-template-columns: 170px minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-inspector {
+    grid-column: 1 / -1;
+    max-height: 420px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-battle-screen-workspace,
+  .database-modal-backdrop .database-modal-window .db-battle-command-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .db-battle-screen-inspector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .database-modal-backdrop .database-modal-window .db-battle-studio-heading,
+  .database-modal-backdrop .database-modal-window .db-animation-studio-editor,
+  .database-modal-backdrop .database-modal-window .db-terrain-studio-workspace,
+  .database-modal-backdrop .database-modal-window .db-battle-screen-workspace,
+  .database-modal-backdrop .database-modal-window .db-battle-command-workspace {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-studio-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-preset-gallery {
+    display: flex;
+    max-height: none;
+    overflow-x: auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-preset-gallery > .db-studio-section-header {
+    flex: 0 0 120px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-preset-card {
+    flex: 0 0 158px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-terrain-preview-stage {
+    min-height: 320px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-inspector,
+  .database-modal-backdrop .database-modal-window .db-battle-screen-inspector,
+  .database-modal-backdrop .database-modal-window .db-battle-command-card-grid,
+  .database-modal-backdrop .database-modal-window .db-terrain-record {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-timeline {
+    grid-template-areas:
+      "frames"
+      "timing"
+      "strip";
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-pattern-strip-panel {
+    border-left: 0;
+    border-top: 1px solid var(--db-studio-line);
+  }
+}
