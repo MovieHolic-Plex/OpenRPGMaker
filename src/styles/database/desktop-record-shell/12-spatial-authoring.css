@@ -1,0 +1,105 @@
+.database-modal-backdrop .db-spatial-workspace {
+  container-type: inline-size;
+}
+
+.database-modal-backdrop .db-spatial-hero {
+  align-items: center;
+  background: linear-gradient(110deg, color-mix(in srgb, #3f7d4d 22%, var(--bg-raised)), var(--bg-raised));
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(180px, 30%) minmax(0, 1fr);
+  overflow: hidden;
+  padding: 10px;
+}
+
+.database-modal-backdrop .db-spatial-hero img {
+  aspect-ratio: 16 / 9;
+  border-radius: 7px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-spatial-hero h2,
+.database-modal-backdrop .db-spatial-hero p,
+.database-modal-backdrop .db-spatial-empty-state p,
+.database-modal-backdrop .db-spatial-panel h3,
+.database-modal-backdrop .db-spatial-panel > p,
+.database-modal-backdrop .db-spatial-level-card h4 {
+  margin: 0;
+}
+
+.database-modal-backdrop .db-spatial-hero h2 { font-size: 20px; }
+.database-modal-backdrop .db-spatial-hero p { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin-top: 4px; }
+
+.database-modal-backdrop .db-spatial-empty-state {
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-surface));
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--border-subtle));
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.database-modal-backdrop .db-spatial-empty-state p { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+
+.database-modal-backdrop .db-spatial-grid {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-spatial-panel,
+.database-modal-backdrop .db-spatial-record-card,
+.database-modal-backdrop .db-spatial-level-card {
+  display: grid;
+  gap: 7px;
+}
+
+.database-modal-backdrop .db-spatial-level-card {
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg-raised));
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.database-modal-backdrop .db-spatial-level-card h4 { color: var(--text-primary); font-size: 12px; }
+
+.database-modal-backdrop .db-spatial-inline-row,
+.database-modal-backdrop .db-spatial-placement-fields {
+  align-items: end;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(72px, .7fr) auto;
+}
+
+.database-modal-backdrop .db-spatial-placement-fields { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(70px, .7fr)); }
+
+.database-modal-backdrop .db-spatial-check-grid {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  margin: 0;
+  padding: 6px 8px 8px;
+}
+
+.database-modal-backdrop .db-spatial-check-grid legend { color: var(--text-muted); font-size: 9px; font-weight: 700; padding: 0 3px; }
+.database-modal-backdrop .db-spatial-checkbox { align-items: center; display: inline-flex; font-size: 10px; gap: 4px; }
+.database-modal-backdrop .db-spatial-checkbox input { margin: 0; width: auto; }
+.database-modal-backdrop .db-spatial-optional-fields { border: 1px solid var(--border-subtle); border-radius: 6px; padding: 6px; }
+.database-modal-backdrop .db-spatial-optional-fields summary { color: var(--text-muted); cursor: pointer; font-size: 10px; font-weight: 700; }
+
+@container (max-width: 980px) {
+  .database-modal-backdrop .db-spatial-grid { grid-template-columns: minmax(0, 1fr); }
+  .database-modal-backdrop .db-spatial-hero { grid-template-columns: minmax(150px, 34%) minmax(0, 1fr); }
+}
+
+@container (max-width: 680px) {
+  .database-modal-backdrop .db-spatial-hero { grid-template-columns: minmax(0, 1fr); }
+  .database-modal-backdrop .db-spatial-hero img { max-height: 170px; }
+  .database-modal-backdrop .db-spatial-inline-row,
+  .database-modal-backdrop .db-spatial-placement-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
