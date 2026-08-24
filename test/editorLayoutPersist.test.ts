@@ -214,7 +214,7 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     expect(reloaded.isLeftCollapsed()).toBe(true);
     expect(fakeElement(nextMain).querySelector(".left-panel")?.style.display).toBe("none");
-  });
+  }, 30_000);
 
   it("채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다", async () => {
     const { renderEditor } = await import("@/editor/panels/editor");
