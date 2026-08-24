@@ -165,11 +165,12 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   await enterMode("edit");
 
   if (showBriefing && elements) {
-    const result = await presentEditorWelcome(elements.root);
+    const { applyWelcomeGenreSystemPresetPlan } = await import("@/editor/welcomeGenreSystemPresetAction");
+    const result = await presentEditorWelcome(elements.root, {
+      applySystemPreset: (plan) => applyWelcomeGenreSystemPresetPlan(plan),
+    });
     if (result.dismiss) setEditorWelcomeDismissed(true);
-    if (result.starterPlan) {
-      const { applyWelcomeGenreStarterPlan } = await import("@/editor/welcomeGenreStarterAction");
-      await applyWelcomeGenreStarterPlan(result.starterPlan);
+    if (result.systemPresetPlan) {
       clearWelcomeIntentBootFlags();
       const { maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } = await import("@/editor/coachMarks");
       maybeStartBasicCoachMarks();
