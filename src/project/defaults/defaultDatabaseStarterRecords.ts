@@ -12,11 +12,12 @@ import type {
 import { SCARLOXY_BATTLE_ANIMATION_SHEET } from "@/assets/scarloxyPack";
 import {
   GENERATED_EFFECT_SHEETS,
-  generatedEffectAnimationId,
+  generatedEffectDatabaseAnimationId,
   generatedEffectResourceId,
   generatedEffectSheet,
   type GeneratedEffectSheetSeed,
 } from "@/assets/generatedEffectSheets";
+import { applyGeneratedBattleEffectSkillBindings } from "./generatedBattleEffectBindings";
 import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./constants";
@@ -42,7 +43,7 @@ type BattleAnimationFlashSeed = {
 };
 
 export function defaultSkillRecords(): SkillRecord[] {
-  return [
+  const records = [
     skill(DEFAULT_SKILL_ID, "공격", "enemy", 10, DEFAULT_ANIMATION_ID, "기본 무기 공격입니다.", "attack", "hp"),
     skill("skill_sword_slash", "검격", "enemy", 22, "anim_sword", "검으로 적 하나를 강하게 베어냅니다.", "attack", "hp", { variance: 15, hitRate: 95 }),
     skill("skill_arcane_bolt", "마법탄", "enemy", 28, "anim_arrow", "정신력으로 만든 파동을 적에게 날립니다.", "mind", "hp", {
@@ -94,6 +95,8 @@ export function defaultSkillRecords(): SkillRecord[] {
       { stateId: "state_defense_up", chance: 100, operation: "add" },
     ]),
   ];
+  applyGeneratedBattleEffectSkillBindings(records);
+  return records;
 }
 
 export function defaultStateRecords(): StateRecord[] {
@@ -172,17 +175,16 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
 
 // 회복·마법·독은 원래 근접 타격 아트(blow/arrow)를 돌려썼다 — 화면에서 셋이 구분되지 않는
 // 근본 원인이었다. id 는 유지해야 기존 스킬·아이템 참조가 안 깨지므로 아트만 갈아탄다.
-const LEGACY_EFFECT_IDS: Record<string, { readonly id: string; readonly name: string }> = {
-  "arcane-nova": { id: "anim_magic", name: "마법 충격" },
-  "heal-bloom": { id: "anim_heal", name: "회복 빛" },
-  "poison-mist": { id: "anim_poison", name: "독침" },
+const LEGACY_EFFECT_NAMES: Readonly<Record<string, string>> = {
+  "arcane-nova": "마법 충격",
+  "heal-bloom": "회복 빛",
+  "poison-mist": "독침",
 };
 
 function generatedEffectAnimation(seed: GeneratedEffectSheetSeed): BattleAnimationRecord {
-  const legacy = LEGACY_EFFECT_IDS[seed.slug];
   return normalizeBattleAnimationRecord({
-    id: legacy?.id ?? generatedEffectAnimationId(seed.slug),
-    name: legacy?.name ?? seed.name,
+    id: generatedEffectDatabaseAnimationId(seed.slug),
+    name: LEGACY_EFFECT_NAMES[seed.slug] ?? seed.name,
     resourceId: generatedEffectResourceId(seed.slug),
     sheet: generatedEffectSheet(seed),
     scope: seed.scope,

@@ -29,6 +29,7 @@ import {
   EQUIPMENT_TRAVELER_HAT_ID,
   STARTER_ACTOR_IDS,
 } from "./defaultDatabaseRecordIds";
+import { applyGeneratedBattleEffectActorBindings } from "./generatedBattleEffectBindings";
 
 type PartyRecords = {
   readonly actors: ActorRecord[];
@@ -49,7 +50,7 @@ export function defaultPartyRecords(): PartyRecords {
 }
 
 function defaultActorRecords(): ActorRecord[] {
-  return [
+  const records = [
     {
       ...createActorRecord(DEFAULT_ACTOR_ID, DEFAULT_CLASS_ID, {
         characterResourceId: "easyrpg-charset-actor1",
@@ -169,4 +170,6 @@ function defaultActorRecords(): ActorRecord[] {
       },
     },
   ];
+  applyGeneratedBattleEffectActorBindings(records);
+  return records;
 }

@@ -86,13 +86,13 @@ describe("default database starter records", () => {
 
     // Then: item-use animations reference bundled EasyRPG sound effects.
     expect(restored.database.items.find((item) => item.id === DEFAULT_ITEM_ID)?.animationId).toBe("anim_heal");
-    expect(restored.database.items.find((item) => item.id === "item_ether")?.animationId).toBe("anim_magic");
+    expect(restored.database.items.find((item) => item.id === "item_ether")?.animationId).toBe("anim_gen_psychic_wave");
     expect(restored.database.items.find((item) => item.id === "item_poison_dart")?.animationId).toBe("anim_poison");
     expect(restored.database.battleAnimations.find((animation) => animation.id === "anim_heal")?.timings).toEqual(
       expect.arrayContaining([expect.objectContaining({ soundResourceId: "easyrpg-sound-recovery5" })])
     );
-    expect(restored.database.battleAnimations.find((animation) => animation.id === "anim_magic")?.timings).toEqual(
-      expect.arrayContaining([expect.objectContaining({ soundResourceId: "easyrpg-sound-magic1" })])
+    expect(restored.database.battleAnimations.find((animation) => animation.id === "anim_gen_psychic_wave")?.timings).toEqual(
+      expect.arrayContaining([expect.objectContaining({ soundResourceId: "easyrpg-sound-confusion" })])
     );
     expect(restored.database.battleAnimations.find((animation) => animation.id === "anim_poison")?.timings).toEqual(
       expect.arrayContaining([expect.objectContaining({ soundResourceId: "easyrpg-sound-poison" })])

@@ -4,6 +4,19 @@ import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databas
 import { updateClassRecord, updateEnemyRecord, updateEquipmentRecord, updateItemRecord, updateSkillRecord, updateTroopRecord } from "@/editor/databaseRecordMutators";
 import { createActorRecord, normalizeActorPatch, normalizeActorRecord } from "@/project/actorModel";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
+import { GENERATED_EFFECT_RESOURCE_IDS, GENERATED_EFFECT_SHEETS, generatedEffectDatabaseAnimationId } from "@/assets/generatedEffectSheets";
+import { defaultBattleAnimationRecords } from "@/project/defaults/defaultDatabaseStarterRecords";
+import {
+  GENERATED_BATTLE_EFFECT_CLASS_BINDINGS,
+  GENERATED_BATTLE_EFFECT_ITEM_BINDINGS,
+  GENERATED_BATTLE_EFFECT_SKILL_BINDINGS,
+  applyGeneratedBattleEffectActorBindings,
+  applyGeneratedBattleEffectClassBindings,
+  applyGeneratedBattleEffectItemBindings,
+  applyGeneratedBattleEffectSkillBindings,
+  countGeneratedBattleEffectActorBindingChanges,
+  countGeneratedBattleEffectBindingChanges,
+} from "@/project/defaults/generatedBattleEffectBindings";
 import {
   normalizeClassRecord,
   normalizeEnemyRecord,
@@ -32,6 +45,30 @@ import type {
 
 export type DatabaseCollection = keyof DatabaseRecords;
 export type DeleteResult = { ok: true } | { ok: false; message: string };
+export type GeneratedBattleEffectPackStatus = {
+  readonly totalAnimations: number;
+  readonly missingAnimations: number;
+  readonly outdatedAnimations: number;
+  readonly actorBindings: number;
+  readonly classBindings: number;
+  readonly skillBindings: number;
+  readonly itemBindings: number;
+};
+export type GeneratedBattleEffectInstallResult = {
+  readonly addedAnimations: number;
+  readonly updatedAnimations: number;
+  readonly updatedActors: number;
+  readonly updatedClasses: number;
+  readonly updatedSkills: number;
+  readonly updatedItems: number;
+  readonly firstAnimationId: string;
+};
+
+const LEGACY_GENERATED_EFFECT_RESOURCES: Readonly<Record<string, string>> = {
+  anim_magic: "easyrpg-battle-blow",
+  anim_heal: "easyrpg-battle-blow",
+  anim_poison: "easyrpg-battle-arrow",
+};
 export type DatabasePatch =
   | Partial<ActorRecord>
   | Partial<ClassRecord>
@@ -85,6 +122,112 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
     }
   }, { scope: "database", collection });
   return id;
+}
+
+/**
+ * Existing Supabase projects intentionally do not receive defaults during load. This explicit action is the
+ * non-destructive upgrade path: missing generated records are added, the three legacy aliases are upgraded when
+ * they still point at old art, and only the known starter actor/class/skill/item ids receive curated bindings.
+ */
+export function installGeneratedBattleEffectPack(): GeneratedBattleEffectInstallResult {
+  const status = generatedBattleEffectPackStatus();
+  const firstAnimationId = generatedEffectDatabaseAnimationId(GENERATED_EFFECT_SHEETS[0]?.slug ?? "slash-steel");
+  if (generatedBattleEffectPackPendingChanges(status) === 0) {
+    return {
+      addedAnimations: 0,
+      updatedAnimations: 0,
+      updatedActors: 0,
+      updatedClasses: 0,
+      updatedSkills: 0,
+      updatedItems: 0,
+      firstAnimationId,
+    };
+  }
+
+  const defaults = generatedBattleAnimationDefaults();
+  let addedAnimations = 0;
+  let updatedAnimations = 0;
+  let updatedActors = 0;
+  let updatedClasses = 0;
+  let updatedSkills = 0;
+  let updatedItems = 0;
+  recordProjectSnapshot();
+  store.update((project) => {
+    for (const defaultRecord of defaults) {
+      const index = project.database.battleAnimations.findIndex((record) => record.id === defaultRecord.id);
+      if (index < 0) {
+        project.database.battleAnimations.push(defaultRecord);
+        addedAnimations += 1;
+        continue;
+      }
+      const existing = project.database.battleAnimations[index];
+      if (!existing || !shouldUpgradeLegacyGeneratedEffect(existing)) continue;
+      project.database.battleAnimations[index] = defaultRecord;
+      updatedAnimations += 1;
+    }
+    updatedActors = applyGeneratedBattleEffectActorBindings(project.database.actors);
+    updatedClasses = applyGeneratedBattleEffectClassBindings(project.database.classes);
+    updatedSkills = applyGeneratedBattleEffectSkillBindings(project.database.skills);
+    updatedItems = applyGeneratedBattleEffectItemBindings(project.database.items);
+  }, { scope: "database", collection: "battleAnimations" });
+
+  return {
+    addedAnimations,
+    updatedAnimations,
+    updatedActors,
+    updatedClasses,
+    updatedSkills,
+    updatedItems,
+    firstAnimationId,
+  };
+}
+
+export function generatedBattleEffectPackStatus(): GeneratedBattleEffectPackStatus {
+  const project = store.getCurrent();
+  const defaults = generatedBattleAnimationDefaults();
+  let missingAnimations = 0;
+  let outdatedAnimations = 0;
+  for (const defaultRecord of defaults) {
+    const existing = project.database.battleAnimations.find((record) => record.id === defaultRecord.id);
+    if (!existing) missingAnimations += 1;
+    else if (shouldUpgradeLegacyGeneratedEffect(existing)) outdatedAnimations += 1;
+  }
+  return {
+    totalAnimations: defaults.length,
+    missingAnimations,
+    outdatedAnimations,
+    actorBindings: countGeneratedBattleEffectActorBindingChanges(project.database.actors),
+    classBindings: countGeneratedBattleEffectBindingChanges(
+      project.database.classes,
+      GENERATED_BATTLE_EFFECT_CLASS_BINDINGS,
+    ),
+    skillBindings: countGeneratedBattleEffectBindingChanges(
+      project.database.skills,
+      GENERATED_BATTLE_EFFECT_SKILL_BINDINGS,
+    ),
+    itemBindings: countGeneratedBattleEffectBindingChanges(
+      project.database.items,
+      GENERATED_BATTLE_EFFECT_ITEM_BINDINGS,
+    ),
+  };
+}
+
+export function generatedBattleEffectPackPendingChanges(status = generatedBattleEffectPackStatus()): number {
+  return status.missingAnimations
+    + status.outdatedAnimations
+    + status.actorBindings
+    + status.classBindings
+    + status.skillBindings
+    + status.itemBindings;
+}
+
+function generatedBattleAnimationDefaults(): BattleAnimationRecord[] {
+  const generatedResourceIds = new Set(GENERATED_EFFECT_RESOURCE_IDS);
+  return defaultBattleAnimationRecords().filter((record) => generatedResourceIds.has(record.resourceId ?? ""));
+}
+
+function shouldUpgradeLegacyGeneratedEffect(record: BattleAnimationRecord): boolean {
+  return record.resourceId === LEGACY_GENERATED_EFFECT_RESOURCES[record.id];
 }
 
 export function updateDatabaseRecord(collection: DatabaseCollection, id: string, patch: DatabasePatch): void {
