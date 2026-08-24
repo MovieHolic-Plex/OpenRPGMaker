@@ -90,6 +90,39 @@ describe("database item inspector form", () => {
     expect(itemEffectStory(project, item).effects).toContain(`스킬 발동: ${skill.name}`);
   });
 
+  // Break caught: special items bypass isItemActorEligible, so populated legacy/AI
+  // restriction ids must not be presented as an enforced actor/class allowlist.
+  it("does not present special item actor and class ids as runtime restrictions", () => {
+    const project = store.getCurrent();
+    const actor = project.database.actors[0]!;
+    const klass = project.database.classes[0]!;
+    const item = normalizeItemRecord({
+      ...currentItem(),
+      type: "special",
+      usableActorIds: [actor.id],
+      usableClassIds: [klass.id],
+    });
+
+    const story = itemEffectStory(project, item);
+
+    expect(story.notes.some((note) => note.startsWith("사용 허용:"))).toBe(false);
+  });
+
+  // Break caught: battle runtime ignores onlyUsableInMenu when the canonical occasion is
+  // always, so the summary must not claim this inconsistent legacy record is menu-only.
+  it("keeps an always item battle-usable when the legacy menu-only flag is also set", () => {
+    const project = store.getCurrent();
+    const item = normalizeItemRecord({
+      ...currentItem(),
+      occasion: "always",
+      occasionField: false,
+      occasionBattle: false,
+      onlyUsableInMenu: true,
+    });
+
+    expect(itemEffectStory(project, item).occasion).toBe("필드 · 전투");
+  });
+
   // Break caught: editing a recovery value without refreshing the story would leave a
   // polished but stale summary that contradicts the saved record.
   it("renders the effect story and refreshes it in place after recovery edits", () => {
