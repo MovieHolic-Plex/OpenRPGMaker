@@ -7,34 +7,20 @@ import {
 import { loadProjectFromSupabase } from "../src/project/supabaseProjectSync.ts";
 import {
   evaluateHorrorExperienceQa,
-  type HorrorBrowserEvidence,
   type HorrorExperienceQaReport,
 } from "../src/testing/horrorExperienceQa.ts";
 import { createHorrorMysteryQaScenarios } from "../src/testing/horrorMysteryQaPlan.ts";
 import { loadSupabaseEnvironment } from "./lib/supabase-database-ops.mjs";
+import { readHorrorBrowserEvidence, browserEvidenceOutputPath } from "./lib/horror-browser-evidence.mjs";
+import { runCapture } from "./capture-horror-browser-evidence.mts";
 
 const EVIDENCE_DIR = path.join("output", "evidence", "horror-mystery-prototype");
-const BROWSER_EVIDENCE_PATH = path.join(EVIDENCE_DIR, "browser-qa.json");
+const BROWSER_EVIDENCE_PATH = browserEvidenceOutputPath();
 const JSON_REPORT_PATH = path.join(EVIDENCE_DIR, "automated-qa.json");
 const MARKDOWN_REPORT_PATH = path.join(EVIDENCE_DIR, "automated-qa.md");
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
-}
-
-function readBrowserEvidence(filePath: string): HorrorBrowserEvidence {
-  assert(fs.existsSync(filePath), `브라우저 QA 증거가 없습니다: ${filePath}`);
-  const parsed: unknown = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  assert(typeof parsed === "object" && parsed !== null, "browser-qa.json은 객체여야 합니다.");
-  const candidate = parsed as Partial<HorrorBrowserEvidence>;
-  assert(candidate.projectId === HORROR_MYSTERY_PROJECT_ID, "브라우저 QA의 projectId가 대상 프로젝트와 다릅니다.");
-  assert(typeof candidate.observedAt === "string" && Number.isFinite(Date.parse(candidate.observedAt)), "브라우저 QA observedAt이 유효하지 않습니다.");
-  assert(typeof candidate.route === "string" && candidate.route.includes(HORROR_MYSTERY_PROJECT_ID), "브라우저 QA route가 대상 프로젝트를 가리키지 않습니다.");
-  assert(typeof candidate.title === "object" && candidate.title !== null, "브라우저 QA title 관찰이 없습니다.");
-  assert(typeof candidate.desktopTouchPadVisible === "boolean", "브라우저 QA touch pad 관찰이 없습니다.");
-  assert(typeof candidate.mapStart === "object" && candidate.mapStart !== null, "브라우저 QA map start 관찰이 없습니다.");
-  assert(typeof candidate.consoleErrorCount === "number", "브라우저 QA console error 수가 없습니다.");
-  return candidate as HorrorBrowserEvidence;
 }
 
 function renderMarkdown(
@@ -89,7 +75,15 @@ assert(config.url && config.anonKey, "VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
 const project = await loadProjectFromSupabase(config);
 assert(project, `Supabase 프로젝트를 로드하지 못했습니다: ${HORROR_MYSTERY_PROJECT_ID}`);
 const { manifest } = createHorrorMysteryPrototypeProject();
-const browserEvidence = readBrowserEvidence(BROWSER_EVIDENCE_PATH);
+
+// Slice A: generate FRESH browser evidence automatically before evaluation. This closes
+// the stale/manual-JSON gap — evidence is re-captured from a real headless browser
+// against the real Supabase-backed project on every run.
+await runCapture();
+
+const browserEvidence = readHorrorBrowserEvidence(BROWSER_EVIDENCE_PATH, {
+  targetProjectId: HORROR_MYSTERY_PROJECT_ID,
+});
 const scenarios = createHorrorMysteryQaScenarios(project, manifest);
 const qa = evaluateHorrorExperienceQa(project, scenarios, browserEvidence);
 const verifiedAt = new Date().toISOString();
