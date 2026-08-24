@@ -5,6 +5,7 @@ import { normalizeWorld } from "../world/guards";
 import type { ProjectWorld } from "../world/types";
 import { normalizeWorldGraph } from "../worldGraph";
 import { normalizePalettePresetId } from "../tilesetPalette";
+import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
@@ -95,6 +96,9 @@ export function validateProjectV3(data: JsonRecord): Project {
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
+  if (project.session.farmAnimals !== undefined) {
+    project.session.farmAnimals = normalizeFarmAnimalStartInstances(project.session.farmAnimals) ?? [];
+  }
   stampCharacterIdsForSocialEvents(project);
   normalizeShopCommands(project);
   repairProjectReferences(project);

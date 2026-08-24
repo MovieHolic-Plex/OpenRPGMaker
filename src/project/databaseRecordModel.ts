@@ -31,6 +31,11 @@ import {
   normalizeShippingSystemConfig,
   normalizeWorldUnlockDefinitions,
 } from "@/project/p0SystemRecords";
+import {
+  normalizeDailyWeatherConfig,
+  normalizeFarmAnimalBuildingDefinitions,
+  normalizeFarmAnimalSpeciesRecords,
+} from "@/project/p1FoundationRecords";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -64,7 +69,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   };
 }
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills" | "farmAnimalSpecies">>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -83,7 +88,9 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     monsterSpecies: (database.monsterSpecies ?? []).map(normalizeMonsterSpeciesRecord),
     crops: (database.crops ?? []).map((crop) => normalizeCropRecord(crop as Partial<CropRecord> & Pick<CropRecord, "id" | "name">)),
     lifeSkills: (database.lifeSkills ?? []).map((skill) => normalizeLifeSkillRecord(skill as Partial<LifeSkillRecord> & Pick<LifeSkillRecord, "id" | "name">)),
-
+    ...(database.farmAnimalSpecies !== undefined
+      ? { farmAnimalSpecies: normalizeFarmAnimalSpeciesRecords(database.farmAnimalSpecies) ?? [] }
+      : {}),
   };
 }
 
@@ -153,6 +160,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(Array.isArray(system.bundles) ? { bundles: normalizeBundleDefinitions(system.bundles) } : {}),
     ...(Array.isArray(system.worldUnlocks) ? { worldUnlocks: normalizeWorldUnlockDefinitions(system.worldUnlocks) } : {}),
     ...(Array.isArray(system.makers) ? { makers: normalizeMakerDefinitions(system.makers) } : {}),
+    ...(system.dailyWeather ? { dailyWeather: normalizeDailyWeatherConfig(system.dailyWeather) } : {}),
+    ...(Array.isArray(system.farmAnimalBuildings)
+      ? { farmAnimalBuildings: normalizeFarmAnimalBuildingDefinitions(system.farmAnimalBuildings) }
+      : {}),
     ...(() => {
       const monsterCare = normalizeMonsterCare(system.monsterCare);
       return monsterCare ? { monsterCare } : {};

@@ -72,6 +72,11 @@ import { absoluteGameMinutes } from "@/project/makers";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
+import {
+  normalizeDailyWeatherState,
+  parseFarmAnimalStateRecord,
+  restoreFarmAnimalStates,
+} from "@/project/p1FoundationRecords";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -127,6 +132,8 @@ export type SaveSnapshot = {
     readonly unlockedRegionIds?: PlaySession["unlockedRegionIds"];
     readonly unlockedRecipeIds?: PlaySession["unlockedRecipeIds"];
     readonly makerInstances?: PlaySession["makerInstances"];
+    readonly dailyWeather?: PlaySession["dailyWeather"];
+    readonly farmAnimals?: PlaySession["farmAnimals"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
@@ -267,6 +274,10 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       unlockedRegionIds: uniqueStrings(session.unlockedRegionIds),
       unlockedRecipeIds: uniqueStrings(session.unlockedRecipeIds),
       makerInstances: structuredClone(restoreMakerInstances(project, session.makerInstances)),
+      dailyWeather: project.system.dailyWeather?.enabled === true
+        ? structuredClone(normalizeDailyWeatherState(session.dailyWeather))
+        : undefined,
+      farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
@@ -409,6 +420,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id)),
   );
   session.makerInstances = restoreMakerInstances(project, snapshot.session.makerInstances);
+  session.dailyWeather = project.system.dailyWeather?.enabled === true
+    ? normalizeDailyWeatherState(snapshot.session.dailyWeather)
+    : undefined;
+  session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
   if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
@@ -579,6 +594,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       unlockedRegionIds: isStringArray(session.unlockedRegionIds) ? [...session.unlockedRegionIds] : undefined,
       unlockedRecipeIds: isStringArray(session.unlockedRecipeIds) ? [...session.unlockedRecipeIds] : undefined,
       makerInstances: isMakerInstancesRecord(session.makerInstances) ? session.makerInstances : undefined,
+      dailyWeather: normalizeDailyWeatherState(session.dailyWeather),
+      farmAnimals: parseFarmAnimalStateRecord(session.farmAnimals),
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
@@ -792,6 +809,17 @@ function restoreLifeSkills(
     restored[skill.id] = { xp, level: levelForXp(xp, skill.maxLevel) };
   }
   return restored;
+}
+
+function restoreFarmAnimalsForProject(
+  project: Project,
+  animals: PlaySession["farmAnimals"],
+): PlaySession["farmAnimals"] {
+  return restoreFarmAnimalStates(
+    project.session.farmAnimals,
+    animals,
+    new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id)),
+  );
 }
 
 function normalizedBundleReceiptIds(
