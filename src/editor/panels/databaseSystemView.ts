@@ -39,8 +39,10 @@ import type {
 } from "@/project/types";
 import { el } from "@/util/dom";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
 import { listTitleMenuOptions, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
 import {
+  analyzePlayResolution,
   normalizePlayResolution,
   PLAY_RESOLUTION_LIMITS,
   resolvePlayResolution,
@@ -161,7 +163,7 @@ function systemSectionNodes(
         ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
       ]),
     ]),
-    display: section("display", [playResolutionFieldset(project.system, rerender)]),
+    display: section("display", [playResolutionFieldset(project, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("리소스", [
         resourcePickerControl({
@@ -359,7 +361,8 @@ function systemSectionNodes(
  * 옵트인 시스템 토글 + 배열 개수 표시. 편집이 아닌 "켰는데 비어 있다"를 보이게 하는 것이 목적.
  * 배열 편집은 각자의 전용 DB 탭/도구가 담당한다.
  */
-function playResolutionFieldset(system: SystemRecords, rerender: () => void): HTMLElement {
+function playResolutionFieldset(project: Project, rerender: () => void): HTMLElement {
+  const { system } = project;
   const resolution = resolvePlayResolution(system);
   const preset = playResolutionPreset(resolution);
   const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
@@ -394,14 +397,14 @@ function playResolutionFieldset(system: SystemRecords, rerender: () => void): HT
         storePlayResolution(draft.system, { width: value, height: current.height });
       }, "system:play-resolution:width");
       rerender();
-    }),
+    }, { min: PLAY_RESOLUTION_LIMITS.minWidth, max: PLAY_RESOLUTION_LIMITS.maxWidth, step: 1 }),
     numberField("세로", "db-field-system-resolution-height", resolution.height, (value) => {
       updateSystem((draft) => {
         const current = resolvePlayResolution(draft.system);
         storePlayResolution(draft.system, { width: current.width, height: value });
       }, "system:play-resolution:height");
       rerender();
-    }),
+    }, { min: PLAY_RESOLUTION_LIMITS.minHeight, max: PLAY_RESOLUTION_LIMITS.maxHeight, step: 1 }),
     el("div", {
       class: "db-field db-field-readonly",
       children: [
@@ -411,7 +414,77 @@ function playResolutionFieldset(system: SystemRecords, rerender: () => void): HT
         }),
       ],
     }),
+    playResolutionDiagnostics(project, resolution),
   ]);
+}
+
+function playResolutionDiagnostics(project: Project, resolution: Readonly<PlayResolution>): HTMLElement {
+  const analysis = analyzePlayResolution(resolution, project.maps);
+  const viewport = estimatedTestPlayViewport();
+  const fitScale = calculatePlaySurfaceScale(viewport.width, viewport.height, resolution.width, resolution.height);
+  const incompatible = analysis.incompatibleMaps;
+  const warnings: HTMLElement[] = [];
+  if (analysis.partialTileX || analysis.partialTileY) {
+    warnings.push(el("p", {
+      class: "db-system-resolution-warning",
+      text: `16px 타일 경계가 ${analysis.partialTileX && analysis.partialTileY ? "가로·세로" : analysis.partialTileX ? "가로" : "세로"}에서 일부 보일 수 있습니다.`,
+    }));
+  }
+  if (incompatible.length > 0) {
+    warnings.push(el("p", {
+      class: "db-system-resolution-warning danger",
+      text: `화면보다 작은 맵 ${incompatible.length}개: ${incompatible.slice(0, 4).map((map) => `${map.name} ${map.width}×${map.height}`).join(", ")}${incompatible.length > 4 ? " 외" : ""}`,
+    }));
+  }
+
+  return el("section", {
+    class: `db-system-resolution-diagnostics${warnings.length ? " has-warning" : ""}`,
+    dataset: {
+      testid: "db-system-resolution-diagnostics",
+      minMapWidth: String(analysis.minMapWidth),
+      minMapHeight: String(analysis.minMapHeight),
+      partialTileX: String(analysis.partialTileX),
+      partialTileY: String(analysis.partialTileY),
+      incompatibleMapCount: String(incompatible.length),
+      estimatedFitScale: fitScale.toFixed(3),
+    },
+    children: [
+      el("strong", { text: "해상도 영향" }),
+      el("dl", {
+        class: "db-system-resolution-facts",
+        children: [
+          resolutionFact("화면비", `${analysis.aspectWidth}:${analysis.aspectHeight}`),
+          resolutionFact("보이는 타일", `${formatTileSpan(analysis.tileColumns)} × ${formatTileSpan(analysis.tileRows)}`),
+          resolutionFact("권장 최소 맵", `${analysis.minMapWidth} × ${analysis.minMapHeight} 타일`),
+          resolutionFact("현재 창 예상", `${formatScale(fitScale)}배 · 자동 맞춤`),
+        ],
+      }),
+      ...warnings,
+    ],
+  });
+}
+
+function resolutionFact(label: string, value: string): HTMLElement {
+  return el("div", {
+    children: [el("dt", { text: label }), el("dd", { text: value })],
+  });
+}
+
+function formatTileSpan(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function formatScale(value: number): string {
+  return value >= 1 ? String(Math.trunc(value)) : value.toFixed(2);
+}
+
+function estimatedTestPlayViewport(): { readonly width: number; readonly height: number } {
+  const windowWidth = typeof window !== "undefined" && window.innerWidth > 0 ? window.innerWidth : 1280;
+  const windowHeight = typeof window !== "undefined" && window.innerHeight > 0 ? window.innerHeight : 800;
+  return {
+    width: Math.max(1, Math.min(1320, windowWidth - 64)),
+    height: Math.max(1, Math.min(970, windowHeight - 78)),
+  };
 }
 
 function playResolutionPreset(resolution: Readonly<PlayResolution>): PlayResolutionPreset {
@@ -1571,10 +1644,12 @@ function titleScreenWorkbenchPreview(
   // 스테이지 전체를 다시 만들면 CSS 애니메이션(레이어 스크롤 시작·등장 연출)이 처음부터
   // 재생된다 — "연출 다시 재생" 버튼이 이 함수를 재호출해 노드를 갈아끼운다.
   const buildStage = (): HTMLElement => {
+    const resolution = resolvePlayResolution(project.system);
+    const resolutionAnalysis = analyzePlayResolution(resolution, project.maps);
     const bgUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
     const stage = el("div", {
       class: "db-title-workbench-stage",
-      dataset: { testid: "db-title-workbench-stage" },
+      dataset: { testid: "db-title-workbench-stage", playResolution: `${resolution.width}x${resolution.height}` },
       attrs: bgUrl
         ? {
             style: [
@@ -1587,6 +1662,7 @@ function titleScreenWorkbenchPreview(
           }
         : {},
     });
+    stage.style.aspectRatio = `${resolutionAnalysis.aspectWidth} / ${resolutionAnalysis.aspectHeight}`;
 
     // 배경 레이어 + 파티클은 런타임과 **같은 렌더러**(renderTitleFxStack)를 그대로 마운트한다
     // — 에디터 전용 복제가 낡을 수 없다. rAF 는 스테이지 교체 시 canvas 분리로 자체 해제된다.

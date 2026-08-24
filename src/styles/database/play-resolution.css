@@ -1,0 +1,57 @@
+.db-system-resolution-diagnostics {
+  background: color-mix(in srgb, var(--surface-raised, #fff) 92%, var(--accent, #356fd4) 8%);
+  border: 1px solid var(--border-subtle, rgba(20, 28, 42, 0.18));
+  border-radius: 6px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.db-system-resolution-diagnostics.has-warning {
+  border-color: color-mix(in srgb, var(--status-warning, #b26b00) 48%, transparent);
+}
+
+.db-system-resolution-facts {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.db-system-resolution-facts > div {
+  background: var(--surface-inset, rgba(0, 0, 0, 0.04));
+  border-radius: 4px;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 8px;
+}
+
+.db-system-resolution-facts dt {
+  color: var(--text-2, #5f6670);
+  font-size: 11px;
+}
+
+.db-system-resolution-facts dd {
+  color: var(--text-1, #20242a);
+  font-weight: 700;
+  margin: 0;
+}
+
+.db-system-resolution-warning {
+  background: color-mix(in srgb, var(--status-warning, #b26b00) 10%, transparent);
+  border-left: 3px solid var(--status-warning, #b26b00);
+  margin: 0;
+  padding: 7px 8px;
+}
+
+.db-system-resolution-warning.danger {
+  background: color-mix(in srgb, var(--status-error, #b42318) 9%, transparent);
+  border-left-color: var(--status-error, #b42318);
+}
+
+@media (max-width: 720px) {
+  .db-system-resolution-facts {
+    grid-template-columns: 1fr;
+  }
+}
