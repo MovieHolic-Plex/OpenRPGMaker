@@ -11,6 +11,7 @@ const RATE_GRADES: readonly StateRateGrade[] = ["A", "B", "C", "D", "E"];
 
 const REMOVAL_OPTIONS = ["전투 종료 후 유지", "전투 종료", "피격 또는 전투 종료", "즉시 해제", "턴 경과"] as const;
 const RESTRICTION_OPTIONS = ["없음", "행동 불가", "아군에게 공격 불가", "스킬 사용 불가", "물리 공격 불가"] as const;
+const GEN1_MAJOR_STATUS_OPTIONS = ["none", "poison", "burn", "sleep", "freeze", "paralysis"] as const;
 
 export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HTMLElement {
   const database = store.getCurrent().database;
@@ -33,6 +34,9 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
       dataset: { testid: "db-states-rm2k3-workbench" },
       children: [
         panel("기본 설정", [
+          selectLiteral("Gen1 주요 상태", "db-state-gen1-major-status", state.gen1MajorStatus ?? "none", GEN1_MAJOR_STATUS_OPTIONS, (gen1MajorStatus) =>
+            update({ gen1MajorStatus: gen1MajorStatus === "none" ? undefined : gen1MajorStatus })
+          ),
           selectLiteral("해제 조건", "db-state-removal-condition", ontology.removalCondition, REMOVAL_OPTIONS, (removalCondition) =>
             update({ removalCondition })
           ),

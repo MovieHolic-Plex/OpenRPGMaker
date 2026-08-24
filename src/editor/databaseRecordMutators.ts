@@ -54,6 +54,8 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   // 속성/상태 변화는 런타임이 소비하는 필드(runtime.ts elementMultiplierFor/applyStateEffects) — 편집 반영 필수.
   if ("elementId" in patch) record.elementId = patch.elementId;
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
+  if ("maxPp" in patch) record.maxPp = patch.maxPp;
+  if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
   database.skills[index] = normalizeSkillRecord(record);
@@ -162,6 +164,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("members" in patch && patch.members !== undefined) record.members = patch.members;
   if ("autoAlign" in patch && patch.autoAlign !== undefined) record.autoAlign = patch.autoAlign;
   if ("uncapturable" in patch && patch.uncapturable !== undefined) record.uncapturable = patch.uncapturable;
+  if ("trainerBattle" in patch) record.trainerBattle = patch.trainerBattle;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
