@@ -66,6 +66,7 @@ import {
 } from "@/battle/battleTargetResolver";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
+import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
 
 export type {
   ActorCommand,
@@ -105,8 +106,8 @@ type StrictQueuedActorCommand = {
 // tieBreak: gen1 전용 동속 랜덤 롤. rm2k3 은 0 고정이라 기존 결정적 정렬(아군 우선 →
 // index 순)이 그대로 유지된다 — battleStrictRuntime "without RNG" 계약의 근거.
 type StrictQueuedAction =
-  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly priority: number; readonly tieBreak: number; readonly actor: MutableBattler; readonly command: ActorCommand }
-  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly priority: number; readonly tieBreak: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
+  | ({ readonly side: "actor"; readonly index: number; readonly actor: MutableBattler; readonly command: ActorCommand } & Gen1TurnOrderEntry)
+  | ({ readonly side: "enemy"; readonly index: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice } & Gen1TurnOrderEntry);
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
@@ -161,6 +162,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         partyActorIds: options.party?.partyActorIds,
       });
   const enemies = enemyBattlers(options.project, troopRecord);
+  const gen1EnemyOrderIds = options.project.system.battleModel === "gen1"
+    ? enemies.filter((enemy) => !enemy.hidden).map((enemy) => enemy.id)
+    : [];
+  let activeGen1EnemyId = gen1EnemyOrderIds[0];
   const activeSlots = normalizeActiveSlots(options.activeSlots ?? troopRecord.activeSlots ?? options.project.system.activeSlots, actors.length);
   let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
   // override → troop → terrain(at location) → forest. Never System2 gauge sheets.
@@ -885,10 +890,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   // gen1 에서만 동속을 랜덤으로 가른다. rm2k3 기본값(0)은 rng 를 아예 소비하지 않아
   // 시드 고정 밸런스 테스트(pkmnBalanceB6 등, blank 프로젝트)의 rng 스트림이 안 바뀐다.
-  function strictTieBreakRoll(): number {
-    return options.project.system.battleModel === "gen1" ? rng() : 0;
-  }
-
   // 기술 우선도 조회. 통상공격/아이템/방어/도주는 0(교체는 정렬 1차 규칙이 이미 최우선).
   // 적의 기본공격 폴백은 skillId="" 라 find 가 undefined → 0 으로 떨어진다.
   function strictActionPriority(skillId: SkillId | undefined): number {
@@ -901,7 +902,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       const actor = actors.find((candidate) => candidate.recordId === entry.actorId);
       if (!actor) return [];
       const priority = strictActionPriority(entry.command.kind === "skill" ? entry.command.skillId : undefined);
-      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, priority, tieBreak: strictTieBreakRoll(), actor, command: entry.command }];
+      return [{
+        side: "actor",
+        index: actors.indexOf(actor),
+        speed: actor.agility,
+        priority,
+        commandClass: strictCommandClass(entry.command),
+        actor,
+        command: entry.command,
+      }];
     });
     const enemyActions: StrictQueuedAction[] = visibleEnemies()
       .flatMap((enemy, index) => {
@@ -911,9 +920,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           return [];
         }
         const action = chooseEnemyAction(enemy);
-        return [{ side: "enemy", index, speed: enemy.agility, priority: strictActionPriority(action?.skillId), tieBreak: strictTieBreakRoll(), enemy, action }];
+        return [{ side: "enemy", index, speed: enemy.agility, priority: strictActionPriority(action?.skillId), commandClass: "combat", enemy, action }];
       });
-    return [...actorActions, ...enemyActions].sort(compareStrictActions);
+    const actions = [...actorActions, ...enemyActions];
+    return options.project.system.battleModel === "gen1"
+      ? orderGen1TurnActions(actions, rng)
+      : actions.sort(compareStrictActions);
+  }
+
+  function strictCommandClass(command: ActorCommand): Gen1TurnOrderEntry["commandClass"] {
+    if (command.kind === "switch") return "switch";
+    if (command.kind === "item" || command.kind === "capture" || command.kind === "escape") return "field";
+    return "combat";
   }
 
   function compareStrictActions(left: StrictQueuedAction, right: StrictQueuedAction): number {
@@ -924,7 +942,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (left.speed !== right.speed) return right.speed - left.speed;
     // gen1: 동속 랜덤(사전 롤 비교 — 비교자 안에서 rng 를 굴리면 정렬이 비일관해진다).
     // 롤까지 같으면(상수 rng 등) 아래 결정적 폴백이 전순서를 보장한다.
-    if (left.tieBreak !== right.tieBreak) return right.tieBreak - left.tieBreak;
     if (left.side !== right.side) return left.side === "actor" ? -1 : 1;
     return left.index - right.index;
   }
@@ -1079,12 +1096,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (skillId) {
       const skill = lookupSkill(skillId);
       if (!skill || battleSkillUseFailure(options.project, enemy, skillId, { requireLearned: false })) return;
+      const requestedTargetId = refreshedEnemyTargetId(enemy, action.targetIds?.[0]);
       const resolution = resolveBattleTargets({
         scope: skill.scope,
         user: enemy,
         actors: activeActors(),
         enemies: visibleEnemies(),
-        requestedTargetId: action.targetIds?.[0],
+        requestedTargetId,
       });
       const targets = resolution.requiresSelection
         ? resolution.targets
@@ -1095,8 +1113,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyEnemyActionSwitchEffects(action);
       return;
     }
-    const target = action?.targetIds?.length
-      ? activeActors().find((actor) => action.targetIds?.includes(actor.id))
+    const refreshedTargetId = refreshedEnemyTargetId(enemy, action?.targetIds?.[0]);
+    const target = refreshedTargetId
+      ? activeActors().find((actor) => actor.id === refreshedTargetId)
       : chooseBasicEnemyTarget(enemy);
     if (!target) return;
     const result = applySkillLike(enemy, target, {
@@ -1118,6 +1137,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result.hit ? "damage" : "miss",
       "enemyAttack",
     );
+  }
+
+  function refreshedEnemyTargetId(enemy: MutableBattler, requestedTargetId: string | undefined): string | undefined {
+    if (!requestedTargetId) return undefined;
+    if (activeActors().some((actor) => actor.id === requestedTargetId)) return requestedTargetId;
+    if (visibleEnemies().some((candidate) => candidate.id === requestedTargetId)) return requestedTargetId;
+    if (actors.some((actor) => actor.id === requestedTargetId)) return chooseBasicEnemyTarget(enemy)?.id;
+    return requestedTargetId;
   }
 
   function lookupSkill(skillId: SkillId) {
@@ -1266,6 +1293,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     if (troopRecord.uncapturable === true) {
       finish({ targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "uncapturable" });
+      return;
+    }
+    if (troopRecord.trainerBattle === true) {
+      finish({ targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "trainerBattle" });
       return;
     }
     const item = options.project.database.items.find((record) => record.id === captureItemId);
@@ -1579,6 +1610,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!enemy.hidden) continue;
         enemy.hidden = false;
         enemy.gauge = 0;
+        registerGen1Enemy(enemy);
       }
       return;
     }
@@ -1586,10 +1618,40 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!enemy?.hidden) return;
     enemy.hidden = false;
     enemy.gauge = 0;
+    registerGen1Enemy(enemy);
   }
 
   function visibleEnemies(): readonly MutableBattler[] {
-    return enemies.filter((enemy) => !enemy.hidden);
+    if (options.project.system.battleModel !== "gen1") return enemies.filter((enemy) => !enemy.hidden);
+    const active = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
+    return active && !active.hidden ? [active] : [];
+  }
+
+  function registerGen1Enemy(enemy: MutableBattler): void {
+    if (options.project.system.battleModel !== "gen1") return;
+    if (!gen1EnemyOrderIds.includes(enemy.id)) gen1EnemyOrderIds.push(enemy.id);
+    if (!activeGen1EnemyId) activeGen1EnemyId = enemy.id;
+  }
+
+  function promoteNextGen1Enemy(): boolean {
+    if (options.project.system.battleModel !== "gen1") return false;
+    const current = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
+    if (current && current.hp > 0 && !current.hidden) return false;
+    const next = gen1EnemyOrderIds
+      .map((enemyId) => enemies.find((enemy) => enemy.id === enemyId))
+      .find((enemy): enemy is MutableBattler => Boolean(enemy && enemy.hp > 0 && !enemy.hidden));
+    if (!next) return false;
+    activeGen1EnemyId = next.id;
+    next.gauge = 0;
+    recordTimeline({
+      kind: "switch",
+      side: "enemy",
+      userRecordId: current?.recordId ?? next.recordId,
+      targetId: next.id,
+      commandKind: "switch",
+      success: true,
+    });
+    return true;
   }
 
   function activeActors(): readonly MutableBattler[] {
@@ -1666,6 +1728,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function resolveOutcome(): void {
     if (result) return;
+    if (options.project.system.battleModel === "gen1") {
+      const current = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
+      if (!current || current.hp <= 0 || current.hidden) {
+        if (promoteNextGen1Enemy()) return;
+        if (gen1EnemyOrderIds.length > 0) {
+          result = "victory";
+          phase = "resolved";
+          clearEndOfBattleStates();
+          accumulateRewards();
+          return;
+        }
+      }
+    }
     const enemiesInBattle = visibleEnemies();
     // 가시 적이 한 명도 없으면(전원 hidden 미출현) 승리로 처리하지 않는다.
     // RM2K3: 숨겨진 적은 필드에 없는 것 — 이벤트로 reveal 되기 전까지 전투는 계속된다.
@@ -1702,7 +1777,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.gold = collected.gold;
     rewards.enemyLevel = collected.enemyLevel;
     rewards.items = [...collected.items];
-    rewards.levelUps = computeLevelUpPreview(collected.exp, collected.enemyLevel);
+    rewards.levelUps = usePartyMonsters ? [] : computeLevelUpPreview(collected.exp, collected.enemyLevel);
     rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
   }
 

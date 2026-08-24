@@ -446,6 +446,8 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
   switch (result.blockedReason) {
     case "uncapturable":
       return "이 전투에서는 포획할 수 없다.";
+    case "trainerBattle":
+      return "트레이너가 곁에 있을 때는 포획할 수 없다.";
     case "missingItem":
       return "포획 아이템이 없다.";
     case "missingSpecies":

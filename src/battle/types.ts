@@ -277,7 +277,7 @@ export interface BattleCapturedMonsterSnapshot {
   readonly captureItemId: ItemId;
 }
 
-export type BattleCaptureBlockedReason = "uncapturable" | "missingTarget" | "missingItem" | "missingSpecies";
+export type BattleCaptureBlockedReason = "uncapturable" | "trainerBattle" | "missingTarget" | "missingItem" | "missingSpecies";
 
 export interface BattleCaptureResultSnapshot {
   readonly targetId: string;
