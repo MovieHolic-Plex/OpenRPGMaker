@@ -103,6 +103,12 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (project.system.initialTroopId === id) return "시스템 기본 전투가 이 적 그룹을 사용 중입니다.";
       return commandLocationMessage(project, "troops", id, "적 그룹");
     case "items": {
+      const spatialBuildings = (project.database.farmBuildingTypes ?? []).filter((record) =>
+        record.levels.some((level) => level.cost?.items?.some((entry) => entry.itemId === id))
+      );
+      if (spatialBuildings.length) return `범용 농장 건물 '${spatialBuildings[0]!.name || spatialBuildings[0]!.id}'의 건설·업그레이드 재료로 사용 중입니다.`;
+      const spatialDecorations = (project.database.homeDecorationTypes ?? []).filter((record) => record.placementItemId === id);
+      if (spatialDecorations.length) return `집 장식 '${spatialDecorations[0]!.name || spatialDecorations[0]!.id}'의 배치 아이템으로 사용 중입니다.`;
       const feedSpecies = (project.database.farmAnimalSpecies ?? []).filter((record) => record.feedItemId === id);
       if (feedSpecies.length) {
         return namedReferenceMessage("동물 종", feedSpecies, "이 아이템을 먹이로 사용 중입니다.");
@@ -193,6 +199,16 @@ export function farmAnimalBuildingReferenceMessage(buildingId: string): string |
     return namedReferenceMessage("시작 동물", animals, "이 동물 축사에 배정되어 있습니다.");
   }
   return null;
+}
+
+export function farmBuildingTypeReferenceMessage(typeId: string): string | null {
+  const placement = (store.getCurrent().session.farmBuildingPlacements ?? []).find((row) => row.typeId === typeId);
+  return placement ? `시작 범용 농장 건물 '${placement.instanceId}'이 이 건물 유형을 사용 중입니다.` : null;
+}
+
+export function homeDecorationTypeReferenceMessage(typeId: string): string | null {
+  const placement = (store.getCurrent().session.homeDecorationPlacements ?? []).find((row) => row.typeId === typeId);
+  return placement ? `시작 집 장식 '${placement.instanceId}'이 이 장식 유형을 사용 중입니다.` : null;
 }
 
 // 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)

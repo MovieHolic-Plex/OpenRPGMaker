@@ -11,6 +11,19 @@ import {
   WEATHER_WEIGHT_MAX,
   isWeatherKind,
 } from "@/project/p1FoundationRecords";
+import { P2_COUNT_MAX, P2_RECORD_LIMIT, P2_RULE_LIMIT, P2_WEIGHT_MAX } from "@/project/p2FoundationRecords";
+import { isSeason, isTimePhase } from "@/project/gameTime";
+import {
+  SPATIAL_CAPACITY_MAX,
+  SPATIAL_COST_ITEM_LIMIT,
+  SPATIAL_DEFINITION_LIMIT,
+  SPATIAL_FOOTPRINT_AXIS_MAX,
+  SPATIAL_FOOTPRINT_TILE_MAX,
+  SPATIAL_LEVEL_LIMIT,
+  SPATIAL_PLACEMENT_LIMIT,
+  isSpatialOrientation,
+} from "@/project/spatialPlacements";
+import { GOLD_MAX } from "@/project/economyValues";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 
 export function validateDatabase(value: unknown): void {
@@ -37,6 +50,9 @@ export function validateDatabase(value: unknown): void {
   // (손상·수작업 편집된 JSON 에서 실제로 재현됨). 다른 옵셔널 컬렉션과 동일 계약으로 맞춘다.
   if (database.lifeSkills !== undefined) requireArray("database.lifeSkills", database.lifeSkills);
   if (database.farmAnimalSpecies !== undefined) validateFarmAnimalSpecies(database.farmAnimalSpecies);
+  if (database.fishSpecies !== undefined) validateFishSpecies(database.fishSpecies);
+  if (database.farmBuildingTypes !== undefined) validateFarmBuildingTypes(database.farmBuildingTypes);
+  if (database.homeDecorationTypes !== undefined) validateHomeDecorationTypes(database.homeDecorationTypes);
 }
 
 export function validateSystem(value: unknown): void {
@@ -65,6 +81,10 @@ export function validateSystem(value: unknown): void {
   if (system.makers !== undefined) validateMakers(system.makers);
   if (system.dailyWeather !== undefined) validateDailyWeather(system.dailyWeather);
   if (system.farmAnimalBuildings !== undefined) validateFarmAnimalBuildings(system.farmAnimalBuildings);
+  if (system.fishing !== undefined) validateFishing(system.fishing);
+  if (system.seasonalForage !== undefined) validateSeasonalForage(system.seasonalForage);
+  if (system.collections !== undefined) validateCollections(system.collections);
+  if (system.museum !== undefined) validateMuseum(system.museum);
   if (system.craftRecipes !== undefined) validateCraftRecipes(system.craftRecipes);
   if (system.itemUpgrades !== undefined) validateItemUpgrades(system.itemUpgrades);
   if (system.sellPrices !== undefined) validateSellPrices(system.sellPrices);
@@ -72,6 +92,151 @@ export function validateSystem(value: unknown): void {
     const chart = requireRecord("system.typeChart", system.typeChart);
     requireArray("system.typeChart.types", chart.types);
     requireRecord("system.typeChart.multipliers", chart.multipliers);
+  }
+}
+
+function validateFishSpecies(value: unknown): void {
+  const rows = requireArray("database.fishSpecies", value);
+  assert(rows.length <= P2_RECORD_LIMIT, `database.fishSpecies must contain at most ${P2_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `database.fishSpecies[${index}]`;
+    const row = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, row.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireNonBlankString(`${label}.name`, row.name);
+    requireNonBlankString(`${label}.itemId`, row.itemId);
+    if (row.skillXp !== undefined) assertSafeIntegerInRange(`${label}.skillXp`, row.skillXp, 0, P2_COUNT_MAX);
+  }
+}
+
+function validateFishing(value: unknown): void {
+  const config = requireRecord("system.fishing", value);
+  requireBoolean("system.fishing.enabled", config.enabled);
+  if (config.energyCost !== undefined) assertSafeIntegerInRange("system.fishing.energyCost", config.energyCost, 0, P2_COUNT_MAX);
+  const spots = requireArray("system.fishing.spots", config.spots);
+  assert(spots.length <= P2_RECORD_LIMIT, `system.fishing.spots must contain at most ${P2_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of spots.entries()) {
+    const label = `system.fishing.spots[${index}]`;
+    const spot = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, spot.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    if (spot.name !== undefined) requireString(`${label}.name`, spot.name);
+    requireNonBlankString(`${label}.mapId`, spot.mapId);
+    validateRect(`${label}.area`, spot.area);
+    const catches = requireArray(`${label}.catches`, spot.catches);
+    assert(catches.length <= P2_RULE_LIMIT, `${label}.catches must contain at most ${P2_RULE_LIMIT} records.`);
+    const seenFish = new Set<string>();
+    for (const [catchIndex, catchRaw] of catches.entries()) {
+      const catchLabel = `${label}.catches[${catchIndex}]`;
+      const rule = requireRecord(catchLabel, catchRaw);
+      const fishId = requireNonBlankString(`${catchLabel}.fishId`, rule.fishId);
+      assert(!seenFish.has(fishId), `${catchLabel}.fishId is duplicated: ${fishId}`);
+      seenFish.add(fishId);
+      assertSafeIntegerInRange(`${catchLabel}.weight`, rule.weight, 1, P2_WEIGHT_MAX);
+      if (rule.minSkillLevel !== undefined) assertSafeIntegerInRange(`${catchLabel}.minSkillLevel`, rule.minSkillLevel, 1, 99);
+      if (rule.seasons !== undefined) validateEnumArray(`${catchLabel}.seasons`, rule.seasons, isSeason);
+      if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
+      if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
+    }
+  }
+}
+
+function validateSeasonalForage(value: unknown): void {
+  const config = requireRecord("system.seasonalForage", value);
+  requireBoolean("system.seasonalForage.enabled", config.enabled);
+  const areas = requireArray("system.seasonalForage.areas", config.areas);
+  assert(areas.length <= P2_RECORD_LIMIT, `system.seasonalForage.areas must contain at most ${P2_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of areas.entries()) {
+    const label = `system.seasonalForage.areas[${index}]`;
+    const area = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, area.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    if (area.name !== undefined) requireString(`${label}.name`, area.name);
+    requireNonBlankString(`${label}.mapId`, area.mapId);
+    validateRect(`${label}.area`, area.area);
+    assertSafeIntegerInRange(`${label}.dailySpawnCount`, area.dailySpawnCount, 0, P2_COUNT_MAX);
+    assertSafeIntegerInRange(`${label}.maxActive`, area.maxActive, 0, P2_COUNT_MAX);
+    if (area.spawnEveryDays !== undefined) assertSafeIntegerInRange(`${label}.spawnEveryDays`, area.spawnEveryDays, 1, 3_650);
+    assertSafeIntegerInRange(`${label}.despawnAfterDays`, area.despawnAfterDays, 1, 3_650);
+    const entries = requireArray(`${label}.entries`, area.entries);
+    assert(entries.length <= P2_RULE_LIMIT, `${label}.entries must contain at most ${P2_RULE_LIMIT} records.`);
+    const entryIds = new Set<string>();
+    for (const [entryIndex, entryRaw] of entries.entries()) {
+      const entryLabel = `${label}.entries[${entryIndex}]`;
+      const entry = requireRecord(entryLabel, entryRaw);
+      const entryId = requireNonBlankString(`${entryLabel}.id`, entry.id);
+      assert(!entryIds.has(entryId), `${entryLabel}.id is duplicated: ${entryId}`);
+      entryIds.add(entryId);
+      assertSafeIntegerInRange(`${entryLabel}.weight`, entry.weight, 1, P2_WEIGHT_MAX);
+      if (entry.itemId !== undefined) requireNonBlankString(`${entryLabel}.itemId`, entry.itemId);
+      if (entry.seasonalDrops !== undefined) {
+        const drops = requireRecord(`${entryLabel}.seasonalDrops`, entry.seasonalDrops);
+        for (const [season, itemId] of Object.entries(drops)) {
+          assert(isSeason(season), `${entryLabel}.seasonalDrops contains an unknown season: ${season}`);
+          requireNonBlankString(`${entryLabel}.seasonalDrops.${season}`, itemId);
+        }
+      }
+      assert(entry.itemId !== undefined || entry.seasonalDrops !== undefined, `${entryLabel} must define itemId or seasonalDrops.`);
+    }
+  }
+}
+
+function validateCollections(value: unknown): void {
+  const config = requireRecord("system.collections", value);
+  requireBoolean("system.collections.enabled", config.enabled);
+  if (config.trackedItemIds !== undefined) validateUniqueStringArray("system.collections.trackedItemIds", config.trackedItemIds, P2_RECORD_LIMIT);
+}
+
+function validateMuseum(value: unknown): void {
+  const config = requireRecord("system.museum", value);
+  requireBoolean("system.museum.enabled", config.enabled);
+  validateUniqueStringArray("system.museum.eligibleItemIds", config.eligibleItemIds, P2_RECORD_LIMIT);
+  const rewards = requireArray("system.museum.rewards", config.rewards);
+  assert(rewards.length <= P2_RECORD_LIMIT, `system.museum.rewards must contain at most ${P2_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rewards.entries()) {
+    const label = `system.museum.rewards[${index}]`;
+    const reward = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, reward.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    if (reward.name !== undefined) requireString(`${label}.name`, reward.name);
+    if (reward.minDonations !== undefined) assertSafeIntegerInRange(`${label}.minDonations`, reward.minDonations, 1, P2_COUNT_MAX);
+    if (reward.requiredItemIds !== undefined) validateUniqueStringArray(`${label}.requiredItemIds`, reward.requiredItemIds, P2_RECORD_LIMIT);
+    assert(reward.minDonations !== undefined || reward.requiredItemIds !== undefined, `${label} needs minDonations or requiredItemIds.`);
+    if (reward.reward !== undefined) validateBundleReward(`${label}.reward`, reward.reward);
+  }
+}
+
+function validateBundleReward(label: string, value: unknown): void {
+  const reward = requireRecord(label, value);
+  if (reward.gold !== undefined) assertSafeIntegerInRange(`${label}.gold`, reward.gold, 0, P2_COUNT_MAX);
+  if (reward.itemRewards !== undefined) validateItemAmounts(`${label}.itemRewards`, reward.itemRewards, false);
+  if (reward.switchId !== undefined) requireNonBlankString(`${label}.switchId`, reward.switchId);
+  if (reward.worldUnlockIds !== undefined) validateUniqueStringArray(`${label}.worldUnlockIds`, reward.worldUnlockIds, P2_RECORD_LIMIT);
+  if (reward.recipeIds !== undefined) validateUniqueStringArray(`${label}.recipeIds`, reward.recipeIds, P2_RECORD_LIMIT);
+}
+
+function validateRect(label: string, value: unknown): void {
+  const rect = requireRecord(label, value);
+  assertSafeInteger(`${label}.x`, rect.x);
+  assertSafeInteger(`${label}.y`, rect.y);
+  assertSafeIntegerInRange(`${label}.w`, rect.w, 1, P2_COUNT_MAX);
+  assertSafeIntegerInRange(`${label}.h`, rect.h, 1, P2_COUNT_MAX);
+}
+
+function validateEnumArray<T extends string>(label: string, value: unknown, guard: (entry: unknown) => entry is T): void {
+  const seen = new Set<string>();
+  for (const [index, entry] of requireArray(label, value).entries()) {
+    assert(guard(entry), `${label}[${index}] is invalid: ${String(entry)}`);
+    assert(!seen.has(entry), `${label}[${index}] is duplicated: ${entry}`);
+    seen.add(entry);
   }
 }
 
@@ -247,6 +412,122 @@ export function validateSession(value: unknown): void {
   requireRecord("session.inventory", session.inventory);
   requireArray("session.partyActorIds", session.partyActorIds);
   if (session.farmAnimals !== undefined) validateFarmAnimalStarts(session.farmAnimals);
+  if (session.farmBuildingPlacements !== undefined) validateSpatialPlacements("session.farmBuildingPlacements", session.farmBuildingPlacements, true);
+  if (session.homeDecorationPlacements !== undefined) validateSpatialPlacements("session.homeDecorationPlacements", session.homeDecorationPlacements, false);
+}
+
+function validateFarmBuildingTypes(value: unknown): void {
+  const rows = requireArray("database.farmBuildingTypes", value);
+  assert(rows.length <= SPATIAL_DEFINITION_LIMIT,
+    `database.farmBuildingTypes must contain at most ${SPATIAL_DEFINITION_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `database.farmBuildingTypes[${index}]`;
+    const record = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, record.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireNonBlankString(`${label}.name`, record.name);
+    if (record.allowedMapIds !== undefined) validateUniqueStringArray(`${label}.allowedMapIds`, record.allowedMapIds, SPATIAL_DEFINITION_LIMIT);
+    const levels = requireArray(`${label}.levels`, record.levels);
+    assert(levels.length > 0 && levels.length <= SPATIAL_LEVEL_LIMIT,
+      `${label}.levels must contain 1 to ${SPATIAL_LEVEL_LIMIT} levels.`);
+    let previousCapacity = 0;
+    for (const [levelIndex, levelRaw] of levels.entries()) {
+      const levelLabel = `${label}.levels[${levelIndex}]`;
+      const level = requireRecord(levelLabel, levelRaw);
+      assertSafeIntegerInRange(`${levelLabel}.level`, level.level, levelIndex + 1, levelIndex + 1);
+      if (level.name !== undefined) requireString(`${levelLabel}.name`, level.name);
+      validateSpatialFootprint(`${levelLabel}.footprint`, level.footprint);
+      assertSafeIntegerInRange(`${levelLabel}.capacity`, level.capacity, 1, SPATIAL_CAPACITY_MAX);
+      assert((level.capacity as number) >= previousCapacity, `${levelLabel}.capacity must not decrease.`);
+      previousCapacity = level.capacity as number;
+      if (level.cost !== undefined) validateSpatialCost(`${levelLabel}.cost`, level.cost);
+      requireNonBlankString(`${levelLabel}.graphicResourceId`, level.graphicResourceId);
+      if (level.orientationGraphicResourceIds !== undefined) {
+        validateOrientationGraphicIds(`${levelLabel}.orientationGraphicResourceIds`, level.orientationGraphicResourceIds);
+      }
+    }
+  }
+}
+
+function validateHomeDecorationTypes(value: unknown): void {
+  const rows = requireArray("database.homeDecorationTypes", value);
+  assert(rows.length <= SPATIAL_DEFINITION_LIMIT,
+    `database.homeDecorationTypes must contain at most ${SPATIAL_DEFINITION_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `database.homeDecorationTypes[${index}]`;
+    const record = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, record.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireNonBlankString(`${label}.name`, record.name);
+    requireNonBlankString(`${label}.placementItemId`, record.placementItemId);
+    validateSpatialFootprint(`${label}.footprint`, record.footprint);
+    requireBoolean(`${label}.blocksMovement`, record.blocksMovement);
+    const orientations = requireArray(`${label}.allowedOrientations`, record.allowedOrientations);
+    assert(orientations.length > 0 && orientations.length <= 4, `${label}.allowedOrientations must contain 1 to 4 directions.`);
+    const seenOrientations = new Set<string>();
+    for (const [orientationIndex, orientation] of orientations.entries()) {
+      assert(isSpatialOrientation(orientation), `${label}.allowedOrientations[${orientationIndex}] is invalid.`);
+      assert(!seenOrientations.has(orientation), `${label}.allowedOrientations[${orientationIndex}] is duplicated: ${orientation}`);
+      seenOrientations.add(orientation);
+    }
+    requireNonBlankString(`${label}.graphicResourceId`, record.graphicResourceId);
+    if (record.orientationGraphicResourceIds !== undefined) {
+      validateOrientationGraphicIds(`${label}.orientationGraphicResourceIds`, record.orientationGraphicResourceIds);
+    }
+    if (record.allowedMapIds !== undefined) validateUniqueStringArray(`${label}.allowedMapIds`, record.allowedMapIds, SPATIAL_DEFINITION_LIMIT);
+  }
+}
+
+function validateSpatialPlacements(label: string, value: unknown, building: boolean): void {
+  const rows = requireArray(label, value);
+  assert(rows.length <= SPATIAL_PLACEMENT_LIMIT, `${label} must contain at most ${SPATIAL_PLACEMENT_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const rowLabel = `${label}[${index}]`;
+    const placement = requireRecord(rowLabel, raw);
+    const instanceId = requireNonBlankString(`${rowLabel}.instanceId`, placement.instanceId);
+    assert(!seen.has(instanceId), `${rowLabel}.instanceId is duplicated: ${instanceId}`);
+    seen.add(instanceId);
+    requireNonBlankString(`${rowLabel}.typeId`, placement.typeId);
+    requireNonBlankString(`${rowLabel}.mapId`, placement.mapId);
+    assertSafeInteger(`${rowLabel}.x`, placement.x);
+    assertSafeInteger(`${rowLabel}.y`, placement.y);
+    assert(isSpatialOrientation(placement.orientation), `${rowLabel}.orientation is invalid.`);
+    if (building) assertSafeIntegerInRange(`${rowLabel}.level`, placement.level, 1, SPATIAL_LEVEL_LIMIT);
+  }
+}
+
+function validateSpatialFootprint(label: string, value: unknown): void {
+  const footprint = requireRecord(label, value);
+  assertSafeIntegerInRange(`${label}.width`, footprint.width, 1, SPATIAL_FOOTPRINT_AXIS_MAX);
+  assertSafeIntegerInRange(`${label}.height`, footprint.height, 1, SPATIAL_FOOTPRINT_AXIS_MAX);
+  assert((footprint.width as number) * (footprint.height as number) <= SPATIAL_FOOTPRINT_TILE_MAX,
+    `${label} must contain at most ${SPATIAL_FOOTPRINT_TILE_MAX} tiles.`);
+}
+
+function validateSpatialCost(label: string, value: unknown): void {
+  const cost = requireRecord(label, value);
+  if (cost.gold !== undefined) assertSafeIntegerInRange(`${label}.gold`, cost.gold, 0, GOLD_MAX);
+  if (cost.items === undefined) return;
+  const items = requireArray(`${label}.items`, cost.items);
+  assert(items.length <= SPATIAL_COST_ITEM_LIMIT, `${label}.items must contain at most ${SPATIAL_COST_ITEM_LIMIT} rows.`);
+  validateItemAmounts(`${label}.items`, items, false);
+  for (const [index, raw] of items.entries()) {
+    const item = requireRecord(`${label}.items[${index}]`, raw);
+    assertSafeIntegerInRange(`${label}.items[${index}].count`, item.count, 1, ITEM_QUANTITY_MAX);
+  }
+}
+
+function validateOrientationGraphicIds(label: string, value: unknown): void {
+  const record = requireRecord(label, value);
+  for (const [orientation, resourceId] of Object.entries(record)) {
+    assert(isSpatialOrientation(orientation), `${label} contains an unknown orientation: ${orientation}`);
+    requireNonBlankString(`${label}.${orientation}`, resourceId);
+  }
 }
 
 function validateDailyWeather(value: unknown): void {

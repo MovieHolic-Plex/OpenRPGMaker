@@ -6,6 +6,7 @@ import type { ProjectWorld } from "../world/types";
 import { normalizeWorldGraph } from "../worldGraph";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
+import { normalizeFarmBuildingPlacements, normalizeHomeDecorationPlacements } from "../spatialPlacements";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
@@ -98,6 +99,12 @@ export function validateProjectV3(data: JsonRecord): Project {
   project.system = normalizeSystemRecords(project.system);
   if (project.session.farmAnimals !== undefined) {
     project.session.farmAnimals = normalizeFarmAnimalStartInstances(project.session.farmAnimals) ?? [];
+  }
+  if (project.session.farmBuildingPlacements !== undefined) {
+    project.session.farmBuildingPlacements = normalizeFarmBuildingPlacements(project.session.farmBuildingPlacements) ?? [];
+  }
+  if (project.session.homeDecorationPlacements !== undefined) {
+    project.session.homeDecorationPlacements = normalizeHomeDecorationPlacements(project.session.homeDecorationPlacements) ?? [];
   }
   stampCharacterIdsForSocialEvents(project);
   normalizeShopCommands(project);

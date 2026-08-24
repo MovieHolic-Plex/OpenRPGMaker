@@ -255,6 +255,7 @@ export interface PlaySessionLike {
   timers: Record<string, number>;
   gold: number;
   inventory: Record<string, number>;
+  collections?: Record<string, import("@/project/collections").CollectionProgress>;
   itemUseCharges?: Record<string, number>;
   partyActorIds: string[];
   monsterInstances?: Record<MonsterInstanceId, MonsterInstance>;

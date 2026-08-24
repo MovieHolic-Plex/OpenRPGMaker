@@ -5,6 +5,7 @@ import {
   FARM_ANIMAL_RECORD_LIMIT,
   isCalendarDayKey,
 } from "@/project/p1FoundationRecords";
+import { calendarDayKey, daysPerSeasonOf, SEASONS } from "@/project/gameTime";
 import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { changeItemsAtomically, type FarmAnimalState, type PlaySession } from "@/project/session";
 import type {
@@ -109,9 +110,11 @@ export function feedFarmAnimal(
   instanceId: string,
   dayKey: string,
 ): FarmAnimalFeedResult {
-  if (!isCalendarDayKey(dayKey)) return { ok: false, reason: "invalid-day-key", instanceId };
   const context = farmAnimalContext(project, session);
   if (!context.ok) return { ok: false, reason: context.reason, instanceId };
+  if (!isCalendarDayKey(dayKey) || !isLiveCareDay(session, dayKey)) {
+    return { ok: false, reason: "invalid-day-key", instanceId };
+  }
   const animal = context.animals[instanceId];
   if (!animal) return { ok: false, reason: "missing-animal", instanceId };
   if (!animal.buildingId) return { ok: false, reason: "unassigned", instanceId };
@@ -141,9 +144,11 @@ export function petFarmAnimal(
   instanceId: string,
   dayKey: string,
 ): FarmAnimalPetResult {
-  if (!isCalendarDayKey(dayKey)) return { ok: false, reason: "invalid-day-key", instanceId };
   const context = farmAnimalContext(project, session);
   if (!context.ok) return { ok: false, reason: context.reason, instanceId };
+  if (!isCalendarDayKey(dayKey) || !isLiveCareDay(session, dayKey)) {
+    return { ok: false, reason: "invalid-day-key", instanceId };
+  }
   const animal = context.animals[instanceId];
   if (!animal) return { ok: false, reason: "missing-animal", instanceId };
   if (!animal.buildingId) return { ok: false, reason: "unassigned", instanceId };
@@ -168,9 +173,11 @@ export function advanceFarmAnimalProduction(
   session: PlaySession,
   dayKey: string,
 ): FarmAnimalAdvanceResult {
-  if (!isCalendarDayKey(dayKey)) return { ok: false, reason: "invalid-day-key" };
   const context = farmAnimalContext(project, session);
   if (!context.ok) return { ok: false, reason: context.reason };
+  if (!isCalendarDayKey(dayKey) || !isLiveAdvanceDay(project, session, dayKey)) {
+    return { ok: false, reason: "invalid-day-key" };
+  }
   const entries = Object.entries(context.animals);
   if (entries.length === 0) {
     return { ok: true, dayKey, advancedInstanceIds: [], products: [] };
@@ -406,6 +413,26 @@ function compareDayKeys(left: string, right: string): number {
   if (leftParts.season !== rightParts.season) return leftParts.season < rightParts.season ? -1 : 1;
   if (leftParts.day === rightParts.day) return 0;
   return leftParts.day < rightParts.day ? -1 : 1;
+}
+
+function isLiveCareDay(session: PlaySession, dayKey: string): boolean {
+  return !session.gameTime || calendarDayKey(session.gameTime) === dayKey;
+}
+
+/**
+ * Direct animal advancement may settle the live day, while the atomic day-transition
+ * authority advances the draft calendar first and then settles the immediately previous day.
+ */
+function isLiveAdvanceDay(project: Project, session: PlaySession, dayKey: string): boolean {
+  const time = session.gameTime;
+  if (!time) return true;
+  if (calendarDayKey(time) === dayKey) return true;
+  const daysPerSeason = daysPerSeasonOf(project);
+  if (time.day > 1) return dayKey === `${time.year}:${time.season}:${time.day - 1}`;
+  const seasonIndex = SEASONS.indexOf(time.season);
+  const previousSeason = SEASONS[(seasonIndex + SEASONS.length - 1) % SEASONS.length]!;
+  const previousYear = time.season === "spring" ? time.year - 1 : time.year;
+  return previousYear >= 1 && dayKey === `${previousYear}:${previousSeason}:${daysPerSeason}`;
 }
 
 function dayKeyParts(value: string): { year: number; season: number; day: number } {

@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -18,6 +18,7 @@ import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
+import { initializeCollections, markDiscovered, validProgress, type CollectionProgress } from "@/project/collections";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { transitionItemStates, type ItemTransitionAction } from "@/project/itemTransitions";
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
@@ -173,6 +174,9 @@ export interface PlaySession {
   timers: Record<string, number>;
   gold: number;
   inventory: Record<string, number>;
+  collections?: Record<string, CollectionProgress>;
+  museumRewardAppliedIds?: string[];
+  forageLastAdvancedDayKey?: string;
   /** Successful-use cursor for the current FIFO copy of each finite-use item. */
   itemUseCharges?: Record<string, number>;
   /** persistKill 필드 스폰의 영구 처치 수(mapId → spawnId → 처치 수). 세이브에 포함된다. */
@@ -198,6 +202,8 @@ export interface PlaySession {
   /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
   dailyWeather?: DailyWeatherState;
   farmAnimals?: Record<string, FarmAnimalState>;
+  farmBuildingPlacements?: Record<string, FarmBuildingPlacement>;
+  homeDecorationPlacements?: Record<string, HomeDecorationPlacement>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -318,6 +324,13 @@ export function startSession(project: Project, seed?: number): PlaySession {
     // 시작 소지금은 인벤토리/파티와 마찬가지로 프로젝트 시작 상태 설정을 따른다.
     gold: Math.min(GOLD_MAX, Math.max(0, start.gold ?? 0)),
     inventory: { ...start.inventory },
+    collections: project.system.collections?.enabled === true
+      || project.system.fishing?.enabled === true
+      || project.system.seasonalForage?.enabled === true
+      || project.system.museum?.enabled === true
+      ? initializeCollections(start.inventory)
+      : undefined,
+    museumRewardAppliedIds: project.system.museum?.enabled === true ? [] : undefined,
     itemUseCharges: {},
     partyActorIds: [...start.partyActorIds],
     energy: project.system.energy
@@ -332,6 +345,8 @@ export function startSession(project: Project, seed?: number): PlaySession {
     unlockedRecipeIds: [],
     makerInstances: {},
     farmAnimals: initialFarmAnimalStates(start.farmAnimals),
+    farmBuildingPlacements: initialSpatialPlacementRecord(start.farmBuildingPlacements),
+    homeDecorationPlacements: initialSpatialPlacementRecord(start.homeDecorationPlacements),
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],
@@ -383,6 +398,15 @@ export function startSession(project: Project, seed?: number): PlaySession {
     ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
   }
   return session;
+}
+
+function initialSpatialPlacementRecord<T extends FarmBuildingPlacement | HomeDecorationPlacement>(
+  placements: readonly T[] | undefined,
+): Record<string, T> | undefined {
+  if (placements === undefined) return undefined;
+  return Object.fromEntries(
+    placements.map((placement) => [placement.instanceId, structuredClone(placement)]),
+  );
 }
 
 export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {
@@ -511,9 +535,16 @@ export function changeItemsAtomically(
         ? { kind: "remove", itemId: operation.itemId, amount: current - next }
         : { kind: "assign", itemId: operation.itemId, count: next });
   }
+  const discoveredItemIds = session.collections
+    ? [...nextCounts].filter(([itemId, next]) => next > (session.inventory[itemId] ?? 0)).map(([itemId]) => itemId)
+    : [];
+  if (session.collections && discoveredItemIds.some((itemId) => validProgress(session.collections?.[itemId]) === undefined)) return false;
   const transitioned = transitionItemStates(session, [], actions);
   session.inventory = transitioned.inventory;
   session.itemUseCharges = transitioned.itemUseCharges;
+  if (session.collections) {
+    for (const itemId of discoveredItemIds) markDiscovered(session as PlaySession, itemId);
+  }
   return true;
 }
 
