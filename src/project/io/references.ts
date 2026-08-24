@@ -88,6 +88,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
   if (project.system.timeSystem?.enabled && project.system.timeSystem.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) issues.push("system.timeSystem.onDayEnd does not exist.");
   validateP0SystemReferences(project, itemIds, switchIds, issues);
+  validateP2SystemReferences(project, itemIds, switchIds, mapIds, issues);
   check(() => validateSystemResources(project.system, resourceIds));
   collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
   validateEndings(project, switchIds, variableIds, issues);
@@ -96,6 +97,70 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
   validateScheduledEventIds(project, issues);
   return issues;
+}
+
+function validateP2SystemReferences(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
+  mapIds: ReadonlySet<string>,
+  issues: string[],
+): void {
+  collectDuplicateDefinitionIssues("database.fishSpecies", project.database.fishSpecies ?? [], issues);
+  collectDuplicateDefinitionIssues("system.fishing.spots", project.system.fishing?.spots ?? [], issues);
+  collectDuplicateDefinitionIssues("system.seasonalForage.areas", project.system.seasonalForage?.areas ?? [], issues);
+  collectDuplicateDefinitionIssues("system.museum.rewards", project.system.museum?.rewards ?? [], issues);
+  const fishIds = new Set((project.database.fishSpecies ?? []).map((fish) => fish.id));
+  const recipeIds = new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id));
+  const worldUnlockIds = new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id));
+  for (const fish of project.database.fishSpecies ?? []) {
+    if (!itemIds.has(fish.itemId)) issues.push(`database.fishSpecies ${fish.id}: itemId does not exist: ${fish.itemId}`);
+  }
+  for (const spot of project.system.fishing?.spots ?? []) {
+    const map = project.maps[spot.mapId];
+    if (!mapIds.has(spot.mapId)) issues.push(`system.fishing.spots ${spot.id}: mapId does not exist: ${spot.mapId}`);
+    else if (map && !rectFitsMap(spot.area, map.width, map.height)) issues.push(`system.fishing.spots ${spot.id}: area is out of bounds for map ${spot.mapId}`);
+    collectDuplicateChildIds(`system.fishing.spots ${spot.id}: catches`, spot.catches.map((rule) => rule.fishId), issues);
+    for (const rule of spot.catches) if (!fishIds.has(rule.fishId)) {
+      issues.push(`system.fishing.spots ${spot.id}: fishId does not exist: ${rule.fishId}`);
+    }
+  }
+  for (const area of project.system.seasonalForage?.areas ?? []) {
+    const map = project.maps[area.mapId];
+    if (!mapIds.has(area.mapId)) issues.push(`system.seasonalForage.areas ${area.id}: mapId does not exist: ${area.mapId}`);
+    else if (map && !rectFitsMap(area.area, map.width, map.height)) issues.push(`system.seasonalForage.areas ${area.id}: area is out of bounds for map ${area.mapId}`);
+    collectDuplicateDefinitionIssues(`system.seasonalForage.areas ${area.id}: entries`, area.entries, issues);
+    for (const entry of area.entries) {
+      if (entry.itemId && !itemIds.has(entry.itemId)) issues.push(`system.seasonalForage.areas ${area.id}: itemId does not exist: ${entry.itemId}`);
+      for (const itemId of Object.values(entry.seasonalDrops ?? {})) if (itemId && !itemIds.has(itemId)) {
+        issues.push(`system.seasonalForage.areas ${area.id}: seasonal itemId does not exist: ${itemId}`);
+      }
+    }
+  }
+  collectExistingIdIssues("system.collections.trackedItemIds", project.system.collections?.trackedItemIds ?? [], itemIds, issues);
+  collectExistingIdIssues("system.museum.eligibleItemIds", project.system.museum?.eligibleItemIds ?? [], itemIds, issues);
+  for (const reward of project.system.museum?.rewards ?? []) {
+    collectExistingIdIssues(`system.museum.rewards ${reward.id}: required itemId`, reward.requiredItemIds ?? [], itemIds, issues);
+    collectExistingIdIssues(`system.museum.rewards ${reward.id}: reward itemId`, reward.reward?.itemRewards?.map((entry) => entry.itemId) ?? [], itemIds, issues);
+    if (reward.reward?.switchId && !switchIds.has(reward.reward.switchId)) issues.push(`system.museum.rewards ${reward.id}: switchId does not exist: ${reward.reward.switchId}`);
+    collectExistingIdIssues(`system.museum.rewards ${reward.id}: worldUnlockId`, reward.reward?.worldUnlockIds ?? [], worldUnlockIds, issues);
+    collectExistingIdIssues(`system.museum.rewards ${reward.id}: recipeId`, reward.reward?.recipeIds ?? [], recipeIds, issues);
+  }
+}
+
+function collectDuplicateChildIds(label: string, values: readonly string[], issues: string[]): void {
+  const seen = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) issues.push(`${label}: duplicate id: ${value}`);
+    seen.add(value);
+  }
+}
+
+function rectFitsMap(rect: { readonly x: number; readonly y: number; readonly w: number; readonly h: number }, width: number, height: number): boolean {
+  return Number.isSafeInteger(rect.x) && Number.isSafeInteger(rect.y)
+    && Number.isSafeInteger(rect.w) && Number.isSafeInteger(rect.h)
+    && rect.x >= 0 && rect.y >= 0 && rect.w > 0 && rect.h > 0
+    && rect.x + rect.w <= width && rect.y + rect.h <= height;
 }
 
 function validateP0SystemReferences(
