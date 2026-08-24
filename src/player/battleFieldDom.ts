@@ -541,15 +541,17 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
   // SC13/L5: 파티 몬스터가 필드에 나선 경우 종족 그래픽을 아군측(back) 스프라이트로
   // 렌더한다. 스킨 전용 파티 스프라이트보다 우선한다(몬스터는 종족 그래픽이 필수).
   const monsterResource = actor.speciesId ? monsterSpeciesResourceId(actor.speciesId) : undefined;
-  if (monsterResource) {
+  if (actor.speciesId) {
     node.dataset.monsterBattler = "true";
-    const url = resolveAssetResourceUrl(monsterResource, { project: store.getCurrent() });
-    if (url) {
-      const image = document.createElement("img");
-      image.className = "battle-actor-image battle-monster-image battle-monster-back";
-      image.alt = `${actor.name} 몬스터`;
-      image.src = url;
-      node.append(image);
+    if (monsterResource) {
+      const url = resolveAssetResourceUrl(monsterResource, { project: store.getCurrent() });
+      if (url) {
+        const image = document.createElement("img");
+        image.className = "battle-actor-image battle-monster-image battle-monster-back";
+        image.alt = `${actor.name} 몬스터`;
+        image.src = url;
+        node.append(image);
+      }
     }
     applyBattlerPose(node, actor.pose);
     node.append(statusIconCluster(actor));
