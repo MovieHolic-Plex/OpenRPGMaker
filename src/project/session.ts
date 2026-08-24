@@ -23,6 +23,9 @@ import { transitionItemStates, type ItemTransitionAction } from "@/project/itemT
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
 import { GOLD_MAX } from "@/project/economyValues";
 import { initialFarmAnimalStates } from "@/project/p1FoundationRecords";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -307,7 +310,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     variables[v.id] = start.variables?.[v.id] ?? 0;
   }
   const gameTime = initialGameTime(project.system.timeSystem);
-  return {
+  const session: PlaySession = {
     switches,
     selfSwitches: {},
     variables,
@@ -375,6 +378,11 @@ export function startSession(project: Project, seed?: number): PlaySession {
     rng: createRngState(seed),
     gameTime,
   };
+  const weather = applyDailyWeatherForDate(project, session, gameTime);
+  if (weather) {
+    ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
+  }
+  return session;
 }
 
 export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {

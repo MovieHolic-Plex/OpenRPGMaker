@@ -10,10 +10,15 @@ import {
 import { absoluteGameMinutes, advanceMakers, type MakerAdvanceResult } from "@/project/makers";
 import type { PlaySession } from "@/project/session";
 import { settleShipping, type ShippingSettlementResult } from "@/project/shipping";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import type { DailyWeatherState } from "@/project/session";
 import type { Project } from "@/project/types";
 import { syncFarmPlotsToDate } from "@/player/farming";
+import { waterFarmPlotsForDailyWeather } from "@/player/farmingWeather";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "farm", "energy", "makers"] as const;
+export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers"] as const;
 export type DayTransitionStage = (typeof DAY_TRANSITION_STAGES)[number];
 
 export type DayTransitionReceipt = {
@@ -21,6 +26,8 @@ export type DayTransitionReceipt = {
   readonly destinationDayKey: string;
   readonly stages: readonly DayTransitionStage[];
   readonly shipping: ShippingSettlementResult;
+  readonly weather?: DailyWeatherState;
+  readonly wateredPlots: number;
   readonly energy: EnergyChangeResult;
   readonly makers: MakerAdvanceResult;
 };
@@ -95,6 +102,9 @@ export function transitionToNextDay(
   }
 
   draft.gameTime = sleepGameTimeUntilMorning(draft.gameTime!, system).time;
+  const weather = applyDailyWeatherForDate(project, draft, draft.gameTime);
+  if (weather) ensureM2Runtime(draft).screen.weather = weatherToRuntimeString(weather);
+  const wateredPlots = waterFarmPlotsForDailyWeather(draft, draft.gameTime);
   syncFarmPlotsToDate(project, draft, system);
 
   const energy = restoreEnergy(project, draft, project.system.energy?.restorePerDay);
@@ -127,6 +137,8 @@ export function transitionToNextDay(
       destinationDayKey: calendarDayKey(draft.gameTime),
       stages: DAY_TRANSITION_STAGES,
       shipping,
+      ...(weather ? { weather } : {}),
+      wateredPlots,
       energy,
       makers,
     },
