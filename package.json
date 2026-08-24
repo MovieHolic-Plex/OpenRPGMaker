@@ -46,6 +46,8 @@
     "construction:harness": "node scripts/run-construction-harness.mjs",
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
     "qa:horror": "npx tsx scripts/qa-horror-mystery-prototype.mts",
+    "capture:horror": "npx tsx scripts/capture-horror-browser-evidence.mts",
+    "build:horror": "npx tsx scripts/build-horror-mystery-prototype.mts",
     "test:watch": "node scripts/run-vitest.mjs --configLoader bundle"
   },
   "dependencies": {
