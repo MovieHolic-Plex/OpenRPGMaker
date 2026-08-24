@@ -3,27 +3,14 @@
   align-items: center;
   display: flex;
   gap: 6px;
-  /* 釉뚮옖???≪꽱??諛??쒖븞 6) ??product accent 怨꾩뿴 */
   border-bottom: 1px solid var(--border-subtle);
-  box-shadow: inset 0 2px 0 0 transparent;
+  box-shadow: none;
   padding-bottom: 8px;
   position: relative;
 }
 .ai-chat-header::before {
-  background: linear-gradient(
-    90deg,
-    var(--accent) 0%,
-    #7aa2ff 42%,
-    color-mix(in srgb, var(--accent) 35%, transparent) 78%,
-    transparent 100%
-  );
-  border-radius: 1px;
-  content: "";
-  height: 2px;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+  content: none;
+  display: none;
 }
 
 .ai-chat-header h2 {

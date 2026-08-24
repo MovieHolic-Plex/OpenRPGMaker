@@ -98,12 +98,12 @@
   box-shadow: 0 18px 50px rgba(20, 14, 8, 0.16);
   inset: 12px auto auto 12px;
   max-height: calc(100% - 24px);
-  max-width: min(300px, 38%);
+  max-width: min(260px, 28%);
   overflow: hidden;
   padding: 10px 10px 8px;
   pointer-events: auto;
   position: absolute;
-  width: min(300px, 38%);
+  width: min(260px, 28%);
   z-index: 31;
   backdrop-filter: blur(18px) saturate(1.3);
 }

@@ -106,8 +106,8 @@
   opacity: 0.45;
 }
 .ai-new-session {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--gold);
+  color: var(--gold-deep);
 }
 /* ?꾧뎄以꾩쓽 ?꾩씠肄?踰꾪듉? ?쇰꺼 踰꾪듉怨??믪씠瑜?留욎텣?? */
 .ai-chat-toolbar .ai-chat-tools-button {

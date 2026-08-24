@@ -284,17 +284,16 @@ All spacing derives from 4px.
 
 ### AI director plate
 
-- Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 (standard 4×4 / 48px cell) + name `감독` + one-line `readAgentBrief().line`.
-- Face is `role="img"` `aria-label="감독"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
+- Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 (standard 4×4 / 48px cell) + name `조수` + one-line `idlePresenceLine`.
+- Face is `role="img"` `aria-label="조수"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
 - Tokens: name `--text-1` 13px/600, line `--text-2` 12px/400, gap `--space-2`, face well `--studio-inset` / `--studio-line` (or `--bg-inset` / `--border-subtle` aliases). No 지시/질문/계획 chips on the plate.
-- Presence line updates from `editorState` / `store` (map, layer, tool, selection).
+- Presence line is idle copy unless a turn is running. Collapsed restore `aria-label` is `조수`. Primary actions (보내기, 이 맵에 넣기) and `@>` use `--gold`, not indigo.
 
-### AI composer briefing chips
+### AI idle hints
 
-- Idle empty composer shows at most three next-move chips from `directorStartPrompts(readAgentBrief())` inside the command-bar stack (`data-testid="ai-composer-chips"`).
-- Chip click fills the textarea with `prompt.instruction` and focuses it. It does not send.
+- Quiet Gold idle on glass/side shows at most two `@>` hint rows (`ai-idle-hints`). Click sends. Composer chips stay empty.
 - Placeholder is `formatComposerPlaceholder(readAgentBrief())`.
-- Tokens: surface `var(--control-bg)`, border `var(--border-default)`, hover/focus `var(--control-bg-hover)` + `var(--accent-border)`, type 12px/600, padding `var(--space-1)` `var(--space-2)`, radius 8px, gap `var(--space-1)`.
+- Ink Only hides gold hint color. Map First hides the card and keeps one command line, left-offset by `--editor-left-safe`.
 - The overlay empty kit (`ai-start-visual-gallery`, `ai-empty-cta`, start-history stack) is not the boot empty surface.
 
 ### Left palette & map tree
@@ -419,7 +418,7 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 ## 10. Desktop UI integration truth (2026-08-11)
 
 - Beginner, Standard, and Expert are desktop density presets, not separate products or permission levels. First visit is **Beginner**. The mode toggle is text weight/underline, never a filled plan-picker. Beginner uses the 48px direct-action rail (tool / layer / panel groups with Korean layer labels 바닥·장식·이벤트), does not auto-open the tile flyout, and limits Database navigation to the common subset. Standard exposes the full palette and map tree with simplified chrome and grouped Database navigation. Expert adds the classic toolbar, dense canvas controls, and all Database navigation; every visible expert toolbar button is actionable, while unsupported legacy stubs remain hidden. The chrome contract is carried by `mapTree`, `classicToolbar`, `canvasChromeDense`, `helpMenu`, `gameMenuLabel`, `paletteRail`, `leftPanelMaxWidthPx`, `layerTermStyle`, `prominentTestPlay`, `coachMarks`, `standardWelcome`, `statusbarDensity`, `railLabels`, `databaseNav`, `eventBeginnerChrome`, and `jargonStyle`. The same project, history, camera, and AI session continue across mode changes.
-- With empty storage, the AI assistant boots **open** and its dock defaults to **float** over the canvas; the map/tile/event tool sidebar remains the left docked column. A stored `chatDock` of **float** or **side** is honored, and the side dock remains a user toggle. A user who collapses AI keeps that choice; a turn that started collapsed re-collapses after idle, but an already-open panel stays open. The header is an agent plate (faceset crop + name `감독` + one-line presence). The work log uses RM-style `@>` command rows, not chat bubbles. A pending proposal keeps a command-row pin with 이 맵에 넣기/취소 even while the review modal is open. The collapsed restore control is a 48px button (`aria-label="AI 어시스턴트"`) showing the same face and a status dot — no `AI` wordmark, no vertical hangul, and no emoji. Restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport. Default agent mode is **chat** (one turn at a time). Slash skill rows show Korean names. Unconnected send shows a 연결하기 card instead of dumping the settings form.
+- With empty storage, the AI assistant boots **open** and its dock defaults to **float** over the canvas; the map/tile/event tool sidebar remains the left docked column. A stored `chatDock` of **float** or **side** is honored, and the side dock remains a user toggle. A user who collapses AI keeps that choice; a turn that started collapsed re-collapses after idle, but an already-open panel stays open. The header is an agent plate (faceset crop + name `조수` + one-line presence). Empty layout defaults the dock to **glass** and temperature to Quiet Gold. The work log uses RM-style `@>` command rows, not chat bubbles. A pending proposal mounts an inline decision card (이 맵에 넣기/취소). The collapsed restore control is a 48px button (`aria-label="조수"`) showing the same face and a status dot — no `AI` wordmark, no vertical hangul, and no emoji. Restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport. Default agent mode is **chat** (one turn at a time). Slash skill rows show Korean names. Unconnected send shows a 연결하기 card instead of dumping the settings form.
 - Event-editor ownership is the desktop matrix `1586×992`, `1280×900`, `1024×768`, and `960×900`. Its top strip, two-column workbench, conditions, command list, and footer stay in normal non-overlapping flow, and coachmarks are suppressed while it is open.
 - Test Play uses whole-number fit-without-crop scaling: the `320×240` runtime stays centered, 4:3, fully visible, and nearest-neighbor sharp. Title options expose one roving Tab stop; arrow navigation, keyboard confirmation, and trusted pointer activation share the same selected-option path.
 - Shared `showConfirm`/`showAlert` dialogs expose programmatic title/message relationships, focus the first action deterministically, trap Tab/Shift+Tab, route Escape through the top `modalStack` entry, and restore only an opener that is still attached.

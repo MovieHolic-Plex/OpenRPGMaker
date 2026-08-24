@@ -132,9 +132,9 @@
   padding: 8px 10px;
   pointer-events: auto;
   position: absolute;
-  left: 12px;
+  left: calc(var(--editor-left-safe, 48px) + 12px);
   right: auto;
-  bottom: 12px;
+  bottom: 16px;
 }
 
 .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
@@ -142,4 +142,14 @@
   border: 1px solid rgba(42, 37, 33, 0.1);
   border-radius: 16px;
   box-shadow: 0 10px 32px rgba(60, 48, 32, 0.12);
+  max-width: min(260px, 28%);
+  width: min(260px, 28%);
+}
+
+.ai-chat-send {
+  background: var(--gold);
+  box-shadow: 0 2px 8px var(--gold-wash);
+}
+.ai-chat-send:hover:not(:disabled) {
+  background: var(--gold-deep);
 }

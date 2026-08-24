@@ -21,23 +21,24 @@
 /* Float is composer-only: the card sits on the capsule, not the rising overlay. */
 .ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed) .ai-proposal-pin-host:not(:empty) {
   bottom: calc(14px + 34px + var(--ai-command-bar-height, 56px) + 8px);
-  max-height: min(48vh, 420px);
+  max-height: min(36vh, 280px);
   overflow: auto;
   pointer-events: auto;
   position: absolute;
   right: 12px;
-  width: min(640px, calc(100vw - 24px));
+  width: min(420px, calc(100vw - 24px));
   z-index: 40;
 }
 
 .ai-proposal-card {
   background: var(--bg-raised);
-  border: 1.5px solid var(--border-default);
-  border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(42, 37, 33, 0.10), 0 1px 4px rgba(42, 37, 33, 0.06);
+  border: 1px solid var(--border-default);
+  border-left: 2px solid var(--gold);
+  border-radius: 12px;
+  box-shadow: none;
   display: grid;
-  gap: 12px;
-  padding: 14px;
+  gap: 10px;
+  padding: 10px 12px;
 }
 .ai-proposal-card.is-destructive {
   border-color: color-mix(in srgb, var(--danger, #C6403D) 70%, var(--border-default));
@@ -99,12 +100,12 @@
 .ai-proposal-thumb-canvas {
   border: 1px solid var(--border-default);
   image-rendering: pixelated;
-  max-height: 160px;
+  max-height: 64px;
   max-width: 100%;
 }
 .ai-proposal-soft-vocab {
-  background: color-mix(in srgb, var(--accent, var(--accent)) 10%, var(--bg-inset));
-  border: 1px solid color-mix(in srgb, var(--accent, var(--accent)) 28%, var(--border-subtle));
+  background: var(--gold-wash);
+  border: 1px solid var(--gold-soft);
   border-radius: var(--radius-s);
   display: grid;
   gap: 4px;
@@ -141,12 +142,12 @@
   border-radius: 10px;
   transition: background 0.15s, border-color 0.15s;
 }
-.ai-proposal-item:hover { border-color: var(--accent-border); background: color-mix(in srgb, var(--bg-raised) 90%, var(--accent) 10%); }
+.ai-proposal-item:hover { border-color: var(--gold-soft); background: var(--gold-wash); }
 .ai-proposal-item input {
   height: 18px;
   margin: 1px 0 0;
   width: 18px;
-  accent-color: var(--accent);
+  accent-color: var(--gold);
 }
 .ai-proposal-item-main {
   font-size: 12px;

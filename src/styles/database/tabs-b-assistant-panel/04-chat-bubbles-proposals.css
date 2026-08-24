@@ -17,7 +17,7 @@
   line-height: 1.55;
 }
 .ai-command-prefix {
-  color: var(--studio-command, #4c7eff);
+  color: var(--gold);
   font-weight: 700;
   user-select: none;
 }
@@ -143,8 +143,8 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .ai-chat-input-row .ai-assistant-input:focus {
-  border-color: var(--accent, #4c6ef5);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #4c6ef5) 18%, transparent);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-wash);
   outline: none;
 }
 .ai-chat-input-row .ai-assistant-input::placeholder {
@@ -154,7 +154,7 @@
 .ai-chat-send {
   flex: 0 0 auto;
   align-self: stretch;
-  background: var(--accent, #4c6ef5);
+  background: var(--gold);
   border: 1.5px solid transparent;
   border-radius: 12px;
   font-family: inherit;
@@ -165,12 +165,12 @@
   color: #fff;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent, #4c6ef5) 25%, transparent);
+  box-shadow: 0 2px 8px var(--gold-wash);
 }
 .ai-chat-send:hover:not(:disabled) {
-  background: var(--accent-hover, #3b5bdb);
+  background: var(--gold-deep);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent, #4c6ef5) 30%, transparent);
+  box-shadow: 0 4px 14px var(--gold-wash);
 }
 .ai-chat-send:active:not(:disabled) {
   transform: translateY(0);
@@ -192,7 +192,7 @@
 }
 .ai-quick-replies.ai-choice-block {
   background: var(--bg-raised);
-  border: 1px solid var(--accent-border);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-s);
   padding: var(--space-1);
 }
@@ -201,7 +201,7 @@
 }
 .ai-quick-reply-chip {
   background: var(--control-bg);
-  border: 1px solid var(--accent-border);
+  border: 1px solid var(--border-default);
   border-radius: 999px;
   color: var(--text-1);
   cursor: pointer;
@@ -211,9 +211,9 @@
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 .ai-quick-reply-chip:hover {
-  background: var(--accent);
-  border-color: var(--accent-border);
-  color: var(--on-accent);
+  background: var(--gold-wash);
+  border-color: var(--gold-soft);
+  color: var(--gold-deep);
 }
 .ai-skill-prompt-details {
   border-top: 1px solid var(--border-subtle);

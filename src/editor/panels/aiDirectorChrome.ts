@@ -15,7 +15,7 @@ import { idlePresenceLine, readAgentBrief } from "./aiAgentBrief";
 const DIRECTOR_FACE_RESOURCE_ID = "easyrpg-faceset-actor1";
 const DIRECTOR_FACE_INDEX = 0;
 const DIRECTOR_NAME = "조수";
-const DIRECTOR_RESTORE_LABEL = "AI 어시스턴트";
+const DIRECTOR_RESTORE_LABEL = "조수";
 const DIRECTOR_FACE_SIZE_PX = FACESET_FACE_WIDTH;
 
 export type DirectorPlateHandle = {

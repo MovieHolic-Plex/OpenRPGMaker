@@ -15,6 +15,7 @@ import type { AiDocument } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import {
   ASSISTANT_TEMPERATURES,
+  assistantTemperatureMenuLabel,
   parseAssistantTemperature,
   persistAssistantTemperature,
   type AssistantTemperature,
@@ -2163,7 +2164,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const panel = el("aside", {
     class: "ai-chat-panel",
-    attrs: { "aria-label": "AI 어시스턴트 채팅" },
+    attrs: { "aria-label": "조수" },
     dataset: {
       testid: "ai-panel",
       uiDensity: "shared",
@@ -2270,6 +2271,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   refreshTemperatureChrome = (): void => {
     const current = readTemperature();
     panel.dataset.temperature = current;
+    const moreTitle = `더보기 · ${assistantTemperatureMenuLabel(current)}`;
+    moreMenuToggle.setAttribute("title", moreTitle);
+    moreMenuToggle.setAttribute("aria-label", moreTitle);
+    commandMenuToggle.setAttribute("title", moreTitle);
+    commandMenuToggle.setAttribute("aria-label", moreTitle);
     for (const row of ASSISTANT_TEMPERATURES) {
       const checked = row.id === current ? "true" : "false";
       const more = panel.querySelector(`[data-testid="ai-temperature-${row.id}"]`);

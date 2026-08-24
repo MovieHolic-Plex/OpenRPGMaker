@@ -3,11 +3,11 @@ import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm, type VocabSoft
 import type { Project } from "@/project/types";
 
 export function proposalAcceptButtonLabel(selectedCount: number, total: number): string {
-  return selectedCount === total ? "이 맵에 넣기" : `선택 ${selectedCount}건 이 맵에 넣기`;
+  return selectedCount === total ? "이 맵에 넣기" : `선택 ${selectedCount}개 이 맵에 넣기`;
 }
 
 export function proposalAcceptWithMaterialButtonLabel(selectedCount: number, total: number): string {
-  return selectedCount === total ? "맵 적용 + 재료 합의" : `선택 ${selectedCount}건 맵+재료 합의`;
+  return selectedCount === total ? "맵 적용 + 재료 합의" : `선택 ${selectedCount}개 맵+재료 합의`;
 }
 
 export function collectVocabSoftConfirms(calls: readonly ProposedCall[], selected?: readonly boolean[]): VocabSoftConfirm[] {
