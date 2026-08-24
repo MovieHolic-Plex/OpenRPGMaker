@@ -74,6 +74,7 @@ import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { cropStageAt, interactWithFarmPlot, syncFarmPlotsToDate } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
+import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
 
 const TICK_MS = 16;
 
@@ -123,6 +124,8 @@ export type SceneExpectStep = {
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
+  /** Runner-observable feedback/transcript: at least one message text has been shown. */
+  messageShown?: boolean;
   gameOver?: boolean;
   endingReached?: string;
   cutsceneLocked?: boolean;
@@ -162,6 +165,7 @@ export interface SceneTestResult {
     readonly followerCount: number;
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
     readonly picturesVisible: readonly string[];
+    readonly messages: readonly string[];
     readonly bgm?: string;
     readonly gameOver: boolean;
     readonly endingsReached: readonly string[];
@@ -219,6 +223,8 @@ interface RunnerState {
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
   facing: Dir;
+  /** Runner-observable transcript of message text bodies shown so far. */
+  readonly messages: string[];
   gameOver: boolean;
   held: { interp: Interpreter; mode: "choices" | "animation"; currentEventId?: string } | null;
   runtimeFailure: string | null;
@@ -230,12 +236,13 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   const map = runtimeMaps[input.mapId];
   const log: string[] = [];
   if (!map) {
-    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, [], input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
   }
   session.currentMapId = input.mapId;
   session.x = input.start.x;
   session.y = input.start.y;
   applyMapDefaultLighting(session, map);
+  applyMapBgmToSession(session.audio, resolveMapBgm(project, input.mapId));
   const state: RunnerState = {
     project,
     runtimeMaps,
@@ -254,6 +261,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     chasers: new Map(),
     encounterAccumulator: 0,
     facing: "down",
+    messages: [],
     gameOver: false,
     held: null,
     runtimeFailure: null,
@@ -264,7 +272,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
@@ -276,11 +284,11 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -511,6 +519,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "choices":
         return { stop: "choices" };
       case "text":
+        state.messages.push(step.body);
         step = interp.resume(undefined);
         break;
       case "wait":
@@ -546,6 +555,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           resetRuntimeMapForRunner(state, step.mapId);
           const targetMap = currentMap(state);
           if (targetMap) applyMapDefaultLighting(state.session, targetMap);
+          if (targetMap) applyMapBgmToSession(state.session.audio, resolveMapBgm(state.project, step.mapId));
         }
         resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
         applyNpcSchedulesForRunner(state);
@@ -1148,6 +1158,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.bgmPlaying !== undefined && state.session.audio.bgm?.resourceId !== step.bgmPlaying) {
     return `BGM: 기대 ${step.bgmPlaying}, 실제 ${state.session.audio.bgm?.resourceId ?? "(none)"}`;
   }
+  if (step.messageShown !== undefined && (state.messages.length > 0) !== step.messageShown) {
+    return `메시지 피드백: 기대 ${step.messageShown ? "출력" : "미출력"}, 실제 ${state.messages.length > 0 ? "출력" : "미출력"}`;
+  }
   if (step.gameOver !== undefined && state.gameOver !== step.gameOver) {
     return `게임 오버: 기대 ${step.gameOver}, 실제 ${state.gameOver}`;
   }
@@ -1698,6 +1711,7 @@ function result(
   eventPositions: RuntimeEventPositions,
   camera: CameraModel,
   log: readonly string[],
+  messages: readonly string[],
   steps: readonly SceneStep[],
   stepsRun: number,
   failedStep: SceneStep | undefined,
@@ -1730,6 +1744,7 @@ function result(
       followerCount: session.followers?.length ?? 0,
       followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
       picturesVisible: Object.keys(session.pictures),
+      messages,
       bgm: session.audio.bgm?.resourceId,
       gameOver,
       endingsReached: endingFlags(session),

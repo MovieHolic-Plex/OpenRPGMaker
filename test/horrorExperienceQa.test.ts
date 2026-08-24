@@ -6,6 +6,7 @@ import {
 } from "@/project/examples/horrorMysteryPrototype";
 import type { Command, Project } from "@/project/types";
 import {
+  analyzeHorrorReachability,
   evaluateHorrorExperienceQa,
   type HorrorBrowserEvidence,
   type HorrorQaScenario,
@@ -160,6 +161,27 @@ describe("automated horror experience QA", () => {
     expect(report.blockers.filter((blocker) => blocker.id === "reachability:unreachable-ending"))
       .toHaveLength(2);
     expect(report.verdict).toBe("fail");
+  });
+
+  // NAME THE BREAK: missingTransferTargets must be collected across ALL authored maps,
+  // not only the ones BFS happens to reach from the start map. An unreachable (orphaned)
+  // map that transfers to a nonexistent map id must still surface as a blocker.
+  it("reports a missing transfer target even when its map is unreachable from start", () => {
+    const { project } = createHorrorMysteryPrototypeProject();
+    // Clone the finale map into a disconnected orphan that no reachable map points to.
+    const orphan = structuredClone(project.maps[HORROR_MYSTERY_MAP_IDS.finale]!);
+    orphan.id = "map_unreachable_orphan";
+    orphan.name = "isolated orphan annex";
+    const targetEvent = orphan.events[0]!;
+    targetEvent.id = "orphan_transfer_event";
+    for (const page of targetEvent.pages ?? []) {
+      page.commands = [{ kind: "transfer", mapId: "map_ghost_non_existent" } as Command];
+    }
+    project.maps[orphan.id] = orphan;
+
+    const analysis = analyzeHorrorReachability(project);
+
+    expect(analysis.missingTransferTargets).toContain("map_ghost_non_existent");
   });
 
   it("still reaches both endings and stays a strong pass when the graph is fully connected", () => {
