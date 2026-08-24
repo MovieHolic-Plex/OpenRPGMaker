@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
-test("approved system-studio mockup keeps at least 95% structural parity", async ({ page }) => {
+test("cream system-studio keeps at least 95% structural parity", async ({ page }) => {
   await page.goto("/?freshProject=1");
   await openDatabase(page);
   await switchDatabaseTab(page, SYSTEM_TAB);
@@ -42,23 +42,23 @@ test("approved system-studio mockup keeps at least 95% structural parity", async
     const checks = {
       modalNearlyFullWidth: modal.width >= innerWidth * 0.97,
       modalNearlyFullHeight: modal.height >= innerHeight * 0.95,
-      iconRailBand: rail.width >= 60 && rail.width <= 84,
-      secondaryNavBand: subnav.width >= 210 && subnav.width <= 245,
+      iconRailBand: rail.width >= 52 && rail.width <= 60,
+      secondaryNavBand: subnav.width >= 180 && subnav.width <= 188,
       studioStartsAfterNavigation: studio.left >= subnav.right,
       nineSystemDestinations: count("nav.db-system-section-nav > button") === 9,
       overviewIsDefault: document.querySelector('[data-system-section="overview"]:not([hidden])') !== null,
       partyEditorStartsHidden: document.querySelector('[data-system-section="party"][hidden]') !== null,
       fourPrimaryCards: primary.length === 4,
       primaryCardsShareRow: primary.length === 4 && Math.max(...primary.map((item) => item.top)) - Math.min(...primary.map((item) => item.top)) <= 2,
-      primaryCardDensity: primary.length === 4 && primary.every((item) => item.height >= 105),
+      primaryCardDensity: primary.length === 4 && primary.every((item) => item.height >= 96),
       stateBelowPrimary: primary.length === 4 && state.top > Math.max(...primary.map((item) => item.bottom)),
       semanticStateRows: count(".db-system-studio-table-row") === 3,
-      statePanelDensity: state.height >= 290,
+      statePanelDensity: state.height >= 270,
       threeRuleCards: rules.length === 3,
       ruleCardsShareRow: rules.length === 3 && Math.max(...rules.map((item) => item.top)) - Math.min(...rules.map((item) => item.top)) <= 2,
       twelveRuleDetails: count(".db-system-studio-card-detail") === 12,
       previewOnRight: primary.length === 4 && preview.left > Math.max(...primary.map((item) => item.right)),
-      fivePreviewImpacts: count(".db-system-studio-impact-item") === 5,
+      fivePreviewImpacts: count(".db-system-studio-impact-row") === 5,
       noHorizontalOverflow: sectionHost.scrollWidth <= sectionHost.clientWidth + 2 && footer.bottom <= innerHeight + 1,
     };
     const passed = Object.values(checks).filter(Boolean).length;

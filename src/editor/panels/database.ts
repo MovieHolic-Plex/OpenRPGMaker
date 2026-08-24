@@ -268,7 +268,7 @@ function refreshTabCounts(container: HTMLElement): void {
 function appendTabSearch(header: HTMLElement): void {
   const input = el("input", {
     class: "db-tab-search",
-    attrs: { type: "search", placeholder: "탭 검색", "aria-label": "탭 검색" },
+    attrs: { type: "search", placeholder: "⌕", title: "탭 검색", "aria-label": "탭 검색" },
     dataset: { testid: "db-tab-search" },
     on: { input: () => applyTabFilter(header, input.value) },
   });

@@ -1,31 +1,30 @@
-/* Modern Game Systems workspace. Scoped to the System tab so the remaining
-   database surfaces keep their current theme while this area establishes the
-   new product direction. */
+/* Modern Game Systems workspace. It uses the same cream tokens as every other
+   Database tab; only the information architecture differs. */
 
 @media (min-width: 800px) {
   .database-modal-backdrop:has(.db-system-studio) {
-    background: rgba(4, 7, 12, 0.86);
+    background: rgba(42, 37, 33, 0.18);
   }
 
   .database-modal-backdrop:has(.db-system-studio) .database-modal-window {
-    --studio-bg: #0b0f16;
-    --studio-surface: #111722;
-    --studio-surface-2: #171e2a;
-    --studio-surface-3: #1c2432;
-    --studio-line: #293244;
-    --studio-line-soft: #202838;
-    --studio-text: #f4f1ea;
-    --studio-muted: #9da8ba;
-    --studio-dim: #6e798d;
-    --studio-violet: #7c6cf2;
-    --studio-violet-strong: #6655ed;
-    --studio-violet-soft: rgba(124, 108, 242, 0.15);
-    --studio-mint: #69d6b0;
-    --studio-amber: #f2b45b;
+    --studio-bg: var(--db-light-bg-base);
+    --studio-surface: var(--db-light-bg-surface);
+    --studio-surface-2: var(--db-light-bg-inset);
+    --studio-surface-3: var(--db-light-bg-raised);
+    --studio-line: var(--db-light-border-default);
+    --studio-line-soft: var(--db-light-border-subtle);
+    --studio-text: var(--db-light-text-1);
+    --studio-muted: var(--db-light-text-2);
+    --studio-dim: var(--db-light-text-3);
+    --studio-violet: var(--db-light-accent);
+    --studio-violet-strong: var(--db-light-accent-hover);
+    --studio-violet-soft: var(--db-light-accent-muted);
+    --studio-mint: var(--db-light-success);
+    --studio-amber: var(--db-light-warning);
     background: var(--studio-bg) !important;
-    border: 1px solid #222b3a !important;
-    border-radius: 0 !important;
-    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid var(--studio-line) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 24px 70px rgba(42, 37, 33, 0.24) !important;
     color: var(--studio-text) !important;
     font-family: Pretendard, Inter, "Noto Sans KR", "Segoe UI", sans-serif !important;
     height: min(1000px, calc(100vh - 16px)) !important;
@@ -33,7 +32,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .database-modal-header {
-    background: #0d121b !important;
+    background: var(--studio-surface) !important;
     border-bottom: 1px solid var(--studio-line-soft) !important;
     min-height: 52px !important;
     padding: 0 16px 0 22px !important;
@@ -82,7 +81,7 @@
   .database-modal-backdrop:has(.db-system-studio) .database-modal-body {
     background: var(--studio-bg) !important;
     display: grid !important;
-    grid-template-columns: 72px minmax(0, 1fr) !important;
+    grid-template-columns: 56px minmax(0, 1fr) !important;
     grid-template-rows: minmax(0, 1fr) !important;
     min-height: 0;
   }
@@ -92,20 +91,20 @@
      and aria-label attributes. */
   .database-modal-backdrop:has(.db-system-studio) .db-tabs {
     align-items: center !important;
-    background: #090d14 !important;
+    background: var(--studio-surface) !important;
     border: 0 !important;
     border-right: 1px solid var(--studio-line-soft) !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 4px !important;
     grid-column: 1 !important;
     grid-row: 1 !important;
     overflow: hidden auto !important;
-    padding: 18px 10px !important;
-    width: 72px !important;
+    padding: 8px 6px 12px !important;
+    width: 56px !important;
   }
 
-  .database-modal-backdrop:has(.db-system-studio) .db-tabs > * {
+  .database-modal-backdrop:has(.db-system-studio) .db-tabs > :not(.db-tab):not(.db-tab-search) {
     display: none !important;
   }
 
@@ -113,25 +112,24 @@
     align-items: center !important;
     background: transparent !important;
     border: 1px solid transparent !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     color: transparent !important;
     display: flex !important;
-    flex: 0 0 44px !important;
+    flex: 0 0 40px !important;
     font-size: 0 !important;
-    height: 44px !important;
+    height: 40px !important;
     justify-content: center !important;
     margin: 0 !important;
-    min-height: 44px !important;
-    order: 20;
+    min-height: 40px !important;
     padding: 0 !important;
     position: relative;
-    width: 44px !important;
+    width: 40px !important;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab::before {
-    color: #8995aa;
+    color: var(--studio-muted);
     content: attr(data-short);
-    font: 700 20px/1 Inter, "Segoe UI Symbol", sans-serif;
+    font: 700 18px/1 Inter, "Segoe UI Symbol", sans-serif;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab[data-count]::after {
@@ -164,18 +162,8 @@
   .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-switches"]::before { content: "◉" !important; }
   .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-variables"]::before { content: "⚙" !important; }
 
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-system"] { order: 0; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-overview"] { order: 1; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-actors"] { order: 2; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-items"] { order: 3; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-enemies"] { order: 4; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-crops"] { order: 5; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-tilesets"] { order: 6; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-switches"] { order: 7; }
-  .database-modal-backdrop:has(.db-system-studio) [data-testid="db-tab-variables"] { order: 8; }
-
   .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active::before {
-    color: #a79cff;
+    color: var(--studio-violet);
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab:hover {
@@ -185,7 +173,7 @@
 
   .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active {
     background: var(--studio-violet-soft) !important;
-    border-color: rgba(124, 108, 242, 0.35) !important;
+    border-color: var(--db-light-accent-border) !important;
     box-shadow: inset 3px 0 0 var(--studio-violet);
   }
 
@@ -208,7 +196,7 @@
     background: var(--studio-bg) !important;
     display: grid !important;
     gap: 0 !important;
-    grid-template-columns: 226px minmax(0, 1fr) !important;
+    grid-template-columns: 184px minmax(0, 1fr) !important;
     height: 100% !important;
     overflow: hidden !important;
     padding: 0 !important;
@@ -216,13 +204,13 @@
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section-nav {
     align-self: stretch !important;
-    background: #0d121b !important;
+    background: var(--studio-surface) !important;
     border-right: 1px solid var(--studio-line-soft) !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 5px !important;
+    gap: 3px !important;
     overflow: hidden auto;
-    padding: 24px 14px !important;
+    padding: 20px 10px !important;
     position: static !important;
   }
 
@@ -230,10 +218,10 @@
     color: var(--studio-text);
     content: "게임 시스템";
     display: block;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 750;
     letter-spacing: -0.025em;
-    margin: 0 8px 16px;
+    margin: 0 8px 12px;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav {
@@ -242,17 +230,17 @@
     border: 1px solid transparent !important;
     border-left: 0 !important;
     border-radius: 8px !important;
-    color: #b3bdcc !important;
+    color: var(--studio-muted) !important;
     display: flex;
-    font: 600 14px/1.25 Pretendard, "Segoe UI", sans-serif !important;
-    min-height: 42px;
-    padding: 0 12px !important;
+    font: 600 13px/1.25 Pretendard, "Segoe UI", sans-serif !important;
+    min-height: 38px;
+    padding: 0 10px !important;
     text-align: left;
     transition: background-color 140ms ease, color 140ms ease;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav::before {
-    color: #69758a;
+    color: var(--studio-dim);
     content: "◇";
     font-size: 15px;
     margin-right: 11px;
@@ -269,30 +257,28 @@
   .database-modal-backdrop:has(.db-system-studio) [data-testid="db-system-nav-title"]::before { content: "▤" !important; }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav:hover {
-    background: #151c28 !important;
+    background: var(--studio-surface-3) !important;
     color: var(--studio-text) !important;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav.active {
-    background: linear-gradient(90deg, rgba(124, 108, 242, 0.26), rgba(124, 108, 242, 0.15)) !important;
-    border-color: rgba(124, 108, 242, 0.22) !important;
+    background: var(--studio-violet-soft) !important;
+    border-color: var(--db-light-accent-border) !important;
     box-shadow: inset 3px 0 0 var(--studio-violet);
-    color: #f7f5ff !important;
+    color: var(--studio-violet) !important;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav.active::before {
-    color: #9d91ff;
+    color: var(--studio-violet);
     content: "◆";
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-sections {
-    background:
-      radial-gradient(circle at 80% -10%, rgba(78, 83, 145, 0.12), transparent 32%),
-      var(--studio-bg) !important;
+    background: var(--studio-bg) !important;
     display: block !important;
     min-width: 0;
     overflow: auto !important;
-    padding: 22px 24px 64px !important;
+    padding: 18px 18px 56px !important;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section[hidden] {
@@ -300,7 +286,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section[data-system-section="party"] > .oprn-db-fieldset {
-    margin-top: 22px;
+    margin-top: 18px;
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section:not([data-system-section="overview"]):not([data-system-section="party"]) {
@@ -329,14 +315,14 @@
   .db-system-studio-header {
     align-items: flex-end;
     display: flex;
-    gap: 22px;
+    gap: 16px;
     justify-content: space-between;
-    margin-bottom: 18px;
-    min-height: 66px;
+    margin-bottom: 14px;
+    min-height: 58px;
   }
 
   .db-system-studio-heading {
-    min-width: 260px;
+    min-width: 220px;
   }
 
   .db-system-studio-heading > div:first-child {
@@ -346,7 +332,7 @@
   }
 
   .db-system-studio-eyebrow {
-    color: #7f8ca3;
+    color: var(--studio-dim);
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.14em;
@@ -396,7 +382,7 @@
 
   .db-system-studio-search {
     align-items: center;
-    background: #0e141e;
+    background: var(--studio-surface-3);
     border: 1px solid var(--studio-line);
     border-radius: 8px;
     color: var(--studio-muted);
@@ -404,7 +390,7 @@
     gap: 8px;
     height: 38px;
     padding: 0 12px;
-    width: min(310px, 26vw);
+    width: min(280px, 24vw);
   }
 
   .db-system-studio-search-input {
@@ -420,7 +406,7 @@
     width: 100%;
   }
 
-  .db-system-studio-search-input::placeholder { color: #667288 !important; }
+  .db-system-studio-search-input::placeholder { color: var(--studio-dim) !important; }
 
   .db-system-studio-autosave {
     color: var(--studio-muted);
@@ -445,13 +431,13 @@
   .db-system-studio-layout {
     align-items: start;
     display: grid;
-    gap: 18px;
-    grid-template-columns: minmax(0, 1fr) 276px;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) 248px;
   }
 
   .db-system-studio-main {
     display: grid;
-    gap: 16px;
+    gap: 14px;
     min-width: 0;
   }
 
@@ -462,28 +448,28 @@
   }
 
   .db-system-studio-card-grid .db-system-studio-card {
-    min-height: 114px;
+    min-height: 100px;
   }
 
   .db-system-studio-card {
     appearance: none;
-    background: linear-gradient(145deg, #161d29, #121823) !important;
+    background: var(--studio-surface-3) !important;
     border: 1px solid var(--studio-line) !important;
     border-radius: 9px !important;
     color: var(--studio-text) !important;
     cursor: pointer;
     display: grid;
     gap: 10px;
-    grid-template-columns: 38px minmax(0, 1fr) auto;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
     min-width: 0;
-    padding: 14px !important;
+    padding: 12px !important;
     text-align: left;
     transition: border-color 140ms ease, transform 140ms ease, background-color 140ms ease;
   }
 
   .db-system-studio-card:hover {
-    background: #1a2230 !important;
-    border-color: rgba(124, 108, 242, 0.55) !important;
+    background: var(--studio-surface-2) !important;
+    border-color: var(--db-light-accent-border) !important;
     transform: translateY(-1px);
   }
 
@@ -492,12 +478,12 @@
     background: var(--studio-violet-soft);
     border: 1px solid rgba(124, 108, 242, 0.22);
     border-radius: 8px;
-    color: #9487ff;
+    color: var(--studio-violet);
     display: flex;
     font: 700 20px/1 Georgia, serif;
-    height: 36px;
+    height: 32px;
     justify-content: center;
-    width: 36px;
+    width: 32px;
   }
 
   .db-system-studio-card:nth-child(4n) .db-system-studio-card-icon,
@@ -545,16 +531,16 @@
 
   .db-system-studio-card-copy em.is-ok { color: var(--studio-mint); }
   .db-system-studio-card-copy em.is-warn { color: var(--studio-amber); }
-  .db-system-studio-card-copy em.is-neutral { color: #8c98ac; }
+  .db-system-studio-card-copy em.is-neutral { color: var(--studio-dim); }
 
   .db-system-studio-card-arrow {
     align-self: center;
-    color: #657187;
+    color: var(--studio-dim);
     font-size: 20px;
   }
 
   .db-system-studio-panel {
-    background: linear-gradient(145deg, #141b26, #101620);
+    background: var(--studio-surface-3);
     border: 1px solid var(--studio-line);
     border-radius: 9px;
     min-width: 0;
@@ -562,7 +548,7 @@
   }
 
   .db-system-studio-state {
-    min-height: 300px;
+    min-height: 280px;
   }
 
   .db-system-studio-panel-header {
@@ -570,7 +556,7 @@
     display: flex;
     gap: 16px;
     justify-content: space-between;
-    padding: 16px 18px 12px;
+    padding: 14px 16px 10px;
   }
 
   .db-system-studio-panel-header h3 {
@@ -634,8 +620,8 @@
   }
 
   .db-system-studio-table-head {
-    background: #111824;
-    color: #7f8ba0;
+    background: var(--studio-surface);
+    color: var(--studio-dim);
     font-size: 10px;
     font-weight: 700;
     min-height: 34px;
@@ -643,11 +629,11 @@
 
   .db-system-studio-table-row {
     border-top: 1px solid var(--studio-line-soft);
-    color: #ccd3df;
+    color: var(--studio-muted);
     font-size: 11px;
   }
 
-  .db-system-studio-table-row:hover { background: rgba(255, 255, 255, 0.02); }
+  .db-system-studio-table-row:hover { background: var(--studio-surface-2); }
 
   .db-system-studio-state-name {
     align-items: center;
@@ -683,17 +669,17 @@
   }
 
   .db-system-studio-table-row code {
-    background: #0b111a;
+    background: var(--studio-surface-2);
     border: 1px solid var(--studio-line);
     border-radius: 5px;
-    color: #aeb8c8;
+    color: var(--studio-text);
     font: 10px/1.5 "SFMono-Regular", Consolas, monospace;
     justify-self: start;
     padding: 2px 7px;
   }
 
   .db-system-studio-usage {
-    color: #919db0;
+    color: var(--studio-dim);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -709,7 +695,7 @@
   .db-system-studio-view-all {
     background: transparent !important;
     border: 0 !important;
-    color: #9d91ff !important;
+    color: var(--studio-violet) !important;
     display: block;
     font: 650 10px/1 Pretendard, "Segoe UI", sans-serif !important;
     margin: 0 auto;
@@ -724,7 +710,7 @@
 
   .db-system-studio-card.is-rule {
     grid-template-rows: auto 1fr auto;
-    min-height: 240px;
+    min-height: 220px;
   }
 
   .db-system-studio-card.is-rule > .db-system-studio-card-copy em {
@@ -740,7 +726,7 @@
 
   .db-system-studio-card-detail {
     align-items: center;
-    color: #aab4c4;
+    color: var(--studio-muted);
     display: flex;
     font-size: 10px;
     justify-content: space-between;
@@ -759,7 +745,7 @@
     align-items: center;
     border: 1px solid var(--studio-line);
     border-radius: 6px;
-    color: #aab4c4;
+    color: var(--studio-muted);
     display: flex;
     font-size: 10px;
     grid-column: 1 / -1;
@@ -768,7 +754,7 @@
   }
 
   .db-system-studio-preview {
-    background: linear-gradient(150deg, #151c27, #101620);
+    background: var(--studio-surface-3);
     border: 1px solid var(--studio-line);
     border-radius: 9px;
     min-width: 0;
@@ -792,13 +778,13 @@
   }
 
   .db-system-studio-preview > header span {
-    color: #758197;
+    color: var(--studio-dim);
     font-size: 13px;
   }
 
   .db-system-studio-preview-stage {
     align-items: center;
-    background-color: #101722;
+    background-color: var(--studio-surface-2);
     background-position: center;
     background-size: cover;
     border: 1px solid var(--studio-line-soft);
@@ -858,14 +844,14 @@
   }
 
   .db-system-studio-impact h4 {
-    color: #e7eaf0;
+    color: var(--studio-text);
     font-size: 11px;
     margin: 0 0 9px 2px;
   }
 
   .db-system-studio-impact-row {
     align-items: center;
-    background: #121925 !important;
+    background: var(--studio-surface-3) !important;
     border: 1px solid var(--studio-line-soft) !important;
     border-radius: 6px !important;
     color: var(--studio-muted) !important;
@@ -881,9 +867,9 @@
 
   .db-system-studio-impact-row > span:first-child {
     align-items: center;
-    background: #1a2230;
+    background: var(--studio-violet-soft);
     border-radius: 5px;
-    color: #9a8eff;
+    color: var(--studio-violet);
     display: flex;
     height: 26px;
     justify-content: center;
@@ -897,25 +883,25 @@
   }
 
   .db-system-studio-impact-row strong {
-    color: #dfe4ec;
+    color: var(--studio-text);
     font-size: 10px;
   }
 
   .db-system-studio-impact-row small {
-    color: #778398;
+    color: var(--studio-dim);
     font-size: 8px;
     margin-top: 2px;
   }
 
   .db-system-studio-impact-row i {
-    color: #617087;
+    color: var(--studio-dim);
     font-style: normal;
   }
 
   .db-system-studio-all-screens {
     background: transparent !important;
     border: 0 !important;
-    color: #9d91ff !important;
+    color: var(--studio-violet) !important;
     display: block;
     font: 650 10px/1 Pretendard, "Segoe UI", sans-serif !important;
     margin: 12px auto 0;
@@ -924,7 +910,7 @@
   /* Existing authoring controls inherit the studio language after a task card
      opens a detail section. No field/test-id or persistence behavior changes. */
   .database-modal-backdrop:has(.db-system-studio) .db-system-section .oprn-db-fieldset {
-    background: linear-gradient(145deg, #151c27, #111720) !important;
+    background: var(--studio-surface-3) !important;
     border: 1px solid var(--studio-line) !important;
     border-radius: 10px !important;
     color: var(--studio-text) !important;
@@ -945,7 +931,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
-    background: #0d131d !important;
+    background: var(--studio-surface-2) !important;
     border-color: var(--studio-line) !important;
     color: var(--studio-text) !important;
   }
@@ -957,7 +943,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(button.btn, .db-resource-picker-button) {
-    background: #1a2230 !important;
+    background: var(--studio-surface-3) !important;
     border-color: var(--studio-line) !important;
     border-radius: 7px !important;
     color: var(--studio-text) !important;
@@ -968,7 +954,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .database-modal-footer {
-    background: #0d121b !important;
+    background: var(--studio-surface) !important;
     border-top: 1px solid var(--studio-line-soft) !important;
     color: var(--studio-muted) !important;
     min-height: 46px !important;
@@ -976,7 +962,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .database-footer-button {
-    background: #171e2a !important;
+    background: var(--studio-surface-3) !important;
     border: 1px solid var(--studio-line) !important;
     border-radius: 7px !important;
     color: var(--studio-text) !important;
