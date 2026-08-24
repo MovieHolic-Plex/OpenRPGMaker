@@ -225,7 +225,7 @@ const MAX_EXPOSED_TOOLS = 40;
 // (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
-  ["system", new Set(["reset_project", "configure_time_system"])],
+  ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality"])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",
@@ -278,7 +278,6 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
   ])],
   // define_ending 이 트림되면 "엔딩을 정의하는 기능이 없다"는 잘못된 보고로 이어진다(2026-08-23 실측).
   ["quest", new Set(["author_story_arc"])],
-  ["system", new Set(["evaluate_game_quality"])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
   ["tile", 0],
