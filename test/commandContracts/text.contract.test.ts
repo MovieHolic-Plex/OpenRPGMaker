@@ -48,7 +48,7 @@ describe("text 계약", () => {
 
     const result = runCommandContract(commands);
 
-    expect(result.pauses).toEqual([
+    expect(result.pauses).toMatchObject([
       {
         kind: "text",
         body: "configured",

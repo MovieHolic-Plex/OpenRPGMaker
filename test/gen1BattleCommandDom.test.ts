@@ -53,11 +53,12 @@ describe("Gen1 monster battle command DOM", () => {
 
     const fight = commandPanel(snapshot, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
     expect(fight.querySelectorAll(".battle-command").filter((node) => node.dataset.testid?.startsWith("actor-skill-"))).toHaveLength(4);
-    expect(fight.textContent).toContain("PP 12/35");
     expect(fight.textContent).toContain("PP 0/20");
-    expect(fight.querySelector("[data-testid='actor-skill-skill_move_5']")).toBeNull();
+    expect(fight.textContent).toContain("PP 5/5");
+    expect(fight.querySelector("[data-testid='actor-skill-skill_move_1']")).toBeNull();
     expect(button(fight, "actor-skill-skill_move_2").disabled).toBe(true);
     expect(button(fight, "actor-skill-skill_move_4").disabled).toBe(false);
+    expect(button(fight, "actor-skill-skill_move_5").disabled).toBe(false);
   });
 
   it("puts normal items and balls in Item and routes a ball through canonical capture targeting", () => {

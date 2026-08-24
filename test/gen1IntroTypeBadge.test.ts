@@ -10,12 +10,14 @@ import { BATTLE_INTRO_MS } from "@/player/battleSequencer";
 import { sendOutDirectorState } from "@/player/battleDirectorDom";
 import { createScarloxyPokemonDemoProject } from "@/project/defaults";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
+import { normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { store } from "@/project/store";
 import type { MonsterInstance } from "@/project/session";
 import type { Project } from "@/project/types";
 
 const EMBER = "skill_scarloxy_ember";
 const SCRATCH = "skill_scarloxy_scratch";
+const UNTYPED = "skill_gen1_ui_untyped";
 const MONSTER_NAME = "스파르츄";
 
 function starterMonster(project: Project): MonsterInstance {
@@ -24,7 +26,7 @@ function starterMonster(project: Project): MonsterInstance {
     speciesId: scarloxySpeciesId("sparchu"),
     level: 5,
     exp: 0,
-    skillIds: [EMBER, SCRATCH],
+    skillIds: [EMBER, SCRATCH, UNTYPED],
     friendship: 70,
     caughtAt: { mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y },
   };
@@ -32,6 +34,7 @@ function starterMonster(project: Project): MonsterInstance {
 
 function mount(options: { monsterParty: boolean; introHold: boolean }) {
   const project = createScarloxyPokemonDemoProject();
+  project.database.skills.push(normalizeSkillRecord({ id: UNTYPED, name: "Untyped Move", maxPp: 10 }));
   store.replace(project);
   const host = document.createElement("div");
   document.body.append(host);
@@ -70,7 +73,7 @@ describe("Gen1 인트로 — 내보내기 비트", () => {
       vi.advanceTimersByTime(BATTLE_INTRO_MS);
       expect(message(controller.root)).not.toContain("가라");
       expect(runtime.snapshot().phase).toBe("actorCommand");
-      expect(controller.root.querySelector("[data-testid='actor-command-attack']")).toBeTruthy();
+      expect(controller.root.querySelector("[data-testid='actor-command-fight']")).toBeTruthy();
     } finally {
       controller.destroy();
       vi.useRealTimers();
@@ -99,21 +102,26 @@ describe("기술 타입 배지", () => {
     try {
       for (let i = 0; i < 200 && runtime.snapshot().phase !== "actorCommand"; i += 1) runtime.tick(1000);
       vi.advanceTimersByTime(300);
-      controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-skill']")?.click();
+      controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-fight']")?.click();
 
-      // 불씨 뿜기(elementId: "fire") → 데모가 저작한 한글 타입명.
+      // 불씨 뿜기(elementId: "fire") → 완성 Gen1 타입 정의의 표시 이름.
       const ember = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${EMBER}']`);
       expect(ember, "불씨 뿜기 항목이 서브메뉴에 없다").toBeTruthy();
       const badge = ember!.querySelector<HTMLElement>(".battle-command-tag");
-      expect(badge?.textContent).toBe("불꽃");
+      expect(badge?.textContent).toBe("Fire");
       expect(badge?.dataset.skillType).toBe("fire");
       // 기술명(strong) 뒤, 상세(small) 앞에 놓여야 배지로 읽힌다.
       expect(badge?.previousElementSibling?.tagName.toLowerCase()).toBe("strong");
 
-      // 할퀴기(무속성) → 배지를 지어내지 않는다.
+      // 완성 Gen1 데이터에서 할퀴기는 Normal 타입이다.
       const scratch = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${SCRATCH}']`);
       expect(scratch, "할퀴기 항목이 서브메뉴에 없다").toBeTruthy();
-      expect(scratch!.querySelector(".battle-command-tag")).toBeNull();
+      expect(scratch!.querySelector(".battle-command-tag")?.textContent).toBe("Normal");
+
+      // elementId가 없는 테스트 전용 기술에는 배지를 지어내지 않는다.
+      const untyped = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${UNTYPED}']`);
+      expect(untyped, "무속성 기술 항목이 서브메뉴에 없다").toBeTruthy();
+      expect(untyped!.querySelector(".battle-command-tag")).toBeNull();
     } finally {
       controller.destroy();
       vi.useRealTimers();

@@ -134,6 +134,12 @@ describe("Gen1 authored project contracts", () => {
 describe("Gen1 monster persistence contracts", () => {
   it("roundtrips statuses, PP, and pending fifth moves through the save-slot loader", () => {
     const project = createBlankProject();
+    const ppSkillId = "skill_pp_contract";
+    project.database.skills.push(normalizeSkillRecord({
+      id: ppSkillId,
+      name: "PP Contract Move",
+      maxPp: 35,
+    }));
     const session = startSession(project, 17);
     const result = giveMonster(project, session, { speciesId: "species_wild_slime", level: 5 });
     if (!result.ok) throw new Error(`giveMonster failed: ${result.reason}`);
@@ -142,7 +148,8 @@ describe("Gen1 monster persistence contracts", () => {
       ...result.instance,
       stateIds: ["state_poison"],
       stateTurns: { state_poison: 3 },
-      skillPp: { skill_attack: 21 },
+      skillIds: [ppSkillId],
+      skillPp: { [ppSkillId]: 21 },
       pendingSkillIds: ["skill_fifth", "skill_sixth"],
     };
     const storage = new MemoryStorage();
@@ -155,7 +162,7 @@ describe("Gen1 monster persistence contracts", () => {
     const restored = applySaveSnapshot(project, loaded.snapshot);
     expect(restored.monsterInstances[instanceId]?.stateIds).toEqual(["state_poison"]);
     expect(restored.monsterInstances[instanceId]?.stateTurns).toEqual({ state_poison: 3 });
-    expect(restored.monsterInstances[instanceId]?.skillPp).toEqual({ skill_attack: 21 });
+    expect(restored.monsterInstances[instanceId]?.skillPp).toEqual({ [ppSkillId]: 21 });
     expect(restored.monsterInstances[instanceId]?.pendingSkillIds).toEqual(["skill_fifth", "skill_sixth"]);
   });
 
