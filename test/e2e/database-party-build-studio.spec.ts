@@ -69,7 +69,7 @@ test("Party Studio follows exact non-first records and keeps broken references i
   await expect(modal).toHaveAttribute("data-party-build-instance", "same");
 });
 
-test("Party Studio folds to one/two columns without horizontal overflow in a 1024px dock", async ({ page }) => {
+test("Party Studio folds to one/two columns without overlap or horizontal overflow in a 1024px dock", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   const { project, actor } = partyBuildFixture();
   await page.setViewportSize({ width: 1024, height: 768 });
@@ -80,16 +80,85 @@ test("Party Studio folds to one/two columns without horizontal overflow in a 102
   await expect(page.locator(".database-modal-backdrop.is-docked")).toBeVisible();
 
   const actorLayout = await page.evaluate(() => {
+    type Rect = { top: number; right: number; bottom: number; left: number };
+    const visibleRect = (element: Element): Rect | null => {
+      const bounds = element.getBoundingClientRect();
+      let rect: Rect = { top: bounds.top, right: bounds.right, bottom: bounds.bottom, left: bounds.left };
+      for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
+        const style = getComputedStyle(ancestor);
+        const ancestorBounds = ancestor.getBoundingClientRect();
+        if (style.overflowX !== "visible") {
+          rect.left = Math.max(rect.left, ancestorBounds.left);
+          rect.right = Math.min(rect.right, ancestorBounds.right);
+        }
+        if (style.overflowY !== "visible") {
+          rect.top = Math.max(rect.top, ancestorBounds.top);
+          rect.bottom = Math.min(rect.bottom, ancestorBounds.bottom);
+        }
+      }
+      return rect.right > rect.left && rect.bottom > rect.top ? rect : null;
+    };
+    const overlaps = (left: Rect | null, right: Rect | null): boolean => Boolean(
+      left && right
+      && left.left < right.right
+      && left.right > right.left
+      && left.top < right.bottom
+      && left.bottom > right.top,
+    );
+    const contains = (outer: DOMRect, inner: DOMRect): boolean => (
+      inner.left >= outer.left - 1
+      && inner.right <= outer.right + 1
+      && inner.top >= outer.top - 1
+      && inner.bottom <= outer.bottom + 1
+    );
     const modal = document.querySelector<HTMLElement>(".database-modal-window");
     const preview = document.querySelector<HTMLElement>(".actor-build-preview-grid");
-    if (!modal || !preview) return null;
+    const listPane = document.querySelector<HTMLElement>(".oprn-record-actors .oprn-record-list-pane");
+    const toolbar = listPane?.querySelector<HTMLElement>(".db-toolbar");
+    const hero = document.querySelector<HTMLElement>('[data-testid="db-record-hero"]');
+    const build = document.querySelector<HTMLElement>('[data-testid="db-actor-build-preview"]');
+    if (!modal || !preview || !listPane || !toolbar || !hero || !build) return null;
+    const panels = { recordList: listPane, header: hero, build };
+    const panelEntries = Object.entries(panels) as Array<[string, HTMLElement]>;
+    const panelOverlaps = panelEntries.flatMap(([leftName, left], index) => (
+      panelEntries.slice(index + 1)
+        .filter(([, right]) => overlaps(visibleRect(left), visibleRect(right)))
+        .map(([rightName]) => `${leftName}:${rightName}`)
+    ));
+    const protectedTargets = { toolbar, header: hero, build };
+    const listPreviewOverlaps = Array.from(listPane.querySelectorAll<HTMLElement>(".db-list-thumb"))
+      .flatMap((thumb, index) => Object.entries(protectedTargets)
+        .filter(([, target]) => overlaps(visibleRect(thumb), visibleRect(target)))
+        .map(([targetName]) => `${index}:${targetName}`));
+    const ownContainerEscapes = Array.from(document.querySelectorAll<HTMLElement>(
+      ".oprn-record-actors .db-list-thumb img, .oprn-record-actors .actor-sheet-crop",
+    )).flatMap((visual, index) => {
+      const container = visual.closest<HTMLElement>(".db-list-thumb, .actor-graphic-preview");
+      return container && contains(container.getBoundingClientRect(), visual.getBoundingClientRect())
+        ? []
+        : [index];
+    });
     return {
       columns: getComputedStyle(preview).gridTemplateColumns.split(" ").filter(Boolean).length,
       modalOverflow: modal.scrollWidth - modal.clientWidth,
       previewOverflow: preview.scrollWidth - preview.clientWidth,
+      panelOverlaps,
+      listPreviewOverlaps,
+      ownContainerEscapes,
     };
   });
-  expect(actorLayout).toEqual({ columns: 1, modalOverflow: 0, previewOverflow: 0 });
+  expect(actorLayout).toEqual({
+    columns: 1,
+    modalOverflow: 0,
+    previewOverflow: 0,
+    panelOverlaps: [],
+    listPreviewOverlaps: [],
+    ownContainerEscapes: [],
+  });
+
+  const actorScreenshot = testInfo.outputPath("docked-actor-1024.png");
+  await page.getByTestId("database-modal").screenshot({ path: actorScreenshot });
+  await testInfo.attach("docked-actor-1024", { path: actorScreenshot, contentType: "image/png" });
 
   await page.getByTestId("db-actor-build-open-class").click();
   await expect(page.getByTestId("db-class-build-summary")).toBeVisible();

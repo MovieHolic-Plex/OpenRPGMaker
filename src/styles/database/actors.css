@@ -1235,13 +1235,25 @@
 
 .database-modal-backdrop.is-docked .database-modal-body .oprn-record-workspace.oprn-record-actors {
   grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 248px minmax(0, 1fr);
+  height: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .oprn-record-list-pane {
-  max-height: 180px;
+  box-sizing: border-box;
+  grid-template-rows: auto auto 0 minmax(0, 1fr) auto auto;
+  max-height: none;
   min-width: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .db-list {
+  align-self: stretch;
+  min-height: 0;
+  overflow: auto;
 }
 
 .database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors :is(
