@@ -104,6 +104,7 @@ export type SaveSnapshot = {
     readonly energy?: PlaySession["energy"];
     readonly shippingQueue?: PlaySession["shippingQueue"];
     readonly shippingLastSettledDayKey?: PlaySession["shippingLastSettledDayKey"];
+    readonly dayTransitionLastDayKey?: PlaySession["dayTransitionLastDayKey"];
     readonly shippingHistory?: PlaySession["shippingHistory"];
     readonly bundleContributions?: PlaySession["bundleContributions"];
     readonly completedBundleIds?: PlaySession["completedBundleIds"];
@@ -242,6 +243,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       energy: nonNegativeIntegerOrUndefined(session.energy),
       shippingQueue: structuredClone(session.shippingQueue ?? {}),
       shippingLastSettledDayKey: session.shippingLastSettledDayKey,
+      dayTransitionLastDayKey: session.dayTransitionLastDayKey,
       shippingHistory: structuredClone((session.shippingHistory ?? []).slice(-shippingHistoryLimit(project))),
       bundleContributions: structuredClone(session.bundleContributions ?? {}),
       completedBundleIds: uniqueStrings(session.completedBundleIds),
@@ -371,6 +373,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     ? restoreShippingQueue(project, snapshot.session.shippingQueue)
     : {};
   session.shippingLastSettledDayKey = shippingEnabled ? snapshot.session.shippingLastSettledDayKey : undefined;
+  session.dayTransitionLastDayKey = snapshot.session.dayTransitionLastDayKey;
   session.shippingHistory = shippingEnabled
     ? structuredClone((snapshot.session.shippingHistory ?? []).slice(-shippingHistoryLimit(project)))
     : [];
@@ -543,6 +546,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       shippingQueue: parsePositiveIntegerRecord(session.shippingQueue),
       shippingLastSettledDayKey: typeof session.shippingLastSettledDayKey === "string" && session.shippingLastSettledDayKey.trim()
         ? session.shippingLastSettledDayKey
+        : undefined,
+      dayTransitionLastDayKey: typeof session.dayTransitionLastDayKey === "string" && session.dayTransitionLastDayKey.trim()
+        ? session.dayTransitionLastDayKey
         : undefined,
       shippingHistory: isShippingSettlementArray(session.shippingHistory) ? session.shippingHistory : undefined,
       bundleContributions: isNestedNonNegativeIntegerRecord(session.bundleContributions) ? session.bundleContributions : undefined,

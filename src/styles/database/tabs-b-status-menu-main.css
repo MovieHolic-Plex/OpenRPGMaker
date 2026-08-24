@@ -345,6 +345,46 @@
   /* 위 .status-menu-detail-row 와 같은 이유 — label 은 내용 크기, value 가 남는 폭. */
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
 }
+.oprn-status-menu .life-ledger-detail {
+  gap: 2px;
+  grid-template-rows: auto 44px auto minmax(0, 1fr) auto;
+}
+.life-ledger-artwork {
+  border: 1px solid rgba(219, 236, 255, 0.45);
+  margin: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.life-ledger-artwork img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 52%;
+  width: 100%;
+}
+.life-ledger-tabs {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.life-ledger-tab {
+  min-width: 0;
+  padding-inline: 2px;
+}
+.life-ledger-tab.active {
+  background: rgba(255, 215, 90, 0.18);
+  border-color: rgba(255, 215, 90, 0.72);
+  color: #fff0a8;
+}
+.life-ledger-detail .status-menu-detail-row-compact {
+  min-height: 22px;
+  white-space: normal;
+}
+.life-ledger-detail .status-menu-detail-row-compact .status-menu-detail-label,
+.life-ledger-detail .status-menu-detail-row-compact .status-menu-detail-value {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
 .status-menu-footer {
   align-items: center;
   background:

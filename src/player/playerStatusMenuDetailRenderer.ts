@@ -16,20 +16,64 @@ export function renderStatusMenuDetailPanel(
     class: "status-menu-detail",
     dataset: { testid: "status-menu-detail" },
   });
+  if (detail.tabs?.length) panel.classList.add("life-ledger-detail");
   panel.append(el("h2", {
     class: "status-menu-detail-title",
     text: detail.title,
     dataset: { testid: "status-menu-detail-title" },
   }));
+  if (detail.artwork) {
+    panel.append(el("figure", {
+      class: "life-ledger-artwork",
+      children: [el("img", {
+        attrs: { src: detail.artwork.src, alt: detail.artwork.alt },
+        dataset: { testid: "life-ledger-artwork" },
+      })],
+    }));
+  }
+  let enabledActionIndex = 0;
+  if (detail.tabs?.length) {
+    const tabs = el("div", {
+      class: "life-ledger-tabs",
+      attrs: { role: "tablist", "aria-label": "생활 장부 분류" },
+    });
+    for (const tab of detail.tabs) {
+      const actionIndex = tab.onActivate ? enabledActionIndex : undefined;
+      const button = el("button", {
+        class: "life-ledger-tab status-menu-detail-action",
+        text: tab.label,
+        attrs: {
+          type: "button",
+          role: "tab",
+          "aria-selected": String(tab.selected),
+          "aria-controls": "life-ledger-tab-panel",
+        },
+        dataset: {
+          testid: tab.testId,
+          ...(actionIndex === undefined ? {} : { actionIndex: String(actionIndex) }),
+        },
+        ...(tab.onActivate ? { on: { click: tab.onActivate } } : {}),
+      });
+      if (tab.selected) button.classList.add("active");
+      if (actionIndex === options.selectedActionIndex) button.classList.add("selected");
+      tabs.append(button);
+      if (actionIndex !== undefined) enabledActionIndex += 1;
+    }
+    panel.append(tabs);
+  }
   if (detail.entries.length === 0) {
     panel.append(el("div", {
       class: "status-menu-detail-empty",
       text: detail.emptyLabel ?? detail.hint ?? "",
+      attrs: { id: "life-ledger-tab-panel", role: detail.tabs ? "tabpanel" : "status" },
     }));
+    if (detail.hint) panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
     return panel;
   }
-  const list = el("div", { class: "status-menu-detail-list" });
-  let enabledActionIndex = 0;
+  const list = el("div", {
+    class: "status-menu-detail-list",
+    attrs: { id: "life-ledger-tab-panel", ...(detail.tabs ? { role: "tabpanel" } : {}) },
+  });
   for (const entry of detail.entries) {
     const actionIndex = entry.onActivate && !entry.disabled ? enabledActionIndex : undefined;
     list.append(renderDetailEntry({

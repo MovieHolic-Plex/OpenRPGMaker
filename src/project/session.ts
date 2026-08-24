@@ -165,6 +165,8 @@ export interface PlaySession {
   energy?: number;
   shippingQueue?: Record<string, number>;
   shippingLastSettledDayKey?: string;
+  /** Source calendar day consumed by the most recent atomic day transition. */
+  dayTransitionLastDayKey?: string;
   shippingHistory?: ShippingSettlement[];
   bundleContributions?: Record<string, Record<string, number>>;
   completedBundleIds?: string[];
