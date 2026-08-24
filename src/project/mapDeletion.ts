@@ -49,6 +49,10 @@ export interface MapDeletionImpact {
   /** Animal-home definitions placed on this map and removed with it. */
   readonly farmAnimalBuildingCount: number;
   readonly farmAnimalBuildingIds: readonly string[];
+  readonly farmBuildingPlacementCount: number;
+  readonly farmBuildingPlacementIds: readonly string[];
+  readonly homeDecorationPlacementCount: number;
+  readonly homeDecorationPlacementIds: readonly string[];
 }
 
 export type MapDeletionBlock = {
@@ -68,6 +72,12 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
   const farmAnimalBuildingIds = (project.system.farmAnimalBuildings ?? [])
     .filter((building) => building.mapId === mapId)
     .map((building) => building.id);
+  const farmBuildingPlacementIds = (project.session.farmBuildingPlacements ?? [])
+    .filter((placement) => placement.mapId === mapId)
+    .map((placement) => placement.instanceId);
+  const homeDecorationPlacementIds = (project.session.homeDecorationPlacements ?? [])
+    .filter((placement) => placement.mapId === mapId)
+    .map((placement) => placement.instanceId);
   return {
     mapId,
     mapName: map.name,
@@ -87,6 +97,10 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
     testPresetCount: (project.testPresets ?? []).filter((preset) => preset.startMapId === mapId).length,
     farmAnimalBuildingCount: farmAnimalBuildingIds.length,
     farmAnimalBuildingIds,
+    farmBuildingPlacementCount: farmBuildingPlacementIds.length,
+    farmBuildingPlacementIds,
+    homeDecorationPlacementCount: homeDecorationPlacementIds.length,
+    homeDecorationPlacementIds,
   };
 }
 
@@ -123,6 +137,19 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
   );
   const removedFarmAnimalEventIds = new Set(draft.maps[mapId].events.map((event) => event.id));
   delete draft.maps[mapId];
+
+  if (draft.session.farmBuildingPlacements) {
+    draft.session.farmBuildingPlacements = draft.session.farmBuildingPlacements.filter((placement) => placement.mapId !== mapId);
+  }
+  if (draft.session.homeDecorationPlacements) {
+    draft.session.homeDecorationPlacements = draft.session.homeDecorationPlacements.filter((placement) => placement.mapId !== mapId);
+  }
+  if (draft.database.farmBuildingTypes) {
+    draft.database.farmBuildingTypes = draft.database.farmBuildingTypes.map((type) => withoutDeletedAllowedMap(type, mapId));
+  }
+  if (draft.database.homeDecorationTypes) {
+    draft.database.homeDecorationTypes = draft.database.homeDecorationTypes.map((type) => withoutDeletedAllowedMap(type, mapId));
+  }
 
   if (draft.system.farmAnimalBuildings) {
     draft.system.farmAnimalBuildings = draft.system.farmAnimalBuildings.filter(
@@ -222,6 +249,13 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
       page.commands = stripMapCommands(page.commands, mapId);
     }
   }
+}
+
+function withoutDeletedAllowedMap<T extends { readonly allowedMapIds?: readonly string[] }>(type: T, mapId: string): T {
+  if (!type.allowedMapIds?.includes(mapId)) return type;
+  const kept = type.allowedMapIds.filter((id) => id !== mapId);
+  const { allowedMapIds: _removed, ...base } = type;
+  return { ...base, ...(kept.length > 0 ? { allowedMapIds: kept } : {}) } as T;
 }
 
 function stripEventScheduleMapReferences(event: GameEvent, mapId: MapId): void {
