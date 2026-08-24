@@ -2,6 +2,13 @@
 
 Wiki verification, Playwright evidence, and focused test guidance for editor changes.
 
+## Roguelike run validation (2026-08-24)
+
+- `runControl` and `run` are registered native kinds and participate in command/condition coverage, project shape validation, reference validation, summaries, and story explanation.
+- Project shape validation checks the action/query discriminant and its action-specific fields. Draft validation reports an empty run-condition flag as `condition.run.flag-empty`; run commands have no project-record references.
+- Optional room metadata validation checks non-empty unique slot ids, non-empty choices, unique choices within a slot, positive integer weights, integer floor bounds 1–9999, ordered floor ranges, and same-map `fieldSpawnId` references. `configure_roguelike_room` rejects invalid references before applying the edit; import validation remains the trust boundary for external JSON.
+- The run itself is runtime session state and the Phase 2 work is engine/editor code only, so it does not require Supabase content persistence. Any demo/map authored with these commands or room slots still falls under the mandatory Supabase save-and-reload rule.
+
 ## Validation Expectations
 
 

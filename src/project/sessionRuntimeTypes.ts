@@ -7,6 +7,7 @@ import type { FarmPlots, MonsterInstance } from "@/project/session";
 import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
+import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import type { BattleResult } from "@/project/gameTime";
 
 export type RuntimeAudioState = {
@@ -300,6 +301,7 @@ export interface PlaySessionLike {
   commonEvents?: { id: string; commands: Command[] }[];
   m2Runtime?: M2RuntimeState;
   rng?: RngState;
+  roguelikeRun?: RoguelikeRunState;
   // 직전 전투 처리 결과. battleProcessing 이 종료된 뒤 인터프리터/필드 스폰/페이지 조건에서 사용.
   battleResult?: BattleResult;
 }

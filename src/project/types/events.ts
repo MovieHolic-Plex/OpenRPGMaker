@@ -14,6 +14,7 @@ import type {
 } from "./base";
 import type { Season, TimePhase } from "../gameTime";
 import type { FieldSpawnDef } from "./project";
+import type { RoguelikeRunCondition } from "../roguelikeRun";
 
 export type Trigger =
   | { kind: "action" }
@@ -45,6 +46,7 @@ export type Condition =
   | { kind: "npcActivity"; activity: string }
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
+  | RoguelikeRunCondition
   | { kind: "all"; conditions: Condition[] }
   | { kind: "any"; conditions: Condition[] }
   | { kind: "not"; condition: Condition };
@@ -376,6 +378,17 @@ export type Command =
   | { kind: "openSaveMenu" }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
+  | {
+      kind: "runControl";
+      action: "start";
+      seed?: number;
+      runId?: string;
+      startFloor?: number;
+    }
+  | { kind: "runControl"; action: "advance"; amount?: number }
+  | { kind: "runControl"; action: "end"; result: "completed" | "failed" | "abandoned" }
+  | { kind: "runControl"; action: "setFlag"; flag: string; value: boolean }
+  | { kind: "runControl"; action: "resetRoom"; roomId?: string }
   | { kind: "killPlayer"; message?: string }
   | { kind: "triggerEnding"; endingId?: string }
   | { kind: "gameOver" }

@@ -1,6 +1,7 @@
 import type Phaser from "phaser";
 import type { ResolvedActionCombatConfig } from "@/project/actionCombat";
 import type { EnemyActionAttack } from "@/project/types";
+import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 
 export type ActionEnemyMode = "combat" | "windup" | "dash" | "recover";
 
@@ -63,6 +64,7 @@ export interface ActionCombatSceneState {
   swingCooldownMs: number;
   stamina: number;
   hitstopMs: number;
+  fieldSpawnRuntime?: FieldSpawnRuntimeState;
   barsGraphics?: Phaser.GameObjects.Graphics;
   hud?: { update(model: ActionHudModel): void; destroy(): void; setHpVisible(visible: boolean): void };
   lastHudSignature: string;

@@ -338,6 +338,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     return commandLine("여관 처리", valuePart(String(cmd.price)), plainPart(`G · ${recover}`), ...extras);
   },
   checkpointSave: (cmd) => commandLine("체크포인트 저장", valuePart(cmd.label || "세션")),
+  runControl: (cmd) => commandLine("로그라이크 런", valuePart(runControlSummary(cmd))),
   killPlayer: (cmd) => commandLine("즉사", valuePart(cmd.message || "게임 오버")),
   triggerEnding: (cmd) => commandLine("엔딩 트리거", valuePart(cmd.endingId || "자동 선택")),
   gameOver: () => [commandPart("게임 오버")],
@@ -1004,6 +1005,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
+    case "run":
+      return runConditionSummary(condition);
     case "all":
       return condition.conditions.length
         ? `모두(${condition.conditions.map((child) => conditionSummary(child)).join(" ∧ ")})`
@@ -1014,6 +1017,34 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
         : "하나(없음)";
     case "not":
       return `아님(${conditionSummary(condition.condition)})`;
+  }
+}
+
+function runControlSummary(command: Extract<Command, { kind: "runControl" }>): string {
+  switch (command.action) {
+    case "start":
+      return `시작 · seed ${command.seed ?? "자동"} · ${command.startFloor ?? 1}층`;
+    case "advance":
+      return `다음 층 +${command.amount ?? 1}`;
+    case "end":
+      return `종료 · ${command.result}`;
+    case "setFlag":
+      return `${command.flag || "플래그"} ${command.value ? "ON" : "OFF"}`;
+    case "resetRoom":
+      return `방 초기화 · ${command.roomId || "현재 방"}`;
+  }
+}
+
+function runConditionSummary(condition: Extract<Extract<Command, { kind: "fork" }>["condition"], { kind: "run" }>): string {
+  switch (condition.query) {
+    case "active":
+      return `런 ${condition.value === false ? "비활성" : "진행 중"}`;
+    case "floor":
+      return `런 층 ${condition.op} ${condition.value}`;
+    case "flag":
+      return `런 ${condition.flag || "플래그"} ${condition.value ? "ON" : "OFF"}`;
+    case "result":
+      return `런 결과 ${condition.result}`;
   }
 }
 

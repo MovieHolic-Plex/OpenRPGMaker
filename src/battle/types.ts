@@ -18,6 +18,7 @@ import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/pro
 import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
 import type { Rng } from "@/util/rng";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
+import type { RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type { BattleFlow } from "@/project/types";
 
@@ -117,6 +118,7 @@ export interface BattleSessionState {
   // 직전 전투 처리 결과(세션 SSOT — openwiki/runtime-battle.md §battleResult).
   // 트룹 배틀 이벤트의 battleResult 조건이 이 스냅샷 값으로 평가된다.
   readonly battleResult?: BattleResult;
+  readonly roguelikeRun?: RoguelikeRunState;
   readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];

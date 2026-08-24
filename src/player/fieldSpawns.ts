@@ -1,6 +1,8 @@
 import { inBounds, isPassable } from "@/project/collision";
 import type { Dir, EventPageGraphic, FieldSpawnDef, GameEvent, GameMap, Project, Rect } from "@/project/types";
 import type { RuntimeEventPositions } from "@/project/runtimeEventState"
+import type { RoguelikeRunState } from "@/project/roguelikeRun";
+import { resolveRoguelikeRoomFieldSpawns, roguelikeRoomGenerationKey } from "@/project/roguelikeRooms";
 
 export const FIELD_SPAWN_EVENT_PREFIX = "__field_spawn__";
 export const FIELD_SPAWN_FIXED_STEP_MS = 1000;
@@ -33,6 +35,8 @@ export interface FieldSpawnRuntimeEntry {
 
 export interface FieldSpawnRuntimeState {
   readonly mapId: string;
+  readonly roguelikeGenerationKey?: string;
+  readonly roguelikeRunRef?: RoguelikeRunState;
   // 필드 스폰 상태는 세이브에 저장하지 않는다. 로드/맵 진입 시 authored fieldSpawns에서 초기 배치로 다시 만든다.
   entries: FieldSpawnRuntimeEntry[];
   fixedAccumulatorMs: number;
@@ -58,15 +62,19 @@ export function createFieldSpawnRuntime(
   project: Project,
   map: GameMap,
   player: { readonly x: number; readonly y: number },
-  killedCounts?: Readonly<Record<string, number>>
+  killedCounts?: Readonly<Record<string, number>>,
+  roguelikeRun?: RoguelikeRunState
 ): FieldSpawnRuntimeState {
+  const generationKey = roguelikeRoomGenerationKey(map, roguelikeRun);
+  const spawns = resolveRoguelikeRoomFieldSpawns(map, roguelikeRun);
   const state: FieldSpawnRuntimeState = {
     mapId: map.id,
-    entries: (map.fieldSpawns ?? []).map((spawn) => ({
+    ...(generationKey ? { roguelikeGenerationKey: generationKey, roguelikeRunRef: roguelikeRun } : {}),
+    entries: spawns.map((spawn) => ({
       spawn: normalizeFieldSpawn(project, spawn),
       alive: [],
       respawnTimersMs: [],
-      persistedDead: Math.max(0, Math.round(killedCounts?.[spawn.id] ?? 0)),
+      persistedDead: generationKey ? 0 : Math.max(0, Math.round(killedCounts?.[spawn.id] ?? 0)),
       cursor: 0,
       serial: 0,
     })),
@@ -76,6 +84,17 @@ export function createFieldSpawnRuntime(
     spawnUntilCapacity(state, entry, project, map, player);
   }
   return state;
+}
+
+export function fieldSpawnRuntimeNeedsRefresh(
+  state: FieldSpawnRuntimeState | null,
+  map: GameMap,
+  roguelikeRun: RoguelikeRunState | undefined
+): boolean {
+  if (!state || state.mapId !== map.id) return true;
+  const activeRun = roguelikeRun?.status === "active" ? roguelikeRun : undefined;
+  return state.roguelikeRunRef !== activeRun
+    || state.roguelikeGenerationKey !== roguelikeRoomGenerationKey(map, roguelikeRun);
 }
 
 export function advanceFieldSpawns(

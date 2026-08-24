@@ -394,6 +394,18 @@ function validateCondition(
     case "friendshipAtLeast":
     case "battleResult":
       return;
+    case "run":
+      if (condition.query === "flag" && !condition.flag.trim()) {
+        issues.push({
+          severity: "error",
+          code: "condition.run.flag-empty",
+          message: "런 플래그 이름이 비어 있습니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-run-flag" },
+        });
+      }
+      return;
   }
   const exhaustive: never = condition;
   void exhaustive;
@@ -738,6 +750,7 @@ function validateCommand(
     case "checkpointSave":
     case "openSaveMenu":
     case "despawnFieldEnemy":
+    case "runControl":
     case "killPlayer":
     case "gameOver":
     case "ending":

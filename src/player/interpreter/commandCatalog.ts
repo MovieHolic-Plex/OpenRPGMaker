@@ -3,7 +3,7 @@ import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from
 import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
-import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
 import { levelForXp, rewardsForLevel } from "@/project/skillModel";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
@@ -28,6 +28,14 @@ import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
 import { advanceFarmPlotsForDay } from "@/player/farming";
 import { resolveShopStock } from "@/project/shopStock";
+import {
+  advanceRoguelikeRunFloor,
+  endRoguelikeRun,
+  resetRoguelikeRunRoom,
+  setRoguelikeRunFlag,
+  startRoguelikeRun,
+} from "@/project/roguelikeRun";
+import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -554,6 +562,35 @@ export function executeCommand(
       return pause("spawnFieldEnemy", { kind: "spawnFieldEnemy", spawn: command.spawn });
     case "despawnFieldEnemy":
       return pause("despawnFieldEnemy", { kind: "despawnFieldEnemy", spawnId: command.spawnId });
+    case "runControl": {
+      switch (command.action) {
+        case "start": {
+          const seed = command.seed ?? Math.floor(nextSessionRandom(state.session, "misc") * 0x1_0000_0000);
+          startRoguelikeRun(state.session, {
+            seed,
+            runId: command.runId,
+            startFloor: command.startFloor,
+          });
+          break;
+        }
+        case "advance":
+          advanceRoguelikeRunFloor(state.session, command.amount);
+          break;
+        case "end":
+          endRoguelikeRun(state.session, command.result);
+          break;
+        case "setFlag":
+          setRoguelikeRunFlag(state.session, command.flag, command.value);
+          break;
+        case "resetRoom":
+          {
+            const map = state.project?.maps[state.session.currentMapId];
+            resetRoguelikeRunRoom(state.session, command.roomId ?? (map ? roguelikeRoomId(map) : state.session.currentMapId));
+          }
+          break;
+      }
+      return resumeNext(frame);
+    }
     case "killPlayer":
       killParty(state);
       return pause("gameOver", { kind: "gameOver", message: command.message });

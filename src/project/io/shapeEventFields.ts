@@ -33,6 +33,7 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.troopIds !== undefined) validateIdArray(`map ${id}.troopIds`, map.troopIds);
     if (map.encounterTable !== undefined) validateEncounterTable(`map ${id}.encounterTable`, map.encounterTable);
     if (map.fieldSpawns !== undefined) validateFieldSpawns(`map ${id}.fieldSpawns`, map.fieldSpawns);
+    if (map.roguelikeRoom !== undefined) validateRoguelikeRoom(`map ${id}.roguelikeRoom`, map.roguelikeRoom);
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
     if (map.farmableArea !== undefined) validateRectArray(`map ${id}.farmableArea`, map.farmableArea);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
@@ -91,6 +92,47 @@ function validateFieldSpawns(label: string, value: unknown): void {
     }
     if (entry.chase !== undefined) requireBoolean(`${label}[${index}].chase`, entry.chase);
     if (entry.graphic !== undefined) validateEventGraphic(`${label}[${index}].graphic`, entry.graphic);
+  }
+}
+
+function validateRoguelikeRoom(label: string, value: unknown): void {
+  const room = requireRecord(label, value);
+  if (room.roomId !== undefined) {
+    const roomId = requireString(`${label}.roomId`, room.roomId);
+    assert(roomId.trim().length > 0, `${label}.roomId는 비울 수 없습니다.`);
+  }
+  if (room.encounterSlots === undefined) return;
+  const slotIds = new Set<string>();
+  for (const [slotIndex, slotValue] of requireArray(`${label}.encounterSlots`, room.encounterSlots).entries()) {
+    const slotLabel = `${label}.encounterSlots[${slotIndex}]`;
+    const slot = requireRecord(slotLabel, slotValue);
+    const slotId = requireString(`${slotLabel}.id`, slot.id).trim();
+    assert(slotId.length > 0, `${slotLabel}.id는 비울 수 없습니다.`);
+    assert(!slotIds.has(slotId), `${slotLabel}.id가 중복됩니다: ${slotId}`);
+    slotIds.add(slotId);
+    const choices = requireArray(`${slotLabel}.choices`, slot.choices);
+    assert(choices.length > 0, `${slotLabel}.choices는 하나 이상이어야 합니다.`);
+    const choiceIds = new Set<string>();
+    for (const [choiceIndex, choiceValue] of choices.entries()) {
+      const choiceLabel = `${slotLabel}.choices[${choiceIndex}]`;
+      const choice = requireRecord(choiceLabel, choiceValue);
+      const fieldSpawnId = requireString(`${choiceLabel}.fieldSpawnId`, choice.fieldSpawnId).trim();
+      assert(fieldSpawnId.length > 0, `${choiceLabel}.fieldSpawnId는 비울 수 없습니다.`);
+      assert(!choiceIds.has(fieldSpawnId), `${choiceLabel}.fieldSpawnId가 중복됩니다: ${fieldSpawnId}`);
+      choiceIds.add(fieldSpawnId);
+      if (choice.weight !== undefined) {
+        const weight = requireNumber(`${choiceLabel}.weight`, choice.weight);
+        assert(Number.isInteger(weight) && weight > 0, `${choiceLabel}.weight는 1 이상의 정수여야 합니다.`);
+      }
+      for (const key of ["minFloor", "maxFloor"] as const) {
+        if (choice[key] === undefined) continue;
+        const floor = requireNumber(`${choiceLabel}.${key}`, choice[key]);
+        assert(Number.isInteger(floor) && floor >= 1 && floor <= 9_999, `${choiceLabel}.${key}는 1..9999 정수여야 합니다.`);
+      }
+      if (typeof choice.minFloor === "number" && typeof choice.maxFloor === "number") {
+        assert(choice.minFloor <= choice.maxFloor, `${choiceLabel}.minFloor가 maxFloor보다 큽니다.`);
+      }
+    }
   }
 }
 

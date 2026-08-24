@@ -4,6 +4,13 @@
 
 Event authoring, event pages, event commands, move routes, command dialogs, and cutscene/horror/puzzle tools.
 
+## Roguelike run authoring (2026-08-24)
+
+- The native command picker exposes **로그라이크 런 제어**. Its rich body switches among start, next-floor, end, run-flag, and room-reset fields; changing the action rerenders because each action has a different command shape.
+- Fork condition forms expose **로그라이크 런** with active, floor, flag, and result modes. Page conditions expose the same control under the advanced-condition list, and page badges/summaries use `R` and run-specific text.
+- Multi-field handlers keep staged values so consecutive edits do not restore an older field. `test/roguelikeRunEditor.test.ts` protects floor condition editing, consecutive flag edits, and action-shape rerendering.
+- AI-assisted room authoring uses the existing field-spawn builder first (`make_hunting_ground` or equivalent), then `configure_roguelike_room` to group those spawn ids into weighted/floor-gated slots, and finally `runControl` events for start, advance, reset, and end. The room tool does not invent missing field-spawn references.
+
 ## Event Authoring
 
 

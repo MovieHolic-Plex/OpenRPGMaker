@@ -65,6 +65,7 @@ const EXPECTED_COMMAND_KINDS = [
   "shop",
   "inn",
   "checkpointSave",
+  "runControl",
   "killPlayer",
   "triggerEnding",
   "gameOver",

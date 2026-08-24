@@ -244,6 +244,32 @@ function traceCondition(
         expected: condition.result,
         summary: `battleResult=${session.battleResult ?? "none"} expected ${condition.result}`,
       };
+    case "run": {
+      const run = session.roguelikeRun;
+      const actual = condition.query === "active"
+        ? run?.status === "active"
+        : condition.query === "floor"
+          ? run?.floor ?? null
+          : condition.query === "flag"
+            ? run?.flags[condition.flag] ?? false
+            : run?.status ?? null;
+      const expected = condition.query === "active"
+        ? condition.value ?? true
+        : condition.query === "floor"
+          ? condition.value
+          : condition.query === "flag"
+            ? condition.value
+            : condition.result;
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        actual,
+        expected,
+        ...(condition.query === "floor" ? { op: condition.op } : {}),
+        summary: `run:${condition.query}=${String(actual ?? "none")} expected ${String(expected)}`,
+      };
+    }
     case "all":
       return {
         index,
