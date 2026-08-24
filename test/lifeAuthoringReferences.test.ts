@@ -39,6 +39,25 @@ describe("life authoring reference integrity", () => {
     ]) expect(issues).toContain(id);
   });
 
+  // Break caught: the separately developed P0 and editor validators both report
+  // the same life-skill reward reference after integration.
+  it("reports each missing life-skill reward reference once", () => {
+    const project = createBlankProject();
+    project.database.lifeSkills = [{
+      id: "life_farming",
+      name: "농사",
+      skillType: "farming",
+      maxLevel: 10,
+      levelUpRewards: [{ level: 2, switchId: "missing_switch", recipeId: "missing_recipe" }],
+    }];
+    project.system.skillSystem = { enabled: true };
+
+    const issues = collectProjectReferenceIssues(project);
+
+    expect(issues.filter((issue) => issue.includes("missing_switch"))).toHaveLength(1);
+    expect(issues.filter((issue) => issue.includes("missing_recipe"))).toHaveLength(1);
+  });
+
   // Break caught: deleting an item or switch used by life authoring is allowed by the editor guard.
   it("blocks item and switch deletion when life records still reference them", () => {
     const project = store.getCurrent();
