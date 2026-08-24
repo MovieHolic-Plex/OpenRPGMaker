@@ -1,13 +1,13 @@
   .canvas-area,
   .editor-layout .canvas-area {
-    /* 상태바 54px / 툴바 예약 — scroll-shell이 상태바 아래로 들어가지 않게 맞춤 */
+    /* 상태바 36px / 툴바 예약 — scroll-shell이 상태바 아래로 들어가지 않게 맞춤 */
     --editor-canvas-chrome-top: 48px;
-    --editor-canvas-chrome-bottom: 54px;
+    --editor-canvas-chrome-bottom: 36px;
   }
 
   .editor-canvas-scroll-shell {
     background: var(--editor-canvas-bg);
-    bottom: var(--editor-canvas-chrome-bottom, 54px);
+    bottom: var(--editor-canvas-chrome-bottom, 36px);
     top: var(--editor-canvas-chrome-top, 48px);
   }
 
@@ -69,11 +69,11 @@
     background: var(--editor-toolbar-bg);
     border-top: 1px solid var(--editor-line);
     color: var(--editor-text-muted);
-    font-size: 14px;
-    height: 54px;
+    font-size: 12px;
+    height: 36px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0 14px;
+    padding: 0 10px;
   }
 
   .editor-statusbar-cell {
@@ -84,7 +84,7 @@
     flex: 0 0 auto;
     min-width: max-content;
     overflow: visible;
-    padding: 0 10px;
+    padding: 0 8px;
     text-overflow: clip;
     white-space: nowrap;
   }

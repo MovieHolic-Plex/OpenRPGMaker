@@ -46,8 +46,8 @@ test.describe("glm-5.2-ultrafast as default model", () => {
       await restore.click();
     }
 
-    await expect(page.getByTestId("ai-settings-toggle")).toBeVisible({ timeout: 5_000 });
-    await page.getByTestId("ai-settings-toggle").click();
+    await expect(page.getByTestId("topbar-ai-settings")).toBeVisible({ timeout: 5_000 });
+    await page.getByTestId("topbar-ai-settings").click();
     await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
 
     await expect(page.getByTestId("ai-config-model")).toHaveValue("z-ai/glm-5.2-ultrafast");

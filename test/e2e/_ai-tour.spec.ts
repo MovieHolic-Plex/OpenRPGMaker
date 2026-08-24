@@ -148,7 +148,7 @@ test("② 슬래시 스킬과 도구 목록", async ({ page }) => {
 test("③ 연결 설정", async ({ page }) => {
   test.setTimeout(180_000);
   await boot(page);
-  await page.getByTestId("ai-settings-toggle").click();
+  await page.getByTestId("topbar-ai-settings").click();
   const modal = page.getByTestId("ai-settings-modal");
   await expect(modal).toBeVisible({ timeout: 10_000 });
   await shot(modal, "10-settings-modal");

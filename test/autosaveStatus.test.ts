@@ -79,7 +79,7 @@ describe("autosave status", () => {
     expect(states.map((state) => state.kind)).toEqual(["pending", "saving", "error", "saving", "error"]);
   });
 
-  it("rerenders only the editor statusbar when autosave state changes outside a project update", async () => {
+  it("keeps autosave state out of the map-focused editor statusbar", async () => {
     const restoreDom = installFakeDom();
     const windowListeners = installBrowserGlobals();
     const fetchControl = installControlledFetch();
@@ -96,13 +96,13 @@ describe("autosave status", () => {
     const flushPromise = store.flush();
     await Promise.resolve();
 
-    expect(statusText(main)).toContain("저장 중");
+    expect(findByTestId(fakeElement(main), "db-autosave-state")).toBeNull();
     expect(renderTilePalette).not.toHaveBeenCalled();
 
     fetchControl.resolveFirst(new Response(null, { status: 201 }));
     await flushPromise;
 
-    expect(statusText(main)).toContain("저장됨");
+    expect(findByTestId(fakeElement(main), "db-autosave-state")).toBeNull();
     expect(renderTilePalette).not.toHaveBeenCalled();
     windowListeners.clear();
     restoreDom();
@@ -207,12 +207,6 @@ function mockEditorDependencies(renderTilePalette: (node: HTMLElement) => void):
     openTestPlayModal: vi.fn(),
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({ renderTilePalette }));
-}
-
-function statusText(root: HTMLElement): string {
-  const state = findByTestId(fakeElement(root), "db-autosave-state");
-  if (!state) throw new Error("db-autosave-state missing");
-  return state.textContent;
 }
 
 function fakeElement(node: HTMLElement): FakeElement {

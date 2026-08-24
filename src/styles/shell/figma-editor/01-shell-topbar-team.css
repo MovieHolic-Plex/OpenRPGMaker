@@ -56,7 +56,8 @@
 
   .team-history-button,
   .team-identity-button,
-  .quick-battle-test-button {
+  .quick-battle-test-button,
+  .topbar-ai-settings-button {
     align-items: center;
     background: var(--control-bg);
     border: 1px solid var(--editor-line);
@@ -88,7 +89,9 @@
   .team-identity-button:focus-visible,
   .team-identity-button[aria-expanded="true"],
   .quick-battle-test-button:hover,
-  .quick-battle-test-button:focus-visible {
+  .quick-battle-test-button:focus-visible,
+  .topbar-ai-settings-button:hover,
+  .topbar-ai-settings-button:focus-visible {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     outline: none;
@@ -110,6 +113,17 @@
   .quick-battle-test-glyph {
     display: block;
     font-size: 15px;
+    line-height: 1;
+  }
+
+  .topbar-ai-settings-button {
+    background: var(--accent-muted);
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .topbar-ai-settings-glyph {
+    font-size: 14px;
     line-height: 1;
   }
 

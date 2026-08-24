@@ -23,8 +23,8 @@ test.describe("glm-5.2-ultrafast preset", () => {
       await restore.click();
     }
 
-    await expect(page.getByTestId("ai-settings-toggle")).toBeVisible({ timeout: 5_000 });
-    await page.getByTestId("ai-settings-toggle").click();
+    await expect(page.getByTestId("topbar-ai-settings")).toBeVisible({ timeout: 5_000 });
+    await page.getByTestId("topbar-ai-settings").click();
     await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
 
     await page.getByTestId("ai-auth-api-key").click();

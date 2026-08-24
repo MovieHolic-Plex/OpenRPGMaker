@@ -8,7 +8,6 @@ import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
 import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { editorState, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import {
@@ -27,17 +26,15 @@ import {
   takeoverMapLock,
   type MapEditLockStatus,
 } from "@/editor/mapEditLocks";
-import { installLayoutBboxOverlay, toggleLayoutBboxes } from "@/editor/layoutBboxOverlay";
+import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
-import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
 import {
   closeTestPlayModal,
   openRandomTroopBattleTestModal,
@@ -64,8 +61,6 @@ const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 const RESPONSIVE_BREAKPOINT = 720;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
-// AI 연동 칩 주기 재조회 — chatgpt OAuth 토큰 만료·companion 장애를 감지해 칩을 다시 그린다.
-const AI_CONNECTION_POLL_MS = 60_000;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -93,7 +88,6 @@ let mapLockBannerRoot: HTMLElement | null = null;
 let statusBarRoot: HTMLElement | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
-let unsubAutoSave: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
@@ -104,8 +98,6 @@ let unsubLayoutBbox: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
-// AI 연동 칩 폴링 타이머 — teardownEditor 에서 정리한다.
-let aiConnectionPollTimer: ReturnType<typeof setInterval> | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
@@ -220,7 +212,6 @@ export function renderEditor(main: HTMLElement): void {
   unsubLayoutBbox = installLayoutBboxOverlay();
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
   unsubEditor = editorState.subscribe(() => refreshPanels());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
@@ -234,7 +225,6 @@ export function renderEditor(main: HTMLElement): void {
   installSelectionChipHint();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();
-  startAiConnectionPolling();
 }
 
 /** AI 독은 자기 호스트(`chatSidePanel`)를 갖는다 — 좌측 도크가 만들지 않는다. */
@@ -368,18 +358,15 @@ export function teardownEditor(): void {
   teardownAiChatPanel();
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
-  stopAiConnectionPolling();
   cleanupProjectE2EBridge();
 
   unsubStore?.();
-  unsubAutoSave?.();
   unsubEditor?.();
   unsubMapLocks?.();
   unsubUiMode?.();
   unsubLayoutBbox?.();
   unsubWorkspace?.();
   unsubStore = null;
-  unsubAutoSave = null;
   unsubEditor = null;
   unsubMapLocks = null;
   unsubUiMode = null;
@@ -418,27 +405,6 @@ export function toggleLeftPanel(): void {
 function refreshStatusbar(): void {
   if (!statusBarRoot) return;
   renderEditorStatusbar(statusBarRoot);
-}
-
-/** AI 연동 칩 폴링 — 부팅 시 1회 즉시 조회하고 이후 주기적으로 캐시를 갱신한다. */
-function startAiConnectionPolling(): void {
-  stopAiConnectionPolling();
-  void refreshAiConnectionStatus(refreshStatusbar);
-  aiConnectionPollTimer = setInterval(() => {
-    void refreshAiConnectionStatus(refreshStatusbar);
-  }, AI_CONNECTION_POLL_MS);
-  // 실제 LLM 요청 성패가 바뀌면 즉시 칩을 다시 그린다(폴링 대기 없이).
-  // "AI 연결됨"인데 404 나던 거짓말 수정(적대 평가 P0) — llmClient 가 이벤트를 쏜다.
-  if (typeof window !== "undefined") {
-    window.removeEventListener(AI_TRANSPORT_HEALTH_EVENT, refreshStatusbar);
-    window.addEventListener(AI_TRANSPORT_HEALTH_EVENT, refreshStatusbar);
-  }
-}
-
-function stopAiConnectionPolling(): void {
-  if (aiConnectionPollTimer === null) return;
-  clearInterval(aiConnectionPollTimer);
-  aiConnectionPollTimer = null;
 }
 
 export function isLeftCollapsed(): boolean {
@@ -541,7 +507,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
   return el("div", {
     class: "persistence-mode-banner is-recovery",
     dataset: { testid: "save-skip-banner" },
-    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.",
+    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.",
   });
 }
 
@@ -550,7 +516,7 @@ export function persistenceModeBannerText(reason: string, saveSkipped: boolean):
     return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
   }
   if (reason === "dev-showcase") return "개발 모드 — 이 브라우저에만 저장됩니다.";
-  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.";
+  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.";
 }
 
 function projectExportNodeElement(): HTMLElement {
@@ -748,18 +714,6 @@ function renderEditorStatusbar(container: HTMLElement): void {
   if (shouldShowMapEditLockStatus(lockStatus, mapId)) {
     cells.push(renderMapEditLockStatus(lockStatus, mapId));
   }
-  cells.push(renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar));
-  // AI 연동 칩 — DB 칩과 동일 패턴. 영역 작업·AI 채팅이 LLM 인증에 의존하므로 상태를 항상 노출한다.
-  cells.push(
-    el("button", {
-      class: "editor-statusbar-cell" + (state.showLayoutBboxes ? " active" : ""),
-      text: state.showLayoutBboxes ? "설계도 숨기기" : "설계도 보기",
-      attrs: { type: "button", title: "맵 bbox 설계도(P/M/H) 오버레이" },
-      dataset: { testid: "toggle-layout-bboxes" },
-      on: { click: () => toggleLayoutBboxes() },
-    })
-  );
-  cells.push(renderAiConnectionStatus(refreshStatusbar));
   container.append(...cells);
 }
 

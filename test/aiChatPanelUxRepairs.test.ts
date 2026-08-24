@@ -356,20 +356,16 @@ describe("키 온보딩과 설정 접근성", () => {
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("인증 실패");
   });
 
-  it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {
-    // Break: settings still expands an inline ai-config details instead of the modal.
+  it("AI 패널 안에는 헤더로 이동한 설정 아이콘을 중복 렌더하지 않는다", () => {
     const panel = renderPanel();
-    findByTestId(panel, "ai-settings-toggle")?.click();
-
-    const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
-    expect(modal).not.toBeNull();
+    expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+    expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
     expect(findByTestId(panel, "ai-config")).toBeNull();
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-chatgpt"));
   });
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-skill-slash-toggle", "ai-new-session"]) {
+    for (const testId of ["ai-collapse", "ai-studio-toggle", "ai-skill-slash-toggle", "ai-new-session"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });

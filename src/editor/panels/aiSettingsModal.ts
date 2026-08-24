@@ -327,6 +327,7 @@ export function renderAiSettingsForm(options: {
       apiKey.row,
       el("details", {
         class: "ai-settings-advanced",
+        attrs: { open: "" },
         dataset: { testid: "ai-settings-advanced" },
         children: [
           el("summary", { text: "고급 설정" }),

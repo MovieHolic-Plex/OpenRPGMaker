@@ -1759,7 +1759,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const collapsedRestore = createDirectorRestoreButton();
 
   const directorPlate = createDirectorPlate();
-  // 1차 크롬: ＋ 새 대화 · ⚙ 설정 · ☰ 더보기 · 접기. 2차 액션은 햄버거로만.
+  // 1차 크롬: ＋ 새 대화 · ☰ 더보기 · 접기. AI 설정은 앱 헤더가 단독 소유한다.
   const openToolsBrowser = (): void => {
     void openToolBrowserModal();
   };
@@ -1784,21 +1784,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "ai-harness" },
     on: { click: openHarness },
-  });
-  const settingsButton = el("button", {
-    class: "ai-chat-icon-btn",
-    text: "⚙",
-    attrs: { type: "button", title: "설정", "aria-label": "AI 설정 열기" },
-    dataset: { testid: "ai-settings-toggle" },
-    on: { click: () => openAiSettings("first") },
-  });
-  // float 모드(헤더 숨김)에서도 1클릭 설정.
-  const commandBarSettingsButton = el("button", {
-    class: "ai-command-settings-button ai-chat-icon-btn",
-    text: "⚙",
-    attrs: { type: "button", title: "설정", "aria-label": "AI 설정 열기" },
-    dataset: { testid: "ai-settings-command-bar" },
-    on: { click: () => openAiSettings("first") },
   });
   const currentChatDock = (): ChatDock => readChatDock();
   let refreshDockLabels: () => void = () => {};
@@ -2060,7 +2045,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     el("div", { class: "ai-more-menu-label", text: "온도", attrs: { role: "presentation" } }),
     ...temperatureMenuButtons("ai-more-menu-item", "ai-temperature", closeMoreMenu),
     moreMenuItem("새 대화", "ai-more-new-session", () => newSessionButton.click()),
-    moreMenuItem("설정", "ai-more-settings", () => settingsButton.click()),
     moreMenuItem("되돌리기", "ai-more-undo", () => undoLastButton.click()),
     moreMenuItem("내보내기", "ai-more-export", () => exportButton?.click()),
     moreMenuDockItem,
@@ -2084,7 +2068,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }),
       el("span", {
         class: "ai-header-actions",
-        children: [newSessionButton, settingsButton, moreWrap],
+        children: [newSessionButton, moreWrap],
       }),
       collapseButton,
     ],
@@ -2098,10 +2082,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   toolbar.inert = true;
 
-  // 하단: / · 입력 · 보내기 · (플로트만) 설정. 도크 모드는 메뉴로만 — 상태줄 옆 칩 제거.
+  // 하단: / · 입력 · 보내기. 도크 모드는 메뉴로만 — 상태줄 옆 칩 제거.
   const inputRow = el("div", {
     class: "ai-chat-input-row",
-    children: [skillToggle, input, sendButton, commandBarSettingsButton],
+    children: [skillToggle, input, sendButton],
   });
   const { commandBar, commandMenu, commandMenuToggle, dispose: disposeCommandBar } = createCommandBarElements({
     slashHost,

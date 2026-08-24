@@ -205,8 +205,7 @@ test("C 모달·툴바 — 설정/도구/더보기/도킹/글꼴", async ({ page
   await boot(page);
 
   // 초보(커맨드바)에서는 설정 진입점이 기어 아이콘(ai-settings-command-bar)이다.
-  let settings = page.getByTestId("ai-settings-toggle");
-  if (!(await settings.isVisible().catch(() => false))) settings = page.getByTestId("ai-settings-command-bar");
+  const settings = page.getByTestId("topbar-ai-settings");
   if (await settings.isVisible().catch(() => false)) {
     await settings.click();
     const modal = page.getByTestId("ai-settings-modal");
@@ -215,12 +214,12 @@ test("C 모달·툴바 — 설정/도구/더보기/도킹/글꼴", async ({ page
     await shot(modal, "C02-settings-modal");
     const adv = page.getByTestId("ai-settings-advanced");
     if (await adv.isVisible().catch(() => false)) {
-      await adv.click();
+      if ((await adv.getAttribute("open")) === null) await adv.click();
       await page.waitForTimeout(400);
       await shot(modal, "C03-settings-advanced");
     }
     await page.getByTestId("ai-settings-close").click();
-  } else log("ABSENT ai-settings-toggle");
+  } else log("ABSENT topbar-ai-settings");
 
   const tools = page.getByTestId("ai-tools-browser");
   if (await tools.isVisible().catch(() => false)) {

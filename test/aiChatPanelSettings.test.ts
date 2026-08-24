@@ -3,6 +3,7 @@
 // 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 감독 m3 / 실행 flash-lite.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
 import { OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
@@ -76,19 +77,17 @@ describe("패널 접기", () => {
 });
 
 function openSettingsSurface(panel: FakeElement): FakeElement {
-  const commandBarSettings = findByTestId(panel, "ai-settings-command-bar");
-  const headerSettings = findByTestId(panel, "ai-settings-toggle");
-  expect(commandBarSettings ?? headerSettings).not.toBeNull();
-  (commandBarSettings ?? headerSettings)?.click();
+  expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
+  expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+  openAiSettingsModal();
   const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
   if (!modal) throw new Error("ai-settings-modal missing");
   return modal;
 }
 
 describe("설정 자동 저장", () => {
-  it("커맨드바에서 설정 모달을 1클릭으로 연다", () => {
+  it("AI 패널 밖의 전용 설정 모달을 열고 고급 설정을 바로 펼친다", () => {
     const panel = renderPanel();
-    expect(findByTestId(panel, "ai-settings-command-bar")).not.toBeNull();
     const modal = openSettingsSurface(panel);
     expect(findByTestId(modal, "ai-config-baseurl")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
@@ -100,6 +99,7 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
+    expect(findByTestId(modal, "ai-settings-advanced")?.getAttribute("open")).not.toBeNull();
     expect(modal.textContent).toContain("제공자 로그인 또는 키");
     const apiKey = findByTestId(modal, "ai-config-apikey");
     expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(true);
