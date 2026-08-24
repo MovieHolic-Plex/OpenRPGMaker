@@ -208,26 +208,31 @@ function transferTargetsOf(commands: readonly Command[], into: Set<string>): voi
 }
 
 export function analyzeHorrorReachability(project: Project): HorrorReachabilityAnalysis {
-  // Scan every page of every event once, per map, to build a conservative transfer graph
-  // and the set of ending ids each map can trigger.
+  // Compute all page records once, then group transfer targets / ending triggers by map
+  // in a single pass (avoids rebuilding pageRecords(project) once per map).
+  const records = pageRecords(project);
   const transferTargetsByMap = new Map<string, Set<string>>();
   const endingTriggersByMap = new Map<string, Set<string>>();
-  for (const map of Object.values(project.maps)) {
-    const transfers = new Set<string>();
-    const endings = new Set<string>();
-    for (const record of pageRecords(project)) {
-      if (record.mapId !== map.id) continue;
-      transferTargetsOf(record.commands, transfers);
-      for (const command of record.commands) {
-        if (command.kind === "triggerEnding" && command.endingId) endings.add(command.endingId);
-      }
+  for (const record of records) {
+    let transfers = transferTargetsByMap.get(record.mapId);
+    if (!transfers) transferTargetsByMap.set(record.mapId, (transfers = new Set()));
+    let endings = endingTriggersByMap.get(record.mapId);
+    if (!endings) endingTriggersByMap.set(record.mapId, (endings = new Set()));
+    transferTargetsOf(record.commands, transfers);
+    for (const command of record.commands) {
+      if (command.kind === "triggerEnding" && command.endingId) endings.add(command.endingId);
     }
-    transferTargetsByMap.set(map.id, transfers);
-    endingTriggersByMap.set(map.id, endings);
+  }
+
+  // Collect missing transfer targets across ALL authored maps (reachable or not).
+  const missingTransferTargets = new Set<string>();
+  for (const transfers of transferTargetsByMap.values()) {
+    for (const target of transfers) {
+      if (!project.maps[target]) missingTransferTargets.add(target);
+    }
   }
 
   // BFS from the actual start map, following only defined transfer targets.
-  const missingTransferTargets = new Set<string>();
   const reachableMapIds = new Set<string>();
   const queue = project.startMapId ? [project.startMapId] : [];
   while (queue.length > 0) {
@@ -236,8 +241,7 @@ export function analyzeHorrorReachability(project: Project): HorrorReachabilityA
     reachableMapIds.add(mapId);
     if (!project.maps[mapId]) continue;
     for (const target of transferTargetsByMap.get(mapId) ?? []) {
-      if (!project.maps[target]) missingTransferTargets.add(target);
-      else queue.push(target);
+      if (project.maps[target]) queue.push(target);
     }
   }
 
@@ -249,8 +253,8 @@ export function analyzeHorrorReachability(project: Project): HorrorReachabilityA
     );
 
   return {
-    reachableMapIds: [...reachableMapIds],
-    missingTransferTargets: [...missingTransferTargets],
+    reachableMapIds: [...reachableMapIds].sort(),
+    missingTransferTargets: [...missingTransferTargets].sort(),
     unreachableEndingIds,
   };
 }
