@@ -44,7 +44,7 @@ describe("P1 daily weather transition integration", () => {
       ok: true,
       receipt: {
         destinationDayKey: "1:spring:2",
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"],
+        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
         weather: forecast,
         wateredPlots: 1,
       },
@@ -88,7 +88,7 @@ describe("P1 daily weather transition integration", () => {
     expect(result).toMatchObject({
       ok: true,
       receipt: {
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"],
+        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
         animals: {
           ok: true,
           dayKey: sourceDayKey,

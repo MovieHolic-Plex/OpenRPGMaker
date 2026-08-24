@@ -79,7 +79,7 @@ describe("P0 day transition integration", () => {
       receipt: {
         sourceDayKey,
         destinationDayKey: "1:summer:1",
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"],
+        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
       },
     });
     expect(session.shippingQueue).toEqual({});

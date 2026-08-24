@@ -1,4 +1,4 @@
-export const RNG_STREAMS = ["encounter", "battle", "movement", "misc"] as const;
+export const RNG_STREAMS = ["encounter", "battle", "movement", "fishing", "misc"] as const;
 
 export type RngStreamName = (typeof RNG_STREAMS)[number];
 
@@ -34,6 +34,7 @@ export function createRngState(seed = randomSessionSeed()): RngState {
       encounter: createStreamState(normalizedSeed, "encounter"),
       battle: createStreamState(normalizedSeed, "battle"),
       movement: createStreamState(normalizedSeed, "movement"),
+      fishing: createStreamState(normalizedSeed, "fishing"),
       misc: createStreamState(normalizedSeed, "misc"),
     },
   };
@@ -67,6 +68,7 @@ export function cloneRngState(state: RngState): RngState {
       encounter: { ...state.streams.encounter },
       battle: { ...state.streams.battle },
       movement: { ...state.streams.movement },
+      fishing: { ...state.streams.fishing },
       misc: { ...state.streams.misc },
     },
   };
@@ -91,6 +93,10 @@ export function mulberry32(seed: number): Rng {
     state = next.state;
     return next.value;
   };
+}
+
+export function deterministicRng(seed: number, ...namespace: readonly (string | number)[]): Rng {
+  return mulberry32(fnv1a(`${normalizeSeed(seed)}:${namespace.join(":")}`));
 }
 
 function createStreamState(seed: number, stream: RngStreamName): RngStreamState {

@@ -59,7 +59,7 @@ import {
   isRuntimeSpawnedEventRecord,
   isShopPawnTicketsRecord,
   isShippingSettlementArray,
-  isRngState,
+  parseRngState,
   isSaveOrigin,
   isAutosaveTrigger,
   isSelfSwitchesRecord,
@@ -87,6 +87,8 @@ import {
   parseHomeDecorationPlacementRecord,
 } from "@/player/saveSlotSpatialValidation";
 import { restoreSpatialPlacementRecords } from "@/project/spatialPlacementRestore";
+import { validProgress, type CollectionProgress } from "@/project/collections";
+import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -146,6 +148,9 @@ export type SaveSnapshot = {
     readonly farmAnimals?: PlaySession["farmAnimals"];
     readonly farmBuildingPlacements?: PlaySession["farmBuildingPlacements"];
     readonly homeDecorationPlacements?: PlaySession["homeDecorationPlacements"];
+    readonly collections?: PlaySession["collections"];
+    readonly museumRewardAppliedIds?: PlaySession["museumRewardAppliedIds"];
+    readonly forageLastAdvancedDayKey?: PlaySession["forageLastAdvancedDayKey"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
@@ -303,6 +308,11 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
       farmBuildingPlacements: structuredClone(spatial.farmBuildingPlacements),
       homeDecorationPlacements: structuredClone(spatial.homeDecorationPlacements),
+      collections: sanitizeCollections(session.collections),
+      museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
+      forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
+        ? session.forageLastAdvancedDayKey
+        : undefined,
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
@@ -332,7 +342,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
       chests: parseChestsRecord(session.chests) ?? {},
-      placeables: structuredClone(session.placeables ?? {}),
+      placeables: restorePlaceables(project, session.placeables),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
@@ -457,6 +467,8 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     : undefined;
   session.dailyWeather = savedDailyWeather;
   session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
+  if (session.collections !== undefined) session.collections = sanitizeCollections(snapshot.session.collections) ?? {};
+  if (session.museumRewardAppliedIds !== undefined) session.museumRewardAppliedIds = sanitizeReceiptIds(snapshot.session.museumRewardAppliedIds) ?? [];
   if (snapshot.session.monsterInstances) {
     session.monsterInstances = {};
     for (const [instanceId, instance] of Object.entries(snapshot.session.monsterInstances)) {
@@ -497,7 +509,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
   session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
-  if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
+  if (snapshot.session.placeables) session.placeables = restorePlaceables(project, snapshot.session.placeables);
   const spatial = restoreSpatialPlacementRecords(project, session, {
     farmBuildingPlacements: parseFarmBuildingPlacementRecord(snapshot.session.farmBuildingPlacements),
     homeDecorationPlacements: parseHomeDecorationPlacementRecord(snapshot.session.homeDecorationPlacements),
@@ -527,6 +539,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
   if (restoredGameTime) session.gameTime = restoredGameTime;
+  session.forageLastAdvancedDayKey = restoredGameTime
+    && snapshot.session.forageLastAdvancedDayKey === calendarDayKey(restoredGameTime)
+    ? snapshot.session.forageLastAdvancedDayKey
+    : undefined;
   session.dayTransitionLastDayKey = restoredGameTime && isPreviousCalendarDayKey(
     project,
     restoredGameTime,
@@ -548,6 +564,71 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   else if (session.m2Runtime) session.m2Runtime.screen.weather = "none";
   syncMonsterPartyFollowers(project, session);
   return session;
+}
+
+const P2_SESSION_RECORD_LIMIT = 2_000;
+
+function sanitizeCollections(value: PlaySession["collections"] | unknown): Record<string, CollectionProgress> | undefined {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const result: Record<string, CollectionProgress> = {};
+  for (const [rawItemId, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
+    const itemId = rawItemId.trim();
+    const progress = validProgress(raw);
+    if (!itemId || !progress) continue;
+    if (!progress.discovered && progress.shippedCount === 0 && progress.caughtCount === 0 && !progress.donated) continue;
+    result[itemId] = progress;
+  }
+  return result;
+}
+
+function sanitizeReceiptIds(value: readonly string[] | unknown): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) return [];
+  const result: string[] = [];
+  for (const raw of value.slice(0, P2_SESSION_RECORD_LIMIT)) {
+    const id = typeof raw === "string" ? raw.trim() : "";
+    if (id && !result.includes(id)) result.push(id);
+  }
+  return result;
+}
+
+function restorePlaceables(project: Project, value: PlaySession["placeables"] | unknown): Record<string, PlaceableObjectState> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const result: Record<string, PlaceableObjectState> = {};
+  for (const [key, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    const candidate = raw as Record<string, any>;
+    const mapId = typeof candidate.mapId === "string" ? candidate.mapId.trim() : "";
+    const id = typeof candidate.id === "string" ? candidate.id.trim() : "";
+    const kind = typeof candidate.kind === "string" ? candidate.kind.trim() : "";
+    const x = candidate.x;
+    const y = candidate.y;
+    const map = project.maps[mapId];
+    if (!id || !kind || !map || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)
+      || x < 0 || y < 0 || x >= map.width || y >= map.height || key !== placeableKey(mapId, x, y)) continue;
+    const itemId = typeof candidate.itemId === "string" && itemIds.has(candidate.itemId) ? candidate.itemId : undefined;
+    const base: PlaceableObjectState = { id, mapId, x, y, kind, ...(itemId ? { itemId } : {}) };
+    const provenance = candidate.forageSpawn;
+    if (provenance !== undefined) {
+      if (!provenance || typeof provenance !== "object" || Array.isArray(provenance)) continue;
+      const areaId = typeof provenance.areaId === "string" ? provenance.areaId.trim() : "";
+      const entryId = typeof provenance.entryId === "string" ? provenance.entryId.trim() : "";
+      const spawnedDayKey = parseCalendarDayKey(provenance.spawnedDayKey) ? provenance.spawnedDayKey as string : "";
+      const area = project.system.seasonalForage?.areas.find((entry) => entry.id === areaId && entry.mapId === mapId);
+      if (kind !== "forage" || !itemId || !area || !area.entries.some((entry) => entry.id === entryId) || !spawnedDayKey) continue;
+      result[key] = { ...base, forageSpawn: { areaId, entryId, spawnedDayKey } };
+      continue;
+    }
+    result[key] = {
+      ...base,
+      ...(candidate.seasonalDrops && typeof candidate.seasonalDrops === "object" && !Array.isArray(candidate.seasonalDrops)
+        ? { seasonalDrops: structuredClone(candidate.seasonalDrops) }
+        : {}),
+    };
+  }
+  return result;
 }
 
 // 색조/날씨/숨김 상태를 m2Runtime.screen 에 복원한다.
@@ -667,6 +748,11 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       farmAnimals: parseFarmAnimalStateRecord(session.farmAnimals),
       farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
       homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
+      collections: sanitizeCollections(session.collections),
+      museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
+      forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
+        ? session.forageLastAdvancedDayKey as string
+        : undefined,
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
@@ -723,7 +809,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
       gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,
-      rng: isRngState(session.rng) ? session.rng : undefined,
+      rng: parseRngState(session.rng),
       roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
       screen: parseScreenState(session.screen),
       access: parseAccessState(session.access),

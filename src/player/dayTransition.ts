@@ -18,8 +18,9 @@ import { syncFarmPlotsToDate } from "@/player/farming";
 import { waterFarmPlotsForDailyWeather } from "@/player/farmingWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { advanceSeasonalForage, type ForageAdvanceResult } from "@/project/seasonalForage";
 
-export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"] as const;
+export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"] as const;
 export type DayTransitionStage = (typeof DAY_TRANSITION_STAGES)[number];
 
 export type DayTransitionReceipt = {
@@ -29,6 +30,7 @@ export type DayTransitionReceipt = {
   readonly shipping: ShippingSettlementResult;
   readonly weather?: DailyWeatherState;
   readonly wateredPlots: number;
+  readonly forage: ForageAdvanceResult;
   readonly energy: EnergyChangeResult;
   readonly makers: MakerAdvanceResult;
   readonly animals: FarmAnimalAdvanceResult;
@@ -38,7 +40,7 @@ export type DayTransitionResult =
   | { readonly ok: true; readonly receipt: DayTransitionReceipt }
   | {
       readonly ok: false;
-      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "shipping" | "energy" | "makers" | "animals";
+      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "shipping" | "forage" | "energy" | "makers" | "animals";
       readonly stage?: DayTransitionStage;
     };
 
@@ -110,6 +112,11 @@ export function transitionToNextDay(
   const wateredPlots = waterFarmPlotsForDailyWeather(draft, draft.gameTime);
   syncFarmPlotsToDate(project, draft, system);
 
+  const forage = advanceSeasonalForage(project, draft, draft.gameTime);
+  if (!forage.ok && forage.reason !== "disabled" && forage.reason !== "already-advanced") {
+    return { ok: false, reason: "forage", stage: "forage" };
+  }
+
   const energy = restoreEnergy(project, draft, project.system.energy?.restorePerDay);
   if (!energy.ok && energy.reason !== "disabled") {
     return { ok: false, reason: "energy", stage: "energy" };
@@ -147,6 +154,7 @@ export function transitionToNextDay(
       shipping,
       ...(weather ? { weather } : {}),
       wateredPlots,
+      forage,
       energy,
       makers,
       animals,
