@@ -264,6 +264,50 @@ describe("class build summary", () => {
     expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(2);
   });
 
+  it("counts class-common equipment for a promotion-only class with no directly assigned actors", () => {
+    // Break caught: an actorless promotion target reports zero despite class-side runtime equipment permissions.
+    const project = createBlankProject();
+    const klass = project.database.classes[1];
+    if (!klass) throw new Error("fixture needs a promotion-only class");
+    project.database.actors = project.database.actors.filter((actor) => actor.classId !== klass.id);
+    klass.equipmentPermissions = {
+      actorIds: [],
+      classIds: [],
+      equipmentIds: ["equip_permission_allowed"],
+    };
+    project.database.equipment = [
+      normalizeEquipmentRecord({
+        id: "equip_class_side_allowed",
+        name: "Class-side allowed",
+        slot: "weapon",
+        equippableClassIds: [klass.id],
+      }),
+      normalizeEquipmentRecord({
+        id: "equip_permission_allowed",
+        name: "Permission allowed",
+        slot: "armor",
+      }),
+      normalizeEquipmentRecord({ id: "equip_promotion_denied", name: "Denied", slot: "helmet" }),
+    ];
+
+    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(2);
+  });
+
+  it("applies the classIds permission path even when a class has no directly assigned actors", () => {
+    // Break caught: the classIds branch of runtime canEquip disappears when there is no actor to call it with.
+    const project = createBlankProject();
+    const klass = project.database.classes[1];
+    if (!klass) throw new Error("fixture needs a promotion-only class");
+    project.database.actors = project.database.actors.filter((actor) => actor.classId !== klass.id);
+    klass.equipmentPermissions = { actorIds: [], classIds: [klass.id], equipmentIds: [] };
+    project.database.equipment = [
+      normalizeEquipmentRecord({ id: "equip_class_id_one", name: "Class id one", slot: "weapon" }),
+      normalizeEquipmentRecord({ id: "equip_class_id_two", name: "Class id two", slot: "armor" }),
+    ];
+
+    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(2);
+  });
+
   it("derives its role and backlink counts without mutating project data", () => {
     // Break caught: summary metadata is persisted into the schema or ignores the actual actor backlinks.
     const project = createBlankProject();
