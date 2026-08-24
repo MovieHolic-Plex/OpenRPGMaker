@@ -39,7 +39,7 @@ describe("pickRandomTroopId", () => {
   });
 });
 
-describe("map-focused edit topbar", () => {
+describe("topbar random battle button", () => {
   let restoreDom: (() => void) | undefined;
   let previousWindow: typeof globalThis.window | undefined;
 
@@ -82,12 +82,25 @@ describe("map-focused edit topbar", () => {
     restoreDom = undefined;
   });
 
-  it("does not render a random battle shortcut while editing", async () => {
+  it("dispatches random-battle detail from the restored topbar button", async () => {
+    // Break: bottom-bar cleanup removes the unrelated topbar battle shortcut.
     const { renderTopbar } = await import("@/editor/panels/menu");
     const topbar = document.createElement("div") as unknown as FakeElement;
     document.body.append(topbar as unknown as Node);
 
+    const events: CustomEvent[] = [];
+    const handler = (event: Event): void => {
+      events.push(event as CustomEvent);
+    };
+    window.addEventListener("oprn:test-play-window", handler);
+
     renderTopbar(topbar as unknown as HTMLElement);
-    expect(findByTestId(topbar, "topbar-battle-test")).toBeNull();
-  });
+    const button = findByTestId(topbar, "topbar-battle-test");
+    expect(button).toBeTruthy();
+    button?.click();
+
+    expect(events).toHaveLength(1);
+    expect(events[0]?.detail).toEqual({ kind: "random-battle" });
+    window.removeEventListener("oprn:test-play-window", handler);
+  }, 30_000);
 });

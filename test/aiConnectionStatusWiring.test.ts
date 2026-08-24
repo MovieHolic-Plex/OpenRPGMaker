@@ -189,48 +189,20 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe("맵 집중형 상태바", () => {
-  it("맥락 정보만 남기고 온라인 저장·설계도·AI 연결 액션을 제거한다", async () => {
-    // Break: a global save/blueprint/AI action gets mounted in the canvas statusbar again.
+describe("에디터 하단 상태바 제거", () => {
+  it("맥락 정보와 액션을 포함한 하단 상태바 자체를 렌더하지 않는다", async () => {
+    // Break: any bottom statusbar surface is mounted below the canvas again.
     storage.setItem("oprn:ai-config", JSON.stringify(APIKEY_READY));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
 
     renderEditor(main);
 
-    const chip = findByTestId(fakeElement(main), "ai-connection-status");
-    const authoringEntry = findByTestId(fakeElement(main), "ai-authoring-entry");
-    expect(chip).not.toBeNull();
-    expect(authoringEntry).not.toBeNull();
-    expect(authoringEntry?.textContent).toContain("AI로 만들기");
-    expect(authoringEntry?.tagName.toLowerCase()).toBe("button");
-    // 칩은 클릭 가능한 버튼이어야 한다(설정 모달 진입점).
-    expect(chip?.tagName.toLowerCase()).toBe("button");
-    // 저장값이 apiKey 여도 OAuth 로 승격되므로, 동반 서비스 조회 전에는 "확인 중" 이 정상이다.
-    // (옛 스펙은 여기서 '연결됨' 을 기대했다 — 설정 모양만 보고 초록을 칠하던 배선이다.)
-    expect(chip?.textContent).toContain("확인 중");
-
-    teardownEditor();
-  });
-
-  it("저장된 설정이 apiKey 여도 칩은 OAuth 상태를 가리킨다", async () => {
-    // 키 유무로 칩을 칠하던 판정은 사라졌다 — 인증 경로가 OAuth 하나뿐이므로 "키 없음" 은
-    // 더 이상 가능한 상태가 아니다. 이 스펙은 그 문구가 되살아나는 것을 막는다.
-    storage.setItem("oprn:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
-    const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
-    const main = document.createElement("main");
-
-    renderEditor(main);
-
-    const chip = findByTestId(fakeElement(main), "ai-connection-status");
-    expect(chip).not.toBeNull();
-    expect(chip?.textContent).not.toContain("키 없음");
-    // auth-${authMode} 클래스는 걷었다(소비하는 스타일시트가 없었다). 대신 상태 kind 클래스가
-    // 실제로 색을 입는다 — styles/editor/ai-auth-connection.css 가 그것을 소비한다.
-    expect(chip?.className).not.toContain("auth-");
-    const kinds = ["ready", "checking", "disconnected", "offline", "error"];
-    expect(kinds.filter((kind) => chip?.classList.contains(kind))).toHaveLength(1);
-
+    const surface = fakeElement(main);
+    expect(findByTestId(surface, "editor-statusbar")).toBeNull();
+    expect(findByTestId(surface, "db-connection-status")).toBeNull();
+    expect(findByTestId(surface, "toggle-layout-bboxes")).toBeNull();
+    expect(findByTestId(surface, "ai-connection-status")).toBeNull();
 
     teardownEditor();
   });

@@ -148,13 +148,6 @@ async function expectModernEditorShell(page: Page): Promise<void> {
       scroll: node.scrollWidth,
       text: node.textContent ?? "",
     }));
-    const visibleStatusCells = Array.from(document.querySelectorAll<HTMLElement>(".editor-statusbar-cell"))
-      .filter((node) => getComputedStyle(node).display !== "none")
-      .map((node) => ({
-        client: node.clientWidth,
-        scroll: node.scrollWidth,
-        text: node.textContent ?? "",
-      }));
     const toolbarItems = Array.from(document.querySelectorAll<HTMLElement>(".canvas-toolbar > *")).map((node) => ({
       client: node.clientWidth,
       scroll: node.scrollWidth,
@@ -162,7 +155,6 @@ async function expectModernEditorShell(page: Page): Promise<void> {
     }));
     const canvasAreaRect = rectOf(".canvas-area");
     const menuRect = rectOf(".map-context-menu");
-    const statusRect = rectOf("[data-testid='editor-statusbar']");
     const toolbarRect = rectOf("[data-testid='editor-zoom-controls']");
     const paletteRect = rectOf("[data-testid='left-palette-root']");
     const mapTreeRect = rectOf("[data-testid='left-map-root']");
@@ -177,17 +169,15 @@ async function expectModernEditorShell(page: Page): Promise<void> {
       menuBg: styleOf(".map-context-menu").backgroundColor,
       menuBorderRadius: styleOf(".map-context-menu").borderRadius,
       menuLabelsOverflow: menuLabelWidths.filter((item) => item.scroll > item.client + 1),
-      menuStaysAboveStatusbar: menuRect.bottom <= statusRect.top + 1,
+      menuStaysInCanvas: menuRect.bottom <= canvasAreaRect.bottom + 1,
       paletteBg: styleOf("[data-testid='left-palette-root']").backgroundColor,
-      statusBg: styleOf("[data-testid='editor-statusbar']").backgroundColor,
-      statusLabelsOverflow: visibleStatusCells.filter((item) => item.scroll > item.client + 1),
-      statusVisible: statusRect.height > 20 && statusRect.bottom <= window.innerHeight,
+      statusVisible: document.querySelector("[data-testid='editor-statusbar']") !== null,
       topbarBg: styleOf(".topbar").backgroundColor,
       toolbarItemsOverflow: toolbarItems.filter((item) => item.scroll > item.client + 1),
       toolbarStaysInCanvas: toolbarRect.left >= canvasAreaRect.left - 1
         && toolbarRect.right <= canvasAreaRect.right + 1
         && toolbarRect.top >= canvasAreaRect.top - 1
-        && toolbarRect.bottom < statusRect.top,
+        && toolbarRect.bottom <= canvasAreaRect.bottom + 1,
       toolbarBg: styleOf("[data-testid='oprn-toolbar']").backgroundColor,
     };
   });
@@ -198,19 +188,17 @@ async function expectModernEditorShell(page: Page): Promise<void> {
   expect(metrics.leftBg).toBe("rgb(252, 249, 242)");
   expect(metrics.paletteBg).toBe("rgb(252, 249, 242)");
   expect(metrics.menuBg).toBe("rgb(255, 255, 255)");
-  expect(metrics.statusBg).toBe("rgb(252, 249, 242)");
   expect(metrics.leftWidth).toBeGreaterThanOrEqual(320);
   expect(metrics.leftWidth).toBeLessThanOrEqual(410);
   expect(metrics.leftPanelHasMockupSections).toBe(true);
   expect(metrics.leftPanelSectionOrder).toBe(true);
   expect(metrics.menuBorderRadius).toBe("10px");
   expect(metrics.menuLabelsOverflow).toEqual([]);
-  expect(metrics.menuStaysAboveStatusbar).toBe(true);
-  expect(metrics.statusLabelsOverflow).toEqual([]);
+  expect(metrics.menuStaysInCanvas).toBe(true);
   expect(metrics.toolbarItemsOverflow).toEqual([]);
   expect(metrics.toolbarStaysInCanvas).toBe(true);
   expect(metrics.documentOverflow).toBeLessThanOrEqual(0);
-  expect(metrics.statusVisible).toBe(true);
+  expect(metrics.statusVisible).toBe(false);
 }
 
 test("Figma-like editor shell and Korean event context menu match the dark mockup", async ({ page }) => {

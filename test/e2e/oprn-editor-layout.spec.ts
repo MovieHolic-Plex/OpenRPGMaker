@@ -18,7 +18,6 @@ type CompactShellMetric = {
   readonly viewport: CompactShellViewport;
   readonly bodyWidth: number;
   readonly documentWidth: number;
-  readonly glyphWrapped: boolean;
   readonly regions: Readonly<Record<string, { readonly bottom: number; readonly left: number; readonly right: number; readonly top: number }>>;
   // Beginner icon rail computed style — runtime contract migrated from the
   // editor-ui-modes.css regex pin (overflow visible / z-index var(--z-rail) / ~48px width).
@@ -61,12 +60,9 @@ async function readCompactShellMetric(page: Page, mode: CompactShellMode, viewpo
       editorRoot: '[data-testid="editor-layout"]',
       leftPanel: ".left-panel",
       saveBanner: '[data-testid="save-skip-banner"]',
-      statusbar: '[data-testid="editor-statusbar"]',
       topbar: ".topbar",
     };
     const longKoreanName = "달빛이 머무는 아주 긴 한국어 프로젝트와 지도 이름".repeat(4);
-    const mapLabel = document.querySelector<HTMLElement>('[data-testid="editor-statusbar"] .editor-statusbar-cell:nth-child(2)');
-    if (mapLabel) mapLabel.textContent = `맵: ${longKoreanName}`;
     const title = document.querySelector<HTMLElement>(".oprn-toolbar .title");
     if (title) title.textContent = longKoreanName;
 
@@ -78,13 +74,11 @@ async function readCompactShellMetric(page: Page, mode: CompactShellMode, viewpo
         return [name, { bottom: box.bottom, left: box.left, right: box.right, top: box.top }];
       })
     );
-    const mapLabelStyle = mapLabel ? getComputedStyle(mapLabel) : null;
     const leftPanelNode = document.querySelector<HTMLElement>(".left-panel");
     const leftPanelStyle = leftPanelNode ? getComputedStyle(leftPanelNode) : null;
     return {
       bodyWidth: document.body.scrollWidth,
       documentWidth: document.documentElement.scrollWidth,
-      glyphWrapped: mapLabelStyle?.whiteSpace !== "nowrap" || (mapLabel?.getBoundingClientRect().height ?? 0) > 54,
       mode: expectedMode,
       regions,
       viewport: expectedViewport,
@@ -169,7 +163,6 @@ test("editor shell contains Basic and Expert regions at every supported viewport
       await recordCompactShellEvidence(modePage, metric);
       expect(metric.documentWidth).toBeLessThanOrEqual(viewport.width);
       expect(metric.bodyWidth).toBeLessThanOrEqual(viewport.width);
-      expect(metric.glyphWrapped).toBe(false);
       for (const region of Object.values(metric.regions)) {
         expect(region.left).toBeGreaterThanOrEqual(0);
         expect(region.right).toBeLessThanOrEqual(viewport.width);
@@ -564,7 +557,7 @@ test("right click picks the visible upper tile even when lower layer is active",
   await page.mouse.click(target.x, target.y, { button: "right" });
 
   await expect(page.getByTestId("selected-tile-status")).toContainText(upperTile);
-  await expect(page.getByTestId("editor-statusbar")).toContainText(upperTile);
+  await expect(page.getByTestId("editor-statusbar")).toHaveCount(0);
 });
 
 test("middle mouse drag pans the map without changing the selected layer", async ({ page }) => {

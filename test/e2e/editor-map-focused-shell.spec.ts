@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test("edit mode keeps chrome focused on the map and exposes scrollable AI settings", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "standard"));
+test("edit mode restores existing chrome, removes the bottom bar, and exposes scrollable AI settings", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto("/?freshProject=1");
 
@@ -20,10 +20,15 @@ test("edit mode keeps chrome focused on the map and exposes scrollable AI settin
     "oprn-toolbar",
     "topbar-test-play",
     "topbar-battle-test",
+  ]) {
+    await expect(page.getByTestId(testId)).toBeVisible();
+  }
+
+  for (const testId of [
+    "editor-statusbar",
     "db-connection-status",
     "toggle-layout-bboxes",
     "ai-connection-status",
-    "build-palette-ai",
     "ai-settings-toggle",
     "ai-settings-command-bar",
   ]) {
