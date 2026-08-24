@@ -82,6 +82,17 @@ export function generatedEffectAnimationId(slug: string): string {
   return `anim_gen_${slug.replaceAll("-", "_")}`;
 }
 
+const GENERATED_EFFECT_ANIMATION_ID_ALIASES: Readonly<Record<string, string>> = {
+  "arcane-nova": "anim_magic",
+  "heal-bloom": "anim_heal",
+  "poison-mist": "anim_poison",
+};
+
+/** Stable database id, including the three legacy ids retained for existing skill references. */
+export function generatedEffectDatabaseAnimationId(slug: string): string {
+  return GENERATED_EFFECT_ANIMATION_ID_ALIASES[slug] ?? generatedEffectAnimationId(slug);
+}
+
 export function generatedEffectSheetFileName(slug: string): string {
   return `effect-${slug}.png`;
 }

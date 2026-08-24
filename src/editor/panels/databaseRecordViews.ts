@@ -6,6 +6,9 @@ import {
   addDatabaseRecord,
   deleteDatabaseRecord,
   duplicateDatabaseRecord,
+  generatedBattleEffectPackPendingChanges,
+  generatedBattleEffectPackStatus,
+  installGeneratedBattleEffectPack,
   type DatabaseCollection,
   updateDatabaseRecord,
 } from "@/editor/databaseActions";
@@ -214,9 +217,40 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       },
     }),
     deleteButton(collection, rerender),
+    ...(collection === "battleAnimations" ? [generatedEffectInstallButton(rerender)] : []),
     viewToggle(collection, rerender)
   );
   return wrap;
+}
+
+function generatedEffectInstallButton(rerender: () => void): HTMLElement {
+  const status = generatedBattleEffectPackStatus();
+  const pending = generatedBattleEffectPackPendingChanges(status);
+  const button = el("button", {
+    class: "btn small",
+    text: pending === 0 ? `이펙트 ${status.totalAnimations}종 적용됨` : `이펙트 ${status.totalAnimations}종 적용`,
+    attrs: {
+      type: "button",
+      title: pending === 0
+        ? "생성 이펙트와 기본 배우·직업·스킬·아이템 연결이 모두 적용되어 있습니다."
+        : `누락 ${status.missingAnimations}종을 추가하고 기본 배우·직업·스킬·아이템 연결을 적용합니다.`,
+    },
+    dataset: { testid: "db-install-generated-effects" },
+    on: {
+      click: () => {
+        if (pending === 0) return;
+        const result = installGeneratedBattleEffectPack();
+        setSelectedRecordId("battleAnimations", result.firstAnimationId);
+        toast(
+          `전투 이펙트 적용: 애니메이션 ${result.addedAnimations + result.updatedAnimations}종, 배우·직업 ${result.updatedActors + result.updatedClasses}개, 스킬 ${result.updatedSkills}개, 아이템 ${result.updatedItems}개`,
+          "ok",
+        );
+        rerender();
+      },
+    },
+  });
+  if (pending === 0) (button as HTMLButtonElement).disabled = true;
+  return button;
 }
 
 // 갤러리↔리스트 뷰 토글 — 컬렉션별 세션 상태만 전환하고 기존 rerender 경로로 목록 창을

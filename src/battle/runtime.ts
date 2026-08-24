@@ -865,6 +865,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result.hit ? "damage" : "miss",
       "attack",
     );
+    const animationId = normalAttackAnimationId(actor);
+    if (animationId) {
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target.id);
+      attachAnimationToLatestTimeline(lastAnimation);
+    }
+  }
+
+  function normalAttackAnimationId(actor: MutableBattler): string | undefined {
+    const actorRecord = options.project.database.actors.find((record) => record.id === actor.recordId);
+    const equipment = actorEquipment.get(actor.recordId as ActorId);
+    if (!equipment?.weapon && actorRecord?.unarmedAnimationId) return actorRecord.unarmedAnimationId;
+    const classAnimationId = options.project.database.classes.find((record) => record.id === actor.classId)?.animationId;
+    return classAnimationId ?? actorRecord?.unarmedAnimationId ?? lookupSkill(DEFAULT_SKILL_ID)?.animationId;
   }
 
   function applyGen1Struggle(

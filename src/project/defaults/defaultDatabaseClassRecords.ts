@@ -19,6 +19,7 @@ import {
   RANGER_EQUIPMENT_IDS,
   SCOUT_EQUIPMENT_IDS,
 } from "./defaultDatabaseRecordIds";
+import { applyGeneratedBattleEffectClassBindings } from "./generatedBattleEffectBindings";
 
 const STANDARD_BATTLE_COMMANDS = [
   { id: "cmd_attack", name: "공격", kind: "attack" },
@@ -30,7 +31,7 @@ const STANDARD_BATTLE_COMMANDS = [
 ] as const satisfies readonly ClassBattleCommand[];
 
 export function defaultClassRecords(): ClassRecord[] {
-  return [
+  const records = [
     normalizeClassRecord({
       id: DEFAULT_CLASS_ID,
       name: "전사",
@@ -110,4 +111,6 @@ export function defaultClassRecords(): ClassRecord[] {
       },
     }),
   ];
+  applyGeneratedBattleEffectClassBindings(records);
+  return records;
 }
