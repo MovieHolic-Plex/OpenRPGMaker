@@ -1,5 +1,5 @@
 import { normalizeTimeSystemConfig } from "@/project/databaseRecordModel";
-import { DEFAULT_DAY_END_HOUR, DEFAULT_DAY_START_HOUR, DEFAULT_TIME_MINUTES_PER_REAL_SECOND } from "@/project/gameTime";
+import { DEFAULT_DAY_END_HOUR, DEFAULT_DAY_START_HOUR, DEFAULT_DAYS_PER_SEASON, DEFAULT_TIME_MINUTES_PER_REAL_SECOND } from "@/project/gameTime";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const configureTimeSystem: ToolDefinition = {
@@ -14,6 +14,7 @@ const configureTimeSystem: ToolDefinition = {
       minutesPerRealSecond: { type: "number", description: "기본 1. 1초마다 몇 게임 분이 흐르는지" },
       dayStartHour: { type: "integer", description: "기본 6" },
       dayEndHour: { type: "integer", description: "기본 26(새벽 2시)" },
+      daysPerSeason: { type: "integer", description: "계절당 일수. 기본 28" },
       forceSleep: { type: "boolean", description: "dayEndHour 도달 시 강제 취침. 기본 false" },
       onDayEnd: { type: "string", description: "다음날 시작 직전 실행할 공통 이벤트 id" },
     },
@@ -33,6 +34,7 @@ const configureTimeSystem: ToolDefinition = {
       minutesPerRealSecond: numberArg(args.minutesPerRealSecond, DEFAULT_TIME_MINUTES_PER_REAL_SECOND),
       dayStartHour: integerArg(args.dayStartHour, DEFAULT_DAY_START_HOUR),
       dayEndHour: integerArg(args.dayEndHour, DEFAULT_DAY_END_HOUR),
+      daysPerSeason: integerArg(args.daysPerSeason, DEFAULT_DAYS_PER_SEASON),
       forceSleep: args.forceSleep === true,
       onDayEnd,
     });

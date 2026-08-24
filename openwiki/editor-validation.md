@@ -1,5 +1,15 @@
 # Editor Validation Expectations
 
+## 생활 저작 표면 집중 검증 (2026-08-24)
+
+- 생활 기술·제작 UI 변경은 `test/databaseLifeCraftingView.test.ts`, `test/databaseSidebarNav.test.ts`, `test/databaseSidebarKeyboard.test.ts`, `test/databaseSystemView.test.ts`를 실행한다. 테스트는 nav/count/view 연결, 5개 레코드군의 구조화 CRUD, undo dirty-state, serialize/deserialize 왕복, 28일 기본 계절 길이 편집을 검증해야 한다.
+- `configure_time_system` 변경은 `test/timeSystem.test.ts`에서 tool schema에 `daysPerSeason`이 존재하고 실행 payload가 정규화 설정으로 전달되며 non-number project shape가 거부되는지 검증한다.
+- NPC 일정 UI 변경은 `test/editorNpcSchedule.test.ts`와 event aggregate gate batch를 함께 실행한다. 빈 schedule에서 add/delete가 가능해야 하고 timePhase/hourRange/season/dayRange/map/x/y/facing/activity가 실제 project draft에 기록되어야 한다. map bounds/passability validator를 UI 편의상 우회하지 않는다.
+- 생활 참조 변경은 `test/lifeAuthoringReferences.test.ts`를 실행한다. `collectProjectReferenceIssues`는 레벨 보상의 switch/recipe와 제작·강화·판매·도구 행동의 item FK를 보고해야 하며 editor delete guard도 동일 참조를 차단해야 한다.
+- 동일 아이템에 대한 판매가 행 중복과 도구 행동 id 중복도 `lifeAuthoringReferences`에서 검사한다. NPC 일정 테스트는 기존 범위를 다시 비활성화해 `hourRange`/`dayRange`가 실제로 삭제되는 회귀까지 포함한다.
+- `databaseLifeCraftingView` 회귀는 중복 ID 입력/중복 판매가 추가 방어와 `changeLifeSkillExp`/`craftRecipe`/`applyItemUpgrade` command-reference 삭제 차단을 포함한다. 일정 회귀는 min/max 우회 clamp 및 앞선 `when:{}` shadow 경고도 포함한다.
+- 이 범위가 UI 코드 단위 구현으로 제한된 작업에서는 Playwright·Supabase authored-content 검증을 대신 실행하지 않는다. 병합 전 시각 QA는 `/` editor에서 Database → `생활 기술·제작`과 이벤트 편집기 → `NPC 일정`을 1024×768 / 1440×900로 확인한다.
+
 Wiki verification, Playwright evidence, and focused test guidance for editor changes.
 
 ## Validation Expectations

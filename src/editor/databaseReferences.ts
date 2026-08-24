@@ -103,6 +103,17 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (project.system.initialTroopId === id) return "시스템 기본 전투가 이 적 그룹을 사용 중입니다.";
       return commandLocationMessage(project, "troops", id, "적 그룹");
     case "items": {
+      const recipes = project.system.craftRecipes?.filter((record) =>
+        record.outputItemId === id || record.ingredients.some((ingredient) => ingredient.itemId === id)
+      ) ?? [];
+      if (recipes.length) return namedReferenceMessage("제작법", recipes.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 제작 재료나 결과로 사용 중입니다.");
+      const upgrades = project.system.itemUpgrades?.filter((record) =>
+        record.fromItemId === id || record.toItemId === id || record.ingredients?.some((ingredient) => ingredient.itemId === id)
+      ) ?? [];
+      if (upgrades.length) return namedReferenceMessage("도구 강화", upgrades.map((record) => ({ name: record.id })), "이 아이템을 강화 재료나 결과로 사용 중입니다.");
+      if (project.system.sellPrices?.some((record) => record.itemId === id)) return "판매 가격 규칙이 이 아이템을 사용 중입니다.";
+      const toolActions = project.system.toolActions?.filter((record) => record.itemId === id) ?? [];
+      if (toolActions.length) return namedReferenceMessage("도구 행동", toolActions.map((record) => ({ name: record.id })), "이 아이템을 사용 중입니다.");
       const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id);
       if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 아이템을 보상으로 사용 중입니다.");
       return commandLocationMessage(project, "items", id, "아이템");
@@ -203,6 +214,9 @@ export function resourceReferenceMessage(resourceId: string): string | null {
 
 export function switchVariableReferenceMessage(kind: "switch" | "variable", id: string): string | null {
   const project = store.getCurrent();
+  if (kind === "switch" && (project.database.lifeSkills ?? []).some((skill) =>
+    skill.levelUpRewards.some((reward) => reward.switchId === id)
+  )) return "생활 기술의 레벨 보상이 이 스위치를 사용 중입니다.";
   if (!switchVariableReferencedInProject(project, kind, id)) return null;
   return kind === "switch" ? "이벤트/조건이 이 스위치를 사용 중입니다." : "이벤트/조건이 이 변수를 사용 중입니다.";
 }
