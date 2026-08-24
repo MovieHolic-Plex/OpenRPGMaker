@@ -12,7 +12,7 @@ export type GenrePresetId = "monster-collect" | "horror-chase" | "farm-life";
 
 /**
  * 각 프리셋이 설정하는 값:
- * - monster-collect: genre, monsterCollection, monsterBattleParty, battleUiStyle, battleModel, monsterCare
+ * - monster-collect: genre, monsterCollection, monsterBattleParty, battleParty, battleFlow, battleUiStyle, battleModel, monsterCare
  * - farm-life: genre, timeSystem, giftSystem, skillSystem
  * - horror-chase: genre 만 설정 (공포 장르는 system.* 토글이 필요 없다)
  */
@@ -23,6 +23,8 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
     case "monster-collect":
       system.monsterCollection = true;
       system.monsterBattleParty = true;
+      system.battleParty = "monsters";
+      system.battleFlow = "strict";
       system.battleUiStyle = "pokemon";
       system.battleModel = "gen1";
       system.monsterCare = { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };

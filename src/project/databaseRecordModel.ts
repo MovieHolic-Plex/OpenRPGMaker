@@ -38,6 +38,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   return {
     id: record.id,
     name: record.name,
+    ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
@@ -419,6 +420,10 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
+    ...(typeof record.maxPp === "number" && Number.isFinite(record.maxPp) && record.maxPp > 0
+      ? { maxPp: clampInteger(record.maxPp, 1, 99) }
+      : {}),
+    ...(record.gen1CriticalRate === "high" ? { gen1CriticalRate: "high" as const } : {}),
     // 화이트리스트 정규화라 여기 없으면 왕복 1회에 사라진다(위 defaultBgmResourceId 주석 참조).
     ...(typeof record.movePriority === "number" && record.movePriority !== 0
       ? { movePriority: clampInteger(record.movePriority, -7, 7) }
@@ -623,7 +628,18 @@ function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefine
   const multiplier = typeof profile.multiplier === "number" && Number.isFinite(profile.multiplier)
     ? Math.max(0.01, Math.min(100, profile.multiplier))
     : 1;
-  return { multiplier };
+  return {
+    multiplier,
+    ...(isGen1BallClass(profile.ballClass) ? { ballClass: profile.ballClass } : {}),
+  };
+}
+
+function isGen1BallClass(value: unknown): value is NonNullable<ItemCaptureProfile["ballClass"]> {
+  return value === "poke" || value === "great" || value === "ultra" || value === "master";
+}
+
+function isGen1MajorStatus(value: unknown): value is NonNullable<StateRecord["gen1MajorStatus"]> {
+  return value === "poison" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
 }
 
 function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): ItemCareProfile | undefined {

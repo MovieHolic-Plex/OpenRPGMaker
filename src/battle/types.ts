@@ -196,6 +196,8 @@ export interface BattleBattlerSnapshot {
   readonly pose: import("@/battle/battlePose").BattleBattlerPose;
   readonly stateIds: readonly string[];
   readonly skillIds: readonly SkillId[];
+  /** Remaining PP by skill for immutable battle consumers. */
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
   readonly equipmentEffects?: EquipmentRuntimeEffects;
   readonly captured?: boolean;
 }

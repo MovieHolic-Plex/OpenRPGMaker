@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -89,6 +89,14 @@ export type MonsterInstance = {
   readonly exp: number;
   readonly currentHp?: number;
   readonly skillIds?: readonly SkillId[];
+  /** Persistent major/volatile state ids carried between battles. */
+  readonly stateIds?: readonly StateId[];
+  /** Per-state elapsed turn counters for persistent state semantics. */
+  readonly stateTurns?: Readonly<Record<StateId, number>>;
+  /** Remaining PP by learned skill id. */
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
+  /** Learned moves awaiting a replace-or-reject choice when the active set is full. */
+  readonly pendingSkillIds?: readonly SkillId[];
   readonly ivs?: MonsterInstanceIvs;
   readonly friendship: number;
   readonly caughtAt: MonsterCaughtAt;
