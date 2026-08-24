@@ -53,7 +53,7 @@
   - Event command catalog (`m2Catalog`, `runtimeSupport`) lives in `src/project/eventCommands/` — it describes what commands are, not how the editor renders them.
   - Content builders (showcase maps, village generation) live in `src/editor/content/`; `project/defaults/` re-exports them through a barrel for backward compatibility.
   - Action combat math modules live in `src/battle/action/` (moved from `src/action/`).
-- **Genre packs** (`src/editor/genrePacks.ts`) are editor-only authoring metadata over the one `Project` schema and one runtime. `src/project/genrePresets.ts` applies shared `system.*` toggles; welcome cards map to validated pack recipes and may optionally build an AI enhancement prompt. Player/runtime code must not branch on genre.
+- **Genre packs** (`src/editor/genrePacks.ts`) are editor-only authoring metadata over the one `Project` schema and one runtime. `src/project/genrePackId.ts` is the canonical five-ID SSOT shared with later phases; welcome/card ids are recipe ids, not persistence aliases. `src/project/genrePresets.ts` applies shared `system.*` toggles. Welcome cards may optionally build an AI enhancement prompt, while the separate confirmed manual action materializes a detached recipe adapter result through `store.loadNewRemoteProject`. Static `configured` checks never imply `playable`; only an exact-project runtime/headless journey receipt can do that. Player/runtime code must not branch on genre.
 
 - Source paths:
   - `src/main.ts`

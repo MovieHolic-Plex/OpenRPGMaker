@@ -199,4 +199,47 @@ describe("presentEditorWelcome", () => {
     expect(result.prompt).toContain("모험 JRPG");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
   });
+
+  it("BREAK: exposes a confirmed manual starter action separately from AI", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const pending = presentEditorWelcome(host);
+    const manual = host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-starter-card-0']");
+
+    expect(manual).toBeTruthy();
+    manual?.click();
+    const confirm = document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']");
+    expect(confirm).toBeTruthy();
+    confirm?.click();
+
+    await expect(pending).resolves.toMatchObject({
+      action: "start",
+      prompt: null,
+      autoSend: false,
+      replaceWithBlank: false,
+      presetId: "adventure-jrpg",
+      source: "manual-starter",
+      starterPlan: {
+        packId: "adventure-jrpg",
+        recipeId: "adventure-village",
+        replaceOpenProject: false,
+        aiRequired: false,
+      },
+    });
+  });
+
+  it("keeps the welcome open when manual starter confirmation is cancelled", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const pending = presentEditorWelcome(host);
+    host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-starter-card-1']")?.click();
+    document.querySelector<HTMLButtonElement>("[data-testid='app-modal-cancel']")?.click();
+    await Promise.resolve();
+
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeTruthy();
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
+    const result = await pending;
+    expect(result.action).toBe("skip");
+    expect(result.starterPlan).toBeUndefined();
+  });
 });
