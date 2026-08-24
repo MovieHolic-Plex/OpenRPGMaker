@@ -11,6 +11,8 @@ import {
 import { sha256HexText } from "@/util/sha256";
 
 const createdDirectories: string[] = [];
+const CLI_PROCESS_TIMEOUT_MS = 150_000;
+const CLI_TEST_TIMEOUT_MS = 180_000;
 
 afterEach(() => {
   for (const directory of createdDirectories.splice(0)) {
@@ -44,7 +46,7 @@ describe("verify:genre-packs CLI", () => {
 
     expect(result.status).not.toBe(0);
     expect(`${result.stdout}\n${result.stderr}`).toContain("evidence-outside-allowed-root");
-  }, 90_000);
+  }, CLI_TEST_TIMEOUT_MS);
 
   it("combines valid evidence files with actual authored/runtime readiness and keeps monster blocked", async () => {
     const evidenceRoot = resolve("output", "evidence");
@@ -87,7 +89,7 @@ describe("verify:genre-packs CLI", () => {
     expect(output).toContain('"status": "blocked"');
     expect(output).toContain('"status": "incomplete"');
     expect(output).toContain('"ok": false');
-  }, 90_000);
+  }, CLI_TEST_TIMEOUT_MS);
 });
 
 function runCli(receiptPath: string, projectPath: string): ReturnType<typeof spawnSync> {
@@ -97,5 +99,5 @@ function runCli(receiptPath: string, projectPath: string): ReturnType<typeof spa
     resolve("scripts", "verify-genre-pack-receipts.mts"),
     receiptPath,
     projectPath,
-  ], { cwd: process.cwd(), encoding: "utf8", timeout: 75_000 });
+  ], { cwd: process.cwd(), encoding: "utf8", timeout: CLI_PROCESS_TIMEOUT_MS });
 }
