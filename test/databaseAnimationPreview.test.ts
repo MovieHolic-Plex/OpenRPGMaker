@@ -6,6 +6,7 @@ import type { BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet 
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 type FakeBrowserGlobals = {
+  readonly Image: typeof globalThis.Image | undefined;
   readonly window: typeof globalThis.window | undefined;
 };
 
@@ -14,8 +15,15 @@ let previousBrowserGlobals: FakeBrowserGlobals;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
-  previousBrowserGlobals = { window: globalThis.window };
+  previousBrowserGlobals = { Image: globalThis.Image, window: globalThis.window };
   vi.useFakeTimers();
+  Object.defineProperty(globalThis, "Image", {
+    configurable: true,
+    value: class {
+      addEventListener(): void {}
+      set src(_value: string) {}
+    },
+  });
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     value: {
@@ -29,6 +37,7 @@ afterEach(() => {
   vi.useRealTimers();
   restoreDom?.();
   restoreDom = undefined;
+  restoreBrowserGlobal("Image", previousBrowserGlobals.Image);
   restoreBrowserGlobal("window", previousBrowserGlobals.window);
 });
 
@@ -78,7 +87,7 @@ describe("database animation preview", () => {
   });
 });
 
-function restoreBrowserGlobal(name: keyof FakeBrowserGlobals, value: FakeBrowserGlobals[typeof name]): void {
+function restoreBrowserGlobal<Key extends keyof FakeBrowserGlobals>(name: Key, value: FakeBrowserGlobals[Key]): void {
   if (value === undefined) {
     Reflect.deleteProperty(globalThis, name);
     return;

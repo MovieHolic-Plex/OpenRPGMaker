@@ -1,4 +1,6 @@
 import { emptyToUndefined, numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
@@ -8,8 +10,6 @@ import {
   countText,
   isBattleCommandKind,
   isTerrainDisplay,
-  readonlyValue,
-  rm2k3Fieldset,
   selectUtilityRecord,
   selectedTerrain,
   terrainVehicleText,
@@ -25,131 +25,348 @@ import type {
   ClassBattleCommandKind,
   DatabaseBattleCommandRecord,
   DatabaseTerrainRecord,
+  TroopRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
+import "@/styles/database/battle-studio.css";
 
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 
 export function renderTerrainTab(host: HTMLElement): void {
   const terrains = store.getCurrent().database.terrains ?? [];
   const selected = selectedTerrain(terrains);
+  const selectedIndex = Math.max(0, terrains.indexOf(selected as DatabaseTerrainRecord));
   const rerender = (): void => {
     host.replaceChildren();
     renderTerrainTab(host);
   };
-  const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: "db-detail-form db-parity-form db-battle-studio-surface db-terrain-studio", dataset: { testid: "db-detail-form" } });
   form.append(
-    rm2k3Fieldset("지형", [
-      readonlyValue("레코드", countText(terrains.length)),
-    ]),
-    rm2k3Fieldset("지형 레코드", terrains.length > 0 ? terrainEditorRows(terrains, rerender) : [readonlyValue("0001", "지형 레코드 없음")]),
-    rm2k3Fieldset("전투와 이동", [
-      readonlyValue("전투 배경", resourceDisplayName(selected?.battleBackgroundResourceId)),
-      readonlyValue("발소리", resourceDisplayName(selected?.footstepSoundResourceId)),
-      readonlyValue("탈것", terrainVehicleText(selected)),
-      readonlyValue("캐릭터", selected?.characterDisplay === "transparent" ? "투명" : "일반"),
-    ]),
+    battleStudioHeading("terrain", "지형", "필드의 이동 규칙과 전투 분위기를 하나의 프리셋으로 관리합니다."),
+    el("div", {
+      class: "db-terrain-studio-workspace",
+      children: [
+        terrainPresetGallery(terrains, selectedIndex, rerender),
+        terrainPreviewStage(selected),
+        el("aside", {
+          class: "db-terrain-inspector",
+          dataset: { testid: "db-terrain-inspector" },
+          children: [
+            studioSectionHeader("지형 속성", `${countText(terrains.length)} · ${selected?.name ?? "선택 없음"}`),
+            el("div", {
+              class: "db-terrain-record-stack",
+              children: terrains.length > 0 ? terrainEditorRows(terrains, rerender) : [emptyStudioState("등록된 지형이 없습니다.")],
+            }),
+          ],
+        }),
+      ],
+    }),
+    el("section", {
+      class: "db-studio-summary-strip",
+      children: [
+        summaryMetric("전투 배경", resourceDisplayName(selected?.battleBackgroundResourceId)),
+        summaryMetric("발소리", resourceDisplayName(selected?.footstepSoundResourceId)),
+        summaryMetric("탈것", terrainVehicleText(selected)),
+        summaryMetric("캐릭터", selected?.characterDisplay === "transparent" ? "투명" : "일반"),
+      ],
+    })
   );
-  host.append(el("h3", { text: "지형" }), form);
+  host.append(form);
 }
 
 export function renderBattleScreenTab(host: HTMLElement): void {
   const project = store.getCurrent();
   const selectedTroop = project.database.troops.find((troop) => troop.id === project.system.initialTroopId) ?? project.database.troops[0];
-  const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: "db-detail-form db-parity-form db-battle-studio-surface db-battle-screen-studio", dataset: { testid: "db-detail-form" } });
   const rerender = (): void => {
     host.replaceChildren();
     renderBattleScreenTab(host);
   };
   form.append(
-    rm2k3Fieldset("전투 화면", [
-      resourcePickerControl({
-        label: "전투 시스템",
-        resourceId: project.system.battleSystemResourceId,
-        kind: "system2",
-        testid: "db-field-battle-system-resource",
-        allowClear: true,
-        dialogTitle: "전투 시스템 그래픽",
-        onChange: (result) => {
-          recordCoalescedSnapshot("db-utility:battle-screen:battle-system-resource");
-          store.update((draft) => {
-            draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
-          }, { scope: "system" });
-        },
-        rerender,
-      }),
-      selectField("초기 적 그룹", "db-picker-battle-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
-        recordProjectSnapshot();
-        store.update((draft) => {
-          draft.system.initialTroopId = emptyToUndefined(value);
-        }, { scope: "system" });
-        rerender();
-      }),
-      selectLiteral(
-        "전투 흐름",
-        "db-field-battle-screen-flow",
-        project.system.battleFlow === "strict" ? "strict" : "gauge",
-        BATTLE_FLOW_OPTIONS,
-        (value) => {
-          recordProjectSnapshot();
-          store.update((draft) => {
-            draft.system.battleFlow = value;
-          }, { scope: "system" });
-        },
-      ),
-      numberField("기본 참전 수", "db-field-battle-screen-active-slots", project.system.activeSlots ?? 0, (value) => {
-        recordCoalescedSnapshot("db-utility:battle-screen:active-slots");
-        store.update((draft) => {
-          draft.system.activeSlots = Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
-        }, { scope: "system" });
-      }),
-    ]),
-    rm2k3Fieldset("선택 적 그룹 미리보기", [
-      readonlyValue("이름", selectedTroop?.name ?? "(없음)"),
-      readonlyValue("멤버", String(selectedTroop?.members?.length ?? selectedTroop?.enemyIds.length ?? 0)),
-      readonlyValue("배경", resourceDisplayName(selectedTroop?.previewBackgroundResourceId ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID)),
-    ]),
-    rm2k3Fieldset("적 그룹 목록", project.database.troops.slice(0, 8).map((troop, index) => {
-      const memberCount = troop.members?.length ?? troop.enemyIds.length;
-      return readonlyValue(ordinalLabel(index), `${troop.name} / 적 ${memberCount}개`);
-    })),
-    rm2k3Fieldset("배치 규칙", [
-      readonlyValue("적", "x/y/숨김 멤버는 적 그룹에서 편집"),
-      readonlyValue("배경", "적 그룹 배경 → 지형 전투 배경 → 기본 전장 (System2 게이지 시트 제외)"),
-      readonlyValue("배치 편집", "적 그룹 멤버 위치는 적 그룹에서 편집"),
-    ]),
+    battleStudioHeading("battleScreen", "전투 화면", "대표 전장을 보면서 전투 흐름과 초기 구성을 맞춥니다."),
+    el("div", {
+      class: "db-battle-screen-workspace",
+      children: [
+        battleScreenPreviewStage(selectedTroop),
+        el("aside", {
+          class: "db-battle-screen-inspector",
+          dataset: { testid: "db-battle-screen-inspector" },
+          children: [
+            studioSectionHeader("화면 속성", selectedTroop?.name ?? "적 그룹 없음"),
+            resourcePickerControl({
+              label: "전투 시스템",
+              resourceId: project.system.battleSystemResourceId,
+              kind: "system2",
+              testid: "db-field-battle-system-resource",
+              allowClear: true,
+              dialogTitle: "전투 시스템 그래픽",
+              onChange: (result) => {
+                recordCoalescedSnapshot("db-utility:battle-screen:battle-system-resource");
+                store.update((draft) => {
+                  draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
+                }, { scope: "system" });
+              },
+              rerender,
+            }),
+            selectField("초기 적 그룹", "db-picker-battle-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
+              recordProjectSnapshot();
+              store.update((draft) => {
+                draft.system.initialTroopId = emptyToUndefined(value);
+              }, { scope: "system" });
+              rerender();
+            }),
+            selectLiteral(
+              "전투 흐름",
+              "db-field-battle-screen-flow",
+              project.system.battleFlow === "strict" ? "strict" : "gauge",
+              BATTLE_FLOW_OPTIONS,
+              (value) => {
+                recordProjectSnapshot();
+                store.update((draft) => {
+                  draft.system.battleFlow = value;
+                }, { scope: "system" });
+              },
+            ),
+            numberField("기본 참전 수", "db-field-battle-screen-active-slots", project.system.activeSlots ?? 0, (value) => {
+              recordCoalescedSnapshot("db-utility:battle-screen:active-slots");
+              store.update((draft) => {
+                draft.system.activeSlots = Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
+              }, { scope: "system" });
+            }),
+          ],
+        }),
+      ],
+    }),
+    battleScreenTroopStrip(project.database.troops),
+    el("section", {
+      class: "db-studio-summary-strip",
+      children: [
+        summaryMetric("배치", "적 위치와 숨김은 적 그룹에서 편집"),
+        summaryMetric("배경 우선순위", "적 그룹 → 지형 → 기본 전장"),
+        summaryMetric("전투 흐름", project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투"),
+      ],
+    })
   );
-  host.append(el("h3", { text: "전투 화면" }), form);
+  host.append(form);
 }
 
 export function renderBattleCommandsTab(host: HTMLElement): void {
   const project = store.getCurrent();
   const commands = project.database.battleCommands ?? [];
-  const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: "db-detail-form db-parity-form db-battle-studio-surface db-battle-command-studio", dataset: { testid: "db-detail-form" } });
   form.append(
-    rm2k3Fieldset("전투 명령", [
-      readonlyValue("레코드", countText(commands.length)),
-      el("button", {
-        class: "db-toolbar-button",
-        text: "직업 탭에서 메뉴 순서 정하기",
-        attrs: { type: "button" },
-        dataset: { testid: "db-open-classes-tab" },
-        on: {
-          click: (event) => {
-            const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
-            if (panelRoot) switchDatabaseActiveTab("classes", panelRoot);
-          },
-        },
-      }),
-    ]),
-    rm2k3Fieldset("전체 명령 목록", commands.length > 0 ? battleCommandEditorRows(commands) : [readonlyValue("0001", "전투 명령 없음")]),
-    rm2k3Fieldset("직업에서 쓰는 방식", [
-      readonlyValue("직업 수", countText(project.database.classes.length)),
-      readonlyValue("연결", "각 직업의 전투 메뉴가 이 목록의 이름과 종류를 참조합니다."),
-      readonlyValue("종류", "공격, 특수기능, 특수계열, 방어, 아이템, 도망, 교체"),
-    ]),
+    battleStudioHeading("battleCommands", "전투 명령", "플레이어가 전투 중 선택할 행동과 직업별 메뉴 연결을 설계합니다."),
+    el("div", {
+      class: "db-battle-command-workspace",
+      children: [
+        battleCommandPreview(commands),
+        el("aside", {
+          class: "db-battle-command-inspector",
+          dataset: { testid: "db-battle-command-inspector" },
+          children: [
+            studioSectionHeader("직업 연결", `${countText(project.database.classes.length)} 직업`),
+            el("p", { text: "각 직업의 전투 메뉴가 이 명령의 이름과 종류를 참조합니다." }),
+            el("button", {
+              class: "db-studio-secondary-action",
+              text: "직업별 메뉴 순서 편집",
+              attrs: { type: "button" },
+              dataset: { testid: "db-open-classes-tab" },
+              on: {
+                click: (event) => {
+                  const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+                  if (panelRoot) switchDatabaseActiveTab("classes", panelRoot);
+                },
+              },
+            }),
+            el("div", {
+              class: "db-command-kind-legend",
+              children: ["공격", "특수기능", "특수계열", "방어", "아이템", "도망", "교체"].map((label) => el("span", { text: label })),
+            }),
+          ],
+        }),
+      ],
+    }),
+    el("section", {
+      class: "db-battle-command-palette",
+      dataset: { testid: "db-battle-command-palette" },
+      children: [
+        studioSectionHeader("명령 팔레트", countText(commands.length)),
+        el("div", {
+          class: "db-battle-command-card-grid",
+          children: commands.length > 0 ? battleCommandEditorCards(commands) : [emptyStudioState("등록된 전투 명령이 없습니다.")],
+        }),
+      ],
+    })
   );
-  host.append(el("h3", { text: "전투 명령" }), form);
+  host.append(form);
+}
+
+function terrainPresetGallery(terrains: readonly DatabaseTerrainRecord[], selectedIndex: number, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  return el("aside", {
+    class: "db-terrain-preset-gallery",
+    dataset: { testid: "db-terrain-preset-gallery" },
+    children: [
+      studioSectionHeader("지형 프리셋", countText(terrains.length)),
+      ...terrains.map((terrain, index) => {
+        const preview = el("span", { class: "db-terrain-preset-thumb" });
+        const url = resolveAssetResourceUrl(terrain.battleBackgroundResourceId, { project });
+        if (url) preview.style.backgroundImage = cssBackground(url);
+        return el("button", {
+          class: `db-terrain-preset-card${index === selectedIndex ? " active" : ""}`,
+          attrs: { type: "button", "aria-pressed": String(index === selectedIndex) },
+          dataset: { testid: `db-terrain-preset-${index}` },
+          children: [
+            preview,
+            el("span", {
+              class: "db-terrain-preset-copy",
+              children: [
+                el("strong", { text: terrain.name }),
+                el("small", { text: `조우 ${terrain.encounterRatePercent}% · 피해 ${terrain.damage}` }),
+              ],
+            }),
+          ],
+          on: {
+            click: () => {
+              selectUtilityRecord("terrain", index);
+              rerender();
+            },
+          },
+        });
+      }),
+    ],
+  });
+}
+
+function terrainPreviewStage(terrain: DatabaseTerrainRecord | undefined): HTMLElement {
+  const stage = el("section", {
+    class: "db-terrain-preview-stage db-studio-dark-stage",
+    dataset: { testid: "db-terrain-preview-stage" },
+    children: [
+      el("div", { class: "db-studio-stage-grid", attrs: { "aria-hidden": "true" } }),
+      el("div", {
+        class: "db-terrain-stage-overlay",
+        children: [
+          el("span", { class: "db-studio-live-chip", text: "LIVE PREVIEW" }),
+          el("strong", { text: terrain?.name ?? "지형 없음" }),
+          el("small", { text: terrain ? `조우 ${terrain.encounterRatePercent}% · 지형 피해 ${terrain.damage}` : "프리셋을 선택하세요" }),
+        ],
+      }),
+      el("div", {
+        class: "db-terrain-stage-actors",
+        attrs: { "aria-hidden": "true" },
+        children: [el("span", { text: "◆" }), el("span", { text: "◆" }), el("span", { text: "▲" })],
+      }),
+    ],
+  });
+  const url = resolveAssetResourceUrl(terrain?.battleBackgroundResourceId, { project: store.getCurrent() });
+  if (url) stage.style.backgroundImage = `linear-gradient(180deg, rgba(23, 27, 31, 0.05), rgba(23, 27, 31, 0.42)), ${cssBackground(url)}`;
+  return stage;
+}
+
+function battleScreenPreviewStage(troop: TroopRecord | undefined): HTMLElement {
+  const project = store.getCurrent();
+  const backdropId = troop?.previewBackgroundResourceId ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  const stage = el("section", {
+    class: "db-battle-screen-preview-stage db-studio-dark-stage",
+    dataset: { testid: "db-battle-screen-preview-stage" },
+  });
+  const url = resolveAssetResourceUrl(backdropId, { project });
+  if (url) stage.style.backgroundImage = `linear-gradient(180deg, rgba(18, 22, 25, 0.08), rgba(18, 22, 25, 0.38)), ${cssBackground(url)}`;
+  stage.append(
+    el("div", { class: "db-studio-stage-grid", attrs: { "aria-hidden": "true" } }),
+    el("div", {
+      class: "db-battle-screen-stage-meta",
+      children: [
+        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "TURN" : "GAUGE" }),
+        el("strong", { text: troop?.name ?? "적 그룹 없음" }),
+        el("small", { text: `${troop?.members?.length ?? troop?.enemyIds.length ?? 0} enemies · ${resourceDisplayName(backdropId)}` }),
+      ],
+    }),
+    el("div", {
+      class: "db-battle-screen-party-markers",
+      attrs: { "aria-label": "아군 진형 미리보기" },
+      children: [0, 1, 2, 3].map((index) => el("span", { text: String(index + 1) })),
+    }),
+    ...battleScreenEnemySprites(troop)
+  );
+  return stage;
+}
+
+function battleScreenEnemySprites(troop: TroopRecord | undefined): HTMLElement[] {
+  const project = store.getCurrent();
+  const members = troop?.members ?? troop?.enemyIds.map((enemyId, index) => ({ enemyId, x: 80 + index * 42, y: 88 + index * 28 })) ?? [];
+  return members.slice(0, 6).map((member, index) => {
+    const enemy = project.database.enemies.find((candidate) => candidate.id === member.enemyId);
+    const url = resolveAssetResourceUrl(enemy?.monsterResourceId, { project });
+    const sprite = url
+      ? el("img", { class: "db-battle-screen-enemy-sprite", attrs: { alt: enemy?.name ?? "몬스터", src: url } })
+      : el("span", { class: "db-battle-screen-enemy-fallback", text: enemy?.name.slice(0, 1) ?? "?" });
+    sprite.style.left = `${18 + index * 9}%`;
+    sprite.style.top = `${35 + (index % 2) * 22}%`;
+    return sprite;
+  });
+}
+
+function battleScreenTroopStrip(troops: readonly TroopRecord[]): HTMLElement {
+  return el("section", {
+    class: "db-battle-screen-troop-strip",
+    dataset: { testid: "db-battle-screen-troop-strip" },
+    children: [
+      studioSectionHeader("적 그룹", `${Math.min(troops.length, 8)} / ${troops.length}`),
+      el("div", {
+        class: "db-battle-screen-troop-cards",
+        children: troops.slice(0, 8).map((troop) => {
+          const memberCount = troop.members?.length ?? troop.enemyIds.length;
+          return el("div", {
+            class: "db-battle-screen-troop-card",
+            children: [el("strong", { text: troop.name }), el("small", { text: `몬스터 ${memberCount} · ${resourceDisplayName(troop.previewBackgroundResourceId)}` })],
+          });
+        }),
+      }),
+    ],
+  });
+}
+
+function battleCommandPreview(commands: readonly DatabaseBattleCommandRecord[]): HTMLElement {
+  return el("section", {
+    class: "db-battle-command-preview db-studio-dark-stage",
+    dataset: { testid: "db-battle-command-preview" },
+    children: [
+      el("div", { class: "db-studio-stage-grid", attrs: { "aria-hidden": "true" } }),
+      el("div", {
+        class: "db-command-preview-copy",
+        children: [el("span", { class: "db-studio-live-chip", text: "BATTLE MENU" }), el("strong", { text: "행동 선택" })],
+      }),
+      el("div", {
+        class: "db-command-preview-menu",
+        children: commands.slice(0, 6).map((command, index) => el("button", {
+          class: index === 0 ? "active" : "",
+          attrs: { type: "button", tabindex: "-1" },
+          text: command.name,
+        })),
+      }),
+    ],
+  });
+}
+
+function studioSectionHeader(title: string, meta: string): HTMLElement {
+  return el("header", {
+    class: "db-studio-section-header",
+    children: [el("strong", { text: title }), el("span", { text: meta })],
+  });
+}
+
+function summaryMetric(label: string, value: string): HTMLElement {
+  return el("div", { class: "db-studio-summary-metric", children: [el("small", { text: label }), el("strong", { text: value })] });
+}
+
+function emptyStudioState(message: string): HTMLElement {
+  return el("div", { class: "db-studio-empty", text: message });
+}
+
+function cssBackground(url: string): string {
+  return `url(${JSON.stringify(url)})`;
 }
 
 function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[], rerender: () => void): HTMLElement[] {
@@ -250,32 +467,43 @@ function terrainRecordFields(terrain: DatabaseTerrainRecord, index: number, rere
   ];
 }
 
-function battleCommandEditorRows(commands: readonly DatabaseBattleCommandRecord[]): HTMLElement[] {
+function battleCommandEditorCards(commands: readonly DatabaseBattleCommandRecord[]): HTMLElement[] {
   const kinds: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "escape", "switch", "event"];
-  return commands.flatMap((command, index) => [
-    utilityTextRow({ label: ordinalLabel(index), value: command.name, testid: `db-field-battle-command-name-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
+  return commands.map((command, index) => el("article", {
+    class: "db-battle-command-card",
+    dataset: { testid: `db-battle-command-card-${index}` },
+    children: [
+      el("header", {
+        children: [
+          el("span", { class: "db-command-card-index", text: String(index + 1).padStart(2, "0") }),
+          el("strong", { text: command.name || "이름 없는 명령" }),
+          el("span", { class: "db-command-card-kind", text: command.kind }),
+        ],
+      }),
+      utilityTextRow({ label: "이름", value: command.name, testid: `db-field-battle-command-name-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
       recordCoalescedSnapshot(`db-utility:battle-command:${index}:name`);
       store.update((project) => {
         const target = project.database.battleCommands?.[index];
         if (target) target.name = value;
       });
-    } }),
-    utilitySelectRow({ label: "종류", value: command.kind, options: kinds, testid: `db-field-battle-command-kind-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
+      } }),
+      utilitySelectRow({ label: "종류", value: command.kind, options: kinds, testid: `db-field-battle-command-kind-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
       recordProjectSnapshot();
       store.update((project) => {
         const target = project.database.battleCommands?.[index];
         if (target) target.kind = isBattleCommandKind(value) ? value : "attack";
       });
-    } }),
-    utilityTextRow({ label: "스킬 묶음", value: command.skillSubsetName ?? "", testid: `db-field-battle-command-subset-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
+      } }),
+      utilityTextRow({ label: "스킬 묶음", value: command.skillSubsetName ?? "", testid: `db-field-battle-command-subset-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
       recordCoalescedSnapshot(`db-utility:battle-command:${index}:subset`);
       store.update((project) => {
         const target = project.database.battleCommands?.[index];
         if (target) target.skillSubsetName = emptyToUndefined(value);
       });
-    } }),
-    battleCommandSkillRow(command, index),
-  ]);
+      } }),
+      battleCommandSkillRow(command, index),
+    ],
+  }));
 }
 
 function battleCommandSkillRow(command: DatabaseBattleCommandRecord, index: number): HTMLElement {

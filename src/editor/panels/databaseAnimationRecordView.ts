@@ -1,4 +1,5 @@
 import { renderAnimationPatternStripPanel, renderAnimationStagePanel } from "@/editor/panels/databaseAnimationPreview";
+import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { emptyToUndefined, field, numberField, selectLiteral } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
@@ -17,6 +18,7 @@ import { el } from "@/util/dom";
 // 전투 애니메이션 편집기 레이아웃 수술(P8 Critical: 196px 압착·+프레임 버튼 가림·프리뷰
 // 비표시) — 배치 A 소유 CSS 파일과 충돌하지 않도록 신규 파일로 분리해 TS 에서 로드한다.
 import "@/styles/database/animation-editor.css";
+import "@/styles/database/battle-studio.css";
 
 const DEFAULT_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const DEFAULT_CELL: BattleAnimationCell = { pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true };
@@ -70,24 +72,36 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
     currentSelectedFrameCells: () => currentFrameCells(animation.id, selectedFrameIndex),
   };
 
-  form.classList.add("animation-detail-form");
-  form.append(animationEditor(context), referencePanel(animation));
+  form.classList.add("animation-detail-form", "db-battle-studio-surface");
+  form.append(
+    battleStudioHeading("animations", animation.name, "전투 장면 위에서 효과를 확인하고 프레임과 타이밍을 조정합니다."),
+    animationEditor(context)
+  );
 
   return form;
 }
 
 function animationEditor(context: AnimationEditorContext): HTMLElement {
   const editor = el("div", {
-    class: "db-animation-rm2003-editor",
+    class: "db-animation-rm2003-editor db-animation-studio-editor",
     dataset: { testid: "db-animation-rm2003-editor" },
   });
   editor.append(
-    topFieldGrid(context),
-    frameListPanel(context),
-    renderAnimationStagePanel(context),
-    timingTablePanel(context),
-    cellTablePanel(context),
-    renderAnimationPatternStripPanel(context)
+    el("section", {
+      class: "db-animation-studio-stage",
+      dataset: { testid: "db-animation-studio-stage" },
+      children: [renderAnimationStagePanel(context)],
+    }),
+    el("aside", {
+      class: "db-animation-studio-inspector",
+      dataset: { testid: "db-animation-studio-inspector" },
+      children: [topFieldGrid(context), cellTablePanel(context), referencePanel(context.animation)],
+    }),
+    el("section", {
+      class: "db-animation-studio-timeline",
+      dataset: { testid: "db-animation-studio-timeline" },
+      children: [frameListPanel(context), timingTablePanel(context), renderAnimationPatternStripPanel(context)],
+    })
   );
   return editor;
 }
