@@ -945,12 +945,13 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
 }
 
 function parseRoguelikeRoom(map: GameMap, args: Record<string, unknown>): RoguelikeRoomDef {
-  if (!Array.isArray(args.slots)) {
+  const slots = args.slots ?? map.roguelikeRoom?.encounterSlots ?? [];
+  if (!Array.isArray(slots)) {
     throw new ToolError("slots는 배열이어야 합니다.", { code: "invalid-slots", mapId: map.id });
   }
   const knownSpawnIds = new Set((map.fieldSpawns ?? []).map((spawn) => spawn.id));
   const usedSlotIds = new Set<string>();
-  const encounterSlots = args.slots.map((slotValue, slotIndex) => {
+  const encounterSlots = slots.map((slotValue, slotIndex) => {
     const label = `slots[${slotIndex}]`;
     const slot = requireRecordValue(slotValue, label);
     const id = stringField(slot, "id", label).trim();
@@ -988,12 +989,20 @@ function parseRoguelikeRoom(map: GameMap, args: Record<string, unknown>): Roguel
     });
     return { id, choices };
   });
-  const roomId = typeof args.roomId === "string" ? args.roomId.trim() : "";
+  const roomId = typeof args.roomId === "string"
+    ? args.roomId.trim()
+    : args.roomId === undefined
+      ? map.roguelikeRoom?.roomId?.trim() ?? ""
+      : "";
   if (args.roomId !== undefined && !roomId) {
     throw new ToolError("roomId는 비울 수 없습니다.", { code: "invalid-room-id", mapId: map.id });
   }
+  const resetEventState = args.resetEventState === undefined
+    ? map.roguelikeRoom?.resetEventState
+    : booleanField(args, "resetEventState", "roguelikeRoom");
   return {
     ...(roomId ? { roomId } : {}),
+    ...(resetEventState !== undefined ? { resetEventState } : {}),
     encounterSlots,
   };
 }
@@ -1182,13 +1191,14 @@ const makeHuntingGround: ToolDefinition = {
 
 const configureRoguelikeRoom: ToolDefinition = {
   name: "configure_roguelike_room",
-  description: "맵의 로그라이크 방 조우 슬롯을 설정한다. 각 슬롯은 fieldSpawns 후보 중 하나를 런 seed·층·방·리셋 횟수로 결정적으로 선택한다. 슬롯에 없는 스폰은 항상 유지된다.",
+  description: "맵의 로그라이크 방 조우 슬롯과 이벤트 리셋 정책을 설정한다. 각 슬롯은 fieldSpawns 후보 중 하나를 런 seed·층·방·리셋 횟수로 결정적으로 선택한다. 기본적으로 새 방 세대는 셀프 스위치와 Erase Event 상태도 초기화한다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       roomId: { type: "string", description: "생략 시 mapId" },
+      resetEventState: { type: "boolean", description: "방 세대 변경 시 셀프 스위치/Erase Event 상태 초기화(기본 true)" },
       slots: { type: "array", items: roguelikeEncounterSlotSchema },
       clear: { type: "boolean", description: "true면 기존 로그라이크 방 설정 제거" },
     },

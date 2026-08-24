@@ -15,6 +15,7 @@ export type RoguelikeRunState = {
   status: RoguelikeRunStatus;
   flags: Record<string, boolean>;
   roomResetCounts: Record<string, number>;
+  roomEventGenerationKeys: Record<string, string>;
   currentRoomId?: string;
 };
 
@@ -48,6 +49,7 @@ export function startRoguelikeRun(
     status: "active",
     flags: {},
     roomResetCounts: {},
+    roomEventGenerationKeys: {},
   };
   host.roguelikeRun = state;
   return state;
@@ -58,7 +60,7 @@ export function advanceRoguelikeRunFloor(host: RoguelikeRunHost, amount = 1): bo
   if (!run) return false;
   const step = Number.isFinite(amount) ? Math.max(1, Math.trunc(amount)) : 1;
   run.floor = clampRunFloor(run.floor + step);
-  run.currentRoomId = undefined;
+  delete run.currentRoomId;
   return true;
 }
 
@@ -123,11 +125,21 @@ export function normalizeRoguelikeRunState(value: unknown): RoguelikeRunState | 
   if (!isRunStatus(value.status) || !isBooleanRecord(value.flags) || !isNumberRecord(value.roomResetCounts)) {
     return undefined;
   }
+  if (value.roomEventGenerationKeys !== undefined && !isStringRecord(value.roomEventGenerationKeys)) {
+    return undefined;
+  }
   const roomResetCounts: Record<string, number> = {};
   for (const [roomId, count] of Object.entries(value.roomResetCounts)) {
     if (!roomId.trim()) continue;
     roomResetCounts[roomId] = Math.max(0, Math.trunc(count));
   }
+  const roomEventGenerationKeys = isStringRecord(value.roomEventGenerationKeys)
+    ? Object.fromEntries(
+        Object.entries(value.roomEventGenerationKeys)
+          .filter(([mapId, generationKey]) => mapId.trim() && generationKey.trim())
+          .map(([mapId, generationKey]) => [mapId, generationKey])
+      )
+    : {};
   return {
     version: ROGUELIKE_RUN_VERSION,
     runId: value.runId.trim(),
@@ -136,9 +148,10 @@ export function normalizeRoguelikeRunState(value: unknown): RoguelikeRunState | 
     status: value.status,
     flags: { ...value.flags },
     roomResetCounts,
-    currentRoomId: typeof value.currentRoomId === "string" && value.currentRoomId.trim()
-      ? value.currentRoomId.trim()
-      : undefined,
+    roomEventGenerationKeys,
+    ...(typeof value.currentRoomId === "string" && value.currentRoomId.trim()
+      ? { currentRoomId: value.currentRoomId.trim() }
+      : {}),
   };
 }
 
@@ -173,4 +186,8 @@ function isBooleanRecord(value: unknown): value is Record<string, boolean> {
 
 function isNumberRecord(value: unknown): value is Record<string, number> {
   return isRecord(value) && Object.values(value).every((entry) => typeof entry === "number" && Number.isFinite(entry));
+}
+
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return isRecord(value) && Object.values(value).every((entry) => typeof entry === "string");
 }

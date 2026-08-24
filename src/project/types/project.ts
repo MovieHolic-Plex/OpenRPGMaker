@@ -184,6 +184,8 @@ export interface FieldSpawnDef {
 export interface RoguelikeRoomDef {
   /** 런 상태에서 방을 식별하는 안정 ID. 생략하면 map.id를 쓴다. */
   roomId?: string;
+  /** 방 세대가 바뀔 때 이 맵 이벤트의 셀프 스위치와 Erase Event 상태를 초기화한다. 기본 true. */
+  resetEventState?: boolean;
   /** 슬롯마다 eligible choice 하나를 뽑는다. 어떤 슬롯에도 언급되지 않은 fieldSpawn은 항상 활성이다. */
   encounterSlots?: RoguelikeEncounterSlot[];
 }

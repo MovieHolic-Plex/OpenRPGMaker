@@ -2,12 +2,12 @@
 
 Use the lightest command that proves the change.
 
-## Roguelike run Phase 0–2 coverage (2026-08-24)
+## Roguelike run Phase 0–3 coverage (2026-08-24)
 
 - `test/roguelikeRun.test.ts`: real interpreter lifecycle plus save-snapshot roundtrip.
 - `test/roguelikeRunEditor.test.ts`: native condition/command forms and staged edit preservation.
 - `test/commandContracts/runControl.contract.test.ts`: all action variants, inactive no-op behavior, non-blocking completion, and project serialization.
-- `test/roguelikeRooms.test.ts`: exact deterministic slot selection, generation invalidation after floor/reset changes and same-seed restart, real `run_scene_test` kill→reset→respawn behavior, real-time enemy HP/projectile cleanup, active-run kill persistence isolation, AI tool authoring, import validation, and project roundtrip.
+- `test/roguelikeRooms.test.ts`: exact deterministic slot selection, generation invalidation after floor/reset changes and same-seed restart, real `run_scene_test` enemy and one-shot loot reset behavior, live event-surface rebuild, save/load generation stability, event-reset opt-out, real-time enemy HP/projectile cleanup, active-run kill persistence isolation, AI tool authoring, import validation, and project roundtrip.
 - Registry/shape coverage includes `runControl` and `run`; native manifest counts are 75 commands and 16 conditions at this phase.
 
 ## Agent validation rule

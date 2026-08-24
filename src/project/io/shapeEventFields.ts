@@ -101,6 +101,7 @@ function validateRoguelikeRoom(label: string, value: unknown): void {
     const roomId = requireString(`${label}.roomId`, room.roomId);
     assert(roomId.trim().length > 0, `${label}.roomId는 비울 수 없습니다.`);
   }
+  if (room.resetEventState !== undefined) requireBoolean(`${label}.resetEventState`, room.resetEventState);
   if (room.encounterSlots === undefined) return;
   const slotIds = new Set<string>();
   for (const [slotIndex, slotValue] of requireArray(`${label}.encounterSlots`, room.encounterSlots).entries()) {

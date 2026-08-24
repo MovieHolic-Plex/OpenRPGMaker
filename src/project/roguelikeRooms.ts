@@ -1,6 +1,12 @@
 import type { RoguelikeRunState } from "./roguelikeRun";
 import type { FieldSpawnDef, GameMap, RoguelikeEncounterChoice } from "./types";
 
+type RoguelikeRoomEventStateHost = {
+  roguelikeRun?: RoguelikeRunState;
+  selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
+  erasedEventIds?: string[];
+};
+
 export function roguelikeRoomId(map: GameMap): string {
   return map.roguelikeRoom?.roomId?.trim() || map.id;
 }
@@ -13,6 +19,36 @@ export function roguelikeRoomGenerationKey(
   const roomId = roguelikeRoomId(map);
   const resetCount = normalizedResetCount(run.roomResetCounts[roomId]);
   return `${run.runId}:${run.seed}:${run.floor}:${roomId}:${resetCount}`;
+}
+
+/**
+ * Keeps one-shot authored event state scoped to a roguelike room generation.
+ * Returns true when callers must also rebuild their runtime event surfaces.
+ */
+export function syncRoguelikeRoomEventGeneration(
+  map: GameMap,
+  host: RoguelikeRoomEventStateHost
+): boolean {
+  if (!map.roguelikeRoom || map.roguelikeRoom.resetEventState === false) return false;
+  const run = host.roguelikeRun;
+  const generationKey = roguelikeRoomGenerationKey(map, run);
+  const previousKey = run?.roomEventGenerationKeys?.[map.id];
+  if (generationKey === previousKey || (!generationKey && !previousKey)) return false;
+
+  const eventIds = new Set(map.events.map((event) => event.id));
+  if (host.selfSwitches) {
+    for (const eventId of eventIds) delete host.selfSwitches[eventId];
+  }
+  if (host.erasedEventIds) {
+    host.erasedEventIds = host.erasedEventIds.filter((eventId) => !eventIds.has(eventId));
+  }
+
+  if (run) {
+    run.roomEventGenerationKeys ??= {};
+    if (generationKey) run.roomEventGenerationKeys[map.id] = generationKey;
+    else delete run.roomEventGenerationKeys[map.id];
+  }
+  return true;
 }
 
 export function resolveRoguelikeRoomFieldSpawns(
