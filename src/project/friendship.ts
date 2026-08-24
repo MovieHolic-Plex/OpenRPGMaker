@@ -4,6 +4,7 @@ import {
   giftDayKey,
   type PlaySession,
 } from "@/project/session";
+import { isPositiveItemQuantity } from "@/project/itemQuantities";
 import { resolveSocialKey } from "@/project/socialKey";
 import {
   resolveBirthday,
@@ -95,12 +96,11 @@ export function giveGiftToNpc(project: Project, session: PlaySession, event: Gam
   if (!npcKey) {
     return { ok: false, reason: "missing-npc-key", message: responseText(responses, "noItems") };
   }
-  session.dailyGifts ??= {};
   const today = giftDayKey(session.gameTime);
-  if (session.dailyGifts[npcKey] === today) {
+  if (session.dailyGifts?.[npcKey] === today) {
     return { ok: false, reason: "already-gifted", npcKey, message: responseText(responses, "alreadyGifted") };
   }
-  if ((session.inventory[itemId] ?? 0) <= 0) {
+  if (!isPositiveItemQuantity(session.inventory[itemId])) {
     return { ok: false, reason: "no-item", npcKey, message: responseText(responses, "noItems") };
   }
   const rank = giftRankForItem(resolveGiftPrefs(project, event), itemId);
@@ -108,8 +108,11 @@ export function giveGiftToNpc(project: Project, session: PlaySession, event: Gam
   if (isBirthdayToday(project, event, session.gameTime)) {
     delta = Math.trunc(delta * BIRTHDAY_GIFT_MULTIPLIER);
   }
-  changeItem(session, itemId, "-=", 1);
+  if (!changeItem(session, itemId, "-=", 1)) {
+    return { ok: false, reason: "no-item", npcKey, message: responseText(responses, "noItems") };
+  }
   const friendship = changeFriendship(session, npcKey, delta);
+  session.dailyGifts ??= {};
   session.dailyGifts[npcKey] = today;
   return {
     ok: true,
