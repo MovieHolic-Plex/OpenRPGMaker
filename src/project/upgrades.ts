@@ -8,6 +8,19 @@ export type ItemUpgradeRule = {
   readonly toItemId: ItemId;
   readonly goldCost?: number;
   readonly ingredients?: readonly { readonly itemId: ItemId; readonly count: number }[];
+  readonly capability?: ToolCapability;
+};
+
+export type ToolCapability = {
+  readonly areaWidth: number;
+  readonly areaHeight: number;
+  readonly energyMultiplier: number;
+};
+
+const DEFAULT_TOOL_CAPABILITY: ToolCapability = {
+  areaWidth: 1,
+  areaHeight: 1,
+  energyMultiplier: 1,
 };
 
 export type SellPriceEntry = {
@@ -34,6 +47,23 @@ export function resolveSellPrice(project: Project, itemId: ItemId): number | und
   if (!item) return undefined;
   // Default sell = half buy price when no table row (common shop convention).
   return Math.max(0, Math.floor((item.price ?? 0) / 2));
+}
+
+export function resolveToolCapability(project: Project, itemId: ItemId | undefined): ToolCapability {
+  if (!itemId) return DEFAULT_TOOL_CAPABILITY;
+  const capability = upgradeRulesOf(project).find((rule) => rule.toItemId === itemId)?.capability;
+  if (
+    !capability
+    || !Number.isInteger(capability.areaWidth)
+    || capability.areaWidth <= 0
+    || !Number.isInteger(capability.areaHeight)
+    || capability.areaHeight <= 0
+    || !Number.isFinite(capability.energyMultiplier)
+    || capability.energyMultiplier <= 0
+  ) {
+    return DEFAULT_TOOL_CAPABILITY;
+  }
+  return capability;
 }
 
 export function applyItemUpgrade(project: Project, session: PlaySession, ruleId: string): UpgradeResult {

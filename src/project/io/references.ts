@@ -85,6 +85,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues);
   if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
   if (project.system.timeSystem?.enabled && project.system.timeSystem.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) issues.push("system.timeSystem.onDayEnd does not exist.");
+  validateP0SystemReferences(project, itemIds, switchIds, issues);
   check(() => validateSystemResources(project.system, resourceIds));
   collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
   validateEndings(project, switchIds, variableIds, issues);
@@ -92,6 +93,60 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateCommonEvents(project, switchIds, context, issues);
   validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
   return issues;
+}
+
+function validateP0SystemReferences(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
+  issues: string[],
+): void {
+  collectDuplicateDefinitionIssues("system.worldUnlocks", project.system.worldUnlocks ?? [], issues);
+  collectDuplicateDefinitionIssues("system.bundles", project.system.bundles ?? [], issues);
+  collectDuplicateDefinitionIssues("system.makers", project.system.makers ?? [], issues);
+  const recipeIds = new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id));
+  const worldUnlockIds = new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id));
+  collectExistingIdIssues("system.shipping.allowedItemIds", project.system.shipping?.allowedItemIds ?? [], itemIds, issues);
+  for (const unlock of project.system.worldUnlocks ?? []) {
+    if (unlock.switchId && !switchIds.has(unlock.switchId)) {
+      issues.push(`system.worldUnlocks ${unlock.id}: switchId does not exist: ${unlock.switchId}`);
+    }
+  }
+  for (const bundle of project.system.bundles ?? []) {
+    collectExistingIdIssues(`system.bundles ${bundle.id}: requirement itemId`, bundle.requirements.map((entry) => entry.itemId), itemIds, issues);
+    collectExistingIdIssues(`system.bundles ${bundle.id}: reward itemId`, bundle.reward?.itemRewards?.map((entry) => entry.itemId) ?? [], itemIds, issues);
+    if (bundle.reward?.switchId && !switchIds.has(bundle.reward.switchId)) {
+      issues.push(`system.bundles ${bundle.id}: reward switchId does not exist: ${bundle.reward.switchId}`);
+    }
+    collectExistingIdIssues(`system.bundles ${bundle.id}: reward worldUnlockId`, bundle.reward?.worldUnlockIds ?? [], worldUnlockIds, issues);
+    collectExistingIdIssues(`system.bundles ${bundle.id}: reward recipeId`, bundle.reward?.recipeIds ?? [], recipeIds, issues);
+  }
+  for (const maker of project.system.makers ?? []) {
+    collectExistingIdIssues(`system.makers ${maker.id}: input itemId`, maker.inputs.map((entry) => entry.itemId), itemIds, issues);
+    collectExistingIdIssues(`system.makers ${maker.id}: output itemId`, maker.outputs.map((entry) => entry.itemId), itemIds, issues);
+  }
+  for (const skill of project.system.skillSystem?.enabled === true ? project.database.lifeSkills ?? [] : []) {
+    for (const reward of skill.levelUpRewards) {
+      if (reward.switchId && !switchIds.has(reward.switchId)) {
+        issues.push(`lifeSkill ${skill.id}: reward switchId does not exist: ${reward.switchId}`);
+      }
+      if (reward.recipeId && !recipeIds.has(reward.recipeId)) {
+        issues.push(`lifeSkill ${skill.id}: reward recipeId does not exist: ${reward.recipeId}`);
+      }
+    }
+  }
+}
+
+function collectDuplicateDefinitionIssues(
+  label: string,
+  rows: readonly { readonly id: string }[],
+  issues: string[],
+): void {
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (seen.has(row.id)) issues.push(`${label}: duplicate id: ${row.id}`);
+    seen.add(row.id);
+  }
 }
 
 function validateEndings(

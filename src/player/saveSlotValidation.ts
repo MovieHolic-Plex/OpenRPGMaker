@@ -1,5 +1,5 @@
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
-import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
+import { GOLD_MAX, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { isSeason, normalizeGameTime } from "@/project/gameTime";
 import type { RuntimeCameraSessionState,
@@ -65,6 +65,85 @@ export function isActorParamBonusRecord(value: unknown): value is Record<string,
 export function isActorStateIdsRecord(value: unknown): value is Record<string, string[]> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((states) => Array.isArray(states) && states.every((stateId) => typeof stateId === "string"));
+}
+
+export function isLifeSkillsRecord(value: unknown): value is NonNullable<PlaySession["lifeSkills"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((progress) => {
+    if (!isRecord(progress)) return false;
+    return isNonNegativeInteger(progress.xp) && isPositiveInteger(progress.level);
+  });
+}
+
+export function isShopTradeCountsRecord(value: unknown): value is NonNullable<PlaySession["shopTradeCounts"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((counts) => {
+    if (!isRecord(counts)) return false;
+    return isNonNegativeInteger(counts.sold) && isNonNegativeInteger(counts.bought);
+  });
+}
+
+export function isShopPawnTicketsRecord(value: unknown): value is NonNullable<PlaySession["shopPawnTickets"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((ticket) => {
+    if (!isRecord(ticket)) return false;
+    return typeof ticket.itemId === "string" &&
+      typeof ticket.dueDayKey === "string" &&
+      isNonNegativeInteger(ticket.pawnPrice);
+  });
+}
+
+export function isNonNegativeIntegerRecord(value: unknown): value is Record<string, number> {
+  return isRecord(value) && Object.values(value).every(isNonNegativeInteger);
+}
+
+export function parsePositiveIntegerRecord(value: unknown): Record<string, number> | undefined {
+  if (!isRecord(value)) return undefined;
+  const parsed: Record<string, number> = {};
+  for (const [key, count] of Object.entries(value)) {
+    if (count === 0) continue;
+    if (!key.trim() || !isPositiveInteger(count) || count > GOLD_MAX) return undefined;
+    parsed[key] = count;
+  }
+  return parsed;
+}
+
+export function isNestedNonNegativeIntegerRecord(value: unknown): value is Record<string, Record<string, number>> {
+  return isRecord(value) && Object.values(value).every(isNonNegativeIntegerRecord);
+}
+
+export function isShippingSettlementArray(value: unknown): value is NonNullable<PlaySession["shippingHistory"]> {
+  if (!Array.isArray(value)) return false;
+  return value.every((settlement) => {
+    if (!isRecord(settlement) || typeof settlement.dayKey !== "string" || !settlement.dayKey.trim()) return false;
+    if (!isNonNegativeInteger(settlement.total) || settlement.total > GOLD_MAX ||
+      !isNonNegativeInteger(settlement.credited) || settlement.credited > settlement.total) return false;
+    if (!Array.isArray(settlement.entries)) return false;
+    let expectedTotal = 0;
+    const entriesAreValid = settlement.entries.every((entry) => {
+      if (!isRecord(entry) || typeof entry.itemId !== "string" || !entry.itemId.trim()) return false;
+      if (!isPositiveInteger(entry.count) || entry.count > GOLD_MAX ||
+        !isNonNegativeInteger(entry.unitPrice) || entry.unitPrice > GOLD_MAX ||
+        !isNonNegativeInteger(entry.subtotal) || entry.subtotal > GOLD_MAX) return false;
+      const expectedSubtotal = Math.min(GOLD_MAX, entry.count * entry.unitPrice);
+      if (entry.subtotal !== expectedSubtotal) return false;
+      expectedTotal = Math.min(GOLD_MAX, expectedTotal + expectedSubtotal);
+      return true;
+    });
+    return entriesAreValid && settlement.total === expectedTotal;
+  });
+}
+
+export function isMakerInstancesRecord(value: unknown): value is NonNullable<PlaySession["makerInstances"]> {
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([instanceId, instance]) => {
+    if (!isRecord(instance) || instance.instanceId !== instanceId || typeof instance.makerId !== "string") return false;
+    if (instance.status !== "idle" && instance.status !== "processing" && instance.status !== "ready") return false;
+    if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
+    return isNonNegativeInteger(instance.startedAtMinute) &&
+      isNonNegativeInteger(instance.readyAtMinute) &&
+      instance.readyAtMinute >= instance.startedAtMinute;
+  });
 }
 
 export function isMonsterInstancesRecord(value: unknown): value is PlaySession["monsterInstances"] {
@@ -379,6 +458,14 @@ function optionalFiniteNumber(value: unknown): boolean {
 
 function isFiniteInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value);
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return isFiniteInteger(value) && value >= 0;
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return isFiniteInteger(value) && value >= 1;
 }
 
 function isDirection(value: unknown): value is "down" | "left" | "right" | "up" {
