@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { createBlankProject } from "@/project/defaults";
 import {
   createMemoryCutsceneProject,
   MEMORY_CUTSCENE_MAP_ID,
@@ -41,5 +42,28 @@ describe("script_cutscene + run_scene_test", () => {
         cutsceneLocked: false,
       },
     });
+  });
+
+  it("리소스 라벨 Decision1을 실제 효과음 id로 자동 해석한다", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "script_cutscene", {
+      mapId: ctx.project.startMapId,
+      eventId: "ev_decision",
+      x: 2,
+      y: 2,
+      beats: [
+        { kind: "music", action: "se", resourceId: "Decision1" },
+        { kind: "say", speaker: "수호석", text: "선택하라." },
+      ],
+    });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const event = ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === "ev_decision");
+    expect(event?.pages?.[0]?.commands).toContainEqual({
+      kind: "playAudio",
+      resourceId: "easyrpg-sound-decision1",
+      loop: false,
+    });
+    expect(result.diff?.warnings.join("\n") ?? "").toContain("Decision1");
   });
 });

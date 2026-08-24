@@ -296,7 +296,7 @@ describe("세션 스펙 게이트", () => {
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean; summary: string }[] = [];
-    await session.sendUserMessage("집 지어줘", (e) => {
+    await session.sendUserMessage("야외 집 지어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
     expect(events.find((e) => e.name === "create_map")!.ok).toBe(true);
@@ -306,6 +306,31 @@ describe("세션 스펙 게이트", () => {
     const gateMsg = session.getMessages().find((m) => m.role === "tool" && typeof m.content === "string" && m.content.includes("spec-gate"));
     expect(gateMsg).toBeDefined();
     expect(gateMsg!.content).toContain("set_build_spec");
+  });
+
+  it("기존 이벤트를 같은 좌표에서 갱신할 때는 새 공간 스펙을 요구하지 않는다", async () => {
+    const context = { project: projectWithMap() };
+    expect(runTool(context, "place_npc", {
+      mapId: "m1", x: 4, y: 4, id: "npc_existing", name: "리나",
+      graphic: { transparent: true }, pages: [{ lines: ["기존 대사"] }],
+    }).ok).toBe(true);
+    const chat = scriptedChat([
+      toolCallMsg("place_npc", {
+        mapId: "m1", x: 4, y: 4, id: "npc_existing", name: "리나",
+        graphic: { transparent: true }, pages: [{ lines: ["수정 대사"] }],
+      }, "c1"),
+      finalMsg("기존 대사를 수정했습니다."),
+    ]);
+    const session = new AssistantSession(context.project, { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean }> = [];
+
+    await session.sendUserMessage("기존 NPC 대사 수정해줘", (event) => {
+      if (event.type === "tool_call") events.push({ name: event.name, ok: event.result.ok });
+    });
+
+    expect(events).toEqual([{ name: "place_npc", ok: true }]);
+    const updated = session.getProposedProject().maps.m1?.events.find((event) => event.id === "npc_existing");
+    expect(updated).toMatchObject({ x: 4, y: 4 });
   });
 
   it("겹침 스펙 거부 → 수정 재제출 → 할당 영역 안 빌드 실행", async () => {
@@ -353,7 +378,7 @@ describe("세션 스펙 게이트", () => {
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean; summary: string }[] = [];
-    await session.sendUserMessage("집 지어줘", (e) => {
+    await session.sendUserMessage("야외 집 지어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
@@ -370,7 +395,7 @@ describe("세션 스펙 게이트", () => {
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; issues?: Array<{ severity: string; code: string; message: string }>; warnings?: string[] }> = [];
-    await session.sendUserMessage("집 지어줘", (e) => {
+    await session.sendUserMessage("야외 집 지어줘", (e) => {
       if (e.type === "tool_call") {
         events.push({
           name: e.name,
@@ -474,7 +499,7 @@ describe("세션 스펙 게이트", () => {
       finalMsg("집A 기초를 깔았습니다."),
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    await session.sendUserMessage("집 계획 잡아줘", () => {});
+    await session.sendUserMessage("야외 집 외장 계획 잡아줘", () => {});
     const turn2: boolean[] = [];
     await session.sendUserMessage("계속해", (e) => {
       if (e.type === "tool_call") turn2.push(e.result.ok);
@@ -538,7 +563,7 @@ describe("세션 스펙 게이트", () => {
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; summary: string }> = [];
-    await session.sendUserMessage("작은 집 3개 만들어줘", (e) => {
+    await session.sendUserMessage("작은 야외 집 3개 만들어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
     const house = events.find((event) => event.name === "build_house_kit")!;
@@ -677,6 +702,17 @@ describe("스펙 게이트 — 배치 전 주변 정리 확인", () => {
     expect(message).toContain("스스로 판단");
     expect(message).not.toContain("물어");
     expect(message).not.toContain("사용자에게");
+  });
+
+  it("타일을 덮어쓰지 않는 event·npc·transfer는 장식된 칸에서도 overExisting 없이 통과", () => {
+    const project = projectWithHouse();
+    for (const kind of ["event", "npc", "transfer"] as const) {
+      const spec: BuildSpec = {
+        mapId: "m1",
+        assets: [{ id: `${kind}-point`, kind, x: 4, y: 4, w: 1, h: 1, layer: "upper" }],
+      };
+      expect(validateBuildSpec(project, spec).filter((issue) => issue.severity === "error"), kind).toEqual([]);
+    }
   });
 
   it("overExisting을 선언하면 통과", () => {

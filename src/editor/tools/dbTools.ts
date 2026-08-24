@@ -506,6 +506,37 @@ function dropUnknownElementRates(
   );
 }
 
+/** 잘못된 speciesId 하나 때문에 신규 적 전체를 버리지 않는다. 기존 적 수정이면 유효한 종 참조를 보존한다. */
+function dropUnknownSpeciesId(
+  project: Project,
+  record: { id: string; speciesId?: string },
+  label: string,
+  warnings: string[],
+): void {
+  const requested = record.speciesId;
+  if (!requested) return;
+  const species = project.database.monsterSpecies ?? [];
+  if (species.some((entry) => entry.id === requested)) return;
+
+  const folded = requested.trim().toLocaleLowerCase();
+  const exactName = species.find((entry) => entry.name.trim().toLocaleLowerCase() === folded);
+  if (exactName) {
+    record.speciesId = exactName.id;
+    warnings.push(`${label}.speciesId 자동 해석: "${requested}" → "${exactName.id}" (${exactName.name})`);
+    return;
+  }
+
+  const previous = project.database.enemies.find((enemy) => enemy.id === record.id)?.speciesId;
+  if (previous && species.some((entry) => entry.id === previous)) record.speciesId = previous;
+  else delete record.speciesId;
+  const sample = species.slice(0, 12).map((entry) => entry.id).join(", ");
+  warnings.push(
+    `${label}.speciesId가 monsterSpecies id가 아니어서 ${previous ? `기존 값 "${previous}"을 유지했습니다` : "필드를 제외했습니다"}: ${requested}. ` +
+      `사용 가능한 종 id(${species.length}개): ${sample}${species.length > 12 ? " …" : ""}. ` +
+      `불/얼음 같은 속성 타입은 speciesId가 아니며 set_type_chart 또는 elementRates를 사용하세요.`,
+  );
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
@@ -519,6 +550,7 @@ const upsertEnemy: ToolDefinition = {
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
     const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "enemy", warnings);
+    dropUnknownSpeciesId(draft, record, "enemy", warnings);
     record.monsterResourceId = resolveMonsterResourceId(draft, record.monsterResourceId, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
     return {
@@ -656,8 +688,41 @@ const setTypeChart: ToolDefinition = {
         : {},
     });
     if (!chart) throw new ToolError("types에 최소 1개 타입 id가 필요합니다.", { code: "missing-type-chart-types" });
+
+    // 상성표 교체로 기존 참조가 새로 고아가 되면, 무관한 선재 오류처럼 보이며 커밋 전체가 거부된다.
+    // 새 차트와 DB 전투 속성 어느 쪽에도 없는 값만 제거하고 어떤 레코드를 고쳤는지 경고한다.
+    const validElementIds = new Set([
+      ...(draft.database.elements ?? []).map((element) => element.id),
+      ...chart.types,
+    ]);
+    const repaired: string[] = [];
+    for (const skill of draft.database.skills) {
+      if (skill.elementId && !validElementIds.has(skill.elementId)) {
+        repaired.push(`skill ${skill.id}.elementId=${skill.elementId}`);
+        delete skill.elementId;
+      }
+    }
+    const prune = (ids: string[], label: string): string[] => ids.filter((id) => {
+      if (validElementIds.has(id)) return true;
+      repaired.push(`${label}=${id}`);
+      return false;
+    });
+    for (const item of draft.database.items) {
+      item.equipmentProfile.attackElementIds = prune(item.equipmentProfile.attackElementIds, `item ${item.id}.attackElementIds`);
+      item.equipmentProfile.elementalDefenseIds = prune(item.equipmentProfile.elementalDefenseIds, `item ${item.id}.elementalDefenseIds`);
+    }
+    for (const equipment of draft.database.equipment) {
+      equipment.attackElementIds = prune(equipment.attackElementIds, `equipment ${equipment.id}.attackElementIds`);
+      equipment.elementalDefenseIds = prune(equipment.elementalDefenseIds, `equipment ${equipment.id}.elementalDefenseIds`);
+    }
     draft.system.typeChart = chart;
-    return { summary: `타입 상성표 설정(${chart.types.length}종)`, data: chart };
+    return {
+      summary: `타입 상성표 설정(${chart.types.length}종)`,
+      data: chart,
+      ...(repaired.length > 0
+        ? { warnings: [`새 상성표에 없는 기존 속성 참조 ${repaired.length}건을 정리했습니다: ${repaired.slice(0, 8).join(", ")}${repaired.length > 8 ? " …" : ""}`] }
+        : {}),
+    };
   },
 };
 

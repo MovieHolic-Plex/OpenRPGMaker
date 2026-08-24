@@ -4,6 +4,7 @@
 // 실행: DEV_SERVER_PORT=9433 npx playwright test test/e2e/_ai-assistant-hostile-eval.spec.ts --project=chromium
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { appendFileSync, mkdirSync } from "node:fs";
+import { AI_ACTIVITY_DISK_ENDPOINT } from "@/ai/activityLogEndpoint";
 
 const OUT = "verify-shots/ai-assistant-hostile";
 mkdirSync(OUT, { recursive: true });
@@ -28,10 +29,15 @@ function collectErrors(page: Page, tag: string): void {
   page.on("requestfailed", (req) => log(`REQ-FAILED [${tag}] ${req.failure()?.errorText} ${req.url().slice(0, 160)}`));
 }
 
-async function boot(page: Page, mode: "basic" | "expert" = "basic", vp = { width: 1600, height: 1000 }): Promise<void> {
+async function boot(
+  page: Page,
+  mode: "basic" | "expert" = "basic",
+  vp = { width: 1600, height: 1000 },
+  path = "/?freshProject=1",
+): Promise<void> {
   await page.setViewportSize(vp);
   await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
-  await page.goto("/?freshProject=1");
+  await page.goto(path);
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 40_000 });
@@ -311,6 +317,13 @@ test("D 실제 대화 한 턴 — 상태 전이·말풍선·후속 UI", async ({
   const quick = page.getByTestId("ai-quick-replies");
   if (await quick.isVisible().catch(() => false)) await shot(quick, "D06-quick-replies");
   await probePanel(page, "D-answer");
+  await expect.poll(async () => page.evaluate(async ({ endpoint, instruction }) => {
+    const response = await fetch(endpoint);
+    if (!response.ok) return false;
+    const latest = await response.json() as { instruction?: string };
+    return latest.instruction === instruction;
+  }, { endpoint: AI_ACTIVITY_DISK_ENDPOINT, instruction: "지금 이 프로젝트에 맵이 몇 개고 이름이 뭔지 도구로 확인해서 알려줘." }), { timeout: 15_000 }).toBe(true);
+  log("DISK-MIRROR: persisted");
   const logText = (await page.getByTestId("ai-chat-log").innerText().catch(() => "")) ?? "";
   log("CHATLOG >>> " + logText.replace(/\n/g, " / ").slice(0, 1200));
 });
@@ -516,4 +529,58 @@ test("I 빈 상태 CTA → 실작업 제안 흐름", async ({ page }) => {
     await shot(page, "I09-proposal-opened");
   }
   await probePanel(page, "I-proposal");
+});
+test("J 실제 복합 턴 — 다중 도구 실패 자동복구·디스크 진단", async ({ page }) => {
+  test.setTimeout(900_000);
+  collectErrors(page, "J");
+  await boot(page, "expert", { width: 1600, height: 1000 }, "/?blankProject=1");
+  const instruction = "적대적 통합 QA다. 시작 마을에 야외 집 2채와 주민 2명을 만들고, 별도의 실내 방 하나도 모두 만들어라. 불/얼음/번개 속성 상성표와 각 속성 몬스터, 선택지가 있는 컷신, switch ending_flag가 켜졌을 때 진엔딩을 정의해라. 각 단계 결과를 다시 읽어 검증하고 변경은 제안으로 남겨라.";
+  const input = page.getByTestId("ai-input");
+  const send = page.getByTestId("ai-send");
+  await input.fill(instruction);
+  await send.click();
+  await expect(send).toBeDisabled({ timeout: 10_000 });
+  await expect(send).toBeEnabled({ timeout: 720_000 });
+  await page.waitForTimeout(2_000);
+
+  await expect.poll(async () => page.evaluate(async ({ endpoint, expected }) => {
+    const response = await fetch(endpoint);
+    if (!response.ok) return false;
+    const latest = await response.json() as { instruction?: string };
+    return latest.instruction === expected;
+  }, { endpoint: AI_ACTIVITY_DISK_ENDPOINT, expected: instruction }), { timeout: 20_000 }).toBe(true);
+
+  const record = await page.evaluate(async (endpoint) => {
+    const response = await fetch(endpoint);
+    return response.json() as Promise<{
+      result?: { ok?: boolean };
+      diagnostics?: { kinds?: string[]; failedTools?: string[] };
+      toolCalls?: { name?: string; ok?: boolean }[];
+    }>;
+  }, AI_ACTIVITY_DISK_ENDPOINT);
+  const toolCalls = record.toolCalls ?? [];
+  const successfulTools = toolCalls.filter((call) => call.ok !== false).map((call) => call.name);
+  const diagnosedFailures = [...new Set(
+    toolCalls.filter((call) => call.ok === false).map((call) => call.name).filter((name): name is string => Boolean(name)),
+  )];
+  expect(record.result?.ok).toBe(true);
+  if (diagnosedFailures.length > 0) {
+    expect(record.diagnostics?.kinds ?? []).toContain("tool-failure");
+    expect(record.diagnostics?.failedTools ?? []).toEqual(expect.arrayContaining(diagnosedFailures));
+  } else {
+    expect(record.diagnostics?.kinds ?? []).not.toContain("tool-failure");
+  }
+  const successfulToolSet = new Set(successfulTools);
+  expect(["author_village", "author_house", "build_house_kit"].some((name) => successfulToolSet.has(name))).toBe(true);
+  expect(["start_interior_room_session", "run_interior_room_pipeline", "create_map"].some((name) => successfulToolSet.has(name))).toBe(true);
+  expect(["place_npc", "make_villager"].some((name) => successfulToolSet.has(name))).toBe(true);
+  expect(successfulTools).toEqual(expect.arrayContaining([
+    "create_transfer_pair",
+    "set_type_chart",
+    "upsert_enemy",
+    "script_cutscene",
+    "define_ending",
+  ]));
+  await shot(page, "J01-complex-turn-final");
+  log(`COMPLEX-SUCCESS-TOOLS: ${successfulTools.join(",")} | RECOVERED: ${diagnosedFailures.join(",") || "none"}`);
 });

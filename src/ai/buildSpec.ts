@@ -25,6 +25,9 @@ export interface SpecAsset {
 const STRUCTURE_MIN_CELLS = 6;
 // 배치 에셋 자리+주변(1칸 테두리)에 이 칸 수 이상의 기본-아닌 타일이 있으면 정리 방침(overExisting)을 요구한다.
 const PLACEMENT_CONFLICT_MIN = 4;
+// Event-like point assets do not overwrite map tiles. Requiring a terrain cleanup decision for an NPC,
+// transfer, or event merely because it sits on a road produces false conflicts and retry loops.
+const NON_TILE_ASSET_KINDS: ReadonlySet<string> = new Set(["event", "npc", "transfer"]);
 // 모델이 선형 도로/페인트를 경계에 딱 붙여 칠할 때 흔한 1~2칸 오차는 재계획 대신 경고로 흡수한다.
 // 구조물 삭제·기존 타일 보호 규칙에는 적용하지 않는, 확정 밑그림 대비 공간 쓰기 호출 경계 전용 slack이다.
 export const SPEC_BOUNDARY_SLACK_CELLS = 2;
@@ -196,7 +199,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
         continue;
       }
       // 배치(비-clear) 에셋: 자리+주변에 기본 타일이 아닌 것이 있으면 overExisting으로 정리 방침을 선언해야 한다.
-      if (asset.overExisting) continue;
+      if (asset.overExisting || NON_TILE_ASSET_KINDS.has(asset.kind)) continue;
       const conflict = placementConflict(currentMap, asset, clearAssets);
       if (conflict.count >= PLACEMENT_CONFLICT_MIN) {
         const at = conflict.sample ? ` 예: (${conflict.sample.x},${conflict.sample.y})` : "";

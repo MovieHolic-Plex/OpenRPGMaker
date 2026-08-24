@@ -17,6 +17,7 @@ import { CONSTRUCTION_TOOLS_V3 } from "../v3";
 import {
   coordKey,
   expandRect,
+  pointInRect,
   rectsOverlap,
   requireTool,
   ROAD_TILES,
@@ -90,11 +91,12 @@ function placeYardCluster(
  * 꽃덤불 링 — 집 옆 벽 아래 자투리 잔디의 2×2에 꽃덤불(288)+덤불(289)을 격자로 섞고
  * 둘레에 꽃잎(348)을 한두 장 흘린다 (참조 맵 문법 L4: 꽃은 흩뿌림이 아니라 클러스터).
  */
-function placeFlowerRings(map: GameMap, houses: readonly BuiltHouse[], seed: number): number {
+function placeFlowerRings(map: GameMap, houses: readonly BuiltHouse[], seed: number, area: Rect): number {
   const rng = mulberry32((seed ^ 0x85ebca6b) >>> 0);
   const blocked = houseBlockedCells(houses);
   const freeGrass = (x: number, y: number): boolean =>
     inMapBounds(map, x, y)
+    && pointInRect({ x, y }, area)
     && (map.lowerTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.GRASS
     && (map.upperTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.EMPTY
     && !blocked.has(coordKey(x, y));
@@ -182,12 +184,16 @@ export function placeVillageDecor(
     const theme = (fromPlan && fromPlan.length > 0
       ? fromPlan
       : pool[i % pool.length]) as readonly YardDecorKind[];
-    const yardArea = yardAreaForHouse(
-      map,
-      [{ x: house.bbox.x, y: house.bbox.y, w: house.bbox.w, h: house.bbox.h }],
-      house.doorAt,
-      { depth: 3, pad: 1 },
+    const yardArea = intersectRects(
+      yardAreaForHouse(
+        map,
+        [{ x: house.bbox.x, y: house.bbox.y, w: house.bbox.w, h: house.bbox.h }],
+        house.doorAt,
+        { depth: 3, pad: 1 },
+      ),
+      area,
     );
+    if (!yardArea) continue;
     // 소품은 점이 아니라 "무리" (참조 맵 문법 L5): 상자류 2개 이상이면 나란히 붙여 클러스터로.
     const clusterKinds = theme.filter((kind) => CLUSTER_PROP_TILES[kind] !== undefined);
     const scatterKinds = theme.filter((kind) => CLUSTER_PROP_TILES[kind] === undefined);
@@ -216,12 +222,12 @@ export function placeVillageDecor(
   // 돌길이면 포석 위 덤불 토핑 (참조 맵 문법 L1).
   if (intent.pathStyle === "stone") placed += placeStoneToppings(map, area, houses, seed);
   // 꽃덤불 링 — 집 벽 옆 자투리 잔디에 1~2개 (참조 맵 문법 L4).
-  placed += placeFlowerRings(map, houses, seed);
+  placed += placeFlowerRings(map, houses, seed, area);
   // 우물 하나 — 광장 근처 (382).
   if (/분수|fountain/i.test(intent.theme)) {
     warnings.push("요청한 fountain(분수) 타일은 combined_town에서 사용할 수 없어 well(우물 382)로 대체했다.");
   }
-  placed += placeVillageWell(map, plaza, houses);
+  placed += placeVillageWell(map, plaza, houses, area);
   // 화려한 깃발 — 중요한 집 문 양옆 벽면 (208/209).
   placed += placeEntranceBanners(map, houses);
   placed += placeShopSigns(map, houses, plaza);
@@ -287,6 +293,14 @@ export function placeVillageDecor(
   return placed;
 }
 
+function intersectRects(a: Rect, b: Rect): Rect | undefined {
+  const x = Math.max(a.x, b.x);
+  const y = Math.max(a.y, b.y);
+  const x2 = Math.min(a.x + a.w, b.x + b.w);
+  const y2 = Math.min(a.y + a.h, b.y + b.h);
+  return x2 > x && y2 > y ? { x, y, w: x2 - x, h: y2 - y } : undefined;
+}
+
 /**
  * 우물(382) — 마을에 하나, 광장 근처 잔디에. (2026-07-16 사용자 확정: 우물은 382)
  */
@@ -294,6 +308,7 @@ function placeVillageWell(
   map: GameMap,
   plaza: Plaza,
   houses: readonly BuiltHouse[],
+  area: Rect,
 ): number {
   const blocked = houseBlockedCells(houses);
   // 우물은 광장의 앵커(리서치: marketplace = well) — 광장 내부 중앙 자리를 최우선으로.
@@ -304,7 +319,7 @@ function placeVillageWell(
     { x: plaza.centerX, y: plaza.centerRow - 1 },
   ];
   for (const cell of centerCandidates) {
-    if (!inMapBounds(map, cell.x, cell.y)) continue;
+    if (!inMapBounds(map, cell.x, cell.y) || !pointInRect(cell, area)) continue;
     const index = cell.y * map.width + cell.x;
     if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
     if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
@@ -317,7 +332,7 @@ function placeVillageWell(
       for (let x = rect.x; x < rect.x + rect.w; x += 1) {
         // 확장 사각형의 테두리만 (광장에서 distance칸 떨어진 링)
         const onRing = x === rect.x || x === rect.x + rect.w - 1 || y === rect.y || y === rect.y + rect.h - 1;
-        if (!onRing || !inMapBounds(map, x, y)) continue;
+        if (!onRing || !inMapBounds(map, x, y) || !pointInRect({ x, y }, area)) continue;
         const index = y * map.width + x;
         if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
         if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;

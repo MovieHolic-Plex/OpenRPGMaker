@@ -38,8 +38,10 @@ export interface WorkItem {
    * Injected into worker context so the model knows when to complete_work_item.
    */
   readonly doneWhen?: string;
-  /** Write tools that mark this item done when any succeeds (orchestrator-authored). */
+  /** Tools that must all succeed before this item can auto-complete (orchestrator-authored). */
   readonly successTools?: readonly string[];
+  /** Emergency generic fallback: require evidence from at least one successful write tool. */
+  readonly requiresAnyWrite?: boolean;
   status: WorkItemStatus;
   note?: string;
 }
@@ -93,6 +95,7 @@ export type OrchestratorDecision =
           readonly instruction: string;
           readonly doneWhen?: string;
           readonly successTools?: readonly string[];
+          readonly requiresAnyWrite?: boolean;
         }[];
       }[];
     };
@@ -112,7 +115,7 @@ Harness contract:
    - title (short)
    - instruction (concrete tools/numbers: author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room, … — 건설 지시는 목표 맵과 정확한 수량을 반드시 명시)
    - doneWhen (acceptance: what must be true when this item is complete)
-   - successTools (optional write tool names that auto-complete the item)
+   - successTools (optional tool names that must ALL succeed before the item auto-completes; list only tools required by doneWhen, never alternatives)
 8. Typical RPG content layers: meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
 10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
@@ -329,6 +332,7 @@ function createWorkPlanFromLayers(input: {
       instruction: string;
       doneWhen?: string;
       successTools?: readonly string[];
+      requiresAnyWrite?: boolean;
     }[];
   }[];
   now: Date;
@@ -342,6 +346,7 @@ function createWorkPlanFromLayers(input: {
       instruction: it.instruction.trim(),
       doneWhen: it.doneWhen?.trim() || undefined,
       successTools: sanitizeToolNames(it.successTools),
+      requiresAnyWrite: it.requiresAnyWrite === true || undefined,
       status: "pending" as const,
     })),
   }));
@@ -507,6 +512,9 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push(`Current item: ${s.current.itemTitle}`);
     lines.push(`Worker instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
+    if (getCurrentWorkItem(plan)?.requiresAnyWrite) {
+      lines.push("Fallback completion gate: at least one write tool must succeed before completing this item.");
+    }
   } else {
     lines.push("All items complete. Summarize results briefly for the user.");
   }
@@ -514,8 +522,8 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push(`Remaining: ${s.remainingTitles.slice(0, 10).join(" → ")}`);
   }
   lines.push(
-    "When this item's successTools write tools succeed, the harness may auto-complete; " +
-      "or call complete_work_item only after those tools succeeded this turn. " +
+    "When all of this item's successTools succeed, the harness may auto-complete; " +
+      "or call complete_work_item only after every listed tool succeeded this turn. " +
       "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
       "do NOT complete a failed item by succeeding a different tool. " +
       "To restructure the remaining plan, call set_work_plan (full replacement). " +
@@ -607,19 +615,20 @@ function assistantLooksLikeBlockingQuestion(text: string): boolean {
 
 export function advanceWorkPlanFromTools(
   plan: WorkPlan,
-  successfulWriteTools: readonly string[]
+  successfulTools: readonly string[]
 ): { completed: WorkItem | null; next: WorkItem | null } {
   const current = getCurrentWorkItem(plan);
   if (!current || current.status !== "in_progress") {
     return { completed: null, next: activateFirstPending(plan) };
   }
   const needed = current.successTools ?? [];
-  // successTools 없는 항목은 자동 완료 금지 — 아무 쓰기나 성공했다고 다음 단계로 넘어가 thrash 유발.
-  // (예: 탁자 place_props 실패 후 place_npc 성공으로 탁자 항목 자동 완료)
-  if (needed.length === 0) return { completed: null, next: current };
-  const tools = new Set(successfulWriteTools);
-  const hit = needed.some((name) => tools.has(name));
-  if (!hit) return { completed: null, next: current };
+  const hasSuccessfulWrite = successfulTools.some((name) => getTool(name)?.mode === "write");
+  if (current.requiresAnyWrite && !hasSuccessfulWrite) return { completed: null, next: current };
+  // successTools 없는 일반 항목은 자동 완료 금지 — 아무 툴이나 성공했다고 다음 단계로 넘어가 thrash 유발.
+  if (needed.length === 0 && !current.requiresAnyWrite) return { completed: null, next: current };
+  const tools = new Set(successfulTools);
+  const allSucceeded = needed.every((name) => tools.has(name));
+  if (!allSucceeded) return { completed: null, next: current };
 
   current.status = "done";
   const next = activateFirstPending(plan);
@@ -627,25 +636,33 @@ export function advanceWorkPlanFromTools(
 }
 
 /**
- * successTools 가 있으면 그중 하나라도 이번 턴에 **성공한 툴**(읽기 포함)에 있어야 complete 허용.
- * 읽기까지 세는 이유: 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 만드는데
- * 쓰기만 세면 그 항목은 어떤 방법으로도 완료할 수 없는 게이트가 된다(2026-08-23 실측).
- * successTools 가 비어 있으면 자유 complete(레거시 항목).
- * force=true 는 skip 경로 대체용이 아니라 테스트/내부용 — 일반 complete_work_item 에서는 쓰지 않는다.
+ * successTools 가 있으면 **모두** 이번 턴에 성공해야 complete 허용(읽기 포함).
+ * `create_map + create_transfer_pair` 같은 복합 항목을 첫 툴 하나만으로 완료 처리하면 뒤 작업이
+ * 영구 누락된다. successTools 가 비어 있으면 자유 complete(레거시 항목).
  */
 export function canCompleteWorkItem(
   item: WorkItem,
   successfulTools: readonly string[] | undefined,
 ): { ok: true } | { ok: false; reason: string } {
   const needed = item.successTools ?? [];
+  if (item.requiresAnyWrite) {
+    const hasSuccessfulWrite = (successfulTools ?? []).some((name) => getTool(name)?.mode === "write");
+    if (!hasSuccessfulWrite) {
+      return {
+        ok: false,
+        reason: `항목 '${item.title}' 완료 조건 미충족: 성공한 쓰기 툴 기록이 없습니다.`,
+      };
+    }
+  }
   if (needed.length === 0) return { ok: true };
   const tools = new Set(successfulTools ?? []);
-  if (needed.some((name) => tools.has(name))) return { ok: true };
+  const missing = needed.filter((name) => !tools.has(name));
+  if (missing.length === 0) return { ok: true };
   return {
     ok: false,
     reason:
-      `항목 '${item.title}' 완료 조건 미충족: successTools(${needed.join(", ")}) 성공 기록이 없습니다. ` +
-      `해당 툴로 성공하거나 skip_work_item으로 건너뛰세요.`,
+      `항목 '${item.title}' 완료 조건 미충족: 필수 successTools 중 ${missing.join(", ")} 성공 기록이 없습니다. ` +
+      `누락된 툴을 성공시키거나 skip_work_item으로 건너뛰세요.`,
   };
 }
 
@@ -705,7 +722,7 @@ export function buildDefaultWorkPlan(goal: string, now = new Date()): WorkPlan {
   const successTools =
     genreTools.length > 0
       ? [...genreTools]
-      : constructionTools ?? ["create_map", "place_npc", "upsert_event", "script_cutscene_preset", "make_horror_loop", "make_gallery_room"];
+      : constructionTools ?? undefined;
   const instruction =
     genre != null
       ? `${templateToolInstruction(genre)}
@@ -729,6 +746,7 @@ export function buildDefaultWorkPlan(goal: string, now = new Date()): WorkPlan {
               instruction,
               doneWhen: "User request addressed with write tools where applicable",
               successTools,
+              requiresAnyWrite: successTools === undefined,
             },
           ],
         },

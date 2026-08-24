@@ -121,4 +121,35 @@ describe("DB write tools", () => {
     // background must not clear system.titleResourceId
     expect(ctx.project.system.titleResourceId).toBeDefined();
   });
+
+  it("set_type_chart는 제거된 타입을 가리키는 기존 전투 참조를 경고와 함께 정리한다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    ctx.project.system.typeChart = { types: ["grass"], multipliers: { grass: { grass: 1 } } };
+    const skill = ctx.project.database.skills[0]!;
+    const item = ctx.project.database.items[0]!;
+    const equipment = ctx.project.database.equipment[0]!;
+    skill.elementId = "grass";
+    item.equipmentProfile.attackElementIds = ["grass"];
+    equipment.elementalDefenseIds = ["grass"];
+
+    const result = runTool(ctx, "set_type_chart", {
+      types: ["fire", "ice", "lightning"],
+      multipliers: {
+        fire: { fire: 1, ice: 2, lightning: 0.5 },
+        ice: { fire: 0.5, ice: 1, lightning: 2 },
+        lightning: { fire: 2, ice: 0.5, lightning: 1 },
+      },
+    }, { dryRun: false });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(skill.id).toBe(ctx.project.database.skills[0]?.id);
+    expect(ctx.project.database.skills[0]?.elementId).toBeUndefined();
+    expect(ctx.project.database.items[0]?.equipmentProfile.attackElementIds).toEqual([]);
+    expect(ctx.project.database.equipment[0]?.elementalDefenseIds).toEqual([]);
+    const warnings = result.diff?.warnings.join("\n") ?? "";
+    expect(warnings).toMatch(/기존 속성 참조 \d+건/);
+    expect(warnings).toContain(`skill ${skill.id}.elementId=grass`);
+    expect(warnings).toContain(`item ${item.id}.attackElementIds=grass`);
+    expect(warnings).toContain(`equipment ${equipment.id}.elementalDefenseIds=grass`);
+  });
 });

@@ -34,6 +34,7 @@ export interface TerrainConstraintMasks {
 export function buildTerrainConstraintMasks(
   map: Pick<GameMap, "width" | "height">,
   requirements: VillageRequirements,
+  area: Rect = { x: 0, y: 0, w: map.width, h: map.height },
 ): TerrainConstraintMasks {
   const { width, height } = map;
   const roles: TerrainCellRole[] = new Array(width * height).fill("buildable");
@@ -41,23 +42,23 @@ export function buildTerrainConstraintMasks(
   const waterRects: Rect[] = [];
   const forestRects: Rect[] = [];
 
-  const strip = Math.min(6, Math.max(4, Math.floor(Math.min(width, height) * 0.12)));
-  const forestDepth = Math.max(4, Math.floor(Math.min(width, height) * 0.14));
+  const strip = Math.min(6, Math.max(4, Math.floor(Math.min(area.w, area.h) * 0.12)));
+  const forestDepth = Math.max(4, Math.floor(Math.min(area.w, area.h) * 0.14));
 
-  let buildable: Rect = { x: 0, y: 0, w: width, h: height };
+  let buildable: Rect = area;
 
   if (requirements.landmarks.includes("river") || requirements.landmarks.includes("harbor")) {
     const side = requirements.riverSide;
-    const water = sideRect(width, height, side, strip);
+    const water = offsetRect(sideRect(area.w, area.h, side, strip), area);
     waterRects.push(water);
     paintRole(roles, width, water, "water");
-    buildable = shrinkBuildableAwayFrom(width, height, side, strip);
+    buildable = offsetRect(shrinkBuildableAwayFrom(area.w, area.h, side, strip), area);
     notes.push(`mask water@${side} ${water.w}×${water.h}`);
   }
 
   if (requirements.landmarks.includes("lake")) {
-    const size = Math.max(8, Math.floor(Math.min(width, height) * (requirements.landmarks.includes("river") ? 0.14 : 0.28)));
-    const lake = lakeRect(width, height, requirements.riverSide, size, requirements.landmarks.includes("river"));
+    const size = Math.max(8, Math.floor(Math.min(area.w, area.h) * (requirements.landmarks.includes("river") ? 0.14 : 0.28)));
+    const lake = offsetRect(lakeRect(area.w, area.h, requirements.riverSide, size, requirements.landmarks.includes("river")), area);
     waterRects.push(lake);
     paintRole(roles, width, lake, "water");
     notes.push(`mask lake ${lake.w}×${lake.h}`);
@@ -66,15 +67,15 @@ export function buildTerrainConstraintMasks(
       buildable = {
         x: Math.max(0, lake.x + lake.w - 2),
         y: Math.max(0, lake.y + lake.h - 2),
-        w: width - Math.max(0, lake.x + lake.w - 2),
-        h: height - Math.max(0, lake.y + lake.h - 2),
+        w: area.x + area.w - Math.max(0, lake.x + lake.w - 2),
+        h: area.y + area.h - Math.max(0, lake.y + lake.h - 2),
       };
     }
   }
 
   if (requirements.landmarks.includes("forest")) {
     const side = requirements.forestSide;
-    const forest = sideRect(width, height, side, forestDepth);
+    const forest = offsetRect(sideRect(area.w, area.h, side, forestDepth), area);
     // 물 마스크와 겹치면 물은 유지, 숲은 물 칸 제외하고 칠함
     forestRects.push(forest);
     paintRole(roles, width, forest, "forest", /* skipWater */ true);
@@ -82,8 +83,8 @@ export function buildTerrainConstraintMasks(
   }
 
   // buildable 밖은 blocked (주거 시공 금지 힌트)
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
       const i = y * width + x;
       if (roles[i] === "water") continue;
       if (!inRect(x, y, buildable) && roles[i] !== "forest") {
@@ -180,13 +181,14 @@ export function runTerrainConstraintPass(
   map: GameMap,
   requirements: VillageRequirements,
   warnings: string[],
+  area?: Rect,
 ): {
   readonly masks: TerrainConstraintMasks;
   readonly waterOps: number;
   readonly forestOps: number;
   readonly notes: string[];
 } {
-  const masks = buildTerrainConstraintMasks(map, requirements);
+  const masks = buildTerrainConstraintMasks(map, requirements, area);
   const applied = applyTerrainPassFromMasks(draft, map, masks, warnings);
   return {
     masks,
@@ -216,6 +218,10 @@ function sideRect(
   if (side === "east") return { x: width - depth, y: 1, w: depth, h: height - 2 };
   if (side === "north") return { x: 1, y: 0, w: width - 2, h: depth };
   return { x: 1, y: height - depth, w: width - 2, h: depth };
+}
+
+function offsetRect(rect: Rect, area: Rect): Rect {
+  return { ...rect, x: rect.x + area.x, y: rect.y + area.y };
 }
 
 function lakeRect(

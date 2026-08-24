@@ -107,7 +107,11 @@ export function requestMentionsOutdoorHouse(text: string): boolean {
 }
 
 export function requestMentionsBothHousePaths(text: string): boolean {
-  return includesAny(normalize(text), BOTH_MARKERS);
+  const n = normalize(text);
+  if (includesAny(n, BOTH_MARKERS)) return true;
+  if (/아니라|말고|대신/u.test(n)) return false;
+  const requestsMultipleOutdoorHouses = /집\s*(?:\d+|한|두|세)\s*채/u.test(n);
+  return requestsMultipleOutdoorHouses && requestMentionsInterior(n) && requestMentionsOutdoorHouse(n);
 }
 
 function isProceedOrAnswerLike(text: string): boolean {

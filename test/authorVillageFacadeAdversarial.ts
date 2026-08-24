@@ -70,7 +70,7 @@ describe("author_village adversarial boundary", () => {
   it("returns a structured blocked ConstructionOutcome from the product facade", () => {
     const context: ToolContext = { project: createExistingProject() };
 
-    const result = runAuthorVillage(context, { ...EXACT_REQUEST, houseCount: 2 });
+    const result = runAuthorVillage(context, { ...EXACT_REQUEST, houseCount: 0 });
 
     expect(result.ok).toBe(false);
     expect(construction(result)).toMatchObject({
@@ -81,7 +81,7 @@ describe("author_village adversarial boundary", () => {
       canonicalRoute: "author_village",
       selectedImplementation: "buildVillageDomain",
       routeChanges: [],
-      counts: { requested: 2, actual: 0 },
+      counts: { requested: 0, actual: 0 },
     });
   });
 

@@ -34,6 +34,13 @@ describe("welcomeGenrePresets", () => {
     expect(prompt).toContain("make_gallery_room");
   });
 
+  it("일반 switch·선택지 컷신·엔딩을 장르 프리셋으로 오인하지 않는다", () => {
+    const prompt = buildWelcomeFreeTextPrompt("switch ending_flag와 선택지 컷신으로 진엔딩을 만든다");
+    expect(prompt).not.toContain("script_cutscene_preset");
+    expect(prompt).not.toContain("make_horror_loop");
+    expect(prompt).toContain("switch ending_flag");
+  });
+
   it("builds preset prompts with shared checklist and no-commit guard", () => {
     const preset = welcomeGenrePresetById("farm-life");
     expect(preset).toBeTruthy();

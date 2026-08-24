@@ -264,6 +264,20 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
   if (!COMMAND_KIND_SET.has(kind)) {
     throw simplePageFieldError(`${path}.kind`, "known command kind string", kind);
   }
+  if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
+    command.key = command.id;
+    delete command.id;
+    warnings?.push(`SimplePage 정규화: ${path}.id를 setSelfSwitch.key로 사용했습니다.`);
+  }
+  if (kind === "setSwitch" && typeof command.switchId !== "string" && typeof command.id === "string") {
+    command.switchId = command.id;
+    delete command.id;
+    warnings?.push(`SimplePage 정규화: ${path}.id를 setSwitch.switchId로 사용했습니다.`);
+  }
+  if ((kind === "setSelfSwitch" || kind === "setSwitch") && (command.value === "true" || command.value === "false")) {
+    command.value = command.value === "true";
+    warnings?.push(`SimplePage 정규화: ${path}.value 문자열을 boolean으로 변환했습니다.`);
+  }
   return command as Command;
 }
 
@@ -279,19 +293,34 @@ function normalizeCommands(raw: unknown, path: string, warnings: string[] | unde
   return values.map((value, index) => normalizeCommand(value, `${path}[${index}]`, warnings));
 }
 
-function normalizeCondition(raw: unknown, path: string): EventPageCondition {
+function normalizeCondition(raw: unknown, path: string, warnings: string[] | undefined): EventPageCondition {
   if (!isRecord(raw)) throw simplePageFieldError(path, "EventPageCondition object", raw);
-  if (typeof raw.kind !== "string") throw simplePageFieldError(`${path}.kind`, "string", raw.kind);
-  if (!CONDITION_KIND_SET.has(raw.kind)) {
-    throw simplePageFieldError(`${path}.kind`, "known condition kind string", raw.kind);
+  const condition: RecordValue = { ...raw };
+  if (typeof condition.kind !== "string") throw simplePageFieldError(`${path}.kind`, "string", condition.kind);
+  if (!CONDITION_KIND_SET.has(condition.kind)) {
+    throw simplePageFieldError(`${path}.kind`, "known condition kind string", condition.kind);
+  }
+  if (condition.kind === "selfSwitch" && typeof condition.key !== "string" && typeof condition.id === "string") {
+    condition.key = condition.id;
+    delete condition.id;
+    warnings?.push(`SimplePage 정규화: ${path}.id를 selfSwitch.key로 사용했습니다.`);
+  }
+  if (condition.kind === "switch" && typeof condition.switchId !== "string" && typeof condition.id === "string") {
+    condition.switchId = condition.id;
+    delete condition.id;
+    warnings?.push(`SimplePage 정규화: ${path}.id를 switch.switchId로 사용했습니다.`);
+  }
+  if ((condition.kind === "selfSwitch" || condition.kind === "switch") && (condition.value === "true" || condition.value === "false")) {
+    condition.value = condition.value === "true";
+    warnings?.push(`SimplePage 정규화: ${path}.value 문자열을 boolean으로 변환했습니다.`);
   }
   try {
-    validateConditionShape(path, raw);
+    validateConditionShape(path, condition);
   } catch (cause) {
     const detail = cause instanceof Error ? cause.message : String(cause);
-    throw simplePageShapeError(path, "valid EventPageCondition object", raw, detail);
+    throw simplePageShapeError(path, "valid EventPageCondition object", condition, detail);
   }
-  return raw as EventPageCondition;
+  return condition as EventPageCondition;
 }
 
 function normalizeConditions(raw: unknown, path: string, warnings: string[] | undefined): EventPageCondition[] {
@@ -303,7 +332,13 @@ function normalizeConditions(raw: unknown, path: string, warnings: string[] | un
     `SimplePage 정규화: ${path} null을 빈 배열로 처리했습니다.`,
     warnings
   );
-  return values.map((value, index) => normalizeCondition(value, `${path}[${index}]`));
+  return values.flatMap((value, index) => {
+    if (isRecord(value) && (Object.keys(value).length === 0 || value.kind === "none")) {
+      warnings?.push(`SimplePage 정규화: ${path}[${index}] 빈/없음 조건을 제외했습니다.`);
+      return [];
+    }
+    return [normalizeCondition(value, `${path}[${index}]`, warnings)];
+  });
 }
 
 // SimplePage[] → EventPage[]. 각 페이지는 lines(대사) → choices → commands(원시) 순으로 합성한다.

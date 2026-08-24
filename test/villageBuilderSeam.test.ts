@@ -92,9 +92,9 @@ describe("buildVillageDomain", () => {
   });
 
   it.each([
-    { requested: 2, clamped: 4 },
-    { requested: 33, clamped: 32 },
-  ])("keeps the legacy $requested-to-$clamped house clamp", ({ requested, clamped }) => {
+    { requested: 2, normalized: 2 },
+    { requested: 33, normalized: 32 },
+  ])("normalizes $requested houses to $normalized", ({ requested, normalized }) => {
     // Given
     const project = createExistingMapProject(100);
 
@@ -111,8 +111,8 @@ describe("buildVillageDomain", () => {
     const data = resultData(result);
 
     // Then
-    expect(result.summary).toContain(`/${clamped}`);
-    expect(data.housesBuilt).toBeLessThanOrEqual(clamped);
+    expect(result.summary).toContain(`/${normalized}`);
+    expect(data.housesBuilt).toBeLessThanOrEqual(normalized);
   });
 
   it("keeps a constrained house shortfall as a compatibility warning", () => {

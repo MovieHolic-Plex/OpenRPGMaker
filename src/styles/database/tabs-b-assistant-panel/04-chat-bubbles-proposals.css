@@ -17,7 +17,7 @@
   line-height: 1.55;
 }
 .ai-command-prefix {
-  color: var(--studio-command, #4c7eff);
+  color: var(--studio-command, color-mix(in srgb, var(--text-1) 68%, #4c7eff));
   font-weight: 700;
   user-select: none;
 }

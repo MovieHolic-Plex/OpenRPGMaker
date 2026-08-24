@@ -134,9 +134,10 @@ export function buildVillageDomain(
       ? inferRequirementsFromQuery(intent.theme)
       : undefined);
   const baseArea = villageBuildArea(map, createArgs.bounds);
+  assertBuildAreaSize(map, baseArea);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
   const terrainMasks = requirements && requirements.landmarks.length > 0
-    ? buildTerrainConstraintMasks(map, requirements)
+    ? buildTerrainConstraintMasks(map, requirements, baseArea)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
   const area = intersectRects(baseArea, reserved);
@@ -219,7 +220,7 @@ export function buildVillageDomain(
   // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
   restoreHouseDoors(map, houses);
   // 길은 다 깐 뒤 울타리(길 칸 스킵)
-  if (fencesEnabled) placeHouseLotFences(map, houses, seed);
+  if (fencesEnabled) placeHouseLotFences(map, houses, seed, area);
   // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
   // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
   assignShopPrograms(houses, plaza, warnings);
@@ -231,7 +232,7 @@ export function buildVillageDomain(
   const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
   let landmarkNotes: string[] = [];
   if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings);
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea);
     landmarkNotes = [...terrain.notes];
     if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
     restoreHouseDoors(map, houses);
@@ -270,7 +271,7 @@ export function buildVillageDomain(
     const needLake = requirements.landmarks.includes("lake");
     if (needRiver || needLake) {
       const waterFloor = needRiver ? 30 : 25;
-      const waterCells = countWaterCells(map);
+      const waterCells = countWaterCells(map, baseArea);
       if (waterCells < waterFloor) {
         throw new ToolError(
           `필수 수역 미시공: 실측 ${waterCells}칸 < ${waterFloor} — fill_region(물)이 실패했거나 타일셋에 물 어휘가 없다. 쿼리「${requirements.query}」`,
@@ -279,7 +280,7 @@ export function buildVillageDomain(
       }
     }
     if (requirements.landmarks.includes("forest")) {
-      const treeCells = countTreeCells(map);
+      const treeCells = countTreeCells(map, baseArea);
       if (treeCells < 15) {
         throw new ToolError(
           `필수 숲 미시공: 실측 나무 ${treeCells}칸 < 15 — place_props(침엽수/활엽수)가 실패했다. 쿼리「${requirements.query}」`,
