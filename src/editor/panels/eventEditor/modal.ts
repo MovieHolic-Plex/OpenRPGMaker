@@ -119,7 +119,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     unregisterModal(backdrop);
     backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
-    if (!document.querySelector("[data-testid='event-editor-modal']")) {
+    if (typeof document !== "undefined" && !document.querySelector("[data-testid='event-editor-modal']")) {
       document.body.classList.remove("event-editor-modal-open");
     }
     disposeFocusTrap();
@@ -204,10 +204,12 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
-    if (!saved) discardEventDraft(request.mapId, request.eventId);
+    // Stop reactive paint before discarding the draft. discardEventDraft emits
+    // synchronously, so a live subscriber can rerender a modal that is closing.
     unsubscribeStore();
     unsubscribeEditor();
     unsubscribeAutoSave();
+    if (!saved) discardEventDraft(request.mapId, request.eventId);
   });
   // 맵에서 더블클릭으로 열면 그 더블클릭의 잔여 dblclick 이벤트가 방금 열린 모달의
   // 명령 줄에 떨어져 편집 다이얼로그가 저절로 열린다(2026-08-19 실측) — 오픈 직후 잠깐 삼킨다.

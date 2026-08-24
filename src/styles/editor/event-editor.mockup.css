@@ -1573,14 +1573,13 @@
   scrollbar-color: var(--mk-t3) transparent;
 }
 
-/* ── 푸터: 목업과 동일 — 상태 좌측, 버튼 우측·콘텐츠 크기(높이 30) ──
-   목업의 .footer 는 64px 행 + 30px 버튼(패딩 0 13px, min-width 없음).
-   part-4/modern 의 min-width 96~112·min-height 25~38 을 여기서 무력화한다. */
+/* ── 푸터: 한 줄 상태 + 콘텐츠 크기 버튼의 압축 행 ── */
 .event-editor-modal-footer {
-  min-height: 64px;
-  padding: 0 14px;
+  min-height: 44px;
+  padding: 5px 14px;
 }
-.event-editor-modal-footer .btn.event-editor-footer-button {
+.event-editor-modal-footer .btn.event-editor-footer-button,
+.event-editor-modal-footer .event-editor-footer-more-summary {
   height: 30px;
   min-height: 30px;
   min-width: 0;
