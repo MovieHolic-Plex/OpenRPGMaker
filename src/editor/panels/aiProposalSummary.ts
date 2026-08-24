@@ -1,10 +1,12 @@
 import { proposalCompletenessWarningLines } from "@/ai/proposalCompleteness";
 import type { ProposedCall } from "@/ai/assistantSession";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
+import { TILE } from "@/project/defaults/constants";
 import { combineDiffs } from "@/project/projectCommitLog";
 import type { Project } from "@/project/types";
 
-const HOUSE_TOOLS = new Set(["build_house", "build_house_kit"]);
+const HOUSE_TOOLS = new Set(["build_house", "build_house_kit", "author_house", "build_house_lots"]);
+const WATER_LABEL = /호수|연못|하천|수역|강가|water|river|lake|pond|(^|[^가-힣])(물|강)([^가-힣]|$)/iu;
 const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
   HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && call.args.kind === "house");
 
@@ -35,12 +37,55 @@ function isTreeScatter(call: ProposedCall): boolean {
   return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
 }
 
+function countHousesInCall(call: ProposedCall): number {
+  if (Array.isArray(call.args.houses) && call.args.houses.length > 0) return call.args.houses.length;
+  if (call.name === "author_village") {
+    const fromData = positive(numberFromRecord(call.result.data, "houseCount"));
+    if (fromData > 0) return fromData;
+    return positive(typeof call.args.houseCount === "number" ? call.args.houseCount : null);
+  }
+  if (isHouseCall(call) || call.name === "build_wall") return 1;
+  if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return 1;
+  return 0;
+}
+
 function countProposalHouses(calls: readonly ProposedCall[]): number {
-  return calls.reduce((total, call) => {
-    if (isHouseCall(call) || call.name === "build_wall") return total + 1;
-    if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return total + 1;
-    return total;
-  }, 0);
+  return calls.reduce((total, call) => total + countHousesInCall(call), 0);
+}
+
+function looksLikeWaterLabel(value: string): boolean {
+  const label = value.trim();
+  if (!label || /건물/u.test(label)) return false;
+  if (label === "물" || label === "강") return true;
+  return WATER_LABEL.test(label);
+}
+
+function isRiverCall(call: ProposedCall): boolean {
+  if (isHouseCall(call) || call.name === "author_village" || call.name === "build_wall") return false;
+  if (call.args.tile === TILE.WATER) return true;
+  const material = typeof call.args.material === "string" ? call.args.material : "";
+  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : "";
+  if (looksLikeWaterLabel(material) || looksLikeWaterLabel(groupId)) return true;
+  return (call.name === "fill_region" || call.name === "paint_tiles" || call.name === "tile_paint") && looksLikeWaterLabel(call.summary);
+}
+
+function hasRiverNoun(calls: readonly ProposedCall[]): boolean {
+  return calls.some(isRiverCall);
+}
+
+function houseHasYard(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (value.fence === true) return true;
+  return Array.isArray(value.yard) && value.yard.length > 0;
+}
+
+function hasYardNoun(calls: readonly ProposedCall[]): boolean {
+  return calls.some((call) => {
+    if (call.args.fence === true) return true;
+    if (Array.isArray(call.args.yard) && call.args.yard.length > 0) return true;
+    if (Array.isArray(call.args.houses) && call.args.houses.some(houseHasYard)) return true;
+    return /앞마당|울타리/u.test(call.summary);
+  });
 }
 
 function countProposalRoadCells(calls: readonly ProposedCall[]): number {
@@ -70,6 +115,14 @@ function countProposalTrees(calls: readonly ProposedCall[]): number {
 
 function formatCount(label: string, count: number, unit: string): string | null {
   return count > 0 ? `${label} ${count}${unit}` : null;
+}
+
+function nounCount(label: string, count: number): string | null {
+  return count > 0 ? `${label} ${count}` : null;
+}
+
+function nounPresence(label: string, present: boolean): string | null {
+  return present ? label : null;
 }
 
 function worldSummaryPart(added: number, modified: number): string | null {
@@ -115,10 +168,14 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
   const houses = countProposalHouses(calls);
   const roadCells = countProposalRoadCells(calls);
   const trees = countProposalTrees(calls);
+  const river = hasRiverNoun(calls);
+  const yard = hasYardNoun(calls);
   const semanticParts = [
-    formatCount("집", houses, "채"),
-    formatCount("길", roadCells, "칸"),
-    formatCount("나무", trees, "그루"),
+    nounCount("집", houses),
+    nounPresence("강", river),
+    nounPresence("앞마당", yard),
+    nounCount("길", roadCells),
+    nounCount("나무", trees),
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
     palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
   ].filter((part): part is string => part !== null);
@@ -126,7 +183,9 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
   const parts = [
     ...semanticParts,
     ...(semanticParts.length === 0 ? fallbackDiffParts(calls) : []),
-    semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 ? `타일 ${remainingTileChanges}칸` : null,
+    semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 && !river && !yard
+      ? `타일 ${remainingTileChanges}칸`
+      : null,
   ].filter((part): part is string => part !== null);
   return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}건`;
 }

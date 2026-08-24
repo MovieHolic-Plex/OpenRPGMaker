@@ -172,7 +172,31 @@ describe("UXD proposal summary helpers", () => {
       proposed("upsert_world_entities", {}, { worldEntitiesAdded: 1 }, "세계관 추가 1"),
     ];
 
-    expect(proposalHumanSummaryLine(calls)).toBe("집 2채 · 길 33칸 · 나무 16그루 · 세계관 1건");
+    expect(proposalHumanSummaryLine(calls)).toBe("집 2 · 길 33 · 나무 16 · 세계관 1건");
+  });
+
+  it("샷 08/10처럼 결정 요약은 짧은 명사 목록이다", () => {
+    const calls = [
+      proposed("author_house", {
+        kind: "lots",
+        mapId: "m1",
+        houses: [
+          { kitId: "amber-wood", yard: ["mailbox"] },
+          { kitId: "bright-plaster", yard: ["flowers"] },
+          { kitId: "blue-stone", yard: ["pot"] },
+        ],
+      }, { tilesChanged: 120 }, "오두막 세 채"),
+      proposed("fill_region", { mapId: "m1", material: "물" }, { tilesChanged: 48 }, "강"),
+    ];
+
+    expect(proposalHumanSummaryLine(calls)).toBe("집 3 · 강 · 앞마당");
+    expect(proposalHumanSummaryLine(calls)).not.toMatch(/채|칸|그루|fill_region|author_house|build_/u);
+    expect(proposalHumanSummaryLine([
+      proposed("paint_tiles", { mapId: "m1", tile: TILE.WATER }, { tilesChanged: 48 }, "수역"),
+    ])).toBe("강");
+    expect(proposalHumanSummaryLine([
+      proposed("build_house_kit", { mapId: "m1", fence: true }, { tilesChanged: 40 }, "집"),
+    ])).toBe("집 1 · 앞마당");
   });
 
   it("세계관 추가와 수정이 함께 있으면 추가/수정 수를 보존한다", () => {
@@ -184,7 +208,7 @@ describe("UXD proposal summary helpers", () => {
   it("완성도 경고는 사람 요약 뒤에 붙인다", () => {
     const calls = [proposed("build_house", { mapId: "m1" }, { tilesChanged: 12 }, "집")];
 
-    expect(proposalSummaryLines(calls, ["⚠ 미이행: 길 영역 미변경"])).toEqual(["집 1채", "⚠ 미이행: 길 영역 미변경"]);
+    expect(proposalSummaryLines(calls, ["⚠ 미이행: 길 영역 미변경"])).toEqual(["집 1", "⚠ 미이행: 길 영역 미변경"]);
   });
 
   it("기술 상세 라인은 원시 도구명을 별도로 유지한다", () => {
@@ -212,8 +236,8 @@ describe("UXD proposal summary helpers", () => {
     ];
 
     expect(proposalDecisionTitle(calls, "강가 오두막 3채")).toBe("강가 오두막 3채");
-    expect(proposalDecisionTitle(calls, "길 초안을 제안합니다.")).toBe("집 3채");
-    expect(proposalDecisionTitle(calls, "build_house_kit 3")).toBe("집 3채");
+    expect(proposalDecisionTitle(calls, "길 초안을 제안합니다.")).toBe("집 3");
+    expect(proposalDecisionTitle(calls, "build_house_kit 3")).toBe("집 3");
     expect(proposalDetailsToggleLabel(3)).toBe("3개 항목 · 자세히");
   });
 
