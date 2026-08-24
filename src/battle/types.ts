@@ -195,6 +195,8 @@ export interface BattleBattlerSnapshot {
   /** Side-view pose for the current resolve beat (idle/attack/hit/defend/dead). */
   readonly pose: import("@/battle/battlePose").BattleBattlerPose;
   readonly stateIds: readonly string[];
+  /** Per-state turn counters, carried by persistent monster instances. */
+  readonly stateTurns?: Readonly<Record<string, number>>;
   readonly skillIds: readonly SkillId[];
   /** Remaining PP by skill for immutable battle consumers. */
   readonly skillPp?: Readonly<Record<SkillId, number>>;

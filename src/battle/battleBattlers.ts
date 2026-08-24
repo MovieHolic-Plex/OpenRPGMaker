@@ -2,7 +2,7 @@ import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/proje
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
 import type { MonsterInstance } from "@/project/session";
-import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds } from "@/project/monsterCollection";
+import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
@@ -64,6 +64,8 @@ export interface MutableBattler {
   agility: number;
   chargeRate: number;
   skillIds: SkillId[];
+  /** Remaining PP for authored monster moves. Missing means the legacy MP path. */
+  skillPp?: Record<SkillId, number>;
   readonly enemyActions?: readonly EnemyActionPattern[];
   readonly battleX?: number;
   readonly battleY?: number;
@@ -316,16 +318,17 @@ function parameterWithBonus(curve: readonly number[], level: number, bonus: numb
 // 액터 파이프라인 대신 이 배틀러들이 필드에 나서면 "내 포켓몬이 싸운다"가 성립한다.
 export function monsterPartyBattlers(project: Project, instances: readonly MonsterInstance[]): MutableBattler[] {
   return instances.map((instance, index) => {
-    const stats = monsterBattleStats(project, instance);
-    const hp = monsterCurrentHp(project, instance);
+    const hydrated = normalizeMonsterInstanceBattleState(project, instance);
+    const stats = monsterBattleStats(project, hydrated);
+    const hp = monsterCurrentHp(project, hydrated);
     return {
       // id is the DOM/runtime node key; recordId is the script/command key (instanceId).
-      id: `mon:${instance.instanceId}`,
-      recordId: instance.instanceId as ActorId,
-      monsterInstanceId: instance.instanceId,
-      speciesId: instance.speciesId,
-      level: instance.level,
-      name: monsterDisplayName(project, instance),
+      id: `mon:${hydrated.instanceId}`,
+      recordId: hydrated.instanceId as ActorId,
+      monsterInstanceId: hydrated.instanceId,
+      speciesId: hydrated.speciesId,
+      level: hydrated.level,
+      name: monsterDisplayName(project, hydrated),
       maxHp: stats.maxHp,
       hp,
       maxMp: stats.maxMp,
@@ -339,10 +342,11 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
       battleX: 252,
       battleY: 96 + index * 36,
       gauge: 0,
-      stateIds: [],
-      stateTurns: {},
+      stateIds: [...(hydrated.stateIds ?? [])],
+      stateTurns: { ...(hydrated.stateTurns ?? {}) },
       defending: false,
-      skillIds: monsterSkillIds(project, instance),
+      skillIds: monsterSkillIds(project, hydrated),
+      skillPp: hydrated.skillPp ? { ...hydrated.skillPp } : undefined,
       hidden: false,
     } satisfies MutableBattler;
   });
@@ -444,8 +448,10 @@ export function battlerSnapshot(
     battleY: position?.battleY ?? battler.battleY,
     defeated: battler.hp <= 0,
     defending: battler.defending,
-    stateIds: battler.stateIds,
-    skillIds: battler.skillIds,
+    stateIds: [...battler.stateIds],
+    stateTurns: { ...battler.stateTurns },
+    skillIds: [...battler.skillIds],
+    skillPp: battler.skillPp ? { ...battler.skillPp } : undefined,
     equipmentEffects: battler.equipmentEffects,
     captured: battler.captured === true ? true : undefined,
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },

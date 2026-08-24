@@ -19,6 +19,7 @@ import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
+import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
@@ -110,7 +111,9 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     scene.session.x = scene.tileX;
     scene.session.y = scene.tileY;
     recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
-    applyWalkCareTicks(store.getCurrent(), scene.session, 1);
+    const project = store.getCurrent();
+    applyWalkCareTicks(project, scene.session, 1);
+    applyGen1FieldPoisonStep(project, scene.session);
     scene.moving = false;
     scene.player.x = characterSpriteX(scene.tileX);
     scene.player.y = characterSpriteY(scene.tileY);

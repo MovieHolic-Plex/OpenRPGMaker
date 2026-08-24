@@ -3,6 +3,7 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { Project } from "@/project/types";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import { transitionActorEquipment, type EquipmentTransitionResult } from "@/project/equipmentRules";
+import { recoverMonsterInstance } from "@/project/monsterCollection";
 
 type ActorVitalKind = "hp" | "mp";
 type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActorMp" }>;
@@ -68,13 +69,19 @@ export function resolveActorFaceIndex(
   return session.actorFaceIndices?.[actor.id] ?? actor.faceIndex ?? 0;
 }
 
-export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefined): void {
+export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefined, project?: Project): void {
   const actorIds = actorId ? [actorId] : session.partyActorIds;
   for (const id of actorIds) {
     const vitals = session.actorVitals[id];
     if (!vitals) continue;
     vitals.hp = vitals.maxHp;
     vitals.mp = vitals.maxMp;
+  }
+  if (actorId || !project) return;
+  for (const instanceId of session.monsterParty ?? []) {
+    const instance = session.monsterInstances?.[instanceId];
+    if (!instance) continue;
+    session.monsterInstances![instanceId] = recoverMonsterInstance(project, instance);
   }
 }
 
