@@ -248,6 +248,34 @@ test("event layer canvas selects on first click and opens the editor on double c
 
   await nativeDoubleClickMapTile(page, 2, 2);
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
+
+  const backgroundContext = await page.evaluate(() => {
+    const backdrop = document.querySelector<HTMLElement>("[data-testid='event-editor-modal']");
+    const modalWindow = backdrop?.querySelector<HTMLElement>(".event-editor-modal-window");
+    const canvas = document.querySelector<HTMLCanvasElement>("[data-testid='edit-canvas'] canvas");
+    if (!backdrop || !modalWindow || !canvas) throw new Error("missing event editor context geometry");
+
+    const modalRect = modalWindow.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const intersectionWidth = Math.max(0, Math.min(modalRect.right, canvasRect.right) - Math.max(modalRect.left, canvasRect.left));
+    const intersectionHeight = Math.max(0, Math.min(modalRect.bottom, canvasRect.bottom) - Math.max(modalRect.top, canvasRect.top));
+    const canvasArea = canvasRect.width * canvasRect.height;
+    const scrimColor = getComputedStyle(backdrop).backgroundColor;
+    const scrimAlpha = Number.parseFloat(scrimColor.match(/,\s*([\d.]+)\)$/u)?.[1] ?? "1");
+
+    return {
+      minimumHorizontalContext: Math.min(modalRect.left, window.innerWidth - modalRect.right),
+      minimumVerticalContext: Math.min(modalRect.top, window.innerHeight - modalRect.bottom),
+      visibleMapRatio: canvasArea > 0 ? (canvasArea - intersectionWidth * intersectionHeight) / canvasArea : 0,
+      scrimAlpha,
+    };
+  });
+  // The editor must read as a window over the map, not an opaque full-screen replacement.
+  expect(backgroundContext.minimumHorizontalContext).toBeGreaterThanOrEqual(40);
+  expect(backgroundContext.minimumVerticalContext).toBeGreaterThanOrEqual(40);
+  expect(backgroundContext.visibleMapRatio).toBeGreaterThan(0.05);
+  expect(backgroundContext.scrimAlpha).toBeLessThan(0.5);
+
   await expect(page.getByTestId("event-editor-diff")).toHaveCount(1);
   await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
   await expect(page.getByTestId("event-classic-graphic")).toBeVisible();

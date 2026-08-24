@@ -43,10 +43,10 @@ body.event-editor-modal-open .coach-mark-card {
   display: grid;
   font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   grid-template-rows: 52px minmax(0, 1fr) 64px;
-  height: min(96dvh, 920px);
-  max-height: calc(100dvh - 24px);
-  max-width: min(1280px, calc(100vw - 24px));
-  width: min(1280px, calc(100vw - 24px));
+  height: min(88dvh, 820px);
+  max-height: calc(100dvh - 80px);
+  max-width: min(1080px, calc(100vw - 80px));
+  width: min(1080px, calc(100vw - 80px));
   place-self: center;
 }
 
