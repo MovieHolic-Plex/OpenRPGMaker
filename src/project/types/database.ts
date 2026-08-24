@@ -13,6 +13,7 @@ import type {
 } from "./base";
 import type { Command, Condition, EventPageGraphic } from "./events";
 import type { Season, TimeSystemConfig } from "../gameTime";
+import type { GenrePackId } from "../genrePackId";
 
 export interface ActorRecord {
   id: ActorId;
@@ -832,7 +833,7 @@ export interface SystemRecords {
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */
   skillSystem?: { enabled: boolean };
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
-  genre?: "monster-collect" | "horror-chase" | "farm-life";
+  genre?: GenrePackId;
 }
 
 export interface ActionCombatHudConfig {
