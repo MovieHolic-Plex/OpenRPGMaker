@@ -22,14 +22,36 @@ const playWalkthrough: ToolDefinition = {
         items: {
           type: "object",
           properties: {
-            kind: { type: "string", description: "스텝 종류(예: move, interact, battle, expect)" },
+            do: { type: "string", enum: ["moveTo", "interact", "choose", "battle"] },
+            expect: { type: "string", enum: ["switch", "item", "variable", "mapId", "gold", "ended", "victory", "defeat"] },
             mapId: { type: "string" },
             x: { type: "integer" },
             y: { type: "integer" },
             eventId: { type: "string" },
             text: { type: "string" },
           },
-          required: ["kind"],
+          oneOf: [
+            {
+              type: "object",
+              properties: { do: { type: "string", enum: ["moveTo", "interact", "choose"] } },
+              required: ["do"],
+            },
+            {
+              type: "object",
+              properties: {
+                do: { type: "string", enum: ["battle"] },
+                expect: { type: "string", enum: ["victory", "defeat"] },
+              },
+              required: ["do", "expect"],
+            },
+            {
+              type: "object",
+              properties: {
+                expect: { type: "string", enum: ["switch", "item", "variable", "mapId", "gold", "ended"] },
+              },
+              required: ["expect"],
+            },
+          ],
           // 스텝 variant 별 전용 필드는 워크스루 실행기가 검증한다.
           additionalProperties: true,
         },

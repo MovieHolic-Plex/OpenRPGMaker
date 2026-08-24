@@ -29,6 +29,7 @@ type Shot = {
 };
 
 const shots: Shot[] = [];
+const genreConfirmations: Partial<Record<(typeof GENRES)[number]["id"], "confirmed" | "cancelled" | "missing">> = {};
 
 function ensureDir(dir: string): void {
   mkdirSync(dir, { recursive: true });
@@ -159,6 +160,7 @@ async function runGenre(page: Page, genre: (typeof GENRES)[number]): Promise<voi
   await shot(page, genre.id, "chip-hover", `hover ${genre.label}`);
 
   const status = await clickChipConfirm(page, genre.chipIndex);
+  genreConfirmations[genre.id] = status;
   await shot(page, genre.id, "confirm-state", `confirm status=${status}`);
   if (status === "confirmed") {
     await capturePostBoot(page, genre.id, "pipeline");
@@ -264,12 +266,15 @@ async function main(): Promise<void> {
     total: shots.length,
     ok: okShots.length,
     byDir,
+    genreConfirmations,
     shots,
   };
   writeFileSync(join(ROOT, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
-  console.log(JSON.stringify({ ok: okShots.length >= 50, total: okShots.length, byDir, root: ROOT }, null, 2));
+  const allGenreSelectionsConfirmed = GENRES.every((genre) => genreConfirmations[genre.id] === "confirmed");
+  const ok = okShots.length >= 50 && shots.every((entry) => entry.ok) && allGenreSelectionsConfirmed;
+  console.log(JSON.stringify({ ok, total: okShots.length, byDir, genreConfirmations, root: ROOT }, null, 2));
 
-  if (okShots.length < 50) {
+  if (!ok) {
     process.exit(1);
   }
 }

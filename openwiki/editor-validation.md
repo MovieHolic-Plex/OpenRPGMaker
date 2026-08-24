@@ -10,6 +10,7 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 - For future editor workflow changes, run the smallest focused Vitest or Playwright path that proves the touched surface, then record the exact command and pass/fail excerpt under task evidence.
 - Authoring-launcher/journey changes must prove all four actions reach their real surfaces, task/layout changes preserve `EditorUiMode`, manual evidence is project-scoped, reference issues block the journey Test action, and Test completion is emitted only after successful `renderPlayer` boot (never on click or failed boot). Focused unit batch: `npm test -- test/authoringTasks.test.ts test/authoringJourney.test.ts test/commandRegistry.test.ts test/selectedEventTestModal.test.ts`.
 - For event-command parity changes, include focused tests for the support table, command-list/picker badge metadata, `projectLint` warning output, and write-tool `ToolResult.issues` propagation. `projectLint` reports non-full map/common/troop-event runtime support as warning code `runtime-support:<commandKind>`; `upsert_event` and `upsert_common_event` summaries also report the unsupported-command count.
+- Native support assertions must exercise the context-specific `COMMAND_GUARANTEES` path. A picker label or source-text grep is not evidence: prove the inserted row badge, draft warning, and `projectLint` result against a known partial native command. Context-free calls are intentionally conservative.
 
 ## Desktop UI integration matrix (2026-08-11)
 
