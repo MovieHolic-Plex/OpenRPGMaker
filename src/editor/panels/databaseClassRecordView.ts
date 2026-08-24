@@ -79,13 +79,13 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
       panel("애니메이션", [spritePreview(record), animationSelect(record)], "db-class-panel-animation"),
       panel("능력치 곡선", [curveGrid], "db-class-panel-curves"),
       panel("경험치 곡선", [expPanel], "db-class-panel-exp"),
-      panel("전투 명령", battleCommandControls(record), "db-class-panel-commands"),
+      panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands"),
       panel("옵션", optionControls(record), "db-class-panel-options"),
-      panel("스킬", [skillTable(record)], "db-class-panel-skills"),
-      panel("승급", promotionControls(record), "db-class-panel-promotion"),
+      panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills"),
+      panel("승급", promotionControls(record, refreshBuildSummary), "db-class-panel-promotion"),
       panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state"),
       panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element"),
-      panel("장비", [equipmentSelect(record)], "db-class-panel-equipment"),
+      panel("장비", [equipmentSelect(record, refreshBuildSummary)], "db-class-panel-equipment"),
     ],
   }));
 }
@@ -111,6 +111,7 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
   host.dataset.skillCount = String(summary.skillCount);
   host.dataset.commandCount = String(summary.commandCount);
   host.dataset.equipmentCount = String(summary.equipmentCount);
+  host.dataset.promotionCount = String(summary.promotionCount);
   host.replaceChildren(
     el("div", {
       class: "db-class-build-heading",
@@ -119,7 +120,7 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
           children: [
             el("span", { class: "db-class-build-eyebrow", text: "CLASS BLUEPRINT" }),
             el("h3", { text: "역할·빌드 요약" }),
-            el("p", { text: "Lv 20 성장 곡선과 현재 연결 데이터를 기준으로 보여줍니다." }),
+            el("p", { text: "Lv 20 성장 곡선과 연결된 주인공을 기준으로, 런타임에서 이 직업 빌드가 사용할 수 있는 장비까지 요약합니다." }),
           ],
         }),
         el("strong", { class: `db-class-role db-class-role-${summary.role}`, text: CLASS_ROLE_LABELS[summary.role] }),
@@ -130,7 +131,7 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
       children: [
         classBuildMetric("습득 스킬", summary.skillCount),
         classBuildMetric("전투 명령", summary.commandCount),
-        classBuildMetric("허용 장비", summary.equipmentCount),
+        classBuildMetric("이 직업 빌드에서 사용 가능한 장비", summary.equipmentCount),
         classBuildMetric("승급 경로", summary.promotionCount),
       ],
     }),
@@ -217,7 +218,7 @@ function animationSelect(record: ClassRecord): HTMLElement {
   );
 }
 
-function battleCommandControls(record: ClassRecord): HTMLElement[] {
+function battleCommandControls(record: ClassRecord, onSummaryChanged: () => void): HTMLElement[] {
   const list = el("div", { class: "db-class-command-list", dataset: { testid: "db-class-command-list" } });
   const preview = el("div", { class: "db-class-command-preview", dataset: { testid: "db-class-command-preview" } });
   const addBtn = el("button", {
@@ -241,7 +242,7 @@ function battleCommandControls(record: ClassRecord): HTMLElement[] {
     const editable = withChange.filter((command) => command.id !== "cmd_change");
     list.replaceChildren(
       commandHeader(),
-      ...editable.map((command, index) => commandRow(record, command, index, refresh)),
+      ...editable.map((command, index) => commandRow(record, command, index, refresh, onSummaryChanged)),
       lockedFooter(withChange),
     );
     addBtn.disabled = editable.length >= 6;
@@ -251,6 +252,7 @@ function battleCommandControls(record: ClassRecord): HTMLElement[] {
         el("span", { class: "db-class-command-preview-item", text: command.name || "(이름 없음)" }),
       ),
     );
+    onSummaryChanged();
   };
 
   refresh();
@@ -271,7 +273,13 @@ function commandHeader(): HTMLElement {
   });
 }
 
-function commandRow(record: ClassRecord, command: ClassBattleCommand, index: number, onChanged: () => void): HTMLElement {
+function commandRow(
+  record: ClassRecord,
+  command: ClassBattleCommand,
+  index: number,
+  onChanged: () => void,
+  onSummaryChanged: () => void,
+): HTMLElement {
   const name = el("input", {
     value: command.name,
     dataset: index === 0 ? { testid: "db-field-class-command-name" } : undefined,
@@ -299,6 +307,7 @@ function commandRow(record: ClassRecord, command: ClassBattleCommand, index: num
         : entry,
     );
     commitCommands(record, next);
+    onSummaryChanged();
   };
   name.addEventListener("input", apply);
   subset.addEventListener("input", apply);
@@ -404,7 +413,7 @@ function optionControls(record: ClassRecord): HTMLElement[] {
   ];
 }
 
-function skillTable(record: ClassRecord): HTMLElement {
+function skillTable(record: ClassRecord, onSummaryChanged: () => void): HTMLElement {
   const root = el("div", { class: "db-class-skill-table" });
   const refresh = (): void => {
     const live = currentClass(record);
@@ -413,6 +422,7 @@ function skillTable(record: ClassRecord): HTMLElement {
       const saveSkill = (levelInput: HTMLInputElement, skillInput: HTMLSelectElement): void => {
         const nextSkill = { level: numericValue(levelInput, 1), skillId: skillInput.value };
         updateDatabaseRecord("classes", record.id, { learnedSkills: replaceSkill(currentClass(record), index, nextSkill) });
+        onSummaryChanged();
       };
       const level = el("input", {
         value: entry.level,
@@ -468,6 +478,7 @@ function skillTable(record: ClassRecord): HTMLElement {
         },
       }),
     );
+    onSummaryChanged();
   };
   refresh();
   return root;
@@ -475,7 +486,7 @@ function skillTable(record: ClassRecord): HTMLElement {
 
 // 허용 장비는 배열 필드(equipmentIds[])다 — 단일 select 는 상호작용 즉시 6→1 로 배열을
 // 파괴했다(P10 Critical). 체크박스 목록으로 배열을 보존한다.
-function equipmentSelect(record: ClassRecord): HTMLElement {
+function equipmentSelect(record: ClassRecord, onSummaryChanged: () => void): HTMLElement {
   const rows = store.getCurrent().database.equipment.map((equipment) => {
     const input = el("input", {
       attrs: { type: "checkbox" },
@@ -489,6 +500,7 @@ function equipmentSelect(record: ClassRecord): HTMLElement {
         ? (has ? [...permissions.equipmentIds] : [...permissions.equipmentIds, equipment.id])
         : permissions.equipmentIds.filter((id) => id !== equipment.id);
       updateDatabaseRecord("classes", record.id, { equipmentPermissions: { ...permissions, equipmentIds } });
+      onSummaryChanged();
     });
     return el("label", { class: "actor-check", children: [input, el("span", { text: equipment.name })] });
   });
@@ -499,7 +511,7 @@ function equipmentSelect(record: ClassRecord): HTMLElement {
   });
 }
 
-function promotionControls(record: ClassRecord): HTMLElement[] {
+function promotionControls(record: ClassRecord, onSummaryChanged: () => void): HTMLElement[] {
   const promotions = record.promotions?.length ? record.promotions : [{ toClassId: "", requires: {} }];
   const rows = promotions.map((promotion, index) => {
     const project = store.getCurrent();
@@ -510,16 +522,19 @@ function promotionControls(record: ClassRecord): HTMLElement[] {
     const variableId = recordSelect(promotion.requires.variableId ?? "", storyFlagRecords("variable"), index === 0 ? "db-picker-class-promotion-variable" : undefined);
     const atLeast = numberInput(promotion.requires.atLeast, "이상", index === 0 ? "db-field-class-promotion-at-least" : undefined);
     const remove = el("button", { class: "db-class-set-button", text: "삭제", attrs: { type: "button" } });
-    const apply = (): void => savePromotion(record, index, {
-      toClassId: toClass.value,
-      requires: {
-        level: optionalNumber(level),
-        switchId: switchId.value || undefined,
-        itemId: itemId.value || undefined,
-        variableId: variableId.value || undefined,
-        atLeast: optionalNumber(atLeast),
-      },
-    });
+    const apply = (): void => {
+      savePromotion(record, index, {
+        toClassId: toClass.value,
+        requires: {
+          level: optionalNumber(level),
+          switchId: switchId.value || undefined,
+          itemId: itemId.value || undefined,
+          variableId: variableId.value || undefined,
+          atLeast: optionalNumber(atLeast),
+        },
+      });
+      onSummaryChanged();
+    };
     for (const input of [toClass, level, switchId, itemId, variableId, atLeast]) {
       input.addEventListener("change", apply);
       input.addEventListener("input", apply);
@@ -528,6 +543,7 @@ function promotionControls(record: ClassRecord): HTMLElement[] {
       const next = [...(currentClass(record).promotions ?? [])];
       next.splice(index, 1);
       updateDatabaseRecord("classes", record.id, { promotions: next });
+      onSummaryChanged();
     });
     return el("div", {
       class: "db-class-command-row",
@@ -538,10 +554,14 @@ function promotionControls(record: ClassRecord): HTMLElement[] {
     class: "db-class-set-button",
     text: "승급 추가",
     attrs: { type: "button" },
+    dataset: { testid: "db-class-promotion-add" },
     on: {
-      click: () => updateDatabaseRecord("classes", record.id, {
-        promotions: [...(currentClass(record).promotions ?? []), { toClassId: firstPromotionTarget(record), requires: {} }],
-      }),
+      click: () => {
+        updateDatabaseRecord("classes", record.id, {
+          promotions: [...(currentClass(record).promotions ?? []), { toClassId: firstPromotionTarget(record), requires: {} }],
+        });
+        onSummaryChanged();
+      },
     },
   });
   return [add, el("div", { class: "db-class-command-rows", children: rows })];

@@ -14,7 +14,11 @@ import {
 } from "@/editor/panels/actorRecordControls";
 import { openActorResourceDialog } from "@/editor/panels/databaseActorResourceDialog";
 import { switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
-import { actorBuildPreview, type ActorBuildPreview } from "@/editor/panels/databasePartyBuildSummary";
+import {
+  actorBuildPreview,
+  type ActorBuildPreview,
+  type ActorBuildReferenceWarning,
+} from "@/editor/panels/databasePartyBuildSummary";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ActorRecord } from "@/project/types";
@@ -25,9 +29,10 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
     class: "db-detail-form actor-detail-form",
     dataset: { testid: "db-detail-form" },
   });
+  const buildPreview = actorBuildPreviewPanel(actor);
   form.append(
     actorHeroHeader(actor),
-    actorBuildPreviewPanel(actor),
+    buildPreview.element,
     el("div", {
       class: "actor-classic-sheet",
       dataset: { testid: "actor-classic-sheet" },
@@ -35,9 +40,9 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
         el("div", {
           class: "actor-editor-grid",
           children: [
-            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor), classPanel(actor), graphicsPanel(actor, rerender), baseStatsPanel(actor)] }),
+            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor, buildPreview.refresh), classPanel(actor, buildPreview.refresh), graphicsPanel(actor, rerender), baseStatsPanel(actor)] }),
             el("div", { class: "actor-column actor-center-stack", children: [curvesPanel(actor), experiencePanel(actor)] }),
-            el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(() => form), battlePanel(actor, rerender), ratesPanel(actor)] }),
+            el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(() => form), battlePanel(actor, rerender, buildPreview.refresh), ratesPanel(actor)] }),
           ],
         }),
       ],
@@ -55,16 +60,26 @@ const BUILD_STAT_LABELS: Readonly<Record<ActorParameterKey, string>> = {
   agility: "민첩성",
 };
 
-function actorBuildPreviewPanel(actor: ActorRecord): HTMLElement {
-  const result = el("div", { class: "actor-build-preview-result" });
+function actorBuildPreviewPanel(actor: ActorRecord): { readonly element: HTMLElement; readonly refresh: () => void } {
+  const resultId = `db-actor-build-result-${actor.id}`;
+  const result = el("div", {
+    class: "actor-build-preview-result",
+    attrs: { id: resultId, "aria-atomic": "true", "aria-live": "polite" },
+    dataset: { testid: "db-actor-build-result" },
+  });
+  const naturalMax = el("small", {
+    class: "actor-build-natural-max",
+    dataset: { maxLevel: String(actor.maxLevel), testid: "db-actor-build-natural-max" },
+  });
   const level = el("input", {
     value: actor.initialLevel,
     attrs: {
       type: "number",
       min: "1",
-      max: String(actor.maxLevel),
+      max: "99",
       inputmode: "numeric",
       "aria-label": "빌드 미리보기 레벨",
+      "aria-controls": resultId,
     },
     dataset: { testid: "db-actor-build-level" },
   }) as HTMLInputElement;
@@ -73,6 +88,10 @@ function actorBuildPreviewPanel(actor: ActorRecord): HTMLElement {
     const parsed = Number.parseInt(level.value, 10);
     const preview = actorBuildPreview(store.getCurrent(), actor.id, Number.isFinite(parsed) ? parsed : current.initialLevel);
     result.replaceChildren(...(preview ? actorBuildPreviewContents(preview) : []));
+    if (preview) {
+      naturalMax.dataset.maxLevel = String(preview.naturalMaxLevel);
+      naturalMax.textContent = `자연 성장 상한 Lv ${preview.naturalMaxLevel}`;
+    }
   };
   level.addEventListener("input", refresh);
   level.addEventListener("change", () => {
@@ -80,7 +99,7 @@ function actorBuildPreviewPanel(actor: ActorRecord): HTMLElement {
     if (preview) level.value = String(preview.level);
   });
   refresh();
-  return el("section", {
+  const element = el("section", {
     class: "actor-build-preview",
     dataset: { testid: "db-actor-build-preview" },
     children: [
@@ -96,13 +115,14 @@ function actorBuildPreviewPanel(actor: ActorRecord): HTMLElement {
           }),
           el("label", {
             class: "actor-build-level-control",
-            children: [el("span", { text: "레벨" }), level],
+            children: [el("span", { text: "레벨" }), level, naturalMax],
           }),
         ],
       }),
       result,
     ],
   });
+  return { element, refresh };
 }
 
 function actorBuildPreviewContents(preview: ActorBuildPreview): HTMLElement[] {
@@ -168,9 +188,10 @@ function actorBuildPreviewContents(preview: ActorBuildPreview): HTMLElement[] {
             testid: `db-actor-build-open-equipment-${equipment.id}`,
           })),
           "설정된 시작 장비가 없습니다.",
+          preview.referenceWarnings.filter((warning) => warning.kind === "equipment"),
         ),
         buildLinkCollection(
-          `Lv ${preview.level} 사용 가능 스킬`,
+          `Lv ${preview.level} DB 성장 스킬`,
           preview.skills.map((skill) => linkedRecordButton({
             collection: "skills",
             id: skill.id,
@@ -178,22 +199,53 @@ function actorBuildPreviewContents(preview: ActorBuildPreview): HTMLElement[] {
             tab: "skills",
             testid: `db-actor-build-open-skill-${skill.id}`,
           })),
-          "이 레벨에서 사용할 스킬이 없습니다.",
+          "DB의 주인공·시작 직업 성장 설정에 등록된 스킬이 없습니다.",
+          preview.referenceWarnings.filter((warning) => warning.kind === "skill"),
+          { testid: "db-actor-build-skills", scope: "database-growth" },
         ),
       ],
     }),
   ];
 }
 
-function buildLinkCollection(title: string, links: HTMLElement[], emptyMessage: string): HTMLElement {
+function buildLinkCollection(
+  title: string,
+  links: HTMLElement[],
+  emptyMessage: string,
+  warnings: readonly ActorBuildReferenceWarning[] = [],
+  dataset?: Readonly<Record<string, string>>,
+): HTMLElement {
   return el("div", {
     class: "actor-build-link-card",
+    dataset,
     children: [
       el("h4", { text: title }),
       links.length > 0
         ? el("div", { class: "actor-build-link-list", children: links })
         : el("p", { class: "actor-build-empty", text: emptyMessage }),
+      ...(warnings.length > 0
+        ? [el("div", {
+            class: "actor-build-reference-warnings",
+            children: warnings.map(referenceWarning),
+          })]
+        : []),
     ],
+  });
+}
+
+function referenceWarning(warning: ActorBuildReferenceWarning): HTMLElement {
+  const detail = warning.kind === "skill"
+    ? "누락된 스킬 참조"
+    : warning.reason === "missing"
+      ? "누락된 장비 참조"
+      : warning.reason === "invalid-slot"
+        ? "슬롯과 맞지 않는 장비 참조"
+        : "현재 빌드에 적용되지 않는 장비 참조";
+  return el("span", {
+    class: "actor-build-reference-warning",
+    text: `${detail}: ${warning.id}`,
+    attrs: { "aria-disabled": "true" },
+    dataset: { testid: `db-actor-build-warning-${warning.kind}-${warning.id}` },
   });
 }
 
@@ -259,7 +311,7 @@ function actorHeroHeader(actor: ActorRecord): HTMLElement {
   });
 }
 
-function identityPanel(actor: ActorRecord): HTMLElement {
+function identityPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
   return actorPanel("이름", "actor-identity", [
     textControl("칭호", "db-field-actor-nickname", actor.nickname, (nickname) =>
       updateDatabaseRecord("actors", actor.id, { nickname })
@@ -267,12 +319,14 @@ function identityPanel(actor: ActorRecord): HTMLElement {
     el("div", {
       class: "actor-level-row",
       children: [
-        numberControl("초기 레벨", "db-field-initial-level", actor.initialLevel, (initialLevel) =>
-          updateDatabaseRecord("actors", actor.id, { initialLevel })
-        ),
-        numberControl("최대 레벨", "db-field-max-level", actor.maxLevel, (maxLevel) =>
-          updateDatabaseRecord("actors", actor.id, { maxLevel })
-        ),
+        numberControl("초기 레벨", "db-field-initial-level", actor.initialLevel, (initialLevel) => {
+          updateDatabaseRecord("actors", actor.id, { initialLevel });
+          refreshBuildPreview();
+        }),
+        numberControl("최대 레벨", "db-field-max-level", actor.maxLevel, (maxLevel) => {
+          updateDatabaseRecord("actors", actor.id, { maxLevel });
+          refreshBuildPreview();
+        }),
       ],
     }),
     checkboxControl("크리티컬", "db-field-actor-critical-enabled", actor.critical.enabled, (enabled) =>
@@ -284,14 +338,15 @@ function identityPanel(actor: ActorRecord): HTMLElement {
   ]);
 }
 
-function classPanel(actor: ActorRecord): HTMLElement {
+function classPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
   return actorPanel("직업", "actor-class", [
     el("div", {
       class: "actor-class-row",
       children: [
-        selectRecord("직업", "db-picker-class", actor.classId, store.getCurrent().database.classes, (classId) =>
-          updateDatabaseRecord("actors", actor.id, { classId })
-        ),
+        selectRecord("직업", "db-picker-class", actor.classId, store.getCurrent().database.classes, (classId) => {
+          updateDatabaseRecord("actors", actor.id, { classId });
+          refreshBuildPreview();
+        }),
         el("button", { class: "btn small", text: "적용", attrs: { type: "button", disabled: "true" } }),
       ],
     }),
