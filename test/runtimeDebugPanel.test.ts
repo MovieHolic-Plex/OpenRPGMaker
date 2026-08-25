@@ -295,24 +295,26 @@ describe("runtime debug panel live readout", () => {
 });
 
 describe("runtime debug panel placement and persistence", () => {
-  it("opens expanded by default and remembers a collapse", () => {
+  it("starts collapsed so the play field stays visible, and remembers an expand", () => {
     const panel = renderRuntimeDebugPanel();
     expect(panel).toBeInstanceOf(HTMLDetailsElement);
     const details = panel as HTMLDetailsElement;
-    expect(details.open).toBe(true);
-
-    details.open = false;
-    details.dispatchEvent(new Event("toggle"));
-    expect(localStorage.getItem(RUNTIME_DEBUG_EXPANDED_KEY)).toBe("0");
+    // 펼침이 기본이면 패널이 토글 없이 플레이 화면 아랫절반을 가린다(실제 관적: 1214x640 창에서 335px).
+    // 준 상태는 여전히 사약이 보이므로 접어도 계읍기 역할은 살아 있다.
+    expect(details.open).toBe(false);
 
     details.open = true;
     details.dispatchEvent(new Event("toggle"));
     expect(localStorage.getItem(RUNTIME_DEBUG_EXPANDED_KEY)).toBe("1");
+
+    details.open = false;
+    details.dispatchEvent(new Event("toggle"));
+    expect(localStorage.getItem(RUNTIME_DEBUG_EXPANDED_KEY)).toBe("0");
   });
 
-  it("restores the collapsed state on the next launch", () => {
-    localStorage.setItem(RUNTIME_DEBUG_EXPANDED_KEY, "0");
-    expect((renderRuntimeDebugPanel() as HTMLDetailsElement).open).toBe(false);
+  it("restores the expanded state on the next launch", () => {
+    localStorage.setItem(RUNTIME_DEBUG_EXPANDED_KEY, "1");
+    expect((renderRuntimeDebugPanel() as HTMLDetailsElement).open).toBe(true);
   });
 
   it("anchors the panel to the bottom so the play field stays visible", () => {

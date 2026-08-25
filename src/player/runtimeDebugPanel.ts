@@ -22,11 +22,12 @@ import { STORAGE_PREFIX } from "@/util/appStorage";
 export const RUNTIME_DEBUG_EXPANDED_KEY = `${STORAGE_PREFIX}testplay-debug-expanded`;
 
 function readExpanded(): boolean {
-  // 저작자가 한 번도 접지 않았다면 펼친 상태로 시작한다(닫힌 채로 시작하면 계측기가 안 보인다).
+  // 기본은 접힌 상태다. 펼친 패널은 1214x640 테스트 플레이 창에서 335px 를 차지해 플레이 화면
+  // 아래쪽 절반을 가렸다(실측). 요약 줄의 라이브 상태는 접어도 보이므로 계측 기능은 그대로다.
   try {
-    return localStorage.getItem(RUNTIME_DEBUG_EXPANDED_KEY) !== "0";
+    return localStorage.getItem(RUNTIME_DEBUG_EXPANDED_KEY) === "1";
   } catch {
-    return true;
+    return false;
   }
 }
 
