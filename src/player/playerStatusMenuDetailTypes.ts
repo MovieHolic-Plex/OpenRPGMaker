@@ -12,6 +12,12 @@ export type StatusMenuDetailEntry = {
     readonly alt: string;
     readonly testId: string;
   };
+  /** 행이 가리키는 데이터베이스 레코드의 아이콘(아이템/장비/스킬). 행의 앞머리 칸에 그린다. */
+  readonly icon?: {
+    readonly resourceId?: string;
+    readonly alt: string;
+    readonly testId: string;
+  };
   readonly testId?: string;
   /** 이 후보를 고르면 능력치가 어떻게 변하는가. 커서가 올라간 항목의 값을 사이드바가 그린다.
       설명 문자열에도 증감이 들어 있지만 좁은 행에서 말줄임으로 묻혀 판단에 못 쓴다. */

@@ -141,6 +141,10 @@ function renderDetailEntry(options: {
         ...(entry.testId ? { dataset: { testid: entry.testId } } : {}),
       });
   if (selected) row.classList.add("selected");
+  if (entry.icon) {
+    row.append(renderDetailEntryIcon(project, entry.icon), renderDetailText(entry));
+    return row;
+  }
   if (entry.face) {
     row.classList.add("with-face");
     row.append(renderDetailFace(project, entry.face), renderDetailText(entry));
@@ -176,6 +180,32 @@ function renderDetailTextChildren(entry: StatusMenuDetailEntry): HTMLElement[] {
   ];
   if (entry.description) children.push(el("span", { class: "status-menu-detail-description", text: entry.description }));
   return children;
+}
+
+function renderDetailEntryIcon(project: Project, icon: NonNullable<StatusMenuDetailEntry["icon"]>): HTMLElement {
+  const url = resolveAssetResourceUrl(icon.resourceId, { project });
+  if (!url) {
+    return el("span", {
+      class: "status-menu-entry-icon missing",
+      attrs: { role: "img", "aria-label": `${icon.alt} missing` },
+      dataset: { testid: icon.testId },
+    });
+  }
+  return el("span", {
+    class: "status-menu-entry-icon",
+    attrs: {
+      role: "img",
+      "aria-label": icon.alt,
+      style: [
+        `background-image:url("${url}")`,
+        "background-size:contain",
+        "background-repeat:no-repeat",
+        "background-position:center",
+        "image-rendering:pixelated",
+      ].join(";"),
+    },
+    dataset: { testid: icon.testId },
+  });
 }
 
 function renderDetailFace(project: Project, face: NonNullable<StatusMenuDetailEntry["face"]>): HTMLElement {
