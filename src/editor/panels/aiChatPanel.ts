@@ -20,7 +20,6 @@ import {
 } from "@/editor/assistantTemperature";
 import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
-import { selectEditorMap } from "@/editor/mapSelection";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
   agentGhostPreviewsForMap,
@@ -2492,34 +2491,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     completionStripHandle = null;
     completionHost.replaceChildren();
     if (!context || disposed) return;
-    completionStripHandle = buildAiCompletionStrip({
-      context,
-      onPrefill: (prompt, completion) => {
-        const project = store.getCurrent();
-        const targetMap = project.maps[completion.mapId];
-        if (targetMap) {
-          const capturedSelection = completion.selection?.mapId === completion.mapId
-            ? { ...completion.selection }
-            : null;
-          dismissedSelectionKey = null;
-          selectionTaskActive = capturedSelection !== null;
-          selectEditorMap(completion.mapId);
-          editorState.set({ selection: capturedSelection });
-        } else {
-          toast("적용했던 맵을 찾을 수 없어 현재 맵에서 요청을 이어갑니다.", "info");
-        }
-        restoreCollapsed();
-        revealVolatileZone();
-        input.value = prompt;
-        refreshSlash();
-        refreshContextChips();
-        try {
-          input.focus();
-        } catch {
-          // headless DOM may not implement focus
-        }
-      },
-    });
+    completionStripHandle = buildAiCompletionStrip({ context });
     completionHost.append(completionStripHandle.element);
   };
   const unsubscribeCompletion = subscribeAiApplyCompletion(renderCompletion);
