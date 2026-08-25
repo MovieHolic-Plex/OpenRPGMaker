@@ -153,7 +153,7 @@ describe("buildVisualStartGallery", () => {
     const chips = findByTestId(panel, "ai-composer-chips");
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(chips?.querySelectorAll("button").length).toBe(0);
-    expect(chips?.hidden).toBe(true);
+    expect(chips?.querySelectorAll("button").length).toBe(3);
+    expect(chips?.hidden).toBe(false);
   });
 });

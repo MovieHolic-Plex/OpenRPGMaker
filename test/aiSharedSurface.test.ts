@@ -66,12 +66,12 @@ describe("AI shared surface", () => {
     const modeBtn = findByTestId(panel, "ai-dock-mode-btn");
     // 헤더 뱃지는 제거 — 커맨드 바 토글 + 더보기 메뉴만 유지.
     expect(findByTestId(panel, "ai-dock-mode-btn-header")).toBeNull();
-    expect(modeBtn?.textContent).toBe("왼쪽 카드로 열기");
+    expect(modeBtn?.textContent).toBe("카드");
     expect(modeBtn?.dataset.dockMode).toBe("float");
 
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreDock = findByTestId(panel, "ai-more-dock");
-    expect(moreDock?.textContent).toContain("왼쪽 카드로 열기");
+    expect(moreDock?.textContent).toContain("카드");
   });
 
   it("keeps dock escape and idle-screen choices reachable from every assistant menu", () => {

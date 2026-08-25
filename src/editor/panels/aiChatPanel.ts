@@ -1873,34 +1873,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-harness" },
     on: { click: openHarness },
   });
-  // 헤더 설정도 ☰ 메뉴 항목이다 — 상시 노출 아이콘을 ＋·☰ 둘로 줄인다(버튼 소음 감소).
-  // testid 는 유지: 여러 테스트가 이 훅으로 설정 모달을 연다.
-  const headerSettingsItem = el("button", {
-    class: "ai-more-menu-item",
-    text: "설정",
-    attrs: { type: "button", role: "menuitem", title: "설정", "aria-label": "AI 설정 열기" },
-    dataset: { testid: "ai-settings-toggle" },
-    on: {
-      click: () => {
-        closeMoreMenu();
-        openAiSettings("first");
-      },
-    },
-  });
-  // float 모드(헤더 숨김)의 설정 진입점. 입력행에 떠 있던 ⚙ 아이콘을 ☰ 메뉴 항목으로
-  // 흡수했다 — 컴포저에서 버튼 하나를 덜어내고, 설정 진입점을 도크별로 한 곳에 모은다.
-  const commandBarSettingsButton = el("button", {
-    class: "ai-command-menu-item ai-command-settings-button",
-    text: "설정",
-    attrs: { type: "button", role: "menuitem", title: "설정", "aria-label": "AI 설정 열기" },
-    dataset: { testid: "ai-settings-command-bar" },
-    on: {
-      click: () => {
-        openComposerPopover(null);
-        openAiSettings("first");
-      },
-    },
-  });
   const currentChatDock = (): ChatDock => readChatDock();
   let refreshDockLabels: () => void = () => {};
   let syncGlassIdle: () => void = () => {};
@@ -2165,7 +2137,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeMoreMenu,
     onChange: applyTemperature,
   });
-  moreMenu.replaceChildren(headerTemperatureSection, headerSettingsItem, ...headerMenu.items);
+  moreMenu.replaceChildren(headerTemperatureSection, ...headerMenu.items);
   const detachButton = el("button", {
     class: "ai-chat-icon-btn ai-chat-detach-btn",
     text: "↗",
@@ -2629,7 +2601,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerTemperatureSection,
     // 스킬 찾기가 첫 항목 — `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
     skillToggle,
-    commandBarSettingsButton,
     ...composerMenu.items,
   );
   refreshTemperatureChrome();

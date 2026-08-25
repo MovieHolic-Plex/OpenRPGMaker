@@ -22,7 +22,7 @@ describe("AI 연동 칩 × 전송 건강", () => {
   it("프록시 설정이면 기본은 연결됨", () => {
     const status = getAiConnectionStatus(proxyConfig);
     expect(status.kind).toBe("ready");
-    expect(status.label).toBe("AI 연결됨");
+    expect(status.label).toBe("Google Antigravity 연결됨");
   });
 
   it("404 실패가 기록되면 '연결됨' 대신 응답 오류를 보고한다", () => {

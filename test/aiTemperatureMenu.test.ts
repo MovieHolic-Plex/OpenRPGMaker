@@ -10,8 +10,8 @@ afterEach(() => {
 });
 
 describe("assistant temperature menus", () => {
-  it("renders the same icon-only accessible choices in header and composer menus", () => {
-    // Break: header and composer menus can drift, and the old A/B/C prose is visible.
+  it("renders the same labeled accessible choices in header and composer menus", () => {
+    // Break: header and composer menus can drift or hide their labels behind hover-only titles.
     restoreDom = installFakeDom();
     for (const variant of ["header", "composer"] as const) {
       const picked: string[] = [];
@@ -21,7 +21,7 @@ describe("assistant temperature menus", () => {
         close: () => undefined,
         onChange: (next) => picked.push(next),
       }));
-      expect(section.textContent).toBe("대기 화면✦◫⌨");
+      expect(section.textContent).toBe("대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기");
       for (const [id, label] of [
         ["quiet-gold", "추천 함께 보기"],
         ["ink-only", "조수만 보기"],
