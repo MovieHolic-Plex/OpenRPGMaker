@@ -32,7 +32,7 @@ import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
-import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
+import { openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
 import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";

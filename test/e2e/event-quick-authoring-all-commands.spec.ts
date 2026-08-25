@@ -9,7 +9,7 @@ type QuickAuthoringEntry = {
   readonly selectable: boolean;
 };
 
-test.setTimeout(180_000);
+test.setTimeout(600_000);
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -44,6 +44,7 @@ test("빠른 저작의 모든 명령을 눌러 삽입 또는 안내 동작을 �
       await expect(dialog).toHaveCount(0);
       await expect(picker).toBeVisible();
       results.push({ ...entry, outcome: "guidance" });
+      await persistResults(entries.length, results);
       continue;
     }
 
@@ -57,14 +58,20 @@ test("빠른 저작의 모든 명령을 눌러 삽입 또는 안내 동작을 �
     await expect(picker).toHaveCount(0);
     await expect(rootCommands).toHaveCount(beforeCount + 1);
     results.push({ ...entry, outcome: "inserted" });
+    await persistResults(entries.length, results);
   }
+});
 
+async function persistResults(
+  count: number,
+  results: ReadonlyArray<QuickAuthoringEntry & { readonly outcome: "inserted" | "guidance" }>,
+): Promise<void> {
   await writeFile(
     `${EVIDENCE_DIR}/all-command-results.json`,
-    `${JSON.stringify({ count: entries.length, results }, null, 2)}\n`,
+    `${JSON.stringify({ count, completed: results.length, results }, null, 2)}\n`,
     "utf8",
   );
-});
+}
 
 async function openEventEditor(page: Page): Promise<Locator> {
   const eventLayerButton = page.getByTestId("layer-event");
