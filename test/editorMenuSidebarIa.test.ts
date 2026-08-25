@@ -33,6 +33,12 @@ class MemoryStorage implements Storage {
 
 let restoreDom: (() => void) | null = null;
 let previousWindow: unknown;
+/**
+ * 코드가 쓰는 시계는 테스트가 넘겨준 fake window 의 것이다. tilePalette 는 스크롤 복원을
+ * `window.setTimeout(restore, 50)` 로 미루는데, 그 콜백은 fake DOM 이 해체된 뒤에 깨어나
+ * `document` 를 만지며 터진다. 대기 시간으로 얼버무리지 않고 넘겨준 타이머를 직접 취소한다.
+ */
+let pendingTimers: ReturnType<typeof globalThis.setTimeout>[] = [];
 
 function fake(node: HTMLElement): FakeElement {
   if (node instanceof FakeElement) return node;
@@ -49,7 +55,11 @@ function installBrowserGlobals(): void {
       localStorage: storage,
       innerWidth: 1600,
       innerHeight: 1000,
-      setTimeout: globalThis.setTimeout.bind(globalThis),
+      setTimeout: ((handler: TimerHandler, timeout?: number) => {
+        const handle = globalThis.setTimeout(handler as () => void, timeout);
+        pendingTimers.push(handle);
+        return handle;
+      }) as typeof globalThis.setTimeout,
       clearTimeout: globalThis.clearTimeout.bind(globalThis),
       requestAnimationFrame: (cb: FrameRequestCallback) => { void cb; return 0; },
       scrollTo: vi.fn(),
@@ -109,6 +119,8 @@ afterEach(async () => {
   // touches `document`, so the fake DOM must still be installed when it runs. Draining the
   // task queue first is deterministic: the menu's 0ms callback was queued before this one.
   await new Promise<void>((resolve) => { globalThis.setTimeout(resolve, 0); });
+  for (const handle of pendingTimers) globalThis.clearTimeout(handle);
+  pendingTimers = [];
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -221,6 +233,27 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     expect(ids).toContain("menu-game-play");
     expect(ids).not.toContain("menu-game-test-window");
     expect(ids).not.toContain("menu-game-export");
+  });
+
+  it("예제 하위 메뉴도 Escape 로 닫힌다", () => {
+    // Break: 하위 메뉴를 여는 사이 항목 버튼이 DOM 에서 사라지며 포서스가 러지고,
+    // Escape 핸들러가 팝업/트리거 포서스에만 달려 있으면 닫힐 방법이 사라진다.
+    // 그 상태에서 팝업은 트리거 자리(증 상단 왼쪽)에 떠 있어 사이드바를 가린다.
+    resetEditorUiModeForTests("standard");
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+
+    const body = () => fake(document.body as unknown as HTMLElement);
+    const projectPopup = openMenu(topbar, "menu-project");
+    expect(projectPopup).not.toBeNull();
+    findByTestId(body(), "menu-project-samples")?.click();
+    expect(findByTestId(body(), "menu-popup-project-samples"), "하위 메뉴가 열려야 한다").not.toBeNull();
+
+    const escape = new Event("keydown") as Event & { key?: string };
+    Object.defineProperty(escape, "key", { value: "Escape" });
+    document.dispatchEvent(escape);
+
+    expect(findByTestId(body(), "menu-popup-project-samples"), "Escape 가 하위 메뉴를 닫아야 한다").toBeNull();
   });
 
   for (const mode of ["standard", "expert"] as const) {

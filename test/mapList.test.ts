@@ -1,9 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderMapList, resetMapListUiStateForTests } from "@/editor/panels/mapList";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { toast } from "@/util/toast";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+
+vi.mock("@/util/toast", () => ({ toast: vi.fn() }));
 
 describe("map tree panel", () => {
   let restoreDom: () => void;
@@ -18,6 +21,7 @@ describe("map tree panel", () => {
 
   afterEach(() => {
     restoreDom();
+    vi.mocked(toast).mockClear();
   });
 
   it("renders compact map organization controls", () => {
@@ -33,6 +37,22 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, "map-tree-filter")).not.toBeNull();
     expect(findByTestId(panel, "map-add-category")).toBeNull();
     expect(findByTestId(panel, "map-add-folder")).not.toBeNull();
+  });
+
+  it("시작 맵 지정 버튼은 이미 시작 맵이어도 결과를 알린다", () => {
+    // Break: 헤더의 「현재 맵을 시작 맵으로」 는 이미 시작 맵일 때 store 갱신이 무효토산되며
+    // 토스트도 상태 변화도 없어 사용자에게는 고장으로 보인다(실제 감사에서 dead 로 잡혔다).
+    // 행 컨텍스트 메뉴는 이 경우 항목 자율를 숨기므로 헤더만 일관성이 없었다.
+    const panel = renderWithFakeDom(() => {
+      const container = document.createElement("div");
+      renderMapList(container);
+      return container;
+    });
+
+    findByTestId(panel, "map-set-start")?.click();
+
+    expect(vi.mocked(toast)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(toast).mock.calls[0]?.[0]).toContain("이미");
   });
 
   it("selects map on click (programmatic HTMLElement.click)", () => {

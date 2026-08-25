@@ -27,7 +27,13 @@ function installProbe() {
   const origDispatch = EventTarget.prototype.dispatchEvent;
   EventTarget.prototype.dispatchEvent = function (event) {
     try {
-      if (typeof event?.type === "string" && /^(oprn|rpgzzu):/.test(event.type)) w.__audit.events.push(event.type);
+      if (typeof event?.type === "string" && /^(oprn|rpgzzu):/.test(event.type)) {
+        // Record the detail kind too: several controls dispatch the same event type with a
+        // different payload (plain test play vs random battle), and type alone makes them look
+        // like duplicates of each other.
+        const kind = event.detail && typeof event.detail === "object" ? event.detail.kind : undefined;
+        w.__audit.events.push(kind ? `${event.type}#${String(kind)}` : event.type);
+      }
     } catch {}
     return origDispatch.call(this, event);
   };
@@ -58,12 +64,22 @@ function snapshot() {
       .map((k) => `${k}=${localStorage.getItem(k)}`)
       .join("|");
   } catch {}
+  // Which menu popup is open. Without this a popup SWAP (parent menu -> submenu) nets a ~zero
+  // DOM delta and reads as a dead control, which is exactly what happened to menu-project-samples.
+  const openPopup = [...document.querySelectorAll(".oprn-menu-popup")]
+    .filter((n) => n.getBoundingClientRect().width > 0)
+    .map((n) => n.dataset?.testid || "(unnamed-popup)")
+    .sort();
   return {
     dialogs,
     toasts,
     pressed,
     expanded,
     ls,
+    openPopup,
+    // Focus is the observable effect of clicking a text input; without this a search field
+    // reads as a dead control because typing, not clicking, is what changes its state.
+    activeTestId: document.activeElement instanceof HTMLElement ? (document.activeElement.dataset?.testid ?? null) : null,
     bodyClass: document.body.className,
     testidCount: document.querySelectorAll("[data-testid]").length,
     domSize: document.body.getElementsByTagName("*").length,
@@ -100,21 +116,26 @@ function diff(before, after) {
   if (addedDialogs.length) changes.push(`dialog:${addedDialogs.join(",")}`);
   if (addedToasts.length) changes.push(`toast:${addedToasts.join(" / ")}`);
   if (newEvents.length) changes.push(`event:${[...new Set(newEvents)].join(",")}`);
+  if ((after.openPopup ?? []).join() !== (before.openPopup ?? []).join()) changes.push(`popup:${(after.openPopup ?? []).join(",") || "(closed)"}`);
+  if (after.activeTestId !== before.activeTestId && after.activeTestId) changes.push(`focus:${after.activeTestId}`);
   if (after.pressed.join() !== before.pressed.join()) changes.push("pressedState");
   if (after.expanded.join() !== before.expanded.join()) changes.push("expandedState");
   if (after.ls !== before.ls) changes.push("localStorage");
   if (after.bodyClass !== before.bodyClass) changes.push("bodyClass");
   if (Math.abs(after.domSize - before.domSize) > 2) changes.push(`domSize:${after.domSize - before.domSize}`);
   else if (after.testidCount !== before.testidCount) changes.push(`testidCount:${after.testidCount - before.testidCount}`);
-  return { changes, addedDialogs, addedToasts, newEvents, newErrors };
+  return { changes, addedDialogs, addedToasts, newEvents, newErrors, popupOpened: (after.openPopup ?? []).join() !== (before.openPopup ?? []).join() };
 }
 
 /** Fingerprint used to detect two controls that do the same thing. */
-function fingerprint(d) {
+function fingerprint(d, after) {
   const parts = [];
   if (d.addedDialogs.length) parts.push(`dlg=${d.addedDialogs.join(",")}`);
   if (d.newEvents.length) parts.push(`evt=${[...new Set(d.newEvents)].sort().join(",")}`);
   if (d.addedToasts.length) parts.push(`toast=${d.addedToasts.map((t) => t.slice(0, 40)).join(",")}`);
+  // Only an OPENING popup identifies an action. Every menu item closes its own menu, so treating
+  // a close as part of the fingerprint made all eleven panel-menu items look like one duplicate group.
+  if (d.popupOpened && (after.openPopup ?? []).length) parts.push(`popup=${(after.openPopup ?? []).join(",")}`);
   return parts.join(";") || "(no-fingerprint)";
 }
 
@@ -144,6 +165,14 @@ async function auditMode(mode) {
     // the dev server keeps HMR sockets open, so networkidle never settles cheaply.
     await page.goto(`${BASE}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await page.locator(".oprn-menu-bar").waitFor({ state: "visible", timeout: 30_000 });
+    // The left dock mounts AFTER the menubar. Without waiting for it the enumeration races the
+    // sidebar and silently audits only the top region -- which is how a whole run once reported
+    // zero leftSidebar targets.
+    await page
+      .locator("[data-testid='left-palette-root'], .basic-left-rail")
+      .first()
+      .waitFor({ state: "visible", timeout: 20_000 })
+      .catch(() => {});
   };
   // Downloads and native file pickers are observable effects, not hangs.
   const sideChannel = { download: null, filechooser: false };
@@ -185,6 +214,11 @@ async function auditMode(mode) {
   }, { noiseSrc: NOISE.source });
 
   const menuTriggers = topLevel.filter((c) => /^menu-(project|map|tools|game|help)$/.test(c.testid));
+  // Coverage guard: the sidebar is the whole point of this audit, so refuse to report a run that
+  // enumerated none of it.
+  const sidebarFound = topLevel.filter((c) => c.surface === "leftSidebar").length;
+  if (sidebarFound === 0) throw new Error(`[${mode}] enumeration found 0 leftSidebar controls -- the left dock did not mount`);
+  console.log(`[${mode}] enumerated ${topLevel.length} top-level controls (${sidebarFound} in the left sidebar)`);
   const popupChildren = [];
   for (const t of menuTriggers) {
     await page.click(`[data-testid="${t.testid}"]`);
@@ -279,6 +313,16 @@ async function auditMode(mode) {
     // see is unusable even when force-clicking still fires its handler.
     const userVisible = await loc.isVisible();
     const isDisabled = await loc.evaluate((n) => n.disabled === true || n.getAttribute("aria-disabled") === "true");
+    // A control that is ALREADY the selected tool / layer / facet legitimately does nothing when
+    // clicked again. That is a no-op, not a dead control, so record it separately.
+    const wasActive = await loc.evaluate(
+      (n) =>
+        n.getAttribute("aria-pressed") === "true" ||
+        n.getAttribute("aria-checked") === "true" ||
+        n.getAttribute("aria-selected") === "true" ||
+        n.classList.contains("active") ||
+        n.classList.contains("is-active")
+    );
     const hiddenBy = userVisible
       ? null
       : await loc.evaluate((n) => {
@@ -328,15 +372,18 @@ async function auditMode(mode) {
             ? "works"
             : isDisabled
               ? "disabled-inert"
-              : "dead";
+              : wasActive
+                ? "already-active"
+                : "dead";
     results.push({
       ...t,
       disabled: isDisabled,
+      wasActive,
       visible: userVisible,
       hiddenAncestor: hiddenBy,
       verdict,
       changes: d.changes,
-      fingerprint: fingerprint(d) + (sideChannel.download ? `;dl=${sideChannel.download}` : "") + (sideChannel.filechooser ? ";filechooser" : ""),
+      fingerprint: fingerprint(d, after) + (sideChannel.download ? `;dl=${sideChannel.download}` : "") + (sideChannel.filechooser ? ";filechooser" : ""),
       pageErrors: d.newErrors,
       clickError,
     });

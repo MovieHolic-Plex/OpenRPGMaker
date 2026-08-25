@@ -336,7 +336,19 @@ function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuC
   window.setTimeout(() => {
     document.addEventListener("pointerdown", onOutsidePointerDown);
   }, 0);
-  popupOutsideListener = () => document.removeEventListener("pointerdown", onOutsidePointerDown);
+  // Escape 는 문서 수준에서 받는다. 팝업·트리거 포서스에만 의지하면 하위 메뉴를 여는 순간
+  // 클릭한 항목 버튼이 DOM 에서 사라지며 포서스가 body 로 가기 때문에 닫는 길이 없어진다
+  // (그런 팝업은 트리거 자리 — 증 상단 왼쪽 — 에 떠 있어 사이드바를 가린다).
+  const onDocumentEscape = (event: Event): void => {
+    if ((event as KeyboardEvent).key !== "Escape") return;
+    event.preventDefault();
+    closeMenuPopup({ restoreFocus: true });
+  };
+  document.addEventListener("keydown", onDocumentEscape);
+  popupOutsideListener = () => {
+    document.removeEventListener("pointerdown", onOutsidePointerDown);
+    document.removeEventListener("keydown", onDocumentEscape);
+  };
 }
 
 function closeMenuPopup(options: { readonly restoreFocus?: boolean } = {}): void {
