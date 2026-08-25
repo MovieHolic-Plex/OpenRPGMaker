@@ -66,12 +66,12 @@ afterEach(() => {
   openEventMovement.clear();
 });
 
-it("defaults to the command list and does not offer a fake graph tab", () => {
+it("defaults to the storyboard and does not offer a fake graph tab", () => {
   render(host);
   const list = host.querySelector<HTMLElement>(".cmd-list");
   const board = host.querySelector<HTMLElement>(".event-storyboard");
-  expect(list?.hidden).toBe(false);
-  expect(board?.hidden).toBe(true);
+  expect(list?.hidden).toBe(true);
+  expect(board?.hidden).toBe(false);
   expect(host.querySelector('[data-testid="event-view-toggle-graph"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-graph-placeholder"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-view-toggle-list"]')?.textContent).toBe("목록");

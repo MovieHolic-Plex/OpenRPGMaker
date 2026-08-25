@@ -34,6 +34,10 @@ export class FakeNode {
   readonly childNodes: FakeNode[] = [];
   parentNode: FakeNode | null = null;
 
+  get ownerDocument(): Document {
+    return globalThis.document;
+  }
+
   get parentElement(): FakeElement | null {
     return this.parentNode instanceof FakeElement ? this.parentNode : null;
   }
@@ -381,6 +385,12 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     defineDomGlobal("cancelAnimationFrame", (frameId: number): void => {
       animationFrames.delete(frameId);
     });
+  } else {
+    defineDomGlobal("requestAnimationFrame", (callback: FrameRequestCallback): number => {
+      callback(0);
+      return 0;
+    });
+    defineDomGlobal("cancelAnimationFrame", (_frameId: number): void => undefined);
   }
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
