@@ -3,7 +3,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 
-const OUT = "verify-shots/ux-baseline";
+const OUT = "verify-shots/ai-assistant-ux/probe-baseline";
 mkdirSync(OUT, { recursive: true });
 const LOG = `${OUT}/_probe-log.txt`;
 

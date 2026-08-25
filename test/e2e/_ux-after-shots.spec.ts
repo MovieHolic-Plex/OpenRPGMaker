@@ -4,7 +4,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 
-const OUT = "verify-shots/ux-after";
+const OUT = "verify-shots/ai-assistant-ux/probe-after";
 mkdirSync(OUT, { recursive: true });
 const LOG = `${OUT}/_probe-log.txt`;
 
