@@ -31,7 +31,9 @@ function project(): Project {
 type MenuDump = {
   readonly label: string;
   readonly count: number;
-  readonly fonts: readonly { readonly testid?: string; readonly family: string; readonly size: string; readonly text: string }[];
+  readonly fonts: readonly { readonly testid?: string; readonly family: string; readonly size: string; readonly eff: number; readonly text: string }[];
+  /** 스테이지의 transform: scale(var(--play-scale)) 누적 배율. */
+  readonly scale: number;
   readonly images: readonly { readonly testid?: string; readonly cls: string; readonly url: string }[];
   readonly faces: readonly { readonly testid?: string; readonly cropX: string; readonly cropY: string; readonly sheetW: string; readonly rendering: string; readonly radius: string }[];
   readonly panelSkin: {
@@ -73,6 +75,10 @@ test("green: esc menu uses the runtime pixel font, renders authored graphics, cr
   const dump = async (label: string): Promise<MenuDump> => page.evaluate((lbl) => {
     const menu = document.querySelector("[data-testid='main-menu']");
     if (!(menu instanceof HTMLElement)) throw new Error("no menu");
+    // 스테이지는 transform: scale(var(--play-scale)) 로 키운다(playSurface.css:60).
+    // getBoundingClientRect 는 변환 후, offsetHeight 는 변환 전 값이니 둘의 별이
+    // 그대로 누적 배율이다. "화면에 배달된 크기"는 CSS px 가 아니라 이 값을 곱한 것이다.
+    const stageScale = menu.offsetHeight > 0 ? menu.getBoundingClientRect().height / menu.offsetHeight : 1;
     const fonts: MenuDump["fonts"][number][] = [];
     const images: MenuDump["images"][number][] = [];
     const faces: MenuDump["faces"][number][] = [];
@@ -81,7 +87,16 @@ test("green: esc menu uses the runtime pixel font, renders authored graphics, cr
       if (r.width === 0 || r.height === 0) continue;
       const cs = getComputedStyle(n);
       const ownText = Array.from(n.childNodes).some((c) => c.nodeType === 3 && (c.textContent ?? "").trim().length > 0);
-      if (ownText) fonts.push({ testid: n.dataset.testid, family: cs.fontFamily, size: cs.fontSize, text: (n.textContent ?? "").trim().slice(0, 24) });
+      if (ownText) {
+        fonts.push({
+          testid: n.dataset.testid,
+          family: cs.fontFamily,
+          size: cs.fontSize,
+          // 화면에 실제로 찍히는 크기 = CSS px * 스테이지 누적 배율.
+          eff: Math.round(parseFloat(cs.fontSize) * stageScale * 100) / 100,
+          text: (n.textContent ?? "").trim().slice(0, 24),
+        });
+      }
       const bg = cs.backgroundImage;
       if (bg !== "none" && bg.includes("url(")) images.push({ testid: n.dataset.testid, cls: n.className.toString().slice(0, 70), url: bg.slice(0, 200) });
       if (n instanceof HTMLImageElement && n.currentSrc) images.push({ testid: n.dataset.testid, cls: n.className.toString().slice(0, 70), url: n.currentSrc });
@@ -101,6 +116,7 @@ test("green: esc menu uses the runtime pixel font, renders authored graphics, cr
     return {
       label: lbl,
       count: menu.querySelectorAll("*").length,
+      scale: Math.round(stageScale * 1000) / 1000,
       fonts,
       images,
       faces,
@@ -138,11 +154,21 @@ test("green: esc menu uses the runtime pixel font, renders authored graphics, cr
     .map((f) => `${d.label} ${f.testid ?? "?"} "${f.text}" -> ${f.family}`));
   expect(wrongFont, `text nodes not on the runtime pixel font:\n${wrongFont.join("\n")}`).toEqual([]);
 
-  // C1b: 8px 미만 글자 없음.
+  // C1b: "화면에 배달된 가장 작은 글자 >= 10px".
+  //
+  // CSS px 기준이 아니라 스테이지 배율을 곱한 실제 렌더 크기로 잰다. 런타임
+  // 스테이지는 transform: scale() 로 키워지므로 CSS 8px 글자가 화면에선 8px 로
+  // 보이지 않는다. 그리고 Galmuri 는 픽셀 폰트라 8px 가 설계 그리드여서, CSS 값을
+  // 10px 로 올리면 그리드가 어긋나 도리어 뭉개진다.
+  const MIN_RENDERED = 10;
   const tooSmall = dumps.flatMap((d) => d.fonts
-    .filter((f) => Number.parseFloat(f.size) < 8)
-    .map((f) => `${d.label} ${f.testid ?? "?"} "${f.text}" -> ${f.size}`));
-  expect(tooSmall, `text nodes below 8px:\n${tooSmall.join("\n")}`).toEqual([]);
+    .filter((f) => f.eff < MIN_RENDERED)
+    .map((f) => `${d.label} ${f.testid ?? "?"} "${f.text}" -> CSS ${f.size} * 배율 ${d.scale} = ${f.eff}px`));
+  expect(tooSmall, `화면 렌더 ${MIN_RENDERED}px 밑 토큰:\n${tooSmall.join("\n")}`).toEqual([]);
+  // 배율이 1 이면 위 단언은 CSS px 을 렌더 px 로 오인한 것이니 함정을 드러낸다.
+  for (const d of dumps) {
+    expect(d.scale, `${d.label}: 스테이지 배율을 재지 못했다`).toBeGreaterThan(1);
+  }
 
   // C2: 아이템/장비 목록이 실제 저작 아이콘을 그린다.
   const itemsDump = dumps.find((d) => d.label === "items");
