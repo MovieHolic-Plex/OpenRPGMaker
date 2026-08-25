@@ -11,6 +11,7 @@ import {
   type StatusMenuCommand,
 } from "@/player/playerStatusMenuModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { FACESET_COLUMNS, FACESET_ROWS } from "@/assets/easyrpgRtp";
 import { createStatusMenuDetail, type StatusMenuDetail, type StatusMenuStatDelta } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
@@ -43,8 +44,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     dataset: { testid: "main-menu", statusMenuScreen: mode, statusMenuLayout: "edge-dock" },
   });
   applySystemGraphic(panel);
-  // The modern ESC surface keeps the authored system resource metadata for
-  // compatibility, but deliberately does not render the RPG windowskin frame.
+  // The modern ESC surface keeps the authored system resource metadata and the
+  // windowskin reachable via --runtime-window-skin, but deliberately strips only
+  // the border-image frame so the full-stage panel never floods the screen with the
+  // skin's center tile ("fill"). Inner panels still consume the authored skin.
   panel.style.removeProperty("border-image-source");
   panel.style.removeProperty("border-image-slice");
 
@@ -294,6 +297,14 @@ function renderPartyFace(
   row: PlayerStatusMenuPartyRow,
   index: number,
 ): HTMLElement {
+  // 파티 얼굴 상자는 22×22px 로 그린다. faceset 시트(4×4, 셀 48px)를 이 상자 크기로
+  // 축소 크롭하므로 시트 폭/높이는 FACESET_* 상수에 22px 를 곱해 유도한다.
+  const faceIndex = row.faceIndex;
+  const column = faceIndex % FACESET_COLUMNS;
+  const faceRow = Math.floor(faceIndex / FACESET_COLUMNS);
+  const cropSize = 22;
+  const cropSheetWidth = FACESET_COLUMNS * cropSize;
+  const cropSheetHeight = FACESET_ROWS * cropSize;
   const url = resolveAssetResourceUrl(row.faceResourceId, { project });
   if (!url) {
     return el("span", {
@@ -310,12 +321,12 @@ function renderPartyFace(
       "aria-label": row.name,
       style: [
         `--crop-url:url("${url}")`,
-        "--crop-width:22px",
-        "--crop-height:22px",
-        "--crop-sheet-width:88px",
-        "--crop-sheet-height:88px",
-        "--crop-x:0px",
-        "--crop-y:0px",
+        `--crop-width:${cropSize}px`,
+        `--crop-height:${cropSize}px`,
+        `--crop-sheet-width:${cropSheetWidth}px`,
+        `--crop-sheet-height:${cropSheetHeight}px`,
+        `--crop-x:-${column * cropSize}px`,
+        `--crop-y:-${faceRow * cropSize}px`,
       ].join(";"),
     },
     dataset: { testid: `status-menu-face-${index}` },
