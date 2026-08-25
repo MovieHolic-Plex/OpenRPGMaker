@@ -35,8 +35,8 @@ const EXPECTED_TABS = [
   "db-tab-life-crafting",
   "db-tab-daily-weather",
   "db-tab-farm-animals",
-  "db-tab-life-collections",
   "db-tab-farm-spatial",
+  "db-tab-life-collections",
   // 맵
   "db-tab-tilesets",
   "db-tab-structure-kits",

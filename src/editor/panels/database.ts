@@ -109,7 +109,6 @@ const tabOrder: readonly DatabaseTab[] = [
   "farmAnimals",
   "lifeCollections",
   "farmSpatial",
-  "lifeCollections",
   "tilesets",
   "structureKits",
   "commonEvents",
@@ -413,6 +412,7 @@ function renderActiveTab(
       return;
     }
     renderActiveTab(body, container, { forceFresh: true });
+    refreshTabCounts(container);
   };
   if (tab === "enemies" || tab === "monsterSpecies" || tab === "troops") {
     const banner = collectionGateBanner(container);

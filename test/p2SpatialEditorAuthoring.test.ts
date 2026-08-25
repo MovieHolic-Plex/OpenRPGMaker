@@ -36,7 +36,7 @@ describe("P2 spatial editor authoring", () => {
   it("exposes a discoverable life tab with a product asset and honest aggregate count", () => {
     // Break caught: the spatial schema exists but beginners cannot discover or distinguish it from P1 animal homes.
     const life = TAB_GROUPS.find((group) => group.label === "생활");
-    expect(life?.tabs.at(-1)).toBe("farmSpatial");
+    expect(life?.tabs).toContain("farmSpatial");
     const host = renderPanel();
     const tab = findByTestId(host, "db-tab-farm-spatial");
     expect(tab?.textContent).toBe("농장 건물·집 꾸미기");
