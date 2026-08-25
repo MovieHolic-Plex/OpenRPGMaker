@@ -1101,6 +1101,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     if (beginForcedSwitchIfNeeded()) return;
 
+    if (!gen1) {
+      for (const actor of activeActors()) {
+        if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
+      }
+    }
     strictPendingActorIds = activeActors()
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
@@ -1117,6 +1122,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function prepareStrictActorCommands(): void {
+    if (!gen1) {
+      for (const actor of activeActors()) {
+        if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
+      }
+    }
     strictPendingActorIds = activeActors()
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);

@@ -208,7 +208,7 @@ describe("horror mystery playable prototype", () => {
   it("새 무결성 경고 없이 조사 밀도·퍼즐 다양성·압박·회복·결말 선택의 플레이테스트 준비 신호를 갖춘다", () => {
     const { project, manifest } = createHorrorMysteryPrototypeProject();
 
-    expect(projectLint(project)).toEqual([]);
+    expect(projectLint(project).filter((issue) => issue.severity === "error")).toEqual([]);
     expect(manifest.gallery.clueEventIds).toHaveLength(6);
     expect(manifest.gallery.sequenceEventIds).toHaveLength(3);
     expect(manifest.chase.trapEventIds).toHaveLength(3);

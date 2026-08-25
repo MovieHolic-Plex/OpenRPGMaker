@@ -680,7 +680,7 @@ export const LLM_REQUEST_TIMEOUT_MS = 180_000;
 // 인증(401)/크레딧(402) 같은 영구 오류는 재시도하지 않는다.
 export function isRetryableLlmError(error: unknown): boolean {
   if (!(error instanceof LlmError)) return false;
-  return error.status === undefined || error.status === 429 || error.status >= 500;
+  return error.status === undefined || error.status === 0 || error.status === 429 || error.status >= 500;
 }
 
 /** 매달림(응답 없는 fetch)을 일시 오류로 감지한다 — AbortController.abort() 는 AbortError 를 던진다. */

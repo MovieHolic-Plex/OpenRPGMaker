@@ -144,7 +144,7 @@ describe("Gen1 runtime regressions", () => {
       rng: () => 0,
     });
 
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_scarloxy_quick", targetEnemyId: "enemy-1" });
 
     expect(runtime.snapshot().rewards.monsterLevelUps.map((preview) => preview.instanceId)).toEqual(["monster-active"]);
   });

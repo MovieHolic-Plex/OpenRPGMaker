@@ -108,7 +108,7 @@ describe("기술 타입 배지", () => {
       const ember = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${EMBER}']`);
       expect(ember, "불씨 뿜기 항목이 서브메뉴에 없다").toBeTruthy();
       const badge = ember!.querySelector<HTMLElement>(".battle-command-tag");
-      expect(badge?.textContent).toBe("Fire");
+      expect(badge?.textContent).toBe("불꽃");
       expect(badge?.dataset.skillType).toBe("fire");
       // 기술명(strong) 뒤, 상세(small) 앞에 놓여야 배지로 읽힌다.
       expect(badge?.previousElementSibling?.tagName.toLowerCase()).toBe("strong");
@@ -117,7 +117,7 @@ describe("기술 타입 배지", () => {
       const scratch = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${SCRATCH}']`);
       expect(scratch, "할퀴기 항목이 서브메뉴에 없다").toBeTruthy();
       const scratchBadge = scratch!.querySelector<HTMLElement>(".battle-command-tag");
-      expect(scratchBadge?.textContent).toBe("Normal");
+      expect(scratchBadge?.textContent).toBe("노말");
       expect(scratchBadge?.dataset.skillType).toBe("normal");
 
       // elementId가 없는 테스트 전용 기술에는 배지를 지어내지 않는다.

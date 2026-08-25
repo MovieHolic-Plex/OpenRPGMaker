@@ -196,6 +196,9 @@ describe("schemaVersion 3 manual slot compatibility (regression)", () => {
     // Break caught: adding a PlaySession field without wiring the save type, writer,
     // known-field parser, and restorer silently resets player progress after reload.
     const { project, session } = projectAndSession();
+    project.database.lifeSkills = [
+      { id: "skill_farming", name: "농사", skillType: "farming", maxLevel: 10, levelUpRewards: [] },
+    ];
     session.actorBattleCommands = { actor_hero: ["cmd_item"] };
     session.lifeSkills = { skill_farming: { xp: 100, level: 2 } };
     session.actorNicknames = { actor_hero: "별명" };
