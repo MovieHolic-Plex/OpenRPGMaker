@@ -5,7 +5,7 @@ import {
   recoveryItemProject,
   runtimeState,
   startActualPlay,
-} from "./rm2k3PlayerStatusMenuHelpers";
+} from "./oprnPlayerStatusMenuHelpers";
 
 test("Korean item target, equipment, row, and formation actions mutate runtime state", async ({ page }) => {
   const recoveryAmount = 77;
@@ -38,13 +38,15 @@ test("Korean item target, equipment, row, and formation actions mutate runtime s
   expect(afterEquip.inventory.equip_scout_dagger).toBeUndefined();
   expect(afterEquip.inventory.equip_sword).toBe(1);
 
-  await page.keyboard.press("X");
-  await page.getByTestId("status-menu-command-row").click();
+  await backToRail(page);
+  await page.getByTestId("status-menu-command-party-menu").click();
+  await page.getByTestId("status-menu-group-command-row").click();
   await page.getByTestId(`status-menu-row-${firstActorId}`).click();
   expect((await runtimeState(page)).actorRows[firstActorId]).toBe("back");
 
-  await page.keyboard.press("X");
-  await page.getByTestId("status-menu-command-formation").click();
+  await backToRail(page);
+  await page.getByTestId("status-menu-command-party-menu").click();
+  await page.getByTestId("status-menu-group-command-formation").click();
   await page.getByTestId(`status-menu-formation-actor-${firstActorId}`).click();
   await page.getByTestId(`status-menu-formation-actor-${fourthActorId}`).click();
   const afterFormation = await runtimeState(page);
@@ -85,4 +87,13 @@ async function lowerActorHp(page: import("@playwright/test").Page, actorId: stri
     window.__oprnSetActorVitals?.(id, 30, 0);
   }, actorId);
   await expect.poll(async () => (await runtimeState(page)).actorVitals[actorId]?.hp).toBe(30);
+}
+
+async function backToRail(page: import("@playwright/test").Page): Promise<void> {
+  for (let step = 0; step < 5; step += 1) {
+    const state = await page.getByTestId("status-menu-debug-json").textContent();
+    if (state && (JSON.parse(state) as { mode?: string }).mode === "main") return;
+    await page.keyboard.press("Escape");
+  }
+  throw new Error("status menu did not return to the primary rail");
 }

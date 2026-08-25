@@ -515,7 +515,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
-    // 키보드 + 클릭 모두 동일 확인 연출 후 분기.
+    // 타이틀 확정은 handleTitleKey의 키보드 경로만 사용한다.
     const title = renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),

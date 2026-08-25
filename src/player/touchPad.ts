@@ -27,10 +27,9 @@ function safeKnobTravel(baseElement: HTMLElement, knobElement: HTMLElement): num
   return Math.max(0, (baseDiameter - knobDiameter) / 2);
 }
 
-// 터치 지원 기기에서는 기본 자동 활성화한다. env 로 강제 오버라이드할 수 있다:
+// 현재 플레이는 키보드 전용이다. 터치 패드는 모바일 빌드 env가 명시적으로 켠 경우에만 활성화한다:
 // - VITE_TOUCH_CONTROLS(에디터 dev 빌드), OPENRPG_PLAYER_TOUCH_CONTROLS(플레이어 익스포트 빌드)
-// - "1|true|on" → 기기와 무관하게 강제 활성, "0|false|off" → 강제 비활성,
-//   미설정 → 기기 자동 감지(isTouchDevice).
+// - "1|true|on" → 강제 활성, "0|false|off" 또는 미설정 → 비활성.
 function touchControlsOverride(): boolean | null {
   const overrides = [
     import.meta.env.VITE_TOUCH_CONTROLS,
@@ -44,7 +43,7 @@ function touchControlsOverride(): boolean | null {
   return null;
 }
 
-// 터치/coarse 포인터 기기 감지.
+// 터치/coarse 포인터 기기 감지. 향후 모바일 기본값을 열 때 쓰며 자동 마운트에는 사용하지 않는다.
 export function isTouchDevice(): boolean {
   if (typeof window === "undefined") return false;
   const hasPointerQueries = typeof window.matchMedia === "function";
@@ -63,9 +62,9 @@ function dispatchKey(type: "keydown" | "keyup", key: string): void {
 }
 
 // host(플레이 스테이지)에 가상 패드를 부착한다.
-// env 오버라이드가 있으면 그 값을, 없으면 터치 기기 자동 감지를 따른다. 비활성이면 no-op.
+// env 오버라이드가 명시적으로 true일 때만 부착한다. 그 외에는 no-op.
 export function createTouchPad(host: HTMLElement): TouchPadHandle {
-  if (!(touchControlsOverride() ?? isTouchDevice())) {
+  if (touchControlsOverride() !== true) {
     return { cleanup: () => {} };
   }
 

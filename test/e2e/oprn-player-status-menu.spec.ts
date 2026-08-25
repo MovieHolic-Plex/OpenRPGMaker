@@ -13,7 +13,7 @@ import {
   seedDefaultProject,
   selectCommand,
   startActualPlay,
-} from "./rm2k3PlayerStatusMenuHelpers";
+} from "./oprnPlayerStatusMenuHelpers";
 
 test("Korean command panels work from the X-key actual play menu", async ({ page }) => {
   // 명령 패널 전 항목 + 스크린샷 캡처를 순회하는 롱 스펙 — swiftshader에서 30초 기본 한도를 넘는다.

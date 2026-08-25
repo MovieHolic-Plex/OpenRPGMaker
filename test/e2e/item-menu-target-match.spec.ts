@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-import { openTestPlayWindow, seedDefaultProject } from "./rm2k3PlayerStatusMenuHelpers";
+import { openTestPlayWindow, seedDefaultProject } from "./oprnPlayerStatusMenuHelpers";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/item-menu-target-match";

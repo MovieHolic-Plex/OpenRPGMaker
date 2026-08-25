@@ -44,6 +44,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let monsterView: "party" | "box" = "party";
   let lifeLedgerTab: LifeLedgerTabId = "shipping";
   let confirmSaveSlot: SaveSlotIndex | undefined;
+  let confirmToTitlePending = false;
   let waitModeEnabled = true;
 
   const reset = (): void => {
@@ -67,6 +68,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     monsterView = "party";
     lifeLedgerTab = "shipping";
     confirmSaveSlot = undefined;
+    confirmToTitlePending = false;
   };
 
   const replaceMenu = (panel: HTMLElement): void => {
@@ -98,6 +100,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       monsterView,
       lifeLedgerTab,
       confirmSaveSlot,
+      confirmToTitle: confirmToTitlePending,
       saveEnabled: isSaveEnabled(session),
       waitModeEnabled,
       selectedDetailActionIndex,
@@ -243,6 +246,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     confirmSaveSlot = undefined;
+    confirmToTitlePending = false;
     saveToSlot(window.localStorage, slot, createSaveSnapshot(store.getCurrent(), scene.getSession()));
     options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"));
   }
@@ -421,6 +425,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     confirmSaveSlot = undefined;
+    confirmToTitlePending = false;
     // 접힌 그룹을 통해 들어왔으면 레일이 아니라 그룹 목록으로 한 단 돌아간다.
     if (openGroupId && !isStatusMenuGroupEntryId(selectedCommand) && groupContains(openGroupId, selectedCommand)) {
       selectedCommand = openGroupId;
@@ -496,6 +501,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function confirmToTitle(): void {
+    if (!confirmToTitlePending) {
+      confirmToTitlePending = true;
+      mode = "function";
+      options.emitMenuJuice(
+        "menu-confirm",
+        renderMenu("저장하지 않은 진행은 사라집니다. 한 번 더 선택하세요.", "to-title")
+      );
+      return;
+    }
+    confirmToTitlePending = false;
     options.emitMenuJuice("menu-confirm", currentMenu());
     window.setTimeout(() => options.renderTitle(), options.menuCloseJuiceMs);
   }
@@ -553,12 +568,31 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const actions = detailActionButtons();
     if (actions.length === 0) {
       setDetailCursor(0);
+      focusActiveMenuContainer();
       return;
     }
     selectedDetailActionIndex = Math.max(0, Math.min(selectedDetailActionIndex, actions.length - 1));
     detailCursors.set(detailStateKey(), selectedDetailActionIndex);
-    actions.forEach((action, index) => action.classList.toggle("selected", index === selectedDetailActionIndex));
+    actions.forEach((action, index) => {
+      const selected = index === selectedDetailActionIndex;
+      action.classList.toggle("selected", selected);
+      action.tabIndex = selected ? 0 : -1;
+      action.setAttribute("aria-current", selected ? "true" : "false");
+    });
+    const detailList = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
+    const activeAction = actions[selectedDetailActionIndex];
+    if (detailList && activeAction?.id) detailList.setAttribute("aria-activedescendant", activeAction.id);
     actions[selectedDetailActionIndex]?.scrollIntoView({ block: "nearest" });
+    focusActiveMenuContainer();
+  }
+
+  function focusActiveMenuContainer(): void {
+    const menu = currentMenu();
+    const target = mode === "function"
+      ? menu?.querySelector<HTMLElement>(".status-menu-detail-list")
+        ?? menu?.querySelector<HTMLElement>(".status-menu-detail")
+      : menu?.querySelector<HTMLElement>(".status-menu-command-rail");
+    if (typeof target?.focus === "function") target.focus({ preventScroll: true });
   }
 
   function detailStateKey(): string {

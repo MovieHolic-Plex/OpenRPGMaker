@@ -125,7 +125,7 @@
 }
 
 .player-layout.system-shell .rm-title-menu-button {
-  cursor: pointer;
+  cursor: default;
   font-size: var(--runtime-font-size-11);
   line-height: 1.15;
   min-height: 20px;
@@ -133,7 +133,7 @@
   text-shadow:
     1px 0 0 var(--oprn-title-window-shadow),
     0 1px 0 var(--oprn-title-window-shadow);
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .player-layout.system-shell .rm-title-menu-button.selected::before {

@@ -61,25 +61,63 @@ describe("database system studio", () => {
     expect(findByTestId(host, "db-system-studio-impact-list")).not.toBeNull();
   });
 
-  it("renders four primary cards and three rule cards", () => {
-    // Break named: the overview does not expose task-oriented system entry points.
+  it("only presents project-backed settings as actionable cards", () => {
+    // Break named: hard-coded Save, Economy, and Input cards pretend unimplemented settings are complete.
     const host = renderSystem();
+    const studio = findByTestId(host, "db-system-studio");
+    if (!studio) throw new Error("missing system studio");
 
-    for (const id of ["startup", "party", "save", "time", "combat", "economy", "input"]) {
+    for (const id of ["startup", "party", "display", "time", "combat", "features", "title"]) {
       expect(findByTestId(host, `db-system-studio-card-${id}`)).not.toBeNull();
     }
+    for (const id of ["save", "economy", "input"]) {
+      expect(findByTestId(host, `db-system-studio-card-${id}`)).toBeNull();
+    }
+    expect(studio.textContent).not.toContain("구성 완료");
+    expect(studio.textContent).not.toContain("주의 1개");
+    expect(studio.textContent).not.toContain("자동 저장 사용");
   });
 
-  it("keeps the three lower rule cards information-dense like the approved mockup", () => {
-    // Break named: lower cards collapse to a single status line and leave half the workspace empty.
+  it("derives every rule-card detail from authored project values", () => {
+    // Break named: rule-card rows keep fixed completion claims when the authored System values change.
+    const project = createBlankProject();
+    project.system.playResolution = { width: 640, height: 360 };
+    project.system.battleFlow = "strict";
+    project.system.activeSlots = 2;
+    project.system.battleUiStyle = "rm2003";
+    project.system.battleModel = "gen1";
+    project.system.skillSystem = { enabled: true };
+    project.system.actionCombat = { enabled: true };
+    store.replace(project);
     const host = renderSystem();
 
-    for (const id of ["combat", "economy", "input"]) {
+    expect(findByTestId(host, "db-system-studio-card-display")?.textContent).toContain("640×360");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("라운드 전투");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("2명");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("군청 창 · 사이드뷰");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("Gen1");
+    expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("생활 스킬사용");
+    expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("액션 전투사용");
+
+    for (const id of ["combat", "features", "title"]) {
       for (let index = 0; index < 4; index += 1) {
         expect(findByTestId(host, `db-system-studio-card-${id}-detail-${index}`)).not.toBeNull();
       }
       expect(findByTestId(host, `db-system-studio-card-${id}-open`)).not.toBeNull();
     }
+  });
+
+  it("renders preview facts as non-interactive project values", () => {
+    // Break named: inert preview buttons and 'all screens' affordances imply navigation that does not exist.
+    const host = renderSystem();
+    const impactList = findByTestId(host, "db-system-studio-impact-list");
+    if (!impactList) throw new Error("missing impact list");
+
+    const rows = impactList.querySelectorAll(".db-system-studio-impact-row");
+    expect(rows).toHaveLength(4);
+    expect(rows.every((row) => row.tagName !== "BUTTON")).toBe(true);
+    expect(impactList.querySelector(".db-system-studio-all-screens")).toBeNull();
+    expect(impactList.textContent).not.toContain("저장/불러오기");
   });
 
   it("navigates from an overview card without writing project state", () => {

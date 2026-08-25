@@ -49,6 +49,7 @@ export type PlayerStatusMenuOptions = {
   readonly monsterView?: "party" | "box";
   readonly lifeLedgerTab?: LifeLedgerTabId;
   readonly confirmSaveSlot?: SaveSlotIndex;
+  readonly confirmToTitle?: boolean;
   readonly saveEnabled?: boolean;
   readonly waitModeEnabled?: boolean;
   readonly actions: PlayerStatusMenuActions;

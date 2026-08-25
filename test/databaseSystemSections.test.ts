@@ -76,13 +76,13 @@ describe("database system section navigation", () => {
     ]);
     expect(buttons.map((button) => button.textContent)).toEqual([
       "개요",
-      "플레이어",
-      "화면과 사운드",
+      "초기 파티",
+      "화면",
       "리소스",
-      "시작과 세이브",
+      "시작 설정",
       "기능 확장",
-      "시간과 생활",
-      "전투 규칙",
+      "시간",
+      "타입 상성",
       "타이틀",
     ]);
   });

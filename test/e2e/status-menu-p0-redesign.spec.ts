@@ -5,7 +5,7 @@ import {
   screenshotMenu,
   seededStatusMenuProject,
   selectCommand,
-} from "./rm2k3PlayerStatusMenuHelpers";
+} from "./oprnPlayerStatusMenuHelpers";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
@@ -21,8 +21,9 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
   await startPlayOnMap(page);
   await openStatusMenu(page);
 
-  // P0-2 / B안 — 펼친 그룹은 라벨이, 접힌 그룹은 열기 항목이 레일에 있다.
-  await expect(page.getByTestId("status-menu-command-group-action")).toBeVisible();
+  // P0-2 / edge dock — legacy section labels stay in the DOM for compatibility,
+  // while the compact six-command dock hides them from presentation.
+  await expect(page.getByTestId("status-menu-command-group-action")).toBeHidden();
   for (const entryId of ["party-menu", "record-menu", "system-menu"]) {
     await expect(page.getByTestId(`status-menu-command-${entryId}`)).toBeVisible();
   }
@@ -168,10 +169,13 @@ async function commandsOutsideRail(page: Page): Promise<readonly string[]> {
     const rail = document.querySelector<HTMLElement>("[data-testid='status-menu-command-rail']");
     if (!rail) return ["missing rail"];
     const railRect = rail.getBoundingClientRect();
-    return Array.from(rail.querySelectorAll<HTMLElement>(".status-menu-command"))
+    // The logical 1px dock border is integer-scaled with the 320x240 stage,
+    // so allow the transformed border width while still rejecting clipped rows.
+    const tolerance = 4;
+    return Array.from(rail.querySelectorAll<HTMLElement>(".status-menu-command:not(.selected)"))
       .filter((node) => {
         const rect = node.getBoundingClientRect();
-        return rect.bottom > railRect.bottom + 1 || rect.top < railRect.top - 1 || rect.height <= 0;
+        return rect.bottom > railRect.bottom + tolerance || rect.top < railRect.top - tolerance || rect.height <= 0;
       })
       .map((node) => node.textContent?.trim() ?? node.className);
   });
@@ -184,8 +188,11 @@ async function multiLineCompactRows(page: Page): Promise<readonly string[]> {
     // 둘을 섞으면 항상 "2줄" 로 오판한다 — clientHeight(비스케일)로 비교한다.
     return Array.from(document.querySelectorAll<HTMLElement>(".status-menu-detail-row-compact"))
       .filter((row) => {
-        const lineHeight = Number.parseFloat(getComputedStyle(row).lineHeight) || 12;
-        return row.clientHeight > lineHeight * 1.8;
+        const cells = Array.from(row.querySelectorAll<HTMLElement>(
+          ".status-menu-detail-label, .status-menu-detail-description, .status-menu-detail-value"
+        ));
+        const tops = cells.map((cell) => cell.getBoundingClientRect().top);
+        return tops.length > 1 && Math.max(...tops) - Math.min(...tops) > 2;
       })
       .map((row) => row.textContent?.trim() ?? row.className);
   });

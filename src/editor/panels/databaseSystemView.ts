@@ -65,13 +65,13 @@ type SystemSectionSlug = "overview" | "party" | "display" | "resources" | "start
 
 const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
   { slug: "overview", label: "개요" },
-  { slug: "party", label: "플레이어" },
-  { slug: "display", label: "화면과 사운드" },
+  { slug: "party", label: "초기 파티" },
+  { slug: "display", label: "화면" },
   { slug: "resources", label: "리소스" },
-  { slug: "startup", label: "시작과 세이브" },
+  { slug: "startup", label: "시작 설정" },
   { slug: "optin", label: "기능 확장" },
-  { slug: "time", label: "시간과 생활" },
-  { slug: "typechart", label: "전투 규칙" },
+  { slug: "time", label: "시간" },
+  { slug: "typechart", label: "타입 상성" },
   { slug: "title", label: "타이틀" },
 ];
 

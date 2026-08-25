@@ -18,6 +18,7 @@ export type StatusMenuDetailEntry = {
   readonly statDelta?: readonly StatusMenuStatDelta[];
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
+  readonly destructive?: boolean;
 };
 
 export type StatusMenuStatDelta = {
@@ -56,6 +57,7 @@ export type StatusMenuDetailOptions = {
   readonly formationActorId?: string;
   readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
+  readonly confirmToTitle?: boolean;
   readonly saveEnabled?: boolean;
   readonly onSaveSlot?: (slot: SaveSlotIndex) => void;
   readonly onLoadSlot?: (slot: SaveSlotIndex) => void;

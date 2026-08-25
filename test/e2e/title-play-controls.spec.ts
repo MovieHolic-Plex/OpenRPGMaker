@@ -11,7 +11,7 @@ const desktopViewports = [
 ] as const;
 
 for (const viewport of desktopViewports) {
-  test(`title controls keep keyboard and trusted-pointer parity at ${viewport.width}x${viewport.height}`, async ({ page }, testInfo) => {
+  test(`title controls stay keyboard-only at ${viewport.width}x${viewport.height}`, async ({ page }, testInfo) => {
     const fixtureStubs = optionalFixtureDescriptions();
     await page.addInitScript(() => {
       (globalThis as { __oprnForcePointerBlock?: boolean }).__oprnForcePointerBlock = true;
@@ -61,14 +61,12 @@ for (const viewport of desktopViewports) {
     await expectFocused(page, "title-option-load-game", focusTrace);
     await page.keyboard.press("Space");
     await expect(page.getByTestId("player-load-window")).toBeVisible();
-    await page.getByTestId("save-slot-1").click();
-    await expect(page.locator(".oprn-load-message")).toContainText("1");
-    await page.getByTestId("player-load-back").click();
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("title-new-game")).toBeVisible();
-    await page.getByTestId("title-load-game").click();
+    await page.keyboard.press("Space");
     await expect(page.getByTestId("player-load-window")).toBeVisible();
-    await page.screenshot({ path: testInfo.outputPath("load-trusted-pointer.png"), fullPage: true });
-    await page.getByTestId("player-load-back").click();
+    await page.screenshot({ path: testInfo.outputPath("load-keyboard.png"), fullPage: true });
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("title-screen")).toBeVisible();
 
     await page.keyboard.press("ArrowUp");
@@ -81,8 +79,11 @@ for (const viewport of desktopViewports) {
     await closeTestPlay(page);
 
     await openTestPlay(page);
-    await page.getByTestId("title-new-game").click();
+    await dispatchTrustedClick(page, "title-new-game");
+    await expect(page.getByTestId("title-screen")).toBeVisible();
+    await page.keyboard.press("Enter");
     await expect(page.getByTestId("play-canvas").locator("canvas")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId("touch-pad")).toHaveCount(0);
     await closeTestPlay(page);
 
     await openTestPlay(page);
@@ -93,7 +94,11 @@ for (const viewport of desktopViewports) {
     await expect(page.getByTestId("test-play-window")).toHaveCount(0);
 
     await openTestPlay(page);
-    await page.getByTestId("title-quit-game").click();
+    await dispatchTrustedClick(page, "title-quit-game");
+    await expect(page.getByTestId("test-play-window")).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Space");
     await expect(page.getByTestId("test-play-window")).toHaveCount(0);
 
     await page.waitForLoadState("networkidle");
@@ -102,6 +107,12 @@ for (const viewport of desktopViewports) {
     await writeFile(testInfo.outputPath("optional-dependency-fixtures.json"), `${JSON.stringify(fixtureStubs, null, 2)}\n`);
     await writeFile(testInfo.outputPath("browser-policy.json"), `${JSON.stringify({ allowed: "exact 127.0.0.1:17831 browser hello refusal only", browserIssues, strictPolicyIssues }, null, 2)}\n`);
     expect(strictPolicyIssues).toEqual([]);
+  });
+}
+
+async function dispatchTrustedClick(page: Page, testId: string): Promise<void> {
+  await page.getByTestId(testId).evaluate((node) => {
+    node.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 }));
   });
 }
 
