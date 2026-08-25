@@ -179,7 +179,13 @@ export async function openTestPlayWindow(page: Page): Promise<void> {
   await page.waitForTimeout(250);
   if (!(await modal.isVisible())) await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
   await expect(modal).toBeVisible({ timeout: 10000 });
-  await expect(modal.getByTestId("title-screen")).toBeVisible({ timeout: 10000 });
+  // 테스트 플레이 창은 자동 시작이 기본값이다(testPlayModal.ts 의 test-play-auto-start,
+  // "편집→테스트 왕복에서 타이틀 걷기를 없앤다"). 그래서 타이틀 화면만 기다리면
+  // 자동 시작이 켜진 기본 경로에서 영원히 못 만난다 — 창이 이미 플레이로 들어갔기 때문이다.
+  // 둘 중 무엇이 떠도 "창이 열렸다"로 본다.
+  await expect(
+    modal.getByTestId("title-screen").or(modal.getByTestId("play-stage")),
+  ).toBeVisible({ timeout: 15000 });
 }
 
 export async function isMenuInsidePlayStage(page: Page): Promise<boolean> {
