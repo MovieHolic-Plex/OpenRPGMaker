@@ -191,6 +191,8 @@
   min-height: var(--balanced-pages-height);
   overflow: hidden;
   padding: 10px 21px 8px;
+  position: relative;
+  z-index: 2;
 }
 
 .event-editor .event-editor-pagebar::before {
@@ -301,6 +303,10 @@
   align-items: center;
   display: flex;
   min-height: 34px;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  z-index: 0;
 }
 
 .event-editor .event-editor-workbench {
