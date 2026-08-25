@@ -76,7 +76,7 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
 
   const picker = page.getByTestId("event-command-picker");
   await expect(picker).toBeVisible();
-  await expect(picker.getByRole("heading", { name: "이벤트 명령" })).toBeVisible();
+  await expect(picker.getByRole("heading", { name: "명령 추가" })).toBeVisible();
   await expect(picker.getByTestId("event-command-picker-tab-1")).toHaveAttribute("aria-selected", "true");
   for (const heading of ["대화/입력", "조건/흐름", "맵/이동", "보상/상점", "소리"]) {
     await expect(picker.locator(".event-command-picker-group-heading").filter({ hasText: heading })).toBeVisible();
@@ -92,7 +92,7 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
 
   await picker.getByTestId("event-command-picker-tab-2").click();
   await expect(picker.getByRole("button", { name: "경험치 변경..." })).toBeVisible();
-  await expect(picker.getByRole("button", { name: "전투 처리..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "전투" })).toBeVisible();
   await expect(picker.getByRole("button", { name: "장소 이동..." })).toHaveCount(0);
 
   await picker.getByTestId("event-command-picker-tab-3").click();

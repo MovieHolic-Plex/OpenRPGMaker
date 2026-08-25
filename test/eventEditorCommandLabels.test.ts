@@ -99,7 +99,7 @@ describe("event editor command labels", () => {
   });
 
   it("does not surface internal M2 jargon as the m2Command display label", () => {
-    expect(commandKindLabel("m2Command")).toBe("이벤트 명령");
+    expect(commandKindLabel("m2Command")).toBe("기타 명령");
     expect(commandKindLabel("m2Command")).not.toMatch(/M2|현대/);
   });
 

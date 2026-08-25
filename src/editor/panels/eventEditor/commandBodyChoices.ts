@@ -76,7 +76,7 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
     }),
     el("p", {
       class: "event-command-choices-hint",
-      text: "각 선택지 본문은 가운데 목록의 가지에서 편집합니다.",
+      text: "각 선택지 본문은 왼쪽 목록에서 고칩니다.",
       dataset: { testid: "event-choice-branch-list-note" },
     })
   );
@@ -213,15 +213,15 @@ function cancelRadioRow(
 }
 
 function cancelBehaviorLabel(behavior: ChoiceCancelBehavior): string {
-  if (behavior === "disallow") return "불가";
-  if (behavior === "branch") return "별도 분기";
-  return `${behavior.slice("choice".length)}번`;
+  if (behavior === "disallow") return "취소 없음";
+  if (behavior === "branch") return "따로 처리";
+  return `선택지 ${behavior.slice("choice".length)}`;
 }
 
 function cancelBehaviorTitle(behavior: ChoiceCancelBehavior): string {
-  if (behavior === "disallow") return "취소 입력 무시";
-  if (behavior === "branch") return "취소 시 전용 명령 실행 (이벤트 목록에서 편집)";
-  return `취소 시 선택지 ${behavior.slice("choice".length)} 실행`;
+  if (behavior === "disallow") return "취소를 누르면 아무 일도 하지 않습니다";
+  if (behavior === "branch") return "취소하면 왼쪽 목록의 전용 칸에서 처리합니다";
+  return `취소하면 선택지 ${behavior.slice("choice".length)}와 같이 진행합니다`;
 }
 
 function cancelBehaviorsForCount(count: number): ChoiceCancelBehavior[] {

@@ -36,7 +36,7 @@ type PickerTarget = {
 };
 
 const COMMAND_PICKER_TARGETS: Record<string, PickerTarget> = {
-  battleProcessing: { tab: 2, name: "전투 처리..." },
+  battleProcessing: { tab: 2, name: "전투" },
   changeGold: { tab: 1, name: "소지금 변경..." },
   changeItem: { tab: 1, name: "아이템 변경..." },
   changeParty: { tab: 1, name: "파티 멤버 변경..." },

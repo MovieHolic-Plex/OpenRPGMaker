@@ -1,3 +1,4 @@
+import { pictureSlotCaption } from "./options";
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
@@ -174,17 +175,17 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(`모습 ${Number(cmd.pattern) + 1}`)
   ),
   changeTile: (cmd) => commandLine(
-    "타일 변경",
+    "지형 변경",
     valuePart(mapName(cmd.mapId)),
     plainPart(" "),
     valuePart(tileLayerSummary(cmd.layer)),
     plainPart(" ("),
     valuePart(`${cmd.x},${cmd.y}`),
-    plainPart(") = "),
-    valuePart(String(cmd.tile))
+    plainPart(") → "),
+    valuePart(tileValueCaption(cmd.tile))
   ),
-  callCommonEvent: (cmd) => commandLine("이벤트 호출", valuePart(commonEventName(cmd.commonEventId))),
-  callMapEvent: (cmd) => commandLine("맵 이벤트 호출", valuePart(mapEventName(cmd.eventId))),
+  callCommonEvent: (cmd) => commandLine("다른 이벤트 부르기", valuePart(commonEventName(cmd.commonEventId))),
+  callMapEvent: (cmd) => commandLine("맵 위 이벤트 부르기", valuePart(mapEventName(cmd.eventId))),
   battleProcessing: (cmd) => commandLine(
     "전투",
     valuePart(
@@ -200,10 +201,10 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(cmd.branchOnResult ? " / 결과 분기" : ""),
   ),
   learnSkill: (cmd) => commandLine(
-    "특수기 변경",
+    "스킬 변경",
     valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체"),
     plainPart(" "),
-    valuePart(cmd.action === "forget" ? "망각" : "습득"),
+    valuePart(cmd.action === "forget" ? "잊기" : "배우기"),
     plainPart(" "),
     valuePart(skillName(cmd.skillId)),
   ),
@@ -310,7 +311,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
       "그림 표시",
       valuePart(`위치 (${cmd.x}, ${cmd.y})`),
     ),
-  erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
+  erasePicture: (cmd) => commandLine("그림 지우기", valuePart(pictureSlotCaption(cmd.pictureId))),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
   stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
   cutsceneControl: (cmd) => commandLine("컷신 제어", valuePart(cmd.mode === "begin" ? "시작" : "종료"), ...(cmd.skippable ? [plainPart(" / "), valuePart("스킵 가능")] : [])),
@@ -334,9 +335,9 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     return commandLine("여관", valuePart(String(cmd.price)), plainPart(`G · ${recover}`), ...extras);
   },
   checkpointSave: (cmd) => commandLine("체크포인트 저장", valuePart(cmd.label || "세션")),
-  runControl: (cmd) => commandLine("로그라이크 런", valuePart(runControlSummary(cmd))),
+  runControl: (cmd) => commandLine("탐험", valuePart(runControlSummary(cmd))),
   killPlayer: (cmd) => commandLine("즉사", valuePart(cmd.message || "게임 오버")),
-  triggerEnding: (cmd) => commandLine("엔딩 트리거", valuePart(cmd.endingId || "자동 선택")),
+  triggerEnding: (cmd) => commandLine("엔딩", valuePart(endingName(cmd.endingId))),
   gameOver: () => [commandPart("게임 오버")],
   ending: (cmd) => commandLine("엔딩", valuePart(cmd.title)),
   returnToTitle: () => [commandPart("타이틀 화면으로")],
@@ -456,7 +457,14 @@ function weatherLabel(kind: Extract<Command, { kind: "setWeather" }>["weather"])
 }
 
 function tileLayerSummary(layer: "lower" | "upper"): string {
-  return layer === "upper" ? "상위" : "하위";
+  return layer === "upper" ? "덧그림" : "바닥";
+}
+
+function tileValueCaption(tile: number): string {
+  if (tile < 0) return "비움";
+  if (tile === 0) return "빈 바닥";
+  if (tile === 1) return "기본 바닥";
+  return `그림 ${tile}`;
 }
 
 function commandPart(text: string): CommandSummaryPart {
@@ -514,7 +522,7 @@ function damageProcessingSummaryParts(cmd: Extract<Command, { kind: "m2Command" 
       : project.database.actors.find((actor) => actor.id === targetRaw)?.name ?? targetRaw;
   const operation = String(cmd.fields.operation ?? "add");
   const opLabel = operation === "remove" ? "회복" : "데미지";
-  return commandLine("데미지 처리", valuePart(target), plainPart(" · "), valuePart(opLabel), plainPart(" "), valuePart(m2NumericValueLabel(cmd)));
+  return commandLine("데미지", valuePart(target), plainPart(" · "), valuePart(opLabel), plainPart(" "), valuePart(m2NumericValueLabel(cmd)));
 }
 
 function changeActorIdentitySummaryParts(
@@ -595,7 +603,7 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
     return changeActorIdentitySummaryParts(cmd, "주인공 별명 변경");
   }
   if (title === "Change Actor Graphic" || cmd.commandId === "m2-024-change-actor-graphic") {
-    return changeActorIdentitySummaryParts(cmd, "주인공 그래픽 변경");
+    return changeActorIdentitySummaryParts(cmd, "주인공 모습 변경");
   }
   if (title === "Change Actor Faceset" || cmd.commandId === "m2-025-change-actor-faceset") {
     return changeActorIdentitySummaryParts(cmd, "주인공 얼굴 변경");
@@ -694,7 +702,7 @@ function page3M2SummaryParts(
     case "Get Terrain ID": {
       const variableId = str("variableId");
       return commandLine(
-        labelOf("지형 ID 얻기"),
+        labelOf("어느 지형인지 알기"),
         plainPart("("),
         valuePart(`${num("x") || "?"}, ${num("y") || "?"}`),
         plainPart(") → "),
@@ -772,11 +780,11 @@ function page3M2SummaryParts(
       );
     }
     case "Show Picture": {
-      const pictureId = str("pictureId") || "pic1";
+      const pictureId = str("pictureId");
       const resourceId = str("resourceId");
       return commandLine(
         labelOf("그림 표시"),
-        valuePart(pictureId),
+        valuePart(pictureSlotCaption(pictureId)),
         plainPart(" ("),
         valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
         plainPart(")"),
@@ -784,19 +792,19 @@ function page3M2SummaryParts(
       );
     }
     case "Move Picture": {
-      const pictureId = str("pictureId") || "pic1";
+      const pictureId = str("pictureId");
       const duration = str("durationMs") || str("duration");
       return commandLine(
         labelOf("그림 이동"),
-        valuePart(pictureId),
+        valuePart(pictureSlotCaption(pictureId)),
         plainPart(" → ("),
         valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
         plainPart(")"),
-        ...(duration ? [plainPart(" · "), valuePart(`${duration}ms`)] : [])
+        ...(duration ? [plainPart(" · "), valuePart(`${Math.round(Number(duration) / 100) / 10}초`)] : [])
       );
     }
     case "Erase Picture":
-      return commandLine(labelOf("그림 삭제"), valuePart(str("pictureId") || "pic1"));
+      return commandLine(labelOf("그림 지우기"), valuePart(pictureSlotCaption(str("pictureId"))));
     case "Show Animation": {
       const target = str("target") || "대상";
       const anim = str("animationId") || str("value") || "(애니메이션)";
@@ -821,34 +829,35 @@ function page3M2SummaryParts(
     case "Key Input Processing": {
       const variableId = str("variableId") || str("target");
       return commandLine(
-        labelOf("키 입력 처리"),
+        labelOf("키 입력"),
         valuePart(variableId ? `변수 ${variableId}` : "키 대기")
       );
     }
     case "Change Tileset": {
-      const tileset = str("value") || str("tilesetId") || str("target") || "(타일셋)";
-      return commandLine(labelOf("타일셋 변경"), valuePart(tileset));
+      const tileset = str("value") || str("tilesetId") || str("target") || "(그림 세트)";
+      return commandLine(labelOf("맵 그림 세트"), valuePart(tileset));
     }
     case "Change Parallax Back": {
-      const resource = str("value") || str("resourceId") || str("target") || "(파노라마)";
-      return commandLine(labelOf("파노라마 변경"), valuePart(resource));
+      const resource = str("value") || str("resourceId") || str("target") || "(먼 배경)";
+      return commandLine(labelOf("먼 배경 변경"), valuePart(resource));
     }
     case "Set Encounter Rate": {
       const rate = str("value") || str("rate") || str("target") || "0";
-      return commandLine(labelOf("인카운트율 설정"), valuePart(rate));
+      return commandLine(labelOf("랜덤 전투 빈도"), valuePart(rate));
     }
     case "Change Tile": {
       const mapId = str("mapId");
-      const layer = str("layer") === "upper" ? "상위" : "하위";
+      const layer = str("layer") === "upper" ? "덧그림" : "바닥";
+      const tileNo = Number(str("tile") || str("value") || "0");
       return commandLine(
-        labelOf("타일 변경"),
+        labelOf("지형 변경"),
         valuePart(mapId ? mapName(mapId) : "(맵)"),
         plainPart(" "),
         valuePart(layer),
         plainPart(" ("),
         valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
-        plainPart(") = "),
-        valuePart(str("tile") || str("value") || "0")
+        plainPart(") → "),
+        valuePart(Number.isFinite(tileNo) ? tileValueCaption(tileNo) : "빈 바닥")
       );
     }
     default:
@@ -939,8 +948,8 @@ function choiceCancelPart(text: string): CommandSummaryPart {
 function choiceCancelSummary(cmd: Extract<Command, { kind: "choices" }>): string {
   const behavior = cmd.cancelBehavior;
   if (!behavior) return "";
-  if (behavior === "disallow") return "취소 금지";
-  if (behavior === "branch") return "취소 시 별도 분기";
+  if (behavior === "disallow") return "취소 없음";
+  if (behavior === "branch") return "취소→따로 처리";
   const index = Number.parseInt(behavior.slice("choice".length), 10);
   if (!Number.isFinite(index) || index < 1) return "취소";
   const option = cmd.options[index - 1];
@@ -1021,13 +1030,13 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
 function runControlSummary(command: Extract<Command, { kind: "runControl" }>): string {
   switch (command.action) {
     case "start":
-      return `시작 · seed ${command.seed ?? "자동"} · ${command.startFloor ?? 1}층`;
+      return `시작 · ${command.seed ?? "자동 난수"} · ${command.startFloor ?? 1}층`;
     case "advance":
       return `다음 층 +${command.amount ?? 1}`;
     case "end":
       return `종료 · ${command.result}`;
     case "setFlag":
-      return `${command.flag || "플래그"} ${command.value ? "켜짐" : "꺼짐"}`;
+      return `${command.flag || "기억"} ${command.value ? "켜짐" : "꺼짐"}`;
     case "resetRoom":
       return `방 초기화 · ${command.roomId || "현재 방"}`;
   }
@@ -1055,7 +1064,7 @@ function commonEventName(id: string): string {
   const project = store.getCurrent();
   if (!id) return "(이벤트 선택)";
   const named = project.commonEvents.find((event) => event.id === id)?.name.trim();
-  return named || "이름 없는 공통 이벤트";
+  return named || "이름 없는 이벤트";
 }
 
 function mapEventName(id: string): string {
@@ -1063,7 +1072,7 @@ function mapEventName(id: string): string {
   const project = store.getCurrent();
   for (const map of Object.values(project.maps)) {
     const event = map.events.find((entry) => entry.id === id);
-    if (event) return event.name.trim() || "이름 없는 이벤트";
+    if (event) return event.id;
   }
   return "이름 없는 이벤트";
 }
@@ -1080,7 +1089,7 @@ function actorName(id: string): string {
 
 function skillName(id: string): string {
   const project = store.getCurrent();
-  return id ? project.database.skills.find((skill) => skill.id === id)?.name ?? id : "(특수기 선택)";
+  return id ? project.database.skills.find((skill) => skill.id === id)?.name ?? id : "(스킬 선택)";
 }
 
 function timerActionLabel(action: string): string {
@@ -1163,6 +1172,13 @@ function recordName(kind: "switch" | "variable", id: string): string {
     return named || "(이름 없음)";
   }
   return id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
+}
+
+function endingName(id: string | undefined): string {
+  const trimmed = id?.trim() ?? "";
+  if (!trimmed) return "자동 선택";
+  const named = store.getCurrent().endings?.find((entry) => entry.id === trimmed)?.name.trim();
+  return named || humanizeAuthorId(trimmed);
 }
 
 function animationName(id: string | undefined): string {

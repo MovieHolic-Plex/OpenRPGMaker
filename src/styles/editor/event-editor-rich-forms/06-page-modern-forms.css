@@ -253,6 +253,23 @@
   width: 100%;
 }
 
+.page3-more-fields {
+  border-top: 1px solid color-mix(in srgb, var(--line, #d8cbb8) 70%, transparent);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.page3-more-fields > summary {
+  color: var(--ink-dim, #6b5e4e);
+  cursor: pointer;
+  font-size: 12px;
+  list-style: none;
+}
+
+.page3-more-fields > summary::-webkit-details-marker {
+  display: none;
+}
+
 .page3-resource-name {
   color: var(--ink, #2a241c);
   flex: 1 1 auto;

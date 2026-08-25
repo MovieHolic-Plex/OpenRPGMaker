@@ -253,7 +253,7 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
   restDuration.min = "0";
   restDuration.step = "50";
   restDuration.value = String(draft.restDurationMs ?? 500);
-  restDuration.title = "암전 연출(ms)";
+  restDuration.title = "암전 연출";
   restDuration.dataset.testid = "inn-rest-duration-input";
   restDuration.className = "commerce-command-input";
 
@@ -262,7 +262,7 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
   wakeDuration.min = "0";
   wakeDuration.step = "50";
   wakeDuration.value = String(draft.wakeDurationMs ?? 750);
-  wakeDuration.title = "기상 메시지(ms)";
+  wakeDuration.title = "기상 메시지";
   wakeDuration.dataset.testid = "inn-wake-duration-input";
   wakeDuration.className = "commerce-command-input";
 
@@ -445,14 +445,14 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
             el("div", {
               class: "commerce-command-field",
               children: [
-                el("label", { class: "commerce-command-title", text: "암전(ms)" }),
+                el("label", { class: "commerce-command-title", text: "암전" }),
                 restDuration,
               ],
             }),
             el("div", {
               class: "commerce-command-field",
               children: [
-                el("label", { class: "commerce-command-title", text: "기상(ms)" }),
+                el("label", { class: "commerce-command-title", text: "기상" }),
                 wakeDuration,
               ],
             }),
@@ -1224,23 +1224,6 @@ function rebuildShopItemList(
     });
     list.append(row);
   }
-}
-
-function listColumn(title: string, count: number, listRoot: HTMLElement, testId: string): HTMLElement {
-  return el("div", {
-    class: "shop-processing-list-column",
-    dataset: { testid: testId },
-    children: [
-      el("div", {
-        class: "shop-processing-list-head",
-        children: [
-          el("span", { class: "shop-processing-list-title", text: title }),
-          el("span", { class: "shop-processing-list-count", text: `${count}` }),
-        ],
-      }),
-      listRoot,
-    ],
-  });
 }
 
 function shopItemList(

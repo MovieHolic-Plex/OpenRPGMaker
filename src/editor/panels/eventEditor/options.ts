@@ -44,10 +44,10 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "moveEvent", label: "이벤트 이동" },
   { value: "setEventGraphicPattern", label: "모습 바꾸기" },
   { value: "changeTile", label: "지형 변경" },
-  { value: "callCommonEvent", label: "공통 이벤트 호출" },
-  { value: "callMapEvent", label: "맵 이벤트 호출" },
+  { value: "callCommonEvent", label: "다른 이벤트 부르기" },
+  { value: "callMapEvent", label: "맵 위 이벤트 부르기" },
   { value: "battleProcessing", label: "전투" },
-  { value: "learnSkill", label: "특수기 습득" },
+  { value: "learnSkill", label: "스킬 배우기" },
   { value: "changeExp", label: "경험치 변경" },
   { value: "changeLevel", label: "레벨 변경" },
   { value: "promoteActor", label: "승급" },
@@ -76,23 +76,23 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "setWeather", label: "날씨 설정" },
   { value: "showAnimation", label: "애니메이션 표시" },
   { value: "showPicture", label: "그림 표시" },
-  { value: "erasePicture", label: "그림 삭제" },
+  { value: "erasePicture", label: "그림 지우기" },
   { value: "playAudio", label: "소리 재생" },
   { value: "stopAudio", label: "소리 정지" },
   { value: "cutsceneControl", label: "컷신 제어" },
   { value: "shop", label: "상점" },
   { value: "inn", label: "여관" },
   { value: "checkpointSave", label: "체크포인트 저장" },
-  { value: "runControl", label: "로그라이크 런 제어" },
+  { value: "runControl", label: "탐험 제어" },
   { value: "killPlayer", label: "즉사" },
-  { value: "triggerEnding", label: "엔딩 트리거" },
+  { value: "triggerEnding", label: "엔딩" },
   { value: "gameOver", label: "게임 오버" },
   { value: "ending", label: "엔딩" },
   { value: "returnToTitle", label: "타이틀로 돌아가기" },
   { value: "wait", label: "대기" },
   { value: "setFlag", label: "기억 설정" },
   { value: "setSelfSwitch", label: "이 이벤트 기억 설정" },
-  { value: "m2Command", label: "이벤트 명령" },
+  { value: "m2Command", label: "기타 명령" },
 ] as const satisfies readonly SelectOption<Command["kind"]>[];
 
 export const SELF_SWITCH_KEY_OPTIONS = [
@@ -104,6 +104,12 @@ export const SELF_SWITCH_KEY_OPTIONS = [
 
 export function commandKindLabel(kind: Command["kind"]): string {
   return COMMAND_KIND_OPTIONS.find((option) => option.value === kind)?.label ?? kind;
+}
+
+/** 화면에 겹친 그림의 자리. RM pictureId 를 숫자 칸으로 노출하지 않는다. */
+export function pictureSlotCaption(pictureId: string | undefined): string {
+  const id = pictureId?.trim() ?? "";
+  return id ? `자리 ${id}` : "자리 없음";
 }
 
 export const PAGE_COMMAND_BUTTONS = [
@@ -135,9 +141,9 @@ export const PAGE_COMMAND_BUTTONS = [
   { kind: "setWeather", testId: "command-add-set-weather", label: "날씨" },
   { kind: "showAnimation", testId: "command-add-show-animation", label: "애니메이션" },
   { kind: "checkpointSave", testId: "command-add-checkpoint-save", label: "체크포인트" },
-  { kind: "runControl", testId: "command-add-run-control", label: "로그라이크 런" },
+  { kind: "runControl", testId: "command-add-run-control", label: "탐험" },
   { kind: "killPlayer", testId: "command-add-kill-player", label: "즉사" },
-  { kind: "triggerEnding", testId: "command-add-trigger-ending", label: "엔딩 트리거" },
+  { kind: "triggerEnding", testId: "command-add-trigger-ending", label: "엔딩" },
   { kind: "ending", testId: "command-add-ending", label: "엔딩" },
   { kind: "gameOver", testId: "command-add-game-over", label: "게임 오버" },
 ] as const satisfies readonly PageCommandButton[];

@@ -96,9 +96,9 @@ const TEXT_CONTROL_SNIPPETS: readonly {
   readonly label: string;
   readonly hint: string;
 }[] = [
-  { key: "color", code: "\\c[1]", label: "색", hint: "이후 글자 색 (0~19)" },
-  { key: "hero", code: "\\n[1]", label: "이름", hint: "n번 주인공 이름 표시" },
-  { key: "variable", code: "\\v[1]", label: "변수", hint: "n번 변수 값 표시" },
+  { key: "color", code: "\\c[1]", label: "색", hint: "이후 글자 색" },
+  { key: "hero", code: "\\n[1]", label: "이름", hint: "주인공 이름" },
+  { key: "variable", code: "\\v[1]", label: "변수", hint: "변수 값" },
   { key: "gold", code: "\\$", label: "소지금", hint: "소지금 창 표시" },
   { key: "pause", code: "\\!", label: "대기", hint: "키 입력까지 문장 정지" },
   { key: "wait-quarter", code: "\\.", label: "0.25초", hint: "1/4초 지연" },
@@ -846,7 +846,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       }),
       el("p", {
         class: "event-fork-section-hint",
-        text: "참/그 외 안의 명령은 이 창이 아니라 가운데 목록의 들여쓰기 가지에서 편집합니다.",
+        text: "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
         dataset: { testid: "event-fork-body-hint" },
       }),
       el("div", {
@@ -901,12 +901,25 @@ function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind
     children: [valueSelect, operandVariable],
   });
 
+  const hint = el("p", {
+    class: "event-command-switch-hint",
+    dataset: { testid: "event-command-switch-hint" },
+  });
+  const renderHint = (): void => {
+    const token = valueSelect.value;
+    hint.textContent = token === "variable"
+      ? "고른 숫자가 0이면 끄고, 아니면 켭니다."
+      : token === "toggle"
+        ? "지금 켜져 있으면 끄고, 꺼져 있으면 켭니다."
+        : "이 스위치를 켜거나 끕니다.";
+  };
   const syncVisibility = (): void => {
     const useVariable = valueSelect.value === "variable";
     operandVariable.hidden = !useVariable;
     // fakeDom 호환: classList.toggle 대신 add/remove.
     if (useVariable) valueRow.classList.add("is-variable");
     else valueRow.classList.remove("is-variable");
+    renderHint();
   };
 
   const apply = (): void => {
@@ -932,11 +945,7 @@ function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind
   wrap.append(
     fieldControl("스위치", swSel),
     fieldControl("값", valueRow),
-    el("p", {
-      class: "event-command-switch-hint",
-      text: "변수로 켜면 0은 꺼짐, 그 외는 켜짐입니다. 전환은 지금 상태를 뒤집습니다.",
-      dataset: { testid: "event-command-switch-hint" },
-    }),
+    hint,
     recordUsageHint("switch", cmd.switchId),
   );
   return wrap;
@@ -958,13 +967,13 @@ function switchValueOption(value: SwitchValue): "true" | "false" | "toggle" | "v
 
 function inputWaitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "inputWait" }>): HTMLElement {
   const wrap = el("div", {});
-  wrap.append(el("span", { class: "empty-hint", text: "아무 키 대기 (변수 미지정 시 키 코드 저장 안 함)" }));
+  wrap.append(el("span", { class: "empty-hint", text: "아무 키나 누를 때까지 기다립니다. 변수를 고르면 누른 키를 기억합니다." }));
   let currentVariableId = cmd.variableId ?? "";
   const variablePicker = databasePicker("variable", currentVariableId, (variableId) => {
     currentVariableId = variableId;
     context.actions.replaceCommand(context.path, { kind: "inputWait", variableId: currentVariableId });
   }, "event-command-input-wait-variable");
-  wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "키 코드 저장 변수(선택)" }), variablePicker] }));
+  wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "어디에 기억" }), variablePicker] }));
   return wrap;
 }
 
@@ -1042,7 +1051,7 @@ function timerBody(context: CommandEditContext, cmd: Extract<Command, { kind: "t
   action.addEventListener("change", apply);
   timerId.addEventListener("change", apply);
   secs.addEventListener("change", apply);
-  wrap.append(fieldControl("동작", action), fieldControl("타이머", timerId), fieldControl("시간(초)", secs));
+  wrap.append(fieldControl("무엇을", action), fieldControl("타이머", timerId), fieldControl("몇 초", secs));
   return wrap;
 }
 

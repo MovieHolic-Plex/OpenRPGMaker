@@ -11,7 +11,7 @@ import {
   type SegmentOption,
 } from "./recordPicker";
 import { selectedOptionValue } from "./dom";
-import { LAYER_OPTIONS } from "./options";
+import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
 import type { CommandEditContext } from "./types";
 
 const ANCHOR_SEGMENTS = [
@@ -778,7 +778,7 @@ export function showPictureBody(
   cmd: Extract<Command, { kind: "showPicture" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "show-picture-command-body");
-  const pictureId = textInput(cmd.pictureId, "그림 칸", "show-picture-id-input");
+  const pictureId = textInput(cmd.pictureId, "화면 자리", "show-picture-id-input");
   const resourceId = textInput(cmd.resourceId, "그림", "show-picture-resource-input");
   resourceId.classList.add("visually-hidden");
   const resourceName = el("span", {
@@ -867,7 +867,7 @@ export function showPictureBody(
       marker.append(
         el("span", {
           class: "page3-preview-picture-missing",
-          text: `#${pictureId.value.trim() || "pic"}`,
+          text: pictureSlotCaption(pictureId.value),
         })
       );
     }
@@ -946,7 +946,7 @@ export function showPictureBody(
   wrap.append(
     intentCard(
       "그림 표시",
-      "화면에 그림을 올립니다. 그림 칸으로 나중에 옮기거나 지울 수 있습니다.",
+      "화면에 그림을 올립니다. 화면 자리로 나중에 옮기거나 지울 수 있습니다.",
       "show-picture-intent"
     ),
     el("div", {
@@ -955,7 +955,7 @@ export function showPictureBody(
         el("div", {
           class: "actor-m2-main page3-command-main",
           children: [
-            fieldBlock("그림 칸", pictureId),
+            fieldBlock("화면 자리", pictureId),
             fieldBlock(
               "그림",
               el("div", {
@@ -972,10 +972,19 @@ export function showPictureBody(
               "크기 · 불투명도",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [scale, opacity] })
             ),
-            fieldBlock(
-              "회전(°) · 전환 시간",
-              el("div", { class: "actor-m2-inline page3-coord-row", children: [rotation, durationMs] })
-            ),
+            el("details", {
+              class: "page3-more-fields",
+              attrs: {
+                ...(Number(rotation.value) || Number(durationMs.value) ? { open: "" } : {}),
+              },
+              children: [
+                el("summary", { text: "회전 · 서서히" }),
+                fieldBlock(
+                  "회전 · 서서히",
+                  el("div", { class: "actor-m2-inline page3-coord-row", children: [rotation, durationMs] })
+                ),
+              ],
+            }),
           ],
         }),
         preview,
@@ -990,7 +999,7 @@ export function erasePictureBody(
   cmd: Extract<Command, { kind: "erasePicture" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "erase-picture-command-body");
-  const pictureId = textInput(cmd.pictureId, "그림 칸", "erase-picture-id-input");
+  const pictureId = textInput(cmd.pictureId, "화면 자리", "erase-picture-id-input");
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "erase-picture-preview" },
@@ -1007,10 +1016,10 @@ export function erasePictureBody(
   const renderPreview = () => {
     const id = pictureId.value.trim() || "pic1";
     preview.replaceChildren(
-      el("p", { class: "actor-m2-preview-line", text: `그림 ${id} 삭제` }),
+      el("p", { class: "actor-m2-preview-line", text: `${pictureSlotCaption(id)} 지우기` }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "화면에 떠 있는 그 칸의 그림을 지웁니다.",
+        text: "화면에 떠 있는 그 자리의 그림을 지웁니다.",
       })
     );
   };
@@ -1019,13 +1028,13 @@ export function erasePictureBody(
   pictureId.addEventListener("input", renderPreview);
   renderPreview();
   wrap.append(
-    intentCard("그림 삭제", "화면에 떠 있는 그림을 칸으로 지웁니다.", "erase-picture-intent"),
+    intentCard("그림 지우기", "화면에 떠 있는 그림을 화면 자리로 지웁니다.", "erase-picture-intent"),
     el("div", {
       class: "actor-m2-layout page3-command-layout",
       children: [
         el("div", {
           class: "actor-m2-main page3-command-main",
-          children: [fieldBlock("그림 칸", pictureId)],
+          children: [fieldBlock("화면 자리", pictureId)],
         }),
         preview,
       ],
@@ -1045,11 +1054,11 @@ export function changeTileBody(
     options: LAYER_SEGMENTS,
     value: cmd.layer,
     testid: "change-tile-layer-select",
-    ariaLabel: "타일 레이어",
+    ariaLabel: "레이어",
   });
   const x = numberInput(cmd.x, "X 좌표", "change-tile-x-input");
   const y = numberInput(cmd.y, "Y 좌표", "change-tile-y-input");
-  const tile = numberInput(cmd.tile, "어떤 타일", "change-tile-tile-input");
+  const tile = numberInput(cmd.tile, "바꿀 그림", "change-tile-tile-input");
   const tileStepper = amountStepper(tile, { testidBase: "change-tile-tile", min: -1 });
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
@@ -1075,14 +1084,23 @@ export function changeTileBody(
   const renderPreview = () => {
     const mapId = mapSel.value;
     const mapName = mapId ? project.maps[mapId]?.name || mapId : "(맵 선택)";
-    const layerLabel = layer.select.value === "upper" ? "상위" : "하위";
+    const layerLabel = layer.select.value === "upper" ? "덧그림" : "바닥";
     const tx = parseInt(x.value, 10) || 0;
     const ty = parseInt(y.value, 10) || 0;
-    const tileNo = parseInt(tile.value, 10) || 0;
+    const parsedTile = parseInt(tile.value, 10);
+    const tileNo = Number.isFinite(parsedTile) ? parsedTile : 0;
+    for (const btn of presets.querySelectorAll<HTMLElement>("[data-testid^='change-tile-preset-']")) {
+      const id = btn.dataset.testid ?? "";
+      const selected =
+        (id.endsWith("-clear") && tileNo < 0) ||
+        (id.endsWith("-zero") && tileNo === 0) ||
+        (id.endsWith("-floor") && tileNo === 1);
+      btn.classList.toggle("is-active", selected);
+    }
     preview.replaceChildren(
       el("p", {
         class: "actor-m2-preview-line",
-        text: `${mapName} · ${layerLabel} (${tx}, ${ty}) → #${tileNo}`,
+        text: `${mapName} · ${layerLabel} (${tx}, ${ty}) → ${tileNo < 0 ? "비움" : tileNo === 0 ? "빈 바닥" : tileNo === 1 ? "기본 바닥" : `그림 ${tileNo}`}`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
@@ -1093,8 +1111,8 @@ export function changeTileBody(
 
   for (const preset of [
     { id: "clear", label: "비우기", tile: -1 },
-    { id: "zero", label: "#0", tile: 0 },
-    { id: "floor", label: "#1", tile: 1 },
+    { id: "zero", label: "빈 바닥", tile: 0 },
+    { id: "floor", label: "기본 바닥", tile: 1 },
   ] as const) {
     presets.append(
       el("button", {
@@ -1137,8 +1155,8 @@ export function changeTileBody(
               "좌표",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] })
             ),
-            fieldBlock("어떤 타일", tileStepper),
-            fieldBlock("빠른 값", presets),
+            fieldBlock("바꿀 그림", presets),
+            fieldBlock("번호", tileStepper),
           ],
         }),
         preview,

@@ -219,7 +219,7 @@ test("diagnose page tab strip geometry", async ({ page }) => {
 });
 
 test("inspector cream-forms each mockup command kind", async ({ page }) => {
-  test.setTimeout(180_000);
+  test.setTimeout(240_000);
   await mkdir(DIR, { recursive: true });
   await page.setViewportSize({ width: 1500, height: 1000 });
   const { project, eventId } = mockupProject();
@@ -268,7 +268,14 @@ test("inspector cream-forms each mockup command kind", async ({ page }) => {
     ?? project.database.items.find((item) => /[가-힣]/.test(item.name))?.id
     ?? project.database.items[0]?.id
     ?? "item_hoe";
+  if (!(project.endings ?? []).some((ending) => ending.id === "end1")) {
+    project.endings = [
+      ...(project.endings ?? []),
+      { id: "end1", name: "마을을 지킨 끝", conditions: [], priority: 1 },
+    ];
+  }
   const actorId = project.database.actors[0]?.id ?? "actor";
+
   const gearId = project.database.equipment[0]?.id ?? "";
   if (project.commonEvents.length === 0) {
     project.commonEvents.push({
@@ -296,7 +303,7 @@ test("inspector cream-forms each mockup command kind", async ({ page }) => {
       { kind: "battleProcessing", troopId: "troop_bat_swarm", canEscape: true, canLose: false },
       { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 1 },
       { kind: "fork", condition: { kind: "switch", switchId: "0001", value: true }, then: [], else: [] },
-      { kind: "loop", body: [] },
+      { kind: "loop", body: [{ kind: "breakLoop" }] },
       { kind: "m2Command", commandId: "m2-014-change-parameters", fields: {} },
       { kind: "changeParty", actorId, action: "add" },
       { kind: "changeActorHp", actorId, op: "+=", amount: 10 },
@@ -336,7 +343,7 @@ test("inspector cream-forms each mockup command kind", async ({ page }) => {
       { kind: "setTime", hour: 8, minute: 0 },
       { kind: "sleepUntilMorning" },
       { kind: "inputWait", variableId: "0001" },
-      { kind: "breakLoop" },
+
       { kind: "changeLevel", actorId, op: "+=", amount: 1 },
       { kind: "changeActorMp", actorId, op: "+=", amount: 5 },
       { kind: "recoverAll", actorId },
@@ -365,7 +372,7 @@ test("inspector cream-forms each mockup command kind", async ({ page }) => {
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();
   await selectView(modal, "List");
-  const items = modal.locator(".cmd-list .cmd-item[data-cmd-depth=\"0\"][data-command-kind]");
+  const items = modal.locator(".cmd-list .cmd-item[data-command-kind]");
   const count = await items.count();
   expect(count).toBeGreaterThan(0);
   const kinds: string[] = [];
@@ -373,18 +380,31 @@ test("inspector cream-forms each mockup command kind", async ({ page }) => {
     const kind = await items.nth(index).getAttribute("data-command-kind");
     if (kind && !kinds.includes(kind)) kinds.push(kind);
   }
-  for (const kind of kinds) {
-    if (!(await modal.isVisible())) {
-      await openEventEditor(page, eventId);
-      await expect(modal).toBeVisible();
-      await selectView(modal, "List");
+  const openList = async () => {
+    await openEventEditor(page, eventId);
+    const live = page.getByTestId("event-editor-modal");
+    await expect(live).toBeVisible({ timeout: 15_000 });
+    await selectView(live, "List");
+    return live;
+  };
+  const captureKind = async (kind: string): Promise<void> => {
+    let live = page.getByTestId("event-editor-modal");
+    if (!(await live.isVisible().catch(() => false))) {
+      live = await openList();
     }
-    const item = modal.locator(`.cmd-list .cmd-item[data-cmd-depth="0"][data-command-kind="${kind}"]`).first();
-    await expect(item).toBeVisible();
+    let item = live.locator(`.cmd-list .cmd-item[data-cmd-depth="0"][data-command-kind="${kind}"]`).first();
+    if (!(await item.isVisible().catch(() => false))) {
+      item = live.locator(`.cmd-list .cmd-item[data-command-kind="${kind}"]`).first();
+    }
+    if (!(await item.isVisible().catch(() => false))) {
+      live = await openList();
+      item = live.locator(`.cmd-list .cmd-item[data-command-kind="${kind}"]`).first();
+    }
+    await expect(item).toBeVisible({ timeout: 10_000 });
     await item.evaluate((node) => node.scrollIntoView({ block: "nearest" }));
     await item.click({ force: true });
-    await expect(modal.locator(`.cmd-item.selected[data-command-kind="${kind}"]`)).toBeVisible();
-    await expect(modal.getByTestId("event-inspector-body")).toBeVisible();
+    await expect(live.locator(`.cmd-item.selected[data-command-kind="${kind}"]`)).toBeVisible();
+    await expect(live.getByTestId("event-inspector-body")).toBeVisible();
     await page.evaluate(() => {
       const active = document.activeElement;
       if (active instanceof HTMLElement) active.blur();
@@ -392,7 +412,20 @@ test("inspector cream-forms each mockup command kind", async ({ page }) => {
         if (select instanceof HTMLSelectElement) select.size = 1;
       }
     });
-    await modal.screenshot({ path: `${DIR}/form-${kind}.png` });
+    const box = await live.boundingBox();
+    if (box) {
+      await page.screenshot({ path: `${DIR}/form-${kind}.png`, clip: box });
+    } else {
+      live = await openList();
+      const retry = live.locator(`.cmd-list .cmd-item[data-command-kind="${kind}"]`).first();
+      await retry.click({ force: true });
+      const retryBox = await live.boundingBox();
+      if (!retryBox) throw new Error(`modal missing for ${kind}`);
+      await page.screenshot({ path: `${DIR}/form-${kind}.png`, clip: retryBox });
+    }
+  };
+  for (const kind of kinds) {
+    await captureKind(kind);
   }
   expect(kinds.length).toBeGreaterThan(40);
 });

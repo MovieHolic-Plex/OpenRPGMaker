@@ -50,8 +50,8 @@ export function emptyEventProject(): { project: Project; eventId: string } {
 // 목업 정본과 동일한 모양의 데모 이벤트.
 // - 페이지 1 의뢰 제안(조건 없음): 선택지 "나중에" 분기 무진행 + 그림 번호 1 중복 -> 경고 2
 //   (탭 배지는 보이지 않는 페이지 경고 대신 무진행만 세도록 overlapForbidden=false)
-// - 페이지 2 진행 중(SW0001 + 변수>=1): 보이지 않는 그래픽 -> 경고 1
-// - 페이지 3 완료 후(SW0002): 명령 12개/15행, 오디오 오류 + 보이지 않는 충돌 경고 -> 오류 1 경고 1
+// - 페이지 2 진행 중(스위치 0001 + 변수>=1): 보이지 않는 그래픽 -> 경고 1
+// - 페이지 3 완료 후(스위치 0002): 명령 12개/15행, 보이지 않는 충돌 경고
 export function mockupProject(): { project: Project; eventId: string } {
   const project = createBlankProject();
   project.switches = [
@@ -169,7 +169,7 @@ function page3(): EventPage {
       cancelBehavior: "choice2",
     },
     { kind: "showPicture", pictureId: "1", resourceId: "easyrpg-picture-cloud", x: 24, y: 32 },
-    { kind: "playAudio", resourceId: "bgm-demo-town", loop: false },
+    { kind: "playAudio", resourceId: "cc0-bgm-rtp-twn-001", loop: false },
     { kind: "transfer", mapId: "map_empty", x: 7, y: 10, direction: "down" },
     { kind: "changeGold", op: "+=", amount: 120 },
     { kind: "changeItem", itemId: DEFAULT_ITEM_ID, op: "+=", amount: 2 },

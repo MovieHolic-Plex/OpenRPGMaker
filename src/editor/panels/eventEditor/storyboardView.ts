@@ -58,7 +58,7 @@ function kindLabel(kind: string): string {
     text:"대사", changeFace:"표정", choices:"선택지", fork:"분기", loop:"반복",
     transfer:"이동", moveEvent:"이벤트 이동", playBgm:"BGM", playSe:"SE",
     battleProcessing:"전투", shopProcessing:"상점", innProcessing:"여관",
-    changeGold:"골드", changeItem:"아이템", wait:"대기", callCommonEvent:"공통 이벤트",
+    changeGold:"골드", changeItem:"아이템", wait:"대기",
   };
   // 커스텀 표에 없으면 명령 사전의 한글 라벨로 — 내부 명령명(setSwitch 등)을
   // 카드 제목에 그대로 노출하지 않는다(2026-08-18 적대 평가 C03).
@@ -84,7 +84,7 @@ export function renderStoryboard(
     track.append(el("div", {
       class: "event-storyboard-empty",
       children: [
-        el("strong", { text: "아직 실행할 내용이 없습니다" }),
+        el("strong", { text: "아직 할 일이 없습니다" }),
         el("span", { text: "아래의 [첫 명령 추가]를 눌러 시작하세요." }),
       ],
     }));

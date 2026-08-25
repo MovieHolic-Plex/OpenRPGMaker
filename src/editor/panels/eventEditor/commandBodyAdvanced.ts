@@ -198,10 +198,10 @@ function runControlBody(
     dataset: { testid: "event-command-run-control" },
   });
   const action = simpleSelect([
-    ["start", "런 시작"],
+    ["start", "탐험 시작"],
     ["advance", "다음 층"],
-    ["end", "런 종료"],
-    ["setFlag", "런 플래그"],
+    ["end", "탐험 종료"],
+    ["setFlag", "탐험 기억"],
     ["resetRoom", "방 초기화"],
   ], cmd.action, "event-command-run-action");
   action.addEventListener("change", () => {
@@ -238,7 +238,7 @@ function runControlBody(
       seed.addEventListener("change", apply);
       runId.addEventListener("change", apply);
       floor.addEventListener("change", apply);
-      wrap.append(inlineField("자동 시드", autoSeed), inlineField("시드", seed), inlineField("런 ID", runId), inlineField("시작 층", floor));
+      wrap.append(inlineField("자동 난수", autoSeed), inlineField("난수 씨앗", seed), inlineField("탐험 이름", runId), inlineField("시작 층", floor));
       break;
     }
     case "advance": {
@@ -370,7 +370,7 @@ function addFollowerBody(
   cmd: Extract<Command, { kind: "addFollower" }>
 ): HTMLElement {
   const actor = el("select", { dataset: { testid: "event-command-add-follower-actor-id" } }) as HTMLSelectElement;
-  actor.append(el("option", { text: "직접 지정", attrs: { value: "" } }));
+  actor.append(el("option", { text: "이름만 적기", attrs: { value: "" } }));
   for (const record of store.getCurrent().database.actors) {
     actor.append(el("option", { text: record.name, attrs: { value: record.id } }));
   }
@@ -387,8 +387,8 @@ function addFollowerBody(
   useGraphic.checked = Boolean(cmd.graphic);
   const graphicType = el("select", { dataset: { testid: "event-command-add-follower-graphic-type" } }) as HTMLSelectElement;
   graphicType.append(
-    el("option", { text: "번들", attrs: { value: "bundled" } }),
-    el("option", { text: "업로드", attrs: { value: "uploaded" } })
+    el("option", { text: "기본 모습", attrs: { value: "bundled" } }),
+    el("option", { text: "올린 그림", attrs: { value: "uploaded" } })
   );
   graphicType.value = cmd.graphic?.sprite?.type ?? "bundled";
   const graphicId = el("input", {
@@ -397,8 +397,9 @@ function addFollowerBody(
     dataset: { testid: "event-command-add-follower-graphic-id" },
   }) as HTMLInputElement;
   const direction = el("select", { dataset: { testid: "event-command-add-follower-graphic-direction" } }) as HTMLSelectElement;
+  const directionLabels = { down: "아래", left: "왼쪽", right: "오른쪽", up: "위" } as const;
   for (const option of ["down", "left", "right", "up"] as const) {
-    direction.append(el("option", { text: option, attrs: { value: option } }));
+    direction.append(el("option", { text: directionLabels[option], attrs: { value: option } }));
   }
   direction.value = cmd.graphic?.direction ?? "down";
   const pattern = el("input", {
@@ -436,10 +437,30 @@ function addFollowerBody(
   for (const control of [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent]) {
     control.addEventListener("change", commit);
   }
+  const graphicFields = el("div", {
+    class: "rich-form-stack",
+    children: [
+      inlineField("모습 종류", graphicType),
+      inlineField("모습", graphicId),
+      inlineField("방향", direction),
+      inlineField("모습 칸", pattern),
+      inlineField("투명", transparent),
+    ],
+  });
+  const syncGraphic = (): void => {
+    graphicFields.style.display = useGraphic.checked ? "" : "none";
+  };
+  useGraphic.addEventListener("change", syncGraphic);
+  syncGraphic();
   return el("div", {
-    class: "terminal-command-editor",
+    class: "rich-command-form cream-command-form",
     dataset: { testid: "add-follower-editor" },
-    children: [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent],
+    children: [
+      inlineField("누구", actor),
+      inlineField("이름", name),
+      inlineField("모습 직접 정하기", useGraphic),
+      graphicFields,
+    ],
   });
 }
 
@@ -469,9 +490,9 @@ function removeFollowerBody(
   mode.addEventListener("change", commit);
   name.addEventListener("change", commit);
   return el("div", {
-    class: "terminal-command-editor",
+    class: "rich-command-form cream-command-form",
     dataset: { testid: "remove-follower-editor" },
-    children: [mode, name],
+    children: [inlineField("어떻게", mode), inlineField("이름", name)],
   });
 }
 
@@ -506,7 +527,7 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
     children: [
       el("span", {
         class: "transfer-command-summary",
-        text: `${map?.name ?? (seeded.mapId || "(map)")} (${seeded.x}, ${seeded.y}) / ${transferDirectionLabel(seeded.direction)} / 페이드: ${transferFadeLabel(seeded.fade)}`,
+        text: `${map?.name ?? (seeded.mapId || "(맵)")} (${seeded.x}, ${seeded.y}) / ${transferDirectionLabel(seeded.direction)} / 페이드: ${transferFadeLabel(seeded.fade)}`,
         dataset: { testid: "transfer-command-summary" },
       }),
       ...(passable === undefined
@@ -671,7 +692,7 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
       }),
       el("p", {
         class: "event-command-choices-hint",
-        text: "변수 값(ms)만큼 대기합니다.",
+        text: "변수 값만큼 초 단위로 기다립니다.",
       }),
     ],
   });
@@ -736,7 +757,19 @@ function advanceTimeBody(context: CommandEditContext, cmd: Extract<Command, { ki
     control.addEventListener("change", apply);
     control.addEventListener("input", apply);
   }
-  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days, hours, minutes] })] });
+  return el("span", {
+    class: "rich-command-form cream-command-form",
+    children: [
+      el("span", {
+        class: "rich-form-row",
+        children: [
+          el("label", { class: "inline-field", children: [el("span", { text: "일" }), days] }),
+          el("label", { class: "inline-field", children: [el("span", { text: "시간" }), hours] }),
+          el("label", { class: "inline-field", children: [el("span", { text: "분" }), minutes] }),
+        ],
+      }),
+    ],
+  });
 }
 
 function advanceCropGrowthBody(context: CommandEditContext, cmd: Extract<Command, { kind: "advanceCropGrowth" }>): HTMLElement {
@@ -749,7 +782,12 @@ function advanceCropGrowthBody(context: CommandEditContext, cmd: Extract<Command
   };
   days.addEventListener("change", apply);
   days.addEventListener("input", apply);
-  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days] })] });
+  return el("span", {
+    class: "rich-command-form cream-command-form",
+    children: [
+      el("span", { class: "rich-form-row", children: [el("label", { class: "inline-field", children: [el("span", { text: "일" }), days] })] }),
+    ],
+  });
 }
 
 function setTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setTime" }>): HTMLElement {
@@ -770,7 +808,18 @@ function setTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
     control.addEventListener("change", apply);
     control.addEventListener("input", apply);
   }
-  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [hour, minute] })] });
+  return el("span", {
+    class: "rich-command-form cream-command-form",
+    children: [
+      el("span", {
+        class: "rich-form-row",
+        children: [
+          el("label", { class: "inline-field", children: [el("span", { text: "시" }), hour] }),
+          el("label", { class: "inline-field", children: [el("span", { text: "분" }), minute] }),
+        ],
+      }),
+    ],
+  });
 }
 
 function setEventGraphicPatternBody(
@@ -1045,8 +1094,7 @@ function mapEventSelect(currentId: string, testId: string): HTMLSelectElement {
   sel.append(el("option", { text: "(이 이벤트)", attrs: { value: "" } }));
   for (const event of map?.events ?? []) {
     known.add(event.id);
-    const label = event.name.trim() || "(이름 없는 이벤트)";
-    sel.append(el("option", { text: label, attrs: { value: event.id } }));
+    sel.append(el("option", { text: event.id, attrs: { value: event.id } }));
   }
   // Keep free-typed / foreign-map ids visible even if not on the current map list.
   if (currentId && !known.has(currentId)) {
@@ -1124,7 +1172,7 @@ function callMapEventBody(
   const sel = el("select", { dataset: { testid: "event-command-call-map-event-select" } }) as HTMLSelectElement;
   sel.append(el("option", { text: "(이벤트 선택)", attrs: { value: "" } }));
   for (const event of map?.events ?? []) {
-    sel.append(el("option", { text: event.name.trim() || "(이름 없는 이벤트)", attrs: { value: event.id } }));
+    sel.append(el("option", { text: event.id, attrs: { value: event.id } }));
   }
   sel.value = cmd.eventId;
   sel.addEventListener("change", () => {
@@ -1146,13 +1194,13 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     options: LEARN_SKILL_ACTION_SEGMENTS,
     value: actionValue,
     testid: "learn-skill-action-select",
-    ariaLabel: "특수기 액션",
+    ariaLabel: "스킬 동작",
   });
   const target = segmentedSelect({
     options: LEARN_SKILL_TARGET_SEGMENTS,
     value: targetMode,
     testid: "learn-skill-target-mode",
-    ariaLabel: "특수기 대상",
+    ariaLabel: "스킬 대상",
   });
   const actor = actorPicker({
     project,
@@ -1165,10 +1213,10 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     testidPrefix: "learn-skill",
     selectTestId: "learn-skill-skill-select",
     selectedCardAliasTestId: "learn-skill-skill-select-card",
-    label: "특수기",
-    searchPlaceholder: "특수기 검색",
-    emptySelectionLabel: "특수기 선택",
-    noneCardLabel: "특수기 선택",
+    label: "스킬",
+    searchPlaceholder: "스킬 검색",
+    emptySelectionLabel: "스킬 선택",
+    noneCardLabel: "스킬 선택",
     noneCardMeta: "비우기",
     clearLabel: "해제",
     allowNone: true,
@@ -1191,8 +1239,8 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     const who = target.select.value === "party"
       ? "파티"
       : (actorRecord?.name ?? (actor.select.value || "주인공"));
-    const verb = action.select.value === "forget" ? "망각" : "습득";
-    const skillName = skillRecord?.name ?? (skillId || "특수기");
+    const verb = action.select.value === "forget" ? "잊기" : "배우기";
+    const skillName = skillRecord?.name ?? (skillId || "스킬");
     const detail = skillRecord
       ? `MP ${skillRecord.mpCost.flat} · 위력 ${skillRecord.power}`
       : "";
@@ -1252,8 +1300,8 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
 }
 
 const LEARN_SKILL_ACTION_SEGMENTS = [
-  { value: "learn", key: "learn", label: "습득" },
-  { value: "forget", key: "forget", label: "망각" },
+  { value: "learn", key: "learn", label: "배우기" },
+  { value: "forget", key: "forget", label: "잊기" },
 ] as const satisfies readonly SegmentOption<"learn" | "forget">[];
 
 const LEARN_SKILL_TARGET_SEGMENTS = [

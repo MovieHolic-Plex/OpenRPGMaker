@@ -84,12 +84,12 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   });
   const npcTargetMap = mapSelect(parameterDraft.npcTargetMapId);
   const npcTargetX = el("input", {
-    attrs: { type: "number", min: "0", placeholder: "NPC X" },
+    attrs: { type: "number", min: "0", placeholder: "가로" },
     value: parameterDraft.npcTargetX,
     dataset: { testid: "move-route-npc-target-x-input" },
   });
   const npcTargetY = el("input", {
-    attrs: { type: "number", min: "0", placeholder: "NPC Y" },
+    attrs: { type: "number", min: "0", placeholder: "세로" },
     value: parameterDraft.npcTargetY,
     dataset: { testid: "move-route-npc-target-y-input" },
   });

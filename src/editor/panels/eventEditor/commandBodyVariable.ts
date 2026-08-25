@@ -61,7 +61,7 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     options: VALUE_SOURCE_SEGMENTS,
     value: initialSource,
     testid: "event-command-variable-value-source",
-    ariaLabel: "값 소스",
+    ariaLabel: "값은",
   });
 
   const value = el("input", {
@@ -76,7 +76,7 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
   }, "event-command-variable-operand");
 
   const numberField = fieldControl("값", value);
-  const variableField = fieldControl("소스 변수", operandVariable);
+  const variableField = fieldControl("어느 변수", operandVariable);
 
   const formula = el("div", {
     class: "event-command-variable-formula",
@@ -198,7 +198,7 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     fieldControl("대상 변수", varSel),
     targetError,
     fieldControl("연산", op.root),
-    fieldControl("값 소스", source.root),
+    fieldControl("값은", source.root),
     numberField,
     variableField,
     operandError,

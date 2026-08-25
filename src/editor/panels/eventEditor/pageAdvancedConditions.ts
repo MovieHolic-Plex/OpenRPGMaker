@@ -40,7 +40,7 @@ const ADVANCED_CONDITION_OPTIONS = [
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
-  { value: "run", label: "로그라이크 런" },
+  { value: "run", label: "탐험" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {

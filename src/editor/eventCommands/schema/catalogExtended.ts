@@ -123,7 +123,7 @@ defineCommand({
 defineCommand({
   kind: "runControl",
   family: "system",
-  label: "로그라이크 런 제어",
+  label: "탐험 제어",
   fields: {
     action: f.enum("동작", [
       { value: "start", label: "런 시작", key: "start" },
@@ -145,7 +145,7 @@ defineCommand({
     value: f.bool("값", { when: (c) => c.action === "setFlag" }),
     roomId: f.text("방 ID", { optional: true, when: (c) => c.action === "resetRoom" }),
   },
-  summary: (c) => `로그라이크 런 · ${str(c.action) || "start"}`,
+  summary: (c) => `탐험 · ${str(c.action) || "start"}`,
 });
 
 defineCommand({
@@ -343,7 +343,7 @@ defineCommand({
 defineCommand({
   kind: "triggerEnding",
   family: "system",
-  label: "엔딩 트리거",
+  label: "엔딩",
   fields: { endingId: f.text("엔딩 ID", { optional: true, placeholder: "비우면 조건 만족 최우선 엔딩" }) },
   summary: (c) => (c.endingId ? `엔딩 ${str(c.endingId)} 실행` : "조건 최우선 엔딩 실행"),
 });

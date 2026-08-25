@@ -24,7 +24,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
     return;
   }
   if (project.database.troops.length === 0) {
-    toast("적 그룹(troop)이 없습니다. 데이터베이스에서 먼저 만드세요.", "error");
+    toast("적 그룹이 없습니다. 데이터베이스에서 먼저 만드세요.", "error");
     return;
   }
 
@@ -69,7 +69,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
 
       const clearSwitch = el("input", {
         class: "field-monster-template-input",
-        attrs: { type: "text", "aria-label": "클리어 스위치 ID" },
+        attrs: { type: "text", "aria-label": "승리하면 켜질 스위치" },
         value: defaultClearSwitch,
         dataset: { testid: "field-monster-template-clear-switch" },
       }) as HTMLInputElement;
@@ -164,7 +164,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
             labeled("적 그룹", troop.root),
             labeled("전투 전 대사 (줄바꿈 = 여러 문장)", intro),
             labeled("승리 후 대사", victory),
-            labeled("클리어 스위치 ID", clearSwitch),
+            labeled("승리하면 켜질 스위치", clearSwitch),
             el("div", {
               class: "field-monster-template-checks",
               children: [

@@ -528,7 +528,7 @@ function appendCommandChildren(
     host.append(renderMarkerLine("전투 결과 분기 끝", depth, "fork"));
   }
   if (cmd.kind === "promoteActor") {
-    host.append(renderMarkerLine(": 승급 성공", depth, "fork"));
+    host.append(renderMarkerLine("승급 성공", depth, "fork"));
     (cmd.successBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -541,7 +541,7 @@ function appendCommandChildren(
           options
       );
     });
-    host.append(renderMarkerLine(": 승급 실패", depth, "fork"));
+    host.append(renderMarkerLine("승급 실패", depth, "fork"));
     (cmd.failureBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -554,7 +554,7 @@ function appendCommandChildren(
           options
       );
     });
-    host.append(renderMarkerLine(": 승급 분기 종료", depth, "fork"));
+    host.append(renderMarkerLine("승급 끝", depth, "fork"));
   }
   if (cmd.kind === "evolveMonster") {
     host.append(renderMarkerLine("진화 성공", depth, "fork"));

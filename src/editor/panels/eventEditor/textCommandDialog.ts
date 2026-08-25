@@ -17,10 +17,10 @@ const FACE_LINE_LIMIT = 38;
 
 const CONTROL_CHARACTER_ROWS: readonly { readonly code: string; readonly label: string }[] = [
   { code: "\\\\", label: "\\ 문자 표시" },
-  { code: "\\c[n]", label: "n번 색상(0-19)으로 이후 문장 표시" },
+  { code: "\\c[n]", label: "이후 글자 색" },
   { code: "\\s[n]", label: "문장 표시 속도 1-20 지정" },
-  { code: "\\n[n]", label: "n번 주인공 이름 표시" },
-  { code: "\\v[n]", label: "n번 변수 값 표시" },
+  { code: "\\n[n]", label: "주인공 이름" },
+  { code: "\\v[n]", label: "변수 값" },
   { code: "\\$", label: "소지금 창 표시" },
   { code: "\\!", label: "키 입력 전까지 문장 표시 일시 정지" },
   { code: "\\.", label: "1/4초 지연" },
@@ -169,8 +169,8 @@ function controlCharacterHelp(): HTMLElement {
   });
   const list = el("dl", { class: "event-command-text-control-list" });
   for (const row of CONTROL_CHARACTER_ROWS) {
-    list.append(el("dt", { text: row.label }), el("dd", { text: row.code }));
+    list.append(el("dt", { text: row.label }));
   }
-  panel.append(el("div", { class: "event-command-text-help-title", text: "문장 효과" }), list);
+  panel.append(el("div", { class: "event-command-text-help-title", text: "문장에 넣을 수 있는 효과" }), list);
   return panel;
 }

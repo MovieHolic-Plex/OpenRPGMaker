@@ -308,7 +308,7 @@ function seasonConditionInputs(context: PageConditionContext): HTMLElement {
 function npcActivityConditionInputs(context: PageConditionContext): HTMLElement {
   const condition = context.page.conditions.find((item) => item.kind === "npcActivity");
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "work" },
+    attrs: { type: "text", placeholder: "일" },
     value: condition?.kind === "npcActivity" ? condition.activity : "work",
     dataset: { testid: "event-page-npc-activity-condition-input" },
   }) as HTMLInputElement;

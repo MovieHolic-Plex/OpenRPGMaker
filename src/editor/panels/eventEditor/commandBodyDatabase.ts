@@ -64,7 +64,7 @@ const BATTLE_LOSE_SEGMENTS = [
 ] as const satisfies readonly { readonly value: "gameover" | "allow"; readonly key: string; readonly label: string }[];
 
 const BATTLE_TROOP_SOURCE_SEGMENTS = [
-  { value: "fixed", key: "fixed", label: "고정 적 그룹" },
+  { value: "fixed", key: "fixed", label: "이 그룹" },
   { value: "variable", key: "variable", label: "변수" },
 ] as const satisfies readonly { readonly value: "fixed" | "variable"; readonly key: string; readonly label: string }[];
 
@@ -143,7 +143,7 @@ export function battleProcessingBody(
     options: BATTLE_TROOP_SOURCE_SEGMENTS,
     value: troopSource,
     testid: "battle-processing-troop-source",
-    ariaLabel: "적 그룹 소스",
+    ariaLabel: "누구와 싸울까",
   });
   const escape = segmentedSelect({
     options: BATTLE_ESCAPE_SEGMENTS,
@@ -189,7 +189,7 @@ export function battleProcessingBody(
   });
   const preview = previewStrip("battle-processing-preview", "확인 시 전투 시작 → battleResult 저장");
   const troopField = battleField("적 그룹", troop.root);
-  const variableField = battleField("적 그룹 변수", el("div"));
+  const variableField = battleField("어느 변수", el("div"));
   const variablePicker = databasePicker(
     "variable",
     troopVariableId,
@@ -200,7 +200,7 @@ export function battleProcessingBody(
     "battle-processing-troop-variable"
   );
   variableField.replaceChildren(
-    el("div", { class: "party-member-field-label", text: "적 그룹 변수" }),
+    el("div", { class: "party-member-field-label", text: "어느 변수" }),
     variablePicker
   );
 
@@ -365,7 +365,7 @@ export function battleProcessingBody(
       text: "이 이벤트에서 전투를 시작합니다",
       dataset: { testid: "battle-processing-intent" },
     })),
-    battleField("적 그룹 소스", source.root),
+    battleField("누구와 싸울까", source.root),
     troopField,
     variableField,
     warning,
@@ -880,14 +880,17 @@ export function giveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
   const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [species.root] }),
-    el("span", { class: "rich-form-row", children: [amountStepper(level, { testidBase: "give-monster-level" }), nickname] })
+    el("span", { class: "rich-form-row", children: [
+      el("label", { class: "inline-field", children: [el("span", { text: "레벨" }), amountStepper(level, { testidBase: "give-monster-level" })] }),
+      el("label", { class: "inline-field", children: [el("span", { text: "별명" }), nickname] }),
+    ] })
   );
   return wrap;
 }
 
 export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "moveMonster" }>): HTMLElement {
   const instanceId = el("input", {
-    attrs: { type: "text", placeholder: "monster_1" },
+    attrs: { type: "text", placeholder: "몬스터" },
     value: cmd.instanceId,
     dataset: { testid: "move-monster-instance-input" },
   }) as HTMLInputElement;
@@ -920,14 +923,14 @@ export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
 export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "evolveMonster" }>): HTMLElement {
   const project = store.getCurrent();
   const instanceId = el("input", {
-    attrs: { type: "text", placeholder: "monster_1" },
+    attrs: { type: "text", placeholder: "몬스터" },
     value: cmd.instanceId,
     dataset: { testid: "evolve-monster-instance-input" },
   }) as HTMLInputElement;
   const species = recordPickerWithPreview({
     records: project.database.monsterSpecies ?? [],
     selectedId: cmd.toSpeciesId ?? "",
-    placeholder: "조건 충족 첫 진화",
+    placeholder: "맞는 첫 진화",
     testid: "evolve-monster-species-select",
     iconOf: (record) => imageIconOf(project, record.graphic.monsterResourceId),
     subtitleOf: (record) => `HP ${record.baseStats.maxHp} · 포획률 ${Math.round(record.captureRate * 100)}%`,
@@ -980,7 +983,7 @@ export function promoteActorBody(
   const klass = recordPickerWithPreview({
     records: project.database.classes,
     selectedId: cmd.toClassId ?? "",
-    placeholder: "조건 충족 첫 승급",
+    placeholder: "맞는 첫 승급",
     testid: "promote-class-select",
     subtitleOf: (record) => {
       const from = project.database.classes.find((source) => (source.promotions ?? []).some((promotion) => promotion.toClassId === record.id));
@@ -1032,7 +1035,7 @@ export function changeEquipmentBody(
     options: EQUIPMENT_SLOT_SEGMENTS,
     value: currentSlot,
     testid: "change-equipment-slot-select",
-    ariaLabel: "장비 슬롯",
+    ariaLabel: "장비 위치",
   });
 
   const equipmentBrowser = searchableRecordBrowser({
@@ -1046,7 +1049,7 @@ export function changeEquipmentBody(
     emptySelectionLabel: "장비 해제",
     emptySelectionMeta: () => `${slotLabel(currentSlot)} 비우기`,
     noneCardLabel: "장비 해제",
-    noneCardMeta: "슬롯 비우기",
+    noneCardMeta: "벗기기",
     clearLabel: "해제",
     allowNone: true,
     includeNoneCard: false,
@@ -1129,7 +1132,7 @@ export function changeEquipmentBody(
                 class: "change-equipment-preview-copy",
                 children: [
                   el("strong", { text: actorRecord.name }),
-                  el("span", { class: "change-equipment-preview-caption", text: `${slotLabel(currentSlot)} 슬롯` }),
+                  el("span", { class: "change-equipment-preview-caption", text: slotLabel(currentSlot) }),
                 ],
               }),
             ],
@@ -1194,7 +1197,7 @@ export function changeEquipmentBody(
         el("div", { class: "party-member-intent-title", text: "장비 변경" }),
         el("p", {
           class: "party-member-intent-body",
-          text: "주인공의 장비 슬롯을 교체하거나 비웁니다. 시작 장착 기준 전/후를 바로 확인하세요.",
+          text: "주인공의 장비를 갈아입히거나 벗깁니다. 바꾸기 전후를 바로 볼 수 있습니다.",
         }),
       ],
     }),
@@ -1205,7 +1208,7 @@ export function changeEquipmentBody(
           class: "change-equipment-toolbar",
           children: [
             equipmentField("주인공", actor.root),
-            equipmentField("슬롯", slot.root),
+            equipmentField("어디", slot.root),
           ],
         }),
         preview,

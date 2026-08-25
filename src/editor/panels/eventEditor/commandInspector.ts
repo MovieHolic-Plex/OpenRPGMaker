@@ -8,6 +8,7 @@
 // replaceCommand → 전체 재렌더가 일어나 선택이 날아간다. 그래서 선택된 경로를
 // 이 모듈이 들고 있다가 재렌더 후 복원한다.
 
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandKindLabel } from "./options";
@@ -112,7 +113,7 @@ export function showCommandInspector(target: InspectorTarget): void {
     el("div", {
       class: "event-inspector-head",
       children: [
-        el("div", { class: "event-inspector-kind", text: commandKindLabel(target.command.kind) }),
+        el("div", { class: "event-inspector-kind", text: inspectorKindText(target.command) }),
         el("div", {
           class: "event-inspector-title",
           text: summary,
@@ -135,6 +136,14 @@ function hideInspector(target: HTMLElement): void {
 function showInspector(target: HTMLElement): void {
   target.hidden = false;
   target.closest(".event-editor-workbench")?.classList.add("has-command-inspector");
+}
+
+function inspectorKindText(command: Command): string {
+  if (command.kind === "m2Command") {
+    const label = m2CommandById(command.commandId)?.label.trim();
+    if (label) return label;
+  }
+  return commandKindLabel(command.kind);
 }
 
 

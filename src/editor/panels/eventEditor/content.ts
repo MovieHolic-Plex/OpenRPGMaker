@@ -524,7 +524,7 @@ function renderEmptyCommandLine(
   const line = el("button", {
     class: "cmd-empty-line",
     text: "명령 추가 — 더블클릭 또는 아래 템플릿에서 시작",
-    attrs: { type: "button", title: "더블클릭해서 이벤트 명령을 추가" },
+    attrs: { type: "button", title: "더블클릭해서 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {
       dblclick: (event) => {
@@ -596,7 +596,7 @@ function renderEmptyCommandLine(
 function openCommandPickerForActions(actions: CommandListActions): void {
   if (document.querySelector('[data-testid="event-command-picker"]')) return;
   openEventCommandPicker({
-    title: "이벤트 명령",
+    title: "명령 추가",
     context: "map",
     onSelect: (command, closePicker) => {
       openNewEventCommandDialog(command, (editedCommand) => {
@@ -612,7 +612,7 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
   const pageId = activePageIdOf(mapId, eventId);
   if (!pageId || document.querySelector('[data-testid="event-command-picker"]')) return false;
   openEventCommandPicker({
-    title: "이벤트 명령",
+    title: "명령 추가",
     context: "map",
     onSelect: (command, closePicker) => {
       openNewEventCommandDialog(command, (editedCommand) => {

@@ -14,6 +14,7 @@ import {
   segmentedSelect,
   type SegmentOption,
 } from "./recordPicker";
+import { pictureSlotCaption } from "./options";
 import type { CommandEditContext } from "./types";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
@@ -385,7 +386,7 @@ function setEventLocationBody(context: CommandEditContext, cmd: M2Command): HTML
   coords.bind(commit);
   renderPreview();
   wrap.append(
-    intentCard("이벤트 위치 설정", "맵 이벤트를 지정 좌표로 옮깁니다.", "set-event-location-intent"),
+    intentCard("이벤트 위치 설정", "맵 위 이벤트를 그 칸으로 옮깁니다.", "set-event-location-intent"),
     layout([fieldBlock("이벤트", event.root), ...coords.fields], preview)
   );
   return wrap;
@@ -439,9 +440,9 @@ function getTerrainIdBody(context: CommandEditContext, cmd: M2Command): HTMLElem
     testid: "get-terrain-id-command-body",
     intentTestid: "get-terrain-id-intent",
     previewTestid: "get-terrain-id-preview",
-    title: "지형 ID 얻기",
-    body: "지정 좌표의 지형 ID를 변수에 저장합니다.",
-    note: "타일 지형 번호를 읽어 분기·조건에 사용합니다.",
+    title: "어느 지형인지 알기",
+    body: "그 칸이 어떤 지형인지 변수에 넣습니다.",
+    note: "그 칸의 지형 종류를 읽어 조건 분기에 씁니다.",
   });
 }
 
@@ -452,7 +453,7 @@ function getEventIdBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
     previewTestid: "get-event-id-preview",
     title: "어느 이벤트인지 알기",
     body: "그 칸에 있는 이벤트가 누구인지 변수에 넣습니다.",
-    note: "해당 칸에 이벤트가 없으면 0을 기록합니다.",
+    note: "그 칸에 이벤트가 없으면 아무도 없다고 기록합니다.",
   });
 }
 
@@ -619,7 +620,7 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
       [
         fieldBlock("색상 프리셋", chips),
         fieldBlock("직접 색", valueInput),
-        fieldBlock("전환 시간(ms)", durationInput),
+        fieldBlock("전환 시간", durationInput),
       ],
       preview
     )
@@ -676,7 +677,7 @@ function flashScreenBody(context: CommandEditContext, cmd: M2Command): HTMLEleme
   wrap.append(
     intentCard("화면 플래시", "화면을 지정 색으로 번쩍입니다.", "flash-screen-intent"),
     layout(
-      [fieldBlock("색상", color.root), fieldBlock("시간(ms)", durationInput)],
+      [fieldBlock("색상", color.root), fieldBlock("시간", durationInput)],
       preview
     )
   );
@@ -734,7 +735,7 @@ function shakeScreenBody(context: CommandEditContext, cmd: M2Command): HTMLEleme
   wrap.append(
     intentCard("화면 흔들기", "카메라 흔들림으로 충격을 표현합니다.", "shake-screen-intent"),
     layout(
-      [fieldBlock("강도", intensity.root), fieldBlock("시간(ms)", durationInput)],
+      [fieldBlock("강도", intensity.root), fieldBlock("시간", durationInput)],
       preview
     )
   );
@@ -916,7 +917,7 @@ function setWeatherEffectsBody(context: CommandEditContext, cmd: M2Command): HTM
       [
         fieldBlock("종류", chips),
         fieldBlock("강도(0~1)", intensityInput),
-        fieldBlock("전환 시간(ms)", transitionInput),
+        fieldBlock("전환 시간", transitionInput),
       ],
       preview
     )
@@ -951,7 +952,7 @@ function movePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLEle
 function erasePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "erase-picture-m2-command-body");
   const pictureIdInput = el("input", {
-    attrs: { type: "text", placeholder: "그림 칸" },
+    attrs: { type: "text", placeholder: "화면 자리" },
     value: String(cmd.fields.pictureId ?? "pic1"),
     dataset: { testid: "erase-picture-m2-id-input" },
   }) as HTMLInputElement;
@@ -968,8 +969,8 @@ function erasePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLEl
   };
   const renderPreview = () => {
     preview.replaceChildren(
-      line(`그림 삭제 · ${pictureIdInput.value.trim() || "pic1"}`),
-      note("해당 번호의 그림을 화면에서 지웁니다.")
+      line(`그림 지우기 · ${pictureSlotCaption(pictureIdInput.value)}`),
+      note("그 자리의 그림을 화면에서 지웁니다.")
     );
   };
 
@@ -977,8 +978,8 @@ function erasePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLEl
   pictureIdInput.addEventListener("input", commit);
   renderPreview();
   wrap.append(
-    intentCard("그림 삭제", "표시 중인 그림 슬롯을 비웁니다.", "erase-picture-m2-intent"),
-    layout([fieldBlock("그림 칸", pictureIdInput)], preview)
+    intentCard("그림 지우기", "표시 중인 그림 슬롯을 비웁니다.", "erase-picture-m2-intent"),
+    layout([fieldBlock("화면 자리", pictureIdInput)], preview)
   );
   return wrap;
 }
@@ -1000,7 +1001,7 @@ function pictureBody(
   const project = store.getCurrent();
   let resourceId = String(cmd.fields.resourceId ?? "").trim();
   const pictureIdInput = el("input", {
-    attrs: { type: "text", placeholder: "그림 칸" },
+    attrs: { type: "text", placeholder: "화면 자리" },
     value: String(cmd.fields.pictureId ?? "pic1"),
     dataset: { testid: `${options.testid.replace(/-command-body$/, "")}-id-input` },
   }) as HTMLInputElement;
@@ -1103,7 +1104,7 @@ function pictureBody(
   renderPreview();
 
   const fields: HTMLElement[] = [
-    fieldBlock("그림 칸", pictureIdInput),
+    fieldBlock("화면 자리", pictureIdInput),
     fieldBlock("X", xInput),
     fieldBlock("Y", yInput),
   ];
@@ -1118,7 +1119,7 @@ function pictureBody(
     );
   }
   if (options.includeDuration) {
-    fields.push(fieldBlock("이동 시간(ms)", durationInput));
+    fields.push(fieldBlock("이동 시간", durationInput));
   }
 
   wrap.append(intentCard(options.title, options.body, options.intentTestid), layout(fields, preview));
@@ -1299,14 +1300,14 @@ function keyInputProcessingBody(context: CommandEditContext, cmd: M2Command): HT
       line(
         `키 입력 → ${variableLabel(variableId)}${wait.select.value === "true" ? " · 입력까지 대기" : ""}`
       ),
-      note("눌린 키 코드를 변수에 저장합니다.")
+      note("누른 키를 변수에 기억합니다.")
     );
   };
 
   wait.select.addEventListener("change", commit);
   renderPreview();
   wrap.append(
-    intentCard("키 입력 처리", "키 입력을 읽어 변수에 넣습니다.", "key-input-processing-intent"),
+    intentCard("키 입력", "키 입력을 읽어 변수에 넣습니다.", "key-input-processing-intent"),
     layout(
       [fieldBlock("결과 변수", variable), fieldBlock("입력까지 대기", wait.root)],
       preview
@@ -1326,7 +1327,7 @@ function changeTilesetBody(context: CommandEditContext, cmd: M2Command): HTMLEle
   const tileset = recordPickerWithPreview({
     records: tilesets,
     selectedId: String(cmd.fields.value ?? cmd.fields.target ?? ""),
-    placeholder: "타일셋 선택",
+    placeholder: "맵 그림 세트",
     testid: "change-tileset-select",
   });
   const preview = previewPanel("change-tileset-preview");
@@ -1341,14 +1342,14 @@ function changeTilesetBody(context: CommandEditContext, cmd: M2Command): HTMLEle
   };
   const renderPreview = () => {
     const name = tilesets.find((entry) => entry.id === tileset.select.value)?.name ?? "(미선택)";
-    preview.replaceChildren(line(`타일셋 → ${name}`), note("현재 맵의 타일셋을 교체합니다."));
+    preview.replaceChildren(line(`맵 그림 세트 → ${name}`), note("이 맵의 바닥·벽 그림을 다른 세트로 바꿉니다."));
   };
 
   tileset.select.addEventListener("change", commit);
   renderPreview();
   wrap.append(
-    intentCard("타일셋 변경", "맵 타일셋을 다른 세트로 바꿉니다.", "change-tileset-intent"),
-    layout([fieldBlock("타일셋", tileset.root)], preview)
+    intentCard("맵 그림 세트", "이 맵의 바닥·벽 그림을 다른 세트로 바꿉니다.", "change-tileset-intent"),
+    layout([fieldBlock("그림 세트", tileset.root)], preview)
   );
   return wrap;
 }
@@ -1400,7 +1401,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
           el("div", {
             class: "actor-m2-preview-copy",
             children: [
-              line(`파노라마 → ${resourceId || "(선택 없음)"}`),
+              line(`먼 배경 → ${resourceId || "(선택 없음)"}`),
               note("맵 원경(parallax) 이미지를 교체합니다."),
             ],
           }),
@@ -1412,11 +1413,11 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
   resourceSelect.addEventListener("change", commit);
   renderPreview();
   wrap.append(
-    intentCard("파노라마 변경", "맵 배경 원경 이미지를 바꿉니다.", "change-parallax-back-intent"),
+    intentCard("먼 배경 변경", "맵 뒤에 깔리는 먼 풍경을 바꿉니다.", "change-parallax-back-intent"),
     layout(
       [
         fieldBlock(
-          "파노라마",
+          "먼 배경",
           el("div", { class: "actor-m2-inline", children: [resourceSelect, pickBtn] })
         ),
       ],
@@ -1455,8 +1456,8 @@ function setEncounterRateBody(context: CommandEditContext, cmd: M2Command): HTML
         ? `변수 ${variableLabel(amount.variableId)}`
         : String(amount.numberValue);
     preview.replaceChildren(
-      line(`인카운트율 = ${label}`),
-      note("0이면 랜덤 인카운트 비활성. 값이 클수록 전투가 잦습니다.")
+      line(`전투 빈도 = ${label}`),
+      note("0이면 랜덤 전투 없음. 값이 클수록 전투가 잦습니다.")
     );
   };
 
@@ -1464,10 +1465,10 @@ function setEncounterRateBody(context: CommandEditContext, cmd: M2Command): HTML
   source.syncVisibility();
   renderPreview();
   wrap.append(
-    intentCard("인카운트율 설정", "맵 랜덤 전투 빈도를 조정합니다.", "set-encounter-rate-intent"),
+    intentCard("랜덤 전투 빈도", "맵에서 적이 얼마나 자주 나타나는지 정합니다.", "set-encounter-rate-intent"),
     layout(
       [
-        fieldBlock("값 소스", source.sourceRoot),
+        fieldBlock("값은", source.sourceRoot),
         source.numberField,
         source.variableField,
       ],
@@ -1490,7 +1491,7 @@ function changeTileM2Body(context: CommandEditContext, cmd: M2Command): HTMLElem
     dataset: { testid: "change-tile-m2-tile-id-input" },
   }) as HTMLInputElement;
   const layerInput = el("input", {
-    attrs: { type: "text", placeholder: "lower / upper" },
+    attrs: { type: "text", placeholder: "아래 / 위" },
     value: String(cmd.fields.target ?? "lower"),
     dataset: { testid: "change-tile-m2-layer-input" },
   }) as HTMLInputElement;
@@ -1526,9 +1527,9 @@ function changeTileM2Body(context: CommandEditContext, cmd: M2Command): HTMLElem
   layerInput.addEventListener("input", commit);
   renderPreview();
   wrap.append(
-    intentCard("타일 변경", "맵 한 칸의 타일 ID를 바꿉니다.", "change-tile-m2-intent"),
+    intentCard("타일 변경", "맵 한 칸의 바닥이나 덧그림을 바꿉니다.", "change-tile-m2-intent"),
     layout(
-      [...coords.fields, fieldBlock("레이어", layerInput), fieldBlock("타일 ID", tileIdInput)],
+      [...coords.fields, fieldBlock("레이어", layerInput), fieldBlock("바꿀 그림", tileIdInput)],
       preview
     )
   );
@@ -1609,7 +1610,7 @@ function valueSourceControls(
     options: VALUE_SOURCE_SEGMENTS,
     value: initialSource,
     testid: `${options.testidBase}-value-source`,
-    ariaLabel: "값 소스",
+    ariaLabel: "값은",
   });
   const numberInput = el("input", {
     attrs: { type: "number", min: "0", step: "1" },

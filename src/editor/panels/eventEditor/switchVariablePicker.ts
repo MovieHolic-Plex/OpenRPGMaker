@@ -44,7 +44,7 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
     dataset: options.selectTestId ? { testid: options.selectTestId } : undefined,
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택)", attrs: { value: "" } }));
-  for (const [index, item] of list.entries()) {
+  for (const item of list) {
     select.append(
       el("option", {
         text: item.name.trim() || "(이름 없음)",

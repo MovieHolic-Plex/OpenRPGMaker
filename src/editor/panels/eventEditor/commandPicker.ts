@@ -227,7 +227,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
       const commandArea = el("div", { class: "event-command-picker-panel" });
       const search = el("input", {
         class: "event-command-picker-search",
-        attrs: { type: "search", placeholder: "명령 검색 (전체 탭)", "aria-label": "이벤트 명령 검색" },
+        attrs: { type: "search", placeholder: "명령 검색 (전체 탭)", "aria-label": "명령 검색" },
         dataset: { testid: "event-command-picker-search" },
       }) as HTMLInputElement;
       const gridToggle = el("button", {
@@ -522,7 +522,7 @@ function renderCommandButton(
     const guidanceId = `command-picker-guidance-${entry.commandId}`;
     children.push(el("span", {
       class: "event-command-picker-alternate-route",
-      text: entry.alternateRoute ? `사용 경로: ${entry.alternateRoute}` : "현재 피커에서는 실행할 수 없음",
+      text: entry.alternateRoute ? `다른 곳: ${entry.alternateRoute}` : "여기서는 고를 수 없습니다",
       attrs: { id: guidanceId },
       dataset: { testid: guidanceId },
     }));
@@ -643,7 +643,7 @@ function renderFooter(close: () => void): HTMLElement {
         dataset: { testid: "event-command-picker-legend" },
         children: [
           el("span", { class: "command-runtime-badge runtime-partial", text: "△", attrs: { "aria-hidden": "true" } }),
-          el("span", { text: "부분 실행" }),
+          el("span", { text: "일부만 실행" }),
           el("span", { class: "command-runtime-badge editor-only", text: "!", attrs: { "aria-hidden": "true" } }),
           el("span", { text: "에디터에서만 미리 봅니다" }),
         ],

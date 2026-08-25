@@ -237,7 +237,7 @@ function selectAllCommands(item: HTMLElement): void {
 function openInsertPicker(request: CommandShortcutRequest, closeMenu: () => void): void {
   closeMenu();
   openEventCommandPicker({
-    title: "이벤트 명령 삽입",
+    title: "명령 넣기",
     context: request.pickerContext,
     onSelect: (command, closePicker) => {
       openNewEventCommandDialog(command, (editedCommand) => {

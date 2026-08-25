@@ -2,6 +2,7 @@ import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { Command } from "@/project/types";
+import { pictureSlotCaption } from "./options";
 
 // RM2003 그림 표시 좌표계(320x240 기준).
 // 앵커는 런타임과 같은 좌상단이다(runtime/pictures.css 의 transform-origin: top left).
@@ -31,7 +32,7 @@ export function previewPicture(cmd: Extract<Command, { kind: "showPicture" }>): 
     frame.append(
       el("span", {
         class: "ecp-picture-missing-label",
-        text: cmd.resourceId?.trim() ? cmd.resourceId : `#${cmd.pictureId}`,
+        text: cmd.resourceId?.trim() ? humanizePictureCaption(cmd.resourceId) : pictureSlotCaption(cmd.pictureId),
       })
     );
     frame.append(
@@ -44,12 +45,18 @@ export function previewPicture(cmd: Extract<Command, { kind: "showPicture" }>): 
   }
   screen.append(marker);
   root.append(screen);
-  const bits = [`그림 ${cmd.pictureId}`, `(${cmd.x}, ${cmd.y})`];
-  if (cmd.resourceId?.trim()) bits.push(cmd.resourceId.trim());
+  const bits = [pictureSlotCaption(cmd.pictureId), `(${cmd.x}, ${cmd.y})`];
+  if (cmd.resourceId?.trim()) bits.push(humanizePictureCaption(cmd.resourceId));
   if (cmd.scale !== undefined) bits.push(`×${cmd.scale}`);
   if (cmd.opacity !== undefined) bits.push(`α${cmd.opacity}`);
   root.append(el("div", { class: "ecp-picture-caption", text: bits.join(" · ") }));
   return root;
+}
+
+function humanizePictureCaption(id: string): string {
+  const slug = id.trim().replace(/^easyrpg-picture-/, "").replace(/^easyrpg-/, "").replace(/[-_]+/g, " ");
+  const named: Record<string, string> = { cloud: "구름" };
+  return named[slug.toLowerCase()] ?? ( /[가-힣]/.test(slug) ? slug : slug );
 }
 
 function clampPct(value: number): number {

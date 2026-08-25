@@ -21,7 +21,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
   { value: "battleResult", label: "전투 결과" },
-  { value: "run", label: "로그라이크 런" },
+  { value: "run", label: "탐험" },
   { value: "all", label: "모두(AND)" },
   { value: "any", label: "하나(OR)" },
   { value: "not", label: "아님(NOT)" },
@@ -419,10 +419,10 @@ function labeledRun(
 ): HTMLElement {
   const box = el("div", { class: "event-condition-detail" });
   const queryOptions = [
-    { value: "active", label: "런 진행 여부" },
+    { value: "active", label: "탐험 중인지" },
     { value: "floor", label: "현재 층" },
-    { value: "flag", label: "런 플래그" },
-    { value: "result", label: "런 결과" },
+    { value: "flag", label: "탐험 기억" },
+    { value: "result", label: "탐험 결과" },
   ] as const;
   const query = selectWithOptions(queryOptions, cond.query, "event-condition-run-query");
   query.addEventListener("change", () => {
@@ -621,9 +621,9 @@ function conditionHint(kind: Condition["kind"]): string {
     case "friendshipAtLeast":
       return "호감도가 지정 값 이상인지 검사합니다. 누구를 비우면 이 이벤트 기준입니다.";
     case "battleResult":
-      return "직전 전투 처리(battleProcessing) 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
+      return "직전 전투 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
     case "run":
-      return "현재 로그라이크 런의 진행 여부, 층, 플래그, 종료 결과를 검사합니다.";
+      return "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.";
     case "all":
       return "하위 조건을 모두 만족해야 참입니다 (AND).";
     case "any":
@@ -985,7 +985,7 @@ export function renderNpcActivityCondition(
 ): HTMLElement {
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "work" },
+    attrs: { type: "text", placeholder: "일" },
     value: cond.activity,
     dataset: { testid: options.activityTestId ?? "event-condition-npc-activity" },
   }) as HTMLInputElement;
