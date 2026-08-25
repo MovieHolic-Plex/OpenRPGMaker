@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 const stylesEntry = readFileSync(new URL("../src/styles/index.css", import.meta.url), "utf8");
 const balancedStylesUrl = new URL("../src/styles/editor/event-editor.balanced.css", import.meta.url);
 const contentSource = readFileSync(new URL("../src/editor/panels/eventEditor/content.ts", import.meta.url), "utf8");
+const modalSource = readFileSync(new URL("../src/editor/panels/eventEditor/modal.ts", import.meta.url), "utf8");
+const pagePropsSource = readFileSync(new URL("../src/editor/panels/eventEditor/pageProps.ts", import.meta.url), "utf8");
 
 describe("balanced event editor presentation layer", () => {
   it("loads the fidelity layer after every earlier event editor stylesheet", () => {
@@ -50,5 +52,17 @@ describe("balanced event editor presentation layer", () => {
     expect(contentSource).toMatch(/section\.append\(\s*eventCard,\s*\/\/ 페이지 전환/);
     expect(contentSource).toContain("settingsColumn.append(settingsMain)");
     expect(contentSource).not.toContain("settingsColumn.append(eventCard, settingsMain)");
+  });
+
+  it("keeps the saved state and full validation bar visible", () => {
+    expect(modalSource).toContain('class: "event-editor-header-save-state", text: "✓ 저장됨"');
+    const css = readFileSync(balancedStylesUrl, "utf8");
+    expect(css).toMatch(/\.event-editor \.event-draft-validation\s*\{[^}]*height:\s*68px !important/s);
+  });
+
+  it("keeps page copy and delete actions visibly available", () => {
+    expect(pagePropsSource).toContain("wrap.open = true");
+    const css = readFileSync(balancedStylesUrl, "utf8");
+    expect(css).toContain("grid-template-columns: 155px minmax(0, 1fr) auto auto !important");
   });
 });

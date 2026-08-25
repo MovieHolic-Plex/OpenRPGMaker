@@ -67,6 +67,7 @@ export function renderEventNameControl(
 
 export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("details", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
+  wrap.open = true;
   const pages = ev.pages ?? [];
   const canPaste = hasCopiedEventPage();
   const canDelete = pages.length > 1;
