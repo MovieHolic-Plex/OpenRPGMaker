@@ -94,12 +94,16 @@ describe("commandRegistry", () => {
       "open-resources",
       "map-screenshot",
       "build-palette",
-      "drawer-map",
-      "drawer-tile",
-      "drawer-event",
+      // 구 `drawer-map` / `drawer-tile` / `drawer-event` 는 2026-08-26 에 삭제됐다.
+      // 그 세 명령은 `activateLeftDrawerTab()` 을 부르고 있었는데, 그 함수가 사용하는 서랽 탭 UI는
+      // 어느 지점에서도 마운트되지 않았다 — `drawer-map` 은 아무 일도 하지 않았고,
+      // `drawer-tile` / `drawer-event` 는 아래 레이어 명령과 중복이었다.
+      "layer-lower",
+      "layer-upper",
+      "layer-event",
       "toggle-chat-dock",
     ];
-    expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id)).toEqual(requiredIds);
+    expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id).sort()).toEqual([...requiredIds].sort());
   });
 
   it("워크스페이스 명령이 프리셋 3개 · 밀도 3개 · 패널마다 3개씩 정확히 한 번 등록된다", () => {

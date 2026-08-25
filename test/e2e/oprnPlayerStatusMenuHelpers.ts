@@ -173,7 +173,7 @@ export async function openTestPlayWindow(page: Page): Promise<void> {
   } else {
     // 기본 모드 경로: 메뉴 바 게임 → 테스트 플레이 창.
     await page.getByTestId("menu-game").click();
-    await page.getByTestId("menu-game-test-window").click();
+    await page.getByTestId("menu-game-play").click();
   }
   const modal = page.getByTestId("test-play-window");
   await page.waitForTimeout(250);

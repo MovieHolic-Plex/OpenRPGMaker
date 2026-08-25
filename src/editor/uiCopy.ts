@@ -31,7 +31,10 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   layerUpper: { plain: "덧그림", technical: "덧그림" },
   layerEvent: { plain: "이벤트", technical: "이벤트" },
   onlineSave: { plain: "온라인 저장", technical: "온라인 저장" },
-  resources: { plain: "자료", technical: "리소스" },
+  // `resources.plain` 은 2026-08-26 까지 `"자료"` 였다 — `databaseShort.plain` 과 글자까지 같아서
+  // 같은 메뉴에 라벨이 똑같은 항목이 두 개 뜨는 사고가 있었다(standard ⋯ 메뉴). 자료집(DB)과
+  // 소재(그림·소리 파일)는 다른 것이므로 이름도 다르게 둔다. 클래식 툴바는 이미 "소재"를 썼다.
+  resources: { plain: "소재", technical: "리소스" },
   world: { plain: "세계", technical: "월드" },
 };
 

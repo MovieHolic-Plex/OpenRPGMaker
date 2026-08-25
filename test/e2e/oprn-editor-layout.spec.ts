@@ -188,7 +188,6 @@ test("editor shell contains Basic and Expert regions at every supported viewport
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&layoutContract=clickability");
-  await expectCenterClickable(page, "[data-testid='toolbar-left-panel']");
   await expectCenterClickable(page, "[data-testid='toolbar-database']");
   await expectCenterClickable(page, "[data-testid='tool-pan']");
   await expectCenterClickable(page, "[data-testid='layer-event']");

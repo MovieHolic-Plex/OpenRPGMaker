@@ -1,7 +1,6 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
-import { addMap, duplicateMap, setStartMap } from "@/editor/actions";
-import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
+import { duplicateMap } from "@/editor/actions";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { showConfirm, showPromptInput } from "@/editor/ui/modal";
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
@@ -9,9 +8,7 @@ import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
   getEditorUiMode,
-  setEditorUiMode,
 } from "@/editor/editorUiMode";
-import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { openHelpModal } from "@/editor/panels/helpModal";
@@ -43,9 +40,10 @@ import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
+// 맵 메뉴는 없다. 「새 맵 / 현재 맵을 시작 맵으로 / 현재 맵 삭제」 세 항목이 모두 좌측 맵 트리
+// (map-add / map-set-start / 행 ⋯ 메뉴)와 같은 동작이었다 — 사이드바가 잦은 조작의 집이다.
 const MENU_ITEMS = [
   { id: "project", label: "프로젝트" },
-  { id: "map", label: "맵" },
   { id: "tools", label: "도구" },
   { id: "game", label: "게임" },
   { id: "help", label: "도움말" },
@@ -57,6 +55,7 @@ type MenuId = (typeof MENU_ITEMS)[number]["id"];
 
 type MenuCommand =
   | { readonly kind: "item"; readonly disabled?: boolean; readonly label: string; readonly onClick: () => void; readonly testId: string }
+  | { readonly kind: "submenu"; readonly label: string; readonly popupId: string; readonly testId: string; readonly commands: () => readonly MenuCommand[] }
   | { readonly kind: "separator" };
 
 let activeMenuPopup: HTMLElement | null = null;
@@ -77,7 +76,6 @@ export function renderTopbar(topbar: HTMLElement): void {
   const uiMode = getEditorUiMode();
   const chrome = getEditorChrome();
   const state = editorState.get();
-  const history = getMapEditHistoryState();
   const menuBar = el("div", {
     class: "oprn-menu-bar editor-studio-menubar",
     dataset: { testid: "oprn-menu-bar", editorUiMode: uiMode },
@@ -86,10 +84,9 @@ export function renderTopbar(topbar: HTMLElement): void {
   for (const item of MENU_ITEMS) {
     if (item.id === "help" && !chrome.helpMenu) continue;
     const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
-    menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
+    menuBar.append(renderMenu(item.id, label, menuCommands(item.id, topbar)));
   }
   menuBar.append(...renderWorkspaceBar());
-  if (uiMode === "standard") menuBar.append(...renderStandardMoreTools());
   // History + identity sit as trailing icon buttons (right end), before window chrome.
   const trailing = el("div", {
     class: "editor-topbar-trailing",
@@ -181,55 +178,6 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
   });
 }
 
-function renderStandardMoreTools(): readonly HTMLElement[] {
-  const menu = el("div", {
-    class: "oprn-menu-popup standard-more-tools-menu",
-    attrs: { role: "menu" },
-    dataset: { testid: "standard-more-tools-menu" },
-  });
-  menu.hidden = true;
-  const button = el("button", {
-    class: "oprn-menu-item standard-more-tools",
-    text: "⋯",
-    attrs: {
-      type: "button",
-      title: "더 많은 도구",
-      "aria-label": "더 많은 도구",
-      "aria-expanded": "false",
-      "aria-haspopup": "menu",
-    },
-    dataset: { testid: "standard-more-tools" },
-    on: {
-      click: (event) => {
-        event.stopPropagation();
-        const expanded = button.getAttribute("aria-expanded") !== "true";
-        button.setAttribute("aria-expanded", String(expanded));
-        menu.hidden = !expanded;
-      },
-    },
-  });
-  const addItem = (label: string, testId: string, action: () => void): void => {
-    menu.append(el("button", {
-      class: "oprn-menu-command",
-      text: label,
-      attrs: { type: "button", role: "menuitem" },
-      dataset: { testid: testId },
-      on: {
-        click: () => {
-          action();
-          button.setAttribute("aria-expanded", "false");
-          menu.hidden = true;
-        },
-      },
-    }));
-  };
-  addItem("세계관", "standard-more-world", () => openWorldPanel());
-  addItem(uiLabel("resources"), "standard-more-resources", () => openResourceModal());
-  addItem(uiLabel("databaseShort"), "standard-more-database", () => openDatabaseModal());
-  addItem("전문가 모드로 전환", "standard-more-switch-expert", () => setEditorUiMode("expert"));
-  return [button, menu];
-}
-
 function renderWindowControls(): HTMLElement {
   const controls = el("div", { class: "oprn-window-controls" });
   const collapsed = document.body.classList.contains("toolbar-collapsed");
@@ -310,7 +258,7 @@ async function toggleFullscreen(): Promise<void> {
   }
 }
 
-function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuCommand[]): void {
+function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuCommand[]): void {
   const alreadyOpen = activeMenuPopup?.dataset.testid === `menu-popup-${id}`;
   closeMenuPopup();
   if (alreadyOpen) return;
@@ -319,6 +267,26 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   for (const command of commands) {
     if (command.kind === "separator") {
       popup.append(el("div", { class: "oprn-menu-separator", attrs: { role: "separator" } }));
+      continue;
+    }
+    if (command.kind === "submenu") {
+      // 하위 메뉴는 같은 팝업 기계를 재사용해 부모 팝업을 대시한다. 일반 항목 경로는
+      // `onClick()` 다음에 `closeMenuPopup()` 가 이어지므로, 그 경로로 여면 방급 여다
+      // 하위 메뉴가 그 자리에서 닫힐다 — 그래서 여기서 직접 닫고 여는 순서를 진다.
+      const submenu = command;
+      popup.append(el("button", {
+        class: "oprn-menu-command",
+        text: submenu.label,
+        attrs: { role: "menuitem", "aria-haspopup": "menu" },
+        dataset: { testid: submenu.testId },
+        on: {
+          click: () => {
+            const trigger = activeMenuTrigger;
+            closeMenuPopup();
+            if (trigger) openMenuPopup(submenu.popupId, trigger, submenu.commands());
+          },
+        },
+      }));
       continue;
     }
     const item = el("button", {
@@ -400,61 +368,49 @@ function positionMenuPopup(popup: HTMLElement, trigger: HTMLElement): void {
   popup.style.top = `${Math.round(top)}px`;
 }
 
-function menuCommands(
-  id: MenuId,
-  state: ReturnType<typeof editorState.get>,
-  history: ReturnType<typeof getMapEditHistoryState>,
-  topbar: HTMLElement
-): readonly MenuCommand[] {
-  const project = store.getCurrent();
-  const mapId = state.currentMapId ?? project.startMapId;
+function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
   switch (id) {
     case "project":
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
-        item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
-        item("천공의 계단 (7층 JRPG)", "menu-project-sky-stair", () => void newSkyStairProject()),
-        item("학습 예시 12맵", "menu-project-training-examples", () => void newTrainingExamplesProject()),
-        item("설산 60×60 (절벽·계단 캔버스)", "menu-project-snow-mountain-60", () => void newSnowMountain60Project()),
-        item("얼음 대평원 64×64 (절벽·계단 캔버스)", "menu-project-ice-plain-64", () => void newIcePlain64Project()),
-        item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
-        item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
-        item("농장 생활 데모", "menu-project-farming-demo", () => void newFarmingDemoProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         item("저장본 다시 불러오기", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
-        item("내보내기...", "menu-project-export", () => void exportProjectPackage()),
+        // 데모 로더 9개가 이 메뉴 최상위에 나란히 붙어 14줄을 만들고 있었다 — 하위 메뉴로 접는다.
+        {
+          kind: "submenu",
+          label: "예제 프로젝트",
+          testId: "menu-project-samples",
+          popupId: "project-samples",
+          commands: sampleProjectCommands,
+        },
+        { kind: "separator" },
         item("가져오기...", "menu-project-import", () => doImport()),
-      ];
-    case "map":
-      return [
-        item("새 맵", "menu-map-new", () => newMap()),
-        item("현재 맵을 시작 맵으로", "menu-map-start", () => setStartMap(mapId)),
-        item("현재 맵 삭제", "menu-map-delete", () => deleteCurrentMap(mapId)),
+        // 라벨 구분: 전에는 프로젝트/게임 메뉴에 「내보내기...」가 따로 있어 같은 말로 다른 일을
+        // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
+        item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
+        item("웹 게임 내보내기...", "menu-project-export-web", () => void doExportWebGame()),
       ];
     case "tools":
+      // 모달 편집기만 담는다. 되돌리기/다시 실행과 레이어 3종은 사이드바가 소유하므로 빠졌다.
+      // 음악·찾기는 전에는 전문가 클래식 툴바에만 있어 초보·표준에서 도달 경로가 없었다.
       return [
-        item("실행 취소", "menu-tools-undo", () => applyHistory(undoMapEdit, topbar), !history.canUndo),
-        item("다시 실행", "menu-tools-redo", () => applyHistory(redoMapEdit, topbar), !history.canRedo),
-        { kind: "separator" },
-        item("하위 레이어", "menu-tools-layer-lower", () => setEditorLayer("lower", topbar)),
-        item("상위 레이어", "menu-tools-layer-upper", () => setEditorLayer("upper", topbar)),
-        item("이벤트 레이어", "menu-tools-layer-event", () => setEditorLayer("event", topbar)),
-        { kind: "separator" },
-        item("데이터베이스...", "menu-tools-database", () => openDatabaseModal()),
-        item("리소스 관리자...", "menu-tools-resources", () => openResourceModal()),
+        item(`${uiLabel("database", getEditorChrome().jargonStyle)}...`, "menu-tools-database", () => openDatabaseModal()),
+        item("자료 보관함...", "menu-tools-resources", () => openResourceModal()),
         item("세계관...", "menu-tools-world", () => openWorldPanel()),
+        { kind: "separator" },
+        item("음악·효과음...", "menu-tools-audio", () => openAudioTestDialog()),
+        item("맵·이벤트 찾기...", "menu-tools-search", () => openMapEventSearchModal()),
         { kind: "separator" },
         item("AI 설정...", "menu-tools-ai-settings", () => openAiSettingsModal()),
       ];
     case "game":
+      // 「시연 실행」과 「시연 실행 창」이 edit 모드에서 둘 다 openTestPlayWindow() 를 부르는
+      // 진짜 중복이었다. 한 줄로 줄이고, 라벨은 레이어가 아니라 실제 모드를 말한다.
       return [
-        item(state.layer === "event" ? "편집 계속" : "시연 실행", "menu-game-play", () => void togglePlayMode()),
-        item("시연 실행 창", "menu-game-test-window", () => void openTestPlayWindow()),
+        item(getMode() === "edit" ? "시연 실행" : "편집으로 돌아가기", "menu-game-play", () => void togglePlayMode()),
         item("랜덤 전투 테스트", "menu-game-battle-test", () => void openRandomBattleTestWindow()),
-        { kind: "separator" },
-        item("내보내기...", "menu-game-export", () => void doExportWebGame()),
       ];
     case "help":
       return [
@@ -462,6 +418,20 @@ function menuCommands(
         item("정보", "menu-help-about", () => toast(`${EDITOR_PRODUCT_BRAND} — ${PRODUCT_TAGLINE}`, "ok")),
       ];
   }
+}
+
+/** 예제 프로젝트 하위 메뉴 — 전부 「현재 작업을 지우고 시작」 확인을 거치는 로더다. */
+function sampleProjectCommands(): readonly MenuCommand[] {
+  return [
+    item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
+    item("천공의 계단 (7층 JRPG)", "menu-project-sky-stair", () => void newSkyStairProject()),
+    item("학습 예시 12맵", "menu-project-training-examples", () => void newTrainingExamplesProject()),
+    item("설산 60×60 (절벽·계단 캔버스)", "menu-project-snow-mountain-60", () => void newSnowMountain60Project()),
+    item("얼음 대평원 64×64 (절벽·계단 캔버스)", "menu-project-ice-plain-64", () => void newIcePlain64Project()),
+    item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
+    item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
+    item("농장 생활 데모", "menu-project-farming-demo", () => void newFarmingDemoProject()),
+  ];
 }
 
 function item(label: string, testId: string, onClick: () => void, disabled = false): MenuCommand {
@@ -514,18 +484,15 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 작업 열기", icon: "open", onClick: () => doLoad(topbar) }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
-    // 레이어 이름은 uiCopy 단일 원천 — 하드코딩하면 용어를 바꿀 때 여기가 빠진다.
-    toolbarButton({ testId: "layer-lower", label: uiLabel("layerLower"), title: `${uiLabel("layerLower")} 레이어 편집`, icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
-    toolbarButton({ testId: "layer-upper", label: uiLabel("layerUpper"), title: `${uiLabel("layerUpper")} 레이어 편집`, icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
-    toolbarButton({ testId: "layer-event", label: uiLabel("layerEvent"), title: `${uiLabel("layerEvent")} 레이어 편집`, icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
-    separator(),
+    // 레이어 전환은 좌측 사이드바(left-layer-switcher)가 소유한다 — 여기에 다시 넣으면 중복이다.
     toolbarButton({ testId: "toolbar-database", label: uiLabel("databaseShort", getEditorChrome().jargonStyle), title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
     toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "자료 보관함", icon: "resources", onClick: () => openResourceModal() }),
     toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
-    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "타일 그림판/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
+    // 구 toolbar-left-panel: 클릭해도 관찰 가능한 변화가 없는 죽은 버튼이었고(실측 감사),
+    // 패널 표시/숨김은 ▤ 패널 메뉴가 소유한다.
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말 (단축키·도구 가이드)", icon: "manual", onClick: () => openHelpModal() })
   );
   disposeToolbarOverflows.push(installToolbarOverflow(row));
@@ -642,11 +609,6 @@ function playModeButton(mode: string): HTMLButtonElement {
   });
 }
 
-function isVisiblePanel(selector: string): boolean {
-  const panel = document.querySelector<HTMLElement>(selector);
-  return panel !== null && panel.getBoundingClientRect().width > 0;
-}
-
 function layerShortLabel(layer: Layer): string {
   switch (layer) {
     case "lower":
@@ -661,23 +623,6 @@ function layerShortLabel(layer: Layer): string {
 /** 도구 이름은 uiCopy 단일 원천 — 여기서 다시 적으면 화면마다 다른 말이 된다. */
 function toolShortLabel(tool: Tool): string {
   return toolLabel(tool);
-}
-
-async function toggleLeftPanel(topbar: HTMLElement): Promise<void> {
-  const editor = await import("@/editor/panels/editor");
-  editor.toggleLeftPanel();
-  renderTopbar(topbar);
-}
-
-function setEditorLayer(layer: Layer, topbar: HTMLElement): void {
-  const state = editorState.get();
-  const tool = layer === "event" ? "event" : state.tool === "event" ? "paint" : state.tool;
-  editorState.set({ layer, tool });
-  renderTopbar(topbar);
-}
-
-function applyHistory(action: () => boolean, topbar: HTMLElement): void {
-  if (action()) renderTopbar(topbar);
 }
 
 async function newProject(): Promise<void> {
@@ -763,27 +708,6 @@ async function newSampleAdventureProject(): Promise<void> {
 function focusLoadedProjectStartMap(): void {
   void import("@/editor/mapSelection").then(({ focusProjectStartMap }) => {
     focusProjectStartMap();
-  });
-}
-
-function newMap(): void {
-  const id = addMap("새 맵");
-  editorState.set({ currentMapId: id, selectedEventId: null, selectedEventPageId: null });
-  toast("새 맵을 추가했습니다", "ok");
-}
-
-function deleteCurrentMap(mapId: string): void {
-  const project = store.getCurrent();
-  if (Object.keys(project.maps).length <= 1) {
-    toast("마지막 맵은 삭제할 수 없습니다", "error");
-    return;
-  }
-  // 확인 다이얼로그(임팩트 요약, 커스텀 모달) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
-  void confirmAndDeleteMap(mapId).then((result) => {
-    if (!result.ok) return;
-    const next = store.getCurrent();
-    editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
-    toast("맵을 삭제했습니다", "ok");
   });
 }
 

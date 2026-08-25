@@ -139,24 +139,9 @@ describe("editor chrome and canvas controls", () => {
     expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("0");
   });
 
-  it("places the standard-only more-tools menu right after the workspace controls", () => {
-    resetEditorUiModeForTests("standard");
-    const topbar = document.createElement("div");
-
-    renderTopbar(topbar);
-    const menuBar = findByTestId(fake(topbar), "oprn-menu-bar");
-    const ids = menuBar?.children.map((child) => child.dataset.testid) ?? [];
-    const chipIndex = ids.indexOf("workspace-command-palette-button");
-    expect(chipIndex).toBeGreaterThan(ids.indexOf("workspace-preset-toggle"));
-    expect(ids[chipIndex + 1]).toBe("standard-more-tools");
-    expect(ids[chipIndex + 2]).toBe("standard-more-tools-menu");
-
-    const button = findByTestId(fake(topbar), "standard-more-tools");
-    const menu = findByTestId(fake(topbar), "standard-more-tools-menu");
-    expect(button?.getAttribute("aria-haspopup")).toBe("menu");
-    expect(menu?.hidden).toBe(true);
-    button?.click();
-    expect(button?.getAttribute("aria-expanded")).toBe("true");
-    expect(menu?.hidden).toBe(false);
-  });
+  // 2026-08-26: standard 전용 ⋯ (`standard-more-tools`) 메뉴를 제거하면서 이 배치 테스트도 삭제했다.
+  // 그 메뉴는 `.oprn-menu-popup{display:none}` 상황에서 `.open` 을 붙이지 않아 실제로는 열리지
+  // 않았고(이 테스트는 `hidden` 필드만 봐서 통과했다), 담긴 4개 항목은 전부 「도구」 메뉴와
+  // 중복이었다. 대심 커버리지: test/editorMenuSidebarIa.test.ts — ⋯ 메뉴 부재 + 편집 모드가
+  // ▤ 메뉴에서 모든 모드에서 도달 가능함을 검증한다.
 });
