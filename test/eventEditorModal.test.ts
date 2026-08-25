@@ -214,6 +214,27 @@ describe("RPG Maker style event editor entry points", () => {
     expect(content.querySelector('[data-testid="event-page-tab-3"]')?.className).toContain("active");
   });
 
+  it("requires confirmation before deleting a visible event page", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const pages = [
+      { ...eventPage(), id: "page-1", name: "첫 페이지" },
+      { ...eventPage(), id: "page-2", name: "삭제 대상" },
+    ];
+    map.events = [{ ...gameEvent(pages[0]), pages }];
+    store.replace(project);
+    editorState.set({ selectedEventPageId: "page-2" });
+    const confirm = vi.fn(() => false);
+    Object.assign(globalThis, { window: { confirm } });
+
+    const content = fakeContainer();
+    renderEventEditorContent(content, project.startMapId, "event-1");
+    content.querySelector<HTMLElement>('[data-testid="event-page-delete"]')?.click();
+
+    expect(confirm).toHaveBeenCalledWith('"삭제 대상" 페이지와 그 안의 모든 명령을 삭제할까요?');
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages).toHaveLength(2);
+  });
+
   it("wires the command toolbar copy, cut, undo, and redo actions", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

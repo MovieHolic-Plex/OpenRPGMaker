@@ -138,8 +138,8 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-draft-validation"]')?.closest(".event-editor-command-header")).toBeTruthy();
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(true);
+    expect(host.querySelector('[data-testid="event-draft-validation"]')?.parentElement).toBe(host.querySelector(".event-editor"));
     expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
   });
 
@@ -180,7 +180,7 @@ describe("event editor UI density", () => {
     const validation = host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]');
     expect(validation).toBeTruthy();
     expect(validation?.open).toBe(false);
-    expect(validation?.closest(".event-editor-command-header")).toBeTruthy();
+    expect(validation?.parentElement).toBe(host.querySelector(".event-editor"));
     expect(validation?.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeTruthy();
   });
 
@@ -278,8 +278,7 @@ describe("event editor UI density", () => {
     expect(title?.textContent).not.toContain("1.맡는다");
     expect(title?.textContent).not.toContain("나중에");
     expect(title?.textContent).not.toContain("취소");
-    // The same helper feeds the card hint.
-    expect(host.querySelector(".event-inspector-card-hint")?.textContent).toBe("두 길목을 정리해 줄래?");
+    expect(host.querySelector('[data-testid="event-inspector-density-toggle"]')).toBeTruthy();
   });
 
   it("falls back to `선택지 N개` when the choices prompt is empty", () => {
@@ -301,7 +300,7 @@ describe("event editor UI density", () => {
     host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
 
     expect(host.querySelector('[data-testid="event-inspector-title"]')?.textContent).toBe("선택지 2개");
-    expect(host.querySelector(".event-inspector-card-hint")?.textContent).toBe("선택지 2개");
+    expect(host.querySelector('[data-testid="event-inspector-density-toggle"]')).toBeTruthy();
   });
 
   it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {

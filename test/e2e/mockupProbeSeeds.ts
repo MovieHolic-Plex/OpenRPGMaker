@@ -30,6 +30,7 @@ export function emptyEventProject(): { project: Project; eventId: string } {
     y: 4,
     trigger: { kind: "action" },
     commands: [],
+    characterId: "north-gate-guard",
     pages: [
       {
         id: "p1",
@@ -59,6 +60,7 @@ export function mockupProject(): { project: Project; eventId: string } {
     { id: "0002", name: "의뢰 완료" },
   ];
   project.variables = [{ id: "0001", name: "처치 수" }];
+  project.characters = { "north-gate-guard": { displayName: "북문 경비병" } };
   project.resourceProfiles = [
     ...project.resourceProfiles,
     { kind: "picture", name: "pic_demo", assetId: "easyrpg-picture-cloud", imageWidth: 100, imageHeight: 100 },
@@ -86,6 +88,7 @@ export function mockupProject(): { project: Project; eventId: string } {
     y: 8,
     trigger: { kind: "action" },
     commands: [],
+    characterId: "north-gate-guard",
     pages: [page1(), page2(), page3()],
   };
   start.events = [event];
@@ -149,22 +152,22 @@ function page2(): EventPage {
 
 // 페이지 3 — 완료 후(스위치 0002). 명령 12개(분기 4 포함) = 15행.
 function page3(): EventPage {
-  const say = (body: string): Command => ({ kind: "text", speaker: undefined, body });
+  const say = (body: string): Command => ({ kind: "text", speaker: "북문 경비병", body });
   const commands: Command[] = [
-    say("서쪽길 슬라임과 동쪽길 박쥐떼 때문에 상인들이 발이 묶였어."),
+    say("드디어 돌아왔군. 의뢰는 잘 해결했나?"),
     {
       kind: "choices",
-      prompt: "두 길목을 정리해 줄래?",
+      prompt: "의뢰를 어떻게 마무리하시겠습니까?",
       options: [
         {
           text: "맡는다",
           branch: [
             { kind: "setSwitch", switchId: "0001", value: true },
             { kind: "setVariable", variableId: "0001", op: "=", value: 0 },
-            say("좋아. 서쪽과 동쪽 길목을 확인하고 돌아와."),
+            say("고맙네. 자네 덕분이야!"),
           ],
         },
-        { text: "나중에", branch: [say("시장 사람들은 여기서 기다릴게.")] },
+        { text: "나중에", branch: [say("알겠네. 준비되면 다시 말해 주게.")] },
       ],
       cancelBehavior: "choice2",
     },
@@ -179,7 +182,7 @@ function page3(): EventPage {
     id: "p3",
     name: "완료 후",
     conditions: [{ kind: "switch", switchId: "0002", value: true }],
-    graphic: { sprite: { type: "bundled", id: "easyrpg-charset-actor1" }, direction: "down", pattern: 0 },
+    graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" }, direction: "down", pattern: 0 },
     trigger: { kind: "action" },
     priority: "same",
     overlapForbidden: true,

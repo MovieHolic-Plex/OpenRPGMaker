@@ -43,8 +43,6 @@ export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
   page: EventPage,
-  event: GameEvent,
-  characterIdControl: HTMLElement = renderEventCharacterIdField(mapId, event),
 ): HTMLElement {
   const name = el("input", {
     attrs: { type: "text", placeholder: "이벤트 이름" },
@@ -58,9 +56,8 @@ export function renderEventNameControl(
     children: [
       el("label", {
         class: "event-editor-name-field",
-        children: [el("span", { text: "이름" }), name],
+        children: [el("span", { text: "이벤트 이름" }), name],
       }),
-      characterIdControl,
     ],
   });
 }
@@ -74,7 +71,11 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   // 페이지 추가는 탭 스트립의 [+](event-page-tab-add) 하나로 통일한다 —
   // 같은 동작이 두 곳에 있으면 초보가 "다른 기능인가?" 하고 헤맨다(적대 평가 스펙).
   const actions: HTMLElement[] = [
-    pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
+    pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => {
+      if (copyEventPageToClipboard(mapId, ev.id, activePage.id)) {
+        wrap.replaceWith(renderPageTabs(mapId, ev, activePage));
+      }
+    }),
   ];
   // 비활성 버튼은 자리만 차지하므로 사용 가능할 때만 노출한다.
   if (canPaste) {
@@ -84,7 +85,9 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   }
   if (canDelete) {
     actions.push(
-      pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id))
+      pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () =>
+        requestEventPageDeletion(mapId, ev.id, activePage)
+      )
     );
   }
   wrap.append(
@@ -100,6 +103,11 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
     })
   );
   return wrap;
+}
+
+function requestEventPageDeletion(mapId: MapId, eventId: string, page: EventPage): void {
+  if (!window.confirm(`"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`)) return;
+  deleteEventPage(mapId, eventId, page.id);
 }
 
 export function renderClassicPageTabStrip(
@@ -539,11 +547,11 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     }, { scope: "project" });
   });
 
-  return el("div", {
-    class: "event-character-social-extras",
+  return el("details", {
+    class: "event-character-social-extras event-character-social-disclosure",
     dataset: { testid: "event-character-social-extras" },
     children: [
-      el("header", {
+      el("summary", {
         class: "event-character-social-header",
         children: [
           el("div", {
@@ -559,62 +567,67 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
           }),
         ],
       }),
-      el("label", {
-        class: "event-talk-friendship-label",
-        dataset: { testid: "event-talk-friendship-field" },
+      el("div", {
+        class: "event-character-social-body",
         children: [
-          talkCheckbox,
-          el("span", {
-            class: "event-character-social-option-copy",
+          el("label", {
+            class: "event-talk-friendship-label",
+            dataset: { testid: "event-talk-friendship-field" },
             children: [
-              el("strong", { text: "대화 보너스" }),
-              el("small", { text: "하루 첫 대화에 호감도를 올립니다." }),
-            ],
-          }),
-        ],
-      }),
-      el("label", {
-        class: "event-character-display-name-label",
-        dataset: { testid: "event-character-display-name-field" },
-        children: [
-          el("span", { text: "표시 이름" }),
-          displayNameInput,
-        ],
-      }),
-      el("details", {
-        class: "event-character-social-advanced",
-        dataset: { testid: "event-character-social-advanced" },
-        children: [
-          el("summary", {
-            children: [
-              el("span", { text: "고급 설정" }),
-              el("code", { text: characterId }),
-            ],
-          }),
-          el("div", {
-            class: "event-character-social-advanced-body",
-            children: [
-              el("label", {
-                class: "event-character-id-advanced-label",
+              talkCheckbox,
+              el("span", {
+                class: "event-character-social-option-copy",
                 children: [
-                  el("span", { text: "연결 키" }),
-                  characterIdInputRow,
+                  el("strong", { text: "대화 보너스" }),
+                  el("small", { text: "하루 첫 대화에 호감도를 올립니다." }),
                 ],
               }),
-              el("p", {
-                text: "같은 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
+            ],
+          }),
+          el("label", {
+            class: "event-character-display-name-label",
+            dataset: { testid: "event-character-display-name-field" },
+            children: [
+              el("span", { text: "표시 이름" }),
+              displayNameInput,
+            ],
+          }),
+          el("details", {
+            class: "event-character-social-advanced",
+            dataset: { testid: "event-character-social-advanced" },
+            children: [
+              el("summary", {
+                children: [
+                  el("span", { text: "고급 설정" }),
+                  el("code", { text: characterId }),
+                ],
               }),
-              el("button", {
-                class: "btn small danger event-character-social-unlink",
-                text: "연결 해제",
-                attrs: { type: "button" },
-                dataset: { testid: "event-character-social-unlink" },
-                on: {
-                  click: () => updateEvent(mapId, event.id, {
-                    characterId: undefined,
-                    talkFriendship: undefined,
+              el("div", {
+                class: "event-character-social-advanced-body",
+                children: [
+                  el("label", {
+                    class: "event-character-id-advanced-label",
+                    children: [
+                      el("span", { text: "연결 키" }),
+                      characterIdInputRow,
+                    ],
                   }),
-                },
+                  el("p", {
+                    text: "같은 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
+                  }),
+                  el("button", {
+                    class: "btn small danger event-character-social-unlink",
+                    text: "연결 해제",
+                    attrs: { type: "button" },
+                    dataset: { testid: "event-character-social-unlink" },
+                    on: {
+                      click: () => updateEvent(mapId, event.id, {
+                        characterId: undefined,
+                        talkFriendship: undefined,
+                      }),
+                    },
+                  }),
+                ],
               }),
             ],
           }),
@@ -652,42 +665,31 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   const conditions = page.conditions ?? [];
   wrap.append(
     collapsibleSection({
-      title: "언제 보이나요",
+      title: "1. 언제 나타날까요?",
       testId: "event-classic-conditions",
       openSet: openEventConditions,
       openKey,
       summaryExtra: renderConditionSummaryBadges(conditions),
       body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
     }),
-    rm2k3Fieldset("그래픽", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    rm2k3Fieldset("2. 모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
     // Trigger + priority always visible under graphic (do not bury under movement collapsible).
     el("div", {
-      class: "event-page-trigger-priority-stack",
+      class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
+        rm2k3Fieldset("3. 시작 방식", trigger, "event-classic-trigger"),
+        rm2k3Fieldset("4. 우선순위", priority, "event-classic-priority"),
         rm2k3Fieldset(
-          "반응 방식",
-          el("div", {
-            class: "event-trigger-priority-block",
-            children: [
-              trigger,
-              el("div", {
-                class: "event-priority-block",
-                dataset: { testid: "event-classic-priority" },
-                children: [
-                  priority,
-                  el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "서로 겹치지 않음" })] }),
-                ],
-              }),
-            ],
-          }),
-          "event-classic-trigger"
+          "5. 겹침",
+          el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "중복 실행 방지" })] }),
+          "event-classic-overlap"
         ),
         renderEventPageSafetyWarning(page),
       ],
     }),
     collapsibleSection({
-      title: "움직임",
+      title: "6. 움직임",
       testId: "event-classic-movement-section",
       openSet: openEventMovement,
       openKey,

@@ -26,7 +26,7 @@ describe("balanced event editor presentation layer", () => {
       "grid-template-rows: var(--balanced-identity-height) var(--balanced-pages-height) minmax(0, 1fr)",
     );
     expect(css).toMatch(/\.event-editor-modal-dynamic \.event-editor\s*\{[^}]*display:\s*grid/s);
-    expect(css).toContain("grid-template-columns: 350px minmax(0, 1fr) 383px");
+    expect(css).toContain("grid-template-columns: var(--event-editor-settings-track) minmax(0, 1fr) 383px !important");
     expect(css).toMatch(/\.event-editor-settings-main\s*\{[^}]*overflow-y:\s*auto/s);
     expect(css).toMatch(/\.event-editor \.cmd-list,[\s\S]*?overflow-y:\s*auto/s);
     expect(css).toMatch(/\.event-editor-inspector-column\s*\{[^}]*overflow-y:\s*auto/s);
@@ -52,16 +52,23 @@ describe("balanced event editor presentation layer", () => {
     expect(contentSource).toMatch(/section\.append\(\s*eventCard,\s*\/\/ 페이지 전환/);
     expect(contentSource).toContain("settingsColumn.append(settingsMain)");
     expect(contentSource).not.toContain("settingsColumn.append(eventCard, settingsMain)");
+    expect(contentSource).toContain('identityField("이벤트 ID", String(eventOrdinal).padStart(4, "0"), "event-editor-event-id")');
+    expect(contentSource).toContain('text: "맵 좌표"');
+    expect(contentSource).toContain('text: "연결된 NPC"');
+    expect(contentSource).toContain('dataset: { testid: "event-editor-event-info" }');
   });
 
-  it("keeps the saved state and full validation bar visible", () => {
-    expect(modalSource).toContain('class: "event-editor-header-save-state", text: "✓ 저장됨"');
+  it("keeps the truthful save state and full validation bar visible", () => {
+    expect(modalSource).toContain('dataset: { testid: "event-editor-header-save-state" }');
+    expect(modalSource).toContain("refreshModalHeaderSaveState");
+    expect(modalSource).not.toContain('class: "event-editor-header-save-state", text: "✓ 저장됨"');
     const css = readFileSync(balancedStylesUrl, "utf8");
-    expect(css).toMatch(/\.event-editor \.event-draft-validation\s*\{[^}]*height:\s*68px !important/s);
+    expect(css).toMatch(/\.event-editor \.event-draft-validation\s*\{[^}]*height:\s*auto !important/s);
   });
 
   it("keeps page copy and delete actions visibly available", () => {
     expect(pagePropsSource).toContain("wrap.open = true");
+    expect(pagePropsSource).toContain("requestEventPageDeletion");
     const css = readFileSync(balancedStylesUrl, "utf8");
     expect(css).toContain("grid-template-columns: 155px minmax(0, 1fr) auto auto !important");
   });
