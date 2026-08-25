@@ -47,16 +47,28 @@ test("event editor matches the approved mockup", async ({ page }) => {
   const nested = modal.locator(".event-storyboard-branch-command").filter({ hasText: "고맙네" });
   await nested.click();
   await expect(inspector.getByTestId("event-inspector-title")).toContainText("고맙네");
+  await inspector.getByTestId("event-inspector-density-toggle").click();
+  await expect(inspector.getByTestId("event-inspector-card")).toBeVisible();
+  await inspector.getByTestId("event-inspector-preview-current").click();
+  await expect(inspector.getByTestId("event-inspector-body")).toBeVisible();
+  await expect(inspector.locator("textarea, input:not([type='hidden']), select").first()).toBeFocused();
+  await inspector.getByTestId("event-inspector-close").click();
+  await expect(nested).toBeFocused();
+  await nested.click();
 
   await modal.getByTestId("event-command-quick-ai").click();
+  await expect(modal.getByTestId("event-editor-aux-tools")).toHaveAttribute("open", "");
   await expect(modal.getByTestId("ai-event-assist")).toHaveAttribute("open", "");
+  await expect(modal.getByTestId("ai-event-assist")).toBeVisible();
   await modal.getByTestId("event-command-quick-preview").click();
   await expect(modal.getByTestId("event-script-live-preview")).toHaveAttribute("open", "");
+  await expect(modal.getByTestId("event-script-live-preview")).toBeVisible();
   await modal.getByTestId("event-command-quick-flow").click();
   await expect(modal.getByTestId("event-script-flowchart")).toHaveAttribute("open", "");
-  await modal.getByTestId("event-command-toolbar-tools").evaluate((details) => { (details as HTMLDetailsElement).open = false; });
+  await expect(modal.getByTestId("event-script-flowchart")).toBeVisible();
+  await modal.getByTestId("event-editor-aux-tools").evaluate((details) => { (details as HTMLDetailsElement).open = false; });
   page.once("dialog", async (dialog) => {
-    expect(dialog.message()).toContain("영구 ID: event-mockup-reference");
+    expect(dialog.message()).toContain("영구 ID: 0001");
     expect(dialog.message()).toContain("연결된 NPC: north-gate-guard");
     await dialog.accept();
   });
@@ -121,6 +133,12 @@ test("page actions are immediate and destructive deletion is cancelable", async 
   );
   const modalBox = await rect(modal);
   for (const box of actionBoxes) expect(box.x + box.width).toBeLessThanOrEqual(modalBox.x + modalBox.width);
+  await modal.getByTestId("event-page-tab-add").click();
+  await expect(modal.getByTestId("event-page-tab-4")).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await modal.getByTestId("event-page-delete").click();
+  await expect(modal.getByTestId("event-page-tab-4")).toHaveCount(0);
+  await expect(modal.getByTestId("event-page-tab-3")).toBeVisible();
 });
 
 test("header test and save actions route to the real workflow", async ({ page }) => {
@@ -143,7 +161,7 @@ test("header test and save actions route to the real workflow", async ({ page })
   await expect(page.getByTestId("test-play-window")).toHaveCount(0);
 });
 
-test("required viewport matrix keeps controls reachable and resizer operable", async ({ page }) => {
+test("required viewport matrix keeps controls reachable and resizer operable", async ({ browser }) => {
   await mkdir(DIR, { recursive: true });
   const viewports = [
     { width: 1586, height: 992 },
@@ -154,6 +172,8 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
   const evidence: unknown[] = [];
 
   for (const viewport of viewports) {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
     const modal = await openMockupState(page, viewport);
     await modal.locator(".event-storyboard-card").first().click();
     await expect(modal.getByTestId("event-editor-inspector")).toBeVisible();
@@ -172,7 +192,7 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
     await expect(modal.getByTestId("event-editor-window-fullscreen")).toBeVisible();
     await expect(modal.getByTestId("event-editor-modal-close")).toBeVisible();
     const identityBounds = await Promise.all(
-      ["event-page-name-input", "event-editor-event-id", "event-position-x", "event-character-id-open-picker", "event-editor-event-info"]
+      ["event-page-name-input", "event-editor-event-id", "event-position-x", "event-character-id-picker-open", "event-editor-event-info"]
         .map(async (id) => rect(modal.getByTestId(id))),
     );
     const identityBand = await rect(modal.getByTestId("event-editor-card"));
@@ -211,6 +231,7 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
     expect(metrics.workbenchTop).toBeGreaterThanOrEqual(metrics.pagebarBottom - 1);
     evidence.push({ viewport, resizeBefore: before, resizeAfter: Number(await handle.getAttribute("aria-valuenow")), metrics });
     await modal.screenshot({ path: `${DIR}/viewport-${viewport.width}x${viewport.height}.png` });
+    await context.close();
   }
 
   await writeFile(`${DIR}/viewport-matrix.json`, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");

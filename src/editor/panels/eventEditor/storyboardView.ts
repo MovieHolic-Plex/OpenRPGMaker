@@ -5,7 +5,12 @@ import {
   CHOICE_CANCEL_BRANCH_INDEX,
   FORK_ELSE_BRANCH_INDEX,
   FORK_THEN_BRANCH_INDEX,
+  INN_NOT_ENOUGH_BRANCH_INDEX,
   LOOP_BODY_BRANCH_INDEX,
+  PROMOTE_FAILURE_BRANCH_INDEX,
+  PROMOTE_SUCCESS_BRANCH_INDEX,
+  SHOP_FAILED_TRANSACTION_BRANCH_INDEX,
+  SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
@@ -258,6 +263,30 @@ function branchesOf(cmd: Command): StoryboardBranch[] {
   }
   if (cmd.kind === "loop") {
     return [{ label: "반복할 내용", commands: cmd.body, pathSegment: LOOP_BODY_BRANCH_INDEX }];
+  }
+  if (cmd.kind === "shop") {
+    const shop = cmd as Extract<Command, { kind: "shop" }> & { failedTransactionBranch?: Command[] };
+    return [
+      ...(cmd.branchOnTransaction && cmd.transactionBranch
+        ? [{ label: "거래했을 때", commands: cmd.transactionBranch, pathSegment: SHOP_TRANSACTION_BRANCH_INDEX }]
+        : []),
+      ...(shop.failedTransactionBranch
+        ? [{ label: "거래하지 못했을 때", commands: shop.failedTransactionBranch, pathSegment: SHOP_FAILED_TRANSACTION_BRANCH_INDEX }]
+        : []),
+    ];
+  }
+  if (cmd.kind === "inn" && cmd.branchOnNotEnoughGold && cmd.notEnoughBranch) {
+    return [{ label: "골드가 부족할 때", commands: cmd.notEnoughBranch, pathSegment: INN_NOT_ENOUGH_BRANCH_INDEX }];
+  }
+  if (cmd.kind === "promoteActor" || cmd.kind === "evolveMonster") {
+    return [
+      ...(cmd.successBranch
+        ? [{ label: cmd.kind === "promoteActor" ? "승급 성공" : "진화 성공", commands: cmd.successBranch, pathSegment: PROMOTE_SUCCESS_BRANCH_INDEX }]
+        : []),
+      ...(cmd.failureBranch
+        ? [{ label: cmd.kind === "promoteActor" ? "승급 실패" : "진화 실패", commands: cmd.failureBranch, pathSegment: PROMOTE_FAILURE_BRANCH_INDEX }]
+        : []),
+    ];
   }
   const branches = cmd as unknown as {
     victoryBranch?: Command[];

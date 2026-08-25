@@ -103,6 +103,16 @@ describe("storyboard branch chips stay inside their card", () => {
     expect(selected).toEqual([[0, 0, 0, -2, 0]]);
   });
 
+  it.each([
+    ["shop transaction", { kind: "shop", goods: [], branchOnTransaction: true, transactionBranch: [{ kind: "text", body: "거래 완료" }] } as Command, [0, -1, 0], "거래 완료"],
+    ["inn insufficient gold", { kind: "inn", price: 50, branchOnNotEnoughGold: true, notEnoughBranch: [{ kind: "text", body: "골드 부족" }] } as Command, [0, -8, 0], "골드 부족"],
+    ["actor promotion success", { kind: "promoteActor", actorId: "actor-1", successBranch: [{ kind: "text", body: "승급 성공" }] } as Command, [0, -6, 0], "승급 성공"],
+    ["monster evolution failure", { kind: "evolveMonster", instanceId: "monster-1", failureBranch: [{ kind: "text", body: "진화 실패" }] } as Command, [0, -7, 0], "진화 실패"],
+  ])("renders the %s branch with its resolvable path", (_label, command, path, text) => {
+    const host = renderStoryboard([command]);
+    expect(host.querySelector<HTMLElement>(`[data-cmd-path='${JSON.stringify(path)}']`)?.textContent).toContain(text);
+  });
+
   it("counts the cancel branch as a normal branch in +K, not a mandatory third slot", () => {
     const host = renderStoryboard([choicesCommand(["맡는다", "나중에"], true)]);
     const card = cardOf(host, 0);
