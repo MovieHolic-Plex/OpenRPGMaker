@@ -184,6 +184,27 @@ test("after: 조수 하단/도크/컴포저/크기조절 실측", async ({ page 
   }
   report.docks = docks;
 
+  // C5 — 하단 밴드가 캔버스 클릭을 삼키지 않는지. 조수 토글은 32px 하나만 남았으니,
+  // 그 밖의 하단 지점에서는 허상 단추 밴드가 아니라 실제 캔버스가 집혀야 한다.
+  await page.getByTestId("chat-dock-toggle").evaluate((n) => (n as HTMLButtonElement).click());
+  await page.waitForTimeout(600);
+  report.bottomHitTest = await page.evaluate(() => {
+    const vh = window.innerHeight;
+    const probes = [700, 900, 1100, 1300, 1500].map((x) => ({ x, y: vh - 40 }));
+    return probes.map(({ x, y }) => {
+      const node = document.elementFromPoint(x, y) as HTMLElement | null;
+      const owner = node?.closest<HTMLElement>("[data-testid]");
+      return {
+        at: [x, y],
+        tag: node?.tagName.toLowerCase() ?? null,
+        testid: owner?.dataset.testid ?? null,
+        canvasReached: Boolean(node?.closest("[data-testid='edit-canvas']")),
+      };
+    });
+  });
+  await page.screenshot({ path: `${OUT}/30-bottom-band.png`, clip: { x: 0, y: 700, width: 1600, height: 300 } });
+  await page.locator(".ai-composer").screenshot({ path: `${OUT}/31-composer.png` });
+
   writeFileSync(`${OUT}/after-report.json`, JSON.stringify(report, null, 2), "utf8");
   log(`docks=${docks.join(",")}`);
   log(`resize=${JSON.stringify(report.resize)} persisted=${JSON.stringify(report.resizePersisted)}`);

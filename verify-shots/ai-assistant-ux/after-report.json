@@ -23,7 +23,7 @@
       1600,
       1000
     ],
-    "assistantBottomCount": 1,
+    "count": 1,
     "rows": [
       {
         "tag": "button",
@@ -128,7 +128,7 @@
       1600,
       1000
     ],
-    "assistantBottomCount": 4,
+    "count": 4,
     "rows": [
       {
         "tag": "textarea",
@@ -204,7 +204,7 @@
       1600,
       1000
     ],
-    "assistantBottomCount": 5,
+    "count": 5,
     "rows": [
       {
         "tag": "textarea",
@@ -292,7 +292,7 @@
       1600,
       1000
     ],
-    "assistantBottomCount": 4,
+    "count": 4,
     "rows": [
       {
         "tag": "textarea",
@@ -349,5 +349,51 @@
     "float",
     "glass"
   ],
-  "_note": "좌측 타일 팔레트/맵 트리 행은 조수 표면이 아니라 제거했다(x<320). 원본은 프로브를 다시 돌리면 나온다."
+  "bottomHitTest": [
+    {
+      "at": [
+        700,
+        960
+      ],
+      "tag": "canvas",
+      "testid": "edit-canvas",
+      "canvasReached": true
+    },
+    {
+      "at": [
+        900,
+        960
+      ],
+      "tag": "canvas",
+      "testid": "edit-canvas",
+      "canvasReached": true
+    },
+    {
+      "at": [
+        1100,
+        960
+      ],
+      "tag": "button",
+      "testid": "ai-composer-skill-button",
+      "canvasReached": false
+    },
+    {
+      "at": [
+        1300,
+        960
+      ],
+      "tag": "div",
+      "testid": "ai-composer-actions",
+      "canvasReached": false
+    },
+    {
+      "at": [
+        1500,
+        960
+      ],
+      "tag": "div",
+      "testid": "ai-composer-actions",
+      "canvasReached": false
+    }
+  ]
 }
