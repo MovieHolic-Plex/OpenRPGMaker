@@ -10,10 +10,11 @@ import type {
   ActorRecord,
   EquipmentStatBonuses,
   EquipmentRecord,
+  ItemRecord,
   Project,
   SkillRecord,
 } from "@/project/types";
-import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
+import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { listFriendshipEntries } from "@/project/friendship";
@@ -141,6 +142,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
   const entries = project.database.items.filter((item) => inventory.has(item.id)).map((item) => ({
     label: item.name,
+    icon: itemEntryIcon(item),
     value: `${inventory.get(item.id) ?? 0}개`,
     description: item.description,
     testId: `status-menu-item-${item.id}`,
@@ -161,6 +163,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       title: `스킬: ${actor.name}`,
       entries: skills.map((skill) => ({
         label: skill.name,
+        icon: skillEntryIcon(project, skill),
         value: `MP ${skill.mpCost.flat}`,
         description: `${skill.description || skillKindLabel(skill)} / 위력 ${skill.power} / 성공 ${skill.successRate}%`,
         testId: `status-menu-skill-${actor.id}-${skill.id}`,
@@ -200,6 +203,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       return {
         label: actor.name,
         value: equipmentName(equipmentById, worn[weaponSlot.id]),
+        icon: equipmentEntryIcon(equipmentById.get(worn[weaponSlot.id] ?? "")),
         testId: `status-menu-equipment-actor-${actor.id}`,
         onActivate: options.onSelectEquipmentActor ? () => options.onSelectEquipmentActor?.(actor.id) : undefined,
       };
@@ -210,9 +214,11 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const actor = project.database.actors.find((record) => record.id === options.equipmentActorId);
   if (!actor) return { title: "장비", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
   if (!options.equipmentSlotId) {
+    const worn = actorEquipment(project, session, actor);
     const entries = EQUIPMENT_SLOTS.map((slot) => ({
       label: slot.label,
-      value: equipmentName(equipmentById, actorEquipment(project, session, actor)[slot.id]),
+      value: equipmentName(equipmentById, worn[slot.id]),
+      icon: equipmentEntryIcon(equipmentById.get(worn[slot.id] ?? "")),
       testId: `status-menu-equipment-slot-${slot.id}`,
       onActivate: options.onSelectEquipmentSlot ? () => options.onSelectEquipmentSlot?.(actor.id, slot.id) : undefined,
     }));
@@ -231,6 +237,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     ? [{
         label: "해제",
         value: equipmentName(equipmentById, currentEquipmentId),
+        icon: equipmentEntryIcon(equipmentById.get(currentEquipmentId ?? "")),
         description: `현재 장비를 벗습니다 / ${statDiffLine(zeroStats(), currentStats)}`,
         statDelta: equipmentStatDelta(options, actor, options.equipmentSlotId as keyof ActorInitialEquipment, undefined),
         testId: "status-menu-equipment-item-none",
@@ -243,6 +250,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ...unequipEntry,
       ...choices.map((equipment) => ({
         label: equipment.name,
+        icon: equipmentEntryIcon(equipment),
         value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
         description: equipmentDetailLine(equipment, currentStats),
         statDelta: equipmentStatDelta(options, actor, options.equipmentSlotId as keyof ActorInitialEquipment, equipment.id),
@@ -526,6 +534,39 @@ function equipmentStats(project: Project, equipmentId: string | undefined): Equi
 function equipmentName(equipmentById: ReadonlyMap<string, EquipmentRecord>, equipmentId: string | undefined): string {
   if (!equipmentId) return "없음";
   return equipmentById.get(equipmentId)?.name ?? "없음";
+}
+
+// 데이터베이스가 이미 저작해 둔 아이콘을 목록 행에 그린다 — 에디터의
+// databaseRecordThumbnails 와 같은 해석 우선순위(iconResourceId → imageResourceId)를 쓴다.
+// 이전에는 iconResourceId 가 src/player 어디에서도 읽히지 않아 목록이 전부 글자만 났다.
+function itemEntryIcon(item: ItemRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
+  return {
+    resourceId: item.iconResourceId ?? item.imageResourceId,
+    alt: item.name,
+    testId: `status-menu-entry-icon-item-${item.id}`,
+  };
+}
+
+function equipmentEntryIcon(equipment: EquipmentRecord | undefined): NonNullable<StatusMenuDetailEntry["icon"]> | undefined {
+  if (!equipment) return undefined;
+  return {
+    resourceId: equipment.iconResourceId ?? equipment.imageResourceId,
+    alt: equipment.name,
+    testId: `status-menu-entry-icon-equipment-${equipment.id}`,
+  };
+}
+
+// SkillRecord 는 icon/image 필드가 없다. 유일한 그래픽 경로는 animationId 가
+// 가리키는 battleAnimations 레코드의 resourceId 다(에디톰도 그렇게 잡는다).
+function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
+  const animation = skill.animationId
+    ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)
+    : undefined;
+  return {
+    resourceId: animation?.resourceId,
+    alt: skill.name,
+    testId: `status-menu-entry-icon-skill-${skill.id}`,
+  };
 }
 
 function slotLabel(slotId: keyof ActorInitialEquipment): string {

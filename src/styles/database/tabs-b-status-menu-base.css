@@ -45,10 +45,10 @@
   border-top: 1px solid rgba(255, 255, 255, 0.26);
   box-sizing: border-box;
   color: #a9c8ff;
-  font-size: 6px;
-  height: 9px;
+  font-size: 8px;
+  height: 11px;
   letter-spacing: 0.1em;
-  line-height: 8px;
+  line-height: 10px;
   margin: 0;
   overflow: hidden;
   padding: 0 3px;
@@ -99,7 +99,7 @@
 .status-menu-detail-action.selected::before {
   color: var(--oprn-status-highlight, #ffd75a);
   content: "▶";
-  font-size: 7px;
+  font-size: 8px;
   left: -1px;
   line-height: 1;
   position: absolute;
@@ -174,10 +174,10 @@
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-sizing: border-box;
   display: block;
-  height: 18px;
+  height: 12px;
   image-rendering: pixelated;
   object-fit: contain;
-  width: 18px;
+  width: 12px;
 }
 .status-menu-entry-icon.actor-face-icon {
   object-fit: cover;
@@ -187,6 +187,7 @@
   background-position: var(--crop-x) var(--crop-y);
   background-repeat: no-repeat;
   background-size: var(--crop-sheet-width) var(--crop-sheet-height);
+  image-rendering: pixelated;
 }
 .status-menu-entry-icon.missing {
   align-content: center;
