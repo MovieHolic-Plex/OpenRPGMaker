@@ -10,16 +10,98 @@
          svg.db-overview-curve     <- 파티 전투력 곡선 (path 2개)
          svg.db-overview-scatter   <- 몬스터 HP vs DPS 산점도 (circle)
          .db-overview-issue        <- 문제 감지 카드 (.db-overview-issue-jump 점프 버튼)
-       button.db-overview-ai     <- AI 분석 (database-ai-toggle 경로)
+       button.db-overview-ai     <- editor-wide assistant (database-ai-toggle path)
    ========================================================================= */
 
 /* ---- stats strip ------------------------------------------------------- */
+
+.database-modal-backdrop .db-overview-game-pulse {
+  box-sizing: border-box;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-overview-hero {
+  align-items: end;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 4px 2px 18px;
+}
+
+.database-modal-backdrop .db-overview-eyebrow {
+  color: var(--db-studio-accent);
+  font: 800 10px/1.2 ui-monospace, Consolas, monospace;
+  letter-spacing: .14em;
+}
+
+.database-modal-backdrop .db-overview-hero h2 {
+  color: var(--db-studio-text-1);
+  font: 800 clamp(24px, 3vw, 34px)/1.1 "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: -.04em;
+  margin: 6px 0 8px;
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .db-overview-hero p {
+  color: var(--db-studio-text-2);
+  margin: 0;
+}
+
+.database-modal-backdrop .db-overview-assistant-cta {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 7px;
+  color: var(--db-studio-accent);
+  font-weight: 700;
+  min-height: 38px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-overview-pulse-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-overview-pulse-card {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.database-modal-backdrop .db-overview-pulse-card > span {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.database-modal-backdrop .db-overview-pulse-card > strong {
+  color: var(--db-studio-text-1);
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.database-modal-backdrop .db-overview-pulse-card > p {
+  color: var(--db-studio-text-2);
+  font-size: 11px;
+  margin: 0;
+}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stats {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 16px 16px 8px;
+  padding: 0;
   background: transparent;
 }
 
@@ -76,8 +158,13 @@
   grid-template-columns: 1fr;
   gap: 16px;
   overflow: visible;
-  padding: 16px;
-  padding-bottom: 28px;
+  padding: 0 0 28px;
+}
+
+@media (max-width: 1120px) {
+  .database-modal-backdrop .db-overview-pulse-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 900px) {
@@ -309,20 +396,20 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-ai {
   align-self: flex-start;
-  background: var(--db-studio-accent);
-  border: 1px solid var(--db-studio-accent);
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-accent-border);
   border-radius: 8px;
-  box-shadow: var(--db-studio-shadow);
-  color: #FFFFFF;
+  box-shadow: none;
+  color: var(--db-studio-accent);
   cursor: pointer;
-  font: 600 13px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 700 13px/1.2 "Malgun Gothic", system-ui, sans-serif;
   padding: 10px 18px;
-  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+  transition: background 120ms ease, border-color 120ms ease;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-ai:hover {
-  background: var(--db-studio-accent-hover);
-  border-color: var(--db-studio-accent-hover);
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-ai:active {

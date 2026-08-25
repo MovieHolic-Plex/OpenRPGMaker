@@ -66,7 +66,34 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 export function renderOverviewTab(host: HTMLElement, _rerender: () => void): void {
   clearChildren(host);
-  const database = store.getCurrent().database;
+  const project = store.getCurrent();
+  const database = project.database;
+  const overview = el("div", {
+    class: "db-overview-game-pulse",
+    dataset: { testid: "db-overview-game-pulse" },
+    children: [
+      el("header", {
+        class: "db-overview-hero",
+        children: [
+          el("div", {
+            children: [
+              el("span", { class: "db-overview-eyebrow", text: "GAME OVERVIEW" }),
+              el("h2", { text: project.meta.title || "새 프로젝트" }),
+              el("p", { text: "세계, 이야기, 등장인물, 시스템이 어떻게 연결되는지 한눈에 확인합니다." }),
+            ],
+          }),
+          el("button", {
+            class: "db-overview-assistant-cta",
+            text: "AI 어시스턴트에게 물어보기",
+            attrs: { type: "button" },
+            dataset: { testid: "db-overview-assistant-cta" },
+            on: { click: openDatabaseAiBar },
+          }),
+        ],
+      }),
+      renderGamePulse(project),
+    ],
+  });
   const statsRow = el("div", { class: "db-overview-stats" });
   for (const { collection, label } of STAT_COLLECTIONS) {
     const count = database[collection].length;
@@ -83,7 +110,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
       }),
     );
   }
-  host.append(statsRow);
+  overview.append(statsRow);
 
   // 무거운 계산(곡선/산점도/감지 + battlePredict 그래프)은 첫 렌더 이후로 미룬다 —
   // 모달 첫 진입을 늦추지 않고, overview 가 아닌 탭에서는 이 경로가 아예 실행되지 않는다.
@@ -91,10 +118,39 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
     class: "db-overview-charts",
     dataset: { testid: "db-overview-charts" },
   });
-  host.append(charts);
+  overview.append(charts);
+  host.append(overview);
   scheduleIdle(() => {
     if (!canInjectDashboard(charts, host)) return;
     charts.append(...renderDashboardContent(host));
+  });
+}
+
+function renderGamePulse(project: ReturnType<typeof store.getCurrent>): HTMLElement {
+  const maps = Object.values(project.maps);
+  const events = maps.reduce((sum, map) => sum + map.events.length, 0) + project.commonEvents.length;
+  const cast = project.database.actors.length + Object.keys(project.characters ?? {}).length;
+  const databaseRecords = STAT_COLLECTIONS.reduce((sum, { collection }) => sum + project.database[collection].length, 0);
+  const startMap = project.maps[project.startMapId];
+  const card = (testid: string, eyebrow: string, value: string, detail: string): HTMLElement =>
+    el("article", {
+      class: "db-overview-pulse-card",
+      dataset: { testid },
+      children: [
+        el("span", { text: eyebrow }),
+        el("strong", { text: value }),
+        el("p", { text: detail }),
+      ],
+    });
+  return el("section", {
+    class: "db-overview-pulse-grid",
+    children: [
+      card("db-overview-world", "세계", `${maps.length}개 맵`, `${project.mapConnections?.length ?? 0}개 이동 연결`),
+      card("db-overview-story", "이야기", `${events}개 이벤트`, `${project.quests?.length ?? 0}개 퀘스트 · ${project.endings?.length ?? 0}개 엔딩`),
+      card("db-overview-cast", "등장인물", `${cast}명`, `플레이어 ${project.database.actors.length}명 · 주민 ${Object.keys(project.characters ?? {}).length}명`),
+      card("db-overview-systems", "게임 데이터", `${databaseRecords}개 레코드`, `전투, 아이템, 성장, 생활 규칙`),
+      card("db-overview-readiness", "시작 지점", startMap?.name ?? "미설정", `좌표 ${project.startPos.x}, ${project.startPos.y}`),
+    ],
   });
 }
 
@@ -136,8 +192,8 @@ function renderDashboardContent(host: HTMLElement): HTMLElement[] {
     renderIssuesSection(host, detectBalanceIssues(project)),
     el("button", {
       class: "db-overview-ai",
-      text: "✨ AI 분석",
-      attrs: { type: "button", title: "데이터베이스 AI 바 열기" },
+      text: "AI 어시스턴트에게 물어보기",
+      attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
       dataset: { testid: "db-overview-ai" },
       on: { click: openDatabaseAiBar },
     }),

@@ -1,5 +1,7 @@
 # Editor AI Panel & Tools
 
+- **Database assistant entry (2026-08-26):** Database Overview's `AI 어시스턴트` enters the same editor-wide assistant, not a database-only analysis bot. Its empty state offers whole-project starter actions, and its request prefix says the assistant can help across the editor while naming the currently visible Database screen. Keep the shared session, proposal, approval, and tool-routing contracts; do not create a separate Database-only LLM pipeline.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, visual polish, dock modes, and harness integration.

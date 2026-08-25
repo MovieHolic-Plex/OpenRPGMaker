@@ -87,13 +87,13 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   // 응답/제안 카드는 기존 채팅 패널 흐름 그대로 — 여기서는 전송과 도크 열기만 한다.
   const aiToggleButton = el("button", {
     class: "database-ai-toggle",
-    text: "✨ AI",
-    attrs: { type: "button", title: "AI에게 요청", "aria-label": "데이터베이스 AI 바 열기", "aria-expanded": "false" },
+    text: "AI 어시스턴트",
+    attrs: { type: "button", title: "AI 어시스턴트 열기", "aria-label": "에디터 AI 어시스턴트 열기", "aria-expanded": "false" },
     dataset: { testid: "database-ai-toggle" },
   }) as HTMLButtonElement;
   const aiInput = el("input", {
     class: "database-ai-input",
-    attrs: { type: "text", placeholder: "예: 이 몬스터 스탯을 중반 밸런스로", "aria-label": "AI에게 보낼 요청" },
+    attrs: { type: "text", placeholder: "프로젝트, 맵, 이벤트, 데이터에 관해 무엇이든 물어보세요", "aria-label": "AI에게 보낼 요청" },
     dataset: { testid: "database-ai-input" },
   }) as HTMLInputElement;
   const aiRunButton = el("button", {
@@ -108,10 +108,31 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     attrs: { type: "button", title: "AI 바 닫기", "aria-label": "데이터베이스 AI 바 닫기" },
     dataset: { testid: "database-ai-close" },
   }) as HTMLButtonElement;
-  const aiBar = el("div", {
-    class: "database-ai-bar",
-    dataset: { testid: "database-ai-bar" },
+  const aiIntro = el("div", {
+    class: "database-ai-intro",
+    children: [
+      el("span", { class: "database-ai-mark", text: "AI" }),
+      el("div", {
+        children: [
+          el("strong", { text: "에디터 AI 어시스턴트" }),
+          el("p", { text: "프로젝트 전체를 함께 살펴봅니다. 현재 화면의 맥락도 자동으로 전달됩니다." }),
+        ],
+      }),
+    ],
+  });
+  const aiSuggestions = el("div", {
+    class: "database-ai-suggestions",
+    children: DATABASE_ASSISTANT_SUGGESTIONS.map((suggestion) => assistantSuggestion(suggestion, aiInput)),
+  });
+  const aiComposer = el("div", {
+    class: "database-ai-composer",
     children: [aiInput, aiRunButton, aiCloseButton],
+  });
+  const aiBar = el("section", {
+    class: "database-ai-bar",
+    attrs: { "aria-label": "에디터 AI 어시스턴트" },
+    dataset: { testid: "database-ai-bar" },
+    children: [aiIntro, aiSuggestions, aiComposer],
   });
   aiBar.hidden = true;
   const setAiBarOpen = (open: boolean): void => {
@@ -129,7 +150,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     }
     // buildSpec 정규식과 호환되는 한 줄 컨텍스트 풋터. 탭 라벨(몬스터/아이템…)과 "DB"가
     // INTENT_KEYWORDS의 db/battle 도메인 강키워드라 도구 노출도 함께 보장된다.
-    const message = `${text}\n\n[컨텍스트] 데이터베이스 DB 탭: ${databaseTabLabel(getDatabaseActiveTab())}${describeSelectedDatabaseRecord()}`;
+    const message = `${text}\n\n[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 ${databaseTabLabel(getDatabaseActiveTab())}${describeSelectedDatabaseRecord()}`;
     if (typeof window !== "undefined") {
       window.__oprnDbAiLastRequest = { message, at: new Date().toISOString() };
     }
@@ -438,6 +459,31 @@ const RECORD_TAB_COLLECTIONS: Partial<Record<DatabaseTab, DatabaseCollection>> =
   states: "states",
   animations: "battleAnimations",
 };
+
+const DATABASE_ASSISTANT_SUGGESTIONS = [
+  { id: "project", label: "프로젝트 흐름 점검", prompt: "이 프로젝트의 전체 제작 상태와 다음 우선순위를 점검해줘" },
+  { id: "map", label: "맵 연결 살펴보기", prompt: "맵 구성과 이동 연결을 살펴보고 빠진 동선을 찾아줘" },
+  { id: "event", label: "이벤트 흐름 검토", prompt: "이벤트와 퀘스트 흐름을 검토하고 막힌 진행을 찾아줘" },
+  { id: "data", label: "게임 데이터 다듬기", prompt: "현재 게임 데이터의 불균형과 연결 누락을 찾아줘" },
+] as const;
+
+function assistantSuggestion(
+  suggestion: (typeof DATABASE_ASSISTANT_SUGGESTIONS)[number],
+  input: HTMLInputElement,
+): HTMLElement {
+  return el("button", {
+    class: "database-ai-suggestion",
+    text: suggestion.label,
+    attrs: { type: "button" },
+    dataset: { testid: `database-ai-suggestion-${suggestion.id}` },
+    on: {
+      click: () => {
+        input.value = suggestion.prompt;
+        input.focus();
+      },
+    },
+  });
+}
 
 // AI 컨텍스트 풋터의 ", 선택 레코드: <이름>(<id>)" 조각. 세션 선택이 없으면 뷰가
 // 기본 선택하는 첫 레코드를 따른다(selectedRecordForSession 과 같은 규칙).
