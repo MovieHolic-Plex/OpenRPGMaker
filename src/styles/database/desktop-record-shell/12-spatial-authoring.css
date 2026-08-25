@@ -4,8 +4,8 @@
 
 .database-modal-backdrop .db-spatial-hero {
   align-items: center;
-  background: linear-gradient(110deg, color-mix(in srgb, #3f7d4d 22%, var(--bg-raised)), var(--bg-raised));
-  border: 1px solid var(--border-subtle);
+  background: var(--db-studio-surface, var(--bg-raised));
+  border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
   border-radius: 10px;
   display: grid;
   gap: 14px;
@@ -33,12 +33,19 @@
 .database-modal-backdrop .db-spatial-hero h2 { font-size: 20px; }
 .database-modal-backdrop .db-spatial-hero p { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin-top: 4px; }
 
-.database-modal-backdrop .db-spatial-empty-state {
-  background: color-mix(in srgb, var(--accent) 7%, var(--bg-surface));
-  border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--border-subtle));
-  border-radius: 8px;
-  padding: 16px;
+.database-modal-backdrop .db-spatial-empty-state,
+.database-modal-backdrop .db-studio-empty {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 10px !important;
+  padding: 18px 16px;
   text-align: center;
+}
+.database-modal-backdrop .db-spatial-empty-state .empty-state__action--primary,
+.database-modal-backdrop .db-studio-empty .empty-state__action--primary {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
 }
 
 .database-modal-backdrop .db-spatial-empty-state p { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
@@ -58,8 +65,8 @@
 }
 
 .database-modal-backdrop .db-spatial-level-card {
-  background: color-mix(in srgb, var(--accent) 4%, var(--bg-raised));
-  border: 1px solid var(--border-subtle);
+  background: var(--db-studio-surface, var(--bg-raised));
+  border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
   border-radius: 6px;
   padding: 8px;
 }
@@ -77,7 +84,7 @@
 .database-modal-backdrop .db-spatial-placement-fields { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(70px, .7fr)); }
 
 .database-modal-backdrop .db-spatial-check-grid {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
   border-radius: 6px;
   display: flex;
   flex-wrap: wrap;
@@ -89,7 +96,7 @@
 .database-modal-backdrop .db-spatial-check-grid legend { color: var(--text-muted); font-size: 9px; font-weight: 700; padding: 0 3px; }
 .database-modal-backdrop .db-spatial-checkbox { align-items: center; display: inline-flex; font-size: 10px; gap: 4px; }
 .database-modal-backdrop .db-spatial-checkbox input { margin: 0; width: auto; }
-.database-modal-backdrop .db-spatial-optional-fields { border: 1px solid var(--border-subtle); border-radius: 6px; padding: 6px; }
+.database-modal-backdrop .db-spatial-optional-fields { border: 1px solid var(--db-studio-border-subtle, var(--border-subtle)); border-radius: 6px; padding: 6px; }
 .database-modal-backdrop .db-spatial-optional-fields summary { color: var(--text-muted); cursor: pointer; font-size: 10px; font-weight: 700; }
 
 @container (max-width: 980px) {

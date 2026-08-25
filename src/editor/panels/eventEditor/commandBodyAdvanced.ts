@@ -129,7 +129,7 @@ export function renderAdvancedCommandBody(
     case "inn":
       return innBody(context, cmd);
     case "checkpointSave":
-      return optionalTextCommandBody(context, cmd, "checkpoint-save-editor", "체크포인트 라벨", "event-command-checkpoint-label", "label");
+      return optionalTextCommandBody(context, cmd, "checkpoint-save-editor", "이름", "event-command-checkpoint-label", "label");
     case "runControl":
       return runControlBody(context, cmd);
     case "killPlayer":
@@ -270,7 +270,7 @@ function runControlBody(
       let currentFlag = cmd.flag;
       let currentValue = cmd.value;
       const flag = textInput(currentFlag, "플래그 이름", "event-command-run-flag");
-      const value = simpleSelect([["true", "ON"], ["false", "OFF"]], String(currentValue), "event-command-run-flag-value");
+      const value = simpleSelect([["true", "켜기"], ["false", "끄기"]], String(currentValue), "event-command-run-flag-value");
       const apply = (): void => context.actions.replaceCommand(context.path, {
         kind: "runControl",
         action: "setFlag",
@@ -590,18 +590,18 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
   const msHint = el("span", {
     class: "event-command-wait-ms-hint",
     dataset: { testid: "event-wait-ms-hint" },
-    text: `${currentMs} ms`,
+    text: `${(currentMs / 1000).toFixed(currentMs % 100 === 0 ? (currentMs % 1000 === 0 ? 0 : 1) : 2)}초`,
   });
 
   const syncSecondsFromMs = () => {
     seconds.value = (currentMs / 1000).toFixed(currentMs % 1000 === 0 ? 0 : currentMs % 100 === 0 ? 1 : 2);
-    msHint.textContent = `${currentMs} ms`;
+    msHint.textContent = `${(currentMs / 1000).toFixed(currentMs % 100 === 0 ? (currentMs % 1000 === 0 ? 0 : 1) : 2)}초`;
   };
 
   const setMsFromSeconds = () => {
     const sec = Number(seconds.value);
     currentMs = Number.isFinite(sec) ? Math.max(0, Math.round(sec * 1000)) : 0;
-    msHint.textContent = `${currentMs} ms`;
+    msHint.textContent = `${(currentMs / 1000).toFixed(currentMs % 100 === 0 ? (currentMs % 1000 === 0 ? 0 : 1) : 2)}초`;
     apply();
   };
   seconds.addEventListener("change", setMsFromSeconds);
@@ -777,14 +777,12 @@ function setEventGraphicPatternBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "setEventGraphicPattern" }>
 ): HTMLElement {
-  // RM2003 Change Event Appearance layout:
-  // left file list | right 4×2 character chips + Direction/Pattern radios + frame probe.
-  // Stored value remains absolute charset frame for the interpreter.
+  // Named event + charset sheet. Stored value remains the absolute charset frame.
   const SLOT_SCALE = 2;
   const PROBE_SCALE = 2;
 
   const wrap = el("div", {
-    class: "event-command-frame-editor event-graphic-rm-picker",
+    class: "event-command-frame-editor event-graphic-rm-picker cream-command-form",
     dataset: { testid: "event-command-frame-editor" },
   });
 
@@ -907,7 +905,7 @@ function setEventGraphicPatternBody(
           text: entry.label,
           attrs: {
             type: "button",
-            title: "방향 " + entry.dir + " · 패턴 왼쪽",
+            title: entry.label,
           },
           dataset: {
             testid: "event-command-frame-door-step-" + String(entry.step),
@@ -1047,7 +1045,7 @@ function mapEventSelect(currentId: string, testId: string): HTMLSelectElement {
   sel.append(el("option", { text: "(이 이벤트)", attrs: { value: "" } }));
   for (const event of map?.events ?? []) {
     known.add(event.id);
-    const label = `${event.id} (${event.x}, ${event.y})`;
+    const label = event.name.trim() || "(이름 없는 이벤트)";
     sel.append(el("option", { text: label, attrs: { value: event.id } }));
   }
   // Keep free-typed / foreign-map ids visible even if not on the current map list.
@@ -1126,7 +1124,7 @@ function callMapEventBody(
   const sel = el("select", { dataset: { testid: "event-command-call-map-event-select" } }) as HTMLSelectElement;
   sel.append(el("option", { text: "(이벤트 선택)", attrs: { value: "" } }));
   for (const event of map?.events ?? []) {
-    sel.append(el("option", { text: `${event.id} (${event.x}, ${event.y})`, attrs: { value: event.id } }));
+    sel.append(el("option", { text: event.name.trim() || "(이름 없는 이벤트)", attrs: { value: event.id } }));
   }
   sel.value = cmd.eventId;
   sel.addEventListener("change", () => {
@@ -1292,14 +1290,14 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   let resourceId = cmd.resourceId.trim();
 
   const wrap = el("div", {
-    class: "play-audio-command-body",
+    class: "play-audio-command-body cream-command-form",
     dataset: { testid: "play-audio-command-body" },
   });
 
   const channelRow = el("div", { class: "play-audio-channel-row", dataset: { testid: "play-audio-channel-row" } });
   const list = el("select", {
     class: "play-audio-resource-select",
-    attrs: { "aria-label": "오디오 리소스" },
+    attrs: { "aria-label": "소리" },
     dataset: { testid: "play-audio-resource-select" },
   }) as HTMLSelectElement;
   const search = el("input", {
@@ -1335,20 +1333,15 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     const label = currentOptionLabel(list) || resourceId || "(선택 없음)";
     meta.replaceChildren(
       el("div", { class: "play-audio-meta-name", text: label }),
-      el("div", { class: "play-audio-meta-id", text: resourceId || "—" }),
-      el("div", {
-        class: "play-audio-meta-url",
-        text: url ? url : "리소스 URL 없음",
-      }),
       el("div", {
         class: playable ? "play-audio-badge ok" : "play-audio-badge warn",
         text: !resourceId
-          ? "리소스 선택 필요"
+          ? "곡을 먼저 고르세요"
           : playable
-            ? "브라우저 재생 가능"
+            ? "미리 듣기 가능"
             : url?.toLowerCase().endsWith(".mid")
-              ? "MIDI — 웹에서 재생 안 됨 (CC0 WAV 사용)"
-              : "재생 불가",
+              ? "이 형식은 미리 들을 수 없습니다"
+              : "미리 듣기 불가",
       })
     );
     status.textContent = "대기 중";
@@ -1357,8 +1350,8 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   const rebuildChannelButtons = (): void => {
     channelRow.replaceChildren();
     for (const option of [
-      { value: "bgm" as const, label: "BGM (반복)" },
-      { value: "se" as const, label: "SE (효과음)" },
+      { value: "bgm" as const, label: "배경음" },
+      { value: "se" as const, label: "효과음" },
     ]) {
       channelRow.append(
         el("button", {
@@ -1394,11 +1387,11 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     });
     resultCount.textContent = query
       ? `전체 ${fullCatalog.length}개 중 ${catalog.length}개`
-      : `${channel === "bgm" ? "BGM" : "효과음"} ${catalog.length}개`;
+      : `${channel === "bgm" ? "배경음" : "효과음"} ${catalog.length}개`;
     list.replaceChildren();
     list.append(el("option", { text: "(선택 없음)", attrs: { value: "" } }));
     if (resourceId && !catalog.some((entry) => entry.id === resourceId) && !query) {
-      list.append(el("option", { text: `현재 값: ${resourceId}`, attrs: { value: resourceId } }));
+      list.append(el("option", { text: currentAudioLabel(resourceId, project), attrs: { value: resourceId } }));
     }
     for (const entry of catalog) {
       const mark = entry.playable ? "" : " · MIDI 비재생";
@@ -1444,7 +1437,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
         }
         stopAudioCommand();
         playAudioCommand({ resourceId, loop: channel === "bgm" }, store.getCurrent());
-        status.textContent = `재생 중: ${resourceId}`;
+        status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
       },
     },
   });
@@ -1469,7 +1462,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: channel === "bgm" ? "music" : "sound",
-          title: channel === "bgm" ? "BGM 선택" : "효과음 선택",
+          title: channel === "bgm" ? "배경음 선택" : "효과음 선택",
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId.trim();
@@ -1485,7 +1478,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     search.placeholder = channel === "bgm"
       ? "장면·분위기 검색 (예: 마을, 보스, 비)"
       : "장면·행동 검색 (예: 문, 구매, 마법)";
-    browseBtn.textContent = channel === "bgm" ? "BGM 라이브러리 열기…" : "효과음 라이브러리 열기…";
+    browseBtn.textContent = channel === "bgm" ? "배경음 목록 열기…" : "효과음 목록 열기…";
   };
 
   rebuildChannelButtons();
@@ -1496,7 +1489,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   wrap.append(
     el("div", { class: "play-audio-label", text: "채널" }),
     channelRow,
-    el("div", { class: "play-audio-label", text: "리소스" }),
+    el("div", { class: "play-audio-label", text: "곡" }),
     search,
     resultCount,
     list,
@@ -1508,7 +1501,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     status,
     el("div", {
       class: "empty-hint",
-      text: "BGM은 루프, SE는 1회. 웹에서는 WAV/OGG/MP3만 미리 듣기 됩니다 (EasyRPG MIDI BGM 제외).",
+      text: "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
       dataset: { testid: "play-audio-channel-hint" },
     })
   );
@@ -1538,6 +1531,14 @@ function isBrowserPlayableAudioUrl(url: string | null): boolean {
 function currentOptionLabel(select: HTMLSelectElement): string {
   const option = select.selectedOptions[0];
   return option?.textContent?.trim() ?? "";
+}
+
+function currentAudioLabel(resourceId: string, project: Project): string {
+  const named = listDatabaseResourceOptions("music", project).find((entry) => entry.id === resourceId)
+    ?? listDatabaseResourceOptions("sound", project).find((entry) => entry.id === resourceId);
+  if (named?.name.trim()) return named.name;
+  const trimmed = resourceId.trim();
+  return trimmed ? trimmed.replace(/^(bgm|se|cc0-bgm)-/, "").replace(/_/g, " ") : "(선택 없음)";
 }
 
 function endingBody(context: CommandEditContext, cmd: Extract<Command, { kind: "ending" }>): HTMLElement {

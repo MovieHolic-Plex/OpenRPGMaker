@@ -68,7 +68,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 
 .ai-chat-panel.chat-dock-float .ai-command-bar {
   bottom: 14px;
-  left: 12px;
+  left: auto;
+  max-width: 640px;
   position: absolute;
   right: 12px;
 }

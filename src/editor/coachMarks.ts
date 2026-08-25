@@ -232,7 +232,10 @@ function placeWelcomeOnCanvas(card: HTMLElement): void {
     document.querySelector<HTMLElement>("[data-testid='edit-canvas']");
   const region = canvas?.getBoundingClientRect();
   if (region && region.width > 80 && region.height > 80) {
-    const left = Math.min(Math.max(region.left + 12, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
+    const glass = document.querySelector<HTMLElement>(".ai-chat-panel.chat-dock-glass:not(.is-collapsed)");
+    const glassRight = glass?.getBoundingClientRect().right ?? 0;
+    const preferredLeft = glassRight > region.left ? glassRight + 12 : region.left + 12;
+    const left = Math.min(Math.max(preferredLeft, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
     const top = Math.min(Math.max(region.top + 12, MARGIN), Math.max(MARGIN, viewportHeight - height - MARGIN));
     card.style.left = `${left}px`;
     card.style.top = `${top}px`;

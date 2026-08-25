@@ -52,30 +52,55 @@ export function renderFarmSpatialTab(host: HTMLElement, rerender: () => void): v
           ] }),
         ],
       }),
-      el("div", {
-        class: "db-life-toolbar db-spatial-toolbar",
-        children: [
-          addButton("건물 유형 추가", "db-spatial-add-building-type", () => addBuildingType(rerender)),
-          addButton("장식 유형 추가", "db-spatial-add-decoration-type", () => addDecorationType(rerender)),
-          addButton("시작 건물 배치", "db-spatial-add-building-placement", () => addBuildingPlacement(rerender)),
-          addButton("시작 장식 배치", "db-spatial-add-decoration-placement", () => addDecorationPlacement(rerender)),
-          el("span", { text: `건물 유형 ${buildingTypes.length} · 장식 유형 ${decorationTypes.length} · 시작 배치 ${buildingPlacements.length + decorationPlacements.length}` }),
-        ],
-      }),
-      ...(count === 0 ? [el("div", {
-        class: "db-spatial-empty-state",
-        dataset: { testid: "db-spatial-empty-state" },
-        children: [el("strong", { text: "아직 설계된 공간 요소가 없습니다." }), el("p", { text: "먼저 건물 유형이나 장식 유형을 추가한 다음 시작 배치를 만드세요." })],
-      })] : []),
-      el("div", {
+      ...(count === 0
+        ? [el("div", {
+            class: "empty-state empty-state--large empty-state--inset db-studio-empty",
+            dataset: { testid: "db-spatial-empty-state" },
+            children: [
+              el("span", { class: "empty-state__icon", text: "🏡", attrs: { "aria-hidden": "true" } }),
+              el("h3", { class: "empty-state__title", text: "아직 설계된 공간 요소가 없습니다" }),
+              el("p", { class: "empty-state__desc", text: "건물 유형이나 장식 유형을 먼저 만들면 배치까지 한 흐름으로 이어집니다." }),
+              el("div", {
+                class: "empty-state__actions",
+                children: [
+                  el("button", {
+                    class: "empty-state__action empty-state__action--primary",
+                    text: "건물 유형 만들기",
+                    attrs: { type: "button" },
+                    dataset: { testid: "db-spatial-add-building-type" },
+                    on: { click: () => addBuildingType(rerender) },
+                  }),
+                  el("button", {
+                    class: "empty-state__action",
+                    text: "장식 유형 만들기",
+                    attrs: { type: "button" },
+                    dataset: { testid: "db-spatial-add-decoration-type" },
+                    on: { click: () => addDecorationType(rerender) },
+                  }),
+                ],
+              }),
+            ],
+          })]
+        : [el("div", {
+            class: "db-life-toolbar db-spatial-toolbar",
+            dataset: { testid: "db-spatial-toolbar" },
+            children: [
+              addButton("건물 유형 추가", "db-spatial-add-building-type", () => addBuildingType(rerender)),
+              addButton("장식 유형 추가", "db-spatial-add-decoration-type", () => addDecorationType(rerender)),
+              addButton("시작 건물 배치", "db-spatial-add-building-placement", () => addBuildingPlacement(rerender)),
+              addButton("시작 장식 배치", "db-spatial-add-decoration-placement", () => addDecorationPlacement(rerender)),
+              el("span", { text: `건물 유형 ${buildingTypes.length} · 장식 유형 ${decorationTypes.length} · 시작 배치 ${buildingPlacements.length + decorationPlacements.length}` }),
+            ],
+          })]),
+      ...(count === 0 ? [] : [el("div", {
         class: "db-spatial-grid",
         children: [
-          panel("범용 농장 건물", "레벨마다 footprint, 수용량, 비용, 그래픽을 설정합니다.", buildingTypes.map((row, index) => buildingTypeCard(row, index, rerender))),
-          panel("집 장식", "인벤토리 아이템과 회전 방향, 충돌 footprint를 설정합니다.", decorationTypes.map((row, index) => decorationTypeCard(row, index, rerender))),
+          panel("범용 농장 건물", "레벨마다 차지 영역, 수용량, 비용, 그래픽을 설정합니다.", buildingTypes.map((row, index) => buildingTypeCard(row, index, rerender))),
+          panel("집 장식", "인벤토리 아이템과 회전 방향, 충돌 영역을 설정합니다.", decorationTypes.map((row, index) => decorationTypeCard(row, index, rerender))),
           panel("시작 건물 배치", "새 게임에서 생성될 범용 건물입니다.", buildingPlacements.map((row, index) => buildingPlacementCard(row, index, buildingTypes, rerender))),
           panel("시작 장식 배치", "새 게임에서 인벤토리와 별도로 시작 배치되는 장식입니다.", decorationPlacements.map((row, index) => decorationPlacementCard(row, index, decorationTypes, rerender))),
         ],
-      }),
+      })]),
     ],
   }));
 }

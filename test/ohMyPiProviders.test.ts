@@ -90,7 +90,7 @@ describe("oh-my-pi provider catalog", () => {
   });
 
   it("기본 제공자는 Codex OAuth 다", () => {
-    expect(DEFAULT_OH_MY_PI_PROVIDER).toBe("openai-codex");
+    expect(DEFAULT_OH_MY_PI_PROVIDER).toBe("google-antigravity");
     expect(getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER)?.authKind).toBe("oauth");
   });
 

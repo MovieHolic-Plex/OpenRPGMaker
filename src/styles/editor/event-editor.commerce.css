@@ -1029,6 +1029,45 @@
   grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
   min-height: 200px;
 }
+.shop-processing-catalog {
+  display: grid;
+  gap: 4px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-inset);
+}
+.shop-processing-catalog-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--bg-raised);
+  color: var(--text-1);
+  text-align: left;
+  cursor: pointer;
+}
+.shop-processing-catalog-row.is-stocked {
+  border-color: var(--border-default);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised));
+}
+.shop-processing-catalog-name {
+  font-weight: 600;
+}
+.shop-processing-catalog-price,
+.shop-processing-catalog-state {
+  color: var(--text-2);
+  font-size: 11px;
+}
+.shop-processing-item-grid-legacy {
+  margin-top: 8px;
+}
 .shop-processing-v2 .shop-processing-item-list-shell {
   min-height: 160px;
 }

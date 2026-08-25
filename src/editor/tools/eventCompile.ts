@@ -278,6 +278,18 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     command.value = command.value === "true";
     warnings?.push(`SimplePage 정규화: ${path}.value 문자열을 boolean으로 변환했습니다.`);
   }
+  if (
+    (kind === "changeGold" || kind === "changeItem" || kind === "changeExp" || kind === "changeLevel"
+      || kind === "changeActorHp" || kind === "changeActorMp" || kind === "changeLifeSkillExp")
+    && typeof command.op !== "string"
+  ) {
+    command.op = "+=";
+    warnings?.push(`SimplePage 정규화: ${path}.op 가 없어 += 로 채웠습니다.`);
+  }
+  if (kind === "setVariable" && typeof command.op !== "string") {
+    command.op = "=";
+    warnings?.push(`SimplePage 정규화: ${path}.op 가 없어 = 로 채웠습니다.`);
+  }
   return command as Command;
 }
 

@@ -83,8 +83,8 @@ void allCommandKindsCovered;
 
 describe("event editor command labels", () => {
   it("uses Korean labels for shop and inn commands", () => {
-    expect(commandKindLabel("shop")).toBe("상점 처리");
-    expect(commandKindLabel("inn")).toBe("여관 처리");
+    expect(commandKindLabel("shop")).toBe("상점");
+    expect(commandKindLabel("inn")).toBe("여관");
   });
 
   it("has one display option for every command kind", () => {

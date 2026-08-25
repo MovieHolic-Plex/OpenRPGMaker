@@ -31,7 +31,7 @@ type AdvancedConditionKind = EventPageCondition["kind"];
 const ADVANCED_CONDITION_OPTIONS = [
   { value: "switch", label: "스위치" },
   { value: "variable", label: "변수" },
-  { value: "selfSwitch", label: "셀프 스위치" },
+  { value: "selfSwitch", label: "이 이벤트 기억" },
   { value: "item", label: "아이템" },
   { value: "actor", label: "주인공" },
   { value: "gold", label: "소지금" },

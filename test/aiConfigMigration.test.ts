@@ -111,6 +111,6 @@ describe("loadAiConfig — 제공자 보존", () => {
 
   it("모르는 제공자는 기본값으로 떨어진다", () => {
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "no-such-provider" }));
-    expect(loadAiConfig().providerId).toBe("openai-codex");
+    expect(loadAiConfig().providerId).toBe("google-antigravity");
   });
 });

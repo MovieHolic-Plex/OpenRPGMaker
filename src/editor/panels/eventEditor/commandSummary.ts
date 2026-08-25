@@ -1,6 +1,6 @@
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
+import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
-import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
@@ -87,11 +87,11 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...(cmd.autoAdvance ? [plainPart(" · "), valuePart("자동 넘김")] : [])
   ),
   changeFace: (cmd) => commandLine(
-    "얼굴 그래픽 변경",
+    "얼굴 바꾸기",
     ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId, cmd.faceIndex)] : []),
-    valuePart(cmd.resourceId || "(선택 없음)"),
-    plainPart(" #"),
-    valuePart(String(cmd.faceIndex + 1)),
+    valuePart(faceSheetLabel(cmd.resourceId)),
+    plainPart(" · "),
+    valuePart(`${cmd.faceIndex + 1}칸`),
     plainPart(" "),
     valuePart(facePositionLabel(cmd.position)),
     ...(cmd.flipHorizontally ? [plainPart(" / "), valuePart("좌우 반전")] : [])
@@ -143,7 +143,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(" "),
     valuePart(operandSummary(cmd.value))
   ),
-  timer: (cmd) => commandLine("타이머 조작", valuePart(cmd.action), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : [])),
+  timer: (cmd) => commandLine("타이머", valuePart(timerActionLabel(cmd.action)), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : [])),
   advanceTime: (cmd) => commandLine("시간 진행", valuePart(advanceTimeSummary(cmd))),
   advanceCropGrowth: (cmd) => commandLine("작물 성장 진행", valuePart(`${cmd.days}일`)),
   setTime: (cmd) => commandLine("시간 설정", valuePart(`${String(cmd.hour).padStart(2, "0")}:${String(cmd.minute ?? 0).padStart(2, "0")}`)),
@@ -168,10 +168,10 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart("개)")
   ),
   setEventGraphicPattern: (cmd) => commandLine(
-    "이벤트 프레임 변경",
-    valuePart(cmd.eventId || "이 이벤트"),
-    plainPart(" = "),
-    valuePart(String(cmd.pattern))
+    "모습 바꾸기",
+    valuePart(!cmd.eventId || cmd.eventId === "this" ? "이 이벤트" : cmd.eventId),
+    plainPart(" · "),
+    valuePart(`모습 ${Number(cmd.pattern) + 1}`)
   ),
   changeTile: (cmd) => commandLine(
     "타일 변경",
@@ -184,9 +184,9 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(String(cmd.tile))
   ),
   callCommonEvent: (cmd) => commandLine("이벤트 호출", valuePart(commonEventName(cmd.commonEventId))),
-  callMapEvent: (cmd) => commandLine("맵 이벤트 호출", valuePart(cmd.eventId || "(이벤트 선택)")),
+  callMapEvent: (cmd) => commandLine("맵 이벤트 호출", valuePart(mapEventName(cmd.eventId))),
   battleProcessing: (cmd) => commandLine(
-    "전투 처리",
+    "전투",
     valuePart(
       cmd.troopSource === "variable"
         ? `변수 ${cmd.troopVariableId || "?"}`
@@ -243,16 +243,16 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(formatActorVitalAmount(cmd.amount, cmd.amountMode))
   ),
   recoverAll: (cmd) => commandLine("모두 회복", valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체")),
-  enterHeroName: (cmd) => commandLine("이름 입력 처리", valuePart(actorName(cmd.actorId)), plainPart(" / 최대 "), valuePart(String(cmd.maxLength)), plainPart("자")),
+  enterHeroName: (cmd) => commandLine("이름 입력", valuePart(actorName(cmd.actorId)), plainPart(" / 최대 "), valuePart(String(cmd.maxLength)), plainPart("자")),
   changeGold: (cmd) => commandLine(
     "소지금 변경",
     opPart(cmd.op),
     plainPart(" "),
     valuePart(typeof cmd.amount === "number" ? String(cmd.amount) : operandSummary(cmd.amount)),
   ),
-  craftRecipe: (cmd) => commandLine("제작", valuePart(cmd.recipeId || "레시피 없음")),
-  applyItemUpgrade: (cmd) => commandLine("아이템 업그레이드", valuePart(cmd.upgradeId || "규칙 없음")),
-  equipTool: (cmd) => commandLine("도구 장착", valuePart(cmd.itemId || "해제")),
+  craftRecipe: (cmd) => commandLine("제작", valuePart(recipeName(cmd.recipeId))),
+  applyItemUpgrade: (cmd) => commandLine("아이템 업그레이드", valuePart(upgradeName(cmd.upgradeId))),
+  equipTool: (cmd) => commandLine("도구 장착", valuePart(cmd.itemId ? itemName(cmd.itemId) : "해제")),
   openChest: (cmd) => commandLine("보관 상자", valuePart(cmd.chestId || "이 타일 상자")),
   changeItem: (cmd) => commandLine(
     "아이템 변경",
@@ -271,7 +271,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(" "),
     valuePart(String(Math.abs(cmd.delta)))
   ),
-  getFriendship: (cmd) => commandLine("호감도 변수 저장", valuePart(cmd.npcKey || "이 이벤트"), plainPart(" → "), valuePart(cmd.variableId || "변수 없음")),
+  getFriendship: (cmd) => commandLine("호감도 읽기", valuePart(cmd.npcKey || "이 이벤트"), plainPart(" → "), valuePart(recordName("variable", cmd.variableId))),
   changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
   giveMonster: (cmd) => commandLine(
     "몬스터 지급",
@@ -280,47 +280,43 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(String(cmd.level)),
     ...(cmd.nickname ? [plainPart(" / "), valuePart(cmd.nickname)] : [])
   ),
-  moveMonster: (cmd) => commandLine("몬스터 이동", valuePart(cmd.instanceId || "(instanceId 없음)"), plainPart(" → "), valuePart(cmd.to === "party" ? "파티" : "보관함")),
-  evolveMonster: (cmd) => commandLine("몬스터 진화", valuePart(cmd.instanceId || "(instanceId 없음)"), plainPart(" → "), valuePart(cmd.toSpeciesId ? monsterSpeciesName(cmd.toSpeciesId) : "조건 충족 첫 진화")),
+  moveMonster: (cmd) => commandLine("몬스터 이동", valuePart(monsterInstanceLabel(cmd.instanceId)), plainPart(" → "), valuePart(cmd.to === "party" ? "파티" : "보관함")),
+  evolveMonster: (cmd) => commandLine("몬스터 진화", valuePart(monsterInstanceLabel(cmd.instanceId)), plainPart(" → "), valuePart(cmd.toSpeciesId ? monsterSpeciesName(cmd.toSpeciesId) : "조건 충족 첫 진화")),
   addFollower: (cmd) => commandLine("동행자 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
   removeFollower: (cmd) => commandLine("동행자 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
   setLighting: (cmd) => commandLine(
     "조명 설정",
-    valuePart(cmd.ambient.toFixed(2)),
-    ...(cmd.transitionMs ? [plainPart(" / "), valuePart(`${cmd.transitionMs}ms`)] : [])
+    valuePart(`${Math.round(cmd.ambient * 100)}%`),
+    ...(cmd.transitionMs ? [plainPart(" · "), valuePart(`${cmd.transitionMs}ms`)] : [])
   ),
-  addLight: (cmd) => commandLine("광원 추가", valuePart(cmd.source.id), plainPart(" / "), valuePart(lightAnchorSummary(cmd.source.at)), plainPart(" r"), valuePart(String(cmd.source.radius))),
-  removeLight: (cmd) => commandLine("광원 제거", valuePart(cmd.all === true ? "전체" : cmd.id || "id 없음")),
+  addLight: (cmd) => commandLine("빛 켜기", valuePart(lightAnchorSummary(cmd.source.at)), plainPart(" · 크기 "), valuePart(String(cmd.source.radius))),
+  removeLight: (cmd) => commandLine("빛 끄기", valuePart(cmd.all === true ? "전부" : cmd.id || "빛 없음")),
   setWeather: (cmd) => commandLine(
     "날씨 설정",
     valuePart(weatherLabel(cmd.weather)),
     plainPart(" "),
-    valuePart(String(cmd.intensity ?? 0.5)),
+    valuePart(`${Math.round((cmd.intensity ?? 0.5) * 100)}%`),
     ...(cmd.transitionMs ? [plainPart(" / "), valuePart(`${cmd.transitionMs}ms`)] : [])
   ),
   showAnimation: (cmd) => commandLine(
     "애니메이션 표시",
     valuePart(animationTargetSummary(cmd.target)),
     plainPart(" / "),
-    valuePart(cmd.animationId || "(선택 없음)"),
+    valuePart(animationName(cmd.animationId)),
     ...(cmd.wait ? [plainPart(" / "), valuePart("대기")] : [])
   ),
   showPicture: (cmd) =>
     commandLine(
       "그림 표시",
-      valuePart(cmd.pictureId),
-      plainPart(" ("),
-      valuePart(`${cmd.x},${cmd.y}`),
-      plainPart(")"),
-      ...(cmd.resourceId?.trim() ? [plainPart(" · "), valuePart(cmd.resourceId.trim())] : [])
+      valuePart(`위치 (${cmd.x}, ${cmd.y})`),
     ),
   erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
-  playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
+  playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
   stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
   cutsceneControl: (cmd) => commandLine("컷신 제어", valuePart(cmd.mode === "begin" ? "시작" : "종료"), ...(cmd.skippable ? [plainPart(" / "), valuePart("스킵 가능")] : [])),
   shop: (cmd) =>
     commandLine(
-      "상점 처리",
+      "상점",
       valuePart(String(cmd.itemIds.length)),
       plainPart("개"),
       plainPart("·"),
@@ -331,11 +327,11 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     const extras: ReturnType<typeof plainPart>[] = [];
     if (cmd.advanceToMorning) extras.push(plainPart(" · 아침"));
     if (cmd.branchOnNotEnoughGold) extras.push(plainPart(" · 부족분기"));
-    if (typeof cmd.price !== "number") return commandLine("여관 처리", valuePart(`변수 ${(cmd.price as { id: string }).id}`), plainPart(`G · ${recover}`), ...extras);
+    if (typeof cmd.price !== "number") return commandLine("여관", valuePart(`변수 ${(cmd.price as { id: string }).id}`), plainPart(`G · ${recover}`), ...extras);
     if (cmd.price <= 0) {
-      return commandLine("여관 처리", valuePart("무료"), plainPart(` · ${recover}`), ...extras);
+      return commandLine("여관", valuePart("무료"), plainPart(` · ${recover}`), ...extras);
     }
-    return commandLine("여관 처리", valuePart(String(cmd.price)), plainPart(`G · ${recover}`), ...extras);
+    return commandLine("여관", valuePart(String(cmd.price)), plainPart(`G · ${recover}`), ...extras);
   },
   checkpointSave: (cmd) => commandLine("체크포인트 저장", valuePart(cmd.label || "세션")),
   runControl: (cmd) => commandLine("로그라이크 런", valuePart(runControlSummary(cmd))),
@@ -344,8 +340,8 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   gameOver: () => [commandPart("게임 오버")],
   ending: (cmd) => commandLine("엔딩", valuePart(cmd.title)),
   returnToTitle: () => [commandPart("타이틀 화면으로")],
-  setFlag: (cmd) => commandLine("플래그 설정", valuePart(cmd.flag), plainPart(" "), onOffBadgePart(cmd.value)),
-  setSelfSwitch: (cmd) => commandLine("셀프 스위치 설정", valuePart(cmd.key), plainPart(" "), onOffBadgePart(cmd.value)),
+  setFlag: (cmd) => commandLine("기억 설정", valuePart(humanizeAuthorId(cmd.flag)), plainPart(" "), onOffBadgePart(cmd.value)),
+  setSelfSwitch: (cmd) => commandLine("이 이벤트 기억", valuePart(cmd.key), plainPart(" "), onOffBadgePart(cmd.value)),
   m2Command: m2CommandSummaryParts,
 };
 
@@ -356,9 +352,11 @@ function commandLine(label: string, ...parts: readonly CommandSummaryToken[]): r
 // 연산 토큰. += 계열/-=/= 를 서로 다른 톤으로 구분해 리스트에서 증감·대입이 색으로 읽히게 한다.
 // 텍스트 자체는 기존과 동일하게 유지한다 (commandSummary 문자열 불변).
 function opPart(op: string): CommandSummaryPart {
-  if (op.startsWith("+")) return { text: op, tone: "op-add" };
-  if (op.startsWith("-")) return { text: op, tone: "op-sub" };
-  if (op === "=") return { text: op, tone: "op-set" };
+  if (op === "+=" || op.startsWith("+")) return { text: "더하기", tone: "op-add" };
+  if (op === "-=" || op.startsWith("-")) return { text: "빼기", tone: "op-sub" };
+  if (op === "*=") return { text: "곱하기", tone: "op-set" };
+  if (op === "/=") return { text: "나누기", tone: "op-set" };
+  if (op === "=") return { text: "이 값으로", tone: "op-set" };
   return valuePart(op);
 }
 
@@ -370,9 +368,9 @@ function advanceTimeSummary(cmd: Extract<Command, { kind: "advanceTime" }>): str
   return parts.length > 0 ? parts.join(" ") : "0분";
 }
 
-// 스위치/플래그 ON·OFF 배지 토큰. 텍스트는 기존 "ON"/"OFF" 그대로.
+// 스위치/플래그 켜짐/꺼짐 배지.
 function onOffBadgePart(value: boolean): CommandSummaryPart {
-  return { text: value ? "ON" : "OFF", tone: value ? "badge-on" : "badge-off" };
+  return { text: value ? "켜짐" : "꺼짐", tone: value ? "badge-on" : "badge-off" };
 }
 
 function switchValueParts(value: SwitchValue): CommandSummaryPart[] {
@@ -436,13 +434,13 @@ function transferDirectionSummary(direction: "retain" | "up" | "right" | "down" 
 }
 
 function lightAnchorSummary(anchor: Extract<Command, { kind: "addLight" }>["source"]["at"]): string {
-  if (anchor === "player") return "플레이어";
+  if (anchor === "player") return "주인공";
   if ("eventId" in anchor) return `이벤트 ${anchor.eventId}`;
   return `(${anchor.x},${anchor.y})`;
 }
 
 function animationTargetSummary(target: Extract<Command, { kind: "showAnimation" }>["target"]): string {
-  if (target === "player") return "플레이어";
+  if (target === "player") return "주인공";
   if ("eventId" in target) return `이벤트 ${target.eventId || "현재"}`;
   return `(${target.x},${target.y})`;
 }
@@ -572,7 +570,7 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   const title = entry?.title ?? "";
   if (title === "Comment" || cmd.commandId === "m2-088-comment") {
     const text = String(cmd.fields.comment ?? "").trim() || "(빈 주석)";
-    return commandLine("◆ 주석", valuePart(oneLine(text)));
+    return commandLine("주석", valuePart(oneLine(text)));
   }
   if (title === "Erase Event" || cmd.commandId === "m2-086-erase-event") {
     const eventId = String(cmd.fields.eventId ?? "").trim();
@@ -706,7 +704,7 @@ function page3M2SummaryParts(
     case "Get Event ID": {
       const variableId = str("variableId");
       return commandLine(
-        labelOf("이벤트 ID 얻기"),
+        labelOf("어느 이벤트인지 알기"),
         plainPart("("),
         valuePart(`${num("x") || "?"}, ${num("y") || "?"}`),
         plainPart(") → "),
@@ -982,11 +980,11 @@ function operandSummary(value: VariableOperand): string {
 function conditionSummary(condition: Extract<Command, { kind: "fork" }>['condition']): string {
   switch (condition.kind) {
     case "switch":
-      return `${recordName("switch", condition.switchId)} ${condition.value ? "ON" : "OFF"}`;
+      return `${recordName("switch", condition.switchId)} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable":
       return `${recordName("variable", condition.variableId)} ${condition.op} ${condition.value}`;
     case "selfSwitch":
-      return `셀프 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
       return `${actorName(condition.actorId)} ${condition.present ? "파티" : "부재"}`;
     case "item":
@@ -1029,7 +1027,7 @@ function runControlSummary(command: Extract<Command, { kind: "runControl" }>): s
     case "end":
       return `종료 · ${command.result}`;
     case "setFlag":
-      return `${command.flag || "플래그"} ${command.value ? "ON" : "OFF"}`;
+      return `${command.flag || "플래그"} ${command.value ? "켜짐" : "꺼짐"}`;
     case "resetRoom":
       return `방 초기화 · ${command.roomId || "현재 방"}`;
   }
@@ -1042,7 +1040,7 @@ function runConditionSummary(condition: Extract<Extract<Command, { kind: "fork" 
     case "floor":
       return `런 층 ${condition.op} ${condition.value}`;
     case "flag":
-      return `런 ${condition.flag || "플래그"} ${condition.value ? "ON" : "OFF"}`;
+      return `런 ${condition.flag || "플래그"} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "result":
       return `런 결과 ${condition.result}`;
   }
@@ -1055,7 +1053,19 @@ function mapName(id: string): string {
 
 function commonEventName(id: string): string {
   const project = store.getCurrent();
-  return id ? project.commonEvents.find((event) => event.id === id)?.name ?? id : "(이벤트 선택)";
+  if (!id) return "(이벤트 선택)";
+  const named = project.commonEvents.find((event) => event.id === id)?.name.trim();
+  return named || "이름 없는 공통 이벤트";
+}
+
+function mapEventName(id: string): string {
+  if (!id) return "(이벤트 선택)";
+  const project = store.getCurrent();
+  for (const map of Object.values(project.maps)) {
+    const event = map.events.find((entry) => entry.id === id);
+    if (event) return event.name.trim() || "이름 없는 이벤트";
+  }
+  return "이름 없는 이벤트";
 }
 
 function troopName(id: string): string {
@@ -1073,14 +1083,57 @@ function skillName(id: string): string {
   return id ? project.database.skills.find((skill) => skill.id === id)?.name ?? id : "(특수기 선택)";
 }
 
+function timerActionLabel(action: string): string {
+  if (action === "set") return "설정";
+  if (action === "start") return "시작";
+  if (action === "stop") return "정지";
+  return action;
+}
+
+
+function recipeName(id: string): string {
+  if (!id) return "(레시피 선택)";
+  const recipe = store.getCurrent().system.craftRecipes?.find((entry) => entry.id === id);
+  if (!recipe) return "이름 없는 레시피";
+  return recipe.name?.trim() || itemName(recipe.outputItemId);
+}
+
+function upgradeName(id: string): string {
+  if (!id) return "(업그레이드 선택)";
+  const rule = store.getCurrent().system.itemUpgrades?.find((entry) => entry.id === id);
+  if (!rule) return "이름 없는 업그레이드";
+  return `${itemName(rule.fromItemId)} → ${itemName(rule.toItemId)}`;
+}
+
+function monsterInstanceLabel(id: string): string {
+  return id ? "몬스터" : "(몬스터 선택)";
+}
+
+function humanizeAuthorId(id: string): string {
+  const trimmed = id.trim();
+  if (!trimmed) return "(없음)";
+  return trimmed.replace(/^item_/, "").replace(/^(bgm|se|cc0-bgm)-/, "").replace(/_/g, " ");
+}
+
+function audioName(id: string): string {
+  const trimmed = id.trim();
+  if (!trimmed) return "(선택 없음)";
+  const track = BGM_CATALOG.find((entry) => entry.id === trimmed);
+  if (track) return track.title;
+  return humanizeAuthorId(trimmed);
+}
+
 function itemName(id: string): string {
   const project = store.getCurrent();
-  return id ? project.database.items.find((item) => item.id === id)?.name ?? id : "(아이템 선택)";
+  if (!id) return "(아이템 선택)";
+  const named = project.database.items.find((item) => item.id === id)?.name.trim();
+  if (named && /[가-힣]/.test(named)) return named;
+  return humanizeAuthorId(named || id);
 }
 
 function monsterSpeciesName(id: string): string {
   const project = store.getCurrent();
-  return id ? (project.database.monsterSpecies ?? []).find((species) => species.id === id)?.name ?? id : "(species 선택)";
+  return id ? (project.database.monsterSpecies ?? []).find((species) => species.id === id)?.name ?? id : "(몬스터 선택)";
 }
 
 function equipmentName(id: string): string {
@@ -1105,9 +1158,34 @@ function recordName(kind: "switch" | "variable", id: string): string {
   const project = store.getCurrent();
   const collection = kind === "switch" ? project.switches : project.variables;
   const index = collection.findIndex((record) => record.id === id);
-  if (index >= 0) return `[${storyFlagOptionLabel(project, kind, collection[index]!, index)}]`;
-  const label = id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
-  return `[${label}]`;
+  if (index >= 0) {
+    const named = collection[index]?.name.trim();
+    return named || "(이름 없음)";
+  }
+  return id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
+}
+
+function animationName(id: string | undefined): string {
+  const trimmed = id?.trim() ?? "";
+  if (!trimmed) return "(연출 선택)";
+  const named = store.getCurrent().database.battleAnimations.find((entry) => entry.id === trimmed)?.name.trim();
+  return named || humanizeAuthorId(trimmed);
+}
+
+function faceSheetLabel(id: string | undefined): string {
+  const trimmed = id?.trim() ?? "";
+  if (!trimmed) return "얼굴 없음";
+  const slug = trimmed
+    .replace(/^easyrpg-faceset-/, "")
+    .replace(/^generated-face-/, "")
+    .replace(/-bust$/, "")
+    .replace(/[-_]+/g, " ");
+  const numbered = /^(actor|monster|object|people)\s*(\d+)$/i.exec(slug);
+  if (numbered) {
+    const kind = { actor: "배역", monster: "몬스터", object: "물건", people: "사람" }[numbered[1]!.toLowerCase()] ?? numbered[1]!;
+    return `${kind} ${numbered[2]}`;
+  }
+  return slug;
 }
 
 function textEmotionLabel(emotion: string): string {

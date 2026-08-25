@@ -227,4 +227,21 @@ describe("PINNED_TOOLS_BY_DOMAIN", () => {
       }
     }
   });
+
+  it("pins quest persist tools and world facades", () => {
+    expect(PINNED_TOOLS_BY_DOMAIN.get("quest")).toEqual(new Set([
+      "author_story_arc",
+      "define_quest",
+      "create_quest",
+      "verify_quest",
+      "lint_quest",
+      "generate_walkthrough",
+    ]));
+    expect(PINNED_TOOLS_BY_DOMAIN.get("world")).toEqual(new Set([
+      "plan_world",
+      "build_world",
+      "link_maps",
+      "lint_world",
+    ]));
+  });
 });

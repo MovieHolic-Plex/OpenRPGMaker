@@ -1,0 +1,469 @@
+/* ============================================================================
+   Database Studio theme (2026-08) — neutral cool studio scoped to the
+   Database modal only. Defines --db-studio-* tokens and maps cream wells
+   to the studio surface. Imported after system-studio.css so it wins.
+   No hex outside these tokens; rest of editor stays cream (tokens.css).
+   ========================================================================= */
+
+.database-modal-backdrop {
+  color-scheme: light;
+
+  /* ---- studio tokens (single source for DB chrome) -------------------- */
+  --db-studio-canvas: #F7F8F8;
+  --db-studio-surface: #FFFFFF;
+  --db-studio-inset: #F1F5F9;
+  --db-studio-well: #EEF2F6;
+  --db-studio-text-1: #0F172A;
+  --db-studio-text-2: #475569;
+  --db-studio-text-3: #94A3B8;
+  --db-studio-border-subtle: rgba(15, 23, 42, 0.08);
+  --db-studio-border-default: rgba(15, 23, 42, 0.10);
+  --db-studio-border-strong: rgba(15, 23, 42, 0.18);
+  --db-studio-accent: #4A57D6;
+  --db-studio-accent-hover: #3C48C4;
+  --db-studio-accent-active: #2F3AAE;
+  --db-studio-accent-soft: rgba(74, 87, 214, 0.08);
+  --db-studio-accent-border: rgba(74, 87, 214, 0.16);
+  --db-studio-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --db-studio-shadow-pop: 0 4px 16px rgba(15, 23, 42, 0.10);
+  --db-studio-success: #0F7A4A;
+  --db-studio-success-muted: rgba(15, 122, 74, 0.10);
+  --db-studio-danger: #DC2626;
+
+  /* ---- cream -> studio remap (legacy token bridge) -------------------- */
+  --bg-base: var(--db-studio-canvas);
+  --bg-surface: var(--db-studio-surface);
+  --bg-raised: var(--db-studio-surface);
+  --bg-overlay: var(--db-studio-surface);
+  --bg-inset: var(--db-studio-inset);
+  --bg-canvas: var(--db-studio-canvas);
+  --bg-well: var(--db-studio-inset);
+  --bg-glass: rgba(255, 255, 255, 0.86);
+  --bg-hover: var(--db-studio-inset);
+  --bg-active: var(--db-studio-accent-soft);
+  --control-bg: var(--db-studio-surface);
+  --control-bg-hover: var(--db-studio-inset);
+  --control-bg-active: var(--db-studio-accent-soft);
+  --border-subtle: var(--db-studio-border-subtle);
+  --border-default: var(--db-studio-border-default);
+  --border-strong: var(--db-studio-border-strong);
+  --text-1: var(--db-studio-text-1);
+  --text-2: var(--db-studio-text-2);
+  --text-3: var(--db-studio-text-3);
+  --text-placeholder: var(--db-studio-text-3);
+  --text-disabled: var(--db-studio-text-3);
+  --accent: var(--db-studio-accent);
+  --accent-hover: var(--db-studio-accent-hover);
+  --accent-active: var(--db-studio-accent-active);
+  --accent-muted: var(--db-studio-accent-soft);
+  --accent-border: var(--db-studio-accent-border);
+  --on-accent: #FFFFFF;
+  --danger: var(--db-studio-danger);
+  --success: var(--db-studio-success);
+  --shadow-pop: var(--db-studio-shadow-pop);
+  --shadow-modal: var(--db-studio-shadow-pop);
+  --focus-ring: 0 0 0 2px rgba(74, 87, 214, 0.35);
+  --focus-outline: 2px solid var(--db-studio-accent);
+
+  /* legacy aliases */
+  --bg: var(--bg-base);
+  --bg-panel: var(--bg-surface);
+  --bg-panel-2: var(--bg-raised);
+  --bg-elev: var(--bg-raised);
+  --bg-recessed: var(--bg-inset);
+  --border: var(--border-default);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-1);
+  --text-dim: var(--text-2);
+  --text-muted: var(--text-3);
+
+  /* keep light-theme bridge vars in sync so older rules resolve to studio */
+  --db-light-bg-base: var(--db-studio-canvas);
+  --db-light-bg-surface: var(--db-studio-surface);
+  --db-light-bg-raised: var(--db-studio-surface);
+  --db-light-bg-inset: var(--db-studio-inset);
+  --db-light-border-subtle: var(--db-studio-border-subtle);
+  --db-light-border-default: var(--db-studio-border-default);
+  --db-light-border-strong: var(--db-studio-border-strong);
+  --db-light-text-1: var(--db-studio-text-1);
+  --db-light-text-2: var(--db-studio-text-2);
+  --db-light-text-3: var(--db-studio-text-3);
+  --db-light-accent: var(--db-studio-accent);
+  --db-light-accent-hover: var(--db-studio-accent-hover);
+  --db-light-accent-muted: var(--db-studio-accent-soft);
+  --db-light-accent-border: var(--db-studio-accent-border);
+  --db-light-on-accent: #FFFFFF;
+
+  --db-modern-bg: var(--db-studio-canvas);
+  --db-modern-panel: var(--db-studio-surface);
+  --db-modern-chrome: var(--db-studio-surface);
+  --db-modern-line: var(--db-studio-border-default);
+  --db-modern-line-soft: var(--db-studio-border-subtle);
+  --db-modern-text: var(--db-studio-text-1);
+  --db-modern-muted: var(--db-studio-text-2);
+}
+
+/* ---- modal window chrome — neutral surface, hairline, soft shadow ----- */
+
+.database-modal-backdrop .database-modal-window {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-default) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--db-studio-shadow-pop) !important;
+  color: var(--db-studio-text-1) !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-header {
+  background: var(--db-studio-surface) !important;
+  border-bottom: 1px solid var(--db-studio-border-default) !important;
+  color: var(--db-studio-text-1) !important;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-header h2 {
+  color: var(--db-studio-text-1) !important;
+  font: 600 14px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+  letter-spacing: -0.01em;
+  text-shadow: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body {
+  background: var(--db-studio-canvas) !important;
+}
+
+/* ---- footer — sticky, autosave readable, primary hierarchy ------------- */
+
+.database-modal-backdrop .database-modal-window {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-footer {
+  background: var(--db-studio-surface) !important;
+  border-top: 1px solid var(--db-studio-border-default) !important;
+  flex: 0 0 auto !important;
+  position: static !important;
+  z-index: 3;
+}
+
+/* autosave sentence — never clipped */
+.database-modal-backdrop .database-modal-window .database-footer-status {
+  background: var(--db-studio-success-muted) !important;
+  border-color: rgba(15, 122, 74, 0.16) !important;
+  color: var(--db-studio-success) !important;
+  max-width: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  word-break: keep-all;
+  line-height: 1.4 !important;
+}
+
+/* Primary = 지금 저장 (apply), ghost = 닫기 (ok) — wins regardless of .primary class */
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"] {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"]:hover {
+  background: var(--db-studio-accent-hover) !important;
+  border-color: var(--db-studio-accent-hover) !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"] {
+  background: transparent !important;
+  border-color: var(--db-studio-border-default) !important;
+  color: var(--db-studio-text-2) !important;
+  font-weight: 500 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"]:hover {
+  background: var(--db-studio-inset) !important;
+  color: var(--db-studio-text-1) !important;
+}
+
+/* danger ghost stays subtle */
+.database-modal-backdrop .database-modal-window .database-footer-button.danger,
+.database-modal-backdrop .database-modal-window .btn.danger {
+  background: transparent !important;
+  border-color: var(--db-studio-border-default) !important;
+  color: var(--db-studio-danger) !important;
+}
+
+/* ---- wells / fieldsets -> hairline sections --------------------------- */
+
+.database-modal-backdrop .database-modal-window :is(
+  fieldset,
+  .oprn-db-fieldset,
+  .db-panel,
+  .db-class-panel,
+  .db-advanced-panel,
+  .db-system-form,
+  .db-terms-form,
+  .db-utility-form,
+  .db-parity-form,
+  .oprn-record-list-pane,
+  .oprn-record-detail-pane,
+  .db-common-event-list-pane,
+  .db-common-event-detail-pane
+) {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+/* spec strip under identity header */
+.database-modal-backdrop .database-modal-window .db-item-spec-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 12px;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+}
+.database-modal-backdrop .database-modal-window .db-item-spec-strip .db-field,
+.database-modal-backdrop .database-modal-window .db-item-spec-strip label {
+  margin: 0 !important;
+}
+.database-modal-backdrop .database-modal-window .db-list-number {
+  color: var(--db-studio-text-3) !important;
+  flex: 0 0 auto;
+  font: 500 11px/1.4 ui-monospace, Consolas, monospace !important;
+  margin-left: auto;
+}
+.database-modal-backdrop .database-modal-window .db-list-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+.database-modal-backdrop .database-modal-window .db-list-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.database-modal-backdrop .database-modal-window fieldset {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+.database-modal-backdrop .database-modal-window fieldset > legend {
+  color: var(--db-studio-text-3) !important;
+  font: 600 11px/1.3 "Malgun Gothic", system-ui, sans-serif !important;
+  padding: 0 4px;
+}
+
+/* list thumb 24px */
+.database-modal-backdrop .database-modal-window .db-list-thumb,
+.database-modal-backdrop .database-modal-window .db-list-row .db-list-thumb {
+  height: 24px !important;
+  width: 24px !important;
+  border-radius: 4px;
+}
+
+/* empty state card */
+.database-modal-backdrop .database-modal-window .db-empty-state,
+.database-modal-backdrop .database-modal-window .empty-state {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 10px !important;
+}
+
+/* raw 번호/ID dump — name already lives in the inspector header */
+.database-modal-backdrop .database-modal-window .oprn-record-identity {
+  display: none !important;
+}
+
+/* group labels must stay readable */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+  overflow: visible !important;
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+  color: var(--db-studio-text-3) !important;
+  font: 600 11px/1.3 "Malgun Gothic", system-ui, sans-serif !important;
+  padding: 10px 8px 4px !important;
+}
+
+/* hairline dividers inside inspector */
+.database-modal-backdrop .database-modal-window .db-detail-form {
+  background: transparent !important;
+}
+
+/* switches/variables: name first, muted #n */
+.database-modal-backdrop .database-modal-window .db-utility-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.database-modal-backdrop .database-modal-window .db-utility-row .db-list-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.database-modal-backdrop .database-modal-window .db-utility-row .db-id {
+  color: var(--db-studio-text-3);
+  flex: 0 0 auto;
+  font: 500 11px/1.4 ui-monospace, Consolas, monospace;
+}
+
+/* Skills: kill the old 2x4 54px RM grid so composer + used-by no longer overlap */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-detail-skills {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  gap: 12px !important;
+  overflow: auto !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-detail-skills > .db-skill-composer {
+  order: -1;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-detail-skills > :is(.field, .db-field) {
+  min-height: auto !important;
+}
+.database-modal-backdrop .database-modal-window .db-skill-composer-eyebrow {
+  display: none;
+}
+
+/* Enemy workspace: 3 flexible columns so the attack table is not clipped */
+.database-modal-backdrop .database-modal-window .oprn-detail-enemies > .db-enemy-bm101-workbench {
+  grid-template-areas:
+    "name graphic actions"
+    "stats species actions"
+    "rewards options actions"
+    "critical options actions"
+    "state element actions"
+    "combat combat combat" !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(260px, 1.05fr) !important;
+  grid-template-rows: auto auto auto auto minmax(140px, 1fr) auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  overflow: auto !important;
+}
+.database-modal-backdrop .database-modal-window .db-enemy-panel-action-combat {
+  grid-area: combat !important;
+}
+
+/* Troops list was pinned to a 31px row under empty search space */
+.database-modal-backdrop .database-modal-window .oprn-record-troops .oprn-record-list-pane {
+  align-content: start !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto auto auto auto !important;
+  overflow: visible !important;
+  padding-bottom: 12px;
+}
+.database-modal-backdrop .database-modal-window .oprn-record-troops .db-list {
+  grid-row: 3;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .tileset-db-list-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+.database-modal-backdrop .database-modal-window .tileset-db-list-row .db-list-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.database-modal-backdrop .database-modal-window .tileset-db-list-row .db-list-number {
+  margin-left: auto;
+}
+.database-modal-backdrop .database-modal-window .db-range-disclosure {
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.database-modal-backdrop .database-modal-window .db-range-disclosure summary {
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 600 12px/1.4 "Malgun Gothic", system-ui, sans-serif;
+}
+.database-modal-backdrop .database-modal-window .db-state-rate-row {
+  align-items: center;
+  display: grid !important;
+  gap: 8px;
+  grid-template-columns: 4.5em minmax(0, 1fr) !important;
+}
+.database-modal-backdrop .database-modal-window .db-state-rate-row b {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Quiet leftover IDs — keep testid text for Playwright */
+.database-modal-backdrop .database-modal-window [data-testid="db-character-id"] {
+  color: var(--db-studio-text-3) !important;
+  font: 500 11px/1.3 ui-monospace, Consolas, monospace !important;
+}
+
+/* Flatten leftover RM fieldsets on enemy/state */
+.database-modal-backdrop .database-modal-window .oprn-detail-enemies fieldset,
+.database-modal-backdrop .database-modal-window .oprn-detail-states fieldset {
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 10px 0 8px !important;
+}
+.database-modal-backdrop .database-modal-window .db-enemy-panel-graphic {
+  min-width: 0;
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .db-enemy-graphic-preview {
+  position: relative;
+  z-index: 0;
+}
+.database-modal-backdrop .database-modal-window .oprn-detail-enemies fieldset > legend,
+.database-modal-backdrop .database-modal-window .oprn-detail-states fieldset > legend {
+  float: none !important;
+  padding: 0 !important;
+}
+
+/* Item graphics: two pickers as one compact row */
+.database-modal-backdrop .database-modal-window .db-items-oprn-workbench .db-resource-picker-control {
+  align-items: center;
+}
+.database-modal-backdrop .database-modal-window .db-items-oprn-workbench fieldset:has(.db-resource-picker-control) {
+  display: grid;
+  gap: 8px 16px;
+  grid-template-columns: 1fr 1fr;
+}
+.database-modal-backdrop .database-modal-window .db-items-oprn-workbench fieldset:has(.db-resource-picker-control) > legend {
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .database-modal-window .db-empty-cta {
+  background: var(--db-studio-accent) !important;
+  border: 0 !important;
+  color: #fff !important;
+}
+
+/* Troops: drop the 1048×554 RM canvas so members/backdrop stay above the footer */
+.database-modal-backdrop .database-modal-window .db-troops-classic-workbench {
+  grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr) !important;
+  grid-template-rows: auto minmax(180px, 1fr) auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+.database-modal-backdrop .database-modal-window .db-troop-top-controls {
+  grid-template-columns: minmax(160px, 1fr) repeat(4, auto) !important;
+  height: auto !important;
+}
+.database-modal-backdrop .database-modal-window .db-troop-member-list {
+  grid-template-rows: auto auto auto !important;
+}

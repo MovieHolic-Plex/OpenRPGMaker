@@ -17,12 +17,12 @@ function latestChoices(context: CommandEditContext, fallback: ChoicesCommand): C
 }
 
 /**
- * RM2003 Show Choices style: dialog edits option texts + cancel only.
+ * Prompt + option labels + cancel. Branch bodies stay on the main list.
  * Branch commands live in the main command list under `: 선택지 …` markers.
  */
 export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): HTMLElement {
   const wrap = el("div", {
-    class: "event-command-choices-inline",
+    class: "event-command-choices-inline cream-command-form",
     dataset: { testid: "event-command-choices-inline-editor" },
   });
   const options = normalizeOptions(cmd.options);
@@ -75,8 +75,8 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
       ],
     }),
     el("p", {
-      class: "event-command-choices-hint event-command-choices-rm-note",
-      text: "각 선택지 명령은 확인 후 이벤트 목록에서 편집합니다.",
+      class: "event-command-choices-hint",
+      text: "각 선택지 본문은 가운데 목록의 가지에서 편집합니다.",
       dataset: { testid: "event-choice-branch-list-note" },
     })
   );

@@ -1,72 +1,90 @@
-/* animation-editor.css — 전투 애니메이션 편집기 레이아웃 수술(P8 Critical).
- *
- * qa-battle Critical: 1280×720 에서 편집기 전체가 196px 로 압착되어
- *  - 행들이 겹쳐 "+ 프레임" 버튼이 스테이지 패널에 가려 클릭 불가
- *  - 스테이지 프리뷰 서피스가 55px 부모 밖으로 이탈해 프리뷰가 화면에 보이지 않음
- *  - 편집기 폭(그리드 min 합 930px)이 부모 폼(854px)을 넘어 우측 열 클리핑
- * 원인: 05-dense-workbenches.css 의 편집기 그리드에 행 최소 높이가 없고 패널이
- * min-height:0 이라 행이 내용 이하로 압착됨. 여기서 행/패널 최소 높이를 강제하고
- * 컬럼 최소 폭 합을 부모 폼 안으로 줄인다. 압착 대신 폼(.animation-detail-form,
- * overflow:auto)이 세로 스크롤을 갖는다.
- * 배치 A 소유 CSS 와 충돌하지 않도록 신규 파일로 분리, databaseAnimationRecordView.ts
- * 에서 import 되어 캐스케이드상 뒤에 로드된다. */
+/* animation-editor.css — studio chrome around the black animation stage.
+ * Restyle controls/inspector/timeline to --db-studio-* tokens.
+ * Keep black canvas (#171a1d / #1d2024) intact — chrome only. */
+
+.database-modal-backdrop .database-modal-body .animation-detail-form {
+  background: var(--db-studio-canvas);
+  color: var(--db-studio-text-1);
+}
+
+/* Inspector inputs/selects -> studio surface */
+.database-modal-backdrop .database-modal-body .db-animation-top-grid :is(input, select),
+.database-modal-backdrop .database-modal-body .db-animation-panel :is(input[type="text"], input[type="number"], select) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-body .db-animation-top-grid :is(label, .db-field) span:first-child,
+.database-modal-backdrop .database-modal-body .db-animation-panel :is(label, .db-field) span:first-child {
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-body .db-animation-panel {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--db-studio-shadow);
+}
+
+.database-modal-backdrop .database-modal-body .db-animation-panel h4 {
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-body .db-animation-table th {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-body .db-animation-table td {
+  color: var(--db-studio-text-1);
+}
 
 @media (min-width: 901px) {
-  /* 고정 높이(height:100%) 그리드 폼의 암시적 auto 행은 min-height:0 아이템과 만나면
-   * 내용 이하로 붕괴한다(편집기 행이 ~13px 로 붕괴해 참조 패널이 편집기 위에 겹침).
-   * 행을 내용 크기로 강제하고 넘치는 만큼 폼이 스크롤(overflow:auto)하게 한다. */
-  .database-modal-body .animation-detail-form {
+  .database-modal-backdrop .database-modal-body .animation-detail-form {
     grid-auto-rows: max-content;
   }
 
-  .database-modal-body .db-animation-rm2003-editor {
-    /* min 합 150+0+220(+gap 20)=390px — 854px 폼 안에서 절대 넘치지 않는다. */
+  .database-modal-backdrop .database-modal-body .db-animation-rm2003-editor {
     grid-template-columns: minmax(150px, 0.42fr) minmax(0, 1fr) minmax(200px, 0.6fr);
-    /* top / frames·stage·timing / cells / strip — 행이 내용 이하로 붕괴하지 않게. */
     grid-template-rows: minmax(170px, auto) minmax(248px, auto) minmax(150px, auto) minmax(64px, auto);
-    /* dense-workbenches 의 min-height:0 은 부모 폼(고정 높이 grid)의 행을 0 까지
-     * 붕괴시켜 편집기 박스가 내용(≈800px)보다 짧아지고(실측 115px) 아래 행들이
-     * 참조 패널·상단 필드 위로 겹쳐 그려졌다 — 내용 기반 최소 높이로 복원해
-     * 폼(.animation-detail-form, overflow:auto)이 스크롤을 갖게 한다. */
     min-height: max-content;
   }
 
-  .database-modal-body .db-animation-top-grid {
+  .database-modal-backdrop .database-modal-body .db-animation-top-grid {
     min-height: auto;
   }
 
-  .database-modal-body .db-animation-frame-list-panel,
-  .database-modal-body .db-animation-stage-panel,
-  .database-modal-body .db-animation-timing-panel {
+  .database-modal-backdrop .database-modal-body .db-animation-frame-list-panel,
+  .database-modal-backdrop .database-modal-body .db-animation-stage-panel,
+  .database-modal-backdrop .database-modal-body .db-animation-timing-panel {
     max-height: none;
     min-height: 248px;
   }
 
-  .database-modal-body [data-testid="db-animation-cell-table"] {
+  .database-modal-backdrop .database-modal-body [data-testid="db-animation-cell-table"] {
     max-height: none;
     min-height: 150px;
     overflow: auto;
   }
 
-  /* 스테이지: 커맨드 그리드 + 프리뷰(154px+) + 스탯 그리드가 세로로 다 보이도록. */
-  .database-modal-body .db-animation-stage-panel {
+  .database-modal-backdrop .database-modal-body .db-animation-stage-panel {
     display: grid;
     gap: 8px;
     grid-template-rows: auto minmax(154px, 1fr) auto;
     overflow: hidden;
   }
 
-  .database-modal-body .db-animation-stage-panel .db-animation-stage-surface {
+  .database-modal-backdrop .database-modal-body .db-animation-stage-panel .db-animation-stage-surface {
     min-height: 154px;
   }
 
-  /* 패턴 스트립: db-animation-panel 클래스가 없어 클리핑 없이 아래 행을 덮었다 —
-   * 자체 박스로 감싸고 가로 스크롤로 제한한다. */
-  .database-modal-body .db-animation-pattern-strip-panel {
+  .database-modal-backdrop .database-modal-body .db-animation-pattern-strip-panel {
     align-items: stretch;
-    background: var(--bg-raised);
-    border: 1px solid var(--db-modern-line, var(--border-subtle));
-    border-radius: 4px;
+    background: var(--db-studio-surface);
+    border: 1px solid var(--db-studio-border-subtle);
+    border-radius: 8px;
     box-sizing: border-box;
     display: flex;
     gap: 6px;
@@ -77,13 +95,12 @@
     padding: 8px;
   }
 
-  .database-modal-body .db-animation-pattern-cell {
+  .database-modal-backdrop .database-modal-body .db-animation-pattern-cell {
     flex: 0 0 auto;
     min-width: 56px;
   }
 
-  /* 프레임 목록이 길어지면 패널 내부 스크롤. */
-  .database-modal-body .db-animation-frame-list {
+  .database-modal-backdrop .database-modal-body .db-animation-frame-list {
     max-height: 150px;
     overflow-y: auto;
   }

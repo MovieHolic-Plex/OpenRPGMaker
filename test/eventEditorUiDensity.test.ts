@@ -126,7 +126,7 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
-    const contents = host.querySelector('[data-testid="event-classic-contents"]');
+    const contents = host.querySelector('[data-testid="event-script-canvas"]');
     const toolbar = contents?.querySelector(".event-editor-command-toolbar");
     const toolsMenu = host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
     expect(toolbar).toBeTruthy();

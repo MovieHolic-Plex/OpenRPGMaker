@@ -4,9 +4,8 @@ import { commandKindSelect, selectedOptionValue } from "./dom";
 import { renderAdvancedCommandBody } from "./commandBodyAdvanced";
 import { renderCoreCommandBody } from "./commandBodyCore";
 import { renderM2CommandBody } from "./commandBodyM2";
-import { commandSummary } from "./commandSummary";
 import { renderSchemaCommandBody } from "./schemaCommandBody";
-import { COMMAND_KIND_OPTIONS } from "./options";
+import { COMMAND_KIND_OPTIONS, commandKindLabel } from "./options";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
@@ -26,8 +25,8 @@ export function renderCommandBody(context: CommandEditContext, cmd: Command): HT
   }
   wrap.append(
     el("div", {
-      class: "event-command-edit-summary",
-      text: commandSummary(cmd),
+      class: "cream-command-form-head",
+      text: commandKindLabel(cmd.kind),
       dataset: { testid: "event-command-edit-summary" },
     })
   );

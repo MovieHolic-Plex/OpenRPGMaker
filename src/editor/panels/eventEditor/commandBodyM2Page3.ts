@@ -24,8 +24,8 @@ const VALUE_SOURCE_SEGMENTS = [
 ] as const satisfies readonly SegmentOption<"number" | "variable">[];
 
 const BOOLEAN_SEGMENTS = [
-  { value: "true", key: "true", label: "ON" },
-  { value: "false", key: "false", label: "OFF" },
+  { value: "true", key: "true", label: "켜기" },
+  { value: "false", key: "false", label: "끄기" },
 ] as const satisfies readonly SegmentOption<"true" | "false">[];
 
 const VEHICLE_SEGMENTS = [
@@ -450,8 +450,8 @@ function getEventIdBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
     testid: "get-event-id-command-body",
     intentTestid: "get-event-id-intent",
     previewTestid: "get-event-id-preview",
-    title: "이벤트 ID 얻기",
-    body: "지정 좌표에 있는 이벤트 ID를 변수에 저장합니다.",
+    title: "어느 이벤트인지 알기",
+    body: "그 칸에 있는 이벤트가 누구인지 변수에 넣습니다.",
     note: "해당 칸에 이벤트가 없으면 0을 기록합니다.",
   });
 }
@@ -951,7 +951,7 @@ function movePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLEle
 function erasePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "erase-picture-m2-command-body");
   const pictureIdInput = el("input", {
-    attrs: { type: "text", placeholder: "그림 번호" },
+    attrs: { type: "text", placeholder: "그림 칸" },
     value: String(cmd.fields.pictureId ?? "pic1"),
     dataset: { testid: "erase-picture-m2-id-input" },
   }) as HTMLInputElement;
@@ -978,7 +978,7 @@ function erasePictureM2Body(context: CommandEditContext, cmd: M2Command): HTMLEl
   renderPreview();
   wrap.append(
     intentCard("그림 삭제", "표시 중인 그림 슬롯을 비웁니다.", "erase-picture-m2-intent"),
-    layout([fieldBlock("그림 번호", pictureIdInput)], preview)
+    layout([fieldBlock("그림 칸", pictureIdInput)], preview)
   );
   return wrap;
 }
@@ -1000,7 +1000,7 @@ function pictureBody(
   const project = store.getCurrent();
   let resourceId = String(cmd.fields.resourceId ?? "").trim();
   const pictureIdInput = el("input", {
-    attrs: { type: "text", placeholder: "그림 번호" },
+    attrs: { type: "text", placeholder: "그림 칸" },
     value: String(cmd.fields.pictureId ?? "pic1"),
     dataset: { testid: `${options.testid.replace(/-command-body$/, "")}-id-input` },
   }) as HTMLInputElement;
@@ -1028,14 +1028,14 @@ function pictureBody(
   const resourceSelect = resourceIdSelect(resourceId, `${options.testid.replace(/-command-body$/, "")}-resource-select`, "picture");
   const pickBtn = el("button", {
     class: "btn small",
-    text: "리소스 선택…",
+    text: "그림 고르기…",
     attrs: { type: "button" },
     dataset: { testid: `${options.testid.replace(/-command-body$/, "")}-resource-picker` },
     on: {
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: "image",
-          title: "그림 리소스 선택",
+          title: "그림 선택",
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
@@ -1103,7 +1103,7 @@ function pictureBody(
   renderPreview();
 
   const fields: HTMLElement[] = [
-    fieldBlock("그림 번호", pictureIdInput),
+    fieldBlock("그림 칸", pictureIdInput),
     fieldBlock("X", xInput),
     fieldBlock("Y", yInput),
   ];
@@ -1360,14 +1360,14 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
   const resourceSelect = resourceIdSelect(resourceId, "change-parallax-back-resource-select", "backdrop");
   const pickBtn = el("button", {
     class: "btn small",
-    text: "리소스 선택…",
+    text: "그림 고르기…",
     attrs: { type: "button" },
     dataset: { testid: "change-parallax-back-resource-picker" },
     on: {
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: "backdrop",
-          title: "파노라마 리소스 선택",
+          title: "먼 배경 선택",
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
@@ -1669,7 +1669,7 @@ function resourceIdSelect(
   const project = store.getCurrent();
   const select = el("select", {
     dataset: { testid: testId },
-    attrs: { "aria-label": prefer === "picture" ? "그림 리소스" : "파노라마 리소스" },
+    attrs: { "aria-label": prefer === "picture" ? "그림" : "먼 배경" },
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택 없음)", attrs: { value: "" } }));
   const ids = new Set<string>();
@@ -1787,7 +1787,7 @@ function variableLabel(variableId: string): string {
   const index = project.variables.findIndex((entry) => entry.id === variableId);
   if (index < 0) return variableId;
   const name = project.variables[index]?.name?.trim();
-  return name ? `${String(index + 1).padStart(4, "0")}: ${name}` : String(index + 1).padStart(4, "0");
+  return name || "(이름 없음)";
 }
 
 function mapLabel(mapId: string): string {

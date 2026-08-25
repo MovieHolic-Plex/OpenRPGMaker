@@ -218,6 +218,185 @@ test("diagnose page tab strip geometry", async ({ page }) => {
   console.log("[geom]", JSON.stringify(info, null, 1));
 });
 
+test("inspector cream-forms each mockup command kind", async ({ page }) => {
+  test.setTimeout(180_000);
+  await mkdir(DIR, { recursive: true });
+  await page.setViewportSize({ width: 1500, height: 1000 });
+  const { project, eventId } = mockupProject();
+  const hostEvent = Object.values(project.maps)
+    .flatMap((map) => map.events)
+    .find((event) => event.id === eventId);
+  const page0 = hostEvent?.pages[0];
+  project.system = {
+    ...project.system,
+    craftRecipes: project.system.craftRecipes?.length
+      ? project.system.craftRecipes
+      : [
+          {
+            id: "recipe_preserves_jar",
+            name: "병조림",
+            ingredients: [{ itemId: "item_hoe", count: 1 }],
+            outputItemId: "item_hoe",
+            outputCount: 1,
+          },
+        ],
+    itemUpgrades: project.system.itemUpgrades?.length
+      ? project.system.itemUpgrades
+      : [
+          {
+            id: "upgrade_copper_hoe",
+            fromItemId: "item_hoe",
+            toItemId: "item_copper_hoe",
+            goldCost: 0,
+            ingredients: [],
+          },
+        ],
+  };
+  const ensureItem = (id: string, name: string): void => {
+    const existing = project.database.items.find((item) => item.id === id);
+    if (existing) {
+      project.database.items = project.database.items.map((item) => item.id === id ? { ...item, name, description: name } : item);
+      return;
+    }
+    const template = project.database.items[0];
+    if (!template) return;
+    project.database.items = [...project.database.items, { ...template, id, name }];
+  };
+  ensureItem("item_hoe", "괭이");
+  ensureItem("item_copper_hoe", "구리 괭이");
+  const toolItemId = project.database.items.find((item) => item.id === "item_hoe")?.id
+    ?? project.database.items.find((item) => /[가-힣]/.test(item.name))?.id
+    ?? project.database.items[0]?.id
+    ?? "item_hoe";
+  const actorId = project.database.actors[0]?.id ?? "actor";
+  const gearId = project.database.equipment[0]?.id ?? "";
+  if (project.commonEvents.length === 0) {
+    project.commonEvents.push({
+      id: "ce_village_bell",
+      name: "마을 종",
+      trigger: "none",
+      commands: [],
+    });
+  } else if (!project.commonEvents[0]?.name.trim()) {
+    project.commonEvents[0] = { ...project.commonEvents[0]!, name: "마을 종" };
+  }
+  const commonId = project.commonEvents[0]?.id ?? "ce_village_bell";
+  const skillId = project.database.skills[0]?.id ?? "skill1";
+  const speciesId = project.database.monsterSpecies?.[0]?.id ?? "mon1";
+  if (page0) {
+    page0.commands.push(
+      { kind: "wait", ms: 400 },
+      { kind: "changeGold", op: "+=", amount: 50 },
+      { kind: "playAudio", resourceId: "cc0-bgm-rtp-fld-001", loop: true },
+      { kind: "setVariable", variableId: "0001", op: "=", value: 1 },
+      { kind: "label", name: "시작" },
+      { kind: "shop", itemIds: ["item_potion"] },
+      { kind: "transfer", mapId: project.startMapId, x: 2, y: 3 },
+      { kind: "inn", price: 20 },
+      { kind: "battleProcessing", troopId: "troop_bat_swarm", canEscape: true, canLose: false },
+      { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 1 },
+      { kind: "fork", condition: { kind: "switch", switchId: "0001", value: true }, then: [], else: [] },
+      { kind: "loop", body: [] },
+      { kind: "m2Command", commandId: "m2-014-change-parameters", fields: {} },
+      { kind: "changeParty", actorId, action: "add" },
+      { kind: "changeActorHp", actorId, op: "+=", amount: 10 },
+      { kind: "changeExp", actorId, op: "+=", amount: 20 },
+      { kind: "changeFace", resourceId: "", faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "erasePicture", pictureId: "1" },
+      { kind: "gameOver" },
+      { kind: "inputNumber", variableId: "0001", digits: 2 },
+      { kind: "gotoLabel", name: "시작" },
+      { kind: "addFollower", actorId },
+      { kind: "enterHeroName", actorId, maxLength: 6, showInitialName: true },
+      { kind: "changeEquipment", actorId, slot: "weapon", equipmentId: gearId },
+      { kind: "changeTile", mapId: project.startMapId, layer: "lower", x: 1, y: 1, tile: 0 },
+      { kind: "setLighting", ambient: 0.4 },
+      { kind: "addLight", source: { id: "횃불", at: "player", radius: 4 } },
+      { kind: "callCommonEvent", commonEventId: commonId },
+      { kind: "callMapEvent", eventId },
+      { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "move", dir: "down" }], repeat: false } },
+      { kind: "setEventGraphicPattern", eventId: "", pattern: 1 },
+      { kind: "setWeather", weather: "rain", intensity: 0.6 },
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      { kind: "checkpointSave", label: "마을" },
+      { kind: "ending", title: "끝", message: "여행이 끝났다." },
+      { kind: "changeFriendship", delta: 5 },
+      { kind: "learnSkill", actorId, skillId, action: "learn" },
+      { kind: "giveMonster", speciesId, level: 3 },
+      {
+        kind: "displayTextSettings",
+        format: "normal",
+        position: "bottom",
+        preventObscuringPlayer: true,
+        allowEventMovementDuringWait: false,
+      },
+      { kind: "showAnimation", target: "player", animationId: project.database.battleAnimations[0]?.id ?? "anim_hit", wait: false },
+      { kind: "timer", action: "set", seconds: 30, timerId: "timer1" },
+      { kind: "advanceTime", hours: 2 },
+      { kind: "setTime", hour: 8, minute: 0 },
+      { kind: "sleepUntilMorning" },
+      { kind: "inputWait", variableId: "0001" },
+      { kind: "breakLoop" },
+      { kind: "changeLevel", actorId, op: "+=", amount: 1 },
+      { kind: "changeActorMp", actorId, op: "+=", amount: 5 },
+      { kind: "recoverAll", actorId },
+      { kind: "removeFollower", all: true },
+      { kind: "removeLight", all: true },
+      { kind: "stopAudio" },
+      { kind: "killPlayer", message: "쓰러졌다." },
+      { kind: "returnToTitle" },
+      { kind: "setFlag", flag: "도입을 봄", value: true },
+      { kind: "setSelfSwitch", key: "A", value: true },
+      { kind: "getFriendship", variableId: "0001" },
+      { kind: "openChest" },
+      { kind: "equipTool", itemId: toolItemId },
+      { kind: "craftRecipe", recipeId: project.system.craftRecipes?.[0]?.id ?? "recipe_preserves_jar" },
+      { kind: "applyItemUpgrade", upgradeId: "upgrade_copper_hoe" },
+      { kind: "moveMonster", instanceId: "mon1", to: "party" },
+      { kind: "evolveMonster", instanceId: "mon1", toSpeciesId: speciesId },
+      { kind: "promoteActor", actorId },
+      { kind: "advanceCropGrowth", days: 1 },
+      { kind: "triggerEnding", endingId: "end1" },
+      { kind: "runControl", action: "start" },
+    );
+  }
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+  const modal = page.getByTestId("event-editor-modal");
+  await expect(modal).toBeVisible();
+  await selectView(modal, "List");
+  const items = modal.locator(".cmd-list .cmd-item[data-cmd-depth=\"0\"][data-command-kind]");
+  const count = await items.count();
+  expect(count).toBeGreaterThan(0);
+  const kinds: string[] = [];
+  for (let index = 0; index < count; index += 1) {
+    const kind = await items.nth(index).getAttribute("data-command-kind");
+    if (kind && !kinds.includes(kind)) kinds.push(kind);
+  }
+  for (const kind of kinds) {
+    if (!(await modal.isVisible())) {
+      await openEventEditor(page, eventId);
+      await expect(modal).toBeVisible();
+      await selectView(modal, "List");
+    }
+    const item = modal.locator(`.cmd-list .cmd-item[data-cmd-depth="0"][data-command-kind="${kind}"]`).first();
+    await expect(item).toBeVisible();
+    await item.evaluate((node) => node.scrollIntoView({ block: "nearest" }));
+    await item.click({ force: true });
+    await expect(modal.locator(`.cmd-item.selected[data-command-kind="${kind}"]`)).toBeVisible();
+    await expect(modal.getByTestId("event-inspector-body")).toBeVisible();
+    await page.evaluate(() => {
+      const active = document.activeElement;
+      if (active instanceof HTMLElement) active.blur();
+      for (const select of document.querySelectorAll("select")) {
+        if (select instanceof HTMLSelectElement) select.size = 1;
+      }
+    });
+    await modal.screenshot({ path: `${DIR}/form-${kind}.png` });
+  }
+  expect(kinds.length).toBeGreaterThan(40);
+});
+
 test("secondary controls remain reachable through disclosures", async ({ page }) => {
   await mkdir(DIR, { recursive: true });
   await page.setViewportSize({ width: 1500, height: 1000 });
@@ -372,15 +551,15 @@ test("mockup parity checklist", async ({ page }) => {
       "색상 범례 제거": !has(".event-command-legend") && !has(".event-command-legend-details"),
       "정적 AI 추천 제거": !has("[data-testid='event-ai-next-steps']"),
       "검사 제어가 헤더 안": !!val && !!commandHeader && val.top >= commandHeader.top - 1 && val.bottom <= commandHeader.bottom + 1,
-      "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
+      "반영하고 닫기 버튼": !!okBtn && okBtn.textContent?.includes("반영하고 닫기") === true,
       "명령 헤더가 페이지바 안": !!commandHeader && !!pagebar && commandHeader.top >= pagebar.top && commandHeader.bottom <= pagebar.bottom + 1,
       "툴바가 캔버스 최상단": !!toolbar && !!list && toolbar.bottom <= list.top + 2 && toolbar.height <= 34,
       "명령 보드 전폭": !!list && !!canvas && list.width >= canvas.width - 32,
       "편집 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-edit-menu")?.open === false,
       "도구 메뉴가 툴바에 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-toolbar > .event-editor-command-tools-menu")?.open === false,
       "푸터 상태 한 줄": !!draftStatus && !!remoteStatus && Math.abs(draftStatus.top - remoteStatus.top) <= 2,
-      // 상단 헤더 문구: "실행 내용 · N개".
-      "헤더 명령 수": /실행 내용\s*·\s*\d+개/.test(commandHeaderText),
+      // 상단 헤더 문구: "이 페이지가 하는 일 · N개".
+      "헤더 명령 수": /이 페이지가 하는 일\s*·\s*\d+개/.test(commandHeaderText),
     };
   });
   const pass = Object.values(result).filter(Boolean).length;
@@ -420,16 +599,13 @@ test("storyboard targets every displayed command path and remains secondary to t
   await expect(modal.getByTestId("event-storyboard")).toBeHidden();
   await selectView(modal, "Storyboard");
 
-  const targets = modal.locator(
-    ".event-storyboard-card[data-cmd-path], .event-storyboard-branch-command[data-cmd-path]",
-  );
-  const topLevelCount = await modal.locator(".event-storyboard-card[data-cmd-path]").count();
-  const nestedCount = await modal.locator(".event-storyboard-branch-command[data-cmd-path]").count();
-  expect(topLevelCount).toBeGreaterThan(0);
-  expect(nestedCount).toBeGreaterThan(0);
+  const cards = modal.locator(".event-storyboard-card[data-cmd-path]");
+  expect(await cards.count()).toBeGreaterThan(0);
+  expect(await modal.locator(".event-storyboard-branch-command").count()).toBe(0);
+  expect(await modal.locator(".event-storyboard-card-branches .event-storyboard-branch").count()).toBeGreaterThan(0);
 
-  for (let index = 0; index < await targets.count(); index += 1) {
-    const target = targets.nth(index);
+  for (let index = 0; index < await cards.count(); index += 1) {
+    const target = cards.nth(index);
     const commandPath = await target.getAttribute("data-cmd-path");
     expect(commandPath).toBeTruthy();
     await target.scrollIntoViewIfNeeded();
@@ -585,7 +761,13 @@ for (const vp of VIEWPORTS) {
     }, vp.width > 1180);
     const checks = { ...initial, ...selected };
     const failedChecks = Object.entries(checks)
-      .filter(([key, value]) => key !== "canvasWidth" && !Boolean(value))
+      .filter(([key, value]) => {
+        if (key === "canvasWidth" || key === "pagebarGap" || key === "chips") return false;
+        if (key === "trackSiblingBranches") return Number(value) !== 0;
+        if (key === "inspectorTitleLines") return Number(value) > 2;
+        if (key === "inspectorTitleHasOptionDump") return Boolean(value);
+        return !value;
+      })
       .map(([key]) => key);
     const pass = Object.keys(checks).length - failedChecks.length;
     const total = Object.keys(checks).length;

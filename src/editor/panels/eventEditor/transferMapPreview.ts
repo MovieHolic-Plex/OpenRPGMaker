@@ -148,7 +148,7 @@ function drawEventMarkers(context: CanvasRenderingContext2D, map: GameMap): void
     context.lineWidth = 1;
     context.strokeRect(x + inset + 2, y + inset + 2, Math.max(1, size - 4), Math.max(1, size - 4));
     context.fillStyle = "#ffffff";
-    context.font = "bold 10px Tahoma, sans-serif";
+    context.font = "bold 10px var(--font-ui, sans-serif), sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText("E", x + map.tileSize / 2, y + map.tileSize / 2 + 0.5);

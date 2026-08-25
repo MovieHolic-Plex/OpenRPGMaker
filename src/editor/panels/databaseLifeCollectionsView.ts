@@ -7,6 +7,11 @@ import { toast } from "@/util/toast";
 
 export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
+  const fishCount = project.database.fishSpecies?.length ?? 0;
+  const spotCount = project.system.fishing?.spots.length ?? 0;
+  const forageCount = project.system.seasonalForage?.areas.length ?? 0;
+  const museumCount = project.system.museum?.rewards.length ?? 0;
+  const isEmpty = fishCount === 0 && spotCount === 0 && forageCount === 0 && museumCount === 0;
   host.append(el("section", {
     class: "db-life-authoring-workspace db-life-collections-workspace",
     dataset: { testid: "db-life-collections-workspace" },
@@ -26,14 +31,36 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
         ] }),
         ],
       }),
-      el("div", { class: "db-life-toolbar", children: [
-        el("button", { class: "btn", text: "기본 생활 컬렉션 만들기", attrs: { type: "button" }, dataset: { testid: "db-life-collections-seed-defaults" }, on: { click: () => seedDefaults(rerender) } }),
-        el("span", { text: `물고기 ${project.database.fishSpecies?.length ?? 0} · 낚시터 ${project.system.fishing?.spots.length ?? 0} · 채집 구역 ${project.system.seasonalForage?.areas.length ?? 0} · 박물관 보상 ${project.system.museum?.rewards.length ?? 0}` }),
-      ] }),
-      section("물고기", "낚시에 잡히는 물고기와 실제 지급 아이템입니다.", "fish", (project.database.fishSpecies ?? []).map((row) => recordCard("fish", row.id, row.name, `${row.id} → ${row.itemId}`, rerender)), addButton("물고기 추가", "db-life-collections-add-fish", () => addFish(rerender))),
-      section("낚시터", "맵·영역·계절·시간·날씨별 출현 표입니다.", "fishing", (project.system.fishing?.spots ?? []).map((row) => recordCard("fishing", row.id, row.name ?? row.id, `${row.mapId} · ${row.catches.length}종`, rerender)), addButton("낚시터 추가", "db-life-collections-add-spot", () => addSpot(rerender))),
-      section("계절 채집", "날짜별로 다시 생성되고 계절 전환 때 정리되는 채집 구역입니다.", "forage", (project.system.seasonalForage?.areas ?? []).map((row) => recordCard("forage", row.id, row.name ?? row.id, `${row.mapId} · 하루 ${row.dailySpawnCount}개`, rerender)), addButton("채집 구역 추가", "db-life-collections-add-forage", () => addForage(rerender))),
-      section("박물관·수집 도감", "발견·출하·낚시·기부 기록과 exact-once 보상입니다.", "museum", (project.system.museum?.rewards ?? []).map((row) => recordCard("museum", row.id, row.name ?? row.id, row.minDonations ? `${row.minDonations}개 기부` : `${row.requiredItemIds?.length ?? 0}종 지정`, rerender)), addButton("박물관 보상 추가", "db-life-collections-add-museum", () => addMuseumReward(rerender))),
+      ...(isEmpty
+        ? [el("div", {
+            class: "empty-state empty-state--large empty-state--inset db-studio-empty",
+            dataset: { testid: "db-life-collections-empty" },
+            children: [
+              el("span", { class: "empty-state__icon", text: "🎣", attrs: { "aria-hidden": "true" } }),
+              el("h3", { class: "empty-state__title", text: "아직 등록된 컬렉션이 없습니다" }),
+              el("p", { class: "empty-state__desc", text: "기본값을 만들면 물고기, 낚시터, 채집 구역, 박물관 보상이 연결된 상태로 채워집니다." }),
+              el("button", {
+                class: "empty-state__action empty-state__action--primary",
+                text: "기본 생활 컬렉션 만들기",
+                attrs: { type: "button" },
+                dataset: { testid: "db-life-collections-seed-defaults" },
+                on: { click: () => seedDefaults(rerender) },
+              }),
+            ],
+          })]
+        : [el("div", {
+            class: "db-life-toolbar",
+            dataset: { testid: "db-life-collections-toolbar" },
+            children: [
+              el("span", { text: `물고기 ${fishCount} · 낚시터 ${spotCount} · 채집 구역 ${forageCount} · 박물관 보상 ${museumCount}` }),
+            ],
+          })]),
+      ...(isEmpty ? [] : [
+        section("물고기", "낚시에 잡히는 물고기와 실제 지급 아이템입니다.", "fish", (project.database.fishSpecies ?? []).map((row) => recordCard("fish", row.id, row.name, `${row.itemId}`, rerender, row.id)), addButton("물고기 추가", "db-life-collections-add-fish", () => addFish(rerender))),
+        section("낚시터", "맵·영역·계절·시간·날씨별 출현 표입니다.", "fishing", (project.system.fishing?.spots ?? []).map((row) => recordCard("fishing", row.id, row.name ?? row.id, `${row.mapId} · ${row.catches.length}종`, rerender)), addButton("낚시터 추가", "db-life-collections-add-spot", () => addSpot(rerender))),
+        section("계절 채집", "날짜별로 다시 생성되고 계절 전환 때 정리되는 채집 구역입니다.", "forage", (project.system.seasonalForage?.areas ?? []).map((row) => recordCard("forage", row.id, row.name ?? row.id, `${row.mapId} · 하루 ${row.dailySpawnCount}개`, rerender)), addButton("채집 구역 추가", "db-life-collections-add-forage", () => addForage(rerender))),
+        section("박물관·수집 도감", "발견·출하·낚시·기부 기록과 한 번만 받는 보상입니다.", "museum", (project.system.museum?.rewards ?? []).map((row) => recordCard("museum", row.id, row.name ?? row.id, row.minDonations ? `${row.minDonations}개 기부` : `${row.requiredItemIds?.length ?? 0}종 지정`, rerender)), addButton("박물관 보상 추가", "db-life-collections-add-museum", () => addMuseumReward(rerender))),
+      ]),
     ],
   }));
 }
@@ -45,15 +72,15 @@ function section(title: string, description: string, id: string, rows: HTMLEleme
   ] });
 }
 type LifeCollectionKind = "fish" | "fishing" | "forage" | "museum";
-function recordCard(kind: LifeCollectionKind, id: string, title: string, detail: string, rerender: () => void): HTMLElement {
+function recordCard(kind: LifeCollectionKind, id: string, title: string, detail: string, rerender: () => void, tooltipId?: string): HTMLElement {
   return el("article", { class: "db-life-record-card", children: [
     el("input", {
       class: "input",
-      attrs: { type: "text", value: title, "aria-label": `${title} 이름` },
+      attrs: { type: "text", value: title, "aria-label": `${title} 이름`, ...(tooltipId ? { title: tooltipId } : {}) },
       dataset: { testid: `db-life-collections-name-${kind}-${id}` },
       on: { change: (event) => renameRecord(kind, id, (event.currentTarget as HTMLInputElement).value, rerender) },
     }),
-    el("span", { text: detail }),
+    el("span", { class: "db-list-meta", text: detail, attrs: tooltipId ? { title: tooltipId } : {} }),
     el("button", {
       class: "btn small danger",
       text: "삭제",

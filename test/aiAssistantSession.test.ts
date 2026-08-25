@@ -172,7 +172,7 @@ describe("자율 실행 드라이버", () => {
       finalResult(THREE_ITEM_PLAN_JSON),
       toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
       titleWrite("c_t1", "t1"),
-      finalResult("어떤 분위기로 바꿀까요?"),
+      finalResult("어떤 분위기로 바꿀까요?\n[선택지] 밝은 | 어두운"),
     ];
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
@@ -1003,8 +1003,10 @@ function assistantFinal(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
-const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
-const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12 };
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512, agentMode: "chat" as const };
+const AUTO_SINGLE_CONFIG = { ...CONFIG, agentMode: "auto" as const };
+const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12, agentMode: "auto" as const };
+const LEGACY_CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
 // 플래너 라운드(오케스트레이션 게이트 통과 시 항상 선행)가 소비하는 1스텝 — direct 로 통과시킨다.
 const PLANNER_DIRECT = assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
 const RAW_TOOL_MARKUP_FIXTURE = `적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...]<]minimax[>[<tool_call>]<]minimax[>[<invoke name="proposetilevocabulary">...`;
@@ -1059,6 +1061,21 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.assistantText).toContain("[선택지]");
     const audit = JSON.parse(session.exportAudit()) as { entries: { kind: string; text?: string }[] };
     expect(audit.entries.some((entry) => entry.kind === "status" && entry.text?.includes("의도 확인"))).toBe(true);
+  }, 30000);
+
+  it("agentMode auto 에서는 bare 집을 clarify로 멈추지 않고 LLM으로 진행한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let chatCalls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      chatCalls += 1;
+      return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
+    };
+    const session = new AssistantSession(createBlankProject(), { config: AUTO_SINGLE_CONFIG, chat });
+    const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
+    expect(chatCalls).toBeGreaterThan(0);
+    expect(result.assistantText).not.toContain("[선택지]");
+    const audit = JSON.parse(session.exportAudit()) as { entries: { kind: string; text?: string }[] };
+    expect(audit.entries.some((entry) => entry.kind === "status" && entry.text?.includes("의도 확인 건너"))).toBe(true);
   }, 30000);
 
   it("실내 표지가 있으면 되묻지 않고 LLM으로 진행한다", async () => {
@@ -1560,6 +1577,22 @@ describe("agentMode 오케스트레이션 게이트", () => {
 
     const chatNames = await exposedToolNames({ ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const });
     expect(chatNames).not.toContain("set_work_plan");
+  }, 30000);
+
+  it("quest 도메인 턴은 workPlan 없이도 define_quest와 verify_quest를 노출한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const names: string[] = [];
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      for (const tool of req.tools ?? []) names.push(tool.function.name);
+      return assistantFinal("완료했습니다.");
+    };
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const },
+      chat,
+    });
+    await session.sendUserMessage("퀘스트 만들어줘. 촌장이 잃어버린 반지를 찾아와", () => {});
+    expect(names).toContain("define_quest");
+    expect(names).toContain("verify_quest");
   }, 30000);
 });
 

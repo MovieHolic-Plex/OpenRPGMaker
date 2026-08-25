@@ -248,7 +248,8 @@ export function resourcePickerControl(input: {
     }
   );
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
-  const displayName = input.resourceId ? optionName ?? prettyId(input.resourceId) : "(미설정)";
+  const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
+  const displayName = input.resourceId ? "설정됨" : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
     class: "db-resource-picker-inline-id db-authoring-id",
@@ -300,7 +301,7 @@ export function resourcePickerControl(input: {
               el("span", {
                 class: "db-resource-picker-inline-name",
                 text: displayName,
-                attrs: { title: input.resourceId ?? "" },
+                attrs: { title: rawName || input.resourceId || "" },
               }),
               idInput,
               el("button", {
@@ -334,7 +335,7 @@ function resourceButton(
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { faceIndex, characterIndex }),
-      el("span", { text: option.name }),
+      el("span", { text: studioResourceLabel(option.name, option.id) }),
     ],
     on: { click: onSelect },
   });
@@ -648,6 +649,17 @@ function isGeneratedBattleActorResource(resourceId: string): boolean {
 
 function prettyId(id: string): string {
   return id.replace(/^generated-(actor|enemy|item|equipment)-/u, "").replaceAll("-", " ");
+}
+
+function studioResourceLabel(name: string, id: string): string {
+  const raw = (name || id).trim();
+  if (/[가-힣]/u.test(raw)) return raw;
+  return raw
+    .replace(/^generated-[a-z]+-/u, "")
+    .replace(/^easyrpg-[a-z]+-/u, "")
+    .replaceAll(/[_-]+/gu, " ")
+    .replaceAll(/\s+/gu, " ")
+    .trim() || raw;
 }
 
 function clampIndex(value: number, max: number): number {

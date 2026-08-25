@@ -1,10 +1,21 @@
 /* 이벤트 에디터 창 모드와 작업 영역 분할선. event-editor.mockup.css 뒤에서 최종 기하를 소유한다. */
 
+.event-editor-modal-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+.event-editor-modal-header > .event-editor-window-controls,
 .event-editor-window-controls {
   align-items: center;
   display: flex;
   flex: 0 0 auto;
   gap: 4px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.event-editor-window-control {
+  white-space: nowrap;
 }
 
 .event-editor-modal-header .event-editor-window-fullscreen {

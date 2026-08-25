@@ -162,7 +162,7 @@ function recordPickerShell(options: {
         class: "event-record-picker-footer",
         children: [
           footerButton({
-            label: "확인",
+            label: "반영하고 닫기",
             testId: "event-record-picker-ok",
             primary: true,
             onClick: () => {
@@ -171,7 +171,7 @@ function recordPickerShell(options: {
               options.close();
             },
           }),
-          footerButton({ label: "취소", onClick: options.close }),
+          footerButton({ label: "닫기", onClick: options.close }),
           options.applyButton,
         ],
       }),

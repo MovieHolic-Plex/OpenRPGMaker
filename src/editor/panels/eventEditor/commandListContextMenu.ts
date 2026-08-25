@@ -118,7 +118,7 @@ export function handleCommandShortcut(
     return;
   }
   if (event.key === "Delete" || event.key === "Del" || event.key === "Backspace") {
-    // 실행 내용 포커스에서 Delete 는 명령만 지운다.
+    // 명령 목록 포커스에서 Delete 는 명령만 지운다.
     // stopPropagation 필수 — 모달 backdrop 의 "이벤트 삭제" 핸들러로 버블되면 이벤트 전체가 날아간다.
     event.preventDefault();
     event.stopPropagation();

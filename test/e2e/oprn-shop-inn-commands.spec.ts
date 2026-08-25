@@ -85,7 +85,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await shopCommand.getByTestId("shop-add-item").click();
   await expect(shopCommand.getByTestId("shop-selected-items")).toHaveValue("item_potion");
   await expect(shopCommand).toContainText("상점 종류");
-  await expect(shopCommand).toContainText("추가 가능");
+  await expect(shopCommand).toContainText("아직 안 담음");
   await page.screenshot({ path: testInfo.outputPath("shop-editor-readable.png"), fullPage: true });
   await shopCommand.getByTestId("event-command-edit-ok").click();
   await expect(shopCommand).toHaveCount(0);

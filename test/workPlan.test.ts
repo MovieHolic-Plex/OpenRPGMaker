@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import {
   advanceWorkPlanFromTools,
   buildDefaultWorkPlan,
@@ -227,8 +228,52 @@ describe("workPlan progress harness", () => {
         autoStepsUsed: 0,
         assistantText: "어떤 스타일로 할까요?",
       })
-    ).toBe(false);
+    ).toBe(true);
     expect(formatRalphContinueMessage(plan)).toContain("RALPH CONTINUE");
+  });
+
+  it("Ralph continues on a 200-char Korean question while the plan is incomplete", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [
+        {
+          title: "L",
+          items: [
+            { title: "A", instruction: "do A" },
+            { title: "B", instruction: "do B" },
+          ],
+        },
+      ],
+    });
+    const stem =
+      "마을 광장에 상인과 NPC를 배치하고 집 지붕 타일을 맞춘 다음 퀘스트 대화를 이어서 작성하면 다음 단계로 넘어갈 수 있습니다. ";
+    const koreanQuestion = `${stem}${"가".repeat(199 - stem.length)}?`;
+    expect(koreanQuestion.length).toBe(200);
+    expect(koreanQuestion.endsWith("?")).toBe(true);
+    expect(shouldRalphContinue(plan, { autoStepsUsed: 0, assistantText: koreanQuestion })).toBe(true);
+  });
+
+  it("Ralph stops when assistant text contains QUICK_REPLY_MARKER", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [
+        {
+          title: "L",
+          items: [
+            { title: "A", instruction: "do A" },
+            { title: "B", instruction: "do B" },
+          ],
+        },
+      ],
+    });
+    expect(
+      shouldRalphContinue(plan, {
+        autoStepsUsed: 0,
+        assistantText: `어떤 스타일로 할까요?\n${QUICK_REPLY_MARKER} 중세 | 현대`,
+      })
+    ).toBe(false);
   });
 
   it("Ralph stops when plan complete", () => {

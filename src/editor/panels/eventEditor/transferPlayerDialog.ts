@@ -112,6 +112,16 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
   };
   const applyDraft = () => {
     if (!request.liveApply) return;
+    const current = request.command;
+    if (
+      current.mapId === draft.mapId &&
+      current.x === draft.x &&
+      current.y === draft.y &&
+      (current.direction ?? "retain") === draft.direction &&
+      (current.fade ?? "black") === draft.fade
+    ) {
+      return;
+    }
     request.onApply({
       kind: "transfer",
       mapId: draft.mapId,
@@ -155,7 +165,7 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
   preview.append(canvas);
   if (request.hideFooter) body.classList.add("transfer-player-inline-host");
   body.append(
-    el("div", { class: "transfer-player-dialog" + (request.hideFooter ? " transfer-player-dialog-inline" : ""), children: [
+    el("div", { class: "transfer-player-dialog cream-command-form" + (request.hideFooter ? " transfer-player-dialog-inline" : ""), children: [
       tree,
       preview,
       el("div", { class: "transfer-player-controls", children: [
@@ -184,7 +194,7 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
           : [
               el("button", {
                 class: "transfer-player-button",
-                text: "확인",
+                text: "반영하고 닫기",
                 dataset: { testid: "transfer-player-ok" },
                 attrs: { type: "button" },
                 on: { click: () => {
@@ -194,7 +204,7 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
               }),
               el("button", {
                 class: "transfer-player-button",
-                text: "취소",
+                text: "닫기",
                 dataset: { testid: "transfer-player-cancel" },
                 attrs: { type: "button" },
                 on: { click: close },
@@ -209,7 +219,10 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
       ? (cb: () => void) => globalThis.requestAnimationFrame(cb)
       : (cb: () => void) => globalThis.setTimeout(cb, 0);
   schedule(() => {
-    schedule(() => rerenderAll());
+    schedule(() => {
+      if (typeof document === "undefined" || !preview.isConnected) return;
+      rerenderAll();
+    });
   });
 }
 
@@ -277,18 +290,12 @@ function appendTreeNode(host: HTMLElement, project: Project, node: MapTreeNode, 
 }
 
 function targetLabel(project: Project, draft: TransferDraft): string {
-  const ids = Object.keys(project.maps);
-  const index = Math.max(0, ids.indexOf(draft.mapId)) + 1;
   const map = project.maps[draft.mapId];
-  return `${String(index).padStart(4, "0")}:${map?.name ?? draft.mapId} (${pad3(draft.x)}.${pad3(draft.y)})`;
-}
-
-function pad3(value: number): string {
-  return String(value).padStart(3, "0");
+  return `${map?.name ?? draft.mapId} (${draft.x}, ${draft.y})`;
 }
 
 function zoomLabel(zoom: number): string {
-  return zoom === 1 ? "1/1" : zoom === 0.5 ? "1/2" : "1/4";
+  return zoom === 1 ? "전체" : zoom === 0.5 ? "절반" : "¼";
 }
 
 function clamp(value: number, min: number, max: number): number {

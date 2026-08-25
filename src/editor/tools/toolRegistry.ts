@@ -277,7 +277,20 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",
   ])],
   // define_ending 이 트림되면 "엔딩을 정의하는 기능이 없다"는 잘못된 보고로 이어진다(2026-08-23 실측).
-  ["quest", new Set(["author_story_arc"])],
+  ["quest", new Set([
+    "author_story_arc",
+    "define_quest",
+    "create_quest",
+    "verify_quest",
+    "lint_quest",
+    "generate_walkthrough",
+  ])],
+  ["world", new Set([
+    "plan_world",
+    "build_world",
+    "link_maps",
+    "lint_world",
+  ])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
   ["tile", 0],

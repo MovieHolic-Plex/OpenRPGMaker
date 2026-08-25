@@ -129,4 +129,4 @@ export function savePanelCollapsed(collapsed: boolean): void {
 }
 
 /** AI 작업으로 자동 펼친 뒤, 검토 대기 없이 턴이 끝나면 다시 접기까지 대기(ms). */
-export const AUTO_COLLAPSE_AFTER_AI_MS = 1200;
+export const AUTO_COLLAPSE_AFTER_AI_MS = 0;

@@ -250,7 +250,7 @@ describe("event editor trust loop", () => {
     const firstTab = document.querySelector<HTMLElement>('[data-testid="event-command-picker-tab-1"]');
     const secondTab = document.querySelector<HTMLElement>('[data-testid="event-command-picker-tab-2"]');
     expect(firstTab?.textContent).toBe("빠른 저작");
-    expect(secondTab?.textContent).toBe("배우·전투");
+    expect(secondTab?.textContent).toBe("동료 · 전투");
     expect(firstTab?.getAttribute("tabindex")).toBe("0");
     expect(secondTab?.getAttribute("tabindex")).toBe("-1");
 

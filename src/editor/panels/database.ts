@@ -281,9 +281,9 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         + (project.system.seasonalForage?.areas.length ?? 0)
         + (project.system.museum?.rewards.length ?? 0);
     case "switches":
-      return project.switches.length;
+      return project.switches.filter((record) => record.name.trim().length > 0).length;
     case "variables":
-      return project.variables.length;
+      return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
     case "tilesets":
@@ -316,7 +316,7 @@ function refreshTabCounts(container: HTMLElement): void {
 function appendTabSearch(header: HTMLElement): void {
   const input = el("input", {
     class: "db-tab-search",
-    attrs: { type: "search", placeholder: "⌕", title: "탭 검색", "aria-label": "탭 검색" },
+    attrs: { type: "search", placeholder: "탭 검색", title: "탭 검색", "aria-label": "탭 검색" },
     dataset: { testid: "db-tab-search" },
     on: { input: () => applyTabFilter(header, input.value) },
   });

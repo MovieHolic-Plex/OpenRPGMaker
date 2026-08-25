@@ -71,7 +71,7 @@ function logParentClass(panel: FakeElement): string {
 }
 
 describe("로그 슬롯은 한 곳에서 정해진다", () => {
-  it("도크별 기본 뷰: 유리는 카드 본문, 사이드는 휘발 존, float 은 마운트 없음", () => {
+  it("도크별 기본 뷰: 유리는 카드 본문, 사이드는 휘발 존, float 은 유리 로그를 유지", () => {
     const panel = renderPanel();
 
     setDock(panel, "glass");
@@ -83,8 +83,9 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
     expect(logParentClass(panel)).toContain("ai-rising-volatile-zone");
 
     setDock(panel, "float");
-    expect(panel.dataset.logSlot).toBe("none");
-    expect(findByTestId(panel, "ai-chat-log")).toBeNull();
+    expect(panel.dataset.logSlot).toBe("glass");
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
+    expect(logParentClass(panel)).toContain("ai-glass-log");
   });
 
   it("기록을 열면 도크와 무관하게 기록 마운트로 간다", () => {
@@ -100,7 +101,7 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
       history.click();
       // 닫으면 그 도크의 기본 슬롯으로 되돌아온다 — 예전에는 닫는 쪽이 항상 휘발 존에
       // 넣고 뒤이어 도크 정책이 다시 옮기는 이중 이동이었다.
-      expect(panel.dataset.logSlot, dock).toBe(dock === "glass" ? "glass" : dock === "side" ? "volatile" : "none");
+      expect(panel.dataset.logSlot, dock).toBe(dock === "glass" ? "glass" : dock === "side" ? "volatile" : "glass");
     }
   });
 
@@ -139,7 +140,10 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
       setDock(panel, dock);
       expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
       expect(findByTestId(panel, "ai-completion-host"), dock).toBeTruthy();
-      expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeNull();
+      // pill은 항상 마운트되나 hidden — 인라인 결정 카드가 대신 보이므로 노출되지 않아야 한다
+      const pill = findByTestId(panel, "ai-proposal-reopen");
+      const pillHidden = pill == null || pill.hidden === true || (pill as { attrs?: { hidden?: string } }).attrs?.hidden !== undefined;
+      expect(pillHidden, dock).toBe(true);
       expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeTruthy();
     }
   });

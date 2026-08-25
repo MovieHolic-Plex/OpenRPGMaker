@@ -169,18 +169,19 @@ function renderCurveSection(curve: readonly PartyPowerCurvePoint[]): HTMLElement
 }
 
 // 공격력+HP 를 공통 스케일로 정규화하고, 5레벨 간격 세로 그리드 + Lv1/Lv10/.../Lv50 축
-// 라벨을 그린다. path 는 수작업 폴리라인 — 외부 차트 라이브러리 금지.
+// 라벨 + 좌측 Y축(0..max)을 그린다. path 는 수작업 폴리라인 — 외부 라이브러리 금지.
 function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
-  const width = 480;
-  const height = 200;
-  const padLeft = 8;
-  const padRight = 22;
-  const padTop = 10;
-  const padBottom = 24;
+  const width = 520;
+  const height = 220;
+  const padLeft = 48;
+  const padRight = 16;
+  const padTop = 12;
+  const padBottom = 32;
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
   // 공유 스케일: 두 시리즈의 최댓값. 전부 0 이어도 분모 0 방지.
   const maxValue = Math.max(1, ...curve.map((point) => Math.max(point.hp, point.attack)));
+  const yTickCount = 4;
   const xFor = (level: number): number => padLeft + ((level - 1) / Math.max(1, curve.length - 1)) * plotWidth;
   const yFor = (value: number): number => padTop + plotHeight - (value / maxValue) * plotHeight;
 
@@ -192,11 +193,38 @@ function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
     role: "img",
     "aria-label": "파티 전투력 곡선 (공격력·HP, Lv1-50)",
   });
+  // Y grid + Y labels (left axis) — horizontal hairlines
+  for (let index = 0; index <= yTickCount; index += 1) {
+    const value = Math.round((maxValue * index) / yTickCount);
+    const y = round2(yFor(value));
+    svg.append(
+      svgElement("line", {
+        class: "db-overview-grid db-overview-grid-y",
+        x1: String(padLeft),
+        y1: String(y),
+        x2: String(padLeft + plotWidth),
+        y2: String(y),
+      }),
+    );
+    svg.append(
+      svgElement(
+        "text",
+        {
+          class: "db-overview-axis-label db-overview-axis-label-y",
+          x: String(padLeft - 8),
+          y: String(y + 3),
+          "text-anchor": "end",
+        },
+        String(value),
+      ),
+    );
+  }
+  // X vertical grids
   for (let level = 5; level <= PARTY_CURVE_MAX_LEVEL; level += 5) {
     const x = round2(xFor(level));
     svg.append(
       svgElement("line", {
-        class: "db-overview-grid",
+        class: "db-overview-grid db-overview-grid-x",
         x1: String(x),
         y1: String(padTop),
         x2: String(x),
@@ -211,7 +239,7 @@ function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
         {
           class: "db-overview-axis-label",
           x: String(round2(xFor(level))),
-          y: String(height - 6),
+          y: String(height - 8),
           "text-anchor": "middle",
         },
         level === 1 ? "Lv1" : `Lv${level}`,
@@ -260,13 +288,14 @@ function renderScatterSection(points: readonly EnemyScatterPoint[]): HTMLElement
 }
 
 // x = HP(log 스케일), y = DPS(선형). 보스=레드/일반=액센트, hover 시 name/exp/gold 툴팁.
+// 좌측 Y축(DPS)과 하단 X축(HP)을 포함해 클리핑 없이 읽히게 한다.
 function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
-  const width = 480;
-  const height = 200;
-  const padLeft = 8;
-  const padRight = 8;
-  const padTop = 10;
-  const padBottom = 24;
+  const width = 520;
+  const height = 220;
+  const padLeft = 48;
+  const padRight = 16;
+  const padTop = 12;
+  const padBottom = 32;
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
   const logHp = points.map((point) => Math.log10(Math.max(1, point.hp)));
@@ -274,6 +303,7 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
   const maxLog = Math.max(...logHp);
   const logSpan = Math.max(1e-6, maxLog - minLog);
   const maxDps = Math.max(1, ...points.map((point) => point.dps));
+  const yTickCount = 4;
   const xFor = (hp: number): number => padLeft + ((Math.log10(Math.max(1, hp)) - minLog) / logSpan) * plotWidth;
   const yFor = (dps: number): number => padTop + plotHeight - (dps / maxDps) * plotHeight;
 
@@ -285,10 +315,71 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
     role: "img",
     "aria-label": "몬스터 HP vs 파티 DPS 산점도",
   });
-  // 축 기준선(눈금 역할).
+  // Y grid + labels
+  for (let index = 0; index <= yTickCount; index += 1) {
+    const dps = Math.round((maxDps * index) / yTickCount);
+    const y = round2(yFor(dps));
+    svg.append(
+      svgElement("line", {
+        class: "db-overview-grid db-overview-grid-y",
+        x1: String(padLeft),
+        y1: String(y),
+        x2: String(padLeft + plotWidth),
+        y2: String(y),
+      }),
+    );
+    svg.append(
+      svgElement(
+        "text",
+        {
+          class: "db-overview-axis-label db-overview-axis-label-y",
+          x: String(padLeft - 8),
+          y: String(y + 3),
+          "text-anchor": "end",
+        },
+        String(dps),
+      ),
+    );
+  }
+  // X ticks — log HP scale (min / mid / max), de-duped
+  const xTickHps: number[] = (() => {
+    if (logSpan < 0.05) return [Math.round(Math.pow(10, minLog))];
+    const midLog = (minLog + maxLog) / 2;
+    const raw = [
+      Math.round(Math.pow(10, minLog)),
+      Math.round(Math.pow(10, midLog)),
+      Math.round(Math.pow(10, maxLog)),
+    ];
+    return [...new Set(raw)];
+  })();
+  for (const hp of xTickHps) {
+    const x = round2(xFor(hp));
+    svg.append(
+      svgElement("line", {
+        class: "db-overview-grid db-overview-grid-x",
+        x1: String(x),
+        y1: String(padTop),
+        x2: String(x),
+        y2: String(padTop + plotHeight),
+      }),
+    );
+    svg.append(
+      svgElement(
+        "text",
+        {
+          class: "db-overview-axis-label",
+          x: String(x),
+          y: String(padTop + plotHeight + 14),
+          "text-anchor": "middle",
+        },
+        String(hp),
+      ),
+    );
+  }
+  // 축 기준선
   svg.append(
     svgElement("line", {
-      class: "db-overview-grid",
+      class: "db-overview-grid db-overview-axis-line",
       x1: String(padLeft),
       y1: String(padTop + plotHeight),
       x2: String(padLeft + plotWidth),
@@ -297,7 +388,7 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
   );
   svg.append(
     svgElement("line", {
-      class: "db-overview-grid",
+      class: "db-overview-grid db-overview-axis-line",
       x1: String(padLeft),
       y1: String(padTop),
       x2: String(padLeft),

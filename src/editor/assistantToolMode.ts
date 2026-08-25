@@ -52,7 +52,7 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
     strong: ["전투", "배틀", "적", "몬스터", "enemy", "troop", "트룹", "시뮬", "드롭", "hp", "상성", "상성표", "속성"],
     weak: ["스킬", "밸런스", "행동"],
   },
-  quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "엔딩", "ending", "결말"], weak: [] },
+  quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "엔딩", "ending", "결말", "의뢰", "미션", "반지를", "찾아오", "촌장", "quest-giver"], weak: [] },
   database: {
     strong: ["아이템", "포션", "물약", "무기", "방어구", "장비", "액터", "캐릭터", "직업", "클래스", "상태이상", "데이터베이스", "데이터 베이스", "db", "능력치", "상성", "상성표", "속성"],
     weak: ["스킬", "적"],

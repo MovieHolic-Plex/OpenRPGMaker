@@ -8,14 +8,14 @@ export function recordUsageHint(kind: "switch" | "variable", recordId: string): 
   if (!recordId) {
     return el("div", {
       class: "event-command-record-usage",
-      text: `${label}를 선택하면 참조 위치 요약이 표시됩니다.`,
+      text: `${label}를 고르면 어디서 쓰이는지 보여 줍니다.`,
       dataset: { testid: `event-command-${kind}-usage` },
     });
   }
   const count = countRecordReferences(recordId);
   return el("div", {
     class: "event-command-record-usage",
-    text: count > 0 ? `이 ${label} 참조: 프로젝트 이벤트 ${count}곳` : `이 ${label}는 다른 곳에서 아직 참조되지 않습니다.`,
+    text: count > 0 ? `이 ${label}는 이벤트 ${count}곳에서 쓰입니다.` : `이 ${label}는 아직 다른 이벤트에서 쓰이지 않습니다.`,
     dataset: { testid: `event-command-${kind}-usage` },
   });
 }

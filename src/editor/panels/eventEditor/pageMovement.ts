@@ -52,7 +52,7 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
       children: [
         type,
         // 정지여도 빈도 슬롯은 유지(비활성) — RM/e2e 계약. 경로 버튼만 custom 일 때 활성.
-        compactLabel("빈도:", frequency, !hasAutonomousMovement),
+        compactLabel("움직임 빈도", frequency, !hasAutonomousMovement),
         customRoute,
       ],
     })
@@ -95,8 +95,9 @@ function compactLabel(text: string, control: HTMLElement, disabled = false): HTM
 
 function frequencySelect(value: number): HTMLSelectElement {
   const select = el("select", { dataset: { testid: "event-page-movement-frequency" } });
+  const labels = ["아주 드묾", "드묾", "가끔", "보통", "자주", "꽤 자주", "매우 자주", "아주 자주"];
   for (let frequency = 1; frequency <= 8; frequency += 1) {
-    select.append(el("option", { attrs: { value: String(frequency) }, text: String(frequency) }));
+    select.append(el("option", { attrs: { value: String(frequency) }, text: labels[frequency - 1] ?? String(frequency) }));
   }
   select.value = String(value);
   return select;

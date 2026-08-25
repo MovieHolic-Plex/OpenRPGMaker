@@ -253,6 +253,13 @@
   width: 100%;
 }
 
+.page3-resource-name {
+  color: var(--ink, #2a241c);
+  flex: 1 1 auto;
+  font-size: 13px;
+  min-width: 0;
+}
+
 .page3-range-input {
   accent-color: var(--accent, #4A57D6);
   flex: 1 1 140px;

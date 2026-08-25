@@ -24,10 +24,12 @@ export function renderCropTab(host: HTMLElement, rerender: () => void): void {
   if (!selectedCropId || !crops.some((record) => record.id === selectedCropId)) selectedCropId = crops[0]?.id;
   const selected = crops.find((record) => record.id === selectedCropId);
   const list = el("div", { class: "db-list" });
-  for (const record of crops) {
+  for (let index = 0; index < crops.length; index += 1) {
+    const record = crops[index]!;
+    const trailing = `#${index + 1}`;
     list.append(el("button", {
       class: `db-list-row${record.id === selectedCropId ? " active" : ""}`,
-      attrs: { type: "button", title: `${record.name} (${record.id})` },
+      attrs: { type: "button", title: `${record.name || "(이름 없음)"} ${trailing} — ${record.id}` },
       dataset: { testid: `db-crop-row-${record.id}`, recordId: record.id },
       on: {
         click: () => {
@@ -37,7 +39,7 @@ export function renderCropTab(host: HTMLElement, rerender: () => void): void {
       },
       children: [
         el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
-        el("small", { text: record.id }),
+        el("small", { class: "db-list-meta", text: trailing, attrs: { title: record.id } }),
       ],
     }));
   }

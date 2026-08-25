@@ -243,7 +243,7 @@ function renderCommandList(
   target.append(
     el("button", {
       class: selectedIndex === -1 ? "event-page-move-route-list-row selected" : "event-page-move-route-list-row",
-      text: "$>",
+      text: "시작",
       attrs: { type: "button" },
       on: { click: () => onSelect(-1) },
     })
@@ -252,7 +252,7 @@ function renderCommandList(
     target.append(
       el("button", {
         class: selectedIndex === index ? "event-page-move-route-list-row selected" : "event-page-move-route-list-row",
-        text: `@> ${moveCommandLabel(move)}`,
+        text: moveCommandLabel(move),
         attrs: { type: "button" },
         dataset: { testid: `event-page-move-route-command-${index + 1}` },
         on: { click: () => onSelect(index) },

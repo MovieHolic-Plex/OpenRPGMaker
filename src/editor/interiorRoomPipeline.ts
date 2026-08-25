@@ -2461,8 +2461,10 @@ function critiqueRoom(map: GameMap, plan: InteriorRoomPlan): string[] {
     }
   }
 
-  // entrance event
-  const entrance = (map.events ?? []).find((e) => e.x === plan.door.x && e.y === plan.door.y);
+  // entrance event: door cell must hold a page named 입구 (GameEvent has no name)
+  const entrance = (map.events ?? []).find(
+    (e) => e.x === plan.door.x && e.y === plan.door.y && e.pages?.[0]?.name === "입구",
+  );
   if (!entrance) issues.push(`missing entrance event at door (${plan.door.x},${plan.door.y})`);
 
   // floor must exist

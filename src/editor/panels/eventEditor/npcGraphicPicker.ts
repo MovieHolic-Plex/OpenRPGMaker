@@ -112,7 +112,7 @@ export function renderNpcGraphicPicker(
   const advancedDetails = document.createElement("details");
   advancedDetails.className = "npc-advanced-sprite";
   const advancedSummary = document.createElement("summary");
-  advancedSummary.textContent = "고급: 직접 ID";
+  advancedSummary.textContent = "고급 · 파일 이름 직접 넣기";
   advancedDetails.append(advancedSummary, directBox);
 
   const rightPane = document.createElement("div");

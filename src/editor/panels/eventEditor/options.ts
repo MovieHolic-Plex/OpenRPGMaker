@@ -14,22 +14,22 @@ export type PageCommandButton = {
 
 export const TRIGGER_OPTIONS = [
   // "결정키"는 게임패드 세대 용어라 초보가 못 알아듣는다 — 플레이어 행동 기준으로 서술.
-  { value: "action", label: "확인 키로 조사" },
-  { value: "playerTouch", label: "플레이어가 접촉" },
-  { value: "eventTouch", label: "이벤트가 접촉" },
-  { value: "auto", label: "자동 실행" },
-  { value: "parallel", label: "병렬 처리" },
+  { value: "action", label: "말을 걸면" },
+  { value: "playerTouch", label: "플레이어가 닿으면" },
+  { value: "eventTouch", label: "이벤트가 닿으면" },
+  { value: "auto", label: "나타나면 바로 실행" },
+  { value: "parallel", label: "뒤에서 계속 실행" },
 ] as const satisfies readonly SelectOption<EventEditorTriggerKind>[];
 
 export const COMMAND_KIND_OPTIONS = [
   { value: "text", label: "문장 표시" },
   { value: "displayTextSettings", label: "문장 표시 설정" },
-  { value: "changeFace", label: "얼굴 그래픽 변경" },
+  { value: "changeFace", label: "얼굴 바꾸기" },
   { value: "choices", label: "선택지 표시" },
   { value: "fork", label: "조건 분기" },
   { value: "setSwitch", label: "스위치 조작" },
   { value: "setVariable", label: "변수 조작" },
-  { value: "timer", label: "타이머 조작" },
+  { value: "timer", label: "타이머" },
   { value: "advanceTime", label: "시간 진행" },
   { value: "advanceCropGrowth", label: "작물 성장 진행" },
   { value: "setTime", label: "시간 설정" },
@@ -42,11 +42,11 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "breakLoop", label: "반복 탈출" },
   { value: "transfer", label: "장소 이동" },
   { value: "moveEvent", label: "이벤트 이동" },
-  { value: "setEventGraphicPattern", label: "이벤트 프레임 변경" },
+  { value: "setEventGraphicPattern", label: "모습 바꾸기" },
   { value: "changeTile", label: "지형 변경" },
   { value: "callCommonEvent", label: "공통 이벤트 호출" },
   { value: "callMapEvent", label: "맵 이벤트 호출" },
-  { value: "battleProcessing", label: "전투 처리" },
+  { value: "battleProcessing", label: "전투" },
   { value: "learnSkill", label: "특수기 습득" },
   { value: "changeExp", label: "경험치 변경" },
   { value: "changeLevel", label: "레벨 변경" },
@@ -55,7 +55,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "changeActorHp", label: "HP 변경" },
   { value: "changeActorMp", label: "MP 변경" },
   { value: "recoverAll", label: "모두 회복" },
-  { value: "enterHeroName", label: "이름 입력 처리" },
+  { value: "enterHeroName", label: "이름 입력" },
   { value: "changeGold", label: "소지금 변경" },
   { value: "changeItem", label: "아이템 변경" },
   { value: "craftRecipe", label: "제작" },
@@ -63,7 +63,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "equipTool", label: "도구 장착" },
   { value: "openChest", label: "보관 상자" },
   { value: "changeFriendship", label: "호감도 변경" },
-  { value: "getFriendship", label: "호감도 변수 저장" },
+  { value: "getFriendship", label: "호감도 읽기" },
   { value: "changeParty", label: "파티 변경" },
   { value: "giveMonster", label: "몬스터 지급" },
   { value: "moveMonster", label: "몬스터 이동" },
@@ -71,8 +71,8 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "addFollower", label: "동행자 추가" },
   { value: "removeFollower", label: "동행자 제거" },
   { value: "setLighting", label: "조명 설정" },
-  { value: "addLight", label: "광원 추가" },
-  { value: "removeLight", label: "광원 제거" },
+  { value: "addLight", label: "빛 켜기" },
+  { value: "removeLight", label: "빛 끄기" },
   { value: "setWeather", label: "날씨 설정" },
   { value: "showAnimation", label: "애니메이션 표시" },
   { value: "showPicture", label: "그림 표시" },
@@ -80,8 +80,8 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "playAudio", label: "소리 재생" },
   { value: "stopAudio", label: "소리 정지" },
   { value: "cutsceneControl", label: "컷신 제어" },
-  { value: "shop", label: "상점 처리" },
-  { value: "inn", label: "여관 처리" },
+  { value: "shop", label: "상점" },
+  { value: "inn", label: "여관" },
   { value: "checkpointSave", label: "체크포인트 저장" },
   { value: "runControl", label: "로그라이크 런 제어" },
   { value: "killPlayer", label: "즉사" },
@@ -90,8 +90,8 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "ending", label: "엔딩" },
   { value: "returnToTitle", label: "타이틀로 돌아가기" },
   { value: "wait", label: "대기" },
-  { value: "setFlag", label: "플래그 설정" },
-  { value: "setSelfSwitch", label: "셀프 스위치 설정" },
+  { value: "setFlag", label: "기억 설정" },
+  { value: "setSelfSwitch", label: "이 이벤트 기억 설정" },
   { value: "m2Command", label: "이벤트 명령" },
 ] as const satisfies readonly SelectOption<Command["kind"]>[];
 
@@ -145,7 +145,7 @@ export const PAGE_COMMAND_BUTTONS = [
 export const EVENT_PRIORITY_OPTIONS = [
   // 기준을 "캐릭터"가 아니라 맵 레이어로 — 초보에게는 그리기 순서가 더 직관적이다.
   { value: "below", label: "맵 아래" },
-  { value: "same", label: "같은 높이" },
+  { value: "same", label: "캐릭터와 같은 층" },
   { value: "above", label: "맵 위" },
 ] as const satisfies readonly SelectOption<EventPage["priority"]>[];
 
@@ -164,11 +164,11 @@ export const BOOLEAN_OPTIONS = [
 ] as const satisfies readonly SelectOption<"true" | "false">[];
 
 export const VARIABLE_OP_OPTIONS = [
-  { value: "=", label: "=" },
-  { value: "+=", label: "+=" },
-  { value: "-=", label: "-=" },
-  { value: "*=", label: "*=" },
-  { value: "/=", label: "/=" },
+  { value: "=", label: "이 값으로" },
+  { value: "+=", label: "더하기" },
+  { value: "-=", label: "빼기" },
+  { value: "*=", label: "곱하기" },
+  { value: "/=", label: "나누기" },
 ] as const satisfies readonly SelectOption<Extract<Command, { kind: "setVariable" }>["op"]>[];
 
 export const TIMER_ACTION_OPTIONS = [

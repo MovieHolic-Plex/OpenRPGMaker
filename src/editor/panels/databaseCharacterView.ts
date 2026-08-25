@@ -34,18 +34,21 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
   const selected = entries.find((entry) => entry.characterId === selectedCharacterId);
 
   const list = el("div", { class: "db-list", dataset: { testid: "db-characters-list" } });
-  for (const entry of entries) {
-    const label = entry.profile?.displayName?.trim() || entry.characterId;
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index]!;
+    const label = entry.profile?.displayName?.trim() || `주민 ${index + 1}`;
     const badges: string[] = [];
     if (entry.isOrphan) badges.push("연결만 있음");
     if (entry.isUnusedProfile) badges.push("미등장");
     if (entry.usageCount > 0) badges.push(`이벤트 ${entry.usageCount}`);
+    const trailing = `#${index + 1}`;
+    const meta = badges.length > 0 ? `${trailing} · ${badges.join(" · ")}` : trailing;
     list.append(
       el("button", {
         class: `db-list-row db-list-row-has-thumb${entry.characterId === selectedCharacterId ? " active" : ""}`,
         attrs: {
           type: "button",
-          title: `${label} (${entry.characterId})`,
+          title: `${label} ${trailing} — ${entry.characterId}`,
         },
         dataset: {
           testid: `db-character-row-${entry.characterId}`,
@@ -62,7 +65,9 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
           characterListThumbnail(project, entry),
           el("span", { class: "db-list-name", text: label }),
           el("small", {
-            text: badges.length > 0 ? `${entry.characterId} · ${badges.join(" · ")}` : entry.characterId,
+            class: "db-list-meta",
+            text: meta,
+            attrs: { title: entry.characterId },
           }),
         ],
       }),
@@ -311,24 +316,30 @@ function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerende
     class: "db-detail-form oprn-detail-form",
     dataset: { testid: "db-detail-form" },
   });
-
+  const displayName = entry.profile?.displayName?.trim() || "이름 없는 주민";
   form.append(
     el("div", {
-      class: "db-record-id",
+      class: "db-record-hero",
       children: [
-        el("span", { text: "주민 연결 ID" }),
-        el("code", { text: entry.characterId, dataset: { testid: "db-character-id" } }),
-      ],
-    }),
-    el("div", {
-      class: "db-character-status",
-      dataset: { testid: "db-character-status" },
-      children: [
-        el("span", {
-          text: entry.hasProfile ? "프로필 있음" : "이벤트 연결만 있음",
+        el("div", {
+          class: "db-record-hero-main",
+          children: [
+            el("h3", { text: displayName, attrs: { title: entry.characterId } }),
+            el("code", {
+              class: "db-record-meta",
+              text: entry.characterId,
+              dataset: { testid: "db-character-id" },
+              attrs: { title: entry.characterId },
+            }),
+          ],
         }),
-        el("span", {
-          text: `이벤트 ${entry.usageCount} · 맵 ${entry.mapCount}`,
+        el("div", {
+          class: "db-character-status",
+          dataset: { testid: "db-character-status" },
+          children: [
+            el("span", { text: entry.hasProfile ? "프로필 있음" : "이벤트 연결만 있음" }),
+            el("span", { text: `이벤트 ${entry.usageCount} · 맵 ${entry.mapCount}` }),
+          ],
         }),
       ],
     }),

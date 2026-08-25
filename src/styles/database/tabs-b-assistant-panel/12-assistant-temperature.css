@@ -31,11 +31,6 @@
   border-color: var(--border-default);
 }
 
-.ai-chat-header .ai-new-session,
-.ai-chat-header [data-testid="ai-settings-toggle"] {
-  display: none;
-}
-
 .ai-chat-panel.is-assistant-idle .ai-context-chips,
 .ai-chat-panel.is-assistant-idle .ai-status-group {
   display: none;
@@ -54,37 +49,6 @@
 .ai-command-menu-item[aria-checked="true"] {
   color: var(--gold-deep, #6E5424);
   font-weight: 700;
-}
-
-.ai-idle-hints {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.ai-idle-hint {
-  align-items: baseline;
-  background: transparent;
-  border: 0;
-  color: var(--gold-deep, #6E5424);
-  cursor: pointer;
-  display: flex;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  gap: 8px;
-  padding: 6px 2px;
-  text-align: left;
-}
-
-.ai-idle-hint .ai-command-prefix {
-  color: var(--gold);
-  flex: none;
-  font-weight: 700;
-}
-
-.ai-chat-panel[data-temperature="ink-only"].is-assistant-idle .ai-idle-hint,
-.ai-chat-panel[data-temperature="ink-only"].is-assistant-idle .ai-idle-hint .ai-command-prefix {
-  color: var(--text-2);
 }
 
 .ai-command-bar-face {

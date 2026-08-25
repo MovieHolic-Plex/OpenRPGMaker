@@ -40,7 +40,7 @@ export function planRequiredToolNames(plan: WorkPlan): string[] {
   return [...names];
 }
 
-function toolSchemasForNames(names: readonly string[]): OpenAiToolSchema[] {
+export function toolSchemasForNames(names: readonly string[]): OpenAiToolSchema[] {
   const defs: ToolDefinition[] = [];
   const seen = new Set<string>();
   for (const name of names) {

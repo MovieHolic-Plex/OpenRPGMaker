@@ -187,9 +187,9 @@ describe("설정 자동 저장", () => {
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
     // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
     // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
-    expect(DEFAULT_MODEL).toBe("gpt-5.6-sol");
-    expect(loadAiConfig().model).toBe("gpt-5.6-sol");
-    expect(loadAiConfig().liteModel).toBe("gpt-5.6-sol");
+    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash");
+    expect(loadAiConfig().model).toBe("gemini-3.7-flash");
+    expect(loadAiConfig().liteModel).toBe("gemini-3.7-flash");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
@@ -215,7 +215,7 @@ describe("설정 자동 저장", () => {
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
-    expect(DEFAULT_LITE_MODEL).toBe("gpt-5.6-sol");
+    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
   });
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
@@ -226,7 +226,22 @@ describe("설정 자동 저장", () => {
     expect(modal.textContent).toContain("실행 모델(툴 작업)");
   });
 
+  it("빈 설정의 모델 선택기는 Antigravity Gemini 3.7 Flash 를 기본으로 보여준다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const preset = findByTestId(modal, "ai-config-model-preset");
+    if (!preset) throw new Error("model preset missing");
+    expect(preset.textContent).toContain("gemini-3.7-flash");
+    expect(preset.textContent).toContain("gemini-3.1-pro");
+  });
+
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaultAiConfig(),
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      liteModel: "gpt-5.6-sol",
+    }));
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");
@@ -239,6 +254,12 @@ describe("설정 자동 저장", () => {
   });
 
   it("ChatGPT 모델 선택기에 GPT-5.6 Sol, Terra, Luna를 모두 노출한다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaultAiConfig(),
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      liteModel: "gpt-5.6-sol",
+    }));
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");

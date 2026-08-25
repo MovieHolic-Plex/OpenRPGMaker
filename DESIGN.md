@@ -1,6 +1,6 @@
 # RPG ZZU Design System
 
-> **Status note:** The editor chrome is a warm cream studio. Runtime game surfaces and the event-command list keep their retro/pixel presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
+> **Status note:** The editor chrome is a warm cream studio. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
@@ -91,17 +91,19 @@ These map to the primary set and exist so domain-specific CSS reads semantically
 | `--border-strong` | `#5f5b52` | Active canvas/modal borders |
 | `--accent-primary` | `#2e6f9e` | (legacy surface-system accent) |
 
-### Event command list tokens
+### Event command editor tokens (cream studio)
 
-The event-command contents list intentionally follows the RM2K3 command editor rather than the rest of the form chrome. These tokens sit on top of the RM2K3 retro light theme and are used only for command rows, command insert rows, and command-type coloring.
+The event-command content surface — list, gutter, hover/selected states, and type coloring — uses the cream studio tokens. There is no retro theme.
 
-| Token | Value | Usage |
-|------|-------|-------|
-| `--rm2k3-command-blue` | `#004bff` | Default command prefix and command text (`@>` lines, labels, and flow commands) |
-| `--rm2k3-command-orange` | `#f07f00` | Party, battle, shop, item, gold, and skill-affecting command summaries |
-| `--rm2k3-command-teal` | `#008c8c` | Picture and audio command summaries |
-| `--rm2k3-command-row-alt` | `#e8f2f7` | Alternating pale row stripe inside the command contents field |
-| `--rm2k3-command-selected` | `#0080ff` | Selected/focused command row fill |
+| Token | Token alias | Value | Usage |
+|------|-------------|-------|-------|
+| `--text-1` / `--accent` | (`--rm2k3-command-blue` alias) | `#4A57D6` | Command kind prefix and flow labels on cream (`@>`-style lines are retired) |
+| `--gold` | (`--rm2k3-command-orange` alias) | `#8A6B2F` | Attention / reward-affecting summaries on cream |
+| `--success` | (`--rm2k3-command-teal` alias) | `#18764F` | Picture/audio summaries on cream |
+| `--bg-hover` | (`--rm2k3-command-row-alt` alias) | `rgba(42,37,33,0.06)` | Subtle row stripe / hover wash |
+| `--accent-muted` | (`--rm2k3-command-selected` alias) | `rgba(74,87,214,0.12)` | Selected/focused command row fill (`--accent-border` for the ring) |
+
+Retired literal RM blues/teals (`#004bff` / `#f07f00` / `#008c8c` / `#e8f2f7` / `#0080ff`) must not be reintroduced. Old `--rm2k3-command-*` names remain only as cream aliases during the CSS consolidation wave (see `.omo/evidence/event-editor-modern/DESIGN.md`). The single scan-aid palette going forward is `--cmdcat-*` (unified from `--cmdcat` / `--pick-cat` / `--lg-cat`).
 
 ### Database state editor tokens
 
@@ -315,11 +317,11 @@ All spacing derives from 4px.
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
 - **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
-- **Event editor**: tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
-- **Event editor top/page controls**: dense RM2K3 modal chrome uses `--rm2k3-event-page-*` tokens for Name width, page button height, tab width, icon size, and condition-row control widths. Keep these controls compact enough for scanning; avoid display-scale button typography inside the modal. The event editor scopes its local `--rm2k3-chrome`/`--rm2k3-face` overrides to a brighter classic-gray range (`#eeeeee`/`#f4f4f4`) so fieldsets and page tabs match the RM2003 event editor reference without changing every other modal.
+- **Event editor**: cream-studio command editor. Tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
+- **Event editor top/page controls**: cream-studio modal chrome. Page tabs show named condition sentences; validation is `오류 N · 경고 N · 안내 N` (hidden when clean), not `검사 !1 △1`. Footer is `닫기 / 반영하고 계속 / 반영하고 닫기` (`취소` is gone). Rail section headers are `언제 보이나요` / `반응 방식` / `움직임` (not `출현 조건` / `트리거·우선순위` / `이동/기타`). Event-card identity is name + coordinates; padded `ID 0001` is gone. Extra control-code chips (`\$` `\!` `\.` `\|` `\>` `\<` `\^` `\_` `\s[n]`) live behind closed `고급`. Density control stays and is labeled `간단히` (not `간단히 보기`). Picture summaries are a human sentence, never a raw slot/path dump as the scan line. Keep controls compact enough for scanning; avoid display-scale button typography inside the modal. Chrome uses cream tokens from `src/styles/tokens.css`; do not reintroduce `--rm2k3-event-page-*` or classic-gray `#eeeeee`/`#f4f4f4` fieldsets.
 - **Event editor sizing**: the event editor is a desktop-default work window at wide widths, but it must remain usable down to roughly `800px` viewport width. It opens with settings and a dominant command canvas; the command inspector is contextual and appears only after command selection. Wide layouts allocate it a fixed right track, while compact layouts overlay it on the right so the canvas does not permanently lose width. Around `900px` and below, the modal clamps to the viewport and compresses the left settings/conditions column while keeping the command contents as a second column; do not stack settings above commands unless the viewport is narrower than the supported editor width.
 - **Event editor resizing**: users can resize both the modal window and the settings/command split. The vertical separator between settings and command contents adjusts the left settings column; the bottom-right grip adjusts the whole event editor window. Keep both handles visible and keyboard-focusable, and keep resize behavior bounded to the viewport.
-- **Event move-route dialog**: custom autonomous movement opens a separate `Move Route` subdialog, styled as a desktop RM-era work window. Keep its command list, options, frequency radios, and three-column command grid fixed for desktop scanning; unsupported movement commands should render disabled rather than pretending to save runtime behavior.
+- **Event move-route dialog**: custom autonomous movement opens a cream-studio route editor, not a desktop RM-era work window. Named per-step pickers replace the shared `매개변수` box; frequency is `아주 드묾 … 아주 자주` (values 1–8 stay). No `$>/@>` prefixes, no always-on frequency radios, no three-column RM command grid, no `확인/취소/도움말` footer. Unsupported movement commands should render disabled rather than pretending to save runtime behavior.
 
 ### First run and online save
 
@@ -423,3 +425,38 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 - Test Play uses whole-number fit-without-crop scaling: the `320×240` runtime stays centered, 4:3, fully visible, and nearest-neighbor sharp. Title options expose one roving Tab stop; arrow navigation, keyboard confirmation, and trusted pointer activation share the same selected-option path.
 - Shared `showConfirm`/`showAlert` dialogs expose programmatic title/message relationships, focus the first action deterministically, trap Tab/Shift+Tab, route Escape through the top `modalStack` entry, and restore only an opener that is still attached.
 - Modern Exteriors asset packaging, custom-atlas layers, seeding, remote persistence, and the Modern remote diagnostic remain blocked pending repository-visible redistribution rights. Those workstreams have no local-fixture or DB-write substitute.
+
+## 11. Database Studio (2026-08)
+
+The Database modal is a neutral cool studio scoped to `.database-modal-backdrop` via `src/styles/database/studio-theme.css` (imported after `system-studio.css`). Tokens are `--db-studio-*`; the rest of the editor stays warm cream (`src/styles/tokens.css`, `color-scheme: light`). No gradients, no heavy shadows, no Inter.
+
+### Tokens
+
+| Token | Value | Role |
+|-------|-------|------|
+| `--db-studio-canvas` | `#F7F8F8` | modal body / page bg (replaces cream well) |
+| `--db-studio-surface` | `#FFFFFF` | cards, header, footer, sidebar |
+| `--db-studio-inset` | `#F1F5F9` | search wells, hover, list well alt |
+| `--db-studio-well` | `#EEF2F6` | secondary inset |
+| `--db-studio-text-1` | `#0F172A` | primary text |
+| `--db-studio-text-2` | `#475569` | secondary |
+| `--db-studio-text-3` | `#94A3B8` | muted / placeholder |
+| `--db-studio-border-subtle` | `rgba(15,23,42,.08)` | hairline section divider |
+| `--db-studio-border-default` | `rgba(15,23,42,.10)` | card/input border |
+| `--db-studio-border-strong` | `rgba(15,23,42,.18)` | emphasis |
+| `--db-studio-accent` | `#4A57D6` | primary (kept hue, Linear feel vs cream) |
+| `--db-studio-accent-soft` | `rgba(74,87,214,.08)` | selected row tint |
+| `--db-studio-accent-border` | `rgba(74,87,214,.16)` | selected border |
+| `--db-studio-shadow` | `0 1px 3px rgba(15,23,42,.08)` | raised |
+| `--db-studio-shadow-pop` | `0 4px 16px rgba(15,23,42,.10)` | modal/popover |
+
+Legacy `--db-light-*` / `--bg-*` / `--db-modern-*` aliases remap to these inside the modal so older rules keep working without a second theme.
+
+### Contracts
+
+- **Nav:** 220px labeled rail at `>=800px` container (`container-type: inline-size` on `.database-modal-window`; media fallback at 799px), 56px icon+tooltip below. Group headers (`파티/전투·몬스터/생활/맵/시스템`) visible as 11px uppercase `text-3`. Count badge via `[data-count]` quiet pill. Selected = `accent-soft` + 2px left accent bar. Search placeholder `탭 검색` full-width readable.
+- **List:** name first (`flex:1`, ellipsis), muted trailing `#n` (`#${visibleIndex}`), 24px thumb, pill sub. Selected = `accent-soft` + border ring. CSS order puts name before number; markup order matches display order.
+- **Inspector:** sticky header (`top:0; z-index:2` on `.db-record-hero` / modal header) and sticky footer; former equal-weight Win95 fieldsets become hairline sections (top border only, `text-3` 12px uppercase labels).
+- **Footer:** `닫기` is ghost (`transparent` + `border-default`), `지금 저장` is filled accent — enforced by `[data-testid]` selectors in `studio-theme.css` even if `.primary` class is on the other button.
+- **Empty:** card + one filled CTA on studio surface, never a cream void.
+- **Dirty / G006 / testids / AI dock / gallery toggle:** unchanged — chrome only.

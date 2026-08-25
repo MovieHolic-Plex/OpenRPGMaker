@@ -188,4 +188,38 @@ describe("place_npc SimplePage malformed input normalization", () => {
     expect(message).toContain("실제 타입: string");
     expect(message).toContain("최소 예시:");
   });
+
+  it("live 2026-08-25: changeGold without op defaults to += so quest reward pages persist", () => {
+    const { result, page } = runPlaceNpc("ev_mayor_lost_ring", {
+      lines: ["그 반지! 정말 고맙네. 약속한 100골드네."],
+      commands: [{ kind: "changeGold", amount: 100 }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(page?.commands).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "changeGold", amount: 100, op: "+=" }),
+    ]));
+  });
+
+  it("live 2026-08-25: 촌장 선택지 setSwitch 페이지는 그대로 배치된다", () => {
+    const { result, context } = runPlaceNpc("ev_mayor_lost_ring", {
+      lines: ["여행자여, 내가 아끼던 반지를 잃어버렸네.", "마을 우물 근처에서 떨어뜨린 것 같아. 찾아오면 100골드를 주겠네."],
+      choices: [
+        {
+          text: "찾아보겠습니다",
+          commands: [
+            { kind: "setSwitch", switchId: "sw_lost_ring_active", value: true },
+            { kind: "text", text: "고맙네. 우물을 자세히 살펴봐 주게." },
+          ],
+        },
+        {
+          text: "지금은 어렵습니다",
+          commands: [{ kind: "text", text: "마음이 바뀌면 다시 찾아오게." }],
+        },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const event = context.project.maps[context.project.startMapId]?.events.find((entry) => entry.id === "ev_mayor_lost_ring");
+    expect(event).toBeTruthy();
+    expect(event?.pages[0]?.name).toBe("리나");
+  });
 });

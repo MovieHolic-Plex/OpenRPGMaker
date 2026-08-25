@@ -13,11 +13,11 @@ type VariableOp = SetVariableCommand["op"];
 type ValueSource = "number" | "variable";
 
 const VARIABLE_OP_SEGMENTS = [
-  { value: "=", key: "set", label: "=" },
-  { value: "+=", key: "add", label: "+=" },
-  { value: "-=", key: "sub", label: "-=" },
-  { value: "*=", key: "mul", label: "×=" },
-  { value: "/=", key: "div", label: "÷=" },
+  { value: "=", key: "set", label: "이 값으로" },
+  { value: "+=", key: "add", label: "더하기" },
+  { value: "-=", key: "sub", label: "빼기" },
+  { value: "*=", key: "mul", label: "곱하기" },
+  { value: "/=", key: "div", label: "나누기" },
 ] as const satisfies readonly SegmentOption<VariableOp>[];
 
 const VALUE_SOURCE_SEGMENTS = [
@@ -31,7 +31,7 @@ const VALUE_SOURCE_SEGMENTS = [
  */
 export function setVariableBody(context: CommandEditContext, cmd: SetVariableCommand): HTMLElement {
   const wrap = el("div", {
-    class: "event-command-record-form event-command-variable-form",
+    class: "event-command-record-form event-command-variable-form cream-command-form",
     dataset: { testid: "event-command-variable-form" },
   });
 
@@ -133,7 +133,7 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     let preview: number | null = null;
     if (nextOp === "*=" && Math.abs(operandVal) > 1) preview = operandVal * 1_000_000;
     if (preview !== null && Math.abs(preview) > 9_999_999) {
-      overflowHint.textContent = "값은 -9,999,999 ~ 9,999,999로 클램프됩니다.";
+      overflowHint.textContent = "값은 -999만 ~ 999만 사이로 맞춰집니다.";
       overflowHint.hidden = false;
     } else {
       overflowHint.hidden = true;
@@ -207,7 +207,7 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     formula,
     el("p", {
       class: "event-command-variable-hint compact muted",
-      text: "÷= 정수 나눗셈(0 방향 버림) · 0 무시 · -9,999,999~9,999,999 클램프",
+      text: "나누기는 나머지를 버립니다. 0으로 나누면 건너뜁니다. 값은 -999만~999만입니다.",
       dataset: { testid: "event-command-variable-hint" },
     }),
     recordUsageHint("variable", currentVariableId),
@@ -253,6 +253,5 @@ function variableLabel(variableId: string): string {
   const index = project.variables.findIndex((entry) => entry.id === variableId);
   if (index < 0) return variableId;
   const name = project.variables[index]?.name?.trim();
-  const num = String(index + 1).padStart(4, "0");
-  return name ? `${num}: ${name}` : num;
+  return name || "(이름 없음)";
 }

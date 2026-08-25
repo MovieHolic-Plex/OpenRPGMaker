@@ -11,7 +11,7 @@
     .tileset-db-workspace
   )) {
     align-items: center;
-    background: rgba(42, 37, 33, 0.06);
+    background: rgba(15, 23, 42, 0.06);
     justify-content: center;
     padding: var(--space-3);
   }
@@ -27,9 +27,10 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) {
-    background: var(--bg-raised);
-    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-    box-shadow: 2px 2px 0 rgba(60, 48, 32, 0.12);
+    background: var(--db-studio-surface, var(--bg-raised, #FFFFFF));
+    border: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
+    border-radius: 10px;
+    box-shadow: var(--db-studio-shadow-pop, 0 4px 16px rgba(15,23,42,.10));
     height: min(1024px, calc(100vh - 24px));
     max-width: calc(100vw - 24px);
     width: min(1530px, calc(100vw - 24px));
@@ -46,11 +47,14 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .database-modal-header {
-    background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 100%);
-    border-bottom: 1px solid var(--accent-border);
-    color: var(--text-1);
-    min-height: 28px;
-    padding: 2px 8px;
+    background: var(--db-studio-surface, var(--bg-raised));
+    border-bottom: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
+    color: var(--db-studio-text-1, #0F172A);
+    min-height: 44px;
+    padding: 0 12px;
+    position: sticky;
+    top: 0;
+    z-index: 3;
   }
 
   .database-modal-window:has(:is(
@@ -64,9 +68,9 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .database-modal-header h2 {
-    color: var(--text-1);
-    font: 700 14px/22px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.36);
+    color: var(--db-studio-text-1, #0F172A);
+    font: 600 14px/1.2 "Malgun Gothic", system-ui, sans-serif;
+    text-shadow: none;
   }
 
   .database-modal-window:has(:is(

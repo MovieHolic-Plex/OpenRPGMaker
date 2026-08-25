@@ -1,6 +1,5 @@
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
-import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
 import {
   addDatabaseRecord,
@@ -14,14 +13,14 @@ import {
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
-import { equipmentFields, itemFields, skillFields } from "@/editor/panels/databaseBasicRecordFields";
+import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
-import { ITEM_TYPES, isEquipmentItemType } from "@/editor/panels/databaseItemRecordView";
+import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import {
   categoryFilterForCollection,
@@ -438,10 +437,10 @@ function recordListRow(
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
     dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}` },
     children: [
-      el("span", { class: "db-list-number", text: `${ordinalLabel(originalIndex)}:` }),
       ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
       ...(sub ? [el("span", { class: "db-list-sub", text: sub })] : []),
+      el("span", { class: "db-list-number", text: `#${originalIndex + 1}` }),
     ],
     on: { click: () => onSelect(record.id) },
   });
@@ -609,12 +608,10 @@ function recordForm(
       return form;
     case "items": {
       const item = store.getCurrent().database.items.find((entry) => entry.id === record.id) ?? store.getCurrent().database.items[0];
-      if (item && !isEquipmentItemType(item.type)) itemFields(form, record.id);
       renderItemRecordForm(form, item, rerender);
       return form;
     }
     case "equipment":
-      equipmentFields(form, record.id);
       renderEquipmentRecordForm(
         form,
         store.getCurrent().database.equipment.find((entry) => entry.id === record.id) ?? store.getCurrent().database.equipment[0],

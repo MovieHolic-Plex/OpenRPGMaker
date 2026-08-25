@@ -149,8 +149,7 @@ function renderCommandItem(
   if (speakerFace) speakerFace.dataset.testid = "cmd-speaker-face";
   head.append(
     handle,
-    el("span", { class: "cmd-prefix", text: "◆" }),
-    // kind 아이콘은 ::before(attr(data-glyph)) — 줄 textContent(RM2003 텍스트 정본)를 보존한다.
+    el("span", { class: "cmd-prefix", attrs: { "aria-hidden": "true" } }),
     el("span", {
       class: "cmd-cat-icon",
       attrs: { "aria-hidden": "true", title: `${categoryVisual.label} 명령` },
@@ -332,7 +331,7 @@ function ensureTerminalRowHint(item: HTMLElement, cmd: Command): void {
 function terminalEditorHint(cmd: Command): { readonly testId: string; readonly text: string } | undefined {
   const kind = String(cmd.kind);
   if (kind.includes("stopAudio")) return { testId: "stop-audio-editor", text: "설정 없음. 현재 재생 중인 오디오를 정지합니다." };
-  if (kind.includes("checkpointSave")) return { testId: "checkpoint-save-editor", text: "현재 런타임 세션을 체크포인트로 저장합니다." };
+  if (kind.includes("checkpointSave")) return { testId: "checkpoint-save-editor", text: "지금 진행을 체크포인트로 저장합니다." };
   if (kind.includes("killPlayer")) return { testId: "kill-player-editor", text: "파티를 전멸시키고 게임 오버 화면을 엽니다." };
   if (kind.includes("triggerEnding")) return { testId: "trigger-ending-editor", text: "엔딩 레지스트리에서 실행할 엔딩을 고릅니다." };
   if (kind.includes("gameOver")) return { testId: "game-over-editor", text: "설정 없음. 게임 오버 화면을 엽니다." };
@@ -353,7 +352,7 @@ function appendCommandChildren(
   if (cmd.kind === "choices") {
     cmd.options.forEach((option, optionIndex) => {
       host.append(renderBranchDropLine(
-        `: ${option.text || `선택지 ${optionIndex + 1}`}`,
+        option.text || `선택지 ${optionIndex + 1}`,
         depth,
         "choices",
         [...path, optionIndex],
@@ -365,7 +364,7 @@ function appendCommandChildren(
     });
     if (cmd.cancelBehavior === "branch") {
       host.append(renderBranchDropLine(
-        ": 취소할 때",
+        "취소할 때",
         depth,
         "choices",
         [...path, CHOICE_CANCEL_BRANCH_INDEX],
@@ -384,13 +383,13 @@ function appendCommandChildren(
         );
       });
     }
-    host.append(renderMarkerLine(": 선택지 종료", depth, "choices"));
+    host.append(renderMarkerLine("선택 끝", depth, "choices"));
     return;
   }
   if (cmd.kind === "fork") {
-    host.append(renderBranchDropLine(": 참일 때", depth, "fork", [...path, FORK_THEN_BRANCH_INDEX], actions));
+    host.append(renderBranchDropLine("조건이 맞을 때", depth, "fork", [...path, FORK_THEN_BRANCH_INDEX], actions));
     if (cmd.then.length === 0) {
-      host.append(renderMarkerLine("  ◆ (비어 있음 — 여기에 명령 추가)", depth + 1, "fork"));
+      host.append(renderMarkerLine("비어 있음 — 여기에 명령 추가", depth + 1, "fork"));
     }
     cmd.then.forEach((child, childIndex) => {
       renderCommandTree(
@@ -405,9 +404,9 @@ function appendCommandChildren(
       );
     });
     if (cmd.else) {
-      host.append(renderBranchDropLine(": 그 외의 경우", depth, "fork", [...path, FORK_ELSE_BRANCH_INDEX], actions));
+      host.append(renderBranchDropLine("그 외", depth, "fork", [...path, FORK_ELSE_BRANCH_INDEX], actions));
       if (cmd.else.length === 0) {
-        host.append(renderMarkerLine("  ◆ (비어 있음 — 여기에 명령 추가)", depth + 1, "fork"));
+        host.append(renderMarkerLine("비어 있음 — 여기에 명령 추가", depth + 1, "fork"));
       }
       cmd.else.forEach((child, childIndex) => {
         renderCommandTree(
@@ -422,11 +421,11 @@ function appendCommandChildren(
         );
       });
     }
-    host.append(renderMarkerLine(": 분기 종료", depth, "fork"));
+    host.append(renderMarkerLine("분기 끝", depth, "fork"));
     return;
   }
   if (cmd.kind === "loop") {
-    host.append(renderBranchDropLine(": 반복 내용", depth, "fork", [...path, LOOP_BODY_BRANCH_INDEX], actions));
+    host.append(renderBranchDropLine("반복", depth, "fork", [...path, LOOP_BODY_BRANCH_INDEX], actions));
     cmd.body.forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -439,12 +438,12 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderMarkerLine(": 반복 종료", depth, "fork"));
+    host.append(renderMarkerLine("반복 끝", depth, "fork"));
     return;
   }
   if (cmd.kind === "shop" && cmd.branchOnTransaction) {
     host.append(renderBranchDropLine(
-      ": 플레이어가 구매/판매했을 때",
+      "구매·판매했을 때",
       depth,
       "shop",
       [...path, SHOP_TRANSACTION_BRANCH_INDEX],
@@ -462,11 +461,11 @@ function appendCommandChildren(
           options
       );
     });
-    host.append(renderMarkerLine(": 상점 분기 종료", depth, "shop"));
+    host.append(renderMarkerLine("상점 분기 끝", depth, "shop"));
   }
   if (cmd.kind === "inn" && cmd.branchOnNotEnoughGold) {
     host.append(renderBranchDropLine(
-      ": 골드가 부족할 때",
+      "골드가 부족할 때",
       depth,
       "shop",
       [...path, INN_NOT_ENOUGH_BRANCH_INDEX],
@@ -484,10 +483,10 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderMarkerLine(": 여관 부족 분기 종료", depth, "shop"));
+    host.append(renderMarkerLine("여관 부족 분기 끝", depth, "shop"));
   }
   if (cmd.kind === "battleProcessing" && cmd.branchOnResult) {
-    host.append(renderBranchDropLine(": 전투 승리", depth, "fork", [...path, BATTLE_VICTORY_BRANCH_INDEX], actions));
+    host.append(renderBranchDropLine("전투 승리", depth, "fork", [...path, BATTLE_VICTORY_BRANCH_INDEX], actions));
     (cmd.victoryBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -500,7 +499,7 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderBranchDropLine(": 전투 패배", depth, "fork", [...path, BATTLE_DEFEAT_BRANCH_INDEX], actions));
+    host.append(renderBranchDropLine("전투 패배", depth, "fork", [...path, BATTLE_DEFEAT_BRANCH_INDEX], actions));
     (cmd.defeatBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -513,7 +512,7 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderBranchDropLine(": 전투 도망", depth, "fork", [...path, BATTLE_ESCAPE_BRANCH_INDEX], actions));
+    host.append(renderBranchDropLine("전투 도망", depth, "fork", [...path, BATTLE_ESCAPE_BRANCH_INDEX], actions));
     (cmd.escapeBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -526,7 +525,7 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderMarkerLine(": 전투 결과 분기 종료", depth, "fork"));
+    host.append(renderMarkerLine("전투 결과 분기 끝", depth, "fork"));
   }
   if (cmd.kind === "promoteActor") {
     host.append(renderMarkerLine(": 승급 성공", depth, "fork"));
@@ -558,7 +557,7 @@ function appendCommandChildren(
     host.append(renderMarkerLine(": 승급 분기 종료", depth, "fork"));
   }
   if (cmd.kind === "evolveMonster") {
-    host.append(renderMarkerLine(": 진화 성공", depth, "fork"));
+    host.append(renderMarkerLine("진화 성공", depth, "fork"));
     (cmd.successBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -571,7 +570,7 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderMarkerLine(": 진화 실패", depth, "fork"));
+    host.append(renderMarkerLine("진화 실패", depth, "fork"));
     (cmd.failureBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -584,7 +583,7 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderMarkerLine(": 진화 분기 종료", depth, "fork"));
+    host.append(renderMarkerLine("진화 끝", depth, "fork"));
   }
 }
 

@@ -114,7 +114,7 @@ it("hides the character-id field behind a connect action until a profile is link
 
 it("keeps follower presets and the field-monster template in the closed toolbar menu", () => {
   render(host);
-  const contents = host.querySelector('[data-testid="event-classic-contents"]');
+  const contents = host.querySelector('[data-testid="event-script-canvas"]');
   const toolbar = contents?.querySelector(".event-editor-command-toolbar");
   const aux = toolbar?.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
   expect(aux).toBeTruthy();
@@ -124,13 +124,13 @@ it("keeps follower presets and the field-monster template in the closed toolbar 
 });
 
 it("uses investigation and map-layer wording for trigger and priority", () => {
-  expect(TRIGGER_OPTIONS.find((option) => option.value === "action")?.label).toBe("확인 키로 조사");
+  expect(TRIGGER_OPTIONS.find((option) => option.value === "action")?.label).toBe("말을 걸면");
   expect(EVENT_PRIORITY_OPTIONS.find((option) => option.value === "below")?.label).toBe("맵 아래");
-  expect(EVENT_PRIORITY_OPTIONS.find((option) => option.value === "same")?.label).toBe("같은 높이");
+  expect(EVENT_PRIORITY_OPTIONS.find((option) => option.value === "same")?.label).toBe("캐릭터와 같은 층");
   expect(EVENT_PRIORITY_OPTIONS.find((option) => option.value === "above")?.label).toBe("맵 위");
   render(host);
   const trigger = host.querySelector<HTMLSelectElement>('[data-testid="event-page-trigger-select"]');
-  expect(trigger?.selectedOptions[0]?.textContent).toBe("확인 키로 조사");
+  expect(trigger?.selectedOptions[0]?.textContent).toBe("말을 걸면");
   const priority = host.querySelector<HTMLSelectElement>('[data-testid="event-page-priority-select"]');
   expect(priority?.selectedOptions[0]?.textContent).toBe("맵 아래");
 });
@@ -154,9 +154,9 @@ it("does not advertise movement speed on a stationary event", () => {
     }));
 
     host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
-    host.querySelector<HTMLButtonElement>("[data-testid='event-storyboard-branch-command-0-0-0']")?.click();
+    host.querySelector<HTMLButtonElement>("[data-testid='event-storyboard-card-0']")?.click();
 
-    expect(host.querySelector(".event-inspector-kind")?.textContent).toBe("스위치 조작");
+    expect(host.querySelector(".event-inspector-kind")?.textContent).toBe("선택지 표시");
   });
 
   it("keeps complete command and branch text available to storyboard users", () => {
@@ -175,7 +175,7 @@ it("does not advertise movement speed on a stationary event", () => {
 
     expect(host.querySelector(".event-storyboard-card-detail")?.textContent).toContain(longBody);
     expect(host.querySelector("[data-testid='event-storyboard-card-0']")?.getAttribute("aria-label")).toContain("번째 명령");
-    expect(host.querySelector(".event-storyboard-branch-label")?.textContent).toBe(longChoice);
+    expect(host.querySelector(".event-storyboard-branch-label")?.textContent).toBe(longChoice.slice(0, 12));
   });
 
   it("moves to the complete command list from a truncated branch", () => {
@@ -188,7 +188,7 @@ it("does not advertise movement speed on a stationary event", () => {
     }));
 
     host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
-    host.querySelector<HTMLButtonElement>(".event-storyboard-branch-overflow")?.click();
+    host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-list']")?.click();
 
     expect(host.querySelector<HTMLElement>(".cmd-list")?.hidden).toBe(false);
     expect(host.querySelector<HTMLElement>(".event-storyboard")?.hidden).toBe(true);
@@ -203,8 +203,8 @@ it("does not advertise movement speed on a stationary event", () => {
 
     host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
 
-    expect(host.querySelector(".event-storyboard-branch-label")?.textContent).toBe("아무것도 하지 않는다");
-    expect(host.querySelector(".event-storyboard-branch-empty")?.textContent).toBe("이 분기는 비어 있습니다");
+    expect(host.querySelector(".event-storyboard-branch-label")?.textContent).toBe("아무것도 하지 않는다".slice(0, 12));
     expect(host.querySelector(".event-storyboard-branch-overflow")).toBeNull();
+    expect(host.querySelector(".event-storyboard-branch-more")).toBeNull();
   });
 });

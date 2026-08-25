@@ -1,5 +1,4 @@
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 import {
   addEventPage,
@@ -236,15 +235,15 @@ function pageTabTooltip(page: EventPage, index: number): string {
 function pageConditionSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch":
-      return `스위치 [${switchVariableName("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+      return `${switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "")} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable":
-      return `변수 [${switchVariableName("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
+      return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${condition.op} ${condition.value}`;
     case "selfSwitch":
-      return `셀프 스위치 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":
-      return `아이템 [${recordName(store.getCurrent().database.items, condition.itemId)}] ${condition.present ? "보유 중" : "미보유"}`;
+      return `아이템 ${recordName(store.getCurrent().database.items, condition.itemId)} ${condition.present ? "있음" : "없음"}`;
     case "gold":
       return `소지금 ${condition.op} ${condition.amount}`;
     case "timer":
@@ -270,22 +269,19 @@ function pageConditionSummary(condition: EventPageCondition): string {
   }
 }
 
-/** 목업의 축약 조건 표기(SW[0001] ON 등). 나머지 종류는 배지 텍스트를 그대로 쓴다. */
+/** 탭/배지에 쓰는 조건 한 줄. 이름 + 켜짐/꺼짐. 번호 기호는 쓰지 않는다. */
 function pageConditionCompactSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch": {
-      // 초보 모드에서는 SW[0001] 같은 기호 대신 스위치 이름을 보여준다 —
-      // 번호는 감독이 검수할 수 없다(2026-08-18 적대 평가, 메모리 '타일 번호엔 항상 그림' 원칙).
-      if (getEditorUiMode() === "beginner") {
-        const named = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
-        if (named) return `${named} ${condition.value ? "ON" : "OFF"}`;
-      }
-      return `SW[${flagDisplayNumber("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+      const named = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
+      return `${named || "스위치"} ${condition.value ? "켜짐" : "꺼짐"}`;
     }
     case "selfSwitch":
-      return `SELF[${condition.key}] ${condition.value ? "ON" : "OFF"}`;
-    case "variable":
-      return `VAR[${flagDisplayNumber("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "variable": {
+      const named = switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "").trim();
+      return `${named || "변수"} ${condition.op} ${condition.value}`;
+    }
     case "item":
       return condition.present ? "아이템 보유" : "아이템 미보유";
     case "actor":
@@ -299,12 +295,6 @@ function pageConditionCompactSummary(condition: EventPageCondition): string {
     default:
       return pageConditionBadgeText(condition);
   }
-}
-
-/** switch/variable 조건의 4자리 표시 번호. switchVariableName("0001: 이름") 접두를 재사용한다. */
-function flagDisplayNumber(kind: "switch" | "variable", id: string): string {
-  const match = /^\d{4}/.exec(switchVariableName(kind, id));
-  return match ? match[0] : id;
 }
 
 function timePhaseLabel(phase: Extract<EventPageCondition, { kind: "timePhase" }>["phase"]): string {
@@ -653,7 +643,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   const conditions = page.conditions ?? [];
   wrap.append(
     collapsibleSection({
-      title: "출현 조건",
+      title: "언제 보이나요",
       testId: "event-classic-conditions",
       openSet: openEventConditions,
       openKey,
@@ -667,7 +657,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
         rm2k3Fieldset(
-          "트리거 · 우선순위",
+          "반응 방식",
           el("div", {
             class: "event-trigger-priority-block",
             children: [
@@ -677,7 +667,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
                 dataset: { testid: "event-classic-priority" },
                 children: [
                   priority,
-                  el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
+                  el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "서로 겹치지 않음" })] }),
                 ],
               }),
             ],
@@ -688,7 +678,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       ],
     }),
     collapsibleSection({
-      title: "이동/기타",
+      title: "움직임",
       testId: "event-classic-movement-section",
       openSet: openEventMovement,
       openKey,
@@ -943,7 +933,7 @@ function movementSpeedLabel(speed: number): string {
 function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const control = el("div", { class: "event-graphic-control", dataset: { testid: "event-page-graphic-control" } });
   const spriteInput = el("input", {
-    attrs: { type: "text", placeholder: "그래픽 ID" },
+    attrs: { type: "text", placeholder: "모습" },
     value: page.graphic.sprite?.id ?? "",
     dataset: { testid: "event-page-sprite-input" },
   });
@@ -969,7 +959,7 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
           dataset: { testid: "event-page-graphic-set" },
           on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
         }),
-        el("label", { class: "event-graphic-transparent", attrs: { title: "체크하면 맵에서 그래픽을 숨깁니다(투명 상태). 해제하면 그래픽이 보입니다." }, children: [transparent, el("span", { text: "투명(맵에서 숨김)" })] }),
+        el("label", { class: "event-graphic-transparent", attrs: { title: "체크하면 맵에서 모습을 숨깁니다. 해제하면 다시 보입니다." }, children: [transparent, el("span", { text: "맵에서 숨기기" })] }),
       ],
     }),
     spriteInput

@@ -67,7 +67,7 @@ describe("자격 증명 축 — providerId 만이 정한다", () => {
   });
 
   it("모르는 id 는 기본 제공자의 종류로 떨어진다 (undefined 를 만들지 않는다)", () => {
-    expect(ohMyPiAuthKind("no-such-provider")).toBe("oauth"); // 기본값 openai-codex
+    expect(ohMyPiAuthKind("no-such-provider")).toBe("oauth"); // 기본값 google-antigravity
     expect(ohMyPiAuthKind(undefined)).toBe("oauth");
   });
 
@@ -105,8 +105,8 @@ describe("에디터의 2종 선택 — 파생값이고 저장하지 않는다", 
   });
 
   it("구독 로그인 목록의 첫 항목은 기본 제공자다", () => {
-    expect(providersForKind("oauth")[0]?.id).toBe("openai-codex");
-    expect(defaultProviderForKind("oauth")).toBe("openai-codex");
+    expect(providersForKind("oauth")[0]?.id).toBe("google-antigravity");
+    expect(defaultProviderForKind("oauth")).toBe("google-antigravity");
     expect(ohMyPiAuthKind(defaultProviderForKind("apiKey"))).toBe("apiKey");
   });
 

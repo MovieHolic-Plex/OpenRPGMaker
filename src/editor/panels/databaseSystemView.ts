@@ -1020,13 +1020,13 @@ function systemPreviewWell(label: string, resourceId: string | undefined): HTMLE
   const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
   const preview = url
     ? el("img", { attrs: { alt: `${label} 미리보기`, src: url } })
-    : el("span", { class: "db-system-preview-empty", text: resourceId ?? "(없음)" });
+    : el("span", { class: "db-system-preview-empty", text: "(없음)" });
   return el("div", {
     class: "db-system-preview-well",
     children: [
       el("span", { class: "db-system-preview-label", text: label }),
       el("div", { class: "db-system-preview-frame", children: [preview] }),
-      el("code", { text: resourceId ?? "(없음)" }),
+      el("code", { text: resourceId ? `리소스 ${resourceId}` : "(없음)" }),
     ],
   });
 }
@@ -1109,7 +1109,7 @@ function titleScreenDisplayFieldset(
     }),
     el("code", {
       class: "db-title-workbench-system-title-id",
-      text: `system.titleResourceId: ${systemTitleResourceId ?? "(없음)"}`,
+      text: systemTitleResourceId ? `리소스 ${systemTitleResourceId}` : "리소스 (없음)",
       dataset: { testid: "db-title-workbench-system-title-id" },
     }),
     numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {

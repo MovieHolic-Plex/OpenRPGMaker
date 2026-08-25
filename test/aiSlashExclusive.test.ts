@@ -56,11 +56,13 @@ function countUniqueByTestId(root: FakeElement, testId: string): number {
 }
 
 describe("슬래시와 시작 화면 배타", () => {
-  it("float 부팅은 워크 로그·오버레이·시작 화면을 마운트하지 않는다", () => {
-    // Break: float still mounts ai-rising-overlay / ai-start-screen under the panel.
+  it("float 부팅은 유리 로그를 마운트하고 오버레이·시작 화면은 마운트하지 않는다", () => {
     const panel = renderPanel();
     expandPanel(panel);
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
+    expect(findByTestId(panel, "ai-quick-replies")).toBeTruthy();
+    expect(panel.dataset.logSlot).toBe("glass");
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
   });

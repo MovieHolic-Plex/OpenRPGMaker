@@ -70,7 +70,7 @@ describe("playAudio command body", () => {
     // switch to SE catalog
     (body.querySelector('[data-testid="play-audio-channel-se"]') as HTMLButtonElement).click();
     expect((body.querySelector('[data-testid="play-audio-search"]') as HTMLInputElement).placeholder).toContain("행동");
-    expect(body.querySelector('[data-testid="play-audio-resource-picker"]')?.textContent).toContain("효과음 라이브러리");
+    expect(body.querySelector('[data-testid="play-audio-resource-picker"]')?.textContent).toContain("효과음 목록");
     const seSelect = body.querySelector('[data-testid="play-audio-resource-select"]') as HTMLSelectElement;
     const seIds = Array.from(seSelect.options).map((option) => option.value);
     expect(seIds.filter((id) => id.startsWith("cc0-se-"))).toHaveLength(SE_CATALOG.length);

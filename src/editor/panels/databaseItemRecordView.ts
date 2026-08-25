@@ -14,6 +14,7 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { itemFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
@@ -161,6 +162,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
       dataset: { testid: "db-items-oprn-workbench" },
       children: [
         itemHeader(record),
+        itemSpecStrip(record),
         storyHost,
         resourcePanel(record, rerender),
         databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"),
@@ -216,6 +218,12 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
       ]),
     ],
   });
+}
+
+function itemSpecStrip(record: ItemRecord): HTMLElement {
+  const spec = el("div", { class: "db-item-spec-strip", dataset: { testid: "db-item-spec-strip" } });
+  if (!isEquipmentItemType(record.type)) itemFields(spec, record.id);
+  return spec;
 }
 
 function itemHeader(record: ItemRecord): HTMLElement {

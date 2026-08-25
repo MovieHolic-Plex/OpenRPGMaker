@@ -36,7 +36,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
 
   openEventSubdialog({
     title: "필드 몬스터 템플릿",
-    subtitle: "전투 → 승리 시 스위치 ON + 이벤트 소거 + 정리 페이지",
+    subtitle: "전투 → 승리 시 스위치 켜기 + 이벤트 소거 + 정리 페이지",
     testId: "field-monster-template-dialog",
     width: "wide",
     render: (body, close) => {
@@ -159,7 +159,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
           children: [
             el("p", {
               class: "field-monster-template-hint",
-              text: "적용 시 이 이벤트의 페이지를 전투/정리 2페이지로 교체합니다. 승리할 때만 스위치 ON + 이벤트 소거가 실행됩니다.",
+              text: "적용 시 이 이벤트의 페이지를 전투/정리 2페이지로 교체합니다. 승리할 때만 스위치 켜기 + 이벤트 소거가 실행됩니다.",
             }),
             labeled("적 그룹", troop.root),
             labeled("전투 전 대사 (줄바꿈 = 여러 문장)", intro),

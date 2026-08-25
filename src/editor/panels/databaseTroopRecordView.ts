@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
@@ -218,9 +219,17 @@ function memberPositionPanel(record: TroopRecord, member: TroopMemberRecord, sel
       updateSelectedMember(record, selectedIndex, { ...member, hidden });
       rerender();
     }),
-    textField("배경", "db-field-troop-backdrop", record.previewBackgroundResourceId ?? "", (previewBackgroundResourceId) => {
-      updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(previewBackgroundResourceId) });
-      rerender();
+    resourcePickerControl({
+      label: "배경",
+      resourceId: record.previewBackgroundResourceId,
+      kind: "backdrop",
+      testid: "db-field-troop-backdrop",
+      dialogTitle: "전투 배경",
+      allowClear: true,
+      onChange: (result) => {
+        updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(result.resourceId) });
+      },
+      rerender,
     }),
   ]);
   panel.classList.add("db-troop-member-position-panel");
@@ -337,7 +346,8 @@ function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => 
             class: `db-troop-member-row${index === selectedIndex ? " active" : ""}`,
             attrs: { type: "button" },
             dataset: { testid: `db-troop-member-row-${index + 1}` },
-            text: `${index + 1}. ${enemyName} · enemy-${index + 1} · X${member.x} Y${member.y}`,
+            text: enemyName,
+            attrs: { title: `${index + 1} · X${member.x} Y${member.y}` },
             on: {
               click: () => {
                 selectedMemberIndexes.set(record.id, index);
@@ -512,7 +522,8 @@ function previewCaption(record: TroopRecord): string {
   const enemyNames = (record.members ?? [])
     .map((member) => enemies.find((enemy) => enemy.id === member.enemyId)?.name)
     .filter((name): name is string => Boolean(name));
-  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${record.previewBackgroundResourceId ?? "(배경 없음)"}`;
+  const terrainName = store.getCurrent().database.terrains?.find((terrain) => terrain.battleBackgroundResourceId === record.previewBackgroundResourceId)?.name;
+  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${terrainName ?? "배경 없음"}`;
 }
 
 function renderChromaKeyImage(canvas: HTMLCanvasElement, url: string): void {

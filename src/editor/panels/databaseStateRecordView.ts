@@ -8,6 +8,13 @@ import type { StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
 const RATE_GRADES: readonly StateRateGrade[] = ["A", "B", "C", "D", "E"];
+const RATE_GRADE_LABEL: Record<StateRateGrade, string> = {
+  A: "약함",
+  B: "조금 약함",
+  C: "보통",
+  D: "강함",
+  E: "무효",
+};
 
 const REMOVAL_OPTIONS = ["전투 종료 후 유지", "전투 종료", "피격 또는 전투 종료", "즉시 해제", "턴 경과"] as const;
 const RESTRICTION_OPTIONS = ["없음", "행동 불가", "아군에게 공격 불가", "스킬 사용 불가", "물리 공격 불가"] as const;
@@ -203,7 +210,7 @@ function rateRows(ontology: ReturnType<typeof stateOntologyFor>): HTMLElement[] 
     el("div", {
       class: `db-state-rate-row grade-${grade.toLowerCase()}`,
       dataset: { testid: `db-state-rate-${grade}` },
-      children: [el("b", { text: grade }), el("input", { attrs: { readonly: "true", type: "text" }, value: `${ontology.rates[grade]}%` })],
+      children: [el("b", { text: RATE_GRADE_LABEL[grade] }), el("input", { attrs: { readonly: "true", type: "text" }, value: `${ontology.rates[grade]}%` })],
     })
   );
 }

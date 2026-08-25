@@ -37,6 +37,18 @@
     min-height: 0;
   }
 
+  /* header/footer sticky so the user never loses primary actions at 1024 */
+  .database-modal-backdrop .database-modal-window .database-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+  }
+
   .database-modal-body .oprn-detail-form,
   .database-modal-body .db-detail-form {
     box-sizing: border-box;

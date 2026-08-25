@@ -10,7 +10,7 @@ const DIGIT_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 
 export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCommand): HTMLElement {
   const wrap = el("div", {
-    class: "input-number-command-body",
+    class: "input-number-command-body cream-command-form",
     dataset: { testid: "input-number-command-body" },
   });
 

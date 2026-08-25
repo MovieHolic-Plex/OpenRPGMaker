@@ -444,21 +444,23 @@
     .db-panel,
     .db-class-panel
   ) {
-    background: var(--bg-raised);
-    border: 1px solid var(--db-modern-line);
+    background: var(--db-studio-surface, var(--bg-raised, #FFFFFF));
+    border: 0;
+    border-top: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
     border-radius: 0;
     box-shadow: none;
-    color: var(--db-modern-text);
-    margin: 0 0 10px;
-    padding: 14px 12px 12px;
+    color: var(--db-studio-text-1, #0F172A);
+    margin: 0 0 4px;
+    padding: 16px 0 12px;
   }
 
   .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(legend, h3, h4) {
-    color: var(--text-1);
-    font: 700 15px/1.15 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-    letter-spacing: 0;
-    margin: 0 0 8px;
-    padding: 0 3px;
+    color: var(--db-studio-text-1, #0F172A);
+    font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    padding: 0;
   }
 
   .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(.field, label) {

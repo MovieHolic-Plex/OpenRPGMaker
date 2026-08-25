@@ -110,7 +110,7 @@ async function addFaceCommand(page: Page): Promise<void> {
   const picker = page.getByTestId("event-command-picker");
   await picker.getByTestId("command-picker-add-changeFace").click();
   await expect(picker).toBeHidden();
-  await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 그래픽 변경");
+  await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 바꾸기");
 }
 
 async function addTextCommand(page: Page, body = FACE_TEXT_BODY): Promise<void> {
@@ -161,7 +161,7 @@ async function addFacesetViaDialog(page: Page): Promise<void> {
   await dialog.getByTestId("faceset-ok").click();
   await expect(dialog).toBeHidden();
   await expect(picker).toBeHidden();
-  await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 그래픽 변경");
+  await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 바꾸기");
 }
 
 async function openChoicesInlineEditor(page: Page): Promise<void> {

@@ -1,3 +1,4 @@
+import { equipmentFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
   emptyToUndefined,
@@ -242,6 +243,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
 
   form.append(
     equipmentHeader(record, summaryHost, refreshOverview),
+    equipmentSpecStrip(record),
     storyHost,
     comparisonPanel,
     resourcePanel(record, rerender),
@@ -292,6 +294,12 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
       }),
     ])
   );
+}
+
+function equipmentSpecStrip(record: EquipmentRecord): HTMLElement {
+  const spec = el("div", { class: "db-item-spec-strip", dataset: { testid: "db-equipment-spec-strip" } });
+  equipmentFields(spec, record.id);
+  return spec;
 }
 
 function equipmentHeader(record: EquipmentRecord, summaryHost: HTMLElement, refreshSummaryChips: () => void): HTMLElement {

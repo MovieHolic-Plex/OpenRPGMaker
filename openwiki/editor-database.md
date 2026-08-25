@@ -1,5 +1,13 @@
 # Editor Database
 
+## Database Studio chrome (2026-08-24)
+
+- The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
+- Nav is a **labeled 220px rail** (group headers visible) that collapses to 56px only below 800px. Tab `textContent` / `db-tab-*` testids stay; CSS no longer uses `font-size: 0`.
+- Record lists are **name-first** with muted `#n` meta. Do not put `0001:` back in `databaseRecordViews.ts` / utility / common-event rows. Unused switch/variable reserve rows are not rendered.
+- Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Dirty 3-way Save/Discard/Keep is unchanged.
+- Keep G006 in-modal `switchDatabaseActiveTab`, gallery+list toggles, and every `db-field-*` / `db-record-row-*` / `db-record-card-*` / `db-system-nav-*` / `db-type-chart-*` testid.
+
 ## P2 낚시·채집·박물관 저작 표면 (2026-08-25)
 
 - `생활` 그룹의 `낚시·채집·박물관` (`lifeCollections`) 탭은 fish species, fishing spots, seasonal forage areas, museum rewards를 구조화해서 목록·추가·이름 변경·삭제한다. 기본값 동작은 collection tracking까지 서로 참조가 맞는 최소 패키지를 만든다. 물고기 삭제는 해당 catch만 제거하고, catch가 하나도 남지 않은 낚시터만 함께 제거한다.

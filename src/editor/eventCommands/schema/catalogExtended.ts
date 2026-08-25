@@ -104,7 +104,7 @@ defineCommand({
 defineCommand({
   kind: "setSelfSwitch",
   family: "state",
-  label: "셀프 스위치",
+  label: "이 이벤트 기억",
   fields: {
     key: f.enum("키", [
       { value: "A", label: "A", key: "a" },
@@ -117,7 +117,7 @@ defineCommand({
       { value: "false", label: "OFF", key: "off" },
     ]),
   },
-  summary: (c) => `셀프 스위치 ${str(c.key) || "A"} → ${c.value === false ? "OFF" : "ON"}`,
+  summary: (c) => `이 이벤트 기억 ${str(c.key) || "A"} → ${c.value === false ? "꺼짐" : "켜짐"}`,
 });
 
 defineCommand({

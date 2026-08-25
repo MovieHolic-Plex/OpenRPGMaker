@@ -7,10 +7,10 @@ export type ProposalPresentationMode = "modal" | "canvas" | "inline";
 export function resolveProposalPresentation(
   requested: ProposalPresentationMode,
   dock: ChatDock,
+  fromReopenPill = false,
 ): ProposalPresentationMode {
-  if (dock === "float") return "inline";
-  if (requested === "canvas") return "canvas";
-  if (dock === "glass" || dock === "side") return "inline";
+  if (fromReopenPill && requested === "canvas") return "canvas";
+  if (dock === "glass" || dock === "side" || dock === "float") return "inline";
   return "inline";
 }
 

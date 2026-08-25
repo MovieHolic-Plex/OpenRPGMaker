@@ -36,9 +36,9 @@ type RuntimeOwner = CommandPresentationDescriptor["executionOwner"];
 
 const PICKER_PAGE_TITLES: Record<1 | 2 | 3 | 4, string> = {
   1: "빠른 저작",
-  2: "배우·전투",
-  3: "맵·연출",
-  4: "시스템·모던",
+  2: "동료 · 전투",
+  3: "지도 · 화면 효과",
+  4: "시스템 · 도구",
 };
 
 function pickerPageTitle(page: 1 | 2 | 3 | 4): string {
@@ -65,7 +65,7 @@ type CommandPage = {
   readonly entries: readonly CommandEntry[];
 };
 
-// 리스트(RM2003 기본) ↔ 아이콘 그리드 표시 모드. 세션 간 유지하되 기본은 리스트.
+// 리스트 ↔ 아이콘 그리드 표시 모드. 기본은 리스트.
 type PickerViewMode = "list" | "grid";
 const PICKER_VIEW_MODE_KEY = "oprn:eventCommandPicker.viewMode";
 
@@ -295,7 +295,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
               type: "button",
               role: "tab",
               title: pickerPageTitle(page.page),
-              "aria-label": `탭 ${page.page}: ${pickerPageTitle(page.page)}`,
+              "aria-label": pickerPageTitle(page.page),
               "aria-selected": page.page === activePage ? "true" : "false",
               tabindex: page.page === activePage ? "0" : "-1",
             },
@@ -472,7 +472,7 @@ function renderCommandGrid(
       grid.append(
         el("div", {
           class: "event-command-picker-group-heading",
-          text: entry.group,
+          text: visual.label,
           dataset: { category: visual.key, glyph: visual.glyph },
         })
       );
@@ -514,7 +514,7 @@ function renderCommandButton(
     el("span", { class: "event-command-picker-command-label", text: entry.label }),
   ];
   if (options.showPageChip) {
-    children.push(el("span", { class: "event-command-picker-page-chip", text: `탭${entry.page}`, attrs: { "aria-hidden": "true" } }));
+    children.push(el("span", { class: "event-command-picker-page-chip", text: pickerPageTitle(entry.page), attrs: { "aria-hidden": "true" } }));
   }
   const badge = renderRuntimeSupportBadge(runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`);
   if (badge) children.push(badge);
@@ -645,7 +645,7 @@ function renderFooter(close: () => void): HTMLElement {
           el("span", { class: "command-runtime-badge runtime-partial", text: "△", attrs: { "aria-hidden": "true" } }),
           el("span", { text: "부분 실행" }),
           el("span", { class: "command-runtime-badge editor-only", text: "!", attrs: { "aria-hidden": "true" } }),
-          el("span", { text: "에디터 전용(런타임 미지원)" }),
+          el("span", { text: "에디터에서만 미리 봅니다" }),
         ],
       }),
       el("button", {

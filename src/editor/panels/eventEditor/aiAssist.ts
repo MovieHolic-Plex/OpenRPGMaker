@@ -98,7 +98,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
       id: inputId,
       rows: "4",
       "aria-describedby": promptHelpId,
-      placeholder: "예) 보물상자: 열면 회복약 2개 주고 셀프스위치 A ON, 이미 열었으면 '비어 있다' 표시",
+      placeholder: "예) 보물상자: 열면 회복약 2개 주고 이 이벤트 기억 A를 켜기, 이미 열었으면 '비어 있다' 표시",
     },
     dataset: { testid: "ai-event-input" },
   });

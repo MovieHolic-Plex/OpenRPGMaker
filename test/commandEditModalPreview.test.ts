@@ -199,7 +199,7 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(body, "event-command-variable-number-value")).toBeTruthy();
     expect(body.textContent).toContain("대상 변수");
     expect(body.textContent).toContain("값 소스");
-    expect(body.textContent).toContain("정수 나눗셈");
+    expect(body.textContent).toContain("나누기는 나머지를 버립니다");
     const formula = findByTestId(body, "event-command-variable-formula");
     expect(formula?.textContent).toContain("+=");
     expect(formula?.textContent).toContain("7");
@@ -265,7 +265,7 @@ describe("command edit modal — image-rich preview", () => {
     const badges = findByTestId(preview, "ecp-settings-badges");
     expect(badges?.textContent).toContain("일반");
     expect(badges?.textContent).toContain("하단");
-    expect(badges?.textContent).toContain("가림 방지 ON");
+    expect(badges?.textContent).toContain("가림 방지 켜짐");
     expect(badges?.textContent).toContain("이벤트 이동 정지");
   });
 

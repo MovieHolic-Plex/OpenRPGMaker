@@ -234,10 +234,11 @@ describe("UXD proposal summary helpers", () => {
     expect(resolveProposalPresentation("modal", "glass")).toBe("inline");
     expect(resolveProposalPresentation("modal", "side")).toBe("inline");
     expect(resolveProposalPresentation("modal", "float")).toBe("inline");
-    expect(resolveProposalPresentation("canvas", "glass")).toBe("canvas");
-    expect(resolveProposalPresentation("canvas", "side")).toBe("canvas");
+    expect(resolveProposalPresentation("canvas", "glass")).toBe("inline");
+    expect(resolveProposalPresentation("canvas", "side")).toBe("inline");
     expect(resolveProposalPresentation("canvas", "float")).toBe("inline");
     expect(resolveProposalPresentation("inline", "float")).toBe("inline");
+    expect(resolveProposalPresentation("canvas", "glass", true)).toBe("canvas");
   });
 
   it("결정 제목은 짧은 명사구를 쓰고 채팅체·툴 id는 버린다", () => {
@@ -475,7 +476,8 @@ describe("UXD proposal panel integration", () => {
 
       const card = findByTestId(panel, "ai-proposal-card") as FakeElement;
       expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
-      expect(findByTestId(panel, "ai-proposal-reopen")).toBeNull();
+      const reopen = findByTestId(panel, "ai-proposal-reopen");
+      expect(reopen == null || reopen.hidden === true || (reopen as { attrs?: { hidden?: string } }).attrs?.hidden !== undefined).toBe(true);
       expect(findByTestId(panel, "ai-proposal-modal")?.hidden).toBe(true);
       expect(findByTestId(panel, "ai-proposal-pin")).toBeNull();
       expect(findByTestId(panel, "ai-proposal-pin-host")?.contains(card)).toBe(true);

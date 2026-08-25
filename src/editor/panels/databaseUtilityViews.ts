@@ -239,7 +239,13 @@ function rangeControls(label: string, kind: "switch" | "variable", rerender: () 
       },
     },
   });
-  return el("div", { class: "db-range", children: [el("span", { text: label }), start, count, prefix, button] });
+  return el("details", {
+    class: "db-range-disclosure",
+    children: [
+      el("summary", { text: label }),
+      el("div", { class: "db-range", children: [start, count, prefix, button] }),
+    ],
+  });
 }
 
 function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
@@ -266,12 +272,6 @@ function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
     list.append(emptyListHint(options.query ? "검색 결과가 없습니다." : options.emptyMessage));
     return list;
   }
-  if (!options.query) {
-    const minimumVisibleRows = 30;
-    for (let index = visibleCount; index < minimumVisibleRows; index += 1) {
-      list.append(emptyNumberedRow(ordinalLabel(index)));
-    }
-  }
   return list;
 }
 
@@ -287,8 +287,8 @@ function namedRow(options: UtilityNamedRowOptions): HTMLElement {
     },
     on: { click: () => options.setSelectedId(options.id) },
     children: [
-      el("span", { class: "db-id", text: `${options.ordinal}:` }),
       el("span", { class: "db-list-name", text: options.name }),
+      el("span", { class: "db-id", text: `#${options.index + 1}` }),
     ],
   });
   const deleteButton = twoStepDeleteButton({
@@ -374,16 +374,6 @@ function storyFlagList(): HTMLElement {
           ],
         }))
         : [el("div", { class: "empty-hint", text: "등록된 스토리 플래그 없음" })]),
-    ],
-  });
-}
-
-function emptyNumberedRow(ordinal: string): HTMLElement {
-  return el("div", {
-    class: "db-row db-empty-row",
-    children: [
-      el("span", { class: "db-id", text: `${ordinal}:` }),
-      el("span", { class: "db-list-name", text: "" }),
     ],
   });
 }

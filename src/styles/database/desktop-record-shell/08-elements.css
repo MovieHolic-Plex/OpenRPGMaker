@@ -1,55 +1,56 @@
 @media (min-width: 981px) {
-  .database-modal-body .db-elements-classic,
-  .database-modal-body .db-elements-classic-inner {
+  .database-modal-backdrop .database-modal-body .db-elements-classic,
+  .database-modal-backdrop .database-modal-body .db-elements-classic-inner {
     height: 100%;
     min-height: 0;
   }
 
-  .database-modal-body .db-elements-classic-inner {
+  .database-modal-backdrop .database-modal-body .db-elements-classic-inner {
     gap: 14px;
     grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
   }
 
-  .database-modal-body .db-elements-editor {
+  .database-modal-backdrop .database-modal-body .db-elements-editor {
     display: grid;
     gap: 12px;
     grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
     grid-template-rows: 88px 160px minmax(0, 1fr);
   }
 
-  .database-modal-body .db-elements-editor .db-elements-fieldset:nth-child(3) {
+  .database-modal-backdrop .database-modal-body .db-elements-editor .db-elements-fieldset:nth-child(3) {
     grid-column: 2;
     grid-row: 1 / 4;
   }
 
-  .database-modal-body .db-elements-list-pane,
-  .database-modal-body .db-elements-editor {
-    background: var(--bg-raised);
-    border: 1px solid var(--border-subtle);
-    border-radius: 6px;
+  .database-modal-backdrop .database-modal-body .db-elements-list-pane,
+  .database-modal-backdrop .database-modal-body .db-elements-editor {
+    background: var(--db-studio-surface);
+    border: 1px solid var(--db-studio-border-default);
+    border-radius: 8px;
+    box-shadow: var(--db-studio-shadow);
   }
 
-  .database-modal-body .db-elements-list-title {
+  .database-modal-backdrop .database-modal-body .db-elements-list-title {
     background: transparent;
-    color: var(--text-1);
-    font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    color: var(--db-studio-text-1);
+    font: 600 13px/20px "Malgun Gothic", system-ui, sans-serif;
     justify-content: flex-start;
   }
 
-  .database-modal-body .db-elements-row,
-  .database-modal-body button.db-elements-row {
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    font: 400 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  .database-modal-backdrop .database-modal-body .db-elements-row,
+  .database-modal-backdrop .database-modal-body button.db-elements-row {
+    border: 1px solid var(--db-studio-border-subtle);
+    border-radius: 6px;
+    font: 400 13px/20px "Malgun Gothic", system-ui, sans-serif;
     height: 36px;
     min-height: 36px;
-    padding: 0 10px 0 26px;
+    padding: 0 10px;
   }
 
-  .database-modal-body .db-elements-row.is-selected,
-  .database-modal-body button.db-elements-row.is-selected {
-    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
-    border-color: var(--accent-border);
-    color: var(--text-1);
+  .database-modal-backdrop .database-modal-body .db-elements-row.is-selected,
+  .database-modal-backdrop .database-modal-body button.db-elements-row.is-selected {
+    background: var(--db-studio-accent-soft);
+    border-color: var(--db-studio-accent-border);
+    color: var(--db-studio-text-1);
   }
 }

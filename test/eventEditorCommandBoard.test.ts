@@ -63,15 +63,15 @@ describe("event editor command board", () => {
 
     const pagebar = host.querySelector<HTMLElement>(".event-editor-pagebar");
     const header = host.querySelector<HTMLElement>('[data-testid="event-command-header"]');
-    const contents = host.querySelector<HTMLElement>('[data-testid="event-classic-contents"]');
+    const contents = host.querySelector<HTMLElement>('[data-testid="event-script-canvas"]');
 
     expect(pagebar?.contains(header)).toBe(true);
-    expect(header?.textContent).toContain("실행 내용 · 2개");
-    expect(header?.querySelector('[data-testid="event-view-toggle-list"]')).toBeTruthy();
-    expect(header?.querySelector('[data-testid="event-view-toggle-storyboard"]')).toBeTruthy();
-    expect(contents?.getAttribute("aria-label")).toBe("실행 내용");
+    expect(header?.textContent).toContain("이 페이지가 하는 일 · 2개");
+    expect(contents?.querySelector('[data-testid="event-view-toggle-list"]')).toBeTruthy();
+    expect(contents?.querySelector('[data-testid="event-view-toggle-storyboard"]')).toBeTruthy();
+    expect(header?.querySelector('[data-testid="event-view-toggle-list"]')).toBeNull();
+    expect(contents?.getAttribute("aria-label")).toBe("이 페이지가 하는 일");
     expect(contents?.querySelector(".event-contents-legend")).toBeNull();
-    expect(contents?.querySelector(".event-view-toggle")).toBeNull();
   });
 
   it("adds readable category badges in addition to category color", () => {

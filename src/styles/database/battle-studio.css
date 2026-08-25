@@ -1,5 +1,6 @@
-/* Battle Studio — the four battle utility surfaces share one modern, canvas-first
- * authoring language while continuing to consume the Database modal's cream tokens. */
+/* Battle Studio — four battle utility surfaces share one neutral studio language.
+ * Scoped to .database-modal-backdrop; tokens only via --db-studio-* (studio-theme.css).
+ * Dark stage (#1d2024) is retained as working canvas; chrome around it is studio. */
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-surface {
   --db-studio-dark: #1d2024;
@@ -11,9 +12,9 @@
   --db-studio-live: #c2e85b;
   --db-studio-timing: #e0a648;
   align-content: start;
-  background: var(--db-light-bg-base);
+  background: var(--db-studio-canvas);
   box-sizing: border-box;
-  color: var(--db-light-text-1);
+  color: var(--db-studio-text-1);
   display: grid;
   gap: 14px;
   grid-auto-flow: row;
@@ -28,7 +29,7 @@
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-heading {
   align-items: end;
-  border-bottom: 1px solid var(--db-light-border-subtle);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
   display: grid;
   gap: 12px 24px;
   grid-template-columns: minmax(210px, 1fr) auto;
@@ -42,7 +43,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-kicker {
-  color: var(--db-light-accent);
+  color: var(--db-studio-accent);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.13em;
@@ -50,16 +51,14 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-title-block h3 {
-  color: var(--db-light-text-1);
-  font-size: clamp(19px, 2vw, 25px);
-  line-height: 1.15;
+  color: var(--db-studio-text-1);
+  font: 600 clamp(19px, 2vw, 25px)/1.15 "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-title-block p {
-  color: var(--db-light-text-2);
-  font-size: 12px;
-  line-height: 1.45;
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.45 "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
@@ -76,21 +75,21 @@
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
-  color: var(--db-light-text-2);
+  color: var(--db-studio-text-2);
   cursor: pointer;
   flex: 0 0 auto;
-  font: 700 12px/1.3 var(--font-ui);
+  font: 700 12px/1.3 "Malgun Gothic", system-ui, sans-serif;
   min-height: 36px;
   padding: 8px 2px 10px;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav-button:hover {
-  color: var(--db-light-text-1);
+  color: var(--db-studio-text-1);
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav-button.active {
-  border-bottom-color: var(--db-light-accent);
-  color: var(--db-light-accent);
+  border-bottom-color: var(--db-studio-accent);
+  color: var(--db-studio-accent);
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-section-header {
@@ -102,13 +101,13 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-section-header strong {
-  color: inherit;
-  font-size: 13px;
+  color: var(--db-studio-text-1);
+  font: 600 13px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-section-header span {
-  color: var(--db-light-text-3);
-  font-size: 10px;
+  color: var(--db-studio-text-3);
+  font: 400 10px/1 "Malgun Gothic", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-dark-stage {
@@ -120,7 +119,7 @@
   background-repeat: repeat;
   background-size: 24px 24px;
   border: 1px solid rgba(21, 24, 27, 0.72);
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   color: var(--db-studio-text);
   min-height: 280px;
@@ -143,14 +142,13 @@
   border: 1px solid rgba(194, 232, 91, 0.45);
   border-radius: 999px;
   color: var(--db-studio-live);
-  font: 800 9px/1.2 var(--font-mono);
+  font: 800 9px/1.2 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: 0.08em;
   padding: 4px 7px;
   width: fit-content;
 }
 
-/* Animation: the existing record list remains the asset browser; this form owns
- * the viewport, inspector, and integrated timeline. */
+/* Animation: record list is asset browser; this form owns viewport/inspector/timeline */
 .database-modal-backdrop .database-modal-window .animation-detail-form.db-battle-studio-surface {
   grid-auto-rows: auto;
   overflow: auto;
@@ -177,7 +175,7 @@
 .database-modal-backdrop .database-modal-window .db-animation-studio-stage > .db-animation-stage-panel {
   background: var(--db-studio-dark);
   border: 1px solid rgba(21, 24, 27, 0.8);
-  border-radius: 6px;
+  border-radius: 8px;
   display: grid;
   gap: 0;
   grid-template-rows: auto minmax(210px, 1fr) auto;
@@ -204,7 +202,7 @@
   border: 1px solid var(--db-studio-line);
   border-radius: 4px;
   color: var(--db-studio-text);
-  font-size: 10px;
+  font: 400 10px/1.2 "Malgun Gothic", system-ui, sans-serif;
   min-height: 27px;
   padding: 4px 7px;
 }
@@ -213,7 +211,7 @@
   background: var(--db-studio-live);
   border-color: var(--db-studio-live);
   color: #171a1d;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-stage-surface {
@@ -231,14 +229,18 @@
   background: var(--db-studio-dark-2);
   border-top: 1px solid var(--db-studio-line);
   color: var(--db-studio-muted);
+  display: flex;
+  gap: 12px;
+  font: 400 10px/1 "Malgun Gothic", system-ui, sans-serif;
   padding: 7px 10px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector {
   align-content: start;
-  background: var(--db-light-bg-raised);
-  border: 1px solid var(--db-light-border-default);
-  border-radius: 6px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  box-shadow: var(--db-studio-shadow);
   display: grid;
   gap: 10px;
   grid-auto-rows: max-content;
@@ -247,12 +249,6 @@
   min-width: 0;
   overflow: auto;
   padding: 11px;
-}
-
-.database-modal-backdrop .database-modal-window .db-animation-studio-inspector > .db-animation-top-grid,
-.database-modal-backdrop .database-modal-window .db-animation-studio-inspector > [data-testid="db-animation-cell-table"],
-.database-modal-backdrop .database-modal-window .db-animation-studio-inspector > [data-testid="db-animation-references"] {
-  grid-area: auto;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-top-grid {
@@ -265,6 +261,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-sheet-fields {
+  display: grid;
+  gap: 8px;
   grid-template-columns: minmax(0, 1fr);
 }
 
@@ -278,11 +276,27 @@
   min-width: 0;
 }
 
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-top-grid :is(label, .db-field) span:first-child,
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel :is(label, .db-field) span:first-child {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector :is(input[type="text"], input[type="number"], select) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  min-height: 30px;
+  padding: 0 8px;
+}
+
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel,
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-setup-panel {
-  background: transparent;
+  background: var(--db-studio-surface);
   border: 0;
-  border-top: 1px solid var(--db-light-border-subtle);
+  border-top: 1px solid var(--db-studio-border-subtle);
   border-radius: 0;
   margin: 0;
   max-height: none;
@@ -299,19 +313,38 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel input[type="checkbox"] {
+  accent-color: var(--db-studio-accent);
   justify-self: start;
   min-height: 16px;
   width: 16px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel h4 {
-  color: var(--db-light-text-1);
-  font-size: 12px;
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
   margin: 0 0 8px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-table {
+  border-collapse: collapse;
   min-width: 620px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-table th {
+  background: var(--db-studio-inset);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-3);
+  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-table td {
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-1);
+  font: 400 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px 6px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector [data-testid="db-animation-cell-table"] {
@@ -323,7 +356,7 @@
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline {
   background: var(--db-studio-dark);
   border: 1px solid rgba(21, 24, 27, 0.8);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--db-studio-text);
   display: grid;
   gap: 0;
@@ -352,7 +385,7 @@
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-list-panel h4 {
   color: var(--db-studio-muted);
-  font-size: 10px;
+  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
   grid-column: 1 / -1;
   margin: 0;
 }
@@ -372,7 +405,7 @@
   border-radius: 3px;
   color: var(--db-studio-muted);
   flex: 0 0 40px;
-  font: 700 10px/1 var(--font-mono);
+  font: 700 10px/1 "Malgun Gothic", system-ui, sans-serif;
   min-height: 34px;
 }
 
@@ -387,7 +420,9 @@
   border: 1px solid var(--db-studio-line);
   border-radius: 4px;
   color: var(--db-studio-text);
+  font: 400 11px/1 "Malgun Gothic", system-ui, sans-serif;
   min-height: 28px;
+  padding: 0 8px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-frame-actions {
@@ -408,13 +443,14 @@
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-timing-panel h4 {
   color: var(--db-studio-muted);
-  font-size: 10px;
+  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
   margin: 0 0 7px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-timing-panel :is(th, td),
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .empty-hint {
   color: var(--db-studio-muted);
+  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-pattern-strip-panel {
@@ -434,9 +470,11 @@
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-timeline .db-animation-pattern-cell {
   background: rgba(255, 255, 255, 0.045);
-  border-color: var(--db-studio-line);
+  border: 1px solid var(--db-studio-line);
+  border-radius: 4px;
   color: var(--db-studio-muted);
   flex: 0 0 54px;
+  min-height: 54px;
 }
 
 /* Terrain */
@@ -453,9 +491,10 @@
 .database-modal-backdrop .database-modal-window .db-battle-command-inspector,
 .database-modal-backdrop .database-modal-window .db-battle-command-palette,
 .database-modal-backdrop .database-modal-window .db-battle-screen-troop-strip {
-  background: var(--db-light-bg-raised);
-  border: 1px solid var(--db-light-border-default);
-  border-radius: 6px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  box-shadow: var(--db-studio-shadow);
   box-sizing: border-box;
   min-width: 0;
   padding: 10px;
@@ -471,10 +510,10 @@
 
 .database-modal-backdrop .database-modal-window .db-terrain-preset-card {
   align-items: center;
-  background: transparent;
+  background: var(--db-studio-surface);
   border: 1px solid transparent;
-  border-radius: 5px;
-  color: var(--db-light-text-1);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
   display: grid;
   gap: 8px;
   grid-template-columns: 42px minmax(0, 1fr);
@@ -484,19 +523,20 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-preset-card:hover {
-  background: var(--db-light-bg-surface);
-  border-color: var(--db-light-border-subtle);
+  background: var(--db-studio-inset);
+  border-color: var(--db-studio-border-subtle);
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-preset-card.active {
-  background: var(--db-light-accent-muted);
-  border-color: var(--db-light-accent-border);
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-preset-thumb {
-  background: linear-gradient(135deg, #7a8c62, #353b31);
+  background: var(--db-studio-well);
   background-position: center;
   background-size: cover;
+  border: 1px solid var(--db-studio-border-subtle);
   border-radius: 4px;
   height: 40px;
   width: 42px;
@@ -515,8 +555,8 @@
   white-space: nowrap;
 }
 
-.database-modal-backdrop .database-modal-window .db-terrain-preset-copy strong { font-size: 12px; }
-.database-modal-backdrop .database-modal-window .db-terrain-preset-copy small { color: var(--db-light-text-3); font-size: 9px; }
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy strong { color: var(--db-studio-text-1); font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif; }
+.database-modal-backdrop .database-modal-window .db-terrain-preset-copy small { color: var(--db-studio-text-3); font: 400 10px/1 "Malgun Gothic", system-ui, sans-serif; }
 
 .database-modal-backdrop .database-modal-window .db-terrain-preview-stage {
   background-position: center;
@@ -538,15 +578,16 @@
 .database-modal-backdrop .database-modal-window .db-terrain-stage-overlay strong,
 .database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta strong,
 .database-modal-backdrop .database-modal-window .db-command-preview-copy strong {
-  font-size: 16px;
-  text-shadow: 0 1px 4px #000;
+  color: var(--db-studio-text);
+  font: 600 16px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-stage-overlay small,
 .database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta small {
   color: var(--db-studio-muted);
-  font: 10px/1.35 var(--font-mono);
-  text-shadow: 0 1px 3px #000;
+  font: 400 10px/1.35 "Malgun Gothic", system-ui, sans-serif;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-stage-actors {
@@ -576,9 +617,9 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-record {
-  background: var(--db-light-bg-surface);
-  border: 1px solid var(--db-light-border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
   display: grid;
   gap: 6px 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -591,6 +632,22 @@
   gap: 4px;
   grid-template-columns: minmax(62px, 0.42fr) minmax(0, 1fr);
   margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-record .db-readonly-row span:first-child {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .db-terrain-record :is(input, select) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  min-height: 30px;
+  padding: 0 8px;
+  width: 100%;
 }
 
 /* Battle screen */
@@ -623,11 +680,18 @@
   margin: 0;
 }
 
-.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector, .db-animation-studio-inspector) :is(input, select, button) {
+.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector) :is(input, select, button) {
   box-sizing: border-box;
   min-height: 30px;
   min-width: 0;
   width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input, select) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-screen-party-markers {
@@ -646,7 +710,7 @@
   border-radius: 50%;
   color: var(--db-studio-live);
   display: flex;
-  font: 700 9px/1 var(--font-mono);
+  font: 700 9px/1 "Malgun Gothic", system-ui, sans-serif;
   height: 22px;
   justify-content: center;
   width: 22px;
@@ -686,17 +750,17 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-screen-troop-card {
-  background: var(--db-light-bg-surface);
-  border: 1px solid var(--db-light-border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
   display: grid;
   flex: 0 0 178px;
   gap: 3px;
   padding: 8px;
 }
 
-.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card strong { font-size: 11px; }
-.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card small { color: var(--db-light-text-3); font-size: 9px; }
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card strong { color: var(--db-studio-text-1); font: 600 11px/1.2 "Malgun Gothic", system-ui, sans-serif; }
+.database-modal-backdrop .database-modal-window .db-battle-screen-troop-card small { color: var(--db-studio-text-3); font: 400 10px/1 "Malgun Gothic", system-ui, sans-serif; }
 
 /* Battle commands */
 .database-modal-backdrop .database-modal-window .db-battle-command-preview {
@@ -720,9 +784,9 @@
 .database-modal-backdrop .database-modal-window .db-command-preview-menu button {
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--db-studio-muted);
-  font: 650 11px/1.3 var(--font-ui);
+  font: 600 11px/1.3 "Malgun Gothic", system-ui, sans-serif;
   min-height: 28px;
   text-align: left;
 }
@@ -740,19 +804,23 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-command-inspector p {
-  color: var(--db-light-text-2);
-  font-size: 11px;
-  line-height: 1.5;
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.5 "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-secondary-action {
-  background: var(--db-light-accent-muted);
-  border: 1px solid var(--db-light-accent-border);
-  border-radius: 5px;
-  color: var(--db-light-accent);
-  font-weight: 750;
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 6px;
+  color: var(--db-studio-accent);
+  font: 700 11px/1 "Malgun Gothic", system-ui, sans-serif;
   min-height: 34px;
+  padding: 0 12px;
+}
+
+.database-modal-backdrop .database-modal-window .db-studio-secondary-action:hover {
+  background: rgba(74, 87, 214, 0.12);
 }
 
 .database-modal-backdrop .database-modal-window .db-command-kind-legend {
@@ -762,10 +830,11 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-command-kind-legend span {
-  background: var(--db-light-bg-inset);
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
   border-radius: 999px;
-  color: var(--db-light-text-2);
-  font-size: 9px;
+  color: var(--db-studio-text-2);
+  font: 400 10px/1 "Malgun Gothic", system-ui, sans-serif;
   padding: 4px 7px;
 }
 
@@ -781,9 +850,10 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-command-card {
-  background: var(--db-light-bg-surface);
-  border: 1px solid var(--db-light-border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--db-studio-shadow);
   display: grid;
   gap: 6px;
   min-width: 0;
@@ -792,7 +862,7 @@
 
 .database-modal-backdrop .database-modal-window .db-battle-command-card > header {
   align-items: center;
-  border-bottom: 1px solid var(--db-light-border-subtle);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
   display: grid;
   gap: 7px;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -800,22 +870,24 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-command-card-index {
-  color: var(--db-light-accent);
-  font: 800 10px/1 var(--font-mono);
+  color: var(--db-studio-accent);
+  font: 800 10px/1 "Malgun Gothic", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-command-card > header strong {
-  font-size: 12px;
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .db-command-card-kind {
-  background: var(--db-light-accent-muted);
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
   border-radius: 999px;
-  color: var(--db-light-accent);
-  font: 700 9px/1 var(--font-mono);
+  color: var(--db-studio-accent);
+  font: 700 9px/1 "Malgun Gothic", system-ui, sans-serif;
   padding: 4px 6px;
 }
 
@@ -827,10 +899,21 @@
   margin: 0;
 }
 
+.database-modal-backdrop .database-modal-window .db-battle-command-card .db-readonly-row span:first-child {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
 .database-modal-backdrop .database-modal-window .db-battle-command-card :is(input, select) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
   box-sizing: border-box;
+  color: var(--db-studio-text-1);
+  font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
   min-height: 30px;
   min-width: 0;
+  padding: 0 8px;
   width: 100%;
 }
 
@@ -843,8 +926,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-summary-metric {
-  background: var(--db-light-bg-inset);
-  border-left: 2px solid var(--db-light-accent-border);
+  background: var(--db-studio-inset);
+  border-left: 2px solid var(--db-studio-accent-border);
   display: grid;
   gap: 3px;
   min-width: 0;
@@ -852,21 +935,45 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-summary-metric small {
-  color: var(--db-light-text-3);
-  font-size: 9px;
+  color: var(--db-studio-text-3);
+  font: 400 9px/1 "Malgun Gothic", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-summary-metric strong {
-  font-size: 11px;
+  color: var(--db-studio-text-1);
+  font: 600 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-empty {
-  color: var(--db-light-text-3);
-  font-size: 12px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  color: var(--db-studio-text-3);
+  font: 400 12px/1.4 "Malgun Gothic", system-ui, sans-serif;
   padding: 16px;
+  text-align: center;
+}
+
+/* 1024 preview collapses to 160px strip so form stays */
+@media (max-width: 1100px) {
+  .database-modal-backdrop .database-modal-window .db-terrain-preview-stage,
+  .database-modal-backdrop .database-modal-window .db-battle-screen-preview-stage,
+  .database-modal-backdrop .database-modal-window .db-battle-command-preview {
+    max-height: 160px;
+    min-height: 160px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-stage > .db-animation-stage-panel {
+    max-height: 360px;
+    min-height: 160px;
+  }
+
+  .database-modal-backdrop .database-modal-window .db-animation-studio-stage > .db-animation-stage-panel .db-animation-stage-surface {
+    min-height: 120px;
+  }
 }
 
 @media (max-width: 1240px) {
@@ -885,7 +992,7 @@
       "inspector"
       "timeline";
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(340px, auto) auto auto;
+    grid-template-rows: minmax(160px, auto) auto auto;
   }
 
   .database-modal-backdrop .database-modal-window .db-animation-studio-inspector {
@@ -943,10 +1050,6 @@
 
   .database-modal-backdrop .database-modal-window .db-terrain-preset-card {
     flex: 0 0 158px;
-  }
-
-  .database-modal-backdrop .database-modal-window .db-terrain-preview-stage {
-    min-height: 320px;
   }
 
   .database-modal-backdrop .database-modal-window .db-animation-studio-inspector,

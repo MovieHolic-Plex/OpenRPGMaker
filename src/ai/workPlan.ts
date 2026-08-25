@@ -25,6 +25,7 @@ import {
   requiredSuccessToolsForUserText,
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
+import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { getTool } from "@/editor/tools/toolRegistry";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
@@ -595,22 +596,11 @@ export function shouldRalphContinue(
   if (remaining > MAX_WORK_PLAN_ITEMS_PER_BURST && opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) {
     return false;
   }
-  // If the model is clearly asking the user a clarifying question, stop (human-in-the-loop).
-  if (opts.assistantText && assistantLooksLikeBlockingQuestion(opts.assistantText)) {
+  // Incomplete plans keep looping through a trailing ?; only explicit quick-replies pause.
+  if (opts.assistantText?.includes(QUICK_REPLY_MARKER)) {
     return false;
   }
   return true;
-}
-
-function assistantLooksLikeBlockingQuestion(text: string): boolean {
-  const t = text.trim();
-  if (t.length < 8) return false;
-  // Short heuristic only for HITL gate — not for planning content.
-  if (/[?？]\s*$/.test(t) && t.length < 400) return true;
-  if (/(선택해|골라|어떻게 할까요|진행할까요|원하시|말해 주|알려 주)/.test(t) && t.length < 500) {
-    return true;
-  }
-  return false;
 }
 
 export function advanceWorkPlanFromTools(

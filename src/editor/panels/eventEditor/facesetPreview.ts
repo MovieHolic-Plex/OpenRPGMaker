@@ -47,8 +47,8 @@ export function renderFacesetPreview(options: FacesetPreviewOptions): HTMLElemen
   if (url === null) {
     preview.dataset.empty = "true";
     preview.append(
-      el("strong", { text: resourceId || "얼굴 그래픽 없음" }),
-      el("span", { text: resourceId ? "미리보기를 찾을 수 없습니다." : "리소스를 선택하면 얼굴이 표시됩니다." })
+      el("strong", { text: resourceId || "얼굴 없음" }),
+      el("span", { text: resourceId ? "미리보기를 찾을 수 없습니다." : "얼굴을 고르면 여기에 보입니다." })
     );
     return preview;
   }
@@ -200,7 +200,7 @@ function normalizedFaceIndex(faceIndex: number): number {
 }
 
 function facesetName(resourceId: string): string {
-  if (!resourceId) return "얼굴 그래픽 없음";
+  if (!resourceId) return "얼굴 없음";
   const project = store.getCurrent();
   const uploaded = project.assets.uploaded[resourceId];
   if (uploaded) return uploaded.name;
@@ -229,7 +229,7 @@ export function renderFacesetIndexGrid(options: {
     class: "event-command-face-index-grid",
     attrs: {
       role: "listbox",
-      "aria-label": "얼굴 번호 선택",
+      "aria-label": "얼굴 칸 선택",
     },
     dataset: { testid: "event-command-face-index-grid" },
   });
@@ -241,7 +241,7 @@ export function renderFacesetIndexGrid(options: {
         class: "event-command-face-index-grid-empty",
         text: resourceId
           ? "이 리소스의 얼굴 시트를 불러올 수 없습니다."
-          : "위에서 얼굴 그래픽을 먼저 선택하세요.",
+          : "위에서 얼굴을 먼저 고르세요.",
       })
     );
     return grid;

@@ -169,8 +169,8 @@ function controlCharacterHelp(): HTMLElement {
   });
   const list = el("dl", { class: "event-command-text-control-list" });
   for (const row of CONTROL_CHARACTER_ROWS) {
-    list.append(el("dt", { text: row.code }), el("dd", { text: row.label }));
+    list.append(el("dt", { text: row.label }), el("dd", { text: row.code }));
   }
-  panel.append(el("div", { class: "event-command-text-help-title", text: "제어 문자" }), list);
+  panel.append(el("div", { class: "event-command-text-help-title", text: "문장 효과" }), list);
   return panel;
 }

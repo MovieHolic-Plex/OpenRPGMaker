@@ -137,12 +137,12 @@ function studioHeader(project: Project, warnings: number, search: HTMLInputEleme
         children: [
           el("label", {
             class: "db-system-studio-search",
-            children: [el("span", { text: "⌕", attrs: { "aria-hidden": "true" } }), search],
+            children: [search],
           }),
-          el("span", { class: "db-system-studio-autosave", text: "● 자동 저장" }),
+          el("span", { class: "db-system-studio-autosave", text: "자동 저장" }),
           el("button", {
             class: "db-system-studio-play",
-            text: "▷  플레이 테스트",
+            text: "플레이 테스트",
             attrs: { type: "button" },
             dataset: { testid: "db-system-studio-play-test" },
           }),
@@ -267,7 +267,7 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
       }),
       el("button", {
         class: "db-system-studio-view-all",
-        text: "전체 상태 보기 ⌄",
+        text: "전체 상태 보기",
         attrs: { type: "button" },
         dataset: { databaseTarget: "switches" },
       }),
@@ -343,7 +343,7 @@ function studioCard(card: StudioCard, variant: "primary" | "rule"): HTMLElement 
               el("span", { text: detail.label }),
               el("strong", {
                 class: `is-${detail.statusKind}`,
-                text: `${detail.statusKind === "warn" ? "△" : "✓"} ${detail.status}`,
+                text: detail.status,
               }),
             ],
           }),
@@ -365,16 +365,16 @@ function studioCard(card: StudioCard, variant: "primary" | "rule"): HTMLElement 
         children: [
           el("strong", { text: card.title }),
           el("small", { text: card.description }),
-          el("em", { class: `is-${card.statusKind}`, text: `${card.statusKind === "warn" ? "△" : "✓"} ${card.status}` }),
+          el("em", { class: `is-${card.statusKind}`, text: card.status }),
         ],
       }),
-      el("span", { class: "db-system-studio-card-arrow", text: "›", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "db-system-studio-card-arrow", text: "", attrs: { "aria-hidden": "true" } }),
       ...(details ? [details] : []),
       ...(variant === "rule"
         ? [
             el("span", {
               class: "db-system-studio-card-open",
-              text: "자세히 보기  ›",
+              text: "자세히 보기",
               dataset: { testid: `db-system-studio-card-${card.id}-open` },
             }),
           ]
@@ -438,7 +438,7 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings, rows: r
     dataset: { testid: "db-system-studio-live-preview" },
     children: [
       el("header", {
-        children: [el("h3", { text: "라이브 프리뷰" }), el("span", { text: "↻  ▱", attrs: { "aria-hidden": "true" } })],
+        children: [el("h3", { text: "라이브 프리뷰" })],
       }),
       previewStage,
       el("section", {
@@ -457,7 +457,7 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings, rows: r
               ],
             }),
           ),
-          el("button", { class: "db-system-studio-all-screens", text: "모든 화면 보기  ›", attrs: { type: "button" } }),
+          el("button", { class: "db-system-studio-all-screens", text: "모든 화면 보기", attrs: { type: "button" } }),
         ],
       }),
     ],

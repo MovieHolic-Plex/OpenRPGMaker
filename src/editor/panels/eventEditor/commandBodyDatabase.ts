@@ -22,9 +22,9 @@ import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, Equipment
 import type { CommandEditContext } from "./types";
 
 const AMOUNT_OP_OPTIONS = [
-  { value: "=", label: "대입" },
-  { value: "+=", label: "증가" },
-  { value: "-=", label: "감소" },
+  { value: "=", label: "이 값으로" },
+  { value: "+=", label: "더하기" },
+  { value: "-=", label: "빼기" },
 ] as const;
 
 const VITAL_AMOUNT_MODE_SEGMENTS = [
@@ -59,7 +59,7 @@ const BATTLE_ESCAPE_SEGMENTS = [
 ] as const satisfies readonly { readonly value: "allow" | "deny"; readonly key: string; readonly label: string }[];
 
 const BATTLE_LOSE_SEGMENTS = [
-  { value: "gameover", key: "gameover", label: "패배=게임오버" },
+  { value: "gameover", key: "gameover", label: "지면 게임 끝" },
   { value: "allow", key: "allow", label: "패배 허용" },
 ] as const satisfies readonly { readonly value: "gameover" | "allow"; readonly key: string; readonly label: string }[];
 
@@ -80,7 +80,7 @@ const BATTLE_PROCESSING_PRESETS = [
   {
     id: "story",
     label: "스토리",
-    title: "스토리 전투 — 도망 불가 · 패배=게임오버",
+    title: "스토리 전투 — 도망 불가 · 지면 게임 끝",
     canEscape: false,
     canLose: false,
     battleFlow: "inherit" as const,
@@ -189,7 +189,7 @@ export function battleProcessingBody(
   });
   const preview = previewStrip("battle-processing-preview", "확인 시 전투 시작 → battleResult 저장");
   const troopField = battleField("적 그룹", troop.root);
-  const variableField = battleField("트룹 변수", el("div"));
+  const variableField = battleField("적 그룹 변수", el("div"));
   const variablePicker = databasePicker(
     "variable",
     troopVariableId,
@@ -200,7 +200,7 @@ export function battleProcessingBody(
     "battle-processing-troop-variable"
   );
   variableField.replaceChildren(
-    el("div", { class: "party-member-field-label", text: "트룹 변수" }),
+    el("div", { class: "party-member-field-label", text: "적 그룹 변수" }),
     variablePicker
   );
 
@@ -301,11 +301,11 @@ export function battleProcessingBody(
       }),
       el("span", {
         class: `rich-preview-after ${canLose ? "gain" : ""}`,
-        text: canLose ? "패배 허용" : "패배=게임오버",
+        text: canLose ? "패배 허용" : "지면 게임 끝",
       }),
       ...(reward ? [el("span", { class: "rich-preview-caption-inline", text: reward })] : []),
       ...(branchOnResult
-        ? [el("span", { class: "rich-preview-caption-inline", text: "결과 분기 ON" })]
+        ? [el("span", { class: "rich-preview-caption-inline", text: "결과 분기 켜짐" })]
         : []),
     );
   };
@@ -356,7 +356,7 @@ export function battleProcessingBody(
   renderHoverAndPreview();
 
   const wrap = el("div", {
-    class: "rich-command-form battle-processing-command-body actor-amount-command-body",
+    class: "rich-command-form cream-command-form battle-processing-command-body actor-amount-command-body",
     dataset: { testid: "event-command-battle-processing-form" },
   });
   wrap.append(
@@ -464,7 +464,7 @@ export function changeGoldBody(context: CommandEditContext, cmd: Extract<Command
   // 타이핑 중에도 프리뷰만 라이브 갱신(저장은 change 시점).
   amount.addEventListener("input", renderPreview);
   renderPreview();
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [op.root, amountStepper(amount, { testidBase: "change-gold-amount" })] }),
     preview.root
@@ -524,7 +524,7 @@ export function changeItemBody(context: CommandEditContext, cmd: Extract<Command
   amount.addEventListener("change", apply);
   amount.addEventListener("input", renderPreview);
   renderPreview();
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [item.root] }),
     el("span", { class: "rich-form-row", children: [op.root, amountStepper(amount, { testidBase: "change-item-amount" })] }),
@@ -576,13 +576,13 @@ export function craftRecipeBody(
     });
   };
   recipe.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [recipe.root] }));
   if (recipes.length === 0) {
     wrap.append(
       el("span", {
         class: "rich-form-hint",
-        text: "system.craftRecipes 가 비어 있습니다. DB/시스템 레시피를 먼저 등록하세요.",
+        text: "등록된 레시피가 없습니다. 시스템에서 레시피를 먼저 만드세요.",
       })
     );
   }
@@ -594,13 +594,17 @@ export function applyItemUpgradeBody(
   cmd: Extract<Command, { kind: "applyItemUpgrade" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const rules = upgradeRulesOf(project).map((rule) => ({
-    id: rule.id,
-    name: rule.id,
-    fromItemId: rule.fromItemId,
-    toItemId: rule.toItemId,
-    goldCost: rule.goldCost ?? 0,
-  }));
+  const rules = upgradeRulesOf(project).map((rule) => {
+    const from = project.database.items.find((entry) => entry.id === rule.fromItemId)?.name.trim() || rule.fromItemId.replace(/^item_/, "").replace(/_/g, " ");
+    const to = project.database.items.find((entry) => entry.id === rule.toItemId)?.name.trim() || rule.toItemId.replace(/^item_/, "").replace(/_/g, " ");
+    return {
+      id: rule.id,
+      name: `${from} → ${to}`,
+      fromItemId: rule.fromItemId,
+      toItemId: rule.toItemId,
+      goldCost: rule.goldCost ?? 0,
+    };
+  });
   const upgrade = recordPickerWithPreview({
     records: rules,
     selectedId: cmd.upgradeId,
@@ -624,13 +628,13 @@ export function applyItemUpgradeBody(
     });
   };
   upgrade.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [upgrade.root] }));
   if (rules.length === 0) {
     wrap.append(
       el("span", {
         class: "rich-form-hint",
-        text: "system.itemUpgrades 가 비어 있습니다. 업그레이드 규칙을 먼저 등록하세요.",
+        text: "등록된 업그레이드가 없습니다. 시스템에서 규칙을 먼저 만드세요.",
       })
     );
   }
@@ -660,12 +664,12 @@ export function equipToolBody(
     });
   };
   item.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [item.root] }));
   wrap.append(
     el("span", {
       class: "rich-form-hint",
-      text: "빈 값이면 손 도구(session.equippedToolItemId)를 해제합니다.",
+      text: "비우면 손에 든 도구를 내려놓습니다.",
     })
   );
   return wrap;
@@ -734,7 +738,7 @@ export function openChestBody(
   chestId.addEventListener("input", apply);
   syncScopeUi();
   const wrap = el("div", {
-    class: "rich-command-form storage-chest-command-body",
+    class: "rich-command-form cream-command-form storage-chest-command-body",
     dataset: { testid: "open-chest-command-body" },
   });
   wrap.append(
@@ -834,7 +838,7 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
   actor.select.addEventListener("change", apply);
   action.select.addEventListener("change", apply);
   renderPreview();
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [actor.root] }),
     el("span", { class: "rich-form-row", children: [action.root] }),
@@ -873,7 +877,7 @@ export function giveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
   species.select.addEventListener("change", apply);
   level.addEventListener("change", apply);
   nickname.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [species.root] }),
     el("span", { class: "rich-form-row", children: [amountStepper(level, { testidBase: "give-monster-level" }), nickname] })
@@ -905,7 +909,7 @@ export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
   };
   instanceId.addEventListener("change", apply);
   target.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [instanceId] }),
     el("span", { class: "rich-form-row", children: [target.root] })
@@ -940,7 +944,7 @@ export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Comm
   instanceId.addEventListener("change", apply);
   species.select.addEventListener("change", apply);
   return el("span", {
-    class: "rich-command-form",
+    class: "rich-command-form cream-command-form",
     children: [
       el("span", { class: "rich-form-row", children: [instanceId] }),
       el("span", { class: "rich-form-row", children: [species.root] }),
@@ -995,7 +999,7 @@ export function promoteActorBody(
   actor.select.addEventListener("change", apply);
   klass.select.addEventListener("change", apply);
   return el("span", {
-    class: "rich-command-form",
+    class: "rich-command-form cream-command-form",
     children: [
       el("span", { class: "rich-form-row", children: [actor.root] }),
       el("span", { class: "rich-form-row", children: [klass.root] }),
@@ -1179,7 +1183,7 @@ export function changeEquipmentBody(
   renderWarning();
 
   const wrap = el("div", {
-    class: "rich-command-form change-equipment-command-body",
+    class: "rich-command-form cream-command-form change-equipment-command-body",
     dataset: { testid: "change-equipment-command-body" },
   });
   wrap.append(
@@ -1542,7 +1546,7 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
   renderPreview();
 
   return el("div", {
-    class: "rich-command-form actor-amount-command-body",
+    class: "rich-command-form cream-command-form actor-amount-command-body",
     dataset: {
       testid:
         cmd.kind === "changeActorHp"

@@ -30,7 +30,7 @@ import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
-import { mentionedToolSchemas, planRequiredToolSchemas } from "./planToolExposure";
+import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
 import {
   calibratedBudgetChars,
@@ -970,15 +970,22 @@ export class AssistantSession {
     this.eventBaseProposalKeys = new Map();
 
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
+    // F-05: auto/orchestrated 모드에서는 bare 집이라도 clarify로 멈추지 않고 planner/LLM으로 넘긴다.
+    // agentMode==="chat"에서만 되묻기를 유지한다. PROTOCOL_LOCKED_RE는 intentClarify 내부에서 이미 bypass.
     const clarify = resolveIntentClarification(text, { explicitSkillId: opts?.explicitSkillId });
     if (clarify) {
-      const assistantText = formatIntentClarifyMessage(clarify);
-      this.messages.push({ role: "assistant", content: assistantText });
-      onEvent({ type: "assistant_message", content: assistantText });
-      this.pushAudit({ kind: "status", text: `의도 확인(${clarify.kind}): ${clarify.reason}` });
-      this.pushAudit({ kind: "assistant", text: assistantText });
-      this.pushAudit({ kind: "status", text: "턴 종료(final) — 의도 확인 · 제안 0건" });
-      return { assistantText, proposedCalls: [], stoppedReason: "final" };
+      const shouldBypassClarify = this.config.agentMode === "auto" || this.orchestrationEnabled();
+      if (shouldBypassClarify) {
+        this.pushAudit({ kind: "status", text: `의도 확인 건너뜀(${clarify.kind}): ${clarify.reason} — auto/orchestrated` });
+      } else {
+        const assistantText = formatIntentClarifyMessage(clarify);
+        this.messages.push({ role: "assistant", content: assistantText });
+        onEvent({ type: "assistant_message", content: assistantText });
+        this.pushAudit({ kind: "status", text: `의도 확인(${clarify.kind}): ${clarify.reason}` });
+        this.pushAudit({ kind: "assistant", text: assistantText });
+        this.pushAudit({ kind: "status", text: "턴 종료(final) — 의도 확인 · 제안 0건" });
+        return { assistantText, proposedCalls: [], stoppedReason: "final" };
+      }
     }
 
     // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
@@ -1278,10 +1285,9 @@ export class AssistantSession {
     this.lastMilestoneCompletionItemId = completed.id;
     const calls = this.finalizeProposals(this.turnProposals);
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
-    // 승인 분류: 자율 모드(auto)는 세션 자체 유효 플래그를 쓴다 — 사용자 UI autoApprove 아님.
-    // agentMode 미지정(구형 주입 config)은 todo 1의 기본값 "auto" 계약을 따른다.
-    // chat 모드만 사용자 설정을 그대로 쓴다(종전 분류와 동일).
-    const autoApproveEnabled = this.config.agentMode === "chat" ? this.config.autoApprove === true : true;
+    // F-06: autoApproveEnabled = (agentMode==="auto") || config.autoApprove
+    // classifyApproval은 DESTRUCTIVE_TOOLS를 먼저 require_approval로 분류하므로 파괴적 변경은 auto여도 승인 필요.
+    const autoApproveEnabled = this.config.agentMode === "auto" || this.config.autoApprove === true;
     const verdict = classifyApproval(calls, { autoApproveEnabled });
     if (verdict.decision !== "auto") {
       this.pauseMilestone(completed, verdict.reason, verdict.warnings, onEvent);
@@ -1901,8 +1907,12 @@ export class AssistantSession {
     const baseTools = toOpenAiTools(undefined, { domains });
     const mentioned = mentionedToolSchemas(this.currentTurnRequestText ?? "");
     const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
+    // F-03: quest 도메인 턴에서는 workPlan이 없어도 persist 툴을 반드시 노출한다.
+    const questPersist = this.currentTurnToolDomains?.has("quest")
+      ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
+      : [];
     const requiredByName = new Map(
-      [...mentioned, ...planRequired].map((tool) => [tool.function.name, tool] as const),
+      [...mentioned, ...planRequired, ...questPersist].map((tool) => [tool.function.name, tool] as const),
     );
     const requiredNames = new Set(requiredByName.keys());
     const tools = [

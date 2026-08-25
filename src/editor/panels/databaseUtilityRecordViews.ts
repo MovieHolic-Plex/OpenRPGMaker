@@ -1,7 +1,6 @@
 import { emptyToUndefined, numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
-import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -381,7 +380,7 @@ function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[], rerender:
 
 function terrainRecordFields(terrain: DatabaseTerrainRecord, index: number, rerender: () => void): HTMLElement[] {
   return [
-    utilityTextRow({ label: ordinalLabel(index), value: terrain.name, testid: `db-field-terrain-name-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
+    utilityTextRow({ label: "이름", value: terrain.name, testid: `db-field-terrain-name-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
       recordCoalescedSnapshot(`db-utility:terrain:${index}:name`);
       store.update((project) => {
         const target = project.database.terrains?.[index];

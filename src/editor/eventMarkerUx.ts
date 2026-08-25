@@ -374,7 +374,7 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "variable":
       return `변수 [${switchVariableName("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
     case "selfSwitch":
-      return `셀프 스위치 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":

@@ -335,14 +335,14 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       footerStatus,
       dirtyPrompt,
       el("button", {
-        class: "database-footer-button primary",
+        class: "database-footer-button",
         text: "닫기",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
         on: { click: () => controller.requestClose("cancel") },
       }),
       el("button", {
-        class: "database-footer-button",
+        class: "database-footer-button primary",
         text: "지금 저장",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.apply },

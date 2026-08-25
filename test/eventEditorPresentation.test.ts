@@ -92,8 +92,8 @@ describe("event editor presentation", () => {
     variable.name = "Flag Count";
     store.replace(project);
 
-    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: true })).toContain("ON");
-    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: false })).toContain("OFF");
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: true })).toContain("켜짐");
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: false })).toContain("꺼짐");
     expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: "toggle" })).toContain("전환");
     expect(commandSummary({
       kind: "setSwitch",
@@ -318,10 +318,7 @@ describe("event editor presentation", () => {
     expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1");
     expect(preview?.dataset.faceIndex).toBe("5");
     expect(preview?.textContent).toContain("얼굴 6");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("얼굴 그래픽 변경");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("easyrpg-faceset-actor1");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("오른쪽");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).not.toContain("right");
+    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toBe("얼굴 바꾸기");
     expect(findByTestId(body, "event-command-face-index")?.attrs.max).toBe(String(RESOURCE_SLICING.faceset.count));
     expect(findByTestId(body, "event-command-face-resource-set")).not.toBeNull();
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-x"]).toBe("-48px");

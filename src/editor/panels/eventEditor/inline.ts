@@ -41,7 +41,7 @@ function renderInlineItem(
   const item = el("div", { class: "cmd-item" });
   if (!cmd) return item;
   item.append(
-    el("span", { class: "cmd-prefix", text: "◆" }),
+    el("span", { class: "cmd-kind-mark", attrs: { "aria-hidden": "true" } }),
     el("span", { class: "cmd-kind", text: commandKindLabel(cmd.kind) }),
     el("button", {
       class: "btn danger",

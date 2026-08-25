@@ -34,7 +34,7 @@ export function renderWeightedBranchCommandBody(
   }
 
   const wrap = el("div", {
-    class: "weighted-branch-command-body m2-command-body",
+    class: "weighted-branch-command-body m2-command-body cream-command-form",
     dataset: { testid: "m2-command-body-m2-211-weighted-branch" },
   });
 
@@ -45,8 +45,8 @@ export function renderWeightedBranchCommandBody(
   let resultVariableId = String(cmd.fields.resultVariableId ?? "").trim();
 
   const help = el("p", {
-    class: "weighted-branch-help empty-hint",
-    text: "가중치 비율로 하나를 고르고, 결과 번호를 변수에 저장합니다.",
+    class: "cream-command-form-head",
+    text: "가중치로 하나 고르기",
     dataset: { testid: "weighted-branch-help" },
   });
 

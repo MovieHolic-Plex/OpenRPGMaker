@@ -361,7 +361,7 @@ describe("OAuth 빠른 선택", () => {
     dispose();
   });
 
-  it("API 키 종류에서 OAuth 로 바꾸면 퀵 카드가 기본 openai-codex 와 동기화된다 (결함 2)", async () => {
+  it("API 키 종류에서 OAuth 로 바꾸면 퀵 카드가 기본 google-antigravity 와 동기화된다 (결함 2)", async () => {
     const { root, dispose } = await render("zai");
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(true);
 
@@ -370,11 +370,10 @@ describe("OAuth 빠른 선택", () => {
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-    expect(chatgpt?.getAttribute("aria-checked")).toBe("true");
-    expect(chatgpt?.getAttribute("tabindex")).toBe("0");
-    expect(chatgpt?.getAttribute("value") ?? "").toBe("");
-    expect(gemini?.getAttribute("aria-checked")).toBe("false");
-    expect(gemini?.getAttribute("tabindex")).toBe("-1");
+    expect(gemini?.getAttribute("aria-checked")).toBe("true");
+    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    expect(chatgpt?.getAttribute("aria-checked")).toBe("false");
+    expect(chatgpt?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 

@@ -1,4 +1,4 @@
-// 조수의 대기 화면 밀도. 저장 ID는 기존 배포와 호환하고, 사용자에게는 동작을 설명한다.
+// 조수의 대기 화면 밀도. 저장 ID는 기존 배포와 호환하고, 라디오에는 아이콘+한국어를 그대로 보인다.
 
 export type AssistantTemperature = "quiet-gold" | "ink-only" | "map-first";
 
@@ -23,6 +23,7 @@ export function parseAssistantTemperature(
   return fallback;
 }
 
+/** 라디오의 보이는 글. hover title 전용이 아니다. */
 export function assistantTemperatureMenuLabel(id: AssistantTemperature): string {
   const item = ASSISTANT_TEMPERATURES.find((candidate) => candidate.id === id);
   return item ? `${item.icon} ${item.label}` : id;

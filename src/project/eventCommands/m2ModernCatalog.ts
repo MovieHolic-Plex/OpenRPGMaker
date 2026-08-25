@@ -26,8 +26,8 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
 ];
 
 const WAIT_CONDITION_OPTIONS: readonly M2CommandFieldOption[] = [
-  { value: "switchOn", label: "스위치 ON" },
-  { value: "switchOff", label: "스위치 OFF" },
+  { value: "switchOn", label: "스위치 켜짐" },
+  { value: "switchOff", label: "스위치 꺼짐" },
   { value: "variable", label: "변수 조건" },
   { value: "region", label: "지역 진입" },
   { value: "eventIdle", label: "이벤트 이동 완료" },
@@ -112,7 +112,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
     case "Camera Control":
       return [
         { key: "mode", label: "동작", type: "select", defaultValue: "panTo", options: CAMERA_MODE_OPTIONS },
-        { key: "target", label: "대상", type: "select", defaultValue: "player", options: MODERN_TARGET_OPTIONS },
+        { key: "target", label: "누구에게", type: "select", defaultValue: "player", options: MODERN_TARGET_OPTIONS },
         { key: "x", label: "X", type: "number", defaultValue: 0 },
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
         { key: "zoom", label: "줌", type: "number", defaultValue: 1 },
@@ -136,7 +136,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
       return [{ key: "eventId", label: "이벤트", type: "text", defaultValue: "" }];
     case "Pathfind Move":
       return [
-        { key: "target", label: "대상", type: "text", defaultValue: "this-event" },
+        { key: "target", label: "누구에게", type: "text", defaultValue: "this-event" },
         { key: "x", label: "X", type: "number", defaultValue: 0 },
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
         { key: "speed", label: "속도", type: "number", defaultValue: 4 },
@@ -145,7 +145,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
     case "Wait Until":
       return [
         { key: "condition", label: "조건", type: "select", defaultValue: "switchOn", options: WAIT_CONDITION_OPTIONS },
-        { key: "target", label: "대상", type: "text", defaultValue: "" },
+        { key: "target", label: "누구에게", type: "text", defaultValue: "" },
         { key: "value", label: "값", type: "text", defaultValue: "" },
         { key: "timeoutMs", label: "최대 대기(ms)", type: "number", defaultValue: 0 },
       ];
@@ -228,7 +228,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
     case "Data Query":
       return [
         { key: "query", label: "조회", type: "select", defaultValue: "gold", options: DATA_QUERY_OPTIONS },
-        { key: "target", label: "대상", type: "text", defaultValue: "" },
+        { key: "target", label: "누구에게", type: "text", defaultValue: "" },
         { key: "variableId", label: "결과 변수", type: "text", defaultValue: "" },
       ];
     default:

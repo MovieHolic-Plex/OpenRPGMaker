@@ -141,7 +141,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-editor-column-resizer",
     attrs: {
       role: "separator",
-      "aria-label": "설정과 실행 내용 사이즈 조절",
+      "aria-label": "설정과 이 페이지가 하는 일 사이즈 조절",
       "aria-orientation": "vertical",
       tabindex: "0",
       title: "드래그 또는 ←/→ 키로 폭 조절 · 더블클릭으로 초기화",
@@ -212,10 +212,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     children: [
       el("span", {
         class: "event-contents-legend",
-        text: `실행 내용 · ${countAllCommands(activePage.commands)}개`,
+        text: `이 페이지가 하는 일 · ${countAllCommands(activePage.commands)}개`,
       }),
       ...(validationControl ? [validationControl] : []),
-      viewToggle,
     ],
   });
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
@@ -261,7 +260,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
             class: "event-editor-id-row",
             dataset: { testid: "event-editor-id-row" },
             children: [
-              el("span", { text: `ID ${displayEventNumber(mapId, eventId)}` }),
               renderEventPositionControls(mapId, ev),
             ],
           }),
@@ -273,10 +271,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   commandsColumn.append(
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
-      attrs: { "aria-label": "실행 내용" },
-      dataset: { testid: "event-classic-contents" },
+      attrs: { "aria-label": "이 페이지가 하는 일" },
+      dataset: { testid: "event-script-canvas" },
       children: [
-        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
+        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle),
         storyboardHost,
         cmdList,
       ],
@@ -317,7 +315,8 @@ function renderCommandToolbar(
   commandHistory: CommandToolbarHistory,
   mapId: MapId,
   eventId: string,
-  page: EventPage
+  page: EventPage,
+  viewToggle?: HTMLElement,
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected");
@@ -364,7 +363,7 @@ function renderCommandToolbar(
   const toolsMenu = renderEventToolsMenu(cmdList, actions, mapId, eventId, page);
   return el("div", {
     class: "event-editor-command-toolbar",
-    attrs: { "aria-label": "실행 내용 도구" },
+    attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
       toolbarButton(
         "+",
@@ -381,11 +380,12 @@ function renderCommandToolbar(
       ),
       editTools,
       toolsMenu,
+      ...(viewToggle ? [viewToggle] : []),
     ],
   });
 }
 
-// 실행 내용 헤더의 전체 명령 수 — 분기 안까지 센다.
+// 이 페이지가 하는 일 헤더의 전체 명령 수 — 분기 안까지 센다.
 function countAllCommands(commands: readonly Command[]): number {
   let n = 0;
   const walk = (cmd: Command): void => {
@@ -523,7 +523,7 @@ function renderEmptyCommandLine(
   const openPicker = () => openCommandPickerForActions(actions);
   const line = el("button", {
     class: "cmd-empty-line",
-    text: "◆  명령 추가 — 더블클릭 또는 아래 템플릿에서 시작",
+    text: "명령 추가 — 더블클릭 또는 아래 템플릿에서 시작",
     attrs: { type: "button", title: "더블클릭해서 이벤트 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {
@@ -627,21 +627,21 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
 
 function renderEventValidationSummary(validation: EventDraftValidation): HTMLDetailsElement | null {
   if (validation.issues.length === 0) return null;
+  const parts: string[] = [];
+  if (validation.errorCount > 0) parts.push(`오류 ${validation.errorCount}`);
+  if (validation.warningCount > 0) parts.push(`경고 ${validation.warningCount}`);
+  if (validation.infoCount > 0) parts.push(`안내 ${validation.infoCount}`);
+  const label = parts.join(" · ");
   const details = el("details", {
     class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " has-info"}`,
     dataset: { testid: "event-draft-validation" },
   }) as HTMLDetailsElement;
-  const counts = [
-    validation.errorCount > 0 ? `!${validation.errorCount}` : "",
-    validation.warningCount > 0 ? `△${validation.warningCount}` : "",
-    validation.infoCount > 0 ? `ⓘ${validation.infoCount}` : "",
-  ].filter(Boolean).join(" ");
   details.append(
     el("summary", {
       class: "event-draft-validation-summary",
       dataset: { testid: "event-draft-validation-summary" },
-      text: `검사 ${counts}`,
-      attrs: { "aria-label": `검사 결과: 오류 ${validation.errorCount}, 경고 ${validation.warningCount}, 안내 ${validation.infoCount}` },
+      text: label,
+      attrs: { "aria-label": label },
     }),
     el("div", {
       class: "event-draft-validation-issues",
@@ -755,8 +755,4 @@ function renderEventPositionControls(mapId: MapId, event: GameEvent): HTMLElemen
   });
 }
 
-function displayEventNumber(mapId: MapId, eventId: string): string {
-  const events = store.getCurrent().maps[mapId]?.events ?? [];
-  const index = events.findIndex((event) => event.id === eventId);
-  return String(index >= 0 ? index + 1 : 1).padStart(4, "0");
-}
+

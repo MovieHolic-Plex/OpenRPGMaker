@@ -162,7 +162,7 @@ describe("RPG Maker style event editor entry points", () => {
       "event-classic-trigger",
       "event-classic-animation-type",
       "event-classic-movement-speed",
-      "event-classic-contents",
+      "event-script-canvas",
     ];
     for (const testId of requiredShellMarkers) {
       expect(content.querySelector(`[data-testid="${testId}"]`), testId).not.toBeNull();

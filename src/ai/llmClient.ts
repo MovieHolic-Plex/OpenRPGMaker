@@ -63,17 +63,12 @@ export const DEFAULT_BASE_URL = "";
 // 127.0.0.1:17832 companion started via `npm run ai:oauth`.
 export const DEFAULT_CHATGPT_BASE_URL =
   typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
-// 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다 — 인증이 무조건 OAuth 이므로.
-// 이전 기본값 `cpen/gpt-5-6-luna` 는 cpenrouter 게이트웨이 ID 였다. OAuth 경로에서 카탈로그
-// 밖 ID 는 오류가 아니라 **조용히 제공자 기본 모델로 강등**되므로(근거: modelCatalog.ts
-// CHATGPT_OAUTH_MODELS 주석의 실측) 감독이 고른 모델이 아닌 것이 답하는 상태였다.
-// 실측(2026-08-21): POST /v1/chat/completions model=gpt-5.6-sol → 200 "OK",
-// model 필드도 gpt-5.6-sol 로 되돌아왔다(강등 없음).
-export const DEFAULT_MODEL = "gpt-5.6-sol";
+// 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
+// 저장된 providerId/model 은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절
+// 암시 기본이므로 loadAiConfig 가 openai-codex 로 남긴다.
+export const DEFAULT_MODEL = "gemini-3.7-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-// (카탈로그의 gpt-5.4-mini 로 내리는 선택지가 있지만 툴 루프 통과를 실측하지 않았으므로
-//  기존 관례대로 감독 모델과 같게 두고, 이원화는 감독이 설정에서 켠다.)
-export const DEFAULT_LITE_MODEL = "gpt-5.6-sol";
+export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 // cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
 // 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
@@ -194,7 +189,11 @@ export function loadAiConfig(): AiConfig {
     // openai-codex 로 되돌렸는데, 연결 방식이 두 종류가 된 뒤로는 틀린 동작이다 —
     // providerId:"zai" 인 옛 설정은 *API 키* 종류 + zai 로 살아야 한다(GLM 이 이 경로로 남는다).
     // 전송 축은 authMode 가 이미 companion 으로 고정하므로 제공자를 강제할 이유가 없다.
-    const providerId = parseOhMyPiProvider(parsed.providerId);
+    // providerId 가 없는 저장 blob 은 Codex 가 공장 기본이던 시절의 암시 값이다.
+    // 새 기본(Antigravity)으로 바꾸면 gpt-5.6-sol 이 Gemini 경로로 실려 강등/오배송된다.
+    const providerId = typeof parsed.providerId === "string" && parsed.providerId.trim() !== ""
+      ? parseOhMyPiProvider(parsed.providerId)
+      : "openai-codex";
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
@@ -861,8 +860,8 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     const target = usesOhMyPiCompanion(config) ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
     const hint = usesOhMyPiCompanion(config) ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
-    reportTransportHealth(false, undefined, `네트워크 오류(${target})`);
-    throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`);
+    reportTransportHealth(false, 0, `네트워크 오류(${target})`);
+    throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`, 0);
   }
 
   if (!response.ok) {

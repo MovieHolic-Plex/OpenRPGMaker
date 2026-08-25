@@ -164,7 +164,7 @@ export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
   "Change Enemy State": "적 상태 변경",
   "Change Equipment": "장비 변경",
   "Change Escape Access": "탈출 허가 변경",
-  "Change Faceset": "얼굴 그래픽 변경",
+  "Change Faceset": "얼굴 바꾸기",
   "Change Gold": "소지금 변경",
   "Change HP": "HP 변경",
   "Change Items": "아이템 변경",

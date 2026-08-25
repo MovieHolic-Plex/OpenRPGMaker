@@ -80,18 +80,18 @@ const RICH_ICON_SIZE = 24;
 export function recordPickerWithPreview<T extends RecordPickerRecordLike>(
   options: RecordPickerOptions<T>
 ): RecordPickerHandle {
-  // 기존 recordSelect 와 동일한 옵션 포맷(0001: 이름)을 유지해 테스트를 보호한다.
+  // 옵션은 이름만 보여 준다. 식별자는 value 에 남긴다.
   const select = el("select", { dataset: { testid: options.testid } }) as HTMLSelectElement;
   select.append(el("option", { text: `(${options.placeholder})`, attrs: { value: "" } }));
   let currentGroup: HTMLElement | null = null;
   let currentGroupName: string | undefined;
-  for (const [index, record] of options.records.entries()) {
+  for (const record of options.records) {
     if (record.group !== currentGroupName) {
       currentGroupName = record.group;
       currentGroup = currentGroupName ? el("optgroup", { attrs: { label: currentGroupName } }) : null;
       if (currentGroup) select.append(currentGroup);
     }
-    const option = el("option", { text: `${String(index + 1).padStart(4, "0")}: ${record.name}`, attrs: { value: record.id } });
+    const option = el("option", { text: record.name.trim() || "(이름 없음)", attrs: { value: record.id } });
     (currentGroup ?? select).append(option);
   }
   select.value = options.selectedId;
@@ -254,10 +254,10 @@ export function searchableRecordBrowser<T extends RecordPickerRecordLike>(
   const rebuildSelect = (preferredId: string): void => {
     select.replaceChildren();
     if (allowNone) select.append(el("option", { text: `(${emptySelectionLabel})`, attrs: { value: "" } }));
-    for (const [index, record] of records.entries()) {
+    for (const record of records) {
       select.append(
         el("option", {
-          text: `${String(index + 1).padStart(4, "0")}: ${record.name}`,
+          text: record.name.trim() || "(이름 없음)",
           attrs: { value: record.id },
         })
       );

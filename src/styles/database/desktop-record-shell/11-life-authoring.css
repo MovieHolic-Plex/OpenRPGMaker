@@ -228,12 +228,10 @@
   }
 }
 
-/* P1 season/weather and farm-animal authoring surfaces. */
+/* P1 season/weather and farm-animal authoring surfaces — studio surface, hairline. */
 .database-modal-backdrop .db-life-authoring-workspace {
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 42%),
-    var(--db-light-bg-surface, var(--bg-surface));
-  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  background: var(--db-studio-surface, var(--db-light-bg-surface, var(--bg-surface)));
+  border: 1px solid var(--db-studio-border-subtle, var(--db-light-border-subtle, var(--border-subtle)));
   border-radius: 10px;
   display: grid;
   gap: 12px;
@@ -264,13 +262,28 @@
 
 .database-modal-backdrop .db-life-toolbar {
   align-items: center;
-  background: color-mix(in srgb, var(--db-light-bg-raised, var(--bg-raised)) 88%, transparent);
-  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  background: var(--db-studio-surface, var(--db-light-bg-raised, var(--bg-raised)));
+  border: 1px solid var(--db-studio-border-subtle, var(--db-light-border-subtle, var(--border-subtle)));
   border-radius: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px 14px;
   padding: 9px 10px;
+}
+
+.database-modal-backdrop .db-life-toolbar.is-empty {
+  display: none;
+}
+
+/* studio empty card — single filled CTA */
+.database-modal-backdrop .db-studio-empty {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+}
+.database-modal-backdrop .db-studio-empty .empty-state__action--primary {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
 }
 
 .database-modal-backdrop .db-life-toolbar > span {
@@ -336,13 +349,50 @@
 }
 
 .database-modal-backdrop .db-life-record-card {
-  background: var(--db-light-bg-surface, var(--bg-surface));
-  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
-  border-left: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
-  border-radius: 6px;
+  background: var(--db-studio-surface, var(--db-light-bg-surface, var(--bg-surface)));
+  border: 1px solid var(--db-studio-border-subtle, var(--db-light-border-subtle, var(--border-subtle)));
+  border-radius: 8px;
   display: grid;
   gap: 6px;
-  padding: 8px;
+  padding: 10px;
+}
+
+/* list meta: trailing #n, name first */
+.database-modal-backdrop .db-list .db-list-meta {
+  color: var(--db-studio-text-3, var(--text-muted));
+  font-size: 11px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.database-modal-backdrop .db-list .db-list-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.database-modal-backdrop .db-record-hero {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.database-modal-backdrop .db-record-hero h3 {
+  color: var(--db-studio-text-1);
+  font: 600 13px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.database-modal-backdrop .db-record-hero .db-record-meta {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
 }
 
 @media (max-width: 1180px) {

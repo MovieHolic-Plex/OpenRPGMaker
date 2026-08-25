@@ -96,7 +96,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   battleProcessing: battleStage,
   setSwitch: (cmd, ctx) => lampStage(switchName(cmd.switchId), resolveSwitchDisplay(cmd, ctx), ctx?.simState ? getSimSwitch(ctx.simState, cmd.switchId) : undefined),
   setVariable: variableStage,
-  setSelfSwitch: (cmd) => lampStage(`셀프 스위치 ${cmd.key}`, cmd.value),
+  setSelfSwitch: (cmd) => lampStage(`이 이벤트 기억 ${cmd.key}`, cmd.value),
   setFlag: (cmd, ctx) => lampStage(cmd.flag || "플래그", cmd.value, ctx?.simState ? getSimSwitch(ctx.simState, cmd.flag) : undefined),
   checkpointSave: (cmd) => screenMock(cmd.label ? `체크포인트: ${cmd.label}` : "체크포인트 저장", "title"),
   killPlayer: () => screenMock("GAME OVER", "gameover"),
@@ -412,7 +412,7 @@ function settingsMessageMock(cmd: Extract<Command, { kind: "displayTextSettings"
   badges.append(
     el("span", {
       class: `ecp-move-badge${cmd.preventObscuringPlayer ? "" : " off"}`,
-      text: cmd.preventObscuringPlayer ? "가림 방지 ON" : "가림 방지 OFF",
+      text: cmd.preventObscuringPlayer ? "가림 방지 켜짐" : "가림 방지 꺼짐",
     })
   );
   badges.append(
@@ -523,7 +523,7 @@ function variablePreviewName(variableId: string): string {
   const index = project.variables.findIndex((entry) => entry.id === variableId);
   if (index < 0) return variableId;
   const name = project.variables[index]?.name?.trim();
-  return name ? `${String(index + 1).padStart(4, "0")}: ${name}` : String(index + 1).padStart(4, "0");
+  return name || "(이름 없음)";
 }
 
 function transferStage(cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
@@ -930,10 +930,10 @@ function battleRewardSummary(
 
 function lampStage(name: string, value: boolean, currentValue?: boolean): HTMLElement {
   const stage = el("div", { class: "ecp-icon-stage" });
-  stage.append(el("div", { class: `ecp-lamp ${value ? "on" : "off"}`, text: value ? "ON" : "OFF" }));
+  stage.append(el("div", { class: `ecp-lamp ${value ? "on" : "off"}`, text: value ? "켜짐" : "꺼짐" }));
   stage.append(el("div", { class: "ecp-icon-name", text: name }));
   if (currentValue !== undefined) {
-    stage.append(el("div", { class: "ecp-current-state", text: `현재: ${currentValue ? "ON" : "OFF"}` }));
+    stage.append(el("div", { class: "ecp-current-state", text: `현재: ${currentValue ? "켜짐" : "꺼짐"}` }));
   }
   return stage;
 }
@@ -989,7 +989,7 @@ function screenMock(text: string, variant: "gameover" | "title" | "ending"): HTM
 
 function summaryCard(cmd: Command, context?: CommandPreviewContext): HTMLElement {
   const card = el("div", { class: "ecp-summary-card ecp-runtime-effect-card", dataset: { testid: "ecp-runtime-effect" } });
-  card.append(el("div", { class: "ecp-runtime-effect-title", text: "런타임 효과" }));
+  card.append(el("div", { class: "ecp-runtime-effect-title", text: "미리보기" }));
   const line = el("div", { class: "ecp-summary-line" });
   for (const part of commandSummaryParts(cmd)) {
     if (isSummaryIconPart(part)) {
@@ -1104,7 +1104,7 @@ function lightSourceStage(cmd: Extract<Command, { kind: "addLight" }>): HTMLElem
     glow.style.background = `radial-gradient(circle, ${cmd.source.color} 0%, transparent 70%)`;
   }
   screen.append(glow);
-  screen.append(el("div", { class: "ecp-fx-label", text: cmd.source.id || "LIGHT" }));
+  screen.append(el("div", { class: "ecp-fx-label", text: cmd.source.id || "빛" }));
   stage.append(screen);
   stage.append(
     el("div", {
@@ -1125,14 +1125,14 @@ function removeLightStage(cmd: Extract<Command, { kind: "removeLight" }>): HTMLE
   screen.append(
     el("div", {
       class: "ecp-fx-label",
-      text: cmd.all === true ? "LIGHTS OFF" : "LIGHT OFF",
+      text: cmd.all === true ? "빛 모두 끄기" : "빛 끄기",
     })
   );
   stage.append(screen);
   stage.append(
     el("div", {
       class: "ecp-fx-caption",
-      text: cmd.all === true ? "모든 광원 제거" : cmd.id || "id 없음",
+      text: cmd.all === true ? "빛 모두 끄기" : cmd.id || "빛 없음",
     })
   );
   return stage;
@@ -1175,7 +1175,7 @@ function animationStage(cmd: Extract<Command, { kind: "showAnimation" }>): HTMLE
   const screen = el("div", { class: "ecp-fx-screen ecp-animation-screen" });
   screen.append(el("div", { class: "ecp-anim-ring", attrs: { "aria-hidden": "true" } }));
   screen.append(el("div", { class: "ecp-anim-ring ecp-anim-ring-inner", attrs: { "aria-hidden": "true" } }));
-  screen.append(el("div", { class: "ecp-fx-label", text: cmd.animationId || "ANIM" }));
+  screen.append(el("div", { class: "ecp-fx-label", text: cmd.animationId ? "연출" : "연출 없음" }));
   stage.append(screen);
   const meta = [animationTargetPreview(cmd.target)];
   if (cmd.wait) meta.push("대기");

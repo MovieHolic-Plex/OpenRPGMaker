@@ -16,7 +16,19 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
       el("section", {
         class: "db-detail-form",
         dataset: { testid: "db-detail-form" },
-        text: "타일셋이 없습니다.",
+        children: [
+          el("div", {
+            class: "db-empty-state tileset-db-empty",
+            children: [
+              el("div", { class: "db-empty-icon", text: "▦" }),
+              el("strong", { class: "db-empty-title", text: "타일셋이 없습니다" }),
+              el("p", {
+                class: "db-empty-copy",
+                text: "프로젝트에 타일셋이 없습니다. 소재에서 칩셋을 가져오거나 기본 타일셋을 확인하세요.",
+              }),
+            ],
+          }),
+        ],
       }),
     );
     return;
@@ -40,8 +52,7 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
   const rows = tilesets.map((tileset, index) =>
     el("button", {
       class: `tileset-db-list-row${tileset.id === selectedId ? " active" : ""}`,
-      text: `${recordNumber(index)}:${tileset.name}`,
-      attrs: { type: "button" },
+      attrs: { type: "button", title: tileset.name || tileset.id },
       dataset: { testid: `tileset-db-row-${tileset.id}` },
       on: {
         click: () => {
@@ -49,6 +60,10 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
           rerender();
         },
       },
+      children: [
+        el("span", { class: "db-list-name", text: tileset.name || "(이름 없음)" }),
+        el("span", { class: "db-list-number", text: `#${index + 1}` }),
+      ],
     }),
   );
   const listbox = el("div", { class: "tileset-db-listbox", children: rows });
@@ -107,8 +122,4 @@ function currentMapTilesetId(): string | null {
   const project = store.getCurrent();
   const mapId = editorState.get().currentMapId ?? project.startMapId;
   return project.maps[mapId]?.tilesetId ?? null;
-}
-
-function recordNumber(index: number): string {
-  return String(index + 1).padStart(4, "0");
 }

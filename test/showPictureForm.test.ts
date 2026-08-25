@@ -74,7 +74,7 @@ describe("그림 표시 폼", () => {
     const body = renderWithFakeDom(() => showPictureBody(context, BASE));
 
     change(findByTestId(body, "show-picture-scale-input"), "60");
-    change(findByTestId(body, "show-picture-opacity-input"), "128");
+    change(findByTestId(body, "show-picture-opacity-input"), "50");
     change(findByTestId(body, "show-picture-rotation-input"), "15");
     change(findByTestId(body, "show-picture-duration-input"), "400");
 
@@ -90,7 +90,7 @@ describe("그림 표시 폼", () => {
     const body = renderWithFakeDom(() => showPictureBody(context, seeded));
 
     expect(findByTestId(body, "show-picture-scale-input")?.value).toBe("75");
-    expect(findByTestId(body, "show-picture-opacity-input")?.value).toBe("200");
+    expect(findByTestId(body, "show-picture-opacity-input")?.value).toBe("78");
     expect(findByTestId(body, "show-picture-rotation-input")?.value).toBe("-30");
     expect(findByTestId(body, "show-picture-duration-input")?.value).toBe("250");
   });
@@ -135,7 +135,7 @@ describe("그림 표시 폼", () => {
     const body = renderWithFakeDom(() => showPictureBody(context, BASE));
     // 예전 문구는 "중심 앵커" 였는데 런타임(transform-origin: top left)과 달랐다.
     const text = body.textContent ?? "";
-    expect(text).toContain("좌상단 앵커");
+    expect(text).toContain("왼쪽 위");
     expect(text).not.toContain("중심 앵커");
   });
 });

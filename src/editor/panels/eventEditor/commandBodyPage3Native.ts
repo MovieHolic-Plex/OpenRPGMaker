@@ -15,10 +15,18 @@ import { LAYER_OPTIONS } from "./options";
 import type { CommandEditContext } from "./types";
 
 const ANCHOR_SEGMENTS = [
-  { value: "player", key: "player", label: "플레이어" },
+  { value: "player", key: "player", label: "주인공" },
   { value: "event", key: "event", label: "이벤트" },
   { value: "position", key: "position", label: "좌표" },
 ] as const satisfies readonly SegmentOption<"player" | "event" | "position">[];
+
+function opacityToPercent(value: number): number {
+  return Math.round((Math.min(255, Math.max(0, value)) / 255) * 100);
+}
+
+function percentToOpacity(value: number): number {
+  return Math.round((Math.min(100, Math.max(0, value)) / 100) * 255);
+}
 
 const BOOL_SEGMENTS = [
   { value: "true", key: "true", label: "예" },
@@ -68,15 +76,16 @@ export function setLightingBody(
     value: String(clamp01(cmd.ambient)),
     dataset: { testid: "set-lighting-ambient-slider" },
   }) as HTMLInputElement;
-  const color = textInput(cmd.color ?? "#000000", "마스크 색상", "set-lighting-color-input");
+  const color = textInput(cmd.color ?? "#000000", "어둠 색", "set-lighting-color-input");
+  color.classList.add("visually-hidden");
   color.setAttribute("type", "text");
   const colorPicker = el("input", {
     class: "page3-color-swatch",
-    attrs: { type: "color", "aria-label": "마스크 색상 피커" },
+    attrs: { type: "color", "aria-label": "어둠 색" },
     value: normalizeHexColor(cmd.color ?? "#000000"),
     dataset: { testid: "set-lighting-color-picker" },
   }) as HTMLInputElement;
-  const transitionMs = numberInput(cmd.transitionMs ?? 0, "전환 시간(ms)", "set-lighting-transition-input");
+  const transitionMs = numberInput(cmd.transitionMs ?? 0, "전환 시간", "set-lighting-transition-input");
   transitionMs.setAttribute("min", "0");
   const transitionStepper = amountStepper(transitionMs, { testidBase: "set-lighting-transition", min: 0 });
   const preview = el("div", {
@@ -117,11 +126,11 @@ export function setLightingBody(
       stage,
       el("p", {
         class: "actor-m2-preview-line",
-        text: `암전 ${pct}% · ${hex}${ms > 0 ? ` · ${ms}ms` : " · 즉시"}`,
+        text: `암전 ${pct}%${ms > 0 ? ` · ${Math.round(ms / 100) / 10}초` : " · 바로"}`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "ambient 0=완전 밝음, 1=완전 암전. 전환 시간이 있으면 페이드 후 적용됩니다.",
+        text: "0이면 낮처럼 밝고, 100%면 완전히 어둡습니다. 전환 시간이 있으면 서서히 바뀝니다.",
       })
     );
   };
@@ -183,7 +192,7 @@ export function setLightingBody(
   wrap.append(
     intentCard(
       "조명 설정",
-      "맵 전체 암전 정도와 마스크 색상을 바꿉니다. 전환 시간(ms)이 있으면 페이드로 적용됩니다.",
+      "맵이 얼마나 어두운지와 어둠 색을 바꿉니다. 전환 시간이 있으면 서서히 바뀝니다.",
       "set-lighting-intent"
     ),
     el("div", {
@@ -200,13 +209,13 @@ export function setLightingBody(
               })
             ),
             fieldBlock(
-              "마스크 색상",
+              "어둠 색",
               el("div", {
                 class: "page3-color-row",
                 children: [colorPicker, color],
               })
             ),
-            fieldBlock("전환 시간(ms)", transitionStepper),
+            fieldBlock("전환 시간", transitionStepper),
             fieldBlock("프리셋", presets),
           ],
         }),
@@ -222,16 +231,16 @@ export function addLightBody(
   cmd: Extract<Command, { kind: "addLight" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "add-light-command-body");
-  const id = textInput(cmd.source.id, "광원 ID", "add-light-id-input");
+  const id = textInput(cmd.source.id, "빛 이름", "add-light-id-input");
   const anchor = segmentedSelect({
     options: ANCHOR_SEGMENTS,
     value: lightAnchorKind(cmd.source.at),
     testid: "add-light-anchor-kind-select",
-    ariaLabel: "광원 앵커",
+    ariaLabel: "어디에 붙일지",
   });
   const eventId = textInput(
     cmd.source.at !== "player" && "eventId" in cmd.source.at ? cmd.source.at.eventId : "",
-    "이벤트 ID",
+    "어느 이벤트",
     "add-light-event-id-input"
   );
   const x = numberInput(
@@ -244,23 +253,23 @@ export function addLightBody(
     "Y",
     "add-light-y-input"
   );
-  const radius = numberInput(cmd.source.radius, "반경(타일)", "add-light-radius-input");
+  const radius = numberInput(cmd.source.radius, "크기", "add-light-radius-input");
   radius.setAttribute("min", "0");
   const radiusStepper = amountStepper(radius, { testidBase: "add-light-radius", min: 0 });
-  const intensity = numberInput(cmd.source.intensity ?? 1, "세기(0~1)", "add-light-intensity-input");
+  const intensity = numberInput(cmd.source.intensity ?? 1, "밝기", "add-light-intensity-input");
   intensity.setAttribute("step", "0.05");
   intensity.setAttribute("min", "0");
   intensity.setAttribute("max", "1");
   const intensitySlider = el("input", {
     class: "page3-range-input",
-    attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "광원 세기" },
+    attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "밝기" },
     value: String(clamp01(cmd.source.intensity ?? 1)),
     dataset: { testid: "add-light-intensity-slider" },
   }) as HTMLInputElement;
-  const color = textInput(cmd.source.color ?? "", "광원 색상", "add-light-color-input");
+  const color = textInput(cmd.source.color ?? "", "빛 색", "add-light-color-input");
   const colorPicker = el("input", {
     class: "page3-color-swatch",
-    attrs: { type: "color", "aria-label": "광원 색상 피커" },
+    attrs: { type: "color", "aria-label": "빛 색" },
     value: normalizeHexColor(cmd.source.color ?? "#ffd27a"),
     dataset: { testid: "add-light-color-picker" },
   }) as HTMLInputElement;
@@ -274,7 +283,7 @@ export function addLightBody(
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "add-light-preview" },
   });
-  const eventField = fieldBlock("이벤트 ID", eventId, "add-light-event-field");
+  const eventField = fieldBlock("어느 이벤트", eventId, "add-light-event-field");
   const posField = fieldBlock(
     "좌표",
     el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] }),
@@ -308,7 +317,7 @@ export function addLightBody(
     const hex = color.value.trim() || "#ffd27a";
     const where =
       anchor.select.value === "player"
-        ? "플레이어"
+        ? "주인공"
         : anchor.select.value === "event"
           ? `이벤트 ${eventId.value.trim() || "(미선택)"}`
           : `(${parseInt(x.value, 10) || 0}, ${parseInt(y.value, 10) || 0})`;
@@ -326,11 +335,11 @@ export function addLightBody(
       stage,
       el("p", {
         class: "actor-m2-preview-line",
-        text: `${lightId} · ${where} · r${r} · ${Math.round(power * 100)}%`,
+        text: `${lightId} · ${where} · 크기 ${r} · 밝기 ${Math.round(power * 100)}%`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: flicker.select.value === "true" ? "깜빡임 켜짐" : "고정 광원",
+        text: flicker.select.value === "true" ? "깜빡임 켜짐" : "고정된 빛",
       })
     );
   };
@@ -374,8 +383,8 @@ export function addLightBody(
   renderPreview();
   wrap.append(
     intentCard(
-      "광원 추가",
-      "플레이어·이벤트·좌표 중 한 곳에 점광원을 붙입니다. 반경(타일)·세기·색·깜빡임을 설정합니다.",
+      "빛 켜기",
+      "주인공이나 이벤트, 칸에 빛을 붙입니다. 크기·밝기·색·깜빡임을 정합니다.",
       "add-light-intent"
     ),
     el("div", {
@@ -384,13 +393,13 @@ export function addLightBody(
         el("div", {
           class: "actor-m2-main page3-command-main",
           children: [
-            fieldBlock("광원 ID", id),
-            fieldBlock("앵커", anchor.root),
+            fieldBlock("빛 이름", id),
+            fieldBlock("어디에", anchor.root),
             eventField,
             posField,
-            fieldBlock("반경(타일)", radiusStepper),
+            fieldBlock("크기", radiusStepper),
             fieldBlock(
-              "세기",
+              "밝기",
               el("div", {
                 class: "page3-slider-row",
                 children: [intensitySlider, intensity],
@@ -421,14 +430,14 @@ export function removeLightBody(
   const all = segmentedSelect({
     options: [
       { value: "true", key: "all", label: "전체 제거" },
-      { value: "false", key: "id", label: "ID 지정" },
+      { value: "false", key: "id", label: "하나만" },
     ] as const satisfies readonly SegmentOption<"true" | "false">[],
     value: cmd.all === true ? "true" : "false",
     testid: "remove-light-all-select",
     ariaLabel: "제거 범위",
   });
-  const id = textInput(cmd.id ?? "", "광원 ID", "remove-light-id-input");
-  const idField = fieldBlock("광원 ID", id, "remove-light-id-field");
+  const id = textInput(cmd.id ?? "", "어느 빛", "remove-light-id-input");
+  const idField = fieldBlock("어느 빛", id, "remove-light-id-field");
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "remove-light-preview" },
@@ -443,18 +452,18 @@ export function removeLightBody(
   };
 
   const syncVisibility = () => {
-    idField.hidden = all.select.value === "true";
+    idField.style.display = all.select.value === "true" ? "none" : "";
   };
 
   const renderPreview = () => {
     const line =
       all.select.value === "true"
-        ? "맵의 모든 동적 광원을 끕니다."
-        : `광원 ID "${id.value.trim() || "(비어 있음)"}" 를 제거합니다.`;
+        ? "맵 위의 움직이는 빛을 모두 끕니다."
+        : `그 빛을 끕니다.`;
     preview.replaceChildren(
       el("p", {
         class: "actor-m2-preview-line",
-        text: all.select.value === "true" ? "LIGHTS OFF" : `LIGHT OFF · ${id.value.trim() || "—"}`,
+        text: all.select.value === "true" ? "빛 모두 끄기" : `빛 끄기 · ${id.value.trim() || "—"}`,
       }),
       el("p", { class: "actor-m2-preview-note", text: line })
     );
@@ -471,8 +480,8 @@ export function removeLightBody(
   renderPreview();
   wrap.append(
     intentCard(
-      "광원 제거",
-      "지정 ID 광원 하나 또는 세션의 모든 동적 광원을 제거합니다.",
+      "빛 끄기",
+      "맵 위의 빛 하나 또는 전부를 끕니다.",
       "remove-light-intent"
     ),
     el("div", {
@@ -510,7 +519,7 @@ export function setWeatherBody(
     value: String(clamp01(cmd.intensity ?? 0.5)),
     dataset: { testid: "set-weather-intensity-slider" },
   }) as HTMLInputElement;
-  const transitionMs = numberInput(cmd.transitionMs ?? 0, "전환 시간(ms)", "set-weather-transition-input");
+  const transitionMs = numberInput(cmd.transitionMs ?? 0, "전환 시간", "set-weather-transition-input");
   transitionMs.setAttribute("min", "0");
   const transitionStepper = amountStepper(transitionMs, { testidBase: "set-weather-transition", min: 0 });
   const preview = el("div", {
@@ -551,7 +560,7 @@ export function setWeatherBody(
       stage,
       el("p", {
         class: "actor-m2-preview-line",
-        text: `${weatherLabel(weather)} · 강도 ${Math.round(power * 100)}%${ms > 0 ? ` · ${ms}ms` : ""}`,
+        text: `${weatherLabel(weather)} · 강도 ${Math.round(power * 100)}%${ms > 0 ? ` · ${Math.round(ms / 100) / 10}초` : ""}`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
@@ -622,7 +631,7 @@ export function setWeatherBody(
                 children: [intensitySlider, intensity],
               })
             ),
-            fieldBlock("전환 시간(ms)", transitionStepper),
+            fieldBlock("전환 시간", transitionStepper),
             fieldBlock("프리셋", presets),
           ],
         }),
@@ -647,7 +656,7 @@ export function showAnimationBody(
   });
   const eventId = textInput(
     cmd.target !== "player" && "eventId" in cmd.target ? cmd.target.eventId : "",
-    "이벤트 ID",
+    "어느 이벤트",
     "show-animation-event-id-input"
   );
   const x = numberInput(
@@ -671,13 +680,13 @@ export function showAnimationBody(
     selectedId: cmd.animationId,
     placeholder: "전투 애니메이션",
     testid: "show-animation-animationId-select",
-    subtitleOf: (record) => record.resourceId ?? null,
+    subtitleOf: (record) => record.scope === "allTargets" ? "여러 대상" : record.scope === "screen" ? "화면 전체" : "대상 하나",
   });
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "show-animation-preview" },
   });
-  const eventField = fieldBlock("이벤트 ID", eventId, "show-animation-event-field");
+  const eventField = fieldBlock("어느 이벤트", eventId, "show-animation-event-field");
   const posField = fieldBlock(
     "좌표",
     el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] }),
@@ -741,7 +750,7 @@ export function showAnimationBody(
   wrap.append(
     intentCard(
       "애니메이션 표시",
-      "전투 애니메이션을 맵 위 대상(플레이어·이벤트·좌표)에 재생합니다.",
+      "맵 위 주인공이나 이벤트, 칸에 연출을 보여 줍니다.",
       "show-animation-intent"
     ),
     el("div", {
@@ -750,7 +759,7 @@ export function showAnimationBody(
         el("div", {
           class: "actor-m2-main page3-command-main",
           children: [
-            fieldBlock("대상", target.root),
+            fieldBlock("어디에", target.root),
             eventField,
             posField,
             fieldBlock("애니메이션", animation.root),
@@ -769,17 +778,28 @@ export function showPictureBody(
   cmd: Extract<Command, { kind: "showPicture" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "show-picture-command-body");
-  const pictureId = textInput(cmd.pictureId, "그림 번호", "show-picture-id-input");
-  const resourceId = textInput(cmd.resourceId, "그림 리소스 ID", "show-picture-resource-input");
+  const pictureId = textInput(cmd.pictureId, "그림 칸", "show-picture-id-input");
+  const resourceId = textInput(cmd.resourceId, "그림", "show-picture-resource-input");
+  resourceId.classList.add("visually-hidden");
+  const resourceName = el("span", {
+    class: "page3-resource-name",
+    text: humanizePictureId(cmd.resourceId),
+    dataset: { testid: "show-picture-resource-name" },
+  });
+  const syncResourceName = (): void => {
+    resourceName.textContent = humanizePictureId(resourceId.value);
+  };
+  resourceId.addEventListener("input", syncResourceName);
+  resourceId.addEventListener("change", syncResourceName);
   const x = numberInput(cmd.x, "X 좌표", "show-picture-x-input");
   const y = numberInput(cmd.y, "Y 좌표", "show-picture-y-input");
   // 런타임은 확대·투명도·회전·전환시간을 모두 지원하는데(pictures/pictureTween.ts) 폼에는
   // 칸이 없어서, 감독이 "60% 로 줄여 15도 기울여 페이드인" 을 하려면 AI 툴이나 JSON
   // 손편집으로 우회해야 했다. 왕복 1회가 폼 입력 1회로 줄어든다.
   const scale = numberInput(cmd.scale ?? 100, "확대율(%) — 100이 원본", "show-picture-scale-input");
-  const opacity = numberInput(cmd.opacity ?? 255, "투명도 0~255 — 255가 불투명", "show-picture-opacity-input");
+  const opacity = numberInput(opacityToPercent(cmd.opacity ?? 255), "불투명도(%)", "show-picture-opacity-input");
   const rotation = numberInput(cmd.rotation ?? 0, "회전(도)", "show-picture-rotation-input");
-  const durationMs = numberInput(cmd.durationMs ?? 0, "전환 시간(ms) — 0이면 즉시", "show-picture-duration-input");
+  const durationMs = numberInput(cmd.durationMs ?? 0, "전환 시간 — 0이면 즉시", "show-picture-duration-input");
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "show-picture-preview" },
@@ -803,7 +823,11 @@ export function showPictureBody(
       x: parseInt(x.value, 10) || 0,
       y: parseInt(y.value, 10) || 0,
       scale: intInRange(scale, 100, 1, 2000),
-      opacity: intInRange(opacity, 255, 0, 255),
+      opacity: (() => {
+        const nextPercent = intInRange(opacity, 100, 0, 100);
+        const current = cmd.opacity ?? 255;
+        return opacityToPercent(current) === nextPercent ? current : percentToOpacity(nextPercent);
+      })(),
       // 회전은 한 바퀴를 넘겨도 뜻이 통하므로 접지 않고 그대로 싣는다.
       rotation: parseInt(rotation.value, 10) || 0,
       durationMs: intInRange(durationMs, 0, 0, 60_000),
@@ -853,9 +877,9 @@ export function showPictureBody(
       el("p", {
         class: "actor-m2-preview-line",
         text:
-          `그림 ${pictureId.value.trim() || "pic1"} · (${px}, ${py})` +
+          `그림 · 위치 (${px}, ${py})` +
           ` · ${parseInt(scale.value, 10) || 100}%` +
-          ` · 투명도 ${parseInt(opacity.value, 10) || 0}` +
+          ` · 불투명도 ${parseInt(opacity.value, 10) || 0}%` +
           (previewRotation ? ` · ${previewRotation}°` : "") +
           ((parseInt(durationMs.value, 10) || 0) ? ` · ${parseInt(durationMs.value, 10)}ms` : ""),
       }),
@@ -863,7 +887,7 @@ export function showPictureBody(
         class: "actor-m2-preview-note",
         // 런타임은 left/top = x/y 에 transform-origin: top left 다(runtime/pictures.css).
         // 예전 문구는 "중심 앵커" 라고 적혀 있었지만 실제와 달랐다.
-        text: rid ? `리소스 ${rid}` : "그림 리소스를 선택하세요 (320×240 좌표계, 좌상단 앵커).",
+        text: rid ? `${humanizePictureId(rid)} · 기준점은 왼쪽 위` : "그림을 선택하세요. 기준점은 왼쪽 위입니다.",
       })
     );
   };
@@ -906,10 +930,11 @@ export function showPictureBody(
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: "image",
-          title: "그림 리소스 선택",
+          title: "그림 선택",
           currentId: resourceId.value.trim(),
           onConfirm: (result) => {
             resourceId.value = result.resourceId;
+            syncResourceName();
             commit();
           },
         });
@@ -921,7 +946,7 @@ export function showPictureBody(
   wrap.append(
     intentCard(
       "그림 표시",
-      "화면 좌표에 그림 레이어를 올립니다. pictureId로 이후 이동/삭제 대상을 식별합니다.",
+      "화면에 그림을 올립니다. 그림 칸으로 나중에 옮기거나 지울 수 있습니다.",
       "show-picture-intent"
     ),
     el("div", {
@@ -930,25 +955,25 @@ export function showPictureBody(
         el("div", {
           class: "actor-m2-main page3-command-main",
           children: [
-            fieldBlock("그림 번호", pictureId),
+            fieldBlock("그림 칸", pictureId),
             fieldBlock(
-              "리소스",
+              "그림",
               el("div", {
                 class: "page3-resource-row",
-                children: [resourceId, pick],
+                children: [resourceName, resourceId, pick],
               })
             ),
             fieldBlock(
-              "좌표 (320×240)",
+              "위치",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] })
             ),
             fieldBlock("위치 프리셋", presets),
             fieldBlock(
-              "확대율(%) · 투명도(0~255)",
+              "크기 · 불투명도",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [scale, opacity] })
             ),
             fieldBlock(
-              "회전(°) · 전환 시간(ms)",
+              "회전(°) · 전환 시간",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [rotation, durationMs] })
             ),
           ],
@@ -965,7 +990,7 @@ export function erasePictureBody(
   cmd: Extract<Command, { kind: "erasePicture" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "erase-picture-command-body");
-  const pictureId = textInput(cmd.pictureId, "그림 번호", "erase-picture-id-input");
+  const pictureId = textInput(cmd.pictureId, "그림 칸", "erase-picture-id-input");
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "erase-picture-preview" },
@@ -985,7 +1010,7 @@ export function erasePictureBody(
       el("p", { class: "actor-m2-preview-line", text: `그림 ${id} 삭제` }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "세션에 표시 중인 해당 pictureId 레이어를 제거합니다.",
+        text: "화면에 떠 있는 그 칸의 그림을 지웁니다.",
       })
     );
   };
@@ -994,13 +1019,13 @@ export function erasePictureBody(
   pictureId.addEventListener("input", renderPreview);
   renderPreview();
   wrap.append(
-    intentCard("그림 삭제", "표시 중인 그림 레이어를 pictureId로 지웁니다.", "erase-picture-intent"),
+    intentCard("그림 삭제", "화면에 떠 있는 그림을 칸으로 지웁니다.", "erase-picture-intent"),
     el("div", {
       class: "actor-m2-layout page3-command-layout",
       children: [
         el("div", {
           class: "actor-m2-main page3-command-main",
-          children: [fieldBlock("그림 번호", pictureId)],
+          children: [fieldBlock("그림 칸", pictureId)],
         }),
         preview,
       ],
@@ -1024,7 +1049,7 @@ export function changeTileBody(
   });
   const x = numberInput(cmd.x, "X 좌표", "change-tile-x-input");
   const y = numberInput(cmd.y, "Y 좌표", "change-tile-y-input");
-  const tile = numberInput(cmd.tile, "타일 번호", "change-tile-tile-input");
+  const tile = numberInput(cmd.tile, "어떤 타일", "change-tile-tile-input");
   const tileStepper = amountStepper(tile, { testidBase: "change-tile-tile", min: -1 });
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
@@ -1061,7 +1086,7 @@ export function changeTileBody(
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: tileNo < 0 ? "음수 타일은 해당 칸을 비웁니다." : "런타임에 맵 타일을 즉시 교체합니다.",
+        text: tileNo < 0 ? "음수면 그 칸을 비웁니다." : "맵 위 그 칸의 타일을 바로 바꿉니다.",
       })
     );
   };
@@ -1097,7 +1122,7 @@ export function changeTileBody(
   wrap.append(
     intentCard(
       "지형 변경",
-      "지정 맵·레이어의 한 칸 타일 번호를 바꿉니다. -1은 비우기입니다.",
+      "맵 한 칸의 바닥이나 덧그림을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다.",
       "change-tile-intent"
     ),
     el("div", {
@@ -1112,7 +1137,7 @@ export function changeTileBody(
               "좌표",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] })
             ),
-            fieldBlock("타일 번호", tileStepper),
+            fieldBlock("어떤 타일", tileStepper),
             fieldBlock("빠른 값", presets),
           ],
         }),
@@ -1161,6 +1186,20 @@ function intentCard(title: string, body: string, testId: string): HTMLElement {
       el("p", { class: "party-member-intent-body", text: body }),
     ],
   });
+}
+
+function humanizePictureId(id: string): string {
+  const trimmed = id.trim();
+  if (!trimmed) return "(그림 선택)";
+  const slug = trimmed.replace(/^easyrpg-picture-/, "").replace(/^easyrpg-/, "").replace(/[-_]+/g, " ");
+  const named: Record<string, string> = {
+    cloud: "구름",
+    "picture cloud": "구름",
+  };
+  const key = slug.toLowerCase();
+  if (named[key]) return named[key];
+  if (/[가-힣]/.test(slug)) return slug;
+  return slug;
 }
 
 function fieldBlock(label: string, control: HTMLElement, testId?: string): HTMLElement {

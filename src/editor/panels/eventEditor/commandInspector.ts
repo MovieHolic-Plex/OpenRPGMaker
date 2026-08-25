@@ -10,8 +10,8 @@
 
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
-import { commandSummary } from "./commandSummary";
 import { commandKindLabel } from "./options";
+import { inspectorTitle } from "./inspectorChoicesTitle";
 import { renderCommandBody } from "./commandBody";
 import type { CommandListActions } from "./types";
 
@@ -84,10 +84,10 @@ export function showCommandInspector(target: InspectorTarget): void {
     ],
   });
   const isForm = density === "form";
-  const summary = safeSummary(target.command);
+  const summary = inspectorTitle(target.command);
   const toggleBtn = el("button", {
     class: "event-inspector-density-toggle",
-    text: isForm ? "간단히 보기" : "자세히 편집",
+    text: isForm ? "간단히" : "자세히 편집",
     attrs: { type: "button", "aria-pressed": isForm ? "true" : "false" },
     dataset: { testid: "event-inspector-density-toggle" },
     on: {
@@ -111,10 +111,17 @@ export function showCommandInspector(target: InspectorTarget): void {
   host.replaceChildren(
     el("div", {
       class: "event-inspector-head",
-      children: [el("div", { class: "event-inspector-kind", text: commandKindLabel(target.command.kind) })],
+      children: [
+        el("div", { class: "event-inspector-kind", text: commandKindLabel(target.command.kind) }),
+        el("div", {
+          class: "event-inspector-title",
+          text: summary,
+          dataset: { testid: "event-inspector-title" },
+        }),
+        ...(isForm ? [toggleBtn] : []),
+      ],
     }),
     isForm ? formBody : card,
-    ...(isForm ? [toggleBtn] : [])
   );
 }
 
@@ -130,10 +137,4 @@ function showInspector(target: HTMLElement): void {
   target.closest(".event-editor-workbench")?.classList.add("has-command-inspector");
 }
 
-function safeSummary(command: Command): string {
-  try {
-    return commandSummary(command);
-  } catch {
-    return command.kind;
-  }
-}
+

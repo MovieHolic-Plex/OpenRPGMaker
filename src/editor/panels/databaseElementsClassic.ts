@@ -1,14 +1,20 @@
 import { clampElementListCount, resizeElementRecords } from "@/editor/databaseElementList";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { pruneDanglingElementRates } from "@/project/io/references";
-import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { isElementKind, readonlyValue, selectUtilityRecord } from "@/editor/panels/databaseUtilityRecordControls";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
-const ELEMENT_DAMAGE_GRADES: readonly ActorRateGrade[] = ["A", "B", "C", "D", "E"];
+const ELEMENT_DAMAGE_GRADES: readonly ActorRateGrade[] = ["A", "B", "C", "D", "E"] as const;
+const GRADE_DISPLAY_LABEL: Record<ActorRateGrade, string> = {
+  A: "약함",
+  B: "조금 약함",
+  C: "보통",
+  D: "강함",
+  E: "무효",
+};
 let selectedElementIndex = 5;
 
 export function renderElementsTab(host: HTMLElement): void {
@@ -32,12 +38,17 @@ export function renderElementsTab(host: HTMLElement): void {
 function renderElementsClassicList(elements: readonly DatabaseElementRecord[], host: HTMLElement): HTMLElement {
   const list = el("div", { class: "db-elements-list", dataset: { testid: "db-elements-list" } });
   for (const [index, element] of elements.entries()) {
+    const label = element.name?.trim() ? element.name : "(이름 없음)";
     list.append(
       el("button", {
         class: `db-elements-row${index === selectedElementIndex ? " is-selected" : ""}`,
-        text: `${ordinalLabel(index)}: ${element.name}`,
-        attrs: { type: "button" },
+        attrs: { type: "button", title: `${label} #${index + 1}` },
         dataset: { testid: `db-elements-row-${index}` },
+        children: [
+          el("span", { class: "db-elements-thumb", attrs: { "aria-hidden": "true" }, text: label.slice(0, 1) || "?" }),
+          el("span", { class: "db-elements-row-name", text: label }),
+          el("span", { class: "db-elements-row-meta", text: `#${index + 1}` }),
+        ],
         on: {
           click: () => {
             selectedElementIndex = index;
@@ -208,6 +219,7 @@ function renderElementDamageRow(element: DatabaseElementRecord, index: number, g
     dataset: { testid: `db-field-element-damage-${grade}` },
     value: element.damageMultipliers[grade],
   });
+  const displayLabel = GRADE_DISPLAY_LABEL[grade];
   input.addEventListener("focus", () => selectUtilityRecord("elements", index));
   input.addEventListener("input", () => {
     const value = clampDamageMultiplier(Number(input.value));
@@ -224,7 +236,7 @@ function renderElementDamageRow(element: DatabaseElementRecord, index: number, g
   return el("label", {
     class: "db-elements-damage-row",
     children: [
-      el("span", { class: `db-elements-grade grade-${grade.toLowerCase()}`, text: grade }),
+      el("span", { class: `db-elements-grade grade-${grade.toLowerCase()}`, text: displayLabel, attrs: { title: `${grade} ${element.damageMultipliers[grade]}%` } }),
       input,
       el("span", { class: "db-elements-percent", text: "%" }),
     ],

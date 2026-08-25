@@ -11,7 +11,7 @@
 }
 
 .npc-graphic-picker .event-graphic-resource-icon.charset-thumb {
-  background-color: #008000;
+  background-color: var(--bg-inset);
   background-repeat: no-repeat;
   border: 1px solid var(--event-rm-mid);
   box-shadow: inset 0 0 0 1px var(--shadow-pop);
@@ -35,7 +35,7 @@
 /* 걷기 애니메이션 프리뷰 — 패턴 0 → 1 → 2 → 1 (4단계) */
 .npc-graphic-picker .npc-walk-preview {
   animation: npc-walk-preview-step 880ms steps(1, end) infinite;
-  background-color: #008000;
+  background-color: var(--bg-inset);
   background-repeat: no-repeat;
   border: 1px solid var(--event-rm-mid);
   image-rendering: pixelated;
@@ -66,7 +66,7 @@
 .npc-graphic-picker .npc-advanced-sprite > summary {
   color: var(--event-rm-text);
   cursor: pointer;
-  font: 400 13px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 13px/18px "Malgun Gothic", sans-serif;
   padding: 2px 0;
   user-select: none;
 }

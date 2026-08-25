@@ -56,7 +56,6 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
     row.append(
       recordIconElement(imageIconOf(project, record.graphic.monsterResourceId), record.name),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
-      el("small", { text: record.id })
     );
     list.append(row);
   }
@@ -288,7 +287,6 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
     applyMagentaChromaKey(stageImage);
   }
   form.append(
-    el("div", { class: "db-record-id", children: [el("span", { text: "ID" }), el("code", { text: record.id })] }),
     textControl("이름", record.name, (value) => updateSpecies(record.id, { name: value }), "db-monster-species-name"),
     el("div", {
       class: "db-monster-species-stage",
@@ -347,7 +345,6 @@ function linkedEnemiesField(record: MonsterSpeciesRecord): HTMLElement {
             class: "db-monster-species-linked-row",
             children: [
               el("span", { class: "db-monster-species-linked-name", text: enemy.name || "(이름 없음)" }),
-              el("small", { text: enemy.id }),
               el("button", {
                 class: "btn small",
                 text: "몬스터 열기",
@@ -653,7 +650,6 @@ function evolutionReferrersField(record: MonsterSpeciesRecord): HTMLElement {
             class: "db-monster-species-linked-row",
             children: [
               el("span", { class: "db-monster-species-linked-name", text: entry.name || "(이름 없음)" }),
-              el("small", { text: entry.id }),
               el("button", {
                 class: "btn small",
                 text: "종족 열기",

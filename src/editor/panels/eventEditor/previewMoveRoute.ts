@@ -16,7 +16,7 @@ export function previewMoveRoute(cmd: Extract<Command, { kind: "moveEvent" }>): 
     el("div", {
       class: "ecp-move-target",
       children: [
-        el("span", { class: "ecp-move-target-label", text: "대상" }),
+        el("span", { class: "ecp-move-target-label", text: "누구에게" }),
         el("span", { class: "ecp-move-target-name", text: targetName(cmd.eventId) }),
       ],
     })

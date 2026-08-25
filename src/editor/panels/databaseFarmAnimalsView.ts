@@ -14,6 +14,7 @@ export function renderFarmAnimalsTab(host: HTMLElement, rerender: () => void): v
   const species = project.database.farmAnimalSpecies ?? [];
   const buildings = project.system.farmAnimalBuildings ?? [];
   const animals = project.session.farmAnimals ?? [];
+  const isEmpty = species.length === 0 && buildings.length === 0 && animals.length === 0;
   host.append(el("section", {
     class: "db-life-authoring-workspace db-farm-animals-workspace",
     dataset: { testid: "db-farm-animals-workspace" },
@@ -28,25 +29,42 @@ export function renderFarmAnimalsTab(host: HTMLElement, rerender: () => void): v
           ] }),
         ],
       }),
-      el("div", {
-        class: "db-life-toolbar",
-        children: [
-          el("button", {
-            class: "btn",
-            text: "닭·소와 기본 축사 만들기",
-            attrs: { type: "button" },
-            dataset: { testid: "db-farm-animals-seed-defaults" },
-            on: { click: () => seedDefaults(rerender) },
-          }),
-          el("span", { text: `종 ${species.length} · 축사 ${buildings.length} · 시작 개체 ${animals.length}` }),
-        ],
-      }),
-      el("div", {
-        class: "db-life-card-grid db-farm-animal-grid",
-        children: [speciesPanel(species, rerender), buildingPanel(buildings, rerender), animalPanel(animals, species, buildings, rerender)],
-      }),
+      ...(isEmpty
+        ? [emptyFarmAnimals(rerender)]
+        : [
+            el("div", {
+              class: "db-life-toolbar",
+              dataset: { testid: "db-farm-animals-toolbar" },
+              children: [
+                el("span", { text: `종 ${species.length} · 축사 ${buildings.length} · 시작 개체 ${animals.length}` }),
+              ],
+            }),
+            el("div", {
+              class: "db-life-card-grid db-farm-animal-grid",
+              children: [speciesPanel(species, rerender), buildingPanel(buildings, rerender), animalPanel(animals, species, buildings, rerender)],
+            }),
+          ]),
     ],
   }));
+}
+
+function emptyFarmAnimals(rerender: () => void): HTMLElement {
+  return el("div", {
+    class: "empty-state empty-state--large empty-state--inset db-studio-empty",
+    dataset: { testid: "db-farm-animals-empty" },
+    children: [
+      el("span", { class: "empty-state__icon", text: "🐓", attrs: { "aria-hidden": "true" } }),
+      el("h3", { class: "empty-state__title", text: "아직 등록된 동물이 없습니다" }),
+      el("p", { class: "empty-state__desc", text: "기본값을 만들면 닭·소 두 종과 축사, 시작 개체가 연결된 상태로 채워집니다." }),
+      el("button", {
+        class: "empty-state__action empty-state__action--primary",
+        text: "닭·소와 기본 축사 만들기",
+        attrs: { type: "button" },
+        dataset: { testid: "db-farm-animals-seed-defaults" },
+        on: { click: () => seedDefaults(rerender) },
+      }),
+    ],
+  });
 }
 
 function speciesPanel(records: readonly FarmAnimalSpeciesRecord[], rerender: () => void): HTMLElement {

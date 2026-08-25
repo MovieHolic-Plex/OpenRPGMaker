@@ -118,7 +118,7 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   row("zhipu-coding-plan", "Zhipu Coding Plan", "glm-5.1", ["ZHIPU_API_KEY"]),
 ];
 
-export const DEFAULT_OH_MY_PI_PROVIDER = "openai-codex";
+export const DEFAULT_OH_MY_PI_PROVIDER = "google-antigravity";
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 

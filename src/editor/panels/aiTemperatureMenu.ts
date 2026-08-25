@@ -1,5 +1,6 @@
 import {
   ASSISTANT_TEMPERATURES,
+  assistantTemperatureMenuLabel,
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
 import { el } from "@/util/dom";
@@ -18,7 +19,7 @@ export function createAssistantTemperatureMenuSection(options: {
   const buttons = ASSISTANT_TEMPERATURES.map((item) =>
     el("button", {
       class: `${itemClass} ai-temperature-option`,
-      text: item.icon,
+      text: assistantTemperatureMenuLabel(item.id),
       attrs: {
         type: "button",
         role: "menuitemradio",

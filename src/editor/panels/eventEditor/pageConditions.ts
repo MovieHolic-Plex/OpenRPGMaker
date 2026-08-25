@@ -107,7 +107,7 @@ export function renderPageConditions(
      (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled),
    ),
     conditionRow(
-      "셀프 스위치",
+      "이 이벤트 기억",
       selfSwitchConditionInputs(context),
       selfSwitchConditionAt(page) !== undefined,
       "",

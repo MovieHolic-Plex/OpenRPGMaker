@@ -21,7 +21,7 @@ export function attachWindowFullscreen(
 
   const updateButton = (): void => {
     const label = fullscreen ? "창 보기로 복원" : "전체 보기";
-    button.textContent = fullscreen ? "❐" : "□";
+    button.textContent = fullscreen ? "❐" : "⛶";
     button.title = `${label} (Alt+Enter)`;
     button.setAttribute("aria-label", label);
     button.setAttribute("aria-pressed", fullscreen ? "true" : "false");

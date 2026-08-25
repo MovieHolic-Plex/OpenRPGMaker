@@ -92,6 +92,25 @@ export function renderStoryboard(
     commands.forEach((cmd, idx) => {
       const info = summarizeCommand(cmd);
       const branches = branchesOf(cmd);
+      const visibleBranches = branches.slice(0, 2);
+      const hiddenBranches = Math.max(0, branches.length - visibleBranches.length);
+      const branchRow = branches.length > 0
+        ? el("span", {
+            class: "event-storyboard-card-branches",
+            children: [
+              ...visibleBranches.map((br) => el("span", {
+                class: "event-storyboard-branch",
+                children: [el("span", {
+                  class: "event-storyboard-branch-label",
+                  text: (br.label || "이름 없는 분기").slice(0, 12),
+                })],
+              })),
+              ...(hiddenBranches > 0
+                ? [el("span", { class: "event-storyboard-branch-more", text: `+${hiddenBranches}` })]
+                : []),
+            ],
+          })
+        : null;
       const card = el("button", {
         class: "event-storyboard-card",
         attrs: {
@@ -111,70 +130,10 @@ export function renderStoryboard(
             ],
           }),
           el("span", { class: "event-storyboard-card-action", text: "편집" }),
+          ...(branchRow ? [branchRow] : []),
         ],
       });
-      const scene = el("div", { class: "event-storyboard-scene", children: [card] });
-      if (branches.length > 0) {
-        scene.append(el("div", {
-          class: "event-storyboard-branches",
-          children: branches.map((br, branchIdx) => {
-            const visibleCommands = br.commands.slice(0, 4);
-            const hiddenCount = br.commands.length - visibleCommands.length;
-            return el("div", {
-              class: "event-storyboard-branch",
-              attrs: { role: "group", "aria-label": `${br.label} 분기, 명령 ${br.commands.length}개` },
-              children: [
-                el("div", {
-                  class: "event-storyboard-branch-head",
-                  children: [
-                    el("span", { class: "event-storyboard-branch-label", text: br.label || "이름 없는 분기" }),
-                    el("span", { class: "event-storyboard-branch-count", text: `명령 ${br.commands.length}개` }),
-                  ],
-                }),
-                ...(visibleCommands.length > 0
-                  ? visibleCommands.map((branchCommand, commandIdx) => {
-                      const branchInfo = summarizeCommand(branchCommand);
-                      const path = [idx, br.pathSegment, commandIdx];
-                      return el("button", {
-                        class: "event-storyboard-branch-command",
-                        attrs: {
-                          type: "button",
-                          style: `--storyboard-accent:${branchInfo.color}`,
-                          "aria-label": `${br.label} 분기 ${commandIdx + 1}번째 명령, ${branchInfo.title}: ${branchInfo.detail}`,
-                        },
-                        dataset: {
-                          testid: `event-storyboard-branch-command-${idx}-${branchIdx}-${commandIdx}`,
-                          cmdPath: JSON.stringify(path),
-                        },
-                        on: { click: (event) => selectPath(path, event.currentTarget as HTMLElement) },
-                        children: [
-                          el("span", { class: "event-storyboard-branch-command-mark" }),
-                          el("span", {
-                            class: "event-storyboard-branch-command-copy",
-                            children: [
-                              el("strong", { text: branchInfo.title }),
-                              el("span", { text: branchInfo.detail }),
-                            ],
-                          }),
-                          el("span", { class: "event-storyboard-branch-command-index", text: String(commandIdx + 1) }),
-                        ],
-                      });
-                    })
-                  : [el("span", { class: "event-storyboard-branch-empty", text: "이 분기는 비어 있습니다" })]),
-                ...(hiddenCount > 0
-                  ? [el(opts?.onShowList ? "button" : "span", {
-                      class: "event-storyboard-branch-overflow",
-                      text: `외 ${hiddenCount}개 · 목록에서 모두 보기`,
-                      attrs: opts?.onShowList ? { type: "button" } : undefined,
-                      on: opts?.onShowList ? { click: () => opts.onShowList?.() } : undefined,
-                    })]
-                  : []),
-              ],
-            });
-          }),
-        }));
-      }
-      track.append(scene);
+      track.append(card);
     });
   }
 
@@ -260,7 +219,7 @@ export function renderViewToggle(
   const labels: Record<StoryboardMode,string> = { list:"목록", storyboard:"스토리보드" };
   const bar = el("div", {
     class: "event-view-toggle",
-    attrs: { role: "group", "aria-label": "실행 내용 보기 방식" },
+    attrs: { role: "group", "aria-label": "보기 방식" },
     dataset: { testid: "event-view-toggle" },
   });
   for (const mode of modes) {

@@ -40,6 +40,14 @@ const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string
   { id: "holy", name: "성" },
 ];
 
+const GRADE_KO: Record<ActorRateGrade, string> = {
+  A: "약함",
+  B: "약함",
+  C: "보통",
+  D: "강함",
+  E: "무효",
+};
+
 const FALLBACK_CLASS_COMMANDS: ClassRecord["battleCommands"] = [
   { id: "cmd_attack", name: "공격", kind: "attack" },
   { id: "cmd_skill", name: "기술", kind: "skill" },
@@ -71,18 +79,76 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
   refreshCurves();
   refreshExp();
 
+  const curvesPanel = el("div", {
+    class: "db-class-section-panel active",
+    dataset: { section: "curves", testid: "db-class-section-curves" },
+    children: [panel("능력치 곡선", [curveGrid], "db-class-panel-curves"), panel("경험치 곡선", [expPanel], "db-class-panel-exp")],
+  });
+  const commandsPanel = el("div", {
+    class: "db-class-section-panel",
+    dataset: { section: "commands", testid: "db-class-section-commands" },
+    children: [panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands")],
+  });
+  const skillsPanel = el("div", {
+    class: "db-class-section-panel",
+    dataset: { section: "skills", testid: "db-class-section-skills" },
+    children: [panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills")],
+  });
+  const promotionPanel = el("div", {
+    class: "db-class-section-panel",
+    dataset: { section: "promotion", testid: "db-class-section-promotion" },
+    children: [panel("승급", promotionControls(record, refreshBuildSummary), "db-class-panel-promotion")],
+  });
+
+  const sectionPanels: readonly HTMLElement[] = [curvesPanel, commandsPanel, skillsPanel, promotionPanel];
+  const sectionTabs = el("div", {
+    class: "db-class-section-tabs",
+    dataset: { testid: "db-class-section-tabs" },
+    attrs: { role: "tablist" },
+  });
+  const tabDefs: readonly { readonly id: string; readonly label: string; readonly panel: HTMLElement }[] = [
+    { id: "curves", label: "곡선", panel: curvesPanel },
+    { id: "commands", label: "명령", panel: commandsPanel },
+    { id: "skills", label: "스킬", panel: skillsPanel },
+    { id: "promotion", label: "승급", panel: promotionPanel },
+  ];
+  const tabButtons: HTMLElement[] = [];
+  for (const def of tabDefs) {
+    const btn = el("button", {
+      class: def.id === "curves" ? "db-class-section-tab active" : "db-class-section-tab",
+      text: def.label,
+      attrs: { type: "button", role: "tab", "aria-selected": String(def.id === "curves"), "aria-controls": `db-class-section-${def.id}` },
+      dataset: { testid: `db-class-section-tab-${def.id}`, section: def.id },
+    });
+    btn.addEventListener("click", () => {
+      for (const b of tabButtons) {
+        const isActive = b === btn;
+        b.classList.toggle("active", isActive);
+        b.setAttribute("aria-selected", String(isActive));
+      }
+      for (const p of sectionPanels) p.classList.toggle("active", p === def.panel);
+    });
+    tabButtons.push(btn);
+  }
+  sectionTabs.append(...tabButtons);
+  // assign ids for aria-controls targets
+  curvesPanel.id = "db-class-section-curves";
+  commandsPanel.id = "db-class-section-commands";
+  skillsPanel.id = "db-class-section-skills";
+  promotionPanel.id = "db-class-section-promotion";
+
   form.append(buildSummaryHost, el("div", {
     class: "db-class-bm88-workbench",
     dataset: { testid: "db-classes-bm88-workbench" },
     children: [
       panel("이름", [nameInput(record)], "db-class-panel-name"),
       panel("애니메이션", [spritePreview(record), animationSelect(record)], "db-class-panel-animation"),
-      panel("능력치 곡선", [curveGrid], "db-class-panel-curves"),
-      panel("경험치 곡선", [expPanel], "db-class-panel-exp"),
-      panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands"),
+      sectionTabs,
+      curvesPanel,
+      commandsPanel,
+      skillsPanel,
+      promotionPanel,
       panel("옵션", optionControls(record), "db-class-panel-options"),
-      panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills"),
-      panel("승급", promotionControls(record, refreshBuildSummary), "db-class-panel-promotion"),
       panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state"),
       panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element"),
       panel("장비", [equipmentSelect(record, refreshBuildSummary)], "db-class-panel-equipment"),
@@ -312,7 +378,6 @@ function commandRow(
   name.addEventListener("input", apply);
   subset.addEventListener("input", apply);
   skill.addEventListener("change", apply);
-  // 종류 변경은 스킬 그룹/스킬 활성화 여부에 영향 → 저장 후 재렌더
   kind.addEventListener("change", () => {
     apply();
     onChanged();
@@ -365,12 +430,10 @@ function lockedFooter(commands: readonly ClassBattleCommand[]): HTMLElement {
   });
 }
 
-/** live store state — record 스냅샷이 아니라 현재 스토어의 전투 명령을 읽는다(인라인 편집에서 재렌더 동기화용). */
 function liveCommands(record: ClassRecord): ClassRecord["battleCommands"] {
   return currentClass(record).battleCommands;
 }
 
-/** 빈 전투 명령은 기본 5종(공격/기술/아이템/방어/도주)으로 표시하고, 첫 편집 keystroke 에서 store 에 반영된다. */
 function sourceCommands(record: ClassRecord): ClassRecord["battleCommands"] {
   const live = liveCommands(record);
   return live.length > 0 ? live : FALLBACK_CLASS_COMMANDS;
@@ -385,7 +448,6 @@ function commitCommands(record: ClassRecord, editable: readonly ClassBattleComma
   updateDatabaseRecord("classes", record.id, { battleCommands: finalizeClassBattleCommands(editable) });
 }
 
-/** kind 에 따라 스킬 그룹/스킬 필드의 활성화 여부를 정한다(적 행동 basic/skill 모드와 동일 패턴). */
 function commandFieldVisibility(kind: ClassBattleCommandKind): { readonly subset: boolean; readonly skill: boolean } {
   if (kind === "skill") return { subset: true, skill: true };
   if (kind === "skillSubset") return { subset: true, skill: false };
@@ -484,8 +546,6 @@ function skillTable(record: ClassRecord, onSummaryChanged: () => void): HTMLElem
   return root;
 }
 
-// 허용 장비는 배열 필드(equipmentIds[])다 — 단일 select 는 상호작용 즉시 6→1 로 배열을
-// 파괴했다(P10 Critical). 체크박스 목록으로 배열을 보존한다.
 function equipmentSelect(record: ClassRecord, onSummaryChanged: () => void): HTMLElement {
   const rows = store.getCurrent().database.equipment.map((equipment) => {
     const input = el("input", {
@@ -603,7 +663,8 @@ function rateRows(record: ClassRecord, kind: "state" | "element"): HTMLElement[]
     const testid = kind === "state" ? `db-picker-class-state-rate-${entry.id}` : `db-picker-class-element-rate-${entry.id}`;
     const select = gradeSelect(value, testid);
     select.addEventListener("change", () => updateRate(record, kind, entry.id, select.value));
-    const label = kind === "state" ? `${entry.name} ${stateRatePercentage(value)}%` : entry.name;
+    const ko = GRADE_KO[value as ActorRateGrade] ?? value;
+    const label = kind === "state" ? `${entry.name} · ${ko} ${stateRatePercentage(value as ActorRateGrade)}%` : `${entry.name} · ${ko}`;
     return el("label", { class: "db-class-rate-row", children: [select, el("span", { text: label })] });
   });
 }
@@ -659,7 +720,11 @@ function kindSelect(value: ClassBattleCommandKind, testid?: string): HTMLSelectE
 
 function gradeSelect(value: ActorRateGrade, testid: string): HTMLSelectElement {
   const select = el("select", { dataset: { testid } }) as HTMLSelectElement;
-  ACTOR_RATE_GRADES.forEach((grade) => select.append(el("option", { text: grade, attrs: { value: grade } })));
+  ACTOR_RATE_GRADES.forEach((grade) => {
+    const ko = GRADE_KO[grade];
+    const label = `${ko} · ${stateRatePercentage(grade)}% (${grade})`;
+    select.append(el("option", { text: label, attrs: { value: grade } }));
+  });
   select.value = value;
   return select;
 }

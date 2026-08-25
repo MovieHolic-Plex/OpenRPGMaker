@@ -13,5 +13,11 @@ export function labelBody(context: CommandEditContext, cmd: LabelCommand): HTMLE
   name.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, { kind: cmd.kind, name: name.value });
   });
-  return name;
+  return el("div", {
+    class: "cream-command-form",
+    children: [
+      el("div", { class: "cream-command-form-head", text: cmd.kind === "label" ? "라벨" : "라벨로 이동" }),
+      name,
+    ],
+  });
 }
