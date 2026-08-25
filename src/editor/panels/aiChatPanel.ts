@@ -286,6 +286,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const openProposalModal = proposalModal.open;
   const closeProposalModal = proposalModal.close;
   let turnBusy = false;
+  // 전송 버튼은 "보낼 것이 있고 한가할 때"만 준버된 상태로 보이며, 이전엔 turnBusy 만 보서
+  // 보낼 게 없을 때도 흔함 없이 활성이었고, 눌러도 send() 가 `if (!text) return` 으로
+  // 조용하게 끝나 아무 피드백도 없었다.
+  //
+  // 미입력 상태를 진짜 `disabled` 로 만들지않는 이유(실측): disabled 버튼은 tab
+  // 순서에서 버리니 키보드 사용자에게는 "전송이 어때 사라진" 것이 되고 이유도
+  // 설명하지 못하며(test/aiPanelChrome 탭 순서 계약이 이걸 직접 잡았다), 프로그램으로
+  // 값을 넣고 click 하는 호출자도 조용하게 사망한다. 그래서 항상 초점·클릭 가능한
+  // 상태로 두고, 준버 여부는 aria-disabled + 클래스로 말하고, 눌렸을 때는 send() 가
+  // 이유를 돌려준다. 진짜 disabled 는 턴 진행 중(turnBusy)에만 쓴다.
+  const refreshSendEnabled = (): void => {
+    const empty = input.value.trim() === "";
+    sendButton.disabled = turnBusy;
+    sendButton.classList.toggle("is-not-ready", empty && !turnBusy);
+    sendButton.setAttribute("aria-disabled", String(turnBusy || empty));
+  };
   let dockToggleLock: HTMLButtonElement | null = null;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
@@ -327,7 +343,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendButton = el("button", {
     class: "ai-assistant-action ai-chat-send",
     text: "↑ 전송",
-    attrs: { type: "button" },
+    attrs: { type: "button", title: "보낼 지시를 입력하세요" },
     dataset: { testid: "ai-send" },
   }) as HTMLButtonElement;
 
@@ -686,8 +702,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     abortButton.setAttribute("aria-disabled", String(!running));
     // 전송은 항상 마운트 — 진행 중엔 비활성(disabled)으로 두고 중단은 형제로 노출한다.
     sendButton.hidden = false;
-    sendButton.disabled = turnBusy;
-    sendButton.setAttribute("aria-disabled", String(turnBusy));
+    refreshSendEnabled();
     if (dockToggleLock) {
       dockToggleLock.disabled = turnBusy;
       dockToggleLock.setAttribute("aria-disabled", String(turnBusy));
@@ -1100,7 +1115,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (!ownsTurn(true)) return;
       endTurnProgress();
       if (activeAbortController === abortController) activeAbortController = null;
-      sendButton.disabled = false;
       turnBusy = false;
       refreshAbortButton();
       // 자율 런 종료(정상 완료·중단·승인 대기 포함): 런 표면을 정리하고 자동 접기를 재개한다.
@@ -1375,7 +1389,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (cancelled) setStatus("대기");
       const regionFailed = !cancelled && (status.textContent ?? "") === "오류";
       endTurnProgress();
-      sendButton.disabled = false;
       turnBusy = false;
       refreshAbortButton();
       if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
@@ -1402,7 +1415,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let lastTypedMessage = "";
   const send = async (): Promise<void> => {
     const text = input.value.trim();
-    if (!text) return;
+    if (!text) {
+      // 조용한 return 은 "버튼이 고장났나" 로 읽혔다. 무엇이 부족한지 말하고 초점을 준다.
+      toast("보낼 지시를 입력하세요", "info");
+      try {
+        input.focus();
+      } catch {
+        // headless DOM may not implement focus
+      }
+      return;
+    }
     if (!ensureConfigReadyForSend()) return;
     if (selectionTaskActive && currentSelectionForRegionTask() && turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
@@ -1412,6 +1434,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     input.value = "";
     syncInputHeight();
     refreshSlash();
+    refreshSendEnabled();
     if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
     else await sendText(text);
   };
@@ -1642,6 +1665,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshSlash();
     syncInputHeight();
     refreshComposerChips();
+    refreshSendEnabled();
   });
   // 입력창 포커스 시 휘발 존(웰컴/대화)을 펼치고, 빈 대화 상태로 포커스를 잃으면 접어 맵을 비운다.
   input.addEventListener("focus", () => {
@@ -2484,6 +2508,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);
   applyCollapsed();
+  refreshSendEnabled(); // 부트 직후도 보낼 게 없으므로 전송은 비활성에서 시작해야 한다.
 
   let completionStripHandle: AiCompletionStripHandle | null = null;
   const renderCompletion = (context: AiApplyCompletionContext | null): void => {

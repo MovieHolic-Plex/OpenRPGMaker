@@ -70,6 +70,20 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   commandMenu.hidden = true;
 
+  // 스킬 진입점은 도크와 무관하게 액션 행에 둔다. 유리·사이드는 CSS 로 `☰` 와 추천
+  // 팝오버를 숨기므로(02-chat-dock.css), 예전에는 기본 도크에서 액션 행이 전송 버튼
+  // 하나만 든 빈 밴드였고 타이핑을 시작하면 `ai-next-steps` 카드까지 사라져 "무엇을
+  // 칠 수 있는지" 알려주는 표면이 하나도 남지 않았다(실측 312x28).
+  // 동작은 복제하지 않고 기존 메뉴 항목의 click 을 재사용한다 — 슬래시 질의의 단일
+  // 소스는 입력창이어야 하고, 그 규칙은 그 핸들러가 이미 지키고 있다.
+  const skillButton = el("button", {
+    class: "ai-composer-menu-btn ai-composer-skill-btn",
+    text: "/",
+    attrs: { type: "button", title: "스킬 찾기", "aria-label": "스킬 찾기" },
+    dataset: { testid: "ai-composer-skill-button" },
+    on: { click: () => options.skillToggle.click() },
+  }) as HTMLButtonElement;
+
   // 추천 칩 팝오버 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 버튼 없음).
   // 흐름 밖이라 열림/닫힘이 바 높이를 건드리지 않는다(구 구조의 점프 원인).
   const suggestPopover = el("div", {
@@ -96,7 +110,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("div", {
         class: "ai-composer-actions-lead",
-        children: [commandMenuToggle, options.contextChips, options.queueIndicator],
+        children: [commandMenuToggle, skillButton, options.contextChips, options.queueIndicator],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
@@ -117,6 +131,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     // 팝오버는 셸의 형제로 두고 absolute 로 띄운다 — 흐름 밖.
     children: [options.slashHost, suggestPopover, commandMenu, composer],
   });
+
+  // 키 힌트는 입력 중에만 필요한 안내다. 상시 노출은 액션 행을 영구 점유했다(실측 160x15).
+  // 숨김은 visibility 로 한다 — display 로 빼면 행 높이가 바뀌어 "바 높이 = f(textarea 줄 수)"
+  // 불변식이 깨지고 clearance 재측정이 오버레이까지 흔든다.
+  const onInputFocus = (): void => actions.classList.add("is-input-focused");
+  const onInputBlur = (): void => actions.classList.remove("is-input-focused");
+  options.input.addEventListener("focus", onInputFocus);
+  options.input.addEventListener("blur", onInputBlur);
 
   const popoverOf = (kind: ComposerPopover): HTMLElement =>
     kind === "slash" ? options.slashHost : kind === "suggest" ? suggestPopover : commandMenu;
@@ -173,6 +195,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     openKind: () => openState,
     measuredTop,
     dispose: () => {
+      options.input.removeEventListener("focus", onInputFocus);
+      options.input.removeEventListener("blur", onInputBlur);
       if (typeof document === "undefined" || typeof document.removeEventListener !== "function") return;
       document.removeEventListener("pointerdown", onDocumentPointerDown);
       document.removeEventListener("keydown", onDocumentKeyDown);
