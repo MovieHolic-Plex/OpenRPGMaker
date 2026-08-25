@@ -27,13 +27,13 @@
   --control-bg-active: rgba(15, 23, 42, 0.12);
 
   --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-default: rgba(15, 23, 42, 0.12);
-  --border-strong: rgba(15, 23, 42, 0.28);
+  --border-default: rgba(15, 23, 42, 0.127);
+  --border-strong: rgba(15, 23, 42, 0.461);
 
   --text-1: #0F172A;
   --text-2: #475569;
-  --text-3: #64748B;
-  --text-placeholder: #64748B;
+  --text-3: #626E89;
+  --text-placeholder: #626E89;
   --text-disabled: #94A3B8;
 
   --accent: #4A57D6;

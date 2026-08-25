@@ -78,11 +78,15 @@ describe("database animation preview", () => {
 
   it("derives the target field from skill and item animation references instead of a hard-coded enemy name", () => {
     const project = createBlankProject();
-    const animation = project.database.battleAnimations.find((entry) => entry.id === "anim_hit");
-    if (!animation) throw new Error("Missing default hit animation");
+    const attackAnimationId = project.database.skills.find((entry) => entry.id === "skill_attack")?.animationId;
+    const animation = project.database.battleAnimations.find((entry) => entry.id === attackAnimationId);
+    if (!animation) throw new Error("Missing generated attack animation");
 
     expect(animationReferenceTarget(animation, project.database)).toBe("공격");
     expect(animationReferenceTarget(animation, project.database)).not.toBe("말벌");
+    const legacyHit = project.database.battleAnimations.find((entry) => entry.id === "anim_hit");
+    if (!legacyHit) throw new Error("Missing legacy hit animation");
+    expect(animationReferenceTarget(legacyHit, project.database)).toBe("(참조 없음)");
     expect(animationReferenceTarget({ id: "anim_unused", name: "미사용" }, project.database)).toBe("(참조 없음)");
   });
 });

@@ -45,10 +45,14 @@ describe("P2 database authoring", () => {
     const host = renderPanel();
     findByTestId(host, "db-tab-life-collections")?.click();
     expect(findByTestId(host, "db-life-collections-workspace")).toBeTruthy();
+    expect(findByTestId(host, "db-life-collections-empty")).toBeTruthy();
+    for (const section of ["fish", "fishing", "forage", "museum"]) {
+      expect(findByTestId(host, `db-life-collections-${section}`)).toBeFalsy();
+    }
+    findByTestId(host, "db-life-collections-seed-defaults")?.click();
     for (const section of ["fish", "fishing", "forage", "museum"]) {
       expect(findByTestId(host, `db-life-collections-${section}`)).toBeTruthy();
     }
-    findByTestId(host, "db-life-collections-seed-defaults")?.click();
 
     const project = store.getCurrent();
     expect(project.database.fishSpecies).toHaveLength(1);

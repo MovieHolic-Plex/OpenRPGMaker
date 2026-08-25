@@ -110,7 +110,7 @@ describe("weighted branch command UX", () => {
 
     expect(findByTestId(body, "m2-command-body-m2-211-weighted-branch")).toBeTruthy();
     expect(findByTestId(body, "weighted-branch-rows")).toBeTruthy();
-    expect(findByTestId(body, "weighted-branch-help")?.textContent).toContain("결과 번호");
+    expect(findByTestId(body, "weighted-branch-help")?.textContent).toContain("가중치로 하나 고르기");
     expect(findByTestId(body, "weighted-branch-guide")?.textContent).toContain("조건 분기");
     expect(findByTestId(body, "m2-command-table-textarea")).toBeFalsy();
     expect(body.textContent).toContain("50%");

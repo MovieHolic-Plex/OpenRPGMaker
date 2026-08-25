@@ -50,7 +50,7 @@ describe("fork command body UX (RM rhythm)", () => {
     expect(body.textContent).toContain("조건 종류");
     expect(body.textContent).toContain("대상 스위치");
     expect(findByTestId(body, "event-fork-else-enabled")).toBeTruthy();
-    expect(findByTestId(body, "event-fork-body-hint")?.textContent).toContain("메인 실행 내용");
+    expect(findByTestId(body, "event-fork-body-hint")?.textContent).toContain("왼쪽 목록");
     expect(findByTestId(body, "event-fork-summary-then")?.textContent).toContain("1개 명령");
     expect(findByTestId(body, "event-fork-summary-else")?.textContent).toContain("분기 없음");
     // No in-dialog then/else mini editors.

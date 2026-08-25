@@ -45,8 +45,8 @@ describe("inn command body", () => {
     expect(findByTestId(body, "inn-recover-mp")).not.toBeNull();
     expect(findByTestId(body, "inn-advance-morning")).not.toBeNull();
     expect(findByTestId(body, "inn-branch-not-enough")).not.toBeNull();
-    expect(body.textContent ?? "").toContain("예");
-    expect(body.textContent ?? "").toContain("아니오");
+    expect(body.textContent ?? "").toContain("숙박");
+    expect(body.textContent ?? "").toContain("거절");
     expect(body.textContent ?? "").toContain("전원 회복");
   });
 
