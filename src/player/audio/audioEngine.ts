@@ -90,6 +90,12 @@ export class AudioEngine {
   // playAudio 명령 처리. url 이 이미 해석된 상태로 전달된다.
   play(channel: AudioChannel, resourceId: string, url: string, loop: boolean): void {
     if (typeof window === "undefined" || typeof Audio === "undefined") return;
+    // Browser-QA 관찰 훅: 재생 지시를 받은 리소스를 기록한다(로드/재생 도달 증명).
+    if (typeof window !== "undefined") {
+      const holder = window as unknown as { __oprnAudioObserved?: string[] };
+      if (!Array.isArray(holder.__oprnAudioObserved)) holder.__oprnAudioObserved = [];
+      holder.__oprnAudioObserved.push(resourceId);
+    }
     const request: AudioRequest = { channel, resourceId, url, loop };
     const { state, immediate } = requestAudio(this.queue, request);
     this.queue = state;

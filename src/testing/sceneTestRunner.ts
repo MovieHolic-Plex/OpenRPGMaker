@@ -71,6 +71,7 @@ import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { cropStageAt, interactWithFarmPlot, syncFarmPlotsToDate } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
+import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
 
 const TICK_MS = 16;
 
@@ -91,6 +92,7 @@ export type SceneStep =
     }
   | { kind: "move"; dir: Dir; to?: never }
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
+  | { kind: "walk"; to: { x: number; y: number }; adjacent?: boolean }
   | { kind: "interact" }
   | { kind: "gift"; eventId?: string; itemId: string }
   | { kind: "choose"; index: number }
@@ -120,6 +122,8 @@ export type SceneExpectStep = {
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
+  /** Runner-observable feedback/transcript: at least one message text has been shown. */
+  messageShown?: boolean;
   gameOver?: boolean;
   endingReached?: string;
   cutsceneLocked?: boolean;
@@ -159,6 +163,7 @@ export interface SceneTestResult {
     readonly followerCount: number;
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
     readonly picturesVisible: readonly string[];
+    readonly messages: readonly string[];
     readonly bgm?: string;
     readonly gameOver: boolean;
     readonly endingsReached: readonly string[];
@@ -216,6 +221,8 @@ interface RunnerState {
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
   facing: Dir;
+  /** Runner-observable transcript of message text bodies shown so far. */
+  readonly messages: string[];
   gameOver: boolean;
   held: { interp: Interpreter; mode: "choices" | "animation"; currentEventId?: string } | null;
   runtimeFailure: string | null;
@@ -227,12 +234,13 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   const map = runtimeMaps[input.mapId];
   const log: string[] = [];
   if (!map) {
-    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, [], input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
   }
   session.currentMapId = input.mapId;
   session.x = input.start.x;
   session.y = input.start.y;
   applyMapDefaultLighting(session, map);
+  applyMapBgmToSession(session.audio, resolveMapBgm(project, input.mapId));
   const state: RunnerState = {
     project,
     runtimeMaps,
@@ -251,6 +259,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     chasers: new Map(),
     encounterAccumulator: 0,
     facing: "down",
+    messages: [],
     gameOver: false,
     held: null,
     runtimeFailure: null,
@@ -261,7 +270,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
@@ -273,11 +282,11 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -291,6 +300,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runSetStep(state, step);
     case "move":
       return runMoveStep(state, step);
+    case "walk":
+      return runWalkStep(state, step);
     case "interact":
       return runInteractStep(state);
     case "gift":
@@ -381,6 +392,100 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
+}
+
+function runWalkStep(state: RunnerState, step: Extract<SceneStep, { kind: "walk" }>): string | null {
+  if (state.gameOver) return "게임 오버 중에는 retryCheckpoint 또는 타이틀 복귀만 가능합니다.";
+  if (isCutsceneInputLocked(state.session)) return "컷신 입력 잠금 중에는 플레이어 이동을 할 수 없습니다.";
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+
+  const start = { x: state.session.x, y: state.session.y };
+  const target = step.to;
+  const isGoal = (x: number, y: number): boolean => step.adjacent
+    ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1
+    : x === target.x && y === target.y;
+  const keyOf = (x: number, y: number): string => `${x},${y}`;
+  const directions: readonly { readonly dir: Dir; readonly dx: number; readonly dy: number }[] = [
+    { dir: "right", dx: 1, dy: 0 },
+    { dir: "left", dx: -1, dy: 0 },
+    { dir: "down", dx: 0, dy: 1 },
+    { dir: "up", dx: 0, dy: -1 },
+  ];
+  const queue: Array<{ x: number; y: number }> = [start];
+  const previous = new Map<string, { readonly from: string; readonly dir: Dir }>();
+  const seen = new Set<string>([keyOf(start.x, start.y)]);
+  let goal: { x: number; y: number } | null = isGoal(start.x, start.y) ? start : null;
+
+  while (!goal && queue.length > 0) {
+    const current = queue.shift()!;
+    for (const direction of directions) {
+      const next = { x: current.x + direction.dx, y: current.y + direction.dy };
+      const nextKey = keyOf(next.x, next.y);
+      if (seen.has(nextKey)) continue;
+      if (!canMove(state.project, map, current.x, current.y, next.x, next.y)) continue;
+      const blocking = findBlockingRuntimeEventAtInMap(
+        state.project,
+        map,
+        state.session,
+        state.eventPositions,
+        next.x,
+        next.y,
+      );
+      const exactTouchTarget = !step.adjacent
+        && next.x === target.x
+        && next.y === target.y
+        && blocking !== undefined
+        && (blocking.trigger.kind === "touch" || blocking.trigger.kind === "playerTouch");
+      if (blocking && !exactTouchTarget) continue;
+      seen.add(nextKey);
+      previous.set(nextKey, { from: keyOf(current.x, current.y), dir: direction.dir });
+      queue.push(next);
+      if (isGoal(next.x, next.y)) {
+        goal = next;
+        break;
+      }
+    }
+  }
+
+  if (!goal) {
+    const qualifier = step.adjacent ? "인접" : "도착";
+    return `연속 보행 ${qualifier} 불가: ${map.id} (${start.x},${start.y}) -> (${target.x},${target.y})`;
+  }
+
+  const route: Dir[] = [];
+  let cursor = keyOf(goal.x, goal.y);
+  const startKey = keyOf(start.x, start.y);
+  while (cursor !== startKey) {
+    const entry = previous.get(cursor);
+    if (!entry) return `연속 보행 경로 복원 실패: ${cursor}`;
+    route.push(entry.dir);
+    cursor = entry.from;
+  }
+  route.reverse();
+
+  const originMapId = state.session.currentMapId;
+  for (let index = 0; index < route.length; index += 1) {
+    const dir = route[index]!;
+    state.facing = dir;
+    const delta = directionDelta(dir);
+    const reason = movePlayerOneStep(state, state.session.x + delta.x, state.session.y + delta.y);
+    if (reason !== null) return reason;
+    if (state.session.currentMapId !== originMapId) {
+      if (index !== route.length - 1) return "연속 보행 도중 예상하지 않은 맵 전이가 발생했습니다.";
+      state.log.push(`walk ${map.id} -> ${state.session.currentMapId} (${route.length} steps)`);
+      return null;
+    }
+    if (state.gameOver) return "연속 보행 도중 게임 오버가 발생했습니다.";
+  }
+
+  if (step.adjacent) {
+    const dx = target.x - state.session.x;
+    const dy = target.y - state.session.y;
+    state.facing = dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up";
+  }
+  state.log.push(`walk ${map.id} (${start.x},${start.y}) -> (${state.session.x},${state.session.y}) (${route.length} steps)`);
+  return null;
 }
 
 function runGiftStep(state: RunnerState, step: Extract<SceneStep, { kind: "gift" }>): string | null {
@@ -505,6 +610,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "choices":
         return { stop: "choices" };
       case "text":
+        state.messages.push(step.body);
         step = interp.resume(undefined);
         break;
       case "wait":
@@ -540,6 +646,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           resetRuntimeMapForRunner(state, step.mapId);
           const targetMap = currentMap(state);
           if (targetMap) applyMapDefaultLighting(state.session, targetMap);
+          if (targetMap) applyMapBgmToSession(state.session.audio, resolveMapBgm(state.project, step.mapId));
         }
         resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
         applyNpcSchedulesForRunner(state);
@@ -1142,6 +1249,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.bgmPlaying !== undefined && state.session.audio.bgm?.resourceId !== step.bgmPlaying) {
     return `BGM: 기대 ${step.bgmPlaying}, 실제 ${state.session.audio.bgm?.resourceId ?? "(none)"}`;
   }
+  if (step.messageShown !== undefined && (state.messages.length > 0) !== step.messageShown) {
+    return `메시지 피드백: 기대 ${step.messageShown ? "출력" : "미출력"}, 실제 ${state.messages.length > 0 ? "출력" : "미출력"}`;
+  }
   if (step.gameOver !== undefined && state.gameOver !== step.gameOver) {
     return `게임 오버: 기대 ${step.gameOver}, 실제 ${state.gameOver}`;
   }
@@ -1665,6 +1775,7 @@ function result(
   eventPositions: RuntimeEventPositions,
   camera: CameraModel,
   log: readonly string[],
+  messages: readonly string[],
   steps: readonly SceneStep[],
   stepsRun: number,
   failedStep: SceneStep | undefined,
@@ -1697,6 +1808,7 @@ function result(
       followerCount: session.followers?.length ?? 0,
       followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
       picturesVisible: Object.keys(session.pictures),
+      messages,
       bgm: session.audio.bgm?.resourceId,
       gameOver,
       endingsReached: endingFlags(session),

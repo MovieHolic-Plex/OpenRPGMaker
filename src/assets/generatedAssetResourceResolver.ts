@@ -18,6 +18,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",
+  "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",
   // ── 구 id 별칭 (읽기 호환. 새로 쓸 때는 위 id 를 쓴다) ──────────────
   "rpg-zzu-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "rpg-zzu-title-blue": "/assets/generated/title/default-title-blue.png",

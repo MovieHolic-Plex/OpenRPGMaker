@@ -3,8 +3,45 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 
 describe("run_scene_test", () => {
+  it("walks every intermediate tile and executes player-touch events instead of jumping to the target", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    project.switches.push({ id: "sw_walk_touch", name: "Walk touch" });
+    map.events.push({
+      id: "ev_walk_touch",
+      x: 3,
+      y: 2,
+      trigger: { kind: "playerTouch" },
+      commands: [],
+      pages: [{
+        id: "page_walk_touch",
+        name: "Intermediate touch",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "playerTouch" },
+        priority: "below",
+        overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "setSwitch", switchId: "sw_walk_touch", value: true }],
+      }],
+    });
+
+    const result = runSceneTest(project, {
+      mapId: map.id,
+      start: { x: 2, y: 2 },
+      steps: [
+        { kind: "walk", to: { x: 4, y: 2 } } as SceneStep,
+        { kind: "expect", switchOn: "sw_walk_touch", playerAt: { x: 4, y: 2 } },
+      ],
+    });
+
+    expect(result.ok, result.failureReason ?? result.log.join("\n")).toBe(true);
+  });
+
   it("validates an interaction switch and a ticked camera pan", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

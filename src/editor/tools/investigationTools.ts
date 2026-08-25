@@ -6,6 +6,7 @@ import { isPassable } from "@/project/collision";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, Trigger } from "@/project/types";
+import { withJosa } from "@/util/josa";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { resolveGraphic, type GraphicSpec } from "./eventCompile";
@@ -154,7 +155,7 @@ function commandsForHotspot(project: Project, map: GameMap, hotspot: RecordValue
     requireExistingItem(project, itemId, `${name}.itemId`);
     const itemName = databaseItemName(project, itemId) ?? itemId;
     commands.push({ kind: "changeItem", itemId, op: "+=", amount: 1 });
-    commands.push({ kind: "text", body: `${itemName}을(를) 얻었다.` });
+    commands.push({ kind: "text", body: `${withJosa(itemName, "을/를")} 얻었다.` });
   }
   if (typeof hotspot.setSwitch === "string" && hotspot.setSwitch.trim().length > 0) {
     const switchId = hotspot.setSwitch.trim();
