@@ -150,7 +150,7 @@
   border-radius: 8px;
   box-shadow: var(--event-popup-shadow);
   color: var(--text, var(--text-1));
-  font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font-family: var(--font-ui, system-ui, sans-serif);
   overflow: hidden;
 }
 

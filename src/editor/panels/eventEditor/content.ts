@@ -32,7 +32,7 @@ import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
-import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
+import { openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
 import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
@@ -70,21 +70,8 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
     movement: { type: "fixed", speed: 3, frequency: 3 },
     commands: [],
   };
-  const catalog = renderPageCommandCatalog(mapId, eventId, stub);
+  const catalog = renderPageCommandCatalog(mapId, eventId, stub, () => activePageIdOf(mapId, eventId));
   catalog.querySelector("[data-testid='page-command-summary']")?.remove();
-  const buttons = catalog.querySelectorAll<HTMLElement>("[data-testid^='command-add-']");
-  for (const btn of buttons) {
-    const testId = btn.dataset.testid ?? "";
-    const kind = commandKindForTestId(testId);
-    if (!kind) continue;
-    const fresh = btn.cloneNode(true) as HTMLElement;
-    fresh.addEventListener("click", () => {
-      const pageId = activePageIdOf(mapId, eventId);
-      if (!pageId) return;
-      openNewEventCommandKindDialog(kind, (command) => addEventPageCommand(mapId, eventId, pageId, command));
-    });
-    btn.replaceWith(fresh);
-  }
   section.append(catalog);
   container.append(section);
 }
@@ -267,7 +254,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       }),
     ],
   });
-  settingsColumn.append(eventCard, settingsMain);
+  settingsColumn.append(settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
@@ -289,6 +276,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   attachColumnResize(columnResizer, workbench);
 
   section.append(
+    eventCard,
     // 페이지 전환, 상태, 보기 전환은 한 줄에 두고 워크벤치가 남은 높이를 전부 갖는다.
     el("div", {
       class: "event-editor-pagebar",
@@ -464,33 +452,6 @@ function toolbarButton(
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,
   }) as HTMLButtonElement;
-}
-
-function commandKindForTestId(testId: string): Command["kind"] | null {
-  const map: Record<string, Command["kind"]> = {
-    "command-add-text": "text",
-    "command-add-choice": "choices",
-    "command-add-switch": "setSwitch",
-    "command-add-variable": "setVariable",
-    "command-add-branch": "fork",
-    "command-add-timer": "timer",
-    "command-add-move-route": "moveEvent",
-    "command-add-picture": "showPicture",
-    "command-add-audio": "playAudio",
-    "command-add-battle": "battleProcessing",
-    "command-add-gold": "changeGold",
-    "command-add-item": "changeItem",
-    "command-add-party": "changeParty",
-    "command-add-give-monster": "giveMonster",
-    "command-add-evolve-monster": "evolveMonster",
-    "command-add-set-lighting": "setLighting",
-    "command-add-checkpoint-save": "checkpointSave",
-    "command-add-kill-player": "killPlayer",
-    "command-add-trigger-ending": "triggerEnding",
-    "command-add-game-over": "gameOver",
-    "command-add-ending": "ending",
-  };
-  return map[testId] ?? null;
 }
 
 function pageCommandActions(mapId: MapId, eventId: string, pageId: string): CommandListActions {

@@ -2,9 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
 import { readEventCommandPickerPreferences } from "@/editor/panels/eventEditor/commandPickerPreferences";
-import { renderEventEditorContent } from "@/editor/panels/eventEditor/content";
+import { renderEventEditorContent, renderEventEditorStable } from "@/editor/panels/eventEditor/content";
 import { renderEventScriptModernViews } from "@/editor/panels/eventEditor/eventScriptModernViews";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { PAGE_COMMAND_BUTTONS } from "@/editor/panels/eventEditor/options";
 import { createBlankProject } from "@/project/defaults";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
@@ -55,13 +56,14 @@ function fakeContainer(): HTMLElement {
   return new FakeElement("div") as unknown as HTMLElement;
 }
 
-function keyEvent(key: string, options: { ctrlKey?: boolean; metaKey?: boolean } = {}): KeyboardEvent {
+function keyEvent(key: string, options: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean } = {}): KeyboardEvent {
   const event = new Event("keydown", { bubbles: true, cancelable: true });
   Object.defineProperties(event, {
     altKey: { value: false },
     ctrlKey: { value: options.ctrlKey ?? false },
     key: { value: key },
     metaKey: { value: options.metaKey ?? false },
+    shiftKey: { value: options.shiftKey ?? false },
   });
   return event as KeyboardEvent;
 }
@@ -90,6 +92,26 @@ afterEach(() => {
 });
 
 describe("event editor trust loop", () => {
+  it.each(PAGE_COMMAND_BUTTONS)(
+    "routes quick command $testId to the active page",
+    ({ kind, testId }) => {
+      const project = createBlankProject();
+      const mapId = project.startMapId;
+      project.maps[mapId].events = [gameEvent(page())];
+      store.replaceProject(project);
+      editorState.set({ currentMapId: mapId, selectedEventId: "event-1", selectedEventPageId: "page-1" });
+
+      const host = fakeContainer();
+      document.body.append(host);
+      renderEventEditorStable(host, mapId, "event-1");
+      document.querySelector<HTMLElement>(`[data-testid="${testId}"]`)?.click();
+      expect(document.querySelector('[data-testid="event-command-edit-dialog"]')).not.toBeNull();
+      document.querySelector<HTMLElement>('[data-testid="event-command-edit-ok"]')?.click();
+
+      expect(store.getCurrent().maps[mapId].events[0]?.pages?.[0]?.commands.at(-1)?.kind).toBe(kind);
+    },
+  );
+
   it.each([
     ["Apply", "event-editor-apply"],
     ["OK", "event-editor-ok"],
@@ -253,6 +275,11 @@ describe("event editor trust loop", () => {
     expect(secondTab?.textContent).toBe("동료 · 전투");
     expect(firstTab?.getAttribute("tabindex")).toBe("0");
     expect(secondTab?.getAttribute("tabindex")).toBe("-1");
+    expect(firstTab?.getAttribute("aria-controls")).toBe("event-command-picker-panel");
+    expect(firstTab?.getAttribute("id")).toBe("event-command-picker-tab-button-1");
+    const panel = document.querySelector<HTMLElement>('[data-testid="event-command-picker"] .event-command-picker-panel');
+    expect(panel?.getAttribute("role")).toBe("tabpanel");
+    expect(panel?.getAttribute("aria-labelledby")).toBe("event-command-picker-tab-button-1");
 
     firstTab?.dispatchEvent(keyEvent("ArrowRight"));
     expect(secondTab?.getAttribute("aria-selected")).toBe("true");
@@ -261,6 +288,10 @@ describe("event editor trust loop", () => {
     secondTab?.dispatchEvent(keyEvent("Home"));
     expect(firstTab?.getAttribute("aria-selected")).toBe("true");
     expect(firstTab?.getAttribute("tabindex")).toBe("0");
+
+    const search = document.querySelector<HTMLInputElement>('[data-testid="event-command-picker-search"]');
+    search?.dispatchEvent(keyEvent("ArrowDown"));
+    expect(String(search?.getAttribute("aria-activedescendant"))).toMatch(/^event-command-picker-option-/u);
 
     const textCommand = document.querySelector<HTMLElement>('[data-testid="command-picker-add-text"]');
     const textId = textCommand?.parentElement?.dataset.commandId;
@@ -288,6 +319,23 @@ describe("event editor trust loop", () => {
       recentRoot?.querySelectorAll<HTMLElement>(".event-command-picker-command-wrap") ?? [],
     ).map((node) => node.dataset.commandId);
     expect(recentIds.slice(0, 2)).toEqual([switchId, waitId]);
+  });
+
+  it("traps focus inside subdialogs and labels the close control in Korean", () => {
+    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => ({ closePicker: false }) });
+    const backdrop = document.querySelector<HTMLElement>('[data-testid="event-command-picker"]');
+    const dialog = backdrop?.querySelector<HTMLElement>('[role="dialog"]') ?? backdrop;
+    const close = dialog?.querySelector<HTMLElement>(".event-subdialog-close");
+    const search = dialog?.querySelector<HTMLElement>('[data-testid="event-command-picker-search"]');
+    const cancel = dialog?.querySelector<HTMLElement>('[data-testid="event-command-picker-cancel"]');
+    if (!dialog || !close || !search || !cancel) throw new Error("expected command picker dialog controls");
+
+    expect(close.getAttribute("aria-label")).toBe("닫기");
+    cancel.focus();
+    cancel.dispatchEvent(keyEvent("Tab"));
+    expect(document.activeElement).toBe(close);
+    close.dispatchEvent(keyEvent("Tab", { shiftKey: true }));
+    expect(document.activeElement).toBe(cancel);
   });
 
   it("restores focus, caret, open details, and scroll across reactive rerenders", () => {

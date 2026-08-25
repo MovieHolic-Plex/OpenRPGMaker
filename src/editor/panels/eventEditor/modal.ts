@@ -276,10 +276,26 @@ function closeExistingEventEditorModal(): void {
 function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HTMLElement {
   // P0 헤더 2행 분리: 타이틀행(엔진·에디터) + 아이덴티티행(ID·이름·좌표)을 시각적으로 분리한다.
   const { eyebrow, title } = eventEditorTitleParts(mapId, eventId);
+  const mapName = store.getCurrent().maps[mapId]?.name?.trim() || "현재 맵";
+  const eventName = title.replace(/\s*\([^)]*\)\s*$/, "").trim() || "이벤트";
+  const clickControl = (testId: string): void => {
+    document.querySelector<HTMLButtonElement>(`[data-testid="${testId}"]`)?.click();
+  };
   return el("div", {
     class: "event-editor-modal-header",
     dataset: { testid: "event-editor-titlebar" },
     children: [
+      el("strong", { class: "event-editor-product-brand", text: PRODUCT_BRAND }),
+      el("div", {
+        class: "event-editor-breadcrumb",
+        children: [
+          el("span", { text: mapName }),
+          el("span", { class: "event-editor-breadcrumb-separator", text: "/" }),
+          el("span", { text: eventName }),
+          el("span", { class: "event-editor-breadcrumb-separator", text: "/" }),
+          el("span", { text: "이벤트 편집" }),
+        ],
+      }),
       el("div", {
         class: "event-editor-window-title",
         children: [
@@ -290,6 +306,30 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
       el("div", {
         class: "event-editor-window-controls",
         children: [
+          el("button", {
+            class: "event-editor-window-control event-editor-header-undo",
+            text: "↶",
+            attrs: { type: "button", title: "실행 취소", "aria-label": "실행 취소" },
+            on: { click: () => clickControl("event-command-toolbar-undo") },
+          }),
+          el("button", {
+            class: "event-editor-window-control event-editor-header-redo",
+            text: "↷",
+            attrs: { type: "button", title: "다시 실행", "aria-label": "다시 실행" },
+            on: { click: () => clickControl("event-command-toolbar-redo") },
+          }),
+          el("button", {
+            class: "btn event-editor-header-test",
+            text: "이벤트 테스트",
+            attrs: { type: "button" },
+            on: { click: () => clickControl("event-editor-modal-test") },
+          }),
+          el("button", {
+            class: "btn primary event-editor-header-save",
+            text: "저장",
+            attrs: { type: "button" },
+            on: { click: () => clickControl("event-editor-modal-apply") },
+          }),
           el("button", {
             class: "event-editor-window-control event-editor-window-fullscreen",
             text: "⛶",

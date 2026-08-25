@@ -125,6 +125,11 @@ export class FakeElement extends FakeNode {
   get children(): FakeElement[] {
     return this.childNodes.filter((child): child is FakeElement => child instanceof FakeElement);
   }
+  get selectedOptions(): FakeElement[] {
+    if (this.tagName !== "SELECT") return [];
+    const options = this.children.filter((child) => child.tagName === "OPTION");
+    return options.filter((option, index) => option.value === this.value || (this.value === "" && index === 0));
+  }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
     add: (...tokens: string[]): void => {
@@ -268,7 +273,13 @@ export class FakeElement extends FakeNode {
 
   querySelectorAll(selector: string): FakeElement[] {
     const matches: FakeElement[] = [];
-    collectMatches(this, selector, matches);
+    for (const part of selector.split(",").map((item) => item.trim()).filter(Boolean)) {
+      const found: FakeElement[] = [];
+      collectMatches(this, part, found);
+      for (const element of found) {
+        if (!matches.includes(element)) matches.push(element);
+      }
+    }
     return matches;
   }
 
@@ -280,6 +291,9 @@ export class FakeElement extends FakeNode {
     }
     if (options?.left !== undefined) this.scrollLeft = options.left;
     if (options?.top !== undefined) this.scrollTop = options.top;
+  }
+
+  scrollIntoView(): void {
   }
 
   getBoundingClientRect(): DOMRect {

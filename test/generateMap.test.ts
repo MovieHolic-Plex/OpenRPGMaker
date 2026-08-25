@@ -7,6 +7,8 @@ import { checkReachability } from "@/project/lint/reachability";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
+import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
+import { isPassable } from "@/project/collision";
 
 const THEMES = ["village", "forest", "cave"] as const;
 const SEEDS = [1, 99] as const;
@@ -66,5 +68,58 @@ describe("generate_map", () => {
     expect(result.summary).toContain("최대 256×256");
     expect(result.summary).toContain("여러 맵");
     expect(ctx.project.maps.gen_huge).toBeUndefined();
+  });
+
+  it("모든 번들 타일셋을 서로 다른 생성 프로필로 디스패치한다", () => {
+    const profileKeys = new Set<string>();
+
+    for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+      const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(ctx, "generate_map", {
+        id: `map_${tilesetId}`,
+        name: asset.name,
+        theme: "village",
+        tilesetId,
+        width: 20,
+        height: 16,
+        seed: 7,
+      });
+
+      expect(result.ok, `${tilesetId}: ${result.summary}`).toBe(true);
+      const data = result.data as { mapId: string; generationProfile: string };
+      const map = ctx.project.maps[data.mapId];
+      expect(map?.tilesetId).toBe(tilesetId);
+      expect(map?.lowerTiles.every((tileId) => tileId >= 0 && tileId < 480)).toBe(true);
+      expect(map?.upperTiles.every((tileId) => tileId === -1 || (tileId >= 0 && tileId < 480))).toBe(true);
+      expect(data.generationProfile).toBe(tilesetId);
+      expect(new Set(map?.lowerTiles).size, tilesetId).toBeGreaterThanOrEqual(2);
+      expect(isPassable(ctx.project, map!, 0, 0)).toBe(false);
+      expect(isPassable(ctx.project, map!, 1, Math.floor(map!.height / 2))).toBe(true);
+      profileKeys.add(data.generationProfile);
+    }
+
+    expect(profileKeys.size).toBe(BUNDLED_EASYRPG_CHIPSET_ASSETS.length);
+  });
+
+  it("등록되지 않은 타일셋은 다른 타일 문법으로 대체하지 않는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    ctx.project.tilesets.uploaded_custom = {
+      ...ctx.project.tilesets.easyrpg_chipset_combined_town!,
+      id: "uploaded_custom",
+      name: "업로드 타일셋",
+      image: { type: "generated", id: "uploaded_custom" },
+    };
+
+    const result = runTool(ctx, "generate_map", {
+      id: "map_custom",
+      theme: "village",
+      tilesetId: "uploaded_custom",
+      width: 20,
+      height: 16,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(ctx.project.maps.map_custom).toBeUndefined();
   });
 });

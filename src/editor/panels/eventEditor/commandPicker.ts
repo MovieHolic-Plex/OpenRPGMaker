@@ -224,7 +224,14 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
       let query = "";
       let viewMode = storedViewMode();
       const tabs = el("div", { class: "event-command-picker-tabs", attrs: { role: "tablist" } });
-      const commandArea = el("div", { class: "event-command-picker-panel" });
+      const commandArea = el("div", {
+        class: "event-command-picker-panel",
+        attrs: {
+          id: "event-command-picker-panel",
+          role: "tabpanel",
+          "aria-labelledby": "event-command-picker-tab-button-1",
+        },
+      });
       const search = el("input", {
         class: "event-command-picker-search",
         attrs: { type: "search", placeholder: "명령 검색 (전체 탭)", "aria-label": "명령 검색" },
@@ -244,6 +251,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
           button.setAttribute("aria-selected", selected ? "true" : "false");
           button.setAttribute("tabindex", selected ? "0" : "-1");
         }
+        commandArea.setAttribute("aria-labelledby", `event-command-picker-tab-button-${activePage}`);
         gridToggle.textContent = viewMode === "grid" ? "▤ 리스트" : "▦ 그리드";
         gridToggle.setAttribute("aria-pressed", viewMode === "grid" ? "true" : "false");
         if (query.trim().length > 0) {
@@ -297,6 +305,8 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
               title: pickerPageTitle(page.page),
               "aria-label": pickerPageTitle(page.page),
               "aria-selected": page.page === activePage ? "true" : "false",
+              "aria-controls": "event-command-picker-panel",
+              id: `event-command-picker-tab-button-${page.page}`,
               tabindex: page.page === activePage ? "0" : "-1",
             },
             dataset: {
@@ -346,7 +356,8 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
 
 /** 결과 영역의 명령 버튼들(그룹 헤딩·토글 제외). */
 function commandButtonsOf(area: HTMLElement): HTMLButtonElement[] {
-  return Array.from(area.querySelectorAll<HTMLButtonElement>("button[data-command-entry]"));
+  return Array.from(area.querySelectorAll<HTMLButtonElement>(".event-command-picker-command"))
+    .filter((button) => button.dataset.commandEntry !== undefined);
 }
 
 /** 키보드 후보를 index 로 옮긴다. 시야 밖이면 스크롤해 들여온다. */
@@ -356,6 +367,11 @@ function highlightCommand(area: HTMLElement, index: number): void {
   const target = buttons[index];
   if (!target) return;
   target.classList.add("keyboard-active");
+  const targetId = target.getAttribute("id") ?? `event-command-picker-option-${target.dataset.commandEntry ?? index}`;
+  target.setAttribute("id", targetId);
+  const search = area.closest(".event-subdialog-body")
+    ?.querySelector<HTMLInputElement>('[data-testid="event-command-picker-search"]');
+  search?.setAttribute("aria-activedescendant", targetId);
   target.scrollIntoView({ block: "nearest" });
 }
 

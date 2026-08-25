@@ -2,6 +2,16 @@
 
 The LLM-harnessed interior pipeline: start session, advance build per layer, evaluate, and self-repair loop.
 
+## Tileset-specific map generation contract
+
+- `generate_map` resolves the requested `tilesetId` through `src/editor/tools/mapGenerationProfiles.ts`. Numeric tile IDs are local to that tileset and must never be reused through a global village/interior palette.
+- Every bundled tileset has its own explicit profile key and layout grammar (`settlement|dungeon|rooms|ship|world|city|wilds`). The generated `GameMap.tilesetId` remains the requested ID.
+- A profile owns the passable floor/path tiles, blocked boundary/obstacle tile, accent tile, and topology grammar. `generate_map` applies that passage contract before its reachability repair loop.
+- The passage contract updates the project tileset record shared by every map using that `tilesetId`; floor/path/accent stay passable and the profile obstacle stays blocked consistently across those maps.
+- The passage contract updates the project tileset record shared by every map using that `tilesetId`; generation therefore treats floor/path/accent as passable and the profile obstacle as blocked consistently across those maps.
+- `villager-room-v1` and `dungeon-room-v1` remain the detailed layer/session pipelines for their respective authored workflows. The generic `generate_map` dispatcher does not force every tileset through the interior pipeline.
+- Uploaded or unknown tilesets do not silently inherit bundled numeric IDs; generation rejects them until a dedicated profile is authored.
+
 ## Interior Room Session Harness (villager-room-v1)
 
 
