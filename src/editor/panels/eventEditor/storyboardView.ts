@@ -23,8 +23,8 @@ export function loadStoryboardMode(): StoryboardMode {
     const raw = localStorage.getItem(MODE_KEY);
     if (raw === "list" || raw === "storyboard") return raw;
   } catch { /* ignore */ }
-  // 목록이 기본: 명령 추가·편집·컨텍스트 메뉴가 모두 목록에 있고, 스토리보드는 훑어보기용.
-  return "list";
+  // 스토리보드가 기본 저작 표면이고 목록은 검색·재정렬·컨텍스트 작업용 보조 보기다.
+  return "storyboard";
 }
 
 export function saveStoryboardMode(mode: StoryboardMode): void {
@@ -79,6 +79,52 @@ export function renderStoryboard(
     }
     opts?.onSelect?.(path);
   };
+  const renderBranchCommands = (branchCommands: readonly Command[], pathPrefix: number[]): HTMLElement[] => branchCommands.map((command, commandIndex) => {
+    const info = summarizeCommand(command);
+    const path = [...pathPrefix, commandIndex];
+    const descendants = branchesOf(command);
+    return el("div", {
+      class: "event-storyboard-branch-command-tree",
+      children: [
+        el("button", {
+          class: "event-storyboard-branch-command",
+          attrs: {
+            type: "button",
+            style: `--storyboard-accent:${info.color}`,
+            "aria-label": `${commandIndex + 1}번째 명령, ${info.title}: ${info.detail}`,
+          },
+          dataset: { cmdPath: JSON.stringify(path) },
+          on: { click: (event) => selectPath(path, event.currentTarget as HTMLElement) },
+          children: [
+            el("span", { class: "event-storyboard-branch-command-mark", attrs: { "aria-hidden": "true" } }),
+            el("span", {
+              class: "event-storyboard-branch-command-copy",
+              children: [el("strong", { text: info.title }), el("span", { text: info.detail })],
+            }),
+            el("span", { class: "event-storyboard-branch-command-index", text: String(commandIndex + 1) }),
+          ],
+        }),
+        ...(descendants.length > 0
+          ? [el("div", {
+              class: "event-storyboard-branch-descendants",
+              children: descendants.map((branch) => el("section", {
+                class: "event-storyboard-branch-panel",
+                children: [
+                  el("header", {
+                    class: "event-storyboard-branch-head",
+                    children: [
+                      el("span", { class: "event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
+                      el("span", { class: "event-storyboard-branch-count", text: `명령 ${branch.commands.length}개` }),
+                    ],
+                  }),
+                  ...renderBranchCommands(branch.commands, [...path, branch.pathSegment]),
+                ],
+              })),
+            })]
+          : []),
+      ],
+    });
+  });
 
   if (commands.length === 0) {
     track.append(el("div", {
@@ -133,7 +179,30 @@ export function renderStoryboard(
           ...(branchRow ? [branchRow] : []),
         ],
       });
-      track.append(card);
+      const branchPanels = branches.length > 0
+        ? el("div", {
+            class: "event-storyboard-branches",
+            children: branches.map((branch) => el("section", {
+              class: "event-storyboard-branch-panel",
+              children: [
+                el("header", {
+                  class: "event-storyboard-branch-head",
+                  children: [
+                    el("span", { class: "event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
+                    el("span", { class: "event-storyboard-branch-count", text: `명령 ${branch.commands.length}개` }),
+                  ],
+                }),
+                ...(branch.commands.length > 0
+                  ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
+                  : [el("div", { class: "event-storyboard-branch-empty", text: "이 분기에는 명령이 없습니다." })]),
+              ],
+            })),
+          })
+        : null;
+      track.append(el("div", {
+        class: "event-storyboard-scene",
+        children: [card, ...(branchPanels ? [branchPanels] : [])],
+      }));
     });
   }
 

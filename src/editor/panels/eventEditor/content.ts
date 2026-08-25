@@ -201,7 +201,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         class: "event-contents-legend",
         text: `이 페이지가 하는 일 · ${countAllCommands(activePage.commands)}개`,
       }),
-      ...(validationControl ? [validationControl] : []),
     ],
   });
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
@@ -210,9 +209,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
   const scheduleEditor = renderEventScheduleEditor(mapId, ev);
   const settingsChildren = [
+    renderEventPageProps(mapId, ev.id, activePage, ev),
     socialExtras,
     scheduleEditor,
-    renderEventPageProps(mapId, ev.id, activePage, ev),
   ].filter((node): node is HTMLElement => node !== null);
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
@@ -227,6 +226,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // top-strip 을 카드 안에 넣는 이유: 이름·캐릭터 ID 가 top-strip 안에 있어야 한다는
   // 기존 계약(eventEditorSettingsLayout.test)을 유지하면서 배치만 목업에 맞추기 위함.
   const characterRelationship = renderEventCharacterIdField(mapId, ev);
+  const eventOrdinal = Math.max(0, map.events.findIndex((candidate) => candidate.id === ev.id)) + 1;
+  const identityField = (label: string, value: string, testId: string): HTMLElement => el("div", {
+    class: "event-editor-identity-field",
+    children: [
+      el("span", { class: "event-editor-identity-label", text: label }),
+      el("strong", { class: "event-editor-identity-value", text: value, dataset: { testid: testId } }),
+    ],
+  });
   const eventCard = el("div", {
     class: "event-editor-card",
     dataset: { testid: "event-editor-card" },
@@ -241,13 +248,36 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         children: [
           el("div", {
             class: "event-editor-top-strip",
-            children: [renderEventNameControl(mapId, ev.id, activePage, ev, characterRelationship)],
-          }),
-          el("div", {
-            class: "event-editor-id-row",
-            dataset: { testid: "event-editor-id-row" },
             children: [
-              renderEventPositionControls(mapId, ev),
+              renderEventNameControl(mapId, ev.id, activePage),
+              identityField("이벤트 ID", String(eventOrdinal).padStart(4, "0"), "event-editor-event-id"),
+              el("div", {
+                class: "event-editor-identity-field event-editor-identity-position",
+                children: [
+                  el("span", { class: "event-editor-identity-label", text: "맵 좌표" }),
+                  renderEventPositionControls(mapId, ev),
+                ],
+              }),
+              el("div", {
+                class: "event-editor-character-field",
+                children: [el("span", { text: "연결된 NPC" }), characterRelationship],
+              }),
+              el("button", {
+                class: "btn event-editor-event-info",
+                text: "ⓘ 이벤트 정보",
+                attrs: { type: "button", title: `이벤트 ${eventOrdinal} · ${ev.id}` },
+                dataset: { testid: "event-editor-event-info" },
+                on: {
+                  click: () => window.alert([
+                    `이벤트 이름: ${activePage.name || "이름 없음"}`,
+                    `영구 ID: ${ev.id}`,
+                    `표시 번호: ${String(eventOrdinal).padStart(4, "0")}`,
+                    `맵 좌표: ${ev.x}, ${ev.y}`,
+                    `연결된 NPC: ${ev.characterId || "없음"}`,
+                    `페이지: ${pages.length}개`,
+                  ].join("\n")),
+                },
+              }),
             ],
           }),
         ],
@@ -264,6 +294,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle),
         storyboardHost,
         cmdList,
+        renderCommandQuickTools(),
       ],
     })
   );
@@ -282,7 +313,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       class: "event-editor-pagebar",
       children: [pageTabStrip, renderPageTabs(mapId, ev, activePage), commandHeader],
     }),
-    workbench
+    workbench,
+    ...(validationControl ? [validationControl] : [])
   );
   container.append(section);
 }
@@ -349,6 +381,18 @@ function renderCommandToolbar(
     ],
   });
   const toolsMenu = renderEventToolsMenu(cmdList, actions, mapId, eventId, page);
+  const commandSearch = el("input", {
+    class: "event-editor-command-search",
+    attrs: { type: "search", placeholder: "명령 검색", "aria-label": "명령 검색" },
+    dataset: { testid: "event-command-search" },
+  }) as HTMLInputElement;
+  commandSearch.addEventListener("input", () => {
+    const query = commandSearch.value.trim().toLocaleLowerCase("ko");
+    const surface = cmdList.hidden ? cmdList.parentElement?.querySelector<HTMLElement>(".event-storyboard") : cmdList;
+    surface?.querySelectorAll<HTMLElement>("[data-cmd-path]").forEach((node) => {
+      node.hidden = query.length > 0 && !node.textContent?.toLocaleLowerCase("ko").includes(query);
+    });
+  });
   return el("div", {
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
@@ -366,9 +410,38 @@ function renderCommandToolbar(
         false,
         true
       ),
+      commandSearch,
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
+    ],
+  });
+}
+
+function renderCommandQuickTools(): HTMLElement {
+  const commandsColumn = (): HTMLElement | null => document.querySelector(".event-editor-commands-column");
+  const open = (selector: string): void => {
+    const column = commandsColumn();
+    const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-command-toolbar-tools']");
+    const details = column?.querySelector<HTMLDetailsElement>(selector);
+    if (!details) return;
+    if (tools) tools.open = true;
+    details.open = true;
+    details.scrollIntoView({ block: "nearest" });
+  };
+  return el("div", {
+    class: "event-editor-command-quick-tools",
+    dataset: { testid: "event-command-quick-tools" },
+    children: [
+      toolbarButton("✧", "AI 명령", "event-command-quick-ai", () => open("[data-testid='ai-event-assist']")),
+      toolbarButton("</>", "스크립트 미리보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),
+      toolbarButton("▣", "스토리보드", "event-command-quick-storyboard", () => {
+        commandsColumn()?.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
+      }),
+      toolbarButton("⌘", "플로우", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
+      toolbarButton("+", "다음 행동", "event-command-quick-next", () => {
+        commandsColumn()?.querySelector<HTMLButtonElement>("[data-testid='event-command-toolbar-add']")?.click();
+      }, false, true),
     ],
   });
 }
@@ -390,7 +463,29 @@ function renderEventToolsMenu(
   mapId: MapId,
   eventId: string,
   page: EventPage
-): HTMLDetailsElement {
+): HTMLElement {
+  const auxTools = el("div", {
+    class: "event-editor-command-tools-popover event-editor-aux-tools",
+    children: [
+      renderEventAiAssist({ mapId, eventId, page, actions, cmdList }),
+      renderEventScriptModernViews({ mapId, eventId, page }),
+      renderFollowerPresetBar({
+        insertCommandsAt: (index, commands) => {
+          for (let i = 0; i < commands.length; i += 1) {
+            insertEventPageCommandAt(mapId, eventId, page.id, [index + i], commands[i]!);
+          }
+        },
+        commandCount: () => page.commands.length,
+      }),
+      el("button", {
+        class: "btn event-editor-aux-tool-button",
+        text: "☠ 필드 몬스터 템플릿",
+        attrs: { type: "button", title: "필드 몬스터 템플릿 (전투→승리 소거)" },
+        dataset: { testid: "event-command-toolbar-field-monster" },
+        on: { click: () => openFieldMonsterTemplateDialog(mapId, eventId, page) },
+      }),
+    ],
+  });
   const menu = el("details", {
     class: "event-editor-command-tools-menu",
     dataset: { testid: "event-editor-aux-tools" },
@@ -400,28 +495,7 @@ function renderEventToolsMenu(
         text: "도구",
         attrs: { title: "AI, 미리보기, 플로우와 특수 템플릿" },
       }),
-      el("div", {
-        class: "event-editor-command-tools-popover event-editor-aux-tools",
-        children: [
-          renderEventAiAssist({ mapId, eventId, page, actions, cmdList }),
-          renderEventScriptModernViews({ mapId, eventId, page }),
-          renderFollowerPresetBar({
-            insertCommandsAt: (index, commands) => {
-              for (let i = 0; i < commands.length; i += 1) {
-                insertEventPageCommandAt(mapId, eventId, page.id, [index + i], commands[i]!);
-              }
-            },
-            commandCount: () => page.commands.length,
-          }),
-          el("button", {
-            class: "btn event-editor-aux-tool-button",
-            text: "☠ 필드 몬스터 템플릿",
-            attrs: { type: "button", title: "필드 몬스터 템플릿 (전투→승리 소거)" },
-            dataset: { testid: "event-command-toolbar-field-monster" },
-            on: { click: () => openFieldMonsterTemplateDialog(mapId, eventId, page) },
-          }),
-        ],
-      }),
+      auxTools,
     ],
   }) as HTMLDetailsElement;
   syncAuxHosts(auxCompositeKey(mapId, eventId, page.id));

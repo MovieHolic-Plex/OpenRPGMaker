@@ -210,13 +210,17 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
     restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
     refreshModalFooterStatus(footer, request);
+    refreshModalHeaderSaveState(header, footer);
     // Keep title in sync when draft meta changes after autosave reattach.
     const title = header.querySelector("h2");
     if (title) title.textContent = eventEditorTitle(request.mapId, request.eventId);
   };
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);
-  const unsubscribeAutoSave = store.subscribeAutoSave(() => refreshModalFooterStatus(footer, request));
+  const unsubscribeAutoSave = store.subscribeAutoSave(() => {
+    refreshModalFooterStatus(footer, request);
+    refreshModalHeaderSaveState(header, footer);
+  });
   const checkpointTimer = globalThis.setInterval(() => {
     const diff = eventDraftDiffById(store.getCurrent(), request.mapId, request.eventId);
     if (diff && diff.changes.length > 0) checkpointEventDraft(request.mapId, request.eventId);
@@ -303,7 +307,11 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
           el("h2", { text: title }),
         ],
       }),
-      el("div", { class: "event-editor-header-save-state", text: "✓ 저장됨" }),
+      el("div", {
+        class: "event-editor-header-save-state",
+        text: "저장 상태 확인 중",
+        dataset: { testid: "event-editor-header-save-state" },
+      }),
       el("div", {
         class: "event-editor-window-controls",
         children: [
@@ -323,13 +331,48 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
             class: "btn event-editor-header-test",
             text: "이벤트 테스트",
             attrs: { type: "button" },
-            on: { click: () => clickControl("event-editor-modal-test") },
+            on: { click: () => clickControl("event-editor-test") },
           }),
           el("button", {
             class: "btn primary event-editor-header-save",
             text: "저장",
             attrs: { type: "button" },
-            on: { click: () => clickControl("event-editor-modal-apply") },
+            on: { click: () => clickControl("event-editor-apply") },
+          }),
+          el("div", {
+            class: "event-editor-header-more",
+            children: (() => {
+              const menu = el("div", {
+                class: "event-editor-header-more-menu",
+                attrs: { hidden: "" },
+                children: [
+                  footerButton("도움말", "event-editor-header-help", () => openEventEditorHelp()),
+                  footerButton("이벤트 삭제", "event-editor-header-delete", () => {
+                    if (requestEditorEventDeletion(mapId, eventId)) close();
+                  }),
+                ],
+              });
+              const toggle = el("button", {
+                class: "event-editor-window-control",
+                text: "⋮",
+                attrs: {
+                  type: "button",
+                  title: "더보기",
+                  "aria-label": "더보기",
+                  "aria-expanded": "false",
+                },
+                dataset: { testid: "event-editor-header-more" },
+                on: {
+                  click: () => {
+                    const nextHidden = !menu.hasAttribute("hidden");
+                    if (nextHidden) menu.setAttribute("hidden", "");
+                    else menu.removeAttribute("hidden");
+                    toggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+                  },
+                },
+              });
+              return [toggle, menu];
+            })(),
           }),
           el("button", {
             class: "event-editor-window-control event-editor-window-fullscreen",
@@ -442,15 +485,15 @@ function renderModalFooter(
             if (!validation.canCommit) return;
             void openSelectedEventTestModal(request.mapId, request.eventId);
           }),
-          footerButton("닫기", "event-editor-cancel", () => requestClose()),
-          footerButton("반영하고 계속", "event-editor-apply", () => {
-            if (!commitValidatedEventDraft(request, "반영하고 계속")) return;
+          footerButton("취소", "event-editor-cancel", () => requestClose()),
+          footerButton("적용", "event-editor-apply", () => {
+            if (!commitValidatedEventDraft(request, "적용")) return;
             footer.dataset.applied = "true";
             beginExistingEventDraft(request.mapId, request.eventId);
             refreshModalFooterStatus(footer, request);
           }),
-          footerButton("반영하고 닫기", "event-editor-ok", () => {
-            if (!commitValidatedEventDraft(request, "반영하고 닫기")) return;
+          footerButton("저장하고 닫기", "event-editor-ok", () => {
+            if (!commitValidatedEventDraft(request, "저장하고 닫기")) return;
             close(true);
             // 모달이 닫히면서 푸터 상태도 사라지므로, 반영 사실을 토스트로 남긴다(적대 평가 L01).
             toast("이벤트 변경을 프로젝트에 반영했습니다.", "ok");
@@ -492,8 +535,8 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   const project = store.getCurrent();
   const event = project.maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
   const cancelDeletesNewEvent = event?.draft?.kind === "new";
-  cancel.textContent = "닫기";
-  cancel.setAttribute("aria-label", cancelDeletesNewEvent ? "닫기: 새 이벤트 삭제" : footerButtonAccessibleName("닫기"));
+  cancel.textContent = "취소";
+  cancel.setAttribute("aria-label", cancelDeletesNewEvent ? "취소: 새 이벤트 삭제" : footerButtonAccessibleName("취소"));
   // created diff(새 드래프트는 항상 1건)가 아니라 "사용자가 실제로 손댔는가"로 판정 —
   // 갓 만든 이벤트가 손대기 전부터 "변경사항 있음"으로 시작하지 않게 한다.
   const changed = eventDraftHasUserChanges(project, request.mapId, request.eventId);
@@ -546,6 +589,19 @@ function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: strin
     case "error": return { text: `저장 실패: ${autoSave.message}`, state: "error" };
     case "idle": return { text: "저장 준비", state: "idle" };
   }
+}
+
+function refreshModalHeaderSaveState(header: HTMLElement, footer: HTMLElement): void {
+  const headerState = header.querySelector<HTMLElement>('[data-testid="event-editor-header-save-state"]');
+  const local = footer.querySelector<HTMLElement>('[data-testid="event-editor-draft-status"]');
+  const remote = footer.querySelector<HTMLElement>('[data-testid="event-editor-remote-status"]');
+  if (!headerState || !local || !remote) return;
+  const durable = remote.dataset.state === "saved";
+  const applied = local.dataset.state === "project" || local.dataset.state === "applied";
+  headerState.textContent = durable && applied ? `✓ ${remote.textContent}` : `${local.textContent} · ${remote.textContent}`;
+  headerState.dataset.localState = local.dataset.state ?? "unknown";
+  headerState.dataset.remoteState = remote.dataset.state ?? "unknown";
+  headerState.title = `${local.title}\n${remote.title}`;
 }
 
 function footerButton(text: string, testId: string, onClick?: () => void, primary = false): HTMLButtonElement {

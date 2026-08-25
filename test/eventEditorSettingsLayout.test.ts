@@ -67,7 +67,9 @@ describe("event editor settings column layout", () => {
     expect(card?.nextElementSibling?.classList.contains("event-editor-pagebar")).toBe(true);
     expect(card.querySelector(".event-editor-card-sprite")).toBeTruthy();
     expect(card.querySelector(".event-editor-top-strip")).toBeTruthy();
-    expect(card.querySelector("[data-testid='event-editor-id-row']")).toBeTruthy();
+    expect(card.querySelector("[data-testid='event-position-controls']")).toBeTruthy();
+    expect(card.querySelector("[data-testid='event-editor-event-id']")).toBeTruthy();
+    expect(card.querySelector("[data-testid='event-editor-event-info']")).toBeTruthy();
 
     // 페이지 탭은 좁은 컬럼 밖 — 조건 요약을 읽을 폭이 필요하다.
     expect(column?.querySelector(".event-page-number-tabs")).toBeNull();
@@ -80,7 +82,7 @@ describe("event editor settings column layout", () => {
     expect(direct[0]?.querySelector(".event-page-props")).toBeTruthy();
   });
 
-  it("orders conditions → graphic → trigger/priority → movement; characterId lives in top strip", () => {
+  it("orders six numbered settings groups; characterId lives in top strip", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_layout");
     const main = host.querySelector(".event-editor-settings-main");
     expect(main).toBeTruthy();
@@ -90,7 +92,7 @@ describe("event editor settings column layout", () => {
     const characterId = host.querySelector('[data-testid="event-character-id-field"]');
     const nameRow = host.querySelector('[data-testid="event-classic-name"]');
     expect(characterId).toBeTruthy();
-    expect(nameRow?.contains(characterId)).toBe(true);
+    expect(nameRow?.contains(characterId)).toBe(false);
     expect(topStrip?.contains(characterId)).toBe(true);
     expect(main?.contains(characterId)).toBe(false);
     // 관계 상태와 연결 행동은 중복 disclosure 없이 카드에서 한 번에 보인다.
@@ -102,19 +104,25 @@ describe("event editor settings column layout", () => {
 
     const conditions = host.querySelector('[data-testid="event-classic-conditions"]');
     const graphic = host.querySelector('[data-testid="event-classic-graphic"]');
-    const triggerPriority = host.querySelector('[data-testid="event-page-trigger-priority-stack"]');
+    const behavior = host.querySelector('[data-testid="event-page-trigger-priority-stack"]');
+    const trigger = host.querySelector('[data-testid="event-classic-trigger"]');
+    const priority = host.querySelector('[data-testid="event-classic-priority"]');
+    const overlap = host.querySelector('[data-testid="event-classic-overlap"]');
     const movement = host.querySelector('[data-testid="event-classic-movement-section"]');
     expect(conditions).toBeTruthy();
     expect(graphic).toBeTruthy();
-    expect(triggerPriority).toBeTruthy();
+    expect(behavior).toBeTruthy();
+    expect(trigger).toBeTruthy();
+    expect(priority).toBeTruthy();
+    expect(overlap).toBeTruthy();
     expect(movement).toBeTruthy();
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
 
     // Trigger is a sibling of movement, not nested inside it.
-    expect(movement?.contains(triggerPriority)).toBe(false);
+    expect(movement?.contains(behavior)).toBe(false);
     expect(movement?.querySelector('[data-testid="event-page-trigger-select"]')).toBeNull();
 
-    const order = [conditions, graphic, triggerPriority, movement]
+    const order = [conditions, graphic, behavior, movement]
       .map((node) => {
         const nodes = main!.querySelectorAll(
           '[data-testid="event-classic-conditions"], [data-testid="event-classic-graphic"], [data-testid="event-page-trigger-priority-stack"], [data-testid="event-classic-movement-section"]'
@@ -122,6 +130,12 @@ describe("event editor settings column layout", () => {
         return [...nodes].indexOf(node as Element);
       });
     expect(order).toEqual([0, 1, 2, 3]);
+    expect(conditions?.querySelector("summary")?.textContent).toContain("1. 언제 나타날까요?");
+    expect(graphic?.querySelector("legend")?.textContent).toContain("2. 모습");
+    expect(trigger?.querySelector("legend")?.textContent).toContain("3. 시작 방식");
+    expect(priority?.querySelector("legend")?.textContent).toContain("4. 우선순위");
+    expect(overlap?.querySelector("legend")?.textContent).toContain("5. 겹침");
+    expect(movement?.querySelector("summary")?.textContent).toContain("6. 움직임");
 
     // Disposition B: no bottom-left/right panes.
     expect(host.querySelector('[data-testid="event-page-bottom-left"]')).toBeNull();

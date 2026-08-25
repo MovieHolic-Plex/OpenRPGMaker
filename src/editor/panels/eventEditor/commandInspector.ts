@@ -107,6 +107,34 @@ export function showCommandInspector(target: InspectorTarget): void {
       toggleBtn,
     ],
   });
+  const closeButton = el("button", {
+    class: "event-inspector-close",
+    text: "×",
+    attrs: { type: "button", title: "선택 명령 닫기", "aria-label": "선택 명령 닫기" },
+    dataset: { testid: "event-inspector-close" },
+    on: { click: () => clearCommandInspector() },
+  });
+  const previewActions = el("div", {
+    class: "event-inspector-preview-actions",
+    children: [
+      el("button", {
+        class: "btn event-inspector-preview-restart",
+        text: "↻ 미리보기 새로고침",
+        attrs: { type: "button", title: "현재 명령 데이터로 미리보기를 다시 그립니다." },
+        dataset: { testid: "event-inspector-preview-restart" },
+        on: { click: () => showCommandInspector(target) },
+      }),
+      el("button", {
+        class: "btn primary event-inspector-preview-current",
+        text: "▶ 현재 명령 편집",
+        attrs: { type: "button" },
+        dataset: { testid: "event-inspector-preview-current" },
+        on: {
+          click: () => formBody.querySelector<HTMLElement>("textarea, input:not([type='hidden']), select, button")?.focus(),
+        },
+      }),
+    ],
+  });
   // 헤더는 한글 명령 이름만 — 원문 요약은 (card 모드) 카드 본문 또는 (form 모드) 편집 폼이
   // 이미 보여주므로 반복하지 않는다.
   host.replaceChildren(
@@ -120,8 +148,10 @@ export function showCommandInspector(target: InspectorTarget): void {
           dataset: { testid: "event-inspector-title" },
         }),
         ...(isForm ? [toggleBtn] : []),
+        closeButton,
       ],
     }),
+    previewActions,
     isForm ? formBody : card,
   );
 }
