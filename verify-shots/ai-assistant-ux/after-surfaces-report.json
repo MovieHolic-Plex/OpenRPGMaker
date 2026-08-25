@@ -1,0 +1,25 @@
+{
+  "sentence": "슬라임을 광장에 두고 회복약을 상자에 넣었습니다.",
+  "enemyNames": [
+    "슬라임",
+    "초원 슬라임",
+    "동굴 박쥐"
+  ],
+  "itemNames": [
+    "회복약",
+    "포획 구슬"
+  ],
+  "mentionCount": 2,
+  "mentionNames": [
+    "슬라임",
+    "회복약"
+  ],
+  "mentionChips": 2,
+  "mentionThumbs": 2,
+  "completionButtons": [
+    "ai-completion-undo"
+  ],
+  "appliedCardThumbs": 2,
+  "appliedCardHasToggle": 1,
+  "appliedCardHasUndo": 1
+}

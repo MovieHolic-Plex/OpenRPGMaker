@@ -1,0 +1,7325 @@
+{
+  "bootGeometry": {
+    "dock": "glass",
+    "logSlot": "glass",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-next-steps']=358x66@339,202",
+      ".ai-glass-log=0x0@0,0",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "bootBottom": {
+    "label": "boot-glass",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "count": 106,
+    "rows": [
+      {
+        "tag": "div",
+        "testid": "editor-layout",
+        "cls": "editor-layout chat-dock-glass",
+        "text": "360 흙길 중심합본 마을 · EasyRPG (CC0)⚙12끌어놓기#전체최근지형물집울타",
+        "rect": [
+          0,
+          116,
+          1600,
+          884
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-panel-resizer",
+        "cls": "resizer resizer-left",
+        "text": "",
+        "rect": [
+          320,
+          116,
+          6,
+          884
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "chat-float-host",
+        "cls": "ai-chat-float-host",
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          326,
+          116,
+          1273,
+          884
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "aside",
+        "testid": "ai-panel",
+        "cls": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          338,
+          128,
+          360,
+          620
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "editor-canvas-scroll-shell",
+        "cls": "editor-canvas-scroll-shell",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "edit-canvas",
+        "cls": "phaser-container",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "oprn-palette-grid",
+        "cls": "chipset-grid oprn-palette-grid",
+        "text": "◆◆◆◆◆◆◆◆◆◆◆◆◆",
+        "rect": [
+          14,
+          249,
+          202,
+          1086
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-command-bar",
+        "cls": "ai-command-bar",
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력",
+        "rect": [
+          339,
+          623,
+          358,
+          124
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "structure-kit-shelf-house",
+        "cls": "structure-kit-shelf-grid",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          263,
+          154
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_blue-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_bright-plaster",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_amber-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-map-root",
+        "cls": "left-panel-stack",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          0,
+          700,
+          319,
+          300
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree",
+        "cls": "panel-section map-tree-panel",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          709,
+          297,
+          280
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-140",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-141",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-142",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-143",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-146",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-162",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "input",
+        "testid": "map-tree-filter",
+        "cls": "map-tree-filter-input",
+        "text": "",
+        "rect": [
+          11,
+          735,
+          297,
+          34
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_slate-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_timber-hall",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_aframe-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-163",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-164",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-165",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-166",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-167",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-168",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-all",
+        "cls": "map-tree-facet is-active",
+        "text": "전체",
+        "rect": [
+          11,
+          775,
+          38,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-empty",
+        "cls": "map-tree-facet",
+        "text": "빈 맵",
+        "rect": [
+          53,
+          775,
+          42,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-nolink",
+        "cls": "map-tree-facet",
+        "text": "문 없음",
+        "rect": [
+          99,
+          775,
+          52,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-encounter",
+        "cls": "map-tree-facet",
+        "text": "인카운터",
+        "rect": [
+          154,
+          775,
+          58,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-169",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-170",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-171",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-172",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-173",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-192",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-list",
+        "cls": "map-tree-list",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작민재의 집 내부13×10 · 1",
+        "rect": [
+          11,
+          805,
+          297,
+          480
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_village_30_100x100",
+        "cls": "map-item map-root active has-children",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          805,
+          297,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_village_30_100x100",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          18,
+          809,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_village_30_100x100",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          284,
+          810,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-193",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-194",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-195",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-196",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-197",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-198",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-item map-node",
+        "text": "민재의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          835,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          839,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          840,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          843,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-199",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-200",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-201",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-222",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-223",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-224",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-item map-node",
+        "text": "소라의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          865,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          869,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          870,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          873,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-225",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-226",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-227",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-228",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-229",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-230",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-item map-node",
+        "text": "대길의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          895,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          899,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          900,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          903,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-item map-node",
+        "text": "연화의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          925,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-240",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-241",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-242",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-244",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-247",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-250",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          929,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          930,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          933,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-item map-node",
+        "text": "준호의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          955,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "authoring-journey",
+        "cls": "authoring-journey",
+        "text": "18프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵맵 16개확인이벤트✓ 커밋 43개확인",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          959,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          960,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-252",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-253",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-254",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-255",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-256",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-257",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          963,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-item map-node",
+        "text": "다솜의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          985,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          989,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          990,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          993,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-270",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-271",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-272",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-282",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-283",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-284",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      }
+    ]
+  },
+  "focusGeometry": {
+    "dock": "glass",
+    "logSlot": "glass",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-next-steps']=358x66@339,202",
+      ".ai-glass-log=0x0@0,0",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "focusBottom": {
+    "label": "focus-empty",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "count": 106,
+    "rows": [
+      {
+        "tag": "div",
+        "testid": "editor-layout",
+        "cls": "editor-layout chat-dock-glass",
+        "text": "360 흙길 중심합본 마을 · EasyRPG (CC0)⚙12끌어놓기#전체최근지형물집울타",
+        "rect": [
+          0,
+          116,
+          1600,
+          884
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-panel-resizer",
+        "cls": "resizer resizer-left",
+        "text": "",
+        "rect": [
+          320,
+          116,
+          6,
+          884
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "chat-float-host",
+        "cls": "ai-chat-float-host",
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          326,
+          116,
+          1273,
+          884
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "aside",
+        "testid": "ai-panel",
+        "cls": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          338,
+          128,
+          360,
+          620
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "editor-canvas-scroll-shell",
+        "cls": "editor-canvas-scroll-shell",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "edit-canvas",
+        "cls": "phaser-container",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "oprn-palette-grid",
+        "cls": "chipset-grid oprn-palette-grid",
+        "text": "◆◆◆◆◆◆◆◆◆◆◆◆◆",
+        "rect": [
+          14,
+          249,
+          202,
+          1086
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-command-bar",
+        "cls": "ai-command-bar",
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력",
+        "rect": [
+          339,
+          623,
+          358,
+          124
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "structure-kit-shelf-house",
+        "cls": "structure-kit-shelf-grid",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          263,
+          154
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_blue-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_bright-plaster",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_amber-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-map-root",
+        "cls": "left-panel-stack",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          0,
+          700,
+          319,
+          300
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree",
+        "cls": "panel-section map-tree-panel",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          709,
+          297,
+          280
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-140",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-141",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-142",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-143",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-146",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-162",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "input",
+        "testid": "map-tree-filter",
+        "cls": "map-tree-filter-input",
+        "text": "",
+        "rect": [
+          11,
+          735,
+          297,
+          34
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_slate-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_timber-hall",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_aframe-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-163",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-164",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-165",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-166",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-167",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-168",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-all",
+        "cls": "map-tree-facet is-active",
+        "text": "전체",
+        "rect": [
+          11,
+          775,
+          38,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-empty",
+        "cls": "map-tree-facet",
+        "text": "빈 맵",
+        "rect": [
+          53,
+          775,
+          42,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-nolink",
+        "cls": "map-tree-facet",
+        "text": "문 없음",
+        "rect": [
+          99,
+          775,
+          52,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-encounter",
+        "cls": "map-tree-facet",
+        "text": "인카운터",
+        "rect": [
+          154,
+          775,
+          58,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-169",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-170",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-171",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-172",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-173",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-192",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-list",
+        "cls": "map-tree-list",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작민재의 집 내부13×10 · 1",
+        "rect": [
+          11,
+          805,
+          297,
+          480
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_village_30_100x100",
+        "cls": "map-item map-root active has-children",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          805,
+          297,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_village_30_100x100",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          18,
+          809,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_village_30_100x100",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          284,
+          810,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-193",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-194",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-195",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-196",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-197",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-198",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-item map-node",
+        "text": "민재의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          835,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          839,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          840,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          843,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-199",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-200",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-201",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-222",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-223",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-224",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-item map-node",
+        "text": "소라의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          865,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          869,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          870,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          873,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-225",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-226",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-227",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-228",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-229",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-230",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-item map-node",
+        "text": "대길의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          895,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          899,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          900,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          903,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-item map-node",
+        "text": "연화의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          925,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-240",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-241",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-242",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-244",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-247",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-250",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          929,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          930,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          933,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-item map-node",
+        "text": "준호의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          955,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "authoring-journey",
+        "cls": "authoring-journey",
+        "text": "18프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵맵 16개확인이벤트✓ 커밋 43개확인",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          959,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          960,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-252",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-253",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-254",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-255",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-256",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-257",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          963,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-item map-node",
+        "text": "다솜의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          985,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          989,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          990,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          993,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-270",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-271",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-272",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-282",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-283",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-284",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      }
+    ]
+  },
+  "typedGeometry": {
+    "dock": "glass",
+    "logSlot": "glass",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-next-steps']=0x0@0,0",
+      ".ai-glass-log=0x0@0,0",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "slashGeometry": {
+    "dock": "glass",
+    "logSlot": "glass",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-next-steps']=0x0@0,0",
+      ".ai-glass-log=0x0@0,0",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "dock_side_geometry": {
+    "dock": "side",
+    "logSlot": "volatile",
+    "boxes": [
+      "[data-testid='ai-panel']=531x884@1068,116",
+      ".ai-command-bar=515x124@1076,868",
+      ".ai-composer=491x104@1088,876",
+      ".ai-composer-actions=469x28@1099,943",
+      ".ai-rising-sticky-zone=515x0@1076,856",
+      "[data-testid='ai-next-steps']=515x78@1076,189",
+      ".ai-glass-log=515x0@1076,275",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "dock_side_bottom": {
+    "label": "dock-side",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "count": 114,
+    "rows": [
+      {
+        "tag": "div",
+        "testid": "editor-layout",
+        "cls": "editor-layout chat-dock-side",
+        "text": "360 흙길 중심합본 마을 · EasyRPG (CC0)⚙12끌어놓기#전체최근지형물집울타",
+        "rect": [
+          0,
+          116,
+          1600,
+          884
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-panel-resizer",
+        "cls": "resizer resizer-left",
+        "text": "",
+        "rect": [
+          320,
+          116,
+          6,
+          884
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "chat-float-host",
+        "cls": "ai-chat-float-host",
+        "text": "",
+        "rect": [
+          326,
+          116,
+          741,
+          884
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "aside",
+        "testid": "chat-side-panel",
+        "cls": "right-panel ai-chat-side-panel",
+        "text": "조수이 맵에 무엇을 둘까요＋입력줄↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          1067,
+          116,
+          533,
+          884
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "aside",
+        "testid": "ai-panel",
+        "cls": "ai-chat-panel is-assistant-idle chat-dock-side",
+        "text": "조수이 맵에 무엇을 둘까요＋입력줄↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          1068,
+          116,
+          531,
+          884
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "editor-canvas-scroll-shell",
+        "cls": "editor-canvas-scroll-shell",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          741,
+          836
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "edit-canvas",
+        "cls": "phaser-container",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          741,
+          836
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "oprn-palette-grid",
+        "cls": "chipset-grid oprn-palette-grid",
+        "text": "◆◆◆◆◆◆◆◆◆◆◆◆◆",
+        "rect": [
+          14,
+          249,
+          202,
+          1086
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-rising-overlay",
+        "cls": "ai-rising-overlay",
+        "text": "",
+        "rect": [
+          1076,
+          555,
+          515,
+          293
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-rising-volatile-zone",
+        "cls": "ai-rising-volatile-zone ai-volatile-dashed",
+        "text": "",
+        "rect": [
+          1076,
+          555,
+          515,
+          293
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-chat-log",
+        "cls": "ai-chat-log",
+        "text": "",
+        "rect": [
+          1080,
+          559,
+          507,
+          285
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "structure-kit-shelf-house",
+        "cls": "structure-kit-shelf-grid",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          263,
+          154
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_blue-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_bright-plaster",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_amber-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-map-root",
+        "cls": "left-panel-stack",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          0,
+          700,
+          319,
+          300
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree",
+        "cls": "panel-section map-tree-panel",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          709,
+          297,
+          280
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-140",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-141",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-142",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-143",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-146",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-162",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "input",
+        "testid": "map-tree-filter",
+        "cls": "map-tree-filter-input",
+        "text": "",
+        "rect": [
+          11,
+          735,
+          297,
+          34
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_slate-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_timber-hall",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_aframe-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-163",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-164",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-165",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-166",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-167",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-168",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-all",
+        "cls": "map-tree-facet is-active",
+        "text": "전체",
+        "rect": [
+          11,
+          775,
+          38,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-empty",
+        "cls": "map-tree-facet",
+        "text": "빈 맵",
+        "rect": [
+          53,
+          775,
+          42,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-nolink",
+        "cls": "map-tree-facet",
+        "text": "문 없음",
+        "rect": [
+          99,
+          775,
+          52,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-encounter",
+        "cls": "map-tree-facet",
+        "text": "인카운터",
+        "rect": [
+          154,
+          775,
+          58,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-169",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-170",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-171",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-172",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-173",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-192",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-list",
+        "cls": "map-tree-list",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작민재의 집 내부13×10 · 1",
+        "rect": [
+          11,
+          805,
+          297,
+          480
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_village_30_100x100",
+        "cls": "map-item map-root active has-children",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          805,
+          297,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_village_30_100x100",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          18,
+          809,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_village_30_100x100",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          284,
+          810,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-193",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-194",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-195",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-196",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-197",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-198",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-item map-node",
+        "text": "민재의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          835,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          839,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          840,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          843,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-199",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-200",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-201",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-222",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-223",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-224",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-item map-node",
+        "text": "소라의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          865,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-command-bar",
+        "cls": "ai-command-bar",
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력",
+        "rect": [
+          1076,
+          868,
+          515,
+          124
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          869,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          870,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          873,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-composer",
+        "cls": "ai-composer",
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단",
+        "rect": [
+          1088,
+          876,
+          491,
+          104
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "textarea",
+        "testid": "ai-input",
+        "cls": "ai-assistant-input",
+        "text": "",
+        "rect": [
+          1099,
+          885,
+          469,
+          54
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-225",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-226",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-227",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-228",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-229",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-230",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-item map-node",
+        "text": "대길의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          895,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          899,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          900,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          903,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-item map-node",
+        "text": "연화의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          925,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-240",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-241",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-242",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-244",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-247",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-250",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          929,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          930,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          933,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-composer-actions",
+        "cls": "ai-composer-actions",
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단",
+        "rect": [
+          1099,
+          943,
+          469,
+          28
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "ai-send",
+        "cls": "ai-assistant-action ai-chat-send",
+        "text": "↑ 전송",
+        "rect": [
+          1504,
+          943,
+          64,
+          28
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-item map-node",
+        "text": "준호의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          955,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "authoring-journey",
+        "cls": "authoring-journey",
+        "text": "18프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵맵 16개확인이벤트✓ 커밋 43개확인",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          959,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          960,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-252",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-253",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-254",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-255",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-256",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-257",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          963,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-item map-node",
+        "text": "다솜의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          985,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          989,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          990,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          993,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-270",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-271",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-272",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-282",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-283",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-284",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      }
+    ]
+  },
+  "dock_float_geometry": {
+    "dock": "float",
+    "logSlot": "glass",
+    "boxes": [
+      "[data-testid='ai-panel']=1273x884@326,116",
+      ".ai-command-bar=640x126@947,826",
+      ".ai-composer=614x104@960,837",
+      ".ai-composer-actions=592x28@971,904",
+      ".ai-rising-sticky-zone=780x0@567,814",
+      "[data-testid='ai-next-steps']=0x0@0,0",
+      ".ai-glass-log=0x0@0,0",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "dock_float_bottom": {
+    "label": "dock-float",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "count": 112,
+    "rows": [
+      {
+        "tag": "div",
+        "testid": "editor-layout",
+        "cls": "editor-layout chat-dock-float",
+        "text": "360 흙길 중심합본 마을 · EasyRPG (CC0)⚙12끌어놓기#전체최근지형물집울타",
+        "rect": [
+          0,
+          116,
+          1600,
+          884
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-panel-resizer",
+        "cls": "resizer resizer-left",
+        "text": "",
+        "rect": [
+          320,
+          116,
+          6,
+          884
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "chat-float-host",
+        "cls": "ai-chat-float-host",
+        "text": "조수이 맵에 무엇을 둘까요＋카드↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만",
+        "rect": [
+          326,
+          116,
+          1273,
+          884
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "aside",
+        "testid": "ai-panel",
+        "cls": "ai-chat-panel is-assistant-idle chat-dock-float",
+        "text": "조수이 맵에 무엇을 둘까요＋카드↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만",
+        "rect": [
+          326,
+          116,
+          1273,
+          884
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "editor-canvas-scroll-shell",
+        "cls": "editor-canvas-scroll-shell",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "edit-canvas",
+        "cls": "phaser-container",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "oprn-palette-grid",
+        "cls": "chipset-grid oprn-palette-grid",
+        "text": "◆◆◆◆◆◆◆◆◆◆◆◆◆",
+        "rect": [
+          14,
+          249,
+          202,
+          1086
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "structure-kit-shelf-house",
+        "cls": "structure-kit-shelf-grid",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          263,
+          154
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_blue-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_bright-plaster",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_amber-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-map-root",
+        "cls": "left-panel-stack",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          0,
+          700,
+          319,
+          300
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree",
+        "cls": "panel-section map-tree-panel",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          709,
+          297,
+          280
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-140",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-141",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-142",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-143",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-146",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-162",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "input",
+        "testid": "map-tree-filter",
+        "cls": "map-tree-filter-input",
+        "text": "",
+        "rect": [
+          11,
+          735,
+          297,
+          34
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_slate-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_timber-hall",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_aframe-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-163",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-164",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-165",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-166",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-167",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-168",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-all",
+        "cls": "map-tree-facet is-active",
+        "text": "전체",
+        "rect": [
+          11,
+          775,
+          38,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-empty",
+        "cls": "map-tree-facet",
+        "text": "빈 맵",
+        "rect": [
+          53,
+          775,
+          42,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-nolink",
+        "cls": "map-tree-facet",
+        "text": "문 없음",
+        "rect": [
+          99,
+          775,
+          52,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-encounter",
+        "cls": "map-tree-facet",
+        "text": "인카운터",
+        "rect": [
+          154,
+          775,
+          58,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-169",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-170",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-171",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-172",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-173",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-192",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-list",
+        "cls": "map-tree-list",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작민재의 집 내부13×10 · 1",
+        "rect": [
+          11,
+          805,
+          297,
+          480
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_village_30_100x100",
+        "cls": "map-item map-root active has-children",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          805,
+          297,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_village_30_100x100",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          18,
+          809,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_village_30_100x100",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          284,
+          810,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-command-bar",
+        "cls": "ai-command-bar",
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력",
+        "rect": [
+          947,
+          826,
+          640,
+          126
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-193",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-194",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-195",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-196",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-197",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-198",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-item map-node",
+        "text": "민재의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          835,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-composer",
+        "cls": "ai-composer",
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단",
+        "rect": [
+          960,
+          837,
+          614,
+          104
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          839,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          840,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          843,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "textarea",
+        "testid": "ai-input",
+        "cls": "ai-assistant-input",
+        "text": "",
+        "rect": [
+          971,
+          846,
+          592,
+          54
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-199",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-200",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-201",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-222",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-223",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-224",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-item map-node",
+        "text": "소라의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          865,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          869,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          870,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          873,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-225",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-226",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-227",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-228",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-229",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-230",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-item map-node",
+        "text": "대길의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          895,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          899,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          900,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          903,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-composer-actions",
+        "cls": "ai-composer-actions",
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단",
+        "rect": [
+          971,
+          904,
+          592,
+          28
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "ai-command-menu-toggle",
+        "cls": "ai-composer-menu-btn ai-command-menu-toggle",
+        "text": "☰",
+        "rect": [
+          971,
+          904,
+          28,
+          28
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "ai-send",
+        "cls": "ai-assistant-action ai-chat-send",
+        "text": "↑ 전송",
+        "rect": [
+          1499,
+          904,
+          64,
+          28
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "ai-composer-hint",
+        "cls": "ai-composer-hint",
+        "text": "Enter 전송 · Shift+Enter 줄바꿈",
+        "rect": [
+          1331,
+          911,
+          160,
+          15
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-item map-node",
+        "text": "연화의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          925,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-240",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-241",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-242",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-244",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-247",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-250",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          929,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          930,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          933,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-item map-node",
+        "text": "준호의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          955,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "authoring-journey",
+        "cls": "authoring-journey",
+        "text": "18프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵맵 16개확인이벤트✓ 커밋 43개확인",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          959,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          960,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-252",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-253",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-254",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-255",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-256",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-257",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          963,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-item map-node",
+        "text": "다솜의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          985,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          989,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          990,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          993,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-270",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-271",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-272",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-282",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-283",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-284",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      }
+    ]
+  },
+  "dock_glass_geometry": {
+    "dock": "glass",
+    "logSlot": "glass",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-next-steps']=358x66@339,202",
+      ".ai-glass-log=0x0@0,0",
+      "[data-testid='authoring-journey-toggle']=32x32@336,958"
+    ],
+    "resizers": [
+      {
+        "cls": "resizer resizer-map-tree",
+        "testid": "map-tree-height-resizer"
+      },
+      {
+        "cls": "resizer resizer-left",
+        "testid": "left-panel-resizer"
+      },
+      {
+        "cls": "ai-chat-resize-handle",
+        "testid": "ai-resize-handle"
+      }
+    ]
+  },
+  "dock_glass_bottom": {
+    "label": "dock-glass",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "count": 106,
+    "rows": [
+      {
+        "tag": "div",
+        "testid": "editor-layout",
+        "cls": "editor-layout chat-dock-glass",
+        "text": "360 흙길 중심합본 마을 · EasyRPG (CC0)⚙12끌어놓기#전체최근지형물집울타",
+        "rect": [
+          0,
+          116,
+          1600,
+          884
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-panel-resizer",
+        "cls": "resizer resizer-left",
+        "text": "",
+        "rect": [
+          320,
+          116,
+          6,
+          884
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "chat-float-host",
+        "cls": "ai-chat-float-host",
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          326,
+          116,
+          1273,
+          884
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "aside",
+        "testid": "ai-panel",
+        "cls": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창",
+        "rect": [
+          338,
+          128,
+          360,
+          620
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "editor-canvas-scroll-shell",
+        "cls": "editor-canvas-scroll-shell",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "absolute"
+      },
+      {
+        "tag": "div",
+        "testid": "edit-canvas",
+        "cls": "phaser-container",
+        "text": "",
+        "rect": [
+          326,
+          164,
+          1273,
+          836
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "oprn-palette-grid",
+        "cls": "chipset-grid oprn-palette-grid",
+        "text": "◆◆◆◆◆◆◆◆◆◆◆◆◆",
+        "rect": [
+          14,
+          249,
+          202,
+          1086
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "ai-command-bar",
+        "cls": "ai-command-bar",
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력",
+        "rect": [
+          339,
+          623,
+          358,
+          124
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "structure-kit-shelf-house",
+        "cls": "structure-kit-shelf-grid",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          263,
+          154
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_blue-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_bright-plaster",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_amber-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          667,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "left-map-root",
+        "cls": "left-panel-stack",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          0,
+          700,
+          319,
+          300
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree",
+        "cls": "panel-section map-tree-panel",
+        "text": "맵 16전체빈 맵문 없음인카운터이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          709,
+          297,
+          280
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-140",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-141",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-142",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-143",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-146",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-162",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          725,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "input",
+        "testid": "map-tree-filter",
+        "cls": "map-tree-filter-input",
+        "text": "",
+        "rect": [
+          11,
+          735,
+          297,
+          34
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_slate-wood",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          23,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_timber-hall",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          111,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "structure-kit-kit_house_aframe-stone",
+        "cls": "structure-kit-cell",
+        "text": "",
+        "rect": [
+          199,
+          747,
+          82,
+          74
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-163",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-164",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-165",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-166",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-167",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-168",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          759,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-all",
+        "cls": "map-tree-facet is-active",
+        "text": "전체",
+        "rect": [
+          11,
+          775,
+          38,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-empty",
+        "cls": "map-tree-facet",
+        "text": "빈 맵",
+        "rect": [
+          53,
+          775,
+          42,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-nolink",
+        "cls": "map-tree-facet",
+        "text": "문 없음",
+        "rect": [
+          99,
+          775,
+          52,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-tree-facet-encounter",
+        "cls": "map-tree-facet",
+        "text": "인카운터",
+        "rect": [
+          154,
+          775,
+          58,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-169",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-170",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-171",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-172",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-173",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-192",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          793,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-list",
+        "cls": "map-tree-list",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작민재의 집 내부13×10 · 1",
+        "rect": [
+          11,
+          805,
+          297,
+          480
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_village_30_100x100",
+        "cls": "map-item map-root active has-children",
+        "text": "이슬 장터 마을100×100 · 20이벤트 · 문30시작",
+        "rect": [
+          11,
+          805,
+          297,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_village_30_100x100",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          18,
+          809,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_village_30_100x100",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          284,
+          810,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-193",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-194",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-195",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-196",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-197",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-198",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          827,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-item map-node",
+        "text": "민재의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          835,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          839,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          840,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_1",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          843,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-199",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-200",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-201",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-222",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-223",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-224",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          861,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-item map-node",
+        "text": "소라의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          865,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          869,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          870,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_2",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          873,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-225",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-226",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-227",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-228",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-229",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-230",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          895,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-item map-node",
+        "text": "대길의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          895,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          899,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          900,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_3",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          903,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-item map-node",
+        "text": "연화의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          925,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-240",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-241",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-242",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-244",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-247",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-250",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          929,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          929,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          930,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_4",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          933,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-item map-node",
+        "text": "준호의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          955,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "authoring-journey",
+        "cls": "authoring-journey",
+        "text": "18프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵맵 16개확인이벤트✓ 커밋 43개확인",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          959,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          960,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-252",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-253",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-254",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-255",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-256",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-257",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          963,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_5",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          963,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "div",
+        "testid": "map-tree-node-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-item map-node",
+        "text": "다솜의 집 내부13×10 · 1이벤트 · 문2",
+        "rect": [
+          27,
+          985,
+          281,
+          30
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-toggle-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-toggle",
+        "text": "",
+        "rect": [
+          34,
+          989,
+          12,
+          22
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "map-context-trigger-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-action map-context-trigger",
+        "text": "",
+        "rect": [
+          260,
+          990,
+          20,
+          20
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "span",
+        "testid": "map-drag-map_house_interior_30_map_village_30_100x100_6",
+        "cls": "map-tree-drag-handle",
+        "text": "",
+        "rect": [
+          52,
+          993,
+          10,
+          14
+        ],
+        "pos": "static"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-270",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          14,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-271",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          48,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-272",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          82,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-282",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          116,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-283",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          150,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      },
+      {
+        "tag": "button",
+        "testid": "chipset-tile-284",
+        "cls": "chipset-tile",
+        "text": "",
+        "rect": [
+          184,
+          997,
+          32,
+          32
+        ],
+        "pos": "relative"
+      }
+    ]
+  },
+  "docks": [
+    "side",
+    "float",
+    "glass"
+  ]
+}
