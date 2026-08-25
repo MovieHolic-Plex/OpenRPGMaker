@@ -3,6 +3,7 @@ import {
   calculatePlaySurfaceCropMetrics,
   calculatePlaySurfacePlacement,
   calculatePlaySurfaceScale,
+  type PlaySurfaceScaleMode,
 } from "@/player/playSurfaceScale";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlayResolution } from "@/project/types";
@@ -15,10 +16,13 @@ export type PlaySurface = {
   readonly cleanup: () => void;
 };
 
-export function createPlaySurface(resolution: Readonly<PlayResolution> = PLAY_RESOLUTION): PlaySurface {
+export function createPlaySurface(
+  resolution: Readonly<PlayResolution> = PLAY_RESOLUTION,
+  scaleMode: PlaySurfaceScaleMode = "integer",
+): PlaySurface {
   const viewport = el("div", {
     class: "play-viewport",
-    dataset: { testid: "play-viewport" },
+    dataset: { testid: "play-viewport", scaleMode },
   });
   const stage = el("div", {
     class: "play-stage",
@@ -32,15 +36,15 @@ export function createPlaySurface(resolution: Readonly<PlayResolution> = PLAY_RE
   stage.append(phaserContainer);
   viewport.append(stage);
 
-  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution));
+  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode));
   resizeObserver.observe(viewport);
-  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport, resolution));
+  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode));
 
   return {
     viewport,
     stage,
     phaserContainer,
-    sync: () => syncPlaySurfaceMetrics(viewport, resolution),
+    sync: () => syncPlaySurfaceMetrics(viewport, resolution, scaleMode),
     cleanup: () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
@@ -66,9 +70,13 @@ function applyPlaySurfaceResolution(
   phaserContainer.style.height = height;
 }
 
-function syncPlaySurfaceMetrics(viewport: HTMLElement, resolution: Readonly<PlayResolution>): void {
+function syncPlaySurfaceMetrics(
+  viewport: HTMLElement,
+  resolution: Readonly<PlayResolution>,
+  scaleMode: PlaySurfaceScaleMode,
+): void {
   const bounds = viewport.getBoundingClientRect();
-  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height);
+  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode);
   const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
   const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height);
   viewport.style.setProperty("--play-scale", String(scale));
