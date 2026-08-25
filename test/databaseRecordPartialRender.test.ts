@@ -68,6 +68,54 @@ afterEach(() => {
 });
 
 describe("Database record tab partial rendering", () => {
+  it("Given the actors collection When the record tab renders Then it uses the studio table and contextual inspector contract", () => {
+    // Break caught: actors still render as the old narrow roster beside a card-heavy form.
+    const host = renderRecordHost("actors");
+
+    expect(findByTestId(host, "db-actor-studio")).not.toBeNull();
+    expect(findByTestId(host, "db-actor-studio")?.textContent).toContain("플레이어 캐릭터");
+    expect(findByTestId(host, "db-actor-studio-summary")).toBeNull();
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("캐릭터");
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("HP");
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("맵 표시");
+    expect(host.querySelector(".db-studio-table-pane")).not.toBeNull();
+    expect(host.querySelector(".db-studio-inspector-pane")).not.toBeNull();
+
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    expect(findByTestId(host, `db-record-row-${actorId}`)).not.toBeNull();
+    expect(findByTestId(host, "db-detail-form")).not.toBeNull();
+    expect(findByTestId(host, "db-record-hero")?.querySelector(".actor-sheet-crop")).not.toBeNull();
+  });
+
+  it("Given an actor opens When the inspector renders Then hierarchy is expressed by direct tabs without guidance copy", () => {
+    // Break caught: a tutorial card and numbered long-form document explain hierarchy instead of embodying it.
+    const host = renderRecordHost("actors");
+
+    expect(findByTestId(host, "db-actor-beginner-guide")).toBeNull();
+    expect(host.querySelector(".actor-task-next")).toBeNull();
+    expect(findByTestId(host, "db-actor-section-tabs")?.textContent).toBe("기본외형성장전투결과");
+    expect(findByTestId(host, "db-actor-tab-identity")?.attrs["aria-selected"]).toBe("true");
+    expect(findByTestId(host, "db-actor-panel-identity")?.hidden).toBe(false);
+    expect(findByTestId(host, "db-actor-panel-appearance")?.hidden).toBe(true);
+    expect(findByTestId(host, "db-record-hero")?.textContent).toContain("시작 파티");
+
+    findByTestId(host, "db-actor-tab-battle")?.click();
+    expect(findByTestId(host, "db-actor-tab-identity")?.attrs["aria-selected"]).toBe("false");
+    expect(findByTestId(host, "db-actor-tab-battle")?.attrs["aria-selected"]).toBe("true");
+    expect(findByTestId(host, "db-actor-panel-identity")?.hidden).toBe(true);
+    expect(findByTestId(host, "db-actor-panel-battle")?.hidden).toBe(false);
+    expect(findByTestId(host, "db-actor-panel-battle")?.textContent).toContain("크리티컬 공격");
+  });
+
+  it("Given the actors gallery preference When the tab renders Then it preserves the existing card gallery", () => {
+    setViewModeForCollection("actors", "gallery");
+    const host = renderRecordHost("actors");
+
+    expect(findByTestId(host, "db-actor-studio")).toBeNull();
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    expect(findByTestId(host, `db-record-card-${actorId}`)).not.toBeNull();
+  });
+
   it("Given a record selection When another record row is clicked Then the list is not rebuilt and only the active row changes", () => {
     const firstId = store.getCurrent().database.skills[0]?.id ?? "";
     const secondId = addDatabaseRecord("skills");
@@ -109,6 +157,22 @@ describe("Database record tab partial rendering", () => {
     // 스토어에도 반영된다.
     expect(store.getCurrent().database.skills.find((entry) => entry.id === skillId)?.name).toBe("번개 강타");
     // 디테일 폼 노드는 재생성되지 않아 입력 포커스가 유지된다.
+    expect(findByTestId(host, "db-detail-form")).toBe(detailFormBefore);
+  });
+
+  it("Given an actor name edit When the inspector changes Then the studio row updates without rebuilding", () => {
+    setViewModeForCollection("actors", "list");
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    const host = renderRecordHost("actors");
+    const detailFormBefore = findByTestId(host, "db-detail-form");
+    const nameInput = findByTestId(host, "db-field-name");
+
+    nameInput!.value = "새 주인공 이름";
+    nameInput!.dispatchEvent(new Event("input"));
+
+    const row = findByTestId(host, `db-record-row-${actorId}`);
+    expect(row?.querySelector(".db-list-name")?.textContent).toBe("새 주인공 이름");
+    expect(store.getCurrent().database.actors[0]?.name).toBe("새 주인공 이름");
     expect(findByTestId(host, "db-detail-form")).toBe(detailFormBefore);
   });
 

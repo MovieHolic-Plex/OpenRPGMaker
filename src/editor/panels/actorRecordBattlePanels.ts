@@ -29,9 +29,9 @@ const OPTION_LABELS: readonly { readonly key: keyof ActorOptions; readonly label
 ] as const;
 
 export function battlePanel(actor: ActorRecord, rerender: () => void, refreshBuildPreview: () => void): HTMLElement {
-  return actorPanel("전투", "actor-battle", [
+  return actorPanel("장비와 스킬", "actor-battle", [
     equipmentPanel(actor, refreshBuildPreview),
-    selectRecord("맨손 애니메이션", "db-picker-unarmed-animation", actor.unarmedAnimationId ?? "", store.getCurrent().database.battleAnimations, (unarmedAnimationId) =>
+    selectRecord("무기 없이 공격할 때 효과", "db-picker-unarmed-animation", actor.unarmedAnimationId ?? "", store.getCurrent().database.battleAnimations, (unarmedAnimationId) =>
       updateDatabaseRecord("actors", actor.id, { unarmedAnimationId: emptyToUndefined(unarmedAnimationId) })
     ),
     optionsPanel(actor),
@@ -52,11 +52,11 @@ export function ratesPanel(actor: ActorRecord): HTMLElement {
       updateDatabaseRecord("actors", actor.id, { elementRates: { ...currentActor(actor).elementRates, [element.id]: grade } })
     )
   );
-  return actorPanel("저항", "actor-rates", [
+  return actorPanel("약점과 저항", "actor-rates", [
     el("p", {
       class: "actor-rate-manual-note",
       dataset: { testid: "db-actor-state-rate-manual-note" },
-      text: "States Page 기준: 주인공의 A-E 상태 저항 등급은 상태 발생 확률로 해석되며 A에서 E로 갈수록 낮아집니다.",
+      text: "상태는 A에서 E로 갈수록 걸릴 확률이 낮아집니다. 속성 등급은 공격 피해의 약점·저항을 정합니다.",
     }),
     el("div", {
       class: "actor-rate-columns",

@@ -36,11 +36,12 @@ export function graphicPreview(
   label: string,
   resourceId: string,
   kind: GraphicPreviewKind,
-  sheetIndex = 0
+  sheetIndex = 0,
+  previewScale = 1
 ): HTMLElement {
   const url = resolveAssetResourceUrl(resourceId === "(없음)" ? undefined : resourceId, { project: store.getCurrent() });
   const visual = url
-    ? previewVisual(label, resourceId, url, kind, sheetIndex)
+    ? previewVisual(label, resourceId, url, kind, sheetIndex, previewScale)
     : neutralActorResourceSlot(resourceId);
   return el("div", {
     class: "actor-graphic-preview",
@@ -63,7 +64,8 @@ function previewVisual(
   resourceId: string,
   url: string,
   kind: GraphicPreviewKind,
-  sheetIndex: number
+  sheetIndex: number,
+  previewScale: number
 ): HTMLElement {
   if (kind === "faceset") {
     const faceIndex = Math.min(15, Math.max(0, Math.trunc(sheetIndex) || 0));
@@ -76,7 +78,7 @@ function previewVisual(
       height: FACESET_FACE_HEIGHT,
       sheetWidth: FACESET_COLUMNS * FACESET_FACE_WIDTH,
       sheetHeight: FACESET_ROWS * FACESET_FACE_HEIGHT,
-      scale: 1,
+      scale: previewScale,
     });
   }
   if (kind === "charset") {

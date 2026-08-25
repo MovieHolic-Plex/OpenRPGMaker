@@ -12,6 +12,7 @@ import {
   updateDatabaseRecord,
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
+import { renderActorStudioList } from "@/editor/panels/databaseActorStudio";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
@@ -39,7 +40,7 @@ import {
 } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import type { DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
+import type { ActorRecord, DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
 
 let searchRerenderTimer: number | null = null;
 
@@ -104,7 +105,11 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       return;
     }
     const index = liveRecords.findIndex((entry) => entry.id === record.id);
-    const onRename = (next: string): void => updateRecordRowLabel(listEl, record.id, next);
+    const onRename = (next: string): void => {
+      updateRecordRowLabel(listEl, record.id, next);
+      const selectedSummary = listPane.querySelector("[data-testid='db-actor-summary-selected']");
+      if (selectedSummary instanceof HTMLElement) selectedSummary.textContent = next || "(이름 없음)";
+    };
     const form = recordForm(collection, record, rerender, onRename);
     form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
@@ -117,19 +122,43 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     renderDetail(id);
   };
 
-  const listEl = recordList(collection, records, onSelect);
-  const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
-  const chips = categoryFilterChips(collection, rerender);
-  listPane.append(
-    el("h3", { text: COLLECTION_LABELS[collection] }),
-    recordSearch(collection, rerender),
-    ...(chips ? [chips] : []),
-    listEl,
-    recordListFooter(records.length),
-    toolbar(collection, rerender),
-  );
+  let listEl: HTMLElement;
+  let listPane: HTMLElement;
+  const actorStudioActive = collection === "actors" && viewModeForCollection(collection) === "list";
+  if (actorStudioActive) {
+    const query = searchQueryForCollection(collection);
+    const filteredActors = (records as ActorRecord[]).filter((record) => matchesNameOrId(record.name, record.id, query));
+    const studio = renderActorStudioList({
+      actors: records as ActorRecord[],
+      filteredActors,
+      selectedId: selected?.id,
+      project: store.getCurrent(),
+      search: recordSearch(collection, rerender),
+      footer: recordListFooter(records.length),
+      toolbar: toolbar(collection, rerender),
+      onSelect,
+    });
+    listEl = studio.scrollRegion;
+    listPane = studio.pane;
+    listEl.scrollTop = listScrollTopForCollection(collection);
+    listEl.addEventListener("scroll", () => setListScrollTopForCollection(collection, listEl.scrollTop));
+    detailPane.classList.add("db-studio-inspector-pane");
+  } else {
+    listEl = recordList(collection, records, onSelect);
+    listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
+    const chips = categoryFilterChips(collection, rerender);
+    listPane.append(
+      el("h3", { text: COLLECTION_LABELS[collection] }),
+      recordSearch(collection, rerender),
+      ...(chips ? [chips] : []),
+      listEl,
+      recordListFooter(records.length),
+      toolbar(collection, rerender),
+    );
+  }
   renderDetail(selected?.id);
-  const workspace = el("div", { class: `db-record-workspace oprn-record-workspace oprn-record-${collection}`, children: [listPane, detailPane] });
+  const studioClass = actorStudioActive ? " db-actor-studio-workspace" : "";
+  const workspace = el("div", { class: `db-record-workspace oprn-record-workspace oprn-record-${collection}${studioClass}`, children: [listPane, detailPane] });
   if (collection === "enemies") {
     // 몬스터(적) 탭과 종족 탭의 역할 구분 안내. height:100% 워크스페이스가 배너에 밀리지 않도록
     // 셸(auto + 1fr)로 감싼다.
@@ -597,7 +626,7 @@ function recordForm(
   switch (collection) {
     case "actors": {
       const actor = store.getCurrent().database.actors.find((entry) => entry.id === record.id);
-      return actor ? renderActorRecordForm(actor, rerender) : form;
+      return actor ? renderActorRecordForm(actor, rerender, onRename, "studio") : form;
     }
     case "classes":
       renderClassRecordForm(form, store.getCurrent().database.classes.find((entry) => entry.id === record.id) ?? store.getCurrent().database.classes[0]);

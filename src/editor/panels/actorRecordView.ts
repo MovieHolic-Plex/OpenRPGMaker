@@ -24,31 +24,101 @@ import { store } from "@/project/store";
 import type { ActorParameterKey, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
-export function renderActorRecordForm(actor: ActorRecord, rerender: () => void): HTMLElement {
+export function renderActorRecordForm(
+  actor: ActorRecord,
+  rerender: () => void,
+  onRename?: (name: string) => void,
+  layout: "default" | "studio" = "default"
+): HTMLElement {
   const form = el("section", {
     class: "db-detail-form actor-detail-form",
     dataset: { testid: "db-detail-form" },
   });
   const buildPreview = actorBuildPreviewPanel(actor);
-  form.append(
-    actorHeroHeader(actor),
-    buildPreview.element,
-    el("div", {
-      class: "actor-classic-sheet",
-      dataset: { testid: "actor-classic-sheet" },
-      children: [
-        el("div", {
-          class: "actor-editor-grid",
-          children: [
-            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor, buildPreview.refresh), classPanel(actor, buildPreview.refresh), graphicsPanel(actor, rerender), baseStatsPanel(actor)] }),
-            el("div", { class: "actor-column actor-center-stack", children: [curvesPanel(actor), experiencePanel(actor)] }),
-            el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(() => form), battlePanel(actor, rerender, buildPreview.refresh), ratesPanel(actor)] }),
-          ],
-        }),
-      ],
-    })
-  );
+  const identity = identityPanel(actor, buildPreview.refresh);
+  const actorClass = classPanel(actor, buildPreview.refresh);
+  const graphics = graphicsPanel(actor, rerender);
+  const baseStats = baseStatsPanel(actor);
+  const curves = curvesPanel(actor);
+  const experience = experiencePanel(actor);
+  const battle = battlePanel(actor, rerender, buildPreview.refresh);
+  const critical = criticalPanel(actor);
+  const rates = ratesPanel(actor);
+  const classicSheet = el("div", {
+    class: "actor-classic-sheet",
+    dataset: { testid: "actor-classic-sheet" },
+    children: [
+      el("div", {
+        class: "actor-editor-grid",
+        children: [
+          el("div", { class: "actor-column actor-left-stack", children: [identity, actorClass, graphics, baseStats] }),
+          el("div", { class: "actor-column actor-center-stack", children: [curves, experience] }),
+          el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(() => form), battle, rates] }),
+        ],
+      }),
+    ],
+  });
+  const hero = actorHeroHeader(actor, onRename);
+  if (layout === "studio") {
+    const sections = [
+      actorSection("identity", [identity, actorClass]),
+      actorSection("appearance", [graphics]),
+      actorSection("growth", [baseStats, curves, experience]),
+      actorSection("battle", [battle, critical, rates]),
+      actorSection("preview", [buildPreview.element]),
+    ];
+    form.append(hero, actorSectionTabs(sections), el("div", { class: "actor-section-body", children: sections }));
+  } else {
+    form.append(hero, buildPreview.element, classicSheet);
+  }
   return form;
+}
+
+const ACTOR_SECTIONS = [
+  { key: "identity", label: "기본" },
+  { key: "appearance", label: "외형" },
+  { key: "growth", label: "성장" },
+  { key: "battle", label: "전투" },
+  { key: "preview", label: "결과" },
+] as const;
+
+type ActorSectionKey = (typeof ACTOR_SECTIONS)[number]["key"];
+
+function actorSection(key: ActorSectionKey, content: HTMLElement[]): HTMLElement {
+  const section = el("section", {
+    class: `actor-section-panel actor-section-${key}`,
+    attrs: { role: "tabpanel" },
+    dataset: { testid: `db-actor-panel-${key}` },
+    children: content,
+  });
+  section.hidden = key !== "identity";
+  return section;
+}
+
+function actorSectionTabs(sections: HTMLElement[]): HTMLElement {
+  const tabs: HTMLElement[] = [];
+  const activate = (index: number): void => {
+    tabs.forEach((tab, candidate) => {
+      const selected = candidate === index;
+      tab.setAttribute("aria-selected", String(selected));
+      tab.classList.toggle("active", selected);
+      sections[candidate]!.hidden = !selected;
+    });
+    sections[index]?.parentElement?.scrollTo?.({ top: 0 });
+  };
+  tabs.push(...ACTOR_SECTIONS.map((section, index) => el("button", {
+    class: `actor-section-tab${index === 0 ? " active" : ""}`,
+    text: section.label,
+    attrs: { "aria-selected": String(index === 0), role: "tab", type: "button" },
+    dataset: { testid: `db-actor-tab-${section.key}` },
+    on: { click: () => activate(index) },
+  })));
+  return el("nav", {
+    class: "actor-section-tabs",
+    attrs: { "aria-label": "캐릭터 편집 영역", role: "tablist" },
+    dataset: { testid: "db-actor-section-tabs" },
+    children: tabs,
+  });
 }
 
 const BUILD_STAT_LABELS: Readonly<Record<ActorParameterKey, string>> = {
@@ -108,8 +178,8 @@ function actorBuildPreviewPanel(actor: ActorRecord): { readonly element: HTMLEle
         children: [
           el("div", {
             children: [
-              el("span", { class: "actor-build-preview-eyebrow", text: "PARTY STUDIO" }),
-              el("h3", { text: "빌드 미리보기" }),
+              el("span", { class: "actor-build-preview-eyebrow", text: "플레이 결과" }),
+              el("h3", { text: "결과 미리보기" }),
               el("p", { text: "실제 전투 계산 기준으로 성장·장비·스킬을 함께 확인합니다." }),
             ],
           }),
@@ -285,9 +355,15 @@ function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
 
 // 히어로 헤더 — 얼굴 + 이름 인라인 편집 + 직업/레벨 태그. 이름 편집은 identityPanel 에서
 // 여기로 승격됐다(아이템/장비 인스펙터 헤더와 같은 비주얼 언어, db-field-name 계약 유지).
-function actorHeroHeader(actor: ActorRecord): HTMLElement {
+function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void): HTMLElement {
   const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;
-  const face = graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset", actor.faceIndex ?? 0);
+  const face = graphicPreview(
+    "얼굴",
+    actor.faceResourceId ?? actor.characterResourceId ?? "(없음)",
+    "faceset",
+    actor.faceIndex ?? 0,
+    4 / 3
+  );
   face.classList.add("db-record-hero-face");
   return el("header", {
     class: "db-record-hero",
@@ -297,12 +373,19 @@ function actorHeroHeader(actor: ActorRecord): HTMLElement {
       el("div", {
         class: "db-record-hero-title",
         children: [
-          textControl("이름", "db-field-name", actor.name, (name) => updateDatabaseRecord("actors", actor.id, { name })),
+          textControl("이름", "db-field-name", actor.name, (name) => {
+            updateDatabaseRecord("actors", actor.id, { name });
+            onRename?.(name);
+          }),
           el("div", {
             class: "db-record-hero-tags",
             children: [
               ...(className ? [el("span", { class: "db-record-hero-tag", text: className })] : []),
               el("span", { class: "db-record-hero-tag muted", text: `Lv ${actor.initialLevel}–${actor.maxLevel}` }),
+              el("span", {
+                class: "db-record-hero-tag party",
+                text: store.getCurrent().system.startActorIds.includes(actor.id) ? "시작 파티" : "대기 멤버",
+              }),
             ],
           }),
         ],
@@ -312,7 +395,7 @@ function actorHeroHeader(actor: ActorRecord): HTMLElement {
 }
 
 function identityPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
-  return actorPanel("이름", "actor-identity", [
+  return actorPanel("이름과 시작 레벨", "actor-identity", [
     textControl("칭호", "db-field-actor-nickname", actor.nickname, (nickname) =>
       updateDatabaseRecord("actors", actor.id, { nickname })
     ),
@@ -329,27 +412,28 @@ function identityPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTM
         }),
       ],
     }),
-    checkboxControl("크리티컬", "db-field-actor-critical-enabled", actor.critical.enabled, (enabled) =>
+  ]);
+}
+
+function criticalPanel(actor: ActorRecord): HTMLElement {
+  return actorPanel("크리티컬 공격", "actor-critical", [
+    checkboxControl("크리티컬 사용", "db-field-actor-critical-enabled", actor.critical.enabled, (enabled) =>
       updateDatabaseRecord("actors", actor.id, { critical: { ...actor.critical, enabled } })
     ),
-    numberControl("확률 분모", "db-field-actor-critical-rate", actor.critical.chanceDenominator, (chanceDenominator) =>
+    numberControl("발생 확률 (1/N)", "db-field-actor-critical-rate", actor.critical.chanceDenominator, (chanceDenominator) =>
       updateDatabaseRecord("actors", actor.id, { critical: { ...actor.critical, chanceDenominator } })
     ),
+    el("p", { class: "actor-field-help", text: "예: N이 30이면 공격할 때 평균 30번 중 1번 발생합니다." }),
   ]);
 }
 
 function classPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
-  return actorPanel("직업", "actor-class", [
-    el("div", {
-      class: "actor-class-row",
-      children: [
-        selectRecord("직업", "db-picker-class", actor.classId, store.getCurrent().database.classes, (classId) => {
-          updateDatabaseRecord("actors", actor.id, { classId });
-          refreshBuildPreview();
-        }),
-        el("button", { class: "btn small", text: "적용", attrs: { type: "button", disabled: "true" } }),
-      ],
+  return actorPanel("시작 직업", "actor-class", [
+    selectRecord("직업", "db-picker-class", actor.classId, store.getCurrent().database.classes, (classId) => {
+      updateDatabaseRecord("actors", actor.id, { classId });
+      refreshBuildPreview();
     }),
+    el("p", { class: "actor-field-help", text: "직업은 사용할 수 있는 장비·명령과 성장 방식에 영향을 줍니다." }),
   ]);
 }
 
@@ -362,7 +446,7 @@ function baseStatsPanel(actor: ActorRecord): HTMLElement {
     mind: "마법력",
     agility: "민첩성",
   };
-  return actorPanel("기본 능력치", "actor-basic-stats", [
+  return actorPanel("현재 시작 능력치", "actor-basic-stats", [
     el("div", {
       class: "actor-basic-stat-grid",
       children: ACTOR_PARAMETER_KEYS.map((key) =>
@@ -414,7 +498,7 @@ function activateInspectorTab(button: HTMLElement, root: HTMLElement, selector: 
 }
 
 function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
-  return actorPanel("그래픽", "actor-graphic", [
+  return actorPanel("화면에 보이는 모습", "actor-graphic", [
     graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset", actor.faceIndex ?? 0),
     resourceControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
       updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
@@ -437,11 +521,11 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
 }
 
 function curvesPanel(actor: ActorRecord): HTMLElement {
-  return actorPanel("능력치 곡선", "actor-parameter-curves", [
+  return actorPanel("레벨별 능력치", "actor-parameter-curves", [
     el("div", { class: "actor-curves-grid", children: actorCurveCards(actor) }),
   ]);
 }
 
 function experiencePanel(actor: ActorRecord): HTMLElement {
-  return actorPanel("경험치 곡선", "actor-experience", actorExperiencePanel(actor));
+  return actorPanel("레벨업 속도", "actor-experience", actorExperiencePanel(actor));
 }

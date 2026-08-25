@@ -344,10 +344,9 @@ function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => 
           const enemyName = project.database.enemies.find((enemy) => enemy.id === member.enemyId)?.name ?? member.enemyId;
           return el("button", {
             class: `db-troop-member-row${index === selectedIndex ? " active" : ""}`,
-            attrs: { type: "button" },
+            attrs: { type: "button", title: `${index + 1} · X${member.x} Y${member.y}` },
             dataset: { testid: `db-troop-member-row-${index + 1}` },
             text: enemyName,
-            attrs: { title: `${index + 1} · X${member.x} Y${member.y}` },
             on: {
               click: () => {
                 selectedMemberIndexes.set(record.id, index);

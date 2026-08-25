@@ -8,6 +8,16 @@
 - Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Dirty 3-way Save/Discard/Keep is unchanged.
 - Keep G006 in-modal `switchDatabaseActiveTab`, gallery+list toggles, and every `db-field-*` / `db-record-row-*` / `db-record-card-*` / `db-system-nav-*` / `db-type-chart-*` testid.
 
+### Actor data-table slice (2026-08-25)
+
+- `actors` is the first record collection using the approved Database Studio table grammar. `databaseActorStudio.ts` owns the searchable table, comparative columns, and map-visibility chips; `databaseRecordViews.ts` still owns selection, search state, add/duplicate/delete, partial detail refresh, and existing `db-record-row-*` contracts.
+- The selected actor's existing `renderActorRecordForm` remains the editing authority and renders in `.db-studio-inspector-pane`. Do not duplicate field controls inside table cells or bypass `updateDatabaseRecord`; table values are comparative read-only projections of the same record.
+- Desktop layout is scoped in `desktop-record-shell/13-actor-studio.css`. Other collections intentionally retain their current record workspace until migrated. Responsive widths below 901px continue through the legacy stacked rules rather than forcing the desktop table.
+- Structural regression coverage is `test/databaseRecordPartialRender.test.ts`: the actor studio/table/header/inspector must coexist with existing row and detail-form testids, while the same file continues to prove selection and rename partial-render behavior.
+- The actor Studio inspector must express hierarchy directly, without beginner guides, numbered walkthroughs, next-step buttons, or explanatory workflow copy. Its fixed structure is selected-actor hero → `기본 / 외형 / 성장 / 전투 / 결과` tab strip → one active panel. `db-actor-section-tabs`, `db-actor-tab-*`, and `db-actor-panel-*` are the navigation contract. Existing field/panel testids and `updateDatabaseRecord` ownership remain unchanged inside the panels.
+- The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
+- Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
+
 ## P2 낚시·채집·박물관 저작 표면 (2026-08-25)
 
 - `생활` 그룹의 `낚시·채집·박물관` (`lifeCollections`) 탭은 fish species, fishing spots, seasonal forage areas, museum rewards를 구조화해서 목록·추가·이름 변경·삭제한다. 기본값 동작은 collection tracking까지 서로 참조가 맞는 최소 패키지를 만든다. 물고기 삭제는 해당 catch만 제거하고, catch가 하나도 남지 않은 낚시터만 함께 제거한다.
