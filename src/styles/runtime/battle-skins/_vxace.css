@@ -32,7 +32,7 @@
   --battle-window-edge: #e4e0c8;
   --battle-text: #ffffff;
   --battle-accent: #ffd75a;
-  --rm2k3-battle-text: #ffffff;
+  --oprn-battle-text: #ffffff;
   /* 참조 창은 어둡고 반투명해서 뒤의 밝은 필드가 배어 나온다. */
   --vxace-window-bg: rgba(18, 24, 30, 0.74);
   --vxace-cell-bg: rgba(10, 14, 20, 0.72);
@@ -325,7 +325,7 @@
 }
 
 /* 명령 입력 단계에서만 감춘다. 대상 선택 중에는 "누구를 공격할까" 안내가 필요하고,
-   기존 계약도 그렇다(rm2k3-battle-system-targeting 스펙이 targetSelect 에서 이 창의 가시성을
+   기존 계약도 그렇다(oprn-battle-system-targeting 스펙이 targetSelect 에서 이 창의 가시성을
    단정한다 — 처음엔 여기까지 감춰서 그 스펙을 깨뜨렸다). 참조 스크린샷은 명령 입력 화면이라
    대상 선택 단계에 대한 근거를 주지 않는다. */
 .battle-scene[data-battle-skin="vxace"][data-battle-phase="actorCommand"] .battle-message-window,

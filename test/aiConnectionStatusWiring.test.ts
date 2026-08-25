@@ -138,7 +138,11 @@ function mockEditorDependencies(): void {
     },
   }));
   vi.doMock("@/editor/panels/dbConnectionSettings", () => ({
-    renderDbConnectionStatus: () => document.createElement("button"),
+    renderDbConnectionStatus: () => {
+      const button = document.createElement("button");
+      button.dataset.testid = "db-connection-status";
+      return button;
+    },
   }));
   vi.doMock("@/editor/panels/mapList", () => ({
     renderMapList: (node: HTMLElement) => {
@@ -185,35 +189,21 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe("AI 연동 칩 상태바 배선", () => {
-  it("renderEditor 가 렌더한 상태바에 AI 연동 칩(testid: ai-connection-status)이 나타난다", async () => {
-    storage.setItem("rpg-zzu:ai-config", JSON.stringify(APIKEY_READY));
+describe("에디터 하단 상태바 제거", () => {
+  it("맥락 정보와 액션을 포함한 하단 상태바 자체를 렌더하지 않는다", async () => {
+    // Break: any bottom statusbar surface is mounted below the canvas again.
+    storage.setItem("oprn:ai-config", JSON.stringify(APIKEY_READY));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
 
     renderEditor(main);
 
-    const chip = findByTestId(fakeElement(main), "ai-connection-status");
-    expect(chip).not.toBeNull();
-    // 칩은 클릭 가능한 버튼이어야 한다(설정 모달 진입점).
-    expect(chip?.tagName.toLowerCase()).toBe("button");
-    // apiKey ready 설정이므로 라벨에 '연결됨' 이 포함된다.
-    expect(chip?.textContent).toContain("연결됨");
+    const surface = fakeElement(main);
+    expect(findByTestId(surface, "editor-statusbar")).toBeNull();
+    expect(findByTestId(surface, "db-connection-status")).toBeNull();
+    expect(findByTestId(surface, "toggle-layout-bboxes")).toBeNull();
+    expect(findByTestId(surface, "ai-connection-status")).toBeNull();
 
     teardownEditor();
-  });
-
-  it("API 키가 없으면 상태바 칩이 '키 없음' 상태를 알린다", async () => {
-    storage.setItem("rpg-zzu:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
-    const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
-    const main = document.createElement("main");
-
-    renderEditor(main);
-
-    const chip = findByTestId(fakeElement(main), "ai-connection-status");
-    expect(chip).not.toBeNull();
-    expect(chip?.textContent).toContain("키");
-
-    teardownEditor();
-  });
+  }, 60_000);
 });

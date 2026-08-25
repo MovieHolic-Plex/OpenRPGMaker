@@ -20,11 +20,7 @@ import {
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
-
-// 재생 무대의 논리 크기(playSurface.css `.play-stage` 320×240 과 같아야 한다).
-// 마커가 이 범위를 벗어나면 무대의 스크롤 영역을 넓히므로 접어 둔다.
-const STAGE_WIDTH = 320;
-const STAGE_HEIGHT = 240;
+import { resolvePlayResolution } from "@/project/playResolution";
 
 type RuntimeAssetProject = Pick<Project, "assets">;
 
@@ -92,6 +88,7 @@ export interface RuntimeStateSnapshot {
   readonly battleResult?: BattleResult;
   readonly gameTime?: GameTime;
   readonly timePhase?: TimePhase;
+  readonly lifeCalendarHudLines?: readonly string[];
 }
 
 export class RuntimeDomOverlay {
@@ -136,13 +133,25 @@ export class RuntimeDomOverlay {
     const mapY = Number(marker.dataset.mapY ?? "0");
     const screenX = mapX - this.cameraX;
     const screenY = mapY - this.cameraY;
+    const { width: stageWidth, height: stageHeight } = this.stageSize();
     const visible =
-      screenX > -TILE_SIZE && screenY > -TILE_SIZE && screenX < STAGE_WIDTH && screenY < STAGE_HEIGHT;
+      screenX > -TILE_SIZE && screenY > -TILE_SIZE && screenX < stageWidth && screenY < stageHeight;
     marker.dataset.offscreen = visible ? "" : "1";
     marker.style.left = `${visible ? screenX : 0}px`;
     marker.style.top = `${visible ? screenY : 0}px`;
     marker.style.visibility = visible ? "" : "hidden";
     marker.style.pointerEvents = visible ? "" : "none";
+  }
+
+  private stageSize(): { readonly width: number; readonly height: number } {
+    const host = this.host();
+    const width = host?.clientWidth || Number.parseFloat(host?.style.width ?? "");
+    const height = host?.clientHeight || Number.parseFloat(host?.style.height ?? "");
+    const fallback = resolvePlayResolution(store.getCurrent().system);
+    return {
+      width: Number.isFinite(width) && width > 0 ? width : fallback.width,
+      height: Number.isFinite(height) && height > 0 ? height : fallback.height,
+    };
   }
 
   upsertEventMarker(view: RuntimeEventView, onActivate?: (eventId: string) => void): void {
@@ -228,7 +237,7 @@ export class RuntimeDomOverlay {
     }
     node.textContent = JSON.stringify(snapshot);
     this.syncTimerHud(snapshot.timers, snapshot.timerActive);
-    this.syncTimeHud(snapshot.gameTime, snapshot.timePhase);
+    this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
   }
 
   syncAudioState(audio: AudioCommandState): void {
@@ -411,7 +420,7 @@ export class RuntimeDomOverlay {
     node.textContent = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
   }
 
-  private syncTimeHud(gameTime: GameTime | undefined, phase: TimePhase | undefined): void {
+  private syncTimeHud(gameTime: GameTime | undefined, phase: TimePhase | undefined, lines?: readonly string[]): void {
     const host = this.host();
     if (!host) return;
     const existing = host.querySelector("[data-testid='runtime-time-hud']");
@@ -426,7 +435,7 @@ export class RuntimeDomOverlay {
       host.append(node);
     }
     node.dataset.phase = phase ?? "";
-    node.textContent = formatGameTime(gameTime);
+    node.textContent = lines?.length ? lines.join("\n") : formatGameTime(gameTime);
   }
 }
 

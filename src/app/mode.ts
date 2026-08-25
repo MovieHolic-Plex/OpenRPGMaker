@@ -11,6 +11,7 @@ import { setAiConfigProvider } from "@/project/editorIdentity";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
 import { recordAiActivity } from "@/ai/activityLog";
+import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
@@ -22,7 +23,7 @@ import {
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
 import { hasDeepLinkedProject, isAutomationBootContext, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
-import { supabaseProjectConfig, supabaseProjectConfigDraftWithSource } from "@/project/supabaseProjectConfig";
+import { hasStoredSupabaseProjectSelection, supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 
 export type Mode = "edit" | "play";
 
@@ -82,16 +83,16 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
     // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1): URL에 ?project= 없고, 이 기기에 저장된
-    // 연결 설정도 없는 진짜 첫 방문은 env 기본(공유) 프로젝트 행을 편집 대상으로 열지
-    // 않는다 — 새 project id를 발급받은 빈 프로젝트로 시작한다(이후 부팅은 custom
-    // 설정으로 본인 행에 복귀). 자동화/테스트 부팅과 데모 파라미터 부팅은 제외.
+    // 선택한 작업도 없는 진짜 첫 방문은 배포 기본(공유) 프로젝트 행을 편집 대상으로 열지
+    // 않는다 — 새 project id를 발급받은 빈 프로젝트로 시작한다. 연결 자격 증명은 배포가
+    // 소유하고 브라우저에는 선택한 project id만 기억한다. 자동화/데모 부팅은 제외.
     const mintFirstVisitProject =
       typeof window !== "undefined"
       && !deepLinkedProjectAtBoot
       && !isAutomationBootContext()
       && createDevShowcaseProjectForLocation() === null
       && supabaseProjectConfig() !== null
-      && supabaseProjectConfigDraftWithSource().source !== "custom";
+      && !hasStoredSupabaseProjectSelection();
     if (mintFirstVisitProject) {
       const { createBlankProject } = await import("@/project/defaults");
       try {
@@ -164,15 +165,23 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   await enterMode("edit");
 
   if (showBriefing && elements) {
-    const result = await presentEditorWelcome(elements.root);
+    const { applyWelcomeGenreSystemPresetPlan } = await import("@/editor/welcomeGenreSystemPresetAction");
+    const result = await presentEditorWelcome(elements.root, {
+      applySystemPreset: (plan) => applyWelcomeGenreSystemPresetPlan(plan),
+    });
     if (result.dismiss) setEditorWelcomeDismissed(true);
-    if (result.prompt) {
+    if (result.systemPresetPlan) {
+      clearWelcomeIntentBootFlags();
+      const { maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } = await import("@/editor/coachMarks");
+      maybeStartBasicCoachMarks();
+      maybeStartStandardWelcomeCard();
+    } else if (result.prompt) {
       setPendingWelcomePipeline({
         prompt: result.prompt,
         autoSend: result.autoSend,
         replaceWithBlank: false,
         presetId: result.presetId,
-        source: result.source ?? "free-text",
+        source: result.source === "chip" ? "chip" : "free-text",
       });
     } else {
       clearWelcomeIntentBootFlags();
@@ -203,7 +212,7 @@ export function isModeShellMounted(): boolean {
 
 function renderDbRequiredScreen(_error: unknown): void {
   if (!elements) return;
-  elements.topbar.textContent = "AI RPG MAKER";
+  elements.topbar.textContent = PRODUCT_BRAND;
   while (elements.main.firstChild) {
     elements.main.removeChild(elements.main.firstChild);
   }
@@ -216,14 +225,14 @@ function renderDbRequiredScreen(_error: unknown): void {
   hero.dataset.testid = "db-required-hero";
   const heroImg = document.createElement("img");
   heroImg.className = "db-required-hero-image";
-  heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
-  heroImg.alt = "AI RPG Maker";
+  heroImg.src = "/assets/generated/title/oprn-boot-hero.jpg";
+  heroImg.alt = PRODUCT_BRAND;
   heroImg.decoding = "async";
   // 생성 히어로 로드 실패 시 기존 타이틀 아트로 폴백
   heroImg.addEventListener("error", () => {
     if (heroImg.dataset.fallback === "1") return;
     heroImg.dataset.fallback = "1";
-    heroImg.src = "/assets/generated/title/bright-rpg-maker-title-v2.png";
+    heroImg.src = "/assets/generated/title/oprn-title-bright-v2.png";
   });
   hero.append(heroImg);
 
@@ -231,7 +240,7 @@ function renderDbRequiredScreen(_error: unknown): void {
   copy.className = "db-required-copy";
   const kicker = document.createElement("p");
   kicker.className = "db-required-kicker";
-  kicker.textContent = "AI RPG MAKER";
+  kicker.textContent = PRODUCT_BRAND;
   const title = document.createElement("h1");
   title.textContent = "세계를 설계하고, 바로 플레이하세요";
   const body = document.createElement("p");
@@ -270,7 +279,7 @@ function openRequiredDbSettings(): void {
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
 function renderLoadFailureScreen(_error: unknown): void {
   if (!elements) return;
-  elements.topbar.textContent = "RPG ZZU - 작업을 불러올 수 없음";
+  elements.topbar.textContent = `${PRODUCT_BRAND} - 작업을 불러올 수 없음`;
   while (elements.main.firstChild) {
     elements.main.removeChild(elements.main.firstChild);
   }
@@ -283,13 +292,13 @@ function renderLoadFailureScreen(_error: unknown): void {
   hero.dataset.testid = "db-required-hero";
   const heroImg = document.createElement("img");
   heroImg.className = "db-required-hero-image";
-  heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
-  heroImg.alt = "AI RPG Maker";
+  heroImg.src = "/assets/generated/title/oprn-boot-hero.jpg";
+  heroImg.alt = PRODUCT_BRAND;
   heroImg.decoding = "async";
   heroImg.addEventListener("error", () => {
     if (heroImg.dataset.fallback === "1") return;
     heroImg.dataset.fallback = "1";
-    heroImg.src = "/assets/generated/title/bright-rpg-maker-title-v2.png";
+    heroImg.src = "/assets/generated/title/oprn-title-bright-v2.png";
   });
   hero.append(heroImg);
 
@@ -297,7 +306,7 @@ function renderLoadFailureScreen(_error: unknown): void {
   copy.className = "db-required-copy";
   const kicker = document.createElement("p");
   kicker.className = "db-required-kicker";
-  kicker.textContent = "RPG ZZU";
+  kicker.textContent = PRODUCT_BRAND;
   const title = document.createElement("h1");
   title.textContent = "저장된 작업을 바로 열 수 없습니다";
   const body = document.createElement("p");
@@ -527,6 +536,15 @@ async function renderTopbar(): Promise<void> {
 
 void import("@/editor/editorUiMode").then(({ subscribeEditorUiMode }) => {
   subscribeEditorUiMode(() => {
+    void renderTopbar();
+  });
+});
+
+// 워크스페이스 구성 변화도 탑바를 다시 그린다 — 프리셋 세그먼트의 선택 표시(aria-pressed)와
+// 패널 메뉴의 체크 상태가 여기서 나온다. 밀도가 안 바뀌는 전환(맵 그리기 → 이벤트 연출)은
+// editorUiMode 구독자를 깨우지 않으므로 이 구독이 없으면 선택 표시가 옛 값에 멈춘다.
+void import("@/editor/workspace/workspaceStore").then(({ subscribeWorkspace }) => {
+  subscribeWorkspace(() => {
     void renderTopbar();
   });
 });

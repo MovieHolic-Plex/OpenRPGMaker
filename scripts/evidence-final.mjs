@@ -9,8 +9,8 @@ const browser = await chromium.launch({ headless: true });
 const ctx = await browser.newContext({ viewport: { width: 810, height: 920 } });
 const page = await ctx.newPage();
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-  localStorage.setItem("rpg-zzu:editor-welcome-dismissed", "1");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:editor-welcome-dismissed", "1");
 });
 await page.goto("http://127.0.0.1:9888/", { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(3000);

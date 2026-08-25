@@ -11,6 +11,7 @@ import { setVariableBody } from "./commandBodyVariable";
 import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
 import { faceDisplayModeOf, renderFacesetIndexGrid, renderFacesetPreview } from "./facesetPreview";
 import { renderConditionEvalPreview } from "./conditionEvalPreview";
+import { renderCommandPreview } from "./commandPreview";
 import { clampFaceIndex, FACESET_FACE_COUNT } from "./messageDialogControls";
 import {
   BOOLEAN_OPTIONS,
@@ -80,7 +81,7 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   breakLoop: () => el("div", { class: "empty-hint", text: "현재 반복을 탈출합니다", dataset: { testid: "break-loop-editor" } }),
 };
 
-// [중간-3] 문장 표시 폼: 내용 본문 + 제어 문자 팔레트(라벨/용도). 화자 필드는 선택 접기.
+// 문장 표시 폼: 실제 게임 미리보기와 쉬운 작성 도구가 기본이고, 원시 제어문자는 고급 경로다.
 const TEXT_EMOTION_SEGMENTS = [
   { value: "neutral", key: "neutral", label: "기본" },
   { value: "happy", key: "happy", label: "기쁨" },
@@ -95,9 +96,9 @@ const TEXT_CONTROL_SNIPPETS: readonly {
   readonly label: string;
   readonly hint: string;
 }[] = [
-  { key: "color", code: "\\c[1]", label: "색", hint: "이후 글자 색 (0~19)" },
-  { key: "hero", code: "\\n[1]", label: "이름", hint: "n번 주인공 이름 표시" },
-  { key: "variable", code: "\\v[1]", label: "변수", hint: "n번 변수 값 표시" },
+  { key: "color", code: "\\c[1]", label: "색", hint: "이후 글자 색" },
+  { key: "hero", code: "\\n[1]", label: "이름", hint: "주인공 이름" },
+  { key: "variable", code: "\\v[1]", label: "변수", hint: "변수 값" },
   { key: "gold", code: "\\$", label: "소지금", hint: "소지금 창 표시" },
   { key: "pause", code: "\\!", label: "대기", hint: "키 입력까지 문장 정지" },
   { key: "wait-quarter", code: "\\.", label: "0.25초", hint: "1/4초 지연" },
@@ -111,7 +112,7 @@ const TEXT_CONTROL_SNIPPETS: readonly {
 
 function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "text" }>): HTMLElement {
   const wrap = el("div", {
-    class: "event-command-text-editor",
+    class: "event-command-text-editor cream-command-form",
     dataset: { testid: "event-command-text-editor" },
   });
   const speaker = el("input", {
@@ -120,7 +121,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     dataset: { testid: "event-command-text-speaker" },
   }) as HTMLInputElement;
   const body = el("textarea", {
-    attrs: { placeholder: "대화 내용 (제어 문자는 아래 버튼으로 삽입)" },
+    attrs: { placeholder: "플레이어에게 보여 줄 문장을 입력하세요", rows: "5" },
     dataset: { testid: "event-command-text-body" },
   }) as HTMLTextAreaElement;
   body.value = cmd.body;
@@ -145,6 +146,25 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     class: "event-command-text-limit-hint",
     dataset: { testid: "event-command-text-limit-hint" },
   });
+  const previewCanvas = el("div", {
+    class: "event-command-text-preview-canvas",
+    attrs: { "aria-live": "polite", "aria-atomic": "true" },
+    dataset: { testid: "event-command-text-live-preview" },
+  });
+  const readDraft = (): Extract<Command, { kind: "text" }> => {
+    const nextEmotion = emotion.select.value;
+    return {
+      kind: "text",
+      speaker: speaker.value.trim() || undefined,
+      body: body.value,
+      ...(nextEmotion && nextEmotion !== "neutral" ? { emotion: nextEmotion } : {}),
+      ...(autoAdvance.checked ? { autoAdvance: true } : {}),
+    };
+  };
+  const refreshPreview = () => {
+    clearChildren(previewCanvas);
+    previewCanvas.append(renderCommandPreview(readDraft(), { face: context.previewFace }));
+  };
   const refreshLimitHint = () => {
     const lines = body.value.split(/\r?\n/);
     const maxLine = lines.reduce((m, line) => Math.max(m, line.length), 0);
@@ -153,7 +173,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     const overLines = lines.length > 4;
     const overChars = maxLine > maxChars;
     if (overLines || overChars) {
-      limitHint.textContent = `RM2003 초과: ${lines.length}줄 / 최대 ${maxLine}자 (권장 4×${maxChars}${faceAware ? "; 얼굴" : ""})`;
+      limitHint.textContent = `권장 길이를 넘김: ${lines.length}줄 / 최대 ${maxLine}자 (권장 4×${maxChars}${faceAware ? "; 얼굴" : ""})`;
       limitHint.dataset.over = "1";
     } else {
       limitHint.textContent = `최대 4줄 / ${maxChars}자 권장${faceAware ? " (얼굴 포함)" : ""}`;
@@ -162,14 +182,8 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   };
   const apply = () => {
     refreshLimitHint();
-    const nextEmotion = emotion.select.value;
-    context.actions.replaceCommand(context.path, {
-      kind: "text",
-      speaker: speaker.value.trim() || undefined,
-      body: body.value,
-      ...(nextEmotion && nextEmotion !== "neutral" ? { emotion: nextEmotion } : {}),
-      ...(autoAdvance.checked ? { autoAdvance: true } : {}),
-    });
+    refreshPreview();
+    context.actions.replaceCommand(context.path, readDraft());
   };
   speaker.addEventListener("change", apply);
   speaker.addEventListener("input", apply);
@@ -177,23 +191,6 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   body.addEventListener("input", apply);
   emotion.select.addEventListener("change", apply);
   autoAdvance.addEventListener("change", apply);
-
-  const speakerDetails = el("details", {
-    class: "event-command-text-speaker-details",
-    dataset: { testid: "event-command-text-speaker-details" },
-  }) as HTMLDetailsElement;
-  if (cmd.speaker?.trim()) speakerDetails.open = true;
-  speakerDetails.append(
-    el("summary", {
-      class: "event-command-text-speaker-summary",
-      text: "화자 이름 (선택)",
-    }),
-    el("p", {
-      class: "event-command-text-speaker-hint",
-      text: "플레이 시 대사 창 위에 붙는 이름입니다. 비우면 얼굴 그래픽만으로 누가 말하는지 표시할 수 있습니다.",
-    }),
-    speaker,
-  );
 
   refreshLimitHint();
   const advancedOpen = Boolean(cmd.emotion && cmd.emotion !== "neutral") || cmd.autoAdvance === true;
@@ -209,7 +206,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     }),
     el("p", {
       class: "event-command-text-speaker-hint",
-      text: "예전 「고급 대화」 기능입니다. 얼굴 그래픽은 별도 「얼굴 그래픽 변경」 명령을 쓰세요.",
+      text: "예전 「고급 대화」 기능입니다. 얼굴은 별도 「얼굴 바꾸기」 명령을 쓰세요.",
     }),
     el("div", {
       class: "event-command-text-advanced-row",
@@ -224,37 +221,146 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     })
   );
 
-  wrap.append(
-    el("div", {
-      class: "event-command-text-body-field",
+  const easyTools = textEasyTools(body, apply);
+  const controlDetails = el("details", {
+    class: "event-command-text-control-details",
+    dataset: { testid: "event-command-text-control-details" },
+  }) as HTMLDetailsElement;
+  controlDetails.open = false;
+  controlDetails.append(
+    el("summary", {
+      class: "event-command-text-control-summary",
       children: [
-        el("div", { class: "event-command-text-body-label", text: "내용" }),
-        body,
-        limitHint,
+        el("span", { text: "더 많은 문장 효과" }),
+        el("span", { class: "event-command-text-control-summary-note", text: "필요할 때만" }),
       ],
     }),
+    el("p", {
+      class: "event-command-text-control-hint",
+      text: "색·대기·속도처럼 덜 쓰는 효과를 넣습니다. 일반 작성은 위의 문장 도구만으로 충분합니다.",
+    }),
     controlCharPalette(body, apply),
-    speakerDetails,
-    advanced,
+  );
+
+  refreshPreview();
+
+  wrap.append(
+    el("section", {
+      class: "event-command-text-preview-card",
+      children: [
+        el("div", {
+          class: "event-command-text-section-head",
+          children: [
+            el("div", {
+              children: [
+                el("strong", { text: "게임 화면 미리보기" }),
+                el("span", { text: "입력한 문장이 실제 창에서 보이는 모습" }),
+              ],
+            }),
+            el("span", { class: "event-command-text-live-chip", text: "LIVE" }),
+          ],
+        }),
+        previewCanvas,
+      ],
+    }),
+    el("section", {
+      class: "event-command-text-compose-card",
+      children: [
+        el("label", {
+          class: "event-command-text-speaker-field",
+          children: [
+            el("span", { class: "event-command-text-body-label", text: "말하는 사람" }),
+            speaker,
+            el("small", { text: "비워 두면 이름표를 숨깁니다." }),
+          ],
+        }),
+        el("div", {
+          class: "event-command-text-body-field",
+          children: [
+            el("div", {
+              class: "event-command-text-body-heading",
+              children: [
+                el("span", { class: "event-command-text-body-label", text: "대화 내용" }),
+                limitHint,
+              ],
+            }),
+            body,
+          ],
+        }),
+        easyTools,
+        advanced,
+        controlDetails,
+      ],
+    }),
   );
   return wrap;
+}
+
+type TextEasyTool = {
+  readonly key: string;
+  readonly glyph: string;
+  readonly label: string;
+  readonly hint: string;
+  readonly run: (body: HTMLTextAreaElement) => void;
+};
+
+function textEasyTools(body: HTMLTextAreaElement, apply: () => void): HTMLElement {
+  const tools: readonly TextEasyTool[] = [
+    { key: "new-line", glyph: "↵", label: "줄 바꿈", hint: "커서 위치에서 다음 줄로 넘깁니다.", run: (target) => insertAtCursor(target, "\n") },
+    { key: "hero-name", glyph: "人", label: "주인공 이름", hint: "첫 번째 주인공 이름을 게임 값으로 넣습니다.", run: (target) => insertAtCursor(target, "\\n[1]") },
+    { key: "variable", glyph: "#", label: "변수 값", hint: "첫 번째 변수 값을 게임 값으로 넣습니다.", run: (target) => insertAtCursor(target, "\\v[1]") },
+    { key: "emphasis", glyph: "A", label: "강조", hint: "선택한 문장을 강조 색으로 표시합니다.", run: (target) => wrapSelection(target, "\\c[2]", "\\c[0]") },
+    { key: "pause", glyph: "Ⅱ", label: "잠시 멈춤", hint: "이 위치에서 플레이어 입력을 기다립니다.", run: (target) => insertAtCursor(target, "\\!") },
+  ];
+  return el("div", {
+    class: "event-command-text-easy-tools",
+    dataset: { testid: "event-command-text-easy-tools" },
+    children: [
+      el("div", {
+        class: "event-command-text-tools-heading",
+        children: [
+          el("span", { class: "event-command-text-body-label", text: "문장 도구" }),
+          el("span", { text: "선택한 문장이나 커서 위치에 적용됩니다." }),
+        ],
+      }),
+      el("div", {
+        class: "event-command-text-tools-row",
+        children: tools.map((tool) => el("button", {
+          class: "event-command-text-tool",
+          attrs: { type: "button", title: tool.hint, "aria-label": tool.label },
+          dataset: { testid: `event-command-text-tool-${tool.key}` },
+          on: {
+            click: () => {
+              tool.run(body);
+              apply();
+              body.focus();
+            },
+          },
+          children: [
+            el("span", { class: "event-command-text-tool-glyph", text: tool.glyph, attrs: { "aria-hidden": "true" } }),
+            el("span", { class: "event-command-text-tool-label", text: tool.label }),
+          ],
+        })),
+      }),
+    ],
+  });
 }
 
 // 제어 문자 팔레트: 커서 위치에 스니펫 삽입. RM2003 제어문자 문법 그대로.
 function controlCharPalette(body: HTMLTextAreaElement, apply: () => void): HTMLElement {
   const palette = el("div", {
     class: "event-command-text-palette",
-    attrs: { "aria-label": "제어 문자 팔레트" },
+    attrs: { "aria-label": "문장 효과" },
     dataset: { testid: "event-command-text-palette" },
   });
   palette.append(
     el("div", {
       class: "event-command-text-palette-header",
       children: [
-        el("span", { class: "event-command-text-palette-label", text: "제어 문자 삽입" }),
+        el("span", { class: "event-command-text-palette-label", text: "문장 효과" }),
         el("span", {
           class: "event-command-text-palette-sub",
-          text: "클릭하면 커서 위치에 들어갑니다. 오른쪽 미리보기에 반영됩니다.",
+          text: "클릭하면 커서 위치에 들어갑니다. 미리보기에 바로 반영됩니다.",
         }),
       ],
     })
@@ -264,7 +370,7 @@ function controlCharPalette(body: HTMLTextAreaElement, apply: () => void): HTMLE
     row.append(
       el("button", {
         class: "event-command-text-palette-button",
-        attrs: { type: "button", title: snippet.hint + " — " + snippet.code },
+        attrs: { type: "button", title: snippet.hint },
         dataset: { testid: "event-command-text-insert-" + snippet.key },
         on: {
           click: () => {
@@ -274,8 +380,8 @@ function controlCharPalette(body: HTMLTextAreaElement, apply: () => void): HTMLE
           },
         },
         children: [
-          el("span", { class: "event-command-text-palette-code", text: snippet.code }),
           el("span", { class: "event-command-text-palette-name", text: snippet.label }),
+          el("span", { class: "event-command-text-palette-hint", text: snippet.hint }),
         ],
       })
     );
@@ -291,6 +397,20 @@ function insertAtCursor(body: HTMLTextAreaElement, code: string): void {
   const cursor = start + code.length;
   try {
     body.setSelectionRange(cursor, cursor);
+  } catch {
+    /* fakeDom 등 selection 미지원 환경 무시 */
+  }
+}
+
+function wrapSelection(body: HTMLTextAreaElement, prefix: string, suffix: string): void {
+  const start = typeof body.selectionStart === "number" ? body.selectionStart : body.value.length;
+  const end = typeof body.selectionEnd === "number" ? body.selectionEnd : start;
+  const selection = body.value.slice(start, end);
+  body.value = body.value.slice(0, start) + prefix + selection + suffix + body.value.slice(end);
+  const selectionStart = start + prefix.length;
+  const selectionEnd = selectionStart + selection.length;
+  try {
+    body.setSelectionRange(selectionStart, selectionEnd);
   } catch {
     /* fakeDom 등 selection 미지원 환경 무시 */
   }
@@ -316,9 +436,9 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     class: "event-command-face-resource-input",
     attrs: {
       type: "text",
-      placeholder: "얼굴 그래픽 리소스 ID",
+      placeholder: "얼굴",
       spellcheck: "false",
-      "aria-label": "얼굴 그래픽 리소스 ID",
+      "aria-label": "얼굴",
     },
     value: cmd.resourceId,
     dataset: { testid: "event-command-face-resource" },
@@ -330,7 +450,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
       type: "number",
       min: "1",
       max: String(FACESET_FACE_COUNT),
-      "aria-label": "얼굴 번호",
+      "aria-label": "얼굴 칸",
     },
     value: String(cmd.faceIndex + 1),
     dataset: { testid: "event-command-face-index" },
@@ -432,7 +552,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     const draft = readDraft();
     openDatabaseResourcePickerDialog({
       kind: "faceset",
-      title: "얼굴 그래픽 선택",
+      title: "얼굴 고르기",
       currentId: draft.resourceId,
       currentFaceIndex: draft.faceIndex,
       allowClear: true,
@@ -458,8 +578,8 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     children: [
       el("button", {
         class: "btn small event-command-face-pick",
-        text: "그래픽 선택…",
-        attrs: { type: "button", "aria-label": "얼굴 그래픽 리소스 선택" },
+        text: "얼굴 고르기…",
+        attrs: { type: "button", "aria-label": "얼굴 그림 선택" },
         dataset: { testid: "event-command-face-resource-set" },
         on: { click: openPicker },
       }),
@@ -517,13 +637,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
             text: "선택한 얼굴",
           }),
           resourceActions,
-          el("label", {
-            class: "event-command-face-resource-label",
-            children: [
-              el("span", { text: "리소스 ID" }),
-              resource,
-            ],
-          }),
+          resource,
         ],
       }),
     ],
@@ -532,7 +646,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   const optionsRow = el("div", {
     class: "event-command-face-options",
     children: [
-      fieldControl("얼굴 번호", faceIndex),
+      fieldControl("얼굴 칸", faceIndex),
       fieldControl("표시 위치", position),
       fieldControl("좌우 반전", flip),
     ],
@@ -554,7 +668,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     optionsRow,
     el("p", {
       class: "event-command-face-hint",
-      text: "칩셋 얼굴은 4×4 칸에서 고릅니다. 리소스 id에 -bust 가 있으면 대사 창 위 대형 흉상으로 표시되며 시트 칸 선택은 숨깁니다.",
+      text: "얼굴은 4×4 칸에서 고릅니다. 흉상 그림을 고르면 대사 창 위 큰 얼굴로 보이며 칸 선택은 숨깁니다.",
     })
   );
   return wrap;
@@ -646,7 +760,7 @@ function fieldControl(label: string, control: HTMLElement): HTMLElement {
 function setFlagBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setFlag" }>): HTMLElement {
   const wrap = el("span", {});
   const flag = el("input", {
-    attrs: { type: "text", placeholder: "플래그 이름" },
+    attrs: { type: "text", placeholder: "예: 도입을 봄" },
     value: cmd.flag,
     dataset: { testid: "event-command-flag-name" },
   }) as HTMLInputElement;
@@ -660,7 +774,7 @@ function setFlagBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
   };
   flag.addEventListener("change", apply);
   val.addEventListener("change", apply);
-  wrap.append(fieldControl("플래그", flag), fieldControl("값", val));
+  wrap.append(fieldControl("기억", flag), fieldControl("상태", val));
   return wrap;
 }
 
@@ -732,7 +846,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       }),
       el("p", {
         class: "event-fork-section-hint",
-        text: "참/그 외 안의 명령은 이 창이 아니라 메인 실행 내용 목록의 들여쓰기 가지에서 편집합니다.",
+        text: "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
         dataset: { testid: "event-fork-body-hint" },
       }),
       el("div", {
@@ -761,7 +875,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
 
 function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSwitch" }>): HTMLElement {
   // 스위치 조작: 검색 가능 피커 + 값(ON/OFF/전환/변수) 한 줄. "값 소스" 별도 필드는 두지 않는다.
-  const wrap = el("div", { class: "event-command-record-form event-command-switch-form" });
+  const wrap = el("div", { class: "event-command-record-form event-command-switch-form cream-command-form" });
   let currentSwitchId = cmd.switchId;
   let currentOperandVariableId = typeof cmd.value === "object" && cmd.value !== null ? cmd.value.id : "";
 
@@ -787,12 +901,25 @@ function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind
     children: [valueSelect, operandVariable],
   });
 
+  const hint = el("p", {
+    class: "event-command-switch-hint",
+    dataset: { testid: "event-command-switch-hint" },
+  });
+  const renderHint = (): void => {
+    const token = valueSelect.value;
+    hint.textContent = token === "variable"
+      ? "고른 숫자가 0이면 끄고, 아니면 켭니다."
+      : token === "toggle"
+        ? "지금 켜져 있으면 끄고, 꺼져 있으면 켭니다."
+        : "이 스위치를 켜거나 끕니다.";
+  };
   const syncVisibility = (): void => {
     const useVariable = valueSelect.value === "variable";
     operandVariable.hidden = !useVariable;
     // fakeDom 호환: classList.toggle 대신 add/remove.
     if (useVariable) valueRow.classList.add("is-variable");
     else valueRow.classList.remove("is-variable");
+    renderHint();
   };
 
   const apply = (): void => {
@@ -818,19 +945,15 @@ function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind
   wrap.append(
     fieldControl("스위치", swSel),
     fieldControl("값", valueRow),
-    el("p", {
-      class: "event-command-switch-hint",
-      text: "변수: 0=OFF / 그 외=ON · 전환: 현재 값을 반전",
-      dataset: { testid: "event-command-switch-hint" },
-    }),
+    hint,
     recordUsageHint("switch", cmd.switchId),
   );
   return wrap;
 }
 
 const SWITCH_VALUE_OPTIONS = [
-  { value: "true", label: "ON" },
-  { value: "false", label: "OFF" },
+  { value: "true", label: "켜기" },
+  { value: "false", label: "끄기" },
   { value: "toggle", label: "전환" },
   { value: "variable", label: "변수" },
 ] as const satisfies readonly SelectOption<"true" | "false" | "toggle" | "variable">[];
@@ -844,18 +967,18 @@ function switchValueOption(value: SwitchValue): "true" | "false" | "toggle" | "v
 
 function inputWaitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "inputWait" }>): HTMLElement {
   const wrap = el("div", {});
-  wrap.append(el("span", { class: "empty-hint", text: "아무 키 대기 (변수 미지정 시 키 코드 저장 안 함)" }));
+  wrap.append(el("span", { class: "empty-hint", text: "아무 키나 누를 때까지 기다립니다. 변수를 고르면 누른 키를 기억합니다." }));
   let currentVariableId = cmd.variableId ?? "";
   const variablePicker = databasePicker("variable", currentVariableId, (variableId) => {
     currentVariableId = variableId;
     context.actions.replaceCommand(context.path, { kind: "inputWait", variableId: currentVariableId });
   }, "event-command-input-wait-variable");
-  wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "키 코드 저장 변수(선택)" }), variablePicker] }));
+  wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "어디에 기억" }), variablePicker] }));
   return wrap;
 }
 
 function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFriendship" }>): HTMLElement {
-  const wrap = el("div", { class: "event-command-record-form" });
+  const wrap = el("div", { class: "event-command-record-form cream-command-form" });
   const npcKey = el("input", {
     attrs: { type: "text", placeholder: "비우면 이 이벤트" },
     value: cmd.npcKey ?? "",
@@ -875,13 +998,13 @@ function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command,
   };
   npcKey.addEventListener("change", apply);
   delta.addEventListener("change", apply);
-  wrap.append(fieldControl("NPC 키", npcKey), fieldControl("변화량", delta));
+  wrap.append(fieldControl("누구", npcKey), fieldControl("변화량", delta));
   appendFriendshipCharacterHint(wrap, cmd.npcKey);
   return wrap;
 }
 
 function getFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { kind: "getFriendship" }>): HTMLElement {
-  const wrap = el("div", { class: "event-command-record-form" });
+  const wrap = el("div", { class: "event-command-record-form cream-command-form" });
   const npcKey = el("input", {
     attrs: { type: "text", placeholder: "비우면 이 이벤트" },
     value: cmd.npcKey ?? "",
@@ -903,7 +1026,7 @@ function getFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { 
       variableId: currentVariableId,
     });
   });
-  wrap.append(fieldControl("NPC 키", npcKey), fieldControl("저장 변수", variablePicker), recordUsageHint("variable", cmd.variableId));
+  wrap.append(fieldControl("누구", npcKey), fieldControl("어디에 저장", variablePicker), recordUsageHint("variable", cmd.variableId));
   appendFriendshipCharacterHint(wrap, cmd.npcKey);
   return wrap;
 }
@@ -928,7 +1051,7 @@ function timerBody(context: CommandEditContext, cmd: Extract<Command, { kind: "t
   action.addEventListener("change", apply);
   timerId.addEventListener("change", apply);
   secs.addEventListener("change", apply);
-  wrap.append(fieldControl("동작", action), fieldControl("타이머", timerId), fieldControl("시간(초)", secs));
+  wrap.append(fieldControl("무엇을", action), fieldControl("타이머", timerId), fieldControl("몇 초", secs));
   return wrap;
 }
 
@@ -944,7 +1067,7 @@ function appendFriendshipCharacterHint(wrap: HTMLElement, npcKey: string | undef
       el("p", {
         class: "event-command-friendship-hint",
         dataset: { testid: "event-command-friendship-requires-character-id" },
-        text: "NPC 키를 비우면 이 이벤트의 캐릭터 ID가 필요합니다. 없으면 런타임에서 무시됩니다.",
+        text: "누구를 비우면 이 이벤트의 인물을 씁니다. 인물이 없으면 이 명령은 건너뜁니다.",
       })
     );
     return;

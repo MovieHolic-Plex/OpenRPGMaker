@@ -87,7 +87,7 @@ describe("learnSkill modern form + forget/party", () => {
       actorId: "",
       skillId,
       action: "forget",
-    })).toContain("망각");
+    })).toContain("잊기");
     expect(commandSummary({
       kind: "learnSkill",
       actorId: "",

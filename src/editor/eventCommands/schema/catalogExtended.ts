@@ -1,6 +1,6 @@
 // 이벤트 명령 스키마 카탈로그 — 잔여 23종.
 //
-// catalog.ts 와 함께 COMMAND_KINDS 73종 전부를 덮는다. 파일을 나눈 이유는 분량뿐이며
+// catalog.ts 와 함께 COMMAND_KINDS 75종 전부를 덮는다. 파일을 나눈 이유는 분량뿐이며
 // 등록 순서는 의미가 없다 (kind 별 레지스트리).
 //
 // 여기 있는 명령 중 shop·addLight·spawnFieldEnemy 는 필드 어휘로 표현되지 않는 부분을
@@ -104,7 +104,7 @@ defineCommand({
 defineCommand({
   kind: "setSelfSwitch",
   family: "state",
-  label: "셀프 스위치",
+  label: "이 이벤트 기억",
   fields: {
     key: f.enum("키", [
       { value: "A", label: "A", key: "a" },
@@ -117,7 +117,35 @@ defineCommand({
       { value: "false", label: "OFF", key: "off" },
     ]),
   },
-  summary: (c) => `셀프 스위치 ${str(c.key) || "A"} → ${c.value === false ? "OFF" : "ON"}`,
+  summary: (c) => `이 이벤트 기억 ${str(c.key) || "A"} → ${c.value === false ? "꺼짐" : "켜짐"}`,
+});
+
+defineCommand({
+  kind: "runControl",
+  family: "system",
+  label: "탐험 제어",
+  fields: {
+    action: f.enum("동작", [
+      { value: "start", label: "런 시작", key: "start" },
+      { value: "advance", label: "다음 층", key: "advance" },
+      { value: "end", label: "런 종료", key: "end" },
+      { value: "setFlag", label: "런 플래그", key: "flag" },
+      { value: "resetRoom", label: "방 초기화", key: "reset" },
+    ]),
+    seed: f.number("시드", { min: 0, max: 0xffff_ffff, optional: true, when: (c) => c.action === "start" }),
+    runId: f.text("런 ID", { optional: true, when: (c) => c.action === "start" }),
+    startFloor: f.number("시작 층", { min: 1, max: 9_999, optional: true, when: (c) => c.action === "start" }),
+    amount: f.number("증가 층", { min: 1, optional: true, when: (c) => c.action === "advance" }),
+    result: f.enum("결과", [
+      { value: "completed", label: "완료", key: "completed" },
+      { value: "failed", label: "실패", key: "failed" },
+      { value: "abandoned", label: "포기", key: "abandoned" },
+    ], { when: (c) => c.action === "end" }),
+    flag: f.text("플래그", { when: (c) => c.action === "setFlag" }),
+    value: f.bool("값", { when: (c) => c.action === "setFlag" }),
+    roomId: f.text("방 ID", { optional: true, when: (c) => c.action === "resetRoom" }),
+  },
+  summary: (c) => `탐험 · ${str(c.action) || "start"}`,
 });
 
 defineCommand({
@@ -315,7 +343,7 @@ defineCommand({
 defineCommand({
   kind: "triggerEnding",
   family: "system",
-  label: "엔딩 트리거",
+  label: "엔딩",
   fields: { endingId: f.text("엔딩 ID", { optional: true, placeholder: "비우면 조건 만족 최우선 엔딩" }) },
   summary: (c) => (c.endingId ? `엔딩 ${str(c.endingId)} 실행` : "조건 최우선 엔딩 실행"),
 });

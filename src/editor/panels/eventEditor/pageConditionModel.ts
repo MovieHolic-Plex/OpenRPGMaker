@@ -226,6 +226,10 @@ export function advancedConditionEntries(page: EventPage): AdvancedConditionEntr
     // 소지금은 간단 행이 없으므로 전부 고급 목록에 표시 — 누락 시 편집 불가.
     if (condition.kind === "gold") {
       entries.push({ index, condition });
+      return;
+    }
+    if (condition.kind === "run") {
+      entries.push({ index, condition });
     }
   });
   return entries;

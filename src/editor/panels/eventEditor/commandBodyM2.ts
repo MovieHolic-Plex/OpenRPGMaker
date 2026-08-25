@@ -3,6 +3,7 @@ import { renderPage3M2CommandBody } from "./commandBodyM2Page3";
 import { renderWeightedBranchCommandBody } from "./commandBodyWeightedBranch";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
+import { KOREAN_LABEL_BY_TITLE } from "@/project/eventCommands/m2CatalogData";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { Command, M2CommandValue, ResourceKind, ResourceProfile, UploadedAsset } from "@/project/types";
@@ -44,12 +45,18 @@ export function renderM2CommandBody(context: CommandEditContext, cmd: Command): 
     return eraseEventCommandBody(context, cmd);
   }
   const wrap = el("div", {
-    class: "m2-command-body",
+    class: "m2-command-body cream-command-form",
     dataset: { testid: `m2-command-body-${cmd.commandId}` },
   });
+  if (entry) {
+    wrap.append(el("div", {
+      class: "cream-command-form-head",
+      text: KOREAN_LABEL_BY_TITLE[entry.title] ?? entry.title,
+    }));
+  }
 
   if (!entry) {
-    wrap.append(el("div", { class: "empty-hint", text: `알 수 없는 M2 명령: ${cmd.commandId}` }));
+    wrap.append(el("div", { class: "empty-hint", text: "이 명령은 이 에디터에서 아직 열 수 없습니다." }));
     return wrap;
   }
 
@@ -128,7 +135,7 @@ function eraseEventCommandBody(context: CommandEditContext, cmd: M2Command): HTM
       el("div", {
         class: "m2-erase-event-field",
         children: [
-          el("label", { class: "m2-erase-event-label", text: "대상" }),
+          el("label", { class: "m2-erase-event-label", text: "어떤 이벤트" }),
           target,
         ],
       }),
@@ -138,7 +145,7 @@ function eraseEventCommandBody(context: CommandEditContext, cmd: M2Command): HTM
 }
 
 function m2CommandHelpText(fieldCount: number): string {
-  return fieldCount > 0 ? "필요한 값을 선택하고 확인을 누르세요." : "이 명령은 추가 설정 없이 실행됩니다.";
+  return fieldCount > 0 ? "값을 고르면 바로 반영됩니다." : "이 명령은 추가 설정 없이 실행됩니다.";
 }
 
 function controlForField(request: FieldControlRequest): HTMLElement {
@@ -266,8 +273,8 @@ function recordPickerControl(request: RecordPickerRequest): HTMLElement {
   });
   select.append(el("option", { text: `(${request.semantic.emptyText})`, attrs: { value: "" } }));
   if (request.value && selectedItem === undefined) select.append(el("option", { text: `현재 값: ${request.value}`, attrs: { value: request.value } }));
-  for (const [index, item] of request.semantic.items.entries()) {
-    select.append(el("option", { text: `${String(index + 1).padStart(4, "0")}: ${item.name}`, attrs: { value: item.id } }));
+  for (const item of request.semantic.items) {
+    select.append(el("option", { text: item.name.trim() || "(이름 없음)", attrs: { value: item.id } }));
   }
   select.value = request.value;
   select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
@@ -336,7 +343,7 @@ function resourcePreview(options: ResourcePreviewOptions): HTMLElement {
     return preview;
   }
   preview.dataset.empty = "true";
-  preview.textContent = options.value ? `${options.selectedName} 미리보기 없음` : "리소스 선택";
+  preview.textContent = options.value ? `${options.selectedName} 미리보기 없음` : "그림을 고르세요";
   return preview;
 }
 
@@ -356,7 +363,7 @@ function fieldSemantic(request: FieldControlRequest): FieldSemantic | undefined 
   if (spec.key === "resourceId") return resourceSemantic(title);
   if (spec.key === "actorId") return recordSemantic("주인공 선택", "주인공 선택", namedRecords(project.database.actors));
   if (spec.key === "classId") return recordSemantic("직업 선택", "직업 선택", namedRecords(project.database.classes));
-  if (spec.key === "skillId") return recordSemantic("특수기 선택", "특수기 선택", namedRecords(project.database.skills));
+  if (spec.key === "skillId") return recordSemantic("스킬 선택", "스킬 선택", namedRecords(project.database.skills));
   if (spec.key === "itemId") return recordSemantic("아이템 선택", "아이템 선택", namedRecords(project.database.items));
   if (spec.key === "equipmentId") return recordSemantic("장비 선택", "장비 선택", namedRecords(project.database.equipment));
   if (spec.key === "stateId") return recordSemantic("상태 선택", "상태 선택", namedRecords(project.database.states));
@@ -364,8 +371,8 @@ function fieldSemantic(request: FieldControlRequest): FieldSemantic | undefined 
   if (spec.key === "troopId") return recordSemantic("적 그룹 선택", "적 그룹 선택", namedRecords(project.database.troops));
   if (spec.key === "switchId") return recordSemantic("스위치 선택", "스위치 선택", switchVariableRecords(project, "switch"));
   if (spec.key === "eventId") return recordSemantic("이벤트 선택", "이벤트 선택", eventRecords(project));
-  if (spec.key === "commonEventId") return recordSemantic("공통 이벤트 선택", "공통 이벤트 선택", namedRecords(project.commonEvents));
-  if (spec.key === "tilesetId") return recordSemantic("타일셋 선택", "타일셋 선택", namedRecords(Object.values(project.tilesets)));
+  if (spec.key === "commonEventId") return recordSemantic("이벤트 고르기", "이벤트 고르기", namedRecords(project.commonEvents));
+  if (spec.key === "tilesetId") return recordSemantic("맵 그림 세트", "맵 그림 세트", namedRecords(Object.values(project.tilesets)));
   if (spec.key === "animationId") return recordSemantic("전투 애니메이션 선택", "전투 애니메이션 선택", namedRecords(project.database.battleAnimations));
   if (spec.key === "variableId") return recordSemantic("변수 선택", "변수 선택", switchVariableRecords(project, "variable"));
   if (spec.key === "mapId") return recordSemantic("맵 선택", "맵 선택", namedRecords(Object.values(project.maps)));
@@ -392,26 +399,26 @@ function targetSemantic(title: string, project: ReturnType<typeof store.getCurre
 
 function valueSemantic(title: string, project: ReturnType<typeof store.getCurrent>): FieldSemantic | undefined {
   if (title === "Change Actor Class") return recordSemantic("직업 선택", "직업 선택", namedRecords(project.database.classes));
-  if (title === "Change Skills") return recordSemantic("특수기 선택", "특수기 선택", namedRecords(project.database.skills));
+  if (title === "Change Skills") return recordSemantic("스킬 선택", "스킬 선택", namedRecords(project.database.skills));
   if (title === "Change Items") return recordSemantic("아이템 선택", "아이템 선택", namedRecords(project.database.items));
   if (title === "Change State" || title === "Change Enemy State") return recordSemantic("상태 선택", "상태 선택", namedRecords(project.database.states));
   if (title === "Change Equipment") return recordSemantic("장비 선택", "장비 선택", namedRecords(project.database.equipment));
-  if (title === "Change Tileset") return recordSemantic("타일셋 선택", "타일셋 선택", namedRecords(Object.values(project.tilesets)));
-  if (title === "Change Battle Commands") return recordSemantic("전투 커맨드 선택", "전투 커맨드 선택", namedRecords(project.database.battleCommands ?? []));
-  if (title === "Change System Graphic") return { kind: "resource", label: "시스템 그래픽 선택", resourceKinds: new Set(["system", "system2"]) };
-  if (title === "Change Actor Graphic" || title === "Change Vehicle Graphic") return { kind: "resource", label: "캐릭터 그래픽 선택", resourceKinds: new Set(["charset"]) };
-  if (title === "Change Actor Faceset") return { kind: "resource", label: "얼굴 그래픽 선택", resourceKinds: new Set(["faceset"]) };
-  if (title === "Change Parallax Back") return { kind: "resource", label: "파노라마 리소스 선택", resourceKinds: new Set(["backdrop"]) };
+  if (title === "Change Tileset") return recordSemantic("맵 그림 세트", "맵 그림 세트", namedRecords(Object.values(project.tilesets)));
+  if (title === "Change Battle Commands") return recordSemantic("전투 명령 선택", "전투 명령 선택", namedRecords(project.database.battleCommands ?? []));
+  if (title === "Change System Graphic") return { kind: "resource", label: "메뉴 모습 선택", resourceKinds: new Set(["system", "system2"]) };
+  if (title === "Change Actor Graphic" || title === "Change Vehicle Graphic") return { kind: "resource", label: "모습 고르기", resourceKinds: new Set(["charset"]) };
+  if (title === "Change Actor Faceset") return { kind: "resource", label: "얼굴 고르기", resourceKinds: new Set(["faceset"]) };
+  if (title === "Change Parallax Back") return { kind: "resource", label: "먼 배경 선택", resourceKinds: new Set(["backdrop"]) };
   return undefined;
 }
 
 function resourceSemantic(title: string): ResourceFieldSemantic {
-  if (title.includes("Battleback")) return { kind: "resource", label: "전투 배경 리소스 선택", resourceKinds: new Set(["backdrop"]) };
-  if (title.includes("Picture")) return { kind: "resource", label: "그림 리소스 선택", resourceKinds: new Set(["picture"]) };
-  if (title.includes("BGM")) return { kind: "resource", label: "BGM 리소스 선택", resourceKinds: new Set(["music"]) };
-  if (title.includes("SE")) return { kind: "resource", label: "SE 리소스 선택", resourceKinds: new Set(["sound"]) };
-  if (title.includes("Movie")) return { kind: "resource", label: "동영상 리소스 선택", resourceKinds: IMAGE_RESOURCE_KINDS };
-  return { kind: "resource", label: "리소스 선택", resourceKinds: IMAGE_RESOURCE_KINDS };
+  if (title.includes("Battleback")) return { kind: "resource", label: "전투 배경 선택", resourceKinds: new Set(["backdrop"]) };
+  if (title.includes("Picture")) return { kind: "resource", label: "그림 선택", resourceKinds: new Set(["picture"]) };
+  if (title.includes("BGM")) return { kind: "resource", label: "배경음 선택", resourceKinds: new Set(["music"]) };
+  if (title.includes("SE")) return { kind: "resource", label: "효과음 선택", resourceKinds: new Set(["sound"]) };
+  if (title.includes("Movie")) return { kind: "resource", label: "영상 선택", resourceKinds: IMAGE_RESOURCE_KINDS };
+  return { kind: "resource", label: "그림 선택", resourceKinds: IMAGE_RESOURCE_KINDS };
 }
 
 function recordSemantic(label: string, emptyText: string, items: readonly RecordPickerItem[]): RecordFieldSemantic {
@@ -470,16 +477,16 @@ function targetLabelForTitle(title: string): string | undefined {
 
 function valueLabelForTitle(title: string): string | undefined {
   if (title === "Change Actor Class") return "직업";
-  if (title === "Change Skills") return "특수기";
+  if (title === "Change Skills") return "스킬";
   if (title === "Change Items") return "아이템";
   if (title === "Change State" || title === "Change Enemy State") return "상태";
   if (title === "Change Equipment") return "장비";
-  if (title === "Change Tileset") return "타일셋";
-  if (title === "Change Battle Commands") return "전투 커맨드";
-  if (title === "Change System Graphic") return "시스템 그래픽";
-  if (title === "Change Actor Graphic" || title === "Change Vehicle Graphic") return "캐릭터 그래픽";
-  if (title === "Change Actor Faceset") return "얼굴 그래픽";
-  if (title === "Change Parallax Back") return "파노라마";
+  if (title === "Change Tileset") return "맵 그림 세트";
+  if (title === "Change Battle Commands") return "전투 명령";
+  if (title === "Change System Graphic") return "메뉴 모습";
+  if (title === "Change Actor Graphic" || title === "Change Vehicle Graphic") return "모습";
+  if (title === "Change Actor Faceset") return "얼굴";
+  if (title === "Change Parallax Back") return "먼 배경";
   return undefined;
 }
 

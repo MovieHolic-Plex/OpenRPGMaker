@@ -1,0 +1,613 @@
+/* 생활·몬스터 저작 탭의 플레이 연결 상태, 복구 동선, 레코드 요약. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-header {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-header .db-record-intro {
+  margin-bottom: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact {
+  background: var(--db-light-bg-inset, var(--bg-inset));
+  margin: 2px 0 8px;
+  padding: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-eyebrow {
+  background: var(--db-light-accent-muted, var(--accent-muted));
+  border: 1px solid var(--db-light-accent-border, var(--accent-border));
+  border-radius: 999px;
+  color: var(--db-light-accent, var(--accent));
+  font: 700 10px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading p {
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3 {
+  color: var(--db-light-text-1, var(--text-1));
+  font: 700 14px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading p {
+  color: var(--db-light-text-2, var(--text-2));
+  font: 400 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact .db-life-card-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card {
+  align-content: start;
+  background: var(--db-light-bg-raised, var(--bg-raised));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action {
+  align-self: end;
+  background: transparent;
+  border: 0;
+  color: var(--db-light-accent, var(--accent));
+  cursor: pointer;
+  font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  justify-self: start;
+  margin-top: 4px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action:focus-visible {
+  border-radius: 3px;
+  outline: 2px solid var(--db-light-focus, var(--focus));
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-ready {
+  border-color: color-mix(in srgb, var(--db-light-success, var(--success)) 34%, transparent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-needs-setup {
+  background: var(--db-light-warning-muted, var(--warning-muted));
+  border-color: color-mix(in srgb, var(--db-light-warning, var(--warning)) 34%, transparent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-label {
+  color: var(--db-light-text-3, var(--text-3));
+  font: 600 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-value {
+  color: var(--db-light-text-1, var(--text-1));
+  font: 700 14px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-detail {
+  color: var(--db-light-text-2, var(--text-2));
+  font: 400 10px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-status {
+  align-items: center;
+  color: var(--db-light-text-2, var(--text-2));
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 11px;
+  gap: 6px 12px;
+  margin-bottom: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-profile-fields,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-prefs,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-responses,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-usage,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-orphan-create {
+  display: grid;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-prefs,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-responses,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-usage,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-orphan-create {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-birthday,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-add-row,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-row,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-usage-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-add-row select {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-row > span,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-character-usage-row > span {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+@media (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-crops),
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-characters),
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species) {
+    display: grid;
+    gap: 8px;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species) > .db-life-header {
+    grid-row: 1;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species) > .oprn-record-monster-species {
+    grid-row: 2;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) > .db-collection-gate-warn {
+    grid-row: 1;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) > .db-life-header {
+    grid-row: 2;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) > .oprn-record-monster-species {
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 1180px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact .db-life-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact .db-life-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* P1 season/weather and farm-animal authoring surfaces — studio surface, hairline. */
+.database-modal-backdrop .db-life-authoring-workspace {
+  background: var(--db-studio-surface, var(--db-light-bg-surface, var(--bg-surface)));
+  border: 1px solid var(--db-studio-border-subtle, var(--db-light-border-subtle, var(--border-subtle)));
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px;
+}
+
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading h2,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading p,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-card h3,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-card p {
+  margin: 0;
+}
+
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading h2 {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading p,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-card p {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+.database-modal-backdrop .db-life-toolbar {
+  align-items: center;
+  background: var(--db-studio-surface, var(--db-light-bg-raised, var(--bg-raised)));
+  border: 1px solid var(--db-studio-border-subtle, var(--db-light-border-subtle, var(--border-subtle)));
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 9px 10px;
+}
+
+.database-modal-backdrop .db-life-toolbar.is-empty {
+  display: none;
+}
+
+/* studio empty card — single filled CTA */
+.database-modal-backdrop .db-studio-empty {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+}
+.database-modal-backdrop .db-studio-empty .empty-state__action--primary {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
+}
+
+.database-modal-backdrop .db-life-toolbar > span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.database-modal-backdrop .db-life-toolbar .field {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-weather-season-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-weather-season {
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-life-rule-row {
+  align-items: end;
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(88px, 1.4fr) minmax(62px, .8fr) minmax(62px, .8fr) auto;
+  padding: 7px;
+}
+
+.database-modal-backdrop .db-life-rule-row .field,
+.database-modal-backdrop .db-life-record-card .field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-life-rule-row .field > span,
+.database-modal-backdrop .db-life-record-card .field > span {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.database-modal-backdrop .db-life-rule-row :is(input, select),
+.database-modal-backdrop .db-life-record-card :is(input, select) {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-farm-animal-grid {
+  align-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-farm-authoring-panel {
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-life-record-card {
+  background: var(--db-studio-surface, var(--db-light-bg-surface, var(--bg-surface)));
+  border: 1px solid var(--db-studio-border-subtle, var(--db-light-border-subtle, var(--border-subtle)));
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+/* list meta: trailing #n, name first */
+.database-modal-backdrop .db-list .db-list-meta {
+  color: var(--db-studio-text-3, var(--text-muted));
+  font-size: 11px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.database-modal-backdrop .db-list .db-list-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.database-modal-backdrop .db-record-hero {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.database-modal-backdrop .db-record-hero h3 {
+  color: var(--db-studio-text-1);
+  font: 600 13px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.database-modal-backdrop .db-record-hero .db-record-meta {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .database-modal-backdrop .db-farm-animal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .db-weather-season-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-rule-row {
+    grid-template-columns: minmax(0, 1fr) minmax(70px, .7fr);
+  }
+}
+
+/* Structured life-skill / crafting authoring (desktop floor: 1024px). */
+.database-modal-backdrop .db-life-crafting-header {
+  background: var(--db-light-bg-raised, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.database-modal-backdrop .db-life-crafting-header h2,
+.database-modal-backdrop .db-life-crafting-header p,
+.database-modal-backdrop .db-life-detail-form h3,
+.database-modal-backdrop .db-life-nested-heading h4 {
+  margin: 0;
+}
+
+.database-modal-backdrop .db-life-crafting-header p {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.database-modal-backdrop .db-life-section-tabs,
+.database-modal-backdrop .db-life-list-actions,
+.database-modal-backdrop .db-life-nested-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .db-life-section-tab {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 999px;
+  color: var(--text-muted);
+  min-height: 28px;
+  padding: 4px 10px;
+}
+
+.database-modal-backdrop .db-life-section-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.database-modal-backdrop .db-body:has(.db-life-crafting-workspace) {
+  display: grid;
+  gap: 8px;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.database-modal-backdrop .db-life-crafting-workspace {
+  min-height: 0;
+}
+
+.database-modal-backdrop .db-life-list-heading,
+.database-modal-backdrop .db-life-nested-heading {
+  justify-content: space-between;
+}
+
+.database-modal-backdrop .db-life-list-actions {
+  border-top: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  padding: 8px;
+}
+
+.database-modal-backdrop .db-life-detail-form {
+  display: grid;
+  gap: 10px;
+  max-width: 920px;
+}
+
+.database-modal-backdrop .db-life-package-pane {
+  min-height: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .db-life-help,
+.database-modal-backdrop .db-life-explicit-remove p {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-life-field {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(100px, 160px) minmax(0, 1fr);
+}
+
+.database-modal-backdrop .db-life-field.is-checkbox {
+  grid-template-columns: minmax(100px, 160px) auto;
+  justify-content: start;
+}
+
+.database-modal-backdrop .db-life-nested-section {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 7px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.database-modal-backdrop .db-life-nested-row {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(140px, 1fr)) auto;
+}
+
+.database-modal-backdrop .db-life-checkbox-list {
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  min-width: 0;
+  padding: 8px 10px 10px;
+}
+
+.database-modal-backdrop .db-life-checkbox-list legend {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding-inline: 4px;
+}
+
+.database-modal-backdrop .db-life-checkbox-list .db-life-field {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.database-modal-backdrop .db-life-explicit-remove {
+  align-items: center;
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 7px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 9px 10px;
+}
+
+@media (min-width: 1360px) {
+  .database-modal-backdrop .db-life-crafting-header {
+    grid-template-columns: minmax(260px, 1fr) auto;
+  }
+
+  .database-modal-backdrop .db-life-section-tabs {
+    justify-content: flex-end;
+    max-width: 760px;
+  }
+
+
+  .database-modal-backdrop .db-life-checkbox-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .database-modal-backdrop .db-life-crafting-header {
+    padding: 9px 10px;
+  }
+
+  .database-modal-backdrop .db-life-section-tab {
+    font-size: 11px;
+    padding-inline: 8px;
+  }
+
+  .database-modal-backdrop .db-life-section-tabs {
+    gap: 4px;
+  }
+
+  .database-modal-backdrop .db-life-crafting-workspace {
+    grid-template-columns: minmax(190px, 28%) minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-nested-row {
+    grid-template-columns: minmax(0, 1fr) minmax(100px, .55fr) auto;
+  }
+
+  .database-modal-backdrop .db-life-field {
+    grid-template-columns: minmax(92px, 126px) minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-checkbox-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-explicit-remove {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

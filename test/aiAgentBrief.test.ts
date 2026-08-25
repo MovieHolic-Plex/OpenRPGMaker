@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  assistantIdleHints,
   directorStartPrompts,
   formatComposerPlaceholder,
+  idlePresenceLine,
   nextStepHint,
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
@@ -32,8 +34,8 @@ describe("readAgentBrief", () => {
     expect(brief.mapName).toBe("빈 맵");
     expect(brief.mapSize).toBe("20×15");
     expect(brief.layerShort).toBe("바닥");
-    expect(brief.toolLabel).toBe("펜");
-    expect(brief.line).toBe("빈 맵 20×15 · 바닥 · 펜");
+    expect(brief.toolLabel).toBe("칠하기");
+    expect(brief.line).toBe("빈 맵 20×15 · 바닥 · 칠하기");
     expect(brief.lookingAt).toBe("지금 빈 맵 20×15");
     expect(brief.eventCount).toBe(0);
   });
@@ -51,8 +53,7 @@ describe("readAgentBrief", () => {
     const brief = readAgentBrief();
     expect(brief.selectionLabel).toBe("선택 4×3 (3,4)");
     expect(brief.line).toContain("선택 4×3 (3,4)");
-    expect(formatComposerPlaceholder(brief)).toMatch(/무엇을 만들까/);
-    expect(formatComposerPlaceholder(brief)).toContain("선택 4×3");
+    expect(formatComposerPlaceholder(brief)).toBe("한 문장으로 지시");
   });
 
   it("선택이 있으면 선택 꾸미기 명령을 앞에 둔다", () => {
@@ -72,8 +73,30 @@ describe("readAgentBrief", () => {
     expect(prompts[0]?.instruction).toContain("빈 맵");
   });
 
+  it("대기 한 줄과 골드 힌트 둘을 준다", () => {
+    const brief = readAgentBrief();
+    expect(idlePresenceLine(brief)).toBe("이 맵에 무엇을 둘까요");
+    expect(assistantIdleHints(brief)).toHaveLength(2);
+    expect(assistantIdleHints(brief)[0]?.label).toBe("강가를 만들어줘");
+    expect(formatComposerPlaceholder(brief)).toBe("한 문장으로 지시");
+  });
+
   it("빈 맵은 버튼을 누르라고 안내한다", () => {
     expect(nextStepHint(readAgentBrief())).toBe("빈 맵이에요. 아래 중 하나를 누르면 바로 시작합니다.");
+  });
+
+  it("흙길 오토타일 외곽만 있어도 실제 길로 인식한다", () => {
+    const project = store.getCurrent();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.lowerTiles[7 * map.width + 2] = 390;
+    map.lowerTiles[7 * map.width + 3] = 391;
+    map.lowerTiles[7 * map.width + 4] = 392;
+    store.replace(structuredClone(project));
+
+    const brief = readAgentBrief();
+    expect(brief.hasPath).toBe(true);
+    expect(nextStepHint(brief)).not.toContain("길이 없어요");
   });
 
   it("선택이 있으면 그 칸을 고르라고 안내한다", () => {

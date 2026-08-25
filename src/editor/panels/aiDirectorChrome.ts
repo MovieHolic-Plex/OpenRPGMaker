@@ -10,17 +10,18 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
-import { readAgentBrief } from "./aiAgentBrief";
+import { idlePresenceLine, readAgentBrief } from "./aiAgentBrief";
 
 const DIRECTOR_FACE_RESOURCE_ID = "easyrpg-faceset-actor1";
 const DIRECTOR_FACE_INDEX = 0;
-const DIRECTOR_NAME = "감독";
-const DIRECTOR_RESTORE_LABEL = "AI 어시스턴트";
+const DIRECTOR_NAME = "조수";
+const DIRECTOR_RESTORE_LABEL = "조수";
 const DIRECTOR_FACE_SIZE_PX = FACESET_FACE_WIDTH;
 
 export type DirectorPlateHandle = {
   readonly element: HTMLElement;
   readonly setName: (name: string) => void;
+  readonly setLine: (line: string | null) => void;
   readonly dispose: () => void;
 };
 
@@ -42,7 +43,7 @@ function applyDirectorFaceCrop(face: HTMLElement): void {
   face.style.backgroundSize = `${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`;
 }
 
-function createDirectorFace(options: DirectorFaceOptions = {}): HTMLElement {
+export function createAssistantFace(options: DirectorFaceOptions = {}): HTMLElement {
   const ariaLabel = options.ariaLabel;
   const face = el("span", {
     class: "ai-director-face",
@@ -66,7 +67,7 @@ export function createDirectorRestoreButton(): HTMLButtonElement {
     dataset: { testid: "ai-collapsed-restore" },
     children: [
       el("span", { class: "ai-collapsed-restore-dot", attrs: { "aria-hidden": "true" } }),
-      createDirectorFace(),
+      createAssistantFace(),
     ],
   });
   button.style.width = `${DIRECTOR_FACE_SIZE_PX}px`;
@@ -75,7 +76,7 @@ export function createDirectorRestoreButton(): HTMLButtonElement {
 }
 
 export function createDirectorPlate(): DirectorPlateHandle {
-  const face = createDirectorFace({
+  const face = createAssistantFace({
     ariaLabel: DIRECTOR_NAME,
     testid: "ai-director-face",
   });
@@ -84,7 +85,7 @@ export function createDirectorPlate(): DirectorPlateHandle {
   const line = el("p", {
     class: "ai-director-line",
     dataset: { testid: "ai-director-line" },
-    text: readAgentBrief().line,
+    text: idlePresenceLine(readAgentBrief()),
   });
   const element = el("div", {
     class: "ai-director-plate",
@@ -95,9 +96,10 @@ export function createDirectorPlate(): DirectorPlateHandle {
     ],
   });
 
+  let override: string | null = null;
   const refreshLine = (): void => {
     if (typeof document === "undefined") return;
-    line.textContent = readAgentBrief().line;
+    line.textContent = override ?? idlePresenceLine(readAgentBrief());
   };
   const unsubscribeEditor = editorState.subscribe(refreshLine);
   const unsubscribeStore = store.subscribe(refreshLine);
@@ -107,6 +109,10 @@ export function createDirectorPlate(): DirectorPlateHandle {
     setName: (nextName: string) => {
       name.textContent = nextName;
       face.setAttribute("aria-label", nextName);
+    },
+    setLine: (nextLine: string | null) => {
+      override = nextLine;
+      refreshLine();
     },
     dispose: () => {
       unsubscribeEditor();

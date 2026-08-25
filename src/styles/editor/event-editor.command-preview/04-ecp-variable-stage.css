@@ -24,7 +24,7 @@
 .ecp-variable-title {
   font-weight: 700;
   font-size: 12px;
-  color: var(--rm2k3-command-blue, #4A57D6);
+  color: var(--oprn-command-blue, #4A57D6);
 }
 
 .ecp-variable-formula {
@@ -66,7 +66,7 @@
   font-weight: 700;
   font-size: 12px;
   margin-bottom: 6px;
-  color: var(--rm2k3-command-blue, #4A57D6);
+  color: var(--oprn-command-blue, #4A57D6);
 }
 .ecp-shop-message {
   font-size: 11px;
@@ -145,7 +145,7 @@
 .ecp-summary-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; justify-content: center; text-align: center; }
 .ecp-summary-icon { image-rendering: pixelated; vertical-align: middle; }
 .ecp-token { font-size: 13px; }
-.ecp-token.command { font-weight: 700; color: var(--rm2k3-command-blue, var(--accent, #4A57D6)); }
+.ecp-token.command { font-weight: 700; color: var(--oprn-command-blue, var(--accent, #4A57D6)); }
 .ecp-token.value { color: var(--text-1, #2A2521); }
 .ecp-token.plain { color: var(--text-2, #5C5348); }
 .ecp-token.op-add { color: var(--success, #18764F); font-weight: 700; }
@@ -160,7 +160,7 @@
 .ecp-move { display: flex; flex-direction: column; gap: 8px; }
 .ecp-move-target { display: flex; align-items: center; gap: 8px; }
 .ecp-move-target-label { font-size: 11px; color: var(--text-2, #5C5348); }
-.ecp-move-target-name { font-weight: 700; font-size: 13px; color: var(--rm2k3-command-blue, var(--accent, #4A57D6)); }
+.ecp-move-target-name { font-weight: 700; font-size: 13px; color: var(--oprn-command-blue, var(--accent, #4A57D6)); }
 .ecp-move-grid-box { display: grid; place-items: center; background: var(--border-default); border-radius: 6px; padding: 8px; }
 .ecp-move-grid { max-width: 100%; height: auto; }
 .ecp-grid-dot { fill: var(--bg-surface); }
@@ -207,7 +207,9 @@
 /* showPicture 화면 배치 */
 .ecp-picture { display: flex; flex-direction: column; gap: 6px; }
 .ecp-picture-screen { position: relative; aspect-ratio: 4 / 3; background: var(--border-default); border: 1px solid var(--border-default); border-radius: 4px; overflow: hidden; }
-.ecp-picture-marker { position: absolute; transform: translate(-50%, -50%); max-width: 60%; max-height: 60%; }
+/* 앵커는 런타임과 같은 좌상단이다(runtime/pictures.css 의 transform-origin: top left).
+   translate(-50%,-50%) 로 중심에 맞추던 시절에는 프리뷰와 실제 위치가 어긋났다. */
+.ecp-picture-marker { position: absolute; transform-origin: top left; max-width: 60%; max-height: 60%; }
 .ecp-picture-img { max-width: 100%; max-height: 120px; image-rendering: pixelated; border: 1px solid var(--border-default); }
 .ecp-picture-marker.missing {
   width: 56px;

@@ -17,12 +17,12 @@ function latestChoices(context: CommandEditContext, fallback: ChoicesCommand): C
 }
 
 /**
- * RM2003 Show Choices style: dialog edits option texts + cancel only.
+ * Prompt + option labels + cancel. Branch bodies stay on the main list.
  * Branch commands live in the main command list under `: 선택지 …` markers.
  */
 export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): HTMLElement {
   const wrap = el("div", {
-    class: "event-command-choices-inline",
+    class: "event-command-choices-inline cream-command-form",
     dataset: { testid: "event-command-choices-inline-editor" },
   });
   const options = normalizeOptions(cmd.options);
@@ -63,7 +63,7 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
       children: [
         optionsPanel,
         el("fieldset", {
-          class: "event-rm2k3-fieldset event-command-cancel-fieldset",
+          class: "event-oprn-fieldset event-command-cancel-fieldset",
           attrs: { title: "Esc / 우클릭 시 동작" },
           children: [
             el("legend", { text: "취소" }),
@@ -75,8 +75,8 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
       ],
     }),
     el("p", {
-      class: "event-command-choices-hint event-command-choices-rm-note",
-      text: "각 선택지 명령은 확인 후 이벤트 목록에서 편집합니다.",
+      class: "event-command-choices-hint",
+      text: "각 선택지 본문은 왼쪽 목록에서 고칩니다.",
       dataset: { testid: "event-choice-branch-list-note" },
     })
   );
@@ -213,15 +213,15 @@ function cancelRadioRow(
 }
 
 function cancelBehaviorLabel(behavior: ChoiceCancelBehavior): string {
-  if (behavior === "disallow") return "불가";
-  if (behavior === "branch") return "별도 분기";
-  return `${behavior.slice("choice".length)}번`;
+  if (behavior === "disallow") return "취소 없음";
+  if (behavior === "branch") return "따로 처리";
+  return `선택지 ${behavior.slice("choice".length)}`;
 }
 
 function cancelBehaviorTitle(behavior: ChoiceCancelBehavior): string {
-  if (behavior === "disallow") return "취소 입력 무시";
-  if (behavior === "branch") return "취소 시 전용 명령 실행 (이벤트 목록에서 편집)";
-  return `취소 시 선택지 ${behavior.slice("choice".length)} 실행`;
+  if (behavior === "disallow") return "취소를 누르면 아무 일도 하지 않습니다";
+  if (behavior === "branch") return "취소하면 왼쪽 목록의 전용 칸에서 처리합니다";
+  return `취소하면 선택지 ${behavior.slice("choice".length)}와 같이 진행합니다`;
 }
 
 function cancelBehaviorsForCount(count: number): ChoiceCancelBehavior[] {

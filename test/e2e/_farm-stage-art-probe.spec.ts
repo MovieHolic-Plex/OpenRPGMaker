@@ -37,8 +37,8 @@ function projectWithGrowthLever(): ReturnType<typeof createFarmingDemoProject> {
 async function teleport(page: Page, x: number, y: number): Promise<void> {
   await page.evaluate(
     ([mapId, tx, ty]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (m: string, a: number, b: number) => void } })
-        .__rpgzzuDebug.teleport(mapId as string, tx as number, ty as number),
+      (window as never as { __oprnDebug: { teleport: (m: string, a: number, b: number) => void } })
+        .__oprnDebug.teleport(mapId as string, tx as number, ty as number),
     [MAP_ID, x, y] as const,
   );
   await page.waitForTimeout(240);
@@ -46,7 +46,7 @@ async function teleport(page: Page, x: number, y: number): Promise<void> {
 
 async function face(page: Page, dir: string): Promise<void> {
   await page.evaluate(
-    (d) => (window as never as { __rpgzzuInput: { face: (v: string) => void } }).__rpgzzuInput.face(d),
+    (d) => (window as never as { __oprnInput: { face: (v: string) => void } }).__oprnInput.face(d),
     dir,
   );
   await page.waitForTimeout(120);
@@ -60,7 +60,7 @@ async function toastText(page: Page): Promise<string> {
 
 async function potatoCount(page: Page): Promise<number> {
   return page.evaluate(() => {
-    const debug = (window as never as { __rpgzzuDebug: { readState: () => { inventory: Record<string, number> } } }).__rpgzzuDebug;
+    const debug = (window as never as { __oprnDebug: { readState: () => { inventory: Record<string, number> } } }).__oprnDebug;
     return debug.readState().inventory.item_potato ?? 0;
   });
 }
@@ -86,7 +86,7 @@ async function growOneDay(page: Page): Promise<void> {
 test("1일차 감자는 수확기 그림인데 수확이 되는가", async ({ page }) => {
   mkdirSync(OUT, { recursive: true });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, projectWithGrowthLever());

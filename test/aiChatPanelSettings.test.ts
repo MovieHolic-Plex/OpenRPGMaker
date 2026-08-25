@@ -3,9 +3,11 @@
 // 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 감독 m3 / 실행 flash-lite.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
-import { OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
+import { OH_MY_PI_PROVIDERS, ohMyPiAuthKind } from "@/ai/ohMyPiProviders";
+import { providersForKind } from "@/ai/aiConnectionKind";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -61,51 +63,55 @@ describe("패널 접기", () => {
 
     collapse?.click();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
 
     collapse?.click();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
   it("부팅 시 저장된 펼침 선택('0')을 복원한다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "0");
+    storage.set("oprn:ai-panel-collapsed", "0");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 });
 
 function openSettingsSurface(panel: FakeElement): FakeElement {
-  const commandBarSettings = findByTestId(panel, "ai-settings-command-bar");
-  const headerSettings = findByTestId(panel, "ai-settings-toggle");
-  expect(commandBarSettings ?? headerSettings).not.toBeNull();
-  (commandBarSettings ?? headerSettings)?.click();
+  expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
+  expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+  openAiSettingsModal();
   const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
   if (!modal) throw new Error("ai-settings-modal missing");
   return modal;
 }
 
 describe("설정 자동 저장", () => {
-  it("커맨드바에서 설정 모달을 1클릭으로 연다", () => {
+  it("AI 패널 밖의 전용 설정 모달을 열고 고급 설정을 바로 펼친다", () => {
     const panel = renderPanel();
-    expect(findByTestId(panel, "ai-settings-command-bar")).not.toBeNull();
     const modal = openSettingsSurface(panel);
-    expect(findByTestId(modal, "ai-config-baseurl")).not.toBeNull();
-    expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
-    expect(findByTestId(modal, "ai-auth-chatgpt")).not.toBeNull();
+    // 브라우저 보관 키·엔드포인트 입력은 제거됐다 — 평문 키가 localStorage 에 남던 근원이다.
+    // 부재 자체가 회귀 방지선이므로 단언으로 고정한다(자세한 계약은 aiSettingsModalNoBrowserKey).
+    expect(findByTestId(modal, "ai-config-baseurl")).toBeNull();
+    expect(findByTestId(modal, "ai-config-apikey")).toBeNull();
+    expect(findByTestId(modal, "ai-auth-oauth")).not.toBeNull();
     expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
     const providers = findByTestId(modal, "ai-oh-my-pi-provider");
     expect(providers).not.toBeNull();
-    expect(providers?.querySelectorAll("option").length).toBeGreaterThanOrEqual(60);
+    // 기본은 구독 로그인 종류라 OAuth 제공자 14종만 담는다 — 예전에는 68종을 종류 구분 없이
+    // 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞여 있었다).
+    expect(providers?.querySelectorAll("option").length).toBe(14);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
-    expect(modal.textContent).toContain("제공자 로그인 또는 키");
-    const apiKey = findByTestId(modal, "ai-config-apikey");
-    expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(true);
+    expect(modal.textContent).toContain("구독 로그인");
+    expect(findByTestId(modal, "ai-settings-advanced")?.getAttribute("open")).not.toBeNull();
   });
 
-  it("새 설정은 ChatGPT 로그인이 기본이고 API 키 폴백으로 전환할 수 있다", () => {
+  it("API 키 종류로 바꿔도 전송 축은 동반 서비스로 남는다", () => {
+    // 옛 스펙은 여기서 stored.authMode === "apiKey" 를 기대했다. 그 배선이 장애의 원인이었다 —
+    // authMode 는 전송 축(동반 서비스 vs 직접 게이트웨이)이고, 사용자가 고르는 것은 자격 증명
+    // 종류다. 두 종류 모두 동반 서비스가 자격을 보관하므로 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     expect(loadAiConfig().authMode).toBe("chatgpt");
@@ -115,21 +121,30 @@ describe("설정 자동 저장", () => {
     apiMode.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.authMode).toBe("apiKey");
-    const apiKey = findByTestId(modal, "ai-config-apikey");
-    expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(false);
+    expect(stored.authMode).toBe("chatgpt");
+    expect(ohMyPiAuthKind(stored.providerId)).toBe("apiKey");
+    // 브라우저에는 비밀이 남지 않는다.
+    expect(stored.apiKey ?? "").toBe("");
+    expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 oh-my-pi 카탈로그 id 전부를 담는다", () => {
+  it("설정 제공자 목록은 고른 연결 종류의 제공자만 담는다", () => {
+    // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider");
     if (!select) throw new Error("provider select missing");
-    const values = select.childNodes
-      .filter((node): node is FakeElement => node instanceof FakeElement)
-      .map((node) => node.attrs.value)
-      .filter((value): value is string => Boolean(value));
-    expect(values).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
+    const values = (): readonly string[] =>
+      select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
+
+    expect(values()).toEqual(providersForKind("oauth").map((provider) => provider.id));
+
+    findByTestId(modal, "ai-auth-api-key")?.click();
+
+    expect(values()).toEqual(providersForKind("apiKey").map((provider) => provider.id));
+    // 합치면 카탈로그 전체다 — 필터가 제공자를 잃어버리지 않는다.
+    expect(providersForKind("oauth").length + providersForKind("apiKey").length)
+      .toBe(OH_MY_PI_PROVIDERS.length);
   });
 
   it("oh-my-pi 제공자를 바꾸면 그 기본 모델과 함께 저장된다", () => {
@@ -144,20 +159,22 @@ describe("설정 자동 저장", () => {
     expect(stored.model).toBe("claude-opus-4-8");
   });
 
-  it("API 키 입력만으로 즉시 localStorage에 저장된다 (저장 버튼 불필요)", () => {
+  it("동반 서비스 키 입력은 localStorage 에 저장되지 않는다", () => {
+    // 옛 스펙은 "API 키 입력만으로 즉시 localStorage 에 저장된다" 였다 — 그게 평문 키가 남던
+    // 경로다. 키는 이제 동반 서비스로만 가고, 브라우저 저장소에는 흔적이 없어야 한다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    const apiKey = findByTestId(modal, "ai-config-apikey");
-    expect(apiKey).not.toBeNull();
-    if (!apiKey) return;
-    apiKey.value = "sk-or-test-abc";
-    apiKey.dispatchEvent(new Event("input"));
+    findByTestId(modal, "ai-auth-api-key")?.click();
+    const key = findByTestId(modal, "ai-companion-api-key");
+    expect(key).not.toBeNull();
+    if (!key) return;
+    key.value = "sk-or-test-abc";
+    key.dispatchEvent(new Event("input"));
 
-    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.apiKey).toBe("sk-or-test-abc");
+    expect(storage.get(AI_CONFIG_STORAGE_KEY) ?? "").not.toContain("sk-or-test-abc");
   });
 
-  it("감독 모델을 비우고 저장하면 기본값(flash-lite)으로 저장된다", () => {
+  it("감독 모델을 비우고 저장하면 기본값(OAuth 카탈로그)으로 저장된다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const model = findByTestId(modal, "ai-config-model");
@@ -167,11 +184,12 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    // 기본 모델은 cpen 게이트웨이 경로(cpen/gpt-5-6-luna) — 예전 chatgpt-codex 기본이 아니다.
-    // 단 chatgpt OAuth 모드에서는 gpt- 프리픽스만 쓸 수 있어 loadAiConfig 가 권장 기본으로 교정한다.
-    expect(DEFAULT_MODEL).toBe("cpen/gpt-5-6-luna");
-    expect(loadAiConfig().model).toBe("gpt-5.6-sol");
-    expect(loadAiConfig().liteModel).toBe("gpt-5.6-sol");
+    // 기본 모델은 OAuth(Codex) 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
+    // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
+    // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
+    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash");
+    expect(loadAiConfig().model).toBe("gemini-3.7-flash");
+    expect(loadAiConfig().liteModel).toBe("gemini-3.7-flash");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
@@ -197,7 +215,7 @@ describe("설정 자동 저장", () => {
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
-    expect(DEFAULT_LITE_MODEL).toBe("cpen/gpt-5-6-luna");
+    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
   });
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
@@ -209,6 +227,12 @@ describe("설정 자동 저장", () => {
   });
 
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaultAiConfig(),
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      liteModel: "gpt-5.6-sol",
+    }));
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");
@@ -221,6 +245,12 @@ describe("설정 자동 저장", () => {
   });
 
   it("ChatGPT 모델 선택기에 GPT-5.6 Sol, Terra, Luna를 모두 노출한다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaultAiConfig(),
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      liteModel: "gpt-5.6-sol",
+    }));
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");
@@ -260,14 +290,16 @@ describe("설정 자동 저장", () => {
   it("설정 저장 버튼도 동일하게 저장한다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    const baseUrl = findByTestId(modal, "ai-config-baseurl");
+    // baseUrl 필드가 사라졌으므로 남아 있는 필드(최대 토큰)로 저장 경로를 확인한다.
+    const maxTokens = findByTestId(modal, "ai-config-maxtokens");
     const save = findByTestId(modal, "ai-config-save");
-    if (!baseUrl || !save) throw new Error("fields missing");
-    baseUrl.value = "https://example.invalid/v1";
+    if (!maxTokens || !save) throw new Error("fields missing");
+    maxTokens.value = "12345";
     save.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.baseUrl).toBe("https://example.invalid/v1");
+    expect(stored.maxTokens).toBe(12345);
+    expect(stored.baseUrl).toBe("");
   });
 });
 

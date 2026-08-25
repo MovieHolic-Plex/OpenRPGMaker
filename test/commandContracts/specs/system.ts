@@ -11,6 +11,7 @@ export const SYSTEM_SPECS = {
   }),
   returnToTitle: nativeManifestEntry("system", { kind: "returnToTitle" }),
   openSaveMenu: nativeManifestEntry("system", { kind: "openSaveMenu" }),
+  runControl: nativeManifestEntry("system", { kind: "runControl", action: "start", seed: 1 }),
   m2Command: nativeManifestEntry("system", {
     kind: "m2Command",
     commandId: "m2-002-display-text-settings",

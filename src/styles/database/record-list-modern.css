@@ -1,10 +1,6 @@
 /* ============================================================================
-   레코드 목록(마스터-디테일) 모던 행 — C 단계.
-   기본 뷰가 목록으로 바뀌면서(databaseRecordViewSession) 행을 [번호] [썸네일]
-   [이름] [카테고리]로 재구성한다. 이름은 flex:1 로 최대 폭을 얻는다(잘림 최소화).
-   레거시 rm2k3-* 스코프 규칙(actors/enemies/troops/desktop 의 3클래스 선택자)은
-   sidebar.css 와 같은 4클래스 프리픽스로 캐스케이드에서 덮는다.
-   light-theme.css 의 --db-light-* 팔레트만 소비한다 — 새 hex 금지.
+   레코드 목록(마스터-디테일) 모던 행 — Database Studio (2026-08).
+   Name-first, trailing #n meta, 24px thumb. 4클래스 스코프.
    ========================================================================= */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row {
@@ -14,82 +10,93 @@
   border-radius: 6px;
   box-shadow: none;
   box-sizing: border-box;
-  color: var(--db-light-text-1);
+  color: var(--db-studio-text-1, #0F172A);
   cursor: pointer;
   display: flex;
   font: 500 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  gap: 10px;
+  gap: 8px;
   height: auto;
   margin: 0;
-  min-height: 38px;
+  min-height: 36px;
   min-width: 0;
   padding: 4px 10px;
   text-align: left;
-  white-space: nowrap;
   width: 100%;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row:hover {
-  background: var(--db-light-accent-muted);
-  color: var(--db-light-text-1);
+  background: var(--db-studio-inset, #F1F5F9);
+  color: var(--db-studio-text-1, #0F172A);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row:focus-visible {
-  outline: 2px solid var(--db-light-accent);
+  outline: 2px solid var(--db-studio-accent, #4A57D6);
   outline-offset: -2px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active {
-  background: var(--db-light-accent-muted);
-  box-shadow: inset 3px 0 0 var(--db-light-accent);
-  color: var(--db-light-accent);
+  background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
+  box-shadow: inset 2px 0 0 var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, #4A57D6);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active::before {
   content: none;
 }
 
-/* 번호 — 흐린 모노 톤, 우측 정렬로 자릿수 정렬 */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-number {
-  color: var(--db-light-text-3);
-  flex: 0 0 auto;
-  font: 500 11px/1.4 "Cascadia Mono", Consolas, monospace;
-  min-width: 38px;
-  text-align: right;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-number {
-  color: var(--db-light-accent);
-}
-
-/* 이름 — 남는 폭 전부. 넘칠 때만 말줄임. */
+/* name — flex:1, ellipsis */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-name {
   flex: 1 1 auto;
   font-weight: 600;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  order: 1;
 }
 
-/* 카테고리 서브라벨 — 아이템 종류/장비 부위 필 */
+/* trailing #n — muted */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-number {
+  color: var(--db-studio-text-3, #94A3B8);
+  flex: 0 0 auto;
+  font: 500 11px/1.4 "Cascadia Mono", Consolas, monospace;
+  order: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-number {
+  color: var(--db-studio-accent, #4A57D6);
+  opacity: 0.7;
+}
+
+/* thumb 24px */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-thumb {
+  flex: 0 0 24px;
+  height: 24px;
+  width: 24px;
+  border-radius: 4px;
+  order: 0;
+}
+
+/* sub pill */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-sub {
-  background: var(--bg-hover);
-  border: 1px solid var(--db-light-border-subtle);
+  background: var(--db-studio-inset, #F1F5F9);
+  border: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
   border-radius: 999px;
-  color: var(--db-light-text-3);
+  color: var(--db-studio-text-3, #94A3B8);
   flex: 0 0 auto;
   font: 600 10.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  order: 3;
   padding: 0 8px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-sub {
-  border-color: var(--db-light-accent-border);
-  color: var(--db-light-accent);
+  border-color: var(--db-studio-accent-border, rgba(74,87,214,.16));
+  color: var(--db-studio-accent, #4A57D6);
 }
 
-/* 목록 웰 — 레거시 인셋 대신 라이트 카드 면 */
+/* list well — hairline */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list:not(.db-gallery) {
-  background: var(--db-light-bg-raised);
-  border: 1px solid var(--db-light-border-subtle);
-  border-radius: 6px;
+  background: var(--db-studio-surface, #FFFFFF);
+  border: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
+  border-radius: 8px;
 }

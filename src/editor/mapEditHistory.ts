@@ -3,7 +3,7 @@ import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eve
 import { store } from "@/project/store";
 
 const MAX_HISTORY = 50;
-export const MAP_EDIT_HISTORY_EVENT = "rpgzzu:map-edit-history-change";
+export const MAP_EDIT_HISTORY_EVENT = "oprn:map-edit-history-change";
 
 type ProjectSnapshot = {
   readonly kind: "project";
@@ -249,6 +249,20 @@ export function getMapEditHistoryState(): { canUndo: boolean; canRedo: boolean }
   return {
     canUndo: undoStack.length > 0,
     canRedo: redoStack.length > 0,
+  };
+}
+
+/**
+ * 다음 undo/redo 가 처리할 항목의 라벨. 스택이 비어 있으면 null.
+ *
+ * 실행 **전에** 읽어야 한다 — undoMapEdit() 이 스택을 pop 한 뒤에는 무엇을 되돌렸는지
+ * 알 수 없다. 되돌림 피드백에 "무엇을" 을 담기 위한 조회기다(라벨 없는 "되돌렸습니다" 는
+ * 감독이 방금 뭐가 사라졌는지 못 알아본다).
+ */
+export function pendingHistoryLabels(): { readonly undo: string | null; readonly redo: string | null } {
+  return {
+    undo: undoStack.length > 0 ? undoStack[undoStack.length - 1]!.label : null,
+    redo: redoStack.length > 0 ? redoStack[redoStack.length - 1]!.label : null,
   };
 }
 

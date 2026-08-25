@@ -1,7 +1,7 @@
 // DOM 미리보기(팔레트/DB 타일셋 시트)용 graft 베이크 캐시.
 // tilesetImageUrl 은 동기 API(CSS background/img src)라서, 베이크는 비동기로 돌리고
 // 결과 dataURL 을 캐시한다 — 캐시 미스면 베이스 URL 을 임시 반환하고 베이크를 예약한다.
-// 베이크 완료 시 "rpg-zzu:tileset-graft-image-baked" 윈도우 이벤트를 쏜다(다음 리렌더에서 반영).
+// 베이크 완료 시 "oprn:tileset-graft-image-baked" 윈도우 이벤트를 쏜다(다음 리렌더에서 반영).
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
@@ -14,7 +14,7 @@ import {
 import { activeTileGrafts, createGraftedTilesetCanvas, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
 import type { TilesetDef } from "@/project/types";
 
-export const TILE_GRAFT_IMAGE_BAKED_EVENT = "rpg-zzu:tileset-graft-image-baked";
+export const TILE_GRAFT_IMAGE_BAKED_EVENT = "oprn:tileset-graft-image-baked";
 
 const bakedUrlCache = new Map<string, string>();
 const pendingBakes = new Set<string>();
@@ -81,11 +81,11 @@ async function bakeGraftedTilesetImage(
   }
 }
 
-// 소스 칩셋 textureKey → 이미지. 색상키 칩셋(interior 등)은 투명색 처리를 적용한다.
+// 소스 타일 그림판 textureKey → 이미지. 색상키 타일 그림판(interior 등)은 투명색 처리를 적용한다.
 async function loadChipsetSourceImage(textureKey: string): Promise<HTMLImageElement | HTMLCanvasElement | null> {
   const path = bundledChipsetPath(textureKey);
   if (!path) {
-    console.warn(`[tileGrafts] 알 수 없는 소스 칩셋 textureKey: ${textureKey}`);
+    console.warn(`[tileGrafts] 알 수 없는 소스 타일 그림판 textureKey: ${textureKey}`);
     return null;
   }
   const image = await loadImage(`/${path}`);

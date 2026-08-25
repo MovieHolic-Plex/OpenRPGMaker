@@ -253,6 +253,30 @@
   width: 100%;
 }
 
+.page3-more-fields {
+  border-top: 1px solid color-mix(in srgb, var(--line, #d8cbb8) 70%, transparent);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.page3-more-fields > summary {
+  color: var(--ink-dim, #6b5e4e);
+  cursor: pointer;
+  font-size: 12px;
+  list-style: none;
+}
+
+.page3-more-fields > summary::-webkit-details-marker {
+  display: none;
+}
+
+.page3-resource-name {
+  color: var(--ink, #2a241c);
+  flex: 1 1 auto;
+  font-size: 13px;
+  min-width: 0;
+}
+
 .page3-range-input {
   accent-color: var(--accent, #4A57D6);
   flex: 1 1 140px;
@@ -347,6 +371,27 @@
 
 .page3-preview-weather-fog {
   background: linear-gradient(180deg, color-mix(in srgb, #c9d4e8 30%, #1d2533), color-mix(in srgb, #9aabbf 40%, #121820));
+}
+
+/* 편집 폼의 그림 마커.
+   규칙이 아예 없어서 position: static 이었고, TS 가 넣는 marker.style.left/top 이 무효였다 —
+   좌표를 바꿔도 미리보기가 움직이지 않았다.
+   앵커는 런타임과 같은 좌상단이다(runtime/pictures.css 의 transform-origin: top left).
+   확대·회전·투명도는 TS 가 인라인으로 얹는다. */
+.page3-preview-picture-marker {
+  max-height: 70%;
+  max-width: 70%;
+  position: absolute;
+  transform-origin: top left;
+}
+
+.page3-preview-picture-marker.is-missing {
+  border: 1px dashed var(--border-default, #C9BFAE);
+  border-radius: 4px;
+  display: grid;
+  min-height: 40px;
+  place-items: center;
+  width: 56px;
 }
 
 .page3-preview-picture-img {

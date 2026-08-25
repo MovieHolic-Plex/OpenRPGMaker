@@ -20,7 +20,7 @@ import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { applyWeatherStep } from "@/player/playSceneWeather";
-import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -69,6 +69,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     const pageId = event.pageId ?? "legacy";
     const key = `${event.event.id}:${pageId}`;
     const process = scene.parallelProcesses.get(key) ?? createParallelProcess(scene, event, pageId);
+    if (process.stopped || process.pendingTimeTransition) continue;
     if (process.waitMs > 0) {
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
@@ -80,6 +81,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
   for (const commonEvent of activeCommonEvents) {
     const key = `common:${commonEvent.id}`;
     const process = scene.parallelProcesses.get(key) ?? createCommonParallelProcess(scene, commonEvent);
+    if (process.stopped || process.pendingTimeTransition) continue;
     if (process.waitMs > 0) {
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
@@ -144,6 +146,10 @@ function consumeParallelSteps(
       process.waitMs = result.ms;
       return;
     }
+    if (result.kind === "advanceTime" || result.kind === "sleepUntilMorning") {
+      startParallelTimeTransition(scene, key, process, result);
+      return;
+    }
     if (applyNonBlockingStep(scene, result, process.currentEventId)) {
       result = process.interpreter.resume(undefined);
       scene.refreshRuntimeSurfaces();
@@ -164,6 +170,35 @@ function consumeParallelSteps(
     releaseCutsceneControlForOwner(scene.session, process.currentEventId);
     scene.parallelProcesses.delete(key);
   }
+}
+
+function startParallelTimeTransition(
+  scene: PlaySceneContext,
+  key: string,
+  process: ParallelProcess,
+  step: Extract<StepResult, { kind: "advanceTime" | "sleepUntilMorning" }>,
+): void {
+  const pending = step.kind === "advanceTime"
+    ? observeScheduledTimeTransition(scene, applyAdvanceTimeStep(scene, step), "scheduled-advance")
+    : observeScheduledTimeTransition(
+      scene,
+      Promise.resolve().then(() => scene.sleepUntilMorning()),
+      "scheduled-sleep",
+    );
+  process.pendingTimeTransition = pending;
+  void pending.then((ok) => {
+    if (scene.parallelProcesses.get(key) !== process || process.pendingTimeTransition !== pending) return;
+    process.pendingTimeTransition = undefined;
+    if (!ok) {
+      process.stopped = true;
+      releaseCutsceneControlForOwner(scene.session, process.currentEventId);
+      scene.refreshRuntimeSurfaces();
+      return;
+    }
+    const result = process.interpreter.resume(undefined);
+    scene.refreshRuntimeSurfaces();
+    consumeParallelSteps(scene, key, process, result);
+  });
 }
 
 export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, currentEventId?: string): boolean {
@@ -194,13 +229,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       applyTimerStep(scene, step);
       return true;
     case "advanceTime":
-      void applyAdvanceTimeStep(scene, step);
+      observeScheduledTimeTransition(scene, applyAdvanceTimeStep(scene, step), "scheduled-advance");
       return true;
     case "setTime":
       applySetTimeStep(scene, step);
       return true;
     case "sleepUntilMorning":
-      void scene.sleepUntilMorning();
+      observeScheduledTimeTransition(scene, scene.sleepUntilMorning(), "scheduled-sleep");
       return true;
     case "showPicture":
       showPictureState(scene.session, step);

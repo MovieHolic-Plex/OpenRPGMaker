@@ -4,6 +4,8 @@
  * - assets/cc0/audio/bgm/* — OpenGameArt 에서 받은 실제 CC0 곡. 곡마다 sourceName 에 작곡자를 남긴다.
  *   CC0 는 표기 의무가 없지만 ATTRIBUTION.md 와 함께 출처를 남겨 재검증이 가능하게 한다.
  */
+import { PRODUCT_BRAND } from "@/brand";
+
 export type Cc0AudioAsset = {
   readonly id: string;
   readonly name: string;
@@ -13,7 +15,7 @@ export type Cc0AudioAsset = {
   readonly sourceName: string;
 };
 
-const SOURCE_NAME = "RPG ZZU generated CC0 tones";
+const SOURCE_NAME = `${PRODUCT_BRAND} generated CC0 tones`;
 
 export const CC0_AUDIO_ASSETS = [
   {

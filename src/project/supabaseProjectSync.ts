@@ -1,3 +1,4 @@
+import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, serialize } from "./io";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { projectWithoutEventDrafts } from "./eventDrafts";
@@ -9,7 +10,7 @@ import type { EditorIdentity } from "./editorIdentity";
 import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
-const DEFAULT_PROJECT_TITLE = "RPG Zzu";
+const DEFAULT_PROJECT_TITLE = PRODUCT_BRAND;
 export { DEFAULT_SUPABASE_PROJECT_ID } from "./supabaseProjectConfig";
 
 type SupabaseProjectRow = {
@@ -121,6 +122,16 @@ export class SupabaseProjectSyncError extends Error {
   ) {
     super(message);
     this.name = "SupabaseProjectSyncError";
+  }
+}
+
+export class SupabaseMigrationRequiredError extends Error {
+  constructor(
+    readonly table: string,
+    readonly migration: string,
+  ) {
+    super(`Supabase table ${table} is missing. Apply ${migration} with npm run db:migrate.`);
+    this.name = "SupabaseMigrationRequiredError";
   }
 }
 
@@ -313,12 +324,7 @@ export type SupabaseAiActivityLogInput = {
   readonly payload: unknown;
 };
 
-/**
- * 채팅/영역 AI 활동 로그 1건.
- * 1) `ai_activity_logs` 전용 테이블
- * 2) 없으면 기존 `ai_analysis_runs` 에 폴백 저장 (tileset_id = `__ai_activity__`)
- *    — 마이그레이션 전에도 PostgREST로 조회 가능하게.
- */
+/** 채팅/영역 AI 활동 로그 1건. 과거 폴백 행은 조회만 하고 새 로그는 전용 테이블에만 쓴다. */
 export const AI_ACTIVITY_FALLBACK_TILESET_ID = "__ai_activity__";
 
 export async function recordSupabaseAiActivityLog(
@@ -333,31 +339,10 @@ export async function recordSupabaseAiActivityLog(
     const missingPrimary =
       (error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error);
     if (!missingPrimary) throw error;
-  }
-  // 폴백: 이미 존재하는 ai_analysis_runs 에 진단 페이로드를 심는다.
-  try {
-    await upsertRows(config, "ai_analysis_runs", "run_id", [
-      {
-        run_id: input.logId,
-        project_id: config.projectId,
-        tileset_id: AI_ACTIVITY_FALLBACK_TILESET_ID,
-        selected_tile_ids_json: [],
-        prompt_context_json: {
-          kind: "ai-activity-log",
-          channel: input.channel,
-          instruction: input.instruction.slice(0, 4000),
-          mapId: input.mapId ?? null,
-        },
-        result_json: input.payload,
-      },
-    ]);
-    return { kind: "saved" };
-  } catch (error) {
-    if (error instanceof SupabaseProjectSyncError && error.status === 404) {
-      return { kind: "not-configured" };
-    }
-    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
-    throw error;
+    throw new SupabaseMigrationRequiredError(
+      "rpg_zzu.ai_activity_logs",
+      "20260709000000_ai_activity_logs.sql",
+    );
   }
 }
 
@@ -468,9 +453,12 @@ export async function recordSupabaseConversation(
     ]);
     return { kind: "saved" };
   } catch (error) {
-    // 마이그레이션 전(테이블 없음)에도 앱이 죽지 않게 활동 로그와 같은 폴백 규약을 따른다.
-    if (error instanceof SupabaseProjectSyncError && error.status === 404) return { kind: "not-configured" };
-    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    if ((error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error)) {
+      throw new SupabaseMigrationRequiredError(
+        "rpg_zzu.ai_conversations",
+        "20260713000000_ai_conversations_user_skills.sql",
+      );
+    }
     throw error;
   }
 }
@@ -548,8 +536,12 @@ export async function recordSupabaseUserSkill(
     ]);
     return { kind: "saved" };
   } catch (error) {
-    if (error instanceof SupabaseProjectSyncError && error.status === 404) return { kind: "not-configured" };
-    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    if ((error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error)) {
+      throw new SupabaseMigrationRequiredError(
+        "rpg_zzu.user_skills",
+        "20260713000000_ai_conversations_user_skills.sql",
+      );
+    }
     throw error;
   }
 }
@@ -571,8 +563,12 @@ export async function deleteSupabaseUserSkill(
     if (!response.ok) throw new SupabaseProjectSyncError(await response.text(), response.status);
     return { kind: "saved" };
   } catch (error) {
-    if (error instanceof SupabaseProjectSyncError && error.status === 404) return { kind: "not-configured" };
-    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    if ((error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error)) {
+      throw new SupabaseMigrationRequiredError(
+        "rpg_zzu.user_skills",
+        "20260713000000_ai_conversations_user_skills.sql",
+      );
+    }
     throw error;
   }
 }

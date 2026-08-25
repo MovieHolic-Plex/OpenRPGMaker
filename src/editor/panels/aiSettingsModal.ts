@@ -77,6 +77,9 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
   });
 
   const close = (): void => {
+    // 인증 패널은 기기 로그인 폴링 타이머를 들고 있다 — 정리하지 않으면 모달이 닫힌 뒤에도
+    // /auth/status 를 3초마다 계속 때린다.
+    form.dispose();
     backdrop.remove();
     document.removeEventListener?.("keydown", onKeyDown);
   };
@@ -99,13 +102,12 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 export function renderAiSettingsForm(options: {
   readonly onSaved?: (config: AiConfig) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
-}): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
+}): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void; dispose: () => void } {
   const onSaved = options.onSaved ?? (() => undefined);
   const onFontSizeChange = options.onFontSizeChange ?? (() => undefined);
   const config = loadAiConfig();
   let authMode = config.authMode;
   let providerId = parseOhMyPiProvider(config.providerId);
-  const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
   const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
     "실행 모델(툴 작업)",
@@ -116,48 +118,34 @@ export function renderAiSettingsForm(options: {
     DEFAULT_LITE_MODEL,
     providerId,
   );
-  const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
+  // 엔드포인트(ai-config-baseurl)와 API 키(ai-config-apikey) 입력은 **의도적으로 없다.**
+  //
+  // 두 필드는 브라우저가 직접 게이트웨이를 치던 시절의 것이고, 입력한 키는 saveAiConfig 를 통해
+  // localStorage["oprn:ai-config"] 에 **평문으로** 저장됐다 — 같은 다이얼로그의 인증 패널이
+  // "브라우저에는 두지 않습니다" 라고 약속하는 중에. 지금은 두 연결 종류 모두 자격을 동반
+  // 서비스가 보관하므로(ai-companion-api-key 입력이 그 경로다) 이 칸들은 존재 이유가 없다.
+  // 게이트웨이가 필요한 소비자(노드 스크립트·evals·벤치마크)는 설정을 직접 주입한다.
   let persistAuthMode = (): void => undefined;
-  const authSettings = renderAiAuthSettings(authMode, (next) => {
-    authMode = next;
-    updateAuthVisibility();
-    // 연결 방식을 바꾸면 모델 드롭다운 목록만 갈아끼우고 선택된 값은 그대로 두던 결함이 있었다.
-    // 그래서 ChatGPT(Codex)로 전환해도 게이트웨이 모델 ID 가 남아 400 이 났다. 새 authMode 에서
-    // 현재 값이 무효하면 권장 기본값으로 따라오게 한다. 유효하면 사용자 선택을 존중해 그대로 둔다.
-    // setValue 를 써야 드롭다운 하이라이트 동기화와 경고 재평가가 함께 일어난다.
-    // defaultModelForAuthMode 는 방어적으로 "" 를 줄 수 있어(카탈로그 빈 경우) DEFAULT_* 로 폴백한다.
-    const recommended = defaultModelForAuthMode(authMode, providerId);
-    if (!isModelValidForAuthMode(authMode, model.input.value.trim(), providerId)) {
-      model.setValue(recommended || DEFAULT_MODEL, authMode);
+  // 인증 패널은 연결 종류와 제공자만 돌려준다 — 전송 축(authMode)은 에디터에서 항상
+  // 동반 서비스이므로 UI 가 정할 것이 없다(근거: llmClient.aiTransport).
+  const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
+    providerId = next;
+    // 제공자를 바꾸면 **그 제공자의 기본 모델을 채택한다.**
+    //
+    // "유효하면 사용자 선택을 존중" 이 더 친절해 보이지만 여기서는 위험하다.
+    // isModelValidForAuthMode 는 openai-codex 에서만 실제 화이트리스트이고 나머지 제공자에는
+    // 무조건 true 를 준다(modelCatalog.ts). 그래서 옛 모델을 "유효하다"며 남기면 동반 서비스의
+    // resolveModel 이 그것을 오류 없이 다른 모델로 강등한다 — 감독이 고른 것도, 새 제공자의
+    // 기본도 아닌 모델이 답한다. 검증 가능한 라이브 카탈로그가 붙기 전까지는 채택이 정직하다.
+    const recommended = defaultModelForAuthMode(authMode, next);
+    if (recommended) {
+      model.setValue(recommended, authMode);
+      liteModel.setValue(recommended, authMode);
     }
-    if (!isModelValidForAuthMode(authMode, liteModel.input.value.trim(), providerId)) {
-      liteModel.setValue(recommended || DEFAULT_LITE_MODEL, authMode);
-    }
-    model.refresh(authMode, providerId);
-    liteModel.refresh(authMode, providerId);
+    model.refresh(authMode, next);
+    liteModel.refresh(authMode, next);
     persistAuthMode();
-  }, {
-    initialProviderId: providerId,
-    onProviderChange: (next) => {
-      providerId = next;
-      const recommended = defaultModelForAuthMode(authMode, next);
-      if (recommended && !isModelValidForAuthMode(authMode, model.input.value.trim(), next)) {
-        model.setValue(recommended, authMode);
-      } else if (recommended) {
-        model.setValue(recommended, authMode);
-        liteModel.setValue(recommended, authMode);
-      }
-      model.refresh(authMode, next);
-      liteModel.refresh(authMode, next);
-      persistAuthMode();
-    },
   });
-  const updateAuthVisibility = (): void => {
-    const apiMode = authMode === "apiKey";
-    baseUrl.row.hidden = !apiMode;
-    apiKey.row.hidden = !apiMode;
-  };
-  updateAuthVisibility();
   const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
   maxTokens.input.setAttribute("max", "1000000");
@@ -254,10 +242,12 @@ export function renderAiSettingsForm(options: {
   const collect = (): AiConfig => ({
     authMode,
     providerId,
-    baseUrl: baseUrl.input.value.trim() || DEFAULT_BASE_URL,
+    // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
+    // 들고 있다. 여기서 빈 값으로 고정해 브라우저 저장소에 비밀·죽은 주소가 남지 않게 한다.
+    baseUrl: DEFAULT_BASE_URL,
     model: model.input.value.trim() || DEFAULT_MODEL,
     liteModel: liteModel.input.value.trim() || DEFAULT_LITE_MODEL,
-    apiKey: apiKey.input.value,
+    apiKey: "",
     maxToolCalls: defaultAiConfig().maxToolCalls,
     maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
     reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
@@ -296,7 +286,7 @@ export function renderAiSettingsForm(options: {
       persist(false);
     }, 350);
   };
-  for (const field of [baseUrl, model, liteModel, apiKey, maxTokens]) {
+  for (const field of [model, liteModel, maxTokens]) {
     field.input.addEventListener("input", scheduleAutoSave);
     field.input.addEventListener("change", () => persist(false));
   }
@@ -304,7 +294,9 @@ export function renderAiSettingsForm(options: {
     // 입력 즉시 유효성을 보여준다(저장까지 기다리지 않음). authMode 는 클로저의 현재 값을 쓴다.
     field.input.addEventListener("input", () => field.validate(authMode, providerId));
     field.preset.addEventListener("change", () => {
-      if (field.preset.value) field.input.value = field.preset.value;
+      // setValue 로 넣는다 — input.value 직접 대입은 경고 재평가를 건너뛰어, 목록에서 고른
+      // 직후에는 이전 값의 경고가 그대로 남아 있었다(저장 시점에야 갱신됐다).
+      if (field.preset.value) field.setValue(field.preset.value, authMode, providerId);
       persist(false);
     });
   }
@@ -324,16 +316,15 @@ export function renderAiSettingsForm(options: {
     dataset: { testid: "ai-config" },
     children: [
       authSettings.element,
-      apiKey.row,
       el("details", {
         class: "ai-settings-advanced",
+        attrs: { open: "" },
         dataset: { testid: "ai-settings-advanced" },
         children: [
           el("summary", { text: "고급 설정" }),
           el("div", {
             class: "ai-settings-advanced-body",
             children: [
-              baseUrl.row,
               model.row,
               liteModel.row,
               maxTokens.row,
@@ -351,8 +342,13 @@ export function renderAiSettingsForm(options: {
 
   return {
     element: form,
+    dispose: () => authSettings.dispose(),
     focusFirstInput: () => authSettings.focus(),
-    focusApiKey: () => authMode === "apiKey" ? apiKey.input.focus() : authSettings.focus(),
+    // focusTarget:"apiKey" 는 이제 **동반 서비스 키 입력**을 뜻한다. 브라우저 보관 키 필드가
+    // 사라졌으므로 인증 패널의 focus() 로 넘긴다 — 그쪽이 "지금 키를 넣어야 하는가"를 알고
+    // (API 키 종류 + 미연결) 그 칸으로 보내거나, 아니면 폼 첫 컨트롤로 보낸다.
+    // aiChatPanel 이 이 값을 여러 곳에서 넘기므로 합법 값으로 유지한다(그 파일은 동시 작업 중).
+    focusApiKey: () => authSettings.focus(),
   };
 }
 
@@ -403,22 +399,18 @@ function modelField(
     dataset: { testid: presetTestid },
     attrs: { "aria-label": `${label} 추천 모델` },
   }) as HTMLSelectElement;
-  // 무효 모델 경고. aiAuthSettings 의 serverError(companion-hint) 관례를 따라 인라인 div 로 표시한다.
-  // companion-hint 의 글자 크기(11px)·여백은 CSS 를 따르고, 경고색은 이 패널의 위험 표시 관례
-  // (tabs-b-assistant-panel.css 의 --danger 사용)를 인라인으로 적용한다 — 이 파일은 CSS 를 편집할 수
-  // 없으므로 새 클래스 스타일을 발명하지 않고 기존 토큰을 그대로 쓴다.
+  // 무효 모델 경고. 스타일은 styles/editor/ai-auth-connection.css 의 .ai-model-warning 이 맡는다
+  // (예전에는 이 파일이 CSS 를 편집할 수 없다는 이유로 색·크기를 인라인 style 로 칠했다 —
+  //  테마를 따라가지 못하는 값이었다).
   const warning = el("div", {
     class: "ai-model-warning",
     attrs: { hidden: "", role: "alert" },
     dataset: { testid: `${inputTestid}-warning` },
   });
-  warning.style.color = "var(--danger, #d85c5c)";
-  warning.style.fontSize = "11px";
-  warning.style.marginTop = "4px";
   const refresh = (nextMode: AiConfig["authMode"], providerId?: string): void => {
     const groups = modelCatalogForAuthMode(nextMode, providerId);
     const options = [
-      el("option", { attrs: { value: "" }, text: "GJC 모델 목록에서 선택" }),
+      el("option", { attrs: { value: "" }, text: "목록에서 모델 고르기" }),
       ...groups.map((group) => el("optgroup", {
         attrs: { label: group.label },
         children: group.models.map((model) => el("option", { attrs: { value: model }, text: model })),
@@ -437,10 +429,12 @@ function modelField(
       return true;
     }
     warning.hidden = false;
+    // 옛 문구는 "gpt- 로 시작하는 모델만" 이라고 했지만 검사는 접두사가 아니라 **정확한 카탈로그
+    // 소속**이다(modelCatalog.isModelValidForAuthMode). 그래서 gpt-5.1-codex-max 처럼 gpt- 로
+    // 시작하는데도 거부되는 ID 에 "gpt- 는 괜찮다"고 안내하는 모순이 있었다. 게다가 remedy 로
+    // 제시한 "연결 방식을 API/게이트웨이로 바꾸세요" 는 이제 존재하지 않는 경로다.
     warning.textContent =
-      mode === "chatgpt"
-        ? "ChatGPT 구독(Codex)은 gpt- 로 시작하는 모델만 쓸 수 있습니다. 목록에서 gpt- 모델을 고르거나 연결 방식을 API/게이트웨이로 바꾸세요."
-        : "이 연결 방식에서 쓸 수 없는 모델입니다. 목록에서 모델을 고르세요.";
+      "이 목록에 없는 모델 ID 는 오류 없이 다른 모델로 바뀝니다. 목록에서 골라 주세요.";
     return false;
   };
   // 값을 바꾸는 공개 수단. input.value 직접 대입은 드롭다운 하이라이트와 경고 표시가 어긋난다.

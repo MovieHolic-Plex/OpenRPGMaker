@@ -103,6 +103,53 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (project.system.initialTroopId === id) return "시스템 기본 전투가 이 적 그룹을 사용 중입니다.";
       return commandLocationMessage(project, "troops", id, "적 그룹");
     case "items": {
+      const spatialBuildings = (project.database.farmBuildingTypes ?? []).filter((record) =>
+        record.levels.some((level) => level.cost?.items?.some((entry) => entry.itemId === id))
+      );
+      if (spatialBuildings.length) return `범용 농장 건물 '${spatialBuildings[0]!.name || spatialBuildings[0]!.id}'의 건설·업그레이드 재료로 사용 중입니다.`;
+      const spatialDecorations = (project.database.homeDecorationTypes ?? []).filter((record) => record.placementItemId === id);
+      if (spatialDecorations.length) return `집 장식 '${spatialDecorations[0]!.name || spatialDecorations[0]!.id}'의 배치 아이템으로 사용 중입니다.`;
+      const feedSpecies = (project.database.farmAnimalSpecies ?? []).filter((record) => record.feedItemId === id);
+      if (feedSpecies.length) {
+        return namedReferenceMessage("동물 종", feedSpecies, "이 아이템을 먹이로 사용 중입니다.");
+      }
+      const productSpecies = (project.database.farmAnimalSpecies ?? []).filter((record) => record.productItemId === id);
+      if (productSpecies.length) {
+        return namedReferenceMessage("동물 종", productSpecies, "이 아이템을 생산물로 사용 중입니다.");
+      }
+      const recipes = project.system.craftRecipes?.filter((record) =>
+        record.outputItemId === id || record.ingredients.some((ingredient) => ingredient.itemId === id)
+      ) ?? [];
+      if (recipes.length) return namedReferenceMessage("제작법", recipes.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 제작 재료나 결과로 사용 중입니다.");
+      const upgrades = project.system.itemUpgrades?.filter((record) =>
+        record.fromItemId === id || record.toItemId === id || record.ingredients?.some((ingredient) => ingredient.itemId === id)
+      ) ?? [];
+      if (upgrades.length) return namedReferenceMessage("도구 강화", upgrades.map((record) => ({ name: record.id })), "이 아이템을 강화 재료나 결과로 사용 중입니다.");
+      if (project.system.sellPrices?.some((record) => record.itemId === id)) return "판매 가격 규칙이 이 아이템을 사용 중입니다.";
+      const toolActions = project.system.toolActions?.filter((record) => record.itemId === id) ?? [];
+      if (toolActions.length) return namedReferenceMessage("도구 행동", toolActions.map((record) => ({ name: record.id })), "이 아이템을 사용 중입니다.");
+      if (project.system.shipping?.allowedItemIds?.includes(id)) return "출하 허용 목록이 이 아이템을 사용 중입니다.";
+      const bundles = (project.system.bundles ?? []).filter((record) =>
+        record.requirements.some((entry) => entry.itemId === id)
+        || record.reward?.itemRewards?.some((entry) => entry.itemId === id)
+      );
+      if (bundles.length) return namedReferenceMessage("꾸러미", bundles.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 요구하거나 보상으로 사용 중입니다.");
+      const makers = (project.system.makers ?? []).filter((record) =>
+        record.inputs.some((entry) => entry.itemId === id) || record.outputs.some((entry) => entry.itemId === id)
+      );
+      if (makers.length) return namedReferenceMessage("가공 설비", makers.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 투입하거나 생산합니다.");
+      const fishSpecies = (project.database.fishSpecies ?? []).filter((record) => record.itemId === id);
+      if (fishSpecies.length) return namedReferenceMessage("물고기 종", fishSpecies, "이 아이템으로 포획됩니다.");
+      const forageAreas = (project.system.seasonalForage?.areas ?? []).filter((area) => area.entries.some((entry) =>
+        entry.itemId === id || Object.values(entry.seasonalDrops ?? {}).includes(id)
+      ));
+      if (forageAreas.length) return namedReferenceMessage("채집 구역", forageAreas.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 채집물로 사용 중입니다.");
+      if (project.system.collections?.trackedItemIds?.includes(id)) return "수집 도감이 이 아이템을 추적 중입니다.";
+      if (project.system.museum?.eligibleItemIds.includes(id)) return "박물관 기부 목록이 이 아이템을 사용 중입니다.";
+      const museumRewards = (project.system.museum?.rewards ?? []).filter((record) =>
+        record.requiredItemIds?.includes(id) || record.reward?.itemRewards?.some((entry) => entry.itemId === id)
+      );
+      if (museumRewards.length) return namedReferenceMessage("박물관 보상", museumRewards.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 조건이나 보상으로 사용 중입니다.");
       const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id);
       if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 아이템을 보상으로 사용 중입니다.");
       return commandLocationMessage(project, "items", id, "아이템");
@@ -138,6 +185,42 @@ export function monsterSpeciesReferenceMessage(speciesId: string): string | null
   if (referrers.length) return namedReferenceMessage("종족", referrers, "이 종족으로 진화합니다.");
   // giveMonster/evolveMonster 이벤트 명령도 종족 id 를 들고 있다.
   return commandLocationMessage(project, "monsterSpecies", speciesId, "종족");
+}
+
+/** Farm-animal species are authored outside DatabaseCollection, so their delete route calls this guard directly. */
+export function farmAnimalSpeciesReferenceMessage(speciesId: string): string | null {
+  const project = store.getCurrent();
+  const animals = (project.session.farmAnimals ?? []).filter((animal) => animal.speciesId === speciesId);
+  if (animals.length) {
+    return namedReferenceMessage("시작 동물", animals, "이 동물 종을 사용 중입니다.");
+  }
+  const buildings = (project.system.farmAnimalBuildings ?? []).filter((building) =>
+    building.allowedSpeciesIds.includes(speciesId)
+  );
+  if (buildings.length) {
+    return namedReferenceMessage("동물 축사", buildings, "이 동물 종을 허용하고 있습니다.");
+  }
+  return null;
+}
+
+/** Farm-animal buildings are system records, so their delete route calls this guard directly. */
+export function farmAnimalBuildingReferenceMessage(buildingId: string): string | null {
+  const project = store.getCurrent();
+  const animals = (project.session.farmAnimals ?? []).filter((animal) => animal.buildingId === buildingId);
+  if (animals.length) {
+    return namedReferenceMessage("시작 동물", animals, "이 동물 축사에 배정되어 있습니다.");
+  }
+  return null;
+}
+
+export function farmBuildingTypeReferenceMessage(typeId: string): string | null {
+  const placement = (store.getCurrent().session.farmBuildingPlacements ?? []).find((row) => row.typeId === typeId);
+  return placement ? `시작 범용 농장 건물 '${placement.instanceId}'이 이 건물 유형을 사용 중입니다.` : null;
+}
+
+export function homeDecorationTypeReferenceMessage(typeId: string): string | null {
+  const placement = (store.getCurrent().session.homeDecorationPlacements ?? []).find((row) => row.typeId === typeId);
+  return placement ? `시작 집 장식 '${placement.instanceId}'이 이 장식 유형을 사용 중입니다.` : null;
 }
 
 // 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)
@@ -203,6 +286,15 @@ export function resourceReferenceMessage(resourceId: string): string | null {
 
 export function switchVariableReferenceMessage(kind: "switch" | "variable", id: string): string | null {
   const project = store.getCurrent();
+  if (kind === "switch" && (project.database.lifeSkills ?? []).some((skill) =>
+    skill.levelUpRewards.some((reward) => reward.switchId === id)
+  )) return "생활 기술의 레벨 보상이 이 스위치를 사용 중입니다.";
+  if (kind === "switch" && (project.system.worldUnlocks ?? []).some((unlock) => unlock.switchId === id)) {
+    return "지역 해금 규칙이 이 스위치를 사용 중입니다.";
+  }
+  if (kind === "switch" && (project.system.bundles ?? []).some((bundle) => bundle.reward?.switchId === id)) {
+    return "꾸러미 완료 보상이 이 스위치를 사용 중입니다.";
+  }
   if (!switchVariableReferencedInProject(project, kind, id)) return null;
   return kind === "switch" ? "이벤트/조건이 이 스위치를 사용 중입니다." : "이벤트/조건이 이 변수를 사용 중입니다.";
 }

@@ -11,6 +11,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import type { Command, EventPage, EventPageGraphic } from "@/project/types";
+import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 describe("event editor presentation", () => {
@@ -91,8 +92,8 @@ describe("event editor presentation", () => {
     variable.name = "Flag Count";
     store.replace(project);
 
-    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: true })).toContain("ON");
-    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: false })).toContain("OFF");
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: true })).toContain("켜짐");
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: false })).toContain("꺼짐");
     expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: "toggle" })).toContain("전환");
     expect(commandSummary({
       kind: "setSwitch",
@@ -165,6 +166,13 @@ describe("event editor presentation", () => {
     const preview = renderWithFakeDom(() => renderEventGraphicPreview(graphic, "random"));
 
     expect(preview).toBeInstanceOf(FakeElement);
+    expect(preview.style.boxSizing).toBe("content-box");
+    expect(preview.style.width).toBe(`${RESOURCE_SLICING.charset.cellWidth * 2}px`);
+    expect(preview.style.height).toBe(`${RESOURCE_SLICING.charset.cellHeight * 2}px`);
+    expect(preview.style.backgroundRepeat).toBe("no-repeat");
+    expect(preview.style.backgroundSize).toBe(
+      `${RESOURCE_SLICING.charset.sheetWidth * 2}px ${RESOURCE_SLICING.charset.sheetHeight * 2}px`
+    );
     expect(preview.classList.contains("moving")).toBe(true);
     expect(preview.dataset.movementType).toBe("random");
     expect(preview.style["--event-graphic-frame-a"]).toBeTruthy();
@@ -218,6 +226,29 @@ describe("event editor presentation", () => {
     const badge = findByTestId(host, "command-runtime-badge-list-0");
     expect(badge?.dataset.runtimeSupport).toBe("editor-only");
     expect(badge?.attrs.title).toContain("런타임에서 실행되지 않습니다");
+  });
+
+  it("renders the inserted native row with the same map support grade as lint and draft validation", () => {
+    const host = renderWithFakeDom(() => {
+      const node = el("div");
+      renderCommandList(
+        node,
+        [{ kind: "giveMonster", speciesId: "monster_missing", level: 1 }],
+        [],
+        {
+          addCommand: () => undefined,
+          deleteCommand: () => undefined,
+          insertCommand: () => undefined,
+          moveCommand: () => undefined,
+          moveCommandTo: () => undefined,
+          replaceCommand: () => undefined,
+        },
+        { runtimeSupport: (command) => commandRuntimeSupport(command, "map") }
+      );
+      return node;
+    });
+
+    expect(findByTestId(host, "command-runtime-badge-list-0")?.dataset.runtimeSupport).toBe("runtime-partial");
   });
 
   it("renders M2 image resource fields with a picker, selected name, and preview", () => {
@@ -287,10 +318,7 @@ describe("event editor presentation", () => {
     expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1");
     expect(preview?.dataset.faceIndex).toBe("5");
     expect(preview?.textContent).toContain("얼굴 6");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("얼굴 그래픽 변경");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("easyrpg-faceset-actor1");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("오른쪽");
-    expect(findByTestId(body, "event-command-edit-summary")?.textContent).not.toContain("right");
+    expect(findByTestId(body, "event-command-edit-summary")?.textContent).toBe("얼굴 바꾸기");
     expect(findByTestId(body, "event-command-face-index")?.attrs.max).toBe(String(RESOURCE_SLICING.faceset.count));
     expect(findByTestId(body, "event-command-face-resource-set")).not.toBeNull();
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-x"]).toBe("-48px");

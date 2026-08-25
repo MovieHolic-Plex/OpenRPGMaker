@@ -35,12 +35,14 @@ import {
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
+import { lifeCalendarHudLines } from "@/player/lifeCalendarHud";
 import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
+import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
 import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
@@ -151,6 +153,7 @@ export function renderTiles<
     }
   }
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
+  renderPlaceableOverlays(scene);
   renderEvents(scene);
 }
 
@@ -234,7 +237,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
 ): void {
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
-  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
   if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
     renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
     return;
@@ -382,6 +385,7 @@ export function activeRuntimeEvents(
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
+  const project = store.getCurrent();
   const events: Record<string, RuntimeEventSnapshot> = {};
   for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
     events[view.event.id] = {
@@ -427,8 +431,9 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),
     battleResult: scene.session.battleResult,
-    gameTime: resolveTimeSystem(store.getCurrent()) ? scene.session.gameTime : undefined,
-    timePhase: resolveTimeSystem(store.getCurrent()) ? timePhaseFor(scene.session.gameTime) : undefined,
+    gameTime: resolveTimeSystem(project) ? scene.session.gameTime : undefined,
+    timePhase: resolveTimeSystem(project) ? timePhaseFor(scene.session.gameTime) : undefined,
+    lifeCalendarHudLines: resolveTimeSystem(project) ? lifeCalendarHudLines(project, scene.session) : undefined,
   });
   scene.runtimeDom.syncAudioState(scene.session.audio);
   scene.runtimeDom.syncPictureLayer(scene.session.pictures);

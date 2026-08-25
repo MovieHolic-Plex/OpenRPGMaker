@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-    window.localStorage.setItem("rpg-zzu-editor-session-id", "e2e-event-editor-trust-loop");
+    window.localStorage.setItem("oprn:editor-session-id", "e2e-event-editor-trust-loop");
   });
 });
 
@@ -31,8 +31,9 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   ]) {
     await expect(editor.getByTestId(testId), testId).toBeVisible();
   }
-  await expect(editor.getByTestId("event-editor-draft-status")).toContainText("로컬 복구");
-  await expect(editor.getByTestId("event-editor-remote-status")).toContainText("원격 저장");
+  await expect(editor.getByTestId("event-editor-draft-status")).toContainText("취소 시 삭제");
+  await expect(editor.getByTestId("event-editor-draft-status")).toContainText("자동 저장");
+  await expect(editor.getByTestId("event-editor-remote-status")).toContainText("임시 세션");
 
   await editor.getByTestId("event-template-transfer").click();
   await expect(page.getByTestId("event-transfer-player-dialog")).toBeVisible();
@@ -90,6 +91,9 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
 
   await editor.getByTestId("event-editor-apply").click();
   await expect(editor).toBeVisible();
+  const validation = editor.getByTestId("event-draft-validation");
+  await validation.locator(":scope > summary").click();
+  await expect(validation).toHaveAttribute("open", "");
   const issue = editor.locator('[data-issue-code="shop.items.empty"]');
   await expect(issue).toBeVisible();
   await issue.click();
@@ -114,6 +118,7 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   await expect(editor).toBeVisible();
 
   await editor.getByTestId("event-editor-cancel").click();
+  await page.getByRole("button", { name: "버리고 닫기" }).click();
   await expect(editor).toBeHidden();
   expect(await eventDraftExists(page, ids)).toBe(false);
 });

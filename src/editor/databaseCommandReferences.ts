@@ -2,7 +2,7 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
 
-type CommandReferenceCollection = DatabaseCollection | "monsterSpecies";
+type CommandReferenceCollection = DatabaseCollection | "monsterSpecies" | "lifeSkills" | "craftRecipes" | "itemUpgrades";
 
 export function commandsReference(project: Project, collection: CommandReferenceCollection, id: string): boolean {
   return commandsReferenceLocations(project, collection, id).length > 0;
@@ -144,6 +144,12 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return collection === "actors" && command.actorId === id;
     case "changeItem":
       return collection === "items" && command.itemId === id;
+    case "changeLifeSkillExp":
+      return collection === "lifeSkills" && command.skillId === id;
+    case "craftRecipe":
+      return collection === "craftRecipes" && command.recipeId === id;
+    case "applyItemUpgrade":
+      return collection === "itemUpgrades" && command.upgradeId === id;
     default:
       return false;
   }

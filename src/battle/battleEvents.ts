@@ -6,6 +6,7 @@ import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from
 import { clampFriendship } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
+import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, Command, Condition, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
@@ -18,6 +19,7 @@ export type BattleEventRuntimeState = {
   readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
   // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷). battleResult 조건 평가 기준.
   readonly battleResult?: "victory" | "defeat" | "escape";
+  readonly roguelikeRun?: RoguelikeRunState;
   inventory: Record<string, number>;
   itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
@@ -715,6 +717,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "spawnFieldEnemy":
       case "despawnFieldEnemy":
       case "advanceCropGrowth":
+      case "runControl":
         logUnsupported(page, context, command.kind);
         return false;
       default:
@@ -779,6 +782,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷)로 실제 평가.
         // 진행 중인 이 전투의 결과가 아니라 "직전" 전투의 결과다(RM2K3 정합).
         return options.state.battleResult === condition.result;
+      case "run":
+        return evalRoguelikeRunCondition(options.state, condition);
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":

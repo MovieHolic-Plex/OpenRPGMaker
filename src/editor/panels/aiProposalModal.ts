@@ -1,12 +1,25 @@
+import type { ChatDock } from "@/editor/chatDock";
 import { el } from "@/util/dom";
 
-export type ProposalPresentationMode = "modal" | "canvas";
+export type ProposalPresentationMode = "modal" | "canvas" | "inline";
+
+/** Decision cards stay in the dock. Float is composer-only — never the overlay pill. */
+export function resolveProposalPresentation(
+  requested: ProposalPresentationMode,
+  dock: ChatDock,
+  fromReopenPill = false,
+): ProposalPresentationMode {
+  if (fromReopenPill && requested === "canvas") return "canvas";
+  if (dock === "glass" || dock === "side" || dock === "float") return "inline";
+  return "inline";
+}
 
 export interface ProposalModalElements {
   readonly noticeHost: HTMLElement;
   readonly pill: HTMLButtonElement;
   readonly count: HTMLElement;
   readonly root: HTMLElement;
+  readonly body: HTMLElement;
   readonly open: (mode?: ProposalPresentationMode) => void;
   readonly minimize: () => void;
   readonly close: () => void;
@@ -26,6 +39,7 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
     attrs: { type: "button", title: "제안을 유지한 채 닫기 (Esc)" },
     dataset: { testid: "ai-proposal-modal-later" },
   }) as HTMLButtonElement;
+  const body = el("div", { class: "ai-proposal-modal-body", children: [proposalHost] });
   const root = el("div", {
     class: "ai-proposal-modal-backdrop",
     attrs: { hidden: "" },
@@ -43,7 +57,7 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
               later,
             ],
           }),
-          el("div", { class: "ai-proposal-modal-body", children: [proposalHost] }),
+          body,
         ],
       }),
     ],
@@ -56,6 +70,11 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
       return;
     }
     root.dataset.presentation = mode;
+    if (mode === "inline") {
+      root.hidden = true;
+      pill.hidden = true;
+      return;
+    }
     if (mode === "canvas") {
       // 안전한 공간 제안은 캔버스 고스트의 실제 승인 버튼으로 먼저 검토한다.
       // 카드와 모달은 그대로 보존해 pill/상세 버튼으로 언제든 전체 검토에 들어갈 수 있다.
@@ -88,5 +107,5 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
   root.addEventListener("keydown", (event) => {
     if ((event as KeyboardEvent).key === "Escape") minimize();
   });
-  return { noticeHost, pill, count, root, open, minimize, close };
+  return { noticeHost, pill, count, root, body, open, minimize, close };
 }

@@ -274,7 +274,16 @@ describe("UXC D30 새 이벤트 모달 상태", () => {
     openNewEventEditorModal(mapId, 2, 2);
 
     expect(findByTestId(fakeBody(), "event-editor-titlebar")?.textContent).toContain("새 이벤트 (저장 전)");
-    expect(findByTestId(fakeBody(), "event-editor-draft-status")?.textContent).toContain("자동 저장");
+    const draftStatus = findByTestId(fakeBody(), "event-editor-draft-status")?.textContent;
+    expect(draftStatus).toContain("취소 시 삭제");
+    expect(draftStatus).toContain("자동 저장");
+    const cancel = findByTestId(fakeBody(), "event-editor-cancel");
+    expect(cancel?.textContent).toContain("취소(삭제)");
+    expect(cancel?.getAttribute("aria-label")).toContain("새 이벤트 삭제");
+
+    findByTestId(fakeBody(), "event-editor-apply")?.click();
+    expect(cancel?.textContent).toBe("취소");
+    expect(cancel?.getAttribute("aria-label")).not.toContain("새 이벤트 삭제");
   });
 
   it("새 이벤트 모달 취소는 이벤트를 남기지 않는다", () => {

@@ -17,7 +17,7 @@ page.on("pageerror", (err) => consoleLines.push(`[pageerror] ${err.message}`));
 // expert 모드에서만 클래식 툴바(toolbar-database 포함)가 렌더된다.
 await page.addInitScript(() => {
   try {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   } catch {}
 });
 

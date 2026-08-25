@@ -1,7 +1,7 @@
 // [P0] 커맨드 카테고리 시각 언어 공용 모듈.
 // - 커맨드 피커: 그룹 헤딩/버튼/탭의 카테고리 아이콘 + 색
 // - 커맨드 리스트: 행 좌측 색 레일(data-command-category) + kind 아이콘
-// RM2003 텍스트 스크립트가 정본이므로 아이콘은 16px 이하의 부가 장식으로만 쓴다.
+// 아이콘은 16px 이하 스캔 보조. 식별은 항상 텍스트가 한다.
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { M2CommandPickerGroup } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
@@ -21,22 +21,27 @@ export type CommandCategoryKey =
 type CategoryVisual = {
   readonly key: CommandCategoryKey;
   readonly glyph: string;
+  readonly label: string;
 };
 
 const GROUP_VISUALS: Record<string, CategoryVisual> = {
-  "대화/입력": { key: "dialogue", glyph: "❝" },
-  "조건/흐름": { key: "flow", glyph: "◇" },
-  "맵/이동": { key: "map", glyph: "➤" },
-  "보상/상점": { key: "reward", glyph: "¤" },
-  "소리": { key: "sound", glyph: "♪" },
-  "배우/전투": { key: "actor", glyph: "☗" },
-  "화면/연출": { key: "screen", glyph: "✦" },
-  "시스템/고급": { key: "system", glyph: "⚙" },
-  "전투 전용": { key: "battle", glyph: "⚔" },
-  "모던 명령": { key: "modern", glyph: "◈" },
+  "대화/입력": { key: "dialogue", glyph: "❝", label: "대화" },
+  "조건/흐름": { key: "flow", glyph: "◇", label: "흐름" },
+  "맵/이동": { key: "map", glyph: "➤", label: "지도" },
+  "보상/상점": { key: "reward", glyph: "¤", label: "보상" },
+  "소리": { key: "sound", glyph: "♪", label: "소리" },
+  "배우/전투": { key: "actor", glyph: "☗", label: "동료" },
+  "화면/연출": { key: "screen", glyph: "✦", label: "화면 효과" },
+  "시스템/고급": { key: "system", glyph: "⚙", label: "시스템" },
+  "전투 전용": { key: "battle", glyph: "⚔", label: "전투" },
+  "모던 명령": { key: "modern", glyph: "◈", label: "도구" },
 };
 
-const FALLBACK_VISUAL: CategoryVisual = GROUP_VISUALS["시스템/고급"] ?? { key: "system", glyph: "⚙" };
+const FALLBACK_VISUAL: CategoryVisual = GROUP_VISUALS["시스템/고급"] ?? {
+  key: "system",
+  glyph: "⚙",
+  label: "시스템",
+};
 
 const CATEGORY_BY_KIND: ReadonlyMap<string, CategoryVisual> = buildKindIndex();
 const CATEGORY_BY_COMMAND_ID: ReadonlyMap<string, CategoryVisual> = buildCommandIdIndex();
@@ -86,7 +91,7 @@ export function commandCategoryVisual(cmd: Command): CategoryVisual {
   return CATEGORY_BY_KIND.get(cmd.kind) ?? FALLBACK_VISUAL;
 }
 
-// 피커 탭(1~4) 대표 아이콘 — RM2003 탭 구성(빠른 저작 / 배우·전투 / 맵·연출 / 시스템·고급) 기준.
+// 피커 탭(1~4) 대표 아이콘.
 export function pickerPageGlyph(page: 1 | 2 | 3 | 4): string {
   switch (page) {
     case 1:

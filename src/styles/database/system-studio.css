@@ -1,0 +1,1325 @@
+/* Database System — studio contract scoped to .database-modal-backdrop.
+   Neutral cool studio via --db-studio-* only. No gradients, no heavy shadows,
+   no Inter/Pretendard. System inner nav is a segmented control; DB outer rail
+   is 220px labeled at >=1100px, 56px icon below. 1024 keeps nav+fields. */
+
+.database-modal-backdrop:has(.db-system-studio) {
+  --studio-bg: var(--db-studio-canvas);
+  --studio-surface: var(--db-studio-surface);
+  --studio-inset: var(--db-studio-inset);
+  --studio-well: var(--db-studio-well);
+  --studio-line: var(--db-studio-border-default);
+  --studio-line-soft: var(--db-studio-border-subtle);
+  --studio-text: var(--db-studio-text-1);
+  --studio-muted: var(--db-studio-text-2);
+  --studio-dim: var(--db-studio-text-3);
+  --studio-accent: var(--db-studio-accent);
+  --studio-accent-soft: var(--db-studio-accent-soft);
+  --studio-accent-border: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop:has(.db-system-studio) .database-modal-window {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-default) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--db-studio-shadow-pop) !important;
+  color: var(--db-studio-text-1) !important;
+  font-family: "Malgun Gothic", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .database-modal-header {
+  background: var(--db-studio-surface) !important;
+  border-bottom: 1px solid var(--db-studio-border-subtle) !important;
+  min-height: 48px !important;
+  padding: 0 14px !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .database-modal-header h2 {
+  color: var(--db-studio-text-1) !important;
+  font: 600 13px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .database-modal-body {
+  background: var(--db-studio-canvas) !important;
+  display: grid !important;
+  grid-template-columns: 56px minmax(0, 1fr) !important;
+  min-height: 0;
+}
+
+@media (min-width: 1100px) {
+  .database-modal-backdrop:has(.db-system-studio) .database-modal-body {
+    grid-template-columns: 220px minmax(0, 1fr) !important;
+  }
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-tabs {
+  background: var(--db-studio-surface) !important;
+  border-right: 1px solid var(--db-studio-border-subtle) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  overflow: hidden auto !important;
+  padding: 8px 6px !important;
+}
+
+@media (min-width: 1100px) {
+  .database-modal-backdrop:has(.db-system-studio) .db-tabs {
+    padding: 10px 8px !important;
+  }
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab {
+  align-items: center !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 6px !important;
+  color: transparent !important;
+  display: flex !important;
+  font-size: 0 !important;
+  height: 36px !important;
+  justify-content: center !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  width: 36px !important;
+  margin: 0 auto !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab::before {
+  color: var(--db-studio-text-2);
+  content: attr(data-short);
+  font: 700 16px/1 "Malgun Gothic", system-ui, sans-serif;
+}
+
+@media (min-width: 1100px) {
+  .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab {
+    color: var(--db-studio-text-2) !important;
+    font: 500 12px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+    height: 32px !important;
+    justify-content: flex-start !important;
+    padding: 0 10px !important;
+    width: 100% !important;
+  }
+  .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab::before {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active {
+  background: var(--db-studio-accent-soft) !important;
+  border-color: var(--db-studio-accent-border) !important;
+  color: var(--db-studio-accent) !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active::before {
+  color: var(--db-studio-accent) !important;
+}
+
+@media (min-width: 1100px) {
+  .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active {
+    box-shadow: inset 2px 0 0 var(--db-studio-accent) !important;
+    font: 750 12px/1 Pretendard, "Segoe UI", sans-serif !important;
+    height: 38px;
+    padding: 0 15px !important;
+    white-space: nowrap;
+  }
+
+  .db-system-studio-layout {
+    align-items: start;
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) 248px;
+  }
+
+  .db-system-studio-main {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .db-system-studio-card-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .db-system-studio-card-grid .db-system-studio-card {
+    min-height: 100px;
+  }
+
+  .db-system-studio-card {
+    appearance: none;
+    background: var(--studio-surface-3) !important;
+    border: 1px solid var(--studio-line) !important;
+    border-radius: 9px !important;
+    color: var(--studio-text) !important;
+    cursor: pointer;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    min-width: 0;
+    padding: 12px !important;
+    text-align: left;
+    transition: border-color 140ms ease, transform 140ms ease, background-color 140ms ease;
+  }
+
+  .db-system-studio-card:hover {
+    background: var(--studio-surface-2) !important;
+    border-color: var(--db-light-accent-border) !important;
+    transform: translateY(-1px);
+  }
+
+  .db-system-studio-card-icon {
+    align-items: center;
+    background: var(--studio-violet-soft);
+    border: 1px solid rgba(124, 108, 242, 0.22);
+    border-radius: 8px;
+    color: var(--studio-violet);
+    display: flex;
+    font: 700 20px/1 Georgia, serif;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+  }
+
+  .db-system-studio-card:nth-child(4n) .db-system-studio-card-icon,
+  .db-system-studio-card.is-rule:nth-child(2) .db-system-studio-card-icon {
+    background: rgba(242, 180, 91, 0.1);
+    border-color: rgba(242, 180, 91, 0.18);
+    color: var(--studio-amber);
+  }
+
+  .db-system-studio-card.is-rule:nth-child(3) .db-system-studio-card-icon {
+    background: rgba(105, 214, 176, 0.1);
+    border-color: rgba(105, 214, 176, 0.18);
+    color: var(--studio-mint);
+  }
+
+  .db-system-studio-card-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .db-system-studio-card-copy strong {
+    color: var(--studio-text);
+    font-size: 14px;
+    font-weight: 730;
+    line-height: 1.3;
+  }
+
+  .db-system-studio-card-copy small {
+    color: var(--studio-muted);
+    font-size: 10px;
+    line-height: 1.45;
+    margin-top: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .db-system-studio-card-copy em {
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 650;
+    margin-top: 10px;
+  }
+
+  .db-system-studio-card-copy em.is-ok { color: var(--studio-mint); }
+  .db-system-studio-card-copy em.is-warn { color: var(--studio-amber); }
+  .db-system-studio-card-copy em.is-neutral { color: var(--studio-dim); }
+
+  .db-system-studio-card-arrow {
+    align-self: center;
+    color: var(--studio-dim);
+    font-size: 20px;
+  }
+
+  .db-system-studio-panel {
+    background: var(--studio-surface-3);
+    border: 1px solid var(--studio-line);
+    border-radius: 9px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .db-system-studio-state {
+    min-height: 280px;
+  }
+
+  .db-system-studio-panel-header {
+    align-items: end;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+  }
+
+  .db-system-studio-panel-header h3 {
+    color: var(--studio-text) !important;
+    font-size: 17px !important;
+    letter-spacing: -0.02em;
+    margin: 0 !important;
+  }
+
+  .db-system-studio-panel-header p {
+    color: var(--studio-muted);
+    font-size: 11px;
+    margin: 4px 0 0;
+  }
+
+  .db-system-studio-state-actions {
+    align-items: center;
+    display: flex;
+    gap: 5px;
+  }
+
+  .db-system-studio-filter,
+  .db-system-studio-add-state {
+    background: transparent !important;
+    border: 1px solid var(--studio-line) !important;
+    border-radius: 6px !important;
+    color: var(--studio-muted) !important;
+    font: 650 10px/1 Pretendard, "Segoe UI", sans-serif !important;
+    height: 30px;
+    padding: 0 10px !important;
+  }
+
+  .db-system-studio-filter.active {
+    background: var(--studio-violet) !important;
+    border-color: #8e83ff !important;
+    color: #fff !important;
+  }
+
+  .db-system-studio-add-state {
+    background: var(--studio-violet) !important;
+    border-color: #8e83ff !important;
+    color: #fff !important;
+    margin-left: 8px;
+  }
+
+  .db-system-studio-table {
+    border: 1px solid var(--studio-line-soft);
+    border-radius: 7px;
+    margin: 0 16px;
+    overflow: hidden;
+  }
+
+  .db-system-studio-table-head,
+  .db-system-studio-table-row {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(180px, 1.6fr) minmax(70px, 0.65fr) minmax(64px, 0.55fr) minmax(130px, 1.35fr);
+    min-height: 42px;
+    padding: 0 14px;
+  }
+
+  .db-system-studio-table-head {
+    background: var(--studio-surface);
+    color: var(--studio-dim);
+    font-size: 10px;
+    font-weight: 700;
+    min-height: 34px;
+  }
+
+  .db-system-studio-table-row {
+    border-top: 1px solid var(--studio-line-soft);
+    color: var(--studio-muted);
+    font-size: 11px;
+  }
+
+  .db-system-studio-table-row:hover { background: var(--studio-surface-2); }
+
+  .db-system-studio-state-name {
+    align-items: center;
+    display: flex;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    gap: 9px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .db-system-studio-state-name i {
+    color: var(--studio-mint);
+    font-style: normal;
+  }
+
+  .db-system-studio-table-row b {
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 750;
+    padding: 4px 7px;
+  }
+
+  .db-system-studio-table-row b.is-switch {
+    background: rgba(105, 214, 176, 0.12);
+    color: var(--studio-mint);
+  }
+
+  .db-system-studio-table-row b.is-variable {
+    background: rgba(92, 143, 247, 0.14);
+    color: #7aa6ff;
+  }
+
+  .db-system-studio-table-row code {
+    background: var(--studio-surface-2);
+    border: 1px solid var(--studio-line);
+    border-radius: 5px;
+    color: var(--studio-text);
+    font: 10px/1.5 "SFMono-Regular", Consolas, monospace;
+    justify-self: start;
+    padding: 2px 7px;
+  }
+
+  .db-system-studio-usage {
+    color: var(--studio-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .db-system-studio-state-empty {
+    color: var(--studio-muted);
+    font-size: 11px;
+    padding: 22px;
+    text-align: center;
+  }
+
+  .db-system-studio-view-all {
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--studio-violet) !important;
+    display: block;
+    font: 650 10px/1 Pretendard, "Segoe UI", sans-serif !important;
+    margin: 0 auto;
+    min-height: 36px;
+  }
+
+  .db-system-studio-rule-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .db-system-studio-card.is-rule {
+    grid-template-rows: auto 1fr auto;
+    min-height: 220px;
+  }
+
+  .db-system-studio-card.is-rule > .db-system-studio-card-copy em {
+    display: none;
+  }
+
+  .db-system-studio-card-details {
+    align-self: stretch;
+    display: grid;
+    gap: 4px;
+    grid-column: 1 / -1;
+  }
+
+  .db-system-studio-card-detail {
+    align-items: center;
+    color: var(--studio-muted);
+    display: flex;
+    font-size: 10px;
+    justify-content: space-between;
+    min-height: 25px;
+  }
+
+  .db-system-studio-card-detail strong {
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .db-system-studio-card-detail strong.is-value { color: var(--studio-text); }
+
+  .db-system-studio-card-open {
+    align-items: center;
+    border: 1px solid var(--studio-line);
+    border-radius: 6px;
+    color: var(--studio-muted);
+    display: flex;
+    font-size: 10px;
+    grid-column: 1 / -1;
+    justify-content: center;
+    min-height: 32px;
+  }
+
+  .db-system-studio-preview {
+    background: var(--studio-surface-3);
+    border: 1px solid var(--studio-line);
+    border-radius: 9px;
+    min-width: 0;
+    overflow: hidden;
+    position: sticky;
+    top: 0;
+  }
+
+  .db-system-studio-preview > header {
+    align-items: center;
+    display: flex;
+    height: 48px;
+    justify-content: space-between;
+    padding: 0 14px;
+  }
+
+  .db-system-studio-preview > header h3 {
+    color: var(--studio-text) !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+  }
+
+  .db-system-studio-preview > header span {
+    color: var(--studio-dim);
+    font-size: 13px;
+  }
+
+  .db-system-studio-preview-stage {
+    align-items: center;
+    background-color: var(--studio-surface-2);
+    background-position: center;
+    background-size: cover;
+    border: 1px solid var(--studio-line-soft);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    height: 244px;
+    justify-content: center;
+    margin: 0 12px;
+    overflow: hidden;
+    padding: 18px;
+    position: relative;
+    text-align: center;
+  }
+
+  .db-system-studio-preview-stage strong {
+    color: #fff;
+    font-family: Georgia, "Noto Serif KR", serif;
+    font-size: 21px;
+    letter-spacing: 0.08em;
+    margin-bottom: 22px;
+    text-shadow: 0 2px 12px #000;
+  }
+
+  .db-system-studio-preview-menu {
+    display: grid;
+    gap: 3px;
+    width: 116px;
+  }
+
+  .db-system-studio-preview-menu span {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+
+  .db-system-studio-preview-menu span.active {
+    background: linear-gradient(90deg, transparent, rgba(124, 108, 242, 0.68), transparent);
+    border-color: rgba(169, 156, 255, 0.22);
+    color: #fff;
+  }
+
+  .db-system-studio-preview-stage > small {
+    bottom: 9px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 8px;
+    position: absolute;
+    right: 10px;
+  }
+
+  .db-system-studio-impact {
+    border-top: 1px solid var(--studio-line-soft);
+    margin-top: 14px;
+    padding: 13px 12px 10px;
+  }
+
+  .db-system-studio-impact h4 {
+    color: var(--studio-text);
+    font-size: 11px;
+    margin: 0 0 9px 2px;
+  }
+
+  .db-system-studio-impact-row {
+    align-items: center;
+    background: var(--studio-surface-3) !important;
+    border: 1px solid var(--studio-line-soft) !important;
+    border-radius: 6px !important;
+    color: var(--studio-muted) !important;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 26px minmax(0, 1fr);
+    margin-top: 6px;
+    min-height: 43px;
+    padding: 6px 8px !important;
+    text-align: left;
+    width: 100%;
+  }
+
+  .db-system-studio-impact-row > span:first-child {
+    align-items: center;
+    background: var(--studio-violet-soft);
+    border-radius: 5px;
+    color: var(--studio-violet);
+    display: flex;
+    height: 26px;
+    justify-content: center;
+    width: 26px;
+  }
+
+  .db-system-studio-impact-row > span:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .db-system-studio-impact-row strong {
+    color: var(--studio-text);
+    font-size: 10px;
+  }
+
+  .db-system-studio-impact-row small {
+    color: var(--studio-dim);
+    font-size: 8px;
+    margin-top: 2px;
+  }
+
+  /* Existing authoring controls inherit the studio language after a task card
+     opens a detail section. No field/test-id or persistence behavior changes. */
+  .database-modal-backdrop:has(.db-system-studio) .db-system-section .oprn-db-fieldset {
+    background: var(--studio-surface-3) !important;
+    border: 1px solid var(--studio-line) !important;
+    border-radius: 10px !important;
+    color: var(--studio-text) !important;
+    margin-bottom: 14px;
+    padding: 18px !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .db-system-section .oprn-db-fieldset legend {
+    background: transparent !important;
+    color: var(--studio-text) !important;
+    font-size: 14px !important;
+    font-weight: 750 !important;
+    padding: 0 6px !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(.db-field, label, p, small) {
+    color: var(--studio-muted);
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
+    background: var(--studio-surface-2) !important;
+    border-color: var(--studio-line) !important;
+    color: var(--studio-text) !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea):focus {
+    border-color: var(--studio-violet) !important;
+    box-shadow: 0 0 0 2px rgba(124, 108, 242, 0.16) !important;
+    outline: none !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(button.btn, .db-resource-picker-button) {
+    background: var(--studio-surface-3) !important;
+    border-color: var(--studio-line) !important;
+    border-radius: 7px !important;
+    color: var(--studio-text) !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .db-title-workbench {
+    color: var(--studio-text);
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .database-modal-footer {
+    background: var(--studio-surface) !important;
+    border-top: 1px solid var(--studio-line-soft) !important;
+    color: var(--studio-muted) !important;
+    min-height: 46px !important;
+    padding: 6px 16px !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .database-footer-button {
+    background: var(--studio-surface-3) !important;
+    border: 1px solid var(--studio-line) !important;
+    border-radius: 7px !important;
+    color: var(--studio-text) !important;
+    min-height: 32px !important;
+  }
+
+  .database-modal-backdrop:has(.db-system-studio) .database-footer-button.primary {
+    background: var(--studio-violet) !important;
+    border-color: #8e83ff !important;
+    color: #fff !important;
+  }
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-body {
+  background: var(--db-studio-canvas) !important;
+  color: var(--db-studio-text-1) !important;
+  display: block !important;
+  min-height: 0;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-body > h3 {
+  display: none !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-form {
+  background: var(--db-studio-canvas) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* Segmented control — keeps db-system-nav-* testids */
+.database-modal-backdrop:has(.db-system-studio) .db-system-section-nav {
+  align-items: center !important;
+  background: var(--db-studio-surface) !important;
+  border-bottom: 1px solid var(--db-studio-border-subtle) !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  padding: 10px 14px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav {
+  appearance: none !important;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-default) !important;
+  border-radius: 999px !important;
+  color: var(--db-studio-text-2) !important;
+  cursor: pointer !important;
+  flex: 0 0 auto !important;
+  font: 500 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  min-height: 30px !important;
+  padding: 0 12px !important;
+  white-space: nowrap !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav:hover {
+  background: var(--db-studio-inset) !important;
+  color: var(--db-studio-text-1) !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section-nav button.db-system-section-nav.active {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-sections {
+  background: var(--db-studio-canvas) !important;
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-height: 0;
+  overflow: auto !important;
+  padding: 14px 14px 48px !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section[hidden] {
+  display: none !important;
+}
+
+/* Studio overview — neutral, no gradients, system font */
+.db-system-studio {
+  color: var(--db-studio-text-1);
+  margin: 0 auto;
+  max-width: 1160px;
+  min-width: 0;
+}
+
+.db-system-studio-header {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.db-system-studio-heading > div:first-child {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+}
+
+.db-system-studio-eyebrow {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.db-system-studio-heading h2 {
+  color: var(--db-studio-text-1) !important;
+  font: 700 20px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+  letter-spacing: -0.02em;
+  margin: 0 !important;
+}
+
+.db-system-studio-health {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.db-system-studio-health span {
+  color: var(--db-studio-text-2);
+  font: 500 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.db-system-studio-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.db-system-studio-search {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  display: flex;
+  height: 32px;
+  padding: 0 10px;
+  width: min(260px, 42vw);
+}
+
+.db-system-studio-search-input {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--db-studio-text-1) !important;
+  font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+  height: auto !important;
+  min-width: 0;
+  outline: 0;
+  padding: 0 !important;
+  width: 100%;
+}
+
+.db-system-studio-search-input::placeholder {
+  color: var(--db-studio-text-3) !important;
+}
+
+.db-system-studio-autosave {
+  color: var(--db-studio-text-2);
+  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.db-system-studio-play {
+  background: var(--db-studio-accent) !important;
+  border: 1px solid var(--db-studio-accent) !important;
+  border-radius: 6px !important;
+  color: #fff !important;
+  font: 600 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  height: 32px;
+  padding: 0 12px !important;
+  white-space: nowrap;
+}
+
+.db-system-studio-play:hover {
+  background: var(--db-studio-accent-hover) !important;
+}
+
+.db-system-studio-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+}
+
+@media (max-width: 1099px) {
+  .db-system-studio-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .db-system-studio-preview {
+    position: static !important;
+  }
+}
+
+.db-system-studio-main {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.db-system-studio-card-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1099px) {
+  .db-system-studio-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .db-system-studio-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.db-system-studio-card {
+  appearance: none;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+  color: var(--db-studio-text-1) !important;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px !important;
+  text-align: left;
+}
+
+.db-system-studio-card:hover {
+  border-color: var(--db-studio-border-default) !important;
+}
+
+.db-system-studio-card-icon {
+  align-items: center;
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 6px;
+  color: var(--db-studio-accent);
+  display: flex;
+  font: 600 14px/1 "Malgun Gothic", system-ui, sans-serif;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.db-system-studio-card-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.db-system-studio-card-copy strong {
+  color: var(--db-studio-text-1);
+  font: 600 13px/1.3 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.db-system-studio-card-copy small {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+.db-system-studio-card-copy em {
+  color: var(--db-studio-text-2);
+  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font-style: normal;
+  margin-top: 6px;
+}
+
+.db-system-studio-card-copy em.is-ok {
+  color: var(--db-studio-success);
+}
+
+.db-system-studio-card-copy em.is-warn {
+  color: var(--db-studio-text-2);
+}
+
+.db-system-studio-card-copy em.is-neutral {
+  color: var(--db-studio-text-3);
+}
+
+.db-system-studio-card-arrow {
+  display: none !important;
+}
+
+.db-system-studio-panel {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.db-system-studio-panel-header {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+}
+
+.db-system-studio-panel-header h3 {
+  color: var(--db-studio-text-1) !important;
+  font: 600 13px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+  margin: 0 !important;
+}
+
+.db-system-studio-panel-header p {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  margin: 4px 0 0;
+}
+
+.db-system-studio-state-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.db-system-studio-filter,
+.db-system-studio-add-state {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-default) !important;
+  border-radius: 999px !important;
+  color: var(--db-studio-text-2) !important;
+  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  height: 28px;
+  padding: 0 10px !important;
+}
+
+.db-system-studio-filter.active {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
+}
+
+.db-system-studio-add-state {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
+}
+
+.db-system-studio-table {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  margin: 0;
+  overflow: hidden;
+}
+
+.db-system-studio-table-head,
+.db-system-studio-table-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(140px, 1.5fr) 70px 64px minmax(100px, 1fr);
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.db-system-studio-table-head {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-3);
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.db-system-studio-table-row {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.3 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.db-system-studio-table-row:hover {
+  background: var(--db-studio-inset);
+}
+
+.db-system-studio-state-name {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-system-studio-table-row b {
+  border-radius: 999px;
+  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
+  padding: 3px 6px;
+}
+
+.db-system-studio-table-row b.is-switch {
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+
+.db-system-studio-table-row b.is-variable {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+
+.db-system-studio-table-row code {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 4px;
+  color: var(--db-studio-text-1);
+  font: 500 11px/1.4 ui-monospace, monospace;
+  padding: 2px 6px;
+}
+
+.db-system-studio-usage {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-system-studio-state-empty {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  padding: 18px;
+  text-align: center;
+}
+
+.db-system-studio-view-all,
+.db-system-studio-all-screens {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--db-studio-text-2) !important;
+  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  display: block;
+  margin: 8px auto;
+  min-height: 28px;
+}
+
+.db-system-studio-rule-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 860px) {
+  .db-system-studio-rule-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.db-system-studio-card.is-rule {
+  min-height: 160px;
+}
+
+.db-system-studio-card-details {
+  display: grid;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.db-system-studio-card-detail {
+  align-items: center;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 400 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  justify-content: space-between;
+}
+
+.db-system-studio-card-detail strong {
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.db-system-studio-card-detail strong.is-ok {
+  color: var(--db-studio-success);
+}
+
+.db-system-studio-card-detail strong.is-warn {
+  color: var(--db-studio-text-2);
+}
+
+.db-system-studio-card-open {
+  align-items: center;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  justify-content: center;
+  min-height: 28px;
+  margin-top: 6px;
+}
+
+.db-system-studio-preview {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  min-width: 0;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+}
+
+.db-system-studio-preview > header {
+  align-items: center;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  height: 40px;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.db-system-studio-preview > header h3 {
+  color: var(--db-studio-text-1) !important;
+  font: 600 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  margin: 0 !important;
+}
+
+.db-system-studio-preview-stage {
+  align-items: center;
+  background: var(--db-studio-well);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  justify-content: center;
+  margin: 10px;
+  overflow: hidden;
+  padding: 12px;
+  position: relative;
+  text-align: center;
+}
+
+.db-system-studio-preview-stage strong {
+  color: var(--db-studio-text-1);
+  font: 700 16px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 1099px) {
+  .db-system-studio-preview-stage {
+    height: 160px;
+  }
+}
+
+.db-system-studio-preview-menu {
+  display: grid;
+  gap: 2px;
+  width: 120px;
+}
+
+.db-system-studio-preview-menu span {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--db-studio-text-2);
+  font: 500 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px 6px;
+}
+
+.db-system-studio-preview-menu span.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+.db-system-studio-impact {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  padding: 10px;
+}
+
+.db-system-studio-impact h4 {
+  color: var(--db-studio-text-1);
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  margin: 0 0 8px;
+}
+
+.db-system-studio-impact-row {
+  align-items: center;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 6px !important;
+  color: var(--db-studio-text-2) !important;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  margin-top: 6px;
+  min-height: 40px;
+  padding: 6px 8px !important;
+  text-align: left;
+  width: 100%;
+}
+
+.db-system-studio-impact-row > span:first-child {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border-radius: 4px;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+/* Authoring fieldsets inside non-overview sections — hairline, not cream wells */
+.database-modal-backdrop:has(.db-system-studio) .db-system-section .oprn-db-fieldset {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+  color: var(--db-studio-text-1) !important;
+  margin-bottom: 12px;
+  padding: 14px !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section .oprn-db-fieldset legend {
+  background: transparent !important;
+  color: var(--db-studio-text-1) !important;
+  font: 600 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  padding: 0 4px !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section :is(.db-field, label) {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.3 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
+  background: var(--db-studio-surface) !important;
+  border-color: var(--db-studio-border-default) !important;
+  color: var(--db-studio-text-1) !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea):focus {
+  border-color: var(--db-studio-accent) !important;
+  box-shadow: 0 0 0 2px rgba(74, 87, 214, 0.15) !important;
+  outline: none !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .db-system-section :is(button.btn, .db-resource-picker-button) {
+  background: var(--db-studio-surface) !important;
+  border-color: var(--db-studio-border-default) !important;
+  border-radius: 6px !important;
+  color: var(--db-studio-text-1) !important;
+  font: 500 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .database-modal-footer {
+  background: var(--db-studio-surface) !important;
+  border-top: 1px solid var(--db-studio-border-subtle) !important;
+  color: var(--db-studio-text-2) !important;
+}
+
+.database-modal-backdrop:has(.db-system-studio) .database-footer-button {
+  border-radius: 6px !important;
+  font: 500 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  min-height: 30px !important;
+}

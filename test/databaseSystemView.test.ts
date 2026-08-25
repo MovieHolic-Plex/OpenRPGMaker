@@ -97,6 +97,79 @@ describe("database system view", () => {
     expect(findByTestId(host, "db-field-system-time-day-start")).not.toBeNull();
   });
 
+  it("edits the project play resolution from the display section", () => {
+    // Break named: the System database view has no project-resolution controls.
+    const host = renderSystem();
+    const preset = findByTestId(host, "db-field-system-resolution-preset");
+    if (!preset) throw new Error("missing play-resolution preset");
+
+    preset.value = "640x360";
+    preset.dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.playResolution).toEqual({ width: 640, height: 360 });
+    expect(findByTestId(host, "db-field-system-resolution-width")?.value).toBe("640");
+    expect(findByTestId(host, "db-field-system-resolution-height")?.value).toBe("360");
+    expect(findByTestId(host, "db-system-nav-display")).not.toBeNull();
+  });
+
+  // Break caught: authored calendars always used the hidden 28-day default.
+  it("edits the season length while preserving the existing start and end clock", () => {
+    const host = renderSystem();
+    setCheckbox(host, "db-field-system-time-enabled", true);
+    const days = findByTestId(host, "db-field-system-time-days-per-season");
+    if (!days) throw new Error("missing days-per-season field");
+    days.value = "14";
+    days.dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.timeSystem).toMatchObject({
+      daysPerSeason: 14,
+      dayStartHour: 6,
+      dayEndHour: 26,
+    });
+  });
+
+  it("shows map compatibility and tile-grid diagnostics for a custom resolution", () => {
+    // Break named: authors can choose 640x360 without seeing its half-tile edge or undersized maps.
+    store.update((draft) => {
+      draft.system.playResolution = { width: 640, height: 360 };
+    });
+
+    const host = renderSystem();
+    const diagnostics = findByTestId(host, "db-system-resolution-diagnostics");
+
+    expect(diagnostics?.dataset.minMapWidth).toBe("40");
+    expect(diagnostics?.dataset.minMapHeight).toBe("23");
+    expect(diagnostics?.dataset.partialTileX).toBe("false");
+    expect(diagnostics?.dataset.partialTileY).toBe("true");
+    expect(diagnostics?.dataset.incompatibleMapCount).toBe("1");
+  });
+
+  it("keeps a non-preset custom resolution editable", () => {
+    // Characterization: advanced custom values remain available alongside the recommended presets.
+    store.update((draft) => {
+      draft.system.playResolution = { width: 633, height: 355 };
+    });
+
+    const host = renderSystem();
+
+    expect(findByTestId(host, "db-field-system-resolution-preset")?.value).toBe("custom");
+    expect(findByTestId(host, "db-field-system-resolution-width")?.value).toBe("633");
+    expect(findByTestId(host, "db-field-system-resolution-height")?.value).toBe("355");
+  });
+
+  it("previews the title screen at the authored play aspect ratio", () => {
+    // Break named: the title workbench stays at its fixed editor shape after resolution changes.
+    store.update((draft) => {
+      draft.system.playResolution = { width: 640, height: 360 };
+    });
+
+    const host = renderSystem();
+    const stage = findByTestId(host, "db-title-workbench-stage");
+
+    expect(stage?.style.aspectRatio).toBe("16 / 9");
+    expect(stage?.dataset.playResolution).toBe("640x360");
+  });
+
   it("edits title screen fields into system.titleScreen", () => {
     const host = renderSystem();
     const title = findByTestId(host, "db-field-title-screen-title");
@@ -164,7 +237,7 @@ describe("database system view", () => {
         layout: { titleX: 160, titleY: 70, menuX: 160, menuY: 118 },
         menuLabels: { newGame: "새 게임", continueGame: "계속", quit: "종료" },
         menuVisibility: { newGame: true, continueGame: true, quit: true },
-        backgroundResourceId: "rpg-zzu-title-field",
+        backgroundResourceId: "oprn-title-field",
       };
     });
     const host = renderSystem();
@@ -194,17 +267,15 @@ describe("database system view", () => {
     const menuPreview = findByTestId(host, "db-title-workbench-menu-preview");
     if (!menuPreview) throw new Error("missing menu preview");
     expect(menuPreview.textContent).toContain("새 게임");
-    expect(menuPreview.textContent).toContain("게임 종료");
-    expect(menuPreview.textContent).not.toContain("계속");
+    expect(menuPreview.textContent).toContain("종료");
+    expect(menuPreview.textContent).not.toContain("이어하기");
     expect(menuPreview.childNodes).toHaveLength(2);
   });
 
   it("shows logo fields when presentation is graphic and previews logo", () => {
     const host = renderSystem();
-    // Defaults now ship a crest logo in both mode, so logo controls are already visible.
-    expect(findByTestId(host, "db-field-title-screen-logo")).not.toBeNull();
-    expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBe("rpg-zzu-title-logo-crest");
-    expect(findByTestId(host, "db-title-workbench-logo")).not.toBeNull();
+    expect(store.getCurrent().system.titleScreen?.titleGraphic?.mode).toBe("text");
+    expect(findByTestId(host, "db-field-title-screen-logo")).toBeNull();
 
     setSelectValue(host, "db-field-title-screen-presentation", "graphic");
     expect(store.getCurrent().system.titleScreen?.titleGraphic?.mode).toBe("graphic");

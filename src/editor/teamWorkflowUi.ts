@@ -1,10 +1,11 @@
+import { PRODUCT_BRAND } from "@/brand";
 import { currentHumanEditorIdentity, setOwnerLabel, type EditorIdentity } from "@/project/editorIdentity";
 import { listProjectCommitsFromSupabase, type SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { readProjectFromUrl } from "@/project/projectUrl";
 
-const LAST_LOGIN_METHOD_KEY = "rpg-zzu-editor-last-login-method";
+const LAST_LOGIN_METHOD_KEY = "oprn:editor-last-login-method";
 
 type LoginMethod = "email" | "google" | "github" | "guest";
 
@@ -171,7 +172,7 @@ function renderLoginModal(mode: LoginMode, onIdentityChanged?: () => void): void
           el("div", {
             class: "team-login-head",
             children: [
-              el("h2", { text: "RPG ZZU 로그인" }),
+              el("h2", { text: `${PRODUCT_BRAND} 로그인` }),
               el("p", { text: "목업 신원으로 팀 작업 표시를 시작합니다." }),
             ],
           }),

@@ -23,6 +23,15 @@ function stubSupabaseEnv(): void {
   vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
 }
 
+function stubManualCommitLog(): void {
+  vi.doMock("@/project/projectCommitLog", async () => {
+    const actual = await vi.importActual<typeof import("@/project/projectCommitLog")>(
+      "@/project/projectCommitLog",
+    );
+    return { ...actual, recordManualProjectCommitAfterSave: vi.fn() };
+  });
+}
+
 describe("Project store flush sha256 evidence", () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -33,6 +42,7 @@ describe("Project store flush sha256 evidence", () => {
   it("전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다", async () => {
     stubSupabaseEnv();
     stubBrowserWindow();
+    stubManualCommitLog();
     vi.stubGlobal("fetch", vi.fn<typeof fetch>());
     vi.doMock("@/project/supabaseProjectSync", async () => {
       const actual = await vi.importActual<typeof import("@/project/supabaseProjectSync")>(
@@ -65,12 +75,14 @@ describe("Project store flush sha256 evidence", () => {
   it("변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로", async () => {
     stubSupabaseEnv();
     stubBrowserWindow();
+    stubManualCommitLog();
     const fetchSpy = vi.fn<typeof fetch>();
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
     const { store } = await import("@/project/store");
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    store._setPersistedBaselineForTest(store.getCurrent());
 
     const result = await store.flush();
 

@@ -13,11 +13,19 @@ function isBoundaryRecord(value: unknown): value is BoundaryRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/**
+ * 허용 키 목록을 강제한다. 거부 메시지에 **허용 키 전체**를 실어야 한다 — 2026-08-23 실측:
+ * `authorHouse.kitId is not allowed.` 만 돌려주자 모델이 무엇이 허용되는지 알 수 없어 같은 인자를
+ * 4회 연속 재전송했다. author_house 처럼 `kind` 에 따라 허용 키가 갈리는 툴은 스키마로 표현할 수
+ * 없으므로(oneOf 금지), 이 에러 문구가 유일한 교정 신호다.
+ */
 export function rejectUnknownKeys(record: BoundaryRecord, keys: readonly string[], scope: string): void {
-  const allowed = new Set(keys);
-  const unknownKey = Object.keys(record).find((key) => !allowed.has(key));
+  const unknownKey = Object.keys(record).find((key) => !keys.includes(key));
   if (unknownKey !== undefined) {
-    throw new ToolError(`${scope}.${unknownKey} is not allowed.`, { code: "invalid-args" });
+    throw new ToolError(
+      `${scope}.${unknownKey} is not allowed. Allowed keys here: ${keys.join(", ")}.`,
+      { code: "invalid-args" },
+    );
   }
 }
 

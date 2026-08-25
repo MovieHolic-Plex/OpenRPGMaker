@@ -147,7 +147,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
 
       const measure = createDialogueTextMeasure(bodyEl);
       const pages = paginateDialogueSegments(parseDialogueText(request.body, request.textContext), {
-        maxWidth: dialogueBodyWidth(request, position),
+        maxWidth: dialogueBodyWidth(request, position, logicalHostWidth(host)),
         measure,
         maxLines: dialogueMaxLines(bodyEl),
         fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
@@ -544,8 +544,8 @@ function renderDialogueSegments(target: HTMLElement, segments: readonly Dialogue
   }
 }
 
-function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition): number {
-  const baseWidth = PLAY_RESOLUTION.width
+function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition, hostWidth: number): number {
+  const baseWidth = hostWidth
     - DIALOGUE_OVERLAY_HORIZONTAL_PADDING[position]
     - DIALOGUE_BOX_HORIZONTAL_PADDING
     - DIALOGUE_BOX_HORIZONTAL_BORDER;
@@ -558,6 +558,13 @@ function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindow
         ? DIALOGUE_BUST_TEXT_RESERVE
         : DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP;
   return Math.max(1, baseWidth - faceWidth);
+}
+
+function logicalHostWidth(host: HTMLElement): number {
+  const inlineWidth = Number.parseFloat(host.style.width);
+  if (Number.isFinite(host.clientWidth) && host.clientWidth > 0) return host.clientWidth;
+  if (Number.isFinite(inlineWidth) && inlineWidth > 0) return inlineWidth;
+  return PLAY_RESOLUTION.width;
 }
 
 /**

@@ -21,7 +21,7 @@ function complain(text: string): void {
 
 async function press(page: Page, dir: string, ms = 220): Promise<void> {
   await page.evaluate(async ({ dir, ms }) => {
-    const h = (window as unknown as { __rpgzzuInput?: InputHandle }).__rpgzzuInput;
+    const h = (window as unknown as { __oprnInput?: InputHandle }).__oprnInput;
     h?.dir(dir);
     await new Promise((r) => setTimeout(r, ms));
     h?.dir(null);
@@ -93,7 +93,7 @@ async function goAdjacent(page: Page, tx: number, ty: number, label: string, max
       stuck += 1;
       // 적이 길을 막았을 수 있다 — 베어 본다.
       await page.evaluate(() => {
-        const h = (window as unknown as { __rpgzzuInput?: InputHandle }).__rpgzzuInput;
+        const h = (window as unknown as { __oprnInput?: InputHandle }).__oprnInput;
         h?.attack();
       });
       await page.waitForTimeout(160);
@@ -149,7 +149,7 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
     errors.push(text.slice(0, 200));
   });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/?project=rpg-zzu-quest-demo");
@@ -173,7 +173,7 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
   // 적대적: 대사 중에 이동·공격을 밀어넣는다.
   await press(page, "left", 200);
   await page.evaluate(() => {
-    const h = (window as unknown as { __rpgzzuInput?: InputHandle }).__rpgzzuInput;
+    const h = (window as unknown as { __oprnInput?: InputHandle }).__oprnInput;
     h?.attack();
   });
   const duringDialogue = await state(page);
@@ -352,7 +352,7 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
       await slot.click({ force: true });
       await page.waitForTimeout(1200);
       const saved = await page.evaluate(() => {
-        const raw = window.localStorage.getItem("rpg-zzu:save-slot:1");
+        const raw = window.localStorage.getItem("oprn:save-slot:1");
         if (!raw) return null;
         try {
           const parsed = JSON.parse(raw) as { session?: { switches?: Record<string, boolean> } };
@@ -390,7 +390,7 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
   // ── 6c. 적대적: NPC 를 베어 본다(마을 NPC 는 검에 반응하면 안 된다)
   const beforeSwing = await state(page);
   await page.evaluate(() => {
-    const h = (window as unknown as { __rpgzzuInput?: InputHandle }).__rpgzzuInput;
+    const h = (window as unknown as { __oprnInput?: InputHandle }).__oprnInput;
     for (let i = 0; i < 5; i += 1) h?.attack();
   });
   await page.waitForTimeout(600);

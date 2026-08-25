@@ -97,7 +97,7 @@ function readPrompt(body: unknown): PromptShape | null {
 test("opens a separate conversational AI workspace and only applies confirmed knowledge", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:ai-config", JSON.stringify({
+    window.localStorage.setItem("oprn:ai-config", JSON.stringify({
       apiKey: "e2e-key",
       authMode: "apiKey",
       baseUrl: "/fake-ai",

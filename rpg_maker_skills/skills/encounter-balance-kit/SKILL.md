@@ -1,6 +1,6 @@
 ---
 name: encounter-balance-kit
-description: Use this RPG Maker authoring skill when creating purposeful early battles with enemy role, HP/attack tuning, weakness, troop layout, reward, escape/lose handling, and post-battle state changes.
+description: Use this authoring skill when creating purposeful early battles with enemy role, HP/attack tuning, weakness, troop layout, reward, escape/lose handling, and post-battle state changes.
 ---
 
 # Encounter Balance Kit

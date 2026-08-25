@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, Project } from "@/project/types";
-import { applyDatabaseChanges, exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { applyDatabaseChanges, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/task-10-db-playwright";
@@ -15,9 +15,9 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-    window.localStorage.setItem("rpg-zzu-editor-session-id", "task-10-db");
+    window.localStorage.setItem("oprn:editor-session-id", "task-10-db");
     // 기본(basic) 모드는 classic 툴바(toolbar-database)를 숨긴다 — 이 스펙은 expert 셸 전제.
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
 });
 

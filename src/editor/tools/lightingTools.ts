@@ -3,6 +3,7 @@ import { normalizeLightingState, normalizeLightSource } from "@/project/lighting
 import type { Command, EventPage, GameEvent, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { LIGHT_SOURCE_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 
@@ -20,10 +21,10 @@ const setLightingVolume: ToolDefinition = {
       sources: {
         type: "array",
         description: "LightSource[]. at은 'player' 문자열, {x,y}, {eventId}, 또는 {kind:'player'}를 허용한다.",
-        items: { type: "object" },
+        items: LIGHT_SOURCE_SCHEMA,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
-      area: { type: "object", description: "event 모드 필수 {x,y,w,h}" },
+      area: { ...RECT_SCHEMA, description: "event 모드 필수 {x,y,w,h}" },
     },
     required: ["mapId", "ambient"],
   },

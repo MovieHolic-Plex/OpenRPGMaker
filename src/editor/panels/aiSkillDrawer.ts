@@ -104,8 +104,8 @@ export function renderSkillParamForm(
       el("div", {
         class: "ai-skill-param-actions",
         children: [
-          // 라벨을 "스킬 실행"으로 구체화(도그푸딩 결함 ③): 상단 툴바의 테스트 플레이 버튼도
-          // "실행"이라 텍스트 기반 클릭(드라이버/사용자)이 풀스크린 테스트 플레이를 여는 오클릭이
+          // 라벨을 "스킬 실행"으로 구체화(도그푸딩 결함 ③): 상단 툴바의 시연 실행 버튼도
+          // "실행"이라 텍스트 기반 클릭(드라이버/사용자)이 풀스크린 시연 실행를 여는 오클릭이
           // 발생했다 — p5/p6에서 스킬 제출이 아예 시작되지 않은 채 7분+ 대기한 근본 원인.
           el("button", {
             class: "ai-assistant-action ai-proposal-accept",

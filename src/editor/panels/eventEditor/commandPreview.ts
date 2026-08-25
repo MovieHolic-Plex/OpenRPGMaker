@@ -8,6 +8,7 @@ import { renderFacesetCrop } from "./facesetPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
 import { facesetIconOf, initialBadge, recordIconElement } from "./recordPicker";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
 import { formatVariableFormula } from "./commandBodyVariable";
@@ -90,12 +91,13 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeTile: changeTileStage,
   inputWait: inputWaitStage,
   changeGold: (cmd, ctx) => goldStage(cmd, ctx),
+  openChest: storageChestStage,
   changeExp: (cmd, ctx) => expStage(cmd, ctx),
   learnSkill: skillStage,
   battleProcessing: battleStage,
   setSwitch: (cmd, ctx) => lampStage(switchName(cmd.switchId), resolveSwitchDisplay(cmd, ctx), ctx?.simState ? getSimSwitch(ctx.simState, cmd.switchId) : undefined),
   setVariable: variableStage,
-  setSelfSwitch: (cmd) => lampStage(`셀프 스위치 ${cmd.key}`, cmd.value),
+  setSelfSwitch: (cmd) => lampStage(`이 이벤트 기억 ${cmd.key}`, cmd.value),
   setFlag: (cmd, ctx) => lampStage(cmd.flag || "플래그", cmd.value, ctx?.simState ? getSimSwitch(ctx.simState, cmd.flag) : undefined),
   checkpointSave: (cmd) => screenMock(cmd.label ? `체크포인트: ${cmd.label}` : "체크포인트 저장", "title"),
   killPlayer: () => screenMock("GAME OVER", "gameover"),
@@ -114,7 +116,7 @@ function messageWindowMock(
 ): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
   // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
-  // 메시지 프리뷰는 windowskin-rm2003 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
+  // 메시지 프리뷰는 기본 창 스킨 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
   const faceClass = face ? " with-face" : "";
   const sideClass = faceRight ? " face-right" : "";
   const speakerName = speaker?.trim() ?? "";
@@ -411,7 +413,7 @@ function settingsMessageMock(cmd: Extract<Command, { kind: "displayTextSettings"
   badges.append(
     el("span", {
       class: `ecp-move-badge${cmd.preventObscuringPlayer ? "" : " off"}`,
-      text: cmd.preventObscuringPlayer ? "가림 방지 ON" : "가림 방지 OFF",
+      text: cmd.preventObscuringPlayer ? "가림 방지 켜짐" : "가림 방지 꺼짐",
     })
   );
   badges.append(
@@ -522,7 +524,7 @@ function variablePreviewName(variableId: string): string {
   const index = project.variables.findIndex((entry) => entry.id === variableId);
   if (index < 0) return variableId;
   const name = project.variables[index]?.name?.trim();
-  return name ? `${String(index + 1).padStart(4, "0")}: ${name}` : String(index + 1).padStart(4, "0");
+  return name || "(이름 없음)";
 }
 
 function transferStage(cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
@@ -568,6 +570,56 @@ function itemStage(cmd: Extract<Command, { kind: "changeItem" }>, context?: Comm
     stage.append(el("div", { class: "ecp-current-state", text: `현재 보유: ${curCount}개` }));
   }
   return stage;
+}
+
+function storageChestStage(cmd: Extract<Command, { kind: "openChest" }>): HTMLElement {
+  const shared = Boolean(cmd.chestId?.trim());
+  const stage = el("div", {
+    class: "ecp-storage-chest-stage",
+    dataset: { testid: "open-chest-preview" },
+  });
+  stage.append(
+    el("div", {
+      class: "ecp-storage-chest-heading",
+      children: [
+        el("strong", { text: "플레이 화면 예시" }),
+        el("span", { text: shared ? "여러 상자 공유" : "이 상자 전용" }),
+      ],
+    }),
+    el("div", {
+      class: "ecp-storage-chest-columns",
+      children: [
+        storagePreviewPane("가방 · 소지품", ["회복약 ×3", "해독초 ×1"]),
+        el("div", {
+          class: "ecp-storage-chest-transfer",
+          attrs: { "aria-hidden": "true" },
+          children: [
+            el("span", { text: "넣기 →" }),
+            el("span", { text: "← 꺼내기" }),
+          ],
+        }),
+        storagePreviewPane("보관 상자", ["철광석 ×5", "빈 칸"]),
+      ],
+    }),
+    el("div", {
+      class: "ecp-storage-chest-note",
+      text: "선택한 아이템을 한 개씩 넣거나 꺼냅니다.",
+    }),
+  );
+  return stage;
+}
+
+function storagePreviewPane(title: string, rows: readonly string[]): HTMLElement {
+  return el("div", {
+    class: "ecp-storage-chest-pane",
+    children: [
+      el("strong", { text: title }),
+      ...rows.map((row, index) => el("span", {
+        class: `ecp-storage-chest-item${row === "빈 칸" ? " empty" : ""}${index === 0 ? " selected" : ""}`,
+        text: row,
+      })),
+    ],
+  });
 }
 
 
@@ -732,7 +784,7 @@ function skillStage(cmd: Extract<Command, { kind: "learnSkill" }>): HTMLElement 
   const targetLabel = !cmd.actorId || cmd.actorId === "party" || cmd.actorId === "all"
     ? "파티 전체"
     : (project.database.actors.find((actor) => actor.id === cmd.actorId)?.name ?? (cmd.actorId || "(주인공 선택)"));
-  const skillName = project.database.skills.find((skill) => skill.id === cmd.skillId)?.name ?? (cmd.skillId || "(특수기 선택)");
+  const skillName = project.database.skills.find((skill) => skill.id === cmd.skillId)?.name ?? (cmd.skillId || "(스킬 선택)");
   const verb = cmd.action === "forget" ? "망각" : "습득";
   stage.append(el("div", { class: "ecp-skill-badge", text: "SK" }));
   stage.append(el("div", { class: "ecp-icon-name", text: targetLabel }));
@@ -879,10 +931,10 @@ function battleRewardSummary(
 
 function lampStage(name: string, value: boolean, currentValue?: boolean): HTMLElement {
   const stage = el("div", { class: "ecp-icon-stage" });
-  stage.append(el("div", { class: `ecp-lamp ${value ? "on" : "off"}`, text: value ? "ON" : "OFF" }));
+  stage.append(el("div", { class: `ecp-lamp ${value ? "on" : "off"}`, text: value ? "켜짐" : "꺼짐" }));
   stage.append(el("div", { class: "ecp-icon-name", text: name }));
   if (currentValue !== undefined) {
-    stage.append(el("div", { class: "ecp-current-state", text: `현재: ${currentValue ? "ON" : "OFF"}` }));
+    stage.append(el("div", { class: "ecp-current-state", text: `현재: ${currentValue ? "켜짐" : "꺼짐"}` }));
   }
   return stage;
 }
@@ -902,7 +954,7 @@ function variableStage(cmd: Extract<Command, { kind: "setVariable" }>, context?:
     })
   );
   const sourceLabel = typeof cmd.value === "number" ? "숫자" : "변수";
-  const metaParts = [`값 소스: ${sourceLabel} · 정수 연산`];
+  const metaParts = [`값은 ${sourceLabel} · 정수 연산`];
   if (context?.simState) {
     const curVal = getSimVariable(context.simState, cmd.variableId);
     metaParts.unshift(`현재 값: ${curVal}`);
@@ -938,7 +990,7 @@ function screenMock(text: string, variant: "gameover" | "title" | "ending"): HTM
 
 function summaryCard(cmd: Command, context?: CommandPreviewContext): HTMLElement {
   const card = el("div", { class: "ecp-summary-card ecp-runtime-effect-card", dataset: { testid: "ecp-runtime-effect" } });
-  card.append(el("div", { class: "ecp-runtime-effect-title", text: "런타임 효과" }));
+  card.append(el("div", { class: "ecp-runtime-effect-title", text: "미리보기" }));
   const line = el("div", { class: "ecp-summary-line" });
   for (const part of commandSummaryParts(cmd)) {
     if (isSummaryIconPart(part)) {
@@ -998,14 +1050,14 @@ function waitStage(cmd: Extract<Command, { kind: "wait" }>): HTMLElement {
     stage.append(
       el("div", {
         class: "ecp-wait-card",
-        text: `변수 ${variablePreviewName(cmd.variableId)} 값(ms)`,
+        text: `변수 ${variablePreviewName(cmd.variableId)} 값(초)`,
       })
     );
     return stage;
   }
   const seconds = (Math.max(0, cmd.ms) / 1000).toFixed(cmd.ms % 1000 === 0 ? 0 : 1);
   stage.append(el("div", { class: "ecp-wait-card", text: `${seconds}초` }));
-  stage.append(el("div", { class: "ecp-wait-sub", text: `${Math.max(0, cmd.ms)} ms` }));
+  stage.append(el("div", { class: "ecp-wait-sub", text: `${Math.max(0, cmd.ms) / 1000}초` }));
   return stage;
 }
 
@@ -1053,7 +1105,7 @@ function lightSourceStage(cmd: Extract<Command, { kind: "addLight" }>): HTMLElem
     glow.style.background = `radial-gradient(circle, ${cmd.source.color} 0%, transparent 70%)`;
   }
   screen.append(glow);
-  screen.append(el("div", { class: "ecp-fx-label", text: cmd.source.id || "LIGHT" }));
+  screen.append(el("div", { class: "ecp-fx-label", text: cmd.source.id || "빛" }));
   stage.append(screen);
   stage.append(
     el("div", {
@@ -1074,14 +1126,14 @@ function removeLightStage(cmd: Extract<Command, { kind: "removeLight" }>): HTMLE
   screen.append(
     el("div", {
       class: "ecp-fx-label",
-      text: cmd.all === true ? "LIGHTS OFF" : "LIGHT OFF",
+      text: cmd.all === true ? "빛 모두 끄기" : "빛 끄기",
     })
   );
   stage.append(screen);
   stage.append(
     el("div", {
       class: "ecp-fx-caption",
-      text: cmd.all === true ? "모든 광원 제거" : cmd.id || "id 없음",
+      text: cmd.all === true ? "빛 모두 끄기" : cmd.id || "빛 없음",
     })
   );
   return stage;
@@ -1124,7 +1176,7 @@ function animationStage(cmd: Extract<Command, { kind: "showAnimation" }>): HTMLE
   const screen = el("div", { class: "ecp-fx-screen ecp-animation-screen" });
   screen.append(el("div", { class: "ecp-anim-ring", attrs: { "aria-hidden": "true" } }));
   screen.append(el("div", { class: "ecp-anim-ring ecp-anim-ring-inner", attrs: { "aria-hidden": "true" } }));
-  screen.append(el("div", { class: "ecp-fx-label", text: cmd.animationId || "ANIM" }));
+  screen.append(el("div", { class: "ecp-fx-label", text: cmd.animationId ? "연출" : "연출 없음" }));
   stage.append(screen);
   const meta = [animationTargetPreview(cmd.target)];
   if (cmd.wait) meta.push("대기");
@@ -1139,10 +1191,10 @@ function erasePictureStage(cmd: Extract<Command, { kind: "erasePicture" }>): HTM
   });
   const screen = el("div", { class: "ecp-picture-screen" });
   const marker = el("div", { class: "ecp-picture-marker missing ecp-picture-erase-marker" });
-  marker.append(el("span", { class: "ecp-picture-missing-label", text: `✕ #${cmd.pictureId}` }));
+  marker.append(el("span", { class: "ecp-picture-missing-label", text: cmd.pictureId ? `✕ ${pictureSlotCaption(cmd.pictureId)}` : "✕ 그림 없음" }));
   screen.append(marker);
   root.append(screen);
-  root.append(el("div", { class: "ecp-picture-caption", text: `그림 ${cmd.pictureId} 삭제` }));
+  root.append(el("div", { class: "ecp-picture-caption", text: `${pictureSlotCaption(cmd.pictureId)} 지우기` }));
   return root;
 }
 
@@ -1156,7 +1208,7 @@ function changeTileStage(cmd: Extract<Command, { kind: "changeTile" }>): HTMLEle
   card.append(
     el("div", {
       class: "ecp-tile-meta",
-      text: `${cmd.layer === "upper" ? "상위" : "하위"} · (${cmd.x}, ${cmd.y})`,
+      text: `${cmd.layer === "upper" ? "덧그림" : "바닥"} · (${cmd.x}, ${cmd.y})`,
     })
   );
   stage.append(card);
@@ -1176,7 +1228,7 @@ function inputWaitStage(cmd: Extract<Command, { kind: "inputWait" }>): HTMLEleme
       class: "ecp-fx-caption",
       text: cmd.variableId?.trim()
         ? `변수 ${variablePreviewName(cmd.variableId)}`
-        : "키 코드 저장 안 함",
+        : "기억하지 않음",
     })
   );
   return stage;
@@ -1230,7 +1282,7 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
     case "transfer":
       return `맵 이동 → (${cmd.x}, ${cmd.y})`;
     case "callCommonEvent":
-      return `공통 이벤트 ${cmd.commonEventId} 호출`;
+      return `이벤트 ${cmd.commonEventId} 부르기`;
     case "callMapEvent":
       return `맵 이벤트 ${cmd.eventId} 호출`;
     case "setLighting":

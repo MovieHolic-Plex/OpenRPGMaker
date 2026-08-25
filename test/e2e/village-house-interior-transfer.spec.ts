@@ -125,8 +125,8 @@ async function collectDoorFrames(page: Page, doorEventId: string, durationMs: nu
     await new Promise<void>((resolve) => {
       const tick = () => {
         const debug = (window as unknown as {
-          __rpgzzuCharacterSprites?: () => { readonly events?: Record<string, { readonly frame?: unknown }> } | null;
-        }).__rpgzzuCharacterSprites?.();
+          __oprnCharacterSprites?: () => { readonly events?: Record<string, { readonly frame?: unknown }> } | null;
+        }).__oprnCharacterSprites?.();
         const frame = debug?.events?.[eventId]?.frame;
         if (frame !== undefined) frames.push(frame);
         if (performance.now() - startedAt >= duration) {

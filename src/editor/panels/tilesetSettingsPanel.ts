@@ -4,7 +4,7 @@ import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
-const TILESET_SELECTION_KEY = "rpg-zzu.database.selectedTilesetId";
+const TILESET_SELECTION_KEY = "oprn:database.selectedTilesetId";
 
 let selectedTilesetId: string | null = null;
 
@@ -16,7 +16,19 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
       el("section", {
         class: "db-detail-form",
         dataset: { testid: "db-detail-form" },
-        text: "타일셋이 없습니다.",
+        children: [
+          el("div", {
+            class: "db-empty-state tileset-db-empty",
+            children: [
+              el("div", { class: "db-empty-icon", text: "▦" }),
+              el("strong", { class: "db-empty-title", text: "타일셋이 없습니다" }),
+              el("p", {
+                class: "db-empty-copy",
+                text: "프로젝트에 타일셋이 없습니다. 소재에서 칩셋을 가져오거나 기본 타일셋을 확인하세요.",
+              }),
+            ],
+          }),
+        ],
       }),
     );
     return;
@@ -30,7 +42,7 @@ function renderTilesetDatabaseWorkspace(
   rerender: () => void,
 ): HTMLElement {
   return el("section", {
-    class: "db-detail-form tileset-db-workspace compact rm2k3-tileset-workspace",
+    class: "db-detail-form tileset-db-workspace compact oprn-tileset-workspace",
     dataset: { testid: "db-detail-form" },
     children: [renderTilesetList(tilesets, selected.id, rerender), renderTilesetEditor(selected, rerender)],
   });
@@ -40,8 +52,7 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
   const rows = tilesets.map((tileset, index) =>
     el("button", {
       class: `tileset-db-list-row${tileset.id === selectedId ? " active" : ""}`,
-      text: `${recordNumber(index)}:${tileset.name}`,
-      attrs: { type: "button" },
+      attrs: { type: "button", title: tileset.name || tileset.id },
       dataset: { testid: `tileset-db-row-${tileset.id}` },
       on: {
         click: () => {
@@ -49,6 +60,10 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
           rerender();
         },
       },
+      children: [
+        el("span", { class: "db-list-name", text: tileset.name || "(이름 없음)" }),
+        el("span", { class: "db-list-number", text: `#${index + 1}` }),
+      ],
     }),
   );
   const listbox = el("div", { class: "tileset-db-listbox", children: rows });
@@ -58,15 +73,15 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
     observer.observe(listbox);
   }
   return el("aside", {
-    class: "tileset-db-list rm2k3-tileset-list-pane",
+    class: "tileset-db-list oprn-tileset-list-pane",
     children: [
       el("div", { class: "tileset-db-panel-title", text: "타일셋" }),
       listbox,
       el("button", {
-        class: "database-footer-button rm2k3-maximum-button disabled",
+        class: "database-footer-button oprn-maximum-button disabled",
         text: "최대 개수",
         attrs: { type: "button", disabled: "true", title: "타일셋 최대 개수 조정은 아직 지원하지 않습니다." },
-        dataset: { testid: "tileset-rm2k3-maximum-count" },
+        dataset: { testid: "tileset-oprn-maximum-count" },
       }),
     ],
   });
@@ -107,8 +122,4 @@ function currentMapTilesetId(): string | null {
   const project = store.getCurrent();
   const mapId = editorState.get().currentMapId ?? project.startMapId;
   return project.maps[mapId]?.tilesetId ?? null;
-}
-
-function recordNumber(index: number): string {
-  return String(index + 1).padStart(4, "0");
 }

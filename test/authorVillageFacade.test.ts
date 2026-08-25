@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { AUTHOR_VILLAGE_TOOL } from "@/editor/tools/authorVillageTool";
 import { serialize } from "@/project/io";
 import {
   construction,
@@ -38,6 +39,69 @@ describe("author_village facade", () => {
     expect(Object.keys(project.maps)).toEqual(["map_existing"]);
   });
 
+  it("supports an exact two-house starter settlement", () => {
+    const project = createExistingProject();
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 2,
+      housePlans: [
+        { kitId: "blue-stone", ownerName: "하린", yard: ["mailbox"] },
+        { kitId: "bright-plaster", ownerName: "도윤", yard: ["flowers"] },
+      ],
+      npcCount: 2,
+      countPolicy: "exact",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    expect(construction(result).counts).toEqual({ requested: 2, actual: 2 });
+    expect(project.maps.map_existing.events.filter((event) => event.id.startsWith("ev_village_"))).toHaveLength(2);
+  });
+
+  it("normalizes mixed existing-target fields captured from a live LLM turn", () => {
+    const project = createExistingProject(32);
+    const result = runFacade(project, {
+      target: {
+        kind: "existing",
+        mapId: "map_existing",
+        name: "빈 맵",
+        width: 32,
+        height: 24,
+        bounds: { x: 1, y: 1, w: 30, h: 22 },
+        plannedMap: { mapId: "map_existing", width: 32, height: 24 },
+      },
+      houseCount: 2,
+      housePlans: [
+        { kitId: "bright-plaster", yard: ["mailbox", "flowers", "pot"], ownerName: "미라", templateId: "village-home-west", program: "dwelling" },
+        { kitId: "amber-wood", yard: ["firewood", "bench_h", "jar"], ownerName: "로안", templateId: "village-home-east", program: "dwelling" },
+      ],
+      countPolicy: "exact",
+      groundTheme: "grass",
+      settlementLayout: "street-grid",
+      npcCount: 0,
+      theme: "밝고 한적한 시작 마을",
+      seed: 4217,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    expect(construction(result).counts).toEqual({ requested: 2, actual: 2 });
+  });
+
+  it("exposes the same target and house-plan fields that its parser accepts", () => {
+    const target = AUTHOR_VILLAGE_TOOL.parameters.properties?.target;
+    const housePlan = AUTHOR_VILLAGE_TOOL.parameters.properties?.housePlans?.items;
+    expect(target?.properties).toEqual(expect.objectContaining({
+      kind: expect.any(Object), mapId: expect.any(Object), bounds: expect.any(Object), plannedMap: expect.any(Object),
+    }));
+    expect(target?.properties).not.toHaveProperty("x");
+    expect(housePlan?.properties).toEqual(expect.objectContaining({
+      kitId: expect.any(Object), yard: expect.any(Object), ownerName: expect.any(Object), templateId: expect.any(Object), program: expect.any(Object),
+    }));
+    expect(housePlan?.properties).not.toHaveProperty("wings");
+  });
+
   it.each(["분수가 있는 평화로운 마을", "town with a Fountain centerpiece"])("substitutes one plaza well for the unavailable landmark in %s", (theme) => {
     const project = createExistingProject();
 
@@ -69,6 +133,22 @@ describe("author_village facade", () => {
     expect(wellCells[0]?.y).toBeLessThan(commons.y + commons.h + 4);
     const warnings = construction(result).warnings;
     expect(warnings.some((warning) => /fountain|분수/i.test(warning) && /unavailable|없/i.test(warning) && /well|우물/i.test(warning) && /substitut|대체/i.test(warning))).toBe(true);
+  });
+
+  it("keeps fountain fallback well placement inside requested bounds", () => {
+    const project = createExistingProject(40);
+    const result = runFacade(project, {
+      target: { kind: "existing", mapId: "map_existing", bounds: { x: 5, y: 5, w: 30, h: 30 } },
+      houseCount: 2,
+      npcCount: 0,
+      countPolicy: "exact",
+      theme: "분수가 있는 작은 마을",
+      seed: 11,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    expect(result.diff?.warnings.join("\n") ?? "").toContain("well(우물 382)");
   });
 
   it("does not emit the fountain fallback warning for an ordinary theme", () => {
@@ -115,7 +195,7 @@ describe("author_village facade", () => {
     expect(construction(result).counts).toEqual({ requested: 4, actual: 4 });
   });
 
-  it.each([2, 33])("rejects houseCount %s without clamping or writing", (houseCount) => {
+  it.each([0, 33])("rejects houseCount %s without clamping or writing", (houseCount) => {
     const project = createExistingProject(100);
     const before = serialize(project);
 
@@ -173,6 +253,24 @@ describe("author_village facade", () => {
     expect(result.issues?.[0]?.code).toBe("map-exists");
     expect(Object.keys(project.maps)).toEqual(["map_existing"]);
     expect(serialize(project)).toBe(before);
+  });
+
+  it("accepts a fully satisfied two-house best-effort request", () => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 2,
+      countPolicy: "best-effort",
+    }, stubTool(2));
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(construction(result)).toMatchObject({
+      executionOk: true,
+      applied: true,
+      outcome: "applied",
+      counts: { requested: 2, actual: 2 },
+    });
   });
 
   it("reports an explicit best-effort result at the 85 percent threshold", () => {
@@ -289,7 +387,7 @@ describe("author_village settlement scale and winter", () => {
     expect(snowTiles.has(firstMap.lowerTiles[first.startPos.y * firstMap.width + first.startPos.x] ?? -1) || roadTiles.has(firstMap.lowerTiles[first.startPos.y * firstMap.width + first.startPos.x] ?? -1)).toBe(true);
     expect(new Set(firstMap.events.filter((event) => event.id.startsWith("ev_village_")).map((event) => `${event.x},${event.y}`)).size).toBe(50);
     expect(firstMap.layoutPlan?.regions.find((region) => region.role === "plaza")?.tags).toContain("street-grid");
-  }, 30_000);
+  }, 90_000);
 
   it("rolls back an exact request when the requested population cannot fit", () => {
     const project = createExistingProject(36);

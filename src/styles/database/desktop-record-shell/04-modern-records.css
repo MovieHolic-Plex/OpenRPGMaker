@@ -1,6 +1,6 @@
 @media (min-width: 800px) {
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -31,7 +31,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -49,7 +49,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -66,7 +66,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -83,7 +83,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -98,7 +98,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -116,7 +116,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -138,7 +138,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -156,7 +156,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -172,13 +172,13 @@
     padding: 14px 16px;
   }
 
-  .database-modal-body .rm2k3-record-workspace {
+  .database-modal-body .oprn-record-workspace {
     gap: 14px;
     grid-template-columns: minmax(236px, 314px) minmax(0, 1fr);
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -200,7 +200,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -215,7 +215,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -234,7 +234,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -249,16 +249,16 @@
     color: var(--text-1);
   }
 
-  .database-modal-body .rm2k3-record-workspace {
+  .database-modal-body .oprn-record-workspace {
     min-width: 0;
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-classes .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-classes .oprn-record-detail-pane {
     overflow-y: auto;
   }
 
-  .database-modal-body .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-list-pane {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 5px;
@@ -273,31 +273,31 @@
     padding: 16px 16px 14px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > h3 {
+  .database-modal-body .oprn-record-list-pane > h3 {
     grid-row: 1;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-search {
+  .database-modal-body .oprn-record-list-pane > .db-search {
     grid-row: 2;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-filter-chips {
+  .database-modal-body .oprn-record-list-pane > .db-filter-chips {
     grid-row: 3;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-list {
+  .database-modal-body .oprn-record-list-pane > .db-list {
     grid-row: 4;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .rm2k3-record-list-footer {
+  .database-modal-body .oprn-record-list-pane > .oprn-record-list-footer {
     grid-row: 5;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-toolbar {
+  .database-modal-body .oprn-record-list-pane > .db-toolbar {
     grid-row: 6;
   }
 
-  .database-modal-body .rm2k3-record-list-pane h3 {
+  .database-modal-body .oprn-record-list-pane h3 {
     background: transparent;
     border: 0;
     color: var(--text-1);
@@ -308,11 +308,11 @@
     text-align: left;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-search {
+  .database-modal-body .oprn-record-list-pane .db-search {
     margin: 0 0 8px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-search input {
+  .database-modal-body .oprn-record-list-pane .db-search input {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -324,7 +324,7 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list {
+  .database-modal-body .oprn-record-list-pane .db-list {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line-soft);
     border-radius: 4px;
@@ -334,7 +334,7 @@
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list-row {
+  .database-modal-body .oprn-record-list-pane .db-list-row {
     align-items: center;
     background: var(--bg-raised);
     border: 0;
@@ -349,35 +349,35 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list-row:hover {
+  .database-modal-body .oprn-record-list-pane .db-list-row:hover {
     background: var(--bg-raised);
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list-row.active {
+  .database-modal-body .oprn-record-list-pane .db-list-row.active {
     background: var(--accent-muted);
     color: var(--text-1);
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list-number {
+  .database-modal-body .oprn-record-list-pane .db-list-number {
     font-variant-numeric: tabular-nums;
     min-width: 48px;
     text-align: right;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list-name {
+  .database-modal-body .oprn-record-list-pane .db-list-name {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .rm2k3-record-list-footer {
+  .database-modal-body .oprn-record-list-pane .oprn-record-list-footer {
     display: grid;
     gap: 10px;
     margin-top: 18px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .rm2k3-maximum-button {
+  .database-modal-body .oprn-record-list-pane .oprn-maximum-button {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -386,19 +386,19 @@
     min-height: 36px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .rm2k3-record-count {
+  .database-modal-body .oprn-record-list-pane .oprn-record-count {
     color: var(--text-1);
     font: 500 15px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar {
+  .database-modal-body .oprn-record-list-pane .db-toolbar {
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(3, 1fr);
     margin-top: 8px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn {
+  .database-modal-body .oprn-record-list-pane .db-toolbar .btn {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -407,11 +407,11 @@
     min-height: 32px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn.danger {
+  .database-modal-body .oprn-record-list-pane .db-toolbar .btn.danger {
     color: var(--danger);
   }
 
-  .database-modal-body .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-detail-pane {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 5px;
@@ -422,7 +422,7 @@
     padding: 14px;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-record-identity {
+  .database-modal-body .oprn-record-detail-pane .oprn-record-identity {
     background: var(--bg-raised);
     border: 0;
     border-bottom: 1px solid var(--db-modern-line-soft);
@@ -430,7 +430,7 @@
     padding: 0 0 10px;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-detail-form {
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form {
     background: var(--bg-raised);
     border: 0;
     min-width: 0;
@@ -438,35 +438,37 @@
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-detail-form :is(
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(
     fieldset,
-    .rm2k3-db-fieldset,
+    .oprn-db-fieldset,
     .db-panel,
     .db-class-panel
   ) {
-    background: var(--bg-raised);
-    border: 1px solid var(--db-modern-line);
+    background: var(--db-studio-surface, var(--bg-raised, #FFFFFF));
+    border: 0;
+    border-top: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
     border-radius: 0;
     box-shadow: none;
-    color: var(--db-modern-text);
+    color: var(--db-studio-text-1, #0F172A);
+    margin: 0 0 4px;
+    padding: 16px 0 12px;
+  }
+
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(legend, h3, h4) {
+    color: var(--db-studio-text-1, #0F172A);
+    font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     margin: 0 0 10px;
-    padding: 14px 12px 12px;
+    padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-detail-form :is(legend, h3, h4) {
-    color: var(--text-1);
-    font: 700 15px/1.15 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-    letter-spacing: 0;
-    margin: 0 0 8px;
-    padding: 0 3px;
-  }
-
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-detail-form :is(.field, label) {
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(.field, label) {
     color: var(--db-modern-muted);
     font: 500 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-detail-form :is(input, select, textarea) {
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(input, select, textarea) {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -476,12 +478,12 @@
     padding: 3px 8px;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane .rm2k3-detail-form :is(button, .btn) {
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(button, .btn) {
     border-radius: 4px;
     font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) {
     align-content: start;
     display: grid;
     gap: 10px 12px;
@@ -489,19 +491,19 @@
     padding-right: 6px;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) > :is(.field, .db-field),
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) > .db-items-rm2k3-workbench,
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) > .db-advanced-panel {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) > :is(.field, .db-field),
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) > .db-items-oprn-workbench,
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) > .db-advanced-panel {
     min-width: 0;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) > :is(.field, .db-field):has(textarea),
-  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) > .db-items-rm2k3-workbench,
-  .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) > :is(.field, .db-field):has(textarea),
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) > .db-items-oprn-workbench,
+  .database-modal-body .oprn-detail-equipment > .db-panel-equipment-graphic {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) :is(.field, .db-field) {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) :is(.field, .db-field) {
     align-items: center;
     display: grid;
     gap: 8px;
@@ -510,20 +512,20 @@
     min-width: 0;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) :is(.field, .db-field) > span {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) :is(.field, .db-field) > span {
     color: var(--text-1);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) :is(input, select, textarea) {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) :is(input, select, textarea) {
     box-sizing: border-box;
     min-width: 0;
     width: 100%;
   }
 
-  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) input[type="checkbox"] {
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) input[type="checkbox"] {
     flex: 0 0 16px;
     height: 16px;
     min-height: 16px;
@@ -532,13 +534,13 @@
     width: 16px;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) textarea {
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) textarea {
     min-height: 68px;
     resize: vertical;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-equipment) > .db-advanced-panel,
-  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel,
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-equipment) > .db-advanced-panel,
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel,
   .database-modal-body .db-item-type-panels > .db-advanced-panel {
     align-content: start;
     border-radius: 4px;
@@ -549,8 +551,8 @@
     padding: 12px;
   }
 
-  .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-equipment) > .db-advanced-panel legend,
-  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel legend,
+  .database-modal-body :is(.oprn-detail-skills, .oprn-detail-equipment) > .db-advanced-panel legend,
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel legend,
   .database-modal-body .db-item-type-panels > .db-advanced-panel legend {
     background: var(--bg-raised);
     color: var(--text-1);
@@ -561,25 +563,25 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-detail-skills > .db-advanced-panel,
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:not(.db-panel-equipment-graphic) {
+  .database-modal-body .oprn-detail-skills > .db-advanced-panel,
+  .database-modal-body .oprn-detail-equipment > .db-advanced-panel:not(.db-panel-equipment-graphic) {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
   }
 
-  .database-modal-body .rm2k3-detail-skills > .db-advanced-panel legend,
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel legend {
+  .database-modal-body .oprn-detail-skills > .db-advanced-panel legend,
+  .database-modal-body .oprn-detail-equipment > .db-advanced-panel legend {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body .rm2k3-record-skills .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-skills .oprn-record-detail-pane {
     grid-template-rows: minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-skills .rm2k3-record-identity {
+  .database-modal-body .oprn-record-skills .oprn-record-identity {
     display: none;
   }
 
-  .database-modal-body .rm2k3-detail-skills {
+  .database-modal-body .oprn-detail-skills {
     align-content: start;
     gap: 12px 14px;
     grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
@@ -588,7 +590,7 @@
     padding: 2px 2px 28px;
   }
 
-  .database-modal-body .rm2k3-detail-skills > :is(.field, .db-field) {
+  .database-modal-body .oprn-detail-skills > :is(.field, .db-field) {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -597,41 +599,41 @@
     padding: 9px 12px;
   }
 
-  .database-modal-body .rm2k3-detail-skills > :is(.field, .db-field) > span {
+  .database-modal-body .oprn-detail-skills > :is(.field, .db-field) > span {
     color: var(--text-1);
     font-weight: 600;
   }
 
-  .database-modal-body .rm2k3-detail-skills > .db-advanced-panel {
+  .database-modal-body .oprn-detail-skills > .db-advanced-panel {
     min-height: 218px;
     overflow: visible;
   }
 
-  .database-modal-body .rm2k3-detail-skills > .db-advanced-panel .field {
+  .database-modal-body .oprn-detail-skills > .db-advanced-panel .field {
     grid-template-columns: minmax(72px, 0.24fr) minmax(0, 1fr);
     min-height: 36px;
   }
 
-  .database-modal-body .rm2k3-detail-skills :is(input, select) {
+  .database-modal-body .oprn-detail-skills :is(input, select) {
     min-height: 32px;
   }
 
-  .database-modal-body :is(.rm2k3-record-items, .rm2k3-record-equipment) .rm2k3-record-detail-pane {
+  .database-modal-body :is(.oprn-record-items, .oprn-record-equipment) .oprn-record-detail-pane {
     grid-template-rows: minmax(0, 1fr);
   }
 
-  .database-modal-body :is(.rm2k3-record-items, .rm2k3-record-equipment) .rm2k3-record-identity {
+  .database-modal-body :is(.oprn-record-items, .oprn-record-equipment) .oprn-record-identity {
     display: none;
   }
 
-  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) {
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) {
     gap: 12px 14px;
     grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
     overflow: auto;
     padding: 2px 2px 28px;
   }
 
-  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) > :is(.field, .db-field) {
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) > :is(.field, .db-field) {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -640,12 +642,12 @@
     padding: 9px 12px;
   }
 
-  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) > :is(.field, .db-field) > span {
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) > :is(.field, .db-field) > span {
     color: var(--text-1);
     font-weight: 600;
   }
 
-  .database-modal-body .db-items-rm2k3-workbench {
+  .database-modal-body .db-items-oprn-workbench {
     align-content: start;
     display: grid;
     gap: 8px 12px;
@@ -653,8 +655,9 @@
     min-width: 0;
   }
 
-  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child,
-  .database-modal-body .db-items-rm2k3-workbench > .db-item-type-panels {
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child,
+  .database-modal-body .db-items-oprn-workbench > .db-item-effect-story,
+  .database-modal-body .db-items-oprn-workbench > .db-item-type-panels {
     grid-column: 1 / -1;
   }
 
@@ -689,7 +692,7 @@
     grid-column: 1 / -1;
   }
 
-  .database-modal-body :is(.db-item-choice-list, .rm2k3-detail-equipment .db-advanced-panel:has(.actor-check)) {
+  .database-modal-body :is(.db-item-choice-list, .oprn-detail-equipment .db-advanced-panel:has(.actor-check)) {
     align-content: start;
     display: grid;
     gap: 6px 12px;
@@ -703,7 +706,7 @@
     grid-column: 1 / -1;
   }
 
-  .database-modal-body :is(.db-checkbox-field, .rm2k3-detail-equipment .actor-check) {
+  .database-modal-body :is(.db-checkbox-field, .oprn-detail-equipment .actor-check) {
     align-items: center;
     color: var(--text-1);
     display: inline-flex;
@@ -712,14 +715,14 @@
     min-width: 0;
   }
 
-  .database-modal-body :is(.db-checkbox-field, .rm2k3-detail-equipment .actor-check) span {
+  .database-modal-body :is(.db-checkbox-field, .oprn-detail-equipment .actor-check) span {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-image-preview {
+  .database-modal-body .oprn-detail-equipment .db-image-preview {
     align-items: center;
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
@@ -730,26 +733,26 @@
     padding: 6px;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-image-preview img {
+  .database-modal-body .oprn-detail-equipment .db-image-preview img {
     height: 34px;
     width: 48px;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-image-preview span,
-  .database-modal-body .rm2k3-detail-equipment .db-image-preview strong {
+  .database-modal-body .oprn-detail-equipment .db-image-preview span,
+  .database-modal-body .oprn-detail-equipment .db-image-preview strong {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic {
+  .database-modal-body .oprn-detail-equipment > .db-panel-equipment-graphic {
     grid-template-columns: minmax(220px, 0.8fr) minmax(260px, 1.2fr);
   }
 
-  .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic .db-field {
+  .database-modal-body .oprn-detail-equipment > .db-panel-equipment-graphic .db-field {
     grid-template-columns: 64px minmax(0, 1fr);
   }
-  .database-modal-body .rm2k3-detail-equipment > .db-equipment-summary-chips {
+  .database-modal-body .oprn-detail-equipment > .db-equipment-summary-chips {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -759,7 +762,7 @@
     min-height: 28px;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip {
+  .database-modal-body .oprn-detail-equipment .db-equipment-summary-chip {
     background: color-mix(in srgb, var(--bg-raised, var(--bg-overlay)) 88%, var(--db-modern-accent, var(--accent)) 12%);
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 999px;
@@ -769,12 +772,12 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip-badge {
+  .database-modal-body .oprn-detail-equipment .db-equipment-summary-chip-badge {
     background: color-mix(in srgb, var(--bg-raised, var(--bg-overlay)) 82%, #c97a2f 18%);
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip.muted,
-  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip[data-kind="empty"] {
+  .database-modal-body .oprn-detail-equipment .db-equipment-summary-chip.muted,
+  .database-modal-body .oprn-detail-equipment .db-equipment-summary-chip[data-kind="empty"] {
     background: transparent;
     color: var(--text-2, var(--text-2));
     font-weight: 500;
@@ -809,12 +812,12 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4),
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(5) {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4),
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) .rm2k3-db-fieldset {
+  .database-modal-body :is(.db-system-form, .db-terms-form) .oprn-db-fieldset {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -824,7 +827,7 @@
     padding: 14px 14px 12px;
   }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) .rm2k3-db-fieldset legend {
+  .database-modal-body :is(.db-system-form, .db-terms-form) .oprn-db-fieldset legend {
     color: var(--text-1);
     font: 700 15px/1.15 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     letter-spacing: 0;
@@ -868,7 +871,7 @@
     width: 100%;
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(5) {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {
     display: grid;
     gap: 10px;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1112,20 +1115,20 @@
     padding: 10px;
   }
 
-  .database-modal-body:has(.rm2k3-record-troops) .db-body {
+  .database-modal-body:has(.oprn-record-troops) .db-body {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-troops,
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-troops,
+  .database-modal-body .oprn-record-troops .oprn-record-detail-pane {
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-troops .oprn-record-detail-pane {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-detail-form {
+  .database-modal-body .oprn-record-troops .oprn-detail-form {
     box-sizing: border-box;
     height: 100%;
     max-height: 100%;
@@ -1157,7 +1160,7 @@
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-detail-troops .db-troop-battle-preview-stage {
+  .database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage {
     height: min(230px, 100%);
   }
 

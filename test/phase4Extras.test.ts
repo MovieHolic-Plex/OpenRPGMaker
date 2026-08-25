@@ -35,6 +35,21 @@ describe("testPresets 직렬화 왕복", () => {
   });
 });
 
+describe("play_walkthrough schema contract", () => {
+  it("publishes one provider-safe do/expect object shape with every runner field", async () => {
+    const { getTool } = await import("@/editor/tools");
+    const scenarioItems = getTool("play_walkthrough")?.parameters.properties?.scenario?.items;
+
+    expect(scenarioItems?.required ?? []).not.toContain("kind");
+    expect(scenarioItems?.oneOf).toBeUndefined();
+    expect(Object.keys(scenarioItems?.properties ?? {}).sort()).toEqual([
+      "count", "do", "eventId", "expect", "index", "itemId", "mapId", "op",
+      "present", "switchId", "value", "variableId", "x", "y",
+    ].sort());
+    expect(scenarioItems?.additionalProperties).toBe(false);
+  });
+});
+
 describe("play_walkthrough 툴", () => {
   it("잿불의 유산 완주 시나리오로 완주 성공을 반환한다", async () => {
     const [{ runTool }, { EMBER_WALKTHROUGH }, { createEmberQuestProject }] = await Promise.all([

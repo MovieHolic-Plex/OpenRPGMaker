@@ -108,7 +108,10 @@ async function playInnRest(
 
   if (step.advanceToMorning) {
     try {
-      await scene.sleepUntilMorning();
+      if (!await scene.sleepUntilMorning()) {
+        finishCommerce(scene, overlay, resolve);
+        return;
+      }
     } catch {
       // 시간 시스템이 없거나 중첩 잠금이면 회복 연출만 유지한다.
     }

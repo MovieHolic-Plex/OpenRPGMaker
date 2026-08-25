@@ -1,6 +1,6 @@
 ---
 name: quest-loop-template
-description: Use this RPG Maker authoring skill when creating or improving short playable quests with a clear objective, trigger NPC, completion condition, state switch/variable, reward, and closure dialogue.
+description: Use this authoring skill when creating or improving short playable quests with a clear objective, trigger NPC, completion condition, state switch/variable, reward, and closure dialogue.
 ---
 
 # Quest Loop Template

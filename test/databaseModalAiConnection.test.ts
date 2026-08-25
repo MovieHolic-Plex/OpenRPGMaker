@@ -112,6 +112,30 @@ function storeListenerCount(): number {
 }
 
 describe("database modal AI bar (M7-①)", () => {
+  it("presents an editor-wide assistant with cross-editor starter actions", () => {
+    registerAiAssistantBridge({
+      send: () => Promise.resolve(turnResultStub()),
+      getStatus: () => turnResultStub().status,
+      getAudit: () => [],
+      getHarness: () => null,
+      abort: () => undefined,
+      openPanel: () => undefined,
+    });
+
+    openDatabaseModal("overview");
+    const modal = modalRoot();
+    const toggle = findByTestId(modal, "database-ai-toggle");
+    expect(toggle?.textContent).toContain("AI 어시스턴트");
+    toggle?.click();
+
+    const assistant = findByTestId(modal, "database-ai-bar");
+    expect(assistant?.textContent).toContain("프로젝트 전체를 함께 살펴봅니다");
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-project")).toBeTruthy();
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-map")).toBeTruthy();
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-event")).toBeTruthy();
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-data")).toBeTruthy();
+  });
+
   it("sends the request through the chat pipeline with the DB context footer and opens the chat dock", () => {
     const sent: string[] = [];
     const openPanel = vi.fn();
@@ -147,7 +171,8 @@ describe("database modal AI bar (M7-①)", () => {
     const message = sent[0] ?? "";
     expect(message.startsWith("이 몬스터 스탯을 중반 밸런스로")).toBe(true);
     // 컨텍스트 풋터: 탭 라벨 + 선택 레코드(세션 무선택이면 첫 레코드) — buildSpec 호환 한 줄.
-    expect(message).toContain("[컨텍스트] 데이터베이스 DB 탭: 몬스터");
+    expect(message).toContain("[컨텍스트] 에디터 전체 요청");
+    expect(message).toContain("현재 화면: 데이터베이스 DB 탭 몬스터");
     const firstEnemy = store.getCurrent().database.enemies[0];
     if (firstEnemy) {
       expect(message).toContain(`선택 레코드: ${firstEnemy.name || "(이름 없음)"}(${firstEnemy.id})`);
@@ -156,7 +181,7 @@ describe("database modal AI bar (M7-①)", () => {
     expect(openPanel).toHaveBeenCalledTimes(1);
     expect(input.value).toBe("");
     // E2E 훅: 실 LLM 호출 없이 전송 도달을 검증할 수 있게 마지막 요청을 남긴다.
-    expect(window.__rpgzzuDbAiLastRequest?.message).toBe(message);
+    expect(window.__oprnDbAiLastRequest?.message).toBe(message);
 
     // 빈 입력은 전송하지 않는다.
     findByTestId(modal, "database-ai-run")?.click();

@@ -3,7 +3,7 @@ import type { OntologyClassificationExample } from "./ontologyTypes";
 export const ONTOLOGY_CLASSIFICATION_EXAMPLES = [
   { task: "이벤트 명령 추가", expectedCapabilityId: "EventAuthoring" },
   { task: "NPC 대사 조건 이벤트 수정", expectedCapabilityId: "EventAuthoring" },
-  { task: "타일셋 지형 태그 자동 분류", expectedCapabilityId: "TilesetSemantics" },
+  { task: "타일셋 지면 종류 자동 분류", expectedCapabilityId: "TilesetSemantics" },
   { task: "오토타일 통행 설정 개선", expectedCapabilityId: "TilesetSemantics" },
   { task: "전투 보상 경험치 처리", expectedCapabilityId: "BattleRuntime" },
   { task: "부대 전투 이벤트 실행", expectedCapabilityId: "BattleRuntime" },

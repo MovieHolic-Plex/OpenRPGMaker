@@ -2,15 +2,15 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { installPlayPointerBlocker, shouldBlockPlayPointerEvent } from "@/player/playInputBlocker";
 
-const FORCE_BLOCK_GLOBAL = globalThis as { __rpgzzuForcePointerBlock?: boolean };
+const FORCE_BLOCK_GLOBAL = globalThis as { __oprnForcePointerBlock?: boolean };
 
 describe("play pointer blocker", () => {
   beforeEach(() => {
-    FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock = true;
+    FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock = true;
   });
 
   afterEach(() => {
-    delete FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock;
+    delete FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock;
   });
 
   it("blocks trusted mouse-style clicks while allowing keyboard-synthetic button clicks", () => {
@@ -20,22 +20,22 @@ describe("play pointer blocker", () => {
     expect(shouldBlockPlayPointerEvent({ type: "click" })).toBe(false);
   });
 
-  it("allows real mouse clicks only within title-owned controls", () => {
-    const g = globalThis as { __rpgzzuForcePointerBlock?: boolean };
-    g.__rpgzzuForcePointerBlock = true;
+  it("blocks title-control pointers with the rest of keyboard-only play", () => {
+    const g = globalThis as { __oprnForcePointerBlock?: boolean };
+    g.__oprnForcePointerBlock = true;
     try {
       const titleControls = document.createElement("section");
       titleControls.dataset.playInputOwner = "title-controls";
       const option = document.createElement("button");
       titleControls.append(option);
-      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: option })).toBe(false);
-      expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: option })).toBe(false);
+      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: option })).toBe(true);
+      expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: option })).toBe(true);
       // 필드 클릭은 여전히 차단
       expect(
         shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: document.createElement("div") })
       ).toBe(true);
     } finally {
-      delete g.__rpgzzuForcePointerBlock;
+      delete g.__oprnForcePointerBlock;
     }
   });
 
@@ -70,19 +70,19 @@ describe("play pointer blocker", () => {
     cleanup();
   });
 
-  it("자동화(webdriver)에서는 허용하되 __rpgzzuForcePointerBlock 강제 시 다시 차단한다", () => {
-    const g = globalThis as { __rpgzzuForcePointerBlock?: boolean };
+  it("자동화(webdriver)에서는 허용하되 __oprnForcePointerBlock 강제 시 다시 차단한다", () => {
+    const g = globalThis as { __oprnForcePointerBlock?: boolean };
     const navigatorPrototype = Object.getPrototypeOf(navigator);
     const original = Object.getOwnPropertyDescriptor(navigatorPrototype, "webdriver");
     Object.defineProperty(navigator, "webdriver", { configurable: true, value: true });
     try {
-      delete g.__rpgzzuForcePointerBlock;
+      delete g.__oprnForcePointerBlock;
       expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1 })).toBe(false);
       expect(shouldBlockPlayPointerEvent({ type: "pointerdown" })).toBe(false);
-      g.__rpgzzuForcePointerBlock = true;
+      g.__oprnForcePointerBlock = true;
       expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1 })).toBe(true);
     } finally {
-      delete g.__rpgzzuForcePointerBlock;
+      delete g.__oprnForcePointerBlock;
       if (original) Object.defineProperty(navigatorPrototype, "webdriver", original);
       else Object.defineProperty(navigator, "webdriver", { configurable: true, value: undefined });
     }

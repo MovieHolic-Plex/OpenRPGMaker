@@ -1,9 +1,9 @@
 // project/session.ts
 // PlaySession: 플레이 중 런타임 상태. Project는 읽기 전용, 가변 상태는 여기에.
 // v2: switches/variables/timers/mapOverrides 포함.
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -18,8 +18,16 @@ import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
+import { initializeCollections, markDiscovered, validProgress, type CollectionProgress } from "@/project/collections";
 import { normalizeLightingState } from "@/project/lightingRules";
-import { transitionItemState } from "@/project/itemTransitions";
+import { transitionItemStates, type ItemTransitionAction } from "@/project/itemTransitions";
+import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
+import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
+import { GOLD_MAX } from "@/project/economyValues";
+import { initialFarmAnimalStates } from "@/project/p1FoundationRecords";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -89,6 +97,14 @@ export type MonsterInstance = {
   readonly exp: number;
   readonly currentHp?: number;
   readonly skillIds?: readonly SkillId[];
+  /** Persistent major/volatile state ids carried between battles. */
+  readonly stateIds?: readonly StateId[];
+  /** Per-state elapsed turn counters for persistent state semantics. */
+  readonly stateTurns?: Readonly<Record<StateId, number>>;
+  /** Remaining PP by learned skill id. */
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
+  /** Learned moves awaiting a replace-or-reject choice when the active set is full. */
+  readonly pendingSkillIds?: readonly SkillId[];
   readonly ivs?: MonsterInstanceIvs;
   readonly friendship: number;
   readonly caughtAt: MonsterCaughtAt;
@@ -108,6 +124,43 @@ export type FarmPlotState = {
 export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
 export type DailyGiftLog = Record<string, string>;
 export type DailyTalkLog = Record<string, string>;
+
+export type ShippingSettlementEntry = {
+  readonly itemId: string;
+  readonly count: number;
+  readonly unitPrice: number;
+  readonly subtotal: number;
+};
+
+export type ShippingSettlement = {
+  readonly dayKey: string;
+  readonly entries: readonly ShippingSettlementEntry[];
+  readonly total: number;
+  readonly credited: number;
+};
+
+export type MakerInstanceState = {
+  readonly instanceId: string;
+  readonly makerId: string;
+  readonly status: "idle" | "processing" | "ready";
+  readonly startedAtMinute?: number;
+  readonly readyAtMinute?: number;
+};
+
+export type DailyWeatherState = {
+  readonly dayKey: string;
+  readonly kind: WeatherKind;
+  readonly intensity: number;
+};
+
+export type FarmAnimalState = FarmAnimalStartInstance & {
+  readonly friendship: number;
+  readonly productionProgress: number;
+  readonly readyProductCount: number;
+  readonly lastFedDayKey?: string;
+  readonly lastPettedDayKey?: string;
+  readonly lastAdvancedDayKey?: string;
+};
 
 export const FRIENDSHIP_MIN = 0;
 export const FRIENDSHIP_MAX = 1000;
@@ -130,6 +183,9 @@ export interface PlaySession {
   timers: Record<string, number>;
   gold: number;
   inventory: Record<string, number>;
+  collections?: Record<string, CollectionProgress>;
+  museumRewardAppliedIds?: string[];
+  forageLastAdvancedDayKey?: string;
   /** Successful-use cursor for the current FIFO copy of each finite-use item. */
   itemUseCharges?: Record<string, number>;
   /** persistKill 필드 스폰의 영구 처치 수(mapId → spawnId → 처치 수). 세이브에 포함된다. */
@@ -140,10 +196,29 @@ export interface PlaySession {
   shopMileagePoints?: number;
   shopPawnTickets?: Record<string, { itemId: string; pawnPrice: number; dueDayKey: string }>;
   shopLastRestockDayKey?: Record<string, string>;
+  energy?: number;
+  shippingQueue?: Record<string, number>;
+  shippingLastSettledDayKey?: string;
+  /** Source calendar day consumed by the most recent atomic day transition. */
+  dayTransitionLastDayKey?: string;
+  shippingHistory?: ShippingSettlement[];
+  bundleContributions?: Record<string, Record<string, number>>;
+  completedBundleIds?: string[];
+  bundleRewardAppliedIds?: string[];
+  unlockedRegionIds?: string[];
+  unlockedRecipeIds?: string[];
+  makerInstances?: Record<string, MakerInstanceState>;
+  /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
+  dailyWeather?: DailyWeatherState;
+  farmAnimals?: Record<string, FarmAnimalState>;
+  farmBuildingPlacements?: Record<string, FarmBuildingPlacement>;
+  homeDecorationPlacements?: Record<string, HomeDecorationPlacement>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
   actorSkillIds: Record<ActorId, SkillId[]>;
+  /** Remaining Gen1 PP for the legacy actor-party fallback path. */
+  actorSkillPp?: Record<ActorId, Record<SkillId, number>>;
   // 런타임 전투 메뉴 오버라이드(Change Battle Commands). actorId → battleCommand ids.
   actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience: Record<string, number>;
@@ -196,6 +271,8 @@ export interface PlaySession {
   dailyTalks?: DailyTalkLog;
   /** Accumulated player steps toward the next monster walk-care tick. */
   monsterCareSteps?: number;
+  /** Completed Gen1 monster-party field steps modulo the four-step poison tick. */
+  monsterFieldPoisonSteps?: number;
   /** Friendship points granted by walk care ticks, keyed by giftDayKey. */
   monsterCareDaily?: Record<string, number>;
   /** Opt-in: currently equipped tool item id (hand). */
@@ -216,13 +293,15 @@ export interface PlaySession {
   playTimeSeconds: number;
   rng?: RngState;
   gameTime?: GameTime;
+  /** Optional roguelike run lifecycle. Authored project data never lives here. */
+  roguelikeRun?: RoguelikeRunState;
 }
 
 // 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
 // 명시적으로 읽는 헬퍼. 런타임 상태(PlaySession = scene.session)와 혼동하지 않도록,
 // "이 값은 플레이 중 상태가 아니라 시작 상태다"라는 의도를 코드로 표시한다.
 // 직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
-export const GOLD_MAX = 9_999_999;
+export { GOLD_MAX } from "@/project/economyValues";
 
 export function startStateOf(project: Project): ProjectStartState {
   return project.session;
@@ -232,9 +311,16 @@ export function startStateOf(project: Project): ProjectStartState {
 // 스위치/변수는 Database 정의에서 0/false 로 초기화(Project.flags는 레거시).
 export function startSession(project: Project, seed?: number): PlaySession {
   const start = startStateOf(project);
+  /**
+   * 저작된 시작 상태를 **존중한다**. `ProjectStartState` 는 그 타입 주석부터
+   * "에디터가 정의하는 초기 스위치/변수 … 새 세션의 시드로만 쓰인다" 라고 선언하는데,
+   * 예전에는 여기서 전부 false/0 으로 덮어써 저작값이 조용히 버려졌다 — 농사 데모가
+   * `var_stamina: 100` 을 저작했는데 런타임에서 0 으로 시작하는 것을 브라우저에서 실측했다.
+   * 선언된 id 만 시드한다(시작 상태에만 있는 미선언 id 는 무시 — 옛 세이브 잔재를 되살리지 않는다).
+   */
   const switches: Record<string, boolean> = {};
   for (const sw of project.switches) {
-    switches[sw.id] = false;
+    switches[sw.id] = start.switches?.[sw.id] ?? false;
   }
   // 레거시 flags도 스위치로 보정(마이그레이션 잔여 대비).
   for (const [k, v] of Object.entries(project.flags)) {
@@ -242,10 +328,10 @@ export function startSession(project: Project, seed?: number): PlaySession {
   }
   const variables: Record<string, number> = {};
   for (const v of project.variables) {
-    variables[v.id] = 0;
+    variables[v.id] = start.variables?.[v.id] ?? 0;
   }
   const gameTime = initialGameTime(project.system.timeSystem);
-  return {
+  const session: PlaySession = {
     switches,
     selfSwitches: {},
     variables,
@@ -253,12 +339,34 @@ export function startSession(project: Project, seed?: number): PlaySession {
     // 시작 소지금은 인벤토리/파티와 마찬가지로 프로젝트 시작 상태 설정을 따른다.
     gold: Math.min(GOLD_MAX, Math.max(0, start.gold ?? 0)),
     inventory: { ...start.inventory },
+    collections: project.system.collections?.enabled === true
+      || project.system.fishing?.enabled === true
+      || project.system.seasonalForage?.enabled === true
+      || project.system.museum?.enabled === true
+      ? initializeCollections(start.inventory)
+      : undefined,
+    museumRewardAppliedIds: project.system.museum?.enabled === true ? [] : undefined,
     itemUseCharges: {},
     partyActorIds: [...start.partyActorIds],
+    energy: project.system.energy
+      ? Math.min(project.system.energy.max, Math.max(0, project.system.energy.initial ?? project.system.energy.max))
+      : undefined,
+    shippingQueue: {},
+    shippingHistory: [],
+    bundleContributions: {},
+    completedBundleIds: [],
+    bundleRewardAppliedIds: [],
+    unlockedRegionIds: [],
+    unlockedRecipeIds: [],
+    makerInstances: {},
+    farmAnimals: initialFarmAnimalStates(start.farmAnimals),
+    farmBuildingPlacements: initialSpatialPlacementRecord(start.farmBuildingPlacements),
+    homeDecorationPlacements: initialSpatialPlacementRecord(start.homeDecorationPlacements),
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],
     actorSkillIds: {},
+    actorSkillPp: {},
     actorExperience: initialActorExperience(project),
     actorLevels: initialActorLevels(project),
     actorVitals: initialActorVitals(project),
@@ -286,6 +394,9 @@ export function startSession(project: Project, seed?: number): PlaySession {
     y: project.startPos.y,
     mapOverrides: {},
     farmPlots: {},
+    // 저작된 설치물(광산의 돌 등)을 새 세션에 놓는다. 캐면 세션에서 사라지므로
+    // 프로젝트 쪽 원본을 공유하면 두 번째 세션에서 이미 캐진 상태로 시작한다 — 반드시 복제한다.
+    placeables: structuredClone(start.placeables ?? {}),
     farmPlotsAdvancedThrough: gameTime && { day: gameTime.day, season: gameTime.season, year: gameTime.year },
     friendship: {},
     dailyGifts: {},
@@ -298,6 +409,20 @@ export function startSession(project: Project, seed?: number): PlaySession {
     rng: createRngState(seed),
     gameTime,
   };
+  const weather = applyDailyWeatherForDate(project, session, gameTime);
+  if (weather) {
+    ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
+  }
+  return session;
+}
+
+function initialSpatialPlacementRecord<T extends FarmBuildingPlacement | HomeDecorationPlacement>(
+  placements: readonly T[] | undefined,
+): Record<string, T> | undefined {
+  if (placements === undefined) return undefined;
+  return Object.fromEntries(
+    placements.map((placement) => [placement.instanceId, structuredClone(placement)]),
+  );
 }
 
 export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {
@@ -403,17 +528,40 @@ export function changeItem(
   itemId: string,
   op: "=" | "+=" | "-=",
   amount: number
-): void {
-  const current = session.inventory[itemId] ?? 0;
-  const next = Math.max(0, applyAmount(current, op, amount));
-  const action = op === "+="
-    ? { kind: "grant" as const, itemId, amount: next - current }
-    : op === "-="
-      ? { kind: "remove" as const, itemId, amount: current - next }
-      : { kind: "assign" as const, itemId, count: next };
-  const transitioned = transitionItemState(session, [], action);
+): boolean {
+  return changeItemsAtomically(session, [{ itemId, op, amount }]);
+}
+
+/** Validates a batch against one evolving inventory and commits it once. */
+export function changeItemsAtomically(
+  session: PlaySessionLike,
+  operations: readonly ItemQuantityOperation[],
+): boolean {
+  if (operations.length === 0) return true;
+  const nextCounts = new Map<string, number>();
+  const actions: ItemTransitionAction[] = [];
+  for (const operation of operations) {
+    const current = nextCounts.get(operation.itemId) ?? session.inventory[operation.itemId] ?? 0;
+    const next = resolveItemQuantity(current, operation.op, operation.amount);
+    if (next === undefined) return false;
+    nextCounts.set(operation.itemId, next);
+    actions.push(operation.op === "+="
+      ? { kind: "grant", itemId: operation.itemId, amount: operation.amount }
+      : operation.op === "-="
+        ? { kind: "remove", itemId: operation.itemId, amount: current - next }
+        : { kind: "assign", itemId: operation.itemId, count: next });
+  }
+  const discoveredItemIds = session.collections
+    ? [...nextCounts].filter(([itemId, next]) => next > (session.inventory[itemId] ?? 0)).map(([itemId]) => itemId)
+    : [];
+  if (session.collections && discoveredItemIds.some((itemId) => validProgress(session.collections?.[itemId]) === undefined)) return false;
+  const transitioned = transitionItemStates(session, [], actions);
   session.inventory = transitioned.inventory;
   session.itemUseCharges = transitioned.itemUseCharges;
+  if (session.collections) {
+    for (const itemId of discoveredItemIds) markDiscovered(session as PlaySession, itemId);
+  }
+  return true;
 }
 
 export function changeParty(
@@ -610,6 +758,8 @@ export function evalCondition(
       return getFriendship(session, condition.npcKey, hostSocial(host)) >= clampFriendship(condition.value);
     case "battleResult":
       return session.battleResult === condition.result;
+    case "run":
+      return evalRoguelikeRunCondition(session, condition);
     case "all":
       return condition.conditions.every((child) => evalCondition(session, child, host));
     case "any":

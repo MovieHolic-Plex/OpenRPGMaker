@@ -81,7 +81,7 @@ describe("applyBattleSystemGraphic System2 wiring", () => {
     try {
       store.replace(createBlankProject());
       store.update((draft) => {
-        draft.system.systemResourceId = "windowskin-rm2003";
+        draft.system.systemResourceId = "windowskin-default";
         draft.system.battleSystemResourceId = "easyrpg-system2-system2-c";
       });
       const node = document.createElement("div") as unknown as FakeElement;
@@ -94,7 +94,7 @@ describe("applyBattleSystemGraphic System2 wiring", () => {
       expect(node.style["--system2-hp-fill-hi"]).toBe("#e7874e");
       expect(node.style["--system2-at-fill-lo"]).toBe("#60bcee");
       // Window skin stays real CSS skin, not System2.
-      expect(node.style["--runtime-window-skin"]).toContain("windowskin-rm2003");
+      expect(node.style["--runtime-window-skin"]).toContain("windowskin-default");
       expect(node.dataset.battleSystemResource).toBe("easyrpg-system2-system2-c");
     } finally {
       restore();

@@ -91,7 +91,7 @@ function playRuntimeJuiceSound(soundResourceId: string): void {
 }
 
 function runtimeJuiceState(): { log: RuntimeJuiceLogEntry[] } {
-  window.__rpgzzuRuntimeJuice ??= { log: [] };
-  window.__rpgzzuJuiceLog ??= runtimeJuiceLog;
-  return window.__rpgzzuRuntimeJuice;
+  window.__oprnRuntimeJuice ??= { log: [] };
+  window.__oprnJuiceLog ??= runtimeJuiceLog;
+  return window.__oprnRuntimeJuice;
 }

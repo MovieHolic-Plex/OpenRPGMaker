@@ -1,13 +1,13 @@
 @media (min-width: 901px) {
-  .database-modal-body .rm2k3-record-classes .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-classes .oprn-record-detail-pane {
     grid-template-rows: minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-classes .rm2k3-record-identity {
+  .database-modal-body .oprn-record-classes .oprn-record-identity {
     display: none;
   }
 
-  .database-modal-body .rm2k3-record-classes .rm2k3-detail-form {
+  .database-modal-body .oprn-record-classes .oprn-detail-form {
     height: 100%;
     min-height: 0;
     overflow-x: hidden;
@@ -16,7 +16,7 @@
 
   /* 11개 패널(장비/승급 포함) 전부를 grid-area 클래스로 명시 배치한다 — :nth-child 매핑은
      패널 개수가 바뀔 때마다 조용히 어긋나며(P1), "장비" 패널이 그 피해자였다. */
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
     display: grid;
     gap: 8px;
     grid-template-areas:
@@ -31,7 +31,7 @@
     min-width: 0;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     box-shadow: none;
@@ -42,26 +42,26 @@
     padding: 10px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-name { grid-area: name; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-animation { grid-area: animation; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-curves { grid-area: curves; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-exp { grid-area: exp; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-commands { grid-area: commands; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-options { grid-area: options; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-skills { grid-area: skills; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-promotion { grid-area: promotion; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-state { grid-area: state; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-element { grid-area: element; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment { grid-area: equipment; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-name { grid-area: name; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-animation { grid-area: animation; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-curves { grid-area: curves; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-exp { grid-area: exp; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-commands { grid-area: commands; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-options { grid-area: options; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-skills { grid-area: skills; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-promotion { grid-area: promotion; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-state { grid-area: state; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-element { grid-area: element; }
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment { grid-area: equipment; }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel legend {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel legend {
     color: var(--text-1);
     font: 700 14px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0 0 7px;
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench .db-field {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench .db-field {
     align-items: center;
     display: grid;
     gap: 8px;
@@ -69,12 +69,12 @@
     margin: 0 0 6px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench :is(input, select) {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench :is(input, select) {
     min-width: 0;
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-sprite-preview {
+  .database-modal-body .oprn-record-classes .db-class-sprite-preview {
     align-items: center;
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
@@ -84,13 +84,13 @@
     margin-bottom: 6px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curves-grid {
+  .database-modal-body .oprn-record-classes .db-class-curves-grid {
     display: grid;
     gap: 6px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve {
+  .database-modal-body .oprn-record-classes .db-class-curve {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     color: var(--db-modern-text);
@@ -99,7 +99,7 @@
   }
 
   /* promotion UI 가 재사용하므로 전투 명령 리디자인과 분리 — 기본 규칙 유지 */
-  .database-modal-body .rm2k3-record-classes .db-class-command-rows {
+  .database-modal-body .oprn-record-classes .db-class-command-rows {
     display: grid;
     gap: 5px;
     max-height: 176px;
@@ -107,13 +107,13 @@
     padding-right: 2px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-row {
+  .database-modal-body .oprn-record-classes .db-class-command-row {
     display: grid;
     gap: 8px;
     grid-template-columns: minmax(0, 1fr) 128px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-set-button {
+  .database-modal-body .oprn-record-classes .db-class-set-button {
     background: var(--control-bg);
     border: 1px solid var(--db-modern-line);
     color: var(--text-1);
@@ -123,7 +123,7 @@
   }
 
   /* 전투 명령 인라인 워크벤치 — .db-class-command-list 내부에만 적용 */
-  .database-modal-body .rm2k3-record-classes .db-class-command-list {
+  .database-modal-body .oprn-record-classes .db-class-command-list {
     display: grid;
     gap: 4px;
     max-height: 196px;
@@ -131,7 +131,7 @@
     padding-right: 2px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-header {
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-header {
     display: grid;
     gap: 6px;
     grid-template-columns: 26px 26px minmax(70px, 1fr) 108px minmax(70px, 1fr) 128px 26px;
@@ -140,29 +140,29 @@
     padding: 2px 2px 4px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-header span:first-child {
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-header span:first-child {
     grid-column: 1 / span 2;
     text-align: center;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row {
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row {
     align-items: center;
     display: grid;
     gap: 6px;
     grid-template-columns: 26px 26px minmax(70px, 1fr) 108px minmax(70px, 1fr) 128px 26px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row :is(input, select) {
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row :is(input, select) {
     min-width: 0;
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row .is-inert {
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row .is-inert {
     opacity: 0.4;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-move,
-  .database-modal-body .rm2k3-record-classes .db-class-command-remove {
+  .database-modal-body .oprn-record-classes .db-class-command-move,
+  .database-modal-body .oprn-record-classes .db-class-command-remove {
     background: var(--control-bg);
     border: 1px solid var(--db-modern-line);
     color: var(--text-1);
@@ -172,12 +172,12 @@
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-move:hover,
-  .database-modal-body .rm2k3-record-classes .db-class-command-remove:hover {
+  .database-modal-body .oprn-record-classes .db-class-command-move:hover,
+  .database-modal-body .oprn-record-classes .db-class-command-remove:hover {
     border-color: var(--accent, var(--db-modern-line));
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row-locked {
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row-locked {
     align-items: center;
     border-top: 1px dashed var(--db-modern-line);
     color: var(--text-2, var(--db-modern-text));
@@ -185,23 +185,23 @@
     padding-top: 6px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-row-locked .db-class-command-lock {
+  .database-modal-body .oprn-record-classes .db-class-command-row-locked .db-class-command-lock {
     grid-column: 1 / span 2;
     text-align: center;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-row-locked .db-class-command-locked-name {
+  .database-modal-body .oprn-record-classes .db-class-command-row-locked .db-class-command-locked-name {
     grid-column: 3 / span 1;
     font-weight: 600;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-row-locked .db-class-command-locked-tag {
+  .database-modal-body .oprn-record-classes .db-class-command-row-locked .db-class-command-locked-tag {
     grid-column: 4 / span 4;
     font-size: 11px;
     opacity: 0.8;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-add {
+  .database-modal-body .oprn-record-classes .db-class-command-add {
     background: var(--control-bg);
     border: 1px dashed var(--db-modern-line);
     color: var(--text-1);
@@ -210,12 +210,12 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-add:disabled {
+  .database-modal-body .oprn-record-classes .db-class-command-add:disabled {
     cursor: not-allowed;
     opacity: 0.5;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-preview {
+  .database-modal-body .oprn-record-classes .db-class-command-preview {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     display: flex;
@@ -226,17 +226,17 @@
     padding: 6px 8px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-preview-label {
+  .database-modal-body .oprn-record-classes .db-class-command-preview-label {
     color: var(--text-2, var(--db-modern-text));
     font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin-bottom: 2px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-preview-item {
+  .database-modal-body .oprn-record-classes .db-class-command-preview-item {
     font: 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
-  .database-modal-body .rm2k3-record-classes .actor-check {
+  .database-modal-body .oprn-record-classes .actor-check {
     align-items: center;
     display: flex;
     gap: 8px;
@@ -244,20 +244,20 @@
     min-height: 26px;
   }
 
-  .database-modal-body .rm2k3-record-classes .actor-check input {
+  .database-modal-body .oprn-record-classes .actor-check input {
     flex: 0 0 auto;
     height: 18px;
     width: 18px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table {
+  .database-modal-body .oprn-record-classes .db-class-skill-table {
     border: 1px solid var(--db-modern-line);
     max-height: 264px;
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table-head,
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table-row {
+  .database-modal-body .oprn-record-classes .db-class-skill-table-head,
+  .database-modal-body .oprn-record-classes .db-class-skill-table-row {
     align-items: center;
     display: grid;
     gap: 6px;
@@ -266,7 +266,7 @@
     padding: 2px 7px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table-head {
+  .database-modal-body .oprn-record-classes .db-class-skill-table-head {
     background: var(--bg-raised);
     border-bottom: 1px solid var(--db-modern-line);
     color: var(--text-1);
@@ -276,12 +276,12 @@
     z-index: 1;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table-row {
+  .database-modal-body .oprn-record-classes .db-class-skill-table-row {
     background: var(--bg-raised);
     border-bottom: 1px solid var(--db-modern-line-soft);
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-add {
+  .database-modal-body .oprn-record-classes .db-class-skill-add {
     background: var(--bg-raised);
     border: 0;
     border-top: 1px solid var(--db-modern-line-soft);
@@ -291,7 +291,7 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-rate-row {
+  .database-modal-body .oprn-record-classes .db-class-rate-row {
     align-items: center;
     display: grid;
     gap: 8px;
@@ -299,50 +299,226 @@
     min-height: 28px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-rate-row + .db-class-rate-row {
+  .database-modal-body .oprn-record-classes .db-class-rate-row + .db-class-rate-row {
     border-top: 1px solid var(--db-modern-line-soft);
     padding-top: 4px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-rate-row span {
+  .database-modal-body .oprn-record-classes .db-class-rate-row span {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-state,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-element {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-state,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-element {
     max-height: 100%;
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-curves,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-exp,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-commands,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-skills,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-promotion,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-curves,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-exp,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-commands,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-skills,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-promotion,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-options {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-options {
     display: grid;
     gap: 4px 10px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-options legend {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-options legend {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
     display: grid;
     gap: 4px 10px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment legend {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment legend {
     grid-column: 1 / -1;
   }
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-summary {
+  background:
+    radial-gradient(circle at 94% 0, rgba(75, 117, 139, 0.14), transparent 34%),
+    var(--db-modern-surface, #fffdf8);
+  border: 1px solid var(--db-modern-line, rgba(92, 72, 42, 0.2));
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(69, 51, 26, 0.08);
+  display: grid;
+  gap: 12px;
+  margin: 8px;
+  padding: 16px 18px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-heading {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-heading :is(h3, p) {
+  margin: 0;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-heading h3 {
+  color: var(--db-modern-text, #30291f);
+  font-size: 17px;
+  margin-top: 2px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-heading p {
+  color: var(--db-modern-muted, #756a5b);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-eyebrow {
+  color: #3d7189;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.database-modal-body .oprn-record-classes .db-class-role {
+  background: #e7f0f3;
+  border: 1px solid rgba(61, 113, 137, 0.26);
+  border-radius: 999px;
+  color: #28576d;
+  flex: 0 0 auto;
+  font-size: 12px;
+  padding: 7px 12px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-metric {
+  background: rgba(247, 243, 234, 0.72);
+  border: 1px solid var(--db-modern-line-soft, rgba(92, 72, 42, 0.12));
+  border-radius: 10px;
+  display: grid;
+  gap: 2px;
+  padding: 9px 10px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-metric strong {
+  color: var(--db-modern-text, #30291f);
+  font-size: 16px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-metric span,
+.database-modal-body .oprn-record-classes .db-class-build-actors > span {
+  color: var(--db-modern-muted, #756a5b);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-actors {
+  align-items: center;
+  border-top: 1px solid var(--db-modern-line-soft, rgba(92, 72, 42, 0.12));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding-top: 10px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-actor-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-actor-link {
+  background: var(--db-modern-raised, #fff);
+  border: 1px solid var(--db-modern-line, rgba(92, 72, 42, 0.2));
+  border-radius: 999px;
+  color: var(--db-modern-text, #30291f);
+  cursor: pointer;
+  font-size: 11px;
+  min-height: 28px;
+  padding: 5px 10px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-actor-link:hover {
+  border-color: #3d7189;
+  color: #28576d;
+}
+
+.database-modal-body .oprn-record-classes .db-class-build-actors em {
+  color: var(--db-modern-muted, #756a5b);
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .database-modal-body .oprn-record-classes .db-class-build-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .database-modal-body .oprn-record-classes .db-class-build-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-build-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-workspace.oprn-record-classes {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .oprn-record-list-pane {
+  max-height: 180px;
+  min-width: 0;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes :is(
+  .oprn-record-detail-pane,
+  .oprn-detail-form,
+  .db-class-build-summary,
+  .db-class-bm88-workbench
+) {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-build-summary {
+  margin-inline: 0;
+  padding: 14px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-build-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
+  grid-template-areas: none;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+  grid-area: auto;
+  min-width: 0;
 }

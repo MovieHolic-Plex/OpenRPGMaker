@@ -10,10 +10,10 @@ mkdirSync(SHOT_DIR, { recursive: true });
 const TILE = 16;
 
 async function openApp(page: Page, mode: string, w = 1440, h = 1000) {
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
 }
 
@@ -26,7 +26,7 @@ async function dismissCoachmark(page: Page) {
 }
 
 async function dblclickTile(page: Page, tx: number, ty: number) {
-  const pt = await page.evaluate(([x, y]) => (window as any).__rpgzzuEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
+  const pt = await page.evaluate(([x, y]) => (window as any).__oprnEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
   await page.mouse.click(pt.x, pt.y, { clickCount: 2, delay: 60 });
   await page.waitForTimeout(1200);
 }

@@ -6,9 +6,9 @@ import { shouldSuppressCoachMarksForWelcomeIntent } from "@/editor/aiBootIntent"
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
-export const COACH_MARKS_SEEN_KEY = "rpg-zzu:coachmarks-basic-v1";
+export const COACH_MARKS_SEEN_KEY = "oprn:coachmarks-basic-v1";
 // 표준 모드 첫 방문 웰컴 카드 전용 키 — 초보 코치마크 키와 분리.
-export const STANDARD_WELCOME_SEEN_KEY = "rpgzzu:standard-welcome-seen";
+export const STANDARD_WELCOME_SEEN_KEY = "oprn:standard-welcome-seen";
 
 export interface CoachMarkStep {
   readonly id: string;
@@ -232,7 +232,10 @@ function placeWelcomeOnCanvas(card: HTMLElement): void {
     document.querySelector<HTMLElement>("[data-testid='edit-canvas']");
   const region = canvas?.getBoundingClientRect();
   if (region && region.width > 80 && region.height > 80) {
-    const left = Math.min(Math.max(region.left + 12, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
+    const glass = document.querySelector<HTMLElement>(".ai-chat-panel.chat-dock-glass:not(.is-collapsed)");
+    const glassRight = glass?.getBoundingClientRect().right ?? 0;
+    const preferredLeft = glassRight > region.left ? glassRight + 12 : region.left + 12;
+    const left = Math.min(Math.max(preferredLeft, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
     const top = Math.min(Math.max(region.top + 12, MARGIN), Math.max(MARGIN, viewportHeight - height - MARGIN));
     card.style.left = `${left}px`;
     card.style.top = `${top}px`;
@@ -242,7 +245,7 @@ function placeWelcomeOnCanvas(card: HTMLElement): void {
   card.style.top = `${Math.max(MARGIN, 72)}px`;
 }
 
-/** 표준 모드 첫 방문 웰컴 카드. 칩셋이 아니라 캔버스 열에 붙인다. */
+/** 표준 모드 첫 방문 웰컴 카드. 타일 그림판이 아니라 캔버스 열에 붙인다. */
 function renderStandardWelcome(storage: Storage | null): void {
   dismiss();
   const card = el("div", {

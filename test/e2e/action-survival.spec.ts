@@ -81,27 +81,27 @@ function buildSurvivalProject() {
 
 function hooks(page: Page) {
   return {
-    debug: () => page.evaluate(() => (window as unknown as { __rpgzzuDebug?: DebugHook }).__rpgzzuDebug!.readState()),
-    skill: () => page.evaluate(() => (window as unknown as { __rpgzzuInput?: InputHook }).__rpgzzuInput?.skill()),
-    action: () => page.evaluate(() => (window as unknown as { __rpgzzuInput?: InputHook }).__rpgzzuInput?.action()),
-    attack: () => page.evaluate(() => (window as unknown as { __rpgzzuInput?: InputHook }).__rpgzzuInput?.attack()),
+    debug: () => page.evaluate(() => (window as unknown as { __oprnDebug?: DebugHook }).__oprnDebug!.readState()),
+    skill: () => page.evaluate(() => (window as unknown as { __oprnInput?: InputHook }).__oprnInput?.skill()),
+    action: () => page.evaluate(() => (window as unknown as { __oprnInput?: InputHook }).__oprnInput?.action()),
+    attack: () => page.evaluate(() => (window as unknown as { __oprnInput?: InputHook }).__oprnInput?.attack()),
     teleport: (mapId: string, x: number, y: number) =>
-      page.evaluate(([m, tx, ty]) => (window as unknown as { __rpgzzuDebug?: DebugHook }).__rpgzzuDebug?.teleport(m as string, tx as number, ty as number), [mapId, x, y]),
+      page.evaluate(([m, tx, ty]) => (window as unknown as { __oprnDebug?: DebugHook }).__oprnDebug?.teleport(m as string, tx as number, ty as number), [mapId, x, y]),
     faceDir: async (d: string) => {
-      await page.evaluate((dir) => (window as unknown as { __rpgzzuInput?: InputHook }).__rpgzzuInput?.dir(dir), d);
+      await page.evaluate((dir) => (window as unknown as { __oprnInput?: InputHook }).__oprnInput?.dir(dir), d);
       await page.waitForTimeout(140);
-      await page.evaluate(() => (window as unknown as { __rpgzzuInput?: InputHook }).__rpgzzuInput?.dir(null));
+      await page.evaluate(() => (window as unknown as { __oprnInput?: InputHook }).__oprnInput?.dir(null));
     },
     projectiles: () => page.evaluate(() => {
-      const state = (window as unknown as { __rpgzzuActionCombat?: () => { projectiles?: number } | null }).__rpgzzuActionCombat?.();
+      const state = (window as unknown as { __oprnActionCombat?: () => { projectiles?: number } | null }).__oprnActionCombat?.();
       return state?.projectiles ?? 0;
     }),
     spawnCount: () => page.evaluate(() => {
-      const chars = (window as unknown as { __rpgzzuCharacterSprites?: () => CharacterDebug }).__rpgzzuCharacterSprites?.();
+      const chars = (window as unknown as { __oprnCharacterSprites?: () => CharacterDebug }).__oprnCharacterSprites?.();
       return Object.keys(chars?.events ?? {}).filter((id) => id.includes("__field_spawn__")).length;
     }),
     nearestSpawnTile: () => page.evaluate(() => {
-      const chars = (window as unknown as { __rpgzzuCharacterSprites?: () => CharacterDebug }).__rpgzzuCharacterSprites?.();
+      const chars = (window as unknown as { __oprnCharacterSprites?: () => CharacterDebug }).__oprnCharacterSprites?.();
       const state = JSON.parse(document.querySelector("[data-testid='runtime-state-json']")?.textContent ?? "{}");
       const spawns = Object.values(chars?.events ?? {})
         .filter((s, i) => Object.keys(chars?.events ?? {})[i]?.includes("__field_spawn__"))
@@ -117,7 +117,7 @@ function hooks(page: Page) {
 }
 
 test("survival: ammo economy, typewriter save menu, persistent kill", async ({ page }, testInfo) => {
-  await page.addInitScript(() => window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1280, height: 900 });
   const { project, start, mapId } = buildSurvivalProject();
   await seedProjectFromSupabaseCanonical(page, project);

@@ -2,9 +2,10 @@ import type { ItemRecord } from "../types";
 import { normalizeItemRecord } from "../databaseRecordModel";
 import { DEFAULT_ITEM_ID, DEFAULT_STATE_ID } from "./constants";
 import { generatedItemRecords } from "./generatedItemRecords";
+import { applyGeneratedBattleEffectItemBindings } from "./generatedBattleEffectBindings";
 
 export function defaultItemRecords(): ItemRecord[] {
-  return [
+  const records = [
     normalizeItemRecord({
       id: DEFAULT_ITEM_ID,
       name: "회복약",
@@ -1673,4 +1674,6 @@ export function defaultItemRecords(): ItemRecord[] {
     // 생성 아이콘 100종 중 소비품·재료·열쇠 계열 (무기·방어구·장식은 equipment 로 분리).
     ...generatedItemRecords(),
   ];
+  applyGeneratedBattleEffectItemBindings(records);
+  return records;
 }

@@ -2,11 +2,12 @@
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
 // - 스트리밍 SSE 파서(data: 라인 / [DONE] / tool_calls delta 조립) 포함.
-// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(rpg-zzu:ai-config).
+// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(oprn:ai-config).
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -62,72 +63,47 @@ export const DEFAULT_BASE_URL = "";
 // 127.0.0.1:17832 companion started via `npm run ai:oauth`.
 export const DEFAULT_CHATGPT_BASE_URL =
   typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
-// 기본 모델은 **에디터의 실제 요청**(툴 45개)을 통과하는 것으로 고른다.
-// 실측(2026-07-26, 같은 본문을 모델만 바꿔 재생):
-//   cpen/gemini-3-flash        503 upstream_unavailable — 5회 전부 실패
-//   cpen/gemini-3-1-flash-lite 503
-//   cpen/gemini-flash-2-5      503 → 200 → 200 (간헐적, 기본값으로 쓸 수 없음)
-//   cpen/gpt-5-6-luna / terra / gpt-5-4-mini   200 안정
-//
-// 원인은 **페이로드 크기가 아니라 tools 자체**다. 2×2 로 갈라 재측정한 결과:
-//   gemini-3-flash  tools=Y image=Y 152KB → 503 / tools=Y image=N  45KB → 503
-//                   tools=N image=Y 120KB → 200 / tools=N image=N  13KB → 200
-// 즉 tools 가 붙으면 크기와 무관하게 실패하고, 빼면 120KB 도 통과한다. cpen 의 gemini
-// 라우트가 툴 호출을 못 받는 것으로 보인다. 채팅만 하면 gemini 도 200 이라
-// "AI 가 되는데 에디터에서만 안 된다" 로 보였다.
-export const DEFAULT_MODEL = "cpen/gpt-5-6-luna";
+// 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
+// 저장된 providerId/model 은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절
+// 암시 기본이므로 loadAiConfig 가 openai-codex 로 남긴다.
+export const DEFAULT_MODEL = "gemini-3.7-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "cpen/gpt-5-6-luna";
+export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 // cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
 // 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
 export const DEFAULT_MAX_TOKENS = 32768;
 
-/** Browser-exposed env keys (from .env.local via Vite). Never hardcode secrets in source. */
-// VITE_LLM_API_KEY 는 클라이언트 번들에 키를 인라인하므로 보안 위험이다 — 게이트웨이 키는
-// 서버 전용 APITOPIA_API_KEY (non-VITE) 로 두고 vite 프록시가 Authorization 을 주입한다.
-// VITE_LLM_API_KEY 는 절대 URL(https://...) 게이트웨이를 직접 치는 사용자를 위해서만 남겨둔다.
-function envApiKey(): string {
-  try {
-    const fromLlm = import.meta.env.VITE_LLM_API_KEY?.trim();
-    if (fromLlm) return fromLlm;
-    const fromYunwu = import.meta.env.VITE_YUNWU_API_KEY?.trim();
-    if (fromYunwu) return fromYunwu;
-  } catch {
-    /* non-vite runtime */
-  }
-  return "";
-}
+// envApiKey()/envBaseUrl() 은 제거했다. `VITE_LLM_API_URL` 이 에디터의 authMode·baseUrl 을 정하던
+// 통로였고, 그게 AI 를 반복적으로 죽인 원인이다(근거는 defaultAiConfig 주석). OAuth 는 클라이언트
+// 키를 쓰지 않으므로 `VITE_LLM_API_KEY`/`VITE_YUNWU_API_KEY` 폴백도 함께 없앴다 — 번들에 키를
+// 인라인하던 경로이기도 하다. 게이트웨이가 필요한 소비자는 `src/benchmark/llmClient.ts` 처럼
+// 자기 baseUrl·키를 자기가 들고 간다.
 
-function envBaseUrl(): string {
-  try {
-    const llm = import.meta.env.VITE_LLM_API_URL?.trim();
-    if (llm && /^https?:\/\//i.test(llm)) return llm.replace(/\/$/, "");
-    if (llm && llm.startsWith("/")) return llm.replace(/\/$/, "");
-  } catch {
-    /* non-vite runtime */
-  }
-  return "";
-}
-
+/**
+ * 에디터 AI 의 기본 설정. **인증은 무조건 OAuth 다**(감독 지시 2026-08-21).
+ *
+ * env 는 authMode 를 정하지 못한다. 예전에는 `VITE_LLM_API_URL` 이 있으면 apiKey 모드로
+ * 부팅했는데, 그 추론이 에디터 AI 를 반복적으로 죽인 단일 원인이었다. 실측(2026-08-21):
+ * 커밋된 `.env` 1행 `VITE_LLM_API_URL=/api/ai` 와 `.env.local` 의 `/api/cliproxy` 가
+ * authMode 를 apiKey 로 강제했고, `/api/cliproxy` 는 vite 프록시가 없어 POST 가 404 였다.
+ * 같은 시점 OAuth 경로는 멀쩡했다(`POST /v1/chat/completions` → 200 "OK", gpt-5.6-sol).
+ * 즉 env 한 줄이 에디터의 모든 AI(어시스턴트·이벤트·영역·타일셋)를 동시에 죽일 수 있었다.
+ *
+ * env 값을 지우는 것만으로 끝내지 않는 이유: 다음에 누가 `.env` 에 한 줄 넣으면 또 전부
+ * 죽는다. 그래서 추론 자체를 없앤다. 게이트웨이가 필요한 소비자(벤치마크, 노드 스크립트)는
+ * 자기 baseUrl 을 자기가 들고 간다 — 에디터 설정에 얹혀 가지 않는다.
+ */
 export function defaultAiConfig(): AiConfig {
-  // env VITE_LLM_API_URL 이 있으면 apiKey 모드로 부팅한다 — 게이트웨이(apitopia 등) 경로로
-  // glm 등 비-Codex 모델을 쓰겠다는 의도. 이때 키가 없으면 조용히 chatgpt OAuth 로 넘어가는 대신
-  // apiKey 모드를 유지해 상태바 "AI 연동" 칩과 영역 작업 모달이 "API 키 없음" 을 명시적으로 알리게
-  // 한다. (이전 동작: URL 만 있고 키가 없으면 chatgpt OAuth 로 폴백 → /v1 → codex 인증 실패가
-  // 되어 "영역 AI 가 왜 안 되나" 원인을 알 수 없었다.) env 가 아예 없으면 chatgpt OAuth fallback.
-  const envUrl = envBaseUrl();
-  const envKey = envApiKey();
-  const wantsGateway = !!envUrl;
-  // 상대 baseUrl(/api/ai 등)은 동일 오리진 vite 프록시 → 서버가 Authorization 을 주입하므로
-  // 클라이언트에 키가 없어도 된다(proxyAuth). 절대 URL(https://...)은 클라이언트 키 필요.
   return {
-    authMode: wantsGateway ? "apiKey" : "chatgpt",
-    providerId: wantsGateway ? "openai" : DEFAULT_OH_MY_PI_PROVIDER,
-    baseUrl: envUrl || DEFAULT_BASE_URL,
+    authMode: "chatgpt",
+    providerId: DEFAULT_OH_MY_PI_PROVIDER,
+    baseUrl: DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
-    apiKey: envKey,
+    // OAuth 는 클라이언트 키를 쓰지 않는다. 동반 서비스(pi-ai)가 자기 저장소의 자격 증명으로
+    // 전송하므로 여기서 env 키를 실어 보내면 apiKey 경로가 되살아난다.
+    apiKey: "",
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
     // 장문 reasoning 모델(MiniMax 등)을 감독으로 쓸 때만 low 캡이 의미 있음.
@@ -137,10 +113,56 @@ export function defaultAiConfig(): AiConfig {
   };
 }
 
-export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
+export const AI_CONFIG_STORAGE_KEY = "oprn:ai-config";
+
+/** 저장 blob 스키마 버전. scrubStoredAiCredentials 의 멱등 표식이다. */
+export const AI_CONFIG_VERSION = 2;
+
+/**
+ * 저장된 blob 에서 **평문 키와 죽은 게이트웨이 주소를 지운다.** 부팅 시 1회. 멱등.
+ *
+ * loadAiConfig 는 이미 그 필드들을 무시하지만, **디스크에는 blob 이 덮어써질 때까지 남는다.**
+ * 인증 패널이 "브라우저에는 두지 않습니다" 라고 약속하는데 그게 미래 키에만 적용되면 약속이
+ * 아니다. 남은 키는 export·디버그 덤프·raw blob 을 읽는 미래 코드에 그대로 실려 나간다.
+ *
+ * **loadAiConfig 안에 넣지 않는다** — `load*` 이름의 함수가 몰래 쓰기를 하면 반드시 누군가를
+ * 물린다(테스트와 상태 칩이 이 함수를 수시로 호출한다). 부팅 시 명시적으로 한 번 부른다.
+ */
+export function scrubStoredAiCredentials(): {
+  scrubbed: boolean;
+  hadApiKey: boolean;
+  hadBaseUrl: boolean;
+} {
+  const untouched = { scrubbed: false, hadApiKey: false, hadBaseUrl: false };
+  if (typeof localStorage === "undefined") return untouched;
+  try {
+    const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
+    if (!raw) return untouched;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    if (Number(parsed.configVersion) >= AI_CONFIG_VERSION) return untouched;
+    const hadApiKey = typeof parsed.apiKey === "string" && parsed.apiKey.trim().length > 0;
+    const hadBaseUrl = typeof parsed.baseUrl === "string" && parsed.baseUrl.trim().length > 0;
+    const next = {
+      ...parsed,
+      authMode: "chatgpt",
+      apiKey: "",
+      baseUrl: DEFAULT_BASE_URL,
+      configVersion: AI_CONFIG_VERSION,
+    };
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(next));
+    return { scrubbed: true, hadApiKey, hadBaseUrl };
+  } catch {
+    // blob 이 깨져 있으면 건드리지 않는다 — loadAiConfig 가 기본값으로 처리한다.
+    return untouched;
+  }
+}
 
 // localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
-// apiKey가 빈 문자열로 저장된 경우(미설정) env 폴백을 허용한다.
+//
+// **인증은 무조건 OAuth 다.** 저장값이 authMode 를 apiKey 로 되돌리지 못한다. 예전 판정은
+// 저장된 baseUrl 이나 apiKey 가 있으면 apiKey 모드로 추론했는데, 그러면 감독이 한 번이라도
+// 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
+// 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 export function loadAiConfig(): AiConfig {
   const base = defaultAiConfig();
   if (typeof localStorage === "undefined") return base;
@@ -148,12 +170,12 @@ export function loadAiConfig(): AiConfig {
     const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
     if (!raw) return base;
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
-    const storedKey = typeof parsed.apiKey === "string" ? parsed.apiKey.trim() : "";
-    const authMode = parsed.authMode === "chatgpt" || parsed.authMode === "apiKey"
-      ? parsed.authMode
-      : storedKey || (typeof parsed.baseUrl === "string" && parsed.baseUrl.trim())
-        ? "apiKey"
-        : "chatgpt";
+    const authMode = "chatgpt" as const;
+    if (parsed.authMode === "apiKey") {
+      console.warn(
+        "[llmClient] 저장된 apiKey 설정을 OAuth 로 승격했습니다 — 에디터 AI 의 인증은 OAuth 하나뿐입니다."
+      );
+    }
     // 저장된 사용자 모델은 존중하되 비었으면 기본값.
     // trim 한 저장값을 먼저 뽑고 || 폴백으로 단순화한다 — 각 표현식이 모두 string 으로 끝나
     // TS 가 string 으로 확정한다(아래 isModelValidForAuthMode 가 string 을 요구). base.liteModel 은
@@ -163,10 +185,15 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    const providerId = parseOhMyPiProvider(
-      parsed.providerId,
-      authMode === "chatgpt" ? DEFAULT_OH_MY_PI_PROVIDER : "openai",
-    );
+    // 저장된 제공자는 **그대로 보존한다.** 예전에는 oauthProviderOrDefault 로 비-oauth 제공자를
+    // openai-codex 로 되돌렸는데, 연결 방식이 두 종류가 된 뒤로는 틀린 동작이다 —
+    // providerId:"zai" 인 옛 설정은 *API 키* 종류 + zai 로 살아야 한다(GLM 이 이 경로로 남는다).
+    // 전송 축은 authMode 가 이미 companion 으로 고정하므로 제공자를 강제할 이유가 없다.
+    // providerId 가 없는 저장 blob 은 Codex 가 공장 기본이던 시절의 암시 값이다.
+    // 새 기본(Antigravity)으로 바꾸면 gpt-5.6-sol 이 Gemini 경로로 실려 강등/오배송된다.
+    const providerId = typeof parsed.providerId === "string" && parsed.providerId.trim() !== ""
+      ? parseOhMyPiProvider(parsed.providerId)
+      : "openai-codex";
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
@@ -182,12 +209,14 @@ export function loadAiConfig(): AiConfig {
     return {
       authMode,
       providerId,
-      baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
+      // 저장된 baseUrl 은 버린다. OAuth 는 동반 서비스 경로가 고정이고(endpoint() 가
+      // usesOhMyPiCompanion 이면 DEFAULT_CHATGPT_BASE_URL 을 쓴다), 죽은 게이트웨이 URL 을
+      // 남겨 두면 설정 화면·가용성 검지가 그것을 계속 진실처럼 보여 준다.
+      baseUrl: base.baseUrl,
       model,
       liteModel,
-      apiKey: parsed.authMode === "apiKey" && typeof parsed.apiKey === "string"
-        ? storedKey
-        : storedKey || base.apiKey || envApiKey(),
+      // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.
+      apiKey: "",
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
         ? Math.floor(Number(parsed.maxToolCalls))
         : base.maxToolCalls,
@@ -296,6 +325,10 @@ function humanizeStatus(status: number, body: string, authMode: AiConfig["authMo
   }
 }
 
+/**
+ * 이 URL 이 동반 서비스 주소인가. **전송 축 판정에는 더 이상 쓰이지 않는다**(aiTransport 참고) —
+ * 저장돼 있던 baseUrl 이 사실 동반 서비스였는지 사후 식별하는 진단·마이그레이션 용도로만 남긴다.
+ */
 export function isCompanionBaseUrl(url: string): boolean {
   const trimmed = url.trim().replace(/\/$/, "");
   return trimmed === "/v1"
@@ -303,10 +336,36 @@ export function isCompanionBaseUrl(url: string): boolean {
     || trimmed === "http://localhost:17832/v1";
 }
 
-/** ChatGPT 모드이거나 동반 서비스 baseUrl 이면 oh-my-pi 동반 경로를 탄다. */
+/**
+ * 전송 축 — 요청이 어디로 나가는가.
+ *
+ * - `companion`: 로컬 동반 서비스(oh-my-pi). 자격 증명은 그쪽이 보관하고, 브라우저는
+ *   `X-Rpgzzu-Provider` 로 제공자만 지목한다. **에디터 UI 는 항상 이쪽이다.**
+ * - `gateway`: `config.baseUrl` 로 직접 나간다(`Authorization: Bearer`). 노드 스크립트·evals·
+ *   벤치마크처럼 **설정을 직접 주입하는 소비자 전용**이고 사용자 UI 는 없다.
+ *
+ * 자격 증명 종류(oauth/apiKey/local)는 이 축과 **무관**하다 — 그건 providerId 에서 파생한다
+ * (`ohMyPiAuthKind`). 동반 서비스는 OAuth 토큰도 API 키도 자기 저장소에 보관하기 때문에,
+ * "API 키를 쓴다"가 "게이트웨이로 나간다"를 뜻하지 않는다.
+ *
+ * `authMode` 값 이름(`"chatgpt"`)은 역사적 잔재다. 영속 포맷이자 주입 와이어 포맷이라
+ * 개명하지 않고 뜻만 여기서 고정한다.
+ */
+export type AiTransport = "companion" | "gateway";
+
+export function aiTransport(config: AiConfig): AiTransport {
+  return config.authMode === "chatgpt" ? "companion" : "gateway";
+}
+
+/**
+ * 동반 서비스 전송인가. `aiTransport(config) === "companion"` 의 별칭이다.
+ *
+ * 예전에는 `isCompanionBaseUrl(config.baseUrl)` 도 함께 봐서 **baseUrl 문자열이 선언된
+ * authMode 를 덮어썼다.** 주입 설정(`authMode:"apiKey"`)의 의도를 조용히 뒤집는 구조라
+ * 걷어냈다 — 전송 축은 authMode 하나만 정한다.
+ */
 export function usesOhMyPiCompanion(config: AiConfig): boolean {
-  if (config.authMode === "chatgpt") return true;
-  return isCompanionBaseUrl(config.baseUrl);
+  return aiTransport(config) === "companion";
 }
 
 function endpoint(config: AiConfig): string {
@@ -334,7 +393,7 @@ function headers(config: AiConfig): Record<string, string> {
   if (config.authMode === "apiKey" && !isProxyAuth(config)) {
     h.Authorization = `Bearer ${config.apiKey}`;
     if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
-    h["X-Title"] = "RPG ZZU Editor";
+    h["X-Title"] = `${PRODUCT_BRAND} Editor`;
   }
   return h;
 }
@@ -581,7 +640,9 @@ async function parseSseStream(
 }
 
 // 비스트리밍 응답 파싱.
-function parseNonStream(json: Record<string, unknown>): ChatResult {
+function parseNonStream(json: Record<string, unknown>, requestedModel?: string): ChatResult {
+  // 응답의 model 은 **해석된** 모델이다 — 요청한 것과 다르면 제공자가 조용히 바꾼 것이다.
+  if (requestedModel && typeof json.model === "string") reportModelDemotion(requestedModel, json.model);
   const choices = json.choices as Array<Record<string, unknown>> | undefined;
   const choice = choices?.[0];
   const msg = (choice?.message ?? {}) as Record<string, unknown>;
@@ -619,7 +680,7 @@ export const LLM_REQUEST_TIMEOUT_MS = 180_000;
 // 인증(401)/크레딧(402) 같은 영구 오류는 재시도하지 않는다.
 export function isRetryableLlmError(error: unknown): boolean {
   if (!(error instanceof LlmError)) return false;
-  return error.status === undefined || error.status === 429 || error.status >= 500;
+  return error.status === undefined || error.status === 0 || error.status === 429 || error.status >= 500;
 }
 
 /** 매달림(응답 없는 fetch)을 일시 오류로 감지한다 — AbortController.abort() 는 AbortError 를 던진다. */
@@ -682,7 +743,7 @@ export interface AiTransportHealth {
   readonly at: number;
 }
 
-export const AI_TRANSPORT_HEALTH_EVENT = "rpgzzu:ai-transport-health";
+export const AI_TRANSPORT_HEALTH_EVENT = "oprn:ai-transport-health";
 
 let aiTransportHealth: AiTransportHealth | null = null;
 
@@ -699,6 +760,48 @@ export function reportTransportHealth(ok: boolean, status?: number, message?: st
   const changed = !aiTransportHealth || aiTransportHealth.ok !== ok || aiTransportHealth.status !== status;
   aiTransportHealth = { ok, status, message, at: Date.now() };
   if (changed && typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new CustomEvent(AI_TRANSPORT_HEALTH_EVENT));
+  }
+}
+
+/** 요청한 모델과 실제로 답한 모델이 다를 때의 기록. */
+export interface AiModelDemotion {
+  readonly requested: string;
+  readonly served: string;
+  readonly at: number;
+}
+
+let aiModelDemotion: AiModelDemotion | null = null;
+
+export function getAiModelDemotion(): AiModelDemotion | null {
+  return aiModelDemotion;
+}
+
+/** 테스트용 — 상태를 초기화한다. */
+export function resetAiModelDemotion(): void {
+  aiModelDemotion = null;
+}
+
+/**
+ * **모델 강등을 조용히 넘기지 않는다.**
+ *
+ * 동반 서비스의 `resolveModel` 은 카탈로그 밖 모델 ID 를 오류가 아니라 제공자 기본 모델로
+ * 바꿔 버린다 — 68종 전부에서. 그래서 감독이 고른 모델이 아닌 것이 답해도 아무 신호가 없었다.
+ * `isModelValidForAuthMode` 화이트리스트는 openai-codex 하나만 막으므로 나머지는 무방비다.
+ *
+ * 다행히 응답 본문의 `model` 은 **해석된** 모델이다(assistantToOpenAI 가 그렇게 채운다).
+ * 서버를 고치지 않고도 요청 모델과 비교하면 강등이 보인다 — 이 함수가 그 비교를 기록한다.
+ * 치명적으로 만들지는 않는다: 강등된 응답도 쓸 수 있는 응답이므로 크게 말하고 넘긴다.
+ */
+export function reportModelDemotion(requested: string, served: string): void {
+  const a = requested.trim();
+  const b = served.trim();
+  if (!a || !b || a.toLowerCase() === b.toLowerCase()) return;
+  const changed = aiModelDemotion?.requested !== a || aiModelDemotion?.served !== b;
+  aiModelDemotion = { requested: a, served: b, at: Date.now() };
+  if (!changed) return;
+  console.warn(`[llmClient] 요청한 모델 '${a}' 대신 '${b}' 이(가) 답했습니다 — 제공자가 조용히 다른 모델로 바꿨습니다.`);
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
     window.dispatchEvent(new CustomEvent(AI_TRANSPORT_HEALTH_EVENT));
   }
 }
@@ -757,8 +860,8 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     const target = usesOhMyPiCompanion(config) ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
     const hint = usesOhMyPiCompanion(config) ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
-    reportTransportHealth(false, undefined, `네트워크 오류(${target})`);
-    throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`);
+    reportTransportHealth(false, 0, `네트워크 오류(${target})`);
+    throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`, 0);
   }
 
   if (!response.ok) {
@@ -781,5 +884,6 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     return await parseSseStream(response.body, req.onToken, req.onReasoning, req.signal);
   }
   const json = (await response.json()) as Record<string, unknown>;
-  return parseNonStream(json);
+  // 요청 모델을 넘겨 응답의 model 과 비교한다 — 조용한 강등을 눈에 보이게 만든다.
+  return parseNonStream(json, config.model);
 }

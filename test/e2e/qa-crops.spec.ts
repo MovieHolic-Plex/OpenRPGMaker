@@ -1,11 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
-import { exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as const;
 const ITEMS_TAB = { label: "Items", slug: "items", testId: "db-tab-items" } as const;
 
 async function gotoExpert(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
 }
@@ -16,8 +16,11 @@ test.describe("QA sweep: crops tab", () => {
     await gotoExpert(page);
     await openDatabase(page);
     await switchDatabaseTab(page, CROPS_TAB);
+    await expect(page.getByTestId("db-crop-readiness")).toBeVisible();
+    await expect(page.getByTestId("db-crop-empty-add")).toBeVisible();
 
     await page.getByTestId("db-crop-add").click();
+    await expect(page.getByTestId("db-crop-overview")).toBeVisible();
     await page.getByTestId("db-crop-name").fill("QA작물경계값");
     await page.getByTestId("db-crop-seed-item").selectOption({ index: 1 });
     await page.getByTestId("db-crop-harvest-item").selectOption({ index: 1 });

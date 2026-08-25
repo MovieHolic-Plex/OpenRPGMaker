@@ -260,7 +260,7 @@
   }
 
   @container (max-width: 220px) {
-    .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar {
+    .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
       min-height: 30px;
     }
 
@@ -329,10 +329,10 @@
     height: 32px;
   }
 
-/* UXC editor shell repairs: keep canvas controls in reserved chrome, not over the map.
-   bottom must match .editor-statusbar height (54px) — 예전 22px는 맵이 상태바 아래로 깔렸다. */
+/* UXC editor shell repairs: keep canvas controls in reserved top chrome while the
+   statusbar-free canvas extends to the bottom edge. */
 .editor-canvas-scroll-shell {
-  bottom: var(--editor-canvas-chrome-bottom, 54px);
+  bottom: var(--editor-canvas-chrome-bottom, 0px);
   top: var(--editor-canvas-chrome-top, 48px);
 }
 

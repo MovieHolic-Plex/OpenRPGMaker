@@ -16,6 +16,12 @@ const FRIED_EGG = {
 
 function projectWithRecipe(): Project {
   const project = createBlankProject();
+  const itemTemplate = project.database.items[0];
+  if (!itemTemplate) throw new Error("blank project must include an item template");
+  project.database.items.push(
+    { ...itemTemplate, id: "item_egg", name: "달걀" },
+    { ...itemTemplate, id: "item_fried_egg", name: "계란프라이" },
+  );
   project.system.craftRecipes = [FRIED_EGG];
   return project;
 }

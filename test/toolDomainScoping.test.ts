@@ -191,6 +191,15 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     expect(exposed.has("paint_road")).toBe(true);
   });
 
+  it("상점 재고 수정 의도는 event 도메인을 열고 조회·재고 툴을 함께 노출한다", () => {
+    const domains = computeActiveToolDomains("상점 재고를 읽고 수정해");
+    expect(domains.has("event")).toBe(true);
+
+    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+    expect(exposed.has("get_event")).toBe(true);
+    expect(exposed.has("set_shop_stock")).toBe(true);
+  });
+
   it("새 프로젝트와 밤 분위기 요청은 system 도메인의 canonical 툴을 cap 안에서 노출한다", () => {
     const resetDomains = computeActiveToolDomains("Start a new project from scratch");
     const resetExposed = toOpenAiTools(undefined, { domains: resetDomains });
@@ -203,6 +212,21 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     expect(nightDomains.has("system")).toBe(true);
     expect(nightExposed.length).toBeLessThanOrEqual(40);
     expect(nightExposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
+  });
+
+  it("길·NPC·상자 복합 요청도 configure_time_system을 노출 상한 밖으로 밀어내지 않는다", () => {
+    // Regression: PINNED_TOOLS_BY_DOMAIN에 system 키가 두 번 선언되어 뒤의
+    // evaluate_game_quality 세트가 configure_time_system 핀을 덮어썼다.
+    const domains = computeActiveToolDomains(
+      "흙길과 NPC 주민 이벤트를 만들고 50G 보상 상자를 둔 뒤 시간 시스템을 활성화해줘",
+    );
+    const exposed = toOpenAiTools(undefined, { domains });
+
+    expect(domains.has("tile")).toBe(true);
+    expect(domains.has("event")).toBe(true);
+    expect(domains.has("system")).toBe(true);
+    expect(exposed.length).toBeLessThanOrEqual(40);
+    expect(exposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
   });
 
   it("부정 필터는 제외된 도메인 키워드를 활성화하지 않는다", () => {

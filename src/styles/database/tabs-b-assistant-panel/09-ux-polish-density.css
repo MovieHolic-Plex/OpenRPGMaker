@@ -3,27 +3,14 @@
   align-items: center;
   display: flex;
   gap: 6px;
-  /* 釉뚮옖???≪꽱??諛??쒖븞 6) ??AI RPG MAKER accent 怨꾩뿴 */
   border-bottom: 1px solid var(--border-subtle);
-  box-shadow: inset 0 2px 0 0 transparent;
+  box-shadow: none;
   padding-bottom: 8px;
   position: relative;
 }
 .ai-chat-header::before {
-  background: linear-gradient(
-    90deg,
-    var(--accent) 0%,
-    #7aa2ff 42%,
-    color-mix(in srgb, var(--accent) 35%, transparent) 78%,
-    transparent 100%
-  );
-  border-radius: 1px;
-  content: "";
-  height: 2px;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+  content: none;
+  display: none;
 }
 
 .ai-chat-header h2 {
@@ -41,7 +28,6 @@
 /* ? 諛붾뒗 ??以?怨좎젙 ???몃줈 怨듦컙???좎떇?섏? ?딅뒗?? */
 
 /* 鍮?蹂댁“ ?몄뒪?몃뒗 ?먮━瑜?李⑥??섏? ?딅뒗?? */
-.ai-proposal-host:empty,
 .ai-quick-replies:empty,
 .ai-context-chips:empty,
 .ai-composer-chips:empty,
@@ -217,22 +203,14 @@
   display: none;
 }
 
-/* 誘몃땲 ?ㅽ듃由? ?댁쟾 ??洹몃９ ?꾩껜 ?④?(湲곗〈 is-prior-turn 怨꾩빟 ?좎?). */
-.ai-rising-overlay .ai-chat-log > .ai-turn-group.is-prior-turn,
-.ai-rising-overlay .ai-chat-log > .is-prior-turn {
-  display: none;
-}
-
-/* ?꾩껜 湲곕줉/?ъ씠?? ?댁쟾 ?댁? ?묓엺 ?ㅻ뜑留?蹂댁씠怨??쇱튂硫?蹂몃Ц. */
-.ai-history-log-mount .ai-chat-log > .ai-turn-group.is-prior-turn,
-.ai-chat-panel.is-studio .ai-chat-log > .ai-turn-group.is-prior-turn,
-.ai-chat-panel.chat-dock-side .ai-chat-log > .ai-turn-group.is-prior-turn {
+/* 이전 턴 그룹은 어느 뷰에서도 보인다 — 오버레이에서 숨기던 규칙은 오버레이가 사이드
+   전용이 된 뒤 죽은 규칙이었다(assistant-rising-overlay.css 의 같은 정리 참조).
+   축약은 .ai-turn-group.is-collapsed 가 담당한다. */
+.ai-chat-log > .ai-turn-group.is-prior-turn {
   display: flex;
   opacity: 0.92;
 }
-.ai-history-log-mount .ai-chat-log > .ai-day-divider,
-.ai-chat-panel.is-studio .ai-chat-log > .ai-day-divider,
-.ai-chat-panel.chat-dock-side .ai-chat-log > .ai-day-divider {
+.ai-chat-log > .ai-day-divider {
   display: flex;
 }
 

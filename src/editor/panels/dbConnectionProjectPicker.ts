@@ -1,6 +1,5 @@
 import { COVER_HEIGHT, COVER_WIDTH, paintProjectCover } from "@/editor/panels/projectPickerCover";
-import { syncProjectToUrl } from "@/project/projectUrl";
-import { resolveBrowserSupabaseUrl } from "@/project/supabaseProxyPath";
+import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import {
   listSupabaseProjects,
   type SupabaseProjectListConfig,
@@ -10,6 +9,7 @@ import { clearChildren, el } from "@/util/dom";
 
 type ProjectPickerOptions = {
   readonly autoLoad: boolean;
+  readonly onCreateProject: () => Promise<void>;
   readonly onProjectSelected: (project: SupabaseProjectListItem) => Promise<void>;
   readonly onStatus: (message: string) => void;
 };
@@ -19,10 +19,7 @@ export type ProjectPickerController = {
   readonly reload: () => Promise<void>;
 };
 
-export function renderProjectPicker(
-  form: HTMLFormElement,
-  options: ProjectPickerOptions,
-): ProjectPickerController {
+export function renderProjectPicker(options: ProjectPickerOptions): ProjectPickerController {
   const list = el("div", {
     class: "db-config-project-list empty",
     // autoLoad가 꺼진 호출에서 "불러오는 중"이 영원히 남던 거짓 문구 수정 —
@@ -31,7 +28,7 @@ export function renderProjectPicker(
     attrs: { "aria-live": "polite" },
     dataset: { testid: "db-config-project-list" },
   });
-  const reload = async (): Promise<void> => loadProjectOptions(form, list, options);
+  const reload = async (): Promise<void> => loadProjectOptions(list, options);
   const element = el("section", {
     class: "db-config-project-picker",
     dataset: { testid: "db-config-project-picker" },
@@ -45,12 +42,24 @@ export function renderProjectPicker(
               el("span", { text: "계속 편집할 작업을 선택하세요." }),
             ],
           }),
-          el("button", {
-            class: "btn",
-            text: "새로고침",
-            attrs: { type: "button" },
-            dataset: { testid: "db-config-load-projects" },
-            on: { click: () => void reload() },
+          el("div", {
+            class: "db-config-project-picker-actions",
+            children: [
+              el("button", {
+                class: "btn primary",
+                text: "새 작업 만들기",
+                attrs: { type: "button" },
+                dataset: { testid: "db-config-create-project" },
+                on: { click: () => void options.onCreateProject() },
+              }),
+              el("button", {
+                class: "btn",
+                text: "새로고침",
+                attrs: { type: "button" },
+                dataset: { testid: "db-config-load-projects" },
+                on: { click: () => void reload() },
+              }),
+            ],
           }),
         ],
       }),
@@ -65,14 +74,13 @@ export function renderProjectPicker(
 }
 
 async function loadProjectOptions(
-  form: HTMLFormElement,
   list: HTMLElement,
   options: ProjectPickerOptions,
 ): Promise<void> {
-  const config = projectListConfigFromForm(form);
+  const config = projectListConfig();
   if (!config) {
-    renderProjectListMessage(list, "온라인 저장 설정을 찾지 못했습니다. 아래의 ‘연결 문제 해결’을 확인하세요.");
-    options.onStatus("작업 목록을 불러오려면 이 앱의 온라인 저장 설정이 필요합니다.");
+    renderProjectListMessage(list, "온라인 저장을 준비하지 못했습니다. 잠시 후 새로고침을 눌러 다시 시도하세요.");
+    options.onStatus("온라인 저장을 준비하지 못했습니다. 앱 관리자에게 자동으로 확인이 필요한 문제입니다.");
     return;
   }
   list.setAttribute("aria-busy", "true");
@@ -88,28 +96,22 @@ async function loadProjectOptions(
         }),
       ])
       : await listSupabaseProjects(config);
-    renderProjectList(form, list, projects, config, options);
+    renderProjectList(list, projects, config, options);
     options.onStatus(projects.length > 0 ? "열 작업을 선택하세요." : "아직 저장된 작업이 없습니다.");
   } catch {
-    renderProjectListMessage(list, "작업 목록을 불러오지 못했습니다. 연결 문제 해결에서 설정을 확인하세요.");
+    renderProjectListMessage(list, "작업 목록을 불러오지 못했습니다. 잠시 후 새로고침을 눌러 다시 시도하세요.");
     options.onStatus("작업 목록을 불러오지 못했습니다. 잠시 후 다시 시도하세요.");
   } finally {
     list.setAttribute("aria-busy", "false");
   }
 }
 
-function projectListConfigFromForm(form: HTMLFormElement): SupabaseProjectListConfig | null {
-  const raw = inputValue(form, "url").replace(/\/+$/u, "");
-  const anonKey = inputValue(form, "anonKey");
-  if (raw.length === 0 || anonKey.length === 0) return null;
-  const url = resolveBrowserSupabaseUrl(raw, {
-    pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol,
-  });
-  return { anonKey, url };
+function projectListConfig(): SupabaseProjectListConfig | null {
+  const config = supabaseProjectConfig();
+  return config ? { anonKey: config.anonKey, url: config.url } : null;
 }
 
 function renderProjectList(
-  form: HTMLFormElement,
   list: HTMLElement,
   projects: readonly SupabaseProjectListItem[],
   config: SupabaseProjectListConfig,
@@ -118,45 +120,30 @@ function renderProjectList(
   clearChildren(list);
   list.classList.toggle("empty", projects.length === 0);
   if (projects.length === 0) {
-    renderEmptyProjectList(form, list);
+    renderEmptyProjectList(list);
     return;
   }
   for (const project of projects) {
-    list.append(renderProjectOption(form, project, config, options));
+    list.append(renderProjectOption(project, config, options));
   }
 }
 
-function renderEmptyProjectList(form: HTMLFormElement, list: HTMLElement): void {
+function renderEmptyProjectList(list: HTMLElement): void {
   list.append(el("div", {
     class: "db-config-project-empty",
     children: [
       el("strong", { text: "아직 저장된 작업이 없습니다." }),
       el("p", {
         children: [
-          el("span", { text: "관리자에게 작업을 요청하세요." }),
-          el("span", { text: "연결 문제는 아래에서 해결할 수 있습니다." }),
+          el("span", { text: "위의 ‘새 작업 만들기’를 누르면 바로 시작할 수 있습니다." }),
+          el("span", { text: "온라인 저장은 앱이 자동으로 준비합니다." }),
         ],
-      }),
-      el("button", {
-        class: "btn",
-        text: "연결 문제 해결",
-        attrs: { type: "button" },
-        dataset: { testid: "db-config-empty-help" },
-        on: { click: () => revealAdvancedConnectionSettings(form) },
       }),
     ],
   }));
 }
 
-function revealAdvancedConnectionSettings(form: HTMLFormElement): void {
-  const details = form.querySelector<HTMLDetailsElement>("[data-testid='db-config-advanced']");
-  if (!details) return;
-  details.open = true;
-  details.querySelector<HTMLElement>("summary")?.focus();
-}
-
 function renderProjectOption(
-  form: HTMLFormElement,
   project: SupabaseProjectListItem,
   config: SupabaseProjectListConfig,
   options: ProjectPickerOptions,
@@ -177,7 +164,6 @@ function renderProjectOption(
     dataset: { projectId: project.projectId, testid: "db-config-project-option" },
     on: {
       click: () => {
-        selectProjectId(form, project);
         options.onStatus(`${project.title} 작업을 여는 중입니다.`);
         void options.onProjectSelected(project);
       },
@@ -202,22 +188,10 @@ function renderProjectOption(
   });
 }
 
-function selectProjectId(form: HTMLFormElement, project: SupabaseProjectListItem): void {
-  const control = form.elements.namedItem("projectId");
-  if (!(control instanceof HTMLInputElement)) return;
-  control.value = project.projectId;
-  syncProjectToUrl({ projectId: project.projectId, projectName: project.title });
-}
-
 function renderProjectListMessage(list: HTMLElement, message: string): void {
   clearChildren(list);
   list.classList.add("empty");
   list.textContent = message;
-}
-
-function inputValue(form: HTMLFormElement, name: string): string {
-  const control = form.elements.namedItem(name);
-  return control instanceof HTMLInputElement ? control.value : "";
 }
 
 function relativeUpdatedAt(iso: string | null): string {

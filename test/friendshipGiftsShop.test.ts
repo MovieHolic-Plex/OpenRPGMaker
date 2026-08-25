@@ -3,6 +3,7 @@ import { runTool } from "@/editor/tools";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { giveGiftToNpc, giftRankForItem } from "@/project/friendship";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { resolveShopStock } from "@/project/shopStock";
 import { changeFriendship, evalCondition, getFriendship, startSession } from "@/project/session";
 import type { Command, GameEvent, Project } from "@/project/types";
@@ -67,6 +68,30 @@ describe("gift runtime", () => {
     expect(giveGiftToNpc(project, session, giftEvent("ev_farmer"), "item_strawberry")).toMatchObject({ ok: false, reason: "system-disabled" });
     expect(session.inventory.item_strawberry).toBe(2);
     expect(getFriendship(session, "ev_farmer")).toBe(0);
+  });
+
+  it.each([
+    ["astronomical", 1e300],
+    ["over cap", ITEM_QUANTITY_MAX + 1],
+    ["infinite", Number.POSITIVE_INFINITY],
+    ["zero", 0],
+    ["missing", undefined],
+  ])("rejects %s gift inventory without mutating any session state", (_label, quantity) => {
+    const project = giftProject();
+    const session = startSession(project);
+    const event = giftEvent("ev_farmer");
+    event.socialCalendar = { birthday: { season: "spring", day: 1 } };
+    session.friendship = { ev_farmer: 25 };
+    session.dailyGifts = undefined;
+    if (quantity === undefined) delete session.inventory.item_strawberry;
+    else session.inventory.item_strawberry = quantity;
+    const before = structuredClone(session);
+
+    expect(giveGiftToNpc(project, session, event, "item_strawberry")).toMatchObject({
+      ok: false,
+      reason: "no-item",
+    });
+    expect(session).toEqual(before);
   });
 });
 
@@ -239,6 +264,17 @@ describe("friendship and shop tools", () => {
     const event = ctx.project.maps[map.id].events.find((entry) => entry.id === "ev_seed_seller");
     expect(event?.giftPrefs).toEqual({ liked: ["item_strawberry"] });
     expect(event?.pages?.[0]?.commands.some((command) => command.kind === "shop")).toBe(true);
+    const scene = runSceneTest(ctx.project, {
+      mapId: map.id,
+      start: { x: 1, y: 2 },
+      steps: [
+        {
+          kind: "expect",
+          shopStock: { eventId: "ev_seed_seller", itemIds: ["item_spring_seed"] },
+        },
+      ],
+    });
+    expect(scene.ok, scene.failureReason).toBe(true);
   });
 });
 

@@ -1,19 +1,14 @@
-import {
-  fillConnectionForm,
-  readConnectionForm,
-  renderAdvancedConnectionSettings,
-} from "@/editor/panels/dbConnectionAdvancedSettings";
 import { renderProjectPicker } from "@/editor/panels/dbConnectionProjectPicker";
-import { onlineConfigSourceLabel, renderOnlineSaveStatus } from "@/editor/panels/dbConnectionStatus";
+import { renderOnlineSaveStatus } from "@/editor/panels/dbConnectionStatus";
 import type { DbPersistenceStatus } from "@/project/persistenceStatus";
 import {
-  resetSupabaseProjectConfigToEnv,
-  saveSupabaseProjectConfigDraft,
-  supabaseProjectConfigDraftWithSource,
+  saveSupabaseSelectedProjectId,
+  supabaseProjectConfig,
 } from "@/project/supabaseProjectConfig";
 import type { SupabaseProjectListItem } from "@/project/supabaseProjectSync";
 import { markSupabaseRecoveredLocation } from "@/project/supabaseRecoveryLocation";
 import { syncProjectToUrl } from "@/project/projectUrl";
+import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -38,45 +33,25 @@ export function openDbConnectionSettings(
 ): void {
   modalRoot?.remove();
   const required = options.required === true;
-  const draft = supabaseProjectConfigDraftWithSource();
+  const onlineSaveReady = supabaseProjectConfig() !== null;
   const statusLine = el("p", {
     class: "db-config-status-line",
-    text: onlineConfigStatusText(draft.source, draft.url.length > 0 && draft.anonKey.length > 0),
+    text: onlineConfigStatusText(onlineSaveReady),
     attrs: { role: "status", "aria-live": "polite" },
     dataset: { testid: "db-config-status-line" },
   });
   const form = el("form", { class: "db-config-form" });
-  const projectPicker = renderProjectPicker(form, {
+  const projectPicker = renderProjectPicker({
     // 기본적으로 바로 불러온다 — 상태바 경로가 옵션 없이 열려 "불러오는 중" 문구가
     // 영원히 멈춰 있던 결함 수정(2026-08-18 UX 리뷰 P0-3).
     autoLoad: options.autoLoadProjects !== false,
-    onProjectSelected: async (project) => connectToSelectedProject(form, statusLine, onRefresh, project),
+    onCreateProject: async () => createNewProject(statusLine, onRefresh),
+    onProjectSelected: async (project) => connectToSelectedProject(statusLine, onRefresh, project),
     onStatus: (message) => setStatusLine(statusLine, message),
-  });
-  const advanced = renderAdvancedConnectionSettings(draft, {
-    onLoadDefaults: () => {
-      const next = resetSupabaseProjectConfigToEnv();
-      fillConnectionForm(form, next);
-      setStatusLine(statusLine, "앱의 기본 연결 정보를 다시 불러왔습니다.");
-      toast("기본 연결 정보를 불러왔습니다", "ok");
-      onRefresh();
-      void projectPicker.reload();
-    },
-    onSave: () => {
-      saveConfigFromForm(form, onRefresh);
-      setStatusLine(statusLine, "이 기기에 연결 정보를 저장했습니다.");
-      toast("연결 정보를 저장했습니다", "ok");
-      void projectPicker.reload();
-    },
-  });
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    void connectToSelectedProject(form, statusLine, onRefresh);
   });
   form.append(
     renderIntro(required),
     projectPicker.element,
-    advanced,
     statusLine,
     renderFooter(required),
   );
@@ -110,7 +85,7 @@ export function openDbConnectionSettings(
     if (!required && event.target === modalRoot) closeDbConnectionSettings();
   });
   document.body.append(modalRoot);
-  form.querySelector<HTMLButtonElement>("[data-testid='db-config-load-projects']")?.focus();
+  form.querySelector<HTMLButtonElement>("[data-testid='db-config-create-project']")?.focus();
 }
 
 function renderIntro(required: boolean): HTMLElement {
@@ -128,7 +103,7 @@ function renderFooter(required: boolean): HTMLElement {
   return el("footer", {
     class: "db-config-actions",
     children: [
-      el("span", { text: "연결 정보는 이 기기에만 저장됩니다." }),
+      el("span", { text: "선택한 작업은 이 기기에 기억되고, 저장은 자동으로 처리됩니다." }),
       ...(required ? [] : [el("button", {
         class: "btn",
         text: "닫기",
@@ -140,46 +115,73 @@ function renderFooter(required: boolean): HTMLElement {
 }
 
 async function connectToSelectedProject(
-  form: HTMLFormElement,
   statusLine: HTMLElement,
   onRefresh: StatusRefresh,
-  project?: SupabaseProjectListItem,
+  project: SupabaseProjectListItem,
 ): Promise<void> {
   if (connecting) return;
-  const draft = readConnectionForm(form);
-  if (!draft.projectId) {
-    setStatusLine(statusLine, "열 작업을 목록에서 선택하세요.");
+  connecting = true;
+  setStatusLine(statusLine, `${project.title}을 여는 중입니다.`);
+  saveSupabaseSelectedProjectId(project.projectId);
+  syncProjectToUrl({ projectId: project.projectId, projectName: project.title });
+  try {
+    const result = await store.reconnectRemotePersistence();
+    if (result.kind === "connected") {
+      await finishProjectChoice("작업을 열었습니다");
+      return;
+    }
+    setStatusLine(statusLine, "작업을 열지 못했습니다. 잠시 후 새로고침을 눌러 다시 시도하세요.");
+    toast("작업을 열지 못했습니다", "error");
+  } catch (error) {
+    console.error("[db-project-picker] failed to open selected project:", error);
+    setStatusLine(statusLine, "작업을 열지 못했습니다. 잠시 후 다시 시도하세요.");
+    toast("작업을 열지 못했습니다", "error");
+  } finally {
+    connecting = false;
+    onRefresh();
+  }
+}
+
+async function createNewProject(statusLine: HTMLElement, onRefresh: StatusRefresh): Promise<void> {
+  if (connecting) return;
+  if (!supabaseProjectConfig()) {
+    setStatusLine(statusLine, "온라인 저장을 준비하지 못했습니다. 잠시 후 다시 시도하세요.");
+    toast("온라인 저장을 준비하지 못했습니다", "error");
     return;
   }
   connecting = true;
-  setStatusLine(statusLine, `${project?.title ?? "선택한 작업"}을 여는 중입니다.`);
-  saveConfigFromForm(form, onRefresh);
-  const result = await store.reconnectRemotePersistence();
-  connecting = false;
-  onRefresh();
-  if (result.kind === "connected") {
-    markSupabaseRecoveredLocation();
-    const { focusProjectStartMap } = await import("@/editor/mapSelection");
-    focusProjectStartMap();
-    toast("작업을 열었습니다", "ok");
-    closeDbConnectionSettings();
-    return;
+  setStatusLine(statusLine, "새 작업을 만들고 온라인에 저장하는 중입니다.");
+  try {
+    const created = await store.loadNewRemoteProject(createBlankProject(), { title: "새 프로젝트" });
+    const saved = await store.flush();
+    if (!created.projectId || saved.kind !== "saved") {
+      setStatusLine(statusLine, "새 작업을 저장하지 못했습니다. 잠시 후 다시 시도하세요.");
+      toast("새 작업을 저장하지 못했습니다", "error");
+      return;
+    }
+    await finishProjectChoice("새 작업을 만들었습니다");
+  } catch (error) {
+    console.error("[db-project-picker] failed to create project:", error);
+    setStatusLine(statusLine, "새 작업을 만들지 못했습니다. 잠시 후 다시 시도하세요.");
+    toast("새 작업을 만들지 못했습니다", "error");
+  } finally {
+    connecting = false;
+    onRefresh();
   }
-  setStatusLine(statusLine, "작업을 열지 못했습니다. ‘연결 문제 해결’을 열어 설정을 확인하세요.");
-  toast("작업을 열지 못했습니다", "error");
 }
 
-function saveConfigFromForm(form: HTMLFormElement, onRefresh: StatusRefresh): void {
-  const draft = readConnectionForm(form);
-  saveSupabaseProjectConfigDraft(draft);
-  syncProjectToUrl({ projectId: draft.projectId || null, projectName: null });
-  onRefresh();
+async function finishProjectChoice(message: string): Promise<void> {
+  markSupabaseRecoveredLocation();
+  const { focusProjectStartMap } = await import("@/editor/mapSelection");
+  focusProjectStartMap();
+  toast(message, "ok");
+  closeDbConnectionSettings();
 }
 
-function onlineConfigStatusText(source: ReturnType<typeof supabaseProjectConfigDraftWithSource>["source"], ready: boolean): string {
+function onlineConfigStatusText(ready: boolean): string {
   return ready
-    ? `${onlineConfigSourceLabel(source)}으로 온라인 저장을 준비했습니다.`
-    : "온라인 저장 설정이 아직 없습니다. 작업 목록이 보이지 않으면 ‘연결 문제 해결’을 확인하세요.";
+    ? "온라인 저장이 준비되었습니다."
+    : "온라인 저장을 준비하지 못했습니다. 잠시 후 새로고침을 눌러 다시 시도하세요.";
 }
 
 function setStatusLine(statusLine: HTMLElement, message: string): void {

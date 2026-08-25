@@ -147,8 +147,8 @@ describe("event editor M2 command body", () => {
     const picker = findByTestId(body, "m2-command-value-resource-picker");
     const preview = findByTestId(body, "m2-command-value-resource-preview");
     expect(picker?.tagName).toBe("SELECT");
-    expect(picker?.attrs["aria-label"]).toBe("시스템 그래픽 선택");
-    expect(picker?.textContent).toContain("EasyRPG RTP System System");
+    expect(picker?.attrs["aria-label"]).toBe("메뉴 모습 선택");
+    expect(picker?.textContent).toContain("System · 시스템 그림 · EasyRPG");
     expect(preview?.dataset.resourceId).toBe("easyrpg-system-system");
   });
 
@@ -185,7 +185,7 @@ describe("event editor M2 command body", () => {
         }) ?? document.createElement("div")
     );
 
-    expect(body.textContent).toContain("필요한 값을 선택하고 확인을 누르세요.");
+    expect(body.textContent).toContain("값을 고르면 바로 반영됩니다.");
     expect(findByTestId(body, "m2-command-mode-option-select")?.tagName).toBe("SELECT");
     expect(findByTestId(body, "m2-command-target-option-select")?.tagName).toBe("SELECT");
     expect(findByTestId(body, "m2-command-x-input")?.value).toBe("10");

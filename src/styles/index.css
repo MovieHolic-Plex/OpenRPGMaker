@@ -18,7 +18,7 @@
 @import "./components/app-modal.css";
 @import "./components/empty-state.css";
 @import "./components/grid-4.css";
-@import "./shell/rm2k3.css";
+@import "./shell/shell-density.css";
 @import "./shell/editor-responsive-expert.css";
 @import "./shell/editor-welcome.css";
 @import "./editor/responsive-a.css";
@@ -44,6 +44,11 @@
 @import "./database/modern-controls.css";
 @import "./database/overview-dashboard.css";
 @import "./database/title-workbench.css";
+@import "./database/play-resolution.css";
+@import "./database/system-studio.css";
+@import "./database/studio-theme.css";
+/* Collection-specific studio slices must follow the shared studio reset. */
+@import "./database/desktop-record-shell/13-actor-studio.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";
@@ -66,6 +71,10 @@
 @import "./editor/storyboard.css";
 @import "./editor/event-editor-help.css";
 @import "./editor/event-editor-follower-preset.css";
+@import "./editor/event-editor.balanced.css";
+/* 마지막 @import — 그 뒤는 실제 규칙이다. AI 인증 패널 규칙을 여기(가장 늦게) 두면
+   database/tabs-b.css 경유로 먼저 들어온 옛 규칙을 !important 없이 이긴다. */
+@import "./editor/ai-auth-connection.css";
 
 /* ============================================================================
    전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md

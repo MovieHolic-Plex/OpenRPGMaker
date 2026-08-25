@@ -340,15 +340,15 @@ defineCommand({
 defineCommand({
   kind: "callCommonEvent",
   family: "map",
-  label: "공통 이벤트 호출",
-  fields: { commonEventId: f.record("공통 이벤트", "commonEvent") },
+  label: "다른 이벤트 부르기",
+  fields: { commonEventId: f.record("다른 이벤트", "commonEvent") },
   summary: (c, l) => `${l.recordName(str(c.commonEventId))} 호출`,
 });
 
 defineCommand({
   kind: "callMapEvent",
   family: "map",
-  label: "맵 이벤트 호출",
+  label: "맵 위 이벤트 부르기",
   fields: { eventId: f.record("대상 이벤트", "event") },
   summary: (c, l) => `${l.recordName(str(c.eventId))} 호출`,
 });
@@ -441,12 +441,12 @@ defineCommand({
     actorId: f.record("대상 주인공", "actor"),
     skillId: f.record("스킬", "skill"),
     action: f.enum("동작", [
-      { value: "learn", label: "습득", key: "learn" },
-      { value: "forget", label: "망각", key: "forget" },
+      { value: "learn", label: "배우기", key: "learn" },
+      { value: "forget", label: "잊기", key: "forget" },
     ]),
   },
   summary: (c, l) =>
-    `${l.recordName(str(c.actorId))} ${l.recordName(str(c.skillId))} ${c.action === "forget" ? "망각" : "습득"}`,
+    `${l.recordName(str(c.actorId))} ${l.recordName(str(c.skillId))} ${c.action === "forget" ? "잊기" : "배우기"}`,
 });
 
 defineCommand({
@@ -612,7 +612,7 @@ defineCommand({
 defineCommand({
   kind: "battleProcessing",
   family: "battle",
-  label: "전투 처리",
+  label: "전투",
   fields: {
     troopSource: f.enum("적 지정 방식", [
       { value: "fixed", label: "고정", key: "fixed" },

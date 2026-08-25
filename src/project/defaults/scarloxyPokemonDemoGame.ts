@@ -8,8 +8,10 @@
 // 알려진 엔진 제약: 잡은 몬스터가 전투에 직접 나서지는 않는다(전투는 트레이너가 수행).
 // 지형/이벤트 헬퍼는 scarloxyDemoGame.ts 의 것을 재사용한다.
 
+import { PRODUCT_BRAND } from "@/brand";
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
 import {
@@ -55,6 +57,69 @@ const TOWN_DOORS = {
 const CAPTURE_ORB_ITEM_ID = "item_capture_orb";
 const EMPTY = -1;
 
+const GEN1_TYPE_DEFINITIONS = [
+  ["normal", "노말", "physical"],
+  ["fighting", "격투", "physical"],
+  ["flying", "비행", "physical"],
+  ["poison", "독", "physical"],
+  ["ground", "땅", "physical"],
+  ["rock", "바위", "physical"],
+  ["bug", "벌레", "physical"],
+  ["ghost", "고스트", "physical"],
+  ["fire", "불꽃", "magical"],
+  ["water", "물", "magical"],
+  ["grass", "풀", "magical"],
+  ["electric", "전기", "magical"],
+  ["psychic", "에스퍼", "magical"],
+  ["ice", "얼음", "magical"],
+  ["dragon", "드래곤", "magical"],
+] as const;
+
+type Gen1Type = typeof GEN1_TYPE_DEFINITIONS[number][0];
+
+const GEN1_TYPE_EFFECTS: readonly [Gen1Type, Gen1Type, 0 | 0.5 | 2][] = [
+  ["water", "fire", 2], ["fire", "grass", 2], ["fire", "ice", 2],
+  ["grass", "water", 2], ["electric", "water", 2], ["water", "rock", 2],
+  ["ground", "flying", 0], ["water", "water", 0.5], ["fire", "fire", 0.5],
+  ["electric", "electric", 0.5], ["ice", "ice", 0.5], ["grass", "grass", 0.5],
+  ["psychic", "psychic", 0.5], ["fire", "water", 0.5], ["grass", "fire", 0.5],
+  ["water", "grass", 0.5], ["electric", "grass", 0.5], ["normal", "rock", 0.5],
+  ["normal", "ghost", 0], ["ghost", "ghost", 2], ["fire", "bug", 2],
+  ["fire", "rock", 0.5], ["water", "ground", 2], ["electric", "ground", 0],
+  ["electric", "flying", 2], ["grass", "ground", 2], ["grass", "bug", 0.5],
+  ["grass", "poison", 0.5], ["grass", "rock", 2], ["grass", "flying", 0.5],
+  ["ice", "water", 0.5], ["ice", "grass", 2], ["ice", "ground", 2],
+  ["ice", "flying", 2], ["fighting", "normal", 2], ["fighting", "poison", 0.5],
+  ["fighting", "flying", 0.5], ["fighting", "psychic", 0.5], ["fighting", "bug", 0.5],
+  ["fighting", "rock", 2], ["fighting", "ice", 2], ["fighting", "ghost", 0],
+  ["poison", "grass", 2], ["poison", "poison", 0.5], ["poison", "ground", 0.5],
+  ["poison", "bug", 2], ["poison", "rock", 0.5], ["poison", "ghost", 0.5],
+  ["ground", "fire", 2], ["ground", "electric", 2], ["ground", "grass", 0.5],
+  ["ground", "bug", 0.5], ["ground", "rock", 2], ["ground", "poison", 2],
+  ["flying", "electric", 0.5], ["flying", "fighting", 2], ["flying", "bug", 2],
+  ["flying", "grass", 2], ["flying", "rock", 0.5], ["psychic", "fighting", 2],
+  ["psychic", "poison", 2], ["bug", "fire", 0.5], ["bug", "grass", 2],
+  ["bug", "fighting", 0.5], ["bug", "flying", 0.5], ["bug", "psychic", 2],
+  ["bug", "ghost", 0.5], ["bug", "poison", 2], ["rock", "fire", 2],
+  ["rock", "fighting", 0.5], ["rock", "ground", 0.5], ["rock", "flying", 2],
+  ["rock", "bug", 2], ["rock", "ice", 2], ["ghost", "normal", 0],
+  ["ghost", "psychic", 0], ["fire", "dragon", 0.5], ["water", "dragon", 0.5],
+  ["electric", "dragon", 0.5], ["grass", "dragon", 0.5], ["ice", "dragon", 2],
+  ["dragon", "dragon", 2],
+];
+
+function gen1TypeChart() {
+  const types = GEN1_TYPE_DEFINITIONS.map(([id]) => id);
+  const multipliers = Object.fromEntries(types.map((attackType) => [
+    attackType,
+    Object.fromEntries(types.map((defenderType) => [defenderType, 1])),
+  ])) as Record<Gen1Type, Record<Gen1Type, number>>;
+  for (const [attackType, defenderType, multiplier] of GEN1_TYPE_EFFECTS) {
+    multipliers[attackType][defenderType] = multiplier;
+  }
+  return { types: [...types], multipliers };
+}
+
 export function createScarloxyPokemonDemoMaps(): readonly GameMap[] {
   return [
     townMap(),
@@ -66,15 +131,24 @@ export function createScarloxyPokemonDemoMaps(): readonly GameMap[] {
 }
 
 export function configureScarloxyPokemonDemoProject(project: Project): void {
-  project.meta = { ...project.meta, title: "Scarloxy 포켓몬풍 데모", author: "RPG ZZU" };
+  project.meta = { ...project.meta, title: "Scarloxy 포켓몬풍 데모", author: PRODUCT_BRAND };
   const titleScreen = project.system.titleScreen;
   project.system = {
     ...project.system,
     monsterCollection: true,
     battleUiStyle: "pokemon",
+    // 전투 규칙 엔진도 Gen1 로 켠다. battleUiStyle 은 스킨(코스메틱)만 바꾸므로
+    // 이것이 없으면 포켓몬 스킨을 쓰면서 RM2k3 규칙으로 싸운다 — applyGenrePreset
+    // ("monster-collect") 은 이미 둘을 함께 켜는데, 출하 데모만 빠져 있었다.
+    battleModel: "gen1",
+    // Gen1 은 게이지(ATB)가 아니라 속도 기반 단일 턴이다. strict 흐름은 이미 구현돼
+    // 있었고(runtime.ts battleFlow), 기본값(gauge)만 꺼져 있었다. 이 데모의 테스트들도
+    // 처음부터 battleFlow: "strict" 를 명시해 왔다(scarloxyPokemonDemo.test.ts).
+    battleFlow: "strict",
     // 잡은 파티 몬스터가 필드에 나서 싸운다(트레이너 대신). 1:1 대치.
     battleParty: "monsters",
     activeSlots: 1,
+    typeChart: gen1TypeChart(),
     startActorIds: [DEFAULT_ACTOR_ID],
     ...(titleScreen
       ? {
@@ -121,15 +195,116 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     hero.learnedSkills = [{ level: 1, skillId: "skill_pkmn_rock" }];
   }
 
+  const captureOrb = project.database.items.find((item) => item.id === CAPTURE_ORB_ITEM_ID);
+  if (captureOrb?.captureProfile) {
+    captureOrb.captureProfile = { ...captureOrb.captureProfile, ballClass: "poke" };
+  }
+
   project.database.skills.push(
-    demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"),
+    // Gen1 관례: 불꽃 기본기는 10% 화상. state_burn 은 아래에서 이 데모 DB 에만 저작한다.
+    { ...demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"), stateEffects: [{ stateId: "state_burn", chance: 10, operation: "add" as const }] },
     demoSkill("skill_scarloxy_leaf", "잎날리기", 24, "anim_scarloxy_green", "날카로운 잎을 날립니다.", "grass"),
     demoSkill("skill_scarloxy_splash", "물장구", 24, "anim_scarloxy_splash", "물보라를 일으켜 공격합니다.", "water"),
     demoSkill("skill_scarloxy_scratch", "할퀴기", 18, "anim_scarloxy_scratch", "발톱으로 할큅니다."),
     demoSkill("skill_scarloxy_ice", "얼음 조각", 28, "anim_scarloxy_ice", "얼음 조각을 날립니다.", "water"),
     demoSkill("skill_scarloxy_burst", "대폭발", 36, "anim_scarloxy_explosion", "거대한 폭발을 일으킵니다.", "fire"),
-    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다.")
+    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다."),
+    // 전광석화 — movePriority +1 은 strict 턴제에서 속도보다 먼저 비교된다(느려도 선공).
+    { ...demoSkill("skill_scarloxy_quick", "전광석화", 18, "anim_scarloxy_scratch", "번개처럼 빠르게 몸통박치기합니다. 반드시 선공합니다."), movePriority: 1 },
+    demoSkill("skill_scarloxy_punch", "Karate Strike", 25, "anim_scarloxy_scratch", "A focused Fighting-type strike.", "fighting"),
+    demoSkill("skill_scarloxy_wing", "Gale Wing", 25, "anim_scarloxy_scratch", "A swift Flying-type strike.", "flying"),
+    { ...demoSkill("skill_scarloxy_venom", "Venom Sting", 20, "anim_poison", "A Poison-type sting.", "poison"), stateEffects: [{ stateId: "state_poison", chance: 20, operation: "add" as const }] },
+    demoSkill("skill_scarloxy_mud", "Mud Quake", 25, "anim_scarloxy_explosion", "A Ground-type shock.", "ground"),
+    demoSkill("skill_scarloxy_bug", "Mandible Cut", 25, "anim_scarloxy_scratch", "A Bug-type bite.", "bug"),
+    demoSkill("skill_scarloxy_shadow", "Night Shade", 25, "anim_magic", "A Ghost-type shade.", "ghost"),
+    demoSkill("skill_scarloxy_spark", "Thunder Jolt", 25, "anim_magic", "An Electric-type jolt.", "electric"),
+    { ...demoSkill("skill_scarloxy_mind", "Dream Pulse", 30, "anim_magic", "A Psychic-type pulse.", "psychic"), stateEffects: [{ stateId: "state_sleep", chance: 10, operation: "add" as const }] },
+    demoSkill("skill_scarloxy_dragon", "Dragon Rage", 40, "anim_scarloxy_explosion", "A Dragon-type blast.", "dragon")
   );
+
+  const gen1MoveMetadata: Readonly<Record<string, { maxPp: number; elementId: Gen1Type; critical?: "normal" | "high" }>> = {
+    [DEFAULT_SKILL_ID]: { maxPp: 35, elementId: "normal" },
+    skill_scarloxy_ember: { maxPp: 25, elementId: "fire" },
+    skill_scarloxy_leaf: { maxPp: 25, elementId: "grass", critical: "high" },
+    skill_scarloxy_splash: { maxPp: 25, elementId: "water" },
+    skill_scarloxy_scratch: { maxPp: 35, elementId: "normal" },
+    skill_scarloxy_ice: { maxPp: 10, elementId: "ice" },
+    skill_scarloxy_burst: { maxPp: 5, elementId: "fire" },
+    skill_pkmn_rock: { maxPp: 15, elementId: "rock" },
+    skill_scarloxy_quick: { maxPp: 30, elementId: "normal" },
+    skill_scarloxy_punch: { maxPp: 25, elementId: "fighting" },
+    skill_scarloxy_wing: { maxPp: 35, elementId: "flying" },
+    skill_scarloxy_venom: { maxPp: 35, elementId: "poison" },
+    skill_scarloxy_mud: { maxPp: 30, elementId: "ground" },
+    skill_scarloxy_bug: { maxPp: 35, elementId: "bug" },
+    skill_scarloxy_shadow: { maxPp: 15, elementId: "ghost" },
+    skill_scarloxy_spark: { maxPp: 30, elementId: "electric" },
+    skill_scarloxy_mind: { maxPp: 10, elementId: "psychic" },
+    skill_scarloxy_dragon: { maxPp: 10, elementId: "dragon" },
+  };
+  for (const [skillId, metadata] of Object.entries(gen1MoveMetadata)) {
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    if (!skill) continue;
+    skill.maxPp = metadata.maxPp;
+    skill.elementId = metadata.elementId;
+    skill.gen1CriticalRate = metadata.critical ?? "normal";
+  }
+  const iceMove = project.database.skills.find((record) => record.id === "skill_scarloxy_ice");
+  if (iceMove) iceMove.stateEffects = [{ stateId: "state_freeze", chance: 10, operation: "add" }];
+  const sparkMove = project.database.skills.find((record) => record.id === "skill_scarloxy_spark");
+  if (sparkMove) sparkMove.stateEffects = [{ stateId: "state_paralysis", chance: 10, operation: "add" }];
+
+  // Gen1 major status is persistent and mutually exclusive at runtime. The
+  // metadata, rather than localized ids/names, is the semantic source of truth.
+  const gen1States = [
+    normalizeStateRecord({
+      id: "state_poison", name: "독", gen1MajorStatus: "poison", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_burn", name: "화상", gen1MajorStatus: "burn", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { attackMultiplier: 0.5, hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_sleep", name: "수면", gen1MajorStatus: "sleep", restriction: "행동 불가",
+      removalCondition: "잠에서 깰 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      recoverWhenHitChance: 0, runtimeEffects: { restrictsAction: true, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_freeze", name: "얼음", gen1MajorStatus: "freeze", restriction: "행동 불가",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { restrictsAction: true, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_paralysis", name: "마비", gen1MajorStatus: "paralysis", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { removeOnBattleEnd: false },
+    }),
+  ];
+  for (const state of gen1States) {
+    const index = project.database.states.findIndex((record) => record.id === state.id);
+    if (index >= 0) project.database.states[index] = state;
+    else project.database.states.push(state);
+  }
+
+  const elements = project.database.elements ?? [];
+  const elementTemplate = elements.find((record) => record.id === "fire") ?? elements[0];
+  if (elementTemplate) {
+    const gen1TypeIds = new Set(GEN1_TYPE_DEFINITIONS.map(([id]) => id));
+    project.database.elements = [
+      ...elements.filter((record) => !gen1TypeIds.has(record.id as Gen1Type)),
+      ...GEN1_TYPE_DEFINITIONS.map(([id, name, kind]) => ({
+        ...elementTemplate,
+        id,
+        name,
+        kind,
+        rateLabels: [...elementTemplate.rateLabels],
+        damageMultipliers: { ...elementTemplate.damageMultipliers },
+      })),
+    ];
+  }
 
   project.database.monsterSpecies = [
     ...(project.database.monsterSpecies ?? []),
@@ -152,11 +327,9 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     ]),
     demoTroop("troop_pkmn_grass_b", "풀숲의 몬스터들", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_larvea", x: 128, y: 136 },
-      { enemyId: "enemy_pkmn_plumette", x: 192, y: 126 },
     ]),
     demoTroop("troop_pkmn_shore", "물가의 몬스터들", "scarloxy-backdrop-sand", [
       { enemyId: "enemy_pkmn_finsta", x: 136, y: 132 },
-      { enemyId: "enemy_pkmn_jacana", x: 196, y: 128 },
     ]),
     demoTroop("troop_pkmn_dream", "떠도는 드림", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_draem", x: 168, y: 128 },
@@ -164,7 +337,7 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     // 트레이너 소유 몬스터는 포획 금지 — 포켓몬 규칙.
     demoTroop("troop_pkmn_rival", "라이벌 배틀", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_rival_cindrill", x: 168, y: 128 },
-    ], { uncapturable: true }),
+    ], { uncapturable: true, trainerBattle: true }),
     demoTroop("troop_pkmn_atrox", "전설의 아트록스", "scarloxy-backdrop-ice", [
       { enemyId: "enemy_pkmn_atrox", x: 168, y: 124 },
     ])
@@ -182,11 +355,50 @@ type SpeciesSeed = {
   readonly stats: { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number };
   readonly captureRate: number;
   readonly skillId?: string;
+  readonly extraSkills?: readonly { level: number; skillId: string }[];
   readonly evolvesTo?: { key: string; level: number };
 };
 
+const SCARLOXY_GEN1_TYPES: Readonly<Record<string, readonly Gen1Type[]>> = {
+  sparchu: ["electric"],
+  cindrill: ["fire", "fighting"],
+  charmadillo: ["fire", "rock"],
+  finsta: ["water"],
+  gulfin: ["water", "ground"],
+  finiette: ["water", "ice"],
+  larvea: ["bug", "poison"],
+  cleaf: ["bug", "grass"],
+  ivieron: ["grass"],
+  plumette: ["flying"],
+  pluma: ["normal", "flying"],
+  jacana: ["water", "flying"],
+  pouch: ["normal"],
+  draem: ["psychic", "ghost"],
+  friolera: ["ice"],
+  atrox: ["dragon"],
+};
+
+const SCARLOXY_GEN1_PRIMARY_SKILLS: Readonly<Record<string, string>> = {
+  sparchu: "skill_scarloxy_spark",
+  cindrill: "skill_scarloxy_punch",
+  charmadillo: "skill_pkmn_rock",
+  finsta: "skill_scarloxy_splash",
+  gulfin: "skill_scarloxy_mud",
+  finiette: "skill_scarloxy_ice",
+  larvea: "skill_scarloxy_venom",
+  cleaf: "skill_scarloxy_bug",
+  ivieron: "skill_scarloxy_leaf",
+  plumette: "skill_scarloxy_wing",
+  pluma: "skill_scarloxy_quick",
+  jacana: "skill_scarloxy_wing",
+  pouch: "skill_scarloxy_scratch",
+  draem: "skill_scarloxy_shadow",
+  friolera: "skill_scarloxy_ice",
+  atrox: "skill_scarloxy_dragon",
+};
+
 const SPECIES_SEEDS: readonly SpeciesSeed[] = [
-  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", evolvesTo: { key: "cindrill", level: 7 } },
+  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", extraSkills: [{ level: 5, skillId: "skill_scarloxy_quick" }], evolvesTo: { key: "cindrill", level: 7 } },
   { key: "cindrill", name: "신드릴", type: "fire", stats: { maxHp: 30, maxMp: 10, attack: 15, defense: 11, mind: 12, agility: 14 }, captureRate: 0.25, skillId: "skill_scarloxy_ember", evolvesTo: { key: "charmadillo", level: 12 } },
   { key: "charmadillo", name: "차마딜로", type: "fire", stats: { maxHp: 46, maxMp: 12, attack: 20, defense: 18, mind: 13, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_burst" },
   { key: "finsta", name: "핀스타", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 9, mind: 11, agility: 11 }, captureRate: 0.5, skillId: "skill_scarloxy_splash", evolvesTo: { key: "gulfin", level: 7 } },
@@ -213,15 +425,18 @@ function scarloxySpeciesRecords() {
     normalizeMonsterSpeciesRecord({
       id: scarloxySpeciesId(seed.key),
       name: seed.name,
-      types: [seed.type],
+      types: [...(SCARLOXY_GEN1_TYPES[seed.key] ?? [seed.type])],
       graphic: { monsterResourceId: `scarloxy-monster-${seed.key}`, graphicHue: 0, transparent: false, flying: false },
       baseStats: seed.stats,
-      captureRate: seed.captureRate,
+      captureRate: Math.round(seed.captureRate * 255) / 255,
       // 데모용 저속 곡선 — 야생전 몇 번이면 스타터가 7레벨 진화에 도달한다.
       expCurve: { base: 2, extra: 1, acceleration: 1 },
       skillsByLevel: [
         { level: 1, skillId: DEFAULT_SKILL_ID },
-        ...(seed.skillId ? [{ level: 3, skillId: seed.skillId }] : []),
+        ...((SCARLOXY_GEN1_PRIMARY_SKILLS[seed.key] ?? seed.skillId)
+          ? [{ level: 3, skillId: SCARLOXY_GEN1_PRIMARY_SKILLS[seed.key] ?? seed.skillId! }]
+          : []),
+        ...(seed.extraSkills ?? []),
       ],
       evolutions: seed.evolvesTo
         ? [{ toSpeciesId: scarloxySpeciesId(seed.evolvesTo.key), requires: { level: seed.evolvesTo.level } }]

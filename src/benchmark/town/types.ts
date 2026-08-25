@@ -1,5 +1,5 @@
 // benchmark/town/types.ts
-// FROZEN CONTRACT for the combined_town 5-axis tile-competence benchmark.
+// FROZEN CONTRACT for the combined_town 9-question tile-competence benchmark.
 //
 // Scope: easyrpg_chipset_combined_town (the project DEFAULT tileset). Measured
 // 2026-08-20: 207/480 labeled, 44 harness groups, 0 tileset autotileGroups,
@@ -7,29 +7,39 @@
 // Autotile ground truth therefore comes from DEFAULT_AUTOTILE_GROUPS, which is
 // the built-in fallback this tileset actually runs on.
 //
-// FIVE AXES, FIVE NUMBERS. Every axis resolves to one 0..1 score so a model can
-// be read at a glance:
+// NINE QUESTIONS, NINE NUMBERS. The question numbers are the art director's own
+// list, kept verbatim so a report can be read against it line by line:
 //
-//   A1 autotile     place the correct autotile variant over a marked shape
-//   A2 wall         which tiles are walls
-//   A3 passability  which tiles a character can walk on
-//   A4 layer        which tiles must be drawn on the upper layer
-//   A5 innerCorner  the concave-corner cells of A1, scored on their own
+//   1 autotile        오토타일을 잘 설정하는지
+//   2 reproducibility 재현성
+//   3 layer           하위·상위 레이어 처리
+//   4 road            길을 잘 만드는지
+//   5 wallOutline     벽의 외곽 처리
+//   6 roofDiagonal    지붕의 대각 타일 처리
+//   7 door            문 설치
+//   8 fenceEnd        울타리 끝 처리
+//   9 village         마을을 잘 구현하는지
 //
-// A5 is deliberately a SUB-SCORE of the same model answer as A1, not a separate
-// question. Placing 4 edges and 4 corners is pattern matching; the inner corner
-// is the only cell that requires reading the DIAGONAL neighbourhood, so it is
-// where fake autotile understanding shows up. Averaging it into A1 would hide it.
+// Axis 2 is not a model skill. It is the harness property plus one measurable
+// fact about the model: given the identical request three times, does it answer
+// the same thing? Replay byte-identity is a HARD GATE (a run that fails it is
+// void, not low-scoring); answer stability is the number reported on the axis.
 //
 // Module ownership (one owner per file, disjoint write scopes):
-//   groundTruth.ts  -> buildTownGroundTruth()
-//   contract.ts     -> parseTownAnswer()
-//   prompts.ts      -> TOWN_PROMPT_VERSION + frozen builders
-//   tasks.ts        -> TOWN_TASKS, townTaskSuiteDigest()
-//   inputImages.ts  -> renderTownImagePng(), townImageDigests()
-//   scoringSets.ts  -> scoreTownTileSet()   (A2, A3, A4)
-//   scoringGrid.ts  -> scoreTownGrid()      (A1, A5)
-//   runner.ts       -> runTownBenchmark(), replayTownArchive()
+//   fixtures.ts         -> shapes, probe candidates, marked grids
+//   palettes.ts         -> the tile vocabulary handed to the model per task
+//   groundTruth.ts      -> buildTownGroundTruth()
+//   contract.ts         -> parseTownAnswer()
+//   prompts.ts          -> TOWN_PROMPT_VERSION + frozen builders
+//   tasks.ts            -> TOWN_TASKS, townTaskSuiteDigest()
+//   inputImages.ts      -> renderTownImagePng(), townImageDigests()
+//   gridWalk.ts         -> flood fill / passability / component helpers
+//   scoringSets.ts      -> scoreTownProbe()      (tileSet answers)
+//   scoringGrid.ts      -> scoreTownAutotile()   (axis 1)
+//   scoringStructure.ts -> scoreTownPlacement()  (axes 3..9)
+//   manifest.ts         -> buildTownRunManifest(), record io
+//   runner.ts           -> runTownBenchmark(), replayTownArchive()
+//   evidence.ts         -> renderPlacementPng(), buildEvidenceHtml()
 //
 // Hashing is REUSED from ../interior/hash.ts (already verified against NIST
 // vectors). Do not write a second sha256.
@@ -44,16 +54,45 @@ export const TOWN_TILE_SIZE = 16;
 /** Grid cells may be -1 ("leave empty") or a valid tile id. */
 export const EMPTY_CELL = -1;
 
+/** A task counts as passed when its score reaches this. */
+export const PASS_THRESHOLD = 0.7;
+
 // ── Axes ─────────────────────────────────────────────────────────────────
 
-export type TownAxisId = "autotile" | "wall" | "passability" | "layer" | "innerCorner";
+export type TownAxisId =
+  | "autotile"
+  | "reproducibility"
+  | "layer"
+  | "road"
+  | "wallOutline"
+  | "roofDiagonal"
+  | "door"
+  | "fenceEnd"
+  | "village";
+
+/** Report order = the art director's question order. */
+export const TOWN_AXIS_ORDER: readonly TownAxisId[] = Object.freeze([
+  "autotile",
+  "reproducibility",
+  "layer",
+  "road",
+  "wallOutline",
+  "roofDiagonal",
+  "door",
+  "fenceEnd",
+  "village",
+]);
 
 export const TOWN_AXIS_TITLE: Readonly<Record<TownAxisId, string>> = Object.freeze({
   autotile: "오토타일 배치",
-  wall: "벽 인식",
-  passability: "통행 가능 판정",
+  reproducibility: "재현성",
   layer: "상위·하위 레이어 구분",
-  innerCorner: "오토타일 오목 코너",
+  road: "길 시공",
+  wallOutline: "벽 외곽 처리",
+  roofDiagonal: "지붕 대각 처리",
+  door: "문 설치",
+  fenceEnd: "울타리 끝 처리",
+  village: "마을 구현",
 });
 
 // ── Ground truth ─────────────────────────────────────────────────────────
@@ -61,8 +100,8 @@ export const TOWN_AXIS_TITLE: Readonly<Record<TownAxisId, string>> = Object.free
 /**
  * A probe set turns a subjective "list every X" question into a bounded binary
  * classification: the model sees exactly these tiles and answers which of them
- * satisfy the property. Bounded probes are why A3/A4 can be scored with plain
- * balanced accuracy instead of an unbounded-recall F1.
+ * satisfy the property. Bounded probes are why the tileSet tasks can be scored
+ * with plain balanced accuracy instead of an unbounded-recall F1.
  */
 export interface TownProbeSet {
   /** Tiles shown to the model, in the exact render order. */
@@ -101,6 +140,11 @@ export interface AutotileCell {
  * The autotile task's answer key, produced by running the REAL engine
  * (autotileVariantForMask) over the marked shape. Not hand-written: if the
  * engine's mapping changes, this changes with it.
+ *
+ * The `inner` cells are the only ones that require reading the DIAGONAL
+ * neighbourhood, so they are reported as their own number inside the axis
+ * detail. Averaging them into the cell accuracy would hide the one measurement
+ * that separates real autotile understanding from edge/corner pattern matching.
  */
 export interface AutotileReference {
   readonly width: number;
@@ -114,25 +158,62 @@ export interface AutotileReference {
   readonly groupId: string;
 }
 
+/** Grid fixtures that carry a reference placement produced by a real stamper. */
+export type TownPlacementKey =
+  | "treeGrid"
+  | "roadGrid"
+  | "wallGrid"
+  | "aframeGrid"
+  | "doorGrid"
+  | "fenceGrid"
+  | "villageGrid";
+
+/**
+ * A reference placement. Row-major arrays of length width*height so records
+ * hash and diff cleanly. EMPTY_CELL marks an untouched cell.
+ */
+export interface PlacementReference {
+  readonly key: TownPlacementKey;
+  readonly width: number;
+  readonly height: number;
+  readonly lower: readonly number[];
+  readonly upper: readonly number[];
+  /**
+   * What is ALREADY drawn in the input image before the model answers — the
+   * pre-built house of the door and fence tasks. All EMPTY_CELL when the task
+   * starts from bare ground. Structural scoring composes base + answer, because
+   * "is the door reachable" is a question about the finished building, not about
+   * the two cells the model typed.
+   */
+  readonly baseLower: readonly number[];
+  readonly baseUpper: readonly number[];
+  /** Human-readable derivation note naming the engine that produced this. */
+  readonly source: string;
+}
+
 export interface TownGroundTruth {
-  /** A2 — canonical wall tiles, plus lookalike traps. */
+  /** Axis 5 probe — canonical house-shell walls, plus lookalike traps. */
   readonly wall: TownProbeSet;
-  /** A3 — walkable vs solid, probed on appearance-contradicting tiles. */
+  /** Axis 4 probe — walkable vs solid, on appearance-contradicting tiles. */
   readonly passability: TownProbeSet;
-  /** A4 — upper vs lower layer. */
+  /** Axis 3 probe — upper vs lower layer. */
   readonly layer: TownProbeSet;
-  /** A1 + A5 — the autotile answer key. */
+  /** Axis 1 — the autotile answer key. */
   readonly autotile: AutotileReference;
+  /** Axes 3..9 — one reference placement per grid fixture. */
+  readonly placements: Readonly<Record<TownPlacementKey, PlacementReference>>;
   /** Per-tile runtime contract read off the seeded tileset (0..479). */
   readonly passFlags: readonly PassFlag[];
   readonly priority: readonly ("lower" | "upper")[];
+  /** Tiles banned by the project (placeholder art). Using one is a hard miss. */
+  readonly banned: ReadonlySet<number>;
   /** Content digest over everything above. */
   readonly digest: string;
 }
 
 // ── Answers ──────────────────────────────────────────────────────────────
 
-export type TownAnswerKind = "tileSet" | "grid";
+export type TownAnswerKind = "tileSet" | "grid" | "layered";
 
 /** {"tileIds":[240,...]} — unique, ascending, 0..479. */
 export interface TownTileSetAnswer {
@@ -144,20 +225,40 @@ export interface TownGridAnswer {
   readonly grid: readonly (readonly number[])[];
 }
 
-export type TownAnswer = TownTileSetAnswer | TownGridAnswer;
+/** {"lower":[[...]],"upper":[[...]]} — equal shape; cells are -1 or 0..479. */
+export interface TownLayeredAnswer {
+  readonly lower: readonly (readonly number[])[];
+  readonly upper: readonly (readonly number[])[];
+}
+
+export type TownAnswer = TownTileSetAnswer | TownGridAnswer | TownLayeredAnswer;
 
 // ── Scoring ──────────────────────────────────────────────────────────────
 
 /**
- * One axis score. `score` is always 0..1 and always simple enough to explain in
- * one sentence, which is the point of this benchmark: F1 for the open-ended
- * wall question, balanced accuracy for the bounded probes, plain cell accuracy
- * for the grids.
+ * How an axis number was computed. Every method is simple enough to explain in
+ * one sentence, which is the point of this benchmark:
+ *
+ *  balancedAccuracy — bounded probe: (sensitivity + specificity) / 2
+ *  f1               — unbounded "list every X" question
+ *  cellAccuracy     — fraction of graded cells carrying the exact right tile
+ *  structural       — mean of identity (did it match the canonical stamp) and
+ *                     structural validity (is what it built sound at all)
+ *  ruleRate         — fraction of a named grammar rule set that holds
+ *  stability        — agreement between repeats of the identical request
  */
+export type TownScoringMethod =
+  | "balancedAccuracy"
+  | "f1"
+  | "cellAccuracy"
+  | "structural"
+  | "ruleRate"
+  | "stability";
+
 export interface AxisScore {
   readonly axis: TownAxisId;
   readonly score: number;
-  readonly method: "f1" | "balancedAccuracy" | "cellAccuracy";
+  readonly method: TownScoringMethod;
   /** Numbers only, so archived records diff cleanly. */
   readonly detail: Readonly<Record<string, number>>;
 }
@@ -170,16 +271,40 @@ export interface ScoredTownAnswer {
 
 // ── Tasks ────────────────────────────────────────────────────────────────
 
+/**
+ * Input image keys resolved by inputImages.ts — exactly one image per task.
+ * A probe image is a strip of the probed tiles in prompt order; a grid image is
+ * the task's palette strip stacked above the marked grid, so the model can see
+ * which picture each palette id refers to.
+ */
+export type TownImageKey =
+  | "wallProbe"
+  | "passabilityProbe"
+  | "layerProbe"
+  | "autotileShape"
+  | "treeGrid"
+  | "roadGrid"
+  | "wallGrid"
+  | "aframeGrid"
+  | "doorGrid"
+  | "fenceGrid"
+  | "villageGrid";
+
+export type TownProbeKey = "wall" | "passability" | "layer";
+
 export interface TownTaskDef {
   readonly id: string;
   readonly titleKo: string;
   readonly kind: TownAnswerKind;
-  /** Input image key resolved by inputImages.ts. */
-  readonly input: "atlas" | "passabilityProbe" | "layerProbe" | "autotileShape";
+  readonly input: TownImageKey;
   /** Frozen prompt builder — no arguments, so no answer can be interpolated. */
   readonly prompt: () => string;
-  /** Axes this one model call is scored on. The grid task yields TWO. */
-  readonly axes: readonly TownAxisId[];
+  /** The single axis this task feeds. Axis 2 is derived, never authored here. */
+  readonly axis: TownAxisId;
+  /** Probe key for `kind === "tileSet"`. */
+  readonly probe?: TownProbeKey;
+  /** Reference placement key — every grid task except the autotile one. */
+  readonly placement?: TownPlacementKey;
 }
 
 // ── Reproducibility spine (same three layers as the interior track) ──────
@@ -223,9 +348,18 @@ export interface TownAttemptRecord {
 export interface TownTaskRecord {
   readonly taskId: string;
   readonly kind: TownAnswerKind;
+  readonly axis: TownAxisId;
   readonly attempts: readonly TownAttemptRecord[];
   readonly meanScore: number | null;
   readonly stdDev: number | null;
+  /** 1 when any attempt reached PASS_THRESHOLD. */
+  readonly passAtK: number;
+  /**
+   * Agreement between repeats of the identical request, 0..1. null when fewer
+   * than two attempts produced a parsed answer — one answer cannot disagree
+   * with itself. Axis 2 is the mean of these.
+   */
+  readonly stability: number | null;
 }
 
 export interface TownRunRecord {
@@ -235,7 +369,7 @@ export interface TownRunRecord {
   /** ISO timestamp. Excluded from every hash so records stay comparable. */
   readonly startedAt: string;
   readonly tasks: readonly TownTaskRecord[];
-  /** The five headline numbers, keyed by axis. null when never scored. */
+  /** The nine headline numbers, keyed by axis. null when never scored. */
   readonly axisScores: Readonly<Record<TownAxisId, number | null>>;
   readonly overall: number;
 }

@@ -7,7 +7,7 @@ import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 // DB 3파 M8 — 사이드 도킹.
 // ① 토글 시 클래스/aria 전환(도크: role=complementary + aria-modal 제거, 복원: 원상).
-// ② localStorage["rpg-zzu:db-dock-mode"] 저장/다음 오픈 시 복원.
+// ② localStorage["oprn:db-dock-mode"] 저장/다음 오픈 시 복원.
 // ③ 도크 모드에서 backdrop 클릭(바깥 클릭)이 close 를 트리거하지 않는다 — 맵 조작이 곧 바깥 클릭.
 
 let restoreDom: (() => void) | undefined;
@@ -107,7 +107,7 @@ describe("database modal dock mode (M8)", () => {
   it("persists dock mode and restores it on next open", () => {
     openDatabaseModal("actors");
     modalParts().dockToggle.click();
-    expect(fakeStorage.getItem("rpg-zzu:db-dock-mode")).toBe("1");
+    expect(fakeStorage.getItem("oprn:db-dock-mode")).toBe("1");
     requestDatabaseModalClose("battleTest");
 
     openDatabaseModal("actors");
@@ -117,7 +117,7 @@ describe("database modal dock mode (M8)", () => {
 
     // 창 모드로 복원하면 저장값도 0 으로 돌아간다.
     modalParts().dockToggle.click();
-    expect(fakeStorage.getItem("rpg-zzu:db-dock-mode")).toBe("0");
+    expect(fakeStorage.getItem("oprn:db-dock-mode")).toBe("0");
   });
 
   it("does not close on backdrop click while docked, but still does in window mode", () => {

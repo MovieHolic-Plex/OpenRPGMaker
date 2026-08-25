@@ -1,4 +1,7 @@
 import "@/player/player.css";
+// 세이브 슬롯 키(oprn:save-slot:*)를 읽기 전에 구 접두사를 옮긴다. src/storageBoot.ts 참고.
+import "@/storageBoot";
+import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
 import { renderPlayer } from "@/player/player";
 import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
@@ -40,7 +43,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
           ? `rpgzzu-export:${decodeURIComponent(communitySlug)}`
           : `rpgzzu-export:${exportedProjectId(project)}`),
     );
-    document.title = project.meta.title || "RPG ZZU Player";
+    document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);
     renderPlayer(root, { hostBridge: host, onExit: () => exitToHost(root, host) });

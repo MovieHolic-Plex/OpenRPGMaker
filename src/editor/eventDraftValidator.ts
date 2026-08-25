@@ -72,7 +72,7 @@ function checkCallDepth(project: Project, issues: EventDraftIssue[]): void {
       if (kind === "callCommonEvent") {
         const id = (cmd as { commonEventId: string }).commonEventId;
         if (visiting.has(id)) {
-          issues.push({ severity: "warning", code: "callCommonEvent.cycle", message: `공통 이벤트 ${id}가 순환 호출됩니다.`, pageId: "" });
+          issues.push({ severity: "warning", code: "callCommonEvent.cycle", message: `다른 이벤트 ${id}가 순환 호출됩니다.`, pageId: "" });
           continue;
         }
         const ce = project.commonEvents?.find((e) => e.id === id);
@@ -394,6 +394,18 @@ function validateCondition(
     case "friendshipAtLeast":
     case "battleResult":
       return;
+    case "run":
+      if (condition.query === "flag" && !condition.flag.trim()) {
+        issues.push({
+          severity: "error",
+          code: "condition.run.flag-empty",
+          message: "기억 이름이 비어 있습니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-run-flag" },
+        });
+      }
+      return;
   }
   const exhaustive: never = condition;
   void exhaustive;
@@ -565,7 +577,7 @@ function validateCommand(
       issues.push({ severity: "warning", code: "runtime.partial", message: "이 명령은 실제 게임에서 일부 효과만 실행됩니다.", pageId, commandPath: path });
     }
   } catch {
-    issues.push({ severity: "error", code: "runtime.unclassified", message: "런타임 지원 정보가 없는 명령입니다.", pageId, commandPath: path });
+    issues.push({ severity: "error", code: "runtime.unclassified", message: "이 명령은 아직 게임에서 어떻게 실행될지 모릅니다.", pageId, commandPath: path });
   }
 
   const require = (code: string, label: string, id: string | undefined, known: ReadonlySet<string>, allowEmpty = false) => {
@@ -605,8 +617,8 @@ function validateCommand(
       validateMoveRoute(project, command.route, pageId, path, refs, issues);
       return;
     case "setEventGraphicPattern": require("reference.event.missing", "외형 변경 이벤트", command.eventId, refs.events, true); return;
-    case "callCommonEvent": require("reference.common-event.missing", "공통 이벤트", command.commonEventId, refs.commonEvents); return;
-    case "callMapEvent": require("reference.event.missing", "호출할 맵 이벤트", command.eventId, refs.events); return;
+    case "callCommonEvent": require("reference.common-event.missing", "다른 이벤트", command.commonEventId, refs.commonEvents); return;
+    case "callMapEvent": require("reference.event.missing", "맵 위 이벤트", command.eventId, refs.events); return;
     case "battleProcessing":
       if (command.troopSource === "variable") require("reference.variable.missing", "적 그룹 변수", command.troopVariableId, refs.variables);
       else require("reference.troop.missing", "적 그룹", command.troopId, refs.troops);
@@ -637,7 +649,7 @@ function validateCommand(
     case "addLight":
       if (typeof command.source.at === "object") {
         if ("eventId" in command.source.at) {
-          require("reference.event.missing", "광원 이벤트", command.source.at.eventId, refs.events, true);
+          require("reference.event.missing", "빛 위치 이벤트", command.source.at.eventId, refs.events, true);
         } else {
           validateMapPosition(
             project,
@@ -646,7 +658,7 @@ function validateCommand(
             command.source.at.y,
             pageId,
             path,
-            "광원 위치",
+            "빛 위치",
             issues,
           );
         }
@@ -738,6 +750,7 @@ function validateCommand(
     case "checkpointSave":
     case "openSaveMenu":
     case "despawnFieldEnemy":
+    case "runControl":
     case "killPlayer":
     case "gameOver":
     case "ending":

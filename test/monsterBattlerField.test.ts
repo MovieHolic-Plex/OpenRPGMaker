@@ -38,4 +38,27 @@ describe("파티 몬스터 전투 필드 렌더", () => {
     const enemyImg = field.querySelector<HTMLImageElement>(".battle-enemy-group .battle-enemy-image");
     expect(enemyImg?.getAttribute("src")).toContain("scarloxy-monster-larvea");
   });
+
+  it("종족 그래픽이 없어도 배우용 스킨 스프라이트로 위장하지 않는다", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const species = project.database.monsterSpecies?.find((record) => record.id === scarloxySpeciesId("sparchu"));
+    if (!species) throw new Error("missing sparchu");
+    species.graphic.monsterResourceId = "";
+    store.replace(project);
+    const session = startSession(project, 7);
+    giveMonster(project, session, { speciesId: species.id, level: 5 });
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: false,
+      partyMonsters: session.monsterParty.map((id) => session.monsterInstances[id]!),
+      rng: () => 0,
+    });
+
+    const actorNode = battleField(runtime.snapshot()).querySelector<HTMLElement>(".battle-actor-group .battle-actor");
+    expect(actorNode?.dataset.monsterBattler).toBe("true");
+    expect(actorNode?.querySelector(".battle-skin-actor-image")).toBeNull();
+    expect(actorNode?.querySelector(".battle-monster-back")).toBeNull();
+  });
 });

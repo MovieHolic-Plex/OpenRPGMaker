@@ -23,7 +23,32 @@ import {
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
+import { isGenrePackId } from "@/project/genrePackId";
+import {
+  normalizeBundleDefinitions,
+  normalizeEnergySystemConfig,
+  normalizeMakerDefinitions,
+  normalizeShippingSystemConfig,
+  normalizeWorldUnlockDefinitions,
+} from "@/project/p0SystemRecords";
+import {
+  normalizeDailyWeatherConfig,
+  normalizeFarmAnimalBuildingDefinitions,
+  normalizeFarmAnimalSpeciesRecords,
+} from "@/project/p1FoundationRecords";
+import {
+  normalizeCollectionSystem,
+  normalizeFishingSystem,
+  normalizeFishSpeciesRecords,
+  normalizeMuseumSystem,
+  normalizeSeasonalForage,
+} from "@/project/p2FoundationRecords";
+import {
+  normalizeFarmBuildingTypes,
+  normalizeHomeDecorationTypes,
+} from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { normalizePlayResolution } from "@/project/playResolution";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -38,6 +63,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   return {
     id: record.id,
     name: record.name,
+    ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
@@ -56,7 +82,10 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   };
 }
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
+  "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes"
+>>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -75,12 +104,23 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     monsterSpecies: (database.monsterSpecies ?? []).map(normalizeMonsterSpeciesRecord),
     crops: (database.crops ?? []).map((crop) => normalizeCropRecord(crop as Partial<CropRecord> & Pick<CropRecord, "id" | "name">)),
     lifeSkills: (database.lifeSkills ?? []).map((skill) => normalizeLifeSkillRecord(skill as Partial<LifeSkillRecord> & Pick<LifeSkillRecord, "id" | "name">)),
-
+    ...(database.farmAnimalSpecies !== undefined
+      ? { farmAnimalSpecies: normalizeFarmAnimalSpeciesRecords(database.farmAnimalSpecies) ?? [] }
+      : {}),
+    ...(database.fishSpecies !== undefined
+      ? { fishSpecies: normalizeFishSpeciesRecords(database.fishSpecies) ?? [] }
+      : {}),
+    ...(database.farmBuildingTypes !== undefined
+      ? { farmBuildingTypes: normalizeFarmBuildingTypes(database.farmBuildingTypes) ?? [] }
+      : {}),
+    ...(database.homeDecorationTypes !== undefined
+      ? { homeDecorationTypes: normalizeHomeDecorationTypes(database.homeDecorationTypes) ?? [] }
+      : {}),
   };
 }
 
 /** Runtime CSS border-image windowskin. EasyRPG System/*.png sheets are not valid 9-slice skins. */
-export const DEFAULT_RUNTIME_WINDOW_SKIN_ID = "windowskin-rm2003";
+export const DEFAULT_RUNTIME_WINDOW_SKIN_ID = "windowskin-default";
 
 const EASYRPG_SYSTEM_SHEET_IDS = new Set([
   "easyrpg-system-system",
@@ -106,6 +146,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   return {
     startActorIds: cleanIds(system.startActorIds),
+    ...(() => {
+      const playResolution = normalizePlayResolution(system.playResolution);
+      return playResolution ? { playResolution } : {};
+    })(),
+    ...(isGenrePackId(system.genre) ? { genre: system.genre } : {}),
     titleResourceId,
     systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
@@ -139,6 +184,19 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
     ...(Array.isArray(system.itemUpgrades) ? { itemUpgrades: system.itemUpgrades } : {}),
     ...(Array.isArray(system.sellPrices) ? { sellPrices: system.sellPrices } : {}),
+    ...(system.energy ? { energy: normalizeEnergySystemConfig(system.energy) } : {}),
+    ...(system.shipping ? { shipping: normalizeShippingSystemConfig(system.shipping) } : {}),
+    ...(Array.isArray(system.bundles) ? { bundles: normalizeBundleDefinitions(system.bundles) } : {}),
+    ...(Array.isArray(system.worldUnlocks) ? { worldUnlocks: normalizeWorldUnlockDefinitions(system.worldUnlocks) } : {}),
+    ...(Array.isArray(system.makers) ? { makers: normalizeMakerDefinitions(system.makers) } : {}),
+    ...(system.dailyWeather ? { dailyWeather: normalizeDailyWeatherConfig(system.dailyWeather) } : {}),
+    ...(Array.isArray(system.farmAnimalBuildings)
+      ? { farmAnimalBuildings: normalizeFarmAnimalBuildingDefinitions(system.farmAnimalBuildings) }
+      : {}),
+    ...(system.fishing ? { fishing: normalizeFishingSystem(system.fishing) } : {}),
+    ...(system.seasonalForage ? { seasonalForage: normalizeSeasonalForage(system.seasonalForage) } : {}),
+    ...(system.collections ? { collections: normalizeCollectionSystem(system.collections) } : {}),
+    ...(system.museum ? { museum: normalizeMuseumSystem(system.museum) } : {}),
     ...(() => {
       const monsterCare = normalizeMonsterCare(system.monsterCare);
       return monsterCare ? { monsterCare } : {};
@@ -213,7 +271,14 @@ function normalizeTitleScreenSettings(
   return {
     title: textOrDefault(settings?.title, defaults.title),
     backgroundResourceId: cleanOptionalId(settings?.backgroundResourceId) ?? titleResourceId ?? defaults.backgroundResourceId,
-    musicResourceId: cleanOptionalId(settings?.musicResourceId) ?? cleanOptionalId(defaults.musicResourceId),
+    // 타이틀 BGM 은 "생략" 과 "명시적 무음" 을 구분한다.
+    //   키 없음  → 기본 곡을 채운다(새 프로젝트가 무음으로 시작하지 않게).
+    //   빈 문자열 → 저작자가 무음을 고른 것으로 보고 그대로 비운다.
+    // 구분하지 않으면 기본곡이 생긴 순간 무음 타이틀을 **표현할 방법이 사라진다**(실측):
+    // cleanOptionalId 가 ""를 undefined 로 바꿔 버려 곧바로 기본곡으로 덮인다.
+    musicResourceId: hasExplicitSilence(settings, "musicResourceId")
+      ? undefined
+      : cleanOptionalId(settings?.musicResourceId) ?? cleanOptionalId(defaults.musicResourceId),
     layout,
     menuLabels: {
       newGame: textOrDefault(settings?.menuLabels?.newGame, defaults.menuLabels.newGame),
@@ -382,7 +447,9 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     },
     parameterCurves: normalizeParameterCurves(record.parameterCurves),
     expCurve: normalizeExpCurve(record.expCurve),
-    stateRates: normalizeRates(record.stateRates),
+    stateRates: record.stateRates === undefined
+      ? { state_death: "C" }
+      : normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
   };
 }
@@ -412,6 +479,14 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
+    ...(typeof record.maxPp === "number" && Number.isFinite(record.maxPp) && record.maxPp > 0
+      ? { maxPp: clampInteger(record.maxPp, 1, 99) }
+      : {}),
+    ...(record.gen1CriticalRate === "high" ? { gen1CriticalRate: "high" as const } : {}),
+    // 화이트리스트 정규화라 여기 없으면 왕복 1회에 사라진다(위 defaultBgmResourceId 주석 참조).
+    ...(typeof record.movePriority === "number" && record.movePriority !== 0
+      ? { movePriority: clampInteger(record.movePriority, -7, 7) }
+      : {}),
     ...(() => {
       const actionSkill = normalizeActionSkillProfile(record.actionSkill);
       return actionSkill ? { actionSkill } : {};
@@ -612,7 +687,18 @@ function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefine
   const multiplier = typeof profile.multiplier === "number" && Number.isFinite(profile.multiplier)
     ? Math.max(0.01, Math.min(100, profile.multiplier))
     : 1;
-  return { multiplier };
+  return {
+    multiplier,
+    ...(isGen1BallClass(profile.ballClass) ? { ballClass: profile.ballClass } : {}),
+  };
+}
+
+function isGen1BallClass(value: unknown): value is NonNullable<ItemCaptureProfile["ballClass"]> {
+  return value === "poke" || value === "great" || value === "ultra" || value === "master";
+}
+
+function isGen1MajorStatus(value: unknown): value is NonNullable<StateRecord["gen1MajorStatus"]> {
+  return value === "poison" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
 }
 
 function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): ItemCareProfile | undefined {
@@ -726,6 +812,21 @@ function cleanOptionalId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * 저작자가 이 슬롯을 "빈 값" 으로 명시했는가 — 키가 있고 내용이 공백뿐인 문자열일 때.
+ *
+ * 기본값이 있는 리소스 슬롯에서 "생략(기본값 원함)" 과 "무음/없음 선택" 을 갈라내는 데 쓴다.
+ * 키 자체가 없으면 false — 그건 구 JSON 이거나 신경 쓰지 않은 것이므로 기본값을 채워야 한다.
+ */
+function hasExplicitSilence<K extends string>(
+  settings: Partial<Record<K, unknown>> | undefined,
+  key: K,
+): boolean {
+  if (settings === undefined || !(key in settings)) return false;
+  const value = settings[key];
+  return typeof value === "string" && value.trim().length === 0;
 }
 
 function textOrDefault(value: string | undefined, fallback: string): string {

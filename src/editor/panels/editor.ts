@@ -1,10 +1,15 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import {
+  DEFAULT_ASSISTANT_TEMPERATURE,
+  parseAssistantTemperature,
+  type AssistantTemperature,
+} from "@/editor/assistantTemperature";
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
-import { editorState, type Layer } from "@/editor/editorState";
+import { editorState } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
+import { installToolCursor } from "@/editor/toolCursor";
 import {
   applyEditorUiModeClasses,
   getEditorChrome,
@@ -21,18 +26,15 @@ import {
   takeoverMapLock,
   type MapEditLockStatus,
 } from "@/editor/mapEditLocks";
-import { installLayoutBboxOverlay, toggleLayoutBboxes } from "@/editor/layoutBboxOverlay";
+import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
-import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
-import { renderMapList } from "@/editor/panels/mapList";
 import {
   closeTestPlayModal,
   openRandomTroopBattleTestModal,
@@ -40,12 +42,26 @@ import {
   openTestPlayModal,
   openTroopBattleTestModal,
 } from "@/editor/panels/testPlayModal";
-import { renderTilePalette } from "@/editor/panels/tilePalette";
-import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
+// 좌측 패널 본문(팔레트·맵 트리)은 이제 패널 레지스트리가 그린다 — 여기서 직접 import 하지 않는다.
+import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
+import type { PanelId } from "@/editor/workspace/panelRegistry";
+import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
+import {
+  AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  AUTHORING_TEST_GATE_BLOCKED_EVENT,
+  authoringProjectFingerprint,
+  evaluateAuthoringTestGate,
+  loadAuthoringJourneyProgress,
+  recordAuthoringJourneyChange,
+  recordSuccessfulTestBoot,
+  saveAuthoringJourneyProgress,
+  setManualJourneyStage,
+} from "@/editor/authoringJourney";
+import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
@@ -55,9 +71,7 @@ const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 const RESPONSIVE_BREAKPOINT = 720;
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
-// AI 연동 칩 주기 재조회 — chatgpt OAuth 토큰 만료·companion 장애를 감지해 칩을 다시 그린다.
-const AI_CONNECTION_POLL_MS = 60_000;
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -65,6 +79,7 @@ type LoadedEditorLayout = {
   readonly leftCollapsed: boolean;
   readonly leftCollapsedStored: boolean;
   readonly chatDock: ChatDock;
+  readonly assistantTemperature: AssistantTemperature;
 };
 
 const initialLayout = loadEditorLayout();
@@ -72,7 +87,6 @@ let leftWidth = initialLayout.leftWidth;
 let leftCollapsed = initialLayout.leftCollapsed;
 let leftUserOverride = initialLayout.leftCollapsedStored;
 let leftRoot: HTMLElement | null = null;
-let leftPaletteRoot: HTMLElement | null = null;
 let leftMapRoot: HTMLElement | null = null;
 let leftResizer: HTMLElement | null = null;
 let mapTreeResizer: HTMLElement | null = null;
@@ -82,22 +96,25 @@ let chatFloatRoot: HTMLElement | null = null;
 let chatSideRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
-let statusBarRoot: HTMLElement | null = null;
+let authoringJourneyRoot: HTMLElement | null = null;
+let authoringJourneyOpen = false;
+let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
-let unsubAutoSave: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
+let assistantTemperature = initialLayout.assistantTemperature;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
-// AI 연동 칩 폴링 타이머 — teardownEditor 에서 정리한다.
-let aiConnectionPollTimer: ReturnType<typeof setInterval> | null = null;
+let unsubWorkspace: (() => void) | null = null;
+// 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
+let leftDock: DockMount | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
-  installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__rpgzzuEditorTool.
+  installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__oprnEditorTool.
   applyEditorUiModeClasses(getEditorUiMode());
 
   // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
@@ -138,10 +155,18 @@ export function renderEditor(main: HTMLElement): void {
     class: "map-lock-banner is-hidden",
     dataset: { testid: "map-lock-banner" },
   });
-  const statusBar = el("div", {
-    class: "editor-statusbar",
-    dataset: { testid: "editor-statusbar" },
+  // Pointer diagnostics remain available to automated editor harnesses without
+  // recreating the retired, visible bottom statusbar.
+  const cursorDiagnostics = el("div", {
+    attrs: { hidden: "true", "aria-hidden": "true" },
+    dataset: { testid: "editor-cursor-diagnostics" },
+    children: [
+      el("span", { dataset: { testid: "cursor-position" }, text: "outside" }),
+      el("span", { dataset: { testid: "cursor-lower" }, text: "-" }),
+      el("span", { dataset: { testid: "cursor-upper" }, text: "-" }),
+    ],
   });
+  const authoringJourney = el("div", { class: "authoring-journey-host" });
   const chatFloatHost = el("div", {
     class: "ai-chat-float-host",
     dataset: { testid: "chat-float-host" },
@@ -156,31 +181,20 @@ export function renderEditor(main: HTMLElement): void {
     attrs: { title: "드래그로 크기 조절", role: "separator", "aria-label": "좌측 패널 너비 조절", "aria-orientation": "vertical", tabindex: "0" },
     dataset: { testid: "left-panel-resizer" },
   });
-  leftPaletteRoot = el("div", { class: "left-panel-stack", dataset: { testid: "left-palette-root" } });
-  mapTreeResizer = el("div", {
-    class: "resizer resizer-map-tree",
-    attrs: {
-      "aria-label": "맵 트리 높이 조절",
-      role: "separator",
-      title: "드래그로 맵 트리 높이 조절",
-    },
-    dataset: { testid: "map-tree-height-resizer", uiDensity: "expert" },
-  });
-  leftMapRoot = el("div", {
-    class: "left-panel-stack",
-    dataset: { testid: "left-map-root", uiDensity: "expert" },
-  });
-  left.append(leftPaletteRoot, mapTreeResizer, leftMapRoot);
+  mountLeftDock(left);
   canvasScrollShell.append(phaserContainer);
   // 저장 모드 배너(결함 ⑩)는 캔버스 열 상단에 넣는다 — .main(flex row)의 형제로 넣으면
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
-  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar, chatFloatHost);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics, chatFloatHost);
   layout.append(left, leftResizer, canvasArea, chatSidePanel);
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
     onChatDockToggle: toggleChatDock,
+    onChatDockChange: setChatDock,
+    getAssistantTemperature: () => assistantTemperature,
+    onAssistantTemperatureChange: setAssistantTemperature,
   });
   main.append(layout, projectExportNodeElement());
 
@@ -191,7 +205,7 @@ export function renderEditor(main: HTMLElement): void {
   chatSideRoot = chatSidePanel;
   aiChatPanelRoot = aiPanel;
   mapLockBannerRoot = mapLockBanner;
-  statusBarRoot = statusBar;
+  authoringJourneyRoot = authoringJourney;
 
   applyChatDockLayout();
   applyLayout();
@@ -199,7 +213,7 @@ export function renderEditor(main: HTMLElement): void {
   refreshPanels();
   ensureCurrentMapLock();
   bindLeftResizer();
-  bindMapTreeResizer();
+  // 맵 트리 리사이저는 도크가 만들 때(mountLeftDock) 함께 묶인다 — 재마운트마다 새 노드다.
   if (typeof ResizeObserver !== "undefined") {
     const ro = new ResizeObserver(() => {
       if (chatDock === "side") {
@@ -212,25 +226,95 @@ export function renderEditor(main: HTMLElement): void {
     });
     const layoutHost = document.querySelector<HTMLElement>(".editor-layout");
     if (layoutHost) ro.observe(layoutHost);
-    (window as unknown as Record<string, unknown>)["__rpgzzuLayoutRO"] = ro;
+    (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] = ro;
   }
   window.addEventListener("resize", onWindowResize);
-  window.addEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
+  window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
+  window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.addEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
   unsubEditor = editorState.subscribe(() => refreshPanels());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
+    syncLeftDock();
     applyEditorUiModeLayout();
     if (!getEditorChrome().coachMarks || !getEditorChrome().standardWelcome) dismissCoachMarks();
   });
+  // 패널 이동·열기/닫기(프리셋 전환 포함)는 도크를 다시 짓는다. syncLeftDock 은 멱등이라
+  // 프리셋 전환처럼 uiMode 구독자와 겹쳐 두 번 불려도 한 번만 조립한다.
+  unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
   installSelectionChipHint();
+  installToolCursor();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();
-  startAiConnectionPolling();
+}
+
+/** AI 독은 자기 호스트(`chatSidePanel`)를 갖는다 — 좌측 도크가 만들지 않는다. */
+const LEFT_DOCK_EXTERNAL: readonly PanelId[] = ["assistant"];
+
+function leftDockPanels(): readonly PanelId[] {
+  return getWorkspaceLayout().docks.left.filter((id) => !LEFT_DOCK_EXTERNAL.includes(id));
+}
+
+/**
+ * 좌측 도크 조립. **어떤 패널이 어느 순서로** 들어가는지는 워크스페이스 레이아웃이 정하고
+ * 이 함수는 그 데이터를 DOM 으로 옮긴다(이전에는 renderEditor 가 자식 3개를 손으로 붙였다).
+ *
+ * 팔레트 호스트를 가리키는 모듈 변수는 이 리팩터로 **사라졌다** — 렌더 경로가 레지스트리를
+ * 지나므로 아무도 그 노드를 이름으로 찾지 않는다. `leftMapRoot`/`mapTreeResizer` 는 남는데,
+ * 맵 트리 표시 여부가 아직 `chrome.mapTree` 밀도 플래그와 CSS `.is-ui-hidden` 게이트에
+ * 걸려 있어서다(그 게이트를 도크 구성으로 합치는 일은 다음 라운드).
+ */
+function mountLeftDock(container: HTMLElement): void {
+  leftDock = mountDock({
+    container,
+    zone: "left",
+    panels: leftDockPanels(),
+    makeSplitter: () => makeMapTreeResizer(),
+  });
+  leftMapRoot = leftDock.hosts.get("maps") ?? null;
+  mapTreeResizer = leftDock.splitters[0] ?? null;
+  bindMapTreeResizer();
+}
+
+function makeMapTreeResizer(): HTMLElement {
+  return el("div", {
+    class: "resizer resizer-map-tree",
+    attrs: {
+      "aria-label": "맵 트리 높이 조절",
+      role: "separator",
+      title: "드래그로 맵 트리 높이 조절",
+    },
+    dataset: { testid: "map-tree-height-resizer", uiDensity: "expert" },
+  });
+}
+
+/**
+ * 워크스페이스 구성이 바뀌었을 때 도크를 맞춘다. **멱등** — 구성 서명이 같으면 다시 짓지
+ * 않는다. 프리셋 전환은 밀도까지 바꿔 editorUiMode 구독자도 깨우므로 이 함수가 한 번의
+ * 전환에 두 번 불릴 수 있다.
+ */
+function syncLeftDock(): void {
+  if (!leftRoot) return;
+  if (leftDock && leftDock.signature === dockSignature("left", leftDockPanels())) return;
+  mountLeftDock(leftRoot);
+  applyEditorUiModeLayout();
+}
+
+/**
+ * 좌측 도크 패널 렌더. 맵 패널은 아직 `chrome.mapTree` 밀도 게이트를 따른다 —
+ * 도크 구성(사용자 선택)과 밀도 게이팅(모드 파생)을 합치는 일은 CSS 게이트 38곳을
+ * 같이 고쳐야 하므로 다음 라운드다.
+ */
+function renderLeftDockPanels(): void {
+  if (!leftDock) return;
+  const mapTreeAllowed = getEditorChrome().mapTree;
+  const ids = [...leftDock.hosts.keys()].filter((id) => id !== "maps" || mapTreeAllowed);
+  renderDockPanels(leftDock, ids);
+  if (!mapTreeAllowed && leftMapRoot) clearChildren(leftMapRoot);
 }
 
 export function applyEditorUiModeLayout(): void {
@@ -259,12 +343,10 @@ export function applyEditorUiModeLayout(): void {
     if (chrome.mapTree) mapTreeResizer.classList.remove("is-ui-hidden");
     else mapTreeResizer.classList.add("is-ui-hidden");
   }
-  if (leftPaletteRoot && leftMapRoot && canvasToolbarRoot && statusBarRoot) {
-    renderTilePalette(leftPaletteRoot);
-    if (chrome.mapTree) renderMapList(leftMapRoot);
-    else clearChildren(leftMapRoot);
+  // 좌측 도크는 비어 있을 수 있다(「자료 밸런싱」 프리셋) — 팔레트 호스트 존재를 전제하지 않는다.
+  if (canvasToolbarRoot) {
+    renderLeftDockPanels();
     renderCanvasToolbar(canvasToolbarRoot);
-    refreshStatusbar();
   }
   applyLayout();
   scheduleFitCanvas();
@@ -300,29 +382,30 @@ export function teardownEditor(): void {
   teardownAiChatPanel();
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
-  stopAiConnectionPolling();
   cleanupProjectE2EBridge();
 
   unsubStore?.();
-  unsubAutoSave?.();
   unsubEditor?.();
   unsubMapLocks?.();
   unsubUiMode?.();
   unsubLayoutBbox?.();
+  unsubWorkspace?.();
   unsubStore = null;
-  unsubAutoSave = null;
   unsubEditor = null;
   unsubMapLocks = null;
   unsubUiMode = null;
   unsubLayoutBbox = null;
-  const ro2 = (window as unknown as Record<string, unknown>)["__rpgzzuLayoutRO"] as ResizeObserver | undefined;
+  unsubWorkspace = null;
+  leftDock = null;
+  const ro2 = (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] as ResizeObserver | undefined;
   ro2?.disconnect?.();
   window.removeEventListener("resize", onWindowResize);
-  window.removeEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
+  window.removeEventListener("oprn:test-play-window", onTestPlayWindowRequest);
+  window.removeEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.removeEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   closeTestPlayModal();
   destroyGame();
   leftRoot = null;
-  leftPaletteRoot = null;
   leftMapRoot = null;
   leftResizer = null;
   mapTreeResizer = null;
@@ -332,7 +415,9 @@ export function teardownEditor(): void {
   chatSideRoot = null;
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
-  statusBarRoot = null;
+  authoringJourneyRoot = null;
+  authoringJourneyOpen = false;
+  authoringJourneyReferenceIssues = null;
   projectExportNode = null;
   document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
@@ -345,42 +430,28 @@ export function toggleLeftPanel(): void {
   scheduleFitCanvas();
 }
 
-function refreshStatusbar(): void {
-  if (!statusBarRoot) return;
-  renderEditorStatusbar(statusBarRoot);
-}
-
-/** AI 연동 칩 폴링 — 부팅 시 1회 즉시 조회하고 이후 주기적으로 캐시를 갱신한다. */
-function startAiConnectionPolling(): void {
-  stopAiConnectionPolling();
-  void refreshAiConnectionStatus(refreshStatusbar);
-  aiConnectionPollTimer = setInterval(() => {
-    void refreshAiConnectionStatus(refreshStatusbar);
-  }, AI_CONNECTION_POLL_MS);
-  // 실제 LLM 요청 성패가 바뀌면 즉시 칩을 다시 그린다(폴링 대기 없이).
-  // "AI 연결됨"인데 404 나던 거짓말 수정(적대 평가 P0) — llmClient 가 이벤트를 쏜다.
-  if (typeof window !== "undefined") {
-    window.removeEventListener(AI_TRANSPORT_HEALTH_EVENT, refreshStatusbar);
-    window.addEventListener(AI_TRANSPORT_HEALTH_EVENT, refreshStatusbar);
-  }
-}
-
-function stopAiConnectionPolling(): void {
-  if (aiConnectionPollTimer === null) return;
-  clearInterval(aiConnectionPollTimer);
-  aiConnectionPollTimer = null;
-}
 
 export function isLeftCollapsed(): boolean {
   return leftCollapsed;
 }
 
 export function toggleChatDock(): void {
-  chatDock = cycleChatDock(chatDock);
+  setChatDock(cycleChatDock(chatDock));
+}
+
+export function setChatDock(next: ChatDock): void {
+  chatDock = parseChatDock(next, chatDock);
   applyChatDockLayout();
   applyLayout();
   saveEditorLayout();
   scheduleFitCanvas();
+}
+
+export function setAssistantTemperature(next: AssistantTemperature): void {
+  assistantTemperature = parseAssistantTemperature(next, assistantTemperature);
+  editorState.set({ assistantTemperature });
+  if (aiChatPanelRoot) aiChatPanelRoot.dataset.temperature = assistantTemperature;
+  saveEditorLayout();
 }
 
 function layoutDockClass(dock: ChatDock): string {
@@ -391,7 +462,8 @@ function layoutDockClass(dock: ChatDock): string {
 
 function applyChatDockLayout(): void {
   if (!chatFloatRoot || !chatSideRoot || !aiChatPanelRoot) return;
-  editorState.set({ chatDock });
+  editorState.set({ chatDock, assistantTemperature });
+  aiChatPanelRoot.dataset.temperature = assistantTemperature;
   const layoutEl = chatFloatRoot.parentElement?.parentElement ?? null;
   layoutEl?.classList.toggle("chat-dock-side", chatDock === "side");
   layoutEl?.classList.toggle("chat-dock-float", chatDock === "float");
@@ -463,7 +535,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
   return el("div", {
     class: "persistence-mode-banner is-recovery",
     dataset: { testid: "save-skip-banner" },
-    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.",
+    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.",
   });
 }
 
@@ -472,7 +544,7 @@ export function persistenceModeBannerText(reason: string, saveSkipped: boolean):
     return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
   }
   if (reason === "dev-showcase") return "개발 모드 — 이 브라우저에만 저장됩니다.";
-  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.";
+  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.";
 }
 
 function projectExportNodeElement(): HTMLElement {
@@ -514,6 +586,18 @@ function applyLayout(): void {
       ? computeSideChatWidth(usableWidth, MIN_CANVAS_WIDTH + resizerWidth + LEFT_PANEL_MIN_WIDTH)
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
+
+  // 좌측 도크가 비면(「자료 밸런싱」 프리셋, 또는 패널을 다 오른쪽으로 보낸 경우) 열을
+  // 아예 접는다. 안 접으면 빈 열이 폭을 계속 먹어 캔버스가 오히려 **좁아진다**
+  // (실측: 프리셋 전환 후 캔버스 1131 → 1111px). 사용자 접힘 토글(leftCollapsed)은
+  // 건드리지 않는다 — 패널을 다시 켜면 원래 폭으로 돌아온다.
+  // publishSideChatWidth 뒤에 둔다: 조수 사이드 도크 폭 계산을 건너뛰면 안 된다.
+  if (leftDock && leftDock.hosts.size === 0) {
+    leftRoot.style.display = "none";
+    leftResizer.style.display = "none";
+    setEditorLeftSafe("12px");
+    return;
+  }
 
   if (chrome.paletteRail) {
     if (leftFolded) {
@@ -568,27 +652,93 @@ function setEditorLeftSafe(px: string): void {
 }
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
-  if (!leftPaletteRoot || !leftMapRoot || !canvasToolbarRoot || !statusBarRoot || !mapLockBannerRoot) return;
+  refreshAuthoringJourney(change);
+  // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
+  if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {
     renderCanvasToolbar(canvasToolbarRoot);
     renderMapEditLockBanner(mapLockBannerRoot);
-    renderEditorStatusbar(statusBarRoot);
     updateProjectExport();
     return;
   }
   if (change?.scope === "database" || change?.scope === "system") {
     renderMapEditLockBanner(mapLockBannerRoot);
-    renderEditorStatusbar(statusBarRoot);
     updateProjectExport();
     return;
   }
-  renderTilePalette(leftPaletteRoot);
-  renderMapList(leftMapRoot);
+  renderLeftDockPanels();
   renderCanvasToolbar(canvasToolbarRoot);
   renderMapEditLockBanner(mapLockBannerRoot);
-  renderEditorStatusbar(statusBarRoot);
   updateProjectExport();
   scheduleFitCanvas();
+}
+
+function authoringJourneyScope(): string {
+  const identity = store.getProjectIdentity();
+  return `${identity.kind}:${identity.id}`;
+}
+
+function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
+  if (!authoringJourneyRoot) return;
+  const project = store.getCurrent();
+  const scope = authoringJourneyScope();
+  let progress = loadAuthoringJourneyProgress(scope);
+  if (change) {
+    const next = recordAuthoringJourneyChange(progress, change);
+    if (next !== progress) {
+      progress = next;
+      saveAuthoringJourneyProgress(scope, progress);
+    }
+  }
+  if (
+    authoringJourneyReferenceIssues === null ||
+    !change ||
+    change.scope === "database" ||
+    change.scope === "system" ||
+    change.scope === "project" ||
+    (change.scope === "map" && !change.cells?.length)
+  ) {
+    authoringJourneyReferenceIssues = evaluateAuthoringTestGate(project).referenceIssues;
+  }
+  clearChildren(authoringJourneyRoot);
+  authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
+    referenceIssues: authoringJourneyReferenceIssues,
+    open: authoringJourneyOpen,
+    onOpenChange: (open) => {
+      authoringJourneyOpen = open;
+    },
+    onManualToggle: (stage, complete) => {
+      const current = loadAuthoringJourneyProgress(scope);
+      saveAuthoringJourneyProgress(scope, setManualJourneyStage(current, stage, complete));
+      refreshAuthoringJourney();
+    },
+  }));
+}
+
+function onAuthoringTestBootSuccess(event: Event): void {
+  if (!(event instanceof CustomEvent)) return;
+  const detail: unknown = event.detail;
+  if (typeof detail !== "object" || detail === null || !("projectFingerprint" in detail)) return;
+  const projectFingerprint = detail.projectFingerprint;
+  if (typeof projectFingerprint !== "string" || projectFingerprint.length === 0) return;
+  const project = store.getCurrent();
+  const gate = evaluateAuthoringTestGate(project);
+  authoringJourneyReferenceIssues = gate.referenceIssues;
+  const scope = authoringJourneyScope();
+  const progress = loadAuthoringJourneyProgress(scope);
+  const next = recordSuccessfulTestBoot(
+    progress,
+    projectFingerprint,
+    authoringProjectFingerprint(project),
+    gate.referenceIssues,
+  );
+  if (next !== progress) saveAuthoringJourneyProgress(scope, next);
+  refreshAuthoringJourney();
+}
+
+function onAuthoringTestGateBlocked(): void {
+  authoringJourneyReferenceIssues = evaluateAuthoringTestGate(store.getCurrent()).referenceIssues;
+  refreshAuthoringJourney();
 }
 
 function renderMapEditLockBanner(container: HTMLElement): void {
@@ -617,94 +767,6 @@ function renderMapEditLockBanner(container: HTMLElement): void {
   );
 }
 
-function renderEditorStatusbar(container: HTMLElement): void {
-  clearChildren(container);
-  const project = store.getCurrent();
-  const state = editorState.get();
-  const mapId = state.currentMapId ?? project.startMapId;
-  const map = project.maps[mapId];
-  const lockStatus = getMapEditLockStatus();
-  const cells: HTMLElement[] = [
-    el("span", { class: "editor-statusbar-cell strong", text: layerStatusLabel(state.layer) }),
-    el("span", { class: "editor-statusbar-cell", text: `맵: ${map?.name ?? mapId}` }),
-    el("span", { class: "editor-statusbar-cell sb-secondary", text: `타일: ${tileDisplayLabelForIndex(state.selectedTile)}` }),
-    el("span", { class: "editor-statusbar-cell", text: toolStatusLabel(state.tool) }),
-    el("span", { class: "editor-statusbar-cell sb-secondary", text: `줌: ${state.zoom}x` }),
-    el("span", {
-      class: "editor-statusbar-cell sb-detail",
-      children: [el("span", { dataset: { testid: "cursor-position" }, text: "outside" })],
-    }),
-    el("span", {
-      class: "editor-statusbar-cell sb-detail",
-      children: ["하위: ", el("span", { dataset: { testid: "cursor-lower" }, text: "-" })],
-    }),
-    el("span", {
-      class: "editor-statusbar-cell sb-detail",
-      children: ["상위: ", el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
-    }),
-  ];
-  if (state.tool === "event" && state.layer === "event") {
-    cells.push(
-      el("button", {
-        class: "editor-statusbar-cell editor-statusbar-hint",
-        text: "타일 칠하려면: 바닥/장식으로 전환",
-        attrs: { type: "button", title: "브러시로 전환해 타일을 칠합니다" },
-        dataset: { testid: "paint-hint-switch" },
-        on: { click: () => editorState.set({ tool: "paint", layer: "lower" }) },
-      })
-    );
-  }
-  // "확보/확인 전"은 소음 — 잠김·확인 중·장애일 때만 표시.
-  if (shouldShowMapEditLockStatus(lockStatus, mapId)) {
-    cells.push(renderMapEditLockStatus(lockStatus, mapId));
-  }
-  cells.push(renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar));
-  // AI 연동 칩 — DB 칩과 동일 패턴. 영역 작업·AI 채팅이 LLM 인증에 의존하므로 상태를 항상 노출한다.
-  cells.push(
-    el("button", {
-      class: "editor-statusbar-cell" + (state.showLayoutBboxes ? " active" : ""),
-      text: state.showLayoutBboxes ? "설계도 숨기기" : "설계도 보기",
-      attrs: { type: "button", title: "맵 bbox 설계도(P/M/H) 오버레이" },
-      dataset: { testid: "toggle-layout-bboxes" },
-      on: { click: () => toggleLayoutBboxes() },
-    })
-  );
-  cells.push(renderAiConnectionStatus(refreshStatusbar));
-  container.append(...cells);
-}
-
-/** 맵 잠금 칩: 평시(idle/held)는 숨기고 사용자 조치가 필요할 때만 노출. */
-function shouldShowMapEditLockStatus(status: MapEditLockStatus, mapId: string): boolean {
-  if (status.kind === "idle" || status.mapId !== mapId) return false;
-  return status.kind === "checking" || status.kind === "locked" || status.kind === "unavailable";
-}
-
-function renderMapEditLockStatus(status: MapEditLockStatus, mapId: string): HTMLElement {
-  const className = status.kind !== "idle" && status.mapId === mapId ? status.kind : "idle";
-  const cell = el("span", {
-    class: `editor-statusbar-cell map-edit-lock-status ${className}`,
-    text: mapEditLockStatusText(status, mapId),
-    attrs: { title: mapEditLockStatusTitle(status, mapId) },
-    dataset: { testid: "map-edit-lock-status" },
-  });
-  if (status.kind === "locked" && status.mapId === mapId) {
-    cell.append(
-      el("button", {
-        class: "map-lock-takeover-button",
-        text: "편집 권한 가져오기",
-        attrs: { type: "button", title: "맵 편집 권한 가져오기" },
-        dataset: { testid: "map-lock-takeover" },
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            void requestMapLockTakeover(status);
-          },
-        },
-      }),
-    );
-  }
-  return cell;
-}
 
 async function requestMapLockTakeover(status: Extract<MapEditLockStatus, { readonly kind: "locked" }>): Promise<void> {
   const immediate = isMapEditLockTakeoverImmediate(status);
@@ -734,69 +796,6 @@ export function normalizeAiDockButtonChrome(panel: HTMLElement): void {
   };
   button.addEventListener("click", update);
   update();
-}
-
-function mapEditLockStatusText(status: MapEditLockStatus, mapId: string): string {
-  if (status.kind === "idle" || status.mapId !== mapId) return "맵 편집: 확인 전";
-  switch (status.kind) {
-    case "checking":
-      return "맵 편집: 확인 중";
-    case "held":
-      return "맵 편집: 확보";
-    case "locked":
-      return "맵 편집: 읽기 전용";
-    case "unavailable":
-      return `맵 편집: ${status.message}`;
-  }
-}
-
-function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): string {
-  if (status.kind === "idle" || status.mapId !== mapId) return "맵 잠금 상태를 아직 확인하지 않았습니다.";
-  switch (status.kind) {
-    case "checking":
-      return `${status.mapName} 편집 권한을 확인하는 중입니다.`;
-    case "held":
-      return `${status.mapName} 편집 권한을 이 브라우저가 잡고 있습니다.`;
-    case "locked":
-      return `${status.mapName} 맵은 지금 ${lockOwnerPhrase(status.ownerLabel)}입니다. ${mapEditLockLastActivityText(status)}.`;
-    case "unavailable":
-      return `${status.mapName} 잠금 확인 실패: ${status.message}. 편집은 허용하지만 수동 저장 충돌 검사는 유지됩니다.`;
-  }
-}
-
-function layerStatusLabel(layer: Layer): string {
-  const plain = getEditorChrome().layerTermStyle === "plain";
-  switch (layer) {
-    case "lower":
-      return plain ? "바닥 레이어" : "하위 레이어";
-    case "upper":
-      return plain ? "장식 레이어" : "상위 레이어";
-    case "event":
-      return "이벤트 레이어";
-  }
-}
-
-function toolStatusLabel(tool: string): string {
-  switch (tool) {
-    case "paint":
-      return "펜";
-    case "fill":
-      return "채우기";
-    case "pan":
-      return "이동";
-    case "event":
-      return "이벤트";
-    case "erase":
-      return "지우개";
-    case "select":
-      return "선택";
-    case "eyedropper":
-      return "스포이드";
-    case "collision":
-      return "통행";
-    default:
-      return tool;
-  }
 }
 
 function onTestPlayWindowRequest(event: Event): void {
@@ -901,8 +900,11 @@ function bindLeftResizer(): void {
   });
 }
 
+// leftRoot 를 전제하지 않는다 — mountLeftDock 은 renderEditor 가 leftRoot 를 대입하기
+// **전에** 불린다(도크가 좌패널의 자식을 만드는 쪽이므로 순서가 그렇다). 본문도 leftRoot 를
+// 쓰지 않는다.
 function bindMapTreeResizer(): void {
-  if (!mapTreeResizer || !leftRoot) return;
+  if (!mapTreeResizer) return;
   mapTreeResizer.addEventListener("mousedown", (event: MouseEvent) => {
     event.preventDefault();
     const startY = event.clientY;
@@ -987,12 +989,12 @@ function loadEditorLayout(): LoadedEditorLayout {
   const LAYOUT_CACHE_VERSION = "2026-07-24-maptree-300";
   const ls = browserLocalStorage();
   if (ls) {
-    const storedVersion = ls.getItem("rpg-zzu:editor-layout-version");
+    const storedVersion = ls.getItem("oprn:editor-layout-version");
     if (storedVersion !== LAYOUT_CACHE_VERSION) {
-      for (const k of ["rpg-zzu:editor-layout", "rpg-zzu:editor-layout:v2", "rpg-zzu:editor-layout:v3", "rpg-zzu:editor-layout:v4"]) {
+      for (const k of ["oprn:editor-layout", "oprn:editor-layout:v2", "oprn:editor-layout:v3", "oprn:editor-layout:v4"]) {
         ls.removeItem(k);
       }
-      ls.setItem("rpg-zzu:editor-layout-version", LAYOUT_CACHE_VERSION);
+      ls.setItem("oprn:editor-layout-version", LAYOUT_CACHE_VERSION);
     }
   }
   const fallback = defaultEditorLayout();
@@ -1009,6 +1011,7 @@ function loadEditorLayout(): LoadedEditorLayout {
       leftCollapsed: leftCollapsedStored ? parsed.leftCollapsed === true : fallback.leftCollapsed,
       leftCollapsedStored,
       chatDock: parseChatDock(parsed.chatDock, fallback.chatDock),
+      assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
     };
   } catch (error) {
     if (error instanceof SyntaxError) return fallback;
@@ -1023,11 +1026,18 @@ function defaultEditorLayout(): LoadedEditorLayout {
     leftCollapsed: false,
     leftCollapsedStored: false,
     chatDock: "glass",
+    assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
 }
 
 function saveEditorLayout(): void {
-  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth, mapTreeHeight, leftCollapsed, chatDock }));
+  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
+    leftWidth,
+    mapTreeHeight,
+    leftCollapsed,
+    chatDock,
+    assistantTemperature,
+  }));
 }
 
 function browserLocalStorage(): Storage | null {

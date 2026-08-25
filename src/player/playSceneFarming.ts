@@ -39,7 +39,7 @@ type FarmOverlayScene = {
 
 const FARM_BASE_DEPTH = 90_000;
 const FARM_CROP_DEPTH = 140_000;
-// 물 준 흙은 전용 타일 아트가 없다(칩셋에 젖은 밭 변형 없음) — 실제 흙 타일 위에 옅은 어두운 틴트만 얹는다.
+// 물 준 흙은 전용 타일 아트가 없다(타일 그림판에 젖은 밭 변형 없음) — 실제 흙 타일 위에 옅은 어두운 틴트만 얹는다.
 const WATERED_TINT_COLOR = 0x2a1a0c;
 const WATERED_TINT_ALPHA = 0.18;
 

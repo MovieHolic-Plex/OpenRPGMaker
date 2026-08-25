@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
@@ -8,6 +8,7 @@ import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 const noopActions: PlayerStatusMenuActions = {
   onCommand: () => undefined,
+  onOpenGroup: () => undefined,
   onSaveSlot: () => undefined,
   onLoadSlot: () => undefined,
   onSelectItemTarget: () => undefined,
@@ -332,6 +333,50 @@ describe("player status menu", () => {
       const target = findByTestId(menu, `status-menu-item-target-${session.partyActorIds[0]}`);
       expect(target?.textContent).toMatch(/HP \d+\/\d+.*MP \d+\/\d+/);
       expect(target?.textContent).not.toContain("사용할 대상을 선택하세요");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("surfaces pending monster moves with explicit replace and reject actions", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const species = project.database.monsterSpecies?.[0];
+      const [oldSkill, pendingSkill] = project.database.skills;
+      if (!species || !oldSkill || !pendingSkill) throw new Error("missing monster move fixtures");
+      session.monsterInstances.monster_pending = {
+        instanceId: "monster_pending",
+        speciesId: species.id,
+        level: 5,
+        exp: 0,
+        skillIds: [oldSkill.id],
+        pendingSkillIds: [pendingSkill.id],
+        friendship: 70,
+        caughtAt: { mapId: session.currentMapId, x: session.x, y: session.y },
+      };
+      session.monsterParty = ["monster_pending"];
+      const replace = vi.fn();
+      const reject = vi.fn();
+      const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots: [],
+        selectedCommand: "monsters",
+        mode: "function",
+        actions: {
+          ...noopActions,
+          onReplacePendingMonsterSkill: replace,
+          onRejectPendingMonsterSkill: reject,
+        },
+      }));
+
+      findByTestId(menu, `status-menu-monster-skill-replace-monster_pending-${pendingSkill.id}-${oldSkill.id}`)?.click();
+      findByTestId(menu, `status-menu-monster-skill-reject-monster_pending-${pendingSkill.id}`)?.click();
+
+      expect(replace).toHaveBeenCalledWith("monster_pending", pendingSkill.id, oldSkill.id);
+      expect(reject).toHaveBeenCalledWith("monster_pending", pendingSkill.id);
     } finally {
       restoreDom();
     }

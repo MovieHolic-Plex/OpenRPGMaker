@@ -6,8 +6,8 @@ declare const process: { readonly env: Record<string, string | undefined> };
 
 const ROOT_RESOURCE_IDS = [
   "hero",
-  "rpg-zzu-title-bright",
-  "rpg-zzu-title-blue",
+  "oprn-title-bright",
+  "oprn-title-blue",
   "generated-enemy-ontology-8da61312",
   "generated-enemy-sylph-hornet",
   "generated-actor-hero-01-face",

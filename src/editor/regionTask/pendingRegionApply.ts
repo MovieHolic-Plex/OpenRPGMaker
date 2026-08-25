@@ -242,7 +242,7 @@ export function __clearPendingRegionApplyForTest(): void {
 
 function publishHeadlessHook(): void {
   if (typeof window === "undefined") return;
-  window.__rpgzzuRegionTaskPending = {
+  window.__oprnRegionTaskPending = {
     get: () => current
       ? {
           mapId: current.mapId,

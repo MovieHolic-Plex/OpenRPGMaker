@@ -6,6 +6,7 @@ import type { BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet 
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 type FakeBrowserGlobals = {
+  readonly Image: typeof globalThis.Image | undefined;
   readonly window: typeof globalThis.window | undefined;
 };
 
@@ -14,8 +15,15 @@ let previousBrowserGlobals: FakeBrowserGlobals;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
-  previousBrowserGlobals = { window: globalThis.window };
+  previousBrowserGlobals = { Image: globalThis.Image, window: globalThis.window };
   vi.useFakeTimers();
+  Object.defineProperty(globalThis, "Image", {
+    configurable: true,
+    value: class {
+      addEventListener(): void {}
+      set src(_value: string) {}
+    },
+  });
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     value: {
@@ -29,6 +37,7 @@ afterEach(() => {
   vi.useRealTimers();
   restoreDom?.();
   restoreDom = undefined;
+  restoreBrowserGlobal("Image", previousBrowserGlobals.Image);
   restoreBrowserGlobal("window", previousBrowserGlobals.window);
 });
 
@@ -69,16 +78,20 @@ describe("database animation preview", () => {
 
   it("derives the target field from skill and item animation references instead of a hard-coded enemy name", () => {
     const project = createBlankProject();
-    const animation = project.database.battleAnimations.find((entry) => entry.id === "anim_hit");
-    if (!animation) throw new Error("Missing default hit animation");
+    const attackAnimationId = project.database.skills.find((entry) => entry.id === "skill_attack")?.animationId;
+    const animation = project.database.battleAnimations.find((entry) => entry.id === attackAnimationId);
+    if (!animation) throw new Error("Missing generated attack animation");
 
     expect(animationReferenceTarget(animation, project.database)).toBe("공격");
     expect(animationReferenceTarget(animation, project.database)).not.toBe("말벌");
+    const legacyHit = project.database.battleAnimations.find((entry) => entry.id === "anim_hit");
+    if (!legacyHit) throw new Error("Missing legacy hit animation");
+    expect(animationReferenceTarget(legacyHit, project.database)).toBe("(참조 없음)");
     expect(animationReferenceTarget({ id: "anim_unused", name: "미사용" }, project.database)).toBe("(참조 없음)");
   });
 });
 
-function restoreBrowserGlobal(name: keyof FakeBrowserGlobals, value: FakeBrowserGlobals[typeof name]): void {
+function restoreBrowserGlobal<Key extends keyof FakeBrowserGlobals>(name: Key, value: FakeBrowserGlobals[Key]): void {
   if (value === undefined) {
     Reflect.deleteProperty(globalThis, name);
     return;

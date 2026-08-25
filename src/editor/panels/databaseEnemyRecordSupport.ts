@@ -28,9 +28,19 @@ export function enemyGraphicVisual(record: EnemyRecord): HTMLElement {
   return el("div", { class: "db-enemy-graphic-stage", children: [image] });
 }
 
+const RATE_GRADE_LABEL: Record<ActorRateGrade, string> = {
+  A: "약함",
+  B: "조금 약함",
+  C: "보통",
+  D: "강함",
+  E: "무효",
+};
+
 export function rateField(label: string, testid: string, value: ActorRateGrade, onChange: (value: ActorRateGrade) => void): HTMLElement {
   const select = el("select", { dataset: { testid } });
-  for (const grade of ACTOR_RATE_GRADES) select.append(el("option", { text: grade, attrs: { value: grade } }));
+  for (const grade of ACTOR_RATE_GRADES) {
+    select.append(el("option", { text: RATE_GRADE_LABEL[grade], attrs: { value: grade } }));
+  }
   select.value = value;
   select.addEventListener("change", () => {
     const next = ACTOR_RATE_GRADES.find((grade) => grade === select.value);

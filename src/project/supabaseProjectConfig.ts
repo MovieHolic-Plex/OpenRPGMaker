@@ -3,7 +3,8 @@ import { resolveBrowserSupabaseUrl } from "./supabaseProxyPath";
 
 export const DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
-const STORAGE_KEY = "rpg-zzu:supabase-project-config";
+const STORAGE_KEY = "oprn:supabase-project-config";
+const SELECTED_PROJECT_STORAGE_KEY = "oprn:supabase-selected-project";
 
 export type SupabaseProjectConfig = {
   readonly anonKey: string;
@@ -51,23 +52,37 @@ export function supabaseProjectConfigDraftWithSource(
   env: SupabaseProjectEnv = import.meta.env,
 ): SupabaseProjectConfigDraftWithSource {
   const stored = loadStoredSupabaseProjectConfig();
+  const storedSelection = loadStoredSupabaseSelectedProjectId();
   const envDraft = supabaseProjectConfigDraftFromEnv(env);
   // custom 은 URL/Anon 중 하나라도 있을 때만 “의도적 사용자 설정”으로 본다.
   // (빈 custom + 기본 projectId 만 남은 캐시가 env 프리필을 막던 회귀 방지)
   const customActive = stored.source === "custom" && (stored.url.length > 0 || stored.anonKey.length > 0);
-  const url = customActive && stored.url ? stored.url : envDraft.url || stored.url;
-  const anonKey = customActive && stored.anonKey ? stored.anonKey : envDraft.anonKey || stored.anonKey;
+  const deploymentConfigured = envDraft.url.length > 0 && envDraft.anonKey.length > 0;
+  const url = deploymentConfigured
+    ? envDraft.url
+    : customActive && stored.url
+      ? stored.url
+      : envDraft.url || stored.url;
+  const anonKey = deploymentConfigured
+    ? envDraft.anonKey
+    : customActive && stored.anonKey
+      ? stored.anonKey
+      : envDraft.anonKey || stored.anonKey;
   // URL ?project= 가 있으면 로드 대상을 그쪽으로 고정 (공유 링크 / 북마크).
   const urlProjectId = readProjectFromUrl().projectId;
   const projectId =
     urlProjectId
       ? urlProjectId
-      : customActive && stored.projectId
-        ? stored.projectId
-        : envDraft.projectId || stored.projectId || DEFAULT_SUPABASE_PROJECT_ID;
-  const source: SupabaseProjectConfigSource = customActive
-    ? "custom"
-    : envDraft.url && envDraft.anonKey
+      : storedSelection
+        ? storedSelection
+        : customActive && stored.projectId
+          ? stored.projectId
+          : envDraft.projectId || stored.projectId || DEFAULT_SUPABASE_PROJECT_ID;
+  const source: SupabaseProjectConfigSource = deploymentConfigured
+    ? "env"
+    : customActive
+      ? "custom"
+      : envDraft.url && envDraft.anonKey
       ? "env"
       : stored.url || stored.anonKey
         ? "legacy"
@@ -77,18 +92,69 @@ export function supabaseProjectConfigDraftWithSource(
   return { anonKey, projectId, source, url };
 }
 
-/** 브라우저 custom 저장을 지우고 env 기본값만 쓰게 한다(연결 폼 리셋). */
+/** 브라우저의 레거시 custom 설정과 작업 선택을 지우고 배포 기본값으로 돌아간다. */
 export function resetSupabaseProjectConfigToEnv(env: SupabaseProjectEnv = import.meta.env): SupabaseProjectConfigDraftWithSource {
   clearSupabaseProjectConfigDraft();
+  clearSupabaseSelectedProjectId();
   return supabaseProjectConfigDraftWithSource(env);
 }
 
 export function saveSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft): void {
-  browserStorage()?.setItem(STORAGE_KEY, JSON.stringify({ ...normalizeSupabaseProjectConfigDraft(draft), source: "custom" }));
+  browserStorage()?.setItem(STORAGE_KEY, serializedStoredConfig(draft));
+}
+
+export type StagedSupabaseProjectConfigDraft = {
+  /** Accept the already-written target config and discard the rollback snapshot. */
+  readonly commit: () => void;
+  /** Restore the exact previous storage value when the surrounding local commit fails. */
+  readonly rollback: () => void;
+};
+
+/**
+ * Writes the target config before any destructive project switch. A quota or
+ * security error therefore aborts with local project/draft/URL state untouched.
+ */
+export function stageSupabaseProjectConfigDraft(
+  draft: SupabaseProjectConfigDraft,
+): StagedSupabaseProjectConfigDraft {
+  const storage = browserStorage();
+  if (!storage) return { commit: () => undefined, rollback: () => undefined };
+  const previous = storage.getItem(STORAGE_KEY);
+  storage.setItem(STORAGE_KEY, serializedStoredConfig(draft));
+  let active = true;
+  return {
+    commit: () => { active = false; },
+    rollback: () => {
+      if (!active) return;
+      if (previous === null) storage.removeItem(STORAGE_KEY);
+      else storage.setItem(STORAGE_KEY, previous);
+      active = false;
+    },
+  };
 }
 
 export function clearSupabaseProjectConfigDraft(): void {
   browserStorage()?.removeItem(STORAGE_KEY);
+}
+
+/** Remember only which work the user selected; deployment credentials never pass through this path. */
+export function saveSupabaseSelectedProjectId(projectId: string): void {
+  const normalized = projectId.trim();
+  if (!normalized) {
+    clearSupabaseSelectedProjectId();
+    return;
+  }
+  browserStorage()?.setItem(SELECTED_PROJECT_STORAGE_KEY, normalized);
+}
+
+export function clearSupabaseSelectedProjectId(): void {
+  browserStorage()?.removeItem(SELECTED_PROJECT_STORAGE_KEY);
+}
+
+export function hasStoredSupabaseProjectSelection(): boolean {
+  if (loadStoredSupabaseSelectedProjectId()) return true;
+  const legacy = loadStoredSupabaseProjectConfig();
+  return Boolean(legacy.projectId && (legacy.url || legacy.anonKey));
 }
 
 function normalizeSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft): SupabaseProjectConfigDraft {
@@ -97,6 +163,10 @@ function normalizeSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft):
     projectId: draft.projectId.trim() || DEFAULT_SUPABASE_PROJECT_ID,
     url: draft.url.trim().replace(/\/$/, ""),
   };
+}
+
+function serializedStoredConfig(draft: SupabaseProjectConfigDraft): string {
+  return JSON.stringify({ ...normalizeSupabaseProjectConfigDraft(draft), source: "custom" });
 }
 
 function supabaseProjectConfigDraftFromEnv(env: SupabaseProjectEnv): SupabaseProjectConfigDraft {
@@ -127,6 +197,10 @@ function loadStoredSupabaseProjectConfig(): StoredSupabaseProjectConfig {
     if (error instanceof SyntaxError) return emptySupabaseProjectConfigDraft();
     throw error;
   }
+}
+
+function loadStoredSupabaseSelectedProjectId(): string {
+  return browserStorage()?.getItem(SELECTED_PROJECT_STORAGE_KEY)?.trim() || "";
 }
 
 function emptySupabaseProjectConfigDraft(): StoredSupabaseProjectConfig {

@@ -15,7 +15,7 @@ import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
 import type { Project } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 // databaseOverviewView 의 IDLE_FALLBACK_MS 와 같은 값 — 플러시 지연을 결정적으로 맞춘다.
 const IDLE_FALLBACK_MS = 200;
 

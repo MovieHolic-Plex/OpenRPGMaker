@@ -9,17 +9,17 @@ mkdirSync(SHOT_DIR, { recursive: true });
 const TILE = 16;
 
 async function openApp(page: Page, mode: string, w = 1440, h = 1000) {
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
   const skip = page.getByText("건너뛰기", { exact: true }).first();
   if (await skip.isVisible().catch(() => false)) { await skip.click(); await page.waitForTimeout(300); }
 }
 
 async function dblclickTile(page: Page, tx: number, ty: number) {
-  const pt = await page.evaluate(([x, y]) => (window as any).__rpgzzuEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
+  const pt = await page.evaluate(([x, y]) => (window as any).__oprnEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
   await page.mouse.click(pt.x, pt.y, { clickCount: 2, delay: 60 });
   await page.waitForTimeout(1200);
 }
@@ -145,13 +145,13 @@ test("I. zoomed element shots: xy inputs, footer, dock, page menu", async ({ pag
   const xyBox = modal(page).locator("[data-testid='event-position-x']").locator("xpath=ancestor::*[3]");
   await xyBox.screenshot({ path: `${SHOT_DIR}/I01-xy-inputs-zoom.png` }).catch(() => page.screenshot({ path: `${SHOT_DIR}/I01-xy-fallback.png` }));
 
-  // 하단 독("도구 · AI, 미리보기, 플로우") 클릭
-  const dock = modal(page).getByText("도구 · AI, 미리보기, 플로우", { exact: false }).first();
-  if (await dock.isVisible().catch(() => false)) {
-    await dock.click();
+  // 명령 툴바의 보조 도구 팝오버를 연다.
+  const tools = modal(page).getByTestId("event-editor-aux-tools");
+  if (await tools.isVisible().catch(() => false)) {
+    await tools.locator(":scope > summary").click();
     await page.waitForTimeout(800);
-    await page.screenshot({ path: `${SHOT_DIR}/I02-bottom-dock-open.png` });
-  } else { console.log("DOCK label not found"); }
+    await page.screenshot({ path: `${SHOT_DIR}/I02-toolbar-tools-open.png` });
+  } else { console.log("TOOLS menu not found"); }
 
   // 더보기 메뉴
   const more = modal(page).getByText("더보기", { exact: false }).first();

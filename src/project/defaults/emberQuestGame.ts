@@ -1,5 +1,6 @@
 // emberQuestGame.ts — 《잿불의 유산》: 에디터 기능 시연용 소형 완성 RPG.
 // 구성: 맵 5개 / 주인공 1명 / NPC 12명 / 몬스터 5종 / 아이템 8종 / 퀘스트 3개 / 고정 전투 5회 + 엔딩.
+import { PRODUCT_BRAND } from "@/brand";
 import type { ActorParameterCurves, Command, EnemyStats, EventPage, GameEvent, GameMap, Project } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -126,7 +127,7 @@ const HOUSE_PATTERN = [
 
 type Point = { readonly x: number; readonly y: number };
 
-// 통행 가능 지면 타일(기본 칩셋 passability 기준). TILE.FLOOR(342)/STAIRS(246)는 통행 불가라 지면으로 쓰지 않는다.
+// 통행 가능 지면 타일(기본 타일 그림판 passability 기준). TILE.FLOOR(342)/STAIRS(246)는 통행 불가라 지면으로 쓰지 않는다.
 const GROUND = {
   PLAZA: TILE.SAND, // 423 밝은 모래 — 마을 광장/성소 바닥
   GRAVEL: 421, // 자갈 흙바닥 — 광산 내부
@@ -151,7 +152,7 @@ export function createEmberQuestProject(): Project {
 
   const project: Project = {
     version: SCHEMA_VERSION,
-    meta: { title: EMBER_TITLE, author: "RPG ZZU", terms: defaultTerms() },
+    meta: { title: EMBER_TITLE, author: PRODUCT_BRAND, terms: defaultTerms() },
     assets: defaultAssetSet(),
     resourceProfiles: defaultResourceProfiles(),
     tilesets: defaultTilesets(),

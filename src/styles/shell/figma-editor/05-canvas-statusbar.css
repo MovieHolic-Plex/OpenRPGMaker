@@ -1,13 +1,13 @@
   .canvas-area,
   .editor-layout .canvas-area {
-    /* 상태바 54px / 툴바 예약 — scroll-shell이 상태바 아래로 들어가지 않게 맞춤 */
+    /* 하단 상태바는 렌더하지 않는다. 캔버스가 하단까지 온전히 사용한다. */
     --editor-canvas-chrome-top: 48px;
-    --editor-canvas-chrome-bottom: 54px;
+    --editor-canvas-chrome-bottom: 0px;
   }
 
   .editor-canvas-scroll-shell {
     background: var(--editor-canvas-bg);
-    bottom: var(--editor-canvas-chrome-bottom, 54px);
+    bottom: var(--editor-canvas-chrome-bottom, 0px);
     top: var(--editor-canvas-chrome-top, 48px);
   }
 
@@ -65,41 +65,6 @@
     min-width: 72px;
   }
 
-  .editor-statusbar {
-    background: var(--editor-toolbar-bg);
-    border-top: 1px solid var(--editor-line);
-    color: var(--editor-text-muted);
-    font-size: 14px;
-    height: 54px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 0 14px;
-  }
-
-  .editor-statusbar-cell {
-    align-items: center;
-    border-left: 0;
-    border-right: 1px solid var(--editor-line);
-    display: inline-flex;
-    flex: 0 0 auto;
-    min-width: max-content;
-    overflow: visible;
-    padding: 0 10px;
-    text-overflow: clip;
-    white-space: nowrap;
-  }
-
-  .editor-statusbar-cell.strong {
-    color: var(--editor-text);
-    flex: 0 0 auto;
-  }
-
-  .editor-statusbar-cell.map-edit-lock-status,
-  .editor-statusbar-cell.db-connection-status {
-    flex-shrink: 0;
-    max-width: none;
-  }
-
   .map-lock-takeover-button {
     background: var(--control-bg);
     border: 1px solid var(--editor-line-strong);
@@ -120,83 +85,8 @@
     outline-offset: 1px;
   }
 
-  button.editor-statusbar-cell {
-    align-items: center;
-    background: transparent;
-    border-bottom: 0;
-    border-left: 0;
-    border-top: 0;
-    color: inherit;
-    cursor: pointer;
-    display: inline-flex;
-    font: inherit;
-    height: 100%;
-  }
-
-  button.editor-statusbar-cell:hover,
-  button.editor-statusbar-cell:focus-visible {
-    background: var(--editor-blue-soft);
-    color: var(--editor-text);
-    outline: 1px solid var(--editor-blue);
-    outline-offset: -2px;
-  }
-
-  @media (min-width: 1024px) and (max-width: 1500px) {
-    .editor-statusbar {
-      padding-right: 58px;
-    }
-
-    .editor-statusbar .sb-detail,
-    .editor-statusbar .sb-secondary {
-      display: none;
-    }
-
-    .editor-statusbar > button.editor-statusbar-cell {
-      flex: 1 1 0;
-      font-size: 11px;
-      min-width: 0;
-      overflow: hidden;
-      padding-inline: 6px;
-      text-overflow: ellipsis;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed)) .editor-statusbar {
-      overflow: hidden;
-      padding-right: 14px;
-    }
-
-    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
-      .editor-statusbar
-      > .editor-statusbar-cell:not(button):not(.strong),
-    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
-      .editor-statusbar
-      > .ai-connection-status {
-      display: none;
-    }
-
-    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
-      .editor-statusbar
-      > .editor-statusbar-cell.strong {
-      min-width: 0;
-      padding-inline: 6px;
-    }
-
-    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
-      .editor-statusbar
-      > button.editor-statusbar-cell:not(.ai-connection-status) {
-      flex: 1 1 0;
-      font-size: 11px;
-      min-width: 0;
-      overflow: hidden;
-      padding-inline: 6px;
-      text-overflow: ellipsis;
-    }
-  }
-
   .map-context-menu,
-  .rm2k3-menu-popup {
+  .oprn-menu-popup {
     background: var(--editor-popover-bg);
     border: 1px solid var(--editor-line-strong);
     border-radius: var(--radius-m);
@@ -210,7 +100,7 @@
     padding: 12px;
   }
 
-  .rm2k3-menu-command {
+  .oprn-menu-command {
     max-width: 100%;
     min-width: 0;
     overflow-wrap: anywhere;

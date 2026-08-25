@@ -24,6 +24,20 @@ export type AiActivityResult = {
   readonly assistantText?: string;
 };
 
+export type AiActivityDiagnosticKind =
+  | "turn-error"
+  | "tool-failure"
+  | "planner-fallback"
+  | "intent-clarification"
+  | "work-plan";
+
+export type AiActivityDiagnostics = {
+  readonly severity: "ok" | "warning" | "error";
+  readonly kinds: readonly AiActivityDiagnosticKind[];
+  readonly messages: readonly string[];
+  readonly failedTools: readonly string[];
+};
+
 export type AiActivityLogRecord = {
   readonly id: string;
   readonly at: string;
@@ -39,6 +53,7 @@ export type AiActivityLogRecord = {
   readonly toolCalls: readonly AiActivityToolCall[];
   readonly audit: readonly AuditEntry[];
   readonly uiEvents?: readonly unknown[];
+  readonly diagnostics: AiActivityDiagnostics;
   readonly persisted?: "local" | "supabase" | "both" | "failed-remote";
 };
 

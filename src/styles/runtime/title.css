@@ -24,6 +24,50 @@
   width: 100%;
 }
 
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial {
+  --oprn-title-text: #f8fafc;
+  --oprn-title-shadow: rgba(5, 12, 28, 0.72);
+  isolation: isolate;
+}
+
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial::before {
+  background:
+    linear-gradient(90deg, rgba(4, 10, 23, 0.84) 0%, rgba(4, 10, 23, 0.46) 34%, transparent 62%),
+    linear-gradient(0deg, rgba(4, 10, 23, 0.36), transparent 42%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.player-layout.system-shell .rm-title-editorial-copy {
+  position: static;
+}
+
+.player-layout.system-shell .rm-title-kicker {
+  color: rgba(226, 232, 240, 0.72);
+  display: block;
+  font: 700 7px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace;
+  left: 10%;
+  letter-spacing: 0.16em;
+  position: absolute;
+  top: 12%;
+  z-index: 3;
+}
+
+.player-layout.system-shell .rm-title-subtitle {
+  color: rgba(248, 250, 252, 0.86);
+  display: block;
+  font: 500 10px/1.3 "Malgun Gothic", "Segoe UI", sans-serif;
+  left: 10%;
+  margin-top: 0;
+  position: absolute;
+  top: 34%;
+  word-break: keep-all;
+  z-index: 3;
+}
+
 /* 한 주기 = 논리 타일 한 장(320×240) 이동. 주기(duration)는 저작 속도로 인라인 주입된다. */
 @keyframes rm-title-layer-scroll-x {
   from { background-position-x: 0; }
@@ -76,21 +120,21 @@
   }
 }
 
-.player-layout.system-shell .rm-title-screen .rm-title-screen-title {
-  font-size: var(--runtime-font-size-22);
-  max-width: 280px;
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial .rm-title-screen-title {
+  font: 800 18px/1.05 "Malgun Gothic", "Segoe UI", sans-serif;
+  letter-spacing: -0.04em;
+  max-width: 72%;
+  text-align: left;
+  transform: none;
+  word-break: keep-all;
+  z-index: 3;
   -webkit-text-stroke: 0;
-  text-shadow:
-    1px 0 0 var(--rm2k3-title-shadow),
-    -1px 0 0 var(--rm2k3-title-shadow),
-    0 1px 0 var(--rm2k3-title-shadow),
-    2px 2px 0 rgba(5, 19, 70, 0.62);
+  text-shadow: 0 2px 10px var(--oprn-title-shadow);
 }
 
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title::before,
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title::after {
-  height: 2px;
-  width: 220px;
+  display: none;
 }
 
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title::before {
@@ -109,71 +153,67 @@
   z-index: 2;
 }
 
-.player-layout.system-shell .rm-title-menu {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-width: var(--runtime-window-border);
-  border-radius: 0;
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu {
+  background: transparent;
+  border: 0;
   box-shadow: none;
   gap: 2px;
-  min-width: 220px;
-  padding: 2px 4px;
+  min-width: 96px;
+  padding: 0;
+  transform: none;
+  z-index: 3;
 }
 
-.player-layout.system-shell .rm-title-menu-button {
-  cursor: pointer;
-  font-size: var(--runtime-font-size-11);
-  line-height: 1.15;
-  min-height: 20px;
-  padding: 2px 8px 2px 26px;
-  text-shadow:
-    1px 0 0 var(--rm2k3-title-window-shadow),
-    0 1px 0 var(--rm2k3-title-window-shadow);
-  pointer-events: auto;
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu-button {
+  background: transparent;
+  border: 0;
+  color: rgba(226, 232, 240, 0.78);
+  cursor: default;
+  font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", sans-serif;
+  min-height: 16px;
+  padding: 2px 6px 2px 10px;
+  pointer-events: none;
+  text-align: left;
+  text-shadow: 0 1px 6px rgba(4, 10, 23, 0.7);
+}
+
+.player-layout.system-shell .rm-title-menu-button.selected {
+  background: transparent;
+  box-shadow: inset 3px 0 0 #4a57d6;
+  color: #fff;
 }
 
 .player-layout.system-shell .rm-title-menu-button.selected::before {
-  border-bottom-width: 6px;
-  border-left-width: 10px;
-  border-top-width: 6px;
-  left: 9px;
+  display: none;
 }
 
 .player-layout.system-shell .rm-title-menu-button:focus-visible {
   background: var(--runtime-window-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
   outline: none;
 }
 
-.player-layout.system-shell .rm-title-input-hint {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-width: var(--runtime-window-border-tight);
-  border-radius: 0;
-  bottom: 8px;
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-input-hint {
+  background: rgba(4, 10, 23, 0.28);
+  border: 0;
+  bottom: 10px;
   box-shadow: none;
-  font-size: var(--runtime-font-size-9);
-  line-height: 1.2;
-  min-width: 174px;
-  padding: 3px 8px;
-  text-shadow: 1px 1px 0 var(--rm2k3-title-window-shadow);
+  color: rgba(248, 250, 252, 0.8);
+  font: 500 8px/1 "Malgun Gothic", "Segoe UI", sans-serif;
+  min-width: 0;
+  padding: 4px 6px;
+  right: 10px;
+  text-shadow: 0 1px 8px rgba(4, 10, 23, 0.8);
+  z-index: 3;
 }
 
-.player-layout.system-shell .rm2k3-load-panel.system-panel {
+.player-layout.system-shell .oprn-load-panel.system-panel {
   align-items: center;
   background-color: #101820;
   border: 0;
   box-shadow: none;
   box-sizing: border-box;
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   display: flex;
   gap: 0;
   justify-content: center;
@@ -181,7 +221,7 @@
   padding: 0;
 }
 
-.player-layout.system-shell .rm2k3-load-window {
+.player-layout.system-shell .oprn-load-window {
   background: var(--runtime-window-fill-fallback);
   border: var(--runtime-window-border) solid transparent;
   border-image-repeat: stretch;
@@ -197,16 +237,16 @@
   padding: 2px 4px;
   position: relative;
   text-shadow:
-    1px 0 0 var(--rm2k3-title-window-shadow),
-    0 1px 0 var(--rm2k3-title-window-shadow);
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
   /* 세이브 카드 2행(Lv · 플레이타임 · 저장시각)이 잘리지 않는 폭. 320 논리폭 안에서 유지. */
   width: min(264px, calc(100% - 28px));
   z-index: 2;
 }
 
-.player-layout.system-shell .rm2k3-load-title {
+.player-layout.system-shell .oprn-load-title {
   border-bottom: 1px solid rgba(255, 255, 255, 0.45);
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   font: inherit;
   line-height: 1.25;
   margin: 0;
@@ -214,8 +254,8 @@
   text-align: center;
 }
 
-.player-layout.system-shell .rm2k3-load-message,
-.player-layout.system-shell .rm2k3-load-corrupt {
+.player-layout.system-shell .oprn-load-message,
+.player-layout.system-shell .oprn-load-corrupt {
   color: rgba(255, 255, 255, 0.96);
   font-size: 10px;
   line-height: 1.25;
@@ -223,22 +263,22 @@
   overflow-wrap: anywhere;
 }
 
-.player-layout.system-shell .rm2k3-load-corrupt {
+.player-layout.system-shell .oprn-load-corrupt {
   color: #ffd7d0;
 }
 
-.player-layout.system-shell .rm2k3-load-slots {
+.player-layout.system-shell .oprn-load-slots {
   display: grid;
   gap: 3px;
 }
 
-.player-layout.system-shell .rm2k3-load-slot,
-.player-layout.system-shell .rm2k3-load-back {
+.player-layout.system-shell .oprn-load-slot,
+.player-layout.system-shell .oprn-load-back {
   appearance: none;
   background: transparent;
   border: 0;
   border-radius: 0;
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   cursor: pointer;
   font: inherit;
   min-height: 18px;
@@ -247,14 +287,14 @@
   position: relative;
   text-align: left;
   text-shadow:
-    1px 0 0 var(--rm2k3-title-window-shadow),
-    0 1px 0 var(--rm2k3-title-window-shadow);
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
 }
 
 /* 세이브 슬롯 카드 — 중첩 tight 9-slice 윈도우 + 2행 그리드.
    border-image-slice 에 fill 을 쓰지 않는 이유: 중앙 채움이 hover/focus 하이라이트
    배경(var(--runtime-window-selected-bg))을 덮어 커서 상태가 보이지 않게 되기 때문. */
-.player-layout.system-shell .rm2k3-load-slot {
+.player-layout.system-shell .oprn-load-slot {
   border: var(--runtime-window-border-tight) solid transparent;
   border-image-repeat: stretch;
   border-image-slice: 24;
@@ -266,7 +306,7 @@
   padding: 2px 6px 2px 18px;
 }
 
-.player-layout.system-shell .rm2k3-load-slot-row {
+.player-layout.system-shell .oprn-load-slot-row {
   align-items: baseline;
   display: flex;
   gap: 4px;
@@ -275,30 +315,30 @@
   white-space: nowrap;
 }
 
-.player-layout.system-shell .rm2k3-load-slot-title {
+.player-layout.system-shell .oprn-load-slot-title {
   flex: none;
 }
 
 /* 320px 논리폭 스테이지 안에서 긴 맵 이름은 말줄임 처리. */
-.player-layout.system-shell .rm2k3-load-slot-map {
+.player-layout.system-shell .oprn-load-slot-map {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.player-layout.system-shell .rm2k3-load-slot-meta {
+.player-layout.system-shell .oprn-load-slot-meta {
   color: rgba(255, 255, 255, 0.85);
   font-size: var(--runtime-font-size-9);
 }
 
-.player-layout.system-shell .rm2k3-load-slot-meta > span + span::before {
+.player-layout.system-shell .oprn-load-slot-meta > span + span::before {
   content: "\00b7";
   margin-right: 4px;
   opacity: 0.7;
 }
 
-.player-layout.system-shell .rm2k3-load-back {
+.player-layout.system-shell .oprn-load-back {
   border-top: 1px solid rgba(255, 255, 255, 0.38);
   margin-top: 2px;
   text-align: center;
@@ -306,22 +346,22 @@
   white-space: nowrap;
 }
 
-.player-layout.system-shell .rm2k3-load-slot:hover,
-.player-layout.system-shell .rm2k3-load-slot:focus-visible,
-.player-layout.system-shell .rm2k3-load-back:hover,
-.player-layout.system-shell .rm2k3-load-back:focus-visible {
+.player-layout.system-shell .oprn-load-slot:hover,
+.player-layout.system-shell .oprn-load-slot:focus-visible,
+.player-layout.system-shell .oprn-load-back:hover,
+.player-layout.system-shell .oprn-load-back:focus-visible {
   background: var(--runtime-window-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
   outline: none;
 }
 
-.player-layout.system-shell .rm2k3-load-slot:hover::before,
-.player-layout.system-shell .rm2k3-load-slot:focus-visible::before {
+.player-layout.system-shell .oprn-load-slot:hover::before,
+.player-layout.system-shell .oprn-load-slot:focus-visible::before {
   border-bottom: 5px solid transparent;
-  border-left: 8px solid var(--rm2k3-title-cursor);
+  border-left: 8px solid var(--oprn-title-cursor);
   border-top: 5px solid transparent;
   content: "";
-  filter: drop-shadow(1px 1px 0 var(--rm2k3-title-window-shadow));
+  filter: drop-shadow(1px 1px 0 var(--oprn-title-window-shadow));
   height: 0;
   left: 5px;
   position: absolute;
@@ -330,10 +370,10 @@
   width: 0;
 }
 
-.player-layout.system-shell .rm2k3-load-slot.is-empty {
+.player-layout.system-shell .oprn-load-slot.is-empty {
   color: rgba(255, 255, 255, 0.74);
 }
 
-.player-layout.system-shell .rm2k3-load-slot.is-corrupt {
+.player-layout.system-shell .oprn-load-slot.is-corrupt {
   color: #ffd7d0;
 }

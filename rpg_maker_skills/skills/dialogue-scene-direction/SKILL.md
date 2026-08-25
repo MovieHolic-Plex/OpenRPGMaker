@@ -1,6 +1,6 @@
 ---
 name: dialogue-scene-direction
-description: Use this RPG Maker authoring skill when writing or improving dialogue scenes with speaker intent, pacing, face usage, choices, state-dependent lines, and short playable RPG text.
+description: Use this authoring skill when writing or improving dialogue scenes with speaker intent, pacing, face usage, choices, state-dependent lines, and short playable RPG text.
 ---
 
 # Dialogue Scene Direction

@@ -310,7 +310,7 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     ],
   }),
   mixedStackGroup("branch-props", "가지", [BRANCH_TILE], "가지는 단독 배치 가능한 자연 소품입니다.", "passable"),
-  // 칩셋 실사(사용자 비전): 가로 벤치 327|328, 세로 의자 358|388.
+  // 타일 그림판 실사(사용자 비전): 가로 벤치 327|328, 세로 의자 358|388.
   mixedStackGroup(
     "bench-horizontal",
     "벤치(가로)",

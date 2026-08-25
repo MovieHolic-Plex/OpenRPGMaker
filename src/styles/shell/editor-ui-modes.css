@@ -526,6 +526,8 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
    basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-beginner 규칙). */
 body.editor-ui-standard .editor-layout .left-panel,
 body.editor-ui-expert .editor-layout .left-panel {
+  box-sizing: border-box;
+  flex: 0 0 auto;
   min-width: 0;
   overflow-x: hidden;
 }
@@ -560,12 +562,12 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 /* 전문가 좌측 RM2003 팔레트: 가로 6칸 고정 */
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.rm2k-palette {
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.oprn-palette {
   container-type: inline-size;
 }
 
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.rm2k-palette-grid {
-  --rm2k-cols: 6;
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
+  --oprn-cols: 6;
   --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
   grid-auto-rows: var(--chipset-cell);
   grid-template-columns: repeat(6, var(--chipset-cell)) !important;
@@ -574,7 +576,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   width: max-content !important;
 }
 
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.rm2k-palette-grid .chipset-tile {
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid .chipset-tile {
   height: var(--chipset-cell);
   min-width: 0;
   width: var(--chipset-cell);
@@ -980,3 +982,293 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 /* Basic rail layout is fully specified in the icon-rail block above. */
+
+/* ── 실제 저작 작업 · 패널 도킹 · 레이아웃 · 밀도 · ⌘K ─────────────────────── */
+
+.authoring-task-btn:hover,
+.authoring-task-btn:focus-visible {
+  background: color-mix(in srgb, var(--brand-blue, #4A57D6) 9%, transparent);
+  box-shadow: inset 0 -2px 0 var(--brand-blue, #4A57D6);
+}
+
+.workspace-panels-button {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.workspace-panels-menu {
+  gap: 1px;
+  min-width: 216px;
+}
+
+.workspace-menu-group {
+  color: var(--text-3, #8A7F70);
+  font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  padding: 6px 8px 3px;
+  text-transform: uppercase;
+}
+
+.workspace-panel-row {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+}
+
+.workspace-panel-row .workspace-panel-toggle {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.workspace-panel-dock-chip {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
+  border-radius: var(--radius-s, 2px);
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 4px 6px;
+}
+
+.workspace-panel-dock-chip:hover,
+.workspace-panel-dock-chip:focus-visible {
+  border-color: var(--border-strong, rgba(60, 48, 32, 0.4));
+  color: var(--text-1, #2E2A24);
+  outline: none;
+}
+
+.workspace-assistant-dock-picker {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 2px 6px 6px;
+}
+
+.workspace-assistant-dock-option {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
+  border-radius: var(--radius-s, 2px);
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.workspace-assistant-dock-option:hover,
+.workspace-assistant-dock-option:focus-visible,
+.workspace-assistant-dock-option[aria-checked="true"] {
+  background: var(--accent-muted, rgba(138, 107, 47, 0.12));
+  border-color: var(--accent-border, rgba(138, 107, 47, 0.45));
+  color: var(--text-1, #2E2A24);
+  outline: none;
+}
+
+.workspace-density-item.is-active,
+.workspace-layout-item.is-active {
+  font-weight: 700;
+}
+
+/* ⌘K 칩 — 단축키를 모르면 커맨드 팔레트는 존재하지 않는 것과 같다. 키캡을 함께 보여준다. */
+.workspace-command-chip {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.workspace-command-chip-icon {
+  font-size: 13px;
+}
+
+.workspace-command-chip-key {
+  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
+  border-radius: var(--radius-s, 2px);
+  color: var(--text-3, #8A7F70);
+  font: 600 10px/1 var(--font-mono, ui-monospace, monospace);
+  padding: 3px 4px;
+}
+
+@media (max-width: 1180px) {
+  /* 좁은 화면에서는 키캡만 접는다 — 아이콘은 남겨 클릭 경로를 유지한다. */
+  .workspace-command-chip-key { display: none; }
+  .authoring-task-btn { font-size: 11px; padding-inline: 6px; }
+}
+
+/* 저작 여정: 하단 풀폭 스트립 대신 캔버스 왼쪽 아래 아이콘. */
+.authoring-journey-host {
+  bottom: 10px;
+  left: 10px;
+  position: absolute;
+  z-index: 24;
+}
+
+.authoring-journey {
+  position: relative;
+}
+
+.authoring-journey-toggle {
+  align-items: center;
+  background: var(--bg-glass, rgba(252, 249, 242, 0.86));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
+  border-radius: var(--radius-s, 3px);
+  box-shadow: var(--shadow-pop, 0 4px 12px rgba(30, 24, 18, 0.12));
+  color: var(--text-1, #2A2521);
+  cursor: pointer;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0;
+  position: relative;
+}
+.authoring-journey-toggle:hover,
+.authoring-journey-toggle:focus-visible {
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.55));
+  outline: none;
+}
+.authoring-journey-toggle svg { display: block; }
+
+.authoring-journey-badge {
+  align-items: center;
+  background: var(--danger, #C6403D);
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font: 700 9px/1 var(--font-ui, system-ui, sans-serif);
+  height: 14px;
+  justify-content: center;
+  min-width: 14px;
+  padding: 0 3px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
+}
+
+.authoring-journey-strip {
+  background: var(--bg-overlay, #FFFFFF);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
+  border-radius: var(--radius-s, 3px);
+  bottom: calc(100% + 6px);
+  box-shadow: 0 8px 24px rgba(30, 24, 18, 0.18);
+  display: none;
+  left: 0;
+  max-height: min(360px, 50vh);
+  overflow: auto;
+  position: absolute;
+  width: min(280px, calc(100vw - 24px));
+}
+.authoring-journey.is-open .authoring-journey-strip { display: block; }
+.authoring-journey-strip[hidden] { display: none; }
+
+.authoring-journey-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+}
+
+.authoring-journey-stage {
+  align-items: center;
+  display: grid;
+  gap: 1px 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 24px 18px;
+  min-width: 0;
+  padding: 6px 8px;
+  position: relative;
+}
+.authoring-journey-stage + .authoring-journey-stage {
+  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
+}
+.authoring-journey-stage[aria-current="step"] {
+  box-shadow: inset 2px 0 0 var(--accent, #4A57D6);
+}
+.authoring-journey-stage.has-issues {
+  box-shadow: inset 2px 0 0 var(--danger, #C6403D);
+}
+.authoring-journey-stage.is-acknowledged:not(.is-complete) {
+  background: color-mix(in srgb, var(--accent, #4A57D6) 5%, transparent);
+}
+
+.authoring-journey-project,
+.authoring-journey-task {
+  background: transparent;
+  border: 0;
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 24px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.authoring-journey-task { cursor: pointer; min-width: 24px; }
+.authoring-journey-task:hover,
+.authoring-journey-task:focus-visible { color: var(--accent, #4A57D6); outline: none; }
+.authoring-journey-task:disabled { color: var(--danger, #C6403D); cursor: not-allowed; }
+
+.authoring-journey-evidence {
+  color: var(--text-3, #6B5F52);
+  font: 500 11px/1.1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 1 / -1;
+  grid-row: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.authoring-journey-manual {
+  background: transparent;
+  border: 0;
+  color: var(--text-3, #6B5F52);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 24px;
+  min-width: 24px;
+  padding: 2px 4px;
+}
+.authoring-journey-manual:focus-visible { outline: 2px solid var(--accent, #4A57D6); }
+
+.authoring-journey-reference-issues {
+  color: var(--danger, #C6403D);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 1 / -1;
+  position: static;
+}
+.authoring-journey-reference-issues > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  min-height: 24px;
+}
+.authoring-journey-reference-panel {
+  background: var(--bg-overlay, #FFFFFF);
+  border: 1px solid var(--danger, #C6403D);
+  border-radius: var(--radius-s, 3px);
+  margin-top: 6px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 8px;
+  position: static;
+  width: auto;
+}
+.authoring-journey-reference-list {
+  font: 500 11px/1.35 var(--font-ui, system-ui, sans-serif);
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.authoring-journey-reference-repair {
+  min-height: 24px;
+  min-width: 24px;
+}

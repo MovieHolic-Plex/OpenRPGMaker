@@ -56,7 +56,7 @@ export function createChipsetTileObject(
   const resolved = resolveRenderArgs(map, tilesetOrX, xOrY, yOrTile, tileOrUndefined);
   if (!resolved) return createMissingTileObject(scene, xOrY, yOrTile);
   const { tile, tileset, x, y } = resolved;
-  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
   if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
   }
@@ -131,7 +131,7 @@ function createLakeQuarterObject(
   textureKey: string,
   part: LakeAutotileQuarterSource
 ): ChipsetTilePiece {
-  // 맵 셀 배치 위치(part.quarter/offset)와 칩셋 크롭(sourceQuarter)을 분리한다.
+  // 맵 셀 배치 위치(part.quarter/offset)와 타일 그림판 크롭(sourceQuarter)을 분리한다.
   // 예: se 자리 ← tile 90/91/92 각각의 nw 8×8 애니.
   const sourceQ = part.sourceQuarter;
   const animationKey = quarterAnimationKey(textureKey, part.tile, sourceQ);

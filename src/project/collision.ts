@@ -1,7 +1,7 @@
 // project/collision.ts
 // 타일 좌표 → 통과 가능 여부 판정. 순수 함수(Phaser/DOM 무관).
 // v2: 4방향 passability 기반(RM2K3 정석). TilesetDef.passability 사용.
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.3.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.3.
 
 import type { GameMap, Project, TilesetDef, Dir, PassFlag } from "./types";
 import { topTileInStack } from "./mapOverlayTiles";

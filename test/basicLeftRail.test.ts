@@ -39,13 +39,13 @@ describe("basic icon rail", () => {
   it("hover 없이 모든 도구와 레이어의 한글 라벨을 DOM에 렌더한다", () => {
     const expectedLabels = [
       ["tool-select", "선택"],
-      ["tool-paint", "브러시"],
-      ["tool-erase", "지우개"],
+      ["tool-paint", "칠하기"],
+      ["tool-erase", "지우기"],
       ["tool-fill", "채우기"],
-      ["tool-event", "이벤트"],
-      ["tool-eyedropper", "스포이트"],
+      ["tool-event", "장면"],
+      ["tool-eyedropper", "집기"],
       ["layer-lower", "바닥"],
-      ["layer-upper", "장식"],
+      ["layer-upper", "덧그림"],
       ["layer-event", "이벤트"],
       ["basic-rail-toggle-tiles", "타일"],
       ["basic-rail-toggle-maps", "맵"],
@@ -86,7 +86,7 @@ describe("basic icon rail", () => {
   it("레이어 스위치는 아이콘 위에 바닥/장식/이벤트 한글을 보여 준다", () => {
     const list = findByTestId(container as unknown as FakeElement, "basic-layer-list");
     expect(list?.textContent).toContain("바닥");
-    expect(list?.textContent).toContain("장식");
+    expect(list?.textContent).toContain("덧그림");
     expect(list?.textContent).toContain("이벤트");
     expect(list?.querySelector("svg")).toBeTruthy();
     expect(list?.querySelector(".basic-rail-badge")).toBeNull();

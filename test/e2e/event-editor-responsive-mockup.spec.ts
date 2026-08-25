@@ -22,7 +22,7 @@ const VIEWPORTS: readonly Viewport[] = [
 ];
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "basic"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "basic"));
 });
 
 test("event editor keeps a non-overlapping desktop flow at every supported viewport", async ({ page }) => {
@@ -76,7 +76,7 @@ test("event editor keeps a non-overlapping desktop flow at every supported viewp
 test("opening the event editor suppresses an active coachmark", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   const browserIssues = installBrowserIssuePolicy(page);
-  await page.addInitScript(() => localStorage.removeItem("rpg-zzu:coachmarks-basic-v1"));
+  await page.addInitScript(() => localStorage.removeItem("oprn:coachmarks-basic-v1"));
   await seedProjectFromSupabaseCanonical(page, createBlankProject(), `${APP_URL}/?freshProject=1&classicCapture=2`);
   const restoredEditor = page.getByTestId("event-editor-modal");
   if (await restoredEditor.count()) {

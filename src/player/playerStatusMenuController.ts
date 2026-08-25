@@ -13,9 +13,10 @@ import {
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
 import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
-import type { ActorInitialEquipment } from "@/project/types";
+import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { moveMonster } from "@/project/monsterCollection";
+import type { LifeLedgerTabId } from "@/player/lifeLedger";
+import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { currentStatusMenu, statusMenuDetailActionButtons, wrapStatusMenuIndex } from "@/player/playerStatusMenuControllerDom";
 import type { PlayerStatusMenuController, PlayerStatusMenuControllerOptions } from "@/player/playerStatusMenuControllerTypes";
 import {
@@ -41,7 +42,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let monsterView: "party" | "box" = "party";
+  let lifeLedgerTab: LifeLedgerTabId = "shipping";
   let confirmSaveSlot: SaveSlotIndex | undefined;
+  let confirmToTitlePending = false;
   let waitModeEnabled = true;
 
   const reset = (): void => {
@@ -63,7 +66,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     monsterView = "party";
+    lifeLedgerTab = "shipping";
     confirmSaveSlot = undefined;
+    confirmToTitlePending = false;
   };
 
   const replaceMenu = (panel: HTMLElement): void => {
@@ -93,7 +98,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentSlotId,
       formationActorId,
       monsterView,
+      lifeLedgerTab,
       confirmSaveSlot,
+      confirmToTitle: confirmToTitlePending,
       saveEnabled: isSaveEnabled(session),
       waitModeEnabled,
       selectedDetailActionIndex,
@@ -142,6 +149,19 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onMoveFormationActor: moveFormationActor,
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
+        onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
+        onRejectPendingMonsterSkill: rejectMonsterSkillFromMenu,
+        onSelectLifeLedgerTab: (tab) => {
+          rememberDetailCursorFromTestId(`life-ledger-tab-${tab}`);
+          lifeLedgerTab = tab;
+          options.emitMenuJuice("menu-select", renderMenu(undefined, "life-ledger"));
+        },
+        onLifeLedgerMutation: (ok, message) => {
+          const scene = options.getActiveScene();
+          scene?.refreshRuntimeSurfaces();
+          scene?.syncRuntimeState();
+          options.emitMenuJuice(ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "life-ledger"));
+        },
         onToggleWait: toggleWaitMode,
         onToTitle: confirmToTitle,
       },
@@ -226,6 +246,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     confirmSaveSlot = undefined;
+    confirmToTitlePending = false;
     saveToSlot(window.localStorage, slot, createSaveSnapshot(store.getCurrent(), scene.getSession()));
     options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"));
   }
@@ -296,6 +317,45 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
   }
 
+  function replaceMonsterSkillFromMenu(instanceId: string, pendingSkillId: string, replacedSkillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const session = scene.getSession();
+    const instance = session.monsterInstances[instanceId];
+    if (!instance) {
+      rejectInput("몬스터를 찾을 수 없습니다");
+      return;
+    }
+    const result = replacePendingMonsterSkill(
+      store.getCurrent(),
+      instance,
+      pendingSkillId as SkillId,
+      replacedSkillId as SkillId,
+    );
+    if (result.ok) session.monsterInstances[instanceId] = result.instance;
+    options.emitMenuJuice(
+      result.ok ? "menu-confirm" : "menu-invalid",
+      renderMenu(result.ok ? "새 기술을 배웠습니다" : "기술 교체에 실패했습니다", "monsters"),
+    );
+  }
+
+  function rejectMonsterSkillFromMenu(instanceId: string, pendingSkillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const session = scene.getSession();
+    const instance = session.monsterInstances[instanceId];
+    if (!instance) {
+      rejectInput("몬스터를 찾을 수 없습니다");
+      return;
+    }
+    const result = rejectPendingMonsterSkill(instance, pendingSkillId as SkillId);
+    if (result.ok) session.monsterInstances[instanceId] = result.instance;
+    options.emitMenuJuice(
+      result.ok ? "menu-confirm" : "menu-invalid",
+      renderMenu(result.ok ? "새 기술을 포기했습니다" : "기술 선택에 실패했습니다", "monsters"),
+    );
+  }
+
   function openGroup(entryId: StatusMenuGroupEntryId): void {
     selectedCommand = entryId;
     openGroupId = entryId;
@@ -338,6 +398,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "formation":
       case "quests":
       case "relationships":
+      case "life-ledger":
         resetSubscreenState();
         mode = "function";
         options.emitMenuJuice("menu-confirm", renderMenu(undefined, commandId));
@@ -364,6 +425,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     confirmSaveSlot = undefined;
+    confirmToTitlePending = false;
     // 접힌 그룹을 통해 들어왔으면 레일이 아니라 그룹 목록으로 한 단 돌아간다.
     if (openGroupId && !isStatusMenuGroupEntryId(selectedCommand) && groupContains(openGroupId, selectedCommand)) {
       selectedCommand = openGroupId;
@@ -429,6 +491,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "load":
       case "quests":
       case "relationships":
+      case "life-ledger":
       case "row":
       case "status":
       case "to-title":
@@ -438,6 +501,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function confirmToTitle(): void {
+    if (!confirmToTitlePending) {
+      confirmToTitlePending = true;
+      mode = "function";
+      options.emitMenuJuice(
+        "menu-confirm",
+        renderMenu("저장하지 않은 진행은 사라집니다. 한 번 더 선택하세요.", "to-title")
+      );
+      return;
+    }
+    confirmToTitlePending = false;
     options.emitMenuJuice("menu-confirm", currentMenu());
     window.setTimeout(() => options.renderTitle(), options.menuCloseJuiceMs);
   }
@@ -495,12 +568,31 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const actions = detailActionButtons();
     if (actions.length === 0) {
       setDetailCursor(0);
+      focusActiveMenuContainer();
       return;
     }
     selectedDetailActionIndex = Math.max(0, Math.min(selectedDetailActionIndex, actions.length - 1));
     detailCursors.set(detailStateKey(), selectedDetailActionIndex);
-    actions.forEach((action, index) => action.classList.toggle("selected", index === selectedDetailActionIndex));
+    actions.forEach((action, index) => {
+      const selected = index === selectedDetailActionIndex;
+      action.classList.toggle("selected", selected);
+      action.tabIndex = selected ? 0 : -1;
+      action.setAttribute("aria-current", selected ? "true" : "false");
+    });
+    const detailList = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
+    const activeAction = actions[selectedDetailActionIndex];
+    if (detailList && activeAction?.id) detailList.setAttribute("aria-activedescendant", activeAction.id);
     actions[selectedDetailActionIndex]?.scrollIntoView({ block: "nearest" });
+    focusActiveMenuContainer();
+  }
+
+  function focusActiveMenuContainer(): void {
+    const menu = currentMenu();
+    const target = mode === "function"
+      ? menu?.querySelector<HTMLElement>(".status-menu-detail-list")
+        ?? menu?.querySelector<HTMLElement>(".status-menu-detail")
+      : menu?.querySelector<HTMLElement>(".status-menu-command-rail");
+    if (typeof target?.focus === "function") target.focus({ preventScroll: true });
   }
 
   function detailStateKey(): string {
@@ -522,11 +614,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "load":
       case "quests":
       case "relationships":
+      case "life-ledger":
       case "row":
       case "status":
       case "to-title":
       case "wait":
-        return selectedCommand;
+        return selectedCommand === "life-ledger" ? `life-ledger:${lifeLedgerTab}` : selectedCommand;
     }
   }
 

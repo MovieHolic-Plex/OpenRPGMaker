@@ -1,7 +1,7 @@
 import { buildEdgeCornerInnerVariantMap } from "./autotileEngine";
 import type { AutotileGroup } from "../types";
 
-// 실내 칩셋(easyrpg_chipset_interior)의 지형/카펫 RM2k3 오토타일 블록 6종.
+// 실내 타일 그림판(easyrpg_chipset_interior)의 지형/카펫 RM2k3 오토타일 블록 6종.
 // 2026-07-12 vision 감사로 확정된 표준 3×4 배치: 윗줄 = 고립 · 바탕(잔디) · 오목 코너 소스,
 // 아래 3×3 = 본체(볼록 코너/변/중앙). 바탕 칸은 멤버가 아니다.
 // 배치는 흙길/모래(combined_town)와 동일하게 buildEdgeCornerInnerVariantMap(8방·11분류)로 성형한다.

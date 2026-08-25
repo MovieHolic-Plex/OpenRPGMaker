@@ -1,4 +1,5 @@
 import { getMode, toggleMode } from "@/app/mode";
+import { PRODUCT_TAGLINE } from "@/brand";
 import { addMap, duplicateMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -9,7 +10,6 @@ import {
   getEditorChrome,
   getEditorUiMode,
   setEditorUiMode,
-  type EditorUiMode,
 } from "@/editor/editorUiMode";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -37,8 +37,9 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
-import { uiLabel } from "@/editor/uiCopy";
+import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
+import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
@@ -50,7 +51,7 @@ const MENU_ITEMS = [
   { id: "help", label: "도움말" },
 ] as const;
 
-const TOOLBAR_COLLAPSED_KEY = "rpg-zzu:toolbar-collapsed";
+const TOOLBAR_COLLAPSED_KEY = "oprn:toolbar-collapsed";
 
 type MenuId = (typeof MENU_ITEMS)[number]["id"];
 
@@ -78,8 +79,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   const state = editorState.get();
   const history = getMapEditHistoryState();
   const menuBar = el("div", {
-    class: "rm2k3-menu-bar editor-studio-menubar",
-    dataset: { testid: "rm2k3-menu-bar", editorUiMode: uiMode },
+    class: "oprn-menu-bar editor-studio-menubar",
+    dataset: { testid: "oprn-menu-bar", editorUiMode: uiMode },
   });
   menuBar.append(renderProductBrand());
   for (const item of MENU_ITEMS) {
@@ -87,7 +88,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
     menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
   }
-  menuBar.append(renderEditorUiModeToggle());
+  menuBar.append(...renderWorkspaceBar());
   if (uiMode === "standard") menuBar.append(...renderStandardMoreTools());
   // History + identity sit as trailing icon buttons (right end), before window chrome.
   const trailing = el("div", {
@@ -95,7 +96,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
-    ...(mode === "edit" ? [renderTestPlayButton()] : []),
+    ...(mode === "edit" ? [renderTestPlayButton(), renderTopbarAiSettingsButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
@@ -107,8 +108,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   topbar.append(menuBar);
   if (showClassic) {
     const toolbar = el("div", {
-      class: "rm2k3-toolbar classic-toolbar is-legacy-surface",
-      dataset: { testid: "rm2k3-toolbar", uiDensity: chrome.classicToolbar ? "expert" : "play" },
+      class: "oprn-toolbar classic-toolbar is-legacy-surface",
+      dataset: { testid: "oprn-toolbar", uiDensity: chrome.classicToolbar ? "expert" : "play" },
     });
     toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
     topbar.append(toolbar);
@@ -127,43 +128,17 @@ function renderProductBrand(): HTMLElement {
   });
 }
 
-function renderEditorUiModeToggle(): HTMLElement {
-  const current = getEditorUiMode();
-  const group = el("div", {
-    class: "editor-ui-mode-toggle",
-    attrs: { role: "group", "aria-label": "에디터 UI 모드" },
-    dataset: { testid: "editor-ui-mode-toggle" },
+function renderTopbarAiSettingsButton(): HTMLElement {
+  return el("button", {
+    class: "topbar-ai-settings-button",
+    attrs: { type: "button", title: "AI 설정", "aria-label": "AI 설정 열기" },
+    dataset: { testid: "topbar-ai-settings" },
+    children: [
+      el("span", { class: "topbar-ai-settings-glyph", attrs: { "aria-hidden": "true" }, text: "⚙" }),
+      el("span", { text: "AI 설정" }),
+    ],
+    on: { click: () => openAiSettingsModal() },
   });
-  const makeButton = (mode: EditorUiMode, label: string, testId: string): HTMLElement =>
-    el("button", {
-      class: `editor-ui-mode-btn${current === mode ? " is-active" : ""}`,
-      text: label,
-      attrs: {
-        type: "button",
-        "aria-pressed": current === mode ? "true" : "false",
-        title:
-          mode === "beginner"
-            ? "초보 — AI와 핵심 도구에 집중"
-            : mode === "standard"
-              ? "표준 — 팔레트와 맵 트리를 함께 사용"
-              : "전문가 — 전체 도구와 고밀도 정보 표시",
-      },
-      dataset: { testid: testId, editorUiMode: mode },
-      on: {
-        click: (event) => {
-          event.stopPropagation();
-          // 구독자가 나머지를 처리한다: editor.ts(applyEditorUiModeLayout) + app/mode.ts(renderTopbar).
-          // 여기서 직접 다시 그리면 전환 1회에 레이아웃/탑바가 2번씩 렌더된다.
-          setEditorUiMode(mode);
-        },
-      },
-    });
-  group.append(
-    makeButton("beginner", "초보", "editor-ui-mode-beginner"),
-    makeButton("standard", "표준", "editor-ui-mode-standard"),
-    makeButton("expert", "전문가", "editor-ui-mode-expert"),
-  );
-  return group;
 }
 
 export function readableTopbarIdentityLabel(label: string): string {
@@ -186,7 +161,7 @@ function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
 
 function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[]): HTMLElement {
   return el("button", {
-    class: "rm2k3-menu-item",
+    class: "oprn-menu-item",
     text: label,
     attrs: { "aria-haspopup": "menu", "aria-expanded": "false" },
     dataset: { testid: `menu-${id}` },
@@ -208,13 +183,13 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
 
 function renderStandardMoreTools(): readonly HTMLElement[] {
   const menu = el("div", {
-    class: "rm2k3-menu-popup standard-more-tools-menu",
+    class: "oprn-menu-popup standard-more-tools-menu",
     attrs: { role: "menu" },
     dataset: { testid: "standard-more-tools-menu" },
   });
   menu.hidden = true;
   const button = el("button", {
-    class: "rm2k3-menu-item standard-more-tools",
+    class: "oprn-menu-item standard-more-tools",
     text: "⋯",
     attrs: {
       type: "button",
@@ -235,7 +210,7 @@ function renderStandardMoreTools(): readonly HTMLElement[] {
   });
   const addItem = (label: string, testId: string, action: () => void): void => {
     menu.append(el("button", {
-      class: "rm2k3-menu-command",
+      class: "oprn-menu-command",
       text: label,
       attrs: { type: "button", role: "menuitem" },
       dataset: { testid: testId },
@@ -256,10 +231,10 @@ function renderStandardMoreTools(): readonly HTMLElement[] {
 }
 
 function renderWindowControls(): HTMLElement {
-  const controls = el("div", { class: "rm2k3-window-controls" });
+  const controls = el("div", { class: "oprn-window-controls" });
   const collapsed = document.body.classList.contains("toolbar-collapsed");
   const collapse = el("button", {
-    class: "rm2k3-window-control",
+    class: "oprn-window-control",
     text: collapsed ? "▾" : "─",
     attrs: { type: "button", title: "툴바 접기/펼치기", "aria-pressed": collapsed ? "true" : "false" },
     dataset: { testid: "window-toolbar-collapse" },
@@ -275,7 +250,7 @@ function renderWindowControls(): HTMLElement {
     },
   });
   const fullscreen = el("button", {
-    class: "rm2k3-window-control",
+    class: "oprn-window-control",
     text: document.fullscreenElement ? "◱" : "□",
     attrs: { type: "button", title: "전체화면 전환" },
     dataset: { testid: "window-fullscreen" },
@@ -340,14 +315,14 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   closeMenuPopup();
   if (alreadyOpen) return;
   button.setAttribute("aria-expanded", "true");
-  const popup = el("div", { class: "rm2k3-menu-popup open", attrs: { role: "menu" }, dataset: { testid: `menu-popup-${id}` } });
+  const popup = el("div", { class: "oprn-menu-popup open", attrs: { role: "menu" }, dataset: { testid: `menu-popup-${id}` } });
   for (const command of commands) {
     if (command.kind === "separator") {
-      popup.append(el("div", { class: "rm2k3-menu-separator", attrs: { role: "separator" } }));
+      popup.append(el("div", { class: "oprn-menu-separator", attrs: { role: "separator" } }));
       continue;
     }
     const item = el("button", {
-      class: "rm2k3-menu-command",
+      class: "oprn-menu-command",
       text: command.label,
       attrs: { role: "menuitem" },
       dataset: { testid: command.testId },
@@ -405,7 +380,7 @@ function closeMenuPopup(options: { readonly restoreFocus?: boolean } = {}): void
   activeMenuTrigger = null;
   activeMenuPopup?.remove();
   activeMenuPopup = null;
-  document.querySelectorAll<HTMLElement>(".rm2k3-menu-item[aria-expanded='true']").forEach((node) => {
+  document.querySelectorAll<HTMLElement>(".oprn-menu-item[aria-expanded='true']").forEach((node) => {
     node.setAttribute("aria-expanded", "false");
   });
   if (options.restoreFocus && trigger?.isConnected) trigger.focus();
@@ -475,8 +450,8 @@ function menuCommands(
       ];
     case "game":
       return [
-        item(state.layer === "event" ? "편집 계속" : "테스트 플레이", "menu-game-play", () => void togglePlayMode()),
-        item("테스트 플레이 창", "menu-game-test-window", () => void openTestPlayWindow()),
+        item(state.layer === "event" ? "편집 계속" : "시연 실행", "menu-game-play", () => void togglePlayMode()),
+        item("시연 실행 창", "menu-game-test-window", () => void openTestPlayWindow()),
         item("랜덤 전투 테스트", "menu-game-battle-test", () => void openRandomBattleTestWindow()),
         { kind: "separator" },
         item("내보내기...", "menu-game-export", () => void doExportWebGame()),
@@ -484,7 +459,7 @@ function menuCommands(
     case "help":
       return [
         item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
-        item("정보", "menu-help-about", () => toast("RPG 쯔꾸르 - RM2000/2003 스타일 웹 에디터", "ok")),
+        item("정보", "menu-help-about", () => toast(`${EDITOR_PRODUCT_BRAND} — ${PRODUCT_TAGLINE}`, "ok")),
       ];
   }
 }
@@ -494,7 +469,7 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
 }
 
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
-  const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
+  const row = el("div", { class: "oprn-toolbar-row classic-row", dataset: { testid: "oprn-toolbar-row-edit" } });
   const selectedEvent = selectedEventForState(state);
   const mapId = state.currentMapId ?? store.getCurrent().startMapId;
   row.append(
@@ -539,17 +514,18 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 작업 열기", icon: "open", onClick: () => doLoad(topbar) }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
-    toolbarButton({ testId: "layer-lower", label: "하위", title: "하위 레이어 편집", icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
-    toolbarButton({ testId: "layer-upper", label: "상위", title: "상위 레이어 편집", icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
-    toolbarButton({ testId: "layer-event", label: "이벤트", title: "이벤트 레이어 편집", icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
+    // 레이어 이름은 uiCopy 단일 원천 — 하드코딩하면 용어를 바꿀 때 여기가 빠진다.
+    toolbarButton({ testId: "layer-lower", label: uiLabel("layerLower"), title: `${uiLabel("layerLower")} 레이어 편집`, icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
+    toolbarButton({ testId: "layer-upper", label: uiLabel("layerUpper"), title: `${uiLabel("layerUpper")} 레이어 편집`, icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
+    toolbarButton({ testId: "layer-event", label: uiLabel("layerEvent"), title: `${uiLabel("layerEvent")} 레이어 편집`, icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
     separator(),
     toolbarButton({ testId: "toolbar-database", label: uiLabel("databaseShort", getEditorChrome().jargonStyle), title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
-    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
+    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "자료 보관함", icon: "resources", onClick: () => openResourceModal() }),
     toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
-    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
+    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "타일 그림판/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말 (단축키·도구 가이드)", icon: "manual", onClick: () => openHelpModal() })
   );
   disposeToolbarOverflows.push(installToolbarOverflow(row));
@@ -571,7 +547,7 @@ function openSelectedEventTestWindow(): void {
     toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok");
     return;
   }
-  window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+  window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
     detail: { kind: "selected-event", ...selectedEvent },
   }));
 }
@@ -594,8 +570,8 @@ function renderTestPlayButton(): HTMLElement {
         class: "topbar-test-play",
         attrs: {
           type: "button",
-          title: "테스트 플레이",
-          "aria-label": "전체 프로젝트 테스트 플레이",
+          title: "시연 실행",
+          "aria-label": "전체 프로젝트 시연 실행",
         },
         dataset: { testid: "mode-play" },
         on: {
@@ -612,6 +588,7 @@ function renderTestPlayButton(): HTMLElement {
     ],
   });
 }
+
 function renderQuickBattleTestButton(): HTMLElement {
   return el("button", {
     class: "team-history-button is-icon-only quick-battle-test-button",
@@ -639,13 +616,13 @@ function renderQuickBattleTestButton(): HTMLElement {
 
 function openRandomBattleTestWindow(): void {
   window.dispatchEvent(
-    new CustomEvent("rpgzzu:test-play-window", {
+    new CustomEvent("oprn:test-play-window", {
       detail: { kind: "random-battle" },
     })
   );
 }
 function classicPlayToolbarRow(mode: string): HTMLElement {
-  const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
+  const row = el("div", { class: "oprn-toolbar-row classic-row", dataset: { testid: "oprn-toolbar-row-primary" } });
   row.append(playModeButton(mode));
   disposeToolbarOverflows.push(installToolbarOverflow(row));
   return row;
@@ -655,7 +632,7 @@ function playModeButton(mode: string): HTMLButtonElement {
   return toolbarButton({
     testId: mode === "edit" ? "mode-play" : "mode-edit",
     label: mode === "edit" ? "실행" : "편집",
-    title: mode === "edit" ? "테스트 플레이" : "편집기로 돌아가기",
+    title: mode === "edit" ? "시연 실행" : "편집기로 돌아가기",
     icon: mode === "edit" ? "play" : "pencil",
     primary: true,
     onClick: () => {
@@ -681,25 +658,9 @@ function layerShortLabel(layer: Layer): string {
   }
 }
 
+/** 도구 이름은 uiCopy 단일 원천 — 여기서 다시 적으면 화면마다 다른 말이 된다. */
 function toolShortLabel(tool: Tool): string {
-  switch (tool) {
-    case "paint":
-      return "펜";
-    case "fill":
-      return "채우기";
-    case "collision":
-      return "통행";
-    case "event":
-      return "이벤트";
-    case "erase":
-      return "지우개";
-    case "select":
-      return "선택";
-    case "eyedropper":
-      return "스포이드";
-    case "pan":
-      return "이동";
-  }
+  return toolLabel(tool);
 }
 
 async function toggleLeftPanel(topbar: HTMLElement): Promise<void> {
@@ -836,7 +797,7 @@ async function togglePlayMode(): Promise<void> {
 
 async function openTestPlayWindow(): Promise<void> {
   // flush 는 openTestPlayModal 이 창을 먼저 띄운 뒤 진행(로딩 UI 표시).
-  window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
+  window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
 }
 async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
   if (store.hasUnsavedChanges()) {

@@ -10,7 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 // DatabaseRecords 의 9개 컬렉션 — DatabaseCollection(= keyof DatabaseRecords) 전체.
 const STAT_COLLECTIONS: readonly DatabaseCollection[] = [
@@ -73,6 +73,22 @@ function renderPanelHost(
 }
 
 describe("database overview tab shell", () => {
+  it("summarizes the authored game across world, story, cast, systems, and readiness", async () => {
+    const { store } = await import("@/project/store");
+    store.replace(createBlankProject());
+    storage.set(ACTIVE_TAB_KEY, "overview");
+
+    const { renderDatabasePanel } = await import("@/editor/panels/database");
+    const panelRoot = renderPanelHost(renderDatabasePanel);
+
+    expect(findByTestId(panelRoot, "db-overview-game-pulse")).toBeTruthy();
+    expect(findByTestId(panelRoot, "db-overview-world")?.textContent).toContain("맵");
+    expect(findByTestId(panelRoot, "db-overview-story")?.textContent).toContain("이벤트");
+    expect(findByTestId(panelRoot, "db-overview-cast")?.textContent).toContain("등장인물");
+    expect(findByTestId(panelRoot, "db-overview-systems")?.textContent).toContain("게임 데이터");
+    expect(findByTestId(panelRoot, "db-overview-readiness")?.textContent).toContain("시작 지점");
+  }, 60_000);
+
   it("renders stat chips for all 9 collections with counts from the project data", async () => {
     const { store } = await import("@/project/store");
     store.replace(createBlankProject());

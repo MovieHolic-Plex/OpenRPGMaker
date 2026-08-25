@@ -8,7 +8,7 @@ type SheetKind = "magenta" | "green" | "black" | "alpha";
 const EVIDENCE_DIR = "output/evidence/battle-animation-transparency";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("런타임 전투 애니메이션 캔버스: 마젠타/녹색/검은 배경 자동 키아웃", async ({ page }) => {

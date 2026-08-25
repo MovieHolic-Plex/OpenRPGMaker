@@ -14,6 +14,7 @@ import {
   directorStateAfterTurn,
   enemyActionDirectorState,
   introDirectorState,
+  sendOutDirectorState,
   type BattleDirectorState,
   resultDirectorState,
 } from "@/player/battleDirectorDom";
@@ -367,10 +368,21 @@ export function createBattleSequencer(
       setBusy(true);
       hooks.onDirectorState(introDirectorState(snapshot));
       hooks.onSyncView();
-      delay(() => {
+      // 파티 몬스터 전투는 "야생의 X가 나타났다!" 다음에 "가라, Y!" 를 한 비트 더 준다.
+      const sendOut = sendOutDirectorState(snapshot);
+      const toCommandPrompt = (): void => {
         hooks.onDirectorState(commandPromptState(snapshot));
         setBusy(false);
         hooks.onSyncView();
+      };
+      delay(() => {
+        if (!sendOut) {
+          toCommandPrompt();
+          return;
+        }
+        hooks.onDirectorState(sendOut);
+        hooks.onSyncView();
+        delay(toCommandPrompt, BATTLE_INTRO_MS);
       }, BATTLE_INTRO_MS);
     },
     runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void {

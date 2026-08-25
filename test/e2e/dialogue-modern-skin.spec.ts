@@ -14,7 +14,7 @@ test("modern dialogue skin stays adaptive across chip, bust, choices, and transp
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await seedProjectFromSupabaseCanonical(page, modernDialogueProject());
   await page.getByTestId("mode-play").click({ force: true });

@@ -7,7 +7,13 @@ const dir = mkdtempSync(join(tmpdir(), "rpgzzu-oh-my-pi-c-"));
 process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
 delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
 
-const { completeProvider, refreshProvider, saveProviderApiKey, seedOAuthForTests } = await import("../scripts/lib/ohMyPiPiAiRuntime.ts");
+const {
+  completeProvider,
+  publicProviderStatus,
+  refreshProvider,
+  saveProviderApiKey,
+  seedOAuthForTests,
+} = await import("../scripts/lib/ohMyPiPiAiRuntime.ts");
 
 function headerAuth(init?: RequestInit): string {
   const headers = init?.headers;
@@ -105,5 +111,122 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
       message = error instanceof Error ? error.message : String(error);
     }
     expect(message).toContain("https://api.anthropic.com/v1/oauth/token");
+  });
+
+  test("Antigravity OAuth without projectId is not reported as connected", () => {
+    // Break caught: publicProviderStatus used to treat any unexpired access/refresh
+    // token as connected, even though Antigravity cannot complete without projectId.
+    seedOAuthForTests("google-antigravity", {
+      access: "incomplete-access",
+      refresh: "incomplete-refresh",
+      expires: Date.now() + 60_000,
+    });
+
+    expect(publicProviderStatus("google-antigravity").connected).toBe(false);
+  });
+
+  test("Antigravity OAuth with projectId remains connected", () => {
+    seedOAuthForTests("google-antigravity", {
+      access: "complete-access",
+      refresh: "complete-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "complete-project",
+    });
+
+    expect(publicProviderStatus("google-antigravity").connected).toBe(true);
+  });
+
+  test("Antigravity completion preserves projectId and reaches the provider", async () => {
+    seedOAuthForTests("google-antigravity", {
+      access: "complete-access",
+      refresh: "complete-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "complete-project",
+    });
+    const urls: string[] = [];
+
+    try {
+      await completeProvider(
+        "google-antigravity",
+        { model: "gemini-3.1-pro", messages: [{ role: "user", content: "ping" }] },
+        {
+          fetch: async (input) => {
+            urls.push(String(input));
+            return new Response("upstream test stop", { status: 400 });
+          },
+        },
+      );
+    } catch {
+      // The mocked upstream intentionally stops after credential parsing.
+    }
+
+    expect(urls.some((url) => url.includes("cloudcode-pa.googleapis.com"))).toBe(true);
+    expect(publicProviderStatus("google-antigravity").connected).toBe(true);
+  });
+
+  test("Antigravity follow-up sends prior tool-call arguments as an object", async () => {
+    // Break caught: openaiToContext forwarded OpenAI's JSON-string function
+    // arguments verbatim, but Gemini requires functionCall.args to be an object.
+    seedOAuthForTests("google-antigravity", {
+      access: "complete-access",
+      refresh: "complete-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "complete-project",
+    });
+    let requestBody: Record<string, any> | undefined;
+
+    try {
+      await completeProvider(
+        "google-antigravity",
+        {
+          model: "gemini-3.7-flash",
+          messages: [
+            { role: "user", content: "Read the current map." },
+            {
+              role: "assistant",
+              content: null,
+              tool_calls: [{
+                id: "call_probe",
+                type: "function",
+                function: { name: "read_editor_probe", arguments: '{"probe":"current_map"}' },
+              }],
+            },
+            {
+              role: "tool",
+              tool_call_id: "call_probe",
+              name: "read_editor_probe",
+              content: '{"width":20,"height":15}',
+            },
+          ],
+          tools: [{
+            type: "function",
+            function: {
+              name: "read_editor_probe",
+              description: "Read the current editor map.",
+              parameters: {
+                type: "object",
+                properties: { probe: { type: "string" } },
+                required: ["probe"],
+              },
+            },
+          }],
+        },
+        {
+          fetch: async (_input, init) => {
+            requestBody = JSON.parse(String(init?.body ?? "{}"));
+            return new Response("upstream test stop", { status: 400 });
+          },
+        },
+      );
+    } catch {
+      // The mocked upstream intentionally stops after request serialization.
+    }
+
+    const contents = requestBody?.request?.contents as Array<{ parts?: Array<Record<string, any>> }> | undefined;
+    const functionCall = contents
+      ?.flatMap((content) => content.parts ?? [])
+      .find((part) => part.functionCall)?.functionCall;
+    expect(functionCall?.name).toBe("read_editor_probe");
+    expect(functionCall?.args).toEqual({ probe: "current_map" });
   });
 });

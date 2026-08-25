@@ -123,8 +123,8 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
     name: "present_doc",
     description:
       "리치 설명 문서를 만들어 채팅에 렌더하고 프로젝트에 저장한다. " +
-      "블록: markdown(설명), table(헤더+행), sheetMap(칩셋 시트 + 색상 존 오버레이 — 타일 블록 위치 안내), " +
-      "tileBlockCard(칩셋 영역 크롭 카드 — col/row/w/h 타일 단위), " +
+      "블록: markdown(설명), table(헤더+행), sheetMap(타일 그림판 시트 + 색상 존 오버레이 — 타일 블록 위치 안내), " +
+      "tileBlockCard(타일 그림판 영역 크롭 카드 — col/row/w/h 타일 단위), " +
       "paintDemo(RM2k3 3×4 오토타일 블록 인터랙티브 페인트 — blockCol/blockRow는 블록 좌상단), " +
       "html(자유형 — 샌드박스 iframe). 타일 이미지는 살아있는 타일셋에서 그려지므로 base64가 필요 없다. " +
       "시각 자료가 필요한 설명(오토타일 구조, 타일 배치 문법, 비교표)에 우선 사용하라.",
@@ -137,7 +137,36 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
           type: "array",
           description:
             "블록 배열. 예: [{kind:'markdown',text:'...'},{kind:'sheetMap',tilesetId:'easyrpg_chipset_interior',zones:[{col:6,row:12,w:3,h:4,label:'다크월'}]},{kind:'tileBlockCard',tilesetId:'...',col:6,row:12,w:3,h:4,title:'다크월 블록'},{kind:'paintDemo',tilesetId:'...',blockCol:0,blockRow:12}]",
-          items: { type: "object" },
+          items: {
+            type: "object",
+            properties: {
+              kind: { type: "string", enum: ["markdown", "sheetMap", "tileBlockCard", "paintDemo"] },
+              text: { type: "string" },
+              title: { type: "string" },
+              tilesetId: { type: "string" },
+              col: { type: "integer" },
+              row: { type: "integer" },
+              w: { type: "integer" },
+              h: { type: "integer" },
+              blockCol: { type: "integer" },
+              blockRow: { type: "integer" },
+              zones: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    col: { type: "integer" },
+                    row: { type: "integer" },
+                    w: { type: "integer" },
+                    h: { type: "integer" },
+                    label: { type: "string" },
+                  },
+                  required: ["col", "row"],
+                },
+              },
+            },
+            required: ["kind"],
+          },
         },
       },
       required: ["title", "blocks"],
@@ -145,7 +174,7 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
     invalidArgsExample: {
       title: "오토타일 후보 정리",
       blocks: [
-        { kind: "markdown", text: "## 요약\n이 칩셋의 오토타일 블록들" },
+        { kind: "markdown", text: "## 요약\n이 그림판의 오토타일 블록들" },
         { kind: "tileBlockCard", tilesetId: "easyrpg_chipset_interior", col: 6, row: 12, w: 3, h: 4, title: "다크월", badge: "구현됨" },
       ],
     },

@@ -18,13 +18,13 @@ export function isOverlayChatDock(dock: ChatDock): boolean {
 }
 
 export function nextChatDockActionLabel(current: ChatDock): string {
-  if (current === "glass") return "옆에 붙이기";
-  if (current === "side") return "아래 바로";
-  return "왼쪽 유리";
+  if (current === "glass") return "오른쪽";
+  if (current === "side") return "입력줄";
+  return "카드";
 }
 
 export function chatDockHint(current: ChatDock): string {
-  if (current === "glass") return "현재: 왼쪽 유리 카드. 클릭하면 사이드 패널로 전환";
-  if (current === "side") return "현재: 사이드 패널. 클릭하면 아래 바로 전환";
-  return "현재: 아래 바. 클릭하면 왼쪽 유리로 전환";
+  if (current === "glass") return "현재: 왼쪽 카드. 클릭하면 오른쪽 패널에 고정";
+  if (current === "side") return "현재: 오른쪽 패널. 클릭하면 입력줄로 떼기";
+  return "현재: 입력줄. 클릭하면 왼쪽 카드로 열기";
 }

@@ -8,13 +8,14 @@ import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { faceGraphicForCharset, faceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
+import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
   compileSimplePages,
@@ -23,10 +24,20 @@ import {
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
-import { ensureNamedSwitch } from "./flagHelpers";
+import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
+import {
+  COMMAND_SCHEMA,
+  COORD_SCHEMA,
+  CUTSCENE_BEAT_SCHEMA,
+  FACE_SCHEMA,
+  GRAPHIC_SPEC_SCHEMA,
+  ITEM_AMOUNT_SCHEMA,
+  RECT_SCHEMA,
+  SIMPLE_PAGE_SCHEMA,
+} from "./schemaShapes";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
@@ -160,6 +171,32 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): voi
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
     (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
+    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings);
+  }
+}
+
+/**
+ * `EventPage` 필수 필드를 채운다.
+ *
+ * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
+ * 필수 필드가 비면 프로젝트 린트가 `page.trigger.kind` / `movement.route` 를 읽다 TypeError 로 죽고,
+ * 사용자에게는 "후처리 실패: Cannot read properties of undefined" 라는 고칠 수 없는 메시지만 남는다
+ * (2026-08-23 실측: upsert_event 3회 연속 같은 실패). 값을 채워 통과시키고 무엇을 채웠는지 경고한다.
+ */
+function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[]): void {
+  const filled: string[] = [];
+  if (page.id === undefined) { page.id = pageId; filled.push("id"); }
+  if (page.name === undefined) { page.name = event.id; filled.push("name"); }
+  if (page.conditions === undefined) { page.conditions = []; filled.push("conditions"); }
+  if (page.graphic === undefined) { page.graphic = {}; filled.push("graphic"); }
+  if (page.trigger === undefined) {
+    page.trigger = event.trigger ?? { kind: "action" };
+    filled.push(`trigger(${page.trigger.kind})`);
+  }
+  if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
+  if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
+  if (filled.length > 0) {
+    warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
   }
 }
 
@@ -176,6 +213,57 @@ function assertEventShape(event: GameEvent, warnings?: string[]): void {
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
       code: "invalid-args",
     });
+  }
+}
+
+function ensureConditionStoryFlags(project: Project, condition: Condition, eventId: string, warnings: string[]): void {
+  if (condition.kind === "switch") {
+    if (!project.switches.some((entry) => entry.id === condition.switchId)) {
+      ensureNamedSwitch(project, condition.switchId, `이벤트 ${eventId}: ${condition.switchId}`);
+      warnings.push(`미등록 switchId 자동 생성: ${condition.switchId}`);
+    }
+  } else if (condition.kind === "variable") {
+    if (!project.variables.some((entry) => entry.id === condition.variableId)) {
+      ensureNamedVariable(project, condition.variableId, `이벤트 ${eventId}: ${condition.variableId}`);
+      warnings.push(`미등록 variableId 자동 생성: ${condition.variableId}`);
+    }
+  } else if (condition.kind === "all" || condition.kind === "any") {
+    for (const child of condition.conditions) ensureConditionStoryFlags(project, child, eventId, warnings);
+  } else if (condition.kind === "not") {
+    ensureConditionStoryFlags(project, condition.condition, eventId, warnings);
+  }
+}
+
+function ensureCommandStoryFlags(project: Project, commands: readonly Command[], eventId: string, warnings: string[]): void {
+  for (const command of commands) {
+    if (command.kind === "setSwitch") {
+      if (!project.switches.some((entry) => entry.id === command.switchId)) {
+        ensureNamedSwitch(project, command.switchId, `이벤트 ${eventId}: ${command.switchId}`);
+        warnings.push(`미등록 switchId 자동 생성: ${command.switchId}`);
+      }
+    } else if (command.kind === "setVariable") {
+      if (!project.variables.some((entry) => entry.id === command.variableId)) {
+        ensureNamedVariable(project, command.variableId, `이벤트 ${eventId}: ${command.variableId}`);
+        warnings.push(`미등록 variableId 자동 생성: ${command.variableId}`);
+      }
+    } else if (command.kind === "choices") {
+      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
+    } else if (command.kind === "fork") {
+      ensureConditionStoryFlags(project, command.condition, eventId, warnings);
+      ensureCommandStoryFlags(project, command.then, eventId, warnings);
+      if (command.else) ensureCommandStoryFlags(project, command.else, eventId, warnings);
+    } else if (command.kind === "loop") {
+      ensureCommandStoryFlags(project, command.body, eventId, warnings);
+    }
+  }
+}
+
+function ensureEventStoryFlags(project: Project, event: GameEvent, warnings: string[]): void {
+  ensureCommandStoryFlags(project, event.commands, event.id, warnings);
+  for (const page of event.pages ?? []) {
+    for (const condition of page.conditions) ensureConditionStoryFlags(project, condition, event.id, warnings);
+    ensureCommandStoryFlags(project, page.commands, event.id, warnings);
   }
 }
 
@@ -196,24 +284,56 @@ export function passableLanding(project: Project, map: GameMap, x: number, y: nu
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용.`,
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      event: { type: "object", description: "GameEvent(id/x/y/trigger/commands/pages...)" },
+      event: {
+        type: "object",
+        description: "GameEvent 추가 또는 부분 수정. id는 항상 필요하고 x/y는 새 이벤트일 때만 필요. 기존 이벤트에서 생략한 최상위 필드는 보존된다.",
+        properties: {
+          id: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+          trigger: { type: "object", properties: { kind: { type: "string" } }, additionalProperties: true },
+          commands: { type: "array", items: COMMAND_SCHEMA },
+          pages: { type: "array", items: SIMPLE_PAGE_SCHEMA },
+        },
+        // 나머지 GameEvent 필드는 이벤트 shape 검증기가 본다.
+        additionalProperties: true,
+        required: ["id"],
+      },
     },
     required: ["mapId", "event"],
   },
   invalidArgsHint: UPSERT_EVENT_NPC_HINT,
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const event = args.event as GameEvent;
+    const patch = args.event as Partial<GameEvent> | undefined;
     const warnings: string[] = [];
-    if (!event || typeof event.id !== "string") throw new ToolError("event.id(문자열)가 필요합니다.");
-    if (typeof event.x !== "number" || typeof event.y !== "number") throw new ToolError("event.x/y(숫자)가 필요합니다.");
-    if (!event.trigger) (event as GameEvent).trigger = { kind: "action" };
+    if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    const existing = map.events.find((entry) => entry.id === patch.id);
+    let event: GameEvent;
+    if (existing) {
+      event = {
+        ...structuredClone(existing),
+        ...structuredClone(patch),
+        id: existing.id,
+      } as GameEvent;
+      const preserved = ["x", "y", "trigger", "commands", "pages", "characterId"]
+        .filter((key) => !Object.prototype.hasOwnProperty.call(patch, key));
+      if (preserved.length > 0) {
+        warnings.push(`기존 이벤트 부분 병합: 생략 필드 보존 (${preserved.join(", ")})`);
+      }
+    } else {
+      if (typeof patch.x !== "number" || typeof patch.y !== "number") {
+        throw new ToolError("새 이벤트에는 event.x/y(숫자)가 필요합니다.");
+      }
+      event = structuredClone(patch) as GameEvent;
+      if (!event.trigger) event.trigger = { kind: "action" };
+    }
     assertEventShape(event, warnings);
     const outcome = upsertEventIntoMap(map, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
@@ -272,13 +392,10 @@ const placeNpc: ToolDefinition = {
       x: { type: "integer" },
       y: { type: "integer" },
       name: { type: "string" },
-      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
-      face: {
-        type: "object",
-        description: "대화 페이스 {resourceId,faceIndex} 또는 {textureKey,characterIndex}. 생략 시 graphic에서 자동 매핑.",
-      },
+      graphic: GRAPHIC_SPEC_SCHEMA,
+      face: FACE_SCHEMA,
       movement: { type: "string", enum: ["fixed", "random"] },
-      pages: { type: "array", description: "SimplePage[]", items: { type: "object" } },
+      pages: { type: "array", description: "SimplePage[]", items: SIMPLE_PAGE_SCHEMA },
       id: { type: "string" },
     },
     required: ["mapId", "x", "y", "name", "pages"],
@@ -289,11 +406,12 @@ const placeNpc: ToolDefinition = {
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     const name = args.name as string;
+    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`NPC 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "npc-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
     // 에이전틱 편의: 통행 불가 칸을 지정하면 실패 대신 근처(반경 3) 통행 가능 칸으로 자동 착지.
-    const landing = nearestPassableCell(draft, map, requestedX, requestedY, 3);
+    const landing = nearestPassableCell(draft, map, requestedX, requestedY, 3, explicitId);
     if (!landing) {
       throw new ToolError(
         `NPC를 놓을 통행 가능 칸이 없습니다: (${requestedX}, ${requestedY}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
@@ -302,13 +420,12 @@ const placeNpc: ToolDefinition = {
     }
     const { x, y } = landing;
     // graphic 생략 시 투명 고스트가 되지 않도록 주민 기본 캐릭터를 쓴다(함정/컷신은 별도 툴).
-    // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 칩셋 몰림을 줄인다.
+    // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 타일 그림판 몰림을 줄인다.
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
     });
-    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
     const similar = findNearbySimilarNpc(map, x, y, name, 2);
@@ -338,6 +455,7 @@ const placeNpc: ToolDefinition = {
     } else {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
+    ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const adjusted = finalX !== requestedX || finalY !== requestedY;
@@ -409,18 +527,48 @@ const setNpcSchedule: ToolDefinition = {
 const makeVillager: ToolDefinition = {
   name: "make_villager",
   description:
-    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다.",
+    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. 같은 맵에 동일 event id 또는 characterId가 이미 있으면 새 주민을 복제하지 않고 기존 위치·생략한 대사 페이지를 보존하며 갱신한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       name: { type: "string" },
-      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
-      home: { type: "object", description: "{x,y}" },
+      graphic: GRAPHIC_SPEC_SCHEMA,
+      home: COORD_SCHEMA,
       schedule: npcScheduleSchema,
-      dailyRoutine: { type: "object", description: "{workAt:{mapId?,x,y},workHours:[start,end]}" },
-      dialogue: { type: "array", description: "{when?,text}[]", items: { type: "object" } },
+      dailyRoutine: {
+        type: "object",
+        description: "{workAt:{mapId?,x,y}, workHours:[start,end]}",
+        properties: {
+          workAt: {
+            type: "object",
+            properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+            required: ["x", "y"],
+          },
+          workHours: { type: "array", description: "[시작시각, 종료시각]", items: { type: "integer" } },
+        },
+      },
+      dialogue: {
+        type: "array",
+        description: "{when?,text}[] — when 조건에 맞는 대사 페이지",
+        items: {
+          type: "object",
+          properties: {
+            text: { type: "string" },
+            when: {
+              type: "object",
+              properties: {
+                npcActivity: { type: "string" },
+                activity: { type: "string" },
+                timePhase: { type: "string", enum: ["morning", "day", "evening", "night"] },
+                season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
+              },
+            },
+          },
+          required: ["text"],
+        },
+      },
       giftPrefs: giftPrefsSchema,
       giftResponses: giftResponsesSchema,
       shop: {
@@ -465,15 +613,25 @@ const makeVillager: ToolDefinition = {
       seed: `${map.id}:${name}:${home.x},${home.y}`,
     });
     const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
+    const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
+      ? args.characterId.trim()
+      : undefined;
+    const exactIdMatch = explicitId ? map.events.find((event) => event.id === explicitId) : undefined;
+    const characterIdMatch = requestedCharacterId
+      ? map.events.find((event) => event.characterId?.trim() === requestedCharacterId)
+      : undefined;
     const similar = findNearbySimilarNpc(map, home.x, home.y, name, 2);
     const shopRole = isShopRoleNpcName(name);
-    const mergeSimilar = Boolean(similar) && (shopRole || !explicitId);
-    const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_villager"));
-    const reused = mergeSimilar;
+    const nearbyMatch = Boolean(similar) && (shopRole || !explicitId) ? similar : undefined;
+    const reusedEvent = exactIdMatch ?? characterIdMatch ?? nearbyMatch;
+    const id = reusedEvent?.id ?? explicitId ?? genId("ev_villager");
+    const reused = reusedEvent !== undefined;
     const warnings: string[] = [];
-    if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
+    if (args.graphic === undefined && !reused) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
     if (homeAdjusted) warnings.push(`주민 위치 자동 조정: (${homeRaw.x}, ${homeRaw.y}) → (${home.x}, ${home.y})`);
-    if (reused) warnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
+    if (exactIdMatch) warnings.push(`동일 event id NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
+    else if (characterIdMatch) warnings.push(`동일 characterId NPC 재사용 → id:${id} (중복 이벤트 대신 갱신)`);
+    else if (nearbyMatch) warnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
       movement: PASSIVE,
       warnings,
@@ -482,8 +640,10 @@ const makeVillager: ToolDefinition = {
     const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");
     const giftResponses = parseGiftResponses(args.giftResponses, "giftResponses");
     const shopStock = parseOptionalShopStock(draft, (args.shop as Record<string, unknown> | undefined)?.stock, "shop.stock");
-    if (shopStock) appendShopCommandToFirstPage(pages, shopStock);
-    const characterId = allocateCharacterId(draft, args.characterId, name, warnings);
+    if (shopStock) appendShopCommandToPages(pages, shopStock);
+    const characterId = reusedEvent
+      ? (requestedCharacterId ?? reusedEvent.characterId ?? allocateCharacterId(draft, undefined, name, warnings))
+      : allocateCharacterId(draft, args.characterId, name, warnings);
     const unlockAt = typeof args.friendshipUnlock === "number" && Number.isFinite(args.friendshipUnlock)
       ? Math.max(1, Math.trunc(args.friendshipUnlock))
       : undefined;
@@ -519,15 +679,25 @@ const makeVillager: ToolDefinition = {
     }
     const talkFriendship = args.talkFriendship === true ? true : undefined;
     let event: GameEvent;
-    if (reused && similar) {
-      event = structuredClone(similar);
-      event.pages = pages;
+    if (reusedEvent) {
+      event = structuredClone(reusedEvent);
+      const replacesDialoguePages = args.dialogue !== undefined || unlockAt !== undefined;
+      if (replacesDialoguePages) {
+        event.pages = pages;
+      } else if (args.graphic !== undefined) {
+        for (const page of event.pages ?? []) page.graphic = structuredClone(graphic);
+      }
+      if (shopStock) setShopStockOnEvent(event, shopStock);
       event.characterId = characterId;
-      if (schedule.length > 0) event.schedule = schedule;
+      if (args.schedule !== undefined || args.dailyRoutine !== undefined) {
+        event.schedule = schedule.length > 0 ? schedule : undefined;
+      }
       if (giftPrefs) event.giftPrefs = giftPrefs;
       if (giftResponses) event.giftResponses = giftResponses;
       if (talkFriendship) event.talkFriendship = talkFriendship;
-      warnings.push(`병합 → 기존 위치 (${similar.x}, ${similar.y}) 유지`);
+      warnings.push(replacesDialoguePages
+        ? `병합 → 기존 위치 (${reusedEvent.x}, ${reusedEvent.y}) 유지, 대사 페이지 갱신`
+        : `병합 → 기존 위치 (${reusedEvent.x}, ${reusedEvent.y}) 및 생략한 대사 페이지 유지`);
     } else {
       event = {
         id,
@@ -545,14 +715,15 @@ const makeVillager: ToolDefinition = {
     }
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const finalX = reused && similar ? similar.x : home.x;
-    const finalY = reused && similar ? similar.y : home.y;
+    const finalX = reusedEvent?.x ?? home.x;
+    const finalY = reusedEvent?.y ?? home.y;
+    const pageCount = event.pages?.length ?? 0;
     const reuseSummary = reused ? " — 기존 NPC 병합 갱신" : "";
     // 시간표를 붙였는데 시간 시스템이 꺼져 있으면 그 시간표는 실행되지 않는다(set_npc_schedule 과 동일).
     warnings.push(...timeSystemOffWarnings(draft, schedule.length));
     return {
-      summary: `${map.name}에 주민 '${name}' 생성 (${finalX}, ${finalY}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}${reuseSummary}`,
-      data: { eventId: id, characterId, x: finalX, y: finalY, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0, reused },
+      summary: `${map.name}에 주민 '${name}' 생성 (${finalX}, ${finalY}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pageCount}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}${reuseSummary}`,
+      data: { eventId: id, characterId, x: finalX, y: finalY, scheduleCount: schedule.length, pageCount, shopStockCount: shopStock?.length ?? 0, reused },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -732,21 +903,32 @@ function shopCommandFromStock(stock: readonly ShopStockEntry[]): Extract<Command
   };
 }
 
-function appendShopCommandToFirstPage(pages: EventPage[], stock: readonly ShopStockEntry[]): void {
-  const page = pages[0];
-  if (page) page.commands.push(shopCommandFromStock(stock));
+function appendShopCommandToPages(pages: EventPage[], stock: readonly ShopStockEntry[]): void {
+  for (const page of pages) page.commands.push(shopCommandFromStock(stock));
 }
 
 function setShopStockOnEvent(event: GameEvent, stock: readonly ShopStockEntry[]): "added" | "modified" {
-  const existing = findFirstShopCommand(event.pages?.flatMap((page) => page.commands) ?? []) ?? findFirstShopCommand(event.commands);
+  if ((event.pages?.length ?? 0) > 0) {
+    let modified = false;
+    for (const page of event.pages ?? []) {
+      const existing = findFirstShopCommand(page.commands);
+      if (existing) {
+        existing.itemIds = uniqueStockItemIds(stock);
+        existing.stock = [...stock];
+        modified = true;
+      } else {
+        page.commands.push(shopCommandFromStock(stock));
+      }
+    }
+    return modified ? "modified" : "added";
+  }
+  const existing = findFirstShopCommand(event.commands);
   if (existing) {
     existing.itemIds = uniqueStockItemIds(stock);
     existing.stock = [...stock];
     return "modified";
   }
-  const command = shopCommandFromStock(stock);
-  if (event.pages?.[0]) event.pages[0].commands.push(command);
-  else event.commands.push(command);
+  event.commands.push(shopCommandFromStock(stock));
   return "added";
 }
 
@@ -782,8 +964,19 @@ function uniqueStockItemIds(stock: readonly ShopStockEntry[]): string[] {
 }
 
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
-function nearestPassableCell(project: Project, map: GameMap, x: number, y: number, maxRadius: number): Point | null {
-  const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+function nearestPassableCell(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+  maxRadius: number,
+  ignoreEventId?: string,
+): Point | null {
+  const occupied = new Set(
+    map.events
+      .filter((event) => event.id !== ignoreEventId)
+      .map((event) => `${event.x},${event.y}`),
+  );
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
@@ -793,6 +986,29 @@ function nearestPassableCell(project: Project, map: GameMap, x: number, y: numbe
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
         if (isPassable(project, map, cx, cy)) return { x: cx, y: cy };
+      }
+    }
+  }
+  return null;
+}
+
+function transferEndpoint(
+  project: Project,
+  map: GameMap,
+  requestedX: number,
+  requestedY: number,
+  maxRadius = 3,
+): { gate: Point; landing: Point } | null {
+  const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+  for (let radius = 0; radius <= maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const gate = { x: requestedX + dx, y: requestedY + dy };
+        if (!inMapBounds(map, gate.x, gate.y) || occupied.has(`${gate.x},${gate.y}`)) continue;
+        const landing = passableLanding(project, map, gate.x, gate.y);
+        if (!landing || (landing.x === gate.x && landing.y === gate.y)) continue;
+        return { gate, landing };
       }
     }
   }
@@ -995,8 +1211,18 @@ const createTransferPair: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      a: { type: "object", description: "{mapId,x,y} 출입구 A" },
-      b: { type: "object", description: "{mapId,x,y} 출입구 B" },
+      a: {
+        type: "object",
+        description: "{mapId,x,y} 출입구 A",
+        properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+        required: ["mapId", "x", "y"],
+      },
+      b: {
+        type: "object",
+        description: "{mapId,x,y} 출입구 B",
+        properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+        required: ["mapId", "x", "y"],
+      },
       fade: { type: "string", enum: ["black", "white", "none"] },
     },
     required: ["a", "b"],
@@ -1007,12 +1233,16 @@ const createTransferPair: ToolDefinition = {
     const fade = (args.fade as TransferFade | undefined) ?? "black";
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
-    const landingB = passableLanding(draft, mapB, b.x, b.y);
-    const landingA = passableLanding(draft, mapA, a.x, a.y);
-    if (!landingB || !landingA) throw new ToolError("출입구 인접에 통행 가능한 착지 칸이 없습니다.", { code: "transfer-no-landing" });
-    // 즉시 재전이 방지: 착지 칸이 상대 출입구 좌표와 겹치면 error.
-    if (landingB.x === b.x && landingB.y === b.y) throw new ToolError("A→B 착지가 B 출입구와 겹칩니다.", { code: "transfer-retrigger" });
-    if (landingA.x === a.x && landingA.y === a.y) throw new ToolError("B→A 착지가 A 출입구와 겹칩니다.", { code: "transfer-retrigger" });
+    const endpointA = transferEndpoint(draft, mapA, a.x, a.y);
+    const endpointB = transferEndpoint(draft, mapB, b.x, b.y);
+    if (!endpointA || !endpointB) {
+      throw new ToolError(
+        "출입구 주변 반경 3칸 안에 통행 가능한 착지 칸을 둔 빈 출입구 위치가 없습니다. get_map_region으로 주변 구조물과 통행 지형을 확인하세요.",
+        { code: "transfer-no-landing" },
+      );
+    }
+    const { gate: gateA, landing: landingA } = endpointA;
+    const { gate: gateB, landing: landingB } = endpointB;
 
     const idA = genId("ev_gate");
     const idB = genId("ev_gate");
@@ -1037,11 +1267,18 @@ const createTransferPair: ToolDefinition = {
         },
       ],
     });
-    upsertEventIntoMap(mapA, gate(idA, a.x, a.y, transferTo(b.mapId, landingB.x, landingB.y)));
-    upsertEventIntoMap(mapB, gate(idB, b.x, b.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
+    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
+    const adjustedB = gateB.x !== b.x || gateB.y !== b.y;
+    const warnings = [
+      ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
+      ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
+    ];
     return {
-      summary: `출입구 쌍 생성: ${mapA.name}(${a.x},${a.y}) ↔ ${mapB.name}(${b.x},${b.y})`,
-      data: { eventIdA: idA, eventIdB: idB, landingA, landingB },
+      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
+      data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
@@ -1060,8 +1297,8 @@ const placeBattleBlocker: ToolDefinition = {
       clearSwitchId: { type: "string", description: "생략 시 자동 생성" },
       intro: { type: "array", description: "전투 전 대사", items: { type: "string" } },
       victory: { type: "array", description: "승리 후 대사", items: { type: "string" } },
-      victoryItems: { type: "array", description: "[{itemId,amount}] 승리 보상", items: { type: "object" } },
-      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
+      victoryItems: { type: "array", description: "[{itemId,amount}] 승리 보상", items: ITEM_AMOUNT_SCHEMA },
+      graphic: GRAPHIC_SPEC_SCHEMA,
       id: { type: "string" },
     },
     required: ["mapId", "x", "y", "troopId"],
@@ -1108,12 +1345,12 @@ const placeTrap: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      at: { type: "object", description: "{x,y} 단일 좌표" },
-      cells: { type: "array", description: "{x,y}[] 여러 좌표", items: { type: "object" } },
+      at: { ...COORD_SCHEMA, description: "{x,y} 단일 좌표" },
+      cells: { type: "array", description: "{x,y}[] 여러 좌표", items: COORD_SCHEMA },
       trigger: { type: "string", enum: ["touch", "action"] },
       message: { type: "string" },
       respawnCheckpoint: { type: "boolean" },
-      graphic: { type: "object", description: "선택 그래픽 {query} 또는 {textureKey,characterIndex}. 생략 시 투명." },
+      graphic: { ...GRAPHIC_SPEC_SCHEMA, description: "선택 그래픽. 생략 시 투명." },
       idPrefix: { type: "string" },
     },
     required: ["mapId", "trigger"],
@@ -1156,9 +1393,19 @@ const makeChaseScene: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      chaser: { type: "object", description: "{at:{x,y},graphic,speed?,sightRange?}" },
+      chaser: {
+        type: "object",
+        description: "{at:{x,y},graphic,speed?,sightRange?}",
+        properties: {
+          at: COORD_SCHEMA,
+          graphic: GRAPHIC_SPEC_SCHEMA,
+          speed: { type: "integer" },
+          sightRange: { type: "integer" },
+        },
+        required: ["at"],
+      },
       killOnTouch: { type: "boolean" },
-      safeZone: { type: "object", description: "{x,y,w,h}" },
+      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
     },
@@ -1680,6 +1927,24 @@ function cutscenePage(
   };
 }
 
+function resolveCutsceneMusicResources(project: Project, beats: readonly CutsceneBeat[], warnings: string[]): CutsceneBeat[] {
+  const resourceIds = collectResourceIds(project);
+  const visit = (items: readonly CutsceneBeat[], path: string): CutsceneBeat[] => items.map((beat, index) => {
+    const beatPath = `${path}[${index}]`;
+    if (beat.kind === "parallel") return { ...beat, beats: visit(beat.beats, `${beatPath}.beats`) };
+    if (beat.kind !== "music" || beat.action === "fade" || beat.action === "stop" || !beat.resourceId) return beat;
+    if (resourceIds.has(beat.resourceId)) return beat;
+    const kind = beat.action === "bgm" ? "bgm" : "se";
+    const match = searchResources(kind, beat.resourceId)
+      .map((result) => ({ result, resourceId: [result.id, result.id.replace(/^(?:bgm|se):/, "")].find((id) => resourceIds.has(id)) }))
+      .find((candidate) => candidate.resourceId !== undefined);
+    if (!match?.resourceId) return beat;
+    warnings.push(`컷신 리소스 자동 해석: ${beatPath}.resourceId "${beat.resourceId}" → "${match.resourceId}" (${match.result.label})`);
+    return { ...beat, resourceId: match.resourceId };
+  });
+  return visit(beats, "beats");
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
@@ -1696,7 +1961,7 @@ const scriptCutscene: ToolDefinition = {
       x: { type: "integer", description: "새 이벤트 생성 시 X. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
       y: { type: "integer", description: "새 이벤트 생성 시 Y. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
       trigger: { type: "string", enum: ["action", "auto", "parallel"], description: "기본 action" },
-      beats: { type: "array", description: "CutsceneBeat[]", items: { type: "object" } },
+      beats: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
     },
     required: ["mapId", "beats"],
@@ -1715,7 +1980,8 @@ const scriptCutscene: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
-    const beats = args.beats as CutsceneBeat[];
+    const warnings: string[] = [];
+    const beats = resolveCutsceneMusicResources(draft, args.beats as CutsceneBeat[], warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);
@@ -1748,6 +2014,7 @@ const scriptCutscene: ToolDefinition = {
     return {
       summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,
       data: { eventId, pageId: page.id, commandCount: commands.length, unsupportedCommands },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

@@ -50,8 +50,8 @@
 }
 
 .battle-atb-bar {
-  background: var(--rm2k3-battle-window-shadow);
-  border: 2px solid var(--rm2k3-battle-window-light);
+  background: var(--oprn-battle-window-shadow);
+  border: 2px solid var(--oprn-battle-window-light);
   display: inline-block;
   flex: 1 1 auto;
   height: 12px;
@@ -138,7 +138,7 @@
 }
 
 .battle-enemy-name {
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   display: block;
   font-size: 18px;
   line-height: 1.1;
@@ -147,7 +147,7 @@
 }
 
 .battle-enemy-hp-text {
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   display: block;
   font-size: 16px;
   line-height: 1;
@@ -161,11 +161,117 @@
 }
 
 .battle-enemy-list-hp {
-  color: var(--rm2k3-battle-muted);
+  color: var(--oprn-battle-muted);
   font-size: 16px;
 }
 
 .battle-field {
   position: relative;
+}
+
+/* 상태이상 배지 — battleFieldDom.statusIconCluster 는 빈 <span> 에 클래스와
+   data-status-icon 만 붙인다. 여기 규칙이 없어서 상태이상을 걸어도 화면에서
+   구별이 전혀 안 됐다(감독 검수 불가). 토큰은 stateIconToken() 의 8종:
+   poison / sleep / paralysis / blind / silence / confuse / death / burst.
+   Gen1 관례대로 3글자 약어로 읽히게 한다. */
+.battle-status-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.battle-status-icon {
+  align-items: center;
+  background: var(--battle-status-icon-bg, #4a4a4a);
+  border: 1px solid rgb(0 0 0 / 45%);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 25%);
+  color: #fff;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  min-width: 22px;
+  padding: 2px 3px;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 55%);
+}
+
+.battle-status-icon::before {
+  content: attr(data-status-icon);
+}
+
+.battle-status-icon-poison {
+  --battle-status-icon-bg: #8a3fa0;
+}
+.battle-status-icon-poison::before {
+  content: "PSN";
+}
+
+.battle-status-icon-burn {
+  --battle-status-icon-bg: #c2543a;
+}
+.battle-status-icon-burn::before {
+  content: "BRN";
+}
+
+.battle-status-icon-freeze {
+  --battle-status-icon-bg: #4aa3c8;
+}
+.battle-status-icon-freeze::before {
+  content: "FRZ";
+}
+
+.battle-status-icon-sleep {
+  --battle-status-icon-bg: #5566a8;
+}
+.battle-status-icon-sleep::before {
+  content: "SLP";
+}
+
+.battle-status-icon-paralysis {
+  --battle-status-icon-bg: #b8901f;
+}
+.battle-status-icon-paralysis::before {
+  content: "PAR";
+}
+
+.battle-status-icon-blind {
+  --battle-status-icon-bg: #3d4450;
+}
+.battle-status-icon-blind::before {
+  content: "BLD";
+}
+
+.battle-status-icon-silence {
+  --battle-status-icon-bg: #2f7d76;
+}
+.battle-status-icon-silence::before {
+  content: "SIL";
+}
+
+.battle-status-icon-confuse {
+  --battle-status-icon-bg: #c05a86;
+}
+.battle-status-icon-confuse::before {
+  content: "CNF";
+}
+
+.battle-status-icon-death {
+  --battle-status-icon-bg: #8f2b2b;
+}
+.battle-status-icon-death::before {
+  content: "KO";
+}
+
+/* burst = stateIconToken 의 폴백. 저작자가 만든 이름 없는 상태가 여기 떨어지므로
+   약어를 만들지 않고 점으로 표시한다(거짓 라벨 금지). */
+.battle-status-icon-burst {
+  --battle-status-icon-bg: #6b6f76;
+}
+.battle-status-icon-burst::before {
+  content: "●";
 }
 

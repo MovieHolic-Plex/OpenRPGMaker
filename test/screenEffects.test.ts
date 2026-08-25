@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import { screenColorToRgb, clampMs } from "@/player/interpreter/commandCatalog";
+import { shakeIntensityRatio } from "@/player/playSceneMapCommands";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -146,5 +147,37 @@ describe("화면 효과 — 헬퍼", () => {
     expect(clampMs(-10)).toBe(300);
     expect(clampMs(99999)).toBe(5000);
     expect(clampMs(50)).toBe(50);
+  });
+});
+
+// 에디터 프리셋(commandBodyM2Page3.ts 의 SHAKE_INTENSITY_SEGMENTS)이 화면에서 실제로
+// 구분되는지 지킨다. 상한이 0.05 였을 때 6 과 10 이 둘 다 0.05 로 잘려 같았다.
+describe("shakeIntensityRatio", () => {
+  const PRESETS = [1, 3, 6, 10] as const;
+
+  it("에디터 4단계 프리셋이 서로 다른 값으로 매핑된다", () => {
+    const ratios = PRESETS.map(shakeIntensityRatio);
+    expect(new Set(ratios).size).toBe(PRESETS.length);
+  });
+
+  it("강도가 커질수록 흔들림도 커진다", () => {
+    const ratios = PRESETS.map(shakeIntensityRatio);
+    for (let index = 1; index < ratios.length; index += 1) {
+      expect(ratios[index]).toBeGreaterThan(ratios[index - 1]!);
+    }
+  });
+
+  it("프리셋별 자연값을 그대로 낸다", () => {
+    expect(shakeIntensityRatio(1)).toBeCloseTo(0.01, 5);
+    expect(shakeIntensityRatio(3)).toBeCloseTo(0.03, 5);
+    expect(shakeIntensityRatio(6)).toBeCloseTo(0.06, 5);
+    expect(shakeIntensityRatio(10)).toBeCloseTo(0.1, 5);
+  });
+
+  it("범위 밖 입력은 가드로 막는다", () => {
+    expect(shakeIntensityRatio(0)).toBeCloseTo(0.01, 5);
+    expect(shakeIntensityRatio(-5)).toBeCloseTo(0.01, 5);
+    expect(shakeIntensityRatio(999)).toBeCloseTo(0.1, 5);
+    expect(shakeIntensityRatio(Number.NaN)).toBeCloseTo(0.01, 5);
   });
 });

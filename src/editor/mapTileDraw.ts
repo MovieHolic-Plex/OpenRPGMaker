@@ -63,7 +63,7 @@ function drawLayer(
     if (tile < 0) continue;
     const x = index % map.width;
     const y = Math.floor(index / map.width);
-    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함(supportsChipsetQuarterComposition).
+    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함(supportsChipsetQuarterComposition).
     if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
       drawLakeAutotile(context, image, map, tileset, x, y, scale);
       continue;

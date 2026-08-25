@@ -10,7 +10,7 @@ import { repairMapTreeOrphans, collectMapIdsInTree } from "@/project/mapTree";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { defaultDatabase, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { DEFAULT_ITEM_ID, TILE } from "@/project/defaults/constants";
-import { RM2K3_WOOD_FLOOR_PASSABILITY } from "@/project/defaults/chipsetMapping";
+import { WOOD_FLOOR_PASSABILITY } from "@/project/defaults/chipsetMapping";
 import type {
   Command,
   EventPage,
@@ -37,11 +37,11 @@ const SHOP_DECK = { x: 39, y: 10, w: 14, h: 14 } as const;
  */
 const STAIR_WORLD_Y = [20, 21] as const;
 
-const WOOD_FLOOR = RM2K3_WOOD_FLOOR_PASSABILITY.body;
-const WOOD_EDGE_W = RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest;
-const WOOD_EDGE_E = RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast;
-const WOOD_EDGE_N = RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth;
-const WOOD_EDGE_S = RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth;
+const WOOD_FLOOR = WOOD_FLOOR_PASSABILITY.body;
+const WOOD_EDGE_W = WOOD_FLOOR_PASSABILITY.edgeWest;
+const WOOD_EDGE_E = WOOD_FLOOR_PASSABILITY.edgeEast;
+const WOOD_EDGE_N = WOOD_FLOOR_PASSABILITY.edgeNorth;
+const WOOD_EDGE_S = WOOD_FLOOR_PASSABILITY.edgeSouth;
 const TIMBER_RAIL = 223;
 const TIMBER_POST = 193;
 const RAIL_L = 468;
@@ -90,7 +90,7 @@ export function buildVillageShoppingStreetProject(options: {
   // 상점 itemIds 검증용 — empty 툴 프로젝트는 items를 비우므로 기본 DB 복원
   project.database = defaultDatabase();
   project.meta = { ...project.meta, title: VILLAGE_SHOPPING_STREET_MAP_NAME };
-  // 타이틀 배경: 쯔꾸르풍 필드 타이틀(rpg-zzu-title-field)
+  // 타이틀 배경: 도트 필드 타이틀(oprn-title-field)
   applyDefaultTitleScreen(project, VILLAGE_SHOPPING_STREET_MAP_NAME);
   ensureTilesetHarnesses(project);
 
@@ -483,7 +483,7 @@ function inside(map: GameMap, x: number, y: number): boolean {
   return x >= 0 && y >= 0 && x < map.width && y < map.height;
 }
 
-const DEFAULT_TITLE_RESOURCE_ID = "rpg-zzu-title-field";
+const DEFAULT_TITLE_RESOURCE_ID = "oprn-title-field";
 
 function applyDefaultTitleScreen(project: Project, title: string): void {
   const base = defaultTitleScreenSettings();

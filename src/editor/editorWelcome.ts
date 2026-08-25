@@ -8,11 +8,15 @@ import {
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   type WelcomeGenrePresetId,
+  welcomeGenrePresetById,
+  welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
+import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
+import { showConfirm } from "@/editor/ui/modal";
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
 
-export const EDITOR_WELCOME_DISMISSED_KEY = "rpg-zzu:editor-welcome-dismissed";
+export const EDITOR_WELCOME_DISMISSED_KEY = "oprn:editor-welcome-dismissed";
 
 export const EDITOR_WELCOME_TESTIDS = {
   host: "editor-welcome",
@@ -21,11 +25,13 @@ export const EDITOR_WELCOME_TESTIDS = {
   skip: "editor-welcome-skip",
   dismiss: "editor-welcome-dismiss",
   genreStart: "editor-welcome-genre-start",
+  systemPresetError: "editor-welcome-system-preset-error",
   inspirationStrip: "editor-welcome-inspiration",
   promptInput: "editor-welcome-prompt-input",
   promptSubmit: "editor-welcome-prompt-submit",
   quickPick: "editor-welcome-quick-pick",
   templateCard: "editor-welcome-template-card",
+  starterCard: "editor-welcome-starter-card",
   chips: [
     "editor-welcome-chip-0",
     "editor-welcome-chip-1",
@@ -65,9 +71,15 @@ export type EditorWelcomeResult = {
   readonly autoSend: boolean;
   readonly replaceWithBlank: boolean;
   readonly presetId?: WelcomeGenrePresetId;
-  readonly source?: "chip" | "free-text";
+  readonly source?: "chip" | "free-text" | "manual-system-preset";
+  readonly systemPresetPlan?: GenreBlankProjectSystemPresetPlan;
   readonly dismiss: boolean;
   readonly action: EditorWelcomeAction;
+};
+
+export type EditorWelcomeOptions = {
+  /** Required by production for the remote-verified manual path; AI cards do not use it. */
+  readonly applySystemPreset?: (plan: GenreBlankProjectSystemPresetPlan) => Promise<unknown>;
 };
 
 export type ShouldPresentEditorWelcomeOptions = {
@@ -209,7 +221,10 @@ function syncBriefingPosition(root: HTMLElement): void {
  * Mount the canvas briefing under `host` and resolve when the user starts or skips.
  * Always removes the overlay. Start sends to the current map — it does not mint a blank project.
  */
-export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeResult> {
+export function presentEditorWelcome(
+  host: HTMLElement,
+  options: EditorWelcomeOptions = {},
+): Promise<EditorWelcomeResult> {
   return new Promise((resolve) => {
     let settled = false;
     const reduceMotion = prefersReducedMotion();
@@ -273,6 +288,55 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
       });
     };
 
+    let applyingSystemPreset = false;
+    const systemPresetError = el("p", {
+      class: "editor-welcome-system-preset-error",
+      attrs: { role: "alert", "aria-live": "polite", hidden: "" },
+      dataset: { testid: EDITOR_WELCOME_TESTIDS.systemPresetError },
+    });
+
+    const startManualPreset = async (presetId: WelcomeGenrePresetId, label: string): Promise<void> => {
+      if (applyingSystemPreset) return;
+      const systemPresetPlan = welcomeGenreSystemPresetPlanById(presetId);
+      const confirmed = await showConfirm({
+        title: "빈 프로젝트에 시스템 프리셋 적용",
+        message: "현재 프로젝트를 먼저 저장한 뒤, 선택한 시스템 설정으로 별도 프로젝트를 만들고 재로드를 확인합니다.",
+        confirmLabel: "저장하고 새 프로젝트 만들기",
+      });
+      if (!confirmed || settled) return;
+      if (!options.applySystemPreset) {
+        systemPresetError.hidden = false;
+        systemPresetError.textContent = "원격 저장 경로를 준비하지 못했습니다. 프로젝트 연결을 확인하세요.";
+        return;
+      }
+      applyingSystemPreset = true;
+      systemPresetError.hidden = true;
+      systemPresetError.textContent = "";
+      const controls = Array.from(root.querySelectorAll<HTMLButtonElement>("button"));
+      controls.forEach((button) => { button.disabled = true; });
+      try {
+        await options.applySystemPreset(systemPresetPlan);
+        if (settled) return;
+        settle({
+          intent: label,
+          prompt: null,
+          autoSend: false,
+          replaceWithBlank: false,
+          presetId,
+          source: "manual-system-preset",
+          systemPresetPlan,
+          dismiss: true,
+          action: "start",
+        });
+      } catch {
+        systemPresetError.hidden = false;
+        systemPresetError.textContent = "새 프로젝트 저장과 재확인을 완료하지 못했습니다. 현재 프로젝트는 그대로 유지됩니다.";
+      } finally {
+        applyingSystemPreset = false;
+        if (!settled) controls.forEach((button) => { button.disabled = false; });
+      }
+    };
+
     const finishSkip = (): void => {
       settle({
         intent: null,
@@ -304,26 +368,64 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
     const cards = el("div", {
       class: "editor-welcome-briefing-cards",
       children: DIRECTOR_BRIEFING_CARDS.map((card, index) =>
-        el("button", {
-          class: "editor-welcome-template-card",
-          attrs: {
-            type: "button",
-            "aria-label": `${card.label} — ${card.blurb}`,
-          },
-          dataset: {
-            testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
-            templateId: card.id,
-          },
-          on: {
-            click: () => startPreset(card.id, card.label),
-          },
+        el("div", {
+          class: "editor-welcome-template-option",
+          dataset: { packId: card.packId },
           children: [
-            el("span", {
-              class: "editor-welcome-template-thumb",
-              attrs: { style: `background-image:url('${card.thumb}')` },
+            el("button", {
+              class: "editor-welcome-template-card",
+              attrs: {
+                type: "button",
+                "aria-label": `${card.label} — ${card.blurb}`,
+              },
+              dataset: {
+                testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
+                templateId: card.id,
+              },
+              on: {
+                click: () => startPreset(card.id, card.label),
+              },
+              children: [
+                el("span", {
+                  class: "editor-welcome-template-thumb",
+                  attrs: { style: `background-image:url('${card.thumb}')` },
+                }),
+                el("span", { class: "editor-welcome-template-label", text: card.label }),
+                el("span", { class: "editor-welcome-template-blurb", text: card.blurb }),
+              ],
             }),
-            el("span", { class: "editor-welcome-template-label", text: card.label }),
-            el("span", { class: "editor-welcome-template-blurb", text: card.blurb }),
+            ...(card.inspirationPresetIds.length > 0
+              ? [
+                  el("div", {
+                    class: "editor-welcome-card-inspirations",
+                    dataset: { testid: EDITOR_WELCOME_TESTIDS.inspirationStrip },
+                    children: card.inspirationPresetIds.map((presetId) => {
+                      const preset = welcomeGenrePresetById(presetId);
+                      if (!preset) throw new Error(`Unknown welcome inspiration preset: ${presetId}`);
+                      return el("button", {
+                        class: "editor-welcome-card-inspiration",
+                        text: preset.label,
+                        attrs: {
+                          type: "button",
+                          "aria-label": `${card.label} 영감: ${preset.label}`,
+                        },
+                        dataset: { presetId: preset.id },
+                        on: { click: () => startPreset(preset.id, preset.label) },
+                      });
+                    }),
+                  }),
+                ]
+              : []),
+            el("button", {
+              class: "editor-welcome-template-starter",
+              text: "빈 프로젝트 시스템 설정",
+              attrs: { type: "button", "aria-label": `${card.label} 빈 프로젝트 시스템 프리셋 적용` },
+              dataset: {
+                testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
+                templateId: card.id,
+              },
+              on: { click: () => void startManualPreset(card.id, card.label) },
+            }),
           ],
         }),
       ),
@@ -352,6 +454,7 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
           children: [promptInput, submit],
         }),
         cards,
+        systemPresetError,
         el("button", {
           class: "editor-welcome-skip",
           text: "빈 맵으로 시작",

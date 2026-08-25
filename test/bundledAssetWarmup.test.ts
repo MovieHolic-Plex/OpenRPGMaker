@@ -15,7 +15,7 @@ describe("bundledAssetWarmup", () => {
   it("lists core chipset path and project-referenced textures only", () => {
     const project = createBlankProject();
     const paths = listBundledPlayAssetPaths(project);
-    expect(paths).toContain("assets/rm2k3-original-chipset.png");
+    expect(paths).toContain("assets/easyrpg-chipset-exterior.png");
     expect(paths).toContain("assets/dialogue-frame.png");
     // blank project still references default actor charset / tileset strings
     expect(paths.length).toBeGreaterThan(2);

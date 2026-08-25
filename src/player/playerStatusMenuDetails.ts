@@ -17,6 +17,7 @@ import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerS
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { listFriendshipEntries } from "@/project/friendship";
+import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import {
   isStatusMenuGroupEntryId,
   listStatusMenuGroupCommandIds,
@@ -58,8 +59,15 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "formation": return formationDetail(options);
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
+    case "life-ledger": return createLifeLedgerDetail({
+      project: options.project,
+      session: options.session,
+      tab: options.lifeLedgerTab,
+      onSelectTab: options.onSelectLifeLedgerTab,
+      onMutation: options.onLifeLedgerMutation,
+    });
     case "wait": return waitDetail(options.waitModeEnabled);
-    case "to-title": return { title: "타이틀", entries: [], hint: "타이틀 화면으로 돌아갑니다." };
+    case "to-title": return toTitleDetail(options);
     default: return assertNever(options.selectedCommand);
   }
 }
@@ -69,9 +77,10 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
   const entries = commandIds.map((commandId) => ({
     label: statusMenuCommandLabel(commandId, options.waitModeEnabled),
     value: "",
-    description: GROUP_COMMAND_DESCRIPTIONS[commandId],
+    description: commandId === "to-title" ? "미저장 진행 삭제" : GROUP_COMMAND_DESCRIPTIONS[commandId],
     testId: `status-menu-group-command-${commandId}`,
     onActivate: options.onCommand ? () => options.onCommand?.(commandId) : undefined,
+    destructive: commandId === "to-title",
   }));
   return {
     title: statusMenuGroupEntryLabel(entryId).replace(" ▸", ""),
@@ -83,11 +92,28 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
 const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> = {
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
+  "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
   load: "저장한 진행을 불러옵니다.",
   wait: "전투 중 명령 입력 시 시간을 멈출지 정합니다.",
   "to-title": "타이틀 화면으로 돌아갑니다. 저장하지 않은 진행은 사라집니다.",
 };
+
+function toTitleDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  return {
+    title: "타이틀로 돌아가기",
+    entries: options.confirmToTitle ? [{
+      label: "진행을 버리고 타이틀로",
+      value: "확인",
+      description: "저장하지 않은 진행은 사라집니다.",
+      testId: "status-menu-confirm-to-title",
+      onActivate: options.onCommand ? () => options.onCommand?.("to-title") : undefined,
+      destructive: true,
+    }] : [],
+    emptyLabel: "타이틀 복귀 확인을 준비하지 못했습니다.",
+    hint: "한 번 더 선택해야 타이틀 화면으로 돌아갑니다.",
+  };
+}
 
 function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { project, session } = options;
@@ -327,14 +353,42 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       if (!instance) return [];
       const maxHp = monsterMaxHp(options.project, instance);
       const hp = monsterCurrentHp(options.project, instance);
-      return [{
-        label: monsterDisplayName(options.project, instance),
-        value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
-        description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
-        testId: `status-menu-monster-${instanceId}`,
-        onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
-        disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
-      }];
+      return [
+        {
+          label: monsterDisplayName(options.project, instance),
+          value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
+          description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
+          testId: `status-menu-monster-${instanceId}`,
+          onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
+          disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
+        },
+        ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
+          const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
+          return [
+            ...(instance.skillIds ?? []).map((replacedSkillId) => {
+              const replaced = options.project.database.skills.find((skill) => skill.id === replacedSkillId);
+              return {
+                label: `${replaced?.name ?? replacedSkillId} → ${pending?.name ?? pendingSkillId}`,
+                value: "기술 교체",
+                description: "기존 기술을 잊고 새 기술을 배웁니다",
+                testId: `status-menu-monster-skill-replace-${instanceId}-${pendingSkillId}-${replacedSkillId}`,
+                onActivate: options.onReplacePendingMonsterSkill
+                  ? () => options.onReplacePendingMonsterSkill?.(instanceId, pendingSkillId, replacedSkillId)
+                  : undefined,
+              };
+            }),
+            {
+              label: `${pending?.name ?? pendingSkillId} 포기`,
+              value: "배우지 않음",
+              description: "대기 중인 새 기술을 포기합니다",
+              testId: `status-menu-monster-skill-reject-${instanceId}-${pendingSkillId}`,
+              onActivate: options.onRejectPendingMonsterSkill
+                ? () => options.onRejectPendingMonsterSkill?.(instanceId, pendingSkillId)
+                : undefined,
+            },
+          ];
+        }),
+      ];
     }),
   ];
   return {

@@ -31,9 +31,28 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
 
   if (tilesetsWithKits.length === 0) {
     form.append(el("div", {
-      class: "empty-hint",
-      text: "아직 학습된 스탬프가 없습니다.",
+      class: "db-empty-state structure-kit-db-empty",
       dataset: { testid: "structure-kit-db-empty" },
+      children: [
+        el("div", { class: "db-empty-icon", text: "⧉" }),
+        el("strong", { class: "db-empty-title", text: "아직 스탬프가 없습니다" }),
+        el("p", {
+          class: "db-empty-copy",
+          text: "맵에서 같은 구조를 여러 번 찍어 보세요. 반복 패턴이 감지되면 제안 카드로 등록할 수 있습니다.",
+        }),
+        el("button", {
+          class: "btn primary db-empty-cta",
+          text: "스탬프 사용법 보기",
+          attrs: { type: "button" },
+          dataset: { testid: "structure-kit-db-empty-cta" },
+          on: {
+            click: () => {
+              editorState.set({ tool: "paint" });
+              toast("타일 브러시에서 패턴을 반복해 찍으면 제안 카드가 나타납니다.", "info");
+            },
+          },
+        }),
+      ],
     }));
     return;
   }
@@ -41,7 +60,11 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   for (const tileset of tilesetsWithKits) {
     form.append(el("h4", {
       class: "structure-kit-db-tileset",
-      text: `${tileset.name} (${tileset.id}) — ${tileset.structureKits!.length}개`,
+      // SYNTHESIS: keep ids as trailing muted meta, not \"name (id) — N개\" leading
+      children: [
+        el("span", { class: "structure-kit-db-tileset-name", text: tileset.name }),
+        el("span", { class: "structure-kit-db-tileset-meta", text: ` · ${(tileset.structureKits ?? []).length}개 · #${tileset.id}` }),
+      ],
     }));
     for (const kit of tileset.structureKits ?? []) {
       form.append(renderKitCard(tileset, kit, rerender));
@@ -115,14 +138,18 @@ function renderKitCard(tileset: TilesetDef, kit: StructureKitDef, rerender: () =
 
   const meta = el("div", {
     class: "structure-kit-db-meta",
-    text: `${learnedFromLabel(kit.learnedFrom)}${kit.createdAt ? ` · ${kit.createdAt.slice(0, 10)}` : ""} · id ${kit.id}`,
+    children: [
+      el("span", { class: "structure-kit-db-meta-label", text: learnedFromLabel(kit.learnedFrom) }),
+      ...(kit.createdAt ? [el("span", { class: "structure-kit-db-meta-dot", text: " · " }), el("span", { text: kit.createdAt.slice(0, 10) })] : []),
+      el("span", { class: "structure-kit-db-meta-id", text: ` · #${kit.id}` }),
+    ],
   });
 
   const actions = el("div", {
     class: "structure-kit-db-actions",
     children: [
       el("button", {
-        class: "btn",
+        class: "btn primary",
         text: "팔레트에서 쓰기",
         attrs: { type: "button", title: "이 스탬프를 브러시로 선택합니다" },
         dataset: { testid: `structure-kit-db-use-${kit.id}` },

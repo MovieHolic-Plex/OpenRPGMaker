@@ -27,7 +27,7 @@ for (const testId of ["editor-welcome-skip", "app-modal-confirm", "editor-welcom
 }
 
 const ids = await page.evaluate(() => {
-  const store = window.__rpgzzuStore ?? null;
+  const store = window.__oprnStore ?? null;
   return null;
 });
 

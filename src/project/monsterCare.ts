@@ -3,6 +3,7 @@ import {
   ensureMonsterSessionFields,
 } from "@/project/monsterCollection";
 import { changeItem, clampFriendship, giftDayKey, type PlaySession } from "@/project/session";
+import { isPositiveItemQuantity } from "@/project/itemQuantities";
 import type { ItemCareProfile, ItemId, MonsterCareConfig, Project } from "@/project/types";
 
 export const DEFAULT_MONSTER_CARE: MonsterCareConfig = {
@@ -59,19 +60,20 @@ export function applyCareItem(
   session: PlaySession,
   input: ApplyCareItemInput
 ): ApplyCareItemResult {
-  ensureMonsterSessionFields(session);
   const item = project.database.items.find((record) => record.id === input.itemId);
   if (!item) return { ok: false, reason: "missingItem" };
   const care = item.careProfile;
   if (!care || (care.kind !== "feed" && care.kind !== "toy")) {
     return { ok: false, reason: "notCareItem" };
   }
-  if ((session.inventory[item.id] ?? 0) <= 0) return { ok: false, reason: "noInventory" };
+  if (!isPositiveItemQuantity(session.inventory[item.id])) return { ok: false, reason: "noInventory" };
 
   const instanceId = input.instanceId.trim();
-  const instance = session.monsterInstances[instanceId];
+  const instance = session.monsterInstances?.[instanceId];
   if (!instance) return { ok: false, reason: "missingInstance" };
-  if (!session.monsterParty.includes(instanceId)) return { ok: false, reason: "notInParty" };
+  if (!session.monsterParty?.includes(instanceId)) return { ok: false, reason: "notInParty" };
+
+  if (!changeItem(session, item.id, "-=", 1)) return { ok: false, reason: "noInventory" };
 
   const friendshipDelta = Math.trunc(Number.isFinite(care.friendshipDelta) ? care.friendshipDelta : 0);
   const nextFriendship = clampFriendship(instance.friendship + friendshipDelta);
@@ -84,8 +86,6 @@ export function applyCareItem(
   if (expDelta > 0) {
     applyMonsterExperienceAndEvolution(project, session, expDelta, [instanceId]);
   }
-
-  changeItem(session, item.id, "-=", 1);
   return {
     ok: true,
     instanceId,

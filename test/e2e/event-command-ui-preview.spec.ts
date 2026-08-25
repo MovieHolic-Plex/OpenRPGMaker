@@ -82,10 +82,10 @@ test("Representative non-face command editors expose readable summaries", async 
   await expect(editor).toContainText("그림 표시");
   await expect(editor).toContainText("소리 재생");
   await expect(editor).toContainText("장소 이동");
-  await expect(editor).toContainText("타일 변경");
+  await expect(editor).toContainText("지형 변경");
   await expect(editor).toContainText("변수 조작");
   await expect(editor).toContainText("아래");
-  await expect(editor).toContainText("상위");
+  await expect(editor).toContainText("덧그림");
   await expect(editor).toContainText("상점 종류");
   await expect(editor).toContainText("판매 아이템");
   await expect(editor).toContainText("소리 정지: 설정 없음");

@@ -41,7 +41,9 @@ export function normalizeEnemyRecord(
       const actionProfile = normalizeEnemyActionProfile(record.actionProfile);
       return actionProfile ? { actionProfile } : {};
     })(),
-    stateRates: normalizeRates(record.stateRates),
+    stateRates: record.stateRates === undefined
+      ? { state_death: "C" }
+      : normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
   };
 }
@@ -68,6 +70,7 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     members,
     autoAlign: record.autoAlign ?? true,
     uncapturable: record.uncapturable === true,
+    ...(record.trainerBattle === true ? { trainerBattle: true } : {}),
     previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),

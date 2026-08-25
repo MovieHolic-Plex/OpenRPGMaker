@@ -27,10 +27,35 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
   const attack = bestAttack(project, snapshot, actor, attacks, rng);
   if (attack) return attack;
 
+  const fallbackSkill = fallbackLearnedSkill(snapshot, actor, learned, rng);
+  if (fallbackSkill) return fallbackSkill;
+
   const enemies = snapshot.enemies.filter((enemy) => !enemy.defeated);
   const target = pickBest(enemies, (enemy) => -enemy.hp / Math.max(1, enemy.maxHp), rng);
   if (target) return { kind: "attack", targetEnemyId: target.id };
   return { kind: "defend" };
+}
+
+function fallbackLearnedSkill(
+  snapshot: BattleSnapshot,
+  actor: BattleBattlerSnapshot,
+  skills: readonly SkillRecord[],
+  rng: Rng,
+): ActorCommand | undefined {
+  const candidates: Array<{ readonly skill: SkillRecord; readonly target: BattleBattlerSnapshot; readonly side: "actor" | "enemy" }> = [];
+  for (const skill of skills) {
+    const resolution = resolveBattleTargets({
+      scope: skill.scope,
+      user: actor,
+      actors: snapshot.actors,
+      enemies: snapshot.enemies,
+    });
+    for (const target of resolution.requiresSelection ? resolution.candidates : resolution.targets.slice(0, 1)) {
+      candidates.push({ skill, target, side: resolution.side });
+    }
+  }
+  const selected = pickBest(candidates, () => 0, rng);
+  return selected ? skillCommand(selected.skill, selected.target, selected.side) : undefined;
 }
 
 function bestRecovery(

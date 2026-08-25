@@ -24,7 +24,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
     return;
   }
   if (project.database.troops.length === 0) {
-    toast("적 그룹(troop)이 없습니다. 데이터베이스에서 먼저 만드세요.", "error");
+    toast("적 그룹이 없습니다. 데이터베이스에서 먼저 만드세요.", "error");
     return;
   }
 
@@ -36,7 +36,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
 
   openEventSubdialog({
     title: "필드 몬스터 템플릿",
-    subtitle: "전투 → 승리 시 스위치 ON + 이벤트 소거 + 정리 페이지",
+    subtitle: "전투 → 승리 시 스위치 켜기 + 이벤트 소거 + 정리 페이지",
     testId: "field-monster-template-dialog",
     width: "wide",
     render: (body, close) => {
@@ -69,7 +69,7 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
 
       const clearSwitch = el("input", {
         class: "field-monster-template-input",
-        attrs: { type: "text", "aria-label": "클리어 스위치 ID" },
+        attrs: { type: "text", "aria-label": "승리하면 켜질 스위치" },
         value: defaultClearSwitch,
         dataset: { testid: "field-monster-template-clear-switch" },
       }) as HTMLInputElement;
@@ -159,12 +159,12 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
           children: [
             el("p", {
               class: "field-monster-template-hint",
-              text: "적용 시 이 이벤트의 페이지를 전투/정리 2페이지로 교체합니다. 승리할 때만 스위치 ON + 이벤트 소거가 실행됩니다.",
+              text: "적용 시 이 이벤트의 페이지를 전투/정리 2페이지로 교체합니다. 승리할 때만 스위치 켜기 + 이벤트 소거가 실행됩니다.",
             }),
             labeled("적 그룹", troop.root),
             labeled("전투 전 대사 (줄바꿈 = 여러 문장)", intro),
             labeled("승리 후 대사", victory),
-            labeled("클리어 스위치 ID", clearSwitch),
+            labeled("승리하면 켜질 스위치", clearSwitch),
             el("div", {
               class: "field-monster-template-checks",
               children: [

@@ -1,24 +1,27 @@
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
-import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
 import {
   addDatabaseRecord,
   deleteDatabaseRecord,
   duplicateDatabaseRecord,
+  generatedBattleEffectPackPendingChanges,
+  generatedBattleEffectPackStatus,
+  installGeneratedBattleEffectPack,
   type DatabaseCollection,
   updateDatabaseRecord,
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
+import { renderActorStudioList } from "@/editor/panels/databaseActorStudio";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
-import { equipmentFields, itemFields, skillFields } from "@/editor/panels/databaseBasicRecordFields";
+import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
-import { ITEM_TYPES, isEquipmentItemType } from "@/editor/panels/databaseItemRecordView";
+import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import {
   categoryFilterForCollection,
@@ -37,7 +40,7 @@ import {
 } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import type { DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
+import type { ActorRecord, DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
 
 let searchRerenderTimer: number | null = null;
 
@@ -91,7 +94,7 @@ const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; r
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
   const selected = selectedRecordForSession(collection, records);
-  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
+  const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
 
   // 디테일 폼만 부분 갱신한다(리스트/스크롤/검색 포커스는 유지).
   const renderDetail = (id: string | undefined): void => {
@@ -102,9 +105,13 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       return;
     }
     const index = liveRecords.findIndex((entry) => entry.id === record.id);
-    const onRename = (next: string): void => updateRecordRowLabel(listEl, record.id, next);
+    const onRename = (next: string): void => {
+      updateRecordRowLabel(listEl, record.id, next);
+      const selectedSummary = listPane.querySelector("[data-testid='db-actor-summary-selected']");
+      if (selectedSummary instanceof HTMLElement) selectedSummary.textContent = next || "(이름 없음)";
+    };
     const form = recordForm(collection, record, rerender, onRename);
-    form.classList.add("rm2k3-detail-form", `rm2k3-detail-${collection}`);
+    form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
   };
 
@@ -115,19 +122,43 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     renderDetail(id);
   };
 
-  const listEl = recordList(collection, records, onSelect);
-  const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
-  const chips = categoryFilterChips(collection, rerender);
-  listPane.append(
-    el("h3", { text: COLLECTION_LABELS[collection] }),
-    recordSearch(collection, rerender),
-    ...(chips ? [chips] : []),
-    listEl,
-    recordListFooter(records.length),
-    toolbar(collection, rerender),
-  );
+  let listEl: HTMLElement;
+  let listPane: HTMLElement;
+  const actorStudioActive = collection === "actors" && viewModeForCollection(collection) === "list";
+  if (actorStudioActive) {
+    const query = searchQueryForCollection(collection);
+    const filteredActors = (records as ActorRecord[]).filter((record) => matchesNameOrId(record.name, record.id, query));
+    const studio = renderActorStudioList({
+      actors: records as ActorRecord[],
+      filteredActors,
+      selectedId: selected?.id,
+      project: store.getCurrent(),
+      search: recordSearch(collection, rerender),
+      footer: recordListFooter(records.length),
+      toolbar: toolbar(collection, rerender),
+      onSelect,
+    });
+    listEl = studio.scrollRegion;
+    listPane = studio.pane;
+    listEl.scrollTop = listScrollTopForCollection(collection);
+    listEl.addEventListener("scroll", () => setListScrollTopForCollection(collection, listEl.scrollTop));
+    detailPane.classList.add("db-studio-inspector-pane");
+  } else {
+    listEl = recordList(collection, records, onSelect);
+    listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
+    const chips = categoryFilterChips(collection, rerender);
+    listPane.append(
+      el("h3", { text: COLLECTION_LABELS[collection] }),
+      recordSearch(collection, rerender),
+      ...(chips ? [chips] : []),
+      listEl,
+      recordListFooter(records.length),
+      toolbar(collection, rerender),
+    );
+  }
   renderDetail(selected?.id);
-  const workspace = el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] });
+  const studioClass = actorStudioActive ? " db-actor-studio-workspace" : "";
+  const workspace = el("div", { class: `db-record-workspace oprn-record-workspace oprn-record-${collection}${studioClass}`, children: [listPane, detailPane] });
   if (collection === "enemies") {
     // 몬스터(적) 탭과 종족 탭의 역할 구분 안내. height:100% 워크스페이스가 배너에 밀리지 않도록
     // 셸(auto + 1fr)로 감싼다.
@@ -214,9 +245,40 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       },
     }),
     deleteButton(collection, rerender),
+    ...(collection === "battleAnimations" ? [generatedEffectInstallButton(rerender)] : []),
     viewToggle(collection, rerender)
   );
   return wrap;
+}
+
+function generatedEffectInstallButton(rerender: () => void): HTMLElement {
+  const status = generatedBattleEffectPackStatus();
+  const pending = generatedBattleEffectPackPendingChanges(status);
+  const button = el("button", {
+    class: "btn small",
+    text: pending === 0 ? `이펙트 ${status.totalAnimations}종 적용됨` : `이펙트 ${status.totalAnimations}종 적용`,
+    attrs: {
+      type: "button",
+      title: pending === 0
+        ? "생성 이펙트와 기본 배우·직업·스킬·아이템 연결이 모두 적용되어 있습니다."
+        : `누락 ${status.missingAnimations}종을 추가하고 기본 배우·직업·스킬·아이템 연결을 적용합니다.`,
+    },
+    dataset: { testid: "db-install-generated-effects" },
+    on: {
+      click: () => {
+        if (pending === 0) return;
+        const result = installGeneratedBattleEffectPack();
+        setSelectedRecordId("battleAnimations", result.firstAnimationId);
+        toast(
+          `전투 이펙트 적용: 애니메이션 ${result.addedAnimations + result.updatedAnimations}종, 배우·직업 ${result.updatedActors + result.updatedClasses}개, 스킬 ${result.updatedSkills}개, 아이템 ${result.updatedItems}개`,
+          "ok",
+        );
+        rerender();
+      },
+    },
+  });
+  if (pending === 0) (button as HTMLButtonElement).disabled = true;
+  return button;
 }
 
 // 갤러리↔리스트 뷰 토글 — 컬렉션별 세션 상태만 전환하고 기존 rerender 경로로 목록 창을
@@ -404,10 +466,10 @@ function recordListRow(
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
     dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}` },
     children: [
-      el("span", { class: "db-list-number", text: `${ordinalLabel(originalIndex)}:` }),
       ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
       ...(sub ? [el("span", { class: "db-list-sub", text: sub })] : []),
+      el("span", { class: "db-list-number", text: `#${originalIndex + 1}` }),
     ],
     on: { click: () => onSelect(record.id) },
   });
@@ -550,7 +612,7 @@ function recordForm(
   rerender: () => void,
   onRename?: (name: string) => void
 ): HTMLElement {
-  const form = el("section", { class: `db-detail-form rm2k3-detail-form rm2k3-detail-${collection}`, dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: `db-detail-form oprn-detail-form oprn-detail-${collection}`, dataset: { testid: "db-detail-form" } });
   // items/equipment 는 모던 인스펙터 헤더가 db-field-name 을 소유한다(T9/T10) — 레거시 이름
   // 필드를 함께 그리면 동일 testid 가 두 개 생겨 Playwright strict-mode 가 깨진다.
   if (
@@ -564,7 +626,7 @@ function recordForm(
   switch (collection) {
     case "actors": {
       const actor = store.getCurrent().database.actors.find((entry) => entry.id === record.id);
-      return actor ? renderActorRecordForm(actor, rerender) : form;
+      return actor ? renderActorRecordForm(actor, rerender, onRename, "studio") : form;
     }
     case "classes":
       renderClassRecordForm(form, store.getCurrent().database.classes.find((entry) => entry.id === record.id) ?? store.getCurrent().database.classes[0]);
@@ -575,12 +637,10 @@ function recordForm(
       return form;
     case "items": {
       const item = store.getCurrent().database.items.find((entry) => entry.id === record.id) ?? store.getCurrent().database.items[0];
-      if (item && !isEquipmentItemType(item.type)) itemFields(form, record.id);
       renderItemRecordForm(form, item, rerender);
       return form;
     }
     case "equipment":
-      equipmentFields(form, record.id);
       renderEquipmentRecordForm(
         form,
         store.getCurrent().database.equipment.find((entry) => entry.id === record.id) ?? store.getCurrent().database.equipment[0],
@@ -606,8 +666,8 @@ function recordForm(
 
 function recordListFooter(count: number): HTMLElement {
   return el("div", {
-    class: "rm2k3-record-list-footer",
-    children: [el("span", { class: "rm2k3-record-count", text: `${count}개` })],
+    class: "oprn-record-list-footer",
+    children: [el("span", { class: "oprn-record-count", text: `${count}개` })],
   });
 }
 

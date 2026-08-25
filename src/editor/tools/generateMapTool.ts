@@ -9,7 +9,14 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
 import { inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
+import {
+  applyMapGenerationPassage,
+  requireMapGenerationProfile,
+  type MapGenerationLayout,
+  type MapGenerationPalette,
+} from "./mapGenerationProfiles";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 type MapTheme = "village" | "forest" | "cave";
 
@@ -38,28 +45,71 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-function blankThemedMap(id: string, name: string, width: number, height: number, palette: ThemePalette): GameMap {
+function blankThemedMap(
+  id: string,
+  name: string,
+  width: number,
+  height: number,
+  tilesetId: string,
+  palette: ThemePalette,
+  pathTile: number,
+): GameMap {
   const size = width * height;
   const map: GameMap = {
     id,
     name,
     width,
     height,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(size).fill(palette.floor),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
     events: [],
   };
   for (let x = 0; x < width; x += 1) {
-    setLower(map, x, 0, TILE.WALL);
-    setLower(map, x, height - 1, TILE.WALL);
+    setLower(map, x, 0, palette.obstacle);
+    setLower(map, x, height - 1, palette.obstacle);
   }
   for (let y = 0; y < height; y += 1) {
-    setLower(map, 0, y, TILE.WALL);
-    setLower(map, width - 1, y, TILE.WALL);
+    setLower(map, 0, y, palette.obstacle);
+    setLower(map, width - 1, y, palette.obstacle);
   }
+  setLower(map, 1, Math.floor(height / 2), pathTile);
   return map;
+}
+
+function themePalette(profile: MapGenerationPalette): ThemePalette {
+  return { floor: profile.base, obstacle: profile.obstacle, decor: profile.accent };
+}
+
+function paintLayoutGrammar(map: GameMap, layout: MapGenerationLayout, palette: ThemePalette): void {
+  if (layout === "rooms") {
+    const splitX = Math.floor(map.width / 2);
+    for (let y = 2; y < map.height - 2; y += 1) setLower(map, splitX, y, palette.obstacle);
+    setLower(map, splitX, Math.floor(map.height / 2), palette.floor);
+    return;
+  }
+  if (layout === "ship") {
+    for (let x = 2; x < map.width - 2; x += 1) {
+      setLower(map, x, 2, palette.obstacle);
+      setLower(map, x, map.height - 3, palette.obstacle);
+    }
+    return;
+  }
+  if (layout === "city") {
+    for (let y = 3; y < map.height - 1; y += 6) {
+      for (let x = 1; x < map.width - 1; x += 1) setLower(map, x, y, palette.floor);
+    }
+    for (let x = 4; x < map.width - 1; x += 7) {
+      for (let y = 1; y < map.height - 1; y += 1) setLower(map, x, y, palette.floor);
+    }
+    return;
+  }
+  if (layout === "world") {
+    for (let y = 4; y < map.height - 1; y += 7) {
+      for (let x = 1; x < map.width - 1; x += 1) setLower(map, x, y, palette.decor);
+    }
+  }
 }
 
 function assertGeneratedMapSize(width: number, height: number): void {
@@ -89,11 +139,12 @@ const generateMap: ToolDefinition = {
     type: "object",
     properties: {
       theme: { type: "string", enum: ["village", "forest", "cave"] },
+      tilesetId: { type: "string", description: "이 맵에 사용할 타일셋. 타일셋별 전용 생성 로직을 선택한다." },
       name: { type: "string" },
       width: { type: "integer", description: "가로 타일 수(최대 256)" },
       height: { type: "integer", description: "세로 타일 수(최대 256)" },
-      entrance: { type: "object", description: "{x,y} 입구(생략 시 좌측 중앙)" },
-      pois: { type: "array", description: "[{x,y}] 관심 지점", items: { type: "object" } },
+      entrance: { ...COORD_SCHEMA, description: "{x,y} 입구(생략 시 좌측 중앙)" },
+      pois: { type: "array", description: "[{x,y}] 관심 지점", items: COORD_SCHEMA },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },
       seed: { type: "integer" },
       id: { type: "string" },
@@ -102,8 +153,13 @@ const generateMap: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const theme = args.theme as MapTheme;
-    const palette = THEME_PALETTES[theme];
-    if (!palette) throw new ToolError(`알 수 없는 테마: ${theme}`, { code: "unknown-theme" });
+    const fallbackPalette = THEME_PALETTES[theme];
+    if (!fallbackPalette) throw new ToolError(`알 수 없는 테마: ${theme}`, { code: "unknown-theme" });
+    const tilesetId = (args.tilesetId as string | undefined) ?? DEFAULT_TILESET_ID;
+    const generationProfile = requireMapGenerationProfile(draft, tilesetId);
+    const generationPalette = generationProfile.palettes[theme];
+    const palette = themePalette(generationPalette);
+    applyMapGenerationPassage(draft, generationProfile, generationPalette);
     const width = args.width as number;
     const height = args.height as number;
     if (width < 6 || height < 6) throw new ToolError("생성 맵은 최소 6x6 이상이어야 합니다.");
@@ -111,7 +167,16 @@ const generateMap: ToolDefinition = {
     const id = (args.id as string | undefined) ?? genId("map");
     if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { mapId: id });
     const rng = mulberry32((args.seed as number | undefined) ?? 1);
-    const map = blankThemedMap(id, (args.name as string | undefined) ?? `${theme} 맵`, width, height, palette);
+    const map = blankThemedMap(
+      id,
+      (args.name as string | undefined) ?? `${theme} 맵`,
+      width,
+      height,
+      tilesetId,
+      palette,
+      generationPalette.path,
+    );
+    paintLayoutGrammar(map, generationProfile.layout, palette);
 
     const entrance = (args.entrance as Point | undefined) ?? { x: 1, y: Math.floor(height / 2) };
     const pois = ((args.pois as Point[] | undefined) ?? defaultPois(width, height)).filter((poi) => inMapBounds(map, poi.x, poi.y));
@@ -141,10 +206,10 @@ const generateMap: ToolDefinition = {
       }
     }
     // 입구 확보.
-    setLower(map, entrance.x, entrance.y, palette.floor);
+    setLower(map, entrance.x, entrance.y, generationPalette.path);
 
     // 입구→각 POI 통로 카빙.
-    for (const poi of pois) carvePath(map, entrance, poi, palette.floor);
+    for (const poi of pois) carvePath(map, entrance, poi, generationPalette.path);
 
     // 도달성 수리 루프: 미도달 POI가 없어질 때까지 통로를 다시 판다.
     let repairs = 0;
@@ -153,7 +218,7 @@ const generateMap: ToolDefinition = {
       const unreachable = pois.filter((poi) => !isAdjacentOrOn(reachable, poi.x, poi.y));
       if (unreachable.length === 0) break;
       for (const poi of unreachable) {
-        carvePath(map, entrance, poi, palette.floor);
+        carvePath(map, entrance, poi, generationPalette.path);
         repairs += 1;
       }
     }
@@ -170,8 +235,14 @@ const generateMap: ToolDefinition = {
     }
 
     return {
-      summary: `${theme} 맵 '${map.name}'(${width}x${height}) 생성 — POI ${pois.length}개, 통로 수리 ${repairs}회`,
-      data: { mapId: id, entrance, pois },
+      summary: `${theme}/${generationProfile.layout} 맵 '${map.name}'(${width}x${height}) 생성 — POI ${pois.length}개, 통로 수리 ${repairs}회`,
+      data: {
+        mapId: id,
+        entrance,
+        pois,
+        generationProfile: generationProfile.tilesetId,
+        generationLayout: generationProfile.layout,
+      },
     };
   },
 };

@@ -96,7 +96,7 @@ function drawLayer(
     if (tile < 0) continue;
     const x = index % map.width;
     const y = Math.floor(index / map.width);
-    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
     if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
       for (const part of lakeAutotileQuarterSources(map, x, y)) {
         drawRawTile(context, image, tileset, part.tile, x, y, part.offsetX, part.offsetY, tileset.tileSize / 2);
@@ -148,7 +148,7 @@ function drawEventMarkers(context: CanvasRenderingContext2D, map: GameMap): void
     context.lineWidth = 1;
     context.strokeRect(x + inset + 2, y + inset + 2, Math.max(1, size - 4), Math.max(1, size - 4));
     context.fillStyle = "#ffffff";
-    context.font = "bold 10px Tahoma, sans-serif";
+    context.font = "bold 10px var(--font-ui, sans-serif), sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText("E", x + map.tileSize / 2, y + map.tileSize / 2 + 0.5);

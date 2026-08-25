@@ -40,11 +40,10 @@ export function planRequiredToolNames(plan: WorkPlan): string[] {
   return [...names];
 }
 
-/** 계획 요구 툴을 OpenAI 스키마 배열로. deprecated 는 supersededBy 로 대체, 도메인/상한 미적용. */
-export function planRequiredToolSchemas(plan: WorkPlan): OpenAiToolSchema[] {
+export function toolSchemasForNames(names: readonly string[]): OpenAiToolSchema[] {
   const defs: ToolDefinition[] = [];
   const seen = new Set<string>();
-  for (const name of planRequiredToolNames(plan)) {
+  for (const name of names) {
     const tool = getTool(name);
     if (!tool) continue;
     // deprecated(빌더 v1 등)는 LLM 에 노출되지 않는다 — supersededBy 가 있으면 그 대체 툴을 노출한다.
@@ -55,4 +54,17 @@ export function planRequiredToolSchemas(plan: WorkPlan): OpenAiToolSchema[] {
   }
   if (defs.length === 0) return [];
   return toOpenAiTools(defs, {});
+}
+
+/** 사용자가 정확한 레지스트리 이름으로 지목한 툴은 도메인 상한 밖에서도 보장한다. */
+export function mentionedToolSchemas(text: string): OpenAiToolSchema[] {
+  const names = activeTools()
+    .filter((tool) => toolNameMentioned(text, tool.name))
+    .map((tool) => tool.name);
+  return toolSchemasForNames(names);
+}
+
+/** 계획 요구 툴을 OpenAI 스키마 배열로. deprecated 는 supersededBy 로 대체, 도메인/상한 미적용. */
+export function planRequiredToolSchemas(plan: WorkPlan): OpenAiToolSchema[] {
+  return toolSchemasForNames(planRequiredToolNames(plan));
 }

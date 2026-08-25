@@ -126,8 +126,8 @@ function recordPickerShell(options: {
               options.hosts.blocks,
               el("button", {
                 class: "btn event-record-picker-max",
-                text: "최대 수",
-                attrs: { type: "button" },
+                text: "+ 새 항목",
+                attrs: { type: "button", title: "필요한 만큼 자동으로 늘어납니다 (고정 상한 없음)" },
                 dataset: { testid: "event-record-picker-add" },
                 on: {
                   click: () => {
@@ -162,7 +162,7 @@ function recordPickerShell(options: {
         class: "event-record-picker-footer",
         children: [
           footerButton({
-            label: "확인",
+            label: "반영하고 닫기",
             testId: "event-record-picker-ok",
             primary: true,
             onClick: () => {
@@ -171,7 +171,7 @@ function recordPickerShell(options: {
               options.close();
             },
           }),
-          footerButton({ label: "취소", onClick: options.close }),
+          footerButton({ label: "닫기", onClick: options.close }),
           options.applyButton,
         ],
       }),

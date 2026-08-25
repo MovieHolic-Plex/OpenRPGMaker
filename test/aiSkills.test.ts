@@ -199,7 +199,7 @@ describe("사용자 정의 스킬", () => {
 
   it("loadUserSkills는 params 있는/없는 레코드를 모두 수용한다(하위호환 + 정화)", () => {
     localStorage.setItem(
-      "rpg-zzu:user-skills",
+      "oprn:user-skills",
       JSON.stringify([
         { id: "u-old", icon: "⭐", name: "옛 스킬", description: "", template: "{{맵}} 정리" },
         {
@@ -272,8 +272,9 @@ describe("스킬 UI(fakeDom)", () => {
     expect(findByTestId(panel, "ai-learn-structure")).toBeTruthy();
     expect(findByTestId(panel, "ai-demo-teach")).toBeTruthy();
     expect(findByTestId(panel, "ai-export")).toBeTruthy();
-    // 설정은 모달 — 헤더 ⚙ 만 상시 노출.
-    expect(findByTestId(panel, "ai-settings-toggle")).toBeTruthy();
+    // 설정은 앱 헤더가 단독 소유하며 AI 패널 안에는 중복 진입점이 없다.
+    expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+    expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
     expect(findByTestId(panel, "ai-config-save")).toBeNull();
     // 컨텍스트 칩에 현재 맵 이름이 뜬다.
     const chips = findByTestId(panel, "ai-context-chips");
@@ -405,7 +406,7 @@ describe("스킬 UI(fakeDom)", () => {
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
     expect(findByTestId(panel, "ai-start-empty-hint")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(findByTestId(panel, "ai-start-visual-gallery")?.parentElement).toBe(findByTestId(panel, "ai-next-steps"));
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-start-build-house")).toBeNull();
     expect(chips).toBeTruthy();
     expect(chipCount).toBeGreaterThanOrEqual(0);

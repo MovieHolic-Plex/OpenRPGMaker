@@ -25,6 +25,7 @@ import { countBroadleaf2x2, evaluateVillageLook, type VillageFix, type VillageLo
 import { checkReachability } from "@/project/lint/reachability";
 import { MAP_TOOLS } from "./mapTools";
 import { buildVillageDomain } from "./villageBuilder";
+import { RECT_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "./schemaShapes";
 
 const CONIFER_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 const BROADLEAF_2X2_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
@@ -123,8 +124,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         height: { type: "integer" },
         mapName: { type: "string" },
         budgetTurns: { type: "integer", description: "기본 12" },
-        houses: { type: "array", items: { type: "object" } },
-        npcs: { type: "array", items: { type: "object" } },
+        houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
+        npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
         pathStyle: { type: "string" },
         settlementLayout: { type: "string" },
         roadWidth: { type: "integer" },
@@ -164,7 +165,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
     run(project, args): ToolExecResult {
       const sessionId = String(args.sessionId ?? "").trim();
       const session = loadSession(project, sessionId);
-      if (!session) throw new ToolError(`session 없음: ${sessionId}`, { code: "session-not-found" });
+      if (!session) throw new ToolError(sessionNotFoundMessage(sessionId), { code: "session-not-found" });
       return {
         summary: sessionSummaryLine(session),
         data: sessionView(session),
@@ -205,7 +206,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
       properties: {
         mapId: { type: "string" },
         area: {
-          type: "object",
+          ...RECT_SCHEMA,
           description: "{x,y,w,h}. 생략 시 맵 가장자리 띠 또는 세션 forest 마스크",
         },
         style: { type: "string", enum: ["conifer", "broadleaf-2x2", "mixed"] },
@@ -266,8 +267,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         height: { type: "integer" },
         mapName: { type: "string" },
         budgetTurns: { type: "integer" },
-        houses: { type: "array", items: { type: "object" } },
-        npcs: { type: "array", items: { type: "object" } },
+        houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
+        npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
         pathStyle: { type: "string" },
         settlementLayout: { type: "string" },
         roadWidth: { type: "integer" },
@@ -1117,6 +1118,18 @@ function openNextPendings(checklist: VillageChecklistItem[]): void {
       item.status = "pending";
     }
   }
+}
+
+/**
+ * 없는 세션 id 에 대한 메시지. 방 하네스 세션 id(`room_…`)를 마을 세션 툴에 넣는 혼동이 흔하므로
+ * 올바른 툴을 지목한다 — 2026-08-23 실측: `get_village_session` 이 room 세션 id 를 받고
+ * "session 없음" 만 돌려줘 모델이 어디로 가야 할지 알 수 없었다.
+ */
+function sessionNotFoundMessage(sessionId: string): string {
+  if (sessionId.startsWith("room_")) {
+    return `session 없음: ${sessionId} — 이 id는 실내/던전 방 하네스 세션입니다. advance_interior_room_build 또는 evaluate_interior_room을 sessionId와 함께 사용하세요.`;
+  }
+  return `session 없음: ${sessionId} — start_village_session이 돌려준 sessionId(vses_…)를 사용하세요.`;
 }
 
 function sessionView(session: VillageBuildSession) {

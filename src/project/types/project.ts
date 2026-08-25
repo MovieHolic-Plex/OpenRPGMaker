@@ -50,6 +50,8 @@ export interface GameMap {
   encounterTable?: EncounterTableEntry[];
   // 필드 몬스터 스폰 정의. 런타임 생존/리스폰 상태는 세이브하지 않고 맵 로드 때 초기화한다.
   fieldSpawns?: FieldSpawnDef[];
+  // 활성 로그라이크 런에서 fieldSpawns 후보를 방/층/리셋 세대별로 결정적으로 선택한다.
+  roguelikeRoom?: RoguelikeRoomDef;
   // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
   safeZones?: Rect[];
   // system.actionCombat.enabled 일 때 이 맵의 필드 스폰 접촉을 턴제 대신 실시간 액션으로 라우팅.
@@ -179,6 +181,27 @@ export interface FieldSpawnDef {
   onKillSwitchId?: string;
 }
 
+export interface RoguelikeRoomDef {
+  /** 런 상태에서 방을 식별하는 안정 ID. 생략하면 map.id를 쓴다. */
+  roomId?: string;
+  /** 방 세대가 바뀔 때 이 맵 이벤트의 셀프 스위치와 Erase Event 상태를 초기화한다. 기본 true. */
+  resetEventState?: boolean;
+  /** 슬롯마다 eligible choice 하나를 뽑는다. 어떤 슬롯에도 언급되지 않은 fieldSpawn은 항상 활성이다. */
+  encounterSlots?: RoguelikeEncounterSlot[];
+}
+
+export interface RoguelikeEncounterSlot {
+  id: string;
+  choices: RoguelikeEncounterChoice[];
+}
+
+export interface RoguelikeEncounterChoice {
+  fieldSpawnId: string;
+  weight?: number;
+  minFloor?: number;
+  maxFloor?: number;
+}
+
 export interface Rect {
   x: number;
   y: number;
@@ -203,6 +226,45 @@ export interface ProjectSession {
   inventory: Record<string, number>;
   partyActorIds: ActorId[];
   gold?: number;
+  /**
+   * 시작 시 세계에 놓인 설치물(바위·나무 등), `mapId:x,y` 키.
+   * 밭 상태와 달리 저작 표면이 필요하다 — 광산의 돌은 맵 타일이 아니라 세션 상태이고,
+   * 캐면 사라지므로 새 세션마다 다시 놓여야 한다.
+   */
+  placeables?: Record<string, import("@/project/placeables").PlaceableObjectState>;
+  /** Editor-authored farm animals instantiated by startSession; runtime progress is not written here. */
+  farmAnimals?: FarmAnimalStartInstance[];
+  /** Editor-authored general structures, independent from P1 animal homes. */
+  farmBuildingPlacements?: FarmBuildingPlacement[];
+  /** Editor-authored home objects. */
+  homeDecorationPlacements?: HomeDecorationPlacement[];
+}
+
+export interface FarmAnimalStartInstance {
+  readonly instanceId: string;
+  readonly speciesId: string;
+  readonly name: string;
+  readonly eventId?: string;
+  readonly buildingId?: string;
+}
+
+export interface FarmBuildingPlacement {
+  readonly instanceId: string;
+  readonly typeId: string;
+  readonly level: number;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly orientation: Dir;
+}
+
+export interface HomeDecorationPlacement {
+  readonly instanceId: string;
+  readonly typeId: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly orientation: Dir;
 }
 
 /**
@@ -280,7 +342,7 @@ export interface AiDocument {
 }
 
 // 테스트 상태 프리셋(Phase 4-1). 스위치/변수/인벤토리/골드/시작 좌표를 부분 저장해
-// 테스트 플레이/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
+// 시연 실행/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
 export interface TestPreset {
   id: string;
   name: string;

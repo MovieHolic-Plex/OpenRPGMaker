@@ -19,7 +19,7 @@ page.on("pageerror", (err) => consoleLines.push(`[pageerror] ${err.message}`));
 // 하드 리프레시에도 유지되므로 stale_state 검증이 그대로 동작한다.
 await page.addInitScript(() => {
   try {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   } catch {}
 });
 

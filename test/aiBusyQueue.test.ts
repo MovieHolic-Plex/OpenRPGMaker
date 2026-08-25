@@ -103,7 +103,7 @@ describe("AI busy 입력 큐", () => {
 
     // 두 번째는 아직 버블로 붙지 않고 큐 표시가 뜬다.
     expect(queue.hidden).toBe(false);
-    expect(queue.textContent).toContain("대기 1건");
+    expect(queue.textContent).toContain("기다리는 메시지 1개");
 
     // 기본 agentMode=auto 이므로 첫 턴은 플래너 라운드(응답 1)와 본문 라운드(응답 2)를 갖는다.
     // 두 번째 턴도 동일하게 2라운드. 순서대로 방출한다.

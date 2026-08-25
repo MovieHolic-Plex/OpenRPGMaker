@@ -29,15 +29,15 @@ import {
   positive,
 } from "./aiProposalSummary";
 
-export const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
+export const SESSION_BACKUP_KEY = "oprn:ai-session-backup";
 export const VOLATILE_OVERLAY_IDLE_MS = 12000;
-export const STUDIO_MODE_KEY = "rpg-zzu:ai-studio";
+export const STUDIO_MODE_KEY = "oprn:ai-studio";
 
 export const MAP_TILE_TOOLS = new Set([
   "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
-  // 타일 v3 공정 프리미티브(V3B)
   "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase",
+  "author_house", "author_village", "build_house_kit", "build_house_lots",
 ]);
 
 export function isWriteTool(name: string): boolean {
@@ -97,16 +97,33 @@ export function proposalHasMapTileChanges(calls: readonly ProposedCall[]): boole
   return calls.some((call) => MAP_TILE_TOOLS.has(call.name) && positive(call.result.diff?.tilesChanged) > 0);
 }
 
-export function proposalPreviewMapId(calls: readonly ProposedCall[], before: Project, after: Project): string | null {
-  if (!proposalHasMapTileChanges(calls)) return null;
-  for (const call of calls) {
-    for (const mapId of mapIdsReferencedByCall(call)) {
-      if (before.maps[mapId] || after.maps[mapId]) return mapId;
+export function firstMapWithTileDiff(before: Project, after: Project): string | null {
+  const ids = new Set([...Object.keys(before.maps), ...Object.keys(after.maps)]);
+  for (const mapId of ids) {
+    const base = before.maps[mapId];
+    const next = after.maps[mapId];
+    if (!base || !next) return mapId;
+    if (base.width !== next.width || base.height !== next.height) return mapId;
+    const cells = Math.min(base.lowerTiles.length, next.lowerTiles.length);
+    for (let i = 0; i < cells; i += 1) {
+      if (base.lowerTiles[i] !== next.lowerTiles[i] || base.upperTiles[i] !== next.upperTiles[i]) return mapId;
     }
-    const created = mapIdCreatedByCall(call);
-    if (created && after.maps[created]) return created;
   }
-  return after.startMapId && after.maps[after.startMapId] ? after.startMapId : null;
+  return null;
+}
+
+export function proposalPreviewMapId(calls: readonly ProposedCall[], before: Project, after: Project): string | null {
+  if (proposalHasMapTileChanges(calls)) {
+    for (const call of calls) {
+      for (const mapId of mapIdsReferencedByCall(call)) {
+        if (before.maps[mapId] || after.maps[mapId]) return mapId;
+      }
+      const created = mapIdCreatedByCall(call);
+      if (created && after.maps[created]) return created;
+    }
+    return after.startMapId && after.maps[after.startMapId] ? after.startMapId : null;
+  }
+  return firstMapWithTileDiff(before, after);
 }
 
 export function hasDestructiveCall(calls: readonly ProposedCall[]): boolean {

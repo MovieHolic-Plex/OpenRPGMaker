@@ -1,12 +1,12 @@
 /* 레코드 리스트 썸네일/리소스 피커 스타일 (database-overhaul, 신규 클래스 전용) */
 
-.database-modal-body .rm2k3-record-list-pane .db-list-row.db-list-row-has-thumb {
+.database-modal-body .oprn-record-list-pane .db-list-row.db-list-row-has-thumb {
   gap: 8px;
   grid-template-columns: auto 32px minmax(0, 1fr);
 }
 
 /* Characters catalog has no ordinal column — thumb + name + badge. */
-.database-modal-body .rm2k3-record-characters .db-list-row.db-list-row-has-thumb {
+.database-modal-body .oprn-record-characters .db-list-row.db-list-row-has-thumb {
   gap: 8px;
   grid-template-columns: 32px auto minmax(0, 1fr);
 }

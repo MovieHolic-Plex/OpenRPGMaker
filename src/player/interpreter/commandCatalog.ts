@@ -3,8 +3,8 @@ import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from
 import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
-import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
-import { levelForXp, rewardsForLevel } from "@/project/skillModel";
+import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
+import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
@@ -17,6 +17,7 @@ import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpr
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
@@ -27,6 +28,14 @@ import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
 import { advanceFarmPlotsForDay } from "@/player/farming";
 import { resolveShopStock } from "@/project/shopStock";
+import {
+  advanceRoguelikeRunFloor,
+  endRoguelikeRun,
+  resetRoguelikeRunRoom,
+  setRoguelikeRunFlag,
+  startRoguelikeRun,
+} from "@/project/roguelikeRun";
+import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -182,6 +191,26 @@ function executeM2Command(
       green: rgb.green,
       blue: rgb.blue,
       durationMs: clampMs(fieldNumber(command.fields, "durationMs", 300)),
+    });
+  }
+
+  // 모던 Screen Effect 의 flash 옵션도 구식 Flash Screen 과 같은 카메라 경로를 탄다.
+  // 지속형(tint/fade)·날씨는 applyScreenEffect 가 runtime.screen 에 반영해 두므로
+  // 여기서는 일회형만 블로킹 pause 로 넘긴다.
+  if (entry.title === "Screen Effect" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const plan = planScreenEffect(
+      fieldString(command.fields, "effect", "fadeIn"),
+      fieldString(command.fields, "value", ""),
+      fieldNumber(command.fields, "durationMs", 300)
+    );
+    if (plan.kind !== "flash") return resumeNext(frame);
+    const rgb = screenColorToRgb(plan.color);
+    return pause("flashScreen", {
+      kind: "flashScreen",
+      red: rgb.red,
+      green: rgb.green,
+      blue: rgb.blue,
+      durationMs: clampMs(plan.durationMs),
     });
   }
 
@@ -415,7 +444,10 @@ export function executeCommand(
       return { kind: "continue" };
     }
     case "breakLoop":
-      breakLoop(state);
+      // A malformed break outside a loop is a warned no-op. Advancing the
+      // current frame is essential: otherwise the interpreter executes this
+      // same command until the global instruction budget is exhausted.
+      if (!breakLoop(state)) return resumeNext(frame);
       return { kind: "continue" };
     case "transfer":
       return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
@@ -533,6 +565,35 @@ export function executeCommand(
       return pause("spawnFieldEnemy", { kind: "spawnFieldEnemy", spawn: command.spawn });
     case "despawnFieldEnemy":
       return pause("despawnFieldEnemy", { kind: "despawnFieldEnemy", spawnId: command.spawnId });
+    case "runControl": {
+      switch (command.action) {
+        case "start": {
+          const seed = command.seed ?? Math.floor(nextSessionRandom(state.session, "misc") * 0x1_0000_0000);
+          startRoguelikeRun(state.session, {
+            seed,
+            runId: command.runId,
+            startFloor: command.startFloor,
+          });
+          break;
+        }
+        case "advance":
+          advanceRoguelikeRunFloor(state.session, command.amount);
+          break;
+        case "end":
+          endRoguelikeRun(state.session, command.result);
+          break;
+        case "setFlag":
+          setRoguelikeRunFlag(state.session, command.flag, command.value);
+          break;
+        case "resetRoom":
+          {
+            const map = state.project?.maps[state.session.currentMapId];
+            resetRoguelikeRunRoom(state.session, command.roomId ?? (map ? roguelikeRoomId(map) : state.session.currentMapId));
+          }
+          break;
+      }
+      return resumeNext(frame);
+    }
     case "killPlayer":
       killParty(state);
       return pause("gameOver", { kind: "gameOver", message: command.message });
@@ -562,33 +623,11 @@ export function executeCommand(
       changeActorLevel(state.session, command);
       return resumeNext(frame);
     case "changeLifeSkillExp": {
-      // 옵트인 시스템 — system.skillSystem.enabled 가 켜져 있을 때만 동작한다. 플래그를 무시하면
-      // "opt-in" 이라는 스키마 문서와 실제 동작이 어긋난다(게이트가 선언만 되어 있던 상태).
-      if (state.project?.system.skillSystem?.enabled !== true) return resumeNext(frame);
-      const session = state.session as PlaySession;
-      session.lifeSkills ??= {};
-      const skillId = command.skillId;
-      const current = session.lifeSkills[skillId]?.xp ?? 0;
-      const amount = typeof command.amount === "number" ? command.amount : 0;
-      let nextXp: number;
-      switch (command.op) {
-        case "=": nextXp = amount; break;
-        case "+=": nextXp = current + amount; break;
-        case "-=": nextXp = current - amount; break;
-      }
-      nextXp = Math.max(0, nextXp);
-      const skill = state.project?.database.lifeSkills?.find((s) => s.id === skillId);
-      const maxLevel = skill?.maxLevel ?? 10;
-      const oldLevel = session.lifeSkills[skillId]?.level ?? 1;
-      const newLevel = levelForXp(nextXp, maxLevel);
-      session.lifeSkills[skillId] = { xp: nextXp, level: newLevel };
-      // 레벨업 시 보상 스위치 ON
-      if (skill && newLevel > oldLevel) {
-        for (let lv = oldLevel + 1; lv <= newLevel; lv++) {
-          for (const reward of rewardsForLevel(skill, lv)) {
-            if (reward.switchId) setSwitch(session, reward.switchId, true);
-          }
-        }
+      if (state.project) {
+        const amount = typeof command.amount === "number"
+          ? command.amount
+          : state.session.variables[command.amount.id] ?? 0;
+        changeLifeSkillXp(state.project, state.session as PlaySession, command.skillId, command.op, amount);
       }
       return resumeNext(frame);
     }
@@ -609,7 +648,7 @@ export function executeCommand(
       changeActorVital(state.session, command);
       return resumeNext(frame);
     case "recoverAll":
-      recoverAll(state.session, command.actorId);
+      recoverAll(state.session, command.actorId, state.project);
       return resumeNext(frame);
     case "enterHeroName": {
       const actor = state.project?.database.actors.find((record) => record.id === command.actorId);

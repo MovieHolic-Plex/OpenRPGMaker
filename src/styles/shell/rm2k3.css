@@ -1,3 +1,0 @@
-/* Split wrapper: preserves rm2k3.css cascade order. */
-@import "./rm2k3.part-1.css";
-@import "./rm2k3.part-2.css";

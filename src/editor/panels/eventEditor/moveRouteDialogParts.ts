@@ -42,7 +42,7 @@ export function renderTopBar(
       }),
       el("fieldset", {
         class: "event-page-move-route-frequency",
-        children: [el("legend", { text: "빈도" }), renderFrequencyRadios(initialFrequency, onFrequencyChange)],
+        children: [el("legend", { text: "움직임 빈도" }), renderFrequencyRadios(initialFrequency, onFrequencyChange)],
       }),
       renderParameterPanel(parameters),
     ],
@@ -53,8 +53,8 @@ export function renderFooter(close: () => void, onOk: () => void, onHelp: () => 
   return el("div", {
     class: "event-page-move-route-footer",
     children: [
-      routeFooterButton("확인", "event-page-move-route-ok", onOk),
-      routeFooterButton("취소", "event-page-move-route-cancel", close),
+      routeFooterButton("반영하고 닫기", "event-page-move-route-ok", onOk),
+      routeFooterButton("닫기", "event-page-move-route-cancel", close),
       routeFooterButton("도움말", "event-page-move-route-help", onHelp),
     ],
   });
@@ -94,7 +94,8 @@ function renderFrequencyRadios(initialFrequency: number, onChange: (frequency: n
     radio.addEventListener("change", () => {
       if (radio.checked) onChange(value);
     });
-    wrap.append(el("label", { children: [radio, el("span", { text: String(value) })] }));
+    const labels = ["아주 드묾", "드묾", "가끔", "보통", "자주", "꽤 자주", "매우 자주", "아주 자주"];
+    wrap.append(el("label", { children: [radio, el("span", { text: labels[value - 1] ?? String(value) })] }));
   }
   return wrap;
 }
@@ -111,7 +112,7 @@ function renderParameterPanel(parameters: MoveRouteCommandContext & {
   return el("fieldset", {
     class: "event-page-move-route-parameters",
     children: [
-      el("legend", { text: "매개변수" }),
+      el("legend", { text: "이 단계 값" }),
       switchParameterRow(parameters.switchId, parameters.onSwitchId),
       graphicParameterRow(parameters.spriteId, parameters.onSpriteId),
       soundParameterRow(parameters.soundId, parameters.onSoundId),
@@ -149,7 +150,7 @@ function switchParameterRow(value: string, onChange: (value: string) => void): H
   });
   return el("label", {
     class: "event-page-move-route-parameter-row",
-    children: [el("span", { text: "스위치 ID" }), picker, input],
+    children: [el("span", { text: "스위치" }), picker, input],
   });
 }
 
@@ -192,7 +193,7 @@ function graphicParameterRow(value: string, onChange: (value: string) => void): 
   });
   return el("label", {
     class: "event-page-move-route-parameter-row",
-    children: [el("span", { text: "그래픽 ID" }), chip, select, input],
+    children: [el("span", { text: "모습" }), chip, select, input],
   });
 }
 
@@ -209,7 +210,7 @@ function soundParameterRow(value: string, onChange: (value: string) => void): HT
     children: [
       el("span", {
         children: [
-          "효과음 ID ",
+          "효과음 ",
           el("span", { class: "event-page-move-route-sound-icon", attrs: { "aria-hidden": "true" }, text: "♪" }),
         ],
       }),

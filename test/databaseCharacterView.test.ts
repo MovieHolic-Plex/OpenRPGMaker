@@ -165,7 +165,7 @@ describe("database character catalog", () => {
     const characters = store.getCurrent().characters ?? {};
     const ids = Object.keys(characters);
     expect(ids.length).toBeGreaterThanOrEqual(2);
-    expect(ids.some((id) => characters[id]?.displayName === "새 캐릭터")).toBe(true);
+    expect(ids.some((id) => characters[id]?.displayName === "새 주민")).toBe(true);
   });
 
   it("renders charset thumbs for used hosts and empty thumbs for unused/orphan-without-graphic", () => {
@@ -228,5 +228,52 @@ describe("database character catalog", () => {
 
     expect(orphanThumb?.className).toContain("db-list-thumb");
     expect(orphanThumb?.className).toContain("empty");
+  });
+
+  // Break caught: the resident tab does not expose whether gift/calendar runtime gates are enabled.
+  it("shows relationship readiness and selected-profile coverage", () => {
+    const host = renderUtility(renderCharactersTab);
+    expect(findByTestId(host, "db-character-readiness-gifts")?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-character-readiness-calendar")?.dataset.state).toBe("needs-setup");
+
+    findByTestId(host, "db-character-row-char_profile")?.click();
+    expect(findByTestId(host, "db-character-overview-links")?.dataset.events).toBe("0");
+    expect(findByTestId(host, "db-character-overview-gifts")?.dataset.count).toBe("1");
+    expect(findByTestId(host, "db-character-overview-birthday")?.dataset.enabled).toBe("true");
+
+    store.update((project) => {
+      project.system.giftSystem = true;
+      project.system.timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26 };
+    });
+    const readyHost = renderUtility(renderCharactersTab);
+    expect(findByTestId(readyHost, "db-character-readiness-gifts")?.dataset.state).toBe("ready");
+    expect(findByTestId(readyHost, "db-character-readiness-calendar")?.dataset.state).toBe("ready");
+  });
+
+  // Break caught: a project with no resident ids offers prose but no direct creation path in detail.
+  it("offers a first-resident action when the catalog is empty", () => {
+    store.update((project) => {
+      project.maps[project.startMapId].events = [];
+      delete project.characters;
+    });
+    const host = renderUtility(renderCharactersTab);
+    expect(findByTestId(host, "db-character-empty")).toBeTruthy();
+
+    findByTestId(host, "db-character-empty-add")?.click();
+
+    expect(Object.keys(store.getCurrent().characters ?? {})).toHaveLength(1);
+    expect(findByTestId(host, "db-character-display-name")).toBeTruthy();
+  });
+
+  // Break caught: orphan event ids and unused profiles are badged in the list but not summarized or repairable.
+  it("summarizes resident connection issues and exposes system/event repair actions", () => {
+    const host = renderUtility(renderCharactersTab);
+    const issues = findByTestId(host, "db-character-readiness-issues");
+    expect(issues?.dataset.orphans).toBe("1");
+    expect(issues?.dataset.unused).toBe("1");
+    expect(issues?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-character-readiness-gifts-action")).toBeTruthy();
+    expect(findByTestId(host, "db-character-readiness-calendar-action")).toBeTruthy();
+    expect(findByTestId(host, "db-character-readiness-issues-action")).toBeTruthy();
   });
 });

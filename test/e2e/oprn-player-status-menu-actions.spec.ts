@@ -1,0 +1,99 @@
+import { expect, test } from "@playwright/test";
+import {
+  audioState,
+  C002_SCREENSHOT,
+  recoveryItemProject,
+  runtimeState,
+  startActualPlay,
+} from "./oprnPlayerStatusMenuHelpers";
+
+test("Korean item target, equipment, row, and formation actions mutate runtime state", async ({ page }) => {
+  const recoveryAmount = 77;
+  await startActualPlay(page, recoveryItemProject(recoveryAmount), "/?e2eVitals=1");
+  const before = await runtimeState(page);
+  const firstActorId = before.partyActorIds[0];
+  const secondActorId = before.partyActorIds[1];
+  const fourthActorId = before.partyActorIds[3];
+  if (!firstActorId || !secondActorId || !fourthActorId) throw new Error("missing party actors");
+  await lowerActorHp(page, secondActorId);
+
+  await page.keyboard.press("X");
+  await page.getByTestId("status-menu-command-items").click();
+  await page.getByTestId("status-menu-item-item_potion").click();
+  await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택");
+  await page.getByTestId(`status-menu-item-target-${secondActorId}`).click();
+  await expect(page.getByTestId("status-menu-message")).toContainText("테스트 회복약을 사용했습니다");
+  await expect.poll(async () => (await runtimeState(page)).actorVitals[secondActorId]?.hp).toBe(30 + recoveryAmount);
+  await expect.poll(async () => (await audioState(page)).se?.resourceId).toBe("easyrpg-sound-item1");
+  expect((await runtimeState(page)).inventory.item_potion).toBe(1);
+
+  await page.keyboard.press("X");
+  await page.getByTestId("status-menu-command-equipment").click();
+  await page.getByTestId(`status-menu-equipment-actor-${firstActorId}`).click();
+  await page.getByTestId("status-menu-equipment-slot-weapon").click();
+  await page.getByTestId("status-menu-equipment-item-equip_scout_dagger").scrollIntoViewIfNeeded();
+  await page.getByTestId("status-menu-equipment-item-equip_scout_dagger").click();
+  const afterEquip = await runtimeState(page);
+  expect(afterEquip.actorEquipment[firstActorId]?.weapon).toBe("equip_scout_dagger");
+  expect(afterEquip.inventory.equip_scout_dagger).toBeUndefined();
+  expect(afterEquip.inventory.equip_sword).toBe(1);
+
+  await backToRail(page);
+  await page.getByTestId("status-menu-command-party-menu").click();
+  await page.getByTestId("status-menu-group-command-row").click();
+  await page.getByTestId(`status-menu-row-${firstActorId}`).click();
+  expect((await runtimeState(page)).actorRows[firstActorId]).toBe("back");
+
+  await backToRail(page);
+  await page.getByTestId("status-menu-command-party-menu").click();
+  await page.getByTestId("status-menu-group-command-formation").click();
+  await page.getByTestId(`status-menu-formation-actor-${firstActorId}`).click();
+  await page.getByTestId(`status-menu-formation-actor-${fourthActorId}`).click();
+  const afterFormation = await runtimeState(page);
+  expect(afterFormation.partyActorIds[0]).toBe(secondActorId);
+  expect(afterFormation.partyActorIds[3]).toBe(firstActorId);
+  await page.getByTestId("main-menu").screenshot({ path: C002_SCREENSHOT });
+});
+
+test("uses a DB-edited recovery item from the status menu", async ({ page }, testInfo) => {
+  const recoveryAmount = 77;
+  await startActualPlay(page, recoveryItemProject(recoveryAmount), "/?e2eVitals=1");
+  const actorId = (await runtimeState(page)).partyActorIds[0];
+  if (!actorId) throw new Error("missing party actor");
+  await lowerActorHp(page, actorId);
+
+  await page.keyboard.press("X");
+  await expect(page.getByTestId("main-menu")).toBeVisible();
+  await page.getByTestId("status-menu-command-items").click();
+  await expect(page.getByTestId("status-menu-detail")).toContainText("테스트 회복약");
+  await page.getByTestId("status-menu-item-item_potion").click();
+  await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택");
+  await page.getByTestId(`status-menu-item-target-${actorId}`).click();
+
+  await expect(page.getByTestId("status-menu-message")).toContainText("테스트 회복약을 사용했습니다");
+  await expect.poll(async () => (await runtimeState(page)).actorVitals[actorId]?.hp).toBe(30 + recoveryAmount);
+  await expect.poll(async () => (await audioState(page)).se?.resourceId).toBe("easyrpg-sound-item1");
+  expect((await runtimeState(page)).inventory.item_potion).toBe(1);
+  await page.getByTestId("main-menu").screenshot({ path: testInfo.outputPath("status-menu-item-use-db-edited-recovery.png") });
+});
+
+async function lowerActorHp(page: import("@playwright/test").Page, actorId: string): Promise<void> {
+  await expect
+    .poll(async () =>
+      page.evaluate(() => typeof window.__oprnSetActorVitals)
+    )
+    .toBe("function");
+  await page.evaluate((id) => {
+    window.__oprnSetActorVitals?.(id, 30, 0);
+  }, actorId);
+  await expect.poll(async () => (await runtimeState(page)).actorVitals[actorId]?.hp).toBe(30);
+}
+
+async function backToRail(page: import("@playwright/test").Page): Promise<void> {
+  for (let step = 0; step < 5; step += 1) {
+    const state = await page.getByTestId("status-menu-debug-json").textContent();
+    if (state && (JSON.parse(state) as { mode?: string }).mode === "main") return;
+    await page.keyboard.press("Escape");
+  }
+  throw new Error("status menu did not return to the primary rail");
+}

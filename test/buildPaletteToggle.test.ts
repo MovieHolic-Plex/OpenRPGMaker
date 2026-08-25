@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import {
   getBuildPaletteHouseOptions,
@@ -98,5 +98,39 @@ describe("build palette toggle → tool switch", () => {
 
     windows?.click();
     expect(getBuildPaletteHouseOptions().windows).toBe(true);
+  });
+
+  it("기존 건축 팝오버의 AI 채우기 버튼을 유지한다", () => {
+    // Break: bottom-bar cleanup removes an unrelated build-palette action.
+    setBuildPaletteEnabled(true);
+    editorState.set({ currentMapId: "map_blank_start", selection: { mapId: "map_blank_start", x: 2, y: 2, width: 10, height: 8 } });
+
+    const popup = renderBuildPalettePopup();
+    const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
+
+    expect(fakePopup ? findByTestId(fakePopup, "build-palette-ai") : null).not.toBeNull();
+  });
+
+  it.each([
+    ["house", "야외 집 한 채"],
+    ["village", "마을"],
+  ] as const)("%s 버튼은 결정론적 시공 대신 AI 영역 작업을 즉시 실행한다", (primitive, instruction) => {
+    const openRegionTask = vi.fn();
+    setBuildPaletteEnabled(true);
+    editorState.set({
+      currentMapId: "map_blank_start",
+      selection: { mapId: "map_blank_start", x: 2, y: 3, width: 40, height: 38 },
+    });
+
+    const popup = renderBuildPalettePopup(openRegionTask);
+    const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
+    findByTestId(fakePopup!, `build-palette-${primitive}`)?.click();
+
+    expect(openRegionTask).toHaveBeenCalledWith(expect.objectContaining({
+      autoRun: true,
+      mapId: "map_blank_start",
+      region: { x: 2, y: 3, width: 40, height: 38 },
+      initialInstruction: expect.stringContaining(instruction),
+    }));
   });
 });

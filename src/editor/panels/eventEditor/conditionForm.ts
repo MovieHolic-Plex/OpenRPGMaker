@@ -11,7 +11,7 @@ export { databasePicker, switchPicker, switchVariablePicker, variablePicker } fr
 const CONDITION_MODE_OPTIONS = [
   { value: "switch", label: "스위치" },
   { value: "variable", label: "변수" },
-  { value: "selfSwitch", label: "셀프 스위치" },
+  { value: "selfSwitch", label: "이 이벤트 기억" },
   { value: "actor", label: "주인공" },
   { value: "item", label: "아이템" },
   { value: "gold", label: "소지금" },
@@ -21,14 +21,15 @@ const CONDITION_MODE_OPTIONS = [
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
   { value: "battleResult", label: "전투 결과" },
+  { value: "run", label: "탐험" },
   { value: "all", label: "모두(AND)" },
   { value: "any", label: "하나(OR)" },
   { value: "not", label: "아님(NOT)" },
 ] as const;
 
 const SWITCH_STATE_OPTIONS = [
-  { value: "true", label: "ON" },
-  { value: "false", label: "OFF" },
+  { value: "true", label: "켜기" },
+  { value: "false", label: "끄기" },
 ] as const;
 
 export const TIME_PHASE_OPTIONS = [
@@ -99,6 +100,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "battleResult":
         onChange({ kind: "battleResult", result: "victory" });
         return;
+      case "run":
+        onChange({ kind: "run", query: "active", value: true });
+        return;
       case "all":
         onChange({ kind: "all", conditions: [{ kind: "switch", switchId: "", value: true }] });
         return;
@@ -149,6 +153,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "battleResult":
       wrap.append(labeledBattleResult(cond, onChange));
+      break;
+    case "run":
+      wrap.append(labeledRun(cond, onChange));
       break;
     case "all":
     case "any":
@@ -376,7 +383,7 @@ function labeledFriendship(
   };
   npcKey.addEventListener("change", apply);
   value.addEventListener("change", apply);
-  box.append(field("NPC 키", npcKey), field("최소 호감도", value));
+  box.append(field("누구", npcKey), field("최소 호감도", value));
   return box;
 }
 
@@ -404,6 +411,94 @@ function labeledBattleResult(
   });
   box.append(field("결과", select));
   return box;
+}
+
+function labeledRun(
+  cond: Extract<Condition, { kind: "run" }>,
+  onChange: (condition: Condition) => void
+): HTMLElement {
+  const box = el("div", { class: "event-condition-detail" });
+  const queryOptions = [
+    { value: "active", label: "탐험 중인지" },
+    { value: "floor", label: "현재 층" },
+    { value: "flag", label: "탐험 기억" },
+    { value: "result", label: "탐험 결과" },
+  ] as const;
+  const query = selectWithOptions(queryOptions, cond.query, "event-condition-run-query");
+  query.addEventListener("change", () => {
+    switch (selectedOptionValue(query, queryOptions, cond.query)) {
+      case "active": onChange({ kind: "run", query: "active", value: true }); return;
+      case "floor": onChange({ kind: "run", query: "floor", op: ">=", value: 1 }); return;
+      case "flag": onChange({ kind: "run", query: "flag", flag: "flag1", value: true }); return;
+      case "result": onChange({ kind: "run", query: "result", result: "completed" }); return;
+    }
+  });
+  box.append(field("조회", query));
+
+  switch (cond.query) {
+    case "active": {
+      const select = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value ?? true), "event-condition-run-active-value");
+      select.addEventListener("change", () => onChange({ kind: "run", query: "active", value: select.value === "true" }));
+      box.append(field("상태", select));
+      break;
+    }
+    case "floor": {
+      let opValue = cond.op;
+      let floorValue = cond.value;
+      const op = selectWithOptions(CONDITION_OP_OPTIONS, opValue, "event-condition-run-floor-op");
+      const value = el("input", {
+        attrs: { type: "number", min: "1", max: "9999", step: "1" },
+        value: String(floorValue),
+        dataset: { testid: "event-condition-run-floor-value" },
+      }) as HTMLInputElement;
+      const apply = (): void => onChange({ kind: "run", query: "floor", op: opValue, value: floorValue });
+      op.addEventListener("change", () => { opValue = selectedOptionValue(op, CONDITION_OP_OPTIONS, opValue); apply(); });
+      value.addEventListener("change", () => {
+        floorValue = Math.max(1, Math.min(9_999, Math.trunc(Number(value.value) || 1)));
+        apply();
+      });
+      box.append(field("비교", op), field("층", value));
+      break;
+    }
+    case "flag": {
+      let flagValue = cond.flag;
+      let boolValue = cond.value;
+      const flag = el("input", {
+        attrs: { type: "text", placeholder: "플래그 이름" },
+        value: flagValue,
+        dataset: { testid: "event-condition-run-flag" },
+      }) as HTMLInputElement;
+      const value = selectWithOptions(BOOLEAN_OPTIONS, String(boolValue), "event-condition-run-flag-value");
+      const apply = (): void => onChange({ kind: "run", query: "flag", flag: flagValue, value: boolValue });
+      flag.addEventListener("change", () => { flagValue = flag.value.trim(); apply(); });
+      value.addEventListener("change", () => { boolValue = value.value === "true"; apply(); });
+      box.append(field("플래그", flag), field("값", value));
+      break;
+    }
+    case "result": {
+      const options = [
+        { value: "completed", label: "완료" },
+        { value: "failed", label: "실패" },
+        { value: "abandoned", label: "포기" },
+      ] as const;
+      const result = selectWithOptions(options, cond.result, "event-condition-run-result");
+      result.addEventListener("change", () => onChange({
+        kind: "run",
+        query: "result",
+        result: selectedOptionValue(result, options, cond.result),
+      }));
+      box.append(field("결과", result));
+      break;
+    }
+  }
+  return box;
+}
+
+export function renderRunCondition(
+  cond: Extract<Condition, { kind: "run" }>,
+  onChange: (condition: Condition) => void
+): HTMLElement {
+  return labeledRun(cond, onChange);
 }
 
 function labeledGroup(
@@ -508,7 +603,7 @@ function conditionHint(kind: Condition["kind"]): string {
     case "variable":
       return "변수 값과 비교 값의 관계가 맞으면 참 분기로 들어갑니다.";
     case "selfSwitch":
-      return "이 이벤트 전용 셀프 스위치(A~D) 상태를 검사합니다.";
+      return "이 이벤트만의 기억(A~D) 상태를 검사합니다.";
     case "actor":
       return "파티에 해당 주인공이 있는지 검사합니다.";
     case "item":
@@ -524,9 +619,11 @@ function conditionHint(kind: Condition["kind"]): string {
     case "npcActivity":
       return "NPC 스케줄 활동 ID가 일치하는지 검사합니다.";
     case "friendshipAtLeast":
-      return "호감도가 지정 값 이상인지 검사합니다. NPC 키를 비우면 이 이벤트 기준입니다.";
+      return "호감도가 지정 값 이상인지 검사합니다. 누구를 비우면 이 이벤트 기준입니다.";
     case "battleResult":
-      return "직전 전투 처리(battleProcessing) 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
+      return "직전 전투 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
+    case "run":
+      return "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.";
     case "all":
       return "하위 조건을 모두 만족해야 참입니다 (AND).";
     case "any":
@@ -628,7 +725,7 @@ export function selfSwitchControl(
 
   const keysWrap = el("span", {
     class: "self-switch-keys",
-    attrs: { role: "group", "aria-label": "셀프 스위치 키" },
+    attrs: { role: "group", "aria-label": "이 이벤트 기억 칸" },
   });
   const keyButtons: HTMLButtonElement[] = [];
   for (const k of SELF_SWITCH_KEYS) {
@@ -655,14 +752,14 @@ export function selfSwitchControl(
   const valueBtn = el("button", {
     class: `self-switch-value ${value ? "on" : "off"}`,
     attrs: { type: "button", "aria-pressed": String(value) },
-    text: value ? "ON" : "OFF",
+    text: value ? "켜짐" : "꺼짐",
     dataset: { testid: options.valueTestId ?? "self-switch-value" },
   }) as HTMLButtonElement;
   valueBtn.addEventListener("click", () => {
     currentValue = !currentValue;
     valueBtn.classList.toggle("on", currentValue);
     valueBtn.classList.toggle("off", !currentValue);
-    valueBtn.textContent = currentValue ? "ON" : "OFF";
+    valueBtn.textContent = currentValue ? "켜짐" : "꺼짐";
     valueBtn.setAttribute("aria-pressed", String(currentValue));
     onChange(currentKey, currentValue);
   });
@@ -888,7 +985,7 @@ export function renderNpcActivityCondition(
 ): HTMLElement {
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "work" },
+    attrs: { type: "text", placeholder: "일" },
     value: cond.activity,
     dataset: { testid: options.activityTestId ?? "event-condition-npc-activity" },
   }) as HTMLInputElement;

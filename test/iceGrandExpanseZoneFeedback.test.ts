@@ -21,7 +21,7 @@ import { startSession, type PlaySession } from "@/project/session";
 import type { Command, EventPage } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 
-const CHECKPOINT_EVENT = "rpgzzu:checkpoint-feedback";
+const CHECKPOINT_EVENT = "oprn:checkpoint-feedback";
 
 function actionPage(commands: readonly Command[]): EventPage {
   return {

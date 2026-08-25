@@ -105,7 +105,7 @@ export function openFacesetDialog(
   onApply: (command: ChangeFaceCommand) => void
 ): void {
   openEventSubdialog({
-    title: "얼굴 그래픽 변경",
+    title: "얼굴 바꾸기",
     testId: "event-command-faceset-dialog",
     width: "wide",
     render: (body, close) => {
@@ -162,7 +162,7 @@ export function openFacesetDialog(
       const openPicker = (): void => {
         openDatabaseResourcePickerDialog({
           kind: "faceset",
-          title: "얼굴 그래픽 선택",
+          title: "얼굴 고르기",
           currentId: resource.value.trim(),
           currentFaceIndex: clampFaceIndex(faceIndex.value),
           allowClear: true,
@@ -184,9 +184,9 @@ export function openFacesetDialog(
         el("div", {
           class: "event-command-faceset-grid",
           children: [
-            fieldset("얼굴 그래픽", [
+            fieldset("얼굴", [
               preview,
-              labelledControl("리소스", resource),
+              labelledControl("그림", resource),
               labelledControl("얼굴", faceIndex),
               el("button", {
                 class: "event-command-text-action",

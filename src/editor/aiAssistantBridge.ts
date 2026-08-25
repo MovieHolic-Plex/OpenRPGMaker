@@ -1,6 +1,6 @@
 // editor/aiAssistantBridge.ts
 // 에디터 AI 채팅과 외부 MCP/에이전트를 같은 세션으로 잇는 브리지.
-// - 패널이 register 하면 window.__rpgzzuAiBridge 와 로컬 HTTP 브리지(127.0.0.1)에 연결
+// - 패널이 register 하면 window.__oprnAiBridge 와 로컬 HTTP 브리지(127.0.0.1)에 연결
 // - MCP(scripts/rpgzzu-assistant-mcp.mjs)가 send/status/audit/harness 를 호출하면
 //   브라우저에서 실제 채팅 패널이 돌고, 사용자는 UI를 그대로 본다.
 
@@ -71,7 +71,7 @@ export function isAiAssistantBridgeConnected(): boolean {
 export function registerAiAssistantBridge(next: AiAssistantBridgeHandlers): void {
   handlers = next;
   if (typeof window !== "undefined") {
-    window.__rpgzzuAiBridge = {
+    window.__oprnAiBridge = {
       send: (text: string) => runSend(text),
       status: () => getStatusSnapshot(),
       audit: () => handlers?.getAudit() ?? [],
@@ -87,7 +87,7 @@ export function unregisterAiAssistantBridge(): void {
   handlers = null;
   stopBridgeClient();
   if (typeof window !== "undefined") {
-    delete window.__rpgzzuAiBridge;
+    delete window.__oprnAiBridge;
   }
 }
 

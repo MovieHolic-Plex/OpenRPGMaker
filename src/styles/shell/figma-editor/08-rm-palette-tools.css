@@ -36,7 +36,7 @@
     max-width: 508px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
     align-items: center;
     background: var(--control-bg);
     border: 1px solid var(--editor-line);
@@ -56,7 +56,7 @@
     z-index: var(--z-canvas-decor);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool {
     align-items: center;
     background: transparent;
     border: 1px solid transparent;
@@ -71,27 +71,27 @@
     width: 26px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool svg {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool svg {
     display: block;
     height: 18px;
     pointer-events: none;
     width: 18px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool:hover:not(:disabled),
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool.active {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:hover:not(:disabled),
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     color: var(--editor-blue);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool:disabled {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:disabled {
     color: var(--editor-text-soft);
     cursor: default;
     opacity: 0.48;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar-separator {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-separator {
     align-self: stretch;
     background: var(--editor-line);
     display: block;
@@ -99,19 +99,19 @@
     width: 1px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar-spacer {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-spacer {
     flex: 1 1 auto;
     min-width: 4px;
   }
 
   /* 맵 모드 도구 그룹(스포이트·이동·통행·이벤트) — flex-wrap 시 한 덩어리로 줄바꿈 */
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar-modes {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-modes {
     display: inline-flex;
     flex: 0 0 auto;
     gap: 1px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-overflow-section {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-overflow-section {
     color: var(--editor-text-soft);
     font-size: 10px;
     font-weight: 700;
@@ -121,13 +121,13 @@
     text-transform: uppercase;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-overflow-dropdown {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-overflow-dropdown {
     max-height: 320px;
     min-width: 196px;
     overflow-y: auto;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-toolbar-menu {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu {
     display: flex;
     flex: 0 0 auto;
     /* static: 드롭다운이 (position:relative인) 툴바 전체를 기준으로 우하단에 열린다.
@@ -135,8 +135,8 @@
     position: static;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-toolbar-dropdown,
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-dropdown {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-dropdown,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-dropdown {
     background: var(--editor-popover-bg);
     border: 1px solid var(--editor-line-strong);
     border-radius: 6px;
@@ -151,15 +151,15 @@
     z-index: var(--z-toolbar);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-dropdown {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-dropdown {
     min-width: 216px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-brush-dropdown {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-brush-dropdown {
     min-width: 118px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-summary {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-summary {
     align-items: center;
     border-bottom: 1px solid var(--editor-line);
     display: grid;
@@ -168,7 +168,7 @@
     padding: 3px 2px 7px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-preview {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-preview {
     background: var(--editor-panel-bg-2);
     border: 1px solid var(--editor-line-strong);
     border-radius: 4px;
@@ -178,18 +178,18 @@
     width: 32px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-field {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-field {
     min-width: 0;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-field-label {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-field-label {
     color: var(--editor-text-muted);
     display: block;
     font-size: 10px;
     line-height: 1.1;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-field-value {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-field-value {
     color: var(--editor-text);
     display: block;
     font-size: 12px;
@@ -200,8 +200,8 @@
     white-space: nowrap;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item,
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-item {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item {
     background: transparent;
     border: 1px solid transparent;
     border-radius: 4px;
@@ -214,7 +214,7 @@
     text-align: left;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item {
     align-items: center;
     display: flex;
     font-size: 12px;
@@ -223,7 +223,7 @@
     min-height: 28px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item::after {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item::after {
     background: transparent;
     border-radius: 999px;
     content: "";
@@ -231,32 +231,32 @@
     width: 6px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item.active::after {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item.active::after {
     background: var(--editor-blue);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item:hover:not(:disabled),
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item.active,
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-item:hover:not(:disabled),
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-item.active {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item:hover:not(:disabled),
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item.active,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item:hover:not(:disabled),
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item.active {
     background: var(--editor-blue-soft);
     border-color: var(--editor-line-strong);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-option-item:disabled,
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-item:disabled {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item:disabled,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item:disabled {
     color: var(--editor-text-soft);
     cursor: default;
     opacity: 0.52;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-label {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-label {
     font-size: 13px;
     font-weight: 700;
     line-height: 1.2;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-template-description {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-description {
     color: var(--editor-text-muted);
     font-size: 11px;
     line-height: 1.2;

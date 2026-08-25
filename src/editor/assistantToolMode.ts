@@ -49,12 +49,12 @@ export interface ActiveToolDomainInfo {
 export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly string[]; weak: readonly string[] }>> = {
   core: { strong: [], weak: [] },
   battle: {
-    strong: ["전투", "배틀", "적", "몬스터", "enemy", "troop", "트룹", "시뮬", "드롭", "hp"],
+    strong: ["전투", "배틀", "적", "몬스터", "enemy", "troop", "트룹", "시뮬", "드롭", "hp", "상성", "상성표", "속성"],
     weak: ["스킬", "밸런스", "행동"],
   },
-  quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story"], weak: [] },
+  quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "엔딩", "ending", "결말", "의뢰", "미션", "반지를", "찾아오", "촌장", "quest-giver"], weak: [] },
   database: {
-    strong: ["아이템", "포션", "물약", "무기", "방어구", "장비", "액터", "캐릭터", "직업", "클래스", "상태이상", "데이터베이스", "데이터 베이스", "db", "능력치"],
+    strong: ["아이템", "포션", "물약", "무기", "방어구", "장비", "액터", "캐릭터", "직업", "클래스", "상태이상", "데이터베이스", "데이터 베이스", "db", "능력치", "상성", "상성표", "속성"],
     weak: ["스킬", "적"],
   },
   tile: {
@@ -67,7 +67,8 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
     ],
     weak: [],
   },
-  event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story"], weak: [] },
+  // 엔딩 툴(define_ending/list_endings)은 event 도메인으로 태깅돼 있으므로 엔딩 키워드도 event 를 켠다.
+  event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "상점", "상인", "재고", "shop", "merchant", "stock", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "컷신", "cutscene", "연출", "선택지", "엔딩", "ending", "결말"], weak: [] },
   world: { strong: ["세계관", "월드", "지역", "관계", "엔티티"], weak: [] },
   system: {
     strong: [

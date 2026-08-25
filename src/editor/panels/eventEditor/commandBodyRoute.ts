@@ -15,7 +15,7 @@ import { previewMoveRoute } from "./previewMoveRoute";
 const routeParameterDrafts = new Map<string, MoveRouteCommandContext>();
 
 export function moveEventBody(context: CommandEditContext, cmd: Extract<Command, { kind: "moveEvent" }>): HTMLElement {
-  const wrap = el("div", { class: "move-route-editor", dataset: { testid: "move-route-editor" } });
+  const wrap = el("div", { class: "move-route-editor cream-command-form", dataset: { testid: "move-route-editor" } });
   const parameterKey = context.path.join(".");
   const parameterDraft = routeParameterDrafts.get(parameterKey) ?? inferRouteParameters(cmd.route.moves);
 
@@ -37,7 +37,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   }
   targetSelect.value = targetKindOf(cmd.eventId);
   const eventIdIn = el("input", {
-    attrs: { type: "text", placeholder: "이벤트 ID" },
+    attrs: { type: "text", placeholder: "어느 이벤트" },
     value: cmd.eventId === PLAYER_MOVE_TARGET ? "" : cmd.eventId,
     dataset: { testid: "move-route-event-id-input" },
   });
@@ -68,28 +68,28 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   skippable.checked = cmd.route.skippable === true;
 
   const switchIdIn = el("input", {
-    attrs: { type: "text", placeholder: "스위치 ID" },
+    attrs: { type: "text", placeholder: "스위치" },
     value: parameterDraft.switchId,
     dataset: { testid: "move-route-switch-id-input" },
   });
   const graphicIdIn = el("input", {
-    attrs: { type: "text", placeholder: "그래픽 ID" },
+    attrs: { type: "text", placeholder: "모습" },
     value: parameterDraft.spriteId,
     dataset: { testid: "move-route-graphic-id-input" },
   });
   const soundIdIn = el("input", {
-    attrs: { type: "text", placeholder: "효과음 ID" },
+    attrs: { type: "text", placeholder: "효과음" },
     value: parameterDraft.soundId,
     dataset: { testid: "move-route-sound-id-input" },
   });
   const npcTargetMap = mapSelect(parameterDraft.npcTargetMapId);
   const npcTargetX = el("input", {
-    attrs: { type: "number", min: "0", placeholder: "NPC X" },
+    attrs: { type: "number", min: "0", placeholder: "가로" },
     value: parameterDraft.npcTargetX,
     dataset: { testid: "move-route-npc-target-x-input" },
   });
   const npcTargetY = el("input", {
-    attrs: { type: "number", min: "0", placeholder: "NPC Y" },
+    attrs: { type: "number", min: "0", placeholder: "세로" },
     value: parameterDraft.npcTargetY,
     dataset: { testid: "move-route-npc-target-y-input" },
   });
@@ -278,18 +278,18 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     children: [skippable, el("span", { text: "막히면 건너뛰기" })],
   });
 
-  // 매개변수는 스위치/그래픽/효과음/NPC이동 버튼에만 쓰이므로 접어 두고,
+  // 스위치/그래픽/효과음/NPC이동 버튼에만 쓰이므로 접어 두고,
   // 주 작업면(목록 + 명령 버튼 + 미리보기)을 먼저 보이게 한다.
   const parametersPanel = el("details", {
     class: "move-route-parameters-details",
     dataset: { testid: "move-route-parameters-details" },
     children: [
-      el("summary", { text: "매개변수 (스위치 · 그래픽 · 효과음 · NPC 맵 이동)" }),
+      el("summary", { text: "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동)" }),
       el("div", {
         class: "move-route-parameters",
         children: [
           labeledField("스위치", switchIdIn),
-          labeledField("그래픽", graphicIdIn),
+          labeledField("모습", graphicIdIn),
           labeledField("효과음", soundIdIn),
           labeledField("NPC 맵", npcTargetMap),
           labeledField("X", npcTargetX),
@@ -299,7 +299,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
       }),
       el("p", {
         class: "move-route-parameters-hint",
-        text: "스위치 ON/OFF, 그래픽 변경, 효과음, NPC 맵 이동 버튼을 누를 때 위 값을 사용합니다.",
+        text: "스위치 켜기/끄기, 모습 바꾸기, 효과음, NPC 맵 이동을 넣을 때 위 값을 씁니다.",
       }),
     ],
   });
@@ -311,7 +311,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
         el("div", {
           class: "move-route-target-row",
           children: [
-            el("span", { class: "move-route-target-label", text: "대상" }),
+            el("span", { class: "move-route-target-label", text: "누구에게" }),
             targetSelect,
             eventIdIn,
           ],
@@ -322,7 +322,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     el("p", {
       class: "move-route-help",
       dataset: { testid: "move-route-help" },
-      text: "오른쪽 명령 버튼으로 경로를 쌓습니다. 왼쪽 목록에서 선택·삭제, 아래 격자에 궤적이 그려집니다. (RM2003 이동 경로와 동일한 명령 세트)",
+      text: "오른쪽 명령 버튼으로 경로를 쌓습니다. 왼쪽 목록에서 선택·삭제, 아래 격자에 궤적이 그려집니다.",
     }),
     el("div", {
       class: "move-route-main",

@@ -119,7 +119,7 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "ecp-message-control-badges")).toBeNull();
   });
 
-  it("text editor keeps body primary and speaker optional with labeled control palette", () => {
+  it("text editor keeps preview and easy tools primary while raw controls stay advanced", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
         { path: [], actions: noopActions, lockKind: true },
@@ -127,8 +127,13 @@ describe("command edit modal — image-rich preview", () => {
       )
     );
     expect(findByTestId(body, "event-command-text-editor")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-live-preview")).toBeTruthy();
     expect(findByTestId(body, "event-command-text-body")).toBeTruthy();
-    expect(findByTestId(body, "event-command-text-speaker-details")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-speaker")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-easy-tools")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-tool-emphasis")).toBeTruthy();
+    const controlDetails = findByTestId(body, "event-command-text-control-details") as HTMLDetailsElement | null;
+    expect(controlDetails?.open).toBe(false);
     expect(findByTestId(body, "event-command-text-palette")).toBeTruthy();
     expect(findByTestId(body, "event-command-text-insert-variable")?.textContent).toContain("변수");
   });
@@ -165,9 +170,10 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(body, "input-number-digit-stepper")).toBeTruthy();
     expect(findByTestId(body, "input-number-digit-chip-2")?.className).toContain("active");
     expect(findByTestId(body, "input-number-digits")).toBeTruthy();
-    expect(body.textContent).toContain("창 제목");
-    expect(body.textContent).toContain("터치용 숫자 키패드 표시");
-    expect(body.textContent).not.toContain("안내 문구");
+    expect(body.textContent).toContain("안내 문구");
+    expect(body.textContent).toContain("화면에 숫자 버튼 보이기");
+    expect(body.textContent).not.toContain("창 제목");
+    expect(body.textContent).not.toContain("자릿수");
   });
 
   it("inputNumber preview without pad shows OK mock instead of keypad", () => {
@@ -193,8 +199,8 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(body, "event-command-variable-value-source")).toBeTruthy();
     expect(findByTestId(body, "event-command-variable-number-value")).toBeTruthy();
     expect(body.textContent).toContain("대상 변수");
-    expect(body.textContent).toContain("값 소스");
-    expect(body.textContent).toContain("정수 나눗셈");
+    expect(body.textContent).toContain("값은");
+    expect(body.textContent).toContain("나누기는 나머지를 버립니다");
     const formula = findByTestId(body, "event-command-variable-formula");
     expect(formula?.textContent).toContain("+=");
     expect(formula?.textContent).toContain("7");
@@ -208,7 +214,7 @@ describe("command edit modal — image-rich preview", () => {
     );
     expect(findByTestId(numberPreview, "ecp-variable-card")).toBeTruthy();
     expect(findByTestId(numberPreview, "ecp-variable-formula")?.textContent).toContain("12");
-    expect(numberPreview.textContent).toContain("값 소스: 숫자");
+    expect(numberPreview.textContent).toContain("값은 숫자");
 
     const varPreview = renderWithFakeDom(() =>
       renderCommandPreview({
@@ -219,7 +225,7 @@ describe("command edit modal — image-rich preview", () => {
       })
     );
     expect(findByTestId(varPreview, "ecp-variable-formula")?.textContent).toContain("+=");
-    expect(varPreview.textContent).toContain("값 소스: 변수");
+    expect(varPreview.textContent).toContain("값은 변수");
   });
 
   it("changeFace play mock shows a tall message window with crop-only face (no editor meta card)", () => {
@@ -260,7 +266,7 @@ describe("command edit modal — image-rich preview", () => {
     const badges = findByTestId(preview, "ecp-settings-badges");
     expect(badges?.textContent).toContain("일반");
     expect(badges?.textContent).toContain("하단");
-    expect(badges?.textContent).toContain("가림 방지 ON");
+    expect(badges?.textContent).toContain("가림 방지 켜짐");
     expect(badges?.textContent).toContain("이벤트 이동 정지");
   });
 

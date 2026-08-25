@@ -1,4 +1,8 @@
 .play-viewport {
+  --play-logical-width: 320px;
+  --play-logical-height: 240px;
+  --play-logical-half-width: 160px;
+  --play-logical-half-height: 120px;
   --play-scale: 1;
   --play-scale-x: 1;
   --play-scale-y: 1;
@@ -8,6 +12,8 @@
   --play-crop-left: 0px;
   --play-visible-width: 320px;
   --play-visible-height: 240px;
+  --play-stage-left: 0px;
+  --play-stage-top: 0px;
   display: grid;
   height: 100%;
   min-height: 100%;
@@ -35,8 +41,8 @@
   opacity: 0.7;
   padding: 0;
   position: absolute;
-  right: calc(50% - 160px * var(--play-scale) + 6px);
-  top: calc(50% - 120px * var(--play-scale) + 6px);
+  right: calc(50% - var(--play-logical-half-width) * var(--play-scale) + 6px);
+  top: calc(50% - var(--play-logical-half-height) * var(--play-scale) + 6px);
   width: 22px;
   z-index: 60;
 }
@@ -46,12 +52,14 @@
 }
 .play-stage {
   background: #000;
-  height: 240px;
+  height: var(--play-logical-height);
+  left: var(--play-stage-left);
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: var(--play-stage-top);
   transform: scale(var(--play-scale));
-  transform-origin: center;
-  width: 320px;
+  transform-origin: top left;
+  width: var(--play-logical-width);
 }
 .player-layout .play-stage > .dialogue-overlay,
 .player-layout .play-stage > .name-entry-overlay,
@@ -93,12 +101,12 @@
   min-width: min(320px, max(1px, calc(var(--play-visible-width) - 16px)));
 }
 .player-layout .phaser-container {
-  height: 240px;
-  width: 320px;
+  height: var(--play-logical-height);
+  width: var(--play-logical-width);
 }
 .player-layout .phaser-container canvas {
   display: block;
-  height: 240px;
+  height: var(--play-logical-height);
   width: 100%;
 }
 
@@ -109,8 +117,8 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(calc(100% - 24px), calc(320px * var(--play-scale) - 24px));
-  height: min(calc(100% - 24px), calc(240px * var(--play-scale) - 24px));
+  width: min(calc(100% - 24px), calc(var(--play-logical-width) * var(--play-scale) - 24px));
+  height: min(calc(100% - 24px), calc(var(--play-logical-height) * var(--play-scale) - 24px));
   align-items: center;
 }
 .player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-shell {

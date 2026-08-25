@@ -1,68 +1,59 @@
 /* ============================================================================
-   rpg-zzu 디자인 토큰 (UI-0 파운데이션) — 단일 진실 공급원(Single Source of Truth)
-   웜 크림 스튜디오 (warm cream studio).
+   rpg-zzu 디자인 토큰 — 단일 진실 공급원
+   쿨 화이트 스튜디오 (cool white + indigo). 크림/골드 폐기.
    전 영역(shell/editor/database/map/resources)은 여기 정의된 변수만 사용한다.
    가이드: src/styles/TOKENS.md
    주의: 이 파일은 index.css 최상단에서 가장 먼저 import 된다.
          레거시 변수(--bg, --surface-panel, --editor-shell-bg 등)는
          editor/core.part-1.css · database/tabs-b-shell-layout.css ·
          shell/figma-editor/01-shell-topbar-team.css 의 :root 에서 이 토큰의 별칭으로 리매핑돼 있다.
-   크림 elevation 순서: canvas < inset < base < surface < raised < overlay
-     (canvas = 가장 깊은 웰; inset과 canvas는 필요 없으면 같은 값으로 수렴 가능하나 이름은 유지)
+   elevation: canvas < inset < base < surface < raised < overlay
    ========================================================================= */
 
 :root {
-  /* ---- 배경 계층 (base → surface → raised → overlay) ------------------- */
-  /* elevation: canvas(깊은 웰) < inset(움푹) < base(셸 바닥) < surface(패널) < raised(카드) < overlay(팝오버) */
-  --bg-base: #F7F3EA;    /* 앱 셸 최하층: 메뉴바/툴바 뒤, body */
-  --bg-surface: #FCF9F2; /* 패널/사이드바/스테이터스바 — base보다 밝음 */
-  --bg-raised: #FFFDF8;  /* 카드, 다이얼로그 본문, 떠 있는 패널 */
-  --bg-overlay: #FFFFFF; /* 팝오버/드롭다운/컨텍스트 메뉴 (최상층) */
-  --bg-inset: #EFE9DC;   /* 인풋 웰, 리스트 웰, 움푹 들어간 영역 */
-  --bg-canvas: #E7E0D0;  /* 맵/게임 캔버스 뒤 웜 크림 우물 */
-  --bg-glass: rgba(252, 249, 242, 0.86); /* 캔버스 위 반투명 플로팅 툴바 */
+  --bg-base: #F7F8F8;
+  --bg-surface: #F7F8F8;
+  --bg-raised: #FFFFFF;
+  --bg-overlay: #FFFFFF;
+  --bg-inset: #EEF1F4;
+  --bg-canvas: #EEF1F4;
+  --bg-glass: rgba(247, 248, 248, 0.92);
+  --bg-scrim: rgba(15, 23, 42, 0.40);
 
-  /* ---- 인터랙션 상태 (배경 위에 얹는 반투명 레이어) --------------------- */
-  --bg-hover: rgba(42, 37, 33, 0.06);  /* 리스트행/메뉴항목 hover — dark-alpha on cream */
-  --bg-active: rgba(42, 37, 33, 0.10); /* pressed/선택 유사 상태 */
-  --control-bg: rgba(42, 37, 33, 0.05);      /* 버튼 등 컨트롤 기본면 */
-  --control-bg-hover: rgba(42, 37, 33, 0.09); /* 컨트롤 hover */
-  --control-bg-active: rgba(42, 37, 33, 0.13);/* 컨트롤 active(눌림) */
+  --bg-hover: rgba(15, 23, 42, 0.05);
+  --bg-active: rgba(15, 23, 42, 0.09);
+  --control-bg: rgba(15, 23, 42, 0.04);
+  --control-bg-hover: rgba(15, 23, 42, 0.08);
+  --control-bg-active: rgba(15, 23, 42, 0.12);
 
-  /* ---- 테두리 (크림 위 웜 다크 알파) ------------------------------------ */
-  --border-subtle: rgba(42, 37, 33, 0.12);  /* 패널 구분선, 섹션 경계 */
-  --border-default: rgba(42, 37, 33, 0.20); /* 컨트롤/카드 기본 보더 — composited 1.47:1 */
-  --border-strong: rgba(42, 37, 33, 0.55);  /* hover 보더, 강조 구분 — composited 3.45:1 (WCAG 1.4.11 >=3) */
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-default: rgba(15, 23, 42, 0.127);
+  --border-strong: rgba(15, 23, 42, 0.461);
 
-  /* ---- 텍스트 3단계 ----------------------------------------------------- */
-  --text-1: #2A2521; /* 본문/제목 (primary) — 13.7:1 on base */
-  --text-2: #5C5348; /* 보조 라벨 (secondary) — 6.8:1 on base */
-  --text-3: #6B5F52; /* 흐린 힌트/비활성 (muted) — 5.13:1 on bg-inset (worst), tuned from #7D7264(3.89:1 fail) */
-  --text-placeholder: #6E6252; /* placeholder/disabled 전용 — 4.91:1 on inset (tuned from #8C8172 3.16:1 fail) */
-  --text-disabled: #6E6252;
+  --text-1: #0F172A;
+  --text-2: #475569;
+  --text-3: #626E89;
+  --text-placeholder: #626E89;
+  --text-disabled: #94A3B8;
 
-  /* ---- 액센트 (인디고 — 크림 위 AA) ------------------------------------- */
-  --accent: #4A57D6; /* on-accent #fff 5.79:1 */
+  --accent: #4A57D6;
   --accent-hover: #3C48C4;
   --accent-active: #2F3AAE;
-  --accent-muted: rgba(74, 87, 214, 0.12);  /* 선택 행/탭 배경 */
-  --accent-border: rgba(74, 87, 214, 0.45); /* 선택 컨트롤 보더 */
-  --on-accent: #ffffff;                       /* 액센트 배경 위 텍스트 */
+  --accent-muted: rgba(74, 87, 214, 0.12);
+  --accent-border: rgba(74, 87, 214, 0.45);
+  --on-accent: #ffffff;
 
-  /* ---- 상태 색 (크림 위 AA) --------------------------------------------- */
-  --danger: #C6403D; /* 4.75:1 vs bg-surface */
+  --danger: #C6403D;
   --danger-muted: rgba(198, 64, 61, 0.13);
-  --success: #18764F; /* 5.34:1 vs bg-surface (tuned from #1F8A5D 4.12:1 fail) */
+  --success: #18764F;
   --success-muted: rgba(24, 118, 79, 0.13);
-  --warning: #8A5E00; /* 5.42:1 vs bg-surface (tuned from #9A6B0F 4.45:1 borderline) */
+  --warning: #8A5E00;
   --warning-muted: rgba(138, 94, 0, 0.13);
 
-  /* ---- 라운드 3단계 ------------------------------------------------------ */
-  --radius-s: 6px;  /* 버튼/인풋/리스트행 */
-  --radius-m: 10px; /* 카드/팝오버 */
-  --radius-l: 14px; /* 모달/큰 패널 */
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
 
-  /* ---- 스페이싱 (4px 기반 8px 그리드) ------------------------------------ */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -70,34 +61,25 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  /* ---- 그림자 2단계 (웜 low-alpha) -------------------------------------- */
-  --shadow-pop: 0 4px 12px rgba(60, 48, 32, 0.10), 0 12px 32px rgba(60, 48, 32, 0.14);
-  --shadow-modal: 0 8px 24px rgba(60, 48, 32, 0.14), 0 24px 64px rgba(60, 48, 32, 0.18);
+  --shadow-pop: 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.10);
+  --shadow-modal: 0 8px 24px rgba(15, 23, 42, 0.10), 0 24px 64px rgba(15, 23, 42, 0.14);
 
-  /* ---- 포커스 링 --------------------------------------------------------- */
-  /* box-shadow 형: box-shadow: var(--focus-ring); */
   --focus-ring: 0 0 0 2px rgba(74, 87, 214, 0.45);
-  /* outline 형: outline: var(--focus-outline); outline-offset: 1px; */
   --focus-outline: 2px solid var(--accent);
 
-  /* ---- 트랜지션 ---------------------------------------------------------- */
-  --transition-fast: 120ms ease; /* hover/색 전이 */
-  --transition-med: 160ms ease;  /* 팝오버/펼침 */
+  --transition-fast: 120ms ease;
+  --transition-med: 160ms ease;
 
-  /* ---- 폰트 (외부 로드 금지 — 로컬 설치분만 폴백) ------------------------ */
   --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic",
     -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas,
     monospace;
 
-
-  /* ---- 브레이크포인트 토큰 (4단계 — 21개 난립 해소) ---------------------- */
   --bp-sm: 640px;
   --bp-md: 900px;
   --bp-lg: 1280px;
   --bp-xl: 1488px;
 
-  /* ---- z-index 스케일 (단일 진실 — 셸 전체 레이어 순서) ------------------ */
   --z-below: 0;
   --z-base: 1;
   --z-raised: 2;
@@ -110,8 +92,6 @@
   --z-flyout: 70;
   --z-status: 80;
   --z-popover: 90;
-  /* confirm/alert 는 어떤 모달(이벤트 에디터 1000, proposal 2500) 위에서도 눌려야 한다.
-     300이던 시절 이벤트 에디터 뒤에 깔려 클릭 불가였다(2026-08-19 실측). */
   --z-app-modal: 2600;
   --z-welcome: 240;
   --z-popover-high: 1200;
@@ -121,17 +101,17 @@
   --z-modal-top: 2300;
   --z-proposal: 2500;
 
-  /* ---- 추가 셸 색 (크림 리튠) -------------------------------------------- */
   --brand-blue: #4A57D6;
-  --mix-base: #F7F3EA;
-  --gold: #8A6B2F;
-  --gold-soft: #E8D9A8;
-  --bg-well: #E7E0D0;
-  /* ---- 얇은 라운드 스크롤바 (전역 기본은 index.css 하단) ----------------- */
-  --scrollbar-thumb: rgba(42, 37, 33, 0.22);
-  --scrollbar-thumb-hover: rgba(42, 37, 33, 0.36);
+  --mix-base: #F7F8F8;
+  /* 레거시 이름. 값은 인디고 — 골드 크롬을 일괄 폐기한다. */
+  --gold: #4A57D6;
+  --gold-deep: #3C48C4;
+  --gold-soft: rgba(74, 87, 214, 0.22);
+  --gold-wash: rgba(74, 87, 214, 0.10);
+  --bg-well: #EEF1F4;
+  --scrollbar-thumb: rgba(15, 23, 42, 0.18);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.30);
 
-  /* ---- 빈 상태 토큰 (크림 리튠) ------------------------------------------ */
   --empty-icon-bg: rgba(74, 87, 214, 0.10);
   --empty-icon-border: rgba(74, 87, 214, 0.28);
   --empty-icon-color: #4A57D6;

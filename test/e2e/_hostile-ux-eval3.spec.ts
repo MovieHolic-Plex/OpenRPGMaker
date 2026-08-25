@@ -9,17 +9,17 @@ mkdirSync(SHOT_DIR, { recursive: true });
 const TILE = 16;
 
 async function openApp(page: Page, mode: string, w = 1440, h = 1000) {
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
   const skip = page.getByText("건너뛰기", { exact: true }).first();
   if (await skip.isVisible().catch(() => false)) { await skip.click(); await page.waitForTimeout(300); }
 }
 
 async function dblclickTile(page: Page, tx: number, ty: number) {
-  const pt = await page.evaluate(([x, y]) => (window as any).__rpgzzuEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
+  const pt = await page.evaluate(([x, y]) => (window as any).__oprnEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
   await page.mouse.click(pt.x, pt.y, { clickCount: 2, delay: 60 });
   await page.waitForTimeout(1200);
 }
@@ -129,16 +129,16 @@ test("N. page tab overflow + out-of-range xy validation", async ({ page }) => {
   console.log("XVAL_AFTER " + JSON.stringify(xval));
 });
 
-test("O. tiny viewport 1024x640 + legend expand", async ({ page }) => {
+test("O. tiny viewport 1024x640 + toolbar tools", async ({ page }) => {
   test.setTimeout(240_000);
   await openApp(page, "standard", 1024, 640);
   await dblclickTile(page, 17, 16);
+  const editor = modal(page);
   await page.screenshot({ path: `${SHOT_DIR}/O01-1024x640-modal.png` });
-  const legend = modal(page).getByText("색상 범례", { exact: false }).first();
-  if (await legend.isVisible().catch(() => false)) {
-    await legend.click();
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: `${SHOT_DIR}/O02-legend-open.png` });
-  }
-  expect(true).toBe(true);
+  await expect(editor.locator(".event-command-legend, .event-command-legend-details")).toHaveCount(0);
+  const tools = editor.getByTestId("event-editor-aux-tools");
+  await tools.locator(":scope > summary").click();
+  await expect(tools).toHaveAttribute("open", "");
+  await expect(editor.getByTestId("event-command-toolbar-field-monster")).toBeVisible();
+  await page.screenshot({ path: `${SHOT_DIR}/O02-toolbar-tools-open.png` });
 });

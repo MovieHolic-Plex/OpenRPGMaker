@@ -106,7 +106,7 @@ describe("choices command body", () => {
     expect(text).not.toContain("접어서 편집");
     expect(text).not.toContain("응답 명령");
     expect(text).not.toContain("명령 추가");
-    expect(text).toContain("이벤트 목록에서 편집");
+    expect(text).toContain("왼쪽 목록에서 고칩니다");
     expect(findByTestId(body, "event-choice-cancel-disallow")).not.toBeNull();
     expect(findByTestId(body, "event-choice-add")?.textContent).toContain("추가");
   });

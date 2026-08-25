@@ -1,6 +1,6 @@
 # RPG ZZU Design System
 
-> **Status note:** The editor chrome is a warm cream studio. Runtime game surfaces and the event-command list keep their retro/pixel presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
+> **Status note:** The editor chrome is a cool white studio with one indigo accent. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
@@ -10,9 +10,9 @@ The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls 
 
 ## 2. Color
 
-### Active editor shell — warm cream studio
+### Active editor shell — cool white studio
 
-There is **one shipped editor shell theme**: a warm cream workbench defined in `src/styles/tokens.css`. The cream ladder is `canvas #E7E0D0 < inset #EFE9DC < base #F7F3EA < surface #FCF9F2 < raised #FFFDF8 < overlay #FFFFFF`; borders/hover/active are warm dark-alpha `rgba(42,37,33,.12/.20/.55)` and `rgba(42,37,33,.06/.10)` (controls `.05/.09/.13`); text `#2A2521/#5C5348/#6B5F52` with placeholder `#6E6252`; accent `#4A57D6/#3C48C4/#2F3AAE`; status `danger #C6403D, success #18764F, warning #8A5E00`; gold `#8A6B2F`; `color-scheme: light`. Previous dark values live in git history only. Runtime HUD tokens are untouched. Do not add a user theme toggle.
+There is **one shipped editor shell theme**: cool white + slate + indigo `#4A57D6` in `src/styles/tokens.css`. Ladder: `canvas/inset #EEF1F4 < base/surface #F7F8F8 < raised/overlay #FFFFFF`. Text `#0F172A/#475569/#64748B`. Legacy `--gold` is an indigo alias. `color-scheme: light`. No theme toggle.
 
 ### Cream shell tokens (SoT: `src/styles/tokens.css`)
 
@@ -20,27 +20,13 @@ Defined in `src/styles/tokens.css` (`src/styles/index.css:75` sets `color-scheme
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--bg-base` | `#F7F3EA` | App shell base (body, menu bar) |
-| `--bg-surface` | `#FCF9F2` | Panels, sidebars, toolbars, statusbar |
-| `--bg-raised` | `#FFFDF8` | Cards, dialogs, floating panels |
-| `--bg-overlay` | `#FFFFFF` | Popovers, dropdowns, context menus |
-| `--bg-inset` | `#EFE9DC` | Input/list wells (recessed) |
-| `--bg-canvas` / `--bg-well` | `#E7E0D0` | Canvas well behind map/game |
-| `--bg-glass` | `rgba(252,249,242,0.86)` | Floating toolbar over canvas |
-| `--border-subtle` | `rgba(42,37,33,0.12)` | Panel/section dividers |
-| `--border-default` | `rgba(42,37,33,0.20)` | Control/card borders |
-| `--border-strong` | `rgba(42,37,33,0.55)` | Hover/emphasis borders |
-| `--text-1` | `#2A2521` | Primary text |
-| `--text-2` | `#5C5348` | Secondary text |
-| `--text-3` | `#6B5F52` | Muted/hint |
-| `--text-placeholder` | `#6E6252` | Placeholder/disabled |
-| `--accent` | `#4A57D6` | Primary/accent |
-| `--accent-hover` | `#3C48C4` | Accent hover |
-| `--accent-active` | `#2F3AAE` | Accent active |
-| `--danger` | `#C6403D` | Destructive |
-| `--success` | `#18764F` | Success |
-| `--warning` | `#8A5E00` | Warning |
-| `--gold` | `#8A6B2F` | Gold/attention |
+| `--bg-base` / `--bg-surface` | `#F7F8F8` | App shell + panels |
+| `--bg-raised` / `--bg-overlay` | `#FFFFFF` | Cards, dialogs, popovers |
+| `--bg-inset` / `--bg-canvas` / `--bg-well` | `#EEF1F4` | Wells + canvas tray |
+| `--text-1` | `#0F172A` | Primary |
+| `--text-2` | `#475569` | Secondary |
+| `--text-3` | `#64748B` | Hint |
+| `--accent` / `--gold` | `#4A57D6` | Send, accept, selection |
 
 ### Primary token set (what the UI is actually built from)
 
@@ -91,17 +77,19 @@ These map to the primary set and exist so domain-specific CSS reads semantically
 | `--border-strong` | `#5f5b52` | Active canvas/modal borders |
 | `--accent-primary` | `#2e6f9e` | (legacy surface-system accent) |
 
-### Event command list tokens
+### Event command editor tokens (cream studio)
 
-The event-command contents list intentionally follows the RM2K3 command editor rather than the rest of the form chrome. These tokens sit on top of the RM2K3 retro light theme and are used only for command rows, command insert rows, and command-type coloring.
+The event-command content surface — list, gutter, hover/selected states, and type coloring — uses the cream studio tokens. There is no retro theme.
 
-| Token | Value | Usage |
-|------|-------|-------|
-| `--rm2k3-command-blue` | `#004bff` | Default command prefix and command text (`@>` lines, labels, and flow commands) |
-| `--rm2k3-command-orange` | `#f07f00` | Party, battle, shop, item, gold, and skill-affecting command summaries |
-| `--rm2k3-command-teal` | `#008c8c` | Picture and audio command summaries |
-| `--rm2k3-command-row-alt` | `#e8f2f7` | Alternating pale row stripe inside the command contents field |
-| `--rm2k3-command-selected` | `#0080ff` | Selected/focused command row fill |
+| Token | Token alias | Value | Usage |
+|------|-------------|-------|-------|
+| `--text-1` / `--accent` | (`--rm2k3-command-blue` alias) | `#4A57D6` | Command kind prefix and flow labels on cream (`@>`-style lines are retired) |
+| `--gold` | (`--rm2k3-command-orange` alias) | `#8A6B2F` | Attention / reward-affecting summaries on cream |
+| `--success` | (`--rm2k3-command-teal` alias) | `#18764F` | Picture/audio summaries on cream |
+| `--bg-hover` | (`--rm2k3-command-row-alt` alias) | `rgba(42,37,33,0.06)` | Subtle row stripe / hover wash |
+| `--accent-muted` | (`--rm2k3-command-selected` alias) | `rgba(74,87,214,0.12)` | Selected/focused command row fill (`--accent-border` for the ring) |
+
+Retired literal RM blues/teals (`#004bff` / `#f07f00` / `#008c8c` / `#e8f2f7` / `#0080ff`) must not be reintroduced. Old `--rm2k3-command-*` names remain only as cream aliases during the CSS consolidation wave (see `.omo/evidence/event-editor-modern/DESIGN.md`). The single scan-aid palette going forward is `--cmdcat-*` (unified from `--cmdcat` / `--pick-cat` / `--lg-cat`).
 
 ### Database state editor tokens
 
@@ -167,33 +155,22 @@ Runtime game surfaces use a separate retro presentation layer from the modern ed
 | `--runtime-font-size-11` | `11px` | Standard Galmuri11 native-size menu/HUD text |
 | `--runtime-font-size-18` | `18px` | 2× Galmuri9 display text and compact runtime headings |
 | `--runtime-font-size-22` | `22px` | 2× Galmuri11 title text |
-| `--runtime-window-skin` | `url("/assets/ui/windowskin-rm2003.png")` | Shared 9-slice skin for runtime game windows |
+| `--runtime-window-skin` | `url("/assets/ui/windowskin-default.png")` | Shared 9-slice skin for runtime game windows |
 | `--runtime-window-slice` | `24 fill` | `border-image-slice` value for the 96×96 default skin |
 | `--runtime-window-border` | `8px` | Standard runtime window border width |
 | `--runtime-window-border-tight` | `6px` | Compact nested runtime window border width |
 
 ### Runtime title-screen tokens
 
-The default game title screen uses a bright RPG Maker-style pixel field/castle background with separate title ornaments, a classic blue RM-era menu window, a white selection cursor, and a small input hint panel layered on top. These tokens are scoped to `.rm-title-screen` / `.rm-title-menu` UI only.
+The default game title screen is an editorial story opening on the authored 320×240 stage: left-aligned kicker `A NEW ADVENTURE`, display title, subtitle `이야기가 시작되는 곳`, and a text menu with a single indigo selected rail. Size type in logical stage pixels, never viewport `vw`, because the stage is scaled. Do not restore the oversized crest, saturated RM menu window, or technical key-help wall. Legacy `--rm2k3-title-*` names remain only for load-window and older chrome.
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--rm2k3-title-sky-glow` | `rgba(255,255,255,0.22)` | Soft upper title-screen light wash |
-| `--rm2k3-title-vignette` | `rgba(15,77,146,0.12)` | Side vignette over bright title art |
-| `--rm2k3-title-window-hi` | `#356fd4` | Menu window top bevel tone |
-| `--rm2k3-title-window` | `#123c9a` | Primary menu window fill |
-| `--rm2k3-title-window-deep` | `#071e68` | Lower menu window fill |
-| `--rm2k3-title-window-edge` | `#f5fbff` | Bright menu bevel edge |
-| `--rm2k3-title-window-shadow` | `#061038` | Dark menu bevel edge and text outline |
-| `--rm2k3-title-window-mid` | `#7da7ff` | Inner blue bevel line |
-| `--rm2k3-title-highlight` | `#397ddd` | Selected/focused menu row top tone |
-| `--rm2k3-title-highlight-deep` | `#1b54bd` | Selected/focused menu row lower tone |
-| `--rm2k3-title-highlight-ring` | `rgba(255,255,255,0.86)` | Selected row inner highlight |
-| `--rm2k3-title-cursor` | `#ffffff` | White menu selection cursor |
-| `--rm2k3-title-ornament` | `rgba(255,251,236,0.96)` | Title divider ornament strokes |
-| `--rm2k3-title-ornament-shadow` | `rgba(13,57,136,0.58)` | Ornament pixel shadow |
-| `--rm2k3-title-text` | `#ffffff` | Title/menu text |
-| `--rm2k3-title-shadow` | `#06185c` | Title text outline and bevel depth |
+| `--oprn-title-text` | `#f8fafc` | Editorial title and menu text |
+| `--oprn-title-shadow` | `rgba(5,12,28,0.72)` | Soft title depth, not a hard pixel outline |
+| `--accent` | `#4A57D6` | Selected menu rail |
+| `--rm2k3-title-window-shadow` | `#061038` | Load-window text depth only |
+| `--rm2k3-title-highlight-ring` | `rgba(255,255,255,0.86)` | Keyboard focus ring on load slots |
 
 ### Runtime battle tokens
 
@@ -262,13 +239,13 @@ All spacing derives from 4px.
 
 ### Workbench grid (actual values)
 
-- Root layout: `topbar / body / statusbar` (column).
+- Root layout: `topbar / body` (column). There is no persistent bottom statusbar.
 - **Topbar**: a stacked RM2K3 chrome — an `rm2k3-menu-bar` (22px) plus one or two `rm2k3-toolbar-row`s. It is **multi-row**, not a single 40px bar.
 - **Body**: with empty storage, the map/tile/event tool sidebar is the left docked column and the 감독 workspace defaults to **float** over the canvas. The saved `chatDock` value is honored on later boots: **side** remains available as a user toggle and adds a docked AI track without replacing the tool sidebar. The canvas must retain the widest usable work area.
 - **Left drawer**: the docked tool column beside the canvas, never a row under the agent log. Empty events are one line (`이벤트 없음 · 더블클릭으로 추가`). Map tree still uses `map-tree-node-*` testids. Beginner substitutes its 48px direct-action rail and opens a requested flyout rather than auto-opening the tile flyout.
 - **Center work area**: fills remaining width, centers the Phaser canvas in a recessed well. Canvas controls must not change canvas dimensions.
 - **Database and Resources**: opened from the topbar as work windows. The Database window has an explicit dock toggle and may become a contained docked panel; Resources remains a modal work window.
-- **Statusbar**: `54px` (`.editor-statusbar`). Always-visible cells are layer, map name, and save status. Paint hint only on the event tool+layer; blueprint toggle only when `layoutPlan.regions` exist; AI chip only when disconnected/offline. **full** (standard/expert) puts tool/tile/zoom/cursor behind a `statusbar-overflow` details. Empty layout plans do not paint a canvas `layoutPlan` chip.
+- **Authoring journey**: a 32px checklist icon at the canvas bottom-left (`authoring-journey-toggle`). The project/map/event/data/test checklist opens as a popover; it must not reserve a full-width bottom row or shrink the canvas.
 
 ### Desktop support floor
 
@@ -284,17 +261,34 @@ All spacing derives from 4px.
 
 ### AI director plate
 
-- Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 (standard 4×4 / 48px cell) + name `감독` + one-line `readAgentBrief().line`.
-- Face is `role="img"` `aria-label="감독"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
+- Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 (standard 4×4 / 48px cell) + name `조수` + one-line `idlePresenceLine`.
+- Face is `role="img"` `aria-label="조수"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
 - Tokens: name `--text-1` 13px/600, line `--text-2` 12px/400, gap `--space-2`, face well `--studio-inset` / `--studio-line` (or `--bg-inset` / `--border-subtle` aliases). No 지시/질문/계획 chips on the plate.
-- Presence line updates from `editorState` / `store` (map, layer, tool, selection).
+- Presence line is idle copy unless a turn is running. Collapsed restore `aria-label` is `조수`. Primary actions (보내기, 이 맵에 넣기) and `@>` use `--gold`, not indigo.
 
-### AI composer briefing chips
+### AI conversation column — Cursor 3-band (locked 2026-08-25)
 
-- Idle empty composer shows at most three next-move chips from `directorStartPrompts(readAgentBrief())` inside the command-bar stack (`data-testid="ai-composer-chips"`).
-- Chip click fills the textarea with `prompt.instruction` and focuses it. It does not send.
+Glass/side assistant is three bands only:
+1. **Plate** — faceset + `조수` + one status. Overflow (`⋯`) holds dock/new-session/settings. No `+` / dock word / detach on the plate.
+2. **Stream** — conversation and tool rows. This band owns scroll. Empty stream may show a one-line hint + at most two chips. No visual gallery.
+3. **Composer** — inset well + indigo `전송`, always at the bottom.
+Proposal cards float over the map (imposter), not inside these three bands.
+
+### AI conversation column (2026-08-25)
+
+Spatial contract (StyleGallery `scroll-body-shell` + `media-object` + `feed` + `imposter`):
+- The assistant is a cream **conversation column**, not a watery 260px billboard. Glass overlay is `360px` (`min(360px, 34%)`), left-inset `12px`. Side dock keeps the same column language at `minmax(320px, 36%)`.
+- **Scroll owner**: `.ai-chat-log` (or `.ai-glass-log` on glass). Header plate and composer stay put. Do not scroll the whole card.
+- Header is a `media-object`: 40px faceset + stacked `조수` / one-line presence. Actions are a 32px icon cluster (dock / more / collapse). No sentence-length dock labels on the plate.
+- Log is a `feed`: user turns sit in an inset well; assistant turns sit on `--bg-raised` with a 1px `--studio-line`. Tool/system rows stay `@>` mono. No indigo, no three-card visual gallery as the boot empty surface.
+- Composer is an inset well (`--bg-inset`) with a gold filled `보내기`. Focus ring uses `--gold`, not indigo.
+- A pending proposal does **not** stay a thin strip inside the 380px column. It floats as an `imposter` over the canvas: `min(520px, 92vw)` cream card, gold filled `이 맵에 넣기`, map ghost still visible around it. Tile-changing proposals (including `author_house`) always show a **지금 / 적용 후** pair.
+
+### AI idle hints
+
+- Quiet Gold idle on glass/side shows at most two `@>` hint rows (`ai-idle-hints`). Click sends. Composer chips stay empty.
 - Placeholder is `formatComposerPlaceholder(readAgentBrief())`.
-- Tokens: surface `var(--control-bg)`, border `var(--border-default)`, hover/focus `var(--control-bg-hover)` + `var(--accent-border)`, type 12px/600, padding `var(--space-1)` `var(--space-2)`, radius 8px, gap `var(--space-1)`.
+- Ink Only hides gold hint color. Map First hides the card and keeps one command line, left-offset by `--editor-left-safe`.
 - The overlay empty kit (`ai-start-visual-gallery`, `ai-empty-cta`, start-history stack) is not the boot empty surface.
 
 ### Left palette & map tree
@@ -316,11 +310,11 @@ All spacing derives from 4px.
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
 - **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
-- **Event editor**: tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
-- **Event editor top/page controls**: dense RM2K3 modal chrome uses `--rm2k3-event-page-*` tokens for Name width, page button height, tab width, icon size, and condition-row control widths. Keep these controls compact enough for scanning; avoid display-scale button typography inside the modal. The event editor scopes its local `--rm2k3-chrome`/`--rm2k3-face` overrides to a brighter classic-gray range (`#eeeeee`/`#f4f4f4`) so fieldsets and page tabs match the RM2003 event editor reference without changing every other modal.
+- **Event editor**: cream-studio command editor. Tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
+- **Event editor top/page controls**: cream-studio modal chrome. Page tabs show named condition sentences; validation is `오류 N · 경고 N · 안내 N` (hidden when clean), not `검사 !1 △1`. Footer is `닫기 / 반영하고 계속 / 반영하고 닫기` (`취소` is gone). Rail section headers are `언제 보이나요` / `반응 방식` / `움직임` (not `출현 조건` / `트리거·우선순위` / `이동/기타`). Event-card identity is name + coordinates; padded `ID 0001` is gone. Extra control-code chips (`\$` `\!` `\.` `\|` `\>` `\<` `\^` `\_` `\s[n]`) live behind closed `고급`. Density control stays and is labeled `간단히` (not `간단히 보기`). Picture summaries are a human sentence, never a raw slot/path dump as the scan line. Keep controls compact enough for scanning; avoid display-scale button typography inside the modal. Chrome uses cream tokens from `src/styles/tokens.css`; do not reintroduce `--rm2k3-event-page-*` or classic-gray `#eeeeee`/`#f4f4f4` fieldsets.
 - **Event editor sizing**: the event editor is a desktop-default work window at wide widths, but it must remain usable down to roughly `800px` viewport width. It opens with settings and a dominant command canvas; the command inspector is contextual and appears only after command selection. Wide layouts allocate it a fixed right track, while compact layouts overlay it on the right so the canvas does not permanently lose width. Around `900px` and below, the modal clamps to the viewport and compresses the left settings/conditions column while keeping the command contents as a second column; do not stack settings above commands unless the viewport is narrower than the supported editor width.
 - **Event editor resizing**: users can resize both the modal window and the settings/command split. The vertical separator between settings and command contents adjusts the left settings column; the bottom-right grip adjusts the whole event editor window. Keep both handles visible and keyboard-focusable, and keep resize behavior bounded to the viewport.
-- **Event move-route dialog**: custom autonomous movement opens a separate `Move Route` subdialog, styled as a desktop RM-era work window. Keep its command list, options, frequency radios, and three-column command grid fixed for desktop scanning; unsupported movement commands should render disabled rather than pretending to save runtime behavior.
+- **Event move-route dialog**: custom autonomous movement opens a cream-studio route editor, not a desktop RM-era work window. Named per-step pickers replace the shared `매개변수` box; frequency is `아주 드묾 … 아주 자주` (values 1–8 stay). No `$>/@>` prefixes, no always-on frequency radios, no three-column RM command grid, no `확인/취소/도움말` footer. Unsupported movement commands should render disabled rather than pretending to save runtime behavior.
 
 ### First run and online save
 
@@ -419,8 +413,43 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 ## 10. Desktop UI integration truth (2026-08-11)
 
 - Beginner, Standard, and Expert are desktop density presets, not separate products or permission levels. First visit is **Beginner**. The mode toggle is text weight/underline, never a filled plan-picker. Beginner uses the 48px direct-action rail (tool / layer / panel groups with Korean layer labels 바닥·장식·이벤트), does not auto-open the tile flyout, and limits Database navigation to the common subset. Standard exposes the full palette and map tree with simplified chrome and grouped Database navigation. Expert adds the classic toolbar, dense canvas controls, and all Database navigation; every visible expert toolbar button is actionable, while unsupported legacy stubs remain hidden. The chrome contract is carried by `mapTree`, `classicToolbar`, `canvasChromeDense`, `helpMenu`, `gameMenuLabel`, `paletteRail`, `leftPanelMaxWidthPx`, `layerTermStyle`, `prominentTestPlay`, `coachMarks`, `standardWelcome`, `statusbarDensity`, `railLabels`, `databaseNav`, `eventBeginnerChrome`, and `jargonStyle`. The same project, history, camera, and AI session continue across mode changes.
-- With empty storage, the AI assistant boots **open** and its dock defaults to **float** over the canvas; the map/tile/event tool sidebar remains the left docked column. A stored `chatDock` of **float** or **side** is honored, and the side dock remains a user toggle. A user who collapses AI keeps that choice; a turn that started collapsed re-collapses after idle, but an already-open panel stays open. The header is an agent plate (faceset crop + name `감독` + one-line presence). The work log uses RM-style `@>` command rows, not chat bubbles. A pending proposal keeps a command-row pin with 이 맵에 넣기/취소 even while the review modal is open. The collapsed restore control is a 48px button (`aria-label="AI 어시스턴트"`) showing the same face and a status dot — no `AI` wordmark, no vertical hangul, and no emoji. Restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport. Default agent mode is **chat** (one turn at a time). Slash skill rows show Korean names. Unconnected send shows a 연결하기 card instead of dumping the settings form.
+- With empty storage, the AI assistant boots **open** and its dock defaults to **float** over the canvas; the map/tile/event tool sidebar remains the left docked column. A stored `chatDock` of **float** or **side** is honored, and the side dock remains a user toggle. A user who collapses AI keeps that choice; a turn that started collapsed re-collapses after idle, but an already-open panel stays open. The header is an agent plate (faceset crop + name `조수` + one-line presence). Empty layout defaults the dock to **glass** and temperature to Quiet Gold. The work log uses RM-style `@>` command rows, not chat bubbles. A pending proposal mounts an inline decision card (이 맵에 넣기/취소). The collapsed restore control is a 48px button (`aria-label="조수"`) showing the same face and a status dot — no `AI` wordmark, no vertical hangul, and no emoji. Restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport. Default agent mode is **chat** (one turn at a time). Slash skill rows show Korean names. Unconnected send shows a 연결하기 card instead of dumping the settings form.
 - Event-editor ownership is the desktop matrix `1586×992`, `1280×900`, `1024×768`, and `960×900`. Its top strip, two-column workbench, conditions, command list, and footer stay in normal non-overlapping flow, and coachmarks are suppressed while it is open.
 - Test Play uses whole-number fit-without-crop scaling: the `320×240` runtime stays centered, 4:3, fully visible, and nearest-neighbor sharp. Title options expose one roving Tab stop; arrow navigation, keyboard confirmation, and trusted pointer activation share the same selected-option path.
 - Shared `showConfirm`/`showAlert` dialogs expose programmatic title/message relationships, focus the first action deterministically, trap Tab/Shift+Tab, route Escape through the top `modalStack` entry, and restore only an opener that is still attached.
 - Modern Exteriors asset packaging, custom-atlas layers, seeding, remote persistence, and the Modern remote diagnostic remain blocked pending repository-visible redistribution rights. Those workstreams have no local-fixture or DB-write substitute.
+
+## 11. Database Studio (2026-08)
+
+The Database modal is a neutral cool studio scoped to `.database-modal-backdrop` via `src/styles/database/studio-theme.css` (imported after `system-studio.css`). Tokens are `--db-studio-*`; the rest of the editor stays warm cream (`src/styles/tokens.css`, `color-scheme: light`). No gradients, no heavy shadows, no Inter.
+
+### Tokens
+
+| Token | Value | Role |
+|-------|-------|------|
+| `--db-studio-canvas` | `#F7F8F8` | modal body / page bg (replaces cream well) |
+| `--db-studio-surface` | `#FFFFFF` | cards, header, footer, sidebar |
+| `--db-studio-inset` | `#F1F5F9` | search wells, hover, list well alt |
+| `--db-studio-well` | `#EEF2F6` | secondary inset |
+| `--db-studio-text-1` | `#0F172A` | primary text |
+| `--db-studio-text-2` | `#475569` | secondary |
+| `--db-studio-text-3` | `#94A3B8` | muted / placeholder |
+| `--db-studio-border-subtle` | `rgba(15,23,42,.08)` | hairline section divider |
+| `--db-studio-border-default` | `rgba(15,23,42,.10)` | card/input border |
+| `--db-studio-border-strong` | `rgba(15,23,42,.18)` | emphasis |
+| `--db-studio-accent` | `#4A57D6` | primary (kept hue, Linear feel vs cream) |
+| `--db-studio-accent-soft` | `rgba(74,87,214,.08)` | selected row tint |
+| `--db-studio-accent-border` | `rgba(74,87,214,.16)` | selected border |
+| `--db-studio-shadow` | `0 1px 3px rgba(15,23,42,.08)` | raised |
+| `--db-studio-shadow-pop` | `0 4px 16px rgba(15,23,42,.10)` | modal/popover |
+
+Legacy `--db-light-*` / `--bg-*` / `--db-modern-*` aliases remap to these inside the modal so older rules keep working without a second theme.
+
+### Contracts
+
+- **Nav:** 220px labeled rail at `>=800px` container (`container-type: inline-size` on `.database-modal-window`; media fallback at 799px), 56px icon+tooltip below. Group headers (`파티/전투·몬스터/생활/맵/시스템`) visible as 11px uppercase `text-3`. Count badge via `[data-count]` quiet pill. Selected = `accent-soft` + 2px left accent bar. Search placeholder `탭 검색` full-width readable.
+- **List:** name first (`flex:1`, ellipsis), muted trailing `#n` (`#${visibleIndex}`), 24px thumb, pill sub. Selected = `accent-soft` + border ring. CSS order puts name before number; markup order matches display order.
+- **Inspector:** sticky header (`top:0; z-index:2` on `.db-record-hero` / modal header) and sticky footer; former equal-weight Win95 fieldsets become hairline sections (top border only, `text-3` 12px uppercase labels).
+- **Footer:** `닫기` is ghost (`transparent` + `border-default`), `지금 저장` is filled accent — enforced by `[data-testid]` selectors in `studio-theme.css` even if `.primary` class is on the other button.
+- **Empty:** card + one filled CTA on studio surface, never a cream void.
+- **Dirty / G006 / testids / AI dock / gallery toggle:** unchanged — chrome only.

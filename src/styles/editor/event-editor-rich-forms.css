@@ -1,12 +1,10 @@
-/* ============================================================================
-   이벤트 명령 리치 편집 폼 (EV-2) — RM2K3 수준 비주얼 UX
-   전부 tokens.css 토큰 기반. 소유: event-editor rich-forms 워커.
-   ========================================================================= */
+/* cream studio */
 
 /* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */
-@import "./event-editor-rich-forms/01-ev-rm2k3-ux-tokens.css";
+@import "./event-editor-rich-forms/01-ev-ux-tokens.css";
 @import "./event-editor-rich-forms/02-rich-gold-badge.css";
 @import "./event-editor-rich-forms/03-change-battle-commands-menu.css";
 @import "./event-editor-rich-forms/04-change-equipment-command-body.css";
 @import "./event-editor-rich-forms/05-force-modern-actor-page3.css";
 @import "./event-editor-rich-forms/06-page-modern-forms.css";
+@import "./event-editor-rich-forms/07-storage-chest-command.css";

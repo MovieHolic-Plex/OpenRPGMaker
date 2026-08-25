@@ -12,8 +12,15 @@
 //   통과하지 못하면 삭제를 커밋하지 않는다(벽돌 원천 차단).
 
 import { deserialize, serialize } from "./io";
-import type { Command, EventPage, MapId, MapTreeNode, Project } from "./types";
+import type { Command, EventPage, GameEvent, MapId, MapTreeNode, Project } from "./types";
 import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
+
+export interface MapScheduleRowReference {
+  readonly hostMapId: MapId;
+  readonly eventId: string;
+  readonly eventIndex: number;
+  readonly scheduleIndex: number;
+}
 
 export interface MapDeletionImpact {
   readonly mapId: MapId;
@@ -30,6 +37,7 @@ export interface MapDeletionImpact {
   readonly treeChildCount: number;
   /** 다른 맵/공통 이벤트에서 이 맵으로 이동(transfer/changeTile)하는 명령 수(함께 제거됨). */
   readonly incomingCommandCount: number;
+  readonly incomingScheduleRows: readonly MapScheduleRowReference[];
   /** 이 맵과 연결된 mapConnections 수(함께 제거됨). */
   readonly connectionCount: number;
   /** 이 맵의 legacy worldview source document 수(함께 제거됨). */
@@ -38,6 +46,17 @@ export interface MapDeletionImpact {
   readonly questCount: number;
   /** 이 맵을 시작 위치로 쓰는 테스트 프리셋 수(시작 위치가 해제됨). */
   readonly testPresetCount: number;
+  /** Animal-home definitions placed on this map and removed with it. */
+  readonly farmAnimalBuildingCount: number;
+  readonly farmAnimalBuildingIds: readonly string[];
+  readonly farmBuildingPlacementCount: number;
+  readonly farmBuildingPlacementIds: readonly string[];
+  readonly homeDecorationPlacementCount: number;
+  readonly homeDecorationPlacementIds: readonly string[];
+  readonly fishingSpotCount: number;
+  readonly fishingSpotIds: readonly string[];
+  readonly forageAreaCount: number;
+  readonly forageAreaIds: readonly string[];
 }
 
 export type MapDeletionBlock = {
@@ -54,6 +73,17 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
   const map = project.maps[mapId];
   if (!map) return null;
   const treeNode = findTreeNode(project.mapTree, mapId);
+  const farmAnimalBuildingIds = (project.system.farmAnimalBuildings ?? [])
+    .filter((building) => building.mapId === mapId)
+    .map((building) => building.id);
+  const farmBuildingPlacementIds = (project.session.farmBuildingPlacements ?? [])
+    .filter((placement) => placement.mapId === mapId)
+    .map((placement) => placement.instanceId);
+  const homeDecorationPlacementIds = (project.session.homeDecorationPlacements ?? [])
+    .filter((placement) => placement.mapId === mapId)
+    .map((placement) => placement.instanceId);
+  const fishingSpotIds = (project.system.fishing?.spots ?? []).filter((spot) => spot.mapId === mapId).map((spot) => spot.id);
+  const forageAreaIds = (project.system.seasonalForage?.areas ?? []).filter((area) => area.mapId === mapId).map((area) => area.id);
   return {
     mapId,
     mapName: map.name,
@@ -64,12 +94,23 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
     isTreeRoot: project.mapTree.mapId === mapId,
     treeChildCount: treeNode?.children.length ?? 0,
     incomingCommandCount: countIncomingCommands(project, mapId),
+    incomingScheduleRows: collectIncomingScheduleRows(project, mapId),
     connectionCount: (project.mapConnections ?? []).filter(
       (connection) => connection.from.mapId === mapId || connection.to.mapId === mapId
     ).length,
     villageInfoCount: (project.villageInfoDocuments ?? []).filter((doc) => doc.mapId === mapId).length,
     questCount: (project.quests ?? []).filter((quest) => questReferencesMap(quest, mapId)).length,
     testPresetCount: (project.testPresets ?? []).filter((preset) => preset.startMapId === mapId).length,
+    farmAnimalBuildingCount: farmAnimalBuildingIds.length,
+    farmAnimalBuildingIds,
+    farmBuildingPlacementCount: farmBuildingPlacementIds.length,
+    farmBuildingPlacementIds,
+    homeDecorationPlacementCount: homeDecorationPlacementIds.length,
+    homeDecorationPlacementIds,
+    fishingSpotCount: fishingSpotIds.length,
+    fishingSpotIds,
+    forageAreaCount: forageAreaIds.length,
+    forageAreaIds,
   };
 }
 
@@ -99,7 +140,67 @@ export function planMapDeletion(project: Project, mapId: MapId): MapDeletionPlan
 // 맵 삭제 + 모든 참조 재배선/정리. draft를 직접 변경한다(호출 전 planMapDeletion으로 검증 권장).
 export function applyMapDeletion(draft: Project, mapId: MapId): void {
   if (!draft.maps[mapId] || Object.keys(draft.maps).length <= 1) return;
+  const removedFarmAnimalBuildingIds = new Set(
+    (draft.system.farmAnimalBuildings ?? [])
+      .filter((building) => building.mapId === mapId)
+      .map((building) => building.id),
+  );
+  const removedFarmAnimalEventIds = new Set(draft.maps[mapId].events.map((event) => event.id));
   delete draft.maps[mapId];
+
+  if (draft.session.farmBuildingPlacements) {
+    draft.session.farmBuildingPlacements = draft.session.farmBuildingPlacements.filter((placement) => placement.mapId !== mapId);
+  }
+  if (draft.session.homeDecorationPlacements) {
+    draft.session.homeDecorationPlacements = draft.session.homeDecorationPlacements.filter((placement) => placement.mapId !== mapId);
+  }
+  if (draft.database.farmBuildingTypes) {
+    draft.database.farmBuildingTypes = draft.database.farmBuildingTypes.map((type) => withoutDeletedAllowedMap(type, mapId));
+  }
+  if (draft.database.homeDecorationTypes) {
+    draft.database.homeDecorationTypes = draft.database.homeDecorationTypes.map((type) => withoutDeletedAllowedMap(type, mapId));
+  }
+
+  if (draft.system.farmAnimalBuildings) {
+    draft.system.farmAnimalBuildings = draft.system.farmAnimalBuildings.filter(
+      (building) => building.mapId !== mapId,
+    );
+  }
+  if (draft.system.fishing) {
+    draft.system.fishing = { ...draft.system.fishing, spots: draft.system.fishing.spots.filter((spot) => spot.mapId !== mapId) };
+  }
+  if (draft.system.seasonalForage) {
+    draft.system.seasonalForage = {
+      ...draft.system.seasonalForage,
+      areas: draft.system.seasonalForage.areas.filter((area) => area.mapId !== mapId),
+    };
+  }
+  const remainingFarmAnimalEventIds = new Set(
+    Object.values(draft.maps).flatMap((map) => map.events.map((event) => event.id)),
+  );
+  if ((removedFarmAnimalBuildingIds.size > 0 || removedFarmAnimalEventIds.size > 0) && draft.session.farmAnimals) {
+    draft.session.farmAnimals = draft.session.farmAnimals.map((animal) => {
+      const clearBuilding = Boolean(animal.buildingId && removedFarmAnimalBuildingIds.has(animal.buildingId));
+      const clearEvent = Boolean(
+        animal.eventId
+        && removedFarmAnimalEventIds.has(animal.eventId)
+        && !remainingFarmAnimalEventIds.has(animal.eventId),
+      );
+      if (clearBuilding && clearEvent) {
+        const { buildingId: _removedBuildingId, eventId: _removedEventId, ...unassignedAnimal } = animal;
+        return unassignedAnimal;
+      }
+      if (clearBuilding) {
+        const { buildingId: _removedBuildingId, ...unassignedAnimal } = animal;
+        return unassignedAnimal;
+      }
+      if (clearEvent) {
+        const { eventId: _removedEventId, ...unboundAnimal } = animal;
+        return unboundAnimal;
+      }
+      return animal;
+    });
+  }
 
   // 맵 트리: 삭제 노드의 자식은 부모로 승격해 보존. 루트가 삭제되면 첫 자식(없으면 남은 맵)을 루트로.
   draft.mapTree = rebuildTreeWithoutMap(draft.mapTree, mapId, Object.keys(draft.maps));
@@ -151,9 +252,10 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
     };
   }
 
-  // 이벤트 명령(transfer/changeTile)과 생활 이동 목적지에서 삭제 맵 참조 제거.
+  // 이벤트 일정, 명령(transfer/changeTile), 생활 이동 목적지에서 삭제 맵 참조 제거.
   for (const map of Object.values(draft.maps)) {
     for (const event of map.events) {
+      stripEventScheduleMapReferences(event, mapId);
       event.commands = stripMapCommands(event.commands, mapId);
       for (const page of event.pages ?? []) stripPageMapReferences(page, mapId);
     }
@@ -166,6 +268,18 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
       page.commands = stripMapCommands(page.commands, mapId);
     }
   }
+}
+
+function withoutDeletedAllowedMap<T extends { readonly allowedMapIds?: readonly string[] }>(type: T, mapId: string): T {
+  if (!type.allowedMapIds?.includes(mapId)) return type;
+  const kept = type.allowedMapIds.filter((id) => id !== mapId);
+  const { allowedMapIds: _removed, ...base } = type;
+  return { ...base, ...(kept.length > 0 ? { allowedMapIds: kept } : {}) } as T;
+}
+
+function stripEventScheduleMapReferences(event: GameEvent, mapId: MapId): void {
+  if (event.schedule === undefined) return;
+  event.schedule = event.schedule.filter((entry) => entry.at.mapId !== mapId);
 }
 
 function stripPageMapReferences(page: EventPage, mapId: MapId): void {
@@ -244,6 +358,23 @@ function countIncomingCommands(project: Project, mapId: MapId): number {
     for (const page of troop.battleEventPages ?? []) countIn(page.commands);
   }
   return count;
+}
+
+function collectIncomingScheduleRows(
+  project: Project,
+  mapId: MapId,
+): MapScheduleRowReference[] {
+  const references: MapScheduleRowReference[] = [];
+  for (const [hostMapId, map] of Object.entries(project.maps)) {
+    if (hostMapId === mapId) continue;
+    for (const [eventIndex, event] of map.events.entries()) {
+      for (const [scheduleIndex, entry] of (event.schedule ?? []).entries()) {
+        if (entry.at.mapId !== mapId) continue;
+        references.push({ hostMapId, eventId: event.id, eventIndex, scheduleIndex });
+      }
+    }
+  }
+  return references;
 }
 
 function questReferencesMap(quest: AnyQuestDef, mapId: MapId): boolean {

@@ -9,7 +9,7 @@ type LoopCommand = Extract<Command, { kind: "loop" }>;
 
 export function loopBody(context: CommandEditContext, cmd: LoopCommand): HTMLElement {
   const wrap = el("div", {
-    class: "loop-body-editor",
+    class: "loop-body-editor cream-command-form",
     attrs: { style: "border:1px solid var(--border);padding:4px;margin-top:4px;border-radius:3px;" },
     dataset: { testid: "event-loop-body" },
   });
@@ -20,7 +20,7 @@ export function loopBody(context: CommandEditContext, cmd: LoopCommand): HTMLEle
     return cmd;
   };
 
-  const headerLabel = el("label", { text: `반복 내용 (${cmd.body.length} 명령)` });
+  const headerLabel = el("div", { class: "cream-command-form-head", text: `반복 · ${cmd.body.length}개 명령` });
   wrap.append(headerLabel);
 
   const working: Command[] = structuredClone(getCurrentLoop().body);

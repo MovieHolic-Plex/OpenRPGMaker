@@ -5,7 +5,7 @@ import {
   dirtyGuardOracle,
   switchTabAnyMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS } from "./oprn-database-helpers";
 
 test.setTimeout(90_000);
 test.use({ serviceWorkers: "block" });
@@ -15,7 +15,7 @@ const TERRAIN_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "terrain")!;
 
 const TOWN_ROW = "tileset-db-row-easyrpg_chipset_combined_town";
 const DUNGEON_ROW = "tileset-db-row-easyrpg_chipset_dungeon";
-const DUNGEON_NAME = "EasyRPG RTP Dungeon ChipSet";
+const DUNGEON_NAME = "던전 · EasyRPG (CC0)";
 
 type TabProbe = {
   detailTextLen: number;
@@ -62,9 +62,9 @@ test.describe("QA sweep: tilesets tab", () => {
 
     await expect(page.getByTestId(TOWN_ROW)).toBeVisible();
     await expect(page.getByTestId(DUNGEON_ROW)).toBeEnabled();
-    await expect(page.getByTestId("tileset-rm2k3-name-input")).toBeEnabled();
-    await expect(page.getByTestId("tileset-rm2k3-maximum-count")).toBeDisabled();
-    await expect(page.getByTestId("tileset-rm2k3-graphic-browse")).toBeEnabled();
+    await expect(page.getByTestId("tileset-oprn-name-input")).toBeEnabled();
+    await expect(page.getByTestId("tileset-oprn-maximum-count")).toBeDisabled();
+    await expect(page.getByTestId("tileset-oprn-graphic-browse")).toBeEnabled();
     await expect(page.getByTestId("tileset-section-tab-rules")).toBeEnabled();
     await expect(page.getByTestId("tileset-settings-open")).toBeEnabled();
     await expect(page.getByTestId("tileset-db-preview")).toBeVisible();
@@ -72,14 +72,14 @@ test.describe("QA sweep: tilesets tab", () => {
 
     await page.getByTestId(DUNGEON_ROW).click();
     await expect(page.getByTestId(DUNGEON_ROW)).toHaveClass(/active/);
-    await expect(page.getByTestId("tileset-rm2k3-name-input")).toHaveValue(DUNGEON_NAME);
+    await expect(page.getByTestId("tileset-oprn-name-input")).toHaveValue(DUNGEON_NAME);
     await expect(page.getByTestId("tileset-db-preview")).toBeVisible();
     await expect(page.getByTestId("tileset-sheet-info")).toBeVisible();
 
     await switchTabAnyMode(page, TERRAIN_TAB);
     await switchTabAnyMode(page, TILESETS_TAB);
     await expect(page.getByTestId(DUNGEON_ROW)).toHaveClass(/active/);
-    await expect(page.getByTestId("tileset-rm2k3-name-input")).toHaveValue(DUNGEON_NAME);
+    await expect(page.getByTestId("tileset-oprn-name-input")).toHaveValue(DUNGEON_NAME);
     await expect(page.getByTestId("tileset-db-preview")).toBeVisible();
 
     expect(consoleErrors, `console errors: ${consoleErrors.join("\n")}`).toEqual([]);

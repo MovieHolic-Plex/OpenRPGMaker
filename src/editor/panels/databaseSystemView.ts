@@ -16,11 +16,13 @@ import {
 } from "@/editor/panels/databaseControls";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
+  DEFAULT_DAYS_PER_SEASON,
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import { store } from "@/project/store";
@@ -38,7 +40,15 @@ import type {
 } from "@/project/types";
 import { el } from "@/util/dom";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
 import { listTitleMenuOptions, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
+import {
+  analyzePlayResolution,
+  normalizePlayResolution,
+  PLAY_RESOLUTION_LIMITS,
+  resolvePlayResolution,
+} from "@/project/playResolution";
+import type { PlayResolution, SystemRecords } from "@/project/types";
 
 const START_PARTY_SLOTS = 4;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
@@ -47,18 +57,22 @@ const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies 
 const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies"] as const satisfies readonly ("none" | TitleParticlePreset)[];
 const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
 const TITLE_INTRO_MENU_OPTIONS = ["none", "fadeIn", "slideUp"] as const satisfies readonly TitleIntroMenuAnimation[];
+const PLAY_RESOLUTION_PRESETS = ["320x240", "426x240", "640x360", "640x480", "custom"] as const;
+type PlayResolutionPreset = (typeof PLAY_RESOLUTION_PRESETS)[number];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
-type SystemSectionSlug = "party" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemSectionSlug = "overview" | "party" | "display" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
 
 const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
+  { slug: "overview", label: "개요" },
   { slug: "party", label: "초기 파티" },
+  { slug: "display", label: "화면" },
   { slug: "resources", label: "리소스" },
   { slug: "startup", label: "시작 설정" },
-  { slug: "optin", label: "옵트인 시스템" },
-  { slug: "time", label: "시간 시스템" },
+  { slug: "optin", label: "기능 확장" },
+  { slug: "time", label: "시간" },
   { slug: "typechart", label: "타입 상성" },
-  { slug: "title", label: "타이틀 화면" },
+  { slug: "title", label: "타이틀" },
 ];
 
 export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
@@ -77,12 +91,13 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
   const nav = systemSectionNav(activeSlug, host, sectionHost);
 
   form.append(nav, sectionHost);
+  wireSystemStudioOverview(form);
   host.append(el("h3", { text: "시스템" }), form);
 }
 
 function readActiveSystemSection(host: HTMLElement): SystemSectionSlug {
   const stored = host.dataset.dbSystemSection;
-  return SYSTEM_SECTION_ORDER.some((section) => section.slug === stored) ? (stored as SystemSectionSlug) : "party";
+  return SYSTEM_SECTION_ORDER.some((section) => section.slug === stored) ? (stored as SystemSectionSlug) : "overview";
 }
 
 function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sectionHost: HTMLElement): HTMLElement {
@@ -142,12 +157,14 @@ function systemSectionNodes(
     return node;
   };
   return {
+    overview: section("overview", [renderSystemStudioOverview(project)]),
     party: section("party", [
       rm2k3Fieldset("초기 파티", [
         startPartyFaceStrip(project.system.startActorIds, project.database.actors),
         ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
       ]),
     ]),
+    display: section("display", [playResolutionFieldset(project, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("리소스", [
         resourcePickerControl({
@@ -345,6 +362,151 @@ function systemSectionNodes(
  * 옵트인 시스템 토글 + 배열 개수 표시. 편집이 아닌 "켰는데 비어 있다"를 보이게 하는 것이 목적.
  * 배열 편집은 각자의 전용 DB 탭/도구가 담당한다.
  */
+function playResolutionFieldset(project: Project, rerender: () => void): HTMLElement {
+  const { system } = project;
+  const resolution = resolvePlayResolution(system);
+  const preset = playResolutionPreset(resolution);
+  const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
+  const labels: Record<PlayResolutionPreset, string> = {
+    "320x240": "320 × 240 · 클래식 4:3",
+    "426x240": "426 × 240 · 와이드 16:9",
+    "640x360": "640 × 360 · 와이드",
+    "640x480": "640 × 480 · 확장 4:3",
+    custom: "직접 입력",
+  };
+  for (const value of PLAY_RESOLUTION_PRESETS) {
+    presetSelect.append(el("option", { text: labels[value], attrs: { value } }));
+  }
+  presetSelect.value = preset;
+  presetSelect.addEventListener("change", () => {
+    const next = presetResolution(presetSelect.value as PlayResolutionPreset);
+    if (!next) return;
+    updateSystem((draft) => storePlayResolution(draft.system, next));
+    rerender();
+  });
+
+  return rm2k3Fieldset("게임 화면 해상도", [
+    el("p", {
+      class: "db-system-resolution-help",
+      text: "플레이 화면이 보여 주는 논리 영역입니다. 값이 커질수록 한 화면에 더 넓은 맵이 보이며, 다음 테스트 플레이부터 적용됩니다.",
+      dataset: { testid: "db-system-resolution-help" },
+    }),
+    field("빠른 선택", presetSelect),
+    numberField("가로", "db-field-system-resolution-width", resolution.width, (value) => {
+      updateSystem((draft) => {
+        const current = resolvePlayResolution(draft.system);
+        storePlayResolution(draft.system, { width: value, height: current.height });
+      }, "system:play-resolution:width");
+      rerender();
+    }, { min: PLAY_RESOLUTION_LIMITS.minWidth, max: PLAY_RESOLUTION_LIMITS.maxWidth, step: 1 }),
+    numberField("세로", "db-field-system-resolution-height", resolution.height, (value) => {
+      updateSystem((draft) => {
+        const current = resolvePlayResolution(draft.system);
+        storePlayResolution(draft.system, { width: current.width, height: value });
+      }, "system:play-resolution:height");
+      rerender();
+    }, { min: PLAY_RESOLUTION_LIMITS.minHeight, max: PLAY_RESOLUTION_LIMITS.maxHeight, step: 1 }),
+    el("div", {
+      class: "db-field db-field-readonly",
+      children: [
+        el("span", { text: "허용 범위" }),
+        el("code", {
+          text: `${PLAY_RESOLUTION_LIMITS.minWidth}–${PLAY_RESOLUTION_LIMITS.maxWidth} × ${PLAY_RESOLUTION_LIMITS.minHeight}–${PLAY_RESOLUTION_LIMITS.maxHeight}`,
+        }),
+      ],
+    }),
+    playResolutionDiagnostics(project, resolution),
+  ]);
+}
+
+function playResolutionDiagnostics(project: Project, resolution: Readonly<PlayResolution>): HTMLElement {
+  const analysis = analyzePlayResolution(resolution, project.maps);
+  const viewport = estimatedTestPlayViewport();
+  const fitScale = calculatePlaySurfaceScale(viewport.width, viewport.height, resolution.width, resolution.height);
+  const incompatible = analysis.incompatibleMaps;
+  const warnings: HTMLElement[] = [];
+  if (analysis.partialTileX || analysis.partialTileY) {
+    warnings.push(el("p", {
+      class: "db-system-resolution-warning",
+      text: `16px 타일 경계가 ${analysis.partialTileX && analysis.partialTileY ? "가로·세로" : analysis.partialTileX ? "가로" : "세로"}에서 일부 보일 수 있습니다.`,
+    }));
+  }
+  if (incompatible.length > 0) {
+    warnings.push(el("p", {
+      class: "db-system-resolution-warning danger",
+      text: `화면보다 작은 맵 ${incompatible.length}개: ${incompatible.slice(0, 4).map((map) => `${map.name} ${map.width}×${map.height}`).join(", ")}${incompatible.length > 4 ? " 외" : ""}`,
+    }));
+  }
+
+  return el("section", {
+    class: `db-system-resolution-diagnostics${warnings.length ? " has-warning" : ""}`,
+    dataset: {
+      testid: "db-system-resolution-diagnostics",
+      minMapWidth: String(analysis.minMapWidth),
+      minMapHeight: String(analysis.minMapHeight),
+      partialTileX: String(analysis.partialTileX),
+      partialTileY: String(analysis.partialTileY),
+      incompatibleMapCount: String(incompatible.length),
+      estimatedFitScale: fitScale.toFixed(3),
+    },
+    children: [
+      el("strong", { text: "해상도 영향" }),
+      el("dl", {
+        class: "db-system-resolution-facts",
+        children: [
+          resolutionFact("화면비", `${analysis.aspectWidth}:${analysis.aspectHeight}`),
+          resolutionFact("보이는 타일", `${formatTileSpan(analysis.tileColumns)} × ${formatTileSpan(analysis.tileRows)}`),
+          resolutionFact("권장 최소 맵", `${analysis.minMapWidth} × ${analysis.minMapHeight} 타일`),
+          resolutionFact("현재 창 예상", `${formatScale(fitScale)}배 · 자동 맞춤`),
+        ],
+      }),
+      ...warnings,
+    ],
+  });
+}
+
+function resolutionFact(label: string, value: string): HTMLElement {
+  return el("div", {
+    children: [el("dt", { text: label }), el("dd", { text: value })],
+  });
+}
+
+function formatTileSpan(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function formatScale(value: number): string {
+  return value >= 1 ? String(Math.trunc(value)) : value.toFixed(2);
+}
+
+function estimatedTestPlayViewport(): { readonly width: number; readonly height: number } {
+  const windowWidth = typeof window !== "undefined" && window.innerWidth > 0 ? window.innerWidth : 1280;
+  const windowHeight = typeof window !== "undefined" && window.innerHeight > 0 ? window.innerHeight : 800;
+  return {
+    width: Math.max(1, Math.min(1320, windowWidth - 64)),
+    height: Math.max(1, Math.min(970, windowHeight - 78)),
+  };
+}
+
+function playResolutionPreset(resolution: Readonly<PlayResolution>): PlayResolutionPreset {
+  const value = `${resolution.width}x${resolution.height}`;
+  return PLAY_RESOLUTION_PRESETS.includes(value as PlayResolutionPreset)
+    ? value as PlayResolutionPreset
+    : "custom";
+}
+
+function presetResolution(preset: PlayResolutionPreset): PlayResolution | undefined {
+  if (preset === "custom") return undefined;
+  const [width, height] = preset.split("x").map(Number);
+  return { width, height };
+}
+
+function storePlayResolution(system: SystemRecords, value: PlayResolution): void {
+  const normalized = normalizePlayResolution(value);
+  if (normalized) system.playResolution = normalized;
+  else delete system.playResolution;
+}
+
 function optInSystemFields(project: Project, rerender: () => void): readonly HTMLElement[] {
   const { system } = project;
   const fields: HTMLElement[] = [
@@ -530,6 +692,7 @@ function timeSystemFieldset(
           minutesPerRealSecond: draft.system.timeSystem?.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
           dayStartHour: draft.system.timeSystem?.dayStartHour ?? DEFAULT_DAY_START_HOUR,
           dayEndHour: draft.system.timeSystem?.dayEndHour ?? DEFAULT_DAY_END_HOUR,
+          daysPerSeason: draft.system.timeSystem?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON,
           forceSleep: draft.system.timeSystem?.forceSleep === true,
           onDayEnd: draft.system.timeSystem?.onDayEnd,
         });
@@ -565,6 +728,15 @@ function timeSystemFieldset(
             dayEndHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_END_HOUR,
           });
         }, "system:time:day-end");
+      }),
+      numberField("계절당 일수", "db-field-system-time-days-per-season", timeSystem.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON, (value) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            daysPerSeason: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAYS_PER_SEASON,
+          });
+        }, "system:time:days-per-season");
       }),
       checkboxField("종료 시 강제 취침", "db-field-system-time-force-sleep", timeSystem.forceSleep === true, (checked) => {
         updateSystem((draft) => {
@@ -824,7 +996,7 @@ function nextRewardPolicy(
 }
 
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "rm2k3-db-fieldset", children: [el("legend", { text: title }), ...children] });
+  return el("fieldset", { class: "oprn-db-fieldset", children: [el("legend", { text: title }), ...children] });
 }
 
 function clampStageCoordinate(value: number, max: number): number {
@@ -848,13 +1020,13 @@ function systemPreviewWell(label: string, resourceId: string | undefined): HTMLE
   const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
   const preview = url
     ? el("img", { attrs: { alt: `${label} 미리보기`, src: url } })
-    : el("span", { class: "db-system-preview-empty", text: resourceId ?? "(없음)" });
+    : el("span", { class: "db-system-preview-empty", text: "(없음)" });
   return el("div", {
     class: "db-system-preview-well",
     children: [
       el("span", { class: "db-system-preview-label", text: label }),
       el("div", { class: "db-system-preview-frame", children: [preview] }),
-      el("code", { text: resourceId ?? "(없음)" }),
+      el("code", { text: resourceId ? `리소스 ${resourceId}` : "(없음)" }),
     ],
   });
 }
@@ -937,7 +1109,7 @@ function titleScreenDisplayFieldset(
     }),
     el("code", {
       class: "db-title-workbench-system-title-id",
-      text: `system.titleResourceId: ${systemTitleResourceId ?? "(없음)"}`,
+      text: systemTitleResourceId ? `리소스 ${systemTitleResourceId}` : "리소스 (없음)",
       dataset: { testid: "db-title-workbench-system-title-id" },
     }),
     numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {
@@ -973,7 +1145,7 @@ function titleScreenDisplayFieldset(
   );
 
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-display" },
     children: [el("legend", { text: "표시" }), ...children],
   });
@@ -981,7 +1153,7 @@ function titleScreenDisplayFieldset(
 
 function titleScreenAudioFieldset(titleScreen: TitleScreenSettings, rerender: () => void): HTMLElement {
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-audio" },
     children: [
       el("legend", { text: "오디오" }),
@@ -1052,7 +1224,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
     quit: true,
   };
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-menu" },
     children: [
       el("legend", { text: "메뉴" }),
@@ -1218,7 +1390,7 @@ function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: 
           // 새 레이어는 항상 유효한 번들 리소스로 시작한다(참조 검증이 error 를 내지 않도록).
           settings.backgroundLayers = [
             ...current,
-            { resourceId: settings.backgroundResourceId ?? "rpg-zzu-title-field" },
+            { resourceId: settings.backgroundResourceId ?? "oprn-title-field" },
           ];
         });
         rerender();
@@ -1302,7 +1474,7 @@ function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: 
   ];
 
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-effects" },
     children: [
       el("legend", { text: "연출" }),
@@ -1483,10 +1655,12 @@ function titleScreenWorkbenchPreview(
   // 스테이지 전체를 다시 만들면 CSS 애니메이션(레이어 스크롤 시작·등장 연출)이 처음부터
   // 재생된다 — "연출 다시 재생" 버튼이 이 함수를 재호출해 노드를 갈아끼운다.
   const buildStage = (): HTMLElement => {
+    const resolution = resolvePlayResolution(project.system);
+    const resolutionAnalysis = analyzePlayResolution(resolution, project.maps);
     const bgUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
     const stage = el("div", {
       class: "db-title-workbench-stage",
-      dataset: { testid: "db-title-workbench-stage" },
+      dataset: { testid: "db-title-workbench-stage", playResolution: `${resolution.width}x${resolution.height}` },
       attrs: bgUrl
         ? {
             style: [
@@ -1499,6 +1673,7 @@ function titleScreenWorkbenchPreview(
           }
         : {},
     });
+    stage.style.aspectRatio = `${resolutionAnalysis.aspectWidth} / ${resolutionAnalysis.aspectHeight}`;
 
     // 배경 레이어 + 파티클은 런타임과 **같은 렌더러**(renderTitleFxStack)를 그대로 마운트한다
     // — 에디터 전용 복제가 낡을 수 없다. rAF 는 스테이지 교체 시 canvas 분리로 자체 해제된다.

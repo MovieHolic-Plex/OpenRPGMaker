@@ -2,8 +2,13 @@ import type { BattleSnapshot } from "@/battle/runtime";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
-import type { BattleAnimationRecord } from "@/project/types";
-import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
+import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
+import { battleAnimationFrameDurationMs } from "@/player/battleAnimationPlayback";
+import {
+  BATTLE_EFFECT_CSS_VARIABLES,
+  flashCssVariables,
+  screenShakeCssVariables,
+} from "@/player/battleAnimationEffectStyle";
 import { findBattlerNode } from "@/player/battleFieldDom";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 
@@ -31,6 +36,10 @@ export function syncBattleAnimationLayer(
   if (!animationKey) {
     existing?.remove();
     sceneRoot.classList.remove("battle-screen-shake", "battle-screen-flash");
+    // 대상 플래시는 배틀러 노드에 붙으므로 씬 클래스만 걷으면 남는다.
+    for (const node of sceneRoot.querySelectorAll(".battle-animation-target-flash")) {
+      node.classList.remove("battle-animation-target-flash");
+    }
     return undefined;
   }
   if (existing?.dataset.animationKey === animationKey) {
@@ -75,13 +84,19 @@ export function mountBattleAnimationPlayback(
   element.setAttribute("aria-label", lastAnimation.name ?? lastAnimation.animationId);
   element.setAttribute("role", "img");
 
+  const context: AnimationRenderContext = {
+    sceneRoot,
+    targetNode: findBattlerNode(sceneRoot ?? document, lastAnimation.targetId),
+    frameDurationMs: battleAnimationFrameDurationMs(record),
+  };
+
   const timers = new Set<number>();
   const url = resolveAssetResourceUrl(record?.resourceId, { project: store.getCurrent() });
   if (url && record?.sheet && record.frames && record.frames.length > 0) {
     element.dataset.renderedFrameCount = String(record.frames.length);
     element.append(animationSheet(record, url));
-    setActiveAnimationFrame(element, record, 0, sceneRoot);
-    startPlayback(element, record, timers, sceneRoot);
+    setActiveAnimationFrame(element, record, 0, context);
+    startPlayback(element, record, timers, context);
   }
 
   return {
@@ -90,6 +105,8 @@ export function mountBattleAnimationPlayback(
     destroy(): void {
       for (const timer of timers) window.clearInterval(timer);
       timers.clear();
+      // 중간에 파괴돼도 효과 흔적을 남기지 않는다 — 남으면 다음 액션이 물려받는다.
+      clearEffectClasses(context);
       element.remove();
     },
   };
@@ -111,11 +128,28 @@ function battleAnimationRecord(animationId: string): BattleAnimationRecord | und
   return store.getCurrent().database.battleAnimations.find((record) => record.id === animationId);
 }
 
+/**
+ * 씬 루트에 적힌 전투 속도 배율을 읽는다(battleDom 의 setSpeed 가 `data-battle-speed` 로 쓴다).
+ *
+ * 예전에는 시퀀서만 배율을 적용하고 애니메이션은 상수 120ms 로 돌았다. 그래서 3배속을 켜면
+ * 대사·모션은 빨라지는데 **이펙트만 원속도로 남아** 다음 행동 위로 겹쳤고, 배속을 연출
+ * 검수용으로 쓸 수 없었다.
+ */
+export function battleAnimationFrameMs(
+  sceneRoot: HTMLElement | null,
+  record?: BattleAnimationRecord
+): number {
+  const raw = Number(sceneRoot?.dataset.battleSpeed);
+  // 시퀀서와 같은 하한(0.2)을 쓴다 — 여기만 다르면 배속을 올릴수록 서로 어긋난다.
+  const speed = Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1;
+  return Math.max(10, Math.round(battleAnimationFrameDurationMs(record) / speed));
+}
+
 function startPlayback(
   element: HTMLElement,
   record: BattleAnimationRecord,
   timers: Set<number>,
-  sceneRoot: HTMLElement | null
+  context: AnimationRenderContext
 ): void {
   const frames = record.frames ?? [];
   if (frames.length <= 1) return;
@@ -125,14 +159,27 @@ function startPlayback(
     if (index >= frames.length) {
       window.clearInterval(timer);
       timers.delete(timer);
-      if (sceneRoot) {
-        sceneRoot.classList.remove("battle-screen-shake", "battle-screen-flash");
-      }
+      finishPlayback(element, context);
       return;
     }
-    setActiveAnimationFrame(element, record, index, sceneRoot);
-  }, BATTLE_ANIMATION_FRAME_MS);
+    setActiveAnimationFrame(element, record, index, context);
+  }, battleAnimationFrameMs(context.sceneRoot, record));
   timers.add(timer);
+}
+
+/**
+ * 재생이 끝나면 그림을 걷는다.
+ *
+ * 예전에는 `clearInterval` 만 하고 마지막 프레임을 그대로 뒀다. 엘리먼트 제거는 다음
+ * 엔트리이거나 시퀀스 종료 시점이라, 그 사이 약 1초 동안 **마지막 컷이 화면에 얼어붙어**
+ * 있었다. 감독 눈에는 "이펙트가 안 사라진다" 로 보인다.
+ */
+function finishPlayback(element: HTMLElement, context: AnimationRenderContext): void {
+  for (const frame of element.querySelectorAll<HTMLElement>(".battle-animation-frame")) {
+    frame.hidden = true;
+  }
+  element.dataset.playbackFinished = "true";
+  clearEffectClasses(context);
 }
 
 function animationSheet(record: BattleAnimationRecord, url: string): HTMLElement {
@@ -198,11 +245,22 @@ function animationCell(
   return canvas;
 }
 
+/**
+ * 프레임을 그릴 때 필요한 대상들.
+ * `targetNode` 는 flash.target === "target" 을 대상에게만 걸기 위해 필요하다 —
+ * 예전에는 대상 지정을 무시하고 무조건 화면 전체를 번쩍였다.
+ */
+type AnimationRenderContext = {
+  readonly sceneRoot: HTMLElement | null;
+  readonly targetNode: HTMLElement | null;
+  readonly frameDurationMs: number;
+};
+
 function setActiveAnimationFrame(
   element: HTMLElement,
   record: BattleAnimationRecord,
   frameIndex: number,
-  sceneRoot: HTMLElement | null
+  context: AnimationRenderContext
 ): void {
   element.dataset.currentFrame = String(frameIndex);
   const frames = element.querySelectorAll<HTMLElement>(".battle-animation-frame");
@@ -215,11 +273,52 @@ function setActiveAnimationFrame(
   element.dataset.activeScreenShake = String(Boolean(timing?.screenShake));
   element.classList.toggle("battle-animation-flash-active", Boolean(timing?.flash));
   element.classList.toggle("battle-animation-shake-active", Boolean(timing?.screenShake));
-  if (sceneRoot) {
-    sceneRoot.classList.toggle("battle-screen-shake", Boolean(timing?.screenShake));
-    sceneRoot.classList.toggle("battle-screen-flash", Boolean(timing?.flash));
-  }
+  applyTimingEffects(context, timing);
   playTimingSound(timing?.soundResourceId);
+}
+
+/**
+ * 프레임 타이밍의 flash/screenShake 를 화면에 반영한다.
+ *
+ * flash 는 `target` 이 정한 곳에만 건다 — "screen" 은 씬 전체, "target" 은 대상 배틀러 노드.
+ * 예전에는 존재 여부만 보고 무조건 씬 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌다.
+ * 대상 노드를 못 찾으면(레이아웃/스킨 차이) 씬 플래시로 떨어뜨려 연출이 통째로 사라지지 않게 한다.
+ */
+function applyTimingEffects(context: AnimationRenderContext, timing: BattleAnimationTiming | undefined): void {
+  const { sceneRoot, targetNode } = context;
+  const flash = timing?.flash;
+  const screenShake = timing?.screenShake;
+  const flashOnTarget = Boolean(flash) && flash!.target === "target" && targetNode !== null;
+
+  if (targetNode) {
+    setEffectVariables(targetNode, flashOnTarget ? flash : undefined, undefined, context.frameDurationMs);
+    targetNode.classList.toggle("battle-animation-target-flash", flashOnTarget);
+  }
+  if (!sceneRoot) return;
+  setEffectVariables(sceneRoot, flashOnTarget ? undefined : flash, screenShake, context.frameDurationMs);
+  sceneRoot.classList.toggle("battle-screen-shake", Boolean(screenShake));
+  sceneRoot.classList.toggle("battle-screen-flash", Boolean(flash) && !flashOnTarget);
+}
+
+/** 재생 종료·엔트리 교체 시 효과 흔적을 걷는다. 남으면 다음 액션이 물려받는다. */
+function clearEffectClasses(context: AnimationRenderContext): void {
+  context.sceneRoot?.classList.remove("battle-screen-shake", "battle-screen-flash");
+  context.targetNode?.classList.remove("battle-animation-target-flash");
+}
+
+function setEffectVariables(
+  host: HTMLElement,
+  flash: BattleAnimationTiming["flash"],
+  screenShake: BattleAnimationTiming["screenShake"],
+  frameDurationMs: number
+): void {
+  // 효과 없는 프레임에서 걷어내지 않으면 다음 효과가 이전 값을 물려받는다.
+  for (const name of BATTLE_EFFECT_CSS_VARIABLES) host.style.removeProperty(name);
+  const variables = {
+    ...(flash ? flashCssVariables(flash, frameDurationMs) : {}),
+    ...(screenShake ? screenShakeCssVariables(screenShake, frameDurationMs) : {}),
+  };
+  for (const [name, value] of Object.entries(variables)) host.style.setProperty(name, value);
 }
 
 function playTimingSound(soundResourceId: string | undefined): void {

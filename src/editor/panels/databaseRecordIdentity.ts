@@ -3,7 +3,7 @@ import { el } from "@/util/dom";
 
 export function recordIdentity(collectionLabel: string, id: string, name: string, index: number): HTMLElement {
   return el("fieldset", {
-    class: "rm2k3-db-fieldset rm2k3-record-identity",
+    class: "oprn-db-fieldset oprn-record-identity",
     children: [
       el("legend", { text: collectionLabel }),
       el("div", {

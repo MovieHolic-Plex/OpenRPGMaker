@@ -197,7 +197,7 @@ export function runCommandContract(
 ## 8. G4 e2e 스모크 3종 (감독자 실행 — codex는 스크립트만 작성)
 
 - 파일: `test/e2e/event-command-runtime.spec.ts`
-- 현행 e2e 관례(`test/e2e/rm2k3-map-editor.spec.ts`의 `/?freshProject=1` 부트,
+- 현행 e2e 관례(`test/e2e/oprn-map-editor.spec.ts`의 `/?freshProject=1` 부트,
   `rpg-maker-*` testid)를 따른다. 시나리오: ① 이벤트에 text+choices 작성→플레이→선택→분기 확인
   ② setSwitch+fork 문 열림 ③ transfer 이동. **codex는 포트 리슨 불가이므로 작성만 하고
   실행·판정은 감독자(Claude)가 한다** — 보고서에 "미실행, 감독자 검증 대기"로 명시.

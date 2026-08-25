@@ -1,10 +1,12 @@
 import { proposalCompletenessWarningLines } from "@/ai/proposalCompleteness";
 import type { ProposedCall } from "@/ai/assistantSession";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
+import { TILE } from "@/project/defaults/constants";
 import { combineDiffs } from "@/project/projectCommitLog";
 import type { Project } from "@/project/types";
 
-const HOUSE_TOOLS = new Set(["build_house", "build_house_kit"]);
+const HOUSE_TOOLS = new Set(["build_house", "build_house_kit", "author_house", "build_house_lots"]);
+const WATER_LABEL = /호수|연못|하천|수역|강가|water|river|lake|pond|(^|[^가-힣])(물|강)([^가-힣]|$)/iu;
 const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
   HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && call.args.kind === "house");
 
@@ -35,12 +37,55 @@ function isTreeScatter(call: ProposedCall): boolean {
   return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
 }
 
+function countHousesInCall(call: ProposedCall): number {
+  if (Array.isArray(call.args.houses) && call.args.houses.length > 0) return call.args.houses.length;
+  if (call.name === "author_village") {
+    const fromData = positive(numberFromRecord(call.result.data, "houseCount"));
+    if (fromData > 0) return fromData;
+    return positive(typeof call.args.houseCount === "number" ? call.args.houseCount : null);
+  }
+  if (isHouseCall(call) || call.name === "build_wall") return 1;
+  if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return 1;
+  return 0;
+}
+
 function countProposalHouses(calls: readonly ProposedCall[]): number {
-  return calls.reduce((total, call) => {
-    if (isHouseCall(call) || call.name === "build_wall") return total + 1;
-    if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return total + 1;
-    return total;
-  }, 0);
+  return calls.reduce((total, call) => total + countHousesInCall(call), 0);
+}
+
+function looksLikeWaterLabel(value: string): boolean {
+  const label = value.trim();
+  if (!label || /건물/u.test(label)) return false;
+  if (label === "물" || label === "강") return true;
+  return WATER_LABEL.test(label);
+}
+
+function isRiverCall(call: ProposedCall): boolean {
+  if (isHouseCall(call) || call.name === "author_village" || call.name === "build_wall") return false;
+  if (call.args.tile === TILE.WATER) return true;
+  const material = typeof call.args.material === "string" ? call.args.material : "";
+  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : "";
+  if (looksLikeWaterLabel(material) || looksLikeWaterLabel(groupId)) return true;
+  return (call.name === "fill_region" || call.name === "paint_tiles" || call.name === "tile_paint") && looksLikeWaterLabel(call.summary);
+}
+
+function hasRiverNoun(calls: readonly ProposedCall[]): boolean {
+  return calls.some(isRiverCall);
+}
+
+function houseHasYard(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (value.fence === true) return true;
+  return Array.isArray(value.yard) && value.yard.length > 0;
+}
+
+function hasYardNoun(calls: readonly ProposedCall[]): boolean {
+  return calls.some((call) => {
+    if (call.args.fence === true) return true;
+    if (Array.isArray(call.args.yard) && call.args.yard.length > 0) return true;
+    if (Array.isArray(call.args.houses) && call.args.houses.some(houseHasYard)) return true;
+    return /앞마당|울타리/u.test(call.summary);
+  });
 }
 
 function countProposalRoadCells(calls: readonly ProposedCall[]): number {
@@ -68,43 +113,48 @@ function countProposalTrees(calls: readonly ProposedCall[]): number {
   }, 0);
 }
 
-function formatCount(label: string, count: number, unit: string): string | null {
-  return count > 0 ? `${label} ${count}${unit}` : null;
+function nounCount(label: string, count: number): string | null {
+  return count > 0 ? `${label} ${count}` : null;
+}
+
+function nounPresence(label: string, present: boolean): string | null {
+  return present ? label : null;
 }
 
 function worldSummaryPart(added: number, modified: number): string | null {
   if (added > 0 && modified > 0) return `세계관 추가 ${added}/수정 ${modified}`;
-  if (added > 0) return `세계관 ${added}건`;
-  if (modified > 0) return `세계관 수정 ${modified}건`;
+  if (added > 0) return `세계관 ${added}`;
+  if (modified > 0) return `세계관 수정 ${modified}`;
   return null;
 }
 
 function palettePresetSummaryPart(added: number, modified: number): string | null {
   if (added > 0 && modified > 0) return `프리셋 추가 ${added}/수정 ${modified}`;
-  if (added > 0) return `프리셋 ${added}건`;
-  if (modified > 0) return `프리셋 수정 ${modified}건`;
+  if (added > 0) return `프리셋 ${added}`;
+  if (modified > 0) return `프리셋 수정 ${modified}`;
   return null;
 }
 
 export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
   const diff = combineDiffs(calls.map((call) => call.result.diff));
+  const npcCount = calls.filter((call) => call.name === "place_npc").length;
   return [
-    formatCount("타일", diff.tilesChanged, "칸"),
-    formatCount("맵", diff.mapsAdded, "개"),
-    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}개` : null,
-    formatCount("NPC", calls.filter((call) => call.name === "place_npc").length, "명"),
-    formatCount("이벤트", Math.max(0, diff.eventsAdded - calls.filter((call) => call.name === "place_npc").length), "개"),
-    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}개` : null,
-    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}개` : null,
-    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}건` : null,
-    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}건` : null,
-    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}개` : null,
-    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}개` : null,
+    nounCount("타일", diff.tilesChanged),
+    nounCount("맵", diff.mapsAdded),
+    nounCount("맵 삭제", diff.mapsRemoved),
+    nounCount("NPC", npcCount),
+    nounCount("이벤트", Math.max(0, diff.eventsAdded - npcCount)),
+    nounCount("이벤트 수정", diff.eventsModified),
+    nounCount("이벤트 삭제", diff.eventsRemoved),
+    nounCount("DB", diff.dbRecordsChanged),
+    nounCount("타일셋", diff.tilesetsChanged),
+    nounCount("스위치", diff.switchesAdded),
+    nounCount("변수", diff.variablesAdded),
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
     palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
-    diff.endingsChanged > 0 ? `엔딩 ${diff.endingsChanged}건` : null,
-    diff.sessionChanged ? "세션 1건" : null,
-    diff.systemChanged ? "시스템 1건" : null,
+    nounCount("엔딩", diff.endingsChanged),
+    nounPresence("세션", diff.sessionChanged),
+    nounPresence("시스템", diff.systemChanged),
   ].filter((part): part is string => part !== null);
 }
 
@@ -115,10 +165,14 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
   const houses = countProposalHouses(calls);
   const roadCells = countProposalRoadCells(calls);
   const trees = countProposalTrees(calls);
+  const river = hasRiverNoun(calls);
+  const yard = hasYardNoun(calls);
   const semanticParts = [
-    formatCount("집", houses, "채"),
-    formatCount("길", roadCells, "칸"),
-    formatCount("나무", trees, "그루"),
+    nounCount("집", houses),
+    nounPresence("강", river),
+    nounPresence("앞마당", yard),
+    nounCount("길", roadCells),
+    nounCount("나무", trees),
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
     palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
   ].filter((part): part is string => part !== null);
@@ -126,9 +180,32 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
   const parts = [
     ...semanticParts,
     ...(semanticParts.length === 0 ? fallbackDiffParts(calls) : []),
-    semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 ? `타일 ${remainingTileChanges}칸` : null,
+    semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 && !river && !yard
+      ? `타일 ${remainingTileChanges}`
+      : null,
   ].filter((part): part is string => part !== null);
-  return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}건`;
+  return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}`;
+}
+
+const TOOLISH_HEADLINE = /[_]|paint_|build_|upsert_|place_|scatter_|create_|set_|query_|run_/u;
+const CHATTY_HEADLINE = /습니다|입니다|해요|할게요|주세요|제안합니다/u;
+
+function firstAssistantHeadline(text: string): string | null {
+  const raw = text.trim().split(/\n+/u)[0]?.trim() ?? "";
+  if (!raw) return null;
+  const line = raw.replace(/[.。!！?？]+$/u, "").trim();
+  if (line.length < 2 || line.length > 28) return null;
+  if (TOOLISH_HEADLINE.test(line) || CHATTY_HEADLINE.test(line)) return null;
+  return line;
+}
+
+/** 결정 카드 한 문장. 채팅체·툴 id는 버리고, 없으면 사람 요약. */
+export function proposalDecisionTitle(calls: readonly ProposedCall[], assistantText = ""): string {
+  return firstAssistantHeadline(assistantText) ?? proposalHumanSummaryLine(calls);
+}
+
+export function proposalDetailsToggleLabel(itemCount: number): string {
+  return `${itemCount}개 항목 · 자세히`;
 }
 
 export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnings: readonly string[] = []): string[] {

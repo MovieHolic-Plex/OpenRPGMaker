@@ -50,33 +50,39 @@ import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
   fieldSpawnAliveCount,
+  fieldSpawnRuntimeNeedsRefresh,
   fieldSpawnTroopId,
   isFieldSpawnEventId,
   resolveFieldSpawnVictory,
   syncFieldSpawnEventsIntoMap,
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
+import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
+import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
   advanceGameTime,
+  calendarDayKey,
   initialGameTime,
   minutesUntilDayEnd,
   resolveTimeSystem,
   setGameTimeClock,
-  sleepGameTimeUntilMorning,
   timePhaseFor,
   type GameTime,
   type TimePhase,
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
-import { cropStageAt, interactWithFarmPlot, syncFarmPlotsToDate } from "@/player/farming";
+import { cropStageAt, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
+import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
+import { transitionToNextDay } from "@/player/dayTransition";
 
 const TICK_MS = 16;
 
 export type SceneStep =
   | { kind: "wait"; ticks: number }
   | { kind: "face"; dir: Dir }
+  | { kind: "walk"; to: { x: number; y: number }; adjacent?: boolean }
   | {
       kind: "set";
       mapId?: string;
@@ -120,6 +126,8 @@ export type SceneExpectStep = {
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
+  /** Runner-observable feedback/transcript: at least one message text has been shown. */
+  messageShown?: boolean;
   gameOver?: boolean;
   endingReached?: string;
   cutsceneLocked?: boolean;
@@ -159,6 +167,7 @@ export interface SceneTestResult {
     readonly followerCount: number;
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
     readonly picturesVisible: readonly string[];
+    readonly messages: readonly string[];
     readonly bgm?: string;
     readonly gameOver: boolean;
     readonly endingsReached: readonly string[];
@@ -216,6 +225,8 @@ interface RunnerState {
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
   facing: Dir;
+  /** Runner-observable transcript of message text bodies shown so far. */
+  readonly messages: string[];
   gameOver: boolean;
   held: { interp: Interpreter; mode: "choices" | "animation"; currentEventId?: string } | null;
   runtimeFailure: string | null;
@@ -227,12 +238,13 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   const map = runtimeMaps[input.mapId];
   const log: string[] = [];
   if (!map) {
-    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, [], input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
   }
   session.currentMapId = input.mapId;
   session.x = input.start.x;
   session.y = input.start.y;
   applyMapDefaultLighting(session, map);
+  applyMapBgmToSession(session.audio, resolveMapBgm(project, input.mapId));
   const state: RunnerState = {
     project,
     runtimeMaps,
@@ -251,6 +263,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     chasers: new Map(),
     encounterAccumulator: 0,
     facing: "down",
+    messages: [],
     gameOver: false,
     held: null,
     runtimeFailure: null,
@@ -261,7 +274,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
@@ -273,11 +286,11 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -291,6 +304,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runSetStep(state, step);
     case "move":
       return runMoveStep(state, step);
+    case "walk":
+      return runWalkStep(state, step);
     case "interact":
       return runInteractStep(state);
     case "gift":
@@ -383,6 +398,101 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   return maybeTriggerRandomEncounterForRunner(state);
 }
 
+function runWalkStep(state: RunnerState, step: Extract<SceneStep, { kind: "walk" }>): string | null {
+  if (state.gameOver) return "게임 오버 중에는 retryCheckpoint 또는 타이틀 복귀만 가능합니다.";
+  if (isCutsceneInputLocked(state.session)) return "컷신 입력 잠금 중에는 플레이어 이동을 할 수 없습니다.";
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+
+  const start = { x: state.session.x, y: state.session.y };
+  const target = step.to;
+  const isGoal = (x: number, y: number): boolean => step.adjacent
+    ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1
+    : x === target.x && y === target.y;
+  const keyOf = (x: number, y: number): string => `${x},${y}`;
+  const directions: readonly { readonly dir: Dir; readonly dx: number; readonly dy: number }[] = [
+    { dir: "right", dx: 1, dy: 0 },
+    { dir: "left", dx: -1, dy: 0 },
+    { dir: "down", dx: 0, dy: 1 },
+    { dir: "up", dx: 0, dy: -1 },
+  ];
+  const queue: Array<{ x: number; y: number }> = [start];
+  const previous = new Map<string, { readonly from: string; readonly dir: Dir }>();
+  const seen = new Set<string>([keyOf(start.x, start.y)]);
+  let goal: { x: number; y: number } | null = isGoal(start.x, start.y) ? start : null;
+
+  while (!goal && queue.length > 0) {
+    const current = queue.shift();
+    if (!current) break;
+    for (const direction of directions) {
+      const next = { x: current.x + direction.dx, y: current.y + direction.dy };
+      const nextKey = keyOf(next.x, next.y);
+      if (seen.has(nextKey) || !canMove(state.project, map, current.x, current.y, next.x, next.y)) continue;
+      const blocking = findBlockingRuntimeEventAtInMap(
+        state.project,
+        map,
+        state.session,
+        state.eventPositions,
+        next.x,
+        next.y,
+      );
+      const exactTouchTarget = !step.adjacent
+        && next.x === target.x
+        && next.y === target.y
+        && blocking !== undefined
+        && (blocking.trigger.kind === "touch" || blocking.trigger.kind === "playerTouch");
+      if (blocking && !exactTouchTarget) continue;
+      seen.add(nextKey);
+      previous.set(nextKey, { from: keyOf(current.x, current.y), dir: direction.dir });
+      queue.push(next);
+      if (isGoal(next.x, next.y)) {
+        goal = next;
+        break;
+      }
+    }
+  }
+
+  if (!goal) {
+    const qualifier = step.adjacent ? "인접" : "도착";
+    return `연속 보행 ${qualifier} 불가: ${map.id} (${start.x},${start.y}) -> (${target.x},${target.y})`;
+  }
+
+  const route: Dir[] = [];
+  let cursor = keyOf(goal.x, goal.y);
+  const startKey = keyOf(start.x, start.y);
+  while (cursor !== startKey) {
+    const entry = previous.get(cursor);
+    if (!entry) return `연속 보행 경로 복원 실패: ${cursor}`;
+    route.push(entry.dir);
+    cursor = entry.from;
+  }
+  route.reverse();
+
+  const originMapId = state.session.currentMapId;
+  for (let index = 0; index < route.length; index += 1) {
+    const dir = route[index];
+    if (!dir) continue;
+    state.facing = dir;
+    const delta = directionDelta(dir);
+    const reason = movePlayerOneStep(state, state.session.x + delta.x, state.session.y + delta.y);
+    if (reason !== null) return reason;
+    if (state.session.currentMapId !== originMapId) {
+      if (index !== route.length - 1) return "연속 보행 도중 예상하지 않은 맵 전이가 발생했습니다.";
+      state.log.push(`walk ${map.id} -> ${state.session.currentMapId} (${route.length} steps)`);
+      return null;
+    }
+    if (state.gameOver) return "연속 보행 도중 게임 오버가 발생했습니다.";
+  }
+
+  if (step.adjacent) {
+    const dx = target.x - state.session.x;
+    const dy = target.y - state.session.y;
+    state.facing = dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up";
+  }
+  state.log.push(`walk ${map.id} (${start.x},${start.y}) -> (${state.session.x},${state.session.y}) (${route.length} steps)`);
+  return null;
+}
+
 function runGiftStep(state: RunnerState, step: Extract<SceneStep, { kind: "gift" }>): string | null {
   if (state.gameOver) return "게임 오버 중에는 선물을 줄 수 없습니다.";
   const view = findGiftTargetEvent(state, step.eventId);
@@ -463,6 +573,7 @@ function runChooseStep(state: RunnerState, index: number): string | null {
   if (!state.held || state.held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   const interp = state.held.interp;
   const stop = pump(state, interp, interp.resume(index));
+  refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, state.held.currentEventId);
   return stop.stop === "failed" ? stop.reason : null;
 }
@@ -478,6 +589,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id });
   state.log.push(`event ${view.event.id} start`);
   const stop = pump(state, interp, interp.start());
+  refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, view.event.id);
   return stop.stop === "failed" ? stop.reason : null;
 }
@@ -501,10 +613,12 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
   for (let guard = 0; guard < 100000; guard += 1) {
     switch (step.kind) {
       case "done":
+        refreshRoguelikeRoomForRunner(state);
         return { stop: "done" };
       case "choices":
         return { stop: "choices" };
       case "text":
+        state.messages.push(step.body);
         step = interp.resume(undefined);
         break;
       case "wait":
@@ -540,6 +654,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           resetRuntimeMapForRunner(state, step.mapId);
           const targetMap = currentMap(state);
           if (targetMap) applyMapDefaultLighting(state.session, targetMap);
+          if (targetMap) applyMapBgmToSession(state.session.audio, resolveMapBgm(state.project, step.mapId));
         }
         resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
         applyNpcSchedulesForRunner(state);
@@ -870,10 +985,8 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     }
     if (system.forceSleep) return sleepUntilMorningForRunner(state);
     remaining -= untilEnd;
-    const hookFailure = runDayEndHookForRunner(state);
-    if (hookFailure) return hookFailure;
-    state.session.gameTime = sleepGameTimeUntilMorning(currentTime, system).time;
-    syncFarmPlotsToDate(state.project, state.session, system);
+    const transitionFailure = transitionToNextDayForRunner(state);
+    if (transitionFailure) return transitionFailure;
     applyNpcSchedulesForRunner(state);
     if (untilEnd <= 0) remaining = 0;
   }
@@ -894,15 +1007,29 @@ function sleepUntilMorningForRunner(state: RunnerState): string | null {
   if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
   if (!state.session.gameTime) return null;
-  const hookFailure = runDayEndHookForRunner(state);
-  if (hookFailure) return hookFailure;
-  state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
-  syncFarmPlotsToDate(state.project, state.session, system);
+  const transitionFailure = transitionToNextDayForRunner(state);
+  if (transitionFailure) return transitionFailure;
   applyNpcSchedulesForRunner(state);
   state.timeFixedAccumulatorMs = 0;
   state.timeMinuteAccumulator = 0;
   state.log.push(`sleep until morning: ${state.session.gameTime.season} ${state.session.gameTime.day} ${state.session.gameTime.hour}:00`);
   return null;
+}
+
+function transitionToNextDayForRunner(state: RunnerState): string | null {
+  const currentTime = state.session.gameTime;
+  if (!currentTime) return "day transition: missing-time";
+  const sourceDayKey = calendarDayKey(currentTime);
+  const beforeHook = structuredClone(state.session);
+  const hookFailure = runDayEndHookForRunner(state);
+  if (hookFailure) {
+    state.session = beforeHook;
+    return hookFailure;
+  }
+  const transition = transitionToNextDay(state.project, state.session, sourceDayKey);
+  if (transition.ok) return null;
+  state.session = beforeHook;
+  return `day transition: ${transition.reason}`;
 }
 
 function applyNpcSchedulesForRunner(state: RunnerState): void {
@@ -1141,6 +1268,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   }
   if (step.bgmPlaying !== undefined && state.session.audio.bgm?.resourceId !== step.bgmPlaying) {
     return `BGM: 기대 ${step.bgmPlaying}, 실제 ${state.session.audio.bgm?.resourceId ?? "(none)"}`;
+  }
+  if (step.messageShown !== undefined && (state.messages.length > 0) !== step.messageShown) {
+    return `메시지 피드백: 기대 ${step.messageShown ? "출력" : "미출력"}, 실제 ${state.messages.length > 0 ? "출력" : "미출력"}`;
   }
   if (step.gameOver !== undefined && state.gameOver !== step.gameOver) {
     return `게임 오버: 기대 ${step.gameOver}, 실제 ${state.gameOver}`;
@@ -1457,14 +1587,35 @@ function initializeFieldSpawnsForRunner(state: RunnerState): void {
     state.fieldSpawnState = null;
     return;
   }
-  state.fieldSpawnState = createFieldSpawnRuntime(state.project, map, { x: state.session.x, y: state.session.y });
+  enterRoguelikeRunRoom(state.session, roguelikeRoomId(map));
+  if (syncRoguelikeRoomEventGeneration(map, state.session)) {
+    syncFieldSpawnEventsIntoMap(map, null, state.eventPositions);
+    Object.assign(state.eventPositions, initialRuntimeEventPositions(map.events));
+    state.autoStartedKeys.clear();
+  }
+  state.fieldSpawnState = createFieldSpawnRuntime(
+    state.project,
+    map,
+    { x: state.session.x, y: state.session.y },
+    state.session.killedFieldSpawns?.[map.id],
+    state.session.roguelikeRun
+  );
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
+}
+
+function refreshRoguelikeRoomForRunner(state: RunnerState): boolean {
+  const map = currentMap(state);
+  if (!map || !fieldSpawnRuntimeNeedsRefresh(state.fieldSpawnState, map, state.session.roguelikeRun)) return false;
+  initializeFieldSpawnsForRunner(state);
+  refreshChasers(state);
+  return true;
 }
 
 function advanceFieldSpawnsForRunner(state: RunnerState, deltaMs: number): void {
   if (state.gameOver || state.runtimeFailure) return;
   const map = currentMap(state);
   if (!map) return;
+  if (refreshRoguelikeRoomForRunner(state)) return;
   const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs);
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
@@ -1478,7 +1629,13 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
   state.session.battleResult = result;
   state.log.push(`field spawn ${eventId}: ${result}`);
   if (result === "victory") {
-    resolveFieldSpawnVictory(state.fieldSpawnState, eventId);
+    const spawn = resolveFieldSpawnVictory(state.fieldSpawnState, eventId);
+    if (spawn?.persistKill && state.session.roguelikeRun?.status !== "active") {
+      state.session.killedFieldSpawns ??= {};
+      const mapKills = (state.session.killedFieldSpawns[state.session.currentMapId] ??= {});
+      mapKills[spawn.id] = (mapKills[spawn.id] ?? 0) + 1;
+    }
+    if (spawn?.onKillSwitchId) state.session.switches[spawn.onKillSwitchId] = true;
     const map = currentMap(state);
     if (map) syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
     refreshChasers(state);
@@ -1665,6 +1822,7 @@ function result(
   eventPositions: RuntimeEventPositions,
   camera: CameraModel,
   log: readonly string[],
+  messages: readonly string[],
   steps: readonly SceneStep[],
   stepsRun: number,
   failedStep: SceneStep | undefined,
@@ -1697,6 +1855,7 @@ function result(
       followerCount: session.followers?.length ?? 0,
       followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
       picturesVisible: Object.keys(session.pictures),
+      messages,
       bgm: session.audio.bgm?.resourceId,
       gameOver,
       endingsReached: endingFlags(session),

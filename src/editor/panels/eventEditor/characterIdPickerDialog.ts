@@ -46,8 +46,8 @@ type PickerHosts = {
  */
 export function openCharacterIdPicker(request: CharacterIdPickerRequest): void {
   openEventSubdialog({
-    title: "캐릭터 ID 선택",
-    subtitle: "프로필·이벤트 사용 현황을 보고 선택하거나 새로 등록합니다.",
+    title: "NPC 관계 연결",
+    subtitle: "기존 NPC를 선택하거나 새 NPC 프로필을 만듭니다.",
     testId: "event-character-id-picker",
     width: "narrow",
     render: (body, close) => renderCharacterIdPicker({ body, close, request }),
@@ -73,8 +73,8 @@ function renderCharacterIdPicker(options: {
     class: "event-character-id-picker-search",
     attrs: {
       type: "search",
-      placeholder: "ID / 표시 이름 검색",
-      "aria-label": "캐릭터 검색",
+      placeholder: "NPC 이름 또는 연결 키 검색",
+      "aria-label": "NPC 검색",
     },
     dataset: { testid: "event-character-id-picker-search" },
   }) as HTMLInputElement;
@@ -83,8 +83,8 @@ function renderCharacterIdPicker(options: {
     class: "event-character-id-picker-create-id",
     attrs: {
       type: "text",
-      placeholder: "고유 캐릭터 ID",
-      "aria-label": "새 캐릭터 ID",
+      placeholder: "예: village_herbalist",
+      "aria-label": "새 NPC 연결 키",
       spellcheck: "false",
     },
     dataset: { testid: "event-character-id-picker-create-id" },
@@ -112,11 +112,11 @@ function renderCharacterIdPicker(options: {
     children: [
       el("div", {
         class: "event-character-id-picker-create-heading",
-        text: "새 캐릭터 등록",
+        text: "새 NPC 프로필",
       }),
       el("label", {
         class: "event-character-id-picker-field",
-        children: [el("span", { text: "캐릭터 ID" }), createIdInput],
+        children: [el("span", { text: "고유 연결 키" }), createIdInput],
       }),
       el("label", {
         class: "event-character-id-picker-field",
@@ -125,13 +125,13 @@ function renderCharacterIdPicker(options: {
       createError,
       el("p", {
         class: "event-character-id-picker-hint",
-        text: "등록 시 project.characters 프로필을 만들고 이 이벤트에 연결합니다. 자유 입력은 프로필을 만들지 않습니다.",
+        text: "같은 연결 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
       }),
     ],
   });
 
   const okButton = footerButton({
-    label: "확인",
+    label: "연결",
     testId: "event-character-id-picker-ok",
     primary: true,
     onClick: () => {
@@ -141,7 +141,7 @@ function renderCharacterIdPicker(options: {
         return;
       }
       if (!state.selectedId) {
-        toast("캐릭터를 선택하세요.", "error");
+        toast("연결할 NPC를 선택하세요.", "error");
         return;
       }
       attachCharacterId(options.request, state.selectedId);
@@ -150,7 +150,7 @@ function renderCharacterIdPicker(options: {
   });
 
   const createToggle = footerButton({
-    label: "새로 만들기",
+    label: "새 NPC 만들기",
     testId: "event-character-id-picker-create-toggle",
     onClick: () => {
       state.mode = state.mode === "create" ? "select" : "create";
@@ -162,7 +162,7 @@ function renderCharacterIdPicker(options: {
   const hosts: PickerHosts = {
     list: el("div", {
       class: "event-character-id-picker-list",
-      attrs: { role: "listbox", "aria-label": "캐릭터 목록" },
+      attrs: { role: "listbox", "aria-label": "NPC 목록" },
       dataset: { testid: "event-character-id-picker-list" },
     }),
     searchInput,
@@ -229,9 +229,9 @@ function render(hosts: PickerHosts, state: PickerState): void {
 
   if (state.mode === "select") {
     hosts.createPane.setAttribute("hidden", "true");
-    hosts.createToggle.textContent = "새로 만들기";
+    hosts.createToggle.textContent = "새 NPC 만들기";
     hosts.searchInput.disabled = false;
-    hosts.okButton.textContent = "확인";
+    hosts.okButton.textContent = "연결";
     hosts.okButton.disabled = !state.selectedId;
 
     if (filtered.length === 0) {
@@ -240,7 +240,7 @@ function render(hosts: PickerHosts, state: PickerState): void {
           class: "empty-hint",
           text: state.query.trim()
             ? `"${state.query.trim()}" 와 일치하는 캐릭터가 없습니다.`
-            : "등록·사용 중인 캐릭터 ID가 없습니다. 새로 만들거나 자유 입력하세요.",
+            : "등록된 NPC가 없습니다. 새 NPC 프로필을 만들어 시작하세요.",
           dataset: { testid: "event-character-id-picker-empty" },
         })
       );
@@ -269,14 +269,14 @@ function render(hosts: PickerHosts, state: PickerState): void {
     hosts.list.append(
       el("div", {
         class: "empty-hint",
-        text: "새 캐릭터 ID와 표시 이름을 입력한 뒤 등록하세요. 이미 쓰인 ID는 거부됩니다.",
+        text: "표시 이름과 고유 연결 키를 입력하세요. 이미 쓰인 연결 키는 사용할 수 없습니다.",
         dataset: { testid: "event-character-id-picker-create-help" },
       })
     );
     hosts.detail.append(
       el("div", {
         class: "event-character-id-picker-detail-empty",
-        text: "생성 모드 — 기존 항목을 덮어쓰지 않습니다.",
+        text: "새 NPC 프로필을 만들면 이 이벤트에 바로 연결됩니다.",
       })
     );
   }

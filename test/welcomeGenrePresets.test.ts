@@ -6,6 +6,7 @@ import {
   WELCOME_INSPIRATION_MINIS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
+  officialGenrePackIdForWelcomePreset,
   welcomeGenrePresetById,
 } from "@/editor/welcomeGenrePresets";
 
@@ -17,6 +18,21 @@ describe("welcomeGenrePresets", () => {
     expect(welcomeGenrePresetById("horror-gallery")?.label).toContain("갤러리");
     expect(welcomeGenrePresetById("school-horror")?.label).toContain("학교");
     expect(welcomeGenrePresetById("story-cutscene")?.label).toContain("회상");
+  });
+
+  it("maps seven UI variants onto only the exact five persisted packs", () => {
+    expect(Object.fromEntries(WELCOME_GENRE_PRESETS.map((preset) => [
+      preset.id,
+      officialGenrePackIdForWelcomePreset(preset.id),
+    ]))).toEqual({
+      "monster-collect": "monster-collect",
+      "partner-raise": "monster-collect",
+      "farm-life": "farm-life",
+      "adventure-jrpg": "adventure-jrpg",
+      "story-cutscene": "story-cutscene",
+      "horror-gallery": "horror-chase",
+      "school-horror": "horror-chase",
+    });
   });
 
   it("horror and story chips force template tools in prompts", () => {
@@ -32,6 +48,13 @@ describe("welcomeGenrePresets", () => {
   it("free-text gallery intent injects make_gallery_room", () => {
     const prompt = buildWelcomeFreeTextPrompt("이브 갤러리 조사 호러 맵");
     expect(prompt).toContain("make_gallery_room");
+  });
+
+  it("일반 switch·선택지 컷신·엔딩을 장르 프리셋으로 오인하지 않는다", () => {
+    const prompt = buildWelcomeFreeTextPrompt("switch ending_flag와 선택지 컷신으로 진엔딩을 만든다");
+    expect(prompt).not.toContain("script_cutscene_preset");
+    expect(prompt).not.toContain("make_horror_loop");
+    expect(prompt).toContain("switch ending_flag");
   });
 
   it("builds preset prompts with shared checklist and no-commit guard", () => {

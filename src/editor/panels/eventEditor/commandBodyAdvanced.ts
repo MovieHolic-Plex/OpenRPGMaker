@@ -1,6 +1,7 @@
-import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
-import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
-import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import {
+  listDatabaseResourceOptions,
+  openDatabaseResourcePickerDialog,
+} from "@/editor/panels/databaseResourcePickerDialog";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { store } from "@/project/store";
@@ -73,7 +74,7 @@ import {
   setClass,
 } from "./npcGraphicPickerControls";
 import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
-import type { Command, EventPageGraphic, GameEvent, GameMap } from "@/project/types";
+import type { Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 export function renderAdvancedCommandBody(
@@ -128,7 +129,9 @@ export function renderAdvancedCommandBody(
     case "inn":
       return innBody(context, cmd);
     case "checkpointSave":
-      return optionalTextCommandBody(context, cmd, "checkpoint-save-editor", "체크포인트 라벨", "event-command-checkpoint-label", "label");
+      return optionalTextCommandBody(context, cmd, "checkpoint-save-editor", "이름", "event-command-checkpoint-label", "label");
+    case "runControl":
+      return runControlBody(context, cmd);
     case "killPlayer":
       return optionalTextCommandBody(context, cmd, "kill-player-editor", "패배 메시지", "event-command-kill-player-message", "message");
     case "triggerEnding":
@@ -184,6 +187,130 @@ export function renderAdvancedCommandBody(
     default:
       return undefined;
   }
+}
+
+function runControlBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "runControl" }>
+): HTMLElement {
+  const wrap = el("div", {
+    class: "rich-command-form",
+    dataset: { testid: "event-command-run-control" },
+  });
+  const action = simpleSelect([
+    ["start", "탐험 시작"],
+    ["advance", "다음 층"],
+    ["end", "탐험 종료"],
+    ["setFlag", "탐험 기억"],
+    ["resetRoom", "방 초기화"],
+  ], cmd.action, "event-command-run-action");
+  action.addEventListener("change", () => {
+    const next = action.value;
+    if (next === "advance") context.actions.replaceCommand(context.path, { kind: "runControl", action: "advance", amount: 1 });
+    else if (next === "end") context.actions.replaceCommand(context.path, { kind: "runControl", action: "end", result: "completed" });
+    else if (next === "setFlag") context.actions.replaceCommand(context.path, { kind: "runControl", action: "setFlag", flag: "flag1", value: true });
+    else if (next === "resetRoom") context.actions.replaceCommand(context.path, { kind: "runControl", action: "resetRoom" });
+    else context.actions.replaceCommand(context.path, { kind: "runControl", action: "start" });
+  });
+  wrap.append(inlineField("동작", action));
+
+  switch (cmd.action) {
+    case "start": {
+      const seed = numberInput(cmd.seed ?? 0, "시드", "event-command-run-seed");
+      const autoSeed = el("input", {
+        attrs: { type: "checkbox" },
+        dataset: { testid: "event-command-run-seed-auto" },
+      }) as HTMLInputElement;
+      autoSeed.checked = cmd.seed === undefined;
+      seed.disabled = autoSeed.checked;
+      const runId = textInput(cmd.runId ?? "", "자동 생성", "event-command-run-id");
+      const floor = numberInput(cmd.startFloor ?? 1, "시작 층", "event-command-run-start-floor");
+      floor.min = "1";
+      floor.max = "9999";
+      const apply = (): void => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "start",
+        ...(!autoSeed.checked ? { seed: Math.trunc(Number(seed.value) || 0) } : {}),
+        ...(runId.value.trim() ? { runId: runId.value.trim() } : {}),
+        startFloor: Math.max(1, Math.min(9_999, Math.trunc(Number(floor.value) || 1))),
+      });
+      autoSeed.addEventListener("change", () => { seed.disabled = autoSeed.checked; apply(); });
+      seed.addEventListener("change", apply);
+      runId.addEventListener("change", apply);
+      floor.addEventListener("change", apply);
+      wrap.append(inlineField("자동 난수", autoSeed), inlineField("난수 씨앗", seed), inlineField("탐험 이름", runId), inlineField("시작 층", floor));
+      break;
+    }
+    case "advance": {
+      const amount = numberInput(cmd.amount ?? 1, "증가 층", "event-command-run-advance-amount");
+      amount.min = "1";
+      amount.addEventListener("change", () => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "advance",
+        amount: Math.max(1, Math.trunc(Number(amount.value) || 1)),
+      }));
+      wrap.append(inlineField("증가", amount));
+      break;
+    }
+    case "end": {
+      const result = simpleSelect([
+        ["completed", "완료"],
+        ["failed", "실패"],
+        ["abandoned", "포기"],
+      ], cmd.result, "event-command-run-result");
+      result.addEventListener("change", () => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "end",
+        result: result.value === "failed" ? "failed" : result.value === "abandoned" ? "abandoned" : "completed",
+      }));
+      wrap.append(inlineField("결과", result));
+      break;
+    }
+    case "setFlag": {
+      let currentFlag = cmd.flag;
+      let currentValue = cmd.value;
+      const flag = textInput(currentFlag, "플래그 이름", "event-command-run-flag");
+      const value = simpleSelect([["true", "켜기"], ["false", "끄기"]], String(currentValue), "event-command-run-flag-value");
+      const apply = (): void => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "setFlag",
+        flag: currentFlag,
+        value: currentValue,
+      });
+      flag.addEventListener("change", () => { currentFlag = flag.value.trim(); apply(); });
+      value.addEventListener("change", () => { currentValue = value.value === "true"; apply(); });
+      wrap.append(inlineField("플래그", flag), inlineField("값", value));
+      break;
+    }
+    case "resetRoom": {
+      const roomId = textInput(cmd.roomId ?? "", "비우면 현재 방", "event-command-run-room-id");
+      roomId.addEventListener("change", () => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "resetRoom",
+        ...(roomId.value.trim() ? { roomId: roomId.value.trim() } : {}),
+      }));
+      wrap.append(inlineField("방 ID", roomId));
+      break;
+    }
+  }
+  return wrap;
+}
+
+function simpleSelect(
+  options: readonly (readonly [string, string])[],
+  value: string,
+  testId: string
+): HTMLSelectElement {
+  const select = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
+  for (const [optionValue, label] of options) {
+    select.append(el("option", { text: label, attrs: { value: optionValue } }));
+  }
+  select.value = value;
+  return select;
+}
+
+function inlineField(label: string, control: HTMLElement): HTMLElement {
+  return el("label", { class: "inline-field", children: [el("span", { text: label }), control] });
 }
 
 function optionalTextCommandBody(
@@ -243,7 +370,7 @@ function addFollowerBody(
   cmd: Extract<Command, { kind: "addFollower" }>
 ): HTMLElement {
   const actor = el("select", { dataset: { testid: "event-command-add-follower-actor-id" } }) as HTMLSelectElement;
-  actor.append(el("option", { text: "직접 지정", attrs: { value: "" } }));
+  actor.append(el("option", { text: "이름만 적기", attrs: { value: "" } }));
   for (const record of store.getCurrent().database.actors) {
     actor.append(el("option", { text: record.name, attrs: { value: record.id } }));
   }
@@ -260,8 +387,8 @@ function addFollowerBody(
   useGraphic.checked = Boolean(cmd.graphic);
   const graphicType = el("select", { dataset: { testid: "event-command-add-follower-graphic-type" } }) as HTMLSelectElement;
   graphicType.append(
-    el("option", { text: "번들", attrs: { value: "bundled" } }),
-    el("option", { text: "업로드", attrs: { value: "uploaded" } })
+    el("option", { text: "기본 모습", attrs: { value: "bundled" } }),
+    el("option", { text: "올린 그림", attrs: { value: "uploaded" } })
   );
   graphicType.value = cmd.graphic?.sprite?.type ?? "bundled";
   const graphicId = el("input", {
@@ -270,8 +397,9 @@ function addFollowerBody(
     dataset: { testid: "event-command-add-follower-graphic-id" },
   }) as HTMLInputElement;
   const direction = el("select", { dataset: { testid: "event-command-add-follower-graphic-direction" } }) as HTMLSelectElement;
+  const directionLabels = { down: "아래", left: "왼쪽", right: "오른쪽", up: "위" } as const;
   for (const option of ["down", "left", "right", "up"] as const) {
-    direction.append(el("option", { text: option, attrs: { value: option } }));
+    direction.append(el("option", { text: directionLabels[option], attrs: { value: option } }));
   }
   direction.value = cmd.graphic?.direction ?? "down";
   const pattern = el("input", {
@@ -309,10 +437,30 @@ function addFollowerBody(
   for (const control of [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent]) {
     control.addEventListener("change", commit);
   }
+  const graphicFields = el("div", {
+    class: "rich-form-stack",
+    children: [
+      inlineField("모습 종류", graphicType),
+      inlineField("모습", graphicId),
+      inlineField("방향", direction),
+      inlineField("모습 칸", pattern),
+      inlineField("투명", transparent),
+    ],
+  });
+  const syncGraphic = (): void => {
+    graphicFields.style.display = useGraphic.checked ? "" : "none";
+  };
+  useGraphic.addEventListener("change", syncGraphic);
+  syncGraphic();
   return el("div", {
-    class: "terminal-command-editor",
+    class: "rich-command-form cream-command-form",
     dataset: { testid: "add-follower-editor" },
-    children: [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent],
+    children: [
+      inlineField("누구", actor),
+      inlineField("이름", name),
+      inlineField("모습 직접 정하기", useGraphic),
+      graphicFields,
+    ],
   });
 }
 
@@ -342,9 +490,9 @@ function removeFollowerBody(
   mode.addEventListener("change", commit);
   name.addEventListener("change", commit);
   return el("div", {
-    class: "terminal-command-editor",
+    class: "rich-command-form cream-command-form",
     dataset: { testid: "remove-follower-editor" },
-    children: [mode, name],
+    children: [inlineField("어떻게", mode), inlineField("이름", name)],
   });
 }
 
@@ -379,7 +527,7 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
     children: [
       el("span", {
         class: "transfer-command-summary",
-        text: `${map?.name ?? (seeded.mapId || "(map)")} (${seeded.x}, ${seeded.y}) / ${transferDirectionLabel(seeded.direction)} / 페이드: ${transferFadeLabel(seeded.fade)}`,
+        text: `${map?.name ?? (seeded.mapId || "(맵)")} (${seeded.x}, ${seeded.y}) / ${transferDirectionLabel(seeded.direction)} / 페이드: ${transferFadeLabel(seeded.fade)}`,
         dataset: { testid: "transfer-command-summary" },
       }),
       ...(passable === undefined
@@ -463,18 +611,18 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
   const msHint = el("span", {
     class: "event-command-wait-ms-hint",
     dataset: { testid: "event-wait-ms-hint" },
-    text: `${currentMs} ms`,
+    text: `${(currentMs / 1000).toFixed(currentMs % 100 === 0 ? (currentMs % 1000 === 0 ? 0 : 1) : 2)}초`,
   });
 
   const syncSecondsFromMs = () => {
     seconds.value = (currentMs / 1000).toFixed(currentMs % 1000 === 0 ? 0 : currentMs % 100 === 0 ? 1 : 2);
-    msHint.textContent = `${currentMs} ms`;
+    msHint.textContent = `${(currentMs / 1000).toFixed(currentMs % 100 === 0 ? (currentMs % 1000 === 0 ? 0 : 1) : 2)}초`;
   };
 
   const setMsFromSeconds = () => {
     const sec = Number(seconds.value);
     currentMs = Number.isFinite(sec) ? Math.max(0, Math.round(sec * 1000)) : 0;
-    msHint.textContent = `${currentMs} ms`;
+    msHint.textContent = `${(currentMs / 1000).toFixed(currentMs % 100 === 0 ? (currentMs % 1000 === 0 ? 0 : 1) : 2)}초`;
     apply();
   };
   seconds.addEventListener("change", setMsFromSeconds);
@@ -544,7 +692,7 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
       }),
       el("p", {
         class: "event-command-choices-hint",
-        text: "변수 값(ms)만큼 대기합니다.",
+        text: "변수 값만큼 초 단위로 기다립니다.",
       }),
     ],
   });
@@ -570,7 +718,7 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
 
   wrap.append(
     el("fieldset", {
-      class: "event-rm2k3-fieldset event-command-wait-mode",
+      class: "event-oprn-fieldset event-command-wait-mode",
       children: [
         el("legend", { text: "대기 방식" }),
         el("label", {
@@ -609,7 +757,19 @@ function advanceTimeBody(context: CommandEditContext, cmd: Extract<Command, { ki
     control.addEventListener("change", apply);
     control.addEventListener("input", apply);
   }
-  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days, hours, minutes] })] });
+  return el("span", {
+    class: "rich-command-form cream-command-form",
+    children: [
+      el("span", {
+        class: "rich-form-row",
+        children: [
+          el("label", { class: "inline-field", children: [el("span", { text: "일" }), days] }),
+          el("label", { class: "inline-field", children: [el("span", { text: "시간" }), hours] }),
+          el("label", { class: "inline-field", children: [el("span", { text: "분" }), minutes] }),
+        ],
+      }),
+    ],
+  });
 }
 
 function advanceCropGrowthBody(context: CommandEditContext, cmd: Extract<Command, { kind: "advanceCropGrowth" }>): HTMLElement {
@@ -622,7 +782,12 @@ function advanceCropGrowthBody(context: CommandEditContext, cmd: Extract<Command
   };
   days.addEventListener("change", apply);
   days.addEventListener("input", apply);
-  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days] })] });
+  return el("span", {
+    class: "rich-command-form cream-command-form",
+    children: [
+      el("span", { class: "rich-form-row", children: [el("label", { class: "inline-field", children: [el("span", { text: "일" }), days] })] }),
+    ],
+  });
 }
 
 function setTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setTime" }>): HTMLElement {
@@ -643,21 +808,30 @@ function setTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
     control.addEventListener("change", apply);
     control.addEventListener("input", apply);
   }
-  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [hour, minute] })] });
+  return el("span", {
+    class: "rich-command-form cream-command-form",
+    children: [
+      el("span", {
+        class: "rich-form-row",
+        children: [
+          el("label", { class: "inline-field", children: [el("span", { text: "시" }), hour] }),
+          el("label", { class: "inline-field", children: [el("span", { text: "분" }), minute] }),
+        ],
+      }),
+    ],
+  });
 }
 
 function setEventGraphicPatternBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "setEventGraphicPattern" }>
 ): HTMLElement {
-  // RM2003 Change Event Appearance layout:
-  // left file list | right 4×2 character chips + Direction/Pattern radios + frame probe.
-  // Stored value remains absolute charset frame for the interpreter.
+  // Named event + charset sheet. Stored value remains the absolute charset frame.
   const SLOT_SCALE = 2;
   const PROBE_SCALE = 2;
 
   const wrap = el("div", {
-    class: "event-command-frame-editor event-graphic-rm-picker",
+    class: "event-command-frame-editor event-graphic-rm-picker cream-command-form",
     dataset: { testid: "event-command-frame-editor" },
   });
 
@@ -780,7 +954,7 @@ function setEventGraphicPatternBody(
           text: entry.label,
           attrs: {
             type: "button",
-            title: "방향 " + entry.dir + " · 패턴 왼쪽",
+            title: entry.label,
           },
           dataset: {
             testid: "event-command-frame-door-step-" + String(entry.step),
@@ -845,7 +1019,7 @@ function setEventGraphicPatternBody(
 
 function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
   const first = assets[0];
-  if (!first) throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
+  if (!first) throw new Error("EasyRPG 캐릭터 그림 목록이 비어 있습니다");
   return first;
 }
 
@@ -920,8 +1094,7 @@ function mapEventSelect(currentId: string, testId: string): HTMLSelectElement {
   sel.append(el("option", { text: "(이 이벤트)", attrs: { value: "" } }));
   for (const event of map?.events ?? []) {
     known.add(event.id);
-    const label = `${event.id} (${event.x}, ${event.y})`;
-    sel.append(el("option", { text: label, attrs: { value: event.id } }));
+    sel.append(el("option", { text: event.id, attrs: { value: event.id } }));
   }
   // Keep free-typed / foreign-map ids visible even if not on the current map list.
   if (currentId && !known.has(currentId)) {
@@ -999,7 +1172,7 @@ function callMapEventBody(
   const sel = el("select", { dataset: { testid: "event-command-call-map-event-select" } }) as HTMLSelectElement;
   sel.append(el("option", { text: "(이벤트 선택)", attrs: { value: "" } }));
   for (const event of map?.events ?? []) {
-    sel.append(el("option", { text: `${event.id} (${event.x}, ${event.y})`, attrs: { value: event.id } }));
+    sel.append(el("option", { text: event.id, attrs: { value: event.id } }));
   }
   sel.value = cmd.eventId;
   sel.addEventListener("change", () => {
@@ -1021,13 +1194,13 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     options: LEARN_SKILL_ACTION_SEGMENTS,
     value: actionValue,
     testid: "learn-skill-action-select",
-    ariaLabel: "특수기 액션",
+    ariaLabel: "스킬 동작",
   });
   const target = segmentedSelect({
     options: LEARN_SKILL_TARGET_SEGMENTS,
     value: targetMode,
     testid: "learn-skill-target-mode",
-    ariaLabel: "특수기 대상",
+    ariaLabel: "스킬 대상",
   });
   const actor = actorPicker({
     project,
@@ -1040,10 +1213,10 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     testidPrefix: "learn-skill",
     selectTestId: "learn-skill-skill-select",
     selectedCardAliasTestId: "learn-skill-skill-select-card",
-    label: "특수기",
-    searchPlaceholder: "특수기 검색",
-    emptySelectionLabel: "특수기 선택",
-    noneCardLabel: "특수기 선택",
+    label: "스킬",
+    searchPlaceholder: "스킬 검색",
+    emptySelectionLabel: "스킬 선택",
+    noneCardLabel: "스킬 선택",
     noneCardMeta: "비우기",
     clearLabel: "해제",
     allowNone: true,
@@ -1066,8 +1239,8 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     const who = target.select.value === "party"
       ? "파티"
       : (actorRecord?.name ?? (actor.select.value || "주인공"));
-    const verb = action.select.value === "forget" ? "망각" : "습득";
-    const skillName = skillRecord?.name ?? (skillId || "특수기");
+    const verb = action.select.value === "forget" ? "잊기" : "배우기";
+    const skillName = skillRecord?.name ?? (skillId || "스킬");
     const detail = skillRecord
       ? `MP ${skillRecord.mpCost.flat} · 위력 ${skillRecord.power}`
       : "";
@@ -1127,8 +1300,8 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
 }
 
 const LEARN_SKILL_ACTION_SEGMENTS = [
-  { value: "learn", key: "learn", label: "습득" },
-  { value: "forget", key: "forget", label: "망각" },
+  { value: "learn", key: "learn", label: "배우기" },
+  { value: "forget", key: "forget", label: "잊기" },
 ] as const satisfies readonly SegmentOption<"learn" | "forget">[];
 
 const LEARN_SKILL_TARGET_SEGMENTS = [
@@ -1165,14 +1338,14 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   let resourceId = cmd.resourceId.trim();
 
   const wrap = el("div", {
-    class: "play-audio-command-body",
+    class: "play-audio-command-body cream-command-form",
     dataset: { testid: "play-audio-command-body" },
   });
 
   const channelRow = el("div", { class: "play-audio-channel-row", dataset: { testid: "play-audio-channel-row" } });
   const list = el("select", {
     class: "play-audio-resource-select",
-    attrs: { "aria-label": "오디오 리소스" },
+    attrs: { "aria-label": "소리" },
     dataset: { testid: "play-audio-resource-select" },
   }) as HTMLSelectElement;
   const search = el("input", {
@@ -1183,6 +1356,10 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   const status = el("div", {
     class: "play-audio-status",
     dataset: { testid: "play-audio-status" },
+  });
+  const resultCount = el("div", {
+    class: "play-audio-result-count",
+    dataset: { testid: "play-audio-result-count" },
   });
   const meta = el("div", {
     class: "play-audio-meta",
@@ -1204,20 +1381,15 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     const label = currentOptionLabel(list) || resourceId || "(선택 없음)";
     meta.replaceChildren(
       el("div", { class: "play-audio-meta-name", text: label }),
-      el("div", { class: "play-audio-meta-id", text: resourceId || "—" }),
-      el("div", {
-        class: "play-audio-meta-url",
-        text: url ? url : "리소스 URL 없음",
-      }),
       el("div", {
         class: playable ? "play-audio-badge ok" : "play-audio-badge warn",
         text: !resourceId
-          ? "리소스 선택 필요"
+          ? "곡을 먼저 고르세요"
           : playable
-            ? "브라우저 재생 가능"
+            ? "미리 듣기 가능"
             : url?.toLowerCase().endsWith(".mid")
-              ? "MIDI — 웹에서 재생 안 됨 (CC0 WAV 사용)"
-              : "재생 불가",
+              ? "이 형식은 미리 들을 수 없습니다"
+              : "미리 듣기 불가",
       })
     );
     status.textContent = "대기 중";
@@ -1226,8 +1398,8 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   const rebuildChannelButtons = (): void => {
     channelRow.replaceChildren();
     for (const option of [
-      { value: "bgm" as const, label: "BGM (반복)" },
-      { value: "se" as const, label: "SE (효과음)" },
+      { value: "bgm" as const, label: "배경음" },
+      { value: "se" as const, label: "효과음" },
     ]) {
       channelRow.append(
         el("button", {
@@ -1239,10 +1411,11 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
             click: () => {
               channel = option.value;
               // Prefer a sensible default when switching channel with empty/wrong-kind id.
-              if (!resourceId || !catalogFor(channel).some((entry) => entry.id === resourceId)) {
-                resourceId = catalogFor(channel)[0]?.id ?? "";
+              if (!resourceId || !catalogFor(channel, project).some((entry) => entry.id === resourceId)) {
+                resourceId = catalogFor(channel, project)[0]?.id ?? "";
               }
               rebuildChannelButtons();
+              refreshChannelCopy();
               fillList();
               apply();
             },
@@ -1254,14 +1427,19 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
 
   const fillList = (): void => {
     const query = search.value.trim().toLowerCase();
-    const catalog = catalogFor(channel).filter((entry) => {
+    const fullCatalog = catalogFor(channel, project);
+    const catalog = fullCatalog.filter((entry) => {
       if (!query) return true;
-      return entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query);
+      if (entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query)) return true;
+      return entry.searchTerms?.some((term) => term.toLowerCase().includes(query)) ?? false;
     });
+    resultCount.textContent = query
+      ? `전체 ${fullCatalog.length}개 중 ${catalog.length}개`
+      : `${channel === "bgm" ? "배경음" : "효과음"} ${catalog.length}개`;
     list.replaceChildren();
     list.append(el("option", { text: "(선택 없음)", attrs: { value: "" } }));
     if (resourceId && !catalog.some((entry) => entry.id === resourceId) && !query) {
-      list.append(el("option", { text: `현재 값: ${resourceId}`, attrs: { value: resourceId } }));
+      list.append(el("option", { text: currentAudioLabel(resourceId, project), attrs: { value: resourceId } }));
     }
     for (const entry of catalog) {
       const mark = entry.playable ? "" : " · MIDI 비재생";
@@ -1307,7 +1485,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
         }
         stopAudioCommand();
         playAudioCommand({ resourceId, loop: channel === "bgm" }, store.getCurrent());
-        status.textContent = `재생 중: ${resourceId}`;
+        status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
       },
     },
   });
@@ -1332,7 +1510,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: channel === "bgm" ? "music" : "sound",
-          title: channel === "bgm" ? "BGM 선택" : "효과음 선택",
+          title: channel === "bgm" ? "배경음 선택" : "효과음 선택",
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId.trim();
@@ -1344,15 +1522,24 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     },
   });
 
+  const refreshChannelCopy = (): void => {
+    search.placeholder = channel === "bgm"
+      ? "장면·분위기 검색 (예: 마을, 보스, 비)"
+      : "장면·행동 검색 (예: 문, 구매, 마법)";
+    browseBtn.textContent = channel === "bgm" ? "배경음 목록 열기…" : "효과음 목록 열기…";
+  };
+
   rebuildChannelButtons();
+  refreshChannelCopy();
   fillList();
   refreshMeta();
 
   wrap.append(
     el("div", { class: "play-audio-label", text: "채널" }),
     channelRow,
-    el("div", { class: "play-audio-label", text: "리소스" }),
+    el("div", { class: "play-audio-label", text: "곡" }),
     search,
+    resultCount,
     list,
     meta,
     el("div", {
@@ -1362,34 +1549,25 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     status,
     el("div", {
       class: "empty-hint",
-      text: "BGM은 루프, SE는 1회. 웹에서는 WAV/OGG/MP3만 미리 듣기 됩니다 (EasyRPG MIDI BGM 제외).",
+      text: "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
       dataset: { testid: "play-audio-channel-hint" },
     })
   );
   return wrap;
 }
 
-type AudioCatalogEntry = { readonly id: string; readonly name: string; readonly playable: boolean };
+type AudioCatalogEntry = {
+  readonly id: string;
+  readonly name: string;
+  readonly playable: boolean;
+  readonly searchTerms?: readonly string[];
+};
 
-function catalogFor(channel: "bgm" | "se"): readonly AudioCatalogEntry[] {
-  if (channel === "bgm") {
-    return [
-      ...CC0_MUSIC_ASSETS.map((asset) => ({ id: asset.id, name: `${asset.name} <CC0>`, playable: true })),
-      ...EASYRPG_MUSIC_ASSETS.map((asset) => ({
-        id: asset.id,
-        name: `${asset.name} <RTP>`,
-        playable: asset.path.toLowerCase().endsWith(".wav") || asset.path.toLowerCase().endsWith(".ogg") || asset.path.toLowerCase().endsWith(".mp3"),
-      })),
-    ];
-  }
-  return [
-    ...CC0_SOUND_ASSETS.map((asset) => ({ id: asset.id, name: `${asset.name} <CC0>`, playable: true })),
-    ...EASYRPG_SOUND_ASSETS.map((asset) => ({
-      id: asset.id,
-      name: `${asset.name} <RTP>`,
-      playable: true,
-    })),
-  ];
+function catalogFor(channel: "bgm" | "se", project: Project): readonly AudioCatalogEntry[] {
+  return listDatabaseResourceOptions(channel === "bgm" ? "music" : "sound", project).map((entry) => ({
+    ...entry,
+    playable: isBrowserPlayableAudioUrl(resolveAudioSource(entry.id, project)),
+  }));
 }
 
 function isBrowserPlayableAudioUrl(url: string | null): boolean {
@@ -1401,6 +1579,14 @@ function isBrowserPlayableAudioUrl(url: string | null): boolean {
 function currentOptionLabel(select: HTMLSelectElement): string {
   const option = select.selectedOptions[0];
   return option?.textContent?.trim() ?? "";
+}
+
+function currentAudioLabel(resourceId: string, project: Project): string {
+  const named = listDatabaseResourceOptions("music", project).find((entry) => entry.id === resourceId)
+    ?? listDatabaseResourceOptions("sound", project).find((entry) => entry.id === resourceId);
+  if (named?.name.trim()) return named.name;
+  const trimmed = resourceId.trim();
+  return trimmed ? trimmed.replace(/^(bgm|se|cc0-bgm)-/, "").replace(/_/g, " ") : "(선택 없음)";
 }
 
 function endingBody(context: CommandEditContext, cmd: Extract<Command, { kind: "ending" }>): HTMLElement {

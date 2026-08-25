@@ -178,7 +178,7 @@ test.describe("interior dark-wall 366 autotile contracts", () => {
       // autotile must diversify: not a solid blob of body 366 only
       expect(cornerCount + edgeCount).toBeGreaterThan(0);
 
-      const ent = map.events?.find((e) => e.name === "입구");
+      const ent = map.events?.find((e) => e.pages?.[0]?.name === "입구");
       expect(ent).toBeTruthy();
       expect(ent!.x).toBe(plan.door.x);
       expect(ent!.y).toBe(plan.door.y);
@@ -232,7 +232,7 @@ test.describe("interior dark-wall 366 autotile contracts", () => {
     expect(hasCorner).toBe(true);
 
     map = applyInteriorRoomLayer(map, plan, "entrance").map;
-    expect(map.events?.some((e) => e.name === "입구")).toBe(true);
+    expect(map.events?.some((e) => e.pages?.[0]?.name === "입구")).toBe(true);
   });
 
   test("pipeline: dining floor cells not eaten by south edge wall", async () => {

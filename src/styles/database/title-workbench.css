@@ -1,5 +1,7 @@
-/* System tab: title-screen authoring workbench (live preview + BGM). */
-.db-title-workbench {
+/* Title workbench — scoped to .database-modal-backdrop, studio tokens only.
+   No gradients, no heavy shadows, Malgun Gothic. Preview collapses at 1024. */
+
+.database-modal-backdrop .db-title-workbench {
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 0.95fr);
@@ -7,13 +9,16 @@
   width: 100%;
 }
 
-.db-title-workbench-fields {
+.database-modal-backdrop .db-title-workbench-fields {
   display: grid;
   gap: 10px;
   min-width: 0;
 }
 
-.db-title-workbench-group {
+.database-modal-backdrop .db-title-workbench-group {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
   display: grid;
   gap: 6px;
   margin: 0;
@@ -21,20 +26,21 @@
   padding: 8px 10px 10px;
 }
 
-.db-title-workbench-group > legend {
-  font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .db-title-workbench-group > legend {
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
   padding: 0 4px;
 }
 
-.db-title-workbench-system-title-id {
-  color: var(--text-2, var(--text-primary));
-  font-size: 11px;
+.database-modal-backdrop .db-title-workbench-system-title-id {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.4 ui-monospace, monospace;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.db-title-menu-option-row {
+.database-modal-backdrop .db-title-menu-option-row {
   align-items: end;
   display: grid;
   gap: 8px;
@@ -42,39 +48,43 @@
   min-width: 0;
 }
 
-.db-title-menu-option-row .db-field {
+.database-modal-backdrop .db-title-menu-option-row .db-field {
   min-width: 0;
 }
 
-.db-field-locked input[type="checkbox"] {
+.database-modal-backdrop .db-field-locked input[type="checkbox"] {
   cursor: not-allowed;
   opacity: 0.75;
 }
 
-.db-title-workbench-preview {
+.database-modal-backdrop .db-title-workbench-preview {
+  align-content: start;
+  align-self: start;
   display: grid;
   gap: 8px;
   min-width: 0;
+  position: sticky;
+  top: 0;
 }
 
-.db-title-workbench-preview-label {
-  color: var(--text-2, var(--text-primary));
-  font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .db-title-workbench-preview-label {
+  color: var(--db-studio-text-2);
+  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
-.db-title-workbench-stage {
+.database-modal-backdrop .db-title-workbench-stage {
+  aspect-ratio: 4 / 3;
   background: #0b1220;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
-  border-radius: 6px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
   box-sizing: border-box;
-  height: 180px;
+  height: auto;
   overflow: hidden;
   position: relative;
   width: 100%;
 }
 
-/* 런타임 fx 스택(renderTitleFxStack)을 그대로 마운트 — 배경 위, 프리뷰 UI 아래. */
-.db-title-workbench-stage .rm-title-fx {
+.database-modal-backdrop .db-title-workbench-stage .rm-title-fx {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -82,7 +92,7 @@
   z-index: 0;
 }
 
-.db-title-workbench-stage .rm-title-bg-layer {
+.database-modal-backdrop .db-title-workbench-stage .rm-title-bg-layer {
   background-position: 0 0;
   background-repeat: repeat;
   background-size: 320px 240px;
@@ -91,66 +101,66 @@
   position: absolute;
 }
 
-.db-title-workbench-stage .rm-title-particles {
+.database-modal-backdrop .db-title-workbench-stage .rm-title-particles {
   height: 100%;
   inset: 0;
   position: absolute;
   width: 100%;
 }
 
-.db-title-workbench-stage .db-title-workbench-title,
-.db-title-workbench-stage .db-title-workbench-logo,
-.db-title-workbench-stage .db-title-workbench-menu {
+.database-modal-backdrop .db-title-workbench-stage .db-title-workbench-title,
+.database-modal-backdrop .db-title-workbench-stage .db-title-workbench-logo,
+.database-modal-backdrop .db-title-workbench-stage .db-title-workbench-menu {
   z-index: 1;
 }
 
-/* 등장 연출 미러 — 키프레임은 runtime/title.css 전역 정의를 공유한다. */
-.db-title-workbench-stage .rm-title-intro-fade-in {
+.database-modal-backdrop .db-title-workbench-stage .rm-title-intro-fade-in {
   animation: rm-title-intro-fade-in 420ms ease-out both;
 }
 
-.db-title-workbench-stage .rm-title-intro-rise-in {
+.database-modal-backdrop .db-title-workbench-stage .rm-title-intro-rise-in {
   animation: rm-title-intro-rise-in 480ms ease-out both;
 }
 
-.db-title-workbench-stage .rm-title-intro-slide-up {
+.database-modal-backdrop .db-title-workbench-stage .rm-title-intro-slide-up {
   animation: rm-title-intro-slide-up 360ms ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .db-title-workbench-stage .rm-title-bg-layer,
-  .db-title-workbench-stage .rm-title-intro-fade-in,
-  .db-title-workbench-stage .rm-title-intro-rise-in,
-  .db-title-workbench-stage .rm-title-intro-slide-up {
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-bg-layer,
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-intro-fade-in,
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-intro-rise-in,
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-intro-slide-up {
     animation: none !important;
   }
 }
 
-.db-title-effects-layers {
+.database-modal-backdrop .db-title-effects-layers {
   display: grid;
   gap: 8px;
   min-width: 0;
 }
 
-.db-title-layer-row {
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.14));
-  border-radius: 4px;
+.database-modal-backdrop .db-title-layer-row {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
   display: grid;
   gap: 6px;
   min-width: 0;
   padding: 6px;
 }
 
-.db-title-density-value {
-  color: var(--text-2, var(--text-primary));
-  font-size: 11px;
+.database-modal-backdrop .db-title-density-value {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
   min-width: 24px;
   text-align: right;
 }
 
-.db-title-workbench-title {
+.database-modal-backdrop .db-title-workbench-title {
   color: #fff8e7;
-  font: 800 16px/1.15 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 16px/1.15 "Malgun Gothic", system-ui, sans-serif;
   max-width: 90%;
   position: absolute;
   text-align: center;
@@ -159,7 +169,7 @@
   white-space: nowrap;
 }
 
-.db-title-workbench-logo {
+.database-modal-backdrop .db-title-workbench-logo {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -171,7 +181,7 @@
   width: 140px;
 }
 
-.db-title-workbench-menu {
+.database-modal-backdrop .db-title-workbench-menu {
   background: rgba(12, 18, 36, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 4px;
@@ -183,33 +193,39 @@
   transform: translate(-50%, 0);
 }
 
-.db-title-workbench-menu-item {
+.database-modal-backdrop .db-title-workbench-menu-item {
   color: #f3f6ff;
-  font: 500 12px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 12px/1.35 "Malgun Gothic", system-ui, sans-serif;
   white-space: nowrap;
 }
 
-.db-title-workbench-audio {
+.database-modal-backdrop .db-title-workbench-audio {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.db-title-workbench-music-id {
-  color: var(--text-2, var(--text-primary));
-  font-size: 11px;
+.database-modal-backdrop .db-title-workbench-music-id {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.4 ui-monospace, monospace;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-@media (max-width: 980px) {
-  .db-title-workbench {
+/* 1024: keep fields, preview may stack */
+@media (max-width: 1099px) {
+  .database-modal-backdrop .db-title-workbench {
     grid-template-columns: 1fr;
   }
+  .database-modal-backdrop .db-title-workbench-preview {
+    position: static;
+  }
+}
 
-  .db-title-menu-option-row {
+@media (max-width: 720px) {
+  .database-modal-backdrop .db-title-menu-option-row {
     grid-template-columns: 1fr;
   }
 }

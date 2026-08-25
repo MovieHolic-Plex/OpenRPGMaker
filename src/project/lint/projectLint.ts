@@ -622,13 +622,16 @@ function hasPlayerTouchEventAt(map: GameMap, x: number, y: number): boolean {
   return false;
 }
 
-function isPlayerTouch(trigger: Trigger): boolean {
-  return trigger.kind === "playerTouch";
+// 린트는 저작 중인(=아직 불완전할 수 있는) 프로젝트 위에서 돌므로 필수 필드가 비어 있어도
+// throw 해서는 안 된다 — 2026-08-23 실측: page.trigger 누락으로 여기서 TypeError 가 나
+// 커밋이 "후처리 실패: Cannot read properties of undefined" 로 끝나고 실제 원인이 가려졌다.
+function isPlayerTouch(trigger: Trigger | undefined): boolean {
+  return trigger?.kind === "playerTouch";
 }
 
 // 밟기(step-on)로도 발동하는 접촉 트리거인가? (touch/playerTouch 둘 다)
-function isSteppableTouch(trigger: Trigger): boolean {
-  return trigger.kind === "playerTouch" || trigger.kind === "touch";
+function isSteppableTouch(trigger: Trigger | undefined): boolean {
+  return trigger?.kind === "playerTouch" || trigger?.kind === "touch";
 }
 
 function errorMessage(cause: unknown): string {

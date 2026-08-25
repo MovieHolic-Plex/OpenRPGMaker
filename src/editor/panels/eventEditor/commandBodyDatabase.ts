@@ -22,9 +22,9 @@ import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, Equipment
 import type { CommandEditContext } from "./types";
 
 const AMOUNT_OP_OPTIONS = [
-  { value: "=", label: "대입" },
-  { value: "+=", label: "증가" },
-  { value: "-=", label: "감소" },
+  { value: "=", label: "이 값으로" },
+  { value: "+=", label: "더하기" },
+  { value: "-=", label: "빼기" },
 ] as const;
 
 const VITAL_AMOUNT_MODE_SEGMENTS = [
@@ -42,6 +42,11 @@ const MONSTER_MOVE_TARGET_OPTIONS = [
   { value: "box", label: "보관함" },
 ] as const;
 
+const STORAGE_CHEST_SCOPE_SEGMENTS = [
+  { value: "local", key: "local", label: "이 상자 전용" },
+  { value: "shared", key: "shared", label: "여러 상자 공유" },
+] as const satisfies readonly { readonly value: "local" | "shared"; readonly key: string; readonly label: string }[];
+
 const BATTLE_FLOW_SEGMENTS = [
   { value: "inherit", key: "inherit", label: "시스템 기본" },
   { value: "gauge", key: "gauge", label: "게이지" },
@@ -54,12 +59,12 @@ const BATTLE_ESCAPE_SEGMENTS = [
 ] as const satisfies readonly { readonly value: "allow" | "deny"; readonly key: string; readonly label: string }[];
 
 const BATTLE_LOSE_SEGMENTS = [
-  { value: "gameover", key: "gameover", label: "패배=게임오버" },
+  { value: "gameover", key: "gameover", label: "지면 게임 끝" },
   { value: "allow", key: "allow", label: "패배 허용" },
 ] as const satisfies readonly { readonly value: "gameover" | "allow"; readonly key: string; readonly label: string }[];
 
 const BATTLE_TROOP_SOURCE_SEGMENTS = [
-  { value: "fixed", key: "fixed", label: "고정 적 그룹" },
+  { value: "fixed", key: "fixed", label: "이 그룹" },
   { value: "variable", key: "variable", label: "변수" },
 ] as const satisfies readonly { readonly value: "fixed" | "variable"; readonly key: string; readonly label: string }[];
 
@@ -75,7 +80,7 @@ const BATTLE_PROCESSING_PRESETS = [
   {
     id: "story",
     label: "스토리",
-    title: "스토리 전투 — 도망 불가 · 패배=게임오버",
+    title: "스토리 전투 — 도망 불가 · 지면 게임 끝",
     canEscape: false,
     canLose: false,
     battleFlow: "inherit" as const,
@@ -138,7 +143,7 @@ export function battleProcessingBody(
     options: BATTLE_TROOP_SOURCE_SEGMENTS,
     value: troopSource,
     testid: "battle-processing-troop-source",
-    ariaLabel: "적 그룹 소스",
+    ariaLabel: "누구와 싸울까",
   });
   const escape = segmentedSelect({
     options: BATTLE_ESCAPE_SEGMENTS,
@@ -184,7 +189,7 @@ export function battleProcessingBody(
   });
   const preview = previewStrip("battle-processing-preview", "확인 시 전투 시작 → battleResult 저장");
   const troopField = battleField("적 그룹", troop.root);
-  const variableField = battleField("트룹 변수", el("div"));
+  const variableField = battleField("어느 변수", el("div"));
   const variablePicker = databasePicker(
     "variable",
     troopVariableId,
@@ -195,7 +200,7 @@ export function battleProcessingBody(
     "battle-processing-troop-variable"
   );
   variableField.replaceChildren(
-    el("div", { class: "party-member-field-label", text: "트룹 변수" }),
+    el("div", { class: "party-member-field-label", text: "어느 변수" }),
     variablePicker
   );
 
@@ -296,11 +301,11 @@ export function battleProcessingBody(
       }),
       el("span", {
         class: `rich-preview-after ${canLose ? "gain" : ""}`,
-        text: canLose ? "패배 허용" : "패배=게임오버",
+        text: canLose ? "패배 허용" : "지면 게임 끝",
       }),
       ...(reward ? [el("span", { class: "rich-preview-caption-inline", text: reward })] : []),
       ...(branchOnResult
-        ? [el("span", { class: "rich-preview-caption-inline", text: "결과 분기 ON" })]
+        ? [el("span", { class: "rich-preview-caption-inline", text: "결과 분기 켜짐" })]
         : []),
     );
   };
@@ -351,7 +356,7 @@ export function battleProcessingBody(
   renderHoverAndPreview();
 
   const wrap = el("div", {
-    class: "rich-command-form battle-processing-command-body actor-amount-command-body",
+    class: "rich-command-form cream-command-form battle-processing-command-body actor-amount-command-body",
     dataset: { testid: "event-command-battle-processing-form" },
   });
   wrap.append(
@@ -360,7 +365,7 @@ export function battleProcessingBody(
       text: "이 이벤트에서 전투를 시작합니다",
       dataset: { testid: "battle-processing-intent" },
     })),
-    battleField("적 그룹 소스", source.root),
+    battleField("누구와 싸울까", source.root),
     troopField,
     variableField,
     warning,
@@ -459,7 +464,7 @@ export function changeGoldBody(context: CommandEditContext, cmd: Extract<Command
   // 타이핑 중에도 프리뷰만 라이브 갱신(저장은 change 시점).
   amount.addEventListener("input", renderPreview);
   renderPreview();
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [op.root, amountStepper(amount, { testidBase: "change-gold-amount" })] }),
     preview.root
@@ -519,7 +524,7 @@ export function changeItemBody(context: CommandEditContext, cmd: Extract<Command
   amount.addEventListener("change", apply);
   amount.addEventListener("input", renderPreview);
   renderPreview();
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [item.root] }),
     el("span", { class: "rich-form-row", children: [op.root, amountStepper(amount, { testidBase: "change-item-amount" })] }),
@@ -571,13 +576,13 @@ export function craftRecipeBody(
     });
   };
   recipe.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [recipe.root] }));
   if (recipes.length === 0) {
     wrap.append(
       el("span", {
         class: "rich-form-hint",
-        text: "system.craftRecipes 가 비어 있습니다. DB/시스템 레시피를 먼저 등록하세요.",
+        text: "등록된 레시피가 없습니다. 시스템에서 레시피를 먼저 만드세요.",
       })
     );
   }
@@ -589,13 +594,17 @@ export function applyItemUpgradeBody(
   cmd: Extract<Command, { kind: "applyItemUpgrade" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const rules = upgradeRulesOf(project).map((rule) => ({
-    id: rule.id,
-    name: rule.id,
-    fromItemId: rule.fromItemId,
-    toItemId: rule.toItemId,
-    goldCost: rule.goldCost ?? 0,
-  }));
+  const rules = upgradeRulesOf(project).map((rule) => {
+    const from = project.database.items.find((entry) => entry.id === rule.fromItemId)?.name.trim() || rule.fromItemId.replace(/^item_/, "").replace(/_/g, " ");
+    const to = project.database.items.find((entry) => entry.id === rule.toItemId)?.name.trim() || rule.toItemId.replace(/^item_/, "").replace(/_/g, " ");
+    return {
+      id: rule.id,
+      name: `${from} → ${to}`,
+      fromItemId: rule.fromItemId,
+      toItemId: rule.toItemId,
+      goldCost: rule.goldCost ?? 0,
+    };
+  });
   const upgrade = recordPickerWithPreview({
     records: rules,
     selectedId: cmd.upgradeId,
@@ -619,13 +628,13 @@ export function applyItemUpgradeBody(
     });
   };
   upgrade.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [upgrade.root] }));
   if (rules.length === 0) {
     wrap.append(
       el("span", {
         class: "rich-form-hint",
-        text: "system.itemUpgrades 가 비어 있습니다. 업그레이드 규칙을 먼저 등록하세요.",
+        text: "등록된 업그레이드가 없습니다. 시스템에서 규칙을 먼저 만드세요.",
       })
     );
   }
@@ -655,12 +664,12 @@ export function equipToolBody(
     });
   };
   item.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [item.root] }));
   wrap.append(
     el("span", {
       class: "rich-form-hint",
-      text: "빈 값이면 손 도구(session.equippedToolItemId)를 해제합니다.",
+      text: "비우면 손에 든 도구를 내려놓습니다.",
     })
   );
   return wrap;
@@ -670,30 +679,107 @@ export function openChestBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "openChest" }>
 ): HTMLElement {
+  const scope = segmentedSelect({
+    options: STORAGE_CHEST_SCOPE_SEGMENTS,
+    value: cmd.chestId?.trim() ? "shared" : "local",
+    testid: "open-chest-scope-select",
+    ariaLabel: "보관 상자 연결 방식",
+  });
   const chestId = el("input", {
-    attrs: { type: "text", title: "상자 ID", placeholder: "이 타일 상자(자동)" },
+    class: "storage-chest-shared-id",
+    attrs: {
+      type: "text",
+      title: "같은 이름을 사용하는 상자끼리 보관 내용을 공유합니다",
+      placeholder: "예: 마을 공동 창고",
+      autocomplete: "off",
+      spellcheck: "false",
+    },
     value: cmd.chestId ?? "",
     dataset: { testid: "open-chest-id-input" },
   }) as HTMLInputElement;
+  const scopeHint = el("span", {
+    class: "storage-chest-scope-hint",
+    dataset: { testid: "open-chest-scope-hint" },
+  });
+  const sharedSettings = el("div", {
+    class: "storage-chest-shared-settings",
+    dataset: { testid: "open-chest-shared-settings" },
+    children: [
+      labeledControl("공유 보관함 이름", chestId),
+      el("span", {
+        class: "rich-form-hint",
+        text: "같은 이름을 지정한 다른 상자에서도 동일한 아이템을 꺼낼 수 있습니다.",
+      }),
+    ],
+  });
+  const syncScopeUi = () => {
+    const shared = scope.select.value === "shared";
+    sharedSettings.dataset.active = String(shared);
+    sharedSettings.setAttribute("aria-hidden", String(!shared));
+    chestId.disabled = !shared;
+    scopeHint.textContent = shared
+      ? "마을 공동 창고처럼 여러 상자가 하나의 보관 내용을 함께 엽니다."
+      : "현재 이벤트가 있는 이 상자에만 아이템을 보관합니다. 가장 간단한 설정입니다.";
+  };
   const apply = () => {
-    const value = chestId.value.trim();
+    const shared = scope.select.value === "shared";
+    if (shared && !chestId.value.trim()) chestId.value = "shared_storage";
+    const value = shared ? chestId.value.trim() : "";
     context.actions.replaceCommand(context.path, {
       kind: "openChest",
       ...(value ? { chestId: value } : {}),
     });
   };
+  scope.select.addEventListener("change", () => {
+    syncScopeUi();
+    apply();
+  });
   chestId.addEventListener("change", apply);
   chestId.addEventListener("input", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  syncScopeUi();
+  const wrap = el("div", {
+    class: "rich-command-form cream-command-form storage-chest-command-body",
+    dataset: { testid: "open-chest-command-body" },
+  });
   wrap.append(
-    el("span", {
-      class: "rich-form-row",
-      children: [labeledControl("상자 ID", chestId)],
+    el("div", {
+      class: "storage-chest-purpose-card",
+      dataset: { testid: "open-chest-purpose-card" },
+      children: [
+        el("span", {
+          class: "storage-chest-glyph",
+          attrs: { "aria-hidden": "true" },
+          children: [
+            el("span", { class: "storage-chest-glyph-lid" }),
+            el("span", { class: "storage-chest-glyph-body" }),
+          ],
+        }),
+        el("span", {
+          class: "storage-chest-purpose-copy",
+          children: [
+            el("strong", { text: "아이템을 맡기고 다시 찾는 상자" }),
+            el("span", { text: "플레이어가 소지품을 넣고 다시 꺼낼 수 있습니다." }),
+          ],
+        }),
+        el("span", { class: "storage-chest-purpose-badge", text: "입출고" }),
+      ],
     }),
-    el("span", {
-      class: "rich-form-hint",
-      text: "비우면 현재 이벤트/타일 기준 session.chests 키를 사용합니다.",
-    })
+    el("div", {
+      class: "storage-chest-scope-section",
+      children: [
+        el("strong", { class: "storage-chest-section-label", text: "보관 내용 연결" }),
+        scope.root,
+        scopeHint,
+      ],
+    }),
+    sharedSettings,
+    el("div", {
+      class: "storage-chest-treasure-note",
+      children: [
+        el("strong", { text: "아이템을 바로 주는 보물상자와는 다릅니다." }),
+        el("span", { text: "한 번 지급하는 상자는 ‘아이템 변경’ 명령으로 만드세요." }),
+      ],
+    }),
   );
   return wrap;
 }
@@ -752,7 +838,7 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
   actor.select.addEventListener("change", apply);
   action.select.addEventListener("change", apply);
   renderPreview();
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [actor.root] }),
     el("span", { class: "rich-form-row", children: [action.root] }),
@@ -791,17 +877,20 @@ export function giveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
   species.select.addEventListener("change", apply);
   level.addEventListener("change", apply);
   nickname.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [species.root] }),
-    el("span", { class: "rich-form-row", children: [amountStepper(level, { testidBase: "give-monster-level" }), nickname] })
+    el("span", { class: "rich-form-row", children: [
+      el("label", { class: "inline-field", children: [el("span", { text: "레벨" }), amountStepper(level, { testidBase: "give-monster-level" })] }),
+      el("label", { class: "inline-field", children: [el("span", { text: "별명" }), nickname] }),
+    ] })
   );
   return wrap;
 }
 
 export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "moveMonster" }>): HTMLElement {
   const instanceId = el("input", {
-    attrs: { type: "text", placeholder: "monster_1" },
+    attrs: { type: "text", placeholder: "몬스터" },
     value: cmd.instanceId,
     dataset: { testid: "move-monster-instance-input" },
   }) as HTMLInputElement;
@@ -823,7 +912,7 @@ export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
   };
   instanceId.addEventListener("change", apply);
   target.select.addEventListener("change", apply);
-  const wrap = el("span", { class: "rich-command-form" });
+  const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [instanceId] }),
     el("span", { class: "rich-form-row", children: [target.root] })
@@ -834,14 +923,14 @@ export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
 export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "evolveMonster" }>): HTMLElement {
   const project = store.getCurrent();
   const instanceId = el("input", {
-    attrs: { type: "text", placeholder: "monster_1" },
+    attrs: { type: "text", placeholder: "몬스터" },
     value: cmd.instanceId,
     dataset: { testid: "evolve-monster-instance-input" },
   }) as HTMLInputElement;
   const species = recordPickerWithPreview({
     records: project.database.monsterSpecies ?? [],
     selectedId: cmd.toSpeciesId ?? "",
-    placeholder: "조건 충족 첫 진화",
+    placeholder: "맞는 첫 진화",
     testid: "evolve-monster-species-select",
     iconOf: (record) => imageIconOf(project, record.graphic.monsterResourceId),
     subtitleOf: (record) => `HP ${record.baseStats.maxHp} · 포획률 ${Math.round(record.captureRate * 100)}%`,
@@ -858,7 +947,7 @@ export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Comm
   instanceId.addEventListener("change", apply);
   species.select.addEventListener("change", apply);
   return el("span", {
-    class: "rich-command-form",
+    class: "rich-command-form cream-command-form",
     children: [
       el("span", { class: "rich-form-row", children: [instanceId] }),
       el("span", { class: "rich-form-row", children: [species.root] }),
@@ -894,7 +983,7 @@ export function promoteActorBody(
   const klass = recordPickerWithPreview({
     records: project.database.classes,
     selectedId: cmd.toClassId ?? "",
-    placeholder: "조건 충족 첫 승급",
+    placeholder: "맞는 첫 승급",
     testid: "promote-class-select",
     subtitleOf: (record) => {
       const from = project.database.classes.find((source) => (source.promotions ?? []).some((promotion) => promotion.toClassId === record.id));
@@ -913,7 +1002,7 @@ export function promoteActorBody(
   actor.select.addEventListener("change", apply);
   klass.select.addEventListener("change", apply);
   return el("span", {
-    class: "rich-command-form",
+    class: "rich-command-form cream-command-form",
     children: [
       el("span", { class: "rich-form-row", children: [actor.root] }),
       el("span", { class: "rich-form-row", children: [klass.root] }),
@@ -946,7 +1035,7 @@ export function changeEquipmentBody(
     options: EQUIPMENT_SLOT_SEGMENTS,
     value: currentSlot,
     testid: "change-equipment-slot-select",
-    ariaLabel: "장비 슬롯",
+    ariaLabel: "장비 위치",
   });
 
   const equipmentBrowser = searchableRecordBrowser({
@@ -960,7 +1049,7 @@ export function changeEquipmentBody(
     emptySelectionLabel: "장비 해제",
     emptySelectionMeta: () => `${slotLabel(currentSlot)} 비우기`,
     noneCardLabel: "장비 해제",
-    noneCardMeta: "슬롯 비우기",
+    noneCardMeta: "벗기기",
     clearLabel: "해제",
     allowNone: true,
     includeNoneCard: false,
@@ -1043,7 +1132,7 @@ export function changeEquipmentBody(
                 class: "change-equipment-preview-copy",
                 children: [
                   el("strong", { text: actorRecord.name }),
-                  el("span", { class: "change-equipment-preview-caption", text: `${slotLabel(currentSlot)} 슬롯` }),
+                  el("span", { class: "change-equipment-preview-caption", text: slotLabel(currentSlot) }),
                 ],
               }),
             ],
@@ -1097,7 +1186,7 @@ export function changeEquipmentBody(
   renderWarning();
 
   const wrap = el("div", {
-    class: "rich-command-form change-equipment-command-body",
+    class: "rich-command-form cream-command-form change-equipment-command-body",
     dataset: { testid: "change-equipment-command-body" },
   });
   wrap.append(
@@ -1108,7 +1197,7 @@ export function changeEquipmentBody(
         el("div", { class: "party-member-intent-title", text: "장비 변경" }),
         el("p", {
           class: "party-member-intent-body",
-          text: "주인공의 장비 슬롯을 교체하거나 비웁니다. 시작 장착 기준 전/후를 바로 확인하세요.",
+          text: "주인공의 장비를 갈아입히거나 벗깁니다. 바꾸기 전후를 바로 볼 수 있습니다.",
         }),
       ],
     }),
@@ -1119,7 +1208,7 @@ export function changeEquipmentBody(
           class: "change-equipment-toolbar",
           children: [
             equipmentField("주인공", actor.root),
-            equipmentField("슬롯", slot.root),
+            equipmentField("어디", slot.root),
           ],
         }),
         preview,
@@ -1460,7 +1549,7 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
   renderPreview();
 
   return el("div", {
-    class: "rich-command-form actor-amount-command-body",
+    class: "rich-command-form cream-command-form actor-amount-command-body",
     dataset: {
       testid:
         cmd.kind === "changeActorHp"

@@ -25,7 +25,7 @@ test.use({ serviceWorkers: "block" });
 
 test("칠하기 탭은 타일 팔레트를 집 킷 선반보다 먼저·넓게 보여준다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1440, height: 950 });
   await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
@@ -33,7 +33,7 @@ test("칠하기 탭은 타일 팔레트를 집 킷 선반보다 먼저·넓게 �
 
   // 에디터는 이벤트 레이어로 열린다 — 타일 팔레트는 타일 레이어에만 있다.
   await page.getByTestId("layer-lower").first().click({ force: true });
-  await page.getByTestId("palette-work-tab-paint").first().click({ force: true });
+  // 작업 탭은 좌패널 1면 통합(2026-08-21)으로 사라졌다 — 팔레트가 곧 기본 화면이다.
   await expect(page.getByTestId("palette-work-pane-paint")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("tile-palette")).toBeVisible({ timeout: 15_000 });
 
@@ -66,13 +66,13 @@ test("칠하기 탭은 타일 팔레트를 집 킷 선반보다 먼저·넓게 �
 
 test("접힌 집 킷 선반은 펼치면 킷 버튼을 보여준다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1440, height: 950 });
   await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
   await page.getByTestId("layer-lower").first().click({ force: true });
-  await page.getByTestId("palette-work-tab-paint").first().click({ force: true });
+  // 작업 탭은 좌패널 1면 통합(2026-08-21)으로 사라졌다 — 팔레트가 곧 기본 화면이다.
   await expect(page.getByTestId("palette-work-pane-paint")).toBeVisible({ timeout: 15_000 });
 
   const toggle = page.getByTestId("structure-kit-shelf-house-toggle");

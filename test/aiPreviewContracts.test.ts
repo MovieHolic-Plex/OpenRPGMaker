@@ -279,7 +279,7 @@ describe("AI preview theme contracts", () => {
 
   it("rejects filename/display-name/renderability-only eligibility without exact metadata-pack texture match", () => {
     const tileset = firstNonDefaultTileset();
-    tileset.name = "EasyRPG RTP Combined Town ChipSet";
+    tileset.name = "합본 마을 · EasyRPG (CC0)";
     const result = evaluateThemeEligibility(tileset, "combined-town");
 
     expect(result.eligible).toBe(false);

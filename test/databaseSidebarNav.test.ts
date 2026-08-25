@@ -19,8 +19,9 @@ const EXPECTED_TABS = [
   "db-tab-skills",
   "db-tab-items",
   "db-tab-equipment",
-  // 전투 — 배틀러는 수집이 아님
+  // 전투·몬스터 — 포획 종족도 이 도메인에 둔다
   "db-tab-enemies",
+  "db-tab-monster-species",
   "db-tab-troops",
   "db-tab-elements",
   "db-tab-states",
@@ -28,10 +29,14 @@ const EXPECTED_TABS = [
   "db-tab-battle-screen",
   "db-tab-battle-commands",
   "db-tab-terrain",
-  // 수집
-  "db-tab-monster-species",
+  // 생활
   "db-tab-crops",
   "db-tab-characters",
+  "db-tab-life-crafting",
+  "db-tab-daily-weather",
+  "db-tab-farm-animals",
+  "db-tab-farm-spatial",
+  "db-tab-life-collections",
   // 맵
   "db-tab-tilesets",
   "db-tab-structure-kits",
@@ -43,8 +48,8 @@ const EXPECTED_TABS = [
   "db-tab-variables",
 ];
 
-const EXPECTED_GROUPS = ["파티", "전투", "수집", "맵", "시스템"];
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const EXPECTED_GROUPS = ["파티", "전투·몬스터", "생활", "맵", "시스템"];
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
 let previousWindow: FakeBrowserGlobals["window"];
@@ -107,14 +112,15 @@ describe("database sidebar navigation", () => {
     expect(groups.map((group) => group.textContent)).toEqual(EXPECTED_GROUPS);
   });
 
-  it("keeps all 24 tab testids, exactly once, in group order (overview pinned on top)", () => {
+  // Break caught: life-skill, weather, and animal records remain hidden behind System counts.
+  it("keeps all 29 tab testids, including the discoverable life authoring surfaces", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(24);
+    expect(EXPECTED_TABS.length).toBe(29);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(24);
+    expect(new Set(EXPECTED_TABS).size).toBe(29);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
@@ -122,6 +128,35 @@ describe("database sidebar navigation", () => {
       expect(button.getAttribute("aria-label"), `${button.dataset.testid} aria-label`).toBe(label);
       expect(button.dataset.short, `${button.dataset.testid} data-short`).toBe(label.slice(0, 1));
     }
+  });
+
+  it("uses domain-specific labels for monster, farming, and resident authoring", () => {
+    const panelRoot = renderPanelHost();
+    expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe("몬스터 종족");
+    expect(findTab(panelRoot, "db-tab-crops").textContent).toBe("농사·작물");
+    expect(findTab(panelRoot, "db-tab-characters").textContent).toBe("주민 관계");
+    expect(findTab(panelRoot, "db-tab-daily-weather").textContent).toBe("계절·날씨");
+    expect(findTab(panelRoot, "db-tab-farm-animals").textContent).toBe("동물·축사");
+  });
+
+  // Break caught: the new navigation entry has no aggregate count or routed view.
+  it("shows the aggregate life-record count and opens its structured workspace", () => {
+    store.update((project) => {
+      project.database.lifeSkills = [{ id: "life", name: "농사", skillType: "farming", maxLevel: 10, levelUpRewards: [] }];
+      project.system.sellPrices = [{ itemId: project.database.items[0]?.id ?? "", price: 10 }];
+      project.system.energy = { max: 100 };
+      project.system.shipping = { enabled: false };
+      project.system.worldUnlocks = [{ id: "unlock" }];
+      project.system.bundles = [];
+      project.system.makers = [{ id: "maker", inputs: [], outputs: [], durationMinutes: 60 }];
+    });
+    const panelRoot = renderPanelHost();
+    const tab = findTab(panelRoot, "db-tab-life-crafting");
+    expect(tab.dataset.count).toBe("6");
+
+    tab.click();
+
+    expect(findByTestId(panelRoot, "db-life-workspace")).toBeTruthy();
   });
 
   it("toggles .active on the clicked tab and clears the previous one", () => {

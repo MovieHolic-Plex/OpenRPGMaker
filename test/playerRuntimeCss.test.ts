@@ -17,6 +17,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".action-hud",
   ".battle-transition-overlay",
   ".status-menu-command-rail",
+  ".status-menu-primary-dock",
   ".status-menu-command",
   ".status-menu-body",
   ".status-menu-party",
@@ -37,6 +38,7 @@ const RUNTIME_IMPORTS = [
   "../database/tabs-b-title-screen.css",
   "../database/tabs-b-status-menu-base.css",
   "../database/tabs-b-status-menu-main.css",
+  "./statusMenuEdgeDock.css",
   "./playLoading.css",
   "./actionHud.css",
   "./timer.css",
@@ -131,14 +133,15 @@ describe("exported player runtime CSS", () => {
     expect(hasCssSelector(fixtureCss, ".battle-transition-overlay")).toBe(true);
   }, PLAYER_BUILD_TIMEOUT_MS);
 
-  it("detects an omitted status-menu module in a disposable built entry", async () => {
-    // Given/When: a disposable closure is built without only the status-menu base import.
+  it("detects an omitted edge-dock status-menu module in a disposable built entry", async () => {
+    // Given/When: a disposable closure is built without only the final edge-dock presentation import.
     const fixtureCss = await buildDisposableClosureWithout(
-      '@import "../database/tabs-b-status-menu-base.css";\n',
+      '@import "./statusMenuEdgeDock.css";\n',
     );
 
-    // Then: base status controls disappear while the adjacent main/status and action CSS remains.
-    expect(hasCssSelector(fixtureCss, ".status-menu-command-rail")).toBe(false);
+    // Then: legacy content primitives remain, but the modern dock contract disappears.
+    expect(hasCssSelector(fixtureCss, ".status-menu-primary-dock")).toBe(false);
+    expect(hasCssSelector(fixtureCss, ".status-menu-command-rail")).toBe(true);
     expect(hasCssSelector(fixtureCss, ".status-menu-party")).toBe(true);
     expect(hasCssSelector(fixtureCss, ".action-hud")).toBe(true);
   }, PLAYER_BUILD_TIMEOUT_MS);

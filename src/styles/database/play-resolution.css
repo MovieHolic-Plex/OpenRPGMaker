@@ -1,0 +1,232 @@
+/* Play resolution diagnostics — scoped, studio tokens, no heavy chrome. */
+
+.database-modal-backdrop .db-system-resolution-diagnostics {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.database-modal-backdrop .db-system-resolution-diagnostics.has-warning {
+  border-color: rgba(180, 83, 9, 0.22);
+}
+
+.database-modal-backdrop .db-system-resolution-facts {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.database-modal-backdrop .db-system-resolution-facts > div {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 8px;
+}
+
+.database-modal-backdrop .db-system-resolution-facts dt {
+  color: var(--db-studio-text-3);
+  font: 500 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .db-system-resolution-facts dd {
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-system-resolution-warning {
+  background: var(--db-studio-inset);
+  border-left: 3px solid var(--db-studio-text-2);
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+  padding: 7px 8px;
+}
+
+.database-modal-backdrop .db-system-resolution-warning.danger {
+  background: rgba(220, 38, 38, 0.06);
+  border-left-color: var(--db-studio-danger);
+}
+
+@media (max-width: 720px) {
+  .database-modal-backdrop .db-system-resolution-facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Type chart matrix — studio chip language, no A-E letters. */
+.database-modal-backdrop .db-type-chart-help {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-type-chart-preview {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: flex;
+  gap: 8px;
+  min-height: 30px;
+  padding: 6px 10px;
+}
+
+.database-modal-backdrop .db-type-chart-preview-legend {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .db-type-chart-preview-line {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .db-type-chart-wrap {
+  display: grid;
+  gap: 10px;
+  position: relative;
+}
+
+.database-modal-backdrop .db-type-chart-matrix {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-type-chart-matrix th,
+.database-modal-backdrop .db-type-chart-matrix td {
+  border: 1px solid var(--db-studio-border-subtle);
+  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px;
+  text-align: center;
+}
+
+.database-modal-backdrop .db-type-chart-matrix th {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+  font-weight: 600;
+}
+
+.database-modal-backdrop .db-type-chip {
+  appearance: none;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  min-height: 28px;
+  min-width: 44px;
+  padding: 0 6px;
+}
+
+.database-modal-backdrop .db-type-chip:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .db-type-chip[data-state="up"] {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .db-type-chip[data-state="down"] {
+  color: var(--db-studio-text-2);
+}
+
+.database-modal-backdrop .db-type-chip[data-state="diag"] {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-3);
+  cursor: default;
+}
+
+.database-modal-backdrop .db-type-chip:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.database-modal-backdrop .db-type-chart-popover {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  box-shadow: var(--db-studio-shadow-pop);
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  position: absolute;
+  z-index: 3;
+}
+
+.database-modal-backdrop .db-type-chart-popover[hidden] {
+  display: none !important;
+}
+
+/* Party face strip — 24px thumb wells */
+.database-modal-backdrop .db-system-party-face-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.database-modal-backdrop .db-system-party-face {
+  background-color: var(--db-studio-inset);
+  background-repeat: no-repeat;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  height: 24px;
+  width: 24px;
+}
+
+.database-modal-backdrop .db-system-party-face.empty {
+  background: var(--db-studio-inset);
+}
+
+/* Resource preview wells — studio card language */
+.database-modal-backdrop .db-system-preview-well {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+}
+
+.database-modal-backdrop .db-system-preview-label {
+  color: var(--db-studio-text-2);
+  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .db-system-preview-frame {
+  align-items: center;
+  background: var(--db-studio-well);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  min-height: 72px;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.database-modal-backdrop .db-system-preview-frame img {
+  image-rendering: pixelated;
+  max-height: 64px;
+  max-width: 100%;
+}
+
+.database-modal-backdrop .db-system-preview-well code,
+.database-modal-backdrop .db-title-workbench-system-title-id {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.3 ui-monospace, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

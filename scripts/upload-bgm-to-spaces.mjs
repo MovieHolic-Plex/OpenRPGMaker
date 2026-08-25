@@ -24,9 +24,19 @@ import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "..");
-/** bgmCdn.ts 의 BGM_CDN_PREFIX 와 반드시 같아야 한다. 어긋나면 전곡 404 다. */
-const KEY_PREFIX = "bgm/v1";
-const CONCURRENCY = 4;
+/**
+ * bgmCdn.ts 의 BGM_CDN_PREFIX 와 반드시 같아야 한다. 어긋나면 전곡 404 다.
+ *
+ * `rpg-zzu/` 로 시작하는 이유: Space(cheapcdn)는 다른 서비스와 공유한다(예: tiot 이미지 CDN 이
+ * `tiot/images/` 를 쓴다). 프로젝트 접두사가 없으면 남의 키를 덮어쓸 위험이 있다.
+ */
+const KEY_PREFIX = "rpg-zzu/bgm/v1";
+/**
+ * 기본 동시 업로드 수. 실측(2026-08-21): 4로 올리면 40MB WAV 가 섞인 구간에서
+ * `TypeError: fetch failed` 가 무리로 터진다. 재시도로 대부분 복구되지만 회차마다
+ * 10\~40건이 남아 여러 번 돌려야 했다. 느려도 2가 한 번에 끝난다. `--concurrency` 로 조절.
+ */
+const DEFAULT_CONCURRENCY = 2;
 /** 콘텐츠 해시가 파일명에 박혀 있으므로 영구 캐시로 둔다. */
 const CACHE_CONTROL = "public, max-age=31536000, immutable";
 
@@ -43,6 +53,7 @@ function parseArgs(argv) {
     dryRun: false,
     verify: false,
     force: false,
+    concurrency: DEFAULT_CONCURRENCY,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i];
@@ -50,6 +61,7 @@ function parseArgs(argv) {
     else if (flag === "--dry-run") args.dryRun = true;
     else if (flag === "--verify") args.verify = true;
     else if (flag === "--force") args.force = true;
+    else if (flag === "--concurrency") args.concurrency = Math.max(1, Number(argv[++i]) || DEFAULT_CONCURRENCY);
   }
   return args;
 }
@@ -68,13 +80,21 @@ async function loadEnvLocal() {
 }
 
 function resolveConfig(env) {
-  const pick = (name) => (process.env[name] ?? env[name] ?? "").trim();
+  const pick = (...names) => {
+    for (const name of names) {
+      const value = (process.env[name] ?? env[name] ?? "").trim();
+      if (value !== "") return value;
+    }
+    return "";
+  };
+  // 이름이 두 벌인 이유: 이 조직의 기존 문서/스크립트는 DO_SPACES_ACCESS_KEY / DO_SPACES_SECRET_KEY 를
+  // 쓴다. 짧은 쪽만 받으면 기존 .env 를 그대로 붙여 놓고도 "자격증명 없음" 이 뜬다.
   const config = {
-    key: pick("DO_SPACES_KEY"),
-    secret: pick("DO_SPACES_SECRET"),
+    key: pick("DO_SPACES_KEY", "DO_SPACES_ACCESS_KEY"),
+    secret: pick("DO_SPACES_SECRET", "DO_SPACES_SECRET_KEY"),
     bucket: pick("DO_SPACES_BUCKET"),
     region: pick("DO_SPACES_REGION"),
-    cdnBase: pick("DO_SPACES_CDN_BASE"),
+    cdnBase: pick("DO_SPACES_CDN_BASE", "CDN_BASE_URL"),
   };
   const missing = ["key", "secret", "bucket", "region"].filter((field) => config[field] === "");
   return { config, missing };
@@ -164,6 +184,31 @@ async function putObject(config, key, body, contentType) {
   if (!res.ok) throw new Error(`PUT ${key} → ${res.status} ${(await res.text()).slice(0, 200)}`);
 }
 
+/**
+ * 네트워크 오류 재시도. 실측(2026-08-21 첫 전량 업로드): 재시도가 없어 281곡 중 45곡이
+ * `TypeError: fetch failed` 로 떨어졌다(40MB WAV 7곡 + mp3 38곡). 서명이나 권한 문제가 아니라
+ * 동시 4업로드에서 나는 전송 계층 끊김이라 한 번만 다시 밀면 대개 통과한다.
+ *
+ * 4xx 는 재시도하지 않는다 — 서명·권한·요청 오류를 반복해 봐야 같은 답이다.
+ */
+async function withRetry(label, attempts, run) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await run();
+    } catch (error) {
+      lastError = error;
+      const message = String(error);
+      if (/→ 4\d\d/.test(message)) throw error;
+      if (attempt < attempts) {
+        // 500ms → 1s → 2s. 끊김이 몰릴 때 같은 순간에 재시도가 겹치지 않게 벌린다.
+        await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** (attempt - 1)));
+      }
+    }
+  }
+  throw new Error(`${label}: ${attempts}회 재시도 실패 — ${lastError}`);
+}
+
 async function runPool(items, limit, worker) {
   const results = new Array(items.length);
   let cursor = 0;
@@ -212,10 +257,10 @@ async function main() {
   }
 
   let done = 0;
-  const results = await runPool(files, CONCURRENCY, async (file) => {
+  const results = await runPool(files, args.concurrency, async (file) => {
     const key = `${KEY_PREFIX}/${file.fileName}`;
     const bytes = statSync(file.local).size;
-    const remote = await headObject(config, key);
+    const remote = await withRetry(`HEAD ${file.fileName}`, 3, () => headObject(config, key));
     done += 1;
     const progress = `[${done}/${files.length}]`;
 
@@ -229,7 +274,9 @@ async function main() {
       return { fileName: file.fileName, key, bytes, status, remoteBytes: remote?.bytes ?? 0 };
     }
     const extension = path.extname(file.fileName).toLowerCase();
-    await putObject(config, key, await readFile(file.local), CONTENT_TYPES[extension] ?? "application/octet-stream");
+    const body = await readFile(file.local);
+    const contentType = CONTENT_TYPES[extension] ?? "application/octet-stream";
+    await withRetry(`PUT ${file.fileName}`, 4, () => putObject(config, key, body, contentType));
     if (done % 10 === 0) console.log(`${progress} uploaded ${file.fileName}`);
     return { fileName: file.fileName, key, bytes, status: "uploaded" };
   });
@@ -255,7 +302,14 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+// CLI 로 직접 실행할 때만 돈다. 가드가 없으면 signRequest 하나를 import 하는 것만으로
+// 전량 업로드가 시작된다(스모크 테스트에서 실제로 발생).
+const invokedDirectly = process.argv[1] !== undefined
+  && import.meta.url === new URL(`file://${process.argv[1].replaceAll("\\", "/")}`).href;
+
+if (invokedDirectly) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

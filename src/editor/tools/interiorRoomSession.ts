@@ -21,9 +21,25 @@ import {
   startRoomSession,
 } from "@/editor/roomHarness/engine";
 import { INTERIOR_ROOM_KIT } from "@/editor/roomHarness/interiorKit";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
+
+/** 방 구조 bbox — RECT + 방 역할/재질. items:{type:"object"} 로 두면 모델이 `rooms:[{}]` 만 보낸다. */
+const INTERIOR_ROOM_RECT_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    x: { type: "integer" },
+    y: { type: "integer" },
+    w: { type: "integer" },
+    h: { type: "integer" },
+    theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
+    floorTile: { type: "integer" },
+  },
+  required: ["x", "y", "w", "h"],
+};
 
 // 엔진 data에 실내 advance 툴 이름 next 힌트를 얹는다.
 function withNext(res: ToolExecResult, sessionId: string): ToolExecResult {
@@ -51,7 +67,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         wings: {
           type: "array",
           description: "바닥 bbox들 [{x,y,w,h}] — rooms 미사용 시 필수",
-          items: { type: "object" },
+          items: RECT_SCHEMA,
         },
         rooms: {
           type: "array",
@@ -60,14 +76,14 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
             + "지정 시 wings 대신 사용. '실내'는 상위 개념이고 배치는 공간(방) 단위: 방마다 역할 테마"
             + "(bedroom|study|dining|kitchen|storage|tavern|corridor)와 바닥 재질을 준다. "
             + "corridor는 복도 — 바닥 점유물 없이 벽 장식·전시물만 놓인다(저택 통로에 사용).",
-          items: { type: "object" },
+          items: INTERIOR_ROOM_RECT_SCHEMA,
         },
         innerDoors: {
           type: "array",
           description: "방 사이 파티션 개구부 [{x,y}] — 파티션 최상단(트림 행) 좌표",
-          items: { type: "object" },
+          items: COORD_SCHEMA,
         },
-        door: { type: "object", description: "{x,y} 남측 입구(floor 남 경계)" },
+        door: { ...COORD_SCHEMA, description: "{x,y} 남측 입구(floor 남 경계)" },
         theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
         themeModifiers: {
           type: "array",
@@ -137,10 +153,10 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         name: { type: "string" },
         width: { type: "integer" },
         height: { type: "integer" },
-        wings: { type: "array", items: { type: "object" } },
-        rooms: { type: "array", items: { type: "object" }, description: "방 구조 bbox [{id,x,y,w,h,theme?}]" },
-        innerDoors: { type: "array", items: { type: "object" }, description: "파티션 개구부 [{x,y}]" },
-        door: { type: "object" },
+        wings: { type: "array", items: RECT_SCHEMA, description: "바닥 bbox들 [{x,y,w,h}]" },
+        rooms: { type: "array", items: INTERIOR_ROOM_RECT_SCHEMA, description: "방 구조 bbox [{id,x,y,w,h,theme?}]" },
+        innerDoors: { type: "array", items: COORD_SCHEMA, description: "파티션 개구부 [{x,y}]" },
+        door: COORD_SCHEMA,
         theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
         themeModifiers: {
           type: "array",

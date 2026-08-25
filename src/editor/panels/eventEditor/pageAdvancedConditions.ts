@@ -8,6 +8,7 @@ import {
   renderGoldCondition,
   renderItemCondition,
   renderNpcActivityCondition,
+  renderRunCondition,
   renderSeasonCondition,
   renderSelfSwitchCondition,
   renderSwitchCondition,
@@ -30,7 +31,7 @@ type AdvancedConditionKind = EventPageCondition["kind"];
 const ADVANCED_CONDITION_OPTIONS = [
   { value: "switch", label: "스위치" },
   { value: "variable", label: "변수" },
-  { value: "selfSwitch", label: "셀프 스위치" },
+  { value: "selfSwitch", label: "이 이벤트 기억" },
   { value: "item", label: "아이템" },
   { value: "actor", label: "주인공" },
   { value: "gold", label: "소지금" },
@@ -39,6 +40,7 @@ const ADVANCED_CONDITION_OPTIONS = [
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
+  { value: "run", label: "탐험" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {
@@ -208,6 +210,8 @@ function renderAdvancedConditionContent(
         npcKeyTestId: `event-page-advanced-condition-friendship-npc-key-${listIndex}`,
         valueTestId: `event-page-advanced-condition-friendship-value-${listIndex}`,
       });
+    case "run":
+      return renderRunCondition(condition, (next) => replaceConditionAt(context, index, next));
   }
   return document.createElement("div");
 }
@@ -238,6 +242,8 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "npcActivity", activity: "work" };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
+    case "run":
+      return { kind: "run", query: "active", value: true };
   }
   return { kind: "switch", switchId: "", value: true };
 }

@@ -110,7 +110,7 @@ export async function startReferenceBattle(page: Page): Promise<void> {
   await page.getByTestId("mode-play").click();
   await page.waitForTimeout(250);
   if (!(await page.getByTestId("test-play-window").isVisible())) {
-    await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
   }
   await expect(page.getByTestId("test-play-window")).toBeVisible();
   await startNewGameFromTitle(page);

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { validateGeneratedAssetManifest, type GeneratedAssetManifestInput } from "@/assets/generatedAssetManifest";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 
 describe("generatedAssetManifest", () => {
   it("accepts the planned Wave 1 RM2K3 asset batch when every target has contract metadata", () => {
-    const result = validateGeneratedAssetManifest(RM2K3_GENERATED_ASSET_PLAN);
+    const result = validateGeneratedAssetManifest(GENERATED_ASSET_PLAN);
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -58,18 +58,18 @@ describe("generatedAssetManifest", () => {
   });
 
   it("keeps promoted battle-generated magenta assets registered in the manifest", () => {
-    const result = validateGeneratedAssetManifest(RM2K3_GENERATED_ASSET_PLAN);
+    const result = validateGeneratedAssetManifest(GENERATED_ASSET_PLAN);
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     const magentaAssets = result.manifest.assets.filter((asset) => asset.provenance.promptVersion === "battle-magenta-v2");
     expect(magentaAssets.map((asset) => asset.id).sort()).toEqual(["monster-slime-01", "troop-preview-slime"]);
-    expect(magentaAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/rm2k3/") === true)).toBe(true);
+    expect(magentaAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
     expect(magentaAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
   });
 
   it("keeps promoted battle charsets extracted from bundled actor charsets registered in the manifest", () => {
-    const result = validateGeneratedAssetManifest(RM2K3_GENERATED_ASSET_PLAN);
+    const result = validateGeneratedAssetManifest(GENERATED_ASSET_PLAN);
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -80,7 +80,7 @@ describe("generatedAssetManifest", () => {
       "hero-03-battle",
       "hero-04-battle",
     ]);
-    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/rm2k3/") === true)).toBe(true);
+    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
     expect(extractedAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
   });
 });

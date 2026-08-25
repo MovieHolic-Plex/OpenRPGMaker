@@ -25,7 +25,7 @@ export class ProjectPackageError extends Error {
 }
 
 export function projectPackageFileName(project: Project): string {
-  return `${safeFileName(project.meta.title || "rpg-zzu-project")}${RPGZZU_EXTENSION}`;
+  return `${safeFileName(project.meta.title || "oprn-project")}${RPGZZU_EXTENSION}`;
 }
 
 export function createProjectPackage(project: Project): Blob {
@@ -102,5 +102,5 @@ function textEntry(name: string, text: string): ZipEntry {
 
 function safeFileName(value: string): string {
   const safe = value.trim().replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "-").replace(/\s+/g, "-");
-  return safe || "rpg-zzu-project";
+  return safe || "oprn-project";
 }

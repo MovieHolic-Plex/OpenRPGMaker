@@ -26,19 +26,19 @@ page.on("dialog", (d) => d.accept());
 page.on("console", (m) => { if (m.type() === "error") writeFileSync(EVIDENCE + "/console.txt", m.text() + "\n", { flag: "a" }); });
 await page.addInitScript(({ supabaseDraft, aiConfig }) => {
   localStorage.clear();
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-  localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
-  localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(supabaseDraft));
-  localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(aiConfig));
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:ai-panel-collapsed", "0");
+  localStorage.setItem("oprn:supabase-project-config", JSON.stringify(supabaseDraft));
+  localStorage.setItem("oprn:ai-config", JSON.stringify(aiConfig));
 }, { supabaseDraft, aiConfig });
 
 await page.goto(BASE + "/", { waitUntil: "domcontentloaded", timeout: 90_000 });
 await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 90_000 });
-await page.waitForFunction(() => typeof window.__rpgzzuAiBridge?.send === "function", null, { timeout: 60_000 });
+await page.waitForFunction(() => typeof window.__oprnAiBridge?.send === "function", null, { timeout: 60_000 });
 
 const t0 = Date.now();
 const r = await page.evaluate(async ({ msg }) => {
-  const bridge = window.__rpgzzuAiBridge;
+  const bridge = window.__oprnAiBridge;
   const p = bridge.send(msg);
   const t = new Promise((resolve) => setTimeout(() => resolve({ ok: false, error: "timeout 600s" }), 600_000));
   return Promise.race([p, t]);

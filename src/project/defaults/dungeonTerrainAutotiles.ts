@@ -1,7 +1,7 @@
 import { buildEdgeCornerInnerVariantMap } from "./autotileEngine";
 import type { AutotileGroup } from "../types";
 
-// 던전 칩셋(easyrpg_chipset_dungeon)의 지형 RM2k3 오토타일 블록 12종 + 붉은 카펫 9-슬라이스.
+// 던전 타일 그림판(easyrpg_chipset_dungeon)의 지형 RM2k3 오토타일 블록 12종 + 붉은 카펫 9-슬라이스.
 // 2026-07-13 vision 업스케일 감사로 확정 — 실내(interiorTerrainAutotiles)와 동일한 표준 3×4 배치:
 // 윗줄 = 고립 · 바탕 · 오목 코너 소스, 아래 3×3 = 본체(볼록 코너/변/중앙). 바탕 칸은 멤버가 아니다.
 // 성형은 buildEdgeCornerInnerVariantMap(8방·11분류)로 실내/흙길(combined_town)과 동일하게 처리한다.

@@ -7,8 +7,8 @@
   --battle-window-edge: #8a6f4d;
   --battle-text: #4a3826;
   --battle-accent: #a2691e;
-  --rm2k3-battle-text: #4a3826;
-  --rm2k3-battle-muted: #7a6448;
+  --oprn-battle-text: #4a3826;
+  --oprn-battle-muted: #7a6448;
   background: #241a10;
   grid-template-columns: minmax(0, 1fr) 172px 296px !important;
 }

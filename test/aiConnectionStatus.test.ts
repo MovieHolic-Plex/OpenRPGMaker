@@ -37,11 +37,11 @@ function installLocalStorage(initial: Record<string, string> = {}): Map<string, 
 }
 
 function saveConfig(store: Map<string, string>, config: Record<string, unknown>): void {
-  store.set("rpg-zzu:ai-config", JSON.stringify(config));
+  store.set("oprn:ai-config", JSON.stringify(config));
 }
 
 const APIKEY_READY = {
-  authMode: "apiKey",
+  authMode: "apiKey" as const,
   baseUrl: "https://gateway.invalid/v1",
   model: "z-ai/glm-5.2-ultrafast",
   liteModel: "z-ai/glm-5.2-ultrafast",
@@ -85,8 +85,11 @@ describe("getAiConnectionStatus — apiKey 모드 동기 평가", () => {
 
   it("절대 URL + 키와 baseUrl 이 모두 있으면 ready", async () => {
     const { getAiConnectionStatus } = await loadModule();
-    const status = getAiConnectionStatus(APIKEY_READY);
+    const status = getAiConnectionStatus({ ...APIKEY_READY, providerId: "zai" });
     expect(status.kind).toBe("ready");
+    expect(status.providerId).toBe("zai");
+    expect(status.providerLabel).toBe("zAI");
+    expect(status.label).toContain("zAI");
     expect(status.label).toContain("연결됨");
     expect(status.title).toContain("API 키로 연결됨");
   });
@@ -107,42 +110,109 @@ describe("getAiConnectionStatus — apiKey 모드 동기 평가", () => {
     expect(status.kind).toBe("checking");
   });
 
-  it("env 상대 VITE_LLM_API_URL + 키 없음 = proxyAuth ready (조용한 OAuth 폴백 방지)", async () => {
+  it("env 상대 VITE_LLM_API_URL 이 있어도 칩은 OAuth 를 가리킨다", async () => {
+    // 옛 스펙은 여기서 apiKey/ready 를 기대했다. 그 배선이 곧 장애의 원인이었다 —
+    // env 가 authMode 를 정하는 통로가 사라졌으므로 칩도 OAuth 하나만 말한다.
     vi.stubEnv("VITE_LLM_API_URL", "/api/ai");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     const { getAiConnectionStatus } = await loadModule();
     const status = getAiConnectionStatus();
-    expect(status.authMode).toBe("apiKey");
-    expect(status.kind).toBe("ready");
-    expect(status.title).toContain("프록시");
+    expect(status.authMode).toBe("chatgpt");
   });
 
-  it("env 절대 VITE_LLM_API_URL + 키 없음 = disconnected (클라이언트 키 필요)", async () => {
+  it("env 절대 VITE_LLM_API_URL 이 있어도 칩은 OAuth 를 가리킨다", async () => {
     vi.stubEnv("VITE_LLM_API_URL", "https://gateway.example/v1");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     const { getAiConnectionStatus } = await loadModule();
     const status = getAiConnectionStatus();
-    expect(status.authMode).toBe("apiKey");
-    expect(status.kind).toBe("disconnected");
-    expect(status.label).toContain("키");
+    expect(status.authMode).toBe("chatgpt");
   });
 });
 
 describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
   it("chatgpt 모드에서 companion 연결됨을 캐시하고 onChange 를 부른다", async () => {
     const store = installLocalStorage();
-    saveConfig(store, { authMode: "chatgpt", model: "z-ai/glm-5.2-ultrafast", maxTokens: 32768 });
+    saveConfig(store, {
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.1-pro-preview",
+      maxTokens: 32768,
+    });
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, planType: "plus" });
 
     const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
     let changed = 0;
     await refreshAiConnectionStatus(() => { changed += 1; });
 
-    expect(fetchChatGptAuthStatus).toHaveBeenCalledTimes(1);
+    expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("google-antigravity");
     expect(changed).toBe(1);
     const status = getAiConnectionStatus();
     expect(status.kind).toBe("ready");
+    expect(status.providerLabel).toBe("Google Antigravity");
+    expect(status.label).toContain("Google Antigravity");
     expect(status.label).toContain("PLUS");
+  });
+
+  it("제공자를 바꾸면 이전 제공자의 ready 캐시를 재사용하지 않는다", async () => {
+    const storage = installLocalStorage();
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      maxTokens: 32768,
+    });
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true });
+
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    await refreshAiConnectionStatus(() => undefined);
+    expect(getAiConnectionStatus().kind).toBe("ready");
+
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.1-pro-preview",
+      maxTokens: 32768,
+    });
+
+    const switched = getAiConnectionStatus();
+    expect(switched.kind).toBe("checking");
+    expect(switched.providerLabel).toBe("Google Antigravity");
+  });
+
+  it("이전 제공자 조회가 진행 중이어도 새 제공자를 즉시 조회하고 늦은 응답은 버린다", async () => {
+    const storage = installLocalStorage();
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      maxTokens: 32768,
+    });
+    let resolveOpenAi!: (value: { connected: boolean }) => void;
+    let resolveGoogle!: (value: { connected: boolean }) => void;
+    fetchChatGptAuthStatus.mockImplementation((providerId: string) => new Promise((resolve) => {
+      if (providerId === "google-antigravity") resolveGoogle = resolve;
+      else resolveOpenAi = resolve;
+    }));
+
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    const oldRefresh = refreshAiConnectionStatus(() => undefined);
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.1-pro-preview",
+      maxTokens: 32768,
+    });
+    const newRefresh = refreshAiConnectionStatus(() => undefined);
+
+    resolveGoogle({ connected: true });
+    await newRefresh;
+    expect(getAiConnectionStatus().kind).toBe("ready");
+    expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
+
+    resolveOpenAi({ connected: false });
+    await oldRefresh;
+    expect(getAiConnectionStatus().kind).toBe("ready");
+    expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
   });
 
   it("companion 이 응답하지 않으면 offline 으로 캐시하고 onChange 를 부른다", async () => {
@@ -158,16 +228,20 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     expect(getAiConnectionStatus().kind).toBe("offline");
   });
 
-  it("apiKey 모드에서는 companion 을 호출하지 않는다", async () => {
+  it("저장된 apiKey 설정도 OAuth 로 승격되어 companion 을 조회한다", async () => {
+    // 옛 스펙은 "apiKey 모드에서는 companion 을 호출하지 않는다" 였다. 이제 저장값이 authMode 를
+    // 되돌리지 못하므로(loadAiConfig 승격) 게이트웨이 설정이 남은 브라우저도 OAuth 를 조회한다.
+    // 이게 없으면 예전 감독의 브라우저는 칩이 영원히 apiKey 를 가리킨 채 죽어 있었다.
     const store = installLocalStorage();
     saveConfig(store, APIKEY_READY);
-    const { refreshAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
-    // 캐시가 남아있으면 apiKey 모드에서도 onChange 가 호출되므로 먼저 비운다.
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, planType: "plus" });
+    const { refreshAiConnectionStatus, resetAiConnectionStatusCache, getAiConnectionStatus } = await loadModule();
     resetAiConnectionStatusCache();
     let changed = 0;
     await refreshAiConnectionStatus(() => { changed += 1; });
-    expect(fetchChatGptAuthStatus).not.toHaveBeenCalled();
-    expect(changed).toBe(0);
+    expect(fetchChatGptAuthStatus).toHaveBeenCalledTimes(1);
+    expect(changed).toBe(1);
+    expect(getAiConnectionStatus().authMode).toBe("chatgpt");
   });
 
   it("이미 캐시된 상태와 동일하면 onChange 를 부르지 않는다", async () => {
@@ -186,26 +260,101 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
 });
 
 describe("renderAiConnectionStatus — 상태바 칩", () => {
-  it("apiKey ready 상태에서 칩은 버튼이고 라벨에 '연결됨' 이 포함된다", async () => {
+  it("OAuth 연결됨 상태에서 칩은 버튼이고 라벨에 '연결됨' 이 포함된다", async () => {
     const store = installLocalStorage();
-    saveConfig(store, APIKEY_READY);
-    const { renderAiConnectionStatus } = await loadModule();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, planType: "plus" });
+    const { renderAiConnectionStatus, refreshAiConnectionStatus } = await loadModule();
+    // chatgpt 모드의 ready 는 동반 서비스 조회 결과 캐시에서 나온다 — 먼저 채운다.
+    await refreshAiConnectionStatus(() => undefined);
     const chip = renderWithFakeDom(() => renderAiConnectionStatus(() => undefined));
     expect(chip.tagName.toLowerCase()).toBe("button");
     expect(chip.dataset.testid).toBe("ai-connection-status");
+    expect(chip.textContent).toContain("OpenAI Codex");
     expect(chip.textContent).toContain("연결됨");
   });
 
   it("칩 클릭 시 AI 설정 모달을 연다", async () => {
     const store = installLocalStorage();
-    saveConfig(store, { ...APIKEY_READY, apiKey: "" }); // disconnected 상태
-    const { renderAiConnectionStatus } = await loadModule();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+    const { renderAiConnectionStatus, refreshAiConnectionStatus } = await loadModule();
+    await refreshAiConnectionStatus(() => undefined);
     const chip = renderWithFakeDom(() => renderAiConnectionStatus(() => undefined)) as FakeElement;
     openAiSettingsModal.mockClear();
     chip.click();
     expect(openAiSettingsModal).toHaveBeenCalledTimes(1);
-    const opts = openAiSettingsModal.mock.calls[0]?.[0] as { focusTarget?: string } | undefined;
-    // apiKey 모드 미연동이면 API 키 입력란으로 포커스.
+    const opts = openAiSettingsModal.mock.calls[0]?.[0] as { focusTarget?: string; onSaved?: unknown } | undefined;
+    // 미연결이면 "지금 키를 넣어야 하는가"는 인증 패널이 판단한다 — 칩은 의도만 넘긴다.
     expect(opts?.focusTarget).toBe("apiKey");
+    // 칩에서 로그인·키 저장을 마치면 칩 자신이 즉시 진실해져야 한다(예전에는 onSaved 를 안 넘겨
+    // 로그인 후에도 낡은 캐시를 보여 줬다).
+    expect(typeof opts?.onSaved).toBe("function");
+  });
+});
+
+describe("다섯 상태를 서로 다르게 말한다", () => {
+  it("도달 불가(A)와 응답 오류(B)와 로그아웃이 각각 다른 kind·라벨·이모지다", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+
+    // (A) 닿지 못함 — 일반 Error 는 이름이 ChatGptCompanionResponseError 가 아니다.
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockRejectedValue(new Error("connect ECONNREFUSED"));
+    await refreshAiConnectionStatus(() => undefined);
+    const unreachable = getAiConnectionStatus();
+    expect(unreachable.kind).toBe("offline");
+    expect(unreachable.label).toContain("꺼짐");
+
+    // (B) 응답했지만 실패 — serverMessage 를 담아 error 로 간다.
+    resetAiConnectionStatusCache();
+    const responded = Object.assign(new Error("boom"), {
+      name: "ChatGptCompanionResponseError",
+      serverMessage: "codex exited",
+    });
+    fetchChatGptAuthStatus.mockRejectedValue(responded);
+    await refreshAiConnectionStatus(() => undefined);
+    const errored = getAiConnectionStatus();
+    expect(errored.kind).toBe("error");
+    expect(errored.label).toContain("오류");
+    expect(errored.title).toContain("codex exited");
+
+    // 그냥 로그아웃 — 위 둘과 달라야 한다.
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+    await refreshAiConnectionStatus(() => undefined);
+    const loggedOut = getAiConnectionStatus();
+    expect(loggedOut.kind).toBe("disconnected");
+    expect(loggedOut.label).toContain("로그인");
+
+    // 세 라벨이 서로 겹치지 않는다 — 예전에는 전부 "AI 로그인" 이었다.
+    expect(new Set([unreachable.label, errored.label, loggedOut.label]).size).toBe(3);
+  });
+
+  it("env 자격만 있으면 연결됨이 아니다 (감독 결정)", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true });
+
+    await refreshAiConnectionStatus(() => undefined);
+
+    const status = getAiConnectionStatus();
+    expect(status.kind).toBe("disconnected");
+    expect(status.title).toContain("환경 변수");
+  });
+
+  it("만료된 자격도 연결됨이 아니다", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, expired: true });
+
+    await refreshAiConnectionStatus(() => undefined);
+
+    expect(getAiConnectionStatus().kind).toBe("disconnected");
   });
 });

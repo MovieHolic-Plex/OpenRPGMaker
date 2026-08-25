@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 export type EditorLaneMode = "beginner" | "expert";
 
@@ -12,13 +12,13 @@ export type BootDbLaneOpts = {
   readonly localStorageSeed?: Readonly<Record<string, string | null>>;
 };
 
-export const EDITOR_UI_MODE_KEY = "rpg-zzu:editor-ui-mode";
+export const EDITOR_UI_MODE_KEY = "oprn:editor-ui-mode";
 export const ONBOARDING_STORAGE_KEYS = [
-  "rpg-zzu:coachmarks-basic-v1",
-  "rpgzzu:standard-welcome-seen",
-  "rpg-zzu:editor-welcome-dismissed",
-  "rpg-zzu:db-dock-mode",
-  "rpg-zzu.database.activeTab",
+  "oprn:coachmarks-basic-v1",
+  "oprn:standard-welcome-seen",
+  "oprn:editor-welcome-dismissed",
+  "oprn:db-dock-mode",
+  "oprn:database.activeTab",
 ] as const;
 
 export const COMMON_DB_TAB_TEST_IDS = [
@@ -121,7 +121,7 @@ export type MutableProject = {
 };
 
 /**
- * Wave-1 seeding spike verdict. `__rpgzzuEditorStore.update` is exposed on the
+ * Wave-1 seeding spike verdict. `__oprnEditorStore.update` is exposed on the
  * DEV window (src/main.ts) and the smoke spec verified that `exportedProject`
  * reflects an in-page mutation. Seed-dependent probes may use `mutatedProject`.
  */
@@ -395,10 +395,10 @@ export async function mutatedProject<T = unknown>(
   const result = await page.evaluate(
     ({ src, data }) => {
       const store = (window as unknown as {
-        __rpgzzuEditorStore?: {
+        __oprnEditorStore?: {
           update?: (fn: (draft: MutableProject) => void, change?: { scope: string }) => void;
         };
-      }).__rpgzzuEditorStore;
+      }).__oprnEditorStore;
       if (!store || typeof store.update !== "function") return "missing-bridge";
       // Playwright cannot structured-clone functions; reconstruct from source.
       const fn = new Function(
@@ -414,7 +414,7 @@ export async function mutatedProject<T = unknown>(
     { src: mutator.toString(), data: payload },
   );
   if (result !== "ok") {
-    throw new Error("mutatedProject: window.__rpgzzuEditorStore.update is not available");
+    throw new Error("mutatedProject: window.__oprnEditorStore.update is not available");
   }
 
   // Timing contract under attack: editor.ts updateProjectExport uses a 150ms
@@ -427,13 +427,13 @@ export async function mutatedProject<T = unknown>(
 
 export async function runSeedingSpike(page: Page): Promise<SeedingSpikeReport> {
   const bridge = await page.evaluate(() => {
-    const store = (window as unknown as { __rpgzzuEditorStore?: { update?: unknown } }).__rpgzzuEditorStore;
-    return typeof store?.update === "function" ? "window.__rpgzzuEditorStore.update" : "missing";
+    const store = (window as unknown as { __oprnEditorStore?: { update?: unknown } }).__oprnEditorStore;
+    return typeof store?.update === "function" ? "window.__oprnEditorStore.update" : "missing";
   });
   if (bridge === "missing") {
     const report: SeedingSpikeReport = {
       proven: false,
-      reason: "No in-page store mutation bridge: window.__rpgzzuEditorStore.update is not exposed.",
+      reason: "No in-page store mutation bridge: window.__oprnEditorStore.update is not exposed.",
       bridge,
     };
     writeSeedingSpike(report);

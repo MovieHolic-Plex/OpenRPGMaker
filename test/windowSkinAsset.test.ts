@@ -10,7 +10,7 @@ const loadBinaryFs = async (): Promise<BinaryFsReader> => {
 };
 
 const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
-const WINDOW_SKIN_URL = new URL("../public/assets/ui/windowskin-rm2003.png", import.meta.url);
+const WINDOW_SKIN_URL = new URL("../public/assets/ui/windowskin-default.png", import.meta.url);
 
 describe("runtime window skin asset", () => {
   it("ships a valid 96x96 RGBA PNG for 24px 9-slice windows", async () => {

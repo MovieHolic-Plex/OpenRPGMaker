@@ -8,16 +8,18 @@
 //
 // 성능 계약: 첫 렌더는 셸+통계 칩만 그리고, 곡선/산점도/문제 카드/AI 버튼은
 // requestIdleCallback(폴백 setTimeout 200ms)으로 지연 계산해 db-overview-charts 에
-// 주입한다. 밸런스 계산 모듈(battlePredict 그래프)은 **동적 import** 로 지연 로드한다 —
-// overview 가 아닌 탭은 물론, overview 첫 렌더 시점에도 파싱/계산 비용이 들지 않는다.
+// 주입한다. 밸런스 계산은 idle callback 안에서만 실행해 첫 렌더를 막지 않는다.
 // 읽기 전용: store 쓰기 경로가 전혀 없다(카운트/계산만 읽음).
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { databaseTabLabel, switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
-import type {
-  BalanceIssue,
-  BalanceIssueKind,
-  EnemyScatterPoint,
-  PartyPowerCurvePoint,
+import {
+  detectBalanceIssues,
+  enemyScatter,
+  partyPowerCurve,
+  type BalanceIssue,
+  type BalanceIssueKind,
+  type EnemyScatterPoint,
+  type PartyPowerCurvePoint,
 } from "@/editor/panels/databaseBalanceCompute";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -64,7 +66,34 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 export function renderOverviewTab(host: HTMLElement, _rerender: () => void): void {
   clearChildren(host);
-  const database = store.getCurrent().database;
+  const project = store.getCurrent();
+  const database = project.database;
+  const overview = el("div", {
+    class: "db-overview-game-pulse",
+    dataset: { testid: "db-overview-game-pulse" },
+    children: [
+      el("header", {
+        class: "db-overview-hero",
+        children: [
+          el("div", {
+            children: [
+              el("span", { class: "db-overview-eyebrow", text: "GAME OVERVIEW" }),
+              el("h2", { text: project.meta.title || "새 프로젝트" }),
+              el("p", { text: "세계, 이야기, 등장인물, 시스템이 어떻게 연결되는지 한눈에 확인합니다." }),
+            ],
+          }),
+          el("button", {
+            class: "db-overview-assistant-cta",
+            text: "AI 어시스턴트에게 물어보기",
+            attrs: { type: "button" },
+            dataset: { testid: "db-overview-assistant-cta" },
+            on: { click: openDatabaseAiBar },
+          }),
+        ],
+      }),
+      renderGamePulse(project),
+    ],
+  });
   const statsRow = el("div", { class: "db-overview-stats" });
   for (const { collection, label } of STAT_COLLECTIONS) {
     const count = database[collection].length;
@@ -81,7 +110,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
       }),
     );
   }
-  host.append(statsRow);
+  overview.append(statsRow);
 
   // 무거운 계산(곡선/산점도/감지 + battlePredict 그래프)은 첫 렌더 이후로 미룬다 —
   // 모달 첫 진입을 늦추지 않고, overview 가 아닌 탭에서는 이 경로가 아예 실행되지 않는다.
@@ -89,14 +118,39 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
     class: "db-overview-charts",
     dataset: { testid: "db-overview-charts" },
   });
-  host.append(charts);
+  overview.append(charts);
+  host.append(overview);
   scheduleIdle(() => {
     if (!canInjectDashboard(charts, host)) return;
-    void import("@/editor/panels/databaseBalanceCompute").then((compute) => {
-      // 동적 import 를 기다리는 사이 모달이 닫혔을 수 있다 — 주입 직전에 재확인.
-      if (!canInjectDashboard(charts, host)) return;
-      charts.append(...renderDashboardContent(host, compute));
+    charts.append(...renderDashboardContent(host));
+  });
+}
+
+function renderGamePulse(project: ReturnType<typeof store.getCurrent>): HTMLElement {
+  const maps = Object.values(project.maps);
+  const events = maps.reduce((sum, map) => sum + map.events.length, 0) + project.commonEvents.length;
+  const cast = project.database.actors.length + Object.keys(project.characters ?? {}).length;
+  const databaseRecords = STAT_COLLECTIONS.reduce((sum, { collection }) => sum + project.database[collection].length, 0);
+  const startMap = project.maps[project.startMapId];
+  const card = (testid: string, eyebrow: string, value: string, detail: string): HTMLElement =>
+    el("article", {
+      class: "db-overview-pulse-card",
+      dataset: { testid },
+      children: [
+        el("span", { text: eyebrow }),
+        el("strong", { text: value }),
+        el("p", { text: detail }),
+      ],
     });
+  return el("section", {
+    class: "db-overview-pulse-grid",
+    children: [
+      card("db-overview-world", "세계", `${maps.length}개 맵`, `${project.mapConnections?.length ?? 0}개 이동 연결`),
+      card("db-overview-story", "이야기", `${events}개 이벤트`, `${project.quests?.length ?? 0}개 퀘스트 · ${project.endings?.length ?? 0}개 엔딩`),
+      card("db-overview-cast", "등장인물", `${cast}명`, `플레이어 ${project.database.actors.length}명 · 주민 ${Object.keys(project.characters ?? {}).length}명`),
+      card("db-overview-systems", "게임 데이터", `${databaseRecords}개 레코드`, `전투, 아이템, 성장, 생활 규칙`),
+      card("db-overview-readiness", "시작 지점", startMap?.name ?? "미설정", `좌표 ${project.startPos.x}, ${project.startPos.y}`),
+    ],
   });
 }
 
@@ -130,18 +184,16 @@ function canInjectDashboard(charts: HTMLElement, host: HTMLElement): boolean {
 
 // --- 대시보드 본문(지연 주입) ---
 
-type BalanceComputeModule = typeof import("@/editor/panels/databaseBalanceCompute");
-
-function renderDashboardContent(host: HTMLElement, compute: BalanceComputeModule): HTMLElement[] {
+function renderDashboardContent(host: HTMLElement): HTMLElement[] {
   const project = store.getCurrent();
   return [
-    renderCurveSection(compute.partyPowerCurve(project)),
-    renderScatterSection(compute.enemyScatter(project)),
-    renderIssuesSection(host, compute.detectBalanceIssues(project)),
+    renderCurveSection(partyPowerCurve(project)),
+    renderScatterSection(enemyScatter(project)),
+    renderIssuesSection(host, detectBalanceIssues(project)),
     el("button", {
       class: "db-overview-ai",
-      text: "✨ AI 분석",
-      attrs: { type: "button", title: "데이터베이스 AI 바 열기" },
+      text: "AI 어시스턴트에게 물어보기",
+      attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
       dataset: { testid: "db-overview-ai" },
       on: { click: openDatabaseAiBar },
     }),
@@ -169,18 +221,19 @@ function renderCurveSection(curve: readonly PartyPowerCurvePoint[]): HTMLElement
 }
 
 // 공격력+HP 를 공통 스케일로 정규화하고, 5레벨 간격 세로 그리드 + Lv1/Lv10/.../Lv50 축
-// 라벨을 그린다. path 는 수작업 폴리라인 — 외부 차트 라이브러리 금지.
+// 라벨 + 좌측 Y축(0..max)을 그린다. path 는 수작업 폴리라인 — 외부 라이브러리 금지.
 function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
-  const width = 480;
-  const height = 200;
-  const padLeft = 8;
-  const padRight = 22;
-  const padTop = 10;
-  const padBottom = 24;
+  const width = 520;
+  const height = 220;
+  const padLeft = 48;
+  const padRight = 16;
+  const padTop = 12;
+  const padBottom = 32;
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
   // 공유 스케일: 두 시리즈의 최댓값. 전부 0 이어도 분모 0 방지.
   const maxValue = Math.max(1, ...curve.map((point) => Math.max(point.hp, point.attack)));
+  const yTickCount = 4;
   const xFor = (level: number): number => padLeft + ((level - 1) / Math.max(1, curve.length - 1)) * plotWidth;
   const yFor = (value: number): number => padTop + plotHeight - (value / maxValue) * plotHeight;
 
@@ -192,11 +245,38 @@ function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
     role: "img",
     "aria-label": "파티 전투력 곡선 (공격력·HP, Lv1-50)",
   });
+  // Y grid + Y labels (left axis) — horizontal hairlines
+  for (let index = 0; index <= yTickCount; index += 1) {
+    const value = Math.round((maxValue * index) / yTickCount);
+    const y = round2(yFor(value));
+    svg.append(
+      svgElement("line", {
+        class: "db-overview-grid db-overview-grid-y",
+        x1: String(padLeft),
+        y1: String(y),
+        x2: String(padLeft + plotWidth),
+        y2: String(y),
+      }),
+    );
+    svg.append(
+      svgElement(
+        "text",
+        {
+          class: "db-overview-axis-label db-overview-axis-label-y",
+          x: String(padLeft - 8),
+          y: String(y + 3),
+          "text-anchor": "end",
+        },
+        String(value),
+      ),
+    );
+  }
+  // X vertical grids
   for (let level = 5; level <= PARTY_CURVE_MAX_LEVEL; level += 5) {
     const x = round2(xFor(level));
     svg.append(
       svgElement("line", {
-        class: "db-overview-grid",
+        class: "db-overview-grid db-overview-grid-x",
         x1: String(x),
         y1: String(padTop),
         x2: String(x),
@@ -211,7 +291,7 @@ function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
         {
           class: "db-overview-axis-label",
           x: String(round2(xFor(level))),
-          y: String(height - 6),
+          y: String(height - 8),
           "text-anchor": "middle",
         },
         level === 1 ? "Lv1" : `Lv${level}`,
@@ -260,13 +340,14 @@ function renderScatterSection(points: readonly EnemyScatterPoint[]): HTMLElement
 }
 
 // x = HP(log 스케일), y = DPS(선형). 보스=레드/일반=액센트, hover 시 name/exp/gold 툴팁.
+// 좌측 Y축(DPS)과 하단 X축(HP)을 포함해 클리핑 없이 읽히게 한다.
 function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
-  const width = 480;
-  const height = 200;
-  const padLeft = 8;
-  const padRight = 8;
-  const padTop = 10;
-  const padBottom = 24;
+  const width = 520;
+  const height = 220;
+  const padLeft = 48;
+  const padRight = 16;
+  const padTop = 12;
+  const padBottom = 32;
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
   const logHp = points.map((point) => Math.log10(Math.max(1, point.hp)));
@@ -274,6 +355,7 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
   const maxLog = Math.max(...logHp);
   const logSpan = Math.max(1e-6, maxLog - minLog);
   const maxDps = Math.max(1, ...points.map((point) => point.dps));
+  const yTickCount = 4;
   const xFor = (hp: number): number => padLeft + ((Math.log10(Math.max(1, hp)) - minLog) / logSpan) * plotWidth;
   const yFor = (dps: number): number => padTop + plotHeight - (dps / maxDps) * plotHeight;
 
@@ -285,10 +367,71 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
     role: "img",
     "aria-label": "몬스터 HP vs 파티 DPS 산점도",
   });
-  // 축 기준선(눈금 역할).
+  // Y grid + labels
+  for (let index = 0; index <= yTickCount; index += 1) {
+    const dps = Math.round((maxDps * index) / yTickCount);
+    const y = round2(yFor(dps));
+    svg.append(
+      svgElement("line", {
+        class: "db-overview-grid db-overview-grid-y",
+        x1: String(padLeft),
+        y1: String(y),
+        x2: String(padLeft + plotWidth),
+        y2: String(y),
+      }),
+    );
+    svg.append(
+      svgElement(
+        "text",
+        {
+          class: "db-overview-axis-label db-overview-axis-label-y",
+          x: String(padLeft - 8),
+          y: String(y + 3),
+          "text-anchor": "end",
+        },
+        String(dps),
+      ),
+    );
+  }
+  // X ticks — log HP scale (min / mid / max), de-duped
+  const xTickHps: number[] = (() => {
+    if (logSpan < 0.05) return [Math.round(Math.pow(10, minLog))];
+    const midLog = (minLog + maxLog) / 2;
+    const raw = [
+      Math.round(Math.pow(10, minLog)),
+      Math.round(Math.pow(10, midLog)),
+      Math.round(Math.pow(10, maxLog)),
+    ];
+    return [...new Set(raw)];
+  })();
+  for (const hp of xTickHps) {
+    const x = round2(xFor(hp));
+    svg.append(
+      svgElement("line", {
+        class: "db-overview-grid db-overview-grid-x",
+        x1: String(x),
+        y1: String(padTop),
+        x2: String(x),
+        y2: String(padTop + plotHeight),
+      }),
+    );
+    svg.append(
+      svgElement(
+        "text",
+        {
+          class: "db-overview-axis-label",
+          x: String(x),
+          y: String(padTop + plotHeight + 14),
+          "text-anchor": "middle",
+        },
+        String(hp),
+      ),
+    );
+  }
+  // 축 기준선
   svg.append(
     svgElement("line", {
-      class: "db-overview-grid",
+      class: "db-overview-grid db-overview-axis-line",
       x1: String(padLeft),
       y1: String(padTop + plotHeight),
       x2: String(padLeft + plotWidth),
@@ -297,7 +440,7 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
   );
   svg.append(
     svgElement("line", {
-      class: "db-overview-grid",
+      class: "db-overview-grid db-overview-axis-line",
       x1: String(padLeft),
       y1: String(padTop),
       x2: String(padLeft),

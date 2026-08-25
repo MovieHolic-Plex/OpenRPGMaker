@@ -1,5 +1,4 @@
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 import {
   addEventPage,
@@ -44,8 +43,6 @@ export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
   page: EventPage,
-  event: GameEvent,
-  characterIdControl: HTMLElement = renderEventCharacterIdField(mapId, event),
 ): HTMLElement {
   const name = el("input", {
     attrs: { type: "text", placeholder: "이벤트 이름" },
@@ -59,22 +56,26 @@ export function renderEventNameControl(
     children: [
       el("label", {
         class: "event-editor-name-field",
-        children: [el("span", { text: "이름" }), name],
+        children: [el("span", { text: "이벤트 이름" }), name],
       }),
-      characterIdControl,
     ],
   });
 }
 
 export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("details", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
+  wrap.open = true;
   const pages = ev.pages ?? [];
   const canPaste = hasCopiedEventPage();
   const canDelete = pages.length > 1;
   // 페이지 추가는 탭 스트립의 [+](event-page-tab-add) 하나로 통일한다 —
   // 같은 동작이 두 곳에 있으면 초보가 "다른 기능인가?" 하고 헤맨다(적대 평가 스펙).
   const actions: HTMLElement[] = [
-    pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
+    pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => {
+      if (copyEventPageToClipboard(mapId, ev.id, activePage.id)) {
+        wrap.replaceWith(renderPageTabs(mapId, ev, activePage));
+      }
+    }),
   ];
   // 비활성 버튼은 자리만 차지하므로 사용 가능할 때만 노출한다.
   if (canPaste) {
@@ -84,7 +85,9 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   }
   if (canDelete) {
     actions.push(
-      pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id))
+      pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () =>
+        requestEventPageDeletion(mapId, ev.id, activePage)
+      )
     );
   }
   wrap.append(
@@ -100,6 +103,11 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
     })
   );
   return wrap;
+}
+
+function requestEventPageDeletion(mapId: MapId, eventId: string, page: EventPage): void {
+  if (!window.confirm(`"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`)) return;
+  deleteEventPage(mapId, eventId, page.id);
 }
 
 export function renderClassicPageTabStrip(
@@ -186,6 +194,7 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   npcActivity: "A",
   friendshipAtLeast: "F",
   battleResult: "B",
+  run: "R",
   all: "&",
   any: "|",
   not: "!",
@@ -235,15 +244,15 @@ function pageTabTooltip(page: EventPage, index: number): string {
 function pageConditionSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch":
-      return `스위치 [${switchVariableName("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+      return `${switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "")} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable":
-      return `변수 [${switchVariableName("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
+      return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${condition.op} ${condition.value}`;
     case "selfSwitch":
-      return `셀프 스위치 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":
-      return `아이템 [${recordName(store.getCurrent().database.items, condition.itemId)}] ${condition.present ? "보유 중" : "미보유"}`;
+      return `아이템 ${recordName(store.getCurrent().database.items, condition.itemId)} ${condition.present ? "있음" : "없음"}`;
     case "gold":
       return `소지금 ${condition.op} ${condition.amount}`;
     case "timer":
@@ -258,6 +267,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
+    case "run":
+      return runConditionText(condition);
     case "all":
       return condition.conditions.length ? `모두(${condition.conditions.length})` : "모두(비어있음)";
     case "any":
@@ -267,22 +278,19 @@ function pageConditionSummary(condition: EventPageCondition): string {
   }
 }
 
-/** 목업의 축약 조건 표기(SW[0001] ON 등). 나머지 종류는 배지 텍스트를 그대로 쓴다. */
+/** 탭/배지에 쓰는 조건 한 줄. 이름 + 켜짐/꺼짐. 번호 기호는 쓰지 않는다. */
 function pageConditionCompactSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch": {
-      // 초보 모드에서는 SW[0001] 같은 기호 대신 스위치 이름을 보여준다 —
-      // 번호는 감독이 검수할 수 없다(2026-08-18 적대 평가, 메모리 '타일 번호엔 항상 그림' 원칙).
-      if (getEditorUiMode() === "beginner") {
-        const named = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
-        if (named) return `${named} ${condition.value ? "ON" : "OFF"}`;
-      }
-      return `SW[${flagDisplayNumber("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+      const named = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
+      return `${named || "스위치"} ${condition.value ? "켜짐" : "꺼짐"}`;
     }
     case "selfSwitch":
-      return `SELF[${condition.key}] ${condition.value ? "ON" : "OFF"}`;
-    case "variable":
-      return `VAR[${flagDisplayNumber("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "variable": {
+      const named = switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "").trim();
+      return `${named || "변수"} ${condition.op} ${condition.value}`;
+    }
     case "item":
       return condition.present ? "아이템 보유" : "아이템 미보유";
     case "actor":
@@ -296,12 +304,6 @@ function pageConditionCompactSummary(condition: EventPageCondition): string {
     default:
       return pageConditionBadgeText(condition);
   }
-}
-
-/** switch/variable 조건의 4자리 표시 번호. switchVariableName("0001: 이름") 접두를 재사용한다. */
-function flagDisplayNumber(kind: "switch" | "variable", id: string): string {
-  const match = /^\d{4}/.exec(switchVariableName(kind, id));
-  return match ? match[0] : id;
 }
 
 function timePhaseLabel(phase: Extract<EventPageCondition, { kind: "timePhase" }>["phase"]): string {
@@ -362,7 +364,12 @@ function pageButton(
   }) as HTMLButtonElement;
 }
 
-export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+export function renderPageCommandCatalog(
+  mapId: MapId,
+  eventId: string,
+  page: EventPage,
+  resolvePageId: () => string | null = () => page.id,
+): HTMLElement {
   const wrap = el("div", {
     class: "panel-section page-command-catalog",
     dataset: { testid: "page-command-catalog" },
@@ -376,10 +383,13 @@ export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: Ev
         text: button.label,
         dataset: { testid: button.testId },
         on: {
-          click: () =>
+          click: () => {
+            const pageId = resolvePageId();
+            if (!pageId) return;
             openNewEventCommandKindDialog(button.kind, (command) =>
-              addEventPageCommand(mapId, eventId, page.id, command)
-            ),
+              addEventPageCommand(mapId, eventId, pageId, command)
+            );
+          },
         },
       })
     );
@@ -401,99 +411,72 @@ function commandLabel(kind: Command["kind"]): string {
 }
 
 const CHARACTER_ID_HELP =
-  "같은 키를 여러 맵 이벤트에 쓰면 호감·선물을 공유합니다. 비우면 일회용 NPC로 취급되어 호감·선물은 동작하지 않습니다. 활동(npcActivity)은 이벤트별입니다.";
+  "NPC 관계를 연결하면 같은 캐릭터가 등장하는 여러 이벤트에서 호감도와 선물 기록을 공유합니다.";
 
-/** Compact optional characterId control for the top identity row (name + characterId). */
+/** One-click relationship status/control for the top identity card. */
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
-  // 프로필이 연결되기 전에는 빈 텍스트 입력 대신 행동 버튼 하나만 보여준다 —
-  // 초보에게 "여기에 뭘 쳐 넣지?"라는 빈칸 공포를 주지 않기 위함(적대 평가 스펙).
-  if (!event.characterId?.trim()) {
-    return el("div", {
-      class: "event-character-id-field event-character-id-field-inline",
-      dataset: { testid: "event-character-id-field" },
-      children: [
-        el("button", {
-          class: "btn small event-character-id-connect",
-          text: "NPC/호감 연결…",
-          attrs: { type: "button", title: CHARACTER_ID_HELP },
-          dataset: { testid: "event-character-id-connect" },
-          on: {
-            click: () => openCharacterIdPicker({
-              mapId,
-              eventId: event.id,
-              currentId: event.characterId,
-            }),
-          },
-        }),
-      ],
-    });
-  }
-  const input = el("input", {
-    attrs: {
-      type: "text",
-      placeholder: "선택 (일회용 NPC)",
-      title: CHARACTER_ID_HELP,
-    },
-    value: event.characterId ?? "",
-    dataset: { testid: "event-character-id-input" },
-  }) as HTMLInputElement;
-  input.addEventListener("change", () => {
-    // Free-type attaches characterId only. Unknown ids do NOT auto-create a profile.
-    const next = input.value.trim() || undefined;
-    updateEvent(
-      mapId,
-      event.id,
-      next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined },
-    );
-  });
-  const pickerButton = el("button", {
-    class: "btn small event-character-id-picker-open",
-    text: "...",
-    attrs: {
-      type: "button",
-      title: "캐릭터 ID 찾기 / 새로 만들기",
-      "aria-label": "캐릭터 ID 찾기",
-    },
-    dataset: { testid: "event-character-id-picker-open" },
-    on: {
-      click: () => openCharacterIdPicker({
-        mapId,
-        eventId: event.id,
-        currentId: event.characterId,
-      }),
-    },
-  });
-
-  const inputRow = el("span", {
-    class: "event-character-id-input-row",
-    children: [input, pickerButton],
-  });
-
-  attachCharacterIdAutocomplete({
-    input,
-    getProject: () => store.getCurrent(),
-    onSelect: () => {},
+  const characterId = event.characterId?.trim();
+  const profileName = characterId
+    ? store.getCurrent().characters?.[characterId]?.displayName?.trim()
+    : "";
+  const connected = Boolean(characterId);
+  const openPicker = () => openCharacterIdPicker({
+    mapId,
+    eventId: event.id,
+    currentId: characterId,
   });
 
   return el("div", {
-    class: "event-character-id-field event-character-id-field-inline",
+    class: `event-character-id-field event-character-id-field-inline ${connected ? "is-linked" : "is-unlinked"}`,
     dataset: { testid: "event-character-id-field" },
     children: [
-      el("label", {
-        class: "event-character-id-label",
+      el("span", {
+        class: "event-character-id-label-text",
+        text: "NPC 관계",
+        attrs: { title: CHARACTER_ID_HELP },
+      }),
+      el("button", {
+        class: `event-character-link-control ${connected ? "is-linked" : "is-unlinked"}`,
+        attrs: {
+          type: "button",
+          title: connected ? `${CHARACTER_ID_HELP} 클릭하여 연결을 변경합니다.` : CHARACTER_ID_HELP,
+          "aria-label": connected
+            ? `NPC 관계 연결됨: ${profileName || characterId}. 연결 변경`
+            : "NPC 관계 연결 안 됨. 호감도와 선물 기능 연결",
+        },
+        dataset: {
+          testid: connected ? "event-character-id-picker-open" : "event-character-id-connect",
+        },
+        on: { click: openPicker },
         children: [
           el("span", {
-            text: "캐릭터 ID",
-            attrs: { title: CHARACTER_ID_HELP },
+            class: "event-character-link-dot",
+            attrs: { "aria-hidden": "true" },
           }),
-          inputRow,
+          el("span", {
+            class: "event-character-link-copy",
+            children: [
+              el("strong", {
+                text: connected ? (profileName || characterId || "") : "연결 안 됨",
+              }),
+              el("small", {
+                text: connected
+                  ? (profileName ? characterId : "호감도 · 선물 기록 공유 중")
+                  : "현재는 일회용 이벤트",
+              }),
+            ],
+          }),
+          el("span", {
+            class: "event-character-link-action",
+            text: connected ? "변경" : "연결",
+          }),
         ],
       }),
     ],
   });
 }
 
-/** Talk-friendship / profile display name — only when characterId is linked. */
+/** Relationship settings — only when a character profile is linked. */
 export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent): HTMLElement | null {
   const characterId = event.characterId?.trim();
   if (!characterId) return null;
@@ -509,10 +492,38 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
   });
 
   const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
+  const characterIdInput = el("input", {
+    attrs: {
+      type: "text",
+      placeholder: "예: village_herbalist",
+      title: "같은 연결 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
+      spellcheck: "false",
+    },
+    value: characterId,
+    dataset: { testid: "event-character-id-input" },
+  }) as HTMLInputElement;
+  characterIdInput.addEventListener("change", () => {
+    const next = characterIdInput.value.trim() || undefined;
+    updateEvent(
+      mapId,
+      event.id,
+      next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined },
+    );
+  });
+  const characterIdInputRow = el("span", {
+    class: "event-character-id-input-row",
+    children: [characterIdInput],
+  });
+  attachCharacterIdAutocomplete({
+    input: characterIdInput,
+    getProject: () => store.getCurrent(),
+    onSelect: () => {},
+  });
+
   const displayNameInput = el("input", {
     attrs: {
       type: "text",
-      placeholder: "상태 메뉴 표시용 (선택)",
+      placeholder: "게임에 표시할 이름",
     },
     value: profileName,
     dataset: { testid: "event-character-display-name-input" },
@@ -536,24 +547,90 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     }, { scope: "project" });
   });
 
-  return el("div", {
-    class: "event-character-social-extras",
+  return el("details", {
+    class: "event-character-social-extras event-character-social-disclosure",
     dataset: { testid: "event-character-social-extras" },
     children: [
-      el("label", {
-        class: "event-talk-friendship-label",
-        dataset: { testid: "event-talk-friendship-field" },
+      el("summary", {
+        class: "event-character-social-header",
         children: [
-          talkCheckbox,
-          el("span", { text: "대화 시 호감도 상승 (하루 1회)" }),
+          el("div", {
+            class: "event-character-social-heading",
+            children: [
+              el("span", { text: "NPC 관계 설정" }),
+              el("strong", { text: profileName.trim() || characterId }),
+            ],
+          }),
+          el("span", {
+            class: "event-character-social-status",
+            text: "연결됨",
+          }),
         ],
       }),
-      el("label", {
-        class: "event-character-display-name-label",
-        dataset: { testid: "event-character-display-name-field" },
+      el("div", {
+        class: "event-character-social-body",
         children: [
-          el("span", { text: "프로필 표시 이름" }),
-          displayNameInput,
+          el("label", {
+            class: "event-talk-friendship-label",
+            dataset: { testid: "event-talk-friendship-field" },
+            children: [
+              talkCheckbox,
+              el("span", {
+                class: "event-character-social-option-copy",
+                children: [
+                  el("strong", { text: "대화 보너스" }),
+                  el("small", { text: "하루 첫 대화에 호감도를 올립니다." }),
+                ],
+              }),
+            ],
+          }),
+          el("label", {
+            class: "event-character-display-name-label",
+            dataset: { testid: "event-character-display-name-field" },
+            children: [
+              el("span", { text: "표시 이름" }),
+              displayNameInput,
+            ],
+          }),
+          el("details", {
+            class: "event-character-social-advanced",
+            dataset: { testid: "event-character-social-advanced" },
+            children: [
+              el("summary", {
+                children: [
+                  el("span", { text: "고급 설정" }),
+                  el("code", { text: characterId }),
+                ],
+              }),
+              el("div", {
+                class: "event-character-social-advanced-body",
+                children: [
+                  el("label", {
+                    class: "event-character-id-advanced-label",
+                    children: [
+                      el("span", { text: "연결 키" }),
+                      characterIdInputRow,
+                    ],
+                  }),
+                  el("p", {
+                    text: "같은 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
+                  }),
+                  el("button", {
+                    class: "btn small danger event-character-social-unlink",
+                    text: "연결 해제",
+                    attrs: { type: "button" },
+                    dataset: { testid: "event-character-social-unlink" },
+                    on: {
+                      click: () => updateEvent(mapId, event.id, {
+                        characterId: undefined,
+                        talkFriendship: undefined,
+                      }),
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
         ],
       }),
     ],
@@ -588,42 +665,31 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   const conditions = page.conditions ?? [];
   wrap.append(
     collapsibleSection({
-      title: "출현 조건",
+      title: "1. 언제 나타날까요?",
       testId: "event-classic-conditions",
       openSet: openEventConditions,
       openKey,
       summaryExtra: renderConditionSummaryBadges(conditions),
       body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
     }),
-    rm2k3Fieldset("그래픽", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    rm2k3Fieldset("2. 모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
     // Trigger + priority always visible under graphic (do not bury under movement collapsible).
     el("div", {
-      class: "event-page-trigger-priority-stack",
+      class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
+        rm2k3Fieldset("3. 시작 방식", trigger, "event-classic-trigger"),
+        rm2k3Fieldset("4. 우선순위", priority, "event-classic-priority"),
         rm2k3Fieldset(
-          "트리거 · 우선순위",
-          el("div", {
-            class: "event-trigger-priority-block",
-            children: [
-              trigger,
-              el("div", {
-                class: "event-priority-block",
-                dataset: { testid: "event-classic-priority" },
-                children: [
-                  priority,
-                  el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
-                ],
-              }),
-            ],
-          }),
-          "event-classic-trigger"
+          "5. 겹침",
+          el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "중복 실행 방지" })] }),
+          "event-classic-overlap"
         ),
         renderEventPageSafetyWarning(page),
       ],
     }),
     collapsibleSection({
-      title: "이동/기타",
+      title: "6. 움직임",
       testId: "event-classic-movement-section",
       openSet: openEventMovement,
       openKey,
@@ -711,12 +777,27 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return `호감≥${condition.value}`;
     case "battleResult":
       return `전투${condition.result === "victory" ? "승" : condition.result === "defeat" ? "패" : "도"}`;
+    case "run":
+      return runConditionText(condition);
     case "all":
       return `AND(${condition.conditions.length})`;
     case "any":
       return `OR(${condition.conditions.length})`;
     case "not":
       return `NOT`;
+  }
+}
+
+function runConditionText(condition: Extract<EventPageCondition, { kind: "run" }>): string {
+  switch (condition.query) {
+    case "active":
+      return `런 ${condition.value === false ? "비활성" : "진행 중"}`;
+    case "floor":
+      return `런 층 ${condition.op} ${condition.value}`;
+    case "flag":
+      return `런 ${condition.flag || "플래그"} ${condition.value ? "ON" : "OFF"}`;
+    case "result":
+      return `런 결과 ${condition.result}`;
   }
 }
 
@@ -787,7 +868,7 @@ function collapsibleSection(options: {
   readonly body: HTMLElement;
 }): HTMLElement {
   const details = el("details", {
-    class: "event-rm2k3-fieldset event-collapsible-section",
+    class: "event-oprn-fieldset event-collapsible-section",
     dataset: { testid: options.testId },
   }) as HTMLDetailsElement;
   const summaryChildren: (Node | string)[] = [
@@ -820,7 +901,7 @@ function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
 
 function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HTMLElement {
   const fieldset = el("fieldset", {
-    class: "event-rm2k3-fieldset",
+    class: "event-oprn-fieldset",
     dataset: testId ? { testid: testId } : undefined,
   });
   fieldset.append(el("legend", { text: title }), content);
@@ -863,7 +944,7 @@ function movementSpeedLabel(speed: number): string {
 function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const control = el("div", { class: "event-graphic-control", dataset: { testid: "event-page-graphic-control" } });
   const spriteInput = el("input", {
-    attrs: { type: "text", placeholder: "그래픽 ID" },
+    attrs: { type: "text", placeholder: "모습" },
     value: page.graphic.sprite?.id ?? "",
     dataset: { testid: "event-page-sprite-input" },
   });
@@ -889,7 +970,7 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
           dataset: { testid: "event-page-graphic-set" },
           on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
         }),
-        el("label", { class: "event-graphic-transparent", attrs: { title: "체크하면 맵에서 그래픽을 숨깁니다(투명 상태). 해제하면 그래픽이 보입니다." }, children: [transparent, el("span", { text: "투명(맵에서 숨김)" })] }),
+        el("label", { class: "event-graphic-transparent", attrs: { title: "체크하면 맵에서 모습을 숨깁니다. 해제하면 다시 보입니다." }, children: [transparent, el("span", { text: "맵에서 숨기기" })] }),
       ],
     }),
     spriteInput

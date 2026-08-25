@@ -14,9 +14,11 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { itemFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
+import { isItemActorEligible } from "@/project/itemEligibility";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
@@ -31,6 +33,7 @@ import type {
   ItemRecord,
   ItemScope,
   ItemType,
+  Project,
   StateId,
 } from "@/project/types";
 import { el } from "@/util/dom";
@@ -80,13 +83,87 @@ const MEDICINE_SCOPE_OPTIONS: readonly { readonly id: ItemScope; readonly name: 
   { id: "allAllies", name: "아군 전체" },
 ];
 
+export type ItemEffectStory = {
+  readonly target: string;
+  readonly occasion: string;
+  readonly consumption: string;
+  readonly effects: readonly string[];
+  readonly notes: readonly string[];
+};
+
+/** Pure, schema-preserving projection of the fields the live item runtimes consume. */
+export function itemEffectStory(project: Project, record: ItemRecord): ItemEffectStory {
+  const effects: string[] = [];
+  const notes: string[] = [];
+  const hpRecovery = recoveryStory("HP", record.hpRecovery);
+  const mpRecovery = recoveryStory("MP", record.mpRecovery);
+  if (hpRecovery) effects.push(hpRecovery);
+  if (mpRecovery) effects.push(mpRecovery);
+
+  const healedStateIds = new Set([
+    ...record.healStateIds,
+    ...record.stateEffects.filter((effect) => effect.operation === "remove").map((effect) => effect.stateId),
+  ]);
+  if (healedStateIds.size > 0) {
+    effects.push(`상태 회복: ${namedIds([...healedStateIds], project.database.states).join(", ")}`);
+  }
+
+  const learnedSkillId = record.type === "book" ? record.learnedSkillId ?? record.skillId : undefined;
+  if (learnedSkillId) effects.push(`스킬 습득: ${namedId(learnedSkillId, project.database.skills)}`);
+  const activatedSkillId = record.type === "special" ? record.activateSkillId ?? record.skillId : undefined;
+  if (activatedSkillId) effects.push(`스킬 발동: ${namedId(activatedSkillId, project.database.skills)}`);
+
+  if (record.type === "seed") {
+    const statChanges = statStory(record.seedParameterBonuses);
+    if (statChanges.length > 0) effects.push(`영구 성장: ${statChanges.join(" · ")}`);
+  }
+  if (record.type === "switch" && record.switchId) {
+    effects.push(`스위치 ON: ${namedId(record.switchId, project.switches)}`);
+  }
+  if (record.captureProfile) effects.push(`포획 배율 ×${record.captureProfile.multiplier}`);
+  if (record.careProfile) {
+    const exp = record.careProfile.expDelta ? ` · 경험치 +${record.careProfile.expDelta}` : "";
+    effects.push(`몬스터 친밀도 ${signed(record.careProfile.friendshipDelta)}${exp}`);
+  }
+  if (record.farmTool) effects.push(`농사 도구: ${FARM_TOOL_LABELS[record.farmTool]}`);
+  if (isEquipmentItemType(record.type)) notes.push("전투 효과는 장비 탭의 장비 레코드에서 설정합니다.");
+  if (record.onlyEffectiveOnDeadActors) notes.push("전투불능 대상에게만 유효");
+  const runtimeAppliesActorRestrictions = !isItemActorEligible(project, record, undefined);
+  if (runtimeAppliesActorRestrictions && (record.usableActorIds.length > 0 || record.usableClassIds.length > 0)) {
+    const actorCount = record.usableActorIds.length;
+    const classCount = record.usableClassIds.length;
+    notes.push(`사용 허용: 주인공 ${actorCount}명 · 직업 ${classCount}개`);
+  }
+
+  return {
+    target: itemTargetLabel(record),
+    occasion: itemOccasionLabel(record),
+    consumption: record.consumable
+      ? record.consumptionLimit === "noLimit"
+        ? "사용할 때 1개 소비"
+        : `1개당 ${record.consumptionLimit}회 사용`
+      : "소비하지 않음",
+    effects: effects.length > 0 ? effects : ["직접 효과 없음"],
+    notes,
+  };
+}
+
 export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rerender: () => void): void {
+  const storyHost = el("section", {
+    class: "db-item-effect-story",
+    attrs: { "aria-label": "아이템 효과 요약" },
+    dataset: { testid: "db-item-effect-story" },
+  });
+  const refreshStory = (): void => fillItemEffectStory(storyHost, store.getCurrent(), currentItem(record));
+  refreshStory();
   form.append(
     el("div", {
-      class: "db-items-rm2k3-workbench",
-      dataset: { testid: "db-items-rm2k3-workbench" },
+      class: "db-items-oprn-workbench",
+      dataset: { testid: "db-items-oprn-workbench" },
       children: [
         itemHeader(record),
+        itemSpecStrip(record),
+        storyHost,
         resourcePanel(record, rerender),
         databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"),
         panel("기본 설정", [
@@ -97,22 +174,22 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
             updateItemType(record, type);
             rerender();
           }),
-          consumptionLimitField(record),
-          farmToolField(record),
+          consumptionLimitField(record, refreshStory),
+          farmToolField(record, refreshStory),
         ]),
-        ...typePanels(record, form),
+        ...typePanels(record, form, refreshStory),
       ],
     })
   );
 }
 
-function typePanels(record: ItemRecord, form: HTMLElement): HTMLElement[] {
+function typePanels(record: ItemRecord, form: HTMLElement, refreshStory: () => void): HTMLElement[] {
   if (isEquipmentItemType(record.type)) return [equipmentRedirect(form)];
-  if (record.type === "medicine") return medicinePanels(record);
-  if (record.type === "book") return bookPanels(record);
-  if (record.type === "seed") return seedPanels(record);
-  if (record.type === "special") return specialPanels(record);
-  if (record.type === "switch") return switchPanels(record);
+  if (record.type === "medicine") return medicinePanels(record, refreshStory);
+  if (record.type === "book") return bookPanels(record, refreshStory);
+  if (record.type === "seed") return seedPanels(record, refreshStory);
+  if (record.type === "special") return specialPanels(record, refreshStory);
+  if (record.type === "switch") return switchPanels(record, refreshStory);
   return [panel("일반 물품", [el("div", { class: "db-preview", text: "효과가 없는 이벤트 제어용 아이템입니다." })])];
 }
 
@@ -141,6 +218,12 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
       ]),
     ],
   });
+}
+
+function itemSpecStrip(record: ItemRecord): HTMLElement {
+  const spec = el("div", { class: "db-item-spec-strip", dataset: { testid: "db-item-spec-strip" } });
+  if (!isEquipmentItemType(record.type)) itemFields(spec, record.id);
+  return spec;
 }
 
 function itemHeader(record: ItemRecord): HTMLElement {
@@ -195,7 +278,7 @@ function resourcePanel(record: ItemRecord, rerender: () => void): HTMLElement {
   ]);
 }
 
-function medicinePanels(record: ItemRecord): HTMLElement[] {
+function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
     el("div", {
       class: "db-item-type-panels",
@@ -203,19 +286,20 @@ function medicinePanels(record: ItemRecord): HTMLElement[] {
       children: [
         panel("범위", [
           segmentedControl("대상", "db-field-item-scope", record.scope, MEDICINE_SCOPE_OPTIONS, (scope) =>
-            updateDatabaseRecord("items", record.id, { scope: scope as ItemScope })
+            updateItemAndRefresh(record, { scope: scope as ItemScope }, refreshStory)
           ),
         ]),
-        panel("사용 가능", actorClassChoices(record)),
-        panel("상태 회복", [choiceList("상태", healStateChoices(record))]),
-        panel("HP 회복", recoveryFields(record, "hpRecovery", "hp")),
-        panel("MP 회복", recoveryFields(record, "mpRecovery", "mp")),
+        panel("사용 가능", actorClassChoices(record, refreshStory)),
+        panel("상태 회복", [choiceList("상태", healStateChoices(record, refreshStory))]),
+        panel("HP 회복", recoveryFields(record, "hpRecovery", "hp", refreshStory)),
+        panel("MP 회복", recoveryFields(record, "mpRecovery", "mp", refreshStory)),
         panel("옵션", [
-          toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) =>
-            updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion })
-          ),
+          toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) => {
+            updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion });
+            refreshStory();
+          }),
           toggleSwitch("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
-            updateDatabaseRecord("items", record.id, { onlyEffectiveOnDeadActors })
+            updateItemAndRefresh(record, { onlyEffectiveOnDeadActors }, refreshStory)
           ),
         ]),
       ],
@@ -223,47 +307,49 @@ function medicinePanels(record: ItemRecord): HTMLElement[] {
   ];
 }
 
-function bookPanels(record: ItemRecord): HTMLElement[] {
+function bookPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
     panel("습득 스킬", [
-      selectField("스킬", "db-picker-item-learned-skill", record.learnedSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) =>
-        updateDatabaseRecord("items", record.id, { learnedSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) })
-      ),
+      selectField("스킬", "db-picker-item-learned-skill", record.learnedSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
+        updateDatabaseRecord("items", record.id, { learnedSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) });
+        refreshStory();
+      }),
     ]),
-    panel("사용 가능", actorClassChoices(record)),
+    panel("사용 가능", actorClassChoices(record, refreshStory)),
   ];
 }
 
-function seedPanels(record: ItemRecord): HTMLElement[] {
+function seedPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
-    panel("능력치 보정", statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed")),
-    panel("사용 가능", actorClassChoices(record)),
+    panel("능력치 보정", statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed", refreshStory)),
+    panel("사용 가능", actorClassChoices(record, refreshStory)),
   ];
 }
 
-function specialPanels(record: ItemRecord): HTMLElement[] {
+function specialPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
     el("div", {
       class: "db-item-type-panels",
       dataset: { testid: "db-items-special-panel" },
       children: [
         panel("발동 스킬", [
-          selectField("발동 스킬", "db-picker-item-activate-skill", record.activateSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) =>
-            updateDatabaseRecord("items", record.id, { activateSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) })
-          ),
+          selectField("발동 스킬", "db-picker-item-activate-skill", record.activateSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
+            updateDatabaseRecord("items", record.id, { activateSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) });
+            refreshStory();
+          }),
         ]),
         panel("사용 메시지", [
           selectLiteral("메시지", "db-field-item-usage-message", record.usageMessage, ["normal", "skill"], (usageMessage) =>
             updateDatabaseRecord("items", record.id, { usageMessage })
           ),
         ]),
-        panel("사용 가능", actorClassChoices(record)),
+        panel("사용 가능", actorClassChoices(record, refreshStory)),
       ],
     }),
   ];
 }
 
-function switchPanels(record: ItemRecord): HTMLElement[] {
+function switchPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
     el("div", {
       class: "db-item-type-panels",
@@ -271,22 +357,24 @@ function switchPanels(record: ItemRecord): HTMLElement[] {
       children: [
         panel("스위치 토글 ON/OFF", [
           selectField("스위치", "db-picker-item-switch", record.switchId ?? "", switchOptions(), (switchId) =>
-            updateDatabaseRecord("items", record.id, { switchId: emptyToUndefined(switchId) })
+            updateItemAndRefresh(record, { switchId: emptyToUndefined(switchId) }, refreshStory)
           ),
         ]),
         panel("사용 조건", [
-          toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) =>
+          toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) => {
             updateDatabaseRecord("items", record.id, {
               occasionField,
               occasion: occasionFromFlags(occasionField, currentItem(record).occasionBattle),
-            })
-          ),
-          toggleSwitch("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) =>
+            });
+            refreshStory();
+          }),
+          toggleSwitch("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) => {
             updateDatabaseRecord("items", record.id, {
               occasionBattle,
               occasion: occasionFromFlags(currentItem(record).occasionField, occasionBattle),
-            })
-          ),
+            });
+            refreshStory();
+          }),
         ]),
       ],
     }),
@@ -298,12 +386,13 @@ function statBonusFields(
   bonuses: EquipmentStatBonuses,
   target: "equipmentProfile" | "seedParameterBonuses",
   testIdPrefix: string,
+  refreshStory?: () => void,
 ): HTMLElement[] {
   return [
-    statBonusField(record, bonuses, target, "attack", "공격력", `${testIdPrefix}-attack`),
-    statBonusField(record, bonuses, target, "defense", "방어력", `${testIdPrefix}-defense`),
-    statBonusField(record, bonuses, target, "mind", "정신력", `${testIdPrefix}-mind`),
-    statBonusField(record, bonuses, target, "agility", "민첩성", `${testIdPrefix}-agility`),
+    statBonusField(record, bonuses, target, "attack", "공격력", `${testIdPrefix}-attack`, refreshStory),
+    statBonusField(record, bonuses, target, "defense", "방어력", `${testIdPrefix}-defense`, refreshStory),
+    statBonusField(record, bonuses, target, "mind", "정신력", `${testIdPrefix}-mind`, refreshStory),
+    statBonusField(record, bonuses, target, "agility", "민첩성", `${testIdPrefix}-agility`, refreshStory),
   ];
 }
 
@@ -314,6 +403,7 @@ function statBonusField(
   key: keyof EquipmentStatBonuses,
   label: string,
   testid: string,
+  refreshStory?: () => void,
 ): HTMLElement {
   // store normalize 와 동일 범위: 씨앗 보정 -50..50, 장비형 아이템 보정 -500..500 (P4).
   const bounds = target === "seedParameterBonuses" ? { min: -50, max: 50 } : { min: -500, max: 500 };
@@ -323,42 +413,48 @@ function statBonusField(
     const next = { ...currentBonuses, [key]: value };
     if (target === "seedParameterBonuses") updateDatabaseRecord("items", record.id, { seedParameterBonuses: next });
     if (target === "equipmentProfile") updateEquipmentProfile(current, { ...current.equipmentProfile, statBonuses: next });
+    refreshStory?.();
   }, bounds);
 }
 
-function recoveryFields(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string): HTMLElement[] {
+function recoveryFields(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string, refreshStory: () => void): HTMLElement[] {
   const value = record[key];
   return [
-    percentRecoveryField(record, key, testIdPrefix),
-    numberField("고정값", `db-field-item-${testIdPrefix}-flat`, value.flat, (flat) =>
-      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat } }), { min: 0, max: 999 }
-    ),
+    percentRecoveryField(record, key, testIdPrefix, refreshStory),
+    numberField("고정값", `db-field-item-${testIdPrefix}-flat`, value.flat, (flat) => {
+      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat } });
+      refreshStory();
+    }, { min: 0, max: 999 }),
   ];
 }
 
 // 회복 % — 슬라이더+스테퍼 쌍(0-100, 스텝 5). base testid 는 필드 래퍼에도 남겨
 // 기존 testid 계약을 유지하고, 입력은 -slider/-stepper 로 식별한다.
-function percentRecoveryField(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string): HTMLElement {
+function percentRecoveryField(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string, refreshStory: () => void): HTMLElement {
   const testid = `db-field-item-${testIdPrefix}-percent`;
-  const fieldNode = sliderStepperField("%", testid, record[key].percentMax, (percentMax) =>
-    updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } }),
+  const fieldNode = sliderStepperField("%", testid, record[key].percentMax, (percentMax) => {
+    updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } });
+    refreshStory();
+  },
     { min: 0, max: 100, step: 5, unit: "%" }
   );
   fieldNode.dataset.testid = testid;
   return fieldNode;
 }
 
-function actorClassChoices(record: ItemRecord): HTMLElement[] {
+function actorClassChoices(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   const project = store.getCurrent();
   return [
-    avatarChipRow("사용 가능 배우", "db-field-item-usable-actors", actorChips(project.database.actors), record.usableActorIds, (actorId, checked) =>
-      updateDatabaseRecord("items", record.id, { usableActorIds: toggleActorIds(currentItem(record).usableActorIds, actorId, checked) })
-    ),
+    avatarChipRow("사용 가능 배우", "db-field-item-usable-actors", actorChips(project.database.actors), record.usableActorIds, (actorId, checked) => {
+      updateDatabaseRecord("items", record.id, { usableActorIds: toggleActorIds(currentItem(record).usableActorIds, actorId, checked) });
+      refreshStory();
+    }),
     choiceList("직업", [
       ...project.database.classes.map((klass) =>
-        checkboxField(klass.name, `db-field-item-usable-class-${klass.id}`, record.usableClassIds.includes(klass.id), (checked) =>
-          updateDatabaseRecord("items", record.id, { usableClassIds: toggleClassIds(currentItem(record).usableClassIds, klass.id, checked) })
-        )
+        checkboxField(klass.name, `db-field-item-usable-class-${klass.id}`, record.usableClassIds.includes(klass.id), (checked) => {
+          updateDatabaseRecord("items", record.id, { usableClassIds: toggleClassIds(currentItem(record).usableClassIds, klass.id, checked) });
+          refreshStory();
+        })
       ),
     ]),
   ];
@@ -373,21 +469,23 @@ function actorChips(actors: readonly ActorRecord[]): AvatarChipActor[] {
   }));
 }
 
-function healStateChoices(record: ItemRecord): HTMLElement[] {
+function healStateChoices(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return store.getCurrent().database.states.map((state) =>
-    checkboxField(state.name, `db-field-item-state-${state.id}`, record.healStateIds.includes(state.id), (checked) =>
-      updateDatabaseRecord("items", record.id, { healStateIds: toggleStateIds(currentItem(record).healStateIds, state.id, checked) })
-    )
+    checkboxField(state.name, `db-field-item-state-${state.id}`, record.healStateIds.includes(state.id), (checked) => {
+      updateDatabaseRecord("items", record.id, { healStateIds: toggleStateIds(currentItem(record).healStateIds, state.id, checked) });
+      refreshStory();
+    })
   );
 }
 
-function consumptionLimitField(record: ItemRecord): HTMLElement {
+function consumptionLimitField(record: ItemRecord, refreshStory: () => void): HTMLElement {
   const value = String(record.consumptionLimit);
   const select = el("select", { dataset: { testid: "db-field-item-consumption-limit" } });
   for (const option of CONSUMPTION_LIMITS) select.append(el("option", { attrs: { value: option }, text: option === "noLimit" ? "제한 없음" : `${option}회` }));
   select.value = value;
   select.addEventListener("change", () => {
     updateDatabaseRecord("items", record.id, { consumptionLimit: parseConsumptionLimit(select.value) });
+    refreshStory();
   });
   return field("사용 횟수", select);
 }
@@ -395,10 +493,11 @@ function consumptionLimitField(record: ItemRecord): HTMLElement {
 // 농사 도구 옵션은 FARM_TOOLS(정본)에서 파생한다 — 하드코딩하면 axe/pickaxe 처럼
 // 런타임 규칙(toolActions legacy-axe-chop/legacy-pick-mine)은 있는데 저작이 불가능한
 // 드리프트가 생긴다. 라벨만 한글이고 저장값은 영문 정본 id 그대로다.
-function farmToolField(record: ItemRecord): HTMLElement {
+function farmToolField(record: ItemRecord, refreshStory: () => void): HTMLElement {
   const options = FARM_TOOLS.map((tool) => ({ id: tool, name: FARM_TOOL_LABELS[tool] }));
   return selectField("농사 도구", "db-field-item-farm-tool", record.farmTool ?? "", options, (farmTool) => {
     updateDatabaseRecord("items", record.id, { farmTool: isFarmTool(farmTool) ? farmTool : undefined });
+    refreshStory();
   });
 }
 
@@ -411,6 +510,108 @@ function checkboxField(label: string, testid: string, checked: boolean, onInput:
 
 function choiceList(title: string, children: HTMLElement[]): HTMLElement {
   return el("div", { class: "db-item-choice-list", children: [el("strong", { text: title }), ...children] });
+}
+
+function fillItemEffectStory(host: HTMLElement, project: Project, record: ItemRecord): void {
+  const story = itemEffectStory(project, record);
+  host.replaceChildren(
+    el("div", { class: "db-effect-story-kicker", text: "사용하면" }),
+    el("div", {
+      class: "db-effect-story-facts",
+      children: [
+        storyFact("대상", story.target, "db-item-story-target"),
+        storyFact("언제", story.occasion, "db-item-story-occasion"),
+        storyFact("소비", story.consumption, "db-item-story-consumption"),
+      ],
+    }),
+    el("div", {
+      class: "db-effect-story-lines",
+      children: story.effects.map((effect) => el("span", {
+        class: "db-effect-story-line",
+        text: effect,
+        dataset: { testid: "db-item-story-effect" },
+      })),
+    }),
+    ...story.notes.map((note) => el("p", { class: "db-effect-story-note", text: note })),
+  );
+}
+
+function storyFact(label: string, value: string, testid: string): HTMLElement {
+  return el("span", {
+    class: "db-effect-story-fact",
+    dataset: { testid },
+    children: [el("small", { text: label }), el("strong", { text: value })],
+  });
+}
+
+function recoveryStory(label: "HP" | "MP", recovery: ItemRecord["hpRecovery"]): string | undefined {
+  if (recovery.percentMax <= 0 && recovery.flat <= 0) return undefined;
+  if (recovery.percentMax > 0 && recovery.flat > 0) return `${label} 최대치 ${recovery.percentMax}% + ${recovery.flat} 회복`;
+  if (recovery.percentMax > 0) return `${label} 최대치 ${recovery.percentMax}% 회복`;
+  return `${label} ${recovery.flat} 회복`;
+}
+
+function itemTargetLabel(record: ItemRecord): string {
+  if (record.captureProfile) return "적 1명";
+  if (record.careProfile) return "파티 몬스터 1마리";
+  switch (record.scope) {
+    case "ally": return "아군 1명";
+    case "allAllies": return "아군 전체";
+    case "enemy": return "적 1명";
+    case "none": return "대상 없음";
+    default: return "대상 없음";
+  }
+}
+
+function itemOccasionLabel(record: ItemRecord): string {
+  const field = itemIsFieldUsable(record);
+  const battle = itemIsBattleUsable(record);
+  if (field && battle) return "필드 · 전투";
+  if (field) return "필드";
+  if (battle) return "전투";
+  return "사용 불가";
+}
+
+/** Mirrors playerItemUse.canUseItemInMenu, including its occasion-first precedence. */
+function itemIsFieldUsable(record: ItemRecord): boolean {
+  if (record.occasion === "never" || record.occasion === "battle") return false;
+  if (record.onlyUsableInMenu) return true;
+  if (record.occasionField === false && record.occasion !== "field" && record.occasion !== "always") return false;
+  return record.occasion === "always" || record.occasion === "field" || record.occasionField === true;
+}
+
+/** Mirrors battle/runtime.itemIsBattleUsable's occasion gate (before effect checks). */
+function itemIsBattleUsable(record: ItemRecord): boolean {
+  if (record.occasion === "never" || record.occasion === "field") return false;
+  if (record.occasionBattle === false && record.occasion !== "battle" && record.occasion !== "always") return false;
+  return true;
+}
+
+function statStory(bonuses: EquipmentStatBonuses): string[] {
+  const labels: readonly [keyof EquipmentStatBonuses, string][] = [
+    ["attack", "공격력"],
+    ["defense", "방어력"],
+    ["mind", "정신력"],
+    ["agility", "민첩성"],
+  ];
+  return labels.flatMap(([key, label]) => bonuses[key] === 0 ? [] : [`${label} ${signed(bonuses[key])}`]);
+}
+
+function namedIds(ids: readonly string[], records: readonly { readonly id: string; readonly name: string }[]): string[] {
+  return ids.map((id) => namedId(id, records));
+}
+
+function namedId(id: string, records: readonly { readonly id: string; readonly name: string }[]): string {
+  return records.find((record) => record.id === id)?.name ?? `삭제된 항목(${id})`;
+}
+
+function signed(value: number): string {
+  return `${value >= 0 ? "+" : ""}${value}`;
+}
+
+function updateItemAndRefresh(record: ItemRecord, patch: Partial<ItemRecord>, refreshStory: () => void): void {
+  updateDatabaseRecord("items", record.id, patch);
+  refreshStory();
 }
 
 function updateItemType(record: ItemRecord, type: ItemType): void {

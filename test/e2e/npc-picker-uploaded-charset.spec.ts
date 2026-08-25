@@ -6,7 +6,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 const PASSABLE = { up: true, down: true, left: true, right: true };
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 type DebugState = {

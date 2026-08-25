@@ -10,8 +10,8 @@ export const ONTOLOGY_CAPABILITIES = [
     uiSurfaces: ["src/editor/EditScene.ts", "src/editor/panels/tilePalette.ts", "src/editor/panels/mapList.ts"],
     runtimeSurfaces: ["src/project/collision.ts", "src/player/playSceneMapRuntime.ts", "src/player/playSceneMovement.ts"],
     storageSurfaces: ["src/project/io/guards.ts", "src/project/io/shape.ts", "src/project/io/references.ts"],
-    testSurfaces: ["test/mapEditCommands.test.ts", "test/e2e/rm2k3-map-editor.spec.ts", "test/e2e/rm2k3-map-runtime.spec.ts"],
-    docsSurfaces: ["docs/specs/2026-06-18-rm2k3-overhaul-design.md"],
+    testSurfaces: ["test/mapEditCommands.test.ts", "test/e2e/oprn-map-editor.spec.ts", "test/e2e/oprn-map-runtime.spec.ts"],
+    docsSurfaces: ["docs/specs/2026-06-18-oprn-overhaul-design.md"],
     commonTasks: [
       {
         id: "map-editing-add-tool",
@@ -19,7 +19,7 @@ export const ONTOLOGY_CAPABILITIES = [
         taskAliases: ["add map tool", "change map editing", "edit canvas behavior"],
         checkSurfaces: ["type", "ui", "runtime", "tests"],
         implementationOrder: ["types", "editor state", "canvas interaction", "runtime semantics", "tests"],
-        requiredTests: ["test/mapEditCommands.test.ts", "test/e2e/rm2k3-map-editor.spec.ts"],
+        requiredTests: ["test/mapEditCommands.test.ts", "test/e2e/oprn-map-editor.spec.ts"],
       },
     ],
     contracts: ["map-uses-existing-tileset", "map-tile-array-size", "supabase-project-root"],
@@ -38,8 +38,8 @@ export const ONTOLOGY_CAPABILITIES = [
     ],
     runtimeSurfaces: ["src/player/interpreter.ts", "src/player/interpreter/commandCatalog.ts", "src/player/playSceneInterpreter.ts"],
     storageSurfaces: ["src/project/io/shapeCommandFields.ts", "src/project/io/commandReferenceValidation.ts"],
-    testSurfaces: ["test/interpreter.test.ts", "test/eventPages.test.ts", "test/e2e/rm2k3-event-commands.spec.ts"],
-    docsSurfaces: ["docs/specs/rm2k3-event-command-buttons.md"],
+    testSurfaces: ["test/interpreter.test.ts", "test/eventPages.test.ts", "test/e2e/oprn-event-commands.spec.ts"],
+    docsSurfaces: ["docs/specs/oprn-event-command-buttons.md"],
     commonTasks: [
       {
         id: "event-authoring-add-command",
@@ -47,7 +47,7 @@ export const ONTOLOGY_CAPABILITIES = [
         taskAliases: ["add event command", "new event command", "change command picker"],
         checkSurfaces: ["type", "ui", "runtime", "storage", "tests"],
         implementationOrder: ["command type", "command factory", "editor body", "interpreter handler", "shape guards", "tests"],
-        requiredTests: ["test/interpreter.test.ts", "test/e2e/rm2k3-event-commands.spec.ts"],
+        requiredTests: ["test/interpreter.test.ts", "test/e2e/oprn-event-commands.spec.ts"],
       },
     ],
     contracts: ["command-references-existing-map", "command-references-existing-record"],
@@ -64,8 +64,8 @@ export const ONTOLOGY_CAPABILITIES = [
     ],
     runtimeSurfaces: ["src/project/tilesetPassage.ts", "src/project/aiPreviewGenerator.ts", "src/project/aiPreviewContracts.ts"],
     storageSurfaces: ["src/project/io/guards.ts", "src/project/io/shapeResourceFields.ts", "src/project/tileMetadataDb.ts"],
-    testSurfaces: ["test/tileMetadataDb.test.ts", "test/aiPreviewContracts.test.ts", "test/e2e/rm2k3-tileset-readability.spec.ts"],
-    docsSurfaces: ["docs/specs/2026-06-27-rpg-zzu-development-ontology-design.md"],
+    testSurfaces: ["test/tileMetadataDb.test.ts", "test/aiPreviewContracts.test.ts", "test/e2e/oprn-tileset-readability.spec.ts"],
+    docsSurfaces: ["docs/specs/2026-06-27-oprn-development-ontology-design.md"],
     commonTasks: [
       {
         id: "tileset-semantics-improve-classification",
@@ -96,8 +96,8 @@ export const ONTOLOGY_CAPABILITIES = [
     ],
     runtimeSurfaces: ["src/battle/runtime.ts", "src/player/interpreter.ts", "src/player/playSceneBattle.ts"],
     storageSurfaces: ["src/project/io/shapeDatabaseFields.ts", "src/project/io/references.ts"],
-    testSurfaces: ["test/defaultDatabase.test.ts", "test/battleRuntimeDb.test.ts", "test/e2e/rm2k3-database.spec.ts", "test/e2e/rm2k3-database-states.spec.ts"],
-    docsSurfaces: ["docs/specs/2026-06-18-rm2k3-overhaul-design.md"],
+    testSurfaces: ["test/defaultDatabase.test.ts", "test/battleRuntimeDb.test.ts", "test/e2e/oprn-database.spec.ts", "test/e2e/oprn-database-states.spec.ts"],
+    docsSurfaces: ["docs/specs/2026-06-18-oprn-overhaul-design.md"],
     commonTasks: [
       {
         id: "database-records-add-field",
@@ -105,7 +105,7 @@ export const ONTOLOGY_CAPABILITIES = [
         taskAliases: ["add database field", "change actor item skill enemy troop", "database records"],
         checkSurfaces: ["type", "ui", "runtime", "storage", "tests"],
         implementationOrder: ["record type", "defaults", "database UI", "runtime readers", "shape guards", "tests"],
-        requiredTests: ["test/defaultDatabase.test.ts", "test/e2e/rm2k3-database.spec.ts"],
+        requiredTests: ["test/defaultDatabase.test.ts", "test/e2e/oprn-database.spec.ts"],
       },
     ],
     contracts: ["database-record-references-exist"],
@@ -125,8 +125,8 @@ export const ONTOLOGY_CAPABILITIES = [
     ],
     runtimeSurfaces: ["src/battle/runtime.ts", "src/battle/battleEvents.ts", "src/battle/battleRewards.ts"],
     storageSurfaces: ["src/project/io/shapeDatabaseFields.ts"],
-    testSurfaces: ["test/battleRuntime.test.ts", "test/battleRuntimeDb.test.ts", "test/e2e/rm2k3-battle.spec.ts"],
-    docsSurfaces: ["docs/specs/2026-06-18-rm2k3-overhaul-design.md"],
+    testSurfaces: ["test/battleRuntime.test.ts", "test/battleRuntimeDb.test.ts", "test/e2e/oprn-battle.spec.ts"],
+    docsSurfaces: ["docs/specs/2026-06-18-oprn-overhaul-design.md"],
     commonTasks: [
       {
         id: "battle-runtime-change-mechanic",
@@ -134,7 +134,7 @@ export const ONTOLOGY_CAPABILITIES = [
         taskAliases: ["battle runtime", "add battle mechanic", "change troop event"],
         checkSurfaces: ["type", "runtime", "ui", "tests"],
         implementationOrder: ["battle types", "runtime state", "DOM display", "database records", "tests"],
-        requiredTests: ["test/battleRuntime.test.ts", "test/e2e/rm2k3-battle.spec.ts"],
+        requiredTests: ["test/battleRuntime.test.ts", "test/e2e/oprn-battle.spec.ts"],
       },
     ],
     contracts: ["database-record-references-exist"],
@@ -148,7 +148,7 @@ export const ONTOLOGY_CAPABILITIES = [
     uiSurfaces: ["src/editor/panels/resourceManager.ts", "src/editor/panels/resourceModal.ts", "src/editor/panels/eventEditor/npcGraphicPicker.ts"],
     runtimeSurfaces: ["src/assets/bundled.ts", "src/assets/generatedAssetResourceResolver.ts", "src/assets/supabaseResourceCache.ts", "src/player/resourceDisplay.ts"],
     storageSurfaces: ["src/project/io/resourceReferenceValidation.ts", "src/project/io/shapeResourceFields.ts"],
-    testSurfaces: ["test/generatedAssetResourceResolver.test.ts", "test/supabaseResourceCache.test.ts", "test/e2e/rm2k3-resource-manager.spec.ts"],
+    testSurfaces: ["test/generatedAssetResourceResolver.test.ts", "test/supabaseResourceCache.test.ts", "test/e2e/oprn-resource-manager.spec.ts"],
     docsSurfaces: ["public/assets/MANIFEST.md"],
     commonTasks: [
       {
@@ -157,7 +157,7 @@ export const ONTOLOGY_CAPABILITIES = [
         taskAliases: ["add resource kind", "new asset type", "resource picker"],
         checkSurfaces: ["type", "ui", "runtime", "storage", "tests"],
         implementationOrder: ["resource type", "manifest/defaults", "picker UI", "runtime resolver", "reference validation", "tests"],
-        requiredTests: ["test/generatedAssetResourceResolver.test.ts", "test/e2e/rm2k3-resource-manager.spec.ts"],
+        requiredTests: ["test/generatedAssetResourceResolver.test.ts", "test/e2e/oprn-resource-manager.spec.ts"],
       },
     ],
     contracts: ["resource-reference-exists", "supabase-resource-root", "bundled-resource-not-user-deletable"],
@@ -178,7 +178,7 @@ export const ONTOLOGY_CAPABILITIES = [
       "src/project/supabaseProjectSync.ts",
     ],
     testSurfaces: ["test/io.test.ts", "test/storePersistence.test.ts", "test/supabaseProjectSync.test.ts"],
-    docsSurfaces: ["docs/specs/2026-06-18-rm2k3-overhaul-design.md"],
+    docsSurfaces: ["docs/specs/2026-06-18-oprn-overhaul-design.md"],
     commonTasks: [
       {
         id: "project-persistence-change-schema",

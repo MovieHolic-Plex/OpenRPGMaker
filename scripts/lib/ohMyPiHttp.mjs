@@ -24,6 +24,7 @@ export function isCompanionPath(url = "") {
     || path === "/auth/login"
     || path === "/auth/providers"
     || path === "/auth/key"
+    || path === "/auth/logout"
     || path === "/auth/refresh"
     || path === "/v1/chat/completions"
   );
@@ -74,6 +75,10 @@ export async function handleCompanionRequest(req, adapters) {
     const apiKey = typeof body.apiKey === "string" ? body.apiKey.trim() : "";
     if (!apiKey) return json(400, { error: "apiKey is required" });
     return json(200, await adapters.saveKey(provider, apiKey));
+  }
+
+  if (method === "POST" && path === "/auth/logout") {
+    return json(200, await adapters.logout(provider));
   }
 
   if (method === "POST" && path === "/v1/chat/completions") {

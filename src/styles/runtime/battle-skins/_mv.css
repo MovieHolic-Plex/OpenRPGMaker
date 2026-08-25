@@ -7,7 +7,7 @@
   --battle-window-edge: #1a2a6c;
   --battle-text: #1c2438;
   --battle-accent: #3858c8;
-  --rm2k3-battle-text: #1c2438;
+  --oprn-battle-text: #1c2438;
   background: #c8ccd8;
   /* 640px 논리 무대에서 192px 명령 열을 보장하고 필드/파티에 448px를 남긴다. */
   grid-template-columns: minmax(0, 1fr) 192px !important;

@@ -5,7 +5,7 @@ import type { Project } from "@/project/types";
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
 export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
 
-const STORAGE_KEY = "rpg-zzu:ai-conversations";
+const STORAGE_KEY = "oprn:ai-conversations";
 const MAX_CONVERSATIONS = 50;
 const TITLE_LIMIT = 40;
 
@@ -85,7 +85,9 @@ export function saveConversation(record: ConversationRecord): void {
     projectContextKey: record.projectContextKey,
     entries: record.entries,
     savedAt: record.savedAt,
-  }).catch(() => undefined);
+  }).catch((error: unknown) => {
+    console.error("[ai-conversation] Supabase mirror failed:", error);
+  });
 }
 
 /** 제목 부분일치 검색(대소문자 무시) — 시작 화면 대화 목록용. */

@@ -38,15 +38,13 @@ async function main(): Promise<void> {
   await page.addInitScript((seed) => {
     (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, project);
   await page.goto(APP, { waitUntil: "domcontentloaded" });
   await page.getByTestId("edit-canvas").waitFor({ timeout: 20_000 });
 
   const takeover = page.getByTestId("map-lock-banner-takeover");
   if (await takeover.isVisible().catch(() => false)) await takeover.click();
-  const expert = page.getByTestId("editor-ui-mode-expert");
-  if (await expert.isVisible().catch(() => false)) await expert.click();
 
   await page.getByTestId("layer-event").click();
   const tool = page.locator('[data-testid="tool-event"]:visible').first();

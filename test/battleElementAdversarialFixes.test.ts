@@ -11,6 +11,7 @@ import { repairProjectReferences, pruneDanglingElementRates, collectProjectRefer
 import { resizeElementRecords } from "@/editor/databaseElementList";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { predictSkillDamage, isMagicalElement } from "@/battle/battlePredict";
+import { computeGen1BaseDamage, GEN1_RANDOM_MAX, GEN1_RANDOM_MEDIAN } from "@/battle/battleDamage";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeClassRecord } from "@/project/databaseRecordModel";
 import type { BattleBattlerSnapshot } from "@/battle/types";
@@ -146,12 +147,15 @@ describe("B2: element kind magical routes defense through mind (gen1 전용)", (
     const magicalDmg = predictSkillDamage(project, target, { power, statistic: "attack", effect: "damage", elementId: "fire" }, target);
     const physicalDmg = predictSkillDamage(project, target, { power, statistic: "attack", effect: "damage", elementId: "slash" }, target);
 
-    // Magical: reduces by mind/2 = 5/2 = 2. Physical: reduces by defense/2 = 100/2 = 50.
-    // Both neutral grade (C=1.0, no elementRates set on this enemy → defaults C).
-    // magical damage = (200 + atk/2) * 1.0 - 2 ; physical = (200 + atk/2) * 1.0 - 50.
+    // Magical divides by mind, physical by defense — gen1 코어 공식(레벨 기반)이라 뺄셈 차이가 아니다.
+    // 이 스냅샷은 level 미설정이라 gen1 시전자 레벨은 1 로 폴백한다(실전 배틀러는 항상 level 을 싣는다).
+    // magical: base(L1, power 200, A 10, D=mind 5) = 18 → 랜덤 중앙값 floor(18×236/255) = 16
+    // physical: base(L1, power 200, A 10, D=defense 100) = 2 → floor(2×236/255) = 1
     expect(magicalDmg.amount).toBeGreaterThan(physicalDmg.amount);
-    // Sanity: the difference is the defense gap (50 - 2 = 48).
-    expect(magicalDmg.amount - physicalDmg.amount).toBe(48);
+    const expectedMagical = Math.floor((computeGen1BaseDamage({ level: 1, power, attack: 10, defense: 5 }) * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
+    const expectedPhysical = Math.floor((computeGen1BaseDamage({ level: 1, power, attack: 10, defense: 100 }) * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
+    expect(magicalDmg.amount).toBe(expectedMagical);
+    expect(physicalDmg.amount).toBe(expectedPhysical);
   });
 
   it("no-element (undefined elementId) uses physical defense (default)", () => {

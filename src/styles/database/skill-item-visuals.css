@@ -1,5 +1,232 @@
 /* 스킬/아이템 시각 패널 스타일 (database-overhaul, 신규 클래스 전용) */
 
+.database-modal-backdrop .oprn-detail-skills > .db-skill-composer {
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .db-skill-composer {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, var(--accent-muted), transparent 45%),
+    var(--bg-raised);
+}
+
+.database-modal-backdrop .db-skill-composer-heading {
+  display: grid;
+  gap: 2px;
+}
+
+.database-modal-backdrop .db-skill-composer-heading strong {
+  color: var(--text-1);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.database-modal-backdrop .db-skill-composer-heading p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.database-modal-backdrop .db-skill-composer-eyebrow {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.database-modal-backdrop .db-skill-composer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .db-skill-composer-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.database-modal-backdrop .db-skill-composer-chip[data-chip-kind="activation"] {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.database-modal-backdrop .db-skill-effect-blocks {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-skill-effect-block {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  background: var(--bg-surface);
+}
+
+.database-modal-backdrop .db-skill-effect-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  font: 800 10px/1 var(--font-mono);
+}
+
+.database-modal-backdrop .db-skill-effect-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-skill-effect-copy strong {
+  color: var(--text-1);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.database-modal-backdrop .db-skill-effect-copy span {
+  overflow-wrap: anywhere;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.database-modal-backdrop .db-skill-used-by {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: 2px;
+}
+
+.database-modal-backdrop .db-skill-used-by-heading,
+.database-modal-backdrop .db-skill-used-by-empty {
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .db-skill-used-by-heading {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.database-modal-backdrop .db-skill-used-by-heading h4 {
+  margin: 0;
+  padding: 0;
+  color: var(--text-1);
+  font-size: 13px;
+}
+
+.database-modal-backdrop .db-skill-used-by-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.database-modal-backdrop .db-skill-backlink {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "kind name arrow"
+    "kind relationship arrow";
+  gap: 1px 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  background: var(--bg-raised);
+  color: var(--text-1);
+  text-align: left;
+}
+
+.database-modal-backdrop .db-skill-backlink:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+}
+
+.database-modal-backdrop .db-skill-backlink:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .db-skill-backlink-kind {
+  grid-area: kind;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.database-modal-backdrop .db-skill-backlink-name {
+  grid-area: name;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-skill-backlink-relationship {
+  grid-area: relationship;
+  overflow: hidden;
+  color: var(--text-3);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-skill-backlink-arrow {
+  grid-area: arrow;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.database-modal-backdrop .db-skill-used-by-empty {
+  margin: 0;
+  padding: 10px;
+  border: 1px dashed var(--border-default);
+  border-radius: 7px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+@media (max-width: 1120px) {
+  .database-modal-backdrop .db-skill-effect-blocks,
+  .database-modal-backdrop .db-skill-used-by {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .db-skill-animation-preview {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

@@ -1,5 +1,4 @@
-/* Event editor and move-route chrome overrides.
-   Imported after the base editor styles so these desktop RM2K3 rules win intentionally. */
+/* cream studio */
 
 .event-subdialog-backdrop {
   z-index: var(--z-popover-high);
@@ -19,7 +18,7 @@
   box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--text-1);
   display: grid;
-  font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font-family: "Malgun Gothic", sans-serif;
   grid-template-rows: 42px minmax(0, 1fr);
   height: min(860px, calc(100vh - 18px));
   min-height: 680px;
@@ -36,7 +35,7 @@
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-header h3 {
   color: var(--text-1);
-  font: 400 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 16px/22px "Malgun Gothic", sans-serif;
 }
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-close {
@@ -76,7 +75,7 @@
 
 .event-page-move-route legend {
   color: var(--text-1);
-  font: 400 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 16px/22px "Malgun Gothic", sans-serif;
   padding: 0 4px;
 }
 
@@ -95,7 +94,7 @@
   border-style: solid;
   border-width: 2px;
   color: var(--text-1);
-  font: 400 16px/24px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 16px/24px "Malgun Gothic", sans-serif;
   height: 32px;
   min-width: 0;
   padding: 2px 8px;
@@ -120,7 +119,7 @@
 
 .event-page-move-route-frequency-radios span,
 .event-page-move-route-options span {
-  font: 400 19px/26px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 19px/26px "Malgun Gothic", sans-serif;
 }
 
 .event-page-move-route-parameters {
@@ -138,7 +137,7 @@
 
 .event-page-move-route-parameters span {
   color: var(--text-1);
-  font: 400 12px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/14px "Malgun Gothic", sans-serif;
   white-space: nowrap;
 }
 
@@ -176,7 +175,7 @@
   border: 0;
   color: var(--accent);
   flex: 0 0 auto;
-  font: 400 19px/28px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 19px/28px "Malgun Gothic", sans-serif;
   min-height: 28px;
   overflow: hidden;
   padding: 0 8px;
@@ -207,7 +206,7 @@
   border-width: 1px;
   box-shadow: inset -1px -1px 0 var(--border-default), inset 1px 1px 0 var(--border-subtle);
   color: var(--text-1);
-  font: 400 19px/26px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 19px/26px "Malgun Gothic", sans-serif;
   min-width: 0;
   overflow: hidden;
   padding: 0 8px;
@@ -589,7 +588,7 @@
   box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--event-rm-text);
   display: grid;
-  font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font-family: "Malgun Gothic", sans-serif;
   grid-template-rows: 31px minmax(0, 1fr) 40px;
   height: min(936px, calc(100vh - 12px));
   height: min(936px, calc(100dvh - 12px));
@@ -637,7 +636,7 @@
 
 .event-editor-modal-header h2 {
   color: var(--text-1);
-  font: 700 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 700 16px/22px "Malgun Gothic", sans-serif;
   letter-spacing: 0;
   margin: 0;
   text-shadow: 1px 1px 0 var(--shadow-pop);
@@ -657,7 +656,7 @@
   border-style: solid;
   border-width: 1px;
   color: var(--text-1);
-  font: 700 18px/20px Tahoma, "MS Sans Serif", sans-serif;
+  font: 700 18px/20px sans-serif;
   height: 23px;
   min-height: 23px;
   min-width: 27px;

@@ -28,18 +28,18 @@ test.describe("region task live with glm-5.2-ultrafast", () => {
     });
 
     await page.addInitScript(() => {
-      localStorage.removeItem("rpg-zzu:ai-config");
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+      localStorage.removeItem("oprn:ai-config");
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
     });
     await page.setViewportSize({ width: 1600, height: 920 });
     await page.goto("/?regionLiveVerify=1");
     await dismissLogin(page);
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
 
-    const mapId = await page.evaluate(() => (window as any).__rpgzzuRegionTaskHarness?.currentMapId());
+    const mapId = await page.evaluate(() => (window as any).__oprnRegionTaskHarness?.currentMapId());
 
     await page.evaluate(([mid]) => {
-      (window as any).__rpgzzuRegionTaskHarness.openModal(mid, { x: 5, y: 5, width: 10, height: 10 });
+      (window as any).__oprnRegionTaskHarness.openModal(mid, { x: 5, y: 5, width: 10, height: 10 });
     }, [mapId]);
 
     await expect(page.getByTestId("region-task-modal")).toBeVisible({ timeout: 5_000 });
@@ -52,7 +52,7 @@ test.describe("region task live with glm-5.2-ultrafast", () => {
 
     const state = await page.evaluate(() => {
       const summary = document.querySelector("[data-testid='region-task-summary']")?.textContent?.trim() ?? "(no summary)";
-      const log = (window as any).__rpgzzuRegionTaskLog;
+      const log = (window as any).__oprnRegionTaskLog;
       const logExists = !!log;
       const modalVisible = !!document.querySelector("[data-testid='region-task-modal']");
       const runBtn = document.querySelector("[data-testid='region-task-run']") as HTMLButtonElement;

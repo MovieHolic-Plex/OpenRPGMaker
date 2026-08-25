@@ -155,6 +155,13 @@ describe("canonical construction contract baseline", () => {
     // Then: its discriminant is preserved without route inference.
     expect(parsed.kind).toBe(expectedKind);
   });
+  it("accepts yard tags on a single house instead of rejecting the call", () => {
+    const parsed = parseAuthorHouseRequest({
+      ...singleHouseRequest,
+      yard: ["mailbox", "flowers"],
+    });
+    expect(parsed.kind).toBe("single");
+  });
   it("parses existing and planned-new village targets", () => {
     // Given: explicit existing and new target shapes.
     const targets: readonly unknown[] = [existingVillageRequest, newVillageRequest];
@@ -194,8 +201,8 @@ describe("canonical construction contract baseline", () => {
 
     expectToolError(parse, "invalid-args");
   });
-  it.each([2, 33])("rejects invalid village count %s", (houseCount) => {
-    // Given: a request outside the strict 4..32 range.
+  it.each([0, 33])("rejects invalid village count %s", (houseCount) => {
+    // Given: a request outside the strict 1..32 range.
     const request = { ...existingVillageRequest, houseCount, housePlans: undefined };
     // When: the village boundary parses it.
     const parse = (): void => { parseAuthorVillageRequest(request); };
@@ -210,13 +217,16 @@ describe("canonical construction contract baseline", () => {
     // Then: a typed boundary error rejects the mismatch.
     expectToolError(parse, "invalid-args");
   });
-  it("enforces target exclusivity", () => {
-    // Given: an existing target polluted with new-target fields.
-    const target = { ...existingVillageRequest.target, name: "Wrong", width: 50, height: 50 };
-    // When: the village boundary parses it.
-    const parse = (): void => { parseAuthorVillageRequest({ ...existingVillageRequest, target }); };
-    // Then: the mixed target is rejected as invalid arguments.
-    expectToolError(parse, "invalid-args");
+  it("normalizes known opposite-variant fields on an existing target", () => {
+    const target = {
+      ...existingVillageRequest.target,
+      name: "Wrong",
+      width: 50,
+      height: 50,
+      plannedMap: { mapId: "map_existing", width: 50, height: 50 },
+    };
+
+    expect(parseAuthorVillageRequest({ ...existingVillageRequest, target }).target).toEqual(existingVillageRequest.target);
   });
   it("rejects missing new-map ID", () => {
     // Given: a new target without its required named map ID.

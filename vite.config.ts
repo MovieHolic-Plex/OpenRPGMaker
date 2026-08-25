@@ -106,6 +106,22 @@ function localOnlyAiProxyPlugin(): Plugin {
 const DEV_ALLOWED_ORIGIN_PATTERN = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
 // output/ai-activity/ 밖으로 쓰지 못하게 강제 — 영숫자/-/_ 만 허용(경로 구분자·`..` 차단).
 const SAFE_ACTIVITY_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+/**
+ * AI 활동 로그 디스크 미러 경로. `src/ai/activityLogEndpoint.ts` 의 AI_ACTIVITY_DISK_ENDPOINT 와
+ * 반드시 같아야 한다(값만 복제하고 계약은 test/aiActivityLogEndpoint.test.ts 가 고정한다).
+ */
+const AI_ACTIVITY_DISK_ENDPOINT = "/__oprn/ai-activity";
+
+/** 미러가 실제로 읽는 필드만 선언한 JSON 경계 타입(전체 레코드는 src/ai/activityLogTypes.ts). */
+type AiActivityMirrorRecord = {
+  id?: string;
+  at?: string;
+  channel?: string;
+  instruction?: string;
+  result?: { ok?: boolean; error?: string; stoppedReason?: string };
+  toolCalls?: { name?: string; ok?: boolean }[];
+  diagnostics?: { severity?: "ok" | "warning" | "error"; kinds?: string[]; failedTools?: string[] };
+};
 
 function devCorsOrigin(req: { headers: { origin?: string | string[] } }): string | null {
   const origin = req.headers.origin;
@@ -119,7 +135,7 @@ function aiActivityDiskPlugin(): Plugin {
     name: "rpgzzu-ai-activity-disk",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (!req.url?.startsWith("/__rpgzzu/ai-activity")) return next();
+        if (!req.url?.startsWith(AI_ACTIVITY_DISK_ENDPOINT)) return next();
         const allowedOrigin = devCorsOrigin(req);
         if (req.method === "OPTIONS") {
           res.statusCode = 204;
@@ -156,8 +172,9 @@ function aiActivityDiskPlugin(): Plugin {
           try {
             mkdirSync(dir, { recursive: true });
             const raw = Buffer.concat(chunks).toString("utf8");
-            const record = JSON.parse(raw) as { id?: string; at?: string; instruction?: string };
-            writeFileSync(join(dir, "latest.json"), JSON.stringify(JSON.parse(raw), null, 2), "utf8");
+            const record = JSON.parse(raw) as AiActivityMirrorRecord;
+            const pretty = JSON.stringify(record, null, 2);
+            writeFileSync(join(dir, "latest.json"), pretty, "utf8");
             appendFileSync(join(dir, "activity.jsonl"), `${raw.replace(/\n/g, " ")}\n`, "utf8");
             // record.id는 클라이언트가 보내는 값 그대로다 — join()은 ".." 세그먼트를 그대로
             // 해석하므로 검증 없이 파일명에 쓰면 output/ai-activity/ 밖으로 경로 탈출이 가능하다.
@@ -165,23 +182,34 @@ function aiActivityDiskPlugin(): Plugin {
               typeof record.id === "string" && SAFE_ACTIVITY_ID_PATTERN.test(record.id)
                 ? record.id
                 : `log_${Date.now()}`;
-            writeFileSync(join(dir, `${id}.json`), JSON.stringify(JSON.parse(raw), null, 2), "utf8");
+            writeFileSync(join(dir, `${id}.json`), pretty, "utf8");
             // index: last 50 summaries
-            let index: unknown[] = [];
+            let index: { id?: string }[] = [];
             const indexPath = join(dir, "index.json");
             if (existsSync(indexPath)) {
               try {
-                index = JSON.parse(readFileSync(indexPath, "utf8")) as unknown[];
+                index = JSON.parse(readFileSync(indexPath, "utf8")) as { id?: string }[];
               } catch {
                 index = [];
               }
             }
+            // 요약에 실패 신호를 같이 넣는다 — QA 가 index.json 만 보고 실패 턴을 골라낼 수 있어야 한다.
+            const failedTools = (record.toolCalls ?? [])
+              .filter((call) => call.ok === false)
+              .map((call) => call.name ?? "?");
             const summary = {
               id,
               at: record.at ?? new Date().toISOString(),
+              channel: record.channel ?? "other",
+              ok: record.result?.ok !== false,
               instruction: record.instruction ?? "",
+              ...(record.result?.error ? { error: record.result.error } : {}),
+              ...(record.result?.stoppedReason ? { stoppedReason: record.result.stoppedReason } : {}),
+              toolCalls: (record.toolCalls ?? []).length,
+              ...(failedTools.length > 0 ? { failedTools } : {}),
+              ...(record.diagnostics ? { diagnostics: record.diagnostics } : {}),
             };
-            const next = [summary, ...index.filter((row) => (row as { id?: string }).id !== id)].slice(0, 50);
+            const next = [summary, ...index.filter((row) => row.id !== id)].slice(0, 50);
             writeFileSync(indexPath, JSON.stringify(next, null, 2), "utf8");
             res.statusCode = 204;
             if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);

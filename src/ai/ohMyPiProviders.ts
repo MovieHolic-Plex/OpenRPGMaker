@@ -69,7 +69,7 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   row("gitlab-duo-agent", "GitLab Duo Agent", "claude_sonnet_4_6_vertex", ["GITLAB_TOKEN"]),
   row("gmi-cloud", "GMI Cloud", "deepseek-ai/DeepSeek-V4-Flash", ["GMI_API_KEY"]),
   row("google", "Google Gemini", "gemini-3.1-pro-preview", ["GEMINI_API_KEY"]),
-  row("google-antigravity", "Google Antigravity", "gemini-3.1-pro"),
+  row("google-antigravity", "Google Antigravity", "gemini-3.7-flash"),
   row("google-gemini-cli", "Google Gemini CLI", "gemini-3.1-pro-preview"),
   row("google-vertex", "Google Vertex", "gemini-3.1-pro-preview", ["GOOGLE_CLOUD_API_KEY"]),
   row("groq", "Groq", "openai/gpt-oss-120b", ["GROQ_API_KEY"]),
@@ -118,7 +118,7 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   row("zhipu-coding-plan", "Zhipu Coding Plan", "glm-5.1", ["ZHIPU_API_KEY"]),
 ];
 
-export const DEFAULT_OH_MY_PI_PROVIDER = "openai-codex";
+export const DEFAULT_OH_MY_PI_PROVIDER = "google-antigravity";
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 
@@ -132,5 +132,32 @@ export function parseOhMyPiProvider(raw: unknown, fallback = DEFAULT_OH_MY_PI_PR
 }
 
 export function ohMyPiOAuthProviders(): readonly OhMyPiProvider[] {
-  return OH_MY_PI_PROVIDERS.filter((provider) => provider.authKind === "oauth");
+  return ohMyPiProvidersByAuthKind("oauth");
+}
+
+/**
+ * 제공자의 자격 증명 종류. **에디터의 인증 UI 는 이 값 하나로 갈라진다.**
+ *
+ * 모르는 값·undefined 는 기본 제공자(openai-codex)의 종류로 떨어진다 — parseOhMyPiProvider 와
+ * 같은 관례라 undefined 를 만들지 않는다. 호출부가 옵셔널 체이닝을 잊어 조용히 분기를 놓치는
+ * 사고를 막는다(예: `getOhMyPiProvider(id)?.authKind === "oauth"` 는 모르는 id 에서 false 가 되어
+ * OAuth 제공자를 API 키처럼 취급했다).
+ */
+export function ohMyPiAuthKind(providerId: unknown): OhMyPiAuthKind {
+  return BY_ID.get(parseOhMyPiProvider(providerId))?.authKind ?? kindOf(DEFAULT_OH_MY_PI_PROVIDER);
+}
+
+/**
+ * 종류별 사용자 표시 이름. 영어 enum(`"oauth"`)을 한국어 UI 로 흘리지 않기 위한 단일 출처다 —
+ * 제공자 선택기가 옵션 텍스트에 `authKind` 를 그대로 붙여 `"Anthropic · oauth"` 로 보이던 것을 대체한다.
+ */
+export const OH_MY_PI_AUTH_KIND_LABEL: Record<OhMyPiAuthKind, string> = {
+  oauth: "구독 로그인",
+  apiKey: "API 키",
+  local: "로컬 서버",
+};
+
+/** 종류별 제공자 목록. 순서는 레지스트리(카탈로그 원본) 순서를 유지한다. */
+export function ohMyPiProvidersByAuthKind(kind: OhMyPiAuthKind): readonly OhMyPiProvider[] {
+  return OH_MY_PI_PROVIDERS.filter((provider) => provider.authKind === kind);
 }

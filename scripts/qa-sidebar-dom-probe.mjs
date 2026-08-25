@@ -19,7 +19,7 @@ page.on("pageerror", (err) => consoleLines.push(`[pageerror] ${err.message}`));
 // (editorUiMode.ts EXPERT_CHROME.classicToolbar=true). 초기 스크립트로 로드 전 세팅.
 await page.addInitScript(() => {
   try {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   } catch {}
 });
 

@@ -65,6 +65,7 @@ const EXPECTED_COMMAND_KINDS = [
   "shop",
   "inn",
   "checkpointSave",
+  "runControl",
   "killPlayer",
   "triggerEnding",
   "gameOver",
@@ -82,8 +83,8 @@ void allCommandKindsCovered;
 
 describe("event editor command labels", () => {
   it("uses Korean labels for shop and inn commands", () => {
-    expect(commandKindLabel("shop")).toBe("상점 처리");
-    expect(commandKindLabel("inn")).toBe("여관 처리");
+    expect(commandKindLabel("shop")).toBe("상점");
+    expect(commandKindLabel("inn")).toBe("여관");
   });
 
   it("has one display option for every command kind", () => {
@@ -98,7 +99,7 @@ describe("event editor command labels", () => {
   });
 
   it("does not surface internal M2 jargon as the m2Command display label", () => {
-    expect(commandKindLabel("m2Command")).toBe("이벤트 명령");
+    expect(commandKindLabel("m2Command")).toBe("기타 명령");
     expect(commandKindLabel("m2Command")).not.toMatch(/M2|현대/);
   });
 

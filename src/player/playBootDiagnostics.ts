@@ -85,7 +85,7 @@ export function recordPlayBootDiagnostic(
   if (RECENT.length > MAX_RECENT) RECENT.length = MAX_RECENT;
 
   if (typeof window !== "undefined") {
-    Reflect.set(window, "__rpgzzuPlayBootLog", listRecentPlayBootDiagnostics);
+    Reflect.set(window, "__oprnPlayBootLog", listRecentPlayBootDiagnostics);
   }
 
   const instruction = formatPlayBootDiagnosticInstruction(payload);

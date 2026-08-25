@@ -18,7 +18,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
   let spec = resolveMapCreateDefaults(project, request);
   openEventSubdialog({
     title: spec.parentId ? "하위 맵 만들기" : "맵 만들기",
-    subtitle: "이름·크기·칩셋을 정한 뒤 만듭니다. 트리 계층은 이동 문이 아닙니다.",
+    subtitle: "이름·크기·타일 그림판을 정한 뒤 만듭니다. 트리 계층은 이동 문이 아닙니다.",
     testId: "map-create-dialog",
     width: "narrow",
     render: (body, close) => {
@@ -38,7 +38,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         dataset: { testid: "map-create-height" },
       }) as HTMLInputElement;
       const tileset = el("select", {
-        attrs: { "aria-label": "칩셋" },
+        attrs: { "aria-label": "타일 그림판" },
         dataset: { testid: "map-create-tileset" },
       }) as HTMLSelectElement;
       appendGroupedTilesetOptions(tileset, Object.values(project.tilesets));
@@ -97,7 +97,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
           field("이름", name),
           field("가로", width),
           field("세로", height),
-          field("칩셋", tileset),
+          field("타일 그림판", tileset),
           field("상위", parent),
           el("p", {
             class: "map-create-hint",

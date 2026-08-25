@@ -17,7 +17,7 @@ Tile placement, layers, map tree operations, start position, and editor canvas b
 - UI: `src/editor/EditScene.ts`, `src/editor/panels/tilePalette.ts`, `src/editor/panels/mapList.ts`
 - Runtime: `src/project/collision.ts`, `src/player/playSceneMapRuntime.ts`, `src/player/playSceneMovement.ts`
 - Storage: `src/project/io/guards.ts`, `src/project/io/shape.ts`, `src/project/io/references.ts`
-- Tests: `test/mapEditCommands.test.ts`, `test/e2e/rm2k3-map-editor.spec.ts`, `test/e2e/rm2k3-map-runtime.spec.ts`
+- Tests: `test/mapEditCommands.test.ts`, `test/e2e/oprn-map-editor.spec.ts`, `test/e2e/oprn-map-runtime.spec.ts`
 
 ### EventAuthoring
 
@@ -28,7 +28,7 @@ Event pages, conditions, graphics, command editing, and command picker workflows
 - UI: `src/editor/panels/eventEditor/commandPicker.ts`, `src/editor/panels/eventEditor/commandBody.ts`, `src/editor/panels/eventEditor/commandSummary.ts`, `src/editor/panels/eventEditor/pageProps.ts`
 - Runtime: `src/player/interpreter.ts`, `src/player/interpreter/commandCatalog.ts`, `src/player/playSceneInterpreter.ts`
 - Storage: `src/project/io/shapeCommandFields.ts`, `src/project/io/commandReferenceValidation.ts`
-- Tests: `test/interpreter.test.ts`, `test/eventPages.test.ts`, `test/e2e/rm2k3-event-commands.spec.ts`
+- Tests: `test/interpreter.test.ts`, `test/eventPages.test.ts`, `test/e2e/oprn-event-commands.spec.ts`
 
 ### TilesetSemantics
 
@@ -39,7 +39,7 @@ Tile metadata, tile groups, cluster rules, terrain tags, passability, palette pr
 - UI: `src/editor/panels/tilesetMetadataEditor.ts`, `src/editor/panels/tilesetAiQuestionEditor.ts`, `src/editor/panels/tilesetAutotileEditor.ts`
 - Runtime: `src/project/tilesetPassage.ts`, `src/project/aiPreviewGenerator.ts`, `src/project/aiPreviewContracts.ts`
 - Storage: `src/project/io/guards.ts`, `src/project/io/shapeResourceFields.ts`, `src/project/tileMetadataDb.ts`
-- Tests: `test/tileMetadataDb.test.ts`, `test/aiPreviewContracts.test.ts`, `test/houseKit.test.ts`, `test/e2e/rm2k3-tileset-readability.spec.ts`
+- Tests: `test/tileMetadataDb.test.ts`, `test/aiPreviewContracts.test.ts`, `test/houseKit.test.ts`, `test/e2e/oprn-tileset-readability.spec.ts`
 
 ### DatabaseRecords
 
@@ -50,7 +50,7 @@ Actors, classes, skills, items, equipment, enemies, troops, states, and animatio
 - UI: `src/editor/panels/database.ts`, `src/editor/panels/databaseRecordViews.ts`, `src/editor/panels/databaseControls.ts`, `src/editor/panels/databaseStateRecordView.ts`, `src/editor/panels/databaseTroopRecordView.ts`, `src/project/ontology/databaseStateOntology.ts`, `src/styles.databaseStates.css`, `src/styles.databaseTroops.css`
 - Runtime: `src/battle/runtime.ts`, `src/player/interpreter.ts`, `src/player/playSceneBattle.ts`
 - Storage: `src/project/io/shapeDatabaseFields.ts`, `src/project/io/references.ts`
-- Tests: `test/defaultDatabase.test.ts`, `test/battleRuntimeDb.test.ts`, `test/e2e/rm2k3-database.spec.ts`, `test/e2e/rm2k3-database-states.spec.ts`
+- Tests: `test/defaultDatabase.test.ts`, `test/battleRuntimeDb.test.ts`, `test/e2e/oprn-database.spec.ts`, `test/e2e/oprn-database-states.spec.ts`
 
 ### BattleRuntime
 
@@ -61,7 +61,7 @@ Battle turns, battlers, rewards, troop events, animations, and battle UI behavio
 - UI: `src/player/battleDom.ts`, `src/player/battleFieldDom.ts`, `src/editor/panels/databaseTroopRecordView.ts`, `src/editor/panels/databaseTroopBattleEventPanel.ts`, `src/styles.databaseTroops.css`
 - Runtime: `src/battle/runtime.ts`, `src/battle/battleEvents.ts`, `src/battle/battleRewards.ts`
 - Storage: `src/project/io/shapeDatabaseFields.ts`
-- Tests: `test/battleRuntime.test.ts`, `test/battleRuntimeDb.test.ts`, `test/e2e/rm2k3-battle.spec.ts`
+- Tests: `test/battleRuntime.test.ts`, `test/battleRuntimeDb.test.ts`, `test/e2e/oprn-battle.spec.ts`
 
 ### ResourcePipeline
 
@@ -72,7 +72,7 @@ Supabase-root resource payloads, local cache/bootstrap files, resource profiles,
 - UI: `src/editor/panels/resourceManager.ts`, `src/editor/panels/resourceModal.ts`, `src/editor/panels/eventEditor/npcGraphicPicker.ts`
 - Runtime: `src/assets/bundled.ts`, `src/assets/generatedAssetResourceResolver.ts`, `src/assets/supabaseResourceCache.ts`, `src/player/resourceDisplay.ts`
 - Storage: `src/project/io/resourceReferenceValidation.ts`, `src/project/io/shapeResourceFields.ts`
-- Tests: `test/generatedAssetResourceResolver.test.ts`, `test/supabaseResourceCache.test.ts`, `test/e2e/rm2k3-resource-manager.spec.ts`
+- Tests: `test/generatedAssetResourceResolver.test.ts`, `test/supabaseResourceCache.test.ts`, `test/e2e/oprn-resource-manager.spec.ts`
 
 ### ProjectPersistence
 

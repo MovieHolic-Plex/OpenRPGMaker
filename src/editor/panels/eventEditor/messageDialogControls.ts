@@ -19,7 +19,7 @@ export function nextGroupName(prefix: string): string {
 
 export function fieldset(legend: string, controls: HTMLElement[]): HTMLElement {
   return el("fieldset", {
-    class: "event-rm2k3-fieldset event-command-modal-fieldset",
+    class: "event-oprn-fieldset event-command-modal-fieldset",
     children: [el("legend", { text: legend }), ...controls],
   });
 }
@@ -65,13 +65,13 @@ export function actionRow(okTestId: string, close: () => void): HTMLElement {
     children: [
       el("button", {
         class: "event-command-text-action primary",
-        text: "확인",
+        text: "반영하고 닫기",
         attrs: { type: "submit" },
         dataset: { testid: okTestId },
       }),
       el("button", {
         class: "event-command-text-action",
-        text: "취소",
+        text: "닫기",
         attrs: { type: "button" },
         on: { click: close },
       }),

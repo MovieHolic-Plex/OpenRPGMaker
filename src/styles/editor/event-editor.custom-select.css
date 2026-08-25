@@ -1,0 +1,273 @@
+/* Event editor custom select — native select remains as the value/event source. */
+.event-custom-select {
+  box-sizing: border-box;
+  display: inline-grid;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.event-custom-select-native {
+  height: 100% !important;
+  inset: 0 !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 100% !important;
+}
+
+.event-editor-modal-body .event-custom-select-trigger,
+.event-subdialog-body .event-custom-select-trigger {
+  align-items: center;
+  appearance: none;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 84%, white 4%), var(--bg-inset));
+  border: 1px solid var(--border-default);
+  border-radius: 7px;
+  box-shadow: 0 1px 0 color-mix(in srgb, white 7%, transparent) inset, 0 1px 2px var(--shadow-pop);
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 600 13px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 9px;
+  grid-template-columns: minmax(0, 1fr) 16px;
+  justify-content: stretch;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 9px 6px 11px;
+  text-align: left;
+  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  width: 100%;
+}
+
+.event-editor-modal-body .event-custom-select-trigger:hover:not(:disabled),
+.event-subdialog-body .event-custom-select-trigger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bg-inset) 90%, var(--accent) 10%);
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--border-default));
+}
+
+.event-editor-modal-body .event-custom-select-trigger:focus-visible,
+.event-editor-modal-body .event-custom-select-trigger[aria-expanded="true"],
+.event-subdialog-body .event-custom-select-trigger:focus-visible,
+.event-subdialog-body .event-custom-select-trigger[aria-expanded="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), 0 1px 2px var(--shadow-pop);
+  outline: none;
+}
+
+.event-custom-select.is-disabled .event-custom-select-trigger {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.event-custom-select.is-placeholder .event-custom-select-value {
+  color: var(--text-2);
+}
+
+.event-custom-select-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-custom-select-chevron {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  color: var(--text-2);
+  height: 7px;
+  justify-self: center;
+  margin-top: -3px;
+  transform: rotate(45deg);
+  transition: transform 140ms ease, margin 140ms ease;
+  width: 7px;
+}
+
+.event-custom-select-trigger[aria-expanded="true"] .event-custom-select-chevron {
+  margin-bottom: -3px;
+  margin-top: 2px;
+  transform: rotate(225deg);
+}
+
+.event-custom-select-popover {
+  --event-custom-select-max-height: 360px;
+  animation: event-custom-select-in 110ms ease-out;
+  background: color-mix(in srgb, var(--bg-raised) 96%, var(--accent) 4%);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border-default));
+  border-radius: 10px;
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--shadow-pop) 88%, transparent), 0 1px 0 color-mix(in srgb, white 7%, transparent) inset;
+  box-sizing: border-box;
+  color: var(--text-1);
+  display: grid;
+  gap: 5px;
+  max-height: var(--event-custom-select-max-height);
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+  position: fixed;
+  transform-origin: top center;
+  z-index: 30;
+}
+
+.event-custom-select-popover.opens-above {
+  transform-origin: bottom center;
+}
+
+.event-custom-select-search-wrap {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 0 6px;
+}
+
+.event-custom-select-search {
+  appearance: none;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px var(--shadow-pop) inset;
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: 500 13px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 32px;
+  outline: none;
+  padding: 5px 9px;
+  width: 100%;
+}
+
+.event-custom-select-search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.event-custom-select-options {
+  display: grid;
+  gap: 2px;
+  max-height: calc(var(--event-custom-select-max-height) - 12px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 1px;
+  scrollbar-color: color-mix(in srgb, var(--text-2) 38%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+.event-custom-select-search-wrap + .event-custom-select-options {
+  max-height: calc(var(--event-custom-select-max-height) - 55px);
+}
+
+.event-custom-select-group {
+  color: var(--text-2);
+  font: 700 10px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  padding: 7px 9px 3px;
+  text-transform: uppercase;
+}
+
+.event-custom-select-option {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 500 13px/19px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 16px;
+  min-height: 34px;
+  padding: 7px 9px 7px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-custom-select-option:hover:not(:disabled),
+.event-custom-select-option.is-active:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg-surface));
+  color: var(--text-1);
+}
+
+.event-custom-select-option:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent) inset;
+  outline: none;
+}
+
+.event-custom-select-option.is-selected {
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-surface));
+  color: color-mix(in srgb, var(--text-1) 90%, var(--accent));
+  font-weight: 700;
+}
+
+.event-custom-select-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.event-custom-select-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-custom-select-option-check {
+  display: block;
+  height: 12px;
+  justify-self: center;
+  opacity: 0;
+  position: relative;
+  width: 12px;
+}
+
+.event-custom-select-option-check::before {
+  border-bottom: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  content: "";
+  height: 8px;
+  left: 3px;
+  position: absolute;
+  top: 0;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+.event-custom-select-option.is-selected .event-custom-select-option-check {
+  opacity: 1;
+}
+
+.event-custom-select-options.is-empty::after {
+  color: var(--text-2);
+  content: "일치하는 옵션이 없습니다.";
+  font: 500 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 18px 10px;
+  text-align: center;
+}
+
+@keyframes event-custom-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-custom-select-popover {
+    animation: none;
+  }
+
+  .event-custom-select-chevron,
+  .event-custom-select-trigger {
+    transition: none;
+  }
+}

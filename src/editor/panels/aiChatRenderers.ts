@@ -52,7 +52,10 @@ export function failedToolVisibleSummary(result: Pick<ToolResult, "summary" | "i
 export function formatToolActivityLine(name: string, result: ToolResult): string {
   const mark = result.ok ? "✓" : "✗";
   const draftPrefix = result.ok && isDraftDestructiveTool(name) ? "(초안) " : "";
-  return ruleToolRejectionText(name, result) ?? `${draftPrefix}${mark} ${name} — ${result.summary}`;
+  const summary = result.summary.trim();
+  const line = summary.length > 0 ? summary : name;
+  return ruleToolRejectionText(name, result) ?? `${draftPrefix}${mark} ${line}`;
+
 }
 
 export function reasoningToggleText(count: number, collapsed: boolean): string {
@@ -110,19 +113,31 @@ function isItemFinished(item: WorkItem): boolean {
   return item.status === "done" || item.status === "skipped";
 }
 
+function currentRunItemTitle(plan: WorkPlan): string {
+  const items = planLayers(plan).flatMap(layerItems);
+  const current = items.find((item) => item.status === "in_progress")
+    ?? items.find((item) => Boolean(item.id) && item.id === plan.currentItemId);
+  const title = (current?.title ?? plan.goal ?? "작업").trim();
+  return title || "작업";
+}
+
 /**
- * 라이브 작업 계획 체크리스트 — emitWorkPlan 이벤트 페이로드로부터
- * 헤더(자율 칩 + 예산) + 목표 + 진행 요약 + 레이어/항목별 상태를 렌더한다.
+ * 라이브 작업 계획 — 앞면은 한 줄 + 2px 골드 바 + 중지.
+ * 칩·예산·레이어 체크리스트는 자세히 서랍에 둔다(다크 자율 박스 금지).
  */
 export function renderWorkPlanChecklist(
   plan: WorkPlan,
-  opts: { readonly active?: boolean; readonly budget?: AutonomousRunBudget } = {}
+  opts: { readonly active?: boolean; readonly budget?: AutonomousRunBudget; readonly onStop?: () => void } = {}
 ): HTMLElement {
   const layers = planLayers(plan);
   const items = layers.flatMap(layerItems);
   const done = items.filter(isItemFinished).length;
   const active = opts.active !== false;
   const budget = opts.budget;
+  const percent = items.length === 0 ? 0 : Math.round((done / items.length) * 100);
+  const statusLine = active ? `${currentRunItemTitle(plan)} 중` : currentRunItemTitle(plan);
+  const progressFill = el("span", { class: "ai-run-progress-fill" });
+  progressFill.style.width = `${percent}%`;
   const head = el("div", {
     class: "ai-autonomous-head",
     children: [
@@ -172,20 +187,59 @@ export function renderWorkPlanChecklist(
       ],
     });
   });
+  const stop = active
+    ? el("button", {
+        class: "ai-run-stop",
+        text: "중지",
+        attrs: { type: "button", title: "진행 중인 작업을 중지합니다" },
+        dataset: { testid: "ai-run-stop" },
+        on: { click: () => opts.onStop?.() },
+      })
+    : null;
   return el("div", {
     class: "ai-autonomous-checklist",
     dataset: { testid: "ai-work-plan-checklist" },
     children: [
-      head,
-      el("div", { class: "ai-autonomous-goal", dataset: { testid: "ai-autonomous-goal" }, text: plan.goal ?? "" }),
       el("div", {
-        class: "ai-autonomous-progress-row",
+        class: "ai-run-whisper",
+        dataset: { testid: "ai-run-whisper" },
         children: [
-          el("span", { class: "ai-autonomous-progress-label", text: "진행" }),
-          el("span", { class: "ai-autonomous-progress", dataset: { testid: "ai-autonomous-progress" }, text: `${done}/${items.length}` }),
+          el("div", {
+            class: "ai-run-line",
+            children: [
+              el("span", { class: "ai-run-status", dataset: { testid: "ai-run-status" }, text: statusLine }),
+              ...(stop ? [stop] : []),
+            ],
+          }),
+          el("div", {
+            class: "ai-run-progress",
+            dataset: { testid: "ai-run-progress" },
+            attrs: { "aria-hidden": "true" },
+            children: [progressFill],
+          }),
         ],
       }),
-      el("div", { class: "ai-autonomous-layers", children: layerRows }),
+      el("details", {
+        class: "ai-run-details",
+        dataset: { testid: "ai-run-details" },
+        children: [
+          el("summary", {
+            class: "ai-run-details-toggle",
+            dataset: { testid: "ai-run-details-toggle" },
+            text: items.length > 0 ? `계획 ${items.length}단계 · 자세히` : "자세히",
+          }),
+          head,
+          el("div", { class: "ai-autonomous-goal", dataset: { testid: "ai-autonomous-goal" }, text: plan.goal ?? "" }),
+          el("div", {
+            class: "ai-autonomous-progress-row",
+            children: [
+              el("span", { class: "ai-autonomous-progress-label", text: "진행" }),
+              el("span", { class: "ai-autonomous-progress", dataset: { testid: "ai-autonomous-progress" }, text: `${done}/${items.length}` }),
+            ],
+          }),
+          el("div", { class: "ai-autonomous-layers", children: layerRows }),
+        ],
+      }),
     ],
   });
 }

@@ -5,7 +5,7 @@ import { serialize } from "@/project/io";
 // Adversarial QA for the map-edit-lock fix: scratch sessions (remotePersistenceEnabled=false)
 // must NEVER touch the Supabase map_edit_locks table; remote-enabled sessions still must.
 
-const STORAGE_KEY = "rpg-zzu:supabase-project-config";
+const STORAGE_KEY = "oprn:supabase-project-config";
 const TEST_CONFIG = {
   anonKey: "test-anon-key",
   projectId: "initial-project",

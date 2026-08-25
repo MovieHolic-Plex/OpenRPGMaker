@@ -2,6 +2,7 @@ import { compareVariableValue } from "../conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
 import { clampFriendship } from "../session";
 import { resolveSocialKey } from "../socialKey";
+import { evalRoguelikeRunCondition, type RoguelikeRunState } from "../roguelikeRun";
 import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
@@ -10,6 +11,7 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
     readonly npcActivities?: Record<string, string>;
     readonly friendship?: Record<string, number>;
     readonly battleResult?: "victory" | "defeat" | "escape";
+    readonly roguelikeRun?: RoguelikeRunState;
   };
 
 export function resolveEventPage(
@@ -59,6 +61,8 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
     }
     case "battleResult":
       return session.battleResult === condition.result;
+    case "run":
+      return evalRoguelikeRunCondition(session, condition);
     case "all":
       return condition.conditions.every((child) => evalPageCondition(child, session, event));
     case "any":

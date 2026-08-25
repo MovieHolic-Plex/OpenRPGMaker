@@ -1,7 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { openCharacterIdPicker } from "@/editor/panels/eventEditor/characterIdPickerDialog";
-import { renderEventCharacterIdField } from "@/editor/panels/eventEditor/pageProps";
+import { renderEventCharacterIdField, renderEventCharacterSocialExtras } from "@/editor/panels/eventEditor/pageProps";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { GameEvent } from "@/project/types";
@@ -50,24 +50,24 @@ describe("characterId picker dialog", () => {
     document.body.replaceChildren();
   });
 
-  // 2026-08-19 초보 친화 스펙(eventEditorHostileUx): 연결 전에는 빈 입력칸 대신
-  // "NPC/호감 연결" 행동 버튼 하나만 노출하고, 연결된 뒤에 자유 입력+피커를 보여준다.
-  it("shows a connect action until linked, then the free-text field with picker", () => {
+  it("shows a direct relationship action, then a linked status and grouped settings", () => {
     const { mapId, event } = seedProject();
     const unlinked = renderEventCharacterIdField(mapId, event);
     document.body.append(unlinked);
-    expect(unlinked.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(unlinked.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
     expect(unlinked.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
     unlinked.remove();
 
-    const linked = renderEventCharacterIdField(mapId, { ...event, characterId: "char_linked" });
+    const linkedEvent = { ...event, characterId: "char_linked" };
+    const linked = renderEventCharacterIdField(mapId, linkedEvent);
+    const extras = renderEventCharacterSocialExtras(mapId, linkedEvent);
     document.body.append(linked);
-    expect(linked.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
-    expect(linked.querySelector('[data-testid="event-character-id-picker-open"]')).toBeTruthy();
+    if (extras) document.body.append(extras);
+    expect(linked.querySelector('[data-testid="event-character-id-picker-open"]')?.textContent).toContain("char_linked");
     expect(linked.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
-    expect((linked.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement).placeholder).toContain(
-      "일회용",
-    );
+    expect(extras?.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    expect(extras?.querySelector('[data-testid="event-talk-friendship-field"]')?.textContent).toContain("대화 보너스");
+    expect(extras?.querySelector('[data-testid="event-character-social-unlink"]')).toBeTruthy();
   });
 
   it("opens dedicated dialog with union list, displayName, and usage counts", () => {
@@ -83,6 +83,7 @@ describe("characterId picker dialog", () => {
     openCharacterIdPicker({ mapId, eventId: event.id, currentId: event.characterId });
     const root = dialogRoot();
 
+    expect(root.textContent).toContain("NPC 관계 연결");
     expect(root.querySelector('[data-testid="event-character-id-picker-search"]')).toBeTruthy();
     expect(root.querySelector('[data-testid="event-character-id-picker-list"]')).toBeTruthy();
     expect(root.textContent).toContain("char_used");
@@ -144,9 +145,10 @@ describe("characterId picker dialog", () => {
   });
 
   it("free-type unknown id attaches without auto profile create", () => {
-    // 자유 입력은 연결된 상태의 필드에서만 가능(연결 전에는 connect 버튼뿐).
+    // 자유 입력은 연결된 관계 카드의 고급 설정에서만 가능하다.
     const { mapId, event } = seedProject({ characterId: "char_seed" });
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event);
+    if (!field) throw new Error("relationship settings missing");
     document.body.append(field);
     const input = field.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement;
     expect(input).toBeTruthy();

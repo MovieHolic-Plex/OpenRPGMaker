@@ -11,13 +11,13 @@ const context = await browser.newContext({ viewport: { width: 1440, height: 900 
 const page = await context.newPage();
 
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-  localStorage.setItem("rpg-zzu:editor-welcome-dismissed", "1");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:editor-welcome-dismissed", "1");
   // Set ALL possible layout keys
   const layout = JSON.stringify({ leftWidth: 340, mapTreeHeight: 120, leftCollapsed: false, chatDock: "side" });
-  localStorage.setItem("rpg-zzu:editor-layout", layout);
-  localStorage.setItem("rpg-zzu:editor-layout:v2", layout);
-  localStorage.setItem("rpg-zzu:editor-layout:v3", layout);
+  localStorage.setItem("oprn:editor-layout", layout);
+  localStorage.setItem("oprn:editor-layout:v2", layout);
+  localStorage.setItem("oprn:editor-layout:v3", layout);
 });
 
 await page.goto(URL, { waitUntil: "networkidle", timeout: 30000 });
@@ -31,9 +31,9 @@ const debug = await page.evaluate(() => {
     display: lp ? getComputedStyle(lp).display : "N/A",
     hidden: lp ? lp.hidden : "N/A",
     classes: lp ? lp.className : "N/A",
-    layoutV3: localStorage.getItem("rpg-zzu:editor-layout:v3"),
-    layoutV2: localStorage.getItem("rpg-zzu:editor-layout:v2"),
-    layoutOld: localStorage.getItem("rpg-zzu:editor-layout"),
+    layoutV3: localStorage.getItem("oprn:editor-layout:v3"),
+    layoutV2: localStorage.getItem("oprn:editor-layout:v2"),
+    layoutOld: localStorage.getItem("oprn:editor-layout"),
   };
 });
 console.log("Debug:", JSON.stringify(debug, null, 2));

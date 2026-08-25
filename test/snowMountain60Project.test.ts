@@ -82,7 +82,7 @@ describe("설산 60×60 직접 URL", () => {
 
   it("로컬이 아닌 호스트에서는 열리지 않는다", () => {
     vi.stubGlobal("window", {
-      location: { hostname: "rpg-zzu.example.com", search: "?devProject=1&snowMountain60=1" },
+      location: { hostname: "oprn:example.com", search: "?devProject=1&snowMountain60=1" },
     });
     expect(createDevShowcaseProjectForLocation()).toBeNull();
   });

@@ -26,7 +26,7 @@
   flex: 1 1 auto;
 }
 /* 작업 영역이 우측 열 전체를 쓴다. */
-.rm2k3-status-menu .status-menu-detail {
+.oprn-status-menu .status-menu-detail {
   grid-column: 2;
   grid-row: 1;
 }
@@ -68,10 +68,10 @@
   border: 1px solid transparent;
   border-radius: 0;
   box-shadow: none;
-  color: var(--rm2k3-status-text);
+  color: var(--oprn-status-text);
   font: inherit;
   line-height: 1.08;
-  min-height: var(--rm2k3-menu-row-height, 15px);
+  min-height: var(--oprn-menu-row-height, 15px);
   overflow: hidden;
   padding: 0 3px;
   text-shadow: none;
@@ -97,7 +97,7 @@
 /* ▶ 마커. 행 폭을 먹지 않도록 좌측 패딩 안쪽에 겹쳐 놓는다. */
 .status-menu-command.selected::before,
 .status-menu-detail-action.selected::before {
-  color: var(--rm2k3-status-highlight, #ffd75a);
+  color: var(--oprn-status-highlight, #ffd75a);
   content: "▶";
   font-size: 7px;
   left: -1px;
@@ -107,19 +107,19 @@
   transform: translateY(-50%);
 }
 /* 비활성 쪽 커서 — 잔상만. ::before 마커도 제거해 "활성 커서는 하나" 를 지킨다. */
-.rm2k3-status-menu.status-menu-detail-focus .status-menu-command.selected,
-.rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
+.oprn-status-menu.status-menu-detail-focus .status-menu-command.selected,
+.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
   background: var(--border-subtle);
   border-color: transparent;
   box-shadow: none;
 }
-.rm2k3-status-menu.status-menu-detail-focus .status-menu-command.selected::before,
-.rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected::before {
+.oprn-status-menu.status-menu-detail-focus .status-menu-command.selected::before,
+.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected::before {
   content: none;
 }
 /* 규칙 2 — 키 입력을 받지 않는 패널 전체를 감광. */
-.rm2k3-status-menu.status-menu-detail-focus .status-menu-command-rail,
-.rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail {
+.oprn-status-menu.status-menu-detail-focus .status-menu-command-rail,
+.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail {
   opacity: 0.62;
 }
 .status-menu-body {
@@ -190,7 +190,7 @@
 }
 .status-menu-entry-icon.missing {
   align-content: center;
-  color: var(--rm2k3-status-text);
+  color: var(--oprn-status-text);
   display: grid;
   justify-content: center;
 }

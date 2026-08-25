@@ -1,4 +1,4 @@
-export const PLAY_RESOLUTION = {
-  width: 320,
-  height: 240,
-} as const;
+export {
+  DEFAULT_PLAY_RESOLUTION as PLAY_RESOLUTION,
+  resolvePlayResolution,
+} from "@/project/playResolution";

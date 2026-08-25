@@ -59,11 +59,14 @@ import {
   type PlayBootDiagnosticSink,
 } from "@/player/playBootDiagnostics";
 import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
+import { resolvePlayResolution } from "@/project/playResolution";
 
 let teardownShell: (() => void) | null = null;
 
 export type RenderPlayerOptions = {
   readonly onExit?: () => void;
+  /** Fires only after the current run has reached a ready PlayScene. */
+  readonly onPlayBootSuccess?: () => void;
   readonly trackGlobalGame?: boolean;
   readonly initialSession?: PlaySession;
   readonly initialEventTestId?: string;
@@ -157,7 +160,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const startedAt = performance.now();
     playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface();
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system));
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -264,6 +267,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       }
       if (!ready.ok) {
         bootDiag("timeout", false, { detail: ready.reason });
+        loading.setStage("error", "플레이 씬을 시작하지 못했습니다.");
+        return;
       }
       // ready 이후 무거운 refresh 가 오버레이를 가두지 않도록 이미 remove 한 뒤 실행.
       try {
@@ -279,6 +284,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       markPlayRender(startedAt);
       loading.remove();
       bootDiag("ready", true, { detail: "boot complete" });
+      try {
+        options.onPlayBootSuccess?.();
+      } catch (callbackError) {
+        console.error("[player] onPlayBootSuccess callback failed:", callbackError);
+      }
     } catch (error) {
       console.error("[player] failed to start play game:", error);
       bootDiag("error", false, { error, detail: "bootPlayGame catch" });
@@ -501,11 +511,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
     void warmBundledPlayAssets(project);
-    const surface = createPlaySurface();
+    const surface = createPlaySurface(resolvePlayResolution(project.system));
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
-    // 키보드 + 클릭 모두 동일 확인 연출 후 분기.
+    // 타이틀 확정은 handleTitleKey의 키보드 경로만 사용한다.
     const title = renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
@@ -595,7 +605,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 export function teardownPlayer(): void {
   teardownShell?.();
   teardownShell = null;
-  delete window.__rpgzzuInput;
+  delete window.__oprnInput;
 }
 
 function isRuntimeMenuKey(key: string): key is RuntimeMenuKey {

@@ -27,7 +27,7 @@ await page.addInitScript((seed) => {
 await page.goto("http://127.0.0.1:9173/", { waitUntil: "domcontentloaded", timeout: 60_000 });
 await page.waitForTimeout(1500);
 
-await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
 await page.waitForSelector('[data-testid="title-screen"]', { timeout: 20_000 });
 await page.keyboard.press("Enter");
 await page.waitForTimeout(1200);

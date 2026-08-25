@@ -28,7 +28,7 @@
   --runtime-font-size-11: 11px;
   --runtime-font-size-18: 18px;
   --runtime-font-size-22: 22px;
-  --runtime-window-skin: url("/assets/ui/windowskin-rm2003.png");
+  --runtime-window-skin: url("/assets/ui/windowskin-default.png");
   --runtime-window-slice: 24 fill;
   --runtime-window-border: 8px;
   --runtime-window-border-tight: 6px;

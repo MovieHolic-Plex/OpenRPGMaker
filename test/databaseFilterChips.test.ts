@@ -8,7 +8,7 @@ import { renderSwitchesTab } from "@/editor/panels/databaseUtilityViews";
 import * as session from "@/editor/panels/databaseRecordViewSession";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const CATEGORY_FILTER_STORAGE_KEY = "rpg-zzu.database.categoryFilter";
+const CATEGORY_FILTER_STORAGE_KEY = "oprn:database.categoryFilter";
 
 // 정적 import 를 쓴다(vi.resetModules + 동적 import 는 이 머신에서 모듈 그래프 재평가에
 // ~9초가 걸려 기본 15초 타임아웃을 넘긴다 — databaseGalleryView.test.ts 와 같은 이유).

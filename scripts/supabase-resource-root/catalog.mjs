@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 export const DEFAULT_EVIDENCE_DIR = "output/evidence/supabase-root-cache";
 export const DEFAULT_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
-const GENERATED_PLAN_PATH = "src/assets/rm2k3GeneratedAssetPlan.json";
+const GENERATED_PLAN_PATH = "src/assets/oprnGeneratedAssetPlan.json";
 
 export const RESOURCE_SLICING = {
   chipset: {
@@ -76,7 +76,7 @@ const BUILTIN_ROOT_FILES = [
     resourceId: "hero",
     name: "Hero 01 Battle Alias",
     resourceKind: "battleCharset",
-    promotedPath: "public/assets/generated/rm2k3/hero-01-battle.png",
+    promotedPath: "public/assets/generated/starter/hero-01-battle.png",
   },
   {
     resourceId: "rpg-zzu-title-blue",
@@ -88,13 +88,13 @@ const BUILTIN_ROOT_FILES = [
     resourceId: "generated-enemy-ontology-8da61312",
     name: "Ontology Enemy",
     resourceKind: "monster",
-    promotedPath: "public/assets/generated/rm2k3/monster-ontology-8da61312.png",
+    promotedPath: "public/assets/generated/starter/monster-ontology-8da61312.png",
   },
   {
     resourceId: "generated-enemy-sylph-hornet",
     name: "Sylph Hornet",
     resourceKind: "monster",
-    promotedPath: "public/assets/generated/rm2k3/sylph-hornet-transparent.png",
+    promotedPath: "public/assets/generated/starter/sylph-hornet-transparent.png",
   },
 ];
 

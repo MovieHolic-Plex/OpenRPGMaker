@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
    AI ?댁떆?ㅽ꽩???⑤꼸 ??紐⑤뜕 ?ㅽ겕 (?붿옄???좏겙 湲곕컲, src/styles/tokens.css)
    ?뚯쑀: p2-assistant. ?대옒?ㅻ챸/testid/DOM 遺덈?, ?됀룸낫?붋룸씪?대뱶쨌洹몃┝?먮쭔 ?좏겙??
    ========================================================================= */
@@ -21,3 +21,9 @@
 @import "./tabs-b-assistant-panel/09-ux-polish-density.css";
 @import "./tabs-b-assistant-panel/10-dock-mode-rich-doc.css";
 @import "./tabs-b-assistant-panel/11-autonomous-run-surface.css";
+@import "./tabs-b-assistant-panel/12-assistant-temperature.css";
+
+/* 컴포저는 구 `.ai-chat-input-row` 잔여 규칙(04번)을 이긴다. */
+@import "./assistant-composer.css";
+/* Modern cream conversation column — after composer so glass/side chrome wins. */
+@import "./tabs-b-assistant-panel/13-assistant-modern.css";

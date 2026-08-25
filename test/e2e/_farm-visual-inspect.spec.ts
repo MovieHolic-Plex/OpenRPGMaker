@@ -19,7 +19,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
 
-const OUT = "C:/Users/USER/AppData/Local/Temp/farm-inspect/";
+const OUT = "output/evidence/stardew/runtime/";
 const MAP_ID = "map_farming_demo";
 const shot = (name: string): string => `${OUT}${name}.png`;
 const log: string[] = [];
@@ -44,7 +44,7 @@ type Probe = { readonly x: number; readonly y: number; readonly inventory: Recor
 
 async function probe(page: Page): Promise<Probe> {
   return page.evaluate(() => {
-    const debug = (window as never as { __rpgzzuDebug: { readState: () => Probe } }).__rpgzzuDebug;
+    const debug = (window as never as { __oprnDebug: { readState: () => Probe } }).__oprnDebug;
     const state = debug.readState();
     return { x: state.x, y: state.y, inventory: state.inventory };
   });
@@ -65,23 +65,29 @@ async function toastText(page: Page): Promise<string> {
 }
 
 /** 숫자키는 window keydown 전역 핸들러가 먹는다 — tapKey 는 방향/액션만 아므로 직접 누른다. */
-async function equipSlot(page: Page, digit: string, why: string): Promise<void> {
-  await page.keyboard.press(digit);
-  await page.waitForTimeout(200);
-  log.push(`[손] ${digit}번키 → "${await handLabel(page)}" (${why})`);
+async function equipItem(page: Page, itemName: string, why: string): Promise<void> {
+  for (let slot = 1; slot <= 9; slot += 1) {
+    await page.keyboard.press(String(slot));
+    await page.waitForTimeout(120);
+    const label = await handLabel(page);
+    if (!label.includes(itemName)) continue;
+    log.push(`[손] ${slot}번키 → "${label}" (${why})`);
+    return;
+  }
+  throw new Error(`손 슬롯에서 '${itemName}'을 찾지 못했습니다.`);
 }
 
 /** (x, y) 를 정면으로 두고 A. 위 칸에 서서 아래를 본다. */
 async function actOn(page: Page, x: number, y: number, what: string): Promise<void> {
   await page.evaluate(
     ([mapId, tx, ty]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (m: string, a: number, b: number) => void } })
-        .__rpgzzuDebug.teleport(mapId as string, tx as number, ty as number),
+      (window as never as { __oprnDebug: { teleport: (m: string, a: number, b: number) => void } })
+        .__oprnDebug.teleport(mapId as string, tx as number, ty as number),
     [MAP_ID, x, y - 1] as const,
   );
   await page.waitForTimeout(260);
   await page.evaluate(() =>
-    (window as never as { __rpgzzuInput: { face: (d: string) => void } }).__rpgzzuInput.face("down"),
+    (window as never as { __oprnInput: { face: (d: string) => void } }).__oprnInput.face("down"),
   );
   await page.waitForTimeout(120);
   await tapKey(page, "Space", 220);
@@ -97,13 +103,13 @@ async function actOn(page: Page, x: number, y: number, what: string): Promise<vo
 async function growOneDay(page: Page, label: string): Promise<void> {
   await page.evaluate(
     ([mapId]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (m: string, a: number, b: number) => void } })
-        .__rpgzzuDebug.teleport(mapId as string, 8, 4),
+      (window as never as { __oprnDebug: { teleport: (m: string, a: number, b: number) => void } })
+        .__oprnDebug.teleport(mapId as string, 8, 4),
     [MAP_ID] as const,
   );
   await page.waitForTimeout(260);
   await page.evaluate(() =>
-    (window as never as { __rpgzzuInput: { face: (d: string) => void } }).__rpgzzuInput.face("right"),
+    (window as never as { __oprnInput: { face: (d: string) => void } }).__oprnInput.face("right"),
   );
   await page.waitForTimeout(120);
   await tapKey(page, "Space", 260);
@@ -118,7 +124,7 @@ test("농사 한 사이클을 화면으로 검수한다 — 갈기·심기·물�
   mkdirSync(OUT, { recursive: true });
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, projectWithGrowthLever());
@@ -129,36 +135,42 @@ test("농사 한 사이클을 화면으로 검수한다 — 갈기·심기·물�
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 30_000 });
   await page.waitForTimeout(2000);
 
+  const timeTextRgb = await page.getByTestId("runtime-time-hud").evaluate((node) => {
+    return getComputedStyle(node).color.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [];
+  });
+  expect(timeTextRgb, "시간 HUD 글자가 어두운 테마 토큰을 물어 읽히지 않는다").toHaveLength(3);
+  expect(Math.min(...timeTextRgb)).toBeGreaterThanOrEqual(220);
+
   // 1) 첫 화면 — 손 슬롯 HUD 가 붙었는지, 밭 가능 영역이 보이는지.
   log.push(`[시작] 손="${await handLabel(page)}"`);
   writeFileSync(shot("01-start"), await page.getByTestId("play-stage").screenshot());
 
   // 2) 괭이로 세 칸 — 오토타일 모양은 이웃이 있어야 드러난다.
-  await equipSlot(page, "1", "괭이");
+  await equipItem(page, "괭이", "괭이");
   for (const x of ROW) await actOn(page, x, TARGET_Y, "갈기");
   writeFileSync(shot("02-tilled"), await page.getByTestId("play-stage").screenshot());
 
   // 3) 감자 씨앗 세 개를 세 칸에. 씨앗은 정확히 3개 — 마지막을 심으면 손이 비어야 한다.
-  await equipSlot(page, "3", "감자 씨앗");
+  await equipItem(page, "감자 씨앗", "감자 씨앗");
   for (const x of ROW) await actOn(page, x, TARGET_Y, "심기");
   log.push(`[씨앗] 마지막 파종 후 손="${await handLabel(page)}" 잔량=${(await probe(page)).inventory.item_potato_seed ?? 0}`);
   writeFileSync(shot("03-planted"), await page.getByTestId("play-stage").screenshot());
 
   // 4) 물뿌리개 — 젖은 흙은 어두운 틴트 한 겹이어야 한다.
-  await equipSlot(page, "2", "물뿌리개");
+  await equipItem(page, "물뿌리개", "물뿌리개");
   for (const x of ROW) await actOn(page, x, TARGET_Y, "물주기");
   writeFileSync(shot("04-watered"), await page.getByTestId("play-stage").screenshot());
 
   // 5) 성장 → 물 → 성장. 감자는 1일 단계 두 개라 여기서 수확기가 된다.
   await growOneDay(page, "1일차");
   writeFileSync(shot("05-grown-1"), await page.getByTestId("play-stage").screenshot());
-  await equipSlot(page, "2", "물뿌리개 재장착");
+  await equipItem(page, "물뿌리개", "물뿌리개 재장착");
   for (const x of ROW) await actOn(page, x, TARGET_Y, "물주기(2일차)");
   await growOneDay(page, "2일차");
   writeFileSync(shot("06-mature"), await page.getByTestId("play-stage").screenshot());
 
   // 6) **괭이를 든 채로** 수확한다. 다 자란 작물은 손에 뭘 들었든 수확돼야 한다(이번 수정의 핵심).
-  await equipSlot(page, "1", "괭이 — 수확은 손과 무관해야 한다");
+  await equipItem(page, "괭이", "괭이 — 수확은 손과 무관해야 한다");
   const before = (await probe(page)).inventory.item_potato ?? 0;
   for (const x of ROW) await actOn(page, x, TARGET_Y, "수확(괭이 든 채)");
   const after = (await probe(page)).inventory.item_potato ?? 0;

@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { directorStartPrompts, readAgentBrief } from "@/editor/panels/aiAgentBrief";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { installFakeDom, findByTestId, renderWithFakeDom } from "./fakeDom";
 import {
+  AI_AUTHORING_EXAMPLES,
+  buildAiAuthoringExamples,
   buildRecentAiWorkCard,
   buildTryRegionCard,
   buildVisualStartGallery,
@@ -95,6 +96,30 @@ describe("buildTryRegionCard", () => {
   });
 });
 
+describe("buildAiAuthoringExamples", () => {
+  it("길·NPC·상점·상자·집·퀘스트 예제를 빠짐없이 제공하고 클릭한 문장을 넘긴다", () => {
+    expect(new Set(AI_AUTHORING_EXAMPLES.map((example) => example.kind))).toEqual(
+      new Set(["road", "npc", "shop", "chest", "house", "quest"]),
+    );
+    const picked: Array<{ instruction: string; id: string }> = [];
+    const examples = renderWithFakeDom(() =>
+      buildAiAuthoringExamples({
+        onPick: (instruction, id) => picked.push({ instruction, id }),
+      }),
+    );
+
+    expect(findByTestId(examples, "ai-authoring-examples")).not.toBeNull();
+    expect(examples.querySelectorAll("button")).toHaveLength(6);
+    findByTestId(examples, "ai-authoring-example-shop")!.click();
+    expect(picked).toEqual([
+      {
+        id: "shop",
+        instruction: AI_AUTHORING_EXAMPLES.find((example) => example.id === "shop")!.instruction,
+      },
+    ]);
+  });
+});
+
 describe("buildRecentAiWorkCard", () => {
   it("기록이 있으면 최근 항목을 렌더, 없으면 null", () => {
     const built = buildRecentAiWorkCard([record()], NOW);
@@ -125,11 +150,10 @@ describe("buildVisualStartGallery", () => {
     if (panel.classList.contains("is-collapsed")) {
       findByTestId(panel, "ai-collapsed-restore")?.click();
     }
-    const prompts = directorStartPrompts(readAgentBrief());
     const chips = findByTestId(panel, "ai-composer-chips");
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(chips?.querySelectorAll("button").length).toBe(prompts.length);
-    expect(prompts.length).toBeLessThanOrEqual(3);
+    expect(chips?.querySelectorAll("button").length).toBe(3);
+    expect(chips?.hidden).toBe(false);
   });
 });

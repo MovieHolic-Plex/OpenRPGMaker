@@ -10,7 +10,7 @@ const DIGIT_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 
 export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCommand): HTMLElement {
   const wrap = el("div", {
-    class: "input-number-command-body",
+    class: "input-number-command-body cream-command-form",
     dataset: { testid: "input-number-command-body" },
   });
 
@@ -37,7 +37,7 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
     dataset: { testid: "input-number-digit-stepper" },
     attrs: {
       role: "radiogroup",
-      "aria-label": "입력 자릿수",
+      "aria-label": "몇 자리",
     },
   });
   // Hidden mirror keeps older e2e helpers that target a numeric field working.
@@ -105,7 +105,7 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
   wrap.append(
     fieldControl("변수", variable),
     fieldControl(
-      "자릿수",
+      "몇 자리",
       el("div", {
         class: "input-number-digits-field",
         children: [
@@ -113,23 +113,23 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
           digitsMirror,
           el("span", {
             class: "input-number-digits-caption",
-            text: "플레이어가 입력할 자리 수 (1~6)",
+            text: "입력할 숫자의 자리 수",
             dataset: { testid: "input-number-digits-caption" },
           }),
         ],
       })
     ),
-    fieldControl("창 제목", prompt),
+    fieldControl("안내 문구", prompt),
     el("div", {
       class: "input-number-options",
       children: [
         el("label", {
           class: "input-number-pad-toggle",
-          children: [showPad, el("span", { text: "터치용 숫자 키패드 표시" })],
+          children: [showPad, el("span", { text: "화면에 숫자 버튼 보이기" })],
         }),
         el("p", {
           class: "empty-hint input-number-hint",
-          text: "우측은 플레이 시 처음 보이는 빈 입력 창입니다. 키보드는 항상 동작하고, 키패드는 터치/마우스용입니다.",
+          text: "숫자 버튼을 켜면 터치로도 입력할 수 있습니다.",
         }),
       ],
     })

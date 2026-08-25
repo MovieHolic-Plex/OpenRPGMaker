@@ -47,6 +47,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           path: [],
           actions,
           lockKind: request.lockKind ?? true,
+          previewFace: request.previewFace,
           getCurrentCommand: () => stagedCommand,
         }, stagedCommand));
         renderPreview();
@@ -253,9 +254,13 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
     // 자릿수 칩 active / 키패드 토글 등 폼 구조 동기화.
     return prev.digits !== next.digits || Boolean(prev.showPad) !== Boolean(next.showPad);
   }
+  if (prev.kind === "runControl" && next.kind === "runControl") {
+    return prev.action !== next.action;
+  }
   if (prev.kind === "fork" && next.kind === "fork") {
     return (
       prev.condition.kind !== next.condition.kind ||
+      (prev.condition.kind === "run" && next.condition.kind === "run" && prev.condition.query !== next.condition.query) ||
       Boolean(prev.else) !== Boolean(next.else) ||
       prev.then.length !== next.then.length ||
       (prev.else?.length ?? 0) !== (next.else?.length ?? 0)

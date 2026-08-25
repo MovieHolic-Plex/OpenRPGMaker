@@ -1,7 +1,7 @@
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
-import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
+import { GOLD_MAX, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
-import { isSeason, normalizeGameTime } from "@/project/gameTime";
+import { isSeason, MAX_DAYS_PER_SEASON } from "@/project/gameTime";
 import type { RuntimeCameraSessionState,
 RuntimeCameraTarget,
 RuntimeEventLocation,
@@ -9,7 +9,9 @@ RuntimeNpcScheduleState,
 RuntimeNpcTravelState,
 RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
-import { RNG_STREAMS, type RngState } from "@/util/rng";
+import { normalizeRngState, RNG_STREAMS, type RngState } from "@/util/rng";
+import { isPositiveItemQuantity } from "@/project/itemQuantities";
+import { isSafeShopTradeCountsRecord } from "@/project/economyValues";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
   if (!isRecord(value)) return false;
@@ -54,6 +56,14 @@ export function isActorSkillIdsRecord(value: unknown): value is PlaySession["act
   return Object.values(value).every(isStringArray);
 }
 
+export function isActorSkillPpRecord(value: unknown): value is NonNullable<PlaySession["actorSkillPp"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((skillPp) =>
+    isRecord(skillPp)
+    && Object.values(skillPp).every((pp) => typeof pp === "number" && Number.isFinite(pp) && pp >= 0),
+  );
+}
+
 export function isActorParamBonusRecord(value: unknown): value is Record<string, Partial<Record<ActorParameterKey, number>>> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((bonuses) => {
@@ -67,6 +77,110 @@ export function isActorStateIdsRecord(value: unknown): value is Record<string, s
   return Object.values(value).every((states) => Array.isArray(states) && states.every((stateId) => typeof stateId === "string"));
 }
 
+export function isLifeSkillsRecord(value: unknown): value is NonNullable<PlaySession["lifeSkills"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((progress) => {
+    if (!isRecord(progress)) return false;
+    return isNonNegativeSafeInteger(progress.xp) && isPositiveSafeInteger(progress.level);
+  });
+}
+
+export function parseChestsRecord(value: unknown): NonNullable<PlaySession["chests"]> | undefined {
+  if (!isRecord(value)) return undefined;
+  const parsed: NonNullable<PlaySession["chests"]> = {};
+  for (const [chestId, rawChest] of Object.entries(value)) {
+    if (!isRecord(rawChest)
+      || rawChest.id !== chestId
+      || !chestId.trim()
+      || typeof rawChest.mapId !== "string"
+      || !rawChest.mapId.trim()
+      || typeof rawChest.x !== "number"
+      || !Number.isSafeInteger(rawChest.x)
+      || typeof rawChest.y !== "number"
+      || !Number.isSafeInteger(rawChest.y)
+      || !isRecord(rawChest.inventory)) continue;
+    const inventory: Record<string, number> = {};
+    for (const [itemId, count] of Object.entries(rawChest.inventory)) {
+      if (itemId.trim() && isPositiveItemQuantity(count)) inventory[itemId] = count;
+    }
+    parsed[chestId] = {
+      id: chestId,
+      mapId: rawChest.mapId,
+      x: rawChest.x,
+      y: rawChest.y,
+      inventory,
+    };
+  }
+  return parsed;
+}
+
+export function isShopTradeCountsRecord(value: unknown): value is NonNullable<PlaySession["shopTradeCounts"]> {
+  return isSafeShopTradeCountsRecord(value);
+}
+
+export function isShopPawnTicketsRecord(value: unknown): value is NonNullable<PlaySession["shopPawnTickets"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((ticket) => {
+    if (!isRecord(ticket)) return false;
+    return typeof ticket.itemId === "string" &&
+      typeof ticket.dueDayKey === "string" &&
+      isNonNegativeInteger(ticket.pawnPrice);
+  });
+}
+
+export function isNonNegativeIntegerRecord(value: unknown): value is Record<string, number> {
+  return isRecord(value) && Object.values(value).every(isNonNegativeInteger);
+}
+
+export function parsePositiveIntegerRecord(value: unknown): Record<string, number> | undefined {
+  if (!isRecord(value)) return undefined;
+  const parsed: Record<string, number> = {};
+  for (const [key, count] of Object.entries(value)) {
+    if (count === 0) continue;
+    if (!key.trim() || !isPositiveInteger(count) || count > GOLD_MAX) return undefined;
+    parsed[key] = count;
+  }
+  return parsed;
+}
+
+export function isNestedNonNegativeIntegerRecord(value: unknown): value is Record<string, Record<string, number>> {
+  return isRecord(value) && Object.values(value).every(isNonNegativeIntegerRecord);
+}
+
+export function isShippingSettlementArray(value: unknown): value is NonNullable<PlaySession["shippingHistory"]> {
+  if (!Array.isArray(value)) return false;
+  return value.every((settlement) => {
+    if (!isRecord(settlement) || typeof settlement.dayKey !== "string" || !settlement.dayKey.trim()) return false;
+    if (!isNonNegativeInteger(settlement.total) || settlement.total > GOLD_MAX ||
+      !isNonNegativeInteger(settlement.credited) || settlement.credited > settlement.total) return false;
+    if (!Array.isArray(settlement.entries)) return false;
+    let expectedTotal = 0;
+    const entriesAreValid = settlement.entries.every((entry) => {
+      if (!isRecord(entry) || typeof entry.itemId !== "string" || !entry.itemId.trim()) return false;
+      if (!isPositiveInteger(entry.count) || entry.count > GOLD_MAX ||
+        !isNonNegativeInteger(entry.unitPrice) || entry.unitPrice > GOLD_MAX ||
+        !isNonNegativeInteger(entry.subtotal) || entry.subtotal > GOLD_MAX) return false;
+      const expectedSubtotal = Math.min(GOLD_MAX, entry.count * entry.unitPrice);
+      if (entry.subtotal !== expectedSubtotal) return false;
+      expectedTotal = Math.min(GOLD_MAX, expectedTotal + expectedSubtotal);
+      return true;
+    });
+    return entriesAreValid && settlement.total === expectedTotal;
+  });
+}
+
+export function isMakerInstancesRecord(value: unknown): value is NonNullable<PlaySession["makerInstances"]> {
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([instanceId, instance]) => {
+    if (!isRecord(instance) || instance.instanceId !== instanceId || typeof instance.makerId !== "string") return false;
+    if (instance.status !== "idle" && instance.status !== "processing" && instance.status !== "ready") return false;
+    if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
+    return isNonNegativeSafeInteger(instance.startedAtMinute) &&
+      isNonNegativeSafeInteger(instance.readyAtMinute) &&
+      instance.readyAtMinute >= instance.startedAtMinute;
+  });
+}
+
 export function isMonsterInstancesRecord(value: unknown): value is PlaySession["monsterInstances"] {
   if (!isRecord(value)) return false;
   return Object.entries(value).every(([instanceId, instance]) => {
@@ -77,6 +191,10 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
     if (instance.currentHp !== undefined && (typeof instance.currentHp !== "number" || !Number.isFinite(instance.currentHp))) return false;
     if (instance.skillIds !== undefined && !isStringArray(instance.skillIds)) return false;
+    if (instance.stateIds !== undefined && !isStringArray(instance.stateIds)) return false;
+    if (instance.stateTurns !== undefined && !isNonNegativeIntegerRecord(instance.stateTurns)) return false;
+    if (instance.skillPp !== undefined && !isNonNegativeIntegerRecord(instance.skillPp)) return false;
+    if (instance.pendingSkillIds !== undefined && !isStringArray(instance.pendingSkillIds)) return false;
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
     return instance.ivs === undefined || isMonsterIvs(instance.ivs);
@@ -141,6 +259,19 @@ export function isRngState(value: unknown): value is RngState {
   });
 }
 
+/** Accepts additive RNG streams while preserving every well-shaped legacy stream. */
+export function parseRngState(value: unknown): RngState | undefined {
+  if (!isRecord(value) || typeof value.seed !== "number" || !Number.isFinite(value.seed) || !isRecord(value.streams)) return undefined;
+  for (const stream of RNG_STREAMS) {
+    const state = value.streams[stream];
+    if (state === undefined) continue;
+    if (!isRecord(state)
+      || typeof state.seed !== "number" || !Number.isFinite(state.seed)
+      || typeof state.state !== "number" || !Number.isFinite(state.state)) return undefined;
+  }
+  return normalizeRngState(value, value.seed);
+}
+
 export function isRuntimeEventLocationRecord(value: unknown): value is Record<string, RuntimeEventLocation> {
   if (!isRecord(value)) return false;
   return Object.values(value).every(isRuntimeEventLocation);
@@ -166,7 +297,11 @@ export function isLightingState(value: unknown): value is LightingState {
 }
 
 export function isGameTime(value: unknown): value is PlaySession["gameTime"] {
-  return normalizeGameTime(value) !== undefined;
+  if (!isRecord(value)) return false;
+  return isNonNegativeSafeInteger(value.minute) && value.minute <= 59 &&
+    isNonNegativeSafeInteger(value.hour) && value.hour <= 48 &&
+    isPositiveSafeInteger(value.day) && value.day <= MAX_DAYS_PER_SEASON &&
+    isSeason(value.season) && isPositiveSafeInteger(value.year);
 }
 
 function isLightSource(value: unknown): value is LightSource {
@@ -379,6 +514,22 @@ function optionalFiniteNumber(value: unknown): boolean {
 
 function isFiniteInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value);
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return isFiniteInteger(value) && value >= 0;
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return isFiniteInteger(value) && value >= 1;
+}
+
+function isNonNegativeSafeInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isPositiveSafeInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 1;
 }
 
 function isDirection(value: unknown): value is "down" | "left" | "right" | "up" {

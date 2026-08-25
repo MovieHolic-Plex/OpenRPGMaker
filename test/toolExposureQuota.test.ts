@@ -114,4 +114,29 @@ describe("노출 상한 도메인 쿼터", () => {
     expect(names).toContain("author_house");
     expect(names).toContain("author_village");
   });
+
+  it("exposes define_quest and verify_quest when core+quest domains are active", () => {
+    // Given: a one-shot quest persist turn scoped to core+quest.
+    const domains = new Set<ToolDomain>(["core", "quest"]);
+
+    // When: the real registry is trimmed to the 40-tool provider limit.
+    const names = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
+
+    // Then: quest persist write/read tools survive the cap.
+    expect(names.length).toBeLessThanOrEqual(40);
+    expect(names).toContain("define_quest");
+    expect(names).toContain("verify_quest");
+  });
+
+  it("exposes plan_world when core+world domains are active", () => {
+    // Given: a world-authoring turn scoped to core+world.
+    const domains = new Set<ToolDomain>(["core", "world"]);
+
+    // When: the real registry is trimmed to the 40-tool provider limit.
+    const names = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
+
+    // Then: the world facade stays in the exposed set.
+    expect(names.length).toBeLessThanOrEqual(40);
+    expect(names).toContain("plan_world");
+  });
 });

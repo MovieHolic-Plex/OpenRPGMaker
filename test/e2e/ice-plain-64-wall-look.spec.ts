@@ -11,7 +11,7 @@ import { startNewGameFromTitle, tapKey } from "./runtimeInput";
 const SHOTS = "tmp/ice-plain-e2e";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   mkdirSync(SHOTS, { recursive: true });
 });
 

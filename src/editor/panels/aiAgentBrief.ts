@@ -2,13 +2,13 @@
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { uiLabel } from "@/editor/uiCopy";
+import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import {
   defaultAiVisualStartPrompts,
   type AiVisualStartPrompt,
 } from "@/editor/panels/aiStartScreenCards";
 import { editorWorkingEvents } from "@/project/eventDrafts";
-import { TILE } from "@/project/defaults/constants";
+import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 
@@ -28,16 +28,7 @@ export type AgentBrief = {
   readonly lookingAt: string;
 };
 
-const TOOL_LABEL: { readonly [K in Tool]: string } = {
-  paint: "펜",
-  fill: "채우기",
-  collision: "통행",
-  event: "이벤트",
-  erase: "지우개",
-  select: "선택",
-  eyedropper: "스포이드",
-  pan: "이동",
-};
+// 도구 이름은 uiCopy 단일 원천(TOOL_LABEL) — 여기서 다시 적지 않는다.
 
 export function layerShortLabel(layer: Layer, termStyle = getEditorChrome().jargonStyle): string {
   switch (layer) {
@@ -55,11 +46,11 @@ export function layerShortLabel(layer: Layer, termStyle = getEditorChrome().jarg
 }
 
 export function toolShortLabel(tool: Tool): string {
-  return TOOL_LABEL[tool];
+  return toolLabel(tool);
 }
 
 function mapHasPath(map: GameMap): boolean {
-  return map.lowerTiles.some((tile) => tile === TILE.PATH);
+  return map.lowerTiles.some((tile) => isRoadTile(tile));
 }
 
 function mapHasEntrance(map: GameMap): boolean {
@@ -131,9 +122,49 @@ export function readAgentBrief(): AgentBrief {
   };
 }
 
-export function formatComposerPlaceholder(brief: AgentBrief): string {
-  if (brief.selectionLabel) return `무엇을 만들까?  ${brief.selectionLabel}  ·  Enter로 보내기`;
-  return "또는 직접 적어 보세요. Enter로 보내기";
+export function formatComposerPlaceholder(_brief: AgentBrief): string {
+  return "한 문장으로 지시";
+}
+
+export function idlePresenceLine(brief: AgentBrief): string {
+  if (brief.selectionLabel) return "선택한 칸에 무엇을 둘까요";
+  return "이 맵에 무엇을 둘까요";
+}
+
+export function assistantIdleHints(brief: AgentBrief): readonly {
+  readonly id: string;
+  readonly label: string;
+  readonly instruction: string;
+}[] {
+  if (brief.selectionLabel) {
+    const prompts = directorStartPrompts(brief);
+    const first = prompts[0];
+    const second = prompts[1];
+    return [
+      {
+        id: first?.id ?? "selection",
+        label: "선택한 칸을 꾸며줘",
+        instruction: first?.instruction ?? "선택한 영역을 꾸며줘.",
+      },
+      {
+        id: second?.id ?? "place",
+        label: "길을 이어줘",
+        instruction: second?.instruction ?? "길을 이어줘.",
+      },
+    ];
+  }
+  return [
+    {
+      id: "river",
+      label: "강가를 만들어줘",
+      instruction: `${brief.mapName}에 자연스러운 강가를 만들어줘.`,
+    },
+    {
+      id: "cottages",
+      label: "오두막 세 채",
+      instruction: `${brief.mapName}에 오두막 세 채를 자연스럽게 배치해줘.`,
+    },
+  ];
 }
 
 export function nextStepHint(brief: AgentBrief): string {

@@ -9,9 +9,9 @@ const SIZES = [
   { name: "1440", width: 1440, height: 900 },
 ] as const;
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
-const EDITOR_LAYOUT_VERSION_KEY = "rpg-zzu:editor-layout-version";
-const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
+const EDITOR_LAYOUT_VERSION_KEY = "oprn:editor-layout-version";
+const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
 const EDITOR_LAYOUT_VERSION = "2026-07-24-maptree-300";
 
 for (const size of SIZES) {
@@ -21,9 +21,9 @@ for (const size of SIZES) {
       await page.setViewportSize({ width: size.width, height: size.height });
       await page.addInitScript(
         ({ layoutKey, layoutVersionKey, layoutVersion, collapsedKey, chatDock }) => {
-          localStorage.removeItem("rpg-zzu:editor-layout");
-          localStorage.removeItem("rpg-zzu:editor-layout:v2");
-          localStorage.removeItem("rpg-zzu:editor-layout:v3");
+          localStorage.removeItem("oprn:editor-layout");
+          localStorage.removeItem("oprn:editor-layout:v2");
+          localStorage.removeItem("oprn:editor-layout:v3");
           localStorage.setItem(layoutVersionKey, layoutVersion);
           localStorage.setItem(layoutKey, JSON.stringify({ chatDock }));
           localStorage.setItem(collapsedKey, "1");
@@ -38,7 +38,7 @@ for (const size of SIZES) {
       );
       await page.goto("/?freshProject=1");
       await page.waitForSelector("[data-testid='editor-layout']");
-      await page.evaluate((m) => (window as never as { __rpgzzuEditorUiMode: { set(v: string): void } }).__rpgzzuEditorUiMode.set(m), mode);
+      await page.evaluate((m) => (window as never as { __oprnEditorUiMode: { set(v: string): void } }).__oprnEditorUiMode.set(m), mode);
       await page.waitForTimeout(300);
 
       // 1) 문서 가로 스크롤 없음
@@ -46,7 +46,7 @@ for (const size of SIZES) {
       expect(overflow).toBeLessThanOrEqual(0);
 
       // 2) 메뉴바 한 줄 (두 줄 꺾임이면 높이가 커진다)
-      const menuBar = page.locator(".rm2k3-menu-bar");
+      const menuBar = page.locator(".oprn-menu-bar");
       await expect(menuBar).toBeVisible();
       const menuBox = await menuBar.boundingBox();
       expect(menuBox?.height).toBeLessThanOrEqual(48);

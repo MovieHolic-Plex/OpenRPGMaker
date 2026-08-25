@@ -77,28 +77,28 @@
 
 .battle-command-icon-sword,
 .battle-command-icon-target {
-  background-image: url("/assets/generated/rm2k3/battle-icon-sword.png");
+  background-image: url("/assets/generated/starter/battle-icon-sword.png");
 }
 
 .battle-command-icon-fire {
-  background-image: url("/assets/generated/rm2k3/battle-icon-fire.png");
+  background-image: url("/assets/generated/starter/battle-icon-fire.png");
 }
 
 .battle-command-icon-shield {
-  background-image: url("/assets/generated/rm2k3/battle-icon-shield.png");
+  background-image: url("/assets/generated/starter/battle-icon-shield.png");
 }
 
 .battle-command-icon-cross {
-  background-image: url("/assets/generated/rm2k3/battle-icon-cross.png");
+  background-image: url("/assets/generated/starter/battle-icon-cross.png");
 }
 
 .battle-command-icon-bag {
-  background-image: url("/assets/generated/rm2k3/battle-icon-bag.png");
+  background-image: url("/assets/generated/starter/battle-icon-bag.png");
 }
 
 .battle-command-icon-boot,
 .battle-command-icon-back {
-  background-image: url("/assets/generated/rm2k3/battle-icon-boot.png");
+  background-image: url("/assets/generated/starter/battle-icon-boot.png");
 }
 
 .battle-result-reward-icon,
@@ -110,25 +110,25 @@
 }
 
 .battle-result-reward-icon-exp {
-  background-image: url("/assets/generated/rm2k3/battle-icon-exp.png");
+  background-image: url("/assets/generated/starter/battle-icon-exp.png");
   border: 0;
   transform: none;
 }
 
 .battle-result-reward-icon-gold {
-  background-image: url("/assets/generated/rm2k3/battle-icon-gold.png");
+  background-image: url("/assets/generated/starter/battle-icon-gold.png");
 }
 
 .battle-result-reward-icon-item {
-  background-image: url("/assets/generated/rm2k3/battle-icon-shard.png");
+  background-image: url("/assets/generated/starter/battle-icon-shard.png");
 }
 
 .battle-result-progress-icon-world {
-  background-image: url("/assets/generated/rm2k3/battle-icon-world.png");
+  background-image: url("/assets/generated/starter/battle-icon-world.png");
 }
 
 .battle-result-progress-icon-next {
-  background-image: url("/assets/generated/rm2k3/battle-icon-next.png");
+  background-image: url("/assets/generated/starter/battle-icon-next.png");
 }
 
 .battle-result-progress-icon-next::before {

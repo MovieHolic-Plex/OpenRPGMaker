@@ -80,6 +80,8 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt).not.toContain('"kind":"m2Command"');
     // newCommand 기본값 자동 직렬화 예시.
     expect(prompt).toContain('{"kind":"changeItem","itemId":"","op":"+=","amount":1}');
+    expect(prompt).toContain('runControl action variants: start, advance, end, setFlag, resetRoom');
+    expect(prompt).toContain('run condition queries: active, floor, flag, result');
     // 참조 가능한 리소스 id:이름.
     expect(prompt).toContain("item_potion: 회복약");
     expect(prompt).toContain("sw_0001: 보물상자 열림");
@@ -225,6 +227,25 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     }) as unknown as FakeElement;
   }
 
+  it("프롬프트 입력과 생성 상태, 결과 영역을 보이는 레이블로 연결한다", () => {
+    const { actions } = recordingActions();
+    const panel = renderPanel(actions);
+
+    const input = findByTestId(panel, "ai-event-input")!;
+    const promptLabel = findByTestId(panel, "ai-event-prompt-label")!;
+    const status = findByTestId(panel, "ai-event-status")!;
+    const result = findByTestId(panel, "ai-event-result")!;
+    const resultTitle = findByTestId(panel, "ai-event-result-title")!;
+
+    expect(promptLabel.tagName).toBe("LABEL");
+    expect(promptLabel.getAttribute("for")).toBe(input.getAttribute("id"));
+    expect(status.getAttribute("role")).toBe("status");
+    expect(status.getAttribute("aria-live")).toBe("polite");
+    expect(result.getAttribute("role")).toBe("region");
+    expect(result.getAttribute("aria-labelledby")).toBe(resultTitle.getAttribute("id"));
+    expect(result.hidden).toBe(true);
+  });
+
   it("생성 → 프리뷰 → 삽입 → 프리뷰 정리 흐름이 동작한다", async () => {
     mockFetchSequence(JSON.stringify(CHEST_COMMANDS));
     const { actions, added } = recordingActions();
@@ -263,12 +284,15 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(inserted).toHaveLength(0);
   });
 
-  it("apiKey 모드에서 키가 없으면 설정 안내를 표시한다", () => {
+  it("연결이 안 됐으면 연결 방식을 완료하라고 안내한다", () => {
     const { actions } = recordingActions();
     const panel = renderPanel(actions, "");
     findByTestId(panel, "ai-event-input")!.value = "보물상자";
     findByTestId(panel, "ai-event-generate")!.click();
-    expect(panel.textContent).toContain("AI 설정에서 API 키와 baseUrl을 입력하세요");
+    // 옛 문구는 "API 키와 baseUrl을 입력하세요" 였다 — 그 두 입력은 설정 모달에서 걷었고
+    // 자격은 동반 서비스가 보관한다. 없는 입력을 가리키는 안내를 남기지 않는다.
+    expect(panel.textContent).toContain("연결 방식");
+    expect(panel.textContent).not.toContain("baseUrl");
   });
 
   it("ChatGPT 모드(apiKey 없음)에서는 생성을 막지 않고 프리뷰를 보여준다", async () => {

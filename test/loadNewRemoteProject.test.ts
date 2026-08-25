@@ -49,11 +49,16 @@ describe("store.loadNewRemoteProject — welcome genre remote branch", () => {
 
     expect(store.isLoaded()).toBe(true);
     expect(store.getCurrent().meta.title).toBe("몬스터 수집");
-    expect(result.projectId).toMatch(/^rpg-zzu-[a-f0-9]{10}$/);
+    // 새로 발급되는 프로젝트 id 접두사는 2026-08-21 개명에서 rpg-zzu- → oprn- 로 바뀌었다.
+    // 이미 발급된 id(원격 Supabase 레코드를 가리킨다)는 그대로 유효하다.
+    expect(result.projectId).toMatch(/^oprn-[a-f0-9]{10}$/);
     expect(result.projectId).not.toBe("rpg-zzu-dungeon-example");
+    expect(store.getProjectIdentity()).toEqual({ kind: "remote", id: result.projectId });
 
     const config = supabaseProjectConfig();
     expect(config?.projectId).toBe(result.projectId);
+    expect(storage.get("oprn:supabase-selected-project")).toBe(result.projectId);
+    expect(storage.has("oprn:supabase-project-config")).toBe(false);
     expect(store.getDbPersistenceStatus().kind).toBe("ready");
 
     // Remote path stays open — flush is not disabled by the welcome blank branch.
@@ -77,7 +82,13 @@ describe("store.loadNewRemoteProject — welcome genre remote branch", () => {
     const { createBlankProject } = await import("@/project/defaults");
 
     const result = await store.loadNewRemoteProject(createBlankProject());
+    const firstIdentity = store.getProjectIdentity();
+    await store.loadNewRemoteProject(createBlankProject());
+    const secondIdentity = store.getProjectIdentity();
     expect(result.projectId).toBeNull();
+    expect(firstIdentity.kind).toBe("local-session");
+    expect(secondIdentity.kind).toBe("local-session");
+    expect(secondIdentity.id).not.toBe(firstIdentity.id);
     expect(store.getDbPersistenceStatus().kind).toBe("not-configured");
     const flushed = await store.flush();
     expect(flushed.kind).toBe("not-configured");

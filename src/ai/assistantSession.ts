@@ -30,7 +30,7 @@ import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
-import { planRequiredToolSchemas } from "./planToolExposure";
+import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
 import {
   calibratedBudgetChars,
@@ -152,7 +152,7 @@ export type AuditEntry =
   | { kind: "status"; text: string; at?: string };
 
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
-// 🔬 하네스 뷰어와 window.__rpgzzuAiHarness(헤드리스 디버깅)가 소비한다.
+// 🔬 하네스 뷰어와 window.__oprnAiHarness(헤드리스 디버깅)가 소비한다.
 export interface HarnessSnapshot {
   readonly model: string;
   readonly liteModel?: string;
@@ -221,6 +221,31 @@ function approvalWarningFor(name: string, args: Record<string, unknown>): string
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function plannedTargetMismatch(spec: BuildSpec, args: Record<string, unknown>): string | null {
+  const expected = spec.plannedMap;
+  const target = args.target;
+  if (!expected || !isRecord(target) || target.kind !== "new") return null;
+
+  const planned = isRecord(target.plannedMap) ? target.plannedMap : target;
+  const actualMapId = typeof planned.mapId === "string"
+    ? planned.mapId
+    : typeof target.mapId === "string"
+      ? target.mapId
+      : null;
+  const actualWidth = typeof planned.width === "number" ? planned.width : null;
+  const actualHeight = typeof planned.height === "number" ? planned.height : null;
+  if (
+    actualMapId === expected.mapId
+    && actualWidth === expected.width
+    && actualHeight === expected.height
+  ) {
+    return null;
+  }
+
+  return `확정된 plannedMap은 '${expected.mapId}' ${expected.width}×${expected.height}이지만 요청 대상은 `
+    + `'${actualMapId ?? "?"}' ${actualWidth ?? "?"}×${actualHeight ?? "?"}입니다.`;
 }
 
 export function rawToolCallMarkupIndex(text: string): number {
@@ -345,7 +370,8 @@ export const METADATA_ONLY_TOOLS = new Set([
 
 // 세션 전용 툴: 공간 빌드 전 밑그림 제출. 레지스트리 툴이 아니라(프로젝트를 바꾸지 않음)
 // 세션이 직접 처리하며, tools 배열에는 이 스키마를 덧붙여 모델에 노출한다.
-const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+// 감사(test/toolSchemaProviderCompat.test.ts)가 레지스트리 툴과 함께 검사해야 하므로 export 한다.
+export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
   type: "function",
   function: {
     name: "set_build_spec",
@@ -359,9 +385,25 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
         assets: {
           type: "array",
           description:
-            "[{id,kind,x,y,w,h,layer?,style?,confirmDestroy?}] — kind: house|road|npc|prop|clear 등, layer: lower(기본)|upper(장식). " +
+            "겹치지 않는 영역을 가진 에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). " +
             "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요.",
-          items: { type: "object" },
+          // properties 를 선언하지 않으면(items:{type:"object"}) strict function-calling 경로에서
+          // 모델이 필드를 표현할 방법이 없어 `assets:[{}]` 만 보낸다 — 2026-08-23 실측: 밑그림 검증 10회 연속 실패.
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "에셋 식별자(예: house_1)" },
+              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등" },
+              x: { type: "integer" },
+              y: { type: "integer" },
+              w: { type: "integer" },
+              h: { type: "integer" },
+              layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower" },
+              style: { type: "string", description: "종류별 스타일 힌트(선택)" },
+              confirmDestroy: { type: "boolean", description: "clear가 기존 구조물을 덮을 때만 true" },
+            },
+            required: ["id", "kind", "x", "y", "w", "h"],
+          },
         },
         buildOrder: {
           type: "array",
@@ -395,7 +437,7 @@ export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
  * Always available so the main model can plan/replan inside the ReAct loop;
  * the pre-turn planner also authors the first plan without tools.
  */
-const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
+export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
   {
     type: "function",
     function: {
@@ -418,9 +460,35 @@ const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
           plannerNote: { type: "string", description: "전략 메모(선택)" },
           layers: {
             type: "array",
-            description:
-              "[{title, items:[{title, instruction, doneWhen?, successTools?}]}] — 2~6 레이어, 항목당 구체 instruction",
-            items: { type: "object" },
+            description: "2~6 레이어. 각 레이어는 title 과 items 를 가지며, 항목마다 구체적인 instruction 이 필요하다.",
+            // items:{type:"object"} 로 두면 모델이 `layers:[{}]` 밖에 못 보낸다(2026-08-23 실측: 8회 연속 인자 오류).
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string", description: "생략 시 L1, L2 … 자동" },
+                title: { type: "string", description: "레이어 제목" },
+                items: {
+                  type: "array",
+                  description: "이 레이어의 작업 항목",
+                  items: {
+                    type: "object",
+                    properties: {
+                      id: { type: "string", description: "생략 시 L1-1 … 자동" },
+                      title: { type: "string", description: "항목 제목" },
+                      instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
+                      doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
+                      successTools: {
+                        type: "array",
+                        description: "이 항목의 성공을 증명하는 툴 이름(선택)",
+                        items: { type: "string" },
+                      },
+                    },
+                    required: ["title", "instruction"],
+                  },
+                },
+              },
+              required: ["title", "items"],
+            },
           },
         },
         required: ["goal", "layers"],
@@ -558,8 +626,9 @@ export class AssistantSession {
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
   private workPlanAutoStepsThisUserMessage = 0;
-  /** 이번 사용자 메시지 동안 성공한 쓰기 툴 이름(WorkPlan complete 가드용). */
-  private turnSuccessfulWriteTools = new Set<string>();
+  /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
+  private turnSuccessfulTools = new Set<string>();
+  private successfulToolsWorkItemId: string | null = null;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -660,6 +729,16 @@ export class AssistantSession {
 
   // 공간 쓰기 툴 게이트. 통과하면 warning 목록, 차단이면 사유가 담긴 ToolResult.
   private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
+    if (
+      name === "place_npc"
+      && typeof args.mapId === "string"
+      && typeof args.id === "string"
+      && typeof args.x === "number"
+      && typeof args.y === "number"
+    ) {
+      const existing = this.ctx.project.maps[args.mapId]?.events.find((event) => event.id === args.id);
+      if (existing?.x === args.x && existing.y === args.y) return { warnings: [] };
+    }
     const regions = affectedRegions(name, args);
     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
@@ -671,6 +750,15 @@ export class AssistantSession {
         "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
       ]);
+    }
+    if (this.activeSpec?.mapId === mapId) {
+      const mismatch = plannedTargetMismatch(this.activeSpec, args);
+      if (mismatch) {
+        return specGateResult(`스펙 게이트: '${name}' 차단 — plannedMap 불일치`, [
+          mismatch,
+          "set_build_spec의 plannedMap과 새 맵 target의 mapId·width·height를 같은 값으로 맞춘 뒤 다시 호출하세요.",
+        ]);
+      }
     }
     // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지를 판정한다.
     const assets = specs.flatMap((spec) => spec.assets);
@@ -877,19 +965,27 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
-    this.turnSuccessfulWriteTools = new Set();
+    this.turnSuccessfulTools = new Set();
+    this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
 
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
+    // F-05: auto/orchestrated 모드에서는 bare 집이라도 clarify로 멈추지 않고 planner/LLM으로 넘긴다.
+    // agentMode==="chat"에서만 되묻기를 유지한다. PROTOCOL_LOCKED_RE는 intentClarify 내부에서 이미 bypass.
     const clarify = resolveIntentClarification(text, { explicitSkillId: opts?.explicitSkillId });
     if (clarify) {
-      const assistantText = formatIntentClarifyMessage(clarify);
-      this.messages.push({ role: "assistant", content: assistantText });
-      onEvent({ type: "assistant_message", content: assistantText });
-      this.pushAudit({ kind: "status", text: `의도 확인(${clarify.kind}): ${clarify.reason}` });
-      this.pushAudit({ kind: "assistant", text: assistantText });
-      this.pushAudit({ kind: "status", text: "턴 종료(final) — 의도 확인 · 제안 0건" });
-      return { assistantText, proposedCalls: [], stoppedReason: "final" };
+      const shouldBypassClarify = this.config.agentMode === "auto" || this.orchestrationEnabled();
+      if (shouldBypassClarify) {
+        this.pushAudit({ kind: "status", text: `의도 확인 건너뜀(${clarify.kind}): ${clarify.reason} — auto/orchestrated` });
+      } else {
+        const assistantText = formatIntentClarifyMessage(clarify);
+        this.messages.push({ role: "assistant", content: assistantText });
+        onEvent({ type: "assistant_message", content: assistantText });
+        this.pushAudit({ kind: "status", text: `의도 확인(${clarify.kind}): ${clarify.reason}` });
+        this.pushAudit({ kind: "assistant", text: assistantText });
+        this.pushAudit({ kind: "status", text: "턴 종료(final) — 의도 확인 · 제안 0건" });
+        return { assistantText, proposedCalls: [], stoppedReason: "final" };
+      }
     }
 
     // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
@@ -978,9 +1074,10 @@ export class AssistantSession {
       return;
     }
 
-    const decision = parseOrchestratorDecision(raw);
-    if (!decision) {
-      this.pushAudit({ kind: "status", text: `planner:parse-fail raw=${raw.slice(0, 200)}` });
+    const parsed = parseOrchestratorDecision(raw);
+    if (!parsed.decision) {
+      // 실패 사유 + 원문을 함께 남긴다. 사유 없이 잘린 원문만 남기면 원인 규명이 불가능하다(2026-08-23 QA).
+      this.pushAudit({ kind: "status", text: `planner:parse-fail ${parsed.error} raw=${raw.slice(0, 800)}` });
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
@@ -988,9 +1085,12 @@ export class AssistantSession {
         this.workPlan = buildDefaultWorkPlan(text);
         this.emitWorkPlan(onEvent);
         this.injectWorkPlanOrchestration();
+        // 폴백 계획은 사용자 요청을 그대로 담지 못한다 — 조용히 진행하면 축소된 결과를 성공으로 보고하게 된다.
+        onEvent({ type: "status", text: `플래너 응답을 해석하지 못해 폴백 계획으로 진행합니다 (${parsed.error})` });
       }
       return;
     }
+    const decision = parsed.decision;
 
     if (decision.action === "direct") {
       this.pushAudit({ kind: "status", text: `planner:direct ${decision.reason ?? ""}` });
@@ -1059,6 +1159,8 @@ export class AssistantSession {
       this.workPlan = plan;
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
+      this.turnSuccessfulTools.clear();
+      this.successfulToolsWorkItemId = plan.currentItemId;
       // 새 계획 = 새 검증 주기: 이전 플랜의 실패/대기/증명 상태를 리셋한다(툴콜 히스토리는
       // 런 전체 누적 — questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
       this.verificationFailed = false;
@@ -1071,25 +1173,31 @@ export class AssistantSession {
         data: { plan: structuredClone(plan), progress },
       };
     }
-    if (!this.workPlan) {
-      return {
-        ok: false,
-        summary: "활성 WorkPlan이 없습니다. set_work_plan으로 계획을 세우거나 어려운 요청으로 플래너가 계획을 만들게 하세요.",
-      };
-    }
+    // 조회는 계획이 없어도 실패가 아니다 — "없음"은 정확한 답이다. ok:false 로 돌려주면 정상 상태가
+    // 실패 통계에 섞이고 모델이 교정할 것도 없는 실패를 재시도한다(2026-08-23 실측).
     if (name === "get_work_plan") {
+      if (!this.workPlan) {
+        return { ok: true, summary: "활성 WorkPlan 없음. 다단계 작업이면 set_work_plan으로 계획을 세우세요.", data: { plan: null } };
+      }
       return {
         ok: true,
         summary: formatWorkPlanUserVisible(this.workPlan).slice(0, 500),
         data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan) },
       };
     }
+    if (!this.workPlan) {
+      return {
+        ok: false,
+        summary: "활성 WorkPlan이 없습니다. set_work_plan으로 계획을 세우거나 어려운 요청으로 플래너가 계획을 만들게 하세요.",
+      };
+    }
     if (name === "complete_work_item") {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
+      this.syncSuccessfulToolsToCurrentWorkItem();
       const result = completeWorkItemById(this.workPlan, id, note, {
-        successfulWriteTools: [...this.turnSuccessfulWriteTools],
+        successfulTools: [...this.turnSuccessfulTools],
       });
       if (!result.ok) {
         return {
@@ -1124,7 +1232,19 @@ export class AssistantSession {
     return { ok: false, summary: `알 수 없는 WorkPlan 툴: ${name}` };
   }
 
-  private async noteSuccessfulWriteTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
+  private syncSuccessfulToolsToCurrentWorkItem(): void {
+    const currentItemId = this.workPlan?.currentItemId ?? null;
+    if (currentItemId === this.successfulToolsWorkItemId) return;
+    this.turnSuccessfulTools.clear();
+    this.successfulToolsWorkItemId = currentItemId;
+  }
+
+  private recordSuccessfulTool(name: string): void {
+    this.syncSuccessfulToolsToCurrentWorkItem();
+    this.turnSuccessfulTools.add(name);
+  }
+
+  private async noteSuccessfulTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.workPlan || names.length === 0) return;
     const { completed, next } = advanceWorkPlanFromTools(this.workPlan, names);
     if (completed) {
@@ -1139,6 +1259,7 @@ export class AssistantSession {
       await this.maybeAutoApplyMilestone(completed, onEvent);
       // 레이어 검증 게이트(todo 5): 완료 항목이 속한 레이어가 끝났으면 canonical 테이블대로 검증.
       await this.sweepFinishedLayers(onEvent);
+      this.syncSuccessfulToolsToCurrentWorkItem();
     }
   }
 
@@ -1164,10 +1285,9 @@ export class AssistantSession {
     this.lastMilestoneCompletionItemId = completed.id;
     const calls = this.finalizeProposals(this.turnProposals);
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
-    // 승인 분류: 자율 모드(auto)는 세션 자체 유효 플래그를 쓴다 — 사용자 UI autoApprove 아님.
-    // agentMode 미지정(구형 주입 config)은 todo 1의 기본값 "auto" 계약을 따른다.
-    // chat 모드만 사용자 설정을 그대로 쓴다(종전 분류와 동일).
-    const autoApproveEnabled = this.config.agentMode === "chat" ? this.config.autoApprove === true : true;
+    // F-06: autoApproveEnabled = (agentMode==="auto") || config.autoApprove
+    // classifyApproval은 DESTRUCTIVE_TOOLS를 먼저 require_approval로 분류하므로 파괴적 변경은 auto여도 승인 필요.
+    const autoApproveEnabled = this.config.agentMode === "auto" || this.config.autoApprove === true;
     const verdict = classifyApproval(calls, { autoApproveEnabled });
     if (verdict.decision !== "auto") {
       this.pauseMilestone(completed, verdict.reason, verdict.warnings, onEvent);
@@ -1649,7 +1769,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) continue;
-      this.turnSuccessfulWriteTools.add("place_npc");
+      this.recordSuccessfulTool("place_npc");
       this.upsertProposal(proposedByKey, {
         name: "place_npc",
         args,
@@ -1785,16 +1905,31 @@ export class AssistantSession {
     // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
     // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
     const baseTools = toOpenAiTools(undefined, { domains });
+    const mentioned = mentionedToolSchemas(this.currentTurnRequestText ?? "");
     const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
-    const planRequiredNames = new Set(planRequired.map((tool) => tool.function.name));
+    // F-03: quest 도메인 턴에서는 workPlan이 없어도 persist 툴을 반드시 노출한다.
+    const questPersist = this.currentTurnToolDomains?.has("quest")
+      ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
+      : [];
+    const requiredByName = new Map(
+      [...mentioned, ...planRequired, ...questPersist].map((tool) => [tool.function.name, tool] as const),
+    );
+    const requiredNames = new Set(requiredByName.keys());
     const tools = [
-      ...baseTools.filter((tool) => !planRequiredNames.has(tool.function.name)),
-      ...planRequired,
+      ...baseTools.filter((tool) => !requiredNames.has(tool.function.name)),
+      ...requiredByName.values(),
       SET_BUILD_SPEC_TOOL,
       ...(planToolsOn ? WORK_PLAN_TOOLS : []),
     ];
     // 토큰 보정 관측용: tools 스키마도 prompt_tokens에 포함되므로 문자 수에 더한다(근사).
     const toolsChars = JSON.stringify(tools).length;
+    // 노출된 툴 목록을 감사에 남긴다. 모델이 "그 기능은 없습니다" 라고 할 때(실측 2026-08-23:
+    // set_type_chart/define_ending/script_cutscene 가 있는데도 없다고 보고) 그 주장이 사실인지
+    // 로그로 확인할 방법이 없었다. 도메인 스코핑·40툴 상한의 결과를 관측 가능하게 만든다.
+    this.pushAudit({
+      kind: "status",
+      text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`.slice(0, 2000),
+    });
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     const orchestrated = this.orchestrationEnabled() || Boolean(this.workPlan);
@@ -1984,7 +2119,6 @@ export class AssistantSession {
       const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
-      const successfulWriteToolsThisRound: string[] = [];
       // Capture before any complete/skip/set tools mutate the cursor.
       const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
@@ -2041,10 +2175,9 @@ export class AssistantSession {
             if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
           }
         }
-        if (toolResult.ok && tool?.mode === "write") {
-          successfulWriteToolsThisRound.push(name);
-          this.turnSuccessfulWriteTools.add(name);
-        }
+        // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
+        // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
+        if (toolResult.ok) this.recordSuccessfulTool(name);
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({
@@ -2126,7 +2259,7 @@ export class AssistantSession {
       }
 
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
-      await this.noteSuccessfulWriteTools(successfulWriteToolsThisRound, onEvent);
+      await this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent);
       const afterItemId = this.workPlan?.currentItemId ?? null;
       const advanced =
         Boolean(this.workPlan) &&

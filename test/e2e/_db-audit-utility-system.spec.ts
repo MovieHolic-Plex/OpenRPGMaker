@@ -16,7 +16,7 @@ import {
   recordFinding,
   switchTabAnyMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject } from "./oprn-database-helpers";
 
 const SPEC = "_db-audit-utility-system";
 const SHOTS_DIR = "output/evidence/db-beginner-audit/shots";
@@ -49,7 +49,7 @@ const PARTY_SLOT_TEST_IDS = [
 
 const DEFAULT_ATTACK_TERM = "공격";
 const DEFAULT_SKILL_TERM = "스킬";
-const TITLE_BG_ALT = "rpg-zzu-title-blue";
+const TITLE_BG_ALT = "oprn-title-blue";
 const TITLE_MUSIC_FALLBACK = "cc0-bgm-field";
 
 type Severity = 0 | 1 | 2 | 3 | 4;
@@ -1119,7 +1119,7 @@ async function probeE3(page: Page, lane: "expert" | "beginner"): Promise<void> {
   const before = titleSnapshot(await exportedProject(page));
   const beforePath = writeJson(`${DIFF_DIR}/${SPEC}-${probeId}-before.json`, before);
   repro.push(`precondition titleResourceId=${JSON.stringify(before.titleResourceId)} backgroundResourceId=${JSON.stringify(before.backgroundResourceId)}`);
-  const nextBg = before.backgroundResourceId === TITLE_BG_ALT ? "rpg-zzu-title-field" : TITLE_BG_ALT;
+  const nextBg = before.backgroundResourceId === TITLE_BG_ALT ? "oprn-title-field" : TITLE_BG_ALT;
   const input = page.getByTestId("db-field-title-screen-background");
   await input.fill(nextBg);
   await input.blur();

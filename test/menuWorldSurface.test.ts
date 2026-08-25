@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -51,24 +52,6 @@ let previousWindow: unknown;
 function fakeElement(node: HTMLElement): FakeElement {
   if (node instanceof FakeElement) return node;
   throw new Error("Expected fake element");
-}
-
-function fakeBody(): FakeElement {
-  if (document.body instanceof FakeElement) return document.body;
-  throw new Error("Expected fake body");
-}
-
-function openToolsMenu(topbar: HTMLElement): FakeElement {
-  const menu = findByTestId(fakeElement(topbar), "menu-tools");
-  if (!menu) throw new Error("menu-tools missing");
-  menu.click();
-  let item = findByTestId(fakeBody(), "menu-tools-world");
-  if (!item) {
-    menu.click();
-    item = findByTestId(fakeBody(), "menu-tools-world");
-  }
-  if (!item) throw new Error("menu-tools-world missing");
-  return item;
 }
 
 function installBrowserGlobals(): void {
@@ -149,50 +132,50 @@ afterEach(() => {
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   restoreWindow(previousWindow);
+  resetEditorUiModeForTests("standard");
   vi.clearAllMocks();
 });
 
-describe("세계관 메뉴 표면", () => {
-  it("툴바에는 세계관 버튼 하나만 남고 legacy 버튼 testid는 사라진다", () => {
+describe("에디터 헤더 복구", () => {
+  it("기존 메뉴·작업 프리셋·테스트·클래식 툴바를 유지한다", () => {
+    // Break: a bottom-bar cleanup accidentally removes established top/editor chrome again.
+    resetEditorUiModeForTests("expert");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
 
-    const toolbarWorld = findByTestId(fakeElement(topbar), "toolbar-world");
-    expect(toolbarWorld?.getAttribute("title")).toBe("세계관");
-    expect(toolbarWorld?.getAttribute("aria-label")).toBe("세계관");
-    expect(findByTestId(fakeElement(topbar), "toolbar-village-info")).toBeNull();
-    expect(findByTestId(fakeElement(topbar), "toolbar-evidence-packet")).toBeNull();
+    const surface = fakeElement(topbar);
+    expect(findByTestId(surface, "editor-product-brand")).not.toBeNull();
+    for (const testId of [
+      "menu-project",
+      "menu-map",
+      "menu-tools",
+      "menu-game",
+      "menu-help",
+      "workspace-preset-toggle",
+      "workspace-panels-button",
+      "workspace-command-palette-button",
+      "topbar-test-play",
+      "topbar-battle-test",
+      "oprn-toolbar",
+      "toolbar-new",
+      "toolbar-map-copy",
+    ]) {
+      expect(findByTestId(surface, testId), testId).not.toBeNull();
+    }
   });
 
-  it("세계관 툴바 버튼은 세계관 패널을 연다", () => {
+  it("헤더의 AI 설정 버튼이 설정 모달을 연다", () => {
+    // Break: settings remains buried in the assistant panel instead of the header.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
-    findByTestId(fakeElement(topbar), "toolbar-world")?.click();
+    const settings = findByTestId(fakeElement(topbar), "topbar-ai-settings");
+    expect(settings?.textContent).toContain("AI 설정");
+    expect(settings?.getAttribute("aria-label")).toBe("AI 설정 열기");
+    settings?.click();
 
-    expect(mocks.openWorldPanel).toHaveBeenCalledTimes(1);
-  });
-
-  it("도구 메뉴는 세계관 항목을 노출하고 마을 정보 항목은 노출하지 않는다", () => {
-    const topbar = document.createElement("div");
-    renderTopbar(topbar);
-
-    openToolsMenu(topbar);
-
-    const worldItem = findByTestId(fakeBody(), "menu-tools-world");
-    expect(worldItem?.textContent).toBe("세계관...");
-    expect(findByTestId(fakeBody(), "menu-tools-village-info")).toBeNull();
-    expect(fakeBody().textContent).not.toContain("마을 정보");
-  });
-
-  it("도구 메뉴의 세계관 항목도 세계관 패널을 연다", () => {
-    const topbar = document.createElement("div");
-    renderTopbar(topbar);
-
-    openToolsMenu(topbar).click();
-
-    expect(mocks.openWorldPanel).toHaveBeenCalledTimes(1);
+    expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1);
   });
 
   it("legacy openVillageInfoModal 진입점은 세계관 패널로 리다이렉트한다", async () => {

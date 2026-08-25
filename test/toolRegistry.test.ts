@@ -46,7 +46,7 @@ describe("toolRegistry", () => {
     }).toMatchInlineSnapshot(`
       {
         "upsert_common_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능.",
-        "upsert_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용.",
+        "upsert_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.",
       }
     `);
   });
@@ -226,5 +226,22 @@ describe("PINNED_TOOLS_BY_DOMAIN", () => {
         ).not.toBe(true);
       }
     }
+  });
+
+  it("pins quest persist tools and world facades", () => {
+    expect(PINNED_TOOLS_BY_DOMAIN.get("quest")).toEqual(new Set([
+      "author_story_arc",
+      "define_quest",
+      "create_quest",
+      "verify_quest",
+      "lint_quest",
+      "generate_walkthrough",
+    ]));
+    expect(PINNED_TOOLS_BY_DOMAIN.get("world")).toEqual(new Set([
+      "plan_world",
+      "build_world",
+      "link_maps",
+      "lint_world",
+    ]));
   });
 });

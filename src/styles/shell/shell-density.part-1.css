@@ -1,0 +1,1107 @@
+.left-panel-stack .layer-row {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.left-panel-stack .layer-caption {
+  display: none;
+}
+
+.left-panel-stack .layer-btn {
+  align-items: center;
+  display: flex;
+  gap: 3px;
+  font-size: 10px;
+  height: 22px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 0;
+  padding: 0 2px;
+}
+
+.left-panel-stack .layer-btn-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.left-panel-stack .brush-control {
+  display: none;
+  gap: 1px;
+  grid-template-columns: 28px repeat(3, minmax(0, 1fr));
+  margin-top: 1px;
+  width: 100%;
+}
+
+.left-panel-stack .brush-control-label {
+  font-size: 10px;
+}
+
+.left-panel-stack .brush-size-btn {
+  height: 20px;
+  padding: 0 1px;
+}
+
+.left-panel-stack .tool-command-row {
+
+  display: none;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+  margin-top: 1px;
+  width: 100%;
+}
+
+.tool-grid .btn,
+.layer-btn,
+.brush-size-btn,
+.tool-command-row .icon-btn {
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tool-grid .btn:hover:not(:disabled),
+.layer-btn:hover:not(:disabled),
+.brush-size-btn:hover:not(:disabled),
+.tool-command-row .icon-btn:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.tool-grid .btn:focus-visible,
+.layer-btn:focus-visible,
+.brush-size-btn:focus-visible,
+.tool-command-row .icon-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.tool-grid .btn.active,
+.tool-grid .btn[aria-pressed="true"],
+.layer-btn.active,
+.layer-btn[aria-pressed="true"],
+.brush-size-btn.active,
+.brush-size-btn[aria-pressed="true"] {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  box-shadow: inset 3px 0 0 var(--accent-primary);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.tool-grid .btn:active:not(:disabled),
+.layer-btn:active:not(:disabled),
+.brush-size-btn:active:not(:disabled),
+.tool-command-row .icon-btn:active:not(:disabled) {
+  background: var(--control-bg-active);
+  border-color: var(--accent-border);
+  box-shadow: none;
+}
+
+.left-panel-stack .tile-tool-status {
+  display: none;
+  gap: 2px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  margin-top: 1px;
+  padding: 2px;
+  width: 100%;
+}
+
+.left-panel-stack .selected-tile-preview {
+  height: 32px;
+  width: 32px;
+}
+
+.left-panel-stack .tile-tool-status-grid {
+  gap: 1px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.left-panel-stack .tile-tool-status-cell:nth-child(n + 3) {
+  display: none;
+}
+
+.left-panel-stack .tile-tool-status-label,
+.left-panel-stack .tile-tool-status-value {
+  font-size: 9px;
+}
+
+.chipset-sheet {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border);
+  container-type: inline-size;
+  display: block;
+  height: min(540px, calc(100vh - 214px));
+  max-height: min(540px, calc(100vh - 214px));
+  min-height: min(280px, 36vh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: relative;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+  width: 100%;
+}
+
+.palette-option-row {
+  align-items: center;
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  margin-bottom: 2px;
+}
+
+.palette-option-label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  padding-left: 3px;
+}
+
+.palette-option-button {
+  font-size: 11px;
+  height: 22px;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+/* ── 좌패널 단일 면 (2026-08-21: 칠하기/찾기/속성 3탭 통합) ───── */
+.palette-work-shell {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  width: 100%;
+}
+
+.palette-work-shell .palette-work-pane.is-paint {
+  flex: 1 1 auto;
+  min-height: 120px;
+}
+
+/* 그룹/시트 팔레트가 높이 0으로 붕괴하지 않게 */
+.palette-work-shell [data-testid="tile-palette-clusters"],
+.palette-work-shell [data-testid="tile-palette"] {
+  flex: 1 1 auto;
+  min-height: 160px;
+  overflow: auto;
+}
+
+/* 단일 면은 세로로 한 흐름 — 칩·도구·필터·팔레트·붓 보조·속성·킷.
+   팔레트만 늘어나고(min-height 160px 위에서 지정) 나머지는 내용 높이를 지킨다. */
+.palette-work-shell .palette-work-pane.is-paint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.palette-work-shell .palette-work-pane.is-paint > .palette-filter-bar,
+.palette-work-shell .palette-work-pane.is-paint > .palette-brush-assist-wrap,
+.palette-work-shell .palette-work-pane.is-paint > .palette-collapsible {
+  flex: 0 0 auto;
+}
+
+/* ── 필터 한 줄 (구 「찾기」 탭의 알맹이) ──────────────────────── */
+.palette-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.palette-filter-search-row {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: minmax(0, 1fr) 28px;
+}
+
+.palette-filter-search-row .tile-search-input {
+  min-width: 0;
+}
+
+/* 분류 칩은 **한 줄 가로 스크롤**. 공용 .tile-category-tabs 는 3열 그리드라
+   7개가 3줄(≈68px)로 늘어난다 — 실측에서 필터 바가 109px 를 먹어 팔레트를 200px 로
+   눌렀고, palette-tiles-come-first.spec.ts 가 지키는 260px 하한을 깼다.
+   이 패널의 희소 자원은 세로다. */
+.palette-filter-bar .tile-category-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  margin-bottom: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.palette-filter-bar .tile-category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.palette-filter-bar .tile-category-tab {
+  flex: 0 0 auto;
+  height: 20px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.palette-filter-status {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: 10px;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.palette-filter-empty {
+  padding: 8px 4px;
+  text-align: center;
+}
+
+/* 커스텀 아틀라스는 위치가 정보라 숨기지 않고 흐리게 한다(tilePaletteRm2k.ts 주석). */
+.chipset-tile.is-filtered-out {
+  filter: grayscale(1);
+  opacity: 0.22;
+}
+
+.chipset-tile.is-filtered-out:hover {
+  opacity: 0.5;
+}
+
+/* ── 타일 속성 창 (구 「속성」 탭) ─────────────────────────────
+   좌패널 인라인이 아니라 창인 이유는 tilePropsDialog.ts 헤더 주석 참고. */
+.tile-props-dialog-backdrop {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  /* 이벤트 에디터 모달(2600)보다 낮게, 캔버스 크롬보다 높게. */
+  z-index: 2400;
+}
+
+.tile-props-dialog-panel {
+  background: var(--bg-surface, var(--bg-inset));
+  border: 1px solid var(--border-strong, var(--border-default));
+  border-radius: var(--radius-m, 8px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+  max-width: 92vw;
+  min-width: 300px;
+  width: 380px;
+}
+
+.tile-props-dialog-head {
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  gap: 7px;
+  padding: 8px 10px;
+}
+
+.tile-props-dialog-head h2 {
+  flex: 0 0 auto;
+  font-size: 13px;
+  margin: 0;
+}
+
+.tile-props-dialog-thumb {
+  border: 1px solid var(--border-default);
+  flex: 0 0 auto;
+  height: 24px;
+  image-rendering: pixelated;
+  width: 24px;
+}
+
+.tile-props-dialog-tileset {
+  color: var(--text-2);
+  flex: 1 1 auto;
+  font-size: 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-props-dialog-close {
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 3px;
+}
+
+.tile-props-dialog-close:hover {
+  color: var(--text-1);
+}
+
+.tile-props-dialog-body {
+  overflow: auto;
+  padding: 10px;
+}
+
+/* ── 접이식 섹션 (보조 패널용) ─────────────────────────────────── */
+.palette-collapsible {
+  border: 1px solid var(--border-subtle, var(--border-default));
+  border-radius: var(--radius-s);
+  min-width: 0;
+}
+
+.palette-collapsible > summary {
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  list-style: none;
+  padding: 4px 6px;
+  user-select: none;
+}
+
+.palette-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+.palette-collapsible > summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 4px;
+  transition: transform var(--transition-fast, 120ms);
+}
+
+.palette-collapsible[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.palette-collapsible > summary:hover {
+  color: var(--text-1);
+}
+
+.palette-collapsible > *:not(summary) {
+  padding: 0 6px 6px;
+}
+
+/* ── 붓 보조: 헤더 한 줄 + 펼침 (details 대신 직접 제어) ────────
+   이웃 연결 칩은 접혀 있어도 이 줄에 남는다 — 붓의 동작을 바꾸는 토글이라
+   칠하는 동안 보여야 한다. 별도 줄로 빼면 33px 를 먹어 팔레트가 눌린다. */
+.palette-inline-section {
+  border: 1px solid var(--border-subtle, var(--border-default));
+  border-radius: var(--radius-s);
+  min-width: 0;
+}
+
+.palette-inline-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 2px 5px;
+}
+
+.palette-inline-toggle {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 600;
+  gap: 3px;
+  padding: 2px 0;
+}
+
+.palette-inline-toggle:hover {
+  color: var(--text-1);
+}
+
+.palette-inline-caret {
+  display: inline-block;
+  font-size: 9px;
+  width: 8px;
+}
+
+.palette-inline-header > .tile-brush-mode-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* 헤더 줄에서는 힌트 문장("오토타일 브러시(항상 성형)" 등)을 숨긴다.
+   실측(268px 패널): 힌트가 공간을 먹어 "이웃 연결" 라벨이 "이웃 ..." 으로 잘렸다.
+   같은 내용은 칩의 title 툴팁에 있고, 펼치면 아래 패널에서 그대로 보인다. */
+.palette-inline-header .tile-brush-hint {
+  display: none;
+}
+
+.palette-inline-header .tile-brush-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.palette-inline-section > .tile-brush-assist {
+  padding: 0 5px 5px;
+}
+
+/* 선택칩의 ⚙ — 타일 속성 창 진입. */
+.selected-tile-props-button {
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1;
+  padding: 1px 2px;
+}
+
+.selected-tile-props-button:hover {
+  color: var(--text-1);
+}
+
+.tile-mapping-meta.is-muted {
+  color: var(--text-3, var(--text-2));
+}
+
+/* ── 타일 번호 오버레이 (# 토글) ───────────────────────────────
+   예전에는 「찾기」 탭 전용 셀(.quick-tile-index span)만 번호를 달았다. 이제 번호는
+   본 팔레트 위에 얹힌다 — 감독은 번호만으로 검수를 못 하므로 그림 위에 겹쳐야 한다.
+   셀이 400개를 넘으므로 span 을 심지 않고 data-tile-index 를 CSS 로 읽는다(DOM 비용 0).
+   ::after 는 이미 .banned(🚫)·.classified 가 쓰고 있어 ::before 를 쓴다. */
+.tile-palette.show-index .chipset-tile::before {
+  background: rgba(0, 0, 0, 0.68);
+  border-radius: 2px;
+  bottom: 1px;
+  color: #fff;
+  content: attr(data-tile-index);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+  left: 1px;
+  line-height: 1.1;
+  padding: 0 2px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.tile-palette.show-index .chipset-tile {
+  position: relative;
+}
+
+/* 선택 타일 + 타일셋 이름 한 줄 칩 (구 palette-tileset-badge 흡수) */
+.selected-tile-status {
+  align-items: center;
+  background: var(--surface-workbench, var(--bg-inset));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: flex;
+  font-size: 11px;
+  font-weight: 600;
+  gap: 5px;
+  line-height: 1.3;
+  min-width: 0;
+  padding: 3px 6px;
+}
+
+.selected-tile-status .selected-tile-thumb {
+  border: 1px solid var(--border-strong, var(--border-default));
+  border-radius: 2px;
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+.selected-tile-status .selected-tile-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-tile-status .selected-tile-tileset {
+  color: var(--text-2, var(--text-secondary));
+  flex: 0 1 auto;
+  font-size: 10px;
+  font-weight: 400;
+  max-width: 42%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-work-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.palette-work-pane.is-paint .tile-palette-title {
+  font-size: 12px;
+  margin: 0;
+}
+
+.quick-tile-picker {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  margin-bottom: var(--space-1);
+  padding: var(--space-1);
+}
+
+.tile-category-tabs {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: var(--space-1);
+}
+
+.tile-category-tab {
+  font-size: 10px;
+  height: 22px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 2px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-category-tab.active,
+.tile-category-tab[aria-selected="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  font-weight: 700;
+}
+
+.tile-search-input {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 11px;
+  height: 24px;
+  padding: 0 var(--space-1);
+  width: 100%;
+}
+
+.tile-search-input:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.quick-tile-toolbar {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: var(--space-1);
+}
+
+.tile-number-toggle {
+  font-size: 10px;
+  height: 24px;
+  min-width: 40px;
+  padding: 0 5px;
+}
+
+.tile-brush-assist {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 2px;
+  margin-bottom: var(--space-1);
+  padding: var(--space-1);
+}
+
+.tile-brush-row,
+.tile-brush-neighborhood {
+  align-items: center;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  min-height: 22px;
+}
+
+.tile-brush-row.hidden,
+.tile-brush-neighborhood.hidden {
+  display: none;
+}
+
+.tile-brush-label {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-brush-chip,
+.tile-brush-neighborhood-value {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 18px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-brush-chip.active {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.stamp-picker,
+.tile-brush-strip,
+.used-location-list {
+  display: flex;
+  gap: 2px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.stamp-button,
+.used-location-button {
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 22px;
+  padding: 0 5px;
+}
+
+.structure-stamp-panel .stamp-picker {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  row-gap: 3px;
+}
+
+.structure-stamp-panel .stamp-button {
+  min-width: 44px;
+}
+
+.stamp-button.active,
+.stamp-button[aria-pressed="true"] {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.tile-brush-mini-cell {
+  flex: 0 0 24px;
+  height: 24px;
+  min-width: 24px;
+  width: 24px;
+}
+
+.tile-brush-empty {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 22px;
+  padding: 0 2px;
+}
+
+.quick-tile-grid {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(6, 32px);
+  justify-content: start;
+  max-height: 118px;
+  min-height: 54px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 2px;
+  scrollbar-gutter: stable;
+}
+
+.quick-tile-cell {
+  align-items: start;
+  appearance: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: 1px solid transparent;
+  cursor: crosshair;
+  display: flex;
+  height: 32px;
+  justify-content: start;
+  min-width: 32px;
+  padding: 0;
+  position: relative;
+}
+
+.quick-tile-cell:hover:not(:disabled),
+.quick-tile-cell:focus-visible:not(:disabled) {
+  border-color: var(--accent-hover);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
+  outline: none;
+}
+
+.quick-tile-cell.active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
+}
+
+.quick-tile-cell.muted::after {
+  background: rgba(42, 37, 33, 0.06);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.quick-tile-index {
+  background: rgba(42, 37, 33, 0.82);
+  color: var(--warning);
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 1px 2px;
+  pointer-events: none;
+}
+
+.quick-tile-picker.show-index .quick-tile-index {
+  display: block;
+}
+
+.quick-tile-empty {
+  grid-column: 1 / -1;
+  min-height: 48px;
+  padding: var(--space-2);
+}
+
+.chipset-sheet::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.chipset-sheet::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+.chipset-sheet::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chipset-sheet-image {
+  display: none;
+  height: var(--chipset-height);
+  image-rendering: pixelated;
+  max-width: none;
+  width: var(--chipset-width);
+}
+
+.chipset-grid {
+  --chipset-cell: 32px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 1px;
+  /* 패널 안에 들어가는 칸만 배치 — 가로 스크롤 없음 */
+  grid-template-columns: repeat(auto-fill, var(--chipset-cell));
+  grid-auto-rows: var(--chipset-cell);
+  justify-content: start;
+  padding: 2px;
+  position: static;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.chipset-tile {
+  appearance: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  cursor: crosshair;
+  height: var(--chipset-cell);
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+.chipset-tile-preview {
+  display: block;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+.chipset-tile-preview img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  left: 0;
+  max-width: none;
+  position: absolute;
+  top: 0;
+  transform-origin: top left;
+  user-select: none;
+}
+
+.chipset-tile:hover:not(:disabled),
+.chipset-tile:focus-visible:not(:disabled) {
+  border-color: var(--accent-hover);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
+  outline: none;
+}
+
+.chipset-tile.active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
+}
+
+.chipset-tile.stamp-source {
+  border-color: var(--success);
+  box-shadow:
+    inset 0 0 0 1px var(--bg-canvas),
+    inset 0 0 0 2px var(--success-muted);
+}
+
+.chipset-tile.classified {
+  filter: saturate(0.72);
+  opacity: 0.55;
+  position: relative;
+}
+
+.chipset-tile.classified::after {
+  align-items: center;
+  background: rgba(74, 87, 214, 0.30);
+  border: 1px solid rgba(42, 37, 33, 0.12);
+  border-radius: 999px;
+  color: var(--text-inverse);
+  content: "✓";
+  display: flex;
+  font-size: 8px;
+  font-weight: 700;
+  height: 11px;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0.75;
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 11px;
+}
+
+/* ── RM2003식 단일 팔레트 (가로 6칸 고정) ───────────────────── */
+/* 열 수는 항상 6. 칸 크기는 시트 컨테이너 폭(cqi) 기준 — % 순환 참조 금지. */
+.chipset-sheet.oprn-palette {
+  container-type: inline-size;
+}
+
+.chipset-grid.oprn-palette-grid {
+  --oprn-cols: 6;
+  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
+  box-sizing: border-box;
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  justify-content: start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px;
+  width: max-content;
+}
+
+.chipset-grid.oprn-palette-grid .chipset-tile {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+
+
+.chipset-tile.oprn-autotile {
+  position: relative;
+}
+
+.oprn-autotile-badge {
+  align-items: center;
+  background: rgba(74, 87, 214, 0.38);
+  border: 1px solid rgba(42, 37, 33, 0.20);
+  border-radius: 2px;
+  color: var(--text-inverse, #fff);
+  display: flex;
+  font-size: 7px;
+  font-weight: 700;
+  height: 10px;
+  justify-content: center;
+  left: 1px;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  top: 1px;
+  width: 10px;
+}
+
+.chipset-tile.range-selected {
+  border-color: var(--accent);
+  box-shadow:
+    inset 0 0 0 1px var(--bg-canvas),
+    inset 0 0 0 3px var(--accent-soft);
+  filter: none;
+  opacity: 1;
+}
+
+.chipset-range-marquee {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px rgba(42, 37, 33, 0.14);
+  height: max(2px, var(--range-height, 0px));
+  left: var(--range-left, 0);
+  pointer-events: none;
+  position: absolute;
+  top: var(--range-top, 0);
+  width: max(2px, var(--range-width, 0px));
+  z-index: var(--z-canvas-raised);
+}
+
+.chipset-range-marquee.hidden {
+  display: none;
+}
+
+.sheet-range-classify {
+  background: var(--accent);
+  border: 1px solid var(--accent-hover);
+  border-radius: 4px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-inverse);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 8px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  z-index: var(--z-canvas-chrome);
+}
+
+.sheet-range-classify:hover,
+.sheet-range-classify:focus-visible {
+  background: var(--accent-hover);
+  outline: 1px solid var(--text-inverse);
+}
+
+.chipset-tile.muted {
+  background: rgba(42, 37, 33, 0.06);
+  cursor: default;
+}
+
+.chipset-tile.muted .chipset-tile-preview {
+  opacity: 0.45;
+}
+
+.chipset-tile.band-dimmed {
+  background: rgba(42, 37, 33, 0.06);
+}
+
+.chipset-tile.band-dimmed.muted {
+  background: rgba(42, 37, 33, 0.06);
+}
+
+.chipset-band-nav {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  margin-bottom: 2px;
+}
+
+.chipset-band-button {
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  font-size: 11px;
+  font-weight: 600;
+  height: 22px;
+  min-width: 0;
+  padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.chipset-band-button.active,
+.chipset-band-button[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  box-shadow: none;
+  color: var(--text-1);
+}
+
+.chipset-band-button:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.chipset-band-button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.chipset-scroll-controls {
+  gap: 1px;
+  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  margin-top: 2px;
+}
+
+.chipset-scroll-button {
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
+  height: 22px;
+}
+
+.chipset-scroll-hint {
+  font-size: 10px;
+  line-height: 20px;
+}
+
+.left-panel-stack .compact-field {
+  align-items: center;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin-top: 2px;
+}
+
+.left-panel-stack .compact-field label {
+  font-size: 10px;
+}
+
+.left-panel-stack .compact-field input {
+  height: 22px;
+  min-width: 0;
+}

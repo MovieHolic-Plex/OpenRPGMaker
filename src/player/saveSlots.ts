@@ -1,33 +1,53 @@
 import { SCHEMA_VERSION, type ActorInitialEquipment, type Project } from "@/project/types";
 import {
   clampFriendship,
+  GOLD_MAX,
   startSession,
   type AudioCommandState,
   type PictureState,
   type PlaySession,
 } from "@/project/session";
 import { normalizeItemTransitionState } from "@/project/itemTransitions";
+import {
+  economyValueOrUndefined,
+  normalizeEconomyValue,
+  sanitizeEconomyRecord,
+  sanitizeShopTradeCounts,
+} from "@/project/economyValues";
 import { syncMonsterPartyFollowers } from "@/project/followers";
+import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import { normalizeGameTime } from "@/project/gameTime";
+import {
+  advanceGameDays,
+  calendarDayKey,
+  normalizeGameTime,
+  resolveTimeSystem,
+  type GameTime,
+  type Season,
+} from "@/project/gameTime";
 import {
   isActorEquipmentRecord,
   isActorParamBonusRecord,
   isActorRowsRecord,
   isStringRecord,
   isActorSkillIdsRecord,
+  isActorSkillPpRecord,
   isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
   isLightingState,
+  isLifeSkillsRecord,
+  isMakerInstancesRecord,
   isGameTime,
   isFarmPlotDate,
   isFarmPlotsRecord,
   isMonsterInstancesRecord,
   isNestedNumberRecord,
+  isNestedNonNegativeIntegerRecord,
   isNumberRecord,
   isPictureRecord,
+  parsePositiveIntegerRecord,
   isRecord,
   isRuntimeCameraState,
   isRuntimeEventLocationRecord,
@@ -37,17 +57,38 @@ import {
   isRuntimeNpcTravelStateRecord,
   isRuntimeRemovedEventIds,
   isRuntimeSpawnedEventRecord,
-  isRngState,
+  isShopPawnTicketsRecord,
+  isShippingSettlementArray,
+  parseRngState,
   isSaveOrigin,
   isAutosaveTrigger,
   isSelfSwitchesRecord,
   isStringArray,
   parseAudioState,
+  parseChestsRecord,
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
+import { shippingHistoryLimit } from "@/project/shipping";
+import { absoluteGameMinutes } from "@/project/makers";
 import { normalizeLightingState } from "@/project/lightingRules";
+import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
+import { normalizeRoguelikeRunState, type RoguelikeRunState } from "@/project/roguelikeRun";
+import {
+  normalizeDailyWeatherState,
+  parseFarmAnimalStateRecord,
+  restoreFarmAnimalStates,
+} from "@/project/p1FoundationRecords";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
+import {
+  parseFarmBuildingPlacementRecord,
+  parseHomeDecorationPlacementRecord,
+} from "@/player/saveSlotSpatialValidation";
+import { restoreSpatialPlacementRecords } from "@/project/spatialPlacementRestore";
+import { validProgress, type CollectionProgress } from "@/project/collections";
+import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -57,7 +98,7 @@ export {
 } from "@/player/systemShellState";
 
 export const SAVE_SLOT_COUNT = 3;
-const SAVE_SLOT_PREFIX = "rpg-zzu:save-slot:";
+const SAVE_SLOT_PREFIX = "oprn:save-slot:";
 let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;
@@ -87,10 +128,35 @@ export type SaveSnapshot = {
     readonly itemUseCharges?: Record<string, number>;
     readonly killedFieldSpawns?: Record<string, Record<string, number>>;
     readonly partyActorIds?: readonly string[];
+    readonly shopLoyaltySpend?: PlaySession["shopLoyaltySpend"];
+    readonly shopTradeCounts?: PlaySession["shopTradeCounts"];
+    readonly shopMileagePoints?: PlaySession["shopMileagePoints"];
+    readonly shopPawnTickets?: PlaySession["shopPawnTickets"];
+    readonly shopLastRestockDayKey?: PlaySession["shopLastRestockDayKey"];
+    readonly energy?: PlaySession["energy"];
+    readonly shippingQueue?: PlaySession["shippingQueue"];
+    readonly shippingLastSettledDayKey?: PlaySession["shippingLastSettledDayKey"];
+    readonly dayTransitionLastDayKey?: PlaySession["dayTransitionLastDayKey"];
+    readonly shippingHistory?: PlaySession["shippingHistory"];
+    readonly bundleContributions?: PlaySession["bundleContributions"];
+    readonly completedBundleIds?: PlaySession["completedBundleIds"];
+    readonly bundleRewardAppliedIds?: PlaySession["bundleRewardAppliedIds"];
+    readonly unlockedRegionIds?: PlaySession["unlockedRegionIds"];
+    readonly unlockedRecipeIds?: PlaySession["unlockedRecipeIds"];
+    readonly makerInstances?: PlaySession["makerInstances"];
+    readonly dailyWeather?: PlaySession["dailyWeather"];
+    readonly farmAnimals?: PlaySession["farmAnimals"];
+    readonly farmBuildingPlacements?: PlaySession["farmBuildingPlacements"];
+    readonly homeDecorationPlacements?: PlaySession["homeDecorationPlacements"];
+    readonly collections?: PlaySession["collections"];
+    readonly museumRewardAppliedIds?: PlaySession["museumRewardAppliedIds"];
+    readonly forageLastAdvancedDayKey?: PlaySession["forageLastAdvancedDayKey"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
+    readonly actorSkillPp?: PlaySession["actorSkillPp"];
+    readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
@@ -103,12 +169,14 @@ export type SaveSnapshot = {
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
     readonly npcActivities?: PlaySession["npcActivities"];
     readonly npcScheduleStates?: PlaySession["npcScheduleStates"];
+    readonly lifeSkills?: PlaySession["lifeSkills"];
     readonly farmPlots?: PlaySession["farmPlots"];
     readonly farmPlotsAdvancedThrough?: PlaySession["farmPlotsAdvancedThrough"];
     readonly friendship?: PlaySession["friendship"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly monsterCareSteps?: number;
+    readonly monsterFieldPoisonSteps?: number;
     readonly monsterCareDaily?: PlaySession["monsterCareDaily"];
     readonly equippedToolItemId?: PlaySession["equippedToolItemId"];
     readonly chests?: PlaySession["chests"];
@@ -126,6 +194,9 @@ export type SaveSnapshot = {
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
     readonly actorNames?: Record<string, string>;
+    readonly actorNicknames?: PlaySession["actorNicknames"];
+    readonly actorFaceResourceIds?: PlaySession["actorFaceResourceIds"];
+    readonly actorFaceIndices?: PlaySession["actorFaceIndices"];
     readonly actorCharacterResourceIds?: Record<string, string>;
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
@@ -133,6 +204,7 @@ export type SaveSnapshot = {
     readonly playTimeSeconds?: number;
     readonly gameTime?: PlaySession["gameTime"];
     readonly rng?: RngState;
+    readonly roguelikeRun?: RoguelikeRunState;
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
@@ -192,6 +264,11 @@ export function setSaveSlotStorageNamespace(namespace: string | null): void {
 
 export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
+  const bundleReceiptIds = normalizedBundleReceiptIds(project, session.completedBundleIds, session.bundleRewardAppliedIds);
+  const spatial = restoreSpatialPlacementRecords(project, session, {
+    farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
+    homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
+  });
   return {
     schemaVersion: SCHEMA_VERSION,
     projectTitle: project.meta.title,
@@ -204,15 +281,44 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       selfSwitches: structuredClone(session.selfSwitches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
-      gold: session.gold,
+      gold: normalizeEconomyValue(session.gold),
       inventory: structuredClone(normalizedItems.inventory),
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
       killedFieldSpawns: structuredClone(session.killedFieldSpawns ?? {}),
       partyActorIds: structuredClone(session.partyActorIds),
+      shopLoyaltySpend: sanitizeEconomyRecord(session.shopLoyaltySpend),
+      shopTradeCounts: sanitizeShopTradeCounts(session.shopTradeCounts),
+      shopMileagePoints: economyValueOrUndefined(session.shopMileagePoints),
+      shopPawnTickets: structuredClone(session.shopPawnTickets),
+      shopLastRestockDayKey: structuredClone(session.shopLastRestockDayKey),
+      energy: nonNegativeIntegerOrUndefined(session.energy),
+      shippingQueue: structuredClone(session.shippingQueue ?? {}),
+      shippingLastSettledDayKey: session.shippingLastSettledDayKey,
+      dayTransitionLastDayKey: session.dayTransitionLastDayKey,
+      shippingHistory: structuredClone((session.shippingHistory ?? []).slice(-shippingHistoryLimit(project))),
+      bundleContributions: structuredClone(session.bundleContributions ?? {}),
+      completedBundleIds: bundleReceiptIds,
+      bundleRewardAppliedIds: [...bundleReceiptIds],
+      unlockedRegionIds: uniqueStrings(session.unlockedRegionIds),
+      unlockedRecipeIds: uniqueStrings(session.unlockedRecipeIds),
+      makerInstances: structuredClone(restoreMakerInstances(project, session.makerInstances)),
+      dailyWeather: project.system.dailyWeather?.enabled === true
+        ? structuredClone(normalizeDailyWeatherState(session.dailyWeather))
+        : undefined,
+      farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
+      farmBuildingPlacements: structuredClone(spatial.farmBuildingPlacements),
+      homeDecorationPlacements: structuredClone(spatial.homeDecorationPlacements),
+      collections: sanitizeCollections(session.collections, new Set(project.database.items.map((item) => item.id))),
+      museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
+      forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
+        ? session.forageLastAdvancedDayKey
+        : undefined,
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
+      actorSkillPp: structuredClone(session.actorSkillPp),
+      actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
@@ -225,16 +331,18 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       npcTravelStates: structuredClone(session.npcTravelStates),
       npcActivities: structuredClone(session.npcActivities ?? {}),
       npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
+      lifeSkills: structuredClone(restoreLifeSkills(project, session.lifeSkills)),
       farmPlots: structuredClone(session.farmPlots ?? {}),
       farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       monsterCareSteps: session.monsterCareSteps,
+      monsterFieldPoisonSteps: session.monsterFieldPoisonSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
-      chests: structuredClone(session.chests ?? {}),
-      placeables: structuredClone(session.placeables ?? {}),
+      chests: parseChestsRecord(session.chests) ?? {},
+      placeables: restorePlaceables(project, session.placeables),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
@@ -248,13 +356,17 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
       actorNames: structuredClone(session.actorNames),
+      actorNicknames: structuredClone(session.actorNicknames),
+      actorFaceResourceIds: structuredClone(session.actorFaceResourceIds),
+      actorFaceIndices: structuredClone(session.actorFaceIndices),
       actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
-      gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
+      gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
       rng: cloneRngState(normalizeRngState(session.rng)),
+      roguelikeRun: structuredClone(session.roguelikeRun),
       screen: pickScreenState(session),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
@@ -309,7 +421,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
-  session.gold = snapshot.session.gold;
+  session.gold = normalizeEconomyValue(snapshot.session.gold);
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   const normalizedItems = normalizeItemTransitionState({
     inventory: session.inventory,
@@ -319,10 +431,60 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
-  if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
+  session.shopLoyaltySpend = sanitizeEconomyRecord(snapshot.session.shopLoyaltySpend);
+  session.shopTradeCounts = sanitizeShopTradeCounts(snapshot.session.shopTradeCounts);
+  session.shopMileagePoints = economyValueOrUndefined(snapshot.session.shopMileagePoints);
+  if (snapshot.session.shopPawnTickets) session.shopPawnTickets = structuredClone(snapshot.session.shopPawnTickets);
+  if (snapshot.session.shopLastRestockDayKey) session.shopLastRestockDayKey = structuredClone(snapshot.session.shopLastRestockDayKey);
+  if (typeof snapshot.session.energy === "number") session.energy = snapshot.session.energy;
+  const shippingEnabled = project.system.shipping?.enabled === true;
+  session.shippingQueue = shippingEnabled
+    ? restoreShippingQueue(project, snapshot.session.shippingQueue)
+    : {};
+  session.shippingLastSettledDayKey = shippingEnabled ? snapshot.session.shippingLastSettledDayKey : undefined;
+  session.shippingHistory = shippingEnabled
+    ? structuredClone((snapshot.session.shippingHistory ?? []).slice(-shippingHistoryLimit(project)))
+    : [];
+  session.bundleContributions = restoreBundleContributions(project, snapshot.session.bundleContributions);
+  const bundleReceiptIds = normalizedBundleReceiptIds(
+    project,
+    snapshot.session.completedBundleIds,
+    snapshot.session.bundleRewardAppliedIds,
+  );
+  session.completedBundleIds = bundleReceiptIds;
+  session.bundleRewardAppliedIds = [...bundleReceiptIds];
+  session.unlockedRegionIds = filterKnownIds(
+    snapshot.session.unlockedRegionIds,
+    new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id)),
+  );
+  session.unlockedRecipeIds = filterKnownIds(
+    snapshot.session.unlockedRecipeIds,
+    new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id)),
+  );
+  session.makerInstances = restoreMakerInstances(project, snapshot.session.makerInstances);
+  const savedDailyWeather = project.system.dailyWeather?.enabled === true
+    ? normalizeDailyWeatherState(snapshot.session.dailyWeather)
+    : undefined;
+  session.dailyWeather = savedDailyWeather;
+  session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
+  if (session.collections !== undefined) {
+    session.collections = sanitizeCollections(
+      snapshot.session.collections,
+      new Set(project.database.items.map((item) => item.id)),
+    ) ?? {};
+  }
+  if (session.museumRewardAppliedIds !== undefined) session.museumRewardAppliedIds = sanitizeReceiptIds(snapshot.session.museumRewardAppliedIds) ?? [];
+  if (snapshot.session.monsterInstances) {
+    session.monsterInstances = {};
+    for (const [instanceId, instance] of Object.entries(snapshot.session.monsterInstances)) {
+      session.monsterInstances[instanceId] = normalizeMonsterInstanceBattleState(project, structuredClone(instance));
+    }
+  }
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
+  if (snapshot.session.actorSkillPp) session.actorSkillPp = structuredClone(snapshot.session.actorSkillPp);
+  if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
@@ -335,20 +497,30 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
+  session.lifeSkills = restoreLifeSkills(project, snapshot.session.lifeSkills);
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
-  session.farmPlotsAdvancedThrough = structuredClone(snapshot.session.farmPlotsAdvancedThrough);
+  session.farmPlotsAdvancedThrough = normalizeFarmPlotDateForProject(project, snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (typeof snapshot.session.monsterCareSteps === "number") {
     session.monsterCareSteps = Math.max(0, Math.trunc(snapshot.session.monsterCareSteps));
   }
+  if (typeof snapshot.session.monsterFieldPoisonSteps === "number") {
+    session.monsterFieldPoisonSteps = snapshot.session.monsterFieldPoisonSteps;
+  }
   if (snapshot.session.monsterCareDaily) {
     session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
-  if (snapshot.session.chests) session.chests = structuredClone(snapshot.session.chests);
-  if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
+  session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
+  if (snapshot.session.placeables) session.placeables = restorePlaceables(project, snapshot.session.placeables);
+  const spatial = restoreSpatialPlacementRecords(project, session, {
+    farmBuildingPlacements: parseFarmBuildingPlacementRecord(snapshot.session.farmBuildingPlacements),
+    homeDecorationPlacements: parseHomeDecorationPlacementRecord(snapshot.session.homeDecorationPlacements),
+  });
+  if (spatial.farmBuildingPlacements !== undefined) session.farmBuildingPlacements = spatial.farmBuildingPlacements;
+  if (spatial.homeDecorationPlacements !== undefined) session.homeDecorationPlacements = spatial.homeDecorationPlacements;
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
@@ -362,20 +534,122 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
   if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
+  if (snapshot.session.actorNicknames) session.actorNicknames = structuredClone(snapshot.session.actorNicknames);
+  if (snapshot.session.actorFaceResourceIds) session.actorFaceResourceIds = structuredClone(snapshot.session.actorFaceResourceIds);
+  if (snapshot.session.actorFaceIndices) session.actorFaceIndices = structuredClone(snapshot.session.actorFaceIndices);
   if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
-  if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
+  const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
+  if (restoredGameTime) session.gameTime = restoredGameTime;
+  session.forageLastAdvancedDayKey = restoredGameTime
+    && snapshot.session.forageLastAdvancedDayKey === calendarDayKey(restoredGameTime)
+    ? snapshot.session.forageLastAdvancedDayKey
+    : undefined;
+  session.dayTransitionLastDayKey = restoredGameTime && isPreviousCalendarDayKey(
+    project,
+    restoredGameTime,
+    snapshot.session.dayTransitionLastDayKey,
+  )
+    ? snapshot.session.dayTransitionLastDayKey
+    : undefined;
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
+  session.roguelikeRun = normalizeRoguelikeRunState(snapshot.session.roguelikeRun);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
   }
+  if (project.system.dailyWeather?.enabled === true) {
+    const weather = session.gameTime
+      ? applyDailyWeatherForDate(project, session, session.gameTime)
+      : savedDailyWeather;
+    session.dailyWeather = weather;
+    if (weather) ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
+  } else {
+    // Authored daily weather and event-command screen weather are independent packages.
+    // Disabling the former clears its HUD state but must not erase a saved setWeather effect.
+    session.dailyWeather = undefined;
+  }
   syncMonsterPartyFollowers(project, session);
   return session;
+}
+
+const P2_SESSION_RECORD_LIMIT = 2_000;
+
+function sanitizeCollections(
+  value: PlaySession["collections"] | unknown,
+  knownItemIds?: ReadonlySet<string>,
+): Record<string, CollectionProgress> | undefined {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const result: Record<string, CollectionProgress> = {};
+  for (const [rawItemId, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
+    const itemId = rawItemId.trim();
+    const progress = validProgress(raw);
+    if (!itemId || !progress || (knownItemIds && !knownItemIds.has(itemId))) continue;
+    if (!progress.discovered && progress.shippedCount === 0 && progress.caughtCount === 0 && !progress.donated) continue;
+    result[itemId] = progress;
+  }
+  return result;
+}
+
+function sanitizeReceiptIds(value: readonly string[] | unknown): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) return [];
+  const result: string[] = [];
+  for (const raw of value.slice(0, P2_SESSION_RECORD_LIMIT)) {
+    const id = typeof raw === "string" ? raw.trim() : "";
+    if (id && !result.includes(id)) result.push(id);
+  }
+  return result;
+}
+
+function restorePlaceables(project: Project, value: PlaySession["placeables"] | unknown): Record<string, PlaceableObjectState> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const result: Record<string, PlaceableObjectState> = {};
+  for (const [key, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    const candidate = raw as Record<string, any>;
+    const mapId = typeof candidate.mapId === "string" ? candidate.mapId.trim() : "";
+    const id = typeof candidate.id === "string" ? candidate.id.trim() : "";
+    const kind = typeof candidate.kind === "string" ? candidate.kind.trim() : "";
+    const x = candidate.x;
+    const y = candidate.y;
+    const map = project.maps[mapId];
+    if (!id || !kind || !map || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)
+      || x < 0 || y < 0 || x >= map.width || y >= map.height || key !== placeableKey(mapId, x, y)) continue;
+    const itemId = typeof candidate.itemId === "string" && itemIds.has(candidate.itemId) ? candidate.itemId : undefined;
+    const base: PlaceableObjectState = { id, mapId, x, y, kind, ...(itemId ? { itemId } : {}) };
+    const provenance = candidate.forageSpawn;
+    if (provenance !== undefined) {
+      if (!provenance || typeof provenance !== "object" || Array.isArray(provenance)) continue;
+      const areaId = typeof provenance.areaId === "string" ? provenance.areaId.trim() : "";
+      const entryId = typeof provenance.entryId === "string" ? provenance.entryId.trim() : "";
+      const spawnedDayKey = parseCalendarDayKey(provenance.spawnedDayKey) ? provenance.spawnedDayKey as string : "";
+      const area = project.system.seasonalForage?.areas.find((entry) => entry.id === areaId && entry.mapId === mapId);
+      const entry = area?.entries.find((candidate) => candidate.id === entryId);
+      const spawnedDate = parseCalendarDayKey(spawnedDayKey);
+      const expectedItemId = entry && spawnedDate ? placeableDropItemId(entry, spawnedDate.season) : undefined;
+      const inArea = Boolean(area && x >= area.area.x && y >= area.area.y
+        && x < area.area.x + area.area.w && y < area.area.y + area.area.h);
+      if (kind !== "forage" || !itemId || !area || !entry || !spawnedDate
+        || spawnedDate.day > (resolveTimeSystem(project)?.daysPerSeason ?? 28)
+        || itemId !== expectedItemId || !inArea) continue;
+      result[key] = { ...base, forageSpawn: { areaId, entryId, spawnedDayKey } };
+      continue;
+    }
+    result[key] = {
+      ...base,
+      ...(candidate.seasonalDrops && typeof candidate.seasonalDrops === "object" && !Array.isArray(candidate.seasonalDrops)
+        ? { seasonalDrops: structuredClone(candidate.seasonalDrops) }
+        : {}),
+    };
+  }
+  return result;
 }
 
 // 색조/날씨/숨김 상태를 m2Runtime.screen 에 복원한다.
@@ -437,7 +711,6 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isBooleanRecord(session.switches)) return { ok: false, message: "Invalid switches" };
   if (!isNumberRecord(session.variables)) return { ok: false, message: "Invalid variables" };
   if (!isNumberRecord(session.timers)) return { ok: false, message: "Invalid timers" };
-  if (typeof session.gold !== "number" || !Number.isFinite(session.gold)) return { ok: false, message: "Invalid gold" };
   if (typeof session.currentMapId !== "string") return { ok: false, message: "Invalid map" };
   if (typeof session.x !== "number") return { ok: false, message: "Invalid x" };
   if (typeof session.y !== "number") return { ok: false, message: "Invalid y" };
@@ -445,6 +718,17 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isBooleanRecord(session.flags)) return { ok: false, message: "Invalid flags" };
   if (!isRecord(session.audio)) return { ok: false, message: "Invalid audio" };
   if (!isPictureRecord(session.pictures)) return { ok: false, message: "Invalid pictures" };
+  if (session.monsterInstances !== undefined && !isMonsterInstancesRecord(session.monsterInstances)) {
+    return { ok: false, message: "Invalid monster instances" };
+  }
+  if (session.monsterFieldPoisonSteps !== undefined && (
+    typeof session.monsterFieldPoisonSteps !== "number"
+    || !Number.isInteger(session.monsterFieldPoisonSteps)
+    || session.monsterFieldPoisonSteps < 0
+    || session.monsterFieldPoisonSteps > 3
+  )) {
+    return { ok: false, message: "Invalid monster field poison steps" };
+  }
   const battleResult = parseBattleResult(session.battleResult);
   if (battleResult === "invalid") return { ok: false, message: "Invalid battle result" };
   const audio = parseAudioState(session.audio);
@@ -456,15 +740,46 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       selfSwitches: isSelfSwitchesRecord(session.selfSwitches) ? session.selfSwitches : undefined,
       variables: session.variables,
       timers: session.timers,
-      gold: session.gold,
+      gold: normalizeEconomyValue(session.gold),
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),
       killedFieldSpawns: isNestedNumberRecord(session.killedFieldSpawns) ? session.killedFieldSpawns : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
+      shopLoyaltySpend: sanitizeEconomyRecord(session.shopLoyaltySpend),
+      shopTradeCounts: sanitizeShopTradeCounts(session.shopTradeCounts),
+      shopMileagePoints: economyValueOrUndefined(session.shopMileagePoints),
+      shopPawnTickets: isShopPawnTicketsRecord(session.shopPawnTickets) ? session.shopPawnTickets : undefined,
+      shopLastRestockDayKey: isStringRecord(session.shopLastRestockDayKey) ? session.shopLastRestockDayKey : undefined,
+      energy: nonNegativeIntegerOrUndefined(session.energy),
+      shippingQueue: parsePositiveIntegerRecord(session.shippingQueue),
+      shippingLastSettledDayKey: typeof session.shippingLastSettledDayKey === "string" && session.shippingLastSettledDayKey.trim()
+        ? session.shippingLastSettledDayKey
+        : undefined,
+      dayTransitionLastDayKey: parseCalendarDayKey(session.dayTransitionLastDayKey)
+        ? session.dayTransitionLastDayKey as string
+        : undefined,
+      shippingHistory: isShippingSettlementArray(session.shippingHistory) ? session.shippingHistory : undefined,
+      bundleContributions: isNestedNonNegativeIntegerRecord(session.bundleContributions) ? session.bundleContributions : undefined,
+      completedBundleIds: isStringArray(session.completedBundleIds) ? [...session.completedBundleIds] : undefined,
+      bundleRewardAppliedIds: isStringArray(session.bundleRewardAppliedIds) ? [...session.bundleRewardAppliedIds] : undefined,
+      unlockedRegionIds: isStringArray(session.unlockedRegionIds) ? [...session.unlockedRegionIds] : undefined,
+      unlockedRecipeIds: isStringArray(session.unlockedRecipeIds) ? [...session.unlockedRecipeIds] : undefined,
+      makerInstances: isMakerInstancesRecord(session.makerInstances) ? session.makerInstances : undefined,
+      dailyWeather: normalizeDailyWeatherState(session.dailyWeather),
+      farmAnimals: parseFarmAnimalStateRecord(session.farmAnimals),
+      farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
+      homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
+      collections: sanitizeCollections(session.collections),
+      museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
+      forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
+        ? session.forageLastAdvancedDayKey as string
+        : undefined,
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
+      actorSkillPp: isActorSkillPpRecord(session.actorSkillPp) ? session.actorSkillPp : undefined,
+      actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
@@ -477,6 +792,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
       npcActivities: isStringRecord(session.npcActivities) ? session.npcActivities : undefined,
       npcScheduleStates: isRuntimeNpcScheduleStateRecord(session.npcScheduleStates) ? session.npcScheduleStates : undefined,
+      lifeSkills: isLifeSkillsRecord(session.lifeSkills) ? session.lifeSkills : undefined,
       farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
       farmPlotsAdvancedThrough: isFarmPlotDate(session.farmPlotsAdvancedThrough) ? session.farmPlotsAdvancedThrough : undefined,
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
@@ -485,9 +801,12 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)
         ? Math.max(0, Math.trunc(session.monsterCareSteps))
         : undefined,
+      monsterFieldPoisonSteps: typeof session.monsterFieldPoisonSteps === "number"
+        ? session.monsterFieldPoisonSteps
+        : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
-      chests: session.chests && typeof session.chests === "object" ? structuredClone(session.chests) as Record<string, any> : undefined,
+      chests: parseChestsRecord(session.chests),
       placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
@@ -502,14 +821,19 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
       actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
+      actorNicknames: isStringRecord(session.actorNicknames) ? session.actorNicknames : undefined,
+      actorFaceResourceIds: isStringRecord(session.actorFaceResourceIds) ? session.actorFaceResourceIds : undefined,
+      actorFaceIndices: isNumberRecord(session.actorFaceIndices) ? session.actorFaceIndices : undefined,
       actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
-      gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
-      rng: isRngState(session.rng) ? session.rng : undefined,
+      gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,
+      rng: parseRngState(session.rng),
+      roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
       screen: parseScreenState(session.screen),
+      access: parseAccessState(session.access),
     },
   };
 }
@@ -534,6 +858,15 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
+function parseAccessState(value: unknown): SaveSnapshot["session"]["access"] {
+  if (!isRecord(value)) return undefined;
+  const result: NonNullable<SaveSnapshot["session"]["access"]> = {};
+  for (const key of ["escape", "menu", "save", "teleportation"] as const) {
+    if (typeof value[key] === "boolean") result[key] = value[key];
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
 function parseBattleResult(value: unknown): PlaySession["battleResult"] | "invalid" {
   if (value === undefined) return undefined;
   if (value === "victory" || value === "defeat" || value === "escape") return value;
@@ -547,6 +880,157 @@ function normalizeFriendshipRecord(value: Record<string, number> | undefined): R
     result[npcKey] = clampFriendship(amount);
   }
   return result;
+}
+
+function nonNegativeIntegerOrUndefined(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value) && value >= 0
+    ? value
+    : undefined;
+}
+
+const CALENDAR_DAY_KEY_PATTERN = /^([1-9]\d*):(spring|summer|fall|winter):([1-9]\d*)$/;
+
+function parseCalendarDayKey(value: unknown): Pick<GameTime, "year" | "season" | "day"> | undefined {
+  if (typeof value !== "string") return undefined;
+  const match = CALENDAR_DAY_KEY_PATTERN.exec(value);
+  if (!match) return undefined;
+  const year = Number(match[1]);
+  const day = Number(match[3]);
+  if (!Number.isSafeInteger(year) || !Number.isSafeInteger(day)) return undefined;
+  return { year, season: match[2] as Season, day };
+}
+
+function isPreviousCalendarDayKey(
+  project: Project,
+  currentTime: GameTime | undefined,
+  candidate: string | undefined,
+): candidate is string {
+  const system = resolveTimeSystem(project);
+  const parsed = parseCalendarDayKey(candidate);
+  if (!system || !currentTime || !parsed || parsed.day > system.daysPerSeason) return false;
+  const previous = {
+    ...parsed,
+    hour: system.dayStartHour,
+    minute: 0,
+  } satisfies GameTime;
+  return calendarDayKey(advanceGameDays(previous, 1, system).time) === calendarDayKey(currentTime);
+}
+
+function normalizeRestorableGameTime(project: Project, value: unknown): GameTime | undefined {
+  const normalized = normalizeGameTime(value, project.system.timeSystem);
+  if (!normalized) return undefined;
+  if (![normalized.year, normalized.day, normalized.hour, normalized.minute].every(Number.isSafeInteger)) {
+    return undefined;
+  }
+  try {
+    absoluteGameMinutes(normalized, project.system.timeSystem);
+    return normalized;
+  } catch {
+    return undefined;
+  }
+}
+
+function uniqueStrings(values: readonly string[] | undefined): string[] {
+  return [...new Set((values ?? []).filter((value) => value.trim().length > 0))];
+}
+
+function normalizeFarmPlotDateForProject(
+  project: Project,
+  value: PlaySession["farmPlotsAdvancedThrough"],
+): PlaySession["farmPlotsAdvancedThrough"] {
+  if (!value) return undefined;
+  const normalized = normalizeGameTime(
+    { ...value, hour: project.system.timeSystem?.dayStartHour ?? 6, minute: 0 },
+    project.system.timeSystem,
+  );
+  return normalized
+    ? { day: normalized.day, season: normalized.season, year: normalized.year }
+    : undefined;
+}
+
+function restoreShippingQueue(
+  project: Project,
+  queue: PlaySession["shippingQueue"],
+): NonNullable<PlaySession["shippingQueue"]> {
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const allowedIds = project.system.shipping?.allowedItemIds;
+  return Object.fromEntries(Object.entries(queue ?? {}).filter(([itemId, count]) =>
+    Number.isInteger(count) && count > 0 && count <= GOLD_MAX &&
+    itemIds.has(itemId) && (allowedIds === undefined || allowedIds.includes(itemId))));
+}
+
+function restoreBundleContributions(
+  project: Project,
+  contributions: PlaySession["bundleContributions"],
+): NonNullable<PlaySession["bundleContributions"]> {
+  const restored: NonNullable<PlaySession["bundleContributions"]> = {};
+  for (const bundle of project.system.bundles ?? []) {
+    const saved = contributions?.[bundle.id];
+    if (!saved) continue;
+    const requirements = new Map(bundle.requirements.map((entry) => [entry.itemId, entry.count] as const));
+    const valid = Object.fromEntries(Object.entries(saved).filter(([itemId, count]) => {
+      const required = requirements.get(itemId);
+      return required !== undefined && count > 0 && count <= required;
+    }));
+    if (Object.keys(valid).length > 0) restored[bundle.id] = valid;
+  }
+  return restored;
+}
+
+function restoreMakerInstances(
+  project: Project,
+  instances: PlaySession["makerInstances"],
+): NonNullable<PlaySession["makerInstances"]> {
+  const makerIds = new Set((project.system.makers ?? []).map((maker) => maker.id));
+  return Object.fromEntries(Object.entries(instances ?? {}).filter(([instanceId, instance]) => {
+    if (instance.instanceId !== instanceId || !makerIds.has(instance.makerId)) return false;
+    if (instance.status === "idle") {
+      return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
+    }
+    return Number.isSafeInteger(instance.startedAtMinute)
+      && instance.startedAtMinute! >= 0
+      && Number.isSafeInteger(instance.readyAtMinute)
+      && instance.readyAtMinute! >= instance.startedAtMinute!;
+  }));
+}
+
+function restoreLifeSkills(
+  project: Project,
+  progress: PlaySession["lifeSkills"],
+): NonNullable<PlaySession["lifeSkills"]> {
+  const restored: NonNullable<PlaySession["lifeSkills"]> = {};
+  for (const skill of project.database.lifeSkills ?? []) {
+    const saved = progress?.[skill.id];
+    if (!saved || !Number.isSafeInteger(saved.xp) || saved.xp < 0) continue;
+    const xp = Math.min(saved.xp, xpForLevel(skill.maxLevel));
+    restored[skill.id] = { xp, level: levelForXp(xp, skill.maxLevel) };
+  }
+  return restored;
+}
+
+function restoreFarmAnimalsForProject(
+  project: Project,
+  animals: PlaySession["farmAnimals"],
+): PlaySession["farmAnimals"] {
+  return restoreFarmAnimalStates(
+    project.session.farmAnimals,
+    animals,
+    new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id)),
+    project.system.farmAnimalBuildings,
+  );
+}
+
+function normalizedBundleReceiptIds(
+  project: Project,
+  completed: readonly string[] | undefined,
+  rewardApplied: readonly string[] | undefined,
+): string[] {
+  const knownIds = new Set((project.system.bundles ?? []).map((bundle) => bundle.id));
+  return filterKnownIds([...(completed ?? []), ...(rewardApplied ?? [])], knownIds);
+}
+
+function filterKnownIds(values: readonly string[] | undefined, knownIds: ReadonlySet<string>): string[] {
+  return uniqueStrings(values).filter((id) => knownIds.has(id));
 }
 
 function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {

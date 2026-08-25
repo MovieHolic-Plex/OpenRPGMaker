@@ -9,17 +9,38 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
+const PROJECT_SCOPED_OAUTH_PROVIDERS = new Set(["google-antigravity", "google-gemini-cli"]);
 
 function storeAs(provider: string): string {
   return getProviderDefinition(provider)?.storeCredentialsAs || provider;
 }
 
-function oauthCreds(row: { access?: string; refresh?: string; expires?: number } | undefined) {
+function oauthCreds(row: {
+  access?: string;
+  refresh?: string;
+  expires?: number;
+  enterpriseUrl?: string;
+  projectId?: string;
+  email?: string;
+  accountId?: string;
+  apiEndpoint?: string;
+  orgId?: string;
+  orgName?: string;
+  authorizedAt?: number;
+} | undefined) {
   if (!row?.access && !row?.refresh) return undefined;
   return {
     access: String(row.access ?? ""),
     refresh: String(row.refresh ?? ""),
     expires: Number(row.expires) || 0,
+    enterpriseUrl: row.enterpriseUrl,
+    projectId: row.projectId,
+    email: row.email,
+    accountId: row.accountId,
+    apiEndpoint: row.apiEndpoint,
+    orgId: row.orgId,
+    orgName: row.orgName,
+    authorizedAt: row.authorizedAt,
   };
 }
 
@@ -49,6 +70,8 @@ export function listOhMyPiProviders() {
  */
 function adoptCodexCliCredentials(provider: string): boolean {
   if (storeAs(provider) !== "openai-codex") return false;
+  // 사용자가 연결을 끊었다면 다시 주워 오지 않는다 — 그러면 해제가 되살아난다.
+  if (store.adoptionDeclined("openai-codex")) return false;
   const path = join(process.env.CODEX_HOME || join(homedir(), ".codex"), "auth.json");
   try {
     const tokens = JSON.parse(readFileSync(path, "utf8"))?.tokens;
@@ -77,21 +100,42 @@ function jwtExpiryMs(token: string): number {
 export function publicProviderStatus(provider: string) {
   const envVars = getOhMyPiProvider(provider)?.envVars ?? [];
   const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
-  if (!store.has(storeAs(provider))) adoptCodexCliCredentials(provider);
+  const credentialProvider = storeAs(provider);
+  if (!store.has(credentialProvider)) adoptCodexCliCredentials(provider);
   const disk = store.publicStatus(provider);
+  const row = store.get(credentialProvider);
+  const hasRequiredMetadata = !PROJECT_SCOPED_OAUTH_PROVIDERS.has(provider)
+    || row?.kind !== "oauth"
+    || Boolean(row.projectId);
+  if (disk.connected && !hasRequiredMetadata) {
+    return { ...disk, connected: false, provider, env: false };
+  }
   if (disk.connected || envHit) {
     return { ...disk, connected: true, provider, env: envHit };
   }
   return { connected: false, provider };
 }
 
-export function seedOAuthForTests(provider: string, creds: { access: string; refresh: string; expires: number }) {
+export function seedOAuthForTests(
+  provider: string,
+  creds: { access: string; refresh: string; expires: number; projectId?: string },
+) {
   store.setOAuth(storeAs(provider), creds);
 }
 
 export function saveProviderApiKey(provider: string, apiKey: string) {
   store.setApiKey(storeAs(provider), apiKey);
   return publicProviderStatus(provider);
+}
+
+/**
+ * 저장된 자격을 지운다. 잘못된 키·만료된 토큰을 지울 방법이 없어서 상태는 초록인데 모든 턴이
+ * 401 이 되던 구멍을 막는다. env 자격은 우리 것이 아니므로 그대로 남고, 응답의 `env` 가 그것을
+ * 밝힌다(에디터는 env 만 있는 상태를 "연결됨"으로 세지 않는다).
+ */
+export function logoutProvider(provider: string) {
+  const removed = store.remove(storeAs(provider));
+  return { ...publicProviderStatus(provider), removed };
 }
 
 async function resolveApiKey(provider: string): Promise<string | undefined> {
@@ -229,6 +273,21 @@ function textOf(content: unknown): string {
     .join("");
 }
 
+function toolArgumentsOf(value: unknown): Record<string, unknown> {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value !== "string") return {};
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 function openaiToContext(provider: string, body: Record<string, unknown>) {
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemPrompt: string[] = [];
@@ -257,7 +316,7 @@ function openaiToContext(provider: string, body: Record<string, unknown>) {
             type: "toolCall",
             id: rec.id ?? "call",
             name: rec.function?.name ?? "tool",
-            arguments: rec.function?.arguments ?? {},
+            arguments: toolArgumentsOf(rec.function?.arguments),
           });
         }
       }

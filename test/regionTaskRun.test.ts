@@ -170,9 +170,9 @@ describe("runRegionTask", () => {
           ? JSON.stringify({
               apiKey: "sk-test",
               baseUrl: "https://example.test/v1",
-              liteModel: "region-lite-model",
+              liteModel: "gpt-5.4-mini",
               maxTokens: 1024,
-              model: "region-main-model",
+              model: "gpt-5.6-sol",
               reasoningEffort: "medium",
             })
           : null,
@@ -197,7 +197,7 @@ describe("runRegionTask", () => {
       const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" });
       expect(result.ok).toBe(true);
       expect(result.applied).toBe(false);
-      expect(JSON.parse(bodies[0]).model).toBe("region-lite-model");
+      expect(JSON.parse(bodies[0]).model).toBe("gpt-5.4-mini");
     } finally {
       if (fetchDescriptor) Object.defineProperty(globalThis, "fetch", fetchDescriptor);
       else Reflect.deleteProperty(globalThis, "fetch");

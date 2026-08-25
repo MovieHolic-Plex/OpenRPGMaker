@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
+import { DEFAULT_FARMLAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import {
@@ -293,6 +294,7 @@ describe("손 슬롯 의도 계약", () => {
     "plot-needs-clearing": false,
     "plot-needs-tilling": false,
     "wrong-tool-for-plot": false,
+    "out-of-season": false,
     "nothing-to-harvest": false,
   };
 
@@ -346,7 +348,13 @@ describe("손 슬롯 의도 계약", () => {
     setEquippedTool(session, "item_tomato_seed");
     const result = interactWithFarmPlot(project, session, map, 4, 5, "plant");
     expect(result.kind).toBe("ignored");
-    expect(result.reason).toBe("wrong-tool-for-plot");
+    /**
+     * 사유는 **계절**이어야 한다. 예전에는 `wrong-tool-for-plot` 을 돌려주어
+     * "지금 든 도구로는 할 수 없습니다" 가 떴다 — 손에 든 씨앗도 갈아 둔 밭도 옳은데
+     * 도구를 의심하게 만드는 거짓이었고, 계절이라는 진짜 이유는 화면에 없었다(브라우저 실측).
+     */
+    expect(result.reason, "계절 거절이 도구 사유로 위장돼 있다").toBe("out-of-season");
+    expect(farmIgnoreMessage(result.reason)).toBe("이 씨앗은 지금 철이 아닙니다");
     expect(session.inventory.item_tomato_seed).toBe(2);
     expect(farmPlotAt(session, map.id, 4, 5)?.cropId).toBeUndefined();
   });
@@ -438,6 +446,51 @@ describe("손 슬롯 의도 계약", () => {
       }
       expect(message, reason).toBeTruthy();
       expect(message!.trim().length, reason).toBeGreaterThan(0);
+    }
+  });
+});
+
+/**
+ * 데모의 밭은 **괭이를 대기 전에도 화면에서 밭으로 보여야** 한다. `farmableArea` 는 저작
+ * 데이터일 뿐 그려지지 않으므로, 바닥 타일이 주변과 같으면 플레이어는 어디를 갈 수 있는지
+ * 알 수 없다(브라우저 실측: 데모 밭이 주변과 똑같은 풀밭이었다).
+ */
+describe("농사 데모의 밭 지형", () => {
+  const farmMap = () => {
+    const project = createFarmingDemoProject();
+    const map = project.maps["map_farming_demo"];
+    if (!map) throw new Error("농사 데모 맵을 찾지 못했다");
+    return map;
+  };
+  const tileAt = (map: ReturnType<typeof farmMap>, x: number, y: number): number | undefined =>
+    map.lowerTiles[y * map.width + x];
+
+  it("paints the farmable rect with ground that differs from the surrounding terrain", () => {
+    const map = farmMap();
+    const rect = map.farmableArea?.[0];
+    expect(rect, "밭 영역이 저작되지 않았다").toBeDefined();
+    if (!rect) return;
+
+    const outside = tileAt(map, rect.x, rect.y - 1);
+    for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+      for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+        expect(tileAt(map, x, y), `밭 (${x},${y}) 이 주변 지형과 같은 타일이다`).not.toBe(outside);
+      }
+    }
+  });
+
+  it("does not use the tilled-soil autotile as the untilled ground", () => {
+    // 갈린 흙 오버레이가 builtin_farmland 를 그린다 — 바닥에 같은 그룹을 깔면
+    // 갈기 전과 후가 같은 그림이 되어 경작 여부를 구별할 수 없다.
+    const map = farmMap();
+    const rect = map.farmableArea?.[0];
+    if (!rect) return;
+    const farmland = new Set(DEFAULT_FARMLAND_AUTOTILE_GROUP.memberTileIds);
+    for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+      for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+        const tile = tileAt(map, x, y);
+        expect(farmland.has(tile ?? -1), `밭 (${x},${y}) 이 경작지 타일로 미리 깔려 있다`).toBe(false);
+      }
     }
   });
 });

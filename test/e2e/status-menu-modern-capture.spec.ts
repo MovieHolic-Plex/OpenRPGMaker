@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-import { openTestPlayWindow, seedDefaultProject } from "./rm2k3PlayerStatusMenuHelpers";
+import { openTestPlayWindow, seedDefaultProject } from "./oprnPlayerStatusMenuHelpers";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 test("captures equipment and item menu evidence without text overflow", async ({ page }) => {

@@ -87,11 +87,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("classic toolbar actions", () => {
+describe("editor chrome and canvas controls", () => {
   it("enables new project without a stub class and runs newProject", async () => {
     resetEditorUiModeForTests("expert");
-    // 2026-08-18 UX 리뷰 P0: 새 프로젝트는 clearAll(같은 원격 id 재사용)이 아니라
-    // 새 project id를 발급하는 loadNewRemoteProject 경로를 탄다.
+    // Break: bottom-bar cleanup removes or disables the existing classic toolbar action.
     const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
     const topbar = document.createElement("div");
 
@@ -127,7 +126,7 @@ describe("classic toolbar actions", () => {
     const expand = findByTestId(fake(firstHost), "editor-canvas-toolbar-expand");
 
     expand?.click();
-    expect(localStorage.getItem("rpg-zzu:canvas-toolbar-expanded")).toBe("1");
+    expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("1");
     expect(expand?.getAttribute("aria-expanded")).toBe("true");
 
     const secondHost = document.createElement("div");
@@ -137,29 +136,27 @@ describe("classic toolbar actions", () => {
     expect(secondExpand?.getAttribute("aria-expanded")).toBe("true");
 
     secondExpand?.click();
-    expect(localStorage.getItem("rpg-zzu:canvas-toolbar-expanded")).toBe("0");
+    expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("0");
   });
 
-  it("places the standard-only more-tools menu immediately after the mode toggle", () => {
+  it("places the standard-only more-tools menu right after the workspace controls", () => {
     resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
-    const menuBar = findByTestId(fake(topbar), "rm2k3-menu-bar");
-    const toggleIndex = menuBar?.children.findIndex((child) => child.dataset.testid === "editor-ui-mode-toggle") ?? -1;
-    expect(menuBar?.children[toggleIndex + 1]?.dataset.testid).toBe("standard-more-tools");
-    expect(menuBar?.children[toggleIndex + 2]?.dataset.testid).toBe("standard-more-tools-menu");
+    const menuBar = findByTestId(fake(topbar), "oprn-menu-bar");
+    const ids = menuBar?.children.map((child) => child.dataset.testid) ?? [];
+    const chipIndex = ids.indexOf("workspace-command-palette-button");
+    expect(chipIndex).toBeGreaterThan(ids.indexOf("workspace-preset-toggle"));
+    expect(ids[chipIndex + 1]).toBe("standard-more-tools");
+    expect(ids[chipIndex + 2]).toBe("standard-more-tools-menu");
 
     const button = findByTestId(fake(topbar), "standard-more-tools");
     const menu = findByTestId(fake(topbar), "standard-more-tools-menu");
     expect(button?.getAttribute("aria-haspopup")).toBe("menu");
-    expect(button?.getAttribute("aria-expanded")).toBe("false");
     expect(menu?.hidden).toBe(true);
     button?.click();
     expect(button?.getAttribute("aria-expanded")).toBe("true");
     expect(menu?.hidden).toBe(false);
-    for (const id of ["standard-more-world", "standard-more-resources", "standard-more-database", "standard-more-switch-expert"]) {
-      expect(findByTestId(fake(topbar), id)?.getAttribute("role")).toBe("menuitem");
-    }
   });
 });

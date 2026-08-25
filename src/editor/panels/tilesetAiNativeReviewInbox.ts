@@ -35,7 +35,7 @@ export function renderTilesetAiReviewInbox(tileset: TilesetDef, rerender: () => 
             children: [
               el("span", { class: "tileset-ai-review-eyebrow", text: "AI FIRST" }),
               el("h3", { text: "AI 타일 지식" }),
-              el("p", { text: "AI가 먼저 칩셋 전체를 읽습니다. 확실한 것은 한 번에 적용하고, 애매한 것만 의견을 보태세요." }),
+              el("p", { text: "AI가 먼저 그림판 전체를 읽습니다. 확실한 것은 한 번에 적용하고, 애매한 것만 의견을 보태세요." }),
             ],
           }),
           ...(state.status === "idle" ? [] : [analysisButton(tileset, rerender, "다시 분석", busy)]),
@@ -74,14 +74,14 @@ function renderStateMessage(state: TilesetAiReviewState, tileset: TilesetDef, re
     return el("div", {
       class: "tileset-ai-review-empty",
       children: [
-        el("strong", { text: "칩셋을 직접 분류하지 마세요" }),
+        el("strong", { text: "그림판을 직접 분류하지 마세요" }),
         el("p", { text: "오토타일, 가구, 나무 레이어, 방향 통행, 반복 패턴을 AI가 먼저 묶고 근거를 제안합니다." }),
         analysisButton(tileset, rerender, "AI로 전체 분석", false),
       ],
     });
   }
   if (state.status === "analyzing") {
-    return status("칩셋 이미지와 기존 지식을 함께 읽는 중입니다…", "working");
+    return status("타일 그림판 이미지와 기존 지식을 함께 읽는 중입니다…", "working");
   }
   if (state.status === "offline" || state.status === "error") {
     return el("div", {
@@ -97,7 +97,7 @@ function renderStateMessage(state: TilesetAiReviewState, tileset: TilesetDef, re
     });
   }
   if (state.status === "stale") {
-    return status("칩셋이 분석 이후 바뀌었습니다. 적용 전에 다시 분석해 주세요.", "warning");
+    return status("타일 그림판이 분석 이후 바뀌었습니다. 적용 전에 다시 분석해 주세요.", "warning");
   }
   const pending = proposalsForAiReview(state).filter((proposal) => proposal.status === "pending").length;
   const message = state.status === "saved" ? `${state.message} 남은 제안 ${pending}개.` : `${summaryForAiReview(state)} · 검토할 제안 ${pending}개`;

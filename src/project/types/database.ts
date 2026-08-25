@@ -3,16 +3,19 @@ import type {
   BattleAnimationId,
   ClassId,
   CropId,
+  Dir,
   EnemyId,
   EquipmentId,
   ItemId,
+  MapId,
   MonsterSpeciesId,
   SkillId,
   StateId,
   TroopId,
 } from "./base";
-import type { Command, Condition, EventPageGraphic } from "./events";
-import type { Season, TimeSystemConfig } from "../gameTime";
+import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
+import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
+import type { GenrePackId } from "../genrePackId";
 
 export interface ActorRecord {
   id: ActorId;
@@ -201,6 +204,16 @@ export interface SkillRecord {
   // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
+  /** Gen1 move PP cap. Omitted for legacy projects that have not opted into per-move PP yet. */
+  maxPp?: number;
+  /** Gen1's high-critical move class. Omission is the legacy-compatible normal class. */
+  gen1CriticalRate?: "normal" | "high";
+  /**
+   * 기술 우선도(-7~+7, 기본 0). strict 턴제에서 속도보다 먼저 비교한다 — 퀵어택(+1)류.
+   * 이름이 movePriority 인 이유: EnemyActionPattern.priority(적 AI 행동 선택 가중치),
+   * StateRecord.priority(상태 표시 우선순위)와 전혀 다른 개념이라 혼동을 차단한다.
+   */
+  movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
 }
@@ -271,6 +284,8 @@ export interface ItemRecord {
 
 export interface ItemCaptureProfile {
   multiplier: number;
+  /** Optional Gen1 capture algorithm class; multiplier remains the compatibility contract. */
+  ballClass?: "poke" | "great" | "ultra" | "master";
 }
 
 export interface ItemCareProfile {
@@ -557,6 +572,8 @@ export interface TroopRecord {
   members?: TroopMemberRecord[];
   autoAlign: boolean;
   uncapturable?: boolean;
+  /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
+  trainerBattle?: boolean;
   previewBackgroundResourceId?: string;
   battleFlow?: BattleFlow;
   activeSlots?: number;
@@ -566,6 +583,8 @@ export interface TroopRecord {
 export interface StateRecord {
   id: StateId;
   name: string;
+  /** Gen1 persistent major status semantics, independent of authored state id/name. */
+  gen1MajorStatus?: "poison" | "burn" | "sleep" | "freeze" | "paralysis";
   // RM2K3 상태(State) 편집 가능 필드 — 사용자가 DB 탭에서 재정의한 값.
   // 값을 설정하지 않으면 ontology 기본값(stateOntologyFor)이 사용된다.
   removalCondition?: string;
@@ -686,6 +705,160 @@ export interface LifeSkillRecord {
   readonly levelUpRewards: readonly LifeSkillLevelUpReward[];
 }
 
+/** One weighted authored outcome for a season's deterministic daily weather table. */
+export interface DailyWeatherRule {
+  readonly kind: WeatherKind;
+  readonly weight: number;
+  readonly intensity?: number;
+}
+
+/** Optional life-sim weather package. Forecasts are derived, never persisted as authored rows. */
+export interface DailyWeatherConfig {
+  readonly enabled: boolean;
+  readonly forecastDays?: number;
+  readonly seasons: Partial<Record<Season, readonly DailyWeatherRule[]>>;
+}
+
+/** Authored animal kind. Runtime ownership/progress lives in PlaySession.farmAnimals. */
+export interface FarmAnimalSpeciesRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly graphic?: EventPageGraphic;
+  readonly feedItemId: ItemId;
+  readonly productItemId: ItemId;
+  readonly productCount: number;
+  readonly productEveryDays: number;
+  readonly petFriendship: number;
+}
+
+/** A placed animal home definition, deliberately narrower than future general farm buildings. */
+export interface FarmAnimalBuildingDefinition {
+  readonly id: string;
+  readonly name: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly capacity: number;
+  readonly allowedSpeciesIds: readonly string[];
+}
+
+export interface FishSpeciesRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly itemId: ItemId;
+  readonly skillXp?: number;
+}
+
+export interface FishingCatchRule {
+  readonly fishId: string;
+  readonly weight: number;
+  readonly seasons?: readonly Season[];
+  readonly timePhases?: readonly TimePhase[];
+  readonly weatherKinds?: readonly WeatherKind[];
+  readonly minSkillLevel?: number;
+}
+
+export interface FishingSpotDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly mapId: MapId;
+  readonly area: import("./project").Rect;
+  readonly catches: readonly FishingCatchRule[];
+}
+
+export interface FishingSystemConfig {
+  readonly enabled: boolean;
+  readonly energyCost?: number;
+  readonly spots: readonly FishingSpotDefinition[];
+}
+
+export interface ForageEntryDefinition {
+  readonly id: string;
+  readonly weight: number;
+  readonly itemId?: ItemId;
+  readonly seasonalDrops?: Partial<Record<Season, ItemId>>;
+}
+
+export interface ForageAreaDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly mapId: MapId;
+  readonly area: import("./project").Rect;
+  readonly dailySpawnCount: number;
+  readonly maxActive: number;
+  readonly spawnEveryDays?: number;
+  readonly despawnAfterDays: number;
+  readonly entries: readonly ForageEntryDefinition[];
+}
+
+export interface SeasonalForageConfig {
+  readonly enabled: boolean;
+  readonly areas: readonly ForageAreaDefinition[];
+}
+
+export interface CollectionSystemConfig {
+  readonly enabled: boolean;
+  readonly trackedItemIds?: readonly ItemId[];
+}
+
+export interface MuseumRewardDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly minDonations?: number;
+  readonly requiredItemIds?: readonly ItemId[];
+  readonly reward?: BundleRewardDefinition;
+}
+
+export interface MuseumSystemConfig {
+  readonly enabled: boolean;
+  readonly eligibleItemIds: readonly ItemId[];
+  readonly rewards: readonly MuseumRewardDefinition[];
+}
+
+export interface SpatialFootprint {
+  readonly width: number;
+  readonly height: number;
+}
+
+export interface SpatialPlacementCost {
+  readonly gold?: number;
+  readonly items?: ItemAmount[];
+}
+
+export interface FarmBuildingLevelDefinition {
+  readonly level: number;
+  readonly name?: string;
+  readonly footprint: SpatialFootprint;
+  /** Generic facility slots, never P1 farm-animal housing capacity. */
+  readonly capacity: number;
+  /** Level 1 builds the structure; later levels upgrade into that level. */
+  readonly cost?: SpatialPlacementCost;
+  readonly graphicResourceId: string;
+  readonly orientationGraphicResourceIds?: Partial<Record<Dir, string>>;
+}
+
+/** General farm structure catalog, deliberately independent from farmAnimalBuildings. */
+export interface FarmBuildingTypeRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly levels: FarmBuildingLevelDefinition[];
+  /** Omitted/empty permits every map. */
+  readonly allowedMapIds?: MapId[];
+}
+
+export interface HomeDecorationTypeRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly placementItemId: ItemId;
+  readonly footprint: SpatialFootprint;
+  readonly blocksMovement: boolean;
+  readonly allowedOrientations: Dir[];
+  readonly graphicResourceId: string;
+  readonly orientationGraphicResourceIds?: Partial<Record<Dir, string>>;
+  /** Omitted/empty permits every map. */
+  readonly allowedMapIds?: MapId[];
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
   elements?: DatabaseElementRecord[];
   terrains?: DatabaseTerrainRecord[];
@@ -693,6 +866,10 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   monsterSpecies?: MonsterSpeciesRecord[];
   crops?: CropRecord[];
   lifeSkills?: LifeSkillRecord[];
+  farmAnimalSpecies?: FarmAnimalSpeciesRecord[];
+  fishSpecies?: FishSpeciesRecord[];
+  farmBuildingTypes?: FarmBuildingTypeRecord[];
+  homeDecorationTypes?: HomeDecorationTypeRecord[];
 }
 
 export interface TitleScreenLayout {
@@ -787,8 +964,69 @@ export interface TitleScreenSettings {
   intro?: TitleIntroSettings;
 }
 
+/** Project-authored logical viewport used by the map runtime and its DOM stage. */
+export interface PlayResolution {
+  width: number;
+  height: number;
+}
+
+export interface EnergySystemConfig {
+  /** Maximum energy available to a fully-rested player. */
+  readonly max: number;
+  /** New-session energy. Omitted means max. */
+  readonly initial?: number;
+  /** Day/sleep restore amount. Omitted means a full restore. */
+  readonly restorePerDay?: number;
+}
+
+export interface ShippingSystemConfig {
+  readonly enabled: boolean;
+  /** Number of immutable settlement summaries retained in a save. */
+  readonly historyLimit?: number;
+  /** Omitted means every item with a resolvable sell price is accepted. */
+  readonly allowedItemIds?: ItemId[];
+}
+
+export interface ItemAmount {
+  readonly itemId: ItemId;
+  readonly count: number;
+}
+
+export interface BundleRewardDefinition {
+  readonly gold?: number;
+  readonly itemRewards?: ItemAmount[];
+  readonly switchId?: string;
+  readonly worldUnlockIds?: string[];
+  readonly recipeIds?: string[];
+}
+
+export interface BundleDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly requirements: ItemAmount[];
+  readonly reward?: BundleRewardDefinition;
+}
+
+export interface WorldUnlockDefinition {
+  readonly id: string;
+  readonly name?: string;
+  /** Optional switch mirrored on when this region is unlocked. */
+  readonly switchId?: string;
+}
+
+export interface MakerDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly inputs: ItemAmount[];
+  readonly outputs: ItemAmount[];
+  /** Processing duration on a monotonic absolute game-minute clock. */
+  readonly durationMinutes: number;
+}
+
 export interface SystemRecords {
   startActorIds: ActorId[];
+  /** Omitted means the legacy 320x240 viewport. */
+  playResolution?: PlayResolution;
   titleResourceId?: string;
   systemResourceId?: string;
   battleSystemResourceId?: string;
@@ -821,12 +1059,34 @@ export interface SystemRecords {
   itemUpgrades?: import("@/project/upgrades").ItemUpgradeRule[];
   /** Opt-in sell price overrides. */
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
+  /** Opt-in life-sim energy pool. */
+  energy?: EnergySystemConfig;
+  /** Opt-in shipping queue and nightly settlement policy. */
+  shipping?: ShippingSystemConfig;
+  /** Community-style contribution definitions. */
+  bundles?: BundleDefinition[];
+  /** Stable world/region unlock definitions referenced by bundle rewards. */
+  worldUnlocks?: WorldUnlockDefinition[];
+  /** Timed input/output processing definitions. */
+  makers?: MakerDefinition[];
+  /** Optional authored daily weather tables. Runtime selection is owned by the day transition. */
+  dailyWeather?: DailyWeatherConfig;
+  /** Placed animal homes for the P1 farm-animal loop. */
+  farmAnimalBuildings?: FarmAnimalBuildingDefinition[];
+  /** Deterministic fishing availability and weighted catch definitions. */
+  fishing?: FishingSystemConfig;
+  /** Deterministic daily forage spawn policy. */
+  seasonalForage?: SeasonalForageConfig;
+  /** Opt-in unified item discovery/shipping/catch/donation journal. */
+  collections?: CollectionSystemConfig;
+  /** Exact-once museum donation and reward definitions. */
+  museum?: MuseumSystemConfig;
   /** Out-of-battle party monster care (walk ticks + feed/toy items). */
   monsterCare?: MonsterCareConfig;
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */
   skillSystem?: { enabled: boolean };
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
-  genre?: "monster-collect" | "horror-chase" | "farm-life";
+  genre?: GenrePackId;
 }
 
 export interface ActionCombatHudConfig {

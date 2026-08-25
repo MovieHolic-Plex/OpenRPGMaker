@@ -4,6 +4,11 @@ import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews"
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
+import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
+import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
+import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
+import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
+import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
@@ -22,6 +27,7 @@ import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { uiLabel } from "@/editor/uiCopy";
 import { store } from "@/project/store";
+import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
@@ -33,6 +39,11 @@ export type DatabaseTab =
   | "commonEvents"
   | "characters"
   | "crops"
+  | "lifeCrafting"
+  | "dailyWeather"
+  | "farmAnimals"
+  | "farmSpatial"
+  | "lifeCollections"
   | "elements"
   | "monsterSpecies"
   | "structureKits"
@@ -53,11 +64,16 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템", testid: "db-tab-items" },
-  { id: "crops", label: "작물", testid: "db-tab-crops" },
-  { id: "characters", label: "캐릭터", testid: "db-tab-characters" },
+  { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
+  { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
+  { id: "lifeCrafting", label: "생활 기술·제작", testid: "db-tab-life-crafting" },
+  { id: "dailyWeather", label: "계절·날씨", testid: "db-tab-daily-weather" },
+  { id: "farmAnimals", label: "동물·축사", testid: "db-tab-farm-animals" },
+  { id: "farmSpatial", label: "농장 건물·집 꾸미기", testid: "db-tab-farm-spatial" },
+  { id: "lifeCollections", label: "낚시·채집·박물관", testid: "db-tab-life-collections" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
-  { id: "monsterSpecies", label: "종족", testid: "db-tab-monster-species" },
+  { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
@@ -78,6 +94,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "items",
   "equipment",
   "enemies",
+  "monsterSpecies",
   "troops",
   "elements",
   "states",
@@ -85,9 +102,13 @@ const tabOrder: readonly DatabaseTab[] = [
   "battleScreen",
   "battleCommands",
   "terrain",
-  "monsterSpecies",
   "crops",
   "characters",
+  "lifeCrafting",
+  "dailyWeather",
+  "farmAnimals",
+  "lifeCollections",
+  "farmSpatial",
   "tilesets",
   "structureKits",
   "commonEvents",
@@ -110,10 +131,10 @@ export type DatabaseTabGroup = {
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "파티", tabs: ["actors", "classes", "skills", "items", "equipment"] },
   {
-    label: "전투",
-    tabs: ["enemies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
+    label: "전투·몬스터",
+    tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
-  { label: "수집", tabs: ["monsterSpecies", "crops", "characters"] },
+  { label: "생활", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", tabs: ["tilesets", "structureKits", "commonEvents"] },
   { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
 ];
@@ -124,9 +145,19 @@ function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: st
   return tab;
 }
 
-const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
+
+type DatabaseTabRenderCache = {
+  readonly project: Project;
+  readonly views: Map<DatabaseTab, readonly Node[]>;
+};
+
+// Each mounted Database panel owns detached DOM for tabs it has already rendered.
+// ProjectStore replaces the Project object on every mutation, which gives the cache
+// a cheap and exact invalidation boundary without hashing large database records.
+const tabRenderCaches = new WeakMap<HTMLElement, DatabaseTabRenderCache>();
 
 export function setDatabaseActiveTab(tab: DatabaseTab): void {
   activeTab = tab;
@@ -152,8 +183,12 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
+  tabRenderCaches.delete(container);
   const header = el("div", { class: "db-tabs" });
-  const body = el("div", { class: "db-body" });
+  const body = el("div", {
+    class: "db-body db-shared-workspace",
+    dataset: { testid: "db-shared-workspace" },
+  });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
   const chrome = getEditorChrome();
   if (chrome.databaseNav === "common") {
@@ -190,7 +225,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
 export function refreshDatabasePanel(container: HTMLElement): void {
   const body = container.querySelector(".db-body");
   if (body instanceof HTMLElement) {
-    renderActiveTab(body, container);
+    renderActiveTab(body, container, { forceFresh: true });
     refreshTabCounts(container);
     return;
   }
@@ -220,10 +255,37 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return database.crops?.length ?? 0;
     case "characters":
       return Object.keys(project.characters ?? {}).length;
+    case "lifeCrafting":
+      return (database.lifeSkills?.length ?? 0)
+        + (project.system.craftRecipes?.length ?? 0)
+        + (project.system.itemUpgrades?.length ?? 0)
+        + (project.system.sellPrices?.length ?? 0)
+        + (project.system.toolActions?.length ?? 0)
+        + (project.system.energy ? 1 : 0)
+        + (project.system.shipping ? 1 : 0)
+        + (project.system.worldUnlocks?.length ?? 0)
+        + (project.system.bundles?.length ?? 0)
+        + (project.system.makers?.length ?? 0);
+    case "dailyWeather":
+      return Object.values(project.system.dailyWeather?.seasons ?? {}).reduce((sum, rules) => sum + (rules?.length ?? 0), 0);
+    case "farmAnimals":
+      return (database.farmAnimalSpecies?.length ?? 0)
+        + (project.system.farmAnimalBuildings?.length ?? 0)
+        + (project.session.farmAnimals?.length ?? 0);
+    case "farmSpatial":
+      return (database.farmBuildingTypes?.length ?? 0)
+        + (database.homeDecorationTypes?.length ?? 0)
+        + (project.session.farmBuildingPlacements?.length ?? 0)
+        + (project.session.homeDecorationPlacements?.length ?? 0);
+    case "lifeCollections":
+      return (database.fishSpecies?.length ?? 0)
+        + (project.system.fishing?.spots.length ?? 0)
+        + (project.system.seasonalForage?.areas.length ?? 0)
+        + (project.system.museum?.rewards.length ?? 0);
     case "switches":
-      return project.switches.length;
+      return project.switches.filter((record) => record.name.trim().length > 0).length;
     case "variables":
-      return project.variables.length;
+      return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
     case "tilesets":
@@ -256,7 +318,7 @@ function refreshTabCounts(container: HTMLElement): void {
 function appendTabSearch(header: HTMLElement): void {
   const input = el("input", {
     class: "db-tab-search",
-    attrs: { type: "search", placeholder: "탭 검색", "aria-label": "탭 검색" },
+    attrs: { type: "search", placeholder: "탭 검색", title: "탭 검색", "aria-label": "탭 검색" },
     dataset: { testid: "db-tab-search" },
     on: { input: () => applyTabFilter(header, input.value) },
   });
@@ -331,14 +393,35 @@ function revealActiveTab(header: HTMLElement): void {
   active.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
-function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
-  clearChildren(body);
-  const rerender = (): void => renderActiveTab(body, container);
-  if (activeTab === "enemies" || activeTab === "monsterSpecies" || activeTab === "troops") {
+function renderActiveTab(
+  body: HTMLElement,
+  container: HTMLElement,
+  options: { readonly forceFresh?: boolean } = {},
+): void {
+  const tab = activeTab;
+  let cache = tabRenderCacheFor(container);
+  const cached = options.forceFresh ? undefined : cache.views.get(tab);
+  if (cached) {
+    body.replaceChildren(...cached);
+    return;
+  }
+
+  body.replaceChildren();
+  const rerender = (): void => {
+    // A debounced callback from a tab that has since been detached must not repaint
+    // whichever tab is currently visible. Its cache entry is simply made cold.
+    if (activeTab !== tab) {
+      tabRenderCacheFor(container).views.delete(tab);
+      return;
+    }
+    renderActiveTab(body, container, { forceFresh: true });
+    refreshTabCounts(container);
+  };
+  if (tab === "enemies" || tab === "monsterSpecies" || tab === "troops") {
     const banner = collectionGateBanner(container);
     if (banner) body.append(banner);
   }
-  switch (activeTab) {
+  switch (tab) {
     case "actors":
     case "classes":
     case "skills":
@@ -347,62 +430,91 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
     case "enemies":
     case "troops":
     case "states":
-      renderRecordTab(body, activeTab, rerender);
-      return;
+      renderRecordTab(body, tab, rerender);
+      break;
     case "animations":
       renderRecordTab(body, "battleAnimations", rerender);
-      return;
+      break;
     case "elements":
       renderElementsTab(body);
-      return;
+      break;
     case "terrain":
       renderTerrainTab(body);
-      return;
+      break;
     case "battleScreen":
       renderBattleScreenTab(body);
-      return;
+      break;
     case "battleCommands":
       renderBattleCommandsTab(body);
-      return;
+      break;
     case "monsterSpecies":
       renderMonsterSpeciesTab(body, rerender);
-      return;
+      break;
     case "crops":
       renderCropTab(body, rerender);
-      return;
+      break;
     case "characters":
       renderCharactersTab(body, rerender);
-      return;
+      break;
+    case "lifeCrafting":
+      renderLifeCraftingTab(body, rerender);
+      break;
+    case "dailyWeather":
+      renderDailyWeatherTab(body, rerender);
+      break;
+    case "farmAnimals":
+      renderFarmAnimalsTab(body, rerender);
+      break;
+    case "farmSpatial":
+      renderFarmSpatialTab(body, rerender);
+      break;
+    case "lifeCollections":
+      renderLifeCollectionsTab(body, rerender);
+      break;
     case "switches":
       renderSwitchesTab(body, rerender);
-      return;
+      break;
     case "variables":
       renderVariablesTab(body, rerender);
-      return;
+      break;
     case "commonEvents":
       renderCommonEventsTab(body, rerender);
-      return;
+      break;
     case "tilesets":
       renderTilesetsTab(body, rerender);
-      return;
+      break;
     case "structureKits":
       renderStructureKitsTab(body, rerender);
-      return;
+      break;
     case "system":
       renderSystemTab(body, rerender);
-      return;
+      break;
     case "terms":
       renderTermsTab(body);
-      return;
+      break;
     case "overview":
       renderOverviewTab(body, rerender);
-      return;
+      break;
   }
+
+  // A renderer may update the store while normalizing its own view. Re-read the
+  // project after rendering so such a mutation invalidates every older tab entry.
+  cache = tabRenderCacheFor(container);
+  cache.views.set(tab, Array.from(body.childNodes));
+}
+
+function tabRenderCacheFor(container: HTMLElement): DatabaseTabRenderCache {
+  const project = store.getCurrent();
+  const current = tabRenderCaches.get(container);
+  if (current?.project === project) return current;
+  const next: DatabaseTabRenderCache = { project, views: new Map() };
+  tabRenderCaches.set(container, next);
+  return next;
 }
 
 /**
- * 수집 데이터를 저작했는데 시스템 탭에서 몬스터 수집이 꺼져 있으면 포획 명령이 전투에
- * 나오지 않는다 — 세 수집 탭 상단에 경고와 시스템 탭 점프를 준다.
+ * 몬스터 데이터를 저작했는데 시스템 탭에서 몬스터 수집이 꺼져 있으면 포획 명령이 전투에
+ * 나오지 않는다 — 몬스터/종족/적 그룹 탭 상단에 경고와 시스템 탭 점프를 준다.
  */
 function collectionGateBanner(container: HTMLElement): HTMLElement | null {
   const project = store.getCurrent();

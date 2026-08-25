@@ -37,7 +37,7 @@ describe("database record list thumbnails", () => {
 
     const skill = thumb("skills", project.database.skills[0], project);
     expect(skill.className).toContain("db-list-thumb-animation");
-    expect(skill.style.backgroundImage).toContain("/assets/easyrpg/battle/");
+    expect(skill.style.backgroundImage).toContain("/assets/generated/effects/");
 
     const animation = thumb("battleAnimations", project.database.battleAnimations[0], project);
     expect(animation.className).toContain("db-list-thumb-animation");

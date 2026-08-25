@@ -176,7 +176,7 @@ const DUNGEON_TILE_LABELS = new Map<number, string>(
   DUNGEON_TILE_SEMANTICS.map((entry) => [entry.index, entry.label])
 );
 
-// 타일셋 텍스처에 맞는 번들 라벨 테이블 — 칩셋마다 같은 인덱스의 의미가 다르다.
+// 타일셋 텍스처에 맞는 번들 라벨 테이블 — 타일 그림판마다 같은 인덱스의 의미가 다르다.
 function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
   if (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_LABELS;
   if (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_LABELS;
@@ -337,12 +337,12 @@ const setTileMetadata: ToolDefinition = {
 };
 
 // ── set_tile_rules ───────────────────────────────────────────────
-// DB 타일셋의 "타일 규칙" 탭(레이어/통행/지형 태그)을 챗봇에서도 설정한다.
+// DB 타일셋의 "타일 규칙" 탭(레이어/통행/지면 종류)을 챗봇에서도 설정한다.
 // 레이어 확정은 하네스·투명 칩 자동 판정보다 우선하므로 사용자 확인을 요구한다.
 const setTileRules: ToolDefinition = {
   name: "set_tile_rules",
   description:
-    "타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지형 태그). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에.",
+    "타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지면 종류). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에.",
   mode: "write",
   parameters: {
     type: "object",
@@ -397,7 +397,7 @@ const setTileRules: ToolDefinition = {
       if (typeof entry.terrainTag === "number" && Number.isInteger(entry.terrainTag)) {
         tileset.terrain[tile] = entry.terrainTag;
         markUserTileRuntimeMetadata(tileset, tile, { terrainTag: entry.terrainTag });
-        changes.push(`타일 ${tile} 지형 태그→${entry.terrainTag}`);
+        changes.push(`타일 ${tile} 지면 종류→${entry.terrainTag}`);
       }
     }
     if (skipped.length > 0) {

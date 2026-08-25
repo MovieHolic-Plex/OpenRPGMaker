@@ -96,8 +96,11 @@ function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] 
 // ── 컨텍스트 모드 도메인 태깅(§2.2.2) ────────────────────────────────────────
 // 노출 정책의 단일 소스: 패밀리 배열 단위 일괄 태깅 + 이름 단위 오버라이드.
 // "core"는 모든 모드 상시 노출(스펙 §2.2.2의 정확한 5종).
+// 참조 id 조회(get_database_records)는 core 다: speciesId/elementRates/itemId 를 쓰는 모든 쓰기 툴의
+// 전제 조건인데 40툴 트림에서 잘리면 모델이 id 를 발명하고 무결성 검증에서 거부된다
+// (2026-08-23 실측: 발명한 element id 3개 거부 후 "속성 id 조회 기능이 없다"며 작업 3건 포기).
 const CORE_TOOL_NAMES: ReadonlySet<string> = new Set([
-  "create_map", "resize_map", "get_project_summary", "list_resources", "tile_query",
+  "create_map", "resize_map", "get_project_summary", "list_resources", "tile_query", "get_database_records",
 ]);
 
 // 혼합 패밀리(QUERY_TOOLS 등)의 이름 단위 도메인 교정.
@@ -222,7 +225,7 @@ const MAX_EXPOSED_TOOLS = 40;
 // (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
-  ["system", new Set(["reset_project", "configure_time_system"])],
+  ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality"])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",
@@ -237,6 +240,10 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "evaluate_interior_room",
     "fill_region",
     "build_wall",
+    // door-transfer 가이드가 "문 시각 배치는 place_door" 라고 직접 가리키는 대표 도구다. 실내 하네스
+    // 4종이 핀에 들어오며 tile 도메인이 상한(40) 트림에 걸리자 이것이 밀려나, 문을 그리는 경로가
+    // 노출에서 사라졌다(test/regionIntentExposure.test.ts door-transfer 보장 실패).
+    "place_door",
     "paint_road", // 흙길/모래 8방 오토타일 — lay_path만 핀되면 AI가 길을 안 깔거나 비성형 경로로 감
     "lay_path",
     "tile_query",
@@ -244,12 +251,22 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "tile_erase", // transform 가이드 대표 도구(regionIntentExposure) — clear_region 폐기 후 유일한 지우기 경로
   ])],
   ["event", new Set([
-    "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event",
+    "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event", "set_shop_stock",
     // 영역 작업 quest-trigger/mood/door-transfer 가이드 대표 도구(2026-07-10 라이브 실측 수정) —
     // event 도메인 안에서도 EVENT_TOOLS/LIGHTING_TOOLS 뒤쪽 정의라 상한(40) 슬라이스에서 밀려
     // place_chest 등이 노출 안 되던 문제.
     "place_chest", "place_storage_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
     "author_story_arc",
+    // 컷신/선택지 요청의 대표 도구. 트림에서 밀리면 모델이 "선택지를 만드는 입력이 없다"고
+    // 사용자에게 보고한다(2026-08-23 실측) — 있는 기능을 없다고 말하게 만드는 노출 누락이다.
+    "script_cutscene", "script_cutscene_preset",
+    // 엔딩 툴은 event 도메인으로 태깅돼 있다(withDomain(ENDING_TOOLS,"event")). quest 쪽에 핀해도
+    // isPinnedTool 이 tool.domains 를 보므로 효과가 없어 "엔딩 정의 기능이 없다"는 오보가 계속됐다.
+    "define_ending", "list_endings",
+  ])],
+  ["database", new Set([
+    // 상성표/속성 요청의 대표 도구.
+    "set_type_chart", "upsert_item", "upsert_enemy",
   ])],
   ["map", new Set([
     "reset_project",
@@ -259,8 +276,21 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.
     "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",
   ])],
-  ["quest", new Set(["author_story_arc"])],
-  ["system", new Set(["evaluate_game_quality"])],
+  // define_ending 이 트림되면 "엔딩을 정의하는 기능이 없다"는 잘못된 보고로 이어진다(2026-08-23 실측).
+  ["quest", new Set([
+    "author_story_arc",
+    "define_quest",
+    "create_quest",
+    "verify_quest",
+    "lint_quest",
+    "generate_walkthrough",
+  ])],
+  ["world", new Set([
+    "plan_world",
+    "build_world",
+    "link_maps",
+    "lint_world",
+  ])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
   ["tile", 0],
@@ -336,7 +366,43 @@ function isPinnedTool(tool: ToolDefinition, domains: ReadonlySet<ToolDomain>): b
 function trimToExposureCap(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain>): readonly ToolDefinition[] {
   if (exposed.length <= MAX_EXPOSED_TOOLS) return exposed;
   const pinned = exposed.filter((tool) => isPinnedTool(tool, domains));
-  if (pinned.length >= MAX_EXPOSED_TOOLS) return pinned.slice(0, MAX_EXPOSED_TOOLS);
+  if (pinned.length >= MAX_EXPOSED_TOOLS) {
+    // 핀 자체가 상한을 넘으면 레지스트리 순서로 자르지 않는다. 뒤쪽에 등록된 강한
+    // 의도 도메인(system 등)이 통째로 사라지므로, 도메인별 라운드로빈으로 최소
+    // 도달성을 보장한 뒤 원래 레지스트리 순서로 반환한다.
+    const NO_DOMAIN = "__none__" as const;
+    const buckets = new Map<ToolDomain | typeof NO_DOMAIN, ToolDefinition[]>();
+    for (const tool of pinned) {
+      const key = toolPrimaryDomain(tool) ?? NO_DOMAIN;
+      const bucket = buckets.get(key);
+      if (bucket) bucket.push(tool);
+      else buckets.set(key, [tool]);
+    }
+    const order = [...buckets.keys()].sort((a, b) => {
+      const pa = a === NO_DOMAIN ? 99 : domainPriority(a, domains);
+      const pb = b === NO_DOMAIN ? 99 : domainPriority(b, domains);
+      if (pa !== pb) return pa - pb;
+      const wa = a === NO_DOMAIN ? 99 : (WRITE_HEAVY_DOMAIN_ORDER.get(a) ?? 99);
+      const wb = b === NO_DOMAIN ? 99 : (WRITE_HEAVY_DOMAIN_ORDER.get(b) ?? 99);
+      return wa - wb;
+    });
+    const picked = new Set<ToolDefinition>();
+    while (picked.size < MAX_EXPOSED_TOOLS) {
+      let tookAny = false;
+      for (const key of order) {
+        if (picked.size >= MAX_EXPOSED_TOOLS) break;
+        const quantum = key !== NO_DOMAIN && domainPriority(key, domains) <= 2 ? 2 : 1;
+        for (let take = 0; take < quantum && picked.size < MAX_EXPOSED_TOOLS; take += 1) {
+          const next = buckets.get(key)?.shift();
+          if (!next) break;
+          picked.add(next);
+          tookAny = true;
+        }
+      }
+      if (!tookAny) break;
+    }
+    return exposed.filter((tool) => picked.has(tool));
+  }
   const rest = exposed.filter((tool) => !isPinnedTool(tool, domains));
 
   const NO_DOMAIN = "__none__" as const;

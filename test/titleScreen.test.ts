@@ -27,13 +27,35 @@ function fullVisibilitySettings(partial: Omit<TitleScreenSettings, "menuVisibili
 }
 
 describe("title screen", () => {
+  it("renders the redesigned editorial title composition instead of legacy window chrome", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      expect(screen.classList.contains("rm-title-screen-editorial")).toBe(true);
+      expect(findByTestId(screen, "title-kicker")?.textContent).toBe("A NEW ADVENTURE");
+      expect(findByTestId(screen, "title-subtitle")?.textContent).toBe("이야기가 시작되는 곳");
+      expect(screen.querySelector(".rm-title-menu")?.classList.contains("rm-title-menu-open")).toBe(true);
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("renders database-configured title text, menu labels, and positions", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
       project.system.titleScreen = fullVisibilitySettings({
         title: "용사의 밤",
-        backgroundResourceId: "rpg-zzu-title-blue",
+        backgroundResourceId: "oprn-title-blue",
         layout: {
           titleX: 144,
           titleY: 64,
@@ -91,7 +113,7 @@ describe("title screen", () => {
       const project = createBlankProject();
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
-        backgroundResourceId: "rpg-zzu-title-blue",
+        backgroundResourceId: "oprn-title-blue",
       });
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
@@ -103,7 +125,7 @@ describe("title screen", () => {
       );
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
       expect(screen.style.borderImageSource).toBeUndefined();
-      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
+      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-default.png");
     } finally {
       restoreDom();
     }
@@ -156,7 +178,7 @@ describe("title screen", () => {
     }
   });
 
-  it("uses the 320x240 EasyRPG title background and centered menu by default", () => {
+  it("uses the 320x240 title background and left-aligned editorial composition by default", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -175,16 +197,16 @@ describe("title screen", () => {
       if (!(title instanceof FakeElement) || !(menu instanceof FakeElement)) {
         throw new Error("expected title screen children");
       }
-      expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
-      expect(title.style.left).toBe("50%");
-      expect(menu.style.left).toBe("50%");
+      expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
+      expect(title.style.left).toBe("10%");
+      expect(menu.style.left).toBe("10.625%");
       expect(findByTestId(screen, "title-input-hint")?.textContent).toBe(TITLE_KEY_PROMPT);
     } finally {
       restoreDom();
     }
   });
 
-  it("wires mouse click handlers on title menu options", () => {
+  it("ignores pointer clicks because title selection is keyboard-only", () => {
     const restoreDom = installFakeDom();
     try {
       let activated: string | null = null;
@@ -208,7 +230,8 @@ describe("title screen", () => {
       const newGame = findByTestId(screen, "title-new-game");
       expect(String(newGame?.tagName ?? "").toLowerCase()).not.toBe("button");
       newGame?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(activated).toBe("new");
+      expect(activated).toBeNull();
+      expect(findByTestId(screen, "title-input-hint")?.textContent).not.toContain("클릭");
     } finally {
       restoreDom();
     }
@@ -372,7 +395,7 @@ describe("title screen", () => {
       // selectedIndex 1 은 이제 resume 을 가리킨다(new → resume → load → quit).
       expect(resume?.attrs["aria-selected"]).toBe("true");
       resume?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(resumed).toBe(1);
+      expect(resumed).toBe(0);
     } finally {
       restoreDom();
     }
@@ -460,7 +483,7 @@ describe("title screen", () => {
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
         backgroundLayers: [
-          { resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 },
+          { resourceId: "oprn-title-field", scrollXPerSec: 16 },
           { resourceId: "easyrpg-title-title1", scrollYPerSec: -12, opacity: 0.5 },
         ],
       });
@@ -478,7 +501,7 @@ describe("title screen", () => {
       expect(fx).toBeTruthy();
       const layers = screen.querySelectorAll("[data-testid='title-bg-layer']");
       expect(layers).toHaveLength(2);
-      expect(layers[0]?.dataset.titleLayerResource).toBe("rpg-zzu-title-field");
+      expect(layers[0]?.dataset.titleLayerResource).toBe("oprn-title-field");
       expect(layers[0]?.dataset.titleLayerIndex).toBe("0");
       // 320px 타일 / 16px/s = 20s 무한 스크롤 주기.
       expect(layers[0]?.style.animation).toBe("rm-title-layer-scroll-x 20s linear infinite");
@@ -583,7 +606,7 @@ describe("title screen", () => {
       const project = createBlankProject();
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
-        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 }],
+        backgroundLayers: [{ resourceId: "oprn-title-field", scrollXPerSec: 16 }],
         particles: { preset: "snow", density: 40 },
       });
       const actions = {
@@ -606,7 +629,7 @@ describe("title screen", () => {
       // 설정이 바뀌면(서명 불일치) 새 노드를 만든다.
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
-        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 32 }],
+        backgroundLayers: [{ resourceId: "oprn-title-field", scrollXPerSec: 32 }],
         particles: { preset: "snow", density: 40 },
       });
       const third = renderWithFakeDom(() =>
@@ -650,7 +673,7 @@ describe("title screen", () => {
       expect(logo).toBeTruthy();
       expect(logo?.dataset.titleLogoResource).toBe("easyrpg-title-title1");
       // Background stays on the title-screen node; logo uses its own resource.
-      expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
+      expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
     } finally {
       restoreDom();
     }

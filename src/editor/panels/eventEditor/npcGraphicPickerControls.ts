@@ -32,7 +32,6 @@ export type GraphicRadioGroup<TValue extends string | number> = {
   readonly setValue: (value: TValue) => void;
 };
 
-const TILESET_LABELS = ["*타일셋 1", "*타일셋 2", "*타일셋 3"] as const;
 const RESOURCE_THUMB_SELECTION = {
   characterIndex: 0,
   direction: "down",
@@ -47,15 +46,7 @@ export function renderGraphicResourceList(
   root.className = "event-graphic-resource-list";
   root.dataset.testid = "event-graphic-resource-list";
   root.setAttribute("role", "listbox");
-  root.setAttribute("aria-label", "그래픽 리소스");
-
-  for (const label of TILESET_LABELS) {
-    const row = document.createElement("div");
-    row.className = "event-graphic-resource-row disabled";
-    row.setAttribute("aria-disabled", "true");
-    row.append(renderResourceIcon(), document.createTextNode(label));
-    root.append(row);
-  }
+  root.setAttribute("aria-label", "모습");
 
   const buttons = assets.map((asset) => {
     const button = document.createElement("button");
@@ -110,7 +101,7 @@ export function renderAdvancedSpriteInput(
 
   const input = document.createElement("input");
   input.type = "text";
-  input.placeholder = "그래픽 ID 예: tex_easyrpg_charset_people1";
+  input.placeholder = "모습 예: tex_easyrpg_charset_people1";
   input.value = initialId;
   input.dataset.testid = "event-page-sprite-input";
   input.addEventListener("input", () => {
@@ -230,5 +221,23 @@ function applyResourceThumbnail(icon: HTMLElement, asset: CharsetPickerAsset): v
 }
 
 function charsetResourceLabel(asset: CharsetPickerAsset): string {
-  return asset.fileName.replace(/\.png$/u, "");
+  return humanizeCharsetFileName(asset.fileName.replace(/\.png$/u, ""));
+}
+
+function humanizeCharsetFileName(name: string): string {
+  const trimmed = name.replace(/^\*/u, "").trim();
+  const numbered = /^(Actor|Monster|Object|People)(\d+)$/u.exec(trimmed);
+  if (numbered) {
+    const kind = {
+      Actor: "배역",
+      Monster: "몬스터",
+      Object: "물건",
+      People: "사람",
+    }[numbered[1]!] ?? numbered[1]!;
+    return `${kind} ${numbered[2]}`;
+  }
+  if (trimmed === "Animal") return "동물";
+  if (trimmed === "Vehicles") return "탈것";
+  if (trimmed === "Template") return "양식";
+  return trimmed;
 }

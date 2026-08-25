@@ -2,7 +2,7 @@
 //
 // 규약(실측 확인):
 //   아이템 아이콘  16x16 PNG → public/assets/cc0/jetrel/icons/<slug>.png   id: cc0-jetrel-<slug>
-//   몬스터 배틀러  96x96 PNG → public/assets/generated/rm2k3/monster-<slug>.png  id: generated-enemy-<slug>
+//   몬스터 배틀러  96x96 PNG → public/assets/generated/starter/monster-<slug>.png  id: generated-enemy-<slug>
 //
 // desc 는 영어로 쓴다 — 생성 모델이 한국어 지시에서 형태를 자주 놓친다.
 

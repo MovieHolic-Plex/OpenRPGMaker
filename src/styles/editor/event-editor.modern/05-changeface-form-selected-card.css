@@ -167,14 +167,15 @@
 }
 
 .event-command-face-resource-input {
-  background: var(--bg-raised);
-  border: 1px solid var(--event-modern-border-strong);
-  border-radius: 4px;
-  color: var(--text-1);
-  font: 600 12px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace);
-  min-width: 0;
-  padding: 6px 8px;
-  width: 100%;
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .event-command-face-grid-section {

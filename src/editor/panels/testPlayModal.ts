@@ -1,4 +1,5 @@
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
+import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
@@ -14,6 +15,11 @@ import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
 import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestSandbox";
 import { toast } from "@/util/toast";
+import {
+  AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  authoringProjectFingerprint,
+} from "@/editor/authoringJourney";
+import { passesAuthoringTestGate } from "@/editor/authoringTestGate";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -25,18 +31,20 @@ let battleSceneController: BattleDomController | null = null;
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
-  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — "RPG 쯔꾸르" 고정 문구는
+  if (!passesAuthoringTestGate()) return;
+  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
   const title = startOverride
     ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
-    : `테스트 플레이 - ${projectTitle || "RPG 쯔꾸르"}`;
+    : `시연 실행 - ${projectTitle || PRODUCT_BRAND}`;
   const body = openTestPlayShell(title);
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {
     await store.flush();
     loading.setStage("preparing");
     const project = projectWithoutEventDrafts(store.getCurrent());
+    const projectFingerprint = authoringProjectFingerprint(project);
     releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(project);
     // 타이틀/플레이 전에 canonical 번들 에셋을 브라우저 캐시에 데운다.
     void warmBundledPlayAssets(project);
@@ -47,12 +55,17 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
       trackGlobalGame: false,
       startOverride,
       diagnosticSink: editorPlayBootDiagnosticSink,
+      onPlayBootSuccess: () => {
+        window.dispatchEvent(new CustomEvent(AUTHORING_TEST_BOOT_SUCCESS_EVENT, {
+          detail: { projectFingerprint },
+        }));
+      },
     });
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
-    loading.setStage("error", "테스트 플레이를 열지 못했습니다");
+    loading.setStage("error", "시연 실행를 열지 못했습니다");
     return;
   }
   // renderPlayer clears body children (including this overlay) when it mounts.
@@ -61,6 +74,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
+  if (!passesAuthoringTestGate()) return false;
   const liveProject = store.getCurrent();
   const validation = validateEventDraft(liveProject, mapId, eventId);
   if (!validation.canCommit) {
@@ -100,6 +114,11 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
 }
 
 export async function openTroopBattleTestModal(troopId: string): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
+  await openTroopBattleTestModalAfterGate(troopId);
+}
+
+async function openTroopBattleTestModalAfterGate(troopId: string): Promise<void> {
   const project = store.getCurrent();
   const troop = project.database.troops.find((record) => record.id === troopId);
   const body = openTestPlayShell(`전투 테스트 - ${troop?.name ?? troopId}`);
@@ -180,6 +199,7 @@ export function pickRandomTroopId(
 export async function openRandomTroopBattleTestModal(
   random: () => number = Math.random
 ): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
   const project = store.getCurrent();
   const troopId = pickRandomTroopId(project, random);
   if (!troopId) {
@@ -188,7 +208,7 @@ export async function openRandomTroopBattleTestModal(
     loading.setStage("error", "적 그룹이 없습니다. 데이터베이스에서 트룹을 추가하세요.");
     return;
   }
-  await openTroopBattleTestModal(troopId);
+  await openTroopBattleTestModalAfterGate(troopId);
 }
 
 export function closeTestPlayModal(): void {
@@ -228,13 +248,13 @@ function openTestPlayShell(title: string): HTMLElement {
   const restoreButton = el("button", {
     class: "test-play-close window-control restore",
     text: "창",
-    attrs: { title: "창 모드", "aria-label": "테스트 플레이 창 모드" },
+    attrs: { title: "창 모드", "aria-label": "시연 실행 창 모드" },
     dataset: { testid: "test-play-window-restore" },
   }) as HTMLButtonElement;
   const maximizeButton = el("button", {
     class: "test-play-close window-control maximize",
     text: "전체",
-    attrs: { title: "전체 화면", "aria-label": "테스트 플레이 전체 화면" },
+    attrs: { title: "전체 화면", "aria-label": "시연 실행 전체 화면" },
     dataset: { testid: "test-play-window-maximize" },
   }) as HTMLButtonElement;
   titlebar.append(
@@ -246,7 +266,7 @@ function openTestPlayShell(title: string): HTMLElement {
     el("button", {
       class: "test-play-close",
       text: "편집으로",
-      attrs: { title: "테스트 플레이 닫기" },
+      attrs: { title: "시연 실행 닫기" },
       dataset: { testid: "mode-edit" },
       on: { click: () => closeTestPlayModal() },
     }),
@@ -312,6 +332,21 @@ function eventDisplayName(event: GameEvent): string {
 
 function yieldToBrowser(): Promise<void> {
   return new Promise((resolve) => {
-    window.requestAnimationFrame(() => resolve());
+    let settled = false;
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      globalThis.clearTimeout(fallback);
+      resolve();
+    };
+    // Background/minimized editor tabs may throttle requestAnimationFrame
+    // indefinitely. Keep the paint opportunity, but never leave Test stuck on
+    // the preparation overlay just because the document is not foregrounded.
+    const fallback = globalThis.setTimeout(finish, 80);
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(finish);
+      return;
+    }
+    finish();
   });
 }

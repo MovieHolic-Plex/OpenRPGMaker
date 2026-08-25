@@ -4,6 +4,19 @@ import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databas
 import { updateClassRecord, updateEnemyRecord, updateEquipmentRecord, updateItemRecord, updateSkillRecord, updateTroopRecord } from "@/editor/databaseRecordMutators";
 import { createActorRecord, normalizeActorPatch, normalizeActorRecord } from "@/project/actorModel";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
+import { GENERATED_EFFECT_RESOURCE_IDS, GENERATED_EFFECT_SHEETS, generatedEffectDatabaseAnimationId } from "@/assets/generatedEffectSheets";
+import { defaultBattleAnimationRecords } from "@/project/defaults/defaultDatabaseStarterRecords";
+import {
+  GENERATED_BATTLE_EFFECT_CLASS_BINDINGS,
+  GENERATED_BATTLE_EFFECT_ITEM_BINDINGS,
+  GENERATED_BATTLE_EFFECT_SKILL_BINDINGS,
+  applyGeneratedBattleEffectActorBindings,
+  applyGeneratedBattleEffectClassBindings,
+  applyGeneratedBattleEffectItemBindings,
+  applyGeneratedBattleEffectSkillBindings,
+  countGeneratedBattleEffectActorBindingChanges,
+  countGeneratedBattleEffectBindingChanges,
+} from "@/project/defaults/generatedBattleEffectBindings";
 import {
   normalizeClassRecord,
   normalizeEnemyRecord,
@@ -32,6 +45,30 @@ import type {
 
 export type DatabaseCollection = keyof DatabaseRecords;
 export type DeleteResult = { ok: true } | { ok: false; message: string };
+export type GeneratedBattleEffectPackStatus = {
+  readonly totalAnimations: number;
+  readonly missingAnimations: number;
+  readonly outdatedAnimations: number;
+  readonly actorBindings: number;
+  readonly classBindings: number;
+  readonly skillBindings: number;
+  readonly itemBindings: number;
+};
+export type GeneratedBattleEffectInstallResult = {
+  readonly addedAnimations: number;
+  readonly updatedAnimations: number;
+  readonly updatedActors: number;
+  readonly updatedClasses: number;
+  readonly updatedSkills: number;
+  readonly updatedItems: number;
+  readonly firstAnimationId: string;
+};
+
+const LEGACY_GENERATED_EFFECT_RESOURCES: Readonly<Record<string, string>> = {
+  anim_magic: "easyrpg-battle-blow",
+  anim_heal: "easyrpg-battle-blow",
+  anim_poison: "easyrpg-battle-arrow",
+};
 export type DatabasePatch =
   | Partial<ActorRecord>
   | Partial<ClassRecord>
@@ -85,6 +122,112 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
     }
   }, { scope: "database", collection });
   return id;
+}
+
+/**
+ * Existing Supabase projects intentionally do not receive defaults during load. This explicit action is the
+ * non-destructive upgrade path: missing generated records are added, the three legacy aliases are upgraded when
+ * they still point at old art, and only the known starter actor/class/skill/item ids receive curated bindings.
+ */
+export function installGeneratedBattleEffectPack(): GeneratedBattleEffectInstallResult {
+  const status = generatedBattleEffectPackStatus();
+  const firstAnimationId = generatedEffectDatabaseAnimationId(GENERATED_EFFECT_SHEETS[0]?.slug ?? "slash-steel");
+  if (generatedBattleEffectPackPendingChanges(status) === 0) {
+    return {
+      addedAnimations: 0,
+      updatedAnimations: 0,
+      updatedActors: 0,
+      updatedClasses: 0,
+      updatedSkills: 0,
+      updatedItems: 0,
+      firstAnimationId,
+    };
+  }
+
+  const defaults = generatedBattleAnimationDefaults();
+  let addedAnimations = 0;
+  let updatedAnimations = 0;
+  let updatedActors = 0;
+  let updatedClasses = 0;
+  let updatedSkills = 0;
+  let updatedItems = 0;
+  recordProjectSnapshot();
+  store.update((project) => {
+    for (const defaultRecord of defaults) {
+      const index = project.database.battleAnimations.findIndex((record) => record.id === defaultRecord.id);
+      if (index < 0) {
+        project.database.battleAnimations.push(defaultRecord);
+        addedAnimations += 1;
+        continue;
+      }
+      const existing = project.database.battleAnimations[index];
+      if (!existing || !shouldUpgradeLegacyGeneratedEffect(existing)) continue;
+      project.database.battleAnimations[index] = defaultRecord;
+      updatedAnimations += 1;
+    }
+    updatedActors = applyGeneratedBattleEffectActorBindings(project.database.actors);
+    updatedClasses = applyGeneratedBattleEffectClassBindings(project.database.classes);
+    updatedSkills = applyGeneratedBattleEffectSkillBindings(project.database.skills);
+    updatedItems = applyGeneratedBattleEffectItemBindings(project.database.items);
+  }, { scope: "database", collection: "battleAnimations" });
+
+  return {
+    addedAnimations,
+    updatedAnimations,
+    updatedActors,
+    updatedClasses,
+    updatedSkills,
+    updatedItems,
+    firstAnimationId,
+  };
+}
+
+export function generatedBattleEffectPackStatus(): GeneratedBattleEffectPackStatus {
+  const project = store.getCurrent();
+  const defaults = generatedBattleAnimationDefaults();
+  let missingAnimations = 0;
+  let outdatedAnimations = 0;
+  for (const defaultRecord of defaults) {
+    const existing = project.database.battleAnimations.find((record) => record.id === defaultRecord.id);
+    if (!existing) missingAnimations += 1;
+    else if (shouldUpgradeLegacyGeneratedEffect(existing)) outdatedAnimations += 1;
+  }
+  return {
+    totalAnimations: defaults.length,
+    missingAnimations,
+    outdatedAnimations,
+    actorBindings: countGeneratedBattleEffectActorBindingChanges(project.database.actors),
+    classBindings: countGeneratedBattleEffectBindingChanges(
+      project.database.classes,
+      GENERATED_BATTLE_EFFECT_CLASS_BINDINGS,
+    ),
+    skillBindings: countGeneratedBattleEffectBindingChanges(
+      project.database.skills,
+      GENERATED_BATTLE_EFFECT_SKILL_BINDINGS,
+    ),
+    itemBindings: countGeneratedBattleEffectBindingChanges(
+      project.database.items,
+      GENERATED_BATTLE_EFFECT_ITEM_BINDINGS,
+    ),
+  };
+}
+
+export function generatedBattleEffectPackPendingChanges(status = generatedBattleEffectPackStatus()): number {
+  return status.missingAnimations
+    + status.outdatedAnimations
+    + status.actorBindings
+    + status.classBindings
+    + status.skillBindings
+    + status.itemBindings;
+}
+
+function generatedBattleAnimationDefaults(): BattleAnimationRecord[] {
+  const generatedResourceIds = new Set(GENERATED_EFFECT_RESOURCE_IDS);
+  return defaultBattleAnimationRecords().filter((record) => generatedResourceIds.has(record.resourceId ?? ""));
+}
+
+function shouldUpgradeLegacyGeneratedEffect(record: BattleAnimationRecord): boolean {
+  return record.resourceId === LEGACY_GENERATED_EFFECT_RESOURCES[record.id];
 }
 
 export function updateDatabaseRecord(collection: DatabaseCollection, id: string, patch: DatabasePatch): void {
@@ -158,6 +301,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         const record = project.database.states.find((entry) => entry.id === id);
         if (!record) return;
         if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+        if ("gen1MajorStatus" in patch) record.gen1MajorStatus = patch.gen1MajorStatus;
         if ("removalCondition" in patch) record.removalCondition = patch.removalCondition;
         if ("restriction" in patch) record.restriction = patch.restriction;
         if ("priority" in patch && patch.priority !== undefined) record.priority = patch.priority;
@@ -172,6 +316,14 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
         if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
         if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
+        // runtimeEffects(전투 규칙 knob 5개)는 이 줄이 없으면 폼 입력이 조용히 버려졌다 —
+        // normalizeStateRecord 는 이미 보존하므로 구멍은 이 뮤테이터 하나였다.
+        // 부분 패치를 병합한다: 건드리지 않은 knob 은 undefined 로 남겨 온톨로지 폴백을 유지한다.
+        if ("runtimeEffects" in patch) {
+          record.runtimeEffects = patch.runtimeEffects
+            ? { ...record.runtimeEffects, ...patch.runtimeEffects }
+            : undefined;
+        }
         Object.assign(record, normalizeStateRecord(record));
         return;
       }
@@ -281,45 +433,54 @@ export function bulkRenameVariables(start: number, count: number, prefix: string
 // 눌러야 되돌려졌다(qa-system-report.md). 여기서는 루프 전체를 감싸는 스냅샷 1개만
 // 남기고, 실제 이름 변경/슬롯 추가는 actions.ts의 헬퍼를 거치지 않고 직접 수행한다.
 function bulkRename(start: number, count: number, prefix: string, kind: "switch" | "variable"): void {
+  const firstNumber = positiveInteger(start);
+  const rangeCount = positiveInteger(count);
+  const requiredSlotCount = firstNumber + rangeCount - 1;
+  if (firstNumber === 0 || rangeCount === 0 || !Number.isSafeInteger(requiredSlotCount)) return;
+
   recordProjectSnapshot();
   if (kind === "switch") {
     store.update((project) => {
-      for (let offset = 0; offset < count; offset++) {
-        const number = start + offset;
+      ensureNumberedSlotCount(project.switches, requiredSlotCount, "sw");
+      for (let offset = 0; offset < rangeCount; offset++) {
+        const number = firstNumber + offset;
         const label = `${prefix} ${number.toString().padStart(4, "0")}`;
-        const existing = project.switches[number - 1];
-        if (existing) {
-          existing.name = label;
-          continue;
-        }
-        project.switches.push({ id: nextNumberedSlotId("sw", project.switches), name: label });
+        project.switches[number - 1]!.name = label;
       }
     }, { scope: "database", collection: "switches" });
     return;
   }
   store.update((project) => {
-    for (let offset = 0; offset < count; offset++) {
-      const number = start + offset;
+    ensureNumberedSlotCount(project.variables, requiredSlotCount, "var");
+    for (let offset = 0; offset < rangeCount; offset++) {
+      const number = firstNumber + offset;
       const label = `${prefix} ${number.toString().padStart(4, "0")}`;
-      const existing = project.variables[number - 1];
-      if (existing) {
-        existing.name = label;
-        continue;
-      }
-      project.variables.push({ id: nextNumberedSlotId("var", project.variables), name: label });
+      project.variables[number - 1]!.name = label;
     }
   }, { scope: "database", collection: "variables" });
 }
 
-// editor/actions.ts의 nextNumberedId와 동일한 규칙(빈 순번 탐색, 다 차면 genId로 폴백).
-// 그쪽 함수는 export되어 있지 않아 재사용할 수 없으므로 동일 로직을 여기 재현한다.
-function nextNumberedSlotId(prefix: "sw" | "var", records: readonly { readonly id: string }[]): string {
+function positiveInteger(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.trunc(value));
+}
+
+// 범위 편집이 실제로 요청한 마지막 번호까지만 동적으로 확장한다. 고정 상한이나
+// 1,000개 선할당은 없으며, 이미 존재하는 사용자/레거시 id는 그대로 보존한다.
+function ensureNumberedSlotCount(
+  records: { id: string; name: string }[],
+  requiredCount: number,
+  prefix: "sw" | "var",
+): void {
   const existingIds = new Set(records.map((record) => record.id));
-  for (let index = 1; index < records.length + 10000; index += 1) {
+  let index = 1;
+  while (records.length < requiredCount) {
     const id = `${prefix}_${String(index).padStart(4, "0")}`;
-    if (!existingIds.has(id)) return id;
+    index += 1;
+    if (existingIds.has(id)) continue;
+    records.push({ id, name: "" });
+    existingIds.add(id);
   }
-  return genId(prefix);
 }
 
 function isBattleAnimationScope(value: unknown): value is BattleAnimationScope {

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("basic editor exposes keyboard test play and pending event CTA", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "basic"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "basic"));
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
 

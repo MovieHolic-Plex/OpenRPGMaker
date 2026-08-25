@@ -48,7 +48,7 @@ function projectWithBattleTrigger(troopId: string) {
 
 async function openBattle(page: Page, troopId: string): Promise<void> {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, projectWithBattleTrigger(troopId));

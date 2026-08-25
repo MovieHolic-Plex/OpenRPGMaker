@@ -34,7 +34,7 @@ describe("setVariable 계약", () => {
     ]);
 
     expect(result.session.variables.var_div_zero).toBe(9);
-    expect(result.warnings).toEqual([]);
+    expect(result.warnings).toEqual(["[session] 변수 'var_div_zero' 0으로 나누기 무시됨"]);
     expect(result.finished).toBe(true);
   });
 

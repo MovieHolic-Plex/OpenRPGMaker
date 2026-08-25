@@ -87,6 +87,7 @@ import {
   villageBoulevard,
   villageRoadAnchors,
 } from "./roads";
+import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "../schemaShapes";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -122,7 +123,7 @@ export function buildVillageDomain(
   if (!tilesetForMap || !isCombinedTownTileset(tilesetForMap)) {
     throw new ToolError(
       `build_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
-        "다른 칩셋에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
+        "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
       { code: "village-tileset-mismatch", mapId },
     );
   }
@@ -133,9 +134,10 @@ export function buildVillageDomain(
       ? inferRequirementsFromQuery(intent.theme)
       : undefined);
   const baseArea = villageBuildArea(map, createArgs.bounds);
+  assertBuildAreaSize(map, baseArea);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
   const terrainMasks = requirements && requirements.landmarks.length > 0
-    ? buildTerrainConstraintMasks(map, requirements)
+    ? buildTerrainConstraintMasks(map, requirements, baseArea)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
   const area = intersectRects(baseArea, reserved);
@@ -218,11 +220,11 @@ export function buildVillageDomain(
   // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
   restoreHouseDoors(map, houses);
   // 길은 다 깐 뒤 울타리(길 칸 스킵)
-  if (fencesEnabled) placeHouseLotFences(map, houses, seed);
+  if (fencesEnabled) placeHouseLotFences(map, houses, seed, area);
   // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
   // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
   assignShopPrograms(houses, plaza, warnings);
-  // 여관 간판: retro House 칩셋의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
+  // 여관 간판: retro House 타일 그림판의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
   ensureInnSignGraft(draft, map.tilesetId);
 
   // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
@@ -230,7 +232,7 @@ export function buildVillageDomain(
   const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
   let landmarkNotes: string[] = [];
   if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings);
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea);
     landmarkNotes = [...terrain.notes];
     if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
     restoreHouseDoors(map, houses);
@@ -269,7 +271,7 @@ export function buildVillageDomain(
     const needLake = requirements.landmarks.includes("lake");
     if (needRiver || needLake) {
       const waterFloor = needRiver ? 30 : 25;
-      const waterCells = countWaterCells(map);
+      const waterCells = countWaterCells(map, baseArea);
       if (waterCells < waterFloor) {
         throw new ToolError(
           `필수 수역 미시공: 실측 ${waterCells}칸 < ${waterFloor} — fill_region(물)이 실패했거나 타일셋에 물 어휘가 없다. 쿼리「${requirements.query}」`,
@@ -278,7 +280,7 @@ export function buildVillageDomain(
       }
     }
     if (requirements.landmarks.includes("forest")) {
-      const treeCells = countTreeCells(map);
+      const treeCells = countTreeCells(map, baseArea);
       if (treeCells < 15) {
         throw new ToolError(
           `필수 숲 미시공: 실측 나무 ${treeCells}칸 < 15 — place_props(침엽수/활엽수)가 실패했다. 쿼리「${requirements.query}」`,
@@ -517,10 +519,10 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         houses: {
           type: "array",
           description: "집 계획 [{kitId?, yard?, ownerName?}]. 개수만 쓰려면 houseCount.",
-          items: { type: "object" },
+          items: VILLAGE_HOUSE_PLAN_SCHEMA,
         },
         houseCount: { type: "integer", description: "집 수(4~32). houses 없을 때 사용." },
-        housePlans: { type: "array", items: { type: "object" }, description: "houses 별칭" },
+        housePlans: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA, description: "houses 별칭" },
         npcs: {
           type: "array",
           items: {
@@ -658,7 +660,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         planId: { type: "string" },
         attempt: { type: "integer" },
         maxAttempts: { type: "integer" },
-        doorFronts: { type: "array", items: { type: "object" } },
+        doorFronts: { type: "array", items: COORD_SCHEMA, description: "[{x,y}] 문 앞 좌표" },
       },
       required: ["mapId"],
     },
@@ -701,7 +703,12 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       type: "object",
       properties: {
         planId: { type: "string" },
-        evaluation: { type: "object", description: "evaluate_village_look의 data 전체" },
+        evaluation: {
+          type: "object",
+          description: "evaluate_village_look의 data 전체",
+          // 평가 payload 는 evaluate_village_look 출력을 그대로 되돌려주는 자리다 — 스키마로 고정하지 않는다.
+          additionalProperties: true,
+        },
       },
       required: ["planId", "evaluation"],
     },
@@ -749,8 +756,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         plazaStyle: { type: "string" },
         plazaLayout: { type: "string" },
         edgeTrees: { type: "string" },
-        houses: { type: "array", items: { type: "object" } },
-        npcs: { type: "array", items: { type: "object" } },
+        houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
+        npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
       },
     },
     invalidArgsExample: { planId: "vplan_1", maxAttempts: 2 },
@@ -771,7 +778,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         doorFronts: {
           type: "array",
           description: "[{x,y}] 문 앞 좌표. 생략 시 맵 이벤트 중 문 transfer 근처를 추정하지 않고 start만 검사.",
-          items: { type: "object" },
+          items: COORD_SCHEMA,
         },
       },
       required: ["mapId"],
@@ -794,7 +801,12 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       type: "object",
       properties: {
         planId: { type: "string", description: "plan_village가 돌려준 계획 id" },
-        plan: { type: "object", description: "VillagePlan 객체(plan_village 결과 plan 필드)" },
+        plan: {
+          type: "object",
+          description: "VillagePlan 객체(plan_village 결과 plan 필드)",
+          // plan_village 가 돌려준 계획을 그대로 되돌려주는 자리다.
+          additionalProperties: true,
+        },
         mapId: { type: "string", description: "기존 맵에 시공한다. 최소 36x36 필요." },
         name: { type: "string", description: "새 맵 이름(기본: 마을 50x50)" },
         width: { type: "integer", description: "새 맵 가로(기본 50, 36~256)" },

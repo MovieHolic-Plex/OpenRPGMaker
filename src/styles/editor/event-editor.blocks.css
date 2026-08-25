@@ -41,16 +41,16 @@
 }
 
 /* ── 카테고리 색 (dataviz 검증 통과 · 다크 서피스 기준) ───────────── */
-.event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: var(--bg-surface); }
-.event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: var(--bg-surface); }
-.event-contents-fieldset .cmd-item[data-command-category="reward"]   { --blk-cat: var(--bg-surface); }
-.event-contents-fieldset .cmd-item[data-command-category="map"],
-.event-contents-fieldset .cmd-item[data-command-category="actor"]    { --blk-cat: var(--bg-surface); }
-.event-contents-fieldset .cmd-item[data-command-category="screen"],
-.event-contents-fieldset .cmd-item[data-command-category="sound"]    { --blk-cat: var(--bg-surface); }
-.event-contents-fieldset .cmd-item[data-command-category="battle"],
-.event-contents-fieldset .cmd-item[data-command-category="system"],
-.event-contents-fieldset .cmd-item[data-command-category="modern"]   { --blk-cat: var(--bg-surface); }
+.event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: var(--cmdcat-dialogue); }
+.event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: var(--cmdcat-flow); }
+.event-contents-fieldset .cmd-item[data-command-category="reward"]   { --blk-cat: var(--cmdcat-reward); }
+.event-contents-fieldset .cmd-item[data-command-category="map"]      { --blk-cat: var(--cmdcat-map); }
+.event-contents-fieldset .cmd-item[data-command-category="actor"]    { --blk-cat: var(--cmdcat-actor); }
+.event-contents-fieldset .cmd-item[data-command-category="screen"]   { --blk-cat: var(--cmdcat-screen); }
+.event-contents-fieldset .cmd-item[data-command-category="sound"]    { --blk-cat: var(--cmdcat-sound); }
+.event-contents-fieldset .cmd-item[data-command-category="battle"]   { --blk-cat: var(--cmdcat-battle); }
+.event-contents-fieldset .cmd-item[data-command-category="system"]   { --blk-cat: var(--cmdcat-system); }
+.event-contents-fieldset .cmd-item[data-command-category="modern"]   { --blk-cat: var(--cmdcat-modern); }
 
 /* 2차 채널 — 색만으로 갈리지 않는 후순위 3종에 사선 텍스처. */
 .event-contents-fieldset .cmd-item[data-command-category="map"] > .cmd-head > .cmd-prefix,
@@ -97,15 +97,16 @@
   align-items: center;
   gap: 9px;
   padding: 7px 9px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--blk-cat) 5%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--blk-cat) 20%, var(--border-subtle));
   border-radius: var(--blk-radius);
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
 }
 
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover {
-  background: var(--bg-raised);
-  border-color: var(--border-default);
+  background: color-mix(in srgb, var(--blk-cat) 9%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--blk-cat) 38%, var(--border-default));
+  box-shadow: 0 2px 7px rgba(42, 37, 33, 0.08);
 }
 
 .event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head {
@@ -161,12 +162,39 @@
 }
 
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+  min-width: 50px;
+  height: 22px;
+  padding: 0 7px;
   color: var(--blk-cat);
-  font-size: 12px;
+  background: color-mix(in srgb, var(--blk-cat) 12%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--blk-cat) 28%, var(--border-subtle));
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
   line-height: 1;
-  width: 14px;
   text-align: center;
-  flex: 0 0 14px;
+  white-space: nowrap;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon::after {
+  content: attr(data-label);
+}
+
+@media (max-width: 1050px) {
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
+    min-width: 24px;
+    width: 24px;
+    padding: 0;
+  }
+
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon::after {
+    display: none;
+  }
 }
 
 /* ── 액션 버튼 — 평소 숨기고 hover/선택 시만 ─────────────────────── */

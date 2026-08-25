@@ -2,7 +2,7 @@
 .event-editor-modal-backdrop.event-editor-modal-backdrop {
   align-content: stretch;
   align-items: stretch;
-  background: var(--bg-surface);
+  background: var(--bg-scrim);
   backdrop-filter: blur(2px);
   display: grid;
   inset: 0;
@@ -42,11 +42,11 @@ body.event-editor-modal-open .coach-mark-card {
   color: var(--event-modern-text);
   display: grid;
   font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  grid-template-rows: 52px minmax(0, 1fr) 64px;
-  height: min(96dvh, 920px);
-  max-height: calc(100dvh - 24px);
-  max-width: min(1280px, calc(100vw - 24px));
-  width: min(1280px, calc(100vw - 24px));
+  grid-template-rows: 52px minmax(0, 1fr) 44px;
+  height: min(88dvh, 820px);
+  max-height: calc(100dvh - 80px);
+  max-width: min(1080px, calc(100vw - 80px));
+  width: min(1080px, calc(100vw - 80px));
   place-self: center;
 }
 
@@ -91,10 +91,13 @@ body.event-editor-modal-open .coach-mark-card {
   text-transform: uppercase;
 }
 
+.event-editor-modal-header > .event-editor-window-controls,
 .event-editor-window-controls {
   align-items: center;
   display: flex;
-  gap: 14px;
+  flex: 0 0 auto;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .event-editor-window-control,
@@ -145,7 +148,6 @@ body.event-editor-modal-open .coach-mark-card {
 }
 
 .event-editor-id-row,
-.event-editor-diff,
 .event-editor-modal-stable {
   display: none;
 }
@@ -345,7 +347,7 @@ body.event-editor-modal-open .coach-mark-card {
 }
 
 .event-editor-workbench {
-  /* 실행 내용 쪽 비중을 조금 더 줘서 짧은 스크립트에서도 리스트 면적을 확보 */
+  /* 이 페이지가 하는 일 쪽 비중을 조금 더 줘서 짧은 스크립트에서도 리스트 면적을 확보 */
   --event-editor-settings-track: clamp(320px, 36vw, 540px);
   display: grid;
   gap: 6px;
@@ -394,11 +396,10 @@ body.event-editor-modal-open .coach-mark-card {
 
 .event-editor-settings-column {
   background: transparent;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  /* 정확히 2 자식: 페이지 탭 스트립 + settings-main */
-  grid-template-columns: 56px minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
+  min-block-size: 0;
   min-height: 0;
   min-width: 0;
   overflow: hidden;

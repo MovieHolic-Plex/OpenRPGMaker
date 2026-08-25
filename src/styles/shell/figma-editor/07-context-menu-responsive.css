@@ -1,7 +1,7 @@
   .map-context-menu-item:hover:not(.disabled),
   .map-context-menu-item:focus-visible:not(.disabled),
-  .rm2k3-menu-command:hover:not(:disabled),
-  .rm2k3-menu-command:focus-visible:not(:disabled) {
+  .oprn-menu-command:hover:not(:disabled),
+  .oprn-menu-command:focus-visible:not(:disabled) {
     background: var(--editor-blue-soft);
     border-color: var(--accent-border);
   }
@@ -84,7 +84,7 @@
   }
 
   .map-context-menu-item.disabled,
-  .rm2k3-menu-command:disabled {
+  .oprn-menu-command:disabled {
     color: var(--editor-text-soft);
     opacity: 0.72;
   }
@@ -96,7 +96,7 @@
   }
 
   @media (max-width: 900px) {
-    .rm2k3-menu-item {
+    .oprn-menu-item {
       margin-right: 10px;
     }
 
@@ -127,13 +127,13 @@
     }
 
     .map-context-menu,
-    .rm2k3-menu-popup {
+    .oprn-menu-popup {
       min-width: min(304px, calc(100vw - 24px));
       padding: 10px;
     }
 
     .map-context-menu-item,
-    .rm2k3-menu-command {
+    .oprn-menu-command {
       column-gap: 10px;
       font-size: 15px;
       min-height: 36px;

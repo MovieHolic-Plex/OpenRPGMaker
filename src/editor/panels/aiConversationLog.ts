@@ -10,6 +10,7 @@ import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
+import { stripQuickReplyLine } from "@/ai/interviewPrompt";
 import { renderMarkdown } from "@/util/markdown";
 import { el } from "@/util/dom";
 import {
@@ -169,8 +170,11 @@ export function appendConversationBubble(options: {
     ],
   });
   // 어시스턴트/시스템 줄은 마크다운, 사용자·툴은 원문. 빈 텍스트는 스트리밍 자리표시자.
-  if (options.text && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(options.text));
-  else if (options.text) body.textContent = options.text;
+  const displayText = options.role === "assistant" || options.role === "system"
+    ? stripQuickReplyLine(options.text)
+    : options.text;
+  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(displayText));
+  else if (displayText) body.textContent = displayText;
   options.log.append(row);
   const pin = options.log.querySelector("[data-testid=ai-proposal-pin]");
   if (pin) {
@@ -275,9 +279,11 @@ export function createConversationLogHost(options: {
   const refreshToolActivityToggle = (): void => {
     if (!toolActivity) return;
     const { count, writeOrFailCount, readOkCount, list, toggle } = toolActivity;
-    const parts = [`🔧 도구 ${count}회`];
-    if (readOkCount > 0 && writeOrFailCount > 0) parts.push(`(조회 ${readOkCount} · 작업 ${writeOrFailCount})`);
-    toggle.textContent = `${parts.join(" ")} ${list.hidden ? "▸" : "▾"}`;
+    const parts: string[] = [];
+    if (writeOrFailCount > 0) parts.push(`작업 ${writeOrFailCount}`);
+    if (readOkCount > 0) parts.push(`조회 ${readOkCount}`);
+    if (parts.length === 0) parts.push(`작업 ${count}`);
+    toggle.textContent = `${parts.join(" · ")} ${list.hidden ? "▸" : "▾"}`;
   };
   const closeToolActivity = (): void => {
     toolActivity = null;
@@ -337,7 +343,7 @@ export function createConversationLogHost(options: {
     }
     if (entry.kind === "assistant" && entry.text.trim()) {
       closeToolActivity();
-      appendBubble("assistant", entry.text, entry.at);
+      appendBubble("assistant", stripQuickReplyLine(entry.text), entry.at);
       return;
     }
     if (entry.kind === "tool") {

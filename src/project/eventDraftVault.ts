@@ -65,6 +65,22 @@ export function listEventDraftVaultEntries(): readonly EventDraftVaultEntry[] {
   }));
 }
 
+/** Restore an in-memory vault snapshot after an aborted local project switch. */
+export function restoreEventDraftVaultEntries(entries: readonly EventDraftVaultEntry[]): void {
+  if (persistTimer) {
+    clearTimeout(persistTimer);
+    persistTimer = null;
+  }
+  vault.clear();
+  for (const entry of entries) {
+    vault.set(eventDraftVaultKey(entry.mapId, entry.event.id), {
+      mapId: entry.mapId,
+      event: structuredClone(entry.event),
+      updatedAt: entry.updatedAt,
+    });
+  }
+}
+
 export function getEventDraftVaultEntry(mapId: MapId, eventId: string): EventDraftVaultEntry | null {
   const entry = vault.get(eventDraftVaultKey(mapId, eventId));
   if (!entry) return null;
@@ -154,23 +170,23 @@ export function restoreEventFromVaultIntoProject(
 }
 
 export function eventDraftVaultStorageKey(projectId = resolveVaultProjectId()): string {
-  return `rpg-zzu:event-draft-vault:${projectId}`;
+  return `oprn:event-draft-vault:${projectId}`;
 }
 
 export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): void {
   const localStorage = browserLocalStorage();
   if (!localStorage) return;
   const key = eventDraftVaultStorageKey(projectId);
-  if (vault.size === 0) {
-    localStorage.removeItem(key);
-    return;
-  }
-  const payload = {
-    version: 1 as const,
-    savedAt: Date.now(),
-    entries: listEventDraftVaultEntries(),
-  };
   try {
+    if (vault.size === 0) {
+      localStorage.removeItem(key);
+      return;
+    }
+    const payload = {
+      version: 1 as const,
+      savedAt: Date.now(),
+      entries: listEventDraftVaultEntries(),
+    };
     localStorage.setItem(key, JSON.stringify(payload));
   } catch (error) {
     console.warn("[eventDraftVault] localStorage persist failed:", error);

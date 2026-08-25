@@ -78,6 +78,8 @@ export function renderActorM2CommandBody(
       return changeActorFacesetCommandBody(context, cmd);
     case "Change Actor Class":
       return changeActorClassCommandBody(context, cmd);
+    case "Change Battle Commands":
+      return changeBattleCommandsCommandBody(context, cmd);
     default:
       return undefined;
   }
@@ -92,7 +94,7 @@ function changeParametersCommandBody(context: CommandEditContext, cmd: M2Command
     options: ACTOR_TARGET_SEGMENTS,
     value: targetMode,
     testid: "change-parameters-target-mode",
-    ariaLabel: "대상",
+    ariaLabel: "누구에게",
   });
   const actor = recordPickerWithPreview({
     records: actors,
@@ -107,7 +109,7 @@ function changeParametersCommandBody(context: CommandEditContext, cmd: M2Command
     options: PARAM_OP_SEGMENTS,
     value: opOf(cmd.fields.operation, "add"),
     testid: "change-parameters-operation",
-    ariaLabel: "조작",
+    ariaLabel: "어떻게",
   });
   const source = valueSourceControls(cmd, {
     testidBase: "change-parameters",
@@ -177,7 +179,7 @@ function changeParametersCommandBody(context: CommandEditContext, cmd: M2Command
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "능력치 변경은 영구 보정입니다. 현재 HP/MP 회복이 필요하면 HP/MP 변경 또는 데미지 처리를 쓰세요.",
+        text: "능력치 변경은 영구 보정입니다. 지금 체력이나 마력을 바로 채우려면 체력/마력 변경을 쓰세요.",
       })
     );
   };
@@ -202,7 +204,7 @@ function changeParametersCommandBody(context: CommandEditContext, cmd: M2Command
   wrap.append(
     intentCard(
       "능력치 변경",
-      "최대 HP/MP·공격 등 영구 보정을 더하거나 줄이거나 대입합니다. 값은 숫자 또는 변수.",
+      "최대 HP/MP·공격 등 영구 보정을 더하거나 줄이거나 이 값으로 바꿉니다. 값은 숫자 또는 변수.",
       "change-parameters-intent"
     ),
     el("div", {
@@ -211,11 +213,11 @@ function changeParametersCommandBody(context: CommandEditContext, cmd: M2Command
         el("div", {
           class: "change-parameters-main actor-m2-main",
           children: [
-            fieldBlock("대상", target.root),
+            fieldBlock("누구에게", target.root),
             actorField,
             fieldBlock("능력치", chips),
-            fieldBlock("조작", operation.root),
-            fieldBlock("값 소스", source.sourceRoot),
+            fieldBlock("어떻게", operation.root),
+            fieldBlock("값은", source.sourceRoot),
             source.numberField,
             source.variableField,
           ],
@@ -237,7 +239,7 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
     options: ACTOR_TARGET_SEGMENTS,
     value: targetMode,
     testid: "change-state-target-mode",
-    ariaLabel: "대상",
+    ariaLabel: "누구에게",
   });
   const actor = actorPicker({
     project,
@@ -248,7 +250,7 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
     options: STATE_OP_SEGMENTS,
     value: opOf(cmd.fields.operation, "add") === "remove" ? "remove" : "add",
     testid: "change-state-operation",
-    ariaLabel: "조작",
+    ariaLabel: "어떻게",
   });
   let currentStateId = String(cmd.fields.value ?? "").trim();
   if (currentStateId && !states.some((entry) => entry.id === currentStateId)) {
@@ -262,10 +264,10 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
     attrs: { "aria-hidden": "true", tabindex: "-1" },
   }) as HTMLSelectElement;
   stateSelect.append(el("option", { text: "(상태 선택)", attrs: { value: "" } }));
-  for (const [index, record] of states.entries()) {
+  for (const record of states) {
     stateSelect.append(
       el("option", {
-        text: `${String(index + 1).padStart(4, "0")}: ${record.name}`,
+        text: record.name.trim() || "(이름 없음)",
         attrs: { value: record.id },
       })
     );
@@ -332,7 +334,7 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
       el("p", { class: "actor-m2-preview-line", text: `${who} · ${stateName} ${opLabel}` }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "독·수면 등 상태 이상을 붙이거나 뗍니다. 전투/필드 세션 actorStateIds 에 반영됩니다.",
+        text: "독·수면 같은 상태 이상을 붙이거나 뗍니다.",
       })
     );
   };
@@ -363,9 +365,9 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
         el("div", {
           class: "actor-m2-main",
           children: [
-            fieldBlock("대상", target.root),
+            fieldBlock("누구에게", target.root),
             actorField,
-            fieldBlock("조작", operation.root),
+            fieldBlock("어떻게", operation.root),
             fieldBlock("상태", chips),
             stateSelect,
           ],
@@ -386,7 +388,7 @@ function damageProcessingCommandBody(context: CommandEditContext, cmd: M2Command
     options: ACTOR_TARGET_SEGMENTS,
     value: targetMode,
     testid: "damage-processing-target-mode",
-    ariaLabel: "대상",
+    ariaLabel: "누구에게",
   });
   const actor = recordPickerWithPreview({
     records: actors,
@@ -400,7 +402,7 @@ function damageProcessingCommandBody(context: CommandEditContext, cmd: M2Command
     options: DAMAGE_OP_SEGMENTS,
     value: opOf(cmd.fields.operation, "add") === "remove" ? "remove" : "add",
     testid: "damage-processing-operation",
-    ariaLabel: "조작",
+    ariaLabel: "어떻게",
   });
   const source = valueSourceControls(cmd, {
     testidBase: "damage-processing",
@@ -467,7 +469,7 @@ function damageProcessingCommandBody(context: CommandEditContext, cmd: M2Command
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "현재 HP에 즉시 반영됩니다. 변수 소스를 쓰면 실행 시점의 변수 값을 사용합니다.",
+        text: "현재 HP에 즉시 반영됩니다. 변수로 정하면 그때의 변수 값을 씁니다.",
       })
     );
   };
@@ -488,7 +490,7 @@ function damageProcessingCommandBody(context: CommandEditContext, cmd: M2Command
 
   wrap.append(
     intentCard(
-      "데미지 처리",
+      "데미지",
       "현재 HP를 깎거나 회복합니다. 숫자 고정값 또는 변수 값을 쓸 수 있습니다.",
       "damage-processing-intent"
     ),
@@ -498,10 +500,10 @@ function damageProcessingCommandBody(context: CommandEditContext, cmd: M2Command
         el("div", {
           class: "actor-m2-main",
           children: [
-            fieldBlock("대상", target.root),
+            fieldBlock("누구에게", target.root),
             actorField,
-            fieldBlock("조작", operation.root),
-            fieldBlock("값 소스", source.sourceRoot),
+            fieldBlock("어떻게", operation.root),
+            fieldBlock("값은", source.sourceRoot),
             source.numberField,
             source.variableField,
             fieldBlock("빠른 값", presets),
@@ -582,7 +584,7 @@ function changeActorNameCommandBody(
                 class: "actor-m2-preview-note",
                 text:
                   mode === "name"
-                    ? "대화 \\n[n] / 메뉴 표시 이름에 반영됩니다."
+                    ? "대화와 메뉴에 보이는 이름에 반영됩니다."
                     : "별명은 상태 창·일부 대화 치환에 쓰입니다.",
               }),
             ],
@@ -642,14 +644,14 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
   });
   const pickBtn = el("button", {
     class: "btn small",
-    text: "리소스 선택…",
+    text: "그림 고르기…",
     attrs: { type: "button" },
     dataset: { testid: "change-actor-graphic-resource-picker" },
     on: {
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: "charset",
-          title: "캐릭터 그래픽 선택",
+          title: "모습 고르기",
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
@@ -689,7 +691,7 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
               }),
               el("p", {
                 class: "actor-m2-preview-note",
-                text: "필드 캐릭터 스프라이트(charset) 오버라이드. 얼굴 그래픽과 별개입니다.",
+                text: "맵에서 보이는 모습을 바꿉니다. 대화 얼굴과는 별개입니다.",
               }),
             ],
           }),
@@ -704,8 +706,8 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
 
   wrap.append(
     intentCard(
-      "주인공 그래픽 변경",
-      "맵에서 보이는 캐릭터 시트를 바꿉니다.",
+      "주인공 모습 변경",
+      "맵에서 보이는 모습을 바꿉니다.",
       "change-actor-graphic-intent"
     ),
     el("div", {
@@ -716,7 +718,7 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
           children: [
             fieldBlock("주인공", actor.root),
             fieldBlock(
-              "캐릭터 그래픽",
+              "모습",
               el("div", {
                 class: "actor-m2-inline",
                 children: [resourceSelect, pickBtn],
@@ -760,14 +762,14 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
   });
   const pickBtn = el("button", {
     class: "btn small",
-    text: "리소스 선택…",
+    text: "그림 고르기…",
     attrs: { type: "button" },
     dataset: { testid: "change-actor-faceset-resource-picker" },
     on: {
       click: () => {
         openDatabaseResourcePickerDialog({
           kind: "faceset",
-          title: "얼굴 그래픽 선택",
+          title: "얼굴 고르기",
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
@@ -812,7 +814,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
         })
       );
     } else {
-      facePreview.append(el("span", { class: "rich-preview-hint", text: "얼굴 리소스를 선택하세요." }));
+      facePreview.append(el("span", { class: "rich-preview-hint", text: "얼굴을 고르세요." }));
     }
     const record = actors.find((entry) => entry.id === actor.select.value);
     const mode = faceDisplayModeOf(resourceId);
@@ -827,7 +829,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
         class: "actor-m2-preview-note",
         text:
           mode === "bust"
-            ? "흉상(-bust) 리소스입니다. 대화 창 옆 큰 초상으로 표시됩니다."
+            ? "흉상 그림입니다. 대화 창 옆 큰 초상으로 보입니다."
             : "faceset 인덱스 칸을 고르면 해당 얼굴이 저장됩니다.",
       })
     );
@@ -843,7 +845,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
   wrap.append(
     intentCard(
       "주인공 얼굴 변경",
-      "대화/메뉴에 쓰이는 얼굴 그래픽을 바꿉니다.",
+      "대화와 메뉴에 쓰이는 얼굴을 바꿉니다.",
       "change-actor-faceset-intent"
     ),
     el("div", {
@@ -854,7 +856,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
           children: [
             fieldBlock("주인공", actor.root),
             fieldBlock(
-              "얼굴 그래픽",
+              "얼굴",
               el("div", {
                 class: "actor-m2-inline",
                 children: [resourceSelect, pickBtn],
@@ -920,7 +922,7 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: "런타임 classOverrides 로 반영됩니다. 성장 곡선/전투 커맨드는 직업 DB를 따릅니다.",
+        text: "직업이 바뀝니다. 성장과 전투 기술은 새 직업을 따릅니다.",
       })
     );
   };
@@ -967,7 +969,7 @@ function valueSourceControls(
     options: VALUE_SOURCE_SEGMENTS,
     value: initialSource,
     testid: `${options.testidBase}-value-source`,
-    ariaLabel: "값 소스",
+    ariaLabel: "값은",
   });
   const numberInput = el("input", {
     attrs: { type: "number", min: "0", step: "1" },
@@ -1028,7 +1030,7 @@ function charsetResourceSelect(currentId: string, testId: string): HTMLSelectEle
   const project = store.getCurrent();
   const select = el("select", {
     dataset: { testid: testId },
-    attrs: { "aria-label": "캐릭터 그래픽" },
+    attrs: { "aria-label": "모습" },
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택 없음)", attrs: { value: "" } }));
   const ids = new Set<string>();
@@ -1058,7 +1060,7 @@ function facesetResourceSelect(currentId: string, testId: string): HTMLSelectEle
   const project = store.getCurrent();
   const select = el("select", {
     dataset: { testid: testId },
-    attrs: { "aria-label": "얼굴 그래픽" },
+    attrs: { "aria-label": "얼굴" },
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택 없음)", attrs: { value: "" } }));
   const ids = new Set<string>();
@@ -1102,6 +1104,71 @@ function intentCard(title: string, body: string, testId: string): HTMLElement {
   });
 }
 
+
+function changeBattleCommandsCommandBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
+  const project = store.getCurrent();
+  const fields = { ...cmd.fields };
+  const wrap = shell("change-battle-commands-command-body", "change-battle-commands-command-body");
+  const mode = segmentedSelect({
+    options: [...ACTOR_TARGET_SEGMENTS],
+    value: String(fields.target ?? "party") === "actor" ? "actor" : "party",
+    testid: "change-battle-commands-target-mode",
+    ariaLabel: "누구에게",
+  });
+  const actor = actorPicker({
+    project,
+    selectedId: String(fields.actorId ?? ""),
+    testid: "change-battle-commands-target-actor",
+    onChange: (id) => apply({ actorId: id, target: "actor" }),
+  });
+  const operation = el("select", { dataset: { testid: "change-battle-commands-operation" } }) as HTMLSelectElement;
+  for (const [value, label] of [["add", "더하기"], ["remove", "빼기"], ["set", "이 값으로"]] as const) {
+    operation.append(el("option", { text: label, attrs: { value } }));
+  }
+  operation.value = String(fields.operation ?? "add");
+  const commandSel = el("select", { dataset: { testid: "change-battle-commands-command-select" } }) as HTMLSelectElement;
+  const commands = project.database.classes.flatMap((entry) => entry.battleCommands ?? []);
+  const unique = new Map<string, string>();
+  for (const command of commands) unique.set(command.id, command.name || command.id);
+  commandSel.append(el("option", { text: "(커맨드 선택)", attrs: { value: "" } }));
+  for (const [id, name] of unique) {
+    commandSel.append(el("option", { text: name, attrs: { value: id } }));
+  }
+  commandSel.value = String(fields.value ?? "");
+  const preview = el("div", { class: "actor-m2-preview", dataset: { testid: "change-battle-commands-preview" } });
+  const apply = (patch: Record<string, unknown> = {}): void => {
+    const next = {
+      ...fields,
+      target: mode.select.value,
+      operation: operation.value,
+      value: commandSel.value,
+      ...patch,
+    };
+    Object.assign(fields, next);
+    context.actions.replaceCommand(context.path, { ...cmd, fields: next });
+    renderPreview();
+  };
+  const renderPreview = (): void => {
+    const who = mode.select.value === "actor" ? "선택한 주인공" : "파티 전체";
+    const how = operation.value === "set" ? "이 값으로" : operation.value === "remove" ? "빼기" : "더하기";
+    const picked = commandSel.value || "커맨드 없음";
+    preview.replaceChildren(el("p", { class: "actor-m2-preview-line", text: `${who} · ${how} · ${picked}` }));
+  };
+  mode.select.addEventListener("change", () => apply());
+  operation.addEventListener("change", () => apply());
+  commandSel.addEventListener("change", () => apply());
+  renderPreview();
+  wrap.append(
+    intentCard("전투 명령 변경", "메뉴에 보이는 전투 명령을 더하거나 빼거나 바꿉니다.", "change-battle-commands-intent"),
+    fieldBlock("누구에게", mode.root),
+    fieldBlock("주인공", actor.root),
+    fieldBlock("어떻게", operation),
+    fieldBlock("커맨드", commandSel),
+    preview
+  );
+  return wrap;
+}
+
 function fieldBlock(label: string, control: HTMLElement, testId?: string): HTMLElement {
   return el("div", {
     class: "actor-m2-field change-parameters-field",
@@ -1127,5 +1194,5 @@ function variableLabel(variableId: string): string {
   const index = project.variables.findIndex((entry) => entry.id === variableId);
   if (index < 0) return variableId;
   const name = project.variables[index]?.name?.trim();
-  return name ? `${String(index + 1).padStart(4, "0")}: ${name}` : String(index + 1).padStart(4, "0");
+  return name || "(이름 없음)";
 }

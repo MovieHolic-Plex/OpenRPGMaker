@@ -9,8 +9,8 @@ const SHOT = process.argv[4];
   const b = await chromium.launch({ args: ["--disable-gpu", "--use-gl=swiftshader", "--no-sandbox"] });
   const p = await (await b.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
   const json = fs.readFileSync(FIXTURE, "utf8");
-  const KEY = `rpg-zzu:dev-project:127.0.0.1/?devProject=1`;
-  await p.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i); }, [KEY, json]);
+  const KEY = `oprn:dev-project:127.0.0.1/?devProject=1`;
+  await p.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i); }, [KEY, json]);
   await p.goto(`http://127.0.0.1:${PORT}/?devProject=1`, { waitUntil: "domcontentloaded" });
   await p.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1500);
@@ -22,13 +22,13 @@ const SHOT = process.argv[4];
     await p.keyboard.press("Enter");
     for (let j = 0; j < 8; j++) {
       await sleep(500);
-      ready = await p.evaluate(() => !!(window.__rpgzzuPlayerSprite?.() && window.__rpgzzuCharacterSprites?.()?.events?.ev_ember_chief));
+      ready = await p.evaluate(() => !!(window.__oprnPlayerSprite?.() && window.__oprnCharacterSprites?.()?.events?.ev_ember_chief));
       if (ready) break;
     }
   }
   console.log("ready:", ready);
   const dump = () => p.evaluate(() => {
-    const ps = window.__rpgzzuPlayerSprite?.(); const ev = window.__rpgzzuCharacterSprites?.()?.events?.ev_ember_chief;
+    const ps = window.__oprnPlayerSprite?.(); const ev = window.__oprnCharacterSprites?.()?.events?.ev_ember_chief;
     return { p: ps ? { x: Math.floor(ps.x / 16), y: Math.floor(ps.y / 16) - 1 } : null, c: ev ? { x: Math.floor(ev.x / 16), y: Math.floor(ev.y / 16) - 1 } : null, dlg: !!document.querySelector(".dialogue-box") };
   });
   let d = await dump();
@@ -49,7 +49,7 @@ const SHOT = process.argv[4];
   await p.keyboard.press("ArrowUp"); await sleep(350);
   await p.keyboard.press("Space"); await sleep(1200);
   d = await dump(); console.log("dlg after Space:", d.dlg);
-  if (!d.dlg) { await p.evaluate(() => window.__rpgzzuInput?.action()); await sleep(1100); d = await dump(); console.log("dlg after hook:", d.dlg); }
+  if (!d.dlg) { await p.evaluate(() => window.__oprnInput?.action()); await sleep(1100); d = await dump(); console.log("dlg after hook:", d.dlg); }
   if (SHOT) await p.screenshot({ path: SHOT });
   console.log("VERDICT:", d.dlg ? "DIALOGUE WORKS" : "DIALOGUE BROKEN");
   await b.close();

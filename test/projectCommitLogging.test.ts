@@ -138,8 +138,8 @@ function stubSupabaseEnv(): void {
 
 function stubEditorIdentityStorage(): void {
   const storage = new Map<string, string>([
-    ["rpg-zzu-editor-session-id", "session-1234"],
-    ["rpg-zzu-editor-owner-label", "Editor One"],
+    ["oprn:editor-session-id", "session-1234"],
+    ["oprn:editor-owner-label", "Editor One"],
   ]);
   const localStorage = {
     getItem: (key: string) => storage.get(key) ?? null,

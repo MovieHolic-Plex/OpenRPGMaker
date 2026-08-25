@@ -2,16 +2,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 
-const FORCE_BLOCK_GLOBAL = globalThis as { __rpgzzuForcePointerBlock?: boolean };
+const FORCE_BLOCK_GLOBAL = globalThis as { __oprnForcePointerBlock?: boolean };
 const originalMatchMedia = window.matchMedia.bind(window);
 const originalMaxTouchPoints = Object.getOwnPropertyDescriptor(navigator, "maxTouchPoints");
 
-function setTouchCapabilities(coarse: boolean, maxTouchPoints: number): void {
+function setTouchCapabilities(coarse: boolean, maxTouchPoints: number, fine = false): void {
   vi.spyOn(window, "matchMedia").mockImplementation((query) => {
     const result = originalMatchMedia(query);
     Object.defineProperty(result, "matches", {
       configurable: true,
-      value: coarse && query === "(pointer: coarse)",
+      value:
+        (coarse && query === "(pointer: coarse)") ||
+        (fine && query === "(pointer: fine)"),
     });
     return result;
   });
@@ -105,11 +107,11 @@ async function loadTouchPad(env: Record<string, string> = {}) {
 beforeEach(() => {
   document.body.replaceChildren();
   setTouchCapabilities(true, 0);
-  delete FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock;
+  delete FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock;
 });
 
 afterEach(() => {
-  delete FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock;
+  delete FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock;
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
   if (originalMaxTouchPoints) {
@@ -122,24 +124,35 @@ afterEach(() => {
 });
 
 describe("touch pad capability and input parity", () => {
-  it("mounts automatically on a coarse-pointer device without env config", async () => {
+  it("stays disabled on a coarse-pointer device without an explicit mobile-build override", async () => {
     const { createTouchPad } = await loadTouchPad();
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
 
-    expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
     handle.cleanup();
   });
 
-  it("mounts automatically when only maxTouchPoints reports touch capability", async () => {
+  it("stays disabled when only maxTouchPoints reports touch capability", async () => {
     setTouchCapabilities(false, 2);
     const { createTouchPad } = await loadTouchPad();
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
 
-    expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
+    handle.cleanup();
+  });
+
+  it("does not cover a fine-pointer desktop just because the browser reports touch points", async () => {
+    setTouchCapabilities(false, 1, true);
+    const { createTouchPad } = await loadTouchPad();
+    const host = document.createElement("div");
+
+    const handle = createTouchPad(host);
+
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
     handle.cleanup();
   });
 
@@ -154,7 +167,7 @@ describe("touch pad capability and input parity", () => {
     handle.cleanup();
   });
 
-  it("detects touch via maxTouchPoints when matchMedia is unavailable", async () => {
+  it("does not auto-mount from maxTouchPoints when matchMedia is unavailable", async () => {
     const descriptor = Object.getOwnPropertyDescriptor(window, "matchMedia");
     Object.defineProperty(window, "matchMedia", { configurable: true, value: undefined });
     Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value: 2 });
@@ -164,7 +177,7 @@ describe("touch pad capability and input parity", () => {
 
       const handle = createTouchPad(host);
 
-      expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+      expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
       handle.cleanup();
     } finally {
       if (descriptor) {
@@ -229,7 +242,7 @@ describe("touch pad capability and input parity", () => {
     const stage = document.createElement("div");
     root.append(stage);
     document.body.append(root);
-    FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock = true;
+    FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock = true;
     const cleanupBlocker = installPlayPointerBlocker(root);
     const handle = createTouchPad(stage);
     const base = stage.querySelector<HTMLElement>(".touch-dpad-base");

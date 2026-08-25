@@ -40,8 +40,8 @@ const readEvents = (page) =>
 
   // ai-config 는 손대지 않는다 — autoApprove 를 주입해 덮어쓰면 대화 세션이 초기화된다(실측).
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "seen");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
   });
 
   await page.goto(`${BASE}/?devProject=1&icePlain64=1&map=${MAP_ID}`, { waitUntil: "load", timeout: 60000 });
@@ -53,7 +53,7 @@ const readEvents = (page) =>
   if (seed.length > 0) {
     const restored = await page.evaluate(
       ({ mapId, events }) => {
-        const hook = window.__rpgzzuEditorTool;
+        const hook = window.__oprnEditorTool;
         if (typeof hook !== "function") return -1;
         let n = 0;
         for (const ev of events) {

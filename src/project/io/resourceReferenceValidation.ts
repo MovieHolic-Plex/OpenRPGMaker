@@ -13,8 +13,10 @@ import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_EFFECT_RESOURCE_IDS } from "@/assets/generatedEffectSheets";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
+import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
 
 export function collectResourceIds(project: Project): Set<string> {
@@ -23,7 +25,7 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of Object.keys(project.assets.uploaded)) ids.add(id);
   for (const profile of project.resourceProfiles) if (profile.assetId) ids.add(profile.assetId);
   for (const tileset of Object.values(project.tilesets)) ids.add(tileset.image.id);
-  for (const asset of RM2K3_GENERATED_ASSET_PLAN.assets) {
+  for (const asset of GENERATED_ASSET_PLAN.assets) {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
   for (const id of builtinGeneratedResourceIds()) ids.add(id);
@@ -36,8 +38,13 @@ export function collectResourceIds(project: Project): Set<string> {
   // 281곡 BGM 카탈로그. 여기서 빠지면 이 곡을 지정한 프로젝트가 **역직렬화 자체에 실패**한다
   // (validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다).
   for (const id of bgmCatalogResourceIds()) ids.add(id);
+  // 456개 효과음 카탈로그. BGM 과 같은 이유로 반드시 등록해야 한다 — 빠지면 이 효과음을
+  // 지정한 프로젝트가 오디오만 무음이 되는 게 아니라 역직렬화 자체에 실패한다.
+  for (const id of seCatalogResourceIds()) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
+  // 절차 생성 전투 이펙트 시트. 기본 DB 가 이 id 를 참조하므로 빠지면 기본 프로젝트조차 역직렬화에서 던진다.
+  for (const id of GENERATED_EFFECT_RESOURCE_IDS) ids.add(id);
   return ids;
 }
 

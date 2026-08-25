@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>RPG ZZU 에디터 내장 AI — 강도 높은 기능 감사</title>
+  <style>
+    :root {
+      --ink: #16231f;
+      --muted: #5e6e67;
+      --paper: #f7f3e9;
+      --surface: #fffdf8;
+      --surface-2: #eee8da;
+      --line: #d9d1c1;
+      --green: #17674c;
+      --green-soft: #dff2e8;
+      --amber: #9a5b00;
+      --amber-soft: #fff0cc;
+      --red: #a5342f;
+      --red-soft: #fbe1df;
+      --blue: #2e5795;
+      --blue-soft: #e1ebfb;
+      --purple: #6b43a4;
+      --shadow: 0 18px 60px rgba(37, 51, 45, .11);
+      --radius: 22px;
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 3% 1%, rgba(90, 142, 104, .13), transparent 26rem),
+        radial-gradient(circle at 95% 12%, rgba(195, 134, 58, .12), transparent 31rem),
+        var(--paper);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    button { font: inherit; }
+    code {
+      padding: .12rem .38rem;
+      border-radius: 6px;
+      background: #ece7dc;
+      font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: .9em;
+      word-break: break-word;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(217, 209, 193, .85);
+      background: rgba(247, 243, 233, .91);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 36px));
+      min-height: 62px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+    .brand-mark {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: white;
+      background: var(--green);
+      box-shadow: 0 7px 18px rgba(23, 103, 76, .2);
+    }
+    nav {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    nav a {
+      padding: 8px 10px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 750;
+      white-space: nowrap;
+      border-radius: 9px;
+    }
+    nav a:hover { color: var(--ink); background: var(--surface-2); }
+
+    main {
+      width: min(var(--max), calc(100% - 36px));
+      margin: 0 auto;
+    }
+    section { scroll-margin-top: 82px; }
+
+    .hero {
+      padding: 76px 0 48px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 42px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 19px;
+      padding: 7px 11px;
+      border: 1px solid #bcd8c9;
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(255, 255, 255, .58);
+      font-size: .78rem;
+      font-weight: 850;
+      letter-spacing: .07em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2ea36f;
+      box-shadow: 0 0 0 5px rgba(46, 163, 111, .12);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.55rem, 5vw, 5rem);
+      line-height: 1.02;
+      letter-spacing: -.065em;
+    }
+    .hero h1 span { color: var(--green); }
+    .dek {
+      max-width: 720px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.03rem, 1.8vw, 1.25rem);
+      letter-spacing: -.015em;
+    }
+    .hero-callout {
+      margin-top: 25px;
+      padding: 17px 19px;
+      border-left: 4px solid var(--amber);
+      border-radius: 0 13px 13px 0;
+      background: rgba(255, 253, 248, .72);
+      font-weight: 730;
+    }
+    .meta-row {
+      margin-top: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+    .meta {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .48);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 470px;
+    }
+    .hero-visual figure {
+      position: absolute;
+      margin: 0;
+      overflow: hidden;
+      border: 7px solid var(--surface);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero-visual figure:first-child {
+      inset: 0 8% 12% 0;
+      transform: rotate(-1.4deg);
+    }
+    .hero-visual figure:last-child {
+      width: 62%;
+      right: 0;
+      bottom: 0;
+      transform: rotate(2deg);
+    }
+    .hero-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-visual figure:first-child img { object-position: left center; }
+    .image-label {
+      position: absolute;
+      left: 13px;
+      bottom: 13px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      color: white;
+      background: rgba(15, 28, 23, .81);
+      backdrop-filter: blur(7px);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .section-head {
+      margin: 74px 0 26px;
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 28px;
+      align-items: end;
+    }
+    .kicker {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--green);
+      font-size: .75rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.85rem, 3.2vw, 3rem);
+      line-height: 1.14;
+      letter-spacing: -.045em;
+    }
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .verdict-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 17px;
+    }
+    .verdict {
+      position: relative;
+      overflow: hidden;
+      min-height: 330px;
+      padding: 25px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 12px 38px rgba(37, 51, 45, .06);
+    }
+    .verdict::after {
+      content: attr(data-number);
+      position: absolute;
+      right: 14px;
+      top: -23px;
+      color: rgba(23, 103, 76, .075);
+      font: 900 8rem/1 Georgia, serif;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: .74rem;
+      font-weight: 900;
+    }
+    .status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .verified { color: var(--green); background: var(--green-soft); }
+    .conditional { color: var(--amber); background: var(--amber-soft); }
+    .failed { color: var(--red); background: var(--red-soft); }
+    .implemented { color: var(--blue); background: var(--blue-soft); }
+    .verdict h3 {
+      margin: 22px 0 8px;
+      font-size: 1.65rem;
+      line-height: 1.18;
+      letter-spacing: -.035em;
+    }
+    .verdict .answer {
+      margin: 0 0 14px;
+      font-size: 1.08rem;
+      font-weight: 850;
+    }
+    .verdict p { margin: 0; color: var(--muted); }
+    .evidence-list {
+      margin: 20px 0 0;
+      padding: 17px 0 0;
+      border-top: 1px solid var(--line);
+      list-style: none;
+    }
+    .evidence-list li {
+      position: relative;
+      margin: 7px 0;
+      padding-left: 18px;
+      color: #3f5049;
+      font-size: .88rem;
+    }
+    .evidence-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 900;
+    }
+    .evidence-list li.caution::before { content: "!"; color: var(--amber); }
+    .evidence-list li.bad::before { content: "×"; color: var(--red); }
+
+    .executive-note {
+      margin-top: 20px;
+      padding: 22px 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      border-radius: 18px;
+      color: #f7fff9;
+      background: #18382c;
+    }
+    .executive-note .icon {
+      font-size: 1.9rem;
+      line-height: 1;
+    }
+    .executive-note p { margin: 0; }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 15px;
+    }
+    .shot {
+      position: relative;
+      margin: 0;
+      overflow: hidden;
+      min-height: 260px;
+      grid-column: span 6;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #18221e;
+      box-shadow: 0 12px 35px rgba(37, 51, 45, .07);
+      cursor: zoom-in;
+    }
+    .shot.wide { grid-column: span 8; }
+    .shot.tall { grid-column: span 4; }
+    .shot img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      object-fit: cover;
+      transition: transform .4s ease;
+    }
+    .shot:hover img { transform: scale(1.018); }
+    .shot figcaption {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 38px 17px 15px;
+      color: white;
+      background: linear-gradient(transparent, rgba(8, 15, 12, .91));
+    }
+    .shot figcaption strong { display: block; font-size: .97rem; }
+    .shot figcaption span { color: rgba(255,255,255,.74); font-size: .76rem; }
+    .source-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 5px 8px;
+      border-radius: 8px;
+      color: #143126;
+      background: rgba(231, 249, 238, .91);
+      font-size: .7rem;
+      font-weight: 900;
+      backdrop-filter: blur(7px);
+    }
+    .source-tag.warn { color: #6b250d; background: rgba(255, 228, 210, .93); }
+
+    .evidence-stack {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 20px;
+    }
+    .panel {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .panel h3 { margin: 0 0 9px; font-size: 1.25rem; letter-spacing: -.02em; }
+    .panel > p { color: var(--muted); margin: 0 0 20px; }
+    .ladder {
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .ladder::before {
+      content: "";
+      position: absolute;
+      left: 17px;
+      top: 12px;
+      bottom: 12px;
+      width: 2px;
+      background: var(--line);
+    }
+    .ladder li {
+      position: relative;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 13px;
+      margin: 17px 0;
+    }
+    .step {
+      z-index: 1;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--green);
+      font-size: .78rem;
+      font-weight: 900;
+      box-shadow: 0 0 0 6px var(--surface);
+    }
+    .ladder strong { display: block; margin-top: 3px; }
+    .ladder span { color: var(--muted); font-size: .86rem; }
+
+    .metric {
+      margin: 19px 0 0;
+    }
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 7px;
+      font-size: .88rem;
+      font-weight: 800;
+    }
+    .bar {
+      height: 11px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8e1d4;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+    .metric.red .bar span { background: var(--red); }
+    .metric small { display: block; margin-top: 6px; color: var(--muted); }
+
+    .tool-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 18px;
+    }
+    .tool-stat {
+      padding: 14px 12px;
+      border-radius: 13px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .tool-stat b {
+      display: block;
+      font-size: 1.45rem;
+      color: var(--green);
+    }
+    .tool-stat span { color: var(--muted); font-size: .74rem; font-weight: 750; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 17px;
+    }
+    .filter-btn {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      color: white;
+      border-color: var(--green);
+      background: var(--green);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--surface);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+    }
+    th, td {
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: .87rem;
+    }
+    th {
+      color: var(--muted);
+      background: #f0eadf;
+      font-size: .75rem;
+      letter-spacing: .04em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fbf8f0; }
+    td:first-child { font-weight: 850; }
+    .hidden-row { display: none; }
+    .mini-status {
+      display: inline-block;
+      padding: 4px 7px;
+      border-radius: 7px;
+      font-size: .69rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .flow-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+    .flow-card h3 { margin: 0 0 14px; }
+    .flow-card ol { margin: 0; padding-left: 20px; }
+    .flow-card li { margin: 9px 0; color: #46574f; font-size: .88rem; }
+    .flow-card .do-not {
+      margin: 17px -5px -5px;
+      padding: 12px;
+      border-radius: 10px;
+      color: #6f3828;
+      background: #f9e8df;
+      font-size: .8rem;
+      font-weight: 740;
+    }
+
+    .failure-log {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+    summary {
+      padding: 15px 17px;
+      cursor: pointer;
+      font-weight: 850;
+    }
+    details > div {
+      padding: 0 17px 17px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    details ul { margin-bottom: 0; }
+
+    .agy-note {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      margin-top: 18px;
+      padding: 23px;
+      border: 1px solid #c9bce0;
+      border-radius: 18px;
+      background: #f1eafa;
+    }
+    .agy-note .agy-mark {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: white;
+      background: var(--purple);
+      font-weight: 950;
+    }
+    .agy-note h3 { margin: 0 0 5px; }
+    .agy-note p { margin: 0; color: #5d5170; }
+
+    .bottom-line {
+      margin: 76px 0 54px;
+      padding: clamp(28px, 5vw, 55px);
+      border-radius: 27px;
+      color: white;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.06), transparent 50%),
+        #142e25;
+      box-shadow: var(--shadow);
+    }
+    .bottom-line h2 { max-width: 850px; }
+    .bottom-line p { max-width: 900px; color: #c8ddd4; font-size: 1.05rem; }
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 25px;
+    }
+    .bottom-grid div {
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 13px;
+      background: rgba(255,255,255,.055);
+    }
+    .bottom-grid b { display: block; margin-bottom: 4px; }
+    .bottom-grid span { color: #b9d0c7; font-size: .82rem; }
+
+    footer {
+      padding: 0 0 45px;
+      color: var(--muted);
+      font-size: .78rem;
+      text-align: center;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      padding: 30px;
+      place-items: center;
+      background: rgba(8, 14, 12, .93);
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img {
+      max-height: calc(100vh - 100px);
+      max-width: min(1400px, 96vw);
+      border-radius: 12px;
+      box-shadow: 0 25px 90px rgba(0,0,0,.45);
+    }
+    .lightbox button {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      color: white;
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+      font-size: 1.45rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding-top: 49px; }
+      .hero-visual { min-height: 430px; }
+      .section-head { grid-template-columns: 1fr; gap: 10px; }
+      .verdict-grid, .flow-grid { grid-template-columns: 1fr; }
+      .verdict { min-height: auto; }
+      .evidence-stack { grid-template-columns: 1fr; }
+      .shot, .shot.wide, .shot.tall { grid-column: span 12; }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 650px) {
+      main, .topbar-inner { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { min-height: 56px; }
+      nav a:nth-child(-n+2) { display: none; }
+      .hero { padding-top: 38px; }
+      .hero-visual { min-height: 340px; }
+      .hero-visual figure:first-child { inset: 0 3% 10% 0; }
+      .hero-visual figure:last-child { width: 68%; }
+      .failure-log { grid-template-columns: 1fr; }
+      .tool-stats { grid-template-columns: 1fr; }
+      .executive-note, .agy-note { grid-template-columns: 1fr; }
+    }
+    @media print {
+      .topbar, .filters, .lightbox { display: none !important; }
+      body { background: white; }
+      main { width: 100%; }
+      .hero { padding-top: 25px; }
+      .panel, .verdict, .shot, details { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-mark">AI</span> 에디터 기능 감사</div>
+      <nav aria-label="보고서 목차">
+        <a href="#verdict">핵심 판정</a>
+        <a href="#proof">화면 증거</a>
+        <a href="#matrix">기능표</a>
+        <a href="#workflow">사용법</a>
+        <a href="#failures">실패 기록</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div>
+        <span class="eyebrow">2026-08-24 · 코드·로그·브라우저·원격 저장 교차검증</span>
+        <h1>내장 AI는<br><span>“꽤 많이”</span> 만든다.</h1>
+        <p class="dek">하지만 기능 목록과 실제 완주율은 다르다. 집·퀘스트·맵 꾸미기를 대상으로 168개 도구 카탈로그, 194개 집중 테스트, 실제 AI 활동 로그, 플레이 왕복, Supabase 재로드를 함께 조사했다.</p>
+        <div class="hero-callout">한 줄 판정: <strong>길·NPC·상점·상자와 마을/외관 건축은 실전적</strong>이고, <strong>출입 가능한 집은 고수준 경로에서 가능</strong>하다. <strong>퀘스트는 엔진은 강하지만 현재 원샷 에디터 저작은 아직 신뢰하면 안 된다.</strong></div>
+        <div class="meta-row">
+          <span class="meta">분석 기준 41944ff</span>
+          <span class="meta">원격 프로젝트 oprn-97906517a7</span>
+          <span class="meta">활성 공급자 OpenAI Codex OAuth</span>
+          <span class="meta">감사 방식: 읽기 + 격리 테스트</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="핵심 시각 증거">
+        <figure>
+          <img src="assets/current-ai-entry.png" alt="현재 에디터의 AI로 만들기 진입 화면과 여섯 가지 예제">
+          <span class="image-label">현재 에디터 · AI 진입 화면</span>
+        </figure>
+        <figure>
+          <img src="assets/house-inside.png" alt="AI가 만든 집 문을 통해 들어간 내부 플레이 화면">
+          <span class="image-label">신규 E2E · 집 내부 진입 성공</span>
+        </figure>
+      </div>
+    </section>
+
+    <section id="verdict">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Direct answers</span>
+          <h2>물어본 세 가지에 바로 답하면</h2>
+        </div>
+        <p>“도구가 있다”를 가능 판정으로 쓰지 않았다. 실제 호출, 구조 테스트, 플레이, 저장 후 재로드 중 무엇까지 통과했는지를 카드마다 표시했다.</p>
+      </div>
+
+      <div class="verdict-grid">
+        <article class="verdict" data-number="1">
+          <span class="status verified">가능</span>
+          <h3>집을 만들 수 있나?</h3>
+          <p class="answer">외관은 확실히 가능. 출입형은 고수준 경로에서 가능.</p>
+          <p><code>author_house</code> 실제 호출 2/2 성공. 새 E2E에서 마을 집의 문을 열고 내부로 이동한 뒤 다시 마을로 복귀했다.</p>
+          <ul class="evidence-list">
+            <li>외관·여러 필지·마당·도로 충돌 방지</li>
+            <li>양방향 전송 이벤트와 내부 맵 생성</li>
+            <li class="caution">직접 내부방 파이프라인의 ‘입구’ 이벤트 회귀 2건</li>
+          </ul>
+        </article>
+
+        <article class="verdict" data-number="2">
+          <span class="status conditional">조건부</span>
+          <h3>퀘스트는 되나?</h3>
+          <p class="answer">엔진은 된다. 현재 채팅 원샷 완주는 불안정하다.</p>
+          <p>그래프, 플래그, 분기, 워크스루, 도달성 검증은 41/42 테스트를 통과했다. 그러나 실제 자유문장 요청은 수리 재시도를 거쳤고 저장되지 않았다.</p>
+          <ul class="evidence-list">
+            <li>연속 3퀘스트·엔딩을 헤드리스 플레이로 검증</li>
+            <li>순환·막다른 분기·도달 불가 탐지</li>
+            <li class="bad">신규 저수준 퀘스트 UI E2E 90초 타임아웃</li>
+          </ul>
+        </article>
+
+        <article class="verdict" data-number="3">
+          <span class="status verified">강점</span>
+          <h3>맵 하나를 잘 꾸미나?</h3>
+          <p class="answer">구조화된 마을·길·배치에는 강하다.</p>
+          <p><code>author_village</code>는 2채 마을과 100×100 도시를 seed 기반으로 재현하고, 길·물·수목·NPC·상점·상자를 함께 다룬다.</p>
+          <ul class="evidence-list">
+            <li>경계·겹침·되돌리기·구조 QA</li>
+            <li>런타임 저장본에서 길 22칸·NPC 4·상점·상자 확인</li>
+            <li class="caution">미감·독창성·재미는 자동 평가가 보증하지 않음</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="executive-note">
+        <div class="icon" aria-hidden="true">⌁</div>
+        <p><strong>실무적으로는 “한 문장 만능 생성기”가 아니라 “RPG 편집 도구를 호출하는 AI 감독”에 가깝다.</strong> 고수준 façade(<code>author_house</code>, <code>author_village</code>, <code>author_story_arc</code>)로 초안을 만들고, lint·walkthrough·플레이·원격 재로드로 닫을 때 가장 잘 작동한다.</p>
+      </div>
+    </section>
+
+    <section id="proof">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Visual proof</span>
+          <h2>말이 아니라 화면으로 본 결과</h2>
+        </div>
+        <p>이미지를 누르면 원본 크기로 볼 수 있다. 성공 화면뿐 아니라 실패 화면도 같은 무게로 포함했다.</p>
+      </div>
+
+      <div class="gallery">
+        <figure class="shot wide" data-lightbox>
+          <img src="assets/live-composite-applied.png" alt="AI가 길과 NPC, 상점 재고, 상자를 수정하고 저장 완료한 에디터 화면">
+          <span class="source-tag">실제 적용 + Supabase 저장</span>
+          <figcaption><strong>길·NPC·상점·상자 복합 수정</strong><span>기존 이벤트를 보존하며 상점 재고를 다시 설정한 실제 에디터 세션</span></figcaption>
+        </figure>
+        <figure class="shot tall" data-lightbox>
+          <img src="assets/quest-example-prefill.png" alt="퀘스트 예제를 눌러 AI 입력창에 프롬프트가 채워진 현재 에디터">
+          <span class="source-tag">현재 UI</span>
+          <figcaption><strong>퀘스트 예제는 제공됨</strong><span>예제 클릭은 입력만 채운다. 성공 증거는 아니다.</span></figcaption>
+        </figure>
+
+        <figure class="shot" data-lightbox>
+          <img src="assets/house-before-door.png" alt="AI가 만든 집 앞에서 문을 열기 전 플레이 화면">
+          <span class="source-tag">신규 E2E · 2026-08-24</span>
+          <figcaption><strong>1. 집 문 앞</strong><span>고수준 마을 생성 후 실제 런타임에서 상호작용</span></figcaption>
+        </figure>
+        <figure class="shot" data-lightbox>
+          <img src="assets/house-inside.png" alt="문을 통해 이동한 집 내부 플레이 화면">
+          <span class="source-tag">신규 E2E · 통과</span>
+          <figcaption><strong>2. 내부 진입</strong><span>가구가 배치된 별도 내부 맵으로 전송 성공</span></figcaption>
+        </figure>
+        <figure class="shot" data-lightbox>
+          <img src="assets/house-returned.png" alt="집 내부에서 다시 마을로 복귀한 플레이 화면">
+          <span class="source-tag">신규 E2E · 통과</span>
+          <figcaption><strong>3. 마을 복귀</strong><span>양방향 전송 왕복이 실제 플레이에서 완료됨</span></figcaption>
+        </figure>
+        <figure class="shot" data-lightbox>
+          <img src="assets/village-five-houses.png" alt="집 다섯 채와 길, 나무, 소품이 배치된 마을 편집 화면">
+          <span class="source-tag">기존 생성 산출물</span>
+          <figcaption><strong>한 맵 마을 구성 범위</strong><span>다섯 집·길·수목·소품의 구조적 배치 예시. 이번 신규 E2E와는 별도 산출물.</span></figcaption>
+        </figure>
+
+        <figure class="shot wide" data-lightbox>
+          <img src="assets/quest-e2e-failure.png" alt="퀘스트 저수준 E2E가 퀘스트 NPC를 찾지 못하고 타임아웃된 에디터 화면">
+          <span class="source-tag warn">실패 증거 · 90초 타임아웃</span>
+          <figcaption><strong>퀘스트 원샷 경로의 현재 빨간불</strong><span>예상한 quest-giver 이벤트가 나타나지 않아 UI E2E가 중단됨</span></figcaption>
+        </figure>
+        <figure class="shot tall" data-lightbox>
+          <img src="assets/interior-wall-grammar.png" alt="인테리어 북쪽 벽 프레임의 저장 타일과 렌더 비교 시트">
+          <span class="source-tag">엔진 파생 근거</span>
+          <figcaption><strong>타일 문법 자체는 구조화됨</strong><span>저장 타일 ID와 실제 렌더를 나란히 검증한 내부 벽 근거</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="method">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Evidence ladder</span>
+          <h2>판정은 네 층의 근거로 만들었다</h2>
+        </div>
+        <p>아래로 갈수록 실제 사용자 결과에 가깝다. 카탈로그만 존재하고 호출·플레이 근거가 없는 기능은 “미실측”으로 낮췄다.</p>
+      </div>
+
+      <div class="evidence-stack">
+        <article class="panel">
+          <h3>근거 사다리</h3>
+          <p>코드가 말하는 가능성과 저장된 게임이 보여주는 사실을 분리했다.</p>
+          <ol class="ladder">
+            <li><span class="step">1</span><div><strong>도구 카탈로그</strong><span>헤드리스 목록 168개: 쓰기 118, 읽기 50. 라이브 대화에는 문맥별 일부만 노출된다.</span></div></li>
+            <li><span class="step">2</span><div><strong>집중 구조 테스트</strong><span>집/내부 84, 퀘스트 42, 마을/배치 68 — 총 194개를 새로 실행했다.</span></div></li>
+            <li><span class="step">3</span><div><strong>실제 AI 활동 + 브라우저</strong><span>도구별 성공/실패 로그와 현재 에디터 UI, 집 문 왕복 E2E를 확인했다.</span></div></li>
+            <li><span class="step">4</span><div><strong>원격 정본 재로드</strong><span>Supabase 프로젝트를 다시 읽어 길·NPC·상점·상자와 런타임 상호작용을 검증했다.</span></div></li>
+          </ol>
+        </article>
+
+        <article class="panel">
+          <h3>이번 집중 감사의 숫자</h3>
+          <p>이 수치는 전체 제품 점수가 아니라, 질문과 직접 관련된 선택 테스트의 결과다.</p>
+          <div class="metric">
+            <div class="metric-head"><span>구조/도구 집중 테스트</span><strong>188 / 194 통과</strong></div>
+            <div class="bar"><span style="width:96.9%"></span></div>
+            <small>집 81/84 · 퀘스트 41/42 · 맵 66/68</small>
+          </div>
+          <div class="metric red">
+            <div class="metric-head"><span>선택한 UI/플레이 E2E</span><strong>1 / 3 통과</strong></div>
+            <div class="bar"><span style="width:33.3%"></span></div>
+            <small>집 출입 왕복 통과. AI 공급자 라벨 타이밍, 퀘스트 이벤트 생성은 실패.</small>
+          </div>
+          <div class="tool-stats">
+            <div class="tool-stat"><b>168</b><span>헤드리스 AI 도구</span></div>
+            <div class="tool-stat"><b>22</b><span>원격 저장본 도로 셀</span></div>
+            <div class="tool-stat"><b>4</b><span>원격 저장본 NPC</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="matrix">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Capability matrix</span>
+          <h2>지금 무엇까지 시킬 수 있나</h2>
+        </div>
+        <p>필터로 판정별 기능을 볼 수 있다. “구현됨·미실측”은 도구/테스트가 있으나 이번 감사에서 실제 저장본까지 완주하지 않은 영역이다.</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="기능 상태 필터">
+        <button class="filter-btn active" data-filter="all">전체</button>
+        <button class="filter-btn" data-filter="verified">실전 검증</button>
+        <button class="filter-btn" data-filter="conditional">조건부</button>
+        <button class="filter-btn" data-filter="implemented">구현됨·미실측</button>
+        <button class="filter-btn" data-filter="failed">현재 빨간불</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>영역</th>
+              <th>판정</th>
+              <th>가능한 작업</th>
+              <th>근거와 한계</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-status="verified">
+              <td>길·지형·소품</td>
+              <td><span class="mini-status verified">실전 검증</span></td>
+              <td>도로 칠하기, 영역 채우기, 호수·길·울타리·소품 배치, 경계/충돌 검사</td>
+              <td><code>paint_road</code> 실제 4/4 성공. 원격 저장본 22 autotile 셀 재로드.</td>
+            </tr>
+            <tr data-status="verified">
+              <td>NPC·상점·상자</td>
+              <td><span class="mini-status verified">실전 검증</span></td>
+              <td>NPC 배치·주민화·일정, 상점 재고, 보물상자, 이벤트 보존 수정</td>
+              <td>원격 저장본 NPC 4·상점 1·상자 1. 상자 상호작용 후 50G 및 self-switch 확인.</td>
+            </tr>
+            <tr data-status="verified">
+              <td>집 외관·필지</td>
+              <td><span class="mini-status verified">실전 검증</span></td>
+              <td>단독 주택, 여러 필지, 문·창·지붕, 마당, 도로와의 간격</td>
+              <td><code>author_house</code> 실제 2/2. 관련 구조 테스트 대부분 통과.</td>
+            </tr>
+            <tr data-status="conditional">
+              <td>출입 가능한 집 내부</td>
+              <td><span class="mini-status conditional">조건부</span></td>
+              <td>별도 내부 맵, 가구, 양방향 문 전송, 마을 복귀</td>
+              <td>고수준 <code>build_village</code> E2E 왕복 통과. 직접 내부방의 ‘입구’ 이벤트 회귀 2건.</td>
+            </tr>
+            <tr data-status="verified">
+              <td>한 맵 마을/도시</td>
+              <td><span class="mini-status verified">실전 검증</span></td>
+              <td>seed 기반 2채 마을, 8채 마을, 100×100 도시, 수목·도로·시설·인구</td>
+              <td><code>author_village</code> 정확성/재현성 테스트 통과. 실제 호출은 3성공/5실패 후 수리됨.</td>
+            </tr>
+            <tr data-status="conditional">
+              <td>퀘스트·스토리 아크</td>
+              <td><span class="mini-status conditional">조건부</span></td>
+              <td>플래그, 선행조건, 보상, 분기, 연속 퀘스트, 엔딩, 워크스루 생성</td>
+              <td>그래프 엔진 41/42. 실제 채팅은 저수준 이벤트 수리 후에도 미저장, 저장본 quest-like 0.</td>
+            </tr>
+            <tr data-status="failed">
+              <td>퀘스트 원샷 UI 완주</td>
+              <td><span class="mini-status failed">현재 빨간불</span></td>
+              <td>자유문장 한 번으로 NPC→목표→귀환→보상까지 자동 생성</td>
+              <td>신규 E2E가 quest-giver 이벤트를 기다리다 90초 타임아웃. 현 상태에서 무검수 사용 금지.</td>
+            </tr>
+            <tr data-status="implemented">
+              <td>조명·시간·날씨·NPC 일정</td>
+              <td><span class="mini-status implemented">구현됨·미실측</span></td>
+              <td>조명 볼륨, 장면 무드, 시간 시스템, 이동 일정</td>
+              <td>도구와 테스트 존재. 원격 저장본의 시간 시스템은 확인했으나 복합 연출은 이번에 완주 미검증.</td>
+            </tr>
+            <tr data-status="implemented">
+              <td>멀티맵·월드 연결</td>
+              <td><span class="mini-status implemented">구현됨·미실측</span></td>
+              <td>월드 계획, 지도 연결, 여관/마을 등 여러 맵 구성</td>
+              <td><code>plan_world</code>, <code>link_maps</code>, <code>build_world</code>와 기존 3맵 산출물 존재. 신규 원격 완주 미실측.</td>
+            </tr>
+            <tr data-status="implemented">
+              <td>전투·몬스터·퍼즐·함정</td>
+              <td><span class="mini-status implemented">구현됨·미실측</span></td>
+              <td>적/부대/전투 이벤트, 퍼즐 컴파일, 함정, 전투/장면 테스트</td>
+              <td>도구 카탈로그와 전용 테스트가 존재하지만 이번 질문 범위에서는 라이브 저장본을 새로 만들지 않음.</td>
+            </tr>
+            <tr data-status="implemented">
+              <td>데이터베이스·이벤트 편집</td>
+              <td><span class="mini-status implemented">구현됨·미실측</span></td>
+              <td>이벤트 페이지/명령, 공통 이벤트, 데이터 엔트리 조회·수정</td>
+              <td>세밀한 저수준 도구는 강력하지만 인자 오류가 실제 로그에서 발생. 고수준 façade 우선 권장.</td>
+            </tr>
+            <tr data-status="conditional">
+              <td>자동 품질 평가</td>
+              <td><span class="mini-status conditional">조건부</span></td>
+              <td>lint, 구조적 배치 검증, 도달성, walkthrough, 맵 영역 재확인</td>
+              <td><code>run_lint</code> 실제 39/39, <code>evaluate_game_quality</code> 24/24. 재미·독창성·회화성은 평가하지 못함.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Recommended use</span>
+          <h2>지금 가장 성공률 높게 쓰는 법</h2>
+        </div>
+        <p>사용자가 도구 이름을 반드시 알 필요는 없지만, 요청을 “생성 → 검증 → 플레이 → 저장 재로드” 단계로 나누면 실패를 발견하기 쉽다.</p>
+      </div>
+
+      <div class="flow-grid">
+        <article class="flow-card">
+          <h3>🏠 집</h3>
+          <ol>
+            <li>위치·크기·외관과 “출입 가능한 별도 내부”를 명시한다.</li>
+            <li><code>author_house</code> 또는 마을 고수준 경로로 초안을 만든다.</li>
+            <li>문 앞 플레이 → 내부 진입 → 같은 문으로 복귀를 확인한다.</li>
+            <li>저장 후 프로젝트를 다시 불러와 전송 쌍을 재검사한다.</li>
+          </ol>
+          <div class="do-not">주의: 내부방 저수준 파이프라인만 단독 호출하는 경로는 현재 입구 이벤트 회귀가 있다.</div>
+        </article>
+
+        <article class="flow-card">
+          <h3>📜 퀘스트</h3>
+          <ol>
+            <li><code>author_story_arc</code> / <code>define_quest</code>로 목표·선행조건·보상을 구조화한다.</li>
+            <li><code>lint_quest</code>와 <code>generate_walkthrough</code>를 실행한다.</li>
+            <li><code>verify_quest</code> 및 <code>run_scene_test</code>로 시작부터 보상까지 재생한다.</li>
+            <li>이벤트 페이지를 검수하고 저장·재로드한다.</li>
+          </ol>
+          <div class="do-not">주의: 복잡한 다중 페이지를 <code>upsert_event</code> 한 번에 맡기고 성공 메시지만 믿으면 안 된다.</div>
+        </article>
+
+        <article class="flow-card">
+          <h3>🗺️ 한 맵 꾸미기</h3>
+          <ol>
+            <li>크기·분위기·시설 수·인구·동선을 먼저 계획한다.</li>
+            <li><code>author_village</code>로 큰 구조를 만든 뒤 길·물·식생·소품을 보강한다.</li>
+            <li><code>show_map_region</code>, <code>run_lint</code>, 구조 QA로 겹침과 막힘을 잡는다.</li>
+            <li>마지막 미감·밀도·랜드마크는 사람이 화면으로 조정한다.</li>
+          </ol>
+          <div class="do-not">주의: 자동 평가 통과는 “예쁘다”가 아니라 “구조적 오류를 덜 찾았다”는 뜻이다.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="activity">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Observed activity</span>
+          <h2>실제 AI 호출 로그가 보여준 성격</h2>
+        </div>
+        <p>로컬 활동 로그의 성공/실패 호출 수다. 같은 요청의 수리 재시도도 포함되므로 제품 전체 성공률로 해석하면 안 된다.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>도구</th><th>성공</th><th>실패</th><th>읽을 점</th></tr></thead>
+          <tbody>
+            <tr><td><code>author_house</code></td><td>2</td><td>0</td><td>두 번 모두 2필지 외관 시공. 라이브 별도 내부 요청은 다른 저수준 경로에서 재료 조회 실패.</td></tr>
+            <tr><td><code>author_village</code></td><td>3</td><td>5</td><td>카운트/대상 인자 오류 후 재시도 성공. 고수준 기능은 유효하지만 첫 시도 보장은 아님.</td></tr>
+            <tr><td><code>paint_road</code></td><td>4</td><td>0</td><td>현재 가장 안정적으로 관찰된 직접 편집 중 하나.</td></tr>
+            <tr><td><code>place_npc</code></td><td>21</td><td>6</td><td>spec gate와 잘못된 페이지 조건 때문에 실패한 기록이 있으나, 수리 후 다수 성공.</td></tr>
+            <tr><td><code>make_villager</code></td><td>9</td><td>0</td><td>주민 성격/기본 이벤트 제작 경로는 로그상 안정적.</td></tr>
+            <tr><td><code>set_shop_stock</code></td><td>3</td><td>0</td><td>기존 이벤트 보존 상태에서 재고 수정 및 원격 재로드 확인.</td></tr>
+            <tr><td><code>run_lint</code></td><td>39</td><td>0</td><td>생성 뒤 구조 오류를 닫는 핵심 안전망.</td></tr>
+            <tr><td><code>evaluate_game_quality</code></td><td>24</td><td>0</td><td>객관적 구조 검사. 미학/재미 점수로 오해하면 안 됨.</td></tr>
+            <tr><td><code>define_quest</code> / <code>verify_quest</code></td><td>0 관찰</td><td>0 관찰</td><td>도구는 구현됐지만 조사한 실제 자유문장 퀘스트 세션에서는 호출되지 않았다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="failures">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Failure ledger</span>
+          <h2>숨기면 안 되는 빨간불 6 + 2</h2>
+        </div>
+        <p>구조 테스트 6건과 E2E 2건의 실패를 성격별로 분리했다. 기준선 전체가 아니라 이번에 직접 실행한 선택 묶음이다.</p>
+      </div>
+
+      <div class="failure-log">
+        <details open>
+          <summary>집/내부 — 3건</summary>
+          <div>
+            <ul>
+              <li>잘못된 wing을 막아야 한다는 테스트가 예상과 달리 성공.</li>
+              <li>내부방 파이프라인에서 이름이 “입구”인 이벤트가 없음.</li>
+              <li>주민 방 kit에서도 같은 “입구” 이벤트가 없음.</li>
+            </ul>
+            <p>영향: 고수준 마을 집 왕복은 통과했지만 직접 내부방 제작의 안정성은 낮춰 판정했다.</p>
+          </div>
+        </details>
+        <details open>
+          <summary>퀘스트 — 1건 + E2E 1건</summary>
+          <div>
+            <ul>
+              <li>예제 게임의 등록 적 5종 중 <code>enemy_slime</code>이 부대에서 미사용.</li>
+              <li>저수준 UI proof가 quest-giver 이벤트를 찾지 못해 90초 타임아웃.</li>
+            </ul>
+            <p>영향: 그래프 엔진 자체보다 “에디터에서 한 번에 저작해 보이는 경로”가 현재 약하다.</p>
+          </div>
+        </details>
+        <details>
+          <summary>맵/라우팅 — 2건</summary>
+          <div>
+            <ul>
+              <li>variant map 없는 <code>lay_path</code>를 거부해야 한다는 guard 기대와 실제 동작이 어긋남.</li>
+              <li>다중 도메인 요청에서 <code>build_house_kit</code>이 라이브 노출 도구 집합에서 밀려남.</li>
+            </ul>
+            <p>영향: 전문 저수준 도구보다 <code>author_village</code> / <code>author_house</code> 같은 고수준 진입을 우선해야 한다.</p>
+          </div>
+        </details>
+        <details>
+          <summary>AI UI — E2E 1건</summary>
+          <div>
+            <p>공급자별 “OpenAI Codex 연결됨” 문구를 5초 안에 기대했지만 일시적으로 일반 “AI 연결됨”만 노출됐다. 수동 브라우저 확인에서는 잠시 뒤 공급자 문구가 보였다.</p>
+            <p>영향: 기능 자체보다는 비동기 상태 라벨/테스트 타이밍 회귀로 보인다.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="agy-note">
+        <div class="agy-mark">AGY</div>
+        <div>
+          <h3>AGY와 “에디터 모델 공급자”는 같은 것이 아니다</h3>
+          <p>현재 화면에서 확인한 내장 AI 공급자는 <strong>OpenAI Codex OAuth</strong>다. AGY bridge는 외부 에이전트가 같은 에디터 채팅/상태를 조작하는 연결 통로이며, 그 자체가 에디터의 LLM 공급자는 아니다. 이전 실측에서는 bridge ping/status가 살아 있었지만, 에디터의 Google Antigravity 공급자는 로그인 상태가 아니었다.</p>
+        </div>
+      </div>
+
+      <details style="margin-top:12px">
+        <summary>재현 명령과 원본 증거 경로</summary>
+        <div>
+          <p><strong>도구 목록:</strong> <code>node scripts/rpgzzu-tools.mjs --list</code></p>
+          <p><strong>집/내부:</strong> <code>npm test -- test/authorHouseFacade.test.ts test/houseKit.test.ts test/houseLotTools.test.ts test/interiorRoomPipeline.test.ts test/villagerRoomKit.test.ts test/villageBuilder.test.ts --pool=threads --maxWorkers=1 --no-file-parallelism --reporter=verbose</code></p>
+          <p><strong>퀘스트:</strong> <code>npm test -- test/questCompiler.test.ts test/questGraph.test.ts test/storyFlags.test.ts test/storyArcQualityTools.test.ts test/walkthroughRunner.test.ts test/emberQuestToolReplay.test.ts test/emberQuestGame.test.ts --pool=threads --maxWorkers=1 --no-file-parallelism --reporter=verbose</code></p>
+          <p><strong>맵:</strong> <code>npm test -- test/authorVillageFacade.test.ts test/naturalVillageReference.test.ts test/villageTerrainBounds.test.ts test/regionAiPlacementHarness.test.ts test/constructionToolsV3.test.ts test/layoutPlacementValidate.test.ts --pool=threads --maxWorkers=1 --no-file-parallelism --reporter=verbose</code></p>
+          <p><strong>선택 E2E:</strong> <code>npx playwright test test/e2e/editor-ai-authoring-entry.spec.ts test/e2e/village-house-interior-transfer.spec.ts test/e2e/oprn-quest-low-level-proof.spec.ts --workers=1 --reporter=line</code></p>
+          <p><strong>원격 재로드:</strong> <code>npx tsx scripts/verify-ai-editor-project.mts oprn-97906517a7</code> — 런타임 boot, 상자 50G/self-switch, 상점 재고까지 통과.</p>
+          <p><strong>증거:</strong> <code>.omo/evidence/editor-ai-phase2/</code>, <code>output/evidence/village-house-interior-transfer/</code>, <code>output/ai-activity/</code>. 기존 원격 저장 영수증 SHA-256: <code>65f82944de866c9cfb7b239b2b44ef1110d89e75e0cd6fc7df027a112e694f69</code>.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="more-visuals">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Breadth examples</span>
+          <h2>한 맵 바깥의 확장성</h2>
+        </div>
+        <p>다음은 기존 3맵 RPG 산출물의 마을과 여관이다. 이번 감사에서 새로 원격 저장한 결과는 아니므로 “가능 범위 참고”로만 본다.</p>
+      </div>
+      <div class="gallery">
+        <figure class="shot" data-lightbox>
+          <img src="assets/multi-map-village.png" alt="여러 집과 길, NPC가 배치된 3맵 RPG의 마을 화면">
+          <span class="source-tag">기존 3맵 산출물</span>
+          <figcaption><strong>멀티맵 RPG · 마을</strong><span>집·길·NPC·이벤트의 결합 범위</span></figcaption>
+        </figure>
+        <figure class="shot" data-lightbox>
+          <img src="assets/multi-map-inn.png" alt="가구와 NPC가 배치된 3맵 RPG의 여관 내부 화면">
+          <span class="source-tag">기존 3맵 산출물</span>
+          <figcaption><strong>멀티맵 RPG · 여관 내부</strong><span>내부 타일·가구·NPC 배치 범위</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="bottom-line" id="conclusion">
+      <span class="kicker" style="color:#92d2b8">Bottom line</span>
+      <h2>지금 써도 된다. 다만 “생성됨”과 “게임으로 완주됨”을 같은 말로 취급하지 말아야 한다.</h2>
+      <p>맵 뼈대, 주택 외관, 길, NPC, 상점, 상자처럼 공간과 데이터가 명확한 작업은 이미 유용하다. 출입형 주택은 고수준 경로로 만들고 왕복 플레이를 확인하면 쓸 수 있다. 퀘스트는 엔진 자산이 충분하지만, 현재 자유문장 원샷 저작은 E2E와 저장 정본 근거가 부족하므로 단계형 검증을 강제해야 한다.</p>
+      <div class="bottom-grid">
+        <div><b>바로 활용</b><span>길 · NPC · 상점 · 상자 · 마을 뼈대 · 외관 집</span></div>
+        <div><b>검증 후 활용</b><span>집 내부 · 다중 맵 · 조명/일정 · 자동 품질 평가</span></div>
+        <div><b>수정 우선</b><span>퀘스트 원샷 UI · 내부 입구 회귀 · 라이브 도구 노출 안정성</span></div>
+      </div>
+    </section>
+
+    <footer>
+      RPG ZZU Editor AI Capability Audit · 2026-08-24 · 보고서는 로컬 이미지와 코드 근거만 사용하며 외부 네트워크 자산이 없다.
+    </footer>
+  </main>
+
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="이미지 확대">
+    <button type="button" aria-label="닫기">×</button>
+    <img src="" alt="">
+  </div>
+
+  <script>
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const rows = document.querySelectorAll("tbody tr[data-status]");
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        filterButtons.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        const filter = button.dataset.filter;
+        rows.forEach((row) => {
+          row.classList.toggle("hidden-row", filter !== "all" && row.dataset.status !== filter);
+        });
+      });
+    });
+
+    const lightbox = document.querySelector(".lightbox");
+    const lightboxImage = lightbox.querySelector("img");
+    const closeLightbox = () => {
+      lightbox.classList.remove("open");
+      lightboxImage.src = "";
+      document.body.style.overflow = "";
+    };
+    document.querySelectorAll("[data-lightbox]").forEach((figure) => {
+      figure.addEventListener("click", () => {
+        const image = figure.querySelector("img");
+        lightboxImage.src = image.src;
+        lightboxImage.alt = image.alt;
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+      });
+    });
+    lightbox.querySelector("button").addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) closeLightbox();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeLightbox();
+    });
+  </script>
+</body>
+</html>

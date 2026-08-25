@@ -71,6 +71,77 @@ afterEach(() => {
 });
 
 describe("equipment inspector header", () => {
+  // Break caught: an author needs an actor-selectable live preview, not only a record-wide
+  // permission checklist and isolated bonus numbers.
+  it("switches the actor comparison between eligible and ineligible actors", () => {
+    const project = store.getCurrent();
+    const equipment = project.database.equipment[0]!;
+    const firstActor = project.database.actors[0]!;
+    const secondActor = project.database.actors[1]!;
+    equipment.equippableActorIds = [firstActor.id];
+    equipment.equippableClassIds = [];
+    firstActor.initialEquipment = {};
+    secondActor.initialEquipment = {};
+
+    const form = renderForm();
+    const resultHost = byTestId(form, "db-equipment-comparison-result");
+    expect(resultHost.dataset.state).toBe("eligible");
+    expect(resultHost.textContent).toContain(`Lv.${firstActor.initialLevel}`);
+
+    const actorSelect = byTestId(form, "db-equipment-comparison-actor");
+    actorSelect.value = secondActor.id;
+    actorSelect.dispatchEvent(new Event("change"));
+
+    expect(findByTestId(form, "db-equipment-comparison-result")).toBe(resultHost);
+    expect(resultHost.dataset.state).toBe("ineligible");
+    expect(resultHost.textContent).toContain("장착 불가");
+  });
+
+  // Break caught: editing the candidate's stats must update the comparison in place; a stale
+  // delta is more misleading than having no preview at all.
+  it("refreshes actor stat deltas in place when an equipment bonus changes", () => {
+    const project = store.getCurrent();
+    const equipment = project.database.equipment[0]!;
+    const actor = project.database.actors[0]!;
+    equipment.equippableActorIds = [actor.id];
+    equipment.equippableClassIds = [];
+    equipment.statBonuses.attack = 8;
+    actor.initialEquipment = {};
+
+    const form = renderForm();
+    const resultHost = byTestId(form, "db-equipment-comparison-result");
+    expect(resultHost.textContent).toContain("빈 부위에 장착");
+    expect(byTestId(form, "db-equipment-comparison-delta-attack").textContent).toContain("+8");
+
+    const attack = byTestId(form, "db-field-equipment-attack");
+    attack.value = "20";
+    attack.dispatchEvent(new Event("input"));
+
+    expect(findByTestId(form, "db-equipment-comparison-result")).toBe(resultHost);
+    expect(byTestId(form, "db-equipment-comparison-delta-attack").textContent).toContain("+20");
+  });
+
+  // Break caught: an already-equipped candidate must not reuse the empty-slot fallback copy.
+  it("labels an already-equipped candidate instead of claiming the slot is empty", () => {
+    const project = store.getCurrent();
+    const equipment = project.database.equipment[0]!;
+    const actor = project.database.actors[0]!;
+    equipment.equippableActorIds = [actor.id];
+    equipment.equippableClassIds = [];
+    actor.initialEquipment = { weapon: equipment.id };
+
+    const resultHost = byTestId(renderForm(), "db-equipment-comparison-result");
+
+    expect(resultHost.textContent).toContain("이미 착용 중");
+    expect(resultHost.textContent).not.toContain("빈 부위에 장착");
+  });
+
+  it("renders a named effect story beside the existing summary chips", () => {
+    const form = renderForm();
+    expect(byTestId(form, "db-equipment-effect-story")).toBeTruthy();
+    expect(byTestId(form, "db-equipment-story-stats")).toBeTruthy();
+  });
+
   it("renders icon, name edit (db-field-name), slot segmented, and the summary chips host", () => {
     const form = renderForm();
     expect(findByTestId(form, "db-equipment-inspector-header")).not.toBeNull();

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
 let previousWindow: typeof globalThis.window | undefined;

@@ -24,9 +24,14 @@ const LIGHTING_MASK_TEXTURE_KEY = "__rpg_zzu_lighting_mask";
 
 export function installLightingLayer(scene: PlaySceneContext): void {
   if (scene.lightingOverlayImage && scene.lightingMaskTexture) return;
+  const camera = scene.cameras.main;
   const texture = scene.textures.exists(LIGHTING_MASK_TEXTURE_KEY)
     ? (scene.textures.get(LIGHTING_MASK_TEXTURE_KEY) as Phaser.Textures.CanvasTexture)
-    : scene.textures.createCanvas(LIGHTING_MASK_TEXTURE_KEY, PLAY_RESOLUTION.width, PLAY_RESOLUTION.height);
+    : scene.textures.createCanvas(
+        LIGHTING_MASK_TEXTURE_KEY,
+        camera.width || PLAY_RESOLUTION.width,
+        camera.height || PLAY_RESOLUTION.height,
+      );
   if (!texture) return;
   const overlay = scene.add.image(0, 0, LIGHTING_MASK_TEXTURE_KEY);
   overlay.setOrigin(0, 0);

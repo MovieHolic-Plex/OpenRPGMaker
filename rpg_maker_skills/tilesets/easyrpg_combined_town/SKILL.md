@@ -1,6 +1,6 @@
 ---
 name: easyrpg-combined-town-tileset
-description: Use this RPG Zzu tileset harness reference when classifying, validating, or procedurally placing tiles from the EasyRPG RTP Combined Town ChipSet, especially roads, water, house walls, doors, windows, fences, roof overlays, and transparent props.
+description: Use this editor tileset harness reference when classifying, validating, or procedurally placing tiles from the EasyRPG RTP Combined Town ChipSet, especially roads, water, house walls, doors, windows, fences, roof overlays, and transparent props.
 ---
 
 # EasyRPG Combined Town Tileset Harness

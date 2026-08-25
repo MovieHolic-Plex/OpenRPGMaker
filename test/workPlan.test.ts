@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import {
   advanceWorkPlanFromTools,
   buildDefaultWorkPlan,
@@ -47,7 +48,7 @@ describe("planner LLM plan parsing (no regex planning)", () => {
         },
       ],
     });
-    const decision = parseOrchestratorDecision(raw);
+    const { decision } = parseOrchestratorDecision(raw);
     expect(decision?.action).toBe("new_plan");
     if (!decision || decision.action === "direct" || decision.action === "resume") throw new Error("expected plan");
     const plan = workPlanFromOrchestratorDecision(decision);
@@ -60,11 +61,43 @@ describe("planner LLM plan parsing (no regex planning)", () => {
 
   it("parses fenced JSON and direct action", () => {
     const fenced = "```json\n{\"action\":\"direct\",\"reason\":\"one NPC line\"}\n```";
-    expect(parseOrchestratorDecision(fenced)).toEqual({ action: "direct", reason: "one NPC line" });
+    expect(parseOrchestratorDecision(fenced).decision).toEqual({ action: "direct", reason: "one NPC line" });
   });
 
   it("parses resume", () => {
-    expect(parseOrchestratorDecision('{"action":"resume","reason":"user said continue"}')?.action).toBe("resume");
+    expect(parseOrchestratorDecision('{"action":"resume","reason":"user said continue"}').decision?.action).toBe("resume");
+  });
+
+  // 2026-08-23 실측: 6개 산출물을 요구한 요청에서 플래너 응답이 출력 한도로 잘려 JSON 이 깨졌고,
+  // 파서가 null 을 돌려주자 세션이 무관한 장르 템플릿으로 갈아치워 축소된 결과를 성공으로 보고했다.
+  it("recovers layers from a truncated planner response", () => {
+    const truncated =
+      '{"action":"new_plan","goal":"던전과 DB를 구성한다","layers":[' +
+      '{"title":"던전","items":[{"title":"맵","instruction":"generate_map cave"}]},' +
+      '{"title":"DB","items":[{"title":"적 3종","instruction":"upsert_enemy 슬라임 3종"}]},' +
+      '{"title":"컷신","items":[{"title":"보스 앞","instructi';
+    const { decision } = parseOrchestratorDecision(truncated);
+    expect(decision?.action).toBe("new_plan");
+    if (!decision || decision.action === "direct" || decision.action === "resume") throw new Error("expected plan");
+    // 온전히 도착한 두 레이어는 살아야 한다 — 폴백 템플릿으로 대체되면 요청이 통째로 바뀐다.
+    expect(decision.layers.map((l) => l.title)).toEqual(["던전", "DB"]);
+  });
+
+  it("reports why a planner response was rejected", () => {
+    expect(parseOrchestratorDecision('{"action":"new_plan","goal":"g"}').error).toContain("layers");
+    expect(parseOrchestratorDecision("not json at all").error).toContain("JSON");
+    expect(parseOrchestratorDecision('{"action":"bogus"}').error).toContain("action");
+  });
+
+  it("accepts planner layer field aliases (name/steps/detail)", () => {
+    const aliased = JSON.stringify({
+      action: "new_plan",
+      goal: "별칭 계획",
+      layers: [{ name: "레이어", steps: [{ name: "항목", detail: "place_npc 상인" }] }],
+    });
+    const { decision } = parseOrchestratorDecision(aliased);
+    if (!decision || decision.action === "direct" || decision.action === "resume") throw new Error("expected plan");
+    expect(decision.layers[0]?.items[0]?.instruction).toBe("place_npc 상인");
   });
 
   it("builds planner user payload with active plan", () => {
@@ -114,6 +147,26 @@ describe("workPlan progress harness", () => {
     const { completed, next } = advanceWorkPlanFromTools(plan, ["build_village"]);
     expect(completed?.id).toBe(first);
     expect(next?.title).toBe("B");
+  });
+
+  it("does not auto-complete a compound item until every successTool succeeded", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "실내 방을 연결한다",
+      layers: [{
+        title: "실내",
+        items: [{
+          title: "방과 전송",
+          instruction: "create_map 후 create_transfer_pair",
+          successTools: ["create_map", "create_transfer_pair"],
+        }],
+      }],
+    });
+
+    expect(advanceWorkPlanFromTools(plan, ["create_map"]).completed).toBeNull();
+    expect(plan.layers[0]?.items[0]?.status).toBe("in_progress");
+    expect(advanceWorkPlanFromTools(plan, ["create_map", "create_transfer_pair"]).completed?.title).toBe("방과 전송");
+    expect(isWorkPlanComplete(plan)).toBe(true);
   });
 
   it("does not auto-complete items without successTools on unrelated writes", () => {
@@ -175,8 +228,52 @@ describe("workPlan progress harness", () => {
         autoStepsUsed: 0,
         assistantText: "어떤 스타일로 할까요?",
       })
-    ).toBe(false);
+    ).toBe(true);
     expect(formatRalphContinueMessage(plan)).toContain("RALPH CONTINUE");
+  });
+
+  it("Ralph continues on a 200-char Korean question while the plan is incomplete", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [
+        {
+          title: "L",
+          items: [
+            { title: "A", instruction: "do A" },
+            { title: "B", instruction: "do B" },
+          ],
+        },
+      ],
+    });
+    const stem =
+      "마을 광장에 상인과 NPC를 배치하고 집 지붕 타일을 맞춘 다음 퀘스트 대화를 이어서 작성하면 다음 단계로 넘어갈 수 있습니다. ";
+    const koreanQuestion = `${stem}${"가".repeat(199 - stem.length)}?`;
+    expect(koreanQuestion.length).toBe(200);
+    expect(koreanQuestion.endsWith("?")).toBe(true);
+    expect(shouldRalphContinue(plan, { autoStepsUsed: 0, assistantText: koreanQuestion })).toBe(true);
+  });
+
+  it("Ralph stops when assistant text contains QUICK_REPLY_MARKER", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [
+        {
+          title: "L",
+          items: [
+            { title: "A", instruction: "do A" },
+            { title: "B", instruction: "do B" },
+          ],
+        },
+      ],
+    });
+    expect(
+      shouldRalphContinue(plan, {
+        autoStepsUsed: 0,
+        assistantText: `어떤 스타일로 할까요?\n${QUICK_REPLY_MARKER} 중세 | 현대`,
+      })
+    ).toBe(false);
   });
 
   it("Ralph stops when plan complete", () => {
@@ -201,14 +298,24 @@ describe("workPlan progress harness", () => {
       ],
     });
     const id = plan.currentItemId!;
-    const blocked = completeWorkItemById(plan, id, "못 함", { successfulWriteTools: ["place_npc"] });
+    const blocked = completeWorkItemById(plan, id, "못 함", { successfulTools: ["place_npc"] });
     expect(blocked.ok).toBe(false);
     if (blocked.ok) throw new Error("expected fail");
     expect(blocked.reason).toContain("place_props");
     expect(plan.layers[0]!.items[0]!.status).toBe("in_progress");
 
-    const ok = completeWorkItemById(plan, id, "done", { successfulWriteTools: ["place_props"] });
+    const ok = completeWorkItemById(plan, id, "done", { successfulTools: ["place_props"] });
     expect(ok.ok).toBe(true);
+    expect(isWorkPlanComplete(plan)).toBe(true);
+  });
+  it("requires write evidence before completing a generic planner-failure fallback", () => {
+    const plan = buildDefaultWorkPlan("세 단계 퀘스트와 보상을 구성해줘", new Date("2026-08-23T00:00:00.000Z"));
+    const item = plan.layers[0]!.items[0]!;
+
+    expect(item.requiresAnyWrite).toBe(true);
+    expect(completeWorkItemById(plan, item.id, undefined, { successfulTools: [] }).ok).toBe(false);
+    expect(completeWorkItemById(plan, item.id, undefined, { successfulTools: ["get_project_summary"] }).ok).toBe(false);
+    expect(advanceWorkPlanFromTools(plan, ["upsert_event"]).completed?.id).toBe(item.id);
     expect(isWorkPlanComplete(plan)).toBe(true);
   });
 });

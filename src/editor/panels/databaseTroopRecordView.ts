@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
@@ -177,7 +178,9 @@ function memberEditor(
             updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
             rerender();
           }),
-          actionButton("RM2003", "db-troop-member-rm2003-preset", () => {
+          // 라벨은 사용자에게 보인다 — 타사 제품명을 쓰지 않는다(2026-08-21).
+          // testid 는 e2e 계약이라 유지하고, 식별자 개명은 별도 라운드에서 다룬다.
+          actionButton("예시 배치", "db-troop-member-rm2003-preset", () => {
             const members = rm2003ExampleMembers();
             if (members.length === 0) return;
             selectedMemberIndexes.set(record.id, 0);
@@ -216,9 +219,17 @@ function memberPositionPanel(record: TroopRecord, member: TroopMemberRecord, sel
       updateSelectedMember(record, selectedIndex, { ...member, hidden });
       rerender();
     }),
-    textField("배경", "db-field-troop-backdrop", record.previewBackgroundResourceId ?? "", (previewBackgroundResourceId) => {
-      updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(previewBackgroundResourceId) });
-      rerender();
+    resourcePickerControl({
+      label: "배경",
+      resourceId: record.previewBackgroundResourceId,
+      kind: "backdrop",
+      testid: "db-field-troop-backdrop",
+      dialogTitle: "전투 배경",
+      allowClear: true,
+      onChange: (result) => {
+        updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(result.resourceId) });
+      },
+      rerender,
     }),
   ]);
   panel.classList.add("db-troop-member-position-panel");
@@ -333,9 +344,9 @@ function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => 
           const enemyName = project.database.enemies.find((enemy) => enemy.id === member.enemyId)?.name ?? member.enemyId;
           return el("button", {
             class: `db-troop-member-row${index === selectedIndex ? " active" : ""}`,
-            attrs: { type: "button" },
+            attrs: { type: "button", title: `${index + 1} · X${member.x} Y${member.y}` },
             dataset: { testid: `db-troop-member-row-${index + 1}` },
-            text: `${index + 1}. ${enemyName} · enemy-${index + 1} · X${member.x} Y${member.y}`,
+            text: enemyName,
             on: {
               click: () => {
                 selectedMemberIndexes.set(record.id, index);
@@ -379,6 +390,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       rerender();
     }),
     activeSlotsField(record, rerender),
+    trainerBattleField(record, rerender),
     uncapturableField(record, rerender),
   ]);
 }
@@ -398,6 +410,15 @@ function uncapturableField(record: TroopRecord, rerender: () => void): HTMLEleme
     rerender();
   });
   field.title = "이 그룹의 적은 포획 대상에서 제외됩니다.";
+  return field;
+}
+
+function trainerBattleField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = checkboxField("트레이너 전투", "db-field-troop-trainer-battle", record.trainerBattle === true, (trainerBattle) => {
+    updateDatabaseRecord("troops", record.id, { trainerBattle });
+    rerender();
+  });
+  field.title = "야생 조우가 아닌 트레이너 전투로 판정합니다.";
   return field;
 }
 
@@ -500,7 +521,8 @@ function previewCaption(record: TroopRecord): string {
   const enemyNames = (record.members ?? [])
     .map((member) => enemies.find((enemy) => enemy.id === member.enemyId)?.name)
     .filter((name): name is string => Boolean(name));
-  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${record.previewBackgroundResourceId ?? "(배경 없음)"}`;
+  const terrainName = store.getCurrent().database.terrains?.find((terrain) => terrain.battleBackgroundResourceId === record.previewBackgroundResourceId)?.name;
+  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${terrainName ?? "배경 없음"}`;
 }
 
 function renderChromaKeyImage(canvas: HTMLCanvasElement, url: string): void {

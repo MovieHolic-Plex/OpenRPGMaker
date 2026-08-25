@@ -1,6 +1,6 @@
 ---
 name: interaction-object-kit
-description: Use this RPG Maker authoring skill when adding interactable map objects such as treasure chests, locked doors, switches, signs, healing points, traps, levers, key items, or one-time pickups.
+description: Use this authoring skill when adding interactable map objects such as treasure chests, locked doors, switches, signs, healing points, traps, levers, key items, or one-time pickups.
 ---
 
 # Interaction Object Kit

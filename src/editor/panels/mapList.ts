@@ -1,7 +1,7 @@
 import { addMapFolder, duplicateMap, moveMapInTree, moveMapsInTree, renameMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap, confirmAndDeleteMapRecursive, confirmAndDeleteMaps, confirmAndDissolveFolder } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
-import { addParentChildTransfers, firstFreeCell } from "@/editor/mapParentLink";
+import { addParentChildTransfers, bestTestStartCell } from "@/editor/mapParentLink";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { mapTreeDropRelation, type MapTreeDropRelation } from "@/editor/mapTreeDrop";
 import { openMapCreateDialog, openMapCreateUnder } from "@/editor/panels/mapCreateDialog";
@@ -56,7 +56,7 @@ type MapActionContext = {
 
 export type MapListVariant = "panel" | "basic";
 
-const COLLAPSED_STORAGE_KEY = "rpg-zzu:map-tree-collapsed";
+const COLLAPSED_STORAGE_KEY = "oprn:map-tree-collapsed";
 const collapsedMapIds = loadCollapsedMapIds();
 let currentMapListContainer: HTMLElement | null = null;
 let currentMapListVariant: MapListVariant = "panel";
@@ -290,7 +290,7 @@ function renderNode(spec: RenderNodeSpec): void {
   item.append(treeToggle(node.mapId, hasChildren, isCollapsed));
   item.append(dragHandle(node.mapId, item, depth > 0));
   item.append(el("span", {
-    class: `map-tree-icon rm-tool-icon rm-tool-icon-${icon}`,
+    class: `map-tree-icon rm-tool-icon oprn-icon-${icon}`,
     attrs: { "aria-hidden": "true" },
   }));
 
@@ -360,7 +360,7 @@ function renderNode(spec: RenderNodeSpec): void {
         "aria-label": `${actionContext.mapName} 메뉴`,
       },
       dataset: { testid: isBasicRow ? `map-more-${node.mapId}` : `map-context-trigger-${node.mapId}` },
-      children: isBasicRow ? undefined : [el("span", { class: "rm-tool-icon rm-tool-icon-map-menu", attrs: { "aria-hidden": "true" } })],
+      children: isBasicRow ? undefined : [el("span", { class: "rm-tool-icon oprn-icon-map-menu", attrs: { "aria-hidden": "true" } })],
       on: {
         click: (event) => {
           event.stopPropagation();
@@ -560,7 +560,7 @@ function treeToggle(mapId: MapId, hasChildren: boolean, isCollapsed: boolean): H
     },
     children: [
       el("span", {
-        class: `rm-tool-icon rm-tool-icon-tree-${isCollapsed ? "closed" : "open"}`,
+        class: `rm-tool-icon oprn-icon-tree-${isCollapsed ? "closed" : "open"}`,
         attrs: { "aria-hidden": "true" },
       }),
     ],
@@ -832,7 +832,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       action: () => void playMapFromTree(context.mapId),
       icon: "map-start",
       id: "test-play",
-      label: "여기서 테스트 플레이",
+      label: "여기서 시연 실행",
       shortcut: "Ctrl+Enter",
       testId: `map-menu-test-play-${context.mapId}`,
     });
@@ -988,7 +988,7 @@ function treeAction(spec: TreeActionSpec): HTMLButtonElement {
     class: "map-tree-action",
     attrs: { title: spec.label, "aria-label": spec.label, type: "button" },
     children: [
-      el("span", { class: `rm-tool-icon rm-tool-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
+      el("span", { class: `rm-tool-icon oprn-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
       ...(spec.text ? [el("span", { class: "map-tree-action-text", text: spec.text })] : []),
     ],
     dataset: { testid: spec.testId },
@@ -1055,10 +1055,11 @@ function applyTreeSelection(mapId: MapId, event: Event, isFolder: boolean): void
 }
 
 function playMapFromTree(mapId: MapId): Promise<void> {
-  const map = store.getCurrent().maps[mapId];
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
   if (!map) return Promise.resolve();
   selectEditorMap(mapId);
-  const cell = firstFreeCell(map) ?? { x: 1, y: 1 };
+  const cell = bestTestStartCell(project, map);
   return openTestPlayModal({ mapId, x: cell.x, y: cell.y });
 }
 

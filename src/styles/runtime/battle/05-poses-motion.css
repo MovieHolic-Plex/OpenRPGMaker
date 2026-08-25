@@ -144,9 +144,37 @@
   100% { transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 
+/* flash.target === "target" 인 플래시. 씬 전체가 아니라 맞은 배틀러만 물든다.
+   예전에는 대상 지정을 무시하고 화면 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌다.
+   배틀러 노드는 위치를 transform 으로 잡으므로 ::after 오버레이를 얹어 스프라이트만 덮는다. */
+.battle-animation-target-flash {
+  position: relative;
+}
+
+.battle-animation-target-flash::after {
+  animation: battle-screen-flash var(--battle-flash-duration, 0.2s) ease-out 2;
+  background: var(--battle-flash-color, rgba(255, 255, 255, 0.45));
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-animation-target-flash::after {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* 색과 지속은 애니메이션 타이밍의 flash.color / flash.durationFrames 에서 온다
+   (battleAnimationEffectStyle.ts). 변수가 없으면 종전 고정값으로 떨어진다. */
 .battle-scene.battle-screen-flash::before {
-  animation: battle-screen-flash 0.2s ease-out 2;
-  background: rgba(180, 190, 255, 0.45);
+  animation: battle-screen-flash var(--battle-flash-duration, 0.2s) ease-out 2;
+  background: var(--battle-flash-color, rgba(180, 190, 255, 0.45));
   content: "";
   inset: 0;
   pointer-events: none;

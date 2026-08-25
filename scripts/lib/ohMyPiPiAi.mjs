@@ -95,6 +95,9 @@ export async function createOhMyPiAdapters() {
     async refresh(provider) {
       return workerJson("/refresh", { provider });
     },
+    async logout(provider) {
+      return workerJson("/logout", { provider });
+    },
     async seedOAuth(provider, creds) {
       return workerJson("/seed-oauth", { provider, ...creds });
     },

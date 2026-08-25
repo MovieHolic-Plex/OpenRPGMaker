@@ -278,6 +278,7 @@ export const COMMAND_GUARANTEES = {
     completion: "continue",
     quick: true,
   }),
+  runControl: guarantee("system", { quick: true }),
 } satisfies Record<CommandKind, CommandGuarantee>;
 
 export function commandGuarantee(kind: CommandKind): CommandGuarantee {

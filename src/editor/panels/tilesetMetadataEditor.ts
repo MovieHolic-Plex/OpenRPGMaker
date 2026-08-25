@@ -111,7 +111,7 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
       }),
       el("p", {
         class: "tileset-rule-note",
-        text: "라벨·설명이 둘 다 비어 있는 칩. 아래 필드로 채운 뒤 다음 → 로 순회합니다. 칩셋 미리보기의「미라벨」필터와 연동.",
+        text: "라벨·설명이 둘 다 비어 있는 칩. 아래 필드로 채운 뒤 다음 → 로 순회합니다. 그림판 미리보기의「미라벨」필터와 연동.",
       }),
       el("div", {
         class: "tileset-unlabeled-queue-actions",
@@ -227,7 +227,7 @@ function renderSelectedTilePanel(tileset: TilesetDef, rerender: () => void): HTM
   });
 }
 
-// ── 타일 규칙 탭: 레이어(자동/하위/상위) + 통행 + 지형 태그 ──────
+// ── 타일 규칙 탭: 레이어(자동/하위/상위) + 통행 + 지면 종류 ──────
 function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElement[] {
   const override = userTileLayerOverride(tileset, selectedTile);
   const choice: TileLayerChoice = override ?? "auto";
@@ -266,7 +266,7 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
 
   return [
     el("fieldset", {
-      class: "rm2k3-db-fieldset tileset-rule-layer",
+      class: "oprn-db-fieldset tileset-rule-layer",
       dataset: { testid: "tileset-rule-layer" },
       children: [
         el("legend", { text: "레이어" }),
@@ -286,14 +286,14 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
       ],
     }),
     el("fieldset", {
-      class: "rm2k3-db-fieldset tileset-rule-passage",
+      class: "oprn-db-fieldset tileset-rule-passage",
       dataset: { testid: "tileset-rule-passage" },
       children: [
         el("legend", { text: "통행" }),
         el("div", { class: "tileset-rule-buttons", children: [passageButton(false, "통행"), passageButton(true, "차단")] }),
       ],
     }),
-    numberControl("지형 태그", tileset.terrain[selectedTile] ?? 0, (value) => updateTerrain(tileset.id, value), "tileset-field-terrain-tag"),
+    numberControl("지면 종류", tileset.terrain[selectedTile] ?? 0, (value) => updateTerrain(tileset.id, value), "tileset-field-terrain-tag"),
   ];
 }
 
@@ -301,7 +301,7 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
 function renderTileMeaningEditors(tileset: TilesetDef, meta: TileAiMetadata): HTMLElement[] {
   return [
     el("fieldset", {
-      class: "rm2k3-db-fieldset tileset-tile-meaning-edit",
+      class: "oprn-db-fieldset tileset-tile-meaning-edit",
       dataset: { testid: "tileset-tile-meaning-edit" },
       children: [
         el("legend", { text: "의미 (라벨·설명)" }),

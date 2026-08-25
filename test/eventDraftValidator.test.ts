@@ -3,6 +3,7 @@ import { createDefaultM2Fields, M2_COMMAND_CATALOG } from "@/project/eventComman
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, Condition, EventPage, GameEvent } from "@/project/types";
+import { newCommand } from "@/editor/eventCommandFactory";
 
 function page(overrides: Partial<EventPage> = {}): EventPage {
   return {
@@ -30,6 +31,21 @@ function gameEvent(eventPage: EventPage): GameEvent {
 }
 
 describe("event draft aggregate validator", () => {
+  it("warns for a native command whose map guarantee is partial", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({ commands: [newCommand("giveMonster")] }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+
+    expect(result.issues).toContainEqual(expect.objectContaining({
+      severity: "warning",
+      code: "runtime.partial",
+      commandPath: [0],
+    }));
+  });
+
   it("treats every recursively nested condition leaf as an auto/parallel gate", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;

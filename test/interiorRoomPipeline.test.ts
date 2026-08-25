@@ -34,7 +34,7 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
 
     map = applyInteriorRoomLayer(map, plan, "entrance").map;
     const entrance = map.events?.find((e) => e.x === plan.door.x && e.y === plan.door.y);
-    expect(entrance?.name).toBe("입구");
+    expect(entrance?.pages?.[0]?.name).toBe("입구");
     const cmd = entrance?.pages?.[0]?.commands?.[0] as { kind?: string; body?: string };
     expect(cmd?.kind).toBe("text");
     expect(typeof cmd?.body).toBe("string");

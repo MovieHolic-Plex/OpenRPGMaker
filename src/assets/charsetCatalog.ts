@@ -37,7 +37,7 @@ function uploadedCharsetToPickerAsset(asset: UploadedAsset): CharsetPickerAsset 
 
 /**
  * 프로젝트 상태 기반 통합 캐릭터칩 목록.
- * 번들(EasyRPG RTP + Scarloxy + Farming) + 소재 관리자에서 업로드한 charset을 합친다.
+ * 번들(EasyRPG RTP + Scarloxy + Farming) + 자료 보관함에서 업로드한 charset을 합친다.
  * NPC 그래픽 피커, 이벤트 커맨드 에디터 등 모든 charset 선택 UI가 이 함수를 사용한다.
  */
 export function projectCharsetAssets(project: {

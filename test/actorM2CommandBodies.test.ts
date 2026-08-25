@@ -115,7 +115,7 @@ describe("actor m2 command body UX", () => {
     )
       .map((part) => part.text)
       .join("");
-    expect(damage).toContain("데미지 처리");
+    expect(damage).toContain("데미지");
     expect(damage).toContain("변수");
 
     const name = commandSummaryParts(

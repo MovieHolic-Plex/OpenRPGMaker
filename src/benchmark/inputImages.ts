@@ -22,7 +22,7 @@ import type { GameMap } from "@/project/types";
 import { FLOOR_TILES } from "./groundTruth";
 import { FENCE_RECT, HOUSE_GROUND_TRUTH, TREE_GROUND_TRUTH } from "./fixtures/construction";
 
-/** 허용 최대 타일 id(0..479). 기본 칩셋 DEFAULT_TILE_COUNT=480 과 정합. */
+/** 허용 최대 타일 id(0..479). 기본 타일 그림판 DEFAULT_TILE_COUNT=480 과 정합. */
 export const MAX_BENCHMARK_TILE_ID = DEFAULT_TILE_COUNT - 1;
 
 /** 그리드 이미지의 셀 크기(px) — renderTempMapImage 의 PREVIEW_SCALE=2 와 정합(16*2=32). */
@@ -140,7 +140,7 @@ function buildGridMap(grid: BenchmarkGrid, tileSize: number): GameMap {
 /**
  * d3/d5/d7 — 그리드(하위 레이어 먼저, 상위 레이어 위에서)를 에디터와 동일한
  * 타일셋 텍스처 슬라이싱 경로(renderTempMapImage)로 그려 PNG data URL 반환.
- * tileSize 는 기본 칩셋 셀 크기(16). 그리드는 검증 후 렌더(fail-fast).
+ * tileSize 는 기본 타일 그림판 셀 크기(16). 그리드는 검증 후 렌더(fail-fast).
  */
 export async function renderGridImage(grid: BenchmarkGrid, tileSize: number = DEFAULT_TILE_SIZE): Promise<string> {
   validateGrid(grid, tileSize);

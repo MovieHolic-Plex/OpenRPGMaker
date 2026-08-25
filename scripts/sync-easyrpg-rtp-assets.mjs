@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import https from "node:https";
@@ -11,24 +11,31 @@ const PUBLIC_RTP_DIR = path.join(ROOT_DIR, "public", "assets", "easyrpg");
 const SOURCE_MANIFEST_PATH = path.join(ROOT_DIR, "src", "assets", "easyrpgRtp.ts");
 const PUBLIC_MANIFEST_PATH = path.join(PUBLIC_RTP_DIR, "rtp-manifest.json");
 
+// `label` 은 **사용자에게 보이는** 카테고리 이름이다. 원본 디렉터리 이름(ChipSet/CharSet…)은
+// Enterbrain 계보 용어라 표시명에 쓰지 않는다 — uiCopy 의 중립어(타일 그림판 등)를 따른다.
+// sourceDir 자체는 원본 저장소 경로이므로 그대로 둔다(재동기화 대조에 쓰인다).
 const CATEGORY_CONFIG = [
-  { sourceDir: "Battle", category: "battle", extension: ".png", publicDir: "battle" },
-  { sourceDir: "BattleWeapon", category: "battleWeapon", extension: ".png", publicDir: "battle-weapon" },
-  { sourceDir: "CharSet", category: "charset", extension: ".png", publicDir: "charset" },
-  { sourceDir: "ChipSet", category: "chipset", extension: ".png", publicDir: "chipset" },
-  { sourceDir: "FaceSet", category: "faceset", extension: ".png", publicDir: "faceset" },
-  { sourceDir: "GameOver", category: "gameOver", extension: ".png", publicDir: "game-over" },
-  { sourceDir: "Monster", category: "monster", extension: ".png", publicDir: "monster" },
-  { sourceDir: "Music", category: "music", extension: ".mid", publicDir: "music" },
-  { sourceDir: "Panorama", category: "backdrop", extension: ".png", publicDir: "backdrop" },
-  { sourceDir: "Picture", category: "picture", extension: ".png", publicDir: "picture" },
-  { sourceDir: "Sound", category: "sound", extension: ".wav", publicDir: "sound" },
-  { sourceDir: "System", category: "system", extension: ".png", publicDir: "system" },
-  { sourceDir: "System2", category: "system2", extension: ".png", publicDir: "system2" },
-  { sourceDir: "Title", category: "title", extension: ".png", publicDir: "title" },
+  { sourceDir: "Battle", category: "battle", extension: ".png", publicDir: "battle", label: "전투 효과" },
+  { sourceDir: "BattleWeapon", category: "battleWeapon", extension: ".png", publicDir: "battle-weapon", label: "전투 무기" },
+  { sourceDir: "CharSet", category: "charset", extension: ".png", publicDir: "charset", label: "캐릭터 그림" },
+  { sourceDir: "ChipSet", category: "chipset", extension: ".png", publicDir: "chipset", label: "타일 그림판" },
+  { sourceDir: "FaceSet", category: "faceset", extension: ".png", publicDir: "faceset", label: "얼굴 그림" },
+  { sourceDir: "GameOver", category: "gameOver", extension: ".png", publicDir: "game-over", label: "게임오버 화면" },
+  { sourceDir: "Monster", category: "monster", extension: ".png", publicDir: "monster", label: "몬스터 그림" },
+  { sourceDir: "Music", category: "music", extension: ".mid", publicDir: "music", label: "음악" },
+  { sourceDir: "Panorama", category: "backdrop", extension: ".png", publicDir: "backdrop", label: "배경 그림" },
+  { sourceDir: "Picture", category: "picture", extension: ".png", publicDir: "picture", label: "그림" },
+  { sourceDir: "Sound", category: "sound", extension: ".wav", publicDir: "sound", label: "효과음" },
+  { sourceDir: "System", category: "system", extension: ".png", publicDir: "system", label: "시스템 그림" },
+  { sourceDir: "System2", category: "system2", extension: ".png", publicDir: "system2", label: "시스템 그림 2" },
+  { sourceDir: "Title", category: "title", extension: ".png", publicDir: "title", label: "타이틀 화면" },
 ];
 
-const CHARSET_DIRECTIONS = ["down", "left", "right", "up"];
+// 캐릭터 그림 시트의 **행 순서**다 — 알파벳 순이 아니라 시트에 그려진 순서여야 한다.
+// 실측 계약(test/easyrpgRtpAssets.test.ts): characterIndex 0 · down · pattern 1 → 프레임 25,
+// 즉 down 은 3번째 행(index 2)이고 up 이 첫 행이다. 여기가 ["down","left","right","up"]
+// 이었는데 생성된 파일은 아래 순서였다 — 생성기가 낡아 재생성하면 방향이 뒤집혔다.
+const CHARSET_DIRECTIONS = ["up", "right", "down", "left"];
 
 function requestBuffer(url, redirects = 0) {
   return new Promise((resolve, reject) => {
@@ -101,9 +108,12 @@ function charsetGroup(fileName) {
   return match?.[0] ?? "Other";
 }
 
+// 표시명에서 `RTP` 를 뺀다 — RTP 는 Enterbrain 의 용어이고, 이 파일들은 EasyRPG 의
+// **대체본**이다(public/assets/easyrpg/COPYING). 출처 표기(EasyRPG)는 남긴다: 실제 저작자
+// 크레딧이고 자료 보관함 검색어로도 쓰인다. bundled.ts 의 표시명 규칙과 같은 형태다.
 function displayName(config, fileName) {
   const stem = fileName.slice(0, fileName.lastIndexOf("."));
-  return `EasyRPG RTP ${stem} ${config.sourceDir}`;
+  return `${stem} · ${config.label} · EasyRPG`;
 }
 
 function publicPath(config, fileName) {
@@ -318,33 +328,33 @@ function boundedInt(value: number, min: number, max: number): number {
 }
 
 async function main() {
-  const treeUrl = `https://api.github.com/repos/${REPO}/git/trees/${EASYRPG_RTP_COMMIT}?recursive=1`;
-  const tree = await requestJson(treeUrl);
-  const sourceFiles = tree.tree
-    .filter((entry) => entry.type === "blob")
-    .map((entry) => entry.path)
-    .filter((sourcePath) => selectedAsset(sourcePath) !== null)
-    .sort((left, right) => left.localeCompare(right));
+  // --manifest-only: 에셋 바이너리를 다시 내리지 않고 매니포스트만 재생성하는 경로.
+  // 표시명·id 같은 **파생 메타데이타**만 바뀌는 변경에 쓴다. 파일 목록은 직전 싱킹이
+  // 쓰고 간 rtp-manifest.json 에서 읽는다 — 출처는 여전하게 EASYRPG_RTP_COMMIT 에 못박혀 있다.
+  const manifestOnly = process.argv.includes("--manifest-only");
+  const sourceFiles = manifestOnly ? await manifestSourceFiles() : await remoteSourceFiles();
   const assets = sourceFiles.flatMap((sourcePath) => {
     const config = selectedAsset(sourcePath);
     return config ? [assetRecord(config, sourcePath)] : [];
   });
 
-  for (const sourcePath of sourceFiles) {
-    const config = selectedAsset(sourcePath);
-    if (!config) continue;
-    const fileName = pathModuleBasename(sourcePath);
-    const targetPath = path.join(PUBLIC_RTP_DIR, config.publicDir, fileName);
-    await mkdir(path.dirname(targetPath), { recursive: true });
-    await writeFile(targetPath, await requestBuffer(rawUrl(sourcePath)));
-    console.log(`synced ${sourcePath}`);
-  }
+  if (!manifestOnly) {
+    for (const sourcePath of sourceFiles) {
+      const config = selectedAsset(sourcePath);
+      if (!config) continue;
+      const fileName = pathModuleBasename(sourcePath);
+      const targetPath = path.join(PUBLIC_RTP_DIR, config.publicDir, fileName);
+      await mkdir(path.dirname(targetPath), { recursive: true });
+      await writeFile(targetPath, await requestBuffer(rawUrl(sourcePath)));
+      console.log(`synced ${sourcePath}`);
+    }
 
-  for (const sourcePath of ["AUTHORS.md", "COPYING"]) {
-    const targetPath = path.join(PUBLIC_RTP_DIR, sourcePath);
-    await mkdir(path.dirname(targetPath), { recursive: true });
-    await writeFile(targetPath, await requestBuffer(rawUrl(sourcePath)));
-    console.log(`synced ${sourcePath}`);
+    for (const sourcePath of ["AUTHORS.md", "COPYING"]) {
+      const targetPath = path.join(PUBLIC_RTP_DIR, sourcePath);
+      await mkdir(path.dirname(targetPath), { recursive: true });
+      await writeFile(targetPath, await requestBuffer(rawUrl(sourcePath)));
+      console.log(`synced ${sourcePath}`);
+    }
   }
 
   await writeFile(SOURCE_MANIFEST_PATH, generateSource(assets));
@@ -352,7 +362,32 @@ async function main() {
     PUBLIC_MANIFEST_PATH,
     `${JSON.stringify({ source: { repository: `https://github.com/${REPO}`, commit: EASYRPG_RTP_COMMIT }, assets }, null, 2)}\n`
   );
-  console.log(`generated ${assets.length} scoped EasyRPG RTP assets`);
+  console.log(`generated ${assets.length} scoped EasyRPG assets${manifestOnly ? " (manifest only)" : ""}`);
+}
+
+/** 원본 저장소(고정 쯤)의 트리에서 대상 파일 경로를 수집한다. */
+async function remoteSourceFiles() {
+  const treeUrl = `https://api.github.com/repos/${REPO}/git/trees/${EASYRPG_RTP_COMMIT}?recursive=1`;
+  const tree = await requestJson(treeUrl);
+  return tree.tree
+    .filter((entry) => entry.type === "blob")
+    .map((entry) => entry.path)
+    .filter((sourcePath) => selectedAsset(sourcePath) !== null)
+    .sort((left, right) => left.localeCompare(right));
+}
+
+/** 직전 싱킹이 기록한 매니포스트에서 대상 파일 경로를 읽는다(네트워키 없이 재생성). */
+async function manifestSourceFiles() {
+  const previous = JSON.parse(await readFile(PUBLIC_MANIFEST_PATH, "utf8"));
+  if (previous.source?.commit !== EASYRPG_RTP_COMMIT) {
+    throw new Error(
+      `rtp-manifest.json 의 commit(${previous.source?.commit}) 이 EASYRPG_RTP_COMMIT 과 다릅니다 — --manifest-only 로는 재생성할 수 없습니다.`
+    );
+  }
+  return previous.assets
+    .map((asset) => asset.sourcePath)
+    .filter((sourcePath) => selectedAsset(sourcePath) !== null)
+    .sort((left, right) => left.localeCompare(right));
 }
 
 main().catch((error) => {

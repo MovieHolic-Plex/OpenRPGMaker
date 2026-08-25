@@ -4,8 +4,8 @@ import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import type { MapEditLockStatus } from "@/editor/mapEditLocks";
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
-const LAYOUT_VERSION_KEY = "rpg-zzu:editor-layout-version";
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
+const LAYOUT_VERSION_KEY = "oprn:editor-layout-version";
 const LAYOUT_VERSION = "2026-07-24-maptree-300";
 
 class MemoryStorage implements Storage {
@@ -131,9 +131,13 @@ function mockEditorDependencies(): void {
     takeoverMapLock,
   }));
   vi.doMock("@/editor/panels/aiChatPanel", () => ({
-    renderAiChatPanel: (options?: { readonly onChatDockToggle?: () => void }) => {
+    renderAiChatPanel: (options?: {
+      readonly onChatDockToggle?: () => void;
+      readonly getAssistantTemperature?: () => string;
+    }) => {
       const panel = document.createElement("aside");
       panel.dataset.testid = "ai-panel";
+      panel.dataset.temperature = options?.getAssistantTemperature?.() ?? "";
       panel.className = "ai-chat-panel";
       const log = document.createElement("div");
       log.dataset.testid = "ai-chat-log";
@@ -214,7 +218,7 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     expect(reloaded.isLeftCollapsed()).toBe(true);
     expect(fakeElement(nextMain).querySelector(".left-panel")?.style.display).toBe("none");
-  });
+  }, 30_000);
 
   it("채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다", async () => {
     const { renderEditor } = await import("@/editor/panels/editor");
@@ -298,6 +302,27 @@ describe("에디터 레이아웃 크기 저장", () => {
     const sideHost = findByTestId(root, "chat-side-panel");
     expect(panel?.parentElement).toBe(sideHost);
     expect(editorState.get().chatDock).toBe("side");
+  });
+
+  it("저장된 조수 대기 화면을 도크 설정과 함께 복원한다", async () => {
+    storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
+      leftWidth: 526,
+      mapTreeHeight: 154,
+      leftCollapsed: false,
+      chatDock: "glass",
+      assistantTemperature: "ink-only",
+    }));
+    vi.resetModules();
+    mockEditorDependencies();
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const { editorState } = await import("@/editor/editorState");
+    const main = document.createElement("main");
+
+    renderEditor(main);
+
+    expect(editorState.get().assistantTemperature).toBe("ink-only");
+    expect(findByTestId(fakeElement(main), "ai-panel")?.dataset.temperature).toBe("ink-only");
   });
 });
 

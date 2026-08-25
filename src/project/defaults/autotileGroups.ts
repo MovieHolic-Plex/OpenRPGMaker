@@ -138,7 +138,7 @@ export const DEFAULT_FARMLAND_AUTOTILE_GROUP: AutotileGroup = {
 
 // RM2K식 3×4 템플릿 블록 공식: 앵커(블록 좌상단) 하나로 11역할 좌표를 계산한다.
 // 윗줄 [외딴, (미사용 변형), 오목] + 아래 3×3 [NW·N·NE / W·몸통·E / SW·S·SE].
-// 에디터 위저드 buildTemplateGroup("rm2k-3x4")과 동일한 공식 — 회귀 테스트로 상호 대조한다.
+// 에디터 위저드 buildTemplateGroup("oprn-3x4")과 동일한 공식 — 회귀 테스트로 상호 대조한다.
 export function templateBlockFromAnchor(anchor: number): EdgeCornerInnerTileSet {
   const row = DEFAULT_TILES_PER_ROW;
   return {

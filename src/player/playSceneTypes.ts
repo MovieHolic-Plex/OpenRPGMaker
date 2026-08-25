@@ -25,6 +25,8 @@ export type ParallelProcess = {
   interpreter: Interpreter;
   waitMs: number;
   started: boolean;
+  pendingTimeTransition?: Promise<boolean>;
+  stopped?: boolean;
 };
 
 export type AutonomousMover = {
@@ -207,7 +209,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateFieldSpawns(deltaMs: number): void;
   actionCombatState?: import("@/player/actionCombatTypes").ActionCombatSceneState | null;
   updateActionCombat?(deltaMs: number): void;
-  sleepUntilMorning(): Promise<void>;
+  sleepUntilMorning(): Promise<boolean>;
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
   showGameOverScreen(message?: string): void;

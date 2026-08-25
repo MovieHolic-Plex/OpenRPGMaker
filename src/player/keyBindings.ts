@@ -142,6 +142,6 @@ export const NAV_KEY_LABEL = "방향키";
 export const AUTO_BATTLE_KEY_LABEL = "F";
 export const SPEED_KEY_LABEL = "Shift";
 
-export const TITLE_KEY_PROMPT = `↑↓ 이동   ${CONFIRM_KEY_LABEL}·클릭 결정   ${CANCEL_KEY_LABEL} 취소`;
+export const TITLE_KEY_PROMPT = "방향키로 고르고 Enter로 시작";
 export const BATTLE_KEY_PROMPT = `${NAV_KEY_LABEL}\u00a0선택 · ${CONFIRM_KEY_LABEL}\u00a0확인 · ${CANCEL_KEY_LABEL}\u00a0취소 · ${AUTO_BATTLE_KEY_LABEL}\u00a0자동 · ${SPEED_KEY_LABEL}\u00a0배속`;
 export const CONTINUE_KEY_PROMPT = `${CONFIRM_KEY_LABEL}로 계속`;

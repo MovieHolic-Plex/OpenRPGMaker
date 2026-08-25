@@ -1,7 +1,6 @@
 import {
   COMMON_EVENT_TRIGGER_OPTIONS,
   commonEventTriggerLabel,
-  ordinalLabel,
 } from "@/editor/panels/databaseDisplay";
 import { duplicateInto } from "@/editor/databaseCopy";
 import { emptyToUndefined } from "@/editor/panels/databaseControls";
@@ -48,16 +47,40 @@ export function renderCommonEventsTab(host: HTMLElement, rerender: () => void): 
   if (selected) {
     detailPane.append(commonEventEditor(selected, commonEvents.indexOf(selected), rerender));
   } else {
-    detailPane.append(emptyCommonEventEditor());
+    detailPane.append(emptyCommonEventEditor(rerender));
   }
   shell.append(listPane, detailPane);
   host.append(el("h3", { text: "공통 이벤트" }), shell);
 }
 
-function emptyCommonEventEditor(): HTMLElement {
-  return el("section", {
-    class: "db-subpanel db-common-event-editor db-common-event-empty-editor",
-    text: "공용 이벤트가 없습니다 — \"+ 공통 이벤트 추가\"로 만드세요.",
+function addCommonEvent(rerender: () => void): void {
+  const next: CommonEvent = {
+    id: genId("ce"),
+    name: "새 공통 이벤트",
+    trigger: "none",
+    commands: [{ kind: "text", body: "" }],
+  };
+  recordProjectSnapshot();
+  store.update((project) => {
+    project.commonEvents.push(next);
+  });
+  selectedCommonEventId = next.id;
+  rerender();
+}
+
+function emptyCommonEventEditor(rerender: () => void): HTMLElement {
+  return el("div", {
+    class: "db-empty-state db-common-event-empty-editor",
+    children: [
+      el("strong", { class: "db-empty-title", text: "아직 공통 이벤트가 없습니다" }),
+      el("p", { class: "db-empty-copy", text: "맵과 상관없이 여러 곳에서 부르는 이벤트를 만드세요." }),
+      el("button", {
+        class: "btn primary db-empty-cta",
+        text: "첫 공통 이벤트 만들기",
+        attrs: { type: "button" },
+        on: { click: () => addCommonEvent(rerender) },
+      }),
+    ],
   });
 }
 
@@ -66,20 +89,7 @@ function addCommonEventButton(rerender: () => void): HTMLElement {
     class: "btn small",
     text: "+ 공통 이벤트 추가",
     on: {
-      click: () => {
-        const next: CommonEvent = {
-          id: genId("ce"),
-          name: "새 공통 이벤트",
-          trigger: "none",
-          commands: [{ kind: "text", body: "" }],
-        };
-        recordProjectSnapshot();
-        store.update((project) => {
-          project.commonEvents.push(next);
-        });
-        selectedCommonEventId = next.id;
-        rerender();
-      },
+      click: () => addCommonEvent(rerender),
     },
   });
 }
@@ -121,8 +131,8 @@ function commonEventListRow(
       },
     },
     children: [
-      el("span", { class: "db-list-number", text: `${ordinalLabel(index)}:` }),
       el("span", { class: "db-list-name", text: commonEvent.name || "(이름 없음)" }),
+      el("span", { class: "db-list-number", text: `#${index + 1}` }),
       el("span", { class: "db-list-meta", text: commonEventTriggerLabel(commonEvent.trigger) }),
     ],
   });
@@ -143,7 +153,7 @@ function commonEventEditor(commonEvent: CommonEvent, index: number, rerender: ()
     replaceCommands: (next: Command[]) => updateCommonEventCommands(commonEvent.id, next),
   });
   block.append(el("fieldset", {
-    class: "rm2k3-db-fieldset db-common-event-command-shell event-contents-fieldset",
+    class: "oprn-db-fieldset db-common-event-command-shell event-contents-fieldset",
     children: [el("legend", { text: "이벤트 명령" }), commands],
   }));
   return block;
@@ -158,7 +168,7 @@ function updateCommonEventCommands(commonEventId: string, commands: Command[]): 
 
 function commonEventNameRow(commonEvent: CommonEvent, index: number, rerender: () => void): HTMLElement {
   return namedRow(
-    ordinalLabel(index),
+    `#${index + 1}`,
     commonEvent.id,
     commonEvent.name,
     (value) => {
@@ -288,9 +298,8 @@ function namedRow(
   return el("div", {
     class: "db-row",
     children: [
-      el("span", { class: "db-id", text: `${ordinal}:` }),
       input,
-      el("span", { class: "db-meta", text: id.slice(0, 12) }),
+      el("span", { class: "db-id", text: ordinal }),
       deleteButton,
     ],
   });

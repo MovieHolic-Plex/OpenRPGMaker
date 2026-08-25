@@ -29,15 +29,15 @@
 }
 
 .ai-rising-overlay .ai-chat-log,
-.ai-rising-overlay .ai-completion-strip,
-.ai-rising-overlay .ai-proposal-pill,
-.ai-rising-overlay .ai-proposal-notice-host > *,
-.ai-rising-overlay .ai-proposal-host > * {
+.ai-rising-sticky-zone .ai-completion-strip,
+.ai-rising-sticky-zone .ai-proposal-pill,
+.ai-rising-sticky-zone .ai-proposal-notice-host > *,
+.ai-rising-sticky-zone .ai-proposal-host > * {
   pointer-events: auto;
 }
 
 .ai-rising-volatile-zone {
-  transition: opacity 320ms ease, transform 320ms ease, border-color 320ms ease;
+  transition: border-color 320ms ease;
   border: 1px dashed transparent;
   border-radius: 14px;
   padding: 4px;
@@ -47,12 +47,6 @@
   border-color: color-mix(in srgb, var(--accent, var(--accent)) 22%, transparent);
   background: color-mix(in srgb, var(--accent, var(--accent)) 5%, transparent);
   backdrop-filter: blur(6px);
-}
-
-.ai-rising-volatile-zone.is-faded {
-  opacity: 0.42;
-  pointer-events: auto;
-  transform: translateY(4px);
 }
 
 .ai-pending-queue {
@@ -165,14 +159,6 @@
   width: 100%;
 }
 
-.ai-chat-panel.chat-dock-side .ai-rising-volatile-zone[hidden],
-.ai-chat-panel.chat-dock-side .ai-rising-volatile-zone.is-faded {
-  display: flex !important;
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-}
-
 .ai-chat-panel.chat-dock-side .ai-rising-overlay .ai-chat-log {
   box-shadow: none;
   flex: 1 1 auto;
@@ -181,21 +167,36 @@
   width: 100%;
 }
 
-/* 미니 스트림: 떠오르는 오버레이에서는 이전 턴을 숨긴다(현재 턴만). 과거 대화는 ⌃ 전체 기록에서. */
-.ai-rising-overlay .ai-chat-log > .is-prior-turn {
-  display: none;
-}
-
-/* 전체 기록/스튜디오 뷰에서는 이전 턴도 전부 보인다. */
-.ai-history-log-mount .ai-chat-log > .is-prior-turn,
-.ai-chat-panel.is-studio .ai-chat-log > .is-prior-turn,
-.ai-chat-panel.chat-dock-side .ai-chat-log > .is-prior-turn {
+/* 이전 턴은 어느 뷰에서도 숨기지 않는다. 예전에는 "미니 스트림(오버레이)에서는 현재 턴만"
+   규칙이 있었지만, 오버레이가 사이드 도크 전용이 된 뒤로는 같은 파일의 사이드 규칙이 항상
+   이겨서 한 번도 적용되지 않는 죽은 규칙이었다(2026-08-23). 접기는 .ai-turn-group.is-collapsed
+   가 담당한다 — 그쪽이 실제로 쓰이는 유일한 축약 경로다. */
+.ai-chat-log > .is-prior-turn {
   display: block;
 }
 
+/* 제안 pill·완료 스트립 밴드. 오버레이 안에 있던 동안은 사이드 도크에서만 존재해서, 기본
+   도크인 유리와 float 에서는 최소화한 제안으로 되돌아갈 pill 이 아예 없었다(2026-08-23 실측).
+   이제 도크와 무관하게 패널 자식이고 컴포저 바로 위 블록이다. */
 .ai-rising-sticky-zone {
   max-height: min(38vh, 420px);
   overflow-y: auto;
+}
+
+/* float 만 컴포저가 절대 위치라 흐름 위치가 캔버스 최상단으로 튄다 — 이 도크에서만 바 위
+   고정 밴드로 띄운다. 컨테이너는 클릭을 삼키지 않고 인터랙티브 자식만 되살린다(빈 밴드가
+   맵 클릭을 먹던 2026-08-19 P0 과 같은 함정). 유리 카드 안에서 fixed 를 쓰면 backdrop-filter
+   가 만든 컨테이닝 블록 + overflow:hidden 에 갇혀 pill 이 47px 폭으로 눌리고 클릭도 안 잡힌다
+   (실측). 그래서 유리·사이드는 흐름 배치를 그대로 쓴다. */
+.ai-chat-panel.chat-dock-float .ai-rising-sticky-zone {
+  bottom: var(--ai-command-bar-clearance, 76px);
+  left: calc(var(--editor-left-safe, 264px) + 12px);
+  margin: 0 auto;
+  max-width: 780px;
+  pointer-events: none;
+  position: fixed;
+  right: 24px;
+  z-index: 41; /* 오버레이와 같은 층 — 커맨드 바(40) 위, 모달(72) 아래 */
 }
 
 .ai-completion-host:empty {

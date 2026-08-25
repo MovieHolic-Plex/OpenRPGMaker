@@ -69,7 +69,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
       el("div", {
         class: "tileset-db-preview-title-row",
         children: [
-          el("div", { class: "tileset-db-preview-title", text: "칩셋 그래픽" }),
+          el("div", { class: "tileset-db-preview-title", text: "타일 그림판" }),
           el("div", {
             class: "tileset-db-layer-filter",
             attrs: { role: "tablist", "aria-label": "레이어 필터" },
@@ -119,7 +119,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
                 el("button", {
                   class: "tileset-db-fullsheet-btn",
                   text: "전체창",
-                  attrs: { type: "button", title: "칩셋 전체를 별도 창에서 통행(O/X/★) 편집" },
+                  attrs: { type: "button", title: "그림판 전체를 별도 창에서 통행(O/X/★) 편집" },
                   dataset: { testid: "tileset-settings-open-header" },
                   on: { click: () => model.onOpenFullSheet?.() },
                 }),
@@ -212,7 +212,7 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
       el("img", {
         attrs: {
           src: tilesetImageUrl(model.tileset),
-          alt: `${model.tileset.name} 칩셋 (${model.tileset.count}칸)`,
+          alt: `${model.tileset.name} 타일 그림판 (${model.tileset.count}칸)`,
           width: String(previewWidth),
           height: String(previewHeight),
         },

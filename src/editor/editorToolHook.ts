@@ -1,6 +1,6 @@
 // editor/editorToolHook.ts
-// 헤드리스(Playwright) 에디터 조작 훅 — 플레이어의 __rpgzzuInput 훅과 같은 계열.
-// window.__rpgzzuEditorTool(name, args)로 에디터 툴을 직접 실행한다.
+// 헤드리스(Playwright) 에디터 조작 훅 — 플레이어의 __oprnInput 훅과 같은 계열.
+// window.__oprnEditorTool(name, args)로 에디터 툴을 직접 실행한다.
 // 쓰기 툴 성공 시 undo 스냅샷을 남기고 store에 반영하므로 Ctrl+Z 복구가 가능하다.
 
 import { editorState } from "@/editor/editorState";
@@ -81,7 +81,7 @@ type ProjectE2EBootstrap = {
 
 // The dev server injects this Symbol-keyed, one-run envelope before app startup.
 // It is consumed and deleted on install; capability and credential proof stay closure-private.
-const PROJECT_E2E_BOOTSTRAP = Symbol.for("rpg-zzu.project-e2e.bootstrap");
+const PROJECT_E2E_BOOTSTRAP = Symbol.for("oprn:project-e2e.bootstrap");
 const MIN_PROJECT_E2E_CAPABILITY_LENGTH = 32;
 let projectE2EBootstrap: ProjectE2EBootstrap | null = null;
 
@@ -101,19 +101,19 @@ type RegionTaskHarness = {
 };
 
 type EditorToolHookWindow = Window & {
-  __rpgzzuEditorTool?: (name: string, args: Record<string, unknown>) => ToolResult;
-  __rpgzzuRegionTaskHarness?: RegionTaskHarness;
+  __oprnEditorTool?: (name: string, args: Record<string, unknown>) => ToolResult;
+  __oprnRegionTaskHarness?: RegionTaskHarness;
   // 헤드리스 건축 팔레트 — UI 드래그 없이 프리미티브/프리셋 시공을 재현(스냅샷+store 반영+자동저장 동일).
-  __rpgzzuBuildPalette?: (
+  __oprnBuildPalette?: (
     selection: BuildPaletteSelection,
     primitive: BuildPalettePrimitive,
     options?: BuildPaletteApplyOptions
   ) => BuildPaletteResult;
   // 하네싱 집 키트 시공 — 기준 집 문법(houseKit) 그대로. 커밋 게이트(신규 오류만 차단) 포함.
-  __rpgzzuHouseKit?: (mapId: MapId, plan: RectHousePlan) => RectHouseStampResult;
+  __oprnHouseKit?: (mapId: MapId, plan: RectHousePlan) => RectHouseStampResult;
   // 임의 평면(ㄱ/ㄴ/ㄷ/ㅁ/O …) — 날개 사각형 합집합을 하네싱 국소 규칙으로 전개.
-  __rpgzzuFootprintHouse?: (mapId: MapId, plan: FootprintHousePlan) => RectHouseStampResult;
-  __rpgzzuProjectE2E?: ProjectE2EBridge;
+  __oprnFootprintHouse?: (mapId: MapId, plan: FootprintHousePlan) => RectHouseStampResult;
+  __oprnProjectE2E?: ProjectE2EBridge;
   [PROJECT_E2E_BOOTSTRAP]?: unknown;
 };
 
@@ -146,7 +146,7 @@ export function installEditorToolHook(): void {
   if (typeof window === "undefined") return;
   const w = window as EditorToolHookWindow;
   if (import.meta.env.DEV) installProjectE2EBridge(w);
-  w.__rpgzzuEditorTool = (name, args) => {
+  w.__oprnEditorTool = (name, args) => {
     const ctx = { project: store.getCurrent() };
     const result = runTool(ctx, name, args, { dryRun: false });
     const tool = getTool(name);
@@ -157,10 +157,10 @@ export function installEditorToolHook(): void {
     return result;
   };
 
-  w.__rpgzzuBuildPalette = (selection, primitive, options = {}) =>
+  w.__oprnBuildPalette = (selection, primitive, options = {}) =>
     applyBuildPalettePrimitive(selection, primitive, options);
 
-  w.__rpgzzuHouseKit = (mapId, plan) => {
+  w.__oprnHouseKit = (mapId, plan) => {
     const current = store.getCurrent();
     if (!current.maps[mapId]) return { ok: false, reason: `맵을 찾을 수 없습니다: ${mapId}` };
     const draft = structuredClone(current);
@@ -179,7 +179,7 @@ export function installEditorToolHook(): void {
     return result;
   };
 
-  w.__rpgzzuFootprintHouse = (mapId, plan) => {
+  w.__oprnFootprintHouse = (mapId, plan) => {
     const current = store.getCurrent();
     if (!current.maps[mapId]) return { ok: false, reason: `맵을 찾을 수 없습니다: ${mapId}` };
     const draft = structuredClone(current);
@@ -197,7 +197,7 @@ export function installEditorToolHook(): void {
     return result;
   };
 
-  w.__rpgzzuRegionTaskHarness = {
+  w.__oprnRegionTaskHarness = {
     currentMapId: () => editorState.get().currentMapId ?? store.getCurrent().startMapId,
     setSelection: (selection) => editorState.set({ selection: selection ?? null }),
     readCell: (mapId, layer, x, y) => {
@@ -208,7 +208,7 @@ export function installEditorToolHook(): void {
       return value ?? null;
     },
     // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
-    // 적용하려면 반환된 result.pending.apply() 또는 window.__rpgzzuRegionTaskPending.apply()를 호출.
+    // 적용하려면 반환된 result.pending.apply() 또는 window.__oprnRegionTaskPending.apply()를 호출.
     runMock: (mapId, region, writes) => runMockRegionTask(mapId, region, writes, "headless mock"),
     // 모달을 통째로 목업 실행에 물린다 — 제안 검토 UI(before/after, 변경 칸 하이라이트,
     // 적용/다시 만들기/버리기)는 실제 LLM 없이 이 경로로만 e2e 검증할 수 있다.
@@ -234,7 +234,7 @@ export function cleanupProjectE2EBridge(): void {
   projectE2EBootstrap = null;
   if (typeof window === "undefined") return;
   const w = window as EditorToolHookWindow;
-  delete w.__rpgzzuProjectE2E;
+  delete w.__oprnProjectE2E;
   delete w[PROJECT_E2E_BOOTSTRAP];
 }
 
@@ -244,7 +244,7 @@ function installProjectE2EBridge(w: EditorToolHookWindow): void {
     cleanupProjectE2EBridge();
     return;
   }
-  if (w.__rpgzzuProjectE2E) return;
+  if (w.__oprnProjectE2E) return;
 
   projectE2EBootstrap = consumeProjectE2EBootstrap(w);
   const methods = {
@@ -275,7 +275,7 @@ function installProjectE2EBridge(w: EditorToolHookWindow): void {
       return frozenAuthorizedResult(result);
     },
   } satisfies ProjectE2EBridge;
-  w.__rpgzzuProjectE2E = Object.freeze(methods);
+  w.__oprnProjectE2E = Object.freeze(methods);
 }
 
 function consumeProjectE2EBootstrap(w: EditorToolHookWindow): ProjectE2EBootstrap | null {

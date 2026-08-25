@@ -182,8 +182,8 @@ async function waitReady(page: Page): Promise<void> {
 
 async function playerSprite(page: Page): Promise<PlayerSpriteDebug> {
   const sprite = await page.evaluate(() => {
-    type HookedWindow = Window & { readonly __rpgzzuPlayerSprite?: () => PlayerSpriteDebug | null };
-    return (window as HookedWindow).__rpgzzuPlayerSprite?.() ?? null;
+    type HookedWindow = Window & { readonly __oprnPlayerSprite?: () => PlayerSpriteDebug | null };
+    return (window as HookedWindow).__oprnPlayerSprite?.() ?? null;
   });
   if (!sprite) throw new Error("missing player sprite debug hook");
   return sprite;
@@ -202,8 +202,8 @@ async function playerDirection(page: Page): Promise<string> {
 async function frequencySample(page: Page, durationMs: number): Promise<FrequencySample> {
   return page.evaluate(async (sampleDurationMs) => {
     type SpriteState = { readonly events?: Record<string, { readonly x?: number; readonly y?: number }> };
-    type HookedWindow = Window & { readonly __rpgzzuCharacterSprites?: () => SpriteState | null };
-    const hook = (window as HookedWindow).__rpgzzuCharacterSprites;
+    type HookedWindow = Window & { readonly __oprnCharacterSprites?: () => SpriteState | null };
+    const hook = (window as HookedWindow).__oprnCharacterSprites;
     if (typeof hook !== "function") throw new Error("missing character sprite hook");
     const samples: Array<{ slow: string; fast: string }> = [];
     const startedAt = performance.now();

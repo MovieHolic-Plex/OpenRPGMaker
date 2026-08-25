@@ -45,15 +45,15 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
   await page.setViewportSize({ width: 1601, height: 769 });
   // Expert density so side AI dock + dense chrome match the reported layout.
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     // AI dock starts collapsed by design — pin it open so the docked layout is measured.
-    localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
+    localStorage.setItem("oprn:ai-panel-collapsed", "0");
   });
   await page.goto("/?freshProject=1&m1MapEditor=1");
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await expect(page.getByTestId("editor-canvas-scroll-shell")).toBeVisible();
-  await expect(page.getByTestId("editor-statusbar")).toBeVisible();
+  await expect(page.getByTestId("editor-statusbar")).toHaveCount(0);
   // Phaser creates the canvas a beat after the container — wait for the real node.
   await expect(page.getByTestId("edit-canvas").locator("canvas")).toBeVisible();
 
@@ -62,23 +62,19 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
     const shell = document.querySelector("[data-testid='editor-canvas-scroll-shell']") as HTMLElement | null;
     const host = document.querySelector("[data-testid='edit-canvas']") as HTMLElement | null;
     const canvas = host?.querySelector("canvas") as HTMLCanvasElement | null;
-    const status = document.querySelector("[data-testid='editor-statusbar']") as HTMLElement | null;
-    if (!area || !shell || !host || !canvas || !status) throw new Error("missing layout nodes");
+    if (!area || !shell || !host || !canvas) throw new Error("missing layout nodes");
     const areaRect = area.getBoundingClientRect();
     const shellRect = shell.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
     const canvasRect = canvas.getBoundingClientRect();
-    const statusRect = status.getBoundingClientRect();
     const hostStyle = getComputedStyle(host);
     return {
       area: { w: areaRect.width, h: areaRect.height },
       shell: { w: shellRect.width, h: shellRect.height, top: shellRect.top - areaRect.top, bottomGap: areaRect.bottom - shellRect.bottom },
       host: { w: hostRect.width, h: hostRect.height, display: hostStyle.display, position: hostStyle.position },
       canvas: { w: canvasRect.width, h: canvasRect.height, attrW: canvas.width, attrH: canvas.height },
-      statusH: statusRect.height,
       fillRatioW: canvasRect.width / shellRect.width,
       fillRatioH: canvasRect.height / shellRect.height,
-      shellOverlapsStatus: shellRect.bottom > statusRect.top + 1,
       bodyClasses: document.body.className,
     };
   });
@@ -86,9 +82,8 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
   // Phaser canvas should nearly fill the scroll shell (not a tiny fixed box).
   expect(metrics.fillRatioW).toBeGreaterThan(0.92);
   expect(metrics.fillRatioH).toBeGreaterThan(0.92);
-  // Scroll shell must not run under the status bar.
-  expect(metrics.shellOverlapsStatus).toBe(false);
-  expect(metrics.shell.bottomGap).toBeGreaterThanOrEqual(metrics.statusH - 2);
+  // With the bottom statusbar retired, the scroll shell reaches the canvas-area edge.
+  expect(metrics.shell.bottomGap).toBeLessThanOrEqual(2);
   expect(metrics.host.display).toBe("block");
 
   await page.screenshot({

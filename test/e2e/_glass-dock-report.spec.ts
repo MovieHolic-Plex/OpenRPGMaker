@@ -22,9 +22,9 @@ async function dismissChrome(page: Page): Promise<void> {
 async function boot(page: Page, mode: "beginner" | "standard"): Promise<void> {
   await page.setViewportSize({ width: 1600, height: 920 });
   await page.addInitScript(({ uiMode }) => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", uiMode);
-    localStorage.removeItem("rpg-zzu:editor-layout:v4");
-    localStorage.removeItem("rpg-zzu:ai-panel-collapsed");
+    localStorage.setItem("oprn:editor-ui-mode", uiMode);
+    localStorage.removeItem("oprn:editor-layout:v4");
+    localStorage.removeItem("oprn:ai-panel-collapsed");
   }, { uiMode: mode });
   await page.goto("/?blankProject=1");
   await dismissChrome(page);

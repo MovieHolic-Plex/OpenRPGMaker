@@ -53,7 +53,7 @@ function readPngAlpha(path) {
 const files = ["monster-slime-01.png", "monster-golem-01.png", "monster-bat-01.png", "monster-dragon-01.png"];
 for (const f of files) {
   try {
-    const r = readPngAlpha("public/assets/generated/rm2k3/" + f);
+    const r = readPngAlpha("public/assets/generated/starter/" + f);
     const visiblePx = r.semi + r.opaque;
     console.log(`${f}: ${r.width}x${r.height} | visible=${visiblePx} | opaque=${r.opaque} (${Math.round(r.opaque / Math.max(1, visiblePx) * 100)}%) | semi=${r.semi} (${Math.round(r.semi / Math.max(1, visiblePx) * 100)}%, avg alpha ${r.avgSemiAlpha}) | transparent=${r.transparent}`);
   } catch (e) {

@@ -34,9 +34,9 @@ describe("system graphics resource application", () => {
     applyBattleSystemGraphic(battleNode as unknown as HTMLElement);
 
     // Field and battle panels both use the real windowskin, not SystemA.png.
-    expect(systemNode.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
-    expect(battleNode.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
-    expect(systemNode.dataset.systemResource).toBe("windowskin-rm2003");
+    expect(systemNode.style["--runtime-window-skin"]).toContain("windowskin-default.png");
+    expect(battleNode.style["--runtime-window-skin"]).toContain("windowskin-default.png");
+    expect(systemNode.dataset.systemResource).toBe("windowskin-default");
     // System2 is gauge chrome only — never border-image fill (that flooded orange panels).
     expect(battleNode.style["--runtime-battle-system2"]).toContain("System2B.png");
     expect(battleNode.dataset.battleSystemResource).toBe("easyrpg-system2-system2-b");
@@ -44,12 +44,12 @@ describe("system graphics resource application", () => {
 
   it("keeps an explicit CSS windowskin resource when authored", () => {
     store.update((draft) => {
-      draft.system.systemResourceId = "windowskin-rm2003";
+      draft.system.systemResourceId = "windowskin-default";
     });
     const node = document.createElement("div") as unknown as FakeElement;
     applySystemGraphic(node as unknown as HTMLElement);
-    expect(node.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
-    expect(node.dataset.systemResource).toBe("windowskin-rm2003");
+    expect(node.style["--runtime-window-skin"]).toContain("windowskin-default.png");
+    expect(node.dataset.systemResource).toBe("windowskin-default");
   });
 
   it("applies title background from resource id", () => {

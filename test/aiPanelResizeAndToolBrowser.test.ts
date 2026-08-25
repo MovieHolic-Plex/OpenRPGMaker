@@ -60,14 +60,14 @@ describe("패널 크기 커스텀", () => {
     savePanelSize({ width: 480, height: 600 });
     expect(loadPanelSize()).toEqual({ width: 480, height: 600 });
     // 손상된 저장값은 무시.
-    storage.set("rpg-zzu:ai-panel-size", "{broken");
+    storage.set("oprn:ai-panel-size", "{broken");
     expect(loadPanelSize()).toBeNull();
   });
 
   it("저장된 크기가 있으면 (떠 있는 모드에서) 패널 인라인 스타일로 적용되고, 리사이즈 핸들이 렌더된다", () => {
     savePanelSize({ width: 500, height: 640 });
     // 커스텀 크기는 떠 있는(비도킹) 모드 전용 — 도킹이 기본값이라 float으로 전환해 확인한다.
-    storage.set("rpg-zzu:ai-panel-docked", "0");
+    storage.set("oprn:ai-panel-docked", "0");
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
     // 부팅 기본 접힘 — 펼친 뒤에야 인라인 크기 적용
     findByTestId(panel, "ai-collapsed-restore")?.click();

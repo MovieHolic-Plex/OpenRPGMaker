@@ -73,7 +73,7 @@ async function openEditor(page: Page): Promise<void> {
     } else {
       // fallback: force open via evaluate if exposed
       await page.evaluate(() => {
-        const anyWin = window as unknown as { __rpgzzuOpenEventEditor?: (mapId: string, eventId: string) => void };
+        const anyWin = window as unknown as { __oprnOpenEventEditor?: (mapId: string, eventId: string) => void };
         // try clicking first event marker canvas double-click area is flaky; use export list
       });
       throw new Error("could not find event list row to open editor");
@@ -118,11 +118,11 @@ async function main(): Promise<void> {
   if (!hasRow) {
     const injected = await page.evaluate((seed) => {
       const w = window as unknown as {
-        __rpgzzuStore?: { replace?: (p: unknown) => void };
+        __oprnStore?: { replace?: (p: unknown) => void };
         __RPG_ZZU_STORE__?: { replace?: (p: unknown) => void };
       };
-      if (w.__rpgzzuStore?.replace) {
-        w.__rpgzzuStore.replace(seed);
+      if (w.__oprnStore?.replace) {
+        w.__oprnStore.replace(seed);
         return "rpgzzuStore";
       }
       // fallback: set e2e seed and reload

@@ -1,6 +1,6 @@
 // test/migration.test.ts
 // v1 → v2 마이그레이션 검증.
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §9.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §9.
 
 import { describe, it, expect } from "vitest";
 import {

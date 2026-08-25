@@ -5,7 +5,7 @@ const path = require("path");
 
 const OUT = path.join(__dirname, "..", "evidence", "playtest-rm2003");
 const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
-const DEV_KEY = "rpg-zzu:dev-project:127.0.0.1/?devProject=1";
+const DEV_KEY = "oprn:dev-project:127.0.0.1/?devProject=1";
 const URL = "http://127.0.0.1:5199/?devProject=1";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -16,13 +16,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const shot = async (n) => { await page.screenshot({ path: path.join(OUT, n + ".png") }); console.log("shot:", n); };
   const key = async (k, t = 1, d = 400) => { for (let i = 0; i < t; i++) { await page.keyboard.press(k); await sleep(d); } };
 
-  const readState = () => page.evaluate(() => window.__rpgzzuDebug?.readState() ?? null);
-  const teleport = (m, x, y) => page.evaluate(([a, b, c]) => window.__rpgzzuDebug?.teleport(a, b, c), [m, x, y]);
-  const action = () => page.evaluate(() => window.__rpgzzuInput?.action());
+  const readState = () => page.evaluate(() => window.__oprnDebug?.readState() ?? null);
+  const teleport = (m, x, y) => page.evaluate(([a, b, c]) => window.__oprnDebug?.teleport(a, b, c), [m, x, y]);
+  const action = () => page.evaluate(() => window.__oprnInput?.action());
   const face = async (dir) => {
-    await page.evaluate((d) => window.__rpgzzuInput?.dir(d), dir);
+    await page.evaluate((d) => window.__oprnInput?.dir(d), dir);
     await sleep(120);
-    await page.evaluate(() => window.__rpgzzuInput?.dir(null));
+    await page.evaluate(() => window.__oprnInput?.dir(null));
     await sleep(250);
   };
   const dialogueOpen = () => page.evaluate(() => !!document.querySelector(".dialogue-overlay"));
@@ -46,15 +46,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     let ev = null;
     for (let i = 0; i < 20 && !ev; i++) {
       ev = await page.evaluate((id) => {
-        const s = window.__rpgzzuCharacterSprites?.();
+        const s = window.__oprnCharacterSprites?.();
         return s?.events?.[id] ?? null;
       }, eventId);
       if (!ev) await sleep(400);
     }
     if (!ev) {
       const dbg = await page.evaluate(() => ({
-        st: window.__rpgzzuDebug?.readState()?.currentMapId ?? null,
-        keys: window.__rpgzzuCharacterSprites ? Object.keys(window.__rpgzzuCharacterSprites()?.events ?? {}) : "no-hook",
+        st: window.__oprnDebug?.readState()?.currentMapId ?? null,
+        keys: window.__oprnCharacterSprites ? Object.keys(window.__oprnCharacterSprites()?.events ?? {}) : "no-hook",
         overlay: !!document.querySelector(".dialogue-overlay"),
       }));
       console.log("NO SPRITE:", eventId, JSON.stringify(dbg).slice(0, 300));
@@ -73,7 +73,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     return false;
   };
 
-  await page.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem('rpg-zzu:save-slot:' + i); } catch (e) {} }, [DEV_KEY, PROJECT_JSON]);
+  await page.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem('oprn:save-slot:' + i); } catch (e) {} }, [DEV_KEY, PROJECT_JSON]);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1200);

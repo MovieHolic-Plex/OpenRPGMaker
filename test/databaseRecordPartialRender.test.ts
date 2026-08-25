@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { addDatabaseRecord } from "@/editor/databaseActions";
-import { refreshDatabasePanel, renderDatabasePanel } from "@/editor/panels/database";
+import {
+  refreshDatabasePanel,
+  renderDatabasePanel,
+  setDatabaseActiveTab,
+} from "@/editor/panels/database";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { createBlankProject } from "@/project/defaults";
@@ -8,6 +12,7 @@ import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 type FakeBrowserGlobals = {
+  readonly Image: typeof globalThis.Image | undefined;
   readonly window: typeof globalThis.window | undefined;
   readonly requestAnimationFrame: typeof globalThis.requestAnimationFrame | undefined;
 };
@@ -18,9 +23,17 @@ let previousBrowserGlobals: FakeBrowserGlobals;
 beforeEach(() => {
   restoreDom = installFakeDom();
   previousBrowserGlobals = {
+    Image: globalThis.Image,
     requestAnimationFrame: globalThis.requestAnimationFrame,
     window: globalThis.window,
   };
+  Object.defineProperty(globalThis, "Image", {
+    configurable: true,
+    value: class {
+      addEventListener(): void {}
+      set src(_value: string) {}
+    },
+  });
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     value: {
@@ -40,6 +53,7 @@ beforeEach(() => {
     },
   });
   store.replace(createBlankProject());
+  setDatabaseActiveTab("terms");
   resetDatabaseRecordViewSession();
   // 스킬 탭은 갤러리 기본값이지만 이 테스트는 리스트 행 부분 렌더 계약을 검증한다 — 명시적으로 list.
   setViewModeForCollection("skills", "list");
@@ -49,10 +63,59 @@ afterEach(() => {
   restoreDom?.();
   restoreDom = undefined;
   restoreBrowserGlobal("window", previousBrowserGlobals.window);
+  restoreBrowserGlobal("Image", previousBrowserGlobals.Image);
   restoreBrowserGlobal("requestAnimationFrame", previousBrowserGlobals.requestAnimationFrame);
 });
 
 describe("Database record tab partial rendering", () => {
+  it("Given the actors collection When the record tab renders Then it uses the studio table and contextual inspector contract", () => {
+    // Break caught: actors still render as the old narrow roster beside a card-heavy form.
+    const host = renderRecordHost("actors");
+
+    expect(findByTestId(host, "db-actor-studio")).not.toBeNull();
+    expect(findByTestId(host, "db-actor-studio")?.textContent).toContain("플레이어 캐릭터");
+    expect(findByTestId(host, "db-actor-studio-summary")).toBeNull();
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("캐릭터");
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("HP");
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("맵 표시");
+    expect(host.querySelector(".db-studio-table-pane")).not.toBeNull();
+    expect(host.querySelector(".db-studio-inspector-pane")).not.toBeNull();
+
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    expect(findByTestId(host, `db-record-row-${actorId}`)).not.toBeNull();
+    expect(findByTestId(host, "db-detail-form")).not.toBeNull();
+    expect(findByTestId(host, "db-record-hero")?.querySelector(".actor-sheet-crop")).not.toBeNull();
+  });
+
+  it("Given an actor opens When the inspector renders Then hierarchy is expressed by direct tabs without guidance copy", () => {
+    // Break caught: a tutorial card and numbered long-form document explain hierarchy instead of embodying it.
+    const host = renderRecordHost("actors");
+
+    expect(findByTestId(host, "db-actor-beginner-guide")).toBeNull();
+    expect(host.querySelector(".actor-task-next")).toBeNull();
+    expect(findByTestId(host, "db-actor-section-tabs")?.textContent).toBe("기본외형성장전투결과");
+    expect(findByTestId(host, "db-actor-tab-identity")?.attrs["aria-selected"]).toBe("true");
+    expect(findByTestId(host, "db-actor-panel-identity")?.hidden).toBe(false);
+    expect(findByTestId(host, "db-actor-panel-appearance")?.hidden).toBe(true);
+    expect(findByTestId(host, "db-record-hero")?.textContent).toContain("시작 파티");
+
+    findByTestId(host, "db-actor-tab-battle")?.click();
+    expect(findByTestId(host, "db-actor-tab-identity")?.attrs["aria-selected"]).toBe("false");
+    expect(findByTestId(host, "db-actor-tab-battle")?.attrs["aria-selected"]).toBe("true");
+    expect(findByTestId(host, "db-actor-panel-identity")?.hidden).toBe(true);
+    expect(findByTestId(host, "db-actor-panel-battle")?.hidden).toBe(false);
+    expect(findByTestId(host, "db-actor-panel-battle")?.textContent).toContain("크리티컬 공격");
+  });
+
+  it("Given the actors gallery preference When the tab renders Then it preserves the existing card gallery", () => {
+    setViewModeForCollection("actors", "gallery");
+    const host = renderRecordHost("actors");
+
+    expect(findByTestId(host, "db-actor-studio")).toBeNull();
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    expect(findByTestId(host, `db-record-card-${actorId}`)).not.toBeNull();
+  });
+
   it("Given a record selection When another record row is clicked Then the list is not rebuilt and only the active row changes", () => {
     const firstId = store.getCurrent().database.skills[0]?.id ?? "";
     const secondId = addDatabaseRecord("skills");
@@ -97,6 +160,22 @@ describe("Database record tab partial rendering", () => {
     expect(findByTestId(host, "db-detail-form")).toBe(detailFormBefore);
   });
 
+  it("Given an actor name edit When the inspector changes Then the studio row updates without rebuilding", () => {
+    setViewModeForCollection("actors", "list");
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    const host = renderRecordHost("actors");
+    const detailFormBefore = findByTestId(host, "db-detail-form");
+    const nameInput = findByTestId(host, "db-field-name");
+
+    nameInput!.value = "새 주인공 이름";
+    nameInput!.dispatchEvent(new Event("input"));
+
+    const row = findByTestId(host, `db-record-row-${actorId}`);
+    expect(row?.querySelector(".db-list-name")?.textContent).toBe("새 주인공 이름");
+    expect(store.getCurrent().database.actors[0]?.name).toBe("새 주인공 이름");
+    expect(findByTestId(host, "db-detail-form")).toBe(detailFormBefore);
+  });
+
   it("Given a scrolled record list When the tab is re-rendered Then the scroll position is restored", () => {
     const firstHost = renderRecordHost("skills");
     const listBefore = firstHost.querySelector(".db-list");
@@ -127,6 +206,38 @@ describe("Database panel partial refresh (undo/redo path)", () => {
     expect(container.querySelector(".db-body")).toBe(bodyBefore);
     expect(container.querySelectorAll(".db-tabs").length).toBe(1);
     expect(bodyBefore?.childNodes.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Database tab render cache", () => {
+  it("Given an unchanged project When a previously visited tab is reopened Then its rendered view is reused", () => {
+    // Break caught: sidebar tab clicks discard a complete tab view and rebuild its list, thumbnails, and form.
+    setDatabaseActiveTab("terms");
+    const container = document.createElement("div") as unknown as FakeElement;
+    renderDatabasePanel(container as unknown as HTMLElement);
+    const termsViewBefore = container.querySelector(".db-body")?.firstChild;
+
+    findByTestId(container, "db-tab-variables")?.click();
+    findByTestId(container, "db-tab-terms")?.click();
+
+    expect(container.querySelector(".db-body")?.firstChild).toBe(termsViewBefore);
+  });
+
+  it("Given a cached tab When project data changes Then reopening the tab renders fresh data", () => {
+    // Break caught: a tab cache survives a project mutation and shows stale record data.
+    setDatabaseActiveTab("terms");
+    const container = document.createElement("div") as unknown as FakeElement;
+    renderDatabasePanel(container as unknown as HTMLElement);
+    const termsViewBefore = container.querySelector(".db-body")?.firstChild;
+
+    findByTestId(container, "db-tab-variables")?.click();
+    store.update((project) => {
+      project.meta.terms.gold = "Cache invalidated gold";
+    }, { scope: "database", collection: "terms" });
+    findByTestId(container, "db-tab-terms")?.click();
+
+    expect(container.querySelector(".db-body")?.firstChild).not.toBe(termsViewBefore);
+    expect(findByTestId(container, "db-field-gold")?.value).toBe("Cache invalidated gold");
   });
 });
 

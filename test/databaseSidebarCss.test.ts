@@ -4,7 +4,7 @@
 // (databaseLightTheme.test.ts 와 동일한 방식). 지켜야 할 불변식:
 //   1. 모든 규칙이 `.database-modal-backdrop` 하위에 스코프 — 전역 :root/셸 침범 금지.
 //   2. `:root` 선택자 금지.
-//   3. 세로 사이드바 폭이 200-220px 요구 범위(구현값 210px).
+//   3. 세로 사이드바 폭이 200-220px 요구 범위(구현값 220px).
 //   4. `.is-docked` 레일 변형 존재 + 레일 폭 ≤56px(구현값 48px).
 //   5. index.css 에서 light-theme.css 다음에 로드 — 팔레트/탭 스트립 규칙을 덮는다.
 import { readFileSync } from "node:fs";
@@ -41,6 +41,7 @@ describe("DB 사이드바 CSS (W2, todo 3)", () => {
     for (const selector of selectors) {
       const trimmed = selector.trim();
       if (trimmed.length === 0) continue;
+      if (trimmed.startsWith("@")) continue;
       expect(
         trimmed,
         `스코프 밖 선택자 발견: "${trimmed}" — 모든 규칙은 .database-modal-backdrop 하위여야 한다.`,
@@ -48,11 +49,11 @@ describe("DB 사이드바 CSS (W2, todo 3)", () => {
     }
   });
 
-  it("세로 사이드바 폭이 180-220px 범위다 (구현값 210px)", () => {
+  it("세로 사이드바 폭이 180-220px 범위다 (구현값 220px)", () => {
     const css = stripCssComments(read("src/styles/database/sidebar.css"));
     const widths = css.match(/width:\s*(\d+)px/g) ?? [];
     // 창 모드 .db-tabs 폭: 200-220px 요구 범위의 구현값.
-    expect(widths, "sidebar.css 에 .db-tabs 폭 선언이 없다").toContain("width: 210px");
+    expect(widths, "sidebar.css 에 .db-tabs 폭 선언이 없다").toContain("width: 220px");
   });
 
   it("도크 레일(.is-docked) 변형이 존재하고 레일 폭이 ≤56px 다 (구현값 48px)", () => {
@@ -61,8 +62,8 @@ describe("DB 사이드바 CSS (W2, todo 3)", () => {
       ".database-modal-backdrop.is-docked",
     );
     expect(css, "도크 레일 폭 선언이 없다").toContain("width: 48px");
-    // 레일에서 라벨 텍스트가 숨겨진다(font-size: 0 — title 속성 툴팁은 유지).
-    expect(css, "도크 레일에서 .db-tab 라벨 숨김이 없다").toMatch(/\.db-tab\s*\{[^}]*font-size:\s*0/);
+    // 레일에서 라벨 색만 숨기고 ::before 아이콘은 유지한다.
+    expect(css, "도크 레일에서 .db-tab 라벨 숨김이 없다").toMatch(/\.db-tab\s*\{[^}]*color:\s*transparent/);
   });
 
   it("index.css 가 sidebar.css 를 light-theme.css 다음에 임포트한다", () => {

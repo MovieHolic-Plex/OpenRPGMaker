@@ -79,7 +79,7 @@ API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환�
 
 ## RM2K3 스타일 도구 세트 (v2 오버홀)
 
-에디터는 RPG메이커 2003의 도구 세트를 현대적 웹 UI로 재구성합니다. 스펙: `docs/specs/2026-06-18-rm2k3-overhaul-design.md`
+에디터는 RPG메이커 2003의 도구 세트를 현대적 웹 UI로 재구성합니다. 스펙: `docs/specs/2026-06-18-oprn-overhaul-design.md`
 
 ### 맵 에디터
 - **3 레이어**: 바닥(lower) / 오브젝트(upper) / 이벤트 — RM2K3 정석 합성

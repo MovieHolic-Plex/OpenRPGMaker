@@ -107,7 +107,7 @@ export function isRegionTaskModalOpen(): boolean {
   return modalRoot !== null;
 }
 
-export const REGION_TASK_MODAL_EVENT = "rpgzzu:region-task-modal";
+export const REGION_TASK_MODAL_EVENT = "oprn:region-task-modal";
 
 /** 열림/닫힘을 알린다 — EditScene 이 선택 칩 오버레이를 숨기거나 되살리는 신호. */
 function dispatchModalOpenState(open: boolean): void {
@@ -1116,7 +1116,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     const ok = await copyTextToClipboard(json);
     if (ok) {
       copyLogButton.textContent = "복사됨";
-      toast("로그 복사 · 활동 DB에도 자동 저장됨 (window.__rpgzzuAiActivityLog)", "ok");
+      toast("로그 복사 · 활동 DB에도 자동 저장됨 (window.__oprnAiActivityLog)", "ok");
       const resetLabel = (): void => {
         if (copyLogButton.isConnected) copyLogButton.textContent = copyLogLabel;
       };

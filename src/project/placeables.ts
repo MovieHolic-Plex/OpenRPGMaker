@@ -1,5 +1,6 @@
 // Opt-in session-backed chests / placeable markers (authoring tools for cozy/farm games).
-import { changeItem, type PlaySession } from "@/project/session";
+import { changeItemsAtomically, type PlaySession } from "@/project/session";
+import { isItemQuantity, isPositiveItemQuantity, resolveItemQuantity } from "@/project/itemQuantities";
 import type { ItemId, MapId } from "@/project/types";
 
 export type ChestState = {
@@ -18,6 +19,11 @@ export type PlaceableObjectState = {
   readonly kind: string;
   readonly itemId?: ItemId;
   readonly seasonalDrops?: Partial<Record<string, string>>;
+  readonly forageSpawn?: {
+    readonly areaId: string;
+    readonly entryId: string;
+    readonly spawnedDayKey: string;
+  };
 };
 
 export function placeableKey(mapId: string, x: number, y: number): string {
@@ -63,11 +69,14 @@ export function depositToChest(
 ): boolean {
   const chest = session.chests?.[chestId];
   if (!chest) return false;
-  const n = Math.max(0, Math.trunc(count));
-  if (n <= 0) return false;
-  if ((session.inventory[itemId] ?? 0) < n) return false;
-  changeItem(session, itemId, "-=", n);
-  chest.inventory[itemId] = (chest.inventory[itemId] ?? 0) + n;
+  if (!isPositiveItemQuantity(count)) return false;
+  const playerCount = session.inventory[itemId] ?? 0;
+  const chestCount = chest.inventory[itemId] ?? 0;
+  if (!isItemQuantity(playerCount) || playerCount < count) return false;
+  const nextChestCount = resolveItemQuantity(chestCount, "+=", count);
+  if (nextChestCount === undefined) return false;
+  if (!changeItemsAtomically(session, [{ itemId, op: "-=", amount: count }])) return false;
+  setContainerCount(chest.inventory, itemId, nextChestCount);
   return true;
 }
 
@@ -79,14 +88,20 @@ export function withdrawFromChest(
 ): boolean {
   const chest = session.chests?.[chestId];
   if (!chest) return false;
-  const n = Math.max(0, Math.trunc(count));
-  if (n <= 0) return false;
-  if ((chest.inventory[itemId] ?? 0) < n) return false;
-  const next = (chest.inventory[itemId] ?? 0) - n;
-  if (next <= 0) delete chest.inventory[itemId];
-  else chest.inventory[itemId] = next;
-  changeItem(session, itemId, "+=", n);
+  if (!isPositiveItemQuantity(count)) return false;
+  const chestCount = chest.inventory[itemId] ?? 0;
+  if (!isItemQuantity(chestCount) || chestCount < count) return false;
+  const nextChestCount = resolveItemQuantity(chestCount, "-=", count);
+  const nextPlayerCount = resolveItemQuantity(session.inventory[itemId] ?? 0, "+=", count);
+  if (nextChestCount === undefined || nextPlayerCount === undefined) return false;
+  if (!changeItemsAtomically(session, [{ itemId, op: "+=", amount: count }])) return false;
+  setContainerCount(chest.inventory, itemId, nextChestCount);
   return true;
+}
+
+function setContainerCount(inventory: Record<string, number>, itemId: string, count: number): void {
+  if (count > 0) inventory[itemId] = count;
+  else delete inventory[itemId];
 }
 
 export function placeObject(

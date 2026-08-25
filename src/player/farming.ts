@@ -1,4 +1,7 @@
 ﻿import { heldToolItemId, resolveToolUseOnTile } from "@/project/toolActions";
+import { spendEnergy } from "@/project/energy";
+import { awardLifeSkillXp } from "@/project/lifeSkillProgress";
+import { resolveToolCapability } from "@/project/upgrades";
 import {
   daysPerSeasonOf,
   SEASONS,
@@ -32,7 +35,11 @@ export type FarmIgnoreReason =
   | "plot-needs-clearing"
   | "plot-needs-tilling"
   | "wrong-tool-for-plot"
-  | "nothing-to-harvest";
+  | "out-of-season"
+  | "nothing-to-harvest"
+  | "inventory-full"
+  | "insufficient-energy"
+  | "invalid-life-skill";
 
 /**
  * 320x240 논리 화면에 한 줄로 들어가야 하므로 문구는 짧게 유지한다.
@@ -53,7 +60,13 @@ const FARM_IGNORE_MESSAGES: Readonly<Record<FarmIgnoreReason, string | null>> = 
   "missing-axe": "도끼가 필요합니다",
   "missing-pickaxe": "곡괭이가 필요합니다",
   "wrong-tool-for-plot": "지금 든 도구로는 할 수 없습니다",
+  // 계절은 농사 게임의 가장 큰 규칙이다. 이걸 도구 탓으로 돌리면 플레이어는 씨앗을 바꿔 보거나
+  // 밭을 다시 갈아 보며 헤맨다 — 손에 든 것도 밭도 옳았기 때문이다.
+  "out-of-season": "이 씨앗은 지금 철이 아닙니다",
   "nothing-to-harvest": "수확할 것이 없습니다",
+  "inventory-full": "가방이 가득 찼습니다",
+  "insufficient-energy": "기력이 부족합니다",
+  "invalid-life-skill": "생활 기술 기록을 확인할 수 없습니다",
 });
 
 /** ignored 결과를 플레이어에게 보여줄 한국어 문구. 표시할 필요가 없는 사유는 null. */
@@ -88,6 +101,14 @@ export type FarmInteractionResult = {
   readonly itemId?: string;
   readonly count?: number;
   readonly reason?: string;
+  readonly source?: "crop" | "rock" | "tree";
+  readonly energySpent?: number;
+  readonly xpAwarded?: Readonly<Partial<Record<"farming" | "mining" | "foraging", number>>>;
+  readonly affectedTiles?: readonly {
+    readonly x: number;
+    readonly y: number;
+    readonly kind: Exclude<FarmInteractionKind, "ignored">;
+  }[];
 };
 
 export function farmPlotKey(x: number, y: number): string {
@@ -108,6 +129,50 @@ export function isTileFarmable(map: GameMap, x: number, y: number): boolean {
 }
 
 export function interactWithFarmPlot(
+  project: Project,
+  session: PlaySession,
+  map: GameMap,
+  x: number,
+  y: number,
+  intent?: FarmIntent
+): FarmInteractionResult {
+  const tileX = Math.trunc(x);
+  const tileY = Math.trunc(y);
+  const heldItemId = heldToolItemId(session);
+  const heldItem = heldItemId ? project.database.items.find((item) => item.id === heldItemId) : undefined;
+  const capability = heldItem?.farmTool
+    ? resolveToolCapability(project, heldItemId)
+    : { areaWidth: 1, areaHeight: 1, energyMultiplier: 1 };
+  const draft = structuredClone(session);
+  const results = capabilityTiles(map, tileX, tileY, capability.areaWidth, capability.areaHeight)
+    .map(({ x: targetX, y: targetY }) => interactWithFarmPlotSingle(project, draft, map, targetX, targetY, intent));
+  const successful = results.filter(
+    (result): result is FarmInteractionResult & { kind: Exclude<FarmInteractionKind, "ignored"> } => result.kind !== "ignored",
+  );
+  if (successful.length === 0) {
+    return results.find((result) => result.x === tileX && result.y === tileY) ?? ignored(tileX, tileY, "not-farmable");
+  }
+
+  let energySpent = 0;
+  if (project.system.energy) {
+    energySpent = Math.max(1, Math.ceil(successful.length * capability.energyMultiplier));
+    const energy = spendEnergy(project, draft, energySpent);
+    if (!energy.ok) return ignored(tileX, tileY, "insufficient-energy");
+  }
+
+  const xpAwarded = awardInteractionXp(project, draft, successful);
+  if (!xpAwarded) return ignored(tileX, tileY, "invalid-life-skill");
+  Object.assign(session, draft);
+  const primary = results.find((result) => result.x === tileX && result.y === tileY && result.kind !== "ignored") ?? successful[0]!;
+  return {
+    ...primary,
+    energySpent,
+    xpAwarded,
+    affectedTiles: successful.map((result) => ({ x: result.x, y: result.y, kind: result.kind })),
+  };
+}
+
+function interactWithFarmPlotSingle(
   project: Project,
   session: PlaySession,
   map: GameMap,
@@ -144,6 +209,47 @@ export function interactWithFarmPlot(
   return ignored(tileX, tileY, "already-watered");
 }
 
+function capabilityTiles(
+  map: GameMap,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): readonly { readonly x: number; readonly y: number }[] {
+  const startX = Math.max(0, x - Math.floor(width / 2));
+  const startY = Math.max(0, y - Math.floor(height / 2));
+  const endX = Math.min(map.width, x - Math.floor(width / 2) + width);
+  const endY = Math.min(map.height, y - Math.floor(height / 2) + height);
+  const tiles: { x: number; y: number }[] = [];
+  for (let targetY = startY; targetY < endY; targetY += 1) {
+    for (let targetX = startX; targetX < endX; targetX += 1) tiles.push({ x: targetX, y: targetY });
+  }
+  return tiles;
+}
+
+function awardInteractionXp(
+  project: Project,
+  session: PlaySession,
+  results: readonly FarmInteractionResult[],
+): Readonly<Partial<Record<"farming" | "mining" | "foraging", number>>> | undefined {
+  const amounts = {
+    farming: results.filter((result) => result.source === "crop").length * 10,
+    mining: results.filter((result) => result.source === "rock").length * 10,
+    foraging: results.filter((result) => result.source === "tree").length * 10,
+  } as const;
+  const awarded: Partial<Record<"farming" | "mining" | "foraging", number>> = {};
+  for (const skillType of ["farming", "mining", "foraging"] as const) {
+    const amount = amounts[skillType];
+    if (amount === 0) continue;
+    const skill = project.database.lifeSkills?.find((entry) => entry.skillType === skillType);
+    if (!skill) continue;
+    const result = awardLifeSkillXp(project, session, skill.id, amount);
+    if (!result.ok) return undefined;
+    awarded[skillType] = amount;
+  }
+  return awarded;
+}
+
 /** 손에 든 아이템이 정한 단일 행동만 시도한다. 실패는 반드시 사유가 있는 ignored 로 돌려준다. */
 function interactWithIntent(
   project: Project,
@@ -177,7 +283,7 @@ function interactWithIntent(
       if (!existing?.tilled) return ignored(tileX, tileY, "plot-needs-tilling");
       if (existing.cropId) return ignored(tileX, tileY, "wrong-tool-for-plot");
       const crop = handSeedCrop(project, session);
-      if (crop === "out-of-season") return ignored(tileX, tileY, "wrong-tool-for-plot");
+      if (crop === "out-of-season") return ignored(tileX, tileY, "out-of-season");
       if (!crop) return ignored(tileX, tileY, "missing-seed");
       return plantPlot(session, plots, key, tileX, tileY, crop);
     }
@@ -216,9 +322,9 @@ function tryHarvestPlot(
   const crop = cropById(project, existing.cropId);
   if (!crop || existing.dead || !isCropReady(crop, existing)) return undefined;
   const count = Math.max(1, Math.trunc(crop.harvestCount || 1));
-  changeItem(session, crop.harvestItemId, "+=", count);
+  if (!changeItem(session, crop.harvestItemId, "+=", count)) return ignored(tileX, tileY, "inventory-full");
   plots[key] = harvestNextPlotState(crop, existing);
-  return { kind: "harvested", x: tileX, y: tileY, cropId: crop.id, itemId: crop.harvestItemId, count };
+  return { kind: "harvested", x: tileX, y: tileY, cropId: crop.id, itemId: crop.harvestItemId, count, source: "crop" };
 }
 
 function tillPlot(
@@ -244,7 +350,7 @@ function plantPlot(
   tileY: number,
   crop: CropRecord
 ): FarmInteractionResult {
-  changeItem(session, crop.seedItemId, "-=", 1);
+  if (!changeItem(session, crop.seedItemId, "-=", 1)) return ignored(tileX, tileY, "missing-seed");
   plots[key] = {
     tilled: true,
     watered: false,
@@ -280,6 +386,7 @@ function tryPlaceableToolHarvest(
   tileX: number,
   tileY: number
 ): FarmInteractionResult | undefined {
+  if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) return undefined;
   const key = placeableKey(map.id, tileX, tileY);
   const placeable = session.placeables?.[key];
   if (!placeable) return undefined;
@@ -290,9 +397,9 @@ function tryPlaceableToolHarvest(
   if (!use) return ignored(tileX, tileY, preferred === "chop" ? "missing-axe" : "missing-pickaxe");
   // 계절별 채집물(seasonalDrops)이 저작돼 있으면 현재 계절의 산출을 우선한다.
   const dropId = placeableDropItemId(placeable, currentSeason(session));
+  if (dropId && !changeItem(session, dropId, "+=", 1)) return ignored(tileX, tileY, "inventory-full");
   const removed = removeObjectAt(session, map.id, tileX, tileY);
   if (!removed) return ignored(tileX, tileY, "missing-placeable");
-  if (dropId) changeItem(session, dropId, "+=", 1);
   return {
     kind: "harvested",
     x: tileX,
@@ -300,6 +407,7 @@ function tryPlaceableToolHarvest(
     itemId: dropId,
     count: dropId ? 1 : 0,
     reason: use.ruleId,
+    source: placeable.kind === "tree" ? "tree" : "rock",
   };
 }
 

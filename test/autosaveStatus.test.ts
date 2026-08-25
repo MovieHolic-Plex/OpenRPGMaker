@@ -47,7 +47,7 @@ describe("autosave status", () => {
     expect(fetchControl.calls.length).toBeGreaterThan(0);
   }, 15_000);
 
-  it("retries one time 30 seconds after an autosave error without another update", async () => {
+  it("retries with exponential backoff after an autosave error without another update", async () => {
     vi.useFakeTimers();
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     const fetchSpy = vi.fn<typeof fetch>(async () => {
@@ -63,23 +63,34 @@ describe("autosave status", () => {
     });
     vi.advanceTimersByTime(4000);
     await vi.waitFor(() => {
-      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down" });
+      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down", retryCount: 1 });
     });
 
     expect(projectSaveCalls(fetchSpy)).toHaveLength(1);
 
-    vi.advanceTimersByTime(30000);
+    vi.advanceTimersByTime(19_999);
+    expect(projectSaveCalls(fetchSpy)).toHaveLength(1);
+    vi.advanceTimersByTime(1);
     await vi.waitFor(() => {
       expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
     });
 
-    expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down" });
-    vi.advanceTimersByTime(30000);
+    await vi.waitFor(() => {
+      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down", retryCount: 2 });
+    });
+    vi.advanceTimersByTime(39_999);
     expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
-    expect(states.map((state) => state.kind)).toEqual(["pending", "saving", "error", "saving", "error"]);
+    vi.advanceTimersByTime(1);
+    await vi.waitFor(() => {
+      expect(projectSaveCalls(fetchSpy)).toHaveLength(3);
+      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down", retryCount: 3 });
+    });
+    expect(states.map((state) => state.kind)).toEqual([
+      "pending", "saving", "error", "saving", "error", "saving", "error",
+    ]);
   });
 
-  it("rerenders only the editor statusbar when autosave state changes outside a project update", async () => {
+  it("keeps autosave state out of the map-focused editor statusbar", async () => {
     const restoreDom = installFakeDom();
     const windowListeners = installBrowserGlobals();
     const fetchControl = installControlledFetch();
@@ -96,13 +107,13 @@ describe("autosave status", () => {
     const flushPromise = store.flush();
     await Promise.resolve();
 
-    expect(statusText(main)).toContain("저장 중");
+    expect(findByTestId(fakeElement(main), "db-autosave-state")).toBeNull();
     expect(renderTilePalette).not.toHaveBeenCalled();
 
     fetchControl.resolveFirst(new Response(null, { status: 201 }));
     await flushPromise;
 
-    expect(statusText(main)).toContain("저장됨");
+    expect(findByTestId(fakeElement(main), "db-autosave-state")).toBeNull();
     expect(renderTilePalette).not.toHaveBeenCalled();
     windowListeners.clear();
     restoreDom();
@@ -143,7 +154,9 @@ function installControlledFetch(): FetchControl {
 }
 
 function projectSaveCalls(fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>): unknown[] {
-  return fetchSpy.mock.calls.filter(([input]) => String(input).includes("/rest/v1/projects?"));
+  return fetchSpy.mock.calls.filter(([input, init]) =>
+    String(input).includes("/rest/v1/projects?") && init?.method === "POST"
+  );
 }
 
 function installBrowserGlobals(): ListenerMap {
@@ -207,12 +220,6 @@ function mockEditorDependencies(renderTilePalette: (node: HTMLElement) => void):
     openTestPlayModal: vi.fn(),
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({ renderTilePalette }));
-}
-
-function statusText(root: HTMLElement): string {
-  const state = findByTestId(fakeElement(root), "db-autosave-state");
-  if (!state) throw new Error("db-autosave-state missing");
-  return state.textContent;
 }
 
 function fakeElement(node: HTMLElement): FakeElement {

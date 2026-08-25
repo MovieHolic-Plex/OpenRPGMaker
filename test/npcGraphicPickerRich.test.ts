@@ -1,6 +1,6 @@
 // 리뷰 결함 [높음-4] 회귀: 그래픽 선택 다이얼로그 이미지 리치화.
 // (a) 좌측 리소스 리스트 행에 대표 스프라이트(캐릭터 0, 아래, 패턴 1) 24x32 썸네일 크롭이 적용되고
-// (b) 원시 리소스 ID 입력은 "고급: 직접 ID" details 뒤에 기본 접힘으로 숨으며
+// (b) 원시 리소스 이름은 고급 접힘 뒤에 기본으로 숨으며
 // (c) 걷기 애니메이션 프리뷰(npc-walk-preview)가 존재하고 방향/캐릭터 변경 시 갱신된다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
@@ -74,29 +74,23 @@ describe("NPC 그래픽 선택 다이얼로그 — 이미지 리치화", () => {
     });
   });
 
-  it("타일셋 자리표시 행은 기존 줄무늬 아이콘(썸네일 없음)을 유지한다", () => {
+  it("타일셋 자리표시 행을 더 이상 보여 주지 않는다", () => {
     const list = renderGraphicResourceList(EASYRPG_CHARSET_ASSETS, () => {});
     const root = list.root as unknown as FakeElement;
     const disabledRows = root
       .querySelectorAll(".disabled")
       .filter((row) => row.classList.contains("event-graphic-resource-row"));
-    expect(disabledRows.length).toBe(3);
-    for (const row of disabledRows) {
-      const icon = row.querySelector(".event-graphic-resource-icon");
-      expect(icon).not.toBeNull();
-      expect(icon?.classList.contains("charset-thumb")).toBe(false);
-      expect(icon?.dataset.transparentColorKeyPath).toBeUndefined();
-    }
+    expect(disabledRows.length).toBe(0);
   });
 
-  it("직접 ID 입력은 '고급: 직접 ID' details 안에 기본 접힘으로 들어간다", () => {
+  it("직접 이름 입력은 고급 접힘 안에 기본으로 들어간다", () => {
     const root = renderPicker();
     const details = root.querySelector(".npc-advanced-sprite");
     expect(details).not.toBeNull();
     expect(details?.tagName).toBe("DETAILS");
     expect((details as FakeElement & { open?: boolean }).open ?? false).toBe(false);
     const summary = details?.querySelector("summary");
-    expect(summary?.textContent).toBe("고급: 직접 ID");
+    expect(summary?.textContent).toBe("고급 · 파일 이름 직접 넣기");
     // testid 는 불변이어야 하고, 입력이 details 내부로 이동해야 한다.
     const input = findByTestId(details as FakeElement, "event-graphic-direct-sprite-input");
     expect(input).not.toBeNull();

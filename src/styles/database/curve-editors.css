@@ -1,236 +1,215 @@
-/* curve-editors.css — 곡선 에디터(직업/주인공 능력치·경험치) 전용 스타일.
- *
- * (1) qa-actors Critical (A): actors.css 의 @media(min-width:901px) 블록이
- *     .actor-center-stack / .actor-inspector-tabs 를 display:none 으로 숨기는데,
- *     이를 대체할 인스펙터 탭 토글이 미구현이라 능력치/경험치 곡선 패널이 데스크톱
- *     폭에서 아예 접근 불가였다. 여기서 곡선 컬럼을 기본 레이아웃(2행 그리드)으로 복원.
- * (2) qa-actors Critical (B): 곡선 다이얼로그 스타일 전체가 07-utility-tabs.css 의
- *     @media(min-width:901px) 안에 갇혀 있어 901px 미만에서는 다이얼로그가 언스타일드로
- *     렌더링됐다. 다이얼로그는 화면 폭과 무관한 오버레이이므로 미디어 쿼리 없이 제공한다.
- * 이 파일은 actorRecordCurveEditors.ts 에서 import 되어 index.css 이후에 로드된다
- * (배치 A 소유 파일과 물리적으로 분리 — 충돌 방지). */
+/* curve-editors.css — studio tokens only, scoped to .database-modal-backdrop */
 
-/* ── (1) 데스크톱에서 곡선 컬럼 복원 ───────────────────────────────── */
-@media (min-width: 901px) {
-  .rm2k3-record-actors .actor-editor-grid {
-    grid-template-areas:
-      "basic inspector"
-      "curves inspector";
-    grid-template-rows: minmax(0, 1fr) minmax(220px, auto);
-  }
-
-  .rm2k3-record-actors .actor-center-stack {
-    align-content: start;
-    display: grid;
-    gap: 10px;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-    max-height: 100%;
-    min-height: 0;
-    overflow: auto;
-  }
-
-  .rm2k3-record-actors .actor-center-stack > .actor-panel {
-    min-height: 0;
-    min-width: 0;
-  }
-
-  /* 좁은 곡선 컬럼에서 요약 텍스트가 세로 한 글자씩 꺾이지 않게 세로 스택으로. */
-  .rm2k3-record-actors .actor-center-stack .actor-exp-row {
-    align-items: start;
-    display: grid;
-    gap: 6px;
-    justify-items: start;
-  }
-}
-
-/* ── (2) 곡선 다이얼로그 — 모든 화면 폭 공통 스타일 ─────────────────── */
-.db-class-dialog-backdrop {
-  background: rgba(60, 48, 32, 0.10);
+.database-modal-backdrop .db-class-dialog-backdrop {
+  background: rgba(15, 23, 42, 0.32);
   padding: 18px;
+  display: grid;
+  place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
 }
 
-.db-class-dialog {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  box-shadow: 0 22px 60px rgba(60, 48, 32, 0.14);
-  color: var(--text-1);
+.database-modal-backdrop .db-class-dialog {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  box-shadow: var(--db-studio-shadow-pop);
+  color: var(--db-studio-text-1);
   display: grid;
-  font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font-family: "Malgun Gothic", system-ui, sans-serif;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   max-height: calc(100vh - 48px);
   overflow: hidden;
-  width: min(1080px, calc(100vw - 48px));
+  width: min(880px, calc(100vw - 32px));
 }
 
-/* 경험치 다이얼로그는 탭 행이 없을 수 있어 행 수를 내용 기반으로 둔다. */
-.db-class-dialog.db-class-exp-dialog {
+.database-modal-backdrop .db-class-dialog.db-class-exp-dialog {
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
 }
 
-.db-class-dialog header,
-.db-class-dialog footer {
-  background: var(--bg-raised);
-  border-color: var(--border-subtle);
-  color: var(--text-1);
+.database-modal-backdrop .db-class-dialog header,
+.database-modal-backdrop .db-class-dialog footer {
+  background: var(--db-studio-surface);
+  border-color: var(--db-studio-border-subtle);
+  color: var(--db-studio-text-1);
   min-height: 48px;
   padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.db-class-dialog header {
-  border-bottom: 1px solid var(--border-subtle);
+.database-modal-backdrop .db-class-dialog header {
+  border-bottom: 1px solid var(--db-studio-border-subtle);
 }
 
-.db-class-dialog footer {
-  border-top: 1px solid var(--border-subtle);
+.database-modal-backdrop .db-class-dialog footer {
+  border-top: 1px solid var(--db-studio-border-subtle);
   justify-content: flex-end;
 }
 
-.db-class-dialog header strong {
-  font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .db-class-dialog header strong {
+  font: 600 14px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  color: var(--db-studio-text-1);
 }
 
-.db-class-dialog header button,
-.db-class-dialog footer button,
-.db-class-dialog .btn {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  color: var(--text-1);
-  font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .db-class-dialog header button,
+.database-modal-backdrop .db-class-dialog footer button,
+.database-modal-backdrop .db-class-dialog .btn {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  font: 600 12px/1 "Malgun Gothic", system-ui, sans-serif;
   min-height: 32px;
-  min-width: 76px;
+  min-width: 72px;
   padding: 6px 12px;
+  cursor: pointer;
 }
 
-.db-class-dialog footer button:first-child {
-  background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
-  border-color: var(--accent-border);
-  color: var(--text-1);
+.database-modal-backdrop .db-class-dialog footer button:first-child {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: #fff;
 }
 
-.db-class-curve-tabs,
-.db-class-exp-dialog-tabs {
-  background: var(--bg-raised);
-  border-bottom: 1px solid var(--border-subtle);
+.database-modal-backdrop .db-class-dialog footer button:first-child:hover {
+  background: var(--db-studio-accent-hover);
+  border-color: var(--db-studio-accent-hover);
+}
+
+.database-modal-backdrop .db-class-curve-tabs,
+.database-modal-backdrop .db-class-exp-dialog-tabs {
+  background: var(--db-studio-surface);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
   display: flex;
   gap: 4px;
   overflow-x: auto;
   padding: 8px 14px 0;
 }
 
-.db-class-curve-tabs button,
-.db-class-exp-dialog-tabs button {
-  background: var(--bg-raised);
+.database-modal-backdrop .db-class-curve-tabs button,
+.database-modal-backdrop .db-class-exp-dialog-tabs button {
+  background: transparent;
   border: 0;
-  border-bottom: 3px solid transparent;
-  color: var(--text-1);
+  border-bottom: 2px solid transparent;
+  color: var(--db-studio-text-2);
   flex: 0 0 auto;
-  font: 600 13px/32px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 13px/32px "Malgun Gothic", system-ui, sans-serif;
   min-height: 36px;
   padding: 0 10px;
+  cursor: pointer;
 }
 
-.db-class-curve-tabs button.active,
-.db-class-exp-dialog-tabs button.active {
-  border-bottom-color: var(--accent-border);
-  color: var(--accent);
+.database-modal-backdrop .db-class-curve-tabs button.active,
+.database-modal-backdrop .db-class-exp-dialog-tabs button.active {
+  border-bottom-color: var(--db-studio-accent);
+  color: var(--db-studio-text-1);
 }
 
-.db-class-dialog-body {
+.database-modal-backdrop .db-class-dialog-body {
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(0, 1fr) 270px;
+  grid-template-columns: minmax(0, 1fr) 240px;
   min-height: 0;
   overflow: auto;
   padding: 14px;
 }
 
-/* 좁은 폭에서는 그래프/사이드를 세로로 쌓는다. */
 @media (max-width: 720px) {
-  .db-class-dialog-body {
+  .database-modal-backdrop .db-class-dialog-body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.db-class-curve-dialog-graph {
+.database-modal-backdrop .db-class-curve-dialog-graph {
   align-items: end;
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
   display: flex;
   gap: 1px;
-  height: 320px;
+  height: 280px;
   min-width: 0;
   overflow: hidden;
   padding: 16px 12px 12px;
 }
 
-.db-class-curve-dialog-graph button {
-  background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+.database-modal-backdrop .db-class-curve-dialog-graph button {
+  background: var(--db-studio-accent);
   border: 0;
   border-radius: 3px 3px 0 0;
   flex: 1 1 0;
-  min-height: 6px;
+  min-height: 4px;
   min-width: 2px;
   padding: 0;
+  cursor: pointer;
 }
 
-.db-class-curve-dialog-graph button.active {
-  background: linear-gradient(180deg, var(--bg-inset) 0%, var(--bg-inset) 100%);
-  box-shadow: 0 0 0 2px var(--accent-muted);
+.database-modal-backdrop .db-class-curve-dialog-graph button.active {
+  background: var(--db-studio-text-1);
+  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
 }
 
-.db-class-dialog-side {
+.database-modal-backdrop .db-class-dialog-side {
   align-content: start;
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
   display: grid;
   gap: 10px;
   min-width: 0;
   padding: 12px;
 }
 
-.db-class-dialog-number {
-  color: var(--text-1);
+.database-modal-backdrop .db-class-dialog-number {
+  color: var(--db-studio-text-2);
   display: grid;
-  font: 600 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
   gap: 5px;
 }
 
-.db-class-dialog-number input {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  color: var(--text-1);
-  font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .db-class-dialog-number input {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.2 "Malgun Gothic", system-ui, sans-serif;
   min-height: 32px;
   padding: 4px 8px;
   width: 100%;
 }
 
-.db-class-dialog-side .db-advanced-panel {
+.database-modal-backdrop .db-class-dialog-number input:focus {
+  outline: none;
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
+}
+
+.database-modal-backdrop .db-class-dialog-side .db-advanced-panel {
   border: 0;
+  border-top: 1px solid var(--db-studio-border-subtle);
   display: grid;
-  gap: 7px;
+  gap: 6px;
   margin: 4px 0 0;
-  padding: 0;
+  padding: 10px 0 0;
 }
 
-.db-class-dialog-side .db-advanced-panel legend {
-  color: var(--text-1);
-  font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  margin: 0 0 2px;
+.database-modal-backdrop .db-class-dialog-side .db-advanced-panel legend {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
 }
 
-.db-class-dialog-side .db-advanced-panel .btn {
+.database-modal-backdrop .db-class-dialog-side .db-advanced-panel .btn {
   width: 100%;
 }
 
-/* ── 경험치 다이얼로그 표/그래프 — 기존에는 어느 폭에서도 스타일이 없어
- *    "L1:0L2:678…" 텍스트 뭉치로 노출됐다(qa-actors Critical B). ───────── */
-.db-class-exp-dialog-body {
+.database-modal-backdrop .db-class-exp-dialog-body {
   display: grid;
   gap: 14px;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -240,43 +219,44 @@
 }
 
 @media (max-width: 720px) {
-  .db-class-exp-dialog-body {
+  .database-modal-backdrop .db-class-exp-dialog-body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.db-class-exp-table {
+.database-modal-backdrop .db-class-exp-table {
   align-content: start;
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
   display: grid;
-  font: 500 12px/20px "Malgun Gothic", "Segoe UI", system-ui, monospace;
+  font: 500 11px/18px ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
-  gap: 0 12px;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-  max-height: 320px;
+  gap: 0 10px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  max-height: 280px;
   min-width: 0;
   overflow-y: auto;
   padding: 10px 12px;
   white-space: pre;
+  color: var(--db-studio-text-2);
 }
 
-.db-class-exp-dialog-graph {
+.database-modal-backdrop .db-class-exp-dialog-graph {
   align-items: end;
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
   display: flex;
   gap: 1px;
-  height: 320px;
+  height: 280px;
   min-width: 0;
   overflow: hidden;
   padding: 16px 12px 12px;
 }
 
-.db-class-exp-dialog-graph i {
-  background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+.database-modal-backdrop .db-class-exp-dialog-graph i {
+  background: var(--db-studio-accent);
   border-radius: 2px 2px 0 0;
   display: block;
   flex: 1 1 0;
@@ -284,7 +264,7 @@
   min-width: 1px;
 }
 
-.db-class-exp-controls {
+.database-modal-backdrop .db-class-exp-controls {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));

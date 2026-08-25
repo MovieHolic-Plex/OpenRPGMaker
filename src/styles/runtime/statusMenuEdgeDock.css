@@ -1,0 +1,733 @@
+/*
+ * Contemporary in-world ESC menu.
+ *
+ * The status-menu base/main modules still own content layouts and every runtime
+ * submenu contract. This final cascade layer replaces only the old full-screen
+ * RPG window presentation with an edge dock, party glance, and progressive tray.
+ */
+.oprn-status-menu.main-menu {
+  --status-edge-amber: #f3bd69;
+  --status-edge-amber-soft: rgba(243, 189, 105, 0.18);
+  --status-edge-border: rgba(247, 229, 198, 0.22);
+  --status-edge-glass: rgba(15, 18, 20, 0.9);
+  --status-edge-glass-soft: rgba(15, 18, 20, 0.76);
+  --status-edge-ivory: #f7efe2;
+  --status-edge-muted: #bfb5a6;
+  --status-edge-teal: #54c9c0;
+  background: transparent;
+  border: 0;
+  border-image: none;
+  box-shadow: none;
+  color: var(--status-edge-ivory);
+  display: block;
+  font: 600 7px/1.25 var(--font-ui);
+  isolation: isolate;
+  overflow: hidden;
+  padding: 0;
+}
+
+.oprn-status-menu.main-menu::before,
+.oprn-status-menu.main-menu::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.oprn-status-menu.main-menu::before {
+  background:
+    radial-gradient(circle at 50% 46%, transparent 0 36%, rgba(5, 8, 10, 0.08) 64%, rgba(5, 8, 10, 0.5) 100%),
+    linear-gradient(180deg, rgba(5, 8, 10, 0.3), transparent 30%, transparent 57%, rgba(5, 8, 10, 0.5));
+  z-index: -2;
+}
+
+.oprn-status-menu.main-menu::after {
+  backdrop-filter: saturate(0.84) brightness(0.9);
+  background: rgba(6, 9, 10, 0.08);
+  z-index: -1;
+}
+
+.oprn-status-menu .status-menu-sidebar {
+  display: block;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+}
+
+.oprn-status-menu .status-menu-primary-dock {
+  align-items: stretch;
+  backdrop-filter: blur(7px) saturate(1.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 42%),
+    var(--status-edge-glass);
+  border: 1px solid var(--status-edge-border);
+  border-image: none;
+  border-radius: 11px;
+  bottom: 16px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  height: 46px;
+  left: 8px;
+  min-height: 0;
+  overflow: visible;
+  pointer-events: auto;
+  position: absolute;
+  right: 8px;
+}
+
+.oprn-status-menu .status-menu-command-group-label,
+.oprn-status-menu .status-menu-command-legacy-suffix {
+  display: none;
+}
+
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command {
+  align-self: stretch;
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid rgba(247, 229, 198, 0.09);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--status-edge-muted);
+  cursor: pointer;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  font: 600 7px/1 var(--font-ui);
+  gap: 4px;
+  height: auto;
+  justify-content: center;
+  min-height: 0;
+  overflow: visible;
+  padding: 4px 2px 3px;
+  position: relative;
+  text-shadow: none;
+}
+
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command:first-of-type {
+  border-left: 0;
+  border-radius: 10px 0 0 10px;
+}
+
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.oprn-status-menu .status-menu-command-icon {
+  align-items: center;
+  color: currentColor;
+  display: flex;
+  font: 700 14px/1 var(--font-ui);
+  height: 16px;
+  justify-content: center;
+  letter-spacing: -0.18em;
+  min-width: 17px;
+}
+
+.oprn-status-menu .status-menu-command-icon::before {
+  content: attr(data-icon);
+}
+
+.oprn-status-menu .status-menu-command-label {
+  display: block;
+  letter-spacing: -0.02em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command.selected {
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255, 228, 177, 0.22), transparent 44%),
+    linear-gradient(180deg, rgba(243, 189, 105, 0.2), rgba(243, 189, 105, 0.08));
+  border: 1px solid rgba(243, 189, 105, 0.72);
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px rgba(243, 189, 105, 0.1),
+    0 5px 16px rgba(0, 0, 0, 0.34),
+    0 0 12px rgba(243, 189, 105, 0.17);
+  color: #ffe7bd;
+  margin: -3px 0;
+  min-height: 52px;
+  z-index: 2;
+}
+
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command.selected::after {
+  background: var(--status-edge-amber);
+  border-radius: 999px;
+  bottom: -1px;
+  box-shadow: 0 0 6px rgba(243, 189, 105, 0.8);
+  content: "";
+  height: 2px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 16px;
+}
+
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command:focus-visible,
+.oprn-status-menu .status-menu-detail-action:focus-visible {
+  outline: 1px solid var(--status-edge-amber);
+  outline-offset: -2px;
+}
+
+.oprn-status-menu .status-menu-command.selected::before,
+.oprn-status-menu .status-menu-detail-action.selected::before {
+  content: none;
+}
+
+.oprn-status-menu.status-menu-detail-focus .status-menu-command-rail,
+.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail {
+  opacity: 1;
+}
+
+.oprn-status-menu.status-menu-detail-focus .status-menu-primary-dock {
+  opacity: 0.88;
+}
+
+.oprn-status-menu .status-menu-party {
+  align-items: stretch;
+  background: transparent;
+  border: 0;
+  border-image: none;
+  box-shadow: none;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  left: 8px;
+  min-height: 0;
+  overflow: visible;
+  padding: 0;
+  pointer-events: auto;
+  position: absolute;
+  right: 8px;
+  top: 7px;
+}
+
+.oprn-status-menu .status-menu-party-row {
+  align-items: center;
+  backdrop-filter: blur(6px);
+  background: var(--status-edge-glass-soft);
+  border: 1px solid rgba(247, 229, 198, 0.18);
+  border-radius: 9px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-height: 32px;
+  overflow: hidden;
+  padding: 3px 4px;
+}
+
+.oprn-status-menu .status-menu-face {
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(247, 229, 198, 0.26);
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: var(--status-edge-ivory);
+  display: flex;
+  font: 700 9px/1 var(--font-ui);
+  height: 22px;
+  justify-content: center;
+  overflow: hidden;
+  width: 22px;
+}
+
+.oprn-status-menu .status-menu-face.actor-sheet-crop {
+  background-image: var(--crop-url);
+  background-position: var(--crop-x) var(--crop-y);
+  background-repeat: no-repeat;
+  background-size: var(--crop-sheet-width) var(--crop-sheet-height);
+  height: 22px;
+  image-rendering: pixelated;
+  width: 22px;
+}
+
+.oprn-status-menu .status-menu-party-info {
+  align-content: center;
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+.oprn-status-menu .status-menu-party-headline {
+  align-items: baseline;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr) max-content;
+}
+
+.oprn-status-menu .status-menu-actor-name {
+  color: var(--status-edge-ivory);
+  font-size: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-actor-subline {
+  color: var(--status-edge-amber);
+  font-size: 5px;
+  text-shadow: none;
+}
+
+.oprn-status-menu .status-menu-vital-line {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: 18px minmax(0, 1fr);
+  min-height: 3px;
+  position: relative;
+}
+
+.oprn-status-menu .status-menu-actor-vitals {
+  color: rgba(247, 239, 226, 0.72);
+  font-size: 4px;
+  line-height: 3px;
+  overflow: hidden;
+  text-overflow: clip;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-vital-gauge {
+  align-self: center;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  box-shadow: none;
+  height: 2px;
+  inset: auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.oprn-status-menu .status-menu-vital-gauge-fill {
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.oprn-status-menu .status-menu-vital-gauge.hp .status-menu-vital-gauge-fill {
+  background: #67d496;
+}
+
+.oprn-status-menu .status-menu-vital-gauge.hp.warn .status-menu-vital-gauge-fill {
+  background: #e5a95d;
+}
+
+.oprn-status-menu .status-menu-vital-gauge.hp.crit .status-menu-vital-gauge-fill {
+  background: #ff6767;
+}
+
+.oprn-status-menu .status-menu-vital-gauge.mp .status-menu-vital-gauge-fill {
+  background: var(--status-edge-teal);
+}
+
+.oprn-status-menu .status-menu-detail,
+.oprn-status-menu .status-menu-stat-delta {
+  backdrop-filter: blur(9px) saturate(1.05);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 34%),
+    rgba(13, 16, 18, 0.93);
+  border: 1px solid var(--status-edge-border);
+  border-image: none;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+}
+
+.oprn-status-menu .status-menu-detail {
+  bottom: 68px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 4px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  left: 24px;
+  overflow: hidden;
+  padding: 7px;
+  position: absolute;
+  right: 24px;
+  top: 46px;
+  transition: opacity 110ms ease, transform 110ms ease, visibility 110ms step-end;
+}
+
+.oprn-status-menu .status-menu-detail[aria-hidden="true"] {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(5px);
+  visibility: hidden;
+}
+
+.oprn-status-menu .status-menu-detail-title {
+  color: var(--status-edge-ivory);
+  font: 750 10px/1.15 var(--font-ui);
+  letter-spacing: -0.025em;
+  margin: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-detail-list,
+.oprn-status-menu .status-menu-scene-list {
+  align-content: start;
+  display: grid;
+  gap: 3px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: rgba(243, 189, 105, 0.44) transparent;
+  scrollbar-width: thin;
+}
+
+.oprn-status-menu .status-menu-detail-row,
+.oprn-status-menu .status-menu-scene-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--status-edge-ivory);
+  display: grid;
+  font: 600 7px/1.2 var(--font-ui);
+  gap: 4px;
+  min-height: 18px;
+  padding: 3px 5px;
+  text-shadow: none;
+}
+
+.oprn-status-menu .status-menu-detail-row {
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+}
+
+.oprn-status-menu .status-menu-detail-action {
+  appearance: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.oprn-status-menu .status-menu-detail-action.selected {
+  background: var(--status-edge-amber-soft);
+  border-color: rgba(243, 189, 105, 0.74);
+  box-shadow:
+    inset 2px 0 0 var(--status-edge-amber),
+    0 0 10px rgba(243, 189, 105, 0.09);
+  color: #ffe7bd;
+}
+
+.oprn-status-menu .status-menu-detail-action.destructive {
+  color: #ff9a91;
+}
+
+.oprn-status-menu .status-menu-detail-action.destructive.selected {
+  background: rgba(190, 55, 50, 0.22);
+  border-color: rgba(255, 126, 116, 0.82);
+  box-shadow: inset 2px 0 0 #ff756b, 0 0 10px rgba(255, 90, 80, 0.12);
+}
+
+.oprn-status-menu .status-menu-detail-row.disabled {
+  color: rgba(247, 239, 226, 0.36);
+}
+
+.oprn-status-menu .status-menu-detail-label,
+.oprn-status-menu .status-menu-detail-value,
+.oprn-status-menu .status-menu-detail-description {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oprn-status-menu .status-menu-detail-value {
+  color: var(--status-edge-muted);
+  justify-self: end;
+  text-align: right;
+}
+
+.oprn-status-menu .status-menu-detail-description,
+.oprn-status-menu .status-menu-detail-hint,
+.oprn-status-menu .status-menu-detail-empty {
+  color: var(--status-edge-muted);
+  font: 500 6px/1.35 var(--font-ui);
+}
+
+.oprn-status-menu .status-menu-detail-row-compact {
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-description {
+  display: block;
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+}
+
+.oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.oprn-status-menu .status-menu-detail-row.has-description {
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr) max-content;
+}
+
+.oprn-status-menu .status-menu-detail-row.has-description .status-menu-detail-description {
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] {
+  bottom: 68px;
+  gap: 0;
+  height: 34px;
+  left: 42px;
+  padding: 4px;
+  right: 42px;
+  top: auto;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-title {
+  display: none;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-list {
+  align-items: stretch;
+  display: grid;
+  gap: 3px;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-action {
+  display: flex;
+  font-size: 7px;
+  justify-content: center;
+  min-height: 26px;
+  padding: 3px;
+  text-align: center;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-description,
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-value {
+  display: none;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-action.destructive {
+  flex-direction: column;
+  gap: 1px;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-action.destructive .status-menu-detail-description {
+  color: #ffaaa3;
+  display: block;
+  font-size: 4px;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="confirmation-card"] {
+  bottom: 68px;
+  gap: 3px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 54px;
+  left: 42px;
+  padding: 6px;
+  right: 42px;
+  top: auto;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="confirmation-card"] .status-menu-detail-list {
+  overflow: hidden;
+}
+
+.oprn-status-menu .status-menu-detail[data-status-menu-presentation="confirmation-card"] .status-menu-detail-action {
+  min-height: 18px;
+}
+
+.oprn-status-menu .status-menu-primary-dock:focus,
+.oprn-status-menu .status-menu-detail-list:focus,
+.oprn-status-menu .status-menu-detail:focus {
+  outline: none;
+}
+
+.oprn-status-menu .status-menu-stat-delta {
+  bottom: 68px;
+  display: grid;
+  gap: 2px;
+  left: 8px;
+  padding: 5px;
+  position: absolute;
+  width: 72px;
+}
+
+.oprn-status-menu .status-menu-stat-delta-title {
+  color: var(--status-edge-amber);
+  font: 700 6px/1.2 var(--font-ui);
+  letter-spacing: 0.08em;
+  padding: 0;
+}
+
+.oprn-status-menu .status-menu-stat-delta-row {
+  display: grid;
+  font: 600 5px/1.2 var(--font-ui);
+  gap: 3px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  padding: 0;
+}
+
+.oprn-status-menu .status-menu-stat-delta-value {
+  color: var(--status-edge-muted);
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-stat-delta-row.up .status-menu-stat-delta-value {
+  color: #78d69a;
+}
+
+.oprn-status-menu .status-menu-stat-delta-row.down .status-menu-stat-delta-value {
+  color: #ff8b83;
+}
+
+.oprn-status-menu .status-menu-footer {
+  align-items: center;
+  background: rgba(13, 16, 18, 0.72);
+  border: 1px solid rgba(247, 229, 198, 0.12);
+  border-image: none;
+  bottom: 3px;
+  box-shadow: none;
+  color: rgba(247, 239, 226, 0.72);
+  display: grid;
+  font: 600 6px/1 var(--font-ui);
+  gap: 5px;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  left: 9px;
+  padding: 1px 3px;
+  position: absolute;
+  right: 9px;
+}
+
+.oprn-status-menu .status-menu-message {
+  color: var(--status-edge-amber);
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-gold,
+.oprn-status-menu .status-menu-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.oprn-status-menu .status-menu-body {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(72px, 0.42fr) minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.oprn-status-menu .status-menu-scene-header {
+  align-items: end;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.oprn-status-menu .status-menu-scene-hint {
+  color: var(--status-edge-muted);
+  font-size: 5px;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-scene-row {
+  align-items: start;
+  grid-template-columns: 20px minmax(0, 1fr);
+  min-height: 30px;
+}
+
+.oprn-status-menu .status-menu-entry-icon,
+.oprn-status-menu .status-menu-detail-face {
+  background-color: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(247, 229, 198, 0.2);
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: block;
+  height: 18px;
+  image-rendering: pixelated;
+  object-fit: cover;
+  overflow: hidden;
+  width: 18px;
+}
+
+.oprn-status-menu .status-menu-entry-icon.actor-sheet-crop,
+.oprn-status-menu .status-menu-detail-face.actor-sheet-crop {
+  background-image: var(--crop-url);
+  background-position: var(--crop-x) var(--crop-y);
+  background-repeat: no-repeat;
+  background-size: var(--crop-sheet-width) var(--crop-sheet-height);
+}
+
+.oprn-status-menu .status-menu-scene-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.oprn-status-menu .status-menu-scene-main {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(48px, 0.46fr) minmax(0, 1fr);
+}
+
+.oprn-status-menu .status-menu-entry-effect,
+.oprn-status-menu .status-menu-entry-performance {
+  color: var(--status-edge-muted);
+  display: block;
+  font-size: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-entry-performance {
+  color: var(--status-edge-amber);
+}
+
+.oprn-status-menu .status-menu-scene-empty {
+  color: var(--status-edge-muted);
+  padding: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oprn-status-menu .status-menu-detail,
+  .oprn-status-menu .status-menu-vital-gauge-fill {
+    transition: none;
+  }
+}

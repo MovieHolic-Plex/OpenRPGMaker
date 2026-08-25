@@ -11,7 +11,7 @@ import {
   applyDatabaseChanges,
   openDatabase,
   switchDatabaseTab,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 
 const OUT = "output/evidence/battle-skins";
 const SYSTEM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "system")!;
@@ -143,7 +143,7 @@ for (const skin of listBattleSkinIds()) {
     const dir = `${OUT}/${skin}`;
     await mkdir(dir, { recursive: true });
     await page.setViewportSize({ width: 1360, height: 768 });
-    await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+    await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 
     // seedReferenceBattleProject performs its own page.goto("/")
     await seedReferenceBattleProject(page);

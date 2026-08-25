@@ -5,13 +5,13 @@ import path from "node:path";
 const EVIDENCE_DIR = path.resolve(
   "../rpg-zzu/.omo/evidence/beginner-friendly-ui-modes/task-11-beginner-friendly-ui-modes",
 );
-const UI_MODE_KEY = "rpg-zzu:editor-ui-mode";
+const UI_MODE_KEY = "oprn:editor-ui-mode";
 const LAYOUT_KEYS = [
-  "rpg-zzu:editor-layout",
-  "rpg-zzu:editor-layout:v2",
-  "rpg-zzu:editor-layout:v3",
-  "rpg-zzu:editor-layout:v4",
-  "rpg-zzu:editor-layout-version",
+  "oprn:editor-layout",
+  "oprn:editor-layout:v2",
+  "oprn:editor-layout:v3",
+  "oprn:editor-layout:v4",
+  "oprn:editor-layout-version",
 ] as const;
 const COMMON_DB_TABS = [
   "db-tab-overview",
@@ -50,7 +50,7 @@ async function bootPersona(page: Page, mode: Persona, width: number, height: num
   await page.addInitScript(({ layoutKeys, modeKey, persona }) => {
     localStorage.setItem(modeKey, persona);
     for (const key of layoutKeys) localStorage.removeItem(key);
-    localStorage.removeItem("rpg-zzu:ai-panel-collapsed");
+    localStorage.removeItem("oprn:ai-panel-collapsed");
   }, { layoutKeys: LAYOUT_KEYS, modeKey: UI_MODE_KEY, persona: mode });
   await page.goto(`/?freshProject=1&persona=${mode}-${width}x${height}`);
   await dismissLogin(page);
@@ -88,20 +88,22 @@ async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<v
   const layout = page.getByTestId("editor-layout");
   await expect(layout).toHaveClass(/chat-dock-glass/);
   await expect(page.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode}`));
-  await expect(page.getByTestId(`editor-ui-mode-${mode}`)).toHaveAttribute("aria-pressed", "true");
+  // 페르소나(밀도)는 body 클래스로 확인하고, 탑바 앞면은 실제 저작 작업을 실행한다.
+  await expect(page.getByTestId("editor-ui-mode-toggle")).toHaveCount(0);
 
   const leftBox = await rect(page.locator(".left-panel"));
   const canvasBox = await rect(page.locator(".canvas-area"));
   expect(leftBox.x, "left tool chrome must stay at the viewport's left edge allowance").toBeLessThanOrEqual(8);
   expect(leftBox.x, "left tool chrome must begin left of the canvas").toBeLessThan(canvasBox.x);
 
-  for (const toggleMode of PERSONAS) {
-    await expect(page.getByTestId(`editor-ui-mode-${toggleMode}`)).toBeVisible();
+  for (const task of ["map", "event", "data", "test"]) {
+    await expect(page.getByTestId(`authoring-task-${task}`)).toBeVisible();
   }
+  await expect(page.getByTestId("workspace-command-palette-button")).toBeVisible();
 
   const commandBox = await rect(page.getByTestId("ai-command-bar"));
-  const modeToggleBox = await rect(page.getByTestId("editor-ui-mode-toggle"));
-  expect(intersectionArea(commandBox, modeToggleBox), "AI command bar must not intersect the mode toggle").toBe(0);
+  const launcherBox = await rect(page.getByTestId("authoring-task-launcher"));
+  expect(intersectionArea(commandBox, launcherBox), "AI command bar must not intersect the authoring task launcher").toBe(0);
 
   const world = await openPaletteResult(page, "world", "open-world");
   await expect(world).toContainText("세계관");
@@ -114,7 +116,7 @@ async function assertBeginnerContract(page: Page): Promise<void> {
   const labels = rail.locator(".basic-rail-label");
   expect(await labels.count()).toBeGreaterThanOrEqual(11);
   for (const label of await labels.all()) await expect(label).toBeVisible();
-  for (const text of ["선택", "브러시", "지우개", "채우기", "이벤트", "스포이트"]) {
+  for (const text of ["선택", "칠하기", "지우기", "채우기", "장면", "집기"]) {
     await expect(rail.locator(".basic-rail-label", { hasText: text }).first()).toBeVisible();
   }
 
@@ -183,7 +185,7 @@ test.afterAll(() => {
       "Automated visual-QA skill/scripts were not present in this worktree.",
       "The six persona screenshots and the 1280x800 float/side pair were inspected through",
       "machine geometry contracts in this spec: viewport containment, leftmost tool chrome,",
-      "float/side class and host placement, and zero-area mode-toggle/AI-bar intersection.",
+      "float/side class and host placement, and zero-area preset-toggle/AI-bar intersection.",
       "Screenshots are evidence only and do not replace those assertions.",
       "",
     ].join("\n"),

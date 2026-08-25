@@ -65,9 +65,11 @@ describe("database navigation by editor mode", () => {
     expect(findByTestId(all, "db-tab-switches")?.textContent).toBe("스위치");
   });
 
-  it("keeps grouped navigation with the battle group in standard mode", () => {
+  it("keeps grouped navigation with explicit monster and life domains in standard mode", () => {
     const host = renderPanel("standard");
-    expect(host.querySelectorAll(".db-tab-group").map((group) => group.textContent)).toContain("전투");
+    const groups = host.querySelectorAll(".db-tab-group").map((group) => group.textContent);
+    expect(groups).toContain("전투·몬스터");
+    expect(groups).toContain("생활");
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });
 

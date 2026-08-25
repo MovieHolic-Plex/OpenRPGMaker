@@ -46,6 +46,7 @@ describe("생활 스킬 시스템", () => {
     project.database.lifeSkills = [
       { id: "skill_farming", name: "  농사  ", skillType: "farming", maxLevel: 10, levelUpRewards: [{ level: 2, switchId: "sw_lv2" }] },
     ];
+    project.switches.push({ id: "sw_lv2", name: "농사 레벨 2" });
     expect(roundTrip(project).database.lifeSkills?.[0]).toMatchObject({
       id: "skill_farming",
       name: "농사",

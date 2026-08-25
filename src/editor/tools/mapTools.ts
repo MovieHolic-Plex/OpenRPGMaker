@@ -17,7 +17,7 @@ import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
-import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import {
   floodFillCells,
   inMapBounds,
@@ -33,6 +33,7 @@ import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -123,9 +124,9 @@ const paintTiles: ToolDefinition = {
       layer: { type: "string", enum: ["lower", "upper"] },
       mode: { type: "string", enum: ["rect", "line", "fill", "cells"] },
       tile: { type: "integer", description: "타일 인덱스(-1=비움)" },
-      from: { type: "object", description: "{x,y}" },
-      to: { type: "object", description: "{x,y}" },
-      cells: { type: "array", description: "[{x,y}...]", items: { type: "object" } },
+      from: COORD_SCHEMA,
+      to: COORD_SCHEMA,
+      cells: { type: "array", description: "[{x,y}...]", items: COORD_SCHEMA },
     },
     required: ["mapId", "layer", "mode", "tile"],
   },
@@ -259,7 +260,7 @@ const paintRoad: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      points: { type: "array", description: "[{x,y}...] 경로 꼭짓점", items: { type: "object" } },
+      points: { type: "array", description: "[{x,y}...] 경로 꼭짓점", items: COORD_SCHEMA },
       style: { type: "string", enum: ["dirt", "sand"] },
       presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
       paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
@@ -338,7 +339,7 @@ const stampStructure: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       template: { type: "string", enum: STRUCTURE_STYLES as unknown as string[] },
-      origin: { type: "object", description: "{x,y} 좌상단" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
       presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
       paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
       naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
@@ -560,7 +561,7 @@ const previewHouse: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 좌상단" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
       width: { type: "integer", description: `가로 칸 수(${HOUSE_MIN_WIDTH}~${HOUSE_MAX_WIDTH})` },
       height: { type: "integer", description: `세로 칸 수(${HOUSE_MIN_HEIGHT}~${HOUSE_MAX_HEIGHT}, 지붕 4행 포함)` },
       material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
@@ -589,7 +590,7 @@ const buildHouse: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 좌상단" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
       width: { type: "integer", description: `가로 칸 수(${HOUSE_MIN_WIDTH}~${HOUSE_MAX_WIDTH})` },
       height: { type: "integer", description: `세로 칸 수(${HOUSE_MIN_HEIGHT}~${HOUSE_MAX_HEIGHT}, 지붕 4행 포함)` },
       material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
@@ -847,6 +848,26 @@ const fieldGraphicSchema: JsonSchema = {
   additionalProperties: true,
 };
 
+const roguelikeEncounterChoiceSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    fieldSpawnId: { type: "string" },
+    weight: { type: "integer" },
+    minFloor: { type: "integer" },
+    maxFloor: { type: "integer" },
+  },
+  required: ["fieldSpawnId"],
+};
+
+const roguelikeEncounterSlotSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    choices: { type: "array", items: roguelikeEncounterChoiceSchema },
+  },
+  required: ["id", "choices"],
+};
+
 function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): EncounterTableEntry[] {
   if (!Array.isArray(value)) throw new ToolError("entries는 배열이어야 합니다.", { code: "invalid-entries", mapId: map.id });
   return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
@@ -921,6 +942,77 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
   if (input.chase !== undefined) spawn.chase = booleanField(input, "chase", label);
   if (input.graphic !== undefined) spawn.graphic = structuredClone(input.graphic) as FieldSpawnDef["graphic"];
   return spawn;
+}
+
+function parseRoguelikeRoom(map: GameMap, args: Record<string, unknown>): RoguelikeRoomDef {
+  const slots = args.slots ?? map.roguelikeRoom?.encounterSlots ?? [];
+  if (!Array.isArray(slots)) {
+    throw new ToolError("slots는 배열이어야 합니다.", { code: "invalid-slots", mapId: map.id });
+  }
+  const knownSpawnIds = new Set((map.fieldSpawns ?? []).map((spawn) => spawn.id));
+  const usedSlotIds = new Set<string>();
+  const encounterSlots = slots.map((slotValue, slotIndex) => {
+    const label = `slots[${slotIndex}]`;
+    const slot = requireRecordValue(slotValue, label);
+    const id = stringField(slot, "id", label).trim();
+    if (!id) throw new ToolError(`${label}.id는 비울 수 없습니다.`, { code: "invalid-slot-id", mapId: map.id });
+    if (usedSlotIds.has(id)) throw new ToolError(`${label}.id가 중복됩니다: ${id}`, { code: "duplicate-slot-id", mapId: map.id });
+    usedSlotIds.add(id);
+    if (!Array.isArray(slot.choices) || slot.choices.length === 0) {
+      throw new ToolError(`${label}.choices는 하나 이상이어야 합니다.`, { code: "empty-slot", mapId: map.id });
+    }
+    const usedChoiceIds = new Set<string>();
+    const choices = slot.choices.map((choiceValue, choiceIndex) => {
+      const choiceLabel = `${label}.choices[${choiceIndex}]`;
+      const choice = requireRecordValue(choiceValue, choiceLabel);
+      const fieldSpawnId = stringField(choice, "fieldSpawnId", choiceLabel).trim();
+      if (!knownSpawnIds.has(fieldSpawnId)) {
+        throw new ToolError(`${choiceLabel}.fieldSpawnId가 존재하지 않습니다: ${fieldSpawnId}`, { code: "spawn-not-found", mapId: map.id });
+      }
+      if (usedChoiceIds.has(fieldSpawnId)) {
+        throw new ToolError(`${choiceLabel}.fieldSpawnId가 슬롯 안에서 중복됩니다: ${fieldSpawnId}`, { code: "duplicate-spawn-choice", mapId: map.id });
+      }
+      usedChoiceIds.add(fieldSpawnId);
+      const weight = choice.weight === undefined ? 1 : integerField(choice, "weight", choiceLabel);
+      if (weight <= 0) throw new ToolError(`${choiceLabel}.weight는 1 이상이어야 합니다.`, { code: "invalid-weight", mapId: map.id });
+      const minFloor = choice.minFloor === undefined ? undefined : runFloorField(choice, "minFloor", choiceLabel, map.id);
+      const maxFloor = choice.maxFloor === undefined ? undefined : runFloorField(choice, "maxFloor", choiceLabel, map.id);
+      if (minFloor !== undefined && maxFloor !== undefined && minFloor > maxFloor) {
+        throw new ToolError(`${choiceLabel}.minFloor가 maxFloor보다 큽니다.`, { code: "invalid-floor-range", mapId: map.id });
+      }
+      return {
+        fieldSpawnId,
+        weight,
+        ...(minFloor !== undefined ? { minFloor } : {}),
+        ...(maxFloor !== undefined ? { maxFloor } : {}),
+      };
+    });
+    return { id, choices };
+  });
+  const roomId = typeof args.roomId === "string"
+    ? args.roomId.trim()
+    : args.roomId === undefined
+      ? map.roguelikeRoom?.roomId?.trim() ?? ""
+      : "";
+  if (args.roomId !== undefined && !roomId) {
+    throw new ToolError("roomId는 비울 수 없습니다.", { code: "invalid-room-id", mapId: map.id });
+  }
+  const resetEventState = args.resetEventState === undefined
+    ? map.roguelikeRoom?.resetEventState
+    : booleanField(args, "resetEventState", "roguelikeRoom");
+  return {
+    ...(roomId ? { roomId } : {}),
+    ...(resetEventState !== undefined ? { resetEventState } : {}),
+    encounterSlots,
+  };
+}
+
+function runFloorField(record: Record<string, unknown>, key: "minFloor" | "maxFloor", label: string, mapId: string): number {
+  const value = integerField(record, key, label);
+  if (value < 1 || value > 9_999) {
+    throw new ToolError(`${label}.${key}는 1..9999 범위여야 합니다.`, { code: "invalid-floor", mapId });
+  }
+  return value;
 }
 
 function parseRect(value: unknown, label: string, map: GameMap): Rect {
@@ -1097,6 +1189,36 @@ const makeHuntingGround: ToolDefinition = {
   },
 };
 
+const configureRoguelikeRoom: ToolDefinition = {
+  name: "configure_roguelike_room",
+  description: "맵의 로그라이크 방 조우 슬롯과 이벤트 리셋 정책을 설정한다. 각 슬롯은 fieldSpawns 후보 중 하나를 런 seed·층·방·리셋 횟수로 결정적으로 선택한다. 기본적으로 새 방 세대는 셀프 스위치와 Erase Event 상태도 초기화한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      roomId: { type: "string", description: "생략 시 mapId" },
+      resetEventState: { type: "boolean", description: "방 세대 변경 시 셀프 스위치/Erase Event 상태 초기화(기본 true)" },
+      slots: { type: "array", items: roguelikeEncounterSlotSchema },
+      clear: { type: "boolean", description: "true면 기존 로그라이크 방 설정 제거" },
+    },
+    required: ["mapId"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    if (args.clear === true) {
+      delete map.roguelikeRoom;
+      return { summary: `${map.name} 로그라이크 방 설정 제거`, data: { mapId: map.id } };
+    }
+    const room = parseRoguelikeRoom(map, args);
+    map.roguelikeRoom = room;
+    return {
+      summary: `${map.name} 로그라이크 방 설정 — 슬롯 ${room.encounterSlots?.length ?? 0}개`,
+      data: { mapId: map.id, roguelikeRoom: room },
+    };
+  },
+};
+
 const createFarmPlot: ToolDefinition = {
   name: "create_farm_plot",
   description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다.",
@@ -1209,7 +1331,7 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, createFarmPlot, resizeMapTool, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };

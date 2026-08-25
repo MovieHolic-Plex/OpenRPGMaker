@@ -24,6 +24,7 @@ import {
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
+import { SE_CATALOG } from "@/assets/seCatalog";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ASSETS,
@@ -31,8 +32,9 @@ import {
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { store } from "@/project/store";
 import type { Project, ResourceKind } from "@/project/types";
@@ -73,7 +75,7 @@ export type OpenDatabaseResourcePickerOptions = {
   readonly onConfirm: (result: DatabaseResourcePickerResult) => void;
 };
 
-type ResourceOption = {
+export type DatabaseResourceOption = {
   readonly id: string;
   readonly name: string;
   /**
@@ -92,7 +94,7 @@ const GENERATED_BATTLE_CHARSET_PREVIEW_SCALE = 0.75;
 export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePickerOptions): void {
   const project = store.getCurrent();
   const prefix = options.testidPrefix ?? "db-resource-picker";
-  const catalog = listResourceOptions(options.kind, project);
+  const catalog = listDatabaseResourceOptions(options.kind, project);
   let selectedId = options.currentId && catalog.some((entry) => entry.id === options.currentId)
     ? options.currentId
     : catalog[0]?.id ?? options.currentId ?? "";
@@ -245,8 +247,9 @@ export function resourcePickerControl(input: {
       hue: input.allowHue ? input.currentHue : undefined,
     }
   );
-  const optionName = listResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
-  const displayName = input.resourceId ? optionName ?? prettyId(input.resourceId) : "(미설정)";
+  const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
+  const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
+  const displayName = input.resourceId ? "설정됨" : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
     class: "db-resource-picker-inline-id db-authoring-id",
@@ -298,7 +301,7 @@ export function resourcePickerControl(input: {
               el("span", {
                 class: "db-resource-picker-inline-name",
                 text: displayName,
-                attrs: { title: input.resourceId ?? "" },
+                attrs: { title: rawName || input.resourceId || "" },
               }),
               idInput,
               el("button", {
@@ -317,7 +320,7 @@ export function resourcePickerControl(input: {
 }
 
 function resourceButton(
-  option: ResourceOption,
+  option: DatabaseResourceOption,
   selectedId: string,
   kind: DatabaseResourcePickerKind,
   project: Project,
@@ -332,14 +335,21 @@ function resourceButton(
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { faceIndex, characterIndex }),
-      el("span", { text: option.name }),
+      el("span", { text: studioResourceLabel(option.name, option.id) }),
     ],
     on: { click: onSelect },
   });
 }
 
-function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project): ResourceOption[] {
-  const options = new Map<string, ResourceOption>();
+/**
+ * 데이터베이스 피커와 이벤트 명령 폼이 함께 쓰는 리소스 목록의 단일 정본이다.
+ * 표시 순서와 장면어 검색 태그가 두 저작 표면에서 어긋나지 않게 한다.
+ */
+export function listDatabaseResourceOptions(
+  kind: DatabaseResourcePickerKind,
+  project: Project
+): readonly DatabaseResourceOption[] {
+  const options = new Map<string, DatabaseResourceOption>();
   const add = (id: string, name: string, searchTerms?: readonly string[]): void => {
     if (!id || options.has(id)) return;
     options.set(id, { id, name, searchTerms });
@@ -369,6 +379,15 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
       break;
     case "sound":
+      // 카탈로그(456개)를 맨 앞에 둔다 — 이게 이 에디터의 기본 효과음 세트다.
+      // EasyRPG RTP 96개는 뒤에 남긴다(CC-BY 이지만 기존 프로젝트가 참조하고 있다).
+      for (const entry of SE_CATALOG) {
+        add(entry.id, `${entry.title} — ${entry.category} (${entry.seconds.toFixed(2)}s)`, [
+          ...entry.tags,
+          entry.category,
+          entry.baseName,
+        ]);
+      }
       for (const asset of CC0_SOUND_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
       break;
@@ -384,6 +403,7 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       break;
     case "battle":
       for (const asset of EASYRPG_BATTLE_ASSETS) add(asset.id, asset.name);
+      for (const asset of GENERATED_EFFECT_SHEET_ASSETS) add(asset.id, asset.name);
       break;
     case "icon":
     case "image":
@@ -395,7 +415,7 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       break;
   }
 
-  for (const asset of RM2K3_GENERATED_ASSET_PLAN.assets) {
+  for (const asset of GENERATED_ASSET_PLAN.assets) {
     if (asset.status !== "promoted") continue;
     if (matchesGeneratedKind(kind, asset.resourceKind, asset.resourceId)) {
       add(asset.resourceId, `${prettyId(asset.resourceId)} <생성>`);
@@ -423,7 +443,16 @@ function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: Re
   if (kind === "music") {
     return resourceKind === "music" || id.startsWith("easyrpg-music-") || id.startsWith("cc0-music-") || id.startsWith("cc0-bgm-");
   }
-  if (kind === "sound") return resourceKind === "sound" || id.startsWith("easyrpg-sound-") || id.startsWith("cc0-sound-");
+  if (kind === "sound") {
+    return (
+      resourceKind === "sound" ||
+      id.startsWith("easyrpg-sound-") ||
+      id.startsWith("cc0-sound-") ||
+      // 456개 효과음 카탈로그. 이게 빠지면 카탈로그 항목을 고른 뒤 피커가 다시 열릴 때
+      // 현재 선택이 "종류 불일치"로 판정돼 (없음) 으로 보인다.
+      id.startsWith("cc0-se-")
+    );
+  }
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";
   if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview");
@@ -622,6 +651,17 @@ function prettyId(id: string): string {
   return id.replace(/^generated-(actor|enemy|item|equipment)-/u, "").replaceAll("-", " ");
 }
 
+function studioResourceLabel(name: string, id: string): string {
+  const raw = (name || id).trim();
+  if (/[가-힣]/u.test(raw)) return raw;
+  return raw
+    .replace(/^generated-[a-z]+-/u, "")
+    .replace(/^easyrpg-[a-z]+-/u, "")
+    .replaceAll(/[_-]+/gu, " ")
+    .replaceAll(/\s+/gu, " ")
+    .trim() || raw;
+}
+
 function clampIndex(value: number, max: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.min(max, Math.max(0, Math.trunc(value)));
@@ -633,6 +673,9 @@ function clampHue(value: number): number {
 }
 
 /** Exported for unit tests and list thumbnail reuse. */
-export function listDatabaseResourceOptionsForTest(kind: DatabaseResourcePickerKind, project: Project): readonly ResourceOption[] {
-  return listResourceOptions(kind, project);
+export function listDatabaseResourceOptionsForTest(
+  kind: DatabaseResourcePickerKind,
+  project: Project
+): readonly DatabaseResourceOption[] {
+  return listDatabaseResourceOptions(kind, project);
 }

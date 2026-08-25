@@ -2,7 +2,6 @@
 // - 인라인 검색으로 select 옵션 필터
 // - ... 버튼으로 classic 모달 피커
 // - 네이티브 select 유지 (testid / Playwright selectOption 호환)
-import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { openSwitchVariablePicker } from "./recordPickerDialog";
@@ -45,10 +44,10 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
     dataset: options.selectTestId ? { testid: options.selectTestId } : undefined,
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택)", attrs: { value: "" } }));
-  for (const [index, item] of list.entries()) {
+  for (const item of list) {
     select.append(
       el("option", {
-        text: storyFlagOptionLabel(project, kind, item, index),
+        text: item.name.trim() || "(이름 없음)",
         attrs: { value: item.id },
       })
     );
@@ -83,8 +82,8 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
 
   const pickerButton = el("button", {
     class: "btn small",
-    text: "...",
-    attrs: { type: "button", title: kind === "switch" ? "스위치 선택" : "변수 선택" },
+    text: "찾기",
+    attrs: { type: "button", title: kind === "switch" ? "스위치 찾기" : "변수 찾기" },
     dataset: { testid: options.pickerTestId ?? `event-${kind}-picker-open` },
     on: {
       click: () =>

@@ -87,7 +87,7 @@ freshProject 실측 (probe-log.txt, 02~12번 스크린샷):
 ### [중간-5] 규칙 감사 패널 접근성/죽은 코드
 
 - `installRuleAuditPanelAutoMount`(`ruleAuditPanel.ts:56-63`)는 **프로덕션 어디서도 호출되지 않는다**(호출자는 `test/ruleAuditPanel.test.ts`뿐). 실측에서도 좌측 팔레트에 `rule-audit-panel` 부재. 실제 노출은 타일 툴바 "규칙 감사" 드롭다운뿐(`rpgMakerTileToolbarMenus.ts:71-88`) — 열기 전에는 위반이 배지 숫자로만 보인다.
-- 부수 적발: `EditScene`이 갱신하는 `cursor-position`/`cursor-lower`/`cursor-upper` 노드는 어떤 코드도 생성하지 않는다(`EditScene.ts:983-990`, setter는 1411-1415에서 조용히 no-op). 이 testid에 의존하는 기존 e2e 헬퍼(`test/e2e/rm2k3-map-editor.spec.ts:62`, `rpg-zzu-editor-layout.spec.ts:46-48`)는 현 빌드에서 성립 불가 — 본 리뷰도 이 때문에 좌표 캘리브레이션을 우회 구현했다.
+- 부수 적발: `EditScene`이 갱신하는 `cursor-position`/`cursor-lower`/`cursor-upper` 노드는 어떤 코드도 생성하지 않는다(`EditScene.ts:983-990`, setter는 1411-1415에서 조용히 no-op). 이 testid에 의존하는 기존 e2e 헬퍼(`test/e2e/oprn-map-editor.spec.ts:62`, `rpg-zzu-editor-layout.spec.ts:46-48`)는 현 빌드에서 성립 불가 — 본 리뷰도 이 때문에 좌표 캘리브레이션을 우회 구현했다.
 
 ### [낮음-1] 클러스터 카드가 문법 형상을 무시한 8열 flow
 

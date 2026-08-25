@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BATTLE_ANIMATION_ASSETS } from "@/assets/scarloxyPack";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
@@ -40,7 +40,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     // Given: the EasyRPG RTP asset manifest is bundled with the project.
     const project = createBlankProject();
     const ids: ReadonlySet<string> = new Set(EASYRPG_RTP_ASSETS.map((asset) => asset.id));
-    const generatedIds: ReadonlySet<string> = new Set(RM2K3_GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
+    const generatedIds: ReadonlySet<string> = new Set(GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
     const allKnownIds: ReadonlySet<string> = new Set([...ids, ...generatedIds, ...builtinGeneratedResourceIds()]);
 
     // When: default resource IDs are read from actors, enemies, and system settings.
@@ -57,8 +57,8 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(project.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1");
     expect(project.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
     expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
-    expect(project.system.titleResourceId).toBe("rpg-zzu-title-field");
-    expect(project.system.systemResourceId).toBe("windowskin-rm2003");
+    expect(project.system.titleResourceId).toBe("oprn-title-field");
+    expect(project.system.systemResourceId).toBe("windowskin-default");
     expect(project.system.battleSystemResourceId).toBe("easyrpg-system2-system2-c");
     for (const id of defaultIds) expect(allKnownIds.has(id ?? "")).toBe(true);
   });
@@ -67,7 +67,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     // Given: the default DB combines EasyRPG RTP resources and generated battle resources.
     const project = createBlankProject();
     const easyRpgIds = new Set<string>(EASYRPG_RTP_ASSETS.map((asset) => asset.id));
-    const generatedIds = new Set<string>(RM2K3_GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
+    const generatedIds = new Set<string>(GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
     const resourceIds = new Set<string>([...easyRpgIds, ...generatedIds, ...builtinGeneratedResourceIds()]);
 
     // When: battle seed records are inspected and a starter troop runtime is created.

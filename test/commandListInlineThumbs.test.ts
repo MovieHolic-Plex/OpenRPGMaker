@@ -39,7 +39,7 @@ describe("커맨드 리스트 인라인 썸네일 (P1)", () => {
     const visuals = parts.filter(isSummaryVisualPart);
     expect(visuals.length).toBe(1);
     expect(visuals[0]?.visual).toMatchObject({ type: "faceCrop", resourceId: FACE_RESOURCE, faceIndex: 2 });
-    expect(commandSummary(cmd)).toContain("얼굴 그래픽 변경");
+    expect(commandSummary(cmd)).toContain("얼굴 바꾸기");
     expect(commandSummary(cmd)).not.toContain("undefined");
   });
 

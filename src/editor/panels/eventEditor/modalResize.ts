@@ -1,5 +1,8 @@
 import { el } from "@/util/dom";
 
+const MIN_MODAL_WIDTH = 560;
+const MIN_MODAL_HEIGHT = 520;
+
 type ResizeState = {
   readonly pointerId: number;
   readonly startPointerX: number;
@@ -25,7 +28,7 @@ export function attachWindowResize(handle: HTMLElement, windowEl: HTMLElement): 
   let resize: ResizeState | null = null;
 
   handle.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0) return;
+    if (windowEl.classList.contains("is-fullscreen") || event.button !== 0) return;
     const rect = windowEl.getBoundingClientRect();
     resize = {
       pointerId: event.pointerId,
@@ -44,8 +47,8 @@ export function attachWindowResize(handle: HTMLElement, windowEl: HTMLElement): 
     const rect = windowEl.getBoundingClientRect();
     const maxWidth = Math.max(360, window.innerWidth - rect.left - 4);
     const maxHeight = Math.max(320, window.innerHeight - rect.top - 4);
-    const minWidth = Math.min(760, maxWidth);
-    const minHeight = Math.min(520, maxHeight);
+    const minWidth = Math.min(MIN_MODAL_WIDTH, maxWidth);
+    const minHeight = Math.min(MIN_MODAL_HEIGHT, maxHeight);
     const nextWidth = clamp(resize.startWidth + event.clientX - resize.startPointerX, minWidth, maxWidth);
     const nextHeight = clamp(resize.startHeight + event.clientY - resize.startPointerY, minHeight, maxHeight);
     windowEl.style.width = `${Math.round(nextWidth)}px`;
@@ -73,8 +76,8 @@ export function attachWindowResize(handle: HTMLElement, windowEl: HTMLElement): 
     const rect = windowEl.getBoundingClientRect();
     const maxW = Math.max(360, window.innerWidth - rect.left - 4);
     const maxH = Math.max(320, window.innerHeight - rect.top - 4);
-    const minW = Math.min(760, maxW);
-    const minH = Math.min(520, maxH);
+    const minW = Math.min(MIN_MODAL_WIDTH, maxW);
+    const minH = Math.min(MIN_MODAL_HEIGHT, maxH);
     windowEl.style.width = `${Math.round(clamp(rect.width + dw, minW, maxW))}px`;
     windowEl.style.height = `${Math.round(clamp(rect.height + dh, minH, maxH))}px`;
     event.preventDefault();

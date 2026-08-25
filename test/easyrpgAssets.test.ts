@@ -70,7 +70,7 @@ describe("bundled EasyRPG RTP assets", () => {
     });
     expect(profile).toMatchObject({
       kind: "chipset",
-      name: "EasyRPG RTP Exterior ChipSet",
+      name: "Exterior · 타일 그림판 · EasyRPG",
       tileWidth: 16,
       tileHeight: 16,
       imageWidth: 480,

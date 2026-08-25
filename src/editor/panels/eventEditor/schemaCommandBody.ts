@@ -29,10 +29,17 @@ import { actorPicker, itemPicker, mapPicker } from "./sharedPickers";
 import { switchPicker, variablePicker } from "./switchVariablePicker";
 import type { CommandEditContext } from "./types";
 
+const OP_LABELS: Record<string, string> = { "=": "이 값으로", "+=": "더하기", "-=": "빼기", "*=": "곱하기", "/=": "나누기" };
+
+const SCHEMA_CONTAINER_TESTID: Record<string, string> = {
+  changeGold: "event-command-gold-form",
+  changeItem: "event-command-item-form",
+};
+
 /**
  * 스키마 렌더 경로를 타는 kind 목록.
  *
- * 명령 73종이 전부 스키마로 선언돼 있지만, 렌더 경로 전환은 kind 마다 아래 절차를
+ * 명령 75종이 전부 스키마로 선언돼 있지만, 렌더 경로 전환은 kind 마다 아래 절차를
  * 밟아야 한다. 기존 폼들이 저마다 testid 계약을 테스트로 못박고 있기 때문이다
  * (예: scopedForms.test.ts 는 gameOver 가 [data-testid="game-over-editor"] 를 내고
  *  input/select/textarea 를 하나도 갖지 않을 것을 요구한다).
@@ -48,6 +55,8 @@ export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>([
   // scopedForms.test.ts 의 컷신 폼 계약 2건이 그래서 실패 상태였다.
   // 스키마가 그 testid 를 승계하며 두 테스트를 통과시킨다.
   "cutsceneControl",
+  "changeGold",
+  "changeItem",
 ]);
 
 /** 프로젝트 상태에서 요약문 조회기를 만든다. */
@@ -108,8 +117,11 @@ export function renderSchemaForm(
   // 컨테이너 testid 는 kind 에서 파생된다: cutsceneControl → cutscene-control-editor.
   // 기존 폼의 컨테이너 계약과 그대로 맞물린다.
   const wrap = el("span", {
-    class: "rich-command-form schema-command-form",
-    dataset: { testid: `${kebab(schema.kind)}-editor`, schemaKind: schema.kind },
+    class: "rich-command-form schema-command-form cream-command-form",
+    dataset: {
+      testid: SCHEMA_CONTAINER_TESTID[schema.kind] ?? `${kebab(schema.kind)}-editor`,
+      schemaKind: schema.kind,
+    },
   });
 
   const current = (): Record<string, unknown> =>
@@ -147,6 +159,12 @@ export function renderSchemaForm(
         children: [el("span", { class: "schema-field-label", text: spec.label }), control],
       })
     );
+  }
+  if (schema.kind === "changeGold") {
+    wrap.append(el("p", { class: "schema-field-hint", text: "금액은 숫자이거나 변수입니다.", dataset: { testid: "change-gold-hint" } }));
+  }
+  if (schema.kind === "changeItem") {
+    wrap.append(el("p", { class: "schema-field-hint", text: "수량은 숫자이거나 변수입니다.", dataset: { testid: "change-item-hint" } }));
   }
   return wrap;
 }
@@ -237,7 +255,7 @@ function renderField(
 
     case "op": {
       const handle = segmentedSelect({
-        options: spec.ops.map((op) => ({ value: op, label: op, key: opKey(op) })),
+        options: spec.ops.map((op) => ({ value: op, label: OP_LABELS[op] ?? op, key: opKey(op) })),
         value: asString(value) || spec.ops[0] || "=",
         testid: `${testid}-select`,
         ariaLabel: spec.label,
@@ -247,36 +265,49 @@ function renderField(
     }
 
     case "operand": {
-      // 고정값 ↔ 변수 참조. 두 컨트롤을 한 행에 두고 모드에 따라 전환한다.
       const isVar = isVarOperand(value);
+      const sourceId =
+        kind === "changeGold" && key === "amount"
+          ? "change-gold-amount-source"
+          : kind === "changeItem" && key === "amount"
+            ? "change-item-amount-source"
+            : `${testid}-mode`;
       const mode = segmentedSelect({
         options: [
-          { value: "fixed", label: "고정값", key: "fixed" },
-          { value: "var", label: "변수", key: "var" },
+          { value: "number", label: "숫자", key: "number" },
+          { value: "variable", label: "변수", key: "variable" },
         ],
-        value: isVar ? "var" : "fixed",
-        testid: `${testid}-mode`,
+        value: isVar ? "variable" : "number",
+        testid: sourceId,
         ariaLabel: `${spec.label} 지정 방식`,
       });
-      const row = el("span", { class: "rich-form-row schema-operand" });
-      row.append(mode.root);
-      if (isVar) {
-        const picker = variablePicker({
-          selectedId: varOperandId(value),
-          selectTestId: `${testid}-variable`,
-          onChange: (id) => patch({ [key]: { kind: "var", id } }),
-        });
-        row.append(picker.root);
-      } else {
-        const input = numberInput(asNumber(value), spec.label, `${testid}-input`);
-        input.addEventListener("change", () =>
-          patch({ [key]: clamp(Number.parseInt(input.value, 10) || 0, spec.min) })
-        );
-        row.append(amountStepper(input, { testidBase: testid, min: spec.min ?? 0 }));
-      }
-      mode.select.addEventListener("change", () => {
-        patch({ [key]: mode.select.value === "var" ? { kind: "var", id: "" } : 0 });
+      const input = numberInput(isVar ? 0 : asNumber(value), spec.label, `${testid}-input`);
+      input.addEventListener("change", () =>
+        patch({ [key]: clamp(Number.parseInt(input.value, 10) || 0, spec.min) })
+      );
+      const numberWrap = amountStepper(input, { testidBase: testid, min: spec.min ?? 0 });
+      const picker = variablePicker({
+        selectedId: varOperandId(value),
+        selectTestId: `${testid}-select`,
+        onChange: (id) => patch({ [key]: { kind: "var", id } }),
       });
+      const variableWrap = el("span", {
+        dataset: { testid: `${testid}-variable` },
+        children: [picker.root],
+      });
+      const sync = (): void => {
+        const useVar = mode.select.value === "variable";
+        numberWrap.hidden = useVar;
+        variableWrap.hidden = !useVar;
+      };
+      mode.select.addEventListener("change", () => {
+        const useVar = mode.select.value === "variable";
+        patch({ [key]: useVar ? { kind: "var", id: varOperandId(value) } : asNumber(value) });
+        sync();
+      });
+      sync();
+      const row = el("span", { class: "rich-form-row schema-operand" });
+      row.append(mode.root, numberWrap, variableWrap);
       return row;
     }
 

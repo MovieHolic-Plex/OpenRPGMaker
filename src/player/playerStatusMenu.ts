@@ -1,5 +1,6 @@
 import {
   createPlayerStatusMenuSnapshot,
+  isStatusMenuGroupEntryId,
   statusMenuCommandGroupLabel,
   statusMenuRailIdForCommand,
   type StatusMenuCommandId,
@@ -9,6 +10,7 @@ import {
   type PlayerStatusMenuSnapshot,
   type StatusMenuCommand,
 } from "@/player/playerStatusMenuModel";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createStatusMenuDetail, type StatusMenuDetail, type StatusMenuStatDelta } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
@@ -32,14 +34,19 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     waitModeEnabled,
   });
   const panel = el("div", {
-    class: "main-menu rm2k3-status-menu system-panel",
+    class: "main-menu oprn-status-menu system-panel",
     attrs: {
-      "aria-label": "RPG Maker 2003 player status menu",
+      "aria-label": "플레이어 상태 메뉴",
+      "aria-modal": "true",
       role: "dialog",
     },
-    dataset: { testid: "main-menu", statusMenuScreen: mode },
+    dataset: { testid: "main-menu", statusMenuScreen: mode, statusMenuLayout: "edge-dock" },
   });
   applySystemGraphic(panel);
+  // The modern ESC surface keeps the authored system resource metadata for
+  // compatibility, but deliberately does not render the RPG windowskin frame.
+  panel.style.removeProperty("border-image-source");
+  panel.style.removeProperty("border-image-slice");
 
   if (mode === "function") panel.classList.add("status-menu-detail-focus");
   const detail = createStatusMenuDetail({
@@ -55,7 +62,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     equipmentSlotId: options.equipmentSlotId,
     formationActorId: options.formationActorId,
     monsterView: options.monsterView,
+    lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
+    confirmToTitle: options.confirmToTitle,
     saveEnabled: options.saveEnabled,
     onSaveSlot: options.actions.onSaveSlot,
     onLoadSlot: options.actions.onLoadSlot,
@@ -72,8 +81,25 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onMoveFormationActor: options.actions.onMoveFormationActor,
     onToggleMonsterView: options.actions.onToggleMonsterView,
     onMoveMonster: options.actions.onMoveMonster,
+    onReplacePendingMonsterSkill: options.actions.onReplacePendingMonsterSkill,
+    onRejectPendingMonsterSkill: options.actions.onRejectPendingMonsterSkill,
+    onSelectLifeLedgerTab: options.actions.onSelectLifeLedgerTab,
+    onLifeLedgerMutation: options.actions.onLifeLedgerMutation,
     onCommand: options.actions.onCommand,
   });
+  const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
+    selectedActionIndex: options.selectedDetailActionIndex,
+  });
+  detailPanel.dataset.statusMenuPresentation = selectedCommand === "to-title"
+    ? "confirmation-card"
+    : isStatusMenuGroupEntryId(selectedCommand)
+      ? "context-tray"
+      : "work-panel";
+  detailPanel.dataset.statusMenuCommand = selectedCommand;
+  if (mode === "main") {
+    detailPanel.setAttribute("aria-hidden", "true");
+    detailPanel.setAttribute("inert", "");
+  }
   panel.append(
     // B안 2열: 좌측 한 창에 레일 + 파티, 우측 전체가 작업 영역.
     el("div", {
@@ -84,12 +110,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         // 장비 후보를 고르는 중이면 파티 대신 "변화" 를 띄운다. 둘 다 넣으면 사이드바를 넘기고,
         // 그 순간 알고 싶은 건 파티 HP 가 아니라 "이걸 끼면 뭐가 얼마나 바뀌나" 다.
         renderStatDeltaPanel(selectedEntryStatDelta(detail, options.selectedDetailActionIndex))
-          ?? renderPartyPanel(snapshot),
+          ?? renderPartyPanel(options.project, snapshot),
       ],
     }),
-    renderStatusMenuDetailPanel(options.project, detail, {
-      selectedActionIndex: options.selectedDetailActionIndex,
-    }),
+    detailPanel,
     // 명시 메시지가 없으면 커서가 올라간 항목의 설명을 푸터에 띄운다(리스트 행은 1줄로 압축됨).
     renderFooter(snapshot, options.message ?? selectedEntryDescription(detail, options.selectedDetailActionIndex))
   );
@@ -104,9 +128,15 @@ type CommandRailRenderOptions = {
 };
 
 function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
+  const selectedRailId = statusMenuRailIdForCommand(options.selectedCommand);
   const rail = el("nav", {
-    class: "status-menu-command-rail",
-    attrs: { role: "menu" },
+    class: "status-menu-command-rail status-menu-primary-dock",
+    attrs: {
+      role: "menu",
+      "aria-label": "게임 메뉴",
+      tabindex: "0",
+      "aria-activedescendant": `status-menu-command-${selectedRailId}`,
+    },
     dataset: { testid: "status-menu-command-rail" },
   });
   for (const command of options.snapshot.commands) {
@@ -120,18 +150,62 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
         dataset: { testid: `status-menu-command-group-${command.groupId}` },
       }));
     }
+    const label = command.label.replace(/\s*▸\s*$/u, "");
+    const selected = command.id === selectedRailId;
     const button = el("button", {
       class: "status-menu-command",
-      text: command.label,
-      attrs: { role: "menuitem" },
+      attrs: {
+        id: `status-menu-command-${command.id}`,
+        role: "menuitem",
+        "aria-label": label,
+        "aria-current": selected ? "true" : "false",
+        tabindex: selected ? "0" : "-1",
+      },
       dataset: { testid: `status-menu-command-${command.id}` },
+      children: [
+        el("span", {
+          class: "status-menu-command-icon",
+          attrs: { "aria-hidden": "true" },
+          dataset: {
+            testid: `status-menu-command-icon-${command.id}`,
+            icon: statusMenuCommandIcon(command.id),
+          },
+        }),
+        el("span", { class: "status-menu-command-label", text: label }),
+        ...(command.opensGroup
+          ? [el("span", { class: "status-menu-command-legacy-suffix", text: " ▸", attrs: { "aria-hidden": "true" } })]
+          : []),
+      ],
       on: { click: () => runCommand(command, options.actions) },
     });
     if (command.destructive) button.classList.add("destructive");
-    if (command.id === statusMenuRailIdForCommand(options.selectedCommand)) button.classList.add("selected");
+    if (selected) button.classList.add("selected");
     rail.append(button);
   }
   return rail;
+}
+
+function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
+  switch (commandId) {
+    case "items": return "◇";
+    case "skills": return "✦";
+    case "equipment": return "◈";
+    case "party-menu": return "●●";
+    case "record-menu": return "▤";
+    case "system-menu": return "⚙";
+    case "status": return "○";
+    case "row": return "↔";
+    case "formation": return "◆";
+    case "monsters": return "♢";
+    case "quests": return "✓";
+    case "relationships": return "∞";
+    case "life-ledger": return "▦";
+    case "save": return "↓";
+    case "load": return "↑";
+    case "wait": return "Ⅱ";
+    case "to-title": return "⌂";
+  }
+  return assertNever(commandId);
 }
 
 function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions): void {
@@ -158,6 +232,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "formation":
     case "quests":
     case "relationships":
+    case "life-ledger":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:
@@ -165,9 +240,10 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
   }
 }
 
-function renderPartyPanel(snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+function renderPartyPanel(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
   const party = el("section", {
-    class: "status-menu-party",
+    class: "status-menu-party status-menu-party-glance",
+    attrs: { "aria-label": "파티 상태" },
     dataset: { testid: "status-menu-party" },
   });
   if (snapshot.emptyPartyLabel) {
@@ -179,12 +255,16 @@ function renderPartyPanel(snapshot: PlayerStatusMenuSnapshot): HTMLElement {
     return party;
   }
   snapshot.partyRows.forEach((row, index) => {
-    party.append(renderPartyRow(row, index));
+    party.append(renderPartyRow(project, row, index));
   });
   return party;
 }
 
-function renderPartyRow(row: PlayerStatusMenuPartyRow, index: number): HTMLElement {
+function renderPartyRow(
+  project: PlayerStatusMenuOptions["project"],
+  row: PlayerStatusMenuPartyRow,
+  index: number,
+): HTMLElement {
   // 사이드바 가용 높이(약 175px)에서 레일이 75px 를 쓰고 파티에 남는 건 100px 이다.
   // 1열 × 4명으로 HP/MP 두 줄을 넣으면 명당 34px = 136px 로 넘친다(실측: 뒤 2명이 잘림).
   // 2×2 격자로 두면 2행 × 34px = 69px 로 들어간다. 대신 셀 폭이 52px 라 얼굴은 뺐다 —
@@ -203,9 +283,42 @@ function renderPartyRow(row: PlayerStatusMenuPartyRow, index: number): HTMLEleme
   );
   return el("article", {
     class: "status-menu-party-row",
-    children: [info],
+    children: [renderPartyFace(project, row, index), info],
     attrs: { "aria-label": `${row.name} ${row.levelLabel} ${row.hpLabel} ${row.mpLabel}` },
     dataset: { testid: `status-menu-party-row-${index}` },
+  });
+}
+
+function renderPartyFace(
+  project: PlayerStatusMenuOptions["project"],
+  row: PlayerStatusMenuPartyRow,
+  index: number,
+): HTMLElement {
+  const url = resolveAssetResourceUrl(row.faceResourceId, { project });
+  if (!url) {
+    return el("span", {
+      class: "status-menu-face missing",
+      text: row.name.trim().slice(0, 1),
+      attrs: { role: "img", "aria-label": row.name },
+      dataset: { testid: `status-menu-face-${index}` },
+    });
+  }
+  return el("span", {
+    class: "status-menu-face actor-sheet-crop",
+    attrs: {
+      role: "img",
+      "aria-label": row.name,
+      style: [
+        `--crop-url:url("${url}")`,
+        "--crop-width:22px",
+        "--crop-height:22px",
+        "--crop-sheet-width:88px",
+        "--crop-sheet-height:88px",
+        "--crop-x:0px",
+        "--crop-y:0px",
+      ].join(";"),
+    },
+    dataset: { testid: `status-menu-face-${index}` },
   });
 }
 

@@ -1,7 +1,7 @@
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
-import { renderBuildPaletteToggle } from "@/editor/panels/buildPalette";
+import { renderCanvasAiWorkbench } from "@/editor/panels/canvasAiWorkbench";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -9,7 +9,7 @@ import { toast } from "@/util/toast";
 
 let mapScreenshotRequestSeq = 0;
 
-export const CANVAS_TOOLBAR_EXPANDED_KEY = "rpg-zzu:canvas-toolbar-expanded";
+export const CANVAS_TOOLBAR_EXPANDED_KEY = "oprn:canvas-toolbar-expanded";
 
 // 기본 모드는 자주 쓰는 배율만 노출한다 — 7컨트롤(라벨+6버튼)은 초보에게 소음.
 // 현재 배율이 목록 밖(3/6/8x)이면 활성 표시를 위해 끼워 넣는다.
@@ -54,14 +54,14 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   });
   zoomGroup.append(
     el("button", {
-      class: "rm2k3-tool-button zoom-stepper-btn",
+      class: "oprn-tool-button zoom-stepper-btn",
       text: "−",
       attrs: { type: "button", title: "축소", "aria-label": "축소" },
       dataset: { testid: "editor-zoom-prev" },
       on: { click: () => editorState.set({ zoom: stepEditorZoom(-1, levels, currentZoom) }) },
     }),
     el("button", {
-      class: "rm2k3-tool-button zoom-stepper-current",
+      class: "oprn-tool-button zoom-stepper-current",
       text: `${currentZoom}x`,
       attrs: { type: "button", title: "배율 목록", "aria-expanded": "false", "aria-label": `현재 ${currentZoom}배` },
       dataset: { testid: "editor-zoom-stepper" },
@@ -73,7 +73,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       },
     }),
     el("button", {
-      class: "rm2k3-tool-button zoom-stepper-btn",
+      class: "oprn-tool-button zoom-stepper-btn",
       text: "+",
       attrs: { type: "button", title: "확대", "aria-label": "확대" },
       dataset: { testid: "editor-zoom-next" },
@@ -87,7 +87,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   for (const zoom of levels) {
     menu.append(
       el("button", {
-        class: "rm2k3-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),
+        class: "oprn-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),
         text: `${zoom}x`,
         attrs: { title: `${zoom}배 확대`, "aria-label": `${zoom}배 확대`, "aria-pressed": String(currentZoom === zoom) },
         dataset: { testid: `editor-zoom-${zoom}` },
@@ -107,7 +107,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     dataset: { testid: "editor-map-save-group", uiDensity: "expert" },
     children: [
       el("button", {
-        class: "rm2k3-tool-button map-save-button",
+        class: "oprn-tool-button map-save-button",
         text: "맵 저장",
         attrs: { title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
         dataset: { testid: "editor-map-screenshot-button" },
@@ -115,12 +115,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       }),
     ],
   });
-  const buildGroup = el("div", {
-    class: "canvas-toolbar-build-group",
-    attrs: { "aria-label": "건축 팔레트", role: "group" },
-    dataset: { testid: "editor-build-palette-group", uiDensity: "expert" },
-    children: [renderBuildPaletteToggle()],
-  });
+  const aiWorkbench = renderCanvasAiWorkbench();
   const expandButton = el("button", {
       class: "canvas-toolbar-expand",
       text: "⋯",
@@ -137,7 +132,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
         },
       },
     });
-  container.append(zoomGroup, expandButton, buildGroup, saveAction);
+  container.append(zoomGroup, expandButton, aiWorkbench, saveAction);
 }
 
 function readCanvasToolbarExpanded(): boolean {

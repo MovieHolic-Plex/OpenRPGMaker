@@ -68,12 +68,12 @@ async function readRuntimeState(page: Page): Promise<RuntimeState> {
 async function startAtExpanseEntry(page: Page): Promise<string> {
   const bootStartedAt = Date.now();
   const local = await createLocalIceGrandExpanseProject();
-  await page.route("**/__rpgzzu/ai-activity", (route) => route.fulfill({ status: 204 }));
+  await page.route("**/__oprn/ai-activity", (route) => route.fulfill({ status: 204 }));
   await page.route("**/rest/v1/ai_analysis_runs?*", (route) => route.fulfill({ status: 204 }));
   await page.addInitScript(({ project }) => {
     window.__RPG_ZZU_E2E_PROJECT__ = project;
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, { project: local.project });
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto(`/?focusX=${ICE_GRAND_EXPANSE_START.x}&focusY=${ICE_GRAND_EXPANSE_START.y}`);
@@ -104,7 +104,7 @@ async function startAtExpanseEntry(page: Page): Promise<string> {
 const KEY_BY_DIR = { down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp" } as const satisfies Record<Dir, string>;
 
 async function readPlayerSprite(page: Page): Promise<PlayerSpriteState> {
-  const value = await page.evaluate(() => window.__rpgzzuPlayerSprite?.() ?? null);
+  const value = await page.evaluate(() => window.__oprnPlayerSprite?.() ?? null);
   if (!isRecord(value) || typeof value.moving !== "boolean" || (typeof value.frame !== "string" && typeof value.frame !== "number")) {
     throw new TypeError("player sprite debug hook is unavailable");
   }
@@ -278,7 +278,7 @@ test("one exact tile pulse", async ({ page }) => {
     document.addEventListener("keyup", recordEvent, { once: true });
     const startedAt = performance.now();
     const sample = (): void => {
-      const sprite = window.__rpgzzuPlayerSprite?.();
+      const sprite = window.__oprnPlayerSprite?.();
       trace.push({ at: performance.now(), moving: sprite?.moving ?? null, x: sprite?.x ?? null, y: sprite?.y ?? null });
       if (performance.now() - startedAt < 2_000) requestAnimationFrame(sample);
     };

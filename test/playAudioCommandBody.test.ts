@@ -1,5 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { SE_CATALOG } from "@/assets/seCatalog";
 import { playAudioBodyForTest } from "@/editor/panels/eventEditor/commandBodyAdvanced";
 import { getAudioEngine } from "@/player/audio";
 import { createBlankProject } from "@/project/defaults";
@@ -68,9 +69,35 @@ describe("playAudio command body", () => {
 
     // switch to SE catalog
     (body.querySelector('[data-testid="play-audio-channel-se"]') as HTMLButtonElement).click();
+    expect((body.querySelector('[data-testid="play-audio-search"]') as HTMLInputElement).placeholder).toContain("행동");
+    expect(body.querySelector('[data-testid="play-audio-resource-picker"]')?.textContent).toContain("효과음 목록");
     const seSelect = body.querySelector('[data-testid="play-audio-resource-select"]') as HTMLSelectElement;
     const seIds = Array.from(seSelect.options).map((option) => option.value);
+    expect(seIds.filter((id) => id.startsWith("cc0-se-"))).toHaveLength(SE_CATALOG.length);
+    expect(seIds[1]).toBe(SE_CATALOG[0]?.id);
     expect(seIds).toContain("easyrpg-sound-decision1");
     expect(seIds).toContain("cc0-sound-ui-confirm");
+
+    // Scene-language tags from the shared SE library must work in the inline event form.
+    const seSearch = body.querySelector('[data-testid="play-audio-search"]') as HTMLInputElement;
+    seSearch.value = "구매";
+    seSearch.dispatchEvent(new Event("input"));
+    expect(Array.from(seSelect.options).map((option) => option.value)).toContain("cc0-se-orp-inventory-coin");
+
+    seSelect.value = "cc0-se-orp-inventory-coin";
+    seSelect.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({
+      kind: "playAudio",
+      resourceId: "cc0-se-orp-inventory-coin",
+      loop: false,
+    });
+
+    (body.querySelector('[data-testid="play-audio-preview"]') as HTMLButtonElement).click();
+    expect(play).toHaveBeenLastCalledWith(
+      "se",
+      "cc0-se-orp-inventory-coin",
+      "/assets/se/oga-rpg-pack/inventory/coin.wav",
+      false
+    );
   });
 });

@@ -15,8 +15,10 @@ import type {
 } from "@/project/types";
 import type { BattleResult, GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
+import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
 import type { Rng } from "@/util/rng";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
+import type { RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type { BattleFlow } from "@/project/types";
 
@@ -116,6 +118,7 @@ export interface BattleSessionState {
   // 직전 전투 처리 결과(세션 SSOT — openwiki/runtime-battle.md §battleResult).
   // 트룹 배틀 이벤트의 battleResult 조건이 이 스냅샷 값으로 평가된다.
   readonly battleResult?: BattleResult;
+  readonly roguelikeRun?: RoguelikeRunState;
   readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
@@ -151,6 +154,8 @@ export interface BattlePartyProgress {
   readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 이벤트/레벨업으로 세션에 직접 습득된 스킬.
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  /** Persisted Gen1 PP for non-monster actor fallback battles. */
+  readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   // 런타임 직업 오버라이드(Change Actor Class/승급).
   readonly classOverrides?: Readonly<Record<string, string>>;
   // 세션 상태 이상(Change State). 전투 진입 시 초기 stateIds 로 반영.
@@ -194,7 +199,11 @@ export interface BattleBattlerSnapshot {
   /** Side-view pose for the current resolve beat (idle/attack/hit/defend/dead). */
   readonly pose: import("@/battle/battlePose").BattleBattlerPose;
   readonly stateIds: readonly string[];
+  /** Per-state turn counters, carried by persistent monster instances. */
+  readonly stateTurns?: Readonly<Record<string, number>>;
   readonly skillIds: readonly SkillId[];
+  /** Remaining PP by skill for immutable battle consumers. */
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
   readonly equipmentEffects?: EquipmentRuntimeEffects;
   readonly captured?: boolean;
 }
@@ -272,9 +281,14 @@ export interface BattleCapturedMonsterSnapshot {
   readonly caughtAt: MonsterCaughtAt;
   readonly ivs: MonsterInstanceIvs;
   readonly captureItemId: ItemId;
+  readonly currentHp?: number;
+  readonly stateIds?: readonly string[];
+  readonly stateTurns?: Readonly<Record<string, number>>;
+  readonly skillIds?: readonly SkillId[];
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
 }
 
-export type BattleCaptureBlockedReason = "uncapturable" | "missingTarget" | "missingItem" | "missingSpecies";
+export type BattleCaptureBlockedReason = "uncapturable" | "trainerBattle" | "missingTarget" | "missingItem" | "missingSpecies";
 
 export interface BattleCaptureResultSnapshot {
   readonly targetId: string;
@@ -284,6 +298,7 @@ export interface BattleCaptureResultSnapshot {
   readonly roll?: number;
   readonly speciesId?: MonsterSpeciesId;
   readonly blockedReason?: BattleCaptureBlockedReason;
+  readonly shakes?: 0 | 1 | 2 | 3;
 }
 
 export interface BattleRoundActionLogSnapshot {
@@ -339,6 +354,9 @@ export interface BattleRewardsSnapshot {
   readonly enemyLevel?: number;
   // 승리 시 파티 정보가 주어졌다면 산출되는 레벨업 미리보기(결과 화면 연출용).
   readonly levelUps?: readonly BattleLevelUpPreview[];
+  // 파티 몬스터(battleParty: "monsters") 경로의 레벨업 미리보기. levelUps 는 액터 전용이라
+  // 몬스터가 싸운 전투는 성장 피드백이 화면에 전혀 나오지 않았다.
+  readonly monsterLevelUps?: readonly MonsterLevelUpPreview[];
 }
 
 export interface BattleEventStateSnapshot {

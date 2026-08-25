@@ -6,7 +6,7 @@ const path = require("path");
 
 const OUT = path.join(__dirname, "..", "evidence", "playtest-rm2003");
 const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
-const DEV_KEY = "rpg-zzu:dev-project:127.0.0.1/?devProject=1";
+const DEV_KEY = "oprn:dev-project:127.0.0.1/?devProject=1";
 const URL = "http://127.0.0.1:5199/?devProject=1";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -23,7 +23,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const shot = async (name) => { await page.screenshot({ path: path.join(OUT, name + ".png") }); console.log("shot:", name); };
   const key = async (k, times = 1, delay = 350) => { for (let i = 0; i < times; i++) { await page.keyboard.press(k); await sleep(delay); } };
   const hold = async (k, ms) => { await page.keyboard.down(k); await sleep(ms); await page.keyboard.up(k); await sleep(200); };
-  const teleport = (mapId, x, y) => page.evaluate(([m, a, b]) => window.__rpgzzuDebug?.teleport(m, a, b), [mapId, x, y]);
+  const teleport = (mapId, x, y) => page.evaluate(([m, a, b]) => window.__oprnDebug?.teleport(m, a, b), [mapId, x, y]);
   const state = () => page.evaluate(() => { const el = document.querySelector('[data-testid="runtime-state-json"]'); if (!el) return null; try { const s = JSON.parse(el.textContent); return { map: s.currentMapId, x: s.x, y: s.y }; } catch { return null; } });
 
   await page.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [DEV_KEY, PROJECT_JSON]);

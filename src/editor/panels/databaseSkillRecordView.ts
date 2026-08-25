@@ -1,5 +1,13 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import {
+  deriveSkillComposerModel,
+  type SkillBacklinkCollection,
+  type SkillComposerEffectKind,
+} from "@/editor/panels/databaseSkillComposerModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
@@ -36,6 +44,8 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   renderStatePanel();
   renderPreviewPanel();
 
+  let composer = skillComposer(form, record);
+  form.prepend(composer);
   form.append(
     textField("설명", "db-field-skill-description", record.description, (description) =>
       updateDatabaseRecord("skills", record.id, { description })
@@ -60,13 +70,154 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       numberField("분산", "db-field-skill-variance", record.variance, (variance) =>
         updateDatabaseRecord("skills", record.id, { variance }), { min: 0, max: 100 }
       ),
+      // strict 턴제 전용. 속도보다 먼저 비교한다(퀵어택=+1). 게이지(ATB) 흐름에선 무시.
+      numberField("우선도", "db-field-skill-move-priority", record.movePriority ?? 0, (movePriority) =>
+        updateDatabaseRecord("skills", record.id, { movePriority }), { min: -7, max: 7 }
+      ),
+    ]),
+    panel("Gen1 기술", [
+      numberField("최대 PP (0=무제한)", "db-field-skill-max-pp", record.maxPp ?? 0, (maxPp) =>
+        updateDatabaseRecord("skills", record.id, { maxPp: maxPp > 0 ? maxPp : undefined }), { min: 0, max: 99 }
+      ),
+      selectLiteral("급소율", "db-field-skill-gen1-critical", record.gen1CriticalRate ?? "normal", ["normal", "high"], (gen1CriticalRate) =>
+        updateDatabaseRecord("skills", record.id, { gen1CriticalRate })
+      ),
     ]),
     panel("액션 스킬", actionSkillFields(record)),
     effectPanel,
     statePanel,
     previewPanel
   );
+  const refreshComposer = (): void => {
+    const next = skillComposer(form, currentSkill(record));
+    composer.replaceWith(next);
+    composer = next;
+  };
+  form.addEventListener("input", refreshComposer);
+  form.addEventListener("change", refreshComposer);
+  form.addEventListener("click", refreshComposer);
   bindAnimationPreviewRefresh(form, renderPreviewPanel);
+}
+
+function skillComposer(form: HTMLElement, record: SkillRecord): HTMLElement {
+  const model = deriveSkillComposerModel(store.getCurrent(), record);
+  const chips = el("div", {
+    class: "db-skill-composer-chips",
+    children: model.chips.map((chip) => composerChip(chip.kind, chip.label)),
+  });
+  const effectBlocks = el("div", {
+    class: "db-skill-effect-blocks",
+    children: model.effectBlocks.map((block) => composerEffectBlock(block.kind, block.title, block.summary)),
+  });
+  const usedBy = el("div", {
+    class: "db-skill-used-by",
+    children: [
+      el("div", {
+        class: "db-skill-used-by-heading",
+        children: [
+          el("h4", { text: "사용처" }),
+          el("span", { class: "db-skill-used-by-count", text: `${model.backlinks.length}` }),
+        ],
+      }),
+      ...(model.backlinks.length > 0
+        ? model.backlinks.map((backlink) => el("button", {
+          class: "db-skill-backlink",
+          attrs: { type: "button", title: `${backlink.name || backlink.id} 열기` },
+          dataset: {
+            collection: backlink.collection,
+            recordId: backlink.id,
+            testid: `db-skill-backlink-${backlink.collection}-${backlink.id}`,
+          },
+          children: [
+            el("span", { class: "db-skill-backlink-kind", text: backlinkCollectionLabel(backlink.collection) }),
+            el("strong", { class: "db-skill-backlink-name", text: backlink.name || backlink.id }),
+            el("small", { class: "db-skill-backlink-relationship", text: backlink.relationship }),
+            el("span", { class: "db-skill-backlink-arrow", attrs: { "aria-hidden": "true" }, text: "→" }),
+          ],
+          on: {
+            click: () => {
+              if (backlink.collection === "monsterSpecies") setSelectedMonsterSpeciesId(backlink.id);
+              else setSelectedRecordId(backlink.collection, backlink.id);
+              const root = databasePanelRootFrom(form);
+              if (root) switchDatabaseActiveTab(backlink.collection, root);
+            },
+          },
+        }))
+        : [el("p", { class: "db-skill-used-by-empty", text: "아직 연결된 레코드가 없습니다." })]),
+    ],
+  });
+  return el("section", {
+    class: "db-skill-composer",
+    dataset: { testid: "db-skill-composer" },
+    attrs: { "aria-label": "스킬 구성 요약" },
+    children: [
+      el("header", {
+        class: "db-skill-composer-heading",
+        children: [
+          el("span", { class: "db-skill-composer-eyebrow", text: "ABILITY COMPOSER" }),
+          el("strong", { text: "스킬 구성" }),
+          el("p", { text: "현재 설정이 전투에서 만드는 결과를 한눈에 확인합니다." }),
+        ],
+      }),
+      chips,
+      effectBlocks,
+      usedBy,
+    ],
+  });
+}
+
+function composerChip(kind: "activation" | "target" | "cost", label: string): HTMLElement {
+  return el("span", {
+    class: "db-skill-composer-chip",
+    dataset: { chipKind: kind, testid: `db-skill-chip-${kind}` },
+    text: label,
+  });
+}
+
+function composerEffectBlock(kind: SkillComposerEffectKind, title: string, summary: string): HTMLElement {
+  return el("article", {
+    class: "db-skill-effect-block",
+    dataset: { effectKind: kind },
+    children: [
+      el("span", { class: "db-skill-effect-icon", attrs: { "aria-hidden": "true" }, text: effectBlockIcon(kind) }),
+      el("div", {
+        class: "db-skill-effect-copy",
+        children: [el("strong", { text: title }), el("span", { text: summary })],
+      }),
+    ],
+  });
+}
+
+function effectBlockIcon(kind: SkillComposerEffectKind): string {
+  switch (kind) {
+    case "primary": return "01";
+    case "element": return "02";
+    case "states": return "03";
+    case "animation": return "04";
+  }
+}
+
+function backlinkCollectionLabel(collection: SkillBacklinkCollection): string {
+  switch (collection) {
+    case "actors": return "주인공";
+    case "classes": return "직업";
+    case "items": return "아이템";
+    case "equipment": return "장비";
+    case "enemies": return "몬스터";
+    case "monsterSpecies": return "종족";
+  }
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }
 
 function actionSkillFields(record: SkillRecord): HTMLElement[] {

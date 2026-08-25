@@ -14,6 +14,7 @@ import {
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 type Point = { readonly x: number; readonly y: number };
 
@@ -93,7 +94,7 @@ const stampStructureKit: ToolDefinition = {
       mapId: { type: "string" },
       kitId: { type: "string", description: "list_structure_kits의 kitId. 생략 시 kitName으로 조회" },
       kitName: { type: "string", description: "킷 이름(부분 일치). kitId가 있으면 무시" },
-      origin: { type: "object", description: "{x,y} 좌상단(단면 첫 열의 첫 행)" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단(단면 첫 열의 첫 행)" },
       repeat: { type: "integer", description: "가로 반복 횟수(기본 3, 1~50)" },
     },
     required: ["mapId", "origin"],

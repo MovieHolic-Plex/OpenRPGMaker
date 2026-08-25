@@ -31,6 +31,7 @@ import type {
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { COMMAND_SCHEMA } from "./schemaShapes";
 
 // id 기준으로 배열에 upsert.
 // Serialize concurrent DB writes to prevent lost update (read-modify-write race).
@@ -180,7 +181,10 @@ const itemEquipmentProfileSchema = objectSchema({
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
 });
-const captureProfileSchema = objectSchema({ multiplier: numberSchema("포획 확률 배율. 생략 시 1") });
+const captureProfileSchema = objectSchema({
+  multiplier: numberSchema("포획 확률 배율. 생략 시 1"),
+  ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
+});
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
 const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema() });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
@@ -260,6 +264,7 @@ const troopRecordSchema = objectSchema({
   members: arrayOf(troopMemberSchema),
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),
+  trainerBattle: booleanSchema(),
   previewBackgroundResourceId: stringSchema(),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
@@ -342,6 +347,9 @@ const skillRecordSchema = objectSchema({
   effect: objectSchema({ kind: stringSchema(), statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema() }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
+  maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
+  gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
+  movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -398,6 +406,7 @@ const classRecordSchema = objectSchema({
 const stateRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
+  gen1MajorStatus: { type: "string", enum: ["poison", "burn", "sleep", "freeze", "paralysis"] },
   removalCondition: stringSchema(),
   restriction: stringSchema(),
   priority: integerSchema(),
@@ -470,22 +479,95 @@ const upsertItem: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("item", itemRecordSchema, { id: "item_potion", name: "회복약", price: 120, hpRecovery: { flat: 80, percentMax: 0 } }),
   run(draft, args): ToolExecResult {
-    const merged = mergeRecord(draft.database.items, args.item, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
+    const itemPatch: Record<string, unknown> | undefined = args.item && typeof args.item === "object" && !Array.isArray(args.item)
+      ? args.item as Record<string, unknown>
+      : undefined;
+    const existing = typeof itemPatch?.id === "string"
+      ? draft.database.items.find((item) => item.id === itemPatch.id)
+      : undefined;
+    const capturePatch = itemPatch?.captureProfile;
+    const nestedPatch = existing?.captureProfile && capturePatch && typeof capturePatch === "object" && !Array.isArray(capturePatch)
+      ? { ...itemPatch, captureProfile: { ...existing.captureProfile, ...capturePatch as Record<string, unknown> } }
+      : args.item;
+    const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
   },
 };
 
+/**
+ * 존재하지 않는 `elementRates` 키를 버리고 경고한다.
+ *
+ * 전체 거부는 사용자 의도를 통째로 날린다 — 2026-08-23 실측: `elementRates:{fire:"C",water:"A",grass:"D"}`
+ * 에서 `grass` 만 DB 속성이 아니었는데 커밋이 거부되고, 모델의 재시도는 elementRates 를 아예 빼서
+ * "불에 강하고 물에 약한" 의도가 조용히 사라졌다(전 속성 기본값 C). `fill_region` 이 보호 셀만 건너뛰고
+ * 경고를 돌려주는 것과 같은 방침으로, 유효한 키는 살린다.
+ */
+function dropUnknownElementRates(
+  project: Project,
+  record: { elementRates?: Record<string, unknown> },
+  label: string,
+  warnings: string[],
+): void {
+  const rates = record.elementRates;
+  if (!rates) return;
+  const known = new Set((project.database.elements ?? []).map((element) => element.id));
+  const unknown = Object.keys(rates).filter((id) => !known.has(id));
+  if (unknown.length === 0) return;
+  for (const id of unknown) delete rates[id];
+  const sample = [...known].slice(0, 12).join(", ");
+  warnings.push(
+    `${label}.elementRates에서 DB 속성이 아닌 키를 제외했습니다: ${unknown.join(", ")}. ` +
+      `사용 가능한 속성 id(${known.size}개): ${sample}${known.size > 12 ? " …" : ""} — 몬스터 타입 상성은 set_type_chart를 쓰세요.`,
+  );
+}
+
+/** 잘못된 speciesId 하나 때문에 신규 적 전체를 버리지 않는다. 기존 적 수정이면 유효한 종 참조를 보존한다. */
+function dropUnknownSpeciesId(
+  project: Project,
+  record: { id: string; speciesId?: string },
+  label: string,
+  warnings: string[],
+): void {
+  const requested = record.speciesId;
+  if (!requested) return;
+  const species = project.database.monsterSpecies ?? [];
+  if (species.some((entry) => entry.id === requested)) return;
+
+  const folded = requested.trim().toLocaleLowerCase();
+  const exactName = species.find((entry) => entry.name.trim().toLocaleLowerCase() === folded);
+  if (exactName) {
+    record.speciesId = exactName.id;
+    warnings.push(`${label}.speciesId 자동 해석: "${requested}" → "${exactName.id}" (${exactName.name})`);
+    return;
+  }
+
+  const previous = project.database.enemies.find((enemy) => enemy.id === record.id)?.speciesId;
+  if (previous && species.some((entry) => entry.id === previous)) record.speciesId = previous;
+  else delete record.speciesId;
+  const sample = species.slice(0, 12).map((entry) => entry.id).join(", ");
+  warnings.push(
+    `${label}.speciesId가 monsterSpecies id가 아니어서 ${previous ? `기존 값 "${previous}"을 유지했습니다` : "필드를 제외했습니다"}: ${requested}. ` +
+      `사용 가능한 종 id(${species.length}개): ${sample}${species.length > 12 ? " …" : ""}. ` +
+      `불/얼음 같은 속성 타입은 speciesId가 아니며 set_type_chart 또는 elementRates를 사용하세요.`,
+  );
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
-  description: "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+  description:
+    "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
+    "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
+    "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다.",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
     const warnings: string[] = [];
+    dropUnknownElementRates(draft, record, "enemy", warnings);
+    dropUnknownSpeciesId(draft, record, "enemy", warnings);
     record.monsterResourceId = resolveMonsterResourceId(draft, record.monsterResourceId, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
     return {
@@ -623,8 +705,41 @@ const setTypeChart: ToolDefinition = {
         : {},
     });
     if (!chart) throw new ToolError("types에 최소 1개 타입 id가 필요합니다.", { code: "missing-type-chart-types" });
+
+    // 상성표 교체로 기존 참조가 새로 고아가 되면, 무관한 선재 오류처럼 보이며 커밋 전체가 거부된다.
+    // 새 차트와 DB 전투 속성 어느 쪽에도 없는 값만 제거하고 어떤 레코드를 고쳤는지 경고한다.
+    const validElementIds = new Set([
+      ...(draft.database.elements ?? []).map((element) => element.id),
+      ...chart.types,
+    ]);
+    const repaired: string[] = [];
+    for (const skill of draft.database.skills) {
+      if (skill.elementId && !validElementIds.has(skill.elementId)) {
+        repaired.push(`skill ${skill.id}.elementId=${skill.elementId}`);
+        delete skill.elementId;
+      }
+    }
+    const prune = (ids: string[], label: string): string[] => ids.filter((id) => {
+      if (validElementIds.has(id)) return true;
+      repaired.push(`${label}=${id}`);
+      return false;
+    });
+    for (const item of draft.database.items) {
+      item.equipmentProfile.attackElementIds = prune(item.equipmentProfile.attackElementIds, `item ${item.id}.attackElementIds`);
+      item.equipmentProfile.elementalDefenseIds = prune(item.equipmentProfile.elementalDefenseIds, `item ${item.id}.elementalDefenseIds`);
+    }
+    for (const equipment of draft.database.equipment) {
+      equipment.attackElementIds = prune(equipment.attackElementIds, `equipment ${equipment.id}.attackElementIds`);
+      equipment.elementalDefenseIds = prune(equipment.elementalDefenseIds, `equipment ${equipment.id}.elementalDefenseIds`);
+    }
     draft.system.typeChart = chart;
-    return { summary: `타입 상성표 설정(${chart.types.length}종)`, data: chart };
+    return {
+      summary: `타입 상성표 설정(${chart.types.length}종)`,
+      data: chart,
+      ...(repaired.length > 0
+        ? { warnings: [`새 상성표에 없는 기존 속성 참조 ${repaired.length}건을 정리했습니다: ${repaired.slice(0, 8).join(", ")}${repaired.length > 8 ? " …" : ""}`] }
+        : {}),
+    };
   },
 };
 
@@ -690,8 +805,14 @@ const upsertActor: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"]);
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
+    const warnings: string[] = [];
+    dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
-    return { summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return {
+      summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      data: record,
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 
@@ -729,8 +850,14 @@ const upsertClass: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.classes, args.class, "class", classRecordSchema, { id: "class_mage", name: "마법사" });
     const record = normalizeClassRecord(merged as Partial<ClassRecord> & Pick<ClassRecord, "id" | "name">);
+    const warnings: string[] = [];
+    dropUnknownElementRates(draft, record, "class", warnings);
     const outcome = upsertById(draft.database.classes, record);
-    return { summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return {
+      summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      data: record,
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 
@@ -811,7 +938,7 @@ const upsertCommonEvent: ToolDefinition = {
       name: { type: "string" },
       trigger: { type: "string", enum: ["none", "auto", "parallel"] },
       conditionSwitchId: { type: "string" },
-      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: { type: "object" } },
+      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: COMMAND_SCHEMA },
     },
     required: ["id", "name", "commands"],
   },
@@ -849,7 +976,11 @@ const setSessionStart: ToolDefinition = {
     type: "object",
     properties: {
       gold: { type: "integer" },
-      inventory: { type: "object", description: "{ itemId: 수량 }" },
+      inventory: {
+        type: "object",
+        description: "{ itemId: 수량 } — 키가 아이템 id 인 동적 맵",
+        additionalProperties: true,
+      },
       partyActorIds: { type: "array", description: "시작 파티 액터 id", items: { type: "string" } },
     },
   },
@@ -873,17 +1004,53 @@ const setTitleScreen: ToolDefinition = {
     type: "object",
     properties: {
       title: { type: "string" },
-      menuLabels: { type: "object", description: "{ newGame, continueGame, quit }" },
-      menuVisibility: { type: "object", description: "{ newGame, continueGame, quit } — newGame always true" },
+      menuLabels: {
+        type: "object",
+        description: "{ newGame, continueGame, quit }",
+        properties: {
+          newGame: { type: "string" },
+          continueGame: { type: "string" },
+          quit: { type: "string" },
+        },
+      },
+      menuVisibility: {
+        type: "object",
+        description: "{ newGame, continueGame, quit } — newGame always true",
+        properties: {
+          newGame: { type: "boolean" },
+          continueGame: { type: "boolean" },
+          quit: { type: "boolean" },
+        },
+      },
       sounds: {
         type: "object",
         description: "{ cursorSeResourceId, confirmSeResourceId, cancelSeResourceId } nested merge",
+        properties: {
+          cursorSeResourceId: { type: "string" },
+          confirmSeResourceId: { type: "string" },
+          cancelSeResourceId: { type: "string" },
+        },
       },
       titleGraphic: {
         type: "object",
         description: "{ mode: text|graphic|both, resourceId, x, y } nested merge",
+        properties: {
+          mode: { type: "string", enum: ["text", "graphic", "both"] },
+          resourceId: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+        },
       },
-      layout: { type: "object", description: "{ titleX, titleY, menuX, menuY } nested merge" },
+      layout: {
+        type: "object",
+        description: "{ titleX, titleY, menuX, menuY } nested merge",
+        properties: {
+          titleX: { type: "integer" },
+          titleY: { type: "integer" },
+          menuX: { type: "integer" },
+          menuY: { type: "integer" },
+        },
+      },
       backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
       musicResourceId: { type: "string" },
       showInputHint: { type: "boolean" },

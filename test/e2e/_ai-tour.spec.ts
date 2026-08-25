@@ -17,7 +17,7 @@ async function shot(target: Page | Locator, name: string): Promise<void> {
 
 declare global {
   interface Window {
-    __rpgzzuRegionTaskHarness?: {
+    __oprnRegionTaskHarness?: {
       currentMapId: () => string;
       openModal: (mapId: string, region: { x: number; y: number; width: number; height: number }) => void;
     };
@@ -44,7 +44,7 @@ async function boot(page: Page, mode: "basic" | "expert" = "basic"): Promise<voi
     }
   });
   // 전문가 모드는 코치마크도 뜨지 않고 도구/하네스 진입점이 모두 노출된다.
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
@@ -148,7 +148,7 @@ test("② 슬래시 스킬과 도구 목록", async ({ page }) => {
 test("③ 연결 설정", async ({ page }) => {
   test.setTimeout(180_000);
   await boot(page);
-  await page.getByTestId("ai-settings-toggle").click();
+  await page.getByTestId("topbar-ai-settings").click();
   const modal = page.getByTestId("ai-settings-modal");
   await expect(modal).toBeVisible({ timeout: 10_000 });
   await shot(modal, "10-settings-modal");
@@ -191,7 +191,7 @@ test("⑤ 실제 영역 작업 — 지정한 사각형만 고쳐 준다", async 
   await boot(page);
 
   await page.evaluate(() => {
-    const harness = window.__rpgzzuRegionTaskHarness!;
+    const harness = window.__oprnRegionTaskHarness!;
     harness.openModal(harness.currentMapId(), { x: 4, y: 4, width: 10, height: 8 });
   });
   const modal = page.getByTestId("region-task-modal");

@@ -142,8 +142,8 @@ Tests       1 failed | 45 passed
 
 다수 Playwright 스펙이 명령 더블클릭 후 행에 `.editing` 클래스가 붙는 과거 inline 편집 방식을 기대한다. 예:
 
-- `test/e2e/rm2k3-event-commands.spec.ts:145`
-- `test/e2e/rm2k3-shop-inn-commands.spec.ts:41`
+- `test/e2e/oprn-event-commands.spec.ts:145`
+- `test/e2e/oprn-shop-inn-commands.spec.ts:41`
 - `test/e2e/task-10-event-stabilization.spec.ts:70`
 
 현재 구현은 `src/editor/panels/eventEditor/commandEditDialog.ts:23-25`에서 별도 서브다이얼로그를 열며 제품 코드에는 `.editing`을 추가하는 경로가 없다.

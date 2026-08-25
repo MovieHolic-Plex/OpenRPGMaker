@@ -7,7 +7,7 @@ import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspec
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import type { EventPage, GameEvent } from "@/project/types";
+import type { Command, EventPage, GameEvent } from "@/project/types";
 
 function basePage(overrides: Partial<EventPage> = {}): EventPage {
   return {
@@ -120,53 +120,68 @@ describe("event editor UI density", () => {
     expect(movement?.contains(classicTrigger)).toBe(false);
     expect(host.querySelector('[data-testid="event-page-trigger-priority-stack"]')).toBeTruthy();
 
-    // Beginner chrome does not mount optional identity controls before disclosure.
-    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    // NPC relationship status is always actionable; only technical fields stay hidden until linked.
+    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
     expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
-    const contents = host.querySelector('[data-testid="event-classic-contents"]');
-    expect(contents?.querySelector(".event-editor-command-toolbar")).toBeTruthy();
+    const contents = host.querySelector('[data-testid="event-script-canvas"]');
+    const toolbar = contents?.querySelector(".event-editor-command-toolbar");
+    const toolsMenu = host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
+    expect(toolbar).toBeTruthy();
+    expect(toolbar?.contains(toolsMenu ?? null)).toBe(true);
     expect(host.querySelector(".event-editor-command-tool-group")).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')?.classList.contains("primary")).toBe(true);
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-edit-menu"]')?.open).toBe(false);
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]')?.open).toBe(false);
+    expect(toolsMenu?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(false);
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(true);
+    expect(host.querySelector('[data-testid="event-draft-validation"]')?.parentElement).toBe(host.querySelector(".event-editor"));
+    expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
   });
 
-  it("lazy-mounts beginner-only optional chrome when its parent details open", () => {
-    resetEditorUiModeForTests("beginner");
+  it.each(["beginner", "expert"] as const)("keeps core controls direct and removes optional legend chrome in %s mode", (mode) => {
+    resetEditorUiModeForTests(mode);
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
 
-    const characterDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-character-id-details"]');
-    const legendDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]');
-    expect(characterDetails?.open).toBe(false);
-    expect(legendDetails?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
+    expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
-
-    expandDetails(characterDetails);
-    expandDetails(legendDetails);
-
-    expect(characterDetails?.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
-    expect(legendDetails?.querySelector('[data-testid="event-command-legend"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
   });
 
-  it("mounts expert optional chrome inside closed details", () => {
-    resetEditorUiModeForTests("expert");
-    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+  it("omits validation chrome when the draft has no issues", () => {
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [baseEvent({
+      x: 1,
+      y: 1,
+      pages: [basePage({ priority: "below" })],
+    })];
+    store.replace(project);
 
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-character-id-details"]')?.open).toBe(false);
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]')?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend"]')?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
+    renderEventEditorDynamic(host, project.startMapId, "ev_herbalist");
+
+    expect(host.querySelector('[data-testid="event-draft-validation"]')).toBeNull();
+  });
+
+  it("shows validation only when the draft has actionable issues", () => {
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [baseEvent({ x: 999, y: 999 })];
+    store.replace(project);
+
+    renderEventEditorDynamic(host, project.startMapId, "ev_herbalist");
+
+    const validation = host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]');
+    expect(validation).toBeTruthy();
+    expect(validation?.open).toBe(false);
+    expect(validation?.parentElement).toBe(host.querySelector(".event-editor"));
+    expect(validation?.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeTruthy();
   });
 
   it("keeps the command inspector hidden until a command is selected", () => {
@@ -237,6 +252,56 @@ describe("event editor UI density", () => {
     // Still outside the movement section after expand.
     expect(movement?.querySelector('[data-testid="event-classic-trigger"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-classic-trigger"]')).toBeTruthy();
+  });
+
+  it("shows a compact choices inspector title: prompt only, no options/cancel", () => {
+    const choicesCmd: Command = {
+      kind: "choices",
+      prompt: "두 길목을 정리해 줄래?",
+      options: [
+        { text: "맡는다", branch: [] },
+        { text: "나중에", branch: [] },
+      ],
+      cancelBehavior: "choice2",
+    };
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [
+      baseEvent({ pages: [basePage({ commands: [choicesCmd] })] }),
+    ];
+    store.replace(project);
+
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
+
+    const title = host.querySelector('[data-testid="event-inspector-title"]');
+    expect(title?.textContent).toBe("두 길목을 정리해 줄래?");
+    expect(title?.textContent).not.toContain("1.맡는다");
+    expect(title?.textContent).not.toContain("나중에");
+    expect(title?.textContent).not.toContain("취소");
+    // Default density is the directly editable form; the old duplicate card hint is absent.
+    expect(host.querySelector(".event-inspector-card-hint")).toBeNull();
+  });
+
+  it("falls back to `선택지 N개` when the choices prompt is empty", () => {
+    const choicesCmd: Command = {
+      kind: "choices",
+      prompt: "   ",
+      options: [
+        { text: "맡는다", branch: [] },
+        { text: "나중에", branch: [] },
+      ],
+    };
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [
+      baseEvent({ pages: [basePage({ commands: [choicesCmd] })] }),
+    ];
+    store.replace(project);
+
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
+
+    expect(host.querySelector('[data-testid="event-inspector-title"]')?.textContent).toBe("선택지 2개");
+    expect(host.querySelector(".event-inspector-card-hint")).toBeNull();
   });
 
   it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {

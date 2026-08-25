@@ -1,32 +1,32 @@
 @media (min-width: 901px) {
-  .database-modal-body .rm2k3-record-actors .actor-detail-form,
-  .database-modal-body .rm2k3-record-actors .actor-classic-sheet {
+  .database-modal-body .oprn-record-actors .actor-detail-form,
+  .database-modal-body .oprn-record-actors .actor-classic-sheet {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-editor-grid {
+  .database-modal-body .oprn-record-actors .actor-editor-grid {
     height: auto;
     min-height: 820px;
     padding-bottom: 18px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+  .database-modal-body .oprn-record-actors .actor-right-stack {
     grid-template-rows: auto auto auto auto auto;
     overflow: visible;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rates {
+  .database-modal-body .oprn-record-actors .actor-rates {
     max-height: none;
     overflow: visible;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rate-list {
+  .database-modal-body .oprn-record-actors .actor-rate-list {
     max-height: 194px;
     overflow: auto;
     padding-bottom: 2px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rate-row {
+  .database-modal-body .oprn-record-actors .actor-rate-row {
     box-sizing: border-box;
     height: 38px;
     line-height: 1.25;
@@ -35,50 +35,50 @@
     padding: 3px 8px;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-troops .oprn-record-list-pane {
     grid-template-rows: 30px 48px minmax(0, 1fr) 34px 34px;
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-list {
+  .database-modal-body .oprn-record-troops .db-list {
     height: auto;
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-list-footer {
+  .database-modal-body .oprn-record-troops .oprn-record-list-footer {
     align-items: center;
     height: auto;
     padding: 4px 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-toolbar {
+  .database-modal-body .oprn-record-troops .db-toolbar {
     align-items: center;
     height: auto;
     margin: 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-event-condition-strip {
+  .database-modal-body .oprn-record-troops .db-troop-event-condition-strip {
     grid-template-columns: 120px minmax(128px, 1fr) 24px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-event-condition-strip select {
+  .database-modal-body .oprn-record-troops .db-troop-event-condition-strip select {
     min-width: 128px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-list {
+  .database-modal-body .oprn-record-troops .db-troop-member-list {
     grid-template-columns: minmax(144px, 0.86fr) minmax(180px, 1.14fr);
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-list [data-testid="db-picker-troop-member-enemy"] {
+  .database-modal-body .oprn-record-troops .db-troop-member-list [data-testid="db-picker-troop-member-enemy"] {
     min-width: 104px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-list > .db-field:first-child {
+  .database-modal-body .oprn-record-troops .db-troop-member-list > .db-field:first-child {
     grid-column: 1 / 3;
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-row {
+  .database-modal-body .oprn-record-troops .db-troop-member-row {
     box-sizing: border-box;
     line-height: 18px;
     min-height: 38px;
@@ -89,25 +89,25 @@
   /* db-panel-equipment-graphic 클래스 기반 규칙(04-modern-records.css)이 1차 배치를 맡는다.
      여기서는 이미지 필드 testid 기준 :has() 규칙만 유지 — 위치(:first-child)에 의존하지 않아
      equipmentFields()가 그래픽 패널 앞에 이름/가격/부위 필드를 붙여도 항상 매치된다(P1). */
-  .database-modal-body .rm2k3-record-equipment .rm2k3-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) {
+  .database-modal-body .oprn-record-equipment .oprn-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) {
     grid-template-columns: minmax(200px, 0.72fr) minmax(320px, 1.28fr);
   }
 
-  .database-modal-body .rm2k3-record-equipment .rm2k3-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) .db-field {
+  .database-modal-body .oprn-record-equipment .oprn-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) .db-field {
     grid-template-columns: 64px minmax(180px, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-states .rm2k3-detail-states > .db-field:first-child {
+  .database-modal-body .oprn-record-states .oprn-detail-states > .db-field:first-child {
     grid-template-columns: 48px minmax(260px, 1fr);
     width: min(640px, 100%);
   }
 
-  .database-modal-body .rm2k3-record-states .rm2k3-detail-states > .db-field:first-child > input {
+  .database-modal-body .oprn-record-states .oprn-detail-states > .db-field:first-child > input {
     min-width: 260px;
   }
 
-  .database-modal-body .rm2k3-record-states .db-state-rm2k3-workbench > .db-state-panel:nth-child(7) .db-state-control,
-  .database-modal-body .rm2k3-record-states .db-state-rm2k3-workbench > .db-state-panel:nth-child(8) .db-state-control {
+  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel:nth-child(7) .db-state-control,
+  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel:nth-child(8) .db-state-control {
     grid-template-columns: 52px minmax(124px, 1fr);
   }
 

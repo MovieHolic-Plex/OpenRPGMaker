@@ -4,17 +4,40 @@
   background: color-mix(in srgb, var(--bg-raised) 94%, var(--event-modern-field));
   border-top: 1px solid var(--border-subtle);
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 58px;
-  padding: 10px 22px;
+  min-height: 44px;
+  padding: 5px 14px;
 }
 
 .event-editor-footer-leading {
   align-items: center;
   display: flex;
-  gap: 14px;
+  gap: 8px;
   min-width: 0;
+  overflow: hidden;
+}
+
+.event-editor-lifecycle-status {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  gap: 8px;
+  margin-right: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-editor-remote-status {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.event-editor-remote-status::before {
+  color: var(--event-modern-text-soft, var(--text-2));
+  content: "·";
+  margin-right: 8px;
 }
 
 .event-editor-draft-status {
@@ -29,14 +52,15 @@
 
 .event-editor-footer-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
   justify-content: flex-end;
 }
 
 .event-editor-footer-button {
-  min-height: 38px;
-  min-width: 96px;
+  min-height: 32px;
+  min-width: 64px;
+  padding-block: 4px;
 }
 
 .event-editor-footer-button.primary {
@@ -109,6 +133,20 @@
 }
 
 @media (max-width: 820px) {
+  .event-editor-modal-footer {
+    gap: 6px;
+    grid-template-columns: minmax(80px, 1fr) auto;
+  }
+
+  .event-editor-footer-leading {
+    display: flex;
+  }
+
+  .event-editor-footer-actions {
+    gap: 4px;
+    justify-content: flex-end;
+  }
+
   .event-editor-modal-body {
     padding: 18px 25px 8px;
   }
@@ -123,7 +161,7 @@
     grid-template-columns: 58px minmax(0, 1fr);
   }
 
-  .event-rm2k3-fieldset {
+  .event-oprn-fieldset {
     padding: 12px 10px;
   }
 

@@ -107,7 +107,7 @@ export function renderPageConditions(
      (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled),
    ),
     conditionRow(
-      "셀프 스위치",
+      "이 이벤트 기억",
       selfSwitchConditionInputs(context),
       selfSwitchConditionAt(page) !== undefined,
       "",
@@ -308,7 +308,7 @@ function seasonConditionInputs(context: PageConditionContext): HTMLElement {
 function npcActivityConditionInputs(context: PageConditionContext): HTMLElement {
   const condition = context.page.conditions.find((item) => item.kind === "npcActivity");
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "work" },
+    attrs: { type: "text", placeholder: "일" },
     value: condition?.kind === "npcActivity" ? condition.activity : "work",
     dataset: { testid: "event-page-npc-activity-condition-input" },
   }) as HTMLInputElement;

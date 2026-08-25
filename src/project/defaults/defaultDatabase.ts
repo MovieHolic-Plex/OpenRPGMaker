@@ -66,9 +66,9 @@ export function defaultDatabase(): ProjectDatabaseRecords {
 export function defaultSystem(): SystemRecords {
   return {
     startActorIds: defaultStarterActorIds(),
-    titleResourceId: "rpg-zzu-title-field",
+    titleResourceId: "oprn-title-field",
     // CSS-ready 9-slice windowskin. EasyRPG System/*.png is a chrome sheet (orange key + icons), not a windowskin.
-    systemResourceId: "windowskin-rm2003",
+    systemResourceId: "windowskin-default",
     // System2 stays as gauge/number chrome only — never used as border-image fill.
     battleSystemResourceId: "easyrpg-system2-system2-c",
     // EasyRPG RTP 음악 30곡은 전부 .mid 다 — 브라우저 HTMLAudioElement 는 MIDI 를 재생하지 못한다.
@@ -95,33 +95,27 @@ export function defaultSystem(): SystemRecords {
 export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
-    backgroundResourceId: "rpg-zzu-title-field",
+    backgroundResourceId: "oprn-title-field",
     // 타이틀 BGM 은 의도적으로 비워 둔다("silent title" — test/titleScreenMusic.test.ts 가 계약으로 못박음).
     // 카탈로그에 타이틀·메뉴 곡이 있으므로 저작자는 피커에서 한 번에 고르면 된다.
     // 후보: cc0-bgm-rtp-ttl-001(새벽의 의뢰서), cc0-bgm-rtp-uix-001..005(UI · 첫 조작).
     layout: {
-      titleX: 160,
-      titleY: 92,
-      menuX: 160,
-      menuY: 148,
+      titleX: 32,
+      titleY: 48,
+      menuX: 34,
+      menuY: 128,
     },
     menuLabels: {
       newGame: "새 게임",
-      continueGame: "계속",
-      quit: "게임 종료",
+      continueGame: "이어하기",
+      quit: "종료",
     },
     menuVisibility: {
       newGame: true,
       continueGame: true,
       quit: true,
     },
-    // Crest logo over night-field title art (scripts/generate-system-title-art.mts when available).
-    titleGraphic: {
-      mode: "both",
-      resourceId: "rpg-zzu-title-logo-crest",
-      x: 160,
-      y: 42,
-    },
+    titleGraphic: { mode: "text", x: 32, y: 62 },
     showInputHint: true,
   };
 }

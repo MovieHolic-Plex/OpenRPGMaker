@@ -67,6 +67,7 @@ async function advanceRetryBackoffs(count: number): Promise<void> {
 describe("isRetryableLlmError", () => {
   it("네트워크(상태 없음)/429/5xx는 재시도, 401/402는 재시도 안 함", () => {
     expect(isRetryableLlmError(new LlmError("네트워크 오류"))).toBe(true);
+    expect(isRetryableLlmError(new LlmError("전송 상태 오류", 0))).toBe(true);
     expect(isRetryableLlmError(new LlmError("한도", 429))).toBe(true);
     expect(isRetryableLlmError(new LlmError("서버", 503))).toBe(true);
     expect(isRetryableLlmError(new LlmError("인증", 401))).toBe(false);

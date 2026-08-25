@@ -21,14 +21,21 @@ import type {
   HouseYardIntent,
 } from "./contracts";
 
-const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows"] as const;
+const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows", "yard"] as const;
 const LOTS_KEYS = ["kind", "mapId", "houses", "seed"] as const;
 const PLAN_KEYS = ["kitId", "wings", "interior", "door", "ownerName", "windows", "yard"] as const;
 
 type HouseCore = Omit<AuthorHousePlan, "yard">;
 
+/**
+ * `kind` 로 허용 키가 갈리는 요청을 파싱한다. JSON Schema 로는 이 분기를 표현할 수 없어서
+ * (`oneOf` 는 Gemini 게이트웨이가 400 으로 죽인다) 모델은 두 모드의 키를 섞어 보낸다 —
+ * 2026-08-23 실측: `kind:"lots"` + 최상위 `kitId/wings` 조합을 한 턴에 33회 연속 보내고
+ * 전부 거부당했다. 허용 키를 에러 문구에 실어도 교정되지 않았으므로(같은 턴에서 재현) 여기서
+ * shape 기반으로 정규화한다 — 이 파일의 wings 클램프·windows:true 보정과 같은 방침이다.
+ */
 export function parseAuthorHouseRequest(value: unknown): AuthorHouseRequest {
-  const request = requireRecord(value, "authorHouse");
+  const request = normalizeRequestShape(requireRecord(value, "authorHouse"));
   const kind = requiredString(request, "kind", "authorHouse");
   switch (kind) {
     case "single":
@@ -38,6 +45,33 @@ export function parseAuthorHouseRequest(value: unknown): AuthorHouseRequest {
     default:
       throw new ToolError("authorHouse.kind must be single or lots.", { code: "invalid-args" });
   }
+}
+
+/**
+ * 모드와 키 조합을 실제 내용에 맞춘다.
+ * - `kind` 누락: `houses` 가 있으면 lots, 없으면 single.
+ * - lots + 최상위 단일 모드 키: `houses` 가 없으면 그 키들을 houses[0] 로 접고, 있으면 잉여 키를 버린다.
+ * - single + `houses`: lots 로 본다.
+ */
+function normalizeRequestShape(request: BoundaryRecord): BoundaryRecord {
+  const hasHouses = Array.isArray(request["houses"]);
+  const singleOnlyKeys = PLAN_KEYS.filter((key) => request[key] !== undefined);
+  const kind = typeof request["kind"] === "string" ? request["kind"] : hasHouses ? "lots" : "single";
+  if (kind === "single" && !hasHouses) return { ...request, kind };
+  if (singleOnlyKeys.length === 0) return { ...request, kind: "lots" };
+
+  const stripped: Record<string, unknown> = { kind: "lots", mapId: request["mapId"] };
+  if (request["seed"] !== undefined) stripped["seed"] = request["seed"];
+  if (hasHouses) {
+    // houses 가 이미 있으면 최상위 단일 모드 키는 중복 의도다 — 버린다.
+    stripped["houses"] = request["houses"];
+    return stripped;
+  }
+  const folded: Record<string, unknown> = {};
+  for (const key of singleOnlyKeys) folded[key] = request[key];
+  folded["yard"] ??= [];
+  stripped["houses"] = [folded];
+  return stripped;
 }
 
 function parseSingleRequest(request: BoundaryRecord): AuthorHouseRequest {

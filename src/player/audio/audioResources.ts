@@ -6,7 +6,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import type { AudioChannel } from "@/project/session";
 import type { Project } from "@/project/types";
 
-// 오디오로 취급하는 업로드 리소스 kind. 그 외(칩셋/그림 등)는 재생 대상이 아니다.
+// 오디오로 취급하는 업로드 리소스 kind. 그 외(타일 그림판/그림 등)는 재생 대상이 아니다.
 const AUDIO_RESOURCE_KINDS: ReadonlySet<string> = new Set(["music", "sound"]);
 
 // 루프 채널(교체 시 크로스페이드, 세이브 복원 시 재개 대상).

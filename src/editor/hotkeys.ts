@@ -1,7 +1,7 @@
 // editor/hotkeys.ts
-// RM2K3 스타일 에디터 단축키 매핑.
+// 에디터 단축키 매핑.
 // 도구/레이어/줌/저장/실행취소를 키보드로 조작한다.
-// RPG Maker 계열 에디터의 F키 레이어 전환 관례를 웹 키보드 규칙에 맞게 재구성했다.
+// F키 레이어 전환은 데스크톱 타일 에디터의 일반 관례를 웹 키보드 규칙에 맞게 재구성했다.
 //   - F5/F6/F7: 하위/상위/이벤트 레이어
 //   - 1~7: 도구 순서 (연필/채우기/스포이트/이동/선택/통행/이벤트)
 //   - 숫자/+-: 정수 줌
@@ -12,7 +12,8 @@
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
-import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
+import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
+import { toast } from "@/util/toast";
 
 /**
  * 현재 포커스가 폼 컨트롤이거나 모달이 열려 있어 에디터 단축키를 무시해야 하는지 판별.
@@ -28,7 +29,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (target.isContentEditable) return true;
     // 모달/팝업/메뉴가 열려 있으면 충돌 방지를 위해 단축키를 끈다.
     if (target.closest("[data-testid^='menu-popup-']")) return true;
-    if (target.closest(".rm2k3-modal") || target.closest(".modal-backdrop")) return true;
+    if (target.closest(".oprn-modal") || target.closest(".modal-backdrop")) return true;
   }
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
   if (typeof document !== "undefined") {
@@ -93,13 +94,41 @@ export function handleHistoryHotkey(event: KeyboardEvent): boolean {
   const key = event.key.toLowerCase();
   if (key === "z") {
     event.preventDefault();
-    return event.shiftKey ? redoMapEdit() : undoMapEdit();
+    return event.shiftKey ? runRedoWithFeedback() : runUndoWithFeedback();
   }
   if (key === "y") {
     event.preventDefault();
-    return redoMapEdit();
+    return runRedoWithFeedback();
   }
   return false;
+}
+
+/**
+ * 되돌림에는 반드시 눈에 보이는 응답이 따라야 한다.
+ *
+ * 예전에는 Ctrl+Z 가 조용히 성공했다. 되돌려진 칸이 화면 밖이거나 변화가 미세하면
+ * 감독은 눌렸는지조차 알 수 없어, 확인하려고 한 번 더 눌렀다가 두 단계를 되돌리는
+ * 사고가 났다. 스택이 비어 있을 때도 마찬가지로 침묵해서 "고장인가" 로 읽혔다.
+ * 성공·실패 양쪽 모두 알린다. 라벨은 pop 전에 읽어야 해서 pendingHistoryLabels() 를 쓴다.
+ */
+function runUndoWithFeedback(): boolean {
+  const label = pendingHistoryLabels().undo;
+  if (!undoMapEdit()) {
+    toast("되돌릴 작업이 없습니다", "info");
+    return false;
+  }
+  toast(label ? `되돌렸습니다 — ${label}` : "되돌렸습니다", "ok");
+  return true;
+}
+
+function runRedoWithFeedback(): boolean {
+  const label = pendingHistoryLabels().redo;
+  if (!redoMapEdit()) {
+    toast("다시 실행할 작업이 없습니다", "info");
+    return false;
+  }
+  toast(label ? `다시 실행했습니다 — ${label}` : "다시 실행했습니다", "ok");
+  return true;
 }
 
 /** 툴 순서: 숫자키 1..7 로 선택. tilePalette TOOLS 순서와 일치시킨다. */

@@ -65,8 +65,8 @@ const OPERATION_OPTIONS: readonly M2CommandFieldOption[] = [
 ];
 
 const BOOLEAN_OPTIONS: readonly M2CommandFieldOption[] = [
-  { value: "true", label: "ON / 허가" },
-  { value: "false", label: "OFF / 금지" },
+  { value: "true", label: "켜기 / 허가" },
+  { value: "false", label: "끄기 / 금지" },
 ];
 const WEATHER_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "none", label: "없음" },
@@ -238,7 +238,7 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
     || (title.includes("Map") && title !== "Stop All Movement")
   ) {
     return [
-      { key: "target", label: "대상", type: "text", defaultValue: "" },
+      { key: "target", label: "어디에", type: "text", defaultValue: "" },
       { key: "mapId", label: "맵 ID", type: "text", defaultValue: "" },
       { key: "x", label: "X", type: "number", defaultValue: 0 },
       { key: "y", label: "Y", type: "number", defaultValue: 0 },
@@ -274,19 +274,19 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
   }
   if (title.includes("Animation")) {
     return [
-      { key: "target", label: "대상", type: "text", defaultValue: "" },
+      { key: "target", label: "누구에게", type: "text", defaultValue: "" },
       { key: "animationId", label: "애니메이션 ID", type: "text", defaultValue: "" },
     ];
   }
   if (title.startsWith("Get ")) {
     return [
-      { key: "target", label: "대상", type: "text", defaultValue: "" },
+      { key: "target", label: "누구에게", type: "text", defaultValue: "" },
       { key: "variableId", label: "변수 ID", type: "text", defaultValue: "" },
     ];
   }
   if (title === "Change Parameters") {
     return [
-      { key: "target", label: "배우", type: "text", defaultValue: "" },
+      { key: "target", label: "동료", type: "text", defaultValue: "" },
       { key: "parameter", label: "능력치", type: "select", defaultValue: "maxHp", options: [
         { value: "maxHp", label: "최대 HP" },
         { value: "maxMp", label: "최대 MP" },
@@ -295,7 +295,7 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
         { value: "mind", label: "정신" },
         { value: "agility", label: "민첩" },
       ] },
-      { key: "operation", label: "조작", type: "select", defaultValue: "add", options: OPERATION_OPTIONS },
+      { key: "operation", label: "어떻게", type: "select", defaultValue: "add", options: OPERATION_OPTIONS },
       { key: "value", label: "값", type: "number", defaultValue: 1 },
       { key: "valueSource", label: "값 소스", type: "select", defaultValue: "number", options: [
         { value: "number", label: "숫자" },
@@ -307,14 +307,14 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
   if (title === "Change State") {
     return [
       { key: "target", label: "주인공", type: "text", defaultValue: "party" },
-      { key: "operation", label: "조작", type: "select", defaultValue: "add", options: OPERATION_OPTIONS },
+      { key: "operation", label: "어떻게", type: "select", defaultValue: "add", options: OPERATION_OPTIONS },
       { key: "value", label: "상태", type: "text", defaultValue: "" },
     ];
   }
   if (title === "Damage Processing") {
     return [
       { key: "target", label: "주인공", type: "text", defaultValue: "party" },
-      { key: "operation", label: "조작", type: "select", defaultValue: "add", options: [
+      { key: "operation", label: "어떻게", type: "select", defaultValue: "add", options: [
         { value: "add", label: "데미지" },
         { value: "remove", label: "회복" },
       ] },
@@ -335,7 +335,7 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
   if (title === "Change Actor Graphic") {
     return [
       { key: "target", label: "주인공", type: "text", defaultValue: "" },
-      { key: "value", label: "캐릭터 그래픽", type: "text", defaultValue: "" },
+      { key: "value", label: "모습", type: "text", defaultValue: "" },
     ];
   }
   if (title === "Change Actor Faceset") {
@@ -360,8 +360,8 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
     title === "Action Times +"
   ) {
     return [
-      { key: "target", label: "대상", type: "text", defaultValue: "" },
-      { key: "operation", label: "조작", type: "select", defaultValue: "set", options: OPERATION_OPTIONS },
+      { key: "target", label: "누구에게", type: "text", defaultValue: "" },
+      { key: "operation", label: "어떻게", type: "select", defaultValue: "set", options: OPERATION_OPTIONS },
       { key: "value", label: "값", type: "text", defaultValue: "" },
     ];
   }
@@ -472,7 +472,7 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       return [{ key: "pictureId", label: "그림 ID", type: "text", defaultValue: "pic1" }];
     case "Show Animation":
       return [
-        { key: "target", label: "대상", type: "select", defaultValue: "player", options: ANIMATION_TARGET_OPTIONS },
+        { key: "target", label: "누구에게", type: "select", defaultValue: "player", options: ANIMATION_TARGET_OPTIONS },
         { key: "animationId", label: "애니메이션 ID", type: "text", defaultValue: "" },
         { key: "wait", label: "완료까지 대기", type: "select", defaultValue: "false", options: BOOLEAN_OPTIONS },
       ];

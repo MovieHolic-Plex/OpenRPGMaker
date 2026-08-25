@@ -112,7 +112,7 @@ export function renderNpcGraphicPicker(
   const advancedDetails = document.createElement("details");
   advancedDetails.className = "npc-advanced-sprite";
   const advancedSummary = document.createElement("summary");
-  advancedSummary.textContent = "고급: 직접 ID";
+  advancedSummary.textContent = "고급 · 파일 이름 직접 넣기";
   advancedDetails.append(advancedSummary, directBox);
 
   const rightPane = document.createElement("div");
@@ -167,7 +167,7 @@ function initialSelection(page: EventPage): NpcGraphicSelection {
 function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
   const first = assets[0];
   if (!first) {
-    throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
+    throw new Error("EasyRPG 캐릭터 그림 목록이 비어 있습니다");
   }
   return first;
 }

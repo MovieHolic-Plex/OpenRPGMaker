@@ -64,13 +64,13 @@ const PROMPTS = [
 
 async function waitBridge(page, timeoutMs = 60_000) {
   await page.waitForFunction(
-    () => typeof window.__rpgzzuAiBridge?.send === "function" && window.__rpgzzuAiBridge.status?.()?.panelMounted !== false,
+    () => typeof window.__oprnAiBridge?.send === "function" && window.__oprnAiBridge.status?.()?.panelMounted !== false,
     null,
     { timeout: timeoutMs }
   );
   // expand panel if needed
   await page.evaluate(() => {
-    const s = window.__rpgzzuAiBridge?.status?.();
+    const s = window.__oprnAiBridge?.status?.();
     if (s && !s.ready) return;
     // open via restore button if collapsed
     const restore = document.querySelector('[data-testid="ai-collapsed-restore"]');
@@ -83,7 +83,7 @@ async function sendTurn(page, text, label) {
   console.log(text.slice(0, 160) + (text.length > 160 ? "…" : ""));
   const result = await page.evaluate(
     async ({ msg, timeoutMs }) => {
-      const bridge = window.__rpgzzuAiBridge;
+      const bridge = window.__oprnAiBridge;
       if (!bridge?.send) return { ok: false, error: "no bridge" };
       const status0 = bridge.status?.();
       if (status0 && status0.configReady === false) {
@@ -160,10 +160,10 @@ async function main() {
   await page.addInitScript(
     ({ supabaseDraft, aiConfig }) => {
       localStorage.clear();
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-      localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
-      localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(supabaseDraft));
-      localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(aiConfig));
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:ai-panel-collapsed", "0");
+      localStorage.setItem("oprn:supabase-project-config", JSON.stringify(supabaseDraft));
+      localStorage.setItem("oprn:ai-config", JSON.stringify(aiConfig));
     },
     { supabaseDraft, aiConfig }
   );
@@ -203,12 +203,12 @@ async function main() {
 
   // Ensure remote project is dew-village (reconnect if needed)
   await page.evaluate(async (projectId) => {
-    const draftRaw = localStorage.getItem("rpg-zzu:supabase-project-config");
+    const draftRaw = localStorage.getItem("oprn:supabase-project-config");
     if (draftRaw) {
       const draft = JSON.parse(draftRaw);
       if (draft.projectId !== projectId) {
         draft.projectId = projectId;
-        localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(draft));
+        localStorage.setItem("oprn:supabase-project-config", JSON.stringify(draft));
       }
     }
   }, PROJECT_ID);
@@ -229,7 +229,7 @@ async function main() {
   }
 
   await waitBridge(page);
-  console.log("AI bridge ready", await page.evaluate(() => window.__rpgzzuAiBridge?.status?.()));
+  console.log("AI bridge ready", await page.evaluate(() => window.__oprnAiBridge?.status?.()));
 
   // Wipe / reset content instruction first so AI rebuilds rather than patches junk
   await sendTurn(

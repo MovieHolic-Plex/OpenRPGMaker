@@ -16,7 +16,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 let buildPaletteEnabled = false;
-export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
+export const BUILD_PALETTE_VISIBILITY_EVENT = "oprn:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
   { id: "house", label: "🏠집", title: "선택한 집 키트와 형태로 집을 시공" },
@@ -30,19 +30,19 @@ const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly
   { id: "ai", label: "✨AI로 채우기", title: "기존 영역 AI 작업 경로로 보내기" },
 ];
 
-const HOUSE_SHAPE_STORAGE_KEY = "rpg-zzu:build-palette:house-shape";
-const HOUSE_KIT_STORAGE_KEY = "rpg-zzu:build-palette:house-kit";
+const HOUSE_SHAPE_STORAGE_KEY = "oprn:build-palette:house-shape";
+const HOUSE_KIT_STORAGE_KEY = "oprn:build-palette:house-kit";
 const HOUSE_OPTION_STORAGE_KEYS = {
-  doorEvent: "rpg-zzu:build-palette:door-event",
-  interior: "rpg-zzu:build-palette:interior",
-  windows: "rpg-zzu:build-palette:windows",
+  doorEvent: "oprn:build-palette:door-event",
+  interior: "oprn:build-palette:interior",
+  windows: "oprn:build-palette:windows",
 } as const;
 
 export type HouseOptionKey = keyof typeof HOUSE_OPTION_STORAGE_KEYS;
 
 export function renderBuildPaletteToggle(): HTMLElement {
   return el("button", {
-    class: "rm2k3-tool-button build-palette-toggle" + (buildPaletteEnabled ? " active" : ""),
+    class: "oprn-tool-button build-palette-toggle" + (buildPaletteEnabled ? " active" : ""),
     text: "🏗️건축▾",
     attrs: {
       type: "button",
@@ -75,7 +75,9 @@ export function isBuildPaletteEnabled(): boolean {
   return buildPaletteEnabled;
 }
 
-export function renderBuildPalettePopup(): HTMLElement | null {
+export function renderBuildPalettePopup(
+  openRegionTask: typeof openRegionTaskModal = openRegionTaskModal,
+): HTMLElement | null {
   if (!buildPaletteEnabled) return null;
   const selection = editorState.get().selection;
   const project = store.getCurrent();
@@ -173,7 +175,11 @@ export function renderBuildPalettePopup(): HTMLElement | null {
       on: {
         click: () => {
           if (primitive.id === "ai") {
-            openBuildPaletteAiFill(selection);
+            openBuildPaletteAiFill(selection, openRegionTask);
+            return;
+          }
+          if (primitive.id === "house" || primitive.id === "village") {
+            openBuildPaletteAiConstruction(selection, primitive.id, openRegionTask);
             return;
           }
           const result = applyBuildPalettePrimitive(selection, primitive.id, buildPaletteApplyOptions());
@@ -252,12 +258,32 @@ function optionTestId(key: HouseOptionKey): string {
   return key === "doorEvent" ? "door-event" : key;
 }
 
-function openBuildPaletteAiFill(selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>): void {
+function openBuildPaletteAiFill(
+  selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>,
+  openRegionTask: typeof openRegionTaskModal,
+): void {
   const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
   const prompt = [
     `선택 영역 mapId=${selection.mapId}, x=${selection.x}, y=${selection.y}, width=${selection.width}, height=${selection.height} 안만 작업하세요.`,
     "먼저 set_build_spec으로 이 사각 영역을 outline/assets에 기록한 뒤, 모든 공간 쓰기 툴은 이 영역 안에서만 실행하세요.",
     "영역을 자연스럽게 채워 주세요.",
   ].join("\n");
-  openRegionTaskModal({ mapId: selection.mapId, region, initialInstruction: prompt, autoRun: false });
+  openRegionTask({ mapId: selection.mapId, region, initialInstruction: prompt, autoRun: false });
+}
+
+function openBuildPaletteAiConstruction(
+  selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>,
+  primitive: "house" | "village",
+  openRegionTask: typeof openRegionTaskModal,
+): void {
+  const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
+  const initialInstruction = primitive === "house"
+    ? "선택 영역 안에 야외 집 한 채를 지어 주세요. 주변 지형과 출입 경로를 보존하고, 완성 전 미리보기를 보여 주세요."
+    : "선택 영역 안에 여러 집과 연결된 길을 갖춘 작은 마을을 만들어 주세요. 주변 지형과 출입 경로를 보존하고, 완성 전 미리보기를 보여 주세요.";
+  openRegionTask({
+    autoRun: true,
+    initialInstruction,
+    mapId: selection.mapId,
+    region,
+  });
 }

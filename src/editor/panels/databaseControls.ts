@@ -22,7 +22,9 @@ export function textControl(label: string, value: string, onInput: (value: strin
   return field(label, input);
 }
 
-export type NumberFieldBounds = { readonly min: number; readonly max: number };
+// step 을 주면 <input type="number"> 의 기본 step=1 대신 소수 입력이 유효값이 된다.
+// 이게 없으면 6.25(=1/16) 같은 값이 브라우저 검증에서 :invalid 로 표시된다.
+export type NumberFieldBounds = { readonly min: number; readonly max: number; readonly step?: number };
 
 export type SliderStepperBounds = {
   readonly min: number;
@@ -105,6 +107,7 @@ export function numberField(
   if (bounds) {
     attrs.min = String(bounds.min);
     attrs.max = String(bounds.max);
+    if (bounds.step !== undefined) attrs.step = String(bounds.step);
   }
   const input = el("input", { attrs, value, dataset: { testid } });
   const normalize = (raw: number): number => {

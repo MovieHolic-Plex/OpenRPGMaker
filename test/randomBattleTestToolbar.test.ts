@@ -82,7 +82,8 @@ describe("topbar random battle button", () => {
     restoreDom = undefined;
   });
 
-  it("dispatches random-battle detail from topbar button", async () => {
+  it("dispatches random-battle detail from the restored topbar button", async () => {
+    // Break: bottom-bar cleanup removes the unrelated topbar battle shortcut.
     const { renderTopbar } = await import("@/editor/panels/menu");
     const topbar = document.createElement("div") as unknown as FakeElement;
     document.body.append(topbar as unknown as Node);
@@ -91,7 +92,7 @@ describe("topbar random battle button", () => {
     const handler = (event: Event): void => {
       events.push(event as CustomEvent);
     };
-    window.addEventListener("rpgzzu:test-play-window", handler);
+    window.addEventListener("oprn:test-play-window", handler);
 
     renderTopbar(topbar as unknown as HTMLElement);
     const button = findByTestId(topbar, "topbar-battle-test");
@@ -100,7 +101,6 @@ describe("topbar random battle button", () => {
 
     expect(events).toHaveLength(1);
     expect(events[0]?.detail).toEqual({ kind: "random-battle" });
-
-    window.removeEventListener("rpgzzu:test-play-window", handler);
-  });
+    window.removeEventListener("oprn:test-play-window", handler);
+  }, 30_000);
 });

@@ -224,6 +224,38 @@ function validateCommandShape(label: string, value: unknown): void {
     case "despawnFieldEnemy":
       requireString(`${label}.spawnId`, command.spawnId);
       return;
+    case "runControl": {
+      const action = requireString(`${label}.action`, command.action);
+      if (action === "start") {
+        if (command.seed !== undefined) requireNumber(`${label}.seed`, command.seed);
+        if (command.runId !== undefined) requireString(`${label}.runId`, command.runId);
+        if (command.startFloor !== undefined) requireNumber(`${label}.startFloor`, command.startFloor);
+        return;
+      }
+      if (action === "advance") {
+        if (command.amount !== undefined) {
+          const amount = requireNumber(`${label}.amount`, command.amount);
+          if (!Number.isInteger(amount) || amount < 1) {
+            throw new ProjectFormatError(`${label}.amount는 1 이상의 정수여야 합니다.`);
+          }
+        }
+        return;
+      }
+      if (action === "end") {
+        requireRunResult(`${label}.result`, command.result);
+        return;
+      }
+      if (action === "setFlag") {
+        requireString(`${label}.flag`, command.flag);
+        requireBoolean(`${label}.value`, command.value);
+        return;
+      }
+      if (action === "resetRoom") {
+        if (command.roomId !== undefined) requireString(`${label}.roomId`, command.roomId);
+        return;
+      }
+      throw new ProjectFormatError(`${label}.action가 잘못되었습니다.`);
+    }
     case "killPlayer":
       if (command.message !== undefined) requireString(`${label}.message`, command.message);
       return;
@@ -421,6 +453,12 @@ function requireMonsterMoveTarget(label: string, value: unknown): void {
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
+function requireRunResult(label: string, value: unknown): void {
+  const result = requireString(label, value);
+  if (result === "completed" || result === "failed" || result === "abandoned") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
 // Condition 유니온(fork/페이지 조건 공용)이 지원하는 모든 kind를 허용해야 한다.
 // switch/variable만 검증하면 item/selfSwitch/gold 조건이 든 프로젝트의 저장/불러오기가 깨진다.
 export function validateConditionShape(label: string, value: unknown): void {
@@ -477,6 +515,28 @@ export function validateConditionShape(label: string, value: unknown): void {
       const result = requireString(`${label}.result`, condition.result);
       if (result === "victory" || result === "defeat" || result === "escape") return;
       break;
+    }
+    case "run": {
+      const query = requireString(`${label}.query`, condition.query);
+      if (query === "active") {
+        if (condition.value !== undefined) requireBoolean(`${label}.value`, condition.value);
+        return;
+      }
+      if (query === "floor") {
+        requireString(`${label}.op`, condition.op);
+        requireNumber(`${label}.value`, condition.value);
+        return;
+      }
+      if (query === "flag") {
+        requireString(`${label}.flag`, condition.flag);
+        requireBoolean(`${label}.value`, condition.value);
+        return;
+      }
+      if (query === "result") {
+        requireRunResult(`${label}.result`, condition.result);
+        return;
+      }
+      throw new ProjectFormatError(`${label}.query가 잘못되었습니다.`);
     }
     case "all":
     case "any": {
