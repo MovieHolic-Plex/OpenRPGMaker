@@ -69,6 +69,7 @@
 @import "./editor/storyboard.css";
 @import "./editor/event-editor-help.css";
 @import "./editor/event-editor-follower-preset.css";
+@import "./editor/event-editor.balanced.css";
 /* 마지막 @import — 그 뒤는 실제 규칙이다. AI 인증 패널 규칙을 여기(가장 늦게) 두면
    database/tabs-b.css 경유로 먼저 들어온 옛 규칙을 !important 없이 이긴다. */
 @import "./editor/ai-auth-connection.css";

@@ -254,7 +254,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       }),
     ],
   });
-  settingsColumn.append(eventCard, settingsMain);
+  settingsColumn.append(settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
@@ -276,6 +276,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   attachColumnResize(columnResizer, workbench);
 
   section.append(
+    eventCard,
     // 페이지 전환, 상태, 보기 전환은 한 줄에 두고 워크벤치가 남은 높이를 전부 갖는다.
     el("div", {
       class: "event-editor-pagebar",

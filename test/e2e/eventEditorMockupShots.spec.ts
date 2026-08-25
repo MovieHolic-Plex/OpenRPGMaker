@@ -78,14 +78,15 @@ test("event editor matches the approved mockup", async ({ page }) => {
   // 5) 인라인 인스펙터 — 명령을 클릭하면 모달 없이 우측에서 편집된다
   const inspector = modal.getByTestId("event-editor-inspector");
   await expect(inspector).toBeHidden();
-  const initialCanvasWidth = (await modal.locator(".event-editor-commands-column").boundingBox())?.width ?? 0;
   await modal.screenshot({ path: `${DIR}/1500x1000-initial.png` });
 
   await selectFirstStoryboardCommand(modal);
   await expect(inspector).toBeVisible();
   await expect(inspector.getByTestId("event-inspector-body")).toBeVisible();
   const selectedCanvasWidth = (await modal.locator(".event-editor-commands-column").boundingBox())?.width ?? 0;
-  expect(initialCanvasWidth).toBeGreaterThan(selectedCanvasWidth);
+  const selectedInspectorWidth = (await modal.locator(".event-editor-inspector-column").boundingBox())?.width ?? 0;
+  expect(selectedCanvasWidth).toBeGreaterThan(700);
+  expect(selectedInspectorWidth).toBeGreaterThanOrEqual(380);
   // 모달이 새로 열리지 않아야 한다 — 이게 "모달 3겹 제거"의 핵심.
   await expect(page.locator("[data-testid='event-command-edit-dialog']")).toHaveCount(0);
   // eslint-disable-next-line no-console
