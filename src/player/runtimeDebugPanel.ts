@@ -354,13 +354,13 @@ export function renderRuntimeDebugPanel(): HTMLElement {
   });
 
   // 접혀도 보이는 한 줄 라이브 상태(summary 안에 넣는 이유: details가 닫힐 때 노출되는 유일한 자식이다).
-  const liveLine = el("span", { class: "runtime-debug-live", dataset: { testid: "runtime-debug-live" } });
+  const liveLine = el("span", { class: "runtime-debug-live", dataset: { testid: "runtime-debug-live-state" } });
 
   const details = el("details", {
     class: "runtime-debug-panel",
     dataset: { testid: "runtime-debug-panel" },
     children: [
-      el("summary", { dataset: { testid: "runtime-debug-summary" }, children: ["🛠 런타임 디버그", liveLine] }),
+      el("summary", { dataset: { testid: "runtime-debug-toggle" }, children: ["🛠 런타임 디버그", liveLine] }),
       labeled("스위치", switchFilterRow, switchRow),
       labeled("변수", varFilterRow, varRow),
       labeled("아이템", itemFilterRow, itemRow),

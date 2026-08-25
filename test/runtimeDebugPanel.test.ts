@@ -243,10 +243,13 @@ describe("runtime debug panel live readout", () => {
     document.body.append(panel);
 
     await nextFrames(3);
-    const live = testid(panel, "runtime-debug-live");
+    const live = testid(panel, "runtime-debug-live-state");
     expect(live.dataset.mapId).toBe("map_0002");
     expect(live.dataset.x).toBe("3");
     expect(live.dataset.y).toBe("9");
+    // 계약: 맵 id 와 x,y 는 기계 판독 dataset 말고 사람이 읽는 본벼에도 있어야 한다.
+    expect(live.textContent).toContain("map_0002");
+    expect(live.textContent).toContain("3,9");
 
     snapshot = stateSnapshot({ currentMapId: "map_0003", x: 11, y: 12 });
     await nextFrames(3);
@@ -274,7 +277,7 @@ describe("runtime debug panel live readout", () => {
     document.body.append(panel);
     await nextFrames(3);
 
-    const live = testid(panel, "runtime-debug-live");
+    const live = testid(panel, "runtime-debug-live-state");
     expect(live.dataset.mapId).toBe("map_0009");
     expect(live.dataset.x).toBe("2");
     expect(live.dataset.inputEnabled).toBe("false");
@@ -286,7 +289,7 @@ describe("runtime debug panel live readout", () => {
     const panel = renderRuntimeDebugPanel();
     document.body.append(panel);
     await nextFrames(2);
-    expect(testid(panel, "runtime-debug-live").dataset.live).toBe("idle");
+    expect(testid(panel, "runtime-debug-live-state").dataset.live).toBe("idle");
     panel.remove();
   });
 });
@@ -317,5 +320,13 @@ describe("runtime debug panel placement and persistence", () => {
     const style = document.getElementById("runtime-debug-panel-style");
     expect(style?.textContent).toContain("bottom:");
     expect(style?.textContent).not.toContain("top:4px");
+  });
+
+  it("exposes the expand/collapse control as the panel summary", () => {
+    const panel = renderRuntimeDebugPanel();
+    const toggle = testid(panel, "runtime-debug-toggle");
+    expect(toggle.tagName).toBe("SUMMARY");
+    // 라이드 상태 한 줄은 접혀도 보이도록 toggle(summary) 안에 있어야 한다.
+    expect(toggle.querySelector("[data-testid='runtime-debug-live-state']")).not.toBeNull();
   });
 });
