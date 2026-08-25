@@ -44,9 +44,9 @@ export function sameInspectorPath(a: readonly number[], b: readonly number[] | u
 export function clearCommandInspector(): void {
   selectedPath = undefined;
   if (host) {
-    const modal = host.closest(".event-editor-modal");
+    const modal = host.closest<HTMLElement>("[data-testid='event-editor-modal']");
     hideInspector(host);
-    setTimeout(() => modal?.querySelector<HTMLElement>("[data-cmd-path].is-selected")?.focus(), 0);
+    modal?.querySelector<HTMLElement>("[data-cmd-path].is-selected")?.focus();
   }
 }
 
@@ -117,7 +117,7 @@ export function showCommandInspector(target: InspectorTarget): void {
     dataset: { testid: "event-inspector-close" },
     on: {
       pointerdown: (event) => event.preventDefault(),
-      click: () => clearCommandInspector(),
+      click: () => setTimeout(clearCommandInspector, 0),
     },
   });
   const previewActions = el("div", {

@@ -306,8 +306,11 @@
   max-width: 100%;
   min-width: 0;
   position: relative;
+  pointer-events: none;
   z-index: 0;
 }
+
+.event-editor .event-editor-command-header :is(button, input, select, textarea, summary, a) { pointer-events: auto; }
 
 .event-editor .event-editor-workbench {
   --event-editor-settings-track: var(--balanced-settings-width);

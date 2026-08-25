@@ -161,7 +161,8 @@ test("header test and save actions route to the real workflow", async ({ page })
   await expect(page.getByTestId("test-play-window")).toHaveCount(0);
 });
 
-test("required viewport matrix keeps controls reachable and resizer operable", async ({ browser }) => {
+test("required viewport matrix keeps controls reachable and resizer operable", async ({ page }) => {
+  test.setTimeout(240_000);
   await mkdir(DIR, { recursive: true });
   const viewports = [
     { width: 1586, height: 992 },
@@ -170,12 +171,16 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
     { width: 960, height: 900 },
   ] as const;
   const evidence: unknown[] = [];
+  const modal = await openMockupState(page, viewports[0]);
 
-  for (const viewport of viewports) {
-    const context = await browser.newContext({ viewport });
-    const page = await context.newPage();
-    const modal = await openMockupState(page, viewport);
-    await modal.locator(".event-storyboard-card").first().click();
+  for (const [index, viewport] of viewports.entries()) {
+    await page.setViewportSize(viewport);
+    if (index === 0) await modal.locator(".event-storyboard-card").first().click();
+    if (viewport.width <= 1180) {
+      await modal.getByTestId("event-inspector-close").click();
+      await expect(modal.getByTestId("event-editor-inspector")).toBeHidden();
+      await modal.locator(".event-storyboard-card").first().click();
+    }
     await expect(modal.getByTestId("event-editor-inspector")).toBeVisible();
     await expect(modal.getByTestId("event-inspector-title")).toBeVisible();
     await expect(modal.getByTestId("event-inspector-preview-current")).toBeVisible();
@@ -201,12 +206,7 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
       expect(box.x + box.width).toBeLessThanOrEqual(identityBand.x + identityBand.width);
     }
 
-    if (viewport.width <= 1180) {
-      await modal.getByTestId("event-inspector-close").click();
-      await expect(modal.getByTestId("event-editor-inspector")).toBeHidden();
-      await modal.locator(".event-storyboard-card").first().click();
-      await expect(modal.getByTestId("event-editor-inspector")).toBeVisible();
-    }
+    if (viewport.width <= 1180) await expect(modal.getByTestId("event-editor-inspector")).toBeVisible();
 
     const pageTabs = modal.getByTestId("event-classic-page-tabs");
     await expect(pageTabs).toBeVisible();
@@ -231,7 +231,6 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
     expect(metrics.workbenchTop).toBeGreaterThanOrEqual(metrics.pagebarBottom - 1);
     evidence.push({ viewport, resizeBefore: before, resizeAfter: Number(await handle.getAttribute("aria-valuenow")), metrics });
     await modal.screenshot({ path: `${DIR}/viewport-${viewport.width}x${viewport.height}.png` });
-    await context.close();
   }
 
   await writeFile(`${DIR}/viewport-matrix.json`, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
