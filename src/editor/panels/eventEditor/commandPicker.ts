@@ -224,7 +224,14 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
       let query = "";
       let viewMode = storedViewMode();
       const tabs = el("div", { class: "event-command-picker-tabs", attrs: { role: "tablist" } });
-      const commandArea = el("div", { class: "event-command-picker-panel" });
+      const commandArea = el("div", {
+        class: "event-command-picker-panel",
+        attrs: {
+          id: "event-command-picker-panel",
+          role: "tabpanel",
+          "aria-labelledby": "event-command-picker-tab-button-1",
+        },
+      });
       const search = el("input", {
         class: "event-command-picker-search",
         attrs: { type: "search", placeholder: "명령 검색 (전체 탭)", "aria-label": "이벤트 명령 검색" },
@@ -244,6 +251,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
           button.setAttribute("aria-selected", selected ? "true" : "false");
           button.setAttribute("tabindex", selected ? "0" : "-1");
         }
+        commandArea.setAttribute("aria-labelledby", `event-command-picker-tab-button-${activePage}`);
         gridToggle.textContent = viewMode === "grid" ? "▤ 리스트" : "▦ 그리드";
         gridToggle.setAttribute("aria-pressed", viewMode === "grid" ? "true" : "false");
         if (query.trim().length > 0) {
@@ -297,6 +305,8 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
               title: pickerPageTitle(page.page),
               "aria-label": pickerPageTitle(page.page),
               "aria-selected": page.page === activePage ? "true" : "false",
+              "aria-controls": "event-command-picker-panel",
+              id: `event-command-picker-tab-button-${page.page}`,
               tabindex: page.page === activePage ? "0" : "-1",
             },
             dataset: {
@@ -356,6 +366,9 @@ function highlightCommand(area: HTMLElement, index: number): void {
   const target = buttons[index];
   if (!target) return;
   target.classList.add("keyboard-active");
+  if (!target.id) target.id = `event-command-picker-option-${target.dataset.commandEntry ?? index}`;
+  const search = area.parentElement?.querySelector<HTMLInputElement>('[data-testid="event-command-picker-search"]');
+  search?.setAttribute("aria-activedescendant", target.id);
   target.scrollIntoView({ block: "nearest" });
 }
 

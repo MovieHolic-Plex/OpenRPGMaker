@@ -125,6 +125,11 @@ export class FakeElement extends FakeNode {
   get children(): FakeElement[] {
     return this.childNodes.filter((child): child is FakeElement => child instanceof FakeElement);
   }
+  get selectedOptions(): FakeElement[] {
+    if (this.tagName !== "SELECT") return [];
+    const options = this.children.filter((child) => child.tagName === "OPTION");
+    return options.filter((option, index) => option.value === this.value || (this.value === "" && index === 0));
+  }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
     add: (...tokens: string[]): void => {

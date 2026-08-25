@@ -59,6 +59,13 @@
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   overflow: hidden;
+  padding: 14px 16px 12px;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-subdialog-window {
+  height: min(760px, calc(100vh - 36px));
+  max-height: calc(100vh - 36px);
+  width: min(860px, calc(100vw - 36px));
 }
 
 .event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel {
@@ -74,10 +81,14 @@
 .event-command-picker-search-row {
   display: flex;
   gap: 8px;
+  min-height: 44px;
+  padding-bottom: 10px;
 }
 
 .event-command-picker-search {
   flex: 1 1 auto;
+  font: 500 13px/19px var(--font-ui, system-ui, sans-serif);
+  min-height: 36px;
   min-width: 0;
 }
 
@@ -87,7 +98,7 @@
   border-radius: 6px;
   color: var(--text-muted, var(--text-2));
   flex: 0 0 auto;
-  font: 650 11px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font: 650 11px/16px var(--font-ui, system-ui, sans-serif);
   padding: 4px 10px;
 }
 
@@ -101,6 +112,8 @@
   display: inline-flex;
   gap: 5px;
   justify-content: center;
+  min-height: 34px;
+  padding-inline: 16px;
 }
 
 .event-command-picker-tab::before {
@@ -167,7 +180,7 @@
   border-radius: 4px;
   color: var(--text-dim, var(--text-2));
   flex: 0 0 auto;
-  font: 700 10px/14px Inter, "Segoe UI", system-ui, sans-serif;
+  font: 700 10px/14px var(--font-ui, system-ui, sans-serif);
   margin-left: 6px;
   padding: 0 4px;
 }
@@ -189,8 +202,23 @@
   color: var(--text-dim, var(--text-2));
   display: inline-flex;
   flex-wrap: wrap;
-  font: 600 11px/16px "Malgun Gothic", sans-serif;
+  font: 600 11px/16px var(--font-ui, system-ui, sans-serif);
   gap: 5px;
+}
+
+@media (max-width: 1100px) {
+  .event-subdialog-backdrop[data-testid="event-command-picker"] {
+    padding: 18px;
+  }
+
+  .event-subdialog-backdrop[data-testid="event-command-picker"] .event-subdialog-window {
+    height: calc(100vh - 36px);
+    width: calc(100vw - 36px);
+  }
+
+  .event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .event-command-picker-legend .command-runtime-badge {

@@ -65,6 +65,20 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
   });
+  windowEl.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    const controls = focusableControls(windowEl);
+    if (controls.length === 0) return;
+    const first = controls[0]!;
+    const last = controls[controls.length - 1]!;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus({ preventScroll: true });
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus({ preventScroll: true });
+    }
+  });
 
   document.body.append(backdrop);
   clearChildren(body);
@@ -84,8 +98,8 @@ function renderHeader(options: EventSubdialogOptions, close: () => void): HTMLEl
     copy,
     el("button", {
       class: "btn event-subdialog-close",
-      text: "x",
-      attrs: { type: "button", title: "Close" },
+      text: "×",
+      attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
       on: { click: close },
     })
   );
@@ -95,4 +109,10 @@ function renderHeader(options: EventSubdialogOptions, close: () => void): HTMLEl
 function focusFirstControl(root: HTMLElement): void {
   const first = root.querySelector("button, input, select, textarea");
   if (first instanceof HTMLElement) first.focus();
+}
+
+function focusableControls(root: HTMLElement): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(
+    'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  ));
 }

@@ -70,21 +70,8 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
     movement: { type: "fixed", speed: 3, frequency: 3 },
     commands: [],
   };
-  const catalog = renderPageCommandCatalog(mapId, eventId, stub);
+  const catalog = renderPageCommandCatalog(mapId, eventId, stub, () => activePageIdOf(mapId, eventId));
   catalog.querySelector("[data-testid='page-command-summary']")?.remove();
-  const buttons = catalog.querySelectorAll<HTMLElement>("[data-testid^='command-add-']");
-  for (const btn of buttons) {
-    const testId = btn.dataset.testid ?? "";
-    const kind = commandKindForTestId(testId);
-    if (!kind) continue;
-    const fresh = btn.cloneNode(true) as HTMLElement;
-    fresh.addEventListener("click", () => {
-      const pageId = activePageIdOf(mapId, eventId);
-      if (!pageId) return;
-      openNewEventCommandKindDialog(kind, (command) => addEventPageCommand(mapId, eventId, pageId, command));
-    });
-    btn.replaceWith(fresh);
-  }
   section.append(catalog);
   container.append(section);
 }
@@ -464,33 +451,6 @@ function toolbarButton(
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,
   }) as HTMLButtonElement;
-}
-
-function commandKindForTestId(testId: string): Command["kind"] | null {
-  const map: Record<string, Command["kind"]> = {
-    "command-add-text": "text",
-    "command-add-choice": "choices",
-    "command-add-switch": "setSwitch",
-    "command-add-variable": "setVariable",
-    "command-add-branch": "fork",
-    "command-add-timer": "timer",
-    "command-add-move-route": "moveEvent",
-    "command-add-picture": "showPicture",
-    "command-add-audio": "playAudio",
-    "command-add-battle": "battleProcessing",
-    "command-add-gold": "changeGold",
-    "command-add-item": "changeItem",
-    "command-add-party": "changeParty",
-    "command-add-give-monster": "giveMonster",
-    "command-add-evolve-monster": "evolveMonster",
-    "command-add-set-lighting": "setLighting",
-    "command-add-checkpoint-save": "checkpointSave",
-    "command-add-kill-player": "killPlayer",
-    "command-add-trigger-ending": "triggerEnding",
-    "command-add-game-over": "gameOver",
-    "command-add-ending": "ending",
-  };
-  return map[testId] ?? null;
 }
 
 function pageCommandActions(mapId: MapId, eventId: string, pageId: string): CommandListActions {

@@ -355,7 +355,12 @@ function pageButton(
   }) as HTMLButtonElement;
 }
 
-export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+export function renderPageCommandCatalog(
+  mapId: MapId,
+  eventId: string,
+  page: EventPage,
+  resolvePageId: () => string | null = () => page.id,
+): HTMLElement {
   const wrap = el("div", {
     class: "panel-section page-command-catalog",
     dataset: { testid: "page-command-catalog" },
@@ -369,10 +374,13 @@ export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: Ev
         text: button.label,
         dataset: { testid: button.testId },
         on: {
-          click: () =>
+          click: () => {
+            const pageId = resolvePageId();
+            if (!pageId) return;
             openNewEventCommandKindDialog(button.kind, (command) =>
-              addEventPageCommand(mapId, eventId, page.id, command)
-            ),
+              addEventPageCommand(mapId, eventId, pageId, command)
+            );
+          },
         },
       })
     );
