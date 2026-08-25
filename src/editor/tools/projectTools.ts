@@ -2,6 +2,10 @@ import { createBlankProject } from "@/project/defaults";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import type { BattleUiStyle, Terms } from "@/project/types";
+
+const TERM_KEYS = ["attack", "skill", "item", "capture", "back", "target", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
+const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, { type: "string" as const }])) as Record<(typeof TERM_KEYS)[number], { readonly type: "string" }>;
 
 const MAX_PROMPT_LENGTH = 2000;
 const MAX_TITLE_LENGTH = 120;
@@ -54,4 +58,89 @@ const resetProject: ToolDefinition = {
   },
 };
 
-export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject];
+const setProjectSettings: ToolDefinition = {
+  name: "set_project_settings",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다.",
+  mode: "write",
+  domains: ["system", "database"],
+  parameters: {
+    type: "object",
+    properties: {
+      title: { type: "string" },
+      author: { type: "string" },
+      terms: { type: "object", properties: termSchema, additionalProperties: false },
+      playResolution: { type: "object", properties: { width: { type: "integer", minimum: 160, maximum: 1920 }, height: { type: "integer", minimum: 120, maximum: 1080 } }, required: ["width", "height"], additionalProperties: false },
+      resources: {
+        type: "object",
+        properties: {
+          titleResourceId: { type: "string" }, systemResourceId: { type: "string" }, battleSystemResourceId: { type: "string" },
+          defaultBgmResourceId: { type: "string" }, battleBgmResourceId: { type: "string" },
+        },
+        additionalProperties: false,
+      },
+      battle: {
+        type: "object",
+        properties: {
+          flow: { type: "string", enum: ["gauge", "strict"] },
+          uiStyle: { type: "string" },
+          activeSlots: { type: "integer", minimum: 1 },
+          initialTroopId: { type: "string" },
+        },
+        additionalProperties: false,
+      },
+      startActorIds: { type: "array", items: { type: "string" } },
+    },
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const changed: string[] = [];
+    if (typeof args.title === "string" && args.title.trim()) {
+      draft.meta.title = args.title.trim();
+      if (draft.system.titleScreen) draft.system.titleScreen.title = draft.meta.title;
+      changed.push("제목");
+    }
+    if (typeof args.author === "string" && args.author.trim()) {
+      draft.meta.author = args.author.trim();
+      changed.push("저자");
+    }
+    if (args.terms && typeof args.terms === "object" && !Array.isArray(args.terms)) {
+      const patch = Object.fromEntries(Object.entries(args.terms).filter((entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].trim().length > 0));
+      draft.meta.terms = { ...draft.meta.terms, ...patch } as Terms;
+      changed.push("용어");
+    }
+    if (args.playResolution && typeof args.playResolution === "object" && !Array.isArray(args.playResolution)) {
+      const resolution = args.playResolution as { width: number; height: number };
+      draft.system.playResolution = { width: resolution.width, height: resolution.height };
+      changed.push("화면");
+    }
+    if (args.resources && typeof args.resources === "object" && !Array.isArray(args.resources)) {
+      const resources = args.resources as Record<string, unknown>;
+      for (const key of ["titleResourceId", "systemResourceId", "battleSystemResourceId", "defaultBgmResourceId", "battleBgmResourceId"] as const) {
+        if (typeof resources[key] === "string") draft.system[key] = resources[key];
+      }
+      changed.push("리소스");
+    }
+    if (args.battle && typeof args.battle === "object" && !Array.isArray(args.battle)) {
+      const battle = args.battle as Record<string, unknown>;
+      if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
+      if (typeof battle.uiStyle === "string") draft.system.battleUiStyle = battle.uiStyle as BattleUiStyle;
+      if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
+      if (typeof battle.initialTroopId === "string") {
+        if (!draft.database.troops.some((troop) => troop.id === battle.initialTroopId)) throw new ToolError(`초기 적 그룹을 찾을 수 없습니다: ${battle.initialTroopId}`, { code: "troop-not-found" });
+        draft.system.initialTroopId = battle.initialTroopId;
+      }
+      changed.push("전투");
+    }
+    if (Array.isArray(args.startActorIds)) {
+      const ids = args.startActorIds.map(String);
+      const missing = ids.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
+      if (missing.length > 0) throw new ToolError(`초기 파티 actor id를 찾을 수 없습니다: ${missing.join(", ")}`, { code: "actor-not-found" });
+      draft.system.startActorIds = ids;
+      changed.push("초기 파티");
+    }
+    if (changed.length === 0) throw new ToolError("바꿀 프로젝트 설정이 없습니다.", { code: "invalid-args" });
+    return { summary: `프로젝트 설정 변경 — ${changed.join(", ")}`, data: { changed } };
+  },
+};
+
+export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject, setProjectSettings];

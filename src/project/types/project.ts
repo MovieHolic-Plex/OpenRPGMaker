@@ -493,6 +493,8 @@ export interface ProjectV1 {
 /** 변경 요약(모델이 다음 턴에 결과를 읽는다). */
 export interface ChangeSummary {
   tilesChanged: number;
+  /** 이름·크기·타일셋·BGM 등 타일/이벤트 외 맵 속성이 바뀐 기존 맵 수. */
+  mapPropertiesChanged?: number;
   eventsAdded: number;
   eventsModified: number;
   eventsRemoved: number;

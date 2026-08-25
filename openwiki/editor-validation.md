@@ -21,6 +21,12 @@
 
 Wiki verification, Playwright evidence, and focused test guidance for editor changes.
 
+## AI editor-wide tool validation (2026-08-25)
+
+- Run `test/aiEditorFullToolCoverage.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, and `test/aiEditorFullToolSafety.test.ts` together with provider-schema, hostile-argument, approval, plan exposure, quota, and message-budget tests. Required behavior: map metadata/tree/duplication writes, database utility CRUD facade, project/system settings, second-round discovery escalation, typed unknown/malformed failures, and approval-required classification for destructive calls.
+- The 40-tool base selector remains a regression contract. Editor-wide reachability is proven by `find_tools` followed by a later-round schema exposure, not by raising the base cap or sending the whole catalog. Request payload compaction and the provider schema ceiling must remain green.
+- Browser proof for an editor-wide assistant change must show (1) one non-map AI request changing actual project state, (2) one destructive request displaying approval while the pre-approval serialized project SHA stays unchanged, and (3) one multi-domain request with successful cross-domain tool/audit rows and a saveable project. Any authored QA project must be persisted to Supabase and reloaded by project id.
+
 ## Roguelike run validation (2026-08-24)
 
 - `runControl` and `run` are registered native kinds and participate in command/condition coverage, project shape validation, reference validation, summaries, and story explanation.

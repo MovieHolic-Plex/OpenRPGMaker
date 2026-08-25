@@ -117,6 +117,7 @@ function failureSummary(name: string, cause: unknown): string {
 function emptySummary(): ChangeSummary {
   return {
     tilesChanged: 0,
+    mapPropertiesChanged: 0,
     eventsAdded: 0,
     eventsModified: 0,
     eventsRemoved: 0,

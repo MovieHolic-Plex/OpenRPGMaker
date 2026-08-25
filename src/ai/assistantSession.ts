@@ -105,6 +105,20 @@ import {
   type WorkPlan,
 } from "./workPlan";
 
+const MAX_ESCALATED_TOOLS_PER_TURN = 16;
+const MAX_BASE_TURN_TOOL_SCHEMAS = 40;
+
+function discoveredToolNames(result: ToolResult): string[] {
+  if (!result.ok || typeof result.data !== "object" || result.data === null || Array.isArray(result.data)) return [];
+  const matches = (result.data as { readonly matches?: unknown }).matches;
+  if (!Array.isArray(matches)) return [];
+  return matches.flatMap((match) => {
+    if (typeof match !== "object" || match === null || Array.isArray(match)) return [];
+    const name = (match as { readonly name?: unknown }).name;
+    return typeof name === "string" ? [name] : [];
+  });
+}
+
 // UI 스트리밍/로그용 이벤트.
 export type SessionEvent =
   | { type: "assistant_token"; delta: string }
@@ -584,6 +598,7 @@ export class AssistantSession {
   private turnProposals = new Map<string, ProposedCall>();
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
+  private turnEscalatedToolNames: string[] = [];
   private eventBaseProposalKeys = new Map<string, string>();
   private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
@@ -965,6 +980,7 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
+    this.turnEscalatedToolNames = [];
     this.turnSuccessfulTools = new Set();
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
@@ -1894,7 +1910,7 @@ export class AssistantSession {
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
-    // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온으로 툴을 고정한다.
+    // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온을 기본 작업 세트로 쓴다.
     const domains = this.currentTurnToolDomains ?? computeActiveToolDomains("");
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
@@ -1904,32 +1920,6 @@ export class AssistantSession {
     // 계획 요구 툴(todo 8 실측): successTools/지시문에 명시된 툴은 도메인 게이트·40툴 상한에
     // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
     // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
-    const baseTools = toOpenAiTools(undefined, { domains });
-    const mentioned = mentionedToolSchemas(this.currentTurnRequestText ?? "");
-    const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
-    // F-03: quest 도메인 턴에서는 workPlan이 없어도 persist 툴을 반드시 노출한다.
-    const questPersist = this.currentTurnToolDomains?.has("quest")
-      ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
-      : [];
-    const requiredByName = new Map(
-      [...mentioned, ...planRequired, ...questPersist].map((tool) => [tool.function.name, tool] as const),
-    );
-    const requiredNames = new Set(requiredByName.keys());
-    const tools = [
-      ...baseTools.filter((tool) => !requiredNames.has(tool.function.name)),
-      ...requiredByName.values(),
-      SET_BUILD_SPEC_TOOL,
-      ...(planToolsOn ? WORK_PLAN_TOOLS : []),
-    ];
-    // 토큰 보정 관측용: tools 스키마도 prompt_tokens에 포함되므로 문자 수에 더한다(근사).
-    const toolsChars = JSON.stringify(tools).length;
-    // 노출된 툴 목록을 감사에 남긴다. 모델이 "그 기능은 없습니다" 라고 할 때(실측 2026-08-23:
-    // set_type_chart/define_ending/script_cutscene 가 있는데도 없다고 보고) 그 주장이 사실인지
-    // 로그로 확인할 방법이 없었다. 도메인 스코핑·40툴 상한의 결과를 관측 가능하게 만든다.
-    this.pushAudit({
-      kind: "status",
-      text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`.slice(0, 2000),
-    });
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     const orchestrated = this.orchestrationEnabled() || Boolean(this.workPlan);
@@ -1951,6 +1941,35 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
       let result: ChatResult;
+      const baseTools = toOpenAiTools(undefined, { domains });
+      const mentioned = mentionedToolSchemas(this.currentTurnRequestText ?? "");
+      const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
+      const questPersist = this.currentTurnToolDomains?.has("quest")
+        ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
+        : [];
+      const escalated = toolSchemasForNames(this.turnEscalatedToolNames);
+      const requiredByName = new Map(
+        [
+          ...mentioned,
+          ...planRequired,
+          ...questPersist,
+          ...escalated,
+          SET_BUILD_SPEC_TOOL,
+          ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+        ].map((tool) => [tool.function.name, tool] as const),
+      );
+      const requiredNames = new Set(requiredByName.keys());
+      const requiredTools = [...requiredByName.values()].filter((tool) => tool.function.name !== "find_tools");
+      const tools = [
+        ...baseTools.filter((tool) => !requiredNames.has(tool.function.name) && tool.function.name !== "find_tools").slice(0, MAX_BASE_TURN_TOOL_SCHEMAS),
+        ...requiredTools,
+        ...toolSchemasForNames(["find_tools"]),
+      ];
+      const toolsChars = JSON.stringify(tools).length;
+      this.pushAudit({
+        kind: "status",
+        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`.slice(0, 2000),
+      });
       // CPEN 64k 메시지 내용 상한(todo 8 실측 422): 전송 사본을 안전 예산으로 압축한다.
       // 원본(this.messages)은 감사/하네스용으로 유지된다.
       const requestMessages = compactMessagesForRequest(this.messages);
@@ -2178,6 +2197,19 @@ export class AssistantSession {
         // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
         // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
         if (toolResult.ok) this.recordSuccessfulTool(name);
+        if (name === "find_tools") {
+          const discovered = discoveredToolNames(toolResult);
+          const next = [...this.turnEscalatedToolNames];
+          for (const toolName of discovered) {
+            const existing = next.indexOf(toolName);
+            if (existing >= 0) next.splice(existing, 1);
+            next.push(toolName);
+          }
+          this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
+          if (discovered.length > 0) {
+            this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
+          }
+        }
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({
