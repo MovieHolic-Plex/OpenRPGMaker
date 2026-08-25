@@ -291,7 +291,7 @@ describe("event editor trust loop", () => {
 
     const search = document.querySelector<HTMLInputElement>('[data-testid="event-command-picker-search"]');
     search?.dispatchEvent(keyEvent("ArrowDown"));
-    expect(search?.getAttribute("aria-activedescendant")).toMatch(/^event-command-picker-option-/u);
+    expect(String(search?.getAttribute("aria-activedescendant"))).toMatch(/^event-command-picker-option-/u);
 
     const textCommand = document.querySelector<HTMLElement>('[data-testid="command-picker-add-text"]');
     const textId = textCommand?.parentElement?.dataset.commandId;
@@ -327,14 +327,15 @@ describe("event editor trust loop", () => {
     const dialog = backdrop?.querySelector<HTMLElement>('[role="dialog"]') ?? backdrop;
     const close = dialog?.querySelector<HTMLElement>(".event-subdialog-close");
     const search = dialog?.querySelector<HTMLElement>('[data-testid="event-command-picker-search"]');
-    if (!dialog || !close || !search) throw new Error("expected command picker dialog controls");
+    const cancel = dialog?.querySelector<HTMLElement>('[data-testid="event-command-picker-cancel"]');
+    if (!dialog || !close || !search || !cancel) throw new Error("expected command picker dialog controls");
 
     expect(close.getAttribute("aria-label")).toBe("닫기");
-    close.focus();
-    close.dispatchEvent(keyEvent("Tab"));
-    expect(document.activeElement).toBe(search);
-    search.dispatchEvent(keyEvent("Tab", { shiftKey: true }));
+    cancel.focus();
+    cancel.dispatchEvent(keyEvent("Tab"));
     expect(document.activeElement).toBe(close);
+    close.dispatchEvent(keyEvent("Tab", { shiftKey: true }));
+    expect(document.activeElement).toBe(cancel);
   });
 
   it("restores focus, caret, open details, and scroll across reactive rerenders", () => {

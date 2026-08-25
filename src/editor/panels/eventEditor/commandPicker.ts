@@ -356,7 +356,8 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
 
 /** 결과 영역의 명령 버튼들(그룹 헤딩·토글 제외). */
 function commandButtonsOf(area: HTMLElement): HTMLButtonElement[] {
-  return Array.from(area.querySelectorAll<HTMLButtonElement>("button[data-command-entry]"));
+  return Array.from(area.querySelectorAll<HTMLButtonElement>(".event-command-picker-command"))
+    .filter((button) => button.dataset.commandEntry !== undefined);
 }
 
 /** 키보드 후보를 index 로 옮긴다. 시야 밖이면 스크롤해 들여온다. */
@@ -366,9 +367,11 @@ function highlightCommand(area: HTMLElement, index: number): void {
   const target = buttons[index];
   if (!target) return;
   target.classList.add("keyboard-active");
-  if (!target.id) target.id = `event-command-picker-option-${target.dataset.commandEntry ?? index}`;
-  const search = area.parentElement?.querySelector<HTMLInputElement>('[data-testid="event-command-picker-search"]');
-  search?.setAttribute("aria-activedescendant", target.id);
+  const targetId = target.getAttribute("id") ?? `event-command-picker-option-${target.dataset.commandEntry ?? index}`;
+  target.setAttribute("id", targetId);
+  const search = area.closest(".event-subdialog-body")
+    ?.querySelector<HTMLInputElement>('[data-testid="event-command-picker-search"]');
+  search?.setAttribute("aria-activedescendant", targetId);
   target.scrollIntoView({ block: "nearest" });
 }
 

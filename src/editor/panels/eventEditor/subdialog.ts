@@ -112,7 +112,17 @@ function focusFirstControl(root: HTMLElement): void {
 }
 
 function focusableControls(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>(
-    'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-  ));
+  const controls: HTMLElement[] = [];
+  const visit = (parent: HTMLElement): void => {
+    for (const child of Array.from(parent.children)) {
+      if (!(child instanceof HTMLElement)) continue;
+      const isControl = ["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(child.tagName)
+        || child.getAttribute("tabindex") !== null;
+      const disabled = "disabled" in child && child.disabled === true;
+      if (isControl && !disabled && child.getAttribute("tabindex") !== "-1") controls.push(child);
+      visit(child);
+    }
+  };
+  visit(root);
+  return controls;
 }
