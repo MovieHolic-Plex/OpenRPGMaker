@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import {
   getBuildPaletteHouseOptions,
@@ -109,5 +109,28 @@ describe("build palette toggle → tool switch", () => {
     const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
 
     expect(fakePopup ? findByTestId(fakePopup, "build-palette-ai") : null).not.toBeNull();
+  });
+
+  it.each([
+    ["house", "야외 집 한 채"],
+    ["village", "마을"],
+  ] as const)("%s 버튼은 결정론적 시공 대신 AI 영역 작업을 즉시 실행한다", (primitive, instruction) => {
+    const openRegionTask = vi.fn();
+    setBuildPaletteEnabled(true);
+    editorState.set({
+      currentMapId: "map_blank_start",
+      selection: { mapId: "map_blank_start", x: 2, y: 3, width: 40, height: 38 },
+    });
+
+    const popup = renderBuildPalettePopup(openRegionTask);
+    const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
+    findByTestId(fakePopup!, `build-palette-${primitive}`)?.click();
+
+    expect(openRegionTask).toHaveBeenCalledWith(expect.objectContaining({
+      autoRun: true,
+      mapId: "map_blank_start",
+      region: { x: 2, y: 3, width: 40, height: 38 },
+      initialInstruction: expect.stringContaining(instruction),
+    }));
   });
 });
