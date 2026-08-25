@@ -422,7 +422,7 @@ function renderCommandQuickTools(): HTMLElement {
   const commandsColumn = (): HTMLElement | null => document.querySelector(".event-editor-commands-column");
   const open = (selector: string): void => {
     const column = commandsColumn();
-    const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-command-toolbar-tools']");
+    const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-editor-aux-tools']");
     const details = column?.querySelector<HTMLDetailsElement>(selector);
     if (!details) return;
     if (tools) tools.open = true;

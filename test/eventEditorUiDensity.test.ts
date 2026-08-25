@@ -138,9 +138,8 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
-    // The integrated balanced shell deliberately keeps page actions available in the top strip.
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(true);
-    expect(host.querySelector('[data-testid="event-draft-validation"]')?.closest(".event-editor-command-header")).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-draft-validation"]')?.parentElement).toBe(host.querySelector(".event-editor"));
     expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
   });
 
@@ -181,7 +180,7 @@ describe("event editor UI density", () => {
     const validation = host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]');
     expect(validation).toBeTruthy();
     expect(validation?.open).toBe(false);
-    expect(validation?.closest(".event-editor-command-header")).toBeTruthy();
+    expect(validation?.parentElement).toBe(host.querySelector(".event-editor"));
     expect(validation?.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeTruthy();
   });
 

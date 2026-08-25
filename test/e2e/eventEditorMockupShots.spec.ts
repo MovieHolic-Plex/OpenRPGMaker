@@ -54,9 +54,9 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await expect(modal.getByTestId("event-script-live-preview")).toHaveAttribute("open", "");
   await modal.getByTestId("event-command-quick-flow").click();
   await expect(modal.getByTestId("event-script-flowchart")).toHaveAttribute("open", "");
-  await modal.getByTestId("event-command-toolbar-tools").evaluate((details) => { (details as HTMLDetailsElement).open = false; });
+  await modal.getByTestId("event-editor-aux-tools").evaluate((details) => { (details as HTMLDetailsElement).open = false; });
   page.once("dialog", async (dialog) => {
-    expect(dialog.message()).toContain("영구 ID: event-mockup-reference");
+    expect(dialog.message()).toContain("영구 ID: 0001");
     expect(dialog.message()).toContain("연결된 NPC: north-gate-guard");
     await dialog.accept();
   });
@@ -88,7 +88,8 @@ test("event editor matches the approved mockup", async ({ page }) => {
   const validation = modal.getByTestId("event-draft-validation");
   await expect(validation).toBeVisible();
   await validation.getByTestId("event-draft-validation-summary").click();
-  await expect(validation.locator('[data-testid^="event-draft-validation-issue-"]')).toHaveCount(2);
+  await expect(validation.locator('[data-testid^="event-draft-validation-issue-"]')).toHaveCount(1);
+  await expect(validation).toContainText("보이지 않는 페이지가 캐릭터와 같은 높이에서 이동을 막습니다");
 
   const evidence = {
     viewport: { width: 1536, height: 1024 },
@@ -172,7 +173,7 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
     await expect(modal.getByTestId("event-editor-window-fullscreen")).toBeVisible();
     await expect(modal.getByTestId("event-editor-modal-close")).toBeVisible();
     const identityBounds = await Promise.all(
-      ["event-page-name-input", "event-editor-event-id", "event-position-x", "event-character-id-open-picker", "event-editor-event-info"]
+      ["event-page-name-input", "event-editor-event-id", "event-position-x", "event-character-id-picker-open", "event-editor-event-info"]
         .map(async (id) => rect(modal.getByTestId(id))),
     );
     const identityBand = await rect(modal.getByTestId("event-editor-card"));
