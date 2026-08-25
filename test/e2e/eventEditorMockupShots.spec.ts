@@ -166,6 +166,7 @@ test("header test and save actions route to the real workflow", async ({ page })
 });
 
 test("required viewport matrix keeps controls reachable and resizer operable", async ({ browser }) => {
+  test.setTimeout(300_000);
   await mkdir(DIR, { recursive: true });
   const viewports = [
     { width: 1586, height: 992 },
@@ -240,4 +241,4 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
   }
 
   await writeFile(`${DIR}/viewport-matrix.json`, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
-}, 300_000);
+});
