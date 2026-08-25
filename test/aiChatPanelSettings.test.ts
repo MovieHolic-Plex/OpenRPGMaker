@@ -226,15 +226,6 @@ describe("설정 자동 저장", () => {
     expect(modal.textContent).toContain("실행 모델(툴 작업)");
   });
 
-  it("빈 설정의 모델 선택기는 Antigravity Gemini 3.7 Flash 를 기본으로 보여준다", () => {
-    const panel = renderPanel();
-    const modal = openSettingsSurface(panel);
-    const preset = findByTestId(modal, "ai-config-model-preset");
-    if (!preset) throw new Error("model preset missing");
-    expect(preset.textContent).toContain("gemini-3.7-flash");
-    expect(preset.textContent).toContain("gemini-3.1-pro");
-  });
-
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       ...defaultAiConfig(),

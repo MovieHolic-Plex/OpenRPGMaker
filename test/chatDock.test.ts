@@ -37,9 +37,9 @@ describe("chatDock", () => {
   it("names the next dock for the toggle", () => {
     // Break: the placement menu used internal design names ("옆에 붙이기", "아래 바로", "왼쪽 유리")
     // instead of telling the user where the assistant will go.
-    expect(nextChatDockActionLabel("glass")).toBe("오른쪽에 고정");
-    expect(nextChatDockActionLabel("side")).toBe("입력줄로 떼기");
-    expect(nextChatDockActionLabel("float")).toBe("왼쪽 카드로 열기");
+    expect(nextChatDockActionLabel("glass")).toBe("오른쪽");
+    expect(nextChatDockActionLabel("side")).toBe("입력줄");
+    expect(nextChatDockActionLabel("float")).toBe("카드");
     expect(chatDockHint("glass")).toContain("오른쪽 패널");
   });
 });

@@ -18,9 +18,9 @@ export function isOverlayChatDock(dock: ChatDock): boolean {
 }
 
 export function nextChatDockActionLabel(current: ChatDock): string {
-  if (current === "glass") return "오른쪽에 고정";
-  if (current === "side") return "입력줄로 떼기";
-  return "왼쪽 카드로 열기";
+  if (current === "glass") return "오른쪽";
+  if (current === "side") return "입력줄";
+  return "카드";
 }
 
 export function chatDockHint(current: ChatDock): string {

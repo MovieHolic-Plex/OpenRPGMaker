@@ -125,10 +125,10 @@ export function renderProposalMapThumbnail(
   canvas.className = "ai-proposal-thumb-canvas";
   const wrap = el("div", {
     class: "ai-proposal-thumb",
-    attrs: { role: "img", "aria-label": `${kind === "before" ? "지금" : "초안"} 미니맵` },
+    attrs: { role: "img", "aria-label": `${kind === "before" ? "지금" : "적용 후"} 미니맵` },
     dataset: { testid: `ai-proposal-thumb-${kind}` },
     children: [
-      el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "지금" : "초안" }),
+      el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "지금" : "적용 후" }),
       canvas,
     ],
   });
@@ -154,7 +154,7 @@ export function renderProposalMapThumbnail(
     sliceCtx.imageSmoothingEnabled = false;
     sliceCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
     // 변경 영역 강조
-    sliceCtx.strokeStyle = kind === "after" ? "#4A57D6" : "#5C5348";
+    sliceCtx.strokeStyle = kind === "after" ? "#8A6B2F" : "#5C5348";
     sliceCtx.lineWidth = Math.max(2, Math.floor(tile / 8));
     sliceCtx.strokeRect(1, 1, sw - 2, sh - 2);
     canvas.width = sw;

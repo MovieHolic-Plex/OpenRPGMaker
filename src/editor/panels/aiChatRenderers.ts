@@ -52,7 +52,10 @@ export function failedToolVisibleSummary(result: Pick<ToolResult, "summary" | "i
 export function formatToolActivityLine(name: string, result: ToolResult): string {
   const mark = result.ok ? "✓" : "✗";
   const draftPrefix = result.ok && isDraftDestructiveTool(name) ? "(초안) " : "";
-  return ruleToolRejectionText(name, result) ?? `${draftPrefix}${mark} ${name} — ${result.summary}`;
+  const summary = result.summary.trim();
+  const line = summary.length > 0 ? summary : name;
+  return ruleToolRejectionText(name, result) ?? `${draftPrefix}${mark} ${line}`;
+
 }
 
 export function reasoningToggleText(count: number, collapsed: boolean): string {

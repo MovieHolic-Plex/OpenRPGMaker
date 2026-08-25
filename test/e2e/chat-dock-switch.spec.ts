@@ -136,7 +136,7 @@ test.describe("chat dock switch", () => {
     // Break: the click opened an absolutely positioned menu inside the side host's overflow:hidden;
     // it existed in the DOM but was completely clipped, so the assistant could not be detached.
     await expect(page.getByTestId("ai-more-menu")).toBeVisible();
-    await expect(page.getByTestId("ai-more-dock")).toHaveText("입력줄로 떼기");
+    await expect(page.getByTestId("ai-more-dock")).toHaveText("입력줄");
     await page.screenshot({ path: "output/evidence/assistant-dock/side-menu-open.png" });
     await page.getByTestId("ai-more-menu-toggle").click();
     await page.getByTestId("ai-chat-detach").click();

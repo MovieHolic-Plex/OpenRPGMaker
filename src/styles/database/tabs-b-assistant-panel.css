@@ -23,5 +23,7 @@
 @import "./tabs-b-assistant-panel/11-autonomous-run-surface.css";
 @import "./tabs-b-assistant-panel/12-assistant-temperature.css";
 
-/* 컴포저는 마지막 — 구 `.ai-chat-input-row` 잔여 규칙(04번)을 확실히 이긴다. */
+/* 컴포저는 구 `.ai-chat-input-row` 잔여 규칙(04번)을 이긴다. */
 @import "./assistant-composer.css";
+/* Modern cream conversation column — after composer so glass/side chrome wins. */
+@import "./tabs-b-assistant-panel/13-assistant-modern.css";

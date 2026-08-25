@@ -395,7 +395,7 @@ describe("OAuth 빠른 선택", () => {
   });
 
   it("화살표 키가 옆 퀵 라디오를 선택하고 포커스도 옮긴다 (결함 4)", async () => {
-    const { root, dispose } = await render();
+    const { root, dispose } = await render("openai-codex");
     const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
 
@@ -431,7 +431,7 @@ describe("OAuth 빠른 선택", () => {
     fetchChatGptAuthStatus
       .mockImplementationOnce(() => new Promise((resolve) => { resolveA = resolve; }))
       .mockImplementationOnce(() => new Promise((resolve) => { resolveB = resolve; }));
-    const { root, dispose } = await render();
+    const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
 
     findByTestId(root, "ai-auth-quick-google-antigravity")?.click();
@@ -456,7 +456,7 @@ describe("OAuth 빠른 선택", () => {
     let resolveLogin!: (value: unknown) => void;
     startChatGptLogin.mockImplementationOnce(() => new Promise((resolve) => { resolveLogin = resolve; }));
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
 
     findByTestId(root, "ai-oauth-login")?.click();

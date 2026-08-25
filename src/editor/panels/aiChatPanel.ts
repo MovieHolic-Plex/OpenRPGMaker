@@ -18,7 +18,7 @@ import {
   persistAssistantTemperature,
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
-import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
+import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
@@ -80,7 +80,7 @@ import {
   nextStepHint,
   readAgentBrief,
 } from "./aiAgentBrief";
-import { AI_AUTHORING_EXAMPLES, buildAiAuthoringExamples, buildVisualStartGallery } from "./aiStartScreenCards";
+import { AI_AUTHORING_EXAMPLES, buildAiAuthoringExamples } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
@@ -91,7 +91,6 @@ import {
 } from "@/editor/aiAssistantBridge";
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import {
-  AUTO_COLLAPSE_AFTER_AI_MS,
   applyAiFontSize,
   clampPanelSize,
   loadAiFontSize,
@@ -115,6 +114,7 @@ import {
   attachCompletenessWarnings,
   backupProjectSnapshot,
   completenessSpecForProposal,
+  displayUserAuditText,
   downloadJson,
   dropSession,
   exportCombinedAudit,
@@ -286,6 +286,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const openProposalModal = proposalModal.open;
   const closeProposalModal = proposalModal.close;
   let turnBusy = false;
+  let dockToggleLock: HTMLButtonElement | null = null;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
   // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 검토 대기·오류면 유지.
@@ -455,7 +456,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     closeToolActivity();
     for (const entry of record.entries) renderConversationEntry(entry);
     const lastAssistant = [...record.entries].reverse().find((entry) => entry.kind === "assistant" && entry.text.trim());
-    if (lastAssistant) renderQuickReplies(lastAssistant.text);
+    if (lastAssistant?.kind === "assistant") renderQuickReplies(lastAssistant.text);
     setStatus(source === "auto" ? "대화 복원됨" : "이전 대화");
     refreshExportButton();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
@@ -681,6 +682,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     sendButton.hidden = false;
     sendButton.disabled = turnBusy;
     sendButton.setAttribute("aria-disabled", String(turnBusy));
+    if (dockToggleLock) {
+      dockToggleLock.disabled = turnBusy;
+      dockToggleLock.setAttribute("aria-disabled", String(turnBusy));
+      if (turnBusy) dockToggleLock.setAttribute("title", "작업이 끝난 뒤에 위치를 바꿀 수 있습니다.");
+    }
   };
   const refreshRunningStatus = (record = false): void => {
     if (!runningProgress) return;
@@ -1653,7 +1659,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-next-steps",
     dataset: { testid: "ai-next-steps" },
   });
-  let nextStepsExpanded = false;
   const refreshNextSteps = (): void => {
     if (typeof document === "undefined") return;
     const brief = readAgentBrief();
@@ -1671,11 +1676,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       nextSteps.replaceChildren();
       return;
     }
-    const prompts = directorStartPrompts(brief).slice(0, 3);
-    const project = store.getCurrent();
-    const mapId = editorState.get().currentMapId ?? project.startMapId;
-    const map = mapId ? project.maps[mapId] : undefined;
-    const tileset = map ? project.tilesets[map.tilesetId] ?? null : null;
     const pickExample = (instruction: string): void => {
       input.value = instruction;
       input.focus();
@@ -1689,36 +1689,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         text: nextStepHint(brief),
       }),
       buildAiAuthoringExamples({
-        examples: nextStepsExpanded ? undefined : AI_AUTHORING_EXAMPLES.slice(0, 2),
+        examples: AI_AUTHORING_EXAMPLES.slice(0, 2),
         onPick: pickExample,
       }),
     ];
-    if (nextStepsExpanded) {
-      const gallery = buildVisualStartGallery({
-        tileset,
-        prompts,
-        tileSize: 28,
-        charsetHeight: 64,
-        onPick: (instruction, id) => {
-          const picked = prompts.find((prompt) => prompt.id === id);
-          void sendText(instruction, picked?.label ?? instruction);
-        },
-      });
-      gallery.classList.add("ai-next-steps-list");
-      children.push(gallery);
-    }
-    children.push(el("button", {
-      class: "ai-next-steps-more",
-      text: nextStepsExpanded ? "접기" : "더 보기",
-      attrs: { type: "button" },
-      dataset: { testid: "ai-next-steps-more" },
-      on: {
-        click: () => {
-          nextStepsExpanded = !nextStepsExpanded;
-          refreshNextSteps();
-        },
-      },
-    }));
+
     nextSteps.replaceChildren(...children);
   };
   // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다(float 전용 —
@@ -1944,6 +1919,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshDockLabels();
   };
   const onDockToggleClick = (): void => {
+    if (turnBusy || runningProgress) {
+      toast("작업이 끝난 뒤에 위치를 바꿀 수 있습니다.", "info");
+      return;
+    }
     if (options.onChatDockToggle) options.onChatDockToggle();
     else changeDock(cycleChatDock(currentChatDock()));
     refreshDockLabels();
@@ -1966,6 +1945,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-dock-mode-btn", dockMode: currentChatDock() },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
+  dockToggleLock = dockModeButton;
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",

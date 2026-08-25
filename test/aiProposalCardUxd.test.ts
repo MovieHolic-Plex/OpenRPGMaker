@@ -267,6 +267,18 @@ describe("UXD proposal summary helpers", () => {
     expect(proposalPreviewMapId([worldCall], before, after)).toBeNull();
   });
 
+  it("author_house 타일 차이는 도구 화이트리스트 밖이어도 미니맵 후보가 된다", () => {
+    const before = createBlankProject();
+    const after = structuredClone(before);
+    const mapId = before.startMapId;
+    const map = after.maps[mapId];
+    if (map) map.lowerTiles[map.width * 4 + 7] = TILE.PATH;
+    const houseCall = proposed("author_house", { mapId, kind: "single" }, { tilesChanged: 24 }, "집 1");
+
+    expect(proposalPreviewMapId([houseCall], before, after)).toBe(mapId);
+    expect(proposalPreviewMapId([houseCall], before, before)).toBe(mapId);
+  });
+
   it("새 맵 위의 후속 페인트는 create_map에 의존한다", () => {
     const calls = [
       proposed("create_map", { id: "map_new", name: "새 맵", width: 8, height: 8 }, { mapsAdded: 1 }, "맵 생성", { mapId: "map_new" }),

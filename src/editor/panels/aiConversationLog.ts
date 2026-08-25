@@ -279,9 +279,11 @@ export function createConversationLogHost(options: {
   const refreshToolActivityToggle = (): void => {
     if (!toolActivity) return;
     const { count, writeOrFailCount, readOkCount, list, toggle } = toolActivity;
-    const parts = [`🔧 도구 ${count}회`];
-    if (readOkCount > 0 && writeOrFailCount > 0) parts.push(`(조회 ${readOkCount} · 작업 ${writeOrFailCount})`);
-    toggle.textContent = `${parts.join(" ")} ${list.hidden ? "▸" : "▾"}`;
+    const parts: string[] = [];
+    if (writeOrFailCount > 0) parts.push(`작업 ${writeOrFailCount}`);
+    if (readOkCount > 0) parts.push(`조회 ${readOkCount}`);
+    if (parts.length === 0) parts.push(`작업 ${count}`);
+    toggle.textContent = `${parts.join(" · ")} ${list.hidden ? "▸" : "▾"}`;
   };
   const closeToolActivity = (): void => {
     toolActivity = null;
