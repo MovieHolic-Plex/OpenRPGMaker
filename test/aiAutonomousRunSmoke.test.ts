@@ -79,6 +79,7 @@ function exhausted(): never {
 
 const ORCH_CONFIG = {
   authMode: "apiKey" as const,
+  agentMode: "auto" as const,
   baseUrl: "x",
   model: "supervisor-model",
   liteModel: "executor-model",
@@ -87,10 +88,8 @@ const ORCH_CONFIG = {
   maxTokens: 512,
 };
 
-// 주의: "빈 맵에 집 하나 지어줘"(무표지)는 의도 확인 게이트(intentClarify house-vs-interior)가
-// LLM 호출 전에 되묻는다 — 드라이버는 질문에 자동 송신하지 않는다(todo 2 사용자 우선 계약).
-// 스모크의 생명주기 증명은 "야외" 표지로 경로가 확정된 변형을 쓴다(아래 pause 테스트가
-// 무표지 게이트 동작을 별도로 고정한다).
+// 자동 모드는 집/실내 의도 확인을 건너뛰고 계획으로 진행한다. 스모크의 생명주기 증명은
+// 여전히 "야외" 표지로 경로를 고정해 계획 자체의 변동을 줄인다.
 // 추가로 author_house 는 공간 빌드 스펙 게이트(SPATIAL_BUILD_TOOLS) 대상이다 — 실제 패널이
 // 사용자 맵 선택 영역을 [컨텍스트] 푸터로 붙여 보내는 것과 동일하게 선택 영역 푸터를 넣어
 // 암묵적 명세(implicitSpecFromContext)를 만든다.
@@ -148,20 +147,20 @@ const statusTexts = (session: { getAuditEntries(): readonly { kind: string; text
   session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text));
 
 describe("자율 런 통합 스모크 (todo 7)", () => {
-  it("무표지 집 요청은 의도 확인 게이트에서 일시정지한다 — LLM 호출 없음, 자동 송신 없음", async () => {
+  it("자동 모드의 무표지 집 요청은 의도 확인을 건너뛰고 계획으로 진행한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
     let calls = 0;
     const chat = async (): Promise<ChatResult> => {
       calls += 1;
-      throw new Error("LLM은 호출되면 안 된다 — 의도 확인 게이트가 먼저 막는다");
+      return finalResult("야외 집(외장)으로 진행합니다.");
     };
     const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
 
     const result = await session.sendUserMessage(HOUSE_GOAL_AMBIGUOUS, () => {}, undefined, { autonomous: true });
 
-    expect(calls).toBe(0);
+    expect(calls).toBeGreaterThan(0);
     expect(result.stoppedReason).toBe("final");
     expect(result.assistantText).toContain("야외 집(외장)으로");
     const audits = statusTexts(session);

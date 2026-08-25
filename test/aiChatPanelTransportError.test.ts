@@ -2,7 +2,7 @@
 // clear pending, append system bubble with settings CTA, and keep ai-send mounted disabled
 // alongside ai-abort (not hidden swap).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, LLM_RETRY_BACKOFF_MS } from "@/ai/llmClient";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -31,6 +31,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -45,6 +46,7 @@ async function flushAsync(): Promise<void> {
 
 describe("transport failure paints recovery CTA and keeps Send mounted", () => {
   it("refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible", async () => {
+    vi.useFakeTimers();
     // Any transport failure counts — network throw
     vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
     const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
@@ -59,7 +61,10 @@ describe("transport failure paints recovery CTA and keeps Send mounted", () => {
     input.value = "hello";
     send.click();
     expect(findByTestId(panel, "ai-send")).toBeTruthy();
-    for (let i = 0; i < 200 && !findByTestId(panel, "ai-error-open-settings"); i++) await Promise.resolve();
+    for (let attempt = 0; attempt < 8 && !findByTestId(panel, "ai-error-open-settings"); attempt += 1) {
+      await vi.advanceTimersByTimeAsync(LLM_RETRY_BACKOFF_MS);
+      await flushAsync();
+    }
     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
     expect(panel.classList.contains("is-turn-running")).toBe(false);
     expect((status.textContent ?? "")).not.toContain("계획 중");

@@ -124,7 +124,7 @@ export function modelCatalogForAuthMode(
   if (authMode === "chatgpt" && (!provider || provider.id === "openai-codex")) {
     return CHATGPT_OAUTH_MODELS;
   }
-  if (provider && provider.id !== "openai-codex") {
+  if (authMode === "chatgpt" && provider && provider.id !== "openai-codex") {
     const providerModels = OH_MY_PI_PROVIDER_MODELS[provider.id];
     if (providerModels) {
       return [{ label: `${provider.label} · oh-my-pi`, models: providerModels }];

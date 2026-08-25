@@ -72,7 +72,8 @@ describe("AI 채팅 lean UI 정책", () => {
         )
       ) as FakeElement;
       expect(node.tagName).toBe("DIV");
-      expect(node.textContent).toContain("paint_road");
+      expect(node.textContent).toBe("✓ 길 12칸");
+      expect(node.textContent).not.toContain("paint_road");
       expect(node.querySelector?.("pre")).toBeFalsy();
     } finally {
       restore();

@@ -366,7 +366,40 @@ function isPinnedTool(tool: ToolDefinition, domains: ReadonlySet<ToolDomain>): b
 function trimToExposureCap(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain>): readonly ToolDefinition[] {
   if (exposed.length <= MAX_EXPOSED_TOOLS) return exposed;
   const pinned = exposed.filter((tool) => isPinnedTool(tool, domains));
-  if (pinned.length >= MAX_EXPOSED_TOOLS) return pinned.slice(0, MAX_EXPOSED_TOOLS);
+  if (pinned.length >= MAX_EXPOSED_TOOLS) {
+    // 핀 자체가 상한을 넘으면 레지스트리 순서로 자르지 않는다. 뒤쪽에 등록된 강한
+    // 의도 도메인(system 등)이 통째로 사라지므로, 도메인별 라운드로빈으로 최소
+    // 도달성을 보장한 뒤 원래 레지스트리 순서로 반환한다.
+    const NO_DOMAIN = "__none__" as const;
+    const buckets = new Map<ToolDomain | typeof NO_DOMAIN, ToolDefinition[]>();
+    for (const tool of pinned) {
+      const key = toolPrimaryDomain(tool) ?? NO_DOMAIN;
+      const bucket = buckets.get(key);
+      if (bucket) bucket.push(tool);
+      else buckets.set(key, [tool]);
+    }
+    const order = [...buckets.keys()].sort((a, b) => {
+      const pa = a === NO_DOMAIN ? 99 : domainPriority(a, domains);
+      const pb = b === NO_DOMAIN ? 99 : domainPriority(b, domains);
+      if (pa !== pb) return pa - pb;
+      const wa = a === NO_DOMAIN ? 99 : (WRITE_HEAVY_DOMAIN_ORDER.get(a) ?? 99);
+      const wb = b === NO_DOMAIN ? 99 : (WRITE_HEAVY_DOMAIN_ORDER.get(b) ?? 99);
+      return wa - wb;
+    });
+    const picked = new Set<ToolDefinition>();
+    while (picked.size < MAX_EXPOSED_TOOLS) {
+      let tookAny = false;
+      for (const key of order) {
+        if (picked.size >= MAX_EXPOSED_TOOLS) break;
+        const next = buckets.get(key)?.shift();
+        if (!next) continue;
+        picked.add(next);
+        tookAny = true;
+      }
+      if (!tookAny) break;
+    }
+    return exposed.filter((tool) => picked.has(tool));
+  }
   const rest = exposed.filter((tool) => !isPinnedTool(tool, domains));
 
   const NO_DOMAIN = "__none__" as const;

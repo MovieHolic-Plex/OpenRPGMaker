@@ -139,19 +139,17 @@ describe("AI 패널 크롬", () => {
     expect(plate?.textContent ?? "").not.toMatch(/지시|질문|계획/u);
   });
 
-  it("헤더 존재 줄은 빈 프로젝트 readAgentBrief().line 이다", () => {
-    // Break: plate is missing or the line is not readAgentBrief().line.
+  it("헤더 존재 줄은 친근한 빈 맵 안내다", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const expected = readAgentBrief().line;
     const line = findByTestId(panel, "ai-director-line");
 
     expect(expected).toBe("빈 맵 20×15 · 바닥 · 칠하기");
-    expect(line?.textContent).toBe(expected);
+    expect(line?.textContent).toBe("이 맵에 무엇을 둘까요");
   });
 
-  it("레이어·도구가 바뀌면 존재 줄이 따라간다", () => {
-    // Break: plate does not subscribe to editorState, so the line stays at boot.
+  it("레이어·도구가 바뀌어도 친근한 빈 맵 안내를 유지한다", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const line = findByTestId(panel, "ai-director-line");
@@ -159,8 +157,8 @@ describe("AI 패널 크롬", () => {
 
     editorState.set({ layer: "upper", tool: "fill" });
 
-    expect(line.textContent).toBe("빈 맵 20×15 · 덧그림 · 채우기");
-    expect(line.textContent).toBe(readAgentBrief().line);
+    expect(readAgentBrief().line).toBe("빈 맵 20×15 · 덧그림 · 채우기");
+    expect(line.textContent).toBe("이 맵에 무엇을 둘까요");
   });
 
   it("첫 방문(저장값 없음)은 펼친 채 부팅한다", () => {
@@ -287,15 +285,13 @@ describe("AI 패널 크롬", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const steps = findByTestId(panel, "ai-next-steps");
-    const buttons = steps?.querySelectorAll(".ai-start-visual-card") ?? [];
-    const expected = directorStartPrompts(readAgentBrief());
+    const examples = findByTestId(panel, "ai-authoring-examples");
+    const buttons = examples?.querySelectorAll(".ai-authoring-example-chip") ?? [];
 
     expect(steps?.hidden).toBe(false);
     expect(findByTestId(panel, "ai-next-steps-hint")?.textContent).toBe(nextStepHint(readAgentBrief()));
-    expect(buttons.length).toBe(expected.length);
-    expect(buttons[0]?.textContent).toBe(expected[0]?.label);
-    expect(findByTestId(panel, `ai-start-visual-stage-${expected[0]?.id ?? "place"}`)).toBeTruthy();
-    expect(findByTestId(panel, "ai-authoring-examples")).toBeTruthy();
+    expect(buttons.length).toBe(2);
+    expect(examples).toBeTruthy();
   });
 
   it("감독 칩 클릭은 입력만 채우고 전송하지 않는다", () => {
@@ -364,20 +360,17 @@ describe("AI 패널 크롬", () => {
     expect(stopIds).toEqual(expect.arrayContaining([...IDLE_FLOAT_TAB_STOPS]));
   });
 
-  it("float dock does not mount the work log or rising overlay", () => {
-    // Break: applyComposerViewPolicy still leaves .ai-chat-log / ai-rising-overlay
-    // under the float panel (even if CSS display:none hides them).
+  it("float dock keeps the work log mounted without the rising overlay", () => {
     const panel = renderPanel();
     expandPanel(panel);
 
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
-    expect(findByTestId(panel, "ai-chat-log")).toBeNull();
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
-    expect(panel.querySelector(".ai-chat-log")).toBeNull();
+    expect(panel.querySelector(".ai-chat-log")).toBeTruthy();
   });
 
-  it("side dock mounts the work log, and switching back to float unmounts it", () => {
-    // Break: dock toggle only flips classes / display:none and never remounts the log.
+  it("side dock mounts the work log, and switching back to float keeps it visible", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const toggle = findByTestId(panel, "chat-dock-toggle");
@@ -401,7 +394,7 @@ describe("AI 패널 크롬", () => {
     toggle.click();
 
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
-    expect(findByTestId(panel, "ai-chat-log")).toBeNull();
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 

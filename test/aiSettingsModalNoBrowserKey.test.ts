@@ -122,6 +122,7 @@ describe("저장되는 blob 에 비밀이 남지 않는다", () => {
 
 describe("모델 프리셋과 경고", () => {
   it("프리셋에서 고르면 경고가 그 자리에서 재평가된다", async () => {
+    storage.set(AI_CONFIG_KEY, JSON.stringify({ providerId: "openai-codex" }));
     const { root, dispose } = await renderForm();
     const input = findByTestId(root, "ai-config-model");
     const preset = findByTestId(root, "ai-config-model-preset");
@@ -142,6 +143,7 @@ describe("모델 프리셋과 경고", () => {
   });
 
   it("경고 문구가 없는 규칙(gpt- 접두사)을 주장하지 않는다", async () => {
+    storage.set(AI_CONFIG_KEY, JSON.stringify({ providerId: "openai-codex" }));
     const { root, dispose } = await renderForm();
     const input = findByTestId(root, "ai-config-model");
     input!.value = "gpt-5.1-codex-max"; // gpt- 로 시작하지만 카탈로그 밖이다

@@ -18,7 +18,7 @@ import {
   persistAssistantTemperature,
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
-import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
+import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
@@ -91,6 +91,7 @@ import {
 } from "@/editor/aiAssistantBridge";
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import {
+  AUTO_COLLAPSE_AFTER_AI_MS,
   applyAiFontSize,
   clampPanelSize,
   loadAiFontSize,
@@ -291,6 +292,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let runningPhaseStatus: string | null = null;
   // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 검토 대기·오류면 유지.
   let collapseAfterAiWork = false;
+  // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
+  // 같은 초기화 구간에 둔다. 아래 크롬 구간에서 선언하면 자동 복원 sendText가
+  // TDZ 상태의 collapsed를 읽어 턴을 시작하기 전에 실패한다.
+  let collapsed = loadPanelCollapsed();
   let autoCollapseTimer: number | null = null;
   let volatileZone: HTMLElement | null = null;
   // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
@@ -539,7 +544,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
-  // 큐에 쌓고 "대기 중 N건"으로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
+  // 큐에 쌓고 "기다리는 메시지 N개"로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
   const pendingSends: { text: string; displayAs?: string; explicitSkillId?: string }[] = [];
   const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
   queueIndicator.hidden = true;
@@ -572,6 +577,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     autonomousRunSurface?.remove();
     autonomousRunSurface = null;
     autonomousFeedHost = null;
+    panel.classList.remove("is-autonomous-run");
   };
   const beginAutonomousRun = (): void => {
     // 새 런: 이전 런의 계획/예산/피드를 전부 버리고 0부터 시작한다.
@@ -595,18 +601,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       mainColumn.prepend(autonomousRunSurface);
     }
+    panel.classList.add("is-autonomous-run");
     return autonomousRunSurface;
   };
   // 계획 도착 시마다 체크리스트를 갱신한다(진행 요약/현재 레이어가 이벤트마다 재계산된다).
   const refreshAutonomousRunSurface = (): void => {
     if (!autonomousRunState || !autonomousRunState.plan) return;
-    ensureAutonomousRunSurface().replaceChildren(
-      renderWorkPlanChecklist(autonomousRunState.plan, {
-        active: autonomousRunState.active,
-        budget: autonomousRunState.budget,
-      }),
-      autonomousFeedHost!,
-    );
+    const surface = ensureAutonomousRunSurface();
+    const checklist = renderWorkPlanChecklist(autonomousRunState.plan, {
+      active: autonomousRunState.active,
+      budget: autonomousRunState.budget,
+    });
+    checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(autonomousFeedHost!);
+    surface.replaceChildren(checklist);
   };
   // 마일스톤 자동 적용/승인 대기 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
   const appendMilestoneFeedLine = (kind: "applied" | "paused", title: string, detail: string): void => {
@@ -1528,12 +1535,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // Overlay empty kit dropped — idle prompts live in the composer as director chips.
   const ensureStartScreen = (): void => {};
+  let autoRestoreReplayText: string | null = null;
   if (autoRestoreConversation) {
-    restoreConversationRecord(autoRestoreConversation, "auto");
     const entries = autoRestoreConversation.entries;
     const lastSpeak = [...entries].reverse().find((entry) => entry.kind === "user" || entry.kind === "assistant");
     if (lastSpeak?.kind === "user" && lastSpeak.text.trim()) {
-      void sendText(displayUserAuditText(lastSpeak.text), undefined, { replay: true });
+      autoRestoreReplayText = displayUserAuditText(lastSpeak.text);
     }
   }
 
@@ -1838,7 +1845,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
 
   // 접기 토글 — 상태는 localStorage에 유지되어 새로고침/모드 전환 후에도 기억된다.
-  let collapsed = loadPanelCollapsed();
   const collapseButton = el("button", {
     class: "ai-chat-collapse",
     attrs: { type: "button", title: "패널 접기/펼치기", "aria-label": "AI 패널 접기/펼치기", "aria-expanded": String(!collapsed) },
@@ -2445,7 +2451,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI 작업 종료 후 맵 우선으로 접기 (이미 펼쳐 있던 경우 포함).
   scheduleCollapseAfterAiWork = (): void => {
     clearAutoCollapseTimer();
-    collapseAfterAiWork = false;
+    // 사이드 워크 로그는 자동 접기로 숨기지 않는다. 맵을 덮는 독만 접는다.
+    if (!isOverlayChatDock(readChatDock())) return;
+    if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
+    // 진행 중 자율 런의 계획/승인 상태는 런이 끝날 때까지 화면에 남긴다.
+    if (autonomousRunState?.active) return;
+    autoCollapseTimer = window.setTimeout(() => {
+      autoCollapseTimer = null;
+      if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
+      if (autonomousRunState?.active || hasPendingQuestion()) return;
+      collapseAfterAiWork = false;
+      collapsed = true;
+      applyCollapsed();
+    }, AUTO_COLLAPSE_AFTER_AI_MS);
   };
   const toggleCollapsed = (): void => {
     clearAutoCollapseTimer();
@@ -2805,6 +2823,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void sendText(text);
     },
   });
+  // 복원된 마지막 사용자 메시지는 모든 panel/collapse 콜백이 초기화된 뒤 재생한다.
+  // 패널 조립 중 sendText를 호출하면 panel·collapsed TDZ를 건드려 복원이 실패한다.
+  if (autoRestoreConversation) restoreConversationRecord(autoRestoreConversation, "auto");
+  if (autoRestoreReplayText) {
+    void sendText(autoRestoreReplayText, undefined, { replay: true });
+  }
 
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
