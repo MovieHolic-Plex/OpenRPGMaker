@@ -11,7 +11,7 @@ import {
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
 } from "@/editor/aiApplyCompletion";
-import type { AiDocument } from "@/project/types";
+import type { AiDocument, Project } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import {
   parseAssistantTemperature,
@@ -93,12 +93,13 @@ import {
   AUTO_COLLAPSE_AFTER_AI_MS,
   applyAiFontSize,
   clampPanelSize,
+  clampPanelSizeToViewport,
   loadAiFontSize,
+  loadDockPanelSize,
   loadPanelCollapsed,
-  loadPanelSize,
   saveAiFontSize,
+  saveDockPanelSize,
   savePanelCollapsed,
-  savePanelSize,
   type AiFontSize,
 } from "./aiPanelLayout";
 import { formatAiRunningStatus, parseAutonomousRunBudget, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
@@ -109,7 +110,8 @@ import {
 } from "./aiConversationLog";
 import { createProposalModalElements } from "./aiProposalModal";
 import { anchoredPopupPosition } from "./popupPosition";
-import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
+import { createProposalHost, renderAppliedComparison, setAssistantMessageBadge } from "./aiProposalCard";
+import { findEntityMentions, renderEntityMentionStrip } from "./aiEntityMentions";
 import {
   attachCompletenessWarnings,
   backupProjectSnapshot,
@@ -138,13 +140,18 @@ export {
   PANEL_SIZE_LIMITS,
   applyAiFontSize,
   clampPanelSize,
+  clampPanelSizeToViewport,
+  clearDockPanelSize,
   loadAiFontSize,
+  loadDockPanelSize,
   loadPanelCollapsed,
   loadPanelSize,
   saveAiFontSize,
+  saveDockPanelSize,
   savePanelCollapsed,
   savePanelSize,
   type AiFontSize,
+  type PanelDock,
   type PanelSize,
 } from "./aiPanelLayout";
 export {
@@ -197,6 +204,27 @@ export {
   shouldShowStatusInChat,
   type StatusTransition,
 } from "./aiChatPanelHelpers";
+
+/**
+ * 이미지 리족 장식 — 어시스탄트 문장이 언급한 통산 자료(몬스타·아이템·등장인물)의
+ * 썰네일을 그 문장 밑에 붙인다. 이름만 나오는 답변은 "어느 슬라임?" 을 다시 물게 하고,
+ * 에디터는 이미 그 그림을 지고 있다(databaseRecordThumbnails.recordListThumbnail).
+ *
+ * 마킹어를 다시 그리는 renderStreamedMarkdown 뒤에 부를것을 전제한다 — 그 전에 붙이면
+ * 본버이 다시 쓰이면서 스트립이 토사진다. 같은 버버을 다시 장식해도 쓸려 쓰지 않는다.
+ */
+export function decorateAssistantMentions(
+  bubble: HTMLElement | null,
+  assistantText: string,
+  project: Project,
+): void {
+  if (!bubble) return;
+  const previous = bubble.querySelector?.("[data-testid=ai-mention-strip]");
+  previous?.remove();
+  if (!assistantText.trim()) return;
+  const strip = renderEntityMentionStrip(findEntityMentions(assistantText, project), project);
+  if (strip) bubble.append(strip);
+}
 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
@@ -1046,15 +1074,33 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         && !explicitApprovalRequired
         && safety.safe
       ) {
-        const toastEl = appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — 3초 내 실행취소 가능`);
-        const undoBtn = document.createElement("button");
-        undoBtn.textContent = "실행취소";
-        undoBtn.className = "ai-assistant-action";
-        undoBtn.dataset.testid = "ai-auto-approve-undo";
-        undoBtn.addEventListener("click", () => { try { undoMapEdit(); toastEl.remove(); } catch {} });
-        toastEl.append(undoBtn);
-        window.setTimeout(() => { try { toastEl.remove(); } catch {} }, 3000);
-        setStatus(`자동 적용 ${result.proposedCalls.length}건 · 실행취소 가능(3s)`);
+        // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
+        // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
+        // 판단해야 했다. 전/후 썸네일·자동 적용 토글·되돌리기를 한 카드에 모아 로그에 남긴다.
+        const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
+        const appliedBubble = appendBubble("system", "");
+        if (currentMapId) {
+          appliedBubble.append(
+            renderAppliedComparison({
+              before: beforeProject,
+              after: afterProject,
+              mapId: currentMapId,
+              summary: appliedSummary,
+              appliedCount: result.proposedCalls.length,
+              onUndo: () => {
+                try {
+                  undoMapEdit();
+                  appliedBubble.remove();
+                } catch {
+                  // undo 스택이 버어진 경우는 카드를 남긴다 — 재시도할 수 있어야 한다.
+                }
+              },
+            }),
+          );
+        } else {
+          appliedBubble.textContent = `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`;
+        }
+        setStatus(`자동 적용 ${result.proposedCalls.length}건 · 카드에서 되돌릴 수 있습니다`);
         acceptProposal(result.proposedCalls);
       } else {
         renderProposal(
@@ -1079,7 +1125,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           );
         }
       }
-      if (result.assistantText) renderQuickReplies(result.assistantText);
+      if (result.assistantText) {
+        renderQuickReplies(result.assistantText);
+        // 마킹어 재렌더(위 streamedBubbles.forEach) 뒤에서 붙여야 쓸려나가지 않는다.
+        decorateAssistantMentions(assistantBubble, result.assistantText, store.getCurrent());
+      }
       // 밑그림 상태 표시 — 확정된 스펙이 있으면 사용자도 본다(다음 빌드가 이 영역 안에서만 실행됨).
       const activeSpec = session.getActiveSpec();
       if (activeSpec && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
@@ -2302,41 +2352,66 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     window.__oprnAiHarness = harnessAccessor;
   }
 
-  // 크기 커스텀: 좌상단 코너 핸들 드래그(오른쪽·아래가 고정이라 왼쪽·위로 끌면 커진다).
-  let panelSize = loadPanelSize();
+  // 크기 커스텀 — **유리 카드 전용**. 예전 applySize 는 chat-dock-float / -glass / -side 세
+  // 경우 전부에서 style 을 비우고 빠져나갔고, ChatDock 은 언제나 그 셋 중 하나(chatDock.ts)라
+  // 저장된 PanelSize 가 어떤 상태에서도 적용되지 않는 죽은 코드였다(실측: 유리 카드가
+  // 부팅·포커스·타이핑·도크 순환 내내 360x620 고정).
+  //
+  // 유리만 여는 이유: 사이드는 폭을 에디터 셸의 열(`chat-side-panel`)이 들고 있어 패널
+  // 인라인 폭으로는 열이 좁아지지 않고, float 은 inset:0 전면 오버레이라 패널 크기 자체가
+  // 의미를 갖지 않는다(바 위치는 CSS 가 잡는다). 크기는 도크별 키로 저장한다 — 360px 카드와
+  // 533px 열을 한 값으로 담을 수 없기 때문이다.
+  // 도크 판정은 `currentChatDock()` 을 본다 — `chat-dock-*` **클래스**는 에디터 셸(editorLayout)이
+  // 부여하므로 패널만 마운트하는 단위 환경에서는 붙지 않았다. 패널이 항상 소유하는
+  // 것은 dataset.chatDock 과 이 접근자다.
+  const resizableDock = (): boolean =>
+    currentChatDock() === "glass"
+    && !panel.classList.contains("is-studio")
+    && !panel.classList.contains("is-docked");
+  const viewportNow = (): { width: number; height: number } =>
+    typeof window === "undefined"
+      ? { width: 1280, height: 900 }
+      : { width: window.innerWidth, height: window.innerHeight };
+  let panelSize = loadDockPanelSize("glass");
+  // 크기만 건드린다. 이전 구현은 `setAttribute("style", "")` 로 인라인을 통째 지웠고,
+  // 그러면 syncCommandBarClearance 가 같은 인라인에 실어놓는 --ai-command-bar-clearance 까지
+  // 함까 날아간다 — 둥지리에 사는 두 사용자가 서로를 지우는 구조였다.
+  const sizeProps = ["width", "height", "maxWidth", "maxHeight"] as const;
   const applySize = (): void => {
-    if (
-      collapsed ||
-      !panelSize ||
-      panel.classList.contains("is-studio") ||
-      panel.classList.contains("is-docked") ||
-      panel.classList.contains("chat-dock-float") ||
-      panel.classList.contains("chat-dock-glass") ||
-      panel.classList.contains("chat-dock-side")
-    ) {
-      panel.setAttribute("style", "");
+    if (collapsed || !panelSize || !resizableDock()) {
+      for (const prop of sizeProps) panel.style[prop] = "";
       return;
     }
-    panel.setAttribute("style", `width:${panelSize.width}px;height:${panelSize.height}px;`);
+    const fitted = clampPanelSizeToViewport(panelSize, viewportNow());
+    // max-width/max-height 도 같이 푼다 — 유리 CSS 가 카드를 min(260px, 28%) 로 묶고 있어
+    // 폭만 인라인으로 줘도 상한이 이겨 실제로 커지지 않는다(02-chat-dock.css:96).
+    panel.style.width = `${fitted.width}px`;
+    panel.style.height = `${fitted.height}px`;
+    panel.style.maxWidth = `${fitted.width}px`;
+    panel.style.maxHeight = `${fitted.height}px`;
   };
   const resizeHandle = el("div", {
-    class: "ai-chat-resize-handle",
-    attrs: { title: "드래그로 패널 크기 조절", "aria-label": "패널 크기 조절" },
+    class: "ai-chat-resize-handle is-corner-end",
+    attrs: { title: "드래그로 조수 카드 크기 조절", "aria-label": "조수 카드 크기 조절" },
     dataset: { testid: "ai-resize-handle" },
   });
   let activeResizeCleanup: (() => void) | null = null;
   resizeHandle.addEventListener("pointerdown", (event: PointerEvent) => {
+    if (!resizableDock()) return;
     event.preventDefault();
     activeResizeCleanup?.();
     const startX = event.clientX;
     const startY = event.clientY;
     const rect = panel.getBoundingClientRect ? panel.getBoundingClientRect() : { width: 320, height: 480 };
-    const startWidth = panelSize?.width ?? rect.width;
-    const startHeight = panelSize?.height ?? rect.height;
+    const startWidth = panelSize?.width ?? (rect.width || 360);
+    const startHeight = panelSize?.height ?? (rect.height || 620);
     const onMove = (move: PointerEvent): void => {
+      // 유리 카드는 왼상단에 고정된다(`inset: 12px auto auto 12px`). 그러니 코너를
+      // 오른쪽·아래로 끌 때 커지는 것이 문자대로 자연하다. 이전 식은 `startX - clientX` 로
+      // 왼쪽으로 끌 때 커지는 우하단 야커 가정이어서 서로 반대였다.
       panelSize = clampPanelSize({
-        width: startWidth + (startX - move.clientX),
-        height: startHeight + (startY - move.clientY),
+        width: startWidth + (move.clientX - startX),
+        height: startHeight + (move.clientY - startY),
       });
       applySize();
     };
@@ -2347,13 +2422,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
     const onUp = (): void => {
       cleanupResize();
-      if (panelSize) savePanelSize(panelSize);
+      if (panelSize) saveDockPanelSize("glass", panelSize);
     };
     activeResizeCleanup = cleanupResize;
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   });
   panel.append(resizeHandle);
+  // 반응형: 창이 좁아지면 자장된 크기를 화면 안으로 다시 맞춘다(생손된 값은 그대로 남긴다).
+  const onViewportResize = (): void => applySize();
+  if (typeof window !== "undefined") window.addEventListener("resize", onViewportResize);
 
   const remountComposerTail = (includeOverlay: boolean): void => {
     const tail: HTMLElement[] = includeOverlay
@@ -2607,6 +2685,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 떠 있던 추천 팝오버를 정리하지 않으면 보이지 않는 팝오버가 남는다.
     syncSuggestPopover();
     syncCommandBarClearance();
+    applySize(); // 도크가 바뀌면 유리 전용 크기를 다시 잡는다(유리로 들어오면 적용, 나가면 해제).
   };
   refreshDockLabels();
   commandMenuToggle.addEventListener("click", () => {
@@ -2857,6 +2936,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     directorPlate.dispose();
 
     if (typeof window !== "undefined") {
+      window.removeEventListener("resize", onViewportResize);
       window.removeEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);
       window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
       if (window.__oprnAiHarness === harnessAccessor) delete window.__oprnAiHarness;
