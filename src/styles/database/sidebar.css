@@ -43,6 +43,108 @@
   scrollbar-gutter: stable;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body > .db-body.db-shared-workspace {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  width: 0;
+}
+
+/* The active tab must never resize the modal. Older :has()-scoped record
+   workbenches requested different heights, making the whole editor jump when
+   the sidebar selection changed. The studio frame owns one viewport now. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) {
+  height: min(900px, calc(100vh - 24px));
+  max-height: calc(100vh - 24px);
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-header {
+  box-sizing: border-box;
+  flex: 0 0 44px !important;
+  min-height: 44px !important;
+  padding: 0 12px !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body {
+  display: flex !important;
+  flex: 1 1 0;
+  flex-direction: row !important;
+  grid-template-columns: none !important;
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
+  flex: 0 0 220px !important;
+  width: 220px !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+  color: var(--db-studio-text-2, #475569) !important;
+  font: 500 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif !important;
+  height: 32px !important;
+  justify-content: flex-start !important;
+  margin: 0 !important;
+  padding: 0 8px !important;
+  width: 100% !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
+  content: none !important;
+  display: none !important;
+}
+
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
+    color: var(--db-studio-text-2, #475569) !important;
+    content: attr(data-short) !important;
+    display: block !important;
+    flex: 0 0 auto !important;
+    font: 700 14px/1 "Segoe UI Symbol", "Malgun Gothic", sans-serif !important;
+    width: auto !important;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
+    color: var(--db-studio-text-2, #475569) !important;
+    content: attr(data-short) !important;
+    display: block !important;
+    flex: 0 0 auto !important;
+    font: 700 14px/1 "Segoe UI Symbol", "Malgun Gothic", sans-serif !important;
+    width: auto !important;
+  }
+}
+
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
+    flex: 0 0 56px !important;
+    width: 56px !important;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
+    flex: 0 0 56px !important;
+    width: 56px !important;
+  }
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 58px !important;
+  gap: var(--space-2);
+  margin: 0 !important;
+  min-height: 58px !important;
+  padding: 6px 8px !important;
+}
+
 /* container query wins when supported; media fallback below */
 @container db-modal (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {

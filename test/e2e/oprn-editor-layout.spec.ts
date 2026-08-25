@@ -202,6 +202,44 @@ test("editor shell contains Basic and Expert regions at every supported viewport
   await expectNoDocumentHorizontalOverflow(page);
 });
 
+test("left mode tabs never resize the editor workspace frame", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+  await page.goto("/?freshProject=1&leftFrameInvariant=1");
+  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+
+  const reference = await editorWorkspaceFrame(page);
+  for (const testId of ["layer-lower", "layer-upper", "layer-event"] as const) {
+    await page.getByTestId(testId).click();
+    const current = await editorWorkspaceFrame(page);
+    expect(Math.abs(current.canvasWidth - reference.canvasWidth), `${testId} canvas width`).toBeLessThanOrEqual(1);
+    expect(Math.abs(current.canvasHeight - reference.canvasHeight), `${testId} canvas height`).toBeLessThanOrEqual(1);
+    expect(Math.abs(current.leftWidth - reference.leftWidth), `${testId} left panel width`).toBeLessThanOrEqual(1);
+    expect(Math.abs(current.leftHeight - reference.leftHeight), `${testId} left panel height`).toBeLessThanOrEqual(1);
+  }
+});
+
+async function editorWorkspaceFrame(page: Page): Promise<{
+  readonly canvasHeight: number;
+  readonly canvasWidth: number;
+  readonly leftHeight: number;
+  readonly leftWidth: number;
+}> {
+  return page.evaluate(() => {
+    const canvas = document.querySelector<HTMLElement>("[data-testid='edit-canvas']");
+    const left = document.querySelector<HTMLElement>(".left-panel");
+    if (!canvas || !left) throw new Error("missing editor workspace frame");
+    const canvasRect = canvas.getBoundingClientRect();
+    const leftRect = left.getBoundingClientRect();
+    return {
+      canvasHeight: Math.round(canvasRect.height),
+      canvasWidth: Math.round(canvasRect.width),
+      leftHeight: Math.round(leftRect.height),
+      leftWidth: Math.round(leftRect.width),
+    };
+  });
+}
+
 test("chipset palette exposes category-only vertical scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&paletteVerticalCategoryScroll=1");

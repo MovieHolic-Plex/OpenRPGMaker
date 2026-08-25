@@ -7,6 +7,9 @@
 - Record lists are **name-first** with muted `#n` meta. Do not put `0001:` back in `databaseRecordViews.ts` / utility / common-event rows. Unused switch/variable reserve rows are not rendered.
 - Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Dirty 3-way Save/Discard/Keep is unchanged.
 - Keep G006 in-modal `switchDatabaseActiveTab`, gallery+list toggles, and every `db-field-*` / `db-record-row-*` / `db-record-card-*` / `db-system-nav-*` / `db-type-chart-*` testid.
+- `.db-body.db-shared-workspace` is the invariant content boundary for every registered Database tab. The modal shell owns the viewport, `.db-tabs` owns the labeled rail, and tab-specific workbenches may scroll or reflow only inside that shared boundary; active-tab content must not resize the modal, sidebar, footer, or workspace frame.
+- The pinned Overview is a whole-game pulse, not a combat-stat dashboard. It surfaces world/maps, story/events, cast, game systems/data, readiness, and start-point summaries (`db-overview-game-pulse`, `-world`, `-story`, `-cast`, `-systems`, `-readiness`) from the current project and retains same-modal navigation.
+- **2026-08-26 navigation/overview correction (supersedes the stale W2/W5 bullets below):** the complete registered tab order uses one labeled 220px grouped rail, collapsing to 56px only below 800px. The Overview leads with project identity/readiness and whole-game summaries; its `AI 어시스턴트` action enters the editor-wide assistant with the current Database screen as context. Do not visually hide desktop labels or restore balance-only analytics as the Overview's primary information architecture.
 
 ### Actor data-table slice (2026-08-25)
 

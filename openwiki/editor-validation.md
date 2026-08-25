@@ -30,6 +30,8 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 
 ## Validation Expectations
 
+- Database visual-shell changes must enumerate every registered tab from the product registry rather than a hand-picked subset. At desktop and narrow acceptance widths, assert one invariant `.db-shared-workspace` frame, stable sidebar/workspace geometry, and no document overflow, then capture and inspect screenshots for every tab. Title-screen changes additionally require the real test-play window at its authored runtime viewport.
+
 
 - Wiki-only edits should pass `npm run openwiki:verify`.
 - Event and database UI repairs should have focused Playwright evidence. Task 10 added separate event and database stabilization specs under `test/e2e/`: the event spec covers event delete confirmation and shop branch persistence, and the database spec covers Database dirty discard, command-reference delete blocking, Common Event nested command editing, troop battle-event page switching, and enemy action switch picker behavior.

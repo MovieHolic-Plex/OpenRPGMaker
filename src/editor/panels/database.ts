@@ -185,7 +185,10 @@ export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   tabRenderCaches.delete(container);
   const header = el("div", { class: "db-tabs" });
-  const body = el("div", { class: "db-body" });
+  const body = el("div", {
+    class: "db-body db-shared-workspace",
+    dataset: { testid: "db-shared-workspace" },
+  });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
   const chrome = getEditorChrome();
   if (chrome.databaseNav === "common") {
