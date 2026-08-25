@@ -117,7 +117,6 @@ function diff(before, after) {
   if (addedToasts.length) changes.push(`toast:${addedToasts.join(" / ")}`);
   if (newEvents.length) changes.push(`event:${[...new Set(newEvents)].join(",")}`);
   if ((after.openPopup ?? []).join() !== (before.openPopup ?? []).join()) changes.push(`popup:${(after.openPopup ?? []).join(",") || "(closed)"}`);
-  if (after.activeTestId !== before.activeTestId && after.activeTestId) changes.push(`focus:${after.activeTestId}`);
   if (after.pressed.join() !== before.pressed.join()) changes.push("pressedState");
   if (after.expanded.join() !== before.expanded.join()) changes.push("expandedState");
   if (after.ls !== before.ls) changes.push("localStorage");
@@ -334,6 +333,10 @@ async function auditMode(mode) {
           }
           return "(self)";
         });
+    // Focus counts as the observable effect ONLY for a text field, where typing (not clicking) is
+    // the real interaction. Counting it for buttons would make every button "work" just by taking
+    // focus, which destroys the audit's ability to spot a dead button.
+    const isTextField = await loc.evaluate((n) => ["INPUT", "TEXTAREA", "SELECT"].includes(n.tagName));
     const before = await page.evaluate(snapshot);
     let clickError = null;
     try {
@@ -358,6 +361,9 @@ async function auditMode(mode) {
     }
     const d = diff(before, after);
     if (navigated) d.changes.push("navigation");
+    if (isTextField && after.activeTestId === t.testid && before.activeTestId !== t.testid) {
+      d.changes.push(`focus:${t.testid}`);
+    }
     if (sideChannel.download) d.changes.push(`download:${sideChannel.download}`);
     if (sideChannel.filechooser) d.changes.push("filechooser");
 
