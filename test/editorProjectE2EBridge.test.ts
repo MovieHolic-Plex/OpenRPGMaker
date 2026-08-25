@@ -30,6 +30,9 @@ function testWindow(): TestWindow {
 
 async function loadBridgeModule() {
   vi.resetModules();
+  vi.stubEnv("VITE_SUPABASE_URL", URL);
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", KEY);
+  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", PROJECT_ID);
   vi.stubGlobal("window", testWindow());
   vi.stubGlobal("navigator", { webdriver: true });
   const credentialDigest = await sha256HexText(KEY);
@@ -54,6 +57,7 @@ afterEach(async () => {
   }
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("mounted project E2E bridge", () => {

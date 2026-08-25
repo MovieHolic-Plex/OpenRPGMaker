@@ -8,16 +8,18 @@
 //
 // 성능 계약: 첫 렌더는 셸+통계 칩만 그리고, 곡선/산점도/문제 카드/AI 버튼은
 // requestIdleCallback(폴백 setTimeout 200ms)으로 지연 계산해 db-overview-charts 에
-// 주입한다. 밸런스 계산 모듈(battlePredict 그래프)은 **동적 import** 로 지연 로드한다 —
-// overview 가 아닌 탭은 물론, overview 첫 렌더 시점에도 파싱/계산 비용이 들지 않는다.
+// 주입한다. 밸런스 계산은 idle callback 안에서만 실행해 첫 렌더를 막지 않는다.
 // 읽기 전용: store 쓰기 경로가 전혀 없다(카운트/계산만 읽음).
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { databaseTabLabel, switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
-import type {
-  BalanceIssue,
-  BalanceIssueKind,
-  EnemyScatterPoint,
-  PartyPowerCurvePoint,
+import {
+  detectBalanceIssues,
+  enemyScatter,
+  partyPowerCurve,
+  type BalanceIssue,
+  type BalanceIssueKind,
+  type EnemyScatterPoint,
+  type PartyPowerCurvePoint,
 } from "@/editor/panels/databaseBalanceCompute";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -92,11 +94,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
   host.append(charts);
   scheduleIdle(() => {
     if (!canInjectDashboard(charts, host)) return;
-    void import("@/editor/panels/databaseBalanceCompute").then((compute) => {
-      // 동적 import 를 기다리는 사이 모달이 닫혔을 수 있다 — 주입 직전에 재확인.
-      if (!canInjectDashboard(charts, host)) return;
-      charts.append(...renderDashboardContent(host, compute));
-    });
+    charts.append(...renderDashboardContent(host));
   });
 }
 
@@ -130,14 +128,12 @@ function canInjectDashboard(charts: HTMLElement, host: HTMLElement): boolean {
 
 // --- 대시보드 본문(지연 주입) ---
 
-type BalanceComputeModule = typeof import("@/editor/panels/databaseBalanceCompute");
-
-function renderDashboardContent(host: HTMLElement, compute: BalanceComputeModule): HTMLElement[] {
+function renderDashboardContent(host: HTMLElement): HTMLElement[] {
   const project = store.getCurrent();
   return [
-    renderCurveSection(compute.partyPowerCurve(project)),
-    renderScatterSection(compute.enemyScatter(project)),
-    renderIssuesSection(host, compute.detectBalanceIssues(project)),
+    renderCurveSection(partyPowerCurve(project)),
+    renderScatterSection(enemyScatter(project)),
+    renderIssuesSection(host, detectBalanceIssues(project)),
     el("button", {
       class: "db-overview-ai",
       text: "✨ AI 분석",
