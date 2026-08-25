@@ -1,7 +1,7 @@
 // ai/approvalPolicy.ts — deny-by-default single approval boundary
 import type { ProposedCall } from "./assistantSession";
 
-export const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set(["remove_event", "remove_map", "clear_region", "reset_project"]);
+export const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set(["remove_event", "remove_map", "delete_database_record", "clear_region", "reset_project"]);
 export const METADATA_ONLY_TOOLS: ReadonlySet<string> = new Set([
   "set_tile_metadata",
   "set_tile_rules",

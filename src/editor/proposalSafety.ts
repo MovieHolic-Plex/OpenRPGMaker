@@ -13,6 +13,7 @@ export const LOW_RISK_SPATIAL_TOOLS: ReadonlySet<string> = new Set([
 
 const KNOWN_DIFF_KEYS: ReadonlySet<keyof ChangeSummary> = new Set([
   "tilesChanged",
+  "mapPropertiesChanged",
   "eventsAdded",
   "eventsModified",
   "eventsRemoved",
@@ -33,6 +34,7 @@ const KNOWN_DIFF_KEYS: ReadonlySet<keyof ChangeSummary> = new Set([
 ]);
 
 const ZERO_COUNT_KEYS: readonly (keyof ChangeSummary)[] = [
+  "mapPropertiesChanged",
   "eventsAdded",
   "eventsModified",
   "eventsRemoved",

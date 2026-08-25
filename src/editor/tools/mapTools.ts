@@ -10,6 +10,18 @@ import { shapeSandAround } from "@/project/defaults/sandAutotile";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
+import { cloneGameMap } from "@/project/mapClone";
+import {
+  appendToTree,
+  canReparentMap,
+  dissolveFolderKeepChildren,
+  extractTreeNode,
+  findParentMapId,
+  findTreeNode,
+  insertTreeNode,
+  isMapTreeFolder,
+  siblingIndex,
+} from "@/project/mapTree";
 import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
@@ -110,6 +122,107 @@ const createMap: ToolDefinition = {
     }
     adoptStartIfNeeded(draft, map);
     return { summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}`, data: { mapId: id } };
+  },
+};
+
+const duplicateMap: ToolDefinition = {
+  name: "duplicate_map",
+  description: "맵 전체(타일·이벤트·BGM·배경·미니맵 설정)를 복제하고 원본 바로 뒤에 배치한다. 새 map id는 명시해야 한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      id: { type: "string", description: "새 맵 id" },
+      name: { type: "string", description: "새 맵 이름(생략 시 '<원본> 복사')" },
+    },
+    required: ["mapId", "id"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const source = requireMap(draft, args.mapId as string);
+    const id = args.id as string;
+    if (draft.maps[id] || findTreeNode(draft.mapTree, id)) {
+      throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id}`, { code: "map-exists", mapId: id });
+    }
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : `${source.name} 복사`;
+    const usedEventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)])));
+    const nextEventId = (): string => {
+      let candidate = genId("ev");
+      while (usedEventIds.has(candidate)) candidate = genId("ev");
+      usedEventIds.add(candidate);
+      return candidate;
+    };
+    const copy = cloneGameMap(source, { newId: id, newName: name, nextEventId });
+    draft.maps[id] = copy;
+    const parentId = findParentMapId(draft.mapTree, source.id);
+    const sourceIndex = siblingIndex(draft.mapTree, source.id);
+    if (!insertTreeNode(draft.mapTree, { mapId: id, children: [] }, parentId ?? "", sourceIndex >= 0 ? sourceIndex + 1 : undefined)) {
+      appendToTree(draft.mapTree, id);
+    }
+    return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})`, data: { mapId: id } };
+  },
+};
+
+const manageMapTree: ToolDefinition = {
+  name: "manage_map_tree",
+  description: "맵 트리의 분류 폴더를 생성·이름 변경·해제하거나 맵/폴더를 다른 분류로 이동한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      operation: { type: "string", enum: ["create_folder", "rename_folder", "dissolve_folder", "move"] },
+      folderId: { type: "string" },
+      mapId: { type: "string", description: "move 대상 맵 또는 폴더 id" },
+      parentId: { type: "string", description: "상위 폴더 id. 루트는 빈 문자열" },
+      index: { type: "integer", minimum: 0 },
+      name: { type: "string" },
+    },
+    required: ["operation"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const operation = args.operation;
+    if (operation === "create_folder") {
+      const folderId = typeof args.folderId === "string" ? args.folderId : "";
+      const name = typeof args.name === "string" ? args.name.trim() : "";
+      if (!folderId || !name) throw new ToolError("create_folder에는 folderId와 비어 있지 않은 name이 필요합니다.", { code: "invalid-args" });
+      if (draft.maps[folderId] || findTreeNode(draft.mapTree, folderId)) throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${folderId}`, { code: "map-tree-id-exists" });
+      const parentId = typeof args.parentId === "string" ? args.parentId : "";
+      if (!insertTreeNode(draft.mapTree, { mapId: folderId, kind: "folder", name, children: [] }, parentId, args.index as number | undefined)) {
+        throw new ToolError(`상위 폴더를 찾을 수 없습니다: ${parentId || "(루트)"}`, { code: "map-tree-parent-not-found" });
+      }
+      return { summary: `맵 분류 '${name}' 생성`, data: { folderId } };
+    }
+    if (operation === "rename_folder") {
+      const folderId = typeof args.folderId === "string" ? args.folderId : "";
+      const name = typeof args.name === "string" ? args.name.trim() : "";
+      const node = findTreeNode(draft.mapTree, folderId);
+      if (!node || !isMapTreeFolder(node)) throw new ToolError(`맵 분류를 찾을 수 없습니다: ${folderId}`, { code: "map-tree-folder-not-found" });
+      if (!name) throw new ToolError("rename_folder에는 비어 있지 않은 name이 필요합니다.", { code: "invalid-args" });
+      node.name = name;
+      return { summary: `맵 분류 이름 변경 → '${name}'`, data: { folderId } };
+    }
+    if (operation === "dissolve_folder") {
+      const folderId = typeof args.folderId === "string" ? args.folderId : "";
+      if (!dissolveFolderKeepChildren(draft.mapTree, folderId)) throw new ToolError(`해제할 맵 분류를 찾을 수 없습니다: ${folderId}`, { code: "map-tree-folder-not-found" });
+      return { summary: `맵 분류 ${folderId} 해제 — 하위 항목 유지`, data: { folderId } };
+    }
+    if (operation === "move") {
+      const mapId = typeof args.mapId === "string" ? args.mapId : "";
+      const parentId = typeof args.parentId === "string" ? args.parentId : "";
+      if (!canReparentMap(draft.mapTree, mapId, parentId)) throw new ToolError(`맵/폴더 ${mapId}을 ${parentId || "루트"} 아래로 이동할 수 없습니다.`, { code: "invalid-map-tree-move" });
+      const oldParentId = findParentMapId(draft.mapTree, mapId);
+      const oldIndex = siblingIndex(draft.mapTree, mapId);
+      const node = extractTreeNode(draft.mapTree, mapId);
+      if (!node) throw new ToolError(`이동할 맵/폴더를 찾을 수 없습니다: ${mapId}`, { code: "map-tree-node-not-found" });
+      if (!insertTreeNode(draft.mapTree, node, parentId, args.index as number | undefined)) {
+        insertTreeNode(draft.mapTree, node, oldParentId ?? "", oldIndex);
+        throw new ToolError(`상위 폴더를 찾을 수 없습니다: ${parentId || "(루트)"}`, { code: "map-tree-parent-not-found" });
+      }
+      return { summary: `맵/분류 ${mapId} 이동 → ${parentId || "루트"}`, data: { mapId, parentId } };
+    }
+    throw new ToolError(`지원하지 않는 map tree 작업입니다: ${String(operation)}`, { code: "invalid-args" });
   },
 };
 
@@ -1078,18 +1191,63 @@ function nextFieldSpawnId(map: GameMap, troopId: string): string {
   throw new ToolError(`스폰 id를 만들 수 없습니다: ${base}`, { code: "spawn-id-exhausted", mapId: map.id });
 }
 
-// 맵 속성(이름/인카운트) 설정. 크기 변경은 resize_map으로 분리.
+const bgmSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    mode: { type: "string", enum: ["parent", "none", "custom"] },
+    resourceId: { type: "string" },
+    fadeInMs: { type: "integer", minimum: 0 },
+  },
+  required: ["mode"],
+  additionalProperties: false,
+};
+
+const backgroundSchema: JsonSchema = {
+  type: "object",
+  properties: { imageId: { type: "string" }, scrollX: { type: "number" }, scrollY: { type: "number" } },
+  required: ["imageId"],
+  additionalProperties: false,
+};
+
+const minimapSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    enabled: { type: "boolean" },
+    corner: { type: "string", enum: ["topRight", "topLeft", "bottomRight", "bottomLeft"] },
+    scale: { type: "number", minimum: 0.08, maximum: 0.5 },
+    showEvents: { type: "boolean" },
+    fogOfWar: { type: "boolean" },
+  },
+  required: ["enabled"],
+  additionalProperties: false,
+};
+
+// 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 속성을 설정한다: name(이름), encounterRate(랜덤 인카운트율, 0=없음), troopIds(인카운트 적 그룹 — 실제 트룹 id여야 함).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       name: { type: "string" },
+      tilesetId: { type: "string" },
       encounterRate: { type: "integer" },
       troopIds: { type: "array", items: { type: "string" } },
+      bgm: bgmSchema,
+      clearBgm: { type: "boolean" },
+      background: backgroundSchema,
+      clearBackground: { type: "boolean" },
+      battleBackground: { type: "string" },
+      clearBattleBackground: { type: "boolean" },
+      flags: {
+        type: "object",
+        properties: { disableSave: { type: "boolean" }, disableTeleport: { type: "boolean" }, disableEscape: { type: "boolean" } },
+        additionalProperties: false,
+      },
+      minimap: minimapSchema,
+      clearMinimap: { type: "boolean" },
     },
     required: ["mapId"],
   },
@@ -1099,6 +1257,13 @@ const setMapProperties: ToolDefinition = {
     if (typeof args.name === "string" && args.name.trim()) {
       map.name = args.name.trim();
       changed.push(`이름='${map.name}'`);
+    }
+    if (typeof args.tilesetId === "string") {
+      const tileset = draft.tilesets[args.tilesetId];
+      if (!tileset) throw new ToolError(`존재하지 않는 타일셋 id: ${args.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
+      map.tilesetId = tileset.id;
+      map.tileSize = tileset.tileSize;
+      changed.push(`타일셋=${tileset.id}`);
     }
     if (typeof args.encounterRate === "number") {
       if (args.encounterRate < 0) throw new ToolError("encounterRate는 0 이상이어야 합니다.");
@@ -1115,7 +1280,44 @@ const setMapProperties: ToolDefinition = {
       map.troopIds = troopIds;
       changed.push(`트룹 ${troopIds.length}종`);
     }
-    if (changed.length === 0) throw new ToolError("바꿀 속성이 없습니다(name/encounterRate/troopIds 중 하나 이상).");
+    if (args.clearBgm === true) {
+      delete map.bgm;
+      changed.push("BGM=기본");
+    } else if (args.bgm && typeof args.bgm === "object" && !Array.isArray(args.bgm)) {
+      const bgm = structuredClone(args.bgm) as GameMap["bgm"];
+      if (bgm?.mode === "custom" && !bgm.resourceId) throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
+      map.bgm = bgm;
+      changed.push(`BGM=${bgm?.mode}`);
+    }
+    if (args.clearBackground === true) {
+      delete map.background;
+      changed.push("배경=기본");
+    } else if (args.background && typeof args.background === "object" && !Array.isArray(args.background)) {
+      map.background = structuredClone(args.background) as NonNullable<GameMap["background"]>;
+      changed.push(`배경=${map.background.imageId}`);
+    }
+    if (args.clearBattleBackground === true) {
+      delete map.battleBackground;
+      changed.push("전투배경=기본");
+    } else if (typeof args.battleBackground === "string" && args.battleBackground.trim()) {
+      map.battleBackground = args.battleBackground.trim();
+      changed.push(`전투배경=${map.battleBackground}`);
+    }
+    if (args.flags && typeof args.flags === "object" && !Array.isArray(args.flags)) {
+      const flags = args.flags as { disableSave?: boolean; disableTeleport?: boolean; disableEscape?: boolean };
+      if (flags.disableSave === true) map.disableSave = true; else delete map.disableSave;
+      if (flags.disableTeleport === true) map.disableTeleport = true; else delete map.disableTeleport;
+      if (flags.disableEscape === true) map.disableEscape = true; else delete map.disableEscape;
+      changed.push("제한 설정");
+    }
+    if (args.clearMinimap === true) {
+      delete map.minimap;
+      changed.push("미니맵=끔");
+    } else if (args.minimap && typeof args.minimap === "object" && !Array.isArray(args.minimap)) {
+      map.minimap = structuredClone(args.minimap) as NonNullable<GameMap["minimap"]>;
+      changed.push(`미니맵=${map.minimap.enabled ? "켬" : "끔"}`);
+    }
+    if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
     return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id } };
   },
 };
@@ -1331,7 +1533,7 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };
