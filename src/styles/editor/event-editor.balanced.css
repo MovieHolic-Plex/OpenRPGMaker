@@ -186,7 +186,7 @@
   border-bottom: 1px solid var(--balanced-border);
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   grid-template-rows: 12px minmax(0, 1fr);
   min-height: var(--balanced-pages-height);
   overflow: hidden;
@@ -232,7 +232,8 @@
   gap: 16px;
   grid-auto-columns: minmax(210px, 248px);
   grid-auto-flow: column;
-  grid-row: auto;
+  grid-column: 1;
+  grid-row: 2;
   min-height: 59px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -302,9 +303,16 @@
 .event-editor .event-editor-command-header {
   align-items: center;
   display: flex;
+  grid-column: 2;
+  grid-row: 2;
   min-height: 34px;
   max-width: 100%;
   min-width: 0;
+}
+
+.event-editor .event-page-tabs {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .event-editor .event-editor-workbench {

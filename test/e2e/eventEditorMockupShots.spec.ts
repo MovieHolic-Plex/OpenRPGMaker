@@ -134,6 +134,9 @@ test("page actions are immediate and destructive deletion is cancelable", async 
   );
   const modalBox = await rect(modal);
   for (const box of actionBoxes) expect(box.x + box.width).toBeLessThanOrEqual(modalBox.x + modalBox.width);
+  const addBox = await rect(modal.getByTestId("event-page-tab-add"));
+  const commandHeaderBox = await rect(modal.getByTestId("event-command-header"));
+  expect(addBox.x + addBox.width).toBeLessThanOrEqual(commandHeaderBox.x);
   await modal.getByTestId("event-page-tab-add").click();
   await expect(modal.getByTestId("event-page-tab-4")).toBeVisible();
   page.once("dialog", (dialog) => dialog.accept());
