@@ -62,10 +62,10 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     for (const z of [3, 6, 8]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeNull();
     }
-    // No expand control / map-save / build palette in basic path
+    // No expand control / map-save / AI workbench in basic path
     expect(fake.querySelector('[data-testid="editor-canvas-toolbar-expand"]')).toBeNull();
     expect(fake.querySelector('[data-testid="editor-map-save-group"]')).toBeNull();
-    expect(fake.querySelector('[data-testid="editor-build-palette-group"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="canvas-ai-workbench"]')).toBeNull();
     expect(fake.querySelector('[data-testid="editor-map-screenshot-button"]')).toBeNull();
   });
 
@@ -84,6 +84,11 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     expect(fake.dataset.uiDensity).toBe("expert");
     // Dense path: expand gate present, full zoom set rendered behind it.
     expect(fake.querySelector('[data-testid="editor-canvas-toolbar-expand"]')).toBeTruthy();
+    expect(fake.querySelector('[data-testid="canvas-ai-workbench"]')).toBeTruthy();
+    expect(fake.querySelector('[data-testid="canvas-ai-create"]')).toBeTruthy();
+    expect(fake.querySelector('[data-testid="canvas-ai-polish"]')).toBeTruthy();
+    expect(fake.querySelector('[data-testid="canvas-ai-inspect"]')).toBeTruthy();
+    expect(fake.querySelector('[data-testid="canvas-ai-ask"]')).toBeTruthy();
     for (const z of [1, 2, 3, 4, 6, 8]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
     }

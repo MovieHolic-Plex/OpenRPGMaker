@@ -155,6 +155,13 @@ describe("canonical construction contract baseline", () => {
     // Then: its discriminant is preserved without route inference.
     expect(parsed.kind).toBe(expectedKind);
   });
+  it("accepts yard tags on a single house instead of rejecting the call", () => {
+    const parsed = parseAuthorHouseRequest({
+      ...singleHouseRequest,
+      yard: ["mailbox", "flowers"],
+    });
+    expect(parsed.kind).toBe("single");
+  });
   it("parses existing and planned-new village targets", () => {
     // Given: explicit existing and new target shapes.
     const targets: readonly unknown[] = [existingVillageRequest, newVillageRequest];

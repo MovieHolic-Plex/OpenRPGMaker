@@ -12,6 +12,7 @@ test-results/
 qa-screenshots/
 # one-off probes, dev logs, and bun/cargo install residue relocated out of root
 scratch/
+_backups/
 *.log
 debug.log
 process_temp.js

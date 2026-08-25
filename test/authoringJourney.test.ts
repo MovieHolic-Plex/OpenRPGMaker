@@ -113,6 +113,24 @@ describe("genre-neutral authoring journey", () => {
     expect(gate.referenceIssues.some((issue: string) => issue.includes("missing-actor"))).toBe(true);
   });
 
+  it("stays collapsed to a toggle until opened", () => {
+    const restore = installFakeDom();
+    try {
+      const root = renderAuthoringJourney(createBlankProject(), emptyAuthoringJourneyProgress());
+      const toggle = findByTestId(root as unknown as FakeElement, "authoring-journey-toggle");
+      const strip = root.querySelector(".authoring-journey-strip") as FakeElement | null;
+      expect(toggle?.getAttribute("aria-expanded")).toBe("false");
+      expect(root.classList.contains("is-open")).toBe(false);
+      expect(strip?.hidden).toBe(true);
+      toggle?.click();
+      expect(toggle?.getAttribute("aria-expanded")).toBe("true");
+      expect(root.classList.contains("is-open")).toBe(true);
+      expect(strip?.hidden).toBe(false);
+    } finally {
+      restore();
+    }
+  });
+
   // Break caught: pressing Test immediately paints a completion check without mounting the player.
   it("launches real tasks but exposes no click-to-complete control for Test", () => {
     const restore = installFakeDom();

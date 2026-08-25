@@ -438,6 +438,199 @@
   z-index: 20;
 }
 
+.canvas-ai-workbench {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+}
+
+.canvas-ai-action {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+.canvas-ai-action svg {
+  height: 16px;
+  width: 16px;
+}
+
+.canvas-ai-action:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.canvas-ai-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.canvas-ai-action.is-ask {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.canvas-ai-action.is-ask:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.canvas-inspection-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-primary);
+  display: grid;
+  gap: 10px;
+  left: 50%;
+  max-height: min(560px, calc(100vh - 110px));
+  overflow: hidden;
+  padding: 14px;
+  position: fixed;
+  top: 64px;
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 24px));
+  z-index: 80;
+}
+
+.canvas-inspection-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.canvas-inspection-header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.canvas-inspection-summary,
+.canvas-inspection-location {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.canvas-inspection-close,
+.canvas-inspection-actions button {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui);
+  min-height: 30px;
+  padding: 0 9px;
+}
+
+.canvas-inspection-actions .is-ai-fix {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.canvas-inspection-list {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+.canvas-inspection-item {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 10px;
+}
+
+.canvas-inspection-severity {
+  background: var(--bg-raised);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font: 700 10px/1 var(--font-ui);
+  padding: 5px 7px;
+}
+
+.canvas-inspection-item.is-error .canvas-inspection-severity {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+.canvas-inspection-item.is-warning .canvas-inspection-severity {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+.canvas-inspection-content {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.canvas-inspection-content strong {
+  font: 600 12px/1.45 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+
+.canvas-inspection-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.canvas-inspection-empty {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-m);
+  color: var(--text-secondary);
+  padding: 24px;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .canvas-ai-action {
+    padding-inline: 7px;
+  }
+
+  .canvas-ai-action span {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .canvas-toolbar[data-ui-density="expert"] .canvas-toolbar-expand,
+  .canvas-toolbar[data-ui-density="expert"] .canvas-toolbar-save-group {
+    display: none;
+  }
+
+  .canvas-inspection-item {
+    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .canvas-inspection-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
 @media (max-width: 520px) {
   .oprn-menu-bar {
     display: none;

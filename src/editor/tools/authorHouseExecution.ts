@@ -6,6 +6,8 @@ import type {
   HouseWing,
 } from "@/editor/construction/contracts";
 import { parseAuthorHouseRequest } from "@/editor/construction/parseHouseRequest";
+import { isPassable } from "@/project/collision";
+import { TILE } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 
 import { summarizeChanges } from "./changeset";
@@ -33,6 +35,7 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
   validatePlans(request);
 
   const execution = buildRequestedHouses(draft, request);
+  restoreStartIfHouseCovered(before, draft);
   const changes = describeAuthorHouseChanges(before, draft);
   const diff = summarizeChanges(before, draft);
   validateAuthorHousePostconditions({ before, after: draft, request, houses: execution.houses, changes, diff });
@@ -172,6 +175,16 @@ function interiorEvidence(exteriorMapId: string, build: HouseKitBuildData): Hous
     exitEventId: build.exitEventId,
     transfer,
   };
+}
+
+function restoreStartIfHouseCovered(before: Project, draft: Project): void {
+  const startMap = draft.maps[draft.startMapId];
+  const beforeMap = before.maps[before.startMapId];
+  if (!startMap || !beforeMap) return;
+  if (isPassable(draft, startMap, draft.startPos.x, draft.startPos.y)) return;
+  const index = draft.startPos.y * startMap.width + draft.startPos.x;
+  startMap.lowerTiles[index] = beforeMap.lowerTiles[index] ?? TILE.GRASS;
+  startMap.upperTiles[index] = beforeMap.upperTiles[index] ?? TILE.EMPTY;
 }
 
 function validatePlans(request: AuthorHouseRequest): void {

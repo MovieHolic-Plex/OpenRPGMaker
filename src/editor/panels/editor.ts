@@ -97,6 +97,7 @@ let chatSideRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
+let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
@@ -415,6 +416,7 @@ export function teardownEditor(): void {
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
+  authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
   document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
@@ -701,6 +703,10 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
   clearChildren(authoringJourneyRoot);
   authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
     referenceIssues: authoringJourneyReferenceIssues,
+    open: authoringJourneyOpen,
+    onOpenChange: (open) => {
+      authoringJourneyOpen = open;
+    },
     onManualToggle: (stage, complete) => {
       const current = loadAuthoringJourneyProgress(scope);
       saveAuthoringJourneyProgress(scope, setManualJourneyStage(current, stage, complete));

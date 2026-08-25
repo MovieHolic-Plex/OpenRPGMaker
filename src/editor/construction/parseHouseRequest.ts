@@ -21,7 +21,7 @@ import type {
   HouseYardIntent,
 } from "./contracts";
 
-const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows"] as const;
+const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows", "yard"] as const;
 const LOTS_KEYS = ["kind", "mapId", "houses", "seed"] as const;
 const PLAN_KEYS = ["kitId", "wings", "interior", "door", "ownerName", "windows", "yard"] as const;
 

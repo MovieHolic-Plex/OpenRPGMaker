@@ -45,10 +45,10 @@ describe("requestCpenTilesetMapping", () => {
     expect(typeof init?.body).toBe("string");
     // 동반 서비스가 자격 증명을 들고 있다 — 브라우저는 키를 보내지 않고 제공자만 지목한다.
     expect(readHeader(init, "Authorization")).toBeNull();
-    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe("google-antigravity");
+    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe("openai-codex");
     const body = parseBody(readStringBody(init));
-    // 공장 기본은 Antigravity Gemini 3.7 Flash.
-    expect(body.model).toBe("gemini-3.7-flash");
+    // 저장된 게이트웨이 모델은 Codex 카탈로그 밖 → 권장 기본으로 교정.
+    expect(body.model).toBe("gpt-5.6-sol");
     expect(body.messages?.[0]?.role).toBe("system");
     expect(body.messages?.[1]?.content).toBe("타일셋을 분석해줘");
     // routing 은 cpenrouter 전용 필드 — 동반 서비스로는 보내지 않는다.

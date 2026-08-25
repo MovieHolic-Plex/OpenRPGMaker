@@ -1,6 +1,6 @@
 # RPG ZZU Design System
 
-> **Status note:** The editor chrome is a warm cream studio. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
+> **Status note:** The editor chrome is a cool white studio with one indigo accent. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
@@ -10,9 +10,9 @@ The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls 
 
 ## 2. Color
 
-### Active editor shell — warm cream studio
+### Active editor shell — cool white studio
 
-There is **one shipped editor shell theme**: a warm cream workbench defined in `src/styles/tokens.css`. The cream ladder is `canvas #E7E0D0 < inset #EFE9DC < base #F7F3EA < surface #FCF9F2 < raised #FFFDF8 < overlay #FFFFFF`; borders/hover/active are warm dark-alpha `rgba(42,37,33,.12/.20/.55)` and `rgba(42,37,33,.06/.10)` (controls `.05/.09/.13`); text `#2A2521/#5C5348/#6B5F52` with placeholder `#6E6252`; accent `#4A57D6/#3C48C4/#2F3AAE`; status `danger #C6403D, success #18764F, warning #8A5E00`; gold `#8A6B2F`; `color-scheme: light`. Previous dark values live in git history only. Runtime HUD tokens are untouched. Do not add a user theme toggle.
+There is **one shipped editor shell theme**: cool white + slate + indigo `#4A57D6` in `src/styles/tokens.css`. Ladder: `canvas/inset #EEF1F4 < base/surface #F7F8F8 < raised/overlay #FFFFFF`. Text `#0F172A/#475569/#64748B`. Legacy `--gold` is an indigo alias. `color-scheme: light`. No theme toggle.
 
 ### Cream shell tokens (SoT: `src/styles/tokens.css`)
 
@@ -20,27 +20,13 @@ Defined in `src/styles/tokens.css` (`src/styles/index.css:75` sets `color-scheme
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--bg-base` | `#F7F3EA` | App shell base (body, menu bar) |
-| `--bg-surface` | `#FCF9F2` | Panels, sidebars, toolbars, statusbar |
-| `--bg-raised` | `#FFFDF8` | Cards, dialogs, floating panels |
-| `--bg-overlay` | `#FFFFFF` | Popovers, dropdowns, context menus |
-| `--bg-inset` | `#EFE9DC` | Input/list wells (recessed) |
-| `--bg-canvas` / `--bg-well` | `#E7E0D0` | Canvas well behind map/game |
-| `--bg-glass` | `rgba(252,249,242,0.86)` | Floating toolbar over canvas |
-| `--border-subtle` | `rgba(42,37,33,0.12)` | Panel/section dividers |
-| `--border-default` | `rgba(42,37,33,0.20)` | Control/card borders |
-| `--border-strong` | `rgba(42,37,33,0.55)` | Hover/emphasis borders |
-| `--text-1` | `#2A2521` | Primary text |
-| `--text-2` | `#5C5348` | Secondary text |
-| `--text-3` | `#6B5F52` | Muted/hint |
-| `--text-placeholder` | `#6E6252` | Placeholder/disabled |
-| `--accent` | `#4A57D6` | Primary/accent |
-| `--accent-hover` | `#3C48C4` | Accent hover |
-| `--accent-active` | `#2F3AAE` | Accent active |
-| `--danger` | `#C6403D` | Destructive |
-| `--success` | `#18764F` | Success |
-| `--warning` | `#8A5E00` | Warning |
-| `--gold` | `#8A6B2F` | Gold/attention |
+| `--bg-base` / `--bg-surface` | `#F7F8F8` | App shell + panels |
+| `--bg-raised` / `--bg-overlay` | `#FFFFFF` | Cards, dialogs, popovers |
+| `--bg-inset` / `--bg-canvas` / `--bg-well` | `#EEF1F4` | Wells + canvas tray |
+| `--text-1` | `#0F172A` | Primary |
+| `--text-2` | `#475569` | Secondary |
+| `--text-3` | `#64748B` | Hint |
+| `--accent` / `--gold` | `#4A57D6` | Send, accept, selection |
 
 ### Primary token set (what the UI is actually built from)
 
@@ -264,13 +250,13 @@ All spacing derives from 4px.
 
 ### Workbench grid (actual values)
 
-- Root layout: `topbar / body / statusbar` (column).
+- Root layout: `topbar / body` (column). There is no persistent bottom statusbar.
 - **Topbar**: a stacked RM2K3 chrome — an `rm2k3-menu-bar` (22px) plus one or two `rm2k3-toolbar-row`s. It is **multi-row**, not a single 40px bar.
 - **Body**: with empty storage, the map/tile/event tool sidebar is the left docked column and the 감독 workspace defaults to **float** over the canvas. The saved `chatDock` value is honored on later boots: **side** remains available as a user toggle and adds a docked AI track without replacing the tool sidebar. The canvas must retain the widest usable work area.
 - **Left drawer**: the docked tool column beside the canvas, never a row under the agent log. Empty events are one line (`이벤트 없음 · 더블클릭으로 추가`). Map tree still uses `map-tree-node-*` testids. Beginner substitutes its 48px direct-action rail and opens a requested flyout rather than auto-opening the tile flyout.
 - **Center work area**: fills remaining width, centers the Phaser canvas in a recessed well. Canvas controls must not change canvas dimensions.
 - **Database and Resources**: opened from the topbar as work windows. The Database window has an explicit dock toggle and may become a contained docked panel; Resources remains a modal work window.
-- **Statusbar**: `54px` (`.editor-statusbar`). Always-visible cells are layer, map name, and save status. Paint hint only on the event tool+layer; blueprint toggle only when `layoutPlan.regions` exist; AI chip only when disconnected/offline. **full** (standard/expert) puts tool/tile/zoom/cursor behind a `statusbar-overflow` details. Empty layout plans do not paint a canvas `layoutPlan` chip.
+- **Authoring journey**: a 32px checklist icon at the canvas bottom-left (`authoring-journey-toggle`). The project/map/event/data/test checklist opens as a popover; it must not reserve a full-width bottom row or shrink the canvas.
 
 ### Desktop support floor
 
@@ -290,6 +276,24 @@ All spacing derives from 4px.
 - Face is `role="img"` `aria-label="조수"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
 - Tokens: name `--text-1` 13px/600, line `--text-2` 12px/400, gap `--space-2`, face well `--studio-inset` / `--studio-line` (or `--bg-inset` / `--border-subtle` aliases). No 지시/질문/계획 chips on the plate.
 - Presence line is idle copy unless a turn is running. Collapsed restore `aria-label` is `조수`. Primary actions (보내기, 이 맵에 넣기) and `@>` use `--gold`, not indigo.
+
+### AI conversation column — Cursor 3-band (locked 2026-08-25)
+
+Glass/side assistant is three bands only:
+1. **Plate** — faceset + `조수` + one status. Overflow (`⋯`) holds dock/new-session/settings. No `+` / dock word / detach on the plate.
+2. **Stream** — conversation and tool rows. This band owns scroll. Empty stream may show a one-line hint + at most two chips. No visual gallery.
+3. **Composer** — inset well + indigo `전송`, always at the bottom.
+Proposal cards float over the map (imposter), not inside these three bands.
+
+### AI conversation column (2026-08-25)
+
+Spatial contract (StyleGallery `scroll-body-shell` + `media-object` + `feed` + `imposter`):
+- The assistant is a cream **conversation column**, not a watery 260px billboard. Glass overlay is `360px` (`min(360px, 34%)`), left-inset `12px`. Side dock keeps the same column language at `minmax(320px, 36%)`.
+- **Scroll owner**: `.ai-chat-log` (or `.ai-glass-log` on glass). Header plate and composer stay put. Do not scroll the whole card.
+- Header is a `media-object`: 40px faceset + stacked `조수` / one-line presence. Actions are a 32px icon cluster (dock / more / collapse). No sentence-length dock labels on the plate.
+- Log is a `feed`: user turns sit in an inset well; assistant turns sit on `--bg-raised` with a 1px `--studio-line`. Tool/system rows stay `@>` mono. No indigo, no three-card visual gallery as the boot empty surface.
+- Composer is an inset well (`--bg-inset`) with a gold filled `보내기`. Focus ring uses `--gold`, not indigo.
+- A pending proposal does **not** stay a thin strip inside the 380px column. It floats as an `imposter` over the canvas: `min(520px, 92vw)` cream card, gold filled `이 맵에 넣기`, map ghost still visible around it. Tile-changing proposals (including `author_house`) always show a **지금 / 적용 후** pair.
 
 ### AI idle hints
 

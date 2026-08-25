@@ -1,7 +1,7 @@
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
-import { renderBuildPaletteToggle } from "@/editor/panels/buildPalette";
+import { renderCanvasAiWorkbench } from "@/editor/panels/canvasAiWorkbench";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -115,12 +115,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       }),
     ],
   });
-  const buildGroup = el("div", {
-    class: "canvas-toolbar-build-group",
-    attrs: { "aria-label": "건축 팔레트", role: "group" },
-    dataset: { testid: "editor-build-palette-group", uiDensity: "expert" },
-    children: [renderBuildPaletteToggle()],
-  });
+  const aiWorkbench = renderCanvasAiWorkbench();
   const expandButton = el("button", {
       class: "canvas-toolbar-expand",
       text: "⋯",
@@ -137,7 +132,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
         },
       },
     });
-  container.append(zoomGroup, expandButton, buildGroup, saveAction);
+  container.append(zoomGroup, expandButton, aiWorkbench, saveAction);
 }
 
 function readCanvasToolbarExpanded(): boolean {
