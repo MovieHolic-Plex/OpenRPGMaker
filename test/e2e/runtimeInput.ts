@@ -59,7 +59,17 @@ export async function startNewGameFromTitle(
   options?: { readonly timeoutMs?: number; readonly waitForRuntimeState?: boolean }
 ): Promise<void> {
   const timeout = options?.timeoutMs ?? 15_000;
-  await expect(page.getByTestId("title-screen")).toBeVisible({ timeout });
+  // 자동 시작이 켜져 있으면 타이틀을 거치지 않고 이미 플레이 중이다. 그때 타이틀을
+  // 기다리면 부팅은 성공했는데 스펙이 빨개진다. 이미 스테이지가 떠 있으면 걷지 않는다.
+  const stage = page.getByTestId("play-stage");
+  const title = page.getByTestId("title-screen");
+  await expect(title.or(stage)).toBeVisible({ timeout });
+  if ((await title.count()) === 0 && (await stage.count()) > 0) {
+    if (options?.waitForRuntimeState === false) return;
+    await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout });
+    return;
+  }
+  await expect(title).toBeVisible({ timeout });
   await expect(page.getByTestId("title-new-game")).toBeVisible({ timeout });
   // Default selection is 새 게임 (index 0).
   await page.keyboard.press("Enter");
