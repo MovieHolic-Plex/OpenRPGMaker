@@ -496,7 +496,7 @@ function evidenceHtml(cards: readonly string[], records: readonly RunRecord[]): 
  .nums span{display:flex;flex-direction:column;font-size:11px;color:#9aa3b0}
  .nums b{font-size:19px;color:#e8ebf0;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
  .card img{display:block;image-rendering:pixelated;border:1px solid #272c35;border-radius:6px;max-width:100%;height:auto;background:#0a0c10}
- .none{width:280px;height:160px;border:1px dashed #3a3f4b;border-radius:6px;color:#6b7480;display:flex;align-items:center;justify-content:center}
+ figure.missing .none{width:280px;height:160px;border:1px dashed #3a3f4b;border-radius:6px;color:#6b7480;display:flex;align-items:center;justify-content:center}
  .facts{color:#9aa3b0;font-size:12px;margin:8px 0 0}
  table.items{border-collapse:collapse;margin:12px 0 0;font-size:12px}
  table.items td{border-bottom:1px solid #23272f;padding:3px 10px 3px 0}
