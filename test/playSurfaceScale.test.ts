@@ -38,6 +38,38 @@ describe("calculatePlaySurfaceScale", () => {
   });
 });
 
+describe("calculatePlaySurfaceScale scale modes", () => {
+  // 실측: 테스트 플레이 창 본문 1214x640 CSS px / 논리 320x240 에서 integer 모드는 2.000 이라
+  // 640x480 만 그리고 나머지 73% 가 죽은 레터박스였다. 배포/커뮤니티 플레이어는 이 값이 바뀌면 안 된다.
+  it("keeps the shipped integer contain scale for the measured test play window body", () => {
+    expect(calculatePlaySurfaceScale(1214, 640, 320, 240)).toBe(2);
+    expect(calculatePlaySurfaceScale(1214, 640, 320, 240, "integer")).toBe(2);
+  });
+
+  it("returns the unfloored contain scale in fit mode so the window is filled", () => {
+    expect(calculatePlaySurfaceScale(1214, 640, 320, 240, "fit")).toBeCloseTo(8 / 3);
+    expect(calculatePlaySurfaceScale(1600, 900, 320, 240, "fit")).toBeCloseTo(3.75);
+  });
+
+  it("treats shrinking and empty viewports identically in both modes", () => {
+    expect(calculatePlaySurfaceScale(300, 200, 320, 240, "fit")).toBeCloseTo(5 / 6);
+    expect(calculatePlaySurfaceScale(300, 200, 320, 240, "integer")).toBeCloseTo(5 / 6);
+    expect(calculatePlaySurfaceScale(0, 0, 320, 240, "fit")).toBe(1);
+  });
+
+  it("reports no crop for a fractional fit scale", () => {
+    const scale = calculatePlaySurfaceScale(1214, 640, 320, 240, "fit");
+    const crop = calculatePlaySurfaceCropMetrics(1214, 640, scale, 320, 240);
+    expect(crop.left).toBe(0);
+    expect(crop.top).toBe(0);
+    expect(crop.visibleWidth).toBe(320);
+    expect(crop.visibleHeight).toBe(240);
+    const placement = calculatePlaySurfacePlacement(1214, 640, scale, 320, 240);
+    expect(placement.top).toBe(0);
+    expect(placement.left).toBeCloseTo((1214 - 320 * (8 / 3)) / 2);
+  });
+});
+
 describe("calculatePlaySurfaceCropMetrics", () => {
   it("reports no crop when contain scaling leaves letterbox space", () => {
     const cases: Array<readonly [number, number]> = [

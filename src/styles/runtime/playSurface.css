@@ -104,9 +104,12 @@
   height: var(--play-logical-height);
   width: var(--play-logical-width);
 }
+/* 분수 배율(fit)에서도 픽셀아트가 흐려지지 않아야 한다 — 스테이지 transform 이 정수가 아닐 때
+   브라우저 기본 보간은 캔버스를 뭉갠다. */
 .player-layout .phaser-container canvas {
   display: block;
   height: var(--play-logical-height);
+  image-rendering: pixelated;
   width: 100%;
 }
 

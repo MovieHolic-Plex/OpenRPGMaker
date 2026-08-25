@@ -9,6 +9,14 @@ export type PlaySurfaceCropMetrics = {
   readonly visibleHeight: number;
 };
 
+/**
+ * 서프이스 배율 정책.
+ * - `integer`: 배포/커뮤니티 플레이어의 기존 동작 — 도트 경계가 깨지지 않는 정수 배율.
+ * - `fit`: 생성 배율을 바닥윽 안 하고 그대로 쓴다. 에디터 테스트 플레이 창은 정수 배율이면
+ *   창의 27% 만 그려(1214x640 → 640x480) 작업자가 무엇을 테스트하는지 보이지 않았다.
+ */
+export type PlaySurfaceScaleMode = "integer" | "fit";
+
 export type PlaySurfacePlacement = {
   readonly left: number;
   readonly top: number;
@@ -18,7 +26,8 @@ export function calculatePlaySurfaceScale(
   viewportW: number,
   viewportH: number,
   logicalW: number = PLAY_RESOLUTION.width,
-  logicalH: number = PLAY_RESOLUTION.height
+  logicalH: number = PLAY_RESOLUTION.height,
+  mode: PlaySurfaceScaleMode = "integer"
 ): number {
   const safeViewportW = nonNegativeFinite(viewportW);
   const safeViewportH = nonNegativeFinite(viewportH);
@@ -26,6 +35,7 @@ export function calculatePlaySurfaceScale(
   const safeLogicalH = positiveFiniteOr(logicalH, PLAY_RESOLUTION.height);
   if (safeViewportW === 0 || safeViewportH === 0) return 1;
   const containScale = Math.min(safeViewportW / safeLogicalW, safeViewportH / safeLogicalH);
+  if (mode === "fit") return containScale;
   return containScale < 1 ? containScale : Math.max(1, Math.floor(containScale));
 }
 

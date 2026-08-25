@@ -393,6 +393,8 @@
   }
 
   .test-play-window[data-window-mode="windowed"] [data-testid="mode-edit"],
+  .test-play-window[data-window-mode="windowed"] [data-testid="test-play-restart"],
+  .test-play-window[data-window-mode="windowed"] [data-testid="test-play-title"],
   .test-play-window[data-window-mode="windowed"] [data-testid="test-play-window-maximize"],
   .test-play-window[data-window-mode="windowed"] > .runtime-debug-panel {
     display: none;
