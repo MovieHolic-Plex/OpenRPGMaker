@@ -103,3 +103,4 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 - `test/autotileTemplates.test.ts` — 위저드 순수 계산 + 내장 폴백 승계.
 - `test/villageBuilder.test.ts` — 포석 돌길 성형·길 침범 훅.
 - 실물 확인은 Playwright(`.claude/skills/verify` 레시피): 물/지형을 깔고 캔버스 스크린샷.
+- 저장된 합본 마을 맵의 변형 정합: `src/project/combinedTownAutotileAudit.ts` + `npm run audit:combined-town-autotiles`. 기본 명령은 읽기 전용이며, 멤버 셀마다 `autotileNeighborMask`/`autotileVariantForMask` 로 기대 변형을 계산한다. 호수 쿼터와 잔디 240은 제외. `--write --confirm-write=combined-town-autotiles` 만 변경된 행을 `saveProjectToSupabase` 로 저장하고 재로드 해시를 증명한다. 회귀는 `test/combinedTownAutotileAudit.test.ts`.
