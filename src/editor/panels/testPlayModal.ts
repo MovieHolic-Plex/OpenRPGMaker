@@ -3,7 +3,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
-import { renderPlayer, teardownPlayer } from "@/player/player";
+import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
 import { nextSessionRandom, startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -20,6 +20,7 @@ import {
   authoringProjectFingerprint,
 } from "@/editor/authoringJourney";
 import { passesAuthoringTestGate } from "@/editor/authoringTestGate";
+import { STORAGE_PREFIX } from "@/util/appStorage";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -27,6 +28,28 @@ let releaseEventTestSnapshot: (() => void) | null = null;
 // 에디터 전투 테스트가 mount 한 배틀 씬 컨트롤러. closeTestPlayModal 이 destroy()
 // 를 호출해 setInterval(200ms 틱) 과 window keydown 리스너 누수를 막는다.
 let battleSceneController: BattleDomController | null = null;
+// 현재 열린 테스트 플레이 창이 조작하는 런 손잡이. renderPlayer 가 onRunControlsReady 로
+// 넘겨주며, 창을 닫으면 버려진다(모듈 전역 가변 상태는 기존 셸 상태와 같은 수준으로만 둔다).
+let playRunControls: PlayerRunControls | null = null;
+
+/** 작업자가 마지막으로 고른 자동 시작 여부. 기본값은 ON — 편집→테스트 왕복에서 타이틀 걷기를 없앤다. */
+const AUTO_START_STORAGE_KEY = `${STORAGE_PREFIX}test-play-auto-start`;
+
+export function readTestPlayAutoStart(): boolean {
+  try {
+    return window.localStorage.getItem(AUTO_START_STORAGE_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
+
+function writeTestPlayAutoStart(autoStart: boolean): void {
+  try {
+    window.localStorage.setItem(AUTO_START_STORAGE_KEY, autoStart ? "1" : "0");
+  } catch {
+    /* private mode / quota — 선택을 기억하지 못해도 테스트는 계속 돌아야 한다. */
+  }
+}
 
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
@@ -38,7 +61,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
   const title = startOverride
     ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
     : `시연 실행 - ${projectTitle || PRODUCT_BRAND}`;
-  const body = openTestPlayShell(title);
+  const body = openTestPlayShell(title, { runControls: true });
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {
     await store.flush();
@@ -54,6 +77,12 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
       onExit: closeTestPlayModal,
       trackGlobalGame: false,
       startOverride,
+      // 전체 테스트 플레이 창은 창을 가득 채운다(정수 배율이면 1214x640 창에서 27% 만 그렸다).
+      surfaceScaleMode: "fit",
+      autoStartRun: readTestPlayAutoStart(),
+      onRunControlsReady: (controls) => {
+        playRunControls = controls;
+      },
       diagnosticSink: editorPlayBootDiagnosticSink,
       onPlayBootSuccess: () => {
         window.dispatchEvent(new CustomEvent(AUTHORING_TEST_BOOT_SUCCESS_EVENT, {
@@ -218,6 +247,7 @@ export function closeTestPlayModal(): void {
   // teardownPlayer 의 teardownShell 은 null 이다).
   battleSceneController?.destroy();
   battleSceneController = null;
+  playRunControls = null;
   removePlayWindowKeydown?.();
   removePlayWindowKeydown = null;
   // Runtime teardown must finish while store.getCurrent() still resolves to the
@@ -229,7 +259,12 @@ export function closeTestPlayModal(): void {
   modalRoot = null;
 }
 
-function openTestPlayShell(title: string): HTMLElement {
+// 런 조작 버튼은 전체 테스트 플레이 창에만 단다. 전홂·이벤트 테스트 셸은 런 손잡이가 없어
+// 버튼이 있으면 생김없이 죽은 추어진다.
+function openTestPlayShell(
+  title: string,
+  shellOptions: { readonly runControls?: boolean } = {},
+): HTMLElement {
   closeTestPlayModal();
   const backdrop = el("div", {
     class: "test-play-modal-backdrop",
@@ -245,6 +280,21 @@ function openTestPlayShell(title: string): HTMLElement {
     dataset: { testid: "test-play-window", windowMode: "windowed" },
   });
   const titlebar = el("div", { class: "test-play-titlebar" });
+  // 편집 후 재테스트를 창을 닫지 않고 끝낸다: 다시 시작(F5) / 타이틀부터.
+  const restartRunButton = el("button", {
+    class: "test-play-close",
+    text: "다시 시작",
+    attrs: { title: "현재 런을 처음부터 다시 시작 (F5)", "aria-label": "시연 실행 다시 시작" },
+    dataset: { testid: "test-play-restart" },
+    on: { click: () => restartPlayRun() },
+  }) as HTMLButtonElement;
+  const bootTitleButton = el("button", {
+    class: "test-play-close",
+    text: "타이틀부터",
+    attrs: { title: "타이틀 화면부터 실행", "aria-label": "시연 실행 타이틀부터" },
+    dataset: { testid: "test-play-title" },
+    on: { click: () => bootPlayTitle() },
+  }) as HTMLButtonElement;
   const restoreButton = el("button", {
     class: "test-play-close window-control restore",
     text: "창",
@@ -270,6 +320,7 @@ function openTestPlayShell(title: string): HTMLElement {
       dataset: { testid: "mode-edit" },
       on: { click: () => closeTestPlayModal() },
     }),
+    ...(shellOptions.runControls ? [restartRunButton, bootTitleButton] : []),
     restoreButton,
     maximizeButton,
     el("button", {
@@ -291,16 +342,35 @@ function openTestPlayShell(title: string): HTMLElement {
   modalRoot = backdrop;
   restoreButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "windowed"));
   maximizeButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "fullscreen"));
-  removePlayWindowKeydown = bindPlayWindowFullscreenHotkey(windowNode);
+  removePlayWindowKeydown = bindPlayWindowHotkeys(windowNode, shellOptions.runControls === true);
   return body;
+}
+
+// 자동 시작 선택은 두 버튼이 곧 작업자의 선택이다 — 다음 실행이 같은 방식으로 열린다.
+function restartPlayRun(): void {
+  writeTestPlayAutoStart(true);
+  playRunControls?.restartRun();
+}
+
+function bootPlayTitle(): void {
+  writeTestPlayAutoStart(false);
+  playRunControls?.returnToTitle();
 }
 
 function setTestPlayWindowMode(windowNode: HTMLElement, mode: TestPlayWindowMode): void {
   windowNode.dataset.windowMode = mode;
 }
 
-function bindPlayWindowFullscreenHotkey(windowNode: HTMLElement): () => void {
+function bindPlayWindowHotkeys(windowNode: HTMLElement, runControls: boolean): () => void {
   const onKeyDown = (event: KeyboardEvent): void => {
+    // F5 는 열린 테스트 플레이 창에서만 잡는다(리스너는 창을 닫을 때 해지된다).
+    // preventDefault 없이 두면 브라우저가 편집기를 새로고침해 작업 중 상태가 날아간다.
+    if (runControls && event.key === "F5" && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      restartPlayRun();
+      return;
+    }
     if (!isPlayWindowFullscreenHotkey(event)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
