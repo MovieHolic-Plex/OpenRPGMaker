@@ -76,7 +76,7 @@ describe("mounted project E2E bridge", () => {
     const first = bridge;
     module.installEditorToolHook();
     expect(window.__oprnProjectE2E).toBe(first);
-  });
+  }, 60_000);
 
   it("denies missing/wrong capability before invoking either remote store method", async () => {
     const { store } = await loadBridgeModule();

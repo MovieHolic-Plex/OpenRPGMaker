@@ -391,10 +391,13 @@ function trimToExposureCap(exposed: readonly ToolDefinition[], domains: Readonly
       let tookAny = false;
       for (const key of order) {
         if (picked.size >= MAX_EXPOSED_TOOLS) break;
-        const next = buckets.get(key)?.shift();
-        if (!next) continue;
-        picked.add(next);
-        tookAny = true;
+        const quantum = key !== NO_DOMAIN && domainPriority(key, domains) <= 2 ? 2 : 1;
+        for (let take = 0; take < quantum && picked.size < MAX_EXPOSED_TOOLS; take += 1) {
+          const next = buckets.get(key)?.shift();
+          if (!next) break;
+          picked.add(next);
+          tookAny = true;
+        }
       }
       if (!tookAny) break;
     }

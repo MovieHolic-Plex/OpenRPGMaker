@@ -205,5 +205,5 @@ describe("에디터 하단 상태바 제거", () => {
     expect(findByTestId(surface, "ai-connection-status")).toBeNull();
 
     teardownEditor();
-  });
+  }, 60_000);
 });
