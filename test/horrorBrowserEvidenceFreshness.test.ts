@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync, unlinkSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import {
@@ -23,6 +24,12 @@ describe("horror browser evidence freshness & provenance", () => {
   function writeStaleEvidence(extra: Record<string, unknown>, copiedAt: string): string {
     const dir = mkdtempSync(join(tmpdir(), "hbv-"));
     const file = join(dir, "browser-qa.json");
+    const pngBytes = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
+    const titleFile = "browser-title.png";
+    const playStartFile = "browser-play-start.png";
+    writeFileSync(join(dir, titleFile), pngBytes);
+    writeFileSync(join(dir, playStartFile), pngBytes);
+    const sha256 = createHash("sha256").update(pngBytes).digest("hex");
     writeFileSync(file, JSON.stringify({
       projectId: HORROR_MYSTERY_PROJECT_ID,
       observedAt: copiedAt,
@@ -33,6 +40,10 @@ describe("horror browser evidence freshness & provenance", () => {
       expectedStart: { mapId: "map_gallery_17x17", x: 13, y: 13 },
       contentDigest: { observed: "a".repeat(64), expected: "a".repeat(64) },
       bgm: { requested: true, played: true },
+      screenshots: {
+        title: { file: titleFile, bytes: pngBytes.byteLength, sha256 },
+        playStart: { file: playStartFile, bytes: pngBytes.byteLength, sha256 },
+      },
       consoleErrorCount: 0,
       ...extra,
     }), "utf8");
@@ -84,6 +95,43 @@ describe("horror browser evidence freshness & provenance", () => {
       captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME,
     });
     expect(evidence.projectId).toBe(HORROR_MYSTERY_PROJECT_ID);
+    expect(evidence.screenshots.title.file).toBe("browser-title.png");
+    rmSync(dirname(fresh), { recursive: true, force: true });
+  });
+
+  it("REJECTS evidence when a bound screenshot is missing", () => {
+    const fresh = writeStaleEvidence(
+      { capturedBy: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME },
+      new Date(now - 1000).toISOString(),
+    );
+    unlinkSync(join(dirname(fresh), "browser-title.png"));
+
+    expect(() =>
+      readHorrorBrowserEvidence(fresh, {
+        targetProjectId: HORROR_MYSTERY_PROJECT_ID,
+        maxStalenessMs,
+        now,
+        captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME,
+      }),
+    ).toThrow(/screenshot|artifact|missing/i);
+    rmSync(dirname(fresh), { recursive: true, force: true });
+  });
+
+  it("REJECTS evidence when a bound screenshot is modified after capture", () => {
+    const fresh = writeStaleEvidence(
+      { capturedBy: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME },
+      new Date(now - 1000).toISOString(),
+    );
+    writeFileSync(join(dirname(fresh), "browser-play-start.png"), "tampered");
+
+    expect(() =>
+      readHorrorBrowserEvidence(fresh, {
+        targetProjectId: HORROR_MYSTERY_PROJECT_ID,
+        maxStalenessMs,
+        now,
+        captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME,
+      }),
+    ).toThrow(/screenshot|hash|sha256|bytes/i);
     rmSync(dirname(fresh), { recursive: true, force: true });
   });
 });

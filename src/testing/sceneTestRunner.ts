@@ -82,6 +82,7 @@ const TICK_MS = 16;
 export type SceneStep =
   | { kind: "wait"; ticks: number }
   | { kind: "face"; dir: Dir }
+  | { kind: "walk"; to: { x: number; y: number }; adjacent?: boolean }
   | {
       kind: "set";
       mapId?: string;
@@ -303,6 +304,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runSetStep(state, step);
     case "move":
       return runMoveStep(state, step);
+    case "walk":
+      return runWalkStep(state, step);
     case "interact":
       return runInteractStep(state);
     case "gift":
@@ -393,6 +396,101 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
+}
+
+function runWalkStep(state: RunnerState, step: Extract<SceneStep, { kind: "walk" }>): string | null {
+  if (state.gameOver) return "게임 오버 중에는 retryCheckpoint 또는 타이틀 복귀만 가능합니다.";
+  if (isCutsceneInputLocked(state.session)) return "컷신 입력 잠금 중에는 플레이어 이동을 할 수 없습니다.";
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+
+  const start = { x: state.session.x, y: state.session.y };
+  const target = step.to;
+  const isGoal = (x: number, y: number): boolean => step.adjacent
+    ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1
+    : x === target.x && y === target.y;
+  const keyOf = (x: number, y: number): string => `${x},${y}`;
+  const directions: readonly { readonly dir: Dir; readonly dx: number; readonly dy: number }[] = [
+    { dir: "right", dx: 1, dy: 0 },
+    { dir: "left", dx: -1, dy: 0 },
+    { dir: "down", dx: 0, dy: 1 },
+    { dir: "up", dx: 0, dy: -1 },
+  ];
+  const queue: Array<{ x: number; y: number }> = [start];
+  const previous = new Map<string, { readonly from: string; readonly dir: Dir }>();
+  const seen = new Set<string>([keyOf(start.x, start.y)]);
+  let goal: { x: number; y: number } | null = isGoal(start.x, start.y) ? start : null;
+
+  while (!goal && queue.length > 0) {
+    const current = queue.shift();
+    if (!current) break;
+    for (const direction of directions) {
+      const next = { x: current.x + direction.dx, y: current.y + direction.dy };
+      const nextKey = keyOf(next.x, next.y);
+      if (seen.has(nextKey) || !canMove(state.project, map, current.x, current.y, next.x, next.y)) continue;
+      const blocking = findBlockingRuntimeEventAtInMap(
+        state.project,
+        map,
+        state.session,
+        state.eventPositions,
+        next.x,
+        next.y,
+      );
+      const exactTouchTarget = !step.adjacent
+        && next.x === target.x
+        && next.y === target.y
+        && blocking !== undefined
+        && (blocking.trigger.kind === "touch" || blocking.trigger.kind === "playerTouch");
+      if (blocking && !exactTouchTarget) continue;
+      seen.add(nextKey);
+      previous.set(nextKey, { from: keyOf(current.x, current.y), dir: direction.dir });
+      queue.push(next);
+      if (isGoal(next.x, next.y)) {
+        goal = next;
+        break;
+      }
+    }
+  }
+
+  if (!goal) {
+    const qualifier = step.adjacent ? "인접" : "도착";
+    return `연속 보행 ${qualifier} 불가: ${map.id} (${start.x},${start.y}) -> (${target.x},${target.y})`;
+  }
+
+  const route: Dir[] = [];
+  let cursor = keyOf(goal.x, goal.y);
+  const startKey = keyOf(start.x, start.y);
+  while (cursor !== startKey) {
+    const entry = previous.get(cursor);
+    if (!entry) return `연속 보행 경로 복원 실패: ${cursor}`;
+    route.push(entry.dir);
+    cursor = entry.from;
+  }
+  route.reverse();
+
+  const originMapId = state.session.currentMapId;
+  for (let index = 0; index < route.length; index += 1) {
+    const dir = route[index];
+    if (!dir) continue;
+    state.facing = dir;
+    const delta = directionDelta(dir);
+    const reason = movePlayerOneStep(state, state.session.x + delta.x, state.session.y + delta.y);
+    if (reason !== null) return reason;
+    if (state.session.currentMapId !== originMapId) {
+      if (index !== route.length - 1) return "연속 보행 도중 예상하지 않은 맵 전이가 발생했습니다.";
+      state.log.push(`walk ${map.id} -> ${state.session.currentMapId} (${route.length} steps)`);
+      return null;
+    }
+    if (state.gameOver) return "연속 보행 도중 게임 오버가 발생했습니다.";
+  }
+
+  if (step.adjacent) {
+    const dx = target.x - state.session.x;
+    const dy = target.y - state.session.y;
+    state.facing = dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up";
+  }
+  state.log.push(`walk ${map.id} (${start.x},${start.y}) -> (${state.session.x},${state.session.y}) (${route.length} steps)`);
+  return null;
 }
 
 function runGiftStep(state: RunnerState, step: Extract<SceneStep, { kind: "gift" }>): string | null {

@@ -5,6 +5,7 @@ import {
   createHorrorMysteryPrototypeProject,
 } from "../src/project/examples/horrorMysteryPrototype.ts";
 import { loadProjectFromSupabase } from "../src/project/supabaseProjectSync.ts";
+import { ensureBundledTilesets } from "../src/project/defaults/defaultAssets.ts";
 import {
   evaluateHorrorExperienceQa,
   type HorrorExperienceQaReport,
@@ -77,11 +78,15 @@ const project = await loadProjectFromSupabase(config);
 assert(project, `Supabase 프로젝트를 로드하지 못했습니다: ${HORROR_MYSTERY_PROJECT_ID}`);
 const { manifest } = createHorrorMysteryPrototypeProject();
 
+// The product store injects any missing bundled tilesets immediately after remote load. Apply the
+// same normalization before hashing so the Node and real-browser project revisions are identical.
+ensureBundledTilesets(project);
+
 // Slice A: generate FRESH browser evidence automatically before evaluation. This closes
 // the stale/manual-JSON gap — evidence is re-captured from a real headless browser
 // against the real Supabase-backed project on every run. The expected content digest comes from
 // the Supabase-reloaded project and is bound to the in-browser observed digest.
-await runCapture({ expectedDigest: canonicalProjectDigest(project) });
+await runCapture({ expectedDigest: canonicalProjectDigest(project), expectedProject: project });
 
 const browserEvidence = readHorrorBrowserEvidence(BROWSER_EVIDENCE_PATH, {
   targetProjectId: HORROR_MYSTERY_PROJECT_ID,

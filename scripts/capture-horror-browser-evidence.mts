@@ -35,6 +35,7 @@ import {
   CAPTURE_HORROR_BROWSER_EVIDENCE_NAME,
   validateHorrorBrowserEvidenceShape,
   browserEvidenceOutputPath,
+  describeScreenshotArtifact,
 } from "./lib/horror-browser-evidence.mjs";
 import { buildViteInvocation } from "./lib/vite-invocation.mjs";
 import {
@@ -43,10 +44,11 @@ import {
   assertObservedDigest,
   deriveRequiredStartBgm,
   assertRequiredBgmObserved,
+  wasRequiredBgmRequested,
   browserScreenshotNames,
   assertScreenshotOrder,
 } from "./lib/horror-capture-rules.mjs";
-import { canonicalProjectDigest, browserCanonicalDigestSource } from "./lib/canonical-project-digest.mjs";
+import { canonicalProjectDigest, evaluateBrowserCanonicalDigest } from "./lib/canonical-project-digest.mjs";
 
 const VIEWPORT = { width: 1440, height: 900 };
 const DEFAULT_DEV_SERVER_PORT = 9815;
@@ -271,8 +273,8 @@ async function observePlaySession(page: Page): Promise<{
   return { currentMapId: record.currentMapId!, x: record.x!, y: record.y!, touchPadVisible };
 }
 
-export async function runCapture(opts: { expectedDigest?: string } = {}): Promise<void> {
-  const { expectedDigest: authorDigest } = opts;
+export async function runCapture(opts: { expectedDigest?: string; expectedProject?: Project } = {}): Promise<void> {
+  const { expectedDigest: authorDigest, expectedProject } = opts;
   const outputPath = browserEvidenceOutputPath();
   const evidenceDir = path.dirname(outputPath);
   fs.mkdirSync(evidenceDir, { recursive: true });
@@ -319,14 +321,20 @@ export async function runCapture(opts: { expectedDigest?: string } = {}): Promis
     // The expected digest is the authoritative one: when the QA orchestrator passes the
     // Supabase-reloaded project's digest we compare against it (cross-side binding); standalone
     // capture falls back to the in-page Node-side digest of the same project (determinism proof).
-    const observedDigest = await page.evaluate(
-      async (project: unknown) => {
-        const fn = new Function(`return (${browserCanonicalDigestSource})`)() as (p: unknown) => Promise<string>;
-        return await fn(project);
-      },
+    const observedDigest = await evaluateBrowserCanonicalDigest(
       snapshot.project as unknown,
+      (callback, input) => page.evaluate(callback, input),
     );
     const expectedDigest = authorDigest ?? canonicalProjectDigest(snapshot.project as unknown);
+    if (expectedProject && observedDigest !== expectedDigest) {
+      const browserProject = snapshot.project as unknown as Record<string, unknown>;
+      const nodeProject = expectedProject as unknown as Record<string, unknown>;
+      const keys = [...new Set([...Object.keys(nodeProject), ...Object.keys(browserProject)])].sort();
+      const differingTopLevelKeys = keys.filter((key) =>
+        canonicalProjectDigest(nodeProject[key]) !== canonicalProjectDigest(browserProject[key]),
+      );
+      console.error(`[capture] digest mismatch top-level keys: ${differingTopLevelKeys.join(", ") || "(none)"}`);
+    }
     assertObservedDigest(observedDigest, expectedDigest);
 
     // 4) Real UI observation: open Test Play → title screen.
@@ -391,7 +399,14 @@ export async function runCapture(opts: { expectedDigest?: string } = {}): Promis
       mapStart,
       expectedStart: { mapId: snapshot.project.startMapId, x: snapshot.project.startPos.x, y: snapshot.project.startPos.y },
       contentDigest: { observed: observedDigest, expected: expectedDigest },
-      bgm: { requested: requestedUrls.includes(requiredBgm.url), played: playedAudio.includes(requiredBgm.resourceId) },
+      bgm: {
+        requested: wasRequiredBgmRequested(requiredBgm.url, requestedUrls),
+        played: playedAudio.includes(requiredBgm.resourceId),
+      },
+      screenshots: {
+        title: describeScreenshotArtifact(titlePath),
+        playStart: describeScreenshotArtifact(playStartPath),
+      },
       consoleErrorCount: errors.relevantErrorCount(),
       errors: {
         console: errors.consoleErrors.slice(0, 50),
@@ -416,7 +431,7 @@ export async function runCapture(opts: { expectedDigest?: string } = {}): Promis
       contentDigest: evidence.contentDigest,
       bgm: evidence.bgm,
       consoleErrorCount: evidence.consoleErrorCount,
-      screenshots: { title: titleName, playStart: playStartName },
+      screenshots: evidence.screenshots,
       reportedOn: "browser-qa.json",
     }, null, 2));
   } finally {

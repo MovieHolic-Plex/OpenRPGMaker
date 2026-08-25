@@ -81,8 +81,22 @@ export function deriveRequiredStartBgm({ startMap, resolveUrl }) {
  * @param {{ resourceId: string; url: string }} required
  * @param {{ requestedUrls: readonly string[]; played: readonly string[] }} observed
  */
+export function wasRequiredBgmRequested(requiredUrl, requestedUrls) {
+  const expectedIsAppRelative = requiredUrl.startsWith("/");
+  return requestedUrls.some((url) => {
+    if (url === requiredUrl) return true;
+    if (!expectedIsAppRelative) return false;
+    try {
+      const absolute = new URL(url);
+      return `${absolute.pathname}${absolute.search}` === requiredUrl;
+    } catch {
+      return false;
+    }
+  });
+}
+
 export function assertRequiredBgmObserved(required, observed) {
-  const loaded = observed.requestedUrls.some((url) => url === required.url);
+  const loaded = wasRequiredBgmRequested(required.url, observed.requestedUrls);
   assert(loaded, `필수 BGM ${required.resourceId} 이(가) 브라우저에서 로드되지 않았습니다 (${required.url}).`);
   const played = observed.played.some((resourceId) => resourceId === required.resourceId);
   assert(played, `필수 BGM ${required.resourceId} 이(가) 재생 엔진에 도달하지 않았습니다 (broken required BGM).`);

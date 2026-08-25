@@ -66,3 +66,16 @@ export const browserCanonicalDigestSource = `(async function(project){
   return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
 })`;
 
+/**
+ * Execute the self-contained digest function in a browser-like evaluator. Both the project and
+ * function source are explicit serialized arguments; the evaluated callback has no Node closure.
+ */
+export async function evaluateBrowserCanonicalDigest(project, evaluate) {
+  return await evaluate(
+    async ({ project: browserProject, source }) => {
+      const digest = new Function(`return (${source})`)();
+      return await digest(browserProject);
+    },
+    { project, source: browserCanonicalDigestSource },
+  );
+}

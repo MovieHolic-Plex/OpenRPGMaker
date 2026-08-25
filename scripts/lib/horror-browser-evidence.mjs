@@ -10,6 +10,8 @@
 //   1. provenance  – the file must be stamped with the automated capture's name
 //   2. freshness   – observedAt must be inside maxStalenessMs, else QA must re-capture
 import fs from "node:fs";
+import path from "node:path";
+import { createHash } from "node:crypto";
 
 export const CAPTURE_HORROR_BROWSER_EVIDENCE_NAME = "capture-horror-browser-evidence";
 
@@ -29,7 +31,45 @@ export const HORROR_BROWSER_EVIDENCE_FIELDS = [
   "expectedStart",
   "contentDigest",
   "bgm",
+  "screenshots",
 ];
+
+const EXPECTED_SCREENSHOT_FILES = {
+  title: "browser-title.png",
+  playStart: "browser-play-start.png",
+};
+
+function sha256(bytes) {
+  return createHash("sha256").update(bytes).digest("hex");
+}
+
+export function describeScreenshotArtifact(filePath) {
+  const bytes = fs.readFileSync(filePath);
+  return {
+    file: path.basename(filePath),
+    bytes: bytes.byteLength,
+    sha256: sha256(bytes),
+  };
+}
+
+function validateScreenshotShape(screenshot, label) {
+  assert(typeof screenshot === "object" && screenshot !== null, `browser-qa screenshots.${label} is missing.`);
+  assert(typeof screenshot.file === "string" && screenshot.file.length > 0, `browser-qa screenshots.${label}.file is missing.`);
+  assert(Number.isInteger(screenshot.bytes) && screenshot.bytes > 0, `browser-qa screenshots.${label}.bytes must be positive.`);
+  assert(typeof screenshot.sha256 === "string" && /^[a-f0-9]{64}$/u.test(screenshot.sha256), `browser-qa screenshots.${label}.sha256 is invalid.`);
+}
+
+function verifyScreenshotArtifact(evidenceFilePath, screenshot, label) {
+  const expectedFile = EXPECTED_SCREENSHOT_FILES[label];
+  assert(screenshot.file === expectedFile, `browser-qa screenshot ${label} must be ${expectedFile}.`);
+  const evidenceDir = path.resolve(path.dirname(evidenceFilePath));
+  const artifactPath = path.resolve(evidenceDir, screenshot.file);
+  assert(path.dirname(artifactPath) === evidenceDir, `browser-qa screenshot ${label} escapes the evidence directory.`);
+  assert(fs.existsSync(artifactPath), `browser-qa screenshot artifact is missing: ${screenshot.file}`);
+  const actual = fs.readFileSync(artifactPath);
+  assert(actual.byteLength === screenshot.bytes, `browser-qa screenshot bytes mismatch: ${screenshot.file}`);
+  assert(sha256(actual) === screenshot.sha256, `browser-qa screenshot sha256 mismatch: ${screenshot.file}`);
+}
 
 export function validateHorrorBrowserEvidenceShape(parsed) {
   assert(typeof parsed === "object" && parsed !== null, "browser-qa.json은 객체여야 합니다.");
@@ -57,6 +97,9 @@ export function validateHorrorBrowserEvidenceShape(parsed) {
   assert(typeof parsed.bgm === "object" && parsed.bgm !== null, "browser-qa bgm 관찰이 없습니다.");
   assert(typeof parsed.bgm.requested === "boolean", "browser-qa bgm.requested가 없습니다.");
   assert(typeof parsed.bgm.played === "boolean", "browser-qa bgm.played가 없습니다.");
+  assert(typeof parsed.screenshots === "object" && parsed.screenshots !== null, "browser-qa screenshots are missing.");
+  validateScreenshotShape(parsed.screenshots.title, "title");
+  validateScreenshotShape(parsed.screenshots.playStart, "playStart");
   return parsed;
 }
 
@@ -95,6 +138,9 @@ export function readHorrorBrowserEvidence(filePath, opts) {
     `브라우저 QA 증거가 만료 또는 미래 시각입니다 (age=${Math.floor(ageMs / 1000)}s, 최대 ${Math.floor(maxStalenessMs / 1000)}s, 허용 미래 편차 ${MAX_FUTURE_SKEW_MS / 1000}s). 캡처를 다시 실행하세요.`,
   );
 
+  verifyScreenshotArtifact(filePath, evidence.screenshots.title, "title");
+  verifyScreenshotArtifact(filePath, evidence.screenshots.playStart, "playStart");
+
   // Return a defensively cloned, credential-free slice (never leak anything unexpected).
   return {
     projectId: evidence.projectId,
@@ -117,6 +163,10 @@ export function readHorrorBrowserEvidence(filePath, opts) {
     bgm: {
       requested: evidence.bgm.requested,
       played: evidence.bgm.played,
+    },
+    screenshots: {
+      title: { ...evidence.screenshots.title },
+      playStart: { ...evidence.screenshots.playStart },
     },
     consoleErrorCount: evidence.consoleErrorCount,
   };

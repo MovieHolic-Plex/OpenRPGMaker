@@ -36,6 +36,10 @@ export declare function assertRequiredBgmObserved(
   required: RequiredStartBgm,
   observed: ObservedAudio,
 ): void;
+export declare function wasRequiredBgmRequested(
+  requiredUrl: string,
+  requestedUrls: readonly string[],
+): boolean;
 
 export declare function browserScreenshotNames(): {
   title: string;

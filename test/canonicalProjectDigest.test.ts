@@ -3,6 +3,7 @@ import {
   canonicalProjectDigest,
   stableProjectSerialize,
   browserCanonicalDigestSource,
+  evaluateBrowserCanonicalDigest,
 } from "../scripts/lib/canonical-project-digest.mjs";
 import { createBlankProject } from "../src/project/defaults";
 import type { Project } from "../src/project/types";
@@ -81,5 +82,17 @@ describe("canonical project content digest", () => {
     const fn = new Function(`return ${browserCanonicalDigestSource}`)();
     const browserDigest = await fn(sampleProject());
     expect(browserDigest).toBe(canonicalProjectDigest(sampleProject()));
+  });
+
+  it("passes the digest source into the browser evaluator instead of closing over Node scope", async () => {
+    const project = sampleProject();
+    let receivedSource = "";
+    const digest = await evaluateBrowserCanonicalDigest(project, async (fn, input) => {
+      receivedSource = input.source;
+      return await fn(input);
+    });
+
+    expect(receivedSource).toBe(browserCanonicalDigestSource);
+    expect(digest).toBe(canonicalProjectDigest(project));
   });
 });

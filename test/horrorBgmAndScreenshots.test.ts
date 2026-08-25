@@ -68,6 +68,32 @@ describe("horror required-BGM observation & screenshot phasing", () => {
     ).not.toThrow();
   });
 
+  it("ACCEPTS an absolute browser response URL for the same app-relative BGM path", () => {
+    const derived = deriveRequiredStartBgm({
+      startMap: map,
+      resolveUrl: () => "/assets/cc0/audio/bgm/cave-theme.ogg",
+    });
+    expect(() =>
+      assertRequiredBgmObserved(derived, {
+        requestedUrls: ["http://127.0.0.1:6758/assets/cc0/audio/bgm/cave-theme.ogg"],
+        played: [derived.resourceId],
+      }),
+    ).not.toThrow();
+  });
+
+  it("REJECTS an absolute browser response URL for a different BGM path", () => {
+    const derived = deriveRequiredStartBgm({
+      startMap: map,
+      resolveUrl: () => "/assets/cc0/audio/bgm/cave-theme.ogg",
+    });
+    expect(() =>
+      assertRequiredBgmObserved(derived, {
+        requestedUrls: ["http://127.0.0.1:6758/assets/cc0/audio/bgm/town-theme.mp3"],
+        played: [derived.resourceId],
+      }),
+    ).toThrow(/BGM|load|로드/i);
+  });
+
   it("maps browser-title.png to before-play and browser-play-start.png to after-play", () => {
     expect(browserScreenshotNames()).toStrictEqual({
       title: "browser-title.png",
