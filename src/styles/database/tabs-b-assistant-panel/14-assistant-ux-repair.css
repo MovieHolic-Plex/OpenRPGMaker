@@ -134,3 +134,19 @@
   filter: saturate(0.35);
   opacity: 0.55;
 }
+
+/* ── 유리 카드 크기 조절 손잡이 ─────────────────────────────────
+   유리 도크에서 컴포저 바(.ai-command-bar, position:relative · z-index:1)가 카드의 아래쪽을
+   덮는다. 실측(verify-shots/ux-after/01): 카드 360x620@338,128 이고 바가 y 623~747 을 차지해
+   우하단 코너(682,732)가 바 아래에 깔렸다 — 손잡이는 보이지만 포인터가 닿지 않아 드래그가
+   아무 일도 하지 않았다. 같은 스택 문맥에서 바보다 위로 올리고 포인터를 명시적으로 받는다. */
+.ai-chat-panel.chat-dock-glass > .ai-chat-resize-handle {
+  pointer-events: auto;
+  z-index: 5;
+}
+
+/* 손잡이가 바 위에 겹쳐 보이므로 배경을 살짝 깔아 어느 표면의 코너인지 읽히게 한다. */
+.ai-chat-panel.chat-dock-glass > .ai-chat-resize-handle::before {
+  background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
+  border-bottom-right-radius: var(--radius-l);
+}
