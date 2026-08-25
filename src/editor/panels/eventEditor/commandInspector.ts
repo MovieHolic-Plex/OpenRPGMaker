@@ -47,7 +47,10 @@ export function clearCommandInspector(): void {
   if (host) {
     const fallback = host.ownerDocument.querySelector<HTMLElement>("[data-cmd-path].is-selected");
     hideInspector(host);
-    requestAnimationFrame(() => fallback?.focus());
+    const restoreFocus = (): void => fallback?.focus();
+    const requestFrame = host.ownerDocument.defaultView?.requestAnimationFrame;
+    if (requestFrame) requestFrame(restoreFocus);
+    else restoreFocus();
   }
 }
 
