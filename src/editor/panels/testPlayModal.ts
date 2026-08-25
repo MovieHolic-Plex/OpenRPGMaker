@@ -259,8 +259,8 @@ export function closeTestPlayModal(): void {
   modalRoot = null;
 }
 
-// 런 조작 버튼은 전체 테스트 플레이 창에만 단다. 전홂·이벤트 테스트 셸은 런 손잡이가 없어
-// 버튼이 있으면 생김없이 죽은 추어진다.
+// 런 조작 버튼은 전체 테스트 플레이 창에만 단다. 전투·이벤트 테스트 셸은 런 손잡이가 없어
+// 버튼을 달면 눌러도 아무 일이 없는 죽은 컨트롤이 된다.
 function openTestPlayShell(
   title: string,
   shellOptions: { readonly runControls?: boolean } = {},

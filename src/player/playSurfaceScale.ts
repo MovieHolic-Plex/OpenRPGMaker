@@ -10,9 +10,9 @@ export type PlaySurfaceCropMetrics = {
 };
 
 /**
- * 서프이스 배율 정책.
+ * 플레이 서피스 배율 정책.
  * - `integer`: 배포/커뮤니티 플레이어의 기존 동작 — 도트 경계가 깨지지 않는 정수 배율.
- * - `fit`: 생성 배율을 바닥윽 안 하고 그대로 쓴다. 에디터 테스트 플레이 창은 정수 배율이면
+ * - `fit`: contain 배율을 내림하지 않고 그대로 쓴다. 에디터 테스트 플레이 창은 정수 배율이면
  *   창의 27% 만 그려(1214x640 → 640x480) 작업자가 무엇을 테스트하는지 보이지 않았다.
  */
 export type PlaySurfaceScaleMode = "integer" | "fit";
