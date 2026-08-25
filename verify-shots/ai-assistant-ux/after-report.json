@@ -23,7 +23,7 @@
       1600,
       1000
     ],
-    "count": 1,
+    "assistantBottomCount": 1,
     "rows": [
       {
         "tag": "button",
@@ -128,7 +128,7 @@
       1600,
       1000
     ],
-    "count": 4,
+    "assistantBottomCount": 4,
     "rows": [
       {
         "tag": "textarea",
@@ -204,7 +204,7 @@
       1600,
       1000
     ],
-    "count": 5,
+    "assistantBottomCount": 5,
     "rows": [
       {
         "tag": "textarea",
@@ -292,7 +292,7 @@
       1600,
       1000
     ],
-    "count": 4,
+    "assistantBottomCount": 4,
     "rows": [
       {
         "tag": "textarea",
@@ -348,5 +348,6 @@
     "side",
     "float",
     "glass"
-  ]
+  ],
+  "_note": "좌측 타일 팔레트/맵 트리 행은 조수 표면이 아니라 제거했다(x<320). 원본은 프로브를 다시 돌리면 나온다."
 }
