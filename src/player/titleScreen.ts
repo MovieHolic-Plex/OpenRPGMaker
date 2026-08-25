@@ -10,9 +10,8 @@ const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
 
 /**
- * 타이틀 메뉴는 키보드(↑↓ / Z·Enter / X·Esc)가 기본이고,
- * 마우스 클릭으로도 동일 동작을 실행한다(실사용자 UX).
- * E2E 는 여전히 `startNewGameFromTitle`(Enter) 경로를 쓴다.
+ * 타이틀 메뉴는 키보드(↑↓ / Z·Enter·Space / X·Esc) 전용이다.
+ * 포인터는 선택이나 확정을 바꾸지 않으며 E2E도 실제 키 입력 경로를 쓴다.
  */
 export type TitleScreenActions = {
   readonly onNewGame: () => void;
@@ -101,7 +100,7 @@ export function focusSelectedTitleOption(title: HTMLElement): void {
 
 export function renderTitleScreen(
   project: Project,
-  actions: TitleScreenActions,
+  _actions: TitleScreenActions,
   selectedIndex = 0,
   context?: TitleMenuContext,
 ): HTMLElement {
@@ -126,7 +125,7 @@ export function renderTitleScreen(
   if (playIntro) applyTitleIntroToLogoNodes(titleNodes, settings.intro);
   title.append(...titleNodes);
   const showInputHint = settings.showInputHint !== false;
-  const menu = renderMenu(settings, options, clampedIndex, actions, showInputHint);
+  const menu = renderMenu(settings, options, clampedIndex, showInputHint);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
   if (showInputHint) {
@@ -339,13 +338,11 @@ function renderMenu(
   settings: TitleScreenSettings,
   options: readonly TitleMenuOption[],
   selectedIndex: number,
-  actions: TitleScreenActions,
   hintVisible: boolean,
 ): HTMLElement {
   const menu = el("div", {
     class: "rm-title-menu",
     attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
-    dataset: { playInputOwner: "title-controls" },
   });
   menu.style.left = logicalX(settings.layout.menuX);
   menu.style.top = logicalY(titleMenuTop(settings.layout.menuY, options.length, hintVisible));
@@ -356,24 +353,10 @@ function renderMenu(
         option.testId,
         option.elementId,
         index === selectedIndex,
-        activateForOption(option.id, actions),
       ),
     );
   }
   return menu;
-}
-
-function activateForOption(id: TitleMenuOptionId, actions: TitleScreenActions): () => void {
-  switch (id) {
-    case "newGame":
-      return actions.onNewGame;
-    case "resume":
-      return actions.onResume;
-    case "continueGame":
-      return actions.onContinue;
-    case "quit":
-      return actions.onQuit;
-  }
 }
 
 function titleOption(
@@ -381,7 +364,6 @@ function titleOption(
   testId: string,
   elementId: string,
   selected: boolean,
-  onActivate: () => void,
 ): HTMLElement {
   const attrs: Record<string, string> = {
     role: "option",
@@ -396,12 +378,6 @@ function titleOption(
     text: label,
     attrs,
     dataset: { testid: testId },
-    on: {
-      click: (event: Event) => {
-        event.preventDefault();
-        onActivate();
-      },
-    },
   });
 }
 

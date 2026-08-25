@@ -122,24 +122,24 @@ afterEach(() => {
 });
 
 describe("touch pad capability and input parity", () => {
-  it("mounts automatically on a coarse-pointer device without env config", async () => {
+  it("stays disabled on a coarse-pointer device without an explicit mobile-build override", async () => {
     const { createTouchPad } = await loadTouchPad();
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
 
-    expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
     handle.cleanup();
   });
 
-  it("mounts automatically when only maxTouchPoints reports touch capability", async () => {
+  it("stays disabled when only maxTouchPoints reports touch capability", async () => {
     setTouchCapabilities(false, 2);
     const { createTouchPad } = await loadTouchPad();
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
 
-    expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
     handle.cleanup();
   });
 
@@ -154,7 +154,7 @@ describe("touch pad capability and input parity", () => {
     handle.cleanup();
   });
 
-  it("detects touch via maxTouchPoints when matchMedia is unavailable", async () => {
+  it("does not auto-mount from maxTouchPoints when matchMedia is unavailable", async () => {
     const descriptor = Object.getOwnPropertyDescriptor(window, "matchMedia");
     Object.defineProperty(window, "matchMedia", { configurable: true, value: undefined });
     Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value: 2 });
@@ -164,7 +164,7 @@ describe("touch pad capability and input parity", () => {
 
       const handle = createTouchPad(host);
 
-      expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+      expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
       handle.cleanup();
     } finally {
       if (descriptor) {

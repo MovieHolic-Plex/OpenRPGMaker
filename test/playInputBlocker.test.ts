@@ -20,7 +20,7 @@ describe("play pointer blocker", () => {
     expect(shouldBlockPlayPointerEvent({ type: "click" })).toBe(false);
   });
 
-  it("allows real mouse clicks only within title-owned controls", () => {
+  it("blocks title-control pointers with the rest of keyboard-only play", () => {
     const g = globalThis as { __oprnForcePointerBlock?: boolean };
     g.__oprnForcePointerBlock = true;
     try {
@@ -28,8 +28,8 @@ describe("play pointer blocker", () => {
       titleControls.dataset.playInputOwner = "title-controls";
       const option = document.createElement("button");
       titleControls.append(option);
-      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: option })).toBe(false);
-      expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: option })).toBe(false);
+      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: option })).toBe(true);
+      expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: option })).toBe(true);
       // 필드 클릭은 여전히 차단
       expect(
         shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: document.createElement("div") })

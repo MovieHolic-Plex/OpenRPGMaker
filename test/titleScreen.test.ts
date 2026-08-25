@@ -184,7 +184,7 @@ describe("title screen", () => {
     }
   });
 
-  it("wires mouse click handlers on title menu options", () => {
+  it("ignores pointer clicks because title selection is keyboard-only", () => {
     const restoreDom = installFakeDom();
     try {
       let activated: string | null = null;
@@ -208,7 +208,8 @@ describe("title screen", () => {
       const newGame = findByTestId(screen, "title-new-game");
       expect(String(newGame?.tagName ?? "").toLowerCase()).not.toBe("button");
       newGame?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(activated).toBe("new");
+      expect(activated).toBeNull();
+      expect(findByTestId(screen, "title-input-hint")?.textContent).not.toContain("클릭");
     } finally {
       restoreDom();
     }
@@ -372,7 +373,7 @@ describe("title screen", () => {
       // selectedIndex 1 은 이제 resume 을 가리킨다(new → resume → load → quit).
       expect(resume?.attrs["aria-selected"]).toBe("true");
       resume?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(resumed).toBe(1);
+      expect(resumed).toBe(0);
     } finally {
       restoreDom();
     }
