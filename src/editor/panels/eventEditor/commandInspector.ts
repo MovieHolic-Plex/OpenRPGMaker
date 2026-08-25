@@ -44,7 +44,11 @@ export function sameInspectorPath(a: readonly number[], b: readonly number[] | u
 /** 선택 자체를 버린다(다른 이벤트/페이지로 이동 등). */
 export function clearCommandInspector(): void {
   selectedPath = undefined;
-  if (host) hideInspector(host);
+  if (host) {
+    const fallback = host.ownerDocument.querySelector<HTMLElement>("[data-cmd-path].is-selected");
+    hideInspector(host);
+    requestAnimationFrame(() => fallback?.focus());
+  }
 }
 
 /**
@@ -112,7 +116,10 @@ export function showCommandInspector(target: InspectorTarget): void {
     text: "×",
     attrs: { type: "button", title: "선택 명령 닫기", "aria-label": "선택 명령 닫기" },
     dataset: { testid: "event-inspector-close" },
-    on: { click: () => clearCommandInspector() },
+    on: {
+      pointerdown: (event) => event.preventDefault(),
+      click: () => clearCommandInspector(),
+    },
   });
   const previewActions = el("div", {
     class: "event-inspector-preview-actions",
@@ -130,7 +137,15 @@ export function showCommandInspector(target: InspectorTarget): void {
         attrs: { type: "button" },
         dataset: { testid: "event-inspector-preview-current" },
         on: {
-          click: () => formBody.querySelector<HTMLElement>("textarea, input:not([type='hidden']), select, button")?.focus(),
+          click: () => {
+            if (!isForm) {
+              saveInspectorDensity("form");
+              showCommandInspector(target);
+              host?.querySelector<HTMLElement>("[data-testid='event-inspector-body'] textarea, [data-testid='event-inspector-body'] input:not([type='hidden']), [data-testid='event-inspector-body'] select, [data-testid='event-inspector-body'] button")?.focus();
+              return;
+            }
+            formBody.querySelector<HTMLElement>("textarea, input:not([type='hidden']), select, button")?.focus();
+          },
         },
       }),
     ],

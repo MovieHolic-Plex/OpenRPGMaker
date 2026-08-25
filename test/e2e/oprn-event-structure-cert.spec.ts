@@ -32,13 +32,14 @@ test("loop5 certifies editor page, command, choice branch, cancel branch, and fo
   await expect(page.getByTestId("event-command-text").filter({ hasText: "ALPHA COPY SOURCE" })).toBeVisible();
   await screenshot(page, "002-editor-structure-initial.png");
 
-  await page.getByTestId("event-page-add").click();
+  await page.getByTestId("event-page-tab-add").click();
   await expect(page.getByTestId("event-page-tab-3")).toBeVisible();
   await screenshot(page, "003-editor-page-added.png");
   await page.getByTestId("event-page-copy").click();
   await page.getByTestId("event-page-paste").click();
   await expect(page.getByTestId("event-page-tab-4")).toBeVisible();
   await screenshot(page, "004-editor-page-pasted.png");
+  page.once("dialog", (dialog) => dialog.accept());
   await page.getByTestId("event-page-delete").click();
   await expect(page.getByTestId("event-page-tab-4")).toHaveCount(0);
   await expect(page.getByTestId("event-page-tab-3")).toBeVisible();
