@@ -64,16 +64,17 @@ describe("패널 크기 커스텀", () => {
     expect(loadPanelSize()).toBeNull();
   });
 
-  it("저장된 크기가 있으면 (떠 있는 모드에서) 패널 인라인 스타일로 적용되고, 리사이즈 핸들이 렌더된다", () => {
+  it("저장된 크기가 있으면 유리 카드에 인라인 크기로 적용되고, 리사이즈 핸들이 렌더된다", () => {
+    // 레거시 전역 키에만 저장해도 도크별 로더가 폴백으로 읽는다(기존 사용자 크기 보존).
     savePanelSize({ width: 500, height: 640 });
-    // 커스텀 크기는 떠 있는(비도킹) 모드 전용 — 도킹이 기본값이라 float으로 전환해 확인한다.
-    storage.set("oprn:ai-panel-docked", "0");
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
     // 부팅 기본 접힘 — 펼친 뒤에야 인라인 크기 적용
     findByTestId(panel, "ai-collapsed-restore")?.click();
     expect(findByTestId(panel, "ai-resize-handle")).toBeTruthy();
-    expect(panel.getAttribute("style")).toContain("width:500px");
-    expect(panel.getAttribute("style")).toContain("height:640px");
+    // 크기는 style **속성 문자열**을 덮어쓰지 않고 개별 프로퍼티로 쓴다 — 같은 인라인 스타일에
+    // --ai-command-bar-clearance 와 --ai-font-scale 이 함께 살기 때문이다(속성 통째 쓰기가 그들을 지웠다).
+    expect(panel.style.width).toBe("500px");
+    expect(panel.style.height).toBe("640px");
   });
 });
 
