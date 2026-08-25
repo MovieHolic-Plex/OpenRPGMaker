@@ -24,6 +24,50 @@
   width: 100%;
 }
 
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial {
+  --oprn-title-text: #f8fafc;
+  --oprn-title-shadow: rgba(5, 12, 28, 0.72);
+  isolation: isolate;
+}
+
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial::before {
+  background:
+    linear-gradient(90deg, rgba(4, 10, 23, 0.84) 0%, rgba(4, 10, 23, 0.46) 34%, transparent 62%),
+    linear-gradient(0deg, rgba(4, 10, 23, 0.36), transparent 42%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.player-layout.system-shell .rm-title-editorial-copy {
+  position: static;
+}
+
+.player-layout.system-shell .rm-title-kicker {
+  color: rgba(226, 232, 240, 0.72);
+  display: block;
+  font: 700 7px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace;
+  left: 10%;
+  letter-spacing: 0.16em;
+  position: absolute;
+  top: 12%;
+  z-index: 3;
+}
+
+.player-layout.system-shell .rm-title-subtitle {
+  color: rgba(248, 250, 252, 0.86);
+  display: block;
+  font: 500 10px/1.3 "Malgun Gothic", "Segoe UI", sans-serif;
+  left: 10%;
+  margin-top: 0;
+  position: absolute;
+  top: 34%;
+  word-break: keep-all;
+  z-index: 3;
+}
+
 /* 한 주기 = 논리 타일 한 장(320×240) 이동. 주기(duration)는 저작 속도로 인라인 주입된다. */
 @keyframes rm-title-layer-scroll-x {
   from { background-position-x: 0; }
@@ -76,21 +120,21 @@
   }
 }
 
-.player-layout.system-shell .rm-title-screen .rm-title-screen-title {
-  font-size: var(--runtime-font-size-22);
-  max-width: 280px;
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial .rm-title-screen-title {
+  font: 800 18px/1.05 "Malgun Gothic", "Segoe UI", sans-serif;
+  letter-spacing: -0.04em;
+  max-width: 72%;
+  text-align: left;
+  transform: none;
+  word-break: keep-all;
+  z-index: 3;
   -webkit-text-stroke: 0;
-  text-shadow:
-    1px 0 0 var(--oprn-title-shadow),
-    -1px 0 0 var(--oprn-title-shadow),
-    0 1px 0 var(--oprn-title-shadow),
-    2px 2px 0 rgba(5, 19, 70, 0.62);
+  text-shadow: 0 2px 10px var(--oprn-title-shadow);
 }
 
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title::before,
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title::after {
-  height: 2px;
-  width: 220px;
+  display: none;
 }
 
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title::before {
@@ -109,38 +153,38 @@
   z-index: 2;
 }
 
-.player-layout.system-shell .rm-title-menu {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-width: var(--runtime-window-border);
-  border-radius: 0;
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu {
+  background: transparent;
+  border: 0;
   box-shadow: none;
   gap: 2px;
-  min-width: 220px;
-  padding: 2px 4px;
+  min-width: 96px;
+  padding: 0;
+  transform: none;
+  z-index: 3;
 }
 
-.player-layout.system-shell .rm-title-menu-button {
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu-button {
+  background: transparent;
+  border: 0;
+  color: rgba(226, 232, 240, 0.78);
   cursor: default;
-  font-size: var(--runtime-font-size-11);
-  line-height: 1.15;
-  min-height: 20px;
-  padding: 2px 8px 2px 26px;
-  text-shadow:
-    1px 0 0 var(--oprn-title-window-shadow),
-    0 1px 0 var(--oprn-title-window-shadow);
+  font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", sans-serif;
+  min-height: 16px;
+  padding: 2px 6px 2px 10px;
   pointer-events: none;
+  text-align: left;
+  text-shadow: 0 1px 6px rgba(4, 10, 23, 0.7);
+}
+
+.player-layout.system-shell .rm-title-menu-button.selected {
+  background: transparent;
+  box-shadow: inset 3px 0 0 #4a57d6;
+  color: #fff;
 }
 
 .player-layout.system-shell .rm-title-menu-button.selected::before {
-  border-bottom-width: 6px;
-  border-left-width: 10px;
-  border-top-width: 6px;
-  left: 9px;
+  display: none;
 }
 
 .player-layout.system-shell .rm-title-menu-button:focus-visible {
@@ -149,22 +193,18 @@
   outline: none;
 }
 
-.player-layout.system-shell .rm-title-input-hint {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-width: var(--runtime-window-border-tight);
-  border-radius: 0;
-  bottom: 8px;
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-input-hint {
+  background: rgba(4, 10, 23, 0.28);
+  border: 0;
+  bottom: 10px;
   box-shadow: none;
-  font-size: var(--runtime-font-size-9);
-  line-height: 1.2;
-  min-width: 174px;
-  padding: 3px 8px;
-  text-shadow: 1px 1px 0 var(--oprn-title-window-shadow);
+  color: rgba(248, 250, 252, 0.8);
+  font: 500 8px/1 "Malgun Gothic", "Segoe UI", sans-serif;
+  min-width: 0;
+  padding: 4px 6px;
+  right: 10px;
+  text-shadow: 0 1px 8px rgba(4, 10, 23, 0.8);
+  z-index: 3;
 }
 
 .player-layout.system-shell .oprn-load-panel.system-panel {

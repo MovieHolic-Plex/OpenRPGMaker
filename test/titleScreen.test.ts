@@ -27,6 +27,28 @@ function fullVisibilitySettings(partial: Omit<TitleScreenSettings, "menuVisibili
 }
 
 describe("title screen", () => {
+  it("renders the redesigned editorial title composition instead of legacy window chrome", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      expect(screen.classList.contains("rm-title-screen-editorial")).toBe(true);
+      expect(findByTestId(screen, "title-kicker")?.textContent).toBe("A NEW ADVENTURE");
+      expect(findByTestId(screen, "title-subtitle")?.textContent).toBe("이야기가 시작되는 곳");
+      expect(screen.querySelector(".rm-title-menu")?.classList.contains("rm-title-menu-open")).toBe(true);
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("renders database-configured title text, menu labels, and positions", () => {
     const restoreDom = installFakeDom();
     try {
@@ -156,7 +178,7 @@ describe("title screen", () => {
     }
   });
 
-  it("uses the 320x240 EasyRPG title background and centered menu by default", () => {
+  it("uses the 320x240 title background and left-aligned editorial composition by default", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -176,8 +198,8 @@ describe("title screen", () => {
         throw new Error("expected title screen children");
       }
       expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
-      expect(title.style.left).toBe("50%");
-      expect(menu.style.left).toBe("50%");
+      expect(title.style.left).toBe("10%");
+      expect(menu.style.left).toBe("10.625%");
       expect(findByTestId(screen, "title-input-hint")?.textContent).toBe(TITLE_KEY_PROMPT);
     } finally {
       restoreDom();

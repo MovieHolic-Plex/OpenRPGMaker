@@ -185,10 +185,9 @@ describe("titleScreen settings normalize expansion", () => {
     expect(project.system.titleScreen?.showInputHint).toBe(true);
     expect(project.system.titleScreen?.sounds).toBeUndefined();
     expect(project.system.titleScreen?.titleGraphic).toEqual({
-      mode: "both",
-      resourceId: "oprn-title-logo-crest",
-      x: 160,
-      y: 42,
+      mode: "text",
+      x: 32,
+      y: 62,
     });
   });
 

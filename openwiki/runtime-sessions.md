@@ -82,6 +82,11 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - Play mode draws Phaser weather in `src/player/playSceneWeather.ts` below the Phase 6a darkness mask. `storm` reuses rain particles plus deterministic fixed-step flash opacity, while `fog` is a scrolling translucent overlay under darkness so lighting can still dominate the final composite.
 - Map-target battle animations are transient runtime effects from `showAnimation` and are intentionally not serialized. `src/player/playSceneMapAnimations.ts` reuses battle animation records/resources on a map overlay above events and below darkness; event targets capture the start tile/pixel position and do not track a moving event after playback begins.
 
+## Editorial title screen (2026-08-26)
+
+- `src/player/titleScreen.ts` renders the game-start surface with the stable editorial root `rm-title-screen-editorial`, the kicker `A NEW ADVENTURE`, and the subtitle `이야기가 시작되는 곳`. Keep the authored title/menu/resource behavior intact while preserving this calmer story-opening composition; do not restore the oversized crest, technical key-help copy, or saturated RM-style menu chrome.
+- Focused structure coverage lives in `test/titleScreen.test.ts`. Browser acceptance must open the actual test-play window and inspect the rendered title surface rather than relying on the System-tab preview alone.
+
 
 ## playerTouch trigger contract (2026-08-20)
 - playerTouch(및 touch) 맵 이벤트는 세 경로로 발동한다: ① **밟기** — 플레이어가 이벤트 타일로 걸어 들어감(`playSceneMovement.ts`의 이동 완료 → `fireTouchTriggers`; 헤드리스는 `sceneTestRunner.ts`의 `movePlayerOneStep`), ② **부딪힘** — priority "same"(차단형) 이벤트에 이동이 막히며 접촉(`firePlayerTouchEvent`), ③ **transfer 연계** — 전이 착지 타일의 touch 이벤트(착지 즉시 재발동 위험은 lint `transfer-retrigger`가 경고). 저작 계약: **playerTouch 이벤트는 밟을 수 있는 타일에 놓아야 한다(priority "below" 권장)** — 플레이어 이동은 지형 통행성(`canMove`)에서 먼저 막히므로, 통행 불가 타일 위의 밟기형(priority≠"same") 페이지는 영구 미발동이다(RM2K3 정합 동작이라 런타임은 고치지 않음). 이 함정은 lint `playerTouch-impassable`(warning, `src/project/lint/projectLint.ts`)이 검출한다. 회귀 스펙: `test/emberQuestGame.test.ts`의 잿불 마을 동문 걷기 전이 케이스(2026-07-07 크리틱 #19 오탐 종결 증거).

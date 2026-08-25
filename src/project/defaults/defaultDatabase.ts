@@ -100,28 +100,22 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
     // 카탈로그에 타이틀·메뉴 곡이 있으므로 저작자는 피커에서 한 번에 고르면 된다.
     // 후보: cc0-bgm-rtp-ttl-001(새벽의 의뢰서), cc0-bgm-rtp-uix-001..005(UI · 첫 조작).
     layout: {
-      titleX: 160,
-      titleY: 92,
-      menuX: 160,
-      menuY: 148,
+      titleX: 32,
+      titleY: 48,
+      menuX: 34,
+      menuY: 128,
     },
     menuLabels: {
       newGame: "새 게임",
-      continueGame: "계속",
-      quit: "게임 종료",
+      continueGame: "이어하기",
+      quit: "종료",
     },
     menuVisibility: {
       newGame: true,
       continueGame: true,
       quit: true,
     },
-    // Crest logo over night-field title art; alpha cleanup is reproducible via `npm run clean:title-logo`.
-    titleGraphic: {
-      mode: "both",
-      resourceId: "oprn-title-logo-crest",
-      x: 160,
-      y: 42,
-    },
+    titleGraphic: { mode: "text", x: 32, y: 62 },
     showInputHint: true,
   };
 }
