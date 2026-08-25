@@ -303,6 +303,7 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
           el("h2", { text: title }),
         ],
       }),
+      el("div", { class: "event-editor-header-save-state", text: "✓ 저장됨" }),
       el("div", {
         class: "event-editor-window-controls",
         children: [

@@ -48,10 +48,12 @@
   border-bottom: 1px solid var(--balanced-border);
   display: grid;
   gap: 22px;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: 155px minmax(0, 1fr) auto auto !important;
   min-height: var(--balanced-header-height);
   padding: 0 20px;
 }
+
+.event-editor-modal-header .event-editor-window-title { display: none; }
 
 .event-editor-product-brand {
   color: #24212b;
@@ -81,6 +83,13 @@
   display: flex;
   flex: 0 0 auto;
   min-width: 0;
+}
+
+.event-editor-header-save-state {
+  color: #5e696b;
+  font-size: 12px;
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .event-editor-window-title::before {
@@ -160,7 +169,8 @@
   border-bottom: 1px solid var(--balanced-border);
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  grid-template-rows: 12px minmax(0, 1fr);
   min-height: var(--balanced-pages-height);
   overflow: hidden;
   padding: 10px 21px 8px;
@@ -176,10 +186,26 @@
 }
 
 .event-editor .event-page-tabs {
-  grid-column: 1;
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
   min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
+  width: 190px;
+}
+.event-editor .event-page-tabs > summary { display: none; }
+.event-editor .event-page-tabs .event-page-action-buttons {
+  align-items: center;
+  display: flex !important;
+  gap: 12px;
+  height: 100%;
+  justify-content: flex-end;
+  position: static !important;
+  width: 190px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .event-editor .event-page-number-tabs {
@@ -244,10 +270,13 @@
 }
 
 .event-editor .event-page-action-buttons .btn {
-  background: var(--balanced-surface);
-  border-color: var(--balanced-border-strong);
+  background: transparent;
+  border-color: transparent;
   box-shadow: none;
   min-height: 38px;
+  width: 89px !important;
+  min-width: 89px !important;
+  text-align: center !important;
 }
 
 .event-editor .event-editor-command-header { display: none; }
@@ -465,7 +494,9 @@
 
 .event-editor .event-editor-inspector-column {
   background: var(--balanced-surface);
-  display: block;
+  border-left: 1px solid var(--balanced-border);
+  display: flex;
+  flex-direction: column;
   grid-column: 3;
   grid-row: 1;
   min-height: 0;
@@ -488,6 +519,29 @@
 .event-editor .event-preview-stage {
   border-radius: 7px;
   overflow: hidden;
+}
+
+.event-editor .event-inspector-head {
+  display: none;
+}
+
+.event-editor .event-inspector-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.event-editor .event-command-text-editor.cream-command-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-editor .event-command-text-preview-card {
+  order: -1;
+}
+
+.event-editor .event-command-text-compose-card {
+  order: 1;
 }
 
 .event-editor .event-draft-validation {
@@ -522,10 +576,15 @@
   overflow: hidden;
 }
 
+.event-editor .event-command-text-preview-card .event-command-text-section-head {
+  display: none;
+}
+
 .event-editor .event-command-text-preview-canvas {
   background:
     linear-gradient(180deg, rgba(7, 15, 33, 0.05), rgba(7, 15, 33, 0.22)),
     url("/generated/battle-reference-forest.png") center / cover no-repeat;
+  height: 238px;
   min-height: 238px;
   padding: 12px;
 }
@@ -549,7 +608,7 @@
   display: flex;
   font-size: 13px;
   font-weight: 650;
-  min-height: 31px;
+  min-height: 32px;
   padding: 0 14px;
 }
 
@@ -561,8 +620,23 @@
 
 .event-editor .event-draft-validation-issues {
   border-top: 1px solid var(--balanced-border);
+  display: block !important;
+  height: 34px;
   max-height: 34px;
   overflow: hidden;
+  padding: 6px 14px;
+}
+
+.event-editor .event-draft-validation {
+  height: 68px !important;
+  max-height: 68px !important;
+}
+
+.event-editor .event-draft-validation-issue {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-height: 22px;
 }
 
 .event-editor-modal-footer {
@@ -577,6 +651,9 @@
 }
 
 .event-editor-footer-actions { gap: 12px; }
+.event-editor-modal-footer .event-editor-lifecycle-status::after {
+  content: " · 자동 저장";
+}
 .event-editor-modal-footer .btn {
   background: var(--balanced-surface);
   border-color: var(--balanced-border-strong);
