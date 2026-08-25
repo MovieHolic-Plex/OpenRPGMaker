@@ -10,6 +10,7 @@
     "wt": "node scripts/agent-worktree.mjs",
     "qwen": "node scripts/qwen-worker.mjs",
     "gates": "node scripts/verify-gates.mjs",
+    "audit:combined-town-autotiles": "vite-node scripts/audit-combined-town-autotiles.mts",
     "dev:keep": "node scripts/dev-keepalive.mjs",
     "dev:keep:detached": "node scripts/dev-keepalive-supervisor.mjs --detach",
     "mcp:assistant": "node scripts/rpgzzu-assistant-mcp.mjs",
