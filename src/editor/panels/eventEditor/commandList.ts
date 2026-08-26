@@ -164,8 +164,7 @@ function renderCommandItem(
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
   head.addEventListener("click", () => {
     selectCommandLine(item);
-    // 목업: 클릭하면 우측 인스펙터가 그 자리에서 바뀐다(모달 없음).
-    showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+    openEditor();
   });
   // 재렌더 뒤에도 선택과 인스펙터가 유지되도록 복원한다.
   if (sameInspectorPath(path, selectedCommandPath())) {
