@@ -14,6 +14,7 @@
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { editorState } from "@/editor/editorState";
+import { getEditorUiMode, setEditorUiMode, type EditorUiMode } from "@/editor/editorUiMode";
 import type { ChatDock } from "@/editor/chatDock";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
 import {
@@ -39,9 +40,19 @@ const DENSITY_OPTIONS: readonly { readonly id: WorkspaceDensity; readonly label:
 
 const ZONE_LABEL: Record<DockZone, string> = { left: "왼쪽", right: "오른쪽", bottom: "아래" };
 
+// 편집 모드는 2026-08-26 에 이 메뉴로 이사했다. 전에는 standard 전용 ⋯ 메뉴에만 있었고,
+// 그 메뉴는 `.open` 클래스를 붙이지 않아 실제로는 열리지 않았다 — 초보 모드 사용자는 Ctrl+K 없이
+// 모드를 바꿀 방법이 아예 없었다. 밀도·레이아웃과 같은 화면 설정이므로 이 메뉴가 집이다.
+const UI_MODE_OPTIONS: readonly { readonly id: EditorUiMode; readonly label: string; readonly hint: string }[] = [
+  { id: "beginner", label: "초보", hint: "이름 붙은 큰 도구 레일과 안내를 최대한 켠다" },
+  { id: "standard", label: "표준", hint: "전체 팔레트와 맵 트리를 여는 기본 배치" },
+  { id: "expert", label: "전문가", hint: "클래식 툴바와 기술 용어까지 노출한다" },
+];
+
 /**
- * 탑바에 들어갈 노드들. `standard-more-tools` 와 같은 평면 형제 패턴을 쓴다 —
- * `.oprn-menu-popup` 이 형제 기준으로 위치를 잡으므로 감싸면 CSS 를 함께 고쳐야 한다.
+ * 탑바에 들어갈 노드들. `.oprn-menu-popup` 이 형제 기준으로 위치를 잡으므로 감싸면 CSS 를
+ * 함께 고쳐야 한다. (구 `standard-more-tools` 가 같은 형제 패턴이었고, `.open` 을 붙이지 않아
+ * 영구히 열리지 않던 탓에 2026-08-26 에 제거됐다.)
  */
 export function renderWorkspaceBar(): readonly HTMLElement[] {
   const [panelsButton, panelsMenu] = renderPanelsMenu();
@@ -168,6 +179,25 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
             event.stopPropagation();
             const next = (event.currentTarget as HTMLElement | null)?.dataset["workspaceDensity"];
             if (isWorkspaceDensity(next)) setWorkspaceDensity(next);
+            close();
+          },
+        },
+      }),
+    );
+  }
+  menu.append(el("div", { class: "workspace-menu-group", text: "편집 모드" }));
+  for (const option of UI_MODE_OPTIONS) {
+    const active = getEditorUiMode() === option.id;
+    menu.append(
+      el("button", {
+        class: `oprn-menu-command workspace-ui-mode-item${active ? " is-active" : ""}`,
+        text: `${active ? "● " : "○ "}${option.label}`,
+        attrs: { type: "button", role: "menuitemradio", "aria-checked": active ? "true" : "false", title: option.hint },
+        dataset: { testid: `workspace-ui-mode-${option.id}`, editorUiMode: option.id },
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            setEditorUiMode(option.id);
             close();
           },
         },

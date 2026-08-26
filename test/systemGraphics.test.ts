@@ -34,9 +34,10 @@ describe("system graphics resource application", () => {
     applyBattleSystemGraphic(battleNode as unknown as HTMLElement);
 
     // Field and battle panels both use the real windowskin, not SystemA.png.
-    expect(systemNode.style["--runtime-window-skin"]).toContain("windowskin-default.png");
-    expect(battleNode.style["--runtime-window-skin"]).toContain("windowskin-default.png");
-    expect(systemNode.dataset.systemResource).toBe("windowskin-default");
+    // 저작 기본 스킨은 따뜻한 갈색 9-slice 다(DEFAULT_RUNTIME_WINDOW_SKIN_ID = windowskin-warm).
+    expect(systemNode.style["--runtime-window-skin"]).toContain("windowskin-warm.png");
+    expect(battleNode.style["--runtime-window-skin"]).toContain("windowskin-warm.png");
+    expect(systemNode.dataset.systemResource).toBe("windowskin-warm");
     // System2 is gauge chrome only — never border-image fill (that flooded orange panels).
     expect(battleNode.style["--runtime-battle-system2"]).toContain("System2B.png");
     expect(battleNode.dataset.battleSystemResource).toBe("easyrpg-system2-system2-b");

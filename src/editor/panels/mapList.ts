@@ -22,6 +22,7 @@ import {
   siblingIndex,
 } from "@/project/mapTree";
 import { store } from "@/project/store";
+import { toast } from "@/util/toast";
 import type { MapId, MapTreeNode } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -603,7 +604,18 @@ function makeMapTreeHeaderActions(root: MapTreeNode): HTMLElement {
         testId: "map-add-folder",
       }),
       treeAction({
-        action: () => setStartMap(editorState.get().currentMapId ?? store.getCurrent().startMapId),
+        // 이미 시작 맵일 때 setStartMap 은 무효토산이고 토스트도 없어서 「눌러도 아무 일 없는
+        // 버튼」이었다(실측 감사에서 dead). 행 컨텍스트 메뉴는 그 경우 항목 자체를 숨기므로
+        // 헤더 버튼만 일관성이 없었다 — 어느 쪽이든 결과를 말해 준다.
+        action: () => {
+          const mapId = editorState.get().currentMapId ?? store.getCurrent().startMapId;
+          if (store.getCurrent().startMapId === mapId) {
+            toast("이미 시작 맵입니다", "ok");
+            return;
+          }
+          setStartMap(mapId);
+          toast(`'${store.getCurrent().maps[mapId]?.name ?? mapId}'을 시작 맵으로 지정했습니다`, "ok");
+        },
         icon: "map-start",
         label: "현재 맵을 시작 맵으로",
         testId: "map-set-start",

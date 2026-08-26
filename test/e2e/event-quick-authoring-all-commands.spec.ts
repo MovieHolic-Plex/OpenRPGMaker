@@ -74,13 +74,8 @@ async function persistResults(
 }
 
 async function openEventEditor(page: Page): Promise<Locator> {
-  const eventLayerButton = page.getByTestId("layer-event");
-  if (await eventLayerButton.isVisible().catch(() => false)) {
-    await eventLayerButton.click();
-  } else {
-    await page.getByRole("button", { name: "도구", exact: true }).click();
-    await page.getByTestId("menu-tools-layer-event").click();
-  }
+  // 레이어 전환은 사이드바가 소유한다 — 상단 「도구」 메뉴의 레이어 항목은 중복이라 제거됐다.
+  await page.getByTestId("layer-event").click();
   const eventTool = page.locator('[data-testid="tool-event"]:visible').first();
   if (await eventTool.count()) await eventTool.click();
 

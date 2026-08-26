@@ -12,7 +12,6 @@ import {
   setWorkspacePreset,
   toggleWorkspacePanel,
 } from "@/editor/workspace/workspaceStore";
-import { activateLeftDrawerTab } from "@/editor/leftDrawerTab";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
@@ -172,27 +171,6 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "도구",
       keywords: ["build", "palette", "건축", "팔레트"],
       run: () => setBuildPaletteEnabled(!isBuildPaletteEnabled()),
-    },
-    {
-      id: "drawer-map",
-      label: "화면: 맵 서랍",
-      category: "화면",
-      keywords: ["drawer", "map", "서랍", "맵"],
-      run: () => activateLeftDrawerTab("map"),
-    },
-    {
-      id: "drawer-tile",
-      label: "화면: 타일 서랍",
-      category: "화면",
-      keywords: ["drawer", "tile", "서랍", "타일"],
-      run: () => activateLeftDrawerTab("tile"),
-    },
-    {
-      id: "drawer-event",
-      label: "화면: 이벤트 서랍",
-      category: "화면",
-      keywords: ["drawer", "event", "서랍", "이벤트"],
-      run: () => activateLeftDrawerTab("event"),
     },
     {
       id: "toggle-chat-dock",

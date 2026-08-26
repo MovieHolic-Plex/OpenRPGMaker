@@ -1,3 +1,14 @@
+/* Neo둥근모 — 90년대 퍼블릭 도메인 비트맵 글꼴 "둥근모꼴" 계보의 둥근 픽셀 폰트.
+   SIL OFL 1.1 (Eunbin Jeong / Dalgona), 라이선스 원문은 LICENSE-neodgm.txt.
+   Galmuri 는 고딕 자형이라 메뉴가 사무적으로 보였다 — 이 글꼴이 레트로 RPG 톤을 만든다. */
+@font-face {
+  font-family: "NeoDunggeunmo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/assets/fonts/neodgm.woff2") format("woff2");
+}
+
 @font-face {
   font-family: "Galmuri9";
   font-style: normal;
@@ -23,22 +34,28 @@
 }
 
 :root {
-  --runtime-pixel-font: "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
+  /* Neo둥근모가 1순위, Galmuri 는 뒤에 남긴다 — Galmuri 지표에 맞춘 화면이 있어
+     글꼴을 지우지 않고 순서만 바꾼다. 둘 다 8px 그리드 픽셀 폰트다. */
+  --runtime-pixel-font: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
   --runtime-font-size-9: 9px;
   --runtime-font-size-11: 11px;
   --runtime-font-size-18: 18px;
   --runtime-font-size-22: 22px;
-  --runtime-window-skin: url("/assets/ui/windowskin-default.png");
+  /* 저작 기본 스킨이 따뜻한 갈색이다. 런타임에서는 applySystemGraphic 이
+     system.systemResourceId 를 읽어 이 변수를 덮어쓴다 — 여기 값은 그 전의 기본값이다. */
+  --runtime-window-skin: url("/assets/ui/windowskin-warm.png");
   --runtime-window-slice: 24 fill;
   --runtime-window-border: 8px;
   --runtime-window-border-tight: 6px;
-  --runtime-window-text: #f4fbff;
-  --runtime-window-muted: #d7ecff;
-  --runtime-window-highlight: #fff6a8;
-  --runtime-window-shadow: #061a55;
+  /* 창 글자·음영을 갈색 스킨에 맞춰 따뜻하게 옮긴다. 파란 스킨 시절의
+     #f4fbff/#061a55/#123c9a 는 갈색 위에서 차갑게 떠 보였다. */
+  --runtime-window-text: #fff6e2;
+  --runtime-window-muted: #e8d3ac;
+  --runtime-window-highlight: #ffe9a8;
+  --runtime-window-shadow: #2a1608;
   --runtime-window-focus: #f5d04a;
-  --runtime-window-fill-fallback: #123c9a;
-  --runtime-window-selected-bg: rgba(53, 113, 226, 0.62);
+  --runtime-window-fill-fallback: #5c3a1c;
+  --runtime-window-selected-bg: rgba(168, 112, 48, 0.62);
   --runtime-dialogue-glass-surface: rgba(8, 15, 28, 0.94);
   --runtime-dialogue-glass-surface-strong: rgba(11, 21, 38, 0.98);
   --runtime-dialogue-glass-surface-soft: rgba(26, 43, 66, 0.82);

@@ -32,7 +32,6 @@ test("map tree create interior, link parent, duplicate", async ({ page }) => {
   await mkdir(OUT, { recursive: true });
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "standard");
-    localStorage.setItem("oprn:left-drawer-tab", "map");
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?freshProject=1");

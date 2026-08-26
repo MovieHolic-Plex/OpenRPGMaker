@@ -18,6 +18,7 @@ import { markPlayRender } from "@/app/perfMetrics";
 import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
 import { createPlaySurface } from "@/player/playSurface";
+import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
 import { createTouchPad, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
@@ -63,6 +64,17 @@ import { resolvePlayResolution } from "@/project/playResolution";
 
 let teardownShell: (() => void) | null = null;
 
+/**
+ * 호스트(에디터 테스트 플레이 창)가 현재 런을 조작하는 손잡이.
+ * 모듈 전역 상태를 늘리지 않기 위해 renderPlayer 옵션 콜백으로만 넘긴다.
+ */
+export type PlayerRunControls = {
+  /** 진행 상태 없는 새 런을 즉시 시작한다(타이틀을 거치지 않는다). */
+  readonly restartRun: () => void;
+  /** 현재 런을 정리하고 타이틀 화면으로 돌아간다. */
+  readonly returnToTitle: () => void;
+};
+
 export type RenderPlayerOptions = {
   readonly onExit?: () => void;
   /** Fires only after the current run has reached a ready PlayScene. */
@@ -75,6 +87,14 @@ export type RenderPlayerOptions = {
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
   // 커뮤니티 호스팅 셸이 주입한 기능(전체화면 토글 등). 에디터 테스트플레이에서는 없다 → 아무것도 렌더되지 않음.
   readonly hostBridge?: HostBridge;
+  // 플레이 서피스 배율 정책. 배포/커뮤니티 플레이어는 정수 배율(기본)을 유지하고,
+  // 에디터 테스트 플레이 창만 "fit" 으로 창을 가득 채운다.
+  readonly surfaceScaleMode?: PlaySurfaceScaleMode;
+  // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
+  // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
+  readonly autoStartRun?: boolean;
+  // 호스트가 다시 시작 / 타이틀부터를 구동할 수 있도록 런 조작 손잡이를 넘긴다.
+  readonly onRunControlsReady?: (controls: PlayerRunControls) => void;
 };
 
 const MENU_CLOSE_JUICE_MS = 250;
@@ -94,6 +114,20 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
   let hostFullscreenCleanup: (() => void) | null = null;
+  // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
+  let shellActive = true;
+  const surfaceScaleMode: PlaySurfaceScaleMode = options.surfaceScaleMode ?? "integer";
+  // 재시작용 시작 지점. 선택-이벤트 테스트는 호출자가 세션을 주므로 그 세션이 플레이 중
+  // 이동하기 전인 마운트 시점의 스폰만 붙잡아 둔다.
+  const restartSpawn: { readonly mapId: string; readonly x: number; readonly y: number } | undefined =
+    options.startOverride ??
+    (options.initialSession
+      ? {
+          mapId: options.initialSession.currentMapId,
+          x: options.initialSession.x,
+          y: options.initialSession.y,
+        }
+      : undefined);
   const layout = el("div", { class: "player-layout system-shell" });
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   main.append(layout);
@@ -160,7 +194,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const startedAt = performance.now();
     playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system));
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -511,7 +545,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
     void warmBundledPlayAssets(project);
-    const surface = createPlaySurface(resolvePlayResolution(project.system));
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode);
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -585,21 +619,39 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     renderTitle({ emitEnterJuice: true });
   };
 
+  // 호스트 "다시 시작": 타이틀을 거치지 않고 진행 상태 없는 런을 다시 띄운다.
+  const restartRun = (): void => {
+    if (!shellActive) return;
+    const session = newSession();
+    if (restartSpawn && !options.startOverride) {
+      applyStatePreset(session, testHerePreset(restartSpawn.mapId, restartSpawn.x, restartSpawn.y));
+    }
+    startGame(session, options.initialEventTestId ?? "");
+  };
+
+  const returnToTitle = (): void => {
+    if (!shellActive) return;
+    renderTitle({ emitEnterJuice: true });
+  };
+
   document.addEventListener("keydown", onKeyDown);
   teardownShell = () => {
+    shellActive = false;
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
     stopGame();
     clearChildren(layout);
   };
-  // 우선순위: 선택-이벤트 테스트(initialSession) → "여기서 테스트"(startOverride) → 타이틀.
+  // 우선순위: 선택-이벤트 테스트(initialSession) → "여기서 테스트"(startOverride)
+  //          → 자동 시작(에디터 테스트 플레이 창) → 타이틀.
   if (options.initialSession) {
     startGame(options.initialSession, options.initialEventTestId ?? "");
-  } else if (options.startOverride) {
+  } else if (options.startOverride || options.autoStartRun) {
     startGame(newSession());
   } else {
     renderTitle();
   }
+  options.onRunControlsReady?.({ restartRun, returnToTitle });
 }
 
 export function teardownPlayer(): void {

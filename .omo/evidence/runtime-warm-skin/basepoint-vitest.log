@@ -1,0 +1,133 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/USER/Downloads/rpg-zzu-runtime-warm-skin[39m
+
+[1m[43m DEPRECATED [49m[22m [33m'basic' reporter is deprecated and will be removed in Vitest v3.
+Remove 'basic' from 'reporters' option. To match 'basic' reporter 100%, use configuration:
+{
+  "test": {
+    "reporters": [
+      [
+        "default",
+        {
+          "summary": false
+        }
+      ]
+    ]
+  }
+}[39m
+ [31m❯[39m test/koreanLocalizationDefaults.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 180[2mms[22m[39m
+   [32m✓[39m Korean default localization and EasyRPG RTP defaults[2m > [22mcreates the default database with readable Korean labels and no mojibake[32m 94[2mms[22m[39m
+   [32m✓[39m Korean default localization and EasyRPG RTP defaults[2m > [22muses inspected EasyRPG RTP image references for non-tileset default surfaces where available[32m 39[2mms[22m[39m
+[31m   [31m×[31m Korean default localization and EasyRPG RTP defaults[2m > [22mships RTP-backed early battle defaults with valid enemy, troop, and animation references[39m[32m 45[2mms[22m[39m
+[31m     → expected [ Array(220) ] to have a length of 29 but got 220[39m
+ [31m❯[39m test/defaultDatabase.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 245[2mms[22m[39m
+[31m   [31m×[31m default database starter party[2m > [22mbuilds a coherent RTP-backed six actor roster with a four member starting party[39m[32m 50[2mms[22m[39m
+[31m     → expected [ 'actor_hero', 'actor_guardian' ] to deeply equal [ Array(4) ][39m
+[31m   [31m×[31m default database starter party[2m > [22mround-trips default party actor and equipment resources as valid references[39m[32m 157[2mms[22m[39m
+[31m     → expected 2 to be 4 // Object.is equality[39m
+   [32m✓[39m default database starter party[2m > [22mregisters the generated dragon monster image in enemies and troops[32m 35[2mms[22m[39m
+ [31m❯[39m test/detsukuruBrandStrings.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 6171[2mms[22m[39m
+[31m   [31m×[31m 탈-쯔구르: 출하 문자열[2m > [22msrc 안에 RPG Maker 계보 표현이 남아 있지 않다[39m[33m 2089[2mms[22m[39m
+[31m     → 금지 표현 1건:
+src/player/runtimeDebugPanel.ts:20 [구 저장 키 접두사 rpg-zzu] // 구 접두사 `rpg-zzu:` 로 직접 쓰면 부팅 시 migrateLegacyStorageKeys 가 새 접두사로: expected [ Array(1) ] to deeply equal [][39m
+   [32m✓[39m 탈-쯔구르: 출하 문자열[2m > [22m엔트리 HTML·manifest 에도 남아 있지 않다[32m 5[2mms[22m[39m
+   [32m✓[39m 탈-쯔구르: 출하 문자열[2m > [22m브랜드 상수 자체가 금지 표현을 담지 않는다[32m 2[2mms[22m[39m
+   [32m✓[39m 탈-쯔구르: 출하 문자열[2m > [22m브랜드 상수가 비어 있지 않다[32m 1[2mms[22m[39m
+   [32m✓[39m 탈-쯔구르: 출하 문자열[2m > [22m면제·미활성 목록이 문서화되어 있다[32m 0[2mms[22m[39m
+   [32m✓[39m 탈-쯔구르: 출하 문자열[2m > [22m전투 스킨 라벨에 타사 제품·프랜차이즈 이름이 없다[32m 4[2mms[22m[39m
+   [32m✓[39m 탈-쯔구르: 출하 문자열[2m > [22m전투 스킨 라벨 12개가 모두 다르다[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m 탈-쯔구르: 출하 문자열[2m > [22m어떤 UI 라벨에도 타사 프랜차이즈 이름이 없다 [33m 2076[2mms[22m[39m
+   [33m[2m✓[22m[39m 탈-쯔구르: 출하 문자열[2m > [22mUI 라벨 형태에 RM2000/RM2003·VX Ace 가 없다 [33m 1990[2mms[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m test/defaultDatabase.test.ts[2m > [22mdefault database starter party[2m > [22mbuilds a coherent RTP-backed six actor roster with a four member starting party
+[31m[1mAssertionError[22m: expected [ 'actor_hero', 'actor_guardian' ] to deeply equal [ Array(4) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "actor_hero",[22m
+[2m    "actor_guardian",[22m
+[32m-   "actor_mage",[39m
+[32m-   "actor_scout",[39m
+[2m  ][22m
+
+[36m [2m❯[22m test/defaultDatabase.test.ts:[2m54:42[22m[39m
+    [90m 52| [39m    [34mexpect[39m(classes)[33m.[39m[34mtoEqual[39m([[33m...[39m[33mSTARTER_CLASS_IDS[39m])[33m;[39m
+    [90m 53| [39m    [34mexpect[39m(equipment)[33m.[39m[34mtoEqual[39m([[33m...[39m[33mSTARTER_EQUIPMENT_IDS[39m])[33m;[39m
+    [90m 54| [39m    expect(project.system.startActorIds).toEqual([...STARTER_ACTOR_IDS…
+    [90m   | [39m                                         [31m^[39m
+    [90m 55| [39m    expect(project.session.partyActorIds).toEqual([...STARTER_ACTOR_ID…
+    [90m 56| [39m    expect(equipmentSlots).toEqual(new Set(["weapon", "shield", "armor…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/defaultDatabase.test.ts[2m > [22mdefault database starter party[2m > [22mround-trips default party actor and equipment resources as valid references
+[31m[1mAssertionError[22m: expected 2 to be 4 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 4[39m
+[31m+ 2[39m
+
+[36m [2m❯[22m test/defaultDatabase.test.ts:[2m99:52[22m[39m
+    [90m 97| [39m      (id) => restored.database.actors.find((actor) => actor.id === id…
+    [90m 98| [39m    )[33m;[39m
+    [90m 99| [39m    [34mexpect[39m([35mnew[39m [33mSet[39m(starterBattleResourceIds)[33m.[39msize)[33m.[39m[34mtoBe[39m([34m4[39m)[33m;[39m
+    [90m   | [39m                                                   [31m^[39m
+    [90m100| [39m    [34mexpect[39m(sword)[33m.[39m[34mtoMatchObject[39m({
+    [90m101| [39m      imageResourceId[33m:[39m [32m"cc0-jetrel-bronze-sword"[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/detsukuruBrandStrings.test.ts[2m > [22m탈-쯔구르: 출하 문자열[2m > [22msrc 안에 RPG Maker 계보 표현이 남아 있지 않다
+[31m[1mAssertionError[22m: 금지 표현 1건:
+src/player/runtimeDebugPanel.ts:20 [구 저장 키 접두사 rpg-zzu] // 구 접두사 `rpg-zzu:` 로 직접 쓰면 부팅 시 migrateLegacyStorageKeys 가 새 접두사로: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "src/player/runtimeDebugPanel.ts:20 [구 저장 키 접두사 rpg-zzu] // 구 접두사 `rpg-zzu:` 로 직접 쓰면 부팅 시 migrateLegacyStorageKeys 가 새 접두사로",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m test/detsukuruBrandStrings.test.ts:[2m201:79[22m[39m
+    [90m199| [39m      })[33m;[39m
+    [90m200| [39m    }
+    [90m201| [39m    expect(offenders, `금지 표현 ${offenders.length}건:\n${offenders.join("…
+    [90m   | [39m                                                                              [31m^[39m
+    [90m202| [39m  })[33m;[39m
+    [90m203| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/koreanLocalizationDefaults.test.ts[2m > [22mKorean default localization and EasyRPG RTP defaults[2m > [22mships RTP-backed early battle defaults with valid enemy, troop, and animation references
+[31m[1mAssertionError[22m: expected [ Array(220) ] to have a length of 29 but got 220[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 29[39m
+[31m+ 220[39m
+
+[36m [2m❯[22m test/koreanLocalizationDefaults.test.ts:[2m82:38[22m[39m
+    [90m 80| [39m    [34mexpect[39m(troopIds[33m.[39msize)[33m.[39m[34mtoBe[39m(project[33m.[39mdatabase[33m.[39mtroops[33m.[39mlength)[33m;[39m
+    [90m 81| [39m    expect(animationIds.size).toBe(project.database.battleAnimations.l…
+    [90m 82| [39m    [34mexpect[39m(project[33m.[39mdatabase[33m.[39menemies)[33m.[39m[34mtoHaveLength[39m([34m29[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m 83| [39m    [34mexpect[39m(project[33m.[39mdatabase[33m.[39mtroops)[33m.[39m[34mtoHaveLength[39m([34m6[39m)[33m;[39m
+    [90m 84| [39m    [34mexpect[39m(animationIds)[33m.[39m[34mtoEqual[39m(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 16:46:43
+[2m   Duration [22m 7.02s[2m (transform 3.03s, setup 0ms, collect 6.21s, tests 6.60s, environment 1ms, prepare 567ms)[22m
+
