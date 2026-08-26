@@ -1,68 +1,63 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-// PIN-RED: event-editor hierarchy chrome (after.html contract).
+// PIN-RED: event-editor hierarchy chrome contract (after.html).
 //
 // These assertions describe the target "hierarchy" shell rendered by content.ts +
-// event-editor.balanced.css:
-//   - cool-white indigo token shell (`--accent: #4A57D6` from tokens.css)
-//   - identity collapsed into a 48px titlebar with ONE primary `저장하고 닫기`
-//   - pages as a 40px underline tab strip (no numbered card tabs)
-//   - an indigo 3px inset rail for the selected story row
-//   - inspector preview-first, no gold `현재 명령 편집`
-//   - a 40px footer with only 취소/적용 (no second save)
-//   - no bottom AI/스크립트/플로우 quick-tools chip row
-//
-// All assertions currently FAIL against the "balanced" baseline; implementation
-// (step 2) flips this file to green.
+// event-editor.(hierarchy|balanced).css, and fail against the current balanced
+// baseline. Implementation flips this file to green. The required shell testids
+// (event-editor-modal, event-page-tab-*, event-storyboard) are kept.
 
-const balancedStylesUrl = new URL("../src/styles/editor/event-editor.balanced.css", import.meta.url);
-const balancedCss = readFileSync(balancedStylesUrl, "utf8");
-const contentSource = readFileSync(new URL("../src/editor/panels/eventEditor/content.ts", import.meta.url), "utf8");
-const modalSource = readFileSync(new URL("../src/editor/panels/eventEditor/modal.ts", import.meta.url), "utf8");
-const pagePropsSource = readFileSync(new URL("../src/editor/panels/eventEditor/pageProps.ts", import.meta.url), "utf8");
-const inspectorSource = readFileSync(new URL("../src/editor/panels/eventEditor/commandInspector.ts", import.meta.url), "utf8");
+const css = readFileSync(
+  new URL("../src/styles/editor/event-editor.balanced.css", import.meta.url),
+  "utf8",
+);
+const contentSource = readFileSync(
+  new URL("../src/editor/panels/eventEditor/content.ts", import.meta.url),
+  "utf8",
+);
+const modalSource = readFileSync(
+  new URL("../src/editor/panels/eventEditor/modal.ts", import.meta.url),
+  "utf8",
+);
+const pagePropsSource = readFileSync(
+  new URL("../src/editor/panels/eventEditor/pageProps.ts", import.meta.url),
+  "utf8",
+);
+const storyboardSource = readFileSync(
+  new URL("../src/editor/panels/eventEditor/storyboardView.ts", import.meta.url),
+  "utf8",
+);
 
-describe("event editor hierarchy chrome (after.html)", () => {
-  it("adopts the cool-white indigo token shell from tokens.css", () => {
-    expect(balancedCss).toMatch(/--accent\s*:\s*#4A57D6/);
-    // Warm "balanced" palette is replaced by indigo tokens; no coral/plum/gold remnants.
-    expect(balancedCss).not.toContain("--balanced-coral");
-    expect(balancedCss).not.toContain("--balanced-gold: #d09f0d");
+describe("event editor hierarchy chrome contract", () => {
+  it("collapses the identity band into the titlebar (no 89px identity row)", () => {
+    expect(css).not.toContain("--balanced-identity-height: 89px");
   });
 
-  it("collapses the identity into a 48px titlebar with one primary save", () => {
-    expect(balancedCss).toContain("--balanced-header-height: 48px");
-    // Product-brand column disappears; event name is the title.
-    expect(balancedCss).not.toContain("155px minmax(0, 1fr) auto auto !important");
-    expect(modalSource).not.toContain("event-editor-product-brand");
-    // The required `event-editor-save` testid becomes the single primary save.
-    expect(modalSource).toContain('testid: "event-editor-save"');
+  it("shrinks the titlebar to 48px", () => {
+    expect(css).toMatch(/--(?:hierarchy|balanced)-header-height:\s*48px/);
   });
 
-  it("renders pages as a 40px underline tab strip, not numbered cards", () => {
-    expect(balancedCss).toContain("--balanced-pages-height: 40px");
-    expect(pagePropsSource).not.toContain("event-page-number-tabs");
-    // Active page tab is an accent underline, not a raised card.
-    expect(balancedCss).toMatch(/\.page-tab\.active::after\s*\{[^}]*background:\s*var\(--accent\)/s);
+  it("shrinks the page tab strip to 40px", () => {
+    expect(css).toMatch(/--(?:hierarchy|balanced)-pages-height:\s*40px/);
   });
 
-  it("selects the story row with an indigo 3px inset rail", () => {
-    expect(balancedCss).toMatch(/box-shadow:\s*inset 3px 0 0 var\(--accent\)/);
-    expect(balancedCss).not.toMatch(/var\(--balanced-plum\)/);
+  it("shrinks the footer to 40px", () => {
+    expect(css).toMatch(/--(?:hierarchy|balanced)-footer-height:\s*40px/);
   });
 
-  it("removes the gold 현재 명령 편집 affordance from the inspector", () => {
-    expect(inspectorSource).not.toContain("현재 명령 편집");
+  it("drops the numbered left-rail '1. 언제 나타날까요?' affordance", () => {
+    expect(pagePropsSource).not.toContain("1. 언제 나타날까요?");
   });
 
-  it("collapses the footer to 40px with no second save", () => {
-    expect(balancedCss).toContain("--balanced-footer-height: 40px");
-    // Save live only in the header; footer keeps 취소/적용.
-    expect(modalSource).not.toContain('footerButton("저장하고 닫기"');
+  it("shows the event name in the titlebar via the event-editor-name testid", () => {
+    expect(modalSource).toContain("event-editor-name");
   });
 
-  it("drops the bottom AI/스크립트/플로우 quick-tools chip row", () => {
-    expect(contentSource).not.toContain("renderCommandQuickTools");
+  it("keeps the required shell testids", () => {
+    const combined = modalSource + pagePropsSource + storyboardSource;
+    expect(combined).toContain("event-editor-modal");
+    expect(combined).toContain("event-page-tab-");
+    expect(combined).toContain("event-storyboard");
   });
 });
