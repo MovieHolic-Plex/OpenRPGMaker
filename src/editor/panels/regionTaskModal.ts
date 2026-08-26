@@ -1078,13 +1078,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       ] : [],
     });
 
+    const reviewCard = el("div", {
+      class: "region-task-review-card",
+      children: [timeline, metricsRow, blockerHost, npcScheduleDecision, issuesHost, roomsHost],
+    });
+
     compareHost.replaceChildren(
-      timeline,
-      metricsRow,
-      blockerHost,
-      npcScheduleDecision,
-      issuesHost,
-      roomsHost,
+      reviewCard,
       figures,
       changeList,
       el("div", {
