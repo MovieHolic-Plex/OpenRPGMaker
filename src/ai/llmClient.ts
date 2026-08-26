@@ -66,9 +66,9 @@ export const DEFAULT_CHATGPT_BASE_URL =
 // 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
 // 저장된 providerId/model 은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절
 // 암시 기본이므로 loadAiConfig 가 openai-codex 로 남긴다.
-export const DEFAULT_MODEL = "gemini-3.7-flash-high";
+export const DEFAULT_MODEL = "gemini-3.7-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "gemini-3.7-flash-high";
+export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 // cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
 // 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.

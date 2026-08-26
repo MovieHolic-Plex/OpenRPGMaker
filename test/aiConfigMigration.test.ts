@@ -104,7 +104,7 @@ describe("loadAiConfig — 제공자 강제 통일", () => {
     const config = loadAiConfig();
 
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash-high");
+    expect(config.model).toBe("gemini-3.7-flash");
     // 전송 축은 그대로 동반 서비스에 고정된다 — 브라우저에 비밀도 죽은 baseUrl 도 남지 않는다.
     expect(config.authMode).toBe("chatgpt");
     expect(config.baseUrl).toBe("");

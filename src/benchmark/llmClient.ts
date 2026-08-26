@@ -30,7 +30,7 @@ const TEMPERATURE = 0.2;
 const REQUEST_TIMEOUT_MS = 120_000;
 // 에디터의 모든 AI 가 Antigravity 로 통일되었으므로(감독 지시 2026-08-26) 폴백도 그 기본값이다.
 // 벤치마크는 자기 settings.model 을 명시하는 것이 정상 사용이고, 이 값은 마지막 폴백일 뿐이다.
-const DEFAULT_MODEL = "gemini-3.7-flash-high";
+const DEFAULT_MODEL = "gemini-3.7-flash";
 // ⚠ 벤치마크의 baseUrl 폴백은 의도적으로 없다. 예전에는 `loadAiConfig().baseUrl`(= env
 // VITE_LLM_API_URL)에 얹혀 갔지만, 에디터 AI 가 OAuth 전용이 되면서(감독 지시 2026-08-21)
 // 그 값은 항상 빈 문자열이다. 여기에 기본 게이트웨이를 박으면 감독이 고르지도 않은 유료
