@@ -14,6 +14,7 @@ import {
 } from "@/editor/agentGhostPreview";
 import { buildInlineApprovalToolbar, getInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
+import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
@@ -340,7 +341,35 @@ export class AgentGhostPreviewRenderer {
     const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
     const now = this.clock();
     const elapsed = this.startTime !== null ? now - this.startTime : 0;
-    const animState = computeGhostAnimationState(this.schedule, elapsed);
+    // >256셀(bbox-only)에서는 프레임마다 스케줄 전체 상태를 계산하지 않는다 —
+    // 100x100 채움이 셀당 상태 객체를 매 프레임 할당하는 낭비를 막는다. 칩은
+    // 스케줄 길이로 완료 여부를 추정한다(스탬프된 셀 수는 bbox 케이스에서 불필요).
+    const bboxOnly = cellCount > AGENT_GHOST_MAX_CELL_RECTS;
+    const animState = bboxOnly
+      ? {
+          cellStates: [],
+          cursorCell: null,
+          shineProgress: 0,
+          isScheduleComplete:
+            this.schedule.length > 0 &&
+            elapsed >= this.schedule[this.schedule.length - 1].startMs + LAST_CELL_DISPLAY_MS,
+          stampedCount: Math.min(
+            // O(log n): 스케줄은 startMs 오름차순 정렬 — 경과 지난 첫 미스를 이분 탐색한다.
+            (() => {
+              const ends = this.schedule;
+              let lo = 0;
+              let hi = ends.length;
+              while (lo < hi) {
+                const mid = (lo + hi) >> 1;
+                if (elapsed >= ends[mid].startMs) lo = mid + 1;
+                else hi = mid;
+              }
+              return lo;
+            })(),
+            cellCount,
+          ),
+        }
+      : computeGhostAnimationState(this.schedule, elapsed);
 
     this.renderOrUpdatePhaseChip(cellCount, animState);
 
@@ -377,11 +406,12 @@ export class AgentGhostPreviewRenderer {
       const px = cell.x * TILE_SIZE;
       const py = cell.y * TILE_SIZE;
 
-      // Draw real tile or fallback rect
+      // Draw real tile or fallback rect. tileId <= EMPTY(-1) 는 지워진 칸이다 —
+      // 존재하지 않는 tile_-1 프레임(=칩셋 전체 시트)이 찍히는 것을 막는다.
       const tilesetId = cell.tilesetId ?? defaultTilesetId;
       const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
 
-      if (tileset && typeof cell.tileId === "number") {
+      if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
         const textureKey = ensureTilesetTexture(this.scene, tileset);
         const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
         tileSprite.setOrigin(0, 0);
