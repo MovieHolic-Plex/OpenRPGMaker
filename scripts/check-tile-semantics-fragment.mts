@@ -7,6 +7,7 @@
 // 사용:
 //   vite-node scripts/check-tile-semantics-fragment.mts --sheet ship --rows 0-3
 
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -105,6 +106,21 @@ function main(): void {
   if (worst && worst[1] > 12) failures.push(`라벨 "${worst[0]}" 가 이 샤드에서 ${worst[1]}칸 — 한 샤드 안에서는 12칸을 넘기지 않는다`);
   const minLabels = Math.max(8, Math.floor(expected.size / 10));
   if (labels.size < minLabels) failures.push(`고유 라벨 ${labels.size} < ${minLabels} — 서술이 뭉개졌다`);
+
+  // 근거 감사 — 커버리지가 맞아도 라벨이 아트를 안 본 경우를 픽셀로 반증한다.
+  // 실측(2026-08-26): retro_dungeon 0-3행은 커버리지 PASS 인데 투명 소품을 통행 가능 바닥으로 적은
+  // 위반이 48건이었다(138-140 금테 붉은 카펫 -> "타오르는 용암", 144-149 묘비/천사상 -> "바닥/벽").
+globalThis.grounding = spawnSync(process.execPath, [
+    path.join("node_modules", "vite-node", "vite-node.mjs"),
+    "scripts/audit-tile-semantics-grounding.mts", "--sheet", sheet, "--rows", `${rowA}-${rowB}`,
+  ], { encoding: "utf8" });
+globalThis.groundingOut = `${grounding.stdout ?? ""}${grounding.stderr ?? ""}`;
+  if (grounding.status === 1) {
+globalThis.lines = groundingOut.split(/\r?\n/).filter((l) => /\[(prop-as-ground|color-mismatch)\]|위반/.test(l));
+    failures.push(`근거 감사 실패 — 라벨이 아트와 어긋난다:\n      ${lines.slice(0, 14).join("\n      ")}`);
+  } else if (grounding.status !== 0) {
+    failures.push(`근거 감사를 실행하지 못했다 (exit ${grounding.status}): ${groundingOut.slice(0, 200)}`);
+  }
 
   if (failures.length > 0) {
     console.error(`FAIL ${sheet} rows ${rows} (${seen.size}/${expected.size} covered)`);
