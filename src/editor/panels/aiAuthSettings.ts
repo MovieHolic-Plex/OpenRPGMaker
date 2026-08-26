@@ -81,7 +81,6 @@ const KIND_COPY: Record<AiConnectionKindId, { label: string; hint: string }> = {
  * 이 카드는 보기 좋은 경로일 뿐 — 동일 제공자 id 는 아래 14종 드롭다운과 공유한다.
  */
 const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; hint: string }>[] = [
-  { id: "openai-codex", label: "ChatGPT", hint: "OpenAI 구독 계정으로 로그인합니다." },
   { id: "google-antigravity", label: "Google Gemini", hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다." },
 ];
 
@@ -224,24 +223,16 @@ export function renderAiAuthSettings(
    * 텍스트에는 제공자 이름만 넣는다(옛 결함 ③).
    */
   const fillProviders = (): void => {
+    // 제공자는 Antigravity 하나로 강제된다(감독 지시 2026-08-26). 예전에는 자격 종류로
+    // 목록을 갈랐는데, 강제 이후 apiKey 쪽 필터는 authKind 가 oauth 인 유일한 제공자를
+    // 걸러내 **빈 select** 를 만들었다(실측). 종류와 무관하게 그 하나만 채운다.
     const rows = providersForKind(kind);
-    const groups = kind === "oauth"
-      ? [{ kindKey: "oauth" as const, rows }]
-      : [
-        { kindKey: "apiKey" as const, rows: rows.filter((row) => row.authKind === "apiKey") },
-        { kindKey: "local" as const, rows: rows.filter((row) => row.authKind === "local") },
-      ];
-    providerSelect.replaceChildren(...groups.flatMap((group) => {
-      if (group.rows.length === 0) return [];
-      const label = group.kindKey === "local"
-        ? `${OH_MY_PI_AUTH_KIND_LABEL.local} (키 불필요)`
-        : OH_MY_PI_AUTH_KIND_LABEL[group.kindKey];
-      return [el("optgroup", {
-        attrs: { label },
-        children: group.rows.map((row) => el("option", { text: row.label, attrs: { value: row.id } })),
-      })];
-    }));
+    providerSelect.replaceChildren(
+      ...rows.map((row) => el("option", { text: row.label, attrs: { value: row.id } })),
+    );
     providerSelect.value = providerId;
+    // 고를 것이 하나뿐이면 select 는 결정이 아니라 표시다 — 바꿀 수 있는 척하지 않는다.
+    providerSelect.disabled = rows.length <= 1;
   };
 
   // ── API 키 입력(동반 서비스 보관) ──────────────────────────────────────────

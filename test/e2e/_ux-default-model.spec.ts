@@ -45,7 +45,21 @@ test("default model: 새 부팅에서 두 모델 슬롯이 강제 기본값이�
     };
   });
 
-  writeFileSync(`${OUT}/default-model-report.json`, JSON.stringify({ bootConfig, fields, FORCED }, null, 2), "utf8");
+  // 제공자 축도 Antigravity 하나로 잠겼는지 실제 화면에서 본다.
+  const provider = await page.evaluate(() => {
+    const select = document.querySelector("[data-testid='ai-oh-my-pi-provider']") as HTMLSelectElement | null;
+    return {
+      options: Array.from(select?.options ?? []).map((o) => o.value),
+      value: select?.value ?? null,
+      disabled: select?.disabled ?? null,
+      chatgptQuickCard: document.querySelectorAll("[data-testid='ai-auth-quick-openai-codex']").length,
+      geminiQuickCard: document.querySelectorAll("[data-testid='ai-auth-quick-google-antigravity']").length,
+      storedProvider: JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}").providerId ?? null,
+    };
+  });
+  console.log(`PROVIDER ${JSON.stringify(provider)}`);
+
+  writeFileSync(`${OUT}/default-model-report.json`, JSON.stringify({ bootConfig, fields, provider, FORCED }, null, 2), "utf8");
   await page.screenshot({ path: `${OUT}/40-settings-default-model.png` });
   console.log(`REPORT ${JSON.stringify({ fields, FORCED })}`);
 

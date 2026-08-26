@@ -153,7 +153,7 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     expect(status.label).toContain("PLUS");
   });
 
-  it("제공자를 바꾸면 이전 제공자의 ready 캐시를 재사용하지 않는다", async () => {
+  it("저장소에 다른 제공자가 적혀 있어도 조회는 Antigravity 로 간다 (전환 불가)", async () => {
     const storage = installLocalStorage();
     saveConfig(storage, {
       authMode: "chatgpt",
@@ -174,12 +174,15 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
       maxTokens: 32768,
     });
 
+    // 제공자가 강제 통일된 뒤에는 "전환"이 존재하지 않는다 — 두 저장값 모두 Antigravity 로
+    // 읽히므로 같은 제공자의 ready 캐시가 그대로 유효하다. 예전 계약(전환 시 캐시 무효화)은
+    // 전환 자체가 사라져 의미를 잃었다.
     const switched = getAiConnectionStatus();
-    expect(switched.kind).toBe("checking");
+    expect(switched.kind).toBe("ready");
     expect(switched.providerLabel).toBe("Google Antigravity");
   });
 
-  it("이전 제공자 조회가 진행 중이어도 새 제공자를 즉시 조회하고 늦은 응답은 버린다", async () => {
+  it("조회는 항상 Antigravity 로 나가고 늦은 응답도 그 제공자로 정착한다", async () => {
     const storage = installLocalStorage();
     saveConfig(storage, {
       authMode: "chatgpt",
@@ -187,11 +190,14 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
       model: "gpt-5.6-sol",
       maxTokens: 32768,
     });
-    let resolveOpenAi!: (value: { connected: boolean }) => void;
-    let resolveGoogle!: (value: { connected: boolean }) => void;
+    // 제공자가 하나로 강제된 뒤에는 "이전 제공자 / 새 제공자" 경합이 존재하지 않는다.
+    // 남은 계약은 이것이다: 조회는 언제나 Antigravity 로 나가고, 늦게 도착한 이전 조회의
+    // 응답이 뒤늦게 상태를 뒤집지 않는다.
+    const pending: ((value: { connected: boolean }) => void)[] = [];
+    const queried: string[] = [];
     fetchChatGptAuthStatus.mockImplementation((providerId: string) => new Promise((resolve) => {
-      if (providerId === "google-antigravity") resolveGoogle = resolve;
-      else resolveOpenAi = resolve;
+      queried.push(providerId);
+      pending.push(resolve);
     }));
 
     const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
@@ -204,12 +210,14 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     });
     const newRefresh = refreshAiConnectionStatus(() => undefined);
 
-    resolveGoogle({ connected: true });
+    expect(new Set(queried)).toEqual(new Set(["google-antigravity"]));
+
+    pending[pending.length - 1]?.({ connected: true });
     await newRefresh;
     expect(getAiConnectionStatus().kind).toBe("ready");
     expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
 
-    resolveOpenAi({ connected: false });
+    pending[0]?.({ connected: false });
     await oldRefresh;
     expect(getAiConnectionStatus().kind).toBe("ready");
     expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
@@ -270,7 +278,7 @@ describe("renderAiConnectionStatus — 상태바 칩", () => {
     const chip = renderWithFakeDom(() => renderAiConnectionStatus(() => undefined));
     expect(chip.tagName.toLowerCase()).toBe("button");
     expect(chip.dataset.testid).toBe("ai-connection-status");
-    expect(chip.textContent).toContain("OpenAI Codex");
+    expect(chip.textContent).toContain("Google Antigravity");
     expect(chip.textContent).toContain("연결됨");
   });
 

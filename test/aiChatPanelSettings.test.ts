@@ -100,7 +100,8 @@ describe("설정 자동 저장", () => {
     expect(providers).not.toBeNull();
     // 기본은 구독 로그인 종류라 OAuth 제공자 14종만 담는다 — 예전에는 68종을 종류 구분 없이
     // 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞여 있었다).
-    expect(providers?.querySelectorAll("option").length).toBe(14);
+    // 제공자는 Antigravity 하나로 강제된다 — 목록도 그 하나뿐이다(감독 지시 2026-08-26).
+    expect(providers?.querySelectorAll("option").length).toBe(1);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
@@ -122,13 +123,16 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.authMode).toBe("chatgpt");
-    expect(ohMyPiAuthKind(stored.providerId)).toBe("apiKey");
+    // 제공자는 Antigravity 하나로 강제되므로 종류 축도 항상 oauth 다 — 자격 종류를 눌러도
+    // 제공자가 바뀌지 않는다(감독 지시 2026-08-26: 잔여 경로 없음).
+    expect(stored.providerId).toBe("google-antigravity");
+    expect(ohMyPiAuthKind(stored.providerId)).toBe("oauth");
     // 브라우저에는 비밀이 남지 않는다.
     expect(stored.apiKey ?? "").toBe("");
     expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 고른 연결 종류의 제공자만 담는다", () => {
+  it("설정 제공자 목록은 종류와 무관하게 Antigravity 하나만 담는다", () => {
     // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
@@ -137,17 +141,17 @@ describe("설정 자동 저장", () => {
     const values = (): readonly string[] =>
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
-    expect(values()).toEqual(providersForKind("oauth").map((provider) => provider.id));
+    expect(values()).toEqual(["google-antigravity"]);
 
     findByTestId(modal, "ai-auth-api-key")?.click();
 
-    expect(values()).toEqual(providersForKind("apiKey").map((provider) => provider.id));
-    // 합치면 카탈로그 전체다 — 필터가 제공자를 잃어버리지 않는다.
-    expect(providersForKind("oauth").length + providersForKind("apiKey").length)
-      .toBe(OH_MY_PI_PROVIDERS.length);
+    // 자격 종류를 눌러도 제공자 목록은 그대로다 — 종류 축은 제공자에서 파생하고 제공자가
+    // 하나뿐이므로 갈릴 목록이 없다.
+    expect(values()).toEqual(["google-antigravity"]);
+    expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 
-  it("oh-my-pi 제공자를 바꾸면 그 기본 모델과 함께 저장된다", () => {
+  it("제공자 선택을 건드려도 Antigravity 로 남는다 (되돌릴 구멍 없음)", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
@@ -155,8 +159,8 @@ describe("설정 자동 저장", () => {
     select.value = "anthropic";
     select.dispatchEvent(new Event("change"));
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.providerId).toBe("anthropic");
-    expect(stored.model).toBe("claude-opus-4-8");
+    expect(stored.providerId).toBe("google-antigravity");
+    expect(loadAiConfig().providerId).toBe("google-antigravity");
   });
 
   it("동반 서비스 키 입력은 localStorage 에 저장되지 않는다", () => {
@@ -244,7 +248,7 @@ describe("설정 자동 저장", () => {
     expect(stored.model).toBe("gpt-5.6-terra");
   });
 
-  it("ChatGPT 모델 선택기에 GPT-5.6 Sol, Terra, Luna를 모두 노출한다", () => {
+  it("모델 선택기는 gemini 만 노출한다 — 남의 제공자 모델은 남기지 않는다", () => {
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       ...defaultAiConfig(),
       providerId: "openai-codex",
@@ -256,9 +260,10 @@ describe("설정 자동 저장", () => {
     const preset = findByTestId(modal, "ai-config-model-preset");
     if (!preset) throw new Error("model preset missing");
 
-    expect(preset.textContent).toContain("gpt-5.6-sol");
-    expect(preset.textContent).toContain("gpt-5.6-terra");
-    expect(preset.textContent).toContain("gpt-5.6-luna");
+    expect(preset.textContent).toContain("gemini-3.7-flash-high");
+    for (const foreign of ["gpt-5.6-sol", "gpt-5.6-terra", "claude", "glm-"]) {
+      expect(preset.textContent, foreign).not.toContain(foreign);
+    }
   });
 
   it("API/게이트웨이 모드에서는 Claude, Gemini, Grok 모델 목록을 제공한다", () => {

@@ -185,15 +185,12 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    // 저장된 제공자는 **그대로 보존한다.** 예전에는 oauthProviderOrDefault 로 비-oauth 제공자를
-    // openai-codex 로 되돌렸는데, 연결 방식이 두 종류가 된 뒤로는 틀린 동작이다 —
-    // providerId:"zai" 인 옛 설정은 *API 키* 종류 + zai 로 살아야 한다(GLM 이 이 경로로 남는다).
-    // 전송 축은 authMode 가 이미 companion 으로 고정하므로 제공자를 강제할 이유가 없다.
-    // providerId 가 없는 저장 blob 은 Codex 가 공장 기본이던 시절의 암시 값이다.
-    // 새 기본(Antigravity)으로 바꾸면 gpt-5.6-sol 이 Gemini 경로로 실려 강등/오배송된다.
-    const providerId = typeof parsed.providerId === "string" && parsed.providerId.trim() !== ""
-      ? parseOhMyPiProvider(parsed.providerId)
-      : "openai-codex";
+    // 제공자는 **Antigravity 하나로 강제한다** (감독 지시 2026-08-26: 에디터의 모든 AI 를
+    // Antigravity 로 통일, 잔여 경로 없음). 예전에는 저장된 providerId 를 그대로 보존했고
+    // providerId 가 없는 옛 blob 은 "openai-codex" 로 남겼다 — 그래서 이미 쓰던 사용자는
+    // 새 기본으로 오지 않고 zai/codex 에 머물렀다(실측). 저장값을 읽지 않으므로 되돌아갈
+    // 구멍이 없다. authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
+    const providerId = DEFAULT_OH_MY_PI_PROVIDER;
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
@@ -240,7 +237,10 @@ export function loadAiConfig(): AiConfig {
 
 export function saveAiConfig(config: AiConfig): void {
   if (typeof localStorage === "undefined") return;
-  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(config));
+  // 제공자는 저장 시점에도 Antigravity 로 못박는다. loadAiConfig 만 강제하면 프로그램
+  // 경로(설정 저장·마이그레이션)로 다른 제공자가 디스크에 남아 다음 판독을 흔든다.
+  const forced: AiConfig = { ...config, providerId: DEFAULT_OH_MY_PI_PROVIDER };
+  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(forced));
 }
 
 export function configForLiteModel(config: AiConfig): AiConfig {
