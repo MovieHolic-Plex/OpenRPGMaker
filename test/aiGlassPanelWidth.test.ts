@@ -17,6 +17,8 @@ function readCssFile(relativePath: string): string {
 describe("Glass assistant card responsive width CSS contract", () => {
   const modernCssPath = "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css";
   const densityCssPath = "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css";
+  const temperatureCssPath = "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css";
+  const commandBarCssPath = "src/styles/database/assistant-command-bar.css";
 
   it("13-assistant-modern.css does not lock glass panel width/max-width to min(360px, 34%)", () => {
     const css = readCssFile(modernCssPath);
@@ -61,4 +63,24 @@ describe("Glass assistant card responsive width CSS contract", () => {
     // At 900px, 360px leaves 540px for map canvas (leaves map canvas visible)
     expect(900 - clampWidth(900)).toBe(540);
   });
+
+  it("12-assistant-temperature.css does not lock glass width to min(260px, 28%)",
+    () => {
+      const css = readCssFile(temperatureCssPath);
+      expect(css).not.toMatch(/width:\s*min\(\s*260px\s*,\s*28%\s*\)/);
+      expect(css).not.toMatch(/max-width:\s*min\(\s*260px\s*,\s*28%\s*\)/);
+    },
+  );
+
+  it("header more-menu stacks idle-view options in one column so labels are not clipped",
+    () => {
+      const css = readCssFile(commandBarCssPath);
+      const stacked = css.match(
+        /\.ai-more-menu\s+\.ai-temperature-picker\s*\{([\s\S]*?)\}/,
+      );
+      expect(stacked).toBeTruthy();
+      expect(stacked?.[1] ?? "").toMatch(/grid-template-columns:\s*(1fr|minmax\(0,\s*1fr\))/);
+      expect(stacked?.[1] ?? "").not.toMatch(/repeat\(\s*3/);
+    },
+  );
 });
