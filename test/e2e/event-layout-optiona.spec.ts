@@ -184,6 +184,7 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
   await expect(page.getByTestId("event-command-edit-dialog")).toHaveCount(0);
 
   await modal.screenshot({ path: `${EVIDENCE_DIR}/red-c1-standard-layout.png` });
+  await page.screenshot({ path: `${EVIDENCE_DIR}/final-1280.png` });
 });
 
 test("C2 compact viewport 1024x768 — modal fits, list wider than rail, no horizontal overflow", async ({ page }) => {
@@ -231,6 +232,7 @@ test("C2 compact viewport 1024x768 — modal fits, list wider than rail, no hori
   expect(geometry.documentScrollWidth, JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.viewportWidth);
 
   await modal.screenshot({ path: `${EVIDENCE_DIR}/red-c2-compact-viewport.png` });
+  await page.screenshot({ path: `${EVIDENCE_DIR}/final-1024.png` });
 });
 
 test("C4 interaction — page segment switching, add command, and undo", async ({ page }) => {
