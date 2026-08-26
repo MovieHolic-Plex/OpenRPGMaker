@@ -1,0 +1,22 @@
+# git log --oneline -12
+8802bd12 test(editor): enter the command picker from the storyboard CTA
+38a277ff test(editor): pin picker page 4 to system and tools only
+7f3ed4ac snapshot: agent worktree base for system-tools-ia
+a1573cc5 Merge agent/structures: 구조물 album tab, save chip, parts[]
+28c0e8cb feat(editor): 구조물 album tab with part raster
+e3f0d654 feat(project): add structure kit parts for list and stamp
+06e09e44 feat(editor): save map selection as a 구조물 kit
+5944c9a5 Merge origin/main (PR #79 gemini-3.7-flash default)
+cbaf2924 snapshot: agent worktree base for structures
+f6ece776 Merge pull request #79 from MovieHolic-Plex/agent/ai-flash-default
+7302db1b Default every editor AI call to gemini-3.7-flash
+52c00f40 Merge PR #78 region task stage segments and interior draft disclosure
+EXIT=0
+
+# git status -sb
+## agent/system-tools-ia
+ M src/editor/eventCommands/commandPresentation.ts
+ M src/editor/panels/eventEditor/commandPicker.ts
+ M src/project/eventCommands/m2PickerLayout.ts
+ M test/m2EventCommandCatalog.test.ts
+EXIT=0

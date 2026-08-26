@@ -1,0 +1,15 @@
+
+Running 9 tests using 1 worker
+
+  ✓  1 [chromium] › test\e2e\event-command-ui-preview.spec.ts:39:1 › Change Face command editor shows the selected face crop and command summary (10.1s)
+  ✓  2 [chromium] › test\e2e\event-command-ui-preview.spec.ts:69:1 › Representative non-face command editors expose readable summaries (15.6s)
+  ✓  3 [chromium] › test\e2e\oprn-event-command-picker.spec.ts:31:1 › storyboard CTA opens the command picker and authors the first command (21.3s)
+  ✓  4 [chromium] › test\e2e\oprn-event-command-picker.spec.ts:81:1 › quick next and toolbar add open the same picker without leaving the storyboard (12.7s)
+  ✓  5 [chromium] › test\e2e\oprn-event-command-picker.spec.ts:99:1 › system and tools tab keeps only system and tools groups (15.1s)
+  ✓  6 [chromium] › test\e2e\oprn-event-command-picker.spec.ts:133:1 › picker exposes runtime owners per tab and inserts from the cross-tab search (15.6s)
+  ✓  7 [chromium] › test\e2e\oprn-event-command-picker.spec.ts:163:1 › list view keeps the context menu, switch picker, and trigger safety warning (33.9s)
+  ✓  8 [chromium] › test\e2e\oprn-modern-event-commands.spec.ts:19:1 › modern commands live on their own IA tab and are reachable from the storyboard CTA (25.0s)
+  ✓  9 [chromium] › test\e2e\oprn-modern-event-commands.spec.ts:46:1 › camera control opens guided m2 controls and lands on the storyboard (15.3s)
+
+  9 passed (2.8m)
+EXIT=0
