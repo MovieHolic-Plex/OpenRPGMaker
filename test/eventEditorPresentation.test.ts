@@ -130,7 +130,8 @@ describe("event editor presentation", () => {
       staged,
     ));
 
-    expect(findByTestId(body, "event-switch-inline-filter")).not.toBeNull();
+    // 인라인 검색 필터는 변수·스위치 선택 모달 통일(2026-08)로 제거됐다. 검색은 "찾기" 트리거가 여는 모달이 소유한다.
+    expect(findByTestId(body, "event-switch-inline-filter")).toBeNull();
     expect(findByTestId(body, "event-command-switch-value")).not.toBeNull();
     expect(findByTestId(body, "event-command-switch-value-row")).not.toBeNull();
     expect(findByTestId(body, "event-command-switch-hint")).not.toBeNull();
