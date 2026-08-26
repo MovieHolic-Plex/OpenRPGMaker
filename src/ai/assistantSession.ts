@@ -47,6 +47,7 @@ import {
   configForLiteModel,
   configWithReasoningPolicy,
   isLlmAbortError,
+  isOhMyPiWorkerCrash,
   isRetryableLlmError,
   LLM_RETRY_BACKOFF_MS,
   loadAiConfig,
@@ -80,6 +81,7 @@ import {
 } from "./proposalCompleteness";
 import {
   formatIntentClarifyMessage,
+  isProtocolLocked,
   resolveIntentClarification,
 } from "./intentClarify";
 import {
@@ -1005,10 +1007,10 @@ export class AssistantSession {
     }
 
     // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
-    // model === liteModel(이원화 비활성) 시 플래너 호출을 건너뛴다 —
-    // 플래너는 감독·실행 모델이 다를 때만 의미가 있고, 같을 땐 불필요한 왕복만 낭비한다.
+    // 영역 작업 합성 문장은 이미 시공 경로가 잠겨 있다. 플래너 왕복은 같은 공급자
+    // 크래시를 두 번 연속으로 만들 뿐이라 본문 툴 루프로 바로 간다.
     this.workPlanAutoStepsThisUserMessage = 0;
-    if (this.orchestrationEnabled() || this.workPlan) {
+    if ((this.orchestrationEnabled() || this.workPlan) && !isProtocolLocked(text)) {
       try {
         await this.runOrchestratorPlanner(text, onEvent, signal);
       } catch (cause) {
@@ -1888,18 +1890,19 @@ export class AssistantSession {
         tokenGuard?.flush();
         return result;
       } catch (cause) {
+        const retryLimit = isOhMyPiWorkerCrash(cause) ? 1 : ASSISTANT_TURN_RETRY_ATTEMPTS;
         if (
           signal?.aborted ||
           isLlmAbortError(cause) ||
           !isRetryableLlmError(cause) ||
-          attempt >= ASSISTANT_TURN_RETRY_ATTEMPTS
+          attempt >= retryLimit
         ) {
           throw cause;
         }
         attempt += 1;
         const text = receivedStreamDelta
-          ? `연결 끊김 — 재시도 중(${attempt}/${ASSISTANT_TURN_RETRY_ATTEMPTS})`
-          : `일시 오류 — 재시도 중(${attempt}/${ASSISTANT_TURN_RETRY_ATTEMPTS})`;
+          ? `연결 끊김 — 재시도 중(${attempt}/${retryLimit})`
+          : `일시 오류 — 재시도 중(${attempt}/${retryLimit})`;
         if (emittedStreamDelta) onEvent({ type: "assistant_stream_reset" });
         onEvent({ type: "status", text });
         this.pushAudit({ kind: "status", text });

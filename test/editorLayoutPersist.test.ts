@@ -217,7 +217,16 @@ describe("에디터 레이아웃 크기 저장", () => {
     reloaded.renderEditor(nextMain);
 
     expect(reloaded.isLeftCollapsed()).toBe(true);
-    expect(fakeElement(nextMain).querySelector(".left-panel")?.style.display).toBe("none");
+    expect(fakeElement(nextMain).querySelector(".left-panel")?.style.display).not.toBe("none");
+  }, 30_000);
+
+  it("좁은 뷰포트에서도 좌측 사이드바를 접어 숨기지 않는다", async () => {
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 480 });
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const main = document.createElement("main");
+    renderEditor(main);
+    expect(fakeElement(main).querySelector(".left-panel")?.style.display).not.toBe("none");
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 1200 });
   }, 30_000);
 
   it("채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다", async () => {
