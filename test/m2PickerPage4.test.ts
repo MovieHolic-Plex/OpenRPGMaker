@@ -134,6 +134,7 @@ describe("picker tab grid hides informational rows", () => {
     expect(labels.filter((label) => label === "체크포인트 저장")).toHaveLength(1);
     expect(labels.filter((label) => label === "엔딩")).toHaveLength(1);
     expect(labels.filter((label) => label.includes("체크포인트"))).toHaveLength(1);
+    expect(labels.filter((label) => label === "저장 메뉴 열기")).toHaveLength(1);
   });
 
   it("groups the page 4 grid under system and tooling headings only", async () => {

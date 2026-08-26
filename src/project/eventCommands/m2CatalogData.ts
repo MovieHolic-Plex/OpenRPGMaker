@@ -293,6 +293,7 @@ export const EXISTING_KIND_BY_TITLE: Partial<Record<string, Command["kind"]>> = 
   "Input Number": "inputNumber",
   "Key Input Processing": "inputWait",
   "Name Input Processing": "enterHeroName",
+  "Open Save Menu": "openSaveMenu",
   "Jump to Label": "gotoLabel",
   "Label": "label",
   "Loop": "loop",
