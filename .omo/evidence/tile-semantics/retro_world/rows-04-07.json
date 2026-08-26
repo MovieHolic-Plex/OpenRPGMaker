@@ -1,38 +1,35 @@
 [
  {
   "index": 120,
-  "label": "어두운 수면 내부",
+  "label": "어두운 수면",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 내부",
+   "최종판정",
    "water",
-   "암수면",
-   "애니메이션"
+   "어두운 수면"
   ]
  },
  {
   "index": 121,
-  "label": "어두운 수면 내부",
+  "label": "어두운 수면",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 내부",
+   "최종판정",
    "water",
-   "암수면",
-   "애니메이션"
+   "어두운 수면"
   ]
  },
  {
   "index": 122,
-  "label": "어두운 수면 내부",
+  "label": "어두운 수면",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 내부",
+   "최종판정",
    "water",
-   "암수면",
-   "애니메이션"
+   "어두운 수면"
   ]
  },
  {
@@ -308,14 +305,12 @@
  },
  {
   "index": 146,
-  "label": "검은 세로 벽스위치",
-  "role": "machine",
-  "passage": "solid",
+  "label": "벽 스위치",
+  "role": "prop",
+  "passage": "passable",
   "tags": [
-   "검은 세로 벽스위치",
-   "switch",
-   "검정",
-   "벽장치"
+   "최종판정",
+   "prop"
   ]
  },
  {
@@ -356,38 +351,35 @@
  },
  {
   "index": 150,
-  "label": "어두운 수면 둥근 경계",
+  "label": "어두운 소용돌이 수면 상부",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 둥근 경계",
+   "최종판정",
    "water",
-   "곡선",
-   "애니메이션"
+   "어두운 소용돌이"
   ]
  },
  {
   "index": 151,
-  "label": "어두운 수면 둥근 경계",
+  "label": "어두운 소용돌이 수면 상부",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 둥근 경계",
+   "최종판정",
    "water",
-   "곡선",
-   "애니메이션"
+   "어두운 소용돌이"
   ]
  },
  {
   "index": 152,
-  "label": "어두운 수면 둥근 경계",
+  "label": "어두운 소용돌이 수면 상부",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 둥근 경계",
+   "최종판정",
    "water",
-   "곡선",
-   "애니메이션"
+   "어두운 소용돌이"
   ]
  },
  {
@@ -712,38 +704,35 @@
  },
  {
   "index": 180,
-  "label": "어두운 수면 굽은 경계",
+  "label": "어두운 소용돌이 수면 하부",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 굽은 경계",
+   "최종판정",
    "water",
-   "암수면",
-   "애니메이션"
+   "어두운 소용돌이"
   ]
  },
  {
   "index": 181,
-  "label": "어두운 수면 굽은 경계",
+  "label": "어두운 소용돌이 수면 하부",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 굽은 경계",
+   "최종판정",
    "water",
-   "암수면",
-   "애니메이션"
+   "어두운 소용돌이"
   ]
  },
  {
   "index": 182,
-  "label": "어두운 수면 굽은 경계",
+  "label": "어두운 소용돌이 수면 하부",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "어두운 수면 굽은 경계",
+   "최종판정",
    "water",
-   "암수면",
-   "애니메이션"
+   "어두운 소용돌이"
   ]
  },
  {
@@ -867,14 +856,13 @@
  },
  {
   "index": 193,
-  "label": "회색 나뭇가지 부조",
-  "role": "decoration",
+  "label": "동굴 석순 상부",
+  "role": "rock",
   "passage": "solid",
   "tags": [
-   "회색 나뭇가지 부조",
-   "relief",
-   "가지무늬",
-   "회색돌"
+   "최종판정",
+   "rock",
+   "동굴 석순"
   ]
  },
  {
@@ -938,14 +926,13 @@
  },
  {
   "index": 199,
-  "label": "눈밭 중앙 밝은 면",
-  "role": "snow",
+  "label": "눈밭 중앙",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "눈밭 중앙 밝은 면",
-   "snow",
-   "설원",
-   "중앙면"
+   "최종판정",
+   "terrain",
+   "눈밭"
   ]
  },
  {
@@ -1069,38 +1056,35 @@
  },
  {
   "index": 210,
-  "label": "검은 수면 내부",
+  "label": "검은 심해 수면",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "검은 수면 내부",
+   "최종판정",
    "water",
-   "검은물",
-   "애니메이션"
+   "검은 수면"
   ]
  },
  {
   "index": 211,
-  "label": "검은 수면 내부",
+  "label": "검은 심해 수면",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "검은 수면 내부",
+   "최종판정",
    "water",
-   "검은물",
-   "애니메이션"
+   "검은 수면"
   ]
  },
  {
   "index": 212,
-  "label": "검은 수면 내부",
+  "label": "검은 심해 수면",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "검은 수면 내부",
+   "최종판정",
    "water",
-   "검은물",
-   "애니메이션"
+   "검은 수면"
   ]
  },
  {
@@ -1212,26 +1196,24 @@
  },
  {
   "index": 222,
-  "label": "회색 굵은 뿌리 부조",
-  "role": "decoration",
+  "label": "동굴 석순 좌하부",
+  "role": "rock",
   "passage": "solid",
   "tags": [
-   "회색 굵은 뿌리 부조",
-   "relief",
-   "석벽",
-   "굵은뿌리"
+   "최종판정",
+   "rock",
+   "동굴 석순"
   ]
  },
  {
   "index": 223,
-  "label": "회색 가는 뿌리 부조",
-  "role": "decoration",
+  "label": "작은 동굴 석순 무리",
+  "role": "rock",
   "passage": "solid",
   "tags": [
-   "회색 가는 뿌리 부조",
-   "relief",
-   "돌조각",
-   "가는뿌리"
+   "최종판정",
+   "rock",
+   "동굴 석순"
   ]
  },
  {

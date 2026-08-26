@@ -1,0 +1,2 @@
+146|벽 스위치|prop|passable|high|
+199|눈밭 중앙|terrain|passable|high|눈밭

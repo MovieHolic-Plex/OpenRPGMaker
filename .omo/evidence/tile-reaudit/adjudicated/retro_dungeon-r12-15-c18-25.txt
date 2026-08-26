@@ -1,0 +1,12 @@
+378|붉은 광석 더미 좌측|rock|solid|high|붉은 광석 더미
+379|붉은 광석 더미 우측|rock|solid|high|붉은 광석 더미
+380|흙 더미 좌측|prop|solid|high|흙 더미
+381|흙 더미 우측|prop|solid|high|흙 더미
+408|눈 더미 좌측|prop|solid|high|눈 더미
+409|눈 더미 우측|prop|solid|high|눈 더미
+410|검은 광석 더미 좌측|rock|solid|medium|검은 광석 더미
+411|검은 광석 더미 우측|rock|solid|medium|검은 광석 더미
+444|아치형 이중문 아치 좌상단|door|solid|medium|아치형 석조 이중문
+445|아치형 이중문 아치 우상단|door|solid|medium|아치형 석조 이중문
+474|아치형 이중문 좌하단|door|solid|high|아치형 석조 이중문
+475|아치형 이중문 우하단|door|solid|high|아치형 석조 이중문

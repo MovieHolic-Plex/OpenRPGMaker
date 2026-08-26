@@ -282,50 +282,50 @@
  },
  {
   "index": 384,
-  "label": "붉은 지붕 왼쪽사선",
+  "label": "주황색 기와 삼각지붕 왼쪽 사면",
   "role": "roof",
   "passage": "solid",
   "tags": [
-   "붉은 지붕 왼쪽사선",
+   "최종판정",
    "roof",
-   "적색",
-   "대각선"
+   "주황색 삼각지붕",
+   "중복시트 이관"
   ]
  },
  {
   "index": 385,
-  "label": "붉은 지붕 오른쪽사선",
+  "label": "주황색 기와 삼각지붕 오른쪽 사면",
   "role": "roof",
   "passage": "solid",
   "tags": [
-   "붉은 지붕 오른쪽사선",
+   "최종판정",
    "roof",
-   "적갈색",
-   "대각선"
+   "주황색 삼각지붕",
+   "중복시트 이관"
   ]
  },
  {
   "index": 386,
-  "label": "푸른 지붕 왼쪽사선",
+  "label": "파란색 기와 삼각지붕 왼쪽 사면",
   "role": "roof",
   "passage": "solid",
   "tags": [
-   "푸른 지붕 왼쪽사선",
+   "최종판정",
    "roof",
-   "청색",
-   "대각선"
+   "파란색 삼각지붕",
+   "중복시트 이관"
   ]
  },
  {
   "index": 387,
-  "label": "푸른 지붕 오른쪽사선",
+  "label": "파란색 기와 삼각지붕 오른쪽 사면",
   "role": "roof",
   "passage": "solid",
   "tags": [
-   "푸른 지붕 오른쪽사선",
+   "최종판정",
    "roof",
-   "남색",
-   "대각선"
+   "파란색 삼각지붕",
+   "중복시트 이관"
   ]
  },
  {
@@ -426,38 +426,38 @@
  },
  {
   "index": 396,
-  "label": "검은 바닥 북서 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 좌상단",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 북서 금속틀",
-   "floor",
-   "회색테두리",
-   "좌상단"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
   "index": 397,
-  "label": "검은 바닥 북쪽 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 상단",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 북쪽 금속틀",
-   "floor",
-   "회색테두리",
-   "상단"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
   "index": 398,
-  "label": "검은 바닥 북동 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 우상단",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 북동 금속틀",
-   "floor",
-   "회색테두리",
-   "우상단"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
@@ -782,14 +782,14 @@
  },
  {
   "index": 426,
-  "label": "검은 바닥 서쪽 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 좌측",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 서쪽 금속틀",
-   "floor",
-   "회색테두리",
-   "좌측"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
@@ -806,14 +806,14 @@
  },
  {
   "index": 428,
-  "label": "검은 바닥 동쪽 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 우측",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 동쪽 금속틀",
-   "floor",
-   "회색테두리",
-   "우측"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
@@ -1138,38 +1138,38 @@
  },
  {
   "index": 456,
-  "label": "검은 바닥 남서 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 좌하단",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 남서 금속틀",
-   "floor",
-   "회색테두리",
-   "좌하단"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
   "index": 457,
-  "label": "검은 바닥 남쪽 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 하단",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 남쪽 금속틀",
-   "floor",
-   "회색테두리",
-   "하단"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {
   "index": 458,
-  "label": "검은 바닥 남동 금속틀",
-  "role": "floor",
-  "passage": "passable",
+  "label": "돌 테두리 구덩이 우하단",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 남동 금속틀",
-   "floor",
-   "회색테두리",
-   "우하단"
+   "최종판정",
+   "cliff",
+   "돌 테두리 구덩이",
+   "중복시트 이관"
   ]
  },
  {

@@ -925,15 +925,13 @@
  },
  {
   "index": 78,
-  "label": "초원 잔디 평원 바닥",
-  "role": "terrain",
+  "label": "잔디 고원 좌상단 모서리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "초원 잔디 평원 바닥",
-   "grass",
-   "초원",
-   "잔디",
-   "평원"
+   "최종판정",
+   "cliff",
+   "잔디 고원 지대"
   ]
  },
  {
@@ -951,28 +949,24 @@
  },
  {
   "index": 80,
-  "label": "초원 언덕 경사 언덕",
-  "role": "terrain",
+  "label": "잔디 고원 우상단 모서리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "초원 언덕 경사 언덕",
-   "hill",
-   "언덕",
-   "초원",
-   "경사"
+   "최종판정",
+   "cliff",
+   "잔디 고원 지대"
   ]
  },
  {
   "index": 81,
-  "label": "어두운 갈색 흙 평지",
-  "role": "terrain",
+  "label": "흙 고원 좌상단 모서리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "어두운 갈색 흙 평지",
-   "dirt",
-   "흙",
-   "갈색",
-   "평지"
+   "최종판정",
+   "cliff",
+   "흙 고원 지대"
   ]
  },
  {
@@ -990,15 +984,13 @@
  },
  {
   "index": 83,
-  "label": "갈색 밭 흙 이랑",
-  "role": "terrain",
+  "label": "흙 고원 우상단 모서리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "갈색 밭 흙 이랑",
-   "dirt",
-   "밭",
-   "흙",
-   "이랑"
+   "최종판정",
+   "cliff",
+   "흙 고원 지대"
   ]
  },
  {
@@ -1283,15 +1275,13 @@
  },
  {
   "index": 108,
-  "label": "초원 잔디 평원 바닥",
-  "role": "terrain",
+  "label": "잔디 고원 좌측 테두리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "초원 잔디 평원 바닥",
-   "grass",
-   "초원",
-   "잔디",
-   "평원"
+   "최종판정",
+   "cliff",
+   "잔디 고원 지대"
   ]
  },
  {
@@ -1309,28 +1299,24 @@
  },
  {
   "index": 110,
-  "label": "초원 언덕 경사 지면",
-  "role": "terrain",
+  "label": "잔디 고원 우측 테두리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "초원 언덕 경사 지면",
-   "hill",
-   "언덕",
-   "초원",
-   "경사"
+   "최종판정",
+   "cliff",
+   "잔디 고원 지대"
   ]
  },
  {
   "index": 111,
-  "label": "갈색 흙 다진 평지",
-  "role": "terrain",
+  "label": "흙 고원 좌측 테두리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "갈색 흙 다진 평지",
-   "dirt",
-   "흙",
-   "평지",
-   "흙바닥"
+   "최종판정",
+   "cliff",
+   "흙 고원 지대"
   ]
  },
  {
@@ -1348,15 +1334,13 @@
  },
  {
   "index": 113,
-  "label": "갈색 흙 언덕 경계",
-  "role": "terrain",
+  "label": "흙 고원 우측 테두리",
+  "role": "cliff",
   "passage": "passable",
   "tags": [
-   "갈색 흙 언덕 경계",
-   "hill",
-   "언덕",
-   "흙",
-   "경계"
+   "최종판정",
+   "cliff",
+   "흙 고원 지대"
   ]
  },
  {

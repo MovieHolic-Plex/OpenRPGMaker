@@ -197,50 +197,46 @@
  },
  {
   "index": 378,
-  "label": "갈색 둥근 덩어리",
-  "role": "prop",
+  "label": "붉은 광석 더미 좌측",
+  "role": "rock",
   "passage": "solid",
   "tags": [
-   "갈색 둥근 덩어리",
-   "둥근",
-   "무더기",
-   "판독보류"
+   "최종판정",
+   "rock",
+   "붉은 광석 더미"
   ]
  },
  {
   "index": 379,
-  "label": "갈색 둥근 덩어리",
-  "role": "prop",
+  "label": "붉은 광석 더미 우측",
+  "role": "rock",
   "passage": "solid",
   "tags": [
-   "갈색 둥근 덩어리",
-   "둥근",
-   "무더기",
-   "판독보류"
+   "최종판정",
+   "rock",
+   "붉은 광석 더미"
   ]
  },
  {
   "index": 380,
-  "label": "갈색 덩어리",
+  "label": "흙 더미 좌측",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "갈색 덩어리",
-   "덩어리",
+   "최종판정",
    "prop",
-   "판독보류"
+   "흙 더미"
   ]
  },
  {
   "index": 381,
-  "label": "갈색 덩어리",
+  "label": "흙 더미 우측",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "갈색 덩어리",
-   "덩어리",
+   "최종판정",
    "prop",
-   "판독보류"
+   "흙 더미"
   ]
  },
  {
@@ -547,50 +543,46 @@
  },
  {
   "index": 408,
-  "label": "흰 뾰족 암석",
-  "role": "rock",
+  "label": "눈 더미 좌측",
+  "role": "prop",
   "passage": "solid",
   "tags": [
-   "흰 뾰족 암석",
-   "흰",
-   "뾰족",
-   "rock"
+   "최종판정",
+   "prop",
+   "눈 더미"
   ]
  },
  {
   "index": 409,
-  "label": "흰 뾰족 바위 조각",
-  "role": "rock",
+  "label": "눈 더미 우측",
+  "role": "prop",
   "passage": "solid",
   "tags": [
-   "흰 뾰족 바위 조각",
-   "흰",
-   "바위",
-   "rock"
+   "최종판정",
+   "prop",
+   "눈 더미"
   ]
  },
  {
   "index": 410,
-  "label": "어두운 뾰족 암석",
+  "label": "검은 광석 더미 좌측",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "어두운 뾰족 암석",
-   "어두운",
-   "뾰족",
-   "rock"
+   "최종판정",
+   "rock",
+   "검은 광석 더미"
   ]
  },
  {
   "index": 411,
-  "label": "어두운 뾰족 바위 조각",
+  "label": "검은 광석 더미 우측",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "어두운 뾰족 바위 조각",
-   "어두운",
-   "바위",
-   "rock"
+   "최종판정",
+   "rock",
+   "검은 광석 더미"
   ]
  },
  {
@@ -965,28 +957,24 @@
  },
  {
   "index": 444,
-  "label": "나무 살대 울타리 좌",
-  "role": "fence",
+  "label": "아치형 이중문 아치 좌상단",
+  "role": "door",
   "passage": "solid",
   "tags": [
-   "나무 살대 울타리 좌",
-   "살대",
-   "목재",
-   "울타리",
-   "fence"
+   "최종판정",
+   "door",
+   "아치형 석조 이중문"
   ]
  },
  {
   "index": 445,
-  "label": "나무 살대 울타리 우",
-  "role": "fence",
+  "label": "아치형 이중문 아치 우상단",
+  "role": "door",
   "passage": "solid",
   "tags": [
-   "나무 살대 울타리 우",
-   "살대",
-   "목재",
-   "울타리",
-   "fence"
+   "최종판정",
+   "door",
+   "아치형 석조 이중문"
   ]
  },
  {
@@ -1320,28 +1308,24 @@
  },
  {
   "index": 474,
-  "label": "밝은 나무 살대 좌",
-  "role": "fence",
+  "label": "아치형 이중문 좌하단",
+  "role": "door",
   "passage": "solid",
   "tags": [
-   "밝은 나무 살대 좌",
-   "살대",
-   "목재",
-   "울타리",
-   "fence"
+   "최종판정",
+   "door",
+   "아치형 석조 이중문"
   ]
  },
  {
   "index": 475,
-  "label": "밝은 나무 살대 우",
-  "role": "fence",
+  "label": "아치형 이중문 우하단",
+  "role": "door",
   "passage": "solid",
   "tags": [
-   "밝은 나무 살대 우",
-   "살대",
-   "목재",
-   "울타리",
-   "fence"
+   "최종판정",
+   "door",
+   "아치형 석조 이중문"
   ]
  },
  {

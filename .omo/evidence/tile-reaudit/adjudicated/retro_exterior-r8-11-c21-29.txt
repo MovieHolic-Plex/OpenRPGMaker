@@ -1,0 +1,3 @@
+268|아치형 창문 왼쪽 상단|window|solid|high|아치형 창문
+269|아치형 창문 오른쪽 상단|window|solid|high|아치형 창문
+326|회색 석상 하단 기단|decoration|solid|medium|회색 석상

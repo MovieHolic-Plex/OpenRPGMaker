@@ -519,14 +519,12 @@
  },
  {
   "index": 404,
-  "label": "흰 사선 무늬 석판",
-  "role": "floor",
-  "passage": "passable",
+  "label": "흰 사선 유리창",
+  "role": "window",
+  "passage": "solid",
   "tags": [
-   "흰 사선 무늬 석판",
-   "stripe",
-   "사선",
-   "흰색"
+   "최종판정",
+   "window"
   ]
  },
  {
@@ -841,26 +839,24 @@
  },
  {
   "index": 432,
-  "label": "보라 회색 돌벽돌",
-  "role": "floor",
-  "passage": "passable",
+  "label": "보라 회색 석벽 상단",
+  "role": "wall",
+  "passage": "solid",
   "tags": [
-   "보라 회색 돌벽돌",
-   "brick",
-   "돌바닥",
-   "보라"
+   "최종판정",
+   "wall",
+   "보라 회색 석벽"
   ]
  },
  {
   "index": 433,
-  "label": "갈금 마름모 바닥",
-  "role": "floor",
-  "passage": "passable",
+  "label": "갈금 벽돌벽 상단",
+  "role": "wall",
+  "passage": "solid",
   "tags": [
-   "갈금 마름모 바닥",
-   "floor",
-   "마름모",
-   "갈색"
+   "최종판정",
+   "wall",
+   "갈금 벽돌벽"
   ]
  },
  {
@@ -962,10 +958,8 @@
   "role": "window",
   "passage": "solid",
   "tags": [
-   "회색 격자 창문",
-   "window",
-   "격자",
-   "회색"
+   "최종판정",
+   "window"
   ]
  },
  {
@@ -1196,26 +1190,24 @@
  },
  {
   "index": 462,
-  "label": "어긋난 보라 돌벽돌",
-  "role": "floor",
-  "passage": "passable",
+  "label": "보라 회색 석벽 하단",
+  "role": "wall",
+  "passage": "solid",
   "tags": [
-   "어긋난 보라 돌벽돌",
-   "brick",
-   "돌바닥",
-   "어긋남"
+   "최종판정",
+   "wall",
+   "보라 회색 석벽"
   ]
  },
  {
   "index": 463,
-  "label": "갈금 격자 바닥",
-  "role": "floor",
-  "passage": "passable",
+  "label": "갈금 벽돌벽 하단",
+  "role": "wall",
+  "passage": "solid",
   "tags": [
-   "갈금 격자 바닥",
-   "floor",
-   "격자",
-   "갈색"
+   "최종판정",
+   "wall",
+   "갈금 벽돌벽"
   ]
  },
  {
@@ -1325,14 +1317,13 @@
  },
  {
   "index": 473,
-  "label": "회색 가로 석인방",
+  "label": "석조 아치 가로보",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "회색 가로 석인방",
-   "lintel",
-   "인방",
-   "석재"
+   "최종판정",
+   "wall",
+   "석조 아치"
   ]
  },
  {

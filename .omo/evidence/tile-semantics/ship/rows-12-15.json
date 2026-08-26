@@ -735,38 +735,35 @@
  },
  {
   "index": 432,
-  "label": "나무 선반장 왼쪽",
-  "role": "shelf",
+  "label": "목재 벽난로 상단 좌측",
+  "role": "prop",
   "passage": "solid",
   "tags": [
-   "나무 선반장 왼쪽",
-   "shelf",
-   "찬장",
-   "좌측"
+   "최종판정",
+   "prop",
+   "목재 벽난로"
   ]
  },
  {
   "index": 433,
-  "label": "나무 선반장 가운데",
-  "role": "shelf",
+  "label": "목재 벽난로 상단 중앙",
+  "role": "prop",
   "passage": "solid",
   "tags": [
-   "나무 선반장 가운데",
-   "shelf",
-   "찬장",
-   "중앙"
+   "최종판정",
+   "prop",
+   "목재 벽난로"
   ]
  },
  {
   "index": 434,
-  "label": "나무 선반장 오른쪽",
-  "role": "shelf",
+  "label": "목재 벽난로 상단 우측",
+  "role": "prop",
   "passage": "solid",
   "tags": [
-   "나무 선반장 오른쪽",
-   "shelf",
-   "찬장",
-   "우측"
+   "최종판정",
+   "prop",
+   "목재 벽난로"
   ]
  },
  {
@@ -1041,14 +1038,13 @@
  },
  {
   "index": 462,
-  "label": "왼쪽홈 가로 마루",
-  "role": "floor",
-  "passage": "passable",
+  "label": "목재 벽난로 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
   "tags": [
-   "왼쪽홈 가로 마루",
-   "floor",
-   "가로결",
-   "좌측홈"
+   "최종판정",
+   "prop",
+   "목재 벽난로"
   ]
  },
  {
@@ -1065,14 +1061,13 @@
  },
  {
   "index": 464,
-  "label": "오른쪽홈 가로 마루",
-  "role": "floor",
-  "passage": "passable",
+  "label": "목재 벽난로 하단 우측",
+  "role": "prop",
+  "passage": "solid",
   "tags": [
-   "오른쪽홈 가로 마루",
-   "floor",
-   "가로결",
-   "우측홈"
+   "최종판정",
+   "prop",
+   "목재 벽난로"
   ]
  },
  {

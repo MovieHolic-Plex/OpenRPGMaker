@@ -1,0 +1,6 @@
+430|대형 목재 창 내부|window|solid|low|대형 목재 창
+432|목재 벽난로 상단 좌측|prop|solid|high|목재 벽난로
+433|목재 벽난로 상단 중앙|prop|solid|high|목재 벽난로
+434|목재 벽난로 상단 우측|prop|solid|high|목재 벽난로
+462|목재 벽난로 하단 좌측|prop|solid|high|목재 벽난로
+464|목재 벽난로 하단 우측|prop|solid|high|목재 벽난로

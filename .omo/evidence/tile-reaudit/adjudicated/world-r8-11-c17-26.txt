@@ -1,0 +1,5 @@
+264|석제 안내판|decoration|solid|high|
+266|어두운 목조 기단|prop|solid|low|
+291|푸른 첨탑 성문|gate|passable|high|
+322|푸른 첨탑 성채 좌측 지붕|roof|solid|high|푸른 첨탑 성채
+323|푸른 첨탑 성채 우측 지붕|roof|solid|high|푸른 첨탑 성채

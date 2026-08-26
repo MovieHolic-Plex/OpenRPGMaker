@@ -73,15 +73,12 @@
  },
  {
   "index": 246,
-  "label": "설원 언 얼음물",
-  "role": "snow",
+  "label": "눈 덮인 침엽수",
+  "role": "tree",
   "passage": "solid",
   "tags": [
-   "설원 언 얼음물",
-   "눈",
-   "얼음",
-   "물",
-   "설원"
+   "최종판정",
+   "tree"
   ]
  },
  {
@@ -265,14 +262,12 @@
  },
  {
   "index": 264,
-  "label": "바위 언덕",
-  "role": "rock",
+  "label": "석제 안내판",
+  "role": "decoration",
   "passage": "solid",
   "tags": [
-   "바위 언덕",
-   "바위",
-   "언덕",
-   "rock"
+   "최종판정",
+   "decoration"
   ]
  },
  {
@@ -582,14 +577,12 @@
  },
  {
   "index": 291,
-  "label": "숲속 작은 연못",
-  "role": "water",
-  "passage": "solid",
+  "label": "푸른 첨탑 성문",
+  "role": "gate",
+  "passage": "passable",
   "tags": [
-   "숲속 작은 연못",
-   "연못",
-   "water",
-   "숲"
+   "최종판정",
+   "gate"
   ]
  },
  {
@@ -939,26 +932,24 @@
  },
  {
   "index": 322,
-  "label": "풀둑 낀 연못",
-  "role": "water",
+  "label": "푸른 첨탑 성채 좌측 지붕",
+  "role": "roof",
   "passage": "solid",
   "tags": [
-   "풀둑 낀 연못",
-   "연못",
-   "풀",
-   "water"
+   "최종판정",
+   "roof",
+   "푸른 첨탑 성채"
   ]
  },
  {
   "index": 323,
-  "label": "둑 낀 물웅덩이",
-  "role": "water",
+  "label": "푸른 첨탑 성채 우측 지붕",
+  "role": "roof",
   "passage": "solid",
   "tags": [
-   "둑 낀 물웅덩이",
-   "물",
-   "둑",
-   "water"
+   "최종판정",
+   "roof",
+   "푸른 첨탑 성채"
   ]
  },
  {

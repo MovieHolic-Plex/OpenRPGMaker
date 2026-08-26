@@ -138,26 +138,22 @@
  },
  {
   "index": 252,
-  "label": "나무 바닥",
-  "role": "floor",
+  "label": "분홍색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "나무 바닥",
-   "wood",
-   "plank",
-   "판자",
-   "바닥"
+   "최종판정",
+   "terrain"
   ]
  },
  {
   "index": 253,
-  "label": "물",
-  "role": "water",
+  "label": "청회색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "물",
-   "water",
-   "호수"
+   "최종판정",
+   "terrain"
   ]
  },
  {
@@ -318,28 +314,24 @@
  },
  {
   "index": 268,
-  "label": "바위 절벽",
-  "role": "cliff",
+  "label": "아치형 창문 왼쪽 상단",
+  "role": "window",
   "passage": "solid",
   "tags": [
-   "바위 절벽",
-   "cliff",
-   "rock",
-   "절벽",
-   "바위"
+   "최종판정",
+   "window",
+   "아치형 창문"
   ]
  },
  {
   "index": 269,
-  "label": "바위 절벽",
-  "role": "cliff",
+  "label": "아치형 창문 오른쪽 상단",
+  "role": "window",
   "passage": "solid",
   "tags": [
-   "바위 절벽",
-   "cliff",
-   "rock",
-   "절벽",
-   "암벽"
+   "최종판정",
+   "window",
+   "아치형 창문"
   ]
  },
  {
@@ -487,26 +479,22 @@
  },
  {
   "index": 282,
-  "label": "분홍빛 지면",
+  "label": "연보라색 거친 자연석 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "분홍빛 지면",
-   "pink",
-   "지면",
-   "판독보류"
+   "최종판정",
+   "terrain"
   ]
  },
  {
   "index": 283,
-  "label": "회색 지면",
+  "label": "회녹색 거친 자연석 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "회색 지면",
-   "grey",
-   "지면",
-   "판독보류"
+   "최종판정",
+   "terrain"
   ]
  },
  {
@@ -845,14 +833,12 @@
  },
  {
   "index": 312,
-  "label": "돌 바닥",
+  "label": "어두운 청회색 거친 자연석 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "돌 바닥",
-   "stone",
-   "돌",
-   "바닥"
+   "최종판정",
+   "terrain"
   ]
  },
  {
@@ -1014,15 +1000,13 @@
  },
  {
   "index": 326,
-  "label": "돌기둥",
-  "role": "pillar",
+  "label": "회색 석상 하단 기단",
+  "role": "decoration",
   "passage": "solid",
   "tags": [
-   "돌기둥",
-   "pillar",
-   "stone",
-   "기둥",
-   "돌"
+   "최종판정",
+   "decoration",
+   "회색 석상"
   ]
  },
  {
@@ -1205,15 +1189,12 @@
  },
  {
   "index": 342,
-  "label": "돌 포장",
-  "role": "path",
+  "label": "베이지색 석판 바닥",
+  "role": "floor",
   "passage": "passable",
   "tags": [
-   "돌 포장",
-   "stone",
-   "paving",
-   "포장",
-   "돌"
+   "최종판정",
+   "floor"
   ]
  },
  {

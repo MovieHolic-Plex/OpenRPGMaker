@@ -18,7 +18,7 @@
 // 그 목록을 직접 구해 커버리지를 검증한다.
 // 도화 가능 여부는 상수가 아니라 PNG 에서 직접 유도한다(불투명·비키색 픽셀이 하나라도 있는가).
 //
-// 실측: 도화 가능 478칸 전수 서술, 고유 라벨 393개.
+// 실측: 도화 가능 478칸 전수 서술, 고유 라벨 395개.
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
@@ -402,8 +402,10 @@ export const RETRO_DUNGEON_TILE_SEMANTICS: readonly RetroDungeonTileSemanticEntr
   one(375, "얼음 벽 상단 좌측", "wall", "solid", ["wall", "얼음 벽"]),
   one(376, "얼음 벽 상단 중앙", "wall", "solid", ["wall", "얼음 벽"]),
   one(377, "얼음 벽 상단 우측", "wall", "solid", ["wall", "얼음 벽"]),
-  ...entries([378, 379], "갈색 둥근 덩어리", "prop", "solid", ["둥근", "무더기", "판독보류"]),
-  ...entries([380, 381], "갈색 덩어리", "prop", "solid", ["덩어리", "prop", "판독보류"]),
+  one(378, "붉은 광석 더미 좌측", "rock", "solid", ["최종판정", "rock", "붉은 광석 더미"]),
+  one(379, "붉은 광석 더미 우측", "rock", "solid", ["최종판정", "rock", "붉은 광석 더미"]),
+  one(380, "흙 더미 좌측", "prop", "solid", ["최종판정", "prop", "흙 더미"]),
+  one(381, "흙 더미 우측", "prop", "solid", ["최종판정", "prop", "흙 더미"]),
   one(382, "회색 둥근 바위", "rock", "solid", ["회색", "바위", "rock"]),
   one(383, "회색 둥근 돌", "rock", "solid", ["회색", "돌", "rock"]),
   one(384, "목재 침대 상단(머리판과 베개)", "furniture", "solid", ["furniture", "침대 머리맡 상단", "세로 목재 침대", "침대"]),
@@ -428,10 +430,10 @@ export const RETRO_DUNGEON_TILE_SEMANTICS: readonly RetroDungeonTileSemanticEntr
   one(405, "어두운 던전 벽 상단 좌측", "wall", "solid", ["wall", "어두운 청석 벽 좌상단", "어두운 던전 벽", "어두운 청석 벽"]),
   one(406, "어두운 던전 벽 상단 중앙", "wall", "solid", ["wall", "어두운 청석 벽 상단 중앙", "어두운 던전 벽", "어두운 청석 벽"]),
   one(407, "어두운 던전 벽 상단 우측", "wall", "solid", ["wall", "어두운 청석 벽 우상단", "어두운 던전 벽", "어두운 청석 벽"]),
-  one(408, "흰 뾰족 암석", "rock", "solid", ["흰", "뾰족", "rock"]),
-  one(409, "흰 뾰족 바위 조각", "rock", "solid", ["흰", "바위", "rock"]),
-  one(410, "어두운 뾰족 암석", "rock", "solid", ["어두운", "뾰족", "rock"]),
-  one(411, "어두운 뾰족 바위 조각", "rock", "solid", ["어두운", "바위", "rock"]),
+  one(408, "눈 더미 좌측", "prop", "solid", ["최종판정", "prop", "눈 더미"]),
+  one(409, "눈 더미 우측", "prop", "solid", ["최종판정", "prop", "눈 더미"]),
+  one(410, "검은 광석 더미 좌측", "rock", "solid", ["최종판정", "rock", "검은 광석 더미"]),
+  one(411, "검은 광석 더미 우측", "rock", "solid", ["최종판정", "rock", "검은 광석 더미"]),
   one(412, "갈색 암석 덩어리", "rock", "solid", ["rock", "갈색 바위 무더기"]),
   one(413, "얼음 결정 파편", "rock", "solid", ["rock", "얼음 결정 무리"]),
   one(414, "목재 침대 하단(이불과 발판)", "furniture", "solid", ["furniture", "세로 침대 하단", "세로 목재 침대", "세로 침대"]),
@@ -464,8 +466,8 @@ export const RETRO_DUNGEON_TILE_SEMANTICS: readonly RetroDungeonTileSemanticEntr
   one(441, "갈색 격자 아치 좌측", "decoration", "solid", ["격자", "아치", "판독보류", "lattice"]),
   one(442, "갈색 격자 아치 중앙", "decoration", "solid", ["격자", "아치", "판독보류", "lattice"]),
   one(443, "갈색 격자 아치 우측", "decoration", "solid", ["격자", "아치", "판독보류", "lattice"]),
-  one(444, "나무 살대 울타리 좌", "fence", "solid", ["살대", "목재", "울타리", "fence"]),
-  one(445, "나무 살대 울타리 우", "fence", "solid", ["살대", "목재", "울타리", "fence"]),
+  one(444, "아치형 이중문 아치 좌상단", "door", "solid", ["최종판정", "door", "아치형 석조 이중문"]),
+  one(445, "아치형 이중문 아치 우상단", "door", "solid", ["최종판정", "door", "아치형 석조 이중문"]),
   one(446, "회색 돌 기둥", "pillar", "solid", ["기둥", "pillar", "돌"]),
   one(447, "황금 왕좌 좌측 상단", "furniture", "solid", ["왕좌", "금장식", "throne", "옥좌"]),
   one(448, "붉은 왕좌 등받이", "furniture", "solid", ["왕좌", "등받이", "throne", "옥좌"]),
@@ -494,8 +496,8 @@ export const RETRO_DUNGEON_TILE_SEMANTICS: readonly RetroDungeonTileSemanticEntr
   one(471, "갈색 격자 문양 좌측", "decoration", "solid", ["격자", "문양", "판독보류", "lattice"]),
   one(472, "갈색 격자 원형 문양", "decoration", "solid", ["격자", "원형", "판독보류", "lattice"]),
   one(473, "갈색 격자 문양 우측", "decoration", "solid", ["격자", "문양", "판독보류", "lattice"]),
-  one(474, "밝은 나무 살대 좌", "fence", "solid", ["살대", "목재", "울타리", "fence"]),
-  one(475, "밝은 나무 살대 우", "fence", "solid", ["살대", "목재", "울타리", "fence"]),
+  one(474, "아치형 이중문 좌하단", "door", "solid", ["최종판정", "door", "아치형 석조 이중문"]),
+  one(475, "아치형 이중문 우하단", "door", "solid", ["최종판정", "door", "아치형 석조 이중문"]),
   one(476, "회색 돌 기둥", "pillar", "solid", ["기둥", "pillar", "돌"]),
   one(477, "황금 왕좌 좌측 팔걸이", "furniture", "solid", ["왕좌", "팔걸이", "throne", "옥좌"]),
   one(478, "붉은 왕좌 좌석", "furniture", "solid", ["왕좌", "좌석", "throne", "옥좌"]),

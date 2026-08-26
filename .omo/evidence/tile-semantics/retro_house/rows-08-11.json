@@ -133,24 +133,24 @@
  },
  {
   "index": 252,
-  "label": "분홍 나뭇결 판",
-  "role": "floor",
+  "label": "분홍색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "분홍 나뭇결 판",
-   "wood",
-   "분홍색"
+   "최종판정",
+   "terrain",
+   "중복시트 이관"
   ]
  },
  {
   "index": 253,
-  "label": "푸른 비늘 돌판",
-  "role": "floor",
+  "label": "청회색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "푸른 비늘 돌판",
-   "stone",
-   "청회색"
+   "최종판정",
+   "terrain",
+   "중복시트 이관"
   ]
  },
  {
@@ -304,24 +304,26 @@
  },
  {
   "index": 268,
-  "label": "왼쪽 회색 난간상",
-  "role": "decoration",
+  "label": "아치형 창문 왼쪽 상단",
+  "role": "window",
   "passage": "solid",
   "tags": [
-   "왼쪽 회색 난간상",
-   "silhouette",
-   "판독보류"
+   "최종판정",
+   "window",
+   "아치형 창문",
+   "중복시트 이관"
   ]
  },
  {
   "index": 269,
-  "label": "오른쪽 회색 난간상",
-  "role": "decoration",
+  "label": "아치형 창문 오른쪽 상단",
+  "role": "window",
   "passage": "solid",
   "tags": [
-   "오른쪽 회색 난간상",
-   "silhouette",
-   "판독보류"
+   "최종판정",
+   "window",
+   "아치형 창문",
+   "중복시트 이관"
   ]
  },
  {
@@ -458,24 +460,24 @@
  },
  {
   "index": 282,
-  "label": "연보라 나뭇결 판",
-  "role": "floor",
+  "label": "연보라색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "연보라 나뭇결 판",
-   "wood",
-   "보라색"
+   "최종판정",
+   "terrain",
+   "중복시트 이관"
   ]
  },
  {
   "index": 283,
-  "label": "비늘 돌판",
-  "role": "floor",
+  "label": "회녹색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "비늘 돌판",
-   "stone",
-   "회녹색"
+   "최종판정",
+   "terrain",
+   "중복시트 이관"
   ]
  },
  {
@@ -795,13 +797,13 @@
  },
  {
   "index": 312,
-  "label": "조약돌 바닥",
-  "role": "floor",
+  "label": "어두운 청회색 거친 자연석 바닥",
+  "role": "terrain",
   "passage": "passable",
   "tags": [
-   "조약돌 바닥",
-   "cobble",
-   "포장"
+   "최종판정",
+   "terrain",
+   "중복시트 이관"
   ]
  },
  {
@@ -950,13 +952,14 @@
  },
  {
   "index": 326,
-  "label": "회색 매달린 장식",
+  "label": "회색 석상 하단 기단",
   "role": "decoration",
   "passage": "solid",
   "tags": [
-   "회색 매달린 장식",
-   "hanging",
-   "판독보류"
+   "최종판정",
+   "decoration",
+   "회색 석상",
+   "중복시트 이관"
   ]
  },
  {
@@ -1129,13 +1132,13 @@
  },
  {
   "index": 342,
-  "label": "회갈색 사각 석벽",
-  "role": "wall",
-  "passage": "solid",
+  "label": "베이지색 석판 바닥",
+  "role": "floor",
+  "passage": "passable",
   "tags": [
-   "회갈색 사각 석벽",
-   "masonry",
-   "돌쌓기"
+   "최종판정",
+   "floor",
+   "중복시트 이관"
   ]
  },
  {
