@@ -3,6 +3,7 @@
 // 스펙 docs/superpowers/specs/2026-07-20-region-task-enhancements-design.md §E.
 
 import { describe, expect, it } from "vitest";
+import { SVG_ICON_NAMES, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { createBlankProject, TILE } from "@/project/defaults";
 import {
   categorizeTileForContext,
@@ -127,6 +128,55 @@ describe("suggestRegionCommandsByContext", () => {
     const region: RegionRect = { x: 0, y: 0, width: 3, height: 3 };
     expect(suggestRegionCommandsByContext(project, mapId, region, 4)).toHaveLength(4);
     expect(suggestRegionCommandsByContext(project, mapId, region, 3)).toHaveLength(3);
+  });
+
+  it("동적 추천 명령이 SvgIconName 아이콘을 가진다 (ICON MAPPING 준수)", () => {
+    const EXPECTED_DYNAMIC_ICONS: Readonly<Record<string, SvgIconName>> = {
+      dock: "structure",
+      bridge: "structure",
+      "street-trees": "polish",
+      "hunting-ground": "combat",
+      campfire: "mood",
+    };
+    const { project, mapId } = makeProject();
+    // 영역 (5,5) 6×6. 물/길/숲/건물을 주변 두르레이트에 배치해 각각의 동적 추천을 유발.
+    paintLower(project, mapId, 4, 4, TILE.WATER);
+    paintLower(project, mapId, 5, 4, TILE.WATER);
+    paintLower(project, mapId, 6, 4, TILE.WATER);
+    paintLower(project, mapId, 4, 5, TILE.WATER);
+    paintLower(project, mapId, 7, 4, TILE.PATH);
+    paintLower(project, mapId, 8, 4, TILE.PATH);
+    paintLower(project, mapId, 9, 4, TILE.TREE);
+    paintLower(project, mapId, 10, 4, TILE.TREE);
+    paintLower(project, mapId, 11, 4, TILE.TREE);
+    paintLower(project, mapId, 11, 7, TILE.WALL);
+    paintLower(project, mapId, 11, 8, TILE.WALL);
+    const region: RegionRect = { x: 5, y: 5, width: 6, height: 6 };
+    const suggestions = suggestRegionCommandsByContext(project, mapId, region, 10);
+    const byId = new Map(suggestions.map((suggestion) => [suggestion.id, suggestion]));
+    expect(byId.has("dock")).toBe(true);
+    expect(byId.has("street-trees")).toBe(true);
+    expect(byId.has("hunting-ground")).toBe(true);
+    expect(byId.has("campfire")).toBe(true);
+    for (const suggestion of suggestions) {
+      expect(SVG_ICON_NAMES).toContain(suggestion.icon);
+      if (EXPECTED_DYNAMIC_ICONS[suggestion.id]) {
+        expect(suggestion.icon).toBe(EXPECTED_DYNAMIC_ICONS[suggestion.id]);
+      }
+    }
+  });
+
+  it("추천 명령 라벨에 이모지가 없다", () => {
+    const { project, mapId } = makeProject();
+    paintLower(project, mapId, 4, 4, TILE.WATER);
+    paintLower(project, mapId, 5, 4, TILE.WATER);
+    paintLower(project, mapId, 6, 4, TILE.WATER);
+    paintLower(project, mapId, 4, 5, TILE.WATER);
+    const region: RegionRect = { x: 5, y: 5, width: 3, height: 3 };
+    const suggestions = suggestRegionCommandsByContext(project, mapId, region, 8);
+    for (const suggestion of suggestions) {
+      expect(suggestion.label).not.toMatch(/\p{Extended_Pictographic}/u);
+    }
   });
 
   it("던전 타일셋에서 야외 전용 명령(꽃밭/오두막/호수) 제외", () => {
