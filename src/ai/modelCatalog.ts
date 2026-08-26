@@ -111,6 +111,7 @@ const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
  */
 const OH_MY_PI_PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   "google-antigravity": [
+    "gemini-3.7-flash-high",
     "gemini-3.7-flash",
     "gemini-3.1-pro",
   ],
@@ -139,7 +140,9 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 authMode 의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * 공장 기본은 Antigravity 의 gemini-3.7-flash. Codex 카탈로그 첫 항목은 gpt-5.6-sol.
+ * 공장 기본은 Antigravity 의 gemini-3.7-flash-high — 모든 모델 슬롯이 이 값을 기본으로 쓴다
+ * (감독 지시 2026-08-26, 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
+ * Codex 카탈로그 첫 항목은 gpt-5.6-sol.
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */
 export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {
