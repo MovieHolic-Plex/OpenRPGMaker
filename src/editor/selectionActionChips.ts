@@ -2,6 +2,7 @@
 // 복사/붙여넣기/지우기/AI 작업/선택 해제를 한 곳에서 제공한다.
 // EditScene의 buildPalette 오버레이 슬롯을 공유 — 건축 팔레트가 켜져 있으면 그쪽이 우선.
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { saveSelectionAsStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import type { TileSelection } from "@/editor/editorState";
 import { editorState } from "@/editor/editorState";
 import {
@@ -116,6 +117,17 @@ export function renderSelectionActionChips(
       attrs: { type: "button", title: "선택 영역을 빈 칸으로 (Del)" },
       dataset: { testid: "selection-chip-clear" },
       on: { click: () => { clearSelectionRegion(selection.mapId); } },
+    }),
+  );
+
+  // 구조물로 저장 — 고른 구획을 이 맵의 타일셋 킷으로 학습시킨다(팔레트 스탬프·AI 시공 공용).
+  bar.append(
+    el("button", {
+      class: "selection-action-chip",
+      text: "구조물로 저장",
+      attrs: { type: "button", title: "선택 영역을 이 맵 타일셋의 구조물 킷으로 저장" },
+      dataset: { testid: "selection-chip-save-structure" },
+      on: { click: () => { saveSelectionAsStructureKit(selection); } },
     }),
   );
 

@@ -2,9 +2,13 @@
 // [등록] 경로 — 감지 패턴을 tileset.structureKits 에 저장한다(스토어 접점만 이 파일에).
 // 순수 변환(패턴↔킷↔스탬프)은 structureKitModel.ts 참조.
 
-import { structureKitSignature } from "@/editor/harnessSuggestion/structureKitModel";
+import {
+  structureKitFromMapRegion,
+  structureKitSignature,
+  type MapRegion,
+} from "@/editor/harnessSuggestion/structureKitModel";
 import { store } from "@/project/store";
-import type { StructureKitDef, TilesetId } from "@/project/types";
+import type { MapId, StructureKitDef, TilesetId } from "@/project/types";
 import { randomUuid } from "@/util/id";
 
 /** 킷을 프로젝트 타일셋에 저장한다. 같은 서명이 이미 있으면 기존 킷을 돌려준다. */
@@ -19,6 +23,15 @@ export function registerStructureKit(tilesetId: TilesetId, kit: StructureKitDef)
     tileset.structureKits = [...(tileset.structureKits ?? []), structuredClone(stored)];
   });
   return stored;
+}
+
+/** 칩 [구조물로 저장] — 지금 선택한 구획을 그 맵의 타일셋에만 등록한다. 맵이 없으면 null. */
+export function saveSelectionAsStructureKit(
+  selection: MapRegion & { readonly mapId: MapId },
+): StructureKitDef | null {
+  const map = store.getCurrent().maps[selection.mapId];
+  if (!map) return null;
+  return registerStructureKit(map.tilesetId, structureKitFromMapRegion(map, selection));
 }
 
 /** DB 관리: 킷 이름 변경. */
