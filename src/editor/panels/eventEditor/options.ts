@@ -89,6 +89,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "gameOver", label: "게임 오버" },
   { value: "ending", label: "엔딩" },
   { value: "returnToTitle", label: "타이틀로 돌아가기" },
+  { value: "openSaveMenu", label: "저장 메뉴 열기" },
   { value: "wait", label: "대기" },
   { value: "setFlag", label: "기억 설정" },
   { value: "setSelfSwitch", label: "이 이벤트 기억 설정" },

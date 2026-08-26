@@ -542,7 +542,50 @@ describe("command edit modal — image-rich preview", () => {
         { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },
         { kind: "fork", condition: { kind: "switch", switchId: "a", value: false }, then: [] },
       ),
-    ).toBe(false);
+      ).toBe(false);
+  });
+
+  it("uses a Korean caption and a save-screen stage for openSaveMenu", () => {
+    const preview = renderWithFakeDom(() => renderCommandPreview({ kind: "openSaveMenu" }));
+    expect(preview.querySelector(".ecp-caption")?.textContent).toBe("저장 메뉴 열기");
+    expect(preview.querySelector(".ecp-stage")).toBeTruthy();
+    expect(preview.classList.contains("ecp-summary-only")).toBe(false);
+  });
+
+  it("renders leftover advanced-dialogue m2 commands as a message stage, not a 0x0 summary", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "m2Command",
+        commandId: "m2-209-advanced-dialogue",
+        fields: { speaker: "미나", body: "숲으로 가자." },
+      }),
+    );
+    expect(findByTestId(preview, "ecp-message-window")).toBeTruthy();
+    expect(preview.querySelector(".ecp-stage")).toBeTruthy();
+    expect(preview.textContent).toContain("미나");
+    expect(preview.textContent).toContain("숲으로 가자");
+    expect(preview.classList.contains("ecp-summary-only")).toBe(false);
+  });
+
+  it("keeps the native text editor's inline stage so the collapsed side panel is not the only preview", () => {
+    const body = renderWithFakeDom(() =>
+      renderCommandBody({ path: [], actions: noopActions, lockKind: true }, { kind: "text", speaker: "촌장", body: "마을에 온 걸 환영하네." }),
+    );
+    expect(body.querySelector(".event-command-text-preview-canvas .ecp-stage")).toBeTruthy();
+    expect(findByTestId(body, "ecp-message-window")).toBeTruthy();
+  });
+
+  it("marks summary-only commands so the preview column can collapse", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "m2Command",
+        commandId: "m2-079-change-menu-access",
+        fields: {},
+      }),
+    );
+    expect(preview.classList.contains("ecp-summary-only")).toBe(true);
+    expect(preview.querySelector(".ecp-summary-card")).toBeTruthy();
+    expect(preview.querySelector(".ecp-stage")).toBeNull();
   });
 });
 

@@ -1,0 +1,239 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/USER/Downloads/rpg-zzu-system-tools-ia[39m
+
+ [31m❯[39m test/m2PickerPage4.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m10 failed[39m[2m)[22m[33m 4235[2mms[22m[39m
+[31m   [31m×[31m picker page 4 is system/tools only[2m > [22mleaves no dialogue, flow, battle-only, or presentation group on page 4[39m[32m 17[2mms[22m[39m
+[31m     → expected [ 'm2-008-control-timer:조건/흐름', …(40) ] to deeply equal [][39m
+[31m   [31m×[31m picker page 4 is system/tools only[2m > [22mroutes labels, loops, timers, and end-event to the page 1 flow tab[39m[32m 3[2mms[22m[39m
+[31m     → expected 4 to be 1 // Object.is equality[39m
+[31m   [31m×[31m picker page 4 is system/tools only[2m > [22mroutes battle-only rows 98-108 to the page 2 battle tab[39m[32m 1[2mms[22m[39m
+[31m     → expected 4 to be 2 // Object.is equality[39m
+[31m   [31m×[31m picker page 4 is system/tools only[2m > [22mroutes camera, screen effect, cutscene, and movie to the page 3 presentation tab[39m[32m 1[2mms[22m[39m
+[31m     → expected 4 to be 3 // Object.is equality[39m
+   [32m✓[39m picker page 4 is system/tools only[2m > [22mkeeps save, menu, system media, shutdown, tooling, and teleport flags on page 4[32m 1[2mms[22m[39m
+[31m   [31m×[31m picker page 4 is system/tools only[2m > [22mrefuses to default unclassified rows onto page 4[39m[32m 5[2mms[22m[39m
+[31m     → expected [Function] to throw an error[39m
+[31m   [31m×[31m picker page 4 is system/tools only[2m > [22mderives system, compatibility, and time family pages without a system dumping ground[39m[32m 1[2mms[22m[39m
+[31m     → expected 4 to be 1 // Object.is equality[39m
+[31m   [31m×[31m picker tab grid hides informational rows[2m > [22mshows only selectable commands on every tab grid[39m[33m 4202[2mms[22m[39m
+[31m     → eventCommandPickerTabEntries is not a function[39m
+[31m   [31m×[31m picker tab grid hides informational rows[2m > [22mkeeps informational rows searchable with an alternate-route hint[39m[32m 1[2mms[22m[39m
+[31m     → eventCommandPickerSearchEntries is not a function[39m
+[31m   [31m×[31m picker tab grid hides informational rows[2m > [22mshows the checkpoint and ending labels at most once on the page 4 grid[39m[32m 1[2mms[22m[39m
+[31m     → eventCommandPickerTabEntries is not a function[39m
+[31m   [31m×[31m picker tab grid hides informational rows[2m > [22mgroups the page 4 grid under system and tooling headings only[39m[32m 0[2mms[22m[39m
+[31m     → eventCommandPickerTabEntries is not a function[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 10 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker page 4 is system/tools only[2m > [22mleaves no dialogue, flow, battle-only, or presentation group on page 4
+[31m[1mAssertionError[22m: expected [ 'm2-008-control-timer:조건/흐름', …(40) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "m2-008-control-timer:조건/흐름",[39m
+[31m+   "m2-026-change-vehicle-graphic:맵/이동",[39m
+[31m+   "m2-027-change-system-bgm:소리",[39m
+[31m+   "m2-028-change-system-se:소리",[39m
+[31m+   "m2-030-change-screen-transition:화면/연출",[39m
+[31m+   "m2-034-name-input-processing:대화/입력",[39m
+[31m+   "m2-063-memorize-current-bgm:소리",[39m
+[31m+   "m2-064-play-memorized-bgm:소리",[39m
+[31m+   "m2-066-play-movie:화면/연출",[39m
+[31m+   "m2-074-set-escape-location:맵/이동",[39m
+[31m+   "m2-078-open-menu-screen:화면/연출",[39m
+[31m+   "m2-081-label:조건/흐름",[39m
+[31m+   "m2-082-jump-to-label:조건/흐름",[39m
+[31m+   "m2-083-loop:조건/흐름",[39m
+[31m+   "m2-084-break-loop:조건/흐름",[39m
+[31m+   "m2-085-end-event-processing:조건/흐름",[39m
+[31m+   "m2-087-call-event:맵/이동",[39m
+[31m+   "m2-090-return-to-title-screen:화면/연출",[39m
+[31m+   "m2-098-change-enemy-hp:배우/전투",[39m
+[31m+   "m2-099-change-enemy-mp:배우/전투",[39m
+[31m+   "m2-100-change-enemy-state:배우/전투",[39m
+[31m+   "m2-101-enemy-encounter:전투 전용",[39m
+[31m+   "m2-102-change-battleback:전투 전용",[39m
+[31m+   "m2-104-battle-events:전투 전용",[39m
+[31m+   "m2-105-abort-battle:전투 전용",[39m
+[31m+   "m2-106-call-common-event:전투 전용",[39m
+[31m+   "m2-107-force-escape:전투 전용",[39m
+[31m+   "m2-108-action-times:전투 전용",[39m
+[31m+   "m2-201-camera-control:화면/연출",[39m
+[31m+   "m2-202-screen-effect:화면/연출",[39m
+[31m+   "m2-203-spawn-event:맵/이동",[39m
+[31m+   "m2-204-remove-event:맵/이동",[39m
+[31m+   "m2-205-pathfind-move:맵/이동",[39m
+[31m+   "m2-206-wait-until:조건/흐름",[39m
+[31m+   "m2-207-region-trigger:맵/이동",[39m
+[31m+   "m2-208-quest-objective:보상/상점",[39m
+[31m+   "m2-209-advanced-dialogue:대화/입력",[39m
+[31m+   "m2-210-sound-layer:소리",[39m
+[31m+   "m2-211-weighted-branch:조건/흐름",[39m
+[31m+   "m2-212-cutscene-control:화면/연출",[39m
+[31m+   "m2-213-checkpoint-save:보상/상점",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m31:23[22m[39m
+    [90m 29| [39m      [33m.[39m[34mmap[39m((entry) [33m=>[39m [32m`[39m[36m${[39mentry[33m.[39mid[36m}[39m[32m:[39m[36m${[39mentry[33m.[39mpickerGroup[36m}[39m[32m`[39m)[33m;[39m
+    [90m 30| [39m
+    [90m 31| [39m    [34mexpect[39m(leftovers)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 32| [39m  })[33m;[39m
+    [90m 33| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker page 4 is system/tools only[2m > [22mroutes labels, loops, timers, and end-event to the page 1 flow tab
+[31m[1mAssertionError[22m: expected 4 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 4[39m
+
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m46:29[22m[39m
+    [90m 44| [39m      [32m"Weighted Branch"[39m[33m,[39m
+    [90m 45| [39m    ]) {
+    [90m 46| [39m      [34mexpect[39m([34mpageOf[39m(title))[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 47| [39m    }
+    [90m 48| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker page 4 is system/tools only[2m > [22mroutes battle-only rows 98-108 to the page 2 battle tab
+[31m[1mAssertionError[22m: expected 4 to be 2 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 4[39m
+
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m52:43[22m[39m
+    [90m 50| [39m  [34mit[39m([32m"routes battle-only rows 98-108 to the page 2 battle tab"[39m[33m,[39m () [33m=>[39m {
+    [90m 51| [39m    for (const row of PDF_COMMAND_ROWS.filter((entry) => entry.index >…
+    [90m 52| [39m      [34mexpect[39m([34mpickerPageForM2Command[39m(row))[33m.[39m[34mtoBe[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                                          [31m^[39m
+    [90m 53| [39m    }
+    [90m 54| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker page 4 is system/tools only[2m > [22mroutes camera, screen effect, cutscene, and movie to the page 3 presentation tab
+[31m[1mAssertionError[22m: expected 4 to be 3 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 3[39m
+[31m+ 4[39m
+
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m58:29[22m[39m
+    [90m 56| [39m  it("routes camera, screen effect, cutscene, and movie to the page 3 …
+    [90m 57| [39m    for (const title of ["Camera Control", "Screen Effect", "Cutscene …
+    [90m 58| [39m      [34mexpect[39m([34mpageOf[39m(title))[33m.[39m[34mtoBe[39m([34m3[39m)[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 59| [39m    }
+    [90m 60| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker page 4 is system/tools only[2m > [22mrefuses to default unclassified rows onto page 4
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m97:7[22m[39m
+    [90m 95| [39m        sourcePages[33m:[39m [32m"none"[39m[33m,[39m
+    [90m 96| [39m      })
+    [90m 97| [39m    )[33m.[39m[34mtoThrow[39m([36m/Totally Unclassified Command/u[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 98| [39m  })[33m;[39m
+    [90m 99| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker page 4 is system/tools only[2m > [22mderives system, compatibility, and time family pages without a system dumping ground
+[31m[1mAssertionError[22m: expected 4 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 4[39m
+
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m103:57[22m[39m
+    [90m101| [39m    [34mexpect[39m([34mcommandPresentationDescriptor[39m([32m"gameOver"[39m)[33m.[39mpage)[33m.[39m[34mtoBe[39m([34m4[39m)[33m;[39m
+    [90m102| [39m    [34mexpect[39m([34mcommandPresentationDescriptor[39m([32m"setFlag"[39m)[33m.[39mpage)[33m.[39m[34mtoBe[39m([34m4[39m)[33m;[39m
+    [90m103| [39m    [34mexpect[39m([34mcommandPresentationDescriptor[39m([32m"timer"[39m)[33m.[39mpage)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                        [31m^[39m
+    [90m104| [39m    [34mexpect[39m([34mcommandPresentationDescriptor[39m([32m"setTime"[39m)[33m.[39mpage)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m105| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker tab grid hides informational rows[2m > [22mshows only selectable commands on every tab grid
+[31m[1mTypeError[22m: eventCommandPickerTabEntries is not a function[39m
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m113:29[22m[39m
+    [90m111| [39m
+    [90m112| [39m    [35mfor[39m ([35mconst[39m page [35mof[39m [[34m1[39m[33m,[39m [34m2[39m[33m,[39m [34m3[39m[33m,[39m [34m4[39m] [35mas[39m [35mconst[39m) {
+    [90m113| [39m      [35mconst[39m informational [33m=[39m [34meventCommandPickerTabEntries[39m(page)
+    [90m   | [39m                            [31m^[39m
+    [90m114| [39m        [33m.[39m[34mfilter[39m((entry) [33m=>[39m [33m![39mentry[33m.[39mselectable)
+    [90m115| [39m        [33m.[39m[34mmap[39m((entry) [33m=>[39m entry[33m.[39mcommandId)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker tab grid hides informational rows[2m > [22mkeeps informational rows searchable with an alternate-route hint
+[31m[1mTypeError[22m: eventCommandPickerSearchEntries is not a function[39m
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m123:28[22m[39m
+    [90m121| [39m  it("keeps informational rows searchable with an alternate-route hint…
+    [90m122| [39m    [35mconst[39m { eventCommandPickerSearchEntries } [33m=[39m [35mawait[39m [34mpickerModule[39m()[33m;[39m
+    [90m123| [39m    const checkpointInfo = eventCommandPickerSearchEntries().find((ent…
+    [90m   | [39m                           [31m^[39m
+    [90m124| [39m
+    [90m125| [39m    [34mexpect[39m(checkpointInfo)[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker tab grid hides informational rows[2m > [22mshows the checkpoint and ending labels at most once on the page 4 grid
+[31m[1mTypeError[22m: eventCommandPickerTabEntries is not a function[39m
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m132:20[22m[39m
+    [90m130| [39m  it("shows the checkpoint and ending labels at most once on the page …
+    [90m131| [39m    [35mconst[39m { eventCommandPickerTabEntries } [33m=[39m [35mawait[39m [34mpickerModule[39m()[33m;[39m
+    [90m132| [39m    const labels = eventCommandPickerTabEntries(4).map((entry) => norm…
+    [90m   | [39m                   [31m^[39m
+    [90m133| [39m
+    [90m134| [39m    expect(labels.filter((label) => label === "체크포인트 저장")).toHaveLengt…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m test/m2PickerPage4.test.ts[2m > [22mpicker tab grid hides informational rows[2m > [22mgroups the page 4 grid under system and tooling headings only
+[31m[1mTypeError[22m: eventCommandPickerTabEntries is not a function[39m
+[36m [2m❯[22m test/m2PickerPage4.test.ts:[2m141:32[22m[39m
+    [90m139| [39m  it("groups the page 4 grid under system and tooling headings only", …
+    [90m140| [39m    [35mconst[39m { eventCommandPickerTabEntries } [33m=[39m [35mawait[39m [34mpickerModule[39m()[33m;[39m
+    [90m141| [39m    const groups = [...new Set(eventCommandPickerTabEntries(4).map((en…
+    [90m   | [39m                               [31m^[39m
+    [90m142| [39m
+    [90m143| [39m    expect(groups.filter((group) => !SYSTEM_TOOL_GROUPS.includes(group…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m10 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 22:12:15
+[2m   Duration [22m 5.39s[2m (transform 2.71s, setup 0ms, collect 240ms, tests 4.24s, environment 0ms, prepare 133ms)[22m
+
+exit=1

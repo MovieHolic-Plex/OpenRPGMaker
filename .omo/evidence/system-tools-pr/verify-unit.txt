@@ -1,0 +1,14 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/USER/Downloads/rpg-zzu-system-tools-ia[39m
+
+ [32m✓[39m test/m2PickerPage4.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 4187[2mms[22m[39m
+   [33m[2m✓[22m[39m picker tab grid hides informational rows[2m > [22mshows only selectable commands on every tab grid [33m 4175[2mms[22m[39m
+ [32m✓[39m test/commandPresentation.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m test/commandEditModalPreview.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1897[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m40 passed[39m[22m[90m (40)[39m
+[2m   Start at [22m 23:12:27
+[2m   Duration [22m 9.69s[2m (transform 4.58s, setup 0ms, collect 11.61s, tests 6.09s, environment 1ms, prepare 451ms)[22m
+
+EXIT=0
