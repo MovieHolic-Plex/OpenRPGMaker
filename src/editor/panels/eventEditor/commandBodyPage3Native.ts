@@ -11,6 +11,12 @@ import {
   type SegmentOption,
 } from "./recordPicker";
 import { selectedOptionValue } from "./dom";
+import {
+  bindShowAnimationPlayback,
+  renderShowAnimationFallback,
+  renderShowAnimationFrame,
+  showAnimationPlaybackSource,
+} from "./showAnimationPlayback";
 import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
 import type { CommandEditContext } from "./types";
 
@@ -682,9 +688,32 @@ export function showAnimationBody(
     testid: "show-animation-animationId-select",
     subtitleOf: (record) => record.scope === "allTargets" ? "여러 대상" : record.scope === "screen" ? "화면 전체" : "대상 하나",
   });
+  // 애니메이션 표시면은 하나다: 고르는 곳과 재생되는 곳이 같은 표면 안에 있다.
+  // (예전에는 intentCard "애니메이션 표시" + fieldBlock "애니메이션" + 가짜 ✦ 스테이지로
+  //  같은 정체성이 세 번 나뉘어 있었다.)
   const preview = el("div", {
-    class: "actor-m2-preview page3-command-preview",
+    class: "actor-m2-preview-body page3-anim-preview",
     dataset: { testid: "show-animation-preview" },
+  });
+  const playHost = el("div", { class: "page3-anim-play-host" });
+  const surface = el("section", {
+    class: "actor-m2-preview page3-command-preview page3-anim-surface",
+    dataset: { testid: "show-animation-surface" },
+    children: [
+      el("div", {
+        class: "page3-anim-surface-head",
+        children: [
+          el("h4", {
+            class: "page3-anim-surface-title",
+            text: "애니메이션",
+            dataset: { testid: "show-animation-surface-title" },
+          }),
+          playHost,
+        ],
+      }),
+      animation.root,
+      preview,
+    ],
   });
   const eventField = fieldBlock("어느 이벤트", eventId, "show-animation-event-field");
   const posField = fieldBlock(
@@ -708,7 +737,57 @@ export function showAnimationBody(
     posField.hidden = target.select.value !== "position";
   };
 
-  const renderPreview = () => {
+  // 재생은 선택한 애니메이션이 바뀌었을 때만 다시 시작한다 — 좌표를 한 글자 칠 때마다 리셋되면 볼 수 없다.
+  let stagedAnimationId: string | undefined;
+  const stageHost = el("div", { class: "page3-anim-stage-host" });
+  const caption = el("p", { class: "actor-m2-preview-line" });
+  const note = el("p", { class: "actor-m2-preview-note" });
+  preview.append(stageHost, caption, note);
+
+  const renderStage = () => {
+    const anim = project.database.battleAnimations.find((entry) => entry.id === animation.select.value);
+    const stage = el("div", {
+      class: "page3-preview-stage page3-preview-animation page3-anim-stage",
+      dataset: { testid: "show-animation-preview-stage" },
+    });
+    const source = showAnimationPlaybackSource(anim, project);
+    if (source) {
+      const cells = el("div", {
+        class: "db-animation-stage-cells page3-anim-cells",
+        dataset: { testid: "show-animation-frame-layer" },
+      });
+      stage.append(el("span", { class: "page3-preview-stage-label", text: "재생" }), cells);
+      renderShowAnimationFrame(cells, source, 0);
+      if (source.frames.length > 1) {
+        const play = el("button", {
+          class: "btn small page3-anim-play",
+          text: "▶ 재생",
+          attrs: { type: "button", "aria-pressed": "false", title: "선택한 애니메이션을 한 번 재생합니다." },
+          dataset: { testid: "show-animation-play" },
+        }) as HTMLButtonElement;
+        playHost.replaceChildren(play);
+        // 열릴 때 1회 자동 재생. 버튼은 그 뒤 다시 켜고 끄는 토글이다.
+        bindShowAnimationPlayback(play, stage, cells, source);
+      } else {
+        // 프레임이 하나면 런타임도 정지 화면이다. 재생 버튼을 주면 거짓말이 된다.
+        playHost.replaceChildren();
+        stage.append(
+          el("span", {
+            class: "page3-anim-stage-note",
+            text: "프레임 1장 · 런타임도 정지 화면",
+            dataset: { testid: "show-animation-static-frame" },
+          })
+        );
+      }
+    } else {
+      playHost.replaceChildren();
+      renderShowAnimationFallback(stage, anim?.name ?? "없는 애니메이션");
+    }
+    stageHost.replaceChildren(stage);
+    stagedAnimationId = animation.select.value;
+  };
+
+  const renderCaption = () => {
     const anim = project.database.battleAnimations.find((entry) => entry.id === animation.select.value);
     const where =
       target.select.value === "player"
@@ -716,22 +795,14 @@ export function showAnimationBody(
         : target.select.value === "event"
           ? `이벤트 ${eventId.value.trim() || "(현재/미선택)"}`
           : `(${parseInt(x.value, 10) || 0}, ${parseInt(y.value, 10) || 0})`;
-    const stage = el("div", {
-      class: "page3-preview-stage page3-preview-animation",
-      dataset: { testid: "show-animation-preview-stage" },
-    });
-    stage.append(el("div", { class: "page3-preview-animation-burst", text: "✦" }));
-    preview.replaceChildren(
-      stage,
-      el("p", {
-        class: "actor-m2-preview-line",
-        text: `${anim?.name ?? (animation.select.value || "(선택 없음)")} · ${where}`,
-      }),
-      el("p", {
-        class: "actor-m2-preview-note",
-        text: wait.select.value === "true" ? "재생이 끝날 때까지 대기" : "대기 없이 다음 명령 진행",
-      })
-    );
+    caption.textContent = `${anim?.name ?? (animation.select.value || "(선택 없음)")} · ${where}`;
+    note.textContent =
+      wait.select.value === "true" ? "재생이 끝날 때까지 대기" : "대기 없이 다음 명령 진행";
+  };
+
+  const renderPreview = () => {
+    if (stagedAnimationId !== animation.select.value) renderStage();
+    renderCaption();
   };
 
   for (const control of [eventId, x, y]) {
@@ -748,11 +819,6 @@ export function showAnimationBody(
   syncVisibility();
   renderPreview();
   wrap.append(
-    intentCard(
-      "애니메이션 표시",
-      "맵 위 주인공이나 이벤트, 칸에 연출을 보여 줍니다.",
-      "show-animation-intent"
-    ),
     el("div", {
       class: "actor-m2-layout page3-command-layout",
       children: [
@@ -762,11 +828,10 @@ export function showAnimationBody(
             fieldBlock("어디에", target.root),
             eventField,
             posField,
-            fieldBlock("애니메이션", animation.root),
             fieldBlock("완료 대기", wait.root),
           ],
         }),
-        preview,
+        surface,
       ],
     })
   );

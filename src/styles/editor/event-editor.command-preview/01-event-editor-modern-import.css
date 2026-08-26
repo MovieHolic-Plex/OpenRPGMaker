@@ -66,6 +66,16 @@
   display: none;
 }
 
+/* 애니메이션 표시: 본문이 진짜 재생 표시면을 직접 갖는다.
+   오른쪽 범용 프리뷰까지 다시 그리면 같은 연출이 한 모달에 둘이 된다. */
+.event-command-edit-columns:has([data-testid="show-animation-command-body"]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-columns:has([data-testid="show-animation-command-body"]) > .event-command-preview-panel {
+  display: none;
+}
+
 .event-command-edit-columns:has(.event-command-frame-editor) {
   grid-template-columns: minmax(0, 1fr);
 }

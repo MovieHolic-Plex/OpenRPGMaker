@@ -39,6 +39,11 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       const previewSimState: PreviewSimState = createPreviewSimState();
       const renderPreview = () => {
         clearChildren(previewHost);
+        // 새 애니메이션 표시면은 편집 본문이 재생기를 직접 갖는다. 여기서 한 번 더 그리면
+        // 같은 연출이 한 모달에 둘 생긴다 — 표시면은 하나만 둔다.
+        const ownsPreview = stagedCommand.kind === "showAnimation";
+        previewHost.hidden = ownsPreview;
+        if (ownsPreview) return;
         previewHost.append(renderCommandPreview(stagedCommand, { face: request.previewFace, simState: previewSimState }));
       };
       const renderEditor = () => {

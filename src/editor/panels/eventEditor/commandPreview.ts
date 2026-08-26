@@ -16,6 +16,12 @@ import { previewAudio } from "./previewAudio";
 import { previewForkFlow } from "./previewForkFlow";
 import { previewMoveRoute } from "./previewMoveRoute";
 import { previewPicture } from "./previewPicture";
+import {
+  playShowAnimationOnce,
+  renderShowAnimationFallback,
+  renderShowAnimationFrame,
+  showAnimationPlaybackSource,
+} from "./showAnimationPlayback";
 import { graphicForPatternPreview } from "./commandBodyAdvanced";
 import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -1249,12 +1255,24 @@ function animationStage(cmd: Extract<Command, { kind: "showAnimation" }>): HTMLE
     class: "ecp-stage ecp-animation-stage",
     dataset: { testid: "ecp-animation-stage" },
   });
-  const screen = el("div", { class: "ecp-fx-screen ecp-animation-screen" });
-  screen.append(el("div", { class: "ecp-anim-ring", attrs: { "aria-hidden": "true" } }));
-  screen.append(el("div", { class: "ecp-anim-ring ecp-anim-ring-inner", attrs: { "aria-hidden": "true" } }));
-  screen.append(el("div", { class: "ecp-fx-label", text: cmd.animationId ? "연출" : "연출 없음" }));
+  const screen = el("div", { class: "ecp-fx-screen ecp-animation-screen page3-anim-stage" });
+  // 이 카드도 편집 본문 표시면과 같은 재생기를 쓴다 — 가짜 링 연출은 없다.
+  const project = store.getCurrent();
+  const record = project.database.battleAnimations.find((entry) => entry.id === cmd.animationId);
+  const source = showAnimationPlaybackSource(record, project);
+  if (source) {
+    const cells = el("div", {
+      class: "db-animation-stage-cells page3-anim-cells",
+      dataset: { testid: "ecp-animation-frame-layer" },
+    });
+    screen.append(cells);
+    if (source.frames.length > 1) playShowAnimationOnce(screen, cells, source);
+    else renderShowAnimationFrame(cells, source, 0);
+  } else {
+    renderShowAnimationFallback(screen, record?.name ?? "연출 없음");
+  }
   stage.append(screen);
-  const meta = [animationTargetPreview(cmd.target)];
+  const meta = [record?.name ?? (cmd.animationId || "연출 없음"), animationTargetPreview(cmd.target)];
   if (cmd.wait) meta.push("대기");
   stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
   return stage;
