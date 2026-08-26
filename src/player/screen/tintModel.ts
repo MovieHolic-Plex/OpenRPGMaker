@@ -3,7 +3,7 @@
 // rgba 로 해석하고, 지속시간 트윈을 위해 두 색 사이를 보간한다.
 // DOM(playSceneScreenEffects)은 이 결과를 배경색으로 적용만 한다.
 
-import { screenColorToRgb } from "@/player/interpreter/commandCatalog";
+import { isScreenColorName, screenColorToRgb } from "@/player/interpreter/commandCatalog";
 
 export type Rgba = {
   readonly r: number;
@@ -82,4 +82,17 @@ export function rgbaToCss(color: Rgba): string {
 
 export function isVisibleTint(color: Rgba): boolean {
   return color.a > 0.001;
+}
+
+// 색 문자열을 parseTintColor 가 **알아봤는지** 여부. 파싱 자신은 실패해도 흰색으로
+// 폴백하므로(조용한 사고) 오류를 표시하려면 이 질의가 새로 필요하다.
+// 에디터 입력 검증(aria-invalid)과 런타임 해석이 같은 사전을 보도록 여기에 둔다.
+export function isRecognizedTintValue(tint: string | undefined): boolean {
+  if (tint === undefined) return true;
+  const trimmed = tint.trim();
+  if (trimmed.length === 0 || trimmed === "neutral" || trimmed === "none") return true;
+  if (isScreenColorName(trimmed)) return true;
+  if (/^#?[0-9a-f]{6}$/i.test(trimmed)) return true;
+  const parts = trimmed.split(",").map((part) => part.trim());
+  return parts.length >= 3 && parts.every((part) => /^-?\d+(\.\d+)?$/.test(part));
 }
