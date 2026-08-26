@@ -160,6 +160,7 @@ export function pickerPageForM2Command(row: M2PdfCommandRow): M2CommandPickerPag
   if (QUICK_AUTHORING_PAGE_TITLES.has(row.title)) return 1;
   if (ACTOR_AND_BATTLE_PAGE_TITLES.has(row.title)) return 2;
   if (DETAILED_MAP_PRESENTATION_PAGE_TITLES.has(row.title)) return 3;
+  if (isScreenPresentationCommand(row.title)) return 3;
   if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return 4;
   throw new Error(`Unclassified event command picker page: ${row.index} ${row.title}`);
 }
