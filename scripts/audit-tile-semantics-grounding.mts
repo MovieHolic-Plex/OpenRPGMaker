@@ -35,7 +35,7 @@ const SHEETS: Record<string, string> = {
 };
 
 /** 통행 가능한 지면으로 읽히는 role — 투명 소품이 여기 오면 오분류다. */
-const GROUND_ROLES = new Set(["floor", "terrain", "path", "sand", "snow", "ice", "grass", "road"]);
+const GROUND_ROLES = new Set(["floor", "terrain", "path", "sand", "snow", "ice", "grass", "road", "stairs", "bridge"]);
 
 /** 라벨에 쓰이는 색상어 -> 허용 색조. hue 는 0-360, sat/val 은 0-1. */
 interface ColorRule {
