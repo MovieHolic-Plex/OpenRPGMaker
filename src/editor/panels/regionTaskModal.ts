@@ -185,9 +185,22 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: "region-task-title-row",
     children: [el("span", { class: "region-task-title", text: "영역 작업" })],
   });
+  // 단계 세그즜트 — 지시 → 생성 → 검토. 어떤 단계가 활성이냐는 CSS 가 data-stage 로 정한다
+  // — JS 는 stage 만 바꾼다는 이 파일의 기존 원칙을 그대로 따른다.
+  const stageSegments = el("div", {
+    class: "region-task-stage-steps",
+    dataset: { testid: "region-task-stage-steps" },
+    children: (["compose", "running", "review"] as const).map((step, index) =>
+      el("span", {
+        class: "region-task-stage-step",
+        dataset: { stageStep: step },
+        text: ["지시", "생성", "검토"][index],
+      }),
+    ),
+  });
   const header = el("div", {
     class: "region-task-header",
-    children: [titleRow, chip, statsChip, closeButton],
+    children: [titleRow, stageSegments, chip, statsChip, closeButton],
   });
 
   // E: 컨텍스트 인식 동적 추천 — 영역 주변 인접 타일 분석 기반. 정적 로테이션은 폴백.
@@ -1554,9 +1567,22 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
 
   // ① 무엇을 만들지 — 추천 칩을 입력창 위에 둔다(먼저 고르고, 아니면 직접 쓴다).
+  // 실내 초안은 매번 쓰는 경로가 아니다 — select 2개 + 버튼을 종일 한 줄에 놓지 않고 접어 둔다.
+  // 접힌 상태여도 querySelector 로 찾아 click 하는 기존 경로(하네스·테스트)는 그대로 동작한다.
+  const directDisclosure = el("details", {
+    class: "region-task-direct-disclosure",
+    dataset: { testid: "region-task-direct-disclosure" },
+    children: [
+      el("summary", { class: "region-task-direct-summary", text: "AI 없이 실내 초안" }),
+      el("div", {
+        class: "region-task-direct-body",
+        children: [directPresetSelect, directModifierSelect, directRoomButton],
+      }),
+    ],
+  });
   const actions = el("div", {
     class: "region-task-actions",
-    children: [directPresetSelect, directModifierSelect, directRoomButton, runButton, cancelButton],
+    children: [directDisclosure, runButton, cancelButton],
   });
   const promptSection = el("div", {
     class: "region-task-prompt",
