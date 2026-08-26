@@ -1,0 +1,1390 @@
+[
+ {
+  "index": 0,
+  "label": "연못 상단 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 상단",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 1,
+  "label": "연못 상단 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 상단",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 2,
+  "label": "연못 상단 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 상단",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 3,
+  "label": "석벽 수로 상단 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 상단",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 4,
+  "label": "석벽 수로 상단 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 상단",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 5,
+  "label": "석벽 수로 상단 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 상단",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 6,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 7,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 8,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 9,
+  "label": "얼음 바닥 물구멍",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "얼음 바닥 물구멍",
+   "ice",
+   "얼음",
+   "물구멍",
+   "water"
+  ]
+ },
+ {
+  "index": 10,
+  "label": "희고 깨끗한 얼음",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "희고 깨끗한 얼음",
+   "ice",
+   "얼음",
+   "백색"
+  ]
+ },
+ {
+  "index": 11,
+  "label": "눈밭 위 얼음 타일",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "얼음 타일 모서리",
+   "빙판"
+  ]
+ },
+ {
+  "index": 12,
+  "label": "용암 지대 좌상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 13,
+  "label": "용암 지대 상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 14,
+  "label": "용암 지대 우상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 15,
+  "label": "흙 지형",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "흙 바닥"
+  ]
+ },
+ {
+  "index": 16,
+  "label": "용암 대각선 경계 좌상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "흙과 용암 경계",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 17,
+  "label": "용암 대각선 경계 우상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "흙과 용암 경계",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 18,
+  "label": "짙은 회색 돌바닥 상단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "짙은 회색 돌바닥 상단",
+   "돌",
+   "바닥",
+   "stone",
+   "상단"
+  ]
+ },
+ {
+  "index": 19,
+  "label": "짙은 회색 돌바닥 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "짙은 회색 돌바닥 중앙",
+   "돌",
+   "바닥",
+   "stone",
+   "중앙"
+  ]
+ },
+ {
+  "index": 20,
+  "label": "문양이 새겨진 어두운 석벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "문양이 새겨진 석벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 21,
+  "label": "회청색 돌바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회청색 돌바닥",
+   "돌",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 22,
+  "label": "청회색 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "청회색 석재 바닥",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 23,
+  "label": "푸른빛 회색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "푸른빛 회색 바닥",
+   "회색",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 24,
+  "label": "석판 묘비 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석비 좌측",
+   "석판 묘비",
+   "석비"
+  ]
+ },
+ {
+  "index": 25,
+  "label": "석판 묘비 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석비 중앙",
+   "석판 묘비",
+   "석비"
+  ]
+ },
+ {
+  "index": 26,
+  "label": "석판 묘비 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석비 우측",
+   "석판 묘비",
+   "석비"
+  ]
+ },
+ {
+  "index": 27,
+  "label": "금빛 장식 소품",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "금빛 장식 소품",
+   "금빛",
+   "장식",
+   "gold",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 28,
+  "label": "금빛 조형 소품",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "금빛 조형 소품",
+   "금빛",
+   "조형",
+   "gold",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 29,
+  "label": "금빛 휘날리는 장식",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "금빛 휘날리는 장식",
+   "금빛",
+   "휘날림",
+   "gold",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 30,
+  "label": "연못 좌측 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 좌측",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 31,
+  "label": "연못 중앙 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 좌측",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 32,
+  "label": "연못 우측 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 좌측",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 33,
+  "label": "석벽 수로 세로길 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 좌측",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 34,
+  "label": "석벽 수로 세로길 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 좌측",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 35,
+  "label": "석벽 수로 세로길 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 좌측",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 36,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 37,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 38,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 39,
+  "label": "얼음판 좌상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 좌상단",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 40,
+  "label": "얼음판 상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 상단",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 41,
+  "label": "얼음판 우상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 우상단",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 42,
+  "label": "용암 지대 좌측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대 좌측",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 43,
+  "label": "빛나는 용암 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대 중앙",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 44,
+  "label": "용암 지대 우측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대 우측",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 45,
+  "label": "어두운 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 46,
+  "label": "흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 47,
+  "label": "흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 48,
+  "label": "어두운 석벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "검푸른 석벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 49,
+  "label": "어두운 석벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "검푸른 석벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 50,
+  "label": "어두운 석벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "검푸른 석벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 51,
+  "label": "얼룩진 회청색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "얼룩진 회청색 바닥",
+   "회색",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 52,
+  "label": "얼룩진 청회색 돌바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "얼룩진 청회색 돌바닥",
+   "돌",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 53,
+  "label": "반점 낀 회청색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "반점 낀 회청색 바닥",
+   "회색",
+   "반점",
+   "바닥"
+  ]
+ },
+ {
+  "index": 54,
+  "label": "원형 레일 좌상단",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "원형 철로 좌상단",
+   "원형 레일",
+   "원형 철로"
+  ]
+ },
+ {
+  "index": 55,
+  "label": "원형 레일 우상단",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "원형 철로 우상단",
+   "원형 레일",
+   "원형 철로"
+  ]
+ },
+ {
+  "index": 56,
+  "label": "광산 레일 가로 분기",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 57,
+  "label": "광산 레일 세로 교차로",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "교차 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 58,
+  "label": "광산 레일 가로 교차로",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 59,
+  "label": "광산 레일 가로 분기선",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 60,
+  "label": "연못 하단 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 하단",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 61,
+  "label": "연못 하단 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 하단",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 62,
+  "label": "연못 하단 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 하단",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 63,
+  "label": "석벽 수로 가로길 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 하단",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 64,
+  "label": "석벽 수로 가로길 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 하단",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 65,
+  "label": "석벽 수로 가로길 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 하단",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 66,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 67,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 68,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 69,
+  "label": "얼음판 좌측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 좌측",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 70,
+  "label": "얼음판 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 중앙",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 71,
+  "label": "얼음판 우측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 우측",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 72,
+  "label": "용암 지대 좌하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 73,
+  "label": "용암 지대 하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 74,
+  "label": "용암 지대 우하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 75,
+  "label": "악마 얼굴 석조 부조",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "decoration",
+   "석벽의 얼굴 조각"
+  ]
+ },
+ {
+  "index": 76,
+  "label": "용암 대각선 경계 좌하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "흙과 용암 경계",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 77,
+  "label": "용암 대각선 경계 우하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "흙과 용암 경계",
+   "용암 지대"
+  ]
+ },
+ {
+  "index": 78,
+  "label": "짙은 회색 자갈 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 조약돌 바닥"
+  ]
+ },
+ {
+  "index": 79,
+  "label": "분홍빛 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "분홍빛 석재 바닥",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 80,
+  "label": "살구빛 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "살구빛 석재 바닥",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 81,
+  "label": "푸른빛 자갈 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "청회색 돌 바닥"
+  ]
+ },
+ {
+  "index": 82,
+  "label": "황토색 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "황갈색 흙 바닥"
+  ]
+ },
+ {
+  "index": 83,
+  "label": "어두운 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 84,
+  "label": "원형 레일 좌하단",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "원형 철로 좌하단",
+   "원형 레일",
+   "원형 철로"
+  ]
+ },
+ {
+  "index": 85,
+  "label": "원형 레일 우하단",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "원형 철로 우하단",
+   "원형 레일",
+   "원형 철로"
+  ]
+ },
+ {
+  "index": 86,
+  "label": "광산 레일 가로 대각선 분기",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 87,
+  "label": "광산 레일 가로 대각선 분기",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 88,
+  "label": "광산 레일 가로 대각선 분기",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 89,
+  "label": "광산 레일 가로 대각선 분기",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 90,
+  "label": "연못 안쪽 모서리 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 안쪽",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 91,
+  "label": "연못 안쪽 모서리 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 안쪽",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 92,
+  "label": "연못 안쪽 모서리 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물웅덩이 안쪽",
+   "연못",
+   "물웅덩이"
+  ]
+ },
+ {
+  "index": 93,
+  "label": "석벽 수로 안쪽 모서리 프레임1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 안쪽",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 94,
+  "label": "석벽 수로 안쪽 모서리 프레임2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 안쪽",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 95,
+  "label": "석벽 수로 안쪽 모서리 프레임3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "석조 수로 안쪽",
+   "석벽 수로",
+   "석조 수로"
+  ]
+ },
+ {
+  "index": 96,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 97,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 98,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 99,
+  "label": "얼음 바닥 물줄기",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "얼음 바닥 물줄기",
+   "ice",
+   "얼음",
+   "물줄기",
+   "water"
+  ]
+ },
+ {
+  "index": 100,
+  "label": "얼음판 하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 하단",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 101,
+  "label": "얼음판 우하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "빙판 우하단",
+   "얼음판",
+   "빙판"
+  ]
+ },
+ {
+  "index": 102,
+  "label": "흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 103,
+  "label": "흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 104,
+  "label": "흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain"
+  ]
+ },
+ {
+  "index": 105,
+  "label": "붉은 석벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "붉은 벽돌 벽",
+   "붉은 석벽"
+  ]
+ },
+ {
+  "index": 106,
+  "label": "붉은 석벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "붉은 벽돌 벽",
+   "붉은 석벽"
+  ]
+ },
+ {
+  "index": 107,
+  "label": "붉은 석벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "붉은 벽돌 벽",
+   "붉은 석벽"
+  ]
+ },
+ {
+  "index": 108,
+  "label": "분홍빛 미색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "분홍빛 미색 바닥",
+   "미색",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 109,
+  "label": "살구빛 석회 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "살구빛 석회 바닥",
+   "석회",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 110,
+  "label": "보랏빛 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "보랏빛 석재 바닥",
+   "보랏빛",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 111,
+  "label": "밝은 회색 석회 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 회색 석회 바닥",
+   "회색",
+   "석회",
+   "바닥"
+  ]
+ },
+ {
+  "index": 112,
+  "label": "새싹이 돋은 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "풀이 난 흙 바닥"
+  ]
+ },
+ {
+  "index": 113,
+  "label": "새싹이 돋은 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "풀이 난 흙 바닥"
+  ]
+ },
+ {
+  "index": 114,
+  "label": "세로 직선 광산 레일",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "세로 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 115,
+  "label": "가로 광산 레일 상향 굴곡",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 116,
+  "label": "가로 직선 광산 레일",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "가로 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 117,
+  "label": "가로 광산 레일 하향 굴곡",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "분기 철로",
+   "광산 레일",
+   "철로"
+  ]
+ },
+ {
+  "index": 118,
+  "label": "뾰족한 청색 창날",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "뾰족한 청색 창날",
+   "창",
+   "창날",
+   "spear",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 119,
+  "label": "사선으로 솟은 창날",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "사선으로 솟은 창날",
+   "창",
+   "창날",
+   "spear",
+   "판독보류"
+  ]
+ }
+]

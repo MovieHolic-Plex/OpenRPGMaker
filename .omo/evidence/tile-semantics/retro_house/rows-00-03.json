@@ -1,0 +1,1432 @@
+[
+ {
+  "index": 0,
+  "label": "물가 상단 프레임 1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "물",
+   "연못",
+   "잔디 물가 물 오토타일"
+  ]
+ },
+ {
+  "index": 1,
+  "label": "물가 상단 프레임 2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "물",
+   "연못",
+   "잔디 물가 물 오토타일"
+  ]
+ },
+ {
+  "index": 2,
+  "label": "물가 상단 프레임 3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "물",
+   "연못",
+   "잔디 물가 물 오토타일"
+  ]
+ },
+ {
+  "index": 3,
+  "label": "잔잔한 파란 물",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔잔한 파란 물",
+   "water",
+   "호수",
+   "물결"
+  ]
+ },
+ {
+  "index": 4,
+  "label": "잔물결이 인 물",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔물결이 인 물",
+   "water",
+   "파문",
+   "수면"
+  ]
+ },
+ {
+  "index": 5,
+  "label": "굵은 물결 수면",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "굵은 물결 수면",
+   "water",
+   "파도",
+   "물결"
+  ]
+ },
+ {
+  "index": 6,
+  "label": "잔디 위 작은 눈밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈 덮인 잔디",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 7,
+  "label": "고른 연두 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "고른 연두 잔디",
+   "grass",
+   "잔디밭",
+   "초원"
+  ]
+ },
+ {
+  "index": 8,
+  "label": "잔디 위 둥근 눈밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 상단",
+   "눈밭",
+   "눈"
+  ]
+ },
+ {
+  "index": 9,
+  "label": "짙은 녹음 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "짙은 녹음 나무",
+   "tree",
+   "수목",
+   "어두운잎"
+  ]
+ },
+ {
+  "index": 10,
+  "label": "고른 연두 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "고른 연두 잔디",
+   "grass",
+   "초원",
+   "평지"
+  ]
+ },
+ {
+  "index": 11,
+  "label": "빽빽한 어두운 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "빽빽한 어두운 나무",
+   "tree",
+   "밀림",
+   "그늘"
+  ]
+ },
+ {
+  "index": 12,
+  "label": "목조 벽돌벽 상단 좌측 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 벽돌 벽 상단 좌측",
+   "목조 기둥 상단",
+   "목조 보"
+  ]
+ },
+ {
+  "index": 13,
+  "label": "목조 벽돌벽 상단 중앙 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 벽돌 벽 상단 중앙",
+   "목조 보 상단",
+   "목조 보"
+  ]
+ },
+ {
+  "index": 14,
+  "label": "목조 벽돌벽 상단 우측 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 벽돌 벽 상단 우측",
+   "목조 기둥 상단",
+   "목조 보"
+  ]
+ },
+ {
+  "index": 15,
+  "label": "목조 회벽 상단 좌측 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 회벽 상단 좌측",
+   "목조 기둥 상단",
+   "목조 보"
+  ]
+ },
+ {
+  "index": 16,
+  "label": "목조 회벽 상단 중앙 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 회벽 상단 중앙",
+   "목조 보 상단",
+   "목조 보"
+  ]
+ },
+ {
+  "index": 17,
+  "label": "목조 회벽 상단 우측 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 회벽 상단 우측",
+   "목조 기둥 상단",
+   "목조 보"
+  ]
+ },
+ {
+  "index": 18,
+  "label": "왼쪽 잿빛 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 잿빛 석벽",
+   "wall",
+   "석조",
+   "회색"
+  ]
+ },
+ {
+  "index": 19,
+  "label": "가운데 잿빛 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "가운데 잿빛 석벽",
+   "wall",
+   "회색돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 20,
+  "label": "오른쪽 잿빛 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 잿빛 석벽",
+   "wall",
+   "석조",
+   "회색"
+  ]
+ },
+ {
+  "index": 21,
+  "label": "왼쪽 어두운 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 어두운 석벽",
+   "wall",
+   "어두운돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 22,
+  "label": "오른쪽 어두운 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 어두운 석벽",
+   "wall",
+   "짙은벽",
+   "석재"
+  ]
+ },
+ {
+  "index": 23,
+  "label": "가운데 어두운 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "가운데 어두운 석벽",
+   "wall",
+   "어두운돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 24,
+  "label": "원형 돌 우물 상단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 우물 상단 좌측",
+   "우물 상단 좌측",
+   "돌 우물"
+  ]
+ },
+ {
+  "index": 25,
+  "label": "원형 돌 우물 상단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 우물 상단 우측",
+   "우물 상단 우측",
+   "돌 우물"
+  ]
+ },
+ {
+  "index": 26,
+  "label": "석조 화덕 상단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "돌 구덩이",
+   "석조 화덕",
+   "검게 찬 원형 돌 구덩이"
+  ]
+ },
+ {
+  "index": 27,
+  "label": "석조 화덕 상단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "돌 구덩이",
+   "석조 화덕",
+   "검게 찬 원형 돌 구덩이"
+  ]
+ },
+ {
+  "index": 28,
+  "label": "묘비",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "index": 29,
+  "label": "자수정 원석",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "돌 무더기",
+   "바위 더미",
+   "광석 더미"
+  ]
+ },
+ {
+  "index": 30,
+  "label": "잔디 낀 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔디 낀 물가",
+   "water",
+   "물가",
+   "잔디"
+  ]
+ },
+ {
+  "index": 31,
+  "label": "풀섶 낀 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "풀섶 낀 물가",
+   "water",
+   "풀숲",
+   "호숫가"
+  ]
+ },
+ {
+  "index": 32,
+  "label": "잔디 모서리 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔디 모서리 물가",
+   "water",
+   "모서리",
+   "잔디"
+  ]
+ },
+ {
+  "index": 33,
+  "label": "짙은 파란 물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "짙은 파란 물결",
+   "water",
+   "파도",
+   "진청색"
+  ]
+ },
+ {
+  "index": 34,
+  "label": "예리한 물결 수면",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "예리한 물결 수면",
+   "water",
+   "물결",
+   "수면"
+  ]
+ },
+ {
+  "index": 35,
+  "label": "포개진 물결 수면",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "포개진 물결 수면",
+   "water",
+   "파문",
+   "겹물결"
+  ]
+ },
+ {
+  "index": 36,
+  "label": "눈밭 가장자리 좌상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 좌상단",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 37,
+  "label": "흰꽃 낀 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흰꽃 낀 초원",
+   "grass",
+   "꽃밭",
+   "연두"
+  ]
+ },
+ {
+  "index": 38,
+  "label": "눈밭 가장자리 우상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 우상단",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 39,
+  "label": "울창한 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "울창한 초록 나무",
+   "tree",
+   "수목",
+   "잎"
+  ]
+ },
+ {
+  "index": 40,
+  "label": "그늘진 짙은 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "그늘진 짙은 나무",
+   "tree",
+   "어두운잎",
+   "수풀"
+  ]
+ },
+ {
+  "index": 41,
+  "label": "무성한 나무 군락",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "무성한 나무 군락",
+   "tree",
+   "밀림",
+   "숲"
+  ]
+ },
+ {
+  "index": 42,
+  "label": "목조 벽돌벽 중간 좌측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 기둥 석벽 좌측",
+   "목조 벽돌 벽 좌측",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 43,
+  "label": "목조 벽돌벽 중간 벽돌",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "벽돌 벽 중앙",
+   "석조 벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 44,
+  "label": "목조 벽돌벽 중간 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 기둥 석벽 우측",
+   "목조 벽돌 벽 우측",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 45,
+  "label": "목조 회벽 중간 좌측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 기둥 회벽 좌측",
+   "목조 회벽 좌측",
+   "회벽"
+  ]
+ },
+ {
+  "index": 46,
+  "label": "목조 회벽 중간 회벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "회반죽 벽",
+   "회벽 중앙",
+   "회벽"
+  ]
+ },
+ {
+  "index": 47,
+  "label": "목조 회벽 중간 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 기둥 회벽 우측",
+   "목조 회벽 우측",
+   "회벽"
+  ]
+ },
+ {
+  "index": 48,
+  "label": "왼쪽 회청 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 회청 석벽",
+   "wall",
+   "회청색",
+   "벽"
+  ]
+ },
+ {
+  "index": 49,
+  "label": "석조 아치문 통로 바닥 상단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "성문 통로 바닥",
+   "성벽 다리 바닥",
+   "석조 아치문 통로"
+  ]
+ },
+ {
+  "index": 50,
+  "label": "오른쪽 회청 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 회청 석벽",
+   "wall",
+   "청회색",
+   "벽면"
+  ]
+ },
+ {
+  "index": 51,
+  "label": "왼쪽 짙은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 짙은 석벽",
+   "wall",
+   "짙은돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 52,
+  "label": "가운데 짙은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "가운데 짙은 석벽",
+   "wall",
+   "어두운돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 53,
+  "label": "오른쪽 짙은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 짙은 석벽",
+   "wall",
+   "짙은벽",
+   "석재"
+  ]
+ },
+ {
+  "index": 54,
+  "label": "원형 돌 우물 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 우물 하단 좌측",
+   "우물 하단 좌측",
+   "돌 우물"
+  ]
+ },
+ {
+  "index": 55,
+  "label": "원형 돌 우물 하단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 우물 하단 우측",
+   "우물 하단 우측",
+   "돌 우물"
+  ]
+ },
+ {
+  "index": 56,
+  "label": "눈 덮인 석조 우물 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 화덕 하단 좌측",
+   "돌 구덩이",
+   "눈 덮인 석조 우물"
+  ]
+ },
+ {
+  "index": 57,
+  "label": "눈 덮인 석조 우물 하단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 화덕 하단 우측",
+   "돌 구덩이",
+   "눈 덮인 석조 우물"
+  ]
+ },
+ {
+  "index": 58,
+  "label": "철제 격자문",
+  "role": "gate",
+  "passage": "solid",
+  "tags": [
+   "gate",
+   "철창 문"
+  ]
+ },
+ {
+  "index": 59,
+  "label": "작은 돌과 자갈",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "작은 광석 더미",
+   "작은 돌더미",
+   "자수정 결정"
+  ]
+ },
+ {
+  "index": 60,
+  "label": "나무둑 낀 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "나무둑 낀 물가",
+   "water",
+   "물가",
+   "목재"
+  ]
+ },
+ {
+  "index": 61,
+  "label": "목재 둑 낀 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "목재 둑 낀 물가",
+   "water",
+   "둑",
+   "나무"
+  ]
+ },
+ {
+  "index": 62,
+  "label": "통나무 낀 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "통나무 낀 물가",
+   "water",
+   "통나무",
+   "물가"
+  ]
+ },
+ {
+  "index": 63,
+  "label": "고른 파란 수면",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "고른 파란 수면",
+   "water",
+   "수면",
+   "물"
+  ]
+ },
+ {
+  "index": 64,
+  "label": "잔잔한 수면 물",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔잔한 수면 물",
+   "water",
+   "호수",
+   "잔잔"
+  ]
+ },
+ {
+  "index": 65,
+  "label": "푸른 잔물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "푸른 잔물결",
+   "water",
+   "잔물결",
+   "수면"
+  ]
+ },
+ {
+  "index": 66,
+  "label": "눈밭 가장자리 좌측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 좌측",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 67,
+  "label": "눈밭 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈 바닥",
+   "눈밭",
+   "눈"
+  ]
+ },
+ {
+  "index": 68,
+  "label": "흰꽃 섞인 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흰꽃 섞인 잔디",
+   "grass",
+   "꽃밭",
+   "연두"
+  ]
+ },
+ {
+  "index": 69,
+  "label": "짙은 숲 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "짙은 숲 나무",
+   "tree",
+   "숲",
+   "어두운잎"
+  ]
+ },
+ {
+  "index": 70,
+  "label": "빽빽한 숲 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "빽빽한 숲 나무",
+   "tree",
+   "밀림",
+   "수풀"
+  ]
+ },
+ {
+  "index": 71,
+  "label": "그윽한 숲 그늘",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "그윽한 숲 그늘",
+   "tree",
+   "그늘",
+   "숲"
+  ]
+ },
+ {
+  "index": 72,
+  "label": "목조 벽돌벽 하단 좌측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 벽돌 벽 하단 좌측",
+   "목조 기둥 석벽 좌측",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 73,
+  "label": "목조 벽돌벽 하단 벽돌",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "벽돌 벽 하단 중앙",
+   "석조 벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 74,
+  "label": "목조 벽돌벽 하단 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 벽돌 벽 하단 우측",
+   "목조 기둥 석벽 우측",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 75,
+  "label": "목조 회벽 하단 좌측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 기둥 회벽 좌측",
+   "목조 회벽 하단 좌측",
+   "회벽"
+  ]
+ },
+ {
+  "index": 76,
+  "label": "목조 회벽 하단 회벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "회벽 하단 중앙",
+   "회반죽 벽",
+   "회벽"
+  ]
+ },
+ {
+  "index": 77,
+  "label": "목조 회벽 하단 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목조 기둥 회벽 우측",
+   "목조 회벽 하단 우측",
+   "회벽"
+  ]
+ },
+ {
+  "index": 78,
+  "label": "왼쪽 회색 돌벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 회색 돌벽",
+   "wall",
+   "회색돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 79,
+  "label": "석조 아치문 통로 바닥 하단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "성문 바닥 통로",
+   "다리 밑 통로",
+   "석조 아치문 통로"
+  ]
+ },
+ {
+  "index": 80,
+  "label": "오른쪽 회색 돌벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 회색 돌벽",
+   "wall",
+   "돌벽",
+   "회색"
+  ]
+ },
+ {
+  "index": 81,
+  "label": "왼쪽 어두운 돌벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 어두운 돌벽",
+   "wall",
+   "어두운돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 82,
+  "label": "가운데 어두운 돌벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "가운데 어두운 돌벽",
+   "wall",
+   "짙은돌",
+   "석조"
+  ]
+ },
+ {
+  "index": 83,
+  "label": "오른쪽 어두운 돌벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 어두운 돌벽",
+   "wall",
+   "어두운돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 84,
+  "label": "다채로운 보석 더미",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "물품 더미",
+   "보석 더미",
+   "천 더미"
+  ]
+ },
+ {
+  "index": 85,
+  "label": "목재 격자 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "격자 창문",
+   "나무 창문",
+   "창문"
+  ]
+ },
+ {
+  "index": 86,
+  "label": "커튼 달린 목재 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "커튼 창문",
+   "창문"
+  ]
+ },
+ {
+  "index": 87,
+  "label": "뾰족한 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "뾰족한 유리창",
+   "window",
+   "창틀",
+   "뾰족"
+  ]
+ },
+ {
+  "index": 88,
+  "label": "닫힌 목재 덧문 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "나무 덧문 창문"
+  ]
+ },
+ {
+  "index": 89,
+  "label": "청록 잎 무더기",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "청록 잎 무더기",
+   "leaves",
+   "청록",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 90,
+  "label": "기둥 세운 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "기둥 세운 물가",
+   "water",
+   "기둥",
+   "물가"
+  ]
+ },
+ {
+  "index": 91,
+  "label": "목책 둘린 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "목책 둘린 물가",
+   "water",
+   "목책",
+   "물"
+  ]
+ },
+ {
+  "index": 92,
+  "label": "세로 기둥 낀 물",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "세로 기둥 낀 물",
+   "water",
+   "세로기둥",
+   "물가"
+  ]
+ },
+ {
+  "index": 93,
+  "label": "격자무늬 물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "격자무늬 물결",
+   "water",
+   "격자",
+   "물결"
+  ]
+ },
+ {
+  "index": 94,
+  "label": "휘감긴 물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "휘감긴 물결",
+   "water",
+   "파문",
+   "수면"
+  ]
+ },
+ {
+  "index": 95,
+  "label": "무늬진 수면",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "무늬진 수면",
+   "water",
+   "무늬",
+   "물결"
+  ]
+ },
+ {
+  "index": 96,
+  "label": "눈밭 가장자리 좌하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 좌하단",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 97,
+  "label": "눈밭 가장자리 하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 하단",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 98,
+  "label": "눈밭 가장자리 우하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 우하단",
+   "눈",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 99,
+  "label": "어두운 수풀 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "어두운 수풀 나무",
+   "tree",
+   "수풀",
+   "어두운"
+  ]
+ },
+ {
+  "index": 100,
+  "label": "빽빽한 나무숲",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "빽빽한 나무숲",
+   "tree",
+   "밀림",
+   "숲"
+  ]
+ },
+ {
+  "index": 101,
+  "label": "짙은 잎 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "짙은 잎 나무",
+   "tree",
+   "짙은잎",
+   "수목"
+  ]
+ },
+ {
+  "index": 102,
+  "label": "통나무 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "나무 판자 벽",
+   "통나무 벽",
+   "목조 건물 벽"
+  ]
+ },
+ {
+  "index": 103,
+  "label": "통나무 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "나무 판자 벽",
+   "통나무 벽",
+   "목조 건물 벽"
+  ]
+ },
+ {
+  "index": 104,
+  "label": "통나무 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "나무 판자 벽",
+   "통나무 벽",
+   "목조 건물 벽"
+  ]
+ },
+ {
+  "index": 105,
+  "label": "통나무 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "나무 판자 벽",
+   "통나무 벽",
+   "목조 건물 벽"
+  ]
+ },
+ {
+  "index": 106,
+  "label": "통나무 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "나무 판자 벽",
+   "통나무 벽",
+   "목조 건물 벽"
+  ]
+ },
+ {
+  "index": 107,
+  "label": "목재 격자 트렐리스",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "격자 울타리"
+  ]
+ },
+ {
+  "index": 108,
+  "label": "왼쪽 짙은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 짙은 석벽",
+   "wall",
+   "짙은돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 109,
+  "label": "가운데 짙은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "가운데 짙은 석벽",
+   "wall",
+   "회색돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 110,
+  "label": "오른쪽 짙은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 짙은 석벽",
+   "wall",
+   "어두운돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 111,
+  "label": "석조 기둥 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 벽 하단 좌측",
+   "석벽 하단 좌측",
+   "낮은 돌담"
+  ]
+ },
+ {
+  "index": 112,
+  "label": "석조 판석 벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 벽 하단 중앙",
+   "석벽 하단 중앙",
+   "낮은 돌담"
+  ]
+ },
+ {
+  "index": 113,
+  "label": "석조 기둥 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 벽 하단 우측",
+   "석벽 하단 우측",
+   "낮은 돌담"
+  ]
+ },
+ {
+  "index": 114,
+  "label": "둥근 나무 받침대",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "원형 나무 탁자",
+   "둥근 목재 탁자",
+   "원형 탁자"
+  ]
+ },
+ {
+  "index": 115,
+  "label": "목재 격자 창문 우측",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "목재 창문 좌측",
+   "나무 창문 좌측",
+   "창문"
+  ]
+ },
+ {
+  "index": 116,
+  "label": "붉은 갈 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "붉은 갈 벽면",
+   "wall",
+   "적갈색",
+   "벽"
+  ]
+ },
+ {
+  "index": 117,
+  "label": "나무 수납장",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 서랍장",
+   "나무 탁자",
+   "나무 궤짝"
+  ]
+ },
+ {
+  "index": 118,
+  "label": "기울어진 목재 벤치",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "비스듬한 나무 탁자",
+   "기울어진 목재 판자",
+   "나무 작업대"
+  ]
+ },
+ {
+  "index": 119,
+  "label": "자수정 원석",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "보라색 바위",
+   "큰 바위",
+   "바위"
+  ]
+ }
+]

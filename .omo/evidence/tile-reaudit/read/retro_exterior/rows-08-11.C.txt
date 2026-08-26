@@ -1,0 +1,18 @@
+252|붉은 자연석 벽|wall|solid|medium|
+253|청회색 자연석 벽|wall|solid|medium|
+264|흰 구름 조각 상단|decoration|passable|low|구름 오버레이
+268|책장 상단 왼쪽|furniture|solid|medium|책장
+269|책장 상단 오른쪽|furniture|solid|medium|책장
+282|분홍 자연석 벽|wall|solid|medium|
+283|청록 자연석 벽|wall|solid|medium|
+294|흰 구름 조각 중단|decoration|passable|low|구름 오버레이
+298|책장 하단 왼쪽|furniture|solid|high|책장
+299|책장 하단 오른쪽|furniture|solid|high|책장
+312|어두운 청록 자연석 벽|wall|solid|medium|
+313|자주색 조약돌 포장|floor|passable|medium|
+324|흰 구름 조각 하단|decoration|passable|low|구름 오버레이
+326|석상 하단부|decoration|solid|medium|석상
+329|검은 암흑 채움|decoration|solid|low|아래로 이어지는 검은 구조물
+342|베이지 석재 벽돌 벽|wall|solid|medium|
+343|원형 문양 석판 바닥|floor|passable|high|
+348|작은 들꽃 무리|plant|passable|high|

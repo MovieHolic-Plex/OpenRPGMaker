@@ -1,0 +1,120 @@
+360|자갈길 단독 타일|terrain|passable|high|자갈길
+361|잔디 바닥|terrain|passable|high|
+362|자갈길 바닥|terrain|passable|high|
+363|모래길 단독 타일|terrain|passable|high|모래길
+364|잔디 바닥|terrain|passable|high|
+365|모래길 바닥|terrain|passable|high|
+366|석조 수로 단독 타일|water|solid|high|석조 수로
+367|어두운 수로 바닥|water|solid|high|
+368|석조 수로 내부 모서리|water|solid|high|석조 수로
+369|깊은 물 단독 타일|water|solid|high|깊은 물
+370|깊은 물 바닥|water|solid|high|
+371|깊은 물 내부 모서리|water|solid|high|깊은 물
+372|짙은 흙 바닥|terrain|passable|high|
+373|붉은 흙 바닥|terrain|passable|high|
+374|주황색 기와지붕 상단|roof|solid|high|주황색 기와지붕
+375|주황색 기와지붕|roof|solid|high|주황색 기와지붕
+376|주황색 기와지붕 밝은면|roof|solid|high|주황색 기와지붕
+377|주황색 기와지붕 어두운면|roof|solid|high|주황색 기와지붕
+378|나무 울타리 좌측 상단|fence|solid|high|나무 울타리
+379|나무 울타리 상단|fence|solid|high|나무 울타리
+380|나무 울타리 우측 상단|fence|solid|high|나무 울타리
+381|모닥불|prop|solid|high|
+382|돌 우물|prop|solid|high|
+383|해골과 뼈|prop|passable|high|
+384|주황색 삼각 지붕 좌하단|roof|solid|high|주황색 삼각 지붕
+385|주황색 삼각 지붕 우하단|roof|solid|high|주황색 삼각 지붕
+386|파란색 삼각 지붕 좌하단|roof|solid|high|파란색 삼각 지붕
+387|파란색 삼각 지붕 우하단|roof|solid|high|파란색 삼각 지붕
+388|통나무 기둥|prop|solid|high|
+389|풀 덮개 차양|roof|solid|medium|
+390|자갈길 좌상단 모서리|terrain|passable|high|자갈길
+391|자갈길 상단 경계|terrain|passable|high|자갈길
+392|자갈길 우상단 모서리|terrain|passable|high|자갈길
+393|모래길 좌상단 모서리|terrain|passable|high|모래길
+394|모래길 상단 경계|terrain|passable|high|모래길
+395|모래길 우상단 모서리|terrain|passable|high|모래길
+396|석조 수로 좌상단 모서리|water|solid|high|석조 수로
+397|석조 수로 상단 경계|water|solid|high|석조 수로
+398|석조 수로 우상단 모서리|water|solid|high|석조 수로
+399|깊은 물 좌상단 모서리|water|solid|high|깊은 물
+400|깊은 물 상단 경계|water|solid|high|깊은 물
+401|깊은 물 우상단 모서리|water|solid|high|깊은 물
+402|붉은 흙 새싹 밭|plant|passable|high|
+403|짙은 흙 새싹 밭|plant|passable|high|
+404|주황색 기와지붕 중간|roof|solid|high|주황색 기와지붕
+405|주황색 기와지붕 하단|roof|solid|high|주황색 기와지붕
+406|파란색 기와지붕 밝은면|roof|solid|high|파란색 기와지붕
+407|파란색 기와지붕 어두운면|roof|solid|high|파란색 기와지붕
+408|나무 울타리 세로 기둥|fence|solid|high|나무 울타리
+409|나무 울타리 가로 중앙|fence|solid|high|나무 울타리
+410|나무 울타리 우측 끝단|fence|solid|high|나무 울타리
+411|흩어진 돌|rock|passable|high|
+412|주점 간판|prop|solid|high|
+413|석조 십자가|prop|solid|high|
+414|거대 비석 좌측 상단|prop|solid|high|거대 비석
+415|거대 비석 상단 중앙|prop|solid|high|거대 비석
+416|거대 비석 우측 상단|prop|solid|high|거대 비석
+417|원형 천막 지붕 좌측|prop|solid|high|원형 천막
+418|원형 천막 지붕 중앙|prop|solid|high|원형 천막
+419|원형 천막 지붕 우측|prop|solid|high|원형 천막
+420|자갈길 좌측 경계|terrain|passable|high|자갈길
+421|자갈길 중앙 바닥|terrain|passable|high|자갈길
+422|자갈길 우측 경계|terrain|passable|high|자갈길
+423|모래길 좌측 경계|terrain|passable|high|모래길
+424|모래길 중앙 바닥|terrain|passable|high|모래길
+425|모래길 우측 경계|terrain|passable|high|모래길
+426|석조 수로 좌측 경계|water|solid|high|석조 수로
+427|석조 수로 중앙 바닥|water|solid|high|석조 수로
+428|석조 수로 우측 경계|water|solid|high|석조 수로
+429|깊은 물 좌측 경계|water|solid|high|깊은 물
+430|깊은 물 중앙 바닥|water|solid|high|깊은 물
+431|깊은 물 우측 경계|water|solid|high|깊은 물
+432|이끼 낀 자갈 바닥|terrain|passable|high|
+433|짙은 자갈 바닥|terrain|passable|high|
+434|석조 화덕 좌측 상단|prop|solid|high|석조 화덕
+435|석조 화덕 우측 상단|prop|solid|high|석조 화덕
+436|파란색 기와지붕 상단|roof|solid|high|파란색 기와지붕
+437|파란색 기와지붕|roof|solid|high|파란색 기와지붕
+438|나무 울타리 좌측 끝단|fence|solid|high|나무 울타리
+439|나무 울타리 가로 하단|fence|solid|high|나무 울타리
+440|나무 이정표|prop|solid|high|
+441|목재 다리 상판|floor|passable|high|목재 다리
+442|무기점 간판|prop|solid|high|
+443|여관 간판|prop|solid|high|
+444|거대 비석 좌측 중앙|prop|solid|high|거대 비석
+445|거대 비석 중앙|prop|solid|high|거대 비석
+446|거대 비석 우측 중앙|prop|solid|high|거대 비석
+447|원형 천막 벽 좌측 상단|prop|solid|high|원형 천막
+448|원형 천막 입구 상단|prop|solid|high|원형 천막
+449|원형 천막 벽 우측 상단|prop|solid|high|원형 천막
+450|자갈길 좌하단 모서리|terrain|passable|high|자갈길
+451|자갈길 하단 경계|terrain|passable|high|자갈길
+452|자갈길 우하단 모서리|terrain|passable|high|자갈길
+453|모래길 좌하단 모서리|terrain|passable|high|모래길
+454|모래길 하단 경계|terrain|passable|high|모래길
+455|모래길 우하단 모서리|terrain|passable|high|모래길
+456|석조 수로 좌하단 모서리|water|solid|high|석조 수로
+457|석조 수로 하단 경계|water|solid|high|석조 수로
+458|석조 수로 우하단 모서리|water|solid|high|석조 수로
+459|깊은 물 좌하단 모서리|water|solid|high|깊은 물
+460|깊은 물 하단 경계|water|solid|high|깊은 물
+461|깊은 물 우하단 모서리|water|solid|high|깊은 물
+462|바위 무더기 좌측|rock|solid|high|바위 무더기
+463|바위 무더기 우측|rock|solid|high|바위 무더기
+464|석조 화덕 좌측 하단|prop|solid|high|석조 화덕
+465|석조 화덕 우측 하단|prop|solid|high|석조 화덕
+466|파란색 기와지붕 중간|roof|solid|high|파란색 기와지붕
+467|파란색 기와지붕 하단|roof|solid|high|파란색 기와지붕
+468|목재 다리 좌측 기둥|prop|solid|high|목재 다리
+469|목재 다리 중앙 기둥|prop|solid|high|목재 다리
+470|목재 다리 우측 기둥|prop|solid|high|목재 다리
+471|목재 다리 하단 받침|prop|solid|high|목재 다리
+472|방어구점 간판|prop|solid|high|
+473|도구점 간판|prop|solid|high|
+474|거대 비석 좌측 하단|prop|solid|high|거대 비석
+475|거대 비석 하단 중앙|prop|solid|high|거대 비석
+476|거대 비석 우측 하단|prop|solid|high|거대 비석
+477|원형 천막 벽 좌측 하단|prop|solid|high|원형 천막
+478|원형 천막 입구 하단|door|passable|high|원형 천막
+479|원형 천막 벽 우측 하단|prop|solid|high|원형 천막

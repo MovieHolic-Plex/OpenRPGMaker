@@ -1,0 +1,120 @@
+360|흙 지형|terrain|passable|high|
+361|모래 지형|terrain|passable|high|
+362|흙 지형|terrain|passable|high|
+363|빈 슬롯|empty|passable|high|
+364|빈 슬롯|empty|passable|high|
+365|빈 슬롯|empty|passable|high|
+366|석재 바닥 좌상단 테두리|floor|passable|high|석재 바닥
+367|석재 바닥 상단 테두리|floor|passable|high|석재 바닥
+368|석재 바닥 상단 테두리|floor|passable|high|석재 바닥
+369|작은 목재 해치|door|solid|high|
+370|어두운 공간|empty|passable|high|
+371|목재 보 교차부|prop|solid|high|목재 보
+372|목재 벽 상단 좌측|wall|solid|high|목재 벽
+373|목재 벽 상단 중앙|wall|solid|high|목재 벽
+374|목재 벽 상단 우측|wall|solid|high|목재 벽
+375|목재 벽 상단 좌측|wall|solid|high|목재 벽
+376|아래로 내려가는 계단 상단|stairs|passable|high|목재 계단
+377|목재 벽 상단 우측|wall|solid|high|목재 벽
+378|선체 좌현 상단|prop|solid|high|선체
+379|덮개 덮인 화물 상자|prop|solid|high|화물 상자
+380|선수 목재 보 좌측|prop|solid|high|선수
+381|선수 목재 보 우측|prop|solid|high|선수
+382|목재 수납장|furniture|solid|high|
+383|선체 우현 상단|prop|solid|high|선체
+384|책장 상단|furniture|solid|high|책장
+385|목재 통|prop|solid|high|
+386|도자기 항아리|prop|solid|high|
+387|둥근 목재 탁자|furniture|solid|high|
+388|지도 액자 좌측|decoration|solid|high|지도 액자
+389|지도 액자 우측|decoration|solid|high|지도 액자
+390|흙 지형 좌상단 모서리|terrain|passable|high|
+391|흙 지형 상단|terrain|passable|high|
+392|흙 지형 우상단 모서리|terrain|passable|high|
+393|빈 슬롯|empty|passable|high|
+394|빈 슬롯|empty|passable|high|
+395|빈 슬롯|empty|passable|high|
+396|석재 바닥 좌상단 테두리|floor|passable|high|석재 바닥
+397|석재 바닥 상단 테두리|floor|passable|high|석재 바닥
+398|석재 바닥 상단 테두리|floor|passable|high|석재 바닥
+399|대형 목재 입구 좌상단|door|solid|high|대형 목재 입구
+400|대형 목재 입구 상단|door|solid|high|대형 목재 입구
+401|대형 목재 입구 우상단|door|solid|high|대형 목재 입구
+402|목재 벽 좌측|wall|solid|high|목재 벽
+403|목재 벽 중앙|wall|solid|high|목재 벽
+404|목재 벽 우측|wall|solid|high|목재 벽
+405|목재 기둥 벽|wall|solid|high|목재 벽
+406|대각선 목재 바닥 좌측|floor|passable|high|대각선 목재 바닥
+407|대각선 목재 바닥 우측|floor|passable|high|대각선 목재 바닥
+408|선체 좌현 외벽 상단|prop|solid|high|선체
+409|선체 내부 대각선 빔 좌측|prop|solid|high|선수
+410|빈 슬롯|empty|passable|high|
+411|빈 슬롯|empty|passable|high|
+412|선체 내부 대각선 빔 우측|prop|solid|high|선수
+413|선체 우현 외벽 상단|prop|solid|high|선체
+414|책장 하단|furniture|solid|high|책장
+415|열린 목재 통|prop|solid|high|
+416|세로 침대 상단|furniture|solid|high|침대
+417|둥근 목재 의자|furniture|solid|high|
+418|세로 목재 난간 상단|fence|solid|high|목재 난간
+419|세로 목재 난간 상단|fence|solid|high|목재 난간
+420|흙 지형 좌측|terrain|passable|high|
+421|흙 지형 중앙|terrain|passable|high|
+422|흙 지형 우측|terrain|passable|high|
+423|빈 슬롯|empty|passable|high|
+424|빈 슬롯|empty|passable|high|
+425|빈 슬롯|empty|passable|high|
+426|석재 바닥 좌측 테두리|floor|passable|high|석재 바닥
+427|석재 바닥|floor|passable|high|석재 바닥
+428|석재 바닥 우측 테두리|floor|passable|high|석재 바닥
+429|대형 목재 입구 좌측|door|solid|high|대형 목재 입구
+430|대형 목재 입구 중앙|door|passable|high|대형 목재 입구
+431|대형 목재 입구 우측|door|solid|high|대형 목재 입구
+432|목재 벽난로 상단 좌측|prop|solid|high|목재 벽난로
+433|목재 벽난로 상단 중앙|prop|solid|high|목재 벽난로
+434|목재 벽난로 상단 우측|prop|solid|high|목재 벽난로
+435|목재 기둥 벽|wall|solid|high|목재 벽
+436|대각선 목재 빔 좌측|prop|solid|high|대각선 목재 빔
+437|대각선 목재 빔 우측|prop|solid|high|대각선 목재 빔
+438|선체 좌현 외벽 중앙|prop|solid|high|선체
+439|빈 슬롯|empty|passable|high|
+440|선수 대각선 외벽 좌측|prop|solid|high|선수
+441|선수 대각선 외벽 우측|prop|solid|high|선수
+442|빈 슬롯|empty|passable|high|
+443|선체 우현 외벽 중앙|prop|solid|high|선체
+444|파이프오르간 상단 좌측|furniture|solid|high|파이프오르간
+445|파이프오르간 상단 우측|furniture|solid|high|파이프오르간
+446|세로 침대 하단|furniture|solid|high|침대
+447|가로 목재 난간 좌측|fence|solid|high|목재 난간
+448|십자 목재 난간 교차점|fence|solid|high|목재 난간
+449|가로 목재 난간 우측|fence|solid|high|목재 난간
+450|흙 지형 좌하단 모서리|terrain|passable|high|
+451|흙 지형 하단|terrain|passable|high|
+452|흙 지형 우하단 모서리|terrain|passable|high|
+453|빈 슬롯|empty|passable|high|
+454|빈 슬롯|empty|passable|high|
+455|빈 슬롯|empty|passable|high|
+456|석재 바닥 좌측 테두리|floor|passable|high|석재 바닥
+457|석재 바닥|floor|passable|high|석재 바닥
+458|석재 바닥 우측 테두리|floor|passable|high|석재 바닥
+459|대형 목재 입구 좌하단|door|solid|high|대형 목재 입구
+460|대형 목재 입구 하단|door|solid|high|대형 목재 입구
+461|대형 목재 입구 우하단|door|solid|high|대형 목재 입구
+462|목재 벽난로 하단 좌측|prop|solid|high|목재 벽난로
+463|목재 벽난로 화로|prop|solid|high|목재 벽난로
+464|목재 벽난로 하단 우측|prop|solid|high|목재 벽난로
+465|목재 기둥 벽|wall|solid|high|목재 벽
+466|목재 바닥 좌하단 코너|floor|passable|high|목재 바닥
+467|목재 바닥 우하단 코너|floor|passable|high|목재 바닥
+468|선체 좌현 외벽 하단|prop|solid|high|선체
+469|선수 전면 목재 빔 좌측|prop|solid|high|선수
+470|선수 전면 목재 기둥 좌측|prop|solid|high|선수
+471|선수 전면 목재 기둥 우측|prop|solid|high|선수
+472|선수 돌출부 끝 기둥|prop|solid|high|선수
+473|선체 우현 외벽 하단|prop|solid|high|선체
+474|파이프오르간 하단 좌측|furniture|solid|high|파이프오르간
+475|파이프오르간 하단 우측|furniture|solid|high|파이프오르간
+476|가로 침대 머리맡|furniture|solid|high|침대
+477|가로 침대 발치|furniture|solid|high|침대
+478|세로 목재 난간 하단|fence|solid|high|목재 난간
+479|가로 목재 난간 조각|fence|solid|high|목재 난간

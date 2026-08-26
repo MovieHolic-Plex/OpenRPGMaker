@@ -1,0 +1,1408 @@
+[
+ {
+  "index": 240,
+  "label": "밝은 잔디 성긴 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 잔디 성긴 무늬",
+   "grass",
+   "초원",
+   "점무늬"
+  ]
+ },
+ {
+  "index": 241,
+  "label": "밝은 잔디 중앙 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 잔디 중앙 무늬",
+   "grass",
+   "초원",
+   "밝은풀"
+  ]
+ },
+ {
+  "index": 242,
+  "label": "밝은 잔디 우측 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 잔디 우측 무늬",
+   "grass",
+   "초지",
+   "연두색"
+  ]
+ },
+ {
+  "index": 243,
+  "label": "짙은 잔디 바둑 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "짙은 잔디 바둑 무늬",
+   "grass",
+   "초원",
+   "격자"
+  ]
+ },
+ {
+  "index": 244,
+  "label": "밝은 잔디 세로 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 잔디 세로 무늬",
+   "grass",
+   "들판",
+   "풀잎"
+  ]
+ },
+ {
+  "index": 245,
+  "label": "짙은 잔디 얼룩 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "짙은 잔디 얼룩 무늬",
+   "grass",
+   "초지",
+   "조밀함"
+  ]
+ },
+ {
+  "index": 246,
+  "label": "눈 덮인 산 왼쪽 꼭대기",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 덮인 절벽 모서리",
+   "눈 덮인 산",
+   "눈 덮인 절벽"
+  ]
+ },
+ {
+  "index": 247,
+  "label": "잔디 위 둥근 눈밭",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "잔디 위 둥근 눈밭",
+   "snowfield",
+   "초원",
+   "흰색"
+  ]
+ },
+ {
+  "index": 248,
+  "label": "암석 섞인 눈밭",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "암석 섞인 눈밭",
+   "snowfield",
+   "바위",
+   "얼룩"
+  ]
+ },
+ {
+  "index": 249,
+  "label": "설산 단일 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 단일 봉우리",
+   "snow",
+   "산맥",
+   "봉우리"
+  ]
+ },
+ {
+  "index": 250,
+  "label": "잔디 위 비스듬한 눈밭",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "잔디 위 비스듬한 눈밭",
+   "snowfield",
+   "초지",
+   "사선"
+  ]
+ },
+ {
+  "index": 251,
+  "label": "설산 이중 능선",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 이중 능선",
+   "snow",
+   "산맥",
+   "능선"
+  ]
+ },
+ {
+  "index": 252,
+  "label": "이끼 낀 돌바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 돌바닥"
+  ]
+ },
+ {
+  "index": 253,
+  "label": "어두운 돌바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 254,
+  "label": "돌 포장 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 돌바닥"
+  ]
+ },
+ {
+  "index": 255,
+  "label": "돌 포장 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 돌바닥"
+  ]
+ },
+ {
+  "index": 256,
+  "label": "돌 포장 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 돌바닥"
+  ]
+ },
+ {
+  "index": 257,
+  "label": "돌 포장 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 돌바닥"
+  ]
+ },
+ {
+  "index": 258,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 259,
+  "label": "둥근 잎 장식나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "둥근 잎 장식나무",
+   "topiary",
+   "관목",
+   "화분"
+  ]
+ },
+ {
+  "index": 260,
+  "label": "갈라진 마른 묘목",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "갈라진 마른 묘목",
+   "sapling",
+   "고목",
+   "가지"
+  ]
+ },
+ {
+  "index": 261,
+  "label": "통나무 더미",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 잔해"
+  ]
+ },
+ {
+  "index": 262,
+  "label": "붉은 지붕 석조집",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "붉은 지붕 석조집",
+   "house",
+   "마을",
+   "건물"
+  ]
+ },
+ {
+  "index": 263,
+  "label": "회색 지붕 석조집",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "회색 지붕 석조집",
+   "house",
+   "마을",
+   "회색집"
+  ]
+ },
+ {
+  "index": 264,
+  "label": "회색 격자 석판",
+  "role": "sign",
+  "passage": "solid",
+  "tags": [
+   "회색 격자 석판",
+   "stone",
+   "표지",
+   "격자"
+  ]
+ },
+ {
+  "index": 265,
+  "label": "굽은 세로 나무기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "굽은 세로 나무기둥",
+   "wood",
+   "갈색",
+   "세로대"
+  ]
+ },
+ {
+  "index": 266,
+  "label": "어두운 통로 입구",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "검은 커튼 하단",
+   "검은 커튼"
+  ]
+ },
+ {
+  "index": 267,
+  "label": "책 가득한 나무책장",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "책 가득한 나무책장",
+   "books",
+   "서가",
+   "목재"
+  ]
+ },
+ {
+  "index": 268,
+  "label": "빈 두칸 나무선반",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "빈 두칸 나무선반",
+   "empty",
+   "수납",
+   "목재"
+  ]
+ },
+ {
+  "index": 269,
+  "label": "양문 달린 나무장",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "양문 달린 나무장",
+   "cabinet",
+   "수납장",
+   "문짝"
+  ]
+ },
+ {
+  "index": 270,
+  "label": "연두 잔디 좌측 점무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연두 잔디 좌측 점무늬",
+   "grass",
+   "초원",
+   "성긴풀"
+  ]
+ },
+ {
+  "index": 271,
+  "label": "연두 잔디 가운데 점무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연두 잔디 가운데 점무늬",
+   "grass",
+   "초지",
+   "밝은점"
+  ]
+ },
+ {
+  "index": 272,
+  "label": "연두 잔디 우측 점무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연두 잔디 우측 점무늬",
+   "grass",
+   "들판",
+   "풀무늬"
+  ]
+ },
+ {
+  "index": 273,
+  "label": "빽빽한 잔디 좌측 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "빽빽한 잔디 좌측 무늬",
+   "grass",
+   "초원",
+   "조밀함"
+  ]
+ },
+ {
+  "index": 274,
+  "label": "빽빽한 잔디 중앙 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "빽빽한 잔디 중앙 무늬",
+   "grass",
+   "초지",
+   "짙은풀"
+  ]
+ },
+ {
+  "index": 275,
+  "label": "빽빽한 잔디 우측 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "빽빽한 잔디 우측 무늬",
+   "grass",
+   "들판",
+   "녹색격자"
+  ]
+ },
+ {
+  "index": 276,
+  "label": "눈 덮인 절벽 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 덮인 산 왼쪽",
+   "눈 덮인 절벽",
+   "눈 덮인 산"
+  ]
+ },
+ {
+  "index": 277,
+  "label": "설원 중앙 돌무늬",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "설원 중앙 돌무늬",
+   "snowfield",
+   "회색돌",
+   "중앙"
+  ]
+ },
+ {
+  "index": 278,
+  "label": "설원 동쪽 풀 경계",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "설원 동쪽 풀 경계",
+   "snowfield",
+   "초지경계",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 279,
+  "label": "설산 서쪽 능선",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 서쪽 능선",
+   "snow",
+   "산맥",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 280,
+  "label": "설산 중앙 골짜기",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 중앙 골짜기",
+   "snow",
+   "산맥",
+   "골짜기"
+  ]
+ },
+ {
+  "index": 281,
+  "label": "설산 동쪽 능선",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 동쪽 능선",
+   "snow",
+   "산맥",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 282,
+  "label": "보랏빛 수정 군집",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "보랏빛 수정 군집",
+   "crystal",
+   "광물",
+   "동굴"
+  ]
+ },
+ {
+  "index": 283,
+  "label": "비스듬한 보라 수정",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "비스듬한 보라 수정",
+   "crystal",
+   "원석",
+   "사선"
+  ]
+ },
+ {
+  "index": 284,
+  "label": "회색 조약돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 조약돌 바닥",
+   "stone",
+   "자갈",
+   "회색"
+  ]
+ },
+ {
+  "index": 285,
+  "label": "회색 돌바닥 좌측 무늬",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 돌바닥 좌측 무늬",
+   "stone",
+   "동굴바닥",
+   "좌측"
+  ]
+ },
+ {
+  "index": 286,
+  "label": "회색 돌바닥 중앙 무늬",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 돌바닥 중앙 무늬",
+   "stone",
+   "암석바닥",
+   "중앙"
+  ]
+ },
+ {
+  "index": 287,
+  "label": "회색 돌바닥 우측 무늬",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 돌바닥 우측 무늬",
+   "stone",
+   "자갈길",
+   "우측"
+  ]
+ },
+ {
+  "index": 288,
+  "label": "꽃 둥근 관목",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "꽃 둥근 관목",
+   "flower",
+   "덤불",
+   "노란꽃"
+  ]
+ },
+ {
+  "index": 289,
+  "label": "두갈래 초록 선인장",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "두갈래 초록 선인장",
+   "cactus",
+   "사막",
+   "가시"
+  ]
+ },
+ {
+  "index": 290,
+  "label": "굽은 줄기 야자나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "굽은 줄기 야자나무",
+   "palm",
+   "열대",
+   "야자잎"
+  ]
+ },
+ {
+  "index": 291,
+  "label": "파란 차양 작은 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "파란 차양 작은 건물",
+   "building",
+   "상점",
+   "파란지붕"
+  ]
+ },
+ {
+  "index": 292,
+  "label": "빨간 차양 노점",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "마을"
+  ]
+ },
+ {
+  "index": 293,
+  "label": "눈 덮인 마을",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "상점 가판대"
+  ]
+ },
+ {
+  "index": 294,
+  "label": "긴 목재 기둥 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 기둥 상단",
+   "목재 기둥"
+  ]
+ },
+ {
+  "index": 295,
+  "label": "쇠테 두른 큰 나무통",
+  "role": "barrel",
+  "passage": "solid",
+  "tags": [
+   "쇠테 두른 큰 나무통",
+   "barrel",
+   "목재",
+   "쇠테"
+  ]
+ },
+ {
+  "index": 296,
+  "label": "분홍 체크무늬 침대",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "분홍 체크무늬 침대",
+   "bed",
+   "가구",
+   "체크"
+  ]
+ },
+ {
+  "index": 297,
+  "label": "다색 책 꽂힌 낮은 책장",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "다색 책 꽂힌 낮은 책장",
+   "books",
+   "서가",
+   "낮은장"
+  ]
+ },
+ {
+  "index": 298,
+  "label": "서랍 하나 나무선반",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "서랍 하나 나무선반",
+   "drawer",
+   "수납",
+   "목재"
+  ]
+ },
+ {
+  "index": 299,
+  "label": "서랍 둘 나무선반",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "서랍 둘 나무선반",
+   "drawer",
+   "수납장",
+   "두칸"
+  ]
+ },
+ {
+  "index": 300,
+  "label": "연한 초원 왼쪽 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연한 초원 왼쪽 무늬",
+   "grass",
+   "들판",
+   "연두"
+  ]
+ },
+ {
+  "index": 301,
+  "label": "연한 초원 가운데 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연한 초원 가운데 무늬",
+   "grass",
+   "평원",
+   "점박이"
+  ]
+ },
+ {
+  "index": 302,
+  "label": "연한 초원 오른쪽 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연한 초원 오른쪽 무늬",
+   "grass",
+   "초지",
+   "밝은풀"
+  ]
+ },
+ {
+  "index": 303,
+  "label": "울창한 풀밭 왼쪽 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "울창한 풀밭 왼쪽 무늬",
+   "grass",
+   "덤불",
+   "조밀함"
+  ]
+ },
+ {
+  "index": 304,
+  "label": "울창한 풀밭 가운데 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "울창한 풀밭 가운데 무늬",
+   "grass",
+   "초원",
+   "짙은녹색"
+  ]
+ },
+ {
+  "index": 305,
+  "label": "울창한 풀밭 오른쪽 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "울창한 풀밭 오른쪽 무늬",
+   "grass",
+   "들판",
+   "격자풀"
+  ]
+ },
+ {
+  "index": 306,
+  "label": "눈 덮인 절벽 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 덮인 산 왼쪽",
+   "눈 덮인 절벽",
+   "눈 덮인 산"
+  ]
+ },
+ {
+  "index": 307,
+  "label": "회색 틈 있는 중앙 설원",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "회색 틈 있는 중앙 설원",
+   "snowfield",
+   "균열",
+   "중앙"
+  ]
+ },
+ {
+  "index": 308,
+  "label": "이끼 드러난 동쪽 설원",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "이끼 드러난 동쪽 설원",
+   "snowfield",
+   "이끼",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 309,
+  "label": "설산 서편 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 서편 봉우리",
+   "snow",
+   "산맥",
+   "서편"
+  ]
+ },
+ {
+  "index": 310,
+  "label": "설산 가운데 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 가운데 봉우리",
+   "snow",
+   "고산",
+   "중앙"
+  ]
+ },
+ {
+  "index": 311,
+  "label": "설산 동편 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 동편 봉우리",
+   "snow",
+   "산맥",
+   "동편"
+  ]
+ },
+ {
+  "index": 312,
+  "label": "적갈색 흙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "밭 흙"
+  ]
+ },
+ {
+  "index": 313,
+  "label": "자줏빛 흙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "붉은 흙"
+  ]
+ },
+ {
+  "index": 314,
+  "label": "남색 벽돌벽 윗무늬",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "남색 벽돌벽 윗무늬",
+   "brick",
+   "성벽",
+   "남색"
+  ]
+ },
+ {
+  "index": 315,
+  "label": "남색 벽돌벽 왼무늬",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "남색 벽돌벽 왼무늬",
+   "brick",
+   "석조",
+   "좌측"
+  ]
+ },
+ {
+  "index": 316,
+  "label": "남색 벽돌벽 가운데무늬",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "남색 벽돌벽 가운데무늬",
+   "brick",
+   "성벽",
+   "중앙"
+  ]
+ },
+ {
+  "index": 317,
+  "label": "남색 벽돌벽 오른무늬",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "남색 벽돌벽 오른무늬",
+   "brick",
+   "석조",
+   "우측"
+  ]
+ },
+ {
+  "index": 318,
+  "label": "넓은 수관 왼쪽",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "넓은 수관 왼쪽",
+   "canopy",
+   "나뭇잎",
+   "좌측"
+  ]
+ },
+ {
+  "index": 319,
+  "label": "넓은 수관 오른쪽",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "넓은 수관 오른쪽",
+   "canopy",
+   "나뭇잎",
+   "우측"
+  ]
+ },
+ {
+  "index": 320,
+  "label": "회색 석조 장치",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "회색 석조 장치",
+   "stone",
+   "구조물",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 321,
+  "label": "홈 석조 장치",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "홈 석조 장치",
+   "stone",
+   "붉은표식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 322,
+  "label": "황금 성 상단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "성 왼쪽 상단",
+   "황금 성",
+   "노란 성"
+  ]
+ },
+ {
+  "index": 323,
+  "label": "황금 성 상단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "성 오른쪽 상단",
+   "황금 성",
+   "노란 성"
+  ]
+ },
+ {
+  "index": 324,
+  "label": "긴 목재 기둥 중단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 기둥 중간",
+   "목재 기둥"
+  ]
+ },
+ {
+  "index": 325,
+  "label": "연노랑 둥근 항아리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "연노랑 둥근 항아리",
+   "vase",
+   "도자기",
+   "노란색"
+  ]
+ },
+ {
+  "index": 326,
+  "label": "둥근 나무 탁자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "둥근 나무 탁자",
+   "table",
+   "원형",
+   "목재"
+  ]
+ },
+ {
+  "index": 327,
+  "label": "등받이 높은 나무의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "등받이 높은 나무의자",
+   "chair",
+   "가구",
+   "정면"
+  ]
+ },
+ {
+  "index": 328,
+  "label": "낮은 등받이 나무의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "낮은 등받이 나무의자",
+   "chair",
+   "가구",
+   "갈색"
+  ]
+ },
+ {
+  "index": 329,
+  "label": "흰 타원형 탁상거울",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "흰 타원형 탁상거울",
+   "mirror",
+   "반사",
+   "화장대"
+  ]
+ },
+ {
+  "index": 330,
+  "label": "초록 평원 왼편 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초록 평원 왼편 무늬",
+   "grass",
+   "초원",
+   "왼편"
+  ]
+ },
+ {
+  "index": 331,
+  "label": "초록 평원 중앙 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초록 평원 중앙 무늬",
+   "grass",
+   "들판",
+   "중앙"
+  ]
+ },
+ {
+  "index": 332,
+  "label": "초록 평원 오른편 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초록 평원 오른편 무늬",
+   "grass",
+   "초지",
+   "오른편"
+  ]
+ },
+ {
+  "index": 333,
+  "label": "진한 풀숲 왼편 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "진한 풀숲 왼편 무늬",
+   "grass",
+   "수풀",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 334,
+  "label": "진한 풀숲 중앙 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "진한 풀숲 중앙 무늬",
+   "grass",
+   "덤불",
+   "가운데"
+  ]
+ },
+ {
+  "index": 335,
+  "label": "진한 풀숲 오른편 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "진한 풀숲 오른편 무늬",
+   "grass",
+   "수풀",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 336,
+  "label": "눈 덮인 산 왼쪽 하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 덮인 절벽 좌하단",
+   "눈 덮인 산",
+   "눈 덮인 절벽"
+  ]
+ },
+ {
+  "index": 337,
+  "label": "눈 덮인 산 가운데 하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 덮인 절벽 하단",
+   "눈 덮인 산",
+   "눈 덮인 절벽"
+  ]
+ },
+ {
+  "index": 338,
+  "label": "눈 덮인 산 오른쪽 하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 덮인 절벽 우하단",
+   "눈 덮인 산",
+   "눈 덮인 절벽"
+  ]
+ },
+ {
+  "index": 339,
+  "label": "설산 왼쪽 사면",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 왼쪽 사면",
+   "snow",
+   "산맥",
+   "좌사면"
+  ]
+ },
+ {
+  "index": 340,
+  "label": "설산 중앙 사면",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 중앙 사면",
+   "snow",
+   "고산",
+   "중앙사면"
+  ]
+ },
+ {
+  "index": 341,
+  "label": "설산 오른쪽 사면",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "설산 오른쪽 사면",
+   "snow",
+   "산맥",
+   "우사면"
+  ]
+ },
+ {
+  "index": 342,
+  "label": "풀 돋은 적갈색 흙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "새싹 밭",
+   "밭"
+  ]
+ },
+ {
+  "index": 343,
+  "label": "풀 돋은 자줏빛 흙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "새싹 밭",
+   "밭"
+  ]
+ },
+ {
+  "index": 344,
+  "label": "짙은 남색 벽돌 윗면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 남색 벽돌 윗면",
+   "brick",
+   "어두운벽",
+   "상단"
+  ]
+ },
+ {
+  "index": 345,
+  "label": "짙은 남색 벽돌 왼면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 남색 벽돌 왼면",
+   "brick",
+   "성벽",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 346,
+  "label": "짙은 남색 벽돌 중간면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 남색 벽돌 중간면",
+   "brick",
+   "석벽",
+   "가운데"
+  ]
+ },
+ {
+  "index": 347,
+  "label": "짙은 남색 벽돌 오른면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 남색 벽돌 오른면",
+   "brick",
+   "성벽",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 348,
+  "label": "굵은 나무뿌리 왼쪽",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "굵은 나무뿌리 왼쪽",
+   "roots",
+   "거목",
+   "좌측"
+  ]
+ },
+ {
+  "index": 349,
+  "label": "굵은 나무뿌리 오른쪽",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "굵은 나무뿌리 오른쪽",
+   "roots",
+   "거목",
+   "우측"
+  ]
+ },
+ {
+  "index": 350,
+  "label": "붉은 눈 석상 왼쪽",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "붉은 눈 석상 왼쪽",
+   "stone",
+   "붉은눈",
+   "좌측"
+  ]
+ },
+ {
+  "index": 351,
+  "label": "붉은 눈 석상 오른쪽",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "붉은 눈 석상 오른쪽",
+   "stone",
+   "붉은눈",
+   "우측"
+  ]
+ },
+ {
+  "index": 352,
+  "label": "황금 성 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "성 왼쪽 하단",
+   "황금 성",
+   "노란 성"
+  ]
+ },
+ {
+  "index": 353,
+  "label": "황금 성 하단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "성 오른쪽 하단",
+   "황금 성",
+   "노란 성"
+  ]
+ },
+ {
+  "index": 354,
+  "label": "긴 목재 기둥 하단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 기둥 하단",
+   "목재 기둥"
+  ]
+ },
+ {
+  "index": 355,
+  "label": "작은 갈색 단지",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "작은 단지"
+  ]
+ },
+ {
+  "index": 356,
+  "label": "낮은 사각 나무탁자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "낮은 사각 나무탁자",
+   "table",
+   "가구",
+   "낮은상"
+  ]
+ },
+ {
+  "index": 357,
+  "label": "왼쪽 향한 나무의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 향한 나무의자",
+   "chair",
+   "측면",
+   "좌향"
+  ]
+ },
+ {
+  "index": 358,
+  "label": "오른쪽 향한 나무의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 향한 나무의자",
+   "chair",
+   "측면",
+   "우향"
+  ]
+ },
+ {
+  "index": 359,
+  "label": "금테 두른 잠긴 보물상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "금테 두른 잠긴 보물상자",
+   "treasure",
+   "상자",
+   "자물쇠"
+  ]
+ }
+]

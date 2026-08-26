@@ -1,0 +1,1344 @@
+[
+ {
+  "index": 360,
+  "label": "작은 숲",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree"
+  ]
+ },
+ {
+  "index": 361,
+  "label": "푸른 평야 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 평야 초지",
+   "평야",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 362,
+  "label": "숲 그늘 풀바닥",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 그늘 풀바닥",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 363,
+  "label": "작은 산",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff"
+  ]
+ },
+ {
+  "index": 364,
+  "label": "밝은 초장 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 초장 풀밭",
+   "초장",
+   "green",
+   "풀"
+  ]
+ },
+ {
+  "index": 365,
+  "label": "산 봉우리",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "작은 산",
+   "산맥"
+  ]
+ },
+ {
+  "index": 366,
+  "label": "석재 창살 난간",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 벽틀",
+   "던전 벽"
+  ]
+ },
+ {
+  "index": 367,
+  "label": "격자 구덩이 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 368,
+  "label": "격자 구덩이 모서리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 모서리",
+   "던전 바닥"
+  ]
+ },
+ {
+  "index": 369,
+  "label": "잔잔한 바다 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 바다 수면",
+   "바다",
+   "calm",
+   "water"
+  ]
+ },
+ {
+  "index": 370,
+  "label": "어두운 암흑 바닥",
+  "role": "floor",
+  "passage": "solid",
+  "tags": [
+   "floor",
+   "검은 어둠 바닥"
+  ]
+ },
+ {
+  "index": 371,
+  "label": "어두운 구덩이 모서리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "동굴 바닥 모서리",
+   "동굴 바닥"
+  ]
+ },
+ {
+  "index": 372,
+  "label": "상향 화살표 발판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 373,
+  "label": "하향 화살표 발판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 374,
+  "label": "석재 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs"
+  ]
+ },
+ {
+  "index": 375,
+  "label": "붉은 카펫 좌상단 모서리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 좌상단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 376,
+  "label": "붉은 카펫 상단 테두리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 상단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 377,
+  "label": "붉은 카펫 우상단 모서리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 우상단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 378,
+  "label": "큰 갈색 산 좌상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "큰 산 좌상단",
+   "큰 갈색 산",
+   "큰 산"
+  ]
+ },
+ {
+  "index": 379,
+  "label": "큰 갈색 산 우상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "큰 산 우상단",
+   "큰 갈색 산",
+   "큰 산"
+  ]
+ },
+ {
+  "index": 380,
+  "label": "원형 석탑 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 탑 상단",
+   "원형 석탑",
+   "돌 탑"
+  ]
+ },
+ {
+  "index": 381,
+  "label": "석조 유적 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 유적"
+  ]
+ },
+ {
+  "index": 382,
+  "label": "석조 신전",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "신전"
+  ]
+ },
+ {
+  "index": 383,
+  "label": "연회색 돌 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "연회색 돌 무늬",
+   "돌",
+   "stone",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 384,
+  "label": "세로 침대 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "침대 상단",
+   "세로 침대",
+   "침대"
+  ]
+ },
+ {
+  "index": 385,
+  "label": "긴 목재 탁자 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 탁자 좌측",
+   "긴 목재 탁자",
+   "목재 탁자"
+  ]
+ },
+ {
+  "index": 386,
+  "label": "긴 목재 탁자 중앙",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 탁자 중앙",
+   "긴 목재 탁자",
+   "목재 탁자"
+  ]
+ },
+ {
+  "index": 387,
+  "label": "긴 목재 탁자 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 탁자 우측",
+   "긴 목재 탁자",
+   "목재 탁자"
+  ]
+ },
+ {
+  "index": 388,
+  "label": "작은 목재 탁자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 탁자"
+  ]
+ },
+ {
+  "index": 389,
+  "label": "수정구슬 점술 탁자",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "수정구 탁자"
+  ]
+ },
+ {
+  "index": 390,
+  "label": "숲 좌상단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "숲"
+  ]
+ },
+ {
+  "index": 391,
+  "label": "숲 상단 중앙",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "숲 상단",
+   "숲"
+  ]
+ },
+ {
+  "index": 392,
+  "label": "숲 아래 풀 지면",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 아래 풀 지면",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 393,
+  "label": "산맥 좌상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 좌상단",
+   "산맥"
+  ]
+ },
+ {
+  "index": 394,
+  "label": "산맥 상단 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 상단",
+   "산맥"
+  ]
+ },
+ {
+  "index": 395,
+  "label": "산맥 우상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 우상단",
+   "산맥"
+  ]
+ },
+ {
+  "index": 396,
+  "label": "격자 구덩이 벽 좌상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 좌상단",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 397,
+  "label": "격자 구덩이 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 상단",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 398,
+  "label": "격자 구덩이 벽 우상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 우상단",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 399,
+  "label": "어두운 구덩이 좌상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 좌상단",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 400,
+  "label": "어두운 구덩이 상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 상단",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 401,
+  "label": "어두운 구덩이 우상단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 우상단",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 402,
+  "label": "좌향 화살표 발판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 403,
+  "label": "우향 화살표 발판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 404,
+  "label": "유리창 상단",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "유리창"
+  ]
+ },
+ {
+  "index": 405,
+  "label": "붉은 카펫 좌측 테두리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 좌측단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 406,
+  "label": "붉은 양탄자 중앙",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 카펫 중앙",
+   "붉은 양탄자",
+   "붉은 카펫"
+  ]
+ },
+ {
+  "index": 407,
+  "label": "붉은 카펫 우측 테두리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 우측단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 408,
+  "label": "큰 갈색 산 좌하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "큰 산 좌하단",
+   "큰 갈색 산",
+   "큰 산"
+  ]
+ },
+ {
+  "index": 409,
+  "label": "핑크 바탕 암석 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 암석 무늬",
+   "암석",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 410,
+  "label": "원형 석탑 하단 입구",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 탑 하단",
+   "원형 석탑",
+   "돌 탑"
+  ]
+ },
+ {
+  "index": 411,
+  "label": "석조 유적 하단 입구",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 유적 하단",
+   "석조 유적"
+  ]
+ },
+ {
+  "index": 412,
+  "label": "석조 다리 북단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "석조 다리 상단",
+   "석조 다리"
+  ]
+ },
+ {
+  "index": 413,
+  "label": "동굴 입구",
+  "role": "door",
+  "passage": "passable",
+  "tags": [
+   "door"
+  ]
+ },
+ {
+  "index": 414,
+  "label": "세로 침대 하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "침대 하단",
+   "세로 침대",
+   "침대"
+  ]
+ },
+ {
+  "index": 415,
+  "label": "가로 침대 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "가로 침대"
+  ]
+ },
+ {
+  "index": 416,
+  "label": "가로 침대 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "가로 침대"
+  ]
+ },
+ {
+  "index": 417,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 418,
+  "label": "피아노 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "피아노"
+  ]
+ },
+ {
+  "index": 419,
+  "label": "피아노 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "피아노"
+  ]
+ },
+ {
+  "index": 420,
+  "label": "숲 좌측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "숲"
+  ]
+ },
+ {
+  "index": 421,
+  "label": "숲 중앙",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "숲"
+  ]
+ },
+ {
+  "index": 422,
+  "label": "숲 그늘 초지",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 그늘 초지",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 423,
+  "label": "산맥 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 좌측",
+   "산맥"
+  ]
+ },
+ {
+  "index": 424,
+  "label": "산맥 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 중앙",
+   "산맥"
+  ]
+ },
+ {
+  "index": 425,
+  "label": "산맥 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 우측",
+   "산맥"
+  ]
+ },
+ {
+  "index": 426,
+  "label": "격자 구덩이 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 좌측",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 427,
+  "label": "격자 구덩이 내부",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "격자 구덩이 중앙",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 428,
+  "label": "격자 구덩이 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 우측",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 429,
+  "label": "어두운 구덩이 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 좌측",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 430,
+  "label": "어두운 구덩이 내부",
+  "role": "floor",
+  "passage": "solid",
+  "tags": [
+   "floor",
+   "암석 구덩이 중앙",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 431,
+  "label": "어두운 구덩이 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 우측",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 432,
+  "label": "갈색 기와 지붕 상단",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "갈색 기와 지붕"
+  ]
+ },
+ {
+  "index": 433,
+  "label": "붉은 기와 지붕 상단",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "붉은 기와 지붕"
+  ]
+ },
+ {
+  "index": 434,
+  "label": "유리창 하단",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "유리창"
+  ]
+ },
+ {
+  "index": 435,
+  "label": "붉은 카펫 좌하단 모서리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 좌하단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 436,
+  "label": "붉은 카펫 하단 테두리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 하단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 437,
+  "label": "붉은 카펫 우하단 모서리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자 우하단",
+   "붉은 카펫",
+   "붉은 양탄자"
+  ]
+ },
+ {
+  "index": 438,
+  "label": "화산 분화구 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "화산 좌상단",
+   "화산"
+  ]
+ },
+ {
+  "index": 439,
+  "label": "핑크 바탕 회색 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 회색 무늬",
+   "rock",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 440,
+  "label": "성채 좌상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "성 좌상단",
+   "성채",
+   "성"
+  ]
+ },
+ {
+  "index": 441,
+  "label": "성채 우상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "성 우상단",
+   "성채",
+   "성"
+  ]
+ },
+ {
+  "index": 442,
+  "label": "석조 다리 교차부",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "석조 다리 중단",
+   "석조 다리"
+  ]
+ },
+ {
+  "index": 443,
+  "label": "석조 다리 가로형 좌측",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "수평 석조 다리 우측",
+   "석조 다리"
+  ]
+ },
+ {
+  "index": 444,
+  "label": "파이프 오르간 파이프 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "파이프 오르간 좌상단",
+   "파이프 오르간"
+  ]
+ },
+ {
+  "index": 445,
+  "label": "파이프 오르간 파이프 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "파이프 오르간 우상단",
+   "파이프 오르간"
+  ]
+ },
+ {
+  "index": 446,
+  "label": "붉은 1인용 왕좌 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "붉은색 의자 등받이",
+   "붉은 1인용 왕좌",
+   "붉은색 등받이 의자"
+  ]
+ },
+ {
+  "index": 447,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 448,
+  "label": "붉은색 대형 소파 등받이 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "대형 붉은 왕좌 좌상단",
+   "붉은색 대형 소파",
+   "대형 붉은 왕좌"
+  ]
+ },
+ {
+  "index": 449,
+  "label": "붉은색 대형 소파 등받이 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "대형 붉은 왕좌 우상단",
+   "붉은색 대형 소파",
+   "대형 붉은 왕좌"
+  ]
+ },
+ {
+  "index": 450,
+  "label": "숲 좌하단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "숲"
+  ]
+ },
+ {
+  "index": 451,
+  "label": "숲 하단 중앙",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "숲 하단",
+   "숲"
+  ]
+ },
+ {
+  "index": 452,
+  "label": "숲바닥 초지",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲바닥 초지",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 453,
+  "label": "산맥 좌하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 좌하단",
+   "산맥"
+  ]
+ },
+ {
+  "index": 454,
+  "label": "산맥 하단 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 하단",
+   "산맥"
+  ]
+ },
+ {
+  "index": 455,
+  "label": "산맥 우하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "산 우하단",
+   "산맥"
+  ]
+ },
+ {
+  "index": 456,
+  "label": "격자 구덩이 벽 좌하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 좌하단",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 457,
+  "label": "격자 구덩이 벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 하단",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 458,
+  "label": "격자 구덩이 벽 우하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석재 난간 우하단",
+   "격자 구덩이",
+   "석재 구덩이 난간"
+  ]
+ },
+ {
+  "index": 459,
+  "label": "어두운 구덩이 좌하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 좌하단",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 460,
+  "label": "심해 검푸른 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "심해 검푸른 물",
+   "심해",
+   "ocean",
+   "dark"
+  ]
+ },
+ {
+  "index": 461,
+  "label": "어두운 구덩이 우하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "암석 구덩이 우하단",
+   "어두운 구덩이",
+   "암석 구덩이"
+  ]
+ },
+ {
+  "index": 462,
+  "label": "갈색 기와 지붕 하단",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "갈색 기와 지붕"
+  ]
+ },
+ {
+  "index": 463,
+  "label": "붉은 기와 지붕 하단",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "붉은 기와 지붕"
+  ]
+ },
+ {
+  "index": 464,
+  "label": "짙회색 무늬 판",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "짙회색 무늬 판",
+   "회색",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 465,
+  "label": "붉은 양탄자 계단 좌측",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "붉은 카펫 계단 좌측",
+   "붉은 양탄자 계단",
+   "붉은 카펫 계단"
+  ]
+ },
+ {
+  "index": 466,
+  "label": "붉은 양탄자 계단 중앙",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "붉은 카펫 계단 중앙",
+   "붉은 양탄자 계단",
+   "붉은 카펫 계단"
+  ]
+ },
+ {
+  "index": 467,
+  "label": "붉은 양탄자 계단 우측",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "붉은 카펫 계단 우측",
+   "붉은 양탄자 계단",
+   "붉은 카펫 계단"
+  ]
+ },
+ {
+  "index": 468,
+  "label": "화산 기슭 좌하단",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "화산 좌하단",
+   "화산"
+  ]
+ },
+ {
+  "index": 469,
+  "label": "핑크 빛 잡석 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 빛 잡석 무늬",
+   "잡석",
+   "stone",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 470,
+  "label": "성채 좌하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "성 좌하단",
+   "성채",
+   "성"
+  ]
+ },
+ {
+  "index": 471,
+  "label": "성채 우하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "성 우하단",
+   "성채",
+   "성"
+  ]
+ },
+ {
+  "index": 472,
+  "label": "석조 다리 남단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "석조 다리 하단",
+   "석조 다리"
+  ]
+ },
+ {
+  "index": 473,
+  "label": "석조 다리 가로형 우측",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "수평 석조 다리 난간",
+   "석조 다리"
+  ]
+ },
+ {
+  "index": 474,
+  "label": "파이프 오르간 건반 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "파이프 오르간 좌하단",
+   "파이프 오르간"
+  ]
+ },
+ {
+  "index": 475,
+  "label": "파이프 오르간 건반 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "파이프 오르간 우하단",
+   "파이프 오르간"
+  ]
+ },
+ {
+  "index": 476,
+  "label": "붉은 1인용 왕좌 하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "붉은색 의자 방석",
+   "붉은 1인용 왕좌",
+   "붉은색 등받이 의자"
+  ]
+ },
+ {
+  "index": 477,
+  "label": "붉은색 대형 소파 팔걸이 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "대형 붉은 왕좌 좌하단",
+   "붉은색 대형 소파",
+   "대형 붉은 왕좌"
+  ]
+ },
+ {
+  "index": 478,
+  "label": "붉은색 대형 소파 방석 중앙",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "대형 붉은 왕좌 중앙",
+   "붉은색 대형 소파",
+   "대형 붉은 왕좌"
+  ]
+ },
+ {
+  "index": 479,
+  "label": "붉은색 대형 소파 팔걸이 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "대형 붉은 왕좌 우하단",
+   "붉은색 대형 소파",
+   "대형 붉은 왕좌"
+  ]
+ }
+]

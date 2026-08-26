@@ -1,0 +1,120 @@
+240|잔디 바닥|terrain|passable|high|
+241|잔디 바닥|terrain|passable|high|
+242|잔디 바닥|terrain|passable|high|
+243|짙은 잔디 바닥|terrain|passable|high|
+244|잔디 바닥|terrain|passable|high|
+245|짙은 잔디 바닥|terrain|passable|high|
+246|독립된 돌길 바닥|floor|passable|high|돌길 바닥
+247|잔디 바닥|terrain|passable|high|
+248|돌길 바닥|floor|passable|high|돌길 바닥
+249|독립된 어두운 돌바닥|floor|passable|high|어두운 돌바닥
+250|잔디 바닥|terrain|passable|high|
+251|어두운 돌바닥|floor|passable|high|어두운 돌바닥
+252|붉은 자갈 바닥|floor|passable|high|
+253|푸른 자갈 바닥|floor|passable|high|
+254|벽돌 벽과 나무 기둥|wall|solid|high|
+255|벽돌 벽과 나무 기둥|wall|solid|high|
+256|회색 벽과 나무 기둥|wall|solid|high|
+257|회색 벽과 나무 기둥|wall|solid|high|
+258|빈 슬롯|empty|passable|high|
+259|나뭇가지 더미|prop|solid|medium|
+260|키 큰 나무 상단|tree|solid|high|키 큰 나무
+261|마른 나무 상단|tree|solid|high|마른 나무
+262|큰 나무 좌상단|tree|solid|high|큰 나무
+263|큰 나무 우상단|tree|solid|high|큰 나무
+264|폭포 상단|water|solid|high|폭포
+265|덩굴 상단|plant|passable|high|덩굴
+266|석상 상단|prop|solid|high|석상
+267|석조 기둥 상단|prop|solid|high|석조 기둥
+268|파이프 오르간 좌상단|furniture|solid|high|파이프 오르간
+269|파이프 오르간 우상단|furniture|solid|high|파이프 오르간
+270|잔디 바닥|terrain|passable|high|
+271|잔디 바닥|terrain|passable|high|
+272|잔디 바닥|terrain|passable|high|
+273|짙은 잔디 바닥|terrain|passable|high|
+274|짙은 잔디 바닥|terrain|passable|high|
+275|짙은 잔디 바닥|terrain|passable|high|
+276|돌길 바닥 좌상단|floor|passable|high|돌길 바닥
+277|돌길 바닥 상단|floor|passable|high|돌길 바닥
+278|돌길 바닥 우상단|floor|passable|high|돌길 바닥
+279|어두운 돌바닥 좌상단|floor|passable|high|어두운 돌바닥
+280|어두운 돌바닥 상단|floor|passable|high|어두운 돌바닥
+281|어두운 돌바닥 우상단|floor|passable|high|어두운 돌바닥
+282|분홍 자갈 바닥|floor|passable|high|
+283|청회색 자갈 바닥|floor|passable|high|
+284|푸른 벽돌 벽 좌상단|wall|solid|high|푸른 벽돌 벽
+285|푸른 벽돌 벽 상단|wall|solid|high|푸른 벽돌 벽
+286|푸른 벽돌 벽 상단 이끼|wall|solid|high|푸른 벽돌 벽
+287|푸른 벽돌 벽 우상단|wall|solid|high|푸른 벽돌 벽
+288|꽃이 핀 덤불|plant|solid|high|
+289|초록 덤불|plant|solid|high|
+290|키 큰 나무 하단|tree|solid|high|키 큰 나무
+291|마른 나무 하단|tree|solid|high|마른 나무
+292|큰 나무 좌하단|tree|solid|high|큰 나무
+293|큰 나무 우하단|tree|solid|high|큰 나무
+294|폭포 중단|water|solid|high|폭포
+295|덩굴 중단|plant|passable|high|덩굴
+296|석상 중단|prop|solid|high|석상
+297|석조 기둥 하단|prop|solid|high|석조 기둥
+298|파이프 오르간 좌하단|furniture|solid|high|파이프 오르간
+299|파이프 오르간 우하단|furniture|solid|high|파이프 오르간
+300|잔디 바닥|terrain|passable|high|
+301|잔디 바닥|terrain|passable|high|
+302|잔디 바닥|terrain|passable|high|
+303|짙은 잔디 바닥|terrain|passable|high|
+304|짙은 잔디 바닥|terrain|passable|high|
+305|짙은 잔디 바닥|terrain|passable|high|
+306|돌길 바닥 좌측|floor|passable|high|돌길 바닥
+307|돌길 바닥 중앙|floor|passable|high|돌길 바닥
+308|돌길 바닥 우측|floor|passable|high|돌길 바닥
+309|어두운 돌바닥 좌측|floor|passable|high|어두운 돌바닥
+310|어두운 돌바닥 중앙|floor|passable|high|어두운 돌바닥
+311|어두운 돌바닥 우측|floor|passable|high|어두운 돌바닥
+312|회색 자갈 바닥|floor|passable|high|
+313|자주색 자갈 바닥|floor|passable|high|
+314|석조 벽 상단 좌측|wall|solid|high|석조 벽
+315|석조 벽 상단 중좌측|wall|solid|high|석조 벽
+316|석조 벽 상단 중우측|wall|solid|high|석조 벽
+317|석조 벽 상단 우측|wall|solid|high|석조 벽
+318|벽걸이 횃불|prop|passable|high|
+319|벽 레버|prop|passable|medium|
+320|벽보|prop|passable|high|
+321|밧줄|prop|passable|high|
+322|나무 사다리|stairs|passable|high|
+323|묘비 상단|prop|solid|high|묘비
+324|폭포 하단 물보라|water|solid|high|폭포
+325|덩굴 하단|plant|passable|high|덩굴
+326|석상 받침대|prop|solid|high|석상
+327|긴 탁자 좌측|furniture|solid|high|긴 탁자
+328|긴 탁자 우측|furniture|solid|high|긴 탁자
+329|어두운 입구 상단|door|solid|high|어두운 입구
+330|잔디 바닥|terrain|passable|high|
+331|잔디 바닥|terrain|passable|high|
+332|잔디 바닥|terrain|passable|high|
+333|짙은 잔디 바닥|terrain|passable|high|
+334|짙은 잔디 바닥|terrain|passable|high|
+335|짙은 잔디 바닥|terrain|passable|high|
+336|돌길 바닥 좌하단|floor|passable|high|돌길 바닥
+337|돌길 바닥 하단|floor|passable|high|돌길 바닥
+338|돌길 바닥 우하단|floor|passable|high|돌길 바닥
+339|어두운 돌바닥 좌하단|floor|passable|high|어두운 돌바닥
+340|어두운 돌바닥 하단|floor|passable|high|어두운 돌바닥
+341|어두운 돌바닥 우하단|floor|passable|high|어두운 돌바닥
+342|밝은 석판 바닥|floor|passable|high|
+343|원형 문양 석판 바닥|floor|passable|high|
+344|석조 벽 하단 좌측|wall|solid|high|석조 벽
+345|석조 벽 하단 중좌측|wall|solid|high|석조 벽
+346|석조 벽 하단 중우측|wall|solid|high|석조 벽
+347|석조 벽 하단 우측|wall|solid|high|석조 벽
+348|들꽃|plant|passable|high|
+349|장작더미|prop|solid|high|
+350|빨간 우체통|prop|solid|high|
+351|붉은 꽃 화분|prop|solid|high|
+352|항아리|prop|solid|high|
+353|묘비 하단|prop|solid|high|묘비
+354|갈색 지붕 좌하단|roof|solid|high|갈색 지붕
+355|갈색 지붕 우하단|roof|solid|high|갈색 지붕
+356|남색 지붕 좌하단|roof|solid|high|남색 지붕
+357|남색 지붕 우하단|roof|solid|high|남색 지붕
+358|나무 기둥|prop|solid|high|
+359|어두운 입구 하단|door|solid|high|어두운 입구

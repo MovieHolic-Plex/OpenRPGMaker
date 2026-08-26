@@ -1,0 +1,120 @@
+0|바다|water|solid|high|
+1|바다|water|solid|high|
+2|바다|water|solid|high|
+3|아치형 창문 상단|window|solid|high|바다 창문
+4|아치형 창문 상단|window|solid|high|바다 창문
+5|아치형 창문 상단|window|solid|high|바다 창문
+6|벽돌 벽 구멍|wall|solid|high|벽돌 벽 입구
+7|벽돌 벽|wall|solid|high|벽돌 벽 입구
+8|벽돌 벽 구멍|wall|solid|high|벽돌 벽 입구
+9|벽돌 벽 구멍|wall|solid|high|벽돌 벽 입구
+10|벽돌 벽|wall|solid|high|벽돌 벽 입구
+11|벽돌 벽 구멍|wall|solid|high|벽돌 벽 입구
+12|세로 나무 벽|wall|solid|high|
+13|가로 나무 벽|wall|solid|high|
+14|가로 나무 벽|wall|solid|high|
+15|세로 나무 벽|wall|solid|high|
+16|가로 나무 벽|wall|solid|high|
+17|세로 나무 벽|wall|solid|high|
+18|나무 수납장|furniture|solid|medium|나무 수납장
+19|나무 수납장|furniture|solid|medium|나무 수납장
+20|나무 수납장|furniture|solid|medium|나무 수납장
+21|나무 수납장|furniture|solid|medium|나무 수납장
+22|나무 사다리|stairs|passable|high|사다리
+23|나무 사다리|stairs|passable|high|사다리
+24|선체 모서리|prop|passable|low|나무 선체
+25|나무 선체|prop|passable|high|나무 선체
+26|나무 선체|prop|passable|high|나무 선체
+27|나무 선체|prop|passable|high|나무 선체
+28|나무 선체|prop|passable|high|나무 선체
+29|나무 선체 곡선|prop|passable|high|나무 선체
+30|바다|water|solid|high|
+31|바다|water|solid|high|
+32|바다|water|solid|high|
+33|창문|window|solid|high|바다 창문
+34|창문|window|solid|high|바다 창문
+35|창문|window|solid|high|바다 창문
+36|어두운 입구|door|solid|high|벽돌 벽 입구
+37|어두운 입구|door|solid|high|벽돌 벽 입구
+38|어두운 입구|door|solid|high|벽돌 벽 입구
+39|어두운 입구|door|solid|high|벽돌 벽 입구
+40|어두운 입구|door|solid|high|벽돌 벽 입구
+41|어두운 입구|door|solid|high|벽돌 벽 입구
+42|가로 나무 벽|wall|solid|high|
+43|나무 벽 대각 빔|wall|solid|high|
+44|나무 계단 상단|stairs|solid|medium|나무 계단
+45|나무 기둥|furniture|solid|medium|이층 침대
+46|이층 침대 상단|furniture|solid|medium|이층 침대
+47|이층 침대 상단|furniture|solid|medium|이층 침대
+48|대각 목재 빔|wall|solid|high|선체 내부
+49|주름 배관|prop|solid|high|배관
+50|주름 배관|prop|solid|high|배관
+51|주름 배관|prop|solid|high|배관
+52|대각 목재 빔|wall|solid|high|선체 내부
+53|나무 기둥|wall|solid|medium|선체 내부
+54|나무 선체|prop|passable|high|나무 선체
+55|나무 선체|prop|passable|high|나무 선체
+56|나무 선체|prop|passable|high|나무 선체
+57|탁자 위 나무 막대|prop|solid|medium|나무 탁자
+58|톱니바퀴|prop|solid|high|톱니바퀴
+59|톱니바퀴|prop|solid|high|톱니바퀴
+60|바다|water|solid|high|
+61|바다|water|solid|high|
+62|바다|water|solid|high|
+63|창 아래 바다|water|solid|high|바다 창문
+64|창 아래 바다|water|solid|high|바다 창문
+65|창 아래 바다|water|solid|high|바다 창문
+66|어두운 입구|door|solid|high|벽돌 벽 입구
+67|어두운 입구|door|solid|high|벽돌 벽 입구
+68|어두운 입구|door|solid|high|벽돌 벽 입구
+69|어두운 입구|door|solid|high|벽돌 벽 입구
+70|어두운 입구|door|solid|high|벽돌 벽 입구
+71|어두운 입구|door|solid|high|벽돌 벽 입구
+72|기계 상단|prop|solid|low|펌프 기계
+73|세로 탱크|prop|solid|high|펌프 기계
+74|나무 계단|stairs|solid|medium|나무 계단
+75|나무 계단|stairs|solid|medium|나무 계단
+76|이층 침대 하단|furniture|solid|medium|이층 침대
+77|나무 벽기둥|wall|solid|medium|이층 침대
+78|대각 목재 빔|wall|solid|high|선체 내부
+79|대각 목재 빔|wall|solid|high|선체 내부
+80|세로 배관|prop|solid|high|배관
+81|대각 목재 빔|wall|solid|high|선체 내부
+82|대각 목재 빔|wall|solid|high|선체 내부
+83|금속 패널|prop|solid|medium|배관
+84|나무 선체|prop|passable|high|나무 선체
+85|나무 선체|prop|passable|high|나무 선체
+86|나무 탁자|furniture|solid|high|나무 탁자
+87|나무 탁자 다리|furniture|solid|high|나무 탁자
+88|나무 탁자|furniture|solid|high|나무 탁자
+89|나무 탁자|furniture|solid|high|나무 탁자
+90|바다|water|solid|high|
+91|바다|water|solid|high|
+92|바다|water|solid|high|
+93|창 아래 바다|water|solid|high|바다 창문
+94|창 아래 바다|water|solid|high|바다 창문
+95|창 아래 바다|water|solid|high|바다 창문
+96|벽돌 벽 하단|wall|solid|high|벽돌 벽 입구
+97|벽돌 벽 하단|wall|solid|high|벽돌 벽 입구
+98|벽돌 벽 하단|wall|solid|high|벽돌 벽 입구
+99|벽돌 벽 하단|wall|solid|high|벽돌 벽 입구
+100|벽돌 벽 하단|wall|solid|high|벽돌 벽 입구
+101|벽돌 벽 하단|wall|solid|high|벽돌 벽 입구
+102|기계 하단|prop|solid|medium|펌프 기계
+103|세로 탱크|prop|solid|high|펌프 기계
+104|현창|window|solid|high|현창
+105|현창|window|solid|high|현창
+106|현창|window|solid|high|현창
+107|나무 문|door|solid|low|현창
+108|나무 벽과 배관|wall|solid|high|선체 내부
+109|대각 목재 빔|wall|solid|high|선체 내부
+110|세로 배관|prop|solid|high|배관
+111|대각 목재 빔|wall|solid|high|선체 내부
+112|가로 배관|prop|solid|high|배관
+113|주름 배관|prop|solid|high|배관
+114|나무 선체|prop|passable|high|나무 선체
+115|나무 선체|prop|passable|high|나무 선체
+116|나무 선체|prop|passable|high|나무 선체
+117|나무 선체|prop|passable|high|나무 선체
+118|나무 선체|prop|passable|high|나무 선체
+119|랜턴|prop|passable|high|

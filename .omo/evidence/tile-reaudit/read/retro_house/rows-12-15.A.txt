@@ -1,0 +1,120 @@
+360|원형 무늬 보라색 자갈 바닥|terrain|passable|medium|보라색 자갈밭
+361|초록 잔디|terrain|passable|high|
+362|보라색 자갈 바닥|terrain|passable|high|보라색 자갈밭
+363|잔디에 둘러싸인 모래 바닥|terrain|passable|high|모래 길
+364|초록 잔디|terrain|passable|high|
+365|잔디 가장자리 모래 바닥|terrain|passable|high|모래 길
+366|청회색 틀의 검은 창문|window|solid|high|청록색 벽
+367|짙은 청록색 벽면|wall|solid|high|청록색 벽
+368|짙은 청록색 벽 모서리|wall|solid|medium|청록색 벽
+369|회색 틀의 남색 창문|window|solid|high|남색 벽
+370|짙은 남색 벽면|wall|solid|high|남색 벽
+371|짙은 남색 벽 모서리|wall|solid|medium|남색 벽
+372|보라색 돌 표면|rock|solid|medium|보라색 암벽
+373|자주색 돌 표면|rock|solid|medium|자주색 암벽
+374|주황색 기와지붕 처마|roof|solid|high|주황색 기와지붕
+375|주황색 기와지붕 조각|roof|solid|high|주황색 기와지붕
+376|밝은 장식이 있는 주황색 기와|roof|solid|high|주황색 기와지붕
+377|주황색 기와지붕 조각|roof|solid|high|주황색 기와지붕
+378|둥근 목책 왼쪽 상단|fence|solid|high|둥근 목책
+379|둥근 목책 상단|fence|solid|high|둥근 목책
+380|둥근 목책 오른쪽 상단|fence|solid|high|둥근 목책
+381|모닥불|prop|solid|high|
+382|보라색 바위|rock|solid|high|
+383|깨진 연두색 항아리|prop|passable|medium|
+384|주황색 삼각 천 왼쪽 조각|decoration|passable|high|주황색 천 장식
+385|주황색 삼각 천 오른쪽 조각|decoration|passable|high|주황색 천 장식
+386|파란색 삼각 천 왼쪽 조각|decoration|passable|high|파란색 천 장식
+387|파란색 삼각 천 오른쪽 조각|decoration|passable|high|파란색 천 장식
+388|세로 목재 기둥|prop|solid|high|
+389|녹색 천 덮개|decoration|passable|low|
+390|잔디 경계의 보라색 자갈 왼쪽 조각|terrain|passable|high|보라색 자갈밭
+391|잔디 경계의 보라색 자갈 가운데 조각|terrain|passable|high|보라색 자갈밭
+392|잔디 경계의 보라색 자갈 오른쪽 조각|terrain|passable|high|보라색 자갈밭
+393|잔디 경계의 모래 길 왼쪽 조각|terrain|passable|high|모래 길
+394|모래 길 가운데 조각|terrain|passable|high|모래 길
+395|잔디 경계의 모래 길 오른쪽 조각|terrain|passable|high|모래 길
+396|청록색 벽 테두리 왼쪽 상단|wall|solid|high|청록색 벽
+397|청록색 벽 테두리 상단|wall|solid|high|청록색 벽
+398|청록색 벽 테두리 오른쪽 상단|wall|solid|high|청록색 벽
+399|남색 벽 테두리 왼쪽 상단|wall|solid|high|남색 벽
+400|남색 벽 테두리 상단|wall|solid|high|남색 벽
+401|남색 벽 테두리 오른쪽 상단|wall|solid|high|남색 벽
+402|초록 싹이 난 자주색 암벽|cliff|solid|medium|자주색 암벽
+403|덩굴이 덮인 보라색 암벽|cliff|solid|high|보라색 암벽
+404|주황색 기와지붕 왼쪽 하단|roof|solid|high|주황색 기와지붕
+405|장식 띠가 있는 주황색 기와지붕|roof|solid|high|주황색 기와지붕
+406|파란색 기와지붕 왼쪽 상단|roof|solid|high|파란색 기와지붕
+407|파란색 기와지붕 오른쪽 상단|roof|solid|high|파란색 기와지붕
+408|둥근 목책 왼쪽 하단|fence|solid|high|둥근 목책
+409|둥근 목책 하단|fence|solid|high|둥근 목책
+410|둥근 목책 오른쪽 하단|fence|solid|high|둥근 목책
+411|흩어진 주황색 돌조각|decoration|passable|medium|
+412|목재 술집 간판|prop|solid|high|
+413|회색 십자 방향 표지판|prop|solid|high|
+414|대형 묘비 왼쪽 상단|prop|solid|high|대형 묘비
+415|대형 묘비 상단|prop|solid|high|대형 묘비
+416|대형 묘비 오른쪽 상단|prop|solid|high|대형 묘비
+417|베이지색 천막 왼쪽 상단|prop|solid|high|베이지색 천막
+418|베이지색 천막 상단|prop|solid|high|베이지색 천막
+419|베이지색 천막 오른쪽 상단|prop|solid|high|베이지색 천막
+420|잔디 경계의 보라색 자갈 왼쪽 조각|terrain|passable|high|보라색 자갈밭
+421|보라색 자갈 가운데 조각|terrain|passable|high|보라색 자갈밭
+422|잔디 경계의 보라색 자갈 오른쪽 조각|terrain|passable|high|보라색 자갈밭
+423|잔디 경계의 모래 길 왼쪽 조각|terrain|passable|high|모래 길
+424|모래 길 가운데 조각|terrain|passable|high|모래 길
+425|잔디 경계의 모래 길 오른쪽 조각|terrain|passable|high|모래 길
+426|청록색 벽 테두리 왼쪽|wall|solid|high|청록색 벽
+427|짙은 청록색 벽 중앙|wall|solid|high|청록색 벽
+428|청록색 벽 테두리 오른쪽|wall|solid|high|청록색 벽
+429|남색 벽 테두리 왼쪽|wall|solid|high|남색 벽
+430|짙은 남색 벽 중앙|wall|solid|high|남색 벽
+431|남색 벽 테두리 오른쪽|wall|solid|high|남색 벽
+432|이끼 낀 회색 암벽|cliff|solid|high|회색 암벽
+433|회색 암벽|cliff|solid|high|회색 암벽
+434|밧줄 달린 회색 철문 왼쪽 상단|gate|solid|medium|회색 철문
+435|밧줄 달린 회색 철문 오른쪽 상단|gate|solid|medium|회색 철문
+436|파란색 기와지붕 왼쪽 가운데|roof|solid|high|파란색 기와지붕
+437|파란색 기와지붕 오른쪽 가운데|roof|solid|high|파란색 기와지붕
+438|굽은 목책 조각|fence|solid|high|목책
+439|곧은 목책 조각|fence|solid|high|목책
+440|등받이 있는 목재 의자|furniture|solid|low|
+441|목재 판자 상판|furniture|solid|low|목재 진열대
+442|청록색 그림의 목재 간판|prop|solid|medium|
+443|붉은 글씨의 여관 간판|prop|solid|high|
+444|대형 묘비 왼쪽 가운데|prop|solid|high|대형 묘비
+445|글자가 새겨진 대형 묘비 가운데|prop|solid|high|대형 묘비
+446|대형 묘비 오른쪽 가운데|prop|solid|high|대형 묘비
+447|베이지색 천막 왼쪽 가운데|prop|solid|high|베이지색 천막
+448|검은 천막 입구 상단|door|passable|high|베이지색 천막
+449|베이지색 천막 오른쪽 가운데|prop|solid|high|베이지색 천막
+450|잔디 경계의 보라색 자갈 왼쪽 하단|terrain|passable|high|보라색 자갈밭
+451|잔디 경계의 보라색 자갈 하단|terrain|passable|high|보라색 자갈밭
+452|잔디 경계의 보라색 자갈 오른쪽 하단|terrain|passable|high|보라색 자갈밭
+453|잔디 경계의 모래 길 왼쪽 하단|terrain|passable|high|모래 길
+454|잔디 경계의 모래 길 하단|terrain|passable|high|모래 길
+455|잔디 경계의 모래 길 오른쪽 하단|terrain|passable|high|모래 길
+456|청록색 벽 테두리 왼쪽 하단|wall|solid|high|청록색 벽
+457|청록색 벽 테두리 하단|wall|solid|high|청록색 벽
+458|청록색 벽 테두리 오른쪽 하단|wall|solid|high|청록색 벽
+459|남색 벽 테두리 왼쪽 하단|wall|solid|high|남색 벽
+460|남색 벽 테두리 하단|wall|solid|high|남색 벽
+461|남색 벽 테두리 오른쪽 하단|wall|solid|high|남색 벽
+462|밝은 결정이 박힌 암벽 왼쪽 조각|cliff|solid|high|결정 암벽
+463|밝은 결정이 박힌 암벽 오른쪽 조각|cliff|solid|high|결정 암벽
+464|밧줄 달린 회색 철문 왼쪽 하단|gate|solid|medium|회색 철문
+465|밧줄 달린 회색 철문 오른쪽 하단|gate|solid|medium|회색 철문
+466|파란색 기와지붕 왼쪽 하단|roof|solid|high|파란색 기와지붕
+467|파란색 기와지붕 오른쪽 하단|roof|solid|high|파란색 기와지붕
+468|목재 진열대 왼쪽 조각|furniture|solid|low|목재 진열대
+469|목재 진열대 가운데 왼쪽 조각|furniture|solid|low|목재 진열대
+470|목재 진열대 가운데 오른쪽 조각|furniture|solid|low|목재 진열대
+471|목재 진열대 오른쪽 조각|furniture|solid|low|목재 진열대
+472|보라색 병 그림의 목재 간판|prop|solid|medium|
+473|빨간 항아리 그림의 목재 간판|prop|solid|high|
+474|대형 묘비 왼쪽 하단|prop|solid|high|대형 묘비
+475|대형 묘비 하단|prop|solid|high|대형 묘비
+476|대형 묘비 오른쪽 하단|prop|solid|high|대형 묘비
+477|베이지색 천막 왼쪽 하단|prop|solid|high|베이지색 천막
+478|검은 천막 입구 하단|door|passable|high|베이지색 천막
+479|베이지색 천막 오른쪽 하단|prop|solid|high|베이지색 천막

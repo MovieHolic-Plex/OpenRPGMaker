@@ -1,0 +1,1429 @@
+[
+ {
+  "index": 360,
+  "label": "흙탕 잔디 북서 모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙탕 잔디 북서 모서리",
+   "soil",
+   "grass corner",
+   "바닥"
+  ]
+ },
+ {
+  "index": 361,
+  "label": "평지 잔디밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평지 잔디밭",
+   "grass",
+   "field",
+   "풀판"
+  ]
+ },
+ {
+  "index": 362,
+  "label": "황토 흙바닥 전체",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "황토 흙바닥 전체",
+   "soil",
+   "ground",
+   "땅"
+  ]
+ },
+ {
+  "index": 363,
+  "label": "모래 북서 잔디 모서리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 북서 잔디 모서리",
+   "sand",
+   "corner",
+   "사구"
+  ]
+ },
+ {
+  "index": 364,
+  "label": "잔디 우측 모래 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "잔디 우측 모래 경계",
+   "sand",
+   "edge",
+   "경계선"
+  ]
+ },
+ {
+  "index": 365,
+  "label": "평사장 모래 전체",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "평사장 모래 전체",
+   "sand",
+   "beach",
+   "사장"
+  ]
+ },
+ {
+  "index": 366,
+  "label": "칠흑 구멍 상단 테두리",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 구멍 상단 테두리",
+   "void",
+   "black",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 367,
+  "label": "암흑 바닥 전체",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "암흑 바닥 전체",
+   "void",
+   "black",
+   "심연",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 368,
+  "label": "칠흑 바닥 모서리 조각",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 바닥 모서리 조각",
+   "void",
+   "black",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 369,
+  "label": "어두운 돌 구덩이 상단",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "어두운 돌 구덩이 상단",
+   "dark",
+   "pit",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 370,
+  "label": "남색 석조 벽 상단 보",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "짙은 남색 벽면",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 371,
+  "label": "남색 석조 벽 상단 오른쪽 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "짙은 남색 벽 모서리",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 372,
+  "label": "거친 자갈 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "짙은 흙 바닥",
+   "붉은 자갈길"
+  ]
+ },
+ {
+  "index": 373,
+  "label": "붉은 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "붉은 흙밭"
+  ]
+ },
+ {
+  "index": 374,
+  "label": "초가지붕 용마루",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가지붕 용마루",
+   "thatch",
+   "ridge",
+   "지붕"
+  ]
+ },
+ {
+  "index": 375,
+  "label": "초가지붕 가로 띠",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가지붕 가로 띠",
+   "thatch",
+   "stripe",
+   "지붕"
+  ]
+ },
+ {
+  "index": 376,
+  "label": "초가지붕 세로 이음",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가지붕 세로 이음",
+   "thatch",
+   "seam",
+   "지붕"
+  ]
+ },
+ {
+  "index": 377,
+  "label": "짚지붕 붉은 띠 무늬",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "짚지붕 붉은 띠 무늬",
+   "thatch",
+   "red band",
+   "처마"
+  ]
+ },
+ {
+  "index": 378,
+  "label": "곡선 목재 울타리 좌상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "나무 울타리 좌측 상단",
+   "둥근 목책 왼쪽 상단",
+   "나무 울타리 좌측 끝"
+  ]
+ },
+ {
+  "index": 379,
+  "label": "목재 울타리 상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "나무 울타리 상단",
+   "둥근 목책 상단",
+   "목재 울타리"
+  ]
+ },
+ {
+  "index": 380,
+  "label": "곡선 목재 울타리 우상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "나무 울타리 우측 상단",
+   "둥근 목책 오른쪽 상단",
+   "나무 울타리 우측 끝"
+  ]
+ },
+ {
+  "index": 381,
+  "label": "석벽 노란 등불 얼룩",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "석벽 노란 등불 얼룩",
+   "lamp",
+   "light",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 382,
+  "label": "돌 화덕",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "돌 우물"
+  ]
+ },
+ {
+  "index": 383,
+  "label": "깨진 연두색 항아리",
+  "role": "prop",
+  "passage": "passable",
+  "tags": [
+   "prop",
+   "해골과 뼈"
+  ]
+ },
+ {
+  "index": 384,
+  "label": "짚지붕 모서리 우상 꺾임",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "짚지붕 모서리 우상 꺾임",
+   "thatch",
+   "corner",
+   "벽"
+  ]
+ },
+ {
+  "index": 385,
+  "label": "짚지붕 모서리 좌하 꺾임",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "짚지붕 모서리 좌하 꺾임",
+   "thatch",
+   "corner",
+   "벽"
+  ]
+ },
+ {
+  "index": 386,
+  "label": "푸른 지붕 꺾임 우상",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "푸른 지붕 꺾임 우상",
+   "blue",
+   "roof",
+   "벽"
+  ]
+ },
+ {
+  "index": 387,
+  "label": "푸른 지붕 꺾임 좌하",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "푸른 지붕 꺾임 좌하",
+   "blue",
+   "roof",
+   "벽"
+  ]
+ },
+ {
+  "index": 388,
+  "label": "세로 목재 기둥",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 기둥 상단",
+   "통나무 기둥",
+   "목재 기둥"
+  ]
+ },
+ {
+  "index": 389,
+  "label": "천막 지붕 상단 장식",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "녹색 차양 지붕",
+   "풀 덮개 차양",
+   "천막"
+  ]
+ },
+ {
+  "index": 390,
+  "label": "흙 위 잔디 북쪽 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 위 잔디 북쪽 경계",
+   "soil",
+   "grass edge",
+   "바닥"
+  ]
+ },
+ {
+  "index": 391,
+  "label": "밭흙 바닥 전체",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭흙 바닥 전체",
+   "soil",
+   "field",
+   "땅"
+  ]
+ },
+ {
+  "index": 392,
+  "label": "흙 남동 잔디 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 남동 잔디 경계",
+   "soil",
+   "grass edge",
+   "모서리"
+  ]
+ },
+ {
+  "index": 393,
+  "label": "모래 사선 북서 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사선 북서 경계",
+   "sand",
+   "diagonal",
+   "사구"
+  ]
+ },
+ {
+  "index": 394,
+  "label": "모래밭 잔디 구석",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 잔디 구석",
+   "sand",
+   "corner",
+   "풀"
+  ]
+ },
+ {
+  "index": 395,
+  "label": "모래 서쪽 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 서쪽 경계",
+   "sand",
+   "edge",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 396,
+  "label": "칠흑 북서 프레임",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 북서 프레임",
+   "void",
+   "frame",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 397,
+  "label": "암흑 상단 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "암흑 상단 경계",
+   "void",
+   "border",
+   "심연",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 398,
+  "label": "칠흑 북동 프레임",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 북동 프레임",
+   "void",
+   "frame",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 399,
+  "label": "남색 석조 벽 패널 왼쪽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 왼쪽 상단",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 400,
+  "label": "남색 석조 벽 패널 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 상단",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 401,
+  "label": "남색 석조 벽 패널 오른쪽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 오른쪽 상단",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 402,
+  "label": "풀꽃 핀 돌밭",
+  "role": "plant",
+  "passage": "passable",
+  "tags": [
+   "풀꽃 핀 돌밭",
+   "flower",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 403,
+  "label": "잡초 무성한 흙",
+  "role": "plant",
+  "passage": "passable",
+  "tags": [
+   "잡초 무성한 흙",
+   "weed",
+   "soil",
+   "수풀"
+  ]
+ },
+ {
+  "index": 404,
+  "label": "초가지붕 상단 밑",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가지붕 상단 밑",
+   "thatch",
+   "upper",
+   "지붕"
+  ]
+ },
+ {
+  "index": 405,
+  "label": "초가지붕 처마 끝",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가지붕 처마 끝",
+   "thatch",
+   "eave",
+   "밑단"
+  ]
+ },
+ {
+  "index": 406,
+  "label": "초가지붕 이음 처마",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가지붕 이음 처마",
+   "thatch",
+   "seam",
+   "밑단"
+  ]
+ },
+ {
+  "index": 407,
+  "label": "짚지붕 처마",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "짚지붕 처마",
+   "thatch",
+   "red",
+   "밑단"
+  ]
+ },
+ {
+  "index": 408,
+  "label": "나무 울타리 세로 기둥",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "나무 울타리 수직 기둥",
+   "둥근 목책 왼쪽 하단",
+   "세로 목재 울타리"
+  ]
+ },
+ {
+  "index": 409,
+  "label": "나무 울타리 가로 중앙",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "가로 목재 울타리",
+   "나무 울타리 중앙",
+   "둥근 목책 하단"
+  ]
+ },
+ {
+  "index": 410,
+  "label": "나무 울타리 우측 연결부",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "나무 울타리 우측 끝단",
+   "둥근 목책 오른쪽 하단",
+   "목재 울타리 연결부"
+  ]
+ },
+ {
+  "index": 411,
+  "label": "흩어진 돌",
+  "role": "rock",
+  "passage": "passable",
+  "tags": [
+   "rock"
+  ]
+ },
+ {
+  "index": 412,
+  "label": "석제 화단 흙 가운데",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "석제 화단 흙 가운데",
+   "planter",
+   "stone",
+   "바닥"
+  ]
+ },
+ {
+  "index": 413,
+  "label": "회색 십자 방향 표지판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 십자가",
+   "철제 십자가"
+  ]
+ },
+ {
+  "index": 414,
+  "label": "거대 비석 좌측 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 묘비 왼쪽 상단",
+   "거대 비석 좌상단",
+   "룬 비석 좌상단"
+  ]
+ },
+ {
+  "index": 415,
+  "label": "거대 비석 상단 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "룬 비석 상단 중앙",
+   "대형 묘비 상단",
+   "거대 비석"
+  ]
+ },
+ {
+  "index": 416,
+  "label": "대형 묘비 오른쪽 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "거대 비석 우측 상단",
+   "거대 비석 우상단",
+   "룬 비석 우상단"
+  ]
+ },
+ {
+  "index": 417,
+  "label": "베이지색 천막 지붕 왼쪽",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "둥근 텐트 지붕 왼쪽",
+   "천막 지붕 좌상단",
+   "베이지색 천막"
+  ]
+ },
+ {
+  "index": 418,
+  "label": "베이지색 천막 지붕 중앙",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "천막 지붕 상단 중앙",
+   "둥근 텐트 지붕 중앙",
+   "베이지색 천막"
+  ]
+ },
+ {
+  "index": 419,
+  "label": "베이지색 천막 지붕 오른쪽",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "둥근 텐트 지붕 오른쪽",
+   "천막 지붕 우상단",
+   "베이지색 천막"
+  ]
+ },
+ {
+  "index": 420,
+  "label": "흙 서쪽 잔디 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 서쪽 잔디 경계",
+   "soil",
+   "edge",
+   "바닥"
+  ]
+ },
+ {
+  "index": 421,
+  "label": "오솔길 흙바닥",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "오솔길 흙바닥",
+   "trail",
+   "dirt",
+   "길"
+  ]
+ },
+ {
+  "index": 422,
+  "label": "흙 동쪽 잔디 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 동쪽 잔디 경계",
+   "soil",
+   "edge",
+   "모서리"
+  ]
+ },
+ {
+  "index": 423,
+  "label": "모래밭 서쪽 가장자리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 서쪽 가장자리",
+   "sand",
+   "border",
+   "사구"
+  ]
+ },
+ {
+  "index": 424,
+  "label": "고운 모래밭 전체",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "고운 모래밭 전체",
+   "sand",
+   "flat",
+   "사장"
+  ]
+ },
+ {
+  "index": 425,
+  "label": "모래 동쪽 잔디 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 동쪽 잔디 경계",
+   "sand",
+   "edge",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 426,
+  "label": "칠흑 서쪽 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 서쪽 경계",
+   "void",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 427,
+  "label": "암흑 중앙 면",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "암흑 중앙 면",
+   "void",
+   "black",
+   "심연",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 428,
+  "label": "칠흑 동쪽 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 동쪽 경계",
+   "void",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 429,
+  "label": "남색 석조 벽 패널 왼쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 왼쪽",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 430,
+  "label": "남색 석조 벽 패널 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "짙은 남색 벽 중앙",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 431,
+  "label": "남색 석조 벽 패널 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 오른쪽",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 432,
+  "label": "이끼 낀 자갈 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "이끼 낀 돌 바닥",
+   "이끼 낀 돌바닥"
+  ]
+ },
+ {
+  "index": 433,
+  "label": "짙은 자갈 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "어두운 돌 바닥",
+   "돌바닥"
+  ]
+ },
+ {
+  "index": 434,
+  "label": "대장간 화덕 상단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 화덕 좌측 상단",
+   "대장간 화덕",
+   "석조 화덕"
+  ]
+ },
+ {
+  "index": 435,
+  "label": "대장간 화덕 상단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 화덕 우측 상단",
+   "대장간 화덕",
+   "석조 화덕"
+  ]
+ },
+ {
+  "index": 436,
+  "label": "푸른 지붕 물결 골",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "푸른 지붕 물결 골",
+   "blue",
+   "ripple",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 437,
+  "label": "푸른 지붕 기와 무늬",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "푸른 지붕 기와 무늬",
+   "blue",
+   "tile",
+   "지붕"
+  ]
+ },
+ {
+  "index": 438,
+  "label": "곡선 목재 울타리 좌하단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "나무 울타리 좌측 연결부",
+   "나무 울타리 좌측 끝단",
+   "굽은 목책 조각"
+  ]
+ },
+ {
+  "index": 439,
+  "label": "나무 울타리 가로 하단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "가로 목재 울타리",
+   "나무 울타리 하단",
+   "곧은 목책 조각"
+  ]
+ },
+ {
+  "index": 440,
+  "label": "목재 방향 푯말",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 이정표"
+  ]
+ },
+ {
+  "index": 441,
+  "label": "황토 길 바닥",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "황토 길 바닥",
+   "dirt",
+   "road",
+   "길"
+  ]
+ },
+ {
+  "index": 442,
+  "label": "청록색 그림의 목재 간판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "검 무기점 간판",
+   "무기점 간판"
+  ]
+ },
+ {
+  "index": 443,
+  "label": "붉은 글씨의 여관 간판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "INN 여관 간판",
+   "여관 간판"
+  ]
+ },
+ {
+  "index": 444,
+  "label": "대형 묘비 왼쪽 가운데",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "거대 비석 중간 좌측",
+   "거대 비석 좌측 중앙",
+   "룬 비석 좌측 중앙"
+  ]
+ },
+ {
+  "index": 445,
+  "label": "글자가 새겨진 대형 묘비 가운데",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "거대 비석 중간 중앙",
+   "거대 비석 중앙",
+   "룬 비석 중앙"
+  ]
+ },
+ {
+  "index": 446,
+  "label": "대형 묘비 오른쪽 가운데",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "거대 비석 중간 우측",
+   "거대 비석 우측 중앙",
+   "룬 비석 우측 중앙"
+  ]
+ },
+ {
+  "index": 447,
+  "label": "베이지색 천막 왼쪽 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "텐트 왼쪽 천 벽",
+   "천막 좌측 벽",
+   "베이지색 천막"
+  ]
+ },
+ {
+  "index": 448,
+  "label": "검은 천막 입구 상단",
+  "role": "door",
+  "passage": "passable",
+  "tags": [
+   "door",
+   "천막 입구 상단",
+   "베이지색 천막",
+   "천막"
+  ]
+ },
+ {
+  "index": 449,
+  "label": "베이지색 천막 오른쪽 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "텐트 오른쪽 천 벽",
+   "천막 우측 벽",
+   "베이지색 천막"
+  ]
+ },
+ {
+  "index": 450,
+  "label": "흙 아래 잔디 남쪽 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 아래 잔디 남쪽 경계",
+   "soil",
+   "grass edge",
+   "바닥"
+  ]
+ },
+ {
+  "index": 451,
+  "label": "흙 남서 잔디 모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 남서 잔디 모서리",
+   "soil",
+   "corner",
+   "모서리"
+  ]
+ },
+ {
+  "index": 452,
+  "label": "흙 남동 잔디 모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 남동 잔디 모서리",
+   "soil",
+   "corner",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 453,
+  "label": "모래 남서 잔디 모서리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 남서 잔디 모서리",
+   "sand",
+   "corner",
+   "사구"
+  ]
+ },
+ {
+  "index": 454,
+  "label": "모래사장 안쪽 면",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래사장 안쪽 면",
+   "sand",
+   "inner",
+   "사장"
+  ]
+ },
+ {
+  "index": 455,
+  "label": "모래 남동 잔디 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 남동 잔디 경계",
+   "sand",
+   "edge",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 456,
+  "label": "칠흑 남서 하단 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 남서 하단 경계",
+   "void",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 457,
+  "label": "칠흑 남쪽 하단 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 남쪽 하단 경계",
+   "void",
+   "border",
+   "심연",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 458,
+  "label": "칠흑 남동 하단 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "칠흑 남동 하단 경계",
+   "void",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 459,
+  "label": "남색 석조 벽 패널 왼쪽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 왼쪽 하단",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 460,
+  "label": "남색 석조 벽 패널 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 하단",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 461,
+  "label": "남색 석조 벽 패널 오른쪽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "남색 벽 테두리 오른쪽 하단",
+   "남색 목조 골조 석조 벽",
+   "남색 벽"
+  ]
+ },
+ {
+  "index": 462,
+  "label": "어두운 땅 하얀 돌무리 좌",
+  "role": "rock",
+  "passage": "passable",
+  "tags": [
+   "어두운 땅 하얀 돌무리 좌",
+   "pale stone",
+   "dark",
+   "돌"
+  ]
+ },
+ {
+  "index": 463,
+  "label": "어두운 땅 하얀 돌무리 우",
+  "role": "rock",
+  "passage": "passable",
+  "tags": [
+   "어두운 땅 하얀 돌무리 우",
+   "pale stone",
+   "dark",
+   "돌"
+  ]
+ },
+ {
+  "index": 464,
+  "label": "대장간 화덕 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 화덕 좌측 하단",
+   "대장간 화덕",
+   "석조 화덕"
+  ]
+ },
+ {
+  "index": 465,
+  "label": "대장간 화덕 하단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 화덕 우측 하단",
+   "대장간 화덕",
+   "석조 화덕"
+  ]
+ },
+ {
+  "index": 466,
+  "label": "푸른 지붕 물결 처마",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "푸른 지붕 물결 처마",
+   "blue",
+   "ripple",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 467,
+  "label": "푸른 지붕 기와 처마",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "푸른 지붕 기와 처마",
+   "blue",
+   "tile",
+   "밑단"
+  ]
+ },
+ {
+  "index": 468,
+  "label": "목조 아치 다리 왼쪽",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "목재 다리 좌측",
+   "목조 아치 다리",
+   "목재 다리"
+  ]
+ },
+ {
+  "index": 469,
+  "label": "목조 아치 다리 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "목재 다리 중앙",
+   "목조 아치 다리",
+   "목재 다리"
+  ]
+ },
+ {
+  "index": 470,
+  "label": "목조 아치 다리 오른쪽",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "목재 다리 우측",
+   "목조 아치 다리",
+   "목재 다리"
+  ]
+ },
+ {
+  "index": 471,
+  "label": "목재 상판 하단 지지대",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 다리 하단 받침",
+   "목재 발판 지지대",
+   "목재 판자 바닥"
+  ]
+ },
+ {
+  "index": 472,
+  "label": "석제 수조 나무판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "석제 수조 나무판",
+   "basin",
+   "wood",
+   "수조"
+  ]
+ },
+ {
+  "index": 473,
+  "label": "빨간 항아리 그림의 목재 간판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "물약 잡화점 간판",
+   "도구점 간판",
+   "잡화점 간판"
+  ]
+ },
+ {
+  "index": 474,
+  "label": "거대 비석 받침대 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "룬 비석 좌하단 받침대",
+   "거대 비석 좌측 하단",
+   "대형 묘비 왼쪽 하단"
+  ]
+ },
+ {
+  "index": 475,
+  "label": "룬 비석 하단 중앙 받침대",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "거대 비석 받침대 중앙",
+   "거대 비석 하단 중앙",
+   "대형 묘비 하단"
+  ]
+ },
+ {
+  "index": 476,
+  "label": "거대 비석 받침대 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 묘비 오른쪽 하단",
+   "룬 비석 우하단 받침대",
+   "거대 비석 우측 하단"
+  ]
+ },
+ {
+  "index": 477,
+  "label": "베이지색 천막 왼쪽 하단 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "텐트 왼쪽 천 벽 하단",
+   "천막 좌하단 지지대",
+   "천막 좌하단 기둥"
+  ]
+ },
+ {
+  "index": 478,
+  "label": "원형 천막 입구 하단",
+  "role": "door",
+  "passage": "passable",
+  "tags": [
+   "door",
+   "검은 천막 입구 하단",
+   "천막 입구 하단",
+   "원형 천막"
+  ]
+ },
+ {
+  "index": 479,
+  "label": "베이지색 천막 오른쪽 하단 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "텐트 오른쪽 천 벽 하단",
+   "천막 우하단 지지대",
+   "천막 우하단 기둥"
+  ]
+ }
+]

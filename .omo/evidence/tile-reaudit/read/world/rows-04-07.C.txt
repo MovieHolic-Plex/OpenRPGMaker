@@ -1,0 +1,16 @@
+125|소용돌이|water|solid|high|
+126|독 늪 내부|terrain|passable|high|독 늪
+128|독 늪 웅덩이|terrain|passable|high|독 늪
+145|물약 선반|prop|solid|high|
+155|소용돌이|water|solid|high|
+156|독 늪 좌상단|terrain|passable|high|독 늪
+157|독 늪 상단 가장자리|terrain|passable|high|독 늪
+158|독 늪 우상단|terrain|passable|high|독 늪
+185|소용돌이|water|solid|high|
+186|독 늪 좌측 가장자리|terrain|passable|high|독 늪
+187|독 늪 중앙|terrain|passable|high|독 늪
+188|독 늪 우측 가장자리|terrain|passable|high|독 늪
+215|소용돌이|water|solid|high|
+216|독 늪 좌하단|terrain|passable|high|독 늪
+217|독 늪 하단 가장자리|terrain|passable|high|독 늪
+218|독 늪 우하단|terrain|passable|high|독 늪

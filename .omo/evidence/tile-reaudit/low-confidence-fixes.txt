@@ -1,0 +1,7 @@
+retro_house 56: 돌 구덩이/눈 덮인 석조 우물 하단 좌측 (prop) 출하=남서 방향 계단
+retro_house 57: 돌 구덩이/눈 덮인 석조 우물 하단 우측 (prop) 출하=남동 방향 계단
+retro_house 84: 천 더미/다채로운 보석 더미 (prop) 출하=타오르는 화톳불
+retro_house 86: 창문/커튼 달린 목재 창문 (window) 출하=걸린 표지판
+retro_house 118: 나무 작업대/기울어진 목재 판자 (furniture) 출하=어두운 갈색 천막
+retro_house 321: 굽은 목재 막대/굽은 갈색 세로 막대 (prop) 출하=세로 갈색 밧줄
+retro_house 329: 검은색 걸개 상단/검은 사각 면 (decoration) 출하=검은 사각 바닥

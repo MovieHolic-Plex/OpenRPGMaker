@@ -1,0 +1,1254 @@
+[
+ {
+  "index": 360,
+  "label": "갈색 흙바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥",
+   "dirt",
+   "흙",
+   "지형"
+  ]
+ },
+ {
+  "index": 361,
+  "label": "노란 모래바닥",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "노란 모래바닥",
+   "sand",
+   "모래",
+   "해변"
+  ]
+ },
+ {
+  "index": 362,
+  "label": "모서리 모래 흙바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "모서리 모래 흙바닥",
+   "dirt",
+   "sand corner",
+   "모서리"
+  ]
+ },
+ {
+  "index": 366,
+  "label": "석재 바닥 좌상단 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 상단 좌측",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 367,
+  "label": "석재 바닥 상단 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 상단",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 368,
+  "label": "석재 바닥 상단 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 상단 우측",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 369,
+  "label": "소형 목재 해치",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "소형 목조 해치",
+   "목재 해치"
+  ]
+ },
+ {
+  "index": 370,
+  "label": "어두운 공간",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty",
+   "어두운 내부"
+  ]
+ },
+ {
+  "index": 371,
+  "label": "목재 보 교차부",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 보 교차점",
+   "목재 보"
+  ]
+ },
+ {
+  "index": 372,
+  "label": "세로 널빤지 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "세로 널빤지 벽",
+   "wood",
+   "벽판",
+   "세로결"
+  ]
+ },
+ {
+  "index": 373,
+  "label": "나무 벽널 가운데",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 벽널 가운데",
+   "wood",
+   "선실벽",
+   "널빤지"
+  ]
+ },
+ {
+  "index": 374,
+  "label": "나무 벽널 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 벽널 오른쪽",
+   "wood",
+   "벽면",
+   "우측"
+  ]
+ },
+ {
+  "index": 375,
+  "label": "나무벽 세로 이음",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무벽 세로 이음",
+   "wood",
+   "이음새",
+   "홈"
+  ]
+ },
+ {
+  "index": 376,
+  "label": "목재 창살 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "목조 창살 창문",
+   "목재 창살 벽",
+   "목조 벽"
+  ]
+ },
+ {
+  "index": 377,
+  "label": "나무벽 왼쪽 이음",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무벽 왼쪽 이음",
+   "wood",
+   "이음새",
+   "좌측"
+  ]
+ },
+ {
+  "index": 378,
+  "label": "밝은 세로 나무결",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "밝은 세로 나무결",
+   "wood",
+   "밝은널",
+   "세로"
+  ]
+ },
+ {
+  "index": 379,
+  "label": "사각 나무 상자",
+  "role": "crate",
+  "passage": "solid",
+  "tags": [
+   "사각 나무 상자",
+   "crate",
+   "궤짝",
+   "화물"
+  ]
+ },
+ {
+  "index": 380,
+  "label": "배 선수 목재 외벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 좌측 경사벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 381,
+  "label": "배 선수 목재 외벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 우측 경사벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 382,
+  "label": "나무 서랍 가구",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "나무 서랍 가구",
+   "drawer",
+   "서랍장",
+   "협탁"
+  ]
+ },
+ {
+  "index": 383,
+  "label": "세로 나무판 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "세로 나무판 기둥",
+   "pillar",
+   "목재",
+   "수직"
+  ]
+ },
+ {
+  "index": 384,
+  "label": "책이 꽂힌 책장",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "책이 꽂힌 책장",
+   "bookshelf",
+   "서적",
+   "선반"
+  ]
+ },
+ {
+  "index": 385,
+  "label": "둥근 나무 술통",
+  "role": "barrel",
+  "passage": "solid",
+  "tags": [
+   "둥근 나무 술통",
+   "barrel",
+   "통",
+   "화물"
+  ]
+ },
+ {
+  "index": 386,
+  "label": "도자기 항아리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "index": 387,
+  "label": "둥근 나무 탁자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "둥근 나무 탁자",
+   "table",
+   "원탁",
+   "가구"
+  ]
+ },
+ {
+  "index": 388,
+  "label": "바다 그림 왼액자",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "바다 그림 왼액자",
+   "painting",
+   "액자",
+   "풍경"
+  ]
+ },
+ {
+  "index": 389,
+  "label": "바다 그림 오른액자",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "바다 그림 오른액자",
+   "painting",
+   "액자",
+   "풍경"
+  ]
+ },
+ {
+  "index": 390,
+  "label": "흙 북서 모래사면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 북서 모래사면",
+   "dirt",
+   "sand",
+   "북서"
+  ]
+ },
+ {
+  "index": 391,
+  "label": "흙 북쪽 모래경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 북쪽 모래경계",
+   "dirt",
+   "sand edge",
+   "북쪽"
+  ]
+ },
+ {
+  "index": 392,
+  "label": "흙 북동 모래사면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 북동 모래사면",
+   "dirt",
+   "sand",
+   "북동"
+  ]
+ },
+ {
+  "index": 396,
+  "label": "석재 바닥 좌상단 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 좌상단",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 397,
+  "label": "석재 바닥 상단 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 상단",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 398,
+  "label": "석재 바닥 상단 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 우상단",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 399,
+  "label": "대형 목조 해치 상단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목재 해치 좌상단",
+   "대형 목조 해치",
+   "대형 목재 해치"
+  ]
+ },
+ {
+  "index": 400,
+  "label": "대형 목조 해치 상단 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목재 해치 상단",
+   "대형 목조 해치",
+   "대형 목재 해치"
+  ]
+ },
+ {
+  "index": 401,
+  "label": "대형 목조 해치 상단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목재 해치 우상단",
+   "대형 목조 해치",
+   "대형 목재 해치"
+  ]
+ },
+ {
+  "index": 402,
+  "label": "짙은 세로 나무벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 세로 나무벽",
+   "wood",
+   "암색벽",
+   "세로"
+  ]
+ },
+ {
+  "index": 403,
+  "label": "평평한 나무 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "평평한 나무 벽면",
+   "wood",
+   "매끈",
+   "벽판"
+  ]
+ },
+ {
+  "index": 404,
+  "label": "나무벽 오른쪽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무벽 오른쪽면",
+   "wood",
+   "우측벽",
+   "선실"
+  ]
+ },
+ {
+  "index": 405,
+  "label": "나무 겹벽 이음",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 겹벽 이음",
+   "wood",
+   "이음",
+   "겹판"
+  ]
+ },
+ {
+  "index": 406,
+  "label": "가로 나무 마루",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 나무 마루",
+   "floor",
+   "갑판",
+   "가로결"
+  ]
+ },
+ {
+  "index": 407,
+  "label": "마루 우측 둥근테",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "마루 우측 둥근테",
+   "floor",
+   "곡면",
+   "우측"
+  ]
+ },
+ {
+  "index": 408,
+  "label": "배 외벽 좌현 중상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 좌측 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 409,
+  "label": "배 선수 목재 외벽 중좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 좌측 경사벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 410,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 411,
+  "label": "배 선수 목재 외벽 중우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 중앙 우측 경사벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 412,
+  "label": "배 외벽 우측 대각선부",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 우측 경사벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 413,
+  "label": "배 외벽 우현 중상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 우측 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 414,
+  "label": "책장 윗칸 선반",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "책장 윗칸 선반",
+   "bookshelf",
+   "상단",
+   "서적"
+  ]
+ },
+ {
+  "index": 415,
+  "label": "열린 나무통 윗면",
+  "role": "barrel",
+  "passage": "solid",
+  "tags": [
+   "열린 나무통 윗면",
+   "barrel",
+   "윗면",
+   "통"
+  ]
+ },
+ {
+  "index": 416,
+  "label": "흰 베개 침대",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "흰 베개 침대",
+   "bed",
+   "침구",
+   "베개"
+  ]
+ },
+ {
+  "index": 417,
+  "label": "둥근 목재 의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "원형 목재 의자"
+  ]
+ },
+ {
+  "index": 418,
+  "label": "세로 목재 난간 상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "목재 기둥",
+   "목재 난간"
+  ]
+ },
+ {
+  "index": 419,
+  "label": "세로 목재 난간 상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "목재 기둥",
+   "목재 난간"
+  ]
+ },
+ {
+  "index": 420,
+  "label": "흙 서쪽 모래경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 서쪽 모래경계",
+   "dirt",
+   "sand edge",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 421,
+  "label": "갈색 흙바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥",
+   "dirt",
+   "흙",
+   "지형"
+  ]
+ },
+ {
+  "index": 422,
+  "label": "흙 동쪽 모래경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 동쪽 모래경계",
+   "dirt",
+   "sand edge",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 426,
+  "label": "석재 바닥 좌측 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 좌측",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 427,
+  "label": "석조 바닥 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 428,
+  "label": "석재 바닥 우측 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 우측",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 429,
+  "label": "대형 목재 해치 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목조 해치 좌측",
+   "대형 목재 해치",
+   "대형 목조 해치"
+  ]
+ },
+ {
+  "index": 430,
+  "label": "창 너머 어둠",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창 너머 어둠",
+   "dark",
+   "내부",
+   "검정"
+  ]
+ },
+ {
+  "index": 431,
+  "label": "대형 목재 해치 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목조 해치 우측",
+   "대형 목재 해치",
+   "대형 목조 해치"
+  ]
+ },
+ {
+  "index": 432,
+  "label": "나무 선반장 왼쪽",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "나무 선반장 왼쪽",
+   "shelf",
+   "찬장",
+   "좌측"
+  ]
+ },
+ {
+  "index": 433,
+  "label": "나무 선반장 가운데",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "나무 선반장 가운데",
+   "shelf",
+   "찬장",
+   "중앙"
+  ]
+ },
+ {
+  "index": 434,
+  "label": "나무 선반장 오른쪽",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "나무 선반장 오른쪽",
+   "shelf",
+   "찬장",
+   "우측"
+  ]
+ },
+ {
+  "index": 435,
+  "label": "고른 세로 나무널",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "고른 세로 나무널",
+   "wood",
+   "널빤지",
+   "세로"
+  ]
+ },
+ {
+  "index": 436,
+  "label": "대각선 목재 난간 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대각선 목재 빔 좌측",
+   "목재 난간",
+   "대각선 목재 빔"
+  ]
+ },
+ {
+  "index": 437,
+  "label": "대각선 목재 난간 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대각선 목재 빔 우측",
+   "목재 난간",
+   "대각선 목재 빔"
+  ]
+ },
+ {
+  "index": 438,
+  "label": "선체 좌측 외벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "배 외벽 좌현 중단",
+   "선체"
+  ]
+ },
+ {
+  "index": 439,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 440,
+  "label": "배 선수 목재 외벽 하좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 좌측 경사벽 하단",
+   "선체"
+  ]
+ },
+ {
+  "index": 441,
+  "label": "배 선수 목재 외벽 하우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "뱃머리 우측 경사벽 하단",
+   "선체"
+  ]
+ },
+ {
+  "index": 442,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 443,
+  "label": "선체 우측 외벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "배 외벽 우현 중단",
+   "선체"
+  ]
+ },
+ {
+  "index": 444,
+  "label": "파이프오르간 상단 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "파이프오르간"
+  ]
+ },
+ {
+  "index": 445,
+  "label": "파이프오르간 상단 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "파이프오르간"
+  ]
+ },
+ {
+  "index": 446,
+  "label": "흰 커버 침대끝",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "흰 커버 침대끝",
+   "bed",
+   "이불",
+   "발치"
+  ]
+ },
+ {
+  "index": 447,
+  "label": "가로 목재 난간 좌측",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "가로 목재 난간",
+   "목재 난간"
+  ]
+ },
+ {
+  "index": 448,
+  "label": "십자 목재 난간 교차점",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "목재 난간 십자 교차점",
+   "목재 난간"
+  ]
+ },
+ {
+  "index": 449,
+  "label": "가로 목재 난간 우측",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "가로 목재 난간",
+   "목재 난간"
+  ]
+ },
+ {
+  "index": 450,
+  "label": "흙 남서 모래모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 남서 모래모서리",
+   "dirt",
+   "sand corner",
+   "남서"
+  ]
+ },
+ {
+  "index": 451,
+  "label": "흙 남쪽 모래경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 남쪽 모래경계",
+   "dirt",
+   "sand edge",
+   "남쪽"
+  ]
+ },
+ {
+  "index": 452,
+  "label": "흙 남동 모래모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 남동 모래모서리",
+   "dirt",
+   "sand corner",
+   "남동"
+  ]
+ },
+ {
+  "index": 456,
+  "label": "석재 바닥 좌측 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 좌하단",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 457,
+  "label": "석조 바닥 하단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 458,
+  "label": "석재 바닥 우측 테두리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석조 바닥 우하단",
+   "석재 바닥",
+   "석조 바닥"
+  ]
+ },
+ {
+  "index": 459,
+  "label": "대형 목조 해치 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목재 해치 좌하단",
+   "대형 목조 해치",
+   "대형 목재 해치"
+  ]
+ },
+ {
+  "index": 460,
+  "label": "대형 목조 해치 하단 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목재 해치 하단",
+   "대형 목조 해치",
+   "대형 목재 해치"
+  ]
+ },
+ {
+  "index": 461,
+  "label": "대형 목조 해치 하단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대형 목재 해치 우하단",
+   "대형 목조 해치",
+   "대형 목재 해치"
+  ]
+ },
+ {
+  "index": 462,
+  "label": "왼쪽홈 가로 마루",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "왼쪽홈 가로 마루",
+   "floor",
+   "가로결",
+   "좌측홈"
+  ]
+ },
+ {
+  "index": 463,
+  "label": "목재 벽난로 화로",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 화덕",
+   "목재 벽난로",
+   "목재 카운터"
+  ]
+ },
+ {
+  "index": 464,
+  "label": "오른쪽홈 가로 마루",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "오른쪽홈 가로 마루",
+   "floor",
+   "가로결",
+   "우측홈"
+  ]
+ },
+ {
+  "index": 465,
+  "label": "세로널 오른쪽 홈",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "세로널 오른쪽 홈",
+   "wood",
+   "세로결",
+   "홈"
+  ]
+ },
+ {
+  "index": 466,
+  "label": "고른 가로 마루판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "고른 가로 마루판",
+   "floor",
+   "갑판",
+   "평판"
+  ]
+ },
+ {
+  "index": 467,
+  "label": "가로 마루 우측결",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 마루 우측결",
+   "floor",
+   "갑판",
+   "우측"
+  ]
+ },
+ {
+  "index": 468,
+  "label": "선체 좌측 외벽 끝단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "배 외벽 좌현 하단",
+   "선체"
+  ]
+ },
+ {
+  "index": 469,
+  "label": "선수 전면 목재 빔 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "배 선수 목재 보 좌측",
+   "선수",
+   "배 선수 구조물"
+  ]
+ },
+ {
+  "index": 470,
+  "label": "배 선수 목재 십자 보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "선수 전면 목재 기둥 좌측",
+   "배 선수 구조물",
+   "선수"
+  ]
+ },
+ {
+  "index": 471,
+  "label": "선수 전면 목재 기둥 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "배 선수 목재 보 우측",
+   "선수",
+   "배 선수 구조물"
+  ]
+ },
+ {
+  "index": 472,
+  "label": "목재 선수 돌출 기둥 하단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "선수 돌출부 끝 기둥",
+   "배 선수 구조물",
+   "선수"
+  ]
+ },
+ {
+  "index": 473,
+  "label": "선체 우측 외벽 끝단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "배 외벽 우현 하단",
+   "선체"
+  ]
+ },
+ {
+  "index": 474,
+  "label": "나무 장롱 왼쪽",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "나무 장롱 왼쪽",
+   "wardrobe",
+   "옷장",
+   "좌측"
+  ]
+ },
+ {
+  "index": 475,
+  "label": "나무 장롱 오른쪽",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "나무 장롱 오른쪽",
+   "wardrobe",
+   "옷장",
+   "우측"
+  ]
+ },
+ {
+  "index": 476,
+  "label": "침대 베개 옆면",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "침대 베개 옆면",
+   "bed",
+   "베개",
+   "측면"
+  ]
+ },
+ {
+  "index": 477,
+  "label": "침대 이불 옆면",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "침대 이불 옆면",
+   "bed",
+   "이불",
+   "측면"
+  ]
+ },
+ {
+  "index": 478,
+  "label": "세로 목재 난간 하단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "목재 기둥 하단",
+   "목재 난간"
+  ]
+ },
+ {
+  "index": 479,
+  "label": "가로 목재 난간 조각",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "fence",
+   "가로 목재 난간",
+   "목재 난간"
+  ]
+ }
+]

@@ -1,0 +1,1 @@
+116|나무 문|door|passable|high|

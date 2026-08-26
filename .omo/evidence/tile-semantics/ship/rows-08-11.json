@@ -1,0 +1,1423 @@
+[
+ {
+  "index": 240,
+  "label": "거친 점 모래땅",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "거친 점 모래땅",
+   "sand",
+   "해변",
+   "바닥"
+  ]
+ },
+ {
+  "index": 241,
+  "label": "고운 노란 모래",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "고운 노란 모래",
+   "sand",
+   "모래사장",
+   "노랑"
+  ]
+ },
+ {
+  "index": 242,
+  "label": "밝은 모래사장",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "밝은 모래사장",
+   "sand",
+   "해변",
+   "밝은흙"
+  ]
+ },
+ {
+  "index": 243,
+  "label": "잔디 고립 덩이",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 고립 덩이",
+   "grass",
+   "풀밭",
+   "고립"
+  ]
+ },
+ {
+  "index": 244,
+  "label": "잔디 한가운데",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 한가운데",
+   "grass",
+   "풀밭",
+   "중심"
+  ]
+ },
+ {
+  "index": 245,
+  "label": "잔디 오목 모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 오목 모서리",
+   "grass",
+   "안쪽모서리",
+   "경계"
+  ]
+ },
+ {
+  "index": 246,
+  "label": "왼쪽 세로줄 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "왼쪽 세로줄 갑판",
+   "deck",
+   "나무",
+   "세로줄눈"
+  ]
+ },
+ {
+  "index": 247,
+  "label": "가로 널 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 널 갑판",
+   "deck",
+   "널빤지",
+   "가로결"
+  ]
+ },
+ {
+  "index": 248,
+  "label": "오른쪽 세로줄 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "오른쪽 세로줄 갑판",
+   "deck",
+   "나무",
+   "우측"
+  ]
+ },
+ {
+  "index": 249,
+  "label": "작은 벽돌 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "작은 벽돌 갑판",
+   "deck",
+   "벽돌무늬",
+   "나무판"
+  ]
+ },
+ {
+  "index": 250,
+  "label": "두 쪽 세로 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "두 쪽 세로 갑판",
+   "deck",
+   "세로널",
+   "이음"
+  ]
+ },
+ {
+  "index": 251,
+  "label": "이음새 가로 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "이음새 가로 갑판",
+   "deck",
+   "가로결",
+   "중앙선"
+  ]
+ },
+ {
+  "index": 252,
+  "label": "빗금 선실벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "빗금 선실벽",
+   "cabin",
+   "선실",
+   "모서리"
+  ]
+ },
+ {
+  "index": 253,
+  "label": "왼쪽 검은 선실벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 검은 선실벽",
+   "cabin",
+   "가로널",
+   "어둠"
+  ]
+ },
+ {
+  "index": 254,
+  "label": "선실 목재 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목재 벽 상단",
+   "선실 목재 벽",
+   "목재 벽"
+  ]
+ },
+ {
+  "index": 255,
+  "label": "선실 목재 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목재 벽 상단",
+   "선실 목재 벽",
+   "목재 벽"
+  ]
+ },
+ {
+  "index": 256,
+  "label": "벽면 사다리 상단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "사다리",
+   "벽면 사다리"
+  ]
+ },
+ {
+  "index": 257,
+  "label": "회색 둥근 금속물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "회색 둥근 금속물",
+   "metal",
+   "회색",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 259,
+  "label": "회색 쇠닻",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "회색 쇠닻",
+   "anchor",
+   "닻",
+   "선구"
+  ]
+ },
+ {
+  "index": 260,
+  "label": "좌하 대각 들보",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "좌하 대각 들보",
+   "beam",
+   "사선",
+   "목재"
+  ]
+ },
+ {
+  "index": 261,
+  "label": "작은 나무 끝촉",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "작은 나무 끝촉",
+   "peg",
+   "말뚝",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 262,
+  "label": "우하 대각 들보",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "우하 대각 들보",
+   "beam",
+   "사선",
+   "굵은목"
+  ]
+ },
+ {
+  "index": 263,
+  "label": "감긴 밧줄 더미",
+  "role": "rope",
+  "passage": "solid",
+  "tags": [
+   "감긴 밧줄 더미",
+   "coil",
+   "로프",
+   "선구"
+  ]
+ },
+ {
+  "index": 264,
+  "label": "갑판 해치 입구 상단",
+  "role": "door",
+  "passage": "passable",
+  "tags": [
+   "door",
+   "선실 출입구 상단",
+   "선실 입구 상단",
+   "갑판 해치"
+  ]
+ },
+ {
+  "index": 265,
+  "label": "대각선 선체 외벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 목재",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 266,
+  "label": "대각선 선체 외벽 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 목재",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 267,
+  "label": "대각선 선체 외벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 목재",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 268,
+  "label": "대각선 선체 외벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 목재",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 269,
+  "label": "대각선 선체 외벽 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 목재",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 270,
+  "label": "거친 점 모래땅",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "거친 점 모래땅",
+   "sand",
+   "해변",
+   "바닥"
+  ]
+ },
+ {
+  "index": 271,
+  "label": "고운 노란 모래",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "고운 노란 모래",
+   "sand",
+   "모래사장",
+   "노랑"
+  ]
+ },
+ {
+  "index": 272,
+  "label": "밝은 모래사장",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "밝은 모래사장",
+   "sand",
+   "해변",
+   "밝은흙"
+  ]
+ },
+ {
+  "index": 273,
+  "label": "잔디 북쪽 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 북쪽 경계",
+   "grass",
+   "북측",
+   "모래경계"
+  ]
+ },
+ {
+  "index": 274,
+  "label": "잔디 한가운데",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 한가운데",
+   "grass",
+   "풀밭",
+   "중심"
+  ]
+ },
+ {
+  "index": 275,
+  "label": "잔디 북동 모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 북동 모서리",
+   "grass",
+   "북동",
+   "경계"
+  ]
+ },
+ {
+  "index": 276,
+  "label": "왼쪽 벽돌 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "왼쪽 벽돌 갑판",
+   "deck",
+   "벽돌무늬",
+   "좌측"
+  ]
+ },
+ {
+  "index": 277,
+  "label": "가운데 가로 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가운데 가로 갑판",
+   "deck",
+   "널빤지",
+   "중앙"
+  ]
+ },
+ {
+  "index": 278,
+  "label": "오른쪽 벽돌 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "오른쪽 벽돌 갑판",
+   "deck",
+   "벽돌무늬",
+   "우측"
+  ]
+ },
+ {
+  "index": 279,
+  "label": "잔벽돌 나무판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "잔벽돌 나무판",
+   "deck",
+   "작은벽돌",
+   "나무"
+  ]
+ },
+ {
+  "index": 280,
+  "label": "넓적 세로 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "넓적 세로 갑판",
+   "deck",
+   "세로널",
+   "넓은판"
+  ]
+ },
+ {
+  "index": 281,
+  "label": "가로결 나무판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로결 나무판",
+   "deck",
+   "가로결",
+   "마루"
+  ]
+ },
+ {
+  "index": 282,
+  "label": "금줄 문턱 선실벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "금줄 문턱 선실벽",
+   "cabin",
+   "문턱",
+   "선실"
+  ]
+ },
+ {
+  "index": 283,
+  "label": "선실 목조 장식 벽판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선실 목재 벽면",
+   "선실 목조 골조벽",
+   "선실 목재 벽"
+  ]
+ },
+ {
+  "index": 284,
+  "label": "짙은 나무 선실벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 선실벽",
+   "cabin",
+   "벽",
+   "가로널"
+  ]
+ },
+ {
+  "index": 285,
+  "label": "왼쪽 갑판 가장자리",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "왼쪽 갑판 가장자리",
+   "deck",
+   "가장자리",
+   "검은테"
+  ]
+ },
+ {
+  "index": 286,
+  "label": "오른쪽 갑판 널",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "오른쪽 갑판 널",
+   "deck",
+   "널빤지",
+   "우측"
+  ]
+ },
+ {
+  "index": 287,
+  "label": "선박 기계 하단 지지대",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "조타륜 하단 받침대",
+   "조타륜 하단",
+   "선박 기계"
+  ]
+ },
+ {
+  "index": 288,
+  "label": "붉은 삼각 깃발",
+  "role": "banner",
+  "passage": "solid",
+  "tags": [
+   "붉은 삼각 깃발",
+   "flag",
+   "페넌트",
+   "빨강"
+  ]
+ },
+ {
+  "index": 289,
+  "label": "가는 대각 가로대",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "가는 대각 가로대",
+   "spar",
+   "사선",
+   "얇은목"
+  ]
+ },
+ {
+  "index": 290,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 291,
+  "label": "가로대 달린 돛대",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "가로대 달린 돛대",
+   "mast",
+   "야드암",
+   "십자"
+  ]
+ },
+ {
+  "index": 292,
+  "label": "가로 돛대 활대",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "가로 돛대 활대",
+   "yard",
+   "가로대",
+   "활대"
+  ]
+ },
+ {
+  "index": 293,
+  "label": "남서 대각 판재",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "남서 대각 판재",
+   "hull",
+   "사선",
+   "하부"
+  ]
+ },
+ {
+  "index": 294,
+  "label": "나무 위 검은 구멍",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "나무 위 검은 구멍",
+   "hatch",
+   "어둠",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 295,
+  "label": "엇갈린 은색 검",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "엇갈린 은색 검",
+   "swords",
+   "교차",
+   "무기"
+  ]
+ },
+ {
+  "index": 296,
+  "label": "대각선 선체 외벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 외벽",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 297,
+  "label": "대각선 선체 외벽 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "선체 경사 외벽",
+   "선체 외벽",
+   "선체"
+  ]
+ },
+ {
+  "index": 298,
+  "label": "늘어진 갈색 밧줄",
+  "role": "rope",
+  "passage": "solid",
+  "tags": [
+   "늘어진 갈색 밧줄",
+   "rope",
+   "로프",
+   "세로줄"
+  ]
+ },
+ {
+  "index": 299,
+  "label": "원형 나무 단면",
+  "role": "barrel",
+  "passage": "solid",
+  "tags": [
+   "원형 나무 단면",
+   "log",
+   "토막",
+   "나이테"
+  ]
+ },
+ {
+  "index": 300,
+  "label": "거친 점 모래땅",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "거친 점 모래땅",
+   "sand",
+   "해변",
+   "바닥"
+  ]
+ },
+ {
+  "index": 301,
+  "label": "고운 노란 모래",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "고운 노란 모래",
+   "sand",
+   "모래사장",
+   "노랑"
+  ]
+ },
+ {
+  "index": 302,
+  "label": "밝은 모래사장",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "밝은 모래사장",
+   "sand",
+   "해변",
+   "밝은흙"
+  ]
+ },
+ {
+  "index": 303,
+  "label": "잔디 동쪽 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 동쪽 경계",
+   "grass",
+   "동측",
+   "모래경계"
+  ]
+ },
+ {
+  "index": 304,
+  "label": "잔디 한가운데",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 한가운데",
+   "grass",
+   "풀밭",
+   "중심"
+  ]
+ },
+ {
+  "index": 305,
+  "label": "잔디 동측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 동측 가장자리",
+   "grass",
+   "동쪽",
+   "경계"
+  ]
+ },
+ {
+  "index": 306,
+  "label": "왼쪽 각진 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "왼쪽 각진 갑판",
+   "deck",
+   "벽돌무늬",
+   "좌측"
+  ]
+ },
+ {
+  "index": 307,
+  "label": "가운데 벽돌 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가운데 벽돌 갑판",
+   "deck",
+   "벽돌무늬",
+   "중앙"
+  ]
+ },
+ {
+  "index": 308,
+  "label": "오른쪽 각진 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "오른쪽 각진 갑판",
+   "deck",
+   "벽돌무늬",
+   "우측"
+  ]
+ },
+ {
+  "index": 309,
+  "label": "사각 나무벽돌",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "사각 나무벽돌",
+   "deck",
+   "사각블록",
+   "나무"
+  ]
+ },
+ {
+  "index": 310,
+  "label": "널찍한 나무판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "널찍한 나무판",
+   "deck",
+   "넓은널",
+   "마루"
+  ]
+ },
+ {
+  "index": 311,
+  "label": "가로 이음 나무판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 이음 나무판",
+   "deck",
+   "가로결",
+   "이음"
+  ]
+ },
+ {
+  "index": 312,
+  "label": "갑판 계단 상단 난간",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "선실 계단 입구 상단",
+   "갑판 계단 상단",
+   "갑판 계단"
+  ]
+ },
+ {
+  "index": 313,
+  "label": "갑판 사다리 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "선실 계단",
+   "갑판 계단"
+  ]
+ },
+ {
+  "index": 314,
+  "label": "목재 갑판 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "갑판 바닥"
+  ]
+ },
+ {
+  "index": 315,
+  "label": "목조 선체 곡선 테두리 왼쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "곡선 선체 난간 좌측",
+   "목조 선체",
+   "선체 난간"
+  ]
+ },
+ {
+  "index": 316,
+  "label": "목조 선체 곡선 테두리 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "곡선 선체 난간 중앙",
+   "목조 선체",
+   "선체 난간"
+  ]
+ },
+ {
+  "index": 317,
+  "label": "목조 선체 곡선 테두리 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "곡선 선체 난간 우측",
+   "목조 선체",
+   "선체 난간"
+  ]
+ },
+ {
+  "index": 318,
+  "label": "붉은 금장 깃발",
+  "role": "banner",
+  "passage": "solid",
+  "tags": [
+   "붉은 금장 깃발",
+   "flag",
+   "금장",
+   "빨강"
+  ]
+ },
+ {
+  "index": 319,
+  "label": "가는 사선 버팀대",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "가는 사선 버팀대",
+   "brace",
+   "사선",
+   "얇은목"
+  ]
+ },
+ {
+  "index": 320,
+  "label": "얇은 대각 목재",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "얇은 대각 목재",
+   "spar",
+   "사선",
+   "버팀"
+  ]
+ },
+ {
+  "index": 321,
+  "label": "나란한 두 돛대",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "나란한 두 돛대",
+   "mast",
+   "쌍기둥",
+   "세로대"
+  ]
+ },
+ {
+  "index": 322,
+  "label": "사선 가는 들보",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "사선 가는 들보",
+   "beam",
+   "사선",
+   "가는목"
+  ]
+ },
+ {
+  "index": 323,
+  "label": "대각 널빤지 조각",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "대각 널빤지 조각",
+   "plank",
+   "사선",
+   "조각"
+  ]
+ },
+ {
+  "index": 324,
+  "label": "왼쪽 향한 대포",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 향한 대포",
+   "cannon",
+   "포신",
+   "좌향"
+  ]
+ },
+ {
+  "index": 325,
+  "label": "오른쪽 향한 대포",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 향한 대포",
+   "cannon",
+   "포차",
+   "우향"
+  ]
+ },
+ {
+  "index": 326,
+  "label": "정면 포구 대포",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "정면 포구 대포",
+   "cannon",
+   "포구",
+   "정면"
+  ]
+ },
+ {
+  "index": 327,
+  "label": "회색 둥근 포탄",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "회색 둥근 포탄",
+   "cannonball",
+   "포탄",
+   "구체"
+  ]
+ },
+ {
+  "index": 328,
+  "label": "목재 사다리 상단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "밧줄 사다리",
+   "목재 사다리",
+   "사다리"
+  ]
+ },
+ {
+  "index": 329,
+  "label": "은밑 갈색 원통",
+  "role": "barrel",
+  "passage": "solid",
+  "tags": [
+   "은밑 갈색 원통",
+   "barrel",
+   "원통",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 330,
+  "label": "거친 점 모래땅",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "거친 점 모래땅",
+   "sand",
+   "해변",
+   "바닥"
+  ]
+ },
+ {
+  "index": 331,
+  "label": "고운 노란 모래",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "고운 노란 모래",
+   "sand",
+   "모래사장",
+   "노랑"
+  ]
+ },
+ {
+  "index": 332,
+  "label": "밝은 모래사장",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "밝은 모래사장",
+   "sand",
+   "해변",
+   "밝은흙"
+  ]
+ },
+ {
+  "index": 333,
+  "label": "잔디 남서 모서리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 남서 모서리",
+   "grass",
+   "남서",
+   "모래경계"
+  ]
+ },
+ {
+  "index": 334,
+  "label": "잔디 한가운데",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 한가운데",
+   "grass",
+   "풀밭",
+   "중심"
+  ]
+ },
+ {
+  "index": 335,
+  "label": "잔디 남동 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 남동 경계",
+   "grass",
+   "남동",
+   "모래변"
+  ]
+ },
+ {
+  "index": 336,
+  "label": "왼쪽 아래 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "왼쪽 아래 갑판",
+   "deck",
+   "하단",
+   "좌측"
+  ]
+ },
+ {
+  "index": 337,
+  "label": "가운데 아래 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가운데 아래 갑판",
+   "deck",
+   "하단",
+   "중앙"
+  ]
+ },
+ {
+  "index": 338,
+  "label": "오른쪽 아래 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "오른쪽 아래 갑판",
+   "deck",
+   "하단",
+   "우측"
+  ]
+ },
+ {
+  "index": 339,
+  "label": "하단 벽돌 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "하단 벽돌 갑판",
+   "deck",
+   "벽돌무늬",
+   "하단"
+  ]
+ },
+ {
+  "index": 340,
+  "label": "하단 세로 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "하단 세로 갑판",
+   "deck",
+   "세로널",
+   "하단"
+  ]
+ },
+ {
+  "index": 341,
+  "label": "하단 가로 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "하단 가로 갑판",
+   "deck",
+   "가로결",
+   "하단"
+  ]
+ },
+ {
+  "index": 342,
+  "label": "선실 목조 골조벽 하단 왼쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목재 벽 기둥 좌측",
+   "선실 목재 벽 하단",
+   "선실 목조 골조벽"
+  ]
+ },
+ {
+  "index": 343,
+  "label": "선실 목조 골조벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목재 벽 기둥 중앙",
+   "선실 목재 벽 하단",
+   "선실 목조 골조벽"
+  ]
+ },
+ {
+  "index": 344,
+  "label": "선실 목조 골조벽 하단 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "목재 벽 기둥 우측",
+   "선실 목재 벽 하단",
+   "선실 목조 골조벽"
+  ]
+ },
+ {
+  "index": 345,
+  "label": "검은 세로 문틀",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "검은 세로 문틀",
+   "doorframe",
+   "문틀",
+   "세로홈"
+  ]
+ },
+ {
+  "index": 346,
+  "label": "문 안쪽 어둠",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "문 안쪽 어둠",
+   "doorway",
+   "어둠",
+   "개구"
+  ]
+ },
+ {
+  "index": 347,
+  "label": "가로 널 선체판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 널 선체판",
+   "plank",
+   "가로널",
+   "선체"
+  ]
+ },
+ {
+  "index": 348,
+  "label": "붉은 금장 깃발",
+  "role": "banner",
+  "passage": "solid",
+  "tags": [
+   "붉은 금장 깃발",
+   "flag",
+   "금장",
+   "빨강"
+  ]
+ },
+ {
+  "index": 349,
+  "label": "사선 나무 버팀",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "사선 나무 버팀",
+   "brace",
+   "사선",
+   "목재"
+  ]
+ },
+ {
+  "index": 350,
+  "label": "굵은 사선 목재",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "굵은 사선 목재",
+   "beam",
+   "사선",
+   "굵은목"
+  ]
+ },
+ {
+  "index": 351,
+  "label": "회색 날 세로막대",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "회색 날 세로막대",
+   "pole",
+   "금속날",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 352,
+  "label": "대각 버팀 널판",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "대각 버팀 널판",
+   "brace",
+   "사선",
+   "널판"
+  ]
+ },
+ {
+  "index": 353,
+  "label": "사선 선체 널판",
+  "role": "ship",
+  "passage": "solid",
+  "tags": [
+   "사선 선체 널판",
+   "hull",
+   "사선",
+   "널판"
+  ]
+ },
+ {
+  "index": 354,
+  "label": "좌향 포차 대포",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "좌향 포차 대포",
+   "cannon",
+   "포차",
+   "좌향"
+  ]
+ },
+ {
+  "index": 355,
+  "label": "우향 포신 대포",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "우향 포신 대포",
+   "cannon",
+   "포신",
+   "우향"
+  ]
+ },
+ {
+  "index": 356,
+  "label": "정면 포구만",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "정면 포구만",
+   "cannon",
+   "포구",
+   "머즐"
+  ]
+ },
+ {
+  "index": 357,
+  "label": "포미 나무 포차",
+  "role": "machine",
+  "passage": "solid",
+  "tags": [
+   "포미 나무 포차",
+   "cannon",
+   "포미",
+   "포차"
+  ]
+ },
+ {
+  "index": 358,
+  "label": "초록 풍경 나무액자",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "초록 풍경 나무액자",
+   "picture",
+   "액자",
+   "풍경"
+  ]
+ },
+ {
+  "index": 359,
+  "label": "주황 불빛 나무액자",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "주황 불빛 나무액자",
+   "picture",
+   "액자",
+   "불빛"
+  ]
+ }
+]

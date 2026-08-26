@@ -1,0 +1,1410 @@
+[
+ {
+  "index": 360,
+  "label": "그늘 진 숲 수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "그늘 진 숲 수관",
+   "forest",
+   "수관",
+   "그늘"
+  ]
+ },
+ {
+  "index": 361,
+  "label": "연두 점무늬 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "연두 점무늬 초원",
+   "grass",
+   "초원",
+   "연두"
+  ]
+ },
+ {
+  "index": 362,
+  "label": "갈색 기슭 숲수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "갈색 기슭 숲수관",
+   "forest",
+   "수관",
+   "갈색"
+  ]
+ },
+ {
+  "index": 363,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree"
+  ]
+ },
+ {
+  "index": 364,
+  "label": "밝은 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 초원",
+   "grass",
+   "평원",
+   "노란점"
+  ]
+ },
+ {
+  "index": 365,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree"
+  ]
+ },
+ {
+  "index": 366,
+  "label": "네모서리 검은 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "네모서리 검은 수면",
+   "water",
+   "수면",
+   "모서리"
+  ]
+ },
+ {
+  "index": 367,
+  "label": "칠흑 수면 한가운데",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "칠흑 수면 한가운데",
+   "water",
+   "검은물",
+   "중앙"
+  ]
+ },
+ {
+  "index": 368,
+  "label": "좌우 끝 검은 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "좌우 끝 검은 수면",
+   "water",
+   "수면",
+   "좌우"
+  ]
+ },
+ {
+  "index": 369,
+  "label": "남색 사각 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 사각 테두리",
+   "water",
+   "남색",
+   "테두리"
+  ]
+ },
+ {
+  "index": 370,
+  "label": "남색 수면 한가운데",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 수면 한가운데",
+   "water",
+   "남색",
+   "중앙"
+  ]
+ },
+ {
+  "index": 371,
+  "label": "좌우 끝 남색 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "좌우 끝 남색 수면",
+   "water",
+   "남색",
+   "좌우"
+  ]
+ },
+ {
+  "index": 372,
+  "label": "노란 위화살 석판",
+  "role": "sign",
+  "passage": "passable",
+  "tags": [
+   "노란 위화살 석판",
+   "arrow",
+   "화살표",
+   "위쪽"
+  ]
+ },
+ {
+  "index": 373,
+  "label": "노란 아래화살 석판",
+  "role": "sign",
+  "passage": "passable",
+  "tags": [
+   "노란 아래화살 석판",
+   "arrow",
+   "화살표",
+   "아래"
+  ]
+ },
+ {
+  "index": 374,
+  "label": "회색 가로 벽돌벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 가로 벽돌벽",
+   "brick",
+   "벽돌",
+   "회색"
+  ]
+ },
+ {
+  "index": 375,
+  "label": "붉은 양탄자 모서리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "화려한 카펫 좌상",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 376,
+  "label": "화려한 카펫 상단",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 377,
+  "label": "붉은 양탄자 모서리",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "화려한 카펫 우상",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 378,
+  "label": "왼쪽 산비탈 조각",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 산비탈 조각",
+   "mountain",
+   "산비탈",
+   "오버레이"
+  ]
+ },
+ {
+  "index": 379,
+  "label": "우뚝한 산봉 조각",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "우뚝한 산봉 조각",
+   "mountain",
+   "산봉",
+   "오버레이"
+  ]
+ },
+ {
+  "index": 380,
+  "label": "회색 두건 석상",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "회색 두건 석상",
+   "statue",
+   "석상",
+   "두건"
+  ]
+ },
+ {
+  "index": 381,
+  "label": "황금 인물 석상",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "황금 인물 석상",
+   "statue",
+   "석상",
+   "황금"
+  ]
+ },
+ {
+  "index": 382,
+  "label": "황금 기둥 신전",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "황금 기둥 신전",
+   "temple",
+   "신전",
+   "황금"
+  ]
+ },
+ {
+  "index": 383,
+  "label": "황금 둥근 기념탑",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "황금 둥근 기념탑",
+   "monument",
+   "기념탑",
+   "황금"
+  ]
+ },
+ {
+  "index": 384,
+  "label": "회색띠 나무 함",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "회색띠 나무 함",
+   "wood",
+   "상자",
+   "회색띠"
+  ]
+ },
+ {
+  "index": 385,
+  "label": "왼쪽 나무 서랍장",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 나무 서랍장",
+   "drawer",
+   "목재",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 386,
+  "label": "가운데 나무 서랍장",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "가운데 나무 서랍장",
+   "drawer",
+   "목재",
+   "중앙"
+  ]
+ },
+ {
+  "index": 387,
+  "label": "오른쪽 나무 서랍장",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 나무 서랍장",
+   "drawer",
+   "목재",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 388,
+  "label": "테두리 나무 궤짝",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "테두리 나무 궤짝",
+   "chest",
+   "궤짝",
+   "목재"
+  ]
+ },
+ {
+  "index": 389,
+  "label": "수정 얹은 파란 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "수정 얹은 파란 상자",
+   "chest",
+   "보물",
+   "수정"
+  ]
+ },
+ {
+  "index": 390,
+  "label": "서쪽 그늘 숲수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "서쪽 그늘 숲수관",
+   "forest",
+   "수관",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 391,
+  "label": "얼룩진 숲 캐노피",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "얼룩진 숲 캐노피",
+   "forest",
+   "수관",
+   "얼룩"
+  ]
+ },
+ {
+  "index": 392,
+  "label": "연한 올리브 수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "연한 올리브 수관",
+   "forest",
+   "수관",
+   "올리브"
+  ]
+ },
+ {
+  "index": 393,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무 숲",
+   "소나무숲"
+  ]
+ },
+ {
+  "index": 394,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무 숲",
+   "소나무숲"
+  ]
+ },
+ {
+  "index": 395,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무 숲",
+   "소나무숲"
+  ]
+ },
+ {
+  "index": 396,
+  "label": "검은 수면 북서 모서리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 북서 모서리",
+   "water",
+   "수면",
+   "북서"
+  ]
+ },
+ {
+  "index": 397,
+  "label": "검은 수면 북쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 북쪽 테두리",
+   "water",
+   "수면",
+   "북쪽"
+  ]
+ },
+ {
+  "index": 398,
+  "label": "검은 수면 북동 모서리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 북동 모서리",
+   "water",
+   "수면",
+   "북동"
+  ]
+ },
+ {
+  "index": 399,
+  "label": "남색 수면 서쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 수면 서쪽 테두리",
+   "water",
+   "남색",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 400,
+  "label": "남색 수면 북쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 수면 북쪽 테두리",
+   "water",
+   "남색",
+   "북쪽"
+  ]
+ },
+ {
+  "index": 401,
+  "label": "남색 수면 동쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 수면 동쪽 테두리",
+   "water",
+   "남색",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 402,
+  "label": "노란 왼화살 석판",
+  "role": "sign",
+  "passage": "passable",
+  "tags": [
+   "노란 왼화살 석판",
+   "arrow",
+   "화살표",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 403,
+  "label": "노란 오른화살 석판",
+  "role": "sign",
+  "passage": "passable",
+  "tags": [
+   "노란 오른화살 석판",
+   "arrow",
+   "화살표",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 404,
+  "label": "흰 사선 무늬 석판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "흰 사선 무늬 석판",
+   "stripe",
+   "사선",
+   "흰색"
+  ]
+ },
+ {
+  "index": 405,
+  "label": "화려한 카펫 좌",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 406,
+  "label": "화려한 카펫 중앙",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 407,
+  "label": "화려한 카펫 우",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 408,
+  "label": "둥근 갈색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "둥근 갈색 바위",
+   "rock",
+   "바위",
+   "갈색"
+  ]
+ },
+ {
+  "index": 409,
+  "label": "가파른 암벽 조각",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "가파른 암벽 조각",
+   "cliff",
+   "암벽",
+   "갈색"
+  ]
+ },
+ {
+  "index": 410,
+  "label": "회색 점무늬 석주",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "회색 점무늬 석주",
+   "pillar",
+   "석주",
+   "회색"
+  ]
+ },
+ {
+  "index": 411,
+  "label": "황금 점무늬 석주",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "황금 점무늬 석주",
+   "pillar",
+   "석주",
+   "황금"
+  ]
+ },
+ {
+  "index": 412,
+  "label": "돌 우물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "우물"
+  ]
+ },
+ {
+  "index": 413,
+  "label": "동굴 입구",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "door"
+  ]
+ },
+ {
+  "index": 414,
+  "label": "붉은 나무 안락의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "붉은 나무 안락의자",
+   "chair",
+   "의자",
+   "빨강"
+  ]
+ },
+ {
+  "index": 415,
+  "label": "베개 있는 침대 머리",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "베개 있는 침대 머리",
+   "bed",
+   "침대",
+   "베개"
+  ]
+ },
+ {
+  "index": 416,
+  "label": "붉은 이불 침대 발치",
+  "role": "bed",
+  "passage": "solid",
+  "tags": [
+   "붉은 이불 침대 발치",
+   "bed",
+   "침대",
+   "이불"
+  ]
+ },
+ {
+  "index": 417,
+  "label": "빈 슬롯",
+  "role": "empty",
+  "passage": "passable",
+  "tags": [
+   "empty"
+  ]
+ },
+ {
+  "index": 418,
+  "label": "흰천 걸린 나무장",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "흰천 걸린 나무장",
+   "cabinet",
+   "서랍",
+   "흰천"
+  ]
+ },
+ {
+  "index": 419,
+  "label": "넓은 나무장 오른쪽",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "넓은 나무장 오른쪽",
+   "cabinet",
+   "가구",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 420,
+  "label": "짙은 줄무늬 숲수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "짙은 줄무늬 숲수관",
+   "forest",
+   "수관",
+   "줄무늬"
+  ]
+ },
+ {
+  "index": 421,
+  "label": "성긴 초록 숲수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "성긴 초록 숲수관",
+   "forest",
+   "수관",
+   "성긴잎"
+  ]
+ },
+ {
+  "index": 422,
+  "label": "고른 초록 수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "고른 초록 수관",
+   "forest",
+   "수관",
+   "고른잎"
+  ]
+ },
+ {
+  "index": 423,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무 숲",
+   "소나무숲"
+  ]
+ },
+ {
+  "index": 424,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무 숲",
+   "소나무숲"
+  ]
+ },
+ {
+  "index": 425,
+  "label": "소나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무 숲",
+   "소나무숲"
+  ]
+ },
+ {
+  "index": 426,
+  "label": "검은 수면 서쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 서쪽 테두리",
+   "water",
+   "수면",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 427,
+  "label": "검은 수면 한가운데",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 한가운데",
+   "water",
+   "수면",
+   "중심"
+  ]
+ },
+ {
+  "index": 428,
+  "label": "검은 수면 동쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 동쪽 테두리",
+   "water",
+   "수면",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 429,
+  "label": "남색 서쪽 세로 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 서쪽 세로 테두리",
+   "water",
+   "남색",
+   "서쪽면"
+  ]
+ },
+ {
+  "index": 430,
+  "label": "남색 수면 내부",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 수면 내부",
+   "water",
+   "남색",
+   "내부"
+  ]
+ },
+ {
+  "index": 431,
+  "label": "남색 동쪽 세로 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 동쪽 세로 테두리",
+   "water",
+   "남색",
+   "동쪽면"
+  ]
+ },
+ {
+  "index": 432,
+  "label": "보라 회색 돌벽돌",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "보라 회색 돌벽돌",
+   "brick",
+   "돌바닥",
+   "보라"
+  ]
+ },
+ {
+  "index": 433,
+  "label": "갈금 마름모 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈금 마름모 바닥",
+   "floor",
+   "마름모",
+   "갈색"
+  ]
+ },
+ {
+  "index": 434,
+  "label": "분홍 흰 사선무늬",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "분홍 흰 사선무늬",
+   "stripe",
+   "사선",
+   "분홍"
+  ]
+ },
+ {
+  "index": 435,
+  "label": "화려한 카펫 좌",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 436,
+  "label": "화려한 카펫 하단",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 437,
+  "label": "화려한 카펫 우",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 438,
+  "label": "용암 흐르는 좌산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "용암 흐르는 좌산",
+   "volcano",
+   "용암",
+   "왼쪽산"
+  ]
+ },
+ {
+  "index": 439,
+  "label": "분화하는 오른쪽 산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "분화하는 오른쪽 산",
+   "volcano",
+   "용암",
+   "오른쪽산"
+  ]
+ },
+ {
+  "index": 440,
+  "label": "황금 짐승석상 왼쪽",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "황금 짐승석상 왼쪽",
+   "statue",
+   "짐승",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 441,
+  "label": "황금 짐승석상 오른쪽",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "황금 짐승석상 오른쪽",
+   "statue",
+   "짐승",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 442,
+  "label": "회색 격자 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "회색 격자 창문",
+   "window",
+   "격자",
+   "회색"
+  ]
+ },
+ {
+  "index": 443,
+  "label": "회색 창턱 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 창턱 석벽",
+   "wall",
+   "창턱",
+   "석재"
+  ]
+ },
+ {
+  "index": 444,
+  "label": "책장 좌상",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "책장 상단",
+   "책장"
+  ]
+ },
+ {
+  "index": 445,
+  "label": "책장 우상",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "책장 상단",
+   "책장"
+  ]
+ },
+ {
+  "index": 446,
+  "label": "금십자 왕좌 등받이",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "금십자 왕좌 등받이",
+   "throne",
+   "왕좌",
+   "등받이"
+  ]
+ },
+ {
+  "index": 447,
+  "label": "왕좌 왼쪽 팔걸이",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "왕좌 왼쪽 팔걸이",
+   "throne",
+   "팔걸이",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 448,
+  "label": "붉은 왕좌 좌석",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "붉은 왕좌 좌석",
+   "throne",
+   "왕좌",
+   "좌석"
+  ]
+ },
+ {
+  "index": 449,
+  "label": "왕좌 오른쪽 팔걸이",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "왕좌 오른쪽 팔걸이",
+   "throne",
+   "팔걸이",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 450,
+  "label": "서쪽 웅덩이 숲수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "서쪽 웅덩이 숲수관",
+   "forest",
+   "수관",
+   "웅덩이"
+  ]
+ },
+ {
+  "index": 451,
+  "label": "남쪽 밝은 숲수관",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "남쪽 밝은 숲수관",
+   "forest",
+   "수관",
+   "밝은잎"
+  ]
+ },
+ {
+  "index": 452,
+  "label": "숲 캐노피",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 캐노피",
+   "forest",
+   "수관",
+   "노란빛"
+  ]
+ },
+ {
+  "index": 453,
+  "label": "소나무 밑동",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무",
+   "소나무숲",
+   "소나무 숲"
+  ]
+ },
+ {
+  "index": 454,
+  "label": "소나무 밑동",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무",
+   "소나무숲",
+   "소나무 숲"
+  ]
+ },
+ {
+  "index": 455,
+  "label": "소나무 밑동",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "소나무",
+   "소나무숲",
+   "소나무 숲"
+  ]
+ },
+ {
+  "index": 456,
+  "label": "검은 수면 남서 모서리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 남서 모서리",
+   "water",
+   "수면",
+   "남서"
+  ]
+ },
+ {
+  "index": 457,
+  "label": "검은 수면 남쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 남쪽 테두리",
+   "water",
+   "수면",
+   "남쪽"
+  ]
+ },
+ {
+  "index": 458,
+  "label": "검은 수면 남동 모서리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 수면 남동 모서리",
+   "water",
+   "수면",
+   "남동"
+  ]
+ },
+ {
+  "index": 459,
+  "label": "남색 남서 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 남서 테두리",
+   "water",
+   "남색",
+   "남서"
+  ]
+ },
+ {
+  "index": 460,
+  "label": "남색 수면 남쪽 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 수면 남쪽 테두리",
+   "water",
+   "남색",
+   "남쪽"
+  ]
+ },
+ {
+  "index": 461,
+  "label": "남색 남동 테두리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 남동 테두리",
+   "water",
+   "남색",
+   "남동"
+  ]
+ },
+ {
+  "index": 462,
+  "label": "어긋난 보라 돌벽돌",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "어긋난 보라 돌벽돌",
+   "brick",
+   "돌바닥",
+   "어긋남"
+  ]
+ },
+ {
+  "index": 463,
+  "label": "갈금 격자 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈금 격자 바닥",
+   "floor",
+   "격자",
+   "갈색"
+  ]
+ },
+ {
+  "index": 464,
+  "label": "회색 격자 쇠창살",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "회색 격자 쇠창살",
+   "grate",
+   "창살",
+   "격자"
+  ]
+ },
+ {
+  "index": 465,
+  "label": "화려한 카펫 하단 좌",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 466,
+  "label": "화려한 카펫 하단",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 467,
+  "label": "화려한 카펫 하단 우",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "붉은 양탄자",
+   "화려한 카펫"
+  ]
+ },
+ {
+  "index": 468,
+  "label": "둥근 갈색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "둥근 갈색 바위",
+   "rock",
+   "바위",
+   "둥근돌"
+  ]
+ },
+ {
+  "index": 469,
+  "label": "가파른 암벽 조각",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "가파른 암벽 조각",
+   "cliff",
+   "암벽",
+   "절벽"
+  ]
+ },
+ {
+  "index": 470,
+  "label": "앉은 황금석상 왼쪽",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "앉은 황금석상 왼쪽",
+   "statue",
+   "석상",
+   "앉은상"
+  ]
+ },
+ {
+  "index": 471,
+  "label": "앉은 황금석상 오른쪽",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "앉은 황금석상 오른쪽",
+   "statue",
+   "석상",
+   "굽은상"
+  ]
+ },
+ {
+  "index": 472,
+  "label": "회색 세로 석주",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "회색 세로 석주",
+   "pillar",
+   "석주",
+   "세로"
+  ]
+ },
+ {
+  "index": 473,
+  "label": "회색 가로 석인방",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 가로 석인방",
+   "lintel",
+   "인방",
+   "석재"
+  ]
+ },
+ {
+  "index": 474,
+  "label": "책 꽂힌 서가 왼쪽",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "책 꽂힌 서가 왼쪽",
+   "books",
+   "서가",
+   "왼쪽"
+  ]
+ },
+ {
+  "index": 475,
+  "label": "책 꽂힌 서가 오른쪽",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "책 꽂힌 서가 오른쪽",
+   "books",
+   "서가",
+   "오른쪽"
+  ]
+ },
+ {
+  "index": 476,
+  "label": "금테 붉은 의자 등",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "금테 붉은 의자 등",
+   "chair",
+   "의자",
+   "등받이"
+  ]
+ },
+ {
+  "index": 477,
+  "label": "금 의자 왼쪽 팔",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "금 의자 왼쪽 팔",
+   "chair",
+   "팔걸이",
+   "금색"
+  ]
+ },
+ {
+  "index": 478,
+  "label": "붉은 의자 방석",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "붉은 의자 방석",
+   "chair",
+   "방석",
+   "빨강"
+  ]
+ },
+ {
+  "index": 479,
+  "label": "금 의자 오른쪽 팔",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "금 의자 오른쪽 팔",
+   "chair",
+   "팔걸이",
+   "오른쪽"
+  ]
+ }
+]

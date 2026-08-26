@@ -1,0 +1,120 @@
+360|잔디 위 원형 자갈길|terrain|passable|high|
+361|잔디 바닥|terrain|passable|high|
+362|자갈 바닥|terrain|passable|high|
+363|잔디 위 원형 흙길|terrain|passable|high|
+364|잔디 바닥|terrain|passable|high|
+365|흙 바닥|terrain|passable|high|
+366|돌 테두리 바닥|terrain|passable|high|
+367|어두운 돌 바닥|terrain|passable|high|
+368|어두운 돌 바닥 모서리|terrain|passable|high|
+369|남색 카펫 바닥|floor|passable|high|
+370|남색 바닥|floor|passable|high|
+371|남색 바닥 모서리|floor|passable|high|
+372|거친 자갈 흙 바닥|terrain|passable|high|
+373|붉은 흙 바닥|terrain|passable|high|
+374|주황색 기와 지붕 상단 장식|roof|solid|high|주황색 기와 지붕
+375|주황색 기와 지붕|roof|solid|high|주황색 기와 지붕
+376|주황색 기와 지붕 밝은 면|roof|solid|high|주황색 기와 지붕
+377|주황색 기와 지붕|roof|solid|high|주황색 기와 지붕
+378|나무 울타리 좌측 끝|fence|solid|high|나무 울타리
+379|나무 울타리 상단|fence|solid|high|나무 울타리
+380|나무 울타리 우측 끝|fence|solid|high|나무 울타리
+381|모닥불|prop|solid|high|모닥불
+382|돌 우물|prop|solid|high|돌 우물
+383|해골과 뼈|prop|passable|high|
+384|주황색 삼각형 차양|roof|solid|high|주황색 차양
+385|갈색 삼각형 차양|roof|solid|high|갈색 차양
+386|파란색 삼각형 차양|roof|solid|high|파란색 차양
+387|남색 삼각형 차양|roof|solid|high|남색 차양
+388|목재 기둥 상단|prop|solid|high|목재 기둥
+389|천막 지붕 상단 장식|roof|solid|high|천막
+390|자갈길 좌상단 모퉁이|terrain|passable|high|자갈길
+391|자갈길 상단 가장자리|terrain|passable|high|자갈길
+392|자갈길 우상단 모퉁이|terrain|passable|high|자갈길
+393|흙길 좌상단 모퉁이|terrain|passable|high|흙길
+394|흙길 상단 가장자리|terrain|passable|high|흙길
+395|흙길 우상단 모퉁이|terrain|passable|high|흙길
+396|어두운 돌 바닥 좌상단 모퉁이|terrain|passable|high|어두운 돌 바닥
+397|어두운 돌 바닥 상단 가장자리|terrain|passable|high|어두운 돌 바닥
+398|어두운 돌 바닥 우상단 모퉁이|terrain|passable|high|어두운 돌 바닥
+399|남색 카펫 좌상단 모퉁이|floor|passable|high|남색 카펫
+400|남색 카펫 상단 가장자리|floor|passable|high|남색 카펫
+401|남색 카펫 우상단 모퉁이|floor|passable|high|남색 카펫
+402|붉은 흙 밭 새싹|plant|passable|high|밭
+403|자갈 흙 밭 새싹|plant|passable|high|밭
+404|주황색 기와 지붕 상단|roof|solid|high|주황색 기와 지붕
+405|주황색 기와 지붕 하단 처마|roof|solid|high|주황색 기와 지붕
+406|파란색 기와 지붕 밝은 면|roof|solid|high|파란색 기와 지붕
+407|파란색 기와 지붕|roof|solid|high|파란색 기와 지붕
+408|나무 울타리 수직 기둥|fence|solid|high|나무 울타리
+409|나무 울타리 중앙|fence|solid|high|나무 울타리
+410|나무 울타리 우측 연결부|fence|solid|high|나무 울타리
+411|모닥불 주변 자갈과 숯|prop|passable|high|
+412|PUB 간판|prop|solid|high|PUB 간판
+413|철제 십자가|prop|solid|high|철제 십자가
+414|룬 비석 좌상단|prop|solid|high|룬 비석
+415|룬 비석 상단 중앙|prop|solid|high|룬 비석
+416|룬 비석 우상단|prop|solid|high|룬 비석
+417|천막 지붕 좌상단|roof|solid|high|천막
+418|천막 지붕 상단 중앙|roof|solid|high|천막
+419|천막 지붕 우상단|roof|solid|high|천막
+420|자갈길 좌측 가장자리|terrain|passable|high|자갈길
+421|자갈길 중앙|terrain|passable|high|자갈길
+422|자갈길 우측 가장자리|terrain|passable|high|자갈길
+423|흙길 좌측 가장자리|terrain|passable|high|흙길
+424|흙길 중앙|terrain|passable|high|흙길
+425|흙길 우측 가장자리|terrain|passable|high|흙길
+426|어두운 돌 바닥 좌측 가장자리|terrain|passable|high|어두운 돌 바닥
+427|어두운 돌 바닥 중앙|terrain|passable|high|어두운 돌 바닥
+428|어두운 돌 바닥 우측 가장자리|terrain|passable|high|어두운 돌 바닥
+429|남색 카펫 좌측 가장자리|floor|passable|high|남색 카펫
+430|남색 카펫 중앙|floor|passable|high|남색 카펫
+431|남색 카펫 우측 가장자리|floor|passable|high|남색 카펫
+432|이끼 낀 돌 바닥|terrain|passable|high|
+433|어두운 돌 바닥|terrain|passable|high|
+434|지하 통로 사다리 좌상단|stairs|passable|high|지하 통로 사다리
+435|지하 통로 사다리 우상단|stairs|passable|high|지하 통로 사다리
+436|파란색 기와 지붕 상단|roof|solid|high|파란색 기와 지붕
+437|파란색 기와 지붕|roof|solid|high|파란색 기와 지붕
+438|나무 울타리 좌측 연결부|fence|solid|high|나무 울타리
+439|나무 울타리 하단|fence|solid|high|나무 울타리
+440|나무 이정표|prop|solid|high|나무 이정표
+441|목재 판자 바닥|floor|passable|high|목재 판자 바닥
+442|검 무기점 간판|prop|solid|high|무기점 간판
+443|INN 여관 간판|prop|solid|high|여관 간판
+444|룬 비석 좌측 중앙|prop|solid|high|룬 비석
+445|룬 비석 중앙|prop|solid|high|룬 비석
+446|룬 비석 우측 중앙|prop|solid|high|룬 비석
+447|천막 좌측 벽|wall|solid|high|천막
+448|천막 입구 상단|door|passable|high|천막
+449|천막 우측 벽|wall|solid|high|천막
+450|자갈길 좌하단 모퉁이|terrain|passable|high|자갈길
+451|자갈길 하단 가장자리|terrain|passable|high|자갈길
+452|자갈길 우하단 모퉁이|terrain|passable|high|자갈길
+453|흙길 좌하단 모퉁이|terrain|passable|high|흙길
+454|흙길 하단 가장자리|terrain|passable|high|흙길
+455|흙길 우하단 모퉁이|terrain|passable|high|흙길
+456|어두운 돌 바닥 좌하단 모퉁이|terrain|passable|high|어두운 돌 바닥
+457|어두운 돌 바닥 하단 가장자리|terrain|passable|high|어두운 돌 바닥
+458|어두운 돌 바닥 우하단 모퉁이|terrain|passable|high|어두운 돌 바닥
+459|남색 카펫 좌하단 모퉁이|floor|passable|high|남색 카펫
+460|남색 카펫 하단 가장자리|floor|passable|high|남색 카펫
+461|남색 카펫 우하단 모퉁이|floor|passable|high|남색 카펫
+462|보라빛 광석 무더기|prop|solid|high|광석
+463|보라빛 광석 파편|prop|solid|high|광석
+464|지하 통로 사다리 좌하단|stairs|passable|high|지하 통로 사다리
+465|지하 통로 사다리 우하단|stairs|passable|high|지하 통로 사다리
+466|파란색 기와 지붕 상단|roof|solid|high|파란색 기와 지붕
+467|파란색 기와 지붕 하단 처마|roof|solid|high|파란색 기와 지붕
+468|목재 다리 좌측 아치|stairs|passable|high|목재 다리
+469|목재 다리 중앙 기둥|stairs|passable|high|목재 다리
+470|목재 다리 우측 아치|stairs|passable|high|목재 다리
+471|목재 상판 하단 지지대|prop|passable|high|목재 판자 바닥
+472|방패 방어구점 간판|prop|solid|high|방어구점 간판
+473|물약 잡화점 간판|prop|solid|high|잡화점 간판
+474|룬 비석 좌하단 받침대|prop|solid|high|룬 비석
+475|룬 비석 하단 중앙 받침대|prop|solid|high|룬 비석
+476|룬 비석 우하단 받침대|prop|solid|high|룬 비석
+477|천막 좌하단 지지대|wall|solid|high|천막
+478|천막 입구 하단|door|passable|high|천막
+479|천막 우하단 지지대|wall|solid|high|천막

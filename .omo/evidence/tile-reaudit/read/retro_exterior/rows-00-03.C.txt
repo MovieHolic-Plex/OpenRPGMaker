@@ -1,0 +1,1 @@
+116|나무 창문 우측|window|passable|high|나무 창문

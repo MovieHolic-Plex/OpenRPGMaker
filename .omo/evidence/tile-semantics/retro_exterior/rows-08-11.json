@@ -1,0 +1,1418 @@
+[
+ {
+  "index": 240,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 241,
+  "label": "잔디밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디밭",
+   "lawn",
+   "잔디",
+   "초원"
+  ]
+ },
+ {
+  "index": 242,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "들판"
+  ]
+ },
+ {
+  "index": 243,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃",
+   "잔디"
+  ]
+ },
+ {
+  "index": 244,
+  "label": "잔디밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디밭",
+   "grass",
+   "잔디",
+   "밭"
+  ]
+ },
+ {
+  "index": 245,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃잔디"
+  ]
+ },
+ {
+  "index": 246,
+  "label": "회색 석벽 단일 블록",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 상단 테두리",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 247,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "풀밭"
+  ]
+ },
+ {
+  "index": 248,
+  "label": "회색 자갈 석벽 단일 블록",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 상단 테두리",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 249,
+  "label": "검은 쇄석 석벽 단일 블록",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 상단 테두리",
+   "어두운 돌 벽"
+  ]
+ },
+ {
+  "index": 250,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "초지"
+  ]
+ },
+ {
+  "index": 251,
+  "label": "어두운 쇄석 석벽 단일 블록",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 상단 테두리",
+   "어두운 돌 벽"
+  ]
+ },
+ {
+  "index": 252,
+  "label": "나무 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "나무 바닥",
+   "wood",
+   "plank",
+   "판자",
+   "바닥"
+  ]
+ },
+ {
+  "index": 253,
+  "label": "물",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "물",
+   "water",
+   "호수"
+  ]
+ },
+ {
+  "index": 254,
+  "label": "목재 골조 자주색 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "건물 외벽 기둥과 벽",
+   "벽돌 벽과 나무 기둥",
+   "목재 골조 석벽 왼쪽"
+  ]
+ },
+ {
+  "index": 255,
+  "label": "목재 골조 자주색 벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "건물 외벽 기둥 사이 벽",
+   "목재 골조 석벽 오른쪽",
+   "벽돌 벽과 나무 기둥"
+  ]
+ },
+ {
+  "index": 256,
+  "label": "건물 외벽 회반죽 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "회색 벽과 나무 기둥",
+   "목재 골조 회벽 상단",
+   "회벽 목조 벽 왼쪽"
+  ]
+ },
+ {
+  "index": 257,
+  "label": "건물 외벽 회반죽 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "회색 벽과 나무 기둥",
+   "목재 골조 회벽 상단",
+   "회벽 목조 벽 오른쪽"
+  ]
+ },
+ {
+  "index": 259,
+  "label": "나무 통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 통",
+   "barrel",
+   "통",
+   "나무",
+   "술통"
+  ]
+ },
+ {
+  "index": 260,
+  "label": "나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "나무",
+   "tree",
+   "숲",
+   "나뭇잎"
+  ]
+ },
+ {
+  "index": 261,
+  "label": "마른 나무 가지 상단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "마른 나무 상단",
+   "마른 나무"
+  ]
+ },
+ {
+  "index": 262,
+  "label": "덤불 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "덤불 나무",
+   "tree",
+   "bush",
+   "덤불",
+   "나무"
+  ]
+ },
+ {
+  "index": 263,
+  "label": "나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "나무",
+   "tree",
+   "잎"
+  ]
+ },
+ {
+  "index": 264,
+  "label": "흰 구조물",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "흰 구조물",
+   "white",
+   "구조물",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 265,
+  "label": "잎 달린 덩굴 상단",
+  "role": "plant",
+  "passage": "passable",
+  "tags": [
+   "plant",
+   "덩굴 가지 상단",
+   "덩굴 상단",
+   "잎 달린 덩굴"
+  ]
+ },
+ {
+  "index": 266,
+  "label": "회색 석상 머리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "회색 석상 상단",
+   "석상 상단",
+   "회색 석상"
+  ]
+ },
+ {
+  "index": 267,
+  "label": "회색 원기둥 머리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석조 기둥 상단",
+   "회색 석주 주두",
+   "회색 원기둥"
+  ]
+ },
+ {
+  "index": 268,
+  "label": "바위 절벽",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "바위 절벽",
+   "cliff",
+   "rock",
+   "절벽",
+   "바위"
+  ]
+ },
+ {
+  "index": 269,
+  "label": "바위 절벽",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "바위 절벽",
+   "cliff",
+   "rock",
+   "절벽",
+   "암벽"
+  ]
+ },
+ {
+  "index": 270,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "푸른"
+  ]
+ },
+ {
+  "index": 271,
+  "label": "잔디밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디밭",
+   "grass",
+   "잔디",
+   "초원"
+  ]
+ },
+ {
+  "index": 272,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "들"
+  ]
+ },
+ {
+  "index": 273,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃",
+   "잔디"
+  ]
+ },
+ {
+  "index": 274,
+  "label": "잔디 밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 밭",
+   "grass",
+   "잔디",
+   "화초"
+  ]
+ },
+ {
+  "index": 275,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃잔디"
+  ]
+ },
+ {
+  "index": 276,
+  "label": "돌 벽 좌상단 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "회색 석벽 상단 왼쪽",
+   "돌 벽",
+   "회색 석벽"
+  ]
+ },
+ {
+  "index": 277,
+  "label": "회색 석벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 상단",
+   "회색 석벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 278,
+  "label": "회색 석벽 상단 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 우상단 모서리",
+   "회색 석벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 279,
+  "label": "어두운 돌벽 좌상단 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 쇄석벽 상단 왼쪽",
+   "어두운 돌 벽",
+   "어두운 쇄석벽"
+  ]
+ },
+ {
+  "index": 280,
+  "label": "어두운 쇄석벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 상단",
+   "어두운 쇄석벽",
+   "어두운 돌 벽"
+  ]
+ },
+ {
+  "index": 281,
+  "label": "어두운 돌벽 우상단 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 쇄석벽 상단 오른쪽",
+   "어두운 돌 벽",
+   "어두운 쇄석벽"
+  ]
+ },
+ {
+  "index": 282,
+  "label": "분홍빛 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "분홍빛 지면",
+   "pink",
+   "지면",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 283,
+  "label": "회색 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "회색 지면",
+   "grey",
+   "지면",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 284,
+  "label": "자주색 벽돌 벽 왼쪽 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "청회색 벽돌벽 왼쪽 상단",
+   "푸른 돌벽 상단 좌측",
+   "푸른 벽돌 벽 좌상단"
+  ]
+ },
+ {
+  "index": 285,
+  "label": "청회색 벽돌벽 중앙 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "푸른 돌벽 상단 중앙",
+   "자주색 벽돌 벽 왼쪽",
+   "푸른 벽돌 벽 상단"
+  ]
+ },
+ {
+  "index": 286,
+  "label": "청회색 벽돌벽 오른쪽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "푸른 벽돌 벽 상단 이끼",
+   "자주색 벽돌 벽 오른쪽",
+   "푸른 돌벽 상단 중앙"
+  ]
+ },
+ {
+  "index": 287,
+  "label": "자주색 벽돌 벽 오른쪽 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "푸른 돌벽 상단 우측",
+   "푸른 벽돌 벽 우상단",
+   "좁은 청회색 벽돌벽"
+  ]
+ },
+ {
+  "index": 288,
+  "label": "꽃 덤불",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "꽃 덤불",
+   "bush",
+   "flower",
+   "꽃",
+   "덤불"
+  ]
+ },
+ {
+  "index": 289,
+  "label": "덤불",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "덤불",
+   "bush",
+   "수풀"
+  ]
+ },
+ {
+  "index": 290,
+  "label": "잎이 무성한 나무 하단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "잎이 무성한 나무 줄기",
+   "원추형 나무 하단",
+   "키 큰 나무 하단"
+  ]
+ },
+ {
+  "index": 291,
+  "label": "마른 나무 줄기 하단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "마른 나무 하단",
+   "마른 나무 줄기",
+   "마른 나무"
+  ]
+ },
+ {
+  "index": 292,
+  "label": "둥근 활엽수 좌측 하단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "큰 활엽수 왼쪽 하단",
+   "큰 활엽수 밑동 왼쪽",
+   "큰 나무 좌하단"
+  ]
+ },
+ {
+  "index": 293,
+  "label": "둥근 활엽수 우측 하단",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "큰 활엽수 오른쪽 하단",
+   "큰 활엽수 밑동 오른쪽",
+   "큰 나무 우하단"
+  ]
+ },
+ {
+  "index": 294,
+  "label": "흰 구조물",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "흰 구조물",
+   "white",
+   "구조물",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 295,
+  "label": "잎 달린 덩굴 중단",
+  "role": "plant",
+  "passage": "passable",
+  "tags": [
+   "plant",
+   "덩굴 가지 중단",
+   "덩굴 중단",
+   "잎 달린 덩굴"
+  ]
+ },
+ {
+  "index": 296,
+  "label": "회색 석상 몸통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "회색 석상 하단",
+   "석상 중단",
+   "회색 석상"
+  ]
+ },
+ {
+  "index": 297,
+  "label": "회색 원기둥 몸통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "회색 석주 기둥부",
+   "석조 기둥 하단",
+   "회색 원기둥"
+  ]
+ },
+ {
+  "index": 298,
+  "label": "파이프 오르간 좌하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "책장 본체 좌측",
+   "책장 하단 왼쪽",
+   "책장 좌측"
+  ]
+ },
+ {
+  "index": 299,
+  "label": "파이프 오르간 우하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "책장 하단 오른쪽",
+   "책장 본체 우측",
+   "책장 우측"
+  ]
+ },
+ {
+  "index": 300,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass"
+  ]
+ },
+ {
+  "index": 301,
+  "label": "잔디밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디밭",
+   "grass",
+   "잔디",
+   "초원"
+  ]
+ },
+ {
+  "index": 302,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 303,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃",
+   "잔디"
+  ]
+ },
+ {
+  "index": 304,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃잔디"
+  ]
+ },
+ {
+  "index": 305,
+  "label": "잔디 밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 밭",
+   "grass",
+   "잔디",
+   "화초"
+  ]
+ },
+ {
+  "index": 306,
+  "label": "회색 석벽 중앙 왼쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 좌측 벽",
+   "회색 석벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 307,
+  "label": "돌 벽 내부 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "돌길 바닥 중앙",
+   "돌 벽 단",
+   "돌길 바닥"
+  ]
+ },
+ {
+  "index": 308,
+  "label": "회색 석벽 중앙 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 우측 벽",
+   "회색 석벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 309,
+  "label": "어두운 쇄석벽 중앙 왼쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 좌측 벽",
+   "어두운 쇄석벽",
+   "어두운 돌 벽"
+  ]
+ },
+ {
+  "index": 310,
+  "label": "어두운 돌벽 내부 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 돌바닥 중앙",
+   "어두운 돌 벽 단",
+   "어두운 돌바닥"
+  ]
+ },
+ {
+  "index": 311,
+  "label": "어두운 쇄석벽 중앙 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 우측 벽",
+   "어두운 쇄석벽",
+   "어두운 돌 벽"
+  ]
+ },
+ {
+  "index": 312,
+  "label": "돌 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "돌 바닥",
+   "stone",
+   "돌",
+   "바닥"
+  ]
+ },
+ {
+  "index": 313,
+  "label": "돌 포장",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "돌 포장",
+   "stone",
+   "paving",
+   "포장",
+   "돌"
+  ]
+ },
+ {
+  "index": 314,
+  "label": "베이지색 벽돌 벽 상단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지 문양 석벽 왼쪽 상단",
+   "베이지색 문양 벽 상단",
+   "석조 벽 상단 좌측"
+  ]
+ },
+ {
+  "index": 315,
+  "label": "베이지 문양 석벽 중앙 왼쪽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지색 벽돌 벽 상단",
+   "베이지색 문양 벽 상단",
+   "석조 벽 상단 중좌측"
+  ]
+ },
+ {
+  "index": 316,
+  "label": "베이지 문양 석벽 중앙 오른쪽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지색 벽돌 벽 상단",
+   "베이지색 문양 벽 상단",
+   "석조 벽 상단 중우측"
+  ]
+ },
+ {
+  "index": 317,
+  "label": "베이지 문양 석벽 오른쪽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지색 벽돌 벽 상단 우측",
+   "베이지색 문양 벽 상단",
+   "석조 벽 상단 우측"
+  ]
+ },
+ {
+  "index": 318,
+  "label": "횃불",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "횃불",
+   "torch",
+   "불",
+   "화염"
+  ]
+ },
+ {
+  "index": 319,
+  "label": "나무 기둥",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 기둥",
+   "post",
+   "기둥",
+   "나무",
+   "말뚝"
+  ]
+ },
+ {
+  "index": 320,
+  "label": "문양이 그려진 두루마리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "문자가 새겨진 석판",
+   "양피지 공고문",
+   "벽보"
+  ]
+ },
+ {
+  "index": 321,
+  "label": "나무 기둥",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 기둥",
+   "post",
+   "기둥",
+   "나무",
+   "줄기"
+  ]
+ },
+ {
+  "index": 322,
+  "label": "나무 사다리",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "목제 사다리"
+  ]
+ },
+ {
+  "index": 323,
+  "label": "보라색 묘비 장식 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "보라색 장식 기둥 상단",
+   "십자가 묘비 상단",
+   "묘비 상단"
+  ]
+ },
+ {
+  "index": 324,
+  "label": "흰 구조물",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "흰 구조물",
+   "white",
+   "구조물",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 325,
+  "label": "잎 달린 덩굴 하단",
+  "role": "plant",
+  "passage": "passable",
+  "tags": [
+   "plant",
+   "덩굴 가지 하단",
+   "덩굴 하단",
+   "잎 달린 덩굴"
+  ]
+ },
+ {
+  "index": 326,
+  "label": "돌기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "돌기둥",
+   "pillar",
+   "stone",
+   "기둥",
+   "돌"
+  ]
+ },
+ {
+  "index": 327,
+  "label": "긴 목제 의자 왼쪽",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "나무 벤치 좌측",
+   "긴 탁자 좌측",
+   "긴 목제 의자"
+  ]
+ },
+ {
+  "index": 328,
+  "label": "긴 목제 의자 오른쪽",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "나무 벤치 우측",
+   "긴 탁자 우측",
+   "긴 목제 의자"
+  ]
+ },
+ {
+  "index": 329,
+  "label": "검은색 걸개 상단",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "검은 암흑 채움",
+   "검은 사각 면",
+   "검은색 걸개"
+  ]
+ },
+ {
+  "index": 330,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass"
+  ]
+ },
+ {
+  "index": 331,
+  "label": "잔디밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디밭",
+   "grass",
+   "잔디",
+   "초원"
+  ]
+ },
+ {
+  "index": 332,
+  "label": "잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디",
+   "grass",
+   "풀밭"
+  ]
+ },
+ {
+  "index": 333,
+  "label": "잔디 밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 밭",
+   "grass",
+   "잔디",
+   "초지"
+  ]
+ },
+ {
+  "index": 334,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃",
+   "잔디"
+  ]
+ },
+ {
+  "index": 335,
+  "label": "꽃 핀 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "꽃 핀 잔디",
+   "grass",
+   "flower",
+   "꽃잔디"
+  ]
+ },
+ {
+  "index": 336,
+  "label": "돌 벽 좌하단 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "회색 석벽 하단 왼쪽",
+   "돌 벽",
+   "회색 석벽"
+  ]
+ },
+ {
+  "index": 337,
+  "label": "회색 석벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 하단",
+   "회색 석벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 338,
+  "label": "회색 석벽 하단 오른쪽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "돌 벽 우하단 모서리",
+   "회색 석벽",
+   "돌 벽"
+  ]
+ },
+ {
+  "index": 339,
+  "label": "어두운 돌벽 좌하단 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 쇄석벽 하단 왼쪽",
+   "어두운 돌 벽",
+   "어두운 쇄석벽"
+  ]
+ },
+ {
+  "index": 340,
+  "label": "어두운 쇄석벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 하단",
+   "어두운 쇄석벽",
+   "어두운 돌 벽"
+  ]
+ },
+ {
+  "index": 341,
+  "label": "어두운 돌벽 우하단 모서리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 쇄석벽 하단 오른쪽",
+   "어두운 돌 벽",
+   "어두운 쇄석벽"
+  ]
+ },
+ {
+  "index": 342,
+  "label": "돌 포장",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "돌 포장",
+   "stone",
+   "paving",
+   "포장",
+   "돌"
+  ]
+ },
+ {
+  "index": 343,
+  "label": "원형 문양 석판 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 344,
+  "label": "베이지색 벽돌 벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지 문양 석벽 왼쪽 하단",
+   "석조 벽 하단 좌측",
+   "갈색 문양 벽 하단"
+  ]
+ },
+ {
+  "index": 345,
+  "label": "베이지 문양 석벽 중앙 왼쪽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지색 벽돌 벽 하단",
+   "석조 벽 하단 중좌측",
+   "갈색 문양 벽 하단"
+  ]
+ },
+ {
+  "index": 346,
+  "label": "베이지 문양 석벽 중앙 오른쪽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지색 벽돌 벽 하단",
+   "석조 벽 하단 중우측",
+   "청회색 문양 벽 하단"
+  ]
+ },
+ {
+  "index": 347,
+  "label": "베이지 문양 석벽 오른쪽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "베이지색 벽돌 벽 하단 우측",
+   "청회색 문양 벽 하단",
+   "석조 벽 하단 우측"
+  ]
+ },
+ {
+  "index": 348,
+  "label": "작은 들꽃 무리",
+  "role": "plant",
+  "passage": "passable",
+  "tags": [
+   "plant",
+   "바닥 들꽃",
+   "흩어진 꽃",
+   "들꽃"
+  ]
+ },
+ {
+  "index": 349,
+  "label": "통나무 더미 하단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "장작더미",
+   "통나무 더미"
+  ]
+ },
+ {
+  "index": 350,
+  "label": "빨간 우체통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "빨간색 튜닉"
+  ]
+ },
+ {
+  "index": 351,
+  "label": "붉은 꽃 화분",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "꽃 화분"
+  ]
+ },
+ {
+  "index": 352,
+  "label": "나무 간판",
+  "role": "sign",
+  "passage": "solid",
+  "tags": [
+   "나무 간판",
+   "sign",
+   "board",
+   "간판",
+   "나무"
+  ]
+ },
+ {
+  "index": 353,
+  "label": "십자가 묘비 하단 기단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "보라색 장식 기둥 하단",
+   "보라색 묘비 몸체",
+   "묘비 하단"
+  ]
+ },
+ {
+  "index": 354,
+  "label": "초가 지붕",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "초가 지붕",
+   "thatch",
+   "roof",
+   "지붕",
+   "초가"
+  ]
+ },
+ {
+  "index": 355,
+  "label": "목재 지붕",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "목재 지붕",
+   "wood",
+   "roof",
+   "지붕",
+   "목재"
+  ]
+ },
+ {
+  "index": 356,
+  "label": "파란 천막",
+  "role": "awning",
+  "passage": "solid",
+  "tags": [
+   "파란 천막",
+   "awning",
+   "blue",
+   "천막",
+   "파란"
+  ]
+ },
+ {
+  "index": 357,
+  "label": "파란 천막",
+  "role": "awning",
+  "passage": "solid",
+  "tags": [
+   "파란 천막",
+   "awning",
+   "blue",
+   "천막"
+  ]
+ },
+ {
+  "index": 358,
+  "label": "세로 목재 기둥",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "원목 기둥",
+   "나무 기둥"
+  ]
+ },
+ {
+  "index": 359,
+  "label": "동굴 입구 하단 바닥",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "door",
+   "어두운 입구 하단",
+   "동굴 입구",
+   "어두운 입구"
+  ]
+ }
+]

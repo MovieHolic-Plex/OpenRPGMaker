@@ -91,7 +91,7 @@ function shareBigram(x: string, y: string): boolean {
   return false;
 }
 
-function loadReading(sheet: string, a: number, b: number, reader: "A" | "B"): Map<number, Reading> {
+function loadReading(sheet: string, a: number, b: number, reader: "A" | "B" | "C"): Map<number, Reading> {
   const file = path.join(READ_ROOT, sheet, `rows-${p2(a)}-${p2(b)}.${reader}.json`);
   if (!fs.existsSync(file)) return new Map();
   try {

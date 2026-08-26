@@ -1,0 +1,1286 @@
+[
+ {
+  "sheet": "retro_exterior",
+  "index": 125,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 155,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 185,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 215,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 144,
+  "label": "목재 기둥 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 174,
+  "label": "목재 기둥 중간",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 204,
+  "label": "목재 기둥 받침",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 156,
+  "label": "새싹 밭이랑 좌측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 157,
+  "label": "새싹 밭이랑 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 158,
+  "label": "새싹 밭이랑 우측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 186,
+  "label": "새싹 밭이랑 좌측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 187,
+  "label": "새싹 밭이랑 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 188,
+  "label": "새싹 밭이랑 우측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 168,
+  "label": "나무 판자 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 169,
+  "label": "나무 판자 벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 170,
+  "label": "나무 판자 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 198,
+  "label": "나무 판자 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 199,
+  "label": "나무 판자 벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 200,
+  "label": "나무 판자 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 228,
+  "label": "나무 판자 벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 229,
+  "label": "나무 판자 벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 230,
+  "label": "나무 판자 벽 하단 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 145,
+  "label": "커튼 달린 창문 좌측",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "커튼"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 146,
+  "label": "커튼 달린 창문 우측",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "커튼"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 147,
+  "label": "나무 의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 148,
+  "label": "나무 협탁",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "협탁",
+   "nightstand",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 175,
+  "label": "나무 의자 앞모습",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 176,
+  "label": "나무 의자 뒷모습",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 205,
+  "label": "나무 의자 우향 측면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 206,
+  "label": "나무 의자 좌향 측면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 177,
+  "label": "쇠테 나무 술통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "술통",
+   "barrel",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 207,
+  "label": "나무 물통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "물통",
+   "bucket",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 234,
+  "label": "긴 나무 벤치 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "벤치",
+   "bench",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 235,
+  "label": "긴 나무 벤치 중앙",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "벤치",
+   "bench",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 236,
+  "label": "긴 나무 벤치 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "벤치",
+   "bench",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 237,
+  "label": "나무 궤짝",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "궤짝",
+   "crate",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 179,
+  "label": "붉은 제비꼬리 깃발 상단",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 209,
+  "label": "붉은 제비꼬리 깃발 하단",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 208,
+  "label": "붉은 삼각 문장 깃발",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "pennant",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 238,
+  "label": "대형 붉은 깃발 좌측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 239,
+  "label": "대형 붉은 깃발 우측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 201,
+  "label": "석조 틀 격자창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "격자"
+  ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 231,
+  "label": "원형 황금 장식창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "장식"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 125,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 155,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 185,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 215,
+  "label": "석조 틀 청색 유리창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "유리"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 144,
+  "label": "목재 기둥 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 174,
+  "label": "목재 기둥 중간",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 204,
+  "label": "목재 기둥 받침",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 156,
+  "label": "새싹 밭이랑 좌측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 157,
+  "label": "새싹 밭이랑 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 158,
+  "label": "새싹 밭이랑 우측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 186,
+  "label": "새싹 밭이랑 좌측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 187,
+  "label": "새싹 밭이랑 중앙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 188,
+  "label": "새싹 밭이랑 우측",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밭",
+   "farmland",
+   "새싹"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 168,
+  "label": "나무 판자 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 169,
+  "label": "나무 판자 벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 170,
+  "label": "나무 판자 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 198,
+  "label": "나무 판자 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 199,
+  "label": "나무 판자 벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 200,
+  "label": "나무 판자 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 228,
+  "label": "나무 판자 벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 229,
+  "label": "나무 판자 벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 230,
+  "label": "나무 판자 벽 하단 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽",
+   "wall",
+   "판자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 145,
+  "label": "커튼 달린 창문 좌측",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "커튼"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 147,
+  "label": "나무 의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 148,
+  "label": "나무 협탁",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "협탁",
+   "nightstand",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 175,
+  "label": "나무 의자 앞모습",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 176,
+  "label": "나무 의자 뒷모습",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 205,
+  "label": "나무 의자 우향 측면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 206,
+  "label": "나무 의자 좌향 측면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "의자",
+   "chair",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 177,
+  "label": "쇠테 나무 술통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "술통",
+   "barrel",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 207,
+  "label": "나무 물통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "물통",
+   "bucket",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 234,
+  "label": "긴 나무 벤치 좌측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "벤치",
+   "bench",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 235,
+  "label": "긴 나무 벤치 중앙",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "벤치",
+   "bench",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 236,
+  "label": "긴 나무 벤치 우측",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "벤치",
+   "bench",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 237,
+  "label": "나무 궤짝",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "궤짝",
+   "crate",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 179,
+  "label": "붉은 제비꼬리 깃발 상단",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 209,
+  "label": "붉은 제비꼬리 깃발 하단",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 208,
+  "label": "붉은 삼각 문장 깃발",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "pennant",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 238,
+  "label": "대형 붉은 깃발 좌측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 239,
+  "label": "대형 붉은 깃발 우측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "깃발",
+   "banner",
+   "문장"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 201,
+  "label": "석조 틀 격자창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "격자"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 231,
+  "label": "원형 황금 장식창",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "장식"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 132,
+  "label": "갑판 급수 펌프 하단부",
+  "role": "machine",
+  "passage": "passable",
+  "tags": [
+   "펌프",
+   "pump",
+   "갑판"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 134,
+  "label": "둥근 구멍 아래 선체 가로 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "판벽",
+   "hull",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 135,
+  "label": "둥근 구멍 아래 선체 가로 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "판벽",
+   "hull",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 136,
+  "label": "둥근 구멍 아래 선체 가로 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "판벽",
+   "hull",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 139,
+  "label": "목조 골조 벽 좌측 사선 브레이스",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "골조",
+   "frame",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 140,
+  "label": "목조 골조 벽 중앙 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "골조",
+   "frame",
+   "기둥"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 141,
+  "label": "목조 골조 벽 우측 사선 브레이스",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "골조",
+   "frame",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 143,
+  "label": "벽 부착 가로 널 선반",
+  "role": "shelf",
+  "passage": "solid",
+  "tags": [
+   "선반",
+   "shelf",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 148,
+  "label": "선반 위 색색 물약병",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "물약",
+   "potion",
+   "선반"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 168,
+  "label": "짙은 석조 벽돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석조",
+   "brick",
+   "벽돌"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 169,
+  "label": "짙은 석조 벽돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석조",
+   "brick",
+   "벽돌"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 170,
+  "label": "짙은 석조 벽돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석조",
+   "brick",
+   "벽돌"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 171,
+  "label": "짙은 석조 벽돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석조",
+   "brick",
+   "벽돌"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 172,
+  "label": "세로 널 목조 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "판벽",
+   "plank",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 173,
+  "label": "세로 널 목조 벽 우측 곡선 테두리",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "판벽",
+   "plank",
+   "곡선"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 177,
+  "label": "선체 곡선 난간 대각선 조각",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "난간",
+   "rail",
+   "선체"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 192,
+  "label": "선실 사각 창 개구부",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "창문",
+   "window",
+   "선실"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 203,
+  "label": "둥근 목조 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "기둥",
+   "pillar",
+   "목재"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 205,
+  "label": "해골과 뼈 더미",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "해골",
+   "skull",
+   "뼈"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 207,
+  "label": "선체 곡선 난간과 갑판 이음",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "난간",
+   "rail",
+   "선체"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 238,
+  "label": "선체 난간 모서리 연결부",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "난간",
+   "rail",
+   "모서리"
+  ]
+ },
+ {
+  "sheet": "ship",
+  "index": 239,
+  "label": "선체 난간 모서리 금속 부속",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "난간",
+   "rail",
+   "금속"
+  ]
+ }
+]

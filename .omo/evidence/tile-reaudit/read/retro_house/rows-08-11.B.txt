@@ -1,0 +1,120 @@
+240|밝은 점무늬 잔디|terrain|passable|high|
+241|밝은 점무늬 잔디|terrain|passable|high|
+242|밝은 점무늬 잔디|terrain|passable|high|
+243|짙은 잎무늬 잔디|terrain|passable|high|
+244|밝은 점무늬 잔디|terrain|passable|high|
+245|짙은 잎무늬 잔디|terrain|passable|high|
+246|회색 석벽 단일 블록|wall|solid|high|
+247|밝은 점무늬 잔디|terrain|passable|high|
+248|회색 자갈 석벽 단일 블록|wall|solid|medium|
+249|검은 쇄석 석벽 단일 블록|wall|solid|medium|
+250|밝은 점무늬 잔디|terrain|passable|high|
+251|어두운 쇄석 석벽 단일 블록|wall|solid|medium|
+252|분홍색 거친 석재 바닥|terrain|passable|high|
+253|청회색 각진 석재 바닥|terrain|passable|high|
+254|목재 골조 석벽 왼쪽|wall|solid|high|목재 골조 석벽
+255|목재 골조 석벽 오른쪽|wall|solid|high|목재 골조 석벽
+256|회벽 목조 벽 왼쪽|wall|solid|high|회벽 목조 벽
+257|회벽 목조 벽 오른쪽|wall|solid|high|회벽 목조 벽
+258|빈 슬롯|empty|passable|high|
+259|부러진 나무 그루터기|prop|solid|high|
+260|잎이 무성한 나무 상단|tree|solid|high|잎이 무성한 나무
+261|마른 나무 가지 상단|tree|solid|high|마른 나무
+262|큰 활엽수 수관 왼쪽|tree|solid|high|큰 활엽수
+263|큰 활엽수 수관 오른쪽|tree|solid|high|큰 활엽수
+264|반투명 흰색 면 상단|decoration|passable|low|반투명 흰색 면
+265|잎 달린 덩굴 상단|plant|passable|high|잎 달린 덩굴
+266|회색 석상 상단|prop|solid|high|회색 석상
+267|회색 석주 주두|prop|solid|high|회색 석주
+268|아치형 창문 왼쪽 상단|window|solid|high|아치형 창문
+269|아치형 창문 오른쪽 상단|window|solid|high|아치형 창문
+270|밝은 점무늬 잔디|terrain|passable|high|
+271|밝은 점무늬 잔디|terrain|passable|high|
+272|밝은 점무늬 잔디|terrain|passable|high|
+273|짙은 잎무늬 잔디|terrain|passable|high|
+274|짙은 잎무늬 잔디|terrain|passable|high|
+275|짙은 잎무늬 잔디|terrain|passable|high|
+276|회색 석벽 상단 왼쪽|wall|solid|high|회색 석벽
+277|회색 석벽 상단 중앙|wall|solid|high|회색 석벽
+278|회색 석벽 상단 오른쪽|wall|solid|high|회색 석벽
+279|어두운 쇄석벽 상단 왼쪽|wall|solid|high|어두운 쇄석벽
+280|어두운 쇄석벽 상단 중앙|wall|solid|high|어두운 쇄석벽
+281|어두운 쇄석벽 상단 오른쪽|wall|solid|high|어두운 쇄석벽
+282|연보라색 석재 바닥|terrain|passable|high|
+283|회녹색 석재 바닥|terrain|passable|high|
+284|청회색 벽돌벽 왼쪽 상단|wall|solid|high|청회색 벽돌벽
+285|청회색 벽돌벽 중앙 상단|wall|solid|high|청회색 벽돌벽
+286|청회색 벽돌벽 오른쪽 상단|wall|solid|high|청회색 벽돌벽
+287|좁은 청회색 벽돌벽|wall|solid|high|
+288|보라 꽃 화분 관목|plant|solid|high|
+289|작은 녹색 관목|plant|solid|high|
+290|잎이 무성한 나무 줄기|tree|solid|high|잎이 무성한 나무
+291|마른 나무 줄기|tree|solid|high|마른 나무
+292|큰 활엽수 밑동 왼쪽|tree|solid|high|큰 활엽수
+293|큰 활엽수 밑동 오른쪽|tree|solid|high|큰 활엽수
+294|반투명 흰색 면 하단|decoration|passable|low|반투명 흰색 면
+295|잎 달린 덩굴 중단|plant|passable|high|잎 달린 덩굴
+296|회색 석상 하단|prop|solid|high|회색 석상
+297|회색 석주 기둥부|prop|solid|high|회색 석주
+298|아치형 창문 왼쪽 하단|window|solid|high|아치형 창문
+299|아치형 창문 오른쪽 하단|window|solid|high|아치형 창문
+300|밝은 점무늬 잔디|terrain|passable|high|
+301|밝은 점무늬 잔디|terrain|passable|high|
+302|밝은 점무늬 잔디|terrain|passable|high|
+303|짙은 잎무늬 잔디|terrain|passable|high|
+304|짙은 잎무늬 잔디|terrain|passable|high|
+305|짙은 잎무늬 잔디|terrain|passable|high|
+306|회색 석벽 중앙 왼쪽|wall|solid|high|회색 석벽
+307|회색 석벽 중앙|wall|solid|high|회색 석벽
+308|회색 석벽 중앙 오른쪽|wall|solid|high|회색 석벽
+309|어두운 쇄석벽 중앙 왼쪽|wall|solid|high|어두운 쇄석벽
+310|어두운 쇄석벽 중앙|wall|solid|high|어두운 쇄석벽
+311|어두운 쇄석벽 중앙 오른쪽|wall|solid|high|어두운 쇄석벽
+312|회색 거친 석재 바닥|terrain|passable|high|
+313|자주색 거친 석재 바닥|terrain|passable|high|
+314|베이지 문양 석벽 왼쪽 상단|wall|solid|high|베이지 문양 석벽
+315|베이지 문양 석벽 중앙 왼쪽 상단|wall|solid|high|베이지 문양 석벽
+316|베이지 문양 석벽 중앙 오른쪽 상단|wall|solid|high|베이지 문양 석벽
+317|베이지 문양 석벽 오른쪽 상단|wall|solid|high|베이지 문양 석벽
+318|불붙은 벽걸이 횃불|prop|passable|high|
+319|꺼진 검은 벽걸이 횃불|prop|passable|medium|
+320|문자가 새겨진 석판|prop|solid|high|
+321|굽은 갈색 세로 막대|prop|solid|low|
+322|목제 사다리|stairs|passable|high|
+323|보라색 장식 기둥 상단|prop|solid|high|보라색 장식 기둥
+324|반투명 흰색 면 끝단|decoration|passable|low|반투명 흰색 면
+325|잎 달린 덩굴 하단|plant|passable|high|잎 달린 덩굴
+326|회색 벽걸이 장식|decoration|passable|low|
+327|긴 목제 의자 왼쪽|furniture|solid|high|긴 목제 의자
+328|긴 목제 의자 오른쪽|furniture|solid|high|긴 목제 의자
+329|검은 사각 면|decoration|passable|low|
+330|밝은 점무늬 잔디|terrain|passable|high|
+331|밝은 점무늬 잔디|terrain|passable|high|
+332|밝은 점무늬 잔디|terrain|passable|high|
+333|짙은 잎무늬 잔디|terrain|passable|high|
+334|짙은 잎무늬 잔디|terrain|passable|high|
+335|짙은 잎무늬 잔디|terrain|passable|high|
+336|회색 석벽 하단 왼쪽|wall|solid|high|회색 석벽
+337|회색 석벽 하단 중앙|wall|solid|high|회색 석벽
+338|회색 석벽 하단 오른쪽|wall|solid|high|회색 석벽
+339|어두운 쇄석벽 하단 왼쪽|wall|solid|high|어두운 쇄석벽
+340|어두운 쇄석벽 하단 중앙|wall|solid|high|어두운 쇄석벽
+341|어두운 쇄석벽 하단 오른쪽|wall|solid|high|어두운 쇄석벽
+342|베이지색 벽돌 바닥|terrain|passable|high|
+343|원형 무늬 석재 바닥|terrain|passable|high|
+344|베이지 문양 석벽 왼쪽 하단|wall|solid|high|베이지 문양 석벽
+345|베이지 문양 석벽 중앙 왼쪽 하단|wall|solid|high|베이지 문양 석벽
+346|베이지 문양 석벽 중앙 오른쪽 하단|wall|solid|high|베이지 문양 석벽
+347|베이지 문양 석벽 오른쪽 하단|wall|solid|high|베이지 문양 석벽
+348|여러 색의 작은 불빛|decoration|passable|high|
+349|높은 목제 등받이 의자|furniture|solid|medium|
+350|빨간 등받이 의자|furniture|solid|medium|
+351|붉은 꽃 화분|prop|solid|high|
+352|둥근 황토색 항아리|prop|solid|high|
+353|보라색 장식 기둥 하단|prop|solid|high|보라색 장식 기둥
+354|주황색 뾰족지붕 왼쪽|roof|solid|high|주황색 뾰족지붕
+355|주황색 뾰족지붕 오른쪽|roof|solid|high|주황색 뾰족지붕
+356|보라색 뾰족지붕 왼쪽|roof|solid|high|보라색 뾰족지붕
+357|보라색 뾰족지붕 오른쪽|roof|solid|high|보라색 뾰족지붕
+358|세로 목재 기둥|prop|solid|high|
+359|검은 면과 보라색 울타리|fence|solid|low|

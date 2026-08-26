@@ -221,7 +221,7 @@ function shareBigram(x: string, y: string): boolean {
   return false;
 }
 
-function loadReading(sheet: string, a: number, b: number, reader: "A" | "B"): Map<number, Reading> {
+function loadReading(sheet: string, a: number, b: number, reader: "A" | "B" | "C"): Map<number, Reading> {
   const file = path.join(READ_ROOT, sheet, `rows-${p2(a)}-${p2(b)}.${reader}.json`);
   if (!fs.existsSync(file)) return new Map();
   try {
@@ -296,7 +296,7 @@ function main(): void {
   for (const s of Object.keys(SHEETS)) for (const g of groupOf(s)) poolSheets.add(g);
   for (const sheet of poolSheets) {
     for (const [ra, rb] of BLOCKS) {
-      for (const reader of ["A", "B"] as const) {
+      for (const reader of ["A", "B", "C"] as const) {
         for (const [index, entry] of loadReading(sheet, ra, rb, reader)) {
           const key = `${groupOf(sheet)[0]}:${index}`;
           const list = pooled.get(key) ?? [];

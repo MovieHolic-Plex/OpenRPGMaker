@@ -1,0 +1,120 @@
+120|어두운 가림막 왼쪽|decoration|passable|low|원형 암흑 가림막
+121|어두운 가림막 중앙|decoration|passable|low|원형 암흑 가림막
+122|어두운 가림막 오른쪽|decoration|passable|low|원형 암흑 가림막
+123|얼음 폭포 물살 첫째 모습|water|solid|high|얼음 폭포
+124|얼음 조각이 붙은 둥근 바위 첫째 모습|rock|solid|high|회전하는 얼음 바위
+125|사각 테두리 석판 첫째 모습|floor|passable|high|사각 테두리 석판
+126|작은 둥근 덤불|plant|solid|high|
+127|밝은 잔디밭|terrain|passable|high|
+128|작은 둥근 덤불|plant|solid|high|
+129|잔디밭의 작은 눈 조각|terrain|passable|high|눈밭
+130|밝은 잔디밭|terrain|passable|high|
+131|둥근 눈밭 가장자리|terrain|passable|high|눈밭
+132|짙은 청회색 조약돌 바닥|floor|passable|high|
+133|자주색 조약돌 바닥|floor|passable|high|
+134|밝은 석조 벽 상단 왼쪽|wall|solid|high|밝은 석조 벽
+135|밝은 석조 벽 상단 중앙 왼쪽|wall|solid|high|밝은 석조 벽
+136|밝은 석조 벽 상단 중앙 오른쪽|wall|solid|high|밝은 석조 벽
+137|밝은 석조 벽 상단 오른쪽|wall|solid|high|밝은 석조 벽
+138|풀로 덮인 목재 들보 왼쪽|wall|solid|high|목재 들보와 흰 회벽
+139|풀로 덮인 목재 들보 중앙|wall|solid|high|목재 들보와 흰 회벽
+140|풀로 덮인 목재 들보 오른쪽|wall|solid|high|목재 들보와 흰 회벽
+141|자주색 돌지붕 왼쪽|roof|solid|high|자주색 돌지붕
+142|자주색 돌지붕 중앙|roof|solid|high|자주색 돌지붕
+143|자주색 돌지붕 오른쪽|roof|solid|high|자주색 돌지붕
+144|불붙은 벽걸이 횃불|prop|passable|high|
+145|색색의 병이 놓인 목재 선반|furniture|solid|high|
+146|검은 세로형 벽 장식|decoration|passable|medium|
+147|청록색 검 문양 걸개|decoration|passable|high|
+148|보라색 방패 문양 걸개|decoration|passable|high|
+149|붉은 항아리 문양 걸개|decoration|passable|high|
+150|둥근 암흑 가림막 위쪽 왼쪽|decoration|passable|low|원형 암흑 가림막
+151|둥근 암흑 가림막 위쪽 중앙|decoration|passable|low|원형 암흑 가림막
+152|둥근 암흑 가림막 위쪽 오른쪽|decoration|passable|low|원형 암흑 가림막
+153|얼음 폭포 물살 둘째 모습|water|solid|high|얼음 폭포
+154|얼음 조각이 붙은 둥근 바위 둘째 모습|rock|solid|high|회전하는 얼음 바위
+155|사각 테두리 석판 둘째 모습|floor|passable|high|사각 테두리 석판
+156|큰 덤불 상단 왼쪽|tree|solid|high|큰 덤불
+157|큰 덤불 상단 중앙|tree|solid|high|큰 덤불
+158|큰 덤불 상단 오른쪽|tree|solid|high|큰 덤불
+159|눈밭 위쪽 왼쪽|terrain|passable|high|눈밭
+160|눈밭 위쪽 중앙|terrain|passable|high|눈밭
+161|눈밭 위쪽 오른쪽|terrain|passable|high|눈밭
+162|옅은 회갈색 석판 바닥|floor|passable|high|
+163|원형 문양 석판 바닥|floor|passable|high|
+164|갈색 무늬 석조 벽 하단 왼쪽|wall|solid|high|밝은 석조 벽
+165|갈색 무늬 석조 벽 하단 중앙 왼쪽|wall|solid|high|밝은 석조 벽
+166|갈색 무늬 석조 벽 하단 중앙 오른쪽|wall|solid|high|밝은 석조 벽
+167|갈색 무늬 석조 벽 하단 오른쪽|wall|solid|high|밝은 석조 벽
+168|목재 들보 아래 흰 회벽 왼쪽|wall|solid|high|목재 들보와 흰 회벽
+169|목재 들보 아래 흰 회벽 중앙|wall|solid|high|목재 들보와 흰 회벽
+170|목재 들보 아래 흰 회벽 오른쪽|wall|solid|high|목재 들보와 흰 회벽
+171|거친 목재 벽 상단 왼쪽|wall|solid|high|자주색 돌지붕 아래 목재 벽
+172|거친 목재 벽 상단 중앙|wall|solid|high|자주색 돌지붕 아래 목재 벽
+173|거친 목재 벽 상단 오른쪽|wall|solid|high|자주색 돌지붕 아래 목재 벽
+174|풍경화 액자|decoration|passable|high|
+175|인물화 액자|decoration|passable|high|
+176|붉고 노란 추상화 액자|decoration|passable|high|
+177|붉은 글자의 흰색 간판|decoration|passable|high|
+178|보라색 글자의 흰색 간판|decoration|passable|high|
+179|회색 십자형 석물|prop|solid|high|
+180|둥근 암흑 가림막 아래쪽 왼쪽|decoration|passable|low|원형 암흑 가림막
+181|둥근 암흑 가림막 아래쪽 중앙|decoration|passable|low|원형 암흑 가림막
+182|둥근 암흑 가림막 아래쪽 오른쪽|decoration|passable|low|원형 암흑 가림막
+183|얼음 폭포 물살 셋째 모습|water|solid|high|얼음 폭포
+184|얼음 조각이 붙은 둥근 바위 셋째 모습|rock|solid|high|회전하는 얼음 바위
+185|사각 테두리 석판 셋째 모습|floor|passable|high|사각 테두리 석판
+186|큰 덤불 가운데 왼쪽|tree|solid|high|큰 덤불
+187|큰 덤불 가운데 중앙|tree|solid|high|큰 덤불
+188|큰 덤불 가운데 오른쪽|tree|solid|high|큰 덤불
+189|눈밭 가운데 왼쪽|terrain|passable|high|눈밭
+190|눈밭 가운데 중앙|terrain|passable|high|눈밭
+191|눈밭 가운데 오른쪽|terrain|passable|high|눈밭
+192|짙은 청회색 돌바닥|floor|passable|high|
+193|회색 나무뿌리 상단|prop|solid|medium|회색 나무뿌리
+194|짙은 청회색 돌바닥|floor|passable|high|
+195|짙은 청회색 돌바닥|floor|passable|high|
+196|짙은 청회색 돌바닥|floor|passable|high|
+197|짙은 청회색 돌바닥|floor|passable|high|
+198|흰 회벽 가운데 왼쪽|wall|solid|high|목재 들보와 흰 회벽
+199|흰 회벽 가운데 중앙|wall|solid|high|목재 들보와 흰 회벽
+200|흰 회벽 가운데 오른쪽|wall|solid|high|목재 들보와 흰 회벽
+201|거친 목재 벽 가운데 왼쪽|wall|solid|high|자주색 돌지붕 아래 목재 벽
+202|거친 목재 벽 가운데 중앙|wall|solid|high|자주색 돌지붕 아래 목재 벽
+203|거친 목재 벽 가운데 오른쪽|wall|solid|high|자주색 돌지붕 아래 목재 벽
+204|청록색 아치형 창문|window|solid|high|
+205|갈색 격자 창문|window|solid|high|
+206|흰 커튼이 달린 목재 창문|window|solid|high|
+207|검 거치대 상단|prop|solid|high|검 거치대
+208|문양이 새겨진 석상 상단|prop|solid|high|문양 석상
+209|장식 석주 상단|prop|solid|high|장식 석주
+210|검은 가림막 왼쪽|decoration|passable|low|원형 암흑 가림막
+211|검은 가림막 중앙|decoration|passable|low|원형 암흑 가림막
+212|검은 가림막 오른쪽|decoration|passable|low|원형 암흑 가림막
+213|얼음 폭포 물살 넷째 모습|water|solid|high|얼음 폭포
+214|얼음 조각이 붙은 둥근 바위 넷째 모습|rock|solid|high|회전하는 얼음 바위
+215|사각 테두리 석판 넷째 모습|floor|passable|high|사각 테두리 석판
+216|큰 덤불 하단 왼쪽|tree|solid|high|큰 덤불
+217|큰 덤불 하단 중앙|tree|solid|high|큰 덤불
+218|큰 덤불 하단 오른쪽|tree|solid|high|큰 덤불
+219|눈밭 아래쪽 왼쪽|terrain|passable|high|눈밭
+220|눈밭 아래쪽 중앙|terrain|passable|high|눈밭
+221|눈밭 아래쪽 오른쪽|terrain|passable|high|눈밭
+222|회색 나무뿌리 하단 왼쪽|prop|solid|medium|회색 나무뿌리
+223|회색 나무뿌리 하단 오른쪽|prop|solid|medium|회색 나무뿌리
+224|짙은 청회색 돌바닥|floor|passable|high|
+225|짙은 청회색 돌바닥|floor|passable|high|
+226|짙은 청회색 돌바닥|floor|passable|high|
+227|짙은 청회색 돌바닥|floor|passable|high|
+228|흰 회벽 하단 왼쪽|wall|solid|high|목재 들보와 흰 회벽
+229|흰 회벽 하단 중앙|wall|solid|high|목재 들보와 흰 회벽
+230|흰 회벽 하단 오른쪽|wall|solid|high|목재 들보와 흰 회벽
+231|거친 목재 벽 하단 왼쪽|wall|solid|high|자주색 돌지붕 아래 목재 벽
+232|거친 목재 벽 하단 오른쪽|wall|solid|high|자주색 돌지붕 아래 목재 벽
+233|빈 슬롯|empty|passable|high|
+234|색색의 천 더미|prop|solid|medium|
+235|세로 목재 사다리|stairs|passable|high|
+236|검은 출입구|door|passable|high|
+237|검 거치대 하단|prop|solid|high|검 거치대
+238|문양이 새겨진 석상 하단|prop|solid|high|문양 석상
+239|장식 석주 하단|prop|solid|high|장식 석주

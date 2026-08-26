@@ -1,0 +1,120 @@
+0|아치형 창 상단|window|solid|medium|아치형 창문
+1|아치형 창 상단|window|solid|medium|아치형 창문
+2|아치형 창 상단|window|solid|medium|아치형 창문
+3|아치형 창 상단|window|solid|medium|아치형 창문
+4|아치형 창 상단|window|solid|medium|아치형 창문
+5|아치형 창 상단|window|solid|medium|아치형 창문
+6|보라색 자갈 바닥 가장자리|floor|passable|high|보라색 자갈 바닥
+7|초록 잔디|terrain|passable|high|
+8|보라색 자갈 바닥|floor|passable|high|
+9|잔디 가장자리 모래 바닥|floor|passable|high|모래 바닥
+10|초록 잔디|terrain|passable|high|
+11|모래 바닥|floor|passable|high|
+12|분홍 석재 타일|floor|passable|medium|
+13|청회색 석재 타일|floor|passable|medium|
+14|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+15|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+16|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+17|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+18|초원 절벽 좌상단|cliff|solid|medium|초원 절벽
+19|초원 절벽 우상단|cliff|solid|medium|초원 절벽
+20|보라 자갈 절벽 좌상단|cliff|solid|medium|보라 자갈 절벽
+21|보라 자갈 절벽 우상단|cliff|solid|medium|보라 자갈 절벽
+22|눈 절벽 좌상단|cliff|solid|medium|눈 절벽
+23|눈 절벽 우상단|cliff|solid|medium|눈 절벽
+24|초록 박공지붕 왼쪽|roof|solid|low|초록 박공지붕
+25|초록 박공지붕 오른쪽|roof|solid|low|초록 박공지붕
+26|보라 박공지붕 왼쪽|roof|solid|low|보라 박공지붕
+27|보라 박공지붕 오른쪽|roof|solid|low|보라 박공지붕
+28|흰 박공지붕 왼쪽|roof|solid|low|흰 박공지붕
+29|흰 박공지붕 오른쪽|roof|solid|low|흰 박공지붕
+30|아치형 창 하단|window|solid|medium|아치형 창문
+31|아치형 창 하단|window|solid|medium|아치형 창문
+32|아치형 창 하단|window|solid|medium|아치형 창문
+33|아치형 창 하단|window|solid|medium|아치형 창문
+34|아치형 창 하단|window|solid|medium|아치형 창문
+35|아치형 창 하단|window|solid|medium|아치형 창문
+36|잔디 테두리 보라색 자갈 바닥|floor|passable|high|보라색 자갈 바닥
+37|보라색 자갈 바닥|floor|passable|high|
+38|잔디점이 있는 보라색 자갈 바닥|floor|passable|high|보라색 자갈 바닥
+39|잔디 테두리 모래 바닥|floor|passable|high|모래 바닥
+40|모래 바닥|floor|passable|high|
+41|잔디점이 있는 모래 바닥|floor|passable|high|모래 바닥
+42|연보라 석재 타일|floor|passable|medium|
+43|회녹색 석재 타일|floor|passable|medium|
+44|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+45|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+46|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+47|밝은 벽돌 벽|wall|solid|medium|밝은 벽돌 벽
+48|초원 절벽 좌하단|cliff|solid|medium|초원 절벽
+49|초원 절벽 우하단|cliff|solid|medium|초원 절벽
+50|보라 자갈 절벽 좌하단|cliff|solid|medium|보라 자갈 절벽
+51|보라 자갈 절벽 우하단|cliff|solid|medium|보라 자갈 절벽
+52|눈 절벽 좌하단|cliff|solid|medium|눈 절벽
+53|눈 절벽 우하단|cliff|solid|medium|눈 절벽
+54|목책 왼쪽 굽은 끝|fence|solid|medium|목책
+55|목책 가로 구간|fence|solid|high|목책
+56|목책 오른쪽 굽은 끝|fence|solid|medium|목책
+57|회색 돌무더기|rock|solid|high|
+58|파란 수정 무더기|rock|solid|high|
+59|흰 돌무더기|rock|solid|high|
+60|목재 들보 아래 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+61|목재 들보 아래 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+62|목재 들보 아래 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+63|목재 들보 아래 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+64|목재 들보 아래 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+65|목재 들보 아래 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+66|보라색 자갈 바닥|floor|passable|high|
+67|보라색 자갈 바닥|floor|passable|high|
+68|보라색 자갈 바닥|floor|passable|high|
+69|잔디 테두리 모래 바닥|floor|passable|high|모래 바닥
+70|모래 바닥|floor|passable|high|
+71|잔디점이 있는 모래 바닥|floor|passable|high|모래 바닥
+72|가로 판재 목벽 상단|wall|solid|medium|목재 벽
+73|어두운 아치형 목문 상단|door|solid|medium|아치형 목문
+74|밝은 회벽 상단|wall|solid|medium|밝은 회벽
+75|밝은 회벽 상단|wall|solid|medium|밝은 회벽
+76|오른쪽 기둥이 있는 회벽 상단|wall|solid|medium|밝은 회벽
+77|왼쪽 기둥이 있는 회벽 상단|wall|solid|medium|밝은 회벽
+78|초록 잔디|terrain|passable|high|
+79|초록 잔디|terrain|passable|high|
+80|초록 잔디|terrain|passable|high|
+81|보라색 자갈 바닥|floor|passable|high|
+82|어두운 테두리 보라색 자갈 바닥|floor|passable|high|보라색 자갈 바닥
+83|보라색 자갈 바닥|floor|passable|high|
+84|목책 세로 구간|fence|solid|medium|목책
+85|짧은 목책 구간|fence|solid|high|목책
+86|목책 세로 끝 구간|fence|solid|medium|목책
+87|보라색 통|prop|solid|low|
+88|십자형 석조 기념물|decoration|solid|high|
+89|둥근 묘비|decoration|solid|high|
+90|어두운 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+91|어두운 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+92|어두운 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+93|어두운 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+94|어두운 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+95|어두운 석조 벽|wall|solid|high|목재 들보가 있는 석조 벽
+96|잔디 테두리 보라색 자갈 바닥|floor|passable|high|보라색 자갈 바닥
+97|보라색 자갈 바닥|floor|passable|high|
+98|보라색 자갈 바닥|floor|passable|high|
+99|잔디 테두리 모래 바닥|floor|passable|high|모래 바닥
+100|잔디 테두리 모래 바닥|floor|passable|high|모래 바닥
+101|잔디점이 있는 모래 바닥|floor|passable|high|모래 바닥
+102|세로 판재 목벽 하단|wall|solid|medium|목재 벽
+103|어두운 아치형 목문 하단|door|solid|medium|아치형 목문
+104|밝은 회벽 하단|wall|solid|medium|밝은 회벽
+105|밝은 회벽 하단|wall|solid|medium|밝은 회벽
+106|오른쪽 기둥이 있는 회벽 하단|wall|solid|medium|밝은 회벽
+107|왼쪽 기둥이 있는 회벽 하단|wall|solid|medium|밝은 회벽
+108|초록 잔디|terrain|passable|high|
+109|초록 잔디|terrain|passable|high|
+110|초록 잔디|terrain|passable|high|
+111|보라색 자갈 바닥|floor|passable|high|
+112|보라색 자갈 바닥|floor|passable|high|
+113|보라색 자갈 바닥|floor|passable|high|
+114|목책 꺾인 끝|fence|solid|medium|목책
+115|목책 가로 구간|fence|solid|high|목책
+116|목재 방향 표지판|prop|solid|high|
+117|흩어진 금빛 조각|decoration|passable|medium|
+118|녹색 금속 장비 더미|prop|solid|low|
+119|키 큰 석비|decoration|solid|high|

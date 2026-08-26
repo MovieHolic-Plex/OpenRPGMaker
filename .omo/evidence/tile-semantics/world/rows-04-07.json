@@ -1,0 +1,1374 @@
+[
+ {
+  "index": 120,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 121,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 122,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 123,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 124,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 125,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 126,
+  "label": "독 늪 내부",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 127,
+  "label": "초록 삼림 캐노피",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "초록 삼림 캐노피",
+   "삼림",
+   "캐노피",
+   "초록"
+  ]
+ },
+ {
+  "index": 128,
+  "label": "독 늪 웅덩이",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 129,
+  "label": "설원 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 130,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 131,
+  "label": "설원 바닥 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 132,
+  "label": "자갈길 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 133,
+  "label": "이끼 낀 벽돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor"
+  ]
+ },
+ {
+  "index": 134,
+  "label": "밝은 석조 벽 상단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 벽돌 벽 상단",
+   "석조 벽",
+   "밝은 벽돌 벽"
+  ]
+ },
+ {
+  "index": 135,
+  "label": "밝은 석조 벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 벽돌 벽 상단",
+   "석조 벽",
+   "밝은 벽돌 벽"
+  ]
+ },
+ {
+  "index": 136,
+  "label": "밝은 석조 벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 벽돌 벽 상단",
+   "석조 벽",
+   "밝은 벽돌 벽"
+  ]
+ },
+ {
+  "index": 137,
+  "label": "밝은 벽돌 벽 상단 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 석조 벽 상단 우측",
+   "밝은 벽돌 벽",
+   "석조 벽"
+  ]
+ },
+ {
+  "index": 138,
+  "label": "잔디 절벽 상단 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "잔디 언덕 상단 좌측",
+   "잔디 절벽",
+   "잔디 언덕"
+  ]
+ },
+ {
+  "index": 139,
+  "label": "잔디 절벽 상단 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "잔디 언덕 상단 중앙",
+   "잔디 절벽",
+   "잔디 언덕"
+  ]
+ },
+ {
+  "index": 140,
+  "label": "잔디 절벽 상단 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "잔디 언덕 상단 우측",
+   "잔디 절벽",
+   "잔디 언덕"
+  ]
+ },
+ {
+  "index": 141,
+  "label": "흙 절벽 상단 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 142,
+  "label": "흙 절벽 상단 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 143,
+  "label": "흙 절벽 상단 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 144,
+  "label": "불꽃 봉수대 아이콘",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "불꽃 봉수대 아이콘",
+   "봉수대",
+   "불꽃",
+   "표지"
+  ]
+ },
+ {
+  "index": 145,
+  "label": "언덕 위 밝은 표지",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "언덕 위 밝은 표지",
+   "언덕",
+   "표지",
+   "등불",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 146,
+  "label": "벽걸이 석재 스위치",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "벽 스위치"
+  ]
+ },
+ {
+  "index": 147,
+  "label": "기와지붕 대형 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "기와지붕 대형 건물",
+   "건물",
+   "지붕",
+   "지도"
+  ]
+ },
+ {
+  "index": 148,
+  "label": "문과 창 큰 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "문과 창 큰 건물",
+   "건물",
+   "창문",
+   "문"
+  ]
+ },
+ {
+  "index": 149,
+  "label": "돌벽 큰 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "돌벽 큰 건물",
+   "건물",
+   "돌벽",
+   "지도"
+  ]
+ },
+ {
+  "index": 150,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 151,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 152,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 153,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 154,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 155,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 156,
+  "label": "독 늪 좌상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 157,
+  "label": "물가 풀밭 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "물가 풀밭 땅",
+   "풀밭",
+   "언덕",
+   "물가"
+  ]
+ },
+ {
+  "index": 158,
+  "label": "독 늪 우상단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 159,
+  "label": "설원 좌상단 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 좌상단",
+   "설원",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 160,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 161,
+  "label": "설원 우상단 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 우상단",
+   "설원",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 162,
+  "label": "밝은 석판 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "석재 벽돌 바닥"
+  ]
+ },
+ {
+  "index": 163,
+  "label": "사각 문양 석재 타일 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "사각 문양 석판"
+  ]
+ },
+ {
+  "index": 164,
+  "label": "밝은 석조 벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 벽돌 벽 하단",
+   "석조 벽",
+   "밝은 벽돌 벽"
+  ]
+ },
+ {
+  "index": 165,
+  "label": "밝은 석조 벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 벽돌 벽 하단",
+   "석조 벽",
+   "밝은 벽돌 벽"
+  ]
+ },
+ {
+  "index": 166,
+  "label": "밝은 석조 벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 벽돌 벽 하단",
+   "석조 벽",
+   "밝은 벽돌 벽"
+  ]
+ },
+ {
+  "index": 167,
+  "label": "밝은 벽돌 벽 하단 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 석조 벽 하단 우측",
+   "밝은 벽돌 벽",
+   "석조 벽"
+  ]
+ },
+ {
+  "index": 168,
+  "label": "설원 절벽 상단 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 좌상단",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 169,
+  "label": "설원 절벽 상단 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 상단",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 170,
+  "label": "설원 절벽 상단 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 우상단",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 171,
+  "label": "흙 절벽 상단부 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 상층 좌측",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 172,
+  "label": "흙 절벽 상단부 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 상층 중앙",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 173,
+  "label": "흙 절벽 상단부 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 상층 우측",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 174,
+  "label": "해자 둘러싼 성",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "해자 둘러싼 성",
+   "성",
+   "해자",
+   "성채"
+  ]
+ },
+ {
+  "index": 175,
+  "label": "불빛 나는 창 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "불빛 나는 창 건물",
+   "건물",
+   "창",
+   "불빛",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 176,
+  "label": "초록 벽 요새",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "초록 벽 요새",
+   "요새",
+   "성벽",
+   "초록"
+  ]
+ },
+ {
+  "index": 177,
+  "label": "건물 좌측 아이콘",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "건물 좌측 아이콘",
+   "건물",
+   "좌측",
+   "지도"
+  ]
+ },
+ {
+  "index": 178,
+  "label": "건물 중앙 아이콘",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "건물 중앙 아이콘",
+   "건물",
+   "중앙",
+   "지도"
+  ]
+ },
+ {
+  "index": 179,
+  "label": "십자가 간판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "신전 간판"
+  ]
+ },
+ {
+  "index": 180,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 181,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 182,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 183,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 184,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 185,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 186,
+  "label": "독 늪 좌측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪 좌측",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 187,
+  "label": "평야 숲 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평야 숲 초지",
+   "숲",
+   "평야",
+   "초지",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 188,
+  "label": "독 늪 우측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪 우측",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 189,
+  "label": "설원 좌측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 좌측",
+   "설원",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 190,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 191,
+  "label": "설원 우측 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 우측",
+   "설원",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 192,
+  "label": "어두운 석판 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "어두운 동굴 바닥"
+  ]
+ },
+ {
+  "index": 193,
+  "label": "회갈색 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회갈색 바위 지대",
+   "바위",
+   "회갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 194,
+  "label": "어두운 돌벽 상단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 석벽 상단",
+   "어두운 돌벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 195,
+  "label": "어두운 돌벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 석벽 상단",
+   "어두운 돌벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 196,
+  "label": "어두운 돌벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 석벽 상단",
+   "어두운 돌벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 197,
+  "label": "어두운 석벽 상단 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 상단 우측",
+   "어두운 석벽",
+   "어두운 돌벽"
+  ]
+ },
+ {
+  "index": 198,
+  "label": "설원 절벽 중간 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 중단 좌측",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 199,
+  "label": "설원 절벽 중간 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 중단 중앙",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 200,
+  "label": "설원 절벽 중간 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 중단 우측",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 201,
+  "label": "흙 절벽 중간부 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 중층 좌측",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 202,
+  "label": "흙 절벽 중간부 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 중층 중앙",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 203,
+  "label": "흙 절벽 중간부 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 중층 우측",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 204,
+  "label": "아치형 격자 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window"
+  ]
+ },
+ {
+  "index": 205,
+  "label": "나무 덧문 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "나무 창문"
+  ]
+ },
+ {
+  "index": 206,
+  "label": "문 달린 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "문 달린 건물",
+   "건물",
+   "문",
+   "지도"
+  ]
+ },
+ {
+  "index": 207,
+  "label": "갑옷 거치대 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "기사 석상 상단",
+   "갑옷 거치대",
+   "기사 석상"
+  ]
+ },
+ {
+  "index": 208,
+  "label": "여신 석상 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석상 상단",
+   "여신 석상",
+   "석상"
+  ]
+ },
+ {
+  "index": 209,
+  "label": "석조 기둥 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "돌기둥 상단",
+   "석조 기둥",
+   "돌기둥"
+  ]
+ },
+ {
+  "index": 210,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 211,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 212,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 213,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 214,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 215,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 216,
+  "label": "독 늪 좌하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 217,
+  "label": "숲 가장자리 초원",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 가장자리 초원",
+   "숲",
+   "초원",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 218,
+  "label": "독 늪 우하단",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "독 늪"
+  ]
+ },
+ {
+  "index": 219,
+  "label": "설원 좌하단 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 좌하단",
+   "설원",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 220,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 221,
+  "label": "설원 우하단 가장자리",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "눈밭 우하단",
+   "설원",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 222,
+  "label": "회색 암반 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 암반 지대",
+   "암반",
+   "바위",
+   "회색"
+  ]
+ },
+ {
+  "index": 223,
+  "label": "회갈색 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회갈색 바위 지대",
+   "바위",
+   "회갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 224,
+  "label": "어두운 돌벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 석벽 하단",
+   "어두운 돌벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 225,
+  "label": "어두운 돌벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 석벽 하단",
+   "어두운 돌벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 226,
+  "label": "어두운 돌벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 석벽 하단",
+   "어두운 돌벽",
+   "어두운 석벽"
+  ]
+ },
+ {
+  "index": 227,
+  "label": "어두운 석벽 하단 우측 기둥",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 돌벽 하단 우측",
+   "어두운 석벽",
+   "어두운 돌벽"
+  ]
+ },
+ {
+  "index": 228,
+  "label": "설원 절벽 하단 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 하단 좌측",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 229,
+  "label": "설원 절벽 하단 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 하단 중앙",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 230,
+  "label": "설원 절벽 하단 우측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "눈 절벽 하단 우측",
+   "설원 절벽",
+   "눈 절벽"
+  ]
+ },
+ {
+  "index": 231,
+  "label": "흙 절벽 하층 좌측",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 하단 좌측",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 232,
+  "label": "흙 절벽 하층 중앙",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "흙 절벽 하단 중앙",
+   "흙 절벽"
+  ]
+ },
+ {
+  "index": 234,
+  "label": "스테인드글라스 창문",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window"
+  ]
+ },
+ {
+  "index": 235,
+  "label": "목재 사다리",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "나무 사다리"
+  ]
+ },
+ {
+  "index": 236,
+  "label": "어두운 통로 입구",
+  "role": "door",
+  "passage": "passable",
+  "tags": [
+   "door",
+   "어두운 통로"
+  ]
+ },
+ {
+  "index": 237,
+  "label": "물가 기둥 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "물가 기둥 구조물",
+   "기둥",
+   "구조물",
+   "물가",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 238,
+  "label": "여신 석상 받침대 하단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "석상 하단",
+   "여신 석상",
+   "석상"
+  ]
+ },
+ {
+  "index": 239,
+  "label": "석조 기둥 받침대 하단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "돌기둥 하단",
+   "석조 기둥",
+   "돌기둥"
+  ]
+ }
+]

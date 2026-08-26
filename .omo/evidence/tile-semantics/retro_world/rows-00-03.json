@@ -1,0 +1,1423 @@
+[
+ {
+  "index": 0,
+  "label": "잔디 물가 북쪽 1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물가 좌상단",
+   "연못"
+  ]
+ },
+ {
+  "index": 1,
+  "label": "잔디 물가 북쪽 2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물가 상단",
+   "연못"
+  ]
+ },
+ {
+  "index": 2,
+  "label": "잔디 물가 북쪽 3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "풀밭 물가 우상단",
+   "연못"
+  ]
+ },
+ {
+  "index": 3,
+  "label": "눈 덮인 물가 북쪽 1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "눈밭 물가 좌상단",
+   "연못"
+  ]
+ },
+ {
+  "index": 4,
+  "label": "눈 덮인 물가 북쪽 2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "눈밭 물가 상단",
+   "연못"
+  ]
+ },
+ {
+  "index": 5,
+  "label": "눈 덮인 물가 북쪽 3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "water",
+   "눈밭 물가 우상단",
+   "연못"
+  ]
+ },
+ {
+  "index": 6,
+  "label": "숲 사방 풀 경계",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 사방 풀 경계",
+   "forest",
+   "수풀",
+   "사방경계"
+  ]
+ },
+ {
+  "index": 7,
+  "label": "밝은 점무늬 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 점무늬 초원",
+   "grass",
+   "평원",
+   "풀밭"
+  ]
+ },
+ {
+  "index": 8,
+  "label": "빽빽한 자주빛 숲",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "빽빽한 자주빛 숲",
+   "forest",
+   "수풀",
+   "나무",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 9,
+  "label": "초원 속 둥근 사막",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "초원 속 둥근 사막",
+   "sand",
+   "모래",
+   "중앙"
+  ]
+ },
+ {
+  "index": 10,
+  "label": "성긴 점무늬 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "성긴 점무늬 초원",
+   "grass",
+   "평원",
+   "풀잎"
+  ]
+ },
+ {
+  "index": 11,
+  "label": "북쪽 열린 모래밭",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "북쪽 열린 모래밭",
+   "sand",
+   "사막",
+   "북쪽"
+  ]
+ },
+ {
+  "index": 12,
+  "label": "분홍 석재 타일",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "붉은 돌바닥"
+  ]
+ },
+ {
+  "index": 13,
+  "label": "청회색 석재 타일",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "청회색 돌바닥"
+  ]
+ },
+ {
+  "index": 14,
+  "label": "자주색 밝은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 밝은 석벽",
+   "wall",
+   "돌벽",
+   "밝은틈"
+  ]
+ },
+ {
+  "index": 15,
+  "label": "자주색 굵은 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 굵은 석벽",
+   "wall",
+   "돌벽",
+   "굵은돌"
+  ]
+ },
+ {
+  "index": 16,
+  "label": "자주색 엇갈린 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 엇갈린 석벽",
+   "wall",
+   "돌벽",
+   "엇갈림"
+  ]
+ },
+ {
+  "index": 17,
+  "label": "자주색 촘촘한 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 촘촘한 석벽",
+   "wall",
+   "돌벽",
+   "촘촘함"
+  ]
+ },
+ {
+  "index": 18,
+  "label": "초원 북동 대각 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "초원 북동 대각 경계",
+   "cliff",
+   "풀밭",
+   "북동"
+  ]
+ },
+ {
+  "index": 19,
+  "label": "초원 북쪽 쐐기 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "초원 북쪽 쐐기 경계",
+   "cliff",
+   "풀밭",
+   "쐐기"
+  ]
+ },
+ {
+  "index": 20,
+  "label": "자갈 대각선 절벽 좌상향",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "보라 자갈 절벽 좌상단",
+   "보라 자갈 절벽"
+  ]
+ },
+ {
+  "index": 21,
+  "label": "자갈 대각선 절벽 우상향",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "보라 자갈 절벽 우상단",
+   "보라 자갈 절벽"
+  ]
+ },
+ {
+  "index": 22,
+  "label": "설원 북서 대각 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "설원 북서 대각 경계",
+   "snow",
+   "눈밭",
+   "북서"
+  ]
+ },
+ {
+  "index": 23,
+  "label": "설원 북쪽 쐐기 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "설원 북쪽 쐐기 경계",
+   "snow",
+   "눈밭",
+   "쐐기"
+  ]
+ },
+ {
+  "index": 24,
+  "label": "녹색 삼각 지붕 좌측",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "초록 박공지붕 왼쪽",
+   "녹색 삼각 지붕",
+   "초록 박공지붕"
+  ]
+ },
+ {
+  "index": 25,
+  "label": "녹색 삼각 지붕 우측",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "초록 박공지붕 오른쪽",
+   "녹색 삼각 지붕",
+   "초록 박공지붕"
+  ]
+ },
+ {
+  "index": 26,
+  "label": "흑색 삼각 지붕 좌측",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "보라 박공지붕 왼쪽",
+   "흑색 삼각 지붕",
+   "보라 박공지붕"
+  ]
+ },
+ {
+  "index": 27,
+  "label": "흑색 삼각 지붕 우측",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "보라 박공지붕 오른쪽",
+   "흑색 삼각 지붕",
+   "보라 박공지붕"
+  ]
+ },
+ {
+  "index": 28,
+  "label": "흰색 눈 덮인 삼각 지붕 좌측",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "흰 박공지붕 왼쪽",
+   "흰색 삼각 지붕",
+   "흰 박공지붕"
+  ]
+ },
+ {
+  "index": 29,
+  "label": "흰색 눈 덮인 삼각 지붕 우측",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "roof",
+   "흰 박공지붕 오른쪽",
+   "흰색 삼각 지붕",
+   "흰 박공지붕"
+  ]
+ },
+ {
+  "index": 30,
+  "label": "초원 사이 세로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 사이 세로 강",
+   "river",
+   "강물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 31,
+  "label": "초원 사이 세로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 사이 세로 강",
+   "river",
+   "강물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 32,
+  "label": "초원 사이 세로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 사이 세로 강",
+   "river",
+   "강물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 33,
+  "label": "설원 사이 세로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 사이 세로 강",
+   "river",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 34,
+  "label": "설원 사이 세로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 사이 세로 강",
+   "river",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 35,
+  "label": "설원 사이 세로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 사이 세로 강",
+   "river",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 36,
+  "label": "숲 서쪽 풀 경계",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 서쪽 풀 경계",
+   "forest",
+   "수풀",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 37,
+  "label": "숲 북쪽 풀 경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "숲 북쪽 풀 경계",
+   "forest",
+   "수풀",
+   "북쪽",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 38,
+  "label": "숲 동쪽 풀 경계",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 동쪽 풀 경계",
+   "forest",
+   "수풀",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 39,
+  "label": "모래밭 북서 풀모서리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 북서 풀모서리",
+   "sand",
+   "모래",
+   "북서"
+  ]
+ },
+ {
+  "index": 40,
+  "label": "모래밭 북쪽 풀경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 북쪽 풀경계",
+   "sand",
+   "모래",
+   "북쪽"
+  ]
+ },
+ {
+  "index": 41,
+  "label": "모래밭 북동 풀모서리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 북동 풀모서리",
+   "sand",
+   "모래",
+   "북동"
+  ]
+ },
+ {
+  "index": 42,
+  "label": "연보라 석재 타일",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "분홍빛 돌바닥"
+  ]
+ },
+ {
+  "index": 43,
+  "label": "회녹색 석재 타일",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "녹회색 돌바닥"
+  ]
+ },
+ {
+  "index": 44,
+  "label": "자주색 큰돌 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 큰돌 석벽",
+   "wall",
+   "돌벽",
+   "큰돌"
+  ]
+ },
+ {
+  "index": 45,
+  "label": "자주색 가로줄 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 가로줄 석벽",
+   "wall",
+   "돌벽",
+   "가로줄"
+  ]
+ },
+ {
+  "index": 46,
+  "label": "자주색 밝은줄 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 밝은줄 석벽",
+   "wall",
+   "돌벽",
+   "밝은줄"
+  ]
+ },
+ {
+  "index": 47,
+  "label": "자주색 잔돌 석벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "자주색 잔돌 석벽",
+   "wall",
+   "돌벽",
+   "잔돌"
+  ]
+ },
+ {
+  "index": 48,
+  "label": "초원 남서 대각 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "초원 남서 대각 경계",
+   "cliff",
+   "풀밭",
+   "남서"
+  ]
+ },
+ {
+  "index": 49,
+  "label": "초원 남쪽 쐐기 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "초원 남쪽 쐐기 경계",
+   "cliff",
+   "풀밭",
+   "남쪽"
+  ]
+ },
+ {
+  "index": 50,
+  "label": "자갈 대각선 절벽 우하향",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "보라 자갈 절벽 좌하단",
+   "보라 자갈 절벽"
+  ]
+ },
+ {
+  "index": 51,
+  "label": "자갈 대각선 절벽 좌하향",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "보라 자갈 절벽 우하단",
+   "보라 자갈 절벽"
+  ]
+ },
+ {
+  "index": 52,
+  "label": "설원 남서 대각 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "설원 남서 대각 경계",
+   "snow",
+   "눈밭",
+   "남서"
+  ]
+ },
+ {
+  "index": 53,
+  "label": "설원 남쪽 역삼각 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "설원 남쪽 역삼각 경계",
+   "snow",
+   "눈밭",
+   "역삼각"
+  ]
+ },
+ {
+  "index": 54,
+  "label": "오름 대각 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "오름 대각 나무울타리",
+   "fence",
+   "목책",
+   "오름대각",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 55,
+  "label": "긴 가로 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "긴 가로 나무울타리",
+   "fence",
+   "목책",
+   "가로",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 56,
+  "label": "내림 대각 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "내림 대각 나무울타리",
+   "fence",
+   "목책",
+   "내림대각",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 57,
+  "label": "회백색 바위 더미",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회백색 바위 더미",
+   "rock",
+   "돌무더기",
+   "회백색"
+  ]
+ },
+ {
+  "index": 58,
+  "label": "푸른 수정 산봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "푸른 수정 산봉우리",
+   "mountain",
+   "산봉우리",
+   "푸른색"
+  ]
+ },
+ {
+  "index": 59,
+  "label": "은빛 쌍봉 산맥",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "은빛 쌍봉 산맥",
+   "mountain",
+   "산맥",
+   "쌍봉"
+  ]
+ },
+ {
+  "index": 60,
+  "label": "초원 사이 가로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 사이 가로 강",
+   "river",
+   "강물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 61,
+  "label": "초원 사이 가로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 사이 가로 강",
+   "river",
+   "강물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 62,
+  "label": "초원 사이 가로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 사이 가로 강",
+   "river",
+   "강물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 63,
+  "label": "설원 사이 가로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 사이 가로 강",
+   "river",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 64,
+  "label": "설원 사이 가로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 사이 가로 강",
+   "river",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 65,
+  "label": "설원 사이 가로 강",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 사이 가로 강",
+   "river",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 66,
+  "label": "숲 북서 풀모서리",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "숲 북서 풀모서리",
+   "forest",
+   "수풀",
+   "북서",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 67,
+  "label": "숲 위쪽 좁은 풀띠",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "숲 위쪽 좁은 풀띠",
+   "forest",
+   "수풀",
+   "풀띠",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 68,
+  "label": "숲 북동 풀모서리",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "숲 북동 풀모서리",
+   "forest",
+   "수풀",
+   "북동",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 69,
+  "label": "모래밭 서쪽 풀경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 서쪽 풀경계",
+   "sand",
+   "모래",
+   "서쪽"
+  ]
+ },
+ {
+  "index": 70,
+  "label": "밝은 점무늬 모래밭",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "밝은 점무늬 모래밭",
+   "sand",
+   "사막",
+   "점무늬"
+  ]
+ },
+ {
+  "index": 71,
+  "label": "모래밭 동쪽 풀경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 동쪽 풀경계",
+   "sand",
+   "모래",
+   "동쪽"
+  ]
+ },
+ {
+  "index": 72,
+  "label": "목재 판자 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "가로 나무 바닥"
+  ]
+ },
+ {
+  "index": 73,
+  "label": "얼룩진 목재 판자 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "floor",
+   "얼룩진 가로 나무 바닥"
+  ]
+ },
+ {
+  "index": 74,
+  "label": "좌측 기둥 회벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 회벽 상단",
+   "기둥 회벽",
+   "밝은 회벽"
+  ]
+ },
+ {
+  "index": 75,
+  "label": "기둥 없는 회벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 회벽 상단",
+   "기둥 회벽",
+   "밝은 회벽"
+  ]
+ },
+ {
+  "index": 76,
+  "label": "오른쪽 기둥이 있는 회벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "우측 기둥 회벽 상단",
+   "밝은 회벽",
+   "기둥 회벽"
+  ]
+ },
+ {
+  "index": 77,
+  "label": "왼쪽 기둥이 있는 회벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "양측 기둥 좁은 회벽 상단",
+   "밝은 회벽",
+   "기둥 회벽"
+  ]
+ },
+ {
+  "index": 78,
+  "label": "잔디 절벽 좌측 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "풀밭 절벽 좌측",
+   "절벽"
+  ]
+ },
+ {
+  "index": 79,
+  "label": "가운데 잎무늬 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "가운데 잎무늬 초원",
+   "grass",
+   "평원",
+   "가운데"
+  ]
+ },
+ {
+  "index": 80,
+  "label": "잔디 절벽 우측 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "풀밭 절벽 우측",
+   "절벽"
+  ]
+ },
+ {
+  "index": 81,
+  "label": "자갈 절벽 좌상단 모서리",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "자갈 절벽 좌상단",
+   "절벽"
+  ]
+ },
+ {
+  "index": 82,
+  "label": "자갈 절벽 상단 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "자갈 절벽 상단",
+   "절벽"
+  ]
+ },
+ {
+  "index": 83,
+  "label": "자갈 절벽 우상단 모서리",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "자갈 절벽 우상단",
+   "절벽"
+  ]
+ },
+ {
+  "index": 84,
+  "label": "가는 세로 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "가는 세로 나무울타리",
+   "fence",
+   "목책",
+   "세로",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 85,
+  "label": "촘촘한 가로 목책",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "촘촘한 가로 목책",
+   "fence",
+   "울타리",
+   "촘촘함",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 86,
+  "label": "왼쪽 꺾인 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 꺾인 나무울타리",
+   "fence",
+   "목책",
+   "꺾임",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 87,
+  "label": "돌테두리 우물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "돌테두리 우물",
+   "well",
+   "우물",
+   "석조"
+  ]
+ },
+ {
+  "index": 88,
+  "label": "십자형 길표지판",
+  "role": "sign",
+  "passage": "solid",
+  "tags": [
+   "십자형 길표지판",
+   "sign",
+   "이정표",
+   "갈림길"
+  ]
+ },
+ {
+  "index": 89,
+  "label": "회색 세로 묘비",
+  "role": "statue",
+  "passage": "solid",
+  "tags": [
+   "회색 세로 묘비",
+   "grave",
+   "묘석",
+   "회색",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 90,
+  "label": "초원 둘레 넓은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 둘레 넓은 바다",
+   "ocean",
+   "바다",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 91,
+  "label": "초원 둘레 넓은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 둘레 넓은 바다",
+   "ocean",
+   "바다",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 92,
+  "label": "초원 둘레 넓은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "초원 둘레 넓은 바다",
+   "ocean",
+   "바다",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 93,
+  "label": "설원 둘레 넓은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 둘레 넓은 바다",
+   "ocean",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 94,
+  "label": "설원 둘레 넓은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 둘레 넓은 바다",
+   "ocean",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 95,
+  "label": "설원 둘레 넓은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "설원 둘레 넓은 바다",
+   "ocean",
+   "설원",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 96,
+  "label": "숲 남서 풀모서리",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 남서 풀모서리",
+   "forest",
+   "수풀",
+   "남서"
+  ]
+ },
+ {
+  "index": 97,
+  "label": "숲 남쪽 풀경계",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "숲 남쪽 풀경계",
+   "forest",
+   "수풀",
+   "남쪽",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 98,
+  "label": "숲 남동 풀모서리",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 남동 풀모서리",
+   "forest",
+   "수풀",
+   "남동"
+  ]
+ },
+ {
+  "index": 99,
+  "label": "모래밭 남서 풀모서리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 남서 풀모서리",
+   "sand",
+   "모래",
+   "남서"
+  ]
+ },
+ {
+  "index": 100,
+  "label": "모래밭 남쪽 풀경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 남쪽 풀경계",
+   "sand",
+   "모래",
+   "남쪽"
+  ]
+ },
+ {
+  "index": 101,
+  "label": "모래밭 남동 풀모서리",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래밭 남동 풀모서리",
+   "sand",
+   "모래",
+   "남동"
+  ]
+ },
+ {
+  "index": 102,
+  "label": "세로결 갈색 목벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "세로결 갈색 목벽",
+   "wood",
+   "목재벽",
+   "세로결"
+  ]
+ },
+ {
+  "index": 103,
+  "label": "목벽 아래 어두운 문",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "목벽 아래 어두운 문",
+   "door",
+   "출입구",
+   "목재"
+  ]
+ },
+ {
+  "index": 104,
+  "label": "좌측 기둥 회벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 회벽 하단",
+   "기둥 회벽",
+   "밝은 회벽"
+  ]
+ },
+ {
+  "index": 105,
+  "label": "기둥 없는 회벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "밝은 회벽 하단",
+   "기둥 회벽",
+   "밝은 회벽"
+  ]
+ },
+ {
+  "index": 106,
+  "label": "오른쪽 기둥이 있는 회벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "우측 기둥 회벽 하단",
+   "밝은 회벽",
+   "기둥 회벽"
+  ]
+ },
+ {
+  "index": 107,
+  "label": "왼쪽 기둥이 있는 회벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "양측 기둥 좁은 회벽 하단",
+   "밝은 회벽",
+   "기둥 회벽"
+  ]
+ },
+ {
+  "index": 108,
+  "label": "잔디 절벽 좌측 하단 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "풀밭 절벽 좌하단",
+   "절벽"
+  ]
+ },
+ {
+  "index": 109,
+  "label": "가운데 작은잎 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "가운데 작은잎 초원",
+   "grass",
+   "평원",
+   "중앙잎"
+  ]
+ },
+ {
+  "index": 110,
+  "label": "잔디 절벽 우측 하단 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "풀밭 절벽 우하단",
+   "절벽"
+  ]
+ },
+ {
+  "index": 111,
+  "label": "자갈 절벽 좌하단 모서리",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "자갈 절벽 좌측",
+   "절벽"
+  ]
+ },
+ {
+  "index": 112,
+  "label": "자갈 절벽 하단 경계",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "자갈 절벽 중앙",
+   "절벽"
+  ]
+ },
+ {
+  "index": 113,
+  "label": "자갈 절벽 우하단 모서리",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "cliff",
+   "자갈 절벽 우측",
+   "절벽"
+  ]
+ },
+ {
+  "index": 114,
+  "label": "왼쪽 끝 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "왼쪽 끝 나무울타리",
+   "fence",
+   "목책",
+   "왼쪽끝",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 115,
+  "label": "아래쪽 가로 나무울타리",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "아래쪽 가로 나무울타리",
+   "fence",
+   "목책",
+   "아래쪽",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 116,
+  "label": "나무 이정표 표지판",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 방향 표지판"
+  ]
+ },
+ {
+  "index": 117,
+  "label": "주황빛 수정 조각",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "주황빛 수정 조각",
+   "crystal",
+   "수정",
+   "파편",
+   "분홍배경"
+  ]
+ },
+ {
+  "index": 118,
+  "label": "녹색 금속 장비 더미",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "해골과 유골"
+  ]
+ },
+ {
+  "index": 119,
+  "label": "푸른 회색 돌기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "푸른 회색 돌기둥",
+   "pillar",
+   "석주",
+   "회색",
+   "분홍배경"
+  ]
+ }
+]

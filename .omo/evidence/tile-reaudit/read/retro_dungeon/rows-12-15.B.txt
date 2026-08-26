@@ -1,0 +1,120 @@
+360|갈색 흙 바닥|terrain|passable|high|
+361|갈색 흙 바닥|terrain|passable|high|
+362|갈색 흙 바닥|terrain|passable|high|
+363|풀 포기 난 흙 바닥|terrain|passable|medium|
+364|갈색 흙 바닥|terrain|passable|high|
+365|잔디 덮인 흙 바닥|terrain|passable|medium|
+366|얼음 테두리 어두운 구덩이(1칸)|terrain|solid|low|
+367|얼음 테두리 어두운 구덩이 가로 조각|terrain|solid|low|얼음 테두리 어두운 구덩이
+368|얼음 테두리 어두운 구덩이 가로 오른쪽 끝|terrain|solid|low|얼음 테두리 어두운 구덩이
+369|돌 테두리 어두운 구덩이(1칸)|terrain|solid|low|
+370|돌 테두리 어두운 구덩이 가로 조각|terrain|solid|low|돌 테두리 어두운 구덩이
+371|돌 테두리 어두운 구덩이 가로 오른쪽 끝|terrain|solid|low|돌 테두리 어두운 구덩이
+372|얼음 결정 벽면 좌측 상단|wall|solid|medium|얼음 결정 벽
+373|얼음 결정 벽면 중앙 상단|wall|solid|medium|얼음 결정 벽
+374|얼음 결정 벽면 우측 상단|wall|solid|medium|얼음 결정 벽
+375|눈 덮인 얼음 지면 띠|terrain|passable|medium|눈 덮인 얼음 지면
+376|눈 덮인 얼음 지면 띠|terrain|passable|medium|눈 덮인 얼음 지면
+377|눈 덮인 얼음 지면 띠|terrain|passable|medium|눈 덮인 얼음 지면
+378|붉은 광석 더미 왼쪽|rock|solid|medium|붉은 광석 더미
+379|붉은 광석 더미 오른쪽|rock|solid|medium|붉은 광석 더미
+380|갈색 흙 더미 왼쪽|rock|solid|medium|갈색 흙 더미
+381|갈색 흙 더미 오른쪽|rock|solid|medium|갈색 흙 더미
+382|연녹색 광석 조각 무리|rock|passable|medium|
+383|회색 돌멩이 무리|rock|passable|medium|
+384|목재 침대 상단(머리판과 베개)|furniture|solid|high|세로 목재 침대
+385|긴 목재 선반 왼쪽|furniture|solid|low|긴 목재 선반
+386|긴 목재 선반 중앙|furniture|solid|low|긴 목재 선반
+387|긴 목재 선반 오른쪽|furniture|solid|low|긴 목재 선반
+388|짧은 목재 선반|furniture|solid|low|
+389|목재 서랍장|furniture|solid|medium|
+390|갈색 흙 바닥|terrain|passable|high|
+391|갈색 흙 바닥|terrain|passable|high|
+392|갈색 흙 바닥|terrain|passable|high|
+393|잔디 지면 좌측 상단|terrain|passable|high|잔디 지면
+394|잔디 지면 중앙 상단|terrain|passable|high|잔디 지면
+395|잔디 지면 우측 상단|terrain|passable|high|잔디 지면
+396|얼음 테두리 어두운 구덩이 좌상단|terrain|solid|low|얼음 테두리 어두운 구덩이
+397|얼음 테두리 어두운 구덩이 상단|terrain|solid|low|얼음 테두리 어두운 구덩이
+398|얼음 테두리 어두운 구덩이 우상단|terrain|solid|low|얼음 테두리 어두운 구덩이
+399|돌 테두리 어두운 구덩이 좌상단|terrain|solid|low|돌 테두리 어두운 구덩이
+400|돌 테두리 어두운 구덩이 상단|terrain|solid|low|돌 테두리 어두운 구덩이
+401|돌 테두리 어두운 구덩이 우상단|terrain|solid|low|돌 테두리 어두운 구덩이
+402|얼음 결정 벽면 좌측 하단|wall|solid|medium|얼음 결정 벽
+403|얼음 결정 벽면 중앙 하단|wall|solid|medium|얼음 결정 벽
+404|얼음 결정 벽면 우측 하단|wall|solid|medium|얼음 결정 벽
+405|어두운 청석 벽 좌상단|wall|solid|medium|어두운 청석 벽
+406|어두운 청석 벽 상단 중앙|wall|solid|medium|어두운 청석 벽
+407|어두운 청석 벽 우상단|wall|solid|medium|어두운 청석 벽
+408|눈 더미 왼쪽|rock|solid|medium|눈 더미
+409|눈 더미 오른쪽|rock|solid|medium|눈 더미
+410|검은 흙 더미 왼쪽|rock|solid|medium|검은 흙 더미
+411|검은 흙 더미 오른쪽|rock|solid|medium|검은 흙 더미
+412|갈색 바위 무더기|rock|solid|medium|
+413|얼음 결정 무리|rock|solid|medium|
+414|목재 침대 하단(이불과 발판)|furniture|solid|high|세로 목재 침대
+415|가로 목재 침대 왼쪽(베개)|furniture|solid|high|가로 목재 침대
+416|가로 목재 침대 오른쪽|furniture|solid|high|가로 목재 침대
+417|테 두른 나무 물통|prop|solid|high|
+418|회색 도자기 항아리|prop|solid|high|
+419|작은 나무 통|prop|solid|medium|
+420|갈색 흙 바닥|terrain|passable|high|
+421|갈색 흙 바닥|terrain|passable|high|
+422|갈색 흙 바닥|terrain|passable|high|
+423|잔디 지면 좌측 중앙|terrain|passable|high|잔디 지면
+424|잔디 지면 중앙|terrain|passable|high|잔디 지면
+425|잔디 지면 우측 중앙|terrain|passable|high|잔디 지면
+426|얼음 테두리 어두운 구덩이 좌측|terrain|solid|low|얼음 테두리 어두운 구덩이
+427|얼음 테두리 어두운 구덩이 내부|terrain|solid|low|얼음 테두리 어두운 구덩이
+428|얼음 테두리 어두운 구덩이 우측|terrain|solid|low|얼음 테두리 어두운 구덩이
+429|돌 테두리 어두운 구덩이 좌측|terrain|solid|low|돌 테두리 어두운 구덩이
+430|돌 테두리 어두운 구덩이 내부|terrain|solid|low|돌 테두리 어두운 구덩이
+431|돌 테두리 어두운 구덩이 우측|terrain|solid|low|돌 테두리 어두운 구덩이
+432|회색 자갈 돌벽 좌상단|wall|solid|medium|회색 자갈 돌벽
+433|회색 자갈 돌벽 상단 중앙|wall|solid|medium|회색 자갈 돌벽
+434|회색 자갈 돌벽 우상단|wall|solid|medium|회색 자갈 돌벽
+435|어두운 청석 벽 좌측 중앙|wall|solid|medium|어두운 청석 벽
+436|어두운 청석 벽면의 회색 돌덩이|rock|solid|medium|어두운 청석 벽
+437|어두운 청석 벽 우측 중앙|wall|solid|medium|어두운 청석 벽
+438|새김글 비석 좌상단|prop|solid|high|새김글 비석
+439|새김글 비석 상단 중앙|prop|solid|high|새김글 비석
+440|새김글 비석 우상단|prop|solid|high|새김글 비석
+441|촛불 수레바퀴 샹들리에 좌상단|decoration|passable|medium|촛불 수레바퀴 샹들리에
+442|촛불 수레바퀴 샹들리에 상단 중앙|decoration|passable|medium|촛불 수레바퀴 샹들리에
+443|촛불 수레바퀴 샹들리에 우상단|decoration|passable|medium|촛불 수레바퀴 샹들리에
+444|아치형 목재 이중문 좌상단|door|solid|high|아치형 목재 이중문
+445|아치형 목재 이중문 우상단|door|solid|high|아치형 목재 이중문
+446|회색 돌기둥 상단|prop|solid|high|회색 돌기둥
+447|황금 왕좌 왼쪽 팔걸이 상단|furniture|solid|high|황금 왕좌
+448|황금 왕좌 등받이와 왕관 장식|furniture|solid|high|황금 왕좌
+449|황금 왕좌 오른쪽 팔걸이 상단|furniture|solid|high|황금 왕좌
+450|갈색 흙 바닥|terrain|passable|high|
+451|갈색 흙 바닥|terrain|passable|high|
+452|갈색 흙 바닥|terrain|passable|high|
+453|잔디 지면 좌측 하단|terrain|passable|high|잔디 지면
+454|잔디 지면 중앙 하단|terrain|passable|high|잔디 지면
+455|잔디 지면 우측 하단|terrain|passable|high|잔디 지면
+456|얼음 테두리 어두운 구덩이 좌하단|terrain|solid|low|얼음 테두리 어두운 구덩이
+457|얼음 테두리 어두운 구덩이 하단|terrain|solid|low|얼음 테두리 어두운 구덩이
+458|얼음 테두리 어두운 구덩이 우하단|terrain|solid|low|얼음 테두리 어두운 구덩이
+459|돌 테두리 어두운 구덩이 좌하단|terrain|solid|low|돌 테두리 어두운 구덩이
+460|돌 테두리 어두운 구덩이 하단|terrain|solid|low|돌 테두리 어두운 구덩이
+461|돌 테두리 어두운 구덩이 우하단|terrain|solid|low|돌 테두리 어두운 구덩이
+462|회색 자갈 돌벽 좌하단|wall|solid|medium|회색 자갈 돌벽
+463|회색 자갈 돌벽 하단 중앙|wall|solid|medium|회색 자갈 돌벽
+464|회색 자갈 돌벽 우하단|wall|solid|medium|회색 자갈 돌벽
+465|어두운 청석 벽 좌하단|wall|solid|medium|어두운 청석 벽
+466|어두운 청석 벽 하단 중앙|wall|solid|medium|어두운 청석 벽
+467|어두운 청석 벽 우하단|wall|solid|medium|어두운 청석 벽
+468|새김글 비석 좌하단|prop|solid|high|새김글 비석
+469|새김글 비석 하단 중앙(비문)|prop|solid|high|새김글 비석
+470|새김글 비석 우하단|prop|solid|high|새김글 비석
+471|촛불 수레바퀴 샹들리에 좌하단|decoration|passable|medium|촛불 수레바퀴 샹들리에
+472|촛불 수레바퀴 샹들리에 하단 중앙|decoration|passable|medium|촛불 수레바퀴 샹들리에
+473|촛불 수레바퀴 샹들리에 우하단|decoration|passable|medium|촛불 수레바퀴 샹들리에
+474|아치형 목재 이중문 좌하단|door|solid|high|아치형 목재 이중문
+475|아치형 목재 이중문 우하단|door|solid|high|아치형 목재 이중문
+476|회색 돌기둥 하단 받침|prop|solid|high|회색 돌기둥
+477|황금 왕좌 왼쪽 팔걸이 하단|furniture|solid|high|황금 왕좌
+478|황금 왕좌 붉은 좌석|furniture|solid|high|황금 왕좌
+479|황금 왕좌 오른쪽 팔걸이 하단|furniture|solid|high|황금 왕좌

@@ -1,0 +1,120 @@
+360|작은 나무|tree|solid|high|
+361|잔디|terrain|passable|high|
+362|작은 나무|tree|solid|high|
+363|소나무|tree|solid|high|
+364|잔디|terrain|passable|high|
+365|소나무|tree|solid|high|
+366|어두운 물|water|solid|high|
+367|어두운 물 상단|water|solid|high|어두운 물
+368|어두운 물 상단|water|solid|high|어두운 물
+369|남색 물|water|solid|high|
+370|남색 물 상단|water|solid|high|남색 물
+371|남색 물 상단|water|solid|high|남색 물
+372|위쪽 노란 화살표|decoration|passable|high|
+373|아래쪽 노란 화살표|decoration|passable|high|
+374|벽돌 벽|wall|solid|high|
+375|화려한 카펫 좌상|decoration|passable|medium|화려한 카펫
+376|화려한 카펫 상단|decoration|passable|medium|화려한 카펫
+377|화려한 카펫 우상|decoration|passable|medium|화려한 카펫
+378|화산 바위 좌상|rock|solid|high|화산
+379|화산 바위 우상|rock|solid|high|화산
+380|돌 석상 상단|prop|solid|high|돌 석상
+381|금 석상 상단|prop|solid|high|금 석상
+382|금색 신전|prop|solid|high|
+383|금색 장식품|prop|solid|medium|
+384|침대 머리맡|furniture|solid|high|침대
+385|나무 찬장|furniture|solid|high|나무 찬장
+386|나무 찬장|furniture|solid|high|나무 찬장
+387|나무 찬장|furniture|solid|high|나무 찬장
+388|나무 찬장|furniture|solid|high|나무 찬장
+389|흰 구슬 장식|prop|solid|medium|
+390|큰 나무 좌상|tree|solid|high|큰 나무
+391|큰 나무 상단|tree|solid|high|큰 나무
+392|큰 나무 우상|tree|solid|high|큰 나무
+393|소나무|tree|solid|high|소나무 숲
+394|소나무|tree|solid|high|소나무 숲
+395|소나무|tree|solid|high|소나무 숲
+396|어두운 물|water|solid|high|어두운 물
+397|어두운 물|water|solid|high|어두운 물
+398|어두운 물|water|solid|high|어두운 물
+399|남색 물|water|solid|high|남색 물
+400|남색 물|water|solid|high|남색 물
+401|남색 물|water|solid|high|남색 물
+402|왼쪽 노란 화살표|decoration|passable|high|
+403|오른쪽 노란 화살표|decoration|passable|high|
+404|흰 사선 무늬|decoration|solid|low|
+405|화려한 카펫 좌|decoration|passable|medium|화려한 카펫
+406|화려한 카펫 중앙|decoration|passable|medium|화려한 카펫
+407|화려한 카펫 우|decoration|passable|medium|화려한 카펫
+408|화산 바위 좌|rock|solid|high|화산
+409|화산 바위 우|rock|solid|high|화산
+410|돌 석상 하단|prop|solid|high|돌 석상
+411|금 석상 하단|prop|solid|high|금 석상
+412|우물|prop|solid|medium|
+413|동굴 입구|prop|solid|high|
+414|침대|furniture|solid|high|침대
+415|침대 좌|furniture|solid|high|침대
+416|침대 우|furniture|solid|high|침대
+417|빈 슬롯|empty|passable|high|
+418|피아노 좌|furniture|solid|high|피아노
+419|피아노 우|furniture|solid|high|피아노
+420|큰 나무 좌|tree|solid|high|큰 나무
+421|큰 나무 중앙|tree|solid|high|큰 나무
+422|큰 나무 우|tree|solid|high|큰 나무
+423|소나무|tree|solid|high|소나무 숲
+424|소나무|tree|solid|high|소나무 숲
+425|소나무|tree|solid|high|소나무 숲
+426|어두운 물|water|solid|high|어두운 물
+427|어두운 물|water|solid|high|어두운 물
+428|어두운 물|water|solid|high|어두운 물
+429|남색 물|water|solid|high|남색 물
+430|남색 물|water|solid|high|남색 물
+431|남색 물|water|solid|high|남색 물
+432|조약돌 바닥|floor|passable|high|조약돌 바닥
+433|갈색 마루|floor|passable|medium|갈색 마루
+434|분홍 사선 무늬|decoration|solid|low|
+435|화려한 카펫 좌|decoration|passable|medium|화려한 카펫
+436|화려한 카펫 하단|decoration|passable|medium|화려한 카펫
+437|화려한 카펫 우|decoration|passable|medium|화려한 카펫
+438|화산 용암 좌|rock|solid|high|화산
+439|화산 용암 우|rock|solid|high|화산
+440|금색 석상 좌상|prop|solid|medium|금색 석상
+441|금색 석상 우상|prop|solid|medium|금색 석상
+442|돌 벽 창문|wall|solid|high|석조 건물
+443|돌 벽|wall|solid|medium|석조 건물
+444|책장 좌상|furniture|solid|high|책장
+445|책장 우상|furniture|solid|high|책장
+446|왕좌 상단|furniture|solid|high|왕좌
+447|빈 슬롯|empty|passable|high|
+448|큰 왕좌 상단|furniture|solid|high|큰 왕좌
+449|큰 왕좌 우상|furniture|solid|high|큰 왕좌
+450|큰 나무 좌하|tree|solid|high|큰 나무
+451|큰 나무 하단|tree|solid|high|큰 나무
+452|큰 나무 우하|tree|solid|high|큰 나무
+453|소나무|tree|solid|high|소나무 숲
+454|소나무|tree|solid|high|소나무 숲
+455|소나무|tree|solid|high|소나무 숲
+456|어두운 물|water|solid|high|어두운 물
+457|어두운 물|water|solid|high|어두운 물
+458|어두운 물|water|solid|high|어두운 물
+459|남색 물|water|solid|high|남색 물
+460|남색 물|water|solid|high|남색 물
+461|남색 물|water|solid|high|남색 물
+462|조약돌 바닥|floor|passable|high|조약돌 바닥
+463|갈색 마루|floor|passable|medium|갈색 마루
+464|격자|decoration|solid|medium|
+465|화려한 카펫 하단 좌|decoration|passable|medium|화려한 카펫
+466|화려한 카펫 하단|decoration|passable|medium|화려한 카펫
+467|화려한 카펫 하단 우|decoration|passable|medium|화려한 카펫
+468|화산 바위 좌하|rock|solid|high|화산
+469|화산 바위 우하|rock|solid|high|화산
+470|금색 석상 좌하|prop|solid|medium|금색 석상
+471|금색 석상 우하|prop|solid|medium|금색 석상
+472|돌 벽|wall|solid|high|석조 건물
+473|돌 처마|roof|solid|medium|석조 건물
+474|책장 좌하|furniture|solid|high|책장
+475|책장 우하|furniture|solid|high|책장
+476|왕좌|furniture|solid|high|왕좌
+477|큰 왕좌 좌팔걸이|furniture|solid|high|큰 왕좌
+478|큰 왕좌 좌석|furniture|solid|high|큰 왕좌
+479|큰 왕좌 우팔걸이|furniture|solid|high|큰 왕좌

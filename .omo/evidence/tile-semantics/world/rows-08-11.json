@@ -1,0 +1,1375 @@
+[
+ {
+  "index": 240,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 241,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 242,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 243,
+  "label": "잔디 알갱이 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 알갱이 초원",
+   "초원",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 244,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 245,
+  "label": "풀 포인트 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "풀 포인트 초원",
+   "초원",
+   "speckle",
+   "grass"
+  ]
+ },
+ {
+  "index": 246,
+  "label": "설원 언 얼음물",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 언 얼음물",
+   "눈",
+   "얼음",
+   "물",
+   "설원"
+  ]
+ },
+ {
+  "index": 247,
+  "label": "새하얀 설원 눈",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "새하얀 설원 눈",
+   "설원",
+   "snow",
+   "지면"
+  ]
+ },
+ {
+  "index": 248,
+  "label": "눈 덮인 숲 조각",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 나무"
+  ]
+ },
+ {
+  "index": 249,
+  "label": "눈 덮인 흙바위 더미",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 쌓인 흙 둔덕"
+  ]
+ },
+ {
+  "index": 250,
+  "label": "새하얀 설원 눈",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "새하얀 설원 눈",
+   "설원",
+   "snow",
+   "지면"
+  ]
+ },
+ {
+  "index": 251,
+  "label": "눈 덮인 흙바위 더미",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 쌓인 흙 둔덕"
+  ]
+ },
+ {
+  "index": 252,
+  "label": "풀 덮인 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "풀 덮인 바위산",
+   "산",
+   "rock",
+   "언덕"
+  ]
+ },
+ {
+  "index": 253,
+  "label": "눈 붙은 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "눈 붙은 바위산",
+   "산",
+   "rock",
+   "눈"
+  ]
+ },
+ {
+  "index": 254,
+  "label": "거친 석벽 상단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 255,
+  "label": "거친 석벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 256,
+  "label": "거친 석벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 257,
+  "label": "어두운 이끼 석벽 우측 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "거친 석벽 상단 우측",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 259,
+  "label": "왕관 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "왕관 초록 나무",
+   "나무",
+   "tree",
+   "숲"
+  ]
+ },
+ {
+  "index": 260,
+  "label": "서 있는 나무 기둥",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "서 있는 나무 기둥",
+   "나무",
+   "trunk",
+   "기둥"
+  ]
+ },
+ {
+  "index": 261,
+  "label": "가로 누운 통나무",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "가로 누운 통나무",
+   "나무",
+   "log",
+   "통나무"
+  ]
+ },
+ {
+  "index": 262,
+  "label": "붉은 지붕 작은 집",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "붉은 지붕 오두막"
+  ]
+ },
+ {
+  "index": 263,
+  "label": "눈 덮인 작은 집",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "눈 덮인 오두막"
+  ]
+ },
+ {
+  "index": 264,
+  "label": "바위 언덕",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 언덕",
+   "바위",
+   "언덕",
+   "rock"
+  ]
+ },
+ {
+  "index": 265,
+  "label": "매달린 나무통 밧줄",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "매달린 밧줄",
+   "매달린 나무통",
+   "밧줄"
+  ]
+ },
+ {
+  "index": 266,
+  "label": "어두운 목조 기단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "어두운 목조 기단",
+   "나무",
+   "structure",
+   "목조"
+  ]
+ },
+ {
+  "index": 267,
+  "label": "책장 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "책장"
+  ]
+ },
+ {
+  "index": 268,
+  "label": "서랍 수납장 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 선반장 상단",
+   "서랍 수납장",
+   "목재 선반장"
+  ]
+ },
+ {
+  "index": 269,
+  "label": "목재 장롱 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "옷장 상단",
+   "목재 장롱",
+   "옷장"
+  ]
+ },
+ {
+  "index": 270,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 271,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 272,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 273,
+  "label": "그늘진 잔디 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "그늘진 잔디 초원",
+   "초원",
+   "shade",
+   "grass"
+  ]
+ },
+ {
+  "index": 274,
+  "label": "울창한 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "울창한 풀밭",
+   "풀밭",
+   "grass",
+   "텍스처"
+  ]
+ },
+ {
+  "index": 275,
+  "label": "잔디 질감 들판",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 질감 들판",
+   "들판",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 276,
+  "label": "눈 덮인 숲 상단 좌측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 좌상단",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 277,
+  "label": "눈 덮인 숲 상단 중앙",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 중상단",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 278,
+  "label": "눈 덮인 숲 상단 우측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 우상단",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 279,
+  "label": "눈 덮인 흙 둔덕 지대 상단 좌측",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 상단 좌측",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 280,
+  "label": "눈 덮인 흙 둔덕 지대 상단 중앙",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 상단 중앙",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 281,
+  "label": "눈 덮인 흙 둔덕 지대 상단 우측",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 상단 우측",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 282,
+  "label": "숲 낀 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "숲 낀 바위산",
+   "산",
+   "숲",
+   "rock"
+  ]
+ },
+ {
+  "index": 283,
+  "label": "눈솟은 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "눈솟은 바위산",
+   "산",
+   "눈",
+   "rock"
+  ]
+ },
+ {
+  "index": 284,
+  "label": "거친 석벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 285,
+  "label": "거친 석벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 286,
+  "label": "거친 석벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 287,
+  "label": "어두운 이끼 석벽 우측 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "거친 석벽 하단 우측",
+   "어두운 이끼 석벽",
+   "거친 석벽"
+  ]
+ },
+ {
+  "index": 288,
+  "label": "빨간 열매 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "빨간 열매 나무",
+   "나무",
+   "열매",
+   "berry",
+   "빨강"
+  ]
+ },
+ {
+  "index": 289,
+  "label": "초록 왕관 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "초록 왕관 나무",
+   "나무",
+   "canopy",
+   "숲"
+  ]
+ },
+ {
+  "index": 290,
+  "label": "무성한 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "무성한 초록 나무",
+   "나무",
+   "잎",
+   "tree"
+  ]
+ },
+ {
+  "index": 291,
+  "label": "숲속 작은 연못",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "숲속 작은 연못",
+   "연못",
+   "water",
+   "숲"
+  ]
+ },
+ {
+  "index": 292,
+  "label": "나무 오두막",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목조 건물"
+  ]
+ },
+ {
+  "index": 293,
+  "label": "눈 덮인 석조 건물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "눈 덮인 텐트"
+  ]
+ },
+ {
+  "index": 294,
+  "label": "긴 목재 탁자 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 식탁 상단",
+   "긴 목재 탁자",
+   "목재 식탁"
+  ]
+ },
+ {
+  "index": 295,
+  "label": "매달린 나무통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "밧줄"
+  ]
+ },
+ {
+  "index": 296,
+  "label": "빛 효과",
+  "role": "decoration",
+  "passage": "passable",
+  "tags": [
+   "decoration",
+   "뿌연 김"
+  ]
+ },
+ {
+  "index": 297,
+  "label": "책장 하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "책장"
+  ]
+ },
+ {
+  "index": 298,
+  "label": "서랍 수납장 하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 선반장 하단",
+   "서랍 수납장",
+   "목재 선반장"
+  ]
+ },
+ {
+  "index": 299,
+  "label": "목재 장롱 하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "옷장 하단",
+   "목재 장롱",
+   "옷장"
+  ]
+ },
+ {
+  "index": 300,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 301,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 302,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 303,
+  "label": "풀무늬 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "풀무늬 초원",
+   "초원",
+   "pattern",
+   "grass"
+  ]
+ },
+ {
+  "index": 304,
+  "label": "잔디 알갱이 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 알갱이 초원",
+   "초원",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 305,
+  "label": "잔디 섬돌 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 섬돌 무늬",
+   "초원",
+   "pattern",
+   "grass"
+  ]
+ },
+ {
+  "index": 306,
+  "label": "눈 덮인 숲 중단 좌측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 좌측",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 307,
+  "label": "눈 덮인 숲 중단 중앙",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 중앙",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 308,
+  "label": "눈 덮인 숲 중단 우측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 우측",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 309,
+  "label": "눈 덮인 흙 둔덕 지대 중단 좌측",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 중단 좌측",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 310,
+  "label": "눈 덮인 흙 둔덕 지대 중단 중앙",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 중단 중앙",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 311,
+  "label": "눈 덮인 흙 둔덕 지대 중단 우측",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 중단 우측",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 312,
+  "label": "사막 모래 지면",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "사막 모래 지면",
+   "모래",
+   "sand",
+   "사막"
+  ]
+ },
+ {
+  "index": 313,
+  "label": "어두운 흙 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "terrain",
+   "자갈빛 흙 지형"
+  ]
+ },
+ {
+  "index": 314,
+  "label": "보라색 벽돌 벽 상단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "자수정 벽돌 벽 상단",
+   "보라색 벽돌 벽",
+   "자수정 벽돌 벽"
+  ]
+ },
+ {
+  "index": 315,
+  "label": "보라색 벽돌 벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "자수정 벽돌 벽 상단",
+   "보라색 벽돌 벽",
+   "자수정 벽돌 벽"
+  ]
+ },
+ {
+  "index": 316,
+  "label": "보라색 벽돌 벽 상단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "자수정 벽돌 벽 상단",
+   "보라색 벽돌 벽",
+   "자수정 벽돌 벽"
+  ]
+ },
+ {
+  "index": 317,
+  "label": "자수정 벽돌 벽 상단 우측 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "보라색 벽돌 벽 상단 우측",
+   "자수정 벽돌 벽",
+   "보라색 벽돌 벽"
+  ]
+ },
+ {
+  "index": 318,
+  "label": "숲 캐노피 덩어리",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 캐노피 덩어리",
+   "숲",
+   "canopy",
+   "forest"
+  ]
+ },
+ {
+  "index": 319,
+  "label": "숲 가장자리 캐노피",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 가장자리 캐노피",
+   "숲",
+   "edge",
+   "forest"
+  ]
+ },
+ {
+  "index": 320,
+  "label": "회색 석조 성채 좌상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 성채 상단 좌측",
+   "회색 석조 성채",
+   "석조 성채"
+  ]
+ },
+ {
+  "index": 321,
+  "label": "회색 석조 성채 우상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 성채 상단 우측",
+   "회색 석조 성채",
+   "석조 성채"
+  ]
+ },
+ {
+  "index": 322,
+  "label": "풀둑 낀 연못",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "풀둑 낀 연못",
+   "연못",
+   "풀",
+   "water"
+  ]
+ },
+ {
+  "index": 323,
+  "label": "둑 낀 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "둑 낀 물웅덩이",
+   "물",
+   "둑",
+   "water"
+  ]
+ },
+ {
+  "index": 324,
+  "label": "긴 목재 탁자 중단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 식탁 중단",
+   "긴 목재 탁자",
+   "목재 식탁"
+  ]
+ },
+ {
+  "index": 325,
+  "label": "회색 도자기 주전자",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "도자기 항아리"
+  ]
+ },
+ {
+  "index": 326,
+  "label": "원형 목재 탁자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "둥근 목재 탁자"
+  ]
+ },
+ {
+  "index": 327,
+  "label": "목재 의자 전면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 안락의자"
+  ]
+ },
+ {
+  "index": 328,
+  "label": "목재 의자 후면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 의자"
+  ]
+ },
+ {
+  "index": 329,
+  "label": "목재 전신 거울 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "화장대 상단",
+   "목재 전신 거울",
+   "화장대"
+  ]
+ },
+ {
+  "index": 330,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 331,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 332,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 333,
+  "label": "짙은 풀 섞인 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "짙은 풀 섞인 초원",
+   "초원",
+   "섞임",
+   "grass"
+  ]
+ },
+ {
+  "index": 334,
+  "label": "풀 언덕 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "풀 언덕 초지",
+   "초지",
+   "grass",
+   "풀밭"
+  ]
+ },
+ {
+  "index": 335,
+  "label": "들판 풀 텍스처",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "들판 풀 텍스처",
+   "들판",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 336,
+  "label": "눈 덮인 숲 하단 좌측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 좌하단",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 337,
+  "label": "눈 덮인 숲 하단 중앙",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 중하단",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 338,
+  "label": "눈 덮인 숲 하단 우측",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "tree",
+   "눈 덮인 숲 우하단",
+   "눈 덮인 숲"
+  ]
+ },
+ {
+  "index": 339,
+  "label": "눈 덮인 흙 둔덕 지대 하단 좌측",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 하단 좌측",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 340,
+  "label": "눈 덮인 흙 둔덕 지대 하단 중앙",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 하단 중앙",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 341,
+  "label": "눈 덮인 흙 둔덕 지대 하단 우측",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "rock",
+   "눈 덮인 바위 무리 하단 우측",
+   "눈 덮인 흙 둔덕 지대",
+   "눈 덮인 바위 무리"
+  ]
+ },
+ {
+  "index": 342,
+  "label": "숲 덮인 산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "숲 덮인 산",
+   "산",
+   "숲",
+   "rock"
+  ]
+ },
+ {
+  "index": 343,
+  "label": "풀 낀 모래 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "풀 낀 모래 언덕",
+   "모래",
+   "풀",
+   "언덕",
+   "sand"
+  ]
+ },
+ {
+  "index": 344,
+  "label": "보라색 벽돌 벽 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "자수정 벽돌 벽 하단",
+   "보라색 벽돌 벽",
+   "자수정 벽돌 벽"
+  ]
+ },
+ {
+  "index": 345,
+  "label": "보라색 벽돌 벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "자수정 벽돌 벽 하단",
+   "보라색 벽돌 벽",
+   "자수정 벽돌 벽"
+  ]
+ },
+ {
+  "index": 346,
+  "label": "보라색 벽돌 벽 하단 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "자수정 벽돌 벽 하단",
+   "보라색 벽돌 벽",
+   "자수정 벽돌 벽"
+  ]
+ },
+ {
+  "index": 347,
+  "label": "자수정 벽돌 벽 하단 우측 끝",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "보라색 벽돌 벽 하단 우측",
+   "자수정 벽돌 벽",
+   "보라색 벽돌 벽"
+  ]
+ },
+ {
+  "index": 348,
+  "label": "큰 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "큰 초록 나무",
+   "나무",
+   "숲",
+   "tree"
+  ]
+ },
+ {
+  "index": 349,
+  "label": "숲 진 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "숲 진 나무",
+   "나무",
+   "숲",
+   "tree"
+  ]
+ },
+ {
+  "index": 350,
+  "label": "회색 석조 성채 좌하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 성채 하단 좌측",
+   "회색 석조 성채",
+   "석조 성채"
+  ]
+ },
+ {
+  "index": 351,
+  "label": "회색 석조 성채 우하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "석조 성채 하단 우측",
+   "회색 석조 성채",
+   "석조 성채"
+  ]
+ },
+ {
+  "index": 352,
+  "label": "파란 첨탑 성 하단 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "파란 첨탑 성 좌하단",
+   "파란 첨탑 성"
+  ]
+ },
+ {
+  "index": 353,
+  "label": "파란 첨탑 성 하단 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "파란 첨탑 성 우하단",
+   "파란 첨탑 성"
+  ]
+ },
+ {
+  "index": 354,
+  "label": "긴 목재 탁자 하단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 식탁 하단",
+   "긴 목재 탁자",
+   "목재 식탁"
+  ]
+ },
+ {
+  "index": 355,
+  "label": "작은 나무통",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "목재 통"
+  ]
+ },
+ {
+  "index": 356,
+  "label": "목재 등받이 없는 의자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "원형 목재 의자"
+  ]
+ },
+ {
+  "index": 357,
+  "label": "목재 의자 우측면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 의자 측면"
+  ]
+ },
+ {
+  "index": 358,
+  "label": "목재 의자 좌측면",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "목재 의자 측면"
+  ]
+ },
+ {
+  "index": 359,
+  "label": "낮은 목재 탁자",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "화장대 하단",
+   "화장대"
+  ]
+ }
+]

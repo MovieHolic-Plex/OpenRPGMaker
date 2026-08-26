@@ -1,0 +1,120 @@
+120|어두운 물|water|solid|high|
+121|어두운 물|water|solid|high|
+122|어두운 물|water|solid|high|
+123|폭포 상단|water|solid|high|폭포
+124|물 소용돌이 상단|water|solid|high|물 소용돌이
+125|푸른 기하학 문양 바닥|floor|passable|high|
+126|어두운 동굴 바닥|floor|passable|high|
+127|어두운 동굴 바닥|floor|passable|high|
+128|어두운 동굴 바닥|floor|passable|high|
+129|작은 구덩이|cliff|solid|high|
+130|어두운 동굴 바닥|floor|passable|high|
+131|어두운 구덩이|cliff|solid|high|
+132|흙 바닥|floor|passable|high|
+133|흙 바닥|floor|passable|high|
+134|흙 바닥|floor|passable|high|
+135|흙 바닥 경계|floor|passable|high|
+136|흙 바닥|floor|passable|high|
+137|흙 바닥|floor|passable|high|
+138|붉은 양탄자 좌상단|decoration|passable|high|붉은 양탄자
+139|붉은 양탄자 상단|decoration|passable|high|붉은 양탄자
+140|붉은 양탄자 우상단|decoration|passable|high|붉은 양탄자
+141|나무 발판|floor|passable|high|
+142|나무 발판|floor|passable|high|
+143|나무 발판|floor|passable|high|
+144|사다리 상단|stairs|passable|high|사다리
+145|수도사 석상 상단|prop|solid|high|수도사 석상
+146|가고일 석상 상단|prop|solid|high|가고일 석상
+147|십자가 묘비|prop|solid|high|
+148|석조 묘비|prop|solid|high|
+149|고드름|decoration|solid|high|
+150|어두운 물|water|solid|high|
+151|어두운 물|water|solid|high|
+152|어두운 물|water|solid|high|
+153|폭포 중간|water|solid|high|폭포
+154|물 소용돌이 중간|water|solid|high|물 소용돌이
+155|푸른 기하학 문양 바닥|floor|passable|high|
+156|어두운 동굴 바닥|floor|passable|high|
+157|어두운 동굴 바닥|floor|passable|high|
+158|어두운 동굴 바닥|floor|passable|high|
+159|대형 구덩이 좌상단|cliff|solid|high|대형 구덩이
+160|대형 구덩이 상단|cliff|solid|high|대형 구덩이
+161|대형 구덩이 우상단|cliff|solid|high|대형 구덩이
+162|돌 절벽 좌상단|cliff|solid|high|돌 절벽
+163|돌 절벽 우상단|cliff|solid|high|돌 절벽
+164|돌 절벽|cliff|solid|high|
+165|흙 바닥 경계|floor|passable|high|
+166|자갈 흙 바닥|floor|passable|high|
+167|흙 바닥|floor|passable|high|
+168|붉은 양탄자 좌측|decoration|passable|high|붉은 양탄자
+169|붉은 양탄자 중앙|decoration|passable|high|붉은 양탄자
+170|붉은 양탄자 우측|decoration|passable|high|붉은 양탄자
+171|나무 다리|floor|passable|high|
+172|위쪽 화살표 발판|floor|passable|high|
+173|아래쪽 화살표 발판|floor|passable|high|
+174|사다리 하단|stairs|passable|high|사다리
+175|수도사 석상 하단|prop|solid|high|수도사 석상
+176|가고일 석상 하단|prop|solid|high|가고일 석상
+177|식물 덩굴 분기|plant|passable|high|식물 덩굴
+178|식물 덩굴 줄기|plant|passable|high|식물 덩굴
+179|식물 덩굴 끝|plant|passable|high|식물 덩굴
+180|어두운 물|water|solid|high|
+181|어두운 물|water|solid|high|
+182|어두운 물|water|solid|high|
+183|폭포 중간|water|solid|high|폭포
+184|물 소용돌이 중간|water|solid|high|물 소용돌이
+185|푸른 기하학 문양 바닥|floor|passable|high|
+186|어두운 동굴 바닥|floor|passable|high|
+187|어두운 동굴 바닥|floor|passable|high|
+188|어두운 동굴 바닥|floor|passable|high|
+189|대형 구덩이 좌측|cliff|solid|high|대형 구덩이
+190|대형 구덩이 중앙|cliff|solid|high|대형 구덩이
+191|대형 구덩이 우측|cliff|solid|high|대형 구덩이
+192|돌 절벽|cliff|solid|high|
+193|돌 절벽|cliff|solid|high|
+194|돌 절벽|cliff|solid|high|
+195|흙 바닥 경계|floor|passable|high|
+196|흙 바닥|floor|passable|high|
+197|흙 바닥|floor|passable|high|
+198|붉은 양탄자 좌하단|decoration|passable|high|붉은 양탄자
+199|붉은 양탄자 하단|decoration|passable|high|붉은 양탄자
+200|붉은 양탄자 우하단|decoration|passable|high|붉은 양탄자
+201|나무 다리|floor|passable|high|
+202|왼쪽 화살표 발판|floor|passable|high|
+203|오른쪽 화살표 발판|floor|passable|high|
+204|쇠창살 좌상단|gate|solid|high|쇠창살
+205|쇠창살 상단|gate|solid|high|쇠창살
+206|쇠창살 우상단|gate|solid|high|쇠창살
+207|노란색 발광 균열 좌측|decoration|passable|medium|노란색 발광 균열
+208|노란색 발광 균열 중앙|decoration|passable|medium|노란색 발광 균열
+209|노란색 발광 균열 파편|decoration|passable|medium|노란색 발광 균열
+210|어두운 물|water|solid|high|
+211|어두운 물|water|solid|high|
+212|어두운 물|water|solid|high|
+213|폭포 하단|water|solid|high|폭포
+214|물 소용돌이 하단|water|solid|high|물 소용돌이
+215|푸른 기하학 문양 바닥|floor|passable|high|
+216|어두운 동굴 바닥|floor|passable|high|
+217|어두운 동굴 바닥|floor|passable|high|
+218|어두운 동굴 바닥|floor|passable|high|
+219|대형 구덩이 좌하단|cliff|solid|high|대형 구덩이
+220|대형 구덩이 하단|cliff|solid|high|대형 구덩이
+221|대형 구덩이 우하단|cliff|solid|high|대형 구덩이
+222|돌 절벽 좌하단|cliff|solid|high|돌 절벽
+223|돌 절벽 우하단|cliff|solid|high|돌 절벽
+224|파란 꽃이 핀 흙 바닥|plant|passable|high|
+225|돌벽 하단|cliff|solid|high|
+226|돌벽 하단|cliff|solid|high|
+227|돌벽 하단|cliff|solid|high|
+228|붉은 양탄자 술 좌측|decoration|passable|high|붉은 양탄자
+229|붉은 양탄자 술 중앙|decoration|passable|high|붉은 양탄자
+230|붉은 양탄자 술 우측|decoration|passable|high|붉은 양탄자
+231|나무 다리|floor|passable|high|
+232|사선 격자 유리판|floor|passable|medium|
+233|빈 슬롯|empty|passable|high|
+234|쇠창살 좌하단|gate|solid|high|쇠창살
+235|쇠창살 하단|gate|solid|high|쇠창살
+236|쇠창살 우하단|gate|solid|high|쇠창살
+237|눈 덮인 경사 좌상단|cliff|solid|high|눈 덮인 절벽
+238|눈 덮인 경사 우상단|cliff|solid|high|눈 덮인 절벽
+239|눈 덮인 협곡|cliff|solid|high|

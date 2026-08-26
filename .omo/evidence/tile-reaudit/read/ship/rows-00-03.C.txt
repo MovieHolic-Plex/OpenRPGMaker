@@ -1,0 +1,63 @@
+6|구멍 난 가로 나무 바닥|floor|passable|high|나무 바닥
+7|가로 나무 판자 바닥|floor|passable|high|
+8|구멍 난 가로 나무 바닥|floor|passable|high|나무 바닥
+9|구멍 난 세로 나무 바닥|floor|passable|high|나무 바닥
+10|세로 나무 판자 바닥|floor|passable|high|
+11|구멍 난 세로 나무 바닥|floor|passable|high|나무 바닥
+12|짙은 세로 나무 판자 바닥|floor|passable|high|
+13|가로 나무 판자 바닥|floor|passable|high|
+14|짙은 가로 나무 판자 바닥|floor|passable|high|
+15|밝은 세로 나무 판자 바닥|floor|passable|high|
+16|밝은 가로 나무 판자 바닥|floor|passable|high|
+17|세로 나무 판자 바닥|floor|passable|high|
+18|선실 목조 벽 상단 좌측|wall|solid|high|목조 벽
+19|선실 목조 벽 상단 중앙|wall|solid|high|목조 벽
+20|선실 목조 벽 상단 중앙|wall|solid|high|목조 벽
+21|선실 목조 벽 상단 우측|wall|solid|high|목조 벽
+26|선수 난간 상단|fence|solid|high|선수 난간
+36|구멍 난 가로 나무 바닥 상단 좌측|floor|passable|high|나무 바닥
+37|구멍 난 가로 나무 바닥 상단 중앙|floor|passable|high|나무 바닥
+38|구멍 난 가로 나무 바닥 상단 우측|floor|passable|high|나무 바닥
+39|구멍 난 세로 나무 바닥 상단 좌측|floor|passable|high|나무 바닥
+40|구멍 난 세로 나무 바닥 상단 중앙|floor|passable|high|나무 바닥
+41|구멍 난 세로 나무 바닥 상단 우측|floor|passable|high|나무 바닥
+44|갑판 목조 계단 좌측 난간|stairs|passable|high|목조 계단
+45|갑판 목조 계단|stairs|passable|high|목조 계단
+46|갑판 목조 난간 중앙|fence|solid|high|갑판 난간
+47|갑판 목조 난간 우측|fence|solid|high|갑판 난간
+48|대각선 목조 지지대 좌상단|prop|solid|high|선체 구조물
+52|대각선 목조 지지대 우상단|prop|solid|high|선체 구조물
+53|선체 수직 기둥 상단|prop|solid|high|선체 구조물
+63|수면 상단 가장자리|water|solid|high|수면
+64|수면 상단 가장자리|water|solid|high|수면
+65|수면 상단 가장자리|water|solid|high|수면
+66|구멍 난 가로 나무 바닥 좌측|floor|passable|high|나무 바닥
+67|바닥 구멍 내부|floor|passable|high|바닥 구멍
+68|구멍 난 가로 나무 바닥 우측|floor|passable|high|나무 바닥
+69|구멍 난 세로 나무 바닥 좌측|floor|passable|high|나무 바닥
+70|바닥 구멍 내부|floor|passable|high|바닥 구멍
+71|구멍 난 세로 나무 바닥 우측|floor|passable|high|나무 바닥
+74|갑판 목조 계단 측면 난간|stairs|solid|high|목조 계단
+75|갑판 목조 계단 하단|stairs|passable|high|목조 계단
+76|갑판 계단 측면 목조 벽|wall|solid|high|갑판 구조물
+78|대각선 목조 지지대 좌측|prop|solid|high|선체 구조물
+79|대각선 목조 지지대 중앙 좌측|prop|solid|high|선체 구조물
+81|대각선 목조 지지대 중앙 우측|prop|solid|high|선체 구조물
+82|대각선 목조 지지대 우측|prop|solid|high|선체 구조물
+86|선수 난간 하단|fence|solid|high|선수 난간
+93|수면 모서리|water|solid|high|수면
+94|수면 모서리|water|solid|high|수면
+95|수면 모서리|water|solid|high|수면
+96|구멍 난 가로 나무 바닥 하단 좌측|floor|passable|high|나무 바닥
+97|구멍 난 가로 나무 바닥 하단 중앙|floor|passable|high|나무 바닥
+98|구멍 난 가로 나무 바닥 하단 우측|floor|passable|high|나무 바닥
+99|구멍 난 세로 나무 바닥 하단 좌측|floor|passable|high|나무 바닥
+100|구멍 난 세로 나무 바닥 하단 중앙|floor|passable|high|나무 바닥
+101|구멍 난 세로 나무 바닥 하단 우측|floor|passable|high|나무 바닥
+104|포문이 있는 선체 목조 벽 좌측|wall|solid|high|선체 목조 벽
+105|포문이 있는 선체 목조 벽 중앙|wall|solid|high|선체 목조 벽
+106|포문이 있는 선체 목조 벽 우측|wall|solid|high|선체 목조 벽
+108|선체 수평 지지대 좌측|prop|solid|high|선체 구조물
+109|대각선 목조 지지대 하단 좌측|prop|solid|high|선체 구조물
+111|대각선 목조 지지대 하단 우측|prop|solid|high|선체 구조물
+112|선체 수평 지지대 우측|prop|solid|high|선체 구조물

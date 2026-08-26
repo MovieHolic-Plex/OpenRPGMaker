@@ -1,0 +1,120 @@
+0|연못 상단 프레임1|water|solid|high|연못
+1|연못 상단 프레임2|water|solid|high|연못
+2|연못 상단 프레임3|water|solid|high|연못
+3|석벽 수로 상단 프레임1|water|solid|high|석벽 수로
+4|석벽 수로 상단 프레임2|water|solid|high|석벽 수로
+5|석벽 수로 상단 프레임3|water|solid|high|석벽 수로
+6|눈 바닥|floor|passable|high|
+7|눈 바닥|floor|passable|high|
+8|눈 바닥|floor|passable|high|
+9|눈밭의 얼음 웅덩이|floor|passable|high|
+10|눈 바닥|floor|passable|high|
+11|빙판 조각|floor|passable|high|빙판
+12|용암 지대 좌상단|terrain|passable|high|용암 지대
+13|용암 지대 상단|terrain|passable|high|용암 지대
+14|용암 지대 우상단|terrain|passable|high|용암 지대
+15|흙 지형|terrain|passable|high|
+16|용암 대각선 경계 좌상단|terrain|passable|high|용암 지대
+17|용암 대각선 경계 우상단|terrain|passable|high|용암 지대
+18|돌 지붕 좌측 모서리|roof|solid|high|돌 지붕
+19|돌 지붕 우측 모서리|roof|solid|high|돌 지붕
+20|석벽의 문양 조각 장식|decoration|solid|high|석벽
+21|조약돌 바닥 1|floor|passable|high|
+22|조약돌 바닥 2|floor|passable|high|
+23|조약돌 바닥 3|floor|passable|high|
+24|석비 좌측|prop|solid|high|석비
+25|석비 중앙|prop|solid|high|석비
+26|석비 우측|prop|solid|high|석비
+27|샹들리에 좌측|prop|passable|high|샹들리에
+28|샹들리에 중앙|prop|passable|high|샹들리에
+29|샹들리에 우측|prop|passable|high|샹들리에
+30|연못 좌측 프레임1|water|solid|high|연못
+31|연못 중앙 프레임2|water|solid|high|연못
+32|연못 우측 프레임3|water|solid|high|연못
+33|석벽 수로 세로길 프레임1|water|solid|high|석벽 수로
+34|석벽 수로 세로길 프레임2|water|solid|high|석벽 수로
+35|석벽 수로 세로길 프레임3|water|solid|high|석벽 수로
+36|눈 바닥|floor|passable|high|
+37|눈 바닥|floor|passable|high|
+38|눈 바닥|floor|passable|high|
+39|빙판 좌상단|floor|passable|high|빙판
+40|빙판 상단|floor|passable|high|빙판
+41|빙판 우상단|floor|passable|high|빙판
+42|용암 지대 좌측 가장자리|terrain|passable|high|용암 지대
+43|빛나는 용암 중앙|terrain|passable|high|용암 지대
+44|용암 지대 우측 가장자리|terrain|passable|high|용암 지대
+45|어두운 흙 바닥|floor|passable|high|
+46|갈색 흙 바닥 1|floor|passable|high|
+47|갈색 흙 바닥 2|floor|passable|high|
+48|어두운 석벽 좌측|wall|solid|high|어두운 석벽
+49|어두운 석벽 중앙|wall|solid|high|어두운 석벽
+50|어두운 석벽 우측|wall|solid|high|어두운 석벽
+51|조약돌 바닥 4|floor|passable|high|
+52|조약돌 바닥 5|floor|passable|high|
+53|조약돌 바닥 6|floor|passable|high|
+54|원형 레일 좌상단|prop|passable|high|원형 레일
+55|원형 레일 우상단|prop|passable|high|원형 레일
+56|광산 레일 가로 분기|prop|passable|high|광산 레일
+57|광산 레일 세로 교차로|prop|passable|high|광산 레일
+58|광산 레일 가로 교차로|prop|passable|high|광산 레일
+59|광산 레일 가로 분기선|prop|passable|high|광산 레일
+60|연못 하단 프레임1|water|solid|high|연못
+61|연못 하단 프레임2|water|solid|high|연못
+62|연못 하단 프레임3|water|solid|high|연못
+63|석벽 수로 가로길 프레임1|water|solid|high|석벽 수로
+64|석벽 수로 가로길 프레임2|water|solid|high|석벽 수로
+65|석벽 수로 가로길 프레임3|water|solid|high|석벽 수로
+66|눈 바닥|floor|passable|high|
+67|눈 바닥|floor|passable|high|
+68|눈 바닥|floor|passable|high|
+69|빙판 좌측|floor|passable|high|빙판
+70|빙판 중앙|floor|passable|high|빙판
+71|빙판 우측|floor|passable|high|빙판
+72|용암 지대 좌하단|terrain|passable|high|용암 지대
+73|용암 지대 하단|terrain|passable|high|용암 지대
+74|용암 지대 우하단|terrain|passable|high|용암 지대
+75|석벽의 얼굴 조각|decoration|solid|high|
+76|용암 대각선 경계 좌하단|terrain|passable|high|용암 지대
+77|용암 대각선 경계 우하단|terrain|passable|high|용암 지대
+78|짙은 회색 자갈 바닥|floor|passable|high|
+79|균열된 적갈색 돌바닥|floor|passable|high|
+80|균열된 분홍빛 돌바닥|floor|passable|high|
+81|푸른빛 자갈 바닥|floor|passable|high|
+82|황토색 흙 바닥|floor|passable|high|
+83|어두운 갈색 흙 바닥|floor|passable|high|
+84|원형 레일 좌하단|prop|passable|high|원형 레일
+85|원형 레일 우하단|prop|passable|high|원형 레일
+86|광산 레일 가로 대각선 분기|prop|passable|high|광산 레일
+87|광산 레일 가로 대각선 분기|prop|passable|high|광산 레일
+88|광산 레일 가로 대각선 분기|prop|passable|high|광산 레일
+89|광산 레일 가로 대각선 분기|prop|passable|high|광산 레일
+90|연못 안쪽 모서리 프레임1|water|solid|high|연못
+91|연못 안쪽 모서리 프레임2|water|solid|high|연못
+92|연못 안쪽 모서리 프레임3|water|solid|high|연못
+93|석벽 수로 안쪽 모서리 프레임1|water|solid|high|석벽 수로
+94|석벽 수로 안쪽 모서리 프레임2|water|solid|high|석벽 수로
+95|석벽 수로 안쪽 모서리 프레임3|water|solid|high|석벽 수로
+96|눈 바닥|floor|passable|high|
+97|눈 바닥|floor|passable|high|
+98|눈 바닥|floor|passable|high|
+99|빙판 좌하단|floor|passable|high|빙판
+100|빙판 하단|floor|passable|high|빙판
+101|빙판 우하단|floor|passable|high|빙판
+102|어두운 흙 바닥 1|floor|passable|high|
+103|어두운 흙 바닥 2|floor|passable|high|
+104|어두운 흙 바닥 3|floor|passable|high|
+105|붉은 석벽 좌측|wall|solid|high|붉은 석벽
+106|붉은 석벽 중앙|wall|solid|high|붉은 석벽
+107|붉은 석벽 우측|wall|solid|high|붉은 석벽
+108|밝은 석재 벽돌 바닥|floor|passable|high|
+109|동심원 사각 문양 석재 바닥|floor|passable|high|
+110|균열된 분홍빛 돌바닥|floor|passable|high|
+111|청록빛 균열 돌바닥|floor|passable|high|
+112|새싹이 자란 흙바닥 1|floor|passable|high|
+113|새싹이 자란 흙바닥 2|floor|passable|high|
+114|세로 직선 광산 레일|prop|passable|high|광산 레일
+115|가로 광산 레일 상향 굴곡|prop|passable|high|광산 레일
+116|가로 직선 광산 레일|prop|passable|high|광산 레일
+117|가로 광산 레일 하향 굴곡|prop|passable|high|광산 레일
+118|푸른 수정|prop|solid|high|
+119|원뿔형 얼음 바위|rock|solid|high|

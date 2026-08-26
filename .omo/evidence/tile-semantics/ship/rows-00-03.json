@@ -1,0 +1,1474 @@
+[
+ {
+  "index": 0,
+  "label": "바다 물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "바다 물결",
+   "바다",
+   "물",
+   "ocean",
+   "물결"
+  ]
+ },
+ {
+  "index": 1,
+  "label": "파도치는 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "파도치는 바다",
+   "바다",
+   "파도",
+   "wave",
+   "물"
+  ]
+ },
+ {
+  "index": 2,
+  "label": "잔잔한 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔잔한 바다",
+   "바다",
+   "잔물결",
+   "sea",
+   "물"
+  ]
+ },
+ {
+  "index": 3,
+  "label": "둥근 청색 창 상단",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "아치형 창문 상단",
+   "둥근 청색 창",
+   "바다 창문"
+  ]
+ },
+ {
+  "index": 4,
+  "label": "둥근 청색 창 상단",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "아치형 창문 상단",
+   "둥근 청색 창",
+   "바다 창문"
+  ]
+ },
+ {
+  "index": 5,
+  "label": "둥근 청색 창 상단",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "아치형 창문 상단",
+   "둥근 청색 창",
+   "바다 창문"
+  ]
+ },
+ {
+  "index": 6,
+  "label": "나무 갑판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "나무 갑판",
+   "갑판",
+   "목재",
+   "deck",
+   "판자"
+  ]
+ },
+ {
+  "index": 7,
+  "label": "나무 갑판 판자",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "나무 갑판 판자",
+   "갑판",
+   "목재",
+   "deck",
+   "판자"
+  ]
+ },
+ {
+  "index": 8,
+  "label": "짙은 갈색 나무 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 갈색 나무 벽",
+   "벽",
+   "목재",
+   "wall",
+   "어두운"
+  ]
+ },
+ {
+  "index": 9,
+  "label": "세로 이음 나무 판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "세로 이음 나무 판",
+   "목재",
+   "세로",
+   "갑판",
+   "wood"
+  ]
+ },
+ {
+  "index": 10,
+  "label": "가로 이음 나무 판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 이음 나무 판",
+   "목재",
+   "가로",
+   "갑판",
+   "wood"
+  ]
+ },
+ {
+  "index": 11,
+  "label": "짙은 갈색 나무 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 갈색 나무 벽면",
+   "벽",
+   "목재",
+   "벽면",
+   "어두운"
+  ]
+ },
+ {
+  "index": 12,
+  "label": "갈색 나무 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 나무 바닥",
+   "바닥",
+   "목재",
+   "floor",
+   "판자"
+  ]
+ },
+ {
+  "index": 13,
+  "label": "밝은 나무 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 나무 바닥",
+   "바닥",
+   "목재",
+   "deck",
+   "밝은"
+  ]
+ },
+ {
+  "index": 14,
+  "label": "짙은 갈색 나무 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "짙은 갈색 나무 바닥",
+   "바닥",
+   "목재",
+   "floor",
+   "판자"
+  ]
+ },
+ {
+  "index": 15,
+  "label": "밝은 나무 바닥 판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 나무 바닥 판",
+   "바닥",
+   "목재",
+   "deck",
+   "밝은"
+  ]
+ },
+ {
+  "index": 16,
+  "label": "나무 갑판 널",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "나무 갑판 널",
+   "갑판",
+   "목재",
+   "deck",
+   "목판"
+  ]
+ },
+ {
+  "index": 17,
+  "label": "세로 이음 나무 판",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "세로 이음 나무 판",
+   "목재",
+   "세로",
+   "갑판",
+   "wood"
+  ]
+ },
+ {
+  "index": 18,
+  "label": "장식 나무 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "장식 나무 벽면",
+   "벽",
+   "목재",
+   "장식",
+   "패널"
+  ]
+ },
+ {
+  "index": 19,
+  "label": "두 쪽 문 모양 나무",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "두 쪽 문 모양 나무",
+   "벽",
+   "목재",
+   "문",
+   "패널"
+  ]
+ },
+ {
+  "index": 20,
+  "label": "장식 나무 벽판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "장식 나무 벽판",
+   "벽",
+   "목재",
+   "장식",
+   "판자"
+  ]
+ },
+ {
+  "index": 21,
+  "label": "대칭 장식 나무 판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "대칭 장식 나무 판",
+   "벽",
+   "목재",
+   "대칭",
+   "패널"
+  ]
+ },
+ {
+  "index": 22,
+  "label": "목재 사다리 왼쪽",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "나무 사다리",
+   "목재 사다리",
+   "사다리"
+  ]
+ },
+ {
+  "index": 23,
+  "label": "목재 사다리 오른쪽",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "stairs",
+   "나무 사다리",
+   "목재 사다리",
+   "사다리"
+  ]
+ },
+ {
+  "index": 25,
+  "label": "가는 대각 목재 들보 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "가는 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 26,
+  "label": "뾰족한 어두운 경사 조각",
+  "role": "cliff",
+  "passage": "solid",
+  "tags": [
+   "뾰족한 어두운 경사 조각",
+   "경사",
+   "절벽",
+   "어두운",
+   "cliff"
+  ]
+ },
+ {
+  "index": 27,
+  "label": "굽은 목재 들보 왼쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "굽은 목재 들보"
+  ]
+ },
+ {
+  "index": 28,
+  "label": "굽은 목재 들보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "굽은 목재 들보"
+  ]
+ },
+ {
+  "index": 29,
+  "label": "굽은 목재 들보 끝",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체 곡선",
+   "굽은 목재 들보",
+   "나무 선체"
+  ]
+ },
+ {
+  "index": 30,
+  "label": "바다 물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "바다 물결",
+   "바다",
+   "물",
+   "ocean",
+   "물결"
+  ]
+ },
+ {
+  "index": 31,
+  "label": "파도치는 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "파도치는 바다",
+   "바다",
+   "파도",
+   "wave",
+   "물"
+  ]
+ },
+ {
+  "index": 32,
+  "label": "잔잔한 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔잔한 바다",
+   "바다",
+   "잔물결",
+   "sea",
+   "물"
+  ]
+ },
+ {
+  "index": 33,
+  "label": "둥근 청색 창 하단 왼쪽",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "창문",
+   "둥근 청색 창",
+   "바다 창문"
+  ]
+ },
+ {
+  "index": 34,
+  "label": "둥근 청색 창 하단 중앙",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "창문",
+   "둥근 청색 창",
+   "바다 창문"
+  ]
+ },
+ {
+  "index": 35,
+  "label": "둥근 청색 창 하단 오른쪽",
+  "role": "window",
+  "passage": "solid",
+  "tags": [
+   "window",
+   "창문",
+   "둥근 청색 창",
+   "바다 창문"
+  ]
+ },
+ {
+  "index": 36,
+  "label": "짙은 나무 선체 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 선체 벽",
+   "벽",
+   "목재",
+   "선체",
+   "어두운"
+  ]
+ },
+ {
+  "index": 37,
+  "label": "짙은 나무 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽",
+   "벽",
+   "목재",
+   "wall",
+   "어두운"
+  ]
+ },
+ {
+  "index": 38,
+  "label": "짙은 나무 격벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 격벽",
+   "벽",
+   "목재",
+   "격벽",
+   "무거운"
+  ]
+ },
+ {
+  "index": 39,
+  "label": "짙은 나무 벽판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽판",
+   "벽",
+   "목재",
+   "벽판",
+   "어두운"
+  ]
+ },
+ {
+  "index": 40,
+  "label": "짙은 나무 벽 조각",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽 조각",
+   "벽",
+   "목재",
+   "조각",
+   "패널"
+  ]
+ },
+ {
+  "index": 41,
+  "label": "짙은 나무 칸막이",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 칸막이",
+   "벽",
+   "목재",
+   "칸막이",
+   "partition"
+  ]
+ },
+ {
+  "index": 42,
+  "label": "판벽 위 가는 대각 띠",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "가로 나무 벽",
+   "대각 띠 판벽"
+  ]
+ },
+ {
+  "index": 43,
+  "label": "판벽 위 굵은 대각 띠",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "나무 벽 대각 빔",
+   "대각 띠 판벽"
+  ]
+ },
+ {
+  "index": 44,
+  "label": "갑판 목조 계단 좌측 난간",
+  "role": "stairs",
+  "passage": "solid",
+  "tags": [
+   "stairs",
+   "나무 계단 상단",
+   "목조 계단",
+   "나무 계단"
+  ]
+ },
+ {
+  "index": 45,
+  "label": "급해진 나무 경사",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "급해진 나무 경사",
+   "경사",
+   "목재",
+   "급경사",
+   "slope"
+  ]
+ },
+ {
+  "index": 46,
+  "label": "나무 격자 판",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 격자 판",
+   "목재",
+   "격자",
+   "칸막이",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 47,
+  "label": "나무 격자 장식판",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 격자 장식판",
+   "목재",
+   "격자",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 48,
+  "label": "두꺼운 대각 목재 들보 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대각선 목조 지지대 좌상단",
+   "두꺼운 대각 목재 들보",
+   "선체 구조물"
+  ]
+ },
+ {
+  "index": 49,
+  "label": "줄무늬 가로 덮개 왼쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "주름 배관",
+   "줄무늬 가로 덮개",
+   "배관"
+  ]
+ },
+ {
+  "index": 50,
+  "label": "줄무늬 가로 덮개 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "주름 배관",
+   "줄무늬 가로 덮개",
+   "배관"
+  ]
+ },
+ {
+  "index": 51,
+  "label": "줄무늬 가로 덮개 오른쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "주름 배관",
+   "줄무늬 가로 덮개",
+   "배관"
+  ]
+ },
+ {
+  "index": 52,
+  "label": "두꺼운 대각 목재 들보 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대각선 목조 지지대 우상단",
+   "두꺼운 대각 목재 들보",
+   "선체 구조물"
+  ]
+ },
+ {
+  "index": 53,
+  "label": "금속 마개 목재 기둥 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "선체 수직 기둥 상단",
+   "금속 장식 목재 기둥",
+   "선체 구조물"
+  ]
+ },
+ {
+  "index": 54,
+  "label": "가는 대각 목재 들보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "가는 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 55,
+  "label": "가는 대각 목재 들보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "가는 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 56,
+  "label": "넓은 대각 목재 들보 상단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "넓은 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 57,
+  "label": "작은 금속 장식물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "작은 금속 장식물",
+   "장식",
+   "금속",
+   "작다",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 58,
+  "label": "나무 바퀴 정면",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "톱니바퀴",
+   "나무 바퀴"
+  ]
+ },
+ {
+  "index": 59,
+  "label": "나무 바퀴 측면",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "톱니바퀴",
+   "나무 바퀴"
+  ]
+ },
+ {
+  "index": 60,
+  "label": "파도 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "파도 바다",
+   "바다",
+   "파도",
+   "water",
+   "물"
+  ]
+ },
+ {
+  "index": 61,
+  "label": "물결 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "물결 바다",
+   "바다",
+   "물결",
+   "ocean",
+   "물"
+  ]
+ },
+ {
+  "index": 62,
+  "label": "바다 물",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "바다 물",
+   "바다",
+   "물",
+   "sea",
+   "wave"
+  ]
+ },
+ {
+  "index": 63,
+  "label": "어두운 절벽 물가",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "어두운 절벽 물가",
+   "물가",
+   "절벽",
+   "바다",
+   "shore"
+  ]
+ },
+ {
+  "index": 64,
+  "label": "물가 벼랑",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "물가 벼랑",
+   "물가",
+   "벼랑",
+   "바다",
+   "cliff"
+  ]
+ },
+ {
+  "index": 65,
+  "label": "바위 해안 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "바위 해안 바다",
+   "해안",
+   "바다",
+   "바위",
+   "coast"
+  ]
+ },
+ {
+  "index": 66,
+  "label": "짙은 갈색 나무 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 갈색 나무 벽",
+   "벽",
+   "목재",
+   "wall",
+   "어두운"
+  ]
+ },
+ {
+  "index": 67,
+  "label": "아주 짙은 갈색 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "아주 짙은 갈색 벽",
+   "벽",
+   "짙은",
+   "갈색",
+   "무늬"
+  ]
+ },
+ {
+  "index": 68,
+  "label": "짙은 나무 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽면",
+   "벽",
+   "목재",
+   "벽면",
+   "어두운"
+  ]
+ },
+ {
+  "index": 69,
+  "label": "짙은 나무 벽판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽판",
+   "벽",
+   "목재",
+   "벽판",
+   "패널"
+  ]
+ },
+ {
+  "index": 70,
+  "label": "아주 짙은 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "아주 짙은 벽",
+   "벽",
+   "짙은",
+   "벽면",
+   "무늬"
+  ]
+ },
+ {
+  "index": 71,
+  "label": "짙은 나무 칸막이",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 칸막이",
+   "벽",
+   "목재",
+   "칸막이",
+   "partition"
+  ]
+ },
+ {
+  "index": 72,
+  "label": "나무 장식 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 장식 구조물",
+   "구조물",
+   "목재",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 73,
+  "label": "벽걸이 장치 세로 관 상부",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "세로 탱크",
+   "벽걸이 금속 장치",
+   "펌프 기계"
+  ]
+ },
+ {
+  "index": 74,
+  "label": "갑판 목조 계단 측면 난간",
+  "role": "stairs",
+  "passage": "solid",
+  "tags": [
+   "stairs",
+   "나무 계단",
+   "목조 계단"
+  ]
+ },
+ {
+  "index": 75,
+  "label": "갑판 목조 계단 하단",
+  "role": "stairs",
+  "passage": "solid",
+  "tags": [
+   "stairs",
+   "나무 계단",
+   "목조 계단"
+  ]
+ },
+ {
+  "index": 76,
+  "label": "목재 난간 아래 가로 홈",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "wall",
+   "갑판 계단 측면 목조 벽",
+   "목재 난간 기단",
+   "갑판 구조물"
+  ]
+ },
+ {
+  "index": 77,
+  "label": "테두리 장식 나무",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "테두리 장식 나무",
+   "나무",
+   "테두리",
+   "장식",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 78,
+  "label": "두꺼운 대각 목재 들보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대각선 목조 지지대 좌측",
+   "두꺼운 대각 목재 들보",
+   "선체 구조물"
+  ]
+ },
+ {
+  "index": 79,
+  "label": "대각선 목조 지지대 중앙 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "두꺼운 대각 목재 들보 중앙",
+   "선체 구조물",
+   "두꺼운 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 80,
+  "label": "금속 장식 목재 기둥 중단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "세로 배관",
+   "금속 장식 목재 기둥",
+   "배관"
+  ]
+ },
+ {
+  "index": 81,
+  "label": "대각선 목조 지지대 중앙 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "두꺼운 대각 목재 들보 중앙",
+   "선체 구조물",
+   "두꺼운 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 82,
+  "label": "어두운 대각 목재 들보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "대각선 목조 지지대 우측",
+   "어두운 대각 목재 들보",
+   "선체 구조물"
+  ]
+ },
+ {
+  "index": 83,
+  "label": "사각 금속 등",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "금속 패널",
+   "배관"
+  ]
+ },
+ {
+  "index": 84,
+  "label": "금속 덮개와 대각 들보 접합부",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "대각 목재 들보"
+  ]
+ },
+ {
+  "index": 85,
+  "label": "교차하는 굽은 목재 들보",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "굽은 목재 들보"
+  ]
+ },
+ {
+  "index": 86,
+  "label": "가느다란 기둥 꼭대기",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "가느다란 기둥 꼭대기",
+   "기둥",
+   "꼭대기",
+   "가늘다",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 87,
+  "label": "긴 목재 선반 왼쪽 지지대",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "나무 탁자 다리",
+   "긴 목재 선반",
+   "나무 탁자"
+  ]
+ },
+ {
+  "index": 88,
+  "label": "긴 목재 선반 중앙",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "나무 탁자",
+   "긴 목재 선반"
+  ]
+ },
+ {
+  "index": 89,
+  "label": "긴 목재 선반 오른쪽",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "furniture",
+   "나무 탁자",
+   "긴 목재 선반"
+  ]
+ },
+ {
+  "index": 90,
+  "label": "바다 물결",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "바다 물결",
+   "바다",
+   "물",
+   "ocean",
+   "물결"
+  ]
+ },
+ {
+  "index": 91,
+  "label": "파도치는 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "파도치는 바다",
+   "바다",
+   "파도",
+   "wave",
+   "물"
+  ]
+ },
+ {
+  "index": 92,
+  "label": "잔잔한 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "잔잔한 바다",
+   "바다",
+   "잔물결",
+   "sea",
+   "물"
+  ]
+ },
+ {
+  "index": 93,
+  "label": "물가 모래 해안",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "물가 모래 해안",
+   "물가",
+   "모래",
+   "해안",
+   "shore"
+  ]
+ },
+ {
+  "index": 94,
+  "label": "아래 물가 해안",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "아래 물가 해안",
+   "물가",
+   "해안",
+   "바다",
+   "coast"
+  ]
+ },
+ {
+  "index": 95,
+  "label": "물가 모래 바다",
+  "role": "water",
+  "passage": "passable",
+  "tags": [
+   "물가 모래 바다",
+   "물가",
+   "모래",
+   "바다",
+   "shore"
+  ]
+ },
+ {
+  "index": 96,
+  "label": "짙은 나무 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽",
+   "벽",
+   "목재",
+   "wall",
+   "어두운"
+  ]
+ },
+ {
+  "index": 97,
+  "label": "짙은 갈색 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 갈색 벽",
+   "벽",
+   "짙은",
+   "갈색",
+   "무늬"
+  ]
+ },
+ {
+  "index": 98,
+  "label": "짙은 나무 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽면",
+   "벽",
+   "목재",
+   "벽면",
+   "어두운"
+  ]
+ },
+ {
+  "index": 99,
+  "label": "짙은 나무 벽판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 벽판",
+   "벽",
+   "목재",
+   "벽판",
+   "패널"
+  ]
+ },
+ {
+  "index": 100,
+  "label": "짙은 나무 격벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 격벽",
+   "벽",
+   "목재",
+   "격벽",
+   "어두운"
+  ]
+ },
+ {
+  "index": 101,
+  "label": "짙은 나무 칸막이",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "짙은 나무 칸막이",
+   "벽",
+   "목재",
+   "칸막이",
+   "partition"
+  ]
+ },
+ {
+  "index": 102,
+  "label": "나무 장식 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 장식 구조물",
+   "구조물",
+   "목재",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 103,
+  "label": "벽걸이 장치 세로 관 하부",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "세로 탱크",
+   "벽걸이 금속 장치",
+   "펌프 기계"
+  ]
+ },
+ {
+  "index": 104,
+  "label": "나무 기둥 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 기둥 벽면",
+   "기둥",
+   "목재",
+   "벽",
+   "패널"
+  ]
+ },
+ {
+  "index": 105,
+  "label": "나무 기둥 판",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 기둥 판",
+   "기둥",
+   "목재",
+   "판자",
+   "패널"
+  ]
+ },
+ {
+  "index": 106,
+  "label": "높은 나무 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "높은 나무 벽",
+   "벽",
+   "목재",
+   "높다",
+   "기둥"
+  ]
+ },
+ {
+  "index": 107,
+  "label": "좁은 목재 판문",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "door",
+   "나무 문",
+   "현창"
+  ]
+ },
+ {
+  "index": 108,
+  "label": "나무 장식 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 장식 구조물",
+   "구조물",
+   "목재",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 109,
+  "label": "대각선 목조 지지대 하단 좌측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "어두운 대각 목재 들보 하단",
+   "선체 구조물",
+   "어두운 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 110,
+  "label": "장식 틀 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "장식 틀 구조물",
+   "구조물",
+   "장식",
+   "틀",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 111,
+  "label": "대각선 목조 지지대 하단 우측",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "어두운 대각 목재 들보 하단",
+   "선체 구조물",
+   "어두운 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 112,
+  "label": "나무 장식 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 장식 구조물",
+   "구조물",
+   "목재",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 113,
+  "label": "가로 줄무늬 금속 막대",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "주름 배관",
+   "배관"
+  ]
+ },
+ {
+  "index": 114,
+  "label": "긴 대각 목재 들보 왼쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "긴 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 115,
+  "label": "긴 대각 목재 들보 중앙",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "긴 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 116,
+  "label": "긴 대각 목재 들보 오른쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "긴 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 117,
+  "label": "넓은 대각 목재 들보 왼쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "넓은 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 118,
+  "label": "넓은 대각 목재 들보 오른쪽",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "prop",
+   "나무 선체",
+   "넓은 대각 목재 들보"
+  ]
+ },
+ {
+  "index": 119,
+  "label": "작은 장식 문양",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "작은 장식 문양",
+   "장식",
+   "문양",
+   "작다",
+   "판독보류"
+  ]
+ }
+]

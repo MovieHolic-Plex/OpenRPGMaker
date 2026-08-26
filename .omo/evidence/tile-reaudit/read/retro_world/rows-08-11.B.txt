@@ -1,0 +1,120 @@
+240|잔디|terrain|passable|high|
+241|잔디|terrain|passable|high|
+242|잔디|terrain|passable|high|
+243|잔디|terrain|passable|high|
+244|잔디|terrain|passable|high|
+245|잔디|terrain|passable|high|
+246|눈 덮인 산 왼쪽 꼭대기|cliff|solid|high|눈 덮인 산
+247|잔디 위 눈더미|terrain|passable|medium|눈 덮인 산
+248|눈 덮인 산 오른쪽 꼭대기|cliff|solid|high|눈 덮인 산
+249|설산 봉우리|cliff|solid|high|설산
+250|잔디 위 눈더미|terrain|passable|medium|설산
+251|설산 봉우리|cliff|solid|high|설산
+252|어두운 돌바닥|floor|passable|high|
+253|어두운 돌바닥|floor|passable|high|
+254|어두운 돌바닥|floor|passable|high|
+255|어두운 돌바닥|floor|passable|high|
+256|어두운 돌바닥|floor|passable|high|
+257|어두운 돌바닥|floor|passable|high|
+258|빈 슬롯|empty|passable|high|
+259|작은 나무|tree|solid|high|
+260|마른 나무|tree|solid|high|
+261|나무 잔해|prop|solid|medium|
+262|빨간 지붕 집|prop|solid|high|
+263|회색 집|prop|solid|high|
+264|창문 있는 회색 건물|prop|solid|high|
+265|매달린 나무 막대|prop|solid|high|
+266|검은 커튼 하단|decoration|passable|medium|검은 커튼
+267|책장 상단|furniture|solid|high|책장
+268|목재 수납장 상단|furniture|solid|high|목재 수납장
+269|옷장 상단|furniture|solid|high|옷장
+270|잔디|terrain|passable|high|
+271|잔디|terrain|passable|high|
+272|잔디|terrain|passable|high|
+273|잔디|terrain|passable|high|
+274|잔디|terrain|passable|high|
+275|잔디|terrain|passable|high|
+276|눈 덮인 산 왼쪽|cliff|solid|high|눈 덮인 산
+277|눈 덮인 산 가운데|cliff|solid|high|눈 덮인 산
+278|눈 덮인 산 오른쪽|cliff|solid|high|눈 덮인 산
+279|설산 왼쪽|cliff|solid|high|설산
+280|설산 가운데|cliff|solid|high|설산
+281|설산 오른쪽|cliff|solid|high|설산
+282|바위|rock|solid|medium|
+283|바위|rock|solid|medium|
+284|어두운 돌바닥|floor|passable|high|
+285|어두운 돌바닥|floor|passable|high|
+286|어두운 돌바닥|floor|passable|high|
+287|어두운 돌바닥|floor|passable|high|
+288|덤불|plant|solid|high|
+289|선인장|plant|solid|high|
+290|야자수|tree|solid|high|
+291|파란 지붕 집|prop|solid|high|
+292|빨간 차양 노점|prop|solid|high|
+293|상점 가판대|prop|solid|high|
+294|목재 기둥 상단|prop|solid|high|목재 기둥
+295|나무통|prop|solid|high|
+296|체크무늬 탁자|furniture|solid|medium|
+297|책장 하단|furniture|solid|high|책장
+298|목재 수납장 하단|furniture|solid|high|목재 수납장
+299|옷장 하단|furniture|solid|high|옷장
+300|잔디|terrain|passable|high|
+301|잔디|terrain|passable|high|
+302|잔디|terrain|passable|high|
+303|잔디|terrain|passable|high|
+304|잔디|terrain|passable|high|
+305|잔디|terrain|passable|high|
+306|눈 덮인 산 왼쪽|cliff|solid|high|눈 덮인 산
+307|눈 덮인 산 가운데|cliff|solid|high|눈 덮인 산
+308|눈 덮인 산 오른쪽|cliff|solid|high|눈 덮인 산
+309|설산 왼쪽|cliff|solid|high|설산
+310|설산 가운데|cliff|solid|high|설산
+311|설산 오른쪽|cliff|solid|high|설산
+312|적갈색 흙|terrain|passable|high|
+313|자줏빛 흙|terrain|passable|high|
+314|검은 돌바닥|floor|passable|high|
+315|검은 돌바닥|floor|passable|high|
+316|검은 돌바닥|floor|passable|high|
+317|검은 돌바닥|floor|passable|high|
+318|큰 나무 수관 왼쪽|tree|solid|high|큰 나무
+319|큰 나무 수관 오른쪽|tree|solid|high|큰 나무
+320|석조 탑 왼쪽 상단|prop|solid|medium|석조 탑
+321|석조 탑 오른쪽 상단|prop|solid|medium|석조 탑
+322|성 왼쪽 상단|prop|solid|high|노란 성
+323|성 오른쪽 상단|prop|solid|high|노란 성
+324|목재 기둥 중간|prop|solid|high|목재 기둥
+325|항아리|prop|solid|high|
+326|원형 나무 탁자|furniture|solid|high|
+327|나무 의자|furniture|solid|high|
+328|나무 의자|furniture|solid|high|
+329|수정|prop|solid|medium|
+330|잔디|terrain|passable|high|
+331|잔디|terrain|passable|high|
+332|잔디|terrain|passable|high|
+333|잔디|terrain|passable|high|
+334|잔디|terrain|passable|high|
+335|잔디|terrain|passable|high|
+336|눈 덮인 산 왼쪽 하단|cliff|solid|high|눈 덮인 산
+337|눈 덮인 산 가운데 하단|cliff|solid|high|눈 덮인 산
+338|눈 덮인 산 오른쪽 하단|cliff|solid|high|눈 덮인 산
+339|설산 왼쪽 하단|cliff|solid|high|설산
+340|설산 가운데 하단|cliff|solid|high|설산
+341|설산 오른쪽 하단|cliff|solid|high|설산
+342|풀 돋은 적갈색 흙|terrain|passable|high|
+343|풀 돋은 자줏빛 흙|terrain|passable|high|
+344|검은 돌바닥|floor|passable|high|
+345|검은 돌바닥|floor|passable|high|
+346|검은 돌바닥|floor|passable|high|
+347|검은 돌바닥|floor|passable|high|
+348|큰 나무 줄기 왼쪽|tree|solid|high|큰 나무
+349|큰 나무 줄기 오른쪽|tree|solid|high|큰 나무
+350|석조 탑 왼쪽 하단|prop|solid|medium|석조 탑
+351|석조 탑 오른쪽 하단|prop|solid|medium|석조 탑
+352|성 왼쪽 하단|prop|solid|high|노란 성
+353|성 오른쪽 하단|prop|solid|high|노란 성
+354|목재 기둥 하단|prop|solid|high|목재 기둥
+355|작은 단지|prop|solid|high|
+356|나무 스툴|furniture|solid|high|
+357|나무 의자|furniture|solid|high|
+358|나무 의자|furniture|solid|high|
+359|나무 서랍장|furniture|solid|high|

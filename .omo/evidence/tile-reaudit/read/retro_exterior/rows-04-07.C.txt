@@ -1,0 +1,2 @@
+131|자갈 바닥|terrain|passable|high|자갈 길
+190|자갈 바닥 중앙|terrain|passable|high|자갈 길

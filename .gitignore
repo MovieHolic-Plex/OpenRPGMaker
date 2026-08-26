@@ -5,6 +5,8 @@ dist/
 !.omo/evidence/
 .omo/evidence/*
 !.omo/evidence/rm2003-database-plan/
+
+
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -120,3 +122,28 @@ verify-shots/ai-assistant-ux/probe-baseline/
 verify-shots/ai-assistant-ux/probe-after/
 verify-shots/ai-assistant-ux/probe-live/
 verify-shots/ai-assistant-ux/probe-model/
+
+# ── 타일 재감사 근거 ──────────────────────────────────────────
+# 위쪽 bare `evidence/` 규칙이 .omo/evidence 를 통째로 막으므로 여기(파일 끝)에서 되살린다.
+# git 은 마지막에 매칭된 규칙을 따르고, 부모 디렉터리가 막혀 있으면 자식을 되살릴 수 없다.
+# 남기는 이유: 이 테이블은 두 번 틀렸고 두 번 다 근거를 사후 검증할 수 없었다.
+# 리뷰어가 "이 칸을 왜 그렇게 적었나" 를 따라갈 수 있어야 한다.
+!.omo/evidence/
+!.omo/evidence/tile-reaudit/
+!.omo/evidence/tile-reaudit/**
+!.omo/evidence/tile-semantics/
+!.omo/evidence/tile-semantics/**
+# blocks/ strips/ 는 약 8MB 이고 커밋된 스크립트가 커밋된 시트 PNG 에서 결정론적으로 재생성한다.
+.omo/evidence/tile-reaudit/blocks/
+.omo/evidence/tile-reaudit/strips/
+# read/**/*.json 은 .txt 에서 ingest 스크립트가 만든다 — 원본만 남긴다.
+.omo/evidence/tile-reaudit/read/**/*.json
+# 판독자가 스스로 뜬 작업용 크롭 — 큐레이션된 근거가 아니고 재생성 가능하다.
+# 판독자가 스스로 뜬 작업용 디렉터리(_crops, _my 등) — 큐레이션된 근거가 아니고 재생성 가능하다.
+.omo/evidence/tile-reaudit/read/**/_*/
+# current/ 는 baseline/*.json 과 같은 내용의 .md 덤프라 중복이다.
+.omo/evidence/tile-reaudit/current/
+# verdict/ 는 corrections.md 가 대체한다.
+.omo/evidence/tile-reaudit/verdict/
+# child-crops/ 는 판독자가 뜬 이름 없는 작업 크롭 — 큐레이션된 근거는 verified/ 다.
+.omo/evidence/tile-reaudit/child-crops/

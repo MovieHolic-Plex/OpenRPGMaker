@@ -1,0 +1,34 @@
+366|석조 바닥 상단 좌측|floor|passable|high|석조 바닥
+367|석조 바닥 상단|floor|passable|high|석조 바닥
+368|석조 바닥 상단 우측|floor|passable|high|석조 바닥
+369|소형 목조 해치|prop|passable|high|
+376|목조 창살 창문|window|solid|high|목조 벽
+378|선체 좌측 외벽|wall|solid|high|선체
+380|뱃머리 좌측 경사벽|wall|solid|high|선체
+381|뱃머리 우측 경사벽|wall|solid|high|선체
+383|선체 우측 외벽|wall|solid|high|선체
+399|대형 목조 해치 상단 좌측|prop|solid|high|대형 목조 해치
+400|대형 목조 해치 상단 중앙|prop|solid|high|대형 목조 해치
+401|대형 목조 해치 상단 우측|prop|solid|high|대형 목조 해치
+408|선체 좌측 외벽|wall|solid|high|선체
+409|뱃머리 좌측 경사벽|wall|solid|high|선체
+411|뱃머리 중앙 우측 경사벽|wall|solid|high|선체
+412|뱃머리 우측 경사벽|wall|solid|high|선체
+413|선체 우측 외벽|wall|solid|high|선체
+429|대형 목조 해치 좌측|prop|solid|high|대형 목조 해치
+430|대형 목조 해치 개구부|prop|passable|high|대형 목조 해치
+431|대형 목조 해치 우측|prop|solid|high|대형 목조 해치
+432|목조 벽 상단 좌측|wall|solid|high|목조 벽
+433|목조 벽 상단 중앙|wall|solid|high|목조 벽
+434|목조 벽 상단 우측|wall|solid|high|목조 벽
+438|선체 좌측 외벽 하단|wall|solid|high|선체
+440|뱃머리 좌측 경사벽 하단|wall|solid|high|선체
+441|뱃머리 우측 경사벽 하단|wall|solid|high|선체
+443|선체 우측 외벽 하단|wall|solid|high|선체
+459|대형 목조 해치 하단 좌측|prop|solid|high|대형 목조 해치
+460|대형 목조 해치 하단 중앙|prop|solid|high|대형 목조 해치
+461|대형 목조 해치 하단 우측|prop|solid|high|대형 목조 해치
+462|목조 벽 하단 좌측|wall|solid|high|목조 벽
+464|목조 벽 하단 우측|wall|solid|high|목조 벽
+468|선체 좌측 외벽 끝단|wall|solid|high|선체
+473|선체 우측 외벽 끝단|wall|solid|high|선체

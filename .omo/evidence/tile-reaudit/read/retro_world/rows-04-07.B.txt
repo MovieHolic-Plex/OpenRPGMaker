@@ -1,0 +1,120 @@
+120|어두운 석벽 왼쪽 윗면|wall|solid|low|어두운 석벽
+121|어두운 석벽 가운데 윗면|wall|solid|low|어두운 석벽
+122|어두운 석벽 오른쪽 윗면|wall|solid|low|어두운 석벽
+123|얼음 절벽 상단|cliff|solid|high|얼음 절벽
+124|얼음 바위 상단|rock|solid|high|얼음 바위
+125|금속 기둥 상단|prop|solid|high|금속 기둥
+126|나무 수관 왼쪽 상단|tree|solid|high|숲 군락
+127|나무 사이 잔디|terrain|passable|high|숲 군락
+128|나무 수관 오른쪽 상단|tree|solid|high|숲 군락
+129|잔디 위 작은 눈더미|terrain|passable|high|눈밭
+130|밝은 잔디|terrain|passable|high|
+131|눈밭 오른쪽 상단|terrain|passable|high|눈밭
+132|짙은 청회색 자갈 바닥|floor|passable|high|
+133|자주색 돌바닥|floor|passable|high|
+134|밝은 석조 벽 왼쪽 상단|wall|solid|high|밝은 석조 벽
+135|밝은 석조 벽 왼쪽 위|wall|solid|high|밝은 석조 벽
+136|밝은 석조 벽 가운데 위|wall|solid|high|밝은 석조 벽
+137|밝은 석조 벽 오른쪽 위|wall|solid|high|밝은 석조 벽
+138|잔디 절벽 왼쪽 상단|cliff|solid|high|잔디 절벽
+139|잔디 절벽 가운데 상단|cliff|solid|high|잔디 절벽
+140|잔디 절벽 오른쪽 상단|cliff|solid|high|잔디 절벽
+141|자주색 지붕 왼쪽 상단|roof|solid|high|자주색 지붕
+142|자주색 지붕 가운데 상단|roof|solid|high|자주색 지붕
+143|자주색 지붕 오른쪽 상단|roof|solid|high|자주색 지붕
+144|벽걸이 횃불|prop|solid|high|
+145|병이 놓인 벽 선반|furniture|solid|high|
+146|검은 벽 스위치|prop|solid|low|
+147|청록색 문양 현수막|decoration|passable|high|목재 현수막 걸이
+148|보라색 문양 현수막|decoration|passable|high|목재 현수막 걸이
+149|붉은 항아리 문양 현수막|decoration|passable|high|목재 현수막 걸이
+150|어두운 석벽 왼쪽 상부|wall|solid|low|어두운 석벽
+151|어두운 석벽 가운데 상부|wall|solid|low|어두운 석벽
+152|어두운 석벽 오른쪽 상부|wall|solid|low|어두운 석벽
+153|얼음 절벽 위쪽|cliff|solid|high|얼음 절벽
+154|얼음 바위 위쪽|rock|solid|high|얼음 바위
+155|금속 기둥 위쪽|prop|solid|high|금속 기둥
+156|나무 수관 왼쪽 위|tree|solid|high|숲 군락
+157|나무 수관 가운데 위|tree|solid|high|숲 군락
+158|나무 수관 오른쪽 위|tree|solid|high|숲 군락
+159|눈밭 왼쪽 상단|terrain|passable|high|눈밭
+160|눈밭 가운데 상단|terrain|passable|high|눈밭
+161|눈밭 오른쪽 위 모서리|terrain|passable|high|눈밭
+162|밝은 사각 석판 바닥|floor|passable|high|
+163|원형 무늬 석판 바닥|floor|passable|high|
+164|갈색 석조 벽 왼쪽 상단|wall|solid|high|갈색 석조 벽
+165|갈색 석조 벽 왼쪽 위|wall|solid|high|갈색 석조 벽
+166|갈색 석조 벽 가운데 위|wall|solid|high|갈색 석조 벽
+167|갈색 석조 벽 오른쪽 위|wall|solid|high|갈색 석조 벽
+168|눈 덮인 절벽 왼쪽 상부|cliff|solid|high|눈 덮인 절벽
+169|눈 덮인 절벽 가운데 상부|cliff|solid|high|눈 덮인 절벽
+170|눈 덮인 절벽 오른쪽 상부|cliff|solid|high|눈 덮인 절벽
+171|뒤엉킨 목재 벽 왼쪽 상부|wall|solid|medium|뒤엉킨 목재 벽
+172|뒤엉킨 목재 벽 가운데 상부|wall|solid|medium|뒤엉킨 목재 벽
+173|뒤엉킨 목재 벽 오른쪽 상부|wall|solid|medium|뒤엉킨 목재 벽
+174|풍경화 액자|decoration|passable|high|
+175|꽃병 그림 액자|decoration|passable|high|
+176|과일 정물화 액자|decoration|passable|high|
+177|붉은 글자 현수막|decoration|passable|medium|목재 현수막 걸이
+178|보라색 글자 현수막|decoration|passable|medium|목재 현수막 걸이
+179|회색 돌 십자가|decoration|solid|high|
+180|어두운 석벽 왼쪽 중부|wall|solid|low|어두운 석벽
+181|어두운 석벽 가운데 중부|wall|solid|low|어두운 석벽
+182|어두운 석벽 오른쪽 중부|wall|solid|low|어두운 석벽
+183|얼음 절벽 아래쪽|cliff|solid|high|얼음 절벽
+184|얼음 바위 아래쪽|rock|solid|high|얼음 바위
+185|금속 기둥 아래쪽|prop|solid|high|금속 기둥
+186|나무 수관 왼쪽 아래|tree|solid|high|숲 군락
+187|나무 수관 가운데 아래|tree|solid|high|숲 군락
+188|나무 수관 오른쪽 아래|tree|solid|high|숲 군락
+189|눈밭 왼쪽 아래 모서리|terrain|passable|high|눈밭
+190|눈밭 가운데|terrain|passable|high|눈밭
+191|눈밭 오른쪽 아래 모서리|terrain|passable|high|눈밭
+192|석조 벽 왼쪽 상부|wall|solid|high|목재 보강 석조 벽
+193|목재 세로 보강대 상부|wall|solid|medium|목재 보강 석조 벽
+194|석조 벽 오른쪽 상부|wall|solid|high|목재 보강 석조 벽
+195|청회색 석조 벽 왼쪽 상부|wall|solid|high|청회색 석조 벽
+196|청회색 석조 벽 가운데 상부|wall|solid|high|청회색 석조 벽
+197|청회색 석조 벽 오른쪽 상부|wall|solid|high|청회색 석조 벽
+198|눈 덮인 절벽 왼쪽 하부|cliff|solid|high|눈 덮인 절벽
+199|눈 덮인 절벽 가운데 하부|cliff|solid|high|눈 덮인 절벽
+200|눈 덮인 절벽 오른쪽 하부|cliff|solid|high|눈 덮인 절벽
+201|뒤엉킨 목재 벽 왼쪽 중부|wall|solid|medium|뒤엉킨 목재 벽
+202|뒤엉킨 목재 벽 가운데 중부|wall|solid|medium|뒤엉킨 목재 벽
+203|뒤엉킨 목재 벽 오른쪽 중부|wall|solid|medium|뒤엉킨 목재 벽
+204|청록색 아치 창문|window|solid|high|
+205|목제 격자 창문|window|solid|high|
+206|흰 커튼 창문|window|solid|high|
+207|장식용 대검 상부|decoration|solid|high|장식용 대검
+208|문양 새긴 묘비 상부|prop|solid|high|문양 새긴 묘비
+209|회색 석조 기둥 상부|decoration|solid|high|회색 석조 기둥
+210|어두운 석벽 왼쪽 하부|wall|solid|low|어두운 석벽
+211|어두운 석벽 가운데 하부|wall|solid|low|어두운 석벽
+212|어두운 석벽 오른쪽 하부|wall|solid|low|어두운 석벽
+213|얼음 절벽 하단|cliff|solid|high|얼음 절벽
+214|얼음 바위 하단|rock|solid|high|얼음 바위
+215|금속 기둥 하단|prop|solid|high|금속 기둥
+216|나무줄기와 수관 왼쪽 하단|tree|solid|high|숲 군락
+217|나무줄기와 수관 가운데 하단|tree|solid|high|숲 군락
+218|나무줄기와 수관 오른쪽 하단|tree|solid|high|숲 군락
+219|눈밭 왼쪽 하단|terrain|passable|high|눈밭
+220|눈밭 가운데 하단|terrain|passable|high|눈밭
+221|눈밭 오른쪽 하단|terrain|passable|high|눈밭
+222|석조 벽 왼쪽 하부|wall|solid|high|목재 보강 석조 벽
+223|목재 세로 보강대 하부|wall|solid|medium|목재 보강 석조 벽
+224|석조 벽 오른쪽 하부|wall|solid|high|목재 보강 석조 벽
+225|청회색 석조 벽 왼쪽 하부|wall|solid|high|청회색 석조 벽
+226|청회색 석조 벽 가운데 하부|wall|solid|high|청회색 석조 벽
+227|청회색 석조 벽 오른쪽 하부|wall|solid|high|청회색 석조 벽
+228|눈 덮인 절벽 왼쪽 하단|cliff|solid|high|눈 덮인 절벽
+229|눈 덮인 절벽 가운데 하단|cliff|solid|high|눈 덮인 절벽
+230|눈 덮인 절벽 오른쪽 하단|cliff|solid|high|눈 덮인 절벽
+231|뒤엉킨 목재 벽 왼쪽 하부|wall|solid|medium|뒤엉킨 목재 벽
+232|뒤엉킨 목재 벽 오른쪽 하부|wall|solid|medium|뒤엉킨 목재 벽
+233|단색 분홍 타일|terrain|passable|low|
+234|알록달록한 천더미|prop|solid|low|
+235|목제 사다리|stairs|passable|high|
+236|검은 출입구|door|passable|high|
+237|장식용 대검 하부|decoration|solid|high|장식용 대검
+238|문양 새긴 묘비 하부|prop|solid|high|문양 새긴 묘비
+239|회색 석조 기둥 하부|decoration|solid|high|회색 석조 기둥

@@ -1,0 +1,120 @@
+0|어두운 푸른 물결|water|solid|high|
+1|어두운 푸른 물결|water|solid|high|
+2|어두운 푸른 물결|water|solid|high|
+3|둥근 청색 창 상단|window|solid|high|둥근 청색 창
+4|둥근 청색 창 상단|window|solid|high|둥근 청색 창
+5|둥근 청색 창 상단|window|solid|high|둥근 청색 창
+6|목재 바닥의 작은 구멍|terrain|solid|medium|
+7|가로 목재 판자 바닥|terrain|passable|high|
+8|목재 바닥 구멍 가장자리|terrain|solid|medium|목재 바닥 구멍
+9|뜯긴 세로 판자 구멍|terrain|solid|medium|목재 바닥 구멍
+10|세로 목재 판자 바닥|terrain|passable|high|
+11|목재 바닥 구멍 가장자리|terrain|solid|medium|목재 바닥 구멍
+12|붉은 세로 판자 바닥|terrain|passable|high|
+13|밝은 가로 판자 바닥|terrain|passable|high|
+14|붉은 가로 판자 바닥|terrain|passable|high|
+15|밝은 세로 판자 바닥|terrain|passable|high|
+16|밝은 가로 판자 바닥|terrain|passable|high|
+17|밝은 세로 판자 바닥|terrain|passable|high|
+18|목재 칸막이 상단 왼쪽|wall|solid|high|목재 칸막이
+19|목재 칸막이 상단 중앙|wall|solid|high|목재 칸막이
+20|목재 칸막이 상단 중앙|wall|solid|high|목재 칸막이
+21|목재 칸막이 상단 오른쪽|wall|solid|high|목재 칸막이
+22|목재 사다리 왼쪽|stairs|passable|high|목재 사다리
+23|목재 사다리 오른쪽|stairs|passable|high|목재 사다리
+24|빈 슬롯|empty|passable|high|
+25|가는 대각 목재 들보 상단|prop|solid|medium|가는 대각 목재 들보
+26|빈 슬롯|empty|passable|high|
+27|굽은 목재 들보 왼쪽|prop|solid|medium|굽은 목재 들보
+28|굽은 목재 들보 중앙|prop|solid|medium|굽은 목재 들보
+29|굽은 목재 들보 끝|prop|solid|medium|굽은 목재 들보
+30|어두운 푸른 물결|water|solid|high|
+31|어두운 푸른 물결|water|solid|high|
+32|어두운 푸른 물결|water|solid|high|
+33|둥근 청색 창 하단 왼쪽|window|solid|high|둥근 청색 창
+34|둥근 청색 창 하단 중앙|window|solid|high|둥근 청색 창
+35|둥근 청색 창 하단 오른쪽|window|solid|high|둥근 청색 창
+36|큰 목재 바닥 구멍 상단 왼쪽|terrain|solid|high|큰 목재 바닥 구멍
+37|큰 목재 바닥 구멍 상단 중앙|terrain|solid|high|큰 목재 바닥 구멍
+38|큰 목재 바닥 구멍 상단 오른쪽|terrain|solid|high|큰 목재 바닥 구멍
+39|세로 판자 구멍 상단 왼쪽|terrain|solid|high|세로 판자 큰 구멍
+40|세로 판자 구멍 상단 중앙|terrain|solid|high|세로 판자 큰 구멍
+41|세로 판자 구멍 상단 오른쪽|terrain|solid|high|세로 판자 큰 구멍
+42|판벽 위 가는 대각 띠|wall|solid|medium|대각 띠 판벽
+43|판벽 위 굵은 대각 띠|wall|solid|medium|대각 띠 판벽
+44|목재 난간 상단 왼쪽|fence|solid|high|목재 난간
+45|목재 난간 왼쪽|fence|solid|high|목재 난간
+46|목재 난간 중앙|fence|solid|high|목재 난간
+47|목재 난간 오른쪽|fence|solid|high|목재 난간
+48|두꺼운 대각 목재 들보 상단|prop|solid|medium|두꺼운 대각 목재 들보
+49|줄무늬 가로 덮개 왼쪽|prop|solid|low|줄무늬 가로 덮개
+50|줄무늬 가로 덮개 중앙|prop|solid|low|줄무늬 가로 덮개
+51|줄무늬 가로 덮개 오른쪽|prop|solid|low|줄무늬 가로 덮개
+52|두꺼운 대각 목재 들보 상단|prop|solid|medium|두꺼운 대각 목재 들보
+53|금속 마개 목재 기둥 상단|prop|solid|low|금속 장식 목재 기둥
+54|가는 대각 목재 들보 중앙|prop|solid|medium|가는 대각 목재 들보
+55|가는 대각 목재 들보 중앙|prop|solid|medium|가는 대각 목재 들보
+56|넓은 대각 목재 들보 상단|prop|solid|medium|넓은 대각 목재 들보
+57|짧은 세로 목재 말뚝|prop|solid|medium|
+58|나무 바퀴 정면|prop|solid|high|나무 바퀴
+59|나무 바퀴 측면|prop|solid|medium|나무 바퀴
+60|어두운 푸른 물결|water|solid|high|
+61|어두운 푸른 물결|water|solid|high|
+62|어두운 푸른 물결|water|solid|high|
+63|청색 직사각 창 왼쪽|window|solid|medium|청색 직사각 창
+64|청색 직사각 창 중앙|window|solid|medium|청색 직사각 창
+65|청색 직사각 창 오른쪽|window|solid|medium|청색 직사각 창
+66|큰 목재 바닥 구멍 중단 왼쪽|terrain|solid|high|큰 목재 바닥 구멍
+67|큰 목재 바닥 구멍 중단 중앙|terrain|solid|high|큰 목재 바닥 구멍
+68|큰 목재 바닥 구멍 중단 오른쪽|terrain|solid|high|큰 목재 바닥 구멍
+69|세로 판자 구멍 중단 왼쪽|terrain|solid|high|세로 판자 큰 구멍
+70|세로 판자 구멍 중단 중앙|terrain|solid|high|세로 판자 큰 구멍
+71|세로 판자 구멍 중단 오른쪽|terrain|solid|high|세로 판자 큰 구멍
+72|벽걸이 장치 둥근 상부|prop|solid|low|벽걸이 금속 장치
+73|벽걸이 장치 세로 관 상부|prop|solid|low|벽걸이 금속 장치
+74|목재 난간 하단 오른쪽|fence|solid|high|목재 난간
+75|목재 난간 하단 왼쪽|fence|solid|high|목재 난간
+76|목재 난간 아래 가로 홈|wall|solid|medium|목재 난간 기단
+77|목재 난간 아래 세로 판자|wall|solid|medium|목재 난간 기단
+78|두꺼운 대각 목재 들보 중앙|prop|solid|medium|두꺼운 대각 목재 들보
+79|두꺼운 대각 목재 들보 중앙|prop|solid|medium|두꺼운 대각 목재 들보
+80|금속 장식 목재 기둥 중단|prop|solid|low|금속 장식 목재 기둥
+81|두꺼운 대각 목재 들보 중앙|prop|solid|medium|두꺼운 대각 목재 들보
+82|어두운 대각 목재 들보 중앙|prop|solid|medium|어두운 대각 목재 들보
+83|사각 금속 등|prop|solid|medium|
+84|금속 덮개와 대각 들보 접합부|prop|solid|low|대각 목재 들보
+85|교차하는 굽은 목재 들보|prop|solid|low|굽은 목재 들보
+86|대각 목재 들보 끝|prop|solid|medium|대각 목재 들보
+87|긴 목재 선반 왼쪽 지지대|furniture|solid|high|긴 목재 선반
+88|긴 목재 선반 중앙|furniture|solid|high|긴 목재 선반
+89|긴 목재 선반 오른쪽|furniture|solid|high|긴 목재 선반
+90|어두운 푸른 물결|water|solid|high|
+91|어두운 푸른 물결|water|solid|high|
+92|어두운 푸른 물결|water|solid|high|
+93|청색 직사각 창 하단 왼쪽|window|solid|medium|청색 직사각 창
+94|청색 직사각 창 하단 중앙|window|solid|medium|청색 직사각 창
+95|청색 직사각 창 하단 오른쪽|window|solid|medium|청색 직사각 창
+96|큰 목재 바닥 구멍 하단 왼쪽|terrain|solid|high|큰 목재 바닥 구멍
+97|큰 목재 바닥 구멍 하단 중앙|terrain|solid|high|큰 목재 바닥 구멍
+98|큰 목재 바닥 구멍 하단 오른쪽|terrain|solid|high|큰 목재 바닥 구멍
+99|세로 판자 구멍 하단 왼쪽|terrain|solid|high|세로 판자 큰 구멍
+100|세로 판자 구멍 하단 중앙|terrain|solid|high|세로 판자 큰 구멍
+101|세로 판자 구멍 하단 오른쪽|terrain|solid|high|세로 판자 큰 구멍
+102|벽걸이 장치 사각 하부|prop|solid|low|벽걸이 금속 장치
+103|벽걸이 장치 세로 관 하부|prop|solid|low|벽걸이 금속 장치
+104|목재 난간 기단 왼쪽|wall|solid|high|목재 난간 기단
+105|목재 난간 기단 중앙|wall|solid|high|목재 난간 기단
+106|목재 난간 기단 오른쪽|wall|solid|high|목재 난간 기단
+107|좁은 목재 판문|door|solid|medium|
+108|판벽 앞 가는 금속 막대|decoration|passable|medium|
+109|어두운 대각 목재 들보 하단|prop|solid|medium|어두운 대각 목재 들보
+110|금속 장식 목재 기둥 하단|prop|solid|low|금속 장식 목재 기둥
+111|어두운 대각 목재 들보 하단|prop|solid|medium|어두운 대각 목재 들보
+112|판벽 앞 굽은 띠와 금속 막대|decoration|passable|low|
+113|가로 줄무늬 금속 막대|prop|solid|low|
+114|긴 대각 목재 들보 왼쪽|prop|solid|medium|긴 대각 목재 들보
+115|긴 대각 목재 들보 중앙|prop|solid|medium|긴 대각 목재 들보
+116|긴 대각 목재 들보 오른쪽|prop|solid|medium|긴 대각 목재 들보
+117|넓은 대각 목재 들보 왼쪽|prop|solid|medium|넓은 대각 목재 들보
+118|넓은 대각 목재 들보 오른쪽|prop|solid|medium|넓은 대각 목재 들보
+119|작은 금속 등불|prop|solid|high|
