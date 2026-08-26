@@ -78,8 +78,8 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다. 옛 기본값 cpen/gpt-5-6-luna 는 게이트웨이
     // ID 라서, OAuth 경로에서 오류 없이 제공자 기본 모델로 강등됐다(감독이 고른 모델이 답하지 않음).
-    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash");
-    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
+    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash-high");
+    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash-high");
   });
 
   it("ChatGPT 모드에 저장된 비-gpt 모델은 로드 시점에 권장 기본으로 교정된다", async () => {
@@ -127,7 +127,7 @@ describe("aiConfig 저장/로드", () => {
     const cfg = defaultAiConfig();
     expect(cfg.authMode).toBe("chatgpt");
     expect(cfg.providerId).toBe("google-antigravity");
-    expect(cfg.model).toBe("gemini-3.7-flash");
+    expect(cfg.model).toBe("gemini-3.7-flash-high");
     expect(cfg.baseUrl).toBe("");
     expect(cfg.apiKey).toBe("");
   });

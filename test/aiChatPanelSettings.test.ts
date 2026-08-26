@@ -187,9 +187,9 @@ describe("설정 자동 저장", () => {
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
     // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
     // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
-    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash");
-    expect(loadAiConfig().model).toBe("gemini-3.7-flash");
-    expect(loadAiConfig().liteModel).toBe("gemini-3.7-flash");
+    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash-high");
+    expect(loadAiConfig().model).toBe("gemini-3.7-flash-high");
+    expect(loadAiConfig().liteModel).toBe("gemini-3.7-flash-high");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
@@ -215,7 +215,7 @@ describe("설정 자동 저장", () => {
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
-    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
+    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash-high");
   });
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
