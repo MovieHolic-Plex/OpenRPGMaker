@@ -2,9 +2,15 @@
 //
 // 왜 strips 로 부족한가 (실측): gen-chipset-strips.mts 는 칩셋 1행(30타일)을 15열 x 2단으로 접어
 // 보여준다. 그래서 세로로 이어지는 물건이 끊기고, 가로로 늘어선 물건은 벽처럼 보인다.
-// 실측 사례 — retro_house 12~17 은 2단 침대다(12-14 = 상단 베개 줄, 15-17 = 하단 크림 매트리스).
-// strips 로만 본 비전 자식은 이 여섯 칸을 "timber-framed house wall" 이라 읽었다. 3x2 로 붙여
-// 보면 침대가 드러난다. 즉 판독에는 인덱스 확실성(strips)과 물건 연속성(이 스크립트)이 둘 다 필요하다.
+//
+// 실측 사례 — retro_house 12~17. 이 여섯 칸을 3x2 크롭으로만 보면 갈색 프레임 + 분홍 줄 +
+// 크림 면이라 2단 침대로 읽힌다. PR #86 이 그렇게 판정해 role=furniture 로 바꿨다. 그런데
+// 아래 4행까지 붙여 보면 분홍은 42-44/72-74 로 이어지는 조석 벽판이고 크림은 45-47/75-77 로
+// 이어지는 회벽판이며, 12~17 은 그 벽판들의 상단 목재 머리보다. 침대가 아니다.
+// (증거: .omo/evidence/tile-reaudit/vision-probe/house-cols10-19-rows0-4.png, 10배 + 아래 4행)
+//
+// 즉 판독에는 인덱스 확실성(strips)과 물건 연속성(이 스크립트)이 둘 다 필요하고, 크롭을 좁게
+// 잡으면 이 스크립트로도 같은 함정에 빠진다. 크롭 모드는 항상 위아래 여유 행을 함께 담을 것.
 //
 // 그래서 타일 경계선을 그리지 않는다. 격자선은 여러 칸에 걸친 물건을 다시 쪼개 놓기 때문이다.
 // 좌표는 아트 영역 바깥 여백에만 찍는다: 위쪽에 열 번호(0-29), 왼쪽에 행 번호.
@@ -33,8 +39,8 @@ const SHEETS: Record<string, string> = {
 
 const COLS = 30;
 const TILE = 16;
-const SCALE = 6;
-const CELL = TILE * SCALE;
+let SCALE = 6;
+let CELL = TILE * SCALE;
 const KEY_COLOR = { r: 255, g: 103, b: 139 } as const;
 const KEY_TOLERANCE = 12;
 
@@ -141,9 +147,10 @@ function blitTile(c: Canvas, src: PNG, index: number, x0: number, y0: number): v
   }
 }
 
-function buildAtlas(src: PNG, rowA: number, rowB: number): Canvas {
+function buildAtlas(src: PNG, rowA: number, rowB: number, colA = 0, colB = COLS - 1): Canvas {
   const rows = rowB - rowA + 1;
-  const artW = COLS * CELL;
+  const cols = colB - colA + 1;
+  const artW = cols * CELL;
   const artH = rows * CELL;
   const w = RULER_LEFT + artW + PAD;
   const h = RULER_TOP + artH + PAD;
@@ -152,16 +159,16 @@ function buildAtlas(src: PNG, rowA: number, rowB: number): Canvas {
   checker(c, RULER_LEFT, RULER_TOP, artW, artH);
 
   for (let row = rowA; row <= rowB; row += 1) {
-    for (let col = 0; col < COLS; col += 1) {
-      blitTile(c, src, row * COLS + col, RULER_LEFT + col * CELL, RULER_TOP + (row - rowA) * CELL);
+    for (let col = colA; col <= colB; col += 1) {
+      blitTile(c, src, row * COLS + col, RULER_LEFT + (col - colA) * CELL, RULER_TOP + (row - rowA) * CELL);
     }
   }
 
   // 열 번호 — 아트 영역 위쪽 여백. 각 타일 칼럼 중앙에 정렬.
-  for (let col = 0; col < COLS; col += 1) {
+  for (let col = colA; col <= colB; col += 1) {
     const label = String(col);
     const wGlyph = label.length * 6 * 2 - 2;
-    drawDigits(c, label, RULER_LEFT + col * CELL + Math.round((CELL - wGlyph) / 2), 6, 2);
+    drawDigits(c, label, RULER_LEFT + (col - colA) * CELL + Math.round((CELL - wGlyph) / 2), 6, 2);
   }
   // 행 번호 — 아트 영역 왼쪽 여백. 각 타일 행 중앙에 정렬.
   for (let row = rowA; row <= rowB; row += 1) {
@@ -172,18 +179,59 @@ function buildAtlas(src: PNG, rowA: number, rowB: number): Canvas {
   return c;
 }
 
+/** "4-7" 또는 "4" 를 [a, b] 로. */
+function parseRange(spec: string, hi: number): readonly [number, number] {
+  const m = /^(\d+)(?:-(\d+))?$/.exec(spec.trim());
+  if (!m) throw new Error(`범위 형식이 잘못됐다: ${spec} (예: 4-7)`);
+  const a = Number(m[1]);
+  const b = m[2] === undefined ? a : Number(m[2]);
+  if (a > b || b > hi) throw new Error(`범위가 시트를 벗어난다: ${spec} (최대 ${hi})`);
+  return [a, b];
+}
+
 function main(): void {
   const args = process.argv.slice(2);
-  const outIdx = args.indexOf("--out");
-  const outDir = outIdx >= 0 ? args[outIdx + 1]! : ".omo/evidence/tile-reaudit/blocks";
-  const sheetIdx = args.indexOf("--sheet");
-  const only = sheetIdx >= 0 ? args[sheetIdx + 1] : undefined;
+  const arg = (name: string): string | undefined => {
+    const i = args.indexOf(name);
+    return i >= 0 ? args[i + 1] : undefined;
+  };
+  const outDir = arg("--out") ?? ".omo/evidence/tile-reaudit/blocks";
+  const only = arg("--sheet");
 
-  const targets = only ? { [only]: SHEETS[only]! } : SHEETS;
   if (only && !SHEETS[only]) {
     console.error(`알 수 없는 시트: ${only} (가능: ${Object.keys(SHEETS).join(", ")})`);
     process.exit(2);
   }
+
+  // 크롭 모드 — 특정 구역을 증거로 남길 때. --rows 를 주면 이 모드로 간다.
+  const rowSpec = arg("--rows");
+  if (rowSpec) {
+    if (!only) {
+      console.error("크롭 모드는 --sheet 가 필요하다");
+      process.exit(2);
+    }
+    SCALE = Number(arg("--scale") ?? 10);
+    CELL = TILE * SCALE;
+    const [rowA, rowB] = parseRange(rowSpec, 15);
+    const [colA, colB] = parseRange(arg("--cols") ?? `0-${COLS - 1}`, COLS - 1);
+    const src = PNG.sync.read(fs.readFileSync(SHEETS[only]!));
+    const c = buildAtlas(src, rowA, rowB, colA, colB);
+    const name = arg("--name") ?? `crop-cols${colA}-${colB}-rows${rowA}-${rowB}.png`;
+    const dir = path.join(outDir, only);
+    fs.mkdirSync(dir, { recursive: true });
+    const dest = path.join(dir, name);
+    fs.writeFileSync(dest, PNG.sync.write(c.png));
+    // 인덱스 = 행 * 30 + 열. 판독자가 눈금과 인덱스를 손으로 맞추지 않게 표를 함께 찍는다.
+    for (let row = rowA; row <= rowB; row += 1) {
+      const idx: string[] = [];
+      for (let col = colA; col <= colB; col += 1) idx.push(String(row * COLS + col));
+      console.log(`  row ${row}: ${idx.join(" ")}`);
+    }
+    console.log(`${dest}  (${c.w}x${c.h}, ${SCALE}x)`);
+    return;
+  }
+
+  const targets = only ? { [only]: SHEETS[only]! } : SHEETS;
 
   let wrote = 0;
   for (const [sheet, pngPath] of Object.entries(targets)) {
