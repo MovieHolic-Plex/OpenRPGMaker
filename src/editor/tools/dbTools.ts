@@ -15,6 +15,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import type {
   ActorRecord,
+  BattleAnimationRecord,
   ClassRecord,
   Command,
   CommonEvent,
@@ -1424,6 +1425,58 @@ export function mergeSessionInventory(project: Project, inventory: Record<string
   project.session.inventory = { ...project.session.inventory, ...inventory };
 }
 
+const upsertBattleAnimation: ToolDefinition = {
+  name: "upsert_battle_animation",
+  description: "전투 애니메이션 레코드를 등록/수정한다. Database 애니메이션 탭과 같은 저작 데이터.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      animation: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          resourceId: { type: "string" },
+          scope: { type: "string", enum: ["singleTarget", "allTargets", "screen"] },
+          position: { type: "string", enum: ["head", "center", "feet", "screen"] },
+          large: { type: "boolean" },
+        },
+        required: ["id", "name"],
+        additionalProperties: false,
+      },
+    },
+    required: ["animation"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const input = args.animation;
+    if (!input || typeof input !== "object" || Array.isArray(input)) {
+      throw new ToolError("animation 객체가 필요합니다.", { code: "invalid-args" });
+    }
+    const record = input as Record<string, unknown>;
+    const id = typeof record.id === "string" ? record.id.trim() : "";
+    const name = typeof record.name === "string" ? record.name.trim() : "";
+    if (!id || !name) throw new ToolError("animation.id와 animation.name이 필요합니다.", { code: "invalid-args" });
+    const existing = draft.database.battleAnimations.find((animation) => animation.id === id);
+    const animation: BattleAnimationRecord = {
+      ...(existing ?? { id, name }),
+      id,
+      name,
+      ...(typeof record.resourceId === "string" ? { resourceId: record.resourceId } : {}),
+      ...(record.scope === "singleTarget" || record.scope === "allTargets" || record.scope === "screen"
+        ? { scope: record.scope }
+        : {}),
+      ...(record.position === "head" || record.position === "center" || record.position === "feet" || record.position === "screen"
+        ? { position: record.position }
+        : {}),
+      ...(typeof record.large === "boolean" ? { large: record.large } : {}),
+    };
+    const outcome = upsertById(draft.database.battleAnimations, animation);
+    return { summary: `전투 애니메이션 '${name}' ${outcome === "added" ? "추가" : "수정"}`, data: animation };
+  },
+};
+
 export const DB_TOOLS: readonly ToolDefinition[] = [
   duplicateDatabaseRecordTool,
   deleteDatabaseRecordTool,
@@ -1442,6 +1495,7 @@ export const DB_TOOLS: readonly ToolDefinition[] = [
   definePromotion,
   upsertState,
   upsertCommonEvent,
+  upsertBattleAnimation,
   setSessionStart,
   setTitleScreen,
 ];

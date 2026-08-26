@@ -1,0 +1,22 @@
+
+ RUN  v3.2.4 C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access
+
+(node:55044) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ test/aiToolDiscoveryEscalation.test.ts (2 tests) 226ms
+ ✓ test/aiEditorCapabilityParity.test.ts (9 tests) 1736ms
+   ✓ AI editor capability parity > authors life-system weather and a farm animal species  529ms
+ ✓ test/aiEditorFullToolCoverage.test.ts (6 tests) 2474ms
+   ✓ AI assistant editor-wide project mutation coverage > duplicates a map with authored metadata and places the copy next to its source  434ms
+   ✓ AI assistant editor-wide project mutation coverage > edits every map property exposed by the map properties editor  364ms
+   ✓ AI assistant editor-wide project mutation coverage > creates, renames, reparents, and dissolves map folders through one canonical facade  634ms
+   ✓ AI assistant editor-wide project mutation coverage > duplicates and deletes database records through typed project tools  350ms
+   ✓ AI assistant editor-wide project mutation coverage > authors utility database records that have dedicated editor tabs  366ms
+   ✓ AI assistant editor-wide project mutation coverage > changes project identity, terms, display, resources, and battle defaults  323ms
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  18:15:33
+   Duration  11.29s (transform 6.50s, setup 0ms, collect 24.52s, tests 4.44s, environment 1ms, prepare 589ms)
+
+EXIT:0

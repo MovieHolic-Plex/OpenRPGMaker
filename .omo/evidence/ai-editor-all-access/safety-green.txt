@@ -1,0 +1,25 @@
+
+ RUN  v3.2.4 C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access
+
+ ✓ test/toolSchemaProviderCompat.test.ts (4 tests) 14ms
+(node:55868) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ test/aiEditorFullToolSafety.test.ts (2 tests) 1100ms
+   ✓ AI editor-wide tool safety > auto mode still marks destructive editor-wide tools as approval-required  900ms
+ ✓ test/aiEditorCapabilityParity.test.ts (9 tests) 4331ms
+   ✓ AI editor capability parity > authors life-system weather and a farm animal species  704ms
+   ✓ AI editor capability parity > registers and deletes an authored resource through typed tools  989ms
+   ✓ AI editor capability parity > registers a structure kit from a painted region  1054ms
+   ✓ AI editor capability parity > shifts map tiles and events through a typed facade  880ms
+ ✓ test/toolHostileArgs.test.ts (5 tests) 31326ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > empty 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  13677ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > nulls 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  4303ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > wrongTypes 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  4812ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > deepHoles 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  8522ms
+
+ Test Files  4 passed (4)
+      Tests  20 passed (20)
+   Start at  18:16:58
+   Duration  46.13s (transform 11.60s, setup 0ms, collect 56.13s, tests 36.77s, environment 1ms, prepare 830ms)
+
+EXIT:0

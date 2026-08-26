@@ -12,6 +12,7 @@ import {
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
+import { TILE } from "@/project/defaults";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
@@ -210,4 +211,64 @@ function repeatArg(args: Record<string, unknown>): number {
   return repeat;
 }
 
-export const STRUCTURE_KIT_TOOLS: readonly ToolDefinition[] = [listStructureKits, stampStructureKit];
+const registerStructureKitTool: ToolDefinition = {
+  name: "register_structure_kit",
+  description: "구조 킷 등록: 맵 영역의 하위/상위 타일을 타일셋 structureKits에 학습 스탬프로 저장한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      kitId: { type: "string" },
+      name: { type: "string" },
+      x: { type: "integer" },
+      y: { type: "integer" },
+      width: { type: "integer" },
+      height: { type: "integer" },
+    },
+    required: ["mapId", "kitId", "x", "y", "width", "height"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const kitId = typeof args.kitId === "string" ? args.kitId.trim() : "";
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : kitId;
+    const x = args.x as number;
+    const y = args.y as number;
+    const width = args.width as number;
+    const height = args.height as number;
+    if (!kitId) throw new ToolError("kitId가 필요합니다.", { code: "invalid-args" });
+    if (![x, y, width, height].every((value) => Number.isInteger(value)) || width < 1 || height < 1) {
+      throw new ToolError("영역은 양의 정수여야 합니다.", { code: "invalid-args", mapId: map.id });
+    }
+    if (x < 0 || y < 0 || x + width > map.width || y + height > map.height) {
+      throw new ToolError("영역이 맵 밖입니다.", { code: "out-of-bounds", mapId: map.id });
+    }
+    const tileset = draft.tilesets[map.tilesetId];
+    if (!tileset) throw new ToolError(`타일셋 없음: ${map.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
+    const rows = Array.from({ length: height }, (_, row) => {
+      const tiles: number[] = [];
+      const upperTiles: number[] = [];
+      for (let col = 0; col < width; col += 1) {
+        const index = (y + row) * map.width + (x + col);
+        tiles.push(map.lowerTiles[index] ?? TILE.EMPTY);
+        upperTiles.push(map.upperTiles[index] ?? TILE.EMPTY);
+      }
+      return { tiles, upperTiles };
+    });
+    const kit: StructureKitDef = {
+      id: kitId,
+      name,
+      kind: "section",
+      width,
+      height,
+      learnedFrom: "user-paint",
+      rows,
+    };
+    const existing = tileset.structureKits ?? [];
+    tileset.structureKits = [...existing.filter((entry) => entry.id !== kitId), kit];
+    return { summary: `구조 킷 ${name} 등록`, data: { kitId, tilesetId: tileset.id, width, height } };
+  },
+};
+
+export const STRUCTURE_KIT_TOOLS: readonly ToolDefinition[] = [listStructureKits, stampStructureKit, registerStructureKitTool];
