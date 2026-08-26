@@ -1,4 +1,4 @@
-import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 export interface AiModelCatalogGroup {
   readonly label: string;
@@ -168,7 +168,14 @@ export function isModelValidForAuthMode(
   providerId?: string,
 ): boolean {
   if (authMode !== "chatgpt") return true;
-  if (parseOhMyPiProvider(providerId) !== "openai-codex") return true;
+  const provider = parseOhMyPiProvider(providerId);
   const wanted = model.trim().toLowerCase();
+  // Antigravity 는 이제 에디터의 유일한 제공자다(감독 지시 2026-08-26). 제공자가 하나뿐이면
+  // 남의 네임스페이스 ID 가 저장돼 있을 이유가 없고, 남겨 두면 그대로 실려 나가 400 이 된다
+   // — 이 파일이 인용한 실측 장애(옛 기본값 z-ai/glm-5.2-ultrafast 가 localStorage 에 남아
+  // 400)와 같은 종류다. 그래서 gemini 네임스페이스만 통과시킨다. 카탈로그를 화이트리스트로
+  // 쓰지 않는 이유는 그대로다: 사용자가 새 gemini 변형을 직접 입력하는 것은 정상 사용이다.
+  if (provider === DEFAULT_OH_MY_PI_PROVIDER) return wanted.startsWith("gemini");
+  if (provider !== "openai-codex") return true;
   return CHATGPT_OAUTH_MODELS.some((group) => group.models.some((id) => id.toLowerCase() === wanted));
 }

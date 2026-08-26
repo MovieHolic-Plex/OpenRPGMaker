@@ -122,7 +122,10 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.authMode).toBe("chatgpt");
-    expect(ohMyPiAuthKind(stored.providerId)).toBe("apiKey");
+    // 제공자는 Antigravity 하나로 강제되므로 종류 축도 항상 oauth 다 — 자격 종류를 눌러도
+    // 제공자가 바뀌지 않는다(감독 지시 2026-08-26: 잔여 경로 없음).
+    expect(stored.providerId).toBe("google-antigravity");
+    expect(ohMyPiAuthKind(stored.providerId)).toBe("oauth");
     // 브라우저에는 비밀이 남지 않는다.
     expect(stored.apiKey ?? "").toBe("");
     expect(stored.baseUrl ?? "").toBe("");
@@ -147,7 +150,7 @@ describe("설정 자동 저장", () => {
       .toBe(OH_MY_PI_PROVIDERS.length);
   });
 
-  it("oh-my-pi 제공자를 바꾸면 그 기본 모델과 함께 저장된다", () => {
+  it("제공자 선택을 건드려도 Antigravity 로 남는다 (되돌릴 구멍 없음)", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
@@ -155,8 +158,8 @@ describe("설정 자동 저장", () => {
     select.value = "anthropic";
     select.dispatchEvent(new Event("change"));
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.providerId).toBe("anthropic");
-    expect(stored.model).toBe("claude-opus-4-8");
+    expect(stored.providerId).toBe("google-antigravity");
+    expect(loadAiConfig().providerId).toBe("google-antigravity");
   });
 
   it("동반 서비스 키 입력은 localStorage 에 저장되지 않는다", () => {
@@ -244,7 +247,7 @@ describe("설정 자동 저장", () => {
     expect(stored.model).toBe("gpt-5.6-terra");
   });
 
-  it("ChatGPT 모델 선택기에 GPT-5.6 Sol, Terra, Luna를 모두 노출한다", () => {
+  it("모델 선택기는 gemini 만 노출한다 — 남의 제공자 모델은 남기지 않는다", () => {
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       ...defaultAiConfig(),
       providerId: "openai-codex",
@@ -256,9 +259,10 @@ describe("설정 자동 저장", () => {
     const preset = findByTestId(modal, "ai-config-model-preset");
     if (!preset) throw new Error("model preset missing");
 
-    expect(preset.textContent).toContain("gpt-5.6-sol");
-    expect(preset.textContent).toContain("gpt-5.6-terra");
-    expect(preset.textContent).toContain("gpt-5.6-luna");
+    expect(preset.textContent).toContain("gemini-3.7-flash-high");
+    for (const foreign of ["gpt-5.6-sol", "gpt-5.6-terra", "claude", "glm-"]) {
+      expect(preset.textContent, foreign).not.toContain(foreign);
+    }
   });
 
   it("API/게이트웨이 모드에서는 Claude, Gemini, Grok 모델 목록을 제공한다", () => {
