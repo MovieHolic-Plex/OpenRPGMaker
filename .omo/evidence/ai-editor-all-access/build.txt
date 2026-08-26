@@ -1,0 +1,187 @@
+
+> rpg-zzu@0.1.0 build
+> tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player
+
+vite v6.4.3 building for production...
+transforming...
+✓ 1026 modules transformed.
+rendering chunks...
+[esbuild css minify]
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:1:0:
+      1 │ // benchmark/ui/styles.css
+        ╵ ~~
+
+
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:2:0:
+      2 │ // 벤치마크 사이트 전용 스타일 — index.html 의 앱 �...
+        ╵ ~~
+
+
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:3:0:
+      3 │ // 자기완결(self-contained) 스타일시트다. 이 페이지�...
+        ╵ ~~
+
+
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:4:0:
+      4 │ // 않으므로, 레포 토큰(src/styles/tokens.css)의 값을 여...
+        ╵ ~~
+
+
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:5:0:
+      5 │ // 같은 다크 IDE 룩을 유지한다(값은 tokens.css 와 동�...
+        ╵ ~~
+
+
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:6:0:
+      6 │ //
+        ╵ ~~
+
+
+▲ [WARNING] Comments in CSS use "/* ... */" instead of "//" [js-comment-in-css]
+
+    <stdin>:7:0:
+      7 │ // 컨벤션(src/styles/components/*.css 참조):
+        ╵ ~~
+
+
+▲ [WARNING] Expected ")" to go with "(" [css-syntax-error]
+
+    <stdin>:244:0:
+      244 │ 
+          │ ^
+          ╵ )
+
+  The unbalanced "(" is here:
+
+    <stdin>:7:12:
+      7 │ // 컨벤션(src/styles/components/*.css 참조):
+        ╵       ^
+
+
+[plugin vite:reporter] 
+(!) C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneInterpreter.ts is dynamically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/PlayScene.ts but also statically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/PlayScene.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/editorUiMode.ts is dynamically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/app/mode.ts but also statically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/coachMarks.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/aiAgentBrief.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/aiConversationLog.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/aiProposalCard.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/database.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/editor.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/editorZoomToolbar.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/menu.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/tilePalette.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/workspaceBar.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/workspace/workspaceStore.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/project/devProjectPersistence.ts is dynamically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/app/mode.ts but also statically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/editor.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/audio/index.ts is dynamically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/app/mode.ts but also statically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/audioTestDialog.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/databaseResourcePickerDialog.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/databaseSystemView.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/eventEditor/commandBodyAdvanced.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/PlayScene.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/battleAudio.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/mapBgm.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneActionCombat.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneBattle.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneInterpreter.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneMapAnimations.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneSchedulers.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/player.ts is dynamically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/app/mode.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/app/mode.ts but also statically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/benchmark.html                                         0.78 kB │ gzip:     0.47 kB
+dist/index.html                                             0.84 kB │ gzip:     0.49 kB
+dist/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+dist/assets/benchmark-B4NuP9X2.css                          3.39 kB │ gzip:     1.21 kB
+dist/assets/worldPanel-kNJN-T22.css                        38.59 kB │ gzip:     5.01 kB
+dist/assets/main-BORrjdfe.css                           1,444.38 kB │ gzip:   210.64 kB
+dist/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+dist/assets/welcomeGenreSystemPresetAction-DZ_hWTK0.js      0.45 kB │ gzip:     0.30 kB
+dist/assets/mapSelection-e3tyP6K6.js                        0.62 kB │ gzip:     0.38 kB
+dist/assets/modulepreload-polyfill-B5Qt9EMX.js              0.71 kB │ gzip:     0.40 kB
+dist/assets/aiSelectionContext-TxlRIYz8.js                  0.73 kB │ gzip:     0.38 kB
+dist/assets/aiBootIntent-RPEH9IUC.js                        0.88 kB │ gzip:     0.43 kB
+dist/assets/eventSpriteResources-BpmCbUF-.js                1.13 kB │ gzip:     0.54 kB
+dist/assets/mapUrlSync-y4mZznDD.js                          1.22 kB │ gzip:     0.64 kB
+dist/assets/mapTileDraw-BorZJjVr.js                         1.76 kB │ gzip:     0.79 kB
+dist/assets/saveActions-CPrUf9UA.js                         2.60 kB │ gzip:     1.19 kB
+dist/assets/workspaceStore-YxpZ7ktA.js                      3.85 kB │ gzip:     1.67 kB
+dist/assets/defaults-i0czDL8G.js                            4.64 kB │ gzip:     2.10 kB
+dist/assets/coachMarks-ClT33nou.js                          4.90 kB │ gzip:     2.22 kB
+dist/assets/playSceneBattle-DjRYM5Ai.js                     5.15 kB │ gzip:     1.97 kB
+dist/assets/benchmark-BBFKjHIE.js                           7.03 kB │ gzip:     2.47 kB
+dist/assets/tilesetActions-zMmgjZ6H.js                      8.81 kB │ gzip:     3.62 kB
+dist/assets/teamWorkflowUi-8RQ61SXt.js                      9.51 kB │ gzip:     3.42 kB
+dist/assets/dbConnectionSettings-xdPO1Xe2.js               10.52 kB │ gzip:     4.10 kB
+dist/assets/helpModal-DkqPQWIh.js                          13.52 kB │ gzip:     5.43 kB
+dist/assets/menu-BsJBaxpe.js                               41.26 kB │ gzip:    12.95 kB
+dist/assets/aiSettingsModal-ByuYkz51.js                    57.90 kB │ gzip:    19.52 kB
+dist/assets/EditScene-Dbv_sJGf.js                          69.42 kB │ gzip:    20.70 kB
+dist/assets/tilePalette-CA8tuybi.js                       107.28 kB │ gzip:    33.79 kB
+dist/assets/PlayScene-DbovBBTz.js                         157.61 kB │ gzip:    49.03 kB
+dist/assets/editor-uaGvSccF.js                            161.46 kB │ gzip:    54.40 kB
+dist/assets/buildPalette-SBX5fhKO.js                      251.72 kB │ gzip:    88.37 kB
+dist/assets/worldPanel-CfUKSPRb.js                        631.63 kB │ gzip:   181.19 kB
+dist/assets/main-Rx0KDE3-.js                            5,474.22 kB │ gzip: 1,187.58 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1m 6s
+
+> rpg-zzu@0.1.0 build:player
+> vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs
+
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-default.png referenced in /assets/ui/windowskin-default.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 410 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneInterpreter.ts is dynamically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/PlayScene.ts but also statically imported by C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/PlayScene.ts, C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/export-player/player.html                             0.40 kB │ gzip:   0.27 kB
+dist/export-player/player-manifest.json                    0.98 kB │ gzip:   0.31 kB
+dist/export-player/assets/phaser.min-CwlHMuXa.js       1,196.12 kB
+dist/export-player/assets/player-CKa1V_Q2.css            244.17 kB │ gzip:  37.76 kB
+dist/export-player/assets/playSceneBattle-CCNDUWVV.js      5.05 kB │ gzip:   1.92 kB
+dist/export-player/assets/PlayScene-CtafN2Zf.js          313.74 kB │ gzip:  94.06 kB
+dist/export-player/player.js                           1,161.46 kB │ gzip: 288.57 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 13.65s
+sdk-manifest: 7 files + 26 runtime assets, artifact 97d2161d90f7ad12, source a2749be272935f3f, schema v4
+EXIT:0

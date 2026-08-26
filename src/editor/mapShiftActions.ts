@@ -1,6 +1,6 @@
 import { TILE } from "@/project/defaults";
 import { store } from "@/project/store";
-import type { GameMap, MapId } from "@/project/types";
+import type { GameMap, MapId, Project } from "@/project/types";
 
 export type MapShiftOffset = {
   readonly dx: number;
@@ -14,30 +14,33 @@ type ShiftSpec = {
   readonly width: number;
 };
 
-export function shiftMapContent(mapId: MapId, offset: MapShiftOffset): boolean {
+export function applyMapShift(project: Project, mapId: MapId, offset: MapShiftOffset): boolean {
   const dx = Math.trunc(offset.dx);
   const dy = Math.trunc(offset.dy);
   if (dx === 0 && dy === 0) return false;
+  const map = project.maps[mapId];
+  if (!map) return false;
+  const spec: ShiftSpec = { dx, dy, height: map.height, width: map.width };
+  map.lowerTiles = shiftedTiles(map.lowerTiles, spec, TILE.GRASS);
+  map.upperTiles = shiftedTiles(map.upperTiles, spec, TILE.EMPTY);
+  replaceShiftedStacks(map, spec);
+  for (const event of map.events) {
+    event.x = clamp(event.x + dx, 0, map.width - 1);
+    event.y = clamp(event.y + dy, 0, map.height - 1);
+  }
+  if (project.startMapId === mapId) {
+    project.startPos = {
+      x: clamp(project.startPos.x + dx, 0, map.width - 1),
+      y: clamp(project.startPos.y + dy, 0, map.height - 1),
+    };
+  }
+  return true;
+}
 
+export function shiftMapContent(mapId: MapId, offset: MapShiftOffset): boolean {
   let shifted = false;
   store.update((project) => {
-    const map = project.maps[mapId];
-    if (!map) return;
-    const spec: ShiftSpec = { dx, dy, height: map.height, width: map.width };
-    map.lowerTiles = shiftedTiles(map.lowerTiles, spec, TILE.GRASS);
-    map.upperTiles = shiftedTiles(map.upperTiles, spec, TILE.EMPTY);
-    replaceShiftedStacks(map, spec);
-    for (const event of map.events) {
-      event.x = clamp(event.x + dx, 0, map.width - 1);
-      event.y = clamp(event.y + dy, 0, map.height - 1);
-    }
-    if (project.startMapId === mapId) {
-      project.startPos = {
-        x: clamp(project.startPos.x + dx, 0, map.width - 1),
-        y: clamp(project.startPos.y + dy, 0, map.height - 1),
-      };
-    }
-    shifted = true;
+    shifted = applyMapShift(project, mapId, offset);
   }, { scope: "map", mapId });
   return shifted;
 }
