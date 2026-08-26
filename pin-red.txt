@@ -1,0 +1,18 @@
+PIN-RED — event editor hierarchy shell
+
+File: test/eventEditorHierarchyShell.test.ts
+Command: npx vitest run test/eventEditorHierarchyShell.test.ts
+
+Result: 1 test file failed, 7 tests failed (exit code 1).
+The file deliberately fails against the current balanced baseline; each
+assertion pins a target of the after.html hierarchy contract that step 2
+(implement) must flip to green.
+
+Failed tests (7):
+  × event editor hierarchy chrome (after.html) > adopts the cool-white indigo token shell from tokens.css
+  × event editor hierarchy chrome (after.html) > collapses the identity into a 48px titlebar with one primary save
+  × event editor hierarchy chrome (after.html) > renders pages as a 40px underline tab strip, not numbered cards
+  × event editor hierarchy chrome (after.html) > selects the story row with an indigo 3px inset rail
+  × event editor hierarchy chrome (after.html) > removes the gold 현재 명령 편집 affordance from the inspector
+  × event editor hierarchy chrome (after.html) > collapses the footer to 40px with no second save
+  × event editor hierarchy chrome (after.html) > drops the bottom AI/스크립트/플로우 quick-tools chip row
