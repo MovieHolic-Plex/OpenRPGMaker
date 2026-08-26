@@ -171,6 +171,11 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
   const footerPrimarySave = modal.locator(".event-editor-modal-footer .btn.primary", { hasText: "저장하고 닫기" });
   expect(await footerPrimarySave.count()).toBe(1);
 
+  // Legacy tab strip must be absent regardless of the edit path (missing selector = RED).
+  await expect(modal.getByTestId("event-page-strip")).toHaveCount(0);
+  expect(await modal.locator(".event-page-number-tabs").count()).toBe(0);
+  expect(await modal.locator("[data-testid^='event-page-tab-']").count()).toBe(0);
+
   // Double-click opens the edit dialog (no '편집' button route).
   const firstRow = modal.locator(".cmd-item .cmd-head").first();
   await firstRow.dblclick();
