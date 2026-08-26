@@ -95,6 +95,8 @@ export interface AgentGhostPreview {
 export interface AgentGhostPreviewState {
   readonly previews: readonly AgentGhostPreview[];
   readonly revision: number;
+  /** 툴 시작 직전(tool_started)에 세팅되는 실행 중 도구 — 상태칩 라벨 원천. */
+  readonly runningToolName: string;
 }
 
 type Listener = (state: AgentGhostPreviewState) => void;
@@ -128,6 +130,7 @@ export const AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS = 150;
 const listeners = new Set<Listener>();
 let previews: AgentGhostPreview[] = [];
 let revision = 0;
+let runningToolName = "";
 
 // 원본 보기(꾹 누름) 동안 렌더만 숨긴다 — 프리뷰 데이터는 유지(시각 토글).
 let hidden = false;
@@ -153,7 +156,20 @@ export function hasAgentGhostPreviewSubscribers(): boolean {
 }
 
 export function getAgentGhostPreviewState(): AgentGhostPreviewState {
-  return { previews: [...previews], revision };
+  return { previews: [...previews], revision, runningToolName };
+}
+
+/** tool_started 직전에 패널이 호출 — 렌더러 상태칩이 실행 중 도구를 즉시 반영한다. */
+export function setAgentGhostRunningTool(name: string): void {
+  if (runningToolName === name) return;
+  runningToolName = name;
+  emit();
+}
+
+export function clearAgentGhostRunningTool(): void {
+  if (runningToolName === "") return;
+  runningToolName = "";
+  emit();
 }
 
 export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: MapId | null): readonly AgentGhostPreview[] {
@@ -162,8 +178,9 @@ export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: M
 }
 
 export function clearAgentGhostPreview(): void {
-  if (previews.length === 0) return;
+  if (previews.length === 0 && runningToolName === "") return;
   previews = [];
+  runningToolName = "";
   emit();
 }
 

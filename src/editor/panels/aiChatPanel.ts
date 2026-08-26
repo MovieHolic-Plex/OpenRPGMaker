@@ -27,6 +27,7 @@ import {
   createThrottledAgentGhostPreviewUpdater,
   getAgentGhostPreviewState,
   hasAgentGhostPreviewSubscribers,
+  setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
 import { classifyApproval } from "@/ai/approvalPolicy";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
@@ -941,6 +942,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           assistantBubble.textContent = event.content;
         }
         currentStreamNodes = [];
+      } else if (event.type === "tool_started") {
+        // 상태칩이 실행 중 도구를 즉시 반영 (tool_started는 실행 직전에 발화된다).
+        setAgentGhostRunningTool(event.name);
       } else if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
