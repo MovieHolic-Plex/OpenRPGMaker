@@ -36,13 +36,15 @@ export type CommandPreviewContext = {
 // 명령 편집 모달 우측 "이미지 리치" 프리뷰 패널. staged command 를 받아 종류별 시각화를
 // 렌더한다. 전용 렌더러가 없으면 요약 카드로 폴백한다(패널이 비어 보이지 않게).
 export function renderCommandPreview(cmd: Command, context?: CommandPreviewContext): HTMLElement {
+  const visual = renderVisual(cmd, context);
+  const summaryOnly = visual.classList.contains("ecp-summary-card");
   const panel = el("div", {
-    class: "event-command-preview",
+    class: summaryOnly ? "event-command-preview ecp-summary-only" : "event-command-preview",
     dataset: { testid: "event-command-preview-body", previewKind: cmd.kind },
   });
   if (context?.skipped) panel.classList.add("ecp-skipped");
   panel.append(el("div", { class: "ecp-caption", text: commandPreviewCaption(cmd) }));
-  panel.append(renderVisual(cmd, context));
+  panel.append(visual);
   return panel;
 }
 
@@ -105,8 +107,23 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   gameOver: () => screenMock("GAME OVER", "gameover"),
   returnToTitle: () => screenMock("타이틀 화면", "title"),
   ending: (cmd) => screenMock(cmd.title || "THE END", "ending"),
+  openSaveMenu: () => screenMock("저장", "title"),
   wait: waitStage,
+  m2Command: m2VisualPreview,
 };
+
+function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?: CommandPreviewContext): HTMLElement {
+  if (cmd.commandId === "m2-209-advanced-dialogue") {
+    const fields = cmd.fields ?? {};
+    const speaker = String(fields.speaker ?? "").trim();
+    return messageWindowMock(speaker || undefined, String(fields.body ?? ""), false, context?.face);
+  }
+  const title = m2CommandById(cmd.commandId)?.title;
+  if (title === "Open Save Menu") return screenMock("저장", "title");
+  if (title === "Game Over") return screenMock("GAME OVER", "gameover");
+  if (title === "Return to Title Screen") return screenMock("타이틀 화면", "title");
+  return summaryCard(cmd, context);
+}
 
 function messageWindowMock(
   speaker: string | undefined,

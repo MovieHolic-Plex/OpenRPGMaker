@@ -71,6 +71,7 @@ const EXPECTED_COMMAND_KINDS = [
   "gameOver",
   "ending",
   "returnToTitle",
+  "openSaveMenu",
   "wait",
   "setFlag",
   "setSelfSwitch",

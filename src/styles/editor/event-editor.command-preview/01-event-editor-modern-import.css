@@ -79,6 +79,15 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* 전용 스테이지가 없는 요약 카드: 빈 우측 칸을 접고 폼을 전폭으로 쓴다. */
+.event-command-edit-columns:has(.event-command-preview.ecp-summary-only) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-columns:has(.event-command-preview.ecp-summary-only) > .event-command-preview-panel {
+  display: none;
+}
+
 .event-command-edit-columns:has(.change-equipment-command-body) > .event-command-preview-panel {
   display: none;
 }
