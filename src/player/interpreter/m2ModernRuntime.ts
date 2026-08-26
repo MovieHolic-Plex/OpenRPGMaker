@@ -179,9 +179,19 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
       runtime.screen.tint = plan.tint;
       runtime.screen.tintDurationMs = plan.tintDurationMs;
       return true;
-    case "flash":
+    case "flash": {
+      // Fade/tint already paint a sized overlay on .play-stage. Reuse that path so
+      // Test Play screenshots see pixels change (dedicated flash nodes were 0×0).
       runtime.screen.flash = plan.color;
+      runtime.screen.flashUntilMs = (typeof performance !== "undefined" && typeof performance.now === "function"
+        ? performance.now()
+        : Date.now()) + Math.max(400, plan.durationMs);
+      const named = plan.color.trim() || "white";
+      runtime.screen.tint = named === "white" ? "255,255,255,0.85" : named;
+      runtime.screen.tintDurationMs = 0;
+      runtime.screen.hidden = false;
       return true;
+    }
     case "weather":
       runtime.screen.weather = plan.weather;
       return true;

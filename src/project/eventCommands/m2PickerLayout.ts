@@ -16,6 +16,13 @@ export const M2_COMMAND_PICKER_GROUP_ORDER: readonly M2CommandPickerGroup[] = [
   "모던 명령",
 ];
 
+/** 전투 이벤트에서만 의미가 있는 PDF 행 구간. 페이지/그룹 판정보다 먼저 걸러진다. */
+const BATTLE_ONLY_INDEX_RANGE = { first: 98, last: 108 } as const;
+
+function isBattleOnlyRow(row: M2PdfCommandRow): boolean {
+  return row.index >= BATTLE_ONLY_INDEX_RANGE.first && row.index <= BATTLE_ONLY_INDEX_RANGE.last;
+}
+
 const QUICK_AUTHORING_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Show Text",
   "Display Text Settings",
@@ -38,6 +45,21 @@ const QUICK_AUTHORING_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Play SE",
   "Play BGM",
   "Fadeout BGM",
+  // 흐름·시간·입력·사운드는 탭 1 저작면이다. 시스템 탭의 쓰레기통이 아니다.
+  "Control Timer",
+  "Label",
+  "Jump to Label",
+  "Loop",
+  "Break Loop",
+  "End Event Processing",
+  "Name Input Processing",
+  "Memorize Current BGM",
+  "Play Memorized BGM",
+  "Wait Until",
+  "Weighted Branch",
+  "Quest Objective",
+  "Advanced Dialogue",
+  "Sound Layer",
 ]);
 
 const ACTOR_AND_BATTLE_PAGE_TITLES: ReadonlySet<string> = new Set([
@@ -59,6 +81,33 @@ const ACTOR_AND_BATTLE_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Change Actor Faceset",
   "Change Actor Class",
   "Change Battle Commands",
+]);
+
+/** 탭 4에 남는 시스템·도구 명령. 세이브/메뉴, 시스템 미디어, 종료, 도구, 시스템 플래그. */
+const SYSTEM_TOOL_PAGE_TITLES: ReadonlySet<string> = new Set([
+  "Change System BGM",
+  "Change System SE",
+  "Change System Graphic",
+  "Set Teleportation Point",
+  "Teleportation On/Off",
+  "Set Escape Location",
+  "Change Escape Access",
+  "Open Save Menu",
+  "Change Save Access",
+  "Open Load Menu",
+  "Open Menu Screen",
+  "Change Menu Access",
+  "Game Over",
+  "Return to Title Screen",
+  "Exit Game",
+  "Toggle ATB Wait Mode",
+  "Toggle Fullscreen Mode",
+  "Open Video Options",
+  "Checkpoint Save",
+  "UI Command",
+  "Debug Log",
+  "Evaluate Expression",
+  "Data Query",
 ]);
 
 const DETAILED_MAP_PRESENTATION_PAGE_TITLES: ReadonlySet<string> = new Set([
@@ -88,17 +137,38 @@ const DETAILED_MAP_PRESENTATION_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Change Parallax Back",
   "Set Encounter Rate",
   "Change Tile",
+  // 지도·연출 상세. 카메라/화면 효과/컷신/동영상은 시스템이 아니라 연출이다.
+  "Change Vehicle Graphic",
+  "Change Screen Transition",
+  "Play Movie",
+  "Call Event",
+  "Camera Control",
+  "Screen Effect",
+  "Cutscene Control",
+  "Spawn Event",
+  "Remove Event",
+  "Pathfind Move",
+  "Region Trigger",
 ]);
 
+/**
+ * 페이지는 명시 분류만 인정한다. 기본값 4(= 시스템 탭 쓰레기통)는 없다.
+ * 새 명령을 추가하면 위 네 표 중 하나에 반드시 등록해야 하고, 빠뜨리면 카탈로그 빌드가 즉시 터진다.
+ */
 export function pickerPageForM2Command(row: M2PdfCommandRow): M2CommandPickerPage {
-  if (row.index >= 200) return 4;
+  if (isBattleOnlyRow(row)) return 2;
   if (QUICK_AUTHORING_PAGE_TITLES.has(row.title)) return 1;
   if (ACTOR_AND_BATTLE_PAGE_TITLES.has(row.title)) return 2;
   if (DETAILED_MAP_PRESENTATION_PAGE_TITLES.has(row.title)) return 3;
-  return 4;
+  if (isScreenPresentationCommand(row.title)) return 3;
+  if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return 4;
+  throw new Error(`Unclassified event command picker page: ${row.index} ${row.title}`);
 }
 
 export function pickerGroupForM2Command(row: M2PdfCommandRow): M2CommandPickerGroup {
+  if (isBattleOnlyRow(row)) return "전투 전용";
+  // 탭 4에 남는 행은 시스템(⚙) 또는 도구(◈) 헤딩 하나로만 묶인다.
+  if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return row.index >= 200 ? "모던 명령" : "시스템/고급";
   if (isDialogueInputCommand(row.title)) return "대화/입력";
   if (isConditionFlowCommand(row.title)) return "조건/흐름";
   if (isMapMovementCommand(row.title)) return "맵/이동";
@@ -106,7 +176,6 @@ export function pickerGroupForM2Command(row: M2PdfCommandRow): M2CommandPickerGr
   if (row.title.includes("BGM") || row.title.includes("SE") || row.title === "Sound Layer") return "소리";
   if (isScreenPresentationCommand(row.title)) return "화면/연출";
   if (isActorBattleCommand(row.title)) return "배우/전투";
-  if (row.index >= 98 && row.index <= 108) return "전투 전용";
   if (row.index >= 200) return "모던 명령";
   return "시스템/고급";
 }
@@ -164,8 +233,7 @@ function isRewardShopCommand(title: string): boolean {
     title === "Change Items" ||
     title === "Shop Processing" ||
     title === "Inn Processing" ||
-    title === "Quest Objective" ||
-    title === "Checkpoint Save"
+    title === "Quest Objective"
   );
 }
 

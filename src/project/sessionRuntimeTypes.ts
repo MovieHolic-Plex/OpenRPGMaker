@@ -35,6 +35,8 @@ export type M2RecordedFallback = {
 
 export type M2ScreenRuntimeState = {
   flash?: string;
+  /** performance.now() 시각. 이 시각 전까지 syncScreenEffects 가 플래시 오버레이를 유지한다. */
+  flashUntilMs?: number;
   hidden?: boolean;
   shake?: number;
   tint?: string;

@@ -2258,7 +2258,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeMoreMenu,
     onChange: applyTemperature,
   });
-  moreMenu.replaceChildren(headerTemperatureSection, ...headerMenu.items);
+  // after.html: 헤더 ☰ 는 대기 화면 3줄을 먼저 보인다. 되돌리기·도크 등은 작업 접기 안에 둔다.
+  const headerActionsFold = el("details", {
+    class: "ai-more-actions",
+    dataset: { testid: "ai-more-actions" },
+    children: [
+      el("summary", {
+        class: "ai-more-actions-summary",
+        text: "작업",
+        attrs: { title: "되돌리기·내보내기·도크·기록·툴" },
+      }),
+      ...headerMenu.items,
+    ],
+  });
+  moreMenu.replaceChildren(headerTemperatureSection, headerActionsFold);
   const detachButton = el("button", {
     class: "ai-chat-icon-btn ai-chat-detach-btn",
     text: "↗",

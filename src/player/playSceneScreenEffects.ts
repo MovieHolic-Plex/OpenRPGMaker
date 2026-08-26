@@ -15,12 +15,40 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 // 날씨는 Phaser 전용 레이어가 소유하며 이 경로에서는 다루지 않는다.
 // 색조는 tintDurationMs 가 있으면 목표 색으로 점진 트윈(requestAnimationFrame)한다.
 // 일회형 효과(flash/shake)는 Phaser 카메라 API 로 별도 처리되며 여기서 다루지 않는다.
+type FlashHold = { readonly color: Rgba; readonly until: number };
+const flashHolds = new WeakMap<HTMLElement, FlashHold>();
+
+function overlayHost(scene: PlaySceneContext): HTMLElement | undefined {
+  const canvas = scene.game?.canvas;
+  const stage = canvas instanceof HTMLElement ? canvas.closest(".play-stage") : null;
+  if (stage instanceof HTMLElement) return stage;
+  const fromRegistry = dialogueHost(scene);
+  if (fromRegistry) return fromRegistry;
+  const parent = canvas?.parentElement;
+  return parent instanceof HTMLElement ? parent : undefined;
+}
+
+/** Phaser camera.flash 는 swiftshader Test Play 에서 픽셀이 안 바뀐다. DOM 오버레이로 유지한다. */
+export function holdScreenFlash(scene: PlaySceneContext, color: Rgba, durationMs: number): void {
+  const host = overlayHost(scene);
+  if (!host) return;
+  const until = nowMs() + Math.max(80, durationMs);
+  flashHolds.set(host, { color, until });
+  setImmediateColor(host, color, "screen-flash");
+}
+
 export function syncScreenEffects(scene: PlaySceneContext): void {
-  const host = dialogueHost(scene);
+  const host = overlayHost(scene);
   if (!host) return;
 
-  const screen = scene.session.m2Runtime?.screen;
+  const flash = flashHolds.get(host);
+  if (flash && nowMs() < flash.until) {
+    setImmediateColor(host, flash.color, "screen-flash");
+    return;
+  }
+  if (flash) flashHolds.delete(host);
 
+  const screen = scene.session.m2Runtime?.screen;
 
   const hidden = screen?.hidden === true;
   // 우선순위: 화면 숨김(즉시, 불투명 검정) > 색조(트윈 가능).
@@ -133,6 +161,10 @@ function upsertScreenLayer(host: HTMLElement, background: string, mode: string):
     });
     host.append(layer);
   }
+  layer.style.position = "absolute";
+  layer.style.inset = "0";
+  layer.style.zIndex = "40";
+  layer.style.pointerEvents = "none";
   layer.style.background = background;
   layer.dataset.mode = mode;
 }

@@ -20,7 +20,7 @@ describe("m2 event command catalog", () => {
     expect(pdfEntries).toHaveLength(108);
     expect(M2_COMMAND_CATALOG).toHaveLength(125);
     expect(new Set(M2_COMMAND_CATALOG.map((entry) => entry.id)).size).toBe(125);
-    expect(pageCount(1)).toBe(21);
+    expect(pageCount(1)).toBe(35);
     expect(pageCount(2)).toBeGreaterThan(0);
     expect(pageCount(3)).toBeGreaterThan(0);
     expect(pdfEntries.filter((entry) => entry.pickerPage === 4).length).toBeGreaterThan(0);
@@ -107,9 +107,19 @@ describe("m2 event command catalog", () => {
       "Conditional Branch",
       "Comment",
       "Erase Event",
+      // 2026-08-26 IA 수리: 흐름·시간·입력·BGM 기억은 시스템 탭이 아니라 탭 1 저작면이다.
+      "Control Timer",
+      "Name Input Processing",
+      "Label",
+      "Jump to Label",
+      "Loop",
+      "Break Loop",
+      "End Event Processing",
+      "Memorize Current BGM",
+      "Play Memorized BGM",
       ])
     );
-    expect(pageOneRows).toHaveLength(21);
+    expect(pageOneRows).toHaveLength(30);
     expect(pageOneGroupsByTitle.get("Show Text")).toBe("대화/입력");
     expect(pageOneGroupsByTitle.get("Control Switches")).toBe("조건/흐름");
     expect(pageOneGroupsByTitle.get("Conditional Branch")).toBe("조건/흐름");
@@ -187,6 +197,26 @@ describe("m2 event command catalog", () => {
     // Advanced Dialogue 만 네이티브 text 변환(runtime-full)이고, 나머지는 troop(및 일부는
     // map/common) 컨텍스트에서 partial 이므로 보수 값이 runtime-partial 이다.
     // map 컨텍스트 full 여부는 M2_MAP_COMMON_FULL_IDS 멤버십이 정본이다.
+    // 2026-08-26 IA 수리: 모던 명령도 성격대로 탭을 받는다. 시스템·도구만 탭 4 에 남는다.
+    const modernPageByTitle: Readonly<Record<string, number>> = {
+      "Camera Control": 3,
+      "Screen Effect": 3,
+      "Spawn Event": 3,
+      "Remove Event": 3,
+      "Pathfind Move": 3,
+      "Region Trigger": 3,
+      "Cutscene Control": 3,
+      "Wait Until": 1,
+      "Weighted Branch": 1,
+      "Quest Objective": 1,
+      "Advanced Dialogue": 1,
+      "Sound Layer": 1,
+      "Checkpoint Save": 4,
+      "UI Command": 4,
+      "Debug Log": 4,
+      "Evaluate Expression": 4,
+      "Data Query": 4,
+    };
     const mapFullModernTitles = new Set(["Camera Control", "Spawn Event", "Remove Event"]);
     for (const title of modernTitles) {
       const entry = requireEntry(title);
@@ -202,7 +232,7 @@ describe("m2 event command catalog", () => {
         expect(entry.bodyStrategy).toBe("generic");
         expect(createDefaultM2Fields(entry)).not.toEqual({});
       }
-      expect(entry.pickerPage).toBe(4);
+      expect(entry.pickerPage).toBe(modernPageByTitle[title]);
       expect(isM2CatalogEntrySelectableInMap(entry)).toBe(true);
       expect(entry.label).not.toBe(title);
     }

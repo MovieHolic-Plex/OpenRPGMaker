@@ -3,23 +3,25 @@ import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { Command } from "@/project/types";
 import { pictureSlotCaption } from "./options";
+import { resolvePlayResolution } from "@/project/playResolution";
 
-// RM2003 그림 표시 좌표계(320x240 기준).
-// 앵커는 런타임과 같은 좌상단이다(runtime/pictures.css 의 transform-origin: top left).
-const SCREEN_W = 320;
-const SCREEN_H = 240;
+// 그림 좌표는 프로젝트 플레이 해상도 기준(기본 320x240, 작가가 바꾸면 그 화면비).
 
 // showPicture 프리뷰: 4:3 화면 목업 위에 그림 썸네일을 좌표에 배치.
 // 리소스가 해석되면 이미지, 아니면 x/y 위치 플레이스홀더 프레임.
 export function previewPicture(cmd: Extract<Command, { kind: "showPicture" }>): HTMLElement {
+  const play = resolvePlayResolution(store.getCurrent().system);
+  const screenW = play.width;
+  const screenH = play.height;
   const root = el("div", { class: "ecp-picture", dataset: { testid: "ecp-picture-preview" } });
   const screen = el("div", { class: "ecp-picture-screen" });
+  screen.style.aspectRatio = `${screenW} / ${screenH}`;
   const url = resolveAssetResourceUrl(cmd.resourceId, { project: store.getCurrent() });
   const marker = el("div", {
     class: `ecp-picture-marker${url ? "" : " missing"}`,
   });
-  marker.style.left = `${clampPct((cmd.x / SCREEN_W) * 100)}%`;
-  marker.style.top = `${clampPct((cmd.y / SCREEN_H) * 100)}%`;
+  marker.style.left = `${clampPct((cmd.x / screenW) * 100)}%`;
+  marker.style.top = `${clampPct((cmd.y / screenH) * 100)}%`;
   if (url) {
     marker.append(
       el("img", {
