@@ -5,6 +5,7 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
+import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
@@ -84,6 +85,8 @@ export function renderTilePalette(container: HTMLElement): void {
     if (map && tileset) {
       container.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
+    // 이벤트 레이어에서도 레이어 전환이 보여야 한다 — 없으면 바닥으로 돌아가는 길이 사이드바에 없다.
+    container.append(makeLeftLayerSwitcher(state.layer));
     renderEventEditor(container);
     return;
   }
@@ -187,6 +190,9 @@ function makePaletteSurface(input: {
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset));
   root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+  // 도구 → 레이어 가 사이드바 최상단 순서다(사용 번도 순). 상단 「도구」 메뉴에 있었던
+  // 레이어 항목을 이리로 옷긴 것이다 — test/editorMenuSidebarIa.test.ts 가 이 순서를 고정한다.
+  root.append(makeLeftLayerSwitcher(state.layer));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
   root.append(makePaletteFilterBar(tileset));
 

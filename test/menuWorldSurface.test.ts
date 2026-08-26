@@ -148,11 +148,13 @@ describe("에디터 헤더 복구", () => {
     expect(findByTestId(surface, "editor-product-brand")).not.toBeNull();
     for (const testId of [
       "menu-project",
-      "menu-map",
+      // 맵 메뉴는 2026-08-26 에 사라졌다 — 상태 세 항목이 모두 좌측 맵 트리와 중복이었다.
       "menu-tools",
       "menu-game",
       "menu-help",
-      "workspace-preset-toggle",
+      // 구 `workspace-preset-toggle` — 진짜 testid 는 `authoring-task-launcher` 다.
+      // indexOf/-1 로 공허하게 통과하던 오해를 고치기 위해 이름을 바롬다.
+      "authoring-task-launcher",
       "workspace-panels-button",
       "workspace-command-palette-button",
       "topbar-test-play",

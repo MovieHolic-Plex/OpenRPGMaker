@@ -1,0 +1,4840 @@
+{
+  "base": "http://127.0.0.1:9806",
+  "ranAt": "2026-08-25T16:24:37.553Z",
+  "modes": {
+    "beginner": {
+      "targetCount": 70,
+      "results": [
+        {
+          "testid": "menu-project",
+          "label": "프로젝트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:16"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map",
+          "label": "맵",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:4"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools",
+          "label": "도구",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:13"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game",
+          "label": "실행",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:6"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help",
+          "label": "도움말",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:3"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panels-button",
+          "label": "패널 배치와 밀도",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-command-palette-button",
+          "label": "명령 팔레트 열기 (Ctrl+K)",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-skill-palette-window command-palette-",
+            "event:oprn:open-command-palette",
+            "pressedState",
+            "domSize:49"
+          ],
+          "fingerprint": "dlg=ai-skill-palette-window command-palette-;evt=oprn:open-command-palette",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "mode-play",
+          "label": "전체 프로젝트 시연 실행",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:248"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-ai-settings",
+          "label": "AI 설정 열기",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-settings-modal,database-modal-window ai-settings-window",
+            "pressedState",
+            "domSize:121"
+          ],
+          "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "domSize:339"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "commit-history-toggle",
+          "label": "커밋 히스토리",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:commit-history-panel",
+            "expandedState",
+            "domSize:125"
+          ],
+          "fingerprint": "dlg=commit-history-panel",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-identity",
+          "label": "편집 신원 — 게스트 세션 4501",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:5"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "window-toolbar-collapse",
+          "label": "─",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "localStorage",
+            "bodyClass"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "window-fullscreen",
+          "label": "□",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "dead",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-map",
+          "label": "맵",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-event",
+          "label": "이벤트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "localStorage",
+            "domSize:-68"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-data",
+          "label": "데이터",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "localStorage",
+            "domSize:812"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-test",
+          "label": "테스트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:560"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-new",
+          "label": "새 프로젝트",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-modal-card,app-prompt-modal",
+            "domSize:-7"
+          ],
+          "fingerprint": "dlg=app-modal-card,app-prompt-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-sample-adventure",
+          "label": "예제로 시작",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-sky-stair",
+          "label": "천공의 계단 (7층 JRPG)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-training-examples",
+          "label": "학습 예시 12맵",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-snow-mountain-60",
+          "label": "설산 60×60 (절벽·계단 캔버스)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-ice-plain-64",
+          "label": "얼음 대평원 64×64 (절벽·계단 캔버스)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-scarloxy-demo",
+          "label": "Scarloxy 몬스터 초원 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-scarloxy-pokemon-demo",
+          "label": "Scarloxy 포켓몬풍 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-farming-demo",
+          "label": "농장 생활 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-load",
+          "label": "열기",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window db-config-window,db-config-modal",
+            "expandedState",
+            "domSize:608"
+          ],
+          "fingerprint": "dlg=database-modal-window db-config-window,db-config-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-save",
+          "label": "저장",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:이미 최신 상태입니다 / 이미 최신 상태입니다",
+            "domSize:-13"
+          ],
+          "fingerprint": "toast=이미 최신 상태입니다,이미 최신 상태입니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-reload-db",
+          "label": "저장본 다시 불러오기",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수 없습니다. / 온라인 저장본을 불러오는 중... / 이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+            "domSize:-10"
+          ],
+          "fingerprint": "toast=온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수,온라인 저장본을 불러오는 중...,이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-export",
+          "label": "내보내기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:내보냈습니다 / 내보냈습니다",
+            "expandedState",
+            "domSize:-13",
+            "download:새-프로젝트.oprn"
+          ],
+          "fingerprint": "toast=내보냈습니다,내보냈습니다;dl=새-프로젝트.oprn",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-import",
+          "label": "가져오기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-15",
+            "filechooser"
+          ],
+          "fingerprint": "(no-fingerprint);filechooser",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-new",
+          "label": "새 맵",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:새 맵을 추가했습니다 / 새 맵을 추가했습니다",
+            "expandedState",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=새 맵을 추가했습니다,새 맵을 추가했습니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-start",
+          "label": "현재 맵을 시작 맵으로",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-4"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-delete",
+          "label": "현재 맵 삭제",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:마지막 맵은 삭제할 수 없습니다 / 마지막 맵은 삭제할 수 없습니다",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=마지막 맵은 삭제할 수 없습니다,마지막 맵은 삭제할 수 없습니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-undo",
+          "label": "실행 취소",
+          "disabled": true,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-redo",
+          "label": "다시 실행",
+          "disabled": true,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-lower",
+          "label": "하위 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-12"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-upper",
+          "label": "상위 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-12"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-event",
+          "label": "이벤트 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-12"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-database",
+          "label": "데이터베이스...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "expandedState",
+            "domSize:869"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-resources",
+          "label": "리소스 관리자...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window resource-modal-win,resource-modal",
+            "domSize:72"
+          ],
+          "fingerprint": "dlg=database-modal-window resource-modal-win,resource-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-world",
+          "label": "세계관...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:world-panel,world-panel-modal",
+            "pressedState",
+            "expandedState",
+            "domSize:203"
+          ],
+          "fingerprint": "dlg=world-panel,world-panel-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-ai-settings",
+          "label": "AI 설정...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-settings-modal,database-modal-window ai-settings-window",
+            "pressedState",
+            "domSize:108"
+          ],
+          "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-play",
+          "label": "시연 실행",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:242"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-test-window",
+          "label": "시연 실행 창",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:242"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-battle-test",
+          "label": "랜덤 전투 테스트",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "domSize:305"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-export",
+          "label": "내보내기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:게임 번들을 만드는 중...게임 내보내기 실패: The player deployment manifest is malformed. Rebuild  / 게임 번들을 만드는 중... / 게임 내보내기 실패: The player deployment manifest is malformed. Rebuild and redeploy th",
+            "expandedState",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=게임 번들을 만드는 중...게임 내보내기 실패: The player de,게임 번들을 만드는 중...,게임 내보내기 실패: The player deployment manife",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help-shortcuts",
+          "label": "단축키 · 도움말",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-help",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:help-modal,help-modal-window",
+            "pressedState",
+            "expandedState",
+            "domSize:184"
+          ],
+          "fingerprint": "dlg=help-modal,help-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help-about",
+          "label": "정보",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-help",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치 / OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치",
+            "testidCount:-1"
+          ],
+          "fingerprint": "toast=OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG ,OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG ",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-toggle-tiles",
+          "label": "☑ 타일",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-panel-dock-tiles-right",
+          "label": "오른쪽",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-panel-toggle-maps",
+          "label": "☑ 맵",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage",
+            "testidCount:-2"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-dock-maps-right",
+          "label": "오른쪽",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage",
+            "testidCount:-2"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-layout-map",
+          "label": "● 맵 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-layout-event",
+          "label": "○ 이벤트 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-layout-data",
+          "label": "○ 데이터 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-70"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-assistant-dock-glass",
+          "label": "◧",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-assistant-dock-side",
+          "label": "▥",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-assistant-dock-float",
+          "label": "⌨",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-guided",
+          "label": "● 안내",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-comfortable",
+          "label": "○ 보통",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "event:oprn:editor-ui-mode",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:317"
+          ],
+          "fingerprint": "evt=oprn:editor-ui-mode",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-dense",
+          "label": "○ 촘촘",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "map-add",
+          "label": "+ 새 맵",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:event-subdialog-window narrow",
+            "domSize:55"
+          ],
+          "fingerprint": "dlg=event-subdialog-window narrow",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "map-tree-facet-all",
+          "label": "전체",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "dead",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "map-tree-facet-empty",
+          "label": "빈 맵",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "map-tree-facet-nolink",
+          "label": "문 없음",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "map-tree-facet-encounter",
+          "label": "인카운터",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-11"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "map-quick-add-child-map_blank_start",
+          "label": "+",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": false,
+          "hiddenAncestor": "(self)",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "map-more-map_blank_start",
+          "label": "⋯",
+          "disabled": false,
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:event-subdialog-window narrow",
+            "domSize:55"
+          ],
+          "fingerprint": "dlg=event-subdialog-window narrow",
+          "pageErrors": [],
+          "clickError": null
+        }
+      ]
+    },
+    "standard": {
+      "targetCount": 68,
+      "results": [
+        {
+          "testid": "menu-project",
+          "label": "프로젝트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:17"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map",
+          "label": "맵",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "domSize:5"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools",
+          "label": "도구",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:14"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game",
+          "label": "게임",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:7"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help",
+          "label": "도움말",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-panels-button",
+          "label": "패널 배치와 밀도",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-command-palette-button",
+          "label": "명령 팔레트 열기 (Ctrl+K)",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-skill-palette-window command-palette-",
+            "event:oprn:open-command-palette",
+            "pressedState",
+            "domSize:49"
+          ],
+          "fingerprint": "dlg=ai-skill-palette-window command-palette-;evt=oprn:open-command-palette",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "standard-more-tools",
+          "label": "더 많은 도구",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "mode-play",
+          "label": "전체 프로젝트 시연 실행",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:248"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-ai-settings",
+          "label": "AI 설정 열기",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-settings-modal,database-modal-window ai-settings-window",
+            "pressedState",
+            "domSize:121"
+          ],
+          "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "domSize:340"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "commit-history-toggle",
+          "label": "커밋 히스토리",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:commit-history-panel",
+            "expandedState",
+            "domSize:126"
+          ],
+          "fingerprint": "dlg=commit-history-panel",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-identity",
+          "label": "편집 신원 — 게스트 세션 063b",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:6"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "window-toolbar-collapse",
+          "label": "─",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "click-failed",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:624"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "window-fullscreen",
+          "label": "□",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "authoring-task-map",
+          "label": "맵",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-event",
+          "label": "이벤트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "localStorage",
+            "domSize:-316"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-data",
+          "label": "데이터",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "localStorage",
+            "domSize:537"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-test",
+          "label": "테스트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:248"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-new",
+          "label": "새 프로젝트",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-modal-card,app-prompt-modal",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-modal-card,app-prompt-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-sample-adventure",
+          "label": "예제로 시작",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-sky-stair",
+          "label": "천공의 계단 (7층 JRPG)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-training-examples",
+          "label": "학습 예시 12맵",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-snow-mountain-60",
+          "label": "설산 60×60 (절벽·계단 캔버스)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-ice-plain-64",
+          "label": "얼음 대평원 64×64 (절벽·계단 캔버스)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-scarloxy-demo",
+          "label": "Scarloxy 몬스터 초원 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-scarloxy-pokemon-demo",
+          "label": "Scarloxy 포켓몬풍 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-farming-demo",
+          "label": "농장 생활 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-load",
+          "label": "열기",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window db-config-window,db-config-modal",
+            "expandedState",
+            "domSize:608"
+          ],
+          "fingerprint": "dlg=database-modal-window db-config-window,db-config-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-save",
+          "label": "저장",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:이미 최신 상태입니다 / 이미 최신 상태입니다",
+            "domSize:-13"
+          ],
+          "fingerprint": "toast=이미 최신 상태입니다,이미 최신 상태입니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-reload-db",
+          "label": "저장본 다시 불러오기",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수 없습니다. / 온라인 저장본을 불러오는 중... / 이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+            "domSize:-11"
+          ],
+          "fingerprint": "toast=온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수,온라인 저장본을 불러오는 중...,이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-export",
+          "label": "내보내기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:내보냈습니다 / 내보냈습니다",
+            "domSize:-13",
+            "download:새-프로젝트.oprn"
+          ],
+          "fingerprint": "toast=내보냈습니다,내보냈습니다;dl=새-프로젝트.oprn",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-import",
+          "label": "가져오기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "domSize:-16",
+            "filechooser"
+          ],
+          "fingerprint": "(no-fingerprint);filechooser",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-new",
+          "label": "새 맵",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:새 맵을 추가했습니다 / 새 맵을 추가했습니다",
+            "pressedState",
+            "expandedState",
+            "domSize:10"
+          ],
+          "fingerprint": "toast=새 맵을 추가했습니다,새 맵을 추가했습니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-start",
+          "label": "현재 맵을 시작 맵으로",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "domSize:-4"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-delete",
+          "label": "현재 맵 삭제",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:마지막 맵은 삭제할 수 없습니다 / 마지막 맵은 삭제할 수 없습니다",
+            "expandedState",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=마지막 맵은 삭제할 수 없습니다,마지막 맵은 삭제할 수 없습니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-undo",
+          "label": "실행 취소",
+          "disabled": true,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-redo",
+          "label": "다시 실행",
+          "disabled": true,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-lower",
+          "label": "하위 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-13"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-upper",
+          "label": "상위 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "domSize:-74"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-event",
+          "label": "이벤트 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-260"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-database",
+          "label": "데이터베이스...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "expandedState",
+            "domSize:873"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-resources",
+          "label": "리소스 관리자...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window resource-modal-win,resource-modal",
+            "domSize:72"
+          ],
+          "fingerprint": "dlg=database-modal-window resource-modal-win,resource-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-world",
+          "label": "세계관...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:world-panel,world-panel-modal",
+            "pressedState",
+            "expandedState",
+            "domSize:202"
+          ],
+          "fingerprint": "dlg=world-panel,world-panel-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-ai-settings",
+          "label": "AI 설정...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-settings-modal,database-modal-window ai-settings-window",
+            "pressedState",
+            "domSize:107"
+          ],
+          "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-play",
+          "label": "시연 실행",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:241"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-test-window",
+          "label": "시연 실행 창",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "expandedState",
+            "domSize:241"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-battle-test",
+          "label": "랜덤 전투 테스트",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "expandedState",
+            "domSize:333"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-export",
+          "label": "내보내기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:게임 번들을 만드는 중...게임 내보내기 실패: The player deployment manifest is malformed. Rebuild  / 게임 번들을 만드는 중... / 게임 내보내기 실패: The player deployment manifest is malformed. Rebuild and redeploy th",
+            "expandedState",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=게임 번들을 만드는 중...게임 내보내기 실패: The player de,게임 번들을 만드는 중...,게임 내보내기 실패: The player deployment manife",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help-shortcuts",
+          "label": "단축키 · 도움말",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-help",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:help-modal,help-modal-window",
+            "pressedState",
+            "expandedState",
+            "domSize:184"
+          ],
+          "fingerprint": "dlg=help-modal,help-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help-about",
+          "label": "정보",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-help",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치 / OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치",
+            "expandedState",
+            "testidCount:-1"
+          ],
+          "fingerprint": "toast=OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG ,OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG ",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "standard-more-world",
+          "label": "세계관",
+          "disabled": false,
+          "surface": "nested",
+          "via": "standard-more-tools",
+          "visible": false,
+          "hiddenAncestor": "standard-more-tools-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "standard-more-resources",
+          "label": "자료",
+          "disabled": false,
+          "surface": "nested",
+          "via": "standard-more-tools",
+          "visible": false,
+          "hiddenAncestor": "standard-more-tools-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "standard-more-database",
+          "label": "자료",
+          "disabled": false,
+          "surface": "nested",
+          "via": "standard-more-tools",
+          "visible": false,
+          "hiddenAncestor": "standard-more-tools-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "standard-more-switch-expert",
+          "label": "전문가 모드로 전환",
+          "disabled": false,
+          "surface": "nested",
+          "via": "standard-more-tools",
+          "visible": false,
+          "hiddenAncestor": "standard-more-tools-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-panel-toggle-tiles",
+          "label": "☑ 타일",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-317"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-dock-tiles-right",
+          "label": "오른쪽",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-316"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-toggle-maps",
+          "label": "☑ 맵",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-34"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-dock-maps-right",
+          "label": "오른쪽",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-33"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-layout-map",
+          "label": "● 맵 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-layout-event",
+          "label": "○ 이벤트 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-317"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-layout-data",
+          "label": "○ 데이터 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-assistant-dock-glass",
+          "label": "◧",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-assistant-dock-side",
+          "label": "▥",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "testidCount:2"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-assistant-dock-float",
+          "label": "⌨",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-guided",
+          "label": "○ 안내",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "event:oprn:editor-ui-mode",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:-317"
+          ],
+          "fingerprint": "evt=oprn:editor-ui-mode",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-comfortable",
+          "label": "● 보통",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-dense",
+          "label": "○ 촘촘",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "event:oprn:editor-ui-mode",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:57"
+          ],
+          "fingerprint": "evt=oprn:editor-ui-mode",
+          "pageErrors": [],
+          "clickError": null
+        }
+      ]
+    },
+    "expert": {
+      "targetCount": 82,
+      "results": [
+        {
+          "testid": "menu-project",
+          "label": "프로젝트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:17"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map",
+          "label": "맵",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:5"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools",
+          "label": "도구",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:13"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game",
+          "label": "게임",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:6"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help",
+          "label": "도움말",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:4"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panels-button",
+          "label": "패널 배치와 밀도",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-command-palette-button",
+          "label": "명령 팔레트 열기 (Ctrl+K)",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-skill-palette-window command-palette-",
+            "event:oprn:open-command-palette",
+            "pressedState",
+            "domSize:48"
+          ],
+          "fingerprint": "dlg=ai-skill-palette-window command-palette-;evt=oprn:open-command-palette",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "mode-play",
+          "label": "전체 프로젝트 시연 실행",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:247"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-ai-settings",
+          "label": "AI 설정 열기",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-settings-modal,database-modal-window ai-settings-window",
+            "pressedState",
+            "domSize:121"
+          ],
+          "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "domSize:340"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "commit-history-toggle",
+          "label": "커밋 히스토리",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:commit-history-panel",
+            "expandedState",
+            "domSize:126"
+          ],
+          "fingerprint": "dlg=commit-history-panel",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "topbar-identity",
+          "label": "편집 신원 — 게스트 세션 7528",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:629"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "window-toolbar-collapse",
+          "label": "─",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "localStorage",
+            "bodyClass"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "window-fullscreen",
+          "label": "□",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-map",
+          "label": "맵",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "localStorage"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-event",
+          "label": "이벤트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "localStorage",
+            "domSize:-316"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-data",
+          "label": "데이터",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "localStorage",
+            "domSize:539"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "authoring-task-test",
+          "label": "테스트",
+          "surface": "topbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "domSize:247"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-new",
+          "label": "새 프로젝트",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-modal-card,app-prompt-modal",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:632"
+          ],
+          "fingerprint": "dlg=app-modal-card,app-prompt-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-map-copy",
+          "label": "맵 복사",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "domSize:12"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-event-test",
+          "label": "이벤트 테스트",
+          "surface": "classicToolbar",
+          "disabled": true,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-battle-test",
+          "label": "전투",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "domSize:340"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-save",
+          "label": "저장",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:이미 최신 상태입니다 / 이미 최신 상태입니다",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:627"
+          ],
+          "fingerprint": "toast=이미 최신 상태입니다,이미 최신 상태입니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-reload-db",
+          "label": "저장본",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수 없습니다. / 온라인 저장본을 불러오는 중... / 이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+            "pressedState",
+            "domSize:6"
+          ],
+          "fingerprint": "toast=온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수,온라인 저장본을 불러오는 중...,이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-load",
+          "label": "열기",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window db-config-window,db-config-modal",
+            "domSize:624"
+          ],
+          "fingerprint": "dlg=database-modal-window db-config-window,db-config-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-import",
+          "label": "가져오기",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "filechooser"
+          ],
+          "fingerprint": "(no-fingerprint);filechooser",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "layer-lower",
+          "label": "바닥",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "dead",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "layer-upper",
+          "label": "덧그림",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-60"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "layer-event",
+          "label": "이벤트",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-246"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-database",
+          "label": "DB",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "domSize:887"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-resource-manager",
+          "label": "소재",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window resource-modal-win,resource-modal",
+            "pressedState",
+            "domSize:86"
+          ],
+          "fingerprint": "dlg=database-modal-window resource-modal-win,resource-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-world",
+          "label": "세계관",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:world-panel,world-panel-modal",
+            "pressedState",
+            "domSize:216"
+          ],
+          "fingerprint": "dlg=world-panel,world-panel-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-sound-test",
+          "label": "음악",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:audio-test-window",
+            "pressedState",
+            "domSize:84"
+          ],
+          "fingerprint": "dlg=audio-test-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-search",
+          "label": "찾기",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:map-event-search-modal,map-event-search-window",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:669"
+          ],
+          "fingerprint": "dlg=map-event-search-modal,map-event-search-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-left-panel",
+          "label": "왼쪽 패널",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "dead",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-help",
+          "label": "도움말",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:help-modal,help-modal-window",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:810"
+          ],
+          "fingerprint": "dlg=help-modal,help-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "toolbar-overflow-toggle",
+          "label": "가려진 툴바 버튼",
+          "surface": "classicToolbar",
+          "disabled": false,
+          "tag": "BUTTON",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-new",
+          "label": "새 프로젝트",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-modal-card,app-prompt-modal",
+            "expandedState",
+            "domSize:-8"
+          ],
+          "fingerprint": "dlg=app-modal-card,app-prompt-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-sample-adventure",
+          "label": "예제로 시작",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-sky-stair",
+          "label": "천공의 계단 (7층 JRPG)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-training-examples",
+          "label": "학습 예시 12맵",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-snow-mountain-60",
+          "label": "설산 60×60 (절벽·계단 캔버스)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-ice-plain-64",
+          "label": "얼음 대평원 64×64 (절벽·계단 캔버스)",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-scarloxy-demo",
+          "label": "Scarloxy 몬스터 초원 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-scarloxy-pokemon-demo",
+          "label": "Scarloxy 포켓몬풍 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "expandedState",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-farming-demo",
+          "label": "농장 생활 데모",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:app-confirm-modal",
+            "domSize:-9"
+          ],
+          "fingerprint": "dlg=app-confirm-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-load",
+          "label": "열기",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window db-config-window,db-config-modal",
+            "domSize:608"
+          ],
+          "fingerprint": "dlg=database-modal-window db-config-window,db-config-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-save",
+          "label": "저장",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:이미 최신 상태입니다 / 이미 최신 상태입니다",
+            "domSize:-13"
+          ],
+          "fingerprint": "toast=이미 최신 상태입니다,이미 최신 상태입니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-reload-db",
+          "label": "저장본 다시 불러오기",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수 없습니다. / 온라인 저장본을 불러오는 중... / 이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+            "domSize:-11"
+          ],
+          "fingerprint": "toast=온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수,온라인 저장본을 불러오는 중...,이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-export",
+          "label": "내보내기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:내보냈습니다 / 내보냈습니다",
+            "domSize:-13",
+            "download:새-프로젝트.oprn"
+          ],
+          "fingerprint": "toast=내보냈습니다,내보냈습니다;dl=새-프로젝트.oprn",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-project-import",
+          "label": "가져오기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-project",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-16",
+            "filechooser"
+          ],
+          "fingerprint": "(no-fingerprint);filechooser",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-new",
+          "label": "새 맵",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:새 맵을 추가했습니다 / 새 맵을 추가했습니다",
+            "pressedState",
+            "expandedState",
+            "domSize:10"
+          ],
+          "fingerprint": "toast=새 맵을 추가했습니다,새 맵을 추가했습니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-start",
+          "label": "현재 맵을 시작 맵으로",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-4"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-map-delete",
+          "label": "현재 맵 삭제",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-map",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:마지막 맵은 삭제할 수 없습니다 / 마지막 맵은 삭제할 수 없습니다",
+            "expandedState",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=마지막 맵은 삭제할 수 없습니다,마지막 맵은 삭제할 수 없습니다",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-undo",
+          "label": "실행 취소",
+          "disabled": true,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-redo",
+          "label": "다시 실행",
+          "disabled": true,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "disabled-inert",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-lower",
+          "label": "하위 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "domSize:-13"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-upper",
+          "label": "상위 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-74"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-layer-event",
+          "label": "이벤트 레이어",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "domSize:-260"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-database",
+          "label": "데이터베이스...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal,database-modal-window",
+            "pressedState",
+            "domSize:873"
+          ],
+          "fingerprint": "dlg=database-modal,database-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-resources",
+          "label": "리소스 관리자...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:database-modal-window resource-modal-win,resource-modal",
+            "domSize:72"
+          ],
+          "fingerprint": "dlg=database-modal-window resource-modal-win,resource-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-world",
+          "label": "세계관...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:world-panel,world-panel-modal",
+            "pressedState",
+            "domSize:202"
+          ],
+          "fingerprint": "dlg=world-panel,world-panel-modal",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-tools-ai-settings",
+          "label": "AI 설정...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-tools",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:ai-settings-modal,database-modal-window ai-settings-window",
+            "pressedState",
+            "expandedState",
+            "domSize:107"
+          ],
+          "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-play",
+          "label": "시연 실행",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "expandedState",
+            "domSize:241"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-test-window",
+          "label": "시연 실행 창",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "pressedState",
+            "expandedState",
+            "domSize:241"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-battle-test",
+          "label": "랜덤 전투 테스트",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:test-play-modal-backdrop",
+            "event:oprn:test-play-window",
+            "expandedState",
+            "domSize:333"
+          ],
+          "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-game-export",
+          "label": "내보내기...",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-game",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:게임 번들을 만드는 중...게임 내보내기 실패: The player deployment manifest is malformed. Rebuild  / 게임 번들을 만드는 중... / 게임 내보내기 실패: The player deployment manifest is malformed. Rebuild and redeploy th",
+            "testidCount:-2"
+          ],
+          "fingerprint": "toast=게임 번들을 만드는 중...게임 내보내기 실패: The player de,게임 번들을 만드는 중...,게임 내보내기 실패: The player deployment manife",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help-shortcuts",
+          "label": "단축키 · 도움말",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-help",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "dialog:help-modal,help-modal-window",
+            "pressedState",
+            "domSize:184"
+          ],
+          "fingerprint": "dlg=help-modal,help-modal-window",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "menu-help-about",
+          "label": "정보",
+          "disabled": false,
+          "surface": "topMenuPopup",
+          "via": "menu-help",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "toast:OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치 / OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치",
+            "expandedState",
+            "testidCount:-1"
+          ],
+          "fingerprint": "toast=OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG ,OPRN Studio — 브라우저에서 돌아가는 AI 협업 탑다운 RPG ",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-toggle-tiles",
+          "label": "☑ 타일",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-317"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-dock-tiles-right",
+          "label": "오른쪽",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-panel-toggle-maps",
+          "label": "☑ 맵",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-34"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-panel-dock-maps-right",
+          "label": "오른쪽",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-layout-map",
+          "label": "● 맵 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-layout-event",
+          "label": "○ 이벤트 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "domSize:-317"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-layout-data",
+          "label": "○ 데이터 중심",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-assistant-dock-glass",
+          "label": "◧",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-assistant-dock-side",
+          "label": "▥",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        },
+        {
+          "testid": "workspace-assistant-dock-float",
+          "label": "⌨",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:-6"
+          ],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-guided",
+          "label": "○ 안내",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "event:oprn:editor-ui-mode",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:-374"
+          ],
+          "fingerprint": "evt=oprn:editor-ui-mode",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-comfortable",
+          "label": "○ 보통",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": true,
+          "hiddenAncestor": null,
+          "verdict": "works",
+          "changes": [
+            "event:oprn:editor-ui-mode",
+            "pressedState",
+            "expandedState",
+            "localStorage",
+            "bodyClass",
+            "domSize:-57"
+          ],
+          "fingerprint": "evt=oprn:editor-ui-mode",
+          "pageErrors": [],
+          "clickError": null
+        },
+        {
+          "testid": "workspace-density-dense",
+          "label": "● 촘촘",
+          "disabled": false,
+          "surface": "nested",
+          "via": "workspace-panels-button",
+          "visible": false,
+          "hiddenAncestor": "workspace-panels-menu",
+          "verdict": "click-failed",
+          "changes": [],
+          "fingerprint": "(no-fingerprint)",
+          "pageErrors": [],
+          "clickError": "locator.click: Element is not visible"
+        }
+      ]
+    }
+  },
+  "duplicates": [
+    {
+      "mode": "beginner",
+      "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "mode-play",
+          "label": "전체 프로젝트 시연 실행",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "topbar-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "authoring-task-test",
+          "label": "테스트",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-game-play",
+          "label": "시연 실행",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        },
+        {
+          "testid": "menu-game-test-window",
+          "label": "시연 실행 창",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        },
+        {
+          "testid": "menu-game-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        }
+      ]
+    },
+    {
+      "mode": "beginner",
+      "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "topbar-ai-settings",
+          "label": "AI 설정 열기",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-ai-settings",
+          "label": "AI 설정...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "beginner",
+      "fingerprint": "dlg=database-modal,database-modal-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "authoring-task-data",
+          "label": "데이터",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-database",
+          "label": "데이터베이스...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "beginner",
+      "fingerprint": "dlg=app-confirm-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "menu-project-sample-adventure",
+          "label": "예제로 시작",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-sky-stair",
+          "label": "천공의 계단 (7층 JRPG)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-training-examples",
+          "label": "학습 예시 12맵",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-snow-mountain-60",
+          "label": "설산 60×60 (절벽·계단 캔버스)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-ice-plain-64",
+          "label": "얼음 대평원 64×64 (절벽·계단 캔버스)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-scarloxy-demo",
+          "label": "Scarloxy 몬스터 초원 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-scarloxy-pokemon-demo",
+          "label": "Scarloxy 포켓몬풍 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-farming-demo",
+          "label": "농장 생활 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "beginner",
+      "fingerprint": "dlg=event-subdialog-window narrow",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "map-add",
+          "label": "+ 새 맵",
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps"
+        },
+        {
+          "testid": "map-more-map_blank_start",
+          "label": "⋯",
+          "surface": "nested",
+          "via": "basic-rail-toggle-maps"
+        }
+      ]
+    },
+    {
+      "mode": "standard",
+      "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "mode-play",
+          "label": "전체 프로젝트 시연 실행",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "topbar-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "authoring-task-test",
+          "label": "테스트",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-game-play",
+          "label": "시연 실행",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        },
+        {
+          "testid": "menu-game-test-window",
+          "label": "시연 실행 창",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        },
+        {
+          "testid": "menu-game-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        }
+      ]
+    },
+    {
+      "mode": "standard",
+      "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "topbar-ai-settings",
+          "label": "AI 설정 열기",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-ai-settings",
+          "label": "AI 설정...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "standard",
+      "fingerprint": "dlg=database-modal,database-modal-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "authoring-task-data",
+          "label": "데이터",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-database",
+          "label": "데이터베이스...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "standard",
+      "fingerprint": "dlg=app-confirm-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "menu-project-sample-adventure",
+          "label": "예제로 시작",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-sky-stair",
+          "label": "천공의 계단 (7층 JRPG)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-training-examples",
+          "label": "학습 예시 12맵",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-snow-mountain-60",
+          "label": "설산 60×60 (절벽·계단 캔버스)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-ice-plain-64",
+          "label": "얼음 대평원 64×64 (절벽·계단 캔버스)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-scarloxy-demo",
+          "label": "Scarloxy 몬스터 초원 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-scarloxy-pokemon-demo",
+          "label": "Scarloxy 포켓몬풍 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-farming-demo",
+          "label": "농장 생활 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "standard",
+      "fingerprint": "evt=oprn:editor-ui-mode",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "workspace-density-guided",
+          "label": "○ 안내",
+          "surface": "nested",
+          "via": "workspace-panels-button"
+        },
+        {
+          "testid": "workspace-density-dense",
+          "label": "○ 촘촘",
+          "surface": "nested",
+          "via": "workspace-panels-button"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=test-play-modal-backdrop;evt=oprn:test-play-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "mode-play",
+          "label": "전체 프로젝트 시연 실행",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "topbar-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "authoring-task-test",
+          "label": "테스트",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "toolbar-battle-test",
+          "label": "전투",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-game-play",
+          "label": "시연 실행",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        },
+        {
+          "testid": "menu-game-test-window",
+          "label": "시연 실행 창",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        },
+        {
+          "testid": "menu-game-battle-test",
+          "label": "랜덤 전투 테스트",
+          "surface": "topMenuPopup",
+          "via": "menu-game"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=ai-settings-modal,database-modal-window ai-settings-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "topbar-ai-settings",
+          "label": "AI 설정 열기",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-ai-settings",
+          "label": "AI 설정...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=database-modal,database-modal-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "authoring-task-data",
+          "label": "데이터",
+          "surface": "topbar",
+          "via": null
+        },
+        {
+          "testid": "toolbar-database",
+          "label": "DB",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-database",
+          "label": "데이터베이스...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=app-modal-card,app-prompt-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-new",
+          "label": "새 프로젝트",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-project-new",
+          "label": "새 프로젝트",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "toast=이미 최신 상태입니다,이미 최신 상태입니다",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-save",
+          "label": "저장",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-project-save",
+          "label": "저장",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "toast=온라인 저장본을 불러오는 중...이 화면에서는 온라인 저장본을 불러올 수,온라인 저장본을 불러오는 중...,이 화면에서는 온라인 저장본을 불러올 수 없습니다.",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-reload-db",
+          "label": "저장본",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-project-reload-db",
+          "label": "저장본 다시 불러오기",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=database-modal-window db-config-window,db-config-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-load",
+          "label": "열기",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-project-load",
+          "label": "열기",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "(no-fingerprint);filechooser",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-import",
+          "label": "가져오기",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-project-import",
+          "label": "가져오기...",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=database-modal-window resource-modal-win,resource-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-resource-manager",
+          "label": "소재",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-resources",
+          "label": "리소스 관리자...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=world-panel,world-panel-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-world",
+          "label": "세계관",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-tools-world",
+          "label": "세계관...",
+          "surface": "topMenuPopup",
+          "via": "menu-tools"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=help-modal,help-modal-window",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "toolbar-help",
+          "label": "도움말",
+          "surface": "classicToolbar",
+          "via": null
+        },
+        {
+          "testid": "menu-help-shortcuts",
+          "label": "단축키 · 도움말",
+          "surface": "topMenuPopup",
+          "via": "menu-help"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "dlg=app-confirm-modal",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "menu-project-sample-adventure",
+          "label": "예제로 시작",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-sky-stair",
+          "label": "천공의 계단 (7층 JRPG)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-training-examples",
+          "label": "학습 예시 12맵",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-snow-mountain-60",
+          "label": "설산 60×60 (절벽·계단 캔버스)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-ice-plain-64",
+          "label": "얼음 대평원 64×64 (절벽·계단 캔버스)",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-scarloxy-demo",
+          "label": "Scarloxy 몬스터 초원 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-scarloxy-pokemon-demo",
+          "label": "Scarloxy 포켓몬풍 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        },
+        {
+          "testid": "menu-project-farming-demo",
+          "label": "농장 생활 데모",
+          "surface": "topMenuPopup",
+          "via": "menu-project"
+        }
+      ]
+    },
+    {
+      "mode": "expert",
+      "fingerprint": "evt=oprn:editor-ui-mode",
+      "sameSurface": true,
+      "controls": [
+        {
+          "testid": "workspace-density-guided",
+          "label": "○ 안내",
+          "surface": "nested",
+          "via": "workspace-panels-button"
+        },
+        {
+          "testid": "workspace-density-comfortable",
+          "label": "○ 보통",
+          "surface": "nested",
+          "via": "workspace-panels-button"
+        }
+      ]
+    }
+  ],
+  "dead": [
+    {
+      "mode": "beginner",
+      "testid": "window-fullscreen",
+      "label": "□",
+      "surface": "topbar",
+      "disabled": false,
+      "tag": "BUTTON",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "dead",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": null
+    },
+    {
+      "mode": "beginner",
+      "testid": "workspace-panel-toggle-tiles",
+      "label": "☑ 타일",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "beginner",
+      "testid": "workspace-panel-dock-tiles-right",
+      "label": "오른쪽",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "beginner",
+      "testid": "workspace-layout-event",
+      "label": "○ 이벤트 중심",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "beginner",
+      "testid": "workspace-density-dense",
+      "label": "○ 촘촘",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "beginner",
+      "testid": "map-tree-facet-all",
+      "label": "전체",
+      "disabled": false,
+      "surface": "nested",
+      "via": "basic-rail-toggle-maps",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "dead",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": null
+    },
+    {
+      "mode": "beginner",
+      "testid": "map-quick-add-child-map_blank_start",
+      "label": "+",
+      "disabled": false,
+      "surface": "nested",
+      "via": "basic-rail-toggle-maps",
+      "visible": false,
+      "hiddenAncestor": "(self)",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "menu-help",
+      "label": "도움말",
+      "surface": "topbar",
+      "disabled": false,
+      "tag": "BUTTON",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "window-toolbar-collapse",
+      "label": "─",
+      "surface": "topbar",
+      "disabled": false,
+      "tag": "BUTTON",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "click-failed",
+      "changes": [
+        "pressedState",
+        "expandedState",
+        "localStorage",
+        "bodyClass",
+        "domSize:624"
+      ],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "window-fullscreen",
+      "label": "□",
+      "surface": "topbar",
+      "disabled": false,
+      "tag": "BUTTON",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "standard-more-world",
+      "label": "세계관",
+      "disabled": false,
+      "surface": "nested",
+      "via": "standard-more-tools",
+      "visible": false,
+      "hiddenAncestor": "standard-more-tools-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "standard-more-resources",
+      "label": "자료",
+      "disabled": false,
+      "surface": "nested",
+      "via": "standard-more-tools",
+      "visible": false,
+      "hiddenAncestor": "standard-more-tools-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "standard-more-database",
+      "label": "자료",
+      "disabled": false,
+      "surface": "nested",
+      "via": "standard-more-tools",
+      "visible": false,
+      "hiddenAncestor": "standard-more-tools-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "standard-more-switch-expert",
+      "label": "전문가 모드로 전환",
+      "disabled": false,
+      "surface": "nested",
+      "via": "standard-more-tools",
+      "visible": false,
+      "hiddenAncestor": "standard-more-tools-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "standard",
+      "testid": "workspace-layout-data",
+      "label": "○ 데이터 중심",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "layer-lower",
+      "label": "바닥",
+      "surface": "classicToolbar",
+      "disabled": false,
+      "tag": "BUTTON",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "dead",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": null
+    },
+    {
+      "mode": "expert",
+      "testid": "toolbar-left-panel",
+      "label": "왼쪽 패널",
+      "surface": "classicToolbar",
+      "disabled": false,
+      "tag": "BUTTON",
+      "visible": true,
+      "hiddenAncestor": null,
+      "verdict": "dead",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": null
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-panel-dock-tiles-right",
+      "label": "오른쪽",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-panel-dock-maps-right",
+      "label": "오른쪽",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-layout-map",
+      "label": "● 맵 중심",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-layout-data",
+      "label": "○ 데이터 중심",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-assistant-dock-glass",
+      "label": "◧",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-assistant-dock-side",
+      "label": "▥",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    },
+    {
+      "mode": "expert",
+      "testid": "workspace-density-dense",
+      "label": "● 촘촘",
+      "disabled": false,
+      "surface": "nested",
+      "via": "workspace-panels-button",
+      "visible": false,
+      "hiddenAncestor": "workspace-panels-menu",
+      "verdict": "click-failed",
+      "changes": [],
+      "fingerprint": "(no-fingerprint)",
+      "pageErrors": [],
+      "clickError": "locator.click: Element is not visible"
+    }
+  ],
+  "errors": []
+}
