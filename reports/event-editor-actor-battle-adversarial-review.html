@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>이벤트 에디터 「동료 · 전투」 적대적 리뷰</title>
+<style>
+:root{
+  --bg:#0f1117; --surface:#151823; --raised:#1c202d; --inset:#0c0e14;
+  --border:rgba(255,255,255,.09); --borderS:rgba(255,255,255,.07);
+  --t1:#e9ecf3; --t2:#9aa3b5; --t3:#626b7d;
+  --accent:#6c79f2; --accent2:#8590f6;
+  --danger:#f0716f; --warn:#f2b749; --ok:#55d69c;
+  --shadow:0 8px 28px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--t1);font-family:Inter,"Segoe UI","Malgun Gothic",system-ui,sans-serif;line-height:1.55}
+a{color:var(--accent2)}
+img{max-width:100%;height:auto;display:block;background:#111}
+.hero{position:sticky;top:0;z-index:20;background:rgba(15,17,23,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.hero-inner{max-width:1180px;margin:0 auto;padding:18px 20px}
+.badge{display:inline-block;font:700 11px/1 sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--accent);padding:6px 10px;border-radius:999px}
+.hero h1{margin:8px 0 4px;font-size:24px;letter-spacing:-.03em}
+.hero p{margin:0;color:var(--t2);font-size:13px;max-width:820px}
+.toc{max-width:1180px;margin:0 auto;padding:10px 20px 14px;display:flex;gap:8px;flex-wrap:wrap}
+.toc a{font:600 13px/1 sans-serif;padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--t1);text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 80px}
+.kpi{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.kpi span{font:700 11px/1 sans-serif;padding:7px 9px;border-radius:999px;border:1px solid var(--border);background:var(--inset);color:var(--t2)}
+.kpi .bad{color:var(--danger);border-color:rgba(240,113,111,.35);background:rgba(240,113,111,.1)}
+.kpi .warn{color:var(--warn);border-color:rgba(242,183,73,.35);background:rgba(242,183,73,.1)}
+.kpi .good{color:var(--ok);border-color:rgba(85,214,156,.35);background:rgba(85,214,156,.12)}
+.chapter{background:var(--raised);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin:18px 0;box-shadow:var(--shadow)}
+.ch-head{display:flex;gap:14px;align-items:flex-start;padding:18px;border-bottom:1px solid var(--borderS)}
+.num{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font:800 16px/1 sans-serif;color:#fff;background:var(--accent);flex:0 0 auto}
+.ch-head h2{margin:0;font-size:18px}
+.ch-head p{margin:4px 0 0;color:var(--t2);font-size:13px}
+.ch-body{padding:18px;display:grid;gap:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--borderS);border-radius:12px;padding:14px}
+.card h3{margin:0 0 8px;font-size:14px}
+.card p,.card li{color:var(--t2);font-size:13px}
+.callout{border-left:3px solid var(--accent);padding:10px 12px;background:rgba(108,121,242,.08);border-radius:0 10px 10px 0;font-size:13px}
+.callout.bad{border-left-color:var(--danger);background:rgba(240,113,111,.08)}
+.callout.warn{border-left-color:var(--warn);background:rgba(242,183,73,.08)}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{text-align:left;color:var(--t2);border-bottom:1px solid var(--border);padding:8px 6px}
+.table td{border-bottom:1px solid var(--borderS);padding:9px 6px;vertical-align:top}
+.sev{font:700 11px/1 sans-serif;padding:4px 7px;border-radius:999px;display:inline-block}
+.sev-p0{background:rgba(240,113,111,.16);color:var(--danger)}
+.sev-p1{background:rgba(242,183,73,.14);color:var(--warn)}
+.sev-p2{background:rgba(148,163,184,.12);color:var(--t2)}
+.shot{background:var(--inset);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.shot-head{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--border);font:600 11px/1 sans-serif;letter-spacing:.04em;color:var(--t2)}
+.dot{width:10px;height:10px;border-radius:50%}
+figcaption{padding:10px 12px;color:var(--t3);font-size:12px;word-break:break-all}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;white-space:pre-wrap;background:var(--inset);border:1px solid var(--borderS);border-radius:10px;padding:10px;color:#cbd5e1;overflow:auto}
+.mini{color:var(--t3);font-size:12px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge">Hostile Review · 동료 · 전투 · 2026-08-26</span>
+    <h1>이벤트 에디터 「동료 · 전투」 적대적 리뷰</h1>
+    <p>대상: 명령 피커 탭 2, 명령 편집 다이얼로그의 미리보기 패널, 전투/파티/능력치 폼이 실제로 고를 수 있는지. 가설은 코드에서 시작했고, Playwright + 스크린샷 + computed style로 증명했다. 미리보기는 “조금 아쉽다”가 아니라 식별 불능이다.</p>
+    <div class="kpi">
+      <span class="bad">P0 3</span><span class="warn">P1 8</span><span>P2 4</span><span class="good">작동하는 부분 있음</span>
+    </div>
+  </div>
+  <nav class="toc">
+    <a href="#verdict">결론</a>
+    <a href="#c1">1 피커</a>
+    <a href="#c2">2 미리보기</a>
+    <a href="#c3">3 전투 폼</a>
+    <a href="#c4">4 배우 명령</a>
+    <a href="#c5">5 레이어·지속성</a>
+    <a href="#matrix">매트릭스</a>
+  </nav>
+</div>
+<div class="wrap">
+
+<section class="chapter" id="verdict">
+  <div class="ch-head">
+    <div class="num">0</div>
+    <div>
+      <h2>결론</h2>
+      <p>탭은 열리고 한국어 라벨은 붙어 있다. 그 다음부터 무너진다. 전투 미리보기의 검 아이콘은 배경과 같은 색이고, 배우 명령 미리보기는 카드 문장만 남으며, 전투 폼은 이름 없는 변수를 한 화면 가득 덤프한다. 피커는 편집 다이얼로그 뒤에 그대로 남아 확인 클릭이 레이어에 먹힌다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <div class="callout bad">측정: <code>.ecp-battle-badge</code> color === backgroundColor === <code>rgba(15, 23, 42, 0.125)</code>. 빈 전투 미리보기의 검은 안 보인다. EXP 배지는 글자색 <code>rgb(247, 248, 248)</code>에 배경 투명 — 흰 패널에서 유령 글자다.</div>
+    <div class="card">
+      <h3>산출물 절대경로</h3>
+      <p>이 보고서: <a href="file:///C:/Users/USER/Downloads/rpg-zzu/reports/event-editor-actor-battle-adversarial-review.html">file:///C:/Users/USER/Downloads/rpg-zzu/reports/event-editor-actor-battle-adversarial-review.html</a></p>
+      <p>증거 폴더: <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review</a></p>
+      <p>계획: <a href="file:///C:/Users/USER/Downloads/rpg-zzu/.omo/plans/event-editor-actor-battle-adversarial-review.md">file:///C:/Users/USER/Downloads/rpg-zzu/.omo/plans/event-editor-actor-battle-adversarial-review.md</a></p>
+      <p>e2e: <a href="file:///C:/Users/USER/Downloads/rpg-zzu/test/e2e/_actor-battle-adversarial-review.spec.ts">file:///C:/Users/USER/Downloads/rpg-zzu/test/e2e/_actor-battle-adversarial-review.spec.ts</a></p>
+      <p>부팅: <code>/?blankProject=1</code> · 포트 9999 · Chromium · 1478×926. 탭 2 인벤토리 JSON에 명령 18개+. 대표 7개 다이얼로그를 열었고 전부 <code>stackedPickerBehind: true</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="c1">
+  <div class="ch-head">
+    <div class="num">1</div>
+    <div>
+      <h2>피커 탭 「동료 · 전투」</h2>
+      <p>그룹 헤딩이 동료 한 줄 다음에 시스템 여섯 번. 전투 명령의 data-category는 battle이 아니라 system이다. 탭 이름은 전투인데 정보 구조는 시스템 쓰레기통이다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>02-picker-tab2-list.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/02-picker-tab2-list.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/02-picker-tab2-list.png" alt="탭 2 리스트. 동료 그룹 아래 HP/MP/상태/회복이 이어지고, 전투는 시스템으로 분류된다."></a>
+  <figcaption>탭 2 리스트. 동료 그룹 아래 HP/MP/상태/회복이 이어지고, 전투는 시스템으로 분류된다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/02-picker-tab2-list.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/02-picker-tab2-list.png</a></figcaption>
+</figure>
+    <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>04-picker-search-battle.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/04-picker-search-battle.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/04-picker-search-battle.png" alt="검색어 「전투」. 전투 처리뿐 아니라 파티/경험치/레벨이 같이 남는다. 전용 전투 명령 변경도 runtime-full로 보인다."></a>
+  <figcaption>검색어 「전투」. 전투 처리뿐 아니라 파티/경험치/레벨이 같이 남는다. 전용 전투 명령 변경도 runtime-full로 보인다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/04-picker-search-battle.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/04-picker-search-battle.png</a></figcaption>
+</figure>
+    <div class="callout warn">헤딩 실측: <code>동료, 시스템, 시스템, 시스템, 시스템, 시스템, 시스템</code>. <code>groupVisual("배우/전투")</code>는 라벨을 「동료」로만 찍고, 전투 전용 그룹은 탭 2에 거의 오지 않는다. Battle Processing은 pickerGroup이 시스템/고급으로 떨어진다.</div>
+    <div class="card">
+      <h3>인벤토리에서 바로 보이는 균열</h3>
+      <ul>
+        <li>파티 멤버 변경 testId는 <code>command-picker-add-changeParty</code> — 스펙이 자주 쓰는 changePartyMember와 어긋난다.</li>
+        <li>HP는 <code>changeActorHp</code>, 스킬은 <code>learnSkill</code>, 파라미터/상태/데미지/얼굴은 m2-0xx 슬러그. 같은 탭에 세 종류의 ID 체계.</li>
+        <li>주인공 이름/별명/얼굴은 runtime-partial인데도 selectable.</li>
+        <li>그리드 토글 testId가 없어 그리드 증거를 못 남겼다 (P2).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="c2">
+  <div class="ch-head">
+    <div class="num">2</div>
+    <div>
+      <h2>미리보기 패널이 개판인 이유</h2>
+      <p><code>event-command-preview</code>는 320×160~280으로 항상 있다. 문제는 패널이 아니라 안쪽 시각 언어다. 토큰을 --bg-surface / 12.5% 슬레이트에 납작하게 눌러서 배지가 사라졌고, 핸들러가 없는 명령은 「미리보기」라는 단어와 한 줄 요약만 남긴다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <div class="grid2">
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-battleProcessing-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-preview.png" alt="빈 전투: 전장 박스 + 유령 검 + 「적 그룹 필요」. img 0개."></a>
+  <figcaption>빈 전투: 전장 박스 + 유령 검 + 「적 그룹 필요」. img 0개. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-preview.png</a></figcaption>
+</figure>
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changeExp-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-preview.png" alt="EXP 원 배지가 배경에 녹아 글자만 희미하다."></a>
+  <figcaption>EXP 원 배지가 배경에 녹아 글자만 희미하다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-preview.png</a></figcaption>
+</figure>
+    </div>
+    <div class="grid2">
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changePartyMember-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-preview.png" alt="배우 미선택. 얼굴 없음, 물음표, 시뮬레이션 문구 「현재 파티에 없음」만."></a>
+  <figcaption>배우 미선택. 얼굴 없음, 물음표, 시뮬레이션 문구 「현재 파티에 없음」만. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-preview.png</a></figcaption>
+</figure>
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changeHp-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeHp-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeHp-preview.png" alt="전용 스테이지 없음. 「미리보기」캡션 + HP -= 10 텍스트."></a>
+  <figcaption>전용 스테이지 없음. 「미리보기」캡션 + HP -= 10 텍스트. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeHp-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeHp-preview.png</a></figcaption>
+</figure>
+    </div>
+    <div class="grid2">
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changeParameters-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeParameters-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeParameters-preview.png" alt="능력치 변경도 요약 카드. 최대 HP ＋1을 시각화하지 않는다."></a>
+  <figcaption>능력치 변경도 요약 카드. 최대 HP ＋1을 시각화하지 않는다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeParameters-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeParameters-preview.png</a></figcaption>
+</figure>
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-recoverAll-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-recoverAll-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-recoverAll-preview.png" alt="모두 회복: 하트/게이지 없이 문장 한 줄."></a>
+  <figcaption>모두 회복: 하트/게이지 없이 문장 한 줄. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-recoverAll-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-recoverAll-preview.png</a></figcaption>
+</figure>
+    </div>
+    <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changeActorFaceset-preview.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeActorFaceset-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeActorFaceset-preview.png" alt="얼굴 변경인데 얼굴 크롭이 없다. 핸들러가 m2Command 폴백."></a>
+  <figcaption>얼굴 변경인데 얼굴 크롭이 없다. 핸들러가 m2Command 폴백. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeActorFaceset-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeActorFaceset-preview.png</a></figcaption>
+</figure>
+    <div class="callout bad">코드 위치: <code>src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css</code> — <code>.ecp-gold-badge, .ecp-exp-badge, .ecp-skill-badge</code>가 color와 background를 모두 surface로 둔다. <code>.ecp-battle-badge</code>도 동일. <code>visualPreviewHandlers</code>에 changeActorHp / m2 파라미터 / recoverAll / faceset이 없다.</div>
+  </div>
+</section>
+
+<section class="chapter" id="c3">
+  <div class="ch-head">
+    <div class="num">3</div>
+    <div>
+      <h2>전투 처리 폼 — 고를 수는 있으나 화면이 오염된다</h2>
+      <p>트룹 칩(슬라임 정찰대, 초원 슬라임 둘, 붉은 드래곤)은 실측으로 보인다. 동시에 「이 그룹/변수」가 두 번 그려지고, 변수 피커가 빈 슬롯 20개를 「(이름 없음)」으로 펼친다. 미리보기 오른쪽은 검 유령이다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-battleProcessing-dialog.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-dialog.png" alt="전투 다이얼로그 전체. 피커가 뒤에 남아 있고, 변수 목록이 본문을 밀어낸다."></a>
+  <figcaption>전투 다이얼로그 전체. 피커가 뒤에 남아 있고, 변수 목록이 본문을 밀어낸다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-dialog.png</a></figcaption>
+</figure>
+    <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>06-battle-configured.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/06-battle-configured.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/06-battle-configured.png" alt="분기 체크 이후. 확인/취소는 보이지만 뒤에 명령 추가 창이 살아 있다."></a>
+  <figcaption>분기 체크 이후. 확인/취소는 보이지만 뒤에 명령 추가 창이 살아 있다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/06-battle-configured.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/06-battle-configured.png</a></figcaption>
+</figure>
+    <div class="card">
+      <h3>작동 노트</h3>
+      <ul>
+        <li>빈 트룹 경고 카피 「적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다」는 폼과 미리보기에 둘 다 있다. 좋다.</li>
+        <li>트룹을 골라도 미리보기 <code>imgs: []</code>. 몬스터 스프라이트 경로가 비거나 resolve가 실패하면 전장이 빈 박스다.</li>
+        <li>도주/패배/흐름 세그먼트는 존재하나 중복 컨트롤과 숨은 체크박스가 공존한다 (e2e 호환용).</li>
+        <li>결과 분기 체크는 DOM에 있다. 리스트 3분기 마커는 확인이 레이어에 막혀 이번 런에서 재오픈 증거를 못 남겼다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="c4">
+  <div class="ch-head">
+    <div class="num">4</div>
+    <div>
+      <h2>배우 명령은 폼이 두 번씩 말한다</h2>
+      <p>세그먼트 컨트롤이 라벨과 옵션을 중복 렌더한다. 파티 추가/제거가 두 줄, 경험치 ＝＋−가 두 줄. 사용자는 같은 결정을 두 번 본 뒤 미리보기에서 다시 텍스트로 본다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <div class="grid2">
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changePartyMember-dialog.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-dialog.png" alt="파티 멤버 변경 다이얼로그. 추가/제거 중복, 미리보기는 물음표."></a>
+  <figcaption>파티 멤버 변경 다이얼로그. 추가/제거 중복, 미리보기는 물음표. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changePartyMember-dialog.png</a></figcaption>
+</figure>
+      <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>05-changeExp-dialog.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-dialog.png" alt="경험치 폼. 연산 세그먼트 중복 + 유령 EXP 배지."></a>
+  <figcaption>경험치 폼. 연산 세그먼트 중복 + 유령 EXP 배지. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-dialog.png</a></figcaption>
+</figure>
+    </div>
+    <div class="callout warn">innerText 실측 조각: 「파티에 추가 | 파티에서 제거 | 파티에 추가 | 파티에서 제거」, 「＝ 대입 | ＋ 증가 | − 감소」가 HP/EXP에서 두 번. 접근성 이름과 화면 텍스트가 겹친다.</div>
+    <p class="mini">HP 폼은 완전 회복/+50% 칩이 있어 의도는 좋다. 미리보기는 그 칩을 게이지로 번역하지 않고 <code>HP -= 10</code>만 적는다.</p>
+  </div>
+</section>
+
+<section class="chapter" id="c5">
+  <div class="ch-head">
+    <div class="num">5</div>
+    <div>
+      <h2>레이어, 빈 줄, 지속성</h2>
+      <p>명령 추가는 빈 줄 더블클릭인데 expert/blank에서도 그 줄이 Playwright에 hidden이었다. 템플릿 CTA가 없으면 dispatchEvent로만 피커가 열린다. 피커 onSelect는 closePicker:false라 편집 창이 피커 위에 쌓인다. 확인 클릭이 이 스택에서 유실되어 리스트 지속성 샷(07)과 800px 샷(08)은 런이 멈췄다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <figure class="shot">
+  <div class="shot-head"><span class="dot" style="background:#f0716f"></span><span class="dot" style="background:#f2b749"></span><span class="dot" style="background:#55d69c"></span>01-event-editor-open.png</div>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/01-event-editor-open.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/01-event-editor-open.png" alt="이벤트 에디터 셸. 명령 리스트와 인스펙터. 인스펙터에는 미리보기 패널이 없다."></a>
+  <figcaption>이벤트 에디터 셸. 명령 리스트와 인스펙터. 인스펙터에는 미리보기 패널이 없다. · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/01-event-editor-open.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/01-event-editor-open.png</a></figcaption>
+</figure>
+    <div class="card">
+      <h3>재현</h3>
+      <ol>
+        <li><code>/?blankProject=1</code>에서 이벤트 레이어 → 맵 더블클릭 → 이벤트 에디터.</li>
+        <li>빈 명령 줄이 안 보이면 리스트 히든 줄에 dblclick를 강제로 보낸다.</li>
+        <li>탭 「동료 · 전투」→ 「전투...」. 뒤에 명령 추가 창이 남는지 확인.</li>
+        <li>미리보기 검/EXP 원을 눈과 eyedropper로 볼 것. 대비가 없다.</li>
+        <li>확인을 눌러도 피커가 남으면 Escape를 두 번  squander 해야 한다. 이건 워크플로가 아니다.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="matrix">
+  <div class="ch-head">
+    <div class="num">M</div>
+    <div>
+      <h2>결함 매트릭스</h2>
+      <p>고칠 순서. 미리보기 토큰과 모달 스택이 먼저다. 폼 중복은 그 다음이다.</p>
+    </div>
+  </div>
+  <div class="ch-body">
+    <table class="table">
+      <thead><tr><th>ID</th><th>심각도</th><th>현상</th><th>증거</th></tr></thead>
+      <tbody>
+        <tr><td>P0-1</td><td><span class="sev sev-p0">P0</span></td><td>미리보기 배지/램프가 배경과 동일 색. 전투 검·EXP 원이 식별 불가.</td><td><a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-preview.png">preview battle</a>, <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-changeExp-preview.png">preview exp</a></td></tr>
+        <tr><td>P0-2</td><td><span class="sev sev-p0">P0</span></td><td>전투 폼이 빈 변수 20개를 「(이름 없음)」으로 펼쳐 트룹 선택이 묻힌다.</td><td><a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/05-battleProcessing-dialog.png">dialog</a></td></tr>
+        <tr><td>P0-3</td><td><span class="sev sev-p0">P0</span></td><td>피커가 편집 다이얼로그 뒤에 상주. 확인이 레이어에 먹힘. 지속성 e2e가 이 지점에서 정지.</td><td>findings.stackedPickerBehind === true (7/7)</td></tr>
+        <tr><td>P1-1</td><td><span class="sev sev-p1">P1</span></td><td>탭 2 그룹이 동료+시스템 반복. 전투 category=system.</td><td><a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/02-picker-tab2-list.png">picker</a>, <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-editor-actor-battle-review/02-picker-tab2-inventory.json">json</a></td></tr>
+        <tr><td>P1-2</td><td><span class="sev sev-p1">P1</span></td><td>HP/파라미터/회복/얼굴 미리보기가 요약 카드 폴백. 얼굴 변경에 얼굴이 없다.</td><td>faceset/hp/params/recover 프리뷰 PNG</td></tr>
+        <tr><td>P1-3</td><td><span class="sev sev-p1">P1</span></td><td>세그먼트 라벨 중복 (추가/제거, ＝＋−).</td><td>party/exp dialog PNG</td></tr>
+        <tr><td>P1-4</td><td><span class="sev sev-p1">P1</span></td><td>누구와 싸울까 이 그룹/변수가 두 번.</td><td>battle dialog</td></tr>
+        <tr><td>P1-5</td><td><span class="sev sev-p1">P1</span></td><td>트룹을 골라도 미리보기에 적 스프라이트 img가 0.</td><td>probe imgs:[]</td></tr>
+        <tr><td>P1-6</td><td><span class="sev sev-p1">P1</span></td><td>인스펙터(클릭)에는 미리보기가 없어 더블클릭 다이얼로그와 정보량이 다르다.</td><td>01 셸</td></tr>
+        <tr><td>P1-7</td><td><span class="sev sev-p1">P1</span></td><td>빈 명령 줄이 시각적으로 숨겨져 명령 추가 진입이 불안정.</td><td>e2e hidden empty-line</td></tr>
+        <tr><td>P1-8</td><td><span class="sev sev-p1">P1</span></td><td>partial 얼굴/이름 명령이 맵 피커에서 선택 가능.</td><td>inventory runtime-partial</td></tr>
+        <tr><td>P2-1</td><td><span class="sev sev-p2">P2</span></td><td>그리드 보기 토글 testId 부재.</td><td>03 샷 없음</td></tr>
+        <tr><td>P2-2</td><td><span class="sev sev-p2">P2</span></td><td>라벨 모두 회복 vs 전체 회복 vs 탭명 동료 · 전투.</td><td>inventory</td></tr>
+        <tr><td>P2-3</td><td><span class="sev sev-p2">P2</span></td><td>검색 「전투」가 파티 계열까지 넓게 매칭.</td><td>04 PNG</td></tr>
+        <tr><td>P2-4</td><td><span class="sev sev-p2">P2</span></td><td>800px/1280 반응형 샷은 스택 행으로 미수집.</td><td>08/09 없음</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">고칠 때 테스트 계약: 미리보기 배지는 배경과 4.5:1 이상, 전투 폼 변수 목록은 슬롯이 이름이 있을 때만, 피커는 편집 다이얼로그를 열기 전에 닫힌다. 얼굴 변경 미리보기는 faceset crop을 쓴다.</div>
+  </div>
+</section>
+
+<p class="mini">리뷰어: 적대 시각 QA + Playwright <code>_actor-battle-adversarial-review.spec.ts</code>. 수정은 이 보고서에 포함하지 않았다.</p>
+</div>
+</body>
+</html>
