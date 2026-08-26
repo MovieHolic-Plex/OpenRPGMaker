@@ -792,6 +792,12 @@ const SCREEN_COLOR_RGB: Record<string, { red: number; green: number; blue: numbe
   neutral: { red: 200, green: 200, blue: 200 },
 };
 
+// 이름으로 지원하는 화면 색인가. 에디터가 "이 값을 알아볼 수 있는가"를 런타임과
+// 같은 목록으로 판단하려면 필요하다(screenColorToRgb 는 모를 경우 조용하게 흰색으로 돌린다).
+export function isScreenColorName(color: string): boolean {
+  return Object.hasOwn(SCREEN_COLOR_RGB, color);
+}
+
 // 화면 효과 색상 문자열(white/red/.../neutral 또는 #rrggbb)을 RGB 로 변환한다.
 export function screenColorToRgb(color: string): { red: number; green: number; blue: number } {
   const named = SCREEN_COLOR_RGB[color];

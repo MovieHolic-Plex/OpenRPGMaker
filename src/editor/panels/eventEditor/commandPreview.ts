@@ -22,6 +22,9 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
+import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { clampMs } from "@/player/interpreter/commandCatalog";
+import { isRecognizedTintValue, isVisibleTint, parseTintColor, rgbaToCss } from "@/player/screen/tintModel";
 import { formatVariableFormula } from "./commandBodyVariable";
 import { previewAudio } from "./previewAudio";
 import { previewForkFlow } from "./previewForkFlow";
@@ -1262,33 +1265,53 @@ function m2Field(cmd: Extract<Command, { kind: "m2Command" }>, key: string, fall
 function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
   const effect = m2Field(cmd, "effect", "fadeIn");
   const value = m2Field(cmd, "value", "");
-  const duration = m2Field(cmd, "durationMs", "300");
+  const duration = clampMs(Number(m2Field(cmd, "durationMs", "300")));
+  const model = screenEffectPreviewModel(effect, value, duration);
   const stage = el("div", {
     class: `ecp-stage ecp-screen-effect-stage ecp-screen-effect-${effect}`,
-    dataset: { testid: "ecp-screen-effect-stage", effect },
+    dataset: { testid: "ecp-screen-effect-stage", effect, playState: "idle" },
   });
-  const screen = el("div", { class: "ecp-fx-screen ecp-screen-effect-screen" });
-  const overlay = el("div", { class: "ecp-screen-effect-overlay" });
-  if (effect === "fadeOut") overlay.style.background = "rgba(0,0,0,0.72)";
-  else if (effect === "fadeIn") overlay.style.background = "rgba(0,0,0,0.18)";
-  else if (effect === "flash") overlay.style.background = "rgba(255,255,255,0.7)";
-  else if (effect === "tint") overlay.style.background = value || "#ff0000";
-  else if (effect === "weather") overlay.style.background = "rgba(80,120,180,0.28)";
-  else overlay.style.background = "rgba(0,0,0,0.35)";
+  // 재생 전이 시간은 런타임 clampMs 가 자른 값을 그대로 쓴다 — 300ms 와 1200ms 가 달라 보여야 한다.
+  stage.style.setProperty("--ecp-fx-duration", `${duration}ms`);
+  const screen = el("div", {
+    class: "ecp-fx-screen ecp-screen-effect-screen",
+    dataset: { testid: "ecp-screen-effect-screen" },
+  });
+  // 미니 모니터 속 가짜 게임 화면. 효과는 "무엇을 덮는가"가 전부라
+  // 덮을 대상이 없으면(흰 배경) 어떤 효과도 보이지 않는다.
+  screen.append(
+    el("div", {
+      class: "ecp-screen-effect-scene",
+      dataset: { testid: "ecp-screen-effect-scene" },
+      attrs: { "aria-hidden": "true" },
+    })
+  );
+  const overlay = el("div", {
+    class: model.neutral ? "ecp-screen-effect-overlay is-fx-neutral" : "ecp-screen-effect-overlay",
+    dataset: { testid: "ecp-screen-effect-overlay" },
+    attrs: { "aria-hidden": "true" },
+  });
+  overlay.style.background = model.background;
+  overlay.style.opacity = String(model.restOpacity);
   screen.append(overlay);
-  const labels: Record<string, string> = {
-    fadeIn: "페이드 인",
-    fadeOut: "페이드 아웃",
-    flash: "플래시",
-    tint: "색조",
-    weather: "날씨",
-  };
-  screen.append(el("div", { class: "ecp-fx-label", text: labels[effect] ?? effect }));
+  screen.append(el("div", { class: "ecp-fx-label", text: screenEffectLabel(effect) }));
   stage.append(screen);
-  const meta = [labels[effect] ?? effect];
+  stage.append(screenEffectPlayButton(stage, overlay, model, duration));
+  const meta = [screenEffectLabel(effect)];
   if (value) meta.push(value);
   meta.push(`${duration}ms`);
+  if (model.note) meta.push(model.note);
   stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
+  if (model.error) {
+    stage.append(
+      el("div", {
+        class: "ecp-screen-effect-error",
+        dataset: { testid: "ecp-screen-effect-error" },
+        attrs: { role: "status" },
+        text: model.error,
+      })
+    );
+  }
   return stage;
 }
 
@@ -1299,6 +1322,127 @@ const CAMERA_MODE_LABELS: Record<string, string> = {
   zoom: "확대/축소",
   lock: "고정",
 };
+
+const SCREEN_EFFECT_LABELS: Record<string, string> = {
+  fadeIn: "페이드 인",
+  fadeOut: "페이드 아웃",
+  flash: "플래시",
+  tint: "색조",
+  weather: "날씨",
+};
+
+function screenEffectLabel(effect: string): string {
+  return SCREEN_EFFECT_LABELS[effect] ?? effect;
+}
+
+/** 프리뷰 오버레이 한 장으로 표현하는 효과 상태. 전부 런타임 계획(planScreenEffect)에서 도출한다. */
+type ScreenEffectPreviewModel = {
+  /** 오버레이 배경 — 런타임 rgba 그대로(알파 포함). */
+  readonly background: string;
+  /** 재생 시작 지점의 불투명도. */
+  readonly fromOpacity: number;
+  /** 정지·도착 상태의 불투명도. */
+  readonly restOpacity: number;
+  /** 색조 제거(톤 리셋) — 색을 칠하는 것이 아니라 지우는 상태. */
+  readonly neutral?: boolean;
+  readonly note?: string;
+  readonly error?: string;
+};
+
+function screenEffectPreviewModel(effect: string, value: string, durationMs: number): ScreenEffectPreviewModel {
+  const plan = planScreenEffect(effect, value, durationMs);
+  const error = screenEffectValueError(effect, value);
+  switch (plan.kind) {
+    case "tint": {
+      // 페이드 인은 "이미 검게 덮인 화면을 걷어낸다" — 도착지가 투명이라
+      // 걷어내는 대상(검은 막)을 시작 상태로 보여줘야 재생이 말이 된다.
+      if (plan.unhide) {
+        return { background: "rgba(0,0,0,1)", fromOpacity: 1, restOpacity: 0.12, note: "어두운 화면을 걷어냄" };
+      }
+      const rgba = parseTintColor(plan.tint);
+      if (!isVisibleTint(rgba)) {
+        // 빈 값 = 런타임의 neutral. 색을 칠하는 것이 아니므로 붉은 사각이 아니라
+        // 채도를 걷어내는 상태로 그린다(CSS 가 grayscale 을 입힌다).
+        return {
+          background: "rgba(255,255,255,0)",
+          fromOpacity: 0,
+          restOpacity: 1,
+          neutral: true,
+          note: "색조 제거",
+        };
+      }
+      return { background: rgbaToCss(rgba), fromOpacity: 0, restOpacity: 1, ...(error ? { error } : {}) };
+    }
+    case "flash": {
+      const rgba = parseTintColor(plan.color);
+      return {
+        background: rgbaToCss({ ...rgba, a: 1 }),
+        fromOpacity: 1,
+        restOpacity: 0.14,
+        note: "번쩍인 뒤 원래대로",
+        ...(error ? { error } : {}),
+      };
+    }
+    case "weather":
+      return { background: "rgba(120,150,190,0.45)", fromOpacity: 0, restOpacity: 1, note: plan.weather };
+    case "unsupported":
+      return { background: "rgba(15,23,42,0.35)", fromOpacity: 0, restOpacity: 1 };
+  }
+}
+
+/** 색 값을 런타임이 알아볼 수 없으면 사유를 돌린다. 색을 안 쓰는 효과(페이드/날씨)는 검사하지 않는다. */
+function screenEffectValueError(effect: string, value: string): string | undefined {
+  if (effect !== "tint" && effect !== "flash") return undefined;
+  const trimmed = value.trim();
+  if (!trimmed || isRecognizedTintValue(trimmed)) return undefined;
+  return `알 수 없는 색 '${trimmed}' — 런타임은 흰색으로 대신합니다.`;
+}
+
+/** 한 번 재생. from 상태로 점프한 다음 다음 프레임에 rest 로 풀어 CSS 전이가 돌게 한다. */
+function screenEffectPlayButton(
+  stage: HTMLElement,
+  overlay: HTMLElement,
+  model: ScreenEffectPreviewModel,
+  durationMs: number
+): HTMLElement {
+  let settleTimer: ReturnType<typeof setTimeout> | undefined;
+  const settle = () => {
+    if (settleTimer !== undefined) clearTimeout(settleTimer);
+    settleTimer = undefined;
+    stage.dataset.playState = "idle";
+  };
+  overlay.addEventListener("transitionend", (event) => {
+    if ((event as TransitionEvent).propertyName === "opacity") settle();
+  });
+  return el("button", {
+    class: "ecp-screen-effect-play",
+    text: "▶ 재생",
+    attrs: { type: "button", title: `${durationMs}ms 동안 한 번 재생` },
+    dataset: { testid: "ecp-screen-effect-play" },
+    on: {
+      click: () => {
+        stage.dataset.playState = "playing";
+        // is-fx-from 은 transition 을 끄는 클래스다 — 시작 상태로 즉시 점프한다.
+        overlay.classList.add("is-fx-from");
+        overlay.style.opacity = String(model.fromOpacity);
+        nextFrame(() => {
+          nextFrame(() => {
+            overlay.classList.remove("is-fx-from");
+            overlay.style.opacity = String(model.restOpacity);
+            // transitionend 가 오지 않는 환경(모션 감소 설정 등)을 위한 안전망.
+            settleTimer = setTimeout(settle, durationMs + 250);
+          });
+        });
+      },
+    },
+  });
+}
+
+/** requestAnimationFrame 이 없는 환경(유닛 테스트 fake DOM 기본 모드)에서는 그자리에서 진행한다. */
+function nextFrame(callback: () => void): void {
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => callback());
+  else callback();
+}
 
 function cameraControlStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
   const mode = m2Field(cmd, "mode", "panTo");
@@ -1465,69 +1609,6 @@ function weatherPreviewLabel(kind: Extract<Command, { kind: "setWeather" }>["wea
     default:
       return String(kind);
   }
-}
-
-
-function hpStage(cmd: Extract<Command, { kind: "changeActorHp" }>, context?: CommandPreviewContext): HTMLElement {
-  const project = store.getCurrent();
-  const record = project.database.actors.find((actor) => actor.id === cmd.actorId);
-  const stage = el("div", {
-    class: "ecp-icon-stage ecp-hp-stage",
-    dataset: { testid: "ecp-hp-stage" },
-  });
-  stage.append(el("div", {
-    class: "ecp-hero-icon",
-    children: [recordIconElement(facesetIconOf(project, record?.faceResourceId, record?.faceIndex ?? 0), record?.name ?? cmd.actorId)],
-  }));
-  stage.append(el("div", { class: "ecp-icon-name", text: record?.name ?? (cmd.actorId || "(주인공 선택)") }));
-  const amountText = cmd.amountMode === "percent" ? `${cmd.amount}%` : String(cmd.amount);
-  stage.append(el("div", { class: "ecp-op-strip", text: `HP ${cmd.op} ${amountText}` }));
-  const fill = cmd.op === "-="
-    ? 32
-    : cmd.op === "+="
-      ? 78
-      : Math.max(8, Math.min(100, cmd.amountMode === "percent" ? cmd.amount : 50));
-  const fillClass = cmd.op === "-=" ? "hurt" : cmd.op === "+=" ? "heal" : "set";
-  const gauge = el("div", { class: "ecp-vital-gauge", dataset: { testid: "ecp-hp-gauge" } });
-  const bar = el("div", { class: `ecp-vital-gauge-fill ${fillClass}` });
-  (bar as HTMLElement).style.width = `${fill}%`;
-  gauge.append(bar);
-  stage.append(gauge);
-  if (context?.simState) {
-    stage.append(el("div", { class: "ecp-current-state", text: `HP ${cmd.op} ${amountText}` }));
-  }
-  return stage;
-}
-
-function recoverAllStage(cmd: Extract<Command, { kind: "recoverAll" }>, context?: CommandPreviewContext): HTMLElement {
-  const project = store.getCurrent();
-  const record = cmd.actorId ? project.database.actors.find((actor) => actor.id === cmd.actorId) : undefined;
-  const stage = el("div", {
-    class: "ecp-icon-stage ecp-recover-stage",
-    dataset: { testid: "ecp-recover-stage" },
-  });
-  if (record) {
-    stage.append(el("div", {
-      class: "ecp-hero-icon",
-      children: [recordIconElement(facesetIconOf(project, record.faceResourceId, record.faceIndex ?? 0), record.name)],
-    }));
-    stage.append(el("div", { class: "ecp-icon-name", text: record.name }));
-  } else {
-    stage.append(el("div", { class: "ecp-gold-badge", text: "+" }));
-    stage.append(el("div", { class: "ecp-icon-name", text: "파티 전체" }));
-  }
-  stage.append(el("div", { class: "ecp-op-strip", text: "HP · MP 전원 회복" }));
-  for (const kind of ["hp", "mp"] as const) {
-    const gauge = el("div", { class: "ecp-vital-gauge", dataset: { testid: `ecp-recover-${kind}-gauge` } });
-    const bar = el("div", { class: `ecp-vital-gauge-fill full ${kind}` });
-    (bar as HTMLElement).style.width = "100%";
-    gauge.append(bar);
-    stage.append(gauge);
-  }
-  if (context?.simState) {
-    stage.append(el("div", { class: "ecp-current-state", text: "현재 상태: 회복" }));
-  }
-  return stage;
 }
 
 function m2Preview(cmd: Extract<Command, { kind: "m2Command" }>, context?: CommandPreviewContext): HTMLElement {
