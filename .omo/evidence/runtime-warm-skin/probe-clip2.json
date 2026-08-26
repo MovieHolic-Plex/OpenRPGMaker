@@ -1,0 +1,16 @@
+{
+  "debugPanel": {
+    "y": 0,
+    "h": 0,
+    "top": 0,
+    "bottom": 0
+  },
+  "debugVisible": false,
+  "menu": {
+    "y": 55,
+    "h": 820,
+    "top": 55,
+    "bottom": 875
+  },
+  "occluded": []
+}

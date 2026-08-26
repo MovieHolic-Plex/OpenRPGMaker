@@ -232,6 +232,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // project.system.systemResourceId 에 저장되므로 지우면 기존 프로젝트의 대사창이 깨진다.
   // 그림 자체는 우리가 생성한 9-slice 다(public/assets/ATTRIBUTION.md).
   "windowskin-default": "/assets/ui/windowskin-default.png",
+  "windowskin-warm": "/assets/ui/windowskin-warm.png",
   "windowskin-rm2003": "/assets/ui/windowskin-default.png",
 };
 

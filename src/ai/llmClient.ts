@@ -66,9 +66,9 @@ export const DEFAULT_CHATGPT_BASE_URL =
 // 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
 // 저장된 providerId/model 은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절
 // 암시 기본이므로 loadAiConfig 가 openai-codex 로 남긴다.
-export const DEFAULT_MODEL = "gemini-3.7-flash";
+export const DEFAULT_MODEL = "gemini-3.7-flash-high";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
+export const DEFAULT_LITE_MODEL = "gemini-3.7-flash-high";
 // cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
 // 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
@@ -163,18 +163,6 @@ export function scrubStoredAiCredentials(): {
 // 저장된 baseUrl 이나 apiKey 가 있으면 apiKey 모드로 추론했는데, 그러면 감독이 한 번이라도
 // 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
 // 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
-function looksLikeCodexModel(model: string): boolean {
-  const normalized = model.trim().toLowerCase();
-  return /^(gpt-|o1|o3|o4|chatgpt)/.test(normalized) && !normalized.startsWith("cpen/");
-}
-
-function resolveStoredProviderId(parsed: Partial<AiConfig>, model: string): string {
-  if (typeof parsed.providerId === "string" && parsed.providerId.trim() !== "") {
-    return parseOhMyPiProvider(parsed.providerId);
-  }
-  return looksLikeCodexModel(model) ? "openai-codex" : DEFAULT_OH_MY_PI_PROVIDER;
-}
-
 export function loadAiConfig(): AiConfig {
   const base = defaultAiConfig();
   if (typeof localStorage === "undefined") return base;
@@ -197,12 +185,12 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    // 저장된 제공자는 **그대로 보존한다.** 예전에는 oauthProviderOrDefault 로 비-oauth 제공자를
-    // openai-codex 로 되돌렸는데, 연결 방식이 두 종류가 된 뒤로는 틀린 동작이다 —
-    // providerId:"zai" 인 옛 설정은 *API 키* 종류 + zai 로 살아야 한다(GLM 이 이 경로로 남는다).
-    // providerId 가 없는 blob 은 공장 기본(Antigravity)을 따른다. gpt-* 만 남은 옛 Codex
-    // blob 만 openai-codex 로 남겨 Gemini 경로에 GPT 모델이 실리지 않게 한다.
-    const providerId = resolveStoredProviderId(parsed, model);
+    // 제공자는 **Antigravity 하나로 강제한다** (감독 지시 2026-08-26: 에디터의 모든 AI 를
+    // Antigravity 로 통일, 잔여 경로 없음). 예전에는 저장된 providerId 를 그대로 보존했고
+    // providerId 가 없는 옛 blob 은 "openai-codex" 로 남겼다 — 그래서 이미 쓰던 사용자는
+    // 새 기본으로 오지 않고 zai/codex 에 머물렀다(실측). 저장값을 읽지 않으므로 되돌아갈
+    // 구멍이 없다. authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
+    const providerId = DEFAULT_OH_MY_PI_PROVIDER;
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
@@ -249,7 +237,10 @@ export function loadAiConfig(): AiConfig {
 
 export function saveAiConfig(config: AiConfig): void {
   if (typeof localStorage === "undefined") return;
-  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(config));
+  // 제공자는 저장 시점에도 Antigravity 로 못박는다. loadAiConfig 만 강제하면 프로그램
+  // 경로(설정 저장·마이그레이션)로 다른 제공자가 디스크에 남아 다음 판독을 흔든다.
+  const forced: AiConfig = { ...config, providerId: DEFAULT_OH_MY_PI_PROVIDER };
+  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(forced));
 }
 
 export function configForLiteModel(config: AiConfig): AiConfig {

@@ -1,4 +1,4 @@
-import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 export interface AiModelCatalogGroup {
   readonly label: string;
@@ -111,6 +111,7 @@ const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
  */
 const OH_MY_PI_PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   "google-antigravity": [
+    "gemini-3.7-flash-high",
     "gemini-3.7-flash",
     "gemini-3.1-pro",
   ],
@@ -139,7 +140,9 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 authMode 의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * 공장 기본은 Antigravity 의 gemini-3.7-flash. Codex 카탈로그 첫 항목은 gpt-5.6-sol.
+ * 공장 기본은 Antigravity 의 gemini-3.7-flash-high — 모든 모델 슬롯이 이 값을 기본으로 쓴다
+ * (감독 지시 2026-08-26, 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
+ * Codex 카탈로그 첫 항목은 gpt-5.6-sol.
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */
 export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {
@@ -165,7 +168,14 @@ export function isModelValidForAuthMode(
   providerId?: string,
 ): boolean {
   if (authMode !== "chatgpt") return true;
-  if (parseOhMyPiProvider(providerId) !== "openai-codex") return true;
+  const provider = parseOhMyPiProvider(providerId);
   const wanted = model.trim().toLowerCase();
+  // Antigravity 는 이제 에디터의 유일한 제공자다(감독 지시 2026-08-26). 제공자가 하나뿐이면
+  // 남의 네임스페이스 ID 가 저장돼 있을 이유가 없고, 남겨 두면 그대로 실려 나가 400 이 된다
+   // — 이 파일이 인용한 실측 장애(옛 기본값 z-ai/glm-5.2-ultrafast 가 localStorage 에 남아
+  // 400)와 같은 종류다. 그래서 gemini 네임스페이스만 통과시킨다. 카탈로그를 화이트리스트로
+  // 쓰지 않는 이유는 그대로다: 사용자가 새 gemini 변형을 직접 입력하는 것은 정상 사용이다.
+  if (provider === DEFAULT_OH_MY_PI_PROVIDER) return wanted.startsWith("gemini");
+  if (provider !== "openai-codex") return true;
   return CHATGPT_OAUTH_MODELS.some((group) => group.models.some((id) => id.toLowerCase() === wanted));
 }

@@ -94,16 +94,18 @@ describe("scrubStoredAiCredentials", () => {
   });
 });
 
-describe("loadAiConfig — 제공자 보존", () => {
-  it("비-OAuth 제공자를 openai-codex 로 되돌리지 않는다", () => {
-    // 연결 방식이 두 종류가 된 뒤로 providerId:"zai" 는 *API 키* 종류로 살아야 한다.
-    // 예전 oauthProviderOrDefault 는 이것을 openai-codex 로 강제해 GLM 경로를 잃게 했다.
+describe("loadAiConfig — 제공자 강제 통일", () => {
+  it("저장된 다른 제공자는 Antigravity 로 마이그레이션한다", () => {
+    // 감독 지시 2026-08-26: 에디터의 모든 AI 를 Antigravity 로 통일하고 잔여 경로를 남기지 않는다.
+    // 이 케이스는 예전의 "제공자 보존" 계약을 **뒤집은** 것이다 — 보존은 이미 쓰던 사용자를
+    // zai/codex 에 남겨 두는 잔여였다. 모델도 남의 네임스페이스이므로 함께 교정된다.
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "zai", model: "glm-5.3" }));
 
     const config = loadAiConfig();
 
-    expect(config.providerId).toBe("zai");
-    // 전송 축은 여전히 동반 서비스로 고정된다 — 제공자를 보존해도 게이트웨이로 새지 않는다.
+    expect(config.providerId).toBe("google-antigravity");
+    expect(config.model).toBe("gemini-3.7-flash-high");
+    // 전송 축은 그대로 동반 서비스에 고정된다 — 브라우저에 비밀도 죽은 baseUrl 도 남지 않는다.
     expect(config.authMode).toBe("chatgpt");
     expect(config.baseUrl).toBe("");
     expect(config.apiKey).toBe("");
@@ -118,11 +120,13 @@ describe("loadAiConfig — 제공자 보존", () => {
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt" }));
     const config = loadAiConfig();
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash");
+    expect(config.model).toBe("gemini-3.7-flash-high");
   });
 
-  it("providerId 없이 gpt 모델만 남은 옛 blob 은 Codex 세션을 유지한다", () => {
+  it("providerId 없이 gpt 모델만 남은 옛 blob 도 Antigravity 로 마이그레이션한다", () => {
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", model: "gpt-5.6-sol" }));
-    expect(loadAiConfig().providerId).toBe("openai-codex");
+    const config = loadAiConfig();
+    expect(config.providerId).toBe("google-antigravity");
+    expect(config.model).toBe("gemini-3.7-flash-high");
   });
 });

@@ -1,0 +1,8 @@
+main status-menu-command-label "아이템" clipX=0 clipY=2 outBottom=-88.83 outTop=-707.25 outRight=-922.18 outLeft=-90.76
+main status-menu-detail-description "아군 하나의 HP를 150 회복하는 상급 약입니다." clipX=19 clipY=0 outBottom=-284.65 outTop=-498.46 outRight=-206.17 outLeft=-349.67
+items status-menu-command-label "아이템" clipX=0 clipY=2 outBottom=-88.83 outTop=-707.25 outRight=-922.18 outLeft=-90.76
+items status-menu-detail-description "아군 하나의 HP를 150 회복하는 상급 약입니다." clipX=19 clipY=0 outBottom=-301.73 outTop=-481.38 outRight=-206.17 outLeft=-349.67
+equipment status-menu-command-label "장비" clipX=0 clipY=2 outBottom=-88.83 outTop=-707.25 outRight=-603.04 outLeft=-436.69
+skills status-menu-command-label "스킬" clipX=0 clipY=2 outBottom=-88.83 outTop=-707.25 outRight=-769.34 outLeft=-270.4
+party status-menu-command-label "파티" clipX=0 clipY=2 outBottom=-88.83 outTop=-707.25 outRight=-436.75 outLeft=-602.99
+status status-menu-command-label "파티" clipX=0 clipY=2 outBottom=-88.83 outTop=-707.25 outRight=-436.75 outLeft=-602.99

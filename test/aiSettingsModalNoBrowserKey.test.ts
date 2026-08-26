@@ -122,7 +122,8 @@ describe("저장되는 blob 에 비밀이 남지 않는다", () => {
 
 describe("모델 프리셋과 경고", () => {
   it("프리셋에서 고르면 경고가 그 자리에서 재평가된다", async () => {
-    storage.set(AI_CONFIG_KEY, JSON.stringify({ providerId: "openai-codex" }));
+    // 제공자는 Antigravity 로 강제된다(감독 지시 2026-08-26) — 유효/무효 축도 gemini 네임스페이스다.
+    storage.set(AI_CONFIG_KEY, JSON.stringify({}));
     const { root, dispose } = await renderForm();
     const input = findByTestId(root, "ai-config-model");
     const preset = findByTestId(root, "ai-config-model-preset");
@@ -134,10 +135,10 @@ describe("모델 프리셋과 경고", () => {
     expect(findByTestId(root, "ai-config-model-warning")?.hidden).toBe(false);
 
     // 목록에서 유효한 값을 고르면 경고가 즉시 사라져야 한다(옛 구현은 저장 시점까지 남았다).
-    preset.value = "gpt-5.6-sol";
+    preset.value = "gemini-3.7-flash-high";
     preset.dispatchEvent(new Event("change"));
 
-    expect(input.value).toBe("gpt-5.6-sol");
+    expect(input.value).toBe("gemini-3.7-flash-high");
     expect(findByTestId(root, "ai-config-model-warning")?.hidden).toBe(true);
     dispose();
   });

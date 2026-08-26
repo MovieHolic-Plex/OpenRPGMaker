@@ -91,18 +91,19 @@ describe("연결 방식은 두 종류다", () => {
     dispose();
   });
 
-  it("종류를 바꾸면 제공자 목록이 그 종류로 갈린다", async () => {
+  it("종류를 바꿔도 제공자 목록은 Antigravity 하나뿐이다", async () => {
+    // 감독 지시 2026-08-26: 에디터의 모든 AI 를 Antigravity 로 통일하고 잔여 경로를 남기지
+    // 않는다. 예전 계약(oauth 14종 / apiKey 54종으로 갈린다)은 고를 수 없는 목록을 화면에
+    // 세워 두는 것이었다. 하나뿐이면 select 는 결정이 아니라 표시이므로 비활성이다.
     const { root, dispose } = await render();
     const select = findByTestId(root, "ai-oh-my-pi-provider");
-    const { kind } = await loadDeps();
 
-    expect(optionValues(select)).toEqual(kind.providersForKind("oauth").map((row) => row.id));
-    expect(optionValues(select)).toHaveLength(14);
+    expect(optionValues(select)).toEqual(["google-antigravity"]);
+    expect(select?.disabled).toBe(true);
 
     findByTestId(root, "ai-auth-api-key")?.click();
 
-    expect(optionValues(select)).toEqual(kind.providersForKind("apiKey").map((row) => row.id));
-    expect(optionValues(select)).toHaveLength(54);
+    expect(optionValues(select)).toEqual(["google-antigravity"]);
     dispose();
   });
 
@@ -349,79 +350,44 @@ describe("OAuth 빠른 선택", () => {
     return event as KeyboardEvent;
   }
 
-  it("기본(OAuth)에서 퀵 그룹이 숨지 않고 ChatGPT·Gemini 가 보인다 (결함 1)", async () => {
+  it("퀵 그룹은 Gemini 카드 하나만 보여 준다 — ChatGPT 카드는 걷었다", async () => {
+    // ChatGPT 카드는 눌러도 제공자가 Antigravity 로 강제되어 아무 일도 하지 않는 거짓
+    // 표면이었으므로 제거했다. 남은 카드는 체크되고 탭 가능해야 한다(a11y 계약 유지).
     const { root, dispose } = await render();
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
-    const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-    expect(chatgpt).not.toBeNull();
     expect(gemini).not.toBeNull();
-    expect(chatgpt?.hidden).toBe(false);
     expect(gemini?.hidden).toBe(false);
+    expect(gemini?.getAttribute("aria-checked")).toBe("true");
+    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    expect(findByTestId(root, "ai-auth-quick-openai-codex")).toBeNull();
     dispose();
   });
 
-  it("API 키 종류에서 OAuth 로 바꾸면 퀵 카드가 기본 google-antigravity 와 동기화된다 (결함 2)", async () => {
+  it("다른 제공자로 저장돼 있었어도 OAuth 로 돌아오면 Gemini 카드가 선택돼 있다", async () => {
     const { root, dispose } = await render("zai");
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(true);
 
     findByTestId(root, "ai-auth-oauth")?.click();
 
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
-    const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     expect(gemini?.getAttribute("aria-checked")).toBe("true");
     expect(gemini?.getAttribute("tabindex")).toBe("0");
-    expect(chatgpt?.getAttribute("aria-checked")).toBe("false");
-    expect(chatgpt?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
-  it("드롭다운으로 비퀵 OAuth 제공자를 고르면 첫 카드만 탭 가능하고 둘 다 체크 해제로 남는다 (결함 3)", async () => {
+  it("카드가 하나뿐이므로 화살표는 그 카드를 유지한다", async () => {
+    // 예전 계약은 "현재 제공자가 퀵 카드에 없으면 화살표가 첫 카드를 고른다" 였다. 제공자가
+    // 강제 통일된 뒤에는 카드 밖 제공자가 존재할 수 없고 이동할 옆 카드도 없다. 남는 계약은
+    // 화살표가 라디오그룹을 깨뜨리지 않는다는 것이다.
     const { root, dispose } = await render();
-    const select = findByTestId(root, "ai-oh-my-pi-provider");
-    expect(select).not.toBeNull();
-    select!.value = "anthropic";
-    select!.dispatchEvent(new Event("change", { bubbles: true }));
-    await Promise.resolve();
-
-    const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-    expect(chatgpt?.getAttribute("aria-checked")).toBe("false");
-    expect(gemini?.getAttribute("aria-checked")).toBe("false");
-    expect(chatgpt?.getAttribute("tabindex")).toBe("0");
-    expect(gemini?.getAttribute("tabindex")).toBe("-1");
-    dispose();
-  });
-
-  it("화살표 키가 옆 퀵 라디오를 선택하고 포커스도 옮긴다 (결함 4)", async () => {
-    const { root, dispose } = await render("openai-codex");
-    const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
-    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-
-    chatgpt?.dispatchEvent(keydown("ArrowRight"));
-
-    expect(chatgpt?.getAttribute("aria-checked")).toBe("false");
-    expect(gemini?.getAttribute("aria-checked")).toBe("true");
-    expect(gemini?.getAttribute("tabindex")).toBe("0");
-    expect(chatgpt?.getAttribute("tabindex")).toBe("-1");
-    expect(document.activeElement).toBe(gemini);
-    dispose();
-  });
-
-  it("현재 제공자가 퀵 카드에 없으면 화살표가 결정적으로 첫 카드를 고른다 (결함 4b)", async () => {
-    const { root, dispose } = await render();
-    const select = findByTestId(root, "ai-oh-my-pi-provider");
-    expect(select).not.toBeNull();
-    select!.value = "anthropic";
-    select!.dispatchEvent(new Event("change", { bubbles: true }));
-    await Promise.resolve();
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
 
-    const chatgpt = findByTestId(root, "ai-auth-quick-openai-codex");
-    expect(chatgpt?.getAttribute("aria-checked")).toBe("true");
-    expect(document.activeElement).toBe(chatgpt);
+    expect(gemini?.getAttribute("aria-checked")).toBe("true");
+    expect(gemini?.getAttribute("tabindex")).toBe("0");
     dispose();
   });
 
