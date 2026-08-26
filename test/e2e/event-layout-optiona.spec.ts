@@ -106,7 +106,9 @@ async function openEditorForProject(page: Page): Promise<{ readonly mapId: strin
     const modalModule = (await import(
       /* @vite-ignore */ "/src/editor/panels/eventEditor/modal.ts" as string
     )) as EventEditorModalModule;
-    const project = await import("/src/project/store.ts");
+    const project = (await import(
+      /* @vite-ignore */ "/src/project/store.ts" as string
+    )) as { store: { getCurrent(): { startMapId?: string } } };
     const mapId = project.store.getCurrent().startMapId;
     if (!mapId) throw new Error("missing start map id");
     modalModule.openEventEditorModal(mapId, eventId);
@@ -132,13 +134,16 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
     nodes.filter((node) => node instanceof HTMLElement && node.getAttribute("aria-pressed") === "true").length,
   );
   expect(activeCount, `expected >=1 active of ${await segments.count()} segments`).toBeGreaterThanOrEqual(1);
+  // 세그먼트는 레거시 탭 스트립과 달리 헤더(모달 상단 titlebar) 안에 있어야 한다.
+  const headerSegments = modal.locator(".event-editor-modal-header [data-testid^='evt-page-segment']");
+  expect(await headerSegments.count()).toBeGreaterThanOrEqual(1);
 
   // Legacy wide page-tab strip is removed from the modal body.
   await expect(modal.getByTestId("event-page-strip")).toHaveCount(0);
   expect(await modal.locator(".event-page-number-tabs").count()).toBe(0);
   expect(await modal.locator("[data-testid^='event-page-tab-']").count()).toBe(0);
 
-  // Left settings rail: at most 5 accordion groups ('details' with a summary header).
+  // 좌측 설정 레일: 적어도 하나의 접이식 그룹(details > summary)이 있고, 그 수도 5 이하다.
   const settingsRail = modal.locator(".event-editor-settings-column");
   await expect(settingsRail).toBeVisible();
   const accordionGroups = settingsRail.locator("details");
@@ -148,9 +153,15 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
   for (const header of accordionHeaders) {
     expect(header.trim().length, `accordion summary text missing: ${JSON.stringify(header)}`).toBeGreaterThan(0);
   }
+  // 레일 전체에 요약 텍스트(summary 로 시작하는 그룹)가 하나 이상 보여야 한다.
+  const railSummaryText = (await settingsRail.innerText()).replace(/\s+/g, " ").trim();
+  expect(railSummaryText.length).toBeGreaterThan(0);
 
   // Command list rows select by click; no per-row '편집' button.
-  const rowCount = await modal.locator(".cmd-item").count();
+  await modal.getByTestId("event-view-toggle-list").click();
+  const rows = modal.locator(".cmd-item");
+  await expect(rows.first()).toBeVisible();
+  const rowCount = await rows.count();
   expect(rowCount).toBeGreaterThan(0);
   expect(await modal.getByTestId("event-command-row-edit").count()).toBe(0);
   expect(await modal.locator(".cmd-actions button", { hasText: "편집" }).count()).toBe(0);
@@ -161,7 +172,7 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
   expect(await footerPrimarySave.count()).toBe(1);
 
   // Double-click opens the edit dialog (no '편집' button route).
-  const firstRow = modal.locator(".cmd-head").first();
+  const firstRow = modal.locator(".cmd-item .cmd-head").first();
   await firstRow.dblclick();
   await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();
   await page.getByTestId("event-command-edit-cancel").click();
@@ -229,8 +240,10 @@ test("C4 interaction — page segment switching, add command, and undo", async (
   await expect(segments.first()).toBeVisible();
   expect(await segments.count()).toBeGreaterThanOrEqual(2);
 
-  // Page 1 first command text.
+  // Page 1 first command text (list view).
+  await modal.getByTestId("event-view-toggle-list").click();
   const firstRow = modal.locator(".cmd-item .cmd-head").first();
+  await expect(firstRow).toBeVisible();
   const page1FirstRowText = (await firstRow.innerText()).trim();
   expect(page1FirstRowText.length).toBeGreaterThan(0);
 
@@ -248,7 +261,8 @@ test("C4 interaction — page segment switching, add command, and undo", async (
     await expect.poll(async () => (await segmentIndex(segments))).toBe(0);
     await segments.nth(1).click();
     await expect.poll(async () => (await segmentIndex(segments))).toBe(1);
-    await expect(modal.locator(".cmd-item .cmd-head").first()).not.toHaveText(page1FirstRowText, { timeout: 10_000 });
+    const stillSame = await modal.locator(".cmd-item .cmd-head").first().innerText();
+    expect(stillSame.trim()).not.toBe(page1FirstRowText);
   } else {
     expect(page2FirstRowText).not.toBe(page1FirstRowText);
   }
