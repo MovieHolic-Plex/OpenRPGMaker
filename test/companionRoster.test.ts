@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { renderCompanionRoster } from "@/editor/panels/eventEditor/companionRoster";
 import { createBlankProject } from "@/project/defaults";
-import type { ActorRecord, Project } from "@/project/types";
+import type { Project } from "@/project/types";
 
 describe("companion roster in the companion command picker", () => {
   it("lists every database actor with a rendered portrait background", () => {

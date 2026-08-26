@@ -10,8 +10,6 @@ type CompanionEntry = {
   readonly selectable: boolean;
 };
 
-type CreatedEvent = { readonly eventId: string };
-
 type SweepResult =
   | { readonly commandId: string; readonly outcome: "dialog-opened"; readonly evidence: string }
   | { readonly commandId: string; readonly outcome: "informational"; readonly evidence: string };
@@ -38,7 +36,9 @@ test("동료·전투 탭을 전수 클릭하고 DB 동료가 이미지로 나온
   const project = companionProject();
   await seedProjectFromSupabaseCanonical(page, project);
   const eventId = await page.evaluate(async (mapId) => {
-    const modalModule = (await import("/src/editor/panels/eventEditor/modal.ts")) as unknown as {
+    // dev 서버 절대 URL 동적 import — 정적 분석(TS2307) 회피를 위해 변수 경로로 우회한다.
+    const specifier = ["/src/editor/panels", "eventEditor", "modal.ts"].join("/");
+    const modalModule = (await import(/* @vite-ignore */ specifier)) as unknown as {
       openNewEventEditorModal: (mapId: string, x: number, y: number) => Promise<string>;
     };
     return modalModule.openNewEventEditorModal(mapId, 5, 5);
@@ -92,6 +92,9 @@ test("동료·전투 탭을 전수 클릭하고 DB 동료가 이미지로 나온
     const thumb = card.getByTestId(`companion-thumb-${actor.id}`);
     const backgroundImage = await thumb.evaluate((node) => getComputedStyle(node).backgroundImage);
     expect(backgroundImage, `${actor.name} 썸네일 배경 이미지`).toContain("url(");
+    // CSS 가 실제로 박스를 만드는지 — inline-block 부모 안에서의 collapse 방지 계약.
+    const box = await thumb.boundingBox();
+    expect(box?.height ?? 0, `${actor.name} 초상화 렌더 높이`).toBeGreaterThanOrEqual(30);
   }
 
   // 카드 클릭은 표준 편집 다이얼로그(addFollower 프리필)로 이어진다.
@@ -109,7 +112,7 @@ test("동료·전투 탭을 전수 클릭하고 DB 동료가 이미지로 나온
     await pickerHost.getByTestId("event-command-picker-tab-2").click();
   }
   await pickerHost.screenshot({ path: `${EVIDENCE_DIR}/99-companion-roster.png` });
-  await closePickerOverlay(page, pickerHost);
+  await closePickerOverlay(pickerHost);
 
   const auxTools = page.getByTestId("event-editor-aux-tools").locator("summary").first();
   await auxTools.click({ force: true });
@@ -124,7 +127,7 @@ test("동료·전투 탭을 전수 클릭하고 DB 동료가 이미지로 나온
   await presetBar.screenshot({ path: `${EVIDENCE_DIR}/follower-presets.png` });
 });
 
-async function closePickerOverlay(page: Page, picker: Locator): Promise<void> {
+async function closePickerOverlay(picker: Locator): Promise<void> {
   if (!(await picker.isVisible().catch(() => false))) return;
   await picker.getByTestId("event-command-picker-cancel").click({ force: true });
   await expect(picker).toHaveCount(0);

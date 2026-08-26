@@ -209,6 +209,52 @@
   text-align: center;
 }
 
+/* ---- DB 동료 로스터(탭2 상단, 이미지 리치) ---- */
+.event-command-picker-companions {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+}
+.event-command-picker-companions-title {
+  color: var(--text-2);
+  font: 750 11px/14px var(--font-ui);
+  margin: 0;
+}
+.event-command-picker-companions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.companion-card {
+  align-items: center;
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 7px;
+  min-height: 30px;
+  padding: 4px 10px 4px 5px;
+}
+.companion-card:hover { border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent); }
+.companion-card-name { font: 650 12px/16px var(--font-ui); }
+.companion-portrait {
+  background-color: var(--bg-inset);
+  background-position: center;
+  border-radius: 6px;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.companion-portrait.is-initial {
+  align-items: center;
+  color: var(--text-muted);
+  display: inline-flex;
+  font: 700 11px/1 var(--font-ui);
+  justify-content: center;
+}
+
 .event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-footer {
   align-items: center;
   background: var(--event-popup-surface);
