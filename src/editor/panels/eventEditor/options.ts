@@ -79,6 +79,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "erasePicture", label: "그림 지우기" },
   { value: "playAudio", label: "소리 재생" },
   { value: "stopAudio", label: "소리 정지" },
+  { value: "playMovie", label: "동영상 재생" },
   { value: "cutsceneControl", label: "컷신 제어" },
   { value: "shop", label: "상점" },
   { value: "inn", label: "여관" },

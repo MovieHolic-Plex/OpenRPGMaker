@@ -69,6 +69,7 @@ export const COMMAND_KINDS = [
   "erasePicture",
   "playAudio",
   "stopAudio",
+  "playMovie",
   "cutsceneControl",
   "displayTextSettings",
   "shop",

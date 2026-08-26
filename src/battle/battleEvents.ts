@@ -718,6 +718,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "despawnFieldEnemy":
       case "advanceCropGrowth":
       case "runControl":
+      // playMovie: 에디토 계약만 생겼고 재생 경로는 아직 없다(guarantee: editorOnly).
+      case "playMovie":
         logUnsupported(page, context, command.kind);
         return false;
       default:

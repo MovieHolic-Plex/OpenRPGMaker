@@ -313,6 +313,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ),
   erasePicture: (cmd) => commandLine("그림 지우기", valuePart(pictureSlotCaption(cmd.pictureId))),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
+  playMovie: (cmd) => commandLine(
+    "동영상 재생",
+    valuePart(movieName(cmd.resourceId)),
+    ...(cmd.wait ? [plainPart(" / "), valuePart("대기")] : []),
+    ...(cmd.skippable ? [plainPart(" / "), valuePart("건너뛰기 허용")] : [])
+  ),
   stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
   cutsceneControl: (cmd) => commandLine("컷신 제어", valuePart(cmd.mode === "begin" ? "시작" : "종료"), ...(cmd.skippable ? [plainPart(" / "), valuePart("스킵 가능")] : [])),
   shop: (cmd) =>
@@ -1186,6 +1192,13 @@ function animationName(id: string | undefined): string {
   if (!trimmed) return "(연출 선택)";
   const named = store.getCurrent().database.battleAnimations.find((entry) => entry.id === trimmed)?.name.trim();
   return named || humanizeAuthorId(trimmed);
+}
+
+// 동영상은 아직 리소스 목록(ResourceKind)에 없어 id 를 사람이 읽는 모양으로만 다듬는다.
+function movieName(id: string | undefined): string {
+  const trimmed = id?.trim() ?? "";
+  if (!trimmed) return "(동영상 선택)";
+  return humanizeAuthorId(trimmed);
 }
 
 function faceSheetLabel(id: string | undefined): string {

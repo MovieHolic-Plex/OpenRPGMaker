@@ -296,6 +296,11 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.animationId`, command.animationId);
       if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
       return;
+    case "playMovie":
+      requireString(`${label}.resourceId`, command.resourceId);
+      if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
+      if (command.skippable !== undefined) requireBoolean(`${label}.skippable`, command.skippable);
+      return;
     case "shop": {
       if ((command as Record<string, unknown>).shopServiceKind !== undefined) requireString(`${label}.shopServiceKind`, (command as Record<string, unknown>).shopServiceKind);
       if ((command as Record<string, unknown>).investmentLevel !== undefined) requireNumber(`${label}.investmentLevel`, (command as Record<string, unknown>).investmentLevel);
