@@ -224,7 +224,9 @@ test("이벤트만 놓은 제안도 미리보기에 마커가 뜨고, 목록 hov
   await expect(overlay).toBeVisible();
   const marker = overlay.locator(".region-task-event-marker");
   await expect(marker).toHaveCount(1);
-  await expect(marker).toHaveText("🎁"); // id 에 chest → 상자 아이콘
+  // 마카는 이모지가 아니라 변경 목록 행에 keying 되는 번호다(모노톰롬 계약).
+  await expect(marker).toHaveText("1");
+  await expect(marker).toHaveAttribute("data-marker-index", "1");
 
   const row = page.getByTestId("region-task-change-row-event-chest_gold_mock");
   await expect(row).toBeVisible();

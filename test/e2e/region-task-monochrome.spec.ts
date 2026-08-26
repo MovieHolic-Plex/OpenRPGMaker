@@ -19,7 +19,7 @@ declare global {
 }
 
 const REGION = { x: 2, y: 2, width: 8, height: 6 };
-const EVIDENCE = "C:/Users/USER/Downloads/rpg-zzu-region-task-modern/.omo/evidence/region-task-modern";
+const EVIDENCE = ".omo/evidence/region-task-modern";
 
 // 서로 떨어진 두 덩어리(청크 2개) + 추가 이벤트 하나 → 검토 단계에서 변경 목록·마커가 렌더된다.
 const WRITES = [
