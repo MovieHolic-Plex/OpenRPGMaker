@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { buildFollowerPresets, followerPresetToCommands } from "@/editor/followerPresets";
-import type { Command } from "@/project/types";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import type { ActorRecord, Command } from "@/project/types";
 
 /**
  * 2026-08-10 회귀 가드 — "동행" 프리셋 칩 실수 클릭 사고.
@@ -28,6 +30,26 @@ describe("follower presets (post monster-chip removal)", () => {
     expect(ids).toContain("preset:pet-cat");
     expect(ids).toContain("preset:pet-chick");
     expect(ids).toContain("preset:companion-hero");
+  });
+
+  it("lists every database actor with portrait metadata", () => {
+    const project = createBlankProject();
+    const template = project.database.actors[0];
+    if (!template) throw new Error("missing default actor fixture");
+    const actors = [
+      actorFixture(template, "actor-companion-a", "세라", "easyrpg-faceset-actor1", "easyrpg-charset-actor1"),
+      actorFixture(template, "actor-companion-b", "루카", "easyrpg-faceset-actor2", "easyrpg-charset-actor2"),
+      actorFixture(template, "actor-companion-c", "미나", "easyrpg-faceset-actor3", "easyrpg-charset-actor3"),
+      actorFixture(template, "actor-companion-d", "가온", "easyrpg-faceset-actor4", "easyrpg-charset-actor4"),
+    ];
+    project.database.actors = actors;
+    store.replace(project);
+
+    const presets = buildFollowerPresets().filter((preset) => preset.kind === "actor");
+
+    expect(presets.map((preset) => preset.refId)).toEqual(actors.map((actor) => actor.id));
+    expect(presets.map((preset) => preset.faceResourceId)).toEqual(actors.map((actor) => actor.faceResourceId));
+    expect(presets.map((preset) => preset.characterResourceId)).toEqual(actors.map((actor) => actor.characterResourceId));
   });
 
   it("mascot preset converts to one addFollower with bundled graphic", () => {
@@ -63,3 +85,21 @@ describe("follower presets (post monster-chip removal)", () => {
     }
   });
 });
+
+function actorFixture(
+  template: ActorRecord,
+  id: ActorRecord["id"],
+  name: string,
+  faceResourceId: string,
+  characterResourceId: string,
+): ActorRecord {
+  return {
+    ...structuredClone(template),
+    id,
+    name,
+    faceResourceId,
+    faceIndex: 0,
+    characterResourceId,
+    characterIndex: 0,
+  };
+}
