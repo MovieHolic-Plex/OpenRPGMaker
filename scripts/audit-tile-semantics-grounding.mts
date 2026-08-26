@@ -38,6 +38,25 @@ const SHEETS: Record<string, string> = {
 const GROUND_ROLES = new Set(["floor", "terrain", "path", "sand", "snow", "ice", "grass", "road", "stairs", "bridge"]);
 
 /** 라벨에 쓰이는 색상어 -> 허용 색조. hue 는 0-360, sat/val 은 0-1. */
+
+/**
+ * C. role 이 재질을 주장하면 그 재질의 색이 타일에 있어야 한다.
+ *
+ * 왜 필요한가 (실측 2026-08-26): retro_dungeon 0-3행은 A/B 검사를 0 위반으로 통과했는데
+ * 직접 대조하니 48-50(짙은 자주 벽돌)이 role=water "깊은 물", 30-32(덩굴 낀 청록 물)가
+ * role=rock "동굴 암벽"이었다. 라벨에 색상어가 없으면 B 가 침묵하고, wall/rock/water 는
+ * 전부 A 의 지면 role 이 아니라 A 도 침묵한다. role 자체를 근거로 삼으면 그 사각지대가 줄어든다.
+ *
+ * 각 role 에 대해 "이 색이 최소 이만큼은 있어야 한다"만 요구한다. 반대 방향(이 색이면 반드시
+ * 이 role)은 요구하지 않는다 — 돌바닥에 물이 비칠 수 있으므로 오탐이 된다.
+ */
+const ROLE_COLOR_RULES: readonly { roles: readonly string[]; share: number; test: (h: number, s: number, v: number) => boolean; want: string }[] = [
+  { roles: ["water"], share: 0.25, want: "\ud30c\ub791·시안 계열", test: (h, s, v) => v > 0.12 && (s > 0.12 ? h >= 155 && h <= 265 : v > 0.6) },
+  { roles: ["lava"], share: 0.2, want: "\붉은·주황 계열", test: (h, s, v) => s > 0.3 && v > 0.25 && (h < 45 || h > 330) },
+  { roles: ["ice", "snow"], share: 0.3, want: "\밝은 헌·퇴색 계열", test: (_h, s, v) => v > 0.6 && s < 0.45 },
+  { roles: ["tree", "grass", "plant", "forest"], share: 0.15, want: "\녹색 계열", test: (h, s) => s > 0.15 && h >= 60 && h <= 175 },
+];
+
 interface ColorRule {
   readonly words: readonly string[];
   /** 픽셀이 이 색에 해당하는지 */
@@ -110,7 +129,7 @@ function loadEntries(sheet: string, rowRange: [number, number] | null): Entry[] 
   return out.sort((a, b) => a.index - b.index);
 }
 
-interface Violation { index: number; kind: "prop-as-ground" | "color-mismatch"; label: string; detail: string }
+interface Violation { index: number; kind: "prop-as-ground" | "color-mismatch" | "role-material-mismatch"; label: string; detail: string }
 
 function auditSheet(sheet: string, rowRange: [number, number] | null): { violations: Violation[]; checked: number } {
   const stats = tileStats(SHEETS[sheet]!);
@@ -141,6 +160,23 @@ function auditSheet(sheet: string, rowRange: [number, number] | null): { violati
         violations.push({
           index: e.index, kind: "color-mismatch", label: e.label,
           detail: `라벨의 색상어에 맞는 픽셀이 ${(share * 100).toFixed(0)}% 뿐이다 (기준 8%)`,
+        });
+      }
+    }
+
+    // C. role 이 주장하는 재질의 색
+globalThis.roleRule = ROLE_COLOR_RULES.find((r) => r.roles.includes(e.role));
+    if (roleRule) {
+globalThis.hits = 0;
+      for (const [r, g, b] of stat.pixels) {
+        const [h, sat, v] = rgbToHsv(r, g, b);
+        if (roleRule.test(h, sat, v)) hits += 1;
+      }
+globalThis.share = hits / stat.pixels.length;
+      if (share < roleRule.share) {
+        violations.push({
+          index: e.index, kind: "role-material-mismatch", label: e.label,
+          detail: `role=${e.role} 인데 ${roleRule.want} 픽셀이 ${(share * 100).toFixed(0)}% 뿐이다 (기준 ${(roleRule.share * 100).toFixed(0)}%)`,
         });
       }
     }
