@@ -152,8 +152,13 @@ function messageWindowMock(
   return stage;
 }
 
+// 미리보기는 '...' 가 아니다. 본문이 아직 비어 있으면 샘플 문장을 보여, 작가가 자기 문장이
+// 게임 창에서 어떻게 보이는지 바로 알게 한다.
+const EMPTY_TEXT_SAMPLE = "여기에 쓴 문장이 게임 창에서 이렇게 보입니다.";
+
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
 function renderPreviewDialogueBody(body: string): HTMLElement {
+  if (!body.trim()) return sampleDialogueBody();
   const project = store.getCurrent();
   const variableDefaults: Record<string, number> = {};
   for (const entry of project.variables ?? []) {
@@ -163,7 +168,7 @@ function renderPreviewDialogueBody(body: string): HTMLElement {
     const id = "var_" + String(i).padStart(4, "0");
     if (variableDefaults[id] === undefined) variableDefaults[id] = 0;
   }
-  const segments = parseDialogueText(body || "...", {
+  const segments = parseDialogueText(body, {
     session: { variables: variableDefaults, actorNames: {} },
     project,
   });
@@ -190,10 +195,26 @@ function renderPreviewDialogueBody(body: string): HTMLElement {
       })
     );
   }
-  if (!wrote) {
-    bodyEl.append(document.createTextNode(body.trim() ? "" : "..."));
-  }
+  if (!wrote) bodyEl.append(sampleSentenceLine());
   return bodyEl;
+}
+
+/** Empty-body stage: an identifiable sample sentence, never a bare "...". */
+function sampleDialogueBody(): HTMLElement {
+  const bodyEl = el("div", {
+    class: "ecp-message-body ecp-message-body-sample",
+    dataset: { testid: "ecp-message-body", sample: "1" },
+  });
+  bodyEl.append(sampleSentenceLine());
+  return bodyEl;
+}
+
+function sampleSentenceLine(): HTMLElement {
+  return el("span", {
+    class: "ecp-message-sample-line",
+    text: EMPTY_TEXT_SAMPLE,
+    dataset: { testid: "ecp-message-sample" },
+  });
 }
 
 /** Render each zero-width control exactly where it occurs in the authored sentence. */
@@ -507,14 +528,26 @@ function inputNumberStage(cmd: Extract<Command, { kind: "inputNumber" }>): HTMLE
     );
   }
 
+  // 자리수 캡션은 자리수만 말한다. 변수 표시명을 여기 쓰면 몇 자리 입력인지가
+  // 보이지 않는다. 입력값을 저장할 변수는 밑에 따로 적는다.
   win.append(
     el("div", {
       class: "ecp-number-meta",
       dataset: { testid: "ecp-number-meta" },
-      text: `${digits}자리 · 변수 ${variablePreviewName(cmd.variableId)} · 대기 중`,
+      text: `${digits}자리 · 대기 중`,
     })
   );
   stage.append(win);
+  stage.append(
+    el("div", {
+      class: "ecp-number-target",
+      dataset: { testid: "ecp-number-target" },
+      children: [
+        el("span", { class: "ecp-number-target-label", text: "입력값 저장" }),
+        el("span", { class: "ecp-number-target-name", text: variablePreviewName(cmd.variableId) }),
+      ],
+    })
+  );
   return stage;
 }
 
@@ -1044,20 +1077,39 @@ function fitZoom(pxWidth: number): number {
   return Math.max(0.15, Math.min(2, 260 / pxWidth));
 }
 
+// 대기 미리보기는 숫자 카드가 아니라 타임라인이다: 앞 명령 → 대기 길이 → 다음 명령.
+const WAIT_TIMELINE_FULL_MS = 3000;
+
 function waitStage(cmd: Extract<Command, { kind: "wait" }>): HTMLElement {
   const stage = el("div", { class: "ecp-stage ecp-wait-stage", dataset: { testid: "ecp-wait-stage" } });
-  if (cmd.variableId?.trim()) {
-    stage.append(
-      el("div", {
-        class: "ecp-wait-card",
-        text: `변수 ${variablePreviewName(cmd.variableId)} 값(초)`,
-      })
-    );
-    return stage;
-  }
-  const seconds = (Math.max(0, cmd.ms) / 1000).toFixed(cmd.ms % 1000 === 0 ? 0 : 1);
-  stage.append(el("div", { class: "ecp-wait-card", text: `${seconds}초` }));
-  stage.append(el("div", { class: "ecp-wait-sub", text: `${Math.max(0, cmd.ms) / 1000}초` }));
+  const byVariable = Boolean(cmd.variableId?.trim());
+  const ms = Math.max(0, cmd.ms);
+  const durationLabel = byVariable
+    ? `변수 ${variablePreviewName(cmd.variableId ?? "")} 값(초)`
+    : `${(ms / 1000).toFixed(ms % 1000 === 0 ? 0 : 1)}초`;
+  const fillRatio = byVariable ? 0.5 : Math.min(1, ms / WAIT_TIMELINE_FULL_MS);
+  const gap = el("div", {
+    class: `ecp-wait-gap${byVariable ? " is-variable" : ""}`,
+    dataset: { testid: "ecp-wait-gap" },
+  });
+  const fill = el("div", { class: "ecp-wait-gap-fill" });
+  fill.style.setProperty("--wait-fill", `${Math.round(fillRatio * 100)}%`);
+  gap.append(fill, el("span", { class: "ecp-wait-gap-label", text: durationLabel }));
+  stage.append(
+    el("div", {
+      class: "ecp-wait-timeline",
+      dataset: { testid: "ecp-wait-timeline" },
+      children: [
+        el("div", { class: "ecp-wait-node", text: "앞 명령" }),
+        gap,
+        el("div", { class: "ecp-wait-node", text: "다음 명령" }),
+      ],
+    }),
+    el("div", {
+      class: "ecp-wait-sub",
+      text: byVariable ? "변수 값만큼 멈췄다가 이어서 진행합니다" : "이 길이만큼 멈췄다가 이어서 진행합니다",
+    })
+  );
   return stage;
 }
 
