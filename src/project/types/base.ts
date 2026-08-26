@@ -235,6 +235,22 @@ export interface StructureKitRow {
 // 스탬프 출처 유니언(2026-07-20, 스탬프 3부작 선행과제): 붓질 학습 외에 내장 파라메트릭 킷.
 export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric";
 
+// 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
+// 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.
+// 입구의 워프 칸은 dy + h - 1 행이라는 규약으로 고정한다(별도 warpCell 필드 없음).
+// 부위는 힌트일 뿐이다 — 시공은 이벤트를 심지 않고, 워프는 별 툴 콜이 절대좌표를 보고 만든다.
+export type StructureKitPartKind = "entrance" | "sign" | "anchor" | "window";
+
+export interface StructureKitPart {
+  id: string;
+  kind: StructureKitPartKind;
+  dx: number;
+  dy: number;
+  w: number;
+  h: number;
+  note?: string;
+}
+
 export interface SectionStructureKitDef {
   id: string;
   kind: "section";
@@ -243,6 +259,8 @@ export interface SectionStructureKitDef {
   width: number;
   height: number;
   rows: StructureKitRow[];
+  /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
+  parts?: StructureKitPart[];
   learnedFrom: StructureKitLearnedFrom;
   createdAt?: string;
 }
@@ -265,6 +283,8 @@ export interface HouseStructureKitDef {
   /** 남쪽 벽 문 타일(116/146) 포함 여부. 기본 true. */
   door?: boolean;
   chimney?: boolean;
+  /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
+  parts?: StructureKitPart[];
   learnedFrom: StructureKitLearnedFrom;
   createdAt?: string;
 }
