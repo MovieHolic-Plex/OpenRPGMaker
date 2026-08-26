@@ -10,8 +10,24 @@ import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runt
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
+import { RETRO_DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroDungeon";
+import { RETRO_EXTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroExterior";
+import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroHouse";
+import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
+import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
+import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { COMBINED_TOWN_HARNESS_PREFIX, DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
+import {
+  COMBINED_TOWN_HARNESS_PREFIX,
+  DUNGEON_TEXTURE_KEY,
+  INTERIOR_TEXTURE_KEY,
+  RETRO_DUNGEON_TEXTURE_KEY,
+  RETRO_EXTERIOR_TEXTURE_KEY,
+  RETRO_HOUSE_TEXTURE_KEY,
+  RETRO_WORLD_TEXTURE_KEY,
+  SHIP_TEXTURE_KEY,
+  WORLD_TEXTURE_KEY,
+} from "@/project/tilesetHarness";
 import { confirmUserTileMetadata, tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
@@ -176,10 +192,25 @@ const DUNGEON_TILE_LABELS = new Map<number, string>(
   DUNGEON_TILE_SEMANTICS.map((entry) => [entry.index, entry.label])
 );
 
+function labelMap(table: readonly { index: number; label: string }[]): Map<number, string> {
+  return new Map(table.map((entry) => [entry.index, entry.label]));
+}
+
 // 타일셋 텍스처에 맞는 번들 라벨 테이블 — 타일 그림판마다 같은 인덱스의 의미가 다르다.
-function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
-  if (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_LABELS;
-  if (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_LABELS;
+// 이전 폴백은 interior/dungeon 이 아닌 모든 번들 칩셋에 마을 라벨을 돌려줬다.
+const BUNDLED_TILE_LABELS: ReadonlyMap<string, ReadonlyMap<number, string>> = new Map([
+  [INTERIOR_TEXTURE_KEY, INTERIOR_TILE_LABELS],
+  [DUNGEON_TEXTURE_KEY, DUNGEON_TILE_LABELS],
+  [RETRO_DUNGEON_TEXTURE_KEY, labelMap(RETRO_DUNGEON_TILE_SEMANTICS)],
+  [RETRO_EXTERIOR_TEXTURE_KEY, labelMap(RETRO_EXTERIOR_TILE_SEMANTICS)],
+  [RETRO_HOUSE_TEXTURE_KEY, labelMap(RETRO_HOUSE_TILE_SEMANTICS)],
+  [RETRO_WORLD_TEXTURE_KEY, labelMap(RETRO_WORLD_TILE_SEMANTICS)],
+  [SHIP_TEXTURE_KEY, labelMap(SHIP_TILE_SEMANTICS)],
+  [WORLD_TEXTURE_KEY, labelMap(WORLD_TILE_SEMANTICS)],
+]);
+
+export function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
+  if (tileset.image.type === "bundled") return BUNDLED_TILE_LABELS.get(tileset.image.id) ?? COMBINED_TOWN_TILE_LABELS;
   return COMBINED_TOWN_TILE_LABELS;
 }
 

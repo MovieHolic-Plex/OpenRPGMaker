@@ -35,7 +35,7 @@ const SHEETS: Record<string, string> = {
 };
 
 /** 통행 가능한 지면으로 읽히는 role — 투명 소품이 여기 오면 오분류다. */
-const GROUND_ROLES = new Set(["floor", "terrain", "path", "sand", "snow", "ice", "grass", "road", "stairs", "bridge"]);
+const GROUND_ROLES = new Set(["floor", "terrain", "sand", "snow", "ice", "grass", "stairs"]);
 
 /** 라벨에 쓰이는 색상어 -> 허용 색조. hue 는 0-360, sat/val 은 0-1. */
 
@@ -55,7 +55,10 @@ const ROLE_COLOR_RULES: readonly { roles: readonly string[]; share: number; test
   // 실측 오탐: retro_world 210-212 "검은 수면 내부", world 370/400/430 "심해 검은 물" 이 파랑 0% 로 걸렸다.
   { roles: ["water"], share: 0.25, want: "파랑·시안 계열 또는 심해 암부", test: (h, s, v) => v < 0.22 || (v > 0.12 && (s > 0.12 ? h >= 155 && h <= 265 : v > 0.6)) },
   { roles: ["lava"], share: 0.2, want: "붉은·주황 계열", test: (h, s, v) => s > 0.3 && v > 0.25 && (h < 45 || h > 330) },
-  { roles: ["ice", "snow"], share: 0.3, want: "밝은 흰·회색 계열", test: (_h, s, v) => v > 0.6 && s < 0.45 },
+  { roles: ["ice", "snow"], share: 0.2, want: "밝은 흰·회색 계열", test: (_h, s, v) => v > 0.6 && s < 0.45 },
+  // 눈밭 임계 0.2: 잔디 위 부분 설원(retro_world 129/247/250, 밝은 픽셀 23%)이 0.3 에서 오탐이었다.
+  // 색상어 임계 0.02: 라벨이 작은 강조 요소의 색을 지목하는 것은 정당하다("붉은 열매 나무" 5%,
+  // "노란 불꽃 벽횃불" 6%, "노란 마름모 상징" 8%). 진짜 부재는 0-1% 로 나타난다.
   // forest 만 남긴다. plant/tree 는 제거했다 — 마른 수풀과 유색 꽃은 정당하게 녹색이 아니다.
   // 실측 오탐: retro_exterior 131 "마른 수풀", 372/373 "보라 꽃포기", 443/473 "석제 화단 붉은 꽃".
   // forest 는 남긴다: 월드맵 캐노피는 녹색이어야 하고, retro_world 8/20/21/26/27 은 녹색 0% 로 정탐이었다.
@@ -145,6 +148,9 @@ function auditSheet(sheet: string, rowRange: [number, number] | null): { violati
     if (stat.pixels.length === 0) continue;
 
     // A. 투명 소품을 통행 가능 지면으로 적었는가.
+    // path/bridge/road 는 제외한다: 월드맵의 도로·교량은 설계상 얇은 선형 오버레이로
+    // 그려져 대부분이 투명하지만 통행 가능하다(실측 world 265 "좁은 흙길", 투명 81%,
+    // 분홍 컬러키 위 굽은 흙길 한 줄).
     // 임계 0.65 는 실측 교정이다: 0.25 로 두면 월드맵의 대각 지형 모서리(world 24-29, 분홍 컬러키
     // 배경 위 잔디/흙/눈 코너 조각, 투명 45%)까지 걸렸다. 그건 하위 레이어 오토타일 코너라 실제로
     // 통행 가능하다. 0.65 이상만 개별 소품으로 본다.
@@ -164,10 +170,10 @@ function auditSheet(sheet: string, rowRange: [number, number] | null): { violati
         if (rule.test(h, s, v)) hits += 1;
       }
       const share = hits / stat.pixels.length;
-      if (share < 0.08) {
+      if (share < 0.02) {
         violations.push({
           index: e.index, kind: "color-mismatch", label: e.label,
-          detail: `라벨의 색상어에 맞는 픽셀이 ${(share * 100).toFixed(0)}% 뿐이다 (기준 8%)`,
+          detail: `라벨의 색상어에 맞는 픽셀이 ${(share * 100).toFixed(0)}% 뿐이다 (기준 2%)`,
         });
       }
     }
