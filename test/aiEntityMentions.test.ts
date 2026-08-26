@@ -150,3 +150,45 @@ describe("renderEntityMentionStrip", () => {
     expect(chip2?.querySelector(".ai-mention-name")?.textContent).toBe("마나 포션");
   });
 });
+
+// 라이브 턴에서 실측한 오탐(2026-08-26): 기본 프로젝트에는 "map", "ale", "egg", "bell",
+// "bone", "coal" 같은 짧은 순수 ASCII 아이템 이름이 수십 개 있다. 부분 문자열 포함만으로
+// 매칭하면 어시스턴트가 "현재 맵: 이슬 장터 마을 (mapvillage30_100x100)" 이라고 말하는
+// 순간 아이템 "map" 썸네일이 붙는다 — 실제로 브라우저에서 붙는 것을 확인했다.
+// 단어 경계가 없다는 근거는 **한글에만** 해당하므로, ASCII 이름은 경계를 요구한다.
+describe("짧은 ASCII 이름 오탐", () => {
+  function projectWithNames(itemNames: string[], enemyNames: string[] = []) {
+    const project = createBlankProject();
+    project.database.items = itemNames.map((name, i) => ({ id: `item_ascii_${i}`, name }) as ItemRecord);
+    project.database.enemies = enemyNames.map((name, i) => ({ id: `enemy_ascii_${i}`, name }) as EnemyRecord);
+    return project;
+  }
+
+  it('맵 id 문자열 안의 "map" 은 아이템 map 으로 보지 않는다', () => {
+    const project = projectWithNames(["map"]);
+
+    expect(findEntityMentions("현재 맵: 이슬 장터 마을 (mapvillage30_100x100)", project)).toEqual([]);
+  });
+
+  it("다른 영어 단어에 숨은 짧은 이름도 잡지 않는다", () => {
+    const project = projectWithNames(["ale", "egg", "bell", "bone"]);
+
+    const found = findEntityMentions("The female scale bellows; bones remain. eggplant.", project);
+
+    expect(found.map((m) => m.name)).toEqual([]);
+  });
+
+  it("독립된 단어로 나오면 ASCII 이름도 정상 매칭한다", () => {
+    const project = projectWithNames(["map", "ale"]);
+
+    const found = findEntityMentions("상자에 map 과 ale 을 넣었습니다.", project);
+
+    expect(found.map((m) => m.name).sort()).toEqual(["ale", "map"]);
+  });
+
+  it("한글 이름은 그대로 부분 문자열로 매칭한다(경계가 없으므로)", () => {
+    const project = projectWithNames([], ["슬라임"]);
+
+    expect(findEntityMentions("슬라임을 광장에 두었습니다.", project).map((m) => m.name)).toEqual(["슬라임"]);
+  });
+});
