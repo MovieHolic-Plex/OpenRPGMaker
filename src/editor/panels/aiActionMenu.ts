@@ -1,7 +1,7 @@
 // editor/panels/aiActionMenu.ts
 // AI 패널 2차 액션 메뉴의 **항목 목록 단일 구현**.
 //
-// 왜: 헤더 ☰(`.ai-more-menu`)와 컴포저 ☰(`.ai-command-menu`)가 같은 5개 항목
+// 왜: 헤더 ☰(`.ai-more-menu` 안 접힌 `작업`)와 컴포저 ☰(`.ai-command-menu`)가 같은 5개 항목
 // (되돌리기 · 내보내기 · 도크 전환 · 전체 기록 · 툴 브라우저)을 각각 따로 만들고 있었다.
 // 두 벌이라 도크 라벨 갱신도 두 곳(`moreMenuDockItem`, `commandDockItem`)에서 따로 했고,
 // 한쪽에만 항목을 추가하면 조용히 갈라졌다. 컨테이너/위치/열림 상태는 서로 달라야 하므로
