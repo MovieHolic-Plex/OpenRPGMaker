@@ -210,7 +210,7 @@ export const RETRO_EXTERIOR_TILE_SEMANTICS: readonly RetroExteriorTileSemanticEn
   one(176, "벽돌 조각 하부 곡선", "wall", "solid", ["벽돌", "brick", "곡선"]),
   one(177, "안쪽 벽 창문들", "window", "solid", ["창문", "window", "실내"]),
   one(178, "벽 안쪽 후면부", "wall", "solid", ["벽", "wall", "내부"]),
-  one(179, "회색 지붕 하단 처마", "roof", "solid", ["지붕", "roof", "처마"]),
+  one(179, "붉은 지붕 하단 처마", "roof", "solid", ["지붕", "roof", "처마"]),
 
   // ── 6행 (인덱스 180-209) ─────────────────────────────────────────────
   one(180, "짙은 남색 창살 3연", "window", "solid", ["창살", "window", "bar"]),
@@ -413,7 +413,7 @@ export const RETRO_EXTERIOR_TILE_SEMANTICS: readonly RetroExteriorTileSemanticEn
   one(367, "암흑 바닥 전체", "terrain", "solid", ["void", "black", "심연", "판독보류"]),
   one(368, "칠흑 바닥 모서리 조각", "terrain", "solid", ["void", "black", "판독보류"]),
   one(369, "어두운 돌 구덩이 상단", "terrain", "solid", ["dark", "pit", "판독보류"]),
-  one(370, "짙은 회색 바닥", "floor", "passable", ["dark", "stone", "돌판"]),
+  one(370, "짙은 남청 바닥", "floor", "passable", ["dark", "stone", "돌판"]),
   one(371, "어두운 돌 구덩이 사면", "terrain", "solid", ["dark", "pit", "판독보류"]),
   one(372, "돌밭 보라 꽃포기", "plant", "passable", ["flower", "purple", "꽃"]),
   one(373, "잡석 꽃밭 보라꽃", "plant", "passable", ["flower", "gravel", "꽃밭"]),
