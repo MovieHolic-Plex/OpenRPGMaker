@@ -113,4 +113,16 @@ describe("loadAiConfig — 제공자 보존", () => {
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "no-such-provider" }));
     expect(loadAiConfig().providerId).toBe("google-antigravity");
   });
+
+  it("providerId 없는 새 설정은 Antigravity OAuth 를 쓴다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt" }));
+    const config = loadAiConfig();
+    expect(config.providerId).toBe("google-antigravity");
+    expect(config.model).toBe("gemini-3.7-flash");
+  });
+
+  it("providerId 없이 gpt 모델만 남은 옛 blob 은 Codex 세션을 유지한다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", model: "gpt-5.6-sol" }));
+    expect(loadAiConfig().providerId).toBe("openai-codex");
+  });
 });
