@@ -135,10 +135,10 @@ describe("모델 프리셋과 경고", () => {
     expect(findByTestId(root, "ai-config-model-warning")?.hidden).toBe(false);
 
     // 목록에서 유효한 값을 고르면 경고가 즉시 사라져야 한다(옛 구현은 저장 시점까지 남았다).
-    preset.value = "gemini-3.7-flash-high";
+    preset.value = "gemini-3.7-flash";
     preset.dispatchEvent(new Event("change"));
 
-    expect(input.value).toBe("gemini-3.7-flash-high");
+    expect(input.value).toBe("gemini-3.7-flash");
     expect(findByTestId(root, "ai-config-model-warning")?.hidden).toBe(true);
     dispose();
   });

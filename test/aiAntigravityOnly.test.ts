@@ -80,8 +80,22 @@ describe("Antigravity 강제 통일", () => {
       storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ model: stale, liteModel: stale }));
 
       const loaded = loadAiConfig();
-      expect(loaded.model, stale).toBe("gemini-3.7-flash-high");
-      expect(loaded.liteModel, stale).toBe("gemini-3.7-flash-high");
+      expect(loaded.model, stale).toBe("gemini-3.7-flash");
+      expect(loaded.liteModel, stale).toBe("gemini-3.7-flash");
+    }
+  });
+
+  // 2026-08-26 실측: 기본값을 한동안 `gemini-3.7-flash-high` 로 강제했는데 Cloud Code Assist 가
+  // 그 ID 를 404 `Requested entity was not found` 로 거부한다 — Antigravity 에서 `-high` 는
+   // 독립 모델이 아니라 `thinking.effortRouting` 의 대상 이름이다. 그 사이에 에디터를 켠
+  // 사용자의 localStorage 에는 404 나는 ID 가 남아 있으므로, 로드할 때 스스로 낫게 만든다.
+  it("사고 강도 변형(-high/-medium/-low)이 저장돼 있으면 기본 모델로 교정한다", () => {
+    for (const broken of ["gemini-3.7-flash-high", "gemini-3.7-flash-medium", "gemini-3.7-flash-low"]) {
+      storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ model: broken, liteModel: broken }));
+
+      const loaded = loadAiConfig();
+      expect(loaded.model, broken).toBe("gemini-3.7-flash");
+      expect(loaded.liteModel, broken).toBe("gemini-3.7-flash");
     }
   });
 

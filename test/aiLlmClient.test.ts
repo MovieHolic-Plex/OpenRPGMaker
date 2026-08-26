@@ -78,8 +78,8 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다. 옛 기본값 cpen/gpt-5-6-luna 는 게이트웨이
     // ID 라서, OAuth 경로에서 오류 없이 제공자 기본 모델로 강등됐다(감독이 고른 모델이 답하지 않음).
-    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash-high");
-    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash-high");
+    expect(DEFAULT_MODEL).toBe("gemini-3.7-flash");
+    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
   });
 
   it("ChatGPT 모드에 저장된 비-gpt 모델은 로드 시점에 권장 기본으로 교정된다", async () => {
@@ -96,8 +96,8 @@ describe("aiConfig 저장/로드", () => {
     const loaded = loadAiConfig();
     expect(loaded.authMode).toBe("chatgpt");
     // 제공자가 Antigravity 로 강제된 뒤에도 교정은 살아 있다 — 목표만 gemini 기본으로 바뀐다.
-    expect(loaded.model).toBe("gemini-3.7-flash-high");
-    expect(loaded.liteModel).toBe("gemini-3.7-flash-high");
+    expect(loaded.model).toBe("gemini-3.7-flash");
+    expect(loaded.liteModel).toBe("gemini-3.7-flash");
   });
 
   it("저장된 다른 제공자와 그 모델은 Antigravity 로 끌어온다 (제공자 강제 통일)", async () => {
@@ -113,7 +113,7 @@ describe("aiConfig 저장/로드", () => {
     }));
     const loaded = loadAiConfig();
     expect(loaded.providerId).toBe("google-antigravity");
-    expect(loaded.model).toBe("gemini-3.7-flash-high");
+    expect(loaded.model).toBe("gemini-3.7-flash");
   });
 
   it("env VITE_LLM_API_URL 이 있어도 OAuth 로 부팅한다 (env 가 authMode 를 정하지 못한다)", async () => {
@@ -128,7 +128,7 @@ describe("aiConfig 저장/로드", () => {
     const cfg = defaultAiConfig();
     expect(cfg.authMode).toBe("chatgpt");
     expect(cfg.providerId).toBe("google-antigravity");
-    expect(cfg.model).toBe("gemini-3.7-flash-high");
+    expect(cfg.model).toBe("gemini-3.7-flash");
     expect(cfg.baseUrl).toBe("");
     expect(cfg.apiKey).toBe("");
   });
@@ -150,7 +150,7 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.baseUrl).toBe("");
     expect(reloaded.apiKey).toBe("");
     // 게이트웨이 모델 ID 는 Antigravity 네임스페이스 밖 → 강제 기본으로 교정된다(조용한 오배송 방지).
-    expect(reloaded.model).toBe("gemini-3.7-flash-high");
+    expect(reloaded.model).toBe("gemini-3.7-flash");
   });
 
   it("authMode 가 없는 옛 설정도 OAuth 로 승격한다", async () => {
@@ -165,7 +165,7 @@ describe("aiConfig 저장/로드", () => {
     const reloaded = loadAiConfig();
     expect(reloaded.authMode).toBe("chatgpt");
     expect(reloaded.baseUrl).toBe("");
-    expect(reloaded.model).toBe("gemini-3.7-flash-high");
+    expect(reloaded.model).toBe("gemini-3.7-flash");
   });
 
   it("저장된 사용자 model은 존중하고 liteModel 누락은 감독 model로 보강한다 (일원화)", async () => {
@@ -197,8 +197,8 @@ describe("aiConfig 저장/로드", () => {
       model: "claude-opus-4-8",
     }));
     const foreign = configForLiteModel(loadAiConfig());
-    expect(foreign.model).toBe("gemini-3.7-flash-high");
-    expect(foreign.liteModel).toBe("gemini-3.7-flash-high");
+    expect(foreign.model).toBe("gemini-3.7-flash");
+    expect(foreign.liteModel).toBe("gemini-3.7-flash");
 
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       authMode: "chatgpt",

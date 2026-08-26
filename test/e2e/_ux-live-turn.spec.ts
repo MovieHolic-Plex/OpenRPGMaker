@@ -23,16 +23,12 @@ async function boot(page: Page): Promise<void> {
     if (res.url().includes("/api/ai")) log(`API /api/ai -> ${res.status()}`);
   });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    // 이 워킹트의 로컬 게이트웨이(/api/ai)는 deepseek-v4-flash · mimo-v2.5 둔 개만 허용한다
-    // (GET /api/ai/models 실측). 앱 기본값은 gemini-3.7-flash 라 게이트웨이가 400
-    // "Model not allowed" 로 돌려보낸다 — 우홼로 모델을 허용 목록으로 맞춘다.
-    const raw = localStorage.getItem("oprn:ai-config");
-    const base = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
-    localStorage.setItem(
-      "oprn:ai-config",
-      JSON.stringify({ ...base, model: "deepseek-v4-flash", liteModel: "deepseek-v4-flash" }),
-    );
+    localStorage.setItem("oprn:editor-ui-mode", "expert"); // 키는 oprn: 다 — rpg-zzu: 는 낡아서 무시된다
+    // 모델은 덮어쓰지 않는다. 예전에는 로컬 `/api/ai` 게이트웨이가 deepseek·mimo 만 받는다고
+    // 보고 여기서 모델을 갈아 끼웠는데, 그 진단이 틀렸다(실측 2026-08-26): 에디터는 authMode
+    // "chatgpt" 로 companion 전송을 타므로 저장된 baseUrl 을 버리고 `/v1` 로 간다 — 게이트웨이
+    // 모델 목록은 이 경로와 무관하다. 그 우회가 남아 있는 동안 Antigravity 에 deepseek 모델명이
+    // 실려 나가 400 이 났고, 제품 결함처럼 보였다. 강제 기본값 그대로 태우는 것이 이 스펙의 값이다.
   });
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
@@ -113,7 +109,9 @@ async function sendTurn(page: Page, instruction: string, tag: string, budgetMs: 
 }
 
 test("live: 실제 턴에서 자동 적용 비교 카드와 언급 썸네일", async ({ page }) => {
-  test.setTimeout(600_000);
+  // 두 턴이 실제로 도구를 돌리면 각각 수 분이 걸린다(400 으로 즉사하던 시절의 600s 로는
+  // 두 번째 턴이 잘렸다) — 턴 예산 300s 두 개에 부팅·채증 여유를 더한 천장이다.
+  test.setTimeout(1_200_000);
   await boot(page);
   const report: Record<string, unknown> = {};
   await page.screenshot({ path: `${OUT}/00-boot.png` });

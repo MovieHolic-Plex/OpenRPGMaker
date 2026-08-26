@@ -69,7 +69,7 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   row("gitlab-duo-agent", "GitLab Duo Agent", "claude_sonnet_4_6_vertex", ["GITLAB_TOKEN"]),
   row("gmi-cloud", "GMI Cloud", "deepseek-ai/DeepSeek-V4-Flash", ["GMI_API_KEY"]),
   row("google", "Google Gemini", "gemini-3.1-pro-preview", ["GEMINI_API_KEY"]),
-  row("google-antigravity", "Google Antigravity", "gemini-3.7-flash-high"),
+  row("google-antigravity", "Google Antigravity", "gemini-3.7-flash"),
   row("google-gemini-cli", "Google Gemini CLI", "gemini-3.1-pro-preview"),
   row("google-vertex", "Google Vertex", "gemini-3.1-pro-preview", ["GOOGLE_CLOUD_API_KEY"]),
   row("groq", "Groq", "openai/gpt-oss-120b", ["GROQ_API_KEY"]),

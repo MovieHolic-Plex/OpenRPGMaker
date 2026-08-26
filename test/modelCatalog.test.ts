@@ -42,8 +42,9 @@ describe("modelCatalog", () => {
     const groups = modelCatalogForAuthMode("chatgpt", "google-antigravity");
     const recommended = groups[0]?.models;
 
-    expect(defaultModelForAuthMode("chatgpt", "google-antigravity")).toBe("gemini-3.7-flash-high");
-    expect(recommended?.slice(0, 3)).toEqual(["gemini-3.7-flash-high", "gemini-3.7-flash", "gemini-3.1-pro"]);
+    expect(defaultModelForAuthMode("chatgpt", "google-antigravity")).toBe("gemini-3.7-flash");
+    // `-high` 는 목록에서 뺐다 — Cloud Code Assist 가 404 로 거부하는 ID 다(실측 2026-08-26).
+    expect(recommended).toEqual(["gemini-3.7-flash", "gemini-3.1-pro"]);
     expect(groups.flatMap((group) => group.models)).not.toContain("gpt-5.6-sol");
   });
 

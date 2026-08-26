@@ -5,7 +5,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 const OUT = "verify-shots/ai-assistant-ux/probe-model";
 mkdirSync(OUT, { recursive: true });
-const FORCED = "gemini-3.7-flash-high";
+const FORCED = "gemini-3.7-flash";
 
 test("default model: 새 부팅에서 두 모델 슬롯이 강제 기본값이다", async ({ page }) => {
   test.setTimeout(180_000);
