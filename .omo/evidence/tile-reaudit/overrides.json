@@ -3454,5 +3454,28 @@
    "최종판정",
    "prop"
   ]
+ },
+ {
+  "sheet": "retro_exterior",
+  "index": 259,
+  "label": "죽은 나뭇가지 덤불",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "최종판정",
+   "plant"
+  ]
+ },
+ {
+  "sheet": "retro_house",
+  "index": 259,
+  "label": "죽은 나뭇가지 덤불",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "최종판정",
+   "plant",
+   "중복시트 이관"
+  ]
  }
 ]

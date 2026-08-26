@@ -311,7 +311,7 @@ export const RETRO_EXTERIOR_TILE_SEMANTICS: readonly RetroExteriorTileSemanticEn
   one(255, "목재 골조 자주색 벽 상단", "wall", "solid", ["wall", "건물 외벽 기둥 사이 벽", "목재 골조 석벽 오른쪽", "벽돌 벽과 나무 기둥"]),
   one(256, "건물 외벽 회반죽 벽", "wall", "solid", ["wall", "회색 벽과 나무 기둥", "목재 골조 회벽 상단", "회벽 목조 벽 왼쪽"]),
   one(257, "건물 외벽 회반죽 벽", "wall", "solid", ["wall", "회색 벽과 나무 기둥", "목재 골조 회벽 상단", "회벽 목조 벽 오른쪽"]),
-  one(259, "나무 통", "prop", "solid", ["barrel", "통", "나무", "술통"]),
+  one(259, "죽은 나뭇가지 덤불", "plant", "solid", ["최종판정", "plant"]),
   one(260, "나무", "tree", "solid", ["tree", "숲", "나뭇잎"]),
   one(261, "마른 나무 가지 상단", "tree", "solid", ["tree", "마른 나무 상단", "마른 나무"]),
   one(262, "덤불 나무", "tree", "solid", ["tree", "bush", "덤불", "나무"]),

@@ -206,15 +206,12 @@
  },
  {
   "index": 259,
-  "label": "나무 통",
-  "role": "prop",
+  "label": "죽은 나뭇가지 덤불",
+  "role": "plant",
   "passage": "solid",
   "tags": [
-   "나무 통",
-   "barrel",
-   "통",
-   "나무",
-   "술통"
+   "최종판정",
+   "plant"
   ]
  },
  {

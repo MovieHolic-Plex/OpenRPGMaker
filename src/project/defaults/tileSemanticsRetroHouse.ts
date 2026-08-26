@@ -311,7 +311,7 @@ export const RETRO_HOUSE_TILE_SEMANTICS: readonly RetroHouseTileSemanticEntry[] 
   one(255, "왼쪽 기둥 벽돌벽", "wall", "solid", ["brick", "목재기둥"]),
   one(256, "오른쪽 보강 회벽", "wall", "solid", ["plaster", "갈색기둥"]),
   one(257, "왼쪽 보강 회벽", "wall", "solid", ["plaster", "나무보"]),
-  one(259, "부러진 나무 그루터기", "prop", "solid", ["prop", "통나무 더미 상단", "나뭇가지 더미", "통나무 더미"]),
+  one(259, "죽은 나뭇가지 덤불", "plant", "solid", ["최종판정", "plant", "중복시트 이관"]),
   one(260, "연두 나무 우듬지", "tree", "solid", ["foliage", "나뭇잎"]),
   one(261, "갈라진 마른 가지", "tree", "solid", ["branch", "고사목"]),
   one(262, "둥근 활엽수 좌측 상단", "tree", "solid", ["tree", "큰 활엽수 왼쪽 상단", "큰 활엽수 수관 왼쪽", "큰 나무 좌상단"]),
