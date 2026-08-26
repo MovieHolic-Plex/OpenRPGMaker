@@ -39,7 +39,7 @@ export function savePanelSize(size: PanelSize): void {
 
 // ── 도크(모드)별 패널 크기 ────────────────────────────────────────
 // 패널은 dock 모드(glass/side/float)마다 쓰임새가 달라 한 저장값으로는 서로 다른 폭(예:
-// 360px 글래스 카드 vs 533px 사이드 컬럼)을 모두 담을 수 없다. 그래서 도크마다 별도 키에
+// clamp(360px, 38vw, 520px) 글래스 카드 vs 533px 사이드 컬럼)을 모두 담을 수 없다. 그래서 도크마다 별도 키에
 // 저장하고, 누락 시 기존 글로벌 값으로 폴백해 기존 사용자 크기를 보존한다.
 export type PanelDock = "glass" | "side" | "float";
 
