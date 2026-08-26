@@ -27,7 +27,7 @@
 .battle-scene[data-battle-skin="octopath"] .battle-party {
   background: rgba(16, 13, 10, 0.92);
   border: 2px solid #c9a227;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   color: #f0e6c8;
 }
 

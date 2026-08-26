@@ -15,7 +15,7 @@
 .battle-scene[data-battle-skin="chrono"] .battle-command-panel {
   background: radial-gradient(circle at 50% 0%, #10365c 0%, #0a1a3a 72%);
   border: 4px solid #35d6e8;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 20px;
   overflow: visible !important;
   padding: 6px 10px !important;
@@ -25,14 +25,14 @@
 .battle-scene[data-battle-skin="chrono"] .battle-party {
   background: linear-gradient(180deg, #0c2b3a, #071a24);
   border: 4px solid #35d6e8;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 16px;
 }
 
 .battle-scene[data-battle-skin="chrono"] .battle-message-window {
   background: linear-gradient(180deg, #0c2b3a, #071a24);
   border: 4px solid #35d6e8;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 16px;
   align-content: start;
 }
