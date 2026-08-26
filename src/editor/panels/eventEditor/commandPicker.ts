@@ -29,6 +29,8 @@ import {
   type CommandPresentationDescriptor,
 } from "@/editor/eventCommands/commandPresentation";
 import { openEventSubdialog } from "./subdialog";
+import { store } from "@/project/store";
+import { renderCompanionRoster } from "./companionRoster";
 
 type CommandKind = Command["kind"];
 
@@ -286,7 +288,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
           return;
         }
         const page = COMMAND_PAGES.find((candidate) => candidate.page === activePage) ?? COMMAND_PAGES[0];
-        commandArea.append(renderPickerPage(page.entries, request.onSelect, close, viewMode, render, request.context));
+        commandArea.append(renderPickerPage(page.page, page.entries, request.onSelect, close, viewMode, render, request.context));
         restoreCommandPickerFocus(commandArea, focusSnapshot);
       };
       search.addEventListener("input", () => {
@@ -402,6 +404,7 @@ function highlightCommand(area: HTMLElement, index: number): void {
 }
 
 function renderPickerPage(
+  page: M2CommandPickerPage,
   entries: readonly CommandEntry[],
   onSelect: EventCommandPickerRequest["onSelect"],
   close: () => void,
@@ -416,6 +419,13 @@ function renderPickerPage(
     .filter((id) => !preferences.favorites.includes(id))
     .flatMap((id) => byId.get(id) ?? []);
   const wrap = el("div", { class: "event-command-picker-page" });
+  if (page === 2) {
+    wrap.append(
+      renderCompanionRoster(store.getCurrent(), {
+        onSelect: (command) => onSelect(command as unknown as Command, close),
+      }),
+    );
+  }
   if (favorites.length > 0) {
     wrap.append(renderQuickCommandSection("즐겨찾기", "event-command-picker-favorites", favorites, onSelect, close, viewMode, onPreferencesChanged, context));
   }

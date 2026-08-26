@@ -15,14 +15,30 @@ export type FollowerPreset = {
   readonly displayName: string;
   /** 캐릭터셋 텍스처 키(썸네일 확인용, 없으면 undefined) */
   readonly textureKey?: string;
+  /** DB 초상화(페이스셋/캐릭터셋) — 이미지 칩 렌더용. */
+  readonly faceResourceId?: string | undefined;
+  readonly faceIndex?: number | undefined;
+  readonly characterResourceId?: string | undefined;
+  readonly characterIndex?: number | undefined;
 };
 
-function projectActors(): readonly { id: string; name: string }[] {
-  const p = store.getCurrent();
-  const db = (p as unknown as { database?: { actors?: readonly { id: string; name: string }[] } }).database;
-  const actors = db?.actors;
-  if (!actors) return [];
-  return actors;
+/** 프로젝트 DB 액터 전원 — 동료 로스터/프리셋은 이 목록이 단일 원천이다. */
+function projectActors(): readonly {
+  id: string;
+  name: string;
+  faceResourceId?: string;
+  faceIndex?: number;
+  characterResourceId?: string;
+  characterIndex?: number;
+}[] {
+  return store.getCurrent().database.actors.map((actor) => ({
+    id: actor.id,
+    name: actor.name,
+    faceResourceId: actor.faceResourceId,
+    faceIndex: actor.faceIndex,
+    characterResourceId: actor.characterResourceId,
+    characterIndex: actor.characterIndex,
+  }));
 }
 
 /** 프로젝트 상태를 읽어 프리셋 목록을 생성. 고정 3개 + 프로젝트 보유 액터를 덧붙임. */
@@ -58,34 +74,28 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
       displayName: "삐약이",
       textureKey: "tex_farming_charset_chicken",
     },
-    {
-      id: "preset:companion-hero",
-      kind: "actor",
-      label: "동료 주인공",
-      description: "파티 주인공 한 명을 뒤따라오게 한다. 대화 연출에 좋다.",
-      hint: "addFollower(actorId)",
-      refId: actors[0]?.id ?? "actor-1",
-      displayName: actors[0]?.name ?? "동료",
-    },
   ];
 
   // 프로젝트 몬스터는 프리셋 칩으로 노출하지 않는다 — 몬스터 동행은
   // monsterParty 가 단일 진실 원천(SSOT)이며, 편입 경로는 몬스터 도감 → 파티 편입이다.
-  // 여기서 안내 메시지를 이벤트에 삽입하면 저자용 안내가 게임 콘텐츠로 흘러들어가므로
-  // 칩 자체를 만들지 않는다 (2026-08-10, "동행" 칩 실수 클릭 사고 후속).
 
-  // 배우가 2명 이상이면 두 번째 배우도 프리셋으로 노출
-  if (actors[1]) {
+  // DB 동료 전원을 칩으로 노출(2026-08-27 — 첫 두 명만 나오던 누락 수정).
+  // 첫 액터 칩은 기존 계약 id(preset:companion-hero)를 유지해 즐겨찾기/테스트 호환을 지킨다.
+  actors.forEach((actor, index) => {
     base.push({
-      id: `preset:actor:${actors[1].id}`,
+      id: index === 0 ? "preset:companion-hero" : `preset:actor:${actor.id}`,
       kind: "actor",
-      label: `${actors[1].name} 동행`,
-      description: `${actors[1].name} 가 뒤따라온다.`,
+      label: index === 0 ? `동료 주인공 (${actor.name || "동료"})` : `${actor.name} 동행`,
+      description: `${actor.name} 가 뒤따라온다.`,
       hint: "addFollower(actorId)",
-      refId: actors[1].id,
-      displayName: actors[1].name,
+      refId: actor.id,
+      displayName: actor.name || "동료",
+      faceResourceId: actor.faceResourceId,
+      faceIndex: actor.faceIndex,
+      characterResourceId: actor.characterResourceId,
+      characterIndex: actor.characterIndex,
     });
-  }
+  });
 
   return base;
 }
