@@ -105,26 +105,24 @@
  },
  {
   "index": 372,
-  "label": "세로 널빤지 벽",
+  "label": "목재 벽 상단 좌측",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "세로 널빤지 벽",
-   "wood",
-   "벽판",
-   "세로결"
+   "wall",
+   "목재 벽 좌측 하단",
+   "목재 벽"
   ]
  },
  {
   "index": 373,
-  "label": "나무 벽널 가운데",
+  "label": "목재 벽 상단 중앙",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "나무 벽널 가운데",
-   "wood",
-   "선실벽",
-   "널빤지"
+   "wall",
+   "목재 벽 중앙 하단",
+   "목재 벽"
   ]
  },
  {
@@ -141,14 +139,14 @@
  },
  {
   "index": 375,
-  "label": "나무벽 세로 이음",
+  "label": "목재 벽 상단 좌측",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "나무벽 세로 이음",
-   "wood",
-   "이음새",
-   "홈"
+   "wall",
+   "목재 창살 벽 좌측",
+   "목재 벽",
+   "목재 창살 벽"
   ]
  },
  {
@@ -165,26 +163,25 @@
  },
  {
   "index": 377,
-  "label": "나무벽 왼쪽 이음",
+  "label": "목재 벽 상단 우측",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "나무벽 왼쪽 이음",
-   "wood",
-   "이음새",
-   "좌측"
+   "wall",
+   "목재 창살 벽 우측",
+   "목재 벽",
+   "목재 창살 벽"
   ]
  },
  {
   "index": 378,
-  "label": "밝은 세로 나무결",
+  "label": "배 외벽 좌현 상단",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "밝은 세로 나무결",
-   "wood",
-   "밝은널",
-   "세로"
+   "wall",
+   "선체 좌측 외벽",
+   "선체"
   ]
  },
  {
@@ -235,14 +232,13 @@
  },
  {
   "index": 383,
-  "label": "세로 나무판 기둥",
+  "label": "배 외벽 우현 상단",
   "role": "pillar",
   "passage": "solid",
   "tags": [
-   "세로 나무판 기둥",
-   "pillar",
-   "목재",
-   "수직"
+   "wall",
+   "선체 우측 외벽",
+   "선체"
   ]
  },
  {
@@ -259,14 +255,12 @@
  },
  {
   "index": 385,
-  "label": "둥근 나무 술통",
+  "label": "대형 오크통",
   "role": "barrel",
   "passage": "solid",
   "tags": [
-   "둥근 나무 술통",
-   "barrel",
-   "통",
-   "화물"
+   "prop",
+   "목재 통"
   ]
  },
  {
@@ -316,38 +310,32 @@
  },
  {
   "index": 390,
-  "label": "흙 북서 모래사면",
+  "label": "흙 지형 좌상단 모서리",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 북서 모래사면",
-   "dirt",
-   "sand",
-   "북서"
+   "terrain",
+   "흙 바닥 좌상단"
   ]
  },
  {
   "index": 391,
-  "label": "흙 북쪽 모래경계",
+  "label": "흙 지형 상단",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 북쪽 모래경계",
-   "dirt",
-   "sand edge",
-   "북쪽"
+   "terrain",
+   "흙 바닥 상단"
   ]
  },
  {
   "index": 392,
-  "label": "흙 북동 모래사면",
+  "label": "흙 지형 우상단 모서리",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 북동 모래사면",
-   "dirt",
-   "sand",
-   "북동"
+   "terrain",
+   "흙 바닥 우상단"
   ]
  },
  {
@@ -460,14 +448,13 @@
  },
  {
   "index": 405,
-  "label": "나무 겹벽 이음",
+  "label": "목재 기둥 벽",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "나무 겹벽 이음",
-   "wood",
-   "이음",
-   "겹판"
+   "wall",
+   "목재 벽 기둥",
+   "목재 벽"
   ]
  },
  {
@@ -628,14 +615,12 @@
  },
  {
   "index": 420,
-  "label": "흙 서쪽 모래경계",
+  "label": "흙 지형 좌측",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 서쪽 모래경계",
-   "dirt",
-   "sand edge",
-   "서쪽"
+   "terrain",
+   "흙 바닥 좌측"
   ]
  },
  {
@@ -652,14 +637,12 @@
  },
  {
   "index": 422,
-  "label": "흙 동쪽 모래경계",
+  "label": "흙 지형 우측",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 동쪽 모래경계",
-   "dirt",
-   "sand edge",
-   "동쪽"
+   "terrain",
+   "흙 바닥 우측"
   ]
  },
  {
@@ -768,14 +751,13 @@
  },
  {
   "index": 435,
-  "label": "고른 세로 나무널",
+  "label": "목재 기둥 벽",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "고른 세로 나무널",
-   "wood",
-   "널빤지",
-   "세로"
+   "wall",
+   "목재 벽 기둥",
+   "목재 벽"
   ]
  },
  {
@@ -943,14 +925,12 @@
  },
  {
   "index": 451,
-  "label": "흙 남쪽 모래경계",
+  "label": "흙 지형 하단",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 남쪽 모래경계",
-   "dirt",
-   "sand edge",
-   "남쪽"
+   "terrain",
+   "흙 바닥 하단"
   ]
  },
  {
@@ -1072,14 +1052,13 @@
  },
  {
   "index": 465,
-  "label": "세로널 오른쪽 홈",
+  "label": "목재 기둥 벽",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "세로널 오른쪽 홈",
-   "wood",
-   "세로결",
-   "홈"
+   "wall",
+   "목재 벽 기둥",
+   "목재 벽"
   ]
  },
  {

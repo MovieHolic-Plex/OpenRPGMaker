@@ -1,62 +1,55 @@
 [
  {
   "index": 120,
-  "label": "파란 깊은 물",
+  "label": "푸른 수면 1",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "파란 깊은 물",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 121,
-  "label": "파란 깊은 물",
+  "label": "푸른 수면 2",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "파란 깊은 물",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 122,
-  "label": "파란 깊은 물",
+  "label": "잔잔한 수면 1",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "파란 깊은 물",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 123,
-  "label": "물보라 흰 거품",
+  "label": "폭포 상단 1",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "물보라 흰 거품",
-   "물",
-   "거품",
-   "foam"
+   "water",
+   "폭포 상단",
+   "폭포"
   ]
  },
  {
   "index": 124,
-  "label": "맑은 얕은 물",
+  "label": "물 소용돌이 상단",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "맑은 얕은 물",
-   "물",
-   "얕음",
-   "water"
+   "water",
+   "소용돌이 물 1",
+   "물 소용돌이",
+   "소용돌이 물"
   ]
  },
  {
@@ -108,14 +101,11 @@
  },
  {
   "index": 129,
-  "label": "균열 난 검은 바위",
+  "label": "작은 구덩이",
   "role": "rock",
   "passage": "passable",
   "tags": [
-   "균열 난 검은 바위",
-   "바위",
-   "균열",
-   "crack"
+   "cliff"
   ]
  },
  {
@@ -361,38 +351,35 @@
  },
  {
   "index": 152,
-  "label": "푸른 파도 물",
+  "label": "잔잔한 수면 2",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "푸른 파도 물",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 153,
-  "label": "물보라 이는 물가",
+  "label": "폭포 상단 2",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "물보라 이는 물가",
-   "물",
-   "거품",
-   "파도"
+   "water",
+   "폭포 중간",
+   "폭포"
   ]
  },
  {
   "index": 154,
-  "label": "깊은 색 물 바닥",
+  "label": "물 소용돌이 중간",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "깊은 색 물 바닥",
-   "물",
    "water",
-   "깊음"
+   "소용돌이 물 2",
+   "물 소용돌이",
+   "소용돌이 물"
   ]
  },
  {
@@ -444,14 +431,12 @@
  },
  {
   "index": 159,
-  "label": "어두운 바위 틈",
+  "label": "대형 구덩이 좌상단",
   "role": "rock",
   "passage": "passable",
   "tags": [
-   "어두운 바위 틈",
-   "바위",
-   "틈",
-   "crack"
+   "cliff",
+   "대형 구덩이"
   ]
  },
  {
@@ -595,26 +580,24 @@
  },
  {
   "index": 172,
-  "label": "회색 돌 경사로",
+  "label": "위쪽 노란색 화살표 발판",
   "role": "path",
   "passage": "passable",
   "tags": [
-   "회색 돌 경사로",
-   "경사로",
-   "돌",
-   "slope"
+   "floor",
+   "위쪽 화살표 발판",
+   "화살표 발판"
   ]
  },
  {
   "index": 173,
-  "label": "회색 미끄럼 경사",
+  "label": "아래쪽 노란색 화살표 발판",
   "role": "path",
   "passage": "passable",
   "tags": [
-   "회색 미끄럼 경사",
-   "경사",
-   "돌",
-   "slope"
+   "floor",
+   "아래쪽 화살표 발판",
+   "화살표 발판"
   ]
  },
  {
@@ -690,62 +673,55 @@
  },
  {
   "index": 180,
-  "label": "짙은 물 애니메이션",
+  "label": "푸른 수면 5",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "짙은 물 애니메이션",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 181,
-  "label": "짙은 물 애니메이션",
+  "label": "푸른 수면 6",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "짙은 물 애니메이션",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 182,
-  "label": "짙은 물 애니메이션",
+  "label": "잔잔한 수면 3",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "짙은 물 애니메이션",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 183,
-  "label": "거품 이는 물가",
+  "label": "폭포 하단 1",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "거품 이는 물가",
-   "물",
-   "거품",
-   "foam"
+   "water",
+   "폭포 중간",
+   "폭포"
   ]
  },
  {
   "index": 184,
-  "label": "맑은 물 바닥",
+  "label": "물 소용돌이 중간",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "맑은 물 바닥",
-   "물",
    "water",
-   "맑음"
+   "소용돌이 물 3",
+   "물 소용돌이",
+   "소용돌이 물"
   ]
  },
  {
@@ -946,26 +922,24 @@
  },
  {
   "index": 202,
-  "label": "회색 돌 경사로",
+  "label": "왼쪽 노란색 화살표 발판",
   "role": "path",
   "passage": "passable",
   "tags": [
-   "회색 돌 경사로",
-   "경사로",
-   "돌",
-   "slope"
+   "floor",
+   "왼쪽 화살표 발판",
+   "화살표 발판"
   ]
  },
  {
   "index": 203,
-  "label": "회색 경사 바닥",
+  "label": "오른쪽 노란색 화살표 발판",
   "role": "path",
   "passage": "passable",
   "tags": [
-   "회색 경사 바닥",
-   "경사",
-   "돌",
-   "slope"
+   "floor",
+   "오른쪽 화살표 발판",
+   "화살표 발판"
   ]
  },
  {
@@ -1006,101 +980,91 @@
  },
  {
   "index": 207,
-  "label": "화롯불 불꽃",
+  "label": "노란색 발광 균열 좌측",
   "role": "torch",
   "passage": "solid",
   "tags": [
-   "화롯불 불꽃",
-   "불",
-   "불꽃",
-   "fire",
-   "애니메이션"
+   "decoration",
+   "황금빛 액체 튀김 좌측",
+   "노란색 발광 균열",
+   "황금빛 액체 튀김"
   ]
  },
  {
   "index": 208,
-  "label": "화롯불 불꽃",
+  "label": "노란색 발광 균열 중앙",
   "role": "torch",
   "passage": "solid",
   "tags": [
-   "화롯불 불꽃",
-   "불",
-   "불꽃",
-   "fire",
-   "애니메이션"
+   "decoration",
+   "황금빛 액체 튀김 중앙",
+   "노란색 발광 균열",
+   "황금빛 액체 튀김"
   ]
  },
  {
   "index": 209,
-  "label": "화롯불 불꽃",
+  "label": "노란색 발광 균열 파편",
   "role": "torch",
   "passage": "solid",
   "tags": [
-   "화롯불 불꽃",
-   "불",
-   "불꽃",
-   "fire",
-   "애니메이션"
+   "decoration",
+   "황금빛 액체 튀김 우측",
+   "노란색 발광 균열",
+   "황금빛 액체 튀김"
   ]
  },
  {
   "index": 210,
-  "label": "파란 물결 애니메이션",
+  "label": "푸른 수면 7",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "파란 물결 애니메이션",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 211,
-  "label": "파란 물결 애니메이션",
+  "label": "푸른 수면 8",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "파란 물결 애니메이션",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 212,
-  "label": "파란 물결 애니메이션",
+  "label": "잔잔한 수면 4",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "파란 물결 애니메이션",
-   "물",
    "water",
-   "애니메이션"
+   "어두운 물"
   ]
  },
  {
   "index": 213,
-  "label": "흰 거품 돌아치는 물",
+  "label": "폭포 하단 2",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "흰 거품 돌아치는 물",
-   "물",
-   "거품",
-   "foam"
+   "water",
+   "폭포 하단",
+   "폭포"
   ]
  },
  {
   "index": 214,
-  "label": "잔잔한 물 바닥",
+  "label": "물 소용돌이 하단",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "잔잔한 물 바닥",
-   "물",
    "water",
-   "잔잔"
+   "소용돌이 물 4",
+   "물 소용돌이",
+   "소용돌이 물"
   ]
  },
  {
@@ -1152,14 +1116,12 @@
  },
  {
   "index": 219,
-  "label": "어두운 바위 굴",
+  "label": "대형 구덩이 좌하단",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "어두운 바위 굴",
-   "바위",
-   "굴",
-   "cave"
+   "cliff",
+   "대형 구덩이"
   ]
  },
  {

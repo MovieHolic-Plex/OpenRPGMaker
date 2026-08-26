@@ -105,15 +105,13 @@
  },
  {
   "index": 8,
-  "label": "초원 속 갈색 밭",
+  "label": "풀밭 모서리 흙바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "초원 속 갈색 밭",
-   "field",
-   "밭",
-   "초원",
-   "흙"
+   "terrain",
+   "잔디 위 흙길",
+   "흙길"
   ]
  },
  {
@@ -407,15 +405,13 @@
  },
  {
   "index": 34,
-  "label": "백사장 얕은 바다",
+  "label": "눈밭 속 세로 물길 2",
   "role": "coast",
   "passage": "solid",
   "tags": [
-   "백사장 얕은 바다",
-   "beach",
-   "백사",
-   "해변",
-   "바다"
+   "water",
+   "눈 해안 세로 강 2",
+   "강"
   ]
  },
  {
@@ -446,15 +442,13 @@
  },
  {
   "index": 37,
-  "label": "초원 흙 경사면",
+  "label": "풀밭과 흙길 경계 상단",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "초원 흙 경사면",
-   "hill",
-   "언덕",
-   "흙",
-   "경사"
+   "terrain",
+   "잔디 경계 흙길 상단",
+   "흙길"
   ]
  },
  {
@@ -812,15 +806,13 @@
  },
  {
   "index": 68,
-  "label": "흙 초원 경사 구릉",
+  "label": "풀밭과 흙길 경계 우측",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흙 초원 경사 구릉",
-   "hill",
-   "구릉",
-   "경사",
-   "흙"
+   "terrain",
+   "잔디 경계 흙길 우측",
+   "흙길"
   ]
  },
  {
@@ -1149,15 +1141,13 @@
  },
  {
   "index": 97,
-  "label": "갈색 흙 평지 지면",
+  "label": "풀밭과 흙길 경계 하단",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "갈색 흙 평지 지면",
-   "dirt",
-   "흙",
-   "평지",
-   "지면"
+   "terrain",
+   "잔디 경계 흙길 하단",
+   "흙길"
   ]
  },
  {
@@ -1321,15 +1311,13 @@
  },
  {
   "index": 112,
-  "label": "갈색 흙 평원 바닥",
+  "label": "흙길 타일 하단 경계",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "갈색 흙 평원 바닥",
-   "dirt",
-   "흙",
-   "평원",
-   "밭"
+   "terrain",
+   "흙 고원 중앙",
+   "흙 고원"
   ]
  },
  {
@@ -1367,15 +1355,12 @@
  },
  {
   "index": 116,
-  "label": "성채 성곽 랜드마크",
+  "label": "목재 표지판",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "성채 성곽 랜드마크",
-   "castle",
-   "성",
-   "성채",
-   "랜드마크"
+   "prop",
+   "나무 표지판"
   ]
  },
  {

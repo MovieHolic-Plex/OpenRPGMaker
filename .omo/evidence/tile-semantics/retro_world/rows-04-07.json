@@ -81,38 +81,34 @@
  },
  {
   "index": 127,
-  "label": "연두색 점무늬 초원",
+  "label": "나무 사이 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "연두색 점무늬 초원",
-   "grass",
-   "평원",
-   "연두"
+   "terrain",
+   "밝은 잔디밭",
+   "숲 군락"
   ]
  },
  {
   "index": 128,
-  "label": "빽빽한 짙은 숲",
+  "label": "작은 둥근 덤불",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "빽빽한 짙은 숲",
-   "forest",
-   "나무",
-   "수풀"
+   "plant",
+   "작은 덤불"
   ]
  },
  {
   "index": 129,
-  "label": "초원 중앙 눈 마름모",
+  "label": "잔디밭의 작은 눈 조각",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 중앙 눈 마름모",
-   "snow",
-   "설원",
-   "마름모"
+   "terrain",
+   "잔디 위 작은 눈더미",
+   "눈밭"
   ]
  },
  {
@@ -431,14 +427,14 @@
  },
  {
   "index": 157,
-  "label": "숲 캐노피 가로 띠",
+  "label": "나무 수관 가운데 위",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 캐노피 가로 띠",
-   "forest",
-   "나뭇잎",
-   "가로형"
+   "tree",
+   "큰 덤불 상단 중앙",
+   "숲 군락",
+   "큰 덤불"
   ]
  },
  {
@@ -455,26 +451,24 @@
  },
  {
   "index": 159,
-  "label": "초원 남동쪽 눈모서리",
+  "label": "눈밭 위쪽 왼쪽",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 남동쪽 눈모서리",
-   "snow",
-   "설원",
-   "남동"
+   "terrain",
+   "눈밭 왼쪽 상단",
+   "눈밭"
   ]
  },
  {
   "index": 160,
-  "label": "초원 남쪽 눈경계",
+  "label": "눈밭 가운데 상단",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 남쪽 눈경계",
-   "snow",
-   "잔디",
-   "남단"
+   "terrain",
+   "눈밭 위쪽 중앙",
+   "눈밭"
   ]
  },
  {
@@ -784,14 +778,14 @@
  },
  {
   "index": 187,
-  "label": "숲 캐노피 가는 테두리",
+  "label": "나무 수관 가운데 아래",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 캐노피 가는 테두리",
-   "forest",
-   "나뭇잎",
-   "가는풀"
+   "tree",
+   "큰 덤불 가운데 중앙",
+   "숲 군락",
+   "큰 덤불"
   ]
  },
  {
@@ -808,14 +802,13 @@
  },
  {
   "index": 189,
-  "label": "초원 동쪽 눈경계",
+  "label": "눈밭 왼쪽 아래 모서리",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 동쪽 눈경계",
-   "snow",
-   "잔디",
-   "동단"
+   "terrain",
+   "눈밭 가운데 왼쪽",
+   "눈밭"
   ]
  },
  {
@@ -832,14 +825,13 @@
  },
  {
   "index": 191,
-  "label": "초원 서쪽 눈경계",
+  "label": "눈밭 오른쪽 아래 모서리",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 서쪽 눈경계",
-   "snow",
-   "잔디",
-   "서단"
+   "terrain",
+   "눈밭 가운데 오른쪽",
+   "눈밭"
   ]
  },
  {
@@ -891,14 +883,12 @@
  },
  {
   "index": 196,
-  "label": "남청색 굽은 돌무늬",
+  "label": "짙은 청회색 돌바닥",
   "role": "floor",
   "passage": "passable",
   "tags": [
-   "남청색 굽은 돌무늬",
    "floor",
-   "암석",
-   "굽은결"
+   "어두운 돌바닥"
   ]
  },
  {
@@ -1160,38 +1150,35 @@
  },
  {
   "index": 219,
-  "label": "초원 북동쪽 눈모서리",
+  "label": "눈밭 아래쪽 왼쪽",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 북동쪽 눈모서리",
-   "snow",
-   "설원",
-   "북동"
+   "terrain",
+   "눈밭 왼쪽 하단",
+   "눈밭"
   ]
  },
  {
   "index": 220,
-  "label": "초원 북쪽 눈경계",
+  "label": "눈밭 아래쪽 중앙",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 북쪽 눈경계",
-   "snow",
-   "잔디",
-   "북단"
+   "terrain",
+   "눈밭 가운데 하단",
+   "눈밭"
   ]
  },
  {
   "index": 221,
-  "label": "초원 북서쪽 눈모서리",
+  "label": "눈밭 아래쪽 오른쪽",
   "role": "snow",
   "passage": "passable",
   "tags": [
-   "초원 북서쪽 눈모서리",
-   "snow",
-   "설원",
-   "북서"
+   "terrain",
+   "눈밭 오른쪽 하단",
+   "눈밭"
   ]
  },
  {
@@ -1335,14 +1322,12 @@
  },
  {
   "index": 234,
-  "label": "다색 깃발형 묶음",
+  "label": "알록달록한 천더미",
   "role": "banner",
   "passage": "solid",
   "tags": [
-   "다색 깃발형 묶음",
-   "banner",
-   "여러색",
-   "판독보류"
+   "prop",
+   "색색의 천 더미"
   ]
  },
  {
@@ -1368,14 +1353,14 @@
  },
  {
   "index": 237,
-  "label": "자홍빛 세로형 받침 장치",
+  "label": "무기 거치대 하단",
   "role": "machine",
   "passage": "solid",
   "tags": [
-   "자홍빛 세로형 받침 장치",
-   "device",
-   "금속",
-   "판독보류"
+   "prop",
+   "검 거치대 하단",
+   "무기 거치대",
+   "검 거치대"
   ]
  },
  {

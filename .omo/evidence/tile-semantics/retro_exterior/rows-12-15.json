@@ -251,14 +251,11 @@
  },
  {
   "index": 381,
-  "label": "석벽 노란 등불 얼룩",
+  "label": "모닥불",
   "role": "torch",
   "passage": "solid",
   "tags": [
-   "석벽 노란 등불 얼룩",
-   "lamp",
-   "light",
-   "판독보류"
+   "prop"
   ]
  },
  {
@@ -363,14 +360,14 @@
  },
  {
   "index": 391,
-  "label": "밭흙 바닥 전체",
+  "label": "잔디 경계의 보라색 자갈 가운데 조각",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "밭흙 바닥 전체",
-   "soil",
-   "field",
-   "땅"
+   "terrain",
+   "자갈길 상단 가장자리",
+   "자갈길 상단 경계",
+   "자갈길 상단"
   ]
  },
  {
@@ -492,26 +489,26 @@
  },
  {
   "index": 402,
-  "label": "풀꽃 핀 돌밭",
+  "label": "붉은 흙 새싹 밭",
   "role": "plant",
   "passage": "passable",
   "tags": [
-   "풀꽃 핀 돌밭",
-   "flower",
-   "grass",
-   "풀"
+   "plant",
+   "붉은 흙 밭 새싹",
+   "붉은 밭 작물",
+   "밭"
   ]
  },
  {
   "index": 403,
-  "label": "잡초 무성한 흙",
+  "label": "짙은 흙 새싹 밭",
   "role": "plant",
   "passage": "passable",
   "tags": [
-   "잡초 무성한 흙",
-   "weed",
-   "soil",
-   "수풀"
+   "plant",
+   "자갈 흙 밭 새싹",
+   "자갈밭 작물",
+   "밭"
   ]
  },
  {
@@ -609,14 +606,13 @@
  },
  {
   "index": 412,
-  "label": "석제 화단 흙 가운데",
+  "label": "목재 술집 간판",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "석제 화단 흙 가운데",
-   "planter",
-   "stone",
-   "바닥"
+   "prop",
+   "PUB 간판",
+   "주점 간판"
   ]
  },
  {
@@ -1198,26 +1194,24 @@
  },
  {
   "index": 462,
-  "label": "어두운 땅 하얀 돌무리 좌",
+  "label": "바위 무더기 좌측",
   "role": "rock",
   "passage": "passable",
   "tags": [
-   "어두운 땅 하얀 돌무리 좌",
-   "pale stone",
-   "dark",
-   "돌"
+   "rock",
+   "보라색 광석",
+   "바위 무더기"
   ]
  },
  {
   "index": 463,
-  "label": "어두운 땅 하얀 돌무리 우",
+  "label": "작은 보라색 광석",
   "role": "rock",
   "passage": "passable",
   "tags": [
-   "어두운 땅 하얀 돌무리 우",
-   "pale stone",
-   "dark",
-   "돌"
+   "rock",
+   "바위 무더기 우측",
+   "바위 무더기"
   ]
  },
  {
@@ -1318,14 +1312,13 @@
  },
  {
   "index": 472,
-  "label": "석제 수조 나무판",
+  "label": "보라색 병 그림의 목재 간판",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "석제 수조 나무판",
-   "basin",
-   "wood",
-   "수조"
+   "prop",
+   "방패 방어구점 간판",
+   "방어구점 간판"
   ]
  },
  {

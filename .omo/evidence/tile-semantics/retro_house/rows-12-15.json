@@ -13,14 +13,13 @@
  },
  {
   "index": 361,
-  "label": "꽃핀 초원",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "꽃핀 초원",
-   "grass",
-   "들판",
-   "야생화"
+   "terrain",
+   "초록 잔디",
+   "잔디"
   ]
  },
  {

@@ -25,13 +25,10 @@
  },
  {
   "index": 242,
-  "label": "평탄한 들판 풀밭",
+  "label": "잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평탄한 들판 풀밭",
-   "들판",
-   "grassland",
    "terrain"
   ]
  },
@@ -61,14 +58,13 @@
  },
  {
   "index": 245,
-  "label": "풀 포인트 초원",
+  "label": "짙은 잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "풀 포인트 초원",
-   "초원",
-   "speckle",
-   "grass"
+   "terrain",
+   "짙은 풀 지형",
+   "짙은 풀 지대"
   ]
  },
  {
@@ -137,26 +133,24 @@
  },
  {
   "index": 252,
-  "label": "풀 덮인 바위산",
+  "label": "풀 자란 자갈 지형",
   "role": "mountain",
   "passage": "solid",
   "tags": [
-   "풀 덮인 바위산",
-   "산",
-   "rock",
-   "언덕"
+   "terrain",
+   "이끼 낀 자갈 바닥",
+   "자갈 지대"
   ]
  },
  {
   "index": 253,
-  "label": "눈 붙은 바위산",
+  "label": "자갈 지형",
   "role": "mountain",
   "passage": "solid",
   "tags": [
-   "눈 붙은 바위산",
-   "산",
-   "rock",
-   "눈"
+   "terrain",
+   "자갈 바닥",
+   "자갈 지대"
   ]
  },
  {
@@ -206,14 +200,11 @@
  },
  {
   "index": 259,
-  "label": "왕관 초록 나무",
+  "label": "작은 활엽수",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "왕관 초록 나무",
-   "나무",
-   "tree",
-   "숲"
+   "tree"
   ]
  },
  {
@@ -354,13 +345,10 @@
  },
  {
   "index": 272,
-  "label": "평탄한 들판 풀밭",
+  "label": "잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평탄한 들판 풀밭",
-   "들판",
-   "grassland",
    "terrain"
   ]
  },
@@ -378,14 +366,13 @@
  },
  {
   "index": 274,
-  "label": "울창한 풀밭",
+  "label": "짙은 잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "울창한 풀밭",
-   "풀밭",
-   "grass",
-   "텍스처"
+   "terrain",
+   "짙은 풀 지형",
+   "짙은 풀 지대"
   ]
  },
  {
@@ -540,27 +527,22 @@
  },
  {
   "index": 288,
-  "label": "빨간 열매 나무",
+  "label": "꽃 핀 관목",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "빨간 열매 나무",
-   "나무",
-   "열매",
-   "berry",
-   "빨강"
+   "plant",
+   "꽃 덤불"
   ]
  },
  {
   "index": 289,
-  "label": "초록 왕관 나무",
+  "label": "둥근 덤불",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "초록 왕관 나무",
-   "나무",
-   "canopy",
-   "숲"
+   "plant",
+   "관목"
   ]
  },
  {
@@ -685,38 +667,31 @@
  },
  {
   "index": 301,
-  "label": "평탄한 들판 풀밭",
+  "label": "잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평탄한 들판 풀밭",
-   "들판",
-   "grassland",
    "terrain"
   ]
  },
  {
   "index": 302,
-  "label": "평탄한 들판 풀밭",
+  "label": "잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평탄한 들판 풀밭",
-   "들판",
-   "grassland",
    "terrain"
   ]
  },
  {
   "index": 303,
-  "label": "풀무늬 초원",
+  "label": "짙은 잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "풀무늬 초원",
-   "초원",
-   "pattern",
-   "grass"
+   "terrain",
+   "짙은 풀 지형",
+   "짙은 풀 지대"
   ]
  },
  {
@@ -814,14 +789,12 @@
  },
  {
   "index": 312,
-  "label": "사막 모래 지면",
+  "label": "갈색 흙 지형",
   "role": "sand",
   "passage": "passable",
   "tags": [
-   "사막 모래 지면",
-   "모래",
-   "sand",
-   "사막"
+   "terrain",
+   "흙 바닥"
   ]
  },
  {
@@ -884,26 +857,26 @@
  },
  {
   "index": 318,
-  "label": "숲 캐노피 덩어리",
+  "label": "큰 나무 잎사귀 좌측",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 캐노피 덩어리",
-   "숲",
-   "canopy",
-   "forest"
+   "tree",
+   "큰 활엽수 좌상단",
+   "큰 나무",
+   "큰 활엽수"
   ]
  },
  {
   "index": 319,
-  "label": "숲 가장자리 캐노피",
+  "label": "큰 나무 잎사귀 우측",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 가장자리 캐노피",
-   "숲",
-   "edge",
-   "forest"
+   "tree",
+   "큰 활엽수 우상단",
+   "큰 나무",
+   "큰 활엽수"
   ]
  },
  {
@@ -1030,25 +1003,19 @@
  },
  {
   "index": 331,
-  "label": "평탄한 들판 풀밭",
+  "label": "잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평탄한 들판 풀밭",
-   "들판",
-   "grassland",
    "terrain"
   ]
  },
  {
   "index": 332,
-  "label": "평탄한 들판 풀밭",
+  "label": "잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평탄한 들판 풀밭",
-   "들판",
-   "grassland",
    "terrain"
   ]
  },
@@ -1066,26 +1033,24 @@
  },
  {
   "index": 334,
-  "label": "풀 언덕 초지",
+  "label": "짙은 잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "풀 언덕 초지",
-   "초지",
-   "grass",
-   "풀밭"
+   "terrain",
+   "짙은 풀 지형",
+   "짙은 풀 지대"
   ]
  },
  {
   "index": 335,
-  "label": "들판 풀 텍스처",
+  "label": "짙은 잔디 지형",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "들판 풀 텍스처",
-   "들판",
-   "texture",
-   "grass"
+   "terrain",
+   "짙은 풀 지형",
+   "짙은 풀 지대"
   ]
  },
  {
@@ -1159,27 +1124,22 @@
  },
  {
   "index": 342,
-  "label": "숲 덮인 산",
+  "label": "풀 섞인 흙 바닥",
   "role": "mountain",
   "passage": "solid",
   "tags": [
-   "숲 덮인 산",
-   "산",
-   "숲",
-   "rock"
+   "terrain",
+   "풀 자란 흙 지형"
   ]
  },
  {
   "index": 343,
-  "label": "풀 낀 모래 언덕",
+  "label": "풀 섞인 황토 바닥",
   "role": "sand",
   "passage": "passable",
   "tags": [
-   "풀 낀 모래 언덕",
-   "모래",
-   "풀",
-   "언덕",
-   "sand"
+   "terrain",
+   "풀 자란 흙 지형"
   ]
  },
  {

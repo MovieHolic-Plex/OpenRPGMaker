@@ -37,38 +37,32 @@
  },
  {
   "index": 123,
-  "label": "물거품 이는 바다",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "물거품 이는 바다",
-   "물거품",
-   "파도",
-   "애니메이션"
+   "water",
+   "거센 급류 상단"
   ]
  },
  {
   "index": 124,
-  "label": "하얀 포말 해면",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "하얀 포말 해면",
-   "포말",
-   "하얀",
-   "애니메이션"
+   "water",
+   "거센 급류 상단"
   ]
  },
  {
   "index": 125,
-  "label": "부서지는 파도",
+  "label": "마법 샘",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "부서지는 파도",
-   "물보라",
-   "파도",
-   "애니메이션"
+   "water",
+   "소용돌이"
   ]
  },
  {
@@ -83,14 +77,12 @@
  },
  {
   "index": 127,
-  "label": "초록 삼림 캐노피",
+  "label": "푸른 잔디",
   "role": "forest",
   "passage": "passable",
   "tags": [
-   "초록 삼림 캐노피",
-   "삼림",
-   "캐노피",
-   "초록"
+   "terrain",
+   "잔디"
   ]
  },
  {
@@ -115,14 +107,12 @@
  },
  {
   "index": 130,
-  "label": "평원 초지",
+  "label": "푸른 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평원 초지",
-   "평야",
-   "풀밭",
-   "초지"
+   "terrain",
+   "잔디"
   ]
  },
  {
@@ -269,27 +259,22 @@
  },
  {
   "index": 144,
-  "label": "불꽃 봉수대 아이콘",
+  "label": "벽걸이 횃불",
   "role": "torch",
   "passage": "solid",
   "tags": [
-   "불꽃 봉수대 아이콘",
-   "봉수대",
-   "불꽃",
-   "표지"
+   "prop",
+   "벽 횃불"
   ]
  },
  {
   "index": 145,
-  "label": "언덕 위 밝은 표지",
+  "label": "시약병 선반",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "언덕 위 밝은 표지",
-   "언덕",
-   "표지",
-   "등불",
-   "판독보류"
+   "prop",
+   "물약 선반"
   ]
  },
  {
@@ -304,38 +289,30 @@
  },
  {
   "index": 147,
-  "label": "기와지붕 대형 건물",
+  "label": "무기점 간판",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "기와지붕 대형 건물",
-   "건물",
-   "지붕",
-   "지도"
+   "prop"
   ]
  },
  {
   "index": 148,
-  "label": "문과 창 큰 건물",
+  "label": "방어구점 간판",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "문과 창 큰 건물",
-   "건물",
-   "창문",
-   "문"
+   "prop"
   ]
  },
  {
   "index": 149,
-  "label": "돌벽 큰 건물",
+  "label": "잡화점 간판",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "돌벽 큰 건물",
-   "건물",
-   "돌벽",
-   "지도"
+   "prop",
+   "시계점 간판"
   ]
  },
  {
@@ -376,38 +353,32 @@
  },
  {
   "index": 153,
-  "label": "물거품 이는 바다",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "물거품 이는 바다",
-   "물거품",
-   "파도",
-   "애니메이션"
+   "water",
+   "소용돌이 급류"
   ]
  },
  {
   "index": 154,
-  "label": "하얀 포말 해면",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "하얀 포말 해면",
-   "포말",
-   "하얀",
-   "애니메이션"
+   "water",
+   "소용돌이 급류"
   ]
  },
  {
   "index": 155,
-  "label": "부서지는 파도",
+  "label": "마법 샘",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "부서지는 파도",
-   "물보라",
-   "파도",
-   "애니메이션"
+   "water",
+   "소용돌이"
   ]
  },
  {
@@ -422,14 +393,13 @@
  },
  {
   "index": 157,
-  "label": "물가 풀밭 땅",
+  "label": "독 늪 상단 가장자리",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "물가 풀밭 땅",
-   "풀밭",
-   "언덕",
-   "물가"
+   "terrain",
+   "독 늪 상단",
+   "독 늪"
   ]
  },
  {
@@ -456,14 +426,14 @@
  },
  {
   "index": 160,
-  "label": "평원 초지",
+  "label": "설원 상단 가장자리",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평원 초지",
-   "평야",
-   "풀밭",
-   "초지"
+   "terrain",
+   "눈밭 상단",
+   "설원",
+   "눈밭"
   ]
  },
  {
@@ -617,63 +587,48 @@
  },
  {
   "index": 174,
-  "label": "해자 둘러싼 성",
+  "label": "풍경화 액자",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "해자 둘러싼 성",
-   "성",
-   "해자",
-   "성채"
+   "decoration"
   ]
  },
  {
   "index": 175,
-  "label": "불빛 나는 창 건물",
+  "label": "모닥불 그림 액자",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "불빛 나는 창 건물",
-   "건물",
-   "창",
-   "불빛",
-   "판독보류"
+   "decoration"
   ]
  },
  {
   "index": 176,
-  "label": "초록 벽 요새",
+  "label": "인물 초상화 액자",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "초록 벽 요새",
-   "요새",
-   "성벽",
-   "초록"
+   "decoration",
+   "초상화 액자"
   ]
  },
  {
   "index": 177,
-  "label": "건물 좌측 아이콘",
+  "label": "여관 간판",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "건물 좌측 아이콘",
-   "건물",
-   "좌측",
-   "지도"
+   "prop"
   ]
  },
  {
   "index": 178,
-  "label": "건물 중앙 아이콘",
+  "label": "주점 간판",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "건물 중앙 아이콘",
-   "건물",
-   "중앙",
-   "지도"
+   "prop"
   ]
  },
  {
@@ -724,38 +679,32 @@
  },
  {
   "index": 183,
-  "label": "물거품 이는 바다",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "물거품 이는 바다",
-   "물거품",
-   "파도",
-   "애니메이션"
+   "water",
+   "거센 물결"
   ]
  },
  {
   "index": 184,
-  "label": "하얀 포말 해면",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "하얀 포말 해면",
-   "포말",
-   "하얀",
-   "애니메이션"
+   "water",
+   "거센 물결"
   ]
  },
  {
   "index": 185,
-  "label": "부서지는 파도",
+  "label": "마법 샘",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "부서지는 파도",
-   "물보라",
-   "파도",
-   "애니메이션"
+   "water",
+   "소용돌이"
   ]
  },
  {
@@ -771,15 +720,12 @@
  },
  {
   "index": 187,
-  "label": "평야 숲 초지",
+  "label": "독 늪 중앙",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평야 숲 초지",
-   "숲",
-   "평야",
-   "초지",
-   "판독보류"
+   "terrain",
+   "독 늪"
   ]
  },
  {
@@ -807,14 +753,14 @@
  },
  {
   "index": 190,
-  "label": "평원 초지",
+  "label": "눈밭 중앙",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평원 초지",
-   "평야",
-   "풀밭",
-   "초지"
+   "terrain",
+   "설원 중앙",
+   "눈밭",
+   "설원"
   ]
  },
  {
@@ -841,14 +787,13 @@
  },
  {
   "index": 193,
-  "label": "회갈색 바위 지대",
+  "label": "석순 상단",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "회갈색 바위 지대",
-   "바위",
-   "회갈색",
-   "지대"
+   "rock",
+   "큰 종유석",
+   "석순"
   ]
  },
  {
@@ -989,14 +934,12 @@
  },
  {
   "index": 206,
-  "label": "문 달린 건물",
+  "label": "어두운 벽감 액자",
   "role": "town-icon",
   "passage": "solid",
   "tags": [
-   "문 달린 건물",
-   "건물",
-   "문",
-   "지도"
+   "decoration",
+   "동굴 그림 액자"
   ]
  },
  {
@@ -1073,38 +1016,32 @@
  },
  {
   "index": 213,
-  "label": "물거품 이는 바다",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "물거품 이는 바다",
-   "물거품",
-   "파도",
-   "애니메이션"
+   "water",
+   "거센 물결"
   ]
  },
  {
   "index": 214,
-  "label": "하얀 포말 해면",
+  "label": "소용돌이치는 물",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "하얀 포말 해면",
-   "포말",
-   "하얀",
-   "애니메이션"
+   "water",
+   "거센 물결"
   ]
  },
  {
   "index": 215,
-  "label": "부서지는 파도",
+  "label": "마법 샘",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "부서지는 파도",
-   "물보라",
-   "파도",
-   "애니메이션"
+   "water",
+   "소용돌이"
   ]
  },
  {
@@ -1153,14 +1090,14 @@
  },
  {
   "index": 220,
-  "label": "평원 초지",
+  "label": "설원 하단 가장자리",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "평원 초지",
-   "평야",
-   "풀밭",
-   "초지"
+   "terrain",
+   "눈밭 하단",
+   "설원",
+   "눈밭"
   ]
  },
  {
@@ -1177,26 +1114,23 @@
  },
  {
   "index": 222,
-  "label": "회색 암반 지대",
+  "label": "작은 석순 무리",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "회색 암반 지대",
-   "암반",
-   "바위",
-   "회색"
+   "rock",
+   "작은 돌조각들"
   ]
  },
  {
   "index": 223,
-  "label": "회갈색 바위 지대",
+  "label": "석순 하단",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "회갈색 바위 지대",
-   "바위",
-   "회갈색",
-   "지대"
+   "rock",
+   "종유석",
+   "석순"
   ]
  },
  {
@@ -1336,15 +1270,14 @@
  },
  {
   "index": 237,
-  "label": "물가 기둥 구조물",
+  "label": "기사 석상 받침대 하단",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "물가 기둥 구조물",
-   "기둥",
-   "구조물",
-   "물가",
-   "판독보류"
+   "prop",
+   "갑옷 거치대 하단",
+   "기사 석상",
+   "갑옷 거치대"
   ]
  },
  {

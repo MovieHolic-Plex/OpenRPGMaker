@@ -1,15 +1,12 @@
 [
  {
   "index": 120,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물",
-   "wave",
-   "sea",
-   "깊은"
+   "water",
+   "바다"
   ]
  },
  {
@@ -27,26 +24,22 @@
  },
  {
   "index": 122,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물",
-   "wave",
-   "sea"
+   "water",
+   "바다"
   ]
  },
  {
   "index": 123,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이치는 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물결",
-   "shallow",
-   "sea"
+   "water",
+   "거품 이는 바다"
   ]
  },
  {
@@ -63,14 +56,12 @@
  },
  {
   "index": 125,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이 중심 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물",
-   "sparkle",
-   "sea"
+   "water",
+   "소용돌이 중심"
   ]
  },
  {
@@ -346,14 +337,12 @@
  },
  {
   "index": 150,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물",
-   "sea",
-   "wave"
+   "water",
+   "바다"
   ]
  },
  {
@@ -370,26 +359,22 @@
  },
  {
   "index": 152,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물결",
-   "ocean",
-   "wave"
+   "water",
+   "바다"
   ]
  },
  {
   "index": 153,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이치는 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물",
-   "shallow",
-   "sea"
+   "water",
+   "거품 이는 바다"
   ]
  },
  {
@@ -406,14 +391,12 @@
  },
  {
   "index": 155,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이 중심 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물결",
-   "wave",
-   "sea"
+   "water",
+   "소용돌이 중심"
   ]
  },
  {
@@ -685,14 +668,12 @@
  },
  {
   "index": 180,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물",
-   "wave",
-   "deep"
+   "water",
+   "바다"
   ]
  },
  {
@@ -709,26 +690,22 @@
  },
  {
   "index": 182,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물결",
-   "ocean",
-   "wave"
+   "water",
+   "바다"
   ]
  },
  {
   "index": 183,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이치는 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물",
-   "shallow",
-   "sea"
+   "water",
+   "거품 이는 바다"
   ]
  },
  {
@@ -745,14 +722,12 @@
  },
  {
   "index": 185,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이 중심 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물결",
-   "wave",
-   "sea"
+   "water",
+   "소용돌이 중심"
   ]
  },
  {
@@ -965,14 +940,12 @@
  },
  {
   "index": 204,
-  "label": "받침대 작은 등불",
+  "label": "밧줄과 활 장비",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "받침대 작은 등불",
-   "등불",
-   "lamp",
-   "받침"
+   "prop",
+   "밧줄과 도르래"
   ]
  },
  {
@@ -988,14 +961,14 @@
  },
  {
   "index": 206,
-  "label": "작은 목재 조각",
+  "label": "선박 뱃머리 돌출봉 끝부분",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "작은 목재 조각",
-   "목재",
-   "chip",
-   "조각"
+   "prop",
+   "빌레잉 핀 하단",
+   "선박 이물",
+   "빌레잉 핀"
   ]
  },
  {
@@ -1059,26 +1032,22 @@
  },
  {
   "index": 212,
-  "label": "짙은 파도 바닷물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파도 바닷물",
-   "물결",
-   "sea",
-   "ocean"
+   "water",
+   "바다"
   ]
  },
  {
   "index": 213,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이치는 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물",
-   "shallow",
-   "sea"
+   "water",
+   "거품 이는 바다"
   ]
  },
  {
@@ -1095,14 +1064,12 @@
  },
  {
   "index": 215,
-  "label": "옅은 파도 바닷물",
+  "label": "소용돌이 중심 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "옅은 파도 바닷물",
-   "물결",
-   "wave",
-   "sea"
+   "water",
+   "소용돌이 중심"
   ]
  },
  {
@@ -1305,26 +1272,26 @@
  },
  {
   "index": 234,
-  "label": "위 목재 아래 어두운 축",
+  "label": "선박 뱃머리 선수루 좌측",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "위 목재 아래 어두운 축",
-   "목재",
-   "beam",
-   "판독보류"
+   "prop",
+   "돛대 가로목 좌측",
+   "선박 이물",
+   "돛대 가로목"
   ]
  },
  {
   "index": 235,
-  "label": "금빛 상단 목재 조각",
+  "label": "선박 뱃머리 선수루 중앙",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "금빛 상단 목재 조각",
-   "목재",
-   "gold",
-   "조각"
+   "prop",
+   "돛대 가로목 중앙 좌측",
+   "선박 이물",
+   "돛대 가로목"
   ]
  },
  {
@@ -1341,14 +1308,14 @@
  },
  {
   "index": 237,
-  "label": "모서리 목재 금빛 조각",
+  "label": "선박 뱃머리 선수루 우측 끝",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "모서리 목재 금빛 조각",
-   "목재",
-   "corner",
-   "조각"
+   "prop",
+   "돛대 가로목 우측 끝",
+   "선박 이물",
+   "돛대 가로목"
   ]
  },
  {

@@ -37,38 +37,38 @@
  },
  {
   "index": 3,
-  "label": "잔잔한 파란 물",
+  "label": "석조 수로 상단 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 파란 물",
    "water",
-   "호수",
-   "물결"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
   "index": 4,
-  "label": "잔물결이 인 물",
+  "label": "석조 수로 상단 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔물결이 인 물",
    "water",
-   "파문",
-   "수면"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
   "index": 5,
-  "label": "굵은 물결 수면",
+  "label": "석조 수로 상단 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "굵은 물결 수면",
    "water",
-   "파도",
-   "물결"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
@@ -109,14 +109,14 @@
  },
  {
   "index": 9,
-  "label": "짙은 녹음 나무",
+  "label": "잔디 위 작은 덤불",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "짙은 녹음 나무",
-   "tree",
-   "수목",
-   "어두운잎"
+   "plant",
+   "작은 수풀",
+   "덤불",
+   "관목"
   ]
  },
  {
@@ -133,14 +133,14 @@
  },
  {
   "index": 11,
-  "label": "빽빽한 어두운 나무",
+  "label": "잔디 위 둥근 덤불",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "빽빽한 어두운 나무",
-   "tree",
-   "밀림",
-   "그늘"
+   "plant",
+   "짙은 수풀",
+   "덤불",
+   "관목"
   ]
  },
  {
@@ -229,14 +229,14 @@
  },
  {
   "index": 19,
-  "label": "가운데 잿빛 석벽",
+  "label": "석조 아치문 상단 중앙",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "가운데 잿빛 석벽",
    "wall",
-   "회색돌",
-   "벽면"
+   "성벽 다리 통로 상단",
+   "성문 상부 아치",
+   "석조 아치문"
   ]
  },
  {
@@ -358,74 +358,74 @@
  },
  {
   "index": 30,
-  "label": "잔디 낀 물가",
+  "label": "세로 수로 물 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔디 낀 물가",
    "water",
-   "물가",
-   "잔디"
+   "수로 물",
+   "물",
+   "하천"
   ]
  },
  {
   "index": 31,
-  "label": "풀섶 낀 물가",
+  "label": "세로 수로 물 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "풀섶 낀 물가",
    "water",
-   "풀숲",
-   "호숫가"
+   "수로 물",
+   "물",
+   "하천"
   ]
  },
  {
   "index": 32,
-  "label": "잔디 모서리 물가",
+  "label": "세로 수로 물 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔디 모서리 물가",
    "water",
-   "모서리",
-   "잔디"
+   "수로 물",
+   "물",
+   "하천"
   ]
  },
  {
   "index": 33,
-  "label": "짙은 파란 물결",
+  "label": "석조 세로 수로 물 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "짙은 파란 물결",
    "water",
-   "파도",
-   "진청색"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
   "index": 34,
-  "label": "예리한 물결 수면",
+  "label": "석조 세로 수로 물 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "예리한 물결 수면",
    "water",
-   "물결",
-   "수면"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
   "index": 35,
-  "label": "포개진 물결 수면",
+  "label": "석조 세로 수로 물 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "포개진 물결 수면",
    "water",
-   "파문",
-   "겹물결"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
@@ -442,14 +442,14 @@
  },
  {
   "index": 37,
-  "label": "흰꽃 낀 초원",
+  "label": "눈밭 가장자리 상단",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흰꽃 낀 초원",
-   "grass",
-   "꽃밭",
-   "연두"
+   "terrain",
+   "눈밭 상단",
+   "눈",
+   "눈밭"
   ]
  },
  {
@@ -466,38 +466,38 @@
  },
  {
   "index": 39,
-  "label": "울창한 초록 나무",
+  "label": "덤불 가장자리 좌상단",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "울창한 초록 나무",
-   "tree",
-   "수목",
-   "잎"
+   "plant",
+   "숲 캐노피 좌상단",
+   "덤불 좌상단",
+   "덤불"
   ]
  },
  {
   "index": 40,
-  "label": "그늘진 짙은 나무",
+  "label": "덤불 가장자리 상단",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "그늘진 짙은 나무",
-   "tree",
-   "어두운잎",
-   "수풀"
+   "plant",
+   "숲 캐노피 상단",
+   "덤불 상단",
+   "덤불"
   ]
  },
  {
   "index": 41,
-  "label": "무성한 나무 군락",
+  "label": "덤불 가장자리 우상단",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "무성한 나무 군락",
-   "tree",
-   "밀림",
-   "숲"
+   "plant",
+   "숲 캐노피 우상단",
+   "덤불 우상단",
+   "덤불"
   ]
  },
  {
@@ -574,14 +574,14 @@
  },
  {
   "index": 48,
-  "label": "왼쪽 회청 석벽",
+  "label": "석조 아치문 좌측 기둥",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "왼쪽 회청 석벽",
    "wall",
-   "회청색",
-   "벽"
+   "성문 통로 좌측 벽",
+   "석조 난간 좌측",
+   "석조 아치문"
   ]
  },
  {
@@ -598,14 +598,14 @@
  },
  {
   "index": 50,
-  "label": "오른쪽 회청 석벽",
+  "label": "석조 아치문 우측 기둥",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "오른쪽 회청 석벽",
    "wall",
-   "청회색",
-   "벽면"
+   "성문 통로 우측 벽",
+   "석조 난간 우측",
+   "석조 아치문"
   ]
  },
  {
@@ -716,74 +716,74 @@
  },
  {
   "index": 60,
-  "label": "나무둑 낀 물가",
+  "label": "가로 수로 물 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "나무둑 낀 물가",
    "water",
-   "물가",
-   "목재"
+   "수로 물",
+   "물",
+   "하천"
   ]
  },
  {
   "index": 61,
-  "label": "목재 둑 낀 물가",
+  "label": "가로 수로 물 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "목재 둑 낀 물가",
    "water",
-   "둑",
-   "나무"
+   "수로 물",
+   "물",
+   "하천"
   ]
  },
  {
   "index": 62,
-  "label": "통나무 낀 물가",
+  "label": "가로 수로 물 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "통나무 낀 물가",
    "water",
-   "통나무",
-   "물가"
+   "수로 물",
+   "물",
+   "하천"
   ]
  },
  {
   "index": 63,
-  "label": "고른 파란 수면",
+  "label": "석조 가로 수로 물 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "고른 파란 수면",
    "water",
-   "수면",
-   "물"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
   "index": 64,
-  "label": "잔잔한 수면 물",
+  "label": "석조 가로 수로 물 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 수면 물",
    "water",
-   "호수",
-   "잔잔"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
   "index": 65,
-  "label": "푸른 잔물결",
+  "label": "석조 가로 수로 물 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "푸른 잔물결",
    "water",
-   "잔물결",
-   "수면"
+   "수로 물",
+   "물",
+   "석조 수로"
   ]
  },
  {
@@ -812,50 +812,50 @@
  },
  {
   "index": 68,
-  "label": "흰꽃 섞인 잔디",
+  "label": "눈밭 가장자리 우측",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "흰꽃 섞인 잔디",
-   "grass",
-   "꽃밭",
-   "연두"
+   "terrain",
+   "눈밭 우측",
+   "눈",
+   "눈밭"
   ]
  },
  {
   "index": 69,
-  "label": "짙은 숲 나무",
+  "label": "덤불 가장자리 좌측",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "짙은 숲 나무",
-   "tree",
-   "숲",
-   "어두운잎"
+   "plant",
+   "숲 캐노피 좌측",
+   "덤불 좌측",
+   "덤불"
   ]
  },
  {
   "index": 70,
-  "label": "빽빽한 숲 나무",
+  "label": "숲 캐노피 중앙",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "빽빽한 숲 나무",
-   "tree",
-   "밀림",
-   "수풀"
+   "plant",
+   "덤불 중앙",
+   "덤불",
+   "숲"
   ]
  },
  {
   "index": 71,
-  "label": "그윽한 숲 그늘",
+  "label": "덤불 가장자리 우측",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "그윽한 숲 그늘",
-   "tree",
-   "그늘",
-   "숲"
+   "plant",
+   "숲 캐노피 우측",
+   "덤불 우측",
+   "덤불"
   ]
  },
  {
@@ -932,14 +932,14 @@
  },
  {
   "index": 78,
-  "label": "왼쪽 회색 돌벽",
+  "label": "석조 아치문 하단 좌측 기둥",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "왼쪽 회색 돌벽",
    "wall",
-   "회색돌",
-   "벽"
+   "성벽 다리 기둥 좌측",
+   "성문 하단 좌측 벽",
+   "석조 아치문"
   ]
  },
  {
@@ -956,14 +956,14 @@
  },
  {
   "index": 80,
-  "label": "오른쪽 회색 돌벽",
+  "label": "석조 아치문 하단 우측 기둥",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "오른쪽 회색 돌벽",
    "wall",
-   "돌벽",
-   "회색"
+   "성벽 다리 기둥 우측",
+   "성문 하단 우측 벽",
+   "석조 아치문"
   ]
  },
  {
@@ -1061,86 +1061,84 @@
  },
  {
   "index": 89,
-  "label": "청록 잎 무더기",
+  "label": "얼음 파편",
   "role": "decoration",
   "passage": "solid",
   "tags": [
-   "청록 잎 무더기",
-   "leaves",
-   "청록",
-   "판독보류"
+   "decoration",
+   "물방울"
   ]
  },
  {
   "index": 90,
-  "label": "기둥 세운 물가",
+  "label": "깊은 수면 물 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "기둥 세운 물가",
    "water",
-   "기둥",
-   "물가"
+   "깊은 물",
+   "물",
+   "연못"
   ]
  },
  {
   "index": 91,
-  "label": "목책 둘린 물가",
+  "label": "깊은 수면 물 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "목책 둘린 물가",
    "water",
-   "목책",
-   "물"
+   "깊은 물",
+   "물",
+   "연못"
   ]
  },
  {
   "index": 92,
-  "label": "세로 기둥 낀 물",
+  "label": "깊은 수면 물 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "세로 기둥 낀 물",
    "water",
-   "세로기둥",
-   "물가"
+   "깊은 물",
+   "물",
+   "연못"
   ]
  },
  {
   "index": 93,
-  "label": "격자무늬 물결",
+  "label": "석조 수로 깊은 물 프레임 1",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "격자무늬 물결",
    "water",
-   "격자",
-   "물결"
+   "깊은 수로 물",
+   "수로 물",
+   "물"
   ]
  },
  {
   "index": 94,
-  "label": "휘감긴 물결",
+  "label": "석조 수로 깊은 물 프레임 2",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "휘감긴 물결",
    "water",
-   "파문",
-   "수면"
+   "깊은 수로 물",
+   "수로 물",
+   "물"
   ]
  },
  {
   "index": 95,
-  "label": "무늬진 수면",
+  "label": "석조 수로 깊은 물 프레임 3",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "무늬진 수면",
    "water",
-   "무늬",
-   "물결"
+   "깊은 수로 물",
+   "수로 물",
+   "물"
   ]
  },
  {
@@ -1181,38 +1179,38 @@
  },
  {
   "index": 99,
-  "label": "어두운 수풀 나무",
+  "label": "덤불 가장자리 좌하단",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "어두운 수풀 나무",
-   "tree",
-   "수풀",
-   "어두운"
+   "plant",
+   "숲 캐노피 좌하단",
+   "덤불 좌하단",
+   "덤불"
   ]
  },
  {
   "index": 100,
-  "label": "빽빽한 나무숲",
+  "label": "덤불 가장자리 하단",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "빽빽한 나무숲",
-   "tree",
-   "밀림",
-   "숲"
+   "plant",
+   "숲 캐노피 하단",
+   "덤불 하단",
+   "덤불"
   ]
  },
  {
   "index": 101,
-  "label": "짙은 잎 나무",
+  "label": "덤불 가장자리 우하단",
   "role": "tree",
   "passage": "solid",
   "tags": [
-   "짙은 잎 나무",
-   "tree",
-   "짙은잎",
-   "수목"
+   "plant",
+   "숲 캐노피 우하단",
+   "덤불 우하단",
+   "덤불"
   ]
  },
  {

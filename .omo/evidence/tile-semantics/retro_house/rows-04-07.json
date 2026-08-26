@@ -1,46 +1,47 @@
 [
  {
   "index": 120,
-  "label": "고요한 물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "고요한 물",
    "water",
-   "잔잔"
+   "어두운 물",
+   "깊은 물"
   ]
  },
  {
   "index": 121,
-  "label": "잔잔한 물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물",
    "water",
-   "고요"
+   "어두운 물",
+   "깊은 물"
   ]
  },
  {
   "index": 122,
-  "label": "푸른 물바닥",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "푸른 물바닥",
    "water",
-   "바닥"
+   "어두운 물",
+   "깊은 물"
   ]
  },
  {
   "index": 123,
-  "label": "깊은 물바닥",
+  "label": "물결치는 어두운 물",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "깊은 물바닥",
    "water",
-   "깊이"
+   "물결 파동",
+   "물결",
+   "폭포"
   ]
  },
  {
@@ -79,13 +80,12 @@
  },
  {
   "index": 127,
-  "label": "무성한 잔디밭",
+  "label": "잡초 풀밭",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "무성한 잔디밭",
-   "grass",
-   "지면"
+   "terrain",
+   "풀밭"
   ]
  },
  {
@@ -114,13 +114,12 @@
  },
  {
   "index": 130,
-  "label": "푸른 잔디밭",
+  "label": "잡초 풀밭",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "푸른 잔디밭",
-   "grass",
-   "지면"
+   "terrain",
+   "풀밭"
   ]
  },
  {
@@ -160,14 +159,14 @@
  },
  {
   "index": 134,
-  "label": "갈색 판자 벽",
+  "label": "금속 장식 목재 벽 우측 상단",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "갈색 판자 벽",
    "wall",
-   "plank",
-   "판자"
+   "통나무 벽 우측",
+   "통나무 벽",
+   "금속 장식 목재 벽"
   ]
  },
  {
@@ -335,58 +334,61 @@
  },
  {
   "index": 149,
-  "label": "물 위 나무 다리",
+  "label": "바위에 꽂힌 곡괭이",
   "role": "prop",
   "passage": "solid",
   "tags": [
-   "물 위 나무 다리",
-   "bridge",
-   "wood",
-   "판독보류"
+   "prop",
+   "흙더미에 꽂힌 삽",
+   "레버"
   ]
  },
  {
   "index": 150,
-  "label": "잔잔한 물",
+  "label": "어두운 물 소용돌이 좌측",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물",
    "water",
-   "고요"
+   "어두운 물 웅덩이 좌측",
+   "깊은 물",
+   "원형 수면"
   ]
  },
  {
   "index": 151,
-  "label": "고요한 물바닥",
+  "label": "어두운 물 소용돌이 중앙",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "고요한 물바닥",
    "water",
-   "바닥"
+   "어두운 물 웅덩이 중앙",
+   "깊은 물",
+   "원형 수면"
   ]
  },
  {
   "index": 152,
-  "label": "푸른 물빛",
+  "label": "어두운 물 소용돌이 우측",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "푸른 물빛",
    "water",
-   "푸른"
+   "어두운 물 웅덩이 우측",
+   "깊은 물",
+   "원형 수면"
   ]
  },
  {
   "index": 153,
-  "label": "물 표면",
+  "label": "물결치는 어두운 물",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "물 표면",
    "water",
-   "표면"
+   "물결 파동",
+   "물결",
+   "폭포"
   ]
  },
  {
@@ -539,14 +541,14 @@
  },
  {
   "index": 167,
-  "label": "무늬 있는 나무 벽",
+  "label": "팀버프레임 목재 기둥 벽",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "무늬 있는 나무 벽",
    "wall",
-   "wood",
-   "무늬"
+   "팀버프레임 목재 기둥",
+   "목재 기둥 마감재",
+   "목재 벽 기둥"
   ]
  },
  {
@@ -687,46 +689,50 @@
  },
  {
   "index": 180,
-  "label": "잔잔한 물",
+  "label": "어두운 물 소용돌이 하단 좌측",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물",
    "water",
-   "고요"
+   "어두운 물 웅덩이 좌측",
+   "깊은 물",
+   "원형 수면"
   ]
  },
  {
   "index": 181,
-  "label": "잔잔한 물바닥",
+  "label": "어두운 물 소용돌이 하단 중앙",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물바닥",
    "water",
-   "바닥"
+   "어두운 물 웅덩이 중앙",
+   "깊은 물",
+   "원형 수면"
   ]
  },
  {
   "index": 182,
-  "label": "고요한 물",
+  "label": "어두운 물 소용돌이 하단 우측",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "고요한 물",
    "water",
-   "잔잔"
+   "어두운 물 웅덩이 우측",
+   "깊은 물",
+   "원형 수면"
   ]
  },
  {
   "index": 183,
-  "label": "잔잔한 물",
+  "label": "물결치는 어두운 물",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물",
    "water",
-   "고요"
+   "물결 파동",
+   "물결",
+   "폭포"
   ]
  },
  {
@@ -1028,46 +1034,47 @@
  },
  {
   "index": 210,
-  "label": "잔잔한 물바닥",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물바닥",
    "water",
-   "바닥"
+   "어두운 물",
+   "깊은 물"
   ]
  },
  {
   "index": 211,
-  "label": "고요한 물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "고요한 물",
    "water",
-   "잔잔"
+   "어두운 물",
+   "깊은 물"
   ]
  },
  {
   "index": 212,
-  "label": "잔잔한 물",
+  "label": "어두운 바다",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "잔잔한 물",
    "water",
-   "고요"
+   "어두운 물",
+   "깊은 물"
   ]
  },
  {
   "index": 213,
-  "label": "푸른 물빛",
+  "label": "물결치는 어두운 물",
   "role": "water",
   "passage": "passable",
   "tags": [
-   "푸른 물빛",
    "water",
-   "푸른"
+   "물결 파동",
+   "물결",
+   "폭포"
   ]
  },
  {

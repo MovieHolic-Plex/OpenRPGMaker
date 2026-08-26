@@ -67,39 +67,33 @@
  },
  {
   "index": 6,
-  "label": "숲 사방 풀 경계",
+  "label": "풀밭 자갈 지형 1x1",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 사방 풀 경계",
-   "forest",
-   "수풀",
-   "사방경계"
+   "terrain",
+   "잔디 위 둥근 자갈길",
+   "자갈 지형"
   ]
  },
  {
   "index": 7,
-  "label": "밝은 점무늬 초원",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "밝은 점무늬 초원",
-   "grass",
-   "평원",
-   "풀밭"
+   "terrain",
+   "초록 잔디"
   ]
  },
  {
   "index": 8,
-  "label": "빽빽한 자주빛 숲",
+  "label": "자갈길 바닥",
   "role": "terrain",
   "passage": "solid",
   "tags": [
-   "빽빽한 자주빛 숲",
-   "forest",
-   "수풀",
-   "나무",
-   "판독보류"
+   "terrain",
+   "자갈 지형"
   ]
  },
  {
@@ -116,14 +110,12 @@
  },
  {
   "index": 10,
-  "label": "성긴 점무늬 초원",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "성긴 점무늬 초원",
-   "grass",
-   "평원",
-   "풀잎"
+   "terrain",
+   "초록 잔디"
   ]
  },
  {
@@ -266,14 +258,13 @@
  },
  {
   "index": 23,
-  "label": "설원 북쪽 쐐기 경계",
+  "label": "눈 덮인 대각선 절벽 우상향",
   "role": "cliff",
   "passage": "solid",
   "tags": [
-   "설원 북쪽 쐐기 경계",
-   "snow",
-   "눈밭",
-   "쐐기"
+   "cliff",
+   "눈 절벽 우상단",
+   "눈 절벽"
   ]
  },
  {
@@ -422,39 +413,35 @@
  },
  {
   "index": 36,
-  "label": "숲 서쪽 풀 경계",
+  "label": "풀밭 자갈 지형 좌상단",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 서쪽 풀 경계",
-   "forest",
-   "수풀",
-   "서쪽"
+   "terrain",
+   "자갈길 좌상단 모서리",
+   "자갈 지형"
   ]
  },
  {
   "index": 37,
-  "label": "숲 북쪽 풀 경계",
+  "label": "자갈길 상단 가장자리",
   "role": "terrain",
   "passage": "solid",
   "tags": [
-   "숲 북쪽 풀 경계",
-   "forest",
-   "수풀",
-   "북쪽",
-   "판독보류"
+   "terrain",
+   "풀밭 자갈 지형 상단",
+   "자갈 지형"
   ]
  },
  {
   "index": 38,
-  "label": "숲 동쪽 풀 경계",
+  "label": "풀밭 자갈 지형 우상단",
   "role": "forest",
   "passage": "solid",
   "tags": [
-   "숲 동쪽 풀 경계",
-   "forest",
-   "수풀",
-   "동쪽"
+   "terrain",
+   "자갈길 우상단 모서리",
+   "자갈 지형"
   ]
  },
  {
@@ -621,14 +608,13 @@
  },
  {
   "index": 53,
-  "label": "설원 남쪽 역삼각 경계",
+  "label": "눈 덮인 대각선 절벽 좌하향",
   "role": "cliff",
   "passage": "solid",
   "tags": [
-   "설원 남쪽 역삼각 경계",
-   "snow",
-   "눈밭",
-   "역삼각"
+   "cliff",
+   "눈 절벽 우하단",
+   "눈 절벽"
   ]
  },
  {
@@ -696,14 +682,12 @@
  },
  {
   "index": 59,
-  "label": "은빛 쌍봉 산맥",
+  "label": "백색 광석 덩어리",
   "role": "mountain",
   "passage": "solid",
   "tags": [
-   "은빛 쌍봉 산맥",
-   "mountain",
-   "산맥",
-   "쌍봉"
+   "rock",
+   "흰 돌무더기"
   ]
  },
  {
@@ -780,41 +764,35 @@
  },
  {
   "index": 66,
-  "label": "숲 북서 풀모서리",
+  "label": "자갈길 좌측 가장자리",
   "role": "terrain",
   "passage": "solid",
   "tags": [
-   "숲 북서 풀모서리",
-   "forest",
-   "수풀",
-   "북서",
-   "판독보류"
+   "terrain",
+   "풀밭 자갈 지형 좌측",
+   "자갈 지형"
   ]
  },
  {
   "index": 67,
-  "label": "숲 위쪽 좁은 풀띠",
+  "label": "자갈길 중앙 바닥",
   "role": "terrain",
   "passage": "solid",
   "tags": [
-   "숲 위쪽 좁은 풀띠",
-   "forest",
-   "수풀",
-   "풀띠",
-   "판독보류"
+   "terrain",
+   "자갈 지형 중앙",
+   "자갈 지형"
   ]
  },
  {
   "index": 68,
-  "label": "숲 북동 풀모서리",
+  "label": "자갈길 우측 가장자리",
   "role": "terrain",
   "passage": "solid",
   "tags": [
-   "숲 북동 풀모서리",
-   "forest",
-   "수풀",
-   "북동",
-   "판독보류"
+   "terrain",
+   "풀밭 자갈 지형 우측",
+   "자갈 지형"
   ]
  },
  {
@@ -934,14 +912,12 @@
  },
  {
   "index": 79,
-  "label": "가운데 잎무늬 초원",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "가운데 잎무늬 초원",
-   "grass",
-   "평원",
-   "가운데"
+   "terrain",
+   "초록 잔디"
   ]
  },
  {
@@ -1053,87 +1029,80 @@
  },
  {
   "index": 89,
-  "label": "회색 세로 묘비",
+  "label": "석조 오벨리스크 상단",
   "role": "statue",
   "passage": "solid",
   "tags": [
-   "회색 세로 묘비",
-   "grave",
-   "묘석",
-   "회색",
-   "분홍배경"
+   "prop",
+   "선돌 상단",
+   "석조 오벨리스크",
+   "선돌"
   ]
  },
  {
   "index": 90,
-  "label": "초원 둘레 넓은 바다",
+  "label": "잔디 물가 개활 수면 1",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "초원 둘레 넓은 바다",
-   "ocean",
-   "바다",
-   "애니메이션"
+   "water",
+   "풀밭 물 모서리",
+   "연못"
   ]
  },
  {
   "index": 91,
-  "label": "초원 둘레 넓은 바다",
+  "label": "잔디 물가 개활 수면 2",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "초원 둘레 넓은 바다",
-   "ocean",
-   "바다",
-   "애니메이션"
+   "water",
+   "풀밭 물 모서리",
+   "연못"
   ]
  },
  {
   "index": 92,
-  "label": "초원 둘레 넓은 바다",
+  "label": "잔디 물가 개활 수면 3",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "초원 둘레 넓은 바다",
-   "ocean",
-   "바다",
-   "애니메이션"
+   "water",
+   "풀밭 물 모서리",
+   "연못"
   ]
  },
  {
   "index": 93,
-  "label": "설원 둘레 넓은 바다",
+  "label": "눈 덮인 물가 개활 수면 1",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "설원 둘레 넓은 바다",
-   "ocean",
-   "설원",
-   "애니메이션"
+   "water",
+   "눈밭 물 모서리",
+   "연못"
   ]
  },
  {
   "index": 94,
-  "label": "설원 둘레 넓은 바다",
+  "label": "눈 덮인 물가 개활 수면 2",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "설원 둘레 넓은 바다",
-   "ocean",
-   "설원",
-   "애니메이션"
+   "water",
+   "눈밭 물 모서리",
+   "연못"
   ]
  },
  {
   "index": 95,
-  "label": "설원 둘레 넓은 바다",
+  "label": "눈 덮인 물가 개활 수면 3",
   "role": "water",
   "passage": "solid",
   "tags": [
-   "설원 둘레 넓은 바다",
-   "ocean",
-   "설원",
-   "애니메이션"
+   "water",
+   "눈밭 물 모서리",
+   "연못"
   ]
  },
  {
@@ -1150,15 +1119,13 @@
  },
  {
   "index": 97,
-  "label": "숲 남쪽 풀경계",
+  "label": "자갈길 하단 가장자리",
   "role": "terrain",
   "passage": "solid",
   "tags": [
-   "숲 남쪽 풀경계",
-   "forest",
-   "수풀",
-   "남쪽",
-   "판독보류"
+   "terrain",
+   "풀밭 자갈 지형 하단",
+   "자갈 지형"
   ]
  },
  {
@@ -1294,14 +1261,12 @@
  },
  {
   "index": 109,
-  "label": "가운데 작은잎 초원",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "가운데 작은잎 초원",
-   "grass",
-   "평원",
-   "중앙잎"
+   "terrain",
+   "초록 잔디"
   ]
  },
  {
@@ -1409,15 +1374,14 @@
  },
  {
   "index": 119,
-  "label": "푸른 회색 돌기둥",
+  "label": "석조 오벨리스크 하단",
   "role": "pillar",
   "passage": "solid",
   "tags": [
-   "푸른 회색 돌기둥",
-   "pillar",
-   "석주",
-   "회색",
-   "분홍배경"
+   "prop",
+   "선돌 하단",
+   "석조 오벨리스크",
+   "선돌"
   ]
  }
 ]

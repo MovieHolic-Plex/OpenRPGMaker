@@ -330,14 +330,14 @@
  },
  {
   "index": 269,
-  "label": "양문 달린 나무장",
+  "label": "목재 옷장 상단",
   "role": "furniture",
   "passage": "solid",
   "tags": [
-   "양문 달린 나무장",
-   "cabinet",
-   "수납장",
-   "문짝"
+   "furniture",
+   "옷장 상단",
+   "목재 옷장",
+   "옷장"
   ]
  },
  {
@@ -685,62 +685,51 @@
  },
  {
   "index": 299,
-  "label": "서랍 둘 나무선반",
+  "label": "목재 옷장 하단",
   "role": "furniture",
   "passage": "solid",
   "tags": [
-   "서랍 둘 나무선반",
-   "drawer",
-   "수납장",
-   "두칸"
+   "furniture",
+   "옷장 하단",
+   "목재 옷장",
+   "옷장"
   ]
  },
  {
   "index": 300,
-  "label": "연한 초원 왼쪽 무늬",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "연한 초원 왼쪽 무늬",
-   "grass",
-   "들판",
-   "연두"
+   "terrain"
   ]
  },
  {
   "index": 301,
-  "label": "연한 초원 가운데 무늬",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "연한 초원 가운데 무늬",
-   "grass",
-   "평원",
-   "점박이"
+   "terrain"
   ]
  },
  {
   "index": 302,
-  "label": "연한 초원 오른쪽 무늬",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "연한 초원 오른쪽 무늬",
-   "grass",
-   "초지",
-   "밝은풀"
+   "terrain"
   ]
  },
  {
   "index": 303,
-  "label": "울창한 풀밭 왼쪽 무늬",
+  "label": "짙은 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "울창한 풀밭 왼쪽 무늬",
-   "grass",
-   "덤불",
-   "조밀함"
+   "terrain",
+   "잔디"
   ]
  },
  {
@@ -757,14 +746,12 @@
  },
  {
   "index": 305,
-  "label": "울창한 풀밭 오른쪽 무늬",
+  "label": "짙은 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "울창한 풀밭 오른쪽 무늬",
-   "grass",
-   "들판",
-   "격자풀"
+   "terrain",
+   "잔디"
   ]
  },
  {
@@ -861,14 +848,14 @@
  },
  {
   "index": 314,
-  "label": "남색 벽돌벽 윗무늬",
+  "label": "어두운 석벽 상단",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "남색 벽돌벽 윗무늬",
-   "brick",
-   "성벽",
-   "남색"
+   "wall",
+   "석조 벽 상단",
+   "석벽",
+   "석조 벽"
   ]
  },
  {
@@ -885,14 +872,14 @@
  },
  {
   "index": 316,
-  "label": "남색 벽돌벽 가운데무늬",
+  "label": "어두운 석벽 상단",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "남색 벽돌벽 가운데무늬",
-   "brick",
-   "성벽",
-   "중앙"
+   "wall",
+   "석조 벽 상단",
+   "석벽",
+   "석조 벽"
   ]
  },
  {
@@ -1052,74 +1039,59 @@
  },
  {
   "index": 330,
-  "label": "초록 평원 왼편 무늬",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "초록 평원 왼편 무늬",
-   "grass",
-   "초원",
-   "왼편"
+   "terrain"
   ]
  },
  {
   "index": 331,
-  "label": "초록 평원 중앙 무늬",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "초록 평원 중앙 무늬",
-   "grass",
-   "들판",
-   "중앙"
+   "terrain"
   ]
  },
  {
   "index": 332,
-  "label": "초록 평원 오른편 무늬",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "초록 평원 오른편 무늬",
-   "grass",
-   "초지",
-   "오른편"
+   "terrain"
   ]
  },
  {
   "index": 333,
-  "label": "진한 풀숲 왼편 무늬",
+  "label": "짙은 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "진한 풀숲 왼편 무늬",
-   "grass",
-   "수풀",
-   "왼쪽"
+   "terrain",
+   "잔디"
   ]
  },
  {
   "index": 334,
-  "label": "진한 풀숲 중앙 무늬",
+  "label": "짙은 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "진한 풀숲 중앙 무늬",
-   "grass",
-   "덤불",
-   "가운데"
+   "terrain",
+   "잔디"
   ]
  },
  {
   "index": 335,
-  "label": "진한 풀숲 오른편 무늬",
+  "label": "짙은 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "진한 풀숲 오른편 무늬",
-   "grass",
-   "수풀",
-   "오른쪽"
+   "terrain",
+   "잔디"
   ]
  },
  {
@@ -1230,14 +1202,14 @@
  },
  {
   "index": 345,
-  "label": "짙은 남색 벽돌 왼면",
+  "label": "어두운 석벽 하단",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "짙은 남색 벽돌 왼면",
-   "brick",
-   "성벽",
-   "왼쪽"
+   "wall",
+   "석조 벽 하단",
+   "석벽",
+   "석조 벽"
   ]
  },
  {
@@ -1254,14 +1226,14 @@
  },
  {
   "index": 347,
-  "label": "짙은 남색 벽돌 오른면",
+  "label": "어두운 석벽 하단",
   "role": "wall",
   "passage": "solid",
   "tags": [
-   "짙은 남색 벽돌 오른면",
-   "brick",
-   "성벽",
-   "오른쪽"
+   "wall",
+   "석조 벽 하단",
+   "석벽",
+   "석조 벽"
   ]
  },
  {
@@ -1395,14 +1367,13 @@
  },
  {
   "index": 359,
-  "label": "금테 두른 잠긴 보물상자",
+  "label": "거울 화장대 하단",
   "role": "chest",
   "passage": "solid",
   "tags": [
-   "금테 두른 잠긴 보물상자",
-   "treasure",
-   "상자",
-   "자물쇠"
+   "furniture",
+   "나무 서랍장",
+   "거울 화장대"
   ]
  }
 ]

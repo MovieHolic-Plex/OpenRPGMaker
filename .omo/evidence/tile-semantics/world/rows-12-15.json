@@ -10,26 +10,23 @@
  },
  {
   "index": 361,
-  "label": "푸른 평야 초지",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "푸른 평야 초지",
-   "평야",
-   "grass",
-   "풀"
+   "terrain",
+   "잔디"
   ]
  },
  {
   "index": 362,
-  "label": "숲 그늘 풀바닥",
+  "label": "작은 숲",
   "role": "forest",
   "passage": "passable",
   "tags": [
-   "숲 그늘 풀바닥",
-   "숲",
-   "forest",
-   "초원"
+   "tree",
+   "숲 상단",
+   "숲"
   ]
  },
  {
@@ -43,14 +40,12 @@
  },
  {
   "index": 364,
-  "label": "밝은 초장 풀밭",
+  "label": "잔디 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "밝은 초장 풀밭",
-   "초장",
-   "green",
-   "풀"
+   "terrain",
+   "잔디"
   ]
  },
  {
@@ -350,14 +345,12 @@
  },
  {
   "index": 392,
-  "label": "숲 아래 풀 지면",
+  "label": "숲 우상단",
   "role": "forest",
   "passage": "passable",
   "tags": [
-   "숲 아래 풀 지면",
-   "숲",
-   "forest",
-   "초원"
+   "tree",
+   "숲"
   ]
  },
  {
@@ -543,14 +536,14 @@
  },
  {
   "index": 409,
-  "label": "핑크 바탕 암석 무늬",
+  "label": "큰 갈색 산 우하단",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "핑크 바탕 암석 무늬",
-   "암석",
-   "pattern",
-   "판독보류"
+   "cliff",
+   "큰 산 우하단",
+   "큰 갈색 산",
+   "큰 산"
   ]
  },
  {
@@ -679,14 +672,12 @@
  },
  {
   "index": 422,
-  "label": "숲 그늘 초지",
+  "label": "숲 우측",
   "role": "forest",
   "passage": "passable",
   "tags": [
-   "숲 그늘 초지",
-   "숲",
-   "forest",
-   "초원"
+   "tree",
+   "숲"
   ]
  },
  {
@@ -873,14 +864,13 @@
  },
  {
   "index": 439,
-  "label": "핑크 바탕 회색 무늬",
+  "label": "화산 분화구 우측",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "핑크 바탕 회색 무늬",
-   "rock",
-   "pattern",
-   "판독보류"
+   "cliff",
+   "화산 우상단",
+   "화산"
   ]
  },
  {
@@ -1019,14 +1009,12 @@
  },
  {
   "index": 452,
-  "label": "숲바닥 초지",
+  "label": "숲 우하단",
   "role": "forest",
   "passage": "passable",
   "tags": [
-   "숲바닥 초지",
-   "숲",
-   "forest",
-   "초원"
+   "tree",
+   "숲"
   ]
  },
  {
@@ -1215,14 +1203,13 @@
  },
  {
   "index": 469,
-  "label": "핑크 빛 잡석 무늬",
+  "label": "화산 기슭 우하단",
   "role": "rock",
   "passage": "solid",
   "tags": [
-   "핑크 빛 잡석 무늬",
-   "잡석",
-   "stone",
-   "판독보류"
+   "cliff",
+   "화산 우하단",
+   "화산"
   ]
  },
  {

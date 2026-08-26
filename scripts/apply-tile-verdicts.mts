@@ -353,9 +353,22 @@ function main(): void {
           && specializationIsCorroborated(sheet, index, ship.role, shippedTables);
         if (ship && (win.role === ship.role || specOk)) {
           const shippedText = `${ship.label} ${ship.tags.join(" ")}`;
-          if (!win.backers.some((v) => shareBigram(v.noun, shippedText))) tally.NOUN! += 1;
-          else tally.KEEP! += 1;
-          out.push(keep());
+          if (win.backers.some((v) => shareBigram(v.noun, shippedText))) {
+            // 명사가 겹친다 = 기존 라벨이 그림을 맞혔다는 독립적 백업이다. 그대로 둔다.
+            tally.KEEP! += 1;
+            out.push(keep());
+            continue;
+          }
+          // role 은 맞는데 명사가 전혀 다른 경우(NOUN).
+          //
+          // 전에는 "정보량 하락 방지"를 이유로 기존 명사를 살렸다. 그건 기존 명사가
+          // 그림에서 유량되었다가 가정해야 성립하는 판단이다. 그 가정은 깨졌다:
+          // 픽셀이 99.6% 같은 두 시트의 기존 표가 label 에서 **0.0%** 일치했다(478칸 전부).
+          // 같은 그림을 도 표가 명사 하나도 같게 적지 못했다는 건 명사가 그림에서 오지 않았다는 뜻이다.
+          // 그러므로 그림을 직접 본 판독자의 명사를 추토한다. role 은 이밌 일치하니 바뀌지 않는다.
+          tally.NOUN! += 1;
+          const adopted = fromReadings(index, win.backers);
+          out.push({ ...adopted, role: ship.role, passage: ship.passage });
           continue;
         }
         tally.FIX! += 1;
