@@ -33,7 +33,7 @@
   padding: 6px 14px 8px !important;
   background: linear-gradient(180deg, #fdfdf4 0%, #edeadb 100%);
   border: 4px solid #45443c;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 16px 4px 16px 16px;
   color: #282828;
 }

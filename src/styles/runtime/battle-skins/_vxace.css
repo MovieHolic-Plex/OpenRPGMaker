@@ -193,7 +193,7 @@
   align-content: start !important;
   background: var(--vxace-window-bg) !important;
   border: 0 !important;
-  border-image: none !important;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 0 !important;
   box-shadow:
     inset 0 0 0 4px var(--vxace-frame),
@@ -308,7 +308,7 @@
 .battle-scene[data-battle-skin="vxace"] .battle-message-window {
   background: rgba(10, 14, 20, 0.82) !important;
   border: 0 !important;
-  border-image: none !important;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 0 !important;
   bottom: 140px !important;
   box-shadow: inset 0 0 0 2px var(--vxace-frame) !important;
@@ -346,7 +346,7 @@
   /* 4인 미만이면 남는 칸이 생긴다 — 투명이면 모달 배경이 드러났다(실측) → 어둡게 깐다. */
   background: rgba(6, 9, 14, 0.94) !important;
   border: 0 !important;
-  border-image: none !important;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-top: 2px solid var(--vxace-frame) !important;
   box-sizing: border-box !important;
   display: flex !important;
@@ -646,7 +646,7 @@
   align-items: center !important;
   background: rgba(12, 16, 24, 0.94) !important;
   border: 0 !important;
-  border-image: none !important;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 0 !important;
   box-shadow: inset 0 0 0 2px var(--vxace-frame), 0 0 24px rgba(0, 0, 0, 0.7) !important;
   box-sizing: border-box !important;

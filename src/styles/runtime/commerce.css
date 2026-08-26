@@ -100,25 +100,23 @@
   font-weight: 700;
 }
 
-/* ── RM2003 상점 창 ──
-   플레이 호스트(≈640×480) 하단에 앵커링하고 세로 플렉스로 섹션을 배치한다.
-   내용이 넘치면 창 전체가 아니라 '아이템 목록만' 스크롤한다(overflow:hidden 로 잘림 방지). */
+/* ── 상점 창 ──
+   오버레이 자신은 **창이 아니다** — 장면을 어둡게 덮는 스크림 + 배치 상자다.
+   예전에는 이 오버레이가 윈도스킨 fill 로 플레이 영역 전체를 칠하고 그 안에 다시
+   패널을 깔아 '파란 상자 속 파란 상자'가 됐다. 이제 창 표면은 개별 패널만 가진다.
+   표면 재료는 자료집 System 윈도스킨(--runtime-window-skin) — 고정 파랑 hex 가 아니다.
+   내용이 넘치면 창 전체가 아니라 '아이템 목록만' 스크롤한다. */
 .runtime-shop-overlay {
   position: absolute;
-  /* 상점은 .play-viewport(스케일 변환 밖) 레이어에 마운트된다(playSceneShop.ts). 그래서 이 inset 은
-     보이는 게임 영역(비스케일) 기준으로 동작해 플레이 영역을 채우는 상점 창이 된다. */
-  inset: 12px;
+  /* 상점은 .play-viewport(스케일 변환 밖) 레이어에 마운트된다(playSceneShop.ts). */
+  inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 8px;
-  padding: 6px 8px;
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
+  padding: 12px;
+  background: rgba(6, 10, 18, 0.46);
+  border: 0;
   border-radius: 0;
   box-shadow: none;
   color: var(--runtime-window-text);
@@ -226,10 +224,11 @@
   overflow-y: auto;
 }
 .runtime-shop-item-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 7px 10px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
@@ -239,6 +238,38 @@
   white-space: nowrap;
   cursor: pointer;
   width: 100%;
+}
+
+/* 가게는 글자 목록이 아니다 — 자료집 아이콘을 행마다 그린다. */
+.runtime-shop-item-icon {
+  width: 20px;
+  height: 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.runtime-shop-item-icon-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--runtime-window-selected-bg);
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+}
+
+.runtime-shop-item-owned {
+  color: var(--runtime-window-muted);
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-shop-panel-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .runtime-shop-item-row:hover,
 .runtime-shop-item-row.selected {

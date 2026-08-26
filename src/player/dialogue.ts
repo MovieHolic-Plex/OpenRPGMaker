@@ -17,6 +17,7 @@ import {
 } from "@/player/dialoguePagination";
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
 import { isCancelKey, isConfirmKey, normalizeKey } from "@/player/keyBindings";
+import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { el, clearChildren } from "@/util/dom";
@@ -92,6 +93,7 @@ export interface DialogueUI {
 
 export function createDialogueUI(host: HTMLElement): DialogueUI {
   const overlay = el("div", { class: "dialogue-overlay" });
+  applySystemWindowSkinVariable(overlay);
   host.append(overlay);
 
   function showText(request: DialogueTextRequest): Promise<void> {
@@ -622,10 +624,15 @@ function createDialogueTextMeasure(reference: HTMLElement): DialogueTextMeasure 
 }
 
 function dialogueBox(extraClass: string, testId: string): HTMLElement {
-  return el("div", {
+  const box = el("div", {
     class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
     dataset: { testid: testId },
   });
+  // 대화/이름상자/선택지 창도 자료집 System 윈도스킨 파이프를 통한다.
+  // 하드코드 hex 유리 토큰만 쓰던 시절엔 윈도스킨을 바꿔도 메시지 창은 그대로여시
+  // 전투/상점/필드 메뉴와 창이 서로 다른 색이었다. 표면은 CSS 가 변수로 소모한다.
+  applySystemWindowSkinVariable(box);
+  return box;
 }
 
 // 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해

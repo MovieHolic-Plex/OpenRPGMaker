@@ -20,7 +20,7 @@
 .battle-scene[data-battle-skin="bravely"] .battle-enemy-list-panel {
   background: linear-gradient(180deg, #f6ecd4, #ecdcba);
   border: 2px solid #8a6f4d;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 8px;
   color: #4a3826;
   text-shadow: none;
