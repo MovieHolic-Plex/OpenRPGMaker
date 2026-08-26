@@ -118,3 +118,4 @@ new-editor/COMPREHENSIVE.html
 # 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
 verify-shots/ai-assistant-ux/probe-baseline/
 verify-shots/ai-assistant-ux/probe-after/
+verify-shots/ai-assistant-ux/probe-live/

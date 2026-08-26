@@ -51,6 +51,38 @@ interface MatchedCandidate {
   readonly endIndex: number;
 }
 
+// 한글·한자·가나 — 이 문자가 들어있는 이름은 단어 경계가 없으므로 부분 문자열로 맞춘다.
+const CJK_PATTERN = /[ᄀ-ᇿ぀-ヿ㄰-㆏㐀-䶿一-鿿가-힯]/u;
+// ASCII 이름의 경계 밖 문자. 예: "map" 은 "mapvillage30" 안에서 맞지 않아야 한다.
+const WORD_CHAR_PATTERN = /[A-Za-z0-9_]/u;
+
+function isWordChar(text: string, index: number): boolean {
+  if (index < 0 || index >= text.length) return false;
+  return WORD_CHAR_PATTERN.test(text[index] ?? "");
+}
+
+/**
+ * `name` 이 `text` 에 나타나는 지점들. `requireBoundary` 가 켜지면 양 끝이 단어 경계여야만
+ * 인정한다.
+ *
+ * 왜 경계가 필요한가 (2026-08-26 라이브 실측): 기본 프로젝트의 아이템에는 "map", "ale",
+ * "egg", "bell", "bone", "coal" 처럼 짧은 순수 ASCII 이름이 수십 개 있다. 부분 문자열
+ * 포함만 봤을 때, 어시스턴트가 "현재 맵: 이슬 장터 마을 (mapvillage30_100x100)" 이라고
+ * 말하는 순간 아이템 `map` 썸네일이 실제로 붙었다. "단어 경계가 없다"는 근거는 한글에만
+ * 해당하므로 ASCII 이름에는 경계를 요구한다.
+ */
+function* occurrences(text: string, name: string, requireBoundary: boolean): Generator<number> {
+  let from = 0;
+  while (from <= text.length - name.length) {
+    const at = text.indexOf(name, from);
+    if (at === -1) return;
+    const boundaryOk =
+      !requireBoundary || (!isWordChar(text, at - 1) && !isWordChar(text, at + name.length));
+    if (boundaryOk) yield at;
+    from = at + 1;
+  }
+}
+
 /**
  * 어시스턴트 채팅 텍스트 내에서 프로젝트 데이터베이스에 존재하는 엔티티 이름을 탐색한다.
  * 한국어 단어 경계가 없는 특성에 맞춰 단순 부분 문자열 포함 여부를 검사하며,
@@ -112,12 +144,10 @@ export function findEntityMentions(
 
   for (const target of recordsByNameAndCollection) {
     const targetName = target.name;
-    let searchFrom = 0;
+    // ASCII 전용 이름은 단어 경계를 요구하고, 한글이 섞인 이름은 부분 문자열로 맞춘다.
+    const requireBoundary = !CJK_PATTERN.test(targetName);
 
-    while (searchFrom <= text.length - targetName.length) {
-      const idx = text.indexOf(targetName, searchFrom);
-      if (idx === -1) break;
-
+    for (const idx of occurrences(text, targetName, requireBoundary)) {
       const endIdx = idx + targetName.length;
 
       // 이미 더 긴 이름이 점유한 범위와 겹치는지 검사
@@ -128,27 +158,21 @@ export function findEntityMentions(
           break;
         }
       }
+      if (hasOverlap) continue;
 
-      if (!hasOverlap) {
-        // 구간 점유
-        for (let i = idx; i < endIdx; i++) {
-          occupied[i] = true;
-        }
+      for (let i = idx; i < endIdx; i++) occupied[i] = true;
 
-        matchedCandidates.push({
-          collection: target.collection,
-          id: target.id,
-          name: targetName,
-          record: target.record,
-          startIndex: idx,
-          endIndex: endIdx,
-        });
+      matchedCandidates.push({
+        collection: target.collection,
+        id: target.id,
+        name: targetName,
+        record: target.record,
+        startIndex: idx,
+        endIndex: endIdx,
+      });
 
-        // 동일 레코드는 텍스트 내 첫 번째 매칭만 결과에 취합
-        break;
-      }
-
-      searchFrom = idx + 1;
+      // 동일 레코드는 텍스트 내 첫 번째 매칭만 결과에 취합한다.
+      break;
     }
   }
 
