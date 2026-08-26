@@ -126,7 +126,7 @@ function isProceedOrAnswerLike(text: string): boolean {
   return false;
 }
 
-function isProtocolLocked(text: string): boolean {
+export function isProtocolLocked(text: string): boolean {
   return PROTOCOL_LOCKED_RE.test(text);
 }
 

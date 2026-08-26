@@ -244,6 +244,30 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
     expect(session.canRetryLastTurn()).toBe(false);
   });
 
+  it("oh-my-pi worker crash 500은 한 번만 재시도하고 멈춘다", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      calls += 1;
+      throw new LlmError(
+        '서버 오류(500): 공급자 측 문제입니다. 잠시 후 재시도하세요. — {"error":"oh-my-pi worker exited (3221225794)"}',
+        500,
+      );
+    };
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: SessionEvent[] = [];
+
+    const pending = session.sendUserMessage("야외 집 한 채", (event) => events.push(event));
+    await advanceRetryBackoffs(1);
+    const result = await pending;
+
+    expect(calls).toBe(2);
+    expect(result.stoppedReason).toBe("error");
+    expect(events.filter((event) => event.type === "status").map((event) => event.text)).toEqual([
+      "일시 오류 — 재시도 중(1/1)",
+    ]);
+  });
+
   it("토큰 일부 수신 후 스트림이 끊기면 부분 출력을 초기화하고 같은 라운드를 재시도한다", async () => {
     vi.useFakeTimers();
     let calls = 0;

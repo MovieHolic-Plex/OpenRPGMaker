@@ -70,7 +70,6 @@ const MIN_CANVAS_WIDTH = 520;
 const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
-const RESPONSIVE_BREAKPOINT = 720;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 
 type LoadedEditorLayout = {
@@ -85,7 +84,6 @@ type LoadedEditorLayout = {
 const initialLayout = loadEditorLayout();
 let leftWidth = initialLayout.leftWidth;
 let leftCollapsed = initialLayout.leftCollapsed;
-let leftUserOverride = initialLayout.leftCollapsedStored;
 let leftRoot: HTMLElement | null = null;
 let leftMapRoot: HTMLElement | null = null;
 let leftResizer: HTMLElement | null = null;
@@ -256,7 +254,9 @@ export function renderEditor(main: HTMLElement): void {
 const LEFT_DOCK_EXTERNAL: readonly PanelId[] = ["assistant"];
 
 function leftDockPanels(): readonly PanelId[] {
-  return getWorkspaceLayout().docks.left.filter((id) => !LEFT_DOCK_EXTERNAL.includes(id));
+  const fromLayout = getWorkspaceLayout().docks.left.filter((id) => !LEFT_DOCK_EXTERNAL.includes(id));
+  const extras = fromLayout.filter((id) => id !== "tiles" && id !== "maps");
+  return ["tiles", "maps", ...extras];
 }
 
 /**
@@ -424,7 +424,6 @@ export function teardownEditor(): void {
 
 export function toggleLeftPanel(): void {
   leftCollapsed = !leftCollapsed;
-  leftUserOverride = true;
   applyLayout();
   saveEditorLayout();
   scheduleFitCanvas();
@@ -563,8 +562,6 @@ function onWindowResize(): void {
 function applyLayout(): void {
   if (!leftRoot || !leftResizer) return;
   const chrome = getEditorChrome();
-  const autoCollapse = window.innerWidth < RESPONSIVE_BREAKPOINT;
-  const leftFolded = leftUserOverride ? leftCollapsed : autoCollapse;
   const layoutEl = leftRoot.parentElement;
   let usableWidth = window.innerWidth;
   if (layoutEl) {
@@ -587,37 +584,13 @@ function applyLayout(): void {
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
 
-  // 좌측 도크가 비면(「자료 밸런싱」 프리셋, 또는 패널을 다 오른쪽으로 보낸 경우) 열을
-  // 아예 접는다. 안 접으면 빈 열이 폭을 계속 먹어 캔버스가 오히려 **좁아진다**
-  // (실측: 프리셋 전환 후 캔버스 1131 → 1111px). 사용자 접힘 토글(leftCollapsed)은
-  // 건드리지 않는다 — 패널을 다시 켜면 원래 폭으로 돌아온다.
-  // publishSideChatWidth 뒤에 둔다: 조수 사이드 도크 폭 계산을 건너뛰면 안 된다.
-  if (leftDock && leftDock.hosts.size === 0) {
-    leftRoot.style.display = "none";
-    leftResizer.style.display = "none";
-    setEditorLeftSafe("12px");
-    return;
-  }
-
+  // 좌측 사이드바(타일+맵 트리)는 편집 모드에서 항상 보인다. 프리셋·접힘 토글·좁은
+  // 뷰포트가 열을 display:none 으로 지울 수 없다.
   if (chrome.paletteRail) {
-    if (leftFolded) {
-      leftRoot.style.display = "none";
-      leftResizer.style.display = "none";
-      setEditorLeftSafe("12px");
-      return;
-    }
     leftRoot.style.display = "";
     leftRoot.style.width = "48px";
     leftResizer.style.display = "none";
     setEditorLeftSafe("60px");
-    return;
-  }
-
-  if (leftFolded) {
-    leftRoot.style.display = "none";
-    leftResizer.style.display = "none";
-    // 좌패널이 접히면 오버레이 안전 영역도 해제(assistant-rising-overlay.css 참조).
-    setEditorLeftSafe("12px");
     return;
   }
   leftRoot.style.display = "";
