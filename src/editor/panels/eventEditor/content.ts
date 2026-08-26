@@ -32,10 +32,10 @@ import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
-import { openNewEventCommandDialog } from "./commandEditDialog";
+import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
-import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
+import { resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
@@ -163,7 +163,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onSelect: (path) => {
         const cmd = resolveCommandAtPath(activePage.commands, path);
         if (!cmd) return;
-        showCommandInspector({ command: cmd, path, actions });
+        openEventCommandEditDialog({
+          initial: cmd,
+          lockKind: true,
+          onApply: (edited) => actions.replaceCommand(path, edited),
+        });
       },
       onAddNext: () => openCommandPickerForActions(actions),
       onShowList: () => { currentMode = "list"; applyViewMode(); },
