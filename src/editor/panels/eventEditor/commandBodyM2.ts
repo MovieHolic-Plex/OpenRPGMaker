@@ -3,6 +3,9 @@ import { renderPage3M2CommandBody } from "./commandBodyM2Page3";
 import { renderWeightedBranchCommandBody } from "./commandBodyWeightedBranch";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
+import { SCREEN_COLOR_OPTIONS } from "@/project/eventCommands/m2ModernCatalog";
+import { screenColorToRgb } from "@/player/interpreter/commandCatalog";
+import { isRecognizedTintValue } from "@/player/screen/tintModel";
 import { KOREAN_LABEL_BY_TITLE } from "@/project/eventCommands/m2CatalogData";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
@@ -150,6 +153,10 @@ function m2CommandHelpText(fieldCount: number): string {
 }
 
 function controlForField(request: FieldControlRequest): HTMLElement {
+  // 화면 효과의 `값` 은 생 텍스트여서 `#xyz` 가 조용히 통과했다 — 색 피커를 붙인다.
+  if (request.title === "Screen Effect" && request.spec.key === "value") {
+    return screenColorControl(request);
+  }
   const semantic = fieldSemantic(request);
   if (semantic?.kind === "record") {
     // 스위치/변수 레코드는 이벤트 에디터 전체 계약에 맞춰 모달 트리거 픽커로 통일한다.
@@ -201,13 +208,128 @@ function numberControl(
   cmd: M2Command,
   spec: M2CommandFieldSpec,
   value: M2CommandValue
-): HTMLInputElement {
+): HTMLElement {
   const input = document.createElement("input");
   input.type = "number";
   input.value = String(typeof value === "number" ? value : spec.defaultValue);
   input.dataset.testid = `m2-command-${spec.key}-input`;
   input.addEventListener("change", () => updateField(context, cmd, spec.key, parseNumber(input.value)));
-  return input;
+  if (spec.min === undefined && spec.max === undefined && spec.step === undefined) return input;
+
+  // 범위가 있는 숫자 필드는 해당 범위를 말하고, 밖으로 나가면 어떻게 잡힐지 알려준다.
+  if (spec.min !== undefined) input.min = String(spec.min);
+  if (spec.max !== undefined) input.max = String(spec.max);
+  if (spec.step !== undefined) input.setAttribute("step", String(spec.step));
+  const note = el("div", { class: "m2-field-note", dataset: { testid: `m2-command-${spec.key}-note` } });
+  const syncNote = () => {
+    const raw = Number(input.value);
+    const min = spec.min ?? Number.NEGATIVE_INFINITY;
+    const max = spec.max ?? Number.POSITIVE_INFINITY;
+    const outOfRange = !Number.isFinite(raw) || raw < min || raw > max;
+    input.setAttribute("aria-invalid", outOfRange ? "true" : "false");
+    note.classList.toggle("is-invalid", outOfRange);
+    note.textContent = outOfRange
+      ? `실제 적용 범위는 ${spec.min ?? ""}~${spec.max ?? ""} 입니다 — ${input.value} 는 ${Math.min(max, Math.max(min, Number.isFinite(raw) ? raw : min))} 로 잡힙니다.`
+      : `적용 범위 ${spec.min ?? ""}~${spec.max ?? ""}`;
+  };
+  input.addEventListener("input", syncNote);
+  syncNote();
+  return el("div", { class: "m2-number-field", children: [input, note] });
+}
+
+/**
+ * 화면 효과 값 필드 — 자유 텍스트(날씨 `rain,0.9` 등)를 유지하면서
+ * 네이티브 색 피커와 프리셋 색 칩을 같이 주고, 알 수 없는 색은 aria-invalid 로 알린다.
+ */
+function screenColorControl(request: FieldControlRequest): HTMLElement {
+  const { context, cmd, spec } = request;
+  const current = String(request.value ?? "");
+  // 효과 select 를 바꿔도 폼은 재빌드되지 않는다(프리뷰만 갱신) — 검사 시점에 다시 읽는다.
+  const currentEffect = (): string => {
+    const latest = context.getCurrentCommand?.();
+    if (latest?.kind === "m2Command" && latest.commandId === cmd.commandId) {
+      return String(latest.fields.effect ?? "fadeIn");
+    }
+    return String(cmd.fields.effect ?? "fadeIn");
+  };
+
+  const text = document.createElement("input");
+  text.type = "text";
+  text.value = current;
+  text.placeholder = "#rrggbb / red / 128,64,32,0.5";
+  text.dataset.testid = `m2-command-${spec.key}-input`;
+
+  const picker = el("input", {
+    class: "m2-screen-color-picker",
+    attrs: { type: "color", "aria-label": "색 골라서 쓰기" },
+    dataset: { testid: `m2-command-${spec.key}-color` },
+  }) as HTMLInputElement;
+  picker.type = "color";
+  picker.value = colorFieldHex(current);
+
+  const error = el("div", {
+    class: "m2-field-error",
+    attrs: { role: "status" },
+    dataset: { testid: `m2-command-${spec.key}-error` },
+  });
+  const swatches = el("div", { class: "m2-screen-color-swatches" });
+
+  const syncValidity = (value: string) => {
+    // 색을 안 쓰는 효과(페이드/날씨)는 검사하지 않는다 — 플레이어 해석과 동일.
+    const effect = currentEffect();
+    const checked = effect === "tint" || effect === "flash";
+    const invalid = checked && value.trim().length > 0 && !isRecognizedTintValue(value);
+    text.setAttribute("aria-invalid", invalid ? "true" : "false");
+    error.textContent = invalid
+      ? `알 수 없는 색 '${value.trim()}' — #rrggbb, red 등 이름, 또는 128,64,32,0.5 형식을 쓴다.`
+      : "";
+    for (const chip of swatches.children) {
+      chip.setAttribute("aria-pressed", chip.getAttribute("data-color") === value.trim() ? "true" : "false");
+    }
+    if (!invalid && value.trim()) picker.value = colorFieldHex(value);
+  };
+
+  const commit = (value: string) => {
+    // 같은 값을 다시 넣으면 캐럿이 끝으로 튄다 — 타이핑 중 커밋에서는 건드리지 않는다.
+    if (text.value !== value) text.value = value;
+    syncValidity(value);
+    updateField(context, cmd, spec.key, value);
+  };
+
+  for (const option of SCREEN_COLOR_OPTIONS) {
+    const chip = el("button", {
+      class: "m2-screen-color-swatch",
+      text: option.label,
+      attrs: { type: "button", "aria-pressed": "false", "data-color": option.value },
+      dataset: { testid: `m2-command-${spec.key}-swatch-${option.value}` },
+      on: { click: () => commit(option.value) },
+    });
+    chip.style.setProperty("--m2-swatch-color", colorFieldHex(option.value));
+    swatches.append(chip);
+  }
+
+  // 타이핑 즉시 커밋한다 — 프리뷰가 런타임 해석(알 수 없는 색 = 흰색 워시)을 바로 보여줘야
+  // "조용히 통과"가 사라진다. 폼은 재빌드되지 않으므로(shouldRerenderCommandForm) 포커스는 유지된다.
+  text.addEventListener("input", () => commit(text.value));
+  text.addEventListener("change", () => commit(text.value));
+  picker.addEventListener("input", () => commit(picker.value));
+  syncValidity(current);
+
+  return el("div", {
+    class: "m2-screen-color-field",
+    children: [
+      el("div", { class: "m2-screen-color-row", children: [text, picker] }),
+      swatches,
+      error,
+    ],
+  });
+}
+
+/** 텍스트 값을 input[type=color] 가 받는 #rrggbb 로. 알 수 없는 값은 런타임과 같이 흰색. */
+function colorFieldHex(value: string): string {
+  const rgb = screenColorToRgb(value.trim());
+  const hex = (channel: number) => channel.toString(16).padStart(2, "0");
+  return `#${hex(rgb.red)}${hex(rgb.green)}${hex(rgb.blue)}`;
 }
 
 function booleanControl(

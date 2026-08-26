@@ -1,7 +1,7 @@
 import { pictureSlotCaption } from "./options";
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
-import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
@@ -622,9 +622,29 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   const fields = Object.entries(cmd.fields)
     .filter(([key, value]) => key !== "color" && key !== "valueSource" && key !== "valueVariableId" && String(value).length > 0)
     .slice(0, 3)
-    .map(([key, value]) => `${key}: ${String(value)}`);
+    .map(([key, value]) => m2FieldSummaryText(entry?.fields ?? [], key, value));
   if (fields.length === 0) return [commandPart(label)];
   return commandLine(label, valuePart(fields.join(", ")));
+}
+
+/**
+ * 폴백 요약은 `effect: fadeIn, durationMs: 300` 처럼 내부 키와 영문 값을 그대로 노출했다.
+ * 같은 값의 사람용 라벨(카탈로그의 option.label / spec.label)이 이미 있으니 그것을 쓴다.
+ */
+function m2FieldSummaryText(
+  specs: readonly M2CommandFieldSpec[],
+  key: string,
+  value: unknown
+): string {
+  const raw = String(value);
+  const spec = specs.find((entry) => entry.key === key);
+  if (!spec) return `${key}: ${raw}`;
+  const option = spec.options?.find((choice) => choice.value === raw);
+  if (option) return option.label;
+  // 단위가 라벨에 이미 들어 있는 숫자 필드(···(ms))는 값 뒤에 단위를 붙인다.
+  const unit = spec.type === "number" ? spec.label.match(/\(([^)]+)\)/u)?.[1] : undefined;
+  if (unit) return `${raw}${unit}`;
+  return `${spec.label} ${raw}`;
 }
 
 function page3M2SummaryParts(
