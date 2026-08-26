@@ -23,6 +23,7 @@ import {
 } from "@/project/tilesetPalette";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { lintWorld, normalizeProjectWorld } from "@/project/world";
+import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
@@ -473,6 +474,53 @@ const checkReachabilityTool: ToolDefinition = {
   },
 };
 
+const findLayoutRegionsTool: ToolDefinition = {
+  name: "find_layout_regions",
+  description:
+    "맵의 설계 bbox 영역(layoutPlan.regions)을 질의로 검색한다. 한국어/영문 부분일치(상점·시장·장터→market, 집→house, 파란→blue, 가운데/중앙→중심 영역). " +
+    "query에 '가운데'/'중앙'이 있으면 맵 중앙에 가까운 순으로 정렬한다. 영역 bbox를 특정하거나 시공 좌표를 추론할 때 쓴다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      query: { type: "string", description: "검색어 (예: 가운데 상점, 파란 집)" },
+    },
+    required: ["mapId", "query"],
+  },
+  run(project, args): ToolExecResult {
+    const map = requireMap(project, args.mapId as string);
+    const query = typeof args.query === "string" ? args.query : "";
+    if (!map.layoutPlan) {
+      return { summary: `${map.name} 맵에 layoutPlan이 없어 검색 영역이 없습니다.`, data: { regions: [] } };
+    }
+    let regions = findLayoutRegions(map, query);
+    // 중앙 쿼리(가운데/중앙)는 맵 중앙에 가까운 영역부터 정렬해 bbox 특정을 돕는다.
+    if (query.includes("가운데") || query.includes("중앙")) {
+      regions = rankRegionsByCenter(map, regions);
+    }
+    const regionData = regions.map((r) => ({
+      id: r.id,
+      role: r.role,
+      label: r.label,
+      x: r.x,
+      y: r.y,
+      w: r.w,
+      h: r.h,
+      kitId: r.kitId,
+      tags: r.tags,
+    }));
+    const first = regions[0];
+    const firstDesc = first
+      ? `${first.role} '${first.label}' @(${first.x},${first.y}) ${first.w}×${first.h}`
+      : "일치 없음";
+    return {
+      summary: `영역 ${regions.length}개 검색됨(${map.name}) — ${firstDesc}`,
+      data: { regions: regionData },
+    };
+  },
+};
+
 const listProjectCommits: ToolDefinition = {
   name: "list_project_commits",
   description: "Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다.",
@@ -553,6 +601,7 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   runLint,
   checkReachabilityTool,
   listProjectCommits,
+  findLayoutRegionsTool,
 ];
 
 function listProjectCommitsSync(url: string, anonKey: string, projectId: string, limit: number): readonly Record<string, unknown>[] {
