@@ -1,0 +1,364 @@
+{
+  "pass": true,
+  "actions": [
+    {
+      "t": "2026-08-26T09:26:19.245Z",
+      "step": "boot",
+      "url": "http://127.0.0.1:9845/?blankProject=1&map=map_blank_start",
+      "title": "OPRN Studio"
+    },
+    {
+      "t": "2026-08-26T09:26:19.660Z",
+      "step": "typed-tools-in-browser",
+      "present": {
+        "upsert_life_skill": true,
+        "upsert_life_system": true,
+        "upsert_battle_animation": true,
+        "upsert_resource": true,
+        "delete_resource": true,
+        "register_structure_kit": true,
+        "shift_map": true,
+        "set_map_properties": true,
+        "set_project_settings": true
+      },
+      "lifeOk": true,
+      "lifeSummary": "생활 스킬 농사",
+      "find": {
+        "matches": [
+          {
+            "name": "upsert_life_skill",
+            "mode": "write",
+            "domains": [
+              "database"
+            ],
+            "description": "생활 스킬(농사/채광/채집/낚시/전투) 레코드를 등록/수정한다. Database 생활 스킬 탭과 같은 저작 데이터.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "skill": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "skillType": {
+                      "type": "string",
+                      "enum": [
+                        "farming",
+                        "mining",
+                        "foraging",
+                        "fishing",
+                        "combat"
+                      ]
+                    },
+                    "maxLevel": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "skillType"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "skill"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "upsert_skill",
+            "mode": "write",
+            "domains": [
+              "database"
+            ],
+            "description": "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "skill": {
+                  "type": "object",
+                  "description": "skill 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": [
+                        "self",
+                        "ally",
+                        "allAllies",
+                        "enemy",
+                        "allEnemies"
+                      ]
+                    },
+                    "power": {
+                      "type": "integer"
+                    },
+                    "animationId": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "normal",
+                        "teleport",
+                        "escape",
+                        "switch"
+                      ]
+                    },
+                    "mpCost": {
+                      "type": "object",
+                      "properties": {
+                        "flat": {
+                          "type": "integer"
+                        },
+                        "percentMax": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "successRate": {
+                      "type": "integer"
+                    },
+                    "variance": {
+                      "type": "integer"
+                    },
+                    "hitRate": {
+                      "type": "integer"
+                    },
+                    "effect": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string"
+                        },
+                        "statistic": {
+                          "type": "string"
+                        },
+                        "affects": {
+                          "type": "string"
+                        },
+                        "switchId": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "elementId": {
+                      "type": "string"
+                    },
+                    "stateEffects": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "stateId": {
+                            "type": "string"
+                          },
+                          "chance": {
+                            "type": "integer"
+                          },
+                          "operation": {
+                            "type": "string",
+                            "enum": [
+                              "add",
+                              "remove"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "maxPp": {
+                      "type": "integer",
+                      "description": "Gen1 기술별 최대 PP. 1~99"
+                    },
+                    "gen1CriticalRate": {
+                      "type": "string",
+                      "enum": [
+                        "normal",
+                        "high"
+                      ]
+                    },
+                    "movePriority": {
+                      "type": "number",
+                      "description": "기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "skill"
+              ],
+              "additionalProperties": false,
+              "description": "허용 예시: {\"skill\":{\"id\":\"skill_fire\",\"name\":\"화염\",\"power\":35,\"elementId\":\"fire\"}}"
+            }
+          },
+          {
+            "name": "upsert_life_system",
+            "mode": "write",
+            "domains": [
+              "database"
+            ],
+            "description": "생활 시스템 설정: 일일 날씨(dailyWeather)·가축 종(farmAnimalSpecies). 레시피/출하/에너지도 이 툴로 확장한다.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "dailyWeather": {
+                  "type": "object",
+                  "description": "일일 날씨 테이블. enabled와 계절별 가중치.",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "forecastDays": {
+                      "type": "integer"
+                    },
+                    "seasons": {
+                      "type": "object",
+                      "properties": {
+                        "spring": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string"
+                              },
+                              "weight": {
+                                "type": "number"
+                              },
+                              "intensity": {
+                                "type": "number"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "summer": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string"
+                              },
+                              "weight": {
+                                "type": "number"
+                              },
+                              "intensity": {
+                                "type": "number"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "fall": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string"
+                              },
+                              "weight": {
+                                "type": "number"
+                              },
+                              "intensity": {
+                                "type": "number"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "winter": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string"
+                              },
+                              "weight": {
+                                "type": "number"
+                              },
+                              "intensity": {
+                                "type": "number"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "farmAnimalSpecies": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "feedItemId": {
+                      "type": "string"
+                    },
+                    "productItemId": {
+                      "type": "string"
+                    },
+                    "productCount": {
+                      "type": "integer"
+                    },
+                    "productEveryDays": {
+                      "type": "integer"
+                    },
+                    "petFriendship": {
+                      "type": "integer"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
+      "projectOk": true,
+      "projectTitle": "브라우저 QA"
+    },
+    {
+      "t": "2026-08-26T09:26:19.726Z",
+      "step": "composer-visible",
+      "composerVisible": true
+    },
+    {
+      "t": "2026-08-26T09:26:24.159Z",
+      "step": "assistant-reply",
+      "reply": "조수\n\n이 맵에 무엇을 둘까요\n\n☰\n▾\n맵 기본 속성 및 타일/환경 설정 중\n중지\n계획 3단계 · 자세히\n2026년 8월 26일 수\n@>\n생활 스킬이랑 전투 애니메이션, 맵 설정을 바꿔줘\n/\n↑ 전송\n중단"
+    }
+  ]
+}

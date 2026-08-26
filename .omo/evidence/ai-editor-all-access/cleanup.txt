@@ -1,0 +1,2 @@
+cleanup: killed worktree vite bash_96 (port 9845); killed https monitor bash_97; browser context closed by Playwright; leftover QA files kept under .omo/evidence/ai-editor-all-access/.
+verified: PID 50592 killed via Stop-Process; port 9845 no longer LISTENING.

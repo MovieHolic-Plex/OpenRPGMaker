@@ -30,6 +30,7 @@ import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/to
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
 import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import { applyMapShift } from "@/editor/mapShiftActions";
 import {
   floodFillCells,
   inMapBounds,
@@ -1533,7 +1534,35 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, removeMapTool];
+const shiftMap: ToolDefinition = {
+  name: "shift_map",
+  description: "맵 내용 밀기: 타일·이벤트·시작 위치를 dx/dy만큼 이동한다. 맵 편집기의 내용 이동과 같다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      dx: { type: "integer" },
+      dy: { type: "integer" },
+    },
+    required: ["mapId", "dx", "dy"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const dx = args.dx as number;
+    const dy = args.dy as number;
+    if (!Number.isInteger(dx) || !Number.isInteger(dy)) {
+      throw new ToolError("dx와 dy는 정수여야 합니다.", { code: "invalid-args", mapId: map.id });
+    }
+    if (!applyMapShift(draft, map.id, { dx, dy })) {
+      throw new ToolError("이동할 오프셋이 없습니다.", { code: "invalid-args", mapId: map.id });
+    }
+    return { summary: `${map.name} 내용 (${dx}, ${dy}) 이동`, data: { mapId: map.id, dx, dy } };
+  },
+};
+
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };
