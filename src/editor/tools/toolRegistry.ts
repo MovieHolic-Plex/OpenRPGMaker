@@ -231,7 +231,7 @@ const MAX_EXPOSED_TOOLS = 40;
 // (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
-  ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality", "configure_monster_system", "upsert_resource"])],
+  ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality"])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",
@@ -252,7 +252,6 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "place_door",
     "paint_road", // 흙길/모래 8방 오토타일 — lay_path만 핀되면 AI가 길을 안 깔거나 비성형 경로로 감
     "lay_path",
-    "register_structure_kit",
     "tile_query",
     // propose_tile_vocabulary: LLM 비노출(deprecated). 핀하지 않음.
     "tile_erase", // transform 가이드 대표 도구(regionIntentExposure) — clear_region 폐기 후 유일한 지우기 경로
@@ -274,7 +273,6 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
   ["database", new Set([
     // 상성표/속성 요청의 대표 도구.
     "set_type_chart", "upsert_item", "upsert_enemy",
-    "upsert_life_skill", "upsert_life_system", "upsert_battle_animation",
   ])],
   ["map", new Set([
     "reset_project",
@@ -283,7 +281,6 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     // 영역 작업 transform/battle-trap/structure 가이드 대표 도구(2026-07-10 라이브 실측 수정).
     // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.
     "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",
-    "set_map_properties", "shift_map",
   ])],
   // define_ending 이 트림되면 "엔딩을 정의하는 기능이 없다"는 잘못된 보고로 이어진다(2026-08-23 실측).
   ["quest", new Set([
