@@ -78,7 +78,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
-  { id: "structureKits", label: "스탬프", testid: "db-tab-structure-kits" },
+  { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },

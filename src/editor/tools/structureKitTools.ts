@@ -11,7 +11,7 @@ import {
   structureKitSize,
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
-import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
+import type { GameMap, Project, StructureKitDef, StructureKitPart, TilesetDef } from "@/project/types";
 import { TILE } from "@/project/defaults";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -29,7 +29,8 @@ const listStructureKits: ToolDefinition = {
   name: "list_structure_kits",
   description:
     "사용자가 붓질로 가르쳐 등록한 구조 킷(내 스탬프) 목록. mapId를 주면 그 맵 타일셋의 킷만. "
-    + "각 킷의 rows는 하위/상위 레이어 타일 id 행렬(기계 표면) — 시공은 stamp_structure_kit로.",
+    + "각 킷의 rows는 하위/상위 레이어 타일 id 행렬(기계 표면) — 시공은 stamp_structure_kit로. "
+    + "parts는 입구·간판·자리 등 부위의 상대좌표(dx,dy) — 절대좌표는 stamp_structure_kit이 돌려준다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -46,6 +47,7 @@ const listStructureKits: ToolDefinition = {
       width: number;
       height: number;
       learnedFrom: string;
+      parts?: StructureKitPart[];
       rows?: { tiles: number[]; upperTiles?: number[] }[];
       house?: { houseKitId: string; wings: { x: number; y: number; w: number; h: number }[] };
     }[] = [];
@@ -60,6 +62,7 @@ const listStructureKits: ToolDefinition = {
           width: size.width,
           height: size.height,
           learnedFrom: kit.learnedFrom,
+          ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
           ...(kit.kind === "section"
             ? {
                 rows: kit.rows.map((row) => ({
@@ -87,7 +90,8 @@ const stampStructureKit: ToolDefinition = {
   name: "stamp_structure_kit",
   description:
     "등록된 구조 킷(내 스탬프)을 맵에 시공한다. 단위 단면(width×height)을 origin 좌상단부터 가로로 repeat회 이어 찍는다. "
-    + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인.",
+    + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인. "
+    + "부위가 있는 킷은 parts를 절대좌표(x,y)로 돌려주며 이벤트는 생성하지 않는다 — 워프는 그 좌표로 따로 만든다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -121,12 +125,38 @@ const stampStructureKit: ToolDefinition = {
       );
     }
     const painted = stampKitCells(map, kit, origin, repeat);
+    const parts = absoluteKitParts(kit, origin);
     return {
       summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×${repeat}회, ${painted}칸`,
-      data: { kitId: kit.id, origin, repeat, height: size.height, width: totalWidth, painted },
+      data: {
+        kitId: kit.id,
+        origin,
+        repeat,
+        height: size.height,
+        width: totalWidth,
+        painted,
+        ...(parts.length > 0 ? { parts } : {}),
+      },
     };
   },
 };
+
+/** 부위 상대좌표 → 시공 절대좌표. 타일과 달리 부위는 한 킷 당 한 번만 — origin에 고정된 힌트다.
+ * 입구의 워프 칸은 y + h - 1 행(규약) — 이 툴은 이벤트를 만들지 않고 좌표만 돌려준다. */
+function absoluteKitParts(
+  kit: StructureKitDef,
+  origin: Point,
+): (Omit<StructureKitPart, "dx" | "dy"> & { x: number; y: number })[] {
+  return (kit.parts ?? []).map((part) => ({
+    id: part.id,
+    kind: part.kind,
+    x: origin.x + part.dx,
+    y: origin.y + part.dy,
+    w: part.w,
+    h: part.h,
+    ...(part.note === undefined ? {} : { note: part.note }),
+  }));
+}
 
 /** 팔레트 스탬프(applyPaletteStamp)와 동일 규약: 비어 있지 않은 칸만 쓴다(고른 그대로, 성형 없음).
  * 셀 목록은 구조 킷 모델이 전개(section=행렬, house=정본 houseKit 시공). */
