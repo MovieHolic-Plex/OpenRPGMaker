@@ -781,7 +781,9 @@ function wrapPageSettingsAsAccordion(
     if (node.classList.contains("event-editor-settings-accordion-group")) return;
     const replacement = el("div", {
       class: node.className,
-      dataset: { ...node.dataset },
+      dataset: Object.fromEntries(
+        Object.entries(node.dataset).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+      ),
     });
     Array.from(node.childNodes).forEach((child) => replacement.append(child));
     node.replaceWith(replacement);
