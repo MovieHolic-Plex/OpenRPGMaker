@@ -64,12 +64,9 @@ export function renderEventNameControl(
 
 export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("details", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
-  wrap.open = true;
   const pages = ev.pages ?? [];
   const canPaste = hasCopiedEventPage();
   const canDelete = pages.length > 1;
-  // 페이지 추가는 탭 스트립의 [+](event-page-tab-add) 하나로 통일한다 —
-  // 같은 동작이 두 곳에 있으면 초보가 "다른 기능인가?" 하고 헤맨다(적대 평가 스펙).
   const actions: HTMLElement[] = [
     pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => {
       if (copyEventPageToClipboard(mapId, ev.id, activePage.id)) {
@@ -77,7 +74,6 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
       }
     }),
   ];
-  // 비활성 버튼은 자리만 차지하므로 사용 가능할 때만 노출한다.
   if (canPaste) {
     actions.push(
       pageButton("붙여넣기", "event-page-paste", "페이지 붙여넣기", "paste", () => pasteEventPage(mapId, ev.id))
@@ -118,32 +114,28 @@ export function renderClassicPageTabStrip(
 ): HTMLElement {
   const pages = ev.pages ?? [];
   const pageButtons = el("div", {
-    class: "event-page-number-tabs",
+    class: "event-page-number-tabs pages",
     dataset: { testid: "event-classic-page-tabs" },
   });
   pages.forEach((page, index) => {
+    const isActive = page.id === activePage.id;
+    const pageErrors = validation?.issues.filter((i) => i.pageId === page.id && (i.severity === "error" || i.severity === "warning")).length ?? 0;
     pageButtons.append(
       el("button", {
-        class: "btn event-page-tab-rich" + (page.id === activePage.id ? " active" : ""),
+        class: "btn page-tab event-page-tab-rich" + (isActive ? " active" : ""),
         dataset: { testid: `event-page-tab-${index + 1}` },
         attrs: { title: pageTabTooltip(page, index) },
         children: [
           el("span", { class: "event-page-tab-number", text: String(index + 1) }),
-          // 탭을 눌러 보지 않고도 "이 페이지가 언제 실행되는가"를 읽을 수 있게 한다.
-          // 4페이지짜리 NPC 에서 감독이 왕복하는 주된 이유였다.
-          el("span", {
-            class: "event-page-tab-meta",
-            children: [
-              el("span", { class: "event-page-tab-title", text: page.name.trim() || "(이름 없음)" }),
-              el("span", {
-                class: "event-page-tab-cond",
-                text: pageTabConditionText(page),
-                dataset: { testid: `event-page-tab-cond-${index + 1}` },
-              }),
-            ],
-          }),
-          pageTabConditionBadges(page),
+          el("span", { class: "event-page-tab-title", text: page.name.trim() || `페이지 ${index + 1}` }),
+          ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
           pageValidationBadge(page.id, validation),
+          el("span", {
+            class: "event-page-tab-cond",
+            attrs: { style: "display: none;" },
+            text: pageTabConditionText(page),
+            dataset: { testid: `event-page-tab-cond-${index + 1}` },
+          }),
         ],
         on: { click: () => editorState.set({ selectedEventPageId: page.id }) },
       })
@@ -151,13 +143,26 @@ export function renderClassicPageTabStrip(
   });
   pageButtons.append(
     el("button", {
-      class: "btn event-page-tab-add",
+      class: "btn page-add event-page-tab-add",
       text: "+",
       attrs: { type: "button", title: "새 페이지 추가", "aria-label": "새 페이지 추가" },
       dataset: { testid: "event-page-tab-add" },
       on: { click: () => addEventPage(mapId, ev.id) },
     })
   );
+
+  const commandCount = activePage.commands.length;
+  const warningCount = validation?.warningCount ?? 0;
+  pageButtons.append(
+    el("div", {
+      class: "pages-meta",
+      children: [
+        el("span", { text: `명령 ${commandCount}` }),
+        ...(warningCount > 0 ? [el("span", { class: "warn-text", text: `경고 ${warningCount}` })] : []),
+      ],
+    })
+  );
+
   return pageButtons;
 }
 
@@ -179,54 +184,6 @@ function pageValidationBadge(pageId: string, validation?: EventDraftValidation):
   });
 }
 
-const PAGE_TAB_BADGE_LIMIT = 3;
-
-const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
-  switch: "S",
-  variable: "V",
-  selfSwitch: "S",
-  actor: "A",
-  item: "I",
-  gold: "G",
-  timer: "T",
-  timePhase: "P",
-  season: "S",
-  npcActivity: "A",
-  friendshipAtLeast: "F",
-  battleResult: "B",
-  run: "R",
-  all: "&",
-  any: "|",
-  not: "!",
-};
-
-function pageTabConditionBadges(page: EventPage): HTMLElement {
-  const badges = el("span", {
-    class: "event-page-tab-badges",
-    attrs: { "aria-hidden": "true" },
-    dataset: { testid: "event-page-tab-badges" },
-  });
-  const conditions = page.conditions ?? [];
-  for (const condition of conditions.slice(0, PAGE_TAB_BADGE_LIMIT)) {
-    badges.append(
-      el("span", {
-        class: `event-page-tab-badge event-page-tab-badge-${condition.kind}`,
-        text: PAGE_TAB_BADGE_LETTERS[condition.kind],
-      })
-    );
-  }
-  if (conditions.length > PAGE_TAB_BADGE_LIMIT) {
-    badges.append(
-      el("span", {
-        class: "event-page-tab-badge event-page-tab-badge-more",
-        text: `+${conditions.length - PAGE_TAB_BADGE_LIMIT}`,
-      })
-    );
-  }
-  return badges;
-}
-
-/** 탭에 직접 보이는 조건 요약. 길면 첫 조건 + 나머지 개수로 줄인다. */
 function pageTabConditionText(page: EventPage): string {
   const conditions = page.conditions ?? [];
   if (conditions.length === 0) return "조건 없음";
@@ -278,7 +235,6 @@ function pageConditionSummary(condition: EventPageCondition): string {
   }
 }
 
-/** 탭/배지에 쓰는 조건 한 줄. 이름 + 켜짐/꺼짐. 번호 기호는 쓰지 않는다. */
 function pageConditionCompactSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch": {
@@ -413,7 +369,6 @@ function commandLabel(kind: Command["kind"]): string {
 const CHARACTER_ID_HELP =
   "NPC 관계를 연결하면 같은 캐릭터가 등장하는 여러 이벤트에서 호감도와 선물 기록을 공유합니다.";
 
-/** One-click relationship status/control for the top identity card. */
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
   const characterId = event.characterId?.trim();
   const profileName = characterId
@@ -476,7 +431,6 @@ export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTM
   });
 }
 
-/** Relationship settings — only when a character profile is linked. */
 export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent): HTMLElement | null {
   const characterId = event.characterId?.trim();
   if (!characterId) return null;
@@ -637,6 +591,25 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
   });
 }
 
+function triggerLabel(trigger: Trigger): string {
+  switch (trigger.kind) {
+    case "action": return "말을 걸면";
+    case "touch":
+    case "playerTouch": return "닿으면";
+    case "eventTouch": return "이벤트가 닿으면";
+    case "auto": return "자동 실행";
+    case "parallel": return "병렬 처리";
+  }
+}
+
+function priorityLabel(priority: EventPage["priority"]): string {
+  switch (priority) {
+    case "same": return "같은 층";
+    case "below": return "아래";
+    case "above": return "위";
+  }
+}
+
 export function renderEventPageProps(mapId: MapId, eventId: string, page: EventPage, event?: GameEvent): HTMLElement {
   const wrap = el("div", { class: "event-page-props", dataset: { testid: "event-page-props" } });
   const trigger = selectWithOptions(TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger), "event-page-trigger-select");
@@ -663,25 +636,73 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
 
   const openKey = eventEditorOpenKey(mapId, eventId, page.id);
   const conditions = page.conditions ?? [];
+
+  const presence = el("div", {
+    class: "presence",
+    children: [
+      el("div", {
+        class: "sprite",
+        children: [renderEventGraphicPreview(page.graphic, page.movement.type)],
+      }),
+      el("div", {
+        children: [
+          el("div", { class: "kicker", text: "이 페이지" }),
+          el("div", { class: "value", text: triggerLabel(page.trigger) }),
+          el("div", { class: "sub", text: `${priorityLabel(page.priority)} · ${movementTypeChipLabel(page.movement.type)}` }),
+        ],
+      }),
+    ],
+  });
+
+  const factWhen = el("div", {
+    class: "fact",
+    children: [
+      el("label", { text: "언제" }),
+      el("div", { class: "value", text: pageTabConditionText(page) }),
+    ],
+  });
+
+  const factOverlap = el("div", {
+    class: "fact",
+    children: [
+      el("label", { text: "겹침" }),
+      el("span", { class: "chip", text: page.overlapForbidden !== false ? "중복 실행 방지" : "겹침 허용" }),
+    ],
+  });
+
+  const factNpc = el("div", {
+    class: "fact",
+    children: [
+      el("label", { text: "NPC" }),
+      el("div", {
+        class: "value",
+        text: event?.characterId ? (store.getCurrent().characters?.[event.characterId]?.displayName?.trim() || event.characterId) : "연결 안 됨",
+      }),
+    ],
+  });
+
   wrap.append(
+    presence,
+    factWhen,
+    factOverlap,
+    factNpc,
     collapsibleSection({
-      title: "1. 언제 나타날까요?",
+      title: "조건",
       testId: "event-classic-conditions",
       openSet: openEventConditions,
       openKey,
       summaryExtra: renderConditionSummaryBadges(conditions),
       body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
     }),
-    rm2k3Fieldset("2. 모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
-    // Trigger + priority always visible under graphic (do not bury under movement collapsible).
+    rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
     el("div", {
       class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
-        rm2k3Fieldset("3. 시작 방식", trigger, "event-classic-trigger"),
-        rm2k3Fieldset("4. 우선순위", priority, "event-classic-priority"),
+        rm2k3Fieldset("시작 방식", trigger, "event-classic-trigger"),
+        rm2k3Fieldset("우선순위", priority, "event-classic-priority"),
         rm2k3Fieldset(
-          "5. 겹침",
+          "겹침",
           el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "중복 실행 방지" })] }),
           "event-classic-overlap"
         ),
@@ -689,7 +710,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       ],
     }),
     collapsibleSection({
-      title: "6. 움직임",
+      title: "움직임",
       testId: "event-classic-movement-section",
       openSet: openEventMovement,
       openKey,
@@ -809,8 +830,6 @@ function truncateBadgeToken(value: string, max: number): string {
 
 function renderMovementSummaryChips(page: EventPage): HTMLElement {
   const typeLabel = movementTypeChipLabel(page.movement.type);
-  // 정지한 이벤트에 "x2 느림" 속도를 광고하지 않는다 — 움직이지 않는데 속도가 보이면
-  // 초보는 "이거 왜 느리다는 거지?"를 고민하게 된다(적대 평가 스펙).
   const isStationary = page.movement.type === "fixed";
   const speedLabel = movementSpeedChipLabel(page.movement.speed);
   return el("span", {
