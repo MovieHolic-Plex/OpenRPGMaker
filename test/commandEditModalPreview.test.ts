@@ -6,6 +6,7 @@ import {
   shouldRerenderCommandForm,
 } from "@/editor/panels/eventEditor/commandEditDialog";
 import { createBlankProject } from "@/project/defaults";
+import { newCommand } from "@/editor/eventActions";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command } from "@/project/types";
@@ -307,6 +308,13 @@ describe("command edit modal — image-rich preview", () => {
     expect(tape?.textContent).toContain("↑");
     expect(preview.textContent).toContain("반복");
     expect(preview.textContent).toContain("완료까지 대기");
+  });
+
+  it("newCommand(moveEvent) defaults to at least one step for visible trajectory", () => {
+    const cmd = newCommand("moveEvent");
+    expect(cmd.kind).toBe("moveEvent");
+    if (cmd.kind !== "moveEvent") return;
+    expect(cmd.route.moves.length).toBeGreaterThanOrEqual(1);
   });
 
   it("move-route editor stacks multiple adds locally and shows path preview + command list", () => {

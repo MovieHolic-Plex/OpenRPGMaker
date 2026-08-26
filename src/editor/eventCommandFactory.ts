@@ -42,7 +42,7 @@ export function newCommand(kind: Command["kind"]): Command {
     case "transfer":
       return { kind: "transfer", mapId: "", x: 0, y: 0, direction: "retain", fade: "black" };
     case "moveEvent":
-      return { kind: "moveEvent", eventId: "", route: { moves: [], repeat: false } };
+      return { kind: "moveEvent", eventId: "", route: { moves: [{ kind: "move", dir: "down" }], repeat: false } };
     case "setEventGraphicPattern":
       return { kind: "setEventGraphicPattern", eventId: "", pattern: 0 };
     case "changeTile":
