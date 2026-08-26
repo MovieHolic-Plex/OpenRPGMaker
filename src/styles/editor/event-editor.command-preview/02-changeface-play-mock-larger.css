@@ -204,11 +204,11 @@
   background: var(--bg-inset, #EFE9DC); border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 999px; padding: 2px 10px;
 }
-.ecp-gold-badge, .ecp-exp-badge, .ecp-skill-badge { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-weight: 800; font-size: 20px; }
-/* 배지 전경은 표면과 대비를 갖는다 — 글자색을 배경색과 같게 두면 아무것도 안 보인다. */
-.ecp-gold-badge { background: var(--bg-inset, #EFE9DC); color: var(--text-1, #2A2521); border: 1px solid var(--border-default, rgba(42,37,33,.28)); }
-.ecp-exp-badge { background: var(--bg-inset, #EFE9DC); color: var(--text-1, #2A2521); border: 1px solid var(--border-default, rgba(42,37,33,.28)); font-size: 14px; }
-.ecp-skill-badge { background: var(--bg-inset, #EFE9DC); color: var(--text-1, #2A2521); border: 1px solid var(--border-default, rgba(42,37,33,.28)); font-size: 14px; }
+.ecp-gold-badge, .ecp-battle-badge, .ecp-exp-badge, .ecp-skill-badge { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-weight: 800; font-size: 20px; }
+.ecp-gold-badge { background: radial-gradient(circle at 35% 30%, var(--bg-raised), var(--warning-muted)); color: var(--warning); border: 1px solid var(--warning); }
+.ecp-exp-badge { background: radial-gradient(circle at 35% 30%, var(--bg-raised), var(--accent-muted)); color: var(--accent); border: 1px solid var(--accent-border); font-size: 14px; }
+.ecp-skill-badge { background: radial-gradient(circle at 35% 30%, var(--bg-raised), var(--bg-inset)); color: var(--text-1); border: 1px solid var(--border-strong); font-size: 14px; }
+.ecp-battle-badge { background: var(--danger-muted); color: var(--danger); border: 1px solid var(--danger); }
 .ecp-battle-stage { width: 100%; align-items: stretch; padding: 10px 8px 14px; }
 .ecp-battle-field {
   position: relative;
@@ -274,5 +274,5 @@
   text-align: center;
 }
 .ecp-lamp { display: grid; place-items: center; width: 56px; height: 30px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; }
-.ecp-lamp.on { background: var(--border-default); color: var(--border-default); border: 1px solid var(--border-default); }
-.ecp-lamp.off { background: var(--border-default); color: var(--border-default); border: 1px solid var(--border-default); }
+.ecp-lamp.on { background: var(--success-muted); color: var(--success); border: 1px solid var(--success); }
+.ecp-lamp.off { background: var(--control-bg); color: var(--text-3); border: 1px solid var(--border-strong); }
