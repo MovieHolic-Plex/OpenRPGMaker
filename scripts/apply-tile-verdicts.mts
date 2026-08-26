@@ -372,7 +372,11 @@ function main(): void {
 
   console.log(Object.entries(tally).map(([k, v]) => `${k} ${v}`).join(" / "));
   if (splits.length) {
-    const p = ".omo/evidence/tile-reaudit/splits.txt";
+    // --sheet 로 한 시트만 돌리면 그 시트 결과만 담긴 파일에 쓴다.
+    // 전체 목록에 덮어쓰면 다른 시트의 보류 목록이 조용히 사라진다(실제로 사라졌다).
+    const p = onlySheet
+      ? `.omo/evidence/tile-reaudit/splits-${onlySheet}.txt`
+      : ".omo/evidence/tile-reaudit/splits.txt";
     fs.writeFileSync(p, `${splits.join("\n")}\n`);
     console.log(`갈린 칸 ${splits.length} -> ${p} (고배율 판정 필요)`);
   }

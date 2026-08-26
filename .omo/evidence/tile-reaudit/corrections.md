@@ -1,6 +1,6 @@
 # 교정된 타일 근거표
 
-총 교정 1490칸 — 판독 다수결 1405칸, 사람이 고배율로 확정 85칸.
+총 교정 1518칸 — 판독 다수결 1387칸, 사람이 고배율로 확정 131칸.
 
 각 줄은 한 칸이다. `이전` 은 재감사 전 출하 라벨, `채택` 은 이번에 넣은 라벨,
 `판독` 은 그림을 본 판독자들이 각각 무엇이라 말했는가다(`*` 는 저신뢰 표기).
@@ -16,7 +16,7 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 아틀라스 PNG 는 커밋하지 않는다 — 커밋된 시트 PNG 에서 결정론적으로 재생성되므로
 저장소에 8MB 를 넣을 이유가 없다. 사람이 직접 확정한 칸의 크롭만 커밋한다.
 
-## retro_dungeon — 교정 296칸
+## retro_dungeon — 교정 320칸
 
 | idx | 이전 | 채택 | 판독 | 근거 위치 |
 |---|---|---|---|---|
@@ -264,6 +264,12 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 363 | 이끼 낀 갈색 바닥 `floor` | 작은 덤불 상단 `plant` | 작은 덤불 상단`plant` · 풀 포기 난 흙 바닥`terrain` · 작은 덤불`plant` | block-12-15 c3 r12 |
 | 364 | 갈색 흙 바닥 `floor` | 갈색 흙 바닥 `terrain` | 갈색 흙 바닥`terrain` · 갈색 흙 바닥`terrain` | block-12-15 c4 r12 |
 | 365 | 초록 이끼 바닥 `floor` | 큰 덤불 상단 `plant` | 큰 덤불 상단`plant` · 잔디 덮인 흙 바닥`terrain` · 작은 덤불`plant` | block-12-15 c5 r12 |
+| 366 | 푸른 물웅덩이 `water` | 얼음 테두리 어두운 웅덩이 단일 타일 `water` | 얼음 웅덩이 단일 타일`water` · 얼음 테두리 어두운 구덩이(1칸)`terrain`* · 얼음 구덩이 테두리`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 367 | 짙은 파란 물 `water` | 얼음 테두리 어두운 웅덩이 가로 좌측 `water` | 얼음 웅덩이 상단 경계`water` · 얼음 테두리 어두운 구덩이 가로 조각`terrain`* · 얼음 구덩이 심연`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 368 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 가로 우측 `water` | 얼음 웅덩이 안쪽 모서리`water` · 얼음 테두리 어두운 구덩이 가로 오른쪽 끝`terrain`* · 얼음 구덩이 안쪽 모서리`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 369 | 돌 테두리 푸른 웅덩이 `water` | 돌 테두리 어두운 웅덩이 단일 타일 `water` | 어두운 돌 웅덩이 단일 타일`water` · 돌 테두리 어두운 구덩이(1칸)`terrain`* · 돌 구덩이 테두리`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 370 | 어두운 물구덩이 `water` | 돌 테두리 어두운 웅덩이 가로 좌측 `water` | 어두운 돌 웅덩이 상단 경계`water` · 돌 테두리 어두운 구덩이 가로 조각`terrain`* · 돌 구덩이 심연`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 371 | 돌 테두리 어두운 물 `water` | 돌 테두리 어두운 웅덩이 가로 우측 `water` | 어두운 돌 웅덩이 안쪽 모서리`water` · 돌 테두리 어두운 구덩이 가로 오른쪽 끝`terrain`* · 돌 구덩이 안쪽 모서리`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
 | 375 | 파란 무늬 흰 얼음 `ice` | 얼음 벽 상단 좌측 `wall` | 얼음 벽 상단 좌측`wall` · 눈 덮인 얼음 지면 띠`terrain` · 얼음 벽 상단 좌측`wall` | block-12-15 c15 r12 |
 | 376 | 파란 무늬 흰 얼음 `ice` | 얼음 벽 상단 중앙 `wall` | 얼음 벽 상단 중앙`wall` · 눈 덮인 얼음 지면 띠`terrain` · 얼음 벽 상단 중앙`wall` | block-12-15 c16 r12 |
 | 377 | 파란 무늬 흰 얼음 `ice` | 얼음 벽 상단 우측 `wall` | 얼음 벽 상단 우측`wall` · 눈 덮인 얼음 지면 띠`terrain` · 얼음 벽 상단 우측`wall` | block-12-15 c17 r12 |
@@ -278,6 +284,12 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 393 | 초록 이끼 바닥 `floor` | 큰 덤불 상단 좌측 `plant` | 덤불 숲 좌상단`plant` · 잔디 지면 좌측 상단`terrain` · 큰 덤불 상단 좌측`plant` | block-12-15 c3 r13 |
 | 394 | 초록 이끼 바닥 `floor` | 덤불 숲 상단 중앙 `plant` | 덤불 숲 상단 중앙`plant` · 잔디 지면 중앙 상단`terrain` · 큰 덤불 상단 중앙`plant` | block-12-15 c4 r13 |
 | 395 | 초록 이끼 바닥 `floor` | 큰 덤불 상단 우측 `plant` | 덤불 숲 우상단`plant` · 잔디 지면 우측 상단`terrain` · 큰 덤불 상단 우측`plant` | block-12-15 c5 r13 |
+| 396 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 상단 좌측 `water` | 얼음 웅덩이 좌상단 모서리`water` · 얼음 테두리 어두운 구덩이 좌상단`terrain`* · 얼음 구덩이 좌상단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 397 | 짙은 파란 물 `water` | 얼음 테두리 어두운 웅덩이 상단 중앙 `water` | 얼음 웅덩이 상단 테두리`water` · 얼음 테두리 어두운 구덩이 상단`terrain`* · 얼음 구덩이 상단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 398 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 상단 우측 `water` | 얼음 웅덩이 우상단 모서리`water` · 얼음 테두리 어두운 구덩이 우상단`terrain`* · 얼음 구덩이 우상단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 399 | 돌 테두리 푸른 웅덩이 `water` | 돌 테두리 어두운 웅덩이 상단 좌측 `water` | 어두운 돌 웅덩이 좌상단 모서리`water` · 돌 테두리 어두운 구덩이 좌상단`terrain`* · 돌 구덩이 좌상단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 400 | 어두운 물구덩이 `water` | 돌 테두리 어두운 웅덩이 상단 중앙 `water` | 어두운 돌 웅덩이 상단 테두리`water` · 돌 테두리 어두운 구덩이 상단`terrain`* · 돌 구덩이 상단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 401 | 돌 테두리 어두운 물 `water` | 돌 테두리 어두운 웅덩이 상단 우측 `water` | 어두운 돌 웅덩이 우상단 모서리`water` · 돌 테두리 어두운 구덩이 우상단`terrain`* · 돌 구덩이 우상단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
 | 405 | 왼편 그늘 어두운 돌벽 `rock` | 어두운 던전 벽 상단 좌측 `wall` | 어두운 던전 벽 상단 좌측`wall` · 어두운 청석 벽 좌상단`wall` | block-12-15 c15 r13 |
 | 406 | 어두운 돌 블록 `rock` | 어두운 던전 벽 상단 중앙 `wall` | 어두운 던전 벽 상단 중앙`wall` · 어두운 청석 벽 상단 중앙`wall` | block-12-15 c16 r13 |
 | 407 | 오른편 그늘 어두운 돌벽 `rock` | 어두운 던전 벽 상단 우측 `wall` | 어두운 던전 벽 상단 우측`wall` · 어두운 청석 벽 우상단`wall` | block-12-15 c17 r13 |
@@ -293,6 +305,12 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 423 | 초록 이끼 바닥 `floor` | 덤불 숲 좌측 가장자리 `plant` | 덤불 숲 좌측 가장자리`plant` · 잔디 지면 좌측 중앙`terrain` · 큰 덤불 중앙 좌측`plant` | block-12-15 c3 r14 |
 | 424 | 초록 이끼 바닥 `floor` | 덤불 숲 내부 `plant` | 덤불 숲 내부`plant` · 잔디 지면 중앙`terrain` · 큰 덤불 중앙`plant` | block-12-15 c4 r14 |
 | 425 | 초록 이끼 바닥 `floor` | 덤불 숲 우측 가장자리 `plant` | 덤불 숲 우측 가장자리`plant` · 잔디 지면 우측 중앙`terrain` · 큰 덤불 중앙 우측`plant` | block-12-15 c5 r14 |
+| 426 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 중간 좌측 `water` | 얼음 웅덩이 좌측 테두리`water` · 얼음 테두리 어두운 구덩이 좌측`terrain`* · 얼음 구덩이 좌측`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 427 | 짙은 파란 물 `water` | 얼음 테두리 어두운 웅덩이 내부 `water` | 얼음 웅덩이 내부 수면`water` · 얼음 테두리 어두운 구덩이 내부`terrain`* · 얼음 구덩이 심연 중앙`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 428 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 중간 우측 `water` | 얼음 웅덩이 우측 테두리`water` · 얼음 테두리 어두운 구덩이 우측`terrain`* · 얼음 구덩이 우측`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 429 | 돌 테두리 푸른 웅덩이 `water` | 돌 테두리 어두운 웅덩이 중간 좌측 `water` | 어두운 돌 웅덩이 좌측 테두리`water` · 돌 테두리 어두운 구덩이 좌측`terrain`* · 돌 구덩이 좌측`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 430 | 어두운 물구덩이 `water` | 돌 테두리 어두운 웅덩이 내부 `water` | 어두운 돌 웅덩이 내부 수면`water` · 돌 테두리 어두운 구덩이 내부`terrain`* · 돌 구덩이 심연 중앙`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 431 | 돌 테두리 어두운 물 `water` | 돌 테두리 어두운 웅덩이 중간 우측 `water` | 어두운 돌 웅덩이 우측 테두리`water` · 돌 테두리 어두운 구덩이 우측`terrain`* · 돌 구덩이 우측`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
 | 432 | 낡은 돌 벽돌 벽면 `wall` | 조약돌 바닥 경계 좌측 `floor` | 돌길 모서리 좌상단`floor` · 회색 자갈 돌벽 좌상단`wall` · 조약돌 바닥 경계 좌측`floor` | block-12-15 c12 r14 |
 | 433 | 낡은 돌 벽돌 벽면 `wall` | 조약돌 바닥 경계 우측 `floor` | 돌길 모서리 우상단`floor` · 회색 자갈 돌벽 상단 중앙`wall` · 조약돌 바닥 경계 우측`floor` | block-12-15 c13 r14 |
 | 434 | 회색 돌 벽돌 벽면 `wall` | 조약돌 바닥 `floor` | 조약돌 바닥`floor` · 회색 자갈 돌벽 우상단`wall` · 조약돌 바닥`floor` | block-12-15 c14 r14 |
@@ -307,6 +325,12 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 453 | 초록 이끼 바닥 `floor` | 큰 덤불 하단 좌측 `plant` | 덤불 숲 좌하단`plant` · 잔디 지면 좌측 하단`terrain` · 큰 덤불 하단 좌측`plant` | block-12-15 c3 r15 |
 | 454 | 초록 이끼 바닥 `floor` | 덤불 숲 하단 중앙 `plant` | 덤불 숲 하단 중앙`plant` · 잔디 지면 중앙 하단`terrain` · 큰 덤불 하단 중앙`plant` | block-12-15 c4 r15 |
 | 455 | 초록 이끼 바닥 `floor` | 큰 덤불 하단 우측 `plant` | 덤불 숲 우하단`plant` · 잔디 지면 우측 하단`terrain` · 큰 덤불 하단 우측`plant` | block-12-15 c5 r15 |
+| 456 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 하단 좌측 `water` | 얼음 웅덩이 좌하단 모서리`water` · 얼음 테두리 어두운 구덩이 좌하단`terrain`* · 얼음 구덩이 좌하단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 457 | 짙은 파란 물 `water` | 얼음 테두리 어두운 웅덩이 하단 중앙 `water` | 얼음 웅덩이 하단 테두리`water` · 얼음 테두리 어두운 구덩이 하단`terrain`* · 얼음 구덩이 하단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 458 | 가장자리 파란 물 `water` | 얼음 테두리 어두운 웅덩이 하단 우측 `water` | 얼음 웅덩이 우하단 모서리`water` · 얼음 테두리 어두운 구덩이 우하단`terrain`* · 얼음 구덩이 우하단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 459 | 돌 테두리 푸른 웅덩이 `water` | 돌 테두리 어두운 웅덩이 하단 좌측 `water` | 어두운 돌 웅덩이 좌하단 모서리`water` · 돌 테두리 어두운 구덩이 좌하단`terrain`* · 돌 구덩이 좌하단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 460 | 어두운 물구덩이 `water` | 돌 테두리 어두운 웅덩이 하단 중앙 `water` | 어두운 돌 웅덩이 하단 테두리`water` · 돌 테두리 어두운 구덩이 하단`terrain`* · 돌 구덩이 하단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
+| 461 | 돌 테두리 어두운 물 `water` | 돌 테두리 어두운 웅덩이 하단 우측 `water` | 어두운 돌 웅덩이 우하단 모서리`water` · 돌 테두리 어두운 구덩이 우하단`terrain`* · 돌 구덩이 우하단`cliff` | **사람 확정** (split2-dungeon-r1215-c0615.png, split2-dungeon-r1215-c1625.png) |
 | 462 | 낡은 돌 벽돌 벽면 `wall` | 조약돌 바닥 1 `floor` | 돌길 바닥`floor` · 회색 자갈 돌벽 좌하단`wall` · 조약돌 바닥 1`floor` | block-12-15 c12 r15 |
 | 463 | 낡은 돌 벽돌 벽면 `wall` | 조약돌 바닥 2 `floor` | 돌길 바닥`floor` · 회색 자갈 돌벽 하단 중앙`wall` · 조약돌 바닥 2`floor` | block-12-15 c13 r15 |
 | 464 | 어두운 돌 벽돌 벽면 `wall` | 어두운 조약돌 바닥 `floor` | 조약돌 바닥`floor` · 회색 자갈 돌벽 우하단`wall` · 어두운 조약돌 바닥`floor` | block-12-15 c14 r15 |
@@ -1008,7 +1032,7 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 466 | 어두운 용암 내부 `terrain` | 화려한 카펫 하단 `decoration` | 화려한 카펫 하단`decoration` · 붉은 양탄자`decoration` | block-12-15 c16 r15 |
 | 467 | 용암 동쪽 아래 테두리 `lava` | 화려한 카펫 하단 우 `decoration` | 화려한 카펫 하단 우`decoration` · 붉은 양탄자`decoration` | block-12-15 c17 r15 |
 
-## ship — 교정 212칸
+## ship — 교정 216칸
 
 | idx | 이전 | 채택 | 판독 | 근거 위치 |
 |---|---|---|---|---|
@@ -1066,19 +1090,20 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 126 | 중앙 어두운 반점 나무 갑판 `prop` | 구멍 뚫린 목재 바닥 `floor` | 갑판 작은 구멍`floor` · 구멍 뚫린 목재 바닥`floor` | block-04-07 c6 r4 |
 | 128 | 어두운 개구부 목재 틀 `wall` | 십자형 구멍 뚫린 목재 바닥 `floor` | 갑판 바닥 구멍 상단`floor` · 십자형 구멍 뚫린 목재 바닥`floor` | block-04-07 c8 r4 |
 | 131 | 어두운 개구부 목재 틀 `wall` | 십자형 구멍 뚫린 세로 목재 바닥 `floor` | 갑판 바닥 구멍 상단`floor` · 십자형 구멍 뚫린 세로 목재 바닥`floor` | block-04-07 c11 r4 |
-| 132 | 무늬 나무 갑판 `floor` | 갑판 바닥 쇠고리 `prop` | 바닥 고정 고리 상단`floor` · 갑판 바닥 쇠고리`prop` · 갑판 쇠고리`prop` | block-04-07 c12 r4 |
-| 134 | 나무 판자 바닥 `floor` | 목재 계단 좌측 `stairs` | 목재 벽 상단 좌측`wall` · 목재 계단 좌측`stairs` · 목조 계단 좌측`stairs` | block-04-07 c14 r4 |
-| 135 | 나무 판자 바닥 `floor` | 목재 계단 중앙 `stairs` | 목재 벽 상단 중앙`wall` · 목재 계단 중앙`stairs` · 목조 계단 중앙`stairs` | block-04-07 c15 r4 |
-| 136 | 가장자리 음영 나무 판자 `floor` | 목재 계단 우측 `stairs` | 목재 벽 상단 우측`wall` · 목재 계단 우측`stairs` · 목조 계단 우측`stairs` | block-04-07 c16 r4 |
+| 132 | 무늬 나무 갑판 `floor` | 갑판 급수 펌프 하단부 `machine` | 바닥 고정 고리 상단`floor` · 갑판 바닥 쇠고리`prop` · 갑판 쇠고리`prop` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 134 | 나무 판자 바닥 `floor` | 둥근 구멍 아래 선체 가로 판벽 `wall` | 목재 벽 상단 좌측`wall` · 목재 계단 좌측`stairs` · 목조 계단 좌측`stairs` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 135 | 나무 판자 바닥 `floor` | 둥근 구멍 아래 선체 가로 판벽 `wall` | 목재 벽 상단 중앙`wall` · 목재 계단 중앙`stairs` · 목조 계단 중앙`stairs` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 136 | 가장자리 음영 나무 판자 `floor` | 둥근 구멍 아래 선체 가로 판벽 `wall` | 목재 벽 상단 우측`wall` · 목재 계단 우측`stairs` · 목조 계단 우측`stairs` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 137 | 금빛 장식이 섞인 나무 `decoration` | 목재 벽 모서리 `wall` | 목재 벽 모서리`wall` · 목재 벽 모서리`wall` | block-04-07 c17 r4 |
 | 138 | 줄무늬 천 가장자리 목재 `awning` | 원통형 권양기 좌측 `prop` | 원통형 권양기 좌측`prop` · 가로형 권양기 좌측`prop` | block-04-07 c18 r4 |
-| 139 | 금빛 장식 나무 `decoration` | 대각선 목재 지붕 지지대 좌측 `wall` | 갑판 난간 대각선 좌상단`fence` · 대각선 목재 지붕 지지대 좌측`wall` · 목조 골조 벽 좌측 사선`wall` | block-04-07 c19 r4 |
-| 140 | 금빛 목재 격자 난간 `fence` | 중앙 수직 목재 지붕 지지대 `wall` | 갑판 난간 세로 중앙`fence` · 중앙 수직 목재 지붕 지지대`wall` · 목조 골조 벽 중앙 기둥`wall` | block-04-07 c20 r4 |
-| 141 | 금빛 장식 나무 `decoration` | 대각선 목재 지붕 지지대 우측 `wall` | 갑판 난간 대각선 우상단`fence` · 대각선 목재 지붕 지지대 우측`wall` · 목조 골조 벽 우측 사선`wall` | block-04-07 c21 r4 |
+| 139 | 금빛 장식 나무 `decoration` | 목조 골조 벽 좌측 사선 브레이스 `wall` | 갑판 난간 대각선 좌상단`fence` · 대각선 목재 지붕 지지대 좌측`wall` · 목조 골조 벽 좌측 사선`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 140 | 금빛 목재 격자 난간 `fence` | 목조 골조 벽 중앙 기둥 `wall` | 갑판 난간 세로 중앙`fence` · 중앙 수직 목재 지붕 지지대`wall` · 목조 골조 벽 중앙 기둥`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 141 | 금빛 장식 나무 `decoration` | 목조 골조 벽 우측 사선 브레이스 `wall` | 갑판 난간 대각선 우상단`fence` · 대각선 목재 지붕 지지대 우측`wall` · 목조 골조 벽 우측 사선`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 142 | 줄무늬 천 목재 장식 `awning` | 원통형 권양기 우측 `prop` | 원통형 권양기 우측`prop` · 가로형 권양기 우측`prop` | block-04-07 c22 r4 |
-| 143 | 금빛 띠 장식 목재 판넬 `decoration` | 1칸 목조 계단 `stairs` | 목재 벽 상단`wall` · 목재 계단`stairs` · 1칸 목조 계단`stairs` | block-04-07 c23 r4 |
+| 143 | 금빛 띠 장식 목재 판넬 `decoration` | 벽 부착 가로 널 선반 `shelf` | 목재 벽 상단`wall` · 목재 계단`stairs` · 1칸 목조 계단`stairs` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 146 | 비스듬한 목재 곡선 조각 `prop` | 대각선 선체 난간 상단 좌측 `wall` | 비스듬한 선체 외벽 좌상단`wall` · 대각선 선체 난간 상단 좌측`wall` | block-04-07 c26 r4 |
 | 147 | 비스듬한 목재 이음매 `floor` | 대각선 선체 난간 상단 우측 `wall` | 비스듬한 선체 외벽 우상단`wall` · 대각선 선체 난간 상단 우측`wall` | block-04-07 c27 r4 |
+| 148 | 작은 다색 조형물 `prop` | 선반 위 색색 물약병 `prop` | 포션 상자 선반`prop` · 선반 위의 물약병`furniture` · 물약 상자`prop` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 149 | 떠 있는 나무 판자 조각 `prop` | 갑판 목재 울타리 난간 상단 `fence` | 갑판 목재 울타리 난간 상단`fence` · 목재 난간`fence` | block-04-07 c29 r4 |
 | 156 | 목재 위 어두운 바닥 `wall` | 갑판 바닥 구멍 좌상단 `floor` | 갑판 큰 구멍 좌상단`floor` · 갑판 바닥 구멍 좌상단`floor` | block-04-07 c6 r5 |
 | 157 | 목재 상단 어두운 하단 `wall` | 갑판 큰 구멍 상단 중앙 `floor` | 갑판 큰 구멍 상단 중앙`floor` · 갑판 바닥 구멍 상단`floor` | block-04-07 c7 r5 |
@@ -1092,15 +1117,16 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 165 | 위 목재 아래 금빛 무늬 `decoration` | 계단 측면 목재 바닥 `floor` | 계단 측면 목재 바닥`floor` · 목재 갑판 바닥`floor` | block-04-07 c15 r5 |
 | 166 | 비스듬한 목재 격자 `decoration` | 곡선 선체 난간 상단 좌측 `wall` | 계단 측면 목재 벽 좌측`wall` · 곡선 선체 난간 상단 좌측`wall` | block-04-07 c16 r5 |
 | 167 | 금빛 띠 목재 무늬 `decoration` | 곡선 선체 난간 상단 우측 `wall` | 계단 측면 목재 벽 우측`wall` · 곡선 선체 난간 상단 우측`wall` | block-04-07 c17 r5 |
-| 168 | 거친 잔물결 바닷물 `water` | 석조 난간 좌단 `wall` | 석재 난간 상단 좌측`fence` · 석조 난간 좌단`wall` · 석조 벽 좌측`wall` | block-04-07 c18 r5 |
-| 169 | 거친 잔물결 바닷물 `water` | 석조 난간 중앙 좌측 `wall` | 석재 난간 상단 중앙`fence` · 석조 난간 중앙 좌측`wall` · 석조 벽 중앙 좌측`wall` | block-04-07 c19 r5 |
-| 170 | 거친 잔물결 바닷물 `water` | 석조 난간 중앙 우측 `wall` | 석재 난간 상단 중앙`fence` · 석조 난간 중앙 우측`wall` · 석조 벽 중앙 우측`wall` | block-04-07 c20 r5 |
-| 171 | 거친 잔물결 바닷물 `water` | 석조 난간 우단 `wall` | 석재 난간 상단 우측`fence` · 석조 난간 우단`wall` · 석조 벽 우측`wall` | block-04-07 c21 r5 |
-| 172 | 금빛 모서리 장식 목재 `decoration` | 목재 선실 벽 아치 좌측 `wall` | 갑판 둥근 난간 좌상단`fence` · 목재 선실 벽 아치 좌측`wall` · 아치형 목조 벽 좌측`wall` | block-04-07 c22 r5 |
-| 173 | 금빛 모서리 장식 목재 `decoration` | 목재 선실 벽 아치 우측 `wall` | 갑판 둥근 난간 우상단`fence` · 목재 선실 벽 아치 우측`wall` · 아치형 목조 벽 우측`wall` | block-04-07 c23 r5 |
+| 168 | 거친 잔물결 바닷물 `water` | 짙은 석조 벽돌 벽 `wall` | 석재 난간 상단 좌측`fence` · 석조 난간 좌단`wall` · 석조 벽 좌측`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 169 | 거친 잔물결 바닷물 `water` | 짙은 석조 벽돌 벽 `wall` | 석재 난간 상단 중앙`fence` · 석조 난간 중앙 좌측`wall` · 석조 벽 중앙 좌측`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 170 | 거친 잔물결 바닷물 `water` | 짙은 석조 벽돌 벽 `wall` | 석재 난간 상단 중앙`fence` · 석조 난간 중앙 우측`wall` · 석조 벽 중앙 우측`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 171 | 거친 잔물결 바닷물 `water` | 짙은 석조 벽돌 벽 `wall` | 석재 난간 상단 우측`fence` · 석조 난간 우단`wall` · 석조 벽 우측`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 172 | 금빛 모서리 장식 목재 `decoration` | 세로 널 목조 벽 `wall` | 갑판 둥근 난간 좌상단`fence` · 목재 선실 벽 아치 좌측`wall` · 아치형 목조 벽 좌측`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 173 | 금빛 모서리 장식 목재 `decoration` | 세로 널 목조 벽 우측 곡선 테두리 `wall` | 갑판 둥근 난간 우상단`fence` · 목재 선실 벽 아치 우측`wall` · 아치형 목조 벽 우측`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 174 | 비스듬한 목재 곡선 조각 `prop` | 곡선 선체 난간 좌상단 `wall` | 곡선 선체 외벽 좌측`wall` · 곡선 선체 난간 좌상단`wall` | block-04-07 c24 r5 |
 | 175 | 비스듬한 목재 격자 무늬 `prop` | 비스듬한 선체 외벽 중앙 `wall` | 비스듬한 선체 외벽 중앙`wall` · 대각선 선체 난간`wall` | block-04-07 c25 r5 |
 | 176 | 비스듬한 목재 곡선 조각 `prop` | 비스듬한 선체 외벽 우측 `wall` | 비스듬한 선체 외벽 우측`wall` · 대각선 선체 난간`wall` | block-04-07 c26 r5 |
+| 177 | 비스듬한 목재 곡선 조각 `prop` | 선체 곡선 난간 대각선 조각 `fence` | 빈 슬롯`empty` · 대각선 선체 난간 모서리`wall` · 선체 난간 대각선 하단`fence` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 178 | 비스듬한 목재 곡선 조각 `prop` | 비스듬한 선체 외벽 모서리 `wall` | 비스듬한 선체 외벽 모서리`wall` · 대각선 선체 난간`wall` | block-04-07 c28 r5 |
 | 186 | 목재 위 어두운 바닥 `wall` | 갑판 큰 구멍 좌측 중앙 `floor` | 갑판 큰 구멍 좌측 중앙`floor` · 갑판 바닥 구멍 좌측`floor` | block-04-07 c6 r6 |
 | 187 | 새까만 어두운 벽 `wall` | 갑판 큰 구멍 내부 중앙 `floor` | 갑판 큰 구멍 내부 중앙`floor` · 갑판 바닥 구멍 내부`floor` | block-04-07 c7 r6 |
@@ -1108,6 +1134,7 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 189 | 좌측 목재 어두운 벽 `wall` | 세로 갑판 바닥 구멍 좌측 `floor` | 갑판 세로 구멍 좌측`floor` · 세로 갑판 바닥 구멍 좌측`floor` | block-04-07 c9 r6 |
 | 190 | 새까만 어두운 벽 `wall` | 세로 갑판 바닥 구멍 내부 `floor` | 갑판 세로 구멍 내부`floor` · 세로 갑판 바닥 구멍 내부`floor` | block-04-07 c10 r6 |
 | 191 | 어둠과 우측 목재 벽 `wall` | 세로 갑판 바닥 구멍 우측 `floor` | 갑판 세로 구멍 우측`floor` · 세로 갑판 바닥 구멍 우측`floor` | block-04-07 c11 r6 |
+| 192 | 금빛 테 목재 문 `door` | 선실 사각 창 개구부 `window` | 선실 창문 프레임 상단`window` · 목재 기둥 구조물`prop` · 계단 하부 목조 지지대`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 193 | 세로 결 무늬 나무 갑판 `floor` | 선실 목재 벽 상단 `wall` | 선실 목재 벽 상단`wall` · 세로 목재 벽`wall` | block-04-07 c13 r6 |
 | 194 | 비스듬한 목재 금빛 격자 `decoration` | 대각선 계단 난간살 상단 `stairs` | 난간 계단 좌하단`stairs` · 대각선 계단 난간살 상단`stairs` | block-04-07 c14 r6 |
 | 195 | 비스듬한 목재 사선 무늬 `decoration` | 대각선 계단 난간살 하단 `stairs` | 난간 계단 우하단`stairs` · 대각선 계단 난간살 하단`stairs` | block-04-07 c15 r6 |
@@ -1118,8 +1145,9 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 200 | 금빛 목재 짜임 무늬 `decoration` | 목재 선실 벽 중앙 우측 `wall` | 목재 벽 상단 중앙`wall` · 목재 선실 벽 중앙 우측`wall` | block-04-07 c20 r6 |
 | 201 | 금빛 목재 격자 무늬 `decoration` | 목재 벽 상단 우측 `wall` | 목재 벽 상단 우측`wall` · 목재 선실 벽 우측`wall` | block-04-07 c21 r6 |
 | 202 | 가로 목재 격자 난간 `fence` | 환기 격자창 `window` | 환기 격자창`window` · 환기창`window` | block-04-07 c22 r6 |
-| 203 | 금빛 격자 망 `fence` | 목재 기둥 상단 `wall` | 목재 기둥 상단`wall` · 돛대 기둥`prop` · 둥근 목조 기둥`wall` | block-04-07 c23 r6 |
-| 205 | 담색 덩어리 더미 `prop` | 해골과 뼈 `decoration` | 해골과 뼈`prop` · 해골과 뼈`decoration` · 해골과 뼈`decoration` | block-04-07 c25 r6 |
+| 203 | 금빛 격자 망 `fence` | 둥근 목조 기둥 `pillar` | 목재 기둥 상단`wall` · 돛대 기둥`prop` · 둥근 목조 기둥`wall` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 205 | 담색 덩어리 더미 `prop` | 해골과 뼈 더미 `decoration` | 해골과 뼈`prop` · 해골과 뼈`decoration` · 해골과 뼈`decoration` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 207 | 비스듬한 목재 격자 `decoration` | 선체 곡선 난간과 갑판 이음 `fence` | 비스듬한 선체 외벽 하단 좌측`wall` · 대각선 선체 바닥 가장자리`floor` · 선체 난간과 갑판`fence` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 208 | 비스듬한 목재 곡선 조각 `prop` | 비스듬한 선체 외벽 하단 우측 `wall` | 비스듬한 선체 외벽 하단 우측`wall` · 대각선 선체 난간`wall` | block-04-07 c28 r6 |
 | 209 | 비스듬한 목재 곡선 조각 `prop` | 비스듬한 선체 외벽 우하단 `wall` | 비스듬한 선체 외벽 우하단`wall` · 대각선 선체 난간 하단`wall` | block-04-07 c29 r6 |
 | 216 | 목재 북쪽 경계 어두움 `wall` | 갑판 바닥 구멍 좌하단 `floor` | 갑판 큰 구멍 좌하단`floor` · 갑판 바닥 구멍 좌하단`floor` | block-04-07 c6 r7 |
@@ -1140,8 +1168,8 @@ vite-node scripts/gen-chipset-blocks.mts --sheet <시트> --rows <a>-<b> --cols 
 | 231 | 금빛 목재 격자 무늬 `fence` | 목재 선실 벽 하단 우측 `wall` | 목재 벽 하단 우측`wall` · 목재 선실 벽 하단 우측`wall` | block-04-07 c21 r7 |
 | 232 | 색무늬 목재 문 패널 `door` | 창살 격자 창문 `window` | 창살 격자 창문`window` · 격자 창문`window` | block-04-07 c22 r7 |
 | 236 | 매달린 금빛 장식 `decoration` | 선박 뱃머리 돌출봉 연결부 `prop` | 선박 뱃머리 돌출봉 연결부`prop` · 돛대 가로목 중앙 우측`prop` | block-04-07 c26 r7 |
-| 238 | 금빛 곡선 장식 목재 `decoration` | 선박 뱃머리 난간 좌하단 `fence` | 선박 뱃머리 난간 좌하단`fence` · 선체 난간 지지대`wall` · 선체 난간 모서리 연결부`fence` | block-04-07 c28 r7 |
-| 239 | 금빛 줄무늬 천 `awning` | 선체 난간 모서리 금속 부속 `fence` | 선박 뱃머리 금속 결합부`fence` · 선체 난간 모서리 금속 보강재`wall` · 선체 난간 모서리 금속 부속`fence` | block-04-07 c29 r7 |
+| 238 | 금빛 곡선 장식 목재 `decoration` | 선체 난간 모서리 연결부 `fence` | 선박 뱃머리 난간 좌하단`fence` · 선체 난간 지지대`wall` · 선체 난간 모서리 연결부`fence` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
+| 239 | 금빛 줄무늬 천 `awning` | 선체 난간 모서리 금속 부속 `fence` | 선박 뱃머리 금속 결합부`fence` · 선체 난간 모서리 금속 보강재`wall` · 선체 난간 모서리 금속 부속`fence` | **사람 확정** (cabin-window-192.png, deck-pump-132.png, hull-plank-wall-134-136.png, rail-pieces-177-207-238-239.png, split2-ship-r0003-c0616.png, split2-ship-r0003-c1726.png, stone-brick-168-171.png, timber-frame-139-141.png) |
 | 254 | 짙은 가로 선실판 `floor` | 선실 목재 벽 상단 `wall` | 목재 벽 상단`wall` · 선실 목재 벽 상단`wall` | block-08-11 c14 r8 |
 | 255 | 짙은 가로 널바닥 `floor` | 선실 목재 벽 상단 `wall` | 목재 벽 상단`wall` · 선실 목재 벽 상단`wall` | block-08-11 c15 r8 |
 | 256 | 갑판 관통 돛대 `pillar` | 벽면 사다리 상단 `stairs` | 벽면 사다리 상단`stairs` · 벽면 사다리 상단`stairs` · 벽면 사다리 상단`stairs` | block-08-11 c16 r8 |
