@@ -40,13 +40,11 @@ import { createCommandToolbarHistory, type CommandToolbarHistory } from "./comma
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
-  renderClassicPageTabStrip,
   renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
   renderEventNameControl,
   renderEventPageProps,
   renderPageCommandCatalog,
-  renderPageTabs,
 } from "./pageProps";
 import type { CommandListActions } from "./types";
 import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
@@ -182,6 +180,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       storyboardEl.replaceWith(fresh);
       storyboardEl = fresh;
       storyboardEl.hidden = false;
+    } else {
+      storyboardEl.replaceChildren();
     }
   }
   storyboardHost.append(storyboardEl);
@@ -261,9 +261,17 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-editor-settings-main",
     children: settingsChildren,
   });
-  const pageTabStrip = renderClassicPageTabStrip(mapId, ev, activePage, validation);
 
   settingsColumn.append(settingsMain);
+  settingsColumn.querySelectorAll("details").forEach((node) => {
+    if (node.classList.contains("event-editor-settings-accordion-group")) return;
+    const replacement = el("div", {
+      class: node.className,
+      dataset: { ...node.dataset },
+    });
+    Array.from(node.childNodes).forEach((child) => replacement.append(child));
+    node.replaceWith(replacement);
+  });
   commandsColumn.append(
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
@@ -287,10 +295,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   section.append(
     eventCard,
-    el("div", {
-      class: "event-editor-pagebar",
-      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
-    }),
     workbench,
     ...(validationControl ? [validationControl] : [])
   );
@@ -343,10 +347,6 @@ function renderCommandToolbar(
         class: "event-editor-command-edit-popover",
         children: [
           toolGroup(
-            toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-            toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo())
-          ),
-          toolGroup(
             toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
             toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)))
           ),
@@ -380,15 +380,14 @@ function renderCommandToolbar(
         "명령",
         "event-command-toolbar-add",
         () => {
-          if (openActiveEventCommandPicker(mapId, eventId)) return;
-          cmdList
-            .querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')
-            ?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true }));
+          openCommandPickerForActions(actions);
         },
         false,
         true
       ),
       commandSearch,
+      toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
+      toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),

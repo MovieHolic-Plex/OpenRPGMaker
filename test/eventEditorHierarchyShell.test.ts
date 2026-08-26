@@ -57,7 +57,7 @@ describe("event editor hierarchy chrome contract", () => {
   it("keeps the required shell testids", () => {
     const combined = modalSource + pagePropsSource + storyboardSource;
     expect(combined).toContain("event-editor-modal");
-    expect(combined).toContain("event-page-tab-");
+    expect(combined).toContain("evt-page-segment");
     expect(combined).toContain("event-storyboard");
   });
 });

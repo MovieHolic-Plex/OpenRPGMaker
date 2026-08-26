@@ -177,7 +177,7 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
   expect(await modal.locator("[data-testid^='event-page-tab-']").count()).toBe(0);
 
   // Double-click opens the edit dialog (no '편집' button route).
-  const firstRow = modal.locator(".cmd-item .cmd-head").first();
+  const firstRow = modal.locator(".cmd-list .cmd-item .cmd-head").first();
   await firstRow.dblclick();
   await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();
   await page.getByTestId("event-command-edit-cancel").click();

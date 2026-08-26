@@ -114,39 +114,51 @@ export function renderClassicPageTabStrip(
 ): HTMLElement {
   const pages = ev.pages ?? [];
   const pageButtons = el("div", {
-    class: "event-page-number-tabs pages",
-    dataset: { testid: "event-classic-page-tabs" },
+    class: "evt-page-segments",
+    attrs: { role: "tablist", "aria-label": "이벤트 페이지" },
+    dataset: { testid: "evt-header-page-tabs" },
   });
   pages.forEach((page, index) => {
     const isActive = page.id === activePage.id;
     const pageErrors = validation?.issues.filter((i) => i.pageId === page.id && (i.severity === "error" || i.severity === "warning")).length ?? 0;
     pageButtons.append(
       el("button", {
-        class: "btn page-tab event-page-tab-rich" + (isActive ? " active" : ""),
-        dataset: { testid: `event-page-tab-${index + 1}` },
-        attrs: { title: pageTabTooltip(page, index) },
+        class: "btn evt-page-segment" + (isActive ? " active" : ""),
+        dataset: { testid: `evt-page-segment-${index + 1}` },
+        attrs: {
+          type: "button",
+          role: "tab",
+          "aria-pressed": isActive ? "true" : "false",
+          "aria-selected": isActive ? "true" : "false",
+          title: pageTabTooltip(page, index),
+        },
         children: [
-          el("span", { class: "event-page-tab-number", text: String(index + 1) }),
-          el("span", { class: "event-page-tab-title", text: page.name.trim() || `페이지 ${index + 1}` }),
+          el("span", { class: "evt-page-segment-number", text: String(index + 1) }),
+          el("span", { class: "evt-page-segment-title", text: page.name.trim() || `페이지 ${index + 1}` }),
           ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
-          pageValidationBadge(page.id, validation),
-          el("span", {
-            class: "event-page-tab-cond",
-            attrs: { style: "display: none;" },
-            text: pageTabConditionText(page),
-            dataset: { testid: `event-page-tab-cond-${index + 1}` },
-          }),
         ],
-        on: { click: () => editorState.set({ selectedEventPageId: page.id }) },
+        on: {
+          click: (event) => {
+            const button = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+            const container = button?.parentElement;
+            container?.querySelectorAll<HTMLElement>(".evt-page-segment").forEach((node) => {
+              const active = node === button;
+              node.classList.toggle("active", active);
+              node.setAttribute("aria-pressed", active ? "true" : "false");
+              node.setAttribute("aria-selected", active ? "true" : "false");
+            });
+            editorState.set({ selectedEventPageId: page.id });
+          },
+        },
       })
     );
   });
   pageButtons.append(
     el("button", {
-      class: "btn page-add event-page-tab-add",
+      class: "btn evt-page-segment-add",
       text: "+",
       attrs: { type: "button", title: "새 페이지 추가", "aria-label": "새 페이지 추가" },
-      dataset: { testid: "event-page-tab-add" },
+      dataset: { testid: "evt-page-add" },
       on: { click: () => addEventPage(mapId, ev.id) },
     })
   );
@@ -164,24 +176,6 @@ export function renderClassicPageTabStrip(
   );
 
   return pageButtons;
-}
-
-function pageValidationBadge(pageId: string, validation?: EventDraftValidation): HTMLElement {
-  const issues = validation?.issues.filter((issue) => issue.pageId === pageId) ?? [];
-  const errors = issues.filter((issue) => issue.severity === "error").length;
-  const warnings = issues.filter((issue) => issue.severity === "warning").length;
-  const count = errors + warnings;
-  return el("span", {
-    class: `event-page-validation-badge${errors > 0 ? " error" : warnings > 0 ? " warning" : " hidden"}`,
-    text: "",
-    attrs: { "aria-label": count > 0 ? `페이지 검사 문제 ${count}개` : "페이지 검사 문제 없음" },
-    dataset: {
-      testid: `event-page-validation-badge-${pageId}`,
-      errors: String(errors),
-      warnings: String(warnings),
-      label: errors > 0 ? `!${errors}` : warnings > 0 ? `△${warnings}` : "",
-    },
-  });
 }
 
 function pageTabConditionText(page: EventPage): string {
@@ -725,7 +719,75 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       }),
     })
   );
-  return wrap;
+  return wrapPageSettingsAsAccordion(wrap, page, conditions);
+}
+
+function wrapPageSettingsAsAccordion(
+  source: HTMLElement,
+  page: EventPage,
+  conditions: EventPageCondition[],
+): HTMLElement {
+  const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
+  const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
+  const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
+  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap']"));
+  const groups = [
+    { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", open: true, nodes: look },
+    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, open: false, nodes: when },
+    { slug: "move", title: "움직임과 속도", summary: page.movement.type, open: false, nodes: move },
+    { slug: "memory", title: "기억과 정리", summary: page.overlapForbidden ? "중복 실행 방지" : "중복 허용", open: false, nodes: memory },
+  ] as const;
+  const rail = el("div", {
+    class: "event-editor-settings-accordion",
+    dataset: { testid: "event-editor-settings-accordion" },
+  });
+  const claimed = new Set<HTMLElement>();
+  for (const group of groups) {
+    const body = el("div", { class: "event-editor-settings-accordion-body" });
+    for (const node of group.nodes) {
+      const closestHost = node.closest(".event-page-props > *");
+      const host = node.parentElement === source
+        ? node
+        : closestHost instanceof HTMLElement
+          ? closestHost
+          : node;
+      if (claimed.has(host) || host.parentElement !== source) continue;
+      claimed.add(host);
+      body.append(host);
+    }
+    rail.append(
+      el("details", {
+        class: `event-editor-settings-accordion-group${group.open ? " is-open" : ""}`,
+        attrs: group.open ? { open: "" } : {},
+        dataset: { testid: `evt-rail-group-${group.slug}` },
+        children: [
+          el("summary", {
+            class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
+            children: [
+              el("span", { class: "event-editor-settings-accordion-title", text: group.title }),
+              el("span", { class: "event-editor-settings-accordion-meta", text: group.summary }),
+            ],
+          }),
+          body,
+        ],
+      })
+    );
+  }
+  Array.from(source.children).forEach((child) => {
+    if (!(child instanceof HTMLElement) || child === rail) return;
+    rail.lastElementChild?.querySelector(".event-editor-settings-accordion-body")?.append(child);
+  });
+  rail.querySelectorAll("details").forEach((node) => {
+    if (node.classList.contains("event-editor-settings-accordion-group")) return;
+    const replacement = el("div", {
+      class: node.className,
+      dataset: { ...node.dataset },
+    });
+    Array.from(node.childNodes).forEach((child) => replacement.append(child));
+    node.replaceWith(replacement);
+  });
+  source.replaceChildren(rail);
+  return source;
 }
 
 const CONDITION_BADGE_LIMIT = 3;
