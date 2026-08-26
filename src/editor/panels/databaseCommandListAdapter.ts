@@ -110,12 +110,10 @@ function renderEmptyCommandLine(actions: CommandListActions, pickerContext?: M2R
     openEventCommandPicker({
       title: "공통 이벤트 명령",
       context: pickerContext,
-      onSelect: (command, closePicker) => {
+      onSelect: (command) => {
         openNewEventCommandDialog(command, (editedCommand) => {
           actions.addCommand([], editedCommand);
-          closePicker();
         });
-        return { closePicker: false };
       },
     });
   };

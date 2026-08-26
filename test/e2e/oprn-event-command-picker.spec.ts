@@ -58,17 +58,18 @@ test("storyboard CTA opens the command picker and authors the first command", as
   await expect(dialog.locator("textarea")).toBeVisible();
   await expect(dialog.getByRole("button", { name: "확인" })).toBeVisible();
 
-  // 취소는 피커를 살려 둔다 — 잘못 고른 명령 하나로 팔레트가 닫히면 저작이 끊긴다.
+  // 한 레이어: 명령을 고르면 피커는 닫힌다. 취소하면 아무것도 남기지 않고 스토리보드로 돌아온다.
   await dialog.locator("textarea").fill("취소될 대사");
   await dialog.getByTestId("event-command-edit-cancel").click();
   await expect(dialog).toBeHidden();
-  await expect(picker).toBeVisible();
+  await expect(page.getByTestId("event-command-picker")).toHaveCount(0);
   await expect(editor.getByTestId("event-command-header")).toContainText("0개");
 
-  const secondDialog = await pickCommand(page, picker, "문장 표시...");
+  const secondPicker = await openCommandPicker(page, "storyboard-cta");
+  const secondDialog = await pickCommand(page, secondPicker, "문장 표시...");
   await secondDialog.locator("textarea").fill("스토리보드 첫 대사");
   await secondDialog.getByTestId("event-command-edit-ok").click();
-  await expect(picker).toBeHidden();
+  await expect(secondPicker).toBeHidden();
 
   const firstCard = editor.getByTestId("event-storyboard-card-0");
   await expect(firstCard).toBeVisible();
