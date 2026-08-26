@@ -106,8 +106,8 @@
   border: 1px solid rgba(42, 37, 33, 0.1);
   border-radius: 16px;
   box-shadow: 0 10px 32px rgba(60, 48, 32, 0.12);
-  max-width: min(260px, 28%);
-  width: min(260px, 28%);
+  max-width: clamp(360px, 38vw, 520px);
+  width: clamp(360px, 38vw, 520px);
 }
 
 .ai-chat-send {
