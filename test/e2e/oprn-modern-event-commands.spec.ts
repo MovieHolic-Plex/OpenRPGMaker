@@ -11,7 +11,7 @@ import { openCommandPicker, openMapEventEditor, openPickerTab, pickerGrid } from
 
 const MODERN_COMMAND_TABS = [
   { label: "카메라 제어...", tab: 3, group: "화면 효과" },
-  { label: "고급 대화...", tab: 1, group: "대화" },
+  { label: "고급 대화...", tab: 1, group: "말하기" },
   { label: "UI 명령...", tab: 4, group: "도구" },
   { label: "데이터 조회...", tab: 4, group: "도구" },
 ] as const satisfies readonly { readonly label: string; readonly tab: 1 | 2 | 3 | 4; readonly group: string }[];

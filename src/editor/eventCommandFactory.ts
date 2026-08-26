@@ -1,5 +1,7 @@
 import type { Command } from "@/project/types";
 import { createDefaultM2Fields, M2_COMMAND_CATALOG, m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { store } from "@/project/store";
+import { defaultMoveRoute, defaultShopItemIds } from "./eventCommands/quickAuthoringDefaults";
 
 export function newCommand(kind: Command["kind"]): Command {
   switch (kind) {
@@ -42,7 +44,8 @@ export function newCommand(kind: Command["kind"]): Command {
     case "transfer":
       return { kind: "transfer", mapId: "", x: 0, y: 0, direction: "retain", fade: "black" };
     case "moveEvent":
-      return { kind: "moveEvent", eventId: "", route: { moves: [], repeat: false } };
+      // 기본 경로는 한 걸음이다 — 「이동 명령 없음」 무대로 열지 않는다.
+      return { kind: "moveEvent", eventId: "", route: defaultMoveRoute() };
     case "setEventGraphicPattern":
       return { kind: "setEventGraphicPattern", eventId: "", pattern: 0 };
     case "changeTile":
@@ -132,7 +135,8 @@ export function newCommand(kind: Command["kind"]): Command {
     case "shop":
       return {
         kind: "shop",
-        itemIds: [],
+        // 첫 화면부터 잡화점 진열이 깔린다 — 판매 목록 0개 상점은 없다.
+        itemIds: [...defaultShopItemIds(store.getCurrent())],
         allowSell: true,
         quantityMode: "single",
         shopType: "normal",

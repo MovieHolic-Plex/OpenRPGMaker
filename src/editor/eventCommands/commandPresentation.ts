@@ -8,8 +8,12 @@ import {
 import type { M2CommandPickerPage } from "@/project/eventCommands/m2PickerLayout";
 import {
   M2_PICKER_BATTLE_GROUP,
+  M2_PICKER_FLOW_GROUP,
   M2_PICKER_GROWTH_GROUP,
   M2_PICKER_PARTY_GROUP,
+  M2_PICKER_SOUND_GROUP,
+  M2_PICKER_SPEAK_GROUP,
+  M2_PICKER_TRADE_GROUP,
 } from "@/project/eventCommands/m2PickerLayout";
 
 export type CommandPresentationDescriptor = Readonly<{
@@ -25,22 +29,23 @@ export type CommandPresentationDescriptor = Readonly<{
 }>;
 
 const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
-  dialogue: "대화/입력",
-  controlFlow: "조건/흐름",
-  state: "스위치/변수",
-  time: "시간/생활",
+  // 탭 1 가족도 카탈로그 행과 같은 저작면 어휘를 쓴다.
+  dialogue: M2_PICKER_SPEAK_GROUP,
+  controlFlow: M2_PICKER_FLOW_GROUP,
+  state: M2_PICKER_FLOW_GROUP,
+  time: M2_PICKER_FLOW_GROUP,
   map: "맵/이동",
   // 탭 2 그룹은 m2 카탈로그 행과 같은 어휘를 쓴다 — 한 작업면이 헤딩 여럿으로 쪼개지지 않게.
   battle: M2_PICKER_BATTLE_GROUP,
   actor: M2_PICKER_GROWTH_GROUP,
-  economy: "아이템/경제",
+  economy: M2_PICKER_TRADE_GROUP,
   social: M2_PICKER_GROWTH_GROUP,
   // 필드 몬스터 등장/제거는 전투 준비다 — 파티 명부가 아니다.
   monster: M2_PICKER_BATTLE_GROUP,
   follower: M2_PICKER_PARTY_GROUP,
   atmosphere: "화면/연출",
-  media: "미디어",
-  commerce: "상점/시설",
+  media: M2_PICKER_SOUND_GROUP,
+  commerce: M2_PICKER_TRADE_GROUP,
   system: "시스템/고급",
   compatibility: "호환/고급",
 };

@@ -20,7 +20,8 @@ describe("m2 event command catalog", () => {
     expect(pdfEntries).toHaveLength(108);
     expect(M2_COMMAND_CATALOG).toHaveLength(125);
     expect(new Set(M2_COMMAND_CATALOG.map((entry) => entry.id)).size).toBe(125);
-    expect(pageCount(1)).toBe(35);
+    // 주석은 탭 1 저작면의 1급 카드가 아니다 — 시스템·도구 탭으로 옮겼다.
+    expect(pageCount(1)).toBe(34);
     expect(pageCount(2)).toBeGreaterThan(0);
     expect(pageCount(3)).toBeGreaterThan(0);
     expect(pdfEntries.filter((entry) => entry.pickerPage === 4).length).toBeGreaterThan(0);
@@ -105,7 +106,6 @@ describe("m2 event command catalog", () => {
       "Fadeout BGM",
       "Play SE",
       "Conditional Branch",
-      "Comment",
       "Erase Event",
       // 2026-08-26 IA 수리: 흐름·시간·입력·BGM 기억은 시스템 탭이 아니라 탭 1 저작면이다.
       "Control Timer",
@@ -119,18 +119,20 @@ describe("m2 event command catalog", () => {
       "Play Memorized BGM",
       ])
     );
-    expect(pageOneRows).toHaveLength(30);
-    expect(pageOneGroupsByTitle.get("Show Text")).toBe("대화/입력");
-    expect(pageOneGroupsByTitle.get("Control Switches")).toBe("조건/흐름");
-    expect(pageOneGroupsByTitle.get("Conditional Branch")).toBe("조건/흐름");
-    expect(pageOneGroupsByTitle.get("Transfer Player")).toBe("맵/이동");
-    expect(pageOneGroupsByTitle.get("Erase Event")).toBe("맵/이동");
-    expect(pageOneGroupsByTitle.get("Change Gold")).toBe("보상/상점");
+    expect(pageOneRows).toHaveLength(29);
+    // 탭 1 헤딩은 RM 분류명이 아니라 저작면이다: 말하기 / 고르기 / 옮기기 / 거래 / 흐름 / 소리.
+    expect(pageOneGroupsByTitle.get("Show Text")).toBe("말하기");
+    expect(pageOneGroupsByTitle.get("Show Choices")).toBe("고르기");
+    expect(pageOneGroupsByTitle.get("Control Switches")).toBe("흐름");
+    expect(pageOneGroupsByTitle.get("Conditional Branch")).toBe("흐름");
+    expect(pageOneGroupsByTitle.get("Transfer Player")).toBe("옮기기");
+    expect(pageOneGroupsByTitle.get("Erase Event")).toBe("옮기기");
+    expect(pageOneGroupsByTitle.get("Change Gold")).toBe("거래");
     expect(pageOneGroupsByTitle.get("Play BGM")).toBe("소리");
     expect(pageOneRows.map((entry) => entry.title)).not.toContain("Change EXP");
     expect(pageOneRows.map((entry) => entry.title)).not.toContain("Change System BGM");
     expect(new Set(pageOneRows.map((entry) => entry.pickerGroup))).toEqual(
-      new Set(["대화/입력", "조건/흐름", "보상/상점", "맵/이동", "소리"])
+      new Set(["말하기", "고르기", "옮기기", "거래", "흐름", "소리"])
     );
     for (const page of [1, 2, 3, 4] as const) {
       expect(new Set(mapRows.filter((entry) => entry.pickerPage === page).map((entry) => entry.pickerGroup)).size).toBeGreaterThan(

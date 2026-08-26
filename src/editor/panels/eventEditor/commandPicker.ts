@@ -14,7 +14,7 @@ import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/project/eventCommands/m2PickerL
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
-import { groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
+import { groupHeadingText, groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 import { nativeCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import {
@@ -512,11 +512,12 @@ function renderCommandGrid(
     if (options.showGroupHeadings !== false && entry.group !== currentGroup) {
       currentGroup = entry.group;
       const visual = groupVisual(entry.group);
-      // 아이콘은 ::before(attr(data-glyph)) 로 — 헤딩 textContent 는 그룹명 그대로 유지(e2e toHaveText 호환).
+      // 아이콘은 ::before(attr(data-glyph)) 로 — 헤딩 textContent 는 작업면 그룹명 그대로.
+      // 리스트 행 배지 라벨(visual.label)과 달리, 피커 헤딩은 언제나 그룹 이름을 쓴다.
       grid.append(
         el("div", {
           class: "event-command-picker-group-heading",
-          text: visual.label,
+          text: groupHeadingText(entry.group),
           dataset: { category: visual.key, glyph: visual.glyph },
         })
       );
