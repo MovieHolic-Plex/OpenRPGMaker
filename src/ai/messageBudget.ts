@@ -57,7 +57,16 @@ function compactUserParts(parts: ContentPart[]): ContentPart[] {
  * - 시스템 프롬프트는 항상 유지.
  * - 최근 KEEP_RECENT_MESSAGES 개는 무압축.
  * - 그 밖의 user/tool 메시지는 이미지 제거 / 툴 결과 요약.
- * - 그래도 초과하면 오래된 비시스템 메시지를 통째로 버린다(시스템·최근 2개는 보존).
+ * - 그래도 초과하면 최근 창 안의 이미지까지 버린다(지시 문장은 남는다).
+ * - 마지막 수단으로 오래된 assistant/tool 메시지를 짝과 함께 버린다.
+ *
+ * **user 메시지는 절대 버리지 않는다.** 예전 구현은 예산 초과 시 `index > 0` 인 첫 메시지를
+ * 지웠는데 그게 곧 사용자 지시였다. 짧은 대화(5개)에서는 최근 창(6개)이 전체를 덮어
+ * 1차 압축이 아무것도 하지 않고, 곧바로 사용자 지시가 삭제됐다. 실측(2026-08-26): 맵 이미지가
+ * 실린 첫 요청이 예산을 넘겨 user 턴이 사라지고 system → assistant(tool_calls) 순서가 되어
+ * Cloud Code Assist 가 400 `Please ensure that function call turn comes immediately after a
+ * user turn or after a function response turn` 로 거부했다. 지시를 잃는 것은 예산을 넘기는
+ * 것보다 나쁘다 — 이미지를 먼저 버리고, 그래도 안 되면 assistant/tool 을 버린다.
  */
 export function compactMessagesForRequest(
   messages: readonly ChatMessage[],
@@ -81,11 +90,30 @@ export function compactMessagesForRequest(
     if (totalMessagesCharLength(result) <= budgetChars) return result;
   }
 
-  // 2차: 여전히 초과면 오래된 비시스템 메시지 제거 (시스템·최근 2개 보존).
-  while (totalMessagesCharLength(result) > budgetChars && result.length > 3) {
-    const dropIndex = result.findIndex((_entry, index) => index > 0 && index < result.length - 2);
+  // 2차: 최근 창 안의 이미지도 버린다 — 오래된 것부터. 비전 이미지는 재생성할 수 있지만
+  // 사용자 지시는 재생성할 수 없다.
+  for (let index = 1; index < result.length; index += 1) {
+    const message = result[index];
+    if (message.role !== "user" || !Array.isArray(message.content)) continue;
+    const stripped = compactUserParts(message.content);
+    if (stripped.length === message.content.length) continue;
+    message.content = stripped;
+    if (totalMessagesCharLength(result) <= budgetChars) return result;
+  }
+
+  // 3차: 여전히 초과면 오래된 assistant/tool 메시지를 버린다. user 는 건너뛴다.
+  // assistant 가 툴을 호출했다면 그 응답(tool)도 같이 버려야 짝 없는 function response 가
+  // 남지 않는다 — 그것도 같은 400 을 부른다.
+  while (totalMessagesCharLength(result) > budgetChars) {
+    const dropIndex = result.findIndex((entry, index) => (
+      index > 0 && index < result.length - 2 && entry.role !== "user"
+    ));
     if (dropIndex < 0) break;
-    result.splice(dropIndex, 1);
+    const dropped = result.splice(dropIndex, 1)[0];
+    for (const call of dropped?.tool_calls ?? []) {
+      const paired = result.findIndex((entry) => entry.role === "tool" && entry.tool_call_id === call.id);
+      if (paired > 0) result.splice(paired, 1);
+    }
   }
   return result;
 }

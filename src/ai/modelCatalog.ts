@@ -110,8 +110,12 @@ const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
  * gateway catalog. Keep the first item equal to the provider default.
  */
 const OH_MY_PI_PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
+  // `gemini-3.7-flash-high` 는 여기 없다 — 실측(2026-08-26) 결과 Cloud Code Assist 가 그 ID 를
+  // 404 `Requested entity was not found` 로 거부한다. 카탈로그에 그 이름이 있는 것은 **cursor**
+  // 제공자 모델(`api: cursor-agent`)이고, Antigravity 에서는 `gemini-3.7-flash` 의
+  // `thinking.effortRouting.high` 대상일 뿐 독립 모델이 아니다. 같은 이유로 `-medium`/`-low` 도
+  // 노출하지 않는다.
   "google-antigravity": [
-    "gemini-3.7-flash-high",
     "gemini-3.7-flash",
     "gemini-3.1-pro",
   ],
@@ -140,7 +144,7 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 authMode 의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * 공장 기본은 Antigravity 의 gemini-3.7-flash-high — 모든 모델 슬롯이 이 값을 기본으로 쓴다
+ * 공장 기본은 Antigravity 의 gemini-3.7-flash — 모든 모델 슬롯이 이 값을 기본으로 쓴다
  * (감독 지시 2026-08-26, 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
  * Codex 카탈로그 첫 항목은 gpt-5.6-sol.
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
@@ -175,7 +179,15 @@ export function isModelValidForAuthMode(
    // — 이 파일이 인용한 실측 장애(옛 기본값 z-ai/glm-5.2-ultrafast 가 localStorage 에 남아
   // 400)와 같은 종류다. 그래서 gemini 네임스페이스만 통과시킨다. 카탈로그를 화이트리스트로
   // 쓰지 않는 이유는 그대로다: 사용자가 새 gemini 변형을 직접 입력하는 것은 정상 사용이다.
-  if (provider === DEFAULT_OH_MY_PI_PROVIDER) return wanted.startsWith("gemini");
+  if (provider === DEFAULT_OH_MY_PI_PROVIDER) {
+    // 사고 강도 변형 ID 는 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는 독립 모델이
+    // 아니라 `thinking.effortRouting` 의 대상 이름이고, 실제로 보내면 Cloud Code Assist 가
+    // 404 로 거부한다(실측 2026-08-26: `gemini-3.7-flash-high` → 404,
+    // `gemini-3.7-flash`·`gemini-3.1-pro` → 200). 거부해야 저장된 값이 기본값으로 교정되므로,
+    // 잘못된 기본값을 한 번 받아 간 사용자의 localStorage 가 스스로 낫는다.
+    if (/-(?:high|medium|low)$/u.test(wanted)) return false;
+    return wanted.startsWith("gemini");
+  }
   if (provider !== "openai-codex") return true;
   return CHATGPT_OAUTH_MODELS.some((group) => group.models.some((id) => id.toLowerCase() === wanted));
 }

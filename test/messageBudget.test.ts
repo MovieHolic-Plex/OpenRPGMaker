@@ -131,4 +131,49 @@ describe("compactMessagesForRequest", () => {
     const out = compactMessagesForRequest(messages);
     expect(totalMessagesCharLength(out)).toBeLessThanOrEqual(REQUEST_MESSAGE_CHAR_BUDGET);
   });
+
+  // 실측 회귀(2026-08-26): 짧은 대화에서 예산을 넘기면 예전 구현이 사용자 지시를 제일 먼저
+  // 삭제했고, system → assistant(tool_calls) 순서가 되어 Cloud Code Assist 가 400
+  // `function call turn comes immediately after a user turn` 으로 턴을 죽였다.
+  it("예산을 넘겨도 사용자 지시를 버리지 않고 이미지를 먼저 버린다", () => {
+    const messages: ChatMessage[] = [
+      { role: "system", content: "s".repeat(12_000) },
+      userWithImage("빈 풀밭에 3x3 꽃밭을 깔아줘", 60_000),
+      { role: "assistant", content: null, tool_calls: [{ id: "c1", type: "function", function: { name: "get_map_region", arguments: "{}" } }] },
+      { role: "tool", tool_call_id: "c1", content: JSON.stringify({ ok: true, summary: "영역" }) },
+    ];
+
+    const out = compactMessagesForRequest(messages);
+
+    expect(totalMessagesCharLength(out)).toBeLessThanOrEqual(REQUEST_MESSAGE_CHAR_BUDGET);
+    // 지시 문장은 살아 있다.
+    const userTurn = out.find((message) => message.role === "user");
+    expect(userTurn, "user 턴이 삭제되면 안 된다").toBeDefined();
+    expect(JSON.stringify(userTurn?.content)).toContain("3x3 꽃밭");
+    // 이미지는 버려졌다.
+    expect(JSON.stringify(userTurn?.content)).not.toContain("data:image");
+    // 시스템 다음 턴은 user 여야 한다 — Gemini 의 요구사항이다.
+    expect(out[1]?.role).toBe("user");
+  });
+
+  it("assistant 를 버릴 때 짝 없는 tool 응답을 남기지 않는다", () => {
+    const messages: ChatMessage[] = [
+      { role: "system", content: "s".repeat(30_000) },
+      { role: "user", content: "지시" },
+      { role: "assistant", content: null, tool_calls: [{ id: "c1", type: "function", function: { name: "a", arguments: "{}" } }] },
+      { role: "tool", tool_call_id: "c1", content: "x".repeat(20_000) },
+      { role: "assistant", content: null, tool_calls: [{ id: "c2", type: "function", function: { name: "b", arguments: "{}" } }] },
+      { role: "tool", tool_call_id: "c2", content: "y".repeat(20_000) },
+      { role: "user", content: "다음 지시" },
+    ];
+
+    const out = compactMessagesForRequest(messages, 40_000);
+
+    const callIds = new Set(out.flatMap((message) => (message.tool_calls ?? []).map((call) => call.id)));
+    for (const message of out) {
+      if (message.role !== "tool") continue;
+      expect(callIds.has(message.tool_call_id ?? ""), `짝 없는 tool 응답: ${message.tool_call_id}`).toBe(true);
+    }
+    expect(out.filter((message) => message.role === "user")).toHaveLength(2);
+  });
 });
