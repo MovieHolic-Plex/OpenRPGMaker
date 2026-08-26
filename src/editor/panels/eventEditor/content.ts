@@ -45,6 +45,7 @@ import {
   renderEventNameControl,
   renderEventPageProps,
   renderPageCommandCatalog,
+  renderPageTabs,
 } from "./pageProps";
 import type { CommandListActions } from "./types";
 import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
@@ -265,6 +266,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   settingsColumn.append(settingsMain);
   settingsColumn.querySelectorAll("details").forEach((node) => {
     if (node.classList.contains("event-editor-settings-accordion-group")) return;
+    if (
+      node.dataset.testid === "event-schedule-editor"
+      || node.dataset.testid === "event-schedule-section"
+      || node.closest("[data-testid='event-schedule-editor'], [data-testid='event-schedule-section']")
+    ) return;
     const replacement = el("div", {
       class: node.className,
       dataset: Object.fromEntries(
@@ -297,6 +303,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   section.append(
     eventCard,
+    el("div", {
+      class: "event-editor-pagebar",
+      children: [renderPageTabs(mapId, ev, activePage)],
+    }),
     workbench,
     ...(validationControl ? [validationControl] : [])
   );

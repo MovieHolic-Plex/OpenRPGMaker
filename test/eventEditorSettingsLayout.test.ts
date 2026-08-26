@@ -64,7 +64,7 @@ describe("event editor settings column layout", () => {
     const card = host.querySelector<HTMLElement>(".event-editor-card");
     expect(card).toBeTruthy();
     expect(card?.parentElement).toBe(host.querySelector(".event-editor"));
-    expect(card?.nextElementSibling?.classList.contains("event-editor-workbench")).toBe(true);
+    expect(card?.nextElementSibling?.classList.contains("event-editor-pagebar")).toBe(true);
     expect(card.querySelector(".event-editor-card-sprite")).toBeTruthy();
     expect(card.querySelector(".event-editor-top-strip")).toBeTruthy();
     expect(card.querySelector("[data-testid='event-position-controls']")).toBeTruthy();

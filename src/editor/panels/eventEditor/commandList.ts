@@ -162,10 +162,16 @@ function renderCommandItem(
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
   let inspectTimer = 0;
+  const deferInspect = typeof requestAnimationFrame === "function" && typeof document !== "undefined" && !!document.body;
   head.addEventListener("click", () => {
     selectCommandLine(item);
-    window.clearTimeout(inspectTimer);
-    inspectTimer = window.setTimeout(() => {
+    if (!deferInspect) {
+      showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+      return;
+    }
+    if (inspectTimer) globalThis.clearTimeout(inspectTimer);
+    inspectTimer = globalThis.setTimeout(() => {
+      inspectTimer = 0;
       showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
     }, 280);
   });
@@ -181,7 +187,7 @@ function renderCommandItem(
   });
   head.addEventListener("dblclick", (event) => {
     if (event.target instanceof Element && event.target.closest(".cmd-actions, .cmd-drag-handle")) return;
-    window.clearTimeout(inspectTimer);
+    if (inspectTimer) globalThis.clearTimeout(inspectTimer);
     event.preventDefault();
     event.stopPropagation();
     selectCommandLine(item);

@@ -135,6 +135,11 @@ export function renderClassicPageTabStrip(
         children: [
           el("span", { class: "evt-page-segment-number", text: String(index + 1) }),
           el("span", { class: "evt-page-segment-title", text: page.name.trim() || `페이지 ${index + 1}` }),
+          el("span", {
+            class: "evt-page-segment-cond",
+            text: pageTabConditionText(page),
+            dataset: { testid: `evt-page-cond-${index + 1}` },
+          }),
           ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
         ],
         on: {
