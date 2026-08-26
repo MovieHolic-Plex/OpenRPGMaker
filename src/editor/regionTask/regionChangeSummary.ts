@@ -11,6 +11,7 @@
 //
 // 순수 함수 — store/DOM 의존 없음.
 import { eventDisplayName } from "@/editor/eventMarkerUx";
+import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import type { RegionRect } from "./clipToRegion";
 import { inRegion } from "./clipToRegion";
@@ -24,8 +25,8 @@ export interface RegionEventChange {
   /** 맵 좌표(절대). 영역 로컬 좌표가 필요하면 호출부가 region 으로 환산한다. */
   readonly x: number;
   readonly y: number;
-  /** 목록 앞에 붙일 이모지 — 무엇이 놓이는지 한눈에. */
-  readonly icon: string;
+  /** 목록 앞에 붙일 아이콘 — 무엇이 놓이는지 한눈에. */
+  readonly icon: SvgIconName;
 }
 
 const KIND_LABEL: Readonly<Record<RegionEventChangeKind, string>> = {
@@ -40,22 +41,22 @@ export function regionEventChangeLabel(change: RegionEventChange): string {
 }
 
 /**
- * 이벤트 종류를 이름·명령에서 추정해 이모지를 고른다.
+ * 이벤트 종류를 이름·명령에서 추정해 아이콘을 고른다.
  * 정확한 분류가 목적이 아니라 목록에서 서로 구분되게 하는 것이 목적이다 —
- * 못 알아보면 일반 이벤트(📍)로 둔다.
+ * 못 알아보면 일반 이벤트(pin)로 둔다.
  */
-function eventIcon(event: GameEvent, name: string): string {
+function eventIcon(event: GameEvent, name: string): SvgIconName {
   const haystack = `${event.id} ${name}`.toLowerCase();
-  if (/(chest|보물|상자)/.test(haystack)) return "🎁";
-  if (/(save|세이브|저장)/.test(haystack)) return "💾";
-  if (/(trap|함정)/.test(haystack)) return "⚠️";
-  if (/(door|transfer|입구|출구|계단|포탈)/.test(haystack)) return "🚪";
-  if (/(sign|표지판|제단|사당)/.test(haystack)) return "🪧";
-  if (/(shop|상점|상인|잡화)/.test(haystack)) return "🛒";
-  if (/(npc|villager|주민|경비|손님|guard)/.test(haystack)) return "🧑";
+  if (/(chest|보물|상자)/.test(haystack)) return "chest";
+  if (/(save|세이브|저장)/.test(haystack)) return "save";
+  if (/(trap|함정)/.test(haystack)) return "warning";
+  if (/(door|transfer|입구|출구|계단|포탈)/.test(haystack)) return "door";
+  if (/(sign|표지판|제단|사당)/.test(haystack)) return "sign";
+  if (/(shop|상점|상인|잡화)/.test(haystack)) return "shop";
+  if (/(npc|villager|주민|경비|손님|guard)/.test(haystack)) return "npc";
   // sprite 가 있으면 캐릭터로 본다(대부분 NPC).
-  if (event.sprite) return "🧑";
-  return "📍";
+  if (event.sprite) return "npc";
+  return "pin";
 }
 
 /** 두 이벤트가 좌표 말고 내용이 같은가. 좌표만 다르면 "옮겨짐"으로 본다. */

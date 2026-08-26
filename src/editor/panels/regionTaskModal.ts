@@ -14,6 +14,7 @@ import {
 } from "@/editor/regionTask/suggestedCommands";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
+import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import { formatRegionTileStatsCompact, summarizeRegionTiles } from "@/editor/regionTask/regionTileStats";
 import {
   regionEventChangeLabel,
@@ -139,8 +140,11 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   const chip = el("span", {
     class: "region-task-chip",
-    text: `▦ (${region.x},${region.y}) ${region.width}×${region.height}`,
     dataset: { testid: "region-task-chip" },
+    children: [
+      makeSvgIcon("select"),
+      el("span", { text: `(${region.x},${region.y}) ${region.width}×${region.height}` }),
+    ],
   });
   // F: 영역 통계 칩 — 현재 타일 분포 컴팩트 표시. 빈 영역이면 숨김.
   const statsText = (() => {
@@ -171,15 +175,15 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   }) as HTMLButtonElement;
   const closeButton = el("button", {
     class: "region-task-close",
-    text: "✕",
     attrs: { type: "button", "aria-label": "닫기" },
     dataset: { testid: "region-task-close" },
+    children: [makeSvgIcon("close")],
     on: { click: () => discardAndClose() },
   });
   // 로그 버튼은 헤더에서 「고급」 안으로 옮겼다 — 초보자에게 첫 화면에 보일 이유가 없다.
   const titleRow = el("div", {
     class: "region-task-title-row",
-    children: [el("span", { class: "region-task-title", text: "✦ 영역 작업" })],
+    children: [el("span", { class: "region-task-title", text: "영역 작업" })],
   });
   const header = el("div", {
     class: "region-task-header",
@@ -208,9 +212,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   const makeCommandChip = (command: SuggestedRegionCommand): HTMLElement =>
     el("button", {
       class: "region-task-suggest-chip",
-      text: command.label,
       attrs: { type: "button", title: command.instruction },
       dataset: { testid: `region-suggest-${command.id}` },
+      children: [
+        makeSvgIcon(command.icon),
+        el("span", { class: "region-task-chip-label", text: command.label }),
+      ],
       on: {
         click: () => {
           textarea.value = command.instruction;
@@ -243,9 +250,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     children: categories.map((category) => {
       const chip = el("button", {
         class: "region-task-category-chip",
-        text: `${category.icon} ${category.label}`,
         attrs: { type: "button" },
         dataset: { testid: `region-category-${category.id}` },
+        children: [
+          makeSvgIcon(category.icon),
+          el("span", { class: "region-task-chip-label", text: category.label }),
+        ],
         on: { click: () => showCategory(activeCategoryId === category.id ? null : category.id) },
       });
       categoryChips.set(category.id, chip);
@@ -303,9 +313,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   }) as HTMLButtonElement;
 
   const renderSnapshot = options.renderSnapshot
-    // targetWidth 를 기본 140 → 200 으로 키운다. 미리보기가 결정의 근거인데 너무 작았다.
+    // targetWidth 를 기본 140 → 240 으로 키운다. 단일 A/B 미리보기가 결정의 근거이므로 충분한 해상도로 보여 준다.
     ?? ((project: Project, map: GameMap, rect: RegionRect) =>
-      renderRegionSnapshot(project, map, rect, { targetWidth: 200 }));
+      renderRegionSnapshot(project, map, rect, { targetWidth: 240 }));
   const compareHost = el("div", { class: "region-task-compare-host" });
 
   // 검토 단계에서 입력창 대신 보여 줄 지시 요약 — 무엇을 시켰는지는 남되 자리는 한 줄만 쓴다.
@@ -343,15 +353,17 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   const advancedBody = el("div", { class: "region-task-advanced-body hidden" });
   const advancedToggle = el("button", {
     class: "region-task-advanced-toggle",
-    text: "▸ 고급 (로그 · 부분 적용 · 스탬프)",
     attrs: { type: "button", "aria-expanded": "false" },
     dataset: { testid: "region-task-advanced-toggle" },
+    children: [
+      el("span", { class: "region-task-advanced-chevron" }),
+      el("span", { class: "region-task-advanced-label", text: "고급 (로그 · 부분 적용 · 스탬프)" }),
+    ],
   }) as HTMLButtonElement;
   let advancedPinned = false;
   const setAdvancedOpen = (open: boolean): void => {
     advancedBody.classList.toggle("hidden", !open);
     advancedToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    advancedToggle.textContent = `${open ? "▾" : "▸"} 고급 (로그 · 부분 적용 · 스탬프)`;
   };
   advancedToggle.addEventListener("click", () => {
     const open = advancedBody.classList.contains("hidden");
@@ -546,14 +558,18 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }
       // 이벤트 마커 — 절대 좌표를 영역 로컬 좌표로 환산해 같은 격자에 배치한다.
       // 영역 밖(clipToRegion 이 되돌리기 전 좌표 등)은 격자에 자리가 없으므로 건너뛴다.
+      let eventMarkerIndex = 0;
       for (const change of eventChanges) {
+        eventMarkerIndex += 1;
+        const markerIndex = eventMarkerIndex;
         const lx = change.x - pending.region.x;
         const ly = change.y - pending.region.y;
         if (lx < 0 || ly < 0 || lx >= rw || ly >= rh) continue;
         const marker = el("span", {
           class: "region-task-event-marker",
-          text: change.icon,
+          text: String(markerIndex),
           attrs: { style: `grid-column: ${lx + 1}; grid-row: ${ly + 1};` },
+          dataset: { markerIndex: String(markerIndex) },
         });
         eventMarkersById.set(change.eventId, marker);
         cells.push(marker);
@@ -565,8 +581,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         children: cells,
       });
     };
+    // A/B 토글이 이미 「이전 | 이후」를 이름표로 달고 있으므로 figure 안에 캡션을 또 두지 않는다.
+    // (실측: 캡션을 남기면 숨긴 쪽 figure 가 캡션만 남아 이후 그림 옆에 "이전" 이 떠 있었다.)
     const makeFigure = async (
-      label: string,
       testid: string,
       project: Project,
       figureMap: GameMap | undefined,
@@ -586,26 +603,64 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }
       return el("figure", {
         class: "region-task-compare-figure",
-        children: [body, el("figcaption", { text: label })],
+        children: [body],
       });
     };
     const overlay = changeOverlay();
-    const beforeFigure = await makeFigure("이전", "region-task-before", pending.baseProject, map, null);
+    const beforeFigure = await makeFigure("region-task-before", pending.baseProject, map, null);
     if (!isCurrentExecution(executionId)) return;
-    const afterFigure = await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap, overlay);
+    const afterFigure = await makeFigure("region-task-after", pending.clippedProject, clippedMap, overlay);
     if (!isCurrentExecution(executionId)) return;
-    figures.append(
-      beforeFigure,
-      el("span", { class: "region-task-compare-arrow", text: "→" }),
-      afterFigure,
-    );
+
+    let currentAbView: "before" | "after" = "after";
+    const previewWrapper = el("div", {
+      class: "region-task-preview",
+      dataset: { testid: "region-task-preview", abView: currentAbView },
+    });
+
+    const abBeforeBtn = el("button", {
+      class: "region-task-preview-ab-btn",
+      text: "이전",
+      attrs: { type: "button" },
+      dataset: { testid: "region-task-preview-ab-before" },
+    }) as HTMLButtonElement;
+
+    const abAfterBtn = el("button", {
+      class: "region-task-preview-ab-btn is-active",
+      text: "이후",
+      attrs: { type: "button" },
+      dataset: { testid: "region-task-preview-ab-after" },
+    }) as HTMLButtonElement;
+
+    const setAbView = (view: "before" | "after"): void => {
+      currentAbView = view;
+      previewWrapper.dataset.abView = view;
+      abBeforeBtn.classList.toggle("is-active", view === "before");
+      abAfterBtn.classList.toggle("is-active", view === "after");
+    };
+
+    abBeforeBtn.addEventListener("click", () => setAbView("before"));
+    abAfterBtn.addEventListener("click", () => setAbView("after"));
+
+    const abToggle = el("div", {
+      class: "region-task-preview-ab-toggle",
+      children: [abBeforeBtn, abAfterBtn],
+    });
+
+    const previewStage = el("div", {
+      class: "region-task-preview-stage",
+      children: [beforeFigure, afterFigure],
+    });
+
+    previewWrapper.append(abToggle, previewStage);
+    figures.append(previewWrapper);
     // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
     if (pending.settled || !isCurrentExecution(executionId)) return;
 
     const partialApplyButton = el("button", {
       class: "region-task-partial-apply",
-      text: `✓ 선택 적용`,
+      text: `선택 적용`,
       attrs: { type: "button", title: "선택한 구역만 적용" },
       dataset: { testid: "region-task-partial-apply" },
     }) as HTMLButtonElement;
@@ -637,7 +692,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     const applyButton = el("button", {
       class: "region-task-apply",
-      text: totalChangedCells > 0 ? `✓ 적용 · ${totalChangedCells}칸` : "✓ 적용",
+      text: totalChangedCells > 0 ? `적용 · ${totalChangedCells}칸` : "적용",
       attrs: { type: "button" },
       dataset: { testid: "region-task-apply" },
       on: { click: () => {
@@ -657,9 +712,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 버리기→입력창 찾기→실행 3단계였던 것을 1단계로 줄인다.
     const retryButton = el("button", {
       class: "region-task-retry",
-      text: "↻ 다시 만들기",
       attrs: { type: "button", title: "같은 지시로 다시 생성" },
       dataset: { testid: "region-task-retry" },
+      children: [
+        makeSvgIcon("undo"),
+        el("span", { class: "region-task-action-label", text: "다시 만들기" }),
+      ],
       on: {
         click: () => {
           if (!isCurrentExecution(executionId)) return;
@@ -673,7 +731,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
     const discardButton = el("button", {
       class: "region-task-discard",
-      text: "✕ 버리기",
+      text: "버리기",
       attrs: { type: "button" },
       dataset: { testid: "region-task-discard" },
       on: { click: () => {
@@ -691,7 +749,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       const selectedCells = cellsOf(selectedChunkIds);
       const partial = selectedChunkIds.size < allChunkIds.length;
       partialApplyButton.textContent =
-        selectedCells === 0 ? "✓ 선택 적용" : `✓ 선택한 ${selectedCells}칸만 적용`;
+        selectedCells === 0 ? "선택 적용" : `선택한 ${selectedCells}칸만 적용`;
       partialApplyButton.disabled = selectedCells === 0;
       // 일부만 선택했을 때만 "선택 적용"이 의미가 있다 — 전부 선택이면 아래 「적용」과 동일.
       partialApplyButton.classList.toggle("hidden", !partial);
@@ -723,7 +781,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       overlay?.classList.toggle("is-isolating", chunkId !== null);
     };
 
-    // 변경 목록의 이벤트 행 ↔ 미리보기 마커를 잇는다. setChunkHighlight 와 같은 모양:
+    // 변경 목록의 이벤트 행과 미리보기 마커를 잇는다. setChunkHighlight 와 같은 모양:
     // 지목된 것만 살리고 나머지는 물러난다.
     const setEventHighlight = (eventId: string | null): void => {
       for (const [id, marker] of eventMarkersById) {
@@ -805,14 +863,14 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     const hasNonTileChanges = eventChanges.length > 0 || outsideChanges.length > 0;
     // 목록이 항목별로 세어 주므로 버튼은 단순히 「적용」으로 둔다. 타일만 바뀔 때만 칸 수를
     // 버튼에 남긴다 — 그때는 목록이 없어서 버튼이 유일한 수량 표시다.
-    if (hasNonTileChanges) applyButton.textContent = "✓ 적용";
+    if (hasNonTileChanges) applyButton.textContent = "적용";
     const changeRows: HTMLElement[] = [];
     if (hasNonTileChanges && totalChangedCells > 0) {
       changeRows.push(el("div", {
         class: "region-task-change-row",
         dataset: { testid: "region-task-change-row-tiles" },
         children: [
-          el("span", { class: "region-task-change-icon", text: "🟦" }),
+          el("span", { class: "region-task-change-icon", children: [makeSvgIcon("tile")] }),
           el("span", { class: "region-task-change-text", text: `타일 ${totalChangedCells}칸` }),
         ],
       }));
@@ -823,7 +881,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         attrs: { title: "마우스를 올리면 미리보기에서 이 위치가 표시됩니다", tabindex: "0" },
         dataset: { testid: `region-task-change-row-event-${change.eventId}` },
         children: [
-          el("span", { class: "region-task-change-icon", text: change.icon }),
+          el("span", { class: "region-task-change-icon", children: [makeSvgIcon(change.icon)] }),
           el("span", { class: "region-task-change-text", text: regionEventChangeLabel(change) }),
         ],
       });
@@ -840,7 +898,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         attrs: { title: "이 변경은 선택한 영역 밖입니다 — 적용하면 프로젝트 전체에 반영됩니다" },
         dataset: { testid: `region-task-change-row-outside-${change.kind}` },
         children: [
-          el("span", { class: "region-task-change-icon", text: "⚠️" }),
+          el("span", { class: "region-task-change-icon", children: [makeSvgIcon("warning")] }),
           el("span", { class: "region-task-change-text", text: `${change.label} · 영역 밖` }),
         ],
       }));
@@ -859,7 +917,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         class: `region-task-checkpoint is-${checkpoint.status}`,
         attrs: { title: checkpoint.detail },
         children: [
-          el("span", { class: "region-task-checkpoint-dot", text: checkpoint.status === "done" ? "✓" : "!" }),
+          el("span", {
+            class: "region-task-checkpoint-dot",
+            children: [makeSvgIcon(checkpoint.status === "done" ? "check" : "warning")],
+          }),
           el("span", { text: checkpoint.label }),
         ],
       })),
@@ -1056,16 +1117,20 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       ] : [],
     });
 
+    const reviewCard = el("div", {
+      class: "region-task-review-card",
+      children: [timeline, metricsRow, blockerHost, npcScheduleDecision, issuesHost, roomsHost],
+    });
+
     compareHost.replaceChildren(
-      timeline,
-      metricsRow,
-      blockerHost,
-      npcScheduleDecision,
-      issuesHost,
-      roomsHost,
+      reviewCard,
       figures,
       changeList,
-      el("div", { class: "region-task-compare-actions", children: [applyButton, retryButton, discardButton] }),
+      el("div", {
+        class: "region-task-compare-actions",
+        dataset: { testid: "region-task-compare-actions" },
+        children: [applyButton, retryButton, discardButton],
+      }),
     );
     setStage("review");
     // 결과가 나오면 로그는 접는다 — 결정에 필요한 건 미리보기와 변경 칸 수다.
@@ -1564,13 +1629,13 @@ export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTask
   const view = globalThis as { innerWidth?: number; innerHeight?: number };
   const vw = typeof view.innerWidth === "number" && view.innerWidth > 0 ? view.innerWidth : 1024;
   const vh = typeof view.innerHeight === "number" && view.innerHeight > 0 ? view.innerHeight : 768;
-  // 460: before/after 썸네일(각 200px)과 화살표가 한 줄에 들어가는 폭.
-  const maxWidth = Math.min(460, Math.max(200, vw - margin * 2));
+  // 380: 단일 A/B 전환형 썸네일(targetWidth 240px)과 액션·메타를 담는 슬림한 팝오버 폭.
+  const maxWidth = Math.min(380, Math.max(200, vw - margin * 2));
   const maxHeight = Math.max(160, vh - margin * 2);
 
   panel.style.position = "fixed";
   panel.style.width = `${maxWidth}px`;
-  panel.style.maxWidth = `min(460px, calc(100vw - ${margin * 2}px))`;
+  panel.style.maxWidth = `min(380px, calc(100vw - ${margin * 2}px))`;
   panel.style.maxHeight = `${maxHeight}px`;
   // 임시 배치 후 실측 → 좌/우·위/아래 플립·클램프.
   let left = anchor.x + 12;
