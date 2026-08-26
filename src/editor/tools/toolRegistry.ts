@@ -49,6 +49,7 @@ import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
 import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 import { PROJECT_TOOLS } from "./projectTools";
+import { FIND_TOOLS } from "./discoveryTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -134,6 +135,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
+  FIND_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,

@@ -1,3 +1,5 @@
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 
 test.setTimeout(60_000);
@@ -23,6 +25,11 @@ test("test play opens windowed and toggles fullscreen with Alt+Enter", async ({ 
   await page.getByTestId("mode-play").click();
   const testWindow = page.getByTestId("test-play-window");
   await expect(testWindow).toBeVisible();
+  const titleEvidenceDir = process.env.TITLE_EVIDENCE_DIR;
+  if (titleEvidenceDir) {
+    await mkdir(titleEvidenceDir, { recursive: true });
+    await testWindow.screenshot({ path: path.join(titleEvidenceDir, "title-start-windowed.png") });
+  }
   await expect(testWindow).toHaveAttribute("data-window-mode", "windowed");
   await expect.poll(async () => {
     const box = await testWindow.boundingBox();

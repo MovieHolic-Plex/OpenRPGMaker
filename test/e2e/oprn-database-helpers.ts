@@ -7,12 +7,14 @@ export type DatabaseTabSpec = {
 };
 
 export const DATABASE_TAB_SPECS = [
+  { label: "Overview", slug: "overview", testId: "db-tab-overview" },
   { label: "Actors", slug: "actors", testId: "db-tab-actors" },
   { label: "Classes", slug: "classes", testId: "db-tab-classes" },
   { label: "Skills", slug: "skills", testId: "db-tab-skills" },
   { label: "Items", slug: "items", testId: "db-tab-items" },
   { label: "Equipment", slug: "equipment", testId: "db-tab-equipment" },
   { label: "Enemies", slug: "enemies", testId: "db-tab-enemies" },
+  { label: "Monster Species", slug: "monster-species", testId: "db-tab-monster-species" },
   { label: "Troops", slug: "troops", testId: "db-tab-troops" },
   { label: "Elements", slug: "elements", testId: "db-tab-elements" },
   { label: "States", slug: "states", testId: "db-tab-states" },
@@ -20,7 +22,15 @@ export const DATABASE_TAB_SPECS = [
   { label: "Battle Screen", slug: "battle-screen", testId: "db-tab-battle-screen" },
   { label: "Battle Commands", slug: "battle-commands", testId: "db-tab-battle-commands" },
   { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" },
+  { label: "Crops", slug: "crops", testId: "db-tab-crops" },
+  { label: "Characters", slug: "characters", testId: "db-tab-characters" },
+  { label: "Life Crafting", slug: "life-crafting", testId: "db-tab-life-crafting" },
+  { label: "Daily Weather", slug: "daily-weather", testId: "db-tab-daily-weather" },
+  { label: "Farm Animals", slug: "farm-animals", testId: "db-tab-farm-animals" },
+  { label: "Farm Spatial", slug: "farm-spatial", testId: "db-tab-farm-spatial" },
+  { label: "Life Collections", slug: "life-collections", testId: "db-tab-life-collections" },
   { label: "Tilesets", slug: "tilesets", testId: "db-tab-tilesets" },
+  { label: "Structure Kits", slug: "structure-kits", testId: "db-tab-structure-kits" },
   { label: "Common Events", slug: "common-events", testId: "db-tab-common-events" },
   { label: "System", slug: "system", testId: "db-tab-system" },
   { label: "Terms", slug: "terms", testId: "db-tab-terms" },
@@ -34,6 +44,7 @@ export type DatabaseShellMetrics = {
   readonly modalHeight: number;
   readonly modalWidth: number;
   readonly tabsTop: number;
+  readonly tabsWidth: number;
 };
 
 export type ExportedProject = {
@@ -229,6 +240,7 @@ export async function captureDatabaseShellMetrics(page: Page): Promise<DatabaseS
       modalHeight: Math.round(modalRect.height),
       modalWidth: Math.round(modalRect.width),
       tabsTop: Math.round(tabs.getBoundingClientRect().top),
+      tabsWidth: Math.round(tabs.getBoundingClientRect().width),
     };
   });
 }

@@ -10,11 +10,12 @@
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
-  font: 700 11px/1 "Malgun Gothic", "Segoe UI", sans-serif;
-  gap: 2px;
-  height: 18px;
+  border-radius: 6px;
+  font: 700 12px/1 "Malgun Gothic", "Segoe UI", sans-serif;
+  gap: 6px;
+  height: 30px;
   margin-left: auto;
-  padding: 0 6px;
+  padding: 0 10px;
 }
 
 .database-ai-toggle[aria-expanded="true"] {
@@ -22,13 +23,14 @@
 }
 
 .database-ai-bar {
-  align-items: center;
+  align-items: stretch;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border-default);
-  display: flex;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  display: grid;
   flex: 0 0 auto;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 10px;
+  padding: 14px 16px 16px;
 }
 
 .database-ai-bar[hidden] {
@@ -40,10 +42,68 @@
   border: 1px solid var(--border-default);
   color: var(--text-primary, var(--text-1));
   flex: 1 1 auto;
-  font-size: 12px;
-  height: 24px;
+  border-radius: 7px;
+  font-size: 13px;
+  height: 38px;
   min-width: 0;
-  padding: 0 6px;
+  padding: 0 12px;
+}
+
+.database-ai-intro {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.database-ai-intro strong {
+  color: var(--text-1);
+  font-size: 14px;
+}
+
+.database-ai-intro p {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 3px 0 0;
+}
+
+.database-ai-mark {
+  align-items: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  color: var(--accent);
+  display: flex;
+  flex: 0 0 34px;
+  font-size: 11px;
+  font-weight: 900;
+  height: 34px;
+  justify-content: center;
+}
+
+.database-ai-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-ai-suggestion {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-2);
+  min-height: 30px;
+  padding: 0 10px;
+}
+
+.database-ai-suggestion:hover {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.database-ai-composer {
+  display: flex;
+  gap: 6px;
 }
 
 .database-ai-run,
@@ -58,11 +118,15 @@
   display: inline-flex;
   flex: 0 0 auto;
   font-size: 12px;
-  height: 24px;
+  border-radius: 7px;
+  height: 38px;
   justify-content: center;
   padding: 0 8px;
 }
 
 .database-ai-run {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
   font-weight: 700;
 }

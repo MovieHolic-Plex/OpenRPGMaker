@@ -170,7 +170,7 @@ function parseDiff(value: unknown): ConstructionDiffTotals {
   const integerKeys = [
     "tilesChanged", "eventsAdded", "eventsModified", "eventsRemoved", "mapsAdded", "mapsRemoved",
     "dbRecordsChanged", "tilesetsChanged", "switchesAdded", "variablesAdded", "worldEntitiesAdded",
-    "worldEntitiesModified", "palettePresetsAdded", "palettePresetsModified", "endingsChanged",
+    "worldEntitiesModified", "palettePresetsAdded", "palettePresetsModified", "endingsChanged", "mapPropertiesChanged",
   ] as const;
   rejectUnknownKeys(diff, [...integerKeys, "sessionChanged", "systemChanged"], "constructionOutcome.diff");
   return {
@@ -189,6 +189,9 @@ function parseDiff(value: unknown): ConstructionDiffTotals {
     palettePresetsAdded: nonNegativeInteger(diff, "palettePresetsAdded", "constructionOutcome.diff"),
     palettePresetsModified: nonNegativeInteger(diff, "palettePresetsModified", "constructionOutcome.diff"),
     endingsChanged: nonNegativeInteger(diff, "endingsChanged", "constructionOutcome.diff"),
+    mapPropertiesChanged: Object.prototype.hasOwnProperty.call(diff, "mapPropertiesChanged")
+      ? nonNegativeInteger(diff, "mapPropertiesChanged", "constructionOutcome.diff")
+      : 0,
     sessionChanged: requiredBoolean(diff, "sessionChanged", "constructionOutcome.diff"),
     systemChanged: requiredBoolean(diff, "systemChanged", "constructionOutcome.diff"),
   };

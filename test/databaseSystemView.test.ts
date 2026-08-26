@@ -267,17 +267,15 @@ describe("database system view", () => {
     const menuPreview = findByTestId(host, "db-title-workbench-menu-preview");
     if (!menuPreview) throw new Error("missing menu preview");
     expect(menuPreview.textContent).toContain("새 게임");
-    expect(menuPreview.textContent).toContain("게임 종료");
-    expect(menuPreview.textContent).not.toContain("계속");
+    expect(menuPreview.textContent).toContain("종료");
+    expect(menuPreview.textContent).not.toContain("이어하기");
     expect(menuPreview.childNodes).toHaveLength(2);
   });
 
   it("shows logo fields when presentation is graphic and previews logo", () => {
     const host = renderSystem();
-    // Defaults now ship a crest logo in both mode, so logo controls are already visible.
-    expect(findByTestId(host, "db-field-title-screen-logo")).not.toBeNull();
-    expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBe("oprn-title-logo-crest");
-    expect(findByTestId(host, "db-title-workbench-logo")).not.toBeNull();
+    expect(store.getCurrent().system.titleScreen?.titleGraphic?.mode).toBe("text");
+    expect(findByTestId(host, "db-field-title-screen-logo")).toBeNull();
 
     setSelectValue(host, "db-field-title-screen-presentation", "graphic");
     expect(store.getCurrent().system.titleScreen?.titleGraphic?.mode).toBe("graphic");

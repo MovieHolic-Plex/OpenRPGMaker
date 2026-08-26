@@ -109,7 +109,7 @@ export function renderTitleScreen(
   const options = listTitleMenuOptions(settings, context);
   const clampedIndex = clampTitleMenuIndex(selectedIndex, options.length);
   const title = el("div", {
-    class: "title-screen rm-title-screen",
+    class: "title-screen rm-title-screen rm-title-screen-editorial",
     dataset: { testid: "title-screen" },
   });
   applyTitleScreenBackground(title, backgroundResourceId, project);
@@ -128,6 +128,7 @@ export function renderTitleScreen(
   const menu = renderMenu(settings, options, clampedIndex, showInputHint);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
+  title.append(renderTitleEditorialCopy());
   if (showInputHint) {
     title.append(renderInputHint());
   }
@@ -280,6 +281,24 @@ function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTML
   return nodes;
 }
 
+function renderTitleEditorialCopy(): HTMLElement {
+  return el("div", {
+    class: "rm-title-editorial-copy",
+    children: [
+      el("span", {
+        class: "rm-title-kicker",
+        text: "A NEW ADVENTURE",
+        dataset: { testid: "title-kicker" },
+      }),
+      el("span", {
+        class: "rm-title-subtitle",
+        text: "이야기가 시작되는 곳",
+        dataset: { testid: "title-subtitle" },
+      }),
+    ],
+  });
+}
+
 function renderTitleLogo(
   graphic: NonNullable<TitleScreenSettings["titleGraphic"]>,
   project: Project,
@@ -341,7 +360,7 @@ function renderMenu(
   hintVisible: boolean,
 ): HTMLElement {
   const menu = el("div", {
-    class: "rm-title-menu",
+    class: "rm-title-menu rm-title-menu-open",
     attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
   });
   menu.style.left = logicalX(settings.layout.menuX);

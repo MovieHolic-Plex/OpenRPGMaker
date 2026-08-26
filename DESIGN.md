@@ -162,26 +162,15 @@ Runtime game surfaces use a separate retro presentation layer from the modern ed
 
 ### Runtime title-screen tokens
 
-The default game title screen uses a bright RPG Maker-style pixel field/castle background with separate title ornaments, a classic blue RM-era menu window, a white selection cursor, and a small input hint panel layered on top. These tokens are scoped to `.rm-title-screen` / `.rm-title-menu` UI only.
+The default game title screen is an editorial story opening on the authored 320×240 stage: left-aligned kicker `A NEW ADVENTURE`, display title, subtitle `이야기가 시작되는 곳`, and a text menu with a single indigo selected rail. Size type in logical stage pixels, never viewport `vw`, because the stage is scaled. Do not restore the oversized crest, saturated RM menu window, or technical key-help wall. Legacy `--rm2k3-title-*` names remain only for load-window and older chrome.
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--rm2k3-title-sky-glow` | `rgba(255,255,255,0.22)` | Soft upper title-screen light wash |
-| `--rm2k3-title-vignette` | `rgba(15,77,146,0.12)` | Side vignette over bright title art |
-| `--rm2k3-title-window-hi` | `#356fd4` | Menu window top bevel tone |
-| `--rm2k3-title-window` | `#123c9a` | Primary menu window fill |
-| `--rm2k3-title-window-deep` | `#071e68` | Lower menu window fill |
-| `--rm2k3-title-window-edge` | `#f5fbff` | Bright menu bevel edge |
-| `--rm2k3-title-window-shadow` | `#061038` | Dark menu bevel edge and text outline |
-| `--rm2k3-title-window-mid` | `#7da7ff` | Inner blue bevel line |
-| `--rm2k3-title-highlight` | `#397ddd` | Selected/focused menu row top tone |
-| `--rm2k3-title-highlight-deep` | `#1b54bd` | Selected/focused menu row lower tone |
-| `--rm2k3-title-highlight-ring` | `rgba(255,255,255,0.86)` | Selected row inner highlight |
-| `--rm2k3-title-cursor` | `#ffffff` | White menu selection cursor |
-| `--rm2k3-title-ornament` | `rgba(255,251,236,0.96)` | Title divider ornament strokes |
-| `--rm2k3-title-ornament-shadow` | `rgba(13,57,136,0.58)` | Ornament pixel shadow |
-| `--rm2k3-title-text` | `#ffffff` | Title/menu text |
-| `--rm2k3-title-shadow` | `#06185c` | Title text outline and bevel depth |
+| `--oprn-title-text` | `#f8fafc` | Editorial title and menu text |
+| `--oprn-title-shadow` | `rgba(5,12,28,0.72)` | Soft title depth, not a hard pixel outline |
+| `--accent` | `#4A57D6` | Selected menu rail |
+| `--rm2k3-title-window-shadow` | `#061038` | Load-window text depth only |
+| `--rm2k3-title-highlight-ring` | `rgba(255,255,255,0.86)` | Keyboard focus ring on load slots |
 
 ### Runtime battle tokens
 

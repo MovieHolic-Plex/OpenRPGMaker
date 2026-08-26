@@ -140,6 +140,7 @@ export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
   const npcCount = calls.filter((call) => call.name === "place_npc").length;
   return [
     nounCount("타일", diff.tilesChanged),
+    nounCount("맵 설정", diff.mapPropertiesChanged ?? 0),
     nounCount("맵", diff.mapsAdded),
     nounCount("맵 삭제", diff.mapsRemoved),
     nounCount("NPC", npcCount),

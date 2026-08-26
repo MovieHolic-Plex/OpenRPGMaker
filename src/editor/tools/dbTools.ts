@@ -33,6 +33,10 @@ import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./c
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
+const DATABASE_RECORD_COLLECTIONS = ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "battleAnimations"] as const;
+type DatabaseRecordCollection = (typeof DATABASE_RECORD_COLLECTIONS)[number];
+const DATABASE_UTILITY_COLLECTIONS = ["elements", "terrains", "battleCommands"] as const;
+
 // id 기준으로 배열에 upsert.
 // Serialize concurrent DB writes to prevent lost update (read-modify-write race).
 export let dbWriteQueue: Promise<void> = Promise.resolve();
@@ -51,6 +55,196 @@ function upsertById<T extends { id: string }>(list: T[], record: T): "added" | "
   list.push(record);
   return "added";
 }
+
+function parseDatabaseRecordCollection(value: unknown): DatabaseRecordCollection {
+  switch (value) {
+    case "actors":
+    case "classes":
+    case "skills":
+    case "items":
+    case "equipment":
+    case "enemies":
+    case "troops":
+    case "states":
+    case "battleAnimations":
+      return value;
+    default:
+      throw new ToolError(`지원하지 않는 DB collection입니다: ${String(value)}`, { code: "invalid-args" });
+  }
+}
+
+function duplicateRecord<T extends { id: string; name: string }>(records: T[], id: string, newId: string, requestedName?: string): T {
+  const source = records.find((record) => record.id === id);
+  if (!source) throw new ToolError(`복제할 DB 레코드를 찾을 수 없습니다: ${id}`, { code: "database-record-not-found" });
+  if (records.some((record) => record.id === newId)) throw new ToolError(`이미 존재하는 DB 레코드 id입니다: ${newId}`, { code: "database-record-exists" });
+  const copy = structuredClone(source);
+  copy.id = newId;
+  copy.name = requestedName?.trim() || `${source.name} 사본`;
+  records.push(copy);
+  return copy;
+}
+
+function deleteRecord<T extends { id: string; name: string }>(records: T[], id: string): T {
+  const index = records.findIndex((record) => record.id === id);
+  const record = records[index];
+  if (!record) throw new ToolError(`삭제할 DB 레코드를 찾을 수 없습니다: ${id}`, { code: "database-record-not-found" });
+  records.splice(index, 1);
+  return record;
+}
+
+function duplicateFromCollection(draft: Project, collection: DatabaseRecordCollection, id: string, newId: string, name?: string): { id: string; name: string } {
+  switch (collection) {
+    case "actors": return duplicateRecord(draft.database.actors, id, newId, name);
+    case "classes": return duplicateRecord(draft.database.classes, id, newId, name);
+    case "skills": return duplicateRecord(draft.database.skills, id, newId, name);
+    case "items": return duplicateRecord(draft.database.items, id, newId, name);
+    case "equipment": return duplicateRecord(draft.database.equipment, id, newId, name);
+    case "enemies": return duplicateRecord(draft.database.enemies, id, newId, name);
+    case "troops": return duplicateRecord(draft.database.troops, id, newId, name);
+    case "states": return duplicateRecord(draft.database.states, id, newId, name);
+    case "battleAnimations": return duplicateRecord(draft.database.battleAnimations, id, newId, name);
+  }
+}
+
+function deleteFromCollection(draft: Project, collection: DatabaseRecordCollection, id: string): { id: string; name: string } {
+  switch (collection) {
+    case "actors": return deleteRecord(draft.database.actors, id);
+    case "classes": return deleteRecord(draft.database.classes, id);
+    case "skills": return deleteRecord(draft.database.skills, id);
+    case "items": return deleteRecord(draft.database.items, id);
+    case "equipment": return deleteRecord(draft.database.equipment, id);
+    case "enemies": return deleteRecord(draft.database.enemies, id);
+    case "troops": return deleteRecord(draft.database.troops, id);
+    case "states": return deleteRecord(draft.database.states, id);
+    case "battleAnimations": return deleteRecord(draft.database.battleAnimations, id);
+  }
+}
+
+const duplicateDatabaseRecordTool: ToolDefinition = {
+  name: "duplicate_database_record",
+  description: "에디터 DB 레코드를 모든 필드와 함께 복제한다. 참조를 보존하기 위해 새 id를 명시한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      collection: { type: "string", enum: DATABASE_RECORD_COLLECTIONS },
+      id: { type: "string" },
+      newId: { type: "string" },
+      name: { type: "string" },
+    },
+    required: ["collection", "id", "newId"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const collection = parseDatabaseRecordCollection(args.collection);
+    const copy = duplicateFromCollection(draft, collection, args.id as string, args.newId as string, typeof args.name === "string" ? args.name : undefined);
+    return { summary: `${collection} '${copy.name}' 복제 — id ${copy.id}`, data: { collection, record: copy } };
+  },
+};
+
+const deleteDatabaseRecordTool: ToolDefinition = {
+  name: "delete_database_record",
+  description: "에디터 DB 레코드를 삭제한다(파괴적). 참조가 남아 프로젝트 무결성이 깨지면 커밋 게이트가 거부한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: { collection: { type: "string", enum: DATABASE_RECORD_COLLECTIONS }, id: { type: "string" } },
+    required: ["collection", "id"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const collection = parseDatabaseRecordCollection(args.collection);
+    const removed = deleteFromCollection(draft, collection, args.id as string);
+    return { summary: `${collection} '${removed.name}'(${removed.id}) 삭제`, data: { collection, id: removed.id } };
+  },
+};
+
+const utilityRecordSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    kind: { type: "string", enum: ["physical", "magical", "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"] },
+    rateLabels: { type: "array", items: { type: "string", enum: ["A", "B", "C", "D", "E"] } },
+    damageMultipliers: { type: "object", properties: { A: { type: "number" }, B: { type: "number" }, C: { type: "number" }, D: { type: "number" }, E: { type: "number" } }, additionalProperties: false },
+    damage: { type: "integer" },
+    encounterRatePercent: { type: "integer" },
+    battleBackgroundResourceId: { type: "string" },
+    footstepSoundResourceId: { type: "string" },
+    characterDisplay: { type: "string", enum: ["normal", "transparent"] },
+    vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" } }, additionalProperties: false },
+    skillSubsetName: { type: "string" },
+    skillId: { type: "string" },
+  },
+  required: ["id", "name"],
+  additionalProperties: false,
+};
+
+const upsertDatabaseUtility: ToolDefinition = {
+  name: "upsert_database_utility",
+  description: "데이터베이스의 속성(elements), 지형(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      collection: { type: "string", enum: DATABASE_UTILITY_COLLECTIONS },
+      record: utilityRecordSchema,
+    },
+    required: ["collection", "record"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const collection = args.collection;
+    const record = structuredClone(args.record) as Record<string, unknown>;
+    const base = requireRecordId(record, "record");
+    if (collection === "elements") {
+      if (record.kind !== "physical" && record.kind !== "magical") throw new ToolError("elements.record.kind는 physical 또는 magical이어야 합니다.", { code: "invalid-args" });
+      const labels = Array.isArray(record.rateLabels) ? record.rateLabels : ["A", "B", "C", "D", "E"];
+      const multipliers = record.damageMultipliers;
+      if (typeof multipliers !== "object" || multipliers === null || Array.isArray(multipliers)) throw new ToolError("elements.record.damageMultipliers가 필요합니다.", { code: "invalid-args" });
+      const next = { id: base.id, name: base.name ?? base.id, kind: record.kind, rateLabels: labels, damageMultipliers: multipliers } as NonNullable<Project["database"]["elements"]>[number];
+      draft.database.elements ??= [];
+      const outcome = upsertById(draft.database.elements, next);
+      return { summary: `속성 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
+    }
+    if (collection === "terrains") {
+      const passage = record.vehiclePassage;
+      if (typeof passage !== "object" || passage === null || Array.isArray(passage)) throw new ToolError("terrains.record.vehiclePassage가 필요합니다.", { code: "invalid-args" });
+      const next = {
+        id: base.id,
+        name: base.name ?? base.id,
+        damage: typeof record.damage === "number" ? Math.trunc(record.damage) : 0,
+        encounterRatePercent: typeof record.encounterRatePercent === "number" ? Math.trunc(record.encounterRatePercent) : 100,
+        ...(typeof record.battleBackgroundResourceId === "string" ? { battleBackgroundResourceId: record.battleBackgroundResourceId } : {}),
+        ...(typeof record.footstepSoundResourceId === "string" ? { footstepSoundResourceId: record.footstepSoundResourceId } : {}),
+        characterDisplay: record.characterDisplay === "transparent" ? "transparent" as const : "normal" as const,
+        vehiclePassage: {
+          boat: (passage as Record<string, unknown>).boat === true,
+          ship: (passage as Record<string, unknown>).ship === true,
+          airshipLand: (passage as Record<string, unknown>).airshipLand === true,
+        },
+      };
+      draft.database.terrains ??= [];
+      const outcome = upsertById(draft.database.terrains, next);
+      return { summary: `지형 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
+    }
+    if (collection === "battleCommands") {
+      const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"]);
+      if (typeof record.kind !== "string" || !allowed.has(record.kind)) throw new ToolError("battleCommands.record.kind가 올바르지 않습니다.", { code: "invalid-args" });
+      const next = {
+        id: base.id,
+        name: base.name ?? base.id,
+        kind: record.kind,
+        ...(typeof record.skillSubsetName === "string" ? { skillSubsetName: record.skillSubsetName } : {}),
+        ...(typeof record.skillId === "string" ? { skillId: record.skillId } : {}),
+      } as NonNullable<Project["database"]["battleCommands"]>[number];
+      draft.database.battleCommands ??= [];
+      const outcome = upsertById(draft.database.battleCommands, next);
+      return { summary: `전투 명령 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
+    }
+    throw new ToolError(`지원하지 않는 utility collection입니다: ${String(collection)}`, { code: "invalid-args" });
+  },
+};
 
 function requireRecordId(record: unknown, label: string): { id: string; name?: string } {
   if (typeof record !== "object" || record === null) throw new ToolError(`${label}는 객체여야 합니다.`);
@@ -1231,6 +1425,9 @@ export function mergeSessionInventory(project: Project, inventory: Record<string
 }
 
 export const DB_TOOLS: readonly ToolDefinition[] = [
+  duplicateDatabaseRecordTool,
+  deleteDatabaseRecordTool,
+  upsertDatabaseUtility,
   upsertItem,
   upsertEnemy,
   upsertTroop,

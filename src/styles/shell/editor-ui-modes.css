@@ -526,6 +526,8 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
    basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-beginner 규칙). */
 body.editor-ui-standard .editor-layout .left-panel,
 body.editor-ui-expert .editor-layout .left-panel {
+  box-sizing: border-box;
+  flex: 0 0 auto;
   min-width: 0;
   overflow-x: hidden;
 }

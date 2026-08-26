@@ -145,7 +145,7 @@ function hasWrite(diff: ChangeSummary): boolean {
   return diff.tilesChanged + diff.eventsAdded + diff.eventsModified + diff.eventsRemoved + diff.mapsAdded
     + diff.mapsRemoved + diff.dbRecordsChanged + diff.tilesetsChanged + diff.switchesAdded + diff.variablesAdded
     + diff.worldEntitiesAdded + diff.worldEntitiesModified + diff.palettePresetsAdded + diff.palettePresetsModified
-    + diff.endingsChanged > 0 || diff.sessionChanged || diff.systemChanged;
+    + diff.endingsChanged + (diff.mapPropertiesChanged ?? 0) > 0 || diff.sessionChanged || diff.systemChanged;
 }
 
 function collectChanges(baseline: Project, draft: Project, summary: ChangeSummary): VillageFacadeChanges {

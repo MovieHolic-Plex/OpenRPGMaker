@@ -1,44 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { openDatabase, type DatabaseTabSpec } from "./oprn-database-helpers";
+import { DATABASE_TAB_SPECS, openDatabase, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 test.setTimeout(420_000);
 test.use({ serviceWorkers: "block" });
 
-const SHOT_ROOT = "C:/Users/USER/Downloads/rpg-zzu/.omo/evidence/db-modern-overhaul/shots";
+const SHOT_ROOT = process.env.DB_OVERHAUL_SHOT_ROOT
+  ?? path.resolve(".omo/evidence/database-editor-overhaul/database-tabs");
 
-const ALL_TABS: readonly DatabaseTabSpec[] = [
-  { label: "Overview", slug: "overview", testId: "db-tab-overview" },
-  { label: "Actors", slug: "actors", testId: "db-tab-actors" },
-  { label: "Classes", slug: "classes", testId: "db-tab-classes" },
-  { label: "Skills", slug: "skills", testId: "db-tab-skills" },
-  { label: "Items", slug: "items", testId: "db-tab-items" },
-  { label: "Equipment", slug: "equipment", testId: "db-tab-equipment" },
-  { label: "Enemies", slug: "enemies", testId: "db-tab-enemies" },
-  { label: "Monster Species", slug: "monster-species", testId: "db-tab-monster-species" },
-  { label: "Troops", slug: "troops", testId: "db-tab-troops" },
-  { label: "Elements", slug: "elements", testId: "db-tab-elements" },
-  { label: "States", slug: "states", testId: "db-tab-states" },
-  { label: "Animations", slug: "animations", testId: "db-tab-animations" },
-  { label: "Battle Screen", slug: "battle-screen", testId: "db-tab-battle-screen" },
-  { label: "Battle Commands", slug: "battle-commands", testId: "db-tab-battle-commands" },
-  { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" },
-  { label: "Crops", slug: "crops", testId: "db-tab-crops" },
-  { label: "Characters", slug: "characters", testId: "db-tab-characters" },
-  { label: "Life Crafting", slug: "life-crafting", testId: "db-tab-life-crafting" },
-  { label: "Daily Weather", slug: "daily-weather", testId: "db-tab-daily-weather" },
-  { label: "Farm Animals", slug: "farm-animals", testId: "db-tab-farm-animals" },
-  { label: "Farm Spatial", slug: "farm-spatial", testId: "db-tab-farm-spatial" },
-  { label: "Life Collections", slug: "life-collections", testId: "db-tab-life-collections" },
-  { label: "Tilesets", slug: "tilesets", testId: "db-tab-tilesets" },
-  { label: "Structure Kits", slug: "structure-kits", testId: "db-tab-structure-kits" },
-  { label: "Common Events", slug: "common-events", testId: "db-tab-common-events" },
-  { label: "System", slug: "system", testId: "db-tab-system" },
-  { label: "Terms", slug: "terms", testId: "db-tab-terms" },
-  { label: "Switches", slug: "switches", testId: "db-tab-switches" },
-  { label: "Variables", slug: "variables", testId: "db-tab-variables" },
-];
+const ALL_TABS: readonly DatabaseTabSpec[] = DATABASE_TAB_SPECS;
 
 const VIEWPORTS = [
   { name: "1440x900", width: 1440, height: 900 },
@@ -50,17 +21,20 @@ async function switchTab(page: Page, tab: DatabaseTabSpec): Promise<void> {
   await expect(button, `missing ${tab.testId}`).toBeVisible({ timeout: 15_000 });
   await button.click({ force: true });
   await expect(button).toHaveClass(/active/);
+  await expect(page.getByTestId("db-shared-workspace")).toBeVisible();
 }
 
 async function selectFirstRecord(page: Page): Promise<boolean> {
   const card = page.locator("[data-testid^='db-record-card-']").first();
   if (await card.isVisible().catch(() => false)) {
     await card.click();
+    await expect(page.getByTestId("database-modal")).toBeVisible();
     return true;
   }
   const row = page.locator("[data-testid^='db-record-row-']").first();
   if (await row.isVisible().catch(() => false)) {
     await row.click();
+    await expect(page.getByTestId("database-modal")).toBeVisible();
     return true;
   }
   return false;
@@ -92,13 +66,11 @@ test("capture every Database tab for the modern overhaul harvest", async ({ page
 
     for (const tab of ALL_TABS) {
       await switchTab(page, tab);
-      await page.waitForTimeout(250);
       const modalPath = path.join(dir, `tab-${tab.slug}.png`);
       await page.getByTestId("database-modal").screenshot({ path: modalPath });
       const selected = await selectFirstRecord(page);
       let detailPath: string | null = null;
       if (selected) {
-        await page.waitForTimeout(200);
         detailPath = path.join(dir, `tab-${tab.slug}-detail.png`);
         await page.getByTestId("database-modal").screenshot({ path: detailPath });
       }
@@ -118,7 +90,7 @@ test("capture every Database tab for the modern overhaul harvest", async ({ page
         const nav = page.getByTestId(`db-system-nav-${section}`);
         if (await nav.isVisible().catch(() => false)) {
           await nav.click();
-          await page.waitForTimeout(200);
+          await expect(nav).toHaveClass(/active/);
           const sectionPath = path.join(dir, `tab-system-${section}.png`);
           await page.getByTestId("database-modal").screenshot({ path: sectionPath });
           manifest.push({
@@ -131,6 +103,47 @@ test("capture every Database tab for the modern overhaul harvest", async ({ page
           });
         }
       }
+
+      await switchTab(page, DATABASE_TAB_SPECS[0]);
+      await page.getByTestId("database-ai-toggle").click();
+      await expect(page.getByTestId("database-ai-bar")).toBeVisible();
+      const assistantPath = path.join(dir, "overview-ai-assistant.png");
+      await page.getByTestId("database-modal").screenshot({ path: assistantPath });
+      manifest.push({
+        slug: "overview-ai-assistant",
+        testId: "database-ai-bar",
+        viewport: viewport.name,
+        modal: assistantPath,
+        detail: null,
+        selected: false,
+      });
+      await page.getByTestId("database-ai-close").click();
+      await expect(page.getByTestId("database-ai-bar")).toBeHidden();
+
+      await page.getByTestId("database-modal-close").click();
+      await expect(page.getByTestId("database-modal")).toBeHidden();
+
+      await page.goto(`/?devProject=1&logCabinShowcase=1&titleQa=${Date.now()}`, {
+        waitUntil: "domcontentloaded",
+      });
+      await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
+      await page.getByTestId("mode-play").click();
+      await expect(page.getByTestId("test-play-window")).toBeVisible();
+      await expect(page.getByTestId("title-screen")).toHaveClass(/rm-title-screen-editorial/);
+      await expect(page.getByTestId("title-kicker")).toHaveText("A NEW ADVENTURE");
+      await expect(page.getByTestId("title-subtitle")).toHaveText("이야기가 시작되는 곳");
+      const titlePath = path.join(dir, "title-start-windowed.png");
+      await page.getByTestId("test-play-window").screenshot({ path: titlePath });
+      manifest.push({
+        slug: "title-start-windowed",
+        testId: "title-screen",
+        viewport: viewport.name,
+        modal: titlePath,
+        detail: null,
+        selected: false,
+      });
+      await page.getByTestId("test-play-window-close").click();
+      await expect(page.getByTestId("test-play-window")).toHaveCount(0);
     }
   }
 

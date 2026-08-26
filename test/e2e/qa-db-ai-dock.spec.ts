@@ -34,7 +34,8 @@ test.describe("QA — DB 모달 AI 바 (M7)", () => {
       () => (window as { __oprnDbAiLastRequest?: { message: string } }).__oprnDbAiLastRequest?.message ?? ""
     );
     expect(message).toContain("이 몬스터 스탯을 중반 밸런스로 맞춰줘");
-    expect(message).toContain("[컨텍스트] 데이터베이스 DB 탭: 몬스터");
+    expect(message).toContain("[컨텍스트] 에디터 전체 요청");
+    expect(message).toContain("현재 화면: 데이터베이스 DB 탭 몬스터");
     expect(message).toContain("선택 레코드:");
 
     // 토스트: 전달 안내(키 미설정 환경에서는 실패 안내로 덮일 수 있다 — 둘 다 도달 증거).

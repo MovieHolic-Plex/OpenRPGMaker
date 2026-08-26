@@ -15,6 +15,7 @@ export function createDraft(project: Project): Project {
 function emptySummary(): ChangeSummary {
   return {
     tilesChanged: 0,
+    mapPropertiesChanged: 0,
     eventsAdded: 0,
     eventsModified: 0,
     eventsRemoved: 0,
@@ -43,6 +44,18 @@ function countTileChanges(before: GameMap, after: GameMap): number {
     else if (before.upperTiles[i] !== after.upperTiles[i]) changed += 1;
   }
   return changed;
+}
+
+function comparableMapProperties(map: GameMap): string {
+  const {
+    lowerTiles: _lowerTiles,
+    upperTiles: _upperTiles,
+    lowerTileStacks: _lowerTileStacks,
+    upperTileStacks: _upperTileStacks,
+    events: _events,
+    ...properties
+  } = map;
+  return JSON.stringify(properties);
 }
 
 function indexEvents(events: readonly GameEvent[]): Map<string, GameEvent> {
@@ -75,6 +88,16 @@ function diffDatabase(before: Project, after: Project, summary: ChangeSummary): 
     "troops",
     "states",
     "battleAnimations",
+    "elements",
+    "terrains",
+    "battleCommands",
+    "monsterSpecies",
+    "crops",
+    "lifeSkills",
+    "farmAnimalSpecies",
+    "fishSpecies",
+    "farmBuildingTypes",
+    "homeDecorationTypes",
   ];
   for (const key of keys) {
     const beforeList = (before.database[key] ?? []) as Array<{ id: string }>;
@@ -145,8 +168,16 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   }
   for (const [id, afterMap] of Object.entries(after.maps)) {
     const beforeMap = before.maps[id];
-    if (beforeMap) summary.tilesChanged += countTileChanges(beforeMap, afterMap);
+    if (beforeMap) {
+      summary.tilesChanged += countTileChanges(beforeMap, afterMap);
+      if (comparableMapProperties(beforeMap) !== comparableMapProperties(afterMap)) {
+        summary.mapPropertiesChanged = (summary.mapPropertiesChanged ?? 0) + 1;
+      }
+    }
     diffMapEvents(beforeMap, afterMap, summary);
+  }
+  if (JSON.stringify(before.mapTree) !== JSON.stringify(after.mapTree)) {
+    summary.mapPropertiesChanged = (summary.mapPropertiesChanged ?? 0) + 1;
   }
   diffDatabase(before, after, summary);
   for (const [id, afterTileset] of Object.entries(after.tilesets)) {
