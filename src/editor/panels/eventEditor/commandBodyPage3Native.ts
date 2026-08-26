@@ -17,6 +17,11 @@ import {
   renderShowAnimationFrame,
   showAnimationPlaybackSource,
 } from "./showAnimationPlayback";
+import {
+  listMovieResources,
+  renderMoviePreviewStage,
+  resolveMovieResourceUrl,
+} from "./playMoviePreview";
 import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
 import type { CommandEditContext } from "./types";
 
@@ -830,6 +835,120 @@ export function showAnimationBody(
             posField,
             fieldBlock("완료 대기", wait.root),
           ],
+        }),
+        surface,
+      ],
+    })
+  );
+  return wrap;
+}
+
+/**
+ * 동영상 재생 본문. 표시면은 하나다 — 고르는 픽커와 진짜 <video> 재생면이 한 표면 안에 있다.
+ * 프로젝트에 동영상이 없으면 번들 샘플을 그 자리에서 재생해 "동영상이 뭘 하는 명령인지"를 보여 준다.
+ */
+export function playMovieBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "playMovie" }>
+): HTMLElement {
+  const wrap = shell("page3-command-body actor-m2-command-body", "play-movie-command-body");
+  const project = store.getCurrent();
+  const movies = listMovieResources(project);
+  const resource = recordPickerWithPreview({
+    records: movies,
+    selectedId: cmd.resourceId,
+    placeholder: "동영상 선택",
+    testid: "play-movie-resource-select",
+    subtitleOf: (record) => record.id,
+  });
+  const wait = segmentedSelect({
+    options: BOOL_SEGMENTS,
+    value: cmd.wait === true ? "true" : "false",
+    testid: "play-movie-wait-select",
+    ariaLabel: "완료 대기",
+  });
+  const skippable = segmentedSelect({
+    options: BOOL_SEGMENTS,
+    value: cmd.skippable === true ? "true" : "false",
+    testid: "play-movie-skippable-select",
+    ariaLabel: "스킵 허용",
+  });
+
+  const stageHost = el("div", { class: "page3-movie-stage-host" });
+  const caption = el("p", { class: "actor-m2-preview-line" });
+  const note = el("p", { class: "actor-m2-preview-note" });
+  const preview = el("div", {
+    class: "actor-m2-preview-body page3-movie-preview",
+    dataset: { testid: "play-movie-preview" },
+    children: [stageHost, caption, note],
+  });
+  const surface = el("section", {
+    class: "actor-m2-preview page3-command-preview page3-movie-surface",
+    dataset: { testid: "play-movie-surface" },
+    children: [
+      el("div", {
+        class: "page3-anim-surface-head",
+        children: [
+          el("h4", {
+            class: "page3-anim-surface-title",
+            text: "동영상",
+            dataset: { testid: "play-movie-surface-title" },
+          }),
+        ],
+      }),
+      resource.root,
+      preview,
+    ],
+  });
+
+  // 재생면은 리소스가 바뀔 때만 다시 만든다 — 토글을 누를 때마다 재생이 처음으로 돌아가면 볼 수 없다.
+  let stagedResourceId: string | undefined;
+  const renderStage = (): void => {
+    const { stage } = renderMoviePreviewStage(resolveMovieResourceUrl(resource.select.value, project));
+    stageHost.replaceChildren(stage);
+    stagedResourceId = resource.select.value;
+  };
+
+  const renderCaption = (): void => {
+    const selected = movies.find((entry) => entry.id === resource.select.value);
+    caption.textContent = selected
+      ? `${selected.name} 재생`
+      : movies.length === 0
+        ? "프로젝트에 동영상 리소스가 없습니다 — 리소스 관리자에서 동영상을 올린 뒤 고르세요"
+        : "(동영상 선택 없음)";
+    note.textContent = [
+      wait.select.value === "true" ? "재생이 끝날 때까지 대기" : "대기 없이 다음 명령 진행",
+      skippable.select.value === "true" ? "플레이어가 건너뛸 수 있음" : "건너뛰기 불가",
+    ].join(" · ");
+  };
+
+  const renderPreview = (): void => {
+    if (stagedResourceId !== resource.select.value) renderStage();
+    renderCaption();
+  };
+
+  const commit = (): void => {
+    context.actions.replaceCommand(context.path, {
+      kind: "playMovie",
+      resourceId: resource.select.value,
+      ...(wait.select.value === "true" ? { wait: true } : {}),
+      ...(skippable.select.value === "true" ? { skippable: true } : {}),
+    });
+    renderPreview();
+  };
+
+  resource.select.addEventListener("change", commit);
+  wait.select.addEventListener("change", commit);
+  skippable.select.addEventListener("change", commit);
+
+  renderPreview();
+  wrap.append(
+    el("div", {
+      class: "actor-m2-layout page3-command-layout",
+      children: [
+        el("div", {
+          class: "actor-m2-main page3-command-main",
+          children: [fieldBlock("완료 대기", wait.root), fieldBlock("스킵 허용", skippable.root)],
         }),
         surface,
       ],
