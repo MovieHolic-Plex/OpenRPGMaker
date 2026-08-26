@@ -1,6 +1,10 @@
 import { el } from "@/util/dom";
 import { buildFollowerPresets, followerPresetToCommands } from "@/editor/followerPresets";
-import type { Command } from "@/project/types";
+import { store } from "@/project/store";
+import type { ActorRecord, Command } from "@/project/types";
+import { companionPortraitElement } from "./companionRoster";
+
+const TESTID_SAFE = /[^a-z0-9-]/gi;
 
 export type FollowerPresetInsertHost = {
   insertCommandsAt: (index: number, commands: readonly Command[]) => void;
@@ -18,13 +22,23 @@ export function renderFollowerPresetBar(host: FollowerPresetInsertHost): HTMLEle
     text: "따라오기 프리셋",
   });
   const chips = el("div", { class: "event-editor-follower-preset-chips" });
+  const project = store.getCurrent();
+  const actorsById = new Map<string, ActorRecord>(project.database.actors.map((actor) => [actor.id, actor]));
   const presets = buildFollowerPresets();
   for (const p of presets) {
+    const actor = p.kind === "actor" ? actorsById.get(p.refId) : undefined;
+    const children: HTMLElement[] = [];
+    if (actor) {
+      children.push(
+        companionPortraitElement(project, actor, { sizePx: 20, testidPrefix: "follower-preset-thumb" }),
+      );
+    }
     const btn = el("button", {
       class: `btn btn-sm follower-preset-chip follower-preset-chip--${p.kind}`,
       text: p.label,
       attrs: { title: `${p.description} — ${p.hint}` },
-      dataset: { testid: `follower-preset-${p.id.replace(/[^a-z0-9-]/gi, "-")}` },
+      dataset: { testid: `follower-preset-chip-${p.id.replace(TESTID_SAFE, "-")}` },
+      children,
       on: {
         click: () => {
           const cmds = followerPresetToCommands(p);
