@@ -672,13 +672,76 @@ const fillRegion: ToolDefinition = {
 };
 
 const ERASE_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, layer: "both" };
+const ERASE_MARKET_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 12, h: 10 }, kind: "market" };
+
+// kind=market 이 지우는 시장/상점 데크 타일 집합. 집 키트 id는 절대 넣지 않는다.
+// (흙길 PATH 360 도 시장 타일이 아니다 — 남긴다.)
+export const MARKET_ERASE_TILES: ReadonlySet<number> = new Set([
+  192, 222, 228, 229, 230, // 나무 마루 본체/테두리
+  223, 193,                // 목재 보/기둥
+  468, 469, 470,           // 좌판 난간
+  234, 235, 236,           // 진열대
+  202, 203,                // 과일 진열
+  237,                     // 나무 상자
+  268,                     // 돌 단
+]);
+
+// 파란 벽돌 집 키트(벽·창문·지붕). kind=market 은 이 타일이 있는 레이어를 절대 건드리지 않는다.
+const HOUSE_KIT_TILES: ReadonlySet<number> = new Set([
+  15, 16, 17, 45, 46, 47, 75, 76, 77, // 벽
+  87,                                 // 창문
+  406, 407, 467,                      // 지붕(lower)
+  356, 357, 386, 387,                 // 지붕(upper)
+]);
+
+export type TileEraseKind = "all" | "market";
+
+function coerceEraseKind(value: unknown): TileEraseKind {
+  if (value === undefined || value === null || value === "" || value === "all") return "all";
+  if (value === "market") return "market";
+  failWithExample("kind는 all|market 중 하나여야 합니다(시장/상점 데크만 철거=market)", ERASE_MARKET_EXAMPLE);
+}
+
+interface MarketErasePlan {
+  readonly cell: Point;
+  readonly lowerTo?: number;
+  readonly upperTo?: number;
+}
+
+// 셀별 계획: 시장 타일이 있는 레이어만 비운다(lower는 잔디 복원). 집 키트 레이어는 계획에서 제외.
+function planMarketErase(map: GameMap, cells: readonly Point[], layer: "both" | "lower" | "upper"): MarketErasePlan[] {
+  const plans: MarketErasePlan[] = [];
+  for (const cell of cells) {
+    const index = cell.y * map.width + cell.x;
+    const lower = map.lowerTiles[index];
+    const upper = map.upperTiles[index];
+    const clearLower = (layer === "both" || layer === "lower") && !HOUSE_KIT_TILES.has(lower) && MARKET_ERASE_TILES.has(lower);
+    const clearUpper = (layer === "both" || layer === "upper") && !HOUSE_KIT_TILES.has(upper) && MARKET_ERASE_TILES.has(upper);
+    if (!clearLower && !clearUpper) continue;
+    plans.push({
+      cell,
+      ...(clearLower ? { lowerTo: TILE.GRASS } : {}),
+      ...(clearUpper ? { upperTo: TILE.EMPTY } : {}),
+    });
+  }
+  return plans;
+}
+
+function applyMarketPlan(map: GameMap, plan: MarketErasePlan): void {
+  const index = plan.cell.y * map.width + plan.cell.x;
+  if (plan.lowerTo !== undefined) map.lowerTiles[index] = plan.lowerTo;
+  if (plan.upperTo !== undefined) map.upperTiles[index] = plan.upperTo;
+}
 
 // tile_erase — 승인 어휘를 소비하지 않는 유일한 배치 툴(지우기는 어휘 결정이 없다).
 // v2 tile_paint의 erase 경로를 대체 — v3 시공 프리미티브에 없던 "되돌리기/청소" 수단.
 const tileErase: ToolDefinition = {
   name: "tile_erase",
   description:
-    "지정 사각형의 타일을 비운다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.",
+    "지정 사각형의 타일을 비운다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다. " +
+    "kind: all(기본, rect 전체를 통째로 비움)/market(시장·상점 데크 철거 전용 — 나무 마루·좌판 난간·진열대·과일·나무 상자·돌 단만 지우고, " +
+    "겹친 집(벽·창문·지붕)·흙길(360)·잔디처럼 시장 타일이 아닌 것은 그대로 보존한다. 시장 lower를 지운 칸은 잔디로 되돌린다). " +
+    "집과 시장이 한 bbox에 섞여 있으면 kind=market 을 쓸 것 — kind 생략(all)은 집까지 다 지운다.",
   mode: "write",
   version: 3,
   parameters: {
@@ -691,6 +754,11 @@ const tileErase: ToolDefinition = {
         required: ["x", "y", "w", "h"],
       },
       layer: { type: "string", enum: ["both", "lower", "upper"], description: "기본 both" },
+      kind: {
+        type: "string",
+        enum: ["all", "market"],
+        description: "기본 all(rect 전체 비움). market=시장/상점 데크만 철거하고 집·흙길·잔디는 보존",
+      },
     },
     required: ["mapId", "rect"],
   },
@@ -701,7 +769,31 @@ const tileErase: ToolDefinition = {
     if (layer !== "both" && layer !== "lower" && layer !== "upper") {
       failWithExample("layer는 both/lower/upper 중 하나여야 합니다", ERASE_EXAMPLE);
     }
+    const kind = coerceEraseKind(args.kind);
     const allCells = cellsInRect(map, rect);
+    if (kind === "market") {
+      const plans = planMarketErase(map, allCells, layer);
+      const planByKey = new Map(plans.map((plan) => [pointKey(plan.cell), plan] as const));
+      const filtered = filterPassageProtectedCells(draft, map, plans.map((plan) => plan.cell), (cell) => {
+        const plan = planByKey.get(pointKey(cell));
+        if (plan) applyMarketPlan(map, plan);
+      });
+      for (const cell of filtered.cells) {
+        const plan = planByKey.get(pointKey(cell));
+        if (plan) applyMarketPlan(map, plan);
+      }
+      return {
+        summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 시장 데크 철거(${layer}) — ${filtered.cells.length}/${allCells.length}칸(집·흙길·잔디 보존)${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
+        warnings: protectedSkipWarnings(filtered.skipped),
+        data: {
+          cleared: filtered.cells.length,
+          requested: allCells.length,
+          skipped: filtered.skipped.length,
+          layer,
+          kind,
+        },
+      };
+    }
     const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
       const index = cell.y * map.width + cell.x;
       if (layer === "both" || layer === "lower") map.lowerTiles[index] = TILE.EMPTY;
@@ -717,7 +809,7 @@ const tileErase: ToolDefinition = {
     return {
       summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 비움(${layer}) — ${cleared}/${allCells.length}칸${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
       warnings: protectedSkipWarnings(filtered.skipped),
-      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer },
+      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer, kind },
     };
   },
 };

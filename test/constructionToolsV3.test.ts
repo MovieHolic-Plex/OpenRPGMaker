@@ -162,7 +162,9 @@ describe("place_door / place_window (공정 2단계 — 벽 셀에만)", () => {
 
 describe("lay_path / place_props (공정 4·5단계)", () => {
   function addApprovedPath(tileset: TilesetDef, withAutotile: boolean): void {
-    const memberTileIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+    // 번들 오토타일(builtin_snow/builtin_undergrowth 등)이 점유하지 않은 id만 쓴다 —
+    // 겹치면 "오토타일 정의 없음" 케이스가 번들 그룹을 주워 통과해 버린다.
+    const memberTileIds = [1, 2, 3, 4, 5, 7, 10, 12, 13, 14, 18, 19, 20];
     tileset.tileGroups!.push({
       id: "test-path", name: "테스트흙길", role: "terrain", defaultLayer: "lower",
       tileIds: memberTileIds, description: "테스트 전용 흙길", placementRules: "", origin: "user",
@@ -182,8 +184,8 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
       tileset.autotileGroups = [{
         id: "test-path-8", name: "테스트흙길8", neighborhood: 8, memberTileIds,
         variantMap: buildEightNeighborVariantMap(
-          { body: 1, edgeN: 2, edgeS: 3, edgeW: 4, edgeE: 5, cornerNW: 6, cornerNE: 7, cornerSW: 8, cornerSE: 9 },
-          { innerNW: 10, innerNE: 11, innerSW: 12, innerSE: 13 }
+          { body: 1, edgeN: 2, edgeS: 3, edgeW: 4, edgeE: 5, cornerNW: 7, cornerNE: 10, cornerSW: 12, cornerSE: 13 },
+          { innerNW: 14, innerNE: 18, innerSW: 19, innerSE: 20 }
         ),
       }];
     }
@@ -207,7 +209,7 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
     expect(data.pathCells).toBeGreaterThanOrEqual(10);
     expect(data.reshaped).toBeGreaterThan(0);
     const map = ctx.project.maps[MAP_ID];
-    const members = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+    const members = new Set([1, 2, 3, 4, 5, 7, 10, 12, 13, 14, 18, 19, 20]);
     expect(members.has(map.lowerTiles[12 * map.width + 5])).toBe(true);
     // 같은 입력/시드 = 같은 결과(결정론).
     const { ctx: ctx2, tileset: tileset2 } = context();
@@ -382,6 +384,95 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.EMPTY);
     expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.GRASS);
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
+  });
+});
+
+describe("tile_erase kind=market (시장 데크만 선택 철거)", () => {
+  const HOUSE_LOWER = [15, 16, 17, 45, 46, 47, 75, 76, 77, 406, 407, 467];
+  const HOUSE_UPPER = [356, 357, 386, 387, 87];
+  const MARKET_LOWER = [222, 192, 228, 229, 230, 223, 193, 268];
+  const MARKET_UPPER = [468, 469, 470, 234, 235, 236, 202, 203, 237];
+  const HOUSE_RECT = { x: 1, y: 2, w: 7, h: 6 };
+  const MARKET_RECT = { x: 8, y: 4, w: 8, h: 8 };
+  const ERASE_RECT = { x: 1, y: 2, w: 15, h: 10 };
+  const MARKET_SET = new Set([...MARKET_LOWER, ...MARKET_UPPER]);
+
+  interface Snapshot {
+    readonly x: number;
+    readonly y: number;
+    readonly lower: number;
+    readonly upper: number;
+  }
+
+  function paintFixture(): { ctx: ToolContext; houseCells: Snapshot[]; marketCells: Snapshot[] } {
+    const { ctx } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    const map = ctx.project.maps[MAP_ID];
+    const houseCells: Snapshot[] = [];
+    const marketCells: Snapshot[] = [];
+    let n = 0;
+    for (let y = HOUSE_RECT.y; y < HOUSE_RECT.y + HOUSE_RECT.h; y += 1) {
+      for (let x = HOUSE_RECT.x; x < HOUSE_RECT.x + HOUSE_RECT.w; x += 1) {
+        const index = y * map.width + x;
+        map.lowerTiles[index] = HOUSE_LOWER[n % HOUSE_LOWER.length];
+        map.upperTiles[index] = n % 3 === 0 ? HOUSE_UPPER[n % HOUSE_UPPER.length] : TILE.EMPTY;
+        houseCells.push({ x, y, lower: map.lowerTiles[index], upper: map.upperTiles[index] });
+        n += 1;
+      }
+    }
+    let m = 0;
+    for (let y = MARKET_RECT.y; y < MARKET_RECT.y + MARKET_RECT.h; y += 1) {
+      for (let x = MARKET_RECT.x; x < MARKET_RECT.x + MARKET_RECT.w; x += 1) {
+        const index = y * map.width + x;
+        map.lowerTiles[index] = MARKET_LOWER[m % MARKET_LOWER.length];
+        map.upperTiles[index] = m % 2 === 0 ? MARKET_UPPER[m % MARKET_UPPER.length] : TILE.EMPTY;
+        marketCells.push({ x, y, lower: map.lowerTiles[index], upper: map.upperTiles[index] });
+        m += 1;
+      }
+    }
+    return { ctx, houseCells, marketCells };
+  }
+
+  it("kind=market: bbox가 집을 덮어도 집 타일은 그대로, 시장 데크만 지우고 lower는 잔디로 되돌린다", () => {
+    const { ctx, houseCells, marketCells } = paintFixture();
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: ERASE_RECT, kind: "market" });
+    expect(result.ok, result.summary).toBe(true);
+    const map = ctx.project.maps[MAP_ID];
+
+    for (const cell of houseCells) {
+      const index = cell.y * map.width + cell.x;
+      expect(map.lowerTiles[index], `house lower ${cell.x},${cell.y}`).toBe(cell.lower);
+      expect(map.upperTiles[index], `house upper ${cell.x},${cell.y}`).toBe(cell.upper);
+    }
+
+    let cleared = 0;
+    let formerLowerMarket = 0;
+    let grassRestored = 0;
+    for (const cell of marketCells) {
+      const index = cell.y * map.width + cell.x;
+      const lower = map.lowerTiles[index];
+      const upper = map.upperTiles[index];
+      if (!MARKET_SET.has(lower) && !MARKET_SET.has(upper)) cleared += 1;
+      if (MARKET_SET.has(cell.lower)) {
+        formerLowerMarket += 1;
+        if (lower === TILE.GRASS) grassRestored += 1;
+      }
+    }
+    expect(cleared / marketCells.length).toBeGreaterThanOrEqual(0.9);
+    expect(formerLowerMarket).toBeGreaterThan(0);
+    expect(grassRestored).toBe(formerLowerMarket);
+  });
+
+  it("kind 생략(레거시)은 그대로 AABB 전체를 비운다 — 집 타일도 EMPTY", () => {
+    const { ctx, houseCells } = paintFixture();
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: ERASE_RECT });
+    expect(result.ok, result.summary).toBe(true);
+    const map = ctx.project.maps[MAP_ID];
+    for (const cell of houseCells) {
+      const index = cell.y * map.width + cell.x;
+      expect(map.lowerTiles[index], `legacy lower ${cell.x},${cell.y}`).toBe(TILE.EMPTY);
+      expect(map.upperTiles[index], `legacy upper ${cell.x},${cell.y}`).toBe(TILE.EMPTY);
+    }
   });
 });
 
