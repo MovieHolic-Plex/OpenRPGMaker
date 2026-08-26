@@ -51,10 +51,15 @@ const GROUND_ROLES = new Set(["floor", "terrain", "path", "sand", "snow", "ice",
  * 이 role)은 요구하지 않는다 — 돌바닥에 물이 비칠 수 있으므로 오탐이 된다.
  */
 const ROLE_COLOR_RULES: readonly { roles: readonly string[]; share: number; test: (h: number, s: number, v: number) => boolean; want: string }[] = [
-  { roles: ["water"], share: 0.25, want: "\ud30c\ub791·시안 계열", test: (h, s, v) => v > 0.12 && (s > 0.12 ? h >= 155 && h <= 265 : v > 0.6) },
-  { roles: ["lava"], share: 0.2, want: "\붉은·주황 계열", test: (h, s, v) => s > 0.3 && v > 0.25 && (h < 45 || h > 330) },
-  { roles: ["ice", "snow"], share: 0.3, want: "\밝은 헌·퇴색 계열", test: (_h, s, v) => v > 0.6 && s < 0.45 },
-  { roles: ["tree", "grass", "plant", "forest"], share: 0.15, want: "\녹색 계열", test: (h, s) => s > 0.15 && h >= 60 && h <= 175 },
+  // water: 심해를 거의 검게 그리는 것이 관행이므로 아주 어두운 픽셀도 물로 인정한다.
+  // 실측 오탐: retro_world 210-212 "검은 수면 내부", world 370/400/430 "심해 검은 물" 이 파랑 0% 로 걸렸다.
+  { roles: ["water"], share: 0.25, want: "파랑·시안 계열 또는 심해 암부", test: (h, s, v) => v < 0.22 || (v > 0.12 && (s > 0.12 ? h >= 155 && h <= 265 : v > 0.6)) },
+  { roles: ["lava"], share: 0.2, want: "붉은·주황 계열", test: (h, s, v) => s > 0.3 && v > 0.25 && (h < 45 || h > 330) },
+  { roles: ["ice", "snow"], share: 0.3, want: "밝은 흰·회색 계열", test: (_h, s, v) => v > 0.6 && s < 0.45 },
+  // forest 만 남긴다. plant/tree 는 제거했다 — 마른 수풀과 유색 꽃은 정당하게 녹색이 아니다.
+  // 실측 오탐: retro_exterior 131 "마른 수풀", 372/373 "보라 꽃포기", 443/473 "석제 화단 붉은 꽃".
+  // forest 는 남긴다: 월드맵 캐노피는 녹색이어야 하고, retro_world 8/20/21/26/27 은 녹색 0% 로 정탐이었다.
+  { roles: ["forest"], share: 0.15, want: "녹색 계열", test: (h, s) => s > 0.15 && h >= 60 && h <= 175 },
 ];
 
 interface ColorRule {
@@ -139,8 +144,11 @@ function auditSheet(sheet: string, rowRange: [number, number] | null): { violati
     const stat = stats[e.index]!;
     if (stat.pixels.length === 0) continue;
 
-    // A. 투명 소품을 통행 가능 지면으로 적었는가
-    if (stat.transparentRatio >= 0.25 && GROUND_ROLES.has(e.role) && e.passage === "passable") {
+    // A. 투명 소품을 통행 가능 지면으로 적었는가.
+    // 임계 0.65 는 실측 교정이다: 0.25 로 두면 월드맵의 대각 지형 모서리(world 24-29, 분홍 컬러키
+    // 배경 위 잔디/흙/눈 코너 조각, 투명 45%)까지 걸렸다. 그건 하위 레이어 오토타일 코너라 실제로
+    // 통행 가능하다. 0.65 이상만 개별 소품으로 본다.
+    if (stat.transparentRatio >= 0.65 && GROUND_ROLES.has(e.role) && e.passage === "passable") {
       violations.push({
         index: e.index, kind: "prop-as-ground", label: e.label,
         detail: `투명 ${(stat.transparentRatio * 100).toFixed(0)}% 인 upper 소품인데 role=${e.role} passage=passable`,
