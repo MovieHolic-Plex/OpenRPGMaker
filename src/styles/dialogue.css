@@ -175,8 +175,7 @@
   padding: 5px;
 }
 
-.dialogue-box.choices::after,
-.dialogue-box.choices::before {
+.dialogue-box.choices::after {
   display: none;
 }
 
@@ -278,8 +277,35 @@
   display: none;
 }
 
-.dialogue-box::after,
+.dialogue-box::after {
+  display: none;
+}
+
+/* ── 자료집 System 윈도스킨 프레임 ──────────────────────────────
+   메시지·선택지 창은 이제 하드코드 hex 유리만 쓰지 않고 프로젝트의
+   `system.systemResourceId` 윈도스킨을 같이 소모한다(dialogue.ts 가
+   `--runtime-window-skin` 을 상자에 집어넣는다). 전투/상점/필드 메뉴와
+   **같은 변수**를 쓰및, 표면은 플레이 톤(유리)을 유지한다 — 그래서 fill 이
+   없는 slice 로 **테두리만** 가지오고, 그것도 border 가 아니라 오버레이
+   의사요소로 얻는다. 상자 지오밌트리(padding/clientHeight)를 그대로 둔다 —
+   페이지네이서어이 본및 칸 높이를 재오서 계산하기 때밑이다(dialoguePagination.ts). */
 .dialogue-box::before {
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: 24;
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: var(--runtime-dialogue-radius);
+  content: "";
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+/* format: transparent 는 “창 없이 글자만” 이다 — 프레임도 없다. */
+.dialogue-box.transparent::before {
   display: none;
 }
 
@@ -298,6 +324,11 @@
   left: 10px;
   top: -9px;
   z-index: 3;
+  /* 이름상자도 같은 윈도스킨 파이프 — 여긴 상자가 작아 fill 로 표면까지 받는다. */
+  border-image-repeat: stretch;
+  border-image-slice: 24 fill;
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: 4px;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-dialogue-font-size);
   line-height: 1.2;
@@ -305,7 +336,7 @@
   align-items: center;
   max-width: calc(100% - 20px);
   margin: 0;
-  padding: 2px 9px;
+  padding: 3px 10px;
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-radius: var(--runtime-dialogue-radius-small);
   background:

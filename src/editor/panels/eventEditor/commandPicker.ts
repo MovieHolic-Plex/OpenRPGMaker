@@ -237,10 +237,12 @@ type EventCommandPickerRequest = {
    * 최저 지원으로 보수 표시한다.
    */
   readonly context?: M2RuntimeContext;
-  readonly onSelect: (command: Command, closePicker: () => void) => EventCommandPickerSelectResult;
+  /**
+   * 한 레이어 계약: 명령을 골랐으면 피커는 **이미 닫힌 상태**로 이 콜백이 불린다.
+   * 편집 다이얼로그를 피커 위에 쌓아 확인이 뒷창에 삼키는 RM식 모달 스택은 없다.
+   */
+  readonly onSelect: (command: Command) => void;
 };
-
-type EventCommandPickerSelectResult = { readonly closePicker: false } | void;
 
 export function openEventCommandPicker(request: EventCommandPickerRequest): void {
   openEventSubdialog({
@@ -602,9 +604,10 @@ function renderCommandButton(
   if (entry.selectable) {
     button.addEventListener("click", () => {
       recordRecentEventCommand(entry.commandId);
-      options.onPreferencesChanged();
-      const result = onSelect(createCommandFromEntry(entry), close);
-      if (!result || result.closePicker !== false) close();
+      const command = createCommandFromEntry(entry);
+      // 한 레이어: 편집 표면을 여는 손짓은 피커를 닫고 넘긴다.
+      close();
+      onSelect(command);
     });
   }
 

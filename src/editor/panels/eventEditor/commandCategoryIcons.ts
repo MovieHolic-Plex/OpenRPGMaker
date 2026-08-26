@@ -30,10 +30,13 @@ const GROUP_VISUALS: Record<string, CategoryVisual> = {
   "맵/이동": { key: "map", glyph: "➤", label: "지도" },
   "보상/상점": { key: "reward", glyph: "¤", label: "보상" },
   "소리": { key: "sound", glyph: "♪", label: "소리" },
-  "배우/전투": { key: "actor", glyph: "☗", label: "동료" },
+  // 탭 2 저작면: 적을 세운다 / 파티를 바꾼다 / 수치를 움직인다 / 모습을 바꾼다.
+  "전투": { key: "battle", glyph: "⚔", label: "전투" },
+  "파티": { key: "actor", glyph: "☗", label: "파티" },
+  "능력·성장": { key: "actor", glyph: "▲", label: "능력·성장" },
+  "모습·이름": { key: "actor", glyph: "☺", label: "모습·이름" },
   "화면/연출": { key: "screen", glyph: "✦", label: "화면 효과" },
   "시스템/고급": { key: "system", glyph: "⚙", label: "시스템" },
-  "전투 전용": { key: "battle", glyph: "⚔", label: "전투" },
   "모던 명령": { key: "modern", glyph: "◈", label: "도구" },
 };
 
@@ -70,7 +73,7 @@ function buildKindIndex(): Map<string, CategoryVisual> {
   index.set("killPlayer", groupVisual("시스템/고급"));
   index.set("triggerEnding", groupVisual("시스템/고급"));
   index.set("ending", groupVisual("시스템/고급"));
-  index.set("recoverAll", groupVisual("배우/전투"));
+  index.set("recoverAll", groupVisual("능력·성장"));
   return index;
 }
 

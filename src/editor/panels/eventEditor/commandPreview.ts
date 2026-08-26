@@ -5,8 +5,18 @@ import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroop
 import { parseDialogueText } from "@/player/dialogue";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { renderFacesetCrop } from "./facesetPreview";
+import {
+  actorBattleM2Preview,
+  equipmentStage,
+  expGaugeStage,
+  levelGaugeStage,
+  partyChipStage,
+  recoverAllGaugeStage,
+  vitalGaugeStage,
+  type ActorBattlePreviewDeps,
+} from "./commandPreviewActorBattle";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { facesetIconOf, initialBadge, recordIconElement } from "./recordPicker";
+import { initialBadge } from "./recordPicker";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
@@ -86,7 +96,12 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeItem: (cmd, ctx) => itemStage(cmd, ctx),
   shop: shopStage,
   inn: innStage,
-  changeParty: (cmd, ctx) => actorStage(cmd.actorId, cmd.action === "add" ? "파티에 추가" : "파티에서 제외", ctx),
+  changeParty: (cmd, ctx) => partyChipStage(cmd, previewDeps(ctx)),
+  changeActorHp: (cmd) => vitalGaugeStage(cmd, "hp"),
+  changeActorMp: (cmd) => vitalGaugeStage(cmd, "mp"),
+  changeLevel: levelGaugeStage,
+  recoverAll: recoverAllGaugeStage,
+  changeEquipment: (cmd, ctx) => equipmentStage(cmd, previewDeps(ctx)),
   addFollower: (cmd) => screenMock(cmd.name || cmd.actorId || "FOLLOWER", "title"),
   removeFollower: (cmd) => screenMock(cmd.all === true ? "FOLLOWERS OFF" : "FOLLOWER OFF", "title"),
   setLighting: lightingStage,
@@ -99,7 +114,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   inputWait: inputWaitStage,
   changeGold: (cmd, ctx) => goldStage(cmd, ctx),
   openChest: storageChestStage,
-  changeExp: (cmd, ctx) => expStage(cmd, ctx),
+  changeExp: (cmd, ctx) => expGaugeStage(cmd, previewDeps(ctx)),
   learnSkill: skillStage,
   battleProcessing: battleStage,
   setSwitch: (cmd, ctx) => lampStage(switchName(cmd.switchId), resolveSwitchDisplay(cmd, ctx), ctx?.simState ? getSimSwitch(ctx.simState, cmd.switchId) : undefined),
@@ -124,6 +139,8 @@ function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?:
     return messageWindowMock(speaker || undefined, String(fields.body ?? ""), false, context?.face);
   }
   const title = m2CommandById(cmd.commandId)?.title;
+  const actorSurface = actorBattleM2Preview(cmd, title, previewDeps(context));
+  if (actorSurface) return actorSurface;
   if (title === "Open Save Menu") return screenMock("저장", "title");
   if (title === "Game Over") return screenMock("GAME OVER", "gameover");
   if (title === "Return to Title Screen") return screenMock("타이틀 화면", "title");
@@ -754,20 +771,6 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
   return stage;
 }
 
-function actorStage(actorId: string, caption: string, context?: CommandPreviewContext): HTMLElement {
-  const project = store.getCurrent();
-  const record = project.database.actors.find((actor) => actor.id === actorId);
-  const stage = el("div", { class: "ecp-icon-stage" });
-  stage.append(el("div", { class: "ecp-hero-icon", children: [recordIconElement(facesetIconOf(project, record?.faceResourceId, record?.faceIndex ?? 0), record?.name ?? actorId)] }));
-  stage.append(el("div", { class: "ecp-icon-name", text: record?.name ?? (actorId || "(주인공 선택)") }));
-  stage.append(el("div", { class: "ecp-op-strip", text: caption }));
-  if (context?.simState) {
-    const inParty = context.simState.partyActorIds.includes(actorId);
-    stage.append(el("div", { class: "ecp-current-state", text: inParty ? "현재 파티에 있음" : "현재 파티에 없음" }));
-  }
-  return stage;
-}
-
 function goldStage(cmd: Extract<Command, { kind: "changeGold" }>, context?: CommandPreviewContext): HTMLElement {
   const stage = el("div", { class: "ecp-icon-stage" });
   stage.append(el("div", { class: "ecp-gold-badge", text: "G" }));
@@ -777,25 +780,6 @@ function goldStage(cmd: Extract<Command, { kind: "changeGold" }>, context?: Comm
   stage.append(el("div", { class: "ecp-op-strip", text: "소지금 " + cmd.op + " " + amountText }));
   if (context?.simState) {
     stage.append(el("div", { class: "ecp-current-state", text: `현재 소지금: ${context.simState.gold} G` }));
-  }
-  return stage;
-}
-
-function expStage(cmd: Extract<Command, { kind: "changeExp" }>, context?: CommandPreviewContext): HTMLElement {
-  const project = store.getCurrent();
-  const stage = el("div", { class: "ecp-icon-stage" });
-  const targetLabel = !cmd.actorId || cmd.actorId === "party" || cmd.actorId === "all"
-    ? "파티 전체"
-    : (project.database.actors.find((actor) => actor.id === cmd.actorId)?.name ?? cmd.actorId);
-  const amountText = typeof cmd.amount === "number"
-    ? String(cmd.amount)
-    : ("변수 " + (cmd.amount.id || "?"));
-  stage.append(el("div", { class: "ecp-exp-badge", text: "EXP" }));
-  stage.append(el("div", { class: "ecp-icon-name", text: targetLabel }));
-  stage.append(el("div", { class: "ecp-op-strip", text: "경험치 " + cmd.op + " " + amountText }));
-  if (context?.simState && cmd.actorId && cmd.actorId !== "party" && cmd.actorId !== "all") {
-    const curExp = context.simState.variables[cmd.actorId + "_exp"] ?? 0;
-    stage.append(el("div", { class: "ecp-current-state", text: `현재 경험치: ${curExp}` }));
   }
   return stage;
 }
@@ -848,7 +832,12 @@ function battleStage(cmd: Extract<Command, { kind: "battleProcessing" }>): HTMLE
       attrs: { title: `변수 ${cmd.troopVariableId || "?"}` },
     }));
   } else if (shown.length === 0) {
-    row.append(el("div", { class: "ecp-battle-badge", text: "⚔" }));
+    // 번 검 아이콘은 적을 보여 주지 않는다 — 뭐가 비었는지 말하는 경고가 들어간다.
+    row.append(el("div", {
+      class: "ecp-battle-enemy-missing",
+      dataset: { testid: "ecp-battle-enemy-missing" },
+      text: troop ? "이 적 그룹에 몬스터가 없습니다" : "적 그룹을 고르세요",
+    }));
   } else {
     for (const enemyId of shown) {
       const enemy = project.database.enemies.find((entry) => entry.id === enemyId);
@@ -874,12 +863,24 @@ function battleStage(cmd: Extract<Command, { kind: "battleProcessing" }>): HTMLE
     }
   }
   field.append(row);
-  stage.append(field);
 
   const title = cmd.troopSource === "variable"
     ? `변수 ${cmd.troopVariableId || "?"}`
     : (troop?.name ?? (cmd.troopId || "(적 그룹 선택)"));
-  stage.append(el("div", { class: "ecp-icon-name", text: title }));
+  // 트룹은 카드다 — 전장·몬스터 아트·이름이 한 단지로 보인다.
+  const card = el("div", {
+    class: "ecp-troop-card",
+    dataset: {
+      testid: "ecp-troop-card",
+      troopId: cmd.troopSource === "variable" ? "" : (cmd.troopId ?? ""),
+      enemyCount: String(shown.length),
+    },
+    children: [
+      field,
+      el("div", { class: "ecp-troop-card-name", dataset: { testid: "ecp-troop-card-name" }, text: title }),
+    ],
+  });
+  stage.append(card);
 
   const rewards = battleRewardSummary(project, enemyIds);
   if (rewards) {
@@ -1034,6 +1035,15 @@ function summaryCard(cmd: Command, context?: CommandPreviewContext): HTMLElement
     card.append(el("div", { class: "ecp-skipped-badge", text: "실행되지 않는 분기" }));
   }
   return card;
+}
+
+/** 동료·전투 저작면 프리뷰가 쓰는 공용 헬퍼 묶음. */
+function previewDeps(context?: CommandPreviewContext): ActorBattlePreviewDeps {
+  return {
+    icon: heroIcon,
+    variableName: variablePreviewName,
+    simPartyActorIds: context?.simState?.partyActorIds,
+  };
 }
 
 function heroIcon(resourceId: string | undefined, name: string, size: number): HTMLElement {

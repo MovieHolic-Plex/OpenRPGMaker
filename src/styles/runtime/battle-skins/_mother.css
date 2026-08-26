@@ -46,7 +46,7 @@
 .battle-scene[data-battle-skin="mother"] .battle-party {
   background: #000;
   border: 4px solid #fff;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
   border-radius: 18px;
   color: #fff;
 }

@@ -202,9 +202,15 @@ function liveText(readout: LiveReadout): string {
   return `${readout.mapId || "map ?"} · ${position} · ${inputLabel} · ${eventLabel}`;
 }
 
-function applyLiveReadout(line: HTMLElement, stateDump: HTMLElement, dumpDetails: HTMLDetailsElement): void {
+function applyLiveReadout(
+  line: HTMLElement,
+  stateDump: HTMLElement,
+  dumpDetails: HTMLDetailsElement,
+  switchValue: SwitchValueReadout,
+): void {
   // readState() 는 프레임당 한 번만 부른다(세션 전체를 복제하는 비용이 있다).
   const state = debug()?.readState();
+  switchValue.apply(state);
   const readout = collectLiveReadout(state);
   line.textContent = liveText(readout);
   // dataset 은 Playwright 가 파싱하는 기계 판독 경로다(문구는 바뀔 수 있다).
@@ -231,6 +237,38 @@ function startLiveLoop(panel: HTMLElement, refresh: () => void): void {
   requestAnimationFrame(tick);
 }
 
+// ── 선택한 스위치의 현재 값 ────────────────────────────────────
+// ON/OFF 를 눌러도 지금 값이 무엇인지 패널 어디에도 없었다 — 확인하려면 전체 JSON 을 열고
+// 수백 개 사이에서 해당 id 를 눈으로 찾아야 했다. 셀렉트 옆에 현재 값을 바로 붙인다.
+type SwitchValueReadout = {
+  readonly node: HTMLElement;
+  readonly apply: (state: DebugState | undefined) => void;
+};
+
+function createSwitchValueReadout(select: HTMLSelectElement): SwitchValueReadout {
+  const node = el("span", { class: "runtime-debug-live", dataset: { testid: "runtime-debug-switch-value" } });
+  const apply = (state: DebugState | undefined): void => {
+    const id = select.value;
+    const value = id ? state?.switches?.[id] : undefined;
+    node.textContent = !id ? "—" : value === undefined ? "?" : value ? "ON" : "OFF";
+    node.dataset.switchId = id;
+    node.dataset.switchValue = value === undefined ? "unknown" : `${value}`;
+  };
+  // 셀렉트를 바꾸면 다음 라이브 틱을 기다리지 않고 그 자리에서 갱신한다.
+  select.addEventListener("change", () => apply(debug()?.readState()));
+  apply(debug()?.readState());
+  return { node, apply };
+}
+
+// ON/OFF 는 누른 직후 값이 바뀌어야 한다 — 리드아웃이 다음 rAF 까지 이전 값을 보여주면
+// 작업자는 버튼이 안 먹힌 것으로 읽는다(라이브 루프가 없는 접힌 상황도 있다).
+function setSwitchAndRefresh(id: string, value: boolean, switchValue: SwitchValueReadout): void {
+  const hook = debug();
+  if (!hook) return;
+  hook.setSwitch(id, value);
+  switchValue.apply(hook.readState());
+}
+
 export function renderRuntimeDebugPanel(): HTMLElement {
   ensureDebugPanelStyles();
   const project = store.getCurrent();
@@ -238,12 +276,14 @@ export function renderRuntimeDebugPanel(): HTMLElement {
 
   // 스위치 토글.
   const { row: switchFilterRow, select: switchSelect } = filterableSelect(project.switches, "runtime-debug-switch", "스위치 검색(이름/ID)");
+  const switchValue = createSwitchValueReadout(switchSelect);
   const switchRow = el("div", {
     class: "runtime-debug-controls",
     children: [
       switchSelect,
-      el("button", { class: "runtime-debug-btn", text: "ON", attrs: { type: "button" }, dataset: { testid: "runtime-debug-switch-on" }, on: { click: () => debug()?.setSwitch(switchSelect.value, true) } }),
-      el("button", { class: "runtime-debug-btn", text: "OFF", attrs: { type: "button" }, dataset: { testid: "runtime-debug-switch-off" }, on: { click: () => debug()?.setSwitch(switchSelect.value, false) } }),
+      el("button", { class: "runtime-debug-btn", text: "ON", attrs: { type: "button" }, dataset: { testid: "runtime-debug-switch-on" }, on: { click: () => setSwitchAndRefresh(switchSelect.value, true, switchValue) } }),
+      el("button", { class: "runtime-debug-btn", text: "OFF", attrs: { type: "button" }, dataset: { testid: "runtime-debug-switch-off" }, on: { click: () => setSwitchAndRefresh(switchSelect.value, false, switchValue) } }),
+      switchValue.node,
     ],
   });
 
@@ -384,7 +424,7 @@ export function renderRuntimeDebugPanel(): HTMLElement {
   details.open = readExpanded();
   details.addEventListener("toggle", () => writeExpanded(details.open));
 
-  applyLiveReadout(liveLine, stateDump, dumpDetails);
-  startLiveLoop(details, () => applyLiveReadout(liveLine, stateDump, dumpDetails));
+  applyLiveReadout(liveLine, stateDump, dumpDetails, switchValue);
+  startLiveLoop(details, () => applyLiveReadout(liveLine, stateDump, dumpDetails, switchValue));
   return details;
 }

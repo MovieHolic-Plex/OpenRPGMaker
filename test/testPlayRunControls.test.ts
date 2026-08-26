@@ -51,6 +51,12 @@ function button(testid: string): HTMLButtonElement | null {
   return document.querySelector<HTMLButtonElement>(`[data-testid='${testid}']`);
 }
 
+function checkbox(testid: string): HTMLInputElement {
+  const node = document.querySelector<HTMLInputElement>(`[data-testid='${testid}']`);
+  if (!node) throw new Error(`missing testid: ${testid}`);
+  return node;
+}
+
 beforeEach(() => {
   storage = memoryStorage();
   Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
@@ -130,5 +136,44 @@ describe("test play window run controls", () => {
 
     expect(runControls.restartRun).not.toHaveBeenCalled();
     expect(event.defaultPrevented).toBe(false);
+  });
+});
+
+describe("test play skip-title option", () => {
+  it("shows the stored preference as a checkbox instead of hiding it behind the buttons", async () => {
+    await openTestPlayModal();
+    expect(checkbox("test-play-skip-title").checked).toBe(true);
+
+    closeTestPlayModal();
+    storage.setItem(AUTO_START_KEY, "0");
+    await openTestPlayModal();
+    expect(checkbox("test-play-skip-title").checked).toBe(false);
+    expect(lastRenderOptions().autoStartRun).toBe(false);
+  });
+
+  it("applies the option to the open window: off goes to the title, on starts the run", async () => {
+    await openTestPlayModal();
+    const skipTitle = checkbox("test-play-skip-title");
+
+    skipTitle.checked = false;
+    skipTitle.dispatchEvent(new Event("change"));
+    expect(runControls.returnToTitle).toHaveBeenCalledTimes(1);
+    expect(storage.getItem(AUTO_START_KEY)).toBe("0");
+
+    skipTitle.checked = true;
+    skipTitle.dispatchEvent(new Event("change"));
+    expect(runControls.restartRun).toHaveBeenCalledTimes(1);
+    expect(storage.getItem(AUTO_START_KEY)).toBe("1");
+  });
+
+  it("keeps the checkbox in sync when the titlebar buttons change the preference", async () => {
+    await openTestPlayModal();
+    const skipTitle = checkbox("test-play-skip-title");
+
+    button("test-play-title")?.click();
+    expect(skipTitle.checked).toBe(false);
+
+    button("test-play-restart")?.click();
+    expect(skipTitle.checked).toBe(true);
   });
 });
