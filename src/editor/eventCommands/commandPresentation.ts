@@ -35,7 +35,8 @@ const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
   actor: M2_PICKER_GROWTH_GROUP,
   economy: "아이템/경제",
   social: M2_PICKER_GROWTH_GROUP,
-  monster: M2_PICKER_PARTY_GROUP,
+  // 필드 몬스터 등장/제거는 전투 준비다 — 파티 명부가 아니다.
+  monster: M2_PICKER_BATTLE_GROUP,
   follower: M2_PICKER_PARTY_GROUP,
   atmosphere: "화면/연출",
   media: "미디어",

@@ -172,8 +172,10 @@ export function pickerPageForM2Command(row: M2PdfCommandRow): M2CommandPickerPag
   if (QUICK_AUTHORING_PAGE_TITLES.has(row.title)) return 1;
   if (ACTOR_AND_BATTLE_PAGE_TITLES.has(row.title)) return 2;
   if (DETAILED_MAP_PRESENTATION_PAGE_TITLES.has(row.title)) return 3;
-  if (isScreenPresentationCommand(row.title)) return 3;
+  // 명시 분류가 휴리스틱을 이긴다. "Open Menu Screen"·"Return to Title Screen" 은 제목에
+  // Screen 이 들어가도 연출이 아니라 시스템 명령이다(탭 4).
   if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return 4;
+  if (isScreenPresentationCommand(row.title)) return 3;
   throw new Error(`Unclassified event command picker page: ${row.index} ${row.title}`);
 }
 
