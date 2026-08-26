@@ -441,7 +441,7 @@ export function createProposalHost(options: {
       return;
     }
     clearDecisionSurface();
-    setStatus("적용됨");
+    setStatus("대기");
     const messageState = pendingProposalMessage;
     setAssistantMessageBadge(messageState?.assistantBubble ?? null, "applied");
     lastAppliedProposalMessage = messageState

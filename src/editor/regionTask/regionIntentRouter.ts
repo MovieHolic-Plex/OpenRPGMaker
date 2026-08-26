@@ -42,7 +42,7 @@ export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, reado
   ],
   "battle-trap": ["몬스터", "전투", "인카운터", "함정", "추격", "쫓아", "슬라임", "유령", "트랩", "즉사", "마녀", "저택"],
   mood: ["조명", "분위기", "어둡", "음산", "축제", "등불", "밤에", "밤이", "밤을", "밤 ", "화려", "을씨년"],
-  transform: ["대칭", "반복", "복제", "옮겨", "옮기", "지워", "지우", "비우", "미러", "뒤집"],
+  transform: ["대칭", "반복", "복제", "옮겨", "옮기", "지워", "지우", "비우", "삭제", "제거", "없애", "미러", "뒤집"],
 };
 
 const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
@@ -56,7 +56,7 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
     // (2026-07-10 라이브 실측 수정) — 탑 등 구조물도 build_wall로 안내한다.
     "- 구조물(야외): author_house(집·여관·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
   "npc-shop":
-    "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정), set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결)",
+    "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정), set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결). 상점/가게를 지울 때는 find_layout_regions({mapId, query})로 상점 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})로 지운다(kind market은 상점 타일만 지우므로 이웃 집·흙길은 유지). show_map_region은 지운 뒤 결과 확인용.",
   "door-transfer":
     "- 문/이동: create_transfer_pair {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트 왕복 쌍을 한 번에. 문 시각 배치는 place_door",
   "quest-trigger":
@@ -68,7 +68,7 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
   transform:
     // clear_region은 v1→v2(tile_paint)→v3(tile_erase) 폐기 체인이라 LLM에 노출되지 않는다
     // (2026-07-10 라이브 실측 수정) — 비우기는 tile_erase로 안내한다.
-    "- 변형: mirror_region {mapId,x,y,w,h,axis:\"horizontal\"|\"vertical\"}(대칭), tile_erase(비우기), move_event/duplicate_event(이벤트 이동·복제)",
+    "- 변형: mirror_region {mapId,x,y,w,h,axis:\"horizontal\"|\"vertical\"}(대칭), tile_erase(비우기), move_event/duplicate_event(이벤트 이동·복제). 상점/가게 철거는 find_layout_regions({mapId, query})로 영역을 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region으로 결과 확인. 영역 상자는 find_layout_regions가 준 rect를 쓰고 비전으로 추측하지 말 것",
 };
 
 const CATEGORY_ORDER: readonly RegionIntentCategory[] = [
