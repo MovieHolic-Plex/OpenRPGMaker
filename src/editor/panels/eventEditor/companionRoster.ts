@@ -3,6 +3,13 @@
 // - 명령 피커 탭2 상단 로스터와 따라오기 프리셋 칩이 같은 렌더러를 쓴다.
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
+import {
+  CHARSET_FRAME_HEIGHT,
+  CHARSET_FRAME_WIDTH,
+  CHARSET_SHEET_COLUMNS,
+  CHARSET_SHEET_ROWS,
+  charsetFrameSource,
+} from "@/assets/easyrpgRtp";
 import type { ActorRecord, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -14,6 +21,17 @@ type PortraitIcon =
       readonly cellHeight: number;
       readonly columns: number;
       readonly index: number;
+      readonly sheetWidth: number;
+      readonly sheetHeight: number;
+    }
+  | {
+      // 캐릭터셋 폴백 — canonical 프레임 소스(charsetFrameSource)의 절대 오프셋.
+      readonly kind: "sheetRect";
+      readonly url: string;
+      readonly x: number;
+      readonly y: number;
+      readonly cellWidth: number;
+      readonly cellHeight: number;
       readonly sheetWidth: number;
       readonly sheetHeight: number;
     }
@@ -36,16 +54,21 @@ function companionPortrait(project: Pick<Project, "assets">, actor: ActorRecord)
   }
   const charsetUrl = resolveAssetResourceUrl(actor.characterResourceId, { project });
   if (charsetUrl === null) return { kind: "none" };
-  // charset 시트 가로열(cell 24×32 기준) 기준 characterIndex 번째 슬롯의 idle-front 한 칸.
+  // canonical 캐릭터셋 한 칸(캐릭터 블록×방향×패턴) — 시트 전체 표시 금지 계약.
+  const source = charsetFrameSource({
+    characterIndex: clampIndex(actor.characterIndex, 7),
+    direction: "down",
+    pattern: 1,
+  });
   return {
-    kind: "sheet",
+    kind: "sheetRect",
     url: charsetUrl,
-    cellWidth: 24,
-    cellHeight: 32,
-    columns: 4,
-    index: clampIndex(actor.characterIndex, 7),
-    sheetWidth: 96,
-    sheetHeight: 128,
+    x: source.x,
+    y: source.y,
+    cellWidth: source.width,
+    cellHeight: source.height,
+    sheetWidth: CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH,
+    sheetHeight: CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT,
   };
 }
 
@@ -67,18 +90,25 @@ export function companionPortraitElement(
     return thumb;
   }
   const scale = options.sizePx / icon.cellWidth;
-  const col = icon.index % icon.columns;
-  const row = Math.floor(icon.index / icon.columns);
   thumb.style.setProperty("background-image", `url("${icon.url}")`);
   thumb.style.setProperty("background-repeat", "no-repeat");
   thumb.style.setProperty(
     "background-size",
     `${icon.sheetWidth * scale}px ${icon.sheetHeight * scale}px`,
   );
-  thumb.style.setProperty(
-    "background-position",
-    `-${col * icon.cellWidth * scale}px -${row * icon.cellHeight * scale}px`,
-  );
+  if (icon.kind === "sheet") {
+    const col = icon.index % icon.columns;
+    const row = Math.floor(icon.index / icon.columns);
+    thumb.style.setProperty(
+      "background-position",
+      `-${col * icon.cellWidth * scale}px -${row * icon.cellHeight * scale}px`,
+    );
+  } else {
+    thumb.style.setProperty(
+      "background-position",
+      `-${icon.x * scale}px -${icon.y * scale}px`,
+    );
+  }
   thumb.style.setProperty("width", `${options.sizePx}px`);
   thumb.style.setProperty("height", `${options.sizePx}px`);
   return thumb;
