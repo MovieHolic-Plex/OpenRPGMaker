@@ -581,8 +581,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         children: cells,
       });
     };
+    // A/B 토글이 이미 「이전 | 이후」를 이름표로 달고 있으므로 figure 안에 캡션을 또 두지 않는다.
+    // (실측: 캡션을 남기면 숨긴 쪽 figure 가 캡션만 남아 이후 그림 옆에 "이전" 이 떠 있었다.)
     const makeFigure = async (
-      label: string,
       testid: string,
       project: Project,
       figureMap: GameMap | undefined,
@@ -602,13 +603,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }
       return el("figure", {
         class: "region-task-compare-figure",
-        children: [body, el("figcaption", { text: label })],
+        children: [body],
       });
     };
     const overlay = changeOverlay();
-    const beforeFigure = await makeFigure("이전", "region-task-before", pending.baseProject, map, null);
+    const beforeFigure = await makeFigure("region-task-before", pending.baseProject, map, null);
     if (!isCurrentExecution(executionId)) return;
-    const afterFigure = await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap, overlay);
+    const afterFigure = await makeFigure("region-task-after", pending.clippedProject, clippedMap, overlay);
     if (!isCurrentExecution(executionId)) return;
 
     let currentAbView: "before" | "after" = "after";
