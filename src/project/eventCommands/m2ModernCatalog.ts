@@ -90,7 +90,7 @@ const DATA_QUERY_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "variable", label: "변수" },
 ];
 
-const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [
+export const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "white", label: "흰색" },
   { value: "red", label: "빨강" },
   { value: "green", label: "초록" },
@@ -122,7 +122,8 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
       return [
         { key: "effect", label: "효과", type: "select", defaultValue: "fadeIn", options: SCREEN_EFFECT_OPTIONS },
         { key: "value", label: "값", type: "text", defaultValue: "" },
-        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+        // 런타임 clampMs(commandCatalog.ts) 가 50~5000ms 로 자른다 — 폼도 같은 범위를 말해야 한다.
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300, min: 50, max: 5000, step: 100 },
       ];
     case "Spawn Event":
       return [
