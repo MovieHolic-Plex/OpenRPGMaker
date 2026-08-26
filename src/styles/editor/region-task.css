@@ -1,7 +1,7 @@
 /* 선택 영역 AI 작업 모달 (우클릭 메뉴 / 우클릭 드래그 팝오버). */
 .region-task-backdrop {
   align-items: center;
-  background: rgba(42, 37, 33, 0.18);
+  background: var(--bg-scrim);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -13,23 +13,23 @@
 /* 우클릭 드래그 직후: 어두운 풀스크린 대신 가벼운 클릭-아웃 레이어 + 포인터 근처 팝오버 */
 .region-task-backdrop-popover {
   align-items: flex-start;
-  background: rgba(42, 37, 33, 0.08);
+  background: rgba(15, 23, 42, 0.08);
   justify-content: flex-start;
   padding: 0;
 }
 
 .region-task-popover {
-  box-shadow: 0 12px 40px rgba(42, 37, 33, 0.10), 0 0 0 1px var(--accent-muted);
+  box-shadow: var(--shadow-pop), 0 0 0 1px var(--accent-muted);
   /* 결과 로그·before/after 비교가 커져도 뷰포트 밖으로 밀리지 않게 */
   max-height: calc(100vh - 24px);
   max-height: calc(100dvh - 24px);
-  /* 미리보기 두 장(200px)+화살표가 들어가야 해 360 → 460 */
-  max-width: min(460px, calc(100vw - 24px));
+  /* 단일 A/B 미리보기 전환으로 팝오버 폭을 슬림하게 축소 (460 → 380) */
+  max-width: min(380px, calc(100vw - 24px));
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  z-index: 1201;
+  z-index: var(--z-popover-top);
 }
 
 .region-task-modal {
@@ -66,7 +66,7 @@
   align-items: center;
   display: inline-flex;
   flex: 0 1 auto;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -78,7 +78,7 @@
 /* 제목 옆 작은 로그 복사 버튼 */
 .region-task-copy-log {
   background: transparent;
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line);
   border-radius: 999px;
   color: var(--editor-text-muted);
   cursor: pointer;
@@ -87,14 +87,14 @@
   font-size: 11px;
   font-weight: 600;
   line-height: 1;
-  padding: 3px 8px;
+  padding: 3px var(--space-2);
 }
 .region-task-copy-log:hover:not(:disabled) {
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .region-task-copy-log.is-ready:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
+  border-color: var(--accent-border);
   color: var(--editor-text);
 }
 .region-task-copy-log:disabled {
@@ -103,30 +103,47 @@
 }
 
 .region-task-chip {
-  background: var(--accent-muted, var(--accent-muted));
-  border: 1px solid var(--accent-border, var(--accent-muted));
+  align-items: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
   border-radius: var(--radius-s);
   color: var(--editor-text);
+  display: inline-flex;
   font-size: 12px;
+  gap: var(--space-1);
   margin-inline-start: auto;
-  padding: 2px 8px;
+  padding: 2px var(--space-2);
+}
+.region-task-chip svg {
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
 }
 
 .region-task-close {
+  align-items: center;
   background: transparent;
   border: none;
   color: var(--editor-text-muted);
   cursor: pointer;
+  display: inline-flex;
   font-size: 16px;
+  justify-content: center;
   line-height: 1;
-  padding: 4px;
+  padding: var(--space-1);
+}
+.region-task-close svg {
+  flex-shrink: 0;
+  height: 14px;
+  width: 14px;
 }
 .region-task-close:hover {
   color: var(--editor-text);
 }
 
 .region-task-input {
-  background: var(--bg-raised, rgba(42, 37, 33, 0.06));
+  background: var(--bg-raised);
   border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
   color: var(--editor-text);
@@ -136,7 +153,7 @@
   width: 100%;
 }
 .region-task-input:focus {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
   outline: none;
 }
 
@@ -159,7 +176,7 @@
   word-break: break-word;
 }
 .region-task-log-line.is-error {
-  color: var(--danger, #C6403D);
+  color: var(--danger);
 }
 
 .region-task-summary {
@@ -172,14 +189,16 @@
 }
 
 .region-task-actions {
+  align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: flex-end;
 }
 
 .region-task-run {
-  background: var(--accent, #4A57D6);
-  border: 1px solid var(--accent-border, #4A57D6);
+  background: var(--accent);
+  border: 1px solid var(--accent-border);
   border-radius: var(--radius-s);
   color: var(--on-accent);
   cursor: pointer;
@@ -196,9 +215,9 @@
 
 .region-task-cancel {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line-strong);
   border-radius: var(--radius-s);
-  color: var(--editor-text, #2A2521);
+  color: var(--editor-text);
   cursor: pointer;
   display: none;
   font: inherit;
@@ -207,18 +226,18 @@
 }
 .region-task-cancel:hover,
 .region-task-cancel:focus-visible {
-  border-color: var(--danger, #C6403D);
-  color: var(--danger, #C6403D);
+  border-color: var(--danger);
+  color: var(--danger);
   outline: none;
 }
 .region-task-modal[data-stage="running"] .region-task-run { display: none; }
 .region-task-modal[data-stage="running"] .region-task-cancel { display: inline-flex; }
 
 .region-task-direct-room {
-  background: color-mix(in srgb, var(--editor-panel, #FFFDF8) 72%, var(--accent, #4A57D6));
-  border: 1px solid var(--accent-border, #4A57D6);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-s);
-  color: var(--editor-text, #2A2521);
+  color: var(--editor-text);
   cursor: pointer;
   font: inherit;
   font-weight: 600;
@@ -226,22 +245,18 @@
 }
 
 .region-task-direct-select {
-  background: var(--editor-panel, #FFFDF8);
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  background: var(--bg-inset);
+  border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
-  color: var(--editor-text, #2A2521);
+  color: var(--editor-text);
   font: inherit;
   max-width: 132px;
   padding: var(--space-2);
 }
 
-.region-task-actions {
-  flex-wrap: wrap;
-  align-items: center;
-}
 /* ── A: 부분 적용 청크 트리 ── */
 .region-task-chunk-tree {
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
   font-size: 0.85em;
   margin: var(--space-1) 0;
@@ -251,7 +266,7 @@
 }
 .region-task-chunk-tree.hidden { display: none; }
 .region-task-chunk-layer-title {
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   font-size: 0.85em;
   margin-bottom: var(--space-1);
 }
@@ -262,25 +277,32 @@
   margin-bottom: var(--space-1);
 }
 .region-task-chunk-layer-name {
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   font-size: 0.8em;
   font-weight: 600;
   text-transform: uppercase;
 }
 .region-task-chunk-label {
   align-items: center;
+  border-radius: var(--radius-s);
+  cursor: pointer;
   display: flex;
   font-size: 0.9em;
   gap: var(--space-1);
+  padding: 1px var(--space-1);
 }
+.region-task-chunk-label:hover { background: var(--editor-row-hover); }
+.region-task-chunk-label:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+
 .region-task-chunk-cb {
-  accent-color: var(--accent, #4A57D6);
+  accent-color: var(--accent);
   cursor: pointer;
 }
 .region-task-partial-apply {
   background: transparent;
-  border: 1px solid var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-s);
+  color: var(--accent);
 }
 .region-task-partial-apply:disabled {
   cursor: default;
@@ -289,10 +311,10 @@
 
 /* ── F: 영역 통계 칩 ── */
 .region-task-stats-chip {
-  background: var(--editor-panel-bg-accent, var(--accent-muted));
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  background: var(--accent-muted);
+  border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   font-size: 0.8em;
   padding: 1px var(--space-2);
 }
@@ -313,7 +335,7 @@
   min-width: 0;
 }
 .region-task-recap-text {
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   flex: 1 1 auto;
   font-size: 13px;
   min-width: 0;
@@ -323,16 +345,16 @@
 }
 .region-task-recap-edit {
   background: transparent;
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line);
   border-radius: 999px;
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   cursor: pointer;
   flex: 0 0 auto;
   font: inherit;
   font-size: 11px;
-  padding: 3px 10px;
+  padding: 3px var(--space-2);
 }
-.region-task-recap-edit:hover { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
+.region-task-recap-edit:hover { border-color: var(--accent); color: var(--accent); }
 
 .region-task-prompt {
   display: flex;
@@ -342,18 +364,36 @@
 
 /* ── 「고급」 접이식 ── */
 .region-task-advanced-toggle {
+  align-items: center;
   align-self: flex-start;
   background: transparent;
   border: none;
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   cursor: pointer;
+  display: inline-flex;
   font: inherit;
   font-size: 12px;
+  gap: var(--space-1);
   padding: 2px 0;
 }
-.region-task-advanced-toggle:hover { color: var(--editor-text, #2A2521); }
+.region-task-advanced-toggle:hover { color: var(--editor-text); }
+.region-task-advanced-chevron {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  display: inline-block;
+  flex-shrink: 0;
+  height: 6px;
+  margin-right: 2px;
+  transform: rotate(-45deg);
+  transition: transform 140ms ease;
+  width: 6px;
+}
+.region-task-advanced-toggle[aria-expanded="true"] .region-task-advanced-chevron {
+  transform: rotate(45deg);
+}
 .region-task-advanced-body {
-  border-top: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  border-top: 1px solid var(--editor-line);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -372,15 +412,124 @@
 
 /* 어시스턴트 문단은 툴 추적 줄과 구분한다 */
 .region-task-log-line.is-assistant {
-  color: var(--editor-text, #2A2521);
+  border-left: 2px solid var(--editor-line-strong);
+  color: var(--editor-text);
   padding-left: var(--space-2);
-  border-left: 2px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
 }
 
 /* ── 변경 칸 하이라이트 (이후 썸네일 위) ──
-   캔버스는 targetWidth 200 이라 컨테이너(max-width 200)와 정확히 같은 크기다 —
+   캔버스는 targetWidth 240 이라 컨테이너(max-width 240)와 정확히 같은 크기다 —
    크롭이 없으므로 inset:0 오버레이 격자가 타일과 1:1 로 맞는다. */
-.region-task-compare-canvas { max-width: 200px; position: relative; }
+.region-task-compare-canvas {
+  background: var(--bg-surface);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  cursor: zoom-in;
+  max-width: 240px;
+  overflow: hidden;
+  position: relative;
+}
+.region-task-compare-canvas canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+.region-task-compare-canvas.is-zoomed {
+  cursor: zoom-out;
+  max-width: none;
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+}
+.region-task-compare-canvas.is-zoomed canvas {
+  transform: scale(2);
+  transform-origin: top left;
+}
+
+.region-task-compare-arrow {
+  color: var(--editor-text-muted);
+  font-size: 16px;
+}
+
+.region-task-compare {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+/* ── 단일 A/B 미리보기 래퍼 및 토글 ── */
+.region-task-preview {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.region-task-preview-ab-toggle {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+}
+
+.region-task-preview-ab-btn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  padding: 3px var(--space-3);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.region-task-preview-ab-btn:hover {
+  color: var(--editor-text);
+}
+
+.region-task-preview-ab-btn.is-active {
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.08));
+  color: var(--editor-text);
+  font-weight: 600;
+}
+
+.region-task-preview-stage {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* A/B 상태에 따라 활성 캔버스만 표시 */
+.region-task-preview[data-ab-view="before"] [data-testid="region-task-after"],
+.region-task-preview[data-ab-view="after"] [data-testid="region-task-before"] {
+  display: none !important;
+}
+
+.region-task-preview[data-ab-view="before"] [data-testid="region-task-before"],
+.region-task-preview[data-ab-view="after"] [data-testid="region-task-after"] {
+  display: block;
+}
+
+.region-task-compare-figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  text-align: center;
+}
+.region-task-compare-figure figcaption {
+  color: var(--editor-text-muted);
+  font: 600 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
 .region-task-change-overlay {
   display: grid;
   inset: 0;
@@ -391,48 +540,49 @@
   transition: background-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
 .region-task-change-cell.is-changed {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 /* 체크를 푼 덩어리 — 적용되지 않으므로 하이라이트를 걷는다 */
 .region-task-change-cell.is-changed.is-excluded {
   background: transparent;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-text-muted, #6B5F52) 35%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-text-muted) 35%, transparent);
 }
 /* 체크박스에 마우스/포커스가 있는 동안: 지목된 덩어리만 살리고 나머지는 물러난다 */
 .region-task-change-overlay.is-isolating .region-task-change-cell.is-changed { opacity: 0.25; }
 .region-task-change-overlay .region-task-change-cell.is-focus {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
-  box-shadow: inset 0 0 0 2px #fff;
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: inset 0 0 0 2px var(--bg-raised);
   opacity: 1;
 }
-/* 이벤트 마커 — 오버레이 격자 한 칸에 이모지 하나. 어떤 타일 위에 놓여도 읽히도록
+
+/* 이벤트 마커 — 오버레이 격자 한 칸에 번호 마커. 어떤 타일 위에 놓여도 읽히도록
    반투명 어두운 원을 깐다. 클릭·hover 대상은 아래 변경 목록 행이므로 포인터는 통과시킨다. */
 .region-task-event-marker {
   align-items: center;
-  background: rgba(42, 37, 33, 0.12);
+  background: var(--bg-active);
   border-radius: 50%;
+  color: var(--text-1);
   display: flex;
-  font-size: 11px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 700;
   justify-content: center;
   line-height: 1;
   pointer-events: none;
   transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
 .region-task-event-marker.is-focus {
-  box-shadow: 0 0 0 2px #fff;
+  box-shadow: 0 0 0 2px var(--bg-raised);
   transform: scale(1.35);
 }
 .region-task-change-overlay.is-isolating .region-task-event-marker { opacity: 0.25; }
+
 /* 목록 행이 tabindex 로 포커스를 받는다 — 키보드로도 어느 행을 보고 있는지 보여야 한다. */
 .region-task-change-row:focus-visible {
-  outline: 2px solid var(--accent, #4A57D6);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
-
-.region-task-chunk-label { border-radius: 4px; cursor: pointer; padding: 1px 4px; }
-.region-task-chunk-label:hover { background: var(--editor-row-hover, rgba(42, 37, 33, 0.06)); }
-.region-task-chunk-label:focus-within { outline: 2px solid var(--accent, #4A57D6); outline-offset: 1px; }
 
 @media (prefers-reduced-motion: reduce) {
   .region-task-change-cell { transition: none; }
@@ -441,133 +591,146 @@
   .region-task-event-marker.is-focus { transform: none; }
 }
 
-/* ── 추천 카테고리 줄 — 무엇을 시킬 수 있는지의 범위를 항상 보여 준다 ── */
+/* ── 추천 카테고리 줄 (Tier 1: Filter Pills) ── */
 .region-task-categories {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1);
 }
-/* 아래 명령 칩(.region-task-suggest-chip, inline-assist.css)과 같은 알약 모양이되,
-   고른 상태를 강조색으로 드러낸다 — 지금 어느 묶음을 보고 있는지가 보여야 한다. */
 .region-task-category-chip {
-  background: transparent;
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
   border-radius: 999px;
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   cursor: pointer;
+  display: inline-flex;
   font: 500 11px/1 var(--font-ui, system-ui, sans-serif);
-  padding: 5px 10px;
+  gap: var(--space-1);
+  padding: 4px var(--space-2);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
+}
+.region-task-category-chip svg {
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
 }
 .region-task-category-chip:hover,
 .region-task-category-chip:focus-visible {
-  border-color: var(--editor-blue, #4A57D6);
-  color: var(--editor-text, #2A2521);
+  background: var(--control-bg-hover);
+  border-color: var(--border-default);
+  color: var(--editor-text);
   outline: none;
 }
 .region-task-category-chip.is-active {
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── 추천 명령 목록 (Tier 2: Icon + Label structured rows/cards) ── */
+.region-task-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+.region-task-suggest-chip {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 12px/1.2 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+  white-space: nowrap;
+}
+.region-task-suggest-chip svg {
+  color: var(--accent);
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
+}
+.region-task-suggest-chip:hover,
+.region-task-suggest-chip:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-pop);
+  color: var(--editor-text);
+  outline: none;
 }
 
 /* ── 변경 목록 — 타일·이벤트·영역 밖 변경을 한 자리에 ── */
 .region-task-change-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   margin-top: var(--space-2);
 }
 .region-task-change-list.hidden { display: none; }
 .region-task-change-row {
-  align-items: baseline;
+  align-items: center;
   display: flex;
   font-size: 13px;
-  gap: 8px;
+  gap: var(--space-2);
   line-height: 1.5;
 }
-.region-task-change-icon { flex: 0 0 auto; }
+.region-task-change-icon {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+.region-task-change-icon svg {
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
+}
 .region-task-change-text { min-width: 0; overflow-wrap: anywhere; }
 /* 영역 밖 변경 — clipToRegion 이 되돌리지 않고 통과시키는 것들. 눈에 걸려야 한다. */
 .region-task-change-row.is-outside .region-task-change-text {
-  color: var(--warning, #8A5E00);
+  color: var(--warning);
 }
 
-/* 액션 1행 — 지금 눌러야 할 것 하나만 강조색 */
-.region-task-compare-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
-.region-task-apply {
-  background: var(--accent, #4A57D6);
-  border: 1px solid var(--accent-border, #4A57D6);
-  border-radius: var(--radius-s);
-  color: var(--on-accent);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: var(--space-2) var(--space-4);
-}
-.region-task-retry,
-.region-task-discard {
-  background: transparent;
-  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
-  border-radius: var(--radius-s);
-  color: var(--editor-text, #2A2521);
-  cursor: pointer;
-  font: inherit;
-  padding: var(--space-2) var(--space-3);
-}
-.region-task-retry:hover,
-.region-task-discard:hover { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
-
-/* ── F: 슬래시 자동완성 드롭다운 ── */
-.region-task-autocomplete {
-  background: var(--editor-panel-bg, #FCF9F2);
-  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
-  border-radius: var(--radius-s);
+/* ── Safe harness review: Consolidated review container ── */
+.region-task-review-card {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
   display: flex;
   flex-direction: column;
-  margin: var(--space-1) 0;
-  max-height: 140px;
-  overflow-y: auto;
+  gap: 0;
+  overflow: hidden;
 }
-.region-task-autocomplete.hidden { display: none; }
-.region-task-autocomplete-item {
-  background: transparent;
-  border: none;
-  color: var(--editor-text, #2A2521);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.9em;
-  padding: var(--space-1) var(--space-2);
-  text-align: left;
-}
-.region-task-autocomplete-item:hover {
-  background: var(--editor-row-hover, rgba(42, 37, 33, 0.06));
-}
-.region-task-autocomplete-item.is-selected {
-  background: var(--accent, #4A57D6);
-  color: var(--on-accent);
+.region-task-review-card:empty { display: none; }
+.region-task-review-card > :not(.hidden) + :not(.hidden) {
+  border-top: 1px solid var(--border-subtle);
 }
 
-
-/* Safe harness review: visible checkpoints, gameplay metrics, blockers, issues and room controls. */
 .region-task-checkpoint-timeline {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  padding: var(--space-2) var(--space-3);
 }
 @media (max-width: 380px) {
   .region-task-checkpoint-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .region-task-checkpoint {
   align-items: center;
-  color: var(--editor-text-muted, #6B5F52);
+  color: var(--editor-text-muted);
   display: flex;
   font-size: 11px;
-  gap: 4px;
+  gap: var(--space-1);
   min-width: 0;
 }
 .region-task-checkpoint-dot {
@@ -579,51 +742,69 @@
   height: 16px;
   justify-content: center;
 }
-.region-task-checkpoint.is-done { color: var(--success, #18764F); }
-.region-task-checkpoint.is-blocked { color: var(--danger, #C6403D); }
+.region-task-checkpoint-dot svg {
+  flex-shrink: 0;
+  height: 10px;
+  width: 10px;
+}
+.region-task-checkpoint.is-done { color: var(--success); }
+.region-task-checkpoint.is-blocked { color: var(--danger); }
+
 .region-task-review-metrics {
-  background: color-mix(in srgb, var(--editor-panel-bg, #FCF9F2) 80%, var(--accent, #4A57D6));
-  border-radius: var(--radius-s);
-  color: var(--editor-text-muted, #6B5F52);
+  background: transparent;
+  color: var(--editor-text-muted);
   font-size: 11px;
   line-height: 1.5;
-  padding: 6px 8px;
+  padding: var(--space-2) var(--space-3);
 }
 .region-task-review-metrics.hidden,
 .region-task-blockers.hidden,
 .region-task-room-controls.hidden { display: none; }
+
 .region-task-review-issues,
 .region-task-blockers {
   display: flex;
   flex-direction: column;
   font-size: 12px;
   gap: 3px;
+  padding: var(--space-2) var(--space-3);
 }
 .region-task-review-issue.is-error,
-.region-task-blockers { color: var(--danger, #C6403D); }
-.region-task-review-issue.is-warning { color: var(--warning, #8A5E00); }
-.region-task-review-clear { color: var(--success, #18764F); }
+.region-task-blockers { color: var(--danger); }
+.region-task-review-issue.is-warning { color: var(--warning); }
+.region-task-review-clear {
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .region-task-room-controls {
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
-  border-radius: var(--radius-s);
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 7px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
 }
-.region-task-room-title { color: var(--editor-text-muted); font-size: 11px; font-weight: 700; }
-.region-task-room-row { align-items: center; display: flex; gap: 6px; }
+.region-task-room-title {
+  color: var(--editor-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.region-task-room-row { align-items: center; display: flex; gap: var(--space-2); }
 .region-task-room-name { flex: 1 1 auto; font-size: 12px; min-width: 0; }
 .region-task-room-lock,
 .region-task-room-reroll {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line-strong);
   border-radius: 999px;
   color: var(--editor-text);
   cursor: pointer;
   font: inherit;
   font-size: 10px;
-  padding: 3px 7px;
+  padding: 3px var(--space-2);
 }
 .region-task-room-reroll:disabled { cursor: default; opacity: 0.45; }
 @media (max-width: 520px) {
@@ -632,75 +813,150 @@
   .region-task-room-name { flex-basis: 100%; }
 }
 
-
 .region-task-live-progress {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: var(--space-1);
 }
 .region-task-live-progress:empty,
 .region-task-modal[data-stage="compose"] .region-task-live-progress { display: none; }
 .region-task-live-progress span {
-  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line);
   border-radius: 999px;
   color: var(--editor-text-muted);
   font-size: 10px;
-  padding: 3px 7px;
+  padding: 3px var(--space-2);
 }
-.region-task-live-progress .is-active { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
-.region-task-live-progress .is-done { border-color: var(--success, #18764F); color: var(--success, #18764F); }
-.region-task-live-progress .is-blocked { border-color: var(--danger, #C6403D); color: var(--danger, #C6403D); }
-
+.region-task-live-progress .is-active { border-color: var(--accent); color: var(--accent); }
+.region-task-live-progress .is-done { border-color: var(--success); color: var(--success); }
+.region-task-live-progress .is-blocked { border-color: var(--danger); color: var(--danger); }
 
 /* NPC 일정은 암묵적으로 켜지지 않는다. 승인 전에 실행 방식 세 가지를 명시적으로 고른다. */
 .region-task-npc-decision {
-  background: color-mix(in srgb, var(--warning, #8A5E00) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--warning, #8A5E00) 55%, transparent);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 55%, transparent);
   border-radius: var(--radius-s);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
 }
 .region-task-npc-decision.hidden { display: none; }
-.region-task-npc-decision-title { color: var(--warning, #8A5E00); font-size: 12px; font-weight: 700; }
+.region-task-npc-decision-title { color: var(--warning); font-size: 12px; font-weight: 700; }
 .region-task-npc-decision-help { color: var(--editor-text-muted); font-size: 11px; line-height: 1.45; }
-.region-task-npc-decision-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.region-task-npc-decision-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .region-task-npc-decision-actions button,
 .region-task-room-checkpoint {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
+  border: 1px solid var(--editor-line-strong);
   border-radius: 999px;
   color: var(--editor-text);
   cursor: pointer;
   font: inherit;
   font-size: 10px;
-  padding: 4px 8px;
+  padding: 4px var(--space-2);
 }
 .region-task-npc-decision-actions button:hover,
-.region-task-room-checkpoint:hover { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
+.region-task-room-checkpoint:hover { border-color: var(--accent); color: var(--accent); }
 
 /* 실제 detached map snapshot을 사용한 레이어별 중간 미리보기. */
-.region-task-room-checkpoints { align-items: center; display: flex; flex-wrap: wrap; gap: 5px; }
-.region-task-room-checkpoint.is-failed { border-color: var(--danger, #C6403D); color: var(--danger, #C6403D); }
-.region-task-room-checkpoint.is-done { border-color: color-mix(in srgb, var(--success, #18764F) 65%, transparent); }
+.region-task-room-checkpoints { align-items: center; display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.region-task-room-checkpoint.is-failed { border-color: var(--danger); color: var(--danger); }
+.region-task-room-checkpoint.is-done { border-color: color-mix(in srgb, var(--success) 65%, transparent); }
 .region-task-room-checkpoint.is-selected {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, transparent);
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--accent);
 }
 .region-task-room-checkpoint-preview {
   align-items: center;
-  background: rgba(0, 0, 0, 0.18);
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-s);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--space-1);
   max-height: 260px;
   overflow: auto;
-  padding: 6px;
+  padding: var(--space-2);
 }
 .region-task-room-checkpoint-preview.hidden { display: none; }
 .region-task-room-checkpoint-preview canvas { height: auto; image-rendering: pixelated; max-width: 100%; }
 .region-task-room-checkpoint-caption { color: var(--editor-text-muted); font-size: 11px; }
+
+/* 액션 1행 — 지금 눌러야 할 것 하나만 강조색. 스크롤 하단에 고정 */
+.region-task-compare-actions {
+  align-items: center;
+  background: var(--bg-overlay);
+  border-top: 1px solid var(--border-subtle);
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  position: sticky;
+  z-index: var(--z-base);
+}
+.region-task-apply {
+  background: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--on-accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+.region-task-retry,
+.region-task-discard {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-retry svg {
+  flex-shrink: 0;
+  height: 14px;
+  width: 14px;
+}
+.region-task-retry:hover,
+.region-task-discard:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── F: 슬래시 자동완성 드롭다운 ── */
+.region-task-autocomplete {
+  background: var(--editor-panel-bg);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-1) 0;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.region-task-autocomplete.hidden { display: none; }
+.region-task-autocomplete-item {
+  background: transparent;
+  border: none;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9em;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+}
+.region-task-autocomplete-item:hover {
+  background: var(--editor-row-hover);
+}
+.region-task-autocomplete-item.is-selected {
+  background: var(--accent);
+  color: var(--on-accent);
+}

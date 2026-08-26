@@ -1,8 +1,10 @@
 import { describe, expect, it, beforeEach } from "vitest";
+import { SVG_ICON_NAMES, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import {
   SUGGESTED_REGION_COMMANDS,
   nextSuggestedRegionCommands,
   nextStartScreenSuggestedCommands,
+  regionCommandCategories,
   __resetSuggestedRegionRotationForTest,
   __resetStartScreenSuggestedRotationForTest,
 } from "@/editor/regionTask/suggestedCommands";
@@ -17,6 +19,58 @@ describe("suggestedCommands", () => {
     expect(SUGGESTED_REGION_COMMANDS).toHaveLength(12);
     expect(new Set(SUGGESTED_REGION_COMMANDS.map((command) => command.id)).size).toBe(12);
     for (const command of SUGGESTED_REGION_COMMANDS) expect(command.instruction.length).toBeGreaterThan(5);
+  });
+
+  it("모든 명령이 SvgIconName 아이콘을 가진다 (ICON MAPPING 준수)", () => {
+    const EXPECTED_COMMAND_ICONS: Readonly<Record<string, SvgIconName>> = {
+      "round-pond": "terrain",
+      "small-cottage": "structure",
+      "flower-scatter": "polish",
+      "treasure-chest": "chest",
+      "storage-chest": "chest",
+      "merchant-npc": "shop",
+      "pasture-fence": "structure",
+      garden: "polish",
+      "gate-guards": "npc",
+      "inn-guests": "structure",
+      festival: "composite",
+      "dark-mood": "mood",
+      "encounter-zone": "combat",
+    };
+    for (const command of SUGGESTED_REGION_COMMANDS) {
+      expect(SVG_ICON_NAMES).toContain(command.icon);
+      expect(command.icon).toBe(EXPECTED_COMMAND_ICONS[command.id]);
+    }
+  });
+
+  it("카테고리 아이콘이 SvgIconName 이다 (ICON MAPPING 준수)", () => {
+    const EXPECTED_CATEGORY_ICONS: Readonly<Record<string, SvgIconName>> = {
+      tiles: "terrain",
+      structures: "structure",
+      polish: "polish",
+      npc: "npc",
+      interaction: "chest",
+      combat: "combat",
+      mood: "mood",
+      composite: "composite",
+    };
+    const categories = regionCommandCategories();
+    expect(categories.length).toBeGreaterThan(0);
+    for (const category of categories) {
+      expect(SVG_ICON_NAMES).toContain(category.icon);
+      if (EXPECTED_CATEGORY_ICONS[category.id]) {
+        expect(category.icon).toBe(EXPECTED_CATEGORY_ICONS[category.id]);
+      }
+    }
+  });
+
+  it("모든 명령·카테고리 라벨에 이모지가 없다", () => {
+    const labels = [
+      ...SUGGESTED_REGION_COMMANDS.map((command) => command.label),
+      ...SUGGESTED_REGION_COMMANDS.map((command) => command.instruction),
+      ...regionCommandCategories().map((category) => category.label),
+    ];
+    for (const label of labels) expect(label).not.toMatch(/\p{Extended_Pictographic}/u);
   });
 
   it("호출마다 로테이션 — 첫 호출 [0..3], 둘째 호출 [4..7], 랩어라운드", () => {

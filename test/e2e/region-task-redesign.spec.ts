@@ -46,9 +46,20 @@ test("검토 단계: 미리보기·변경칸 하이라이트가 보이고 입력
   await expect(modal).toBeVisible();
   await expect(modal).toHaveAttribute("data-stage", "review", { timeout: 20_000 });
 
-  // 결정에 필요한 것: 미리보기 두 장 + 변경 칸 하이라이트 + 적용 버튼(칸 수 포함).
-  await expect(page.getByTestId("region-task-before")).toBeVisible();
+  // 결정에 필요한 것: 단일 A/B 미리보기(기본 after 노출, before 숨김, 토글 시 flip) + 변경 칸 하이라이트 + 적용 버튼(칸 수 포함).
+  const preview = page.getByTestId("region-task-preview");
+  await expect(preview).toBeVisible();
+  await expect(preview).toHaveAttribute("data-ab-view", "after");
   await expect(page.getByTestId("region-task-after")).toBeVisible();
+  await expect(page.getByTestId("region-task-before")).toBeHidden();
+  await page.getByTestId("region-task-preview-ab-before").click();
+  await expect(preview).toHaveAttribute("data-ab-view", "before");
+  await expect(page.getByTestId("region-task-before")).toBeVisible();
+  await expect(page.getByTestId("region-task-after")).toBeHidden();
+  await page.getByTestId("region-task-preview-ab-after").click();
+  await expect(preview).toHaveAttribute("data-ab-view", "after");
+  await expect(page.getByTestId("region-task-after")).toBeVisible();
+  await expect(page.getByTestId("region-task-before")).toBeHidden();
   await expect(page.getByTestId("region-task-change-overlay")).toBeVisible();
   await expect(page.getByTestId("region-task-apply")).toContainText("4칸");
   await expect(page.getByTestId("region-task-retry")).toBeVisible();
@@ -213,7 +224,9 @@ test("이벤트만 놓은 제안도 미리보기에 마커가 뜨고, 목록 hov
   await expect(overlay).toBeVisible();
   const marker = overlay.locator(".region-task-event-marker");
   await expect(marker).toHaveCount(1);
-  await expect(marker).toHaveText("🎁"); // id 에 chest → 상자 아이콘
+  // 마카는 이모지가 아니라 변경 목록 행에 keying 되는 번호다(모노톰롬 계약).
+  await expect(marker).toHaveText("1");
+  await expect(marker).toHaveAttribute("data-marker-index", "1");
 
   const row = page.getByTestId("region-task-change-row-event-chest_gold_mock");
   await expect(row).toBeVisible();

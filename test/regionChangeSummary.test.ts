@@ -1,6 +1,7 @@
 // test/regionChangeSummary.test.ts
 // 영역 작업 제안의 "타일이 아닌 변경" 요약 — 이벤트 목록 + 영역 밖 변경 경고.
 import { describe, expect, it } from "vitest";
+import { SVG_ICON_NAMES } from "@/editor/panels/tileToolbarIcons";
 import { createBlankProject } from "@/project/defaults";
 import {
   regionEventChangeLabel,
@@ -42,7 +43,8 @@ describe("summarizeRegionEventChanges", () => {
     expect(changes).toHaveLength(1);
     expect(changes[0]!.kind).toBe("added");
     expect(changes[0]!.name).toBe("잡화점 주인");
-    expect(changes[0]!.icon).toBe("🛒"); // id 에 shop → 상점 아이콘
+    expect(changes[0]!.icon).toBe("shop"); // id 에 shop → 상점 아이콘
+    expect(SVG_ICON_NAMES).toContain(changes[0]!.icon);
     expect(regionEventChangeLabel(changes[0]!)).toContain("(6,6)");
     expect(regionEventChangeLabel(changes[0]!)).toContain("새로 놓임");
   });
@@ -75,6 +77,21 @@ describe("summarizeRegionEventChanges", () => {
   it("변경이 없으면 빈 목록", () => {
     const { project, mapId } = makeProject();
     expect(summarizeRegionEventChanges(project, structuredClone(project), mapId, REGION)).toHaveLength(0);
+  });
+
+  it("변경 아이콘이 SvgIconName 이고 라벨·이름에 이모지가 없다", () => {
+    const { project, mapId } = makeProject();
+    const proposed = withEvents(project, mapId, [npc("shop_merchant", 6, 6, "잡화점 주인")]);
+    const changes = summarizeRegionEventChanges(project, proposed, mapId, REGION);
+    for (const change of changes) {
+      expect(SVG_ICON_NAMES).toContain(change.icon);
+      expect(change.name).not.toMatch(/\p{Extended_Pictographic}/u);
+      expect(regionEventChangeLabel(change)).not.toMatch(/\p{Extended_Pictographic}/u);
+    }
+    const outside = summarizeOutsideRegionChanges(project, proposed, mapId);
+    for (const row of outside) {
+      expect(row.label).not.toMatch(/\p{Extended_Pictographic}/u);
+    }
   });
 });
 
