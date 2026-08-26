@@ -1,0 +1,86 @@
+
+Running 1 test using 1 worker
+
+Scanned 47 text nodes on battle surface.
+Node: "1" [battle-enemy-index-badge] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=11px clipX=0 clipY=0
+Node: "공격" [] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=0
+Node: "스킬" [] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=0
+Node: "방어" [] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=0
+Node: "아이템" [] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=0
+Node: "도주" [] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=0
+Node: "방향키 선택 · Z/Enter/Space 확인 · X/Esc 취소 · F 자동 · Shift 배속" [battle-key-prompts] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=13px clipX=0 clipY=0
+Node: "주인공Lv 1" [battle-actor-name] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=0px clipX=0 clipY=3
+Node: "Lv" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "1" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "HP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "514" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=30px clipX=0 clipY=5
+Node: "MP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "43" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=24px clipX=0 clipY=4
+Node: "전" [battle-actor-role-actor_hero] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=26px clipX=0 clipY=4
+Node: "ATB" [battle-atb-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=3
+Node: "94%" [battle-atb-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "수호자Lv 1" [battle-actor-name] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=0px clipX=0 clipY=3
+Node: "Lv" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "1" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "HP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "514" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=30px clipX=0 clipY=5
+Node: "MP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "43" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=24px clipX=0 clipY=4
+Node: "수" [battle-actor-role-actor_guardian] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=26px clipX=0 clipY=4
+Node: "ATB" [battle-atb-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=3
+Node: "94%" [battle-atb-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "마도사Lv 1" [battle-actor-name] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=0px clipX=0 clipY=3
+Node: "Lv" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "1" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "HP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "514" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=30px clipX=0 clipY=5
+Node: "MP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "43" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=24px clipX=0 clipY=4
+Node: "마" [battle-actor-role-actor_mage] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=26px clipX=0 clipY=4
+Node: "ATB" [battle-atb-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=3
+Node: "94%" [battle-atb-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "정찰병Lv 1" [battle-actor-name] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=0px clipX=0 clipY=3
+Node: "Lv" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "1" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+Node: "HP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "514" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=30px clipX=0 clipY=5
+Node: "MP" [battle-vital-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=12px clipX=0 clipY=0
+Node: "43" [battle-vital-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=24px clipX=0 clipY=4
+Node: "정" [battle-actor-role-actor_scout] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=26px clipX=0 clipY=4
+Node: "ATB" [battle-atb-label] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=18px clipX=0 clipY=3
+Node: "100%" [battle-atb-value] family="Malgun Gothic", "Noto Sans KR", Meiryo, "Hiragino Sans", system-ui, sans-serif size=22px clipX=0 clipY=3
+  ✘  1 [chromium] › test\e2e\_warm-battle-surface.spec.ts:61:1 › verify battle screen renders correctly under Neo둥근모 and warm skin without clipping (22.7s)
+
+
+  1) [chromium] › test\e2e\_warm-battle-surface.spec.ts:61:1 › verify battle screen renders correctly under Neo둥근모 and warm skin without clipping 
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "NeoDunggeunmo"
+    Received string:    "\"Malgun Gothic\", \"Noto Sans KR\", Meiryo, \"Hiragino Sans\", system-ui, sans-serif"
+
+      153 |   expect(report.nodes.length).toBeGreaterThan(0);
+      154 |   for (const node of report.nodes) {
+    > 155 |     expect(node.family).toContain("NeoDunggeunmo");
+          |                         ^
+      156 |     expect(node.clipX, `Node clipped horizontally: ${node.cls} - "${node.text}" (clipX: ${node.clipX})`).toBeLessThanOrEqual(1);
+      157 |     expect(node.clipY, `Node clipped vertically: ${node.cls} - "${node.text}" (clipY: ${node.clipY})`).toBeLessThanOrEqual(1);
+      158 |   }
+        at C:\Users\USER\Downloads\rpg-zzu-runtime-warm-skin\test\e2e\_warm-battle-surface.spec.ts:155:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\_warm-battle-surface-verif-ed8b3--warm-skin-without-clipping-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\_warm-battle-surface-verif-ed8b3--warm-skin-without-clipping-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\_warm-battle-surface-verif-ed8b3--warm-skin-without-clipping-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\_warm-battle-surface-verif-ed8b3--warm-skin-without-clipping-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › test\e2e\_warm-battle-surface.spec.ts:61:1 › verify battle screen renders correctly under Neo둥근모 and warm skin without clipping 

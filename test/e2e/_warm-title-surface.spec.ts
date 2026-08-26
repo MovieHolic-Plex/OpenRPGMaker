@@ -125,7 +125,7 @@ test("verify title screen renders correctly under Neo둥근모 and warm skin wit
     };
   });
 
-  writeFileSync(EVIDENCE_JSON, JSON.stringify(report, null, 2));
+  writeFileSync(EVIDENCE_JSON, JSON.stringify({ ...report, consoleLines }, null, 2));
 
   console.log(`Scanned ${report.nodes.length} text nodes on title surface.`);
   for (const n of report.nodes) {
@@ -139,4 +139,10 @@ test("verify title screen renders correctly under Neo둥근모 and warm skin wit
   // 2. Zero nodes have clipX > 1 or clipY > 1
   const clipped = report.nodes.filter((n) => n.clipX > 1 || n.clipY > 1);
   expect(clipped, `Clipped text nodes found:\n${JSON.stringify(clipped, null, 2)}`).toEqual([]);
+
+  // 3. 폰트·윈도우스킨 교승이 화면 오류를 만들지 않았는가. AI 활동 로그처럼 이 변경과
+  // 동일섬이 없는 백엔드 녹음은 지점에서도 둥으므로 자산·스크립트 오류만 걸러낸다.
+  const surfaceErrors = consoleLines.filter((line) => /^\[pageerror\]/.test(line)
+    || (/^\[error\]/.test(line) && /neodgm|windowskin/.test(line)));
+  expect(surfaceErrors, `타이틀 화면 오류:\n${surfaceErrors.join("\n")}`).toEqual([]);
 });

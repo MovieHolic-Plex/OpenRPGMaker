@@ -133,7 +133,7 @@ test("verify dialogue window renders correctly under Neo둥근모 and warm skin 
     };
   });
 
-  writeFileSync(EVIDENCE_JSON, JSON.stringify(report, null, 2), "utf8");
+  writeFileSync(EVIDENCE_JSON, JSON.stringify({ ...report, consoleLines }, null, 2), "utf8");
 
   expect(report.nodes.length).toBeGreaterThan(0);
   for (const node of report.nodes) {
@@ -141,4 +141,9 @@ test("verify dialogue window renders correctly under Neo둥근모 and warm skin 
     expect(node.clipX, `Node clipped horizontally: ${node.cls} - "${node.text}" (clipX: ${node.clipX})`).toBeLessThanOrEqual(1);
     expect(node.clipY, `Node clipped vertically: ${node.cls} - "${node.text}" (clipY: ${node.clipY})`).toBeLessThanOrEqual(1);
   }
+
+  // 폰트·윈도우스킨 교승이 대사창에 오류를 만들지 않았는가(자산·스크립트 오류만).
+  const surfaceErrors = consoleLines.filter((line) => /^\[pageerror\]/.test(line)
+    || (/^\[error\]/.test(line) && /neodgm|windowskin/.test(line)));
+  expect(surfaceErrors, `대사창 오류:\n${surfaceErrors.join("\n")}`).toEqual([]);
 });

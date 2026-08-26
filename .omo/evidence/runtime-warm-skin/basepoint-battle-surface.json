@@ -568,22 +568,5 @@
       "clipX": 0,
       "clipY": 3
     }
-  ],
-  "consoleLines": [
-    "[debug] [vite] connecting...",
-    "[debug] [vite] connected.",
-    "[log] %c %c %c %c %c Phaser v3.90.0 (WebGL | Web Audio) %c https://phaser.io/v390 background: #ff0000 background: #ffff00 background: #00ff00 background: #00ffff color: #ffffff; background: #000000 background: transparent",
-    "[warning] [.WebGL-0x417404266000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[warning] [.WebGL-0x417404266000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[warning] [.WebGL-0x417404266000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[warning] [.WebGL-0x417404266000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
-    "[error] Failed to load resource: net::ERR_CONNECTION_REFUSED",
-    "[info] [play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame",
-    "[log] %c %c %c %c %c Phaser v3.90.0 (WebGL | Web Audio) %c https://phaser.io/v390 background: #ff0000 background: #ffff00 background: #00ff00 background: #00ffff color: #ffffff; background: #000000 background: transparent",
-    "[info] [play-boot] [play-boot] stage=map ok map=map_blank_start",
-    "[info] [play-boot] [play-boot] stage=ready ok map=map_blank_start PlayScene.create finished",
-    "[info] [play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces",
-    "[info] [play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete",
-    "[error] Failed to load resource: net::ERR_CONNECTION_REFUSED"
   ]
 }

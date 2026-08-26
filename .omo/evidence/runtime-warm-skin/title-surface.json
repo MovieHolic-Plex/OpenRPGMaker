@@ -91,5 +91,11 @@
       "clipY": 0
     }
   ],
-  "skinVar": "url(\"/assets/ui/windowskin-warm.png\")"
+  "skinVar": "url(\"/assets/ui/windowskin-warm.png\")",
+  "consoleLines": [
+    "[debug] [vite] connecting...",
+    "[debug] [vite] connected.",
+    "[log] %c %c %c %c %c Phaser v3.90.0 (WebGL | Web Audio) %c https://phaser.io/v390 background: #ff0000 background: #ffff00 background: #00ff00 background: #00ffff color: #ffffff; background: #000000 background: transparent",
+    "[error] Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
 }

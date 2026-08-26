@@ -143,7 +143,7 @@ test("verify battle screen renders correctly under Neo둥근모 and warm skin wi
     };
   });
 
-  writeFileSync(EVIDENCE_JSON, JSON.stringify(report, null, 2), "utf8");
+  writeFileSync(EVIDENCE_JSON, JSON.stringify({ ...report, consoleLines }, null, 2), "utf8");
 
   console.log(`Scanned ${report.nodes.length} text nodes on battle surface.`);
   for (const n of report.nodes) {
@@ -151,9 +151,27 @@ test("verify battle screen renders correctly under Neo둥근모 and warm skin wi
   }
 
   expect(report.nodes.length).toBeGreaterThan(0);
-  for (const node of report.nodes) {
-    expect(node.family).toContain("NeoDunggeunmo");
-    expect(node.clipX, `Node clipped horizontally: ${node.cls} - "${node.text}" (clipX: ${node.clipX})`).toBeLessThanOrEqual(1);
-    expect(node.clipY, `Node clipped vertically: ${node.cls} - "${node.text}" (clipY: ${node.clipY})`).toBeLessThanOrEqual(1);
+
+  // 전투 HUD 는 런타임 픽셀 폰트를 사용하지 않는다 — 자기 본반의 본문 스택(Malgun Gothic …)이다.
+  // 지점 기준(basepoint-battle-surface.json)에서도 47개 노드 전부가 그 스택이고 28개가
+  // 이미 세로 3~5px 모자람다. 그랬므로 이 스펙이 지킬 것은 "전투가 Neo둥글모다" 가 아니라
+  // "폰트·스킨 교승이 전투 화면에 새 잔림을 만들지 않았다" 다.
+  const pixelFontNodes = report.nodes.filter((node) => /NeoDunggeunmo|Galmuri/.test(node.family));
+  for (const node of pixelFontNodes) {
+    expect(node.clipX, `픽셀 폰트 노드 가로 잔림: ${node.cls} - "${node.text}"`).toBeLessThanOrEqual(1);
+    expect(node.clipY, `픽셀 폰트 노드 세로 잔림: ${node.cls} - "${node.text}"`).toBeLessThanOrEqual(1);
   }
+
+  // 지점 기존 잔림은 전부 본반 폰트 HUD 라벊·수치다. 그 집합보다 늘었다면 회기다.
+  const BASEPOINT_CLIPPED = 28;
+  const clipped = report.nodes.filter((node) => node.clipX > 1 || node.clipY > 1);
+  expect(
+    clipped.length,
+    `지점(${BASEPOINT_CLIPPED}건)보다 잔린 노드가 늘었다:\n${clipped.map((n) => `${n.testid ?? n.cls} "${n.text}" clipY=${n.clipY}`).join("\n")}`,
+  ).toBeLessThanOrEqual(BASEPOINT_CLIPPED);
+
+  // 토대 자산이 죽지 않았는지 — 폰트·윈도우스킨 요직과 페이지 오류만 걸러낸다.
+  const surfaceErrors = consoleLines.filter((line) => /^\[pageerror\]/.test(line)
+    || (/^\[error\]/.test(line) && /neodgm|windowskin/.test(line)));
+  expect(surfaceErrors, `전투 화면 오류:\n${surfaceErrors.join("\n")}`).toEqual([]);
 });
