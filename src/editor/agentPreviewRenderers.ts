@@ -144,6 +144,19 @@ export function computeGhostAnimationState(
   };
 }
 
+/** 프로젝트 diff 로 합성된 프리뷰가 쓰는 가짜 도구명 — 칩 라벨로는 쓸모가 없다. */
+export const GHOST_DIFF_PSEUDO_TOOL = "live_project_diff";
+
+/**
+ * 칩에 쓸 도구명을 고른다. diff 프리뷰의 가짜 도구명(live_project_diff)보다
+ * tool_started 로 들어온 실제 도구명을 우선한다.
+ */
+export function preferredGhostToolName(previewToolName: string, runningToolName: string): string {
+  if (previewToolName && previewToolName !== GHOST_DIFF_PSEUDO_TOOL) return previewToolName;
+  if (runningToolName) return runningToolName;
+  return previewToolName;
+}
+
 export function koreanToolLabel(toolName: string): string {
   if (/^(?:build|author|paint|fill|create|scatter)/u.test(toolName)) {
     return "시공 중";
@@ -186,11 +199,17 @@ export function ghostPhaseChipInfo(options: {
   };
 }
 
+/** 같은 셀 집합인지 판별하는 지문 — 셀 순서까지 같아야 같은 스케줄로 본다. */
+function ghostScheduleKey(schedule: readonly GhostRevealStep[]): string {
+  return schedule.map((step) => `${step.cell.x},${step.cell.y},${step.cell.layer ?? ""},${step.cell.tileId ?? ""}`).join("|");
+}
+
 type SceneWithPhaserObjects = Phaser.Scene & {
   readonly add: Phaser.GameObjects.GameObjectFactory;
   readonly cameras: Phaser.Cameras.Scene2D.CameraManager;
   readonly game: Phaser.Game;
   readonly tweens: Phaser.Tweens.TweenManager;
+  readonly events: Phaser.Events.EventEmitter;
 };
 
 export interface AgentGhostPreviewRendererOptions {
@@ -206,6 +225,8 @@ export class AgentGhostPreviewRenderer {
   private currentToolName: string = "";
   private cachedBounds: AgentGhostBounds | null = null;
   private animGroup: Phaser.GameObjects.Container | null = null;
+  private scheduleKey: string = "";
+  private tickerBound: (() => void) | null = null;
 
   constructor(
     private readonly scene: SceneWithPhaserObjects,
@@ -231,15 +252,23 @@ export class AgentGhostPreviewRenderer {
     if (previews.length === 0) {
       this.clearPhaseChip();
       this.schedule = [];
+      this.scheduleKey = "";
       this.startTime = null;
       this.animGroup = null;
+      this.stopTicker();
       return;
     }
 
     const allCells = previews.flatMap((p) => p.cells);
     this.schedule = buildGhostRevealSchedule(allCells);
-    this.startTime = this.clock();
-    this.currentToolName = previews[0]?.toolName || this.currentState().runningToolName || "";
+    // 같은 셀 집합으로 다시 렌더되면(스토어 emit, 카메라 변경 등) 시작 시각을 유지한다.
+    // 아니면 공개 애니메이션이 매 emit 마다 처음으로 되돌아가 첫 프레임에서 얼어붙는다.
+    const nextKey = ghostScheduleKey(this.schedule);
+    if (this.startTime === null || nextKey !== this.scheduleKey) {
+      this.startTime = this.clock();
+    }
+    this.scheduleKey = nextKey;
+    this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", this.currentState().runningToolName ?? "");
 
     // compute union bounds
     let minX = Number.POSITIVE_INFINITY;
@@ -270,6 +299,35 @@ export class AgentGhostPreviewRenderer {
 
     this.renderDomMarkers(previews);
     this.update();
+    this.startTicker();
+  }
+
+  /**
+   * 씬 update 이벤트에 붙어 공개 스케줄을 프레임마다 진행시킨다.
+   * 스케줄 + 마무리 샤인이 끝나면 스스로 떨어진다(유휴 시 프레임 작업 0).
+   */
+  private startTicker(): void {
+    if (this.tickerBound || this.schedule.length === 0) return;
+    const tick = (): void => {
+      if (this.startTime === null || this.schedule.length === 0) {
+        this.stopTicker();
+        return;
+      }
+      this.update();
+      const elapsed = this.clock() - this.startTime;
+      const last = this.schedule[this.schedule.length - 1].startMs;
+      if (elapsed >= last + LAST_CELL_DISPLAY_MS + FINISH_SHINE_DURATION_MS) this.stopTicker();
+    };
+    this.tickerBound = tick;
+    this.scene.events.on("update", tick);
+    this.scene.events.once("shutdown", this.stopTicker, this);
+    this.scene.events.once("destroy", this.stopTicker, this);
+  }
+
+  private stopTicker(): void {
+    if (!this.tickerBound) return;
+    this.scene.events.off("update", this.tickerBound);
+    this.tickerBound = null;
   }
 
   update(): void {
@@ -499,10 +557,12 @@ export class AgentGhostPreviewRenderer {
   }
 
   clear(): void {
+    this.stopTicker();
     this.layer.removeAll(true);
     this.clearDomMarkers();
     this.clearPhaseChip();
     this.schedule = [];
+    this.scheduleKey = "";
     this.startTime = null;
     this.animGroup = null;
   }

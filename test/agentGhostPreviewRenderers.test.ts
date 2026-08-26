@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   computeGhostAnimationState,
   ghostPhaseChipInfo,
-  type GhostCellAnimState,
+  preferredGhostToolName,
   AgentGhostPreviewRenderer,
 } from "@/editor/agentPreviewRenderers";
 import {
@@ -133,6 +133,42 @@ describe("ghostPhaseChipInfo helper", () => {
   });
 });
 
+/** Phaser 씬 이벤트 최소 대역 — 프레임 티커(update)와 shutdown/destroy 만 다룬다. */
+function makeEmitter() {
+  const handlers = new Map<string, Set<(...args: unknown[]) => void>>();
+  return {
+    handlers,
+    on(name: string, fn: (...args: unknown[]) => void) {
+      if (!handlers.has(name)) handlers.set(name, new Set());
+      handlers.get(name)!.add(fn);
+      return this;
+    },
+    once(name: string, fn: (...args: unknown[]) => void) {
+      return this.on(name, fn);
+    },
+    off(name: string, fn: (...args: unknown[]) => void) {
+      handlers.get(name)?.delete(fn);
+      return this;
+    },
+    emit(name: string) {
+      for (const fn of [...(handlers.get(name) ?? [])]) fn();
+      return true;
+    },
+    count(name: string) {
+      return handlers.get(name)?.size ?? 0;
+    },
+  };
+}
+
+describe("preferredGhostToolName", () => {
+  it("diff 가짜 도구명보다 tool_started 로 들어온 실제 도구명을 쓴다", () => {
+    expect(preferredGhostToolName("live_project_diff", "fill_region")).toBe("fill_region");
+    expect(preferredGhostToolName("fill_region", "paint_tiles")).toBe("fill_region");
+    expect(preferredGhostToolName("live_project_diff", "")).toBe("live_project_diff");
+    expect(preferredGhostToolName("", "upsert_event")).toBe("upsert_event");
+  });
+});
+
 describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
   let restoreDom: (() => void) | null = null;
   let hostEl: any;
@@ -207,6 +243,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
       tweens: {
         add: vi.fn(),
       },
+      events: makeEmitter(),
     };
   });
 
@@ -278,6 +315,58 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     expect(schedule[0].cell.x).toBe(0);
     expect(schedule[1].cell.x).toBe(1);
     expect(schedule[0].startMs).toBeLessThan(schedule[1].startMs);
+  });
+
+  it("(d) 씬 update 이벤트가 공개 애니메이션을 진행시키고 완료 후 스스로 떨어진다", () => {
+    let now = 1000;
+    const renderer = new AgentGhostPreviewRenderer(mockScene, mockLayer, () => "m1", { clock: () => now });
+
+    const base = createBlankProject();
+    const draft = createBlankProject();
+    base.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"].lowerTiles[0] = 5;
+    draft.maps["m1"].lowerTiles[1] = 6;
+    store.replace(base);
+
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+
+    // 렌더 직후 티커가 붙는다 — render() 를 다시 부르지 않아도 프레임마다 진행한다.
+    expect(mockScene.events.count("update")).toBe(1);
+    const chip = hostEl.querySelector("[data-testid='ai-ghost-phase-chip']");
+    expect(chip?.textContent).toContain("중");
+
+    now += 3000;
+    mockScene.events.emit("update");
+    expect(chip?.textContent).toContain("초안 완성");
+
+    // 스케줄 + 샤인이 끝나면 유휴 상태로 돌아간다(프레임 작업 0).
+    expect(mockScene.events.count("update")).toBe(0);
+  });
+
+  it("(e) 같은 셀 집합으로 다시 렌더해도 진행 상태가 처음으로 되돌아가지 않는다", () => {
+    let now = 1000;
+    const renderer = new AgentGhostPreviewRenderer(mockScene, mockLayer, () => "m1", { clock: () => now });
+
+    const base = createBlankProject();
+    const draft = createBlankProject();
+    base.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"].lowerTiles[0] = 5;
+    store.replace(base);
+
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+    const chip = hostEl.querySelector("[data-testid='ai-ghost-phase-chip']");
+
+    now += 3000;
+    renderer.update();
+    expect(chip?.textContent).toContain("초안 완성");
+
+    // 스토어 emit·카메라 변경 등으로 다시 렌더돼도 완료 상태를 유지한다.
+    renderer.render();
+    expect(hostEl.querySelector("[data-testid='ai-ghost-phase-chip']")?.textContent).toContain("초안 완성");
   });
 
   it("(c) >256-cell preview renders bbox-only (no per-cell sprites) and chip still counts", () => {
