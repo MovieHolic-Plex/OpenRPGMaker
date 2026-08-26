@@ -38,7 +38,6 @@ import { loadStoryboardMode, renderStoryboard, renderViewToggle, type Storyboard
 import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
-import { branchesOf } from "./previewSimulation";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   renderClassicPageTabStrip,

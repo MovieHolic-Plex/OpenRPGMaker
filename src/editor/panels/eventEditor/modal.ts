@@ -1,4 +1,3 @@
-import { PRODUCT_BRAND } from "@/brand";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
@@ -18,7 +17,6 @@ import { store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
-import { openEventEditorHelp } from "./eventEditorHelp";
 import {
   navigateToEventDraftIssue,
   openActiveEventCommandPicker,
@@ -275,7 +273,7 @@ function renderModalHeader(
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
   const activePage = pages.find((p) => p.id === selectedPageId) ?? pages[0];
-  const eventName = activePage?.name ?? ev?.draft?.name ?? (ev?.draft?.kind === "new" ? "새 이벤트 (저장 전)" : "이벤트");
+  const eventName = activePage?.name?.trim() || (ev?.draft?.kind === "new" ? "새 이벤트 (저장 전)" : "이벤트");
 
   const nameInput = el("input", {
     class: "event-name",
