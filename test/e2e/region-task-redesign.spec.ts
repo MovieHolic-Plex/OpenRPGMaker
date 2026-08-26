@@ -46,9 +46,20 @@ test("검토 단계: 미리보기·변경칸 하이라이트가 보이고 입력
   await expect(modal).toBeVisible();
   await expect(modal).toHaveAttribute("data-stage", "review", { timeout: 20_000 });
 
-  // 결정에 필요한 것: 미리보기 두 장 + 변경 칸 하이라이트 + 적용 버튼(칸 수 포함).
-  await expect(page.getByTestId("region-task-before")).toBeVisible();
+  // 결정에 필요한 것: 단일 A/B 미리보기(기본 after 노출, before 숨김, 토글 시 flip) + 변경 칸 하이라이트 + 적용 버튼(칸 수 포함).
+  const preview = page.getByTestId("region-task-preview");
+  await expect(preview).toBeVisible();
+  await expect(preview).toHaveAttribute("data-ab-view", "after");
   await expect(page.getByTestId("region-task-after")).toBeVisible();
+  await expect(page.getByTestId("region-task-before")).toBeHidden();
+  await page.getByTestId("region-task-preview-ab-before").click();
+  await expect(preview).toHaveAttribute("data-ab-view", "before");
+  await expect(page.getByTestId("region-task-before")).toBeVisible();
+  await expect(page.getByTestId("region-task-after")).toBeHidden();
+  await page.getByTestId("region-task-preview-ab-after").click();
+  await expect(preview).toHaveAttribute("data-ab-view", "after");
+  await expect(page.getByTestId("region-task-after")).toBeVisible();
+  await expect(page.getByTestId("region-task-before")).toBeHidden();
   await expect(page.getByTestId("region-task-change-overlay")).toBeVisible();
   await expect(page.getByTestId("region-task-apply")).toContainText("4칸");
   await expect(page.getByTestId("region-task-retry")).toBeVisible();

@@ -313,9 +313,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   }) as HTMLButtonElement;
 
   const renderSnapshot = options.renderSnapshot
-    // targetWidth 를 기본 140 → 200 으로 키운다. 미리보기가 결정의 근거인데 너무 작았다.
+    // targetWidth 를 기본 140 → 240 으로 키운다. 단일 A/B 미리보기가 결정의 근거이므로 충분한 해상도로 보여 준다.
     ?? ((project: Project, map: GameMap, rect: RegionRect) =>
-      renderRegionSnapshot(project, map, rect, { targetWidth: 200 }));
+      renderRegionSnapshot(project, map, rect, { targetWidth: 240 }));
   const compareHost = el("div", { class: "region-task-compare-host" });
 
   // 검토 단계에서 입력창 대신 보여 줄 지시 요약 — 무엇을 시켰는지는 남되 자리는 한 줄만 쓴다.
@@ -610,11 +610,49 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     if (!isCurrentExecution(executionId)) return;
     const afterFigure = await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap, overlay);
     if (!isCurrentExecution(executionId)) return;
-    figures.append(
-      beforeFigure,
-      el("span", { class: "region-task-compare-arrow", text: "→" }),
-      afterFigure,
-    );
+
+    let currentAbView: "before" | "after" = "after";
+    const previewWrapper = el("div", {
+      class: "region-task-preview",
+      dataset: { testid: "region-task-preview", abView: currentAbView },
+    });
+
+    const abBeforeBtn = el("button", {
+      class: "region-task-preview-ab-btn",
+      text: "이전",
+      attrs: { type: "button" },
+      dataset: { testid: "region-task-preview-ab-before" },
+    }) as HTMLButtonElement;
+
+    const abAfterBtn = el("button", {
+      class: "region-task-preview-ab-btn is-active",
+      text: "이후",
+      attrs: { type: "button" },
+      dataset: { testid: "region-task-preview-ab-after" },
+    }) as HTMLButtonElement;
+
+    const setAbView = (view: "before" | "after"): void => {
+      currentAbView = view;
+      previewWrapper.dataset.abView = view;
+      abBeforeBtn.classList.toggle("is-active", view === "before");
+      abAfterBtn.classList.toggle("is-active", view === "after");
+    };
+
+    abBeforeBtn.addEventListener("click", () => setAbView("before"));
+    abAfterBtn.addEventListener("click", () => setAbView("after"));
+
+    const abToggle = el("div", {
+      class: "region-task-preview-ab-toggle",
+      children: [abBeforeBtn, abAfterBtn],
+    });
+
+    const previewStage = el("div", {
+      class: "region-task-preview-stage",
+      children: [beforeFigure, afterFigure],
+    });
+
+    previewWrapper.append(abToggle, previewStage);
+    figures.append(previewWrapper);
     // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
     if (pending.settled || !isCurrentExecution(executionId)) return;
@@ -1590,13 +1628,13 @@ export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTask
   const view = globalThis as { innerWidth?: number; innerHeight?: number };
   const vw = typeof view.innerWidth === "number" && view.innerWidth > 0 ? view.innerWidth : 1024;
   const vh = typeof view.innerHeight === "number" && view.innerHeight > 0 ? view.innerHeight : 768;
-  // 460: before/after 썸네일(각 200px)과 화살표가 한 줄에 들어가는 폭.
-  const maxWidth = Math.min(460, Math.max(200, vw - margin * 2));
+  // 380: 단일 A/B 전환형 썸네일(targetWidth 240px)과 액션·메타를 담는 슬림한 팝오버 폭.
+  const maxWidth = Math.min(380, Math.max(200, vw - margin * 2));
   const maxHeight = Math.max(160, vh - margin * 2);
 
   panel.style.position = "fixed";
   panel.style.width = `${maxWidth}px`;
-  panel.style.maxWidth = `min(460px, calc(100vw - ${margin * 2}px))`;
+  panel.style.maxWidth = `min(380px, calc(100vw - ${margin * 2}px))`;
   panel.style.maxHeight = `${maxHeight}px`;
   // 임시 배치 후 실측 → 좌/우·위/아래 플립·클램프.
   let left = anchor.x + 12;

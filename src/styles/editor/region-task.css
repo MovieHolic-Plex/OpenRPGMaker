@@ -23,8 +23,8 @@
   /* 결과 로그·before/after 비교가 커져도 뷰포트 밖으로 밀리지 않게 */
   max-height: calc(100vh - 24px);
   max-height: calc(100dvh - 24px);
-  /* 미리보기 두 장(200px)+화살표가 들어가야 해 360 → 460 */
-  max-width: min(460px, calc(100vw - 24px));
+  /* 단일 A/B 미리보기 전환으로 팝오버 폭을 슬림하게 축소 (460 → 380) */
+  max-width: min(380px, calc(100vw - 24px));
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -418,14 +418,14 @@
 }
 
 /* ── 변경 칸 하이라이트 (이후 썸네일 위) ──
-   캔버스는 targetWidth 200 이라 컨테이너(max-width 200)와 정확히 같은 크기다 —
+   캔버스는 targetWidth 240 이라 컨테이너(max-width 240)와 정확히 같은 크기다 —
    크롭이 없으므로 inset:0 오버레이 격자가 타일과 1:1 로 맞는다. */
 .region-task-compare-canvas {
   background: var(--bg-surface);
   border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
   cursor: zoom-in;
-  max-width: 200px;
+  max-width: 240px;
   overflow: hidden;
   position: relative;
 }
@@ -453,9 +453,69 @@
 .region-task-compare {
   align-items: center;
   display: flex;
+  flex-direction: column;
   gap: var(--space-2);
   justify-content: center;
   margin-top: var(--space-2);
+}
+
+/* ── 단일 A/B 미리보기 래퍼 및 토글 ── */
+.region-task-preview {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.region-task-preview-ab-toggle {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+}
+
+.region-task-preview-ab-btn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  padding: 3px var(--space-3);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.region-task-preview-ab-btn:hover {
+  color: var(--editor-text);
+}
+
+.region-task-preview-ab-btn.is-active {
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.08));
+  color: var(--editor-text);
+  font-weight: 600;
+}
+
+.region-task-preview-stage {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* A/B 상태에 따라 활성 캔버스만 표시 */
+.region-task-preview[data-ab-view="before"] [data-testid="region-task-after"],
+.region-task-preview[data-ab-view="after"] [data-testid="region-task-before"] {
+  display: none !important;
+}
+
+.region-task-preview[data-ab-view="before"] [data-testid="region-task-before"],
+.region-task-preview[data-ab-view="after"] [data-testid="region-task-after"] {
+  display: block;
 }
 
 .region-task-compare-figure {
