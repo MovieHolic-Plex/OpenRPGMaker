@@ -271,3 +271,20 @@
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------
+   변수/스위치 모달 통일 픽커 (switchVariablePicker.ts)
+   - 트리거 버튼만 보이고, 네이티브 select 는 계약용으로만 남긴다.
+   - 커스텀 셀렉트 enhancer 가 숨긴 select 을 다시 감싸지 않도록
+     customSelect.ts SKIP 목록의 마커 클래스와 짝을 이룬다.
+---------------------------------------------------------------- */
+.event-record-modal-select {
+  display: none;
+}
+
+.event-record-picker-trigger {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

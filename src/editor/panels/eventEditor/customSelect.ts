@@ -2,6 +2,7 @@ const SKIP_SELECT_CLASSES = [
   "rich-native-select",
   "shop-processing-native-select",
   "record-browser-hidden-select",
+  "event-record-modal-select",
 ] as const;
 
 const SEARCH_THRESHOLD = 9;
