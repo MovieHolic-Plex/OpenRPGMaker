@@ -30,7 +30,7 @@ const SHEETS: Record<string, string> = {
 
 const COLS = 30;
 const TILE = 16;
-const SCALE = 8;
+const SCALE = 6;
 const PER_DISPLAY_ROW = 15;
 const CELL = TILE * SCALE; // 128
 const LABEL_H = 18;
