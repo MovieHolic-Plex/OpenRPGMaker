@@ -179,12 +179,12 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
     expect((result.data as { parts?: unknown }).parts).toBeUndefined();
   });
 
-  it("시스템 프롬프트에 '내 스탬프' 다이제스트가 실린다", () => {
+  it("시스템 프롬프트에 '내 구조물' 다이제스트가 실린다", () => {
     const { project, mapId } = projectWithKit();
 
     const prompt = buildSystemPrompt(project, { currentMapId: mapId });
 
-    expect(prompt).toContain("내 스탬프");
+    expect(prompt).toContain("내 구조물");
     expect(prompt).toContain("성벽 단면");
     expect(prompt).toContain("stamp_structure_kit");
   });

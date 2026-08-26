@@ -54,7 +54,7 @@ export function makeStructureKitShelf(input: StructureKitShelfInput): HTMLElemen
     shelf.append(details);
   }
   if (learnedKits.length > 0) {
-    shelf.append(el("div", { class: "structure-kit-shelf-title", text: "내 스탬프" }));
+    shelf.append(el("div", { class: "structure-kit-shelf-title", text: "내 구조물" }));
     const grid = el("div", { class: "structure-kit-shelf-grid" });
     for (const kit of learnedKits) grid.append(makeKitButton(kit, input));
     shelf.append(grid);
@@ -78,10 +78,10 @@ function makeKitButton(kit: StructureKitDef, input: StructureKitShelfInput): HTM
     scale: kit.kind === "house" ? 1 : 2,
   });
   icon.className = "structure-kit-icon";
-  const label = kit.name ?? "패턴 스탬프";
+  const label = kit.name ?? "구조물";
   const title = kit.kind === "house"
-    ? `${label} — ${size.width}×${size.height} 집 킷 스탬프 (클릭해서 찍기)`
-    : `${label} — ${size.width}×${size.height} 단면 스탬프 (클릭해서 찍기)`;
+    ? `${label} — ${size.width}×${size.height} 집 킷 (클릭해서 찍기)`
+    : `${label} — ${size.width}×${size.height} 단면 구조물 (클릭해서 찍기)`;
   return el("button", {
     class: "structure-kit-cell" + (active ? " active" : ""),
     attrs: {

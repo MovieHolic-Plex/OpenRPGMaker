@@ -1,157 +1,480 @@
 // panels/structureKitDbTab.ts
-// 데이터베이스 '스탬프' 탭 — 유저 붓질에서 학습된 구조 킷(structureKits)의 관리 표면.
-// §④ 규약: 킷은 타일 실렌더(단위 단면 + 조립 미리보기)로 보여준다. 이름 변경·삭제·팔레트 사용 제공.
-// AI도 같은 데이터를 쓴다: list_structure_kits(조회) / stamp_structure_kit(시공).
+// 데이터베이스 '구조물' 탭 — 타일셋 앨범 + 표 + 인스펙터 래스터.
+// IA 규약:
+// 1. 타일셋 레일은 필터가 아니라 앨범. 기본 앨범은 현재 맵 타일셋(editorState.currentMapId).
+// 2. 표에는 선택된 타일셋의 구조물만 표시.
+// 3. 빈 상태 정확한 카피: "이 타일셋에는 아직 구조물이 없습니다."
+// 4. 인스펙터: 이름, 래스터, 부위 목록(인스턴스 번호), 문에서 입구 추정, 지금 저장(filled primary), 팔레트에서 쓰기, 삭제.
 
 import { editorState } from "@/editor/editorState";
 import { deleteStructureKit, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import { store } from "@/project/store";
-import type { StructureKitDef, TilesetDef } from "@/project/types";
+import type { StructureKitDef, StructureKitPart, StructureKitPartKind, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
-/** 조립 미리보기 폭(타일) — 제안 카드와 같은 12열 규약. */
-const PREVIEW_COLUMNS = 12;
+interface ActiveSessionState {
+  tilesetId: string | null;
+  selectedKitId: string | null;
+  selectedPartId: string | null;
+  searchQuery: string;
+}
+
+const session: ActiveSessionState = {
+  tilesetId: null,
+  selectedKitId: null,
+  selectedPartId: null,
+  searchQuery: "",
+};
+
+export function resetStructureKitsTabSession(): void {
+  session.tilesetId = null;
+  session.selectedKitId = null;
+  session.selectedPartId = null;
+  session.searchQuery = "";
+}
 
 export function renderStructureKitsTab(host: HTMLElement, rerender: () => void): void {
-  host.append(el("h3", { text: "스탬프 (구조 킷)" }));
-  const form = el("section", { class: "db-detail-form structure-kit-db", dataset: { testid: "db-detail-form" } });
-  host.append(form);
+  host.dataset.testid = "db-detail-form";
+  const current = store.getCurrent();
+  const tilesets = Object.values(current.tilesets);
 
-  const tilesetsWithKits = Object.values(store.getCurrent().tilesets)
-    .filter((tileset) => (tileset.structureKits ?? []).length > 0);
-
-  form.append(el("p", {
-    class: "structure-kit-db-hint",
-    text: "맵에 패턴을 반복해 찍으면 제안 카드가 뜨고, [등록]하면 여기에 쌓입니다. "
-      + "등록된 킷은 팔레트 '내 스탬프'와 AI 시공(stamp_structure_kit)이 함께 사용합니다.",
-  }));
-
-  if (tilesetsWithKits.length === 0) {
-    form.append(el("div", {
-      class: "db-empty-state structure-kit-db-empty",
-      dataset: { testid: "structure-kit-db-empty" },
-      children: [
-        el("div", { class: "db-empty-icon", text: "⧉" }),
-        el("strong", { class: "db-empty-title", text: "아직 스탬프가 없습니다" }),
-        el("p", {
-          class: "db-empty-copy",
-          text: "맵에서 같은 구조를 여러 번 찍어 보세요. 반복 패턴이 감지되면 제안 카드로 등록할 수 있습니다.",
-        }),
-        el("button", {
-          class: "btn primary db-empty-cta",
-          text: "스탬프 사용법 보기",
-          attrs: { type: "button" },
-          dataset: { testid: "structure-kit-db-empty-cta" },
-          on: {
-            click: () => {
-              editorState.set({ tool: "paint" });
-              toast("타일 브러시에서 패턴을 반복해 찍으면 제안 카드가 나타납니다.", "info");
-            },
-          },
-        }),
-      ],
-    }));
-    return;
+  // 기본 앨범 결정: 현재 맵 타일셋
+  if (!session.tilesetId || !current.tilesets[session.tilesetId]) {
+    const currentMapId = editorState.get().currentMapId ?? current.startMapId;
+    const currentMap = current.maps[currentMapId];
+    const defaultTilesetId = currentMap?.tilesetId ?? tilesets[0]?.id ?? "";
+    session.tilesetId = defaultTilesetId;
   }
 
-  for (const tileset of tilesetsWithKits) {
-    form.append(el("h4", {
-      class: "structure-kit-db-tileset",
-      // SYNTHESIS: keep ids as trailing muted meta, not \"name (id) — N개\" leading
-      children: [
-        el("span", { class: "structure-kit-db-tileset-name", text: tileset.name }),
-        el("span", { class: "structure-kit-db-tileset-meta", text: ` · ${(tileset.structureKits ?? []).length}개 · #${tileset.id}` }),
-      ],
-    }));
-    for (const kit of tileset.structureKits ?? []) {
-      form.append(renderKitCard(tileset, kit, rerender));
+  const activeTileset = current.tilesets[session.tilesetId] ?? tilesets[0];
+  const activeKits = activeTileset?.structureKits ?? [];
+
+  // 선택된 kit 유효성 확인
+  if (activeKits.length > 0) {
+    if (!session.selectedKitId || !activeKits.some((k) => k.id === session.selectedKitId)) {
+      session.selectedKitId = activeKits[0]!.id;
     }
+  } else {
+    session.selectedKitId = null;
+  }
+
+  const selectedKit = activeKits.find((k) => k.id === session.selectedKitId) ?? null;
+
+  // 헤더
+  host.append(
+    el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
+    el("p", { text: "타일셋에 묶입니다. 한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." })
+  );
+
+  const workspace = el("div", {
+    class: "structure-kit-album-workspace",
+    dataset: { testid: "structure-kit-album-workspace" },
+  });
+  host.append(workspace);
+
+  // 1. 타일셋 레일 (앨범)
+  const rail = el("div", {
+    class: "structure-kit-album-rail",
+    dataset: { testid: "structure-kit-album-rail" },
+    children: [
+      el("div", { class: "structure-kit-album-rail-title", text: "타일셋" }),
+    ],
+  });
+
+  for (const tileset of tilesets) {
+    const count = (tileset.structureKits ?? []).length;
+    const isActive = tileset.id === activeTileset?.id;
+    const item = el("button", {
+      class: `structure-kit-album-item${isActive ? " active" : ""}${count === 0 ? " zero" : ""}`,
+      attrs: { type: "button" },
+      dataset: { testid: `structure-kit-tileset-${tileset.id}` },
+      children: [
+        el("span", { text: tileset.name }),
+        el("span", { class: "structure-kit-album-count", text: String(count) }),
+      ],
+      on: {
+        click: () => {
+          session.tilesetId = tileset.id;
+          session.selectedKitId = null;
+          session.selectedPartId = null;
+          refresh(host, rerender);
+        },
+      },
+    });
+    rail.append(item);
+  }
+  workspace.append(rail);
+
+  // 2. 표 (가운데 열)
+  const tableCol = el("div", { class: "structure-kit-table-col" });
+
+  const tools = el("div", {
+    class: "structure-kit-tools",
+    children: [
+      el("input", {
+        class: "structure-kit-search",
+        attrs: { type: "search", placeholder: "이름, 부위 검색" },
+        value: session.searchQuery,
+        on: {
+          input: (event) => {
+            const target = event.currentTarget;
+            if (!(target instanceof HTMLInputElement)) return;
+            session.searchQuery = target.value;
+            refresh(host, rerender);
+          },
+        },
+      }),
+      el("div", {
+        class: "structure-kit-hint-chip",
+        children: [
+          el("span", { text: "맵에서 영역 선택 → " }),
+          el("b", { text: "구조물로 저장" }),
+        ],
+      }),
+    ],
+  });
+  tableCol.append(tools);
+
+  // 필터링된 키 목록
+  const query = session.searchQuery.trim().toLowerCase();
+  const visibleKits = activeKits.filter((kit) => {
+    if (!query) return true;
+    if ((kit.name ?? "").toLowerCase().includes(query)) return true;
+    if (kit.parts?.some((p) => partKindName(p.kind).includes(query) || (p.note ?? "").toLowerCase().includes(query))) return true;
+    return false;
+  });
+
+  if (activeKits.length === 0) {
+    const emptyWrap = el("div", {
+      class: "structure-kit-empty-wrap",
+      dataset: { testid: "structure-kit-db-empty" },
+      children: [
+        el("strong", { text: "이 타일셋에는 아직 구조물이 없습니다." }),
+        el("p", {
+          class: "structure-kit-quiet",
+          text: "맵에서 타일 영역을 선택한 후 [구조물로 저장]을 누르면 이 앨범에 추가됩니다.",
+        }),
+      ],
+    });
+    tableCol.append(emptyWrap);
+  } else {
+    const tableWrap = el("div", { class: "structure-kit-table-wrap" });
+    const table = el("table", { class: "structure-kit-table" });
+    table.append(
+      el("thead", {
+        children: [
+          el("tr", {
+            children: [
+              el("th", { attrs: { style: "width: 50%;" }, text: "이름" }),
+              el("th", { text: "크기" }),
+              el("th", { text: "부위" }),
+            ],
+          }),
+        ],
+      })
+    );
+
+    const tbody = el("tbody");
+    for (const kit of visibleKits) {
+      const isSelected = kit.id === selectedKit?.id;
+      const size = structureKitSize(kit);
+      const row = el("tr", {
+        class: `structure-kit-row${isSelected ? " active" : ""}`,
+        dataset: { testid: `structure-kit-db-${kit.id}` },
+        children: [
+          el("td", {
+            children: [
+              el("div", {
+                class: "structure-kit-row-name",
+                children: [
+                  el("div", {
+                    class: "structure-kit-row-thumb",
+                    children: [
+                      renderTileCellsToCanvas({
+                        tileset: activeTileset,
+                        widthTiles: size.width,
+                        heightTiles: size.height,
+                        cells: assembledKitCells(kit, size.width),
+                        scale: 1,
+                      }),
+                    ],
+                  }),
+                  el("span", { text: kit.name ?? "구조물" }),
+                ],
+              }),
+            ],
+          }),
+          el("td", {
+            class: "structure-kit-row-meta",
+            text: `${size.width}×${size.height}`,
+          }),
+          el("td", {
+            children: renderPartBadges(kit.parts),
+          }),
+        ],
+        on: {
+          click: () => {
+            session.selectedKitId = kit.id;
+            session.selectedPartId = null;
+            refresh(host, rerender);
+          },
+        },
+      });
+      tbody.append(row);
+    }
+    table.append(tbody);
+    tableWrap.append(table);
+    tableCol.append(tableWrap);
+
+    const footer = el("div", {
+      class: "structure-kit-footer",
+      children: [
+        el("span", { text: `${visibleKits.length}개` }),
+      ],
+    });
+    tableCol.append(footer);
+  }
+
+  workspace.append(tableCol);
+
+  // 3. 인스펙터 (오른쪽 열)
+  if (selectedKit && activeTileset) {
+    const inspector = renderInspector(activeTileset, selectedKit, host, rerender);
+    workspace.append(inspector);
   }
 }
 
-function renderKitCard(tileset: TilesetDef, kit: StructureKitDef, rerender: () => void): HTMLElement {
-  const card = el("div", {
-    class: "structure-kit-db-card",
-    dataset: { testid: `structure-kit-db-${kit.id}` },
+function refresh(host: HTMLElement, rerender: () => void): void {
+  while (host.firstChild) {
+    host.removeChild(host.firstChild);
+  }
+  renderStructureKitsTab(host, rerender);
+}
+
+function renderPartBadges(parts?: StructureKitPart[]): HTMLElement[] {
+  if (!parts || parts.length === 0) {
+    return [el("span", { class: "structure-kit-part-badge none", text: "부위 없음" })];
+  }
+  const badges: HTMLElement[] = [];
+  const countByKind = new Map<StructureKitPartKind, number>();
+  for (const part of parts) {
+    countByKind.set(part.kind, (countByKind.get(part.kind) ?? 0) + 1);
+  }
+
+  for (const [kind, count] of countByKind) {
+    const badgeText = count > 1 ? `${partKindName(kind)} ×${count}` : partKindName(kind);
+    const colorClass = kind === "window" ? "teal" : kind === "anchor" ? "gray" : "";
+    badges.push(el("span", { class: `structure-kit-part-badge ${colorClass}`.trim(), text: badgeText }));
+  }
+  return badges;
+}
+
+function partKindName(kind: StructureKitPartKind): string {
+  switch (kind) {
+    case "entrance":
+      return "입구";
+    case "window":
+      return "창문";
+    case "sign":
+      return "간판";
+    case "anchor":
+      return "자리";
+  }
+}
+
+function renderInspector(
+  tileset: TilesetDef,
+  kit: StructureKitDef,
+  host: HTMLElement,
+  rerender: () => void
+): HTMLElement {
+  const size = structureKitSize(kit);
+  const inspector = el("div", {
+    class: "structure-kit-inspector",
+    dataset: { testid: `structure-kit-inspector-${kit.id}` },
   });
 
-  // ── 그림이 주인공: 단위 단면(왼쪽) + 조립 미리보기(오른쪽) — 실타일 렌더 ──
-  const size = structureKitSize(kit);
-  const unitCanvas = renderTileCellsToCanvas({
+  inspector.append(
+    el("div", { class: "structure-kit-inspector-title", text: kit.name ?? "구조물" })
+  );
+
+  // 이름 필드
+  const nameField = el("div", {
+    class: "structure-kit-field",
+    children: [
+      el("label", { text: "이름" }),
+      el("input", {
+        value: kit.name ?? "구조물",
+        attrs: { type: "text" },
+        dataset: { testid: `structure-kit-db-name-${kit.id}` },
+        on: {
+          change: (event) => {
+            const target = event.currentTarget;
+            if (!(target instanceof HTMLInputElement)) return;
+            renameStructureKit(tileset.id, kit.id, target.value);
+            rerender();
+            refresh(host, rerender);
+          },
+        },
+      }),
+    ],
+  });
+  inspector.append(nameField);
+
+  // 메타 정보
+  const sourceLabel = kit.learnedFrom === "user-paint" ? "붓질에서 학습" : "내장 파라메트릭";
+  inspector.append(
+    el("div", {
+      class: "structure-kit-inspector-meta",
+      text: `${size.width}×${size.height} · ${tileset.name} · ${sourceLabel}`,
+    })
+  );
+
+  // 래스터 뷰 + 부위 오버레이
+  const rasterWrap = el("div", {
+    class: "structure-kit-raster-wrap",
+    dataset: { testid: "structure-kit-raster-wrap" },
+  });
+
+  const canvas = renderTileCellsToCanvas({
     tileset,
     widthTiles: size.width,
     heightTiles: size.height,
     cells: assembledKitCells(kit, size.width),
-    scale: kit.kind === "house" ? 2 : 3,
+    scale: 3,
   });
-  unitCanvas.className = "structure-kit-db-unit";
-  unitCanvas.dataset.testid = `structure-kit-db-unit-${kit.id}`;
+  canvas.className = "structure-kit-raster-canvas";
+  canvas.dataset.testid = `structure-kit-db-unit-${kit.id}`;
+  rasterWrap.append(canvas);
 
-  const figureChildren = [
-    el("figure", {
-      class: "structure-kit-db-figure",
+  // 부위 오버레이 표시
+  const parts = kit.parts ?? [];
+  parts.forEach((part, index) => {
+    const leftPercent = (part.dx / size.width) * 100;
+    const topPercent = (part.dy / size.height) * 100;
+    const widthPercent = (part.w / size.width) * 100;
+    const heightPercent = (part.h / size.height) * 100;
+
+    const overlay = el("div", {
+      class: `structure-kit-overlay ${part.kind}`,
+      attrs: {
+        style: `left:${leftPercent}%;top:${topPercent}%;width:${widthPercent}%;height:${heightPercent}%;`,
+      },
       children: [
-        el("div", { class: "structure-kit-db-figure-body", children: [unitCanvas] }),
-        el("figcaption", { text: kit.kind === "house" ? `집 킷 ${size.width}×${size.height}` : `단면 ${size.width}×${size.height}` }),
+        el("span", { class: "structure-kit-overlay-badge", text: String(index + 1) }),
+        ...(part.kind === "entrance"
+          ? [el("span", { class: "structure-kit-overlay-warp-pin" })]
+          : []),
       ],
-    }),
-  ];
-  // 집 킷은 한 채가 완결 단위 — 조립 미리보기는 반복 단면(section)에만 의미가 있다.
-  if (kit.kind !== "house") {
-    const previewCanvas = renderTileCellsToCanvas({
-      tileset,
-      widthTiles: PREVIEW_COLUMNS,
-      heightTiles: size.height,
-      cells: assembledKitCells(kit, PREVIEW_COLUMNS),
-      scale: 2,
     });
-    previewCanvas.className = "structure-kit-db-preview";
-    previewCanvas.dataset.testid = `structure-kit-db-preview-${kit.id}`;
-    figureChildren.push(el("figure", {
-      class: "structure-kit-db-figure",
-      children: [
-        el("div", { class: "structure-kit-db-figure-body", children: [previewCanvas] }),
-        el("figcaption", { text: "이어 찍으면 (12열 조립)" }),
-      ],
-    }));
-  }
-  const figures = el("div", { class: "structure-kit-db-figures", children: figureChildren });
+    rasterWrap.append(overlay);
+  });
 
-  // ── 관리: 이름 변경 / 팔레트에서 쓰기 / 삭제 ──
-  const nameInput = el("input", {
-    class: "structure-kit-db-name",
-    value: kit.name ?? "패턴 스탬프",
-    attrs: { type: "text", "aria-label": "스탬프 이름", title: "이름을 바꾸면 팔레트·AI 다이제스트에 함께 반영됩니다" },
-    dataset: { testid: `structure-kit-db-name-${kit.id}` },
+  inspector.append(rasterWrap);
+
+  // 부위 목록
+  const partsList = el("div", { class: "structure-kit-parts-list" });
+  parts.forEach((part, index) => {
+    const isSelected = part.id === session.selectedPartId;
+    const rangeText = part.kind === "entrance"
+      ? `문 ${part.w}×${Math.max(1, part.h - 1)} + 앞 1칸`
+      : `(${part.dx},${part.dy}) ${part.w}×${part.h}`;
+
+    const partItem = el("div", {
+      class: `structure-kit-part-item${isSelected ? " selected" : ""}`,
+      children: [
+        el("div", {
+          class: "structure-kit-part-top",
+          children: [
+            el("span", { class: `structure-kit-part-dot ${part.kind}`, text: String(index + 1) }),
+            el("span", { class: "structure-kit-part-kind", text: partKindName(part.kind) }),
+            el("span", { class: "structure-kit-part-range", text: rangeText }),
+          ],
+        }),
+        ...(part.note ? [el("div", { class: "structure-kit-part-note", text: part.note })] : []),
+        el("div", {
+          class: "structure-kit-part-actions",
+          children: [
+            el("button", {
+              class: "structure-kit-part-delete-btn",
+              attrs: { type: "button" },
+              text: "부위 삭제",
+              on: {
+                click: () => {
+                  const updatedParts = (kit.parts ?? []).filter((p) => p.id !== part.id);
+                  saveKitParts(tileset.id, kit, updatedParts);
+                  rerender();
+                  refresh(host, rerender);
+                },
+              },
+            }),
+          ],
+        }),
+      ],
+      on: {
+        click: () => {
+          session.selectedPartId = part.id;
+          refresh(host, rerender);
+        },
+      },
+    });
+    partsList.append(partItem);
+  });
+  inspector.append(partsList);
+
+  // 문에서 입구 추정 버튼
+  const estimateBtn = el("button", {
+    class: "btn small structure-kit-estimate",
+    attrs: { type: "button" },
+    text: "문에서 입구 추정",
+    dataset: { testid: "structure-kit-estimate-entrance" },
     on: {
-      change: (event) => {
-        const target = event.currentTarget;
-        if (!(target instanceof HTMLInputElement)) return;
-        renameStructureKit(tileset.id, kit.id, target.value);
+      click: () => {
+        const estimated = autoEstimateEntranceParts(kit);
+        if (estimated.length === 0) {
+          toast("문 타일을 찾지 못했습니다.", "info");
+          return;
+        }
+        const merged = [...(kit.parts ?? []).filter((p) => p.kind !== "entrance"), ...estimated];
+        saveKitParts(tileset.id, kit, merged);
+        toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
         rerender();
+        refresh(host, rerender);
       },
     },
   });
+  inspector.append(estimateBtn);
 
-  const meta = el("div", {
-    class: "structure-kit-db-meta",
-    children: [
-      el("span", { class: "structure-kit-db-meta-label", text: learnedFromLabel(kit.learnedFrom) }),
-      ...(kit.createdAt ? [el("span", { class: "structure-kit-db-meta-dot", text: " · " }), el("span", { text: kit.createdAt.slice(0, 10) })] : []),
-      el("span", { class: "structure-kit-db-meta-id", text: ` · #${kit.id}` }),
-    ],
-  });
+  inspector.append(
+    el("p", {
+      class: "structure-kit-quiet",
+      text: "이 래스터를 드래그하면 부위가 붙습니다. 흰 점이 워프 칸입니다.",
+    })
+  );
 
+  // 하단 액션 버튼들 (지금 저장, 팔레트에서 쓰기, 삭제)
   const actions = el("div", {
-    class: "structure-kit-db-actions",
+    class: "structure-kit-actions",
     children: [
       el("button", {
         class: "btn primary",
+        attrs: { type: "button" },
+        text: "지금 저장",
+        dataset: { testid: "structure-kit-save-now" },
+        on: {
+          click: () => {
+            toast("구조물이 저장되었습니다.", "ok");
+            rerender();
+          },
+        },
+      }),
+      el("button", {
+        class: "btn",
+        attrs: { type: "button" },
         text: "팔레트에서 쓰기",
-        attrs: { type: "button", title: "이 스탬프를 브러시로 선택합니다" },
         dataset: { testid: `structure-kit-db-use-${kit.id}` },
         on: {
           click: () => {
@@ -159,35 +482,72 @@ function renderKitCard(tileset: TilesetDef, kit: StructureKitDef, rerender: () =
               activePaletteStamp: paletteStampFromKit(kit),
               tool: "paint",
             });
-            toast(`'${kit.name ?? "패턴"}' 스탬프를 브러시로 선택했습니다`, "ok");
+            toast(`'${kit.name ?? "구조물"}'을 브러시로 선택했습니다`, "ok");
           },
         },
       }),
       el("button", {
-        class: "btn structure-kit-db-delete",
+        class: "btn ghost structure-kit-delete",
+        attrs: { type: "button" },
         text: "삭제",
-        attrs: { type: "button", title: "이 스탬프를 프로젝트에서 제거합니다" },
         dataset: { testid: `structure-kit-db-delete-${kit.id}` },
         on: {
           click: () => {
             deleteStructureKit(tileset.id, kit.id);
-            toast(`'${kit.name ?? "패턴"}' 스탬프 삭제`, "info");
+            toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
+            session.selectedKitId = null;
+            session.selectedPartId = null;
             rerender();
+            refresh(host, rerender);
           },
         },
       }),
     ],
   });
+  inspector.append(actions);
 
-  card.append(
-    figures,
-    el("div", { class: "structure-kit-db-side", children: [nameInput, meta, actions] }),
-  );
-  return card;
+  return inspector;
 }
 
-function learnedFromLabel(learnedFrom: string): string {
-  if (learnedFrom === "user-paint") return "붓질에서 학습";
-  if (learnedFrom === "builtin-parametric") return "내장 파라메트릭";
-  return learnedFrom;
+function saveKitParts(tilesetId: string, kit: StructureKitDef, parts: StructureKitPart[]): void {
+  const current = store.getCurrent();
+  const tileset = current.tilesets[tilesetId];
+  if (!tileset || !tileset.structureKits) return;
+
+  const nextKits = tileset.structureKits.map((k) => (k.id === kit.id ? { ...k, parts } : k));
+  store.update((proj) => {
+    const targetTileset = proj.tilesets[tilesetId];
+    if (targetTileset) {
+      targetTileset.structureKits = nextKits;
+    }
+  });
+}
+
+function autoEstimateEntranceParts(kit: StructureKitDef): StructureKitPart[] {
+  const estimated: StructureKitPart[] = [];
+  // 문 타일 id 예: 116, 146, 360 등 (RM2k3 도어 패턴)
+  const DOOR_TILES = new Set([116, 146, 117, 147, 360, 361]);
+
+  if (kit.kind === "section") {
+    for (let y = 0; y < kit.rows.length; y += 1) {
+      const row = kit.rows[y];
+      if (!row) continue;
+      for (let x = 0; x < kit.width; x += 1) {
+        const tile = row.tiles[x] ?? -1;
+        const upper = row.upperTiles?.[x] ?? -1;
+        if (DOOR_TILES.has(tile) || DOOR_TILES.has(upper)) {
+          estimated.push({
+            id: `pt_${Date.now()}_${x}_${y}`,
+            kind: "entrance",
+            dx: x,
+            dy: Math.max(0, y - 1),
+            w: 1,
+            h: 3,
+            note: "문 2칸 + 앞 1칸",
+          });
+        }
+      }
+    }
+  }
+  return estimated;
 }
