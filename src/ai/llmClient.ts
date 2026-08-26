@@ -163,6 +163,18 @@ export function scrubStoredAiCredentials(): {
 // 저장된 baseUrl 이나 apiKey 가 있으면 apiKey 모드로 추론했는데, 그러면 감독이 한 번이라도
 // 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
 // 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
+function looksLikeCodexModel(model: string): boolean {
+  const normalized = model.trim().toLowerCase();
+  return /^(gpt-|o1|o3|o4|chatgpt)/.test(normalized) && !normalized.startsWith("cpen/");
+}
+
+function resolveStoredProviderId(parsed: Partial<AiConfig>, model: string): string {
+  if (typeof parsed.providerId === "string" && parsed.providerId.trim() !== "") {
+    return parseOhMyPiProvider(parsed.providerId);
+  }
+  return looksLikeCodexModel(model) ? "openai-codex" : DEFAULT_OH_MY_PI_PROVIDER;
+}
+
 export function loadAiConfig(): AiConfig {
   const base = defaultAiConfig();
   if (typeof localStorage === "undefined") return base;
@@ -188,12 +200,9 @@ export function loadAiConfig(): AiConfig {
     // 저장된 제공자는 **그대로 보존한다.** 예전에는 oauthProviderOrDefault 로 비-oauth 제공자를
     // openai-codex 로 되돌렸는데, 연결 방식이 두 종류가 된 뒤로는 틀린 동작이다 —
     // providerId:"zai" 인 옛 설정은 *API 키* 종류 + zai 로 살아야 한다(GLM 이 이 경로로 남는다).
-    // 전송 축은 authMode 가 이미 companion 으로 고정하므로 제공자를 강제할 이유가 없다.
-    // providerId 가 없는 저장 blob 은 Codex 가 공장 기본이던 시절의 암시 값이다.
-    // 새 기본(Antigravity)으로 바꾸면 gpt-5.6-sol 이 Gemini 경로로 실려 강등/오배송된다.
-    const providerId = typeof parsed.providerId === "string" && parsed.providerId.trim() !== ""
-      ? parseOhMyPiProvider(parsed.providerId)
-      : "openai-codex";
+    // providerId 가 없는 blob 은 공장 기본(Antigravity)을 따른다. gpt-* 만 남은 옛 Codex
+    // blob 만 openai-codex 로 남겨 Gemini 경로에 GPT 모델이 실리지 않게 한다.
+    const providerId = resolveStoredProviderId(parsed, model);
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;

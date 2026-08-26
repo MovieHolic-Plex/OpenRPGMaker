@@ -1,7 +1,7 @@
 // Shared companion router for vite middleware and the standalone OAuth process.
-// Codex (openai-codex) stays on the existing session; every other id is adapter-driven.
+// Missing provider falls back to Antigravity (same factory default as src/ai/ohMyPiProviders.ts).
 
-const DEFAULT_PROVIDER = "openai-codex";
+const DEFAULT_PROVIDER = "google-antigravity";
 
 function headerMap(headers) {
   if (!headers || typeof headers !== "object") return {};

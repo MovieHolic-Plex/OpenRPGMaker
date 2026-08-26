@@ -138,7 +138,7 @@ export function ohMyPiOAuthProviders(): readonly OhMyPiProvider[] {
 /**
  * 제공자의 자격 증명 종류. **에디터의 인증 UI 는 이 값 하나로 갈라진다.**
  *
- * 모르는 값·undefined 는 기본 제공자(openai-codex)의 종류로 떨어진다 — parseOhMyPiProvider 와
+ * 모르는 값·undefined 는 기본 제공자(google-antigravity)의 종류로 떨어진다 — parseOhMyPiProvider 와
  * 같은 관례라 undefined 를 만들지 않는다. 호출부가 옵셔널 체이닝을 잊어 조용히 분기를 놓치는
  * 사고를 막는다(예: `getOhMyPiProvider(id)?.authKind === "oauth"` 는 모르는 id 에서 false 가 되어
  * OAuth 제공자를 API 키처럼 취급했다).

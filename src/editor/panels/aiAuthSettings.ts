@@ -81,8 +81,8 @@ const KIND_COPY: Record<AiConnectionKindId, { label: string; hint: string }> = {
  * 이 카드는 보기 좋은 경로일 뿐 — 동일 제공자 id 는 아래 14종 드롭다운과 공유한다.
  */
 const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; hint: string }>[] = [
-  { id: "openai-codex", label: "ChatGPT", hint: "OpenAI 구독 계정으로 로그인합니다." },
   { id: "google-antigravity", label: "Google Gemini", hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다." },
+  { id: "openai-codex", label: "ChatGPT", hint: "OpenAI 구독 계정으로 로그인합니다." },
 ];
 
 export function renderAiAuthSettings(

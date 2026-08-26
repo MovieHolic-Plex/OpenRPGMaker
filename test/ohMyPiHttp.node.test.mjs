@@ -18,8 +18,8 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(isCompanionPath("/other"), false);
   });
 
-  it("provider 쿼리·헤더·본문이 없으면 openai-codex 로 둔다", () => {
-    assert.equal(resolveCompanionProvider({ url: "/auth/status" }), "openai-codex");
+  it("provider 쿼리·헤더·본문이 없으면 google-antigravity 로 둔다", () => {
+    assert.equal(resolveCompanionProvider({ url: "/auth/status" }), "google-antigravity");
     assert.equal(resolveCompanionProvider({ url: "/auth/status?provider=groq" }), "groq");
     assert.equal(
       resolveCompanionProvider({ url: "/v1/chat/completions", headers: { "x-rpgzzu-provider": "anthropic" } }),
@@ -114,7 +114,7 @@ describe("oh-my-pi companion HTTP", () => {
     ]);
   });
 
-  it("고른 제공자를 기본값(openai-codex)으로 덮어쓰지 않는다", async () => {
+  it("고른 제공자를 기본값(google-antigravity)으로 덮어쓰지 않는다", async () => {
     let codex = 0;
     const adapters = {
       status: async (provider) => {
