@@ -87,6 +87,13 @@ function ensureDebugPanelStyles(): void {
 .runtime-debug-dump summary{font-weight:400;font-size:11px;color:var(--text-2,#9aa3b5)}
 .runtime-debug-state{background:var(--bg-inset,#0c0e14);border:1px solid var(--border-subtle,rgba(255,255,255,.07));
   border-radius:var(--radius-s,6px);color:var(--text-2,#9aa3b5);margin-top:var(--space-2,8px);padding:var(--space-1,4px);max-height:160px;overflow:auto;white-space:pre-wrap;font-size:11px;font-family:var(--font-mono,monospace)}
+/* ESC 상태 메뉴가 열려 있는 동안은 이 패널이 메뉴 푸터를 덮는다.
+   실측(1280x900, 배율 3.417): 패널 849..871 vs 푸터 824..865 — 소지금·설명·시간이 있는
+   아래 16px 가 가려졌다. 이 패널은 테스트 플레이 창 전용 보조물이므로 게임 UI 에 양보한다.
+   주의: 이 패널은 windowNode(.test-play-window)에 스테이지와 **형제**로 붙는다
+   (testPlayModal.ts: windowNode.append(titlebar, body, renderRuntimeDebugPanel())).
+   그래서 .play-stage 하위 선택자로는 절대 안 잡힌다 — 공통 조상에서 :has() 로 내려와야 한다. */
+.test-play-window:has([data-testid='main-menu']) .runtime-debug-panel{display:none}
 `;
   document.head.append(style);
 }

@@ -1,0 +1,95 @@
+{
+  "nodes": [
+    {
+      "cls": "rm-title-screen-title",
+      "text": "새 프로젝트",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "18px",
+      "scrollWidth": 95,
+      "clientWidth": 95,
+      "scrollHeight": 22,
+      "clientHeight": 22,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "title-new-game",
+      "cls": "rm-title-menu-button primary selected",
+      "text": "새 게임",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "11px",
+      "scrollWidth": 96,
+      "clientWidth": 96,
+      "scrollHeight": 17,
+      "clientHeight": 17,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "title-load-game",
+      "cls": "rm-title-menu-button",
+      "text": "이어하기",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "11px",
+      "scrollWidth": 96,
+      "clientWidth": 96,
+      "scrollHeight": 17,
+      "clientHeight": 17,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "title-quit-game",
+      "cls": "rm-title-menu-button",
+      "text": "종료",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "11px",
+      "scrollWidth": 96,
+      "clientWidth": 96,
+      "scrollHeight": 17,
+      "clientHeight": 17,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "title-kicker",
+      "cls": "rm-title-kicker",
+      "text": "A NEW ADVENTURE",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "7px",
+      "scrollWidth": 69,
+      "clientWidth": 69,
+      "scrollHeight": 8,
+      "clientHeight": 8,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "title-subtitle",
+      "cls": "rm-title-subtitle",
+      "text": "이야기가 시작되는 곳",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "10px",
+      "scrollWidth": 100,
+      "clientWidth": 100,
+      "scrollHeight": 13,
+      "clientHeight": 13,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "title-input-hint",
+      "cls": "rm-title-input-hint",
+      "text": "방향키로 고르고 Enter로 시작",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "8px",
+      "scrollWidth": 150,
+      "clientWidth": 150,
+      "scrollHeight": 16,
+      "clientHeight": 16,
+      "clipX": 0,
+      "clipY": 0
+    }
+  ],
+  "skinVar": "url(\"/assets/ui/windowskin-warm.png\")"
+}

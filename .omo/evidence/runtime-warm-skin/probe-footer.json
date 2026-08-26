@@ -1,0 +1,296 @@
+{
+  "menu": {
+    "t": 55,
+    "b": 875,
+    "l": 93,
+    "r": 1187,
+    "h": 820,
+    "w": 1093
+  },
+  "stage": {
+    "t": 55,
+    "b": 875,
+    "l": 93,
+    "r": 1187,
+    "h": 820,
+    "w": 1093
+  },
+  "viewport": {
+    "w": 1280,
+    "h": 900
+  },
+  "footers": [
+    {
+      "text": "아군 하나의 HP를 50 회복합니다.",
+      "cls": "status-menu-detail-description",
+      "rect": {
+        "t": 376,
+        "b": 413,
+        "l": 288,
+        "r": 978,
+        "h": 37,
+        "w": 690
+      },
+      "font": "8px",
+      "lineHeight": "10.8px",
+      "scrollH": 11,
+      "clientH": 11,
+      "offsetH": 11,
+      "ancestors": [
+        {
+          "tag": "span",
+          "cls": "status-menu-detail-copy",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "21.3906px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 340,
+            "b": 413,
+            "l": 288,
+            "r": 1026,
+            "h": 73,
+            "w": 738
+          },
+          "clips": true
+        },
+        {
+          "tag": "button",
+          "testid": "status-menu-item-item_potion",
+          "cls": "status-menu-detail-row status-menu-detail-ro",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "29.3906px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 327,
+            "b": 427,
+            "l": 220,
+            "r": 1060,
+            "h": 100,
+            "w": 841
+          },
+          "clips": true
+        },
+        {
+          "tag": "div",
+          "cls": "status-menu-detail-list",
+          "overflowY": "auto",
+          "overflowX": "hidden",
+          "height": "80.5px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 327,
+            "b": 602,
+            "l": 220,
+            "r": 1060,
+            "h": 275,
+            "w": 841
+          },
+          "clips": true
+        },
+        {
+          "tag": "section",
+          "testid": "status-menu-detail",
+          "cls": "status-menu-detail",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "126px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 229,
+            "b": 660,
+            "l": 175,
+            "r": 1105,
+            "h": 431,
+            "w": 929
+          },
+          "clips": true
+        },
+        {
+          "tag": "div",
+          "testid": "main-menu",
+          "cls": "main-menu oprn-status-menu system-panel",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "240px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 55,
+            "b": 875,
+            "l": 93,
+            "r": 1187,
+            "h": 820,
+            "w": 1093
+          },
+          "clips": true
+        }
+      ]
+    },
+    {
+      "text": "돈 0G",
+      "testid": "status-menu-gold",
+      "cls": "status-menu-gold",
+      "rect": {
+        "t": 831,
+        "b": 858,
+        "l": 138,
+        "r": 206,
+        "h": 27,
+        "w": 68
+      },
+      "font": "8px",
+      "lineHeight": "8px",
+      "scrollH": 8,
+      "clientH": 8,
+      "offsetH": 8,
+      "ancestors": [
+        {
+          "tag": "footer",
+          "cls": "status-menu-footer",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "12px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 824,
+            "b": 865,
+            "l": 124,
+            "r": 1156,
+            "h": 41,
+            "w": 1032
+          },
+          "clips": true
+        },
+        {
+          "tag": "div",
+          "testid": "main-menu",
+          "cls": "main-menu oprn-status-menu system-panel",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "240px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 55,
+            "b": 875,
+            "l": 93,
+            "r": 1187,
+            "h": 820,
+            "w": 1093
+          },
+          "clips": true
+        }
+      ]
+    },
+    {
+      "text": "아군 하나의 HP를 50 회복합니다.",
+      "testid": "status-menu-message",
+      "cls": "status-menu-message",
+      "rect": {
+        "t": 831,
+        "b": 858,
+        "l": 223,
+        "r": 1070,
+        "h": 27,
+        "w": 847
+      },
+      "font": "8px",
+      "lineHeight": "8px",
+      "scrollH": 8,
+      "clientH": 8,
+      "offsetH": 8,
+      "ancestors": [
+        {
+          "tag": "footer",
+          "cls": "status-menu-footer",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "12px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 824,
+            "b": 865,
+            "l": 124,
+            "r": 1156,
+            "h": 41,
+            "w": 1032
+          },
+          "clips": true
+        },
+        {
+          "tag": "div",
+          "testid": "main-menu",
+          "cls": "main-menu oprn-status-menu system-panel",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "240px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 55,
+            "b": 875,
+            "l": 93,
+            "r": 1187,
+            "h": 820,
+            "w": 1093
+          },
+          "clips": true
+        }
+      ]
+    },
+    {
+      "text": "0:00",
+      "testid": "status-menu-time",
+      "cls": "status-menu-time",
+      "rect": {
+        "t": 831,
+        "b": 858,
+        "l": 1088,
+        "r": 1142,
+        "h": 27,
+        "w": 55
+      },
+      "font": "8px",
+      "lineHeight": "8px",
+      "scrollH": 8,
+      "clientH": 8,
+      "offsetH": 8,
+      "ancestors": [
+        {
+          "tag": "footer",
+          "cls": "status-menu-footer",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "12px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 824,
+            "b": 865,
+            "l": 124,
+            "r": 1156,
+            "h": 41,
+            "w": 1032
+          },
+          "clips": true
+        },
+        {
+          "tag": "div",
+          "testid": "main-menu",
+          "cls": "main-menu oprn-status-menu system-panel",
+          "overflowY": "hidden",
+          "overflowX": "hidden",
+          "height": "240px",
+          "maxHeight": "none",
+          "rect": {
+            "t": 55,
+            "b": 875,
+            "l": 93,
+            "r": 1187,
+            "h": 820,
+            "w": 1093
+          },
+          "clips": true
+        }
+      ]
+    }
+  ]
+}

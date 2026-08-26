@@ -489,10 +489,18 @@
 }
 
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-description {
-  display: block;
-  grid-column: 2;
-  grid-row: 1;
-  text-align: right;
+  /* Neo둥근모는 같은 8px 에서 Galmuri 보다 글자폭이 넓다. 이름·수량이 자기 폭을
+     먼저 가져가고 남은 1fr 에 설명문을 nowrap 으로 밀어넣으면 20px 이 모자라
+     말줄임으로 잘렸다(실측: clipX=20). 설명문을 아래 줄 전체 폭으로 내려
+     두 줄까지 감싸게 하면 문장이 끝까지 보인다. */
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  text-align: left;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
 }
 
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value {

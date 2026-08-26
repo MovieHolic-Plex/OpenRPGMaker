@@ -1,0 +1,116 @@
+{
+  "nodes": [
+    {
+      "testid": "dialogue-speaker",
+      "cls": "speaker speaker-nameplate",
+      "text": "마을 장로 미르",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 82,
+      "clientWidth": 82,
+      "scrollHeight": 15,
+      "clientHeight": 15,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "cls": "body",
+      "text": "어서 오게나, 여행자여! 따뜻한 온기가 머무는 이슬 마을이라네. 새로운 폰트와 갈색 창 스킨이 아주 잘 어울리는구먼.",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 282,
+      "clientWidth": 282,
+      "scrollHeight": 59,
+      "clientHeight": 59,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "cls": "dialogue-page-cursor",
+      "text": "▼",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "0px",
+      "scrollWidth": 4,
+      "clientWidth": 4,
+      "scrollHeight": 4,
+      "clientHeight": 4,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "cls": "choice-prompt-row",
+      "text": "무엇을 도와드릴까요?",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 288,
+      "clientWidth": 288,
+      "scrollHeight": 16,
+      "clientHeight": 16,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "runtime-choice-0",
+      "cls": "choice-btn selected",
+      "text": "마을의 전설에 대해 묻는다",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "scrollHeight": 11,
+      "clientHeight": 11,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "runtime-choice-1",
+      "cls": "choice-btn",
+      "text": "종을 복원하는 방법을 찾는다",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "scrollHeight": 11,
+      "clientHeight": 11,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "testid": "runtime-choice-2",
+      "cls": "choice-btn",
+      "text": "떠난다",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "scrollHeight": 11,
+      "clientHeight": 11,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "cls": "dialogue-gold-label",
+      "text": "소지금",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 27,
+      "clientWidth": 27,
+      "scrollHeight": 9,
+      "clientHeight": 9,
+      "clipX": 0,
+      "clipY": 0
+    },
+    {
+      "cls": "dialogue-gold-value",
+      "text": "1,250 G",
+      "family": "NeoDunggeunmo, Galmuri11, Galmuri9, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "size": "9px",
+      "scrollWidth": 32,
+      "clientWidth": 32,
+      "scrollHeight": 9,
+      "clientHeight": 9,
+      "clipX": 0,
+      "clipY": 0
+    }
+  ]
+}

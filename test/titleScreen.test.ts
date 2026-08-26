@@ -125,7 +125,8 @@ describe("title screen", () => {
       );
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
       expect(screen.style.borderImageSource).toBeUndefined();
-      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-default.png");
+      // 저작 기본 윈도우스킨은 따뜻한 갈색이다(windowskin-warm).
+      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-warm.png");
     } finally {
       restoreDom();
     }
