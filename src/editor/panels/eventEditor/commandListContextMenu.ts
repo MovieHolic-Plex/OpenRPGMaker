@@ -239,7 +239,8 @@ function openInsertPicker(request: CommandShortcutRequest, closeMenu: () => void
   openEventCommandPicker({
     title: "명령 넣기",
     context: request.pickerContext,
-    onSelect: (command) => {
+    onSelect: (command, closePicker) => {
+      closePicker();
       openNewEventCommandDialog(command, (editedCommand) => {
         request.actions.insertCommand(request.path, editedCommand);
       });
