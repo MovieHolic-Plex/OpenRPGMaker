@@ -158,6 +158,31 @@
   border-color: var(--accent);
 }
 
+/* 조수 카드(유리)는 좌상단에 고정되므로 손잡이도 우하단이어야 "끌어서 키운다"가 성립한다.
+   좌상단 손잡이는 카드가 커지는 방향과 반대로 움직여 매번 헛손질이 됐다. */
+.ai-chat-resize-handle.is-corner-end {
+  bottom: 0;
+  cursor: nwse-resize;
+  left: auto;
+  right: 0;
+  top: auto;
+}
+.ai-chat-resize-handle.is-corner-end::before {
+  border-bottom: 2px solid var(--border-strong);
+  border-bottom-right-radius: var(--radius-l);
+  border-left: 0;
+  border-right: 2px solid var(--border-strong);
+  border-top: 0;
+  border-top-left-radius: 0;
+}
+/* 손잡이는 크기를 실제로 바꿀 수 있는 유리 도크에서만 보인다 — 사이드는 에디터 셸의 열이,
+   float 은 inset:0 오버레이가 크기를 가지므로 손잡이가 거짓 약속이 된다. */
+.ai-chat-panel:not(.chat-dock-glass) > .ai-chat-resize-handle,
+.ai-chat-panel.is-studio > .ai-chat-resize-handle,
+.ai-chat-panel.is-docked > .ai-chat-resize-handle {
+  display: none;
+}
+
 /* ?㎞ ??釉뚮씪?곗? 踰꾪듉 */
 .ai-chat-tools-button {
   background: var(--control-bg);

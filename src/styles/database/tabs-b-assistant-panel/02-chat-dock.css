@@ -109,7 +109,6 @@
    담당한다 → 컴포저의 ☰ 와 추천 팝오버를 빼 중복을 없앤다. float 은 헤더가 숨겨지므로
    컴포저 ☰ 가 유일한 메타 진입점이라 그대로 둔다. */
 .ai-chat-panel.chat-dock-glass .ai-chat-toolbar,
-.ai-chat-panel.chat-dock-glass .ai-chat-resize-handle,
 .ai-chat-panel.chat-dock-glass .ai-command-menu-toggle,
 .ai-chat-panel.chat-dock-glass .ai-command-settings-button,
 .ai-chat-panel.chat-dock-glass .ai-composer-suggest,

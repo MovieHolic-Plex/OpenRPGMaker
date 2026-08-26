@@ -6,7 +6,7 @@ import {
   type ProposedCall,
   type TurnResult,
 } from "@/ai/assistantSession";
-import { loadAiConfig } from "@/ai/llmClient";
+import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
@@ -63,6 +63,111 @@ import {
 } from "./aiChatPanelHelpers";
 
 export type AiMessageBadgeState = "proposal" | "applied" | "discarded" | "reverted";
+
+/**
+ * 제안 카드 내 자동 승인 체크박스 토글.
+ * 사용자가 설정 모달을 찾아가지 않고도 결정 시점에 바로 앞으로의 자동 적용 여부를 전환할 수 있게 한다.
+ */
+export function renderAutoApproveToggle(options: {
+  readonly checked: boolean;
+  readonly onChange: (next: boolean) => void;
+}): HTMLElement {
+  const checkbox = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "ai-proposal-auto-approve-input" },
+    on: {
+      change: (event) => {
+        const target = event.target as HTMLInputElement | null;
+        options.onChange(target ? target.checked : false);
+      },
+    },
+  }) as HTMLInputElement;
+  checkbox.checked = options.checked;
+
+  const labelSpan = el("span", {
+    class: "ai-proposal-auto-approve-label",
+    text: "앞으로 자동 적용",
+  });
+
+  return el("label", {
+    class: "ai-proposal-auto-approve",
+    dataset: { testid: "ai-proposal-auto-approve" },
+    attrs: {
+      title: "켜면 안전한 변경은 검토 없이 바로 적용됩니다. 파괴적 변경과 재료 합의는 계속 승인을 요구합니다.",
+    },
+    children: [checkbox, labelSpan],
+  });
+}
+
+/**
+ * 자동 적용 버전의 전/후 뱄교 카드.
+ *
+ * 자동 상태로 적용된 진행은 사용자에게 "뭐가 바뀌었는지" 를 보여주지 않으면
+ * 신뢰할 수 없는 변경이 된다. 이전 구현은 평범한 시스템 버버 하나에 3초짜리
+ * 실행추소 버튼만 달았고(3초 뒤 setTimeout 이 지운다), 수동 경로에만 있는 전/후
+ * 썰네일을 보지 못했다. 자동 적용은 더 많은 설명이 필요하지 더 적은 설명이
+ * 필요하지 않다 — 그래서 같은 뱄교를 여기서도 보여주고, 그 자리에서 자동 적용을
+ * 닫을 수 있게 하고, 되돌리기는 사라지지 않게 단단하게 둔다.
+ */
+export function renderAppliedComparison(options: {
+  readonly before: Project;
+  readonly after: Project;
+  readonly mapId: string;
+  readonly summary: string;
+  readonly appliedCount: number;
+  readonly onUndo: () => void;
+}): HTMLElement {
+  const { before, after, mapId, summary, appliedCount } = options;
+  const crop = computeMapTileChangeBounds(before, after, mapId);
+  const thumbs = crop
+    ? el("div", {
+        class: "ai-proposal-thumbs ai-auto-applied-thumbs",
+        dataset: { testid: "ai-auto-applied-thumbs" },
+        children: [
+          renderProposalMapThumbnail(before, mapId, "before", crop),
+          renderProposalMapThumbnail(after, mapId, "after", crop),
+        ],
+      })
+    : null;
+
+  return el("div", {
+    class: "ai-auto-applied-card",
+    attrs: { role: "group", "aria-label": "자동 적용 결과" },
+    dataset: { testid: "ai-auto-applied-card" },
+    children: [
+      el("div", {
+        class: "ai-auto-applied-head",
+        children: [
+          el("span", {
+            class: "ai-auto-applied-badge",
+            text: `자동 적용 ${appliedCount}건`,
+            dataset: { testid: "ai-auto-applied-count" },
+          }),
+          el("span", { class: "ai-auto-applied-summary", text: summary, attrs: { title: summary } }),
+        ],
+      }),
+      ...(thumbs ? [thumbs] : []),
+      el("div", {
+        class: "ai-auto-applied-actions",
+        children: [
+          renderAutoApproveToggle({
+            checked: loadAiConfig().autoApprove === true,
+            onChange: (next) => {
+              saveAiConfig({ ...loadAiConfig(), autoApprove: next });
+            },
+          }),
+          el("button", {
+            class: "ai-assistant-action ai-auto-applied-undo",
+            text: "되돌리기",
+            attrs: { type: "button", title: "자동으로 적용한 변경을 되돌립니다" },
+            dataset: { testid: "ai-auto-applied-undo" },
+            on: { click: () => options.onUndo() },
+          }),
+        ],
+      }),
+    ],
+  });
+}
 
 const AI_MESSAGE_BADGE_LABELS: Record<AiMessageBadgeState, string> = {
   proposal: "제안",
@@ -605,6 +710,12 @@ export function createProposalHost(options: {
         el("div", {
           class: "ai-proposal-actions",
           children: [
+            renderAutoApproveToggle({
+              checked: loadAiConfig().autoApprove === true,
+              onChange: (next) => {
+                saveAiConfig({ ...loadAiConfig(), autoApprove: next });
+              },
+            }),
             (acceptButton = el("button", {
               class: "ai-assistant-action ai-proposal-accept",
               text: proposalAcceptButtonLabel(result.proposedCalls.length, result.proposedCalls.length),

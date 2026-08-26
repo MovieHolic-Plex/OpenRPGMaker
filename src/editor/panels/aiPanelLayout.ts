@@ -37,6 +37,62 @@ export function savePanelSize(size: PanelSize): void {
   localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(clampPanelSize(size)));
 }
 
+// ── 도크(모드)별 패널 크기 ────────────────────────────────────────
+// 패널은 dock 모드(glass/side/float)마다 쓰임새가 달라 한 저장값으로는 서로 다른 폭(예:
+// 360px 글래스 카드 vs 533px 사이드 컬럼)을 모두 담을 수 없다. 그래서 도크마다 별도 키에
+// 저장하고, 누락 시 기존 글로벌 값으로 폴백해 기존 사용자 크기를 보존한다.
+export type PanelDock = "glass" | "side" | "float";
+
+const dockKey = (dock: PanelDock): string => `oprn:ai-panel-size:${dock}`;
+
+/**
+ * 뷰포트에 반응형으로 크기를 제한한다. PANEL_SIZE_LIMITS로 1차 클램프한 뒤,
+ * 뷰포트의 90%를 폭/높이 상한으로 추가로 적용한다 (최소 한계는 유지).
+ * 비유효(비유한/0 이하) 뷰포트 수치는 "뷰포트 상한 없음"으로 취급해 그냥 clampPanelSize를 쓴다.
+ */
+export function clampPanelSizeToViewport(
+  size: PanelSize,
+  viewport: { readonly width: number; readonly height: number }
+): PanelSize {
+  const clamped = clampPanelSize(size);
+  const capWidth =
+    Number.isFinite(viewport.width) && viewport.width > 0
+      ? Math.max(PANEL_SIZE_LIMITS.minWidth, Math.round(viewport.width * 0.9))
+      : Infinity;
+  const capHeight =
+    Number.isFinite(viewport.height) && viewport.height > 0
+      ? Math.max(PANEL_SIZE_LIMITS.minHeight, Math.round(viewport.height * 0.9))
+      : Infinity;
+  return {
+    width: Math.min(clamped.width, capWidth),
+    height: Math.min(clamped.height, capHeight),
+  };
+}
+
+export function loadDockPanelSize(dock: PanelDock): PanelSize | null {
+  if (typeof localStorage === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(dockKey(dock));
+    // per-dock 키가 없으면 레거시 글로벌 값으로 폴백 (기존 사용자 크기 보존)
+    if (!raw) return loadPanelSize();
+    const parsed = JSON.parse(raw) as Partial<PanelSize>;
+    if (typeof parsed.width !== "number" || typeof parsed.height !== "number") return null;
+    return clampPanelSize({ width: parsed.width, height: parsed.height });
+  } catch {
+    return null;
+  }
+}
+
+export function saveDockPanelSize(dock: PanelDock, size: PanelSize): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(dockKey(dock), JSON.stringify(clampPanelSize(size)));
+}
+
+export function clearDockPanelSize(dock: PanelDock): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.removeItem(dockKey(dock));
+}
+
 // ── 도킹 사이드바 폭(§2.3 — G4) ──────────────────────────────────
 // fixed 오버레이(is-docked / 기록 패널)용 폭. 좌측 리사이저로 조절해 localStorage에 유지한다.
 const DOCK_WIDTH_KEY = "oprn:ai-dock-width";

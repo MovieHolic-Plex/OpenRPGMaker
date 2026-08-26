@@ -1,0 +1,353 @@
+{
+  "bootGeometry": {
+    "dock": "glass",
+    "panelInlineSize": [
+      "",
+      ""
+    ],
+    "handleVisible": true,
+    "handleClass": "ai-chat-resize-handle is-corner-end",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-composer-skill-button']=28x28@362,698",
+      "[data-testid='ai-send']=64x28@610,698"
+    ]
+  },
+  "bootBottom": {
+    "label": "boot-glass",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "assistantBottomCount": 1,
+    "rows": [
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ]
+      }
+    ]
+  },
+  "sendAriaEmpty": "true",
+  "sendClassEmpty": "ai-assistant-action ai-chat-send is-not-ready",
+  "skillButtonPresent": 1,
+  "actionsClassFocused": "ai-composer-actions is-input-focused",
+  "sendAriaTyped": "false",
+  "sendClassTyped": "ai-assistant-action ai-chat-send",
+  "typedGeometry": {
+    "dock": "glass",
+    "panelInlineSize": [
+      "",
+      ""
+    ],
+    "handleVisible": true,
+    "handleClass": "ai-chat-resize-handle is-corner-end",
+    "boxes": [
+      "[data-testid='ai-panel']=360x620@338,128",
+      ".ai-command-bar=358x124@339,623",
+      ".ai-composer=334x104@351,631",
+      ".ai-composer-actions=312x28@362,698",
+      ".ai-rising-sticky-zone=358x0@339,615",
+      "[data-testid='ai-composer-skill-button']=28x28@362,698",
+      "[data-testid='ai-send']=64x28@610,698"
+    ]
+  },
+  "inputAfterSkillButton": "/",
+  "slashHostVisible": true,
+  "handleCount": 1,
+  "resize": {
+    "before": [
+      360,
+      620
+    ],
+    "after": [
+      572,
+      762
+    ]
+  },
+  "resizeGeometry": {
+    "dock": "glass",
+    "panelInlineSize": [
+      "572px",
+      "762px"
+    ],
+    "handleVisible": true,
+    "handleClass": "ai-chat-resize-handle is-corner-end",
+    "boxes": [
+      "[data-testid='ai-panel']=572x762@338,128",
+      ".ai-command-bar=570x124@339,765",
+      ".ai-composer=546x104@351,773",
+      ".ai-composer-actions=524x28@362,840",
+      ".ai-rising-sticky-zone=570x0@339,757",
+      "[data-testid='ai-composer-skill-button']=28x28@362,840",
+      "[data-testid='ai-send']=64x28@822,840"
+    ]
+  },
+  "resizePersisted": [
+    572,
+    762
+  ],
+  "storedSizes": {
+    "glass": "{\"width\":572,\"height\":762}",
+    "side": null,
+    "float": null
+  },
+  "mentionProbe": "no-probe-hook",
+  "dock_side_geometry": {
+    "dock": "side",
+    "panelInlineSize": [
+      "",
+      ""
+    ],
+    "handleVisible": false,
+    "handleClass": "ai-chat-resize-handle is-corner-end",
+    "boxes": [
+      "[data-testid='ai-panel']=531x884@1068,116",
+      ".ai-command-bar=515x124@1076,868",
+      ".ai-composer=491x104@1088,876",
+      ".ai-composer-actions=469x28@1099,943",
+      ".ai-rising-sticky-zone=515x0@1076,856",
+      "[data-testid='ai-composer-skill-button']=28x28@1099,943",
+      "[data-testid='ai-send']=64x28@1504,943"
+    ]
+  },
+  "dock_side_bottom": {
+    "label": "dock-side",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "assistantBottomCount": 4,
+    "rows": [
+      {
+        "tag": "textarea",
+        "testid": "ai-input",
+        "cls": "ai-assistant-input",
+        "text": "",
+        "rect": [
+          1099,
+          885,
+          469,
+          54
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-composer-skill-button",
+        "cls": "ai-composer-menu-btn ai-composer-skill-btn",
+        "text": "/",
+        "rect": [
+          1099,
+          943,
+          28,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-send",
+        "cls": "ai-assistant-action ai-chat-send is-not-ready",
+        "text": "↑ 전송",
+        "rect": [
+          1504,
+          943,
+          64,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ]
+      }
+    ]
+  },
+  "dock_float_geometry": {
+    "dock": "float",
+    "panelInlineSize": [
+      "",
+      ""
+    ],
+    "handleVisible": false,
+    "handleClass": "ai-chat-resize-handle is-corner-end",
+    "boxes": [
+      "[data-testid='ai-panel']=1273x884@326,116",
+      ".ai-command-bar=640x126@947,826",
+      ".ai-composer=614x104@960,837",
+      ".ai-composer-actions=592x28@971,904",
+      ".ai-rising-sticky-zone=780x0@567,814",
+      "[data-testid='ai-composer-skill-button']=28x28@1005,904",
+      "[data-testid='ai-send']=64x28@1499,904"
+    ]
+  },
+  "dock_float_bottom": {
+    "label": "dock-float",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "assistantBottomCount": 5,
+    "rows": [
+      {
+        "tag": "textarea",
+        "testid": "ai-input",
+        "cls": "ai-assistant-input",
+        "text": "",
+        "rect": [
+          971,
+          846,
+          592,
+          54
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-command-menu-toggle",
+        "cls": "ai-composer-menu-btn ai-command-menu-toggle",
+        "text": "☰",
+        "rect": [
+          971,
+          904,
+          28,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-composer-skill-button",
+        "cls": "ai-composer-menu-btn ai-composer-skill-btn",
+        "text": "/",
+        "rect": [
+          1005,
+          904,
+          28,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-send",
+        "cls": "ai-assistant-action ai-chat-send is-not-ready",
+        "text": "↑ 전송",
+        "rect": [
+          1499,
+          904,
+          64,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ]
+      }
+    ]
+  },
+  "dock_glass_geometry": {
+    "dock": "glass",
+    "panelInlineSize": [
+      "572px",
+      "762px"
+    ],
+    "handleVisible": true,
+    "handleClass": "ai-chat-resize-handle is-corner-end",
+    "boxes": [
+      "[data-testid='ai-panel']=572x762@338,128",
+      ".ai-command-bar=570x124@339,765",
+      ".ai-composer=546x104@351,773",
+      ".ai-composer-actions=524x28@362,840",
+      ".ai-rising-sticky-zone=570x0@339,757",
+      "[data-testid='ai-composer-skill-button']=28x28@362,840",
+      "[data-testid='ai-send']=64x28@822,840"
+    ]
+  },
+  "dock_glass_bottom": {
+    "label": "dock-glass",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "assistantBottomCount": 4,
+    "rows": [
+      {
+        "tag": "textarea",
+        "testid": "ai-input",
+        "cls": "ai-assistant-input",
+        "text": "",
+        "rect": [
+          362,
+          782,
+          524,
+          54
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-composer-skill-button",
+        "cls": "ai-composer-menu-btn ai-composer-skill-btn",
+        "text": "/",
+        "rect": [
+          362,
+          840,
+          28,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "ai-send",
+        "cls": "ai-assistant-action ai-chat-send is-not-ready",
+        "text": "↑ 전송",
+        "rect": [
+          822,
+          840,
+          64,
+          28
+        ]
+      },
+      {
+        "tag": "button",
+        "testid": "authoring-journey-toggle",
+        "cls": "authoring-journey-toggle",
+        "text": "18",
+        "rect": [
+          336,
+          958,
+          32,
+          32
+        ]
+      }
+    ]
+  },
+  "docks": [
+    "side",
+    "float",
+    "glass"
+  ],
+  "_note": "좌측 타일 팔레트/맵 트리 행은 조수 표면이 아니라 제거했다(x<320). 원본은 프로브를 다시 돌리면 나온다."
+}
