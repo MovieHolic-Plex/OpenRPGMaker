@@ -46,11 +46,31 @@ function alternateRouteFor(kind: CommandKind): string | undefined {
   return undefined;
 }
 
+/**
+ * 페이지 매핑은 가족 전수를 명시한다. time/compatibility 를 시스템 탭으로 물려보내는
+ * 기본값 4 는 없다 — 시간/생활은 탭 1 저작면이고, 시스템 탭은 시스템·도구만 단는다.
+ */
+const PAGE_BY_FAMILY: Readonly<Record<CommandFamily, M2CommandPickerPage>> = {
+  dialogue: 1,
+  controlFlow: 1,
+  state: 1,
+  time: 1,
+  economy: 1,
+  commerce: 1,
+  actor: 2,
+  battle: 2,
+  monster: 2,
+  follower: 2,
+  social: 2,
+  map: 3,
+  atmosphere: 3,
+  media: 3,
+  system: 4,
+  compatibility: 4,
+};
+
 function pageForFamily(family: CommandFamily): M2CommandPickerPage {
-  if (["dialogue", "controlFlow", "state", "economy", "commerce"].includes(family)) return 1;
-  if (["actor", "battle", "monster", "follower", "social"].includes(family)) return 2;
-  if (["map", "atmosphere", "media"].includes(family)) return 3;
-  return 4;
+  return PAGE_BY_FAMILY[family];
 }
 
 export const COMMAND_PRESENTATION_DESCRIPTORS: readonly CommandPresentationDescriptor[] = Object.freeze(

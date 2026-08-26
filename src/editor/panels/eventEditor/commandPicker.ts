@@ -157,6 +157,32 @@ const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
 }));
 const ALL_COMMAND_ENTRIES = COMMAND_PAGES.flatMap((page) => page.entries);
 
+/**
+ * 탭 그리드에 실제로 그려지는 항목. 선택 불가 정보 행은 발견성을 속이므로 배제하고,
+ * 검색 결과에서만 “다른 곳: …” 안내와 함금로 노출한다.
+ */
+export type EventCommandPickerEntryView = {
+  readonly commandId: string;
+  readonly label: string;
+  readonly group: M2CommandPickerGroup;
+  readonly page: M2CommandPickerPage;
+  readonly selectable: boolean;
+  readonly alternateRoute?: string;
+};
+
+function tabGridEntries(entries: readonly CommandEntry[]): readonly CommandEntry[] {
+  return entries.filter((entry) => entry.selectable);
+}
+
+export function eventCommandPickerTabEntries(page: M2CommandPickerPage): readonly EventCommandPickerEntryView[] {
+  const found = COMMAND_PAGES.find((candidate) => candidate.page === page);
+  return tabGridEntries(found?.entries ?? []);
+}
+
+export function eventCommandPickerSearchEntries(): readonly EventCommandPickerEntryView[] {
+  return ALL_COMMAND_ENTRIES;
+}
+
 export const EVENT_COMMAND_PICKER_NATIVE_KINDS: readonly CommandKind[] = [
   ...new Set(
     COMMAND_PAGES.flatMap((page) => page.entries)
@@ -396,7 +422,7 @@ function renderPickerPage(
   if (recents.length > 0) {
     wrap.append(renderQuickCommandSection("최근 명령", "event-command-picker-recents", recents, onSelect, close, viewMode, onPreferencesChanged, context));
   }
-  wrap.append(renderCommandGrid(entries, onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
+  wrap.append(renderCommandGrid(tabGridEntries(entries), onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
   return wrap;
 }
 
