@@ -64,33 +64,33 @@ describe("6종 번들 칩셋 시맨틱 배선", () => {
   // 저작한 라벨이 검색 경로에만 갇히면 팔레트·DB 화면은 여전히 "타일 24" 를 보여준다.
   // themePacks.ts:311 의 전례("검색 전용이던 테이블을 시드 원천으로 승격")를 따라 tileMeta 까지 흘려보낸다.
   describe("tileMeta 시드", () => {
-globalThis.tilesets = defaultTilesets();
+      const tilesets = defaultTilesets();
 
     it.each(WIRING)("$textureKey 타일셋은 도화 가능 칸 전수를 tileMeta 라벨로 보유한다", ({ textureKey, drawable }) => {
-globalThis.tilesetId = textureKey.replace(/^tex_/, "");
-globalThis.tileset = tilesets[tilesetId];
+      const tilesetId = textureKey.replace(/^tex_/, "");
+      const tileset = tilesets[tilesetId];
       expect(tileset, `tileset ${tilesetId} 가 기본 프로젝트에 없다`).toBeDefined();
-globalThis.labeled = (tileset!.tileMeta ?? []).filter((meta) => meta.label.trim().length > 0);
+      const labeled = (tileset!.tileMeta ?? []).filter((meta) => meta.label.trim().length > 0);
       expect(labeled.length).toBe(drawable);
     });
 
     it.each(WIRING)("$textureKey 의 tileMeta 라벨은 시맨틱 테이블과 일치한다", ({ textureKey, table }) => {
-globalThis.tilesetId = textureKey.replace(/^tex_/, "");
-globalThis.tileset = tilesets[tilesetId]!;
-globalThis.mismatched = table.filter((entry) => tileset.tileMeta?.[entry.index]?.label !== entry.label);
+      const tilesetId = textureKey.replace(/^tex_/, "");
+      const tileset = tilesets[tilesetId]!;
+      const mismatched = table.filter((entry) => tileset.tileMeta?.[entry.index]?.label !== entry.label);
       expect(mismatched.map((entry) => entry.index).slice(0, 10)).toEqual([]);
     });
 
     it.each(WIRING)("$textureKey 의 tileMeta 는 번들 출처로 표시된다", ({ textureKey, table }) => {
-globalThis.tilesetId = textureKey.replace(/^tex_/, "");
-globalThis.tileset = tilesets[tilesetId]!;
-globalThis.sample = table[Math.floor(table.length / 2)]!;
+      const tilesetId = textureKey.replace(/^tex_/, "");
+      const tileset = tilesets[tilesetId]!;
+      const sample = table[Math.floor(table.length / 2)]!;
       expect(tileset.tileMeta?.[sample.index]?.source).toBe("bundled-default");
     });
 
     it("기존 실내 칩셋의 tileMeta 시드는 그대로다", () => {
-globalThis.interior = tilesets["easyrpg_chipset_interior"]!;
-globalThis.labeled = (interior.tileMeta ?? []).filter((meta) => meta.label.trim().length > 0);
+      const interior = tilesets["easyrpg_chipset_interior"]!;
+      const labeled = (interior.tileMeta ?? []).filter((meta) => meta.label.trim().length > 0);
       expect(labeled.length).toBeGreaterThanOrEqual(460);
     });
   });
