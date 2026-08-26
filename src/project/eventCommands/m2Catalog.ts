@@ -40,6 +40,10 @@ export type M2CommandFieldSpec = {
   readonly type: M2CommandFieldType;
   readonly defaultValue: M2CommandValue;
   readonly options?: readonly M2CommandFieldOption[];
+  /** number 필드의 통상 범위 — 런타임 클램프와 같은 수를 쓴다(예: clampMs 50~5000). */
+  readonly min?: number;
+  readonly max?: number;
+  readonly step?: number;
 };
 
 export type M2CommandCatalogEntry = M2PdfCommandRow & {
