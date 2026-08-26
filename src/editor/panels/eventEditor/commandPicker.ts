@@ -145,15 +145,26 @@ const DERIVED_COMMAND_ENTRIES: readonly CommandEntry[] = COMMAND_PRESENTATION_DE
     page: descriptor.page,
     alternateRoute: descriptor.alternateRoute,
   }));
+// 「빠른 저작」(탭 1)은 카탈로그 1페이지가 아니라 이야기 작업면이다. 고를 수 없는 안내 행과
+// 메모용 주석은 이 탭에 섞지 않고 「시스템 · 도구」 탭으로 내린다 — 검색·즐겨찾기에서는 그대로 보인다.
+const QUICK_AUTHORING_DEMOTED_COMMAND_IDS: ReadonlySet<string> = new Set(["m2-088-comment"]);
+const DEMOTED_PICKER_PAGE: M2CommandPickerPage = 4;
+
+function quickAuthoringWorkspaceEntry(entry: CommandEntry): CommandEntry {
+  if (entry.page !== 1) return entry;
+  if (entry.selectable && !QUICK_AUTHORING_DEMOTED_COMMAND_IDS.has(entry.commandId)) return entry;
+  return { ...entry, page: DEMOTED_PICKER_PAGE };
+}
+
+const PICKER_ENTRIES: readonly CommandEntry[] = [
+  ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerLabel !== "고급 대화").map(commandEntryFromCatalog),
+  ...NATIVE_ONLY_ENTRIES,
+  ...DERIVED_COMMAND_ENTRIES,
+].map(quickAuthoringWorkspaceEntry);
+
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
-  entries: [
-    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && entry.pickerLabel !== "고급 대화").map(
-      commandEntryFromCatalog
-    ),
-    ...NATIVE_ONLY_ENTRIES.filter((entry) => entry.page === page),
-    ...DERIVED_COMMAND_ENTRIES.filter((entry) => entry.page === page),
-  ],
+  entries: PICKER_ENTRIES.filter((entry) => entry.page === page),
 }));
 const ALL_COMMAND_ENTRIES = COMMAND_PAGES.flatMap((page) => page.entries);
 
@@ -209,9 +220,17 @@ type EventCommandPickerRequest = {
    * 최저 지원으로 보수 표시한다.
    */
   readonly context?: M2RuntimeContext;
+  /**
+   * 명령이 선택되면 호출된다. 호출 지점에서 피커는 이미 닫혀 있으므로, 넘겨받는
+   * `closePicker` 는 멱등하게 아무것도 하지 않는다.
+   */
   readonly onSelect: (command: Command, closePicker: () => void) => EventCommandPickerSelectResult;
 };
 
+/**
+ * 한 레이어 계약 이후 `closePicker: false` 는 무시된다 — 명령을 고르는 순간 피커는 항상 닫힌다.
+ * 이 반환 타입은 기존 호출자가 그대로 타입 검사를 통과하도록 남긴 호환 장치다.
+ */
 type EventCommandPickerSelectResult = { readonly closePicker: false } | void;
 
 export function openEventCommandPicker(request: EventCommandPickerRequest): void {
@@ -567,8 +586,11 @@ function renderCommandButton(
     button.addEventListener("click", () => {
       recordRecentEventCommand(entry.commandId);
       options.onPreferencesChanged();
-      const result = onSelect(createCommandFromEntry(entry), close);
-      if (!result || result.closePicker !== false) close();
+      // 한 레이어 계약: 명령을 고르면 피커는 닫힌다. 편집 창이 유일한 1차 액션이고, 뒤에
+      // 남은 피커가 확인 클릭을 먹는 모달 스택은 없다. close() 는 멱등이라 편집 창이
+      // 나중에 넘겨받은 closePicker() 를 호출해도 안전하다.
+      close();
+      onSelect(createCommandFromEntry(entry), close);
     });
   }
 

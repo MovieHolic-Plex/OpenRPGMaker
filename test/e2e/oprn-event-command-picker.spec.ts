@@ -133,7 +133,8 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
   await picker.getByTestId("event-command-picker-tab-1").click();
   await picker.screenshot({ path: testInfo.outputPath("rm2k3-event-command-picker.png") });
   await picker.getByTestId("command-picker-add-text").click();
-  await expect(picker).toBeVisible();
+  // 한 레이어 계약: 명령을 고르면 피커는 닫힌다 — 편집 창 밑에 피커가 새지 않는다.
+  await expect(picker).toHaveCount(0);
   const commandDialog = page.getByTestId("event-command-edit-dialog");
   await expect(commandDialog).toBeVisible();
   await expect(commandDialog).toContainText("문장 표시");
@@ -143,6 +144,8 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
   await commandDialog.locator("textarea").fill("취소될 대사");
   await commandDialog.getByTestId("event-command-edit-cancel").click();
   await expect(commandDialog).toBeHidden();
+
+  await emptyLine.dblclick();
   await expect(picker).toBeVisible();
   await picker.getByTestId("event-command-picker-cancel").click();
   await expect(picker).toBeHidden();
@@ -359,6 +362,7 @@ test("event command context menu, switch picker, and trigger safety warning work
   picker = page.getByTestId("event-command-picker");
   await expect(picker).toBeVisible();
   await picker.getByTestId("command-picker-add-setSwitch").click();
+  await expect(picker).toHaveCount(0);
   await expect(editor.getByTestId("event-command-setSwitch")).toHaveCount(0);
   await expect(commandDialog).toBeVisible();
   await expect(commandDialog).toContainText("스위치 조작");

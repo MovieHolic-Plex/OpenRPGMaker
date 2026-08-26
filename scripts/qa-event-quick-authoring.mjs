@@ -35,7 +35,13 @@ try {
       selectable: command?.getAttribute("aria-disabled") !== "true",
     };
   }));
-  if (entries.length !== 28) throw new Error(`expected 28 quick-authoring rows, found ${entries.length}`);
+  // 「빠른 저작」은 카탈로그 전수 리스트가 아니다: 행 수를 고정하지 않고, 고를 수 없는 안내 행이
+  // 하나도 없는지만 본다.
+  if (entries.length === 0) throw new Error("quick-authoring workspace has no rows");
+  const guidance = entries.filter((entry) => !entry.selectable);
+  if (guidance.length > 0) {
+    throw new Error(`quick-authoring has guidance rows: ${guidance.map((entry) => entry.commandId).join(", ")}`);
+  }
 
   const results = [];
   for (const entry of entries) {
@@ -44,22 +50,15 @@ try {
       `.event-command-picker-command-wrap[data-command-id="${entry.commandId}"] > .event-command-picker-command`,
     ).first();
     const dialog = page.getByTestId("event-command-edit-dialog");
-    if (!entry.selectable) {
-      if (await button.getAttribute("aria-disabled") !== "true") throw new Error(`${entry.commandId}: guidance row is not disabled`);
-      await button.dispatchEvent("click");
-      if (await dialog.count()) throw new Error(`${entry.commandId}: guidance row opened an edit dialog`);
-      results.push({ ...entry, outcome: "guidance" });
-    } else {
-      await button.scrollIntoViewIfNeeded();
-      await button.click();
-      await dialog.waitFor({ state: "visible" });
-      const beforeCount = await editor.locator('.cmd-item[data-cmd-depth="0"]').count();
-      await dialog.getByTestId("event-command-edit-ok").click();
-      await dialog.waitFor({ state: "detached" });
-      const afterCount = await editor.locator('.cmd-item[data-cmd-depth="0"]').count();
-      if (afterCount !== beforeCount + 1) throw new Error(`${entry.commandId}: command count ${beforeCount} -> ${afterCount}`);
-      results.push({ ...entry, outcome: "inserted" });
-    }
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+    await dialog.waitFor({ state: "visible" });
+    const beforeCount = await editor.locator('.cmd-item[data-cmd-depth="0"]').count();
+    await dialog.getByTestId("event-command-edit-ok").click();
+    await dialog.waitFor({ state: "detached" });
+    const afterCount = await editor.locator('.cmd-item[data-cmd-depth="0"]').count();
+    if (afterCount !== beforeCount + 1) throw new Error(`${entry.commandId}: command count ${beforeCount} -> ${afterCount}`);
+    results.push({ ...entry, outcome: "inserted" });
     await writeFile(
       `${evidenceDir}/all-command-results.json`,
       `${JSON.stringify({ count: entries.length, completed: results.length, results }, null, 2)}\n`,

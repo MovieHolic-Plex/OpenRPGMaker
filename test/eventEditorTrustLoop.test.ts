@@ -308,12 +308,16 @@ describe("event editor trust loop", () => {
     const waitCommand = document.querySelector<HTMLElement>('[data-testid="command-picker-add-wait"]');
     const waitId = waitCommand?.parentElement?.dataset.commandId;
     waitCommand?.click();
+    // 한 레이어 계약: 고르면 피커가 닫히니, 다음 명령은 피커를 다시 여어서 고른다.
+    expect(document.querySelector('[data-testid="event-command-picker"]')).toBeNull();
+    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     const switchCommand = document.querySelector<HTMLElement>('[data-testid="command-picker-add-setSwitch"]');
     const switchId = switchCommand?.parentElement?.dataset.commandId;
     switchCommand?.click();
     if (!waitId || !switchId) throw new Error("expected recent command ids");
     const recents = readEventCommandPickerPreferences().recents;
     expect(recents.slice(0, 2)).toEqual([switchId, waitId]);
+    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     const recentRoot = document.querySelector<HTMLElement>('[data-testid="event-command-picker-recents"]');
     const recentIds = Array.from(
       recentRoot?.querySelectorAll<HTMLElement>(".event-command-picker-command-wrap") ?? [],
