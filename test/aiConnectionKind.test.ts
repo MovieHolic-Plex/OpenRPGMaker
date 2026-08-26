@@ -99,9 +99,14 @@ describe("에디터의 2종 선택 — 파생값이고 저장하지 않는다", 
     expect(editorConnectionKind({ ...GATEWAY, providerId: "ollama" })).toBe("apiKey");
   });
 
-  it("종류별 제공자 수는 14 / 54 다", () => {
-    expect(providersForKind("oauth")).toHaveLength(14);
-    expect(providersForKind("apiKey")).toHaveLength(54);
+  it("종류와 무관하게 Antigravity 하나만 노출한다 (제공자 강제 통일)", () => {
+    // 감독 지시 2026-08-26: 에디터의 모든 AI 를 Antigravity 로 통일하고 잔여 경로를 남기지
+    // 않는다. loadAiConfig·saveAiConfig 가 제공자를 강제하므로 종류별 목록은 고를 수 없는
+    // 선택지였다 — 노출 자체를 걷었다.
+    expect(providersForKind("oauth")).toHaveLength(1);
+    expect(providersForKind("apiKey")).toHaveLength(1);
+    expect(providersForKind("oauth")[0]?.id).toBe("google-antigravity");
+    expect(providersForKind("apiKey")[0]?.id).toBe("google-antigravity");
   });
 
   it("구독 로그인 목록의 첫 항목은 기본 제공자다", () => {

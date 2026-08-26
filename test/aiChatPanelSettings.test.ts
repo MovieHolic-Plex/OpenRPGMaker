@@ -100,7 +100,8 @@ describe("설정 자동 저장", () => {
     expect(providers).not.toBeNull();
     // 기본은 구독 로그인 종류라 OAuth 제공자 14종만 담는다 — 예전에는 68종을 종류 구분 없이
     // 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞여 있었다).
-    expect(providers?.querySelectorAll("option").length).toBe(14);
+    // 제공자는 Antigravity 하나로 강제된다 — 목록도 그 하나뿐이다(감독 지시 2026-08-26).
+    expect(providers?.querySelectorAll("option").length).toBe(1);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
@@ -131,7 +132,7 @@ describe("설정 자동 저장", () => {
     expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 고른 연결 종류의 제공자만 담는다", () => {
+  it("설정 제공자 목록은 종류와 무관하게 Antigravity 하나만 담는다", () => {
     // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
@@ -140,14 +141,14 @@ describe("설정 자동 저장", () => {
     const values = (): readonly string[] =>
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
-    expect(values()).toEqual(providersForKind("oauth").map((provider) => provider.id));
+    expect(values()).toEqual(["google-antigravity"]);
 
     findByTestId(modal, "ai-auth-api-key")?.click();
 
-    expect(values()).toEqual(providersForKind("apiKey").map((provider) => provider.id));
-    // 합치면 카탈로그 전체다 — 필터가 제공자를 잃어버리지 않는다.
-    expect(providersForKind("oauth").length + providersForKind("apiKey").length)
-      .toBe(OH_MY_PI_PROVIDERS.length);
+    // 자격 종류를 눌러도 제공자 목록은 그대로다 — 종류 축은 제공자에서 파생하고 제공자가
+    // 하나뿐이므로 갈릴 목록이 없다.
+    expect(values()).toEqual(["google-antigravity"]);
+    expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 
   it("제공자 선택을 건드려도 Antigravity 로 남는다 (되돌릴 구멍 없음)", () => {

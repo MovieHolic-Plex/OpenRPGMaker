@@ -15,11 +15,9 @@
 import { DEFAULT_BASE_URL, type AiConfig } from "@/ai/llmClient";
 import {
   DEFAULT_OH_MY_PI_PROVIDER,
-  ohMyPiAuthKind,
-  ohMyPiProvidersByAuthKind,
+  ohMyPiAuthKind,
   parseOhMyPiProvider,
-  type OhMyPiProvider,
-} from "@/ai/ohMyPiProviders";
+  type OhMyPiProvider, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 /** 사용자가 고르는 연결 방식. `local` 제공자는 "API 키" 쪽에 접는다(키 불필요 안내를 붙인다). */
 export type AiConnectionKindId = "oauth" | "apiKey";
@@ -37,13 +35,18 @@ export function editorConnectionKind(config: AiConfig): AiConnectionKindId {
  * 순서는 레지스트리 순서를 유지하되, 구독 로그인은 기본 제공자를 맨 앞으로 올린다 —
  * 첫 항목이 곧 권장값이라는 관례를 목록 자체가 지키게 한다.
  */
-export function providersForKind(kind: AiConnectionKindId): readonly OhMyPiProvider[] {
-  if (kind === "oauth") {
-    const oauth = ohMyPiProvidersByAuthKind("oauth");
-    const preferred = oauth.filter((provider) => provider.id === DEFAULT_OH_MY_PI_PROVIDER);
-    return [...preferred, ...oauth.filter((provider) => provider.id !== DEFAULT_OH_MY_PI_PROVIDER)];
-  }
-  return [...ohMyPiProvidersByAuthKind("apiKey"), ...ohMyPiProvidersByAuthKind("local")];
+export function providersForKind(_kind: AiConnectionKindId): readonly OhMyPiProvider[] {
+  // 에디터는 Antigravity 하나만 쓴다 (감독 지시 2026-08-26: 모든 AI 를 Antigravity 로 통일,
+  // 잔여 경로 없음). 예전에는 종류별로 oauth 14종 / apiKey+local 54종을 노출했지만,
+  // loadAiConfig·saveAiConfig 가 제공자를 강제하므로 그 목록은 고를 수 없는 선택지였다 —
+  // 화면에 남겨 두면 고르면 바뀌는 것처럼 보이는 거짓 표면이 된다.
+  const forced = getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER);
+  return forced ? [forced] : [];
+}
+
+/** 종류 축은 제공자에서 파생하고 제공자가 하나뿐이므로 항상 구독 로그인이다. */
+export function editorHasProviderChoice(): boolean {
+  return false;
 }
 
 /** 그 종류의 기본 제공자. */
