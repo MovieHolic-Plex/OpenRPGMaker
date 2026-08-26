@@ -6,6 +6,11 @@ import {
   type CommandSupport,
 } from "@/project/commandGuaranteeRegistry";
 import type { M2CommandPickerPage } from "@/project/eventCommands/m2PickerLayout";
+import {
+  M2_PICKER_BATTLE_GROUP,
+  M2_PICKER_GROWTH_GROUP,
+  M2_PICKER_PARTY_GROUP,
+} from "@/project/eventCommands/m2PickerLayout";
 
 export type CommandPresentationDescriptor = Readonly<{
   kind: CommandKind;
@@ -25,12 +30,13 @@ const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
   state: "스위치/변수",
   time: "시간/생활",
   map: "맵/이동",
-  battle: "전투",
-  actor: "배우/파티",
+  // 탭 2 그룹은 m2 카탈로그 행과 같은 어휘를 쓴다 — 한 작업면이 헤딩 여럿으로 쪼개지지 않게.
+  battle: M2_PICKER_BATTLE_GROUP,
+  actor: M2_PICKER_GROWTH_GROUP,
   economy: "아이템/경제",
-  social: "관계/소셜",
-  monster: "몬스터",
-  follower: "동료",
+  social: M2_PICKER_GROWTH_GROUP,
+  monster: M2_PICKER_PARTY_GROUP,
+  follower: M2_PICKER_PARTY_GROUP,
   atmosphere: "화면/연출",
   media: "미디어",
   commerce: "상점/시설",

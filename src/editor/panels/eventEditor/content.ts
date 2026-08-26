@@ -633,12 +633,10 @@ function openCommandPickerForActions(actions: CommandListActions): void {
   openEventCommandPicker({
     title: "명령 추가",
     context: "map",
-    onSelect: (command, closePicker) => {
+    onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         actions.addCommand([], editedCommand);
-        closePicker();
       });
-      return { closePicker: false };
     },
   });
 }
@@ -649,12 +647,10 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
   openEventCommandPicker({
     title: "명령 추가",
     context: "map",
-    onSelect: (command, closePicker) => {
+    onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         addEventPageCommand(mapId, eventId, pageId, editedCommand);
-        closePicker();
       });
-      return { closePicker: false };
     },
   });
   return true;

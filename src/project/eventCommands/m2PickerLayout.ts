@@ -3,16 +3,28 @@ import type { M2PdfCommandRow } from "./m2CatalogData";
 export type M2CommandPickerPage = 1 | 2 | 3 | 4;
 export type M2CommandPickerGroup = string;
 
+/**
+ * 탭 2(동료 · 전투)는 카탈로그 분류가 아니라 저작 작업면이다. 그래서 그룹 이름은
+ * `배우/전투` 같은 RM 분류명이 아니라 작가가 하려는 일 — 적을 세우고(전투), 누구를
+ * 파티에 넣고(파티), 수치를 움직이고(능력·성장), 모습을 바꾼다(모습·이름) — 로 쪼갠다.
+ */
+export const M2_PICKER_BATTLE_GROUP = "전투";
+export const M2_PICKER_PARTY_GROUP = "파티";
+export const M2_PICKER_GROWTH_GROUP = "능력·성장";
+export const M2_PICKER_APPEARANCE_GROUP = "모습·이름";
+
 export const M2_COMMAND_PICKER_GROUP_ORDER: readonly M2CommandPickerGroup[] = [
   "대화/입력",
   "조건/흐름",
   "맵/이동",
   "보상/상점",
   "소리",
-  "배우/전투",
+  M2_PICKER_BATTLE_GROUP,
+  M2_PICKER_PARTY_GROUP,
+  M2_PICKER_GROWTH_GROUP,
+  M2_PICKER_APPEARANCE_GROUP,
   "화면/연출",
   "시스템/고급",
-  "전투 전용",
   "모던 명령",
 ];
 
@@ -166,7 +178,9 @@ export function pickerPageForM2Command(row: M2PdfCommandRow): M2CommandPickerPag
 }
 
 export function pickerGroupForM2Command(row: M2PdfCommandRow): M2CommandPickerGroup {
-  if (isBattleOnlyRow(row)) return "전투 전용";
+  if (isBattleOnlyRow(row)) return M2_PICKER_BATTLE_GROUP;
+  const tab2Group = actorBattleSurfaceGroup(row.title);
+  if (tab2Group) return tab2Group;
   // 탭 4에 남는 행은 시스템(⚙) 또는 도구(◈) 헤딩 하나로만 묶인다.
   if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return row.index >= 200 ? "모던 명령" : "시스템/고급";
   if (isDialogueInputCommand(row.title)) return "대화/입력";
@@ -175,10 +189,41 @@ export function pickerGroupForM2Command(row: M2PdfCommandRow): M2CommandPickerGr
   if (isRewardShopCommand(row.title)) return "보상/상점";
   if (row.title.includes("BGM") || row.title.includes("SE") || row.title === "Sound Layer") return "소리";
   if (isScreenPresentationCommand(row.title)) return "화면/연출";
-  if (isActorBattleCommand(row.title)) return "배우/전투";
   if (row.index >= 200) return "모던 명령";
   return "시스템/고급";
 }
+
+/** 탭 2 작업면 그룹. 탭 2 행이 아니면 undefined. */
+function actorBattleSurfaceGroup(title: string): M2CommandPickerGroup | undefined {
+  if (title === "Battle Processing" || title === "Change Battle Commands") return M2_PICKER_BATTLE_GROUP;
+  if (title === "Change Party Member") return M2_PICKER_PARTY_GROUP;
+  if (APPEARANCE_PAGE_TITLES.has(title)) return M2_PICKER_APPEARANCE_GROUP;
+  if (GROWTH_PAGE_TITLES.has(title)) return M2_PICKER_GROWTH_GROUP;
+  return undefined;
+}
+
+/** 수치·성장: HP/MP/EXP/레벨/능력치/스킬/장비/상태. 게이지로 미리 보는 명령들. */
+const GROWTH_PAGE_TITLES: ReadonlySet<string> = new Set([
+  "Change EXP",
+  "Change Level",
+  "Change Parameters",
+  "Change Skills",
+  "Change Equipment",
+  "Change HP",
+  "Change MP",
+  "Change State",
+  "Recover All",
+  "Damage Processing",
+]);
+
+/** 모습·이름: 얼굴·맵 그래픽·이름·별명·직업. */
+const APPEARANCE_PAGE_TITLES: ReadonlySet<string> = new Set([
+  "Change Actor Name",
+  "Change Actor Nickname",
+  "Change Actor Graphic",
+  "Change Actor Faceset",
+  "Change Actor Class",
+]);
 
 function isDialogueInputCommand(title: string): boolean {
   return (
@@ -250,19 +295,3 @@ function isScreenPresentationCommand(title: string): boolean {
   );
 }
 
-function isActorBattleCommand(title: string): boolean {
-  return (
-    title.includes("Actor") ||
-    title.includes("Party") ||
-    title.includes("EXP") ||
-    title.includes("Level") ||
-    title.includes("Parameters") ||
-    title.includes("Skills") ||
-    title.includes("Equipment") ||
-    title.includes("HP") ||
-    title.includes("MP") ||
-    title.includes("State") ||
-    title === "Recover All" ||
-    title === "Damage Processing"
-  );
-}
