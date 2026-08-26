@@ -12,7 +12,22 @@ import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
-import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
+import { RETRO_DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroDungeon";
+import { RETRO_EXTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroExterior";
+import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroHouse";
+import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
+import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
+import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
+import {
+  DUNGEON_TEXTURE_KEY,
+  INTERIOR_TEXTURE_KEY,
+  RETRO_DUNGEON_TEXTURE_KEY,
+  RETRO_EXTERIOR_TEXTURE_KEY,
+  RETRO_HOUSE_TEXTURE_KEY,
+  RETRO_WORLD_TEXTURE_KEY,
+  SHIP_TEXTURE_KEY,
+  WORLD_TEXTURE_KEY,
+} from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
@@ -142,10 +157,26 @@ function monsterCandidates(): ResourceCandidate[] {
 
 // 타일셋 텍스처에 맞는 번들 시맨틱 테이블 선택.
 // 타일 인덱스는 칩셋마다 의미가 다르므로 combined_town 테이블을 다른 칩셋에 적용하면 오답이 된다.
-function bundledTileSemantics(tileset: TilesetDef | undefined): readonly { index: number; label: string; tags: readonly string[] }[] {
-  if (tileset?.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_SEMANTICS;
-  if (tileset?.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_SEMANTICS;
-  if (tileset?.image.type === "bundled") return COMBINED_TOWN_TILE_SEMANTICS;
+// 이전에는 interior/dungeon 이외의 모든 번들 칩셋이 폴백으로 combined_town 을 받았다 —
+// 배·월드맵·레트로 4종이 다른 칩셋의 사실을 인용하는 상태였다. 칩셋별로 갈라 준다.
+const BUNDLED_TILE_SEMANTICS: ReadonlyMap<
+  string,
+  readonly { index: number; label: string; tags: readonly string[] }[]
+> = new Map([
+  [INTERIOR_TEXTURE_KEY, INTERIOR_TILE_SEMANTICS],
+  [DUNGEON_TEXTURE_KEY, DUNGEON_TILE_SEMANTICS],
+  [RETRO_DUNGEON_TEXTURE_KEY, RETRO_DUNGEON_TILE_SEMANTICS],
+  [RETRO_EXTERIOR_TEXTURE_KEY, RETRO_EXTERIOR_TILE_SEMANTICS],
+  [RETRO_HOUSE_TEXTURE_KEY, RETRO_HOUSE_TILE_SEMANTICS],
+  [RETRO_WORLD_TEXTURE_KEY, RETRO_WORLD_TILE_SEMANTICS],
+  [SHIP_TEXTURE_KEY, SHIP_TILE_SEMANTICS],
+  [WORLD_TEXTURE_KEY, WORLD_TILE_SEMANTICS],
+]);
+
+export function bundledTileSemantics(
+  tileset: TilesetDef | undefined
+): readonly { index: number; label: string; tags: readonly string[] }[] {
+  if (tileset?.image.type === "bundled") return BUNDLED_TILE_SEMANTICS.get(tileset.image.id) ?? COMBINED_TOWN_TILE_SEMANTICS;
   if (!tileset) return COMBINED_TOWN_TILE_SEMANTICS;
   return [];
 }

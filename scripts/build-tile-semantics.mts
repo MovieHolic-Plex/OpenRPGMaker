@@ -130,6 +130,36 @@ function buildBody(entries: Entry[]): string {
 
 function renderFile(target: SheetTarget, entries: Entry[]): string {
   const distinct = new Set(entries.map((e) => e.label)).size;
+  const body = buildBody(entries);
+  // 쓰지 않는 헬퍼는 내보내지 않는다 — noUnusedLocals 가 켜져 있어 타입체크가 깨진다.
+  const usesEntries = body.includes("...entries([");
+  const usesOne = body.includes("  one(");
+  const entriesHelper = usesEntries
+    ? `
+function entries(
+  indexes: readonly number[],
+  label: string,
+  role: string,
+  passage: "passable" | "solid",
+  tags: readonly string[]
+): ${target.typeName}[] {
+  return indexes.map((index) => ({ index, label, role, passage, tags: [label, ...tags] }));
+}
+`
+    : "";
+  const oneHelper = usesOne
+    ? `
+function one(
+  index: number,
+  label: string,
+  role: string,
+  passage: "passable" | "solid",
+  tags: readonly string[]
+): ${target.typeName} {
+  return { index, label, role, passage, tags: [label, ...tags] };
+}
+`
+    : "";
   return `// ${target.title} 칩셋(${target.textureKey}) 타일 그림판의 AI 검색용 큐레이션 시맨틱 테이블.
 // 6x 업스케일 행 스트립(.omo/evidence/chipset-strips/${target.id}/row-00..15.png) 전수 판독으로 작성했다.
 // tileSemanticsDungeon.ts / tileSemanticsInterior.ts 와 동일한 계약: tileset.tileMeta[] 와 별개로
@@ -146,29 +176,9 @@ function renderFile(target: SheetTarget, entries: Entry[]): string {
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
 
 export type ${target.typeName} = CombinedTownTileSemanticEntry;
-
-function entries(
-  indexes: readonly number[],
-  label: string,
-  role: string,
-  passage: "passable" | "solid",
-  tags: readonly string[]
-): ${target.typeName}[] {
-  return indexes.map((index) => ({ index, label, role, passage, tags: [label, ...tags] }));
-}
-
-function one(
-  index: number,
-  label: string,
-  role: string,
-  passage: "passable" | "solid",
-  tags: readonly string[]
-): ${target.typeName} {
-  return { index, label, role, passage, tags: [label, ...tags] };
-}
-
+${entriesHelper}${oneHelper}
 export const ${target.konst}: readonly ${target.typeName}[] = [
-${buildBody(entries)}
+${body}
 ];
 `;
 }
