@@ -83,4 +83,12 @@ describe("Glass assistant card responsive width CSS contract", () => {
       expect(stacked?.[1] ?? "").not.toMatch(/repeat\(\s*3/);
     },
   );
+
+  it("header more-menu folds the five actions under .ai-more-actions so the popover can hug",
+    () => {
+      const css = readCssFile(commandBarCssPath);
+      expect(css).toMatch(/\.ai-more-actions\s*\{/);
+      expect(css).toMatch(/\.ai-more-actions-summary/);
+    },
+  );
 });

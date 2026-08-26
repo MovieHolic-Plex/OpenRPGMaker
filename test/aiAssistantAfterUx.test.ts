@@ -144,6 +144,20 @@ describe("Assistant After UX contracts", () => {
     expect(menu?.classList.contains("is-viewport-anchored")).toBe(false);
   });
 
+  it("folds header undo/dock actions under 작업 so the idle-view menu hugs", () => {
+    const panel = renderPanel("glass");
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    const menu = findByTestId(panel, "ai-more-menu") as FakeElement;
+    const fold = findByTestId(menu, "ai-more-actions");
+    expect(fold).not.toBeNull();
+    expect(fold?.textContent ?? "").toContain("작업");
+    expect(findByTestId(fold!, "ai-more-dock")).not.toBeNull();
+    expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
+    // 대기 화면 라디오는 접기 밖 — 펼치지 않아도 바로 보인다.
+    expect(findByTestId(fold!, "ai-temperature-quiet-gold")).toBeNull();
+    expect(findByTestId(menu, "ai-temperature-quiet-gold")).not.toBeNull();
+  });
+
   it("folds lint and quality verification dumps into details labeled 작업 기록", async () => {
     const mapId = store.getCurrent().startMapId;
     const lintDump = "- id map_dungeon_1\n✓ lint: error 0 / warning 226 / info 4\n✓ 출입구 쌍: 빈 맵(49,20) ↔ 어두운 동굴 던전(15,28)\n✓ 게임 품질 평가 통과 (객관 차단 오류 없음)";

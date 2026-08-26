@@ -72,6 +72,23 @@ async function assertInputUsable(page: Page, value: string): Promise<void> {
   await expect(input).toBeFocused();
 }
 
+/** 헤더 ☰ 의 되돌리기·도크는 after.html hug를 위해 작업 접기 안에 있다. */
+async function revealHeaderActions(page: Page): Promise<void> {
+  const fold = page.getByTestId("ai-more-actions");
+  await expect(fold).toBeVisible();
+  await fold.evaluate((node) => {
+    (node as HTMLDetailsElement).open = true;
+  });
+  await expect(page.getByTestId("ai-more-dock")).toBeVisible();
+}
+
+async function clickHeaderDock(page: Page): Promise<void> {
+  await page.getByTestId("ai-more-menu-toggle").click();
+  await expect(page.getByTestId("ai-more-menu")).toBeVisible();
+  await revealHeaderActions(page);
+  await page.getByTestId("ai-more-dock").click();
+}
+
 test.describe("chat dock switch", () => {
   test("glass default, side then float toggle, DOM preservation, focus, and resize bounds", async ({ page }) => {
     test.setTimeout(60_000);
@@ -106,9 +123,7 @@ test.describe("chat dock switch", () => {
     await expect(page.getByTestId("dock-marker")).toBeAttached();
 
     // glass 모드: 카드 헤더 메뉴로 사이드 전환.
-    await page.getByTestId("ai-more-menu-toggle").click();
-    await expect(page.getByTestId("ai-more-menu")).toBeVisible();
-    await page.getByTestId("ai-more-dock").click();
+    await clickHeaderDock(page);
     await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
     await expect(page.getByTestId("dock-marker")).toBeAttached();
     await expect(sidePanel.getByTestId("ai-chat-log")).toBeAttached();
@@ -136,10 +151,10 @@ test.describe("chat dock switch", () => {
     // Break: the click opened an absolutely positioned menu inside the side host's overflow:hidden;
     // it existed in the DOM but was completely clipped, so the assistant could not be detached.
     await expect(page.getByTestId("ai-more-menu")).toBeVisible();
+    await revealHeaderActions(page);
     await expect(page.getByTestId("ai-more-dock")).toHaveText("입력줄");
     await page.screenshot({ path: "output/evidence/assistant-dock/side-menu-open.png" });
-    await page.getByTestId("ai-more-menu-toggle").click();
-    await page.getByTestId("ai-chat-detach").click();
+    await page.getByTestId("ai-more-dock").click();
     await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
     await expect.poll(() => layoutDock(page)).toBe("float");
     await assertInputUsable(page, "float after toggle ok");
@@ -162,8 +177,7 @@ test.describe("chat dock switch", () => {
     expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
     await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-12-float.png" });
 
-    await page.getByTestId("ai-more-menu-toggle").click();
-    await page.getByTestId("ai-more-dock").click();
+    await clickHeaderDock(page);
 
     const sidePanel = page.getByTestId("chat-side-panel");
     await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
@@ -177,7 +191,13 @@ test.describe("chat dock switch", () => {
 
     await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
     await page.getByTestId("ai-more-menu-toggle").click();
+    await expect(page.getByTestId("ai-more-menu")).toBeVisible();
+    const hug = await page.getByTestId("ai-more-menu").boundingBox();
+    expect(hug).not.toBeNull();
+    expect(hug!.height).toBeLessThanOrEqual(200);
+    await expect(page.getByTestId("ai-temperature-quiet-gold")).toHaveText("✦ 추천 함께 보기");
     await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-2-menu.png" });
+    await revealHeaderActions(page);
     await page.getByTestId("ai-more-dock").click();
 
     await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
@@ -196,7 +216,7 @@ test.describe("chat dock switch", () => {
     ] as const;
     for (const [id, icon, label] of headerChoices) {
       const choice = page.getByTestId(`ai-temperature-${id}`);
-      await expect(choice).toHaveText(icon);
+      await expect(choice).toHaveText(`${icon} ${label}`);
       await expect(choice).toHaveAttribute("aria-label", label);
     }
 
@@ -239,8 +259,7 @@ test.describe("chat dock switch", () => {
     await page.keyboard.press("Enter");
     await page.getByTestId("ai-command-menu-dock").click();
     await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
-    await page.getByTestId("ai-more-menu-toggle").click();
-    await page.getByTestId("ai-more-dock").click();
+    await clickHeaderDock(page);
     await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
 
     await page.getByTestId("ai-collapse").click();
