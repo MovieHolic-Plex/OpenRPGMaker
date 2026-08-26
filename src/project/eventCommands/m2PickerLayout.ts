@@ -13,16 +13,41 @@ export const M2_PICKER_PARTY_GROUP = "파티";
 export const M2_PICKER_GROWTH_GROUP = "능력·성장";
 export const M2_PICKER_APPEARANCE_GROUP = "모습·이름";
 
+/**
+ * 탭 1(빠른 저작)도 같은 원칙이다. 28개 동급 행이 아니라 작가가 지금 하려는 일 —
+ * 말을 걸고(말하기), 답을 받고(고르기), 장소를 옮기고(옮기기), 물건을 팔고(거래),
+ * 흐름을 잡고(흐름), 소리를 깐다(소리) — 로 쪼갠다.
+ */
+export const M2_PICKER_SPEAK_GROUP = "말하기";
+export const M2_PICKER_CHOOSE_GROUP = "고르기";
+export const M2_PICKER_MOVE_GROUP = "옮기기";
+export const M2_PICKER_TRADE_GROUP = "거래";
+export const M2_PICKER_FLOW_GROUP = "흐름";
+export const M2_PICKER_SOUND_GROUP = "소리";
+
+/** 탭 1 저작면 헤딩. 이 여섯 개 밖의 그룹이 탭 1 그리드에 오면 IA 회귀다. */
+export const M2_QUICK_AUTHORING_SURFACE_GROUPS: readonly M2CommandPickerGroup[] = [
+  M2_PICKER_SPEAK_GROUP,
+  M2_PICKER_CHOOSE_GROUP,
+  M2_PICKER_MOVE_GROUP,
+  M2_PICKER_TRADE_GROUP,
+  M2_PICKER_FLOW_GROUP,
+  M2_PICKER_SOUND_GROUP,
+];
+
 export const M2_COMMAND_PICKER_GROUP_ORDER: readonly M2CommandPickerGroup[] = [
-  "대화/입력",
-  "조건/흐름",
-  "맵/이동",
-  "보상/상점",
-  "소리",
+  M2_PICKER_SPEAK_GROUP,
+  M2_PICKER_CHOOSE_GROUP,
+  M2_PICKER_MOVE_GROUP,
+  M2_PICKER_TRADE_GROUP,
+  M2_PICKER_FLOW_GROUP,
+  M2_PICKER_SOUND_GROUP,
   M2_PICKER_BATTLE_GROUP,
   M2_PICKER_PARTY_GROUP,
   M2_PICKER_GROWTH_GROUP,
   M2_PICKER_APPEARANCE_GROUP,
+  // 탭 3(지도 · 화면 효과) 그룹. 탭 3 수선 계획은 별도이고 여기서는 정렬만 유지한다.
+  "맵/이동",
   "화면/연출",
   "시스템/고급",
   "모던 명령",
@@ -45,7 +70,6 @@ const QUICK_AUTHORING_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Control Variables",
   "Conditional Branch",
   "Wait",
-  "Comment",
   "Transfer Player",
   "Move Event",
   "Wait for All Movement",
@@ -97,6 +121,8 @@ const ACTOR_AND_BATTLE_PAGE_TITLES: ReadonlySet<string> = new Set([
 
 /** 탭 4에 남는 시스템·도구 명령. 세이브/메뉴, 시스템 미디어, 종료, 도구, 시스템 플래그. */
 const SYSTEM_TOOL_PAGE_TITLES: ReadonlySet<string> = new Set([
+  // 주석은 저작 작업면의 주인공이 아니다 — RM 편집기 습관은 시스템·도구 탭에 둔다.
+  "Comment",
   "Change System BGM",
   "Change System SE",
   "Change System Graphic",
@@ -183,17 +209,45 @@ export function pickerGroupForM2Command(row: M2PdfCommandRow): M2CommandPickerGr
   if (isBattleOnlyRow(row)) return M2_PICKER_BATTLE_GROUP;
   const tab2Group = actorBattleSurfaceGroup(row.title);
   if (tab2Group) return tab2Group;
+  const tab1Group = quickAuthoringSurfaceGroup(row.title);
+  if (tab1Group) return tab1Group;
   // 탭 4에 남는 행은 시스템(⚙) 또는 도구(◈) 헤딩 하나로만 묶인다.
   if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return row.index >= 200 ? "모던 명령" : "시스템/고급";
-  if (isDialogueInputCommand(row.title)) return "대화/입력";
-  if (isConditionFlowCommand(row.title)) return "조건/흐름";
+  if (isDialogueInputCommand(row.title)) return M2_PICKER_SPEAK_GROUP;
+  if (isConditionFlowCommand(row.title)) return M2_PICKER_FLOW_GROUP;
   if (isMapMovementCommand(row.title)) return "맵/이동";
-  if (isRewardShopCommand(row.title)) return "보상/상점";
-  if (row.title.includes("BGM") || row.title.includes("SE") || row.title === "Sound Layer") return "소리";
+  if (isRewardShopCommand(row.title)) return M2_PICKER_TRADE_GROUP;
+  if (row.title.includes("BGM") || row.title.includes("SE") || row.title === "Sound Layer") return M2_PICKER_SOUND_GROUP;
   if (isScreenPresentationCommand(row.title)) return "화면/연출";
   if (row.index >= 200) return "모던 명령";
   return "시스템/고급";
 }
+
+/**
+ * 탭 1 작업면 그룹. 탭 1 행이 아니면 undefined.
+ * 「맵/이동」처럼 탭 3까지 걸치는 분류명 대신, 탭 1 에 실제로 놓이는 행만 골라 잡는다.
+ */
+function quickAuthoringSurfaceGroup(title: string): M2CommandPickerGroup | undefined {
+  if (!QUICK_AUTHORING_PAGE_TITLES.has(title)) return undefined;
+  if (CHOOSE_SURFACE_TITLES.has(title)) return M2_PICKER_CHOOSE_GROUP;
+  if (MOVE_SURFACE_TITLES.has(title)) return M2_PICKER_MOVE_GROUP;
+  return undefined;
+}
+
+/** 고르기: 답을 받는 명령. 창과 버튼이 그려져야 하는 것들. */
+const CHOOSE_SURFACE_TITLES: ReadonlySet<string> = new Set([
+  "Show Choices",
+  "Input Number",
+  "Name Input Processing",
+]);
+
+/** 옮기기: 장소·이벤트를 움직이는 명령. */
+const MOVE_SURFACE_TITLES: ReadonlySet<string> = new Set([
+  "Transfer Player",
+  "Move Event",
+  "Wait for All Movement",
+  "Erase Event",
+]);
 
 /** 탭 2 작업면 그룹. 탭 2 행이 아니면 undefined. */
 function actorBattleSurfaceGroup(title: string): M2CommandPickerGroup | undefined {
@@ -248,7 +302,6 @@ function isConditionFlowCommand(title: string): boolean {
     title === "Wait" ||
     title === "Wait Until" ||
     title === "Weighted Branch" ||
-    title === "Comment" ||
     title === "Label" ||
     title === "Jump to Label" ||
     title === "Loop" ||

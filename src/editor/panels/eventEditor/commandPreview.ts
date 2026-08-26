@@ -5,6 +5,7 @@ import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroop
 import { parseDialogueText } from "@/player/dialogue";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { renderFacesetCrop } from "./facesetPreview";
+import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
 import {
   actorBattleM2Preview,
   equipmentStage,
@@ -156,26 +157,31 @@ function messageWindowMock(
   const stage = el("div", { class: "ecp-stage" });
   // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
   // 메시지 프리뷰는 기본 창 스킨 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
-  const faceClass = face ? " with-face" : "";
+  // 말하기 무대: 빈 본문이어도 게임 창에 샘플 대사와 얼굴이 보인다. "..." 만 남기지 않는다.
+  const authored = body.trim().length > 0;
+  const sampleFace = authored ? undefined : sampleSpeakerFace();
+  const shownFace = face ?? sampleFace;
+  const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
+  const faceClass = shownFace ? " with-face" : "";
   const sideClass = faceRight ? " face-right" : "";
-  const speakerName = speaker?.trim() ?? "";
+  const speakerName = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
   const win = el("div", {
     class: "ecp-message-window" + sideClass + faceClass + (speakerName ? " has-speaker" : ""),
-    dataset: { testid: "ecp-message-window" },
+    dataset: { testid: "ecp-message-window", ...(authored ? {} : { sample: "true" }) },
   });
   // [중간-3] 직전 changeFace 상태가 있으면 화자 얼굴을 프리뷰에 반영.
   // Crop only — no editor resource-id chrome inside the play mock.
-  if (face) {
+  if (shownFace) {
     win.append(
       renderFacesetCrop({
-        resourceId: face.resourceId,
-        faceIndex: face.faceIndex,
+        resourceId: shownFace.resourceId,
+        faceIndex: shownFace.faceIndex,
         displaySize: PREVIEW_FACE_SIZE,
       })
     );
   }
   const textCol = el("div", { class: "ecp-message-text" });
-  textCol.append(renderPreviewDialogueBody(body));
+  textCol.append(renderPreviewDialogueBody(shownBody));
   win.append(textCol);
   // 화자 네임플레이트는 창 밖(상단 가장자리)에 올려 본문과 시각적으로 분리한다.
   if (speakerName) {
@@ -188,7 +194,25 @@ function messageWindowMock(
     );
   }
   stage.append(win);
+  if (!authored) {
+    stage.append(
+      el("div", {
+        class: "ecp-message-sample-note",
+        dataset: { testid: "ecp-message-sample-note" },
+        text: "샘플 대사 — 본문을 쓰면 이 창에 그대로 들어갑니다",
+      })
+    );
+  }
   return stage;
+}
+
+/** 샘플 무대에 세울 얼굴. 파티 첫 배우의 faceset 을 그대로 빌린다. */
+function sampleSpeakerFace(): CommandPreviewContext["face"] | undefined {
+  const project = store.getCurrent();
+  const partyId = project.session?.partyActorIds?.[0];
+  const actor = project.database.actors.find((entry) => entry.id === partyId) ?? project.database.actors[0];
+  if (!actor?.faceResourceId) return undefined;
+  return { resourceId: actor.faceResourceId, faceIndex: actor.faceIndex ?? 0 };
 }
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
@@ -546,11 +570,24 @@ function inputNumberStage(cmd: Extract<Command, { kind: "inputNumber" }>): HTMLE
     );
   }
 
+  // 변수 표시명이 자리수 미리보기를 삼키지 않게, 자리수·상태와 변수 칩을 분리한다.
   win.append(
     el("div", {
       class: "ecp-number-meta",
       dataset: { testid: "ecp-number-meta" },
-      text: `${digits}자리 · 변수 ${variablePreviewName(cmd.variableId)} · 대기 중`,
+      children: [
+        el("span", {
+          class: "ecp-number-meta-digits",
+          dataset: { testid: "ecp-number-digit-count" },
+          text: `${digits}자리 · 대기 중`,
+        }),
+        el("span", {
+          class: "ecp-number-meta-variable",
+          dataset: { testid: "ecp-number-variable" },
+          attrs: { title: `변수 ${variablePreviewName(cmd.variableId)}` },
+          text: `변수 ${variablePreviewName(cmd.variableId)}`,
+        }),
+      ],
     })
   );
   stage.append(win);
@@ -1076,21 +1113,54 @@ function fitZoom(pxWidth: number): number {
   return Math.max(0.15, Math.min(2, 260 / pxWidth));
 }
 
+/** 대기 — 타임라인이다. 같은 초를 두 번 쓴 요약 카드가 아니다. */
 function waitStage(cmd: Extract<Command, { kind: "wait" }>): HTMLElement {
   const stage = el("div", { class: "ecp-stage ecp-wait-stage", dataset: { testid: "ecp-wait-stage" } });
-  if (cmd.variableId?.trim()) {
-    stage.append(
-      el("div", {
-        class: "ecp-wait-card",
-        text: `변수 ${variablePreviewName(cmd.variableId)} 값(초)`,
-      })
-    );
-    return stage;
-  }
-  const seconds = (Math.max(0, cmd.ms) / 1000).toFixed(cmd.ms % 1000 === 0 ? 0 : 1);
-  stage.append(el("div", { class: "ecp-wait-card", text: `${seconds}초` }));
-  stage.append(el("div", { class: "ecp-wait-sub", text: `${Math.max(0, cmd.ms) / 1000}초` }));
+  const variableId = cmd.variableId?.trim();
+  const seconds = Math.max(0, cmd.ms) / 1000;
+  const spanLabel = variableId
+    ? `변수 ${variablePreviewName(variableId)} 값`
+    : `${seconds.toFixed(cmd.ms % 1000 === 0 ? 0 : 1)}초`;
+  stage.append(waitTimeline(spanLabel, variableId ? null : seconds));
   return stage;
+}
+
+/**
+ * 이전 명령 → 대기 구간 → 다음 명령. 대기 길이는 구간의 폭으로도 보인다.
+ * 고정 시간이면 눈금(초)을 얹고, 변수면 길이가 정해지지 않았음을 그대로 말한다.
+ */
+function waitTimeline(spanLabel: string, seconds: number | null): HTMLElement {
+  const rail = el("div", { class: "ecp-wait-rail", attrs: { "aria-hidden": "true" } });
+  const span = el("div", {
+    class: `ecp-wait-span${seconds === null ? " is-variable" : ""}`,
+    dataset: { testid: "ecp-wait-span" },
+  });
+  // 0.1초 = 최소 폭, 3초 = 꽉 찬 폭. 변수 대기는 절반 폭 점선으로 둔다.
+  span.style.setProperty("--wait-span", seconds === null ? "50%" : `${Math.max(12, Math.min(100, (seconds / 3) * 100))}%`);
+  span.append(el("span", { class: "ecp-wait-span-label", text: spanLabel }));
+  rail.append(
+    el("div", { class: "ecp-wait-node is-before", children: [el("span", { text: "이전 명령" })] }),
+    span,
+    el("div", { class: "ecp-wait-node is-after", children: [el("span", { text: "다음 명령" })] })
+  );
+  const ticks = el("div", { class: "ecp-wait-ticks", dataset: { testid: "ecp-wait-ticks" } });
+  if (seconds === null) {
+    ticks.append(el("span", { class: "ecp-wait-tick", text: "길이는 실행할 때 정해집니다" }));
+  } else {
+    for (const tick of [0, 1, 2, 3]) {
+      ticks.append(
+        el("span", {
+          class: `ecp-wait-tick${seconds >= tick && tick > 0 ? " is-passed" : ""}`,
+          text: `${tick}s`,
+        })
+      );
+    }
+  }
+  return el("div", {
+    class: "ecp-wait-timeline",
+    dataset: { testid: "ecp-wait-timeline" },
+    children: [rail, ticks],
+  });
 }
 
 function switchName(id: string): string {

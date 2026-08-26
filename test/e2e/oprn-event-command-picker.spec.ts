@@ -43,7 +43,8 @@ test("storyboard CTA opens the command picker and authors the first command", as
   const picker = await openCommandPicker(page, "storyboard-cta");
   await expect(picker.getByRole("heading", { name: "명령 추가" })).toBeVisible();
   await expect(picker.getByTestId("event-command-picker-tab-1")).toHaveAttribute("aria-selected", "true");
-  for (const heading of ["대화", "흐름", "보상", "소리"]) {
+  // 탭 1 헤딩은 저작면이다: 말하기 / 고르기 / 옮기기 / 거래 / 흐름 / 소리.
+  for (const heading of ["말하기", "흐름", "거래", "소리"]) {
     await expect(pickerGrid(picker).locator(".event-command-picker-group-heading").filter({ hasText: heading }).first()).toBeVisible();
   }
   for (const label of ["문장 표시...", "스위치 조작...", "조건 분기...", "장소 이동...", "BGM 재생..."]) {

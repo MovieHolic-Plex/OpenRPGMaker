@@ -70,9 +70,27 @@ function kindLabel(kind: string): string {
   return m[kind] ?? commandKindLabel(kind as Parameters<typeof commandKindLabel>[0]);
 }
 
+/** 빈 이벤트 진입 CTA — 작가가 가장 자주 시작하는 세 가지. */
+export type StoryboardQuickStartKind = "text" | "transfer" | "shop";
+
+const QUICK_START_ACTIONS: readonly {
+  readonly kind: StoryboardQuickStartKind;
+  readonly label: string;
+  readonly hint: string;
+}[] = [
+  { kind: "text", label: "말하기", hint: "대사 창을 띄웁니다" },
+  { kind: "transfer", label: "장소 옮기기", hint: "다른 맵으로 보냅니다" },
+  { kind: "shop", label: "상점 열기", hint: "물건을 팝니다" },
+];
+
 export function renderStoryboard(
   commands: readonly Command[],
-  opts?: { onSelect?: (path: number[]) => void; onAddNext?: () => void; onShowList?: () => void }
+  opts?: {
+    onSelect?: (path: number[]) => void;
+    onAddNext?: () => void;
+    onShowList?: () => void;
+    onQuickStart?: (kind: StoryboardQuickStartKind) => void;
+  }
 ): HTMLElement {
   const host = el("div", { class: "event-storyboard", dataset: { testid: "event-storyboard" } });
   const track = el("div", { class: "event-storyboard-track" });
@@ -134,9 +152,24 @@ export function renderStoryboard(
   if (commands.length === 0) {
     track.append(el("div", {
       class: "event-storyboard-empty",
+      dataset: { testid: "event-storyboard-empty" },
       children: [
-        el("strong", { text: "아직 할 일이 없습니다" }),
-        el("span", { text: "아래의 [첫 명령 추가]를 눌러 시작하세요." }),
+        el("strong", { text: "무엇부터 할까요?" }),
+        el("span", { text: "가장 자주 쓰는 시작을 고르세요. 전체 명령은 아래 [첫 명령 추가]에 있습니다." }),
+        el("div", {
+          class: "event-storyboard-quick-starts",
+          dataset: { testid: "event-storyboard-quick-starts" },
+          children: QUICK_START_ACTIONS.map((action) => el("button", {
+            class: `event-storyboard-quick-start is-${action.kind}`,
+            attrs: { type: "button", "aria-label": `${action.label} — ${action.hint}` },
+            dataset: { testid: `event-storyboard-quick-${action.kind}` },
+            on: { click: () => opts?.onQuickStart?.(action.kind) },
+            children: [
+              el("span", { class: "event-storyboard-quick-start-label", text: action.label }),
+              el("span", { class: "event-storyboard-quick-start-hint", text: action.hint }),
+            ],
+          })),
+        }),
       ],
     }));
   } else {

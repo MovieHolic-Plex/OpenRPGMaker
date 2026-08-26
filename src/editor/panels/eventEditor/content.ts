@@ -35,6 +35,7 @@ import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
+import { newCommand } from "@/editor/eventActions";
 import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
@@ -172,6 +173,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       },
       // 장면 추가는 뷰를 갈아타지 않고 그 자리에서 명령 피커를 연다 (적대 평가 스펙).
       onAddNext: () => openCommandPickerForActions(actions),
+      // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
+      onQuickStart: (kind) => {
+        openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command));
+      },
       onShowList: () => { currentMode = "list"; applyViewMode(); },
     });
   let storyboardEl = makeStoryboard();
