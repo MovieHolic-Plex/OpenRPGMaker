@@ -587,6 +587,18 @@ describe("command edit modal — image-rich preview", () => {
     expect(preview.querySelector(".ecp-summary-card")).toBeTruthy();
     expect(preview.querySelector(".ecp-stage")).toBeNull();
   });
+
+  it("renders a visual stage for Screen Effect instead of a summary card", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "m2Command",
+        commandId: "m2-202-screen-effect",
+        fields: { effect: "flash", value: "white", durationMs: 400 },
+      }),
+    );
+    expect(findByTestId(preview, "ecp-screen-effect-stage")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-runtime-effect")).toBeFalsy();
+  });
 });
 
 function hasKindSelect(root: FakeElement): boolean {

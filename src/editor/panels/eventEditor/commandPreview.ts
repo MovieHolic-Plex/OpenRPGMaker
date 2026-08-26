@@ -56,6 +56,11 @@ function commandPreviewCaption(cmd: Command): string {
 }
 
 function renderVisual(cmd: Command, context?: CommandPreviewContext): HTMLElement {
+  if (cmd.kind === "m2Command") {
+    const title = m2CommandById(cmd.commandId)?.title;
+    if (title === "Screen Effect") return screenEffectStage(cmd);
+    if (title === "Camera Control") return cameraControlStage(cmd);
+  }
   const handler = visualPreviewHandlers[cmd.kind] as VisualPreviewHandler<Command> | undefined;
   return handler ? handler(cmd, context) : summaryCard(cmd, context);
 }
@@ -1153,6 +1158,60 @@ function removeLightStage(cmd: Extract<Command, { kind: "removeLight" }>): HTMLE
       text: cmd.all === true ? "빛 모두 끄기" : cmd.id || "빛 없음",
     })
   );
+  return stage;
+}
+
+
+function m2Field(cmd: Extract<Command, { kind: "m2Command" }>, key: string, fallback: string): string {
+  const value = cmd.fields?.[key];
+  if (typeof value === "string" && value.trim()) return value;
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  return fallback;
+}
+
+function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
+  const effect = m2Field(cmd, "effect", "fadeIn");
+  const value = m2Field(cmd, "value", "");
+  const duration = m2Field(cmd, "durationMs", "300");
+  const stage = el("div", {
+    class: `ecp-stage ecp-screen-effect-stage ecp-screen-effect-${effect}`,
+    dataset: { testid: "ecp-screen-effect-stage", effect },
+  });
+  const screen = el("div", { class: "ecp-fx-screen ecp-screen-effect-screen" });
+  const overlay = el("div", { class: "ecp-screen-effect-overlay" });
+  if (effect === "fadeOut") overlay.style.background = "rgba(0,0,0,0.72)";
+  else if (effect === "fadeIn") overlay.style.background = "rgba(0,0,0,0.18)";
+  else if (effect === "flash") overlay.style.background = "rgba(255,255,255,0.7)";
+  else if (effect === "tint") overlay.style.background = value || "#ff0000";
+  else if (effect === "weather") overlay.style.background = "rgba(80,120,180,0.28)";
+  else overlay.style.background = "rgba(0,0,0,0.35)";
+  screen.append(overlay);
+  const labels: Record<string, string> = {
+    fadeIn: "페이드 인",
+    fadeOut: "페이드 아웃",
+    flash: "플래시",
+    tint: "색조",
+    weather: "날씨",
+  };
+  screen.append(el("div", { class: "ecp-fx-label", text: labels[effect] ?? effect }));
+  stage.append(screen);
+  const meta = [labels[effect] ?? effect];
+  if (value) meta.push(value);
+  meta.push(`${duration}ms`);
+  stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
+  return stage;
+}
+
+function cameraControlStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
+  const mode = m2Field(cmd, "mode", "panTo");
+  const stage = el("div", {
+    class: "ecp-stage ecp-camera-stage",
+    dataset: { testid: "ecp-camera-stage", mode },
+  });
+  const screen = el("div", { class: "ecp-fx-screen ecp-camera-screen" });
+  screen.append(el("div", { class: "ecp-fx-label", text: `카메라 ${mode}` }));
+  stage.append(screen);
+  stage.append(el("div", { class: "ecp-fx-caption", text: mode }));
   return stage;
 }
 

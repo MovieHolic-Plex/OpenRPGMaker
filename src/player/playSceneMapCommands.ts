@@ -12,6 +12,7 @@ import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes"
 import { resetFollowerTrailNearPlayer } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { maybeAutosave } from "@/player/autosave";
+import { el } from "@/util/dom";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
 type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
@@ -105,8 +106,35 @@ export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: 
 // Promise 패턴을 따른다. Phaser cameras.main.flash(duration, r, g, b) 사용.
 export function flashCamera(scene: PlaySceneContext, step: FlashScreenStep): Promise<void> {
   return new Promise((resolve) => {
-    scene.cameras.main.once("cameraflashcomplete", () => resolve());
-    scene.cameras.main.flash(step.durationMs, step.red, step.green, step.blue);
+    let settled = false;
+    const host = dialogueHost(scene);
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      host?.querySelector("[data-testid='runtime-screen-flash']")?.remove();
+      resolve();
+    };
+    if (host) {
+      let layer = host.querySelector<HTMLElement>("[data-testid='runtime-screen-flash']");
+      if (!layer) {
+        layer = el("div", {
+          class: "runtime-screen-effect",
+          dataset: { testid: "runtime-screen-flash", mode: "screen-flash" },
+        });
+        host.append(layer);
+      }
+      const alpha = 0.85;
+      layer.style.background = `rgba(${step.red},${step.green},${step.blue},${alpha})`;
+    }
+    const cam = scene.cameras?.main;
+    if (cam && typeof cam.flash === "function") {
+      cam.once("cameraflashcomplete", finish);
+      cam.flash(step.durationMs, step.red, step.green, step.blue, true);
+    }
+    const timeout = typeof window !== "undefined" && typeof window.setTimeout === "function"
+      ? window.setTimeout
+      : setTimeout;
+    timeout(finish, Math.max(50, step.durationMs));
   });
 }
 
