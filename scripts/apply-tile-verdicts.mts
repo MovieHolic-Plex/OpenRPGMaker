@@ -183,6 +183,52 @@ const SHEET_PNG: Record<string, string> = {
  * (478/478/478/480/464/478) 와 6시트 모다 일치한다 — 상수를 보고 맞춘 게 아니라
  * 그림에서 유도해 우연힐 일이 없지 않은 일치다.
  */
+const imgCache = new Map<string, PNG | null>();
+function sheetImage(sheet: string): PNG | null {
+  if (imgCache.has(sheet)) return imgCache.get(sheet)!;
+  const file = SHEET_PNG[sheet];
+  const img = file && fs.existsSync(file) ? PNG.sync.read(fs.readFileSync(file)) : null;
+  imgCache.set(sheet, img);
+  return img;
+}
+
+/**
+ * 두 시트의 같은 인덱스가 정말 같은 그림인가.
+ *
+ * 중복 시트라도 전부 같지는 않다. retro_exterior/retro_house 는 전체로는 RGB 차이 0.4% 인데,
+ * 그 0.4% 가 실제로 몇몇 칸을 다른 그림으로 만든다 — 예를 들어 116 은 한쪽이 78픽셀만 칠해져
+ * 있고 다른 쪽은 256픽셀 전부가 칠해져 있다. 시트 단위로 판독을 합치면 그런 칸에서
+ * **서로 다른 그림을 본 판독을 한 표로 섞는다**(실제로 116 에서 창문 3표 대 문 2표가 섞였다).
+ * 그래서 합치는 단위는 시트가 아니라 타일이다.
+ */
+const sameTileCache = new Map<string, boolean>();
+function sameTileAcrossSheets(a: string, b: string, slot: number): boolean {
+  const key = `${a}|${b}|${slot}`;
+  const hit = sameTileCache.get(key);
+  if (hit !== undefined) return hit;
+  const A = sheetImage(a);
+  const B = sheetImage(b);
+  let same = A !== null && B !== null && A.width === B.width;
+  if (same && A && B) {
+    const r0 = Math.floor(slot / 30) * 16;
+    const c0 = (slot % 30) * 16;
+    outer: for (let y = 0; y < 16; y += 1) {
+      for (let x = 0; x < 16; x += 1) {
+        const i = ((r0 + y) * A.width + (c0 + x)) * 4;
+        const aClear = A.data[i + 3]! <= 8;
+        const bClear = B.data[i + 3]! <= 8;
+        if (aClear && bClear) continue;
+        if (aClear !== bClear || A.data[i] !== B.data[i] || A.data[i + 1] !== B.data[i + 1] || A.data[i + 2] !== B.data[i + 2]) {
+          same = false;
+          break outer;
+        }
+      }
+    }
+  }
+  sameTileCache.set(key, same);
+  return same;
+}
+
 function drawableSlots(sheet: string): Set<number> {
   const file = SHEET_PNG[sheet];
   const out = new Set<number>();
@@ -290,21 +336,35 @@ function main(): void {
   const splits: string[] = [];
   const lows: string[] = [];
 
-  // 중복 시트 묶음의 판독을 미리 전부 읽어 둔다 — 같은 인덱스에 최대 4표가 모인다.
-  const pooled = new Map<string, Reading[]>();
+  // 시트별로 자기 판독을 모아 둔다. 합치는 건 소모 지점에서 한다 — 타일 단위로 확인해서.
+  const own = new Map<string, Reading[]>();
   const poolSheets = new Set<string>();
   for (const s of Object.keys(SHEETS)) for (const g of groupOf(s)) poolSheets.add(g);
   for (const sheet of poolSheets) {
     for (const [ra, rb] of BLOCKS) {
       for (const reader of ["A", "B", "C"] as const) {
         for (const [index, entry] of loadReading(sheet, ra, rb, reader)) {
-          const key = `${groupOf(sheet)[0]}:${index}`;
-          const list = pooled.get(key) ?? [];
+          const key = `${sheet}:${index}`;
+          const list = own.get(key) ?? [];
           list.push(entry);
-          pooled.set(key, list);
+          own.set(key, list);
         }
       }
     }
+  }
+
+  /**
+   * 한 칸에 썰 판독을 모은다: 자기 시트 판독 + 그 타일이 픽셀까지 같은 형제 시트의 판독.
+   * 시트 단위로 합치면 0.4% 어긋나는 칸에서 서로 다른 그림의 판독이 한 표로 섞인다.
+   */
+  function votesFor(sheet: string, index: number): Reading[] {
+    const list = [...(own.get(`${sheet}:${index}`) ?? [])];
+    for (const peer of groupOf(sheet)) {
+      if (peer === sheet) continue;
+      if (!sameTileAcrossSheets(sheet, peer, index)) continue;
+      list.push(...(own.get(`${peer}:${index}`) ?? []));
+    }
+    return list;
   }
 
   for (const [sheet, shippedSource] of Object.entries(SHEETS)) {
@@ -321,7 +381,7 @@ function main(): void {
       for (let index = ra * 30; index <= rb * 30 + 29; index += 1) {
         if (!drawable.has(index)) continue; // 번 칸 — 라벨을 내지 않는다
         const ship = byIndex.get(index);
-        const votes = pooled.get(`${groupOf(sheet)[0]}:${index}`) ?? [];
+        const votes = votesFor(sheet, index);
         const keep = (): Out => ({
           index,
           label: ship?.label ?? "빈 슬롯",

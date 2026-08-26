@@ -633,15 +633,12 @@
  },
  {
   "index": 296,
-  "label": "세로 나무 말뚝",
-  "role": "prop",
-  "passage": "solid",
+  "label": "밧줄",
+  "role": "stairs",
+  "passage": "passable",
   "tags": [
-   "세로 나무 말뚝",
-   "나무",
-   "post",
-   "말뚝",
-   "기둥"
+   "최종판정",
+   "stairs"
   ]
  },
  {
@@ -1312,15 +1309,13 @@
  },
  {
   "index": 355,
-  "label": "겹겹 바위 지형",
-  "role": "rock",
-  "passage": "solid",
+  "label": "동굴 입구 바닥",
+  "role": "floor",
+  "passage": "passable",
   "tags": [
-   "겹겹 바위 지형",
-   "바위",
-   "rock",
-   "지형",
-   "겹겹"
+   "최종판정",
+   "floor",
+   "동굴 입구"
   ]
  },
  {

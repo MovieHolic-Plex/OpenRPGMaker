@@ -18,7 +18,7 @@
 // 그 목록을 직접 구해 커버리지를 검증한다.
 // 도화 가능 여부는 상수가 아니라 PNG 에서 직접 유도한다(불투명·비키색 픽셀이 하나라도 있는가).
 //
-// 실측: 도화 가능 478칸 전수 서술, 고유 라벨 414개.
+// 실측: 도화 가능 478칸 전수 서술, 고유 라벨 415개.
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
@@ -130,10 +130,10 @@ export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
   one(76, "목조 회벽 상단 우측", "wall", "solid", ["wall", "목조 회벽"]),
   one(77, "목조 회벽 상단 좁은 기둥", "wall", "solid", ["wall", "목조 회벽 상단 기둥", "목조 회벽"]),
   one(78, "잔디 고원 좌상단 모서리", "cliff", "passable", ["최종판정", "cliff", "잔디 고원 지대"]),
-  one(79, "초원 평야 푸른 잔디", "terrain", "passable", ["grass", "초원", "잔디", "평야"]),
+  one(79, "잔디", "terrain", "passable", ["최종판정", "terrain"]),
   one(80, "잔디 고원 우상단 모서리", "cliff", "passable", ["최종판정", "cliff", "잔디 고원 지대"]),
   one(81, "흙 고원 좌상단 모서리", "cliff", "passable", ["최종판정", "cliff", "흙 고원 지대"]),
-  one(82, "갈색 흙 평원 지면", "terrain", "passable", ["dirt", "흙", "평원", "지면"]),
+  one(82, "흙", "terrain", "passable", ["최종판정", "terrain"]),
   one(83, "흙 고원 우상단 모서리", "cliff", "passable", ["최종판정", "cliff", "흙 고원 지대"]),
   one(84, "목재 울타리 좌측 세로 기둥", "fence", "solid", ["fence", "목재 울타리 세로 좌측", "목재 울타리"]),
   one(85, "목재 울타리 중앙 연결부", "fence", "solid", ["fence", "목재 울타리 가로 구간", "목재 울타리"]),
@@ -317,7 +317,7 @@ export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
   one(263, "눈 덮인 작은 집", "prop", "solid", ["prop", "눈 덮인 오두막"]),
   one(264, "석제 안내판", "decoration", "solid", ["최종판정", "decoration"]),
   one(265, "매달린 나무통 밧줄", "prop", "solid", ["prop", "매달린 밧줄", "매달린 나무통", "밧줄"]),
-  one(266, "어두운 목조 기단", "prop", "solid", ["나무", "structure", "목조"]),
+  one(266, "어두운 벽난로 아궁이", "furniture", "solid", ["최종판정", "furniture", "벽난로"]),
   one(267, "책장 상단", "furniture", "solid", ["furniture", "책장"]),
   one(268, "서랍 수납장 상단", "furniture", "solid", ["furniture", "목재 선반장 상단", "서랍 수납장", "목재 선반장"]),
   one(269, "목재 장롱 상단", "furniture", "solid", ["furniture", "옷장 상단", "목재 장롱", "옷장"]),
@@ -421,7 +421,7 @@ export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
   one(366, "석재 창살 난간", "wall", "solid", ["wall", "석조 벽틀", "던전 벽"]),
   one(367, "격자 구덩이 바닥", "floor", "passable", ["floor"]),
   one(368, "격자 구덩이 모서리", "floor", "passable", ["floor", "석조 바닥 모서리", "던전 바닥"]),
-  one(369, "잔잔한 바다 수면", "water", "solid", ["바다", "calm", "water"]),
+  one(369, "암석 구덩이 테두리", "cliff", "solid", ["최종판정", "cliff", "암석 구덩이"]),
   one(370, "어두운 암흑 바닥", "floor", "solid", ["floor", "검은 어둠 바닥"]),
   one(371, "어두운 구덩이 모서리", "floor", "passable", ["floor", "동굴 바닥 모서리", "동굴 바닥"]),
   one(372, "상향 화살표 발판", "floor", "passable", ["floor"]),
@@ -435,7 +435,7 @@ export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
   one(380, "원형 석탑 상단", "wall", "solid", ["wall", "돌 탑 상단", "원형 석탑", "돌 탑"]),
   one(381, "석조 유적 상단", "prop", "solid", ["prop", "석조 유적"]),
   one(382, "석조 신전", "prop", "solid", ["prop", "신전"]),
-  one(383, "연회색 돌 무늬", "rock", "solid", ["돌", "stone", "판독보류"]),
+  one(383, "작은 석탑", "decoration", "solid", ["최종판정", "decoration"]),
   one(384, "세로 침대 상단", "furniture", "solid", ["furniture", "침대 상단", "세로 침대", "침대"]),
   one(385, "긴 목재 탁자 좌측", "furniture", "solid", ["furniture", "목재 탁자 좌측", "긴 목재 탁자", "목재 탁자"]),
   one(386, "긴 목재 탁자 중앙", "furniture", "solid", ["furniture", "목재 탁자 중앙", "긴 목재 탁자", "목재 탁자"]),
@@ -518,11 +518,11 @@ export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
   one(457, "격자 구덩이 벽 하단", "wall", "solid", ["wall", "석재 난간 하단", "격자 구덩이", "석재 구덩이 난간"]),
   one(458, "격자 구덩이 벽 우하단", "wall", "solid", ["wall", "석재 난간 우하단", "격자 구덩이", "석재 구덩이 난간"]),
   one(459, "어두운 구덩이 좌하단", "cliff", "solid", ["cliff", "암석 구덩이 좌하단", "어두운 구덩이", "암석 구덩이"]),
-  one(460, "심해 검푸른 물", "water", "solid", ["심해", "ocean", "dark"]),
+  one(460, "구덩이 하단", "cliff", "solid", ["최종판정", "cliff", "구덩이"]),
   one(461, "어두운 구덩이 우하단", "cliff", "solid", ["cliff", "암석 구덩이 우하단", "어두운 구덩이", "암석 구덩이"]),
   one(462, "갈색 기와 지붕 하단", "roof", "solid", ["roof", "갈색 기와 지붕"]),
   one(463, "붉은 기와 지붕 하단", "roof", "solid", ["roof", "붉은 기와 지붕"]),
-  one(464, "짙회색 무늬 판", "decoration", "solid", ["회색", "pattern", "판독보류"]),
+  one(464, "환기구", "prop", "passable", ["최종판정", "prop"]),
   one(465, "붉은 양탄자 계단 좌측", "stairs", "passable", ["stairs", "붉은 카펫 계단 좌측", "붉은 양탄자 계단", "붉은 카펫 계단"]),
   one(466, "붉은 양탄자 계단 중앙", "stairs", "passable", ["stairs", "붉은 카펫 계단 중앙", "붉은 양탄자 계단", "붉은 카펫 계단"]),
   one(467, "붉은 양탄자 계단 우측", "stairs", "passable", ["stairs", "붉은 카펫 계단 우측", "붉은 양탄자 계단", "붉은 카펫 계단"]),

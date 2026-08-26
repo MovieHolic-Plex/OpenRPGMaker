@@ -70,6 +70,24 @@ function sameTile(a: string, b: string, slot: number): boolean {
   return true;
 }
 
+/** 그 칸에 실제로 그려진 픽셀이 있는가 (불통명·버키색). */
+function paintedPixelCount(sheet: string, slot: number): number {
+  const img = sheetImage(sheet);
+  if (!img) return -1;
+  const r0 = Math.floor(slot / 30) * 16;
+  const c0 = (slot % 30) * 16;
+  let painted = 0;
+  for (let y = 0; y < 16; y += 1) {
+    for (let x = 0; x < 16; x += 1) {
+      const i = ((r0 + y) * img.width + (c0 + x)) * 4;
+      if (img.data[i + 3]! <= 8) continue;
+      const keyed = Math.abs(img.data[i]! - 255) + Math.abs(img.data[i + 1]! - 103) + Math.abs(img.data[i + 2]! - 139) < 12;
+      if (!keyed) painted += 1;
+    }
+  }
+  return painted;
+}
+
 const ROLES = new Set([
   "terrain", "floor", "water", "wall", "door", "roof", "window", "stairs",
   "furniture", "prop", "tree", "plant", "fence", "gate", "cliff", "rock", "decoration", "empty",
@@ -85,6 +103,7 @@ function main(): void {
 
   const added: Override[] = [];
   const lowConf: string[] = [];
+  const contradicted: string[] = [];
   let parsed = 0;
   let badRole = 0;
 
@@ -106,6 +125,18 @@ function main(): void {
       if (!ROLES.has(role)) { badRole += 1; continue; }
       parsed += 1;
       const confidence = parts[4] ?? "medium";
+
+      // 그림에 픽셀이 있는 칸을 "번 슬롯"으로 적은 판정은 받지 않는다.
+      // 사람이든 모델이든 "안 보이는다"고 말할 수 있지만 픽셀은 결정로직이다.
+      // 실제로 retro_exterior 116 을 "불통명 번 슬롯"이라고 한 판정이 있었고,
+      // 그 칸은 불통명·버키색 픽셀을 78개 가지고 있다. 그대로 반영하면 그려진 타일이
+      // 검색에서 사라진다. 그림과 서술이 모순되면 그림이 이긴다.
+      const painted = paintedPixelCount(sheet, index);
+      if (role === "empty" && painted > 0) {
+        contradicted.push(`${sheet} ${index}: "${parts[1]}" role=empty 이라 했지만 그림에 픽셀 ${painted}개가 있다 — 기각`);
+        continue;
+      }
+
       if (confidence === "low") {
         lowConf.push(`${sheet} ${index}: ${parts[1]} (${role}) — 4번째 판정도 저신뢰. 사람이 볼 칸.`);
         continue; // 저신뢰는 승격하지 않는다
@@ -142,6 +173,10 @@ function main(): void {
   if (lowConf.length) fs.writeFileSync(NEEDS_HUMAN, `${lowConf.join("\n")}\n`);
 
   console.log(`판정 ${parsed}줄 읽음${badRole ? ` (role 불량 ${badRole}줄 버림)` : ""}`);
+  if (contradicted.length) {
+    console.log(`그림과 모순되어 기각한 판정 ${contradicted.length}칸:`);
+    for (const c of contradicted) console.log(`  ${c}`);
+  }
   console.log(`오버라이드 승격 ${added.length}칸 (중복시트 이관 포함) -> 총 ${existing.length + added.length}`);
   console.log(`저신뢰라 승격 보류 ${lowConf.length}칸${lowConf.length ? ` -> ${NEEDS_HUMAN}` : ""}`);
 }

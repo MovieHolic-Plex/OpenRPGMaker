@@ -275,14 +275,13 @@
  },
  {
   "index": 266,
-  "label": "어두운 목조 기단",
-  "role": "prop",
+  "label": "어두운 벽난로 아궁이",
+  "role": "furniture",
   "passage": "solid",
   "tags": [
-   "어두운 목조 기단",
-   "나무",
-   "structure",
-   "목조"
+   "최종판정",
+   "furniture",
+   "벽난로"
   ]
  },
  {

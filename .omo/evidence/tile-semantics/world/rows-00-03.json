@@ -928,15 +928,12 @@
  },
  {
   "index": 79,
-  "label": "초원 평야 푸른 잔디",
+  "label": "잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "초원 평야 푸른 잔디",
-   "grass",
-   "초원",
-   "잔디",
-   "평야"
+   "최종판정",
+   "terrain"
   ]
  },
  {
@@ -963,15 +960,12 @@
  },
  {
   "index": 82,
-  "label": "갈색 흙 평원 지면",
+  "label": "흙",
   "role": "terrain",
   "passage": "passable",
   "tags": [
-   "갈색 흙 평원 지면",
-   "dirt",
-   "흙",
-   "평원",
-   "지면"
+   "최종판정",
+   "terrain"
   ]
  },
  {

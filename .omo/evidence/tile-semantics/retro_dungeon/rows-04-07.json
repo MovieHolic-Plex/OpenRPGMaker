@@ -1304,38 +1304,35 @@
  },
  {
   "index": 237,
-  "label": "흰 석조 벽면",
-  "role": "wall",
-  "passage": "solid",
+  "label": "눈 장식 좌측",
+  "role": "decoration",
+  "passage": "passable",
   "tags": [
-   "흰 석조 벽면",
-   "석조",
-   "흰색",
-   "stone"
+   "최종판정",
+   "decoration",
+   "눈 장식"
   ]
  },
  {
   "index": 238,
-  "label": "하얀 돌 벽",
-  "role": "wall",
-  "passage": "solid",
+  "label": "눈 장식 중앙",
+  "role": "decoration",
+  "passage": "passable",
   "tags": [
-   "하얀 돌 벽",
-   "돌",
-   "흰색",
-   "wall"
+   "최종판정",
+   "decoration",
+   "눈 장식"
   ]
  },
  {
   "index": 239,
-  "label": "밝은 석조 바닥",
-  "role": "floor",
+  "label": "눈 장식 우측",
+  "role": "decoration",
   "passage": "passable",
   "tags": [
-   "밝은 석조 바닥",
-   "돌",
-   "stone",
-   "밝음"
+   "최종판정",
+   "decoration",
+   "눈 장식"
   ]
  }
 ]

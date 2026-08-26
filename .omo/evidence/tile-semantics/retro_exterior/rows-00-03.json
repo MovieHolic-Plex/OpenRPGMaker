@@ -1377,13 +1377,12 @@
  },
  {
   "index": 116,
-  "label": "주황 줄무늬 천막 (좌)",
-  "role": "awning",
+  "label": "목재 창문",
+  "role": "window",
   "passage": "solid",
   "tags": [
-   "주황 줄무늬 천막 (좌)",
-   "천막",
-   "차양"
+   "최종판정",
+   "window"
   ]
  },
  {

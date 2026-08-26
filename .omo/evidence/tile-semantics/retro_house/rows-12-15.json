@@ -13,12 +13,12 @@
  },
  {
   "index": 361,
-  "label": "잔디 바닥",
+  "label": "초록 잔디",
   "role": "terrain",
   "passage": "passable",
   "tags": [
    "terrain",
-   "초록 잔디",
+   "잔디 바닥",
    "잔디"
   ]
  },
@@ -82,38 +82,38 @@
  },
  {
   "index": 367,
-  "label": "검은 석재 바닥",
-  "role": "floor",
-  "passage": "passable",
+  "label": "깨진 암반 구멍 상단 좌측",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 석재 바닥",
-   "stone",
-   "암색",
-   "실내"
+   "최종판정",
+   "cliff",
+   "깨진 암반 구멍",
+   "중복시트 이관"
   ]
  },
  {
   "index": 368,
-  "label": "금속 모서리 암색 바닥",
-  "role": "floor",
-  "passage": "passable",
+  "label": "깨진 암반 구멍 상단 우측",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "금속 모서리 암색 바닥",
-   "floor",
-   "검은색",
-   "모서리장식"
+   "최종판정",
+   "cliff",
+   "깨진 암반 구멍",
+   "중복시트 이관"
   ]
  },
  {
   "index": 369,
-  "label": "회색틀 보라 바닥",
-  "role": "floor",
-  "passage": "passable",
+  "label": "석조 틀 어두운 창 단일",
+  "role": "window",
+  "passage": "solid",
   "tags": [
-   "회색틀 보라 바닥",
-   "floor",
-   "보라색",
-   "테두리"
+   "최종판정",
+   "window",
+   "석조 틀 창",
+   "중복시트 이관"
   ]
  },
  {
@@ -259,12 +259,12 @@
  },
  {
   "index": 382,
-  "label": "돌 화덕",
+  "label": "돌 우물",
   "role": "prop",
   "passage": "solid",
   "tags": [
    "prop",
-   "돌 우물"
+   "돌 화덕"
   ]
  },
  {
@@ -497,24 +497,24 @@
  },
  {
   "index": 402,
-  "label": "붉은 흙 새싹 밭",
+  "label": "붉은 흙 밭 새싹",
   "role": "plant",
   "passage": "passable",
   "tags": [
    "plant",
-   "붉은 흙 밭 새싹",
+   "붉은 흙 새싹 밭",
    "붉은 밭 작물",
    "밭"
   ]
  },
  {
   "index": 403,
-  "label": "짙은 흙 새싹 밭",
+  "label": "자갈 흙 밭 새싹",
   "role": "plant",
   "passage": "passable",
   "tags": [
    "plant",
-   "자갈 흙 밭 새싹",
+   "짙은 흙 새싹 밭",
    "자갈밭 작물",
    "밭"
   ]
@@ -569,12 +569,12 @@
  },
  {
   "index": 408,
-  "label": "나무 울타리 세로 기둥",
+  "label": "나무 울타리 수직 기둥",
   "role": "fence",
   "passage": "solid",
   "tags": [
    "fence",
-   "나무 울타리 수직 기둥",
+   "나무 울타리 세로 기둥",
    "둥근 목책 왼쪽 하단",
    "세로 목재 울타리"
   ]
@@ -631,18 +631,18 @@
   "passage": "solid",
   "tags": [
    "prop",
-   "석조 십자가",
-   "철제 십자가"
+   "철제 십자가",
+   "석조 십자가"
   ]
  },
  {
   "index": 414,
-  "label": "거대 비석 좌측 상단",
+  "label": "대형 묘비 왼쪽 상단",
   "role": "prop",
   "passage": "solid",
   "tags": [
    "prop",
-   "대형 묘비 왼쪽 상단",
+   "거대 비석 좌측 상단",
    "거대 비석 좌상단",
    "룬 비석 좌상단"
   ]
@@ -793,14 +793,14 @@
  },
  {
   "index": 427,
-  "label": "검은 바닥 중앙판",
-  "role": "floor",
-  "passage": "passable",
+  "label": "깨진 암반 구멍 내부",
+  "role": "cliff",
+  "passage": "solid",
   "tags": [
-   "검은 바닥 중앙판",
-   "floor",
-   "암색",
-   "중앙"
+   "최종판정",
+   "cliff",
+   "깨진 암반 구멍",
+   "중복시트 이관"
   ]
  },
  {
@@ -864,12 +864,12 @@
  },
  {
   "index": 433,
-  "label": "짙은 자갈 바닥",
+  "label": "어두운 돌 바닥",
   "role": "terrain",
   "passage": "passable",
   "tags": [
    "terrain",
-   "어두운 돌 바닥",
+   "짙은 자갈 바닥",
    "돌바닥"
   ]
  },
@@ -1351,14 +1351,14 @@
  },
  {
   "index": 474,
-  "label": "거대 비석 받침대 좌측",
+  "label": "룬 비석 좌하단 받침대",
   "role": "prop",
   "passage": "solid",
   "tags": [
    "prop",
-   "룬 비석 좌하단 받침대",
-   "거대 비석 좌측 하단",
-   "대형 묘비 왼쪽 하단"
+   "거대 비석 받침대 좌측",
+   "대형 묘비 왼쪽 하단",
+   "거대 비석 좌측 하단"
   ]
  },
  {
@@ -1375,13 +1375,13 @@
  },
  {
   "index": 476,
-  "label": "거대 비석 받침대 우측",
+  "label": "대형 묘비 오른쪽 하단",
   "role": "prop",
   "passage": "solid",
   "tags": [
    "prop",
-   "대형 묘비 오른쪽 하단",
    "룬 비석 우하단 받침대",
+   "거대 비석 받침대 우측",
    "거대 비석 우측 하단"
   ]
  },
@@ -1399,14 +1399,14 @@
  },
  {
   "index": 478,
-  "label": "원형 천막 입구 하단",
+  "label": "검은 천막 입구 하단",
   "role": "door",
   "passage": "passable",
   "tags": [
    "door",
-   "검은 천막 입구 하단",
+   "원형 천막 입구 하단",
    "천막 입구 하단",
-   "원형 천막"
+   "베이지색 천막"
   ]
  },
  {

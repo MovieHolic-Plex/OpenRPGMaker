@@ -92,14 +92,13 @@
  },
  {
   "index": 369,
-  "label": "잔잔한 바다 수면",
-  "role": "water",
+  "label": "암석 구덩이 테두리",
+  "role": "cliff",
   "passage": "solid",
   "tags": [
-   "잔잔한 바다 수면",
-   "바다",
-   "calm",
-   "water"
+   "최종판정",
+   "cliff",
+   "암석 구덩이"
   ]
  },
  {
@@ -244,14 +243,12 @@
  },
  {
   "index": 383,
-  "label": "연회색 돌 무늬",
-  "role": "rock",
+  "label": "작은 석탑",
+  "role": "decoration",
   "passage": "solid",
   "tags": [
-   "연회색 돌 무늬",
-   "돌",
-   "stone",
-   "판독보류"
+   "최종판정",
+   "decoration"
   ]
  },
  {
@@ -1100,14 +1097,13 @@
  },
  {
   "index": 460,
-  "label": "심해 검푸른 물",
-  "role": "water",
+  "label": "구덩이 하단",
+  "role": "cliff",
   "passage": "solid",
   "tags": [
-   "심해 검푸른 물",
-   "심해",
-   "ocean",
-   "dark"
+   "최종판정",
+   "cliff",
+   "구덩이"
   ]
  },
  {
@@ -1144,14 +1140,12 @@
  },
  {
   "index": 464,
-  "label": "짙회색 무늬 판",
-  "role": "decoration",
-  "passage": "solid",
+  "label": "환기구",
+  "role": "prop",
+  "passage": "passable",
   "tags": [
-   "짙회색 무늬 판",
-   "회색",
-   "pattern",
-   "판독보류"
+   "최종판정",
+   "prop"
   ]
  },
  {

@@ -1,0 +1,3 @@
+237|눈 장식 좌측|decoration|passable|high|눈 장식
+238|눈 장식 중앙|decoration|passable|high|눈 장식
+239|눈 장식 우측|decoration|passable|high|눈 장식

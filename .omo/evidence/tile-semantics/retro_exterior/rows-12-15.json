@@ -85,39 +85,35 @@
  },
  {
   "index": 367,
-  "label": "암흑 바닥 전체",
-  "role": "terrain",
+  "label": "깨진 암반 구멍 상단 좌측",
+  "role": "cliff",
   "passage": "solid",
   "tags": [
-   "암흑 바닥 전체",
-   "void",
-   "black",
-   "심연",
-   "판독보류"
+   "최종판정",
+   "cliff",
+   "깨진 암반 구멍"
   ]
  },
  {
   "index": 368,
-  "label": "칠흑 바닥 모서리 조각",
-  "role": "terrain",
+  "label": "깨진 암반 구멍 상단 우측",
+  "role": "cliff",
   "passage": "solid",
   "tags": [
-   "칠흑 바닥 모서리 조각",
-   "void",
-   "black",
-   "판독보류"
+   "최종판정",
+   "cliff",
+   "깨진 암반 구멍"
   ]
  },
  {
   "index": 369,
-  "label": "어두운 돌 구덩이 상단",
-  "role": "terrain",
+  "label": "석조 틀 어두운 창 단일",
+  "role": "window",
   "passage": "solid",
   "tags": [
-   "어두운 돌 구덩이 상단",
-   "dark",
-   "pit",
-   "판독보류"
+   "최종판정",
+   "window",
+   "석조 틀 창"
   ]
  },
  {
@@ -783,15 +779,13 @@
  },
  {
   "index": 427,
-  "label": "암흑 중앙 면",
-  "role": "terrain",
+  "label": "깨진 암반 구멍 내부",
+  "role": "cliff",
   "passage": "solid",
   "tags": [
-   "암흑 중앙 면",
-   "void",
-   "black",
-   "심연",
-   "판독보류"
+   "최종판정",
+   "cliff",
+   "깨진 암반 구멍"
   ]
  },
  {

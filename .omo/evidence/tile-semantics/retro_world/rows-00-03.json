@@ -1190,14 +1190,13 @@
  },
  {
   "index": 103,
-  "label": "목벽 아래 어두운 문",
-  "role": "door",
+  "label": "걸레받이가 있는 목재 판벽",
+  "role": "wall",
   "passage": "solid",
   "tags": [
-   "목벽 아래 어두운 문",
-   "door",
-   "출입구",
-   "목재"
+   "최종판정",
+   "wall",
+   "목재 판벽"
   ]
  },
  {
@@ -1351,15 +1350,12 @@
  },
  {
   "index": 117,
-  "label": "주황빛 수정 조각",
-  "role": "decoration",
-  "passage": "solid",
+  "label": "광석 조각",
+  "role": "prop",
+  "passage": "passable",
   "tags": [
-   "주황빛 수정 조각",
-   "crystal",
-   "수정",
-   "파편",
-   "분홍배경"
+   "최종판정",
+   "prop"
   ]
  },
  {

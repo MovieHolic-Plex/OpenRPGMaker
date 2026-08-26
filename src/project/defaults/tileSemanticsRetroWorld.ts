@@ -148,7 +148,7 @@ export const RETRO_WORLD_TILE_SEMANTICS: readonly RetroWorldTileSemanticEntry[] 
   one(100, "모래밭 남쪽 풀경계", "sand", "passable", ["sand", "모래", "남쪽"]),
   one(101, "모래밭 남동 풀모서리", "sand", "passable", ["sand", "모래", "남동"]),
   one(102, "세로결 갈색 목벽", "wall", "solid", ["wood", "목재벽", "세로결"]),
-  one(103, "목벽 아래 어두운 문", "door", "solid", ["door", "출입구", "목재"]),
+  one(103, "걸레받이가 있는 목재 판벽", "wall", "solid", ["최종판정", "wall", "목재 판벽"]),
   one(104, "좌측 기둥 회벽 하단", "wall", "solid", ["wall", "밝은 회벽 하단", "기둥 회벽", "밝은 회벽"]),
   one(105, "기둥 없는 회벽 하단", "wall", "solid", ["wall", "밝은 회벽 하단", "기둥 회벽", "밝은 회벽"]),
   one(106, "오른쪽 기둥이 있는 회벽 하단", "wall", "solid", ["wall", "우측 기둥 회벽 하단", "밝은 회벽", "기둥 회벽"]),
@@ -162,7 +162,7 @@ export const RETRO_WORLD_TILE_SEMANTICS: readonly RetroWorldTileSemanticEntry[] 
   one(114, "왼쪽 끝 나무울타리", "fence", "solid", ["fence", "목책", "왼쪽끝", "분홍배경"]),
   one(115, "아래쪽 가로 나무울타리", "fence", "solid", ["fence", "목책", "아래쪽", "분홍배경"]),
   one(116, "나무 이정표 표지판", "prop", "solid", ["prop", "목재 방향 표지판"]),
-  one(117, "주황빛 수정 조각", "decoration", "solid", ["crystal", "수정", "파편", "분홍배경"]),
+  one(117, "광석 조각", "prop", "passable", ["최종판정", "prop"]),
   one(118, "녹색 금속 장비 더미", "prop", "solid", ["prop", "해골과 유골"]),
   one(119, "석조 오벨리스크 하단", "pillar", "solid", ["prop", "선돌 하단", "석조 오벨리스크", "선돌"]),
 

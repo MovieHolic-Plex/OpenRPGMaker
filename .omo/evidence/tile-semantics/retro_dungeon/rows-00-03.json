@@ -204,28 +204,24 @@
  },
  {
   "index": 18,
-  "label": "짙은 회색 돌바닥 상단",
-  "role": "floor",
-  "passage": "passable",
+  "label": "어두운 석벽 상단 좌측",
+  "role": "wall",
+  "passage": "solid",
   "tags": [
-   "짙은 회색 돌바닥 상단",
-   "돌",
-   "바닥",
-   "stone",
-   "상단"
+   "최종판정",
+   "wall",
+   "어두운 석벽"
   ]
  },
  {
   "index": 19,
-  "label": "짙은 회색 돌바닥 중앙",
-  "role": "floor",
-  "passage": "passable",
+  "label": "어두운 석벽 상단 우측",
+  "role": "wall",
+  "passage": "solid",
   "tags": [
-   "짙은 회색 돌바닥 중앙",
-   "돌",
-   "바닥",
-   "stone",
-   "중앙"
+   "최종판정",
+   "wall",
+   "어두운 석벽"
   ]
  },
  {
