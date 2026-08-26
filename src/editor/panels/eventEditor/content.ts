@@ -32,11 +32,11 @@ import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
-import { openNewEventCommandDialog } from "./commandEditDialog";
+import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
 import { newCommand } from "@/editor/eventActions";
-import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
+import { resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
@@ -163,7 +163,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onSelect: (path) => {
         const cmd = resolveCommandAtPath(activePage.commands, path);
         if (!cmd) return;
-        showCommandInspector({ command: cmd, path, actions });
+        openEventCommandEditDialog({
+          initial: cmd,
+          lockKind: true,
+          onApply: (edited) => actions.replaceCommand(path, edited),
+        });
       },
       onAddNext: () => openCommandPickerForActions(actions),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.

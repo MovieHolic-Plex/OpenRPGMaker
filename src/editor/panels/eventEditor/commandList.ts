@@ -161,19 +161,9 @@ function renderCommandItem(
     ...(issueBadge ? [issueBadge] : []),
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
-  let inspectTimer = 0;
-  const deferInspect = typeof requestAnimationFrame === "function" && typeof document !== "undefined" && !!document.body;
   head.addEventListener("click", () => {
     selectCommandLine(item);
-    if (!deferInspect) {
-      showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
-      return;
-    }
-    if (inspectTimer) globalThis.clearTimeout(inspectTimer);
-    inspectTimer = globalThis.setTimeout(() => {
-      inspectTimer = 0;
-      showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
-    }, 280);
+    openEditor();
   });
   // 재렌더 뒤에도 선택과 인스펙터가 유지되도록 복원한다.
   if (sameInspectorPath(path, selectedCommandPath())) {
@@ -187,7 +177,6 @@ function renderCommandItem(
   });
   head.addEventListener("dblclick", (event) => {
     if (event.target instanceof Element && event.target.closest(".cmd-actions, .cmd-drag-handle")) return;
-    if (inspectTimer) globalThis.clearTimeout(inspectTimer);
     event.preventDefault();
     event.stopPropagation();
     selectCommandLine(item);
