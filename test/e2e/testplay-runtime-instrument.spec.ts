@@ -8,7 +8,7 @@
 //   D5 저작자가 읽을 수 있는 상태 없음 → 라이브 리드아웃.
 import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { startNewGameFromTitle, tapKey } from "./runtimeInput";
+import { tapKey } from "./runtimeInput";
 
 const EVIDENCE_DIR = process.env.TESTPLAY_EVIDENCE_DIR ?? "";
 
@@ -44,6 +44,8 @@ test("테스트 플레이는 창을 채우고, 타이틀 없이 시작하고, �
   const runtimeState = page.getByTestId("runtime-state-json");
   await expect(runtimeState).toBeAttached({ timeout: 60_000 });
   await expect(page.getByTestId("title-screen")).toHaveCount(0);
+  // D2 옵션: 지금 모드가 체크박스로 보이고, 그것이 자동 시작 선호다.
+  await expect(page.getByTestId("test-play-skip-title")).toBeChecked();
 
   // D1: 논리 해상도가 창을 채운다(정수 배율 상한 2.0 초과).
   const geometry = await page.evaluate(() => {
@@ -127,6 +129,11 @@ test("테스트 플레이는 창을 채우고, 타이틀 없이 시작하고, �
   await expect
     .poll(async () => JSON.parse((await runtimeState.textContent()) ?? "{}").switches?.[switchId!])
     .toBe(true);
+  // 스위치를 쓸 수 있다 = 바뀐 값을 패널에서 바로 볼 수 있다(전체 JSON 을 열지 않고).
+  const switchValue = page.getByTestId("runtime-debug-switch-value");
+  await expect(switchValue).toHaveAttribute("data-switch-id", switchId!);
+  await expect(switchValue).toHaveAttribute("data-switch-value", "true");
+  await expect(switchValue).toHaveText("ON");
   const shotDebug = evidence("21-debug-instrument.png");
   if (shotDebug) await page.screenshot({ path: shotDebug });
 
@@ -144,8 +151,14 @@ test("테스트 플레이는 창을 채우고, 타이틀 없이 시작하고, �
   // D3: 타이틀부터도 그대로 도달 가능하다(기존 경로 보존).
   await page.getByTestId("test-play-title").click();
   await expect(page.getByTestId("title-screen")).toBeVisible({ timeout: 60_000 });
-  await startNewGameFromTitle(page);
-  await expect(runtimeState).toBeAttached();
+  // 체크박스는 버튼이 바꾸 선호를 같이 보여준다(숨은 상태 금지).
+  await expect(page.getByTestId("test-play-skip-title")).not.toBeChecked();
+  // 타이틀은 플레이 서페이스를 공유하므로 play-stage 가 동시에 살아 있다 — 공용 햬프의
+  // title.or(stage) 는 여기에서 strict 위반이 된다. 타이틀을 곧바로 집어 새 게임을 시작한다.
+  await expect(page.getByTestId("title-new-game")).toBeVisible({ timeout: 60_000 });
+  await page.keyboard.press("Enter");
+  await expect(runtimeState).toBeAttached({ timeout: 60_000 });
+  await expect(page.getByTestId("title-screen")).toHaveCount(0);
 
   expect(consoleErrors, `unexpected console errors: ${consoleErrors.join(" | ")}`).toEqual([]);
 

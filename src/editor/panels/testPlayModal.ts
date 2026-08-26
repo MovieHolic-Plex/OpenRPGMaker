@@ -31,6 +31,9 @@ let battleSceneController: BattleDomController | null = null;
 // 현재 열린 테스트 플레이 창이 조작하는 런 손잡이. renderPlayer 가 onRunControlsReady 로
 // 넘겨주며, 창을 닫으면 버려진다(모듈 전역 가변 상태는 기존 셸 상태와 같은 수준으로만 둔다).
 let playRunControls: PlayerRunControls | null = null;
+// 타이틀 건너뛰기 체크박스. 저장된 선호를 화면에 드러내는 유일한 노드이므로, 버튼이
+// 선호를 바꿀 때마다 같이 맞춰준다(숨은 상태가 다음 실행을 바꾸는 일을 없앤다).
+let skipTitleCheckbox: HTMLInputElement | null = null;
 
 /** 작업자가 마지막으로 고른 자동 시작 여부. 기본값은 ON — 편집→테스트 왕복에서 타이틀 걷기를 없앤다. */
 const AUTO_START_STORAGE_KEY = `${STORAGE_PREFIX}test-play-auto-start`;
@@ -49,6 +52,7 @@ function writeTestPlayAutoStart(autoStart: boolean): void {
   } catch {
     /* private mode / quota — 선택을 기억하지 못해도 테스트는 계속 돌아야 한다. */
   }
+  if (skipTitleCheckbox) skipTitleCheckbox.checked = autoStart;
 }
 
 type TestPlayWindowMode = "fullscreen" | "windowed";
@@ -248,6 +252,7 @@ export function closeTestPlayModal(): void {
   battleSceneController?.destroy();
   battleSceneController = null;
   playRunControls = null;
+  skipTitleCheckbox = null;
   removePlayWindowKeydown?.();
   removePlayWindowKeydown = null;
   // Runtime teardown must finish while store.getCurrent() still resolves to the
@@ -295,6 +300,20 @@ function openTestPlayShell(
     dataset: { testid: "test-play-title" },
     on: { click: () => bootPlayTitle() },
   }) as HTMLButtonElement;
+  // 타이틀 건너뛰기는 저장되는 선호다. 예전에는 다시 시작 / 타이틀부터를 눌러야만 바뀌어서
+  // 작업자가 지금 어느 모드인지 볼 수도, 직접 고를 수도 없었다.
+  const skipTitleInput = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "test-play-skip-title" },
+  }) as HTMLInputElement;
+  skipTitleInput.checked = readTestPlayAutoStart();
+  skipTitleInput.addEventListener("change", () => setSkipTitle(skipTitleInput.checked));
+  const skipTitleLabel = el("label", {
+    class: "test-play-close test-play-skip-title",
+    attrs: { title: "체크하면 타이틀 화면을 거치지 않고 바로 플레이한다" },
+    dataset: { testid: "test-play-skip-title-label" },
+    children: [skipTitleInput, " 타이틀 건너뛰기"],
+  });
   const restoreButton = el("button", {
     class: "test-play-close window-control restore",
     text: "창",
@@ -320,7 +339,7 @@ function openTestPlayShell(
       dataset: { testid: "mode-edit" },
       on: { click: () => closeTestPlayModal() },
     }),
-    ...(shellOptions.runControls ? [restartRunButton, bootTitleButton] : []),
+    ...(shellOptions.runControls ? [skipTitleLabel, restartRunButton, bootTitleButton] : []),
     restoreButton,
     maximizeButton,
     el("button", {
@@ -340,6 +359,7 @@ function openTestPlayShell(
   backdrop.append(windowNode);
   document.body.append(backdrop);
   modalRoot = backdrop;
+  if (shellOptions.runControls) skipTitleCheckbox = skipTitleInput;
   restoreButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "windowed"));
   maximizeButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "fullscreen"));
   removePlayWindowKeydown = bindPlayWindowHotkeys(windowNode, shellOptions.runControls === true);
@@ -355,6 +375,15 @@ function restartPlayRun(): void {
 function bootPlayTitle(): void {
   writeTestPlayAutoStart(false);
   playRunControls?.returnToTitle();
+}
+
+// 체크박스는 죽은 설정이 아니다: 지금 열려 있는 창에도 즉시 적용한다(켜면 런 시작, 끄면 타이틀).
+function setSkipTitle(skipTitle: boolean): void {
+  if (skipTitle) {
+    restartPlayRun();
+    return;
+  }
+  bootPlayTitle();
 }
 
 function setTestPlayWindowMode(windowNode: HTMLElement, mode: TestPlayWindowMode): void {
