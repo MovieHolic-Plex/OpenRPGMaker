@@ -12,9 +12,19 @@ export interface AiCompletionStripHandle {
   readonly dispose: () => void;
 }
 
+/**
+ * 적용 완료 스트립 — 컴포저 바로 위 고정 밴드(`ai-completion-host`)에 사는 한 줄.
+ *
+ * 왜 한 줄인가 (감독 지시 2026-08-25 + 실측): 예전 스트립은 요약 옆에 `시연 실행`,
+ * `AI로 다듬기`, `문제 검사`, `되돌리기` 네 버튼을 세웠고, 이 밴드는 도크와 무관하게
+ * 항상 마운트되므로 적용할 때마다 화면 하단에 버튼 무리가 새로 떴다. 사용자에게는
+ * "하단에 이상한 버튼들이 계속 뜬다"로 읽혔다. 앞의 세 개는 결국 컴포저에 문장을
+ * 넣어주는 일이라 상시 버튼일 이유가 없고(같은 요청을 직접 타이핑하면 된다),
+ * `되돌리기`만이 이 밴드에서만 할 수 있는 일 — 방금 만든 undo 체크포인트가 아직
+ * top 일 때만 유효한, 시간에 묶인 동작 — 이다. 그래서 요약 + 되돌리기로 좁혔다.
+ */
 export function buildAiCompletionStrip(options: {
   readonly context: AiApplyCompletionContext;
-  readonly onPrefill: (prompt: string, context: AiApplyCompletionContext) => void;
 }): AiCompletionStripHandle {
   const { context } = options;
   const undo = el("button", {
@@ -37,44 +47,15 @@ export function buildAiCompletionStrip(options: {
     toast("방금 AI 변경을 되돌렸습니다.", "ok");
   });
 
-  const action = (label: string, testid: string, onClick: () => void): HTMLButtonElement =>
-    el("button", {
-      class: "ai-completion-action",
-      text: label,
-      attrs: { type: "button" },
-      dataset: { testid },
-      on: { click: onClick },
-    }) as HTMLButtonElement;
-
   const element = el("div", {
     class: "ai-completion-strip",
-    attrs: { role: "toolbar", "aria-label": "AI 적용 후 다음 작업" },
+    attrs: { role: "status", "aria-label": "AI 적용 결과" },
     dataset: { testid: "ai-completion-strip" },
     children: [
       el("span", {
         class: "ai-completion-summary",
         text: context.summary || "변경을 적용했습니다",
         attrs: { title: context.instruction || context.summary },
-      }),
-      action("시연 실행", "ai-completion-test", () => {
-        if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
-        const detail = { kind: "map", mapId: context.mapId };
-        if (typeof CustomEvent === "function") {
-          window.dispatchEvent(new CustomEvent("oprn:test-play-window", { detail }));
-        } else {
-          const event = new Event("oprn:test-play-window");
-          Object.defineProperty(event, "detail", { configurable: true, value: detail });
-          window.dispatchEvent(event);
-        }
-      }),
-      action("AI로 다듬기", "ai-completion-refine", () => {
-        options.onPrefill(
-          `방금 적용한 결과를 확인하고, 선택한 영역을 주변과 더 자연스럽게 어울리도록 다듬어줘.\n참고: ${context.instruction || context.summary}`,
-          context,
-        );
-      }),
-      action("문제 검사", "ai-completion-audit", () => {
-        options.onPrefill("방금 적용한 부분의 통행, 겹침, 누락 문제를 검사하고 고칠 방법을 알려줘.", context);
       }),
       undo,
     ],

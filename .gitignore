@@ -114,3 +114,7 @@ new-editor/COMPREHENSIVE.html
 !/public/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3
 !/public/assets/cc0/audio/catalog/rtp-btl-001-vanguard-signal_fc54007f.mp3
 !/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3
+
+# 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
+verify-shots/ai-assistant-ux/probe-baseline/
+verify-shots/ai-assistant-ux/probe-after/
