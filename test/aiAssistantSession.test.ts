@@ -1146,6 +1146,31 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(names).toEqual(["create_map", "set_start_position"]);
   }, 30000);
 
+  // 액션 가시성 계약: 툴 실행 **직전** tool_started 가 1-based 서수와 함께 나가야
+  // 프리뷰 UI 가 "지금 무엇을 하는 중"을 결과 도착 전에 그릴 수 있다.
+  it("각 툴 실행 직전에 tool_started(name,index)를 tool_call 보다 먼저 내보낸다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const chat = scriptedChat([
+      assistantToolCall("get_project_summary", {}),
+      assistantToolCall("create_map", { id: "m1", name: "새 맵", width: 6, height: 6 }, "c_create_map"),
+      assistantFinal("맵을 만들었습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+
+    const observed: string[] = [];
+    await session.sendUserMessage("맵 하나 만들어줘", (event: SessionEvent) => {
+      if (event.type === "tool_started") observed.push(`started:${event.name}:${event.index}`);
+      if (event.type === "tool_call") observed.push(`call:${event.name}`);
+    });
+
+    expect(observed).toEqual([
+      "started:get_project_summary:1",
+      "call:get_project_summary",
+      "started:create_map:2",
+      "call:create_map",
+    ]);
+  }, 30000);
+
   it("maxToolCalls 상한에 도달하면 현재까지의 제안을 반환한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     // 항상 툴콜만 반복(최종 응답 없음).
