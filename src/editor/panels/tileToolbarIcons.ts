@@ -2,7 +2,8 @@ type SvgIconName =
   | "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo"
   | "eyedropper" | "event" | "tile" | "layers" | "map" | "hand" | "collision" | "more"
   | "terrain" | "structure" | "polish" | "npc" | "chest" | "combat" | "mood"
-  | "composite" | "pin" | "save" | "warning" | "door" | "sign" | "shop";
+  | "composite" | "pin" | "save" | "warning" | "door" | "sign" | "shop"
+  | "close" | "check";
 type SvgTag = "path" | "rect" | "circle";
 type SvgNodeSpec = {
   readonly tag: SvgTag;
@@ -164,6 +165,13 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M3.5 8.5L5 4h12l1.5 4.5" } },
     { tag: "path", attrs: { d: "M3.5 8.5a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0" } },
     { tag: "path", attrs: { d: "M5 10.5V18h12v-7.5" } },
+  ],
+  close: [
+    { tag: "path", attrs: { d: "M6 6l10 10" } },
+    { tag: "path", attrs: { d: "M16 6l-10 10" } },
+  ],
+  check: [
+    { tag: "path", attrs: { d: "M5 12l4 4 8-9" } },
   ],
 };
 
