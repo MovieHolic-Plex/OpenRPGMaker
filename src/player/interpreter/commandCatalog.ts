@@ -754,6 +754,13 @@ export function executeCommand(
         animationId: command.animationId,
         wait: command.wait === true,
       });
+    case "playMovie":
+      return pause("playMovie", {
+        kind: "playMovie",
+        resourceId: command.resourceId,
+        wait: command.wait !== false,
+        skippable: command.skippable !== false,
+      });
     case "setFlag":
       state.session.flags[command.flag] = command.value;
       return resumeNext(frame);

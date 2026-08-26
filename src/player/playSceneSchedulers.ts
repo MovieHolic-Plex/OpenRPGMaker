@@ -19,6 +19,7 @@ import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 
@@ -269,6 +270,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "showAnimation":
       void playMapAnimation(scene, { ...step, wait: false }, currentEventId);
+      return true;
+    case "playMovie":
+      void playMovieOverlay(scene, { ...step, wait: false });
       return true;
     case "spawnEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);
