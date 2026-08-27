@@ -296,24 +296,28 @@
  },
  {
   "index": 145,
-  "label": "커튼 달린 창문 좌측",
-  "role": "window",
+  "label": "거울 달린 서랍장 좌측",
+  "role": "furniture",
   "passage": "solid",
   "tags": [
-   "창문",
-   "window",
-   "커튼"
+   "서랍장",
+   "드레서",
+   "dresser",
+   "거울",
+   "가구"
   ]
  },
  {
   "index": 146,
-  "label": "커튼 달린 창문 우측",
-  "role": "window",
+  "label": "거울 달린 서랍장 우측",
+  "role": "furniture",
   "passage": "solid",
   "tags": [
-   "창문",
-   "window",
-   "커튼"
+   "서랍장",
+   "드레서",
+   "dresser",
+   "거울",
+   "가구"
   ]
  },
  {

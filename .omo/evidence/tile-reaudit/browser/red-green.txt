@@ -1,0 +1,66 @@
+# tile-semantics-corrected-label.spec.ts — RED/GREEN 증거 (2026-08-27)
+
+대상: retro_exterior 179번 타일.
+화면: 데이터베이스 · 타일셋 탭 → "레트로 바깥 · EasyRPG" → 타일 그림판 179 셀 우클릭 → "의미 편집…" 다이얼로그.
+소스 기대 라벨(src/project/defaults/tileSemanticsRetroExterior.ts): "붉은 제비꼬리 깃발 상단" (role=decoration)
+옛 오독 라벨(출하 데이터): "붉은 지붕 하단 처마" (role=roof)
+실행 명령: npx playwright test test/e2e/tile-semantics-corrected-label.spec.ts --reporter=line
+
+## 1) RED — 단정을 옛 오독 라벨로 임시 뒤집은 실행 (expect(shown).toBe("붉은 지붕 하단 처마") + 처마·지붕 포함 기대)
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] › test\e2e\tile-semantics-corrected-label.spec.ts:30:1 › 교정된 179번 타일 의미가 타일셋 DB 의미 편집 다이얼로그에 뜬다
+  1) [chromium] › test\e2e\tile-semantics-corrected-label.spec.ts:30:1 › 교정된 179번 타일 의미가 타일셋 DB 의미 편집 다이얼로그에 뜬다 
+
+    Error: RED PROOF: 옛 오독 라벨 기대
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "붉은 지붕 하단 처마"
+    Received: "붉은 제비꼬리 깃발 상단"
+
+      56 |   const shown = await labelField.inputValue();
+      57 |   // 화면 라벨이 교정된 테이블 라벨과 글자 단위로 같아야 한다.
+    > 58 |   expect(shown, `RED PROOF: 옛 오독 라벨 기대`).toBe("붉은 지붕 하단 처마");
+         |                                          ^
+      59 |   // 교정된 명사가 있어야 하고, 틀린 옛 라벨의 명사는 남아 있으면 안 된다.
+      60 |   expect(shown).toContain("처마");
+      61 |   expect(shown).toContain("지붕");
+        at C:\Users\USER\Downloads\rpg-zzu-tile-reaudit\test\e2e\tile-semantics-corrected-label.spec.ts:58:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\tile-semantics-corrected-l-62ed7--의미가-타일셋-DB-의미-편집-다이얼로그에-뜬다-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\tile-semantics-corrected-l-62ed7--의미가-타일셋-DB-의미-편집-다이얼로그에-뜬다-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\tile-semantics-corrected-l-62ed7--의미가-타일셋-DB-의미-편집-다이얼로그에-뜬다-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\tile-semantics-corrected-l-62ed7--의미가-타일셋-DB-의미-편집-다이얼로그에-뜬다-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [chromium] › test\e2e\tile-semantics-corrected-label.spec.ts:30:1 › 교정된 179번 타일 의미가 타일셋 DB 의미 편집 다이얼로그에 뜬다 
+
+## 2) GREEN — 단정을 교정 라벨로 복구한 실행 (테이블 값과 글자 일치 + "깃발" 포함 · "처마"/"지붕" 불포함)
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] › test\e2e\tile-semantics-corrected-label.spec.ts:30:1 › 교정된 179번 타일 의미가 타일셋 DB 의미 편집 다이얼로그에 뜬다
+  1 passed (17.7s)
+
+## 주의 — 맨 처음 실행이 실패한 원인 (테스트 결함 아님)
+playwright.config.ts 의 webServer 는 reuseExistingServer: true 다. 최초 실행 시 포트 9173 에는
+다른 저장소(../rpg-zzu)의 dev 서버가 이미 떠 있어 교정 전 코드가 서비스됐고, 화면 라벨이
+"붉은 지붕 하단 처마" 로 나왔다. 이 워크트리에서 직접 dev 서버를 띄워 확인한 결과:
+  curl -s http://127.0.0.1:9173/src/project/defaults/tileSemanticsRetroExterior.ts | grep 'one(179'
+  -> one(179, "붉은 제비꼬리 깃발 상단", "decoration", "solid", ["깃발", "banner", "문장"])
+위 RED/GREEN 두 실행은 모두 이 워크트리의 dev 서버를 상대로 한 것이다.
+워크트리 e2e 는 반드시 해당 워크트리 dev 서버가 9173 을 잡은 상태에서 돌려야 한다.
