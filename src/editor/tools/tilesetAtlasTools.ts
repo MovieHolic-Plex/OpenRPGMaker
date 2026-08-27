@@ -11,6 +11,7 @@ import type {
   PassFlag,
   Project,
   TileGraft,
+  TileAiMetadata,
   TilesetAnimationStrip,
   TilesetDef,
   TilesetKind,
@@ -20,7 +21,6 @@ import {
   ANIMATION_STRIP_SCHEMA,
   AUTOTILE_GROUP_SCHEMA,
   TILE_GRAFT_SCHEMA,
-  TILESET_IMAGE_SCHEMA,
   TILESET_PROPERTY_SCHEMAS,
 } from "./tilesetAtlasSchemas";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -143,7 +143,7 @@ function resizeSlotArrays(tileset: TilesetDef, count: number): void {
   tileset.count = count;
 }
 
-function authoredMeta(meta: TilesetDef["tileMeta"] extends (infer Entry)[] | undefined ? Entry : never): boolean {
+function authoredMeta(meta: TileAiMetadata | undefined): boolean {
   if (!meta) return false;
   return Boolean(
     meta.label.trim() || meta.description.trim() || meta.tags?.length || meta.role || meta.defaultLayer ||
