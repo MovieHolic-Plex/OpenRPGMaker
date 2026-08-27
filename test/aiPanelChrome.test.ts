@@ -288,7 +288,7 @@ describe("AI 패널 크롬", () => {
 
     expect(steps?.hidden).toBe(false);
     expect(findByTestId(panel, "ai-next-steps-hint")?.textContent).toBe(nextStepHint(readAgentBrief()));
-    expect(buttons.length).toBe(2);
+    expect(buttons.length).toBe(4);
     expect(examples).toBeTruthy();
   });
 
