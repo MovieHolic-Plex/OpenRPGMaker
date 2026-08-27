@@ -45,3 +45,11 @@ export function swingArcCells(facing: Dir, originX: number, originY: number, ran
 export function cellInArc(cells: readonly TileCell[], x: number, y: number): boolean {
   return cells.some((cell) => cell.x === x && cell.y === y);
 }
+
+// 소수 타일 좌표의 몸(중심 (tx,ty), 한 칸 크기)이 스윙 호 칸들과 겹치는지.
+// 각 칸은 [cx-0.5, cx+0.5] 정사각형으로 보고, 겹침은 양의 면적이 있을 때만 참.
+// 타일 반올림 좌표만 보던 판정과 달리 칸 사이를 보간 중인 적도 맞을 수 있다.
+export function swingArcOverlapsPoint(facing: Dir, originX: number, originY: number, range: number, targetX: number, targetY: number): boolean {
+  const cells = swingArcCells(facing, originX, originY, range);
+  return cells.some((cell) => Math.abs(targetX - cell.x) < 0.5 && Math.abs(targetY - cell.y) < 0.5);
+}

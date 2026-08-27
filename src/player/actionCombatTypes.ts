@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import type { AttackBufferState } from "@/battle/action/attackWindow";
 import type { ResolvedActionCombatConfig } from "@/project/actionCombat";
 import type { EnemyActionAttack } from "@/project/types";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
@@ -64,6 +65,8 @@ export interface ActionCombatSceneState {
   dodgeIframesMs: number;
   playerFlashMs: number;
   swingCooldownMs: number;
+  /** 쿨다운 중 눌린 공격을 기록하는 입력 버퍼 규칙 상태. */
+  attackBuffer: AttackBufferState;
   stamina: number;
   hitstopMs: number;
   fieldSpawnRuntime?: FieldSpawnRuntimeState;

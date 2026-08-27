@@ -1,7 +1,8 @@
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
-import { swingArcCells, cellInArc } from "@/battle/action/hitbox";
+import { swingArcCells, cellInArc, swingArcOverlapsPoint } from "@/battle/action/hitbox";
+import { bufferAttackPress, createAttackBuffer, tickAttackBuffer } from "@/battle/action/attackWindow";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 import { consumeHitstop } from "@/battle/action/hitstop";
 import { resolveDodgeStep } from "@/battle/action/dodge";
@@ -73,6 +74,7 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
     dodgeIframesMs: 0,
     playerFlashMs: 0,
     swingCooldownMs: 0,
+    attackBuffer: createAttackBuffer(),
     stamina: ACTION_STAMINA_MAX,
     hitstopMs: 0,
     lastHudSignature: "",
@@ -123,7 +125,11 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
 
 function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
   state.playerIframesMs = Math.max(0, state.playerIframesMs - deltaMs);
-  state.swingCooldownMs = Math.max(0, state.swingCooldownMs - deltaMs);
+  // 쿨다운 중 눌린 공격은 버퍼에 기록되고, 쿨다운이 끝나는 프레임에 딱 한 번 발화한다.
+  const cooldownBefore = state.swingCooldownMs;
+  state.swingCooldownMs = Math.max(0, cooldownBefore - deltaMs);
+  const buffered = tickAttackBuffer(state.attackBuffer, cooldownBefore, deltaMs);
+  if (buffered.fired) performActionCombatSwing(scene, state);
   if (state.config.staminaEnabled) {
     state.stamina = Math.min(ACTION_STAMINA_MAX, state.stamina + (ACTION_STAMINA_REGEN_PER_SEC * deltaMs) / 1000);
   }
@@ -190,7 +196,8 @@ function resolveSpawnEnemyRecord(project: Project, troopId: string): EnemyRecord
   return project.database.enemies.find((entry) => entry.id === enemyId);
 }
 
-function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: number; y: number } | null {
+// 보간 중인 적의 소수 타일 좌표. 라운딩 전 값이라 서브타일 겹침 판정에 쓴다.
+function enemyFractionalTilePosition(scene: PlaySceneContext, eventId: string): { x: number; y: number } | null {
   const pos = scene.eventPositions[eventId];
   if (pos) {
     const mover = scene.autonomousNPCs.get(eventId);
@@ -198,8 +205,8 @@ function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: numbe
     if (move && mover) {
       const progress = Math.min(1, move.elapsedMs / Math.max(1, mover.moveDurationMs));
       return {
-        x: Math.round(move.fromX + (move.toX - move.fromX) * progress),
-        y: Math.round(move.fromY + (move.toY - move.fromY) * progress),
+        x: move.fromX + (move.toX - move.fromX) * progress,
+        y: move.fromY + (move.toY - move.fromY) * progress,
       };
     }
     return { x: pos.x, y: pos.y };
@@ -210,6 +217,12 @@ function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: numbe
     if (instance) return { x: instance.x, y: instance.y };
   }
   return null;
+}
+
+function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: number; y: number } | null {
+  const pos = enemyFractionalTilePosition(scene, eventId);
+  if (!pos) return null;
+  return { x: Math.round(pos.x), y: Math.round(pos.y) };
 }
 
 // 대시 걸음마다 회피를 시도한다. 성공하면 스태미나를 쓰고 짧은 무적 창만 열린다.
@@ -290,20 +303,28 @@ function killPartyForActionCombat(scene: PlaySceneContext): void {
 export function tryActionCombatSwing(scene: PlaySceneContext): void {
   const state = scene.actionCombatState;
   if (!state || scene.running || !scene.inputEnabled) return;
-  if (state.swingCooldownMs > 0) return;
+  // 쿨다운 중 입력은 유지된다: 버퍼에 기록해 두면 쿨다운이 끝나는 프레임에 한 번 발화한다.
+  if (state.swingCooldownMs > 0) {
+    bufferAttackPress(state.attackBuffer);
+    return;
+  }
+  performActionCombatSwing(scene, state);
+}
+
+function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSceneState): void {
   if (state.config.staminaEnabled && state.stamina < ACTION_SWING_STAMINA_COST) return;
   const lead = leadActorSwingProfile(scene);
   if (!lead) return;
   state.swingCooldownMs = lead.cooldownMs;
   if (state.config.staminaEnabled) state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
-  const arc = swingArcCells(scene.facing, scene.tileX, scene.tileY, lead.range);
   flashSwingArc(scene, scene.facing, lead.range);
   pulsePlayerSwing(scene);
   playActionSe(SE_SWING_RESOURCE_ID);
   const project = store.getCurrent();
+  // 보간 중인 적은 반올림 타일이 아니라 몸이 실제로 호와 겹치는지로 판정한다.
   for (const enemy of [...state.enemies.values()]) {
-    const pos = enemyTilePosition(scene, enemy.eventId);
-    if (!pos || !cellInArc(arc, pos.x, pos.y)) continue;
+    const pos = enemyFractionalTilePosition(scene, enemy.eventId);
+    if (!pos || !swingArcOverlapsPoint(scene.facing, scene.tileX, scene.tileY, lead.range, pos.x, pos.y)) continue;
     const base = computeSwingDamage({
       attackerAttack: lead.attack,
       defenderDefense: enemy.defense,
