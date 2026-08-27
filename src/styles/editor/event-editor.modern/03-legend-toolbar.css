@@ -57,6 +57,9 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   min-width: 0;
+  /* 마지막 보조 버튼이 명령 컬럼 오른쪽 경계에 닿아 있었다(실측 1439 vs 컬럼 1440).
+     컬럼 안쪽으로 10px 들여 액션 줄의 끝을 분명히 만든다. */
+  padding-right: 10px;
   row-gap: 6px;
 }
 
@@ -67,10 +70,13 @@
   white-space: nowrap;
 }
 
-/* 남는 폭은 검색이 흡수한다 — 줄바꿈 전에 먼저 줄어드는 유일한 컨트롤. */
+/* 남는 폭은 검색이 흡수한다 — 줄바꿈 전에 먼저 줄어드는 유일한 컨트롤.
+   단 320px 이상으로는 늘지 않는다: 1440px 에서 423px 까지 부풀어 툴바가 검색 상자로
+   읽혔다. 이 줄의 주인공은 검색이 아니라 왼쪽 액션들이다. */
 .event-editor .event-contents-fieldset > .toolbar.event-editor-command-toolbar
   > .event-editor-command-search {
   flex: 1 1 140px;
+  max-width: 320px;
   min-width: 96px;
   width: auto;
 }
