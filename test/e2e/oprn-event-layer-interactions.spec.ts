@@ -517,10 +517,9 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-pattern", "0");
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveCSS("background-image", /data:image\/png/);
 
+  // 숨어 있던 identity 카드(.event-editor-card-sprite)는 삭제됐다 — 설정 레일의 미리보기만 남는다.
   const graphicPreview = page.getByTestId("event-page-graphic-preview");
-  const cardFrame = page.locator(".event-editor-card-sprite");
-  const cardPreview = cardFrame.getByTestId("event-page-graphic-icon-preview");
-  for (const preview of [graphicPreview, cardPreview]) {
+  for (const preview of [graphicPreview]) {
     await expect(preview).toHaveCSS("box-sizing", "content-box");
     await expect(preview).toHaveCSS("width", `${CHARSET_FRAME_WIDTH * 2}px`);
     await expect(preview).toHaveCSS("height", `${CHARSET_FRAME_HEIGHT * 2}px`);

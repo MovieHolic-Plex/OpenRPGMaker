@@ -61,16 +61,12 @@ describe("event editor settings column layout", () => {
     expect(direct[0]?.dataset.testid).toBe("event-editor-column-label-settings");
     expect(direct[1]?.classList.contains("event-editor-settings-main")).toBe(true);
 
-    // 카드는 스프라이트 + 이름/캐릭터 ID + 좌표를 한 덩어리로 묶는다.
-    const card = host.querySelector<HTMLElement>(".event-editor-card");
-    expect(card).toBeTruthy();
-    expect(card?.parentElement).toBe(host.querySelector(".event-editor"));
-    expect(card?.nextElementSibling?.classList.contains("event-editor-pagebar")).toBe(true);
-    expect(card.querySelector(".event-editor-card-sprite")).toBeTruthy();
-    expect(card.querySelector(".event-editor-top-strip")).toBeTruthy();
-    expect(card.querySelector("[data-testid='event-position-controls']")).toBeTruthy();
-    expect(card.querySelector("[data-testid='event-editor-event-id']")).toBeTruthy();
-    expect(card.querySelector("[data-testid='event-editor-event-info']")).toBeTruthy();
+    // 숨은 identity 카드는 제거됐다: `display: none` 인 채 DOM 에만 남아 있던 죽은 UI 였고,
+    // 이름·ID·좌표·NPC 는 모달 헤더와 설정 레일이 이미 보여준다.
+    expect(host.querySelector(".event-editor-card")).toBeNull();
+    expect(host.querySelector("[data-testid='event-editor-event-info']")).toBeNull();
+    expect(host.querySelector("[data-testid='event-position-controls']")).toBeNull();
+    expect(host.querySelector(".event-editor")?.firstElementChild?.classList.contains("event-editor-pagebar")).toBe(true);
 
     // 페이지 선택은 폭이 필요하다 — 좁은 설정 레일 밖, 전용 페이지 행이 유일한 집이다.
     expect(column?.querySelector(".evt-page-segments")).toBeNull();

@@ -5,8 +5,9 @@ import { expect, type Locator, type Page } from "@playwright/test";
  *
  * 북극성: RPG Maker 2003 에디터 창 복제는 폐기됐다. 그래서 여기에는
  * `event-command-empty-line` 더블클릭(구 `@>` 빈 줄) 경로가 없다. 명령 피커는 제품
- * 표면 그대로 스토리보드 CTA(`event-storyboard-add`), 빠른 도구(`event-command-quick-next`),
- * 툴바(`event-command-toolbar-add`) 중 하나로만 연다.
+ * 표면 그대로 스토리보드 CTA(`event-storyboard-add`) 또는 툴바(`event-command-toolbar-add`)
+ * 로만 연다. 빠른 도구의 `+ 다음` 은 툴바 버튼을 대신 눌러주는 중복이라 제거됐으므로,
+ * 남은 `"quick-next"` 진입점 이름은 툴바 버튼을 가리킨다.
  */
 export type PickerEntryPoint = "storyboard-cta" | "quick-next" | "toolbar-add";
 
@@ -43,11 +44,7 @@ export async function openCommandPicker(
 ): Promise<Locator> {
   const editor = page.getByTestId("event-editor-modal");
   const cta = editor.getByTestId(
-    entryPoint === "storyboard-cta"
-      ? "event-storyboard-add"
-      : entryPoint === "quick-next"
-        ? "event-command-quick-next"
-        : "event-command-toolbar-add"
+    entryPoint === "storyboard-cta" ? "event-storyboard-add" : "event-command-toolbar-add"
   );
   await expect(cta).toBeVisible();
   await cta.click();
