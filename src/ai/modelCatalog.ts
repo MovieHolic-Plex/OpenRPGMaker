@@ -1,4 +1,5 @@
-import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 
 export interface AiModelCatalogGroup {
   readonly label: string;
@@ -14,136 +15,82 @@ export interface AiModelCatalogGroup {
  *   gpt-5.5           → model=gpt-5.5  "OK"
  *   gpt-5.1-codex-max → model=gpt-5.5  "OK"   ← 카탈로그 밖. 요청한 모델이 무시됐다.
  *   cpen/gpt-5-6-luna → model=gpt-5.5  "OK"   ← 마찬가지
- * 그래서 목록은 pi-catalog 와 동일해야 한다. 옛 목록에는 codex 계열 11개가 더 있었지만
- * 전부 이 조용한 강등에 걸렸다. 첫 항목은 기존 기본값(gpt-5.6-sol)을 유지한다.
+ * 그래서 목록은 pi-catalog 와 동일해야 한다(실측 2026-08-27 `getBundledModels("openai-codex")` 8종).
+ * 첫 항목은 제공자 기본값(gpt-5.6-sol)을 유지한다.
  */
-const CHATGPT_OAUTH_MODELS: readonly AiModelCatalogGroup[] = [
-  {
-    label: "ChatGPT 구독 · Codex",
-    models: [
-      "gpt-5.6-sol",
-      "gpt-5.6-terra",
-      "gpt-5.6-luna",
-      "gpt-5.5",
-      "gpt-5.4",
-      "gpt-5.4-mini",
-      "gpt-5.3-codex-spark",
-      "gpt-daybreak-blue-latest",
-    ],
-  },
-];
-
-/** 게이트웨이/직접 API 는 pi-catalog 제약을 받지 않으므로 OpenAI 계열을 넓게 유지한다. */
-const OPENAI_GATEWAY_MODELS: AiModelCatalogGroup = {
-  label: "OpenAI · API/게이트웨이",
-  models: [
-    "gpt-5.6-sol",
-    "gpt-5.6-terra",
-    "gpt-5.6-luna",
-    "gpt-5.5",
-    "gpt-5.4",
-    "gpt-5.4-mini",
-    "gpt-5.4-nano",
-    "gpt-5.3-codex",
-    "gpt-5.3-codex-spark",
-    "gpt-5.2-codex",
-    "gpt-5.2",
-    "gpt-5.1-codex-max",
-    "gpt-5.1-codex",
-    "gpt-5.1-codex-mini",
-    "gpt-5.1",
-    "gpt-5-codex",
-    "gpt-5-codex-mini",
-    "gpt-5",
-    "codex-auto-review",
-  ],
-};
-
-const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
-  OPENAI_GATEWAY_MODELS,
-  {
-    label: "Anthropic · API/게이트웨이",
-    models: ["claude-opus-4-8", "claude-opus-4-7", "claude-opus-4-6", "claude-sonnet-4-6", "claude-sonnet-4-5", "claude-haiku-4-5"],
-  },
-  {
-    label: "Google Gemini · API/게이트웨이",
-    models: ["gemini-3.5-flash", "gemini-3.1-pro-preview", "gemini-3.1-flash-lite-preview", "gemini-3-pro-preview", "gemini-2.5-pro", "gemini-2.5-flash"],
-  },
-  {
-    label: "xAI Grok · API/게이트웨이",
-    models: ["grok-4.3", "grok-code-fast-1", "grok-build-0.1", "grok-4.1-fast", "grok-4"],
-  },
-  {
-    label: "그 외 GJC 레지스트리 · API/게이트웨이",
-    models: ["deepseek-v4-pro", "deepseek-v4-flash", "qwen3.7-max", "qwen3.7-plus", "MiniMax-M3", "kimi-k2.7-code", "glm-5.2", "glm-5.2-ultrafast", "z-ai/glm-5.2-ultrafast"],
-  },
-  {
-    // qwencloud(알리바바 MaaS) 전용 경로 — baseUrl 을 /api/qwen 으로 설정해야 동작한다.
-    label: "Qwen · qwencloud",
-    models: ["qwen3.8-max-preview"],
-  },
-  {
-    // cpenrouter.space 전용 경로 — baseUrl 을 /api/cpen 으로 설정해야 동작한다.
-    // 모델 목록은 라이브 GET https://cpenrouter.space/v1/models 응답(12종) 그대로다.
-    // cpen/100/... 변종 6종은 같은 모델 이름에 100/ 이 끼워진 형태(컨텍스트 변형).
-    // 기본 선택이 쉽도록 채팅 완성 실측 성공 모델 cpen/gemini-3-flash 를 맨 앞에 둔다.
-    label: "cpenrouter · cpenrouter.space",
-    models: [
-      "cpen/gemini-3-flash",
-      "cpen/gpt-5-6-luna",
-      "cpen/gpt-5-6-terra",
-      "cpen/gpt-5-4-mini",
-      "cpen/gemini-3-1-flash-lite",
-      "cpen/gemini-flash-2-5",
-      "cpen/100/gemini-3-flash",
-      "cpen/100/gpt-5-6-luna",
-      "cpen/100/gpt-5-6-terra",
-      "cpen/100/gpt-5-4-mini",
-      "cpen/100/gemini-3-1-flash-lite",
-      "cpen/100/gemini-flash-2-5",
-    ],
-  },
+const CODEX_MODELS: readonly string[] = [
+  "gpt-5.6-sol",
+  "gpt-5.6-terra",
+  "gpt-5.6-luna",
+  "gpt-5.5",
+  "gpt-5.4",
+  "gpt-5.4-mini",
+  "gpt-5.3-codex-spark",
+  "gpt-daybreak-blue-latest",
 ];
 
 /**
- * Provider-native choices that the editor intentionally recommends ahead of the broad
- * gateway catalog. Keep the first item equal to the provider default.
+ * Antigravity 경로에서 고를 수 있는 모델.
+ *
+ * `getBundledModels("google-antigravity")` 실측(2026-08-27) 결과를 그대로 쓴다. pi-catalog 가
+ * 제공자 전송 계층이 실제로 해석하는 모델 목록이므로, gemini 밖 네임스페이스(Claude·gpt-oss·
+ * tab_*)도 여기서는 **Antigravity 소속 모델**이다. 첫 항목만 제품 기본값(gemini-3.7-flash)에
+ * 맞춰 앞으로 옮겼다.
+ *
+ * `gemini-3.7-flash-high` 는 없다 — 실측(2026-08-26) 결과 Cloud Code Assist 가 그 ID 를 404
+ * `Requested entity was not found` 로 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는
+ * 독립 모델이 아니라 `gemini-3.7-flash` 의 `thinking.effortRouting` 대상 이름이다.
  */
-const OH_MY_PI_PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
-  // `gemini-3.7-flash-high` 는 여기 없다 — 실측(2026-08-26) 결과 Cloud Code Assist 가 그 ID 를
-  // 404 `Requested entity was not found` 로 거부한다. 카탈로그에 그 이름이 있는 것은 **cursor**
-  // 제공자 모델(`api: cursor-agent`)이고, Antigravity 에서는 `gemini-3.7-flash` 의
-  // `thinking.effortRouting.high` 대상일 뿐 독립 모델이 아니다. 같은 이유로 `-medium`/`-low` 도
-  // 노출하지 않는다.
-  "google-antigravity": [
-    "gemini-3.7-flash",
-    "gemini-3.1-pro",
-  ],
+const ANTIGRAVITY_MODELS: readonly string[] = [
+  "gemini-3.7-flash",
+  "claude-opus-4-5",
+  "claude-opus-4-6",
+  "claude-sonnet-4-5",
+  "claude-sonnet-4-6",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-pro",
+  "gemini-3-flash",
+  "gemini-3-pro",
+  "gemini-3.1-flash-image",
+  "gemini-3.1-flash-lite",
+  "gemini-3.1-pro",
+  "gemini-3.5-flash",
+  "gemini-3.6-flash",
+  "gemini-3.7-flash-tiered",
+  "gpt-oss-120b",
+  "tab_flash_lite_preview",
+  "tab_jump_flash_lite_preview",
+];
+
+/**
+ * 제공자별 모델 목록. 에디터가 고를 수 있는 제공자가 둘뿐이므로 카탈로그도 둘뿐이다.
+ * 게이트웨이·cpenrouter·qwencloud 그룹은 걷어냈다 — 그 모델들에 닿을 제공자가 레지스트리에 없다.
+ */
+const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
+  [ANTIGRAVITY_PROVIDER_ID]: ANTIGRAVITY_MODELS,
+  [CODEX_PROVIDER_ID]: CODEX_MODELS,
 };
 
+/**
+ * 그 제공자에서 고를 수 있는 모델 그룹.
+ *
+ * authMode(전송 축)는 목록을 가르지 않는다 — 주입 게이트웨이 설정(노드 스크립트·벤치마크)도
+ * 결국 이 두 제공자의 모델을 쓴다. 인자는 호출부 호환을 위해 유지한다.
+ */
 export function modelCatalogForAuthMode(
   authMode: "chatgpt" | "apiKey",
   providerId?: string,
 ): readonly AiModelCatalogGroup[] {
-  const provider = getOhMyPiProvider(parseOhMyPiProvider(providerId));
-  if (authMode === "chatgpt" && (!provider || provider.id === "openai-codex")) {
-    return CHATGPT_OAUTH_MODELS;
-  }
-  if (authMode === "chatgpt" && provider && provider.id !== "openai-codex") {
-    const providerModels = OH_MY_PI_PROVIDER_MODELS[provider.id];
-    if (providerModels) {
-      return [{ label: `${provider.label} · oh-my-pi`, models: providerModels }];
-    }
-    return [
-      { label: `${provider.label} · oh-my-pi`, models: [provider.defaultModel] },
-      ...API_GATEWAY_MODELS,
-    ];
-  }
-  return API_GATEWAY_MODELS;
+  void authMode;
+  const id = parseOhMyPiProvider(providerId);
+  const provider = getOhMyPiProvider(id);
+  const models = PROVIDER_MODELS[id] ?? (provider ? [provider.defaultModel] : []);
+  return [{ label: `${provider?.label ?? id} · oh-my-pi`, models }];
 }
 
 /**
- * 해당 authMode 의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
+ * 해당 제공자의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
  * 공장 기본은 Antigravity 의 gemini-3.7-flash — 모든 모델 슬롯이 이 값을 기본으로 쓴다
  * (감독 지시 2026-08-26, 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
  * Codex 카탈로그 첫 항목은 gpt-5.6-sol.
@@ -155,16 +102,21 @@ export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", provider
 }
 
 /**
- * 모델 ID 가 해당 authMode 에서 실제로 쓸 수 있는지 판정한다.
+ * 모델 ID 가 해당 제공자에서 실제로 쓸 수 있는지 판정한다.
  *
- * 일반 원칙은 그대로다 — 카탈로그는 '추천 목록'이지 화이트리스트가 아니고, 사용자가 공급자별
- * ID 를 직접 입력하는 것은 정상 사용이다. apiKey 모드는 어떤 ID 든 허용한다.
+ * apiKey 전송(주입 게이트웨이)은 어떤 ID 든 허용한다 — 그 경로는 UI 가 없고, 설정을 직접 넣는
+ * 소비자가 자기 게이트웨이의 모델 이름을 안다.
  *
- * 예외는 Codex(ChatGPT 구독) 하나다. 이 경로는 pi-catalog 에 등재된 ID 만 해석되고,
- * 나머지는 오류 없이 제공자 기본 모델로 강등된다(근거는 CHATGPT_OAUTH_MODELS 주석의 실측).
- * 조용히 다른 모델이 답하는 편보다 미리 거부하는 편이 낫기 때문에, 여기서만 카탈로그를
- * 허용 목록으로 쓴다. 옛 판정("gpt- 로 시작하면 통과")은 gpt-5.1-codex 같은 강등 대상을
- * 그대로 통과시켰다.
+ * companion 전송에서는 **선택된 제공자의 pi-catalog 목록에 속하는가**로 판정한다. 카탈로그 밖 ID 는
+ * `resolveModel` 이 오류 대신 제공자 기본 모델로 조용히 강등시키므로(근거는 CODEX_MODELS 주석의
+ * 실측), 다른 모델이 답한 줄 모르게 두기보다 미리 거부해 loadAiConfig 가 그 제공자의 기본값으로
+ * 교정하게 한다. 이것이 남의 네임스페이스 ID(Antigravity 에 gpt-…, Codex 에 gemini-…, 옛 기본값
+ * z-ai/…·cpen/…)가 그대로 실려 나가 400 이 되던 실측 장에를 막는다.
+ *
+ * 예외 하나: Antigravity 는 gemini 네임스페이스를 번들링 밖이라도 통과시킨다 — 카탈로그는 굳어
+ * 있는 스냅샷이고, 아직 번들링에 없는 새 gemini 변형을 사용자가 직접 입력하는 것은 정상 사용이다.
+ * 단 사고 강도 변형(`-high`/`-medium`/`-low`)은 그 예외에서 다시 제외한다 — 독립 모델이
+ * 아니라 `thinking.effortRouting` 대상 이름이고 실제로 404 다(실측 2026-08-26).
  */
 export function isModelValidForAuthMode(
   authMode: "chatgpt" | "apiKey",
@@ -174,20 +126,9 @@ export function isModelValidForAuthMode(
   if (authMode !== "chatgpt") return true;
   const provider = parseOhMyPiProvider(providerId);
   const wanted = model.trim().toLowerCase();
-  // Antigravity 는 이제 에디터의 유일한 제공자다(감독 지시 2026-08-26). 제공자가 하나뿐이면
-  // 남의 네임스페이스 ID 가 저장돼 있을 이유가 없고, 남겨 두면 그대로 실려 나가 400 이 된다
-   // — 이 파일이 인용한 실측 장애(옛 기본값 z-ai/glm-5.2-ultrafast 가 localStorage 에 남아
-  // 400)와 같은 종류다. 그래서 gemini 네임스페이스만 통과시킨다. 카탈로그를 화이트리스트로
-  // 쓰지 않는 이유는 그대로다: 사용자가 새 gemini 변형을 직접 입력하는 것은 정상 사용이다.
-  if (provider === DEFAULT_OH_MY_PI_PROVIDER) {
-    // 사고 강도 변형 ID 는 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는 독립 모델이
-    // 아니라 `thinking.effortRouting` 의 대상 이름이고, 실제로 보내면 Cloud Code Assist 가
-    // 404 로 거부한다(실측 2026-08-26: `gemini-3.7-flash-high` → 404,
-    // `gemini-3.7-flash`·`gemini-3.1-pro` → 200). 거부해야 저장된 값이 기본값으로 교정되므로,
-    // 잘못된 기본값을 한 번 받아 간 사용자의 localStorage 가 스스로 낫는다.
-    if (/-(?:high|medium|low)$/u.test(wanted)) return false;
-    return wanted.startsWith("gemini");
-  }
-  if (provider !== "openai-codex") return true;
-  return CHATGPT_OAUTH_MODELS.some((group) => group.models.some((id) => id.toLowerCase() === wanted));
+  const allowed = PROVIDER_MODELS[provider] ?? [];
+  if (allowed.some((id) => id.toLowerCase() === wanted)) return true;
+  if (provider !== ANTIGRAVITY_PROVIDER_ID) return false;
+  if (/-(?:high|medium|low)$/u.test(wanted)) return false;
+  return wanted.startsWith("gemini");
 }

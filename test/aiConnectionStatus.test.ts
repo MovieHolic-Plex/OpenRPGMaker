@@ -85,11 +85,11 @@ describe("getAiConnectionStatus — apiKey 모드 동기 평가", () => {
 
   it("절대 URL + 키와 baseUrl 이 모두 있으면 ready", async () => {
     const { getAiConnectionStatus } = await loadModule();
-    const status = getAiConnectionStatus({ ...APIKEY_READY, providerId: "zai" });
+    const status = getAiConnectionStatus({ ...APIKEY_READY, providerId: "openai-codex" });
     expect(status.kind).toBe("ready");
-    expect(status.providerId).toBe("zai");
-    expect(status.providerLabel).toBe("zAI");
-    expect(status.label).toContain("zAI");
+    expect(status.providerId).toBe("openai-codex");
+    expect(status.providerLabel).toBe("OpenAI Codex");
+    expect(status.label).toContain("OpenAI Codex");
     expect(status.label).toContain("연결됨");
     expect(status.title).toContain("API 키로 연결됨");
   });
@@ -153,7 +153,9 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     expect(status.label).toContain("PLUS");
   });
 
-  it("저장소에 다른 제공자가 적혀 있어도 조회는 Antigravity 로 간다 (전환 불가)", async () => {
+  it("제공자를 바꾼 새 설정은 이전 제공자의 ready 캐시를 재사용하지 않는다", async () => {
+    // 제공자가 둘이므로 "전환"이 다시 생겼다. 칩이 이전 제공자의 연결 상태를 새 제공자의
+    // 상태로 보여 주면 로그인하지 않은 제공자가 "연결됨"이라 불리는 거짓이 된다.
     const storage = installLocalStorage();
     saveConfig(storage, {
       authMode: "chatgpt",
@@ -165,24 +167,28 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
 
     const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
     await refreshAiConnectionStatus(() => undefined);
-    expect(getAiConnectionStatus().kind).toBe("ready");
+    const codex = getAiConnectionStatus();
+    expect(codex.kind).toBe("ready");
+    expect(codex.providerLabel).toBe("OpenAI Codex");
 
     saveConfig(storage, {
       authMode: "chatgpt",
       providerId: "google-antigravity",
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-3.7-flash",
       maxTokens: 32768,
     });
 
-    // 제공자가 강제 통일된 뒤에는 "전환"이 존재하지 않는다 — 두 저장값 모두 Antigravity 로
-    // 읽히므로 같은 제공자의 ready 캐시가 그대로 유효하다. 예전 계약(전환 시 캐시 무효화)은
-    // 전환 자체가 사라져 의미를 잃었다.
     const switched = getAiConnectionStatus();
-    expect(switched.kind).toBe("ready");
     expect(switched.providerLabel).toBe("Google Antigravity");
+    expect(switched.kind).toBe("checking");
+
+    // 새 제공자로 조회하면 그 제공자 이름으로 나간다.
+    await refreshAiConnectionStatus(() => undefined);
+    expect(fetchChatGptAuthStatus).toHaveBeenLastCalledWith("google-antigravity");
+    expect(getAiConnectionStatus().kind).toBe("ready");
   });
 
-  it("조회는 항상 Antigravity 로 나가고 늦은 응답도 그 제공자로 정착한다", async () => {
+  it("조회는 선택된 제공자로 나가고 이전 제공자의 늦은 응답은 새 상태를 덮지 않는다", async () => {
     const storage = installLocalStorage();
     saveConfig(storage, {
       authMode: "chatgpt",
@@ -190,9 +196,6 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
       model: "gpt-5.6-sol",
       maxTokens: 32768,
     });
-    // 제공자가 하나로 강제된 뒤에는 "이전 제공자 / 새 제공자" 경합이 존재하지 않는다.
-    // 남은 계약은 이것이다: 조회는 언제나 Antigravity 로 나가고, 늦게 도착한 이전 조회의
-    // 응답이 뒤늦게 상태를 뒤집지 않는다.
     const pending: ((value: { connected: boolean }) => void)[] = [];
     const queried: string[] = [];
     fetchChatGptAuthStatus.mockImplementation((providerId: string) => new Promise((resolve) => {
@@ -205,18 +208,20 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     saveConfig(storage, {
       authMode: "chatgpt",
       providerId: "google-antigravity",
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-3.7-flash",
       maxTokens: 32768,
     });
     const newRefresh = refreshAiConnectionStatus(() => undefined);
 
-    expect(new Set(queried)).toEqual(new Set(["google-antigravity"]));
+    // 각 조회는 그 시점에 선택된 제공자로 나간다.
+    expect(queried).toEqual(["openai-codex", "google-antigravity"]);
 
-    pending[pending.length - 1]?.({ connected: true });
+    pending[1]?.({ connected: true });
     await newRefresh;
     expect(getAiConnectionStatus().kind).toBe("ready");
     expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
 
+    // 늦게 도착한 이전(Codex) 조회의 실패 상태가 현재 제공자의 ready 를 덮어쓰지 않는다.
     pending[0]?.({ connected: false });
     await oldRefresh;
     expect(getAiConnectionStatus().kind).toBe("ready");

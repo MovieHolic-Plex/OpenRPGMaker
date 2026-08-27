@@ -64,8 +64,8 @@ export const DEFAULT_BASE_URL = "";
 export const DEFAULT_CHATGPT_BASE_URL =
   typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
 // 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
-// 저장된 providerId/model 은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절
-// 암시 기본이므로 loadAiConfig 가 openai-codex 로 남긴다.
+// 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
+// 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
 export const DEFAULT_MODEL = "gemini-3.7-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
 export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
@@ -185,13 +185,15 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    // 제공자는 **Antigravity 하나로 강제한다** (감독 지시 2026-08-26: 에디터의 모든 AI 를
-    // Antigravity 로 통일, 잔여 경로 없음). 예전에는 저장된 providerId 를 그대로 보존했고
-    // providerId 가 없는 옛 blob 은 "openai-codex" 로 남겼다 — 그래서 이미 쓰던 사용자는
-    // 새 기본으로 오지 않고 zai/codex 에 머물렀다(실측). 저장값을 읽지 않으므로 되돌아갈
-    // 구멍이 없다. authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
-    const providerId = DEFAULT_OH_MY_PI_PROVIDER;
-    // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
+    // 제공자는 **Antigravity 와 Codex 둘 중 하나**다. 저장된 선택은 그대로 존중하고,
+    // 레지스트리에 없는 값(옛 zai/xiaomi/… 나 오타)은 parseOhMyPiProvider 가 기본 제공자로
+    // 스냅한다 — 사라진 제공자 id 가 살아남아 동반 서비스에 그대로 실려 나가는 것을 막는다.
+    // providerId 가 없는 옛 blob 도 같은 경로로 기본 제공자가 된다.
+    // authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
+    const providerId = parseOhMyPiProvider(parsed.providerId);
+    // 모델 검증은 **선택된 제공자 기준**이다. 다른 제공자의 모델(Antigravity 에 gpt-5.6-sol,
+    // Codex 에 gemini-3.7-flash)은 그대로 보내면 조용히 강등되거나 400 이 되므로, 여기서
+    // 그 제공자의 권장 기본값으로 교정한다 — 사용자의 localStorage 가 스스로 낫는다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
       if (!isModelValidForAuthMode(authMode, model, providerId)) {
@@ -237,10 +239,11 @@ export function loadAiConfig(): AiConfig {
 
 export function saveAiConfig(config: AiConfig): void {
   if (typeof localStorage === "undefined") return;
-  // 제공자는 저장 시점에도 Antigravity 로 못박는다. loadAiConfig 만 강제하면 프로그램
-  // 경로(설정 저장·마이그레이션)로 다른 제공자가 디스크에 남아 다음 판독을 흔든다.
-  const forced: AiConfig = { ...config, providerId: DEFAULT_OH_MY_PI_PROVIDER };
-  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(forced));
+  // 제공자는 저장 시점에도 레지스트리 값으로 정규화한다. 프로그램 경로(설정 저장·마이그레이션)가
+  // 레지스트리 밖 id 를 디스크에 남기면 다음 판독이 흔들리기 때문 — 두 제공자 중 하나로 못박되,
+  // 사용자가 고른 Codex 를 Antigravity 로 되돌리지는 않는다.
+  const normalized: AiConfig = { ...config, providerId: parseOhMyPiProvider(config.providerId) };
+  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
 }
 
 export function configForLiteModel(config: AiConfig): AiConfig {
@@ -791,8 +794,9 @@ export function resetAiModelDemotion(): void {
  * **모델 강등을 조용히 넘기지 않는다.**
  *
  * 동반 서비스의 `resolveModel` 은 카탈로그 밖 모델 ID 를 오류가 아니라 제공자 기본 모델로
- * 바꿔 버린다 — 68종 전부에서. 그래서 감독이 고른 모델이 아닌 것이 답해도 아무 신호가 없었다.
- * `isModelValidForAuthMode` 화이트리스트는 openai-codex 하나만 막으므로 나머지는 무방비다.
+ * 바꿔 버린다 — 두 제공자 모두. 그래서 감독이 고른 모델이 아닌 것이 답해도 아무 신호가 없었다.
+ * `isModelValidForAuthMode` 는 Codex 만 카탈로그 화이트리스트로 막고 Antigravity 는 gemini
+ * 네임스페이스만 본다 — 사용자가 직접 입력한 새 gemini 변형이 강등되는 경우는 여기서만 보인다.
  *
  * 다행히 응답 본문의 `model` 은 **해석된** 모델이다(assistantToOpenAI 가 그렇게 채운다).
  * 서버를 고치지 않고도 요청 모델과 비교하면 강등이 보인다 — 이 함수가 그 비교를 기록한다.

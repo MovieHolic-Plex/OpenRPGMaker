@@ -1,8 +1,8 @@
 // 전송 축(동반 서비스 vs 주입 게이트웨이)과 자격 증명 축(oauth/apiKey/local)의 분리를 고정한다.
 //
 // 배경: `AiConfig.authMode: "chatgpt" | "apiKey"` 하나가 두 축을 겸해서, ① baseUrl 문자열이
-// 선언된 인증 모드를 덮어쓸 수 있었고 ② 68종 제공자의 authKind 가 UI 에 전혀 반영되지 않았다.
-// 이 파일은 두 축이 각자 하나의 진실 원천을 갖는지 본다.
+// 선언된 인증 모드를 덮어쓸 수 있었고 ② 제공자의 authKind 가 UI 에 전혀 반영되지 않았다.
+// 이 파일은 두 축이 각자 하나의 진실 원천을 갖는지, 그리고 **두 제공자가 모두 선택 가능한지** 본다.
 import { describe, expect, it } from "vitest";
 
 import {
@@ -11,6 +11,7 @@ import {
   defaultAiConfig,
   type AiConfig,
 } from "@/ai/llmClient";
+import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import {
   OH_MY_PI_AUTH_KIND_LABEL,
   OH_MY_PI_PROVIDERS,
@@ -21,6 +22,7 @@ import {
   configForConnectionKind,
   defaultProviderForKind,
   editorConnectionKind,
+  editorHasProviderChoice,
   providersForKind,
 } from "@/ai/aiConnectionKind";
 
@@ -55,33 +57,25 @@ describe("전송 축 — authMode 만이 정한다", () => {
 });
 
 describe("자격 증명 축 — providerId 만이 정한다", () => {
-  it("68종 모두 정확히 한 종류로 분류된다", () => {
-    const counts = { oauth: 0, apiKey: 0, local: 0 };
+  it("두 제공자가 모두 oauth 로 분류된다", () => {
     for (const provider of OH_MY_PI_PROVIDERS) {
-      expect(ohMyPiAuthKind(provider.id)).toBe(provider.authKind);
-      counts[provider.authKind] += 1;
+      expect(ohMyPiAuthKind(provider.id), provider.id).toBe(provider.authKind);
+      expect(provider.authKind, provider.id).toBe("oauth");
     }
-    expect(counts.oauth).toBe(14);
-    expect(counts.local).toBe(4);
-    expect(counts.oauth + counts.apiKey + counts.local).toBe(OH_MY_PI_PROVIDERS.length);
+    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(OH_MY_PI_PROVIDERS.length);
+    // apiKey·local 제공자는 없다 — 그래서 "API 키" 종류에 내놓을 제공자가 없다.
+    expect(ohMyPiProvidersByAuthKind("apiKey")).toHaveLength(0);
+    expect(ohMyPiProvidersByAuthKind("local")).toHaveLength(0);
   });
 
   it("모르는 id 는 기본 제공자의 종류로 떨어진다 (undefined 를 만들지 않는다)", () => {
-    expect(ohMyPiAuthKind("no-such-provider")).toBe("oauth"); // 기본값 google-antigravity
+    expect(ohMyPiAuthKind("no-such-provider")).toBe("oauth");
     expect(ohMyPiAuthKind(undefined)).toBe("oauth");
-  });
-
-  it("종류별 목록은 레지스트리와 합이 같다", () => {
-    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(14);
-    expect(ohMyPiProvidersByAuthKind("local")).toHaveLength(4);
-    const total = (["oauth", "apiKey", "local"] as const)
-      .reduce((sum, kind) => sum + ohMyPiProvidersByAuthKind(kind).length, 0);
-    expect(total).toBe(OH_MY_PI_PROVIDERS.length);
   });
 
   it("종류 라벨은 원시 enum 값이 아니다 — 영어 enum 을 UI 에 흘리지 않는다", () => {
     // "API 키" 처럼 정착한 외래어는 정상이다. 막으려는 것은 `authKind` 값을 그대로 붙여
-    // "Anthropic · oauth" 로 보이던 것 — 라벨이 enum 키와 같아지는 상태다.
+    // "OpenAI Codex · oauth" 로 보이던 것 — 라벨이 enum 키와 같아지는 상태다.
     for (const [kind, label] of Object.entries(OH_MY_PI_AUTH_KIND_LABEL)) {
       expect(label).not.toBe(kind);
       expect(label.trim()).not.toHaveLength(0);
@@ -90,29 +84,32 @@ describe("자격 증명 축 — providerId 만이 정한다", () => {
   });
 });
 
-describe("에디터의 2종 선택 — 파생값이고 저장하지 않는다", () => {
-  it("oauth 제공자는 구독 로그인, 나머지는 API 키 종류로 접힌다", () => {
-    expect(editorConnectionKind({ ...GATEWAY, providerId: "openai-codex" })).toBe("oauth");
-    expect(editorConnectionKind({ ...GATEWAY, providerId: "anthropic" })).toBe("oauth");
-    expect(editorConnectionKind({ ...GATEWAY, providerId: "zai" })).toBe("apiKey");
-    // local 4종은 별도 종류를 만들지 않고 API 키 쪽에 접는다("키 불필요" 안내를 붙인다).
-    expect(editorConnectionKind({ ...GATEWAY, providerId: "ollama" })).toBe("apiKey");
+describe("에디터의 제공자 선택 — 두 구독 로그인", () => {
+  it("두 제공자 모두 구독 로그인 종류로 읽힌다", () => {
+    expect(editorConnectionKind({ ...GATEWAY, providerId: CODEX_PROVIDER_ID })).toBe("oauth");
+    expect(editorConnectionKind({ ...GATEWAY, providerId: ANTIGRAVITY_PROVIDER_ID })).toBe("oauth");
+    // 사라진 제공자 id 는 기본 제공자(oauth)로 스냅되므로 여기서도 oauth 다.
+    expect(editorConnectionKind({ ...GATEWAY, providerId: "zai" })).toBe("oauth");
   });
 
-  it("종류와 무관하게 Antigravity 하나만 노출한다 (제공자 강제 통일)", () => {
-    // 감독 지시 2026-08-26: 에디터의 모든 AI 를 Antigravity 로 통일하고 잔여 경로를 남기지
-    // 않는다. loadAiConfig·saveAiConfig 가 제공자를 강제하므로 종류별 목록은 고를 수 없는
-    // 선택지였다 — 노출 자체를 걷었다.
-    expect(providersForKind("oauth")).toHaveLength(1);
-    expect(providersForKind("apiKey")).toHaveLength(1);
-    expect(providersForKind("oauth")[0]?.id).toBe("google-antigravity");
-    expect(providersForKind("apiKey")[0]?.id).toBe("google-antigravity");
+  it("종류와 무관하게 두 제공자를 노출하고, 사용자에게 선택권이 있다", () => {
+    // 이전 계약은 "Antigravity 하나만" 이었다. 감독 요구가 바뀌어 Codex 도 1급 선택지다.
+    for (const kind of ["oauth", "apiKey"] as const) {
+      expect(providersForKind(kind).map((provider) => provider.id)).toEqual([
+        ANTIGRAVITY_PROVIDER_ID,
+        CODEX_PROVIDER_ID,
+      ]);
+    }
+    expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
+    expect(editorHasProviderChoice()).toBe(true);
   });
 
-  it("구독 로그인 목록의 첫 항목은 기본 제공자다", () => {
-    expect(providersForKind("oauth")[0]?.id).toBe("google-antigravity");
-    expect(defaultProviderForKind("oauth")).toBe("google-antigravity");
-    expect(ohMyPiAuthKind(defaultProviderForKind("apiKey"))).toBe("apiKey");
+  it("목록의 첫 항목은 기본 제공자이고 두 종류의 기본값이 같다", () => {
+    expect(providersForKind("oauth")[0]?.id).toBe(ANTIGRAVITY_PROVIDER_ID);
+    expect(defaultProviderForKind("oauth")).toBe(ANTIGRAVITY_PROVIDER_ID);
+    // "API 키" 쪽에 내놓을 제공자가 없으므로 가짜 apiKey 제공자를 만들지 않고 같은 기본값을 쓴다.
+    expect(defaultProviderForKind("apiKey")).toBe(ANTIGRAVITY_PROVIDER_ID);
+    expect(ohMyPiAuthKind(defaultProviderForKind("apiKey"))).toBe("oauth");
   });
 
   it("configForConnectionKind 는 브라우저에 비밀을 남기지 않는다", () => {
@@ -121,21 +118,29 @@ describe("에디터의 2종 선택 — 파생값이고 저장하지 않는다", 
       expect(next.authMode).toBe("chatgpt"); // 에디터는 항상 동반 서비스 전송이다
       expect(next.baseUrl).toBe("");
       expect(next.apiKey).toBe("");
-      expect(editorConnectionKind(next)).toBe(kind);
+      // 두 제공자가 모두 oauth 이므로 파생 종류는 항상 oauth 다.
+      expect(editorConnectionKind(next)).toBe("oauth");
     }
   });
 
-  it("종류를 유지한 채 제공자만 바꿀 수 있다", () => {
+  it("제공자를 Codex 로 바꿀 수 있고 되돌릴 수도 있다", () => {
     const base = defaultAiConfig();
-    const zai = configForConnectionKind(base, "apiKey", "zai");
-    expect(zai.providerId).toBe("zai");
-    expect(editorConnectionKind(zai)).toBe("apiKey");
+    const codex = configForConnectionKind(base, "oauth", CODEX_PROVIDER_ID);
+    expect(codex.providerId).toBe(CODEX_PROVIDER_ID);
+
+    const back = configForConnectionKind(codex, "oauth", ANTIGRAVITY_PROVIDER_ID);
+    expect(back.providerId).toBe(ANTIGRAVITY_PROVIDER_ID);
   });
 
-  it("종류에 맞지 않는 제공자를 주면 그 종류의 기본 제공자로 스냅한다", () => {
-    const snapped = configForConnectionKind(defaultAiConfig(), "apiKey", "openai-codex");
-    expect(editorConnectionKind(snapped)).toBe("apiKey");
-    expect(snapped.providerId).toBe(defaultProviderForKind("apiKey"));
+  it("제공자를 지정하지 않으면 기존 선택을 유지한다", () => {
+    const codex = { ...defaultAiConfig(), providerId: CODEX_PROVIDER_ID };
+    expect(configForConnectionKind(codex, "oauth").providerId).toBe(CODEX_PROVIDER_ID);
+    expect(configForConnectionKind(codex, "apiKey").providerId).toBe(CODEX_PROVIDER_ID);
+  });
+
+  it("레지스트리에 없는 제공자를 주면 기본 제공자로 스냅한다", () => {
+    const snapped = configForConnectionKind(defaultAiConfig(), "apiKey", "zai");
+    expect(snapped.providerId).toBe(ANTIGRAVITY_PROVIDER_ID);
   });
 
   it("기본 설정은 구독 로그인 종류다", () => {

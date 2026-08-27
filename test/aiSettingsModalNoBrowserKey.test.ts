@@ -75,11 +75,14 @@ describe("브라우저 보관 키·엔드포인트 입력이 없다", () => {
     dispose();
   });
 
-  it("동반 서비스 키 입력은 인증 패널 쪽에 남아 있다", async () => {
-    // 키를 넣을 자리가 아예 없어지면 API 키 종류를 쓸 수 없다 — 그 자리는 인증 패널이다.
+  it("동반 서비스 키 입력도 이제 없다 — 두 제공자가 모두 구독 로그인이다", async () => {
+    // 옛 계약은 "키를 넣을 자리는 인증 패널에 남는다" 였다. 고를 수 있는 제공자가
+    // Antigravity·Codex 둘로 좁혀지고 둘 다 구독 로그인이므로 저장할 키가 없다 —
+    // 숨은 input 조차 두지 않는다(자동완성·미래 collect 경로가 값을 읽을 수 있다).
     const { root, dispose } = await renderForm();
     findByTestId(root, "ai-auth-api-key")?.click();
-    expect(findByTestId(root, "ai-companion-api-key")).not.toBeNull();
+    expect(findByTestId(root, "ai-companion-api-key")).toBeNull();
+    expect(findByTestId(root, "ai-companion-save-key")).toBeNull();
     dispose();
   });
 });
