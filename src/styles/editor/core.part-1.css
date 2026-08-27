@@ -201,7 +201,16 @@ body[data-editor-tool] .editor-layout [data-testid="edit-canvas"] {
   cursor: var(--editor-tool-cursor, default);
 }
 
-body[data-editor-tool="paint"] { --editor-tool-cursor: crosshair; }
+/* 실측(Chromium 1440x900, before-standard-contract.json): erase 는 매핑이 없어 default 로
+   떨어져 "도구 없음"과 구별되지 않았고, select 는 paint 와 바이트 단위로 같은 crosshair 여서
+   클릭이 타일을 칠하는지 영역만 표시하는지 커서가 답하지 못했다. 여덟 도구가 서로 다른 값으로
+   해결되어야 하고 default 는 없어야 한다. paint/erase 는 연필·지우개 모양을 직접 그린다. */
+body[data-editor-tool="paint"] {
+  --editor-tool-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M3.5 20.5l1.2-4.2L15.6 5.4l3 3L7.7 19.3z' fill='%23ffe066' stroke='%23111' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M14.4 6.6l3 3' stroke='%23111' stroke-width='1.2'/%3E%3C/svg%3E") 4 20, crosshair;
+}
+body[data-editor-tool="erase"] {
+  --editor-tool-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M3.5 20.5h7.6l8.4-8.4-5.6-5.6-10.4 10.4z' fill='%23ffd8d8' stroke='%23111' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M8.2 10.4l5.6 5.6' stroke='%23111' stroke-width='1.2'/%3E%3C/svg%3E") 4 20, no-drop;
+}
 body[data-editor-tool="fill"] { --editor-tool-cursor: cell; }
 body[data-editor-tool="eyedropper"] { --editor-tool-cursor: copy; }
 body[data-editor-tool="pan"] { --editor-tool-cursor: grab; }

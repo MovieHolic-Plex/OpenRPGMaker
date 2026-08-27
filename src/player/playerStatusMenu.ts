@@ -117,7 +117,12 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     }),
     detailPanel,
     // 명시 메시지가 없으면 커서가 올라간 항목의 설명을 푸터에 띄운다(리스트 행은 1줄로 압축됨).
-    renderFooter(snapshot, options.message ?? selectedEntryDescription(detail, options.selectedDetailActionIndex))
+    // main 모드에선 상세 패널이 visibility:hidden 이라 커서가 화면에 없다 — 안 보이는 항목의
+    // 설명을 푸터에 띄우면 레일 선택(예: 시스템)과 어긋난 문구("…슬롯에 저장합니다")가 남는다.
+    renderFooter(
+      snapshot,
+      options.message ?? (mode === "function" ? selectedEntryDescription(detail, options.selectedDetailActionIndex) : undefined)
+    )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
   return panel;

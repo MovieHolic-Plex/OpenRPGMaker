@@ -1,0 +1,228 @@
+{
+ "escape": {
+  "overlayStillMounted": true
+ },
+ "tabTrap": {
+  "escapedDialog": true,
+  "firstEscapeAt": 14,
+  "trail": [
+   "IN BUTTON.editor-welcome-prompt-submit",
+   "IN BUTTON.editor-welcome-template-card",
+   "IN BUTTON.editor-welcome-template-starter",
+   "IN BUTTON.editor-welcome-template-card",
+   "IN BUTTON.editor-welcome-card-inspiration",
+   "IN BUTTON.editor-welcome-template-starter",
+   "IN BUTTON.editor-welcome-template-card",
+   "IN BUTTON.editor-welcome-card-inspiration",
+   "IN BUTTON.editor-welcome-template-starter",
+   "IN BUTTON.editor-welcome-template-card",
+   "IN BUTTON.editor-welcome-template-starter",
+   "IN BUTTON.editor-welcome-template-card",
+   "IN BUTTON.editor-welcome-template-starter",
+   "IN BUTTON.editor-welcome-skip",
+   "OUT BODY.ai-chat-dock-glass",
+   "OUT BUTTON.oprn-menu-item",
+   "OUT BUTTON.oprn-menu-item",
+   "OUT BUTTON.oprn-menu-item",
+   "OUT BUTTON.oprn-menu-item",
+   "OUT BUTTON.authoring-task-btn",
+   "OUT BUTTON.authoring-task-btn",
+   "OUT BUTTON.authoring-task-btn",
+   "OUT BUTTON.authoring-task-btn",
+   "OUT BUTTON.oprn-menu-item"
+  ]
+ },
+ "scrimClick": {
+  "overlayStillMounted": true
+ },
+ "competingOnboarding": {
+  "askingPrompts": [
+   {
+    "text": "이 맵에 무엇을 둘까요",
+    "cls": "ai-director-line",
+    "vis": {
+     "visibility": "visible",
+     "display": "block",
+     "opacity": "1",
+     "box": {
+      "x": 155,
+      "y": 96,
+      "w": 358,
+      "h": 14
+     }
+    }
+   },
+   {
+    "text": "빈 맵이에요. 아래 중 하나를 누르면 바로 시작합니다.",
+    "cls": "ai-next-steps-hint",
+    "vis": {
+     "visibility": "visible",
+     "display": "block",
+     "opacity": "1",
+     "box": {
+      "x": 97,
+      "y": 139,
+      "w": 494,
+      "h": 18
+     }
+    }
+   },
+   {
+    "text": "이런 것도 만들 수 있어요",
+    "cls": "ai-authoring-examples-title",
+    "vis": {
+     "visibility": "visible",
+     "display": "block",
+     "opacity": "1",
+     "box": {
+      "x": 97,
+      "y": 165,
+      "w": 111,
+      "h": 28
+     }
+    }
+   },
+   {
+    "text": "어떤 게임을 만들까요?",
+    "cls": "editor-welcome-title",
+    "vis": {
+     "visibility": "visible",
+     "display": "block",
+     "opacity": "1",
+     "box": {
+      "x": 421,
+      "y": 454,
+      "w": 670,
+      "h": 31
+     }
+    }
+   }
+  ],
+  "aiChatDock": {
+   "visibility": "visible",
+   "display": "flex",
+   "opacity": "1",
+   "box": {
+    "x": 84,
+    "y": 61,
+    "w": 520,
+    "h": 620
+   }
+  },
+  "aiCommandBar": {
+   "visibility": "hidden",
+   "display": "grid",
+   "opacity": "1",
+   "box": {
+    "x": 85,
+    "y": 556,
+    "w": 518,
+    "h": 124
+   }
+  },
+  "bodyClass": "ai-chat-dock-glass ai-command-bar-active editor-ui-beginner director-briefing-open"
+ },
+ "contrastAndTargets": {
+  "skip": {
+   "sel": ".editor-welcome-skip",
+   "color": "rgb(98, 110, 137)",
+   "fontSize": "12px",
+   "target": {
+    "w": 73,
+    "h": 17
+   },
+   "contrastVsStage": 5.11
+  },
+  "blurb": {
+   "sel": ".editor-welcome-template-blurb",
+   "color": "rgb(71, 85, 105)",
+   "fontSize": "11px",
+   "target": {
+    "w": 124,
+    "h": 28
+   },
+   "contrastVsStage": 7.58
+  },
+  "inspiration": {
+   "sel": ".editor-welcome-card-inspiration",
+   "color": "rgb(71, 85, 105)",
+   "fontSize": "11px",
+   "target": {
+    "w": 126,
+    "h": 28
+   },
+   "contrastVsStage": 7.58
+  },
+  "inputBoxShadowWhenBlurred": "rgba(74, 87, 214, 0.45) 0px 0px 0px 2px",
+  "starterLineCount": [
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "starterWraps": [
+   38,
+   38,
+   38,
+   38,
+   38
+  ],
+  "cardBottomYs": [
+   818,
+   818,
+   818,
+   818,
+   818
+  ],
+  "starterTopYs": [
+   774,
+   780,
+   780,
+   774,
+   774
+  ]
+ },
+ "mobileReachability": {
+  "before": {
+   "title": {
+    "y": -526,
+    "bottom": -463,
+    "h": 62
+   },
+   "input": {
+    "y": -381,
+    "bottom": -333,
+    "h": 48
+   },
+   "stage": {
+    "y": -571,
+    "bottom": 808,
+    "h": 1379
+   }
+  },
+  "after": {
+   "title": {
+    "y": -526,
+    "bottom": -463,
+    "h": 62
+   },
+   "input": {
+    "y": -381,
+    "bottom": -333,
+    "h": 48
+   }
+  },
+  "docScrollHeight": 844,
+  "innerHeight": 844,
+  "pageYOffset": 0,
+  "stageOverflowY": "visible",
+  "briefingOverflowY": "visible",
+  "titleAboveViewport": true,
+  "inputAboveViewport": true
+ },
+ "mobileInputClickable": {
+  "clickable": false,
+  "err": "TimeoutError: locator.click: Timeout 3000ms exceeded."
+ }
+}

@@ -20,12 +20,17 @@ type EventCommandEditDialogRequest = {
   readonly previewFace?: { readonly resourceId: string };
 };
 
+/** 상점은 진열·재고·옵션이 한 화면에 다 들어야 하는 특수 케이스 — 전체화면으로 연다. */
+export function commandDialogWidth(command: Command): "narrow" | "wide" | "full" {
+  return command.kind === "shop" ? "full" : "wide";
+}
+
 export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): void {
   let stagedCommand = structuredClone(request.initial);
   openEventSubdialog({
     title: request.title ?? commandEditTitle(stagedCommand),
     testId: "event-command-edit-dialog",
-    width: "wide",
+    width: commandDialogWidth(stagedCommand),
     render: (body, close) => {
       const editor = el("div", {
         class: "event-command-edit-dialog",

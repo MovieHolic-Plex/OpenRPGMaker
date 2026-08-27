@@ -238,6 +238,30 @@ describe("player status menu", () => {
     }
   });
 
+  it("leaves the footer blank on the rail so hidden panel descriptions do not leak", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      // 시스템 그룹의 첫 항목(저장) 설명이 레일 단계에서 푸터로 새던 결함.
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "system-menu",
+          mode: "main",
+          selectedDetailActionIndex: 0,
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-message")?.textContent).toBe("");
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("keeps status detail HP and MP numbers visible in text", () => {
     const restoreDom = installFakeDom();
     try {

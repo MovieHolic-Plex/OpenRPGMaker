@@ -13,9 +13,13 @@ import { summarizeChanges } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import {
+  formatLayoutRepairSummary,
+  layoutRepairDidWork,
+  repairLayoutPlacement,
+} from "@/project/lint/layoutPlacementRepair";
+import {
   formatLayoutValidationSummary,
   layoutValidationBlocking,
-  validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
@@ -452,35 +456,36 @@ export function createProposalHost(options: {
       ? markSoftVocabApprovalsOnProject(proposed, calls, selected)
       : 0;
 
-    // 배치 후 검증: 물 위 나무, 나무 짝, 지시 대비 나무 누락 등
+    // 배치 충돌은 사람에게 되돌리지 않는다. 물/벽 위 소품은 육지로 옮기거나 정리한다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
     const instruction = lastUser && lastUser.kind === "user" ? lastUser.text : "";
-    const layoutIssues = validateLayoutPlacement(proposed, {
+    const repaired = repairLayoutPlacement(proposed, {
       mapId: currentHistoryMapId() ?? undefined,
       instruction,
       toolNames: selectedCalls.map((call) => call.name),
     });
-    const layoutBlocking = layoutValidationBlocking(layoutIssues);
+    const layoutBlocking = layoutValidationBlocking(repaired.remaining);
     if (layoutBlocking.length > 0) {
       setStatus("배치 검증 실패");
-      const summary = formatLayoutValidationSummary(layoutIssues);
+      const summary = formatLayoutValidationSummary(repaired.remaining);
       appendBubble("system", `❌ ${summary}`);
       toast(summary, "error");
       return false;
     }
+    const applyProject = repaired.project;
 
     // 커밋 게이트 검증 → undo 스냅샷 → store.replace → await 커밋 로그는
     // 공유 적용 함수(applyProposedProject)가 수행한다 — 마일스톤 자동 적용과 같은 경로.
-    const completionMapId = proposalPreviewMapId(selectedCalls, before, proposed)
+    const completionMapId = proposalPreviewMapId(selectedCalls, before, applyProject)
       ?? currentHistoryMapId()
-      ?? proposed.startMapId;
+      ?? applyProject.startMapId;
     const completionInstruction = instruction.split("\n\n[컨텍스트]")[0]?.trim() ?? instruction.trim();
     const completionSummary = proposalHumanSummaryLine(selectedCalls);
     clearAgentGhostPreview();
     const actualDiff = reassembled?.ok
       ? combineDiffs(reassembled.results.map((result) => result.diff))
-      : summarizeChanges(before, proposed);
-    const applied = await applyProposedProject(proposed, {
+      : summarizeChanges(before, applyProject);
+    const applied = await applyProposedProject(applyProject, {
       source: "agent",
       agentName: loadAiConfig().model,
       summary: aiHistoryLabel(selectedCalls),
@@ -504,6 +509,9 @@ export function createProposalHost(options: {
       : { calls: selectedCalls, assistantBubble: null, summary: proposalHumanSummaryLine(selectedCalls) };
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${selectedCalls.length}건을 프로젝트에 적용했습니다.`);
+    if (layoutRepairDidWork(repaired.counts)) {
+      appendBubble("system", formatLayoutRepairSummary(repaired.counts));
+    }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
     }

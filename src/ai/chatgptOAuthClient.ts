@@ -43,6 +43,15 @@ export function hasStoredCompanionCredential(status: ChatGptAuthStatus): boolean
   return status.connected && status.env !== true && status.expired !== true;
 }
 
+/** 동반 서비스가 미연결/만료를 말하면 로그인이 필요하다. 서비스에 닿지 못한 경우는 false — 전송 오류 경로가 담당한다. */
+export async function companionCredentialMissing(providerId?: string): Promise<boolean> {
+  try {
+    return !hasStoredCompanionCredential(await fetchChatGptAuthStatus(providerId));
+  } catch {
+    return false;
+  }
+}
+
 export interface ChatGptLoginStart {
   readonly verificationUrl: string;
   readonly userCode: string;
@@ -167,6 +176,8 @@ export interface CompanionLoginStart extends ChatGptLoginStart {
   readonly needsApiKey?: boolean;
   readonly instructions?: string;
   readonly connected?: boolean;
+  /** 루프백 OAuth 를 원격 origin 으로 연 경우, 돌아온 localhost 콜백 URL 을 붙여넣어야 한다. */
+  readonly pasteCallback?: boolean;
 }
 
 /** 동반 서비스가 실제로 아는 제공자 한 줄. `/auth/providers` 응답 모양이다. */
@@ -237,7 +248,19 @@ export async function startChatGptLogin(providerId?: string, apiKey?: string): P
     needsApiKey: payload?.needsApiKey === true,
     instructions: typeof payload?.instructions === "string" ? payload.instructions : undefined,
     connected: payload?.connected === true,
+    pasteCallback: payload?.pasteCallback === true,
   };
+}
+
+export async function completeOAuthPaste(callbackUrl: string): Promise<void> {
+  const response = await companionFetch(companionAuthUrl("/auth/oauth-paste"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: callbackUrl }),
+  });
+  if (!response.ok) {
+    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  }
 }
 
 export async function refreshCompanionAuth(providerId?: string): Promise<ChatGptAuthStatus> {

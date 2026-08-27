@@ -325,14 +325,14 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     await flushAsync();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
 
-    // 런 종료 → 자동 접기 재개.
+    // 런 종료 뒤에도 조수는 열어 둔다 — 답을 읽어야 한다.
     assistantMock.releaseHeldTurn();
     await sending;
     await flushAsync();
     expect(findByTestId(panel, "ai-autonomous-run-surface")).toBeNull();
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
     await flushAsync();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
   it("런이 끝나면 체크리스트가 정리되고 다음 런은 새 계획으로 다시 그린다", async () => {

@@ -18,7 +18,7 @@ import {
   persistAssistantTemperature,
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
-import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
+import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
@@ -92,7 +92,6 @@ import {
 } from "@/editor/aiAssistantBridge";
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import {
-  AUTO_COLLAPSE_AFTER_AI_MS,
   applyAiFontSize,
   clampPanelSize,
   clampPanelSizeToViewport,
@@ -2618,22 +2617,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (studio) applyStudio(false);
     applyCollapsed();
   };
-  // AI 작업 종료 후 맵 우선으로 접기 (이미 펼쳐 있던 경우 포함).
+  // 턴이 끝나면 조수를 열어 둔다. 예전에는 유리/입력줄이 0ms 로 다시 접혀
+  // 답장이 48px 얼굴 뒤로 사라졌다. 접기는 접기 버튼만.
   scheduleCollapseAfterAiWork = (): void => {
     clearAutoCollapseTimer();
-    // 사이드 워크 로그는 자동 접기로 숨기지 않는다. 맵을 덮는 독만 접는다.
-    if (!isOverlayChatDock(readChatDock())) return;
-    if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
-    // 진행 중 자율 런의 계획/승인 상태는 런이 끝날 때까지 화면에 남긴다.
-    if (autonomousRunState?.active) return;
-    autoCollapseTimer = window.setTimeout(() => {
-      autoCollapseTimer = null;
-      if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
-      if (autonomousRunState?.active || hasPendingQuestion()) return;
-      collapseAfterAiWork = false;
-      collapsed = true;
-      applyCollapsed();
-    }, AUTO_COLLAPSE_AFTER_AI_MS);
+    collapseAfterAiWork = false;
   };
   const toggleCollapsed = (): void => {
     clearAutoCollapseTimer();
