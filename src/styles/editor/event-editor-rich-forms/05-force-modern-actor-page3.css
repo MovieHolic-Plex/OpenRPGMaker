@@ -246,3 +246,215 @@
 .actor-m2-faceset-grid {
   min-width: 0;
 }
+
+/* ---- Page 3 시스템·연출 프리뷰 (색조 / 날씨 / 먼 배경 / 키 입력) ----
+   토큰만 사용한다(tokens.css). 사용자가 고른 색은 인라인 --actor-m2-effect-color 로만 들어온다. */
+
+/* P0: 좁은 열에서 한국어 칩이 글자 단위로 쪼개지던 문제. */
+.actor-m2-chip {
+  min-inline-size: max-content;
+  white-space: nowrap;
+}
+
+.actor-m2-chip-label {
+  white-space: nowrap;
+}
+
+.actor-m2-field .rich-segment-group {
+  justify-self: start;
+}
+
+/* 숫자 입력은 값 폭에 맞춰 좁게 — 넓은 입력이 프리뷰 열을 밀어내지 않게. */
+.page3-command-body .actor-m2-field input[type="number"] {
+  inline-size: 108px;
+}
+
+.actor-m2-preview-stage {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  min-height: 88px;
+  overflow: hidden;
+  position: relative;
+}
+
+.actor-m2-stage-label {
+  color: var(--text-2);
+  font: 700 10px/1 var(--font-ui);
+  text-transform: none;
+  z-index: 1;
+}
+
+.actor-m2-preview-error {
+  color: var(--danger);
+  font: 600 11px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+/* 색조 — 프리셋 색은 06-page-modern-forms.css 의 .page3-tint-preview[data-tint] 규칙을 재사용하고,
+   직접 입력 색만 인라인 변수로 얹는다. */
+.actor-m2-preview-stage .actor-m2-effect-swatch[data-tint="custom"] {
+  background: var(--actor-m2-effect-color, var(--accent));
+}
+
+/* 날씨 — 강도를 오버레이 불투명도로 반영(06 의 고정 opacity 를 덮어쓴다). */
+.actor-m2-preview-stage .actor-m2-weather-overlay[data-weather] {
+  opacity: calc(0.2 + var(--actor-m2-weather-intensity, 0.5) * 0.75);
+  transition: opacity var(--transition-med);
+}
+
+.actor-m2-preview-stage .actor-m2-weather-overlay[data-weather="none"] {
+  opacity: 0;
+}
+
+.actor-m2-fog-layer {
+  inset: 0;
+  opacity: var(--actor-m2-fog-strength, 0.5);
+  position: absolute;
+}
+
+.actor-m2-fog-layer-far {
+  animation: actor-m2-fog-drift 9s ease-in-out infinite alternate;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text-3) 22%, transparent),
+    color-mix(in srgb, var(--bg-raised) 55%, transparent)
+  );
+}
+
+.actor-m2-fog-layer-near {
+  animation: actor-m2-fog-drift 6s ease-in-out infinite alternate-reverse;
+  background: radial-gradient(
+    120% 70% at 50% 100%,
+    color-mix(in srgb, var(--bg-raised) 75%, transparent),
+    transparent 70%
+  );
+}
+
+@keyframes actor-m2-fog-drift {
+  from { transform: translateX(-4%); }
+  to { transform: translateX(4%); }
+}
+
+.actor-m2-weather-dot {
+  block-size: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  display: inline-block;
+  inline-size: 8px;
+  margin-inline-end: var(--space-1);
+  vertical-align: middle;
+}
+
+.actor-m2-weather-dot[data-weather="none"] { background: var(--bg-inset); }
+.actor-m2-weather-dot[data-weather="rain"] { background: color-mix(in srgb, var(--accent) 55%, var(--bg-raised)); }
+.actor-m2-weather-dot[data-weather="storm"] { background: color-mix(in srgb, var(--accent) 80%, var(--text-1)); }
+.actor-m2-weather-dot[data-weather="snow"] { background: color-mix(in srgb, var(--bg-raised) 72%, var(--accent)); }
+.actor-m2-weather-dot[data-weather="fog"] { background: color-mix(in srgb, var(--text-3) 55%, var(--bg-raised)); }
+
+/* 먼 배경 — 와이드 비율 썸네일 + 말줄임 캡션. */
+.actor-m2-parallax-preview {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+}
+
+.actor-m2-parallax-preview-img {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: cover;
+}
+
+.actor-m2-parallax-preview-caption {
+  background: color-mix(in srgb, var(--bg-raised) 82%, transparent);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font: 600 10px/1.6 var(--font-ui);
+  inset-block-end: 0;
+  inset-inline: 0;
+  margin: 0;
+  overflow: hidden;
+  padding-inline: var(--space-1);
+  position: absolute;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actor-m2-parallax-preview-empty,
+.actor-m2-parallax-preview-missing {
+  color: var(--text-3);
+  font: 500 11px/1.4 var(--font-ui);
+  margin: 0;
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.actor-m2-parallax-preview-missing {
+  color: var(--danger);
+}
+
+/* 키 입력 — 저장되는 코드 집합을 키캡으로 노출. */
+.actor-m2-keycaps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.actor-m2-keycap {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop);
+  display: inline-grid;
+  gap: 1px;
+  justify-items: center;
+  padding: var(--space-1) var(--space-2);
+}
+
+.actor-m2-keycap-keys {
+  color: var(--text-1);
+  font: 700 11px/1.2 var(--font-ui);
+  white-space: nowrap;
+}
+
+.actor-m2-keycap-code {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 700 9px/1.4 var(--font-ui);
+  padding-inline: var(--space-1);
+}
+
+.actor-m2-keycap-label {
+  color: var(--text-2);
+  font: 500 10px/1.2 var(--font-ui);
+  white-space: nowrap;
+}
+
+.actor-m2-preview-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.actor-m2-preview-badge {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 600 11px/1.7 var(--font-ui);
+  padding-inline: var(--space-2);
+  white-space: nowrap;
+}
+
+/* 동작 최소화 — 색·강도 정보는 유지하고 움직임만 멈춘다. */
+@media (prefers-reduced-motion: reduce) {
+  .actor-m2-fog-layer,
+  .actor-m2-preview-stage .actor-m2-weather-overlay[data-weather] {
+    animation: none;
+    transition: none;
+  }
+}
