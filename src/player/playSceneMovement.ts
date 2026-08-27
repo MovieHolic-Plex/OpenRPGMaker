@@ -138,9 +138,19 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const project = store.getCurrent();
-  // 현재 칸에서 직교 한 칸 통행 가능 여부(대각선은 두 직교로 분해해 판정).
-  const canStep = (dx: number, dy: number): boolean =>
-    canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
+  // 현재 칸에서 (dx,dy) 칸으로 갈 수 있나. 직교는 canMove 한 번.
+  // 대각선은 NPC(canNpcMove)와 같은 L자 2구간 판정: 중간 칸(가로 또는 세로)을 거쳐
+  // 목적지로 진입할 수 있어야 한다. 첫 구간은 호출자(resolveDiagonalStep)가 이미 보므로
+  // 여기서는 중간 칸 → 목적지 구간을 확인한다.
+  const canStep = (dx: number, dy: number): boolean => {
+    if (dx !== 0 && dy !== 0) {
+      return (
+        canMove(project, scene.map, scene.tileX + dx, scene.tileY, scene.tileX + dx, scene.tileY + dy) ||
+        canMove(project, scene.map, scene.tileX, scene.tileY + dy, scene.tileX + dx, scene.tileY + dy)
+      );
+    }
+    return canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
+  };
   // 4방향 모드(서바이벌 호러 감각): 대각 입력을 한 축으로 직교화한다.
   let moveX = input.x;
   let moveY = input.y;
