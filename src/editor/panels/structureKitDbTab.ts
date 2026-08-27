@@ -8,6 +8,7 @@
 
 import { editorState } from "@/editor/editorState";
 import { deleteStructureKit, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { builtinHouseStructureKitsFor } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import { store } from "@/project/store";
@@ -50,7 +51,10 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   }
 
   const activeTileset = current.tilesets[session.tilesetId] ?? tilesets[0];
-  const activeKits = activeTileset?.structureKits ?? [];
+  // 팔레트 선반과 같은 합집합 규약: 내장 파라메트릭 킷이 등록 킷보다 앞에 온다.
+  const activeKits: StructureKitDef[] = activeTileset
+    ? [...builtinHouseStructureKitsFor(activeTileset), ...(activeTileset.structureKits ?? [])]
+    : [];
 
   // 선택된 kit 유효성 확인
   if (activeKits.length > 0) {
@@ -85,7 +89,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   });
 
   for (const tileset of tilesets) {
-    const count = (tileset.structureKits ?? []).length;
+    const count = builtinHouseStructureKitsFor(tileset).length + (tileset.structureKits ?? []).length;
     const isActive = tileset.id === activeTileset?.id;
     const item = el("button", {
       class: `structure-kit-album-item${isActive ? " active" : ""}${count === 0 ? " zero" : ""}`,
@@ -291,6 +295,8 @@ function renderInspector(
   host: HTMLElement,
   rerender: () => void
 ): HTMLElement {
+  // 내장 파라메트릭 킷은 프로젝트 데이터에 없는 가상 킷 — 이름 변경·삭제 같은 파괴적 액션을 노출하지 않는다.
+  const isBuiltin = kit.learnedFrom === "builtin-parametric";
   const size = structureKitSize(kit);
   const inspector = el("div", {
     class: "structure-kit-inspector",
@@ -308,17 +314,19 @@ function renderInspector(
       el("label", { text: "이름" }),
       el("input", {
         value: kit.name ?? "구조물",
-        attrs: { type: "text" },
+        attrs: isBuiltin ? { type: "text", disabled: "" } : { type: "text" },
         dataset: { testid: `structure-kit-db-name-${kit.id}` },
-        on: {
-          change: (event) => {
-            const target = event.currentTarget;
-            if (!(target instanceof HTMLInputElement)) return;
-            renameStructureKit(tileset.id, kit.id, target.value);
-            rerender();
-            refresh(host, rerender);
-          },
-        },
+        on: isBuiltin
+          ? undefined
+          : {
+              change: (event: Event) => {
+                const target = event.currentTarget;
+                if (!(target instanceof HTMLInputElement)) return;
+                renameStructureKit(tileset.id, kit.id, target.value);
+                rerender();
+                refresh(host, rerender);
+              },
+            },
       }),
     ],
   });
@@ -455,10 +463,30 @@ function renderInspector(
     })
   );
 
-  // 하단 액션 버튼들 (지금 저장, 팔레트에서 쓰기, 삭제)
+  // 하단 액션 버튼들 (지금 저장, 팔레트에서 쓰기, 삭제 — 내장 킷은 저장되지 않아 제외)
   const actions = el("div", {
     class: "structure-kit-actions",
     children: [
+      ...(isBuiltin
+        ? []
+        : [
+            el("button", {
+              class: "btn ghost structure-kit-delete",
+              attrs: { type: "button" },
+              text: "삭제",
+              dataset: { testid: `structure-kit-db-delete-${kit.id}` },
+              on: {
+                click: () => {
+                  deleteStructureKit(tileset.id, kit.id);
+                  toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
+                  session.selectedKitId = null;
+                  session.selectedPartId = null;
+                  rerender();
+                  refresh(host, rerender);
+                },
+              },
+            }),
+          ]),
       el("button", {
         class: "btn primary",
         attrs: { type: "button" },
@@ -486,25 +514,19 @@ function renderInspector(
           },
         },
       }),
-      el("button", {
-        class: "btn ghost structure-kit-delete",
-        attrs: { type: "button" },
-        text: "삭제",
-        dataset: { testid: `structure-kit-db-delete-${kit.id}` },
-        on: {
-          click: () => {
-            deleteStructureKit(tileset.id, kit.id);
-            toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
-            session.selectedKitId = null;
-            session.selectedPartId = null;
-            rerender();
-            refresh(host, rerender);
-          },
-        },
-      }),
     ],
   });
   inspector.append(actions);
+
+  if (isBuiltin) {
+    inspector.append(
+      el("p", {
+        class: "structure-kit-quiet",
+        dataset: { testid: "structure-kit-builtin-hint" },
+        text: "내장 파라메트릭 킷은 프로젝트에 저장되지 않아 이름 변경이나 삭제를 할 수 없습니다.",
+      })
+    );
+  }
 
   return inspector;
 }
