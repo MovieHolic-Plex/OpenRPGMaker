@@ -10,7 +10,7 @@ import {
   type M2CommandPickerPage,
   type M2RuntimeContext,
 } from "@/project/eventCommands/m2Catalog";
-import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/project/eventCommands/m2PickerLayout";
+import { M2_COMMAND_PICKER_GROUP_ORDER, mapScreenNativeSurfaceGroup } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
@@ -58,6 +58,12 @@ type CommandEntry = {
   readonly runtimeOwner: RuntimeOwner;
   readonly alternateRoute?: string;
   readonly page: M2CommandPickerPage;
+  /**
+   * 그룹 안 정렬 우선순위. 0 = 지금 권하는 구현(네이티띘·모던), 1 = 네이티띘 대체가
+   * 있는 RM 카탈로그 복사본. 「날씨 효과 설정(m2-050)」이 「날씨 설정(setWeather)」 위에
+   * 오는 것을 막는다 — 같은 일을 다를 이름으로 두 번 물어보지 않게.
+   */
+  readonly rank: number;
 };
 
 type CommandPage = {
@@ -86,15 +92,26 @@ function nativeCommandEntry(
     label: descriptor.label,
     kind,
     commandId: kind,
-    group: commandPresentationGroupLabel(descriptor.group),
+    group: pickerGroupForDescriptor(descriptor),
     index,
     testId: `command-picker-add-${kind}`,
     selectable: descriptor.selectable,
     runtimeSupport: runtimeSupportFor(descriptor),
     runtimeOwner: descriptor.executionOwner,
     page: descriptor.page,
+    rank: 0,
     alternateRoute: descriptor.alternateRoute,
   };
+}
+
+/**
+ * 저작면 헤딩. 탭 3 네이티띘 명령은 가족 라벨(`화면 연출`·`소리`)로는 거칩어서
+ * 조명·날씨 / 그림 / 연출 헤딩을 kind 단위로 다심 직는다.
+ */
+function pickerGroupForDescriptor(descriptor: CommandPresentationDescriptor): M2CommandPickerGroup {
+  const label = commandPresentationGroupLabel(descriptor.group);
+  if (descriptor.page !== 3) return label;
+  return mapScreenNativeSurfaceGroup(descriptor.kind) ?? label;
 }
 
 // These commands are absent from the RM2k3 catalog. Their explicit picker data only
@@ -139,13 +156,14 @@ const DERIVED_COMMAND_ENTRIES: readonly CommandEntry[] = COMMAND_PRESENTATION_DE
     label: descriptor.label,
     kind: descriptor.kind,
     commandId: descriptor.kind,
-    group: commandPresentationGroupLabel(descriptor.group),
+    group: pickerGroupForDescriptor(descriptor),
     index: 1_000 + index,
     testId: `${descriptor.selectable ? "command-picker-add" : "command-picker-info"}-${descriptor.kind}`,
     selectable: descriptor.selectable,
     runtimeSupport: runtimeSupportFor(descriptor),
     runtimeOwner: descriptor.executionOwner,
     page: descriptor.page,
+    rank: 0,
     alternateRoute: descriptor.alternateRoute,
   }));
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
@@ -179,11 +197,12 @@ function tabGridEntries(entries: readonly CommandEntry[]): readonly CommandEntry
 
 export function eventCommandPickerTabEntries(page: M2CommandPickerPage): readonly EventCommandPickerEntryView[] {
   const found = COMMAND_PAGES.find((candidate) => candidate.page === page);
-  return tabGridEntries(found?.entries ?? []);
+  // 그리드와 같은 순서로 돌려준다 — 테스트가 보는 순서가 작가가 보는 순서다.
+  return [...tabGridEntries(found?.entries ?? [])].sort(compareCommandEntries);
 }
 
 export function eventCommandPickerSearchEntries(): readonly EventCommandPickerEntryView[] {
-  return ALL_COMMAND_ENTRIES;
+  return [...ALL_COMMAND_ENTRIES].sort(compareCommandEntries);
 }
 
 export const EVENT_COMMAND_PICKER_NATIVE_KINDS: readonly CommandKind[] = [
@@ -212,6 +231,7 @@ function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
       runtimeSupport: runtimeSupportFor(descriptor),
       runtimeOwner: descriptor.executionOwner,
       page: entry.pickerPage,
+      rank: 0,
       alternateRoute: descriptor.alternateRoute,
     };
   }
@@ -226,6 +246,9 @@ function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
     runtimeSupport: entry.runtimeSupport,
     runtimeOwner: commandPresentationDescriptor("m2Command").executionOwner,
     page: entry.pickerPage,
+    // 탭 3 지도·화면 저작면에서만 RM 카탈로그 박물관 행을 네이티띘·모던 명령 밑으로 내린다.
+    // 다른 탭은 기족 순서를 그대로 둔다(이 PR 은 탭 3 수리다).
+    rank: entry.pickerPage === 3 && entry.index < 200 ? 1 : 0,
     alternateRoute: selectable ? undefined : commandPresentationDescriptor("m2Command").alternateRoute,
   };
 }
@@ -663,7 +686,9 @@ function restoreCommandPickerFocus(
 
 function compareCommandEntries(a: CommandEntry, b: CommandEntry): number {
   const groupDelta = groupOrder(a.group) - groupOrder(b.group);
-  return groupDelta === 0 ? a.index - b.index : groupDelta;
+  if (groupDelta !== 0) return groupDelta;
+  const rankDelta = a.rank - b.rank;
+  return rankDelta === 0 ? a.index - b.index : rankDelta;
 }
 
 function groupOrder(group: M2CommandPickerGroup): number {

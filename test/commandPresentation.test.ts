@@ -9,6 +9,7 @@ import {
   EVENT_COMMAND_PICKER_NATIVE_ONLY_PLACEMENTS,
 } from "@/editor/panels/eventEditor/commandPicker";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
+import { mapScreenNativeSurfaceGroup } from "@/project/eventCommands/m2PickerLayout";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 
 describe("command presentation descriptor", () => {
@@ -36,7 +37,9 @@ describe("command presentation descriptor", () => {
     for (const placement of EVENT_COMMAND_PICKER_NATIVE_ONLY_PLACEMENTS) {
       const descriptor = commandPresentationDescriptor(placement.kind);
       expect(placement.page).toBe(descriptor.page);
-      expect(placement.group).toBe(commandPresentationGroupLabel(descriptor.group));
+      // 탭 3 저작면은 가족 라벨보다 정밀하다 — 조명·날씨 / 그림 / 화면 연출 헤딩을 kind 단위로 잡는다.
+      const surfaceGroup = placement.page === 3 ? mapScreenNativeSurfaceGroup(placement.kind) : undefined;
+      expect(placement.group).toBe(surfaceGroup ?? commandPresentationGroupLabel(descriptor.group));
     }
   });
 
