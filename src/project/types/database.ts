@@ -1085,6 +1085,8 @@ export interface SystemRecords {
   monsterCare?: MonsterCareConfig;
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */
   skillSystem?: { enabled: boolean };
+  /** 자자가 골람 역할별 글꼴. 생략·기본값은 저장하지 않으며 tokens.css 기본 토큰이 그대로 산다. */
+  fonts?: import("@/project/fontRegistry").SystemFontConfig;
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
   genre?: GenrePackId;
 }

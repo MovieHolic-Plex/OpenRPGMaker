@@ -34,9 +34,10 @@
 }
 
 :root {
-  /* Neo둥근모가 1순위, Galmuri 는 뒤에 남긴다 — Galmuri 지표에 맞춘 화면이 있어
-     글꼴을 지우지 않고 순서만 바꾼다. 둘 다 8px 그리드 픽셀 폰트다. */
-  --runtime-pixel-font: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
+  /* 픽셀 글꼴은 tokens.css 의 --font-pixel 을 그대로 따른다. 이전엔 여기서 자기 스택을 따로
+     선언해 tokens.css 와 독립된 두 번째 진실 공급원이 됐고, 그러면 DB → 시스템 → 폰트
+     에서 고른 값이 에디터에만 먹는다. 선택 가능한 글꼴 목록은 fontRegistry.ts 가 소유한다. */
+  --runtime-pixel-font: var(--font-pixel);
   --runtime-font-size-9: 9px;
   --runtime-font-size-11: 11px;
   --runtime-font-size-18: 18px;

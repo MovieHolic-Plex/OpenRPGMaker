@@ -9,6 +9,7 @@ import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { normalizeSystemFontConfig } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
@@ -175,6 +176,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
     ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
+    ...(() => {
+      const fonts = normalizeSystemFontConfig(system.fonts);
+      return fonts ? { fonts } : {};
+    })(),
     ...(system.monsterBattleParty !== undefined ? { monsterBattleParty: system.monsterBattleParty === true } : {}),
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
     ...(typeChart ? { typeChart } : {}),

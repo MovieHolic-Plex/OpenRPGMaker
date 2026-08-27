@@ -14,6 +14,7 @@ import { recordAiActivity } from "@/ai/activityLog";
 import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
+import { syncProjectFontTheme } from "@/app/fontTheme";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
 import {
   markInitialEditRender,
@@ -121,6 +122,11 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   // 로드 직후 1회 반영하고 이후 store 변경(전투 모델 전환 포함)마다 갱신한다.
   syncBattleModelAttribute(store.getCurrent());
   store.subscribe(syncBattleModelAttribute);
+
+  // 자자가 골람 글꼴(system.fonts)을 리생 지점에서 단 한 번 물린다 — 에디터와 런타임이
+  // 같은 document 를 공유하므로 루트 변수 하나로 둘 다 덮인다.
+  syncProjectFontTheme(store.getCurrent());
+  store.subscribe(syncProjectFontTheme);
 
   // 최초 편집 맵 = 시작 맵.
   await finishEditorBoot(startedAt);
