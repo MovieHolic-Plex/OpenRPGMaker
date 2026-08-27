@@ -30,6 +30,8 @@ export type TileToolbarModel = {
 let openMenu: ToolbarMenuId = null;
 // 열림 상태는 모듈에 남긴다(재렌더 생존). 닫는 길은 밖에서 들어오므로 재렌더 콜백과
 // 문서 리스너가 필요하고, 리스너는 렌더마다 쌓이지 않게 1회만 설치한다(basicLeftRail 과 동일).
+let openAnchor: { readonly menu: HTMLElement; readonly trigger: HTMLElement } | null = null;
+let anchorKeepersInstalled = false;
 let latestRerender: (() => void) | null = null;
 let detachDocumentListeners: (() => void) | null = null;
 
@@ -263,20 +265,40 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
  */
 function scheduleMenuAnchor(menu: HTMLElement, trigger: HTMLElement): void {
   if (typeof window === "undefined") return;
+  openAnchor = { menu, trigger };
   const apply = (): void => {
     if (!menu.isConnected || !trigger.isConnected) return;
     anchorMenuToViewport(menu, trigger);
   };
   if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(apply);
   else setTimeout(apply, 0);
-  const onResize = (): void => {
-    if (!menu.isConnected) {
-      window.removeEventListener("resize", onResize);
+  installAnchorKeepers();
+}
+
+/**
+ * 창 크기·스크롤에 맞춰 열린 메뉴를 다시 잡는다.
+ *
+ * 리스너를 렌더마다 붙이면 안 된다: 좌패널은 editorState 가 바뀔 때마다 다시 그려지므로
+ * 메뉴가 열려 있는 동안 resize 리스너가 무한히 쌓이고, 각각이 이미 버려진 메뉴 노드를
+ * 붙잡는다. 그래서 모듈 수준에서 한 번만 달고, 지금 열린 메뉴만 다시 잡는다.
+ *
+ * 스크롤도 봐야 한다: 메뉴는 fixed 라 화면에 고정되지만 트리거는 세로로 스크롤되는
+ * .palette-work-pane 안에 있어서, 스크롤하면 메뉴만 남고 버튼이 떠나 버린다.
+ */
+function installAnchorKeepers(): void {
+  if (anchorKeepersInstalled || typeof window === "undefined") return;
+  anchorKeepersInstalled = true;
+  const reanchor = (): void => {
+    const current = openAnchor;
+    if (!current) return;
+    if (!current.menu.isConnected || !current.trigger.isConnected) {
+      openAnchor = null;
       return;
     }
-    anchorMenuToViewport(menu, trigger);
+    anchorMenuToViewport(current.menu, current.trigger);
   };
-  window.addEventListener("resize", onResize);
+  window.addEventListener("resize", reanchor);
+  window.addEventListener("scroll", reanchor, true);
 }
 
 /**
@@ -305,6 +327,12 @@ function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): void {
   const viewportW = window.innerWidth || 1440;
 
   menu.style.position = "fixed";
+  // CSS 는 이 메뉴를 오른쪽 기준으로 붙인다(absolute 시절 계약). fixed 로 바꾸면서 left 만
+  // 주면 left+right 가 동시에 걸려 메뉴가 뷰포트 오른쪽 끝까지 늘어난다 — 실측 폭 1341px 로
+  // 캔버스와 조수 카드를 덮었다. 그래서 재기 전에 right/bottom 을 풀어 shrink-to-fit 으로
+  // 되돌린 뒤 자연 폭을 읽는다.
+  menu.style.right = "auto";
+  menu.style.bottom = "auto";
   menu.style.maxHeight = "none";
   const box = menu.getBoundingClientRect();
   const needed = Math.max(menu.scrollHeight || 0, box.height || 0);
@@ -417,6 +445,7 @@ function makeOptionItem(label: string, active: boolean, disabled: boolean, actio
 
 function closeToolbarMenus(): void {
   openMenu = null;
+  openAnchor = null;
 }
 
 function tilePreviewStyle(selectedTile: number, tileset: TilesetDef): string {
