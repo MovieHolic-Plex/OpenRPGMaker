@@ -38,7 +38,7 @@
 
   /* 도구막대 행은 ⋯ 트리거를 오른쪽에 고정하는 틀이고, 가로 스크롤은 내부 자식이 맡는다.
      이전엔 행 자신이 overflow-x:auto 인 30px 띠여서 도구 합 344px → clientWidth 261px(표준)
-     ·281px(전문가) 에서 ⋯ 가 x=328 로 밀려 좌패널(폭 300/320px) 밖에서 그려지고,
+     ·281px(전문가) 에서 ⋯ 가 x=328 로 밀려 좌패널(폭 300/320px) 밖에서 그려졌고,
      드롭다운은 그 띠의 자손이라 열려도 중심 히트테스트가 칩셋 타일로 떨어졌다. */
   .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
     align-items: center;
@@ -92,11 +92,18 @@
     width: 18px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:hover:not(:disabled),
-  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:hover:not(:disabled) {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     color: var(--editor-blue);
+  }
+
+  /* 고른 도구는 hover 보다 또렷하게 강해야 한다. 전엔 둘이 한 선언 블록을 공유해서
+     마우스가 도구 줄 위에 있는 동안에는 지금 무엇으로 그리는지를 알 수 없었다. */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active {
+    background: var(--editor-blue);
+    border-color: var(--editor-blue);
+    color: var(--on-accent);
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:disabled {
