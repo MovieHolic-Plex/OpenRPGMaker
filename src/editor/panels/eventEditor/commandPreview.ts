@@ -118,7 +118,6 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeExp: (cmd, ctx) => expGaugeStage(cmd, previewDeps(ctx)),
   learnSkill: skillStage,
   battleProcessing: battleStage,
-  m2Command: (cmd, ctx) => m2Preview(cmd, ctx),
   setSwitch: (cmd, ctx) => lampStage(switchName(cmd.switchId), resolveSwitchDisplay(cmd, ctx), ctx?.simState ? getSimSwitch(ctx.simState, cmd.switchId) : undefined),
   setVariable: variableStage,
   setSelfSwitch: (cmd) => lampStage(`이 이벤트 기억 ${cmd.key}`, cmd.value),
@@ -135,6 +134,9 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
 };
 
 function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?: CommandPreviewContext): HTMLElement {
+  if (cmd.commandId === "m2-025-change-actor-faceset") {
+    return m2Preview(cmd, context);
+  }
   if (cmd.commandId === "m2-209-advanced-dialogue") {
     const fields = cmd.fields ?? {};
     const speaker = String(fields.speaker ?? "").trim();
