@@ -33,6 +33,17 @@ import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type C
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
 import {
+  buildCompactedMessages,
+  buildSummarizationRequest,
+  DEFAULT_COMPACTION_SETTINGS,
+  estimateContextTokens,
+  findCompactionCutPoint,
+  findPreviousSummary,
+  resolveContextWindow,
+  resolveThresholdContextTokens,
+  shouldCompact,
+} from "./contextCompaction";
+import {
   calibratedBudgetChars,
   estimatePromptChars,
   loadTokenObservations,
@@ -644,6 +655,16 @@ export class AssistantSession {
   private runEndProofPlanId: string | null = null;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
+  /** 직전 요청에 공급자가 실제로 과금한 프롬프트 토큰 — 컨텍스트 압축 임계 판정의 실측 입력. */
+  private lastPromptTokens = 0;
+  /**
+   * 이번 턴에서 요약 콜이 이미 실패했는가. 실패하면 대화가 그대로 커다란 채로 다음 라운드로
+   * 가므로, 가드가 없으면 라운드마다 같은 요약 콜을 다시 때린다(한 턴에 수십 번). 턴당 1회로
+   * 제한하고 다음 사용자 턴에서 다시 시도한다 — 일시 장애는 그때 자연히 회복된다.
+   * 성공한 압축은 이 예산을 쓰지 않는다(senpi per-turn-cap.js: 성공은 admission budget 을
+   * 소모하지 않고, 반복 실패만 회로 차단기가 막는다 — circuit-breaker.js).
+   */
+  private compactionFailedThisTurn = false;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
@@ -989,6 +1010,7 @@ export class AssistantSession {
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
+    this.compactionFailedThisTurn = false;
     this.turnSuccessfulTools = new Set();
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
@@ -1619,10 +1641,68 @@ export class AssistantSession {
   private recordPromptUsage(result: ChatResult, toolsChars: number, sentMessages?: readonly ChatMessage[]): void {
     const promptTokens = result.usage?.prompt_tokens;
     if (typeof promptTokens !== "number" || !Number.isFinite(promptTokens) || promptTokens <= 0) return;
+    // 압축 임계 판정의 과금 측 입력. 이미지 요청은 보정 관측에서 제외되지만(아래 hasImages)
+    // 과금 토큰 자체는 유효하므로 여기서 먼저 저장한다.
+    this.lastPromptTokens = promptTokens;
     // 전송 사본을 기준으로 보정 관측한다(요청이 압축됐으면 압축 후 크기로).
     const estimate = estimatePromptChars(sentMessages ?? this.messages, toolsChars);
     if (estimate.hasImages || estimate.chars <= 0) return;
     recordTokenObservation({ promptChars: estimate.chars, promptTokens, at: new Date().toISOString() });
+  }
+
+  /**
+   * 컨텍스트 압축(contextCompaction): 대화가 모델 창을 넘볼 만큼 커졌으면 앞부분을 LLM 요약
+   * 1건으로 갈아치운다. 요청 직전(compactMessagesForRequest 앞)에 돈다 — 문자 클램프는 오래된
+   * assistant/tool 을 통째로 버리므로, 그 전에 요약으로 기억을 옮겨두어야 한다.
+   *
+   * **이 메서드는 절대 던지지 않는다.** 요약은 최적화이지 턴의 정확성 요건이 아니다. 실패·중단·
+   * 빈 응답이면 대화를 손대지 않고 조용히 돌아가고, 요청은 기존 문자 클램프가 감당한다.
+   */
+  private async maybeCompactConversation(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
+    if (this.compactionFailedThisTurn) return;
+    const estimate = estimateContextTokens(this.messages);
+    const contextTokens = resolveThresholdContextTokens(this.lastPromptTokens, estimate);
+    if (!shouldCompact(contextTokens, resolveContextWindow(this.config.model), DEFAULT_COMPACTION_SETTINGS)) return;
+    const cutPoint = findCompactionCutPoint(this.messages, DEFAULT_COMPACTION_SETTINGS.keepRecentTokens);
+    // 요약할 앞부분이 없다(시스템 프롬프트 직후가 곧 잔존 창) — LLM 을 부를 이유가 없다.
+    if (cutPoint.firstKeptIndex <= 1) return;
+
+    onEvent({ type: "status", text: "대화가 길어져 이전 맥락을 요약 중…" });
+    let summary: string | null = null;
+    try {
+      // 요약 콜에는 툴을 싣지 않는다(요약 모델이 툴을 부르면 안 된다). 이 콜 자체는 압축
+      // 판정을 다시 타지 않으므로 재귀가 없다. 상위 라운드 재시도와 겹치지 않게 즉시 실패시킨다.
+      const result = await this.chat(this.config, {
+        messages: buildSummarizationRequest(this.messages.slice(1, cutPoint.firstKeptIndex), findPreviousSummary(this.messages)),
+        disableTransientRetry: true,
+        signal,
+      });
+      const text = result.message.content;
+      summary = typeof text === "string" && text.trim().length > 0 ? text.trim() : null;
+    } catch (cause) {
+      const reason = isLlmAbortError(cause) || signal?.aborted
+        ? "사용자가 중단했습니다"
+        : cause instanceof Error ? cause.message : String(cause);
+      this.compactionFailedThisTurn = true;
+      this.pushAudit({ kind: "status", text: `대화 압축 건너뜀: 요약 실패 — ${reason}` });
+      return;
+    }
+    if (signal?.aborted) {
+      this.compactionFailedThisTurn = true;
+      this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 사용자가 중단했습니다" });
+      return;
+    }
+    if (summary === null) {
+      this.compactionFailedThisTurn = true;
+      this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 요약 응답이 비어 있습니다" });
+      return;
+    }
+
+    const compacted = buildCompactedMessages({ messages: this.messages, cutPoint, summary });
+    const compactedTokens = estimateContextTokens(compacted);
+    // messages 는 세션이 계속 참조하는 배열이다 — 재할당 대신 제자리 교체로 동일성을 유지한다.
+    this.messages.splice(0, this.messages.length, ...compacted);
+    this.pushAudit({ kind: "status", text: `대화 압축: ${contextTokens} -> ${compactedTokens} 토큰 (요약 1건)` });
   }
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
@@ -1987,6 +2067,9 @@ export class AssistantSession {
         kind: "status",
         text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`.slice(0, 2000),
       });
+      // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
+      // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.
+      await this.maybeCompactConversation(onEvent, signal);
       // CPEN 64k 메시지 내용 상한(todo 8 실측 422): 전송 사본을 안전 예산으로 압축한다.
       // 원본(this.messages)은 감사/하네스용으로 유지된다.
       const requestMessages = compactMessagesForRequest(this.messages);

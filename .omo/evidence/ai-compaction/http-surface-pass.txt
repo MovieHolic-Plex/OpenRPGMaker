@@ -1,0 +1,48 @@
+=== 압축 실증(실제 HTTP) ===
+엔드포인트           http://127.0.0.1:36705/v1/chat/completions
+모델 컨텍스트 윈도우 128000 토큰, 예약 16384, 유지 20000
+압축 임계값          111616 토큰
+주입 후 메시지        33개 / 추정 195324 토큰
+
+서버가 받은 요청      2건 (요약 1건 / 턴 1건)
+  #1 요약 bytes=17363 tools=0 roles=system,user,user
+  #2 턴   bytes=102188 tools=41 roles=system,user,user,assistant,tool,assistant,user
+
+압축 후 세션 메시지    8개 / 추정 27165 토큰
+system 프롬프트 index0 OK
+요약 메시지 index      1
+사용자 지시 보존        OK
+
+마지막 턴 요청 roles   system,user,user,assistant,tool,assistant,user
+짝 없는 tool 응답      없음 OK
+와이어 본문 크기        102188 bytes
+
+--- 압축 요약 메시지 본문 ---
+[context-compaction-summary]
+## Goal
+아이스 그랜드 익스팬스 마을 저작을 계속한다.
+
+## Constraints & Preferences
+- 실내 맵은 villager-room-v1 파이프라인만 사용한다.
+
+## Progress
+### Done
+- [x] map_ice_village 바닥/도로 시공
+### In Progress
+- [ ] 주민 3명 배치
+### Blocked
+- (none)
+
+## Key Decisions
+- **author_village 사용**: 개별 build_house_kit 보다 계약이 좁다.
+
+## Next Steps
+1. place_npc 로 주민 3명을 배치한다.
+
+## Critical Context
+- mapId: map_ice_village
+
+--- 압축 감사 로그 ---
+  대화 압축: 195327 -> 27161 토큰 (요약 1건)
+
+RESULT: PASS

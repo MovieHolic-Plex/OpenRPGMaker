@@ -21,7 +21,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor pre-edit routing & cautions (read first): `openwiki/editor-pre-edit-routing.md`
    - Editor event authoring: `openwiki/editor-event-authoring.md`, `openwiki/editor-event-commands.md`, `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
-   - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`
+   - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`, `openwiki/ai-context-compaction.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
    - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
