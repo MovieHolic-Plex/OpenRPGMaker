@@ -109,6 +109,7 @@ function updateChaseNpc(
     sightRange: mover.sightRange,
     giveUpRange: mover.giveUpRange,
     pathfind: mover.pathfind,
+    kite: mover.kite,
   });
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);

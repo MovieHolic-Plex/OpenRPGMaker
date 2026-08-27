@@ -5,7 +5,12 @@ import { swingArcCells, cellInArc, swingArcOverlapsPoint } from "@/battle/action
 import { bufferAttackPress, createAttackBuffer, tickAttackBuffer } from "@/battle/action/attackWindow";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 import { consumeHitstop } from "@/battle/action/hitstop";
+import { canActInMode, resolveStaggerOnHit, tickStagger } from "@/battle/action/stagger";
+import { resolveKnockback } from "@/battle/action/knockback";
 import { resolveDodgeStep } from "@/battle/action/dodge";
+import { guardedDamage, resolveGuardStep } from "@/battle/action/guard";
+import { kiteBandForAttack } from "@/battle/action/kiting";
+import { activeActionSkillId, cycleActionSkillSlot, resolveActionSkillSlots } from "@/battle/action/skillSlots";
 import { shouldApplyContactDamage } from "@/battle/action/contact";
 import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
@@ -44,6 +49,10 @@ const TELEGRAPH_ALPHA = 0.35;
 // 히트스톱: 타격 순간 액션 전투 갱신만 아주 짧게 건너뛴다(게임 전체는 얼리지 않음).
 const HITSTOP_HIT_ENEMY_MS = 70;
 const HITSTOP_PLAYER_HURT_MS = 110;
+// 넉백: 한 타일을 밀려나는 데 걸리는 시간. 히트스톱이 풀린 직후 튀듯 밀린다.
+const KNOCKBACK_TWEEN_MS = 120;
+// 사망 연출: 적이 같은 프레임에 사라지지 않고 흰 섬광 → 페이드로 꺼진다.
+const DEATH_BEAT_MS = 220;
 // 액션 전투 효과음 SE 리소스(EasyRPG RTP 사운드). 프로젝트에 해당 SE 가 없으면 resolveAudioSource 가 null 을 반환해 무음.
 const SE_SWING_RESOURCE_ID = "easyrpg-sound-attack1";
 const SE_HIT_ENEMY_RESOURCE_ID = "easyrpg-sound-blow2";
@@ -76,11 +85,16 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
     swingCooldownMs: 0,
     attackBuffer: createAttackBuffer(),
     stamina: ACTION_STAMINA_MAX,
+    guarding: false,
+    guardMultiplier: 1,
+    skillSlotIds: [],
+    activeSkillSlot: 0,
     hitstopMs: 0,
     lastHudSignature: "",
   };
   scene.actionCombatState = state;
   scene.input_.setAttackMode(true);
+  refreshActionSkillSlots(scene, state);
   syncActionEnemiesForScene(scene);
   if (config.hearts || config.stamina) {
     const host = scene.game.canvas.closest(".play-stage");
@@ -114,6 +128,9 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   state.hitstopMs = hitstop.nextRemainingMs;
   if (hitstop.skipUpdate) return;
   syncActionEnemiesForScene(scene);
+  // 슬롯 순환 엣지는 이동/조사 경로가 아니라 여기서 바로 소모한다.
+  if (scene.input_.consumeSkillCycleEdge()) cycleActionSkillSlotForScene(scene, state);
+  updatePlayerGuard(scene, state, deltaMs);
   tickActionTimers(scene, state, deltaMs);
   updatePlayerDodge(scene, state, deltaMs);
   updateEnemyModes(scene, state, deltaMs);
@@ -131,7 +148,10 @@ function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState
   const buffered = tickAttackBuffer(state.attackBuffer, cooldownBefore, deltaMs);
   if (buffered.fired) performActionCombatSwing(scene, state);
   if (state.config.staminaEnabled) {
-    state.stamina = Math.min(ACTION_STAMINA_MAX, state.stamina + (ACTION_STAMINA_REGEN_PER_SEC * deltaMs) / 1000);
+    // 가드를 잡고 있는 동안은 회복하지 않는다 — 그러지 않으면 드레인이 리젬에 상쇄되어 상시 가드가 공짜가 된다.
+    if (!state.guarding) {
+      state.stamina = Math.min(ACTION_STAMINA_MAX, state.stamina + (ACTION_STAMINA_REGEN_PER_SEC * deltaMs) / 1000);
+    }
   }
   if (state.playerFlashMs > 0) {
     state.playerFlashMs = Math.max(0, state.playerFlashMs - deltaMs);
@@ -228,7 +248,8 @@ function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: numbe
 // 대시 걸음마다 회피를 시도한다. 성공하면 스태미나를 쓰고 짧은 무적 창만 열린다.
 // 스태미나가 비용보다 적으면 회피가 열리지 않고 그대로 맞는다(예전의 무한 무적 제거).
 function updatePlayerDodge(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
-  const requested = state.config.staminaEnabled && scene.dashing && scene.moving && scene.inputEnabled;
+  // 가드와 회피는 동시에 서지 않는다. 가드를 잡은 동안은 대시로 무적을 사지 못한다.
+  const requested = state.config.staminaEnabled && !state.guarding && scene.dashing && scene.moving && scene.inputEnabled;
   const outcome = resolveDodgeStep({
     stamina: state.stamina,
     cost: state.config.dodgeStaminaCost,
@@ -241,6 +262,22 @@ function updatePlayerDodge(scene: PlaySceneContext, state: ActionCombatSceneStat
   state.dodgeIframesMs = outcome.iframesRemainingMs;
 }
 
+// 홀드 가드. 키를 누르고 있는 동안 피해가 줄고 스태미나가 탄다. 판정 자체는 전부 순수 모듈(guard.ts).
+function updatePlayerGuard(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
+  const requested = state.config.staminaEnabled && scene.inputEnabled && !scene.running && scene.input_.isGuardHeld();
+  const outcome = resolveGuardStep({
+    stamina: state.stamina,
+    reductionPercent: state.config.guardDamageReductionPercent,
+    drainPerSec: state.config.guardStaminaDrainPerSec,
+    deltaMs,
+    requested,
+    dodging: state.dodgeIframesMs > 0,
+  });
+  state.stamina = outcome.stamina;
+  state.guarding = outcome.guarding;
+  state.guardMultiplier = outcome.damageMultiplier;
+}
+
 function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneState): void {
   // RM eventTouch 의미론: 적이 플레이어에 "닿는" 것은 같은 칸이 아니라 인접(8방) 접촉.
   // NPC 이동 규칙상 적 묘버는 플레이어 칸에 진입할 수 없으므로 같은 칸 판정은 절대 발화하지 않는다.
@@ -248,6 +285,8 @@ function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneSta
   const targets = [{ x: scene.tileX, y: scene.tileY }];
   if (scene.moving) targets.push({ x: scene.movingTo.x, y: scene.movingTo.y });
   for (const enemy of state.enemies.values()) {
+    // 경직 중인 적은 거리를 종힐 수 없으니 접촉 피해도 없다.
+    if (!canActInMode(enemy.mode)) continue;
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
     const moving = scene.autonomousNPCs.get(enemy.eventId)?.activeMove != null;
@@ -269,20 +308,23 @@ function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, da
   if (state.playerIframesMs > 0) return;
   // 회피 무적: 스태미나를 지불하고 열린 짧은 창 동안만 유효하다.
   if (state.dodgeIframesMs > 0) return;
+  // 가드: 무적이 아니라 감산이다. 피해는 반드시 1 이상 들어온다.
+  const dealt = state.guarding ? guardedDamage(damage, state.guardMultiplier) : damage;
+  if (dealt <= 0) return;
   const project = store.getCurrent();
   const leadId = scene.session.partyActorIds[0];
   if (!leadId) return;
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals || vitals.hp <= 0) return;
-  vitals.hp = Math.max(0, vitals.hp - damage);
+  vitals.hp = Math.max(0, vitals.hp - dealt);
   state.playerIframesMs = state.config.playerIframesMs;
   state.playerFlashMs = PLAYER_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_PLAYER_HURT_MS);
-  scene.player.setTintFill(0xff7777);
+  scene.player.setTintFill(state.guarding ? 0x88bbff : 0xff7777);
   scene.cameras.main.shake(90, 0.006);
   playActionSe(SE_PLAYER_HURT_RESOURCE_ID);
-  spawnDamageNumber(scene, characterSpriteX(fromTileX), characterSpriteY(fromTileY) - 20, `-${damage}`, "#ff6655");
+  spawnDamageNumber(scene, characterSpriteX(fromTileX), characterSpriteY(fromTileY) - 20, `-${dealt}`, state.guarding ? "#9bd0ff" : "#ff6655");
   if (vitals.hp <= 0) killPartyForActionCombat(scene);
 }
 
@@ -346,19 +388,12 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals) return;
-  const knownSkillIds = (() => {
-    const actor = project.database.actors.find((entry) => entry.id === leadId);
-    if (!actor) return [] as string[];
-    const normalized = normalizeActorRecord(actor);
-    const level = scene.session.actorLevels?.[leadId] ?? normalized.initialLevel;
-    const classOverrides = scene.session.classOverrides;
-    const effectiveClass = effectiveActorClassId(project, { classOverrides }, leadId);
-    const usesOverride = hasActorClassOverride({ classOverrides: classOverrides ? { ...classOverrides } : undefined }, leadId);
-    return learnedSkillIds(project, normalized, level, scene.session.actorSkillIds?.[leadId], effectiveClass, usesOverride);
-  })();
-  const skill = knownSkillIds
-    .map((id) => project.database.skills.find((entry) => entry.id === id))
-    .find((record) => record?.actionSkill);
+  // 예전에는 배운 스킬 중 actionSkill 이 붙은 맨 앞 하나만 find 로 집어 나머지는 닿지 않았다.
+  // 지금은 슬롯 목록을 재해석하고 **활성 슬롯**을 쓴다(R 로 순환).
+  refreshActionSkillSlots(scene, state);
+  const skillId = activeActionSkillId(state.skillSlotIds, state.activeSkillSlot);
+  if (!skillId) return;
+  const skill = project.database.skills.find((entry) => entry.id === skillId);
   if (!skill?.actionSkill) return;
   const mpCost = battleSkillMpCost(skill, vitals.maxMp);
   if (vitals.mp < mpCost) return;
@@ -381,7 +416,42 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   });
 }
 
+// 주인공이 배운 스킬 id 목록(레벌/클래스 오버라이드 반영).
+function leadLearnedSkillIds(scene: PlaySceneContext, project: Project, leadId: string): readonly string[] {
+  const actor = project.database.actors.find((entry) => entry.id === leadId);
+  if (!actor) return [];
+  const normalized = normalizeActorRecord(actor);
+  const level = scene.session.actorLevels?.[leadId] ?? normalized.initialLevel;
+  const classOverrides = scene.session.classOverrides;
+  const effectiveClass = effectiveActorClassId(project, { classOverrides }, leadId);
+  const usesOverride = hasActorClassOverride({ classOverrides: classOverrides ? { ...classOverrides } : undefined }, leadId);
+  return learnedSkillIds(project, normalized, level, scene.session.actorSkillIds?.[leadId], effectiveClass, usesOverride);
+}
+
+// 배운 스킬 → 액션 슬롯 재해석. 슬롯이 줄어들어 활성 인덱스가 범위를 벗어나면 0 번으로 스냅된다.
+function refreshActionSkillSlots(scene: PlaySceneContext, state: ActionCombatSceneState): void {
+  const project = store.getCurrent();
+  const leadId = scene.session.partyActorIds[0];
+  const learned = leadId ? leadLearnedSkillIds(scene, project, leadId) : [];
+  state.skillSlotIds = resolveActionSkillSlots(learned, (skillId) => (
+    project.database.skills.find((entry) => entry.id === skillId)?.actionSkill != null
+  ));
+  if (state.activeSkillSlot >= state.skillSlotIds.length) state.activeSkillSlot = 0;
+}
+
+function cycleActionSkillSlotForScene(scene: PlaySceneContext, state: ActionCombatSceneState): void {
+  refreshActionSkillSlots(scene, state);
+  state.activeSkillSlot = cycleActionSkillSlot(state.activeSkillSlot, state.skillSlotIds.length);
+}
+
+/** HUD 표시용 슬롯 이름. 스킬 레코드가 사라지면 id 를 그대로 보여준다. */
+function actionSkillSlotNames(project: Project, slotIds: readonly string[]): string[] {
+  return slotIds.map((id) => project.database.skills.find((entry) => entry.id === id)?.name ?? id);
+}
+
 function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, damage: number, tileX: number, tileY: number): void {
+  // 이미 사망 연출에 들어간 적은 다시 맞지 않는다(보상 이중 지급 방지).
+  if (enemy.dying) return;
   enemy.hp = Math.max(0, enemy.hp - damage);
   enemy.flashMs = ENEMY_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_HIT_ENEMY_MS);
@@ -389,9 +459,15 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   scene.cameras.main.shake(60, 0.004);
   playActionSe(SE_HIT_ENEMY_RESOURCE_ID);
   spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 20, String(damage), "#ffe066");
-  applyKnockbackVisual(scene, enemy);
-  if (enemy.hp > 0) return;
+  if (enemy.hp > 0) {
+    staggerActionEnemy(scene, enemy);
+    applyKnockback(scene, state, enemy);
+    return;
+  }
+  // 사망: 보상은 여기서 정확히 한 번 떨어지고, 사라지는 연출만 뒤로 미룬다.
+  enemy.dying = true;
   grantActionKillRewards(scene, enemy, tileX, tileY);
+  playEnemyDeathBeat(scene, enemy);
   cleanupEnemyVisuals(scene, enemy);
   state.enemies.delete(enemy.eventId);
   if (scene.fieldSpawnState) {
@@ -399,6 +475,48 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
     syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
     scene.renderTiles();
     scene.registerPageMoveRoutes();
+  }
+}
+
+// 사망 연출(데스 비트). 적 이벤트/스프라이트는 스폰 정리와 함께 이번 프레임에 사라지므로,
+// 같은 자리에 스프라이트 사본(고스트)을 하나 남겨 흰 섬광 → 페이드로 꺼뜨린다.
+// 규칙 상태(보상/스폰)는 이미 확정돼 있어서 연출이 전투 판정에 끼어들지 않는다.
+function playEnemyDeathBeat(scene: PlaySceneContext, enemy: ActionEnemyState): void {
+  const sprite = scene.eventSprites.get(enemy.eventId);
+  if (!sprite) return;
+  const ghost = scene.add.sprite(sprite.x, sprite.y, sprite.texture.key, sprite.frame.name);
+  ghost.setOrigin(sprite.originX, sprite.originY);
+  ghost.setDisplaySize(sprite.displayWidth, sprite.displayHeight);
+  ghost.setDepth(COMBAT_DEPTH);
+  ghost.setTintFill(0xffffff);
+  scene.tweens.add({
+    targets: ghost,
+    alpha: 0,
+    scaleX: ghost.scaleX * 1.25,
+    scaleY: ghost.scaleY * 0.7,
+    y: ghost.y - TILE_SIZE * 0.25,
+    duration: DEATH_BEAT_MS,
+    ease: "Quad.easeOut",
+    onComplete: () => ghost.destroy(),
+  });
+}
+
+// 피격 경직. 진행 중이던 선딜/돌진을 실제로 끊는다: 텔레그래프와 점멸 트윈을 없애고,
+// 예약된 공격 상태를 버리고, 경직 창 동안 이동/행동을 얼린다.
+function staggerActionEnemy(scene: PlaySceneContext, enemy: ActionEnemyState): void {
+  const outcome = resolveStaggerOnHit({ mode: enemy.mode });
+  if (outcome.cancelWindup || enemy.mode === "windup") {
+    enemy.telegraph?.destroy();
+    enemy.telegraph = undefined;
+    stopWindupTelegraph(scene, enemy);
+  }
+  if (outcome.cancelDash) enemy.dash = undefined;
+  enemy.mode = outcome.mode;
+  enemy.modeTimerMs = outcome.modeTimerMs;
+  const mover = scene.autonomousNPCs.get(enemy.eventId);
+  if (mover) {
+    mover.actionFrozen = true;
+    mover.activeMove = null;
   }
 }
 
@@ -579,20 +697,25 @@ function strokeArcBand(
   graphics.fillPoints(points, true, true);
 }
 
+// 뜨는 데밌지 숫자. 타일이 16px 이라 12px 글자는 적 스프라이트를 토막 덮어버렸다.
+// 8px + 엉은 하단 효과로 줄이고, 생재 높이도 한 타일 이내로 잡는다.
+const DAMAGE_NUMBER_FONT_PX = 8;
+const DAMAGE_NUMBER_RISE_PX = 10;
+
 function spawnDamageNumber(scene: PlaySceneContext, worldX: number, worldY: number, text: string, color: string): void {
   const label = scene.add.text(worldX, worldY, text, {
     fontFamily: projectFontStack(store.getCurrent().system.fonts, "mono"),
-    fontSize: "12px",
+    fontSize: `${DAMAGE_NUMBER_FONT_PX}px`,
     fontStyle: "bold",
     color,
     stroke: "#000000",
-    strokeThickness: 3,
+    strokeThickness: 2,
   });
   label.setOrigin(0.5, 1);
   label.setDepth(COMBAT_DEPTH + 1);
   scene.tweens.add({
     targets: label,
-    y: worldY - 14,
+    y: worldY - DAMAGE_NUMBER_RISE_PX,
     alpha: 0,
     duration: 650,
     onComplete: () => label.destroy(),
@@ -626,7 +749,7 @@ function updateActionHudModel(scene: PlaySceneContext, state: ActionCombatSceneS
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals) return;
-  const signature = `${vitals.hp}/${vitals.maxHp}|${Math.round(state.stamina)}|${state.config.stamina}`;
+  const signature = `${vitals.hp}/${vitals.maxHp}|${Math.round(state.stamina)}|${state.config.stamina}|${state.skillSlotIds.join(",")}|${state.activeSkillSlot}|${state.guarding}`;
   if (signature === state.lastHudSignature) return;
   state.lastHudSignature = signature;
   state.hud.update({
@@ -635,12 +758,17 @@ function updateActionHudModel(scene: PlaySceneContext, state: ActionCombatSceneS
     stamina: Math.round(state.stamina),
     staminaMax: ACTION_STAMINA_MAX,
     showStamina: state.config.stamina,
+    skillSlotNames: actionSkillSlotNames(project, state.skillSlotIds),
+    activeSkillSlot: state.activeSkillSlot,
+    guarding: state.guarding,
   });
 }
 
 function cleanupEnemyVisuals(scene: PlaySceneContext, enemy: ActionEnemyState): void {
   enemy.telegraph?.destroy();
   enemy.telegraph = undefined;
+  enemy.knockbackTween?.stop();
+  enemy.knockbackTween = undefined;
   stopWindupTelegraph(scene, enemy);
   const mover = scene.autonomousNPCs.get(enemy.eventId);
   if (mover) mover.actionFrozen = false;
@@ -652,18 +780,46 @@ function playActionSe(resourceId: string): void {
   playAudioCommand({ resourceId, loop: false }, store.getCurrent());
 }
 
-function applyKnockbackVisual(scene: PlaySceneContext, enemy: ActionEnemyState): void {
+// 실제 넉백. 규칙(방향/저항/막힘)은 resolveKnockback 이 정하고, 여기서는 런타임 좌표를 옮기고
+// 스프라이트를 **새 타일로** 보낸다(예전에는 5px 밀었다가 제자리로 돌아와 위치가 그대로였다).
+function applyKnockback(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState): void {
+  const from = enemyTilePosition(scene, enemy.eventId);
+  if (!from) return;
+  const project = store.getCurrent();
+  const outcome = resolveKnockback({
+    enemyTile: from,
+    playerTile: { x: scene.tileX, y: scene.tileY },
+    knockbackResist: enemy.knockbackResist,
+    roll: nextSessionRandom(scene.session, "battle"),
+    inBounds: (x, y) => inBounds(scene.map, x, y),
+    isPassable: (x, y) => isPassable(project, scene.map, x, y),
+    isOccupied: (x, y) => otherEnemyOccupiesTile(scene, state, enemy.eventId, x, y),
+  });
+  if (!outcome.displaced) return;
+  moveRuntimeEventPosition(scene.eventPositions, enemy.eventId, outcome.x, outcome.y, scene.eventPositions[enemy.eventId]?.direction ?? "down");
   const sprite = scene.eventSprites.get(enemy.eventId);
   if (!sprite) return;
-  if (enemy.knockbackResist > 0 && nextSessionRandom(scene.session, "battle") < enemy.knockbackResist) return;
-  const dx = sprite.x - characterSpriteX(scene.tileX);
-  const dy = sprite.y - characterSpriteY(scene.tileY);
-  const len = Math.max(0.001, Math.hypot(dx, dy));
-  const push = 5;
-  const homeX = sprite.x;
-  const homeY = sprite.y;
-  sprite.setPosition(homeX + (dx / len) * push, homeY + (dy / len) * push);
-  scene.tweens.add({ targets: sprite, x: homeX, y: homeY, duration: 140 });
+  enemy.knockbackTween?.stop();
+  enemy.knockbackTween = scene.tweens.add({
+    targets: sprite,
+    x: characterSpriteX(outcome.x),
+    y: characterSpriteY(outcome.y),
+    duration: KNOCKBACK_TWEEN_MS,
+    ease: "Quad.easeOut",
+    onComplete: () => {
+      enemy.knockbackTween = undefined;
+      sprite.setPosition(characterSpriteX(outcome.x), characterSpriteY(outcome.y));
+    },
+  });
+}
+
+function otherEnemyOccupiesTile(scene: PlaySceneContext, state: ActionCombatSceneState, selfEventId: string, x: number, y: number): boolean {
+  for (const other of state.enemies.values()) {
+    if (other.eventId === selfEventId) continue;
+    const pos = enemyTilePosition(scene, other.eventId);
+    if (pos && pos.x === x && pos.y === y) return true;
+  }
+  return false;
 }
 
 function dominantAxisDir(dx: number, dy: number): Dir {
@@ -685,6 +841,9 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
     enemy.attackCooldownMs = Math.max(0, enemy.attackCooldownMs - deltaMs);
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
+    // 원거리 적은 거리를 지킨다: 추객 묘버에 밴드를 심어 주면 붙지 않게 한다.
+    const mover = scene.autonomousNPCs.get(enemy.eventId);
+    if (mover) mover.kite = kiteBandForAttack(enemy.actionAttack) ?? undefined;
     const dx = scene.tileX - pos.x;
     const dy = scene.tileY - pos.y;
     const cheby = Math.max(Math.abs(dx), Math.abs(dy));
@@ -706,6 +865,18 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
       }
       case "dash": {
         stepDash(scene, state, enemy, deltaMs);
+        break;
+      }
+      case "stagger": {
+        const staggered = tickStagger({
+          modeTimerMs: enemy.modeTimerMs,
+          deltaMs,
+          attackCooldownMs: enemy.attackCooldownMs,
+          armCooldownMs: attack?.cooldownMs ?? DEFAULT_ATTACK_COOLDOWN_MS,
+        });
+        enemy.modeTimerMs = staggered.modeTimerMs;
+        enemy.attackCooldownMs = staggered.attackCooldownMs;
+        if (staggered.mode === "combat") endRecover(scene, enemy, attack);
         break;
       }
       case "recover": {

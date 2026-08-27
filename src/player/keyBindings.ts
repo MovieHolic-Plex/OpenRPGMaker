@@ -13,6 +13,8 @@
 //   이동          : 방향키 · WASD
 //   대시(dash)    : Shift
 //   공격/스킬     : Space(액션 전투 한정) · Q
+//   스킬 슬롯 순환: R  (액션 전투 한정)
+//   가드(홀드)    : C  (액션 전투 한정)
 //
 // 예외로 두는 서피스: 이름 입력(nameEntry)은 문자 타이핑 화면이라 z/x 가 글자다.
 // 여기의 confirm/cancel 계약을 적용하지 않는다.
@@ -51,6 +53,17 @@ export function isDashKey(key: string): boolean {
 
 export function isSkillKey(key: string): boolean {
   return normalizeKey(key) === "q";
+}
+
+// 액션 스킬 슬롯 순환. Q(캐스트) 옆이면서 이동(WASD)·확인(Z/Enter/Space/E)·취소(X/Esc)
+// ·대시(Shift)·자동전투(F) 어디와도 겹치지 않는 키를 고른다.
+export function isSkillCycleKey(key: string): boolean {
+  return normalizeKey(key) === "r";
+}
+
+// 홀드 가드(방어). 누르고 있는 동안 피해가 줄고 스태미나가 탄다.
+export function isGuardKey(key: string): boolean {
+  return normalizeKey(key) === "c";
 }
 
 // 액션 전투에서 스윙으로 라우팅되는 키. 확인 키 전체를 공격으로 받는다 —

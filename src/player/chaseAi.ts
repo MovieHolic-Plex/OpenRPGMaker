@@ -1,4 +1,5 @@
 import { canMove, inBounds } from "@/project/collision";
+import { resolveKiteIntent, type KiteBand } from "@/battle/action/kiting";
 import type { Dir, GameMap, Project, Rect } from "@/project/types";
 
 const REPATH_INTERVAL_MS = 500;
@@ -38,6 +39,8 @@ export function nextChaseDecision(input: {
   readonly sightRange?: number;
   readonly giveUpRange?: number;
   readonly pathfind?: boolean;
+  /** 원거리 적의 거리 유지 밴드. 주면 붙지 않고 선호 거리를 지킨다. */
+  readonly kite?: KiteBand;
 }): ChaseDecision {
   const { mover } = input;
   mover.chaseHome ??= { ...input.from };
@@ -62,6 +65,25 @@ export function nextChaseDecision(input: {
   mover.chaseActive = true;
   if (mover.timer < mover.moveIntervalMs) return { kind: "wait" };
 
+  // 거리 유지: 최소 거리 안으로 붙으면 뒤로 물러나고, 선호 밴드 안이면 버틴다.
+  // 밴드보다 멀어졌을 때만 아래의 일반 추격 경로를 탄다.
+  if (input.kite) {
+    const intent = resolveKiteIntent({ distance: chebyshev(input.from, input.player), band: input.kite });
+    if (intent === "hold") {
+      mover.chasePath = [];
+      return { kind: "wait" };
+    }
+    if (intent === "retreat") {
+      mover.chasePath = [];
+      const step = retreatStep(input.project, input.map, input.from, input.player);
+      if (!step) return { kind: "wait" };
+      const away = directionForDelta(step.x - input.from.x, step.y - input.from.y);
+      if (!away) return { kind: "wait" };
+      mover.timer = 0;
+      return { kind: "move", x: step.x, y: step.y, dir: away };
+    }
+  }
+
   if (mover.chaseRepathTimerMs >= REPATH_INTERVAL_MS || !mover.chasePath || mover.chasePath.length === 0) {
     mover.chasePath = input.pathfind === false
       ? directStepPath(input.project, input.map, input.from, input.player)
@@ -77,7 +99,10 @@ export function nextChaseDecision(input: {
     return { kind: "wait" };
   }
   mover.timer = 0;
-  if (next.x === input.player.x && next.y === input.player.y) return { kind: "touch", dir };
+  // 거리를 지키는 적은 플레이어 칸을 밟지 않는다 — 접촉으로 끝내는 게 목적이 아니다.
+  if (next.x === input.player.x && next.y === input.player.y) {
+    return input.kite ? { kind: "wait" } : { kind: "touch", dir };
+  }
   mover.chasePath = mover.chasePath.slice(1);
   return { kind: "move", x: next.x, y: next.y, dir };
 }
@@ -153,6 +178,21 @@ function directStepPath(project: Project, map: GameMap, from: ChasePoint, to: Ch
   return candidates[0] ? [candidates[0]] : [];
 }
 
+// 후퇴 한 걸음. 플레이어에서 가장 멀어지는 통행 가능 칸을 고른다(체비셰프 우선, 맨해튼 타이브레이크).
+// 뒷걸짐이 생기지 않으면(모리 끌입) null — 그럴 땐 그자리에서 버틴다.
+function retreatStep(project: Project, map: GameMap, from: ChasePoint, player: ChasePoint): ChasePoint | null {
+  const candidates = [...DIRECTIONS]
+    .map((direction) => ({ x: from.x + direction.x, y: from.y + direction.y }))
+    .filter((point) => canMove(project, map, from.x, from.y, point.x, point.y))
+    .filter((point) => !(point.x === player.x && point.y === player.y))
+    .sort((a, b) => (
+      (chebyshev(b, player) - chebyshev(a, player)) || (manhattan(b, player) - manhattan(a, player))
+    ));
+  const best = candidates[0];
+  if (!best) return null;
+  return chebyshev(best, player) > chebyshev(from, player) ? best : null;
+}
+
 function directionForDelta(dx: number, dy: number): Dir | null {
   if (dx === 0 && dy === 1) return "down";
   if (dx === -1 && dy === 0) return "left";
@@ -163,6 +203,10 @@ function directionForDelta(dx: number, dy: number): Dir | null {
 
 function manhattan(a: ChasePoint, b: ChasePoint): number {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function chebyshev(a: ChasePoint, b: ChasePoint): number {
+  return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 }
 
 type AStarNode = {

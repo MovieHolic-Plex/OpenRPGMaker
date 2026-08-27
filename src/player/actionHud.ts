@@ -14,6 +14,7 @@ export class ActionHud {
   private readonly hpText: HTMLElement;
   private readonly staminaRow: HTMLElement;
   private readonly staminaFill: HTMLElement;
+  private readonly slotRow: HTMLElement;
 
   constructor(host: HTMLElement) {
     this.root = el("div", "action-hud", "action-hud");
@@ -34,7 +35,10 @@ export class ActionHud {
     stBar.append(this.staminaFill);
     this.staminaRow.append(stIcon, stBar);
 
-    this.root.append(this.hpRow, this.staminaRow);
+    // 스킬 슬롯 줄. R 로 순환하는 활성 슬롯을 표시한다(슬롯이 없으면 줄 자체를 숨긴다).
+    this.slotRow = el("div", "action-hud-row action-hud-slots", "action-hud-slot-row");
+
+    this.root.append(this.hpRow, this.staminaRow, this.slotRow);
     host.append(this.root);
   }
 
@@ -52,6 +56,20 @@ export class ActionHud {
       const stRatio = model.staminaMax > 0 ? Math.max(0, Math.min(1, model.stamina / model.staminaMax)) : 0;
       this.staminaFill.style.width = `${Math.round(stRatio * 100)}%`;
     }
+    this.staminaRow.classList.toggle("is-guarding", model.guarding);
+    this.renderSlots(model);
+  }
+
+  private renderSlots(model: ActionHudModel): void {
+    this.slotRow.style.display = model.skillSlotNames.length > 0 ? "" : "none";
+    this.slotRow.replaceChildren();
+    model.skillSlotNames.forEach((name, index) => {
+      const chip = el("span", "action-hud-slot", `action-hud-slot-${index}`);
+      chip.textContent = `${index + 1} ${name}`;
+      chip.classList.toggle("is-active", index === model.activeSkillSlot);
+      if (index === model.activeSkillSlot) chip.dataset.active = "true";
+      this.slotRow.append(chip);
+    });
   }
 
   destroy(): void {

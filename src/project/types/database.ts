@@ -1113,6 +1113,10 @@ export interface SystemActionCombat {
   dodgeStaminaCost?: number;
   /** 회피 성공 시 열리는 무적 창. 기본 300ms. */
   dodgeIframesMs?: number;
+  /** 홀드 가드 중 피해 감소율(%). 기본 50, 최대 90 — 완전 방어는 없다. */
+  guardDamageReductionPercent?: number;
+  /** 가드 유지 초당 스태미나 소모. 기본 20. 0이면 공짜 가드. */
+  guardStaminaDrainPerSec?: number;
   hud?: ActionCombatHudConfig;
 }
 

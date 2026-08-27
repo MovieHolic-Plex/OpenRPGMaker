@@ -4,7 +4,8 @@ import type { ResolvedActionCombatConfig } from "@/project/actionCombat";
 import type { EnemyActionAttack } from "@/project/types";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 
-export type ActionEnemyMode = "combat" | "windup" | "dash" | "recover";
+// "stagger" = 피겪 경직. 진행 중이던 선딜/돌진을 끊고 짧게 허점을 여는다(src/battle/action/stagger.ts).
+export type ActionEnemyMode = "combat" | "windup" | "dash" | "recover" | "stagger";
 
 export interface ActionEnemyDashState {
   readonly dirX: -1 | 0 | 1;
@@ -53,6 +54,10 @@ export interface ActionEnemyState {
   dash?: ActionEnemyDashState;
   telegraph?: Phaser.GameObjects.Graphics;
   windupTween?: Phaser.Tweens.Tween;
+  /** 사망 연출(페이드)이 이미 시작됐는가 — 보상 이중 지급 방지. */
+  dying?: boolean;
+  /** 넉백 스프라이트 트윈. 연속 타격 때 이전 트윈을 먼저 멈춘다. */
+  knockbackTween?: Phaser.Tweens.Tween;
 }
 
 export interface ActionCombatSceneState {
@@ -68,6 +73,14 @@ export interface ActionCombatSceneState {
   /** 쿨다운 중 눌린 공격을 기록하는 입력 버퍼 규칙 상태. */
   attackBuffer: AttackBufferState;
   stamina: number;
+  /** 이번 프레임 홀드 가드가 서 있는가. */
+  guarding: boolean;
+  /** 가드 중 피해 배수(1 = 감소 없음). */
+  guardMultiplier: number;
+  /** 배운 액션 스킬을 숬서대로 추린 슬롯. */
+  skillSlotIds: string[];
+  /** 현재 출려로 캐스트하는 슬롯 인덱스. */
+  activeSkillSlot: number;
   hitstopMs: number;
   fieldSpawnRuntime?: FieldSpawnRuntimeState;
   barsGraphics?: Phaser.GameObjects.Graphics;
@@ -81,6 +94,10 @@ export interface ActionHudModel {
   readonly stamina: number;
   readonly staminaMax: number;
   readonly showStamina: boolean;
+  /** 슬롯에 올라은 액션 스킬 이름(표시용). */
+  readonly skillSlotNames: readonly string[];
+  readonly activeSkillSlot: number;
+  readonly guarding: boolean;
 }
 
 export const ACTION_STAMINA_MAX = 100;

@@ -2,6 +2,8 @@
 // 실시간 액션 전투 옵트인 패키지의 스키마 정규화 + 런타임 설정 해석.
 // timeSystem/monsterCollection과 같은 패턴: 생략 시 레거시(턴제 라우팅) 유지.
 
+import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
+
 import type {
   ActionCombatHudConfig,
   ActionSkillProfile,
@@ -18,6 +20,8 @@ export const DEFAULT_SWING_COOLDOWN_MS = 350;
 export const DEFAULT_SWING_RANGE = 1;
 export const DEFAULT_DODGE_STAMINA_COST = 25;
 export const DEFAULT_DODGE_IFRAMES_MS = 300;
+export const DEFAULT_GUARD_DAMAGE_REDUCTION_PERCENT = 50;
+export const DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC = 20;
 
 export interface ResolvedActionCombatConfig {
   readonly playerIframesMs: number;
@@ -31,6 +35,10 @@ export interface ResolvedActionCombatConfig {
   readonly staminaEnabled: boolean;
   readonly dodgeStaminaCost: number;
   readonly dodgeIframesMs: number;
+  /** 가드 중 피해 감소율(%). 0..90. */
+  readonly guardDamageReductionPercent: number;
+  /** 가드 유지 초당 스태미나 소모. */
+  readonly guardStaminaDrainPerSec: number;
   readonly enemyHpBars: "always" | "damaged" | "never";
   readonly fourWayMovement: boolean;
 }
@@ -65,6 +73,12 @@ export function normalizeActionCombatConfig(config: Partial<SystemActionCombat> 
   if (config.swingDamageBonus !== undefined) out.swingDamageBonus = clampInt(config.swingDamageBonus, 0, 9999, 0);
   if (config.dodgeStaminaCost !== undefined) out.dodgeStaminaCost = clampInt(config.dodgeStaminaCost, 0, 100, DEFAULT_DODGE_STAMINA_COST);
   if (config.dodgeIframesMs !== undefined) out.dodgeIframesMs = clampInt(config.dodgeIframesMs, 0, 3000, DEFAULT_DODGE_IFRAMES_MS);
+  if (config.guardDamageReductionPercent !== undefined) {
+    out.guardDamageReductionPercent = clampInt(config.guardDamageReductionPercent, 0, GUARD_MAX_DAMAGE_REDUCTION_PERCENT, DEFAULT_GUARD_DAMAGE_REDUCTION_PERCENT);
+  }
+  if (config.guardStaminaDrainPerSec !== undefined) {
+    out.guardStaminaDrainPerSec = clampInt(config.guardStaminaDrainPerSec, 0, 100, DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC);
+  }
   if (hud) out.hud = hud;
   return out;
 }
@@ -144,6 +158,8 @@ export function resolveActionCombatConfig(project: Project): ResolvedActionComba
     staminaEnabled: true,
     dodgeStaminaCost: clampInt(raw?.dodgeStaminaCost, 0, 100, DEFAULT_DODGE_STAMINA_COST),
     dodgeIframesMs: clampInt(raw?.dodgeIframesMs, 0, 3000, DEFAULT_DODGE_IFRAMES_MS),
+    guardDamageReductionPercent: clampInt(raw?.guardDamageReductionPercent, 0, GUARD_MAX_DAMAGE_REDUCTION_PERCENT, DEFAULT_GUARD_DAMAGE_REDUCTION_PERCENT),
+    guardStaminaDrainPerSec: clampInt(raw?.guardStaminaDrainPerSec, 0, 100, DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC),
     enemyHpBars: raw?.hud?.enemyHpBars ?? "damaged",
     fourWayMovement: raw?.fourWayMovement === true,
   };
