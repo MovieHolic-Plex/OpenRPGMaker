@@ -12,7 +12,6 @@ import {
   M2_PICKER_GROWTH_GROUP,
   M2_PICKER_MAP_GROUP,
   M2_PICKER_PARTY_GROUP,
-  M2_PICKER_SOUND_GROUP,
   M2_PICKER_SPEAK_GROUP,
   M2_PICKER_STAGING_GROUP,
   M2_PICKER_TRADE_GROUP,
@@ -48,7 +47,7 @@ const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
   // 분위기 명령은 탭 3 저작면이다. 조명·날씨·그림처럼 더 정확한 헤딩은
   // `mapScreenNativeSurfaceGroup` 가 kind 단위로 다심 직는다.
   atmosphere: M2_PICKER_STAGING_GROUP,
-  media: M2_PICKER_SOUND_GROUP,
+  media: "미디어",
   commerce: M2_PICKER_TRADE_GROUP,
   system: "시스템/고급",
   compatibility: "호환/고급",
