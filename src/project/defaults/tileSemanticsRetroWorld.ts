@@ -264,7 +264,7 @@ export const RETRO_WORLD_TILE_SEMANTICS: readonly RetroWorldTileSemanticEntry[] 
   one(234, "다색 깃발형 묶음", "banner", "solid", ["banner", "여러색", "판독보류"]),
   one(235, "분홍 가로대 나무사다리", "ladder", "passable", ["ladder", "목재", "가로대"]),
   one(236, "검은 단색 사각형", "decoration", "solid", ["black", "빈타일", "판독보류"]),
-  one(237, "자홍빛 세로형 받침 장치", "machine", "solid", ["device", "금속", "판독보류"]),
+  one(237, "회색 세로형 받침 장치", "machine", "solid", ["device", "금속", "판독보류"]),
   one(238, "회색 날개 석상", "statue", "solid", ["statue", "조각상", "날개"]),
   one(239, "회색 홈무늬 기둥", "pillar", "solid", ["pillar", "석주", "세로홈"]),
 
