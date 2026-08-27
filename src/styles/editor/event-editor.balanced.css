@@ -320,6 +320,27 @@
   grid-template-columns: 228px minmax(0, 1fr) !important;
 }
 
+/* 인스펙터가 열리면 명령 목록이 12px 리사이저 트랙으로 밀려 34px 미만으로 접혔다
+   (적대적 QA 3라운드 D5 실측: 12px). 원인은 자동 배치 —
+   `.event-editor-column-resizer { grid-column: 1 }` 이 배치 커서를 한 칸 당겨서
+   목록이 리사이저 트랙, 인스펙터가 목록 트랙에 앉았다(4번째 트랙은 빈 채로).
+   최종 기하는 windowing 레이어가 소유하므로(설정 | 12px 리사이저 | 목록 | 348px 인스펙터)
+   트랙 목록은 그대로 두고, 네 컬럼의 트랙만 못 박아 자동 배치를 없앤다.
+   단일 컬럼으로 접히는 720px 이하는 제외한다. */
+@media (min-width: 721px) {
+  .event-editor .event-editor-workbench > .event-editor-settings-column {
+    grid-column: 1;
+  }
+
+  .event-editor .event-editor-workbench.has-command-inspector > .event-editor-commands-column {
+    grid-column: 3;
+  }
+
+  .event-editor .event-editor-workbench.has-command-inspector > .event-editor-inspector-column {
+    grid-column: 4;
+  }
+}
+
 .event-editor .event-editor-column-resizer {
   display: block;
   grid-column: 1;

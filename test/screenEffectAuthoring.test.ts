@@ -12,9 +12,15 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderCommandPreview } from "@/editor/panels/eventEditor/commandPreview";
+import {
+  clearCommandInspector,
+  setCommandInspectorHost,
+  showCommandInspector,
+} from "@/editor/panels/eventEditor/commandInspector";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
+import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { FakeElement, findByTestId, flushFakeAnimationFrames, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 const SCREEN_EFFECT_ID = "m2-202-screen-effect";
@@ -101,5 +107,69 @@ describe("screen effect authoring — stage and play control", () => {
     // parseTintColor("#xyz") → screenColorToRgb 폴백 = 흰색 45%. 투명 검정 금지.
     expect(overlay?.style.background).toBe("rgba(255,255,255,0.45)");
     expect(findByTestId(preview, "ecp-screen-effect-error")?.textContent).toContain("#xyz");
+  });
+});
+
+/**
+ * D5(3라운드): 명령 행 한 번 클릭으로 열리는 우측 인스펙터에는 프리뷰가 아예 없었다.
+ * 스테이지는 Space 로 여는 편집 모달에만 있었고, 인스펙터의 `↻ 미리보기 새로고침` 버튼은
+ * 빈 약속이었다(누르면 프리뷰 없는 패널을 다시 그림).
+ */
+describe("screen effect authoring — inline inspector preview (D5)", () => {
+  let restoreDom: (() => void) | undefined;
+
+  const noopActions: CommandListActions = {
+    addCommand: () => {},
+    insertCommand: () => {},
+    replaceCommand: () => {},
+    deleteCommand: () => {},
+    moveCommand: () => {},
+    moveCommandTo: () => {},
+  };
+
+  function openInspector(fields: Record<string, unknown>): FakeElement {
+    const host = new FakeElement("div");
+    setCommandInspectorHost(host as unknown as HTMLElement);
+    showCommandInspector({ command: screenEffect(fields), path: [0], actions: noopActions });
+    return host;
+  }
+
+  beforeEach(() => {
+    restoreDom = installFakeDom({ animationFrames: "manual" });
+    store.replace(createBlankProject());
+  });
+
+  afterEach(() => {
+    clearCommandInspector();
+    setCommandInspectorHost(undefined);
+    restoreDom?.();
+  });
+
+  it("renders the same stage and play control the edit modal has", () => {
+    const host = openInspector({ effect: "fadeOut", value: "", durationMs: 900 });
+    expect(findByTestId(host, "event-inspector-preview")).toBeTruthy();
+    expect(findByTestId(host, "ecp-screen-effect-stage")).toBeTruthy();
+    expect(findByTestId(host, "ecp-screen-effect-play")).toBeTruthy();
+  });
+
+  it("plays the effect inside the inspector", () => {
+    const host = openInspector({ effect: "fadeOut", value: "", durationMs: 900 });
+    const stage = findByTestId(host, "ecp-screen-effect-stage");
+    findByTestId(host, "ecp-screen-effect-play")?.click();
+    expect(stage?.dataset.playState).toBe("playing");
+    flushFakeAnimationFrames();
+    expect(findByTestId(host, "ecp-screen-effect-overlay")?.className).not.toContain("is-fx-from");
+  });
+
+  it("refresh button redraws a stage instead of an empty panel", () => {
+    const host = openInspector({ effect: "flash", value: "white", durationMs: 400 });
+    const refresh = findByTestId(host, "event-inspector-preview-restart");
+    expect(refresh).toBeTruthy();
+    refresh?.click();
+    const preview = findByTestId(host, "event-inspector-preview");
+    expect(preview?.childNodes.length ?? 0).toBeGreaterThan(0);
+    expect(findByTestId(host, "ecp-screen-effect-stage")).toBeTruthy();
+    // 새로고침은 폼을 날리지 않는다 — 값 입력이 그대로 남아야 한다.
+    expect(findByTestId(host, "m2-command-value-input")).toBeTruthy();
   });
 });
