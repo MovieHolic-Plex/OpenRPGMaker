@@ -49,7 +49,7 @@ type SupabaseMapMetaRow = {
   readonly height: number;
 };
 
-type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "ai_conversations" | "maps" | "tilesets" | "user_skills";
+type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "ai_conversations" | "maps" | "tilesets";
 type SupabaseCommitTable = "project_changes" | "project_commits";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 /** project_id → 마지막 성공 insert 커밋 id (parent 계보). */
@@ -502,91 +502,6 @@ export async function loadSupabaseConversation(
     return rows[0] ?? null;
   } catch {
     return null;
-  }
-}
-
-// ── 사용자 정의 스킬 미러 ────────────────────────────────────────────────
-export type SupabaseUserSkillInput = {
-  readonly id: string;
-  readonly icon: string;
-  readonly name: string;
-  readonly description: string;
-  readonly template: string;
-  /** params/needsSelection 등 확장 필드 원본(하위호환용 통째 저장). */
-  readonly skill: unknown;
-};
-
-export async function recordSupabaseUserSkill(
-  input: SupabaseUserSkillInput,
-  config = supabaseProjectConfig(),
-): Promise<SupabaseSaveResult> {
-  if (!config) return { kind: "not-configured" };
-  try {
-    await upsertRows(config, "user_skills", "project_id,skill_id", [
-      {
-        skill_id: input.id,
-        project_id: config.projectId,
-        icon: input.icon || "⭐",
-        name: input.name.slice(0, 120),
-        description: input.description.slice(0, 500),
-        template: input.template,
-        skill_json: input.skill,
-        updated_at: new Date().toISOString(),
-      },
-    ]);
-    return { kind: "saved" };
-  } catch (error) {
-    if ((error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error)) {
-      throw new SupabaseMigrationRequiredError(
-        "rpg_zzu.user_skills",
-        "20260713000000_ai_conversations_user_skills.sql",
-      );
-    }
-    throw error;
-  }
-}
-
-export async function deleteSupabaseUserSkill(
-  skillId: string,
-  config = supabaseProjectConfig(),
-): Promise<SupabaseSaveResult> {
-  if (!config) return { kind: "not-configured" };
-  const params = new URLSearchParams({
-    project_id: `eq.${config.projectId}`,
-    skill_id: `eq.${skillId}`,
-  });
-  try {
-    const response = await fetch(`${config.url}/rest/v1/user_skills?${params.toString()}`, {
-      method: "DELETE",
-      headers: supabaseJsonHeaders(config, "write"),
-    });
-    if (!response.ok) throw new SupabaseProjectSyncError(await response.text(), response.status);
-    return { kind: "saved" };
-  } catch (error) {
-    if ((error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error)) {
-      throw new SupabaseMigrationRequiredError(
-        "rpg_zzu.user_skills",
-        "20260713000000_ai_conversations_user_skills.sql",
-      );
-    }
-    throw error;
-  }
-}
-
-export async function listSupabaseUserSkills(
-  config = supabaseProjectConfig(),
-): Promise<readonly Record<string, unknown>[]> {
-  if (!config) return [];
-  const params = new URLSearchParams({
-    project_id: `eq.${config.projectId}`,
-    select: "skill_id,icon,name,description,template,skill_json,updated_at",
-    order: "updated_at.desc",
-    limit: "100",
-  });
-  try {
-    return await fetchJsonArray(`${config.url}/rest/v1/user_skills?${params.toString()}`, config);
-  } catch {
-    return [];
   }
 }
 

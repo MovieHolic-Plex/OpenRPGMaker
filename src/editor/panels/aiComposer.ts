@@ -13,15 +13,15 @@
 //    투명한 전면 레이어는 두지 않는다 — 보이지 않는 레이어가 맵 클릭을 삼킨 P0 사고가 있었다
 //    (2026-08-19, 회귀 스펙 `test/e2e/_ai-assistant-hostile-eval.spec.ts` H 히트테스트).
 //
-// 좌측 메타 레일은 폐기했다(2026-08-21, 감독 지시): 유리·사이드에서 레일 한 열이 `/` 버튼
+// 좌측 메타 레일은 폐기했다(2026-08-21, 감독 지시): 유리·사이드에서 레일 한 열이 버튼
 // **하나**만 담아, 열 자체가 그 버튼 하나를 위한 장식이 되고 하단을 어지럽혔다. 이제 메타
-// 진입점은 액션 행 좌측의 `☰` 하나뿐이고, 스킬 검색(`/`)·설정은 그 메뉴 안의 항목이다.
-// 세로 열이 없어져 바 높이도 레일 3버튼(92px) 하한에서 풀렸다.
+// 진입점은 액션 행 좌측의 `☰` 하나뿐이고 설정은 그 메뉴 안의 항목이다.
+// 조수 스킬 기능이 제거되면서 슬래시 팝오버(`/` 목록)와 그 앵커 버튼도 함께 사라졌다.
 
 import { el } from "@/util/dom";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
-export type ComposerPopover = "slash" | "suggest" | "menu";
+export type ComposerPopover = "suggest" | "menu";
 
 export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
@@ -42,9 +42,6 @@ export interface ComposerOptions {
   readonly input: HTMLTextAreaElement;
   readonly sendButton: HTMLButtonElement;
   readonly abortButton: HTMLButtonElement;
-  /** ☰ 메뉴의 "스킬 찾기" 항목 — 슬래시 팝오버를 연다(패널이 click 핸들러를 소유). */
-  readonly skillToggle: HTMLElement;
-  readonly slashHost: HTMLElement;
   readonly contextChips: HTMLElement;
   readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
@@ -70,20 +67,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   commandMenu.hidden = true;
 
-  // 스킬 진입점은 도크와 무관하게 액션 행에 둔다. 유리·사이드는 CSS 로 `☰` 와 추천
-  // 팝오버를 숨기므로(02-chat-dock.css), 예전에는 기본 도크에서 액션 행이 전송 버튼
-  // 하나만 든 빈 밴드였고 타이핑을 시작하면 `ai-next-steps` 카드까지 사라져 "무엇을
-  // 칠 수 있는지" 알려주는 표면이 하나도 남지 않았다(실측 312x28).
-  // 동작은 복제하지 않고 기존 메뉴 항목의 click 을 재사용한다 — 슬래시 질의의 단일
-  // 소스는 입력창이어야 하고, 그 규칙은 그 핸들러가 이미 지키고 있다.
-  const skillButton = el("button", {
-    class: "ai-composer-menu-btn ai-composer-skill-btn",
-    text: "/",
-    attrs: { type: "button", title: "스킬 찾기", "aria-label": "스킬 찾기" },
-    dataset: { testid: "ai-composer-skill-button" },
-    on: { click: () => options.skillToggle.click() },
-  }) as HTMLButtonElement;
-
   // 추천 칩 팝오버 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 버튼 없음).
   // 흐름 밖이라 열림/닫힘이 바 높이를 건드리지 않는다(구 구조의 점프 원인).
   const suggestPopover = el("div", {
@@ -93,9 +76,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [options.composerChips],
   });
   suggestPopover.hidden = true;
-
-  options.slashHost.classList.add("ai-composer-popover", "ai-composer-slash");
-  options.slashHost.hidden = true;
 
   // 액션 행: 항상 존재하는 고정 높이 한 줄. 좌측 컨텍스트/대기 큐는 nowrap + 가로 스크롤이라
   // 내용이 길어져도 줄이 늘지 않는다(줄바꿈이 곧 바 높이 변화였다).
@@ -110,7 +90,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("div", {
         class: "ai-composer-actions-lead",
-        children: [commandMenuToggle, skillButton, options.contextChips, options.queueIndicator],
+        children: [commandMenuToggle, options.contextChips, options.queueIndicator],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
@@ -129,7 +109,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     class: "ai-command-bar",
     dataset: { testid: "ai-command-bar" },
     // 팝오버는 셸의 형제로 두고 absolute 로 띄운다 — 흐름 밖.
-    children: [options.slashHost, suggestPopover, commandMenu, composer],
+    children: [suggestPopover, commandMenu, composer],
   });
 
   // 키 힌트는 입력 중에만 필요한 안내다. 상시 노출은 액션 행을 영구 점유했다(실측 160x15).
@@ -141,15 +121,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   options.input.addEventListener("blur", onInputBlur);
 
   const popoverOf = (kind: ComposerPopover): HTMLElement =>
-    kind === "slash" ? options.slashHost : kind === "suggest" ? suggestPopover : commandMenu;
-  // 슬래시 목록의 열림 표시는 메뉴 안의 "스킬 찾기" 항목이 들고 있다(전용 바 버튼 없음).
+    kind === "suggest" ? suggestPopover : commandMenu;
   const toggleOf = (kind: ComposerPopover): HTMLElement | null =>
-    kind === "slash" ? options.skillToggle : kind === "suggest" ? null : commandMenuToggle;
+    kind === "suggest" ? null : commandMenuToggle;
 
   const openPopover = (kind: ComposerPopover | null): void => {
     if (openState === kind) return;
     openState = kind;
-    for (const candidate of ["slash", "suggest", "menu"] as const) {
+    for (const candidate of ["suggest", "menu"] as const) {
       const open = candidate === kind;
       popoverOf(candidate).hidden = !open;
       toggleOf(candidate)?.setAttribute("aria-expanded", String(open));

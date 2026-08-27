@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { SYSTEM_SKILLS, type SkillRunContext } from "@/ai/skills";
+import { buildClusterEditKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { commitChangeset } from "@/editor/tools/changeset";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
@@ -8,11 +8,6 @@ import { store } from "@/project/store";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
 
 const MAP_ID = "map_autotile_rules";
-const CTX: SkillRunContext = {
-  mapId: MAP_ID,
-  mapName: "오토타일 규칙 테스트",
-  selection: null,
-};
 
 let previousProject: Project;
 
@@ -186,7 +181,26 @@ function projectWithGroup(tileGroup: TileGroupMetadata): { readonly map: GameMap
   return { map, project };
 }
 
+/** 킥오프 프롬프트에 실릴 그룹 스냅샷(구 skills.ts 의 clusterGroupSnapshot 로컬 픽스처). */
+function groupSnapshot(tilesetId: string, groupId: string): ClusterGroupSnapshot | null {
+  const group = store.getCurrent().tilesets[tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
+  if (!group) return null;
+  return {
+    id: group.id,
+    name: group.name,
+    role: group.role,
+    defaultLayer: group.defaultLayer,
+    tileIds: [...group.tileIds],
+    description: group.description,
+    placementRules: group.placementRules,
+    patternGrammar: group.patternGrammar ? { kind: group.patternGrammar.kind } : null,
+  };
+}
+
 function clusterEditPrompt(groupId: string): string {
-  const cluster = SYSTEM_SKILLS.find((skill) => skill.id === "cluster-edit");
-  return cluster?.buildPrompt?.({ tilesetId: DEFAULT_TILESET_ID, groupId }, CTX) ?? "";
+  return buildClusterEditKickoff({
+    tilesetId: DEFAULT_TILESET_ID,
+    groupId,
+    group: groupSnapshot(DEFAULT_TILESET_ID, groupId),
+  });
 }

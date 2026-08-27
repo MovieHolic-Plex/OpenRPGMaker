@@ -4,7 +4,6 @@
    ========================================================================= */
 
 @import "./assistant-proposal.css";
-@import "./assistant-skills.css";
 @import "./assistant-command-bar.css";
 @import "./assistant-rising-overlay.css";
 
@@ -30,3 +29,5 @@
 /* 조수 UX 수리 — 가장 나중에 불어 기존 도크 규칙을 이긴다(힌트 visibility 등). */
 @import "./tabs-b-assistant-panel/14-assistant-ux-repair.css";
 @import "./tabs-b-assistant-panel/15-assistant-readable.css";
+/* 변경 우선 모던 스타일 — 마지막에 불어 툴 활동 후경화와 카드 규칙이 09/13/14/15 를 이긴다. */
+@import "./tabs-b-assistant-panel/16-modern-change-first.css";

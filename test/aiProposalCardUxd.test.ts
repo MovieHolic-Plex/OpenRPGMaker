@@ -662,19 +662,6 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-msg-badge-reverted")?.textContent).toBe("되돌려짐");
   });
 
-  it("스킬 실행 사용자 메시지는 실제 지시 보기 토글을 포함한다", async () => {
-    // Break: slash-running map-audit no longer attaches the raw-prompt toggle.
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "검증하겠습니다." }));
-    const panel = renderPanel();
-    const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "/검증";
-    input.dispatchEvent(new Event("input"));
-    findByTestId(panel, "ai-slash-item-map-audit")?.click();
-    await flushAsync();
-
-    expect(findByTestId(panel, "ai-skill-prompt-toggle")?.textContent).toBe("실제 지시 보기");
-    expect(findByTestId(panel, "ai-skill-prompt-raw")?.textContent).toContain("현재 맵(빈 맵)을 전면 검증해 주세요");
-  });
 });
 
 describe("UXD topbar identity chip", () => {
@@ -769,8 +756,8 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     await flushAsync();
 
     expect(findByTestId(panel, "ai-proposal-card")).toBeNull();
-    expect(findByTestId(panel, "ai-auto-applied-card")).toBeTruthy();
-    expect(findByTestId(panel, "ai-auto-applied-undo")).toBeTruthy();
+    expect(findByTestId(panel, "ai-change-card")).toBeTruthy();
+    expect(findByTestId(panel, "ai-change-undo")).toBeTruthy();
     const map = store.getCurrent().maps[mapId];
     expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.PATH);
     // 린트 경고는 게이트가 아니라 로그로 전달된다.
@@ -796,7 +783,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
 
     expect(findByTestId(panel, "ai-proposal-card")).toBeTruthy();
     expect(findByTestId(panel, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
-    expect(findByTestId(panel, "ai-auto-applied-card")).toBeNull();
+    expect(findByTestId(panel, "ai-change-card")).toBeNull();
   });
 
   it("자동 적용을 끄면 비파괴 제안도 검토 카드로 돌아간다", async () => {
@@ -818,7 +805,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     await flushAsync();
 
     expect(findByTestId(panel, "ai-proposal-card")).toBeTruthy();
-    expect(findByTestId(panel, "ai-auto-applied-card")).toBeNull();
+    expect(findByTestId(panel, "ai-change-card")).toBeNull();
     const map = store.getCurrent().maps[mapId];
     expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.GRASS);
   });
@@ -845,7 +832,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     await flushAsync();
 
     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("배치 검증 실패");
-    expect(findByTestId(panel, "ai-auto-applied-card")).toBeNull();
+    expect(findByTestId(panel, "ai-change-card")).toBeNull();
     expect(store.getCurrent().maps[mapId].upperTiles[brokenIndex]).not.toBe(260);
   });
 });

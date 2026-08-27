@@ -31,12 +31,7 @@ describe("resolveIntentClarification — 집 vs 실내", () => {
     expect(resolveIntentClarification("진행해")).toBeNull();
   });
 
-  it("명시 스킬 id면 되묻지 않는다", () => {
-    expect(resolveIntentClarification("집 하나 만들어줘", { explicitSkillId: "build-house" })).toBeNull();
-    expect(resolveIntentClarification("집 하나 만들어줘", { explicitSkillId: "build-interior" })).toBeNull();
-  });
-
-  it("스킬 킥오프 프로토콜 문장은 되묻지 않는다", () => {
+  it("킥오프 프로토콜 문장은 되묻지 않는다", () => {
     const kickoff = [
       "현재 맵(마을)에 집을 지어주세요.",
       "- 크기: 10×10",

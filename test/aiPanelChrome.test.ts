@@ -81,7 +81,6 @@ function findByAttr(root: FakeElement, name: string, value: string): FakeElement
 const TAB_ORDER_TAGS = new Set(["BUTTON", "TEXTAREA", "INPUT"]);
 const IDLE_FLOAT_TAB_STOPS = [
   "ai-command-menu-toggle",
-  "ai-skill-slash-toggle",
   "ai-input",
   "ai-send",
 ] as const;
@@ -347,7 +346,7 @@ describe("AI 패널 크롬", () => {
     expect(getMapEditHistoryState().canUndo).toBe(false);
   });
 
-  it("펼친 플로트에서 숨은 툴바·서랍 버튼은 tab 순서에 없다", () => {
+  it("펼친 플로트에서 숨은 툴바 버튼은 tab 순서에 없다", () => {
     const panel = renderPanel();
     expandPanel(panel);
 
@@ -355,7 +354,6 @@ describe("AI 패널 크롬", () => {
     const stopIds = stops.map((stop) => stop.dataset.testid).filter((id): id is string => Boolean(id));
 
     expect(stops.some((stop) => stop.closest("[data-testid=ai-chat-toolbar]") !== null)).toBe(false);
-    expect(stops.some((stop) => stop.closest("[data-testid=ai-skill-drawer]") !== null)).toBe(false);
     expect(stopIds).toEqual(expect.arrayContaining([...IDLE_FLOAT_TAB_STOPS]));
   });
 
