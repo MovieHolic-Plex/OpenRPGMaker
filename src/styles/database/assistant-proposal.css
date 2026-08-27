@@ -77,12 +77,45 @@
   line-height: 1.45;
   padding: 0;
 }
-.ai-proposal-thumbs {
+/* before→after 는 나란히 두지 않고 한 자리에서 좌→우로 한 번 훑는다.
+   after 를 before 위에 겹치고 clip-path 를 왼쪽에서 오른쪽으로 열어준다. */
+.ai-proposal-wipe {
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
 }
-@media (max-width: 420px) { .ai-proposal-thumbs { grid-template-columns: 1fr; } }
+.ai-proposal-wipe-stack {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  min-width: 0;
+  padding: 6px;
+  position: relative;
+}
+.ai-proposal-wipe-stack .ai-proposal-thumb {
+  display: grid;
+  min-width: 0;
+}
+.ai-proposal-wipe-stack .ai-proposal-thumb.is-after {
+  animation: ai-proposal-wipe-sweep var(--ai-proposal-wipe-ms, 420ms) linear both;
+  inset: 6px;
+  position: absolute;
+}
+@keyframes ai-proposal-wipe-sweep {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-proposal-wipe-stack .ai-proposal-thumb.is-after {
+    animation: none;
+    clip-path: none;
+  }
+}
+.ai-proposal-wipe-caption {
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 700;
+}
 .ai-proposal-thumb {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
@@ -417,15 +450,11 @@
 }
 
 /* 몰입 핵심: before/after 비교를 크게 나란히. */
-.ai-proposal-modal .ai-proposal-thumbs {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr 1fr;
+.ai-proposal-modal .ai-proposal-wipe {
   margin: 12px 0;
 }
 
-.ai-proposal-modal .ai-proposal-thumbs img,
-.ai-proposal-modal .ai-proposal-thumbs canvas {
+.ai-proposal-modal .ai-proposal-wipe canvas {
   image-rendering: pixelated;
   max-width: 100%;
   width: 100%;

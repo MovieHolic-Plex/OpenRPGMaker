@@ -3,6 +3,7 @@ import {
   agentGhostPreviewsForMap,
   appendAgentGhostPreviewForToolCall,
   buildGhostRevealSchedule,
+  GHOST_WIPE_DURATION_MS,
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
   getAgentGhostPreviewState,
@@ -220,99 +221,73 @@ describe("agent ghost preview live draft diff", () => {
   });
 });
 
-// 목업 계약(proposal-v2.html): 타일은 row-major 로 50ms 간격, 전체 스윕은 2.5s 상한.
-// 이벤트/NPC 는 마지막 타일 뒤부터 x 오름차순으로 100ms 간격.
+// 좌→우 단일 와이프 계약: 변경 셀은 열(x) 단위로 한 번에 드러난다. 같은 열은 같은 시각,
+// 열은 왼쪽에서 오른쪽으로, 총 길이는 셀 수와 무관하게 GHOST_WIPE_DURATION_MS 고정이다.
+// 셀별 스탬프 간격·이벤트 별도 팝인·2.5초 스윕은 없앴다(사용자 요청: "좌에서 우로 한번에 쏵").
 describe("buildGhostRevealSchedule", () => {
-  it("타일을 row-major(y→x) 순서로 50ms 간격 배치한다", () => {
+  it("같은 열은 같은 시각에 드러나고 열은 왼쪽에서 오른쪽으로 진행한다", () => {
     const schedule = buildGhostRevealSchedule([
       { x: 2, y: 1, layer: "lower" },
+      { x: 0, y: 5, layer: "lower" },
       { x: 0, y: 1, layer: "upper" },
       { x: 1, y: 0, layer: "lower" },
     ]);
 
-    expect(schedule.map((entry) => [entry.cell.x, entry.cell.y, entry.startMs, entry.kind])).toEqual([
-      [1, 0, 0, "tile"],
-      [0, 1, 50, "tile"],
-      [2, 1, 100, "tile"],
+    expect(schedule.map((entry) => [entry.cell.x, entry.cell.y, entry.startMs])).toEqual([
+      [0, 1, 0],
+      [0, 5, 0],
+      [1, 0, GHOST_WIPE_DURATION_MS / 2],
+      [2, 1, GHOST_WIPE_DURATION_MS],
     ]);
   });
 
-  it("같은 좌표의 lower/upper 는 lower 를 먼저 스탬프한다", () => {
+  it("같은 좌표의 lower·upper·event 는 같은 시각에 lower→upper→event 순서로 들어간다", () => {
     const schedule = buildGhostRevealSchedule([
+      { x: 1, y: 1, layer: "event" },
       { x: 1, y: 1, layer: "upper" },
       { x: 1, y: 1, layer: "lower" },
     ]);
 
-    expect(schedule.map((entry) => entry.cell.layer)).toEqual(["lower", "upper"]);
-    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 50]);
+    expect(schedule.map((entry) => entry.cell.layer)).toEqual(["lower", "upper", "event"]);
+    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 0, 0]);
+    expect(schedule.map((entry) => entry.kind)).toEqual(["tile", "tile", "event"]);
   });
 
-  it("셀이 많으면 총 스윕 2500ms 를 넘지 않도록 간격을 줄인다", () => {
-    const cells = Array.from({ length: 200 }, (_, index) => ({
-      x: index % 20,
-      y: Math.floor(index / 20),
-      layer: "lower" as const,
-    }));
-
-    const schedule = buildGhostRevealSchedule(cells);
-
-    expect(schedule).toHaveLength(200);
-    // step = max(8, min(50, floor(2500/200))) = 12
-    expect(schedule[1].startMs).toBe(12);
-    expect(schedule[199].startMs).toBe(199 * 12);
-    expect(schedule[199].startMs).toBeLessThanOrEqual(2500);
-  });
-
-  it("극단적으로 많은 셀도 최소 간격 8ms 를 유지한다", () => {
+  it("셀이 아무리 많아도 와이프 총 길이는 고정 상한을 넘지 않는다", () => {
     const cells = Array.from({ length: 400 }, (_, index) => ({
       x: index % 20,
       y: Math.floor(index / 20),
       layer: "lower" as const,
     }));
-
     const schedule = buildGhostRevealSchedule(cells);
 
-    expect(schedule[1].startMs).toBe(8);
+    expect(schedule).toHaveLength(400);
+    expect(schedule[0].startMs).toBe(0);
+    expect(schedule[schedule.length - 1].startMs).toBe(GHOST_WIPE_DURATION_MS);
+    // 열 20개 → 인접 열 간격은 균등하다.
+    const columnStarts = [...new Set(schedule.map((entry) => entry.startMs))];
+    expect(columnStarts).toHaveLength(20);
+    expect(columnStarts[1] - columnStarts[0]).toBeCloseTo(GHOST_WIPE_DURATION_MS / 19, 6);
   });
 
-  it("이벤트는 마지막 타일 뒤 100ms 부터 x 오름차순으로 100ms 간격 팝인한다", () => {
-    const schedule = buildGhostRevealSchedule([
-      { x: 5, y: 3, layer: "event" },
-      { x: 0, y: 0, layer: "lower" },
-      { x: 1, y: 0, layer: "lower" },
-      { x: 2, y: 9, layer: "event" },
-      { x: 2, y: 1, layer: "event" },
-    ]);
-
-    const events = schedule.filter((entry) => entry.kind === "event");
-    expect(schedule.filter((entry) => entry.kind === "tile").map((entry) => entry.startMs)).toEqual([0, 50]);
-    // 마지막 타일 시작 50ms → 첫 이벤트 150ms.
-    expect(events.map((entry) => [entry.cell.x, entry.cell.y, entry.startMs])).toEqual([
-      [2, 1, 150],
-      [2, 9, 250],
-      [5, 3, 350],
-    ]);
-  });
-
-  it("타일이 없으면 이벤트가 0ms 부터 시작하고, 빈 입력은 빈 스케줄을 낸다", () => {
-    const eventsOnly = buildGhostRevealSchedule([
-      { x: 4, y: 2, layer: "event" },
-      { x: 1, y: 7, layer: "event" },
-    ]);
-
-    expect(eventsOnly.map((entry) => entry.startMs)).toEqual([0, 100]);
-    expect(eventsOnly[0].cell.x).toBe(1);
+  it("빈 입력은 빈 스케줄이고, 한 열뿐이면 0ms 에 한 번에 드러난다", () => {
     expect(buildGhostRevealSchedule([])).toEqual([]);
+    const singleColumn = buildGhostRevealSchedule([
+      { x: 4, y: 2, layer: "event" },
+      { x: 4, y: 7, layer: "lower" },
+    ]);
+    expect(singleColumn.map((entry) => entry.startMs)).toEqual([0, 0]);
+    expect(singleColumn.map((entry) => entry.cell.y)).toEqual([2, 7]);
   });
 
-  it("opts 로 간격/상한을 바꿀 수 있고 셀 참조는 그대로 유지된다", () => {
+  it("durationMs 로 와이프 길이를 바꿀 수 있고 셀 참조는 그대로 유지된다", () => {
     const first = { x: 0, y: 0, layer: "lower" as const, tileId: 12, tilesetId: "ts_a" };
     const schedule = buildGhostRevealSchedule([first, { x: 1, y: 0, layer: "lower" }, { x: 9, y: 9, layer: "event" }], {
-      tileStepMs: 20,
-      eventStepMs: 40,
+      durationMs: 200,
     });
 
-    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 20, 60]);
+    // 와이프 선단은 공간을 지나간다 — 시각은 열 인덱스가 아니라 x 위치에 비례한다.
+    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 200 / 9, 200]);
     expect(schedule[0].cell).toBe(first);
   });
 });
