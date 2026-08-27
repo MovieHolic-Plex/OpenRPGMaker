@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels/sidebarFocus";
+import { captureFocus, restoreFocus, applyRovingTabindex, cssEscape } from "@/editor/panels/sidebarFocus";
 import { installFakeDom } from "./fakeDom";
 
 describe("sidebarFocus - Focus survival & Roving Tabindex", () => {
@@ -74,9 +74,91 @@ describe("sidebarFocus - Focus survival & Roving Tabindex", () => {
       restoreFocus(container, snapshot);
       expect(document.activeElement).toBe(outsideBtn);
     });
+
+    it("restores focus to oprn-tool-overflow anchor when focused element inside overflow dropdown disappears", () => {
+      const toolbar = document.createElement("div");
+      toolbar.setAttribute("role", "toolbar");
+
+      const overflowTrigger = document.createElement("button");
+      overflowTrigger.dataset.testid = "oprn-tool-overflow";
+
+      const dropdown = document.createElement("div");
+      dropdown.dataset.testid = "toolbar-overflow-dropdown";
+
+      const brush2Btn = document.createElement("button");
+      brush2Btn.dataset.testid = "brush-size-2";
+      dropdown.append(brush2Btn);
+
+      toolbar.append(overflowTrigger, dropdown);
+      container.append(toolbar);
+
+      brush2Btn.focus();
+      expect(document.activeElement).toBe(brush2Btn);
+
+      const snapshot = captureFocus(container);
+
+      // Rebuild container with dropdown closed (brush-size-2 is gone)
+      container.replaceChildren();
+      const newToolbar = document.createElement("div");
+      newToolbar.setAttribute("role", "toolbar");
+      const newOverflowTrigger = document.createElement("button");
+      newOverflowTrigger.dataset.testid = "oprn-tool-overflow";
+      newToolbar.append(newOverflowTrigger);
+      container.append(newToolbar);
+
+      restoreFocus(container, snapshot);
+      expect(document.activeElement).toBe(newOverflowTrigger);
+    });
+    it("escapes data-testid unconditionally for quoted string attribute selectors", () => {
+      expect(cssEscape('foo"bar\\baz')).toBe('foo\\"bar\\\\baz');
+    });
   });
 
   describe("applyRovingTabindex & keyboard navigation", () => {
+    it("드롭다운 버튼은 roving tabindex 를 받지 않아 Tab 순서에 남고, 그 안에서 누른 화살표는 도구막대 포커스를 옮기지 않는다", () => {
+      const toolbar = document.createElement("div");
+      toolbar.setAttribute("role", "toolbar");
+
+      const tool1 = document.createElement("button");
+      tool1.dataset.testid = "tool-paint";
+      tool1.classList.add("active");
+
+      const overflowTrigger = document.createElement("button");
+      overflowTrigger.dataset.testid = "oprn-tool-overflow";
+
+      const dropdown = document.createElement("div");
+      dropdown.dataset.testid = "toolbar-overflow-dropdown";
+
+      const copyBtn = document.createElement("button");
+      copyBtn.dataset.testid = "copy-button";
+      const brush4Btn = document.createElement("button");
+      brush4Btn.dataset.testid = "brush-size-4";
+
+      dropdown.append(copyBtn, brush4Btn);
+      toolbar.append(tool1, overflowTrigger, dropdown);
+      container.append(toolbar);
+
+      applyRovingTabindex(container);
+
+      // Toolbar buttons get roving tabindex
+      expect(tool1.getAttribute("tabindex")).toBe("0");
+      expect(overflowTrigger.getAttribute("tabindex")).toBe("-1");
+
+      // Dropdown buttons must NOT get tabindex="-1"
+      expect(copyBtn.getAttribute("tabindex")).toBeNull();
+      expect(brush4Btn.getAttribute("tabindex")).toBeNull();
+
+      // Arrow keys inside dropdown must NOT preventDefault or hijack focus to toolbar
+      copyBtn.focus();
+      let prevented = false;
+      const arrowDownEvent = new Event("keydown", { bubbles: true, cancelable: true }) as any;
+      arrowDownEvent.key = "ArrowDown";
+      arrowDownEvent.preventDefault = () => { prevented = true; };
+
+      copyBtn.dispatchEvent(arrowDownEvent);
+      expect(prevented).toBe(false);
+      expect(document.activeElement).toBe(copyBtn);
+    });
     it("sets tabindex=0 on active button and tabindex=-1 on others", () => {
       const toolbar = document.createElement("div");
       toolbar.setAttribute("role", "toolbar");

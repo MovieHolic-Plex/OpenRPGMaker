@@ -24,11 +24,29 @@ await page.addInitScript((mode) => {
 }, argMode);
 await page.goto(`http://127.0.0.1:${argPort}/?devProject=1&marketTown=1`, { waitUntil: "domcontentloaded" });
 await page.locator('[data-testid="edit-canvas"]').waitFor({ state: "visible", timeout: 90_000 });
-await page.waitForTimeout(900);
+// 고정 대기(900ms)는 느린 머신에서 트리거가 아직 붙지 않은 채로 클릭해 경주에 진다.
+// 조건으로 기다린다.
+await page.locator('[data-testid="oprn-tool-overflow"]').waitFor({ state: "visible", timeout: 30_000 });
+
+const steps: Record<string, unknown> = {};
 
 const isOpen = () => page.evaluate(() => Boolean(document.querySelector('[data-testid="toolbar-overflow-dropdown"]')));
 const open = async () => {
-  await page.getByTestId("oprn-tool-overflow").click({ timeout: 5000 });
+  // 클릭이 막히면 왜 막혔는지 남긴다: Playwright 의 actionability 실패는 "무엇이 대신
+  // 이벤트를 받는가"를 말해 주지 않으므로, 실패 시 히트테스트 결과를 직접 찍는다.
+  try {
+    await page.getByTestId("oprn-tool-overflow").click({ timeout: 5000 });
+  } catch (error) {
+    steps.openBlockedBy = await page.evaluate(() => {
+      const t = document.querySelector('[data-testid="oprn-tool-overflow"]') as HTMLElement | null;
+      if (!t) return "trigger-absent";
+      const r = t.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) as HTMLElement | null;
+      return `rect=${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.width)}x${Math.round(r.height)} hit=${hit?.tagName}.${(hit?.className || "").split(" ")[0]} isTrigger=${hit === t || Boolean(t.contains(hit))}`;
+    });
+    steps.openError = String(error).split("\n")[0];
+    throw error;
+  }
   await page.waitForTimeout(250);
 };
 const rectOf = (sel: string) => page.evaluate((s) => {
@@ -37,8 +55,6 @@ const rectOf = (sel: string) => page.evaluate((s) => {
   const r = el.getBoundingClientRect();
   return { x: r.x, y: r.y, width: r.width, height: r.height };
 }, sel);
-
-const steps: Record<string, unknown> = {};
 
 await open();
 steps.openedByTriggerClick = await isOpen();

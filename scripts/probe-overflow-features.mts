@@ -20,6 +20,7 @@ const PORT = arg("port", "9814");
 const MODE = arg("mode", "standard");
 const TAG = arg("tag", "after");
 const OUT = arg("out", ".omo/evidence/left-sidebar-repair");
+const [VW, VH] = arg("viewport", "1440x900").split("x").map(Number) as [number, number];
 
 async function openOverflow(page: Page): Promise<boolean> {
   const trigger = page.getByTestId("oprn-tool-overflow");
@@ -37,12 +38,28 @@ async function hitReachable(page: Page, testid: string): Promise<string> {
   return page.evaluate((id) => {
     const el = document.querySelector(`[data-testid="${id}"]`) as HTMLElement | null;
     if (!el) return "absent";
-    el.scrollIntoView({ block: "nearest" });
     const r = el.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) return "zero-size";
     const cx = r.x + r.width / 2;
     const cy = r.y + r.height / 2;
     if (cx < 0 || cy < 0 || cx > innerWidth || cy > innerHeight) return "offscreen";
+    // 조상 클리핑은 "그 조상이 이 요소를 실제로 자를 수 있는지"까지 봐야 한다. position:fixed
+    // 로 띄운 메뉴는 뷰포트 기준이므로 overflow:hidden 조상에게 잘리지 않는다 — palette-root
+    // 하단만 보고 판정하면 고쳐진 뒤에도 계속 FAIL 이 뜬다(실제로 그렇게 거짓 실패했다).
+    let fixedAncestor = false;
+    for (let n: HTMLElement | null = el; n; n = n.parentElement) {
+      if (getComputedStyle(n).position === "fixed") { fixedAncestor = true; break; }
+    }
+    if (!fixedAncestor) {
+      for (let n: HTMLElement | null = el.parentElement; n; n = n.parentElement) {
+        const cs = getComputedStyle(n);
+        if (cs.overflow === "visible" && cs.overflowY === "visible") continue;
+        const cr = n.getBoundingClientRect();
+        if (cy > cr.y + cr.height + 0.5 || cy < cr.y - 0.5) {
+          return `clipped-by:${n.tagName}.${(n.className || "").split(" ")[0]}(box ${Math.round(cr.y)}..${Math.round(cr.y + cr.height)} vs item ${Math.round(cy)})`;
+        }
+      }
+    }
     const hit = document.elementFromPoint(cx, cy);
     if (!hit) return "no-hit";
     return el === hit || el.contains(hit) ? "reachable" : `blocked-by:${(hit as HTMLElement).tagName}.${(hit as HTMLElement).className}`;
@@ -52,7 +69,7 @@ async function hitReachable(page: Page, testid: string): Promise<string> {
 async function main(): Promise<void> {
   mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const page = await browser.newPage({ viewport: { width: VW, height: VH } });
   await page.addInitScript((mode) => {
     localStorage.setItem("oprn:editor-ui-mode", mode as string);
     localStorage.setItem("rpg-zzu:editor-ui-mode", mode as string);
@@ -85,6 +102,31 @@ async function main(): Promise<void> {
     }, size);
   }
 
+  /* B2: 메뉴 안에서 섹션을 펼치면 메뉴가 커진다 — 그 상태에서 붓 크기가 여전히 닿는가.
+     펼치기는 이 변경이 되찾은 기능 자체이므로, 접힌 상태만 재는 것은 반쪽 증거다. */
+  const expanded: Record<string, string> = {};
+  if (await openOverflow(page)) {
+    await page.getByTestId("toolbar-toggle-history").click({ timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(320);
+    if (!(await openOverflow(page))) {
+      expanded["menu"] = "closed-after-expand";
+    } else {
+      expanded["menu"] = await page.evaluate(() => {
+        const dd = document.querySelector('[data-testid="toolbar-overflow-dropdown"]') as HTMLElement | null;
+        const root = document.querySelector('[data-testid="left-palette-root"]') as HTMLElement | null;
+        if (!dd || !root) return "absent";
+        const r = dd.getBoundingClientRect();
+        const cr = root.getBoundingClientRect();
+        return `ddBottom=${Math.round(r.y + r.height)} rootBottom=${Math.round(cr.y + cr.height)} scrollH=${dd.scrollHeight} clientH=${dd.clientHeight}`;
+      });
+      for (const id of ["brush-size-1", "brush-size-2", "brush-size-3", "brush-size-4"]) {
+        expanded[id] = await hitReachable(page, id);
+      }
+    }
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+  }
+
   /* 인스펙터·기록 패널이 정말 화면에 나오는가. */
   const panels: Record<string, string> = {};
   for (const [id, label] of [["oprn-tool-inspector", "인스펙터"], ["toolbar-toggle-history", "작업 기록"]] as const) {
@@ -109,8 +151,8 @@ async function main(): Promise<void> {
   }, sel);
   const geometry = { aiPanel: await rect('[data-testid="ai-panel"]'), leftPanel: await rect(".left-panel") };
 
-  const out = { tag: TAG, mode: MODE, at: new Date().toISOString(), features, brush, panels, geometry };
-  const file = join(OUT, `${TAG}-${MODE}-overflow-features.json`);
+  const out = { tag: TAG, mode: MODE, viewport: `${VW}x${VH}`, at: new Date().toISOString(), features, expanded, brush, panels, geometry };
+  const file = join(OUT, `${TAG}-${MODE}-${VW}x${VH}-overflow-features.json`);
   writeFileSync(file, JSON.stringify(out, null, 2));
   console.log(JSON.stringify(out, null, 2));
   console.log(`\nwrote ${file}`);

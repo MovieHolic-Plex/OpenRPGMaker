@@ -18,8 +18,15 @@ const pick = (name, fallback) => {
 const DIR = pick("dir", ".omo/evidence/left-sidebar-repair");
 const MODE = pick("mode", "standard");
 
+const VIEWPORT = pick("viewport", "1440x900");
+
 const load = (tag, kind) => {
-  const file = join(DIR, `${tag}-${MODE}-${kind}.json`);
+  // 기능 도달성 프로브는 뷰포트를 파일명에 넣는다 — 1440x900 만 재면 좁은 화면의 클리핑을
+  // 놓치기 때문이다(리뷰어 B1). 오래된 이름은 절대 대체로 읽지 않는다: 최종 CSS 를 설명하지
+  // 않는 파일로 판정하면 17/17 이 거짓이 된다(리뷰어 B5).
+  const file = kind === "overflow-features" || kind === "anchor-stability"
+    ? join(DIR, `${tag}-${MODE}-${VIEWPORT}-${kind}.json`)
+    : join(DIR, `${tag}-${MODE}-${kind}.json`);
   if (!existsSync(file)) return { missing: file };
   return JSON.parse(readFileSync(file, "utf8"));
 };
@@ -89,8 +96,33 @@ if (!afterFeat.missing) {
   const blocked = entries.filter(([, v]) => v !== "reachable");
   const beforeBlocked = beforeFeat.missing ? "?" : Object.entries(beforeFeat.features).filter(([k, v]) => k !== "⋯ 열림" && v !== "reachable").length;
   check("C1d", "갇힌 기능 9개가 전부 히트테스트로 도달된다", blocked.length === 0, `before차단=${beforeBlocked}/9 after차단=${blocked.length}/9 ${blocked.map(([k, v]) => `${k}:${v}`).join(", ")}`);
+  const expanded = Object.entries(afterFeat.expanded ?? {}).filter(([k]) => k !== "menu");
+  const expandedBlocked = expanded.filter(([, v]) => v !== "reachable");
+  check(
+    "C1e",
+    "섹션을 펼친 메뉴에서도 붓 크기 4종이 닿는다",
+    expanded.length > 0 && expandedBlocked.length === 0,
+    `측정 ${expanded.length}개 / 차단 ${expandedBlocked.length}개 | ${afterFeat.expanded?.menu ?? "menu 정보 없음"}`,
+  );
 } else {
   check("C1d", "갇힌 기능 9개 도달성", false, `after 기능 프로브 없음: ${afterFeat.missing}`);
+}
+
+/* 앵커 정렬은 히트테스트로 잡히지 않는다: 메뉴가 뷰포트 폭만큼 늘어나도 항목은 그 "안"에
+   있어 전부 reachable 로 나온다(이 브랜치에서 실제로 그렇게 18/18 이 나왔다). 그래서 트리거
+   정렬 증거를 판정에 포함한다. */
+const anchor = load("after", "anchor-stability");
+if (anchor.missing) {
+  check("C1f", "메뉴가 트리거에 정렬되어 있다", false, `앵커 증거 없음: ${anchor.missing}`);
+} else {
+  const dx = Number(/dxRight=(-?\d+)/.exec(anchor.afterOpen ?? "")?.[1] ?? "NaN");
+  const dxResize = Number(/dxRight=(-?\d+)/.exec(anchor.afterResize ?? "")?.[1] ?? "NaN");
+  check(
+    "C1f",
+    "메뉴가 트리거에 정렬되고 스크롤·리사이즈 후에도 유지된다",
+    Number.isFinite(dx) && Math.abs(dx) <= 8 && Number.isFinite(dxResize) && Math.abs(dxResize) <= 8,
+    `open=${anchor.afterOpen} | resize=${anchor.afterResize} | listeners=${anchor.listenerGrowth}`,
+  );
 }
 
 const failed = results.filter((r) => !r.pass);

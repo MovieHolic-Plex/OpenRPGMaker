@@ -106,6 +106,17 @@
     color: var(--on-accent);
   }
 
+  /* 선언을 분리하는 것만으로는 부족하다: `:hover:not(:disabled)` 는 클래스 5개,
+     `.active` 는 4개라 명시도에서 hover 가 이긴다. 그래서 고른 도구에 마우스를 올리는
+     순간 배경이 hover 상태와 정확히 같아지며(실측: 둘 다 rgba(15,23,42,0.08)) — 가리킨
+     버튼이 지금 선택된 것인지 알 수 없었다. 이 상태만 따로 받아 채운 모양을 지킨다. */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active:hover:not(:disabled) {
+    background: var(--editor-blue);
+    border-color: var(--editor-blue);
+    color: var(--on-accent);
+    filter: brightness(1.12);
+  }
+
   .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:disabled {
     color: var(--editor-text-soft);
     cursor: default;
