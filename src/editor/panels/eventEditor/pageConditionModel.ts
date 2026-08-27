@@ -109,7 +109,7 @@ export function toggleSwitchCondition(
   const next = withoutNthCondition(context.page.conditions, "switch", context.slot);
   const condition = switchConditionAt(context.page, context.slot);
   if (enabled) {
-    if (condition !== undefined) next.push({ ...condition, value: true });
+    if (condition !== undefined) next.push({ ...condition });
     else {
       // slot마다 다른 기본 스위치를 고른다(둘 다 sw[0]이면 동일 조건 중복).
       const switches = store.getCurrent().switches;
