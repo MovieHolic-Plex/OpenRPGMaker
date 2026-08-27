@@ -85,25 +85,58 @@
 
 ## 6. PR 병합 — 통과
 
-`base/tile-reaudit` 로 8개 PR 병합, 열린 PR 0개. origin/main 은 건드리지 않았다.
+`base/tile-reaudit` 로 **9개 PR 병합**, 열린 PR 0개. origin/main 은 건드리지 않았다.
+
+| PR | 병합 커밋 |
+|---|---|
+| #100 | `29645ac1` |
+| #102 | `e6418af0` |
+| #103 | `03ef0738` |
+| #104 | `722d35c4` |
+| #105 | `3f865ceb` |
+| #106 | `236f4f74` |
+| #107 | `e58811d4` |
+| #109 | `ab22348e` |
+| (최종) | 아래 정리 커밋 PR |
+
+`base/tile-reaudit` 최종 tip 은 `ab22348e` 이후 이 문서의 정리 커밋이다.
 
 ## 정리 영수증
 
 | 대상 | 상태 |
 |---|---|
+| 워크트리 QA dev server | PID **41208** (`rpg-zzu-tile-reaudit`, 127.0.0.1:**9173**) → **GONE**, 9173 리스너 사라짐 |
+| 백그라운드 터미널 세션 | **27개 전부 종료** |
 | 브라우저 컨텍스트 | chrome/headless_shell 프로세스 **0개** — playwright 종료 시 함께 닫혔다 |
 | playwright 산출물 | `test-results/`, `playwright-report/` **없음** (삭제) |
 | 임시 스크립트 | `/tmp/dump-idx.cjs`, `/tmp/chk24.cjs`, `/tmp/reaudited-exterior.ts` 삭제 |
 | dag 런 / 자식 태스크 | 진행 중 없음 |
 | 작업트리 | `git status --porcelain` **0줄** |
 
-dev server(0.0.0.0:9999)는 **일부러 살려뒀다**. playwright 설정이
-`reuseExistingServer: true` 라서 내가 띄운 게 아니라 이미 돌던 걸 재사용했고,
-이 저장소에는 `dev:keep:detached` 상주 supervisor 스크립트가 따로 있다.
-내가 시작하지 않은 상주 프로세스를 끄는 건 사용자 작업을 끊는 일이라 건드리지 않았다.
+내가 띄운 워크트리 QA 서버(9173)만 껐다. 포트 9999 의 두 리스너는
+PID **29096**·**4412** 로 둘 다 **본 저장소(`C:\Users\USER\Downloads\rpg-zzu`)** 의 vite 이고
+내가 시작한 게 아니라 원래 돌던 사용자 프로세스라 **살려뒀다** — 커맨드라인으로 작업 디렉터리를
+확인한 뒤 판단했다. 남의 상주 서버를 끄는 건 사용자 작업을 끊는 일이다.
+
+### 워크트리 e2e 의 함정 (기록해 둘 값어치가 있다)
+
+`playwright.config.ts` 가 `reuseExistingServer: true` 다. 그래서 워크트리에서 e2e 를 돌릴 때
+포트를 **본 저장소 dev server 가 이미 쥐고 있으면 교정 전 코드로 테스트가 돌아간다.**
+실제로 첫 실행이 이 이유로 옛 라벨(`붉은 지붕 하단 처마`)을 보고 실패했다 — 테스트 결함이 아니라
+**다른 브랜치를 측정한 것**이었다. 워크트리 e2e 는 그 워크트리 서버가 포트를 쥔 상태에서 돌려야 한다.
 
 ## 미해결 (숨기지 않고 남긴다)
 
 - **3칸** — 물건은 판독자들이 합의했지만 role 이 갈린다. `splits.txt`.
   `retro_world 296`, `ship 294`, `ship 430`. 그림만으로는 결정이 안 되고 제품 판단이 필요하다.
 - **10칸** — 저신뢰라 승격 보류. `needs-human.txt`.
+
+## 최종 검증 (145/146 교정 반영 후 재실행)
+
+| 검사 | 결과 |
+|---|---|
+| `verify-tile-semantics` | **6/6 시트 PASS**, 커버리지 478/478·478/478·480/480·478/478·464/464·478/478 |
+| 출하 엔트리 대조 | 2,856 = 2,856, **누락 0** |
+| 테스트 (8파일) | **128/128 통과** |
+| `npm run typecheck:app` | **exit 0** |
+| `git status --porcelain` | 0줄 |
