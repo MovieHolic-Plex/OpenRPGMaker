@@ -261,7 +261,7 @@ export async function saveProjectMapPatchToSupabase(
   removeLegacySpriteReferences(persistedProject);
   removeLegacySpriteReferences(baseProject);
   // 비교 정규화(todo 8 실측 결함): 로드 경로(repairSupabaseCurrentJson + deserialize →
-  // validateProjectV3)는 저장본을 로드할 때 맵을 **변형**한다 — normalizeShopCommands가
+  // validateProjectV4)는 저장본을 로드할 때 맵을 **변형**한다 — normalizeShopCommands가
   // shop 커맨드에 branchOnTransaction/transactionBranch/branchOnFailedTransaction/
   // failedTransactionBranch 기본 필드를 주입하고, stampCharacterIdsForSocialEvents가
   // characterId를 스탬프하며, repairProjectReferences가 끊긴 참조를 정리한다. 에디터
@@ -1002,7 +1002,7 @@ function mapSaveConflicts(
 /**
  * 맵 스냅샷 비교를 위한 정규화(todo 8 실측 결함 수정).
  *
- * 로드 경로(loadProjectSnapshotFromSupabase)는 저장본을 deserialize(→ validateProjectV3)
+ * 로드 경로(loadProjectSnapshotFromSupabase)는 저장본을 deserialize(→ validateProjectV4)
  * 로 통과시키면서 맵을 **변형**한다: normalizeShopCommands가 shop 커맨드에 branch
  * 필드(branchOnTransaction/transactionBranch/...)를 주입하고,
  * stampCharacterIdsForSocialEvents가 소셜 이벤트에 characterId를 스탬프하며,

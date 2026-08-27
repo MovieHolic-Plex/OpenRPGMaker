@@ -1,8 +1,7 @@
 // 동료(DB 액터) 이미지 리치 표면 공유 헬퍼.
-// - 초상화: faceset 한 칸 우선, 없으면 charset idle-front 한 칸(시트 전체 금지 계약 유지).
+// - 초상화: 낱장 얼굴 그림 우선, 없으면 charset idle-front 한 칸(캐릭셋 시트 전체 금지 계약 유지).
 // - 명령 피커 탭2 상단 로스터와 따라오기 프리셋 칩이 같은 렌더러를 쓴다.
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import {
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
@@ -15,14 +14,9 @@ import { clearChildren, el } from "@/util/dom";
 
 type PortraitIcon =
   | {
-      readonly kind: "sheet";
+      // 낱장 얼굴 그림 한 장 — 크롭 없이 초상 박스를 그대로 채운다.
+      readonly kind: "image";
       readonly url: string;
-      readonly cellWidth: number;
-      readonly cellHeight: number;
-      readonly columns: number;
-      readonly index: number;
-      readonly sheetWidth: number;
-      readonly sheetHeight: number;
     }
   | {
       // 캐릭터셋 폴백 — canonical 프레임 소스(charsetFrameSource)의 절대 오프셋.
@@ -39,18 +33,8 @@ type PortraitIcon =
 
 function companionPortrait(project: Pick<Project, "assets">, actor: ActorRecord): PortraitIcon {
   const faceUrl = resolveAssetResourceUrl(actor.faceResourceId, { project });
-  const slicing = RESOURCE_SLICING.faceset;
   if (faceUrl !== null) {
-    return {
-      kind: "sheet",
-      url: faceUrl,
-      cellWidth: slicing.cellWidth,
-      cellHeight: slicing.cellHeight,
-      columns: slicing.columns,
-      index: clampIndex(actor.faceIndex, slicing.columns * slicing.rows - 1),
-      sheetWidth: slicing.sheetWidth,
-      sheetHeight: slicing.sheetHeight,
-    };
+    return { kind: "image", url: faceUrl };
   }
   const charsetUrl = resolveAssetResourceUrl(actor.characterResourceId, { project });
   if (charsetUrl === null) return { kind: "none" };
@@ -89,21 +73,17 @@ export function companionPortraitElement(
     thumb.classList.add("is-initial");
     return thumb;
   }
-  const scale = options.sizePx / icon.cellWidth;
   thumb.style.setProperty("background-image", `url("${icon.url}")`);
   thumb.style.setProperty("background-repeat", "no-repeat");
-  thumb.style.setProperty(
-    "background-size",
-    `${icon.sheetWidth * scale}px ${icon.sheetHeight * scale}px`,
-  );
-  if (icon.kind === "sheet") {
-    const col = icon.index % icon.columns;
-    const row = Math.floor(icon.index / icon.columns);
-    thumb.style.setProperty(
-      "background-position",
-      `-${col * icon.cellWidth * scale}px -${row * icon.cellHeight * scale}px`,
-    );
+  if (icon.kind === "image") {
+    thumb.style.setProperty("background-size", `${options.sizePx}px ${options.sizePx}px`);
+    thumb.style.setProperty("background-position", "center");
   } else {
+    const scale = options.sizePx / icon.cellWidth;
+    thumb.style.setProperty(
+      "background-size",
+      `${icon.sheetWidth * scale}px ${icon.sheetHeight * scale}px`,
+    );
     thumb.style.setProperty(
       "background-position",
       `-${icon.x * scale}px -${icon.y * scale}px`,

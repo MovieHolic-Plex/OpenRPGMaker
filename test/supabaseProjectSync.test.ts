@@ -337,7 +337,7 @@ describe("Supabase project sync", () => {
   it("does not false-conflict when the load path repairs a saved map (shop commands)", async () => {
     // todo 8 실측 결함: 첫 마일스톤 저장 후 매 flush가 kind=conflict로 끝나 데모 행이
     // 다음 마일스톤을 저장할 수 없었다. 로드 경로(repairSupabaseCurrentJson + deserialize →
-    // validateProjectV3)는 저장본을 로드할 때 맵을 변형한다 — normalizeShopCommands가 shop
+    // validateProjectV4)는 저장본을 로드할 때 맵을 변형한다 — normalizeShopCommands가 shop
     // 커맨드에 branchOnTransaction/transactionBranch/branchOnFailedTransaction/
     // failedTransactionBranch 기본 필드를 주입한다. 에디터 메모리의 persistedBaseline/로컬
     // 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵도 JSON 문자열이 달라져

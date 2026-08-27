@@ -745,8 +745,8 @@ function actorRoleNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   return node;
 }
 
-/** 파티 행 왼쪽의 얼굴 초상. faceset 시트(4×4, 셀 48px)를 CSS 변수로 크롭한다.
- *  얼굴 리소스가 없으면 노드를 만들지 않는다(가짜 플레이스홀더를 넣지 않는다). */
+/** 파티 행 왼쪽의 얼굴 초상. 얼굴은 낱장 파일(48×48) 한 장이라 통째로 그린다.
+ *  얼굴 리소스가 없거나 URL 이 풀리지 않으면 노드를 만들지 않는다(가짜 플레이스홀더를 넣지 않는다). */
 function actorFaceNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   const project = store.getCurrent();
   const record = project.database.actors.find((entry) => entry.id === actor.recordId);
@@ -755,71 +755,28 @@ function actorFaceNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   if (!resourceId) return null;
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) return null;
-  const index = Math.max(0, Math.trunc(actor.faceIndex ?? record.faceIndex ?? 0)) % FACE_SHEET_GRID ** 2;
   const node = document.createElement("span");
   node.className = "battle-actor-face";
   node.dataset.testid = `battle-actor-face-${actor.recordId}`;
   node.dataset.faceResourceId = resourceId;
-  node.dataset.faceIndex = String(index);
   node.setAttribute("role", "img");
   node.setAttribute("aria-label", `${actor.name} 얼굴`);
   node.style.setProperty("--battle-face-url", `url("${url}")`);
-  applyFaceGrid(node, FACE_SHEET_GRID, index);
-  // 모든 얼굴 리소스가 4×4 시트는 아니다 — 단일 초상 파일(예: 1254×1254 버스트)도 등록돼 있고,
-  // 그걸 4×4 로 크롭하면 **좌상단 1/4 만** 나온다. 실제 크기를 읽어 격자를 정정한다.
-  // (동기로는 알 수 없어 로드 후 CSS 변수만 갈아끼운다 — 첫 프레임은 4×4 로 그려진다.)
-  correctFaceGridOnLoad(node, url, index);
+  // 스킨 CSS(_vxace/_rm2003)는 아직 셀 크기 × 격자로 background 를 계산한다. 격자 1 · 열/행 0 이
+  // "이미지 한 장을 셀 폭에 맞춰 통째로" 그리는 값이라, 스킨 CSS 를 건드리지 않고 낱장 얼굴을 그린다.
+  node.style.setProperty("--battle-face-grid", "1");
+  node.style.setProperty("--battle-face-col", "0");
+  node.style.setProperty("--battle-face-row", "0");
+  removeFaceNodeOnLoadError(node, url);
   return node;
 }
 
-/** EasyRPG RTP faceset 시트는 192×192 = 4열×4행(48px 셀). */
-const FACE_SHEET_GRID = 4;
-/** RM 계열 faceset 한 칸의 변 길이(px). */
-const FACE_CELL_PX = 48;
-
-function applyFaceGrid(node: HTMLElement, grid: number, index: number): void {
-  const wrapped = grid <= 1 ? 0 : index % (grid * grid);
-  node.style.setProperty("--battle-face-grid", String(grid));
-  node.style.setProperty("--battle-face-col", String(grid <= 1 ? 0 : wrapped % grid));
-  node.style.setProperty("--battle-face-row", String(grid <= 1 ? 0 : Math.floor(wrapped / grid)));
-  node.dataset.faceGrid = String(grid);
-}
-
-/** 실제 이미지 크기에서 격자 수를 추론한다. 폭과 높이를 함께 본다.
- *  RM 계열 faceset 은 정사각 시트이고 셀도 정사각 48px 다. 그래서 '폭==높이 이고 폭/48 이
- *  2~4 의 정수' 일 때만 시트(그 배수)로 보고, 그 외에는 전부 단일 초상(1)으로 본다.
- *
- *  이 판정으로 **실제로 고쳐진** 오판 사례(폭만 보던 시절에는 시트로 오판했다):
- *   - 384×384 단일 초상 → cells=8 은 4 초과 → grid 1 로 정정(예전엔 grid 8, 좌상단 1/64 만 표시)
- *   - 192×48 (4열 1행) 스트립 → 폭≠높이 → grid 1 로 정정(예전엔 grid 4, 없는 행을 크롭)
- *
- *  **여전히 모호해서 시트로 가정하는** 사례:
- *   - 96×96 → cells=2 는 2~4 범위 안이라 grid 2 로 판정한다. 이건 원리적으로 모호하다 —
- *     48px 얼굴의 2×2 시트일 수도, VX Ace 규격 96px 단일 얼굴일 수도 있고 이미지 크기만으로는
- *     구분할 수 없다. RM 관례상 96×96 은 2×2 시트가 흔하므로 시트로 가정하는 현재 동작이 합리적이다.
- *     96px 단일 얼굴을 쓰려면 이미지 크기로는 해결되지 않으므로 리소스 메타데이터로 격자를 명시해야 한다.
- *
- *  폭이 0 이하이거나 유한하지 않으면(로드 실패 등) 기존처럼 기본 격자를 유지한다. */
-function faceGridFromNaturalSize(width: number, height: number): number {
-  if (!Number.isFinite(width) || width <= 0) return FACE_SHEET_GRID;
-  if (width !== height) return 1;
-  const cells = width / FACE_CELL_PX;
-  if (!Number.isInteger(cells) || cells < 2 || cells > 4) return 1;
-  return cells;
-}
-
-/** 로드 성공/실패를 모두 다룬다.
- *  성공: 실제 이미지 크기(폭·높이)로 격자를 정정한다.
- *  실패(404 등): 얼굴 노드를 DOM 에서 제거한다. 그러면 '얼굴 리소스가 없으면 노드를 만들지
- *  않는다'는 기존 원칙이 404 에도 적용되어, vxace 스킨에서 셀 배경이 비고 테두리만 남지 않는다.
+/** 404 등 로드 실패 시 얼굴 노드를 DOM 에서 제거한다. 그러면 '얼굴 리소스가 없으면 노드를 만들지
+ *  않는다'는 원칙이 404 에도 적용되어, vxace 스킨에서 셀 배경이 비고 테두리만 남지 않는다.
  *  vxace CSS 가 :not(:has(.battle-actor-face)) 로 열을 접으므로 레이아웃도 알아서 맞는다. */
-function correctFaceGridOnLoad(node: HTMLElement, url: string, index: number): void {
+function removeFaceNodeOnLoadError(node: HTMLElement, url: string): void {
   if (typeof Image === "undefined") return;
   const probe = new Image();
-  probe.onload = () => {
-    const grid = faceGridFromNaturalSize(probe.naturalWidth, probe.naturalHeight);
-    if (grid !== FACE_SHEET_GRID) applyFaceGrid(node, grid, index);
-  };
   probe.onerror = () => {
     node.remove();
   };

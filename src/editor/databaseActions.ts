@@ -248,10 +248,6 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
           record.maxLevel = Math.max(record.initialLevel, actorPatch.maxLevel);
         }
         if ("faceResourceId" in actorPatch) record.faceResourceId = actorPatch.faceResourceId;
-        if ("faceIndex" in actorPatch) {
-          if (actorPatch.faceIndex === undefined) delete record.faceIndex;
-          else record.faceIndex = actorPatch.faceIndex;
-        }
         if ("characterResourceId" in actorPatch) record.characterResourceId = actorPatch.characterResourceId;
         if ("characterIndex" in actorPatch) {
           if (actorPatch.characterIndex === undefined) delete record.characterIndex;

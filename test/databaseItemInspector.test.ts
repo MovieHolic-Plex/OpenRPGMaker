@@ -22,11 +22,9 @@ let restoreDom: (() => void) | undefined;
 beforeEach(() => {
   restoreDom = installFakeDom();
   const project = createBlankProject();
-  project.database.actors[0]!.faceResourceId = "easyrpg-faceset-actor1";
-  project.database.actors[0]!.faceIndex = 0;
+  project.database.actors[0]!.faceResourceId = "easyrpg-faceset-actor1-00";
   if (project.database.actors[1]) {
-    project.database.actors[1]!.faceResourceId = "easyrpg-faceset-actor1";
-    project.database.actors[1]!.faceIndex = 1;
+    project.database.actors[1]!.faceResourceId = "easyrpg-faceset-actor1-01";
   }
   const item = project.database.items[0];
   if (!item) throw new Error("fixture needs at least one item");

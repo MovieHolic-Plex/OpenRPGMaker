@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
+import { FACE_IMAGE_SIZE, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { RESOURCE_PROFILE_SPECS, validateResourceDimensions } from "@/project/resourceProfiles";
 
 describe("RM2K3 resource profiles", () => {
@@ -34,17 +34,6 @@ describe("RM2K3 resource profiles", () => {
       columns: 12,
       rows: 8,
       count: 96,
-    });
-    expect(RESOURCE_SLICING.faceset).toMatchObject({
-      kind: "grid",
-      unit: "face",
-      cellWidth: 48,
-      cellHeight: 48,
-      columns: 4,
-      rows: 4,
-      count: 16,
-      sheetWidth: 192,
-      sheetHeight: 192,
     });
     expect(RESOURCE_SLICING.battleWeapon).toMatchObject({
       kind: "grid",
@@ -83,9 +72,30 @@ describe("RM2K3 resource profiles", () => {
     if (!result.ok) expect(result.message).toBe("칩셋: 480x256 크기가 필요합니다. 현재 320x240입니다.");
   });
 
-  it("rejects a faceset that is not the ontology 192x192 sheet", () => {
-    const result = validateResourceDimensions("faceset", 96, 96);
+  it("treats a faceset as one whole 48x48 image", () => {
+    expect(RESOURCE_SLICING.faceset).toEqual({ kind: "whole-image", unit: "image" });
+    expect(FACE_IMAGE_SIZE).toBe(48);
+
+    const result = validateResourceDimensions("faceset", FACE_IMAGE_SIZE, FACE_IMAGE_SIZE);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.tileCount).toBe(1);
+      expect(result.tilesPerRow).toBe(1);
+    }
+  });
+
+  it("still accepts the legacy 48-multiple square sheets left on disk", () => {
+    const sheet = validateResourceDimensions("faceset", 192, 192);
+    expect(sheet.ok).toBe(true);
+    if (sheet.ok) {
+      expect(sheet.tilesPerRow).toBe(4);
+      expect(sheet.tileCount).toBe(16);
+    }
+  });
+
+  it("rejects a faceset that is neither a 48x48 face nor a 48-multiple square", () => {
+    const result = validateResourceDimensions("faceset", 96, 48);
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.message).toBe("얼굴 그래픽: 192x192 크기가 필요합니다. 현재 96x96입니다.");
+    if (!result.ok) expect(result.message).toBe("얼굴 그래픽: 48x48 얼굴 한 장이 필요합니다. 현재 96x48입니다.");
   });
 });

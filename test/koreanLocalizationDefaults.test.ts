@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BATTLE_ANIMATION_ASSETS } from "@/assets/scarloxyPack";
@@ -41,7 +42,14 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     const project = createBlankProject();
     const ids: ReadonlySet<string> = new Set(EASYRPG_RTP_ASSETS.map((asset) => asset.id));
     const generatedIds: ReadonlySet<string> = new Set(GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
-    const allKnownIds: ReadonlySet<string> = new Set([...ids, ...generatedIds, ...builtinGeneratedResourceIds()]);
+    // 얼굴은 낱장 파일이다 — 시트를 잘라 만든 112장이 번들 리소스로 함께 등록된다.
+    const faceIds: ReadonlySet<string> = new Set(FACESET_FACE_ASSETS.map((face) => face.id));
+    const allKnownIds: ReadonlySet<string> = new Set([
+      ...ids,
+      ...generatedIds,
+      ...faceIds,
+      ...builtinGeneratedResourceIds(),
+    ]);
 
     // When: default resource IDs are read from actors, enemies, and system settings.
     const defaultIds = [
@@ -54,7 +62,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     ];
 
     // Then: each default resource points at an existing RTP 또는 generated asset.
-    expect(project.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1");
+    expect(project.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1-00");
     expect(project.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
     expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
     expect(project.system.titleResourceId).toBe("oprn-title-field");

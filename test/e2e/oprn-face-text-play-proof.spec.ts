@@ -227,7 +227,7 @@ async function authoredEventId(page: Page): Promise<string> {
   const event = map.events.find((entry) =>
     entry.pages?.some((pageEntry) =>
       pageEntry.commands.some((command) => command.kind === "text" && command.body === FACE_TEXT_BODY) &&
-      pageEntry.commands.some((command) => command.kind === "changeFace" && command.resourceId === "easyrpg-faceset-actor1")
+      pageEntry.commands.some((command) => command.kind === "changeFace" && command.resourceId === "easyrpg-faceset-actor1-00")
     )
   );
   if (!event) throw new Error("missing authored face/text event");
@@ -271,7 +271,7 @@ async function authoredDisplayOptionsFacesetChoicesEventId(page: Page): Promise<
         pageEntry.commands.some(
           (command) =>
             command.kind === "changeFace" &&
-            command.resourceId === "easyrpg-faceset-actor1" &&
+            command.resourceId === "easyrpg-faceset-actor1-00" &&
             command.flipHorizontally === true
         ) &&
         pageEntry.commands.some((command) => command.kind === "text" && command.body === DISPLAY_OPTIONS_FACESET_BODY) &&

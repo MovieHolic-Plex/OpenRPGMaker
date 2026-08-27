@@ -44,15 +44,15 @@ test("Change Face command editor shows the selected face crop and command summar
 
   const inspector = await openCommandInspector(editor, "changeFace");
   const resource = inspector.getByTestId("event-command-face-resource");
-  await resource.fill("easyrpg-faceset-actor1");
+  // 얼굴 한 칸 = 파일 한 장. 칸 번호 컨트롤은 없고 낱장 리소스 id 하나로 고른다
+  // (…-05 = 예전 4×4 시트의 5번 칸 = 사람이 읽는 「얼굴 6」).
+  await resource.fill("easyrpg-faceset-actor1-05");
   await dispatchChange(resource);
-  // 얼굴 칸은 4×4 그리드에서 고른다 — 0-based 5번 칸이 사람에게는 「얼굴 6」이다.
-  await inspector.getByTestId("event-command-face-slot-5").click();
 
   const preview = inspector.getByTestId("event-command-face-preview");
   await expect(preview).toBeVisible();
-  await expect(preview).toHaveAttribute("data-resource-id", "easyrpg-faceset-actor1");
-  await expect(preview).toHaveAttribute("data-face-index", "5");
+  await expect(preview).toHaveAttribute("data-resource-id", "easyrpg-faceset-actor1-05");
+  await expect(inspector.getByTestId("event-command-face-index")).toHaveCount(0);
   await expect(preview).toContainText("얼굴 6");
   await expect(preview).toContainText("왼쪽");
   await expect(preview).not.toContainText("left");
@@ -61,7 +61,6 @@ test("Change Face command editor shows the selected face crop and command summar
   await screenshotEvidence(page, EVIDENCE_DIR, "C001-face-command-preview.png");
   await writeEvidenceJson(EVIDENCE_DIR, "C001-face-command-preview.json", {
     cleanup: "Playwright closes the browser context and dev-server webServer after the test.",
-    faceIndex: await preview.getAttribute("data-face-index"),
     resourceId: await preview.getAttribute("data-resource-id"),
   });
 });
@@ -148,7 +147,7 @@ function reviewProject(): Project {
   const switchId = project.switches[0]?.id ?? "";
   const itemId = project.database.items[0]?.id ?? "";
   const commands: Command[] = [
-    { kind: "changeFace", resourceId: "easyrpg-faceset-actor2", faceIndex: 0, position: "left", flipHorizontally: false },
+    { kind: "changeFace", resourceId: "easyrpg-faceset-actor2-00", position: "left", flipHorizontally: false },
     { kind: "showPicture", pictureId: "pic_demo", resourceId: "easyrpg-picture-cloud", x: 24, y: 32 },
     { kind: "playAudio", resourceId: "bgm-demo-town", loop: true },
     { kind: "transfer", mapId, x: 7, y: 10, direction: "down", fade: "white" },

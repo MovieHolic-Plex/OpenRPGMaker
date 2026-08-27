@@ -19,7 +19,6 @@ import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import {
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
@@ -87,7 +86,7 @@ function renderCommandTree(
 ): void {
   host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState, options));
   if (cmd.kind === "changeFace") {
-    faceState.current = cmd.resourceId ? { resourceId: cmd.resourceId, faceIndex: cmd.faceIndex } : undefined;
+    faceState.current = cmd.resourceId ? { resourceId: cmd.resourceId } : undefined;
   }
   appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
 }
@@ -144,7 +143,7 @@ function renderCommandItem(
   const activeFaceForItem = faceState.current;
   const speakerFace =
     cmd.kind === "text" && activeFaceForItem
-      ? renderSummaryVisual({ type: "faceCrop", resourceId: activeFaceForItem.resourceId, faceIndex: activeFaceForItem.faceIndex })
+      ? renderSummaryVisual({ type: "faceCrop", resourceId: activeFaceForItem.resourceId })
       : null;
   if (speakerFace) speakerFace.dataset.testid = "cmd-speaker-face";
   head.append(
@@ -238,23 +237,19 @@ function renderCommandSummary(cmd: Command): HTMLElement {
 
 // [P1] 인라인 썸네일 렌더러. 실패(리소스 미해석, canvas 미지원)하면 null 로 조용히 생략.
 function renderSummaryVisual(visual: CommandSummaryVisual): HTMLElement | null {
-  if (visual.type === "faceCrop") return renderFaceCrop16(visual.resourceId, visual.faceIndex);
+  if (visual.type === "faceCrop") return renderFaceCrop16(visual.resourceId);
   if (visual.type === "charsetSprite") return renderCharsetSprite16(visual.spriteId);
   return renderMapThumb16(visual.mapId);
 }
 
-// 페이스셋 한 칸을 16x16 으로 크롭.
-function renderFaceCrop16(resourceId: string, faceIndex: number): HTMLElement | null {
+// 낱장 얼굴 한 장을 16x16 으로 축소한다(시트 크롭 없음).
+function renderFaceCrop16(resourceId: string): HTMLElement | null {
   const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
   if (!url) return null;
-  const slicing = RESOURCE_SLICING.faceset;
-  const scale = 16 / slicing.cellWidth;
-  const col = Math.max(0, faceIndex) % slicing.columns;
-  const row = Math.floor(Math.max(0, faceIndex) / slicing.columns);
   const crop = el("span", { class: "cmd-thumb cmd-thumb-face", attrs: { "aria-hidden": "true" } });
   crop.style.setProperty("background-image", `url("${url}")`);
-  crop.style.setProperty("background-size", `${slicing.sheetWidth * scale}px ${slicing.sheetHeight * scale}px`);
-  crop.style.setProperty("background-position", `-${col * slicing.cellWidth * scale}px -${row * slicing.cellHeight * scale}px`);
+  crop.style.setProperty("background-size", "16px 16px");
+  crop.style.setProperty("background-position", "center");
   return crop;
 }
 

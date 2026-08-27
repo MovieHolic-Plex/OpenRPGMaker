@@ -26,12 +26,12 @@ const referenceActors = [
   // 이전 주석은 사실이 아니었다. 실제 문제는 투명 픽셀의 RGB 가 여전히 #FF00FF 로 남아 있어서,
   // CSS 배경으로 확대 보간할 때 가장자리에 **마젠타 프린지**가 생긴다는 것이다(실측 스크린샷).
   // 그래서 얼굴 선명도는 48px faceset 해상도에 묶여 있다.
-  { id: "actor_hero", name: "아린", battleResourceId: "generated-actor-hero-01-battle", faceResourceId: "generated-actor-hero-01-face" },
-  { id: "actor_guardian", name: "수호자", battleResourceId: "generated-actor-hero-02-battle", faceResourceId: "generated-actor-hero-02-face" },
-  // hero-03 은 얼굴 시트가 생성되지 않았다(등록만 있고 파일이 없어 404 였다 —
-  // generatedAssetResourceResolver 주석 참조). 실제로 존재하는 RTP 얼굴 시트를 쓴다.
-  { id: "actor_mage", name: "마도사", battleResourceId: "generated-actor-hero-03-battle", faceResourceId: "easyrpg-faceset-actor2" },
-  { id: "actor_scout", name: "정찰병", battleResourceId: "generated-actor-hero-04-battle", faceResourceId: "easyrpg-faceset-people2" },
+  { id: "actor_hero", name: "아린", battleResourceId: "generated-actor-hero-01-battle", faceResourceId: "generated-actor-hero-01-face-00" },
+  { id: "actor_guardian", name: "수호자", battleResourceId: "generated-actor-hero-02-battle", faceResourceId: "generated-actor-hero-02-face-00" },
+  // hero-03 은 얼굴 그림이 생성되지 않았다(등록만 있고 파일이 없어 404 였다 —
+  // generatedAssetResourceResolver 주석 참조). 실제로 존재하는 RTP 낱장 얼굴을 쓴다.
+  { id: "actor_mage", name: "마도사", battleResourceId: "generated-actor-hero-03-battle", faceResourceId: "easyrpg-faceset-actor2-00" },
+  { id: "actor_scout", name: "정찰병", battleResourceId: "generated-actor-hero-04-battle", faceResourceId: "easyrpg-faceset-people2-00" },
 ] as const;
 
 export async function seedReferenceBattleProject(

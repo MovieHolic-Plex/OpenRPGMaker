@@ -1,9 +1,10 @@
 // 대사창 얼굴이 **런타임 CSS 만으로도** 그려지는지 지킨다.
 //
 // ── 있었던 결함(2026-07-27 확인) ─────────────────────────────────────────────
-// dialogue.ts 의 renderFace() 는 페이스셋 칩을
-//   <div class="dialogue-face actor-sheet-crop" style="--crop-url:…;--crop-x:…">
-// 로 만든다. 그런데 `.actor-sheet-crop` 의 background-image / width / height 선언은
+// dialogue.ts 의 renderFace() 는 얼굴 칩을
+//   <div class="dialogue-face dialogue-face-image" style="--face-url:…">
+// 로 만든다. 그런데 이 상자의 background-image / width / height 선언은 예전에 `.actor-sheet-crop`
+// 이라는 이름으로
 // src/styles/editor/event-editor-legacy.part-1.css — **에디터 전용 CSS** 에만 있었다.
 // 익스포트한 단독 플레이어는 src/player/player.css(tokens + runtime/playerRuntime)만
 // 불러오므로 그 규칙이 없고, 얼굴은 배경 없는 빈 테두리로 그려졌다.
@@ -19,19 +20,20 @@ const root = resolve(__dirname, "..");
 const read = (rel: string): string => readFileSync(resolve(root, rel), "utf8");
 
 describe("런타임 대사창 얼굴 CSS", () => {
-  it("dialogue.css 가 페이스셋 칩 크롭을 스스로 그린다", () => {
+  it("dialogue.css 가 낱장 얼굴 칩을 스스로 그린다", () => {
     const css = read("src/styles/dialogue.css");
-    const rule = css.slice(css.indexOf(".dialogue-face.actor-sheet-crop"));
+    const rule = css.slice(css.indexOf(".dialogue-face.dialogue-face-image"));
     expect(
       css,
-      "dialogue.css 에 .dialogue-face.actor-sheet-crop 규칙이 없다 — "
+      "dialogue.css 에 .dialogue-face.dialogue-face-image 규칙이 없다 — "
       + "에디터 CSS 없이 구동하는 익스포트 플레이어에서 얼굴이 빈 칸으로 그려진다.",
-    ).toContain(".dialogue-face.actor-sheet-crop");
-    // 크롭에 필요한 네 가지가 모두 있어야 한 칸만 보인다.
-    for (const declaration of ["background-image", "background-position", "background-size", "height", "width"]) {
-      expect(rule.slice(0, 500), `크롭 선언 ${declaration} 이 없다`).toContain(declaration);
+    ).toContain(".dialogue-face.dialogue-face-image");
+    // 얼굴은 시트가 아니라 파일 한 장이다 — 칸을 자르는 background-position 없이
+    // 상자 크기에 그림을 맞추는 선언만 있으면 된다.
+    for (const declaration of ["background-image", "background-size", "height", "width"]) {
+      expect(rule.slice(0, 500), `얼굴 선언 ${declaration} 이 없다`).toContain(declaration);
     }
-    expect(rule.slice(0, 500)).toContain("--crop-url");
+    expect(rule.slice(0, 500)).toContain("--face-url");
   });
 
   it("dialogue.css 는 런타임 CSS 사슬 안에 있다", () => {

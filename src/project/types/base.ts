@@ -416,4 +416,4 @@ export interface Terms {
   mp?: string;
 }
 
-export const SCHEMA_VERSION = 3 as const;
+export const SCHEMA_VERSION = 4 as const;

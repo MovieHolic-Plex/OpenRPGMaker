@@ -102,8 +102,9 @@ async function setMessageSettings(page: Page, format: "normal" | "transparent", 
 }
 
 async function setFace(page: Page): Promise<void> {
-  await editCommand(page, "changeFace", async (command) => fillAndChange(command.getByTestId("event-command-face-resource"), "easyrpg-faceset-actor1"));
-  await editCommand(page, "changeFace", async (command) => fillAndChange(command.getByTestId("event-command-face-index"), "3"));
+  // 얼굴 한 칸 = 파일 한 장 — 칸 번호 입력은 사라졌고 낱장 얼굴 id 하나만 고른다
+  // (…-02 = 예전 「얼굴 3」 = 0-based 2번 칸).
+  await editCommand(page, "changeFace", async (command) => fillAndChange(command.getByTestId("event-command-face-resource"), "easyrpg-faceset-actor1-02"));
   await editCommand(page, "changeFace", async (command) => { await command.getByTestId("event-command-face-position").selectOption("right"); });
   await editCommand(page, "changeFace", async (command) => command.getByTestId("event-command-face-flip-horizontal").check());
 }
@@ -228,7 +229,7 @@ function assertExport(state: DebugState): void {
   const dialogue = commandsOf(state, "ev_loop12_dialogue");
   expect(dialogue).toEqual(expect.arrayContaining([
     expect.objectContaining({ kind: "displayTextSettings", format: "normal", position: "bottom" }),
-    expect.objectContaining({ kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 2, position: "right", flipHorizontally: true }),
+    expect.objectContaining({ kind: "changeFace", resourceId: "easyrpg-faceset-actor1-02", position: "right", flipHorizontally: true }),
     expect.objectContaining({ kind: "text", speaker: "Loop12 NPC", body: FACE_TEXT }),
     expect.objectContaining({ kind: "choices", options: expect.arrayContaining([expect.objectContaining({ text: "Omega" })]) }),
   ]));
@@ -247,7 +248,7 @@ function dialogueChoiceProject(): Project {
   map.events.push(
     event("ev_loop12_dialogue", 4, 5, [
       { kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: true, allowEventMovementDuringWait: false },
-      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-00", position: "left", flipHorizontally: false },
       { kind: "text", speaker: "Draft", body: "Draft" },
       { kind: "choices", prompt: "Draft", cancelBehavior: "choice2", options: FIVE_OPTIONS.map((text, index) => ({ text, branch: index === 4 ? [{ kind: "setVariable", variableId: "var_loop12_choice", op: "=", value: 5 }, { kind: "text", speaker: "Branch", body: CHOICE_TEXT }] : [] })) },
     ]),

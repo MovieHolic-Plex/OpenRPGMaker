@@ -8,10 +8,10 @@ import { describe, expect, it } from "vitest";
 import type { Command } from "@/project/types";
 import { roundtripCommands, runCommandContract } from "./harness";
 
+// 얼굴 한 칸 = 파일 한 장. 시트 id + 칸 번호 짝은 없어졌고 낱장 얼굴 리소스 id 하나만 남는다.
 const FACE_COMMAND: Extract<Command, { kind: "changeFace" }> = {
   kind: "changeFace",
-  resourceId: "easyrpg-faceset-actor1",
-  faceIndex: 1,
+  resourceId: "easyrpg-faceset-actor1-01",
   position: "left",
   flipHorizontally: false,
 };
@@ -25,8 +25,7 @@ describe("changeFace 계약", () => {
         kind: "text",
         body: "face",
         face: {
-          resourceId: "easyrpg-faceset-actor1",
-          faceIndex: 1,
+          resourceId: "easyrpg-faceset-actor1-01",
           position: "left",
           flipHorizontally: false,
         },
@@ -53,7 +52,7 @@ describe("changeFace 계약", () => {
   it("경계: 빈 resourceId 는 현재 face 상태를 지우고 text 는 face 없이 진행된다", () => {
     const result = runCommandContract([
       FACE_COMMAND,
-      { kind: "changeFace", resourceId: "", faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false },
       { kind: "text", body: "cleared" },
     ]);
 

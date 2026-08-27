@@ -38,8 +38,7 @@ describe("text 계약", () => {
       },
       {
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-actor1",
-        faceIndex: 2,
+        resourceId: "easyrpg-faceset-actor1-02",
         position: "right",
         flipHorizontally: true,
       },
@@ -53,8 +52,7 @@ describe("text 계약", () => {
         kind: "text",
         body: "configured",
         face: {
-          resourceId: "easyrpg-faceset-actor1",
-          faceIndex: 2,
+          resourceId: "easyrpg-faceset-actor1-02",
           position: "right",
           flipHorizontally: true,
         },

@@ -43,21 +43,6 @@
   writing-mode: horizontal-tb;
 }
 
-.event-command-face-index-grid {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  justify-items: center;
-  max-width: 248px;
-  min-width: 0;
-  width: 100%;
-}
-
-.event-command-face-index-grid[data-empty="true"] {
-  display: block;
-  max-width: none;
-}
-
 .event-command-face-hint {
   color: var(--text-dim, var(--text-2));
   font: 500 11px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
@@ -90,9 +75,9 @@
 
 .event-command-face-crop {
   background-image: var(--face-url);
-  background-position: var(--face-scaled-x) var(--face-scaled-y);
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
+  background-size: contain;
   border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
   border-style: solid;
   border-width: 1px;

@@ -17,7 +17,7 @@ type EventCommandEditDialogRequest = {
   // 명령 추가/편집 모두 종류 select 를 잠근다(분기 유실·내부 kind 노출 방지).
   readonly lockKind?: boolean;
   // [중간-3] 이 명령 시점의 활성 얼굴(직전 changeFace). 문장 표시 프리뷰에 반영.
-  readonly previewFace?: { readonly resourceId: string; readonly faceIndex: number };
+  readonly previewFace?: { readonly resourceId: string };
 };
 
 export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): void {

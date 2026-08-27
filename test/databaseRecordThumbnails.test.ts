@@ -66,17 +66,18 @@ describe("database record list thumbnails", () => {
     expect(empty?.className).toContain("empty");
   });
 
-  it("crops actor faces by faceIndex", () => {
+  // 얼굴 한 칸 = 파일 한 장 — 시트 오프셋이 아니라 그림 한 장이 슬롯을 채운다.
+  it("renders the actor face image whole, with no sheet offset", () => {
     const project = createBlankProject();
-    const actor = { ...project.database.actors[0], faceIndex: 1 };
+    const actor = { ...project.database.actors[0] };
     const node = thumb("actors", actor, project);
-    expect(node.style.backgroundPosition).toContain("-");
-    expect(node.style.backgroundPosition).not.toBe("0px 0px");
+    expect(node.style.backgroundPosition).toBe("center");
+    expect(node.style.backgroundSize).toBe("32px 32px");
   });
 
-  it("parameterized size scales the crop math while the default stays at 32px", () => {
+  it("parameterized size scales the thumbnail while the default stays at 32px", () => {
     const project = createBlankProject();
-    const actor = { ...project.database.actors[0], faceIndex: 0 };
+    const actor = { ...project.database.actors[0] };
 
     // 기본(size 미지정)은 기존 32px 크롭과 동일하다 — 기존 호출부 계약 유지.
     const defaultNode = thumb("actors", actor, project);
@@ -84,7 +85,7 @@ describe("database record list thumbnails", () => {
     if (!(explicit32 instanceof FakeElement)) throw new Error("expected fake element");
     expect(explicit32.style.backgroundSize).toBe(defaultNode.style.backgroundSize);
 
-    // 48px 은 배율 1.5 로 크롭 스케일이 커진다 (backgroundSize 첫 숫자 = size × 시트 열 수).
+    // 48px 은 배율 1.5 로 표시 크기가 커진다 (backgroundSize 첫 숫자 = 표시 크기).
     const large = recordListThumbnail("actors", actor, project, 48);
     if (!(large instanceof FakeElement)) throw new Error("expected fake element");
     expect(large.style.backgroundSize).not.toBe(defaultNode.style.backgroundSize);

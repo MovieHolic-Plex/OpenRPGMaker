@@ -21,8 +21,9 @@ describe("schema v3 migration contract", () => {
     const event = v3.maps.map_a.events[0];
     const pages = event.pages ?? [];
 
-    expect(v3.version).toBe(3);
-    expect(SCHEMA_VERSION).toBe(3);
+    // v1·v2 사슬은 얼굴 낱장 분할(v3→v4) 단계까지 통과해 항상 현재 스키마로 나온다.
+    expect(v3.version).toBe(SCHEMA_VERSION);
+    expect(SCHEMA_VERSION).toBe(4);
     expect(pages).toHaveLength(1);
     expect(pages[0].commands.some((command) => command.kind === "setSwitch")).toBe(true);
     expect(v3.database.actors.length).toBeGreaterThan(0);
@@ -35,7 +36,7 @@ describe("schema v3 migration contract", () => {
     const event = v3.maps.map_a.events[0];
     const pages = event.pages ?? [];
 
-    expect(v3.version).toBe(3);
+    expect(v3.version).toBe(SCHEMA_VERSION);
     expect(event.trigger.kind).toBe("action");
     expect(event.commands.length).toBeGreaterThan(0);
     expect(pages[0].trigger.kind).toBe("action");

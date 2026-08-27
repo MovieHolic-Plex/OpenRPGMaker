@@ -29,7 +29,7 @@ import {
 // 새 kind가 추가되는데 여기 항목을 안 채우면 컴파일 에러가 난다(누락 차단).
 const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   text: { kind: "text", body: "hello" },
-  changeFace: { kind: "changeFace", resourceId: "res1", faceIndex: 0, position: "left", flipHorizontally: false },
+  changeFace: { kind: "changeFace", resourceId: "res1", position: "left", flipHorizontally: false },
   choices: { kind: "choices", options: [{ text: "a", branch: [] }] },
   fork: { kind: "fork", condition: { kind: "switch", switchId: "sw1", value: true }, then: [], else: [] },
   wait: { kind: "wait", ms: 100 },

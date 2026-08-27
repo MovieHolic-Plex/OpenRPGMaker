@@ -175,7 +175,6 @@ async function openTroopBattleTestModalAfterGate(troopId: string): Promise<void>
         experience: session.actorExperience,
         names: session.actorNames,
         faceResourceIds: session.actorFaceResourceIds,
-        faceIndices: session.actorFaceIndices,
         vitals: session.actorVitals,
         paramBonuses: session.actorParamBonuses,
         equipment: session.actorEquipment,

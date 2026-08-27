@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type ProposedCall, type TurnResult } from "@/ai/assistantSession";
-import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, type AiConfig } from "@/ai/llmClient";
 import {
   enforceProposalDependencies,
   proposalDecisionTitle,
@@ -118,8 +118,11 @@ function fakeElement(node: HTMLElement | null): FakeElement {
   throw new Error("Expected fake element");
 }
 
-function renderPanel(dock: ChatDock = "side"): FakeElement {
-  storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m" }));
+/** 검토 카드 경로: 자동 적용을 명시적으로 끈 설정. 기본값은 즉시 적용이다. */
+const REVIEW_MODE: Partial<AiConfig> = { agentMode: "chat", autoApprove: false };
+
+function renderPanel(dock: ChatDock = "side", config: Partial<AiConfig> = {}): FakeElement {
+  storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m", ...config }));
   return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
 }
 
@@ -335,7 +338,7 @@ describe("UXD proposal panel integration", () => {
     ];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "강가 오두막 3채", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "강가에 오두막 세 채";
     findByTestId(panel, "ai-send")?.click();
@@ -378,7 +381,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] })];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "길 초안을 제안합니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아줘";
 
@@ -399,7 +402,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
 
@@ -419,7 +422,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("side");
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
     findByTestId(panel, "ai-send")?.click();
@@ -440,7 +443,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("float");
+    const panel = renderPanel("float", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
     findByTestId(panel, "ai-send")?.click();
@@ -473,14 +476,7 @@ describe("UXD proposal panel integration", () => {
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => after);
     editorState.set({ currentMapId: mapId, selection: null });
     try {
-      const panel = renderPanel("float");
-      storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-        ...defaultAiConfig(),
-        apiKey: "sk-test",
-        baseUrl: "x",
-        model: "m",
-        autoApprove: true,
-      }));
+      const panel = renderPanel("float", REVIEW_MODE);
       const input = findByTestId(panel, "ai-input") as FakeElement;
       input.value = "초안";
       findByTestId(panel, "ai-send")?.click();
@@ -512,7 +508,7 @@ describe("UXD proposal panel integration", () => {
       .mockResolvedValueOnce(turn({ assistantText: "초안입니다.", proposedCalls: calls }))
       .mockResolvedValueOnce(turn({ assistantText: "추가로 설명만 할게요.", proposedCalls: [] }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
 
     input.value = "맵 고쳐줘";
@@ -580,7 +576,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
 
@@ -626,7 +622,7 @@ describe("UXD proposal panel integration", () => {
     ];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "두 칸을 제안합니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "두 칸";
 
@@ -651,7 +647,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] })];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "한 칸 제안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    const panel = renderPanel();
+    const panel = renderPanel("side", REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "한 칸";
 
@@ -726,5 +722,117 @@ describe("proposal thumbnail crop coverage (event-only + new map)", () => {
     expect(el.dataset.testid ?? el.querySelector("[data-testid=ai-proposal-thumb-new-map]") !== null).toBeTruthy();
     expect(el.querySelector('[data-testid="ai-proposal-thumb-new-map"]') !== null
       || el.getAttribute("data-testid") === "ai-proposal-thumb-new-map").toBe(true);
+  });
+});
+
+// 감독 지시(2026-08-27): "AI 가 생성하고 나서 '이 맵에 넣기' modal 이 뜨는데 이게 좆도 의미가
+// 없다. 그냥 바로 집어넣고(approve 없이) 왼쪽 하단에 되돌리기 기능을 활용하게 하는 게 나을듯."
+//
+// 실측한 결함: autoApprove 는 이미 사실상 켜져 있었는데(agentMode 기본값 "auto") aiChatPanel 의
+// 자동 적용 분기가 classifyProposalSafety().safe 와 completenessWarnings.length === 0 을 함께
+// 요구했다. safe 판정은 LOW_RISK_SPATIAL_TOOLS(타일만 바꾸는 5개 툴) + "현재 맵 타일 배열만
+// 변경" 만 통과시키므로 NPC·이벤트·맵 생성이 섞인 실제 생성 턴은 전부 검토 카드로 갔다.
+// 되돌리기가 있는 변경을 승인 카드로 막는 것은 마찰만 남는다 — 경고는 로그로 전달하면 된다.
+describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
+  it("비파괴 제안은 안전분류 불통과·린트 경고와 무관하게 승인 없이 바로 적용된다", async () => {
+    const baseline = store.getCurrent();
+    const mapId = baseline.startMapId;
+    const ctx: ToolContext = { project: structuredClone(baseline) };
+    const calls = [
+      runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }),
+      proposed("place_npc", { mapId, x: 1, y: 1 }, { eventsAdded: 1 }, "NPC 1명"),
+    ];
+    // 이 제안은 예전 게이트를 둘 다 못 넘는다: safety 불통과 + 세계관 미기재 린트 경고.
+    expect(classifyProposalSafety({ calls, before: baseline, after: ctx.project, currentMapId: mapId }).safe).toBe(false);
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
+      turn({ assistantText: "NPC 1명과 길 1칸을 놓았습니다.", proposedCalls: calls }),
+    );
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
+    editorState.set({ currentMapId: mapId, selection: null });
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "여기 NPC 넣고 길 깔아줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-proposal-card")).toBeNull();
+    expect(findByTestId(panel, "ai-change-card")).toBeTruthy();
+    expect(findByTestId(panel, "ai-change-undo")).toBeTruthy();
+    const map = store.getCurrent().maps[mapId];
+    expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.PATH);
+    // 린트 경고는 게이트가 아니라 로그로 전달된다.
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("세계관 미기재");
+  });
+
+  it("파괴적 제안은 여전히 검토 카드로 간다", async () => {
+    const baseline = store.getCurrent();
+    const mapId = baseline.startMapId;
+    const calls = [
+      { ...proposed("clear_region", { mapId }, { tilesChanged: 24 }, "영역 비우기"), destructive: true },
+    ];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
+      turn({ assistantText: "영역을 비웁니다.", proposedCalls: calls }),
+    );
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    editorState.set({ currentMapId: mapId, selection: null });
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "여기 다 지워줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-proposal-card")).toBeTruthy();
+    expect(findByTestId(panel, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
+    expect(findByTestId(panel, "ai-change-card")).toBeNull();
+  });
+
+  it("자동 적용을 끄면 비파괴 제안도 검토 카드로 돌아간다", async () => {
+    const baseline = store.getCurrent();
+    const mapId = baseline.startMapId;
+    const ctx: ToolContext = { project: structuredClone(baseline) };
+    const calls = [
+      runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }),
+    ];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
+      turn({ assistantText: "길 1칸을 제안합니다.", proposedCalls: calls }),
+    );
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
+    editorState.set({ currentMapId: mapId, selection: null });
+    const panel = renderPanel("side", REVIEW_MODE);
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "길 깔아줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-proposal-card")).toBeTruthy();
+    expect(findByTestId(panel, "ai-change-card")).toBeNull();
+    const map = store.getCurrent().maps[mapId];
+    expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.GRASS);
+  });
+  // 즉시 적용은 "적용됐다"고 말하기 전에 실제로 적용됐는지 확인해야 한다. 배치 검증(수관 아래
+  // 밑동 없음 등)이 막으면 store 는 그대로이므로 자동 적용 카드를 남기면 거짓말이 된다.
+  it("배치 검증이 막은 턴은 자동 적용 카드를 남기지 않는다", async () => {
+    const baseline = store.getCurrent();
+    const mapId = baseline.startMapId;
+    const after = structuredClone(baseline);
+    const target = after.maps[mapId];
+    const brokenIndex = 3 * target.width + 3;
+    target.upperTiles[brokenIndex] = 260;
+    const calls = [proposed("place_props", { mapId }, { tilesChanged: 1 }, "나무 1")];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
+      turn({ assistantText: "나무를 놓았습니다.", proposedCalls: calls }),
+    );
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
+    editorState.set({ currentMapId: mapId, selection: null });
+
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "나무 심어줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("배치 검증 실패");
+    expect(findByTestId(panel, "ai-change-card")).toBeNull();
+    expect(store.getCurrent().maps[mapId].upperTiles[brokenIndex]).not.toBe(260);
   });
 });

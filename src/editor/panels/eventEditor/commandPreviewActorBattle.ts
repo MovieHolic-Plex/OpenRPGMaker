@@ -65,7 +65,6 @@ export function actorFaceChip(
   chip.append(
     renderFacesetCrop({
       resourceId: actor?.faceResourceId ?? "",
-      faceIndex: actor?.faceIndex ?? 0,
       displaySize: options.size ?? 56,
     })
   );
@@ -507,7 +506,6 @@ function facesetChangeStage(cmd: M2Command): HTMLElement {
   const project = store.getCurrent();
   const actor = project.database.actors.find((entry) => entry.id === String(cmd.fields?.target ?? "").trim());
   const resourceId = String(cmd.fields?.value ?? "").trim();
-  const faceIndex = Math.max(0, Math.trunc(Number(cmd.fields?.faceIndex ?? 0)) || 0);
   const stage = el("div", {
     class: "ecp-stage ecp-faceset-change-stage",
     dataset: { testid: "ecp-faceset-change-stage" },
@@ -523,7 +521,6 @@ function facesetChangeStage(cmd: M2Command): HTMLElement {
             el("div", { class: "ecp-faceset-change-title", text: "지금" }),
             renderFacesetCrop({
               resourceId: actor?.faceResourceId ?? "",
-              faceIndex: actor?.faceIndex ?? 0,
               displaySize: 88,
             }),
           ],
@@ -534,7 +531,7 @@ function facesetChangeStage(cmd: M2Command): HTMLElement {
           dataset: { testid: "ecp-faceset-after" },
           children: [
             el("div", { class: "ecp-faceset-change-title", text: "변경 후" }),
-            renderFacesetCrop({ resourceId, faceIndex, displaySize: 88 }),
+            renderFacesetCrop({ resourceId, displaySize: 88 }),
           ],
         }),
       ],
@@ -542,7 +539,7 @@ function facesetChangeStage(cmd: M2Command): HTMLElement {
     el("div", {
       class: "ecp-gauge-caption",
       dataset: { testid: "ecp-faceset-change-caption" },
-      text: `${actor?.name ?? "(주인공 선택)"} · 얼굴 ${faceIndex + 1}${resourceId ? "" : " · 얼굴 미선택"}`,
+      text: `${actor?.name ?? "(주인공 선택)"} · 얼굴${resourceId ? "" : " · 얼굴 미선택"}`,
     })
   );
   return stage;

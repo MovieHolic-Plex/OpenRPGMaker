@@ -9,9 +9,7 @@ import { renderFacesetPreview } from "./facesetPreview";
 import {
   actionRow,
   checkboxControl,
-  clampFaceIndex,
   dialogForm,
-  FACESET_FACE_COUNT,
   fieldset,
   labelledControl,
   nextGroupName,
@@ -116,12 +114,6 @@ export function openFacesetDialog(
       resource.placeholder = DEFAULT_FACE_RESOURCE_ID;
       resource.value = initial.resourceId;
       resource.dataset.testid = "faceset-resource-id";
-      const faceIndex = document.createElement("input");
-      faceIndex.type = "number";
-      faceIndex.min = "1";
-      faceIndex.max = String(FACESET_FACE_COUNT);
-      faceIndex.value = String(initial.faceIndex + 1);
-      faceIndex.dataset.testid = "faceset-index";
       const left = radioControl(positionName, "left", initial.position === "left", "faceset-position-left");
       const right = radioControl(positionName, "right", initial.position === "right", "faceset-position-right");
       const flip = checkboxControl(initial.flipHorizontally, "faceset-flip-horizontal");
@@ -135,7 +127,6 @@ export function openFacesetDialog(
         preview.append(
           renderFacesetPreview({
             resourceId: resource.value.trim(),
-            faceIndex: clampFaceIndex(faceIndex.value),
             position: selectedPosition(),
             flipHorizontally: flip.checked,
           })
@@ -147,14 +138,12 @@ export function openFacesetDialog(
         onApply({
           kind: "changeFace",
           resourceId: resource.value.trim(),
-          faceIndex: clampFaceIndex(faceIndex.value),
           position: selectedPosition(),
           flipHorizontally: flip.checked,
         });
         close();
       });
       resource.addEventListener("input", refreshPreview);
-      faceIndex.addEventListener("input", refreshPreview);
       left.addEventListener("change", refreshPreview);
       right.addEventListener("change", refreshPreview);
       flip.addEventListener("change", refreshPreview);
@@ -164,19 +153,16 @@ export function openFacesetDialog(
           kind: "faceset",
           title: "얼굴 고르기",
           currentId: resource.value.trim(),
-          currentFaceIndex: clampFaceIndex(faceIndex.value),
           allowClear: true,
           testidPrefix: "faceset-resource-dialog",
           onConfirm: (result) => {
             resource.value = result.resourceId;
-            faceIndex.value = String((result.faceIndex ?? 0) + 1);
             refreshPreview();
           },
         });
       };
       const clearResource = (): void => {
         resource.value = "";
-        faceIndex.value = "1";
         refreshPreview();
       };
 
@@ -187,7 +173,6 @@ export function openFacesetDialog(
             fieldset("얼굴", [
               preview,
               labelledControl("그림", resource),
-              labelledControl("얼굴", faceIndex),
               el("button", {
                 class: "event-command-text-action",
                 text: "설정",

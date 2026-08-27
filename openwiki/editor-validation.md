@@ -1,5 +1,9 @@
 # Editor Validation Expectations
 
+## event-unreachable lint rule (2026-08-27)
+
+- `projectLint`는 모든 맵 이벤트에 대해 자신의 칸과 4방향 이웃이 전부 통행 불가인 경우 warning 코드 `event-unreachable` 을 보고한다(mapId·event id·좌표 포함, 수정 지시: "통행 가능한 칸으로 옮기세요"). RM2K3 의미상 action 트리거 이벤트(문·간판)는 통행 불가 타일 위에 있어도 되므로, 통행 가능한 이웃이 하나라도 있으면 진단하지 않는다. `playerTouch-impassable` 과 대상이 겹칠 수 있지만 의미가 다르고 둘 다 발화해도 무방하다. 회귀: `test/projectLint.test.ts` 의 `event-unreachable` describe.
+
 ## P2 생활 시스템 무결성 (2026-08-25)
 
 - P2 wire shape는 unsafe number, blank/duplicate definition ID, invalid rectangle, 빈 weighted catch/forage set, malformed museum reward를 normalization 전에 거부한다. 전역 reference validation은 fish→item, catch→fish, spot/area→map+bounds, forage→item, collection/museum item, museum reward item/switch/world-unlock/recipe를 검사한다.

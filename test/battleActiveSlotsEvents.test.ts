@@ -497,11 +497,11 @@ describe("battle event Tier-1 commands (Step 3)", () => {
   it("changeFace/displayTextSettings 는 메시지 스트립 프레젠테이션 로그를 남긴다", () => {
     const project = tier1Project();
     const runtime = runPage(project, [
-      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 2, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-02", position: "left", flipHorizontally: false },
       { kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false },
     ]);
     const logs = runtime.snapshot().eventLogs;
-    expect(logs.some((log) => log.kind === "message" && log.detail === "changeFace easyrpg-faceset-actor1#2")).toBe(true);
+    expect(logs.some((log) => log.kind === "message" && log.detail === "changeFace easyrpg-faceset-actor1-02")).toBe(true);
     expect(logs.some((log) => log.kind === "message" && log.detail === "displayTextSettings normal/bottom")).toBe(true);
   });
 });

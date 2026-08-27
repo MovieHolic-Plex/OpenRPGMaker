@@ -465,7 +465,6 @@ function actorChips(actors: readonly ActorRecord[]): AvatarChipActor[] {
     id: actor.id,
     name: actor.name,
     faceResourceId: actor.faceResourceId,
-    faceIndex: actor.faceIndex,
   }));
 }
 

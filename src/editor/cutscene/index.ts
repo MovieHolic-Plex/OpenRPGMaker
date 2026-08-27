@@ -238,7 +238,6 @@ function compileSayBeat(beat: CutsceneSayBeat): Command[] {
     commands.push({
       kind: "changeFace",
       resourceId: beat.face.resourceId,
-      faceIndex: beat.face.faceIndex ?? 0,
       position: beat.face.position ?? "left",
       flipHorizontally: beat.face.flipHorizontally ?? false,
     });

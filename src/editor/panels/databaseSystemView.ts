@@ -1,8 +1,4 @@
 import {
-  FACESET_COLUMNS,
-  FACESET_FACE_HEIGHT,
-  FACESET_FACE_WIDTH,
-  FACESET_ROWS,
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { BATTLE_SKINS, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
@@ -62,6 +58,8 @@ import {
 import type { PlayResolution, SystemRecords } from "@/project/types";
 
 const START_PARTY_SLOTS = 4;
+/** 시작 파티 얼굴 칸 표시 크기(px). 낱장 얼굴 48px 을 그대로 담는다. */
+const START_PARTY_FACE_SIZE = 40;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const BATTLE_UI_STYLE_OPTIONS = listBattleSkinIds();
 const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
@@ -751,10 +749,6 @@ function startPartyFaceStrip(startActorIds: readonly string[], actors: readonly 
     if (!url) {
       return el("span", { class: "db-system-party-face empty", attrs: { "aria-label": actor.name } });
     }
-    const faceIndex = actor.faceIndex ?? 0;
-    const column = faceIndex % FACESET_COLUMNS;
-    const row = Math.floor(faceIndex / FACESET_COLUMNS);
-    const scale = 40 / FACESET_FACE_WIDTH;
     return el("span", {
       class: "db-system-party-face",
       attrs: {
@@ -763,8 +757,8 @@ function startPartyFaceStrip(startActorIds: readonly string[], actors: readonly 
         title: actor.name,
         style: [
           `background-image:url("${url}")`,
-          `background-position:-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`,
-          `background-size:${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`,
+          "background-position:center",
+          `background-size:${START_PARTY_FACE_SIZE}px ${START_PARTY_FACE_SIZE}px`,
         ].join(";"),
       },
     });

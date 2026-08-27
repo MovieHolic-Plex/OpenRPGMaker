@@ -28,55 +28,68 @@ const noopActions: PlayerStatusMenuActions = {
   onToTitle: () => undefined,
 };
 
+function renderPartyFaceStyle(faceResourceId: string): string {
+  const project = createBlankProject();
+  const session = startSession(project);
+  const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
+  hero.faceResourceId = faceResourceId;
+  const menu = renderWithFakeDom(() =>
+    renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+  );
+  return findByTestId(menu, "status-menu-face-0")?.getAttribute("style") ?? "";
+}
+
 describe("player status menu party portrait", () => {
-  it("carries the authored actor faceIndex into the party row", () => {
+  it("carries the authored per-face resource id into the party row and keeps no cell index", () => {
     const project = createBlankProject();
     const session = startSession(project);
     const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
-    hero.faceIndex = 2;
+    hero.faceResourceId = "easyrpg-faceset-actor1-02";
     const snapshot = createPlayerStatusMenuSnapshot(project, session);
-    expect(snapshot.partyRows[0]?.faceIndex).toBe(2);
+    expect(snapshot.partyRows[0]?.faceResourceId).toBe("easyrpg-faceset-actor1-02");
+    expect(snapshot.partyRows[0]).not.toHaveProperty("faceIndex");
   });
 
-  it("crops a 16px face box to the faceset column/row for faceIndex 2", () => {
+  it("paints the whole face file into the 22px party box", () => {
     const restoreDom = installFakeDom();
     try {
-      const project = createBlankProject();
-      const session = startSession(project);
-      const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
-      hero.faceIndex = 2;
-      const menu = renderWithFakeDom(() =>
-        renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
-      );
-      const face = findByTestId(menu, "status-menu-face-0");
-      const style = face?.getAttribute("style") ?? "";
-      // faceIndex 2 → column 2, row 0.
-      expect(style).toContain("--crop-x:-44px");
-      expect(style).toMatch(/--crop-y:-0px|--crop-y:0px/);
-      // 22px box on a 4×4 faceset sheet → 88px sheet crop window.
-      expect(style).toContain("--crop-sheet-width:88px");
-      expect(style).toContain("--crop-sheet-height:88px");
-      expect(style).toContain("--crop-width:22px");
-      expect(style).toContain("--crop-height:22px");
+      const style = renderPartyFaceStyle("easyrpg-faceset-actor1-02");
+      expect(style).toContain('background-image:url("/assets/easyrpg/faceset/Actor1/02.png")');
+      // 낱장 얼굴 파일 한 장을 상자 크기에 맞춘다 — 시트 열/행 오프셋은 없다.
+      expect(style).toContain("background-size:22px 22px");
+      expect(style).toContain("width:22px");
+      expect(style).toContain("height:22px");
+      expect(style).not.toContain("background-position");
+      expect(style).not.toContain("--crop-");
     } finally {
       restoreDom();
     }
   });
 
-  it("maps faceIndex 5 to column 1 row 1", () => {
+  it("switches file, not crop offsets, when another face is authored", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const style = renderPartyFaceStyle("easyrpg-faceset-people1-05");
+      expect(style).toContain('background-image:url("/assets/easyrpg/faceset/People1/05.png")');
+      expect(style).not.toContain("--crop-");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps the name-initial placeholder when the face resource does not resolve", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
       const session = startSession(project);
       const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
-      hero.faceIndex = 5;
+      hero.faceResourceId = "missing-face-resource";
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
       );
       const face = findByTestId(menu, "status-menu-face-0");
-      const style = face?.getAttribute("style") ?? "";
-      expect(style).toContain("--crop-x:-22px");
-      expect(style).toContain("--crop-y:-22px");
+      expect(face?.className).toContain("missing");
+      expect(face?.textContent).toBe(hero.name.trim().slice(0, 1));
     } finally {
       restoreDom();
     }

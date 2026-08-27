@@ -7,7 +7,6 @@ import {
   CHARSET_SHEET_ROWS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { createBlankProject } from "@/project/defaults";
 import { charsetIconOf, facesetIconOf } from "@/editor/panels/eventEditor/recordPicker";
 import { actorPicker, itemPicker, mapPicker, mapSelectElement } from "@/editor/panels/eventEditor/sharedPickers";
@@ -70,32 +69,21 @@ describe("sharedPickers", () => {
     expect(itemHandle.root.querySelector(".record-picker-card-subtitle")?.textContent).toBe("시작 보유 ×0");
   });
 
-  it("facesetIconOf crops one face cell by faceIndex, never the whole sheet", () => {
+  it("facesetIconOf renders one standalone face image, never a sheet crop", () => {
     const project = createBlankProject();
-    const faceIndex = 5;
-    const icon = facesetIconOf(project, "easyrpg-faceset-actor1", faceIndex);
+    const icon = facesetIconOf(project, "easyrpg-faceset-actor1-05");
     expect(icon).not.toBeNull();
-    if (icon?.kind !== "sheet") throw new Error("expected sheet crop");
-    expect(icon.index).toBe(faceIndex);
-    expect(icon.columns).toBe(RESOURCE_SLICING.faceset.columns);
-    expect(icon.cellWidth).toBe(RESOURCE_SLICING.faceset.cellWidth);
+    if (icon?.kind !== "image") throw new Error("expected whole-image face icon");
+    expect(icon.url).toContain("/assets/easyrpg/faceset/Actor1/05.png");
 
-    // actorPicker must pass actor.faceIndex into the crop
+    // actorPicker must render that face as a plain <img>, not a crop box.
     const actor = project.database.actors[0]!;
-    actor.faceResourceId = "easyrpg-faceset-actor1";
-    actor.faceIndex = faceIndex;
+    actor.faceResourceId = "easyrpg-faceset-actor1-05";
     const picker = actorPicker({ project, selectedId: actor.id, testid: "actor-face-crop" });
-    const crop = picker.root.querySelector(".rich-record-icon-crop") as HTMLElement | null;
-    expect(crop).toBeTruthy();
-    const scale = 24 / RESOURCE_SLICING.faceset.cellWidth;
-    const col = faceIndex % RESOURCE_SLICING.faceset.columns;
-    const row = Math.floor(faceIndex / RESOURCE_SLICING.faceset.columns);
-    expect(crop!.style.backgroundPosition).toBe(
-      `-${col * RESOURCE_SLICING.faceset.cellWidth * scale}px -${row * RESOURCE_SLICING.faceset.cellHeight * scale}px`,
-    );
-    expect(crop!.style.backgroundSize).toBe(
-      `${RESOURCE_SLICING.faceset.sheetWidth * scale}px ${RESOURCE_SLICING.faceset.sheetHeight * scale}px`,
-    );
+    expect(picker.root.querySelectorAll(".rich-record-icon-crop")).toHaveLength(0);
+    const images = picker.root.querySelectorAll(".rich-record-icon");
+    expect(images).toHaveLength(1);
+    expect(images[0]?.getAttribute("src")).toContain("/assets/easyrpg/faceset/Actor1/05.png");
   });
 
   it("charsetIconOf crops one character slot idle-front frame from multi-object sheets", () => {

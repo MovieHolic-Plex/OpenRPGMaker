@@ -30,7 +30,7 @@ import {
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
-import { classifyApproval } from "@/ai/approvalPolicy";
+import { classifyApproval, resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
@@ -1175,33 +1175,40 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ? agentGhostPreviewsForMap(getAgentGhostPreviewState(), currentMapId).length > 0
         : false;
       const canvasFirst = safety.safe && !explicitApprovalRequired && hasCurrentMapGhost;
-      if (
-        result.proposedCalls.length > 0
-        && completenessWarnings.length === 0
-        && autoApproveEnabled
-        && verdict.decision === "auto"
-        && result.stoppedReason !== "error"
-        && !explicitApprovalRequired
-        && safety.safe
-      ) {
+      // 승인 카드는 파괴적·재료합의 변경과 자동 적용 off 에만 남는다. 안전 분류와 완성도 린트
+      // 경고는 더 이상 게이트가 아니다 — 되돌리기가 있는 변경을 카드로 막으면 마찰만 남는다.
+      const applyMode = resolveProposalApplyMode({
+        callCount: result.proposedCalls.length,
+        autoApplyEnabled: autoApproveEnabled,
+        approvalDecision: verdict.decision,
+        turnErrored: result.stoppedReason === "error",
+      });
+      if (applyMode === "apply-now") {
+        // 적용을 먼저 하고 그 결과를 기다린 다음에 카드를 붙인다 — 배치 검증·커밋 게이트가 적용을
+        // 거부하면 store 는 그대로이므로 "자동 적용 N건" 은 거짓이 된다(사유는 acceptProposal 이
+        // 이미 ❌ 버블로 남긴다).
         // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
         // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
         // 판단해야 했다. 이제 전/후 큰 비교 카드를 로그에 남기고 넓은 화면으로 열 수 있다.
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
-        if (currentMapId) {
-          emitChangeCard({
-            before: beforeProject,
-            after: afterProject,
-            mapId: currentMapId,
-            title: proposalHumanSummaryLine(result.proposedCalls) || appliedSummary,
-            detail: appliedSummary,
-            calls: result.proposedCalls,
-          });
-        } else {
-          appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
+        // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
+        if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
+        const applied = await acceptProposal(result.proposedCalls);
+        setStatus(applied ? "대기" : "적용 실패");
+        if (applied) {
+          if (currentMapId) {
+            emitChangeCard({
+              before: beforeProject,
+              after: afterProject,
+              mapId: currentMapId,
+              title: proposalHumanSummaryLine(result.proposedCalls) || appliedSummary,
+              detail: appliedSummary,
+              calls: result.proposedCalls,
+            });
+          } else {
+            appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
+          }
         }
-        setStatus("대기");
-        acceptProposal(result.proposedCalls);
       } else {
         renderProposal(
           result,
