@@ -107,9 +107,10 @@
   margin: 0;
 }
 
+/* 미정의 --bg-sunken 크림 fallback 을 쓰면 쿨 화이트 테마에서 무대만 누렇게 떴다 — 토큰으로 정리. */
 .page3-preview-stage {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-sunken, #EFE9DC) 70%, #EFE9DC), var(--bg-sunken, #EFE9DC));
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 70%, var(--bg-raised)), var(--bg-inset));
   border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
   border-radius: 6px;
   min-height: 88px;

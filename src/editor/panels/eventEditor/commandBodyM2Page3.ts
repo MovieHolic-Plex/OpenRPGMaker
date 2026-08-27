@@ -91,6 +91,19 @@ const ANIMATION_TARGET_SEGMENTS = [
   { value: "event", key: "event", label: "이벤트" },
 ] as const satisfies readonly SegmentOption<"player" | "event">[];
 
+// 런타임 keyInputCodeFor(playSceneInterpreter) 와 같은 코드 집합.
+// 변수에 실제로 저장되는 값을 작성자가 눈으로 확인할 수 있게 프리뷰에 그린다.
+const KEY_INPUT_KEYCAPS = [
+  { code: "1", keys: "↓ / S", label: "아래", badge: "1" },
+  { code: "2", keys: "← / A", label: "왼쪽", badge: "2" },
+  { code: "3", keys: "→ / D", label: "오른쪽", badge: "3" },
+  { code: "4", keys: "↑ / W", label: "위", badge: "4" },
+  { code: "5", keys: "Enter / Z", label: "결정", badge: "5" },
+  { code: "6", keys: "Esc / X", label: "취소", badge: "6" },
+  { code: "7", keys: "Shift", label: "보조", badge: "7" },
+  { code: "digits", keys: "0 – 9", label: "숫자키", badge: "10~19" },
+] as const;
+
 /** 피커 3페이지(맵·연출) M2 리치 폼. 해당 없으면 undefined → 일반 M2 폼. */
 export function renderPage3M2CommandBody(
   context: CommandEditContext,
@@ -600,12 +613,40 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
   };
   const renderPreview = () => {
     const explicit = valueInput.value.trim();
+    const custom = parseEffectColor(explicit);
     const duration = Math.max(0, Math.trunc(Number(durationInput.value) || 0));
     const colorLabel = TINT_COLOR_CHIPS.find((chip) => chip.id === color)?.label ?? color;
-    preview.replaceChildren(
-      line(`색조 ${explicit || colorLabel}${duration > 0 ? ` · ${duration}ms` : " · 즉시"}`),
-      note("명시 RGB/hex가 있으면 색 이름보다 우선합니다.")
+    const shownLabel = custom ? explicit : colorLabel;
+    const stage = previewStage(
+      "tint-screen-preview-stage",
+      `색조 미리보기: ${shownLabel} · ${durationPhrase(duration)}`
     );
+    const swatch = el("div", {
+      class: "actor-m2-effect-swatch page3-tint-preview",
+      dataset: {
+        testid: "tint-screen-preview-swatch",
+        tint: custom ? "custom" : color,
+        durationMs: String(duration),
+      },
+    });
+    if (custom) swatch.style.setProperty("--actor-m2-effect-color", custom);
+    stage.append(swatch, stageLabel(shownLabel));
+    const children: HTMLElement[] = [stage];
+    if (explicit && !custom) {
+      children.push(
+        el("p", {
+          class: "actor-m2-preview-error",
+          text: "색상 값을 확인해 주세요.",
+          attrs: { role: "status" },
+          dataset: { testid: "tint-screen-preview-error" },
+        })
+      );
+    }
+    children.push(
+      line(`${shownLabel} 색조 · ${durationPhrase(duration)}`),
+      note("직접 색을 입력하면 프리셋보다 우선합니다.")
+    );
+    preview.replaceChildren(...children);
   };
 
   valueInput.addEventListener("change", commit);
@@ -840,9 +881,15 @@ function setWeatherEffectsBody(context: CommandEditContext, cmd: M2Command): HTM
   const parsed = parseWeatherValue(String(cmd.fields.value ?? "none"));
   let kind = parsed.kind;
   const intensityInput = el("input", {
-    attrs: { type: "number", min: "0", max: "1", step: "0.05" },
+    attrs: { type: "number", min: "0", max: "1", step: "0.05", "aria-label": "날씨 강도 값" },
     value: String(parsed.intensity),
     dataset: { testid: "set-weather-effects-intensity-input" },
+  }) as HTMLInputElement;
+  const intensitySlider = el("input", {
+    class: "page3-range-input",
+    attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "날씨 강도" },
+    value: String(parsed.intensity),
+    dataset: { testid: "set-weather-effects-intensity-slider" },
   }) as HTMLInputElement;
   const transitionInput = el("input", {
     attrs: { type: "number", min: "0", step: "1" },
@@ -865,9 +912,19 @@ function setWeatherEffectsBody(context: CommandEditContext, cmd: M2Command): HTM
       chips.append(
         el("button", {
           class: "btn small actor-m2-chip" + (chip.id === kind ? " is-active" : ""),
-          text: chip.label,
           attrs: { type: "button" },
           dataset: { testid: `set-weather-effects-kind-${chip.id}` },
+          children: [
+            el("span", {
+              class: "actor-m2-weather-dot",
+              attrs: { "aria-hidden": "true" },
+              dataset: {
+                testid: `set-weather-effects-kind-${chip.id}-dot`,
+                weather: chip.id,
+              },
+            }),
+            el("span", { class: "actor-m2-chip-label", text: chip.label }),
+          ],
           on: {
             click: () => {
               kind = chip.id;
@@ -895,18 +952,57 @@ function setWeatherEffectsBody(context: CommandEditContext, cmd: M2Command): HTM
     const intensity = clamp01(Number(intensityInput.value));
     const transitionMs = Math.max(0, Math.trunc(Number(transitionInput.value) || 0));
     const label = WEATHER_CHIPS.find((chip) => chip.id === kind)?.label ?? kind;
+    const percent = Math.round(intensity * 100);
+    const stage = previewStage(
+      "set-weather-effects-preview-stage",
+      kind === "none" ? "날씨 미리보기: 없음" : `날씨 미리보기: ${label} · 강도 ${percent}%`,
+      "page3-preview-weather"
+    );
+    const overlay = el("div", {
+      class: "actor-m2-weather-overlay page3-weather-preview",
+      dataset: {
+        testid: "set-weather-effects-preview-overlay",
+        weather: kind,
+        intensity: String(round2(intensity)),
+        transitionMs: String(transitionMs),
+      },
+    });
+    overlay.style.setProperty("--actor-m2-weather-intensity", String(round2(intensity)));
+    stage.append(overlay);
+    // 안개만 원경/근경 두 겹 — 저장 필드 추가 없이 강도에서 파생한다.
+    if (kind === "fog") {
+      stage.append(fogLayer("far", round2(intensity * 0.55)), fogLayer("near", round2(intensity)));
+    }
+    stage.append(stageLabel(kind === "none" ? "없음" : `${label} ${percent}%`));
     preview.replaceChildren(
+      stage,
       line(
         kind === "none"
           ? "날씨 없음"
-          : `${label} · 강도 ${round2(intensity)}${transitionMs > 0 ? ` · ${transitionMs}ms` : ""}`
+          : `${label} · 강도 ${percent}%${transitionMs > 0 ? ` · ${durationPhrase(transitionMs)}` : ""}`
       ),
-      note("비/눈/폭풍/안개 오버레이를 설정합니다.")
+      note(
+        kind === "fog"
+          ? "먼 배경과 전경에 안개 베일을 겹쳐 표시합니다."
+          : kind === "none"
+            ? "화면에 깔린 날씨 오버레이를 걷어냅니다."
+            : "비/눈/폭풍 오버레이를 화면 전체에 겹칩니다."
+      )
     );
   };
 
-  intensityInput.addEventListener("change", commit);
-  intensityInput.addEventListener("input", commit);
+  const commitFromNumber = () => {
+    intensitySlider.value = String(round2(clamp01(Number(intensityInput.value))));
+    commit();
+  };
+  const commitFromSlider = () => {
+    intensityInput.value = String(round2(clamp01(Number(intensitySlider.value))));
+    commit();
+  };
+  intensityInput.addEventListener("change", commitFromNumber);
+  intensityInput.addEventListener("input", commitFromNumber);
+  intensitySlider.addEventListener("change", commitFromSlider);
+  intensitySlider.addEventListener("input", commitFromSlider);
   transitionInput.addEventListener("change", commit);
   transitionInput.addEventListener("input", commit);
   renderChips();
@@ -916,7 +1012,10 @@ function setWeatherEffectsBody(context: CommandEditContext, cmd: M2Command): HTM
     layout(
       [
         fieldBlock("종류", chips),
-        fieldBlock("강도(0~1)", intensityInput),
+        fieldBlock(
+          "강도(0~1)",
+          el("div", { class: "actor-m2-inline", children: [intensitySlider, intensityInput] })
+        ),
         fieldBlock("전환 시간", transitionInput),
       ],
       preview
@@ -1296,11 +1395,48 @@ function keyInputProcessingBody(context: CommandEditContext, cmd: M2Command): HT
     renderPreview();
   };
   const renderPreview = () => {
+    const waiting = wait.select.value === "true";
+    const keycaps = el("div", {
+      class: "actor-m2-keycaps",
+      attrs: { role: "list", "aria-label": "입력 가능한 키 코드" },
+      dataset: { testid: "key-input-processing-keycaps" },
+    });
+    for (const cap of KEY_INPUT_KEYCAPS) {
+      keycaps.append(
+        el("div", {
+          class: "actor-m2-keycap",
+          attrs: { role: "listitem" },
+          dataset: { testid: `key-input-processing-keycap-${cap.code}`, code: cap.code },
+          children: [
+            el("span", { class: "actor-m2-keycap-keys", text: cap.keys }),
+            el("span", { class: "actor-m2-keycap-code", text: cap.badge }),
+            el("span", { class: "actor-m2-keycap-label", text: cap.label }),
+          ],
+        })
+      );
+    }
     preview.replaceChildren(
-      line(
-        `키 입력 → ${variableLabel(variableId)}${wait.select.value === "true" ? " · 입력까지 대기" : ""}`
-      ),
-      note("누른 키를 변수에 기억합니다.")
+      keycaps,
+      el("div", {
+        class: "actor-m2-preview-badges",
+        children: [
+          el("span", {
+            class: "actor-m2-preview-badge",
+            text: `누른 키 코드 → ${variableLabel(variableId)}`,
+            dataset: { testid: "key-input-processing-preview-target" },
+          }),
+          el("span", {
+            class: "actor-m2-preview-badge",
+            text: waiting ? "입력까지 대기" : "대기 없이 진행",
+            dataset: {
+              testid: "key-input-processing-preview-wait",
+              wait: waiting ? "true" : "false",
+            },
+          }),
+        ],
+      }),
+      line(`키 입력 → ${variableLabel(variableId)}${waiting ? " · 입력까지 대기" : ""}`),
+      note("위 키 코드 중 하나가 변수에 기록됩니다.")
     );
   };
 
@@ -1393,20 +1529,48 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
   };
   const renderPreview = () => {
     const icon = imageIconOf(project, resourceId || undefined);
+    const url = icon?.kind === "image" ? icon.url : null;
+    const state = !resourceId ? "empty" : url === null ? "missing" : "ready";
+    const name = resourceId ? resourceDisplayName(project, resourceId) : "";
+    const panel = el("div", {
+      class: "actor-m2-parallax-preview actor-m2-preview-stage",
+      dataset: { testid: "change-parallax-back-preview-image", state },
+    });
+    if (state === "ready" && url !== null) {
+      panel.append(
+        el("img", {
+          class: "actor-m2-parallax-preview-img",
+          attrs: { src: url, alt: `먼 배경: ${name}`, loading: "lazy" },
+        }),
+        el("p", {
+          class: "actor-m2-parallax-preview-caption",
+          text: name,
+          attrs: { title: resourceId },
+          dataset: { testid: "change-parallax-back-preview-caption" },
+        })
+      );
+    } else if (state === "empty") {
+      panel.append(
+        el("p", {
+          class: "actor-m2-parallax-preview-empty",
+          text: "먼 배경을 선택하면 여기에 표시됩니다.",
+          dataset: { testid: "change-parallax-back-preview-empty" },
+        })
+      );
+    } else {
+      panel.append(
+        el("p", {
+          class: "actor-m2-parallax-preview-missing",
+          text: "배경 이미지를 불러올 수 없습니다.",
+          attrs: { role: "status" },
+          dataset: { testid: "change-parallax-back-preview-missing" },
+        })
+      );
+    }
     preview.replaceChildren(
-      el("div", {
-        class: "actor-m2-preview-actor",
-        children: [
-          recordIconElement(icon, resourceId || "선택 없음"),
-          el("div", {
-            class: "actor-m2-preview-copy",
-            children: [
-              line(`먼 배경 → ${resourceId || "(선택 없음)"}`),
-              note("맵 원경(parallax) 이미지를 교체합니다."),
-            ],
-          }),
-        ],
-      })
+      panel,
+      line(`먼 배경 → ${resourceId ? name : "(선택 없음)"}`),
+      note("맵 원경(parallax) 이미지를 교체합니다.")
     );
   };
 
@@ -1744,6 +1908,56 @@ function previewPanel(testId: string): HTMLElement {
     class: "actor-m2-preview",
     dataset: { testid: testId },
   });
+}
+
+/** 프리뷰 시각 무대. 색조/날씨가 공유한다(첫 자식 계약). */
+function previewStage(testId: string, ariaLabel: string, extraClass = ""): HTMLElement {
+  return el("div", {
+    class: `actor-m2-preview-stage page3-preview-stage${extraClass ? ` ${extraClass}` : ""}`,
+    attrs: { role: "img", "aria-label": ariaLabel },
+    dataset: { testid: testId },
+  });
+}
+
+// 색만으로 상태를 구분하지 않도록 무대 위에 텍스트 라벨을 겹친다.
+function stageLabel(text: string): HTMLElement {
+  return el("span", { class: "page3-preview-stage-label actor-m2-stage-label", text });
+}
+
+function fogLayer(depth: "far" | "near", strength: number): HTMLElement {
+  const layer = el("div", {
+    class: `actor-m2-fog-layer actor-m2-fog-layer-${depth}`,
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: `set-weather-effects-preview-fog-${depth}`, depth },
+  });
+  layer.style.setProperty("--actor-m2-fog-strength", String(strength));
+  return layer;
+}
+
+/** `#rgb`/`#rrggbb`/`r,g,b` 만 허용. 무효면 null → 프리뷰가 오류 안내를 띄운다. */
+function parseEffectColor(raw: string): string | null {
+  const value = raw.trim();
+  if (!value) return null;
+  if (/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/iu.test(value)) return value.toLowerCase();
+  const parts = value.split(/[\s,]+/u).filter(Boolean);
+  if (parts.length !== 3) return null;
+  if (!parts.every((part) => /^\d{1,3}$/u.test(part) && Number(part) <= 255)) return null;
+  return `rgb(${parts.join(", ")})`;
+}
+
+function durationPhrase(ms: number): string {
+  if (ms <= 0) return "즉시 전환";
+  return `${Math.round(ms / 100) / 10}초 전환`;
+}
+
+function resourceDisplayName(
+  project: ReturnType<typeof store.getCurrent>,
+  resourceId: string
+): string {
+  const profile = project.resourceProfiles.find((entry) => entry.assetId === resourceId);
+  if (profile?.name?.trim()) return profile.name.trim();
+  const uploaded = project.assets.uploaded[resourceId]?.name?.trim();
+  return uploaded || resourceId;
 }
 
 function line(text: string): HTMLElement {
