@@ -179,6 +179,17 @@
     white-space: nowrap;
   }
 
+  /* record-list-modern.css 가 .db-list-name 에 order:1 을 주는데, 이 스택은 grid 라
+     그 order 가 그대로 적용되었다 — 기본 order:0 인 장호(small)가 이름 위로 올라가
+     이름이 부제처럼 보이는 위계 역전이 연출됐다. 스택 안에서만 상쇄한다. */
+  .db-actor-name-stack > .db-list-name {
+    order: 0;
+  }
+
+  .db-actor-name-stack > small {
+    order: 1;
+  }
+
   .db-actor-name-stack small {
     color: var(--text-2);
     font-size: 10px;

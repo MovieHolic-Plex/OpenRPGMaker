@@ -21,6 +21,15 @@
     margin-top: 6px;
   }
 
+  /* 파괴적 액션(삭제) 바로 옆에 뷰 전환 토글이 붙어 오조작을 부르던 배치를 구분자로 끊는다.
+     추가/복제/삭제 버튼은 flex-grow:1 로 행을 가득 채우므로 margin-left:auto 로는 여백이
+     생기지 않는다 — 경계선과 좌측 여백으로 그룹을 나눈다. */
+  .database-modal-body .oprn-record-list-pane .db-toolbar .db-view-toggle-group {
+    border-left: 1px solid var(--border-subtle);
+    margin-left: 6px;
+    padding-left: 12px;
+  }
+
   .database-modal-body .oprn-record-list-pane .db-toolbar .db-toolbar-button,
   .database-modal-body .oprn-record-list-pane .db-toolbar .btn {
     background: var(--bg-raised);
