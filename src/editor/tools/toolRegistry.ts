@@ -51,6 +51,12 @@ import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
 import { LIFE_SYSTEM_TOOLS } from "./lifeSystemTools";
+import { LIFE_ECONOMY_TOOLS } from "./lifeEconomyTools";
+import { LIFE_COLLECTION_TOOLS } from "./lifeCollectionTools";
+import { FARM_SPATIAL_TOOLS } from "./farmSpatialTools";
+import { GAME_SYSTEM_TOGGLE_TOOLS } from "./gameSystemToggleTools";
+import { TILESET_ATLAS_TOOLS } from "./tilesetAtlasTools";
+import { AUTHORING_MISC_TOOLS } from "./authoringMiscTools";
 import { RESOURCE_TOOLS } from "./resourceTools";
 
 export { PLACEMENT_TOOLS };
@@ -162,6 +168,13 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
   ...withDomain(LIFE_SYSTEM_TOOLS, "database"),
+  ...withDomain(LIFE_ECONOMY_TOOLS, "database"),
+  ...withDomain(LIFE_COLLECTION_TOOLS, "database"),
+  ...withDomain(FARM_SPATIAL_TOOLS, "database"),
+  ...withDomain(GAME_SYSTEM_TOGGLE_TOOLS, "system"),
+  ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
+  // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.
+  ...withDomain(AUTHORING_MISC_TOOLS, "map"),
   ...withDomain(RESOURCE_TOOLS, "system"),
   ...withDomain(WORLD_TOOLS, "world"),
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
