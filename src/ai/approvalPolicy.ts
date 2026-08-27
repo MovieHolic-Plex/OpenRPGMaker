@@ -81,7 +81,7 @@ export interface ProposalApplyModeInput {
  * (oprn-tool-undo → undoMapEdit) 와 자동 적용 카드의 되돌리기다.
  *
  * 단 `require_approval`은 그대로 검토로 보낸다: 파괴적/재료합의 변경은 acceptProposal 안에서
- * 확인 단계를 거치기 때문에, 자동 적용 카드를 먼지 붙이면 "적용됨" 이 거짓이 된다.
+ * 확인 단계를 거치기 때문에, 자동 적용 카드를 먼저 붙이면 "적용됨" 이 거짓이 된다.
  */
 export function resolveProposalApplyMode(input: ProposalApplyModeInput): ProposalApplyMode {
   if (input.callCount <= 0) return "review";

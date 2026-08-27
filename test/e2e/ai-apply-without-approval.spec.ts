@@ -16,110 +16,25 @@
  *
  * 실행:
  *   DEV_SERVER_PORT=9861 npx playwright test test/e2e/ai-apply-without-approval.spec.ts --project=chromium
- * 서버는 이 스펙이 직접 띄우고(이미 떠 있으면 재사용) afterAll 에서 프로세스 트리를 죽인 뒤
- * 포트가 더 이상 연결을 받지 않는 것까지 확인한다.
+ * dev 서버는 playwright.config 의 webServer 가 관리한다(스위트 종료 시 자동 종료).
  */
 import { expect, test, type Page } from "@playwright/test";
-import { spawn, execFileSync } from "node:child_process";
-import { createConnection } from "node:net";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const PORT = Number(process.env.DEV_SERVER_PORT ?? "9861");
-const ORIGIN = `http://127.0.0.1:${PORT}`;
 const EVIDENCE = path.resolve(".omo/evidence/ai-apply-without-approval");
 const PROPOSAL_CARD = "[data-testid='ai-proposal-card']";
 const APPLIED_CARD = "[data-testid='ai-auto-applied-card']";
 const UNDO_BUTTON = "[data-testid='oprn-tool-undo']";
 
-let startedServer: { pid: number } | null = null;
 const timeline: string[] = [];
 
 mkdirSync(EVIDENCE, { recursive: true });
 
-// ── 서버 수명주기 ───────────────────────────────────────────────────────────
-function listening(): Promise<boolean> {
-  return new Promise((resolve) => {
-    const socket = createConnection({ host: "127.0.0.1", port: PORT });
-    const done = (value: boolean): void => {
-      socket.destroy();
-      resolve(value);
-    };
-    socket.once("connect", () => done(true));
-    socket.once("error", () => done(false));
-    socket.setTimeout(1_000, () => done(false));
-  });
-}
-
-async function waitForServer(timeoutMs: number): Promise<void> {
-  const deadline = Date.now() + timeoutMs;
-  for (;;) {
-    if (await listening()) {
-      const response = await fetch(ORIGIN).catch(() => null);
-      if (response?.ok) return;
-    }
-    if (Date.now() > deadline) throw new Error(`dev server did not answer on ${ORIGIN} within ${timeoutMs}ms`);
-    await new Promise((resolve) => setTimeout(resolve, 400));
-  }
-}
-
-/** 포트를 LISTEN 중인 PID 목록 — 스펙이 띄우지 않은(재사용한) 서버도 정리 대상이다. */
-function listenerPids(): readonly number[] {
-  if (process.platform !== "win32") {
-    const out = execFileSync("bash", ["-lc", `lsof -ti tcp:${PORT} -s TCP:LISTEN || true`], { encoding: "utf8" });
-    return out.split(/\s+/u).flatMap((token) => (token.trim() === "" ? [] : [Number(token)]));
-  }
-  const out = execFileSync("netstat", ["-ano"], { encoding: "utf8" });
-  const pids = new Set<number>();
-  for (const line of out.split(/\r?\n/u)) {
-    if (!line.includes(`:${PORT} `) || !line.includes("LISTENING")) continue;
-    const pid = Number(line.trim().split(/\s+/u).at(-1));
-    if (Number.isInteger(pid) && pid > 0) pids.add(pid);
-  }
-  return [...pids];
-}
-
-function killTree(pid: number): void {
-  try {
-    if (process.platform === "win32") execFileSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
-    else process.kill(-pid, "SIGKILL");
-  } catch {
-    // 이미 죽었으면 통과 — afterAll 은 포트 상태로 최종 판정한다.
-  }
-}
-
-test.beforeAll(async () => {
-  if (await listening()) return; // 이미 떠 있으면 재사용(playwright webServer 규약과 동일).
-  const child = spawn("npm", ["run", "dev:worktree"], {
-    cwd: process.cwd(),
-    env: { ...process.env, DEV_SERVER_PORT: String(PORT), DEV_SERVER_NO_TLS: "1" },
-    detached: process.platform !== "win32",
-    shell: process.platform === "win32",
-    stdio: "ignore",
-  });
-  child.unref();
-  startedServer = { pid: child.pid ?? 0 };
-  await waitForServer(90_000);
-});
-
-test.afterAll(async () => {
-  const pids = new Set<number>([...listenerPids(), ...(startedServer?.pid ? [startedServer.pid] : [])]);
-  for (const pid of pids) killTree(pid);
-  let closed = false;
-  for (let attempt = 0; attempt < 25 && !closed; attempt += 1) {
-    closed = !(await listening());
-    if (!closed) await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-  const receipt = [
-    `dev server port: ${PORT}`,
-    `killed pids: ${[...pids].join(", ") || "(none found)"}`,
-    `port accepts connections after kill: ${String(!closed)}`,
-    `timeline: ${JSON.stringify(timeline)}`,
-  ].join("\n");
-  writeFileSync(path.join(EVIDENCE, "e2e-server-cleanup.txt"), `${receipt}\n`, "utf8");
-  console.log(`\n[cleanup receipt]\n${receipt}`);
-  expect(closed, `port ${PORT} still accepts connections after kill`).toBe(true);
-});
+// dev 서버는 playwright.config 의 webServer 가 띄우고 스위트 종료 시 직접 내린다
+// (`reuseExistingServer: true`). 스펙이 같은 포트를 따로 spawn/kill 하면 그 관리자와 싸워서
+// "포트가 아직 살아 있다" 는 거짓 실패만 만든다 — 실측으로 확인했다. 그래서 여기서는 서버를
+// 건드리지 않고, 증거 영수증(타일 타임라인)만 남긴다.
 
 // ── 대본화된 AI 턴 ──────────────────────────────────────────────────────────
 interface TurnPlan {
@@ -188,7 +103,10 @@ async function bootEditor(page: Page): Promise<string> {
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
   });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
+  // 빈 프로젝트로 띄운다: 샘플 마을(`?freshProject=1`)에는 수관 아래 밑동이 없는 나무가 이미
+  // 있어 배치 검증(validateLayoutPlacement)이 이 프로젝트의 모든 AI 적용을 막는다 — 그 기존
+  // 결함은 이 스펙의 대상이 아니다.
+  await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
   await expect(page.getByTestId("login-modal")).toBeHidden({ timeout: 15_000 });
@@ -235,6 +153,14 @@ function readCell(page: Page, mapId: string, x: number, y: number): Promise<numb
   }, { id: mapId, cx: x, cy: y });
 }
 
+/** 채팅 도크를 접어 맵 캔버스를 가리지 않게 한다 — 증거 스크린샷에 타일이 보여야 한다. */
+async function collapseChatDock(page: Page): Promise<void> {
+  const collapse = page.getByTestId("ai-collapse");
+  if (!(await collapse.isVisible().catch(() => false))) return;
+  await collapse.click();
+  await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible({ timeout: 10_000 });
+}
+
 function startTurn(page: Page, text: string): Promise<{ ok?: boolean; error?: string }> {
   return page.evaluate(async (prompt) => {
     const bridge = (window as unknown as {
@@ -271,6 +197,8 @@ test.describe("AI 제안 즉시 적용 + 좌하단 되돌리기", () => {
     const appliedTile = await readCell(page, plan.mapId, center.x, center.y);
     timeline.push(`applied=${String(appliedTile)}`);
     await page.screenshot({ path: path.join(EVIDENCE, "applied-without-approval.png"), animations: "disabled" });
+    await collapseChatDock(page);
+    await page.screenshot({ path: path.join(EVIDENCE, "applied-map.png"), animations: "disabled" });
 
     // 경계 2: 좌하단 되돌리기 한 번으로 원복 — 승인 대신 쓰는 복구 경로.
     const undo = page.locator(UNDO_BUTTON);
@@ -281,5 +209,11 @@ test.describe("AI 제안 즉시 적용 + 좌하단 되돌리기", () => {
       .toBe(beforeTile);
     timeline.push(`after-undo=${String(await readCell(page, plan.mapId, center.x, center.y))}`);
     await page.screenshot({ path: path.join(EVIDENCE, "reverted-by-sidebar-undo.png"), animations: "disabled" });
+
+    writeFileSync(
+      path.join(EVIDENCE, "tile-timeline.txt"),
+      `${["map: " + plan.mapId, `cell: (${center.x},${center.y})`, ...timeline].join("\n")}\n`,
+      "utf8",
+    );
   });
 });
