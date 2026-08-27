@@ -18,6 +18,7 @@ import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { isCustomTileset } from "@/project/tilesetKind";
 import { uiLabel } from "@/editor/uiCopy";
 import { toast } from "@/util/toast";
+import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels/sidebarFocus";
 
 // ── 좌패널 1면 통합 (2026-08-21) ──────────────────────────────────────────────
 // 예전에는 「칠하기 | 찾기 | 속성」 3탭이었다. 감독 지적("칠하기만 있으면 되는 거
@@ -68,6 +69,7 @@ type PaletteScroll = {
 };
 
 export function renderTilePalette(container: HTMLElement): void {
+  const focusSnapshot = captureFocus(container);
   const previousPaletteScroll = readPaletteScroll(container);
   clearChildren(container);
   const state = editorState.get();
@@ -88,6 +90,8 @@ export function renderTilePalette(container: HTMLElement): void {
     // 이벤트 레이어에서도 레이어 전환이 보여야 한다 — 없으면 바닥으로 돌아가는 길이 사이드바에 없다.
     container.append(makeLeftLayerSwitcher(state.layer));
     renderEventEditor(container);
+    applyRovingTabindex(container);
+    restoreFocus(container, focusSnapshot);
     return;
   }
 
@@ -104,12 +108,16 @@ export function renderTilePalette(container: HTMLElement): void {
   if (!map) {
     shell.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
     container.append(shell);
+    applyRovingTabindex(container);
+    restoreFocus(container, focusSnapshot);
     return;
   }
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) {
     shell.append(el("div", { class: "empty-hint", text: uiLabel("tilesetMissing") }));
     container.append(shell);
+    applyRovingTabindex(container);
+    restoreFocus(container, focusSnapshot);
     return;
   }
 
@@ -118,6 +126,8 @@ export function renderTilePalette(container: HTMLElement): void {
   const palette: HTMLElement | null = body.palette;
 
   container.append(shell);
+  applyRovingTabindex(container);
+  restoreFocus(container, focusSnapshot);
   if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
   if (pendingRevealSelectedTile) {
     pendingRevealSelectedTile = false;
@@ -588,11 +598,15 @@ function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scro
     resetChipsetScroll = false;
     const resetScroll = { ...scroll, sheetLeft: 0, sheetTop: 0 };
     applyPaletteScroll(container, palette, resetScroll);
-    window.requestAnimationFrame(() => applyPaletteScroll(container, palette, resetScroll));
+    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(() => applyPaletteScroll(container, palette, resetScroll));
+    }
     return;
   }
   applyPaletteScroll(container, palette, scroll);
-  window.requestAnimationFrame(() => applyPaletteScroll(container, palette, scroll));
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(() => applyPaletteScroll(container, palette, scroll));
+  }
 }
 
 function applyPaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {

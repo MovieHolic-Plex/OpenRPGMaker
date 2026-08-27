@@ -18,6 +18,7 @@ import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { renderMapList } from "@/editor/panels/mapList";
+import { captureFocus, restoreFocus } from "@/editor/panels/sidebarFocus";
 import {
   basicFlyoutReducer,
   buildFlyoutShell,
@@ -103,6 +104,7 @@ export function resetBasicLeftRailForTests(): void {
 }
 
 export function renderBasicLeftRail(container: HTMLElement): void {
+  const focusSnapshot = captureFocus(container);
   clearChildren(container);
   lastContainer = container;
   installDocumentListeners();
@@ -129,6 +131,7 @@ export function renderBasicLeftRail(container: HTMLElement): void {
     shell.append(makeFlyout(flyoutState.open, state.selectedTile, state.layer, tileset));
   }
   container.append(shell);
+  restoreFocus(container, focusSnapshot);
 }
 
 function makeToolsColumn(activeTool: Tool): HTMLElement {
