@@ -308,6 +308,8 @@ export type Command =
   | { kind: "removeLight"; id?: string; all?: boolean }
   | { kind: "setWeather"; weather: WeatherKind; intensity?: number; transitionMs?: number }
   | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: BattleAnimationId; wait?: boolean }
+  // 동영상 리소스는 아직 ResourceKind 에 없다(다른 레인이 확장 중) — 지금은 리소스 id 문자열만 받는다.
+  | { kind: "playMovie"; resourceId: string; wait?: boolean; skippable?: boolean }
   | {
       kind: "showPicture";
       pictureId: string;

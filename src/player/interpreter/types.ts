@@ -92,6 +92,7 @@ export type StepResult =
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
   | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }
   | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: string; wait: boolean }
+  | { kind: "playMovie"; resourceId: string; wait: boolean; skippable: boolean }
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
   | { kind: "shakeScreen"; intensity: number; durationMs: number }
   | {

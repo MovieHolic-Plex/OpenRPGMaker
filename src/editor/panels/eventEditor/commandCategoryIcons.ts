@@ -66,6 +66,7 @@ function buildKindIndex(): Map<string, CategoryVisual> {
   index.set("removeLight", groupVisual("화면/연출"));
   index.set("setWeather", groupVisual("화면/연출"));
   index.set("showAnimation", groupVisual("화면/연출"));
+  index.set("playMovie", groupVisual("화면/연출"));
   index.set("checkpointSave", groupVisual("시스템/고급"));
   index.set("killPlayer", groupVisual("시스템/고급"));
   index.set("triggerEnding", groupVisual("시스템/고급"));

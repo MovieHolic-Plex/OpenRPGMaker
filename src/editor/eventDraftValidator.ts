@@ -685,6 +685,8 @@ function validateCommand(
       return;
     case "showPicture": require("reference.resource.missing", "그림 리소스", command.resourceId, refs.resources); return;
     case "playAudio": require("reference.resource.missing", "오디오 리소스", command.resourceId, refs.resources); return;
+    // 동영상도 그림·오디오와 같은 기준이다 — 미지정·없는 리소스는 둘 다 오류로 말한다.
+    case "playMovie": require("reference.resource.missing", "동영상 리소스", command.resourceId, refs.resources); return;
     case "shop":
       if (command.itemIds.length === 0 && (command.stock?.length ?? 0) === 0) {
         issues.push({

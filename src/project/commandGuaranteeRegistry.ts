@@ -203,6 +203,9 @@ export const COMMAND_GUARANTEES = {
   // playAudio/stopAudio: battleEvents.ts 가 호스트 오디오 콜백으로 실제 실행(troop-full).
   playAudio: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   stopAudio: guarantee("media", { ...playerPause, support: troopFull }),
+  // playMovie: 인터프리터 pause + 플레이어 비디오 오버레이(playSceneMovies.playMovieOverlay)까지 착지했으므로
+  // showAnimation과 동일 등급(media·player·pause·troop-full). 피커 직선택과 검증기 통과가 함께 열린다.
+  playMovie: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
   // displayTextSettings: battleEvents.ts 가 메시지 표시 설정을 이벤트 로그로 실행(Step 3).
   displayTextSettings: guarantee("dialogue", { support: troopFull }),
