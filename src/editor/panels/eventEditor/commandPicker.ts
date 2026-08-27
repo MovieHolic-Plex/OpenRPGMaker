@@ -450,7 +450,10 @@ function renderPickerPage(
   if (page === 2) {
     wrap.append(
       renderCompanionRoster(store.getCurrent(), {
-        onSelect: (command) => onSelect(command as unknown as Command, close),
+        onSelect: (command) => {
+          close();
+          onSelect(command as unknown as Command);
+        },
       }),
     );
   }
