@@ -159,7 +159,7 @@ export function renderAppliedComparison(options: {
           el("button", {
             class: "ai-assistant-action ai-auto-applied-undo",
             text: "되돌리기",
-            attrs: { type: "button", title: "자동으로 적용한 변경을 되돌립니다" },
+            attrs: { type: "button", title: "자동으로 적용한 변경을 되돌립니다 — 원쪽 아래 되돌리기와 같은 함수다" },
             dataset: { testid: "ai-auto-applied-undo" },
             on: { click: () => options.onUndo() },
           }),

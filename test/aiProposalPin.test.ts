@@ -85,7 +85,9 @@ function installBrowserGlobals(): void {
 }
 
 function renderPanel(dock: ChatDock = "side"): FakeElement {
-  storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m" }));
+  // 이 파일은 대기 제안 카드/핀을 검증하므로 자동 적용을 명시적으로 끈다
+  // (기본값은 승인 없이 즉시 적용 — approvalPolicy.resolveProposalApplyMode).
+  storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m", agentMode: "chat", autoApprove: false }));
   return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
 }
 
