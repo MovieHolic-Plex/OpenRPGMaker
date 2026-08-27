@@ -132,7 +132,7 @@ export function newCommand(kind: Command["kind"]): Command {
     case "shop":
       return {
         kind: "shop",
-        itemIds: [],
+        itemIds: ["item_potion", "item_ether", "item_antidote"],
         allowSell: true,
         quantityMode: "single",
         shopType: "normal",

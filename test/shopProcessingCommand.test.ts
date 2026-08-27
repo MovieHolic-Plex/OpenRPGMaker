@@ -21,10 +21,10 @@ function mkSession(): PlaySessionLike {
 }
 
 describe("Shop Processing command options", () => {
-  it("creates RM-style shop processing defaults", () => {
+  it("creates a general-store shop with starter stock (not an empty catalog)", () => {
     expect(newCommand("shop")).toMatchObject({
       kind: "shop",
-      itemIds: [],
+      itemIds: ["item_potion", "item_ether", "item_antidote"],
       shopType: "normal",
       messageType: "welcome",
       branchOnTransaction: false,

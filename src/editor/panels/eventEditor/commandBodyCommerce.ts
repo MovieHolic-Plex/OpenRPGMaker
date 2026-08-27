@@ -1070,13 +1070,27 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     ],
   });
 
-  fieldset.append(
+  const catalogFold = el("details", {
+    class: "shop-processing-catalog-fold",
+    dataset: { testid: "shop-item-catalog-fold" },
+  });
+  catalogFold.append(
+    el("summary", {
+      class: "shop-processing-catalog-fold-summary",
+      text: `DB 전체 목록 (${items.length})·필터·검색`,
+    }),
     filterBar,
     catalog,
+  );
+  selectedList.root.classList.add("shop-processing-sale-list");
+  selectedList.root.dataset.testid = "shop-sale-list";
+  fieldset.append(
+    selectedList.root,
+    catalogFold,
     el("div", {
       class: "shop-processing-e2e-tray",
       attrs: { "aria-hidden": "true" },
-      children: [selectedList.root, availableList.root, add, remove],
+      children: [availableList.root, add, remove],
     }),
     controls,
     detail.root,

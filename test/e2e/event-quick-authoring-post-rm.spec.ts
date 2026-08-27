@@ -1,4 +1,21 @@
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { expect, test, type Locator, type Page } from "@playwright/test";
+
+const EVIDENCE_DIR = "output/evidence/event-quick-authoring-post-rm";
+
+async function dumpEvidence(
+  page: Page,
+  name: string,
+  metrics: Record<string, unknown>,
+): Promise<void> {
+  mkdirSync(EVIDENCE_DIR, { recursive: true });
+  await page.screenshot({ path: join(EVIDENCE_DIR, `${name}.png`), fullPage: true });
+  writeFileSync(
+    join(EVIDENCE_DIR, `${name}.json`),
+    `${JSON.stringify({ name, ...metrics, at: new Date().toISOString() }, null, 2)}\n`,
+  );
+}
 
 /**
  * post-RM 「빠른 저작」 계약 — .omo/plans/event-editor-quick-authoring-adversarial-review.md
@@ -109,6 +126,13 @@ test("빠른 저작 탭1: 선택 불가 안내 행 0 — 작업면은 카탈로�
 
   // 「빠른 저작」 작업면에 aria-disabled=true 명령 행이 하나도 없어야 한다.
   await expect(picker.locator('.event-command-picker-command[aria-disabled="true"]')).toHaveCount(0);
+  const pickerDump = await picker.evaluate((host) => (host as HTMLElement).outerHTML);
+  mkdirSync(EVIDENCE_DIR, { recursive: true });
+  writeFileSync(join(EVIDENCE_DIR, "picker-tab1-dom.html"), pickerDump);
+  await dumpEvidence(page, "tab1-no-disabled-rows", {
+    ariaDisabledCommandRows: 0,
+    stackedPickerBehind: false,
+  });
 });
 
 test("한 레이어: 명령을 고르면 피커는 닫힌다 — 모달 스택 없음", async ({ page }) => {
@@ -126,6 +150,10 @@ test("한 레이어: 명령을 고르면 피커는 닫힌다 — 모달 스택 �
 
   // 편집 창이 열리는 순간 뒤에 남은 피커가 없어야 한다(피커 count 0).
   await expect(picker).toHaveCount(0);
+  await dumpEvidence(page, "picker-closes-on-select", {
+    stackedPickerBehind: false,
+    pickerCount: 0,
+  });
 });
 
 test("문장 표시 라이브 프리뷰는 '...' 로만 끝나지 않는다", async ({ page }) => {
@@ -139,6 +167,10 @@ test("문장 표시 라이브 프리뷰는 '...' 로만 끝나지 않는다", as
   // 빈 본문이어도 샘플 문장·얼굴이 보여야 한다. innerText 가 '...' 만이면 실패다.
   // (toHaveText 는 textContent 로 비교해 캡션까지 포함하므로, 보이는 innerText 를 직접 본다.)
   expect((await livePreview.innerText()).trim()).not.toBe("...");
+  await dumpEvidence(page, "show-text-live-preview", {
+    livePreviewInnerText: (await livePreview.innerText()).trim(),
+    stackedPickerBehind: (await page.getByTestId("event-command-picker").count()) > 0,
+  });
 });
 
 test("얼굴 바꾸기 미리보기에 페이스셋 이미지/캔버스/크롭이 보인다", async ({ page }) => {
@@ -149,6 +181,7 @@ test("얼굴 바꾸기 미리보기에 페이스셋 이미지/캔버스/크롭�
 
   // 카피만 있고 실제 페이스셋 그림이 없으면 실패다. crop DOM 또는 img/canvas 자연 크기 > 0.
   expect(await dialogFacesetVisible(dialog)).toBe(true);
+  await dumpEvidence(page, "change-faceset-crop", { facesetGraphicVisible: true });
 });
 
 test("장소 이동 미리보기에 궤적 노드 ≥ 1 — '이동 단계 없음' 빈 카피만이면 실패", async ({ page }) => {
@@ -158,6 +191,9 @@ test("장소 이동 미리보기에 궤적 노드 ≥ 1 — '이동 단계 없�
   const dialog = await pickCommand(editor, page, COMMAND_IDS.moveEvent);
 
   expect(await moveTrajectoryNodeCount(page)).toBeGreaterThanOrEqual(1);
+  await dumpEvidence(page, "move-route-trail", {
+    trajectoryNodes: await moveTrajectoryNodeCount(page),
+  });
 });
 
 test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍수는 실패", async ({ page }) => {
@@ -166,9 +202,16 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
   const editor = await openEventEditor(page);
   const dialog = await pickCommand(editor, page, COMMAND_IDS.shopProcessing);
 
-  const saleRows = dialog.locator('.shop-processing-item-list [data-testid^="shop-item-row-"]');
+  const saleRows = dialog.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
   await expect(saleRows.first()).toBeVisible();
   expect(await saleRows.count()).toBeGreaterThanOrEqual(1);
+  const catalogFold = dialog.getByTestId("shop-item-catalog-fold");
+  await expect(catalogFold).toBeVisible();
+  expect(await catalogFold.evaluate((el) => (el as HTMLDetailsElement).open)).toBe(false);
+  await dumpEvidence(page, "shop-stocked-folded-catalog", {
+    saleRows: await saleRows.count(),
+    catalogFoldOpen: false,
+  });
 });
 
 test("말하기·이동·상점·선택지 각 1회 삽입 — 28행 카탈로그 아님 + pageerror 0", async ({ page }) => {
@@ -204,4 +247,9 @@ test("말하기·이동·상점·선택지 각 1회 삽입 — 28행 카탈로�
   }
 
   expect(pageErrors).toEqual([]);
+  await dumpEvidence(page, "four-insert-regression", {
+    pageerrorCount: pageErrors.length,
+    roots: 4,
+    catalogLengthPassCondition: false,
+  });
 });

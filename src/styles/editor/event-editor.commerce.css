@@ -1029,6 +1029,20 @@
   grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
   min-height: 200px;
 }
+.shop-processing-catalog-fold {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 4px 8px 8px;
+  background: var(--bg-raised);
+}
+.shop-processing-catalog-fold-summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 2px;
+}
+.shop-processing-sale-list {
+  margin-bottom: 8px;
+}
 .shop-processing-catalog {
   display: grid;
   gap: 4px;
