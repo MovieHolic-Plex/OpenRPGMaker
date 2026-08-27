@@ -201,3 +201,58 @@
   display: grid;
   gap: var(--space-1);
 }
+
+/* ── 의도 카드 + 시간 프리셋 칩 (D6) ─────────────────────────────────
+   `날씨 설정` 모달은 의도 카드·프리셋 칩·슬라이더를 갖는데 화면 효과는 필드 3줄뿐이었다.
+   카드 자체는 기존 `.m2-command-intent-card` 를 그대로 쓰고, 여기서는 배치만 얹는다. */
+.m2-screen-effect-intent {
+  margin-bottom: var(--space-3);
+}
+
+.m2-screen-effect-duration-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.m2-screen-effect-duration-chip {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.m2-screen-effect-duration-chip:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+.m2-screen-effect-duration-chip[aria-pressed="true"] {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+.m2-screen-effect-duration-chip:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+/* 값을 읽지 않는 효과(fadeIn/fadeOut)에서는 `값` 행을 감춘다 — .field 는 flex/grid 라
+   [hidden] 이 display 규칙에 져서 그냥 두면 계속 보인다(D9). */
+.event-editor .field[data-testid="m2-screen-effect-value-field"][hidden] {
+  display: none !important;
+}
+
+/* ── 인라인 인스펙터 프리뷰 (D5) ──────────────────────────────────────
+   행 한 번 클릭으로 열리는 인스펙터에는 프리뷰가 없었고 `↻ 미리보기 새로고침` 은
+   빈 패널을 다시 그렸다. 편집 모달과 같은 스테이지를 여기에도 둔다. */
+.event-editor .event-inspector-preview {
+  padding: var(--space-2) var(--space-2) 0;
+}
+
+.event-editor .event-inspector-preview .event-command-preview {
+  max-inline-size: 100%;
+}

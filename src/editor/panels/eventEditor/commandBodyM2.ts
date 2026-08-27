@@ -78,7 +78,125 @@ export function renderM2CommandBody(context: CommandEditContext, cmd: Command): 
   for (const spec of entry.fields) {
     wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value: cmd.fields[spec.key] ?? spec.defaultValue })));
   }
+  if (entry.title === "Screen Effect") decorateScreenEffectBody(wrap);
   return wrap;
+}
+
+/** 시간 프리셋 칩 — 런타임 clampMs(50~5000) 안쪽의 흔한 세 값. */
+const SCREEN_EFFECT_DURATION_PRESETS = [
+  { id: "fast", label: "빠른", ms: 300 },
+  { id: "normal", label: "보통", ms: 800 },
+  { id: "slow", label: "느린", ms: 1600 },
+] as const;
+
+/**
+ * `값` 을 실제로 읽는 효과. planScreenEffect/applyScreenEffect 와 같은 목록이다.
+ * fadeIn/fadeOut 은 도착 색이 고정(투명/검정)이라 값을 보지 않는다 — 입력을 보여주면
+ * 감독은 "여기에 뭘 넣어야 하나" 를 고민하고, 넣어도 아무 일도 일어나지 않는다(D9).
+ */
+const SCREEN_EFFECT_VALUE_USERS: ReadonlySet<string> = new Set(["tint", "flash", "weather"]);
+
+/**
+ * 화면 효과 폼에 의도 카드와 시간 프리셋을 얹고, 쓰이지 않는 `값` 행을 숨긴다(D6/D9).
+ * 폼은 효과를 바꿔도 재빌드되지 않으므로(shouldRerenderCommandForm) 여기서 직접 동기화한다.
+ */
+function decorateScreenEffectBody(wrap: HTMLElement): void {
+  const effectSelect = wrap.querySelector<HTMLSelectElement>('[data-testid="m2-command-effect-option-select"]');
+  const valueRow = wrap.querySelector<HTMLElement>('[data-testid="m2-command-value-input"]')?.closest(".field");
+  const durationInput = wrap.querySelector<HTMLInputElement>('[data-testid="m2-command-durationMs-input"]');
+  const durationRow = durationInput?.closest(".field");
+  if (!effectSelect || !(valueRow instanceof HTMLElement) || !durationInput || !(durationRow instanceof HTMLElement)) return;
+
+  valueRow.dataset.testid = "m2-screen-effect-value-field";
+  const intent = el("div", {
+    class: "m2-command-intent-card m2-screen-effect-intent",
+    dataset: { testid: "m2-screen-effect-intent" },
+    attrs: { role: "note" },
+  });
+  const intentTitle = el("div", { class: "m2-command-intent-title" });
+  const intentCopy = el("p", { class: "m2-command-intent-body" });
+  intent.append(intentTitle, intentCopy);
+
+  const presets = el("div", {
+    class: "m2-screen-effect-duration-presets",
+    attrs: { role: "group", "aria-label": "시간 프리셋" },
+  });
+  const sync = (): void => {
+    const effect = effectSelect.value || "fadeIn";
+    const value = wrap.querySelector<HTMLInputElement>('[data-testid="m2-command-value-input"]')?.value ?? "";
+    const durationMs = clampScreenEffectMs(Number(durationInput.value));
+    valueRow.hidden = !SCREEN_EFFECT_VALUE_USERS.has(effect);
+    intentTitle.textContent = screenEffectIntentTitle(effect);
+    intentCopy.textContent = screenEffectIntentCopy(effect, value, durationMs);
+    for (const chip of presets.children) {
+      chip.setAttribute("aria-pressed", chip.getAttribute("data-ms") === String(durationMs) ? "true" : "false");
+    }
+  };
+
+  for (const preset of SCREEN_EFFECT_DURATION_PRESETS) {
+    presets.append(
+      el("button", {
+        class: "m2-screen-effect-duration-chip",
+        text: `${preset.label} ${preset.ms}ms`,
+        attrs: { type: "button", "aria-pressed": "false", "data-ms": String(preset.ms) },
+        dataset: { testid: `m2-screen-effect-duration-${preset.id}` },
+        on: {
+          click: () => {
+            durationInput.value = String(preset.ms);
+            // 숫자 필드가 스스로 범위 안내를 갱신하고(input) 명령에 커밋하도록(change) 태운다.
+            durationInput.dispatchEvent(new Event("input", { bubbles: true }));
+            durationInput.dispatchEvent(new Event("change", { bubbles: true }));
+            sync();
+          },
+        },
+      })
+    );
+  }
+  durationRow.append(presets);
+
+  // 효과/값/시간 어디를 건드려도 의도 카드와 값 행 노출이 따라온다.
+  wrap.addEventListener("change", sync);
+  wrap.addEventListener("input", sync);
+  wrap.prepend(intent);
+  sync();
+}
+
+/** 런타임 clampMs(commandCatalog.ts) 와 같은 범위. 의도 카드가 실제 실행 시간을 말해야 한다. */
+function clampScreenEffectMs(value: number): number {
+  if (!Number.isFinite(value)) return 300;
+  return Math.min(5000, Math.max(50, Math.round(value)));
+}
+
+function screenEffectIntentTitle(effect: string): string {
+  switch (effect) {
+    case "fadeIn": return "페이드 인";
+    case "fadeOut": return "페이드 아웃";
+    case "flash": return "플래시";
+    case "tint": return "색조";
+    case "weather": return "날씨";
+    default: return effect;
+  }
+}
+
+/** 고른 효과가 무엇을 하는지 한 줄로. 문장은 planScreenEffect 의 실제 실행 경로에서 나온다. */
+function screenEffectIntentCopy(effect: string, value: string, durationMs: number): string {
+  const color = value.trim();
+  switch (effect) {
+    case "fadeIn":
+      return `검게 덮인 화면을 ${durationMs}ms 동안 걷어내며 서서히 밝아진다. 값은 쓰지 않는다.`;
+    case "fadeOut":
+      return `${durationMs}ms 동안 화면이 점점 어두워져 검정으로 덮인다. 값은 쓰지 않는다.`;
+    case "flash":
+      return `화면이 ${color || "흰색"}으로 한 번 밝게 번쩍이고 ${durationMs}ms 안에 원래대로 돌아온다.`;
+    case "tint":
+      return color
+        ? `화면 전체가 ${durationMs}ms 동안 ${color} 색조로 물든다.`
+        : `값이 비어 있어 ${durationMs}ms 동안 색조를 지운다(원래 색으로 되돌림).`;
+    case "weather":
+      return `날씨 레이어를 '${color || "none"}' 로 바꾼다. 날씨는 즉시 바뀌어 시간(${durationMs}ms)을 쓰지 않는다.`;
+    default:
+      return `'${effect}' 는 런타임에 렌더러가 없어 실행되지 않는다(${durationMs}ms 도 무시된다).`;
+  }
 }
 
 function eraseEventCommandBody(context: CommandEditContext, cmd: M2Command): HTMLElement {

@@ -14,6 +14,7 @@ import {
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type {
   Command,
@@ -558,6 +559,38 @@ function validateVariableDivideByZero(commands: readonly Command[], pageId: stri
   }
 }
 
+const SCREEN_EFFECT_COMMAND_ID = "m2-202-screen-effect";
+
+/**
+ * 화면 효과의 런타임 경고를 효과 단위로 말한다(적대적 QA 3라운드 D9).
+ *
+ * 명령 단위 분류(m2CommandRuntimeSupport)는 이 커맨드를 map 컨텍스트에서 `runtime-partial` 로
+ * 읽으므로, 모든 행에 `이 명령은 실제 게임에서 일부 효과만 실행됩니다` 가 붙었다. 그 문장은
+ * fadeIn/fadeOut/flash/tint/weather 에는 거짓이다 — applyScreenEffect 가 실제 렌더 경로
+ * (screen.tint / flash / weather)에 그대로 얹는다. 참인 경우는 렌더러가 없는 값(blur 등)뿐이다.
+ *
+ * @returns `"not-applicable"` = 화면 효과 명령이 아님(일반 규칙을 그대로 쓴다),
+ *   `null` = 화면 효과이고 실제로 실행된다(경고 없음), 그 외 = 효과를 지목한 경고.
+ */
+function screenEffectRuntimeIssue(
+  command: Command,
+  pageId: string,
+  path: readonly number[],
+): EventDraftIssue | null | "not-applicable" {
+  if (command.kind !== "m2Command" || command.commandId !== SCREEN_EFFECT_COMMAND_ID) return "not-applicable";
+  const effect = String(command.fields?.effect ?? "fadeIn");
+  const value = String(command.fields?.value ?? "");
+  const plan = planScreenEffect(effect, value, Number(command.fields?.durationMs ?? 300));
+  if (plan.kind !== "unsupported") return null;
+  return {
+    severity: "warning",
+    code: "runtime.screenEffect.unsupported",
+    message: `화면 효과 '${effect}' 는 런타임에 렌더러가 없어 실행되지 않습니다 — 페이드/플래시/색조/날씨 중에서 고르세요.`,
+    pageId,
+    commandPath: path,
+  };
+}
+
 function validateCommand(
   project: Project,
   mapId: MapId,
@@ -571,7 +604,11 @@ function validateCommand(
   const path = visit.path;
   try {
     const support = commandRuntimeSupport(command, "map");
-    if (support === "editor-only") {
+    const screenEffect = screenEffectRuntimeIssue(command, pageId, path);
+    if (screenEffect !== "not-applicable") {
+      // 화면 효과는 고른 어떤 것을 실행하는가로 갈린다 — 행당 "일부 효과만" 가 아니다(D9).
+      if (screenEffect) issues.push(screenEffect);
+    } else if (support === "editor-only") {
       issues.push({ severity: "warning", code: "runtime.editor-only", message: "이 명령은 에디터 전용이며 실제 게임에서는 효과 없이 건너뜁니다.", pageId, commandPath: path });
     } else if (support === "runtime-partial") {
       issues.push({ severity: "warning", code: "runtime.partial", message: "이 명령은 실제 게임에서 일부 효과만 실행됩니다.", pageId, commandPath: path });
