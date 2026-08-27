@@ -1,5 +1,7 @@
 # Editor AI Panel & Tools
 
+- **AI 컨텍스트 압축 (2026-08-27):** 대화가 길어져 모델 컨텍스트 윈도우 상한에 도달하면 `src/ai/contextCompaction.ts`가 앞부분 대화를 LLM 요약 1회로 치환하여 세션 대화 배열(`this.messages`)을 영구 압축한다. 요청 전송 직전 사본을 52,000자로 줄이는 `messageBudget.ts` 클램프 및 12,000자 시스템 프롬프트 예산 `contextBuilder.ts`와 분리된 독립 계층이다. 상세 계약: `openwiki/ai-context-compaction.md`. Tests: `test/contextCompaction.test.ts`, `test/assistantSessionCompaction.test.ts`.
+
 - **Database assistant entry (2026-08-26):** Database Overview's `AI 어시스턴트` enters the same editor-wide assistant, not a database-only analysis bot. Its empty state offers whole-project starter actions, and its request prefix says the assistant can help across the editor while naming the currently visible Database screen. Keep the shared session, proposal, approval, and tool-routing contracts; do not create a separate Database-only LLM pipeline.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
