@@ -157,7 +157,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     return value;
   };
-  const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
+  const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "strict";
   // B: skin-driven ATB haste — chrono fast, dq/mother slow, octopath subtle
   const skinHasteMultiplier = (() => {
     try {
