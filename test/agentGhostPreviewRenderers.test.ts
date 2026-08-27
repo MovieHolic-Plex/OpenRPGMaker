@@ -214,7 +214,8 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
           setOrigin: vi.fn(),
           setAlpha: vi.fn(),
           setScale: vi.fn(),
-          setCrop: vi.fn(),
+                    setCrop: vi.fn(),
+          setVisible: vi.fn(),
           destroy: vi.fn(),
         })),
         rectangle: vi.fn(() => ({

@@ -228,8 +228,16 @@ export class AgentGhostPreviewRenderer {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private tileLayerKey = "";
   private currentToolName: string = "";
-  /** 초안 맵 공급자(선택) — 있으면 타일을 에디터 컴포지터 경로로 합성해 찍는다. */
-  draftMapProvider?: (mapId: MapId) => import("@/project/types").GameMap | null | undefined;
+  /** 이번 프레임의 FX 오브젝트(경계/이펙트/커서/샤인) — 다음 프레임 머리에 파괴된다. */
+  private fxFrames: Phaser.GameObjects.Graphics[] = [];
+  private tileLayerParent: Phaser.GameObjects.Container | null = null;
+  /** 스케줄 순서의 타일 오브젝트 — 프레임마다 phase 로 visible/스케일 게이팅된다. */
+  private tileObjects: Array<{ obj: Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; baseX: number; baseY: number }> = [];
+
+  private collectFx(fx: Phaser.GameObjects.Graphics): void {
+    this.fxFrames.push(fx);
+    this.animGroup?.add(fx);
+  }
   private cachedBounds: AgentGhostBounds | null = null;
   private animGroup: Phaser.GameObjects.Container | null = null;
   private scheduleKey: string = "";
@@ -262,6 +270,8 @@ export class AgentGhostPreviewRenderer {
       this.scheduleKey = "";
       this.startTime = null;
       this.animGroup = null;
+      this.tileLayer = null; // layer.removeAll(true) 가 파괴했다 — 참조와 키를 반드시 리셋
+      this.tileLayerKey = "";
       this.stopTicker();
       return;
     }
@@ -319,10 +329,6 @@ export class AgentGhostPreviewRenderer {
       if (this.startTime === null || this.schedule.length === 0) {
         this.stopTicker();
         return;
-      }
-      if (typeof location !== "undefined" && location.search.includes("ghostDebug")) {
-        const done = this.schedule.filter((st) => this.clock() - (this.startTime ?? 0) >= st.startMs).length;
-        console.log(`[ghostdbg] tick elapsed=${Math.round(this.clock() - (this.startTime ?? 0))} bound=${this.tickerBound ? 1 : 0} progress=${done}/${this.schedule.length}`);
       }
       // 한 프레임의 렌더 오류(예: 컴포지터 경로의 예외)가 리빌 전체를 얼리는 것을 막는다 —
       // 칩 텍스트 갱신은 drawAnimationLayers 보다 앞서므로, 예외가 나도 진행 상태는 살아 있다.
@@ -398,18 +404,18 @@ export class AgentGhostPreviewRenderer {
 
   private drawAnimationLayers(animState: GhostAnimationState): void {
     if (!this.animGroup) return;
-    const group = this.animGroup;
     // 타일/경계 레이어는 스케줄이 바뀔 때 한 번만 만든다 — 매 프레임 removeAll+재생성은
     // (a) 수백 개 GameObject churn, (b) 재생 중 애님 스프라이트 파괴로 Phaser 메인 루프를
-    // 불안정하게 만들어(실측: 리빌이 도중 정지) 원인이 된다. 프레임마다 갱신하는 것은
-    // FX 그래픽스 하나뿐이다.
-    if (!this.tileLayer || this.tileLayerKey !== this.scheduleKey) {
+    // 불안정하게 만들어(실측: 리빌이 도중 정지) 원인이 된다. 프레임 갱신 대상은
+    // 매번 destroy→재생성하는 얇은 FX 레이어(bounds+셀 이펙트+커서+샤인, graphics 뿐)와
+    // 캐시된 타일의 알파/스케일 게이팅뿐이다.
+    this.fxFrames.forEach((fx) => fx.destroy());
+    this.fxFrames.length = 0;
+
+    if (!this.tileLayer || this.tileLayerKey !== this.scheduleKey || this.tileLayerParent !== this.animGroup) {
       this.buildTileLayer();
       this.tileLayerKey = this.scheduleKey;
-    }
-    const previews = this.currentPreviews();
-    for (const preview of previews) {
-      group.add(this.boundsGraphic(preview.bounds));
+      this.tileLayerParent = this.animGroup;
     }
 
     for (let i = 0; i < this.schedule.length; i++) {
@@ -439,7 +445,27 @@ export class AgentGhostPreviewRenderer {
         fx.fillRect(cx, cy + dist, 2, 2);
         fx.fillRect(cx, cy - dist, 2, 2);
       }
-      group.add(fx);
+      if (cellAnim.afterglowAlpha > 0 || cellAnim.ringAlpha > 0 || (cellAnim.sparkProgress > 0 && cellAnim.sparkProgress < 1)) {
+        this.collectFx(fx);
+      } else {
+        fx.destroy();
+      }
+
+      // 타일 게이팅/팝: 미공개 셀은 숨김, 찍히는 셀은 스케일 팝(1.5→1.0), 끝나면 원위치.
+      const tileEntry = this.tileObjects[i];
+      if (tileEntry) {
+        const { obj, baseX, baseY } = tileEntry;
+        obj.setVisible(true);
+        if (cellAnim.scale !== 1.0) {
+          obj.setScale(cellAnim.scale);
+          obj.x = baseX - (TILE_SIZE * (cellAnim.scale - 1)) / 2;
+          obj.y = baseY - (TILE_SIZE * (cellAnim.scale - 1)) / 2;
+        } else {
+          obj.setScale(1);
+          obj.x = baseX;
+          obj.y = baseY;
+        }
+      }
     }
 
     // 2. Cursor crosshair on latest active stamped cell
@@ -460,7 +486,7 @@ export class AgentGhostPreviewRenderer {
       cursorGfx.lineTo(cx + TILE_SIZE + 5, cy + TILE_SIZE / 2);
       cursorGfx.strokePath();
 
-      group.add(cursorGfx);
+      this.collectFx(cursorGfx);
     }
 
     // 3. Diagonal white shine sweep across preview bounds after completion
@@ -481,12 +507,13 @@ export class AgentGhostPreviewRenderer {
       shineGfx.lineTo(bx + currentPos - bh, by + bh);
       shineGfx.strokePath();
 
-      group.add(shineGfx);
+      this.collectFx(shineGfx);
     }
   }
 
   /** 타일 스탬프 레이어(컴포지터 경로 포함)를 스케줄당 한 번 빌드한다. */
   private buildTileLayer(): void {
+    this.tileObjects = [];
     if (this.tileLayer) {
       this.tileLayer.removeAll(true);
     } else if (this.animGroup) {
@@ -495,14 +522,16 @@ export class AgentGhostPreviewRenderer {
     }
     if (!this.tileLayer) return;
 
-    const previews = this.currentPreviews();
-    const allCells = previews.flatMap((p) => p.cells);
     const project = store.getCurrent();
     const currentMap = this.mapId() ? project.maps[this.mapId()!] : undefined;
     const defaultTilesetId = currentMap?.tilesetId;
     const draftMap = getAgentGhostDraftMap(this.mapId() as MapId) ?? null;
+    const objects: Array<{ obj: Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; baseX: number; baseY: number }> = [];
 
-    for (const cell of allCells) {
+    // 스케줄 순서대로 만들어 cellStates 인덱스와 정렬한다 — 프레임마다 phase 게이팅이
+    // 이 순서에 의존한다(스탬프 팝·순차 공개). 미공개 셀은 visible=false 로 둔다.
+    for (const step of this.schedule) {
+      const cell = step.cell;
       const px = cell.x * TILE_SIZE;
       const py = cell.y * TILE_SIZE;
       const tilesetId = cell.tilesetId ?? defaultTilesetId;
@@ -516,16 +545,23 @@ export class AgentGhostPreviewRenderer {
           : null;
         if (composed) {
           composed.setAlpha(GHOST_SPRITE_ALPHA);
+          composed.setVisible(false);
           this.tileLayer.add(composed);
+          objects.push({ obj: composed, baseX: px, baseY: py });
           continue;
         }
         const textureKey = ensureTilesetTexture(this.scene, tileset);
         const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
         tileSprite.setOrigin(0, 0);
         tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
+        tileSprite.setVisible(false);
         this.tileLayer.add(tileSprite);
+        objects.push({ obj: tileSprite, baseX: px, baseY: py });
       } else {
-        this.tileLayer.add(this.cellRect(cell));
+        const rect = this.cellRect(cell);
+        rect.setVisible(false);
+        this.tileLayer.add(rect);
+        objects.push({ obj: rect, baseX: px, baseY: py });
       }
     }
   }
@@ -621,6 +657,8 @@ export class AgentGhostPreviewRenderer {
     this.scheduleKey = "";
     this.startTime = null;
     this.animGroup = null;
+    this.tileLayer = null;
+    this.tileLayerKey = "";
   }
 
   private currentState(): AgentGhostPreviewState {
