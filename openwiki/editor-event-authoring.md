@@ -97,3 +97,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 ## Guided story arc facade
 
 `author_story_arc` is the deterministic high-level path for bounded tutorial objectives, executable choice branches, and an optional twist reveal. It compiles only to existing event text/choices/fork/setSwitch/setVariable commands plus quest graphs and story-flag metadata, reports the created identifiers, and rejects empty objectives or branch bodies. It is a structural authoring aid, not an automatic prose-quality or story-quality judge.
+
+## 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- **전수 감사:** 명령 피커 3탭 45항목을 playwright로 전부 열어 스크린샷(`.omo/evidence/event-map-items/before|after/`)과 항목별 감사(`audit-before.md`)로 남겼다. 고유 다이얼로그 44개가 A형(설명카드+요약+미리보기)과 B형 레거시(기타 명령 껍데기, 9건: m2-026/030/066/078/201/202/205/207/212)로 갈라진다. B형 껍데기 통일은 아직 미착수 — 후속 과제.
+- **적용된 픽스:** (1) `isM2CatalogEntrySelectableInMap`이 m2-055(Show Animation 중복 등재)를 맵 피커에서 제외 — 카탈로그 엔트리는 저장 프로젝트 호환을 위해 유지. (2) 조명 설정(setLighting) 입력을 0~1 → 밝기(%)/100 스케일로 통일하고 암전/AMB/주변광 3중 용어를 "밝기"로 정리(`commandBodyPage3Native.ts`, `commandPreview.ts` lightingStage/caption). (3) 카메라 프리뷰의 내부 토큰(panTo 등)은 `CAMERA_MODE_LABELS`로 한국어화. (4) 타일 변경(changeTile)에 실맵 캔버스 미리보기 추가(`change-tile-map-canvas`, drawTransferMapPreview 재사용). (5) 프리셋 칩 세로 쪼개짐 방지 CSS(`05-force-modern-actor-page3.css`: nowrap+min-width fit-content). (6) parallax 병기 문구 정리.
+- **계약 테스트:** `test/eventMapItemsBeginnerUx.test.ts`. e2e 증거: `_event-map-items-after.spec.ts`.

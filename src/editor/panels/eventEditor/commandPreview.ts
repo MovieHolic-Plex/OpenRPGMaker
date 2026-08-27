@@ -1186,9 +1186,9 @@ function lightingStage(cmd: Extract<Command, { kind: "setLighting" }>): HTMLElem
   overlay.style.opacity = String(1 - ambient);
   if (cmd.color) overlay.style.background = cmd.color;
   screen.append(overlay);
-  screen.append(el("div", { class: "ecp-fx-label", text: `AMB ${pct}%` }));
+  screen.append(el("div", { class: "ecp-fx-label", text: `어둠 ${100 - pct}%` }));
   stage.append(screen);
-  const meta: string[] = [`주변광 ${pct}%`];
+  const meta: string[] = [`밝기 ${pct}%`];
   if (cmd.transitionMs) meta.push(`${cmd.transitionMs}ms`);
   stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
   return stage;
@@ -1285,16 +1285,26 @@ function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLEl
   return stage;
 }
 
+// 초보자 계약: 카메라 모드 내부 토큰을 한국어로 표기한다.
+const CAMERA_MODE_LABELS: Record<string, string> = {
+  panTo: "화면 이동",
+  follow: "대상 따라가기",
+  zoom: "확대/축소",
+  lock: "고정",
+};
+
 function cameraControlStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
   const mode = m2Field(cmd, "mode", "panTo");
+  // 초보자 계약: 내부 API 토큰(panTo 등)을 그대로 보여주지 않는다.
+  const modeLabel = CAMERA_MODE_LABELS[mode] ?? "카메라 이동";
   const stage = el("div", {
     class: "ecp-stage ecp-camera-stage",
     dataset: { testid: "ecp-camera-stage", mode },
   });
   const screen = el("div", { class: "ecp-fx-screen ecp-camera-screen" });
-  screen.append(el("div", { class: "ecp-fx-label", text: `카메라 ${mode}` }));
+  screen.append(el("div", { class: "ecp-fx-label", text: modeLabel }));
   stage.append(screen);
-  stage.append(el("div", { class: "ecp-fx-caption", text: mode }));
+  stage.append(el("div", { class: "ecp-fx-caption", text: modeLabel }));
   return stage;
 }
 
@@ -1535,7 +1545,7 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
     case "callMapEvent":
       return `맵 이벤트 ${cmd.eventId} 호출`;
     case "setLighting":
-      return `주변광 ${Math.round(cmd.ambient * 100)}%`;
+      return `밝기 ${Math.round(cmd.ambient * 100)}%`;
     case "setWeather":
       return `날씨: ${weatherPreviewLabel(cmd.weather)}`;
     case "timer":

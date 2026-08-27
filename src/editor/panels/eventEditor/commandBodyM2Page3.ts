@@ -1402,7 +1402,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
             class: "actor-m2-preview-copy",
             children: [
               line(`먼 배경 → ${resourceId || "(선택 없음)"}`),
-              note("맵 원경(parallax) 이미지를 교체합니다."),
+              note("맵 뒤에 깔리는 먼 풍경 그림을 바꿉니다."),
             ],
           }),
         ],
