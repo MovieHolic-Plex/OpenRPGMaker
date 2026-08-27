@@ -6,9 +6,11 @@
 
 .event-editor {
   /* ── 목업 토큰 ── */
-  --mk-accent: #d9a441; /* 황동 — 목업의 유일한 온색 */
-  --mk-accent-ink: #2A2521;
-  --mk-accent-wash: rgba(217, 164, 65, 0.14);
+  /* 액센트는 셸 토큰 하나로 통일한다 (DESIGN.md: 인디고 #4A57D6 단일 액센트).
+   * 목업 시절의 황동은 푸터 기본 버튼과 나란히 놓이면 액센트가 둘로 보였다. */
+  --mk-accent: var(--accent);
+  --mk-accent-ink: var(--on-accent);
+  --mk-accent-wash: var(--accent-muted);
   --mk-line: rgba(42,37,33,.12);
   --mk-line-soft: rgba(42,37,33,.06);
   --mk-surface: var(--bg-surface);
@@ -251,7 +253,7 @@
   flex: 0 0 auto;
 }
 
-/* ── 액센트 통일 — 목업의 황동 ───────────────────────────────────── */
+/* ── 액센트 통일 — 셸 인디고 ─────────────────────────────────────── */
 .event-editor .event-editor-command-tool.primary,
 .event-editor .btn.primary {
   background: var(--mk-accent);
@@ -334,8 +336,8 @@
 
 /* 키보드 후보 — 마우스 hover 와 구분되게 테두리로. */
 .event-command-picker-command.keyboard-active {
-  background: rgba(217, 164, 65, 0.14);
-  box-shadow: inset 0 0 0 1px #d9a441;
+  background: var(--accent-muted);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 /* 리스트 모드는 전폭 행 — 목업처럼 라벨이 잘리지 않게. */
@@ -653,11 +655,11 @@
   align-self: center;
 }
 
-/* ── 확인 버튼도 목업 액센트로 (testid: event-editor-ok) ────────── */
+/* ── 확인 버튼도 셸 액센트로 (testid: event-editor-ok) ──────────── */
 [data-testid="event-editor-ok"] {
-  background: #d9a441;
-  border-color: #d9a441;
-  color: #2A2521;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
   font-weight: 650;
 }
 
