@@ -28,6 +28,7 @@ import {
 } from "@/editor/mapEditLocks";
 import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
+import { bindMapSurfaceFocusHandoff } from "@/editor/mapSurfaceFocus";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -230,6 +231,7 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
   window.addEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
+  bindMapSurfaceFocusHandoff(phaserContainer);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
 
