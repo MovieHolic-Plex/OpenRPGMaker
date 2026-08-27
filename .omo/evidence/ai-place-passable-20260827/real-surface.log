@@ -1,0 +1,94 @@
+== AI 배치 통행 가능 실면 증거 (place_battle_blocker) ==
+surface : runTool(ctx, "place_battle_blocker", args) — src/editor/tools/toolRunner.ts
+project : 잿불의 유산 (createEmberQuestProject, 배포 데모)
+troopId : troop_slime_pair
+
+[1] 실제 맵 5개의 작가가 그린 벽 위에 몬스터를 요청한다
+
+  map_ember_village "잿불 마을" 32x26 tileset=easyrpg_chipset_combined_town
+    requested : (4, 3)  lower=374 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 잿불 마을에 전투 블로커 'troop_slime_pair' 배치 (3, 2) — 요청 좌표 (4, 3)에서 자동 조정 · 나무 상·하 보정: 수관 보완 589칸
+    warning   : 전투 블로커 'troop_slime_pair' 위치 자동 조정: (4, 3) → (3, 2)
+    data      : {"eventId":"ev_battle_proof_map_ember_village","clearSwitchId":"sw_ev_battle_proof_map_ember_village_clear","x":3,"y":2,"adjusted":true}
+    OK   data.adjusted: true (기대 true)
+    OK   경고 문구 '위치 자동 조정': true (기대 true)
+    final     : ev_battle_proof_map_ember_village at (3, 2)  lower=240 upper=-1
+    OK   isPassable(최종 좌표): true (기대 true)
+    OK   최종 좌표 ≠ 요청 좌표: true (기대 true)
+    OK   data 좌표 == 커밋된 좌표: 3,2 (기대 3,2)
+
+  map_mist_forest "안개 숲" 30x30 tileset=easyrpg_chipset_combined_town
+    requested : (11, 1)  lower=290 upper=260
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 안개 숲에 전투 블로커 'troop_slime_pair' 배치 (14, 1) — 요청 좌표 (11, 1)에서 자동 조정
+    warning   : 전투 블로커 'troop_slime_pair' 위치 자동 조정: (11, 1) → (14, 1)
+    data      : {"eventId":"ev_battle_proof_map_mist_forest","clearSwitchId":"sw_ev_battle_proof_map_mist_forest_clear","x":14,"y":1,"adjusted":true}
+    OK   data.adjusted: true (기대 true)
+    OK   경고 문구 '위치 자동 조정': true (기대 true)
+    final     : ev_battle_proof_map_mist_forest at (14, 1)  lower=240 upper=-1
+    OK   isPassable(최종 좌표): true (기대 true)
+    OK   최종 좌표 ≠ 요청 좌표: true (기대 true)
+    OK   data 좌표 == 커밋된 좌표: 14,1 (기대 14,1)
+
+  map_dry_mine "메마른 광산" 26x22 tileset=easyrpg_chipset_combined_town
+    requested : (7, 1)  lower=306 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 메마른 광산에 전투 블로커 'troop_slime_pair' 배치 (10, 4) — 요청 좌표 (7, 1)에서 자동 조정
+    warning   : 전투 블로커 'troop_slime_pair' 위치 자동 조정: (7, 1) → (10, 4)
+    data      : {"eventId":"ev_battle_proof_map_dry_mine","clearSwitchId":"sw_ev_battle_proof_map_dry_mine_clear","x":10,"y":4,"adjusted":true}
+    OK   data.adjusted: true (기대 true)
+    OK   경고 문구 '위치 자동 조정': true (기대 true)
+    final     : ev_battle_proof_map_dry_mine at (10, 4)  lower=421 upper=-1
+    OK   isPassable(최종 좌표): true (기대 true)
+    OK   최종 좌표 ≠ 요청 좌표: true (기대 true)
+    OK   data 좌표 == 커밋된 좌표: 10,4 (기대 10,4)
+
+  map_ash_pass "잿빛 고개" 24x18 tileset=easyrpg_chipset_combined_town
+    requested : (18, 2)  lower=306 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 잿빛 고개에 전투 블로커 'troop_slime_pair' 배치 (17, 1) — 요청 좌표 (18, 2)에서 자동 조정
+    warning   : 전투 블로커 'troop_slime_pair' 위치 자동 조정: (18, 2) → (17, 1)
+    data      : {"eventId":"ev_battle_proof_map_ash_pass","clearSwitchId":"sw_ev_battle_proof_map_ash_pass_clear","x":17,"y":1,"adjusted":true}
+    OK   data.adjusted: true (기대 true)
+    OK   경고 문구 '위치 자동 조정': true (기대 true)
+    final     : ev_battle_proof_map_ash_pass at (17, 1)  lower=423 upper=-1
+    OK   isPassable(최종 좌표): true (기대 true)
+    OK   최종 좌표 ≠ 요청 좌표: true (기대 true)
+    OK   data 좌표 == 커밋된 좌표: 17,1 (기대 17,1)
+
+  map_flame_sanctum "화염 성소" 20x18 tileset=easyrpg_chipset_combined_town
+    requested : (4, 4)  lower=306 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 화염 성소에 전투 블로커 'troop_slime_pair' 배치 (3, 3) — 요청 좌표 (4, 4)에서 자동 조정
+    warning   : 전투 블로커 'troop_slime_pair' 위치 자동 조정: (4, 4) → (3, 3)
+    data      : {"eventId":"ev_battle_proof_map_flame_sanctum","clearSwitchId":"sw_ev_battle_proof_map_flame_sanctum_clear","x":3,"y":3,"adjusted":true}
+    OK   data.adjusted: true (기대 true)
+    OK   경고 문구 '위치 자동 조정': true (기대 true)
+    final     : ev_battle_proof_map_flame_sanctum at (3, 3)  lower=423 upper=-1
+    OK   isPassable(최종 좌표): true (기대 true)
+    OK   최종 좌표 ≠ 요청 좌표: true (기대 true)
+    OK   data 좌표 == 커밋된 좌표: 3,3 (기대 3,3)
+
+[2] 반경 3이 전부 통행 불가면 착지 대신 거부한다
+  map_mist_forest requested (0, 0)  lower=306 upper=-1
+    summary   : 'place_battle_blocker' 실행 실패: 전투 블로커 'troop_slime_pair'을 놓을 통행 가능 칸이 없습니다: (0, 0) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.
+    issues    : [{"severity":"error","code":"battle-blocker-impassable","mapId":"map_mist_forest","x":0,"y":0,"message":"전투 블로커 'troop_slime_pair'을 놓을 통행 가능 칸이 없습니다: (0, 0) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요."}]
+    OK   result.ok: false (기대 false)
+    OK   code: battle-blocker-impassable (기대 battle-blocker-impassable)
+    OK   이벤트가 추가되지 않음: 10 (기대 10)
+
+[3] 프로젝트 전체 불변식 — 모든 맵의 몬스터 이벤트는 통행 가능 칸에 서 있다
+    OK   map_ember_village ev_battle_proof_map_ember_village (3, 2): true (기대 true)
+    OK   map_mist_forest ev_battle_proof_map_mist_forest (14, 1): true (기대 true)
+    OK   map_dry_mine ev_battle_proof_map_dry_mine (10, 4): true (기대 true)
+    OK   map_ash_pass ev_battle_proof_map_ash_pass (17, 1): true (기대 true)
+    OK   map_flame_sanctum ev_battle_proof_map_flame_sanctum (3, 3): true (기대 true)
+  검사한 전투 블로커: 5개
+
+VERDICT: PASS — 몬스터는 통행 가능 칸에만 남는다.
