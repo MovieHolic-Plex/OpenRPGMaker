@@ -31,3 +31,5 @@
 @import "./tabs-b-assistant-panel/15-assistant-readable.css";
 /* 변경 우선 모던 스타일 — 마지막에 불어 툴 활동 후경화와 카드 규칙이 09/13/14/15 를 이긴다. */
 @import "./tabs-b-assistant-panel/16-modern-change-first.css";
+/* 조수 셸 기하 — 토큰으로 여백·리듬을 한곳에서 잡고 앞 레이어의 상충 기하를 이긴다. */
+@import "./tabs-b-assistant-panel/17-assistant-modern-shell.css";
