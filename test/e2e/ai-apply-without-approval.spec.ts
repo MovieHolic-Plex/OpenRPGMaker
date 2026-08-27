@@ -153,6 +153,14 @@ function readCell(page: Page, mapId: string, x: number, y: number): Promise<numb
   }, { id: mapId, cx: x, cy: y });
 }
 
+/** 채팅 도크를 접어 맵 캔버스를 가리지 않게 한다 — 증거 스크린샷에 타일이 보여야 한다. */
+async function collapseChatDock(page: Page): Promise<void> {
+  const collapse = page.getByTestId("ai-collapse");
+  if (!(await collapse.isVisible().catch(() => false))) return;
+  await collapse.click();
+  await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible({ timeout: 10_000 });
+}
+
 function startTurn(page: Page, text: string): Promise<{ ok?: boolean; error?: string }> {
   return page.evaluate(async (prompt) => {
     const bridge = (window as unknown as {
@@ -189,6 +197,8 @@ test.describe("AI 제안 즉시 적용 + 좌하단 되돌리기", () => {
     const appliedTile = await readCell(page, plan.mapId, center.x, center.y);
     timeline.push(`applied=${String(appliedTile)}`);
     await page.screenshot({ path: path.join(EVIDENCE, "applied-without-approval.png"), animations: "disabled" });
+    await collapseChatDock(page);
+    await page.screenshot({ path: path.join(EVIDENCE, "applied-map.png"), animations: "disabled" });
 
     // 경계 2: 좌하단 되돌리기 한 번으로 원복 — 승인 대신 쓰는 복구 경로.
     const undo = page.locator(UNDO_BUTTON);
