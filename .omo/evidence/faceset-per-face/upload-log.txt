@@ -3,22 +3,22 @@ uploaded sheet file: Actor2.png (192x192, 16칸)
 AFTER upload: {
  "uploadedFacesetAssets": 16,
  "ids": [
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-00",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-01",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-02",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-03",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-04",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-05",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-06",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-07",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-08",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-09",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-10",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-11",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-12",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-13",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-14",
-  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-15"
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-00",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-01",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-02",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-03",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-04",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-05",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-06",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-07",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-08",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-09",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-10",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-11",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-12",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-13",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-14",
+  "faceset_img_b45012f5-6a34-4325-be62-cb173967fe1b-15"
  ],
  "sizes": [
   "48x48"
