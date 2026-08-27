@@ -9,7 +9,12 @@ import {
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
-import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/skills";
+import {
+  buildClusterEditKickoff,
+  buildRangeClassifyKickoff,
+  buildUnclassifiedAnalysisKickoff,
+  type ClusterGroupSnapshot,
+} from "@/ai/clusterAssistPrompt";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
@@ -179,7 +184,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
         config: configForLiteModel(loadAiConfig()),
-        contextOptions: { currentMapId: skillContext().mapId ?? undefined },
+        contextOptions: { currentMapId: currentMapId() ?? undefined },
         renderImages: renderToolImages,
       });
     }
@@ -300,7 +305,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
     const proposed = session.getProposedProject();
-    const mapId = skillContext().mapId;
+    const mapId = currentMapId();
     const snapshot: SnapshotRecorder = recordProjectSnapshot;
     const before = store.getCurrent();
     clearAgentGhostPreview();
@@ -392,16 +397,13 @@ function startKickoff(
     appendBubble("system", "AI 연결을 먼저 완료하세요. 오른쪽 AI 패널에서 구독 로그인을 마친 뒤 다시 열어 주세요.");
     return;
   }
-  const args = skillArgs(model.detail);
-  const skillId = skillIdFor(model.detail);
-  const skill = SYSTEM_SKILLS.find((entry) => entry.id === skillId);
-  const prompt = skill?.buildPrompt?.(args, skillContext()) ?? "";
-  if (!prompt.trim()) {
+  const kickoff = kickoffFor(model.detail);
+  if (!kickoff.prompt.trim()) {
     status.textContent = "시작 실패";
-    appendBubble("system", "AI 스킬을 시작할 수 없습니다.");
+    appendBubble("system", "AI 분석을 시작할 수 없습니다.");
     return;
   }
-  void sendText(prompt, skill?.displayAs?.(args) ?? model.title);
+  void sendText(kickoff.prompt, kickoff.displayAs ?? model.title);
 }
 
 function renderTilePreview(model: ModalModel): HTMLElement {
@@ -504,38 +506,60 @@ function captionLine(text: string): string {
   return caption.length > CAPTION_MAX_LENGTH ? `${caption.slice(0, CAPTION_MAX_LENGTH - 3)}...` : caption;
 }
 
-function skillArgs(detail: ClusterAiModalDetail): Record<string, SkillArgValue> {
+/** 킥오프 프롬프트는 클러스터 보조 프롬프트 빌더가 단일 원천이다(구 스킬 레지스트리 경유 제거). */
+function kickoffFor(detail: ClusterAiModalDetail): { readonly prompt: string; readonly displayAs: string } {
   switch (detail.kind) {
     case "cluster-edit":
-      return { groupId: detail.groupId, tilesetId: detail.tilesetId };
+      return {
+        prompt: buildClusterEditKickoff({
+          tilesetId: detail.tilesetId,
+          groupId: detail.groupId,
+          group: clusterGroupSnapshot(detail.tilesetId, detail.groupId),
+        }),
+        displayAs: `클러스터 수정 — ${detail.groupId}`,
+      };
     case "range-classify":
-      return { rect: detail.rect, tileIds: detail.tileIds, tilesetId: detail.tilesetId };
+      return {
+        prompt: buildRangeClassifyKickoff({
+          tilesetId: detail.tilesetId,
+          rect: detail.rect,
+          tileIds: detail.tileIds,
+        }),
+        displayAs: `범위 분류 — ${detail.tileIds.length}개`,
+      };
     case "unclassified-analysis":
-      return { sampleTiles: detail.sampleTiles, tilesetId: detail.tilesetId, total: detail.total };
+      return {
+        prompt: buildUnclassifiedAnalysisKickoff({
+          tilesetId: detail.tilesetId,
+          sampleTiles: detail.sampleTiles,
+          total: detail.total,
+        }),
+        displayAs: `미분류 분석 — ${detail.total}개`,
+      };
   }
   return assertNever(detail);
 }
 
-function skillIdFor(detail: ClusterAiModalDetail): string {
-  switch (detail.kind) {
-    case "cluster-edit": return "cluster-edit";
-    case "range-classify": return "range-classify";
-    case "unclassified-analysis": return "unclassified-analysis";
-  }
-  return assertNever(detail);
+function clusterGroupSnapshot(tilesetId: string, groupId: string): ClusterGroupSnapshot | null {
+  const group = store.getCurrent().tilesets[tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
+  if (!group) return null;
+  return {
+    id: group.id,
+    name: group.name,
+    role: group.role,
+    defaultLayer: group.defaultLayer,
+    tileIds: [...group.tileIds],
+    description: group.description,
+    placementRules: group.placementRules,
+    patternGrammar: group.patternGrammar ? { kind: group.patternGrammar.kind } : null,
+  };
 }
 
-function skillContext(): SkillRunContext {
+/** 현재 편집 중인 맵 id — 세션 컨텍스트/스냅샷 라벨용. */
+function currentMapId(): string | null {
   const state = editorState.get();
   const project = store.getCurrent();
-  const mapId = state.currentMapId ?? project.startMapId ?? null;
-  return {
-    mapId,
-    mapName: mapId ? project.maps[mapId]?.name ?? null : null,
-    selection: state.selection
-      ? { mapId: state.selection.mapId, x: state.selection.x, y: state.selection.y, width: state.selection.width, height: state.selection.height }
-      : null,
-  };
+  return state.currentMapId ?? project.startMapId ?? null;
 }
 
 function choiceOptions(text: string): readonly string[] {

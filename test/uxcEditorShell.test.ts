@@ -18,7 +18,6 @@ import {
 } from "@/editor/mapEditLocks";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { normalizeAiDockButtonChrome, persistenceModeBannerText } from "@/editor/panels/editor";
-import { openSkillPalette } from "@/editor/panels/aiSkillDrawer";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { createBlankProject } from "@/project/defaults";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -210,14 +209,6 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
     } finally {
       resetEditorUiModeForTests();
     }
-  });
-
-  it("Ctrl+K 스킬 팔레트가 데이터베이스 모달 백드롭 클래스를 쓰지 않는다", () => {
-    const palette = openSkillPalette(vi.fn());
-
-    expect(palette.dataset.testid).toBe("ai-skill-palette");
-    expect(palette.className.split(/\s+/)).toContain("ai-skill-palette-backdrop");
-    expect(palette.className.split(/\s+/)).not.toContain("database-modal-backdrop");
   });
 
   it("AI 패널 언독 버튼 툴팁을 패널 분리로 보정한다", () => {

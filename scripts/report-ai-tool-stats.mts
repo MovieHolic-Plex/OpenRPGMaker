@@ -1,6 +1,6 @@
 /**
  * AI 툴 레지스트리 통계 리포터 — 기능 문서(아티팩트/위키)의 수치 정본.
- * 도메인별 활성 툴 수, deprecated 수, 시스템 스킬 수를 실측해 표로 출력한다.
+ * 도메인별 활성 툴 수, deprecated 수를 실측해 표로 출력한다.
  * 실행: npx tsx scripts/report-ai-tool-stats.mts [--json]
  */
 import { allTools, activeTools } from "../src/editor/tools/toolRegistry.ts";
@@ -34,26 +34,16 @@ for (const tool of active) {
   else byDomain.set(key, [tool.name]);
 }
 
-let systemSkillCount: number | null = null;
-try {
-  const { SYSTEM_SKILLS } = await import("../src/ai/skills.ts");
-  systemSkillCount = SYSTEM_SKILLS.length;
-} catch {
-  // skills.ts가 브라우저 전용 의존을 갖게 되면 조용히 생략(툴 통계는 그대로 유효).
-}
-
 const rows = [...byDomain.entries()].sort((a, b) => b[1].length - a[1].length);
 
 if (process.argv.includes("--json")) {
   console.log(JSON.stringify({
     activeTotal: active.length,
     deprecated: deprecatedCount,
-    systemSkills: systemSkillCount,
     domains: Object.fromEntries(rows.map(([domain, names]) => [domain, { count: names.length, tools: names }])),
   }, null, 2));
 } else {
   console.log(`활성 툴 합계: ${active.length} (deprecated ${deprecatedCount} 별도)`);
-  if (systemSkillCount !== null) console.log(`시스템 스킬: ${systemSkillCount}`);
   console.log("");
   console.log("| 도메인 | 개수 | 대표 툴 |");
   console.log("|---|---|---|");

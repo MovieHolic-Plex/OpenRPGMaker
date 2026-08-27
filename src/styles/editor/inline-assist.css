@@ -178,10 +178,71 @@
   50% { opacity: 0.55; }
 }
 
-/* 팔레트 항목은 슬래시 드로어(.ai-slash-item)의 14px+1fr 그리드를 쓰지 않는다 —
-   리스트가 flex 컨테이너가 아니라 버튼이 shrink-to-fit으로 붕괴해 라벨이 한 글자만 남는다. */
-.command-palette-window.ai-skill-palette-window {
+/* Ctrl+K 팔레트 셸 — 구 스킬 팔레트 CSS(assistant-skills.css)와 함께 있던 백드롭·창·항목
+   규칙을 여기로 가져왔다. 스킬 기능 제거로 그 파일이 사라졌고, 팔레트는 자립해야 한다.
+   항목은 flex 한 줄이다 — 그리드로 두면 버튼이 shrink-to-fit으로 붕괴해 라벨이 한 글자만 남는다. */
+.command-palette-backdrop {
+  align-items: flex-start;
+  background: rgba(60, 48, 32, 0.12);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding-top: 12vh;
+  position: fixed;
+  z-index: 80;
+}
+
+.command-palette-window {
+  background: var(--bg-inset, var(--bg-surface));
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 4px;
   max-width: min(560px, 92vw);
+  padding: 6px;
+  width: 100%;
+}
+
+.command-palette-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong, var(--border-subtle));
+  border-radius: 4px;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 7px;
+  width: 100%;
+}
+
+.command-palette-item {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.command-palette-item:last-child {
+  border-bottom: none;
+}
+
+.command-palette-item:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.command-palette-empty {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 8px;
 }
 
 .command-palette-list {
@@ -191,18 +252,17 @@
   overflow-y: auto;
 }
 
-.command-palette-item.ai-slash-item {
-  align-items: center;
-  display: flex;
-  gap: 8px;
-  width: 100%;
-}
-
-.command-palette-item .ai-slash-item-name {
+.command-palette-item-name {
+  color: var(--text-1);
   flex: 0 1 auto;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.command-palette-item .ai-slash-item-desc {
+.command-palette-item-desc {
   color: var(--editor-text-muted, #6B5F52);
   display: block;
   flex: 1 1 auto;

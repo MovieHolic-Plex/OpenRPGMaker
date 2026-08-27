@@ -9,7 +9,6 @@ import {
   recordSupabaseAiActivityLog,
   recordSupabaseAiAnalysisRun,
   recordSupabaseConversation,
-  recordSupabaseUserSkill,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
   seedLastRemoteCommitTip,
@@ -877,25 +876,6 @@ describe("Supabase project sync", () => {
     }, TEST_CONFIG)).rejects.toMatchObject({
       migration: "20260713000000_ai_conversations_user_skills.sql",
       table: "rpg_zzu.ai_conversations",
-    });
-  });
-
-  it("fails with the required migration when the user skills table is missing", async () => {
-    vi.stubGlobal("fetch", (async () => new Response(
-      JSON.stringify({ code: "PGRST205", message: "missing user_skills" }),
-      { status: 404 },
-    )) satisfies typeof fetch);
-
-    await expect(recordSupabaseUserSkill({
-      id: "skill-one",
-      icon: "⭐",
-      name: "검증 스킬",
-      description: "migration check",
-      template: "verify",
-      skill: {},
-    }, TEST_CONFIG)).rejects.toMatchObject({
-      migration: "20260713000000_ai_conversations_user_skills.sql",
-      table: "rpg_zzu.user_skills",
     });
   });
 

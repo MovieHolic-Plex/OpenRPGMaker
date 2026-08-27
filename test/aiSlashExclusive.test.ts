@@ -55,7 +55,9 @@ function countUniqueByTestId(root: FakeElement, testId: string): number {
   return seen.size;
 }
 
-describe("슬래시와 시작 화면 배타", () => {
+// 조수 스킬(슬래시 목록)이 제거된 뒤에도 지켜야 할 것: 입력값이 무엇이든 시작 화면·라이징
+// 오버레이를 되붙이지 않고, 선행 "/" 는 팝오버 없는 일반 텍스트다.
+describe("컴포저 입력과 시작 화면 배타", () => {
   it("float 부팅은 유리 로그를 마운트하고 오버레이·시작 화면은 마운트하지 않는다", () => {
     const panel = renderPanel();
     expandPanel(panel);
@@ -67,8 +69,8 @@ describe("슬래시와 시작 화면 배타", () => {
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
   });
 
-  it("입력이 / 로 시작하면 슬래시 목록만 있고 시작 화면은 없다", () => {
-    // Break: refreshSlash renders the slash list while startScreen is also mounted.
+  it("입력이 / 로 시작해도 팝오버·시작 화면이 없다", () => {
+    // Break: a leading "/" opens a popover again instead of staying plain text.
     const panel = renderPanel();
     expandPanel(panel);
     const input = findByTestId(panel, "ai-input");
@@ -77,45 +79,31 @@ describe("슬래시와 시작 화면 배타", () => {
     input.value = "/";
     input.dispatchEvent(new Event("input"));
 
-    expect(findByTestId(panel, "ai-slash-list")).toBeTruthy();
+    expect(findByTestId(panel, "ai-slash-list")).toBeNull();
+    expect(findByTestId(panel, "ai-slash-host")).toBeNull();
+    expect(input.value).toBe("/");
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 
-  it("슬래시 토글도 시작 화면 없이 목록만 연다", () => {
-    // Break: slash-toggle mounts start screen or the rising overlay.
-    const panel = renderPanel();
-    expandPanel(panel);
-    const toggle = findByTestId(panel, "ai-skill-slash-toggle");
-    if (!toggle) throw new Error("slash toggle missing");
-
-    toggle.click();
-
-    expect(findByTestId(panel, "ai-slash-list")).toBeTruthy();
-    expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
-    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
-  });
-
-  it("빈 대화에서 슬래시를 닫아도 시작 화면과 오버레이를 붙이지 않는다", () => {
-    // Break: refreshSlash remounts startScreen or the rising overlay when slash closes.
+  it("입력을 지워도 시작 화면과 오버레이를 붙이지 않는다", () => {
+    // Break: clearing the input remounts startScreen or the rising overlay.
     const panel = renderPanel();
     expandPanel(panel);
     const input = findByTestId(panel, "ai-input");
     if (!input) throw new Error("input missing");
     input.value = "/";
     input.dispatchEvent(new Event("input"));
-    expect(findByTestId(panel, "ai-slash-list")).toBeTruthy();
 
     input.value = "";
     input.dispatchEvent(new Event("input"));
 
-    expect(findByTestId(panel, "ai-slash-list")).toBeNull();
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 
-  it("대화 기록이 있어도 슬래시를 닫아도 시작 화면을 붙이지 않는다", () => {
-    // Break: ensureStartScreen remounts whenever slash closes, even with conversation entries.
+  it("대화 기록이 있어도 입력을 지우면 시작 화면을 붙이지 않는다", () => {
+    // Break: ensureStartScreen remounts whenever the input clears, even with conversation entries.
     saveConversation({
       id: "conv_slash_exclusive",
       title: "마을",

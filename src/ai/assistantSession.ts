@@ -893,7 +893,7 @@ export class AssistantSession {
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
-    opts?: { readonly explicitSkillId?: string | null; readonly autonomous?: boolean },
+    opts?: { readonly autonomous?: boolean },
   ): Promise<TurnResult> {
     // 자율 드라이버: opts.autonomous === true 일 때만 진입한다(명시 플래그 — 플래그 없는 기존
     // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
@@ -905,8 +905,8 @@ export class AssistantSession {
     // 내부에서는 유지되어 3회 시도 한도가 턴 단위로 초기화되지 않는다.
     this.verificationFailed = false;
     this.verificationPending = null;
-    if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal, opts);
-    const first = await this.executeUserTurn(text, onEvent, signal, opts);
+    if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal);
+    const first = await this.executeUserTurn(text, onEvent, signal);
     return this.runAutonomousDriver(first, onEvent, signal);
   }
 
@@ -928,7 +928,7 @@ export class AssistantSession {
         type: "status",
         text: `자율 실행 계속 (${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS})`,
       });
-      const next = await this.executeUserTurn("계속", onEvent, signal, undefined);
+      const next = await this.executeUserTurn("계속", onEvent, signal);
       if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
       last = next;
     }
@@ -982,12 +982,10 @@ export class AssistantSession {
   }
 
   // 한 턴 실행: 사용자 메시지 → (LLM ↔ 툴) 루프 → 최종 응답 + 제안 changeset.
-  // opts.explicitSkillId: 스킬 서랍/슬래시로 고른 경우 — 집/실내 되묻기 게이트를 건너뛴다.
   private async executeUserTurn(
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
-    opts?: { readonly explicitSkillId?: string | null },
   ): Promise<TurnResult> {
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
@@ -1019,7 +1017,7 @@ export class AssistantSession {
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
     // F-05: auto/orchestrated 모드에서는 bare 집이라도 clarify로 멈추지 않고 planner/LLM으로 넘긴다.
     // agentMode==="chat"에서만 되묻기를 유지한다. PROTOCOL_LOCKED_RE는 intentClarify 내부에서 이미 bypass.
-    const clarify = resolveIntentClarification(text, { explicitSkillId: opts?.explicitSkillId });
+    const clarify = resolveIntentClarification(text);
     if (clarify) {
       const shouldBypassClarify = this.config.agentMode === "auto" || this.orchestrationEnabled();
       if (shouldBypassClarify) {

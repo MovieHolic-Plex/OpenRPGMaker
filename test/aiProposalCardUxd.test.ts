@@ -666,19 +666,6 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-msg-badge-reverted")?.textContent).toBe("되돌려짐");
   });
 
-  it("스킬 실행 사용자 메시지는 실제 지시 보기 토글을 포함한다", async () => {
-    // Break: slash-running map-audit no longer attaches the raw-prompt toggle.
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "검증하겠습니다." }));
-    const panel = renderPanel();
-    const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "/검증";
-    input.dispatchEvent(new Event("input"));
-    findByTestId(panel, "ai-slash-item-map-audit")?.click();
-    await flushAsync();
-
-    expect(findByTestId(panel, "ai-skill-prompt-toggle")?.textContent).toBe("실제 지시 보기");
-    expect(findByTestId(panel, "ai-skill-prompt-raw")?.textContent).toContain("현재 맵(빈 맵)을 전면 검증해 주세요");
-  });
 });
 
 describe("UXD topbar identity chip", () => {
