@@ -57,8 +57,9 @@ describe("event editor settings column layout", () => {
     const column = host.querySelector(".event-editor-settings-column");
     expect(column).toBeTruthy();
     const direct = [...(column?.children ?? [])] as HTMLElement[];
-    expect(direct).toHaveLength(1);
-    expect(direct[0]?.classList.contains("event-editor-settings-main")).toBe(true);
+    expect(direct).toHaveLength(2);
+    expect(direct[0]?.dataset.testid).toBe("event-editor-column-label-settings");
+    expect(direct[1]?.classList.contains("event-editor-settings-main")).toBe(true);
 
     // 카드는 스프라이트 + 이름/캐릭터 ID + 좌표를 한 덩어리로 묶는다.
     const card = host.querySelector<HTMLElement>(".event-editor-card");
@@ -71,14 +72,14 @@ describe("event editor settings column layout", () => {
     expect(card.querySelector("[data-testid='event-editor-event-id']")).toBeTruthy();
     expect(card.querySelector("[data-testid='event-editor-event-info']")).toBeTruthy();
 
-    // 페이지 탭은 좁은 컬럼 밖 — 조건 요약을 읽을 폭이 필요하다.
+    // 페이지 선택은 폭이 필요하다 — 좁은 설정 레일 밖, 전용 페이지 행이 유일한 집이다.
     expect(column?.querySelector(".evt-page-segments")).toBeNull();
-    expect(host.querySelector(".evt-page-segments")).toBeNull();
+    expect(host.querySelector(".event-editor-pagebar .evt-page-segments")).toBeTruthy();
     expect(host.querySelector(".event-page-number-tabs")).toBeNull();
 
     // RM2003 셸: 스케줄 패널은 마운트하지 않음. 페이지 설정만 settings-main 안.
-    expect(direct[0]?.querySelector("[data-testid='event-schedule-section']")).toBeNull();
-    expect(direct[0]?.querySelector(".event-page-props")).toBeTruthy();
+    expect(direct[1]?.querySelector("[data-testid='event-schedule-section']")).toBeNull();
+    expect(direct[1]?.querySelector(".event-page-props")).toBeTruthy();
   });
 
   it("orders six numbered settings groups; characterId lives in top strip", () => {
