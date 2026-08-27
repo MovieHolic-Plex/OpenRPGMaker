@@ -90,4 +90,20 @@ describe("이벤트 편집기 좌측 레일 그룹 소속", () => {
     expect(checkbox!.checked).toBe(true);
     expect(meta!.textContent).toBe("겹침 금지");
   });
+
+  it("움직임 그룹 요약은 원시 enum 이 아니라 한글 라벨을 보여준다", () => {
+    const mapId = seed({ movement: { type: "random", speed: 5, frequency: 6 } });
+    renderEventEditorDynamic(host, mapId, "ev_rail");
+    const meta = host.querySelector<HTMLElement>("[data-testid='evt-rail-meta-move']");
+    expect(meta!.textContent).toContain("무작위");
+    expect(meta!.textContent).not.toContain("random");
+  });
+
+  it("이동 속도 select 는 런타임 범위 1~8 을 전부 제시한다", () => {
+    const mapId = seed({ movement: { type: "random", speed: 8, frequency: 6 } });
+    renderEventEditorDynamic(host, mapId, "ev_rail");
+    const select = host.querySelector<HTMLSelectElement>("[data-testid='event-page-movement-speed-select']");
+    expect([...select!.options].map((option) => option.value)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8"]);
+    expect(select!.value).toBe("8");
+  });
 });

@@ -762,7 +762,7 @@ function wrapPageSettingsAsAccordion(
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", open: true, nodes: look },
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, open: false, nodes: when },
-    { slug: "move", title: "움직임과 속도", summary: page.movement.type, open: false, nodes: move },
+    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), open: false, nodes: move },
     { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), open: false, nodes: memory },
   ] as const;
   const rail = el("div", {
@@ -942,6 +942,12 @@ function movementTypeChipLabel(type: EventPage["movement"]["type"]): string {
   }
 }
 
+function movementSummaryText(page: EventPage): string {
+  const type = movementTypeChipLabel(page.movement.type);
+  if (page.movement.type === "fixed") return type;
+  return `${type} · ${movementSpeedChipLabel(page.movement.speed)}`;
+}
+
 function movementSpeedChipLabel(speed: number): string {
   switch (speed) {
     case 1:
@@ -956,6 +962,10 @@ function movementSpeedChipLabel(speed: number): string {
       return "x2 빠름";
     case 6:
       return "x4 빠름";
+    case 7:
+      return "x6 빠름";
+    case 8:
+      return "x8 빠름";
     default:
       return String(speed);
   }
@@ -1013,7 +1023,7 @@ function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HT
 
 function movementSpeedSelect(mapId: MapId, eventId: string, page: EventPage): HTMLSelectElement {
   const select = el("select", { dataset: { testid: "event-page-movement-speed-select" } }) as HTMLSelectElement;
-  for (let speed = 1; speed <= 6; speed += 1) {
+  for (let speed = 1; speed <= 8; speed += 1) {
     select.append(el("option", { attrs: { value: String(speed) }, text: movementSpeedLabel(speed) }));
   }
   select.value = String(page.movement.speed);
@@ -1039,6 +1049,10 @@ function movementSpeedLabel(speed: number): string {
       return "5: x2 빠름";
     case 6:
       return "6: x4 빠름";
+    case 7:
+      return "7: x6 빠름";
+    case 8:
+      return "8: x8 빠름";
     default:
       return String(speed);
   }
