@@ -11,6 +11,7 @@ import {
   updateEventPage,
 } from "@/editor/eventPages";
 import { editorState } from "@/editor/editorState";
+import { showConfirm } from "@/editor/ui/modal";
 import { updateEvent } from "@/editor/eventActions";
 import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -82,7 +83,7 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   if (canDelete) {
     actions.push(
       pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () =>
-        requestEventPageDeletion(mapId, ev.id, activePage)
+        void requestEventPageDeletion(mapId, ev.id, activePage)
       )
     );
   }
@@ -101,8 +102,15 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   return wrap;
 }
 
-function requestEventPageDeletion(mapId: MapId, eventId: string, page: EventPage): void {
-  if (!window.confirm(`"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`)) return;
+async function requestEventPageDeletion(mapId: MapId, eventId: string, page: EventPage): Promise<void> {
+  const confirmed = await showConfirm({
+    title: "페이지 삭제",
+    message: `"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`,
+    confirmLabel: "삭제",
+    cancelLabel: "취소",
+    danger: true,
+  });
+  if (!confirmed) return;
   deleteEventPage(mapId, eventId, page.id);
 }
 
@@ -778,7 +786,7 @@ function wrapPageSettingsAsAccordion(
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", open: true, nodes: look },
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, open: false, nodes: when },
-    { slug: "move", title: "움직임과 속도", summary: page.movement.type, open: false, nodes: move },
+    { slug: "move", title: "움직임과 속도", summary: movementTypeChipLabel(page.movement.type), open: false, nodes: move },
     { slug: "memory", title: "기억과 정리", summary: page.overlapForbidden ? "중복 실행 방지" : "중복 허용", open: false, nodes: memory },
   ] as const;
   const rail = el("div", {
