@@ -203,17 +203,9 @@ export const COMMAND_GUARANTEES = {
   // playAudio/stopAudio: battleEvents.ts 가 호스트 오디오 콜백으로 실제 실행(troop-full).
   playAudio: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   stopAudio: guarantee("media", { ...playerPause, support: troopFull }),
-  // playMovie: 지금은 사양·폼·검증만 있다. 인툼리토·플레이어 실행 경로는 다른 레인이 지금 짓는 중이므로
-  // editorOnly 로 정직하게 선언한다(피커 직선택 불가 + 검증기 runtime.editor-only 경고).
-  // 런타임이 들어오면 support 를 full 로 바꾸는 것만으로 피커 진열까지 같이 살아난다.
-  playMovie: guarantee("media", {
-    stability: "experimental",
-    executionOwner: "player",
-    completion: "pause",
-    direct: false,
-    ai: false,
-    support: { map: "editorOnly", common: "editorOnly", troop: "editorOnly" },
-  }),
+  // playMovie: 인터프리터 pause + 플레이어 비디오 오버레이(playSceneMovies.playMovieOverlay)까지 착지했으므로
+  // showAnimation과 동일 등급(media·player·pause·troop-full). 피커 직선택과 검증기 통과가 함께 열린다.
+  playMovie: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
   // displayTextSettings: battleEvents.ts 가 메시지 표시 설정을 이벤트 로그로 실행(Step 3).
   displayTextSettings: guarantee("dialogue", { support: troopFull }),

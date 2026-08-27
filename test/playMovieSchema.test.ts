@@ -100,8 +100,10 @@ describe("playMovie 명령 계약", () => {
     });
   });
 
-  it("런타임 보증은 아직 에디터 전용이라고 정직하게 말한다", () => {
-    expect(commandRuntimeSupport({ ...VALID_MOVIE }, "map")).toBe("editor-only");
+  it("런타임이 착지했으므로 맵 컨텍스트에서 전체 지원으로 승격된다", () => {
+    expect(commandRuntimeSupport({ ...VALID_MOVIE }, "map")).toBe("runtime-full");
+    expect(commandRuntimeSupport({ ...VALID_MOVIE }, "common")).toBe("runtime-full");
+    expect(commandRuntimeSupport({ ...VALID_MOVIE }, "troop")).toBe("runtime-full");
   });
 
   it("검증기가 알 수 없는 동영상 리소스를 오류로 잡는다", () => {
