@@ -77,11 +77,23 @@ function listenerPids(): readonly number[] {
 }
 
 function killTree(pid: number): void {
-  try {
-    if (process.platform === "win32") execFileSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
-    else process.kill(-pid, "SIGKILL");
-  } catch {
-    // 이미 죽었으면 통과 — afterAll 은 포트 상태로 최종 판정한다.
+  if (process.platform === "win32") {
+    try {
+      execFileSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
+    } catch {
+      // 이미 죽었으면 통과 — afterAll 은 포트 상태로 최종 판정한다.
+    }
+    return;
+  }
+  // 그룹과 해당 pid 를 모두 닫는다. lsof 가 돌려준 리스너 pid 는 보통 vite 자식이라
+  // 그룹 리더가 아니고(실상: pid 1610194), `kill(-pid)` 단로만 쓰면 ESRCH 로 조용하게
+  // 삼키져 포트가 살아남은다 — 그러면 정리 영수증이 거짓이 된다.
+  for (const target of [-pid, pid]) {
+    try {
+      process.kill(target, "SIGKILL");
+    } catch {
+      // 이미 죽었거나 그룹이 없으면 통과.
+    }
   }
 }
 
