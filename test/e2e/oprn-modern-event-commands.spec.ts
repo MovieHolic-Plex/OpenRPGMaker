@@ -4,13 +4,18 @@ import { openCommandPicker, openMapEventEditor, openPickerTab, pickerGrid } from
 /**
  * 모던(m2 200번대) 명령의 발견성 계약.
  *
+ * 탭 3 헤딩은 카탈로그 분류명(`화면 효과`)이 아니라 저작면 이름(`화면 연출`)이다.
  * 탭 번호는 재분류(picker-ia) 이후 **실제 소속**을 따른다: 카메라 제어는 연출이라 탭3,
  * 고급 대화는 대화라 탭1, UI 명령·데이터 조회는 시스템·도구라 탭4다.
  * 탭4 버튼 24개 같은 고정 개수 단언은 카탈로그 드리프트라 폐기했다.
  */
 
+// 탭 스직 4×4 회 · 새 프로젝트 시드를 한 테스트에서 돌린다 — 기본 30초 예산은 머싱 상황에
+// 따라 갈리므로(우리 맵 시드만 15–30초) 통과가 운에 달리지 않게 새로 잡는다.
+test.setTimeout(120_000);
+
 const MODERN_COMMAND_TABS = [
-  { label: "카메라 제어...", tab: 3, group: "화면 효과" },
+  { label: "카메라 제어...", tab: 3, group: "화면 연출" },
   { label: "고급 대화...", tab: 1, group: "말하기" },
   { label: "UI 명령...", tab: 4, group: "도구" },
   { label: "데이터 조회...", tab: 4, group: "도구" },
@@ -68,7 +73,8 @@ test("camera control opens guided m2 controls and lands on the storyboard", asyn
 
   await expect(picker).toBeHidden();
   await expect(editor.getByTestId("event-storyboard-card-0")).toContainText("카메라 제어");
-  await expect(editor.getByTestId("event-command-header")).toContainText("1개");
+  // 사라진 `event-command-header` 칩 대신 실제 산출법을 재엔다: 스토리부드에 카드 하나.
+  await expect(editor.locator("[data-testid^='event-storyboard-card-']")).toHaveCount(1);
 });
 
 /** 명령 버튼이 속한 그룹 헤딩 — 그리드는 헤딩 → 버튼 순서의 평면 목록이다. */

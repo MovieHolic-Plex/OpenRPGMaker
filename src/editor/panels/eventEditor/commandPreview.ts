@@ -17,6 +17,7 @@ import {
   type ActorBattlePreviewDeps,
 } from "./commandPreviewActorBattle";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
+import { cameraControlStage as mapScreenCameraStage, changeTileChipStage } from "./commandPreviewMapScreen";
 import { initialBadge } from "./recordPicker";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
@@ -79,7 +80,10 @@ function renderVisual(cmd: Command, context?: CommandPreviewContext): HTMLElemen
   if (cmd.kind === "m2Command") {
     const title = m2CommandById(cmd.commandId)?.title;
     if (title === "Screen Effect") return screenEffectStage(cmd);
-    if (title === "Camera Control") return cameraControlStage(cmd);
+    if (title === "Camera Control") return mapScreenCameraStage(cmd);
+    // 레거시 RM 화면 행도 같은 무대에 서다 — 토큰 요약 카드로 내밀지 않는다.
+    const legacy = legacyScreenEffectCommand(cmd, title);
+    if (legacy) return screenEffectStage(legacy);
   }
   const handler = visualPreviewHandlers[cmd.kind] as VisualPreviewHandler<Command> | undefined;
   return handler ? handler(cmd, context) : summaryCard(cmd, context);
@@ -121,7 +125,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   showAnimation: animationStage,
   playMovie: movieStage,
   erasePicture: erasePictureStage,
-  changeTile: changeTileStage,
+  changeTile: changeTileChipStage,
   inputWait: inputWaitStage,
   changeGold: (cmd, ctx) => goldStage(cmd, ctx),
   openChest: storageChestStage,
@@ -1262,6 +1266,49 @@ function m2Field(cmd: Extract<Command, { kind: "m2Command" }>, key: string, fall
   return fallback;
 }
 
+/**
+ * 레거시 RM 화면 행(색조·플래시·숨기기·표시·날씨 효과)을 모던 `Screen Effect` 무대의
+ * 필드로 옮긴다. 같은 일을 하는 행이 다른 모양으로 보이거나, 서로 다른 진상을
+ * 이야기하면 작가가 어떤 행을 골러도 믿지 못한다. 흔들기(Shake)는 오버레이 한 장으로
+ * 재현할 수 없으니 여기서 다루지 않는다(상상만 그리는 무대는 또 다른 거짓말이다).
+ */
+function legacyScreenEffectCommand(
+  cmd: Extract<Command, { kind: "m2Command" }>,
+  title: string | undefined
+): Extract<Command, { kind: "m2Command" }> | undefined {
+  const fields = ((): { readonly effect: string; readonly value: string; readonly durationMs: number } | undefined => {
+    switch (title) {
+      case "Tint Screen":
+        return {
+          effect: "tint",
+          value: m2Field(cmd, "value", "") || m2Field(cmd, "color", "neutral"),
+          durationMs: Number(m2Field(cmd, "duration", "0")) || 300,
+        };
+      case "Flash Screen":
+        return {
+          effect: "flash",
+          // 레거시 `value` 기본값은 "flash" 라는 하나마나한 문자다 — 색은 `color` 가 진짜다.
+          value: m2Field(cmd, "color", "white"),
+          durationMs: Number(m2Field(cmd, "durationMs", "300")),
+        };
+      case "Hide Screen":
+        return { effect: "fadeOut", value: "", durationMs: Number(m2Field(cmd, "durationMs", "300")) };
+      case "Show Screen":
+        return { effect: "fadeIn", value: "", durationMs: Number(m2Field(cmd, "durationMs", "300")) };
+      case "Set Weather Effects":
+        return {
+          effect: "weather",
+          value: m2Field(cmd, "value", "none"),
+          durationMs: Number(m2Field(cmd, "transitionMs", "0")) || 300,
+        };
+      default:
+        return undefined;
+    }
+  })();
+  if (!fields) return undefined;
+  return { kind: "m2Command", commandId: cmd.commandId, fields: { ...fields } };
+}
+
 function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
   const effect = m2Field(cmd, "effect", "fadeIn");
   const value = m2Field(cmd, "value", "");
@@ -1315,13 +1362,6 @@ function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLEl
   return stage;
 }
 
-// 초보자 계약: 카메라 모드 내부 토큰을 한국어로 표기한다.
-const CAMERA_MODE_LABELS: Record<string, string> = {
-  panTo: "화면 이동",
-  follow: "대상 따라가기",
-  zoom: "확대/축소",
-  lock: "고정",
-};
 
 const SCREEN_EFFECT_LABELS: Record<string, string> = {
   fadeIn: "페이드 인",
@@ -1444,20 +1484,6 @@ function nextFrame(callback: () => void): void {
   else callback();
 }
 
-function cameraControlStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
-  const mode = m2Field(cmd, "mode", "panTo");
-  // 초보자 계약: 내부 API 토큰(panTo 등)을 그대로 보여주지 않는다.
-  const modeLabel = CAMERA_MODE_LABELS[mode] ?? "카메라 이동";
-  const stage = el("div", {
-    class: "ecp-stage ecp-camera-stage",
-    dataset: { testid: "ecp-camera-stage", mode },
-  });
-  const screen = el("div", { class: "ecp-fx-screen ecp-camera-screen" });
-  screen.append(el("div", { class: "ecp-fx-label", text: modeLabel }));
-  stage.append(screen);
-  stage.append(el("div", { class: "ecp-fx-caption", text: modeLabel }));
-  return stage;
-}
 
 function weatherStage(cmd: Extract<Command, { kind: "setWeather" }>): HTMLElement {
   const kind = cmd.weather || "none";
@@ -1546,23 +1572,6 @@ function erasePictureStage(cmd: Extract<Command, { kind: "erasePicture" }>): HTM
   return root;
 }
 
-function changeTileStage(cmd: Extract<Command, { kind: "changeTile" }>): HTMLElement {
-  const stage = el("div", {
-    class: "ecp-stage ecp-tile-stage",
-    dataset: { testid: "ecp-tile-stage" },
-  });
-  const card = el("div", { class: "ecp-tile-card" });
-  card.append(el("div", { class: "ecp-tile-swatch", text: String(cmd.tile) }));
-  card.append(
-    el("div", {
-      class: "ecp-tile-meta",
-      text: `${cmd.layer === "upper" ? "덧그림" : "바닥"} · (${cmd.x}, ${cmd.y})`,
-    })
-  );
-  stage.append(card);
-  stage.append(el("div", { class: "ecp-fx-caption", text: cmd.mapId || "(맵)" }));
-  return stage;
-}
 
 function inputWaitStage(cmd: Extract<Command, { kind: "inputWait" }>): HTMLElement {
   const stage = el("div", {

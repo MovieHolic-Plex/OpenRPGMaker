@@ -25,6 +25,27 @@ export const M2_PICKER_TRADE_GROUP = "거래";
 export const M2_PICKER_FLOW_GROUP = "흐름";
 export const M2_PICKER_SOUND_GROUP = "소리";
 
+/**
+ * 탭 3(지도 · 화면 효과)도 같은 원칙이다. RM 카탈로그 분류(`맵/이동`·`화면/연출`·
+ * `시스템/고급`)로 섞어 두면 작가가 「조명을 깔고 싶다」·「그림을 띄우고 싶다」로
+ * 찾을 수 없다. 그래서 지금 하려는 일 — 지도를 고치고(지도), 조명·날씨를 깔고
+ * (조명·날씨), 그림을 띄우고(그림), 화면을 연출하고(화면 연출), 값을 읽는다(값 읽기) — 로 쪼갠다.
+ */
+export const M2_PICKER_MAP_GROUP = "지도";
+export const M2_PICKER_LIGHT_WEATHER_GROUP = "조명·날씨";
+export const M2_PICKER_PICTURE_GROUP = "그림";
+export const M2_PICKER_STAGING_GROUP = "화면 연출";
+export const M2_PICKER_READ_GROUP = "값 읽기";
+
+/** 탭 3 저작면 헤딩. 이 다섯 개 밖의 그룹이 탭 3 그리드에 오면 IA 회귀다. */
+export const M2_MAP_SCREEN_SURFACE_GROUPS: readonly M2CommandPickerGroup[] = [
+  M2_PICKER_LIGHT_WEATHER_GROUP,
+  M2_PICKER_STAGING_GROUP,
+  M2_PICKER_PICTURE_GROUP,
+  M2_PICKER_MAP_GROUP,
+  M2_PICKER_READ_GROUP,
+];
+
 /** 탭 1 저작면 헤딩. 이 여섯 개 밖의 그룹이 탭 1 그리드에 오면 IA 회귀다. */
 export const M2_QUICK_AUTHORING_SURFACE_GROUPS: readonly M2CommandPickerGroup[] = [
   M2_PICKER_SPEAK_GROUP,
@@ -46,9 +67,13 @@ export const M2_COMMAND_PICKER_GROUP_ORDER: readonly M2CommandPickerGroup[] = [
   M2_PICKER_PARTY_GROUP,
   M2_PICKER_GROWTH_GROUP,
   M2_PICKER_APPEARANCE_GROUP,
-  // 탭 3(지도 · 화면 효과) 그룹. 탭 3 수선 계획은 별도이고 여기서는 정렬만 유지한다.
-  "맵/이동",
-  "화면/연출",
+  // 탭 3(지도 · 화면 효과) 저작면 순서. 이 탭을 여는 이유는 분위기·연출이다 —
+  // 조명·날씨 → 화면 연출 → 그림 이 먼저 보이고, 지도 배관(탈것·이벤트 위치)과 조회는 뒤로 간다.
+  M2_PICKER_LIGHT_WEATHER_GROUP,
+  M2_PICKER_STAGING_GROUP,
+  M2_PICKER_PICTURE_GROUP,
+  M2_PICKER_MAP_GROUP,
+  M2_PICKER_READ_GROUP,
   "시스템/고급",
   "모던 명령",
 ];
@@ -211,16 +236,74 @@ export function pickerGroupForM2Command(row: M2PdfCommandRow): M2CommandPickerGr
   if (tab2Group) return tab2Group;
   const tab1Group = quickAuthoringSurfaceGroup(row.title);
   if (tab1Group) return tab1Group;
+  // 탭 3 행은 카탈로그 분류가 아니라 저작면 헤딩으로만 묶인다.
+  if (pickerPageForM2Command(row) === 3) return mapScreenSurfaceGroup(row.title);
   // 탭 4에 남는 행은 시스템(⚙) 또는 도구(◈) 헤딩 하나로만 묶인다.
   if (SYSTEM_TOOL_PAGE_TITLES.has(row.title)) return row.index >= 200 ? "모던 명령" : "시스템/고급";
   if (isDialogueInputCommand(row.title)) return M2_PICKER_SPEAK_GROUP;
   if (isConditionFlowCommand(row.title)) return M2_PICKER_FLOW_GROUP;
-  if (isMapMovementCommand(row.title)) return "맵/이동";
+  if (isMapMovementCommand(row.title)) return M2_PICKER_MAP_GROUP;
   if (isRewardShopCommand(row.title)) return M2_PICKER_TRADE_GROUP;
   if (row.title.includes("BGM") || row.title.includes("SE") || row.title === "Sound Layer") return M2_PICKER_SOUND_GROUP;
-  if (isScreenPresentationCommand(row.title)) return "화면/연출";
+  if (isScreenPresentationCommand(row.title)) return M2_PICKER_STAGING_GROUP;
   if (row.index >= 200) return "모던 명령";
   return "시스템/고급";
+}
+
+/** 탭 3 저작면 그룹. 값을 변수로 읽어 오는 행 — 지도 연출이 아니라 조회다. */
+const MAP_SCREEN_READ_TITLES: ReadonlySet<string> = new Set([
+  "Get Player Location",
+  "Get Terrain ID",
+  "Get Event ID",
+  "Key Input Processing",
+]);
+
+/** 화면을 칠하거나 흔드는 연출. 그림(Picture)·날씨는 각자 헤딩을 갖는다. */
+const MAP_SCREEN_STAGING_TITLES: ReadonlySet<string> = new Set([
+  "Hide Screen",
+  "Show Screen",
+  "Tint Screen",
+  "Flash Screen",
+  "Shake Screen",
+  "Flash Event",
+  "Change Screen Transition",
+  "Show Animation",
+  "Play Movie",
+  "Screen Effect",
+  "Camera Control",
+  "Cutscene Control",
+]);
+
+/**
+ * 탭 3 행 → 저작면 그룹. 그림/날씨/연출/조회 밖은 모두 지도 작업이다
+ * (지형 변경, 맵 그림 세트, 먼 배경, 맵 스크롤, 탈것, 이벤트 배치 …).
+ */
+function mapScreenSurfaceGroup(title: string): M2CommandPickerGroup {
+  if (MAP_SCREEN_READ_TITLES.has(title)) return M2_PICKER_READ_GROUP;
+  if (title.includes("Picture")) return M2_PICKER_PICTURE_GROUP;
+  if (title.includes("Weather")) return M2_PICKER_LIGHT_WEATHER_GROUP;
+  if (MAP_SCREEN_STAGING_TITLES.has(title)) return M2_PICKER_STAGING_GROUP;
+  return M2_PICKER_MAP_GROUP;
+}
+
+/**
+ * 카탈로그에 없는 네이티브 탭 3 명령의 저작면 그룹. 조명·날씨는 `atmosphere`,
+ * 애니메이션은 `media` 가족이라 가족 라벨만 쓰면 「소리」 헤딩에 떨어진다.
+ */
+const MAP_SCREEN_NATIVE_GROUPS: Readonly<Record<string, M2CommandPickerGroup>> = {
+  setLighting: M2_PICKER_LIGHT_WEATHER_GROUP,
+  addLight: M2_PICKER_LIGHT_WEATHER_GROUP,
+  removeLight: M2_PICKER_LIGHT_WEATHER_GROUP,
+  setWeather: M2_PICKER_LIGHT_WEATHER_GROUP,
+  showPicture: M2_PICKER_PICTURE_GROUP,
+  erasePicture: M2_PICKER_PICTURE_GROUP,
+  showAnimation: M2_PICKER_STAGING_GROUP,
+  playMovie: M2_PICKER_STAGING_GROUP,
+  changeTile: M2_PICKER_MAP_GROUP,
+};
+
+export function mapScreenNativeSurfaceGroup(kind: string): M2CommandPickerGroup | undefined {
+  return MAP_SCREEN_NATIVE_GROUPS[kind];
 }
 
 /**

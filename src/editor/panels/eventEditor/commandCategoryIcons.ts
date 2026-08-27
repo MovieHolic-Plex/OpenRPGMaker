@@ -4,10 +4,15 @@
 // 아이콘은 16px 이하 스캔 보조. 식별은 항상 텍스트가 한다.
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import {
+  M2_MAP_SCREEN_SURFACE_GROUPS,
   M2_PICKER_APPEARANCE_GROUP,
   M2_PICKER_BATTLE_GROUP,
   M2_PICKER_GROWTH_GROUP,
+  M2_PICKER_LIGHT_WEATHER_GROUP,
+  M2_PICKER_MAP_GROUP,
   M2_PICKER_PARTY_GROUP,
+  M2_PICKER_PICTURE_GROUP,
+  M2_PICKER_STAGING_GROUP,
   M2_QUICK_AUTHORING_SURFACE_GROUPS,
   type M2CommandPickerGroup,
 } from "@/project/eventCommands/m2PickerLayout";
@@ -38,10 +43,15 @@ const GROUP_VISUALS: Record<string, CategoryVisual> = {
   "옮기기": { key: "map", glyph: "➤", label: "지도" },
   "거래": { key: "reward", glyph: "¤", label: "보상" },
   "흐름": { key: "flow", glyph: "◇", label: "흐름" },
-  // 탭 3·4 카탈로그 분류명은 그대로 남는다(탭 3 수리는 별 계획).
+  // 탭 3 저작면: 지도를 고친다 / 분위기를 깔다 / 그림을 띄운다 / 화면을 연출한다 / 값을 읽는다.
+  "지도": { key: "map", glyph: "➤", label: "지도" },
+  "조명·날씨": { key: "screen", glyph: "☀", label: "조명·날씨" },
+  "그림": { key: "screen", glyph: "◰", label: "그림" },
+  "화면 연출": { key: "screen", glyph: "✦", label: "화면 연출" },
+  "값 읽기": { key: "flow", glyph: "≡", label: "값 읽기" },
+  // 탭 4 카탈로그 분류명은 그대로 단는다.
   "대화/입력": { key: "dialogue", glyph: "❝", label: "대화" },
   "조건/흐름": { key: "flow", glyph: "◇", label: "흐름" },
-  "맵/이동": { key: "map", glyph: "➤", label: "지도" },
   "보상/상점": { key: "reward", glyph: "¤", label: "보상" },
   "소리": { key: "sound", glyph: "♪", label: "소리" },
   // 탭 2 저작면: 적을 세운다 / 파티를 바꾼다 / 수치를 움직인다 / 모습을 바꾼다.
@@ -49,7 +59,6 @@ const GROUP_VISUALS: Record<string, CategoryVisual> = {
   "파티": { key: "actor", glyph: "☗", label: "파티" },
   "능력·성장": { key: "actor", glyph: "▲", label: "능력·성장" },
   "모습·이름": { key: "actor", glyph: "☺", label: "모습·이름" },
-  "화면/연출": { key: "screen", glyph: "✦", label: "화면 효과" },
   "시스템/고급": { key: "system", glyph: "⚙", label: "시스템" },
   "모던 명령": { key: "modern", glyph: "◈", label: "도구" },
 };
@@ -74,16 +83,18 @@ function buildKindIndex(): Map<string, CategoryVisual> {
   index.set("setSelfSwitch", groupVisual("흐름"));
   index.set("inputWait", groupVisual("말하기"));
   index.set("callMapEvent", groupVisual("옮기기"));
-  index.set("changeTile", groupVisual("맵/이동"));
-  index.set("setEventGraphicPattern", groupVisual("맵/이동"));
-  index.set("addFollower", groupVisual("맵/이동"));
-  index.set("removeFollower", groupVisual("맵/이동"));
-  index.set("setLighting", groupVisual("화면/연출"));
-  index.set("addLight", groupVisual("화면/연출"));
-  index.set("removeLight", groupVisual("화면/연출"));
-  index.set("setWeather", groupVisual("화면/연출"));
-  index.set("showAnimation", groupVisual("화면/연출"));
-  index.set("playMovie", groupVisual("화면/연출"));
+  index.set("changeTile", groupVisual(M2_PICKER_MAP_GROUP));
+  index.set("setEventGraphicPattern", groupVisual(M2_PICKER_MAP_GROUP));
+  index.set("addFollower", groupVisual(M2_PICKER_MAP_GROUP));
+  index.set("removeFollower", groupVisual(M2_PICKER_MAP_GROUP));
+  index.set("setLighting", groupVisual(M2_PICKER_LIGHT_WEATHER_GROUP));
+  index.set("addLight", groupVisual(M2_PICKER_LIGHT_WEATHER_GROUP));
+  index.set("removeLight", groupVisual(M2_PICKER_LIGHT_WEATHER_GROUP));
+  index.set("setWeather", groupVisual(M2_PICKER_LIGHT_WEATHER_GROUP));
+  index.set("showAnimation", groupVisual(M2_PICKER_STAGING_GROUP));
+  index.set("showPicture", groupVisual(M2_PICKER_PICTURE_GROUP));
+  index.set("erasePicture", groupVisual(M2_PICKER_PICTURE_GROUP));
+  index.set("playMovie", groupVisual(M2_PICKER_STAGING_GROUP));
   index.set("checkpointSave", groupVisual("시스템/고급"));
   index.set("killPlayer", groupVisual("시스템/고급"));
   index.set("triggerEnding", groupVisual("시스템/고급"));
@@ -111,6 +122,7 @@ export function groupVisual(group: M2CommandPickerGroup): CategoryVisual {
  */
 const AUTHORING_SURFACE_HEADINGS: ReadonlySet<string> = new Set([
   ...M2_QUICK_AUTHORING_SURFACE_GROUPS,
+  ...M2_MAP_SCREEN_SURFACE_GROUPS,
   M2_PICKER_BATTLE_GROUP,
   M2_PICKER_PARTY_GROUP,
   M2_PICKER_GROWTH_GROUP,

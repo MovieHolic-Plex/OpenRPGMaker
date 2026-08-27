@@ -3,6 +3,12 @@ import { M2_COMMAND_CATALOG, type M2CommandCatalogEntry } from "@/project/eventC
 import { MODERN_COMMAND_ROWS, PDF_COMMAND_ROWS } from "@/project/eventCommands/m2CatalogData";
 import { pickerPageForM2Command } from "@/project/eventCommands/m2PickerLayout";
 import { commandPresentationDescriptor } from "@/editor/eventCommands/commandPresentation";
+// 피탤 모듈은 정적으로 싣는다. 동적 import 를 테스트 안에서 처졊다가 그래프 로드 시간이
+// 테스트 타이아웃을 가리면, 통과가 기계 상황에 달린 운이 된다.
+import {
+  eventCommandPickerSearchEntries,
+  eventCommandPickerTabEntries,
+} from "@/editor/panels/eventEditor/commandPicker";
 
 /**
  * 탭 4(시스템 · 도구)는 시스템/도구 명령만 담는다. 대화·흐름·전투 전용·화면 연출 그룹이
@@ -16,10 +22,6 @@ function normalizedLabel(label: string): string {
 
 function page4CatalogEntries(): readonly M2CommandCatalogEntry[] {
   return M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === 4);
-}
-
-async function pickerModule() {
-  return import("@/editor/panels/eventEditor/commandPicker");
 }
 
 describe("picker page 4 is system/tools only", () => {
@@ -106,9 +108,7 @@ describe("picker page 4 is system/tools only", () => {
 });
 
 describe("picker tab grid hides informational rows", () => {
-  it("shows only selectable commands on every tab grid", async () => {
-    const { eventCommandPickerTabEntries } = await pickerModule();
-
+  it("shows only selectable commands on every tab grid", () => {
     for (const page of [1, 2, 3, 4] as const) {
       const informational = eventCommandPickerTabEntries(page)
         .filter((entry) => !entry.selectable)
@@ -118,8 +118,7 @@ describe("picker tab grid hides informational rows", () => {
     }
   });
 
-  it("keeps informational rows searchable with an alternate-route hint", async () => {
-    const { eventCommandPickerSearchEntries } = await pickerModule();
+  it("keeps informational rows searchable with an alternate-route hint", () => {
     const checkpointInfo = eventCommandPickerSearchEntries().find((entry) => entry.commandId === "checkpointSave");
 
     expect(checkpointInfo).toBeDefined();
@@ -127,8 +126,7 @@ describe("picker tab grid hides informational rows", () => {
     expect(checkpointInfo?.alternateRoute).toBeTruthy();
   });
 
-  it("shows the checkpoint and ending labels at most once on the page 4 grid", async () => {
-    const { eventCommandPickerTabEntries } = await pickerModule();
+  it("shows the checkpoint and ending labels at most once on the page 4 grid", () => {
     const labels = eventCommandPickerTabEntries(4).map((entry) => normalizedLabel(entry.label));
 
     expect(labels.filter((label) => label === "체크포인트 저장")).toHaveLength(1);
@@ -137,8 +135,7 @@ describe("picker tab grid hides informational rows", () => {
     expect(labels.filter((label) => label === "저장 메뉴 열기")).toHaveLength(1);
   });
 
-  it("groups the page 4 grid under system and tooling headings only", async () => {
-    const { eventCommandPickerTabEntries } = await pickerModule();
+  it("groups the page 4 grid under system and tooling headings only", () => {
     const groups = [...new Set(eventCommandPickerTabEntries(4).map((entry) => entry.group))].sort();
 
     expect(groups.filter((group) => !SYSTEM_TOOL_GROUPS.includes(group))).toEqual([]);

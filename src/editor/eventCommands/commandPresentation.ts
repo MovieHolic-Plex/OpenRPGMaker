@@ -10,9 +10,11 @@ import {
   M2_PICKER_BATTLE_GROUP,
   M2_PICKER_FLOW_GROUP,
   M2_PICKER_GROWTH_GROUP,
+  M2_PICKER_MAP_GROUP,
   M2_PICKER_PARTY_GROUP,
   M2_PICKER_SOUND_GROUP,
   M2_PICKER_SPEAK_GROUP,
+  M2_PICKER_STAGING_GROUP,
   M2_PICKER_TRADE_GROUP,
 } from "@/project/eventCommands/m2PickerLayout";
 
@@ -34,7 +36,7 @@ const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
   controlFlow: M2_PICKER_FLOW_GROUP,
   state: M2_PICKER_FLOW_GROUP,
   time: M2_PICKER_FLOW_GROUP,
-  map: "맵/이동",
+  map: M2_PICKER_MAP_GROUP,
   // 탭 2 그룹은 m2 카탈로그 행과 같은 어휘를 쓴다 — 한 작업면이 헤딩 여럿으로 쪼개지지 않게.
   battle: M2_PICKER_BATTLE_GROUP,
   actor: M2_PICKER_GROWTH_GROUP,
@@ -43,7 +45,9 @@ const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
   // 필드 몬스터 등장/제거는 전투 준비다 — 파티 명부가 아니다.
   monster: M2_PICKER_BATTLE_GROUP,
   follower: M2_PICKER_PARTY_GROUP,
-  atmosphere: "화면/연출",
+  // 분위기 명령은 탭 3 저작면이다. 조명·날씨·그림처럼 더 정확한 헤딩은
+  // `mapScreenNativeSurfaceGroup` 가 kind 단위로 다심 직는다.
+  atmosphere: M2_PICKER_STAGING_GROUP,
   media: M2_PICKER_SOUND_GROUP,
   commerce: M2_PICKER_TRADE_GROUP,
   system: "시스템/고급",
