@@ -1241,3 +1241,227 @@
   .shop-empty-illust { grid-template-columns: 44px 1fr; }
   .shop-empty-illust-cta { grid-column: 1 / -1; justify-self: start; }
 }
+
+/* ============================================================
+   상점 전용 전체화면 (subdialog width: "full")
+   상점은 진열·재고·옵션이 한 화면에 다 있어야 하는 특수 명령이라
+   좁은 wide 창 대신 뷰포트를 거의 다 쓰는 창을 쓰고, 남는 높이는
+   목록이 먹는다(빈 아래쪽 여백 금지).
+   ============================================================ */
+.event-subdialog-window.full {
+  width: calc(100vw - 48px);
+  max-width: 1880px;
+  height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
+}
+
+.event-subdialog-window.full .event-subdialog-header {
+  flex: 0 0 auto;
+}
+
+.event-subdialog-window.full .event-subdialog-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-subdialog-window.full .event-command-edit-dialog {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-subdialog-window.full .event-command-edit-columns {
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 레거시 상점 규칙이 편집 본문을 68vh/620px 로 묶어 전체화면 아래쪽이 비었다 — 여기서 해제한다. */
+.event-subdialog-window.full .event-command-edit-columns > .event-command-edit-body:has(.shop-processing-command-body),
+.event-subdialog-window.full .event-command-edit-body {
+  display: flex;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-subdialog-window.full .event-command-edit-body > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.event-subdialog-window.full .shop-processing-command-body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+}
+
+/* 상단 툴바: 상태 배지 + 프리셋 한 줄 (제목은 창 헤더가 이미 갖고 있다) */
+.shop-processing-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.shop-processing-toolbar .shop-processing-presets {
+  margin-left: auto;
+}
+
+/* 진열/자료집 | 옵션 레일 */
+.event-subdialog-window.full .shop-processing-layout {
+  align-items: stretch;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+  min-height: 0;
+}
+
+.event-subdialog-window.full .shop-processing-main {
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+/* 목록 패널: 진열대(좌) | 자료집(우), 상세는 아래 전폭 */
+.event-subdialog-window.full .shop-processing-items {
+  align-content: stretch;
+  display: grid;
+  gap: 8px 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-subdialog-window.full .shop-processing-items > legend {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.event-subdialog-window.full .shop-processing-sale-list {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: auto;
+}
+
+.event-subdialog-window.full .shop-processing-item-controls {
+  align-self: start;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 1;
+  grid-row: 3;
+  justify-content: flex-start;
+  padding-top: 0;
+}
+
+.event-subdialog-window.full .shop-processing-item-controls > button {
+  flex: 0 0 auto;
+  min-width: 56px;
+  width: auto;
+}
+
+.event-subdialog-window.full .shop-processing-catalog-fold {
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-subdialog-window.full .shop-processing-catalog,
+.event-subdialog-window.full .shop-processing-catalog.shop-processing-item-list {
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+  overflow: auto;
+}
+
+.event-subdialog-window.full .shop-processing-item-detail {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  max-height: 34vh;
+  overflow: auto;
+}
+
+/* 옵션 레일: 설명 문단 없이 컨트롤만 밀도 있게, 넘치면 레일이 스크롤한다 */
+.shop-options-rail-title {
+  color: var(--text-2, #5C5348);
+  font: 800 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shop-processing-side[data-testid="shop-options-rail"] {
+  align-content: start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.2));
+  border-radius: 10px;
+  gap: 10px;
+  padding: 10px;
+}
+
+.event-subdialog-window.full .shop-processing-side[data-testid="shop-options-rail"] {
+  max-height: 100%;
+  overflow: auto;
+  position: static;
+}
+
+.shop-processing-side .shop-processing-fieldset {
+  margin: 0;
+}
+
+.shop-processing-stock-chip {
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.2));
+  border-radius: 999px;
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-self: start;
+  padding: 6px 10px;
+}
+
+.shop-sab-extra {
+  display: grid;
+  gap: 6px;
+}
+
+.shop-sab-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(64px, auto) minmax(0, 1fr);
+}
+
+.shop-sab-title {
+  color: var(--text-2, #5C5348);
+  font: 800 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1100px) {
+  .event-subdialog-window.full .shop-processing-layout,
+  .event-subdialog-window.full .shop-processing-items {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .event-subdialog-window.full .shop-processing-catalog-fold {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .event-subdialog-window.full .shop-processing-item-detail {
+    grid-row: auto;
+  }
+}

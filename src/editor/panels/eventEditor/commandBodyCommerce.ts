@@ -78,54 +78,45 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
           dataset: { testid: "shop-empty-banner" },
           children: [
             el("div", { class: "shop-empty-illust-icon", text: "🛒", attrs: { "aria-hidden": "true" } }),
-            el("div", {
-              class: "shop-empty-illust-copy",
-              children: [
-                el("div", { class: "shop-empty-illust-title", text: "아직 파는 물건이 없어요" }),
-                el("div", { class: "shop-empty-illust-sub", text: "오른쪽 목록에서 아이템을 고르거나 프리셋을 불러오세요." }),
-              ],
-            }),
-            el("div", { class: "shop-empty-illust-cta", text: "+ 아래 목록에서 선택" }),
+            el("div", { class: "shop-empty-illust-copy", text: "진열이 비었습니다 — 프리셋이나 자료집에서 담으세요." }),
           ],
         })
       : null;
   const main = el("div", {
     class: "shop-processing-main",
     children: [
-      (() => {
-        const h = shopIntentCard();
-        h.append(headerBadge);
-        h.classList.add("shop-intent-header");
-        return h;
-      })(),
       ...(emptyWarn ? [emptyWarn] : []),
-      shopPresetsBar(context, command, project.database.items),
       shopItemsPanel(context, command, project.database.items),
       shopTransactionBranchControls(context, command),
     ],
   });
   const side = el("div", {
     class: "shop-processing-side",
+    dataset: { testid: "shop-options-rail" },
     children: [shopSettingsCard(context, command)],
   });
   try { side.append(shopSabExtraCard(context, command)); } catch {}
   wrap.append(
+    shopToolbar(context, command, project.database.items, headerBadge),
     el("div", { class: "shop-processing-layout", children: [main, side] }),
     selectedSummary(project.database.items, command.itemIds)
   );
   return wrap;
 }
 
-function shopIntentCard(): HTMLElement {
+/** 제목·진열 상황·프리셋을 한 줄로 모은 상단 툴바 — 설명 문단 없이 상태만 보여준다. */
+function shopToolbar(
+  context: CommandEditContext,
+  command: ShopCommand,
+  items: readonly ItemRecord[],
+  badge: HTMLElement
+): HTMLElement {
   return el("div", {
-    class: "shop-processing-intent shop-processing-intent-compact",
+    class: "shop-processing-intent shop-intent-header shop-processing-toolbar",
     dataset: { testid: "shop-intent-card" },
     children: [
-      el("div", { class: "shop-processing-intent-title", text: "상점" }),
-      el("div", {
-        class: "shop-processing-intent-flow",
-        text: "판매 목록 → 규칙(종류·소지금) → 미리보기",
-      }),
+      badge,
+      shopPresetsBar(context, command, items),
     ],
   });
 }
@@ -566,13 +557,19 @@ function shopSabExtraCard(context: CommandEditContext, command: ShopCommand): HT
   const mileage = el("input", { attrs: { type: "number", min: "0", max: "0.1", step: "0.01" }, dataset: { testid: "shop-mileageRate" } }) as HTMLInputElement;
   (mileage as HTMLInputElement).value = String((ext.mileageRate as number) ?? "");
   mileage.addEventListener("change", () => { const n = Number((mileage as HTMLInputElement).value); context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), mileageRate: Number.isFinite(n) ? Math.max(0, Math.min(0.1, n)) : undefined } as unknown as Command); });
-  wrap.append(row("서비스", serviceSel), row("투자 Lv 0..5", invest), row("마일리지 0..0.1", mileage));
+  invest.title = "투자 단계 0~5 — 진열 가격에 반영됩니다";
+  mileage.title = "마일리지 적립률 0~0.1";
+  serviceSel.className = "commerce-command-input";
+  invest.className = "commerce-command-input";
+  mileage.className = "commerce-command-input";
+  wrap.append(row("서비스", serviceSel), row("투자 Lv", invest), row("마일리지", mileage));
   return wrap;
 }
 function shopSettingsCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
   return el("div", {
     class: "shop-processing-settings shop-processing-settings-compact",
     children: [
+      el("div", { class: "shop-options-rail-title", text: "상점 설정" }),
       shopTypeGroup(context, command),
       shopQuantityModeGroup(context, command),
       shopMessageSelect(context, command),
@@ -617,10 +614,6 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
         input,
         el("span", { class: "shop-processing-merchant-gold-unit", text: "G" }),
       ],
-    }),
-    el("p", {
-      class: "commerce-command-hint",
-      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G(비우면 100G), 0이면 매입 불가. 방문마다 리셋됩니다.",
     })
   );
   return fieldset;
@@ -645,7 +638,7 @@ function shopQuantityModeGroup(context: CommandEditContext, command: ShopCommand
   select.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, {
       ...latestShop(context, command),
-      quantityMode: select.value === "select" ? "select" : "single",
+      quantityMode: select.value === "select" ? "select" : "single"
     });
   });
   return el("div", {
@@ -653,23 +646,19 @@ function shopQuantityModeGroup(context: CommandEditContext, command: ShopCommand
     children: [
       el("label", { class: "commerce-command-title", text: "구매 수량" }),
       select,
-      el("span", { class: "commerce-command-hint", text: "플레이어가 1~99 수량을 고릅니다 (←/→ 키 가능, 단일은 1개 고정)." }),
-    ],
+    ]
   });
 }
 
 function shopStockSummary(command: ShopCommand): HTMLElement {
   const stock = command.stock ?? [];
-  const free = stock.filter((row) => !row.seasons || row.seasons.length === 0).length;
-  const seasonal = stock.length - free;
-  const text =
-    stock.length === 0
-      ? "계절 재고(stock) 없음 — 행 선택 후 아래에서 계절·가격을 넣으세요. 비워두면 itemIds 판매 목록만으로 동작합니다."
-      : `계절 재고 ${stock.length}건(사계절 ${free} · 계절한정 ${seasonal}). stock이 있으면 itemIds 대신 stock 기준으로 판매합니다.`;
+  const seasonal = stock.filter((row) => Boolean(row.seasons && row.seasons.length > 0)).length;
+  const text = stock.length === 0 ? "재고 기본" : "재고 " + String(stock.length) + " · 계절한정 " + String(seasonal);
   return el("div", {
-    class: "commerce-command-hint",
+    class: "shop-processing-stock-chip",
     text,
     dataset: { testid: "shop-stock-summary" },
+    attrs: { title: "계절 재고를 넣으면 판매 기준이 그쪽으로 바랍니다" },
   });
 }
 
@@ -730,7 +719,7 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     context.actions.replaceCommand(context.path, {
       ...latest,
       branchOnTransaction: checkbox.checked,
-      transactionBranch: checkbox.checked ? latest.transactionBranch ?? [] : latest.transactionBranch,
+      transactionBranch: checkbox.checked ? latest.transactionBranch ?? [] : latest.transactionBranch
     });
   });
   const failCheckbox = document.createElement("input");
@@ -742,7 +731,7 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     context.actions.replaceCommand(context.path, {
       ...latest,
       branchOnFailedTransaction: failCheckbox.checked,
-      failedTransactionBranch: failCheckbox.checked ? latest.failedTransactionBranch ?? [] : latest.failedTransactionBranch,
+      failedTransactionBranch: failCheckbox.checked ? latest.failedTransactionBranch ?? [] : latest.failedTransactionBranch
     });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option shop-branch-card" });
@@ -755,10 +744,6 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     el("label", {
       class: "commerce-command-option shop-processing-check",
       children: [failCheckbox, el("span", { text: "빈 상점/거래 없음일 때 분기" })],
-    }),
-    el("p", {
-      class: "commerce-command-hint",
-      text: "거래 성공→첫 분기, 빈 상점/취소→두 번째 분기. 여관의 ‘돈 없을 때 분기’와 대칭.",
     })
   );
   return fieldset;
@@ -811,7 +796,6 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
         class: "shop-processing-branch-head",
         children: [
           el("span", { class: "shop-processing-branch-title", text: "구매/판매 분기" }),
-          el("span", { class: "commerce-command-hint", text: "거래 후 실행할 명령" }),
         ],
       }),
       el("div", {
@@ -996,11 +980,7 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
 
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-items" });
   fieldset.append(
-    el("legend", { text: "판매 목록" }),
-    el("p", {
-      class: "commerce-command-hint shop-processing-items-hint",
-      text: "체크한 물건이 상점에 나갑니다. ▲▼로 진열 순서를 바꿉니다.",
-    }),
+    el("legend", { text: "판매 목록" })
   );
   if (items.length === 0) {
     fieldset.append(
@@ -1085,7 +1065,7 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
       catalog,
     ],
   }) as HTMLDetailsElement;
-  catalogFold.open = false;
+  catalogFold.open = true;
 
   selectedList.root.classList.add("shop-processing-sale-list");
   selectedList.root.dataset.testid = "shop-sale-list";
