@@ -1,23 +1,14 @@
 // editor/panels/aiAuthSettings.ts
-// AI 연결 방식 패널 — **구독 로그인(OAuth)** 과 **API 키** 두 종류를 엄격히 구분한다.
+// AI 연결 방식 패널 — **Google Antigravity** 와 **OpenAI Codex** 구독 로그인을 고른다.
 //
-// 두 종류의 공통점과 차이(설계 근거):
-//  - 공통: 전송은 항상 로컬 동반 서비스(oh-my-pi)다. 자격 증명도 항상 동반 서비스가 보관한다
-//    (~/.rpg-zzu/oh-my-pi-auth.json). 그래서 **브라우저에는 어떤 비밀도 남지 않는다** —
-//    이 약속을 `configForConnectionKind` 가 코드로 강제한다.
-//  - 차이: 제공자를 무엇으로 인증하느냐. 구독 로그인은 기기 코드 흐름, API 키는 키 저장이다.
-//    이 종류는 providerId 의 authKind 에서 **파생**하고 따로 저장하지 않는다.
+// 둘의 공통 계약:
+//  - 전송은 로컬 동반 서비스(oh-my-pi)다.
+//  - 자격 증명은 동반 서비스의 ~/.rpg-zzu/oh-my-pi-auth.json 에만 있다.
+//  - 둘 다 oauth 이므로 브라우저에는 API 키 입력칸도, 저장되는 비밀도 없다.
 //
-// 이 파일이 고친 옛 결함(전부 2026-08-21 실측):
-//  ① 키 입력칸이 "ChatGPT 구독" 패널 안에 있었고, "API / 게이트웨이" 패널에는 입력이 하나도
-//     없었다 — 라벨과 내용이 뒤집혀 있었다.
-//  ② 키 칸을 `id === "openai-codex"` 로만 숨겨서 나머지 OAuth 제공자 13종에 불필요한 키 칸이 떴다.
-//  ③ 제공자 68종을 인증 종류 구분 없이 한 줄로 나열하고, 옵션 텍스트에 영어 enum(`· oauth`)이 샜다.
-//  ④ 기기 로그인이 5초 뒤 딱 한 번 폴링해서, 20~60초 걸리는 로그인은 "대기 중"에서 영구히 멈췄다.
-//     코드 복사 버튼도, URL 링크도, 취소도 없었다.
-//  ⑤ `companionHint`("npm run ai:oauth")에 hidden 이 없어 열 때마다 번쩍였고, 성공 경로에서도
-//     미로그인 사용자에게 "서비스가 안 켜졌다"고 오진했다.
-//  ⑥ 상태 문구만 바꾸고 tone 을 안 바꾸는 분기가 있어 색 점이 이전 상태로 남았다.
+// AiConnectionKindId 의 "API 키" 값은 주입 설정의 타입 호환을 위해 남아 있지만 이 레지스트리에
+// apiKey 제공자는 없다. 화면에서 그 가지를 눌러도 가짜 제공자를 만들거나 키 입력을 되살리지 않고,
+// 같은 두 구독 제공자를 보여 준다. `configForConnectionKind` 가 전송/비밀 정규화를 강제한다.
 
 import {
   disconnectCompanionAuth,
@@ -25,7 +16,6 @@ import {
   hasStoredCompanionCredential,
   isChatGptCompanionResponseError,
   refreshCompanionAuth,
-  saveCompanionApiKey,
   startChatGptLogin,
   type ChatGptAuthStatus,
   type ChatGptCompanionUnreachableError,
@@ -44,6 +34,7 @@ import {
   ohMyPiAuthKind,
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
+import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { el } from "@/util/dom";
 
 export interface AiAuthSettingsChange {
@@ -71,17 +62,18 @@ const KIND_COPY: Record<AiConnectionKindId, { label: string; hint: string }> = {
   },
   apiKey: {
     label: "API 키",
-    hint: "제공자에서 받은 키를 이 PC의 연결 서비스에만 저장합니다.",
+    hint: "지원 제공자가 없습니다. 아래 두 제공자는 모두 구독 로그인입니다.",
   },
 };
 
 /**
- * OAuth 모드의 빠른 선택 카드. ChatGPT 는 OpenAI 구독 계정으로 로그인할 수 있고,
+ * OAuth 제공자 두 개의 빠른 선택 카드. Codex 는 OpenAI 구독 계정으로 로그인하고,
  * Gemini 는 **구독을 암시하지 않고** Google 계정으로 로그인한다(CLI 장르 용어도 쓰지 않는다).
- * 이 카드는 보기 좋은 경로일 뿐 — 동일 제공자 id 는 아래 14종 드롭다운과 공유한다.
+ * 이 카드는 보기 좋은 경로일 뿐 — 동일 providerId 는 아래 select 와 공유한다.
  */
 const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; hint: string }>[] = [
-  { id: "google-antigravity", label: "Google Gemini", hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다." },
+  { id: ANTIGRAVITY_PROVIDER_ID, label: "Google Gemini", hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다." },
+  { id: CODEX_PROVIDER_ID, label: "OpenAI Codex", hint: "ChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다." },
 ];
 
 export function renderAiAuthSettings(
@@ -153,8 +145,8 @@ export function renderAiAuthSettings(
   });
 
   // ── OAuth 빠른 선택(radiogroup) ──────────────────────────────────────────
-  // ChatGPT / Google Gemini 두 카드. 구독 로그인 종류일 때만 보이고, 아래 14종 드롭다운과 같은
-  // providerId 를 공유한다 — 선택하면 select 값·aria·onChange·상태 조회·로그인 라우팅까지 동기화된다.
+  // Google Gemini / OpenAI Codex 두 카드. 아래 select 와 같은 providerId 를 공유한다 — 선택하면
+  // select 값·aria·onChange·상태 조회·로그인 라우팅까지 한 경로에서 동기화된다.
   const quickHeading = el("h3", {
     class: "ai-config-label",
     text: "빠른 선택",
@@ -223,36 +215,18 @@ export function renderAiAuthSettings(
    * 텍스트에는 제공자 이름만 넣는다(옛 결함 ③).
    */
   const fillProviders = (): void => {
-    // 제공자는 Antigravity 하나로 강제된다(감독 지시 2026-08-26). 예전에는 자격 종류로
-    // 목록을 갈랐는데, 강제 이후 apiKey 쪽 필터는 authKind 가 oauth 인 유일한 제공자를
-    // 걸러내 **빈 select** 를 만들었다(실측). 종류와 무관하게 그 하나만 채운다.
+    // 둘 다 oauth 이므로 종류와 무관하게 같은 두 제공자를 채운다. 첫 항목은 기본 제공자다.
     const rows = providersForKind(kind);
     providerSelect.replaceChildren(
       ...rows.map((row) => el("option", { text: row.label, attrs: { value: row.id } })),
     );
     providerSelect.value = providerId;
-    // 고를 것이 하나뿐이면 select 는 결정이 아니라 표시다 — 바꿀 수 있는 척하지 않는다.
     providerSelect.disabled = rows.length <= 1;
   };
 
-  // ── API 키 입력(동반 서비스 보관) ──────────────────────────────────────────
-  const companionKey = el("input", {
-    class: "ai-config-input ai-companion-key",
-    attrs: { type: "password", placeholder: "제공자에서 받은 키", "aria-label": "제공자 API 키" },
-    dataset: { testid: "ai-companion-api-key" },
-  }) as HTMLInputElement;
-  const saveKeyButton = el("button", {
-    class: "ai-assistant-action",
-    text: "키 저장",
-    attrs: { type: "button" },
-    dataset: { testid: "ai-companion-save-key" },
-  }) as HTMLButtonElement;
-  const keyRow = el("div", {
-    class: "ai-auth-key-row",
-    attrs: { hidden: "" },
-    dataset: { testid: "ai-companion-key-row" },
-    children: [companionKey, saveKeyButton],
-  });
+  // API 키 입력은 없다. 이 레지스트리의 두 제공자는 모두 oauth 이고 시크릿은 동반 서비스의
+  // 디스크 저장소에만 있다. 숨은 input 으로 남겨도 fake DOM·브라우저 자동완성·미래 collect 경로가
+  // 값을 읽을 수 있으므로 DOM 자체를 만들지 않는다.
 
   // ── 동작 버튼 ─────────────────────────────────────────────────────────────
   const loginButton = el("button", {
@@ -337,13 +311,11 @@ export function renderAiAuthSettings(
       button.setAttribute("aria-checked", String(active));
       button.setAttribute("tabindex", active ? "0" : "-1");
     }
-    // 키 칸은 **자격 종류**로 가른다 — 하드코딩된 제공자 id 가 아니다(옛 결함 ②).
-    keyRow.hidden = providerKind !== "apiKey";
+    // 두 제공자는 모두 oauth 이므로 키 입력 분기가 없다. 안내도 providerId 하드코딩 대신
+    // 레지스트리 authKind 를 따라가 새 제공자를 추가할 때 잘못된 키 안내가 생기지 않게 한다.
     providerHelp.textContent = providerKind === "oauth"
       ? `${meta?.label ?? providerId} 계정으로 로그인합니다. 키는 입력하지 않습니다.`
-      : providerKind === "local"
-        ? `${meta?.label ?? providerId} 는 이 PC에서 도는 로컬 서버라 키가 필요 없습니다.`
-        : `${meta?.label ?? providerId} 에서 받은 키가 필요합니다. 키는 이 PC의 연결 서비스에만 저장됩니다.`;
+      : `${meta?.label ?? providerId} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`;
     kindBadge.textContent = stored
       ? OH_MY_PI_AUTH_KIND_LABEL[providerKind]
       : KIND_COPY[kind].label;
@@ -630,10 +602,11 @@ export function renderAiAuthSettings(
           return refreshStatus(gen, provider);
         }
         if (login.needsApiKey) {
-          // 이 제공자는 기기 흐름이 없다 — 키 종류로 안내한다.
-          setStatus("키 필요", "disconnected");
+          // 레지스트리의 두 제공자는 oauth 다. 동반 서비스가 키 필요를 돌려주면 제공자 계약이
+          // 어긋난 것이므로 존재하지 않는 키 입력 경로를 안내하지 않고 다시 로그인을 요구한다.
+          setStatus("구독 로그인 필요", "disconnected");
           hint.textContent = login.instructions
-            || "이 제공자는 키가 필요합니다. 연결 방식을 'API 키'로 바꾸고 키를 저장하세요.";
+            || "이 제공자는 구독 로그인만 지원합니다. 연결 서비스를 확인한 뒤 다시 로그인하세요.";
           hint.hidden = false;
           return;
         }
@@ -677,7 +650,6 @@ export function renderAiAuthSettings(
     void disconnectCompanionAuth(provider)
       .then((auth) => {
         if (!isCurrent()) return;
-        companionKey.value = "";
         applyStatus(auth);
       })
       .catch((error: unknown) => {
@@ -692,32 +664,6 @@ export function renderAiAuthSettings(
           loginButton.disabled = false;
           disconnectButton.disabled = false;
         }
-      });
-  });
-
-  saveKeyButton.addEventListener("click", () => {
-    const key = companionKey.value.trim();
-    if (!key) {
-      // 상태 문구를 덮어쓰지 않는다 — 입력 오류는 입력 옆에서 말한다.
-      providerHelp.textContent = "키를 입력하세요.";
-      companionKey.focus();
-      return;
-    }
-    saveKeyButton.disabled = true;
-    setStatus("키 저장 중…", "checking");
-    void saveCompanionApiKey(providerId, key)
-      .then((auth) => {
-        if (disposed) return;
-        companionKey.value = "";
-        applyStatus(auth);
-      })
-      .catch((error: unknown) => {
-        if (disposed) return;
-        if (isChatGptCompanionResponseError(error)) showServerError(error);
-        else showUnreachable(error);
-      })
-      .finally(() => {
-        saveKeyButton.disabled = false;
       });
   });
 
@@ -740,7 +686,6 @@ export function renderAiAuthSettings(
         ] }),
         el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
           el("div", { class: "ai-auth-state", children: [status, kindBadge] }),
-          keyRow,
           el("div", { class: "ai-auth-actions", children: [loginButton, disconnectButton] }),
           deviceBlock,
           hint,
@@ -749,10 +694,9 @@ export function renderAiAuthSettings(
       ],
     }),
     focus: () => {
-      // 지금 해야 할 일이 "키 입력"인 경우에만 그 칸으로 보낸다. 그 외에는 폼의 첫 컨트롤
-      // (종류 라디오)로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
-      if (kind === "apiKey" && !stored && !keyRow.hidden) companionKey.focus();
-      else kindButtons.get(kind)?.focus();
+      // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
+      // API 키 입력은 두 제공자 모두에게 존재하지 않는다.
+      kindButtons.get(kind)?.focus();
     },
     dispose: () => {
       disposed = true;

@@ -1,0 +1,29 @@
+### BEFORE = origin/main tree, worktree rpg-zzu-oauth2base
+### PATH for the companion: /tmp/ulw/nobun-bin.tuGkVP (node only)
+[rpg-zzu] AI companion (oh-my-pi): http://127.0.0.1:17842
+### GET /auth/providers
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:12:23 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+### provider count
+count: 0
+### GET /auth/status?provider=openai-codex
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:12:23 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+### error body /auth/providers (bun-less)
+{"error":"bun 이 필요합니다. oh-my-pi 제공자 로그인/전송은 Bun 에서만 로드됩니다."}
+### error body /auth/status (bun-less)
+{"error":"bun 이 필요합니다. oh-my-pi 제공자 로그인/전송은 Bun 에서만 로드됩니다."}

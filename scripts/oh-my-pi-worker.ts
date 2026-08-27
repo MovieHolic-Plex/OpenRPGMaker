@@ -1,16 +1,11 @@
-// Bun-only worker: @oh-my-pi/pi-ai ships TypeScript + bun:sqlite and will not load under Node/tsx.
-// Node (vite plugin / companion) talks to this loopback process.
+// Bun 전용 완성 워커. `@oh-my-pi/pi-ai` 가 bun:sqlite · type:text import 를 쓰므로
+// Node/tsx 에선 로드되지 않아, 모델 호출만 이 루프백 프로세스에 남긴다.
+//
+// 인증은 이곳에 없다: 토큰·로그인·갱신은 Node 쒡(scripts/lib/aiAuthRuntime.ts)이 전부 소유하고,
+// 이 워커는 이미 부혼 apiKey 를 요청 본밎으로 받는다. 그러지 않으면 Bun 없는 머신에서
+// 로그인조차 불가능해진다.
 
-import {
-  completeProvider,
-  listOhMyPiProviders,
-  logoutProvider,
-  publicProviderStatus,
-  refreshProvider,
-  saveProviderApiKey,
-  seedOAuthForTests,
-  startProviderLogin,
-} from "./lib/ohMyPiPiAiRuntime.ts";
+import { completeProvider } from "./lib/ohMyPiPiAiRuntime.ts";
 
 const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
 
@@ -27,41 +22,12 @@ const server = Bun.serve({
   async fetch(request) {
     const url = new URL(request.url);
     try {
-      if (request.method === "GET" && url.pathname === "/providers") {
-        return json({ providers: listOhMyPiProviders() });
-      }
-      const body = request.method === "GET" ? {} : await request.json() as Record<string, unknown>;
-      const provider = typeof body.provider === "string" ? body.provider : "openai-codex";
-      if (request.method === "POST" && url.pathname === "/status") {
-        return json(publicProviderStatus(provider));
-      }
-      if (request.method === "POST" && url.pathname === "/login") {
-        return json(await startProviderLogin(provider, body));
-      }
-      if (request.method === "POST" && url.pathname === "/seed-oauth") {
-        if (process.env.RPG_ZZU_OH_MY_PI_TEST_STUB !== "1") return json({ error: "forbidden" }, 403);
-        seedOAuthForTests(provider, {
-          access: String(body.access ?? "a"),
-          refresh: String(body.refresh ?? "r"),
-          expires: Number(body.expires) || 0,
-        });
-        return json(publicProviderStatus(provider));
-      }
-      if (request.method === "POST" && url.pathname === "/refresh") {
-        return json(await refreshProvider(provider));
-      }
-      if (request.method === "POST" && url.pathname === "/logout") {
-        return json(logoutProvider(provider));
-      }
-      if (request.method === "POST" && url.pathname === "/key") {
-        const apiKey = typeof body.apiKey === "string" ? body.apiKey : "";
-        if (!apiKey) return json({ error: "apiKey is required" }, 400);
-        return json(saveProviderApiKey(provider, apiKey));
-      }
       if (request.method === "POST" && url.pathname === "/complete") {
+        const body = await request.json() as Record<string, unknown>;
+        const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
-        const result = await completeProvider(provider, payload);
-        return json(result);
+        const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
+        return json(await completeProvider(provider, payload, { apiKey }));
       }
       return json({ error: "Not found" }, 404);
     } catch (error) {

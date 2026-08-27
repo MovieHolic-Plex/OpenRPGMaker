@@ -7,13 +7,14 @@ const dir = mkdtempSync(join(tmpdir(), "rpgzzu-oh-my-pi-c-"));
 process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
 delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
 
+// 경계가 갈렸다: 자격·갱신·상태는 Node 쪽 aiAuthRuntime, 모델 호출만 pi-ai 런타임이다.
+const { completeProvider } = await import("../scripts/lib/ohMyPiPiAiRuntime.ts");
 const {
-  completeProvider,
   publicProviderStatus,
   refreshProvider,
-  saveProviderApiKey,
+  resolveRequestApiKey,
   seedOAuthForTests,
-} = await import("../scripts/lib/ohMyPiPiAiRuntime.ts");
+} = await import("../scripts/lib/aiAuthRuntime.ts");
 
 function headerAuth(init?: RequestInit): string {
   const headers = init?.headers;
@@ -49,36 +50,52 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
     rmSync(dir, { recursive: true, force: true });
   });
 
-  test("Groq 키로 complete 가 api.groq.com 을 친다", async () => {
-    saveProviderApiKey("groq", "gsk-complete-test");
+  test("해결된 자격이 실제 요청의 Authorization 으로 나간다", async () => {
+    // 원래 이 케이스는 groq API 키가 api.groq.com 으로 나가는지 봤다. 제공자가 둘로 줄어
+    // groq 는 사라졌지만 지켜야 할 것은 같다: **우리가 만든 자격이 와이어에 실제로 실린다.**
+    seedOAuthForTests("openai-codex", {
+      access: "codex-access-on-wire",
+      refresh: "codex-refresh",
+      expires: Date.now() + 60_000,
+    });
+    const apiKey = await resolveRequestApiKey("openai-codex");
+    expect(apiKey).toBe("codex-access-on-wire");
+
     const urls: string[] = [];
     const auths: string[] = [];
-    const result = await completeProvider(
-      "groq",
-      { model: "openai/gpt-oss-120b", messages: [{ role: "user", content: "ping" }] },
-      {
-        fetch: async (input, init) => {
-          urls.push(String(input));
-          auths.push(headerAuth(init));
-          return openAiSse("pong-from-groq");
+    try {
+      await completeProvider(
+        "openai-codex",
+        { model: "gpt-5.6-sol", messages: [{ role: "user", content: "ping" }] },
+        {
+          apiKey,
+          fetch: async (input, init) => {
+            urls.push(String(input));
+            auths.push(headerAuth(init));
+            return new Response("upstream test stop", { status: 400 });
+          },
         },
-      },
-    );
-    expect(urls.some((url) => url.includes("api.groq.com"))).toBe(true);
-    expect(auths.some((header) => header.includes("gsk-complete-test"))).toBe(true);
-    expect(result.completion.choices[0].message.content).toBe("pong-from-groq");
+      );
+    } catch {
+      // 모의 상류는 요청 직렬화 직후 의도적으로 멈춘다.
+    }
+
+    expect(urls.some((url) => /chatgpt\.com|openai\.com/.test(url))).toBe(true);
+    expect(auths.some((header) => header.includes("codex-access-on-wire"))).toBe(true);
   });
 
-  test("만료된 Anthropic 토큰 갱신은 api.anthropic.com OAuth 토큰 URL 을 친다", async () => {
-    // github-copilot refreshToken 은 refresh 를 access 로 복사만 하고 네트워크를 안 탄다.
-    seedOAuthForTests("anthropic", {
+  test("만료된 Antigravity 갱신은 우리 코드로 Google token URL 을 친다", async () => {
+    // 원래 이 자리에는 Anthropic 갱신 케이스 둘이 있었다. Anthropic 은 레지스트리에서 사라졌지만
+    // 지켜야 할 계약은 같다: 갱신이 **제공자의 실제 토큰 엔드포인트**를 치고, 실패가 삼켜지지 않는다.
+    seedOAuthForTests("google-antigravity", {
       access: "expired-access",
       refresh: "invalid-refresh",
       expires: Date.now() - 1000,
+      projectId: "proj-refresh",
     });
     const urls: string[] = [];
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
       urls.push(String(input));
       return new Response(JSON.stringify({ error: "invalid_grant" }), {
         status: 400,
@@ -87,30 +104,16 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
     }) as typeof fetch;
     let message = "";
     try {
-      await refreshProvider("anthropic");
+      await refreshProvider("google-antigravity");
     } catch (error) {
       message = error instanceof Error ? error.message : String(error);
     } finally {
       globalThis.fetch = originalFetch;
     }
-    expect(urls.some((url) => url.includes("https://api.anthropic.com/v1/oauth/token"))).toBe(true);
-    expect(message.length).toBeGreaterThan(0);
-    expect(/anthropic|oauth|token|400|invalid/i.test(message)).toBe(true);
-  });
 
-  test("만료된 Anthropic 갱신은 실제 token 엔드포인트에서 거절된다", async () => {
-    seedOAuthForTests("anthropic", {
-      access: "expired-access",
-      refresh: "rpgzzu-invalid-refresh",
-      expires: Date.now() - 1000,
-    });
-    let message = "";
-    try {
-      await refreshProvider("anthropic");
-    } catch (error) {
-      message = error instanceof Error ? error.message : String(error);
-    }
-    expect(message).toContain("https://api.anthropic.com/v1/oauth/token");
+    expect(urls).toContain("https://oauth2.googleapis.com/token");
+    expect(message.length).toBeGreaterThan(0);
+    expect(/antigravity|token|refresh|400|invalid/i.test(message)).toBe(true);
   });
 
   test("Antigravity OAuth without projectId is not reported as connected", () => {
@@ -150,6 +153,7 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
         "google-antigravity",
         { model: "gemini-3.1-pro", messages: [{ role: "user", content: "ping" }] },
         {
+          apiKey: await resolveRequestApiKey("google-antigravity"),
           fetch: async (input) => {
             urls.push(String(input));
             return new Response("upstream test stop", { status: 400 });
@@ -212,6 +216,7 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
           }],
         },
         {
+          apiKey: await resolveRequestApiKey("google-antigravity"),
           fetch: async (_input, init) => {
             requestBody = JSON.parse(String(init?.body ?? "{}"));
             return new Response("upstream test stop", { status: 400 });

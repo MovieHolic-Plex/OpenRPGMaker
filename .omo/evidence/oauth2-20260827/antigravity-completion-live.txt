@@ -1,0 +1,15 @@
+### LIVE end-to-end: our ported auth -> packed apiKey -> pi-ai transport -> real Gemini
+### provider: google-antigravity (credential from the machine's own Antigravity login)
+### status before:
+{"connected":true,"provider":"google-antigravity","authKind":"oauth","expired":false,"env":false}
+### POST /v1/chat/completions (real model call):
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:56:06 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"id":"oh-my-pi-1787824566007","object":"chat.completion","model":"gemini-3.7-flash","choices":[{"index":0,"message":{"role":"assistant","content":"RPGZZU-OAUTH-OK"},"finish_reason":"stop"}]}

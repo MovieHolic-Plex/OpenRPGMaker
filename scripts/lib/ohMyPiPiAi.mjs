@@ -1,8 +1,18 @@
-// Node adapter: every provider (including openai-codex) resolves through the
-// @oh-my-pi/pi-ai Bun worker — the package is Bun TypeScript (bun:sqlite, type:text imports).
+// 동반 서버 어댑터. 인증(상태·로그인·갱신·해제)은 순수 Node 에서 돌고,
+// Bun 워커는 모델 호출(completion) 하나만 맡는다 — 그래서 Bun 이 없는 머신도
+// 로그인까지는 끝마칠 수 있고, 워커는 실제로 모델을 부를 때에서야 처음 뜨운다.
 
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import {
+  listOhMyPiProviders,
+  logoutProvider,
+  publicProviderStatus,
+  refreshProvider,
+  resolveRequestApiKey,
+  seedOAuthForTests,
+  startProviderLogin,
+} from "./aiAuthRuntime.ts";
 
 let workerPortPromise;
 let workerChild;
@@ -77,32 +87,33 @@ export function stopOhMyPiWorker() {
 
 export async function createOhMyPiAdapters() {
   return {
-    listProviders: async () => {
-      const port = await startWorker();
-      const response = await fetch(`http://127.0.0.1:${port}/providers`);
-      const payload = await response.json();
-      return payload.providers ?? [];
-    },
+    listProviders: async () => listOhMyPiProviders(),
     async status(provider) {
-      return workerJson("/status", { provider });
+      return publicProviderStatus(provider);
     },
     async login(provider, body) {
-      return workerJson("/login", { provider, ...(body ?? {}) });
+      return startProviderLogin(provider, body ?? {});
     },
-    async saveKey(provider, apiKey) {
-      return workerJson("/key", { provider, apiKey });
+    async saveKey(provider) {
+      // 지원 제공자 둘 다 구독 로그인이다. API 키를 받는 생기면 사용자가
+      // 키를 붙여넣고 연결된 상태를 기다리다 401 로 새는 경로가 다시 생긴다.
+      const error = new Error(`${provider} 는 구독 로그인 전용이라 API 키를 쓰지 않습니다.`);
+      error.status = 400;
+      throw error;
     },
     async refresh(provider) {
-      return workerJson("/refresh", { provider });
+      return refreshProvider(provider);
     },
     async logout(provider) {
-      return workerJson("/logout", { provider });
+      return logoutProvider(provider);
     },
     async seedOAuth(provider, creds) {
-      return workerJson("/seed-oauth", { provider, ...creds });
+      seedOAuthForTests(provider, creds);
+      return publicProviderStatus(provider);
     },
     async complete(provider, body) {
-      return workerJson("/complete", { provider, body });
+      const apiKey = await resolveRequestApiKey(provider);
+      return workerJson("/complete", { provider, body, apiKey });
     },
   };
 }

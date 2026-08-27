@@ -1,0 +1,47 @@
+### AFTER = agent/oauth2 (ported OAuth, two providers)
+### PATH for the companion: /tmp/ulw/nb.f4e7ek (node only, bun unreachable)
+[rpg-zzu] AI companion (oh-my-pi): http://127.0.0.1:17846
+### curl -i /auth/providers
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:53:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"providers":[{"id":"google-antigravity","label":"Google Antigravity","authKind":"oauth","defaultModel":"gemini-3.7-flash","hasLogin":true,"hasRefresh":true},{"id":"openai-codex","label":"OpenAI Codex","authKind":"oauth","defaultModel":"gpt-5.6-sol","hasLogin":true,"hasRefresh":true}]}
+### curl -i /auth/status?provider=openai-codex
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:53:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"connected":true,"provider":"openai-codex","authKind":"oauth","expired":false,"env":false}
+### curl -i /auth/status?provider=google-antigravity
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:53:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"connected":true,"provider":"google-antigravity","authKind":"oauth","expired":false,"env":false}
+### curl -i /auth/status?provider=zai  (unknown must fail closed)
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Vary: Origin
+Date: Thu, 27 Aug 2026 09:53:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"알 수 없는 제공자입니다: zai"}

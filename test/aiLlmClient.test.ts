@@ -374,20 +374,23 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     expect(result.message.tool_calls?.[0].function.name).toBe("create_map");
   });
 
+  // 이 케이스가 지키는 것: **사용자가 고른 제공자가 그대로 헤더로 나간다.** 예전에는 레지스트리에
+  // 있던 groq 로 확인했지만 제공자가 Antigravity·Codex 둘로 줄었으므로, 기본값이 아닌 쪽(Codex)을
+  // 골라 같은 계약을 본다 — 기본값으로 확인하면 "무엇을 골라도 기본값" 인 버그를 놓친다.
   it("chatgpt 모드는 선택한 oh-my-pi 제공자를 동반 서비스 헤더로 보낸다", async () => {
     const { chatCompletion, usesOhMyPiCompanion } = await loadClient();
-    expect(usesOhMyPiCompanion({ ...CONFIG_BASE, authMode: "chatgpt", providerId: "groq" })).toBe(true);
+    expect(usesOhMyPiCompanion({ ...CONFIG_BASE, authMode: "chatgpt", providerId: "openai-codex" })).toBe(true);
     mockFetchOnce(new Response(JSON.stringify({
       choices: [{ message: { content: "ok" }, finish_reason: "stop" }],
     }), { status: 200, headers: { "Content-Type": "application/json" } }));
     await chatCompletion(
-      { ...CONFIG_BASE, authMode: "chatgpt", providerId: "groq", apiKey: "" },
+      { ...CONFIG_BASE, authMode: "chatgpt", providerId: "openai-codex", apiKey: "" },
       { messages: [{ role: "user", content: "hi" }], stream: false },
     );
     const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
     const sent = init?.headers as Record<string, string>;
-    expect(sent["X-Rpgzzu-Provider"]).toBe("groq");
+    expect(sent["X-Rpgzzu-Provider"]).toBe("openai-codex");
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/chat/completions");
   });
 });

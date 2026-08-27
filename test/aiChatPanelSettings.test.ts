@@ -98,10 +98,9 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
     const providers = findByTestId(modal, "ai-oh-my-pi-provider");
     expect(providers).not.toBeNull();
-    // 기본은 구독 로그인 종류라 OAuth 제공자 14종만 담는다 — 예전에는 68종을 종류 구분 없이
-    // 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞여 있었다).
-    // 제공자는 Antigravity 하나로 강제된다 — 목록도 그 하나뿐이다(감독 지시 2026-08-26).
-    expect(providers?.querySelectorAll("option").length).toBe(1);
+    // 예전에는 68종을 종류 구분 없이 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞였다).
+    // 지금 목록은 로그인 경로가 실재하는 두 구독 제공자뿐이다.
+    expect(providers?.querySelectorAll("option").length).toBe(2);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
@@ -132,7 +131,7 @@ describe("설정 자동 저장", () => {
     expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 종류와 무관하게 Antigravity 하나만 담는다", () => {
+  it("설정 제공자 목록은 종류와 무관하게 두 구독 제공자만 담는다", () => {
     // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
@@ -141,41 +140,64 @@ describe("설정 자동 저장", () => {
     const values = (): readonly string[] =>
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
-    expect(values()).toEqual(["google-antigravity"]);
+    expect(values()).toEqual(["google-antigravity", "openai-codex"]);
 
     findByTestId(modal, "ai-auth-api-key")?.click();
 
-    // 자격 종류를 눌러도 제공자 목록은 그대로다 — 종류 축은 제공자에서 파생하고 제공자가
-    // 하나뿐이므로 갈릴 목록이 없다.
-    expect(values()).toEqual(["google-antigravity"]);
+    // 자격 종류를 눌러도 목록은 그대로다 — 두 제공자가 모두 구독 로그인이라 갈릴 목록이 없다.
+    expect(values()).toEqual(["google-antigravity", "openai-codex"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 
-  it("제공자 선택을 건드려도 Antigravity 로 남는다 (되돌릴 구멍 없음)", () => {
+  it("Codex 를 고르면 저장·재로드를 살아남는다 (제공자 선택이 실제로 반영된다)", () => {
+    // 옛 계약은 "무엇을 골라도 Antigravity 로 되돌린다" 였다. 감독 요구가 바뀌어 Codex 도
+    // 1급 선택지이므로, 고른 값이 blob 에 적히고 재로드에서도 유지되는지가 새 회귀선이다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
     if (!select) throw new Error("provider select missing");
-    select.value = "anthropic";
+
+    select.value = "openai-codex";
     select.dispatchEvent(new Event("change"));
+
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.providerId).toBe("google-antigravity");
+    expect(stored.providerId).toBe("openai-codex");
+    // 제공자를 바꾸면 그 제공자의 기본 모델을 채택한다(남의 카탈로그 모델을 남기지 않는다).
+    expect(stored.model).toBe("gpt-5.6-sol");
+    const reloaded = loadAiConfig();
+    expect(reloaded.providerId).toBe("openai-codex");
+    expect(reloaded.model).toBe("gpt-5.6-sol");
+
+    // 되돌리기도 된다 — 잠긴 축이 아니라 진짜 선택이다.
+    select.value = "google-antigravity";
+    select.dispatchEvent(new Event("change"));
     expect(loadAiConfig().providerId).toBe("google-antigravity");
   });
 
-  it("동반 서비스 키 입력은 localStorage 에 저장되지 않는다", () => {
+  it("키 입력칸이 아예 없고 저장된 blob 의 apiKey 는 빈 문자열이다", () => {
     // 옛 스펙은 "API 키 입력만으로 즉시 localStorage 에 저장된다" 였다 — 그게 평문 키가 남던
-    // 경로다. 키는 이제 동반 서비스로만 가고, 브라우저 저장소에는 흔적이 없어야 한다.
+    // 경로다. 고를 수 있는 두 제공자가 모두 구독 로그인이라 키 입력 자체가 사라졌고, 남는
+    // 보안 계약은 그대로다: **브라우저 저장소에 비밀이 닿지 않는다.**
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     findByTestId(modal, "ai-auth-api-key")?.click();
-    const key = findByTestId(modal, "ai-companion-api-key");
-    expect(key).not.toBeNull();
-    if (!key) return;
-    key.value = "sk-or-test-abc";
-    key.dispatchEvent(new Event("input"));
 
-    expect(storage.get(AI_CONFIG_STORAGE_KEY) ?? "").not.toContain("sk-or-test-abc");
+    // 숨은 input 도 두지 않는다 — 자동완성·미래 collect 경로가 값을 읽을 수 있는 표면이다.
+    expect(findByTestId(modal, "ai-config-apikey")).toBeNull();
+    expect(findByTestId(modal, "ai-companion-api-key")).toBeNull();
+    expect(findByTestId(modal, "ai-companion-save-key")).toBeNull();
+
+    // 저장 경로를 한 번 태워도 blob 에는 비밀이 없다.
+    const maxTokens = findByTestId(modal, "ai-config-maxtokens");
+    if (!maxTokens) throw new Error("maxTokens field missing");
+    maxTokens.value = "4096";
+    maxTokens.dispatchEvent(new Event("change"));
+
+    const raw = storage.get(AI_CONFIG_STORAGE_KEY) ?? "";
+    const stored = JSON.parse(raw || "{}");
+    expect(stored.apiKey).toBe("");
+    expect(stored.baseUrl).toBe("");
+    expect(raw).not.toContain("sk-");
   });
 
   it("감독 모델을 비우고 저장하면 기본값(OAuth 카탈로그)으로 저장된다", () => {
@@ -248,36 +270,58 @@ describe("설정 자동 저장", () => {
     expect(stored.model).toBe("gpt-5.6-terra");
   });
 
-  it("모델 선택기는 gemini 만 노출한다 — 남의 제공자 모델은 남기지 않는다", () => {
+  it("모델 선택기는 선택된 제공자의 모델만 노출하고 제공자를 바꾸면 목록도 바뀐다", () => {
+    // 회귀 가치는 그대로다: 남의 제공자 모델이 목록에 섞이면 고른 모델이 조용히 강등된다.
+    // 달라진 것은 기준이다 — "gemini 만" 이 아니라 "**선택된** 제공자의 카탈로그만".
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const preset = findByTestId(modal, "ai-config-model-preset");
+    const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
+    if (!preset || !select) throw new Error("model preset or provider select missing");
+
+    // 기본 제공자(Antigravity): gemini 계열이 보이고 Codex 모델은 없다.
+    expect(preset.textContent).toContain("gemini-3.7-flash");
+    for (const foreign of ["gpt-5.6-sol", "gpt-5.6-terra", "glm-", "grok-"]) {
+      expect(preset.textContent, foreign).not.toContain(foreign);
+    }
+
+    // Codex 로 전환하면 목록이 Codex 카탈로그로 교체된다.
+    select.value = "openai-codex";
+    select.dispatchEvent(new Event("change"));
+
+    expect(preset.textContent).toContain("gpt-5.6-sol");
+    expect(preset.textContent).toContain("gpt-5.6-terra");
+    for (const foreign of ["gemini-3.7-flash", "claude-opus", "glm-", "grok-"]) {
+      expect(preset.textContent, foreign).not.toContain(foreign);
+    }
+  });
+
+  it("두 제공자 카탈로그 밖 모델은 제시되지도, 살아남지도 않는다", () => {
+    // 옛 계약("API/게이트웨이 모드에서 Claude·Gemini·Grok 목록을 제공한다")이 지켰던 동작은
+    // 사라졌다: 그 모델들에 닿을 게이트웨이 제공자가 레지스트리에 없다. 같은 자리에서 지켜야
+    // 할 새 보증은 이것이다 — 카탈로그 밖 ID 는 목록에 없고, 저장돼 있었다면 로드 시 선택된
+    // 제공자의 기본 모델로 교정된다(그대로 실려 나가면 400/조용한 강등이 된다).
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       ...defaultAiConfig(),
-      providerId: "openai-codex",
-      model: "gpt-5.6-sol",
-      liteModel: "gpt-5.6-sol",
+      model: "claude-opus-4-8",
+      liteModel: "grok-4.6",
     }));
+
+    const corrected = loadAiConfig();
+    expect(corrected.providerId).toBe("google-antigravity");
+    expect(corrected.model).toBe(DEFAULT_MODEL);
+    expect(corrected.liteModel).toBe(DEFAULT_LITE_MODEL);
+
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");
     if (!preset) throw new Error("model preset missing");
 
-    expect(preset.textContent).toContain("gemini-3.7-flash");
-    for (const foreign of ["gpt-5.6-sol", "gpt-5.6-terra", "claude", "glm-"]) {
-      expect(preset.textContent, foreign).not.toContain(foreign);
+    // 자격 종류를 눌러도 사라진 게이트웨이 목록이 되살아나지 않는다.
+    findByTestId(modal, "ai-auth-api-key")?.click();
+    for (const gone of ["claude-opus-4-8", "grok-4.3", "grok-4.6", "glm-5.2-ultrafast", "cpen/"]) {
+      expect(preset.textContent, gone).not.toContain(gone);
     }
-  });
-
-  it("API/게이트웨이 모드에서는 Claude, Gemini, Grok 모델 목록을 제공한다", () => {
-    const panel = renderPanel();
-    const modal = openSettingsSurface(panel);
-    const apiMode = findByTestId(modal, "ai-auth-api-key");
-    const preset = findByTestId(modal, "ai-config-model-preset");
-    if (!apiMode || !preset) throw new Error("API mode controls missing");
-
-    apiMode.click();
-
-    expect(preset.textContent).toContain("claude-opus-4-8");
-    expect(preset.textContent).toContain("gemini-3.5-flash");
-    expect(preset.textContent).toContain("grok-4.3");
   });
 
   it("실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
