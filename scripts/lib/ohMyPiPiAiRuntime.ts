@@ -1,264 +1,15 @@
-// Node-only oh-my-pi login / refresh / complete. Loaded via tsx (package ships TypeScript).
+// 완성(completion) 전송 전용 pi-ai 어댑터.
+//
+// 분리 경계: 자감·로그인·갱신은 scripts/lib/aiAuthRuntime.ts 가 순수 Node 에서 다 처리하고,
+// 이 파일은 이미 부혼 자겁문자열(apiKey)를 받아 모델 호출만 한다. pi-ai 는 bun:sqlite 를
+// 싣고 오므로 Bun 에서만 로드되며, 그 Bun 의존이 인증 경로로 새지 않는 것이 이 경계의 목적이다.
 
-import { complete, getOAuthApiKey, getProviderDefinition, refreshOAuthToken } from "@oh-my-pi/pi-ai";
+import { complete } from "@oh-my-pi/pi-ai";
 import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
-import { getOhMyPiProvider, OH_MY_PI_PROVIDERS } from "../../src/ai/ohMyPiProviders.ts";
-import { createOhMyPiAuthStore, defaultOhMyPiAuthPath } from "./ohMyPiAuthStore.mjs";
-import { readFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
-
-const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
-const PROJECT_SCOPED_OAUTH_PROVIDERS = new Set(["google-antigravity", "google-gemini-cli"]);
-
-function storeAs(provider: string): string {
-  return getProviderDefinition(provider)?.storeCredentialsAs || provider;
-}
-
-function oauthCreds(row: {
-  access?: string;
-  refresh?: string;
-  expires?: number;
-  enterpriseUrl?: string;
-  projectId?: string;
-  email?: string;
-  accountId?: string;
-  apiEndpoint?: string;
-  orgId?: string;
-  orgName?: string;
-  authorizedAt?: number;
-} | undefined) {
-  if (!row?.access && !row?.refresh) return undefined;
-  return {
-    access: String(row.access ?? ""),
-    refresh: String(row.refresh ?? ""),
-    expires: Number(row.expires) || 0,
-    enterpriseUrl: row.enterpriseUrl,
-    projectId: row.projectId,
-    email: row.email,
-    accountId: row.accountId,
-    apiEndpoint: row.apiEndpoint,
-    orgId: row.orgId,
-    orgName: row.orgName,
-    authorizedAt: row.authorizedAt,
-  };
-}
+import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 
 function testStub(): boolean {
   return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
-}
-
-export function listOhMyPiProviders() {
-  return OH_MY_PI_PROVIDERS.map((provider) => ({
-    id: provider.id,
-    label: provider.label,
-    authKind: provider.authKind,
-    defaultModel: provider.defaultModel,
-    hasLogin: Boolean(getProviderDefinition(provider.id)?.login),
-    hasRefresh: Boolean(getProviderDefinition(provider.id)?.refreshToken),
-  }));
-}
-
-/**
- * Codex CLI 로그인(`~/.codex/auth.json`)을 pi-ai 자격 증명 슬롯으로 한 번 옮긴다.
- *
- * pi-ai 는 자체 저장소(`~/.rpg-zzu/oh-my-pi-auth.json`)를 쓰므로, 이 단계가 없으면 이미
- * `codex login` 이 끝난 PC 에서도 디바이스 코드를 다시 승인해야 한다. refresh 토큰만 있으면
- * pi-ai 의 refreshToken 정의가 나머지를 채우므로 그것만 옮긴다.
- *
- * 실패는 조용히 무시한다 — 파일이 없거나 형식이 다르면 그냥 device 로그인으로 가면 된다.
- */
-function adoptCodexCliCredentials(provider: string): boolean {
-  if (storeAs(provider) !== "openai-codex") return false;
-  // 사용자가 연결을 끊었다면 다시 주워 오지 않는다 — 그러면 해제가 되살아난다.
-  if (store.adoptionDeclined("openai-codex")) return false;
-  const path = join(process.env.CODEX_HOME || join(homedir(), ".codex"), "auth.json");
-  try {
-    const tokens = JSON.parse(readFileSync(path, "utf8"))?.tokens;
-    const access = typeof tokens?.access_token === "string" ? tokens.access_token : "";
-    const refresh = typeof tokens?.refresh_token === "string" ? tokens.refresh_token : "";
-    if (!refresh) return false;
-    // access 토큰의 exp 를 그대로 쓴다. 못 읽으면 만료로 두면 첫 사용에서 refresh 가 돈다.
-    store.setOAuth("openai-codex", { access, refresh, expires: jwtExpiryMs(access) });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function jwtExpiryMs(token: string): number {
-  const payload = token.split(".")[1];
-  if (!payload) return 0;
-  try {
-    const exp = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"))?.exp;
-    return typeof exp === "number" ? exp * 1000 : 0;
-  } catch {
-    return 0;
-  }
-}
-
-export function publicProviderStatus(provider: string) {
-  const envVars = getOhMyPiProvider(provider)?.envVars ?? [];
-  const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
-  const credentialProvider = storeAs(provider);
-  if (!store.has(credentialProvider)) adoptCodexCliCredentials(provider);
-  const disk = store.publicStatus(provider);
-  const row = store.get(credentialProvider);
-  const hasRequiredMetadata = !PROJECT_SCOPED_OAUTH_PROVIDERS.has(provider)
-    || row?.kind !== "oauth"
-    || Boolean(row.projectId);
-  if (disk.connected && !hasRequiredMetadata) {
-    return { ...disk, connected: false, provider, env: false };
-  }
-  if (disk.connected || envHit) {
-    return { ...disk, connected: true, provider, env: envHit };
-  }
-  return { connected: false, provider };
-}
-
-export function seedOAuthForTests(
-  provider: string,
-  creds: { access: string; refresh: string; expires: number; projectId?: string },
-) {
-  store.setOAuth(storeAs(provider), creds);
-}
-
-export function saveProviderApiKey(provider: string, apiKey: string) {
-  store.setApiKey(storeAs(provider), apiKey);
-  return publicProviderStatus(provider);
-}
-
-/**
- * 저장된 자격을 지운다. 잘못된 키·만료된 토큰을 지울 방법이 없어서 상태는 초록인데 모든 턴이
- * 401 이 되던 구멍을 막는다. env 자격은 우리 것이 아니므로 그대로 남고, 응답의 `env` 가 그것을
- * 밝힌다(에디터는 env 만 있는 상태를 "연결됨"으로 세지 않는다).
- */
-export function logoutProvider(provider: string) {
-  const removed = store.remove(storeAs(provider));
-  return { ...publicProviderStatus(provider), removed };
-}
-
-async function resolveApiKey(provider: string): Promise<string | undefined> {
-  const row = store.get(storeAs(provider));
-  if (row?.kind === "apiKey" && row.apiKey) return String(row.apiKey);
-  const envVars = getOhMyPiProvider(provider)?.envVars ?? [];
-  for (const name of envVars) {
-    const value = process.env[name]?.trim();
-    if (value) return value;
-  }
-  if (row?.kind === "oauth") {
-    let creds = oauthCreds(row);
-    if (!creds) return undefined;
-    const def = getProviderDefinition(provider);
-    if (def?.refreshToken && Date.now() >= creds.expires) {
-      creds = await refreshOAuthToken(provider as never, creds);
-      store.setOAuth(storeAs(provider), creds);
-    }
-    const got = await getOAuthApiKey(provider as never, { [provider]: creds, [storeAs(provider)]: creds });
-    if (got?.newCredentials) store.setOAuth(storeAs(provider), got.newCredentials);
-    if (got?.apiKey) return got.apiKey;
-    return creds.access;
-  }
-  return undefined;
-}
-
-export async function refreshProvider(provider: string) {
-  const row = store.get(storeAs(provider));
-  if (!row || row.kind !== "oauth") return publicProviderStatus(provider);
-  if (testStub()) {
-    store.setOAuth(storeAs(provider), {
-      access: "stub-refreshed",
-      refresh: String(row.refresh ?? "r"),
-      expires: Date.now() + 60_000,
-    });
-    return { ...publicProviderStatus(provider), refreshed: true };
-  }
-  let creds = oauthCreds(row);
-  if (!creds) return publicProviderStatus(provider);
-  creds = await refreshOAuthToken(provider as never, creds);
-  store.setOAuth(storeAs(provider), creds);
-  return { ...publicProviderStatus(provider), refreshed: true };
-}
-
-/**
- * 브라우저 UI 에서 완결 가능한 로그인 정의를 고른다.
- *
- * pi-ai 의 `openai-codex` 정의는 `pasteCodeFlow` + `callbackPort: 1455` 인 브라우저 흐름이라
- * 사용자가 리다이렉트 URL 을 복사해 되돌려 줘야 한다. 우리 화면은 `verificationUrl` + `userCode`
- * 만 보여주므로 그 왕복을 태울 자리가 없고, `onPrompt` 가 던져 로그인이 죽는다.
- * device 변형(`openai-codex-device`)은 같은 자격 증명 슬롯(`storeCredentialsAs: "openai-codex"`)
- * 에 쓰면서 verificationUrl + userCode 만으로 끝나므로 이쪽을 쓴다.
- */
-const LOGIN_ALIAS: Record<string, string> = { "openai-codex": "openai-codex-device" };
-
-function loginDefinition(provider: string) {
-  const alias = LOGIN_ALIAS[provider];
-  return (alias ? getProviderDefinition(alias) : undefined) ?? getProviderDefinition(provider);
-}
-
-export async function startProviderLogin(provider: string, body: { apiKey?: string } = {}) {
-  const supplied = typeof body.apiKey === "string" ? body.apiKey.trim() : "";
-  const def = loginDefinition(provider);
-  if (testStub() && def?.login) {
-    return {
-      connected: false,
-      provider,
-      verificationUrl: `https://oauth.example.test/${provider}`,
-      userCode: "TEST-OK",
-    };
-  }
-  if (!def?.login) {
-    if (supplied) return { ...saveProviderApiKey(provider, supplied), verificationUrl: "", userCode: "" };
-    return { connected: false, provider, needsApiKey: true, verificationUrl: "", userCode: "" };
-  }
-
-  let announced = false;
-  return await new Promise((resolve, reject) => {
-    const pending = def.login!({
-      onAuth(info) {
-        if (announced) return;
-        announced = true;
-        resolve({
-          connected: false,
-          provider,
-          verificationUrl: info.launchUrl || info.url,
-          userCode: extractUserCode(info.url, info.instructions),
-          instructions: info.instructions,
-        });
-      },
-      async onPrompt(prompt) {
-        if (supplied) return supplied;
-        if (prompt.allowEmpty) return "";
-        throw new Error(prompt.message || "이 제공자는 API 키가 필요합니다.");
-      },
-    });
-    pending
-      .then((creds) => {
-        if (typeof creds === "string") store.setApiKey(storeAs(provider), creds);
-        else store.setOAuth(storeAs(provider), creds);
-        if (!announced) {
-          announced = true;
-          resolve({ connected: true, provider, verificationUrl: "", userCode: "" });
-        }
-      })
-      .catch((error: unknown) => {
-        if (!announced) reject(error);
-      });
-  });
-}
-
-function extractUserCode(url: string, instructions?: string): string {
-  try {
-    const parsed = new URL(url);
-    const fromQuery = parsed.searchParams.get("user_code") || parsed.searchParams.get("code");
-    if (fromQuery) return fromQuery;
-  } catch {
-    /* ignore */
-  }
-  const fromInstructions = (instructions ?? "").match(/Enter code:\s*([A-Z0-9-]+)/i);
-  if (fromInstructions?.[1]) return fromInstructions[1];
-  const match = (instructions ?? "").match(/\b[A-Z0-9]{4,8}(?:-[A-Z0-9]{4,8})?\b/);
-  return match?.[0] ?? "";
 }
 
 function textOf(content: unknown): string {
@@ -418,7 +169,7 @@ function assistantToOpenAI(message: {
 export async function completeProvider(
   provider: string,
   body: Record<string, unknown>,
-  options?: { fetch?: typeof fetch },
+  options?: { fetch?: typeof fetch; apiKey?: string },
 ) {
   const modelId = typeof body.model === "string" ? body.model : getOhMyPiProvider(provider)?.defaultModel ?? "";
   const model = resolveModel(provider, modelId);
@@ -443,7 +194,7 @@ export async function completeProvider(
       },
     };
   }
-  const apiKey = await resolveApiKey(provider);
+  const apiKey = options?.apiKey;
   const context = openaiToContext(provider, body);
   const message = await complete(model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),

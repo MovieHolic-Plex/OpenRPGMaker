@@ -4,7 +4,7 @@
 // 양쪽에서 같은 코드로 돌아야 하고, 예전 경로처럼 Bun 워커에 로그인을 위임하면
 // Bun 없는 환경에서 인증 자체가 불가능해진다.
 
-import { decodeJwtPayload, type PortedOAuthCredentials } from "./credentials";
+import { decodeJwtPayload, type PortedOAuthCredentials } from "./credentials.ts";
 
 export const CODEX_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann";
 export const CODEX_TOKEN_URL = "https://auth.openai.com/oauth/token";

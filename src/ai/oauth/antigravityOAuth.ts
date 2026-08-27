@@ -4,7 +4,7 @@
 // Bun 없이도 로그인이 되어야 하므로 같은 와이어 계약을 fetch 만으로 다시 구현한다.
 // 그래서 이 파일에는 node:* import 도 Bun API 도 없다 — 브라우저/Node/테스트에서 동일하게 돈다.
 
-import type { PortedOAuthCredentials } from "./credentials";
+import type { PortedOAuthCredentials } from "./credentials.ts";
 
 /** URL 문자열과 RequestInit 만 받는 최소 fetch 계약. globalThis.fetch 가 그대로 대입된다. */
 export type OAuthFetch = (input: string, init: RequestInit) => Promise<Response>;
