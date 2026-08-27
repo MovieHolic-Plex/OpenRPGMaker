@@ -29,8 +29,9 @@ import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
-import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { applyMapShift } from "@/editor/mapShiftActions";
+import { visitProjectCommands } from "./commandTraversal";
 import {
   floodFillCells,
   inMapBounds,
@@ -46,7 +47,7 @@ import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
-import { COORD_SCHEMA } from "./schemaShapes";
+import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -1562,7 +1563,210 @@ const shiftMap: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
+// ── copy_map_region ──
+// 맵 편집기의 영역 선택→복사→붙여넣기(editor/mapClipboard.ts)를 툴로 노출한다.
+// mirror_region(제자리 대칭)·shift_map(맵 전체 밀기)·stamp_structure(템플릿 도장)로는
+// "이 영역을 저기로 복제"가 표현되지 않았다(2026-08-26 도달성 감사 CONFIRMED GAP).
+
+type CopyLayers = "all" | "lower" | "upper";
+type CopyOverExisting = "clear" | "keep";
+
+interface CopySourceCell {
+  readonly dx: number;
+  readonly dy: number;
+  readonly lower: number;
+  readonly upper: number;
+}
+
+interface CopyProtectedSkip {
+  readonly x: number;
+  readonly y: number;
+  readonly reason: string;
+}
+
+function copyRegionRect(args: Record<string, unknown>, field: string): { mapId: string; x: number; y: number; w: number; h: number } {
+  const raw = args[field];
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${field}는 객체여야 합니다.`, { code: "invalid-args" });
+  }
+  return raw as { mapId: string; x: number; y: number; w: number; h: number };
+}
+
+// 시작 위치·transfer 목적지는 통행이 보장돼야 하는 칸이다. fill_region/tile_erase 와 같은 정책:
+// 그 칸을 통행 불가로 만드는 쓰기만 건너뛰고 경고하며, 편집 전체를 거부하지 않는다.
+function copyProtectedCells(project: Project, map: GameMap): Map<string, string> {
+  const cells = new Map<string, string>();
+  if (project.startMapId === map.id) cells.set(`${project.startPos.x},${project.startPos.y}`, "시작 위치");
+  visitProjectCommands(project, ({ command }) => {
+    if (command.kind === "transfer" && command.mapId === map.id) cells.set(`${command.x},${command.y}`, "transfer 목적지");
+  });
+  return cells;
+}
+
+function copySkipWarnings(skipped: readonly CopyProtectedSkip[]): string[] | undefined {
+  if (skipped.length === 0) return undefined;
+  const samples = skipped.slice(0, 3).map((cell) => `(${cell.x},${cell.y})은 ${cell.reason}라 제외했습니다`);
+  const extra = skipped.length > samples.length ? ` 외 ${skipped.length - samples.length}칸` : "";
+  return [`${samples.join(", ")}${extra}`];
+}
+
+// duplicate_map/duplicate_event 와 같은 발급 방식(genId + 프로젝트 전역 사용 중 id 회피)을 쓴다.
+function copyEventIdAllocator(project: Project): () => string {
+  const used = new Set<string>(
+    Object.values(project.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)]))
+  );
+  return (): string => {
+    let candidate = genId("ev_copy");
+    while (used.has(candidate)) candidate = genId("ev_copy");
+    used.add(candidate);
+    return candidate;
+  };
+}
+
+const copyMapRegion: ToolDefinition = {
+  name: "copy_map_region",
+  description:
+    "맵의 사각 영역을 다른 위치/다른 맵으로 복사한다(맵 편집기의 영역 선택→복사→붙여넣기와 같다). "
+    + "쓰는 저작 데이터: 목적지 맵의 하위·상위 타일, withEvents면 목적지 맵의 이벤트(새 id로 복제). 원본은 그대로 남는다. "
+    + "layers: all(기본)|lower|upper. overExisting: clear(기본, 목적지 내용을 덮어씀)|keep(목적지에 이미 타일이 있는 칸은 건드리지 않음). "
+    + "같은 맵 안에서 겹치는 영역으로도 안전하게 복사된다. 시작 위치·transfer 목적지를 통행 불가로 덮는 칸은 건너뛰고 경고한다. "
+    + "오토타일 경계는 보정하지 않는다 — 제자리 대칭은 mirror_region, 맵 전체 밀기는 shift_map.",
+  mode: "write",
+  invalidArgsExample: { from: { mapId: "map_1", x: 2, y: 3, w: 6, h: 4 }, to: { mapId: "map_2", x: 10, y: 8 } },
+  parameters: {
+    type: "object",
+    properties: {
+      from: {
+        type: "object",
+        description: "복사할 원본 영역(맵 좌표)",
+        properties: { mapId: { type: "string" }, ...(RECT_SCHEMA.properties ?? {}) },
+        required: ["mapId", ...(RECT_SCHEMA.required ?? [])],
+      },
+      to: {
+        type: "object",
+        description: "붙여넣을 목적지 좌상단(다른 맵 id도 가능)",
+        properties: { mapId: { type: "string" }, ...(COORD_SCHEMA.properties ?? {}) },
+        required: ["mapId", ...(COORD_SCHEMA.required ?? [])],
+      },
+      layers: { type: "string", enum: ["all", "lower", "upper"], description: "복사할 레이어(기본 all)" },
+      withEvents: { type: "boolean", description: "영역 안 이벤트도 복제할지(기본 false)" },
+      overExisting: { type: "string", enum: ["clear", "keep"], description: "목적지에 이미 타일이 있을 때(기본 clear=덮어씀, keep=보존)" },
+    },
+    required: ["from", "to"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const from = copyRegionRect(args, "from");
+    const to = copyRegionRect(args, "to");
+    const source = requireMap(draft, from.mapId);
+    const target = requireMap(draft, to.mapId);
+    if (!Number.isInteger(from.w) || !Number.isInteger(from.h) || from.w < 1 || from.h < 1) {
+      throw new ToolError("from.w/h는 1 이상의 정수여야 합니다.", { code: "invalid-args", mapId: source.id });
+    }
+    if (from.x < 0 || from.y < 0 || from.x + from.w > source.width || from.y + from.h > source.height) {
+      throw new ToolError(
+        `복사할 영역이 맵(${source.width}×${source.height}) 밖입니다: (${from.x},${from.y}) ${from.w}×${from.h}`,
+        { code: "region-out-of-bounds", mapId: source.id, x: from.x, y: from.y }
+      );
+    }
+    if (to.x < 0 || to.y < 0 || to.x + from.w > target.width || to.y + from.h > target.height) {
+      throw new ToolError(
+        `붙여넣을 영역이 맵(${target.width}×${target.height}) 밖입니다: (${to.x},${to.y}) ${from.w}×${from.h}`,
+        { code: "region-out-of-bounds", mapId: target.id, x: to.x, y: to.y }
+      );
+    }
+    const layers = (args.layers as CopyLayers | undefined) ?? "all";
+    const overExisting = (args.overExisting as CopyOverExisting | undefined) ?? "clear";
+    const withEvents = args.withEvents === true;
+    const writeLower = layers !== "upper";
+    const writeUpper = layers !== "lower";
+
+    // 같은 맵에서 겹치는 영역으로 복사할 때 읽으면서 쓰면 원본이 먼저 덮여 타일이 오염된다.
+    // 그래서 목적지에 한 칸도 쓰기 전에 소스를 전부 버퍼에 담는다(맵 편집기 클립보드와 같은 순서).
+    const buffer: CopySourceCell[] = [];
+    for (let dy = 0; dy < from.h; dy += 1) {
+      for (let dx = 0; dx < from.w; dx += 1) {
+        const index = (from.y + dy) * source.width + from.x + dx;
+        buffer.push({ dx, dy, lower: source.lowerTiles[index], upper: source.upperTiles[index] });
+      }
+    }
+
+    const protectedCells = copyProtectedCells(draft, target);
+    const skipped: CopyProtectedSkip[] = [];
+    let copied = 0;
+    let kept = 0;
+    for (const cell of buffer) {
+      const x = to.x + cell.dx;
+      const y = to.y + cell.dy;
+      const index = y * target.width + x;
+      const beforeLower = target.lowerTiles[index];
+      const beforeUpper = target.upperTiles[index];
+      // overExisting=keep 은 "이미 뭔가 있는 칸은 건드리지 않는다" — 레이어별로 판단한다.
+      const putLower = writeLower && (overExisting === "clear" || beforeLower === TILE.EMPTY);
+      const putUpper = writeUpper && (overExisting === "clear" || beforeUpper === TILE.EMPTY);
+      if (!putLower && !putUpper) {
+        kept += 1;
+        continue;
+      }
+      if (putLower) target.lowerTiles[index] = cell.lower;
+      if (putUpper) target.upperTiles[index] = cell.upper;
+      const reason = protectedCells.get(`${x},${y}`);
+      // 보호 칸은 쓴 결과가 통행 가능한지 실측하고, 막히면 원래 타일로 되돌린다(부분 스킵 정책).
+      if (reason !== undefined && !isPassable(draft, target, x, y)) {
+        target.lowerTiles[index] = beforeLower;
+        target.upperTiles[index] = beforeUpper;
+        skipped.push({ x, y, reason });
+        continue;
+      }
+      copied += 1;
+    }
+
+    const copiedEventIds: string[] = [];
+    if (withEvents) {
+      const nextId = copyEventIdAllocator(draft);
+      const inside = source.events.filter(
+        (event) => event.x >= from.x && event.x < from.x + from.w && event.y >= from.y && event.y < from.y + from.h
+      );
+      for (const event of inside) {
+        // duplicate_event 와 같은 규약: 커맨드는 그대로 두고 id·좌표만 새로 잡는다
+        // (transfer 목적지를 임의로 다시 배선하면 저자 의도를 조용히 바꾼다).
+        const clone: GameEvent = {
+          ...structuredClone(event),
+          id: nextId(),
+          x: to.x + (event.x - from.x),
+          y: to.y + (event.y - from.y),
+        };
+        if (clone.pages) clone.pages = clone.pages.map((page) => ({ ...page, id: nextId() }));
+        target.events.push(clone);
+        copiedEventIds.push(clone.id);
+      }
+    }
+
+    const where = source.id === target.id ? "같은 맵" : target.name;
+    const notes = [
+      kept > 0 ? `기존 유지 ${kept}칸` : null,
+      skipped.length > 0 ? `보호 ${skipped.length}칸 제외` : null,
+      copiedEventIds.length > 0 ? `이벤트 ${copiedEventIds.length}개 복제` : null,
+    ].filter((note): note is string => note !== null);
+    return {
+      summary: `${source.name} (${from.x},${from.y}) ${from.w}×${from.h} → ${where} (${to.x},${to.y}) 복사 — ${copied}/${buffer.length}칸(${layers})${notes.length > 0 ? `, ${notes.join(", ")}` : ""}`,
+      warnings: copySkipWarnings(skipped),
+      data: {
+        fromMapId: source.id,
+        toMapId: target.id,
+        copied,
+        requested: buffer.length,
+        kept,
+        skipped: skipped.length,
+        layers,
+        overExisting,
+        events: copiedEventIds,
+      },
+    };
+  },
+};
+
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, copyMapRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };
