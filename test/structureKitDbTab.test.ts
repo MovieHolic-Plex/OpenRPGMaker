@@ -5,6 +5,9 @@ import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type { StructureKitDef } from "@/project/types";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
+import { INTERIOR_ROOM_THEME_CATALOG, INTERIOR_ROOM_THEMES, INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
+import { interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
@@ -228,5 +231,196 @@ describe("structureKitDbTab 내장 파라메트릭 킷 노출", () => {
     const registeredDelete = host.querySelector("[data-testid='structure-kit-db-delete-kit_registered']");
     expect(registeredDelete).not.toBeNull();
     expect(registeredDelete!.textContent).toContain("삭제");
+  });
+});
+
+describe("structureKitDbTab 3원본 앨범(내장·실내 오브젝트·내가 저장한)", () => {
+  function renderOnInteriorAlbum(): FakeElement {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    const railItem = host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`);
+    expect(railItem).not.toBeNull();
+    railItem!.click();
+    return host;
+  }
+
+  function clickSource(host: FakeElement, source: "all" | "builtin" | "interior" | "user"): void {
+    const chip = host.querySelector(`[data-testid='structure-kit-source-${source}']`);
+    expect(chip).not.toBeNull();
+    chip!.click();
+  }
+
+  // f. 실내 칩셋 앨범 + 실내 오브젝트 원본 → 책장 행이 있고 빈 상태가 아니다.
+  it("실내 칩셋 앨범에서 실내 오브젝트 원본을 고르면 책장 행이 래스터와 함께 표시된다", () => {
+    const host = renderOnInteriorAlbum();
+    clickSource(host, "interior");
+
+    const row = host.querySelector("[data-testid='structure-kit-object-bookshelf']");
+    expect(row).not.toBeNull();
+    expect(row!.querySelector("canvas")).not.toBeNull();
+    expect(row!.textContent).toContain("책장");
+    expect(row!.textContent).toContain("3×3");
+    expect(row!.textContent).toContain("서재");
+
+    expect(host.querySelector("[data-testid='structure-kit-db-empty']")).toBeNull();
+  });
+
+  // g. 실내 오브젝트는 다른 타일셋 앨범에 섞이지 않는다.
+  it("combined_town 앨범에는 실내 오브젝트가 섞이지 않는다", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    expect(current.maps[mapId]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    expect(host.querySelector("[data-testid='structure-kit-object-bookshelf']")).toBeNull();
+
+    clickSource(host, "interior");
+    expect(host.querySelector("[data-testid='structure-kit-object-bookshelf']")).toBeNull();
+    // 앨범 자체는 내장 킷이 있으므로 정확한 빈 상태 카피가 아니라 조용한 안내만 나온다.
+    expect(host.querySelector("[data-testid='structure-kit-db-empty']")).toBeNull();
+    const note = host.querySelector("[data-testid='structure-kit-source-empty']");
+    expect(note).not.toBeNull();
+    expect(note!.textContent).toContain("실내 오브젝트");
+  });
+
+  // h. 세 원본 칩이 모두 있고, 표시된 개수가 그 원본이 나열하는 행 수와 같다.
+  it("원본 칩 세 개가 모두 있고 개수가 실제 행 수와 일치한다", () => {
+    const sources = ["builtin", "interior", "user"] as const;
+
+    const interiorHost = renderOnInteriorAlbum();
+    for (const source of sources) {
+      clickSource(interiorHost, source);
+      const chip = interiorHost.querySelector(`[data-testid='structure-kit-source-${source}']`)!;
+      const shown = Number.parseInt(chip.textContent.match(/(\d+)\s*$/u)![1]!, 10);
+      expect(interiorHost.querySelectorAll(".structure-kit-row").length).toBe(shown);
+    }
+    clickSource(interiorHost, "interior");
+    const interiorChip = interiorHost.querySelector("[data-testid='structure-kit-source-interior']")!;
+    expect(Number.parseInt(interiorChip.textContent.match(/(\d+)\s*$/u)![1]!, 10)).toBe(
+      INTERIOR_OBJECT_CATALOG.length,
+    );
+
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내가 저장한 킷"));
+
+    const townHost = new FakeElement("div");
+    renderStructureKitsTab(townHost, () => {});
+    // 앨범 선택은 세션에 남으므로(실내 앨범) 마을 앨범을 명시적으로 고른다.
+    townHost.querySelector(`[data-testid='structure-kit-tileset-${DEFAULT_TILESET_ID}']`)!.click();
+    for (const source of sources) {
+      clickSource(townHost, source);
+      const chip = townHost.querySelector(`[data-testid='structure-kit-source-${source}']`)!;
+      const shown = Number.parseInt(chip.textContent.match(/(\d+)\s*$/u)![1]!, 10);
+      expect(townHost.querySelectorAll(".structure-kit-row").length).toBe(shown);
+    }
+    clickSource(townHost, "user");
+    expect(townHost.querySelector("[data-testid='structure-kit-db-kit_mine']")).not.toBeNull();
+    expect(townHost.querySelector("[data-testid='structure-kit-db-kit_house_blue-stone']")).toBeNull();
+  });
+
+  // i. 실내 오브젝트 인스펙터: 삭제/이름 변경 없음.
+  it("실내 오브젝트를 선택하면 삭제 없는 인스펙터가 렌더된다", () => {
+    const host = renderOnInteriorAlbum();
+    clickSource(host, "interior");
+    host.querySelector("[data-testid='structure-kit-object-bookshelf']")!.click();
+
+    const inspector = host.querySelector("[data-testid='structure-kit-inspector-bookshelf']");
+    expect(inspector).not.toBeNull();
+    expect(inspector!.textContent).toContain("책장");
+    expect(inspector!.textContent).toContain("3×3");
+    expect(inspector!.textContent).toContain("하층");
+    expect(inspector!.textContent).toContain("서재");
+    expect(inspector!.textContent).toContain("북쪽 벽");
+    expect(inspector!.querySelector("canvas")).not.toBeNull();
+
+    expect(host.querySelector("[data-testid='structure-kit-db-delete-bookshelf']")).toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-db-name-bookshelf']")).toBeNull();
+    const hint = host.querySelector("[data-testid='structure-kit-object-hint']");
+    expect(hint).not.toBeNull();
+    expect(hint!.textContent).toContain("코드");
+  });
+});
+
+describe("structureKitDbTab 방 종류 테마 문법 뷰", () => {
+  function renderInteriorThemeView(): FakeElement {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)!.click();
+    host.querySelector("[data-testid='structure-kit-source-interior']")!.click();
+    return host;
+  }
+
+  // j. 일곱 테마 카드가 실내 앨범에 모두 렌더된다.
+  it("실내 앨범에서 일곱 개 방 종류 카드가 모두 렌더된다", () => {
+    const host = renderInteriorThemeView();
+
+    expect(INTERIOR_ROOM_THEMES.length).toBe(7);
+    for (const theme of INTERIOR_ROOM_THEMES) {
+      const card = host.querySelector(`[data-testid='structure-kit-theme-${theme}']`);
+      expect(card, theme).not.toBeNull();
+      expect(card!.textContent).toContain(INTERIOR_ROOM_THEME_CATALOG[theme].label);
+    }
+    expect(host.querySelectorAll(".structure-kit-theme-card").length).toBe(7);
+
+    // 필수 역할이 없는 방(창고·복도)은 빈 줄이 아니라 한국어 안내를 둔다.
+    for (const theme of ["storage", "corridor"] as const) {
+      const card = host.querySelector(`[data-testid='structure-kit-theme-${theme}']`)!;
+      expect(card.querySelector("canvas")).toBeNull();
+      expect(card.textContent).toContain("필수 오브젝트가 없는 방입니다");
+    }
+  });
+
+  // k. 침실 카드는 침대 역할 오브젝트를, 선술집 카드는 탁자·카운터 두 역할을 덮는다.
+  it("침실 카드는 침대 역할 썸네일을, 선술집 카드는 탁자·카운터 역할을 함께 보여준다", () => {
+    const host = renderInteriorThemeView();
+
+    const bedroom = host.querySelector("[data-testid='structure-kit-theme-bedroom']")!;
+    const bedSlot = bedroom.querySelector("[data-testid='structure-kit-theme-bedroom-role-bed']");
+    expect(bedSlot).not.toBeNull();
+    expect(bedSlot!.querySelector("canvas")).not.toBeNull();
+    expect(bedroom.textContent).toContain("침대");
+
+    const tavern = host.querySelector("[data-testid='structure-kit-theme-tavern']")!;
+    const tableSlot = tavern.querySelector("[data-testid='structure-kit-theme-tavern-role-table']");
+    const counterSlot = tavern.querySelector("[data-testid='structure-kit-theme-tavern-role-counter']");
+    expect(tableSlot).not.toBeNull();
+    expect(counterSlot).not.toBeNull();
+    expect(tableSlot!.querySelector("canvas")).not.toBeNull();
+    expect(counterSlot!.querySelector("canvas")).not.toBeNull();
+    expect(tavern.textContent).toContain("탁자");
+    expect(tavern.textContent).toContain("카운터");
+    // 제안 분위기도 한국어로 노출된다(선술집: rustic|luxury).
+    expect(tavern.textContent).toContain("소박함");
+    expect(tavern.textContent).toContain("화려함");
+  });
+
+  // l. 서재 카드를 고르면 표가 서재 테마 오브젝트로만 좁혀지고, 다시 누르면 풀린다.
+  it("서재 카드를 고르면 표가 서재 테마 오브젝트로 좁혀지고 다시 누르면 해제된다", () => {
+    const host = renderInteriorThemeView();
+
+    expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).not.toBeNull();
+
+    host.querySelector("[data-testid='structure-kit-theme-study']")!.click();
+
+    expect(host.querySelector("[data-testid='structure-kit-object-bookshelf']")).not.toBeNull();
+    // bed_h는 침실 전용이라 서재 필터에서 사라진다.
+    expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).toBeNull();
+    expect(host.querySelectorAll(".structure-kit-row").length).toBe(interiorObjectsForTheme("study").length);
+
+    host.querySelector("[data-testid='structure-kit-theme-study']")!.click();
+    expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).not.toBeNull();
+    expect(host.querySelectorAll(".structure-kit-row").length).toBe(INTERIOR_OBJECT_CATALOG.length);
   });
 });
