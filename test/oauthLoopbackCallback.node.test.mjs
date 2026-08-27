@@ -133,4 +133,33 @@ describe("OAuth 루프백 콜백 서버", () => {
     moved.close();
     blocker.close();
   });
+
+  // 실측: 이 머신의 `getent hosts localhost` 는 ::1 을 먼저 준다. redirect_uri 의 호스트명이
+  // localhost 이므로(Codex 는 허용목록이 그 값으로 고정) IPv4 만 듣고 있으면 브라우저는
+  // [::1]:PORT 로 붙고 콜백이 영원히 도착하지 않는다.
+  it("localhost 가 ::1 로 풀리는 호스트에서도 콜백을 받는다", async () => {
+    const handle = await startOAuthCallbackServer({ preferredPort: 0, expectedState: "v6" });
+    assert.ok(handle.hosts.includes("127.0.0.1"), `hosts=${JSON.stringify(handle.hosts)}`);
+
+    const viaIpv6 = handle.hosts.includes("::1");
+    const target = viaIpv6
+      ? `http://[::1]:${handle.port}/oauth-callback?code=v6code&state=v6`
+      : `http://127.0.0.1:${handle.port}/oauth-callback?code=v6code&state=v6`;
+    const response = await fetch(target, { redirect: "manual" });
+    const result = await handle.waitForCode;
+
+    assert.equal(response.status, 200);
+    assert.equal(result.code, "v6code");
+  });
+
+  it("redirectUri 의 localhost 이름으로 실제 연결이 된다", async () => {
+    // 이름 해석 결과가 무엇이든(127.0.0.1 이든 ::1 이든) 우리가 그 주소를 듣고 있어야 한다.
+    const handle = await startOAuthCallbackServer({ preferredPort: 0, expectedState: "name" });
+
+    const response = await fetch(`${handle.redirectUri}?code=namecode&state=name`, { redirect: "manual" });
+    const result = await handle.waitForCode;
+
+    assert.equal(response.status, 200);
+    assert.equal(result.code, "namecode");
+  });
 });

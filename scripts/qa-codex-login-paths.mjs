@@ -52,8 +52,26 @@ async function openSettings() {
   await page.getByTestId("ai-oh-my-pi-provider").waitFor({ state: "visible", timeout: 30_000 });
 }
 
+// 상태 배지의 tone 이 checking 을 벗어날 때까지 기다린다 — 시간이 아니라 상태를 기다린다.
+async function settledTone() {
+  await page.waitForFunction(
+    () => document.querySelector('[data-testid="ai-oauth-status"]')?.dataset.tone !== "checking",
+    null,
+    { timeout: 60_000 },
+  );
+  return page.getByTestId("ai-oauth-status").getAttribute("data-tone");
+}
+
 async function startLogin(provider) {
   await page.getByTestId("ai-oh-my-pi-provider").selectOption(provider);
+  // 이 머신에는 이미 자격이 있어(런타임이 Codex CLI 자격도 채택한다) 로그인 버튼이
+  // "연결 확인" 으로 동작한다. 로그인 경로를 보려면 먼저 연결을 끊어야 한다.
+  await settledTone();
+globalThis.disconnect = page.getByTestId("ai-auth-disconnect");
+  if (await disconnect.isVisible()) {
+    await disconnect.click();
+    await settledTone();
+  }
   await page.getByTestId("ai-oauth-login").click();
   // 시간을 기다리지 않는다: 로그인 응답이 도착하면 device 블록이 보이게 된다.
   await page.getByTestId("ai-oauth-device-code").waitFor({ state: "visible", timeout: 60_000 });

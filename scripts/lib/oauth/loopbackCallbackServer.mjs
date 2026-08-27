@@ -9,11 +9,40 @@
 // 를 만들어야 한다. Google 은 루프백 리다이렉트의 포트를 고정하지 않는다(RFC 8252 §7.3).
 // 포트를 고정해 두면 로그인은 백그라운드에서 EADDRINUSE 로 죽고, 화면에는 성공처럼 보인다.
 import { createServer } from "node:http";
+import { networkInterfaces } from "node:os";
 
 const DEFAULT_PORT = 51121;
 const DEFAULT_PATH = "/oauth-callback";
 const DEFAULT_TIMEOUT_MS = 300_000;
 const HOSTNAME = "127.0.0.1";
+const IPV6_HOSTNAME = "::1";
+
+/**
+ * redirect_uri 의 호스트명은 `localhost` 다(Codex 는 허용목록이 그 값으로 고정이다).
+ * 그런데 `localhost` 는 이 개발 머신에서 **::1 로 먼저** 풀린다(getent hosts localhost → ::1).
+ * IPv4 만 듣고 있으면 브라우저는 [::1]:PORT 로 붙고 콜백은 영원히 도착하지 않는다.
+ * 그래서 두 루프백 주소를 같은 포트로 함께 듣는다. 0.0.0.0/:: 로 넓히지는 않는다 —
+ * LAN 의 아무나 인가 코드를 밀어넣을 수 있게 된다.
+ */
+function ipv6LoopbackAvailable() {
+  for (const addresses of Object.values(networkInterfaces())) {
+    for (const address of addresses ?? []) {
+      if (address.internal && address.family === "IPv6") return true;
+    }
+  }
+  return false;
+}
+
+function listenOn(server, port, hostname) {
+  return new Promise((resolve, reject) => {
+    const onError = (cause) => reject(cause);
+    server.once("error", onError);
+    server.listen(port, hostname, () => {
+      server.removeListener("error", onError);
+      resolve(server.address().port);
+    });
+  });
+}
 
 const PAGE = (title, message) =>
   `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${title}</title>` +
@@ -57,7 +86,7 @@ function listenWithFallback(server, preferredPort, allowPortFallback) {
  * 콜백 대기를 시작한다. 반환 시점에 포트는 이미 확보돼 있다.
  *
  * @param {{ preferredPort?: number, callbackPath?: string, expectedState?: string, timeoutMs?: number, signal?: AbortSignal, allowPortFallback?: boolean }} [options]
- * @returns {Promise<{ port: number, redirectUri: string, waitForCode: Promise<{ code: string, state: string }>, close: () => void }>}
+ * @returns {Promise<{ port: number, hosts: string[], redirectUri: string, waitForCode: Promise<{ code: string, state: string }>, close: () => void }>}
  */
 export async function startOAuthCallbackServer(options = {}) {
   const {
@@ -76,7 +105,7 @@ export async function startOAuthCallbackServer(options = {}) {
   // 아무도 await 하지 않아도 unhandled rejection 으로 프로세스를 죽이지 않는다.
   waitForCode.catch(() => {});
 
-  const server = createServer((req, res) => {
+  const handleRequest = (req, res) => {
     const url = new URL(req.url ?? "/", `http://${HOSTNAME}`);
     if (url.pathname !== callbackPath) {
       res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
@@ -104,7 +133,10 @@ export async function startOAuthCallbackServer(options = {}) {
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     res.end(PAGE("로그인 완료", "이 탭은 닫아도 됩니다."), () => finish(() => settle.resolve({ code, state })));
-  });
+  };
+
+  const server = createServer(handleRequest);
+  const secondary = [];
 
   let settled = false;
   let timer;
@@ -114,6 +146,11 @@ export async function startOAuthCallbackServer(options = {}) {
     settled = true;
     if (timer) clearTimeout(timer);
     signal?.removeEventListener("abort", onAbort);
+    for (const extra of secondary) {
+      extra.closeAllConnections?.();
+      extra.close();
+    }
+    secondary.length = 0;
     server.closeAllConnections?.();
     server.close(() => apply());
   }
@@ -131,6 +168,18 @@ export async function startOAuthCallbackServer(options = {}) {
   // 대체 포트 재시도 양쪽에 도달해, 이미 정리된 것으로 표시된 서버가 새 포트에 다시 바인드되고
   // 아무도 닫지 못한다(실측: 살아 있는 리스닝 소켓이 이벤트 루프를 104초 붙잡았다).
   const port = await listenWithFallback(server, preferredPort, allowPortFallback);
+  const hosts = [HOSTNAME];
+  if (ipv6LoopbackAvailable()) {
+    // 최선 노력이다: ::1 바인드가 실패해도 IPv4 경로는 살아 있으므로 로그인을 중단시키지 않는다.
+    const ipv6Server = createServer(handleRequest);
+    try {
+      await listenOn(ipv6Server, port, IPV6_HOSTNAME);
+      secondary.push(ipv6Server);
+      hosts.push(IPV6_HOSTNAME);
+    } catch {
+      ipv6Server.close();
+    }
+  }
   signal?.addEventListener("abort", onAbort, { once: true });
   server.on("error", (cause) => finish(() => settle.reject(cause)));
 
@@ -141,6 +190,7 @@ export async function startOAuthCallbackServer(options = {}) {
 
   return {
     port,
+    hosts,
     redirectUri: `http://localhost:${port}${callbackPath}`,
     waitForCode,
     close: () => finish(() => settle.reject(new Error("OAuth callback server closed"))),
