@@ -242,7 +242,7 @@
 }
 
 .tileset-db-preview-scale button.scroll {
-  font-family: "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-mono);
   min-width: 24px;
   padding: 0 5px;
 }

@@ -613,7 +613,7 @@
 
   .database-modal-body .db-common-event-editor :is(input, select, button, .btn) {
     box-sizing: border-box;
-    font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-ui);
     min-width: 0;
   }
 

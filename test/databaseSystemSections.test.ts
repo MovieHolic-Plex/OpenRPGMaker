@@ -38,6 +38,7 @@ const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: st
   { slug: "overview", testid: "db-system-studio" },
   { slug: "party", testid: "db-picker-system-start-actor" },
   { slug: "display", testid: "db-field-system-resolution-preset" },
+  { slug: "font", testid: "db-field-system-font-ui" },
   { slug: "resources", testid: "db-field-title-resource" },
   { slug: "startup", testid: "db-field-system-battle-flow" },
   { slug: "optin", testid: "db-field-system-skill-system" },
@@ -60,13 +61,14 @@ describe("database system section navigation", () => {
     cleanupDom = undefined;
   });
 
-  it("renders exactly 9 section nav buttons in order", () => {
+  it("renders exactly 10 section nav buttons in order", () => {
     const host = renderSystem();
     const buttons = sectionNavButtons(host);
     expect(buttons.map((button) => button.dataset.testid)).toEqual([
       "db-system-nav-overview",
       "db-system-nav-party",
       "db-system-nav-display",
+      "db-system-nav-font",
       "db-system-nav-resources",
       "db-system-nav-startup",
       "db-system-nav-optin",
@@ -78,6 +80,7 @@ describe("database system section navigation", () => {
       "개요",
       "초기 파티",
       "화면",
+      "폰트",
       "리소스",
       "시작 설정",
       "기능 확장",

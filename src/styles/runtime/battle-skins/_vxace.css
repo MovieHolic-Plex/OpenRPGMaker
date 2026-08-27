@@ -40,9 +40,9 @@
   --vxace-frame-dark: rgba(18, 22, 28, 0.9);
   --vxace-muted: #cfd8e8;
   /* 참조 화면의 글자는 픽셀 폰트가 아니라 안티에일리어싱된 고딕체다(확대 대조로 확인).
-     battle.css 가 쓰는 토큰을 이 스킨 범위에서만 부드러운 산세리프로 바꾼다 —
+     이 스킨은 UI 토큰(var(--font-ui))을 빌려 battle.css 가 쓰는 토큰을 부드러운 산세리프로 바꾼다 —
      기본값 Galmuri 는 다른 11종 스킨에서 그대로 쓰인다. */
-  --runtime-pixel-font: "Malgun Gothic", "Noto Sans KR", "Meiryo", "Hiragino Sans", system-ui, sans-serif;
+  --runtime-pixel-font: var(--font-ui);
   /* 셀 폭 = (640 − 셀 간격 4px × 3) / 4 = 157px. 얼굴 배경 크롭 계산에도 쓴다. */
   --vxace-cell-w: 157px;
   /* 모든 오버레이 글자에 쓰는 검정 아웃라인 — 밝은 필드/얼굴 위에서 읽히게 한다. */

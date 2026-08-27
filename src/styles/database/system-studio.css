@@ -24,7 +24,7 @@
   border-radius: 10px !important;
   box-shadow: var(--db-studio-shadow-pop) !important;
   color: var(--db-studio-text-1) !important;
-  font-family: "Malgun Gothic", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  font-family: var(--font-ui) !important;
 }
 
 .database-modal-backdrop:has(.db-system-studio) .database-modal-header {
@@ -335,7 +335,7 @@
   .db-system-studio-state-name {
     align-items: center;
     display: flex;
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: var(--font-mono);
     gap: 9px;
     min-width: 0;
     overflow: hidden;
@@ -498,7 +498,7 @@
 
   .db-system-studio-preview-stage strong {
     color: #fff;
-    font-family: Georgia, "Noto Serif KR", serif;
+    font-family: var(--font-serif);
     font-size: 21px;
     letter-spacing: 0.08em;
     margin-bottom: 22px;

@@ -70,10 +70,13 @@
   --transition-fast: 120ms ease;
   --transition-med: 160ms ease;
 
-  --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic",
-    -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas,
-    monospace;
+  /* 글꼴 단일 진실 공급원. 값은 src/project/fontRegistry.ts 의 기본 스택과 글자 단위로 같아야
+     하며 test/systemFontTheme.test.ts 가 그 일치를 검사한다. 저작자가 DB → 시스템 → 폰트에서
+     고른 값은 applyProjectFontTheme 이 :root 인라인 스타일로 이 세 토큰을 덮어쓴다. */
+  --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --font-pixel: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
+  --font-serif: Georgia, "Noto Serif KR", serif;
 
   --bp-sm: 640px;
   --bp-md: 900px;

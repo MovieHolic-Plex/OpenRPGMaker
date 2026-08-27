@@ -89,7 +89,7 @@
   border-radius: var(--radius);
   background: var(--accent-soft);
   color: var(--text);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   padding: var(--space-2) var(--space-3);
   pointer-events: none;

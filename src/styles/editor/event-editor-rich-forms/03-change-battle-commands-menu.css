@@ -23,7 +23,7 @@
 
 .change-battle-commands-slot .n {
   color: var(--text-3, #6B5F52);
-  font-family: ui-monospace, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
 }
 

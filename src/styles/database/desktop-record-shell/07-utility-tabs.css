@@ -11,7 +11,7 @@
     box-shadow: 0 22px 60px rgba(60, 48, 32, 0.14);
     color: var(--text-1);
     display: grid;
-    font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-ui);
     grid-template-rows: auto auto minmax(0, 1fr) auto;
     max-height: calc(100vh - 48px);
     overflow: hidden;

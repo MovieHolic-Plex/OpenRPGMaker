@@ -67,7 +67,7 @@
 | `--shadow-pop` / `--shadow-modal` | `rgba(60, 48, 32, 0.10-0.18)` 웜 low-alpha 스택 |
 | `--focus-ring` | `box-shadow: var(--focus-ring)` 용 (`rgba(74,87,214,0.45)`) / `--focus-outline` = `2px solid var(--accent)` |
 | `--transition-fast / med` | 120ms / 160ms ease |
-| `--font-ui` / `--font-mono` | system-ui+Pretendard 스택 / 모노 (외부 폰트 로드 금지) |
+| `--font-ui` / `--font-mono` / `--font-pixel` / `--font-serif` | 네 개가 **글꼴 단일 진실 공급원**. UI 산세리프 / 모노 / 런타임 픽셀 / 세리프 (외부 폰트 로드 금지 — 픽셀 글꼴은 `public/assets/fonts/` 번들 woff2) |
 | `--scrollbar-thumb(-hover)` | `rgba(42,37,33,0.22)` / `0.36` — 전역 기본이 index.css 하단에 이미 있음 (thin+라운드) |
 | `--brand-blue` | `#4A57D6` (= accent) |
 | `--empty-icon-bg/border/color` | `rgba(74,87,214,0.10)` / `0.28` / `#4A57D6` |
@@ -132,8 +132,9 @@ background: var(--success-muted); border: 1px solid var(--success); color: var(-
 3. **:root 에서 `--accent`, `--danger`, `--bg`, `--text` 같은 공용 이름 재정의 금지** — 전역 스코프라 앱 전체가 물든다. 영역 전용 변수는 `--rm2k3-enemy-*` 처럼 네임스페이스 프리픽스.
 4. **외부 리소스(웹폰트/CDN) 금지** — 오프라인 LAN 환경.
 5. 레이아웃 치수(width/height/inset/grid 골격)는 보수적으로 — 색/보더/라운드/그림자/타이포 중심.
-6. `src/styles/runtime/` 와 `dialogue.css` 의 인게임 런타임 look 은 에디터 셸 토큰과 분리한다. 런타임 게임 표면은 `src/styles/runtime/system.css` 의 `--runtime-*` 토큰(픽셀 폰트, 9-slice 윈도우 스킨)을 사용하고, 크림 에디터 토큰을 창 프레임/폰트에 끌어오지 않는다.
-7. `database/tabs-b-assistant-panel.css` 는 p2-assistant 소유 — 건드리지 말 것.
+6. `src/styles/runtime/` 와 `dialogue.css` 의 인게임 런타임 look 은 에디터 셸 토큰과 분리한다. 런타임 게임 표면은 `src/styles/runtime/system.css` 의 `--runtime-*` 토큰(9-slice 윈도우 스킨)을 사용하고, 크림 에디터 토큰을 창 프레임에 끌어오지 않는다. **글꼴은 예외다** — `--runtime-pixel-font` 는 `var(--font-pixel)` 별칭이며, 글꼴만은 전 영역이 §6 의 네 토큰을 공유한다.
+7. **`font-family` 에 리터럴 글꼴 스택 금지.** 소비지점은 `var(--font-ui|--font-mono|--font-pixel|--font-serif)` 또는 `inherit` 만 쓴다. 의미 있는 별칭 한 단계(`--runtime-pixel-font: var(--font-pixel)`)는 허용되지만, 별칭이 리터럴 스택을 담는 것은 금지다 — `--mk-mono` 가 실제로 그렇게 네 번째 진실 공급원으로 숨어 있었다. `test/fontFamilyTokenGuard.test.ts` 가 별칭 체인을 끝까지 따라가며 이 규칙을 기계로 고정한다.
+8. `database/tabs-b-assistant-panel.css` 는 p2-assistant 소유 — 건드리지 말 것.
 
 ## 5. 런타임 대화창
 

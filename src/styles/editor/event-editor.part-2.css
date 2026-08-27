@@ -266,7 +266,7 @@
 
 .event-contents-fieldset .cmd-empty-line {
   cursor: default;
-  font-family: "Malgun Gothic", sans-serif;
+  font-family: var(--font-ui);
 }
 
 .event-contents-fieldset .cmd-head {
@@ -861,7 +861,7 @@
 }
 
 .weighted-branch-weight-input {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: var(--font-mono);
   text-align: center;
 }
 

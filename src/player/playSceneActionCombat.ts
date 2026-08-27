@@ -1,4 +1,5 @@
 import { store } from "@/project/store";
+import { projectFontStack } from "@/project/fontRegistry";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { swingArcCells, cellInArc } from "@/battle/action/hitbox";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
@@ -539,7 +540,7 @@ function strokeArcBand(
 
 function spawnDamageNumber(scene: PlaySceneContext, worldX: number, worldY: number, text: string, color: string): void {
   const label = scene.add.text(worldX, worldY, text, {
-    fontFamily: "monospace",
+    fontFamily: projectFontStack(store.getCurrent().system.fonts, "mono"),
     fontSize: "12px",
     fontStyle: "bold",
     color,
