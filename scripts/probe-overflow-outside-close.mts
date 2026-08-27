@@ -24,7 +24,9 @@ await page.addInitScript((mode) => {
 }, argMode);
 await page.goto(`http://127.0.0.1:${argPort}/?devProject=1&marketTown=1`, { waitUntil: "domcontentloaded" });
 await page.locator('[data-testid="edit-canvas"]').waitFor({ state: "visible", timeout: 90_000 });
-await page.waitForTimeout(900);
+// 고정 대기(900ms)는 느린 머신에서 트리거가 아직 붙지 않은 채로 클릭해 경주에 진다.
+// 조건으로 기다린다.
+await page.locator('[data-testid="oprn-tool-overflow"]').waitFor({ state: "visible", timeout: 30_000 });
 
 const isOpen = () => page.evaluate(() => Boolean(document.querySelector('[data-testid="toolbar-overflow-dropdown"]')));
 const open = async () => {

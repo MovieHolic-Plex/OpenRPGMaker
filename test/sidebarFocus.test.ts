@@ -115,7 +115,7 @@ describe("sidebarFocus - Focus survival & Roving Tabindex", () => {
   });
 
   describe("applyRovingTabindex & keyboard navigation", () => {
-    it("does not apply roving tabindex to buttons inside toolbar-overflow-dropdown and does not hijack arrow keys inside dropdown", () => {
+    it("드롭다운 버튼은 roving tabindex 를 받지 않아 Tab 순서에 남고, 그 안에서 누른 화살표는 도구막대 포커스를 옮기지 않는다", () => {
       const toolbar = document.createElement("div");
       toolbar.setAttribute("role", "toolbar");
 

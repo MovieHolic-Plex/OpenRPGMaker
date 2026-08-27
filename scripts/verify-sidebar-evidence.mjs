@@ -24,7 +24,7 @@ const load = (tag, kind) => {
   // 기능 도달성 프로브는 뷰포트를 파일명에 넣는다 — 1440x900 만 재면 좁은 화면의 클리핑을
   // 놓치기 때문이다(리뷰어 B1). 오래된 이름은 절대 대체로 읽지 않는다: 최종 CSS 를 설명하지
   // 않는 파일로 판정하면 17/17 이 거짓이 된다(리뷰어 B5).
-  const file = kind === "overflow-features"
+  const file = kind === "overflow-features" || kind === "anchor-stability"
     ? join(DIR, `${tag}-${MODE}-${VIEWPORT}-${kind}.json`)
     : join(DIR, `${tag}-${MODE}-${kind}.json`);
   if (!existsSync(file)) return { missing: file };
@@ -106,6 +106,23 @@ if (!afterFeat.missing) {
   );
 } else {
   check("C1d", "갇힌 기능 9개 도달성", false, `after 기능 프로브 없음: ${afterFeat.missing}`);
+}
+
+/* 앵커 정렬은 히트테스트로 잡히지 않는다: 메뉴가 뷰포트 폭만큼 늘어나도 항목은 그 "안"에
+   있어 전부 reachable 로 나온다(이 브랜치에서 실제로 그렇게 18/18 이 나왔다). 그래서 트리거
+   정렬 증거를 판정에 포함한다. */
+const anchor = load("after", "anchor-stability");
+if (anchor.missing) {
+  check("C1f", "메뉴가 트리거에 정렬되어 있다", false, `앵커 증거 없음: ${anchor.missing}`);
+} else {
+  const dx = Number(/dxRight=(-?\d+)/.exec(anchor.afterOpen ?? "")?.[1] ?? "NaN");
+  const dxResize = Number(/dxRight=(-?\d+)/.exec(anchor.afterResize ?? "")?.[1] ?? "NaN");
+  check(
+    "C1f",
+    "메뉴가 트리거에 정렬되고 스크롤·리사이즈 후에도 유지된다",
+    Number.isFinite(dx) && Math.abs(dx) <= 8 && Number.isFinite(dxResize) && Math.abs(dxResize) <= 8,
+    `open=${anchor.afterOpen} | resize=${anchor.afterResize} | listeners=${anchor.listenerGrowth}`,
+  );
 }
 
 const failed = results.filter((r) => !r.pass);

@@ -55,12 +55,7 @@
     padding: 2px;
     position: relative;
     width: 100%;
-    /* fixed 로 띄운 ⋯ 메뉴가 조상 클리핑을 벗어나면, 이번엔 쌓임 순서에서 조수 카드에 진다:
-       .ai-chat-float-host 가 z=32 인데 이 줄은 z=3(--z-canvas-decor) 짜리 쌓임 문맥이라
-       메뉴가 그 안에 갇힌다(실측: 항목 전부 blocked-by:DIV.ai-history-log-mount).
-       좌패널과 캔버스는 겹치지 않으므로 이 줄을 플라이아웃 층으로 올려도 다른 것을 가리지
-       않는다 — 초보 레일 플라이아웃이 쓰는 층과 같은 토큰이다. */
-    z-index: var(--z-flyout);
+    z-index: var(--z-canvas-decor);
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-scroll {
