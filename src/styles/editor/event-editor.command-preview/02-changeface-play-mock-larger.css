@@ -48,9 +48,9 @@
 }
 .ecp-message-window .event-command-face-crop {
   background-image: var(--face-url);
-  background-position: var(--face-scaled-x) var(--face-scaled-y);
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
+  background-size: contain;
   border: 1px solid var(--border-default);
   border-radius: 2px;
   height: var(--face-display-height, 96px);

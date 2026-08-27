@@ -59,7 +59,8 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   return project;
 }
 
-export function validateProjectV3(data: JsonRecord): Project {
+/** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
+export function validateProjectV4(data: JsonRecord): Project {
   validateMeta(data.meta);
   validateAssets(data.assets);
   validateResourceProfiles(data.resourceProfiles);

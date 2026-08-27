@@ -168,17 +168,15 @@ export function renderClassicPageTabStrip(
     })
   );
 
-  const commandCount = activePage.commands.length;
   const warningCount = validation?.warningCount ?? 0;
-  pageButtons.append(
-    el("div", {
-      class: "pages-meta",
-      children: [
-        el("span", { text: `명령 ${commandCount}` }),
-        ...(warningCount > 0 ? [el("span", { class: "warn-text", text: `경고 ${warningCount}` })] : []),
-      ],
-    })
-  );
+  if (warningCount > 0) {
+    pageButtons.append(
+      el("div", {
+        class: "pages-meta",
+        children: [el("span", { class: "warn-text", text: `경고 ${warningCount}` })],
+      })
+    );
+  }
 
   return pageButtons;
 }
@@ -727,6 +725,47 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   return wrapPageSettingsAsAccordion(wrap, page, conditions);
 }
 
+type EventRailGroupSpec = {
+  readonly slug: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly open: boolean;
+};
+
+function railGroup(spec: EventRailGroupSpec, body: HTMLElement): HTMLDetailsElement {
+  return el("details", {
+    class: `event-editor-settings-accordion-group${spec.open ? " is-open" : ""}`,
+    attrs: spec.open ? { open: "" } : {},
+    dataset: { testid: `evt-rail-group-${spec.slug}`, railGroup: spec.slug },
+    children: [
+      el("summary", {
+        class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
+        children: [
+          el("span", { class: "event-editor-settings-accordion-title", text: spec.title }),
+          el("span", {
+            class: "event-editor-settings-accordion-meta",
+            text: spec.summary,
+            dataset: { testid: `evt-rail-meta-${spec.slug}` },
+          }),
+        ],
+      }),
+      body,
+    ],
+  }) as HTMLDetailsElement;
+}
+
+export function appendEventRailGroup(
+  propsRoot: HTMLElement,
+  spec: EventRailGroupSpec,
+  nodes: readonly HTMLElement[],
+): void {
+  const rail = propsRoot.querySelector<HTMLElement>(".event-editor-settings-accordion");
+  if (!rail || nodes.length === 0) return;
+  const body = el("div", { class: "event-editor-settings-accordion-body" });
+  nodes.forEach((node) => body.append(node));
+  rail.append(railGroup(spec, body));
+}
+
 function wrapPageSettingsAsAccordion(
   source: HTMLElement,
   page: EventPage,
@@ -760,23 +799,7 @@ function wrapPageSettingsAsAccordion(
       claimed.add(host);
       body.append(host);
     }
-    rail.append(
-      el("details", {
-        class: `event-editor-settings-accordion-group${group.open ? " is-open" : ""}`,
-        attrs: group.open ? { open: "" } : {},
-        dataset: { testid: `evt-rail-group-${group.slug}` },
-        children: [
-          el("summary", {
-            class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
-            children: [
-              el("span", { class: "event-editor-settings-accordion-title", text: group.title }),
-              el("span", { class: "event-editor-settings-accordion-meta", text: group.summary }),
-            ],
-          }),
-          body,
-        ],
-      })
-    );
+    rail.append(railGroup(group, body));
   }
   Array.from(source.children).forEach((child) => {
     if (!(child instanceof HTMLElement) || child === rail) return;

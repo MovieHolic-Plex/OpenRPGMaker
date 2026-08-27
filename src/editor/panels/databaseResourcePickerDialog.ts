@@ -7,20 +7,15 @@ import {
   CHARSET_SHEET_ROWS,
   EASYRPG_BACKDROP_ASSETS,
   EASYRPG_BATTLE_ASSETS,
-  EASYRPG_FACESET_ASSETS,
   EASYRPG_MONSTER_ASSETS,
   EASYRPG_SYSTEM2_ASSETS,
   EASYRPG_SYSTEM_ASSETS,
   EASYRPG_TITLE_ASSETS,
   EASYRPG_MUSIC_ASSETS,
   EASYRPG_SOUND_ASSETS,
-  FACESET_COLUMNS,
-  FACESET_FACE_COUNT,
-  FACESET_FACE_HEIGHT,
-  FACESET_FACE_WIDTH,
-  FACESET_ROWS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
+import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
@@ -57,7 +52,6 @@ export type DatabaseResourcePickerKind =
 
 export type DatabaseResourcePickerResult = {
   readonly resourceId: string;
-  readonly faceIndex?: number;
   readonly characterIndex?: number;
   readonly graphicHue?: number;
 };
@@ -66,7 +60,6 @@ export type OpenDatabaseResourcePickerOptions = {
   readonly kind: DatabaseResourcePickerKind;
   readonly title: string;
   readonly currentId?: string;
-  readonly currentFaceIndex?: number;
   readonly currentCharacterIndex?: number;
   readonly currentHue?: number;
   readonly allowHue?: boolean;
@@ -98,7 +91,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   let selectedId = options.currentId && catalog.some((entry) => entry.id === options.currentId)
     ? options.currentId
     : catalog[0]?.id ?? options.currentId ?? "";
-  let faceIndex = clampIndex(options.currentFaceIndex ?? 0, FACESET_FACE_COUNT - 1);
   let characterIndex = clampIndex(options.currentCharacterIndex ?? 0, CHARSET_CHARACTER_COUNT - 1);
   let hue = clampHue(options.currentHue ?? 0);
 
@@ -120,7 +112,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     });
     list.replaceChildren(
       ...filtered.map((entry) =>
-        resourceButton(entry, selectedId, options.kind, project, faceIndex, characterIndex, () => {
+        resourceButton(entry, selectedId, options.kind, project, characterIndex, () => {
           selectedId = entry.id;
           refreshList();
           refreshPreview();
@@ -136,7 +128,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   const refreshPreview = (): void => {
     preview.replaceChildren(
       resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", {
-        faceIndex,
         characterIndex,
         hue: options.allowHue ? hue : undefined,
       })
@@ -145,15 +136,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
 
   const refreshIndexPanel = (): void => {
     indexPanel.replaceChildren();
-    if (options.kind === "faceset") {
-      indexPanel.append(
-        numberControl("얼굴 인덱스", `${prefix}-face-index`, faceIndex, 0, FACESET_FACE_COUNT - 1, (value) => {
-          faceIndex = value;
-          refreshList();
-          refreshPreview();
-        })
-      );
-    }
     if (options.kind === "charset") {
       indexPanel.append(
         numberControl("캐릭터 인덱스", `${prefix}-character-index`, characterIndex, 0, CHARSET_CHARACTER_COUNT - 1, (value) => {
@@ -190,7 +172,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         if (!selectedId) return;
         options.onConfirm({
           resourceId: selectedId,
-          faceIndex: options.kind === "faceset" ? faceIndex : undefined,
           characterIndex: options.kind === "charset" ? characterIndex : undefined,
           graphicHue: options.allowHue ? hue : undefined,
         });
@@ -205,7 +186,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       action: () => {
         options.onConfirm({
           resourceId: "",
-          faceIndex: options.kind === "faceset" ? 0 : undefined,
           characterIndex: options.kind === "charset" ? 0 : undefined,
           graphicHue: options.allowHue ? 0 : undefined,
         });
@@ -229,7 +209,6 @@ export function resourcePickerControl(input: {
   readonly allowClear?: boolean;
   readonly allowHue?: boolean;
   readonly currentHue?: number;
-  readonly currentFaceIndex?: number;
   readonly currentCharacterIndex?: number;
   readonly onChange: (result: DatabaseResourcePickerResult) => void;
   readonly rerender: () => void;
@@ -242,7 +221,6 @@ export function resourcePickerControl(input: {
     input.label,
     "db-resource-picker-inline-thumb",
     {
-      faceIndex: input.currentFaceIndex ?? 0,
       characterIndex: input.currentCharacterIndex ?? 0,
       hue: input.allowHue ? input.currentHue : undefined,
     }
@@ -260,7 +238,6 @@ export function resourcePickerControl(input: {
   const commitText = (): void => {
     input.onChange({
       resourceId: idInput.value.trim(),
-      faceIndex: input.currentFaceIndex,
       characterIndex: input.currentCharacterIndex,
       graphicHue: input.currentHue,
     });
@@ -275,7 +252,6 @@ export function resourcePickerControl(input: {
       kind: input.kind,
       title: input.dialogTitle ?? `${input.label} 리소스`,
       currentId: input.resourceId,
-      currentFaceIndex: input.currentFaceIndex,
       currentCharacterIndex: input.currentCharacterIndex,
       currentHue: input.currentHue,
       allowHue: input.allowHue,
@@ -324,7 +300,6 @@ function resourceButton(
   selectedId: string,
   kind: DatabaseResourcePickerKind,
   project: Project,
-  faceIndex: number,
   characterIndex: number,
   onSelect: () => void,
   prefix: string
@@ -334,7 +309,7 @@ function resourceButton(
     attrs: { type: "button", title: `${option.name} (${option.id})` },
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
-      resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { faceIndex, characterIndex }),
+      resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { characterIndex }),
       el("span", { text: studioResourceLabel(option.name, option.id) }),
     ],
     on: { click: onSelect },
@@ -357,7 +332,8 @@ export function listDatabaseResourceOptions(
 
   switch (kind) {
     case "faceset":
-      for (const asset of EASYRPG_FACESET_ASSETS) add(asset.id, asset.name);
+      // 낱장 얼굴 112장. 분할 전 시트 id 는 저장본 호환을 위해 등록만 남고 피커에서는 빠진다.
+      for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
       break;
     case "charset":
       for (const asset of CHARSET_ASSETS) add(asset.id, asset.name);
@@ -433,7 +409,11 @@ export function listDatabaseResourceOptions(
 }
 
 function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: ResourceKind | undefined, id: string): boolean {
-  if (kind === "faceset") return resourceKind === "faceset" || (id.startsWith("generated-actor-") && id.endsWith("-face"));
+  if (kind === "faceset") {
+    // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
+    if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
+    return resourceKind === "faceset" || (id.startsWith("generated-actor-") && id.endsWith("-face"));
+  }
   if (kind === "charset") return resourceKind === "charset" || (id.startsWith("generated-actor-") && id.endsWith("-charset"));
   if (kind === "battleCharset") {
     return resourceKind === "battleCharset" || id === "hero" || (id.startsWith("generated-actor-") && id.endsWith("-battle"));
@@ -506,7 +486,7 @@ function resourceVisual(
   project: Project,
   label: string,
   className: string,
-  crop: { readonly faceIndex: number; readonly characterIndex: number; readonly hue?: number }
+  crop: { readonly characterIndex: number; readonly hue?: number }
 ): HTMLElement {
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
   const url = resolveAssetResourceUrl(resourceId, { project });
@@ -539,20 +519,6 @@ function resourceVisual(
     });
   }
 
-  if (kind === "faceset") {
-    const column = crop.faceIndex % FACESET_COLUMNS;
-    const row = Math.floor(crop.faceIndex / FACESET_COLUMNS);
-    return cropVisual(className, label, url, {
-      x: column * FACESET_FACE_WIDTH,
-      y: row * FACESET_FACE_HEIGHT,
-      width: FACESET_FACE_WIDTH,
-      height: FACESET_FACE_HEIGHT,
-      sheetWidth: FACESET_COLUMNS * FACESET_FACE_WIDTH,
-      sheetHeight: FACESET_ROWS * FACESET_FACE_HEIGHT,
-      scale: 1,
-      hue: crop.hue,
-    });
-  }
   if (kind === "charset") {
     const source = charsetFrameSource({ characterIndex: crop.characterIndex, direction: "down", pattern: 1 });
     return cropVisual(className, label, url, {

@@ -31,7 +31,7 @@ export const PARITY_MATRIX: readonly ParityRow[] = [
   { contentType: "actors", field: "learnedSkills", playerConsumer: "src/battle/battleBattlers.ts#learnedSkillIds", harness: "simulateBattle", status: "planned-T5" },
   { contentType: "actors", field: "classId", playerConsumer: "src/battle/battleBattlers.ts#classId", harness: "simulateBattle", status: "planned-T5" },
   { contentType: "actors", field: "options.dualWield", playerConsumer: "src/battle/battleBattlers.ts#statBonuses", harness: "simulateBattle", status: "planned-T5" },
-  { contentType: "actors", field: "faceIndex/characterIndex", playerConsumer: "src/player/PlayScene.ts#PlayScene", harness: "runSceneTest", status: "gap" },
+  { contentType: "actors", field: "faceResourceId/characterIndex", playerConsumer: "src/player/PlayScene.ts#PlayScene", harness: "runSceneTest", status: "gap" },
 
   { contentType: "classes", field: "battleCommands", playerConsumer: "src/battle/battleCommands.ts#battleCommandsForActor", harness: "simulateBattle", status: "planned-T5" },
   { contentType: "classes", field: "learnedSkills", playerConsumer: "src/battle/battleBattlers.ts#learnedSkillIds", harness: "simulateBattle", status: "planned-T5" },

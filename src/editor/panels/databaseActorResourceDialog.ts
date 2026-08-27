@@ -12,14 +12,12 @@ export function openActorResourceDialog(record: ActorRecord, field: ActorResourc
     kind,
     title: dialogTitle(kind),
     currentId: current[field],
-    currentFaceIndex: current.faceIndex ?? 0,
     currentCharacterIndex: current.characterIndex ?? 0,
     testidPrefix: "db-actor-resource-dialog",
     onConfirm: (result) => {
       if (field === "faceResourceId") {
         updateDatabaseRecord("actors", record.id, {
           faceResourceId: result.resourceId || undefined,
-          faceIndex: result.faceIndex,
         });
       } else if (field === "characterResourceId") {
         updateDatabaseRecord("actors", record.id, {

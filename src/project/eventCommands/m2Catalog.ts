@@ -350,7 +350,6 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
     return [
       { key: "target", label: "주인공", type: "text", defaultValue: "" },
       { key: "value", label: "얼굴 그래픽", type: "text", defaultValue: "" },
-      { key: "faceIndex", label: "얼굴 번호", type: "number", defaultValue: 0 },
     ];
   }
   if (title === "Change Actor Class") {

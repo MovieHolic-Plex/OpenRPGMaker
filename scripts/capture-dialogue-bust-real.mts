@@ -27,7 +27,6 @@ async function main(): Promise<void> {
       mapHeight: 20,
       face: {
         resourceId: "generated-face-actor1-bust",
-        faceIndex: 0,
         position: "left",
         flipHorizontally: false,
       },

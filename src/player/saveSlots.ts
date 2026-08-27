@@ -8,6 +8,7 @@ import {
   type PlaySession,
 } from "@/project/session";
 import { normalizeItemTransitionState } from "@/project/itemTransitions";
+import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
 import {
   economyValueOrUndefined,
   normalizeEconomyValue,
@@ -196,7 +197,6 @@ export type SaveSnapshot = {
     readonly actorNames?: Record<string, string>;
     readonly actorNicknames?: PlaySession["actorNicknames"];
     readonly actorFaceResourceIds?: PlaySession["actorFaceResourceIds"];
-    readonly actorFaceIndices?: PlaySession["actorFaceIndices"];
     readonly actorCharacterResourceIds?: Record<string, string>;
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
@@ -362,7 +362,6 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorNames: structuredClone(session.actorNames),
       actorNicknames: structuredClone(session.actorNicknames),
       actorFaceResourceIds: structuredClone(session.actorFaceResourceIds),
-      actorFaceIndices: structuredClone(session.actorFaceIndices),
       actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
@@ -566,7 +565,6 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
   if (snapshot.session.actorNicknames) session.actorNicknames = structuredClone(snapshot.session.actorNicknames);
   if (snapshot.session.actorFaceResourceIds) session.actorFaceResourceIds = structuredClone(snapshot.session.actorFaceResourceIds);
-  if (snapshot.session.actorFaceIndices) session.actorFaceIndices = structuredClone(snapshot.session.actorFaceIndices);
   if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
@@ -733,6 +731,25 @@ function leadPartyLevel(project: Project, session: PlaySession): number | undefi
   return session.actorLevels[actorId] ?? actor?.initialLevel;
 }
 
+/** 얼굴은 낱장 파일 한 장(리소스 id 하나)다. 그러나 예전 세이본은 (시트 id, 셀 번호) 짝을
+ *  따로 직렬화해 넣었다 — 그 셀 번호를 버리면 오래된 세이본이 전부 칸 0 얼굴로 보이게 된다.
+ *  그래서 로드 시에만 짝을 `faceIdForSheetCell` 로 섭어 낱장 id 하나로 바꾼다. 지금 시작하는
+ *  세이본은 이 맵을 다시 생산하지 않는다(내보내는 쓸 리소스 id 자신이 이미 낱장이다). */
+function parseActorFaceResourceIds(
+  session: Record<string, unknown>,
+): Record<string, string> | undefined {
+  const ids = isStringRecord(session.actorFaceResourceIds) ? session.actorFaceResourceIds : undefined;
+  if (!ids) return undefined;
+  const legacyCells = isNumberRecord(session.actorFaceIndices) ? session.actorFaceIndices : undefined;
+  if (!legacyCells) return ids;
+  const mapped: Record<string, string> = {};
+  for (const [actorId, resourceId] of Object.entries(ids)) {
+    const cell = legacyCells[actorId];
+    mapped[actorId] = cell === undefined ? resourceId : faceIdForSheetCell(resourceId, cell);
+  }
+  return mapped;
+}
+
 type ParsedSessionResult =
   | { readonly ok: true; readonly session: SaveSnapshot["session"] }
   | { readonly ok: false; readonly message: string };
@@ -852,8 +869,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
       actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
       actorNicknames: isStringRecord(session.actorNicknames) ? session.actorNicknames : undefined,
-      actorFaceResourceIds: isStringRecord(session.actorFaceResourceIds) ? session.actorFaceResourceIds : undefined,
-      actorFaceIndices: isNumberRecord(session.actorFaceIndices) ? session.actorFaceIndices : undefined,
+      actorFaceResourceIds: parseActorFaceResourceIds(session),
       actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,

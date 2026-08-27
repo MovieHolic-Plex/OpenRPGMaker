@@ -30,6 +30,7 @@ import {
   STARTER_ACTOR_IDS,
 } from "./defaultDatabaseRecordIds";
 import { applyGeneratedBattleEffectActorBindings } from "./generatedBattleEffectBindings";
+import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
 
 type PartyRecords = {
   readonly actors: ActorRecord[];
@@ -61,7 +62,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "주인공",
       nickname: "없음",
-      faceResourceId: "easyrpg-faceset-actor1",
+      faceResourceId: faceIdForSheetCell("easyrpg-faceset-actor1", 0),
       characterResourceId: "easyrpg-charset-actor1",
       battleCharacterResourceId: "generated-actor-hero-01-battle",
       initialEquipment: {
@@ -81,7 +82,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "수호자",
       nickname: "방패",
-      faceResourceId: "easyrpg-faceset-actor2",
+      faceResourceId: faceIdForSheetCell("easyrpg-faceset-actor2", 0),
       characterResourceId: "easyrpg-charset-actor2",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
       initialEquipment: {
@@ -101,7 +102,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "마도사",
       nickname: "별빛",
-      faceResourceId: "easyrpg-faceset-people1",
+      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people1", 0),
       characterResourceId: "easyrpg-charset-actor3",
       battleCharacterResourceId: "generated-actor-hero-03-battle",
       initialEquipment: {
@@ -120,7 +121,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "정찰병",
       nickname: "바람",
-      faceResourceId: "easyrpg-faceset-people2",
+      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people2", 0),
       characterResourceId: "easyrpg-charset-actor4",
       battleCharacterResourceId: "generated-actor-hero-04-battle",
       initialEquipment: {
@@ -139,7 +140,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "성직자",
       nickname: "치유",
-      faceResourceId: "easyrpg-faceset-people1",
+      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people1", 0),
       characterResourceId: "easyrpg-charset-actor1",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
       initialEquipment: {
@@ -159,7 +160,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "궁수",
       nickname: "초원",
-      faceResourceId: "easyrpg-faceset-people2",
+      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people2", 0),
       characterResourceId: "easyrpg-charset-actor2",
       battleCharacterResourceId: "generated-actor-hero-01-battle",
       initialEquipment: {

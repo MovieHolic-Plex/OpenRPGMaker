@@ -134,9 +134,11 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
     nodes.filter((node) => node instanceof HTMLElement && node.getAttribute("aria-pressed") === "true").length,
   );
   expect(activeCount, `expected >=1 active of ${await segments.count()} segments`).toBeGreaterThanOrEqual(1);
-  // 세그먼트는 레거시 탭 스트립과 달리 헤더(모달 상단 titlebar) 안에 있어야 한다.
+  // 세그먼트는 48px 타이틀바 안에서 잘렸다(2줄 리치 탭). 이제 전용 페이지 행이 유일한 집이다.
   const headerSegments = modal.locator(".event-editor-modal-header [data-testid^='evt-page-segment']");
-  expect(await headerSegments.count()).toBeGreaterThanOrEqual(1);
+  expect(await headerSegments.count()).toBe(0);
+  const pagebarSegments = modal.locator(".event-editor-pagebar [data-testid^='evt-page-segment']");
+  expect(await pagebarSegments.count()).toBeGreaterThanOrEqual(1);
 
   // Legacy wide page-tab strip is removed from the modal body.
   await expect(modal.getByTestId("event-page-strip")).toHaveCount(0);

@@ -11,7 +11,6 @@ import {
   type StatusMenuCommand,
 } from "@/player/playerStatusMenuModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { FACESET_COLUMNS, FACESET_ROWS } from "@/assets/easyrpgRtp";
 import { createStatusMenuDetail, type StatusMenuDetail, type StatusMenuStatDelta } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
@@ -302,14 +301,11 @@ function renderPartyFace(
   row: PlayerStatusMenuPartyRow,
   index: number,
 ): HTMLElement {
-  // 파티 얼굴 상자는 22×22px 로 그린다. faceset 시트(4×4, 셀 48px)를 이 상자 크기로
-  // 축소 크롭하므로 시트 폭/높이는 FACESET_* 상수에 22px 를 곱해 유도한다.
-  const faceIndex = row.faceIndex;
-  const column = faceIndex % FACESET_COLUMNS;
-  const faceRow = Math.floor(faceIndex / FACESET_COLUMNS);
-  const cropSize = 22;
-  const cropSheetWidth = FACESET_COLUMNS * cropSize;
-  const cropSheetHeight = FACESET_ROWS * cropSize;
+  // 파티 얼굴 상자는 22×22px 로 그린다. 얼굴은 낱장 파일(48×48) 한 장이므로
+  // 상자 크기로 축소해 통째로 건다 — 시트 열/행 계산은 없다.
+  // 그리는 기하를 인라인으로 잡는다 — 예전 `.actor-sheet-crop` 공용 생상은 진짜 시트(charset)
+  // 후손이라 얼굴은 이제 그 생상을 실지 않는다.
+  const boxSize = 22;
   const url = resolveAssetResourceUrl(row.faceResourceId, { project });
   if (!url) {
     return el("span", {
@@ -320,18 +316,17 @@ function renderPartyFace(
     });
   }
   return el("span", {
-    class: "status-menu-face actor-sheet-crop",
+    class: "status-menu-face",
     attrs: {
       role: "img",
       "aria-label": row.name,
       style: [
-        `--crop-url:url("${url}")`,
-        `--crop-width:${cropSize}px`,
-        `--crop-height:${cropSize}px`,
-        `--crop-sheet-width:${cropSheetWidth}px`,
-        `--crop-sheet-height:${cropSheetHeight}px`,
-        `--crop-x:-${column * cropSize}px`,
-        `--crop-y:-${faceRow * cropSize}px`,
+        `background-image:url("${url}")`,
+        `background-size:${boxSize}px ${boxSize}px`,
+        "background-repeat:no-repeat",
+        "image-rendering:pixelated",
+        `width:${boxSize}px`,
+        `height:${boxSize}px`,
       ].join(";"),
     },
     dataset: { testid: `status-menu-face-${index}` },

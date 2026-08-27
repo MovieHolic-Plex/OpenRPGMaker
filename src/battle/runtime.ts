@@ -188,7 +188,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     : actorBattlers(options.project, {
         names: options.party?.names,
         faceResourceIds: options.party?.faceResourceIds,
-        faceIndices: options.party?.faceIndices,
         levels: options.party?.levels,
         vitals: options.party?.vitals,
         paramBonuses: options.party?.paramBonuses,

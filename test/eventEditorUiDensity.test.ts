@@ -22,8 +22,7 @@ function basePage(overrides: Partial<EventPage> = {}): EventPage {
     commands: [
       {
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-people1",
-        faceIndex: 8,
+        resourceId: "easyrpg-faceset-people1-00",
         position: "left",
         flipHorizontally: false,
       },

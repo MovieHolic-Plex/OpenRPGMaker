@@ -41,6 +41,8 @@ import { createCommandToolbarHistory, type CommandToolbarHistory } from "./comma
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
+  appendEventRailGroup,
+  renderClassicPageTabStrip,
   renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
   renderEventNameControl,
@@ -262,17 +264,21 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
   const scheduleEditor = renderEventScheduleEditor(mapId, ev);
-  const settingsChildren = [
-    renderEventPageProps(mapId, ev.id, activePage, ev),
-    socialExtras,
-    scheduleEditor,
-  ].filter((node): node is HTMLElement => node !== null);
+  const pageSettings = renderEventPageProps(mapId, ev.id, activePage, ev);
+  const npcName = ev.characterId
+    ? store.getCurrent().characters?.[ev.characterId]?.displayName?.trim() || ev.characterId
+    : "연결 안 됨";
+  appendEventRailGroup(
+    pageSettings,
+    { slug: "npc", title: "NPC와 일정", summary: npcName, open: false },
+    [socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
+  );
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
-    children: settingsChildren,
+    children: [pageSettings],
   });
 
-  settingsColumn.append(settingsMain);
+  settingsColumn.append(columnLabel("settings", "이 페이지 설정", "어떻게 보이고 언제 켜지는지"), settingsMain);
   settingsColumn.querySelectorAll("details").forEach((node) => {
     if (node.classList.contains("event-editor-settings-accordion-group")) return;
     if (
@@ -290,6 +296,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     node.replaceWith(replacement);
   });
   commandsColumn.append(
+    columnLabel(
+      "commands",
+      "이 페이지가 하는 일",
+      "위에서 아래로 차례대로 실행됩니다",      el("span", {
+        class: "event-editor-column-count",
+        text: `${activePage.commands.length}개`,
+        dataset: { testid: "event-editor-command-count" },
+      }),
+    ),
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
       attrs: { "aria-label": "이 페이지가 하는 일" },
@@ -298,10 +313,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle),
         storyboardHost,
         cmdList,
-        renderCommandQuickTools(),
       ],
     })
   );
+  inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
   const workbench = el("div", {
     class: `event-editor-workbench${inspectorColumn.hidden ? "" : " has-command-inspector"}`,
@@ -314,12 +329,29 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     eventCard,
     el("div", {
       class: "event-editor-pagebar",
-      children: [renderPageTabs(mapId, ev, activePage)],
+      children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageTabs(mapId, ev, activePage)],
     }),
     workbench,
     ...(validationControl ? [validationControl] : [])
   );
   container.append(section);
+}
+
+function columnLabel(
+  slot: "settings" | "commands" | "inspector",
+  title: string,
+  hint: string,
+  trailing?: HTMLElement,
+): HTMLElement {
+  return el("div", {
+    class: `event-editor-column-label event-editor-column-label-${slot}`,
+    dataset: { testid: `event-editor-column-label-${slot}` },
+    children: [
+      el("span", { class: "event-editor-column-title", text: title }),
+      el("span", { class: "event-editor-column-hint", text: hint }),
+      ...(trailing ? [trailing] : []),
+    ],
+  });
 }
 
 function activePageIdOf(mapId: MapId, eventId: string): string | null {
@@ -412,11 +444,12 @@ function renderCommandToolbar(
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
+      renderCommandAuxGroup(),
     ],
   });
 }
 
-function renderCommandQuickTools(): HTMLElement {
+function renderCommandAuxGroup(): HTMLElement {
   const commandsColumn = (): HTMLElement | null => document.querySelector(".event-editor-commands-column");
   const open = (selector: string): void => {
     const column = commandsColumn();
@@ -428,8 +461,8 @@ function renderCommandQuickTools(): HTMLElement {
     details.scrollIntoView({ block: "nearest" });
   };
   return el("div", {
-    class: "event-editor-command-quick-tools",
-    dataset: { testid: "event-command-quick-tools" },
+    class: "event-editor-command-aux-group",
+    attrs: { role: "group", "aria-label": "보조 도구" },
     children: [
       toolbarButton("✧", "AI 명령", "event-command-quick-ai", () => open("[data-testid='ai-event-assist']")),
       toolbarButton("</>", "스크립트 미리보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),

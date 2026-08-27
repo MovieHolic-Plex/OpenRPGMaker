@@ -13,7 +13,7 @@ import {
   segmentedSelect,
   type SegmentOption,
 } from "./recordPicker";
-import { faceDisplayModeOf, renderFacesetCrop, renderFacesetIndexGrid } from "./facesetPreview";
+import { faceDisplayModeOf, renderFaceGallery, renderFacesetCrop } from "./facesetPreview";
 import type { CommandEditContext } from "./types";
 import { replaceFields } from "./commandBodyM2Page3";
 
@@ -738,7 +738,6 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
   const project = store.getCurrent();
   const actors = project.database.actors;
   let resourceId = String(cmd.fields.value ?? "").trim();
-  let faceIndex = Math.max(0, Math.min(15, Math.trunc(Number(cmd.fields.faceIndex ?? 0)) || 0));
   const actor = recordPickerWithPreview({
     records: actors,
     selectedId: String(cmd.fields.target ?? ""),
@@ -752,8 +751,8 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
     class: "actor-m2-faceset-preview",
     dataset: { testid: "change-actor-faceset-face-preview" },
   });
-  const faceGrid = el("div", {
-    class: "actor-m2-faceset-grid",
+  const faceGallery = el("div", {
+    class: "actor-m2-faceset-gallery",
     dataset: { testid: "change-actor-faceset-face-grid" },
   });
   const preview = el("div", {
@@ -774,7 +773,6 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
           onConfirm: (result) => {
             resourceId = result.resourceId;
             resourceSelect.value = resourceId;
-            faceIndex = Math.max(0, Math.min(15, Math.trunc(Number(result.faceIndex ?? 0)) || 0));
             commit();
           },
         });
@@ -787,32 +785,27 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
     replaceFields(context, cmd, {
       target: actor.select.value,
       value: resourceId,
-      faceIndex,
     });
     renderFaceUi();
   };
 
+  // 낱장 얼굴 갤러리는 한 번만 짓고 이후엔 선택 강조만 갱신한다.
+  const gallery = renderFaceGallery({
+    selectedId: resourceId,
+    onSelect: (nextId) => {
+      resourceId = nextId;
+      resourceSelect.value = nextId;
+      commit();
+    },
+  });
+
   const renderFaceUi = () => {
     facePreview.replaceChildren();
-    faceGrid.replaceChildren();
+    faceGallery.replaceChildren();
+    gallery.setSelected(resourceId);
+    faceGallery.append(gallery.root);
     if (resourceId) {
-      facePreview.append(
-        renderFacesetCrop({
-          resourceId,
-          faceIndex,
-          displaySize: 96,
-        })
-      );
-      faceGrid.append(
-        renderFacesetIndexGrid({
-          resourceId,
-          faceIndex,
-          onSelect: (index) => {
-            faceIndex = Math.max(0, Math.min(15, Math.trunc(index) || 0));
-            commit();
-          },
-        })
-      );
+      facePreview.append(renderFacesetCrop({ resourceId, displaySize: 96 }));
     } else {
       facePreview.append(el("span", { class: "rich-preview-hint", text: "얼굴을 고르세요." }));
     }
@@ -822,7 +815,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
       el("p", {
         class: "actor-m2-preview-line",
         text: record
-          ? `${record.name} 얼굴 → ${resourceId || "(선택 없음)"} #${faceIndex + 1}`
+          ? `${record.name} 얼굴 → ${resourceId || "(선택 없음)"}`
           : `주인공 선택 · ${resourceId || "(선택 없음)"}`,
       }),
       el("p", {
@@ -830,16 +823,13 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
         text:
           mode === "bust"
             ? "흉상 그림입니다. 대화 창 옆 큰 초상으로 보입니다."
-            : "faceset 인덱스 칸을 고르면 해당 얼굴이 저장됩니다.",
+            : "얼굴 그림 한 장을 고르면 그 얼굴이 저장됩니다.",
       })
     );
   };
 
   actor.select.addEventListener("change", commit);
-  resourceSelect.addEventListener("change", () => {
-    faceIndex = 0;
-    commit();
-  });
+  resourceSelect.addEventListener("change", commit);
   renderFaceUi();
 
   wrap.append(
@@ -863,7 +853,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
               })
             ),
             facePreview,
-            faceGrid,
+            faceGallery,
           ],
         }),
         preview,

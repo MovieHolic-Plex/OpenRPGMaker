@@ -64,7 +64,6 @@ export type M2ActorRuntimeState = {
   classId?: string;
   damage?: number;
   faceset?: string;
-  faceIndex?: number;
   name?: string;
   nickname?: string;
   parameters?: number;
@@ -274,7 +273,6 @@ export interface PlaySessionLike {
   actorNames?: Record<ActorId, string>;
   actorNicknames?: Record<ActorId, string>;
   actorFaceResourceIds?: Record<ActorId, string>;
-  actorFaceIndices?: Record<ActorId, number>;
   actorCharacterResourceIds?: Record<ActorId, string>;
   classOverrides?: Record<ActorId, string>;
   actorParamBonuses?: Record<ActorId, Partial<Record<ActorParameterKey, number>>>;

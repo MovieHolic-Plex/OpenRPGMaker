@@ -10,6 +10,7 @@
 //  - transfer-impassable   (error)   transfer 목적지 타일이 통행 불가
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - playerTouch-impassable (warning) 밟기형(priority≠same) touch/playerTouch 이벤트가 통행 불가 타일 위(영구 미발동)
+//  - event-unreachable       (warning) 자신의 칸과 4방향 이웃이 전부 통행 불가라 접근 불가능한 이벤트
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
 //  - map-size              (warning) 256×256 초과 맵
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
@@ -65,6 +66,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkStartPosition(project, issues);
   checkTransfers(project, issues);
   checkPlayerTouchTilePassability(project, issues);
+  checkEventUnreachable(project, issues);
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
@@ -268,6 +270,34 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
 }
 
 // (f) 같은 맵 내 이벤트 좌표 중복.
+// 밟기형 여부와 무관하게, 자신의 칸과 4방향 이웃이 전부 통행 불가인 이벤트는 플레이어가
+// 어떻게도 접근할 수 없다(부딪힘 발동도 이웃 칸에서 시도해야 하므로). warning 으로만 잡는다:
+// playerTouch-impassable 과 대상이 겹칠 수 있지만 메시지/의미가 다르고 둘 다 울려도 무방하다.
+function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (isPassable(project, map, event.x, event.y)) continue;
+      const neighbourPassable = [
+        { x: event.x, y: event.y - 1 },
+        { x: event.x, y: event.y + 1 },
+        { x: event.x - 1, y: event.y },
+        { x: event.x + 1, y: event.y },
+      ].some((cell) => inBounds(map, cell.x, cell.y) && isPassable(project, map, cell.x, cell.y));
+      if (neighbourPassable) continue;
+      issues.push({
+        severity: "warning",
+        code: "event-unreachable",
+        mapId: map.id,
+        x: event.x,
+        y: event.y,
+        message:
+          `이벤트에 도달할 수 없습니다 — 자신의 칸과 4방향 이웃이 모두 통행 불가입니다: ` +
+          `${map.id} ${event.id} (${event.x}, ${event.y}) — 통행 가능한 칸으로 옮기세요.`,
+      });
+    }
+  }
+}
+
 function checkDuplicateEventPositions(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     const seen = new Map<string, string>();

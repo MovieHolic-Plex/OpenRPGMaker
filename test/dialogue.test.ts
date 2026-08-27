@@ -244,7 +244,6 @@ describe("dialogue bust face overlay", () => {
       mapHeight: 20,
       face: {
         resourceId: "generated-face-actor1-bust",
-        faceIndex: 0,
         position: "left",
         flipHorizontally: false,
       },
@@ -281,7 +280,6 @@ describe("dialogue bust face overlay", () => {
       mapHeight: 20,
       face: {
         resourceId: "generated-face-actor1-bust",
-        faceIndex: 0,
         position: "right",
         flipHorizontally: false,
       },
@@ -313,7 +311,6 @@ describe("dialogue bust face overlay", () => {
       mapHeight: 20,
       face: {
         resourceId: "generated-face-actor1-full",
-        faceIndex: 0,
         position: "left",
         flipHorizontally: false,
       },

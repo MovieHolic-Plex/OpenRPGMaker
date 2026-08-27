@@ -37,16 +37,7 @@
   min-width: 0;
   overflow: hidden;
 }
-.status-menu-face.actor-sheet-crop {
-  /* 얼굴 기하는 DOM 이 단독으로 소유한다: playerStatusMenu.ts renderPartyFace 가 faceIndex 로
-     --crop-x/--crop-y 를 계산해 인라인으로 심는다. 여기서 --crop-* 를 !important 로 덮으면
-     스토아의 !important 가 인라인 선언을 이기기 때문에, 그리는 상자는 22px 인데 예술은
-     64px 시트의 16px 칸으로 잡혀 오른쪽 6px 에 이웃 칸이 밀려들어왔다.
-     실숭: .omo/evidence/runtime-menu-visual/baseline-04-portrait-zoom.png — 주인공의 오른쪽
-     머리가 쟘리고 다음 칸의 살결이 같은 퇀 어에 보인다. 상자 크기는 edge-dock 레이어가
-     22px 로 이긴다(선통성 0-3-0) — 여기에서 다른 숫자를 박지 않는다. */
-  image-rendering: pixelated;
-}
+
 .status-menu-face {
   box-sizing: border-box;
   overflow: hidden;

@@ -822,4 +822,30 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     const map = store.getCurrent().maps[mapId];
     expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.GRASS);
   });
+  // 즉시 적용은 "적용됐다"고 말하기 전에 실제로 적용됐는지 확인해야 한다. 배치 검증(수관 아래
+  // 밑동 없음 등)이 막으면 store 는 그대로이므로 자동 적용 카드를 남기면 거짓말이 된다.
+  it("배치 검증이 막은 턴은 자동 적용 카드를 남기지 않는다", async () => {
+    const baseline = store.getCurrent();
+    const mapId = baseline.startMapId;
+    const after = structuredClone(baseline);
+    const target = after.maps[mapId];
+    const brokenIndex = 3 * target.width + 3;
+    target.upperTiles[brokenIndex] = 260;
+    const calls = [proposed("place_props", { mapId }, { tilesChanged: 1 }, "나무 1")];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
+      turn({ assistantText: "나무를 놓았습니다.", proposedCalls: calls }),
+    );
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
+    editorState.set({ currentMapId: mapId, selection: null });
+
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "나무 심어줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("배치 검증 실패");
+    expect(findByTestId(panel, "ai-auto-applied-card")).toBeNull();
+    expect(store.getCurrent().maps[mapId].upperTiles[brokenIndex]).not.toBe(260);
+  });
 });

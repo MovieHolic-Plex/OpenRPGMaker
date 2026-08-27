@@ -97,7 +97,6 @@ describe("deserialize 거부", () => {
           {
             kind: "changeFace",
             resourceId: "missing-face",
-            faceIndex: 0,
             position: "left",
             flipHorizontally: false,
           },
@@ -106,10 +105,10 @@ describe("deserialize 거부", () => {
     ];
     expect(() => deserialize(JSON.stringify(obj))).toThrow(/resourceId/);
 
-    obj.maps[mapId].events[0].commands[0].resourceId = "easyrpg-faceset-actor1";
+    obj.maps[mapId].events[0].commands[0].resourceId = "easyrpg-faceset-actor1-00";
     expect(deserialize(JSON.stringify(obj)).maps[mapId].events[0].commands[0]).toMatchObject({
       kind: "changeFace",
-      resourceId: "easyrpg-faceset-actor1",
+      resourceId: "easyrpg-faceset-actor1-00",
     });
 
     obj.maps[mapId].events[0].commands[0].position = "middle";

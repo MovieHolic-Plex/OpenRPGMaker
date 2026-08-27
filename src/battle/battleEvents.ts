@@ -670,7 +670,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "changeFace":
         // 메시지 스트립 프레젠테이션 상태 — 이벤트 로그 detail 로 반영
         // (battleDirectorDom 의 message 소비 경로와 동일한 채널, DOM 수정 없음).
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: command.resourceId ? `changeFace ${command.resourceId}#${command.faceIndex}` : "changeFace clear" });
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: command.resourceId ? `changeFace ${command.resourceId}` : "changeFace clear" });
         return false;
       case "displayTextSettings":
         // 메시지 표시 설정 프레젠테이션 상태 — 이벤트 로그 detail 로 반영.

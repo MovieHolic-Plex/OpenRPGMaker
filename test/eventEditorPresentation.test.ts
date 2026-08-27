@@ -289,7 +289,7 @@ describe("event editor presentation", () => {
     expect(findByTestId(body, "move-picture-m2-y-input")?.value).toBe("32");
   });
 
-  it("renders the selected face graphic crop inside the Change Face command editor", () => {
+  it("renders the selected standalone face image inside the Change Face command editor", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
         {
@@ -305,8 +305,7 @@ describe("event editor presentation", () => {
         },
         {
           kind: "changeFace",
-          resourceId: "easyrpg-faceset-actor1",
-          faceIndex: 5,
+          resourceId: "easyrpg-faceset-actor1-05",
           position: "right",
           flipHorizontally: true,
         }
@@ -316,22 +315,30 @@ describe("event editor presentation", () => {
     const preview = findByTestId(body, "event-command-face-preview");
 
     expect(preview).not.toBeNull();
-    expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1");
-    expect(preview?.dataset.faceIndex).toBe("5");
-    expect(preview?.textContent).toContain("얼굴 6");
+    expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1-05");
+    // 칸 번호는 모델에서 사라졌다 — 표면에도 인덱스 흔적이 없어야 한다.
+    expect(preview?.dataset.faceIndex).toBeUndefined();
     expect(findByTestId(body, "event-command-edit-summary")?.textContent).toBe("얼굴 바꾸기");
-    expect(findByTestId(body, "event-command-face-index")?.attrs.max).toBe(String(RESOURCE_SLICING.faceset.count));
+    expect(findByTestId(body, "event-command-face-index")).toBeNull();
+    expect(findByTestId(body, "event-command-face-index-grid")).toBeNull();
+    expect(findByTestId(body, "event-command-face-slot-5")).toBeNull();
     expect(findByTestId(body, "event-command-face-resource-set")).not.toBeNull();
-    expect(findByTestId(body, "event-command-face-crop")?.style["--face-x"]).toBe("-48px");
-    expect(findByTestId(body, "event-command-face-crop")?.style["--face-y"]).toBe("-48px");
-    expect(findByTestId(body, "event-command-face-crop")?.style["--face-sheet-size"]).toBe("192px");
-    expect(findByTestId(body, "event-command-face-crop")?.style["--face-display-width"]).toBe("96px");
-    expect(findByTestId(body, "event-command-face-index-grid")).not.toBeNull();
-    expect(findByTestId(body, "event-command-face-slot-5")?.className).toContain("is-selected");
+    const crop = findByTestId(body, "event-command-face-crop");
+    expect(crop?.style["--face-display-width"]).toBe("96px");
+    expect(crop?.style["--face-x"]).toBeUndefined();
+    expect(crop?.style["--face-sheet-size"]).toBeUndefined();
+    expect(findByTestId(body, "faceset-crop-sheet")?.attrs.src).toContain(
+      "/assets/easyrpg/faceset/Actor1/05.png",
+    );
+    // 4×4 격자 대신 낱장 얼굴 갤러리에서 고른다.
+    expect(findByTestId(body, "event-command-face-gallery")).not.toBeNull();
+    expect(
+      findByTestId(body, "event-command-face-option-easyrpg-faceset-actor1-05")?.className,
+    ).toContain("is-selected");
   });
 
   
-  it("hides the 4x4 sheet grid for bust resources and shows a bust note", () => {
+  it("hides the face gallery for bust resources and shows a bust note", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
         {
@@ -348,7 +355,6 @@ describe("event editor presentation", () => {
         {
           kind: "changeFace",
           resourceId: "generated-face-actor1-bust",
-          faceIndex: 0,
           position: "left",
           flipHorizontally: false,
         }
@@ -356,7 +362,7 @@ describe("event editor presentation", () => {
     );
 
     expect(findByTestId(body, "event-command-face-bust-note")).not.toBeNull();
-    expect(findByTestId(body, "event-command-face-index-grid")).toBeNull();
+    expect(findByTestId(body, "event-command-face-gallery")).toBeNull();
     expect(findByTestId(body, "event-command-face-preview")?.dataset.faceMode).toBe("bust");
     expect(findByTestId(body, "event-command-face-bust-preset")).not.toBeNull();
   });
@@ -378,7 +384,6 @@ it("explains missing face graphic previews instead of leaving a blank slot", () 
         {
           kind: "changeFace",
           resourceId: "missing-faceset",
-          faceIndex: 0,
           position: "left",
           flipHorizontally: false,
         }
@@ -392,22 +397,23 @@ it("explains missing face graphic previews instead of leaving a blank slot", () 
     expect(preview?.textContent).toContain("미리보기를 찾을 수 없습니다.");
   });
 
-  it("updates the Change Face dialog preview when resource and face inputs change", () => {
-    openFacesetDialog({ kind: "changeFace", resourceId: "", faceIndex: 0, position: "left", flipHorizontally: false }, () => undefined);
+  it("updates the Change Face dialog preview when the face resource changes", () => {
+    openFacesetDialog({ kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false }, () => undefined);
 
     const dialog = findByTestId(document.body as unknown as FakeElement, "event-command-faceset-dialog");
     const resource = findByTestId(dialog ?? new FakeElement("div"), "faceset-resource-id");
-    const faceIndex = findByTestId(dialog ?? new FakeElement("div"), "faceset-index");
 
-    if (!resource || !faceIndex || !dialog) throw new Error("missing faceset dialog controls");
-    resource.value = "easyrpg-faceset-actor1"; resource.dispatchEvent(new Event("input"));
-    faceIndex.value = "6"; faceIndex.dispatchEvent(new Event("input"));
+    if (!resource || !dialog) throw new Error("missing faceset dialog controls");
+    // 칸 번호 스피너는 삭제됐다.
+    expect(findByTestId(dialog, "faceset-index")).toBeNull();
+    resource.value = "easyrpg-faceset-actor1-05"; resource.dispatchEvent(new Event("input"));
 
     const preview = findByTestId(dialog, "event-command-face-preview");
-    expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1");
-    expect(preview?.dataset.faceIndex).toBe("5");
-    expect(preview?.textContent).toContain("얼굴 6");
-    expect(faceIndex.max).toBe(String(RESOURCE_SLICING.faceset.count));
+    expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1-05");
+    expect(preview?.dataset.faceIndex).toBeUndefined();
+    expect(findByTestId(dialog, "faceset-crop-sheet")?.attrs.src).toContain(
+      "/assets/easyrpg/faceset/Actor1/05.png",
+    );
   });
 
   it("renders page conditions as Korean RM-style condition rows", () => {

@@ -335,7 +335,8 @@ export interface ProposalHostApi {
     assistantBubble?: HTMLElement | null,
     presentation?: ProposalPresentationMode,
   ) => void;
-  acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean, approveMaterials?: boolean) => void;
+  /** 실제로 적용되었으때만 true — 즐시 적용 경로가 "적용됨" 카드를 붙이기 전에 이것을 기다린다. */
+  acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean, approveMaterials?: boolean) => Promise<boolean>;
   rejectProposal: () => void;
   /** 이 호스트가 마지막으로 등록한 인라인 승인 actions가 여전히 현재 슬롯이면(CAS) 해제한다. */
   clearInlineActionsIfMine: () => void;
@@ -404,9 +405,9 @@ export function createProposalHost(options: {
     selectedCalls: readonly ProposedCall[],
     hasEdits: boolean,
     approveMaterials = false,
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     const session = controller.session;
-    if (!session) return;
+    if (!session) return false;
     const before = store.getCurrent();
     const fullAccept = selectedCalls.length === calls.length && !hasEdits;
     const reassembled = fullAccept
@@ -415,7 +416,7 @@ export function createProposalHost(options: {
     if (reassembled && !reassembled.ok) {
       setStatus("적용 실패");
       toast(`적용 실패: ${reassembled.message}`, "error");
-      return;
+      return false;
     }
     const proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
 
@@ -439,7 +440,7 @@ export function createProposalHost(options: {
       const summary = formatLayoutValidationSummary(repaired.remaining);
       appendBubble("system", `❌ ${summary}`);
       toast(summary, "error");
-      return;
+      return false;
     }
     const applyProject = repaired.project;
 
@@ -467,7 +468,7 @@ export function createProposalHost(options: {
     if (!applied.ok) {
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
-      return;
+      return false;
     }
     clearDecisionSurface();
     setStatus("대기");
@@ -499,6 +500,7 @@ export function createProposalHost(options: {
       });
     }
     onProposalSettled?.();
+    return true;
   };
 
   const acceptProposal = (
@@ -506,13 +508,13 @@ export function createProposalHost(options: {
     selectedState?: readonly boolean[],
     hasEdits = false,
     approveMaterials = false,
-  ): void => {
+  ): Promise<boolean> => {
     clearInlineActionsIfMine();
     const session = controller.session;
-    if (!session) return;
+    if (!session) return Promise.resolve(false);
     const selected = selectedState ? enforceProposalDependencies(selectedState, proposalDependencyIndexes(calls)) : calls.map(() => true);
     const selectedCalls = calls.filter((_, index) => selected[index]);
-    if (selectedCalls.length === 0) return;
+    if (selectedCalls.length === 0) return Promise.resolve(false);
     const warnings = proposalApprovalWarnings(selectedCalls);
     const hasDestructive = selectedCalls.some((c) => c.destructive || c.name === "clear_region" || c.name === "remove_event" || c.name === "remove_map" || c.name === "delete_tile_group" || c.name === "reset_project");
     if (hasDestructive) {
@@ -521,19 +523,14 @@ export function createProposalHost(options: {
         .map((c) => `• ${plainToolNames ? sanitizeUserFacingToolId(c.summary || c.name) : c.summary || c.name}`)
         .join("\n");
       const msg = `파괴적 작업이 포함되어 있습니다 — 아래 내역을 확인하세요:\n${summary}\n\n체크박스는 기본 해제 상태입니다. 적용하려면 직접 체크 후 [확인 후 적용]을 누르세요.`;
-      void showConfirm({ title: "파괴적 변경 — 3단 확인", message: msg, confirmLabel: "확인 후 적용" }).then((ok: boolean) => {
-        if (ok) void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
-      });
-      return;
+      return showConfirm({ title: "파괴적 변경 — 3단 확인", message: msg, confirmLabel: "확인 후 적용" })
+        .then((ok: boolean) => (ok ? applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials) : false));
     }
     const decision = confirmRuleApproval(warnings);
     if (decision !== true) {
-      void decision.then((confirmed) => {
-        if (confirmed) void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
-      });
-      return;
+      return decision.then((confirmed) => (confirmed ? applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials) : false));
     }
-    void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
+    return applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
   };
 
   const rejectProposal = (): void => {
@@ -705,7 +702,7 @@ export function createProposalHost(options: {
             dataset: { testid: "ai-proposal-accept-materials" },
             on: {
               click: () =>
-                acceptProposal(
+                void acceptProposal(
                   callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
                   selected,
                   hasVocabularyEdits(vocabEditsByCall),
@@ -755,7 +752,7 @@ export function createProposalHost(options: {
               dataset: { testid: "ai-proposal-accept" },
               on: {
                 click: () =>
-                  acceptProposal(
+                  void acceptProposal(
                     callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
                     selected,
                     hasVocabularyEdits(vocabEditsByCall),
@@ -800,7 +797,7 @@ export function createProposalHost(options: {
           total: result.proposedCalls.length,
         },
         {
-          onAccept: () => acceptProposal(
+          onAccept: () => void acceptProposal(
             callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
             selected,
             hasVocabularyEdits(vocabEditsByCall),

@@ -387,7 +387,6 @@ export function compileSimplePage(
       commands.push({
         kind: "changeFace",
         resourceId: face.resourceId,
-        faceIndex: face.faceIndex,
         position: face.position ?? "left",
         flipHorizontally: face.flipHorizontally ?? false,
       });
@@ -428,9 +427,9 @@ function faceFromSimplePage(page: SimplePage): FaceGraphic | null {
   if (!raw || typeof raw !== "object") return null;
   const rec = raw as Record<string, unknown>;
   if (typeof rec.resourceId === "string" && rec.resourceId.trim()) {
+    // 얼굴은 낱장 리소스 id 한 개로 지정한다(시트 id+칸 번호 계약은 폐기).
     return {
       resourceId: rec.resourceId.trim(),
-      faceIndex: typeof rec.faceIndex === "number" ? rec.faceIndex : 0,
       position: rec.position === "right" ? "right" : "left",
       flipHorizontally: rec.flipHorizontally === true,
     };

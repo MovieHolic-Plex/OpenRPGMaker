@@ -52,7 +52,6 @@ function resolvePlaceNpcFaceArg(
     if (typeof rec.resourceId === "string" && rec.resourceId.trim()) {
       return {
         resourceId: rec.resourceId.trim(),
-        faceIndex: typeof rec.faceIndex === "number" ? rec.faceIndex : 0,
         position: rec.position === "right" ? "right" : "left",
         flipHorizontally: rec.flipHorizontally === true,
       };
@@ -282,6 +281,63 @@ export function passableLanding(project: Project, map: GameMap, x: number, y: nu
   return null;
 }
 
+/**
+ * AI 배치 툴 공용 통행 가능 착지 판정.
+ *
+ * 왜: place_battle_blocker 등 다수 툴이 inMapBounds 만 보고 몬스터를 벽 위에 세웠다.
+ * RM2K3 의미상 action 트리거 이벤트(문·간판)는 통행 불가 타일 위에 있어도 되지만,
+ * 캐릭터형 이벤트(몬스터·추격자·NPC)와 밟아야 발동하는 트리거는 반드시 통행 가능 칸에 서야 한다.
+ *
+ * - kind "character" 또는 steppable 트리거: 최종 칸이 isPassable 이어야 한다(반경 3 자동 착지).
+ * - kind "interaction": 벽 위 허용, 단 4방향 이웃(또는 자신) 중 하나는 통행 가능해야 한다.
+ *   완전히 갇힌 경우에만 반경 3 자동 착지, 그것도 실패하면 ToolError.
+ */
+export function resolveEventPlacement(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+  options: {
+    readonly kind: "character" | "interaction";
+    readonly steppable?: boolean;
+    readonly ignoreEventId?: string;
+    readonly label: string;
+    readonly code: string;
+  },
+): { x: number; y: number; adjusted: boolean } {
+  const mustStandOnPassable = options.kind === "character" || options.steppable === true;
+  if (isPassable(project, map, x, y)) return { x, y, adjusted: false };
+  if (!mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
+  const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId);
+  if (!landing) {
+    throw new ToolError(
+      `${options.label}을 놓을 통행 가능 칸이 없습니다: (${x}, ${y}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
+      { code: options.code, mapId: map.id, x, y },
+    );
+  }
+  return { x: landing.x, y: landing.y, adjusted: landing.x !== x || landing.y !== y };
+}
+
+/** place_npc 와 같은 문구의 자동 조정 경고. */
+function placementAdjustedWarning(label: string, from: Point, to: Point): string {
+  return `${label} 위치 자동 조정: (${from.x}, ${from.y}) → (${to.x}, ${to.y})`;
+}
+
+/** 밟아서 발동하는 트리거인가(touch/playerTouch + priority !== "same"). */
+function isSteppableTrigger(trigger: Trigger | undefined, priority: EventPage["priority"] | undefined): boolean {
+  if (trigger?.kind !== "touch" && trigger?.kind !== "playerTouch") return false;
+  return priority !== "same";
+}
+
+/** 이벤트 본체/페이지 중 하나라도 밟아서 발동하면 steppable 로 본다. */
+function eventIsSteppable(event: GameEvent): boolean {
+  if ((event.pages ?? []).some((page) => isSteppableTrigger(page.trigger, page.priority))) return true;
+  if ((event.pages ?? []).length > 0) return false;
+  return isSteppableTrigger(event.trigger, undefined);
+}
+
+const PLACEMENT_AUTOLAND_HINT = "통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.";
+
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
   description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.`,
@@ -292,7 +348,7 @@ const upsertEvent: ToolDefinition = {
       mapId: { type: "string" },
       event: {
         type: "object",
-        description: "GameEvent 추가 또는 부분 수정. id는 항상 필요하고 x/y는 새 이벤트일 때만 필요. 기존 이벤트에서 생략한 최상위 필드는 보존된다.",
+        description: "GameEvent 추가 또는 부분 수정. id는 항상 필요하고 x/y는 새 이벤트일 때만 필요. 기존 이벤트에서 생략한 최상위 필드는 보존된다. 새 이벤트 좌표가 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지하고, 기존 이벤트 부분 수정은 좌표를 건드리지 않는다.",
         properties: {
           id: { type: "string" },
           x: { type: "integer" },
@@ -316,6 +372,7 @@ const upsertEvent: ToolDefinition = {
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
     const existing = map.events.find((entry) => entry.id === patch.id);
     let event: GameEvent;
+    let adjusted = false;
     if (existing) {
       event = {
         ...structuredClone(existing),
@@ -333,13 +390,28 @@ const upsertEvent: ToolDefinition = {
       }
       event = structuredClone(patch) as GameEvent;
       if (!event.trigger) event.trigger = { kind: "action" };
+      // 새 이벤트만 착지 보정한다 — 부분 병합에서 기존 이벤트를 옮기면 저작 의도가 조용히 깨진다.
+      const requested: Point = { x: event.x, y: event.y };
+      if (inMapBounds(map, requested.x, requested.y)) {
+        const placement = resolveEventPlacement(draft, map, requested.x, requested.y, {
+          kind: "interaction",
+          steppable: eventIsSteppable(event),
+          ignoreEventId: event.id,
+          label: `이벤트 '${event.id}'`,
+          code: "upsert-event-impassable",
+        });
+        event.x = placement.x;
+        event.y = placement.y;
+        adjusted = placement.adjusted;
+        if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
+      }
     }
     assertEventShape(event, warnings);
     const outcome = upsertEventIntoMap(map, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
-      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
-      data: { eventId: event.id, unsupportedCommands },
+      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
+      data: { eventId: event.id, unsupportedCommands, x: event.x, y: event.y, adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -1285,7 +1357,7 @@ const createTransferPair: ToolDefinition = {
 
 const placeBattleBlocker: ToolDefinition = {
   name: "place_battle_blocker",
-  description: "필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다.",
+  description: `필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다. 몬스터는 캐릭터형이므로 반드시 통행 가능 칸에 서야 한다 — ${PLACEMENT_AUTOLAND_HINT}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -1305,14 +1377,22 @@ const placeBattleBlocker: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const x = args.x as number;
-    const y = args.y as number;
+    const requestedX = args.x as number;
+    const requestedY = args.y as number;
     const troopId = args.troopId as string;
-    if (!inMapBounds(map, x, y)) throw new ToolError(`블로커 위치가 맵 밖입니다: (${x}, ${y})`, { mapId: map.id, x, y });
+    if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`블로커 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
     if (!draft.database.troops.some((troop) => troop.id === troopId)) {
-      throw new ToolError(`존재하지 않는 troopId: ${troopId} — 허용 예시: ${knownIds(draft.database.troops)}`, { code: "troop-not-found", mapId: map.id, x, y });
+      throw new ToolError(`존재하지 않는 troopId: ${troopId} — 허용 예시: ${knownIds(draft.database.troops)}`, { code: "troop-not-found", mapId: map.id, x: requestedX, y: requestedY });
     }
     const id = (args.id as string | undefined) ?? genId("ev_battle");
+    // 몬스터는 캐릭터형 — 벽 위에 세우면 플레이어가 전투를 시작할 수 없다.
+    const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
+      kind: "character",
+      ignoreEventId: id,
+      label: `전투 블로커 '${troopId}'`,
+      code: "battle-blocker-impassable",
+    });
+    const { x, y, adjusted } = placement;
     const clearSwitchId = (args.clearSwitchId as string | undefined) ?? `sw_${id}_clear`;
     ensureNamedSwitch(draft, clearSwitchId, `전투 완료: ${id}`);
     const intro = (args.intro as string[] | undefined) ?? ["적이 앞을 가로막았다!"];
@@ -1332,14 +1412,22 @@ const placeBattleBlocker: ToolDefinition = {
     });
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    return { summary: `${map.name}에 전투 블로커 '${troopId}' 배치 (${x}, ${y})`, data: { eventId: id, clearSwitchId } };
+    const warnings = adjusted
+      ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })]
+      : [];
+    return {
+      summary: `${map.name}에 전투 블로커 '${troopId}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, clearSwitchId, x, y, adjusted },
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 
 const placeTrap: ToolDefinition = {
   name: "place_trap",
   description:
-    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다.",
+    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다. "
+    + "touch 트랩은 밟을 수 있어야 하므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1369,17 +1457,29 @@ const placeTrap: ToolDefinition = {
     const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
     const idPrefix = typeof args.idPrefix === "string" && args.idPrefix.trim() ? args.idPrefix.trim() : "ev_trap";
     const eventIds: string[] = [];
+    const warnings: string[] = [];
+    // touch 트랩은 밟혀야 발동한다 — 벽 위의 트랩은 죽은 장치다.
+    const steppable = trigger.kind === "touch";
     for (const [index, cell] of cells.entries()) {
       const id = cells.length === 1 ? genId(idPrefix) : genId(`${idPrefix}_${index + 1}`);
-      const event = trapEvent(id, cell.x, cell.y, trigger, graphic, typeof args.message === "string" ? args.message : undefined);
+      const placement = resolveEventPlacement(draft, map, cell.x, cell.y, {
+        kind: "interaction",
+        steppable,
+        ignoreEventId: id,
+        label: "트랩",
+        code: "trap-impassable",
+      });
+      if (placement.adjusted) warnings.push(placementAdjustedWarning("트랩", cell, placement));
+      const event = trapEvent(id, placement.x, placement.y, trigger, graphic, typeof args.message === "string" ? args.message : undefined);
       assertEventShape(event);
       upsertEventIntoMap(map, event);
       eventIds.push(id);
     }
     const checkpointEventId = args.respawnCheckpoint === true ? ensureMapCheckpointEvent(map) : undefined;
     return {
-      summary: `${map.name}에 즉사 트랩 ${eventIds.length}개 배치${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
-      data: { eventIds, checkpointEventId },
+      summary: `${map.name}에 즉사 트랩 ${eventIds.length}개 배치${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}${warnings.length > 0 ? ` — 위치 자동 조정 ${warnings.length}건` : ""}`,
+      data: { eventIds, checkpointEventId, adjusted: warnings.length > 0 },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
@@ -1387,7 +1487,7 @@ const placeTrap: ToolDefinition = {
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다.",
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1427,6 +1527,13 @@ const makeChaseScene: ToolDefinition = {
     }
     const graphic = resolveGraphic(chaser.graphic as GraphicSpec | undefined);
     const id = genId("ev_chaser");
+    // 추격자는 캐릭터형 — 벽 위에서 시작하면 첫 프레임부터 갇힌다.
+    const placement = resolveEventPlacement(draft, map, chaser.at.x, chaser.at.y, {
+      kind: "character",
+      ignoreEventId: id,
+      label: "추격자",
+      code: "chaser-impassable",
+    });
     const activateSwitch = typeof args.activateSwitch === "string" && args.activateSwitch.trim()
       ? args.activateSwitch.trim()
       : undefined;
@@ -1439,8 +1546,8 @@ const makeChaseScene: ToolDefinition = {
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
     const event: GameEvent = {
       id,
-      x: chaser.at.x,
-      y: chaser.at.y,
+      x: placement.x,
+      y: placement.y,
       trigger: { kind: "eventTouch" },
       commands: [],
       pages: [
@@ -1467,9 +1574,13 @@ const makeChaseScene: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(map) : undefined;
+    const warnings = placement.adjusted
+      ? [placementAdjustedWarning("추격자", chaser.at, placement)]
+      : [];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${chaser.at.x}, ${chaser.at.y})${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
-      data: { eventId: id, safeZone, activateSwitch, checkpointEventId },
+      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
@@ -1481,7 +1592,8 @@ const placeChest: ToolDefinition = {
   description:
     "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지). " +
     "'보물상자'·'상자를 열면 ~을 주는' 요청만 이 툴. " +
-    "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지.",
+    "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
+    "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1502,11 +1614,18 @@ const placeChest: ToolDefinition = {
   invalidArgsExample: { mapId: "map_1", x: 5, y: 5, contents: { itemId: "item_potion", gold: 50 } },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const x = args.x as number;
-    const y = args.y as number;
-    if (!inMapBounds(map, x, y)) {
-      throw new ToolError(`상자 위치가 맵 밖입니다: (${x}, ${y})`, { code: "chest-out-of-bounds", mapId: map.id, x, y });
+    const requestedX = args.x as number;
+    const requestedY = args.y as number;
+    if (!inMapBounds(map, requestedX, requestedY)) {
+      throw new ToolError(`상자 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "chest-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
+    // action 트리거 상자는 RM2K3 문 의미대로 벽 위도 허용 — 단 인접 칸에서 조사할 수 있어야 한다.
+    const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
+      kind: "interaction",
+      label: "보물상자",
+      code: "chest-impassable",
+    });
+    const { x, y, adjusted } = placement;
     const contents = (args.contents ?? {}) as { itemId?: unknown; gold?: unknown };
     const itemId = typeof contents.itemId === "string" && contents.itemId.length > 0 ? contents.itemId : undefined;
     const gold = typeof contents.gold === "number" && Number.isFinite(contents.gold) && contents.gold > 0
@@ -1516,6 +1635,7 @@ const placeChest: ToolDefinition = {
       throw new ToolError("contents.itemId 또는 contents.gold(양수) 중 최소 하나가 필요합니다.", { code: "chest-empty-contents" });
     }
     const warnings: string[] = [];
+    if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
     if (itemId && !draft.database.items.some((item) => item.id === itemId)) {
       warnings.push(`아이템 '${itemId}'가 데이터베이스에 없습니다 — upsert_item으로 먼저 만들거나 기존 id를 쓰세요`);
     }
@@ -1566,8 +1686,8 @@ const placeChest: ToolDefinition = {
     assertEventShape(event, warnings);
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name}에 보물상자 '${name}' 배치 (${x}, ${y}) — 보상 ${rewardText}`,
-      data: { eventId: id, x, y },
+      summary: `${map.name}에 보물상자 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""} — 보상 ${rewardText}`,
+      data: { eventId: id, x, y, adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -1578,7 +1698,8 @@ const placeStorageChest: ToolDefinition = {
   name: "place_storage_chest",
   description:
     "보관 상자 이벤트를 배치한다. 조사하면 openChest로 소지품↔상자 입출고 UI를 연다(session.chests). " +
-    "농장 창고·인벤 확장용. 보물상자(1회 보상)는 place_chest. 장식 박스는 place_props.",
+    "농장 창고·인벤 확장용. 보물상자(1회 보상)는 place_chest. 장식 박스는 place_props. " +
+    "벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1595,11 +1716,17 @@ const placeStorageChest: ToolDefinition = {
   invalidArgsExample: { mapId: "map_1", x: 4, y: 6, name: "창고 상자" },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const x = args.x as number;
-    const y = args.y as number;
-    if (!inMapBounds(map, x, y)) {
-      throw new ToolError(`보관 상자 위치가 맵 밖입니다: (${x}, ${y})`, { code: "storage-chest-out-of-bounds", mapId: map.id, x, y });
+    const requestedX = args.x as number;
+    const requestedY = args.y as number;
+    if (!inMapBounds(map, requestedX, requestedY)) {
+      throw new ToolError(`보관 상자 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "storage-chest-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
+    const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
+      kind: "interaction",
+      label: "보관 상자",
+      code: "storage-chest-impassable",
+    });
+    const { x, y, adjusted } = placement;
     const graphic = resolveGraphic({ query: "보물상자" });
     const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
     const name = (args.name as string | undefined) ?? "보관 상자";
@@ -1630,15 +1757,16 @@ const placeStorageChest: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name}에 보관 상자 '${name}' 배치 (${x}, ${y}) — chestId=${chestId}`,
-      data: { eventId: id, x, y, chestId },
+      summary: `${map.name}에 보관 상자 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""} — chestId=${chestId}`,
+      data: { eventId: id, x, y, chestId, adjusted },
+      ...(adjusted ? { warnings: [placementAdjustedWarning("보관 상자", { x: requestedX, y: requestedY }, placement)] } : {}),
     };
   },
 };
 
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
-  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형).",
+  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1653,11 +1781,18 @@ const placeSavepoint: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const x = args.x as number;
-    const y = args.y as number;
-    if (!inMapBounds(map, x, y)) {
-      throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${x}, ${y})`, { code: "savepoint-out-of-bounds", mapId: map.id, x, y });
+    const requestedX = args.x as number;
+    const requestedY = args.y as number;
+    if (!inMapBounds(map, requestedX, requestedY)) {
+      throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "savepoint-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
+    // priority "below" 이지만 트리거는 action — 밟는 이벤트가 아니므로 interaction 규칙을 쓴다.
+    const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
+      kind: "interaction",
+      label: "세이브 포인트",
+      code: "savepoint-impassable",
+    });
+    const { x, y, adjusted } = placement;
     const graphic = resolveGraphic({ query: "크리스탈" });
     const id = (args.id as string | undefined) ?? genId("ev_save");
     const name = (args.name as string | undefined) ?? "세이브 포인트";
@@ -1688,7 +1823,11 @@ const placeSavepoint: ToolDefinition = {
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    return { summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})`, data: { eventId: id, x, y } };
+    return {
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted },
+      ...(adjusted ? { warnings: [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] } : {}),
+    };
   },
 };
 
@@ -1819,7 +1958,7 @@ function ensureMapCheckpointEvent(map: GameMap): string {
 
 const duplicateEvent: ToolDefinition = {
   name: "duplicate_event",
-  description: "이벤트를 다른 맵/좌표로 복제한다.",
+  description: "이벤트를 다른 맵/좌표로 복제한다. 원본 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트·캐릭터형은 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1839,9 +1978,25 @@ const duplicateEvent: ToolDefinition = {
     const source = fromMap.events.find((event) => event.id === args.eventId);
     if (!source) throw new ToolError(`복제할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found" });
     const newId = (args.newId as string | undefined) ?? genId("ev_copy");
-    const clone: GameEvent = { ...structuredClone(source), id: newId, x: args.x as number, y: args.y as number };
+    const requestedX = args.x as number;
+    const requestedY = args.y as number;
+    if (!inMapBounds(toMap, requestedX, requestedY)) {
+      throw new ToolError(`복제 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "duplicate-out-of-bounds", mapId: toMap.id, x: requestedX, y: requestedY });
+    }
+    const placement = resolveEventPlacement(draft, toMap, requestedX, requestedY, {
+      kind: "interaction",
+      steppable: eventIsSteppable(source),
+      ignoreEventId: newId,
+      label: `이벤트 '${newId}'`,
+      code: "duplicate-event-impassable",
+    });
+    const clone: GameEvent = { ...structuredClone(source), id: newId, x: placement.x, y: placement.y };
     upsertEventIntoMap(toMap, clone);
-    return { summary: `이벤트 '${args.eventId}' → '${newId}' (${toMap.name})`, data: { eventId: newId } };
+    return {
+      summary: `이벤트 '${args.eventId}' → '${newId}' (${toMap.name} ${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: newId, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      ...(placement.adjusted ? { warnings: [placementAdjustedWarning(`이벤트 '${newId}'`, { x: requestedX, y: requestedY }, placement)] } : {}),
+    };
   },
 };
 
@@ -1865,7 +2020,7 @@ const removeEvent: ToolDefinition = {
 
 const moveEvent: ToolDefinition = {
   name: "move_event",
-  description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다.",
+  description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1876,12 +2031,23 @@ const moveEvent: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const event = map.events.find((entry) => entry.id === args.eventId);
     if (!event) throw new ToolError(`옮길 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found" });
-    const x = args.x as number;
-    const y = args.y as number;
-    if (!inMapBounds(map, x, y)) throw new ToolError(`이동 위치가 맵 밖입니다: (${x}, ${y})`, { mapId: map.id, x, y });
-    event.x = x;
-    event.y = y;
-    return { summary: `이벤트 '${args.eventId}' → (${x}, ${y})` };
+    const requestedX = args.x as number;
+    const requestedY = args.y as number;
+    if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`이동 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
+    const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
+      kind: "interaction",
+      steppable: eventIsSteppable(event),
+      ignoreEventId: event.id,
+      label: `이벤트 '${event.id}'`,
+      code: "move-event-impassable",
+    });
+    event.x = placement.x;
+    event.y = placement.y;
+    return {
+      summary: `이벤트 '${args.eventId}' → (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: event.id, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      ...(placement.adjusted ? { warnings: [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] } : {}),
+    };
   },
 };
 

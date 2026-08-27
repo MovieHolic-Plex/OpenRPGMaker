@@ -20,7 +20,7 @@ import { beginCutsceneControl } from "@/player/cutsceneControl";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { createBlankProject } from "@/project/defaults";
 import { startSession, type PlaySession } from "@/project/session";
-import type { Project } from "@/project/types";
+import { SCHEMA_VERSION, type Project } from "@/project/types";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -191,7 +191,7 @@ describe("maybeAutosave (PlayScene hook wrapper)", () => {
   });
 });
 
-describe("schemaVersion 3 manual slot compatibility (regression)", () => {
+describe("manual slot schemaVersion compatibility (regression)", () => {
   it("preserves persistent runtime progression through the real storage loader", () => {
     // Break caught: adding a PlaySession field without wiring the save type, writer,
     // known-field parser, and restorer silently resets player progress after reload.
@@ -203,7 +203,6 @@ describe("schemaVersion 3 manual slot compatibility (regression)", () => {
     session.lifeSkills = { skill_farming: { xp: 100, level: 2 } };
     session.actorNicknames = { actor_hero: "별명" };
     session.actorFaceResourceIds = { actor_hero: "face_custom" };
-    session.actorFaceIndices = { actor_hero: 3 };
     session.shopLoyaltySpend = { shop_1: 500 };
     session.shopTradeCounts = { shop_1: { sold: 2, bought: 1 } };
     session.shopMileagePoints = 42;
@@ -224,7 +223,6 @@ describe("schemaVersion 3 manual slot compatibility (regression)", () => {
     expect(restored.lifeSkills).toEqual(session.lifeSkills);
     expect(restored.actorNicknames).toEqual(session.actorNicknames);
     expect(restored.actorFaceResourceIds).toEqual(session.actorFaceResourceIds);
-    expect(restored.actorFaceIndices).toEqual(session.actorFaceIndices);
     expect(restored.shopLoyaltySpend).toEqual(session.shopLoyaltySpend);
     expect(restored.shopTradeCounts).toEqual(session.shopTradeCounts);
     expect(restored.shopMileagePoints).toBe(42);
@@ -240,7 +238,7 @@ describe("schemaVersion 3 manual slot compatibility (regression)", () => {
     const legacy = JSON.parse(JSON.stringify(snapshot)) as Record<string, unknown>;
     delete legacy.savedBy;
     delete legacy.autosaveTrigger;
-    expect(legacy.schemaVersion).toBe(3);
+    expect(legacy.schemaVersion).toBe(SCHEMA_VERSION);
 
     const storage = new MemoryStorage();
     storage.setItem(saveSlotKey(2), JSON.stringify(legacy));
