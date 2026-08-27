@@ -63,7 +63,16 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
-import { parseQuickReplies, QUICK_REPLY_MARKER, stripQuickReplyLine } from "@/ai/interviewPrompt";
+import {
+  buildInterviewKickoff,
+  buildStructureLearnKickoff,
+  parseQuickReplies,
+  QUICK_REPLY_MARKER,
+  stripQuickReplyLine,
+} from "@/ai/interviewPrompt";
+import { buildDemonstrationMessage } from "@/ai/demonstrationPrompt";
+import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { loadAiConfig } from "@/ai/llmClient";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
@@ -2122,6 +2131,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     document.addEventListener("keydown", onMoreMenuKeyDown);
   }
   // 두 메뉴가 공유하는 5개 항목의 유일한 구현(aiActionMenu.ts). 컨테이너·열림 상태만 표면마다 다르다.
+  // 시연으로 가르치기: AI 추측이 틀렸을 때 말 대신 샌드박스에 직접 깔아서 보여준다.
+  // 붓질 순서+설명이 메시지로 전달되고, 시연 결과는 채팅에 그리드 이미지로 남는다.
+  const startDemoTeach = (seed: DemoTeachSeed | null): void => {
+    openDemoTeachModal({
+      seed,
+      onSend: (payload) => {
+        appendTileGrid({
+          tilesetId: DEFAULT_TILESET_ID,
+          x: payload.seed?.x ?? 0,
+          y: payload.seed?.y ?? 0,
+          w: payload.w,
+          h: payload.h,
+          lower: payload.lower,
+          upper: payload.upper,
+        });
+        void sendText(
+          buildDemonstrationMessage(payload),
+          `✍️ 시연 — 직접 깐 타일(${payload.strokes.length}회 붓질)로 보여줬습니다.`,
+        );
+      },
+    });
+  };
+
   const sharedMenuActions: AiActionMenuActions = {
     undoLast: () => undoLastButton.click(),
     exportAudit: () => exportButton?.click(),
@@ -2131,6 +2163,34 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       applyHistoryOpen(true);
     },
     openTools: () => toolsButton.click(),
+    // 가르치기 진입점 — 사라진 스킬 서러에 업혀 있었지만 기능 자신은 살아 있다.
+    startInterview: () => {
+      const state = editorState.get();
+      const mapId = state.currentMapId ?? store.getCurrent().startMapId ?? null;
+      void sendText(
+        buildInterviewKickoff(mapId),
+        "🎓 맵 인터뷰 시작 — 현재 맵의 타일 의밌를 가르츠 주세요.",
+      );
+    },
+    learnStructure: () => {
+      const selection = editorState.get().selection;
+      if (!selection) {
+        toast("맵에서 배울 여역을 먼저 선택하세요.", "error");
+        return;
+      }
+      void sendText(
+        buildStructureLearnKickoff(selection.mapId, selection),
+        "📐 선택 여역 학습 — 구조밌을 배워 주세요.",
+      );
+    },
+    startDemoTeach: () => {
+      const selection = editorState.get().selection;
+      startDemoTeach(
+        selection
+          ? { mapId: selection.mapId, x: selection.x, y: selection.y, w: selection.width, h: selection.height }
+          : null,
+      );
+    },
   };
   // 더보기: 일상 액션 + 설정. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
   const headerMenu = createAiActionMenuItems({

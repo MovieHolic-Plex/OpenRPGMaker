@@ -9,11 +9,6 @@
 //  E3) "Enter 전송 · Shift+Enter 줄바꿈" 힌트가 액션 행을 영구 점유했다(실측 160x15).
 //      포커스 중에만 보여야 하고, 바 높이 = f(textarea 줄 수) 불변식을 지키려면
 //      display 가 아니라 visibility 로 숨겨야 한다.
-//  E5) 유리·사이드 도크는 CSS 로 `ai-command-menu-toggle` 과 추천 팝오버를 숨긴다
-//      (02-chat-dock.css). 그 결과 기본 도크에서 액션 행은 전송 버튼 하나만 든
-//      28px 빈 밴드였고, 타이핑을 시작하면 `ai-next-steps` 카드까지 사라져
-//      "무엇을 칠 수 있는지" 알려주는 표면이 0개가 됐다. 스킬 목록 진입점을
-//      도크와 무관하게 액션 행에 둔다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
@@ -121,17 +116,4 @@ describe("E3 힌트는 포커스 중에만", () => {
     input.dispatchEvent(new Event("blur"));
     expect(actions.className).not.toContain("is-input-focused");
   });
-});
-
-describe("E5 스킬 진입점은 모든 도크의 액션 행에 있다", () => {
-  for (const dock of ["glass", "side", "float"] as const) {
-    it(`${dock} 도크의 액션 행이 스킬 버튼을 직접 들고 있다`, () => {
-      const panel = renderPanel(dock);
-      const actions = findByTestId(panel, "ai-composer-actions") as unknown as FakeElement;
-      const skill = findByTestId(actions, "ai-composer-skill-button");
-
-      expect(skill, dock).toBeTruthy();
-      expect(skill?.getAttribute("title")).toBe("스킬 찾기");
-    });
-  }
 });
