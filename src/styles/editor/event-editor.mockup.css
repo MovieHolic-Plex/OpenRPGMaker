@@ -602,12 +602,17 @@
       8px
       minmax(300px, 1fr) !important;
   }
+  /* 인스펙터는 1180px 이하에서도 자기 그리드 트랙에 그대로 있다.
+     이전에는 `position: absolute; inset: 0 0 0 auto; width: min(348px, 46vw)` 오버레이여서
+     1024x768 실측 시 명령 컬럼(x=684 w=340)과 인스펙터(x=676 w=348)가 겹치며
+     [+ 명령] 버튼과 cmd-list 행이 elementFromPoint 기준으로 클릭 불가능해졌다.
+     트랙 포함 레이아웃은 event-editor.balanced.css 가 소유한다. */
   .event-editor .event-editor-inspector-column {
-    position: absolute;
-    z-index: 12;
-    inset: 0 0 0 auto;
-    width: min(348px, 46vw);
-    box-shadow: -16px 0 32px var(--shadow-pop);
+    box-shadow: none;
+    inset: auto;
+    position: static;
+    width: auto;
+    z-index: auto;
   }
 }
 
