@@ -57,7 +57,7 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
   if (!container || !snapshot || typeof document === "undefined") return;
 
   if (snapshot.testId) {
-    const target = container.querySelector<HTMLElement>(`[data-testid="${snapshot.testId}"]`);
+    const target = container.querySelector<HTMLElement>(`[data-testid="${cssEscape(snapshot.testId)}"]`);
     if (target && typeof target.focus === "function") {
       target.focus();
       return;
@@ -84,36 +84,44 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
  * 방향키(ArrowLeft/ArrowRight/ArrowUp/ArrowDown), Home, End 키보드 탐색을 위임 처리한다.
  */
 export function applyRovingTabindex(container: HTMLElement): void {
-  const toolbars = findToolbars(container);
-  for (const toolbar of toolbars) {
+  for (const toolbar of findToolbars(container)) {
     setupToolbarRoving(toolbar);
   }
 }
 
+function cssEscape(value: string): string {
+  const escape = (globalThis as { CSS?: { escape?: (v: string) => string } }).CSS?.escape;
+  return escape ? escape(value) : value.replace(/["\\]/g, "\\$&");
+}
+
+/**
+ * 좌패널 안의 도구막대를 찾는다.
+ *
+ * querySelectorAll 한 방으로 끝내고 싶지만 수동 스캔을 남긴 이유가 있다: 테스트 하네스
+ * test/fakeDom.ts 의 matchesSelector 는 `.class` / `[data-*=...]` / 태그만 해석하고
+ * `[role="toolbar"]` 같은 일반 속성 선택자를 매칭하지 못해 빈 배열을 준다(실측: 이 대비
+ * 경로를 지우자 test/sidebarFocus.test.ts 의 화살표 이동 케이스가 결정적으로 깨졌다).
+ * 실제 브라우저에서는 첫 줄에서 끝나고, 스캔은 하네스에서만 쓰인다.
+ */
 function findToolbars(container: HTMLElement): HTMLElement[] {
-  const list: HTMLElement[] = [];
-  const found = container.querySelectorAll<HTMLElement>('[role="toolbar"], .oprn-tile-toolbar, [data-testid="oprn-tile-toolbar"]');
-  if (found && found.length > 0) {
-    return Array.from(found);
-  }
-  const walk = (node: Element): void => {
-    if (node instanceof HTMLElement) {
-      if (
-        node.getAttribute("role") === "toolbar" ||
-        node.classList.contains("oprn-tile-toolbar") ||
-        node.dataset.testid === "oprn-tile-toolbar"
-      ) {
-        list.push(node);
-      }
-    }
-    if (node.children) {
-      for (const child of Array.from(node.children)) {
-        walk(child);
-      }
-    }
+  const matched = Array.from(container.querySelectorAll<HTMLElement>('[role="toolbar"], .oprn-tile-toolbar, [data-testid="oprn-tile-toolbar"]'));
+  if (matched.length > 0) return matched;
+
+  const found: HTMLElement[] = [];
+  const scan = (node: Element): void => {
+    if (node instanceof HTMLElement && isToolbar(node)) found.push(node);
+    for (const child of Array.from(node.children)) scan(child);
   };
-  walk(container);
-  return list;
+  scan(container);
+  return found;
+}
+
+function isToolbar(node: HTMLElement): boolean {
+  return (
+    node.getAttribute("role") === "toolbar" ||
+    node.classList.contains("oprn-tile-toolbar") ||
+    node.dataset.testid === "oprn-tile-toolbar"
+  );
 }
 
 function setupToolbarRoving(toolbar: HTMLElement): void {
