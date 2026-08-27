@@ -589,14 +589,31 @@
   outline: none;
 }
 
+/* 변화 카드는 파티 패널을 대체해 사이드바에 들어온다 — 도크 스킨에서도 파티와 같은 상단
+   띠(left/right 8px, top 7px)에 눕힌다. 이전 값(left:8px, width:72px, bottom:68px)은
+   left:24px 에서 시작하는 상세 패널 아래에 깔려 라벨이 세로로 잘리고 값은 전부 가려졌다.
+   능력치 다네 줄은 제목 오른쪽에서 2행×2열로 헤침다. 한 줄로 펼면 칸이 값보다
+   12px 짧아 "53 → 45 (−8)" 이 말줌이로 잘렸고, 2행이라도 높이는 파티 카드보다 낮다. */
 .oprn-status-menu .status-menu-stat-delta {
-  bottom: 68px;
+  align-content: center;
   display: grid;
-  gap: 2px;
+  gap: 3px 8px;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  grid-template-columns: max-content;
+  grid-template-rows: repeat(2, max-content);
   left: 8px;
-  padding: 5px;
+  padding: 4px 7px;
+  pointer-events: auto;
   position: absolute;
-  width: 72px;
+  right: 8px;
+  top: 7px;
+}
+
+.oprn-status-menu .status-menu-stat-delta-title {
+  align-self: center;
+  grid-column: 1;
+  grid-row: 1 / span 2;
 }
 
 .oprn-status-menu .status-menu-stat-delta-title {
@@ -611,6 +628,7 @@
   font: 600 8px/1.2 var(--runtime-pixel-font);
   gap: 3px;
   grid-template-columns: max-content minmax(0, 1fr);
+  min-width: 0;
   padding: 0;
 }
 

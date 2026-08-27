@@ -11,6 +11,7 @@ import {
   charsetFrameIndex,
   decodeCharsetFrameIndex,
 } from "@/assets/easyrpgRtp";
+import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { defaultResourceProfiles } from "@/project/defaults/defaultAssets";
 
@@ -77,7 +78,7 @@ describe("EasyRPG RTP asset manifest", () => {
     ]);
   });
 
-  it("keeps every generated EasyRPG RTP manifest entry available as a bundled file and resource profile", async () => {
+  it("keeps every RTP manifest entry as a bundled file, and every entry except the legacy faceset sheets as a resource profile", async () => {
     const fs = await loadFs();
     expect(EASYRPG_RTP_ASSETS.length).toBe(188);
 
@@ -87,12 +88,22 @@ describe("EasyRPG RTP asset manifest", () => {
 
     expect(missingFiles).toEqual([]);
 
-    const profileAssetIds = new Set(defaultResourceProfiles().map((profile) => profile.assetId));
+    // 얼굴 시트는 번들 파일로는 남기고(v3 저장본 해석용) 저자가 고르는 리소스에서만 뺀다.
+    // 이 제약이 없으면 리소스 관리자 얼굴 목록이 낱장 112장 대신 192×192 시트 5장만
+    // 보여준다 — 사용자 신고 2026-08-27.
+    const legacySheetIds = new Set(LEGACY_FACESET_SHEET_ASSETS.map((asset) => asset.id));
+    const profiles = defaultResourceProfiles();
+    const profileAssetIds = new Set(profiles.map((profile) => profile.assetId));
     const missingProfiles = EASYRPG_RTP_ASSETS
-      .filter((asset) => !profileAssetIds.has(asset.id))
+      .filter((asset) => !legacySheetIds.has(asset.id) && !profileAssetIds.has(asset.id))
       .map((asset) => `${asset.id}:${asset.category}`);
 
     expect(missingProfiles).toEqual([]);
+    expect([...legacySheetIds].filter((id) => profileAssetIds.has(id))).toEqual([]);
+
+    const faceProfiles = profiles.filter((profile) => profile.kind === "faceset");
+    expect(faceProfiles).toHaveLength(FACESET_FACE_ASSETS.length);
+    expect(faceProfiles.every((profile) => profile.imageWidth === FACE_IMAGE_SIZE)).toBe(true);
   });
 
   it("maps RPG Maker 2000 CharSet character selections to 24x32 spritesheet frame indexes", () => {

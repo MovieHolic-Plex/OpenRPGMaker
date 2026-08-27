@@ -335,6 +335,17 @@ function renderScatterSection(points: readonly EnemyScatterPoint[]): HTMLElement
     );
     return section;
   }
+  section.append(
+    el("div", {
+      class: "db-overview-legend",
+      dataset: { testid: "db-overview-scatter-legend" },
+      children: [
+        el("span", { class: "db-overview-legend-normal", text: "일반" }),
+        el("span", { class: "db-overview-legend-boss", text: "보스" }),
+        el("span", { class: "db-overview-legend-note", text: "x축 HP(로그) · y축 파티 DPS" }),
+      ],
+    }),
+  );
   section.append(scatterChart(points));
   return section;
 }
@@ -448,15 +459,21 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
     }),
   );
   for (const point of points) {
-    svg.append(
-      svgElement("circle", {
-        class: point.isBoss ? "db-overview-scatter-dot db-overview-scatter-dot-boss" : "db-overview-scatter-dot",
-        cx: String(round2(xFor(point.hp))),
-        cy: String(round2(yFor(point.dps))),
-        r: point.isBoss ? "6" : "5",
-        title: `${point.name} — exp ${point.exp}, gold ${point.gold}`,
-      }),
+    const dot = svgElement("circle", {
+      class: point.isBoss ? "db-overview-scatter-dot db-overview-scatter-dot-boss" : "db-overview-scatter-dot",
+      cx: String(round2(xFor(point.hp))),
+      cy: String(round2(yFor(point.dps))),
+      r: point.isBoss ? "6" : "5",
+    });
+    // SVG 요소는 title 속성을 툴팁으로 쓰지 않는다 — <title> 자식이어야 브라우저가 띄운다.
+    dot.append(
+      svgElement(
+        "title",
+        {},
+        `${point.name} — HP ${point.hp}, DPS ${point.dps}, exp ${point.exp}, gold ${point.gold}`,
+      ),
     );
+    svg.append(dot);
   }
   return svg;
 }

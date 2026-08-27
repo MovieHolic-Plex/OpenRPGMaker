@@ -13,6 +13,7 @@ import { CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { createBlankProject, DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { store } from "@/project/store";
+import { ROGUELIKE_RUN_VERSION, type RoguelikeRunState } from "@/project/roguelikeRun";
 import type { EventPage, EventPageCondition, GameEvent } from "@/project/types";
 import { el } from "@/util/dom";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -26,6 +27,17 @@ const SIMPLE_KINDS: readonly SimpleConditionKind[] = [
   "npcActivity",
   "friendshipAtLeast",
 ];
+
+const RUN_STATE: RoguelikeRunState = {
+  version: ROGUELIKE_RUN_VERSION,
+  runId: "guarantee-run",
+  seed: 1,
+  floor: 3,
+  status: "active",
+  flags: {},
+  roomResetCounts: {},
+  roomEventGenerationKeys: {},
+};
 
 function ensureEventWithPage(conditions: EventPage["conditions"] = []): {
   mapId: string;
@@ -93,6 +105,22 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "npcActivity", activity: "work" };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 50 };
+    case "battleResult":
+      return { kind: "battleResult", result: "victory" };
+    case "run":
+      return { kind: "run", query: "floor", op: ">=", value: 3 };
+    case "all":
+      return {
+        kind: "all",
+        conditions: [{ kind: "switch", switchId: project.switches[0]?.id ?? "sw_0001", value: true }],
+      };
+    case "any":
+      return {
+        kind: "any",
+        conditions: [{ kind: "switch", switchId: project.switches[0]?.id ?? "sw_0001", value: true }],
+      };
+    case "not":
+      return { kind: "not", condition: { kind: "switch", switchId: "sw_absent", value: true } };
   }
 }
 
@@ -195,6 +223,11 @@ describe("page conditions working guarantee (all kinds)", () => {
      sampleCondition("selfSwitch"),
       { kind: "selfSwitch", key: "B", value: false },
      sampleCondition("gold"),
+     sampleCondition("battleResult"),
+     sampleCondition("run"),
+     sampleCondition("all"),
+     sampleCondition("any"),
+     sampleCondition("not"),
    ];
     const page: EventPage = {
       id: "p",
@@ -345,6 +378,8 @@ describe("page conditions working guarantee (all kinds)", () => {
       gameTime: { minute: 0, hour: 12, day: 1, season: "spring" as const, year: 1 },
       npcActivities: { ev_runtime: "work" },
       friendship: { ev_runtime: 50 },
+      battleResult: "victory" as const,
+      roguelikeRun: RUN_STATE,
     };
     event.characterId = "ev_runtime";
     // fill variable id from actual sample
@@ -398,6 +433,8 @@ describe("page conditions working guarantee (all kinds)", () => {
         gameTime: undefined as undefined | { minute: number; hour: number; day: number; season: "spring" | "summer" | "fall" | "winter"; year: number },
         npcActivities: {} as Record<string, string>,
         friendship: {} as Record<string, number>,
+        battleResult: undefined as undefined | "victory" | "defeat" | "escape",
+        roguelikeRun: undefined as undefined | RoguelikeRunState,
       };
 
       // failing session — timer는 "N초 이하"라 미설정(0)도 참이므로 초과 값으로 실패시킨다.
@@ -413,6 +450,8 @@ describe("page conditions working guarantee (all kinds)", () => {
         friendship: { ...base.friendship },
         gameTime: base.gameTime,
         gold: base.gold,
+        battleResult: base.battleResult,
+        roguelikeRun: base.roguelikeRun,
       };
       if (condition.kind === "timer") {
         fail.timers[condition.timerId] = condition.seconds + 1;
@@ -420,6 +459,10 @@ describe("page conditions working guarantee (all kinds)", () => {
         fail.gameTime = { minute: 0, hour: 23, day: 1, season: "spring", year: 1 }; // night vs day sample
       } else if (condition.kind === "season") {
         fail.gameTime = { minute: 0, hour: 12, day: 1, season: "winter", year: 1 };
+      } else if (condition.kind === "not") {
+        // NOT 은 내부 조건이 참일 때 거짓이 된다.
+        const inner = condition.condition;
+        if (inner.kind === "switch") fail.switches[inner.switchId] = inner.value;
       }
       expect(resolveEventPage(event, fail), `${kind} should fail mismatched session`).toBeUndefined();
 
@@ -436,6 +479,8 @@ describe("page conditions working guarantee (all kinds)", () => {
         friendship: { ...base.friendship },
         gameTime: base.gameTime,
         gold: base.gold,
+        battleResult: base.battleResult,
+        roguelikeRun: base.roguelikeRun,
       };
       switch (condition.kind) {
         case "switch":
@@ -471,6 +516,21 @@ describe("page conditions working guarantee (all kinds)", () => {
         case "friendshipAtLeast":
           event.characterId = event.id;
           pass.friendship[event.id] = condition.value;
+          break;
+        case "battleResult":
+          pass.battleResult = condition.result;
+          break;
+        case "run":
+          pass.roguelikeRun = RUN_STATE;
+          break;
+        case "all":
+        case "any":
+          for (const child of condition.conditions) {
+            if (child.kind === "switch") pass.switches[child.switchId] = child.value;
+          }
+          break;
+        case "not":
+          // 내부 조건(sw_absent)이 거짓인 기본 세션에서 NOT 은 참이다.
           break;
       }
       expect(resolveEventPage(event, pass)?.id, `${kind} should pass matching session`).toBe("only");

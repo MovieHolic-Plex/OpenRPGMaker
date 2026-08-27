@@ -3,6 +3,8 @@ import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { bundledAssetRef, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
@@ -243,8 +245,21 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       assetId: asset.id,
     });
   }
+  // 얼굴은 낱장 파일이 리소스다. 4x4 시트(EASYRPG_RTP_ASSETS 의 faceset 행)는 v3 로드 해석용으로만
+  // 남아 있는 레거시라 저자에게 보이는 리소스 목록에는 등록하지 않는다.
+  for (const face of FACESET_FACE_ASSETS) {
+    if (profiles.some((profile) => profile.assetId === face.id)) continue;
+    profiles.push({
+      kind: "faceset",
+      name: face.name,
+      imageWidth: FACE_IMAGE_SIZE,
+      imageHeight: FACE_IMAGE_SIZE,
+      assetId: face.id,
+    });
+  }
   for (const asset of EASYRPG_RTP_ASSETS) {
     const kind = resourceKindForEasyRpgCategory(asset.category);
+    if (kind === "faceset") continue;
     if (profiles.some((profile) => profile.assetId === asset.id)) continue;
     profiles.push({
       kind,
@@ -260,7 +275,13 @@ export function defaultResourceProfiles(): ResourceProfile[] {
 }
 
 export function ensureBundledResourceProfiles(project: { resourceProfiles: ResourceProfile[] }): boolean {
-  const nextResourceProfiles = project.resourceProfiles.filter((profile) => profile.assetId !== LEGACY_RM_TILESET_TEXTURE_KEY);
+  // 이미 저장된 프로젝트에 남아 있는 4x4 얼굴 시트 프로필도 걷어낸다 — 그대로 두면
+  // 리소스 관리자에 192x192 시트가 계속 보인다(실측: 얼굴 그래픽 목록이 낱장 112장 대신 시트 5장이었다).
+  const staleFaceSheetIds = new Set<string>(LEGACY_FACESET_SHEET_IDS);
+  const nextResourceProfiles = project.resourceProfiles.filter(
+    (profile) => profile.assetId !== LEGACY_RM_TILESET_TEXTURE_KEY
+      && !(profile.kind === "faceset" && profile.assetId !== undefined && staleFaceSheetIds.has(profile.assetId))
+  );
   let changed = nextResourceProfiles.length !== project.resourceProfiles.length;
   project.resourceProfiles = nextResourceProfiles;
   const existingAssetIds = new Set(project.resourceProfiles.map((profile) => profile.assetId).filter((assetId) => assetId !== undefined));

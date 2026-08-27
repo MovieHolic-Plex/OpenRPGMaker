@@ -33,7 +33,9 @@ export const BATTLE_ASSET_PIXEL_SCALE = 2;
 
 /**
  * 컨테이너 크기에 맞는 배율. 정수 배율이 컨테이너의 88% 이상을 채우면 정수를 쓴다
- * (픽셀 보간 없음). 그렇지 않으면 꽉 채우는 소수 배율을 쓴다.
+ * (픽셀 보간 없음). 그렇지 않으면 꽉 채우는 소수 배율을 **0.5 단계로 내림해** 쓴다 —
+ * 임의 소수(예: 1.73)는 논리 1-2px 창 테두리와 픽셀 폰트가 디바이스 픽셀 격자에
+ * 걸려 흐려진다(실측). 0.5 배율은 논리 2px = 1 디바이스 px 이라 격자에 정확히 놓인다.
  */
 export function calculateBattleStageScale(width: number, height: number): number {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return 1;
@@ -41,7 +43,9 @@ export function calculateBattleStageScale(width: number, height: number): number
   if (exact <= 0) return 1;
   const integer = Math.floor(exact);
   if (integer >= 1 && integer / exact >= 0.88) return integer;
-  return Math.max(0.5, exact);
+  // 소수 폴백은 0.5 단계로 내림해 양자화한다. floor(exact) 보다 클 수 없으므로
+  // 컨테이너를 넘치지 않고, Math.max 의 0.5 가 그대로 바닥이 된다.
+  return Math.max(0.5, Math.floor(exact * 2) / 2);
 }
 
 type ScaleBinding = { readonly sync: () => void; readonly cleanup: () => void };

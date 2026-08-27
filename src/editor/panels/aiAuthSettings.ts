@@ -264,9 +264,10 @@ export function renderAiAuthSettings(
   }) as HTMLButtonElement;
   const deviceCodeRow = el("div", {
     class: "ai-oauth-device-code-row",
+    dataset: { testid: "ai-oauth-device-code-row" },
     children: [deviceUserCode, copyCodeButton],
   });
-  const deviceStep2 = el("span", { text: "2. 이 코드를 입력하세요" });
+  const deviceStep2 = el("span", { text: "2. 이 코드를 입력하세요", dataset: { testid: "ai-oauth-device-step2" } });
   const pasteInput = el("input", {
     class: "ai-config-input ai-oauth-paste-url",
     attrs: {
@@ -674,12 +675,16 @@ export function renderAiAuthSettings(
         if (login.verificationUrl) deviceUrl.setAttribute("href", login.verificationUrl);
         deviceUserCode.textContent = login.userCode || "";
         copyCodeButton.hidden = !login.userCode;
-        deviceCodeRow.hidden = login.pasteCallback === true && !login.userCode;
+        // 코드가 없는 로그인(브라우저 루프백 완료: Antigravity, 1455 를 잡은 Codex)에서는
+        // 빈 코드 줄과 "이 코드를 입력하세요" 가 남으면 사용자가 없는 코드를 찾게 된다.
+        deviceCodeRow.hidden = !login.userCode;
         pasteRow.hidden = login.pasteCallback !== true;
         pasteInput.value = "";
         deviceStep2.textContent = login.pasteCallback
           ? "2. 로그인 후 주소창의 127.0.0.1 주소를 붙여 넣으세요"
-          : "2. 이 코드를 입력하세요";
+          : login.userCode
+            ? "2. 이 코드를 입력하세요"
+            : "2. 로그인을 마치면 자동으로 연결됩니다";
         devicePoll.textContent = `로그인 확인 중… (0/${DEVICE_POLL_MAX_ATTEMPTS})`;
         setStatus("브라우저에서 로그인 대기 중", "checking");
         // 링크를 눌러 열 수도 있게 남겨 둔 채 자동 실행도 시도한다(팝업 차단 시 링크가 대안).

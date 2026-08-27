@@ -23,13 +23,24 @@ describe("포팅한 OAuth 라이브 로그인 (실제 제공자 엔드포인트)
     rmSync(dir, { recursive: true, force: true });
   });
 
-  it("openai-codex 로그인이 우리 device 흐름으로 실제 ChatGPT 코드를 받아온다", { timeout: 25_000 }, async () => {
+  it("openai-codex 로그인이 살아 있는 경로로 실제 제공자에 닿는다", { timeout: 25_000 }, async () => {
     const adapters = await createOhMyPiAdapters();
     const login = await adapters.login("openai-codex", {});
 
-    assert.equal(login.verificationUrl, "https://auth.openai.com/codex/device");
-    assert.match(String(login.userCode), /^[A-Z0-9-]{4,}$/, `userCode=${login.userCode}`);
-    assert.match(String(login.instructions), /Enter code/);
+    // 로그인은 두 경로다: 1455 를 잡으면 및라우저 PKCE, 잡힌 상황이라면 device 코드.
+    // 안내 문장은 고정하지 않고(문구는 바눲다) 기계가 쓰는 값만 계약으로 본다.
+    assert.ok(String(login.instructions).length > 0, "사용자에게 무엇을 할지 말해야 한다");
+
+    if (String(login.verificationUrl).startsWith("https://auth.openai.com/codex/device")) {
+      assert.match(String(login.userCode), /^[A-Z0-9-]{4,}$/, `userCode=${login.userCode}`);
+      return;
+    }
+
+    const url = new URL(String(login.verificationUrl));
+    assert.equal(url.origin + url.pathname, "https://auth.openai.com/oauth/authorize");
+    assert.equal(url.searchParams.get("redirect_uri"), "http://localhost:1455/auth/callback");
+    assert.equal(url.searchParams.get("code_challenge_method"), "S256");
+    assert.equal(login.userCode, "", "및라우저 경로는 사용자가 입력할 코드가 없다");
   });
 
   it("google-antigravity 로그인이 우리 인가 URL 과 루프백 리다이렉트를 만든다", async () => {

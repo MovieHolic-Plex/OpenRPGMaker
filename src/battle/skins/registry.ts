@@ -262,10 +262,10 @@ export function listBattleSkinIds(): BattleSkinId[] {
 }
 
 /** 미설정/미지의 값이 떨어지는 기본 스킨. */
-export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "vxace";
+export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "rm2003";
 
 /** legacy(`classic`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
- *  미설정(undefined)은 기본 스킨(vxace)으로, legacy `classic` 은 rm2003 으로 남긴다. */
+ *  미설정(undefined)은 기본 스킨(rm2003)으로, legacy `classic` 은 rm2003 으로 남긴다. */
 export function resolveSkinId(legacy: string | undefined): BattleSkinId {
   if (legacy === "pokemon") return "pokemon";
   if (legacy === "classic") return "rm2003";
