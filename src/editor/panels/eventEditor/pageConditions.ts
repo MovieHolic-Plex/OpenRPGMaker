@@ -20,6 +20,21 @@ import {
 } from "./pageConditionModel";
 import type { EventPage, MapId } from "@/project/types";
 
+const SWITCH_VALUE_OPTIONS = [
+  { value: "on", label: "켜짐" },
+  { value: "off", label: "꺼짐" },
+] as const;
+
+const ITEM_PRESENT_OPTIONS = [
+  { value: "present", label: "보유 중" },
+  { value: "absent", label: "보유 안 함" },
+] as const;
+
+const ACTOR_PRESENT_OPTIONS = [
+  { value: "present", label: "파티에 있음" },
+  { value: "absent", label: "파티에 없음" },
+] as const;
+
 export function renderPageConditions(
   mapId: MapId,
   eventId: string,
@@ -33,14 +48,14 @@ export function renderPageConditions(
       "스위치",
       switchConditionInputs({ ...context, slot: 0, testPrefix: "event-page-switch-condition" }),
       switchConditionAt(page, 0) !== undefined,
-      "켜짐",
+      "",
       (enabled) => toggleSwitchCondition({ ...context, slot: 0 }, enabled),
     ),
     conditionRow(
       "스위치",
       switchConditionInputs({ ...context, slot: 1, testPrefix: "event-page-switch2-condition" }),
       switchConditionAt(page, 1) !== undefined,
-      "켜짐",
+      "",
       (enabled) => toggleSwitchCondition({ ...context, slot: 1 }, enabled),
     ),
     conditionRow(
@@ -54,14 +69,14 @@ export function renderPageConditions(
       "아이템",
       itemConditionInputs(context),
       page.conditions.some((item) => item.kind === "item"),
-      "보유 중",
+      "",
       (enabled) => toggleSimpleCondition(context, "item", enabled),
     ),
     conditionRow(
       "주인공",
       actorConditionInputs(context),
       page.conditions.some((item) => item.kind === "actor"),
-      "파티에 있음",
+      "",
       (enabled) => toggleSimpleCondition(context, "actor", enabled),
     ),
     conditionRow(
@@ -150,19 +165,35 @@ function conditionRow(
 
 function switchConditionInputs(params: SwitchConditionParams): HTMLElement {
   const condition = switchConditionAt(params.page, params.slot);
-  const apply = (switchId: string) => {
+  let currentSwitchId = condition?.switchId ?? "";
+  const value = selectWithOptions(
+    SWITCH_VALUE_OPTIONS,
+    condition?.value === false ? "off" : "on",
+    `${params.testPrefix}-value`
+  );
+  const apply = () => {
     const next = withoutNthCondition(params.page.conditions, "switch", params.slot);
-    if (switchId) next.push({ kind: "switch", switchId, value: true });
+    if (currentSwitchId) {
+      next.push({
+        kind: "switch",
+        switchId: currentSwitchId,
+        value: selectedOptionValue(value, SWITCH_VALUE_OPTIONS, "on") === "on",
+      });
+    }
     updateEventPage(params.mapId, params.eventId, params.page.id, { conditions: next });
   };
+  value.addEventListener("change", apply);
   const picker = switchVariableIdPicker({
     kind: "switch",
-    currentId: condition?.switchId ?? "",
+    currentId: currentSwitchId,
     inputTestId: `${params.testPrefix}-input`,
     pickerTestId: `${params.testPrefix}-picker-open`,
-    onChange: apply,
+    onChange: (switchId) => {
+      currentSwitchId = switchId;
+      apply();
+    },
   });
-  return el("div", { class: "event-condition-control switch", children: [picker] });
+  return el("div", { class: "event-condition-control switch", children: [picker, value] });
 }
 
 function variableConditionInputs(context: PageConditionContext): HTMLElement {
@@ -211,34 +242,66 @@ function variableConditionInputs(context: PageConditionContext): HTMLElement {
 
 function actorConditionInputs(context: PageConditionContext): HTMLElement {
   const condition = context.page.conditions.find((item) => item.kind === "actor");
-  const apply = (actorId: string) => {
+  let currentActorId = condition?.kind === "actor" ? condition.actorId : "";
+  const present = selectWithOptions(
+    ACTOR_PRESENT_OPTIONS,
+    condition?.kind === "actor" && condition.present === false ? "absent" : "present",
+    "event-page-actor-condition-present"
+  );
+  const apply = () => {
     const next = withoutFirstCondition(context.page.conditions, "actor");
-    if (actorId) next.push({ kind: "actor", actorId, present: true });
+    if (currentActorId) {
+      next.push({
+        kind: "actor",
+        actorId: currentActorId,
+        present: selectedOptionValue(present, ACTOR_PRESENT_OPTIONS, "present") === "present",
+      });
+    }
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   };
+  present.addEventListener("change", apply);
   const actor = databaseRecordSelect({
     kind: "actor",
-    currentId: condition?.kind === "actor" ? condition.actorId : "",
+    currentId: currentActorId,
     testId: "event-page-actor-condition-input",
-    onChange: apply,
+    onChange: (actorId) => {
+      currentActorId = actorId;
+      apply();
+    },
   });
-  return el("div", { class: "event-condition-control record", children: [actor] });
+  return el("div", { class: "event-condition-control record", children: [actor, present] });
 }
 
 function itemConditionInputs(context: PageConditionContext): HTMLElement {
   const condition = context.page.conditions.find((item) => item.kind === "item");
-  const apply = (itemId: string) => {
+  let currentItemId = condition?.kind === "item" ? condition.itemId : "";
+  const present = selectWithOptions(
+    ITEM_PRESENT_OPTIONS,
+    condition?.kind === "item" && condition.present === false ? "absent" : "present",
+    "event-page-item-condition-present"
+  );
+  const apply = () => {
     const next = withoutFirstCondition(context.page.conditions, "item");
-    if (itemId) next.push({ kind: "item", itemId, present: true });
+    if (currentItemId) {
+      next.push({
+        kind: "item",
+        itemId: currentItemId,
+        present: selectedOptionValue(present, ITEM_PRESENT_OPTIONS, "present") === "present",
+      });
+    }
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   };
+  present.addEventListener("change", apply);
   const item = databaseRecordSelect({
     kind: "item",
-    currentId: condition?.kind === "item" ? condition.itemId : "",
+    currentId: currentItemId,
     testId: "event-page-item-condition-input",
-    onChange: apply,
+    onChange: (itemId) => {
+      currentItemId = itemId;
+      apply();
+    },
   });
-  return el("div", { class: "event-condition-control record", children: [item] });
+  return el("div", { class: "event-condition-control record", children: [item, present] });
 }
 
 function timerConditionInputs(context: PageConditionContext, timerId: "timer1" | "timer2"): HTMLElement {
