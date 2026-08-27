@@ -276,3 +276,21 @@
 .ecp-lamp { display: grid; place-items: center; width: 56px; height: 30px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; }
 .ecp-lamp.on { background: var(--success-muted); color: var(--success); border: 1px solid var(--success); }
 .ecp-lamp.off { background: var(--control-bg); color: var(--text-3); border: 1px solid var(--border-strong); }
+.ecp-vital-gauge {
+  width: 100%;
+  max-width: 160px;
+  height: 10px;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ecp-vital-gauge-fill {
+  height: 100%;
+  min-width: 8px;
+}
+.ecp-vital-gauge-fill.hurt { background: var(--danger, #C4473A); }
+.ecp-vital-gauge-fill.heal { background: var(--success, #2F8A4E); }
+.ecp-vital-gauge-fill.set { background: var(--accent, #4A57D6); }
+.ecp-vital-gauge-fill.full.hp { background: var(--danger, #C4473A); }
+.ecp-vital-gauge-fill.full.mp { background: var(--accent, #4A57D6); }

@@ -34,3 +34,59 @@ describe("battleProcessing command preview", () => {
     }
   });
 });
+
+describe("actor vital and faceset command previews", () => {
+  it("changeActorHp renders an HP gauge stage", () => {
+    const restore = installFakeDom();
+    try {
+      const project = createBlankProject();
+      store.replace(project);
+      const actorId = project.database.actors[0]?.id ?? "";
+      const preview = renderCommandPreview({
+        kind: "changeActorHp",
+        actorId,
+        op: "-=",
+        amount: 10,
+      }) as unknown as HTMLElement;
+      expect(findByTestId(preview as unknown as FakeElement, "ecp-hp-stage")).toBeTruthy();
+      expect(findByTestId(preview as unknown as FakeElement, "ecp-hp-gauge")).toBeTruthy();
+      expect(preview.textContent).toContain("HP");
+    } finally {
+      restore();
+    }
+  });
+
+  it("recoverAll is registered as a visual preview handler with gauges", () => {
+    const restore = installFakeDom();
+    try {
+      store.replace(createBlankProject());
+      const preview = renderCommandPreview({ kind: "recoverAll" }) as unknown as HTMLElement;
+      expect(findByTestId(preview as unknown as FakeElement, "ecp-recover-stage")).toBeTruthy();
+      expect(findByTestId(preview as unknown as FakeElement, "ecp-recover-hp-gauge")).toBeTruthy();
+      expect(preview.textContent).toContain("회복");
+    } finally {
+      restore();
+    }
+  });
+
+  it("m2 change-actor-faceset preview renders a faceset crop", () => {
+    const restore = installFakeDom();
+    try {
+      const project = createBlankProject();
+      store.replace(project);
+      const actor = project.database.actors[0];
+      const preview = renderCommandPreview({
+        kind: "m2Command",
+        commandId: "m2-025-change-actor-faceset",
+        fields: { target: actor?.id ?? "", value: actor?.faceResourceId ?? "", faceIndex: 0 },
+      }) as unknown as HTMLElement;
+      const crop =
+        findByTestId(preview as unknown as FakeElement, "event-command-face-crop-shell")
+        ?? findByTestId(preview as unknown as FakeElement, "event-command-face-preview");
+      expect(crop).toBeTruthy();
+      expect(findByTestId(preview as unknown as FakeElement, "ecp-runtime-effect")).toBeFalsy();
+    } finally {
+      restore();
+    }
+  });
+});

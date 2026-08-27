@@ -118,6 +118,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeExp: (cmd, ctx) => expGaugeStage(cmd, previewDeps(ctx)),
   learnSkill: skillStage,
   battleProcessing: battleStage,
+  m2Command: (cmd, ctx) => m2Preview(cmd, ctx),
   setSwitch: (cmd, ctx) => lampStage(switchName(cmd.switchId), resolveSwitchDisplay(cmd, ctx), ctx?.simState ? getSimSwitch(ctx.simState, cmd.switchId) : undefined),
   setVariable: variableStage,
   setSelfSwitch: (cmd) => lampStage(`이 이벤트 기억 ${cmd.key}`, cmd.value),
@@ -1417,6 +1418,96 @@ function weatherPreviewLabel(kind: Extract<Command, { kind: "setWeather" }>["wea
     default:
       return String(kind);
   }
+}
+
+
+function hpStage(cmd: Extract<Command, { kind: "changeActorHp" }>, context?: CommandPreviewContext): HTMLElement {
+  const project = store.getCurrent();
+  const record = project.database.actors.find((actor) => actor.id === cmd.actorId);
+  const stage = el("div", {
+    class: "ecp-icon-stage ecp-hp-stage",
+    dataset: { testid: "ecp-hp-stage" },
+  });
+  stage.append(el("div", {
+    class: "ecp-hero-icon",
+    children: [recordIconElement(facesetIconOf(project, record?.faceResourceId, record?.faceIndex ?? 0), record?.name ?? cmd.actorId)],
+  }));
+  stage.append(el("div", { class: "ecp-icon-name", text: record?.name ?? (cmd.actorId || "(주인공 선택)") }));
+  const amountText = cmd.amountMode === "percent" ? `${cmd.amount}%` : String(cmd.amount);
+  stage.append(el("div", { class: "ecp-op-strip", text: `HP ${cmd.op} ${amountText}` }));
+  const fill = cmd.op === "-="
+    ? 32
+    : cmd.op === "+="
+      ? 78
+      : Math.max(8, Math.min(100, cmd.amountMode === "percent" ? cmd.amount : 50));
+  const fillClass = cmd.op === "-=" ? "hurt" : cmd.op === "+=" ? "heal" : "set";
+  const gauge = el("div", { class: "ecp-vital-gauge", dataset: { testid: "ecp-hp-gauge" } });
+  const bar = el("div", { class: `ecp-vital-gauge-fill ${fillClass}` });
+  (bar as HTMLElement).style.width = `${fill}%`;
+  gauge.append(bar);
+  stage.append(gauge);
+  if (context?.simState) {
+    stage.append(el("div", { class: "ecp-current-state", text: `HP ${cmd.op} ${amountText}` }));
+  }
+  return stage;
+}
+
+function recoverAllStage(cmd: Extract<Command, { kind: "recoverAll" }>, context?: CommandPreviewContext): HTMLElement {
+  const project = store.getCurrent();
+  const record = cmd.actorId ? project.database.actors.find((actor) => actor.id === cmd.actorId) : undefined;
+  const stage = el("div", {
+    class: "ecp-icon-stage ecp-recover-stage",
+    dataset: { testid: "ecp-recover-stage" },
+  });
+  if (record) {
+    stage.append(el("div", {
+      class: "ecp-hero-icon",
+      children: [recordIconElement(facesetIconOf(project, record.faceResourceId, record.faceIndex ?? 0), record.name)],
+    }));
+    stage.append(el("div", { class: "ecp-icon-name", text: record.name }));
+  } else {
+    stage.append(el("div", { class: "ecp-gold-badge", text: "+" }));
+    stage.append(el("div", { class: "ecp-icon-name", text: "파티 전체" }));
+  }
+  stage.append(el("div", { class: "ecp-op-strip", text: "HP · MP 전원 회복" }));
+  for (const kind of ["hp", "mp"] as const) {
+    const gauge = el("div", { class: "ecp-vital-gauge", dataset: { testid: `ecp-recover-${kind}-gauge` } });
+    const bar = el("div", { class: `ecp-vital-gauge-fill full ${kind}` });
+    (bar as HTMLElement).style.width = "100%";
+    gauge.append(bar);
+    stage.append(gauge);
+  }
+  if (context?.simState) {
+    stage.append(el("div", { class: "ecp-current-state", text: "현재 상태: 회복" }));
+  }
+  return stage;
+}
+
+function m2Preview(cmd: Extract<Command, { kind: "m2Command" }>, context?: CommandPreviewContext): HTMLElement {
+  if (cmd.commandId === "m2-025-change-actor-faceset") {
+    const resourceId = String(cmd.fields.value ?? "").trim();
+    const faceIndex = Math.max(0, Math.trunc(Number(cmd.fields.faceIndex ?? 0)) || 0);
+    const project = store.getCurrent();
+    const actor = project.database.actors.find((entry) => entry.id === String(cmd.fields.target ?? ""));
+    const stage = el("div", {
+      class: "ecp-stage ecp-face-stage",
+      dataset: { testid: "ecp-m2-faceset-stage" },
+    });
+    stage.append(renderFacesetCrop({
+      resourceId: resourceId || actor?.faceResourceId || "",
+      faceIndex: resourceId ? faceIndex : (actor?.faceIndex ?? 0),
+      flipHorizontally: false,
+      displaySize: PREVIEW_FACE_SIZE,
+      position: "left",
+    }));
+    stage.append(el("div", {
+      class: "ecp-face-caption",
+      text: actor?.name ? `${actor.name} 얼굴` : "주인공 얼굴 변경",
+      dataset: { testid: "ecp-face-caption" },
+    }));
+    return stage;
+  }
+  return summaryCard(cmd, context);
 }
 
 function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEventId?: string): string | null {
