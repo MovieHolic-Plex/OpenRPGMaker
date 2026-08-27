@@ -56,9 +56,10 @@ export interface ResolvedStep {
   readonly dy: Axis;
 }
 
-// 대각선 통행/미끄러짐 판정(순수). canStep(dx,dy)=현재 칸에서 직교 한 칸 통행 가능?
+// 대각선 통행/미끄러짐 판정(순수). canStep(dx,dy)=현재 칸에서 (dx,dy) 칸으로 갈 수 있나?
 // - 직교 입력: 해당 칸이 열려있으면 이동, 아니면 null.
-// - 대각선 입력: 양쪽 직교 칸이 모두 열려야 대각선 이동(모서리 끼임 방지).
+// - 대각선 입력: 양쪽 직교 칸이 모두 열리고 **대각선 목적지 자체도** 열려야 대각선 이동.
+//   목적지 검사가 빠지면 두 직교가 열린 코너에서 통행 불가 칸으로 들어가는 코너컷이 난다.
 //   한쪽만 막히면 가능한 직교 방향으로 미끄러지고, 둘 다 막히면 null.
 export function resolveDiagonalStep(
   x: Axis,
@@ -69,7 +70,7 @@ export function resolveDiagonalStep(
   if (x !== 0 && y !== 0) {
     const horiz = canStep(x, 0);
     const vert = canStep(0, y);
-    if (horiz && vert) return { dx: x, dy: y };
+    if (horiz && vert && canStep(x, y)) return { dx: x, dy: y };
     if (horiz) return { dx: x, dy: 0 };
     if (vert) return { dx: 0, dy: y };
     return null;

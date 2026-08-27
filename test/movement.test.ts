@@ -64,6 +64,12 @@ describe("resolveDiagonalStep (대각선 통행/미끄러짐 판정)", () => {
     expect(resolveDiagonalStep(1, -1, stepper([[1, 0]]))).toEqual({ dx: 0, dy: -1 });
   });
 
+  it("양쪽 직교가 열려도 대각선 목적지가 막혀 있으면 대각선으로 들어가지 않는다", () => {
+    // 코너컷 버그: (1,0)/(0,-1) 은 열려 있고 대각선 목적지 (1,-1) 만 통행 불가.
+    // 목적지로 진입할 수 없으므로 대각선 대신 직교로 미끄러져야 한다.
+    expect(resolveDiagonalStep(1, -1, stepper([[1, -1]]))).toEqual({ dx: 1, dy: 0 });
+  });
+
   it("양쪽 직교가 모두 막히면 이동하지 않는다", () => {
     expect(resolveDiagonalStep(1, -1, stepper([[1, 0], [0, -1]]))).toBeNull();
   });
