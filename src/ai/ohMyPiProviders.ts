@@ -9,7 +9,9 @@
 // id 문자열은 src/ai/oauth/credentials.ts 에서 가져온다 — 전송 계층(packRequestApiKey)과 UI 가
 // 같은 상수를 보게 해서 한쪽만 오타/개명되는 사고를 없앤다.
 
-import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+// 상대 경로 + 확장자로 가져온다: 이 모듈은 브라우저 번들뿐 아니라 **순수 Node**(동반 서비스의
+// scripts/lib/aiAuthRuntime.ts)에서도 로드된다. Node 는 `@/` 별칭도, 확장자 없는 지정자도 풀지 못한다.
+import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials.ts";
 
 /**
  * 자격 증명 종류. 레지스트리에는 oauth 만 남았지만 세 값을 유지한다 — 동반 서비스의
