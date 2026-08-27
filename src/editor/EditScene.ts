@@ -41,8 +41,7 @@ import {
   movePastePreview,
   selectTileRegion,
 } from "@/editor/mapClipboard";
-import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
-import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
 import {
@@ -789,6 +788,10 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
+    // 히스토리 키는 굵은 가드보다 먼저 — shouldIgnoreEditorShortcut 은 체크박스/슬라이더
+    // 포커스까지 INPUT 으로 묶어 되돌리기를 삼켰다. handleHistoryHotkey 가 텍스트 편집
+    // 포커스만 정확히 양보하고, 성공/빈 스택 모두 토스트로 알린다.
+    if (this.handleHistoryKey(event)) return;
     // 텍스트 입력/모달이 포커스를 잡고 있으면 에디터 단축키를 끈다.
     if (shouldIgnoreEditorShortcut(event)) return;
     if (this.cameraPanController?.handleSpaceKeyDown(event)) return;
@@ -797,6 +800,19 @@ export class EditScene extends PhaserRuntime.Scene {
     // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
     if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
     this.handleShortcut(event);
+  }
+
+  private handleHistoryKey(event: KeyboardEvent): boolean {
+    if (!isHistoryHotkeyChord(event)) return false;
+    // 데이터베이스/이벤트 에디터 모달은 자체 리스너로 같은 키를 처리한다 — 두 번 되돌리지 않는다.
+    if (historyHotkeyOwnedByPanel()) return false;
+    const mid = this.mapId();
+    if (mid && !canEditMap(mid)) {
+      event.preventDefault();
+      toast(mapEditLockNotice(mid), "error");
+      return true;
+    }
+    return handleHistoryHotkey(event);
   }
 
   private handleEscapeKey(): boolean {
@@ -856,22 +872,12 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     const mid = this.mapId();
     if (!mid) return;
-    if ((key === "z" || key === "y" || key === "v") && !canEditMap(mid)) {
+    if (key === "v" && !canEditMap(mid)) {
       event.preventDefault();
       toast(mapEditLockNotice(mid), "error");
       return;
     }
-    if (key === "z") {
-      event.preventDefault();
-      if (event.shiftKey) {
-        redoMapEdit();
-      } else {
-        undoMapEdit();
-      }
-    } else if (key === "y") {
-      event.preventDefault();
-      redoMapEdit();
-    } else if (key === "c") {
+    if (key === "c") {
       event.preventDefault();
       if (editorState.get().layer === "event") {
         const t = this.lastPointerTile;

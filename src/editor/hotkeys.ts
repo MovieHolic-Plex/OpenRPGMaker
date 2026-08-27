@@ -68,7 +68,11 @@ const NON_TEXT_INPUT_TYPES: ReadonlySet<string> = new Set([
  * 텍스트 편집이 아니므로 여기서 제외한다(P11-C: 체크박스 포커스 중 Ctrl+Z 무반응).
  */
 export function isTextEditingFocus(event: KeyboardEvent): boolean {
-  const target = event.target;
+  return isTextEditingElement(event.target);
+}
+
+/** isTextEditingFocus 의 요소 판정부 — 포커스 반납(mapSurfaceFocus) 도 같은 규칙을 써야 한다. */
+export function isTextEditingElement(target: unknown): boolean {
   if (typeof HTMLElement === "undefined" || !(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
   if (tag === "INPUT") {
@@ -81,11 +85,28 @@ export function isTextEditingFocus(event: KeyboardEvent): boolean {
   return target.isContentEditable;
 }
 
+/** Ctrl/Cmd+Z · Ctrl/Cmd+Shift+Z · Ctrl/Cmd+Y 인지 — 히스토리 키를 다른 가드보다 먼저 라우팅하려면 필요. */
+export function isHistoryHotkeyChord(event: KeyboardEvent): boolean {
+  if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
+  const key = event.key.toLowerCase();
+  return key === "z" || key === "y";
+}
+
+/**
+ * 자체 document/backdrop 리스너로 handleHistoryHotkey 를 이미 부르는 패널이 떠 있는지.
+ * 이 경우 맵 씬까지 같은 키를 처리하면 한 번의 Ctrl+Z 가 두 단계를 되돌린다.
+ */
+export function historyHotkeyOwnedByPanel(): boolean {
+  if (typeof document === "undefined") return false;
+  if (document.querySelector("[data-testid='database-modal']")) return true;
+  return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
+}
+
 /**
  * 모달(데이터베이스/이벤트 에디터) 이 열려 있어도 전역 실행취소/다시실행을 처리한다.
  * 텍스트 입력 필드에 포커스가 있으면(브라우저 텍스트 undo 우선) 무시한다.
  * Ctrl+Z = 실행취소, Ctrl+Y 또는 Ctrl+Shift+Z = 다시실행.
- * 히스토리 키(Ctrl+Z/Y)는 스택이 비어 있어도 브라우저 기본 동작을 막지만,
+ * 히스토리 키(Ctrl+Z/Y)는 스택이 비어 있어도 브라우저 기본 동작을 막는다.
  * @returns 프로젝트 상태가 실제로 복원/재적용되었으면 true(=재렌더 필요).
  */
 export function handleHistoryHotkey(event: KeyboardEvent): boolean {
