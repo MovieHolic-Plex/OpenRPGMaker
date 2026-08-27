@@ -40,7 +40,7 @@ import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
-import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
+import { repairLayoutPlacement } from "@/project/lint/layoutPlacementRepair";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
@@ -784,12 +784,13 @@ export async function runRegionTask(
         mapId: opts.mapId,
         region: opts.region,
       });
-      const layoutIssues = validateLayoutPlacement(harness.project, {
+      const repaired = repairLayoutPlacement(harness.project, {
         mapId: opts.mapId,
         region: { x: opts.region.x, y: opts.region.y, width: opts.region.width, height: opts.region.height },
         instruction,
         toolNames,
       });
+      const layoutIssues = repaired.remaining;
       const structuredLayoutIssues = layoutIssues.map((issue) => ({
         code: issue.code,
         severity: issue.severity === "error" ? "error" as const : "warning" as const,
@@ -802,7 +803,7 @@ export async function runRegionTask(
         .filter((issue) => issue.severity === "error")
         .map((issue) => issue.message);
       return {
-        project: harness.project,
+        project: repaired.project,
         report: {
           ...harness.report,
           issues: [...harness.report.issues, ...structuredLayoutIssues],

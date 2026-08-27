@@ -733,12 +733,47 @@ function applyMarketPlan(map: GameMap, plan: MarketErasePlan): void {
   if (plan.upperTo !== undefined) map.upperTiles[index] = plan.upperTo;
 }
 
+// 지우기의 "기본 바닥" — 하위를 빈 칸(TILE.EMPTY)으로 남기면 에디터에는 빈 칸 체커가,
+// 플레이에는 검은 배경이 드러난다(editSceneRender 의 createEmptyTile / createPlayGame 의 "#000").
+// 조수에게 "이거 지워·다시 해줘" 를 시키면 되돌릴 곳은 구멍이 아니라 지면이다 — clear_region(기본 잔디),
+// planMarketErase(잔디 복원), resize_map, applyMapShift 는 이미 그렇게 한다. tile_erase 만 이 열 밖에 있어서
+// 조수가 기본 바닥을 체커로 남기는 상황을 만들어 왔다(사용자 보고 2026-08-27).
+// rect 밖에서 가장 흔한 하위 타일을 기본 바닥으로 본다 — 실내는 실내 바닥, 야외는 잔디가 자연히 잡힌다.
+// 맵 전체가 rect 면 안쪽 최빈값, 그마저도 없으면 잔디.
+// 진짜 구멍(하늘 맵·허공)이 필요하면 clear_region 의 fill="empty" 를 쓴다.
+function baseGroundTile(map: GameMap, rect: Rect): number {
+  const outside = new Map<number, number>();
+  const inside = new Map<number, number>();
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      const tile = map.lowerTiles[y * map.width + x];
+      if (tile === undefined || tile < 0) continue;
+      const within = x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h;
+      const counts = within ? inside : outside;
+      counts.set(tile, (counts.get(tile) ?? 0) + 1);
+    }
+  }
+  return mostFrequentTile(outside) ?? mostFrequentTile(inside) ?? TILE.GRASS;
+}
+
+function mostFrequentTile(counts: ReadonlyMap<number, number>): number | null {
+  let best: number | null = null;
+  let bestCount = 0;
+  for (const [tile, count] of counts) {
+    if (count > bestCount) {
+      best = tile;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
 // tile_erase — 승인 어휘를 소비하지 않는 유일한 배치 툴(지우기는 어휘 결정이 없다).
 // v2 tile_paint의 erase 경로를 대체 — v3 시공 프리미티브에 없던 "되돌리기/청소" 수단.
 const tileErase: ToolDefinition = {
   name: "tile_erase",
   description:
-    "지정 사각형의 타일을 비운다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다. " +
+    "지정 사각형을 정리한다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 상위는 빈 칸이 되고, 하위는 맵의 기본 바닥(rect 밖에서 가장 흔한 하위 타일 — 실내는 실내 바닥, 야외는 잔디)으로 되돌아가 바닥에 구멍을 남기지 않는다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다. " +
     "kind: all(기본, rect 전체를 통째로 비움)/market(시장·상점 데크 철거 전용 — 나무 마루·좌판 난간·진열대·과일·나무 상자·돌 단만 지우고, " +
     "겹친 집(벽·창문·지붕)·흙길(360)·잔디처럼 시장 타일이 아닌 것은 그대로 보존한다. 시장 lower를 지운 칸은 잔디로 되돌린다). " +
     "집과 시장이 한 bbox에 섞여 있으면 kind=market 을 쓸 것 — kind 생략(all)은 집까지 다 지운다.",
@@ -794,22 +829,23 @@ const tileErase: ToolDefinition = {
         },
       };
     }
+    const groundTile = baseGroundTile(map, rect);
     const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
       const index = cell.y * map.width + cell.x;
-      if (layer === "both" || layer === "lower") map.lowerTiles[index] = TILE.EMPTY;
+      if (layer === "both" || layer === "lower") map.lowerTiles[index] = groundTile;
       if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
     });
     let cleared = 0;
     for (const cell of filtered.cells) {
       const index = cell.y * map.width + cell.x;
-      if (layer === "both" || layer === "lower") map.lowerTiles[index] = TILE.EMPTY;
+      if (layer === "both" || layer === "lower") map.lowerTiles[index] = groundTile;
       if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
       cleared += 1;
     }
     return {
-      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 비움(${layer}) — ${cleared}/${allCells.length}칸${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 정리(${layer}) — ${cleared}/${allCells.length}칸${layer === "upper" ? "" : `, 하위는 기본 바닥 ${groundTile} 복원`}${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
       warnings: protectedSkipWarnings(filtered.skipped),
-      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer, kind },
+      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer, kind, groundTile },
     };
   },
 };
