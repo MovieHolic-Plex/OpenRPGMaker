@@ -361,6 +361,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
+  let panelRoot: HTMLElement | null = null;
+  // 빈 로그 껍데기(.ai-glass-log·.ai-history-log-mount)를 접고 시작 블록을 가운데로 올리는 CSS 훅.
+  // 턴 행 testid 가 아니라 **로그의 자식 유무**로 판정해야 한다 — 복원된 대화는 그 testid 를 달지
+  // 않아 testid 로 세면 복원된 로그를 숨긴다. `:empty` 로도 못 잡는다 — 껍데기 안에 빈
+  // .ai-chat-log 엘리먼트가 실제로 들어 있다.
+  const syncConversationState = (): void => {
+    if (panelRoot) panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
+  };
   const pinHost = el("div", {
     class: "ai-proposal-pin-host",
     dataset: { testid: "ai-proposal-pin-host" },
@@ -618,6 +626,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 남아 .ai-glass-log 가 display:none 이라 사용자에게 보이지 않는다(실보 2026-08-27).
     syncGlassIdle();
     refreshExportButton();
+    syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
   };
 
@@ -1681,6 +1690,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const hasLog = Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row]"));
+    syncConversationState();
     const busy = hasLog || Boolean(turnBusy || runningProgress);
     const dock = readChatDock();
     const show = (dock === "glass" || dock === "side")
@@ -1705,7 +1715,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         text: nextStepHint(brief),
       }),
       buildAiAuthoringExamples({
-        examples: AI_AUTHORING_EXAMPLES.slice(0, 2),
+        examples: AI_AUTHORING_EXAMPLES.slice(0, 4),
         onPick: pickExample,
       }),
     ];
@@ -2333,9 +2343,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       uiDensity: "shared",
       chatDock: currentChatDock(),
       temperature: readTemperature(),
+      aiConversation: "empty",
     },
     children: [header, toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
   });
+  panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
