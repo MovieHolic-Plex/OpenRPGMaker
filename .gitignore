@@ -5,6 +5,7 @@ dist/
 !.omo/evidence/
 .omo/evidence/*
 !.omo/evidence/rm2003-database-plan/
+!.omo/evidence/ai-compaction/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -34,6 +35,12 @@ nul
 .omc/
 .playwright-mcp/
 evidence/
+# 위 evidence/ 는 어디에 있는 evidence 디렉터리든 잡으므로 앞에서 둔 .omo/evidence 화이트리스트를
+# 무력화한다(실측: git check-ignore -v 가 .gitignore 의 evidence/ 행을 지목했다). 증거로
+# 추적하는 .omo/evidence 하위 디렉터리는 이 뒤에서 다시 예외 처리해야 한다.
+!.omo/evidence/
+!.omo/evidence/ai-compaction/
+!.omo/evidence/ai-compaction/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json
