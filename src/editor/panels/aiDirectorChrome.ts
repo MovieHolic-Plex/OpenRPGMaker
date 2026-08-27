@@ -48,22 +48,20 @@ export function createAssistantFace(options: DirectorFaceOptions = {}): HTMLElem
 }
 
 export function createDirectorRestoreButton(): HTMLButtonElement {
-  const button = el("button", {
+  return el("button", {
     class: "ai-collapsed-restore",
     attrs: {
       type: "button",
-      title: DIRECTOR_RESTORE_LABEL,
+      title: "조수 열기",
       "aria-label": DIRECTOR_RESTORE_LABEL,
     },
     dataset: { testid: "ai-collapsed-restore" },
     children: [
       el("span", { class: "ai-collapsed-restore-dot", attrs: { "aria-hidden": "true" } }),
       createAssistantFace(),
+      el("span", { class: "ai-collapsed-restore-name", text: DIRECTOR_NAME }),
     ],
-  });
-  button.style.width = `${DIRECTOR_FACE_SIZE_PX}px`;
-  button.style.height = `${DIRECTOR_FACE_SIZE_PX}px`;
-  return button;
+  }) as HTMLButtonElement;
 }
 
 export function createDirectorPlate(): DirectorPlateHandle {

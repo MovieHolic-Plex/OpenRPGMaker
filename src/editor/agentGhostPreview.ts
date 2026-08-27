@@ -13,7 +13,7 @@ export interface AgentGhostCell {
   readonly tileId?: number;
 }
 
-/** 스탬프 애니메이션 1스텝: 어떤 셀을 언제, 어떤 종류로 드러낼지. */
+/** 와이프 1스텝: 어떤 셀을 언제, 어떤 종류로 드러낼지. */
 export interface GhostRevealStep {
   readonly cell: AgentGhostCell;
   readonly startMs: number;
@@ -21,55 +21,38 @@ export interface GhostRevealStep {
 }
 
 export interface GhostRevealScheduleOptions {
-  /** 타일 셀 간 기본 간격(기본 50ms). */
-  readonly tileStepMs?: number;
-  /** 타일 스윕 총 길이 상한(기본 2500ms) — 넘으면 간격을 줄인다. */
-  readonly maxTileSweepMs?: number;
-  /** 타일 간격 최소값(기본 8ms). */
-  readonly minTileStepMs?: number;
-  /** 이벤트 셀 간 간격(기본 100ms). */
-  readonly eventStepMs?: number;
+  /** 와이프 총 길이(기본 GHOST_WIPE_DURATION_MS). */
+  readonly durationMs?: number;
 }
 
-export const GHOST_REVEAL_TILE_STEP_MS = 50;
-export const GHOST_REVEAL_TILE_SWEEP_CAP_MS = 2500;
-export const GHOST_REVEAL_MIN_TILE_STEP_MS = 8;
-export const GHOST_REVEAL_EVENT_STEP_MS = 100;
+/** 좌→우 와이프 총 길이 — 셀 수와 무관하게 고정이다. */
+export const GHOST_WIPE_DURATION_MS = 420;
+/** 마지막 열이 드러난 뒤 완료로 넘어가기까지의 유지 시간. */
+export const GHOST_WIPE_HOLD_MS = 150;
 
 /**
- * 목업(proposal-v2.html) 계약의 순수 함수 구현.
- * - 타일: row-major(y↑ 그다음 x↑, 같은 좌표는 lower→upper)로 tileStep 간격.
- *   셀이 많으면 총 스윕이 상한을 넘지 않도록 간격을 줄인다(최소 minTileStepMs).
- * - 이벤트/NPC: 마지막 타일 시작 + eventStep 부터 x↑(그다음 y↑)로 eventStep 간격.
+ * 좌에서 우로 한 번 지나가는 단일 와이프 스케줄.
+ *
+ * 이전 구현은 셀 하나하나를 row-major 로 스탬프하며 최대 2.5초 동안 팝·링·스파크를 뿌렸다.
+ * 변경 규모가 클수록 오래 걸리고, "무슨 연출인지"가 "무엇이 바뀌었는지"를 가렸다. 이제는
+ * 열(x) 단위로 선단이 한 번 지나간다: 같은 열은 같은 시각에, 시각은 열 인덱스가 아니라
+ * **x 위치에 비례**하므로 선단이 공간을 등속으로 지나가고, 총 길이는 항상 durationMs 다.
  */
 export function buildGhostRevealSchedule(
   cells: readonly AgentGhostCell[],
   opts?: GhostRevealScheduleOptions
 ): readonly GhostRevealStep[] {
-  const tileStepBase = opts?.tileStepMs ?? GHOST_REVEAL_TILE_STEP_MS;
-  const sweepCap = opts?.maxTileSweepMs ?? GHOST_REVEAL_TILE_SWEEP_CAP_MS;
-  const minStep = opts?.minTileStepMs ?? GHOST_REVEAL_MIN_TILE_STEP_MS;
-  const eventStep = opts?.eventStepMs ?? GHOST_REVEAL_EVENT_STEP_MS;
-
-  const tiles = cells.filter((cell) => cell.layer !== "event");
-  const events = cells.filter((cell) => cell.layer === "event");
-  tiles.sort((a, b) => a.y - b.y || a.x - b.x || layerOrder(a.layer) - layerOrder(b.layer));
-  events.sort((a, b) => a.x - b.x || a.y - b.y);
-
-  const tileStep = tiles.length > 0
-    ? Math.max(minStep, Math.min(tileStepBase, Math.floor(sweepCap / tiles.length)))
-    : tileStepBase;
-
-  const steps: GhostRevealStep[] = tiles.map((cell, index) => ({
+  if (cells.length === 0) return [];
+  const duration = opts?.durationMs ?? GHOST_WIPE_DURATION_MS;
+  const sorted = [...cells].sort((a, b) => a.x - b.x || a.y - b.y || layerOrder(a.layer) - layerOrder(b.layer));
+  const minX = sorted[0].x;
+  const maxX = sorted[sorted.length - 1].x;
+  const span = maxX - minX;
+  return sorted.map((cell) => ({
     cell,
-    startMs: index * tileStep,
-    kind: "tile" as const,
+    startMs: span > 0 ? ((cell.x - minX) / span) * duration : 0,
+    kind: cell.layer === "event" ? ("event" as const) : ("tile" as const),
   }));
-  const eventBase = tiles.length > 0 ? (tiles.length - 1) * tileStep + eventStep : 0;
-  for (const [index, cell] of events.entries()) {
-    steps.push({ cell, startMs: eventBase + index * eventStep, kind: "event" });
-  }
-  return steps;
 }
 
 function layerOrder(layer: AgentGhostLayer): number {

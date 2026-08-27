@@ -1,0 +1,32 @@
+ ❯ test/eventMarkerTooltipPlacement.test.ts:30:30
+     28|     const placement = computeEventMarkerTooltipPlacement({ tile, tip, …
+     29| 
+     30|     expect(placement.anchor).toBe("bottom-right");
+       |                              ^
+     31|     expect(placement.top).toBeGreaterThanOrEqual(tile.y + tile.height);
+     32|     expect(placement.top + tip.height).toBeLessThanOrEqual(host.height…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/eventMarkerTooltipPlacement.test.ts > computeEventMarkerTooltipPlacement > keeps the bubble inside the host at the top-right corner
+AssertionError: expected 'top-right' to be 'bottom-left' // Object.is equality
+
+Expected: "bottom-left"
+Received: "top-right"
+
+ ❯ test/eventMarkerTooltipPlacement.test.ts:39:30
+     37|     const placement = computeEventMarkerTooltipPlacement({ tile, tip, …
+     38| 
+     39|     expect(placement.anchor).toBe("bottom-left");
+       |                              ^
+     40|     expect(placement.left).toBeGreaterThanOrEqual(0);
+     41|     expect(placement.top).toBeGreaterThanOrEqual(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  00:23:12
+   Duration  1.83s (transform 137ms, setup 0ms, collect 108ms, tests 75ms, environment 0ms, prepare 192ms)
+

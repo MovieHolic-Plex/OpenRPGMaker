@@ -96,12 +96,12 @@
 .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
   inset: 12px auto auto 12px;
   max-height: calc(100% - 24px);
-  max-width: min(260px, 28%);
-  overflow: auto;
+  max-width: clamp(360px, 38vw, 520px);
+  overflow: hidden;
   padding: 10px 10px 8px;
   pointer-events: auto;
   position: absolute;
-  width: min(260px, 28%);
+  width: clamp(360px, 38vw, 520px);
   z-index: 31;
 }
 
@@ -125,7 +125,6 @@
   overflow: auto;
 }
 
-.ai-chat-panel.chat-dock-glass.is-glass-idle .ai-glass-log,
 .ai-chat-panel.chat-dock-glass.is-history-open .ai-next-steps,
 .ai-chat-panel.chat-dock-glass.is-studio .ai-next-steps,
 .ai-chat-panel.chat-dock-side.is-history-open .ai-next-steps,

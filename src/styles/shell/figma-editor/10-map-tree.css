@@ -108,7 +108,7 @@
     box-sizing: border-box;
     display: grid;
     gap: 4px;
-    grid-template-columns: 14px 10px 16px minmax(0, 1fr) auto 20px;
+    grid-template-columns: 14px 10px 44px minmax(0, 1fr) auto 20px;
     min-height: 30px;
     max-width: 100%;
     min-width: 0;
@@ -134,8 +134,8 @@
   }
 
   .left-panel-stack[data-testid="left-map-root"] .map-item.map-node {
-    margin-left: 16px;
-    width: calc(100% - 16px);
+    margin-left: calc(var(--map-depth, 1) * 14px);
+    width: calc(100% - var(--map-depth, 1) * 14px);
   }
 
   .left-panel-stack[data-testid="left-map-root"] .map-tree-name {

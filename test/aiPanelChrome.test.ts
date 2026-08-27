@@ -202,8 +202,8 @@ describe("AI 패널 크롬", () => {
     expect(restore).toBeTruthy();
     expect(restore?.getAttribute("type")).toBe("button");
     expect(restore?.getAttribute("aria-label")).toBe("조수");
-    expect(restore?.style.width).toBe("48px");
-    expect(restore?.style.height).toBe("48px");
+    expect(restore?.textContent ?? "").toContain("조수");
+    expect(restore?.querySelector(".ai-collapsed-restore-name")?.textContent).toBe("조수");
     expect(restore?.textContent ?? "").not.toContain("🤖");
     expect(restore?.querySelector(".ai-collapsed-restore-float")).toBeNull();
     expect(restore?.querySelector(".ai-collapsed-restore-rail-icon")).toBeNull();
@@ -237,8 +237,7 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-docked")).toBe(false);
     expect(panel.classList.contains("is-collapsed")).toBe(true);
     expect(restore?.getAttribute("aria-label")).toBe("조수");
-    expect(restore?.style.width).toBe("48px");
-    expect(restore?.style.height).toBe("48px");
+    expect(restore?.textContent ?? "").toContain("조수");
     expect(restore?.textContent ?? "").not.toContain("🤖");
     expect(restore?.querySelector(".ai-collapsed-restore-float")).toBeNull();
     expect(restore?.querySelector(".ai-director-face")).toBeTruthy();

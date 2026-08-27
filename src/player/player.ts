@@ -23,6 +23,7 @@ import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
 import { createTouchPad, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
+import { currentStatusMenu, markStatusMenuClosing } from "@/player/playerStatusMenuControllerDom";
 import {
   moveTitleSelection,
   type RuntimeMenuKey,
@@ -426,8 +427,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const closeMenuWithJuice = (): void => {
-    const menu = layout.querySelector<HTMLElement>("[data-testid='main-menu']");
+    const menu = currentStatusMenu(layout);
     if (!menu) return;
+    markStatusMenuClosing(menu);
     emitRuntimeJuice({ event: "menu-close", target: menu });
     window.setTimeout(() => {
       if (menu.isConnected) menu.remove();
@@ -494,7 +496,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const onKeyDown = (event: KeyboardEvent): void => {
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-    const menu = layout.querySelector<HTMLElement>("[data-testid='main-menu']");
+    const menu = currentStatusMenu(layout);
     if (menu && event.key === "Tab") {
       event.preventDefault();
       event.stopPropagation();

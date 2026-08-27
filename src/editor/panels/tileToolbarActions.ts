@@ -3,6 +3,8 @@ import type { EditorBrushSize, PaintShape, Tool } from "@/editor/editorState";
 
 export type TileToolId = "select" | "pen" | "rect" | "round" | "fill" | "erase";
 
+export type MapModeToolId = Extract<Tool, "eyedropper" | "pan" | "collision" | "event">;
+
 const TOOL_PATCHES: Record<TileToolId, { readonly tool: Tool; readonly paintShape: PaintShape }> = {
   erase: { tool: "erase", paintShape: "pen" },
   fill: { tool: "fill", paintShape: "pen" },
@@ -24,15 +26,19 @@ export function selectTileTool(tool: TileToolId): void {
   });
 }
 
-export function selectEyedropperTool(): void {
+export function selectMapModeTool(tool: MapModeToolId): void {
   const current = editorState.get();
   editorState.set({
     activePaletteStamp: null,
-    layer: current.layer === "event" ? "lower" : current.layer,
+    layer: tool === "event" ? "event" : current.layer === "event" ? "lower" : current.layer,
     paintShape: "pen",
     selection: null,
-    tool: "eyedropper",
+    tool,
   });
+}
+
+export function selectEyedropperTool(): void {
+  selectMapModeTool("eyedropper");
 }
 
 export function setTileBrushSize(size: EditorBrushSize): void {

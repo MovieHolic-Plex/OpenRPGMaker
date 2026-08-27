@@ -352,8 +352,8 @@ describe("키 온보딩과 설정 접근성", () => {
     await flushAsync();
 
     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-    // OAuth 경로의 401 문구는 "ChatGPT 로그인 실패(401)" 다 — apiKey 시절의 "인증 실패" 가 아니다.
-    expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("로그인 실패");
+    // OAuth 경로의 401 문구는 Google Gemini 로그인을 안내한다 — apiKey 시절의 "인증 실패" 가 아니다.
+    expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("Gemini");
   });
 
   it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {

@@ -412,3 +412,46 @@
   font: 500 12px/1.4 var(--font-ui, system-ui, sans-serif);
   margin: 0;
 }
+
+/* 맵 트리 행 썸네일 — 실제 맵을 40×30 으로 렌더한 캔버스. 초보자가 이름만 보고
+   맵을 고르지 않아도 되게 한다. 크기는 세 변형(패널/좁은 패널/초보 플라이아웃)의
+   그리드 3번째 칸 44px 과 함께 유지한다. */
+.map-tree-thumb {
+  background: #111827;
+  border: 1px solid color-mix(in srgb, var(--editor-line, #d6cbb8) 70%, transparent);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: block;
+  height: 30px;
+  width: 40px;
+}
+
+.map-item.active .map-tree-thumb {
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 60%, transparent);
+}
+
+/* 계층 들여쓰기 — --map-depth 를 실제로 쓴다. 이전에는 이 변수를 행에 심어놓고도
+   어떤 CSS 도 읽지 않아, 3층이든 1층이든 같은 위치에 그려졌다(초보 플라이아웃은
+   들여쓰기 규칙 자체가 없었다). 왼쪽 선이 부모-자식 관계를 눈으로 잇는다. */
+.map-item.map-node {
+  border-left: 2px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
+  margin-left: calc(var(--map-depth, 1) * 14px);
+  width: calc(100% - var(--map-depth, 1) * 14px);
+}
+
+.basic-flyout-map-host .map-item.map-item-basic.map-node {
+  margin-left: calc(var(--map-depth, 1) * 14px);
+  width: calc(100% - var(--map-depth, 1) * 14px);
+}
+
+/* 썸네일 칸(44px)이 이름·메타 칸을 좁히므로, 좁은 초보 플라이아웃에서 메타가 두 줄로
+   접히지 않게 한 줄 + 줄임표로 고정한다(전문가 패널은 10-map-tree.css 가 이미 같은 처리). */
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-copy {
+  min-width: 0;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

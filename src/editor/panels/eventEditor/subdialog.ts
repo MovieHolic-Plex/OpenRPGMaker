@@ -6,7 +6,8 @@ type EventSubdialogOptions = {
   readonly title: string;
   readonly subtitle?: string;
   readonly testId: string;
-  readonly width: "narrow" | "wide";
+  // full = 상점처럼 표가 넓은 특수 명령용 전체화면. narrow/wide 는 기존 폭 고정 창.
+  readonly width: "narrow" | "wide" | "full";
   readonly render: (body: HTMLElement, close: () => void) => void;
 };
 
