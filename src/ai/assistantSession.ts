@@ -128,6 +128,9 @@ export type SessionEvent =
   | { type: "assistant_message"; content: string }
   | { type: "assistant_stream_reset" }
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
+  // 툴 실행 직전에 나가는 신호 이벤트 — 결과 도착 전에 "지금 무엇을 하는 중"을 그릴 수 있게 한다.
+  // index는 이번 턴의 1-based 실행 서수.
+  | { type: "tool_started"; name: string; index: number }
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string }
   | { type: "work_plan"; plan: WorkPlan }
@@ -601,6 +604,8 @@ export class AssistantSession {
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
   private turnEscalatedToolNames: string[] = [];
+  /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
+  private turnToolStartedCount = 0;
   private eventBaseProposalKeys = new Map<string, string>();
   private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
@@ -982,6 +987,7 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
+    this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
     this.turnSuccessfulTools = new Set();
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
@@ -1352,6 +1358,12 @@ export class AssistantSession {
     this.rebaseProject(applied.applied);
   }
 
+  /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
+  private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string): void {
+    this.turnToolStartedCount += 1;
+    onEvent({ type: "tool_started", name, index: this.turnToolStartedCount });
+  }
+
   private pauseMilestone(
     completed: WorkItem,
     reason: string,
@@ -1397,6 +1409,7 @@ export class AssistantSession {
     const calls = selectVerificationCalls(layer, this.verificationHistory);
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
+      this.emitToolStarted(onEvent, call.name);
       const result = runTool(this.ctx, call.name, call.args);
       onEvent({ type: "tool_call", name: call.name, args: call.args, result });
       this.pushAudit({
@@ -1776,6 +1789,7 @@ export class AssistantSession {
         graphic: { query: name },
         pages: [specNpcPage(name)],
       };
+      this.emitToolStarted(onEvent, "place_npc");
       const result = runTool(this.ctx, "place_npc", args, { dryRun: false });
       onEvent({ type: "tool_call", name: "place_npc", args, result });
       this.pushAudit({
@@ -2147,6 +2161,7 @@ export class AssistantSession {
       for (const call of toolCalls) {
         const { name, args } = parseToolCall(call);
         const tool = getTool(name);
+        this.emitToolStarted(onEvent, name);
         if (tool?.mode === "write") writeToolAttempts += 1;
         // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
         // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).

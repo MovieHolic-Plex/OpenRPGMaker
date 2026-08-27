@@ -7,6 +7,73 @@ export interface AgentGhostCell {
   readonly x: number;
   readonly y: number;
   readonly layer: AgentGhostLayer;
+  /** 이 셀을 그릴 타일셋(맵 tilesetId). 타일 diff 셀에만 채워진다. */
+  readonly tilesetId?: string;
+  /** 변경 후(after) 타일 id — 렌더러가 실제 타일을 미리 그릴 수 있게 한다. */
+  readonly tileId?: number;
+}
+
+/** 스탬프 애니메이션 1스텝: 어떤 셀을 언제, 어떤 종류로 드러낼지. */
+export interface GhostRevealStep {
+  readonly cell: AgentGhostCell;
+  readonly startMs: number;
+  readonly kind: "tile" | "event";
+}
+
+export interface GhostRevealScheduleOptions {
+  /** 타일 셀 간 기본 간격(기본 50ms). */
+  readonly tileStepMs?: number;
+  /** 타일 스윕 총 길이 상한(기본 2500ms) — 넘으면 간격을 줄인다. */
+  readonly maxTileSweepMs?: number;
+  /** 타일 간격 최소값(기본 8ms). */
+  readonly minTileStepMs?: number;
+  /** 이벤트 셀 간 간격(기본 100ms). */
+  readonly eventStepMs?: number;
+}
+
+export const GHOST_REVEAL_TILE_STEP_MS = 50;
+export const GHOST_REVEAL_TILE_SWEEP_CAP_MS = 2500;
+export const GHOST_REVEAL_MIN_TILE_STEP_MS = 8;
+export const GHOST_REVEAL_EVENT_STEP_MS = 100;
+
+/**
+ * 목업(proposal-v2.html) 계약의 순수 함수 구현.
+ * - 타일: row-major(y↑ 그다음 x↑, 같은 좌표는 lower→upper)로 tileStep 간격.
+ *   셀이 많으면 총 스윕이 상한을 넘지 않도록 간격을 줄인다(최소 minTileStepMs).
+ * - 이벤트/NPC: 마지막 타일 시작 + eventStep 부터 x↑(그다음 y↑)로 eventStep 간격.
+ */
+export function buildGhostRevealSchedule(
+  cells: readonly AgentGhostCell[],
+  opts?: GhostRevealScheduleOptions
+): readonly GhostRevealStep[] {
+  const tileStepBase = opts?.tileStepMs ?? GHOST_REVEAL_TILE_STEP_MS;
+  const sweepCap = opts?.maxTileSweepMs ?? GHOST_REVEAL_TILE_SWEEP_CAP_MS;
+  const minStep = opts?.minTileStepMs ?? GHOST_REVEAL_MIN_TILE_STEP_MS;
+  const eventStep = opts?.eventStepMs ?? GHOST_REVEAL_EVENT_STEP_MS;
+
+  const tiles = cells.filter((cell) => cell.layer !== "event");
+  const events = cells.filter((cell) => cell.layer === "event");
+  tiles.sort((a, b) => a.y - b.y || a.x - b.x || layerOrder(a.layer) - layerOrder(b.layer));
+  events.sort((a, b) => a.x - b.x || a.y - b.y);
+
+  const tileStep = tiles.length > 0
+    ? Math.max(minStep, Math.min(tileStepBase, Math.floor(sweepCap / tiles.length)))
+    : tileStepBase;
+
+  const steps: GhostRevealStep[] = tiles.map((cell, index) => ({
+    cell,
+    startMs: index * tileStep,
+    kind: "tile" as const,
+  }));
+  const eventBase = tiles.length > 0 ? (tiles.length - 1) * tileStep + eventStep : 0;
+  for (const [index, cell] of events.entries()) {
+    steps.push({ cell, startMs: eventBase + index * eventStep, kind: "event" });
+  }
+  return steps;
+}
+
+function layerOrder(layer: AgentGhostLayer): number {
+  return layer === "lower" ? 0 : layer === "upper" ? 1 : 2;
 }
 
 export interface AgentGhostBounds {
@@ -28,6 +95,8 @@ export interface AgentGhostPreview {
 export interface AgentGhostPreviewState {
   readonly previews: readonly AgentGhostPreview[];
   readonly revision: number;
+  /** 툴 시작 직전(tool_started)에 세팅되는 실행 중 도구 — 상태칩 라벨 원천. */
+  readonly runningToolName: string;
 }
 
 type Listener = (state: AgentGhostPreviewState) => void;
@@ -61,6 +130,7 @@ export const AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS = 150;
 const listeners = new Set<Listener>();
 let previews: AgentGhostPreview[] = [];
 let revision = 0;
+let runningToolName = "";
 
 // 원본 보기(꾹 누름) 동안 렌더만 숨긴다 — 프리뷰 데이터는 유지(시각 토글).
 let hidden = false;
@@ -86,7 +156,33 @@ export function hasAgentGhostPreviewSubscribers(): boolean {
 }
 
 export function getAgentGhostPreviewState(): AgentGhostPreviewState {
-  return { previews: [...previews], revision };
+  return { previews: [...previews], revision, runningToolName };
+}
+
+/** tool_started 직전에 패널이 호출 — 렌더러 상태칩이 실행 중 도구를 즉시 반영한다. */
+export function setAgentGhostRunningTool(name: string): void {
+  if (runningToolName === name) return;
+  runningToolName = name;
+  emit();
+}
+
+export function clearAgentGhostRunningTool(): void {
+  if (runningToolName === "") return;
+  runningToolName = "";
+  emit();
+}
+
+let draftMapProvider: ((mapId: MapId) => import("@/project/types").GameMap | undefined) | null = null;
+
+/** 패널이 세션의 초안 프로젝트를 공급 — 렌더러가 컴포지터 경로로 타일을 찍는다. */
+export function setAgentGhostDraftMapProvider(
+  provider: ((mapId: MapId) => import("@/project/types").GameMap | undefined) | null
+): void {
+  draftMapProvider = provider;
+}
+
+export function getAgentGhostDraftMap(mapId: MapId): import("@/project/types").GameMap | undefined {
+  return draftMapProvider?.(mapId);
 }
 
 export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: MapId | null): readonly AgentGhostPreview[] {
@@ -95,8 +191,9 @@ export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: M
 }
 
 export function clearAgentGhostPreview(): void {
-  if (previews.length === 0) return;
+  if (previews.length === 0 && runningToolName === "") return;
   previews = [];
+  runningToolName = "";
   emit();
 }
 
@@ -380,10 +477,10 @@ function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap
       const index = y * before.width + x;
       const nextIndex = y * after.width + x;
       if (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex])) {
-        includeCell(area, { x, y, layer: "lower" });
+        includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId, tileId: afterTileId(after, "lower", nextIndex) });
       }
       if (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex])) {
-        includeCell(area, { x, y, layer: "upper" });
+        includeCell(area, { x, y, layer: "upper", tilesetId: after.tilesetId, tileId: afterTileId(after, "upper", nextIndex) });
       }
     }
   }
@@ -411,6 +508,14 @@ function collectEventDiffCells(area: MutableArea, before: GameMap, after: GameMa
     includeCell(area, { x: newEvent.x, y: newEvent.y, layer: "event" });
     if (moved) includeCell(area, { x: oldEvent.x, y: oldEvent.y, layer: "event" });
   }
+}
+
+/** 변경 후 그 좌표에 실제로 보이는 타일 id(스택이 있으면 최상단). */
+function afterTileId(map: GameMap, layer: "lower" | "upper", index: number): number | undefined {
+  const stack = layer === "lower" ? map.lowerTileStacks?.[index] : map.upperTileStacks?.[index];
+  if (stack && stack.length > 0) return stack[stack.length - 1];
+  const tile = layer === "lower" ? map.lowerTiles[index] : map.upperTiles?.[index];
+  return typeof tile === "number" ? tile : undefined;
 }
 
 function sameStacks(a: readonly number[] | undefined, b: readonly number[] | undefined): boolean {

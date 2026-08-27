@@ -696,3 +696,48 @@ describe("UXD topbar identity chip", () => {
     expect(findByTestId(fakeElement(topbar), "topbar-identity")?.textContent).toBe("게스트 세션 4547");
   });
 });
+
+describe("proposal thumbnail crop coverage (event-only + new map)", () => {
+  it("event-only proposal produces a non-null crop including the event bbox", async () => {
+    const { computeMapTileChangeBounds } = await import("@/editor/panels/aiProposalCard");
+    const { runTool } = await import("@/editor/tools");
+    const { createBlankProject } = await import("@/project/defaults");
+    const { TILE } = await import("@/project/defaults/constants");
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 16 }).ok).toBe(true);
+    ctx.project.maps.m1.lowerTiles.fill(TILE.GRASS);
+    ctx.project.maps.m1.upperTiles.fill(TILE.EMPTY);
+    const after = structuredClone(ctx.project);
+    // place one event at (12,9) — no tile change at all
+    after.maps.m1.events.push({
+      id: "ev1",
+      x: 12,
+      y: 9,
+      trigger: { action: "playerTouch" },
+      commands: [],
+    } as never);
+    const crop = computeMapTileChangeBounds(ctx.project, after, "m1");
+    expect(crop).not.toBeNull();
+    expect(crop!.x).toBeLessThanOrEqual(12);
+    expect(crop!.x + crop!.w).toBeGreaterThan(12);
+    expect(crop!.y).toBeLessThanOrEqual(9);
+    expect(crop!.y + crop!.h).toBeGreaterThan(9);
+  });
+
+  it("new-map proposal renders the 새 맵 placeholder thumbnail", async () => {
+    const { computeMapTileChangeBounds } = await import("@/editor/panels/aiProposalCard");
+    const { renderProposalMapThumbnail } = await import("@/editor/panels/aiProposalCard");
+    const { runTool } = await import("@/editor/tools");
+    const { createBlankProject } = await import("@/project/defaults");
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 16 }).ok).toBe(true);
+    const created = structuredClone(ctx.project);
+    expect(runTool({ project: created }, "create_map", { id: "m2", name: "new", width: 12, height: 10 }).ok).toBe(true);
+    // before lacks m2 entirely
+    expect(computeMapTileChangeBounds(ctx.project, created, "m2")).toBeNull();
+    const el = renderProposalMapThumbnail(ctx.project, "m2", "after", null);
+    expect(el.dataset.testid ?? el.querySelector("[data-testid=ai-proposal-thumb-new-map]") !== null).toBeTruthy();
+    expect(el.querySelector('[data-testid="ai-proposal-thumb-new-map"]') !== null
+      || el.getAttribute("data-testid") === "ai-proposal-thumb-new-map").toBe(true);
+  });
+});
