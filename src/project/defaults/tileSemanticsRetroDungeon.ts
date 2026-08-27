@@ -8,7 +8,7 @@
 // 그 목록을 직접 구해 커버리지를 검증한다.
 // 판독이 애매한 타일은 단정 대신 형태 서술을 쓰고 "판독보류" 태그를 남겼다(실내 465~467 전례).
 //
-// 실측: 도화 가능 478칸 전수 서술, 고유 라벨 341개.
+// 실측: 도화 가능 478칸 전수 서술, 고유 라벨 343개.
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
@@ -190,7 +190,7 @@ export const RETRO_DUNGEON_TILE_SEMANTICS: readonly RetroDungeonTileSemanticEntr
   one(162, "잔불 깔린 바위", "terrain", "passable", ["바위", "불씨", "잔불"]),
   one(163, "재와 바위 섞인 바닥", "terrain", "passable", ["재", "바위", "ash"]),
   one(164, "불씨 박힌 흙", "terrain", "passable", ["불씨", "흙", "ember"]),
-  one(165, "회색 돌 바닥", "floor", "passable", ["돌", "stone", "회색"]),
+  one(165, "갈흙빛 돌 바닥", "floor", "passable", ["돌", "stone", "회색"]),
   one(166, "갈색 점토 바닥", "floor", "passable", ["점토", "갈색", "clay"]),
   one(167, "석회암 돌 바닥", "floor", "passable", ["돌", "stone", "밝음"]),
   ...entries([168, 169, 170], "붉은 용암 불꽃", "lava", "solid", ["용암", "lava", "애니메이션"]),
@@ -438,9 +438,9 @@ export const RETRO_DUNGEON_TILE_SEMANTICS: readonly RetroDungeonTileSemanticEntr
   one(431, "돌 테두리 어두운 물", "water", "solid", ["물", "돌테", "water"]),
   ...entries([432, 433], "낡은 돌 벽돌 벽면", "wall", "solid", ["벽돌", "벽", "wall"]),
   one(434, "회색 돌 벽돌 벽면", "wall", "solid", ["벽돌", "벽", "wall"]),
-  one(435, "왼편 그늘 회색 돌벽", "rock", "solid", ["그늘", "돌벽", "rock"]),
+  one(435, "왼편 그늘 남청 돌벽", "rock", "solid", ["그늘", "돌벽", "rock"]),
   one(436, "회색 둥근 바위", "rock", "solid", ["회색", "바위", "boulder", "돌덩이"]),
-  one(437, "오른편 그늘 회색 돌벽", "rock", "solid", ["그늘", "돌벽", "rock"]),
+  one(437, "오른편 그늘 남청 돌벽", "rock", "solid", ["그늘", "돌벽", "rock"]),
   one(438, "회색 돌 경계 벽", "wall", "solid", ["돌", "벽", "wall"]),
   one(439, "회청색 돌 벽면", "wall", "solid", ["돌", "벽면", "wall"]),
   one(440, "회색 돌 경계 벽", "wall", "solid", ["돌", "벽", "wall"]),

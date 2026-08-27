@@ -178,15 +178,46 @@ function auditSheet(sheet: string, rowRange: [number, number] | null): { violati
       }
     }
 
+    // D. 무채색 주장 반증 — 라벨이 회색/갈색을 말하는데 타일이 고채도 반대 색조인 경우.
+    //
+    // 왜 이 모양인가: 회색·갈색은 저채도 팔레트에서 오탐이 심해 B 의 "그 색이 있어야 한다" 목록에서
+    // 빼 두었다(위 주석 참고). 그 사각지대로 retro_exterior 179 "회색 지붕 하단 처마"가 픽셀 100%
+    // 빨강인데도 통과했다. 그래서 방향을 뒤집었다 — 저채도 타일은 아예 건드리지 않고, 타일 대부분이
+    // 뚜렷하게 채도 높은 색일 때만 무채색 주장을 반증한다. 이러면 예전 오탐("푸른 회색 암반" 같은
+    // 저채도 청회색)은 구조적으로 걸릴 수 없다.
+    // 임계와 단어 목록은 실제 오탐을 보고 조여다(1차 55% · 은색 포함 → 26살 중 대부분 오탐):
+    //  · "은색"은 뻐다 — "붉은색 무늬 기와"가 부분밑열로 걸렸다.
+    //  · 라벨이 이미 유채색을 명시하면("보라 바닥 북서 회색허") 건드리지 않는다 — 그런 라벨은
+    //    타일이 유채색이라는 사실을 이밌 인정하고 있고, 회색은 소수 요소를 가리필 수 있다.
+    //  · 임계 0.90 — 반증은 거의 확실할 때만 게이트가 될 자객이 있다. 60% 전후는 석재·반짝이는
+    //    기와에서 정상으로 나온다.
+    const achromaticWord = ["회색", "회백", "잿빛"].find((w) => e.label.includes(w));
+    const chromaticWord = ["붉은", "빨간", "적색", "보라", "자주", "자밥5", "푸른", "파란", "청", "녹색", "초록", "노란", "황색", "주황", "금밥5", "분황", "분통"]
+      .some((w) => e.label.includes(w));
+    if (achromaticWord && !chromaticWord) {
+      let vivid = 0;
+      for (const [r, g, b] of stat.pixels) {
+        const [, s, v] = rgbToHsv(r, g, b);
+        if (s > 0.35 && v > 0.2) vivid += 1;
+      }
+      const vividShare = vivid / stat.pixels.length;
+      if (vividShare >= 0.9) {
+        violations.push({
+          index: e.index, kind: "achromatic-claim-vivid-tile", label: e.label,
+          detail: `라벨이 "${achromaticWord}"이라는데 픽셀 ${(vividShare * 100).toFixed(0)}% 가 고채도다 (기준 90%)`,
+        });
+      }
+    }
+
     // C. role 이 주장하는 재질의 색
-globalThis.roleRule = ROLE_COLOR_RULES.find((r) => r.roles.includes(e.role));
+    const roleRule = ROLE_COLOR_RULES.find((r) => r.roles.includes(e.role));
     if (roleRule) {
-globalThis.hits = 0;
+      let hits = 0;
       for (const [r, g, b] of stat.pixels) {
         const [h, sat, v] = rgbToHsv(r, g, b);
         if (roleRule.test(h, sat, v)) hits += 1;
       }
-globalThis.share = hits / stat.pixels.length;
+      const share = hits / stat.pixels.length;
       if (share < roleRule.share) {
         violations.push({
           index: e.index, kind: "role-material-mismatch", label: e.label,
