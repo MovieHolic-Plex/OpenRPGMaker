@@ -1087,12 +1087,15 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   }) as HTMLDetailsElement;
   catalogFold.open = false;
 
+  selectedList.root.classList.add("shop-processing-sale-list");
+  selectedList.root.dataset.testid = "shop-sale-list";
   fieldset.append(
+    selectedList.root,
     catalogFold,
     el("div", {
       class: "shop-processing-e2e-tray",
       attrs: { "aria-hidden": "true" },
-      children: [selectedList.root, availableList.root, add, remove],
+      children: [availableList.root, add, remove],
     }),
     controls,
     detail.root,

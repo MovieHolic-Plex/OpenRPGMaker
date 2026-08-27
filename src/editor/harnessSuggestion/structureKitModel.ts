@@ -6,7 +6,21 @@ import { isHouseKitId, stampFootprintHouseKit } from "@/editor/houseKit";
 import type { PaletteStamp, PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
-import type { GameMap, HouseStructureKitDef, StructureKitDef, TilesetDef } from "@/project/types";
+import type {
+  GameMap,
+  HouseStructureKitDef,
+  SectionStructureKitDef,
+  StructureKitDef,
+  TilesetDef,
+} from "@/project/types";
+
+/** 맵 구획(선택 영역과 같은 규약: 좌상단 + 크기). */
+export interface MapRegion {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
 
 /** 감지 패턴 → 저장 스키마. 상위 레이어 행은 내용이 있을 때만 기록(직렬화 최소화). */
 export function structureKitFromPattern(
@@ -33,6 +47,39 @@ export function structureKitFromPattern(
     name: options.name ?? autoKitName(pattern),
     width: pattern.unit.width,
     height: pattern.unit.height,
+    rows,
+    learnedFrom: "user-paint",
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/** 맵 구획 → section 킷. 유저가 직접 고른 영역을 그대로 단면으로 굳힌다(성형 없음).
+ * 상위 레이어 행은 내용이 있을 때만 기록 — structureKitFromPattern과 같은 직렬화 규약. */
+export function structureKitFromMapRegion(
+  map: GameMap,
+  region: MapRegion,
+  options: { readonly id?: string; readonly name?: string } = {},
+): SectionStructureKitDef {
+  const rows = [];
+  for (let row = 0; row < region.height; row += 1) {
+    const tiles: number[] = [];
+    const upperTiles: number[] = [];
+    let hasUpper = false;
+    for (let column = 0; column < region.width; column += 1) {
+      const index = (region.y + row) * map.width + (region.x + column);
+      tiles.push(map.lowerTiles[index] ?? TILE.EMPTY);
+      const upper = map.upperTiles[index] ?? TILE.EMPTY;
+      upperTiles.push(upper);
+      if (upper !== TILE.EMPTY) hasUpper = true;
+    }
+    rows.push(hasUpper ? { tiles, upperTiles } : { tiles });
+  }
+  return {
+    id: options.id ?? `kit_${Math.random().toString(36).slice(2, 10)}`,
+    kind: "section",
+    name: options.name ?? `구조물 ${region.width}×${region.height}`,
+    width: region.width,
+    height: region.height,
     rows,
     learnedFrom: "user-paint",
     createdAt: new Date().toISOString(),

@@ -1,9 +1,12 @@
 // 영역 작업 추천 명령 — 코퍼스(2026-07-10 corpus.md)에서 "가능" 판정 + 범용
 // (특정 타일셋/기존 지물 의존 없음)만 선별한 12개. 모달이 열릴 때마다 4개씩 로테이션.
+import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
+
 export type TilesetCategory = "outdoor" | "dungeon" | "interior";
 
 export interface SuggestedRegionCommand {
   readonly id: string;
+  readonly icon: SvgIconName;
   readonly label: string;
   readonly instruction: string;
   readonly category: string;
@@ -14,25 +17,25 @@ export interface SuggestedRegionCommand {
 }
 
 export const SUGGESTED_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
-  { id: "round-pond", label: "🌊 둥근 호수", instruction: "여기에 둥근 호수를 만들어줘", category: "타일", tilesets: ["outdoor"] },
-  { id: "small-cottage", label: "🏠 오두막", instruction: "이 영역에 작은 오두막 한 채 지어줘", category: "구조물", tilesets: ["outdoor"] },
-  { id: "flower-scatter", label: "🌸 꽃밭", instruction: "여기 잔디밭에 꽃이랑 잡초를 자연스럽게 흩뿌려줘", category: "다듬기", tilesets: ["outdoor"] },
-  { id: "treasure-chest", label: "🎁 보물상자", instruction: "이 방에 보물상자를 하나 숨겨줘", category: "상호작용" },
-  { id: "storage-chest", label: "📦 보관 상자", instruction: "여기에 아이템을 넣고 뺄 수 있는 보관 상자를 배치해줘", category: "상호작용" },
-  { id: "merchant-npc", label: "🧑‍🌾 상인", instruction: "이 자리에 잡화점 상인 NPC 하나 배치해줘", category: "NPC" },
-  { id: "pasture-fence", label: "🐄 목장 울타리", instruction: "이 구역에 울타리를 둘러서 목장을 만들어줘", category: "구조물", tilesets: ["outdoor"] },
-  { id: "garden", label: "🌳 정원", instruction: "이 영역에 화단과 나무로 정원을 조성해줘", category: "구조물", tilesets: ["outdoor"] },
-  { id: "gate-guards", label: "💂 경비병", instruction: "여기 입구 앞에 경비병 두 명 세워줘", category: "NPC" },
-  { id: "inn-guests", label: "🛏️ 여관", instruction: "이 공터에 여관을 짓고 손님 NPC 몇 명과 주인을 배치해줘", category: "복합", tilesets: ["outdoor"] },
-  { id: "festival", label: "🏮 축제 분위기", instruction: "이 광장에 축제 분위기 내게 등불이랑 좌판, 상인들 배치해줘", category: "복합", tilesets: ["outdoor"] },
-  { id: "dark-mood", label: "🌑 음산한 조명", instruction: "이 방을 어둡고 음산한 조명으로 바꿔줘", category: "분위기" },
-  { id: "encounter-zone", label: "⚔️ 몬스터 구역", instruction: "이 영역에 들어서면 슬라임이 나오는 인카운터 구역으로 설정해줘", category: "전투" },
+  { id: "round-pond", icon: "terrain", label: "둥근 호수", instruction: "여기에 둥근 호수를 만들어줘", category: "타일", tilesets: ["outdoor"] },
+  { id: "small-cottage", icon: "structure", label: "오두막", instruction: "이 영역에 작은 오두막 한 채 지어줘", category: "구조물", tilesets: ["outdoor"] },
+  { id: "flower-scatter", icon: "polish", label: "꽃밭", instruction: "여기 잔디밭에 꽃이랑 잡초를 자연스럽게 흩뿌려줘", category: "다듬기", tilesets: ["outdoor"] },
+  { id: "treasure-chest", icon: "chest", label: "보물상자", instruction: "이 방에 보물상자를 하나 숨겨줘", category: "상호작용" },
+  { id: "storage-chest", icon: "chest", label: "보관 상자", instruction: "여기에 아이템을 넣고 뺄 수 있는 보관 상자를 배치해줘", category: "상호작용" },
+  { id: "merchant-npc", icon: "shop", label: "상인", instruction: "이 자리에 잡화점 상인 NPC 하나 배치해줘", category: "NPC" },
+  { id: "pasture-fence", icon: "structure", label: "목장 울타리", instruction: "이 구역에 울타리를 둘러서 목장을 만들어줘", category: "구조물", tilesets: ["outdoor"] },
+  { id: "garden", icon: "polish", label: "정원", instruction: "이 영역에 화단과 나무로 정원을 조성해줘", category: "구조물", tilesets: ["outdoor"] },
+  { id: "gate-guards", icon: "npc", label: "경비병", instruction: "여기 입구 앞에 경비병 두 명 세워줘", category: "NPC" },
+  { id: "inn-guests", icon: "structure", label: "여관", instruction: "이 공터에 여관을 짓고 손님 NPC 몇 명과 주인을 배치해줘", category: "복합", tilesets: ["outdoor"] },
+  { id: "festival", icon: "composite", label: "축제 분위기", instruction: "이 광장에 축제 분위기 내게 등불이랑 좌판, 상인들 배치해줘", category: "복합", tilesets: ["outdoor"] },
+  { id: "dark-mood", icon: "mood", label: "음산한 조명", instruction: "이 방을 어둡고 음산한 조명으로 바꿔줘", category: "분위기" },
+  { id: "encounter-zone", icon: "combat", label: "몬스터 구역", instruction: "이 영역에 들어서면 슬라임이 나오는 인카운터 구역으로 설정해줘", category: "전투" },
 ] as const;
 
 export interface RegionCommandCategory {
   readonly id: string;
   readonly label: string;
-  readonly icon: string;
+  readonly icon: SvgIconName;
   readonly commands: readonly SuggestedRegionCommand[];
 }
 
@@ -41,21 +44,21 @@ export interface RegionCommandCategory {
 // 사물 → 사람 → 그 외"로 사용자가 찾는 빈도순이다.
 // id 를 ASCII 로 따로 두는 이유: 이 값이 data-testid(`region-category-<id>`)와 CSS 선택자에
 // 들어간다 — 한글이 그대로 들어가면 셀렉터 이스케이프가 필요해진다.
-const CATEGORY_ORDER: readonly { readonly id: string; readonly label: string; readonly icon: string }[] = [
-  { id: "tiles", label: "타일", icon: "🌊" },
-  { id: "structures", label: "구조물", icon: "🏠" },
-  { id: "polish", label: "다듬기", icon: "🌿" },
-  { id: "npc", label: "NPC", icon: "🧑" },
-  { id: "interaction", label: "상호작용", icon: "🎁" },
-  { id: "combat", label: "전투", icon: "⚔️" },
-  { id: "mood", label: "분위기", icon: "🌙" },
-  { id: "composite", label: "복합", icon: "✨" },
+const CATEGORY_ORDER: readonly { readonly id: string; readonly label: string; readonly icon: SvgIconName }[] = [
+  { id: "tiles", label: "타일", icon: "terrain" },
+  { id: "structures", label: "구조물", icon: "structure" },
+  { id: "polish", label: "다듬기", icon: "polish" },
+  { id: "npc", label: "NPC", icon: "npc" },
+  { id: "interaction", label: "상호작용", icon: "chest" },
+  { id: "combat", label: "전투", icon: "combat" },
+  { id: "mood", label: "분위기", icon: "mood" },
+  { id: "composite", label: "복합", icon: "composite" },
 ];
 
 /**
  * SUGGESTED_REGION_COMMANDS 를 category 로 묶어 표시 순서대로 돌려준다.
  * 명령이 없는 카테고리는 빈 칩이 되므로 생략한다.
- * CATEGORY_ORDER 에 없는 category 문자열도 📌 로 뒤에 붙여 반환한다 — 명령을 추가하면서
+ * CATEGORY_ORDER 에 없는 category 문자열도 pin 아이콘으로 뒤에 붙여 반환한다 — 명령을 추가하면서
  * 이 목록을 잊었을 때 그 칩이 조용히 사라지면 추가 사실 자체를 눈치챌 수 없다.
  */
 export function regionCommandCategories(): RegionCommandCategory[] {
@@ -75,7 +78,7 @@ export function regionCommandCategories(): RegionCommandCategory[] {
   // 남은 것 = 아직 CATEGORY_ORDER 에 등록되지 않은 새 카테고리.
   for (const [label, commands] of byCategory) {
     if (commands.length === 0) continue;
-    result.push({ id: label, label, icon: "📌", commands });
+    result.push({ id: label, label, icon: "pin", commands });
   }
   return result;
 }

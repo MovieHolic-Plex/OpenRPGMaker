@@ -54,7 +54,7 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
   },
   quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "엔딩", "ending", "결말", "의뢰", "미션", "반지를", "찾아오", "촌장", "quest-giver"], weak: [] },
   database: {
-    strong: ["아이템", "포션", "물약", "무기", "방어구", "장비", "액터", "캐릭터", "직업", "클래스", "상태이상", "데이터베이스", "데이터 베이스", "db", "능력치", "상성", "상성표", "속성"],
+    strong: ["아이템", "포션", "물약", "무기", "방어구", "장비", "액터", "캐릭터", "직업", "클래스", "상태이상", "데이터베이스", "데이터 베이스", "db", "능력치", "상성", "상성표", "속성", "생활", "생활 스킬", "레시피", "제작", "가축", "날씨", "전투 애니메이션"],
     weak: ["스킬", "적"],
   },
   tile: {
@@ -76,10 +76,11 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
       "새 프로젝트", "새 게임", "처음부터", "프로젝트 초기화", "new project", "new game", "start project", "start over", "reset project",
       "시간 시스템", "낮", "밤", "아침", "저녁", "day night", "day/night", "time system",
       "품질", "quality", "평가", "evaluate",
+      "포획", "몬스터 시스템", "몬스터 도감",
     ],
     weak: [],
   },
-  map: { strong: ["맵", "지도", "마을", "던전", "필드", "실내", "도시", "정착지", "city", "town", "settlement"], weak: [] },
+  map: { strong: ["맵", "지도", "마을", "던전", "필드", "실내", "도시", "정착지", "city", "town", "settlement", "사냥터"], weak: [] },
 };
 
 const NEGATION_WORDS = ["말고", "제외", "빼고", "말고서", "아니라"] as const;

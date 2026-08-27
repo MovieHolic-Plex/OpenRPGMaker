@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이벤트 에디터 · 빠른 저작 적대적 리뷰</title>
+<style>
+:root{--bg:#0a0c14;--panel:#121625;--panel2:#171d31;--line:#242b46;--text:#eaf0ff;--muted:#9aa4c0;--faint:#6a7391;--red:#ff3b5a;--amber:#ffb020;--green:#2ecc71;--blue:#4ea1ff;--violet:#9b7cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(900px 500px at 20% -10%,rgba(78,161,255,.16),transparent),radial-gradient(900px 600px at 90% 0%,rgba(255,59,90,.12),transparent),var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR",system-ui;line-height:1.7}
+a{color:var(--blue)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px 120px}
+.hero{position:relative;margin:0 -22px;min-height:420px;overflow:hidden;border-bottom:3px solid rgba(255,59,90,.45);background:#070914}
+.hero .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.38) saturate(1.05)}
+.hero .wash{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,12,20,.12),rgba(10,12,20,.86))}
+.hero .inner{position:relative;z-index:1;min-height:420px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:36px 20px}
+.badge{display:inline-flex;gap:8px;align-items:center;font-size:11px;letter-spacing:1.4px;font-weight:900;color:#ffd0d8;border:1px solid rgba(255,59,90,.45);background:rgba(255,59,90,.12);padding:6px 14px;border-radius:999px}
+.hero h1{margin-top:14px;font-size:38px;font-weight:950;letter-spacing:-1.2px;line-height:1.08}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero .sub{margin-top:12px;max-width:860px;color:#d6dcf2;font-size:15.2px}
+.verdict{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+.v{border-radius:14px;padding:16px 12px;text-align:center;border:1px solid var(--line);background:var(--panel)}
+.v .k{font-size:11px;font-weight:800;color:var(--faint);letter-spacing:.6px}
+.v .pct{font-size:28px;font-weight:950;margin-top:6px}
+.v.fail .pct{color:var(--red)} .v.warn .pct{color:var(--amber)} .v.ok .pct{color:var(--green)}
+section{margin:28px 0}
+h2{font-size:22px;margin-bottom:10px}
+h3{font-size:16px;margin:16px 0 8px}
+p,li{color:#d5dbeb}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+figure{margin:12px 0 22px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px}
+figure img{width:100%;height:auto;border-radius:8px;display:block;background:#0b0e18}
+figcaption{font-size:12px;color:var(--muted);margin-top:8px;word-break:break-all}
+.cmd{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--panel)}
+.cmd.bad{border-color:rgba(255,59,90,.45)}
+.cmd.warn{border-color:rgba(255,176,32,.4)}
+.cmd header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{font-size:11px;padding:2px 8px;border-radius:999px;background:#1c2338}
+.pill.bad{background:rgba(255,59,90,.18);color:#ffd0d8}
+.pill.warn{background:rgba(255,176,32,.16);color:#ffe2a8}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.toc a{display:inline-block;margin:4px 6px 4px 0;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none;font-size:12.5px;font-weight:700}
+ul{padding-left:18px}
+code{font-family:Consolas,monospace;font-size:12px;color:#c9d4ff}
+</style>
+</head>
+<body>
+<div class="hero">
+  <img class="bg" src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/02-quick-authoring-list-wide.png" alt="빠른 저작 피커">
+  <div class="wash"></div>
+  <div class="inner">
+    <div class="badge">ADVERSARIAL REVIEW · FAIL ON PREVIEW</div>
+    <h1>이벤트 에디터 <em>빠른 저작</em><br>적대적 리뷰 보고서</h1>
+    <p class="sub">Visual QA · 명령 전수 클릭 · 미리보기 공허도 · Playwright e2e. 삽입은 살아 있으나, 히어로 명령인 「문장 표시」 미리보기는 빈 말줄임표 무대다.</p>
+    <p class="sub">2026-08-26 12:45 UTC · 대상 https://127.0.0.1:9999/?freshProject=1 · 28행 (삽입 25 / 안내 3)</p>
+  </div>
+</div>
+<div class="wrap">
+<nav class="toc panel">
+  <strong>바로가기</strong>
+  <a href="#verdict">판정</a>
+  <a href="#plan">리뷰 계획</a>
+  <a href="#visual">Visual QA</a>
+  <a href="#preview">미리보기</a>
+  <a href="#e2e">E2E</a>
+  <a href="#commands">명령 전수</a>
+  <a href="#evidence">증거 절대경로</a>
+</nav>
+
+<div class="verdict" id="verdict">
+  <div class="v fail"><div class="k">종합 판정</div><div class="pct">FAIL</div><p>미리보기 선적 불가</p></div>
+  <div class="v ok"><div class="k">삽입 e2e</div><div class="pct">28/28</div><p>클릭→확인/안내 통과</p></div>
+  <div class="v fail"><div class="k">우측 프리뷰 숨김</div><div class="pct">4</div><p>문장·장소·경로·상점</p></div>
+  <div class="v warn"><div class="k">그래픽 없는 프리뷰</div><div class="pct">≈21</div><p>img=0 canvas=0</p></div>
+</div>
+
+<section id="plan">
+<h2>수행한 적대적 리뷰 계획</h2>
+<div class="panel">
+<ol>
+<li><b>Visual QA</b> — 피커 리스트/그리드/검색/호버/스크롤 + compact 1024 / medium 1280 / wide 1440.</li>
+<li><b>기능</b> — 빠른 저작 28행을 모두 눌러 편집 다이얼로그 또는 안내(disabled) 동작을 확인. 첫 명령은 확인으로 실제 삽입.</li>
+<li><b>미리보기</b> — 우측 <code>event-command-preview</code> 가시성·공허도·깨진 이미지·오버플로. 숨김 명령은 인라인 프리뷰를 따로 캡처.</li>
+<li><b>E2E</b> — <code>test/e2e/event-quick-authoring-all-commands.spec.ts</code> (Playwright, 5.0분, 통과).</li>
+<li><b>적대 가설</b> — 「미리보기가 개판」을 기본 가설로 두고, 히어로 명령부터 그래픽이 실제로 그어지는지 확인.</li>
+</ol>
+<p>측정 스크립트: file:///C:/Users/USER/Downloads/rpg-zzu/scripts/adversarial-event-quick-authoring.mjs · file:///C:/Users/USER/Downloads/rpg-zzu/scripts/adversarial-inline-preview.mjs</p>
+</div>
+</section>
+
+<section id="visual">
+<h2>Visual QA — 피커</h2>
+<p>오버레이 피커는 세 뷰포트에서 화면 밖으로 밀려나지 않았고, 메트릭 상 가로 오버플로도 없었다. 문제는 밀도·위계·죽은 행이다.</p>
+<ul>
+<li>리스트 행이 아이콘+라벨+별 즐겨찾기로만 구성되어, 「빠른 저작」이 RPG 초보자용 팔레트처럼 보이지 않고 카탈로그 덤프처럼 보인다.</li>
+<li>선택 불가 안내 행 3개(맵 위 이벤트 부르기, 컷신 제어, 이 이벤트 기억 설정)가 같은 리스트에 섞여 있다. 클릭해도 다이얼로그가 안 열린다(의도)지만, 초보자에게는 고장난 버튼으로 읽힌다.</li>
+<li>주석이 editor-only 배지와 함께 1탭에 있다. 빠른 저작의 첫 화면에 런타임 무관 명령이 끼어 있다.</li>
+<li>그리드 모드는 라벨이 더 잘리기 쉬운 아이콘 타일 — 메트릭 트리거는 없었으나 초보자 스캔 비용이 크다.</li>
+<li>검색 「문장」은 결과를 반환했다(기능 OK).</li>
+</ul>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/picker-contact.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/picker-contact.png" alt="피커 Visual QA 콘택트 시트" style="max-width:920px"></a>
+  <figcaption>피커 Visual QA 콘택트 시트 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/picker-contact.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/picker-contact.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/02-quick-authoring-list-wide.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/02-quick-authoring-list-wide.png" alt="리스트 · 1440×900" style="max-width:920px"></a>
+  <figcaption>리스트 · 1440×900 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/02-quick-authoring-list-wide.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/02-quick-authoring-list-wide.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/03-quick-authoring-grid-wide.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/03-quick-authoring-grid-wide.png" alt="그리드 · 1440×900" style="max-width:920px"></a>
+  <figcaption>그리드 · 1440×900 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/03-quick-authoring-grid-wide.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/03-quick-authoring-grid-wide.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/07-picker-compact.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/07-picker-compact.png" alt="compact 1024×768" style="max-width:920px"></a>
+  <figcaption>compact 1024×768 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/07-picker-compact.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/07-picker-compact.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring/quick-authoring-before-polish.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring/quick-authoring-before-polish.png" alt="e2e 캡처 피커" style="max-width:920px"></a>
+  <figcaption>e2e 캡처 피커 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring/quick-authoring-before-polish.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring/quick-authoring-before-polish.png</a></figcaption>
+</figure>
+</section>
+
+<section id="preview">
+<h2>미리보기 — 핵심 실패</h2>
+<h3>P0. 「문장 표시」 LIVE 미리보기가 빈 말줄임표다</h3>
+<p>우측 범용 패널은 <code>.event-command-edit-columns:has(.event-command-text-editor) &gt; .event-command-preview-panel { display:none }</code> 로 숨긴다. 대체재인 인라인 <code>event-command-text-live-preview</code> 는 368×239, 텍스트가 <b>"..."</b>, img 0, canvas 0. 기본 본문이 빈 문자열이라 게임 창 목업이 공허하다. 빠른 저작에서 가장 많이 누를 명령의 첫인상이 빈 무대다.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview.png" alt="문장 표시 인라인 라이브 미리보기 — 내용이 ... 뿐" style="max-width:920px"></a>
+  <figcaption>문장 표시 인라인 라이브 미리보기 — 내용이 ... 뿐 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-card.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-card.png" alt="게임 화면 미리보기 카드 전체" style="max-width:920px"></a>
+  <figcaption>게임 화면 미리보기 카드 전체 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-card.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-card.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-full.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-full.png" alt="문장 표시 편집 다이얼로그 전체" style="max-width:920px"></a>
+  <figcaption>문장 표시 편집 다이얼로그 전체 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-full.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-text-preview-full.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png" alt="전수 캡처 당시 문장 표시 다이얼로그" style="max-width:920px"></a>
+  <figcaption>전수 캡처 당시 문장 표시 다이얼로그 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png</a></figcaption>
+</figure>
+
+<h3>P0. 「얼굴 바꾸기」 미리보기에 얼굴이 없다</h3>
+<p>우측 패널은 보인다. 카피는 「대사 창에 이 얼굴이 표시됩니다 / 왼쪽 · 얼굴 1」인데 img=0 canvas=0. 페이스셋이 안 그려진다.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png" alt="얼굴 바꾸기 우측 미리보기" style="max-width:920px"></a>
+  <figcaption>얼굴 바꾸기 우측 미리보기 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-faceset-right-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-faceset-right-preview.png" alt="얼굴 바꾸기 미리보기 재캡처" style="max-width:920px"></a>
+  <figcaption>얼굴 바꾸기 미리보기 재캡처 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-faceset-right-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-faceset-right-preview.png</a></figcaption>
+</figure>
+
+<h3>P1. 장소 이동 인라인 맵은 1600×1600 캔버스</h3>
+<p>우측 패널은 의도적으로 숨김. 인라인 맵 피커는 동작하고 캔버스가 있다. 다만 내부 캔버스가 1600×1600 으로, 688×517 뷰에 과잉이다. 줌 컨트롤(전체/절반/¼)과 맵 목록이 한 화면에 밀집.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-transfer.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-transfer.png" alt="장소 이동 인라인 에디터" style="max-width:920px"></a>
+  <figcaption>장소 이동 인라인 에디터 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-transfer.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-transfer.png</a></figcaption>
+</figure>
+
+<h3>P1. 이동 경로 「경로 미리보기」에 궤적이 없다</h3>
+<p>안내 문구는 「아래 격자에 궤적이 그려집니다」인데 기본 상태에서 canvas 0, 「이동 단계 없음」. 빈 격자 카피만 있다.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-move-route.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-move-route.png" alt="이동 경로 설정 인라인 에디터" style="max-width:920px"></a>
+  <figcaption>이동 경로 설정 인라인 에디터 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-move-route.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-move-route.png</a></figcaption>
+</figure>
+
+<h3>P1. 상점 첫 화면이 「빈 상점」+ DB 177개 스크롤</h3>
+<p>우측 패널은 shop-preview-collapsed 로 숨김. 본문이 이미 아이콘 홍수다. 미리보기 영역은 「아직 파는 물건이 없어요」.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-shop.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-shop.png" alt="상점 인라인 본문 — 빈 상점 + 카탈로그 과밀" style="max-width:920px"></a>
+  <figcaption>상점 인라인 본문 — 빈 상점 + 카탈로그 과밀 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-shop.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/focus-inline-shop.png</a></figcaption>
+</figure>
+
+<h3>P1. 숫자 입력 미리보기 카피 오염</h3>
+<p>측정 텍스트: 「1자리 · 변수 회수한 달빛 약초 · 대기 중」. 자리수 미리보기가 프로젝트 기본 변수 이름을 그대로 삼켰다.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png" alt="숫자 입력 미리보기" style="max-width:920px"></a>
+  <figcaption>숫자 입력 미리보기 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png</a></figcaption>
+</figure>
+
+<h3>P1. 요약 카드만 있는 명령들</h3>
+<p>대기(「0.5초」 두 번), 주석(「(빈 주석)」), 모든 이동 완료 대기(제목 반복), 제작/업그레이드/도구 장착(선택하세요 플레이스홀더). 우측 320px 패널이 폼을 좁히면서 정보량은 캡션 수준.</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/preview-contact.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/preview-contact.png" alt="우측 미리보기 전수 콘택트 시트 — 대부분 베이지 텍스트 카드" style="max-width:920px"></a>
+  <figcaption>우측 미리보기 전수 콘택트 시트 — 대부분 베이지 텍스트 카드 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/preview-contact.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/preview-contact.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png" alt="대기 미리보기" style="max-width:920px"></a>
+  <figcaption>대기 미리보기 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png" alt="주석 미리보기" style="max-width:920px"></a>
+  <figcaption>주석 미리보기 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/inline-contact.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/inline-contact.png" alt="인라인 히어로 프리뷰 콘택트" style="max-width:920px"></a>
+  <figcaption>인라인 히어로 프리뷰 콘택트 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/inline-contact.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/inline-contact.png</a></figcaption>
+</figure>
+</section>
+
+<section id="e2e">
+<h2>E2E · 실제 동작</h2>
+<div class="panel">
+<p><b>통과.</b> <code>npx playwright test test/e2e/event-quick-authoring-all-commands.spec.ts</code> — 1 passed (5.0m).</p>
+<ul>
+<li>삽입 25 / 안내 3 / 실패 0. 안내 행은 다이얼로그를 열지 않는다.</li>
+<li>적대적 스크립트도 「문장 표시」 확인 클릭 후 루트 명령 1개 삽입을 확인.</li>
+<li>페이지 예외(pageerror) 0.</li>
+<li>콘솔: <code>Failed to load resource: net::ERR_CONNECTION_REFUSED</code> 7회 — HTTPS 에디터에서 부가 리소스/소켓 거부. 삽입 자체는 막지 않음.</li>
+</ul>
+<p>e2e 결과 JSON: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring/all-command-results.json</p>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/90-after-insert.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/90-after-insert.png" alt="문장 표시 삽입 후 이벤트 에디터 목록" style="max-width:920px"></a>
+  <figcaption>문장 표시 삽입 후 이벤트 에디터 목록 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/90-after-insert.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/90-after-insert.png</a></figcaption>
+</figure>
+
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/01-event-editor-open.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/01-event-editor-open.png" alt="이벤트 에디터 셸" style="max-width:920px"></a>
+  <figcaption>이벤트 에디터 셸 · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/01-event-editor-open.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/01-event-editor-open.png</a></figcaption>
+</figure>
+</div>
+</section>
+
+<section id="commands">
+<h2>명령 전수 카드</h2>
+<p>다이얼로그/미리보기 스크린샷은 각 카드에 절대경로로 걸려 있다.</p>
+
+<article class="cmd bad">
+  <header><strong>문장 표시...</strong> <code>m2-001-show-text</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">우측 미리보기 display:none</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-row.png" alt="cmd-01-m2-001-show-text-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-01-m2-001-show-text-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png" alt="cmd-01-m2-001-show-text-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-01-m2-001-show-text-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-01-m2-001-show-text-dialog.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>문장 표시 설정...</strong> <code>m2-002-display-text-settings</code>
+  <span class="pill warn">dialog-opened</span></header>
+  <p class="notes">img/canvas 0 — 텍스트 카드만 · 문장 표시 설정 / ★ / 일반 창으로 표시됩니다. / 이후 문장 표시에 적용됩니다. / 미리보기 / 일반 / 하단 / 가림 방지 켜짐 / 이벤트 이동 정지</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-row.png" alt="cmd-02-m2-002-display-text-settings-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-02-m2-002-display-text-settings-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-dialog.png" alt="cmd-02-m2-002-display-text-settings-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-02-m2-002-display-text-settings-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-preview.png" alt="cmd-02-m2-002-display-text-settings-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-02-m2-002-display-text-settings-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-02-m2-002-display-text-settings-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>얼굴 바꾸기...</strong> <code>m2-003-change-faceset</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 얼굴 바꾸기 / 대사 창에 / 이 얼굴이 표시됩니다. / 왼쪽 · 얼굴 1</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-row.png" alt="cmd-03-m2-003-change-faceset-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-03-m2-003-change-faceset-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-dialog.png" alt="cmd-03-m2-003-change-faceset-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-03-m2-003-change-faceset-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png" alt="cmd-03-m2-003-change-faceset-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-03-m2-003-change-faceset-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-03-m2-003-change-faceset-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>선택지 표시...</strong> <code>m2-004-show-choices</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 선택지 표시 / ▶ 예 / ▶ 아니오 / 취소 → 선택지 2</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-row.png" alt="cmd-04-m2-004-show-choices-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-04-m2-004-show-choices-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-dialog.png" alt="cmd-04-m2-004-show-choices-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-04-m2-004-show-choices-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-preview.png" alt="cmd-04-m2-004-show-choices-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-04-m2-004-show-choices-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-04-m2-004-show-choices-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>숫자 입력...</strong> <code>m2-005-input-number</code>
+  <span class="pill warn">dialog-opened</span></header>
+  <p class="notes">img/canvas 0 — 텍스트 카드만 · 숫자 입력 / 숫자 입력 / OK / 1자리 · 변수 회수한 달빛 약초 · 대기 중</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-row.png" alt="cmd-05-m2-005-input-number-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-05-m2-005-input-number-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-dialog.png" alt="cmd-05-m2-005-input-number-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-05-m2-005-input-number-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png" alt="cmd-05-m2-005-input-number-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-05-m2-005-input-number-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-05-m2-005-input-number-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>스위치 조작...</strong> <code>m2-006-control-switches</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 스위치 조작 / 켜짐 / 스위치 / 현재: 꺼짐</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-row.png" alt="cmd-06-m2-006-control-switches-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-06-m2-006-control-switches-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-dialog.png" alt="cmd-06-m2-006-control-switches-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-06-m2-006-control-switches-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-preview.png" alt="cmd-06-m2-006-control-switches-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-06-m2-006-control-switches-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-06-m2-006-control-switches-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>변수 조작...</strong> <code>m2-007-control-variables</code>
+  <span class="pill warn">dialog-opened</span></header>
+  <p class="notes">img/canvas 0 — 텍스트 카드만 · 변수 조작 / 변수 조작 / [변수 선택] = 0 / 현재 값: 0 · 값은 숫자 · 정수 연산</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-row.png" alt="cmd-07-m2-007-control-variables-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-07-m2-007-control-variables-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-dialog.png" alt="cmd-07-m2-007-control-variables-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-07-m2-007-control-variables-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-preview.png" alt="cmd-07-m2-007-control-variables-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-07-m2-007-control-variables-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-07-m2-007-control-variables-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>대기...</strong> <code>m2-060-wait</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 대기 / 0.5초 / 0.5초</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-row.png" alt="cmd-08-m2-060-wait-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-08-m2-060-wait-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-dialog.png" alt="cmd-08-m2-060-wait-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-08-m2-060-wait-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png" alt="cmd-08-m2-060-wait-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-08-m2-060-wait-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-08-m2-060-wait-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>조건 분기...</strong> <code>m2-080-conditional-branch</code>
+  <span class="pill warn">dialog-opened</span></header>
+  <p class="notes">img/canvas 0 — 텍스트 카드만 · 조건 분기 / ◇ / 스위치 선택 켜짐 / 참일 때 (then) / 1개 명령 / 조건 참 / 그 외 (else) / 분기 없음 / 미사용</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-row.png" alt="cmd-09-m2-080-conditional-branch-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-09-m2-080-conditional-branch-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-dialog.png" alt="cmd-09-m2-080-conditional-branch-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-09-m2-080-conditional-branch-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-preview.png" alt="cmd-09-m2-080-conditional-branch-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-09-m2-080-conditional-branch-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-09-m2-080-conditional-branch-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>주석...</strong> <code>m2-088-comment</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 주석 / 미리보기 / 주석 / : / (빈 주석)</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-row.png" alt="cmd-10-m2-088-comment-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-10-m2-088-comment-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-dialog.png" alt="cmd-10-m2-088-comment-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-10-m2-088-comment-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png" alt="cmd-10-m2-088-comment-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-10-m2-088-comment-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-10-m2-088-comment-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>맵 위 이벤트 부르기</strong> <code>callMapEvent</code>
+  <span class="pill warn">guidance</span></header>
+  <p class="notes">선택 불가 안내 행</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-11-callMapEvent-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-11-callMapEvent-row.png" alt="cmd-11-callMapEvent-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-11-callMapEvent-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-11-callMapEvent-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-11-callMapEvent-row.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>컷신 제어</strong> <code>cutsceneControl</code>
+  <span class="pill warn">guidance</span></header>
+  <p class="notes">선택 불가 안내 행</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-12-cutsceneControl-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-12-cutsceneControl-row.png" alt="cmd-12-cutsceneControl-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-12-cutsceneControl-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-12-cutsceneControl-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-12-cutsceneControl-row.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>장소 이동...</strong> <code>m2-035-transfer-player</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">우측 미리보기 display:none</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-row.png" alt="cmd-13-m2-035-transfer-player-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-13-m2-035-transfer-player-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-dialog.png" alt="cmd-13-m2-035-transfer-player-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-13-m2-035-transfer-player-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-13-m2-035-transfer-player-dialog.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>이동 경로 설정...</strong> <code>m2-057-move-event</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">우측 미리보기 display:none</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-row.png" alt="cmd-14-m2-057-move-event-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-14-m2-057-move-event-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-dialog.png" alt="cmd-14-m2-057-move-event-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-14-m2-057-move-event-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-14-m2-057-move-event-dialog.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>모든 이동 완료 대기</strong> <code>m2-058-wait-for-all-movement</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 모든 이동 완료 대기 / 미리보기 / 모든 이동 완료 대기</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-row.png" alt="cmd-15-m2-058-wait-for-all-movement-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-15-m2-058-wait-for-all-movement-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-dialog.png" alt="cmd-15-m2-058-wait-for-all-movement-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-15-m2-058-wait-for-all-movement-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-preview.png" alt="cmd-15-m2-058-wait-for-all-movement-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-15-m2-058-wait-for-all-movement-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-15-m2-058-wait-for-all-movement-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>이벤트 삭제</strong> <code>m2-086-erase-event</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 이벤트 삭제 / 미리보기 / 이벤트 지우기 / : / 이 이벤트</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-row.png" alt="cmd-16-m2-086-erase-event-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-16-m2-086-erase-event-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-dialog.png" alt="cmd-16-m2-086-erase-event-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-16-m2-086-erase-event-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-preview.png" alt="cmd-16-m2-086-erase-event-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-16-m2-086-erase-event-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-16-m2-086-erase-event-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>소지금 변경...</strong> <code>m2-009-change-gold</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 소지금 변경 / G / 소지금 += 10 / 현재 소지금: 0 G</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-row.png" alt="cmd-17-m2-009-change-gold-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-17-m2-009-change-gold-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-dialog.png" alt="cmd-17-m2-009-change-gold-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-17-m2-009-change-gold-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-preview.png" alt="cmd-17-m2-009-change-gold-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-17-m2-009-change-gold-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-17-m2-009-change-gold-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>아이템 변경...</strong> <code>m2-010-change-items</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 아이템 변경 / ? / (아이템 선택) / += 1개 / 현재 보유: 0개</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-row.png" alt="cmd-18-m2-010-change-items-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-18-m2-010-change-items-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-dialog.png" alt="cmd-18-m2-010-change-items-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-18-m2-010-change-items-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-preview.png" alt="cmd-18-m2-010-change-items-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-18-m2-010-change-items-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-18-m2-010-change-items-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>상점...</strong> <code>m2-032-shop-processing</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">우측 미리보기 display:none</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-row.png" alt="cmd-19-m2-032-shop-processing-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-19-m2-032-shop-processing-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-dialog.png" alt="cmd-19-m2-032-shop-processing-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-19-m2-032-shop-processing-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-19-m2-032-shop-processing-dialog.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>여관...</strong> <code>m2-033-inn-processing</code>
+  <span class="pill warn">dialog-opened</span></header>
+  <p class="notes">img/canvas 0 — 텍스트 카드만 · 여관 / 여관 / 어서 오세요. 편히 쉬어가시겠어요? / 하룻밤 묵는 데 20 G 입니다. 묵으시겠습니까? / 예 / 아니오 / 20 G · 전원 회복</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-row.png" alt="cmd-20-m2-033-inn-processing-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-20-m2-033-inn-processing-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-dialog.png" alt="cmd-20-m2-033-inn-processing-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-20-m2-033-inn-processing-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-preview.png" alt="cmd-20-m2-033-inn-processing-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-20-m2-033-inn-processing-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-20-m2-033-inn-processing-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>BGM 재생...</strong> <code>m2-061-play-bgm</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 소리 재생 / ▶ / (소리 선택 없음) / 반복 재생</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-row.png" alt="cmd-21-m2-061-play-bgm-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-21-m2-061-play-bgm-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-dialog.png" alt="cmd-21-m2-061-play-bgm-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-21-m2-061-play-bgm-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-preview.png" alt="cmd-21-m2-061-play-bgm-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-21-m2-061-play-bgm-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-21-m2-061-play-bgm-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>BGM 페이드아웃...</strong> <code>m2-062-fadeout-bgm</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · BGM 페이드아웃 / ■ / 재생 중인 소리를 정지합니다</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-row.png" alt="cmd-22-m2-062-fadeout-bgm-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-22-m2-062-fadeout-bgm-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-dialog.png" alt="cmd-22-m2-062-fadeout-bgm-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-22-m2-062-fadeout-bgm-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-preview.png" alt="cmd-22-m2-062-fadeout-bgm-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-22-m2-062-fadeout-bgm-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-22-m2-062-fadeout-bgm-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>SE 재생...</strong> <code>m2-065-play-se</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 소리 재생 / ▶ / (소리 선택 없음) / 1회 재생</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-row.png" alt="cmd-23-m2-065-play-se-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-23-m2-065-play-se-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-dialog.png" alt="cmd-23-m2-065-play-se-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-23-m2-065-play-se-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-preview.png" alt="cmd-23-m2-065-play-se-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-23-m2-065-play-se-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-23-m2-065-play-se-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>제작</strong> <code>craftRecipe</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 제작 / 미리보기 / 제작 / : / (레시피 선택)</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-row.png" alt="cmd-24-craftRecipe-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-24-craftRecipe-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-dialog.png" alt="cmd-24-craftRecipe-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-24-craftRecipe-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-preview.png" alt="cmd-24-craftRecipe-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-24-craftRecipe-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-24-craftRecipe-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>업그레이드</strong> <code>applyItemUpgrade</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 업그레이드 / 미리보기 / 아이템 업그레이드 / : / (업그레이드 선택)</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-row.png" alt="cmd-25-applyItemUpgrade-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-25-applyItemUpgrade-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-dialog.png" alt="cmd-25-applyItemUpgrade-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-25-applyItemUpgrade-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-preview.png" alt="cmd-25-applyItemUpgrade-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-25-applyItemUpgrade-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-25-applyItemUpgrade-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd bad">
+  <header><strong>도구 장착</strong> <code>equipTool</code>
+  <span class="pill bad">dialog-opened</span></header>
+  <p class="notes">그래픽 없는 빈약한 요약 카드 · 도구 장착 / 미리보기 / 도구 장착 / : / 해제 / 도구 해제</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-row.png" alt="cmd-26-equipTool-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-26-equipTool-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-dialog.png" alt="cmd-26-equipTool-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-26-equipTool-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-preview.png" alt="cmd-26-equipTool-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-26-equipTool-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-26-equipTool-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>보관 상자</strong> <code>openChest</code>
+  <span class="pill warn">dialog-opened</span></header>
+  <p class="notes">img/canvas 0 — 텍스트 카드만 · 보관 상자 / 플레이 화면 예시 / 이 상자 전용 / 가방 · 소지품 / 회복약 ×3 / 해독초 ×1 / 넣기 → / ← 꺼내기 / 보관 상자 / 철광석 ×5 / 빈 칸 / 선택한 아이템을 한 개씩 넣거나 꺼냅니다.</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-row.png" alt="cmd-27-openChest-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-27-openChest-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-row.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-dialog.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-dialog.png" alt="cmd-27-openChest-dialog.png" style="max-width:640px"></a>
+  <figcaption>cmd-27-openChest-dialog.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-dialog.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-dialog.png</a></figcaption>
+</figure>
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-preview.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-preview.png" alt="cmd-27-openChest-preview.png" style="max-width:640px"></a>
+  <figcaption>cmd-27-openChest-preview.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-preview.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-27-openChest-preview.png</a></figcaption>
+</figure></div>
+</article>
+<article class="cmd warn">
+  <header><strong>이 이벤트 기억 설정</strong> <code>setSelfSwitch</code>
+  <span class="pill warn">guidance</span></header>
+  <p class="notes">선택 불가 안내 행</p>
+  <div class="shots">
+<figure>
+  <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-28-setSelfSwitch-row.png"><img src="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-28-setSelfSwitch-row.png" alt="cmd-28-setSelfSwitch-row.png" style="max-width:640px"></a>
+  <figcaption>cmd-28-setSelfSwitch-row.png · <a href="file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-28-setSelfSwitch-row.png">file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/cmd-28-setSelfSwitch-row.png</a></figcaption>
+</figure></div>
+</article>
+</section>
+
+<section id="evidence">
+<h2>증거 절대경로</h2>
+<div class="panel">
+<ul>
+<li>이 보고서: file:///C:/Users/USER/Downloads/rpg-zzu/event-quick-authoring-adversarial-review.html</li>
+<li>증거 디렉터리: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial</li>
+<li>findings.json: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/findings.json</li>
+<li>피커 콘택트: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/picker-contact.png</li>
+<li>미리보기 콘택트: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/preview-contact.png</li>
+<li>다이얼로그 콘택트: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring-adversarial/contact/dialog-contact.png</li>
+<li>e2e 증거: file:///C:/Users/USER/Downloads/rpg-zzu/output/evidence/event-quick-authoring</li>
+</ul>
+</div>
+<h3>권고 (고치라는 지시가 아닌 리뷰 결론)</h3>
+<ol>
+<li>문장 표시 기본 미리보기에 샘플 문장/얼굴 목업을 넣고, 빈 본문일 때 「...」만 남기지 말 것.</li>
+<li>얼굴 바꾸기 미리보기에 실제 페이스셋 크롭을 그릴 것 (지금은 카피만).</li>
+<li>빠른 저작 1탭에서 선택 불가 안내 행을 접거나 「다른 곳」 섹션으로 내릴 것.</li>
+<li>대기/주석/제작류는 320px 요약 카드 대신 타임라인·아이콘 스테이지를 주거나 패널을 접을 것.</li>
+<li>숫자 입력 미리보기에 변수 표시명을 그대로 넣지 말 것.</li>
+<li>상점 첫 화면 과밀: 빈 상점 CTA와 177개 아이콘 그리드를 분리할 것.</li>
+</ol>
+</section>
+</div>
+</body>
+</html>

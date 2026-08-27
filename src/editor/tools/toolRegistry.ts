@@ -50,6 +50,8 @@ import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
+import { LIFE_SYSTEM_TOOLS } from "./lifeSystemTools";
+import { RESOURCE_TOOLS } from "./resourceTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -159,6 +161,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
+  ...withDomain(LIFE_SYSTEM_TOOLS, "database"),
+  ...withDomain(RESOURCE_TOOLS, "system"),
   ...withDomain(WORLD_TOOLS, "world"),
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),

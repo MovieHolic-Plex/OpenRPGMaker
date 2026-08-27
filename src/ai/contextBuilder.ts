@@ -305,7 +305,7 @@ function tileSemanticsSection(project: Project): string {
   return ["## 타일 지식(사용자가 가르침 — 타일 깔 때 최우선 근거)", ...lines].join("\n");
 }
 
-// 유저 붓질에서 학습·등록된 구조 킷(내 스탬프) — 봇도 같은 킷으로 시공할 수 있음을 알린다.
+// 유저 붓질에서 학습·등록된 구조 킷(내 구조물) — 봇도 같은 킷으로 시공할 수 있음을 알린다.
 // 타일 행렬은 여기 다 싣지 않는다(기계 표면) — list_structure_kits로 조회, 시공은 stamp_structure_kit.
 function structureKitSection(project: Project, mapId: string | undefined): string {
   const lines: string[] = [];
@@ -318,12 +318,12 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
             height: Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1),
           }
         : { width: kit.width, height: kit.height };
-      lines.push(`- ${kit.name ?? "패턴 스탬프"} (${kit.id}, ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"}, ${kit.learnedFrom})`);
+      lines.push(`- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"}, ${kit.learnedFrom})`);
     }
   }
   if (lines.length === 0) return "";
   return [
-    "## 내 스탬프(유저가 가르친 구조 킷 — 반복 구조 시공의 최우선 재료)",
+    "## 내 구조물(유저가 가르친 구조 킷 — 반복 구조 시공의 최우선 재료)",
     "유저가 손으로 찍어 등록한 반복 단면입니다. 성벽/울타리류 반복 구조 요청 시 개별 타일 대신 이 킷을 쓰세요:",
     ...lines,
     "상세(타일 행렬)는 list_structure_kits, 시공은 stamp_structure_kit(mapId, kitId, origin, repeat).",

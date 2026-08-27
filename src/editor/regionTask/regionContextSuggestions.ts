@@ -99,13 +99,13 @@ function buildContextualPool(
   // 물 인접: 부두/다리 는 야외 전용(실내/던전엔 부적합).
   if (counts.water >= 3) {
     pool.push({
-      id: "dock", label: "🚢 부두",
+      id: "dock", icon: "structure", label: "부두",
       instruction: "물 옆에 나무 부두를 만들어줘",
       category: "구조물",
       tilesets: ["outdoor"],
     });
     pool.push({
-      id: "bridge", label: "🌉 다리",
+      id: "bridge", icon: "structure", label: "다리",
       instruction: "이 영역에 다리를 놓아줘",
       category: "구조물",
       tilesets: ["outdoor"],
@@ -114,7 +114,7 @@ function buildContextualPool(
   // 길 인접: 가로수(야외)/상가
   if (counts.road >= 2) {
     pool.push({
-      id: "street-trees", label: "🌳 가로수",
+      id: "street-trees", icon: "polish", label: "가로수",
       instruction: "길을 따라 가로수를 심어줘",
       category: "다듬기",
       tilesets: ["outdoor"],
@@ -124,13 +124,13 @@ function buildContextualPool(
   // 숲 인접: 사냥터/캠프파이어 (야외)
   if (counts.forest >= 3) {
     pool.push({
-      id: "hunting-ground", label: "⚔️ 사냥터",
+      id: "hunting-ground", icon: "combat", label: "사냥터",
       instruction: "이 영역을 슬라임이 나오는 사냥터로 만들어줘",
       category: "전투",
       tilesets: ["outdoor"],
     });
     pool.push({
-      id: "campfire", label: "🔥 캠프파이어",
+      id: "campfire", icon: "mood", label: "캠프파이어",
       instruction: "숲 가장자리에 캠프파이어와 통나무 의자를 만들어줘",
       category: "구조물",
       tilesets: ["outdoor"],

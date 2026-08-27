@@ -1,0 +1,203 @@
+
+ RUN  v3.2.4 C:/Users/USER/Downloads/rpg-zzu-ai-all-editor-access
+
+(node:51832) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ test/aiToolDiscoveryEscalation.test.ts (2 tests) 397ms
+ ❯ test/aiEditorCapabilityParity.test.ts (9 tests | 9 failed) 1015ms
+   × AI editor capability parity > authors a life skill through a typed database facade 53ms
+     → expected undefined to be 'write' // Object.is equality
+   × AI editor capability parity > authors life-system weather and a farm animal species 84ms
+     → expected undefined to be 'write' // Object.is equality
+   × AI editor capability parity > returns full database record fields when include=full 256ms
+     → expected undefined to be 44 // Object.is equality
+   × AI editor capability parity > upserts a battle animation record 34ms
+     → expected undefined to be 'write' // Object.is equality
+   × AI editor capability parity > registers and deletes an authored resource through typed tools 47ms
+     → expected undefined to be 'write' // Object.is equality
+   × AI editor capability parity > registers a structure kit from a painted region 229ms
+     → expected undefined to be 'write' // Object.is equality
+   × AI editor capability parity > shifts map tiles and events through a typed facade 207ms
+     → expected undefined to be 'write' // Object.is equality
+   × AI editor capability parity > discovers the new authored-data facades from Korean queries 84ms
+     → 생활 스킬: expected '{"matches":[{"name":"upsert_skill","m…' to contain 'upsert_life_skill'
+   × AI editor capability parity > routes life and monster requests onto the domains that own the write tools 19ms
+     → expected [ 'find_tools', 'tile_query', …(38) ] to include 'upsert_life_skill'
+ ✓ test/aiEditorFullToolCoverage.test.ts (6 tests) 3944ms
+   ✓ AI assistant editor-wide project mutation coverage > duplicates a map with authored metadata and places the copy next to its source  680ms
+   ✓ AI assistant editor-wide project mutation coverage > edits every map property exposed by the map properties editor  582ms
+   ✓ AI assistant editor-wide project mutation coverage > creates, renames, reparents, and dissolves map folders through one canonical facade  1136ms
+   ✓ AI assistant editor-wide project mutation coverage > duplicates and deletes database records through typed project tools  549ms
+   ✓ AI assistant editor-wide project mutation coverage > authors utility database records that have dedicated editor tabs  514ms
+   ✓ AI assistant editor-wide project mutation coverage > changes project identity, terms, display, resources, and battle defaults  479ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > authors a life skill through a typed database facade
+AssertionError: expected undefined to be 'write' // Object.is equality
+
+- Expected: 
+"write"
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:23:48
+     21|   it("authors a life skill through a typed database facade", () => {
+     22|     const ctx = context();
+     23|     expect(getTool("upsert_life_skill")?.mode).toBe("write");
+       |                                                ^
+     24|     const result = runTool(ctx, "upsert_life_skill", {
+     25|       skill: { id: "life_farming", name: "농사", skillType: "farming", m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > authors life-system weather and a farm animal species
+AssertionError: expected undefined to be 'write' // Object.is equality
+
+- Expected: 
+"write"
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:33:49
+     31|   it("authors life-system weather and a farm animal species", () => {
+     32|     const ctx = context();
+     33|     expect(getTool("upsert_life_system")?.mode).toBe("write");
+       |                                                 ^
+     34|     const weather = runTool(ctx, "upsert_life_system", {
+     35|       dailyWeather: { enabled: true, forecastDays: 3, seasons: { sprin…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > returns full database record fields when include=full
+AssertionError: expected undefined to be 44 // Object.is equality
+
+- Expected: 
+44
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:58:81
+     56|     const slime = records.find((record) => record.id === "enemy_parity…
+     57|     expect(slime).toMatchObject({ id: "enemy_parity", name: "패리티 슬라임" …
+     58|     expect((slime as { stats?: { maxHp?: number } } | undefined)?.stat…
+       |                                                                                 ^
+     59|   });
+     60| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > upserts a battle animation record
+AssertionError: expected undefined to be 'write' // Object.is equality
+
+- Expected: 
+"write"
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:63:54
+     61|   it("upserts a battle animation record", () => {
+     62|     const ctx = context();
+     63|     expect(getTool("upsert_battle_animation")?.mode).toBe("write");
+       |                                                      ^
+     64|     const result = runTool(ctx, "upsert_battle_animation", {
+     65|       animation: { id: "anim_slash", name: "베기", scope: "singleTarget"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > registers and deletes an authored resource through typed tools
+AssertionError: expected undefined to be 'write' // Object.is equality
+
+- Expected: 
+"write"
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:73:46
+     71|   it("registers and deletes an authored resource through typed tools",…
+     72|     const ctx = context();
+     73|     expect(getTool("upsert_resource")?.mode).toBe("write");
+       |                                              ^
+     74|     expect(getTool("delete_resource")?.mode).toBe("write");
+     75|     const created = runTool(ctx, "upsert_resource", {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > registers a structure kit from a painted region
+AssertionError: expected undefined to be 'write' // Object.is equality
+
+- Expected: 
+"write"
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:89:53
+     87|     const mapId = "map_kit";
+     88|     expect(runTool(ctx, "create_map", { id: mapId, name: "킷 맵", width:…
+     89|     expect(getTool("register_structure_kit")?.mode).toBe("write");
+       |                                                     ^
+     90|     const result = runTool(ctx, "register_structure_kit", {
+     91|       mapId,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > shifts map tiles and events through a typed facade
+AssertionError: expected undefined to be 'write' // Object.is equality
+
+- Expected: 
+"write"
+
++ Received: 
+undefined
+
+ ❯ test/aiEditorCapabilityParity.test.ts:109:40
+    107|     const mapId = "map_shift";
+    108|     expect(runTool(ctx, "create_map", { id: mapId, name: "이동 맵", width…
+    109|     expect(getTool("shift_map")?.mode).toBe("write");
+       |                                        ^
+    110|     const result = runTool(ctx, "shift_map", { mapId, dx: 1, dy: 0 });
+    111|     expect(result.ok, result.summary).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > discovers the new authored-data facades from Korean queries
+AssertionError: 생활 스킬: expected '{"matches":[{"name":"upsert_skill","m…' to contain 'upsert_life_skill'
+
+Expected: "upsert_life_skill"
+Received: "{"matches":[{"name":"upsert_skill","mode":"write","domains":["database"],"description":"스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.","parameters":{"type":"object","properties":{"skill":{"type":"object","description":"skill 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.","properties":{"id":{"type":"string"},"name":{"type":"string"},"scope":{"type":"string","enum":["self","ally","allAllies","enemy","allEnemies"]},"power":{"type":"integer"},"animationId":{"type":"string"},"description":{"type":"string"},"type":{"type":"string","enum":["normal","teleport","escape","switch"]},"mpCost":{"type":"object","properties":{"flat":{"type":"integer"},"percentMax":{"type":"integer"}},"additionalProperties":false},"successRate":{"type":"integer"},"variance":{"type":"integer"},"hitRate":{"type":"integer"},"effect":{"type":"object","properties":{"kind":{"type":"string"},"statistic":{"type":"string"},"affects":{"type":"string"},"switchId":{"type":"string"}},"additionalProperties":false},"elementId":{"type":"string"},"stateEffects":{"type":"array","items":{"type":"object","properties":{"stateId":{"type":"string"},"chance":{"type":"integer"},"operation":{"type":"string","enum":["add","remove"]}},"additionalProperties":false}},"maxPp":{"type":"integer","description":"Gen1 기술별 최대 PP. 1~99"},"gen1CriticalRate":{"type":"string","enum":["normal","high"]},"movePriority":{"type":"number","description":"기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"}},"additionalProperties":false}},"required":["skill"],"additionalProperties":false,"description":"허용 예시: {\"skill\":{\"id\":\"skill_fire\",\"name\":\"화염\",\"power\":35,\"elementId\":\"fire\"}}"}}]}"
+
+ ❯ test/aiEditorCapabilityParity.test.ts:126:50
+    124|       const result = runTool(ctx, "find_tools", { query });
+    125|       expect(result.ok, result.summary).toBe(true);
+    126|       expect(JSON.stringify(result.data), query).toContain(tool);
+       |                                                  ^
+    127|     }
+    128|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  test/aiEditorCapabilityParity.test.ts > AI editor capability parity > routes life and monster requests onto the domains that own the write tools
+AssertionError: expected [ 'find_tools', 'tile_query', …(38) ] to include 'upsert_life_skill'
+ ❯ test/aiEditorCapabilityParity.test.ts:132:45
+    130|   it("routes life and monster requests onto the domains that own the w…
+    131|     expect(computeActiveToolDomains("생활 스킬이랑 레시피 추가해").has("database")…
+    132|     expect(exposedNames("생활 스킬이랑 레시피 추가해")).toContain("upsert_life_ski…
+       |                                             ^
+    133| 
+    134|     const monsterNames = exposedNames("몬스터 포획 시스템을 켜고 사냥터를 만들어");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  9 failed | 8 passed (17)
+   Start at  18:07:24
+   Duration  22.71s (transform 15.15s, setup 0ms, collect 53.72s, tests 5.36s, environment 1ms, prepare 625ms)
+
+EXIT:1

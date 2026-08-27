@@ -39,6 +39,7 @@ describe("openRegionTaskModal", () => {
     expect(copy?.getAttribute("disabled")).not.toBeNull();
     const chip = findByTestId(root, "region-task-chip");
     expect(chip?.textContent).toContain("(2,3) 4×5");
+    expect(chip?.querySelector("svg")).not.toBeNull();
   });
 
   it("빈 지시로 실행하면 runner를 호출하지 않고 안내한다", () => {
@@ -326,16 +327,18 @@ describe("pending 비교 UI", () => {
     expect(findByTestId(rootB, "region-task-input")).not.toBeNull();
   });
 
-  it("추천 칩 클릭 시 입력창이 채워진다", () => {
+  it("카테고리 칩과 추천 칩이 SVG 아이콘과 라벨을 렌더한다", () => {
     restoreDom = installFakeDom();
-    const root = openModal({ mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 } });
-    const chips = findByTestId(root, "region-task-suggestions");
-    expect(chips).not.toBeNull();
-    const firstChip = chips!.querySelector("button") as HTMLElement;
-    firstChip.dispatchEvent(new Event("click"));
-    const input = findByTestId(root, "region-task-input") as HTMLTextAreaElement;
-    expect(input.value.length).toBeGreaterThan(5);
-    closeRegionTaskModal();
+    const root = openModal({ mapId: "m1", region: REGION });
+    const categoryChip = root.querySelector(".region-task-category-chip");
+    expect(categoryChip).not.toBeNull();
+    expect(categoryChip?.querySelector("svg")).not.toBeNull();
+    expect(categoryChip?.querySelector(".region-task-chip-label")).not.toBeNull();
+
+    const suggestChip = root.querySelector(".region-task-suggest-chip");
+    expect(suggestChip).not.toBeNull();
+    expect(suggestChip?.querySelector("svg")).not.toBeNull();
+    expect(suggestChip?.querySelector(".region-task-chip-label")).not.toBeNull();
   });
 
   it("앵커 팝오버는 뷰포트 밖으로 나가지 않게 left/top/maxHeight를 클램프한다", () => {

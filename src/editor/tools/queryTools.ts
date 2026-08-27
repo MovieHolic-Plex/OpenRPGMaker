@@ -552,38 +552,50 @@ const listProjectCommits: ToolDefinition = {
 const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
   "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
-  "elements", "monsterSpecies",
+  "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
 ] as const;
 type DbCollection = (typeof DB_COLLECTIONS)[number];
 
-function collectionEntries(project: Project, collection: DbCollection): { id: string; name: string }[] {
-  const named = (list: readonly { id: string; name?: string }[]): { id: string; name: string }[] =>
-    list.map((entry) => ({ id: entry.id, name: entry.name ?? "" }));
+function collectionRecords(project: Project, collection: DbCollection): readonly Record<string, unknown>[] {
+  const named = (list: readonly Record<string, unknown>[]): readonly Record<string, unknown>[] => list;
   switch (collection) {
-    case "switches": return named(project.switches);
-    case "variables": return named(project.variables);
-    case "commonEvents": return named(project.commonEvents);
+    case "switches": return named(project.switches as unknown as Record<string, unknown>[]);
+    case "variables": return named(project.variables as unknown as Record<string, unknown>[]);
+    case "commonEvents": return named(project.commonEvents as unknown as Record<string, unknown>[]);
     case "quests": return (project.quests ?? []).map((quest) => ({ id: questDefId(quest), name: quest.title }));
     case "maps": return Object.values(project.maps).map((map) => ({ id: map.id, name: map.name }));
-    default: return named(project.database[collection] ?? []);
+    default: return named((project.database[collection] ?? []) as unknown as Record<string, unknown>[]);
   }
+}
+
+function collectionEntries(project: Project, collection: DbCollection): { id: string; name: string }[] {
+  return collectionRecords(project, collection).map((entry) => ({
+    id: String(entry.id ?? ""),
+    name: String(entry.name ?? ""),
+  }));
 }
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies. enemy.speciesId 는 monsterSpecies, enemy.elementRates 의 키는 elements 에서 확인하라.",
+  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops.",
   mode: "read",
   parameters: {
     type: "object",
-    properties: { collection: { type: "string", enum: DB_COLLECTIONS as unknown as string[] } },
+    properties: {
+      collection: { type: "string", enum: DB_COLLECTIONS as unknown as string[] },
+      include: { type: "string", enum: ["ids", "full"] },
+    },
     required: ["collection"],
+    additionalProperties: false,
   },
   run(project, args): ToolExecResult {
     const collection = args.collection as DbCollection;
     if (!DB_COLLECTIONS.includes(collection)) {
       throw new ToolError(`알 수 없는 컬렉션: ${String(args.collection)}`, { code: "invalid-collection" });
     }
-    const records = collectionEntries(project, collection);
+    const records = args.include === "full"
+      ? collectionRecords(project, collection)
+      : collectionEntries(project, collection);
     return { summary: `${collection} ${records.length}건`, data: { records } };
   },
 };

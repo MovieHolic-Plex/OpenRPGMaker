@@ -178,9 +178,10 @@ function faceCrop(url: string, faceIndex: number, name: string, displaySize?: nu
   const scaleX = width / FACESET_FACE_WIDTH;
   const scaleY = height / FACESET_FACE_HEIGHT;
   const crop = el("div", {
-    class: "event-command-face-crop",
+    // faceset-crop-box: 크롭 박스임을 DOM 으로 식별할 수 있게 한다(카피만 있는 미리보기 금지).
+    class: "event-command-face-crop faceset-crop-box",
     attrs: { "aria-label": `${name} 얼굴 ${faceIndex + 1} 미리보기`, role: "img" },
-    dataset: { testid: "event-command-face-crop" },
+    dataset: { testid: "event-command-face-crop", facesetCrop: "1" },
   });
   crop.style.setProperty("--face-url", `url("${url}")`);
   crop.style.setProperty("--face-x", `-${col * FACESET_FACE_WIDTH}px`);
@@ -192,6 +193,15 @@ function faceCrop(url: string, faceIndex: number, name: string, displaySize?: nu
   crop.style.setProperty("--face-scaled-y", `-${row * FACESET_FACE_HEIGHT * scaleY}px`);
   crop.style.setProperty("--face-scaled-sheet-width", `${FACESET_SHEET_WIDTH * scaleX}px`);
   crop.style.setProperty("--face-scaled-sheet-height", `${FACESET_SHEET_HEIGHT * scaleY}px`);
+  // 배경 이미지는 DOM 에 아무 자연 크기도 남기지 않는다 — 시트를 실제 <img> 로 붙이고
+  // 크롭 박스가 잘라 낸다. 로드 실패는 onerror 로 시트만 떼어 CSS 배경 폴백에 맡긴다.
+  const sheet = el("img", {
+    class: "faceset-crop-sheet",
+    attrs: { src: url, alt: "", draggable: "false", "aria-hidden": "true" },
+    dataset: { testid: "faceset-crop-sheet" },
+  });
+  sheet.addEventListener("error", () => sheet.remove());
+  crop.append(sheet);
   return crop;
 }
 

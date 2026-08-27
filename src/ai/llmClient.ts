@@ -683,6 +683,11 @@ export function isRetryableLlmError(error: unknown): boolean {
   return error.status === undefined || error.status === 0 || error.status === 429 || error.status >= 500;
 }
 
+/** 로컬 oh-my-pi Bun 워커 프로세스 크래시. 같은 페이로드로 3연타는 복구가 아니라 대기만 늘린다. */
+export function isOhMyPiWorkerCrash(error: unknown): boolean {
+  return error instanceof LlmError && /oh-my-pi worker exited/i.test(error.message);
+}
+
 /** 매달림(응답 없는 fetch)을 일시 오류로 감지한다 — AbortController.abort() 는 AbortError 를 던진다. */
 export function isLlmTimeoutError(error: unknown): boolean {
   return error instanceof Error && error.name === "AbortError";

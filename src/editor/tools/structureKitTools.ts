@@ -11,7 +11,8 @@ import {
   structureKitSize,
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
-import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
+import type { GameMap, Project, StructureKitDef, StructureKitPart, TilesetDef } from "@/project/types";
+import { TILE } from "@/project/defaults";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
@@ -28,7 +29,8 @@ const listStructureKits: ToolDefinition = {
   name: "list_structure_kits",
   description:
     "사용자가 붓질로 가르쳐 등록한 구조 킷(내 스탬프) 목록. mapId를 주면 그 맵 타일셋의 킷만. "
-    + "각 킷의 rows는 하위/상위 레이어 타일 id 행렬(기계 표면) — 시공은 stamp_structure_kit로.",
+    + "각 킷의 rows는 하위/상위 레이어 타일 id 행렬(기계 표면) — 시공은 stamp_structure_kit로. "
+    + "parts는 입구·간판·자리 등 부위의 상대좌표(dx,dy) — 절대좌표는 stamp_structure_kit이 돌려준다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -45,6 +47,7 @@ const listStructureKits: ToolDefinition = {
       width: number;
       height: number;
       learnedFrom: string;
+      parts?: StructureKitPart[];
       rows?: { tiles: number[]; upperTiles?: number[] }[];
       house?: { houseKitId: string; wings: { x: number; y: number; w: number; h: number }[] };
     }[] = [];
@@ -59,6 +62,7 @@ const listStructureKits: ToolDefinition = {
           width: size.width,
           height: size.height,
           learnedFrom: kit.learnedFrom,
+          ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
           ...(kit.kind === "section"
             ? {
                 rows: kit.rows.map((row) => ({
@@ -86,7 +90,8 @@ const stampStructureKit: ToolDefinition = {
   name: "stamp_structure_kit",
   description:
     "등록된 구조 킷(내 스탬프)을 맵에 시공한다. 단위 단면(width×height)을 origin 좌상단부터 가로로 repeat회 이어 찍는다. "
-    + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인.",
+    + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인. "
+    + "부위가 있는 킷은 parts를 절대좌표(x,y)로 돌려주며 이벤트는 생성하지 않는다 — 워프는 그 좌표로 따로 만든다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -120,12 +125,38 @@ const stampStructureKit: ToolDefinition = {
       );
     }
     const painted = stampKitCells(map, kit, origin, repeat);
+    const parts = absoluteKitParts(kit, origin);
     return {
       summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×${repeat}회, ${painted}칸`,
-      data: { kitId: kit.id, origin, repeat, height: size.height, width: totalWidth, painted },
+      data: {
+        kitId: kit.id,
+        origin,
+        repeat,
+        height: size.height,
+        width: totalWidth,
+        painted,
+        ...(parts.length > 0 ? { parts } : {}),
+      },
     };
   },
 };
+
+/** 부위 상대좌표 → 시공 절대좌표. 타일과 달리 부위는 한 킷 당 한 번만 — origin에 고정된 힌트다.
+ * 입구의 워프 칸은 y + h - 1 행(규약) — 이 툴은 이벤트를 만들지 않고 좌표만 돌려준다. */
+function absoluteKitParts(
+  kit: StructureKitDef,
+  origin: Point,
+): (Omit<StructureKitPart, "dx" | "dy"> & { x: number; y: number })[] {
+  return (kit.parts ?? []).map((part) => ({
+    id: part.id,
+    kind: part.kind,
+    x: origin.x + part.dx,
+    y: origin.y + part.dy,
+    w: part.w,
+    h: part.h,
+    ...(part.note === undefined ? {} : { note: part.note }),
+  }));
+}
 
 /** 팔레트 스탬프(applyPaletteStamp)와 동일 규약: 비어 있지 않은 칸만 쓴다(고른 그대로, 성형 없음).
  * 셀 목록은 구조 킷 모델이 전개(section=행렬, house=정본 houseKit 시공). */
@@ -210,4 +241,64 @@ function repeatArg(args: Record<string, unknown>): number {
   return repeat;
 }
 
-export const STRUCTURE_KIT_TOOLS: readonly ToolDefinition[] = [listStructureKits, stampStructureKit];
+const registerStructureKitTool: ToolDefinition = {
+  name: "register_structure_kit",
+  description: "구조 킷 등록: 맵 영역의 하위/상위 타일을 타일셋 structureKits에 학습 스탬프로 저장한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      kitId: { type: "string" },
+      name: { type: "string" },
+      x: { type: "integer" },
+      y: { type: "integer" },
+      width: { type: "integer" },
+      height: { type: "integer" },
+    },
+    required: ["mapId", "kitId", "x", "y", "width", "height"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const kitId = typeof args.kitId === "string" ? args.kitId.trim() : "";
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : kitId;
+    const x = args.x as number;
+    const y = args.y as number;
+    const width = args.width as number;
+    const height = args.height as number;
+    if (!kitId) throw new ToolError("kitId가 필요합니다.", { code: "invalid-args" });
+    if (![x, y, width, height].every((value) => Number.isInteger(value)) || width < 1 || height < 1) {
+      throw new ToolError("영역은 양의 정수여야 합니다.", { code: "invalid-args", mapId: map.id });
+    }
+    if (x < 0 || y < 0 || x + width > map.width || y + height > map.height) {
+      throw new ToolError("영역이 맵 밖입니다.", { code: "out-of-bounds", mapId: map.id });
+    }
+    const tileset = draft.tilesets[map.tilesetId];
+    if (!tileset) throw new ToolError(`타일셋 없음: ${map.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
+    const rows = Array.from({ length: height }, (_, row) => {
+      const tiles: number[] = [];
+      const upperTiles: number[] = [];
+      for (let col = 0; col < width; col += 1) {
+        const index = (y + row) * map.width + (x + col);
+        tiles.push(map.lowerTiles[index] ?? TILE.EMPTY);
+        upperTiles.push(map.upperTiles[index] ?? TILE.EMPTY);
+      }
+      return { tiles, upperTiles };
+    });
+    const kit: StructureKitDef = {
+      id: kitId,
+      name,
+      kind: "section",
+      width,
+      height,
+      learnedFrom: "user-paint",
+      rows,
+    };
+    const existing = tileset.structureKits ?? [];
+    tileset.structureKits = [...existing.filter((entry) => entry.id !== kitId), kit];
+    return { summary: `구조 킷 ${name} 등록`, data: { kitId, tilesetId: tileset.id, width, height } };
+  },
+};
+
+export const STRUCTURE_KIT_TOOLS: readonly ToolDefinition[] = [listStructureKits, stampStructureKit, registerStructureKitTool];

@@ -1520,6 +1520,21 @@ describe("agentMode 오케스트레이션 게이트", () => {
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
   }, 30000);
 
+  it("영역 작업 합성 문장은 agentMode auto여도 플래너를 건너뛴다", async () => {
+    const { AssistantSession, createBlankProject, llm } = await load();
+    const chat = scriptedChat([
+      assistantFinal("집을 시공합니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat });
+
+    await session.sendUserMessage(
+      "선택 영역 안에 야외 집 한 채를 지어 주세요.\n\n영역 작업 도구 규칙:\n- 공식 시공 facade 사용",
+      () => {},
+    );
+
+    expect(plannerStarted(session.getAuditEntries())).toBe(false);
+  }, 30000);
+
   it("agentMode chat + 단일 모델은 종래대로 플래너를 돌지 않는다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("완료했습니다.")]);
