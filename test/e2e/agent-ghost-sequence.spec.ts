@@ -186,6 +186,10 @@ async function bootEditor(page: Page): Promise<string> {
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
+    // 이 스펙은 **대기 제안**의 고스트 수이명을 보므로 자동 적용을 명시적으로 끈다.
+    // 기본값은 승인 없이 즉시 적용이고(approvalPolicy.resolveProposalApplyMode), 적용 직전에
+    // clearAgentGhostPreview() 가 고스트를 지우므로 대기 상태를 관얰할 수 없다.
+    localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat", autoApprove: false }));
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
