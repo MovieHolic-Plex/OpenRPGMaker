@@ -16,7 +16,7 @@ Since 2026-08-20 this distribution is ratchet-gated by `test/parity/parityMatrix
 | learnedSkills | `src/battle/battleBattlers.ts#learnedSkillIds` | simulateBattle | planned-T5 |
 | classId | `src/battle/battleBattlers.ts#classId` | simulateBattle | planned-T5 |
 | options.dualWield | `src/battle/battleBattlers.ts#statBonuses` | simulateBattle | planned-T5 |
-| faceIndex/characterIndex | `src/player/PlayScene.ts#PlayScene` | runSceneTest | gap |
+| characterIndex | `src/player/PlayScene.ts#PlayScene` | runSceneTest | gap |
 
 ## classes
 
