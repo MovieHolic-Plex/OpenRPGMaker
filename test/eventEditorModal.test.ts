@@ -4,6 +4,7 @@ import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
 import { renderEventEditorContent } from "@/editor/panels/eventEditor/content";
+import { renderClassicPageTabStrip } from "@/editor/panels/eventEditor/pageProps";
 import { openNpcGraphicDialog } from "@/editor/panels/eventEditor/graphicDialog";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { createBlankProject } from "@/project/defaults";
@@ -200,18 +201,17 @@ describe("RPG Maker style event editor entry points", () => {
     }
     expect(content.querySelector('[data-testid="event-page-paste"]')).toBeNull();
 
-    const tabStrip = content.querySelector('[data-testid="event-classic-page-tabs"]');
-    expect(tabStrip).not.toBeNull();
-    // 탭은 번호뿐 아니라 페이지 이름과 조건 요약을 함께 보여준다 — 탭을 눌러 보지 않고도
-    // "이 페이지가 언제 실행되는가"를 읽을 수 있어야 한다.
+    const ev = store.getCurrent().maps[project.startMapId]!.events[0]!;
+    const strip = renderClassicPageTabStrip(project.startMapId, ev, ev.pages[2]!);
+    expect(strip.dataset.testid).toBe("evt-header-page-tabs");
     for (const [index, name] of ["EV0002", "EV0002-2", "EV0002-3"].entries()) {
-      const tab = content.querySelector(`[data-testid="event-page-tab-${index + 1}"]`);
+      const tab = strip.querySelector(`[data-testid="evt-page-segment-${index + 1}"]`);
       expect(tab?.textContent).toContain(String(index + 1));
       expect(tab?.textContent).toContain(name);
     }
-    expect(content.querySelector('[data-testid="event-page-tab-cond-1"]')?.textContent).toBe("조건 없음");
-    expect(content.querySelector('[data-testid="event-page-tab-add"]')).not.toBeNull();
-    expect(content.querySelector('[data-testid="event-page-tab-3"]')?.className).toContain("active");
+    expect(strip.querySelector('[data-testid="evt-page-cond-1"]')?.textContent).toBe("조건 없음");
+    expect(strip.querySelector('[data-testid="evt-page-add"]')).not.toBeNull();
+    expect(strip.querySelector('[data-testid="evt-page-segment-3"]')?.className).toContain("active");
   });
 
   it("requires confirmation before deleting a visible event page", () => {

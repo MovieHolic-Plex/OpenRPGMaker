@@ -72,8 +72,8 @@ describe("rich event page tabs", () => {
     ];
     const strip = renderStrip(pages);
 
-    const tab1 = findByTestId(strip, "event-page-tab-1");
-    const tab2 = findByTestId(strip, "event-page-tab-2");
+    const tab1 = findByTestId(strip, "evt-page-segment-1");
+    const tab2 = findByTestId(strip, "evt-page-segment-2");
     expect(tab1).not.toBeNull();
     expect(tab2).not.toBeNull();
     // 목업 v2: 탭은 번호 + 이름 + 조건 요약 + 배지만 가진다 — 썸네일은 없다.
@@ -86,16 +86,12 @@ describe("rich event page tabs", () => {
     const pages = [eventPage("page-1"), eventPage("page-2", { conditions: richConditions() })];
     const strip = renderStrip(pages);
 
-    const badges1 = findByTestId(findByTestId(strip, "event-page-tab-1")!, "event-page-tab-badges");
-    expect(badges1).not.toBeNull();
-    expect(badges1?.querySelectorAll(".event-page-tab-badge")).toHaveLength(0);
-
-    const badges2 = findByTestId(findByTestId(strip, "event-page-tab-2")!, "event-page-tab-badges");
-    expect(badges2).not.toBeNull();
-    const badgeTexts = badges2!.querySelectorAll(".event-page-tab-badge").map((badge) => badge.textContent);
-    expect(badgeTexts).toEqual(["S", "V", "I", "+2"]);
-    expect(badges2!.querySelector(".event-page-tab-badge-switch")?.textContent).toBe("S");
-    expect(badges2!.querySelector(".event-page-tab-badge-more")?.textContent).toBe("+2");
+    const tab1 = findByTestId(strip, "evt-page-segment-1");
+    const tab2 = findByTestId(strip, "evt-page-segment-2");
+    expect(tab1).not.toBeNull();
+    expect(tab2).not.toBeNull();
+    expect(findByTestId(tab1!, "event-page-tab-badges")).toBeNull();
+    expect(findByTestId(tab2!, "event-page-tab-badges")).toBeNull();
   });
 
   it("summarizes conditions with database names in the tab tooltip", () => {
@@ -105,11 +101,11 @@ describe("rich event page tabs", () => {
     ];
     const strip = renderStrip(pages);
 
-    const title1 = findByTestId(strip, "event-page-tab-1")!.getAttribute("title") ?? "";
+    const title1 = findByTestId(strip, "evt-page-segment-1")!.getAttribute("title") ?? "";
     expect(title1).toContain("페이지 1 — EV001");
     expect(title1).toContain("조건 없음");
 
-    const title2 = findByTestId(strip, "event-page-tab-2")!.getAttribute("title") ?? "";
+    const title2 = findByTestId(strip, "evt-page-segment-2")!.getAttribute("title") ?? "";
     expect(title2).toContain("페이지 2 — 의뢰 수락 후");
     expect(title2).toContain("별등 의뢰 수락 켜짐");
     expect(title2).toContain("별등 진행도 >= 3");
@@ -122,14 +118,14 @@ describe("rich event page tabs", () => {
     const pages = [eventPage("page-1"), eventPage("page-2", { conditions: richConditions() })];
     const strip = renderStrip(pages, pages[1]!);
 
-    expect(strip.dataset.testid).toBe("event-classic-page-tabs");
-    const tab1 = findByTestId(strip, "event-page-tab-1")!;
-    const tab2 = findByTestId(strip, "event-page-tab-2")!;
+    expect(strip.dataset.testid).toBe("evt-header-page-tabs");
+    const tab1 = findByTestId(strip, "evt-page-segment-1")!;
+    const tab2 = findByTestId(strip, "evt-page-segment-2")!;
     expect(tab1.tagName).toBe("BUTTON");
     expect(tab2.tagName).toBe("BUTTON");
 
-    expect(tab1.querySelector(".event-page-tab-number")?.textContent).toBe("1");
-    expect(tab2.querySelector(".event-page-tab-number")?.textContent).toBe("2");
+    expect(tab1.querySelector(".evt-page-segment-number")?.textContent).toBe("1");
+    expect(tab2.querySelector(".evt-page-segment-number")?.textContent).toBe("2");
     expect(tab1.textContent).toContain("1");
     expect(tab2.textContent).toContain("2");
 

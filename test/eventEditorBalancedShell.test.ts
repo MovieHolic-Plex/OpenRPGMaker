@@ -60,6 +60,6 @@ describe("hierarchy event editor presentation layer", () => {
   it("keeps page copy and delete actions visibly available", () => {
     expect(pagePropsSource).not.toContain("wrap.open = true");
     expect(pagePropsSource).toContain("requestEventPageDeletion");
-    expect(pagePropsSource).toContain("event-page-tab-add");
+    expect(pagePropsSource).toContain("evt-page-add");
   });
 });

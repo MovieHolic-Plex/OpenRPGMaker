@@ -23,6 +23,7 @@ import {
   renderEventEditorDynamic,
   renderEventEditorStable,
 } from "./content";
+import { renderClassicPageTabStrip } from "./pageProps";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
 import { installEventEditorCustomSelects } from "./customSelect";
@@ -195,6 +196,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     customSelects.refresh();
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
     restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
+    refreshHeaderPageSegments(header, request);
     refreshModalFooterStatus(footer, request);
     refreshModalHeaderSaveState(header, footer);
   };
@@ -320,6 +322,9 @@ function renderModalHeader(
         attrs: { style: "display: none;" },
         dataset: { testid: "event-editor-header-save-state" },
       }),
+      pages.length > 0 && activePage
+        ? renderClassicPageTabStrip(mapId, ev!, activePage)
+        : el("span", { attrs: { style: "display: none;" } }),
       el("div", {
         class: "header-actions",
         children: [
@@ -333,13 +338,6 @@ function renderModalHeader(
               if (!validation.canCommit) return;
               void openSelectedEventTestModal(mapId, eventId);
             }},
-          }),
-          el("button", {
-            class: "btn primary event-editor-header-save",
-            text: "저장하고 닫기",
-            attrs: { type: "button" },
-            dataset: { testid: "event-editor-save" },
-            on: { click: saveAction },
           }),
           el("button", {
             class: "icon-btn event-editor-modal-close",
@@ -418,6 +416,11 @@ function renderModalFooter(
             beginExistingEventDraft(request.mapId, request.eventId);
             refreshModalFooterStatus(footer, request);
           }),
+          footerButton("저장하고 닫기", "event-editor-save", () => {
+            if (!commitValidatedEventDraft(request, "저장하고 닫기")) return;
+            close(true);
+            toast("이벤트 변경을 프로젝트에 반영했습니다.", "ok");
+          }, true),
         ],
       }),
     ],
@@ -504,6 +507,19 @@ function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: strin
     case "error": return { text: `저장 실패: ${autoSave.message}`, state: "error" };
     case "idle": return { text: "저장 준비", state: "idle" };
   }
+}
+
+function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditorRequest): void {
+  const map = store.getCurrent().maps[request.mapId];
+  const ev = map?.events.find((entry) => entry.id === request.eventId);
+  const pages = ev?.pages ?? [];
+  const selectedPageId = editorState.get().selectedEventPageId;
+  const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
+  if (!ev || !activePage) return;
+  const next = renderClassicPageTabStrip(request.mapId, ev, activePage);
+  const current = header.querySelector<HTMLElement>('[data-testid="evt-header-page-tabs"]');
+  if (current) current.replaceWith(next);
+  else header.querySelector(".header-actions")?.before(next);
 }
 
 function refreshModalHeaderSaveState(header: HTMLElement, footer: HTMLElement): void {

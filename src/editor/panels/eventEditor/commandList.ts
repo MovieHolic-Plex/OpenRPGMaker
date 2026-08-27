@@ -159,13 +159,21 @@ function renderCommandItem(
     renderCommandSummary(cmd),
     ...(supportBadge ? [supportBadge] : []),
     ...(issueBadge ? [issueBadge] : []),
-    commandActions(path, actions)
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
+  let inspectTimer = 0;
+  const deferInspect = typeof requestAnimationFrame === "function" && typeof document !== "undefined" && !!document.body;
   head.addEventListener("click", () => {
     selectCommandLine(item);
-    // 목업: 클릭하면 우측 인스펙터가 그 자리에서 바뀐다(모달 없음).
-    showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+    if (!deferInspect) {
+      showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+      return;
+    }
+    if (inspectTimer) globalThis.clearTimeout(inspectTimer);
+    inspectTimer = globalThis.setTimeout(() => {
+      inspectTimer = 0;
+      showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+    }, 280);
   });
   // 재렌더 뒤에도 선택과 인스펙터가 유지되도록 복원한다.
   if (sameInspectorPath(path, selectedCommandPath())) {
@@ -178,8 +186,8 @@ function renderCommandItem(
     openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
   });
   head.addEventListener("dblclick", (event) => {
-    // 버튼(↑↓x)·드래그 핸들 더블클릭은 편집 모달을 열지 않는다(각자 동작을 유지한다).
     if (event.target instanceof Element && event.target.closest(".cmd-actions, .cmd-drag-handle")) return;
+    if (inspectTimer) globalThis.clearTimeout(inspectTimer);
     event.preventDefault();
     event.stopPropagation();
     selectCommandLine(item);
@@ -191,7 +199,7 @@ function renderCommandItem(
     selectCommandLine(item);
     handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
   });
-  item.append(head);
+  item.append(head, commandActions(path, actions));
   ensureTerminalRowHint(item, cmd);
   // 항목 자체를 드롭 타겟으로 만들어 위/아래 삽입 위치를 결정한다.
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
