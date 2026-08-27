@@ -41,6 +41,40 @@
   min-height: 0;
 }
 
+/* 1024x768 에서 툴바가 열 밖으로 새지 않게 한다.
+ * 왜 이렇게 무거운 선택자인가: event-editor.mockup.css / .balanced.css 가 이 파일보다
+ * 나중에 로드되면서 같은 (0,2,0)~(0,3,0) 규칙으로 justify-content: flex-end · 고정 32px 행을
+ * 잡는다. flex-end + 줄바꿈 없음이면 넘친 폭이 왼쪽으로 밀려 [+ 명령] 이 열 밖에서 잘렸다.
+ * 그래서 한 단계 높은 특이성으로 줄바꿈 행 + 자동 높이 행을 확정한다. */
+.event-editor .event-contents-fieldset.event-oprn-fieldset {
+  /* 툴바가 두 줄이 되면 행이 같이 자란다 — 고정 32px 는 목록 위로 겹쳐 흘렀다. */
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.event-editor .event-contents-fieldset > .toolbar.event-editor-command-toolbar {
+  align-content: center;
+  column-gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  min-width: 0;
+  row-gap: 6px;
+}
+
+/* 1순위 액션은 항상 첫 칸에서 라벨 폭을 온전히 지킨다. */
+.event-editor .event-contents-fieldset > .toolbar.event-editor-command-toolbar
+  > [data-testid="event-command-toolbar-add"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 남는 폭은 검색이 흡수한다 — 줄바꿈 전에 먼저 줄어드는 유일한 컨트롤. */
+.event-editor .event-contents-fieldset > .toolbar.event-editor-command-toolbar
+  > .event-editor-command-search {
+  flex: 1 1 140px;
+  min-width: 96px;
+  width: auto;
+}
+
 .event-editor-command-tool-group {
   align-items: center;
   display: inline-flex;
