@@ -67,11 +67,13 @@ describe("AI assistant UX P0–P2", () => {
     expect(headerSettings).toBeNull();
     expect(newChat?.getAttribute("aria-label")).toContain("새 대화");
     expect(more?.textContent).toContain("☰");
-    // 내보내기·도크는 햄버거 안
+    // 내보내기·도크는 햄버거 안 작업 접기
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreMenu = findByTestId(panel, "ai-more-menu");
-    expect(findByTestId(moreMenu!, "ai-more-export")).not.toBeNull();
-    expect(findByTestId(moreMenu!, "ai-more-dock")).not.toBeNull();
+    const fold = findByTestId(moreMenu!, "ai-more-actions");
+    expect(fold).not.toBeNull();
+    expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
+    expect(findByTestId(fold!, "ai-more-dock")).not.toBeNull();
   });
 
   it("opens a dedicated settings modal with config fields", () => {

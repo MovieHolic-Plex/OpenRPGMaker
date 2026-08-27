@@ -70,7 +70,7 @@
 /* 1280px 湲?醫곸? ?붾㈃: AI ?꾪궧 ?몄뀑??以꾩뿬 罹붾쾭??醫뚰뙏?덊듃????쓣 ?뚮젮以?? */
 @media (max-width: 1320px) {
   body.ai-panel-docked {
-    --ai-docked-panel-inset: calc(min(360px, 40vw) + 4px);
+    --ai-docked-panel-inset: calc(clamp(360px, 38vw, 520px) + 4px);
   }
 }
 

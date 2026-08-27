@@ -1,0 +1,23 @@
+# retired-contract greps over the three rewritten specs + helper
+-- gridTemplateColumns / 1400 / 860 / toHaveLength(24) --
+test/e2e/oprn-event-command-picker.spec.ts:14: * 폐기된 RM2003 계약은 여기서 단언하지 않는다: 2열 그리드, 1400×860 모달,
+grep_exit=0
+-- exact 조건 / 그래픽 / 실행 내용 label assertions --
+grep_exit=1
+-- event-command-empty-line usage in the three specs --
+test/e2e/eventStoryboardPicker.ts:7: * `event-command-empty-line` 더블클릭(구 `@>` 빈 줄) 경로가 없다. 명령 피커는 제품
+test/e2e/oprn-event-command-picker.spec.ts:15: * exact `조건`/`그래픽`/`실행 내용` 라벨, 기본 visible `event-command-empty-line`,
+test/e2e/oprn-event-command-picker.spec.ts:37:  await expect(editor.getByTestId("event-command-empty-line")).toBeHidden();
+test/e2e/oprn-event-command-picker.spec.ts:77:  await expect(editor.getByTestId("event-command-empty-line")).toBeHidden();
+test/e2e/oprn-event-command-picker.spec.ts:90:  await expect(editor.getByTestId("event-command-empty-line")).toBeHidden();
+grep_exit=0
+-- loadStoryboardMode default --
+26:export function loadStoryboardMode(): StoryboardMode {
+27-  try {
+28-    const raw = localStorage.getItem(MODE_KEY);
+29-    if (raw === "list" || raw === "storyboard") return raw;
+30-  } catch { /* ignore */ }
+31-  // 스토리보드가 기본 저작 표면이고 목록은 검색·재정렬·컨텍스트 작업용 보조 보기다.
+32-  return "storyboard";
+33-}
+34-

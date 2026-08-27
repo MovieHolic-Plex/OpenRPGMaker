@@ -268,7 +268,7 @@ describe("event editor trust loop", () => {
   });
 
   it("uses strict roving tabs, preserves command focus, and keeps recents newest-first", () => {
-    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => ({ closePicker: false }) });
+    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     const firstTab = document.querySelector<HTMLElement>('[data-testid="event-command-picker-tab-1"]');
     const secondTab = document.querySelector<HTMLElement>('[data-testid="event-command-picker-tab-2"]');
     expect(firstTab?.textContent).toBe("빠른 저작");
@@ -305,19 +305,19 @@ describe("event editor trust loop", () => {
     expect(focusedFavorite?.classList.contains("event-command-picker-favorite")).toBe(true);
     expect(focusedFavorite?.parentElement?.dataset.commandId).toBe(textId);
 
+    // 한 레이어: 명령을 고르면 피커가 닫힌다. 다음 선택은 피커를 다시 열고 한다.
     const waitCommand = document.querySelector<HTMLElement>('[data-testid="command-picker-add-wait"]');
     const waitId = waitCommand?.parentElement?.dataset.commandId;
     waitCommand?.click();
-    // 한 레이어 계약: 고르면 피커가 닫히니, 다음 명령은 피커를 다시 여어서 고른다.
     expect(document.querySelector('[data-testid="event-command-picker"]')).toBeNull();
     openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     const switchCommand = document.querySelector<HTMLElement>('[data-testid="command-picker-add-setSwitch"]');
     const switchId = switchCommand?.parentElement?.dataset.commandId;
     switchCommand?.click();
+    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     if (!waitId || !switchId) throw new Error("expected recent command ids");
     const recents = readEventCommandPickerPreferences().recents;
     expect(recents.slice(0, 2)).toEqual([switchId, waitId]);
-    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     const recentRoot = document.querySelector<HTMLElement>('[data-testid="event-command-picker-recents"]');
     const recentIds = Array.from(
       recentRoot?.querySelectorAll<HTMLElement>(".event-command-picker-command-wrap") ?? [],
@@ -326,7 +326,7 @@ describe("event editor trust loop", () => {
   });
 
   it("traps focus inside subdialogs and labels the close control in Korean", () => {
-    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => ({ closePicker: false }) });
+    openEventCommandPicker({ title: "이벤트 명령", onSelect: () => undefined });
     const backdrop = document.querySelector<HTMLElement>('[data-testid="event-command-picker"]');
     const dialog = backdrop?.querySelector<HTMLElement>('[role="dialog"]') ?? backdrop;
     const close = dialog?.querySelector<HTMLElement>(".event-subdialog-close");

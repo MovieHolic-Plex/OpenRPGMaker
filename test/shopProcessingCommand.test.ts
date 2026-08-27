@@ -21,7 +21,8 @@ function mkSession(): PlaySessionLike {
 }
 
 describe("Shop Processing command options", () => {
-  it("creates a general-store shop with starter stock (not an empty catalog)", () => {
+  it("creates RM-style shop processing defaults", () => {
+    // 첫 화면부터 잡화점 진열이 깔린다 — 판매 목록 0개 상점으로 시작하지 않는다.
     expect(newCommand("shop")).toMatchObject({
       kind: "shop",
       itemIds: ["item_potion", "item_ether", "item_antidote"],

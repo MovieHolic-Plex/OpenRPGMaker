@@ -235,6 +235,65 @@ describe("runtime debug panel write controls", () => {
   });
 });
 
+describe("runtime debug panel switch value readout", () => {
+  // 예전에는 ON/OFF 를 눌러도 패널에 결과가 없어서 상태를 보려면 전체 JSON 을 열어
+  // 수백 개 사이에서 해당 id 를 눈으로 찾아야 했다.
+  function hookWithLiveSwitches(): { hook: RuntimeDebugHook; switches: Record<string, boolean> } {
+    const switches: Record<string, boolean> = { sw_0001: false, sw_0007: true };
+    const hook: RuntimeDebugHook = {
+      setSwitch: vi.fn((id: string, value: boolean) => {
+        switches[id] = value;
+      }),
+      setVariable: vi.fn(),
+      giveItem: vi.fn(),
+      setGold: vi.fn(),
+      heal: vi.fn(),
+      teleport: vi.fn(),
+      applyPreset: vi.fn(),
+      setSeed: vi.fn(),
+      readState: vi.fn(() => stateSnapshot({ switches: { ...switches } })),
+    };
+    (window as DebugWindow).__oprnDebug = hook;
+    return { hook, switches };
+  }
+
+  it("shows the current value of the selected switch and follows the selection", () => {
+    hookWithLiveSwitches();
+    const panel = renderRuntimeDebugPanel();
+    const value = testid(panel, "runtime-debug-switch-value");
+
+    expect(value.dataset.switchId).toBe("sw_0001");
+    expect(value.dataset.switchValue).toBe("false");
+    expect(value.textContent).toBe("OFF");
+
+    const switchSelect = select(panel, "runtime-debug-switch-select");
+    switchSelect.value = "sw_0007";
+    switchSelect.dispatchEvent(new Event("change"));
+    expect(value.dataset.switchValue).toBe("true");
+    expect(value.textContent).toBe("ON");
+  });
+
+  it("refreshes the moment ON/OFF is pressed, without waiting for a frame", () => {
+    const { switches } = hookWithLiveSwitches();
+    const panel = renderRuntimeDebugPanel();
+    const value = testid(panel, "runtime-debug-switch-value");
+
+    testid(panel, "runtime-debug-switch-on").click();
+    expect(switches["sw_0001"]).toBe(true);
+    expect(value.textContent).toBe("ON");
+
+    testid(panel, "runtime-debug-switch-off").click();
+    expect(switches["sw_0001"]).toBe(false);
+    expect(value.textContent).toBe("OFF");
+  });
+
+  it("reads unknown before a run installs the debug hook", () => {
+    const value = testid(renderRuntimeDebugPanel(), "runtime-debug-switch-value");
+    expect(value.dataset.switchValue).toBe("unknown");
+    expect(value.textContent).toBe("?");
+  });
+});
+
 describe("runtime debug panel live readout", () => {
   it("reflects the hook state while attached and stops refreshing once detached", async () => {
     let snapshot = stateSnapshot({ currentMapId: "map_0002", x: 3, y: 9 });

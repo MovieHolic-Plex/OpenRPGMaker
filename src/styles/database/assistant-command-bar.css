@@ -218,6 +218,43 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* after.html: 헤더 ☰ 대기 화면은 한 줄 아이콘이 아니라 라벨이 보이는 세로 목록 */
+.ai-more-menu .ai-temperature-picker {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ai-more-menu .ai-temperature-option.ai-more-menu-item {
+  justify-content: flex-start;
+  font-size: 13px;
+  text-align: left;
+}
+
+/* after.html hug: 대기 화면만 먼저 보이고, 5개 액션은 접힌 작업 안.
+   details 에 display:grid 를 주면 접기 위젯이 깨지니 기본 display 를 유지한다. */
+.ai-more-actions {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 4px;
+  padding-top: 2px;
+}
+
+.ai-more-actions-summary {
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  list-style: none;
+  padding: 6px 8px;
+}
+
+.ai-more-actions-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ai-more-actions[open] > .ai-more-actions-summary {
+  color: var(--text-1);
+}
+
 .ai-temperature-option.ai-more-menu-item,
 .ai-temperature-option.ai-command-menu-item {
   align-items: center;

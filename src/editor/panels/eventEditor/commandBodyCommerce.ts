@@ -1,3 +1,4 @@
+import { GENERAL_STORE_PRESET_ITEM_IDS } from "@/editor/eventCommands/quickAuthoringDefaults";
 import { newCommand } from "@/editor/eventActions";
 import { INN_NOT_ENOUGH_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
@@ -142,7 +143,7 @@ const SHOP_PRESETS: readonly ShopPreset[] = [
     id: "general",
     label: "잡화점",
     title: "회복약·마력약·해독초",
-    itemIds: ["item_potion", "item_ether", "item_antidote"],
+    itemIds: GENERAL_STORE_PRESET_ITEM_IDS,
     shopType: "normal",
   },
   {
@@ -1070,18 +1071,22 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     ],
   });
 
+  // 카탈로그는 접혀서 시작한다 — 첫 화면은 진열대이고, DB 전체 아이콘 그리드가 아니다.
   const catalogFold = el("details", {
     class: "shop-processing-catalog-fold",
     dataset: { testid: "shop-item-catalog-fold" },
-  });
-  catalogFold.append(
-    el("summary", {
-      class: "shop-processing-catalog-fold-summary",
-      text: `DB 전체 목록 (${items.length})·필터·검색`,
-    }),
-    filterBar,
-    catalog,
-  );
+    children: [
+      el("summary", {
+        class: "shop-processing-catalog-summary",
+        dataset: { testid: "shop-item-catalog-summary" },
+        text: `자료집에서 더 담기 · DB ${items.length}개`,
+      }),
+      filterBar,
+      catalog,
+    ],
+  }) as HTMLDetailsElement;
+  catalogFold.open = false;
+
   selectedList.root.classList.add("shop-processing-sale-list");
   selectedList.root.dataset.testid = "shop-sale-list";
   fieldset.append(

@@ -29,7 +29,7 @@
 .battle-scene[data-battle-skin="rm2000"] .battle-party {
   background: linear-gradient(180deg, #101c52, #0a1238);
   border: 4px solid #d8d8e8;
-  border-image: none;
+  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
 }
 
 /* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */

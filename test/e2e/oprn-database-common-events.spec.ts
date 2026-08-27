@@ -31,8 +31,8 @@ test("database common events use the full command picker and preserve cancel/sav
   await commandDialog.locator("select").last().selectOption("false");
   await commandDialog.getByTestId("event-command-edit-cancel").click();
   await expect(commandDialog).toBeHidden();
-  await page.getByTestId("event-command-picker-cancel").click();
-  await expect(page.getByTestId("event-command-picker")).toBeHidden();
+  // 한 레이어: 명령을 고르면 피커는 이미 닫혀 있다. 취소는 아무것도 남기지 않는다.
+  await expect(page.getByTestId("event-command-picker")).toHaveCount(0);
   await expect(page.getByTestId("event-command-setSwitch")).toHaveCount(0);
 
   await page.screenshot({ path: testInfo.outputPath("db-common-event-cancel-without-mutation.png"), fullPage: true });

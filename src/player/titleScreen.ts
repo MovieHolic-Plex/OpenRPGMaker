@@ -1,5 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { applyTitleScreenBackground } from "@/player/systemGraphics";
+import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleBackgroundLayer, TitleIntroSettings, TitleScreenSettings } from "@/project/types";
@@ -240,12 +240,11 @@ function round3(value: number): number {
 }
 
 function applyTitleMenuGraphic(node: HTMLElement, project: Project): void {
-  const resourceId = project.system.systemResourceId || "windowskin-default";
-  node.dataset.systemResource = resourceId;
-  // CSS keeps the menu's existing border-image contract; set only the variable so
-  // the full-screen root cannot paint a 9-slice fill over the key art.
-  const url = resolveAssetResourceUrl(resourceId, { project }) ?? "/assets/ui/windowskin-default.png";
-  node.style.setProperty("--runtime-window-skin", `url("${url}")`);
+  // 윈도스킨 정본 파이프를 그대로 쓴다 — 이전에는 이 함수가 `systemResourceId ||
+  // "windowskin-default"` 로 자기만의 정관화를 해서, 자료집이 셀정한 윈도스킨 id 가
+  // 필드 메뉴·전투·상점(normalizeSystemWindowSkinId 경로)와 타이틀에서 어긍날 수 있었다.
+  // 변수만 심는다: 전면 루트에 9-slice fill 을 컬면 타이틀 키아트를 덮는다.
+  applySystemWindowSkinVariable(node, project);
 }
 
 function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTMLElement[] {

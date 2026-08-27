@@ -6,6 +6,7 @@ import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/play
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { dialogueHost } from "@/player/playSceneDom";
+import { holdScreenFlash } from "@/player/playSceneScreenEffects";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
@@ -105,19 +106,41 @@ export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: 
 // Promise 패턴을 따른다. Phaser cameras.main.flash(duration, r, g, b) 사용.
 export function flashCamera(scene: PlaySceneContext, step: FlashScreenStep): Promise<void> {
   return new Promise((resolve) => {
-    scene.cameras.main.once("cameraflashcomplete", () => resolve());
-    scene.cameras.main.flash(step.durationMs, step.red, step.green, step.blue);
+    let settled = false;
+    const holdMs = Math.max(800, step.durationMs);
+    holdScreenFlash(scene, { r: step.red, g: step.green, b: step.blue, a: 0.85 }, holdMs);
+    const cam = scene.cameras?.main;
+    if (cam && typeof cam.flash === "function") {
+      cam.flash(holdMs, step.red, step.green, step.blue, true);
+    }
+    const graphics = typeof scene.add?.graphics === "function" ? scene.add.graphics() : null;
+    if (graphics) {
+      graphics.setScrollFactor(0);
+      graphics.setDepth(900_000);
+      const width = (cam?.width && cam.width > 1) ? cam.width : 320;
+      const height = (cam?.height && cam.height > 1) ? cam.height : 240;
+      const color = ((step.red & 255) << 16) | ((step.green & 255) << 8) | (step.blue & 255);
+      graphics.fillStyle(color, 0.85);
+      graphics.fillRect(0, 0, width, height);
+    }
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      graphics?.destroy();
+      const screen = scene.session.m2Runtime?.screen;
+      if (screen?.tint === "255,255,255,0.85") {
+        screen.tint = "none";
+        screen.tintDurationMs = 0;
+      }
+      resolve();
+    };
+    const timeout = typeof window !== "undefined" && typeof window.setTimeout === "function"
+      ? window.setTimeout
+      : setTimeout;
+    timeout(finish, holdMs);
   });
 }
 
-/**
- * RM2K3 흔들림 강도(1~10)를 Phaser `shake()` 의 0~1 비율로 정규화한다.
- *
- * 상한이 0.05 였을 때 에디터 프리셋 6("강하게")과 10("매우 강하게")이 **둘 다 0.05 로 잘려**
- * 화면상 완전히 같았다. 감독은 다이얼을 올려도 변화가 없어 다시 올리고 다시 재생하는
- * 왕복을 반복했다. 상한을 강도 10 의 자연값인 0.10 으로 올려 4단계가 실제로 4단계가 되게 한다.
- * 이제 클램프는 세기를 압축하는 장치가 아니라 **범위 밖 입력만 막는 가드**다.
- */
 export function shakeIntensityRatio(power: number): number {
   if (!Number.isFinite(power)) return SHAKE_MIN_RATIO;
   return Math.min(SHAKE_MAX_RATIO, Math.max(SHAKE_MIN_RATIO, power / 100));

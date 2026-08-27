@@ -5,8 +5,19 @@ import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroop
 import { parseDialogueText } from "@/player/dialogue";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { renderFacesetCrop } from "./facesetPreview";
+import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
+import {
+  actorBattleM2Preview,
+  equipmentStage,
+  expGaugeStage,
+  levelGaugeStage,
+  partyChipStage,
+  recoverAllGaugeStage,
+  vitalGaugeStage,
+  type ActorBattlePreviewDeps,
+} from "./commandPreviewActorBattle";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { facesetIconOf, initialBadge, recordIconElement } from "./recordPicker";
+import { initialBadge } from "./recordPicker";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
@@ -36,13 +47,15 @@ export type CommandPreviewContext = {
 // 명령 편집 모달 우측 "이미지 리치" 프리뷰 패널. staged command 를 받아 종류별 시각화를
 // 렌더한다. 전용 렌더러가 없으면 요약 카드로 폴백한다(패널이 비어 보이지 않게).
 export function renderCommandPreview(cmd: Command, context?: CommandPreviewContext): HTMLElement {
+  const visual = renderVisual(cmd, context);
+  const summaryOnly = visual.classList.contains("ecp-summary-card");
   const panel = el("div", {
-    class: "event-command-preview",
+    class: summaryOnly ? "event-command-preview ecp-summary-only" : "event-command-preview",
     dataset: { testid: "event-command-preview-body", previewKind: cmd.kind },
   });
   if (context?.skipped) panel.classList.add("ecp-skipped");
   panel.append(el("div", { class: "ecp-caption", text: commandPreviewCaption(cmd) }));
-  panel.append(renderVisual(cmd, context));
+  panel.append(visual);
   return panel;
 }
 
@@ -54,6 +67,11 @@ function commandPreviewCaption(cmd: Command): string {
 }
 
 function renderVisual(cmd: Command, context?: CommandPreviewContext): HTMLElement {
+  if (cmd.kind === "m2Command") {
+    const title = m2CommandById(cmd.commandId)?.title;
+    if (title === "Screen Effect") return screenEffectStage(cmd);
+    if (title === "Camera Control") return cameraControlStage(cmd);
+  }
   const handler = visualPreviewHandlers[cmd.kind] as VisualPreviewHandler<Command> | undefined;
   return handler ? handler(cmd, context) : summaryCard(cmd, context);
 }
@@ -79,7 +97,12 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeItem: (cmd, ctx) => itemStage(cmd, ctx),
   shop: shopStage,
   inn: innStage,
-  changeParty: (cmd, ctx) => actorStage(cmd.actorId, cmd.action === "add" ? "파티에 추가" : "파티에서 제외", ctx),
+  changeParty: (cmd, ctx) => partyChipStage(cmd, previewDeps(ctx)),
+  changeActorHp: (cmd) => vitalGaugeStage(cmd, "hp"),
+  changeActorMp: (cmd) => vitalGaugeStage(cmd, "mp"),
+  changeLevel: levelGaugeStage,
+  recoverAll: recoverAllGaugeStage,
+  changeEquipment: (cmd, ctx) => equipmentStage(cmd, previewDeps(ctx)),
   addFollower: (cmd) => screenMock(cmd.name || cmd.actorId || "FOLLOWER", "title"),
   removeFollower: (cmd) => screenMock(cmd.all === true ? "FOLLOWERS OFF" : "FOLLOWER OFF", "title"),
   setLighting: lightingStage,
@@ -92,7 +115,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   inputWait: inputWaitStage,
   changeGold: (cmd, ctx) => goldStage(cmd, ctx),
   openChest: storageChestStage,
-  changeExp: (cmd, ctx) => expStage(cmd, ctx),
+  changeExp: (cmd, ctx) => expGaugeStage(cmd, previewDeps(ctx)),
   learnSkill: skillStage,
   battleProcessing: battleStage,
   setSwitch: (cmd, ctx) => lampStage(switchName(cmd.switchId), resolveSwitchDisplay(cmd, ctx), ctx?.simState ? getSimSwitch(ctx.simState, cmd.switchId) : undefined),
@@ -105,8 +128,25 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   gameOver: () => screenMock("GAME OVER", "gameover"),
   returnToTitle: () => screenMock("타이틀 화면", "title"),
   ending: (cmd) => screenMock(cmd.title || "THE END", "ending"),
+  openSaveMenu: () => screenMock("저장", "title"),
   wait: waitStage,
+  m2Command: m2VisualPreview,
 };
+
+function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?: CommandPreviewContext): HTMLElement {
+  if (cmd.commandId === "m2-209-advanced-dialogue") {
+    const fields = cmd.fields ?? {};
+    const speaker = String(fields.speaker ?? "").trim();
+    return messageWindowMock(speaker || undefined, String(fields.body ?? ""), false, context?.face);
+  }
+  const title = m2CommandById(cmd.commandId)?.title;
+  const actorSurface = actorBattleM2Preview(cmd, title, previewDeps(context));
+  if (actorSurface) return actorSurface;
+  if (title === "Open Save Menu") return screenMock("저장", "title");
+  if (title === "Game Over") return screenMock("GAME OVER", "gameover");
+  if (title === "Return to Title Screen") return screenMock("타이틀 화면", "title");
+  return summaryCard(cmd, context);
+}
 
 function messageWindowMock(
   speaker: string | undefined,
@@ -117,26 +157,31 @@ function messageWindowMock(
   const stage = el("div", { class: "ecp-stage" });
   // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
   // 메시지 프리뷰는 기본 창 스킨 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
-  const faceClass = face ? " with-face" : "";
+  // 말하기 무대: 빈 본문이어도 게임 창에 샘플 대사와 얼굴이 보인다. "..." 만 남기지 않는다.
+  const authored = body.trim().length > 0;
+  const sampleFace = authored ? undefined : sampleSpeakerFace();
+  const shownFace = face ?? sampleFace;
+  const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
+  const faceClass = shownFace ? " with-face" : "";
   const sideClass = faceRight ? " face-right" : "";
-  const speakerName = speaker?.trim() ?? "";
+  const speakerName = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
   const win = el("div", {
     class: "ecp-message-window" + sideClass + faceClass + (speakerName ? " has-speaker" : ""),
-    dataset: { testid: "ecp-message-window" },
+    dataset: { testid: "ecp-message-window", ...(authored ? {} : { sample: "true" }) },
   });
   // [중간-3] 직전 changeFace 상태가 있으면 화자 얼굴을 프리뷰에 반영.
   // Crop only — no editor resource-id chrome inside the play mock.
-  if (face) {
+  if (shownFace) {
     win.append(
       renderFacesetCrop({
-        resourceId: face.resourceId,
-        faceIndex: face.faceIndex,
+        resourceId: shownFace.resourceId,
+        faceIndex: shownFace.faceIndex,
         displaySize: PREVIEW_FACE_SIZE,
       })
     );
   }
   const textCol = el("div", { class: "ecp-message-text" });
-  textCol.append(renderPreviewDialogueBody(body));
+  textCol.append(renderPreviewDialogueBody(shownBody));
   win.append(textCol);
   // 화자 네임플레이트는 창 밖(상단 가장자리)에 올려 본문과 시각적으로 분리한다.
   if (speakerName) {
@@ -149,16 +194,29 @@ function messageWindowMock(
     );
   }
   stage.append(win);
+  if (!authored) {
+    stage.append(
+      el("div", {
+        class: "ecp-message-sample-note",
+        dataset: { testid: "ecp-message-sample-note" },
+        text: "샘플 대사 — 본문을 쓰면 이 창에 그대로 들어갑니다",
+      })
+    );
+  }
   return stage;
 }
 
-// 미리보기는 '...' 가 아니다. 본문이 아직 비어 있으면 샘플 문장을 보여, 작가가 자기 문장이
-// 게임 창에서 어떻게 보이는지 바로 알게 한다.
-const EMPTY_TEXT_SAMPLE = "여기에 쓴 문장이 게임 창에서 이렇게 보입니다.";
+/** 샘플 무대에 세울 얼굴. 파티 첫 배우의 faceset 을 그대로 빌린다. */
+function sampleSpeakerFace(): CommandPreviewContext["face"] | undefined {
+  const project = store.getCurrent();
+  const partyId = project.session?.partyActorIds?.[0];
+  const actor = project.database.actors.find((entry) => entry.id === partyId) ?? project.database.actors[0];
+  if (!actor?.faceResourceId) return undefined;
+  return { resourceId: actor.faceResourceId, faceIndex: actor.faceIndex ?? 0 };
+}
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
 function renderPreviewDialogueBody(body: string): HTMLElement {
-  if (!body.trim()) return sampleDialogueBody();
   const project = store.getCurrent();
   const variableDefaults: Record<string, number> = {};
   for (const entry of project.variables ?? []) {
@@ -168,7 +226,7 @@ function renderPreviewDialogueBody(body: string): HTMLElement {
     const id = "var_" + String(i).padStart(4, "0");
     if (variableDefaults[id] === undefined) variableDefaults[id] = 0;
   }
-  const segments = parseDialogueText(body, {
+  const segments = parseDialogueText(body || "...", {
     session: { variables: variableDefaults, actorNames: {} },
     project,
   });
@@ -195,26 +253,10 @@ function renderPreviewDialogueBody(body: string): HTMLElement {
       })
     );
   }
-  if (!wrote) bodyEl.append(sampleSentenceLine());
+  if (!wrote) {
+    bodyEl.append(document.createTextNode(body.trim() ? "" : "..."));
+  }
   return bodyEl;
-}
-
-/** Empty-body stage: an identifiable sample sentence, never a bare "...". */
-function sampleDialogueBody(): HTMLElement {
-  const bodyEl = el("div", {
-    class: "ecp-message-body ecp-message-body-sample",
-    dataset: { testid: "ecp-message-body", sample: "1" },
-  });
-  bodyEl.append(sampleSentenceLine());
-  return bodyEl;
-}
-
-function sampleSentenceLine(): HTMLElement {
-  return el("span", {
-    class: "ecp-message-sample-line",
-    text: EMPTY_TEXT_SAMPLE,
-    dataset: { testid: "ecp-message-sample" },
-  });
 }
 
 /** Render each zero-width control exactly where it occurs in the authored sentence. */
@@ -528,26 +570,27 @@ function inputNumberStage(cmd: Extract<Command, { kind: "inputNumber" }>): HTMLE
     );
   }
 
-  // 자리수 캡션은 자리수만 말한다. 변수 표시명을 여기 쓰면 몇 자리 입력인지가
-  // 보이지 않는다. 입력값을 저장할 변수는 밑에 따로 적는다.
+  // 변수 표시명이 자리수 미리보기를 삼키지 않게, 자리수·상태와 변수 칩을 분리한다.
   win.append(
     el("div", {
       class: "ecp-number-meta",
       dataset: { testid: "ecp-number-meta" },
-      text: `${digits}자리 · 대기 중`,
-    })
-  );
-  stage.append(win);
-  stage.append(
-    el("div", {
-      class: "ecp-number-target",
-      dataset: { testid: "ecp-number-target" },
       children: [
-        el("span", { class: "ecp-number-target-label", text: "입력값 저장" }),
-        el("span", { class: "ecp-number-target-name", text: variablePreviewName(cmd.variableId) }),
+        el("span", {
+          class: "ecp-number-meta-digits",
+          dataset: { testid: "ecp-number-digit-count" },
+          text: `${digits}자리 · 대기 중`,
+        }),
+        el("span", {
+          class: "ecp-number-meta-variable",
+          dataset: { testid: "ecp-number-variable" },
+          attrs: { title: `변수 ${variablePreviewName(cmd.variableId)}` },
+          text: `변수 ${variablePreviewName(cmd.variableId)}`,
+        }),
       ],
     })
   );
+  stage.append(win);
   return stage;
 }
 
@@ -765,20 +808,6 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
   return stage;
 }
 
-function actorStage(actorId: string, caption: string, context?: CommandPreviewContext): HTMLElement {
-  const project = store.getCurrent();
-  const record = project.database.actors.find((actor) => actor.id === actorId);
-  const stage = el("div", { class: "ecp-icon-stage" });
-  stage.append(el("div", { class: "ecp-hero-icon", children: [recordIconElement(facesetIconOf(project, record?.faceResourceId, record?.faceIndex ?? 0), record?.name ?? actorId)] }));
-  stage.append(el("div", { class: "ecp-icon-name", text: record?.name ?? (actorId || "(주인공 선택)") }));
-  stage.append(el("div", { class: "ecp-op-strip", text: caption }));
-  if (context?.simState) {
-    const inParty = context.simState.partyActorIds.includes(actorId);
-    stage.append(el("div", { class: "ecp-current-state", text: inParty ? "현재 파티에 있음" : "현재 파티에 없음" }));
-  }
-  return stage;
-}
-
 function goldStage(cmd: Extract<Command, { kind: "changeGold" }>, context?: CommandPreviewContext): HTMLElement {
   const stage = el("div", { class: "ecp-icon-stage" });
   stage.append(el("div", { class: "ecp-gold-badge", text: "G" }));
@@ -788,25 +817,6 @@ function goldStage(cmd: Extract<Command, { kind: "changeGold" }>, context?: Comm
   stage.append(el("div", { class: "ecp-op-strip", text: "소지금 " + cmd.op + " " + amountText }));
   if (context?.simState) {
     stage.append(el("div", { class: "ecp-current-state", text: `현재 소지금: ${context.simState.gold} G` }));
-  }
-  return stage;
-}
-
-function expStage(cmd: Extract<Command, { kind: "changeExp" }>, context?: CommandPreviewContext): HTMLElement {
-  const project = store.getCurrent();
-  const stage = el("div", { class: "ecp-icon-stage" });
-  const targetLabel = !cmd.actorId || cmd.actorId === "party" || cmd.actorId === "all"
-    ? "파티 전체"
-    : (project.database.actors.find((actor) => actor.id === cmd.actorId)?.name ?? cmd.actorId);
-  const amountText = typeof cmd.amount === "number"
-    ? String(cmd.amount)
-    : ("변수 " + (cmd.amount.id || "?"));
-  stage.append(el("div", { class: "ecp-exp-badge", text: "EXP" }));
-  stage.append(el("div", { class: "ecp-icon-name", text: targetLabel }));
-  stage.append(el("div", { class: "ecp-op-strip", text: "경험치 " + cmd.op + " " + amountText }));
-  if (context?.simState && cmd.actorId && cmd.actorId !== "party" && cmd.actorId !== "all") {
-    const curExp = context.simState.variables[cmd.actorId + "_exp"] ?? 0;
-    stage.append(el("div", { class: "ecp-current-state", text: `현재 경험치: ${curExp}` }));
   }
   return stage;
 }
@@ -859,7 +869,12 @@ function battleStage(cmd: Extract<Command, { kind: "battleProcessing" }>): HTMLE
       attrs: { title: `변수 ${cmd.troopVariableId || "?"}` },
     }));
   } else if (shown.length === 0) {
-    row.append(el("div", { class: "ecp-battle-badge", text: "⚔" }));
+    // 번 검 아이콘은 적을 보여 주지 않는다 — 뭐가 비었는지 말하는 경고가 들어간다.
+    row.append(el("div", {
+      class: "ecp-battle-enemy-missing",
+      dataset: { testid: "ecp-battle-enemy-missing" },
+      text: troop ? "이 적 그룹에 몬스터가 없습니다" : "적 그룹을 고르세요",
+    }));
   } else {
     for (const enemyId of shown) {
       const enemy = project.database.enemies.find((entry) => entry.id === enemyId);
@@ -885,12 +900,24 @@ function battleStage(cmd: Extract<Command, { kind: "battleProcessing" }>): HTMLE
     }
   }
   field.append(row);
-  stage.append(field);
 
   const title = cmd.troopSource === "variable"
     ? `변수 ${cmd.troopVariableId || "?"}`
     : (troop?.name ?? (cmd.troopId || "(적 그룹 선택)"));
-  stage.append(el("div", { class: "ecp-icon-name", text: title }));
+  // 트룹은 카드다 — 전장·몬스터 아트·이름이 한 단지로 보인다.
+  const card = el("div", {
+    class: "ecp-troop-card",
+    dataset: {
+      testid: "ecp-troop-card",
+      troopId: cmd.troopSource === "variable" ? "" : (cmd.troopId ?? ""),
+      enemyCount: String(shown.length),
+    },
+    children: [
+      field,
+      el("div", { class: "ecp-troop-card-name", dataset: { testid: "ecp-troop-card-name" }, text: title }),
+    ],
+  });
+  stage.append(card);
 
   const rewards = battleRewardSummary(project, enemyIds);
   if (rewards) {
@@ -1047,6 +1074,15 @@ function summaryCard(cmd: Command, context?: CommandPreviewContext): HTMLElement
   return card;
 }
 
+/** 동료·전투 저작면 프리뷰가 쓰는 공용 헬퍼 묶음. */
+function previewDeps(context?: CommandPreviewContext): ActorBattlePreviewDeps {
+  return {
+    icon: heroIcon,
+    variableName: variablePreviewName,
+    simPartyActorIds: context?.simState?.partyActorIds,
+  };
+}
+
 function heroIcon(resourceId: string | undefined, name: string, size: number): HTMLElement {
   const url = resolveIconUrl(resourceId);
   if (url) return el("img", { class: "ecp-hero-img", attrs: { src: url, alt: "", width: String(size), height: String(size), draggable: "false" } });
@@ -1077,40 +1113,54 @@ function fitZoom(pxWidth: number): number {
   return Math.max(0.15, Math.min(2, 260 / pxWidth));
 }
 
-// 대기 미리보기는 숫자 카드가 아니라 타임라인이다: 앞 명령 → 대기 길이 → 다음 명령.
-const WAIT_TIMELINE_FULL_MS = 3000;
-
+/** 대기 — 타임라인이다. 같은 초를 두 번 쓴 요약 카드가 아니다. */
 function waitStage(cmd: Extract<Command, { kind: "wait" }>): HTMLElement {
   const stage = el("div", { class: "ecp-stage ecp-wait-stage", dataset: { testid: "ecp-wait-stage" } });
-  const byVariable = Boolean(cmd.variableId?.trim());
-  const ms = Math.max(0, cmd.ms);
-  const durationLabel = byVariable
-    ? `변수 ${variablePreviewName(cmd.variableId ?? "")} 값(초)`
-    : `${(ms / 1000).toFixed(ms % 1000 === 0 ? 0 : 1)}초`;
-  const fillRatio = byVariable ? 0.5 : Math.min(1, ms / WAIT_TIMELINE_FULL_MS);
-  const gap = el("div", {
-    class: `ecp-wait-gap${byVariable ? " is-variable" : ""}`,
-    dataset: { testid: "ecp-wait-gap" },
-  });
-  const fill = el("div", { class: "ecp-wait-gap-fill" });
-  fill.style.setProperty("--wait-fill", `${Math.round(fillRatio * 100)}%`);
-  gap.append(fill, el("span", { class: "ecp-wait-gap-label", text: durationLabel }));
-  stage.append(
-    el("div", {
-      class: "ecp-wait-timeline",
-      dataset: { testid: "ecp-wait-timeline" },
-      children: [
-        el("div", { class: "ecp-wait-node", text: "앞 명령" }),
-        gap,
-        el("div", { class: "ecp-wait-node", text: "다음 명령" }),
-      ],
-    }),
-    el("div", {
-      class: "ecp-wait-sub",
-      text: byVariable ? "변수 값만큼 멈췄다가 이어서 진행합니다" : "이 길이만큼 멈췄다가 이어서 진행합니다",
-    })
-  );
+  const variableId = cmd.variableId?.trim();
+  const seconds = Math.max(0, cmd.ms) / 1000;
+  const spanLabel = variableId
+    ? `변수 ${variablePreviewName(variableId)} 값`
+    : `${seconds.toFixed(cmd.ms % 1000 === 0 ? 0 : 1)}초`;
+  stage.append(waitTimeline(spanLabel, variableId ? null : seconds));
   return stage;
+}
+
+/**
+ * 이전 명령 → 대기 구간 → 다음 명령. 대기 길이는 구간의 폭으로도 보인다.
+ * 고정 시간이면 눈금(초)을 얹고, 변수면 길이가 정해지지 않았음을 그대로 말한다.
+ */
+function waitTimeline(spanLabel: string, seconds: number | null): HTMLElement {
+  const rail = el("div", { class: "ecp-wait-rail", attrs: { "aria-hidden": "true" } });
+  const span = el("div", {
+    class: `ecp-wait-span${seconds === null ? " is-variable" : ""}`,
+    dataset: { testid: "ecp-wait-span" },
+  });
+  // 0.1초 = 최소 폭, 3초 = 꽉 찬 폭. 변수 대기는 절반 폭 점선으로 둔다.
+  span.style.setProperty("--wait-span", seconds === null ? "50%" : `${Math.max(12, Math.min(100, (seconds / 3) * 100))}%`);
+  span.append(el("span", { class: "ecp-wait-span-label", text: spanLabel }));
+  rail.append(
+    el("div", { class: "ecp-wait-node is-before", children: [el("span", { text: "이전 명령" })] }),
+    span,
+    el("div", { class: "ecp-wait-node is-after", children: [el("span", { text: "다음 명령" })] })
+  );
+  const ticks = el("div", { class: "ecp-wait-ticks", dataset: { testid: "ecp-wait-ticks" } });
+  if (seconds === null) {
+    ticks.append(el("span", { class: "ecp-wait-tick", text: "길이는 실행할 때 정해집니다" }));
+  } else {
+    for (const tick of [0, 1, 2, 3]) {
+      ticks.append(
+        el("span", {
+          class: `ecp-wait-tick${seconds >= tick && tick > 0 ? " is-passed" : ""}`,
+          text: `${tick}s`,
+        })
+      );
+    }
+  }
+  return el("div", {
+    class: "ecp-wait-timeline",
+    dataset: { testid: "ecp-wait-timeline" },
+    children: [rail, ticks],
+  });
 }
 
 function switchName(id: string): string {
@@ -1188,6 +1238,60 @@ function removeLightStage(cmd: Extract<Command, { kind: "removeLight" }>): HTMLE
       text: cmd.all === true ? "빛 모두 끄기" : cmd.id || "빛 없음",
     })
   );
+  return stage;
+}
+
+
+function m2Field(cmd: Extract<Command, { kind: "m2Command" }>, key: string, fallback: string): string {
+  const value = cmd.fields?.[key];
+  if (typeof value === "string" && value.trim()) return value;
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  return fallback;
+}
+
+function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
+  const effect = m2Field(cmd, "effect", "fadeIn");
+  const value = m2Field(cmd, "value", "");
+  const duration = m2Field(cmd, "durationMs", "300");
+  const stage = el("div", {
+    class: `ecp-stage ecp-screen-effect-stage ecp-screen-effect-${effect}`,
+    dataset: { testid: "ecp-screen-effect-stage", effect },
+  });
+  const screen = el("div", { class: "ecp-fx-screen ecp-screen-effect-screen" });
+  const overlay = el("div", { class: "ecp-screen-effect-overlay" });
+  if (effect === "fadeOut") overlay.style.background = "rgba(0,0,0,0.72)";
+  else if (effect === "fadeIn") overlay.style.background = "rgba(0,0,0,0.18)";
+  else if (effect === "flash") overlay.style.background = "rgba(255,255,255,0.7)";
+  else if (effect === "tint") overlay.style.background = value || "#ff0000";
+  else if (effect === "weather") overlay.style.background = "rgba(80,120,180,0.28)";
+  else overlay.style.background = "rgba(0,0,0,0.35)";
+  screen.append(overlay);
+  const labels: Record<string, string> = {
+    fadeIn: "페이드 인",
+    fadeOut: "페이드 아웃",
+    flash: "플래시",
+    tint: "색조",
+    weather: "날씨",
+  };
+  screen.append(el("div", { class: "ecp-fx-label", text: labels[effect] ?? effect }));
+  stage.append(screen);
+  const meta = [labels[effect] ?? effect];
+  if (value) meta.push(value);
+  meta.push(`${duration}ms`);
+  stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
+  return stage;
+}
+
+function cameraControlStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
+  const mode = m2Field(cmd, "mode", "panTo");
+  const stage = el("div", {
+    class: "ecp-stage ecp-camera-stage",
+    dataset: { testid: "ecp-camera-stage", mode },
+  });
+  const screen = el("div", { class: "ecp-fx-screen ecp-camera-screen" });
+  screen.append(el("div", { class: "ecp-fx-label", text: `카메라 ${mode}` }));
+  stage.append(screen);
+  stage.append(el("div", { class: "ecp-fx-caption", text: mode }));
   return stage;
 }
 

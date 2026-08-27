@@ -1,0 +1,613 @@
+{
+  "generatedAt": "2026-08-26T14:08:36.944Z",
+  "source": "npx vite-node .omo/evidence/system-tools-pr/dump-page4.mts",
+  "tab4Grid": {
+    "count": 26,
+    "groups": [
+      "모던 명령",
+      "시스템/고급"
+    ],
+    "nonSystemToolGroups": [],
+    "informationalRows": [],
+    "entries": [
+      {
+        "commandId": "m2-027-change-system-bgm",
+        "label": "시스템 BGM 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-028-change-system-se",
+        "label": "시스템 SE 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-029-change-system-graphic",
+        "label": "메뉴 모습 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-072-set-teleportation-point",
+        "label": "순간이동 위치 설정...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-073-teleportation-on-off",
+        "label": "순간이동 허가 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-074-set-escape-location",
+        "label": "탈출 위치 설정...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-075-change-escape-access",
+        "label": "탈출 허가 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-076-open-save-menu",
+        "label": "저장 메뉴 열기",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-077-change-save-access",
+        "label": "저장 금지 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-078-open-menu-screen",
+        "label": "메뉴 화면 열기",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-079-change-menu-access",
+        "label": "메뉴 금지 변경...",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-089-game-over",
+        "label": "게임 오버",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-090-return-to-title-screen",
+        "label": "타이틀 화면으로",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-093-open-load-menu",
+        "label": "로드 메뉴 열기",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-094-exit-game",
+        "label": "게임 종료",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-095-toggle-atb-wait-mode",
+        "label": "ATB 대기 모드 전환",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-096-toggle-fullscreen-mode",
+        "label": "전체화면 모드 전환",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-097-open-video-options",
+        "label": "비디오 옵션 열기",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-213-checkpoint-save",
+        "label": "체크포인트 저장...",
+        "group": "모던 명령",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-214-ui-command",
+        "label": "UI 명령...",
+        "group": "모던 명령",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-215-debug-log",
+        "label": "디버그 로그...",
+        "group": "모던 명령",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-216-evaluate-expression",
+        "label": "식 계산...",
+        "group": "모던 명령",
+        "selectable": true
+      },
+      {
+        "commandId": "m2-217-data-query",
+        "label": "데이터 조회...",
+        "group": "모던 명령",
+        "selectable": true
+      },
+      {
+        "commandId": "ending",
+        "label": "엔딩",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "openSaveMenu",
+        "label": "openSaveMenu",
+        "group": "시스템/고급",
+        "selectable": true
+      },
+      {
+        "commandId": "runControl",
+        "label": "탐험 제어",
+        "group": "시스템/고급",
+        "selectable": true
+      }
+    ]
+  },
+  "catalogPage4": {
+    "count": 23,
+    "entries": [
+      {
+        "id": "m2-027-change-system-bgm",
+        "label": "시스템 BGM 변경",
+        "title": "Change System BGM",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-028-change-system-se",
+        "label": "시스템 SE 변경",
+        "title": "Change System SE",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-029-change-system-graphic",
+        "label": "메뉴 모습 변경",
+        "title": "Change System Graphic",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-072-set-teleportation-point",
+        "label": "순간이동 위치 설정",
+        "title": "Set Teleportation Point",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-073-teleportation-on-off",
+        "label": "순간이동 허가 변경",
+        "title": "Teleportation On/Off",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-074-set-escape-location",
+        "label": "탈출 위치 설정",
+        "title": "Set Escape Location",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-075-change-escape-access",
+        "label": "탈출 허가 변경",
+        "title": "Change Escape Access",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-076-open-save-menu",
+        "label": "저장 메뉴 열기",
+        "title": "Open Save Menu",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-077-change-save-access",
+        "label": "저장 금지 변경",
+        "title": "Change Save Access",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-078-open-menu-screen",
+        "label": "메뉴 화면 열기",
+        "title": "Open Menu Screen",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-079-change-menu-access",
+        "label": "메뉴 금지 변경",
+        "title": "Change Menu Access",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-089-game-over",
+        "label": "게임 오버",
+        "title": "Game Over",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-090-return-to-title-screen",
+        "label": "타이틀 화면으로",
+        "title": "Return to Title Screen",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-093-open-load-menu",
+        "label": "로드 메뉴 열기",
+        "title": "Open Load Menu",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-094-exit-game",
+        "label": "게임 종료",
+        "title": "Exit Game",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-095-toggle-atb-wait-mode",
+        "label": "ATB 대기 모드 전환",
+        "title": "Toggle ATB Wait Mode",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-096-toggle-fullscreen-mode",
+        "label": "전체화면 모드 전환",
+        "title": "Toggle Fullscreen Mode",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-097-open-video-options",
+        "label": "비디오 옵션 열기",
+        "title": "Open Video Options",
+        "group": "시스템/고급"
+      },
+      {
+        "id": "m2-213-checkpoint-save",
+        "label": "체크포인트 저장",
+        "title": "Checkpoint Save",
+        "group": "모던 명령"
+      },
+      {
+        "id": "m2-214-ui-command",
+        "label": "UI 명령",
+        "title": "UI Command",
+        "group": "모던 명령"
+      },
+      {
+        "id": "m2-215-debug-log",
+        "label": "디버그 로그",
+        "title": "Debug Log",
+        "group": "모던 명령"
+      },
+      {
+        "id": "m2-216-evaluate-expression",
+        "label": "식 계산",
+        "title": "Evaluate Expression",
+        "group": "모던 명령"
+      },
+      {
+        "id": "m2-217-data-query",
+        "label": "데이터 조회",
+        "title": "Data Query",
+        "group": "모던 명령"
+      }
+    ]
+  },
+  "pdfAndModernRowsOnPage4": {
+    "count": 23,
+    "rows": [
+      {
+        "index": 27,
+        "title": "Change System BGM",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 28,
+        "title": "Change System SE",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 29,
+        "title": "Change System Graphic",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 72,
+        "title": "Set Teleportation Point",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 73,
+        "title": "Teleportation On/Off",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 74,
+        "title": "Set Escape Location",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 75,
+        "title": "Change Escape Access",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 76,
+        "title": "Open Save Menu",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 77,
+        "title": "Change Save Access",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 78,
+        "title": "Open Menu Screen",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 79,
+        "title": "Change Menu Access",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 89,
+        "title": "Game Over",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 90,
+        "title": "Return to Title Screen",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 93,
+        "title": "Open Load Menu",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 94,
+        "title": "Exit Game",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 95,
+        "title": "Toggle ATB Wait Mode",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 96,
+        "title": "Toggle Fullscreen Mode",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 97,
+        "title": "Open Video Options",
+        "group": "시스템/고급"
+      },
+      {
+        "index": 213,
+        "title": "Checkpoint Save",
+        "group": "모던 명령"
+      },
+      {
+        "index": 214,
+        "title": "UI Command",
+        "group": "모던 명령"
+      },
+      {
+        "index": 215,
+        "title": "Debug Log",
+        "group": "모던 명령"
+      },
+      {
+        "index": 216,
+        "title": "Evaluate Expression",
+        "group": "모던 명령"
+      },
+      {
+        "index": 217,
+        "title": "Data Query",
+        "group": "모던 명령"
+      }
+    ]
+  },
+  "leftoverGroupsOnPage4": {
+    "대화/입력": [],
+    "조건/흐름": [],
+    "전투 전용": [],
+    "화면/연출": [],
+    "맵/이동": [],
+    "소리": [],
+    "배우/전투": [],
+    "보상/상점": []
+  },
+  "movedOffPage4": {
+    "Label": 1,
+    "Loop": 1,
+    "Control Timer": 1,
+    "End Event Processing": 1,
+    "Name Input Processing": 1,
+    "Camera Control": 3,
+    "Screen Effect": 3,
+    "Cutscene Control": 3,
+    "Play Movie": 3,
+    "Advanced Dialogue": 1
+  },
+  "searchOnlyInformational": [
+    {
+      "commandId": "advanceTime",
+      "page": 1,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "advanceCropGrowth",
+      "page": 1,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "setTime",
+      "page": 1,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "sleepUntilMorning",
+      "page": 1,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "callMapEvent",
+      "page": 1,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "cutsceneControl",
+      "page": 1,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "setSelfSwitch",
+      "page": 1,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-098-change-enemy-hp",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-099-change-enemy-mp",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-100-change-enemy-state",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-101-enemy-encounter",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-102-change-battleback",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-103-show-animation",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-104-battle-events",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-105-abort-battle",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-106-call-common-event",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-107-force-escape",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "m2-108-action-times",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "promoteActor",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "changeFriendship",
+      "page": 2,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "getFriendship",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "giveMonster",
+      "page": 2,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "moveMonster",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "evolveMonster",
+      "page": 2,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "addFollower",
+      "page": 2,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "removeFollower",
+      "page": 2,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "setEventGraphicPattern",
+      "page": 3,
+      "alternateRoute": "명령 목록 삽입"
+    },
+    {
+      "commandId": "checkpointSave",
+      "page": 4,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "killPlayer",
+      "page": 4,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "triggerEnding",
+      "page": 4,
+      "alternateRoute": "빠른 저작"
+    },
+    {
+      "commandId": "setFlag",
+      "page": 4,
+      "alternateRoute": "명령 목록 삽입"
+    }
+  ]
+}

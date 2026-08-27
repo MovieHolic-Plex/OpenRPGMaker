@@ -205,13 +205,40 @@ export {
   type StatusTransition,
 } from "./aiChatPanelHelpers";
 
+export function foldWorkLogs(bubble: HTMLElement | null): void {
+  if (!bubble) return;
+  const preElements = Array.from(bubble.querySelectorAll("pre"));
+  for (const pre of preElements) {
+    if (pre.parentElement?.tagName === "DETAILS") continue;
+    const text = pre.textContent ?? "";
+    const isWorkLog = /lint|warning|error|품질|검사|오류|경고|출입구\s*쌍|id\s+map_|✓/i.test(text);
+    if (!isWorkLog) continue;
+    const errMatch = text.match(/(?:error|오류)\s*[:=]?\s*(\d+)/i);
+    const warnMatch = text.match(/(?:warning|경고)\s*[:=]?\s*(\d+)/i);
+    const infoMatch = text.match(/(?:info|정보)\s*[:=]?\s*(\d+)/i);
+    const parts: string[] = ["작업 기록"];
+    if (errMatch) parts.push(`오류 ${errMatch[1]}`);
+    if (warnMatch) parts.push(`경고 ${warnMatch[1]}`);
+    else if (infoMatch) parts.push(`안내 ${infoMatch[1]}`);
+    const summaryText = parts.join(" · ");
+
+    const details = el("details", {
+      class: "work ai-work-log",
+      dataset: { testid: "ai-work-log" },
+      children: [el("summary", { text: summaryText })],
+    });
+    pre.replaceWith(details);
+    details.append(pre);
+  }
+}
+
 /**
- * 이미지 리족 장식 — 어시스탄트 문장이 언급한 통산 자료(몬스타·아이템·등장인물)의
- * 썰네일을 그 문장 밑에 붙인다. 이름만 나오는 답변은 "어느 슬라임?" 을 다시 물게 하고,
+ * 이미지 리치 장식 — 어시스턴트 문장이 언급한 통산 자료(몬스터·아이템·등장인물)의
+ * 썸네일을 그 문장 밑에 붙인다. 이름만 나오는 답변은 "어느 슬라임?" 을 다시 물게 하고,
  * 에디터는 이미 그 그림을 지고 있다(databaseRecordThumbnails.recordListThumbnail).
  *
- * 마킹어를 다시 그리는 renderStreamedMarkdown 뒤에 부를것을 전제한다 — 그 전에 붙이면
- * 본버이 다시 쓰이면서 스트립이 토사진다. 같은 버버을 다시 장식해도 쓸려 쓰지 않는다.
+ * 마크다운을 다시 그리는 renderStreamedMarkdown 뒤에 부를것을 전제한다 — 그 전에 붙이면
+ * 본문이 다시 쓰이면서 스트립이 터진다. 같은 버블을 다시 장식해도 덧붙이지 않는다.
  */
 export function decorateAssistantMentions(
   bubble: HTMLElement | null,
@@ -219,6 +246,7 @@ export function decorateAssistantMentions(
   project: Project,
 ): void {
   if (!bubble) return;
+  foldWorkLogs(bubble);
   const previous = bubble.querySelector?.("[data-testid=ai-mention-strip]");
   previous?.remove();
   if (!assistantText.trim()) return;
@@ -1046,8 +1074,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
             calls: result.proposedCalls,
       });
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
-      streamedBubbles.forEach(renderStreamedMarkdown); // 스트리밍 원문을 마크다운으로 다시 렌더.
-      if (result.assistantText && !assistantBubble) assistantBubble = appendBubble("assistant", result.assistantText);
+      streamedBubbles.forEach((bubble) => {
+        renderStreamedMarkdown(bubble);
+        foldWorkLogs(bubble);
+      }); // 스트리밍 원문을 마크다운으로 다시 렌더.
+      if (result.assistantText && !assistantBubble) {
+        assistantBubble = appendBubble("assistant", result.assistantText);
+        foldWorkLogs(assistantBubble);
+      }
       const beforeProject = store.getCurrent();
       const afterProject = session.getProposedProject();
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
@@ -1100,7 +1134,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         } else {
           appliedBubble.textContent = `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`;
         }
-        setStatus(`자동 적용 ${result.proposedCalls.length}건 · 카드에서 되돌릴 수 있습니다`);
+        setStatus("대기");
         acceptProposal(result.proposedCalls);
       } else {
         renderProposal(
@@ -2150,9 +2184,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     moreMenuToggle.setAttribute("aria-expanded", "false");
   };
   const positionMoreMenu = (): void => {
+    const isGlass = currentChatDock() === "glass";
+    if (isGlass) {
+      moreMenu.classList.remove("is-viewport-anchored");
+      moreMenu.style.left = "";
+      moreMenu.style.top = "";
+      moreMenu.style.right = "0";
+      return;
+    }
     const anchor = moreMenuToggle.getBoundingClientRect();
-    const width = moreMenu.offsetWidth || 184;
-    const height = moreMenu.offsetHeight || 360;
+    const width = moreMenu.offsetWidth || 228;
+    const height = moreMenu.offsetHeight || 180;
     const viewport = {
       width: typeof window === "undefined" ? 1280 : window.innerWidth,
       height: typeof window === "undefined" ? 800 : window.innerHeight,
@@ -2216,7 +2258,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeMoreMenu,
     onChange: applyTemperature,
   });
-  moreMenu.replaceChildren(headerTemperatureSection, ...headerMenu.items);
+  // after.html: 헤더 ☰ 는 대기 화면 3줄을 먼저 보인다. 되돌리기·도크 등은 작업 접기 안에 둔다.
+  const headerActionsFold = el("details", {
+    class: "ai-more-actions",
+    dataset: { testid: "ai-more-actions" },
+    children: [
+      el("summary", {
+        class: "ai-more-actions-summary",
+        text: "작업",
+        attrs: { title: "되돌리기·내보내기·도크·기록·툴" },
+      }),
+      ...headerMenu.items,
+    ],
+  });
+  moreMenu.replaceChildren(headerTemperatureSection, headerActionsFold);
   const detachButton = el("button", {
     class: "ai-chat-icon-btn ai-chat-detach-btn",
     text: "↗",

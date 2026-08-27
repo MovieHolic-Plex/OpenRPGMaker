@@ -66,9 +66,8 @@ const GUARANTEED_TOOLS_BY_CATEGORY: Readonly<Record<RegionIntentCategory, readon
 };
 
 // 가이드 문장에서 snake_case 도구명 후보를 뽑는다. 도구명이 아닌 snake_case 표기(인자
-// 이름 등)가 가이드에 섞이면 여기 등록해 전수 검증에서 예외 처리한다 — 현재는 없음
-// (GUIDE_LINES의 모든 snake_case 토큰이 실제 도구명이다).
-const GUIDE_TEXT_NON_TOOL_WHITELIST: ReadonlySet<string> = new Set([]);
+// 이름 등)가 가이드에 섞이면 여기 등록해 전수 검증에서 예외 처리한다.
+const GUIDE_TEXT_NON_TOOL_WHITELIST: ReadonlySet<string> = new Set();
 const SNAKE_CASE_RE = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/g;
 function toolNameCandidatesInGuide(category: RegionIntentCategory): string[] {
   const text = regionIntentGuideLines([category]).join("\n");

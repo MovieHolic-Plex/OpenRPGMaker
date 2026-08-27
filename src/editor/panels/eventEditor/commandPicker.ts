@@ -14,7 +14,7 @@ import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/project/eventCommands/m2PickerL
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
-import { groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
+import { groupHeadingText, groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 import { nativeCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import {
@@ -145,28 +145,43 @@ const DERIVED_COMMAND_ENTRIES: readonly CommandEntry[] = COMMAND_PRESENTATION_DE
     page: descriptor.page,
     alternateRoute: descriptor.alternateRoute,
   }));
-// 「빠른 저작」(탭 1)은 카탈로그 1페이지가 아니라 이야기 작업면이다. 고를 수 없는 안내 행과
-// 메모용 주석은 이 탭에 섞지 않고 「시스템 · 도구」 탭으로 내린다 — 검색·즐겨찾기에서는 그대로 보인다.
-const QUICK_AUTHORING_DEMOTED_COMMAND_IDS: ReadonlySet<string> = new Set(["m2-088-comment"]);
-const DEMOTED_PICKER_PAGE: M2CommandPickerPage = 4;
-
-function quickAuthoringWorkspaceEntry(entry: CommandEntry): CommandEntry {
-  if (entry.page !== 1) return entry;
-  if (entry.selectable && !QUICK_AUTHORING_DEMOTED_COMMAND_IDS.has(entry.commandId)) return entry;
-  return { ...entry, page: DEMOTED_PICKER_PAGE };
-}
-
-const PICKER_ENTRIES: readonly CommandEntry[] = [
-  ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerLabel !== "고급 대화").map(commandEntryFromCatalog),
-  ...NATIVE_ONLY_ENTRIES,
-  ...DERIVED_COMMAND_ENTRIES,
-].map(quickAuthoringWorkspaceEntry);
-
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
-  entries: PICKER_ENTRIES.filter((entry) => entry.page === page),
+  entries: [
+    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && entry.pickerLabel !== "고급 대화").map(
+      commandEntryFromCatalog
+    ),
+    ...NATIVE_ONLY_ENTRIES.filter((entry) => entry.page === page),
+    ...DERIVED_COMMAND_ENTRIES.filter((entry) => entry.page === page),
+  ],
 }));
 const ALL_COMMAND_ENTRIES = COMMAND_PAGES.flatMap((page) => page.entries);
+
+/**
+ * 탭 그리드에 실제로 그려지는 항목. 선택 불가 정보 행은 발견성을 속이므로 배제하고,
+ * 검색 결과에서만 “다른 곳: …” 안내와 함금로 노출한다.
+ */
+export type EventCommandPickerEntryView = {
+  readonly commandId: string;
+  readonly label: string;
+  readonly group: M2CommandPickerGroup;
+  readonly page: M2CommandPickerPage;
+  readonly selectable: boolean;
+  readonly alternateRoute?: string;
+};
+
+function tabGridEntries(entries: readonly CommandEntry[]): readonly CommandEntry[] {
+  return entries.filter((entry) => entry.selectable);
+}
+
+export function eventCommandPickerTabEntries(page: M2CommandPickerPage): readonly EventCommandPickerEntryView[] {
+  const found = COMMAND_PAGES.find((candidate) => candidate.page === page);
+  return tabGridEntries(found?.entries ?? []);
+}
+
+export function eventCommandPickerSearchEntries(): readonly EventCommandPickerEntryView[] {
+  return ALL_COMMAND_ENTRIES;
+}
 
 export const EVENT_COMMAND_PICKER_NATIVE_KINDS: readonly CommandKind[] = [
   ...new Set(
@@ -221,17 +236,11 @@ type EventCommandPickerRequest = {
    */
   readonly context?: M2RuntimeContext;
   /**
-   * 명령이 선택되면 호출된다. 호출 지점에서 피커는 이미 닫혀 있으므로, 넘겨받는
-   * `closePicker` 는 멱등하게 아무것도 하지 않는다.
+   * 한 레이어 계약: 명령을 골랐으면 피커는 **이미 닫힌 상태**로 이 콜백이 불린다.
+   * 편집 다이얼로그를 피커 위에 쌓아 확인이 뒷창에 삼키는 RM식 모달 스택은 없다.
    */
-  readonly onSelect: (command: Command, closePicker: () => void) => EventCommandPickerSelectResult;
+  readonly onSelect: (command: Command) => void;
 };
-
-/**
- * 한 레이어 계약 이후 `closePicker: false` 는 무시된다 — 명령을 고르는 순간 피커는 항상 닫힌다.
- * 이 반환 타입은 기존 호출자가 그대로 타입 검사를 통과하도록 남긴 호환 장치다.
- */
-type EventCommandPickerSelectResult = { readonly closePicker: false } | void;
 
 export function openEventCommandPicker(request: EventCommandPickerRequest): void {
   openEventSubdialog({
@@ -415,7 +424,7 @@ function renderPickerPage(
   if (recents.length > 0) {
     wrap.append(renderQuickCommandSection("최근 명령", "event-command-picker-recents", recents, onSelect, close, viewMode, onPreferencesChanged, context));
   }
-  wrap.append(renderCommandGrid(entries, onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
+  wrap.append(renderCommandGrid(tabGridEntries(entries), onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
   return wrap;
 }
 
@@ -503,11 +512,12 @@ function renderCommandGrid(
     if (options.showGroupHeadings !== false && entry.group !== currentGroup) {
       currentGroup = entry.group;
       const visual = groupVisual(entry.group);
-      // 아이콘은 ::before(attr(data-glyph)) 로 — 헤딩 textContent 는 그룹명 그대로 유지(e2e toHaveText 호환).
+      // 아이콘은 ::before(attr(data-glyph)) 로 — 헤딩 textContent 는 작업면 그룹명 그대로.
+      // 리스트 행 배지 라벨(visual.label)과 달리, 피커 헤딩은 언제나 그룹 이름을 쓴다.
       grid.append(
         el("div", {
           class: "event-command-picker-group-heading",
-          text: visual.label,
+          text: groupHeadingText(entry.group),
           dataset: { category: visual.key, glyph: visual.glyph },
         })
       );
@@ -585,12 +595,10 @@ function renderCommandButton(
   if (entry.selectable) {
     button.addEventListener("click", () => {
       recordRecentEventCommand(entry.commandId);
-      options.onPreferencesChanged();
-      // 한 레이어 계약: 명령을 고르면 피커는 닫힌다. 편집 창이 유일한 1차 액션이고, 뒤에
-      // 남은 피커가 확인 클릭을 먹는 모달 스택은 없다. close() 는 멱등이라 편집 창이
-      // 나중에 넘겨받은 closePicker() 를 호출해도 안전하다.
+      const command = createCommandFromEntry(entry);
+      // 한 레이어: 편집 표면을 여는 손짓은 피커를 닫고 넘긴다.
       close();
-      onSelect(createCommandFromEntry(entry), close);
+      onSelect(command);
     });
   }
 

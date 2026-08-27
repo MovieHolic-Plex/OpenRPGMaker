@@ -20,12 +20,12 @@
   height: min(620px, calc(100% - 24px));
   inset: 12px auto auto 12px;
   max-height: calc(100% - 24px);
-  max-width: min(360px, 34%);
+  max-width: clamp(360px, 38vw, 520px);
   overflow: hidden;
   padding: 0;
   pointer-events: auto;
   position: absolute;
-  width: min(360px, 34%);
+  width: clamp(360px, 38vw, 520px);
   z-index: 31;
 }
 

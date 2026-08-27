@@ -1,0 +1,223 @@
+/* 동료 · 전투 저작면 프리뷰 — 트룹 카드 / 파티 얼굴 칩 / HP·MP·EXP 게이지.
+   계획: .omo/plans/event-editor-actor-battle-adversarial-review.md
+   토큰 규칙: 전경(글자·게이지 채움)은 표면과 대비를 갖는다. 배경색과 같은 색 배지는 금지. */
+
+/* ── 트룹 카드 ─────────────────────────────────────────────── */
+.ecp-troop-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.2));
+  background: var(--bg-raised, #FFFDF8);
+  box-shadow: 0 1px 0 var(--border-subtle, rgba(42, 37, 33, 0.12));
+}
+.ecp-troop-card-name {
+  font: 700 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+  text-align: center;
+}
+.ecp-battle-enemy-missing {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-strong, rgba(42, 37, 33, 0.45));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, transparent);
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+/* ── 파티 얼굴 칩 ──────────────────────────────────────────── */
+.ecp-party-stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.ecp-party-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.2));
+  background: var(--bg-raised, #FFFDF8);
+}
+.ecp-party-chip.is-join { border-color: var(--accent-positive, #2E7D32); }
+.ecp-party-chip.is-leave { border-color: var(--accent-negative, #B3261E); }
+.ecp-party-chip-name {
+  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+  max-width: 84px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.ecp-party-chip-caption {
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+}
+.ecp-party-before-after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.ecp-party-column { display: flex; flex-direction: column; gap: 4px; align-items: center; flex: 1 1 0; }
+.ecp-party-column-title {
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+}
+.ecp-party-chip-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.ecp-party-chip-empty,
+.ecp-party-chip-more {
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-3, #6B5F52);
+  align-self: center;
+}
+.ecp-party-arrow,
+.ecp-equipment-arrow,
+.ecp-faceset-change-arrow {
+  font-size: 18px;
+  color: var(--text-2, #5C5348);
+}
+
+/* ── 게이지 ───────────────────────────────────────────────── */
+.ecp-actor-gauge-stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+.ecp-actor-gauge-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.2));
+  background: var(--bg-raised, #FFFDF8);
+}
+.ecp-actor-gauge-bars { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ecp-gauge { display: grid; grid-template-columns: 68px 1fr; grid-template-rows: auto auto; gap: 2px 8px; }
+.ecp-gauge-label {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}
+.ecp-gauge-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.28));
+  background: var(--bg-inset, #EFE9DC);
+  overflow: hidden;
+}
+.ecp-gauge-ghost {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--border-default, rgba(42, 37, 33, 0.28));
+}
+.ecp-gauge-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent-strong, #7A5C2E);
+}
+.ecp-gauge-hp .ecp-gauge-fill { background: #2E7D32; }
+.ecp-gauge-mp .ecp-gauge-fill { background: #1B5E9E; }
+.ecp-gauge-exp .ecp-gauge-fill { background: #8C6D1F; }
+.ecp-gauge-level .ecp-gauge-fill { background: #6A4CA8; }
+.ecp-gauge-param .ecp-gauge-fill { background: #7A5C2E; }
+.ecp-gauge.is-loss .ecp-gauge-fill { background: #B3261E; }
+.ecp-gauge-numbers {
+  font: 600 11px/1.25 "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text-1, #2A2521);
+}
+.ecp-gauge-caption,
+.ecp-actor-gauge-empty {
+  font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+  text-align: center;
+}
+.ecp-actor-gauge-empty {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-strong, rgba(42, 37, 33, 0.45));
+  color: var(--text-1, #2A2521);
+}
+
+/* ── 장비 / 상태 / 얼굴·모습·이름 ─────────────────────────── */
+.ecp-equipment-stage,
+.ecp-state-stage,
+.ecp-faceset-change-stage,
+.ecp-actor-graphic-stage,
+.ecp-actor-name-stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.ecp-equipment-row,
+.ecp-actor-graphic-row,
+.ecp-actor-name-row,
+.ecp-state-row,
+.ecp-faceset-change-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ecp-equipment-item,
+.ecp-actor-graphic-sprite {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.2));
+  background: var(--bg-raised, #FFFDF8);
+}
+.ecp-equipment-item-name {
+  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}
+.ecp-state-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.28));
+  background: var(--bg-inset, #EFE9DC);
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+.ecp-state-badge.is-remove { border-style: dashed; }
+.ecp-faceset-change-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ecp-faceset-change-title {
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+}
+.ecp-actor-name-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.2));
+  background: var(--bg-raised, #FFFDF8);
+}
+.ecp-actor-name-title {
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+}
+.ecp-actor-name-value {
+  font: 700 14px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}

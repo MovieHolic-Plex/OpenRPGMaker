@@ -41,6 +41,22 @@ export function applyTitleScreenBackground(node: HTMLElement, resourceId: string
   }
 }
 
+/**
+ * Sets `--runtime-window-skin` + `data-system-resource` **without** painting a 9-slice
+ * fill on the node itself.
+ *
+ * Use this on full-bleed play roots whose children own the window chrome (battle scene,
+ * title screen, dialogue overlay). Painting `border-image-slice: 24 fill` on such a root
+ * tiles the windowskin center over the whole scene — the regression fixed by the battle
+ * adversarial review §1.
+ */
+export function applySystemWindowSkinVariable(node: HTMLElement, project?: Project): string {
+  const source = project ?? store.getCurrent();
+  const skinId = resolveWindowSkinResourceId(source.system.systemResourceId);
+  node.dataset.systemResource = skinId;
+  return applyWindowSkinVariable(node, skinId, source);
+}
+
 /** Applies system window skin so DB systemResourceId changes are visible on runtime chrome. */
 export function applySystemGraphic(node: HTMLElement, project?: Project): void {
   const source = project ?? store.getCurrent();
@@ -95,13 +111,11 @@ export function applyBattleSystemGraphic(node: HTMLElement, project?: Project): 
     delete node.dataset.battleSystem2;
     node.style.removeProperty("--runtime-battle-system2");
   }
-  const windowSkinId = resolveWindowSkinResourceId(source.system.systemResourceId);
-  node.dataset.systemResource = windowSkinId;
   // 전투 루트에는 CSS 변수만 심는다 — 패널들이 var(--runtime-window-skin) 으로 소비한다.
   // 루트 자체에 border-image(slice "24 fill")를 걸면 fill 이 windowskin 의 중앙 타일을
   // **씬 전체**(자식 아래, 배경 위)에 칠해서, 커맨드 패널이 비는 순간(타깃 선택 등)
   // 파란 윈도스킨 타일이 화면을 채우던 결함(적대 리뷰 §1)의 원인이었다.
-  applyWindowSkinVariable(node, windowSkinId, source);
+  applySystemWindowSkinVariable(node, source);
   node.style.removeProperty("border-image-source");
   node.style.removeProperty("border-image-slice");
 }
