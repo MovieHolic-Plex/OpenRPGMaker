@@ -28,6 +28,10 @@ import {
   renderEventMarkerTooltipElement,
   shouldOfferEventLayerSwitch,
 } from "@/editor/eventMarkerUx";
+import {
+  computeEventMarkerTooltipPlacement,
+  type TooltipAnchor,
+} from "@/editor/eventMarkerTooltipPlacement";
 import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
@@ -95,6 +99,7 @@ type RightRegionGesture = {
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+const TOOLTIP_ANCHORS: readonly TooltipAnchor[] = ["top-right", "top-left", "bottom-right", "bottom-left"];
 
 type TileRect = {
   readonly x: number;
@@ -1263,8 +1268,6 @@ export class EditScene extends PhaserRuntime.Scene {
     }
 
     const model = buildEventMarkerTooltipModel(existing);
-    // Native title remains for accessibility / no-DOM fallbacks.
-    canvas.title = model.plainText;
 
     const host = canvas.parentElement;
     if (!host || typeof document === "undefined") return;
@@ -1282,8 +1285,6 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private clearEventMarkerTooltip(): void {
-    const canvas = this.game.canvas;
-    if (canvas) canvas.title = "";
     this.eventMarkerTooltipEl?.remove();
     this.eventMarkerTooltipEl = null;
     this.eventMarkerTooltipKey = "";
@@ -1296,50 +1297,36 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!tip || !canvas || !host) return;
 
     const camera = this.cameras.main;
-    const tileRect = tileRectToScreenRect(
-      { x: tileX, y: tileY, width: 1, height: 1 },
-      { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom },
-    );
     const canvasRect = canvas.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
     const tipRect = tip.getBoundingClientRect();
-    const tipWidth = Math.max(1, tipRect.width || tip.offsetWidth || 180);
-    const tipHeight = Math.max(1, tipRect.height || tip.offsetHeight || 72);
-    const hostWidth = Math.max(1, hostRect.width);
-    const hostHeight = Math.max(1, hostRect.height);
+    const tileSize = store.getCurrent().maps[this.mapId() ?? ""]?.tileSize || TILE_SIZE;
+    // worldView 는 렌더가 실제로 쓰는 사각형이다. scrollX/Y 는 3.60+ 줌 규약 때문에 화면
+    // 왼쪽 위와 대응하지 않아 배치가 호스트 코너로 밀려났다(실측 2026-08-27).
+    const tileRect = {
+      x: canvasRect.left - hostRect.left + (tileX * tileSize - camera.worldView.x) * camera.zoom,
+      y: canvasRect.top - hostRect.top + (tileY * tileSize - camera.worldView.y) * camera.zoom,
+      width: tileSize * camera.zoom,
+      height: tileSize * camera.zoom,
+    };
 
-    const canvasOffsetX = canvasRect.left - hostRect.left;
-    const canvasOffsetY = canvasRect.top - hostRect.top;
-    const GAP = 8;
+    const placement = computeEventMarkerTooltipPlacement({
+      tile: tileRect,
+      tip: {
+        width: Math.max(1, tipRect.width || tip.offsetWidth || 180),
+        height: Math.max(1, tipRect.height || tip.offsetHeight || 72),
+      },
+      host: {
+        width: Math.max(1, hostRect.width),
+        height: Math.max(1, hostRect.height),
+      },
+    });
 
-    // Center horizontally above the event tile.
-    let left = canvasOffsetX + tileRect.x + (tileRect.width - tipWidth) / 2;
-    // Default: directly above the tile.
-    let top = canvasOffsetY + tileRect.y - tipHeight - GAP;
-    let placedAbove = true;
-
-    // Not enough room above — flip below the tile.
-    if (top < 8) {
-      top = canvasOffsetY + tileRect.y + tileRect.height + GAP;
-      placedAbove = false;
+    for (const anchor of TOOLTIP_ANCHORS) {
+      tip.classList.toggle(`tip-anchor-${anchor}`, placement.anchor === anchor);
     }
-
-    // Clamp horizontally into the host.
-    if (left < 8) left = 8;
-    if (left + tipWidth > hostWidth - 8) {
-      left = hostWidth - tipWidth - 8;
-    }
-
-    // Clamp vertically.
-    if (top + tipHeight > hostHeight - 8) {
-      top = hostHeight - tipHeight - 8;
-    }
-    if (top < 8) top = 8;
-
-    tip.classList.toggle("tip-above", placedAbove);
-    tip.classList.toggle("tip-below", !placedAbove);
-    tip.style.left = `${Math.round(left)}px`;
-    tip.style.top = `${Math.round(top)}px`;
+    tip.style.left = `${Math.round(placement.left)}px`;
+    tip.style.top = `${Math.round(placement.top)}px`;
   }
 
   private renderEventLayerClickFeedback(): void {
