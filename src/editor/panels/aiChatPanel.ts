@@ -30,7 +30,7 @@ import {
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
-import { classifyApproval } from "@/ai/approvalPolicy";
+import { classifyApproval, resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
@@ -1106,15 +1106,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ? agentGhostPreviewsForMap(getAgentGhostPreviewState(), currentMapId).length > 0
         : false;
       const canvasFirst = safety.safe && !explicitApprovalRequired && hasCurrentMapGhost;
-      if (
-        result.proposedCalls.length > 0
-        && completenessWarnings.length === 0
-        && autoApproveEnabled
-        && verdict.decision === "auto"
-        && result.stoppedReason !== "error"
-        && !explicitApprovalRequired
-        && safety.safe
-      ) {
+      // 승인 카드는 파괴적·재료합의 변경과 자동 적용 off 에만 남는다. 안전 분류와 완성도 린트
+      // 경고는 더 이상 게이트가 아니다 — 되돌리기가 있는 변경을 카드로 막으면 마찰만 남는다.
+      const applyMode = resolveProposalApplyMode({
+        callCount: result.proposedCalls.length,
+        autoApplyEnabled: autoApproveEnabled,
+        approvalDecision: verdict.decision,
+        turnErrored: result.stoppedReason === "error",
+      });
+      if (applyMode === "apply-now") {
         // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
         // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
         // 판단해야 했다. 전/후 썸네일·자동 적용 토글·되돌리기를 한 카드에 모아 로그에 남긴다.
@@ -1142,6 +1142,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           appliedBubble.textContent = `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`;
         }
         setStatus("대기");
+        // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
+        if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
         acceptProposal(result.proposedCalls);
       } else {
         renderProposal(

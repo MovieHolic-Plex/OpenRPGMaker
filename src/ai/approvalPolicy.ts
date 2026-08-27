@@ -61,6 +61,35 @@ export function classifyApproval(calls: readonly ProposedCall[], opts: { autoApp
   return { decision: "auto", reason: "자동 승인 조건 충족", requiresUserConfirm: false, warnings };
 }
 
+export type ProposalApplyMode = "apply-now" | "review";
+
+export interface ProposalApplyModeInput {
+  /** 이 턴이 만든 쓰기 툼콜 수. 0 이면 적용할 것이 없다. */
+  readonly callCount: number;
+  /** agentMode === "auto" 또는 autoApprove === true. 기본값은 켜진 상태다. */
+  readonly autoApplyEnabled: boolean;
+  readonly approvalDecision: ApprovalDecision;
+  readonly turnErrored: boolean;
+}
+
+/**
+ * 제안을 바로 맵에 넣을지(apply-now), 사용자 결정 카드로 보낼지(review) 한 자리에서 정한다.
+ *
+ * 안전 분류(`classifyProposalSafety`)와 완성도 린트 경고는 **이 입력에 없다** — 일부러 버렸다.
+ * 되돌리기 한 번으로 원복되는 변경을 승인 카드로 받아내면 마찰만 남고(사용자는 항상
+ * 수락한다), 경고는 카드가 아니라 로그로 전달하면 된다. 복구 경로는 좌하단 되돌리기
+ * (oprn-tool-undo → undoMapEdit) 와 자동 적용 카드의 되돌리기다.
+ *
+ * 단 `require_approval`은 그대로 검토로 보낸다: 파괴적/재료합의 변경은 acceptProposal 안에서
+ * 확인 단계를 거치기 때문에, 자동 적용 카드를 먼지 붙이면 "적용됨" 이 거짓이 된다.
+ */
+export function resolveProposalApplyMode(input: ProposalApplyModeInput): ProposalApplyMode {
+  if (input.callCount <= 0) return "review";
+  if (input.turnErrored) return "review";
+  if (!input.autoApplyEnabled) return "review";
+  return input.approvalDecision === "auto" ? "apply-now" : "review";
+}
+
 export function isSilencedSuccess(calls: readonly ProposedCall[], assistantText: string): { silenced: boolean; kind: string; message: string } | null {
   if (calls.length === 0) {
     const clipped = assistantText.trim().slice(0, 120);

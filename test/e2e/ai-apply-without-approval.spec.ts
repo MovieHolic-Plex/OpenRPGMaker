@@ -1,19 +1,21 @@
 /**
- * 고스트 프리뷰 순차 공개 + 상태칩 증거 스펙 (실제 에디터 표면).
+ * AI 제안 즉시 적용 + 좌하단 되돌리기 복구 증거 스펙 (실제 에디터 표면).
  *
  * 무엇을 증명하나:
- *  - 스크립트된 AI 턴(=실 LLM 없음, /v1/chat/completions 목업) 한 번이 맵 캔버스 호스트에
- *    ai-ghost-phase-chip 과 agent-ghost-preview 마커를 실제로 띄운다.
- *  - 칩 문구가 ghostPhaseChipInfo 계약(`… 중 · n/N 셀 · <tool>`)을 그대로 따른다.
+ *  - 스크립트된 AI 턴(실 LLM 없음, `/v1/chat/completions` 목업) 하나가 승인 카드
+ *    (`ai-proposal-card`, "이 맵에 넣기") 없이 **바로 맵에 적용**된다. 이 턴은 예전 게이트를
+ *    통과하지 못하는 조합이다(set_build_spec 은 LOW_RISK_SPATIAL_TOOLS 밖 → classifyProposalSafety
+ *    가 review-required 로 분류) — 즉 예전에는 반드시 카드가 떴다.
+ *  - 적용 결과는 로그의 자동 적용 비교 카드(`ai-auto-applied-card`)로 남는다.
+ *  - **왼쪽 아래 되돌리기(`oprn-tool-undo`)** 한 번으로 그 적용이 원복된다 — 승인 대신 쓰는
+ *    복구 경로가 실제로 동작함을 타일 값으로 확인한다.
  *
  * 왜 목업 경로인가: loadAiConfig()(src/ai/llmClient.ts)는 저장된 authMode/baseUrl/apiKey 를
- * 무시하고 언제나 oh-my-pi 동반 서비스로 나간다(dev 에서는 같은 오리진 `/v1`). 그래서
- * localStorage 로 baseUrl 을 바꾸는 예전 방식(test/e2e/tileset-ai-native-review.spec.ts)이
- * 아니라 `**\/v1/chat/completions` 자체를 라우트로 가로챈다 — 플래너 1콜 + 툴 루프 2라운드 +
- * 마무리 1콜을 결정적으로 대본화한다.
+ * 무시하고 항상 동반 서비스로 나간다(dev 에서는 같은 오리진 `/v1`). 그래서 라우트 자체를
+ * 가로채 플래너 1콜 + 툴 루프 2라운드 + 마무리 1콜을 결정적으로 대본화한다.
  *
  * 실행:
- *   DEV_SERVER_PORT=9860 npx playwright test test/e2e/agent-ghost-sequence.spec.ts --project=chromium
+ *   DEV_SERVER_PORT=9861 npx playwright test test/e2e/ai-apply-without-approval.spec.ts --project=chromium
  * 서버는 이 스펙이 직접 띄우고(이미 떠 있으면 재사용) afterAll 에서 프로세스 트리를 죽인 뒤
  * 포트가 더 이상 연결을 받지 않는 것까지 확인한다.
  */
@@ -23,14 +25,15 @@ import { createConnection } from "node:net";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const PORT = Number(process.env.DEV_SERVER_PORT ?? "9860");
+const PORT = Number(process.env.DEV_SERVER_PORT ?? "9861");
 const ORIGIN = `http://127.0.0.1:${PORT}`;
-const EVIDENCE = path.resolve(".omo/evidence/ai-action-visibility");
-const CHIP = "[data-testid='ai-ghost-phase-chip']";
-const MARKER = "[data-testid='agent-ghost-preview']";
+const EVIDENCE = path.resolve(".omo/evidence/ai-apply-without-approval");
+const PROPOSAL_CARD = "[data-testid='ai-proposal-card']";
+const APPLIED_CARD = "[data-testid='ai-auto-applied-card']";
+const UNDO_BUTTON = "[data-testid='oprn-tool-undo']";
 
 let startedServer: { pid: number } | null = null;
-const chipTimeline: string[] = [];
+const timeline: string[] = [];
 
 mkdirSync(EVIDENCE, { recursive: true });
 
@@ -111,7 +114,7 @@ test.afterAll(async () => {
     `dev server port: ${PORT}`,
     `killed pids: ${[...pids].join(", ") || "(none found)"}`,
     `port accepts connections after kill: ${String(!closed)}`,
-    `chip timeline: ${JSON.stringify(chipTimeline)}`,
+    `timeline: ${JSON.stringify(timeline)}`,
   ].join("\n");
   writeFileSync(path.join(EVIDENCE, "e2e-server-cleanup.txt"), `${receipt}\n`, "utf8");
   console.log(`\n[cleanup receipt]\n${receipt}`);
@@ -119,15 +122,12 @@ test.afterAll(async () => {
 });
 
 // ── 대본화된 AI 턴 ──────────────────────────────────────────────────────────
-/**
- * 플래너(툴 없음) → set_build_spec → fill_region → 마무리 문장.
- * fill_region 은 스펙 게이트를 통과해야 실행되므로 set_build_spec 라운드가 반드시 먼저다.
- */
 interface TurnPlan {
   mapId: string;
   rect: { x: number; y: number; w: number; h: number };
 }
 
+/** 플래너(툴 없음) → set_build_spec → fill_region → 마무리 문장. */
 async function installScriptedTurn(page: Page, plan: () => TurnPlan): Promise<void> {
   let toolRounds = 0;
   await page.route("**/v1/chat/completions", async (route) => {
@@ -170,7 +170,7 @@ async function installScriptedTurn(page: Page, plan: () => TurnPlan): Promise<vo
         }],
       };
     } else {
-      message = { role: "assistant", content: "연못 초안을 올렸습니다. 확인해 주세요." };
+      message = { role: "assistant", content: "연못을 넣었습니다." };
     }
     await route.fulfill({
       contentType: "application/json",
@@ -186,10 +186,6 @@ async function bootEditor(page: Page): Promise<string> {
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
-    // 이 스펙은 **대기 제안**의 고스트 수이명을 보므로 자동 적용을 명시적으로 끈다.
-    // 기본값은 승인 없이 즉시 적용이고(approvalPolicy.resolveProposalApplyMode), 적용 직전에
-    // clearAgentGhostPreview() 가 고스트를 지우므로 대기 상태를 관얰할 수 없다.
-    localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat", autoApprove: false }));
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
@@ -204,53 +200,41 @@ async function bootEditor(page: Page): Promise<string> {
   return String(mapId);
 }
 
-/**
- * 고스트가 화면에 실제로 보이는 자리를 엔진 좌표 훅(__oprnEditWorldToClient)으로 고른다.
- * 카메라 스크롤/줌 규약을 스펙에 복제하지 않고, 채팅 도크·제안 카드가 덮지 않는 우상단
- * 클라이언트 좌표에 대응하는 타일을 역탐색한다.
- */
-async function pickVisibleRegion(page: Page, mapId: string): Promise<TurnPlan["rect"]> {
-  // 좌표 훅은 EditScene.create() 에서 설치된다 — 캔버스가 보인 직후에는 아직 없을 수 있다.
+/** 맵 안쪽의 안전한 사각형 — 하네스 readCell 로 네 귀퉁이가 맵 안인지 확인한다. */
+async function pickRegion(page: Page, mapId: string): Promise<TurnPlan["rect"]> {
   await expect
-    .poll(() => page.evaluate(() => typeof (window as unknown as { __oprnEditWorldToClient?: unknown }).__oprnEditWorldToClient === "function"), {
+    .poll(() => page.evaluate(() => typeof (window as unknown as { __oprnRegionTaskHarness?: unknown }).__oprnRegionTaskHarness === "object"), {
       timeout: 30_000,
       intervals: [200],
     })
     .toBe(true);
   const rect = await page.evaluate(({ id }) => {
-    const w = window as unknown as {
-      __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
+    const harness = (window as unknown as {
       __oprnRegionTaskHarness?: { readCell: (mapId: string, layer: string, x: number, y: number) => number | null };
-    };
-    const toClient = w.__oprnEditWorldToClient;
-    const harness = w.__oprnRegionTaskHarness;
-    if (!toClient || !harness) return null;
-    const TILE = 16;
-    const size = { w: 10, h: 8 };
-    for (let ty = 0; ty < 200; ty += 1) {
-      for (let tx = 0; tx < 200; tx += 1) {
-        const point = toClient(tx * TILE, ty * TILE);
-        if (point.x < 1040 || point.x > 1120 || point.y < 100 || point.y > 170) continue;
-        // 영역 네 귀퉁이가 모두 맵 안이어야 한다(readCell 은 맵 밖이면 null).
-        if (harness.readCell(id, "lower", tx + size.w - 1, ty + size.h - 1) === null) continue;
-        return { x: tx, y: ty, ...size };
+    }).__oprnRegionTaskHarness;
+    if (!harness) return null;
+    const size = { w: 6, h: 6 };
+    for (let y = 2; y < 40; y += 1) {
+      for (let x = 2; x < 40; x += 1) {
+        if (harness.readCell(id, "lower", x + size.w - 1, y + size.h - 1) === null) continue;
+        return { x, y, ...size };
       }
     }
     return null;
   }, { id: mapId });
-  expect(rect, "카메라 시야 안에서 고스트를 그릴 영역을 찾지 못했다").toBeTruthy();
+  expect(rect, "맵 안에서 채울 영역을 찾지 못했다").toBeTruthy();
   return rect as TurnPlan["rect"];
 }
 
-/** 채팅 도크를 접어 맵 캔버스(칩·마커)를 가리지 않게 한다 — 증거 스크린샷 가독성. */
-async function collapseChatDock(page: Page): Promise<void> {
-  const collapse = page.getByTestId("ai-collapse");
-  if (!(await collapse.isVisible().catch(() => false))) return;
-  await collapse.click();
-  await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible({ timeout: 10_000 });
+function readCell(page: Page, mapId: string, x: number, y: number): Promise<number | null> {
+  return page.evaluate(({ id, cx, cy }) => {
+    const harness = (window as unknown as {
+      __oprnRegionTaskHarness?: { readCell: (mapId: string, layer: string, x: number, y: number) => number | null };
+    }).__oprnRegionTaskHarness;
+    return harness ? harness.readCell(id, "lower", cx, cy) : null;
+  }, { id: mapId, cx: x, cy: y });
 }
 
-/** 브리지 턴을 시작하고 기다리지 않는다 — 애니메이션 중간 상태를 관찰해야 한다. */
 function startTurn(page: Page, text: string): Promise<{ ok?: boolean; error?: string }> {
   return page.evaluate(async (prompt) => {
     const bridge = (window as unknown as {
@@ -261,73 +245,41 @@ function startTurn(page: Page, text: string): Promise<{ ok?: boolean; error?: st
   }, text);
 }
 
-test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
+test.describe("AI 제안 즉시 적용 + 좌하단 되돌리기", () => {
   test.describe.configure({ timeout: 180_000 });
 
-  test("스크립트된 턴이 맵 캔버스에 상태칩과 고스트 마커를 띄운다", async ({ page }) => {
-    const plan: TurnPlan = { mapId: "", rect: { x: 26, y: 13, w: 10, h: 8 } };
+  test("승인 카드 없이 맵에 적용되고 되돌리기 한 번으로 원복된다", async ({ page }) => {
+    const plan: TurnPlan = { mapId: "", rect: { x: 2, y: 2, w: 6, h: 6 } };
     await installScriptedTurn(page, () => plan);
     plan.mapId = await bootEditor(page);
-    plan.rect = await pickVisibleRegion(page, plan.mapId);
+    plan.rect = await pickRegion(page, plan.mapId);
+    const center = { x: plan.rect.x + Math.floor(plan.rect.w / 2), y: plan.rect.y + Math.floor(plan.rect.h / 2) };
 
-    // 경계 1: 턴 이전 — 칩도 마커도 없다.
-    await expect(page.locator(CHIP)).toHaveCount(0);
-    await expect(page.locator(MARKER)).toHaveCount(0);
-    await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-1.png"), animations: "disabled" });
+    const beforeTile = await readCell(page, plan.mapId, center.x, center.y);
+    expect(beforeTile, "적용 전 타일 값을 읽어야 한다").not.toBeNull();
+    timeline.push(`before=${String(beforeTile)}`);
 
-    const turn = startTurn(page, "광장 가운데에 둥근 연못을 만들어줘");
-
-    // 경계 2: 애니메이션 중 — 진행 문구(`… 중 · n/N 셀 · <tool>`)가 실제로 붙는다.
-    // 80셀 스윕은 ~3s 만에 끝나므로, 폴링 간격을 짧게 잡아 중간 상태를 놓치지 않는다.
-    // (놓치면 스킵하는 게 아니라 실패하는 플레이크 — 그래서 이 경계는 대신
-    //  “칩이 언젠가는 진행 문구를 노출한다”를 expect.poll 로 관찰한다.)
-    const chip = page.locator(CHIP);
-    await expect(chip).toHaveCount(1, { timeout: 60_000 });
-    let midPhaseText = "";
-    await expect
-      .poll(async () => {
-        const text = (await chip.textContent().catch(() => "")) ?? "";
-        if (/중 · \d+\/\d+ 셀 · \S+/u.test(text)) midPhaseText = text;
-        return midPhaseText;
-      }, { timeout: 60_000, intervals: [50] })
-      .toMatch(/중 · \d+\/\d+ 셀 · \S+/u);
-    const chipTextNow = (await chip.textContent()) ?? "";
-    if (midPhaseText && chipTextNow.includes("중 ·")) chipTimeline.push(midPhaseText);
-
-    // 칩과 고스트 마커는 맵 캔버스 호스트(캔버스의 부모)에 붙는다.
-    expect(await chip.evaluate((node) => Boolean(node.parentElement?.querySelector("canvas")))).toBe(true);
-    await expect(page.locator(MARKER)).not.toHaveCount(0, { timeout: 60_000 });
-    expect(await page.locator(MARKER).first().evaluate((node) => Boolean(node.parentElement?.querySelector("canvas")))).toBe(true);
-    await collapseChatDock(page);
-    await expect(chip).toBeVisible();
-    await expect(page.locator(MARKER).first()).toBeVisible();
-    await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-2.png"), animations: "disabled" });
-
-    // 경계 3: 공개가 끝나면 칩은 '초안 완성 · 검토 대기'로 넘어가고 마커는 그대로 남는다.
-    const result = await turn;
+    const result = await startTurn(page, "광장 가운데에 둥근 연못을 만들어줘");
     expect(result.ok, `브리지 턴 실패: ${result.error ?? ""}`).toBe(true);
-    await expect(page.locator(MARKER)).not.toHaveCount(0);
-    await expect(chip).toHaveText("초안 완성 · 검토 대기", { timeout: 15_000 });
-    chipTimeline.push((await chip.textContent()) ?? "");
-    await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-3.png"), animations: "disabled" });
-  });
 
-  // 공개 스케줄은 씬 update 이벤트에 붙은 티커가 굴린다(AgentGhostPreviewRenderer.startTicker).
-  // 여기서는 실제 프레임 루프 위에서 칩이 "작업 중"에서 "초안 완성 · 검토 대기"까지 가는지 본다.
-  test("상태칩이 공개 스케줄 완료 후 '초안 완성'으로 넘어간다", async ({ page }) => {
-    const plan: TurnPlan = { mapId: "", rect: { x: 26, y: 13, w: 10, h: 8 } };
-    await installScriptedTurn(page, () => plan);
-    plan.mapId = await bootEditor(page);
-    plan.rect = await pickVisibleRegion(page, plan.mapId);
-
-    const turn = startTurn(page, "광장 가운데에 둥근 연못을 만들어줘");
-    const chip = page.locator(CHIP);
-    await expect(chip).toHaveCount(1, { timeout: 60_000 });
-    expect((await turn).ok).toBe(true);
-
-    // 공개 스케줄(타일 스윕 ≤2500ms + 마지막 셀 300ms + 샤인 450ms)의 두 배를 준다.
+    // 경계 1: 승인 카드가 아예 뜨지 않는다 — 바로 적용된다.
+    await expect(page.locator(APPLIED_CARD)).toHaveCount(1, { timeout: 30_000 });
+    await expect(page.locator(PROPOSAL_CARD)).toHaveCount(0);
     await expect
-      .poll(async () => (await chip.textContent()) ?? "", { timeout: 60_000, intervals: [500] })
-      .toContain("초안 완성");
+      .poll(() => readCell(page, plan.mapId, center.x, center.y), { timeout: 30_000, intervals: [200] })
+      .not.toBe(beforeTile);
+    const appliedTile = await readCell(page, plan.mapId, center.x, center.y);
+    timeline.push(`applied=${String(appliedTile)}`);
+    await page.screenshot({ path: path.join(EVIDENCE, "applied-without-approval.png"), animations: "disabled" });
+
+    // 경계 2: 좌하단 되돌리기 한 번으로 원복 — 승인 대신 쓰는 복구 경로.
+    const undo = page.locator(UNDO_BUTTON);
+    await expect(undo).toBeVisible({ timeout: 15_000 });
+    await undo.click();
+    await expect
+      .poll(() => readCell(page, plan.mapId, center.x, center.y), { timeout: 30_000, intervals: [200] })
+      .toBe(beforeTile);
+    timeline.push(`after-undo=${String(await readCell(page, plan.mapId, center.x, center.y))}`);
+    await page.screenshot({ path: path.join(EVIDENCE, "reverted-by-sidebar-undo.png"), animations: "disabled" });
   });
 });
