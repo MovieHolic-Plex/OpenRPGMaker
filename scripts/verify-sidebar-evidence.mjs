@@ -18,8 +18,15 @@ const pick = (name, fallback) => {
 const DIR = pick("dir", ".omo/evidence/left-sidebar-repair");
 const MODE = pick("mode", "standard");
 
+const VIEWPORT = pick("viewport", "1440x900");
+
 const load = (tag, kind) => {
-  const file = join(DIR, `${tag}-${MODE}-${kind}.json`);
+  // 기능 도달성 프로브는 뷰포트를 파일명에 넣는다 — 1440x900 만 재면 좁은 화면의 클리핑을
+  // 놓치기 때문이다(리뷰어 B1). 오래된 이름은 절대 대체로 읽지 않는다: 최종 CSS 를 설명하지
+  // 않는 파일로 판정하면 17/17 이 거짓이 된다(리뷰어 B5).
+  const file = kind === "overflow-features"
+    ? join(DIR, `${tag}-${MODE}-${VIEWPORT}-${kind}.json`)
+    : join(DIR, `${tag}-${MODE}-${kind}.json`);
   if (!existsSync(file)) return { missing: file };
   return JSON.parse(readFileSync(file, "utf8"));
 };
@@ -89,6 +96,14 @@ if (!afterFeat.missing) {
   const blocked = entries.filter(([, v]) => v !== "reachable");
   const beforeBlocked = beforeFeat.missing ? "?" : Object.entries(beforeFeat.features).filter(([k, v]) => k !== "⋯ 열림" && v !== "reachable").length;
   check("C1d", "갇힌 기능 9개가 전부 히트테스트로 도달된다", blocked.length === 0, `before차단=${beforeBlocked}/9 after차단=${blocked.length}/9 ${blocked.map(([k, v]) => `${k}:${v}`).join(", ")}`);
+  const expanded = Object.entries(afterFeat.expanded ?? {}).filter(([k]) => k !== "menu");
+  const expandedBlocked = expanded.filter(([, v]) => v !== "reachable");
+  check(
+    "C1e",
+    "섹션을 펼친 메뉴에서도 붓 크기 4종이 닿는다",
+    expanded.length > 0 && expandedBlocked.length === 0,
+    `측정 ${expanded.length}개 / 차단 ${expandedBlocked.length}개 | ${afterFeat.expanded?.menu ?? "menu 정보 없음"}`,
+  );
 } else {
   check("C1d", "갇힌 기능 9개 도달성", false, `after 기능 프로브 없음: ${afterFeat.missing}`);
 }
