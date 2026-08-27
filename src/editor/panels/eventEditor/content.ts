@@ -41,6 +41,7 @@ import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResi
 import {
   appendEventRailGroup,
   renderClassicPageTabStrip,
+  renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
   renderEventPageProps,
   renderPageCommandCatalog,
@@ -196,6 +197,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   applyViewMode();
   const validationControl = renderEventValidationSummary(validation);
 
+  // NPC 연결 컨트롤은 삭제된 `display: none` identity 카드 안에 살았다 — 이제 그 주제가 속한
+  // 「NPC와 일정」 그룹에서 사용자가 실제로 보고 누를 수 있다.
+  const characterLink = renderEventCharacterIdField(mapId, ev);
   const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
   const scheduleEditor = renderEventScheduleEditor(mapId, ev);
   const pageSettings = renderEventPageProps(mapId, ev.id, activePage, ev);
@@ -205,7 +209,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   appendEventRailGroup(
     pageSettings,
     { slug: "npc", title: "NPC와 일정", summary: npcName, open: false },
-    [socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
+    [characterLink, socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
   );
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
