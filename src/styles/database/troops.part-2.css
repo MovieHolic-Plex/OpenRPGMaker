@@ -192,11 +192,6 @@
 }
 
 @media (max-width: 1100px) {
-  .database-modal-window:has(.oprn-record-troops) {
-    height: calc(100vh - 8px);
-    width: calc(100vw - 8px);
-  }
-
   .database-modal-body:has(.oprn-record-troops) .db-body {
     height: calc(100vh - 130px);
     overflow: auto;

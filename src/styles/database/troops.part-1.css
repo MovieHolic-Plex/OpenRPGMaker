@@ -8,10 +8,7 @@
 }
 
 .database-modal-backdrop:has(.oprn-record-troops) {
-  align-items: flex-start;
   background: rgba(42, 37, 33, 0.06);
-  justify-content: flex-start;
-  padding: 0;
 }
 
 .database-modal-window:has(.oprn-record-troops) {
@@ -21,8 +18,6 @@
   border-width: 2px;
   box-shadow: 1px 1px 0 #303030;
   color: var(--text-1);
-  height: var(--oprn-troop-modal-height);
-  width: var(--oprn-troop-modal-width);
 }
 
 .database-modal-window:has(.oprn-record-troops) .database-modal-header {

@@ -31,9 +31,6 @@
     border: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
     border-radius: 10px;
     box-shadow: var(--db-studio-shadow-pop, 0 4px 16px rgba(15,23,42,.10));
-    height: min(1024px, calc(100vh - 24px));
-    max-width: calc(100vw - 24px);
-    width: min(1530px, calc(100vw - 24px));
   }
 
   .database-modal-window:has(:is(

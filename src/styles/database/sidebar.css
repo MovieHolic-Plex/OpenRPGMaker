@@ -56,11 +56,18 @@
 }
 
 /* The active tab must never resize the modal. Older :has()-scoped record
-   workbenches requested different heights, making the whole editor jump when
-   the sidebar selection changed. The studio frame owns one viewport now. */
+   workbenches requested their own width AND height, so clicking a sidebar tab
+   moved the window by up to 98px (measured 1628 / 1584 / 1530 at 1920x1200).
+   This block is the ONLY geometry owner for the studio frame: no tab-content
+   selector may declare width/height on .database-modal-window again. Pinned by
+   test/e2e/database-modal-size-invariant.spec.ts at 0px tolerance. */
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) {
   height: min(900px, calc(100vh - 24px));
   max-height: calc(100vh - 24px);
+  max-width: calc(100vw - 24px);
+  min-height: 0;
+  min-width: 0;
+  width: min(1628px, calc(100vw - 24px));
 }
 
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-header {
