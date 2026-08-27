@@ -225,6 +225,8 @@ export class AgentGhostPreviewRenderer {
   private clock: () => number;
   private startTime: number | null = null;
   private schedule: readonly GhostRevealStep[] = [];
+  private tileLayer: Phaser.GameObjects.Container | null = null;
+  private tileLayerKey = "";
   private currentToolName: string = "";
   /** 초안 맵 공급자(선택) — 있으면 타일을 에디터 컴포지터 경로로 합성해 찍는다. */
   draftMapProvider?: (mapId: MapId) => import("@/project/types").GameMap | null | undefined;
@@ -318,6 +320,10 @@ export class AgentGhostPreviewRenderer {
         this.stopTicker();
         return;
       }
+      if (typeof location !== "undefined" && location.search.includes("ghostDebug")) {
+        const done = this.schedule.filter((st) => this.clock() - (this.startTime ?? 0) >= st.startMs).length;
+        console.log(`[ghostdbg] tick elapsed=${Math.round(this.clock() - (this.startTime ?? 0))} bound=${this.tickerBound ? 1 : 0} progress=${done}/${this.schedule.length}`);
+      }
       // 한 프레임의 렌더 오류(예: 컴포지터 경로의 예외)가 리빌 전체를 얼리는 것을 막는다 —
       // 칩 텍스트 갱신은 drawAnimationLayers 보다 앞서므로, 예외가 나도 진행 상태는 살아 있다.
       try {
@@ -392,100 +398,48 @@ export class AgentGhostPreviewRenderer {
 
   private drawAnimationLayers(animState: GhostAnimationState): void {
     if (!this.animGroup) return;
-    // Clear dynamic anim parts while preserving bounds
-    // We recreate anim container or redraw on graphics
     const group = this.animGroup;
-    group.removeAll(true);
-
+    // 타일/경계 레이어는 스케줄이 바뀔 때 한 번만 만든다 — 매 프레임 removeAll+재생성은
+    // (a) 수백 개 GameObject churn, (b) 재생 중 애님 스프라이트 파괴로 Phaser 메인 루프를
+    // 불안정하게 만들어(실측: 리빌이 도중 정지) 원인이 된다. 프레임마다 갱신하는 것은
+    // FX 그래픽스 하나뿐이다.
+    if (!this.tileLayer || this.tileLayerKey !== this.scheduleKey) {
+      this.buildTileLayer();
+      this.tileLayerKey = this.scheduleKey;
+    }
     const previews = this.currentPreviews();
     for (const preview of previews) {
       group.add(this.boundsGraphic(preview.bounds));
     }
 
-    // 1. Draw stamped cells
-    const project = store.getCurrent();
-    const currentMap = this.mapId() ? project.maps[this.mapId()!] : undefined;
-    const defaultTilesetId = currentMap?.tilesetId;
-
     for (let i = 0; i < this.schedule.length; i++) {
-      const step = this.schedule[i];
-      const cell = step.cell;
       const cellAnim = animState.cellStates[i];
       if (!cellAnim || cellAnim.phase === "pending") continue;
 
-      const px = cell.x * TILE_SIZE;
-      const py = cell.y * TILE_SIZE;
+      const px = this.schedule[i].cell.x * TILE_SIZE;
+      const py = this.schedule[i].cell.y * TILE_SIZE;
 
-      // Draw real tile or fallback rect. tileId <= EMPTY(-1) 는 지워진 칸이다 —
-      // 존재하지 않는 tile_-1 프레임(=칩셋 전체 시트)이 찍히는 것을 막는다.
-      const tilesetId = cell.tilesetId ?? defaultTilesetId;
-      const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
-
-      if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
-        // 에디터 본 렌더와 같은 컴포지터 경로(호수 쿼터·지형 쿼터·도로 오토타일·밑동 합성)로
-        // 찍는다 — raw 프레임 스탬프는 수락 후 결과물과 다른 그림을 보여주는 오덕정이 된다.
-        // 초안 맵을 만들어 다음 셀 좌표를 대입하면 createChipsetTileObject 가
-        // 다음 셀의 이웃 타일까지 반영한 조합을 내려준다.
-        const draftMap = getAgentGhostDraftMap(this.mapId() as MapId) ?? null;
-        const composed = draftMap
-          ? createChipsetTileObject(this.scene, draftMap, tileset, cell.x, cell.y, cell.tileId)
-          : null;
-        if (composed) {
-          composed.setAlpha(GHOST_SPRITE_ALPHA);
-          if (cellAnim.scale !== 1.0) {
-            const s = cellAnim.scale;
-            composed.setScale(s);
-            composed.x = px - (TILE_SIZE * (s - 1)) / 2;
-            composed.y = py - (TILE_SIZE * (s - 1)) / 2;
-          }
-          group.add(composed);
-        } else {
-          const textureKey = ensureTilesetTexture(this.scene, tileset);
-          const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
-          tileSprite.setOrigin(0, 0);
-          tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
-          if (cellAnim.scale !== 1.0) {
-            tileSprite.setScale(cellAnim.scale);
-            const offset = (TILE_SIZE * (cellAnim.scale - 1)) / 2;
-            (tileSprite as any).x = px - offset;
-            (tileSprite as any).y = py - offset;
-          }
-          group.add(tileSprite);
-        }
-      } else {
-        // Fallback translucent rect for cells without tileId
-        const rect = this.cellRect(cell);
-        group.add(rect);
-      }
-
-      // FX overlays per cell during stamp / settling
+      const fx = this.scene.add.graphics();
       if (cellAnim.afterglowAlpha > 0) {
-        const glow = this.scene.add.rectangle(px, py, TILE_SIZE, TILE_SIZE, AGENT_GHOST_AMBER_COLOR, cellAnim.afterglowAlpha);
-        glow.setOrigin(0, 0);
-        group.add(glow);
+        fx.fillStyle(AGENT_GHOST_AMBER_COLOR, cellAnim.afterglowAlpha);
+        fx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
       }
-
       if (cellAnim.ringAlpha > 0) {
-        const ringGfx = this.scene.add.graphics();
-        ringGfx.lineStyle(2, AGENT_GHOST_INDIGO_COLOR, cellAnim.ringAlpha);
+        fx.lineStyle(2, AGENT_GHOST_INDIGO_COLOR, cellAnim.ringAlpha);
         const expand = (1 - cellAnim.ringAlpha) * 6;
-        ringGfx.strokeRect(px - expand, py - expand, TILE_SIZE + expand * 2, TILE_SIZE + expand * 2);
-        group.add(ringGfx);
+        fx.strokeRect(px - expand, py - expand, TILE_SIZE + expand * 2, TILE_SIZE + expand * 2);
       }
-
       if (cellAnim.sparkProgress > 0 && cellAnim.sparkProgress < 1) {
-        const sparkGfx = this.scene.add.graphics();
-        sparkGfx.fillStyle(AGENT_GHOST_AMBER_COLOR, 1 - cellAnim.sparkProgress);
+        fx.fillStyle(AGENT_GHOST_AMBER_COLOR, 1 - cellAnim.sparkProgress);
         const cx = px + TILE_SIZE / 2;
         const cy = py + TILE_SIZE / 2;
         const dist = cellAnim.sparkProgress * 12;
-        // 4 radial sparks
-        sparkGfx.fillRect(cx + dist, cy, 2, 2);
-        sparkGfx.fillRect(cx - dist, cy, 2, 2);
-        sparkGfx.fillRect(cx, cy + dist, 2, 2);
-        sparkGfx.fillRect(cx, cy - dist, 2, 2);
-        group.add(sparkGfx);
+        fx.fillRect(cx + dist, cy, 2, 2);
+        fx.fillRect(cx - dist, cy, 2, 2);
+        fx.fillRect(cx, cy + dist, 2, 2);
+        fx.fillRect(cx, cy - dist, 2, 2);
       }
+      group.add(fx);
     }
 
     // 2. Cursor crosshair on latest active stamped cell
@@ -496,9 +450,8 @@ export class AgentGhostPreviewRenderer {
 
       const cursorGfx = this.scene.add.graphics();
       cursorGfx.lineStyle(2, AGENT_GHOST_INDIGO_COLOR, 0.9);
-      cursorGfx.strokeRect(cx - 2, cy - 2, TILE_SIZE + 4, TILE_SIZE + 4);
+      cursorGfx.strokeRect(cx + 3, cy + 3, TILE_SIZE - 6, TILE_SIZE - 6);
 
-      // crosshair tick marks
       cursorGfx.lineStyle(1, 0xffffff, 0.85);
       cursorGfx.beginPath();
       cursorGfx.moveTo(cx + TILE_SIZE / 2, cy - 5);
@@ -529,6 +482,51 @@ export class AgentGhostPreviewRenderer {
       shineGfx.strokePath();
 
       group.add(shineGfx);
+    }
+  }
+
+  /** 타일 스탬프 레이어(컴포지터 경로 포함)를 스케줄당 한 번 빌드한다. */
+  private buildTileLayer(): void {
+    if (this.tileLayer) {
+      this.tileLayer.removeAll(true);
+    } else if (this.animGroup) {
+      this.tileLayer = this.scene.add.container(0, 0);
+      this.animGroup.add(this.tileLayer);
+    }
+    if (!this.tileLayer) return;
+
+    const previews = this.currentPreviews();
+    const allCells = previews.flatMap((p) => p.cells);
+    const project = store.getCurrent();
+    const currentMap = this.mapId() ? project.maps[this.mapId()!] : undefined;
+    const defaultTilesetId = currentMap?.tilesetId;
+    const draftMap = getAgentGhostDraftMap(this.mapId() as MapId) ?? null;
+
+    for (const cell of allCells) {
+      const px = cell.x * TILE_SIZE;
+      const py = cell.y * TILE_SIZE;
+      const tilesetId = cell.tilesetId ?? defaultTilesetId;
+      const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
+
+      if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
+        // 에디터 본 렌더와 같은 컴포지터 경로(호수 쿼터·지형 쿼터·도로 오토타일·밑동 합성).
+        // 애니메이션 스프라이트가 파괴/재생성되는 churn을 없애려고 스케줄당 한 번만 만든다.
+        const composed = draftMap
+          ? createChipsetTileObject(this.scene, draftMap, tileset, cell.x, cell.y, cell.tileId)
+          : null;
+        if (composed) {
+          composed.setAlpha(GHOST_SPRITE_ALPHA);
+          this.tileLayer.add(composed);
+          continue;
+        }
+        const textureKey = ensureTilesetTexture(this.scene, tileset);
+        const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
+        tileSprite.setOrigin(0, 0);
+        tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
+        this.tileLayer.add(tileSprite);
+      } else {
+        this.tileLayer.add(this.cellRect(cell));
+      }
     }
   }
 

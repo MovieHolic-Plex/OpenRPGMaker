@@ -172,6 +172,19 @@ export function clearAgentGhostRunningTool(): void {
   emit();
 }
 
+let draftMapProvider: ((mapId: MapId) => import("@/project/types").GameMap | undefined) | null = null;
+
+/** 패널이 세션의 초안 프로젝트를 공급 — 렌더러가 컴포지터 경로로 타일을 찍는다. */
+export function setAgentGhostDraftMapProvider(
+  provider: ((mapId: MapId) => import("@/project/types").GameMap | undefined) | null
+): void {
+  draftMapProvider = provider;
+}
+
+export function getAgentGhostDraftMap(mapId: MapId): import("@/project/types").GameMap | undefined {
+  return draftMapProvider?.(mapId);
+}
+
 export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: MapId | null): readonly AgentGhostPreview[] {
   if (!mapId) return [];
   return state.previews.filter((preview) => preview.mapId === mapId);

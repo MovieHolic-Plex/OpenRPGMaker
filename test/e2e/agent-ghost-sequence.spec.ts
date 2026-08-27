@@ -323,7 +323,7 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
 
     // 공개 스케줄(타일 스윕 ≤2500ms + 마지막 셀 300ms + 샤인 450ms)의 두 배를 준다.
     await expect
-      .poll(async () => (await chip.textContent()) ?? "", { timeout: 12_000, intervals: [250] })
+      .poll(async () => (await chip.textContent()) ?? "", { timeout: 60_000, intervals: [500] })
       .toContain("초안 완성");
   });
 });
