@@ -1,4 +1,4 @@
-import type { EventPageMovement, MoveCommand } from "@/project/types";
+import type { EventAnimationType, EventPageMovement, MoveCommand } from "@/project/types";
 import { store } from "@/project/store";
 import { resolveTimeSystem } from "@/project/gameTime";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
@@ -45,7 +45,7 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
       // 가 이벤트 조사 직후에도 호출되는데, 여기서 facing 을 기본 방향으로 되돌리면
       // turnActionEventTowardPlayer 가 플레이어 쪽으로 돌려놓은 방향이 즉시 취소된다
       // (= "말을 걸어도 NPC 가 쳐다보지 않는" 버그).
-      if (mover) configurePageMover(mover, movement, route.strategy);
+      if (mover) configurePageMover(mover, movement, route.strategy, view.animationType);
       continue;
     }
     removePageRouteForEvent(scene, view.event.id);
@@ -56,7 +56,7 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
     if (mover) {
       // 신규 무버만 페이지 그래픽의 초기 방향으로 세팅한다.
       mover.facing = view.page?.graphic.direction ?? "down";
-      configurePageMover(mover, movement, route.strategy);
+      configurePageMover(mover, movement, route.strategy, view.animationType);
     }
   }
   for (const eventId of [...scene.pageMoveRouteEventIds]) {
@@ -101,9 +101,11 @@ function routeForPageMovement(
 function configurePageMover(
   mover: AutonomousMover,
   movement: EventPageMovement,
-  strategy: AutonomousMover["strategy"]
+  strategy: AutonomousMover["strategy"],
+  animationType: EventAnimationType
 ): void {
   mover.strategy = strategy;
+  mover.directionFix = animationType === "fixedDirection" || animationType === "fixedDirectionStep";
   mover.speedRank = clampSetting(movement.speed);
   mover.frequencyRank = clampSetting(movement.frequency);
   mover.moveDurationMs = npcMoveDurationMs(movement.speed);
