@@ -97,3 +97,10 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 ## Guided story arc facade
 
 `author_story_arc` is the deterministic high-level path for bounded tutorial objectives, executable choice branches, and an optional twist reveal. It compiles only to existing event text/choices/fork/setSwitch/setVariable commands plus quest graphs and story-flag metadata, reports the created identifiers, and rejects empty objectives or branch bodies. It is a structural authoring aid, not an automatic prose-quality or story-quality judge.
+
+## Presentation and system M2 command bodies
+
+- Rich Page-3 presentation and system command bodies live in `src/editor/panels/eventEditor/commandBodyM2Page3.ts`. They render dedicated two-column intent layouts (`page3-command-body actor-m2-command-body`) for screen tint, flash, shake, weather overlays, parallax background, tile swap, picture controls, vehicles, and coordinate queries.
+- Visual preview panels mount on the right column via `previewPanel(testId)`. Commands publish specific preview testids such as `tint-screen-preview`, `flash-screen-preview`, `set-weather-effects-preview`, `change-parallax-back-preview`, `show-picture-m2-preview`, and `move-to-variable-location-preview`.
+- Screen and weather forms expose interactive color chips and swatch/overlay preview elements (`.actor-m2-chip-grid`, `.actor-m2-preview-actor`, `.actor-m2-preview-copy`). When authors adjust color values, weather intensity, or resource targets, previews update their line and note descriptors immediately.
+- TDD behavior contracts live in `test/page3CommandBodies.test.ts` (with interpreter execution coverage in `test/commandContracts/m2Command.contract.test.ts`). Each contract test exercises DOM inputs, verifies staged command replacement via `replaceFields`, and confirms that `executeM2RuntimeCommand` mutates session state as expected.
