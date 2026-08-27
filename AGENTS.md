@@ -17,6 +17,7 @@ Before making code changes, read:
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
    - Runtime battle: `openwiki/runtime-battle.md`
+   - Runtime action combat: `openwiki/runtime-action-combat.md`
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
