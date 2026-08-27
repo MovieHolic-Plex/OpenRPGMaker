@@ -12,6 +12,7 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
+import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import {
   formatViewportContextBlock,
   mapRegionForContext,
@@ -414,8 +415,12 @@ function ruleText(rule: ClusterRuleHint): string {
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
 export function buildSystemPrompt(project: Project, options: ContextOptions = {}): string {
-  const budget = options.budgetChars ?? DEFAULT_BUDGET_CHARS;
-  const sections: string[] = [INTRO, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
+  // 툴 능력 색인은 INTRO 직후(=예산 슬라이서가 뒤에서 자르므로 절대 안전한 자리)에 넣는다.
+  // 색인이 기존 섹션을 밀어내면 안 되므로 색인 자체의 문자 비용을 예산에 더한다 —
+  // 그러면 기존 섹션들은 색인 도입 전과 동일한 공간을 유지한다.
+  const capabilityIndex = buildToolCapabilityIndex();
+  const budget = (options.budgetChars ?? DEFAULT_BUDGET_CHARS) + capabilityIndex.length + 2;
+  const sections: string[] = [INTRO, capabilityIndex, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);
   const tileVocabulary = tileVocabularySection(project, options.currentMapId);

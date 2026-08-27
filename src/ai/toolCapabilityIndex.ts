@@ -1,0 +1,73 @@
+// ai/toolCapabilityIndex.ts
+// 시스템 프롬프트에 붙는 "툴 능력 색인" 조립기. 순수 함수(브라우저 접근 금지, 프로젝트 불필요).
+//
+// 왜 필요한가(실측): 활성 툴은 148개인데 한 라운드에 노출되는 스키마는 최대 40개다.
+// 노출되지 않은 툴은 모델에게 "없는 기능"이라 사용자에게 "그 기능이 없습니다"라고 오보하며
+// work item 을 skip 했다(openwiki/editor-ai-tools.md 2026-08-23 기록).
+// 스키마는 라운드마다 바뀌어도 **존재 목록**은 고정이므로, 이름만 담은 색인을 상시 싣는다.
+// 설명·스키마는 넣지 않는다 — 이 섹션은 문서가 아니라 존재 색인이다(예산 절약).
+
+import { activeTools } from "@/editor/tools";
+import type { ToolDefinition, ToolDomain } from "@/editor/tools";
+
+export const TOOL_CAPABILITY_INDEX_HEADING = "## 툴 능력 색인";
+const RULE_HEADING = "### 색인 사용 규칙(반드시 준수)";
+
+// 에디터 작업 영역 순서(사람이 읽는 순서 = 안정 정렬 키). 도메인이 없거나 미지의 값이면 CATCH_ALL.
+const AREA_ORDER: readonly { readonly domain: ToolDomain; readonly label: string }[] = [
+  { domain: "core", label: "핵심(상시 노출)" },
+  { domain: "map", label: "맵" },
+  { domain: "tile", label: "타일·배치" },
+  { domain: "event", label: "이벤트" },
+  { domain: "database", label: "데이터베이스" },
+  { domain: "quest", label: "퀘스트" },
+  { domain: "world", label: "세계관" },
+  { domain: "battle", label: "전투" },
+  { domain: "system", label: "시스템" },
+];
+
+const CATCH_ALL_LABEL = "기타";
+
+/** 여러 도메인을 가진 툴은 첫 도메인에만 실린다(중복 금지, 전수 1회 노출 보장). */
+function areaLabelOf(tool: ToolDefinition): string {
+  const first = tool.domains?.[0];
+  const area = AREA_ORDER.find((entry) => entry.domain === first);
+  return area?.label ?? CATCH_ALL_LABEL;
+}
+
+/**
+ * 활성(비 deprecated) 툴 이름만 영역별로 묶은 색인 텍스트.
+ * 기본 입력은 activeTools() 이며, 호출자가 목록을 넘겨도 deprecated 는 다시 걸러낸다.
+ */
+export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = activeTools()): string {
+  const live = tools.filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined);
+  const byLabel = new Map<string, string[]>();
+  for (const tool of live) {
+    const label = areaLabelOf(tool);
+    const bucket = byLabel.get(label) ?? [];
+    bucket.push(tool.name);
+    byLabel.set(label, bucket);
+  }
+
+  const lines: string[] = [
+    `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${live.length}개 · 이름만)`,
+    "아래는 이 에디터에 **실제로 존재하는 툴 전체 목록**입니다. 이번 라운드의 tool 목록은 40개로 잘려 있을 뿐입니다.",
+  ];
+  for (const { label } of AREA_ORDER) {
+    const names = byLabel.get(label);
+    if (!names || names.length === 0) continue;
+    lines.push(`- ${label}: ${names.join(", ")}`);
+  }
+  const rest = byLabel.get(CATCH_ALL_LABEL);
+  if (rest && rest.length > 0) lines.push(`- ${CATCH_ALL_LABEL}: ${rest.join(", ")}`);
+
+  lines.push(
+    "",
+    RULE_HEADING,
+    "1. 위 이름은 전부 존재하고 호출 가능한 툴입니다. 목록에 있으면 그 기능은 이 에디터에 있습니다.",
+    "2. 필요한 툴의 스키마가 이번 라운드 tool 목록에 없으면 find_tools(query)로 스키마를 불러오고, 다음 라운드에서 그 툴을 호출하세요.",
+    "3. 색인에 있는 기능을 \"그 기능이 없습니다\" 또는 \"지원하지 않습니다\"라고 사용자에게 보고하는 것은 결함입니다. 포기하거나 work item 을 skip 하지 말고 find_tools 로 에스컬레이션하세요.",
+    "4. 단, 이 색인은 UX 응답 정책에 적힌 진짜 엔진 한계를 뒤집지 않습니다 — 3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포는 여전히 지원하지 않습니다.",
+  );
+  return lines.join("\n");
+}
