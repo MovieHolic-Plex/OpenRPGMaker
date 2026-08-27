@@ -651,38 +651,18 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     ],
   });
 
-  const factWhen = el("div", {
-    class: "fact",
-    children: [
-      el("label", { text: "언제" }),
-      el("div", { class: "value", text: pageTabConditionText(page) }),
-    ],
-  });
-
   const factOverlap = el("div", {
     class: "fact",
+    dataset: { testid: "event-page-fact-overlap" },
     children: [
       el("label", { text: "겹침" }),
-      el("span", { class: "chip", text: page.overlapForbidden !== false ? "중복 실행 방지" : "겹침 허용" }),
-    ],
-  });
-
-  const factNpc = el("div", {
-    class: "fact",
-    children: [
-      el("label", { text: "NPC" }),
-      el("div", {
-        class: "value",
-        text: event?.characterId ? (store.getCurrent().characters?.[event.characterId]?.displayName?.trim() || event.characterId) : "연결 안 됨",
-      }),
+      el("span", { class: "chip", text: overlapSummary(page) }),
     ],
   });
 
   wrap.append(
     presence,
-    factWhen,
     factOverlap,
-    factNpc,
     collapsibleSection({
       title: "조건",
       testId: "event-classic-conditions",
@@ -698,14 +678,18 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       children: [
         rm2k3Fieldset("시작 방식", trigger, "event-classic-trigger"),
         rm2k3Fieldset("우선순위", priority, "event-classic-priority"),
-        rm2k3Fieldset(
-          "겹침",
-          el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "중복 실행 방지" })] }),
-          "event-classic-overlap"
-        ),
         renderEventPageSafetyWarning(page),
       ],
     }),
+    rm2k3Fieldset(
+      "겹침",
+      el("label", {
+        class: "event-overlap-label",
+        attrs: { title: "켜면 다른 추인공·NPC 가 이 칸을 지나갈 수 없습니다" },
+        children: [overlap, el("span", { text: "겹침 금지(같은 칸 통행 차단)" })],
+      }),
+      "event-classic-overlap"
+    ),
     collapsibleSection({
       title: "움직임",
       testId: "event-classic-movement-section",
@@ -774,12 +758,12 @@ function wrapPageSettingsAsAccordion(
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
-  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap']"));
+  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", open: true, nodes: look },
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, open: false, nodes: when },
     { slug: "move", title: "움직임과 속도", summary: page.movement.type, open: false, nodes: move },
-    { slug: "memory", title: "기억과 정리", summary: page.overlapForbidden ? "중복 실행 방지" : "중복 허용", open: false, nodes: memory },
+    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), open: false, nodes: memory },
   ] as const;
   const rail = el("div", {
     class: "event-editor-settings-accordion",
@@ -801,10 +785,14 @@ function wrapPageSettingsAsAccordion(
     }
     rail.append(railGroup(group, body));
   }
-  Array.from(source.children).forEach((child) => {
-    if (!(child instanceof HTMLElement) || child === rail) return;
-    rail.lastElementChild?.querySelector(".event-editor-settings-accordion-body")?.append(child);
-  });
+  const leftovers = Array.from(source.children).filter(
+    (child): child is HTMLElement => child instanceof HTMLElement && child !== rail,
+  );
+  if (leftovers.length > 0) {
+    const body = el("div", { class: "event-editor-settings-accordion-body" });
+    leftovers.forEach((child) => body.append(child));
+    rail.append(railGroup({ slug: "other", title: "기타", summary: `분료 없음 ${leftovers.length}개`, open: false }, body));
+  }
   rail.querySelectorAll("details").forEach((node) => {
     if (node.classList.contains("event-editor-settings-accordion-group")) return;
     const replacement = el("div", {
@@ -821,6 +809,10 @@ function wrapPageSettingsAsAccordion(
 }
 
 const CONDITION_BADGE_LIMIT = 3;
+
+function overlapSummary(page: EventPage): string {
+  return page.overlapForbidden !== false ? "겹침 금지" : "겹침 허용";
+}
 
 function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {
   if (conditions.length === 0) {
