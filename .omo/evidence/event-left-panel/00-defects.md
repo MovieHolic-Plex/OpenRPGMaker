@@ -55,3 +55,30 @@
   감독자가 코드로 재확인하지 않았다. 수정하지 않았고 회귀 테스트도 없다.
 - `02-movement.md` 는 D03 을 "정상"으로 판정했는데, 그 레인은 **수정 이후의 코드**를 읽었다.
   수정 전 RED 캡처(`test/runtimeSpawnedEventMovement.test.ts`, 60틱 동안 좌표 불변)가 근거다.
+
+## C1 실물 증거 — 실제 브라우저에서 주민이 움직인다
+
+편집기 Test Play 는 D14(부팅 시 생성되는 `item_gen_*` 팩의 없는 애니메이션 참조 → 저작 테스트 게이트가
+참조 문제 18건으로 차단)에 막혀 있으므로, **내보내기 플레이어 빌드**를 실제 Chromium 으로 띄워 런타임을
+관찰했다. 같은 런타임 코드이고 편집기 셸·게이트를 거치지 않는다.
+
+절차(재현 가능):
+
+```
+npm run build:player
+npx vite-node scripts/tmp-player-movement-fixture.mts dist/export-player/project.json
+(cd dist/export-player && python3 -m http.server 9873 --bind 127.0.0.1)
+PLAYER_URL=http://127.0.0.1:9873/player.html VILLAGER_ID=ev_mir_elder \
+  npx playwright test test/e2e/_player-movement-proof.spec.ts
+```
+
+픽스처는 예제 마을에서 **일정을 가진** 주민 `ev_mir_elder` 에게 이동 유형 무작위(속도 6, 빈도 8)를 준다.
+관찰값은 `window.__oprnCharacterSprites().events["ev_mir_elder"]` 의 실제 스프라이트 좌표다.
+
+| 코드 상태 | 60초 관찰 결과 | 판정 |
+|---|---|---|
+| D01 수정 되돌림(일정 있으면 페이지 이동 폐기) | `["808,784"]` — 한 칸도 움직이지 않음 | RED (사용자 신고 증상 재현) |
+| D01 수정 적용 | `["805,784","800,784"]` | GREEN |
+
+스크린샷: `verify-shots/event-left-panel/player-random-movement.png`.
+스펙: `test/e2e/_player-movement-proof.spec.ts` (진단 스펙 — 기본 e2e 스위트에서 제외되며 위 3단계 준비가 필요하다).
