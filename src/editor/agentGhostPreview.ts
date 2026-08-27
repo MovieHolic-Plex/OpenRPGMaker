@@ -51,6 +51,8 @@ export interface AgentGhostToolCallLike {
 
 export interface ThrottledAgentGhostPreviewUpdater {
   readonly handleToolCall: (event: AgentGhostToolCallLike) => void;
+  readonly setLatestRunningTool?: (tool: { readonly name: string; readonly index: number } | null) => void;
+  readonly latestRunningTool?: { readonly name: string; readonly index: number } | null;
   readonly flush: () => void;
   readonly cancel: () => void;
 }
@@ -113,23 +115,25 @@ export function appendAgentGhostPreviewForToolCall(
 
 export function replaceAgentGhostPreviewFromProjectDiff(
   baseProject: Project,
-  draftProject: Project
+  draftProject: Project,
+  toolName?: string
 ): readonly AgentGhostPreview[] {
-  const next = summarizeAgentGhostPreviewForProjectDiff(baseProject, draftProject);
+  const next = summarizeAgentGhostPreviewForProjectDiff(baseProject, draftProject, toolName);
   replacePreviews(next);
   return next;
 }
 
 export function summarizeAgentGhostPreviewForProjectDiff(
   baseProject: Project,
-  draftProject: Project
+  draftProject: Project,
+  toolName?: string
 ): readonly AgentGhostPreview[] {
   const previewsByMap: AgentGhostPreview[] = [];
   const mapIds = new Set([...Object.keys(baseProject.maps), ...Object.keys(draftProject.maps)]);
   for (const mapId of mapIds) {
     const baseMap = baseProject.maps[mapId];
     const draftMap = draftProject.maps[mapId];
-    const preview = mapDiffPreview(mapId, baseMap, draftMap);
+    const preview = mapDiffPreview(mapId, baseMap, draftMap, toolName);
     if (preview) previewsByMap.push(preview);
   }
   return previewsByMap;
@@ -140,15 +144,16 @@ export function createThrottledAgentGhostPreviewUpdater(options: {
   readonly getDraftProject: () => Project;
   readonly isWriteTool: (toolName: string) => boolean;
   readonly throttleMs?: number;
-  readonly apply?: (baseProject: Project, draftProject: Project) => void;
+  readonly apply?: (baseProject: Project, draftProject: Project, toolName?: string) => void;
   readonly setTimeoutFn?: (handler: () => void, timeout: number) => TimerHandle;
   readonly clearTimeoutFn?: (handle: TimerHandle) => void;
 }): ThrottledAgentGhostPreviewUpdater {
   const throttleMs = options.throttleMs ?? AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS;
   const setTimeoutFn = options.setTimeoutFn ?? ((handler, timeout) => setTimeout(handler, timeout));
   const clearTimeoutFn = options.clearTimeoutFn ?? ((handle) => clearTimeout(handle));
-  const apply = options.apply ?? ((baseProject, draftProject) => {
-    replaceAgentGhostPreviewFromProjectDiff(baseProject, draftProject);
+  let latestRunningTool: { readonly name: string; readonly index: number } | null = null;
+  const apply = options.apply ?? ((baseProject, draftProject, toolName) => {
+    replaceAgentGhostPreviewFromProjectDiff(baseProject, draftProject, toolName);
   });
   let timer: TimerHandle | null = null;
   let pending = false;
@@ -157,10 +162,16 @@ export function createThrottledAgentGhostPreviewUpdater(options: {
     timer = null;
     if (!pending) return;
     pending = false;
-    apply(options.getBaseProject(), options.getDraftProject());
+    apply(options.getBaseProject(), options.getDraftProject(), latestRunningTool?.name);
   };
 
   return {
+    get latestRunningTool() {
+      return latestRunningTool;
+    },
+    setLatestRunningTool(tool): void {
+      latestRunningTool = tool;
+    },
     handleToolCall(event): void {
       if (event.type !== "tool_call" || !event.result?.ok || !event.name || !options.isWriteTool(event.name)) return;
       pending = true;
@@ -174,7 +185,7 @@ export function createThrottledAgentGhostPreviewUpdater(options: {
       }
       if (!pending) return;
       pending = false;
-      apply(options.getBaseProject(), options.getDraftProject());
+      apply(options.getBaseProject(), options.getDraftProject(), latestRunningTool?.name);
     },
     cancel(): void {
       if (timer !== null) clearTimeoutFn(timer);
@@ -321,16 +332,21 @@ function emit(): void {
   for (const listener of listeners) listener(state);
 }
 
-function mapDiffPreview(mapId: MapId, baseMap: GameMap | undefined, draftMap: GameMap | undefined): AgentGhostPreview | null {
+function mapDiffPreview(
+  mapId: MapId,
+  baseMap: GameMap | undefined,
+  draftMap: GameMap | undefined,
+  toolName: string = "live_project_diff"
+): AgentGhostPreview | null {
   if (!baseMap && !draftMap) return null;
   if (!baseMap && draftMap) {
-    return finalizeArea(boundsArea(mapId, fullMapBounds(draftMap), "live_project_diff", "새 맵 초안", false) as MutableArea, "live_project_diff", {
+    return finalizeArea(boundsArea(mapId, fullMapBounds(draftMap), toolName, "새 맵 초안", false) as MutableArea, toolName, {
       mapId,
       kind: "created",
     });
   }
   if (baseMap && !draftMap) {
-    return finalizeArea(boundsArea(mapId, fullMapBounds(baseMap), "live_project_diff", "맵 제거 초안", false) as MutableArea, "live_project_diff", {
+    return finalizeArea(boundsArea(mapId, fullMapBounds(baseMap), toolName, "맵 제거 초안", false) as MutableArea, toolName, {
       mapId,
       kind: "removed",
     });
@@ -339,15 +355,15 @@ function mapDiffPreview(mapId: MapId, baseMap: GameMap | undefined, draftMap: Ga
   const after = draftMap as GameMap;
   const initialBounds = initialDiffBounds(before, after);
   const area = initialBounds
-    ? boundsArea(mapId, initialBounds, "live_project_diff", "AI 작업 초안", false)
-    : { bounds: null, cells: [], clipToMap: false, label: "AI 작업 초안", mapId, toolName: "live_project_diff" };
+    ? boundsArea(mapId, initialBounds, toolName, "AI 작업 초안", false)
+    : { bounds: null, cells: [], clipToMap: false, label: "AI 작업 초안", mapId, toolName };
   if (!area) return null;
   collectTileDiffCells(area, before, after);
   collectEventDiffCells(area, before, after);
   const normalized = normalizeArea({ maps: { [mapId]: after } } as Project, area);
   if (!normalized?.bounds) return null;
   if (normalized.cells.length === 0 && sameMapShape(before, after)) return null;
-  return finalizeArea(normalized, "live_project_diff", {
+  return finalizeArea(normalized, toolName, {
     mapId,
     kind: "changed",
     bounds: normalized.bounds,

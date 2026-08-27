@@ -910,6 +910,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         else setStatus(runningPhaseStatus);
         return;
       }
+      if (event.type === "tool_started") {
+        ghostPreviewUpdater.setLatestRunningTool?.({ name: event.name, index: event.index });
+        return;
+      }
       if (event.type === "assistant_stream_reset") {
         clearCurrentStreamAttempt();
         return;
