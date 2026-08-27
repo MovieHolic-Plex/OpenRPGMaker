@@ -60,6 +60,8 @@ export interface ActionCombatSceneState {
   readonly projectiles: ActionProjectile[];
   projectileSerial: number;
   playerIframesMs: number;
+  /** 회피 성공으로 열린 단하한 무적 창의 남은 시간. */
+  dodgeIframesMs: number;
   playerFlashMs: number;
   swingCooldownMs: number;
   stamina: number;

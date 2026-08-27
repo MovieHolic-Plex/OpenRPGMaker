@@ -1093,7 +1093,7 @@ export interface SystemRecords {
 export interface ActionCombatHudConfig {
   /** 플레이어 HP 하트 바. 생략 시 true. */
   hearts?: boolean;
-  /** 스태미나 바 표시 + 스윙/대시 소모. 생략 시 false. */
+  /** 스태미나 바 **표시** 토글. 생략 시 false. 소모 규칙 자체는 액션 맵에서 항상 켜진다. */
   stamina?: boolean;
   /** 몬스터 철력 바. "damaged"(기본)=피해입은 개척만, "always"=항상, "never"=숨김. */
   enemyHpBars?: "always" | "damaged" | "never";
@@ -1109,6 +1109,10 @@ export interface SystemActionCombat {
   swingDamageBonus?: number;
   /** true면 액션 전투 맵에서 대각 이동을 끄고 4방향 그리드 이동만 허용(클식 서바이벌 호러 감각). */
   fourWayMovement?: boolean;
+  /** 회피(대시) 1회 스태미나 비용. 기본 25. 0이면 공짜 회피. */
+  dodgeStaminaCost?: number;
+  /** 회피 성공 시 열리는 무적 창. 기본 300ms. */
+  dodgeIframesMs?: number;
   hud?: ActionCombatHudConfig;
 }
 

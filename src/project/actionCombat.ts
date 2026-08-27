@@ -16,6 +16,8 @@ import type {
 export const DEFAULT_PLAYER_IFRAMES_MS = 800;
 export const DEFAULT_SWING_COOLDOWN_MS = 350;
 export const DEFAULT_SWING_RANGE = 1;
+export const DEFAULT_DODGE_STAMINA_COST = 25;
+export const DEFAULT_DODGE_IFRAMES_MS = 300;
 
 export interface ResolvedActionCombatConfig {
   readonly playerIframesMs: number;
@@ -23,7 +25,12 @@ export interface ResolvedActionCombatConfig {
   readonly swingDamageBonus: number;
   readonly swingRange: number;
   readonly hearts: boolean;
+  /** 스태미나 바 **표시** 여부(hud.stamina). 소모 규칙과 무관. */
   readonly stamina: boolean;
+  /** 스태미나 소모 규칙이 도는가. 액션 전투 맵에서는 기본 true. */
+  readonly staminaEnabled: boolean;
+  readonly dodgeStaminaCost: number;
+  readonly dodgeIframesMs: number;
   readonly enemyHpBars: "always" | "damaged" | "never";
   readonly fourWayMovement: boolean;
 }
@@ -56,6 +63,8 @@ export function normalizeActionCombatConfig(config: Partial<SystemActionCombat> 
   if (config.playerIframesMs !== undefined) out.playerIframesMs = clampInt(config.playerIframesMs, 0, 10000, DEFAULT_PLAYER_IFRAMES_MS);
   if (config.swingCooldownMs !== undefined) out.swingCooldownMs = clampInt(config.swingCooldownMs, 50, 5000, DEFAULT_SWING_COOLDOWN_MS);
   if (config.swingDamageBonus !== undefined) out.swingDamageBonus = clampInt(config.swingDamageBonus, 0, 9999, 0);
+  if (config.dodgeStaminaCost !== undefined) out.dodgeStaminaCost = clampInt(config.dodgeStaminaCost, 0, 100, DEFAULT_DODGE_STAMINA_COST);
+  if (config.dodgeIframesMs !== undefined) out.dodgeIframesMs = clampInt(config.dodgeIframesMs, 0, 3000, DEFAULT_DODGE_IFRAMES_MS);
   if (hud) out.hud = hud;
   return out;
 }
@@ -130,7 +139,11 @@ export function resolveActionCombatConfig(project: Project): ResolvedActionComba
     swingDamageBonus: clampInt(raw?.swingDamageBonus, 0, 9999, 0),
     swingRange: DEFAULT_SWING_RANGE,
     hearts: raw?.hud?.hearts !== false,
+    // hud.stamina 는 표시 토글일 뿐이다. 소모/회피 규칙은 액션 맵에서 항상 돈다.
     stamina: raw?.hud?.stamina === true,
+    staminaEnabled: true,
+    dodgeStaminaCost: clampInt(raw?.dodgeStaminaCost, 0, 100, DEFAULT_DODGE_STAMINA_COST),
+    dodgeIframesMs: clampInt(raw?.dodgeIframesMs, 0, 3000, DEFAULT_DODGE_IFRAMES_MS),
     enemyHpBars: raw?.hud?.enemyHpBars ?? "damaged",
     fourWayMovement: raw?.fourWayMovement === true,
   };

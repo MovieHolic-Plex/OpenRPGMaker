@@ -4,6 +4,8 @@ import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isA
 import { swingArcCells, cellInArc } from "@/battle/action/hitbox";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 import { consumeHitstop } from "@/battle/action/hitstop";
+import { resolveDodgeStep } from "@/battle/action/dodge";
+import { shouldApplyContactDamage } from "@/battle/action/contact";
 import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
@@ -68,6 +70,7 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
     projectiles: [],
     projectileSerial: 0,
     playerIframesMs: 0,
+    dodgeIframesMs: 0,
     playerFlashMs: 0,
     swingCooldownMs: 0,
     stamina: ACTION_STAMINA_MAX,
@@ -110,6 +113,7 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   if (hitstop.skipUpdate) return;
   syncActionEnemiesForScene(scene);
   tickActionTimers(scene, state, deltaMs);
+  updatePlayerDodge(scene, state, deltaMs);
   updateEnemyModes(scene, state, deltaMs);
   updateProjectiles(scene, state, deltaMs);
   applyContactDamage(scene, state);
@@ -120,7 +124,7 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
 function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
   state.playerIframesMs = Math.max(0, state.playerIframesMs - deltaMs);
   state.swingCooldownMs = Math.max(0, state.swingCooldownMs - deltaMs);
-  if (state.config.stamina) {
+  if (state.config.staminaEnabled) {
     state.stamina = Math.min(ACTION_STAMINA_MAX, state.stamina + (ACTION_STAMINA_REGEN_PER_SEC * deltaMs) / 1000);
   }
   if (state.playerFlashMs > 0) {
@@ -208,17 +212,33 @@ function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: numbe
   return null;
 }
 
+// 대시 걸음마다 회피를 시도한다. 성공하면 스태미나를 쓰고 짧은 무적 창만 열린다.
+// 스태미나가 비용보다 적으면 회피가 열리지 않고 그대로 맞는다(예전의 무한 무적 제거).
+function updatePlayerDodge(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
+  const requested = state.config.staminaEnabled && scene.dashing && scene.moving && scene.inputEnabled;
+  const outcome = resolveDodgeStep({
+    stamina: state.stamina,
+    cost: state.config.dodgeStaminaCost,
+    iframesMs: state.config.dodgeIframesMs,
+    activeIframesMs: state.dodgeIframesMs,
+    deltaMs,
+    requested,
+  });
+  state.stamina = outcome.stamina;
+  state.dodgeIframesMs = outcome.iframesRemainingMs;
+}
+
 function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneState): void {
   // RM eventTouch 의미론: 적이 플레이어에 "닿는" 것은 같은 칸이 아니라 인접(8방) 접촉.
   // NPC 이동 규칙상 적 묘버는 플레이어 칸에 진입할 수 없으므로 같은 칸 판정은 절대 발화하지 않는다.
+  // 단, 접촉 피해는 **거리를 좁히는 적**만 준다 — windup/recover 중이면 예고된 타격이 피해원이다.
   const targets = [{ x: scene.tileX, y: scene.tileY }];
   if (scene.moving) targets.push({ x: scene.movingTo.x, y: scene.movingTo.y });
   for (const enemy of state.enemies.values()) {
-    if (enemy.mode === "dash") continue;
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
-    const touching = targets.some((t) => Math.max(Math.abs(pos.x - t.x), Math.abs(pos.y - t.y)) <= 1);
-    if (!touching) continue;
+    const moving = scene.autonomousNPCs.get(enemy.eventId)?.activeMove != null;
+    if (!shouldApplyContactDamage({ enemyTile: pos, playerTiles: targets, mode: enemy.mode, moving })) continue;
     const lead = leadActorStats(scene);
     if (!lead) return;
     const damage = computeContactDamage({
@@ -234,8 +254,8 @@ function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneSta
 function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, damage: number, fromTileX: number, fromTileY: number): void {
   if (damage <= 0) return;
   if (state.playerIframesMs > 0) return;
-  const dodging = scene.dashing && scene.moving;
-  if (dodging) return;
+  // 회피 무적: 스태미나를 지불하고 열린 짧은 창 동안만 유효하다.
+  if (state.dodgeIframesMs > 0) return;
   const project = store.getCurrent();
   const leadId = scene.session.partyActorIds[0];
   if (!leadId) return;
@@ -271,11 +291,11 @@ export function tryActionCombatSwing(scene: PlaySceneContext): void {
   const state = scene.actionCombatState;
   if (!state || scene.running || !scene.inputEnabled) return;
   if (state.swingCooldownMs > 0) return;
-  if (state.config.stamina && state.stamina < ACTION_SWING_STAMINA_COST) return;
+  if (state.config.staminaEnabled && state.stamina < ACTION_SWING_STAMINA_COST) return;
   const lead = leadActorSwingProfile(scene);
   if (!lead) return;
   state.swingCooldownMs = lead.cooldownMs;
-  if (state.config.stamina) state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
+  if (state.config.staminaEnabled) state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
   const arc = swingArcCells(scene.facing, scene.tileX, scene.tileY, lead.range);
   flashSwingArc(scene, scene.facing, lead.range);
   pulsePlayerSwing(scene);
