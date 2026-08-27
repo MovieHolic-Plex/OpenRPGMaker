@@ -188,7 +188,10 @@ async function bootEditor(page: Page): Promise<string> {
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
   });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
+  // 빈 프로젝트로 띄운다: 샘플 마을(`?freshProject=1`)에는 수관 아래 밑동이 없는 나무가 이미
+  // 있어 배치 검증(validateLayoutPlacement)이 이 프로젝트의 모든 AI 적용을 막는다 — 그 기존
+  // 결함은 이 스펙의 대상이 아니다.
+  await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
   await expect(page.getByTestId("login-modal")).toBeHidden({ timeout: 15_000 });

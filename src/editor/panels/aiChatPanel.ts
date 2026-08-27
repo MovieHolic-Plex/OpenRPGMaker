@@ -1115,36 +1115,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         turnErrored: result.stoppedReason === "error",
       });
       if (applyMode === "apply-now") {
+        // 적용을 먼저 하고 그 결과를 기다린 다음에 카드를 붙인다 — 배치 검증·커밋 게이트가 적용을
+        // 거부하면 store 는 그대로이므로 "자동 적용 N건" 은 거짓이 된다(사유는 acceptProposal 이
+        // 이미 ❌ 버블로 남긴다).
         // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
         // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
         // 판단해야 했다. 전/후 썸네일·자동 적용 토글·되돌리기를 한 카드에 모아 로그에 남긴다.
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
-        const appliedBubble = appendBubble("system", "");
-        if (currentMapId) {
-          appliedBubble.append(
-            renderAppliedComparison({
-              before: beforeProject,
-              after: afterProject,
-              mapId: currentMapId,
-              summary: appliedSummary,
-              appliedCount: result.proposedCalls.length,
-              onUndo: () => {
-                try {
-                  undoMapEdit();
-                  appliedBubble.remove();
-                } catch {
-                  // undo 스택이 버어진 경우는 카드를 남긴다 — 재시도할 수 있어야 한다.
-                }
-              },
-            }),
-          );
-        } else {
-          appliedBubble.textContent = `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`;
-        }
-        setStatus("대기");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
-        acceptProposal(result.proposedCalls);
+        const applied = await acceptProposal(result.proposedCalls);
+        setStatus(applied ? "대기" : "적용 실패");
+        if (applied) {
+          const appliedBubble = appendBubble("system", "");
+          if (currentMapId) {
+            appliedBubble.append(
+              renderAppliedComparison({
+                before: beforeProject,
+                after: afterProject,
+                mapId: currentMapId,
+                summary: appliedSummary,
+                appliedCount: result.proposedCalls.length,
+                onUndo: () => {
+                  try {
+                    undoMapEdit();
+                    appliedBubble.remove();
+                  } catch {
+                    // undo 스택이 비어진 경우는 카드를 남긴다 — 재시도할 수 있어야 한다.
+                  }
+                },
+              }),
+            );
+          } else {
+            appliedBubble.textContent = `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`;
+          }
+        }
       } else {
         renderProposal(
           result,
