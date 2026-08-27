@@ -57,6 +57,7 @@ import {
   syncFieldSpawnEventsIntoMap,
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
+import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
@@ -368,7 +369,7 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
     if (isFieldSpawnEventId(blocking.event.id) && blocking.trigger.kind === "eventTouch") {
       return runEventView(state, blocking);
     }
-    if (blocking.trigger.kind === "touch" || blocking.trigger.kind === "playerTouch") {
+    if (firesOnPlayerCollision(blocking.trigger.kind)) {
       return runEventView(state, blocking);
     }
     return `이동 대상에 막는 이벤트가 있습니다: ${blocking.event.id} (${x},${y})`;
@@ -378,7 +379,7 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   state.session.y = y;
   recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
-  const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
+  const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, PLAYER_COLLISION_TRIGGER_KINDS);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
 }
@@ -393,7 +394,7 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   state.session.y = y;
   recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
-  const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
+  const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, PLAYER_COLLISION_TRIGGER_KINDS);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
 }
@@ -440,7 +441,7 @@ function runWalkStep(state: RunnerState, step: Extract<SceneStep, { kind: "walk"
         && next.x === target.x
         && next.y === target.y
         && blocking !== undefined
-        && (blocking.trigger.kind === "touch" || blocking.trigger.kind === "playerTouch");
+        && firesOnPlayerCollision(blocking.trigger.kind);
       if (blocking && !exactTouchTarget) continue;
       seen.add(nextKey);
       previous.set(nextKey, { from: keyOf(current.x, current.y), dir: direction.dir });

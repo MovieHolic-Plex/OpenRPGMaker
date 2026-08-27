@@ -14,7 +14,7 @@ import { findBlockingRuntimeEventAtInMap,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
-import type { EventAnimationType } from "@/project/types";
+import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
@@ -22,7 +22,7 @@ import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
-import { isFieldSpawnEventId } from "@/player/fieldSpawns";
+import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { tryChestInteraction } from "@/player/playSceneChest";
@@ -376,7 +376,7 @@ function setActionEventRuntimeDirection(
 }
 
 function fireTouchTriggers(scene: PlaySceneContext): void {
-  const event = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, ["touch", "playerTouch"]);
+  const event = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, PLAYER_COLLISION_TRIGGER_KINDS);
   if (event) void scene.runEvent(event.event.id);
 }
 
@@ -397,12 +397,8 @@ function findBlockingRuntimeEventInScene(
   return findBlockingRuntimeEventAtInMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions, x, y);
 }
 
-function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: string): void {
-  if (isFieldSpawnEventId(eventId) && triggerKind === "eventTouch") {
-    void scene.runEvent(eventId);
-    return;
-  }
-  if (triggerKind === "touch" || triggerKind === "playerTouch") void scene.runEvent(eventId);
+function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: Trigger["kind"]): void {
+  if (firesOnPlayerCollision(triggerKind)) void scene.runEvent(eventId);
 }
 
 function directionDelta(dir: Dir): { x: number; y: number } {
