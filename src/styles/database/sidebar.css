@@ -94,30 +94,72 @@
   width: 100% !important;
 }
 
-.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-  content: none !important;
-  display: none !important;
+/* Labeled rail only: no glyph column. In the collapsed icon rail the
+   per-tab glyphs below are the only affordance, so they must survive. */
+@container db-modal (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
+    content: none !important;
+    display: none !important;
+  }
 }
 
+@media (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+/* Collapsed icon rail: hide the label text and count pill, center the glyph.
+   These need !important because the :has(.db-shared-workspace) block above
+   forces color/padding/width on .db-tab. */
 @container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+    color: transparent !important;
+    font-size: 0 !important;
+    height: 40px !important;
+    justify-content: center !important;
+    max-width: 40px !important;
+    padding: 0 !important;
+    width: 40px !important;
+  }
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
     color: var(--db-studio-text-2, #475569) !important;
-    content: attr(data-short) !important;
     display: block !important;
     flex: 0 0 auto !important;
-    font: 700 14px/1 "Segoe UI Symbol", "Malgun Gothic", sans-serif !important;
+    font-size: 18px !important;
     width: auto !important;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab.active::before {
+    color: var(--db-studio-accent, #4A57D6) !important;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-count]::after {
+    display: none !important;
   }
 }
 
 @media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+    color: transparent !important;
+    font-size: 0 !important;
+    height: 40px !important;
+    justify-content: center !important;
+    max-width: 40px !important;
+    padding: 0 !important;
+    width: 40px !important;
+  }
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
     color: var(--db-studio-text-2, #475569) !important;
-    content: attr(data-short) !important;
     display: block !important;
     flex: 0 0 auto !important;
-    font: 700 14px/1 "Segoe UI Symbol", "Malgun Gothic", sans-serif !important;
+    font-size: 18px !important;
     width: auto !important;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab.active::before {
+    color: var(--db-studio-accent, #4A57D6) !important;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-count]::after {
+    display: none !important;
   }
 }
 
@@ -231,6 +273,8 @@
   outline-offset: 1px;
 }
 
+/* Collapsed rail: a 40px input cannot fit the placeholder, so swap the text
+   for a centered magnifier mark; the real label stays on placeholder/title. */
 @container db-modal (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
     height: 36px;
@@ -238,6 +282,16 @@
     padding: 0;
     text-align: center;
     font-size: 13px;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2394A3B8' stroke-width='1.6'%3E%3Ccircle cx='7' cy='7' r='4.2'/%3E%3Cpath d='M10.2 10.2 14 14'/%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
+    color: transparent;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:not(:placeholder-shown) {
+    background-image: none;
   }
 }
 
@@ -247,6 +301,16 @@
     width: 40px;
     padding: 0;
     text-align: center;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2394A3B8' stroke-width='1.6'%3E%3Ccircle cx='7' cy='7' r='4.2'/%3E%3Cpath d='M10.2 10.2 14 14'/%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
+    color: transparent;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:not(:placeholder-shown) {
+    background-image: none;
   }
 }
 
@@ -345,6 +409,7 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
     border-radius: 8px;
     color: transparent;
+    font-size: 0;
     justify-content: center;
     height: 40px;
     max-width: 40px;
@@ -368,6 +433,7 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
     border-radius: 8px;
     color: transparent;
+    font-size: 0;
     justify-content: center;
     height: 40px;
     max-width: 40px;
@@ -436,6 +502,7 @@
 
 .database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab {
   color: transparent;
+  font-size: 0;
   height: 32px;
   justify-content: center;
   padding: 0;

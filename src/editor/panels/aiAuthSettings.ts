@@ -20,6 +20,7 @@
 //  ⑥ 상태 문구만 바꾸고 tone 을 안 바꾸는 분기가 있어 색 점이 이전 상태로 남았다.
 
 import {
+  completeOAuthPaste,
   disconnectCompanionAuth,
   fetchChatGptAuthStatus,
   hasStoredCompanionCredential,
@@ -287,6 +288,32 @@ export function renderAiAuthSettings(
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-copy-code" },
   }) as HTMLButtonElement;
+  const deviceCodeRow = el("div", {
+    class: "ai-oauth-device-code-row",
+    children: [deviceUserCode, copyCodeButton],
+  });
+  const deviceStep2 = el("span", { text: "2. 이 코드를 입력하세요" });
+  const pasteInput = el("input", {
+    class: "ai-config-input ai-oauth-paste-url",
+    attrs: {
+      type: "url",
+      placeholder: "http://127.0.0.1:…/oauth-callback?code=…",
+      "aria-label": "OAuth 콜백 주소",
+    },
+    dataset: { testid: "ai-oauth-paste-url" },
+  }) as HTMLInputElement;
+  const pasteButton = el("button", {
+    class: "ai-assistant-action",
+    text: "콜백 전달",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-oauth-paste-submit" },
+  }) as HTMLButtonElement;
+  const pasteRow = el("div", {
+    class: "ai-oauth-paste-row",
+    attrs: { hidden: "" },
+    dataset: { testid: "ai-oauth-paste-row" },
+    children: [pasteInput, pasteButton],
+  });
   const devicePoll = el("span", {
     class: "ai-oauth-device-poll",
     attrs: { role: "status" },
@@ -306,8 +333,9 @@ export function renderAiAuthSettings(
       el("div", { class: "ai-oauth-device-steps", children: [
         el("span", { text: "1. 아래 주소를 열고" }),
         deviceUrl,
-        el("span", { text: "2. 이 코드를 입력하세요" }),
-        el("div", { class: "ai-oauth-device-code-row", children: [deviceUserCode, copyCodeButton] }),
+        deviceStep2,
+        deviceCodeRow,
+        pasteRow,
       ] }),
       el("div", { class: "ai-oauth-device-foot", children: [devicePoll, cancelButton] }),
     ],
@@ -563,6 +591,36 @@ export function renderAiAuthSettings(
     setStatus("로그인을 취소했습니다", "disconnected");
   });
 
+  pasteButton.addEventListener("click", () => {
+    const url = pasteInput.value.trim();
+    if (!url) {
+      devicePoll.textContent = "콜백 주소를 붙여 넣으세요.";
+      return;
+    }
+    pasteButton.disabled = true;
+    const gen = opGeneration;
+    const provider = providerId;
+    void completeOAuthPaste(url)
+      .then(async () => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        devicePoll.textContent = "콜백을 전달했습니다. 연결 확인 중…";
+        const auth = await fetchChatGptAuthStatus(provider);
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        if (hasStoredCompanionCredential(auth)) {
+          stopPolling();
+          applyStatus(auth);
+        }
+      })
+      .catch((error: unknown) => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        if (isChatGptCompanionResponseError(error)) showServerError(error);
+        else showUnreachable(error);
+      })
+      .finally(() => {
+        if (!disposed && gen === opGeneration) pasteButton.disabled = false;
+      });
+  });
+
   copyCodeButton.addEventListener("click", () => {
     const code = deviceUserCode.textContent?.trim() ?? "";
     if (!code) return;
@@ -643,6 +701,12 @@ export function renderAiAuthSettings(
         if (login.verificationUrl) deviceUrl.setAttribute("href", login.verificationUrl);
         deviceUserCode.textContent = login.userCode || "";
         copyCodeButton.hidden = !login.userCode;
+        deviceCodeRow.hidden = login.pasteCallback === true && !login.userCode;
+        pasteRow.hidden = login.pasteCallback !== true;
+        pasteInput.value = "";
+        deviceStep2.textContent = login.pasteCallback
+          ? "2. 로그인 후 주소창의 127.0.0.1 주소를 붙여 넣으세요"
+          : "2. 이 코드를 입력하세요";
         devicePoll.textContent = `로그인 확인 중… (0/${DEVICE_POLL_MAX_ATTEMPTS})`;
         setStatus("브라우저에서 로그인 대기 중", "checking");
         // 링크를 눌러 열 수도 있게 남겨 둔 채 자동 실행도 시도한다(팝업 차단 시 링크가 대안).

@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, type Plugin, type ProxyOptions } from "vite";
+import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ProxyOptions, type ViteDevServer } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync, realpathSync } from "node:fs";
 import { join } from "node:path";
@@ -224,10 +224,9 @@ function aiActivityDiskPlugin(): Plugin {
   };
 }
 
-// DEV-only same-origin bridge to the oh-my-pi companion router (provider auth + completions).
-// Removes the need to run `npm run ai:oauth` alongside `npm run dev` — the browser
-// hits /auth/* and /v1/chat/completions on the same dev port. preview/dist still
-// route to the standalone 127.0.0.1:17832 companion (npm run ai:oauth).
+// Same-origin bridge to the oh-my-pi companion router (provider auth + completions).
+// Browser always calls /auth/* and /v1/chat/completions on the page origin — never
+// 127.0.0.1:17832 — so Tailscale preview (`mdc-server:9888`) still reaches this process.
 function codexOAuthPlugin(): Plugin {
   let adaptersPromise: Promise<OhMyPiAdapters> | null = null;
   function getAdapters() {
@@ -241,36 +240,42 @@ function codexOAuthPlugin(): Plugin {
     }
     return 500;
   }
+  function attachCompanion(server: ViteDevServer | PreviewServer) {
+    server.middlewares.use(async (req, res, next) => {
+      const url = req.url ?? "";
+      if (!isCompanionPath(url)) return next();
+      try {
+        if (req.method === "OPTIONS") {
+          res.statusCode = 204;
+          res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+          res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Rpgzzu-Provider");
+          res.end();
+          return;
+        }
+        const body = await readRequestJson(req);
+        const result = await handleCompanionRequest(
+          { method: req.method, url, headers: req.headers as Record<string, string>, body },
+          await getAdapters(),
+        );
+        writeCompanionResult(res, result);
+      } catch (error) {
+        res.statusCode = errorStatus(error);
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(JSON.stringify({ error: error instanceof Error ? error.message : "OAuth companion bridge failed" }));
+      }
+    });
+    server.httpServer?.on("close", () => {
+      adaptersPromise = null;
+      stopOhMyPiWorker();
+    });
+  }
   return {
     name: "rpgzzu-codex-oauth",
     configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        const url = req.url ?? "";
-        if (!isCompanionPath(url)) return next();
-        try {
-          if (req.method === "OPTIONS") {
-            res.statusCode = 204;
-            res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-            res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Rpgzzu-Provider");
-            res.end();
-            return;
-          }
-          const body = await readRequestJson(req);
-          const result = await handleCompanionRequest(
-            { method: req.method, url, headers: req.headers as Record<string, string>, body },
-            await getAdapters(),
-          );
-          writeCompanionResult(res, result);
-        } catch (error) {
-          res.statusCode = errorStatus(error);
-          res.setHeader("Content-Type", "application/json; charset=utf-8");
-          res.end(JSON.stringify({ error: error instanceof Error ? error.message : "OAuth dev bridge failed" }));
-        }
-      });
-      server.httpServer?.on("close", () => {
-        adaptersPromise = null;
-        stopOhMyPiWorker();
-      });
+      attachCompanion(server);
+    },
+    configurePreviewServer(server) {
+      attachCompanion(server);
     },
   };
 }

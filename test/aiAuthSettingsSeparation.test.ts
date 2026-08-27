@@ -15,6 +15,7 @@ const startChatGptLogin = vi.fn();
 const saveCompanionApiKey = vi.fn();
 const refreshCompanionAuth = vi.fn();
 const disconnectCompanionAuth = vi.fn();
+const completeOAuthPaste = vi.fn();
 
 vi.mock("@/ai/chatgptOAuthClient", async () => {
   const actual = await import("@/ai/chatgptOAuthClient");
@@ -25,6 +26,7 @@ vi.mock("@/ai/chatgptOAuthClient", async () => {
     saveCompanionApiKey: (...args: unknown[]) => saveCompanionApiKey(...args),
     refreshCompanionAuth: (...args: unknown[]) => refreshCompanionAuth(...args),
     disconnectCompanionAuth: (...args: unknown[]) => disconnectCompanionAuth(...args),
+    completeOAuthPaste: (...args: unknown[]) => completeOAuthPaste(...args),
   };
 });
 
@@ -235,6 +237,40 @@ describe("기기 로그인", () => {
     // 옛 구현은 5초 뒤 한 번만 확인하고 끝나서, 그보다 오래 걸리면 영구히 "대기 중"이었다.
     expect(findByTestId(root, "ai-oauth-device-poll")?.textContent ?? "").toContain("/60");
     expect(findByTestId(root, "ai-oauth-device-cancel")).not.toBeNull();
+    expect(findByTestId(root, "ai-oauth-paste-row")?.hidden).toBe(true);
+    dispose();
+  });
+
+  it("원격 루프백 로그인은 공개 origin 링크와 콜백 붙여넣기를 보여 준다", async () => {
+    startChatGptLogin.mockResolvedValue({
+      verificationUrl: "http://mdc-server:9888/oauth/launch?port=34031",
+      userCode: "",
+      pasteCallback: true,
+    });
+    completeOAuthPaste.mockResolvedValue(undefined);
+    fetchChatGptAuthStatus
+      .mockResolvedValueOnce({ connected: false })
+      .mockResolvedValue({ connected: true, env: false });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const link = findByTestId(root, "ai-oauth-device-url");
+    expect(link?.getAttribute("href")).toBe("http://mdc-server:9888/oauth/launch?port=34031");
+    const pasteRow = findByTestId(root, "ai-oauth-paste-row");
+    expect(pasteRow?.hidden).toBe(false);
+    const input = findByTestId(root, "ai-oauth-paste-url") as FakeElement & { value?: string };
+    input.value = "http://127.0.0.1:34031/oauth-callback?code=ok";
+    findByTestId(root, "ai-oauth-paste-submit")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34031/oauth-callback?code=ok");
+    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
     dispose();
   });
 

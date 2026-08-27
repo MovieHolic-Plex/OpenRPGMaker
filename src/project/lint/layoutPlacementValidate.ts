@@ -23,12 +23,16 @@ export type LayoutValidateOptions = {
   readonly toolNames?: readonly string[];
 };
 
-const TREE_TILE_IDS = new Set<number>([
+export const LAYOUT_TREE_TILE_IDS = new Set<number>([
   260, 290, 261, 291,
   262, 263, 292, 293, // 활엽수 2×2
   259, // 가지
   289, // 덤불
 ]);
+const TREE_TILE_IDS = LAYOUT_TREE_TILE_IDS;
+
+export const LAYOUT_TREE_CANOPY_IDS = new Set([260, 261, 262, 263]);
+export const LAYOUT_TREE_TRUNK_IDS = new Set([290, 291, 292, 293]);
 
 const TREE_INTENT = /나무|침엽|숲|수목|tree|forest|conifer|broadleaf/i;
 const PROP_TOOLS = new Set(["place_props", "scatter_object", "tile_scatter"]);
@@ -176,7 +180,7 @@ function checkTreesOnImpassable(
   });
 }
 
-function isLowerTerrainPassable(project: Project, map: GameMap, x: number, y: number): boolean {
+export function isLowerTerrainPassable(project: Project, map: GameMap, x: number, y: number): boolean {
   const index = y * map.width + x;
   const saved = map.upperTiles[index];
   map.upperTiles[index] = TILE.EMPTY;
@@ -187,16 +191,13 @@ function isLowerTerrainPassable(project: Project, map: GameMap, x: number, y: nu
   }
 }
 
-const TREE_CANOPY_SET = new Set([260, 261, 262, 263]);
-const TREE_TRUNK_SET = new Set([290, 291, 292, 293]);
-
 /** 수관 아래 밑동 없음 — error. 숲 겹침(lower 밑동+upper 수관)과 레거시 upper 밑동 모두 인정. */
 function checkVerticalTreePairs(map: GameMap, mapId: string, region: LayoutRegion, issues: LintIssue[]): void {
   let broken = 0;
   let sample: { x: number; y: number; name: string } | undefined;
   forEachCell(region, (x, y, index) => {
     const upper = map.upperTiles[index];
-    if (!TREE_CANOPY_SET.has(upper)) return;
+    if (!LAYOUT_TREE_CANOPY_IDS.has(upper)) return;
     if (y + 1 >= map.height) {
       broken += 1;
       if (!sample) sample = { x, y, name: "나무" };
@@ -205,7 +206,7 @@ function checkVerticalTreePairs(map: GameMap, mapId: string, region: LayoutRegio
     const belowIndex = (y + 1) * map.width + x;
     const belowLower = map.lowerTiles[belowIndex];
     const belowUpper = map.upperTiles[belowIndex];
-    if (!TREE_TRUNK_SET.has(belowLower) && !TREE_TRUNK_SET.has(belowUpper)) {
+    if (!LAYOUT_TREE_TRUNK_IDS.has(belowLower) && !LAYOUT_TREE_TRUNK_IDS.has(belowUpper)) {
       broken += 1;
       if (!sample) sample = { x, y, name: "나무" };
     }

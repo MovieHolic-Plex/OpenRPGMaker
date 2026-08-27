@@ -57,12 +57,18 @@ export interface AiConfig {
 // 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
 // 저장 설정은 loadAiConfig가 존중한다.
 export const DEFAULT_BASE_URL = "";
-// DEV: vite.config.ts codexOAuthPlugin mounts the same handlers same-origin, so the
-// browser calls /auth/* and /v1/chat/completions on the dev server itself (no separate
-// `npm run ai:oauth` process). PROD (preview/dist): fall back to the standalone
-// 127.0.0.1:17832 companion started via `npm run ai:oauth`.
-export const DEFAULT_CHATGPT_BASE_URL =
-  typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
+// 브라우저는 항상 페이지와 같은 오리진의 /v1 을 친다.
+//
+// 예전 preview 경로는 `http://127.0.0.1:17832/v1` 로 고정돼 있었다. 그건 oh-my-pi
+// 동반 서비스가 **이 머신 루프백**에서 듣기 때문이다. `npm run dev` 는 vite 플러그인이
+// 같은 포트에 /v1 을 붙이므로 괜찮았지만, `npm start`(preview) 를 Tailscale
+// (`mdc-server:9888`) 로 열면 탭은 원격이고 127.0.0.1 은 **사용자 PC**라 동반 서비스에
+// 닿지 않는다. 그래서 DEV/preview 를 가르지 않는다 — vite 가 configurePreviewServer 로
+// 같은 핸들러를 붙인다.
+export function companionCompletionsBaseUrl(_env?: { readonly DEV?: boolean }): string {
+  return "/v1";
+}
+export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
 // 저장된 providerId/model 은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절
 // 암시 기본이므로 loadAiConfig 가 openai-codex 로 남긴다.
@@ -308,12 +314,12 @@ export class LlmAbortError extends Error {
   }
 }
 
-function humanizeStatus(status: number, body: string, authMode: AiConfig["authMode"]): string {
+export function humanizeLlmStatus(status: number, body: string, authMode: AiConfig["authMode"]): string {
   const detail = body ? ` — ${body.slice(0, 300)}` : "";
   switch (status) {
     case 401:
       return authMode === "chatgpt"
-        ? `ChatGPT 로그인 실패(401): 로컬 OAuth 동반 서비스에서 다시 로그인하세요.${detail}`
+        ? `Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요.${detail}`
         : `인증 실패(401): API 키가 없거나 잘못되었습니다. 어시스턴트 설정에서 API 키와 엔드포인트(baseUrl)를 확인하세요.${detail}`;
     case 402:
       return `결제/크레딧 오류(402): LLM 공급자 잔액 또는 과금 설정을 확인하세요.${detail}`;
@@ -878,9 +884,9 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     }
     // 429(사용량 제한)는 연결 문제 아님 — 칩까지 붉히지 않는다.
     if (response.status !== 429) {
-      reportTransportHealth(false, response.status, humanizeStatus(response.status, body, config.authMode));
+      reportTransportHealth(false, response.status, humanizeLlmStatus(response.status, body, config.authMode));
     }
-    throw new LlmError(humanizeStatus(response.status, body, config.authMode), response.status);
+    throw new LlmError(humanizeLlmStatus(response.status, body, config.authMode), response.status);
   }
   reportTransportHealth(true, response.status);
 

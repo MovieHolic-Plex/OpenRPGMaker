@@ -102,10 +102,10 @@
 }
 
 .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
-  background: rgba(252, 249, 242, 0.72);
-  border: 1px solid rgba(42, 37, 33, 0.1);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
   border-radius: 16px;
-  box-shadow: 0 10px 32px rgba(60, 48, 32, 0.12);
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.14);
   max-width: clamp(360px, 38vw, 520px);
   width: clamp(360px, 38vw, 520px);
 }

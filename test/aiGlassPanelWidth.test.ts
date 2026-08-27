@@ -72,6 +72,19 @@ describe("Glass assistant card responsive width CSS contract", () => {
     },
   );
 
+  it("02-chat-dock.css 유리 카드도 260px 로 잠그지 않는다", () => {
+    const css = readCssFile("src/styles/database/tabs-b-assistant-panel/02-chat-dock.css");
+    expect(css).not.toMatch(/width:\s*min\(\s*260px\s*,\s*28%\s*\)/);
+    expect(css).not.toMatch(/max-width:\s*min\(\s*260px\s*,\s*28%\s*\)/);
+    expect(css).toMatch(/width:\s*clamp\(\s*360px\s*,\s*38vw\s*,\s*520px\s*\)/);
+  });
+
+  it("유휴 유리 로그를 display:none 으로 접지 않는다", () => {
+    const css = readCssFile("src/styles/database/tabs-b-assistant-panel/15-assistant-readable.css");
+    expect(css).toMatch(/\.ai-chat-panel\.chat-dock-glass\.is-glass-idle \.ai-glass-log/);
+    expect(css).toMatch(/display:\s*block/);
+  });
+
   it("header more-menu stacks idle-view options in one column so labels are not clipped",
     () => {
       const css = readCssFile(commandBarCssPath);
