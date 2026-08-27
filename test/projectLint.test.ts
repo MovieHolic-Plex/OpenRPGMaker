@@ -256,6 +256,57 @@ describe("projectLint", () => {
     });
   });
 
+  describe("event-unreachable", () => {
+    function makeImpassable(project: Project, x: number, y: number): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.lowerTiles[y * map.width + x] = TILE_FLOOR_IMPASSABLE;
+      map.upperTiles[y * map.width + x] = -1;
+    }
+
+    function pushActionEvent(project: Project, id: string, x: number, y: number): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.events.push({ id, x, y, trigger: { kind: "action" }, commands: [] });
+    }
+
+    function unreachableOf(project: Project): readonly LintIssue[] {
+      return projectLint(project).filter((issue) => issue.code === "event-unreachable");
+    }
+
+    it("자신의 칸과 4방향 이웃이 전부 통행 불가면 warning을 보고한다", () => {
+      const project = cloneProject(createBlankProject());
+      // (5,5)와 4방향 이웃을 벽으로 감싼다.
+      makeImpassable(project, 5, 5);
+      makeImpassable(project, 5, 4);
+      makeImpassable(project, 5, 6);
+      makeImpassable(project, 4, 5);
+      makeImpassable(project, 6, 5);
+      pushActionEvent(project, "ev_walled", 5, 5);
+
+      const issues = unreachableOf(project);
+      expect(issues, JSON.stringify(issues, null, 2)).toHaveLength(1);
+      expect(issues[0]).toMatchObject({ severity: "warning", x: 5, y: 5 });
+      expect(issues[0]?.message).toContain("ev_walled");
+      expect(issues[0]?.message).toContain("통행 가능한 칸으로 옮기세요");
+    });
+
+    it("통행 불가 타일이라도 통행 가능한 이웃이 하나 있으면(문·간판) 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      makeImpassable(project, 7, 7); // 문 타일 자체만 통행 불가, 이웃은 기본 통행 가능.
+      pushActionEvent(project, "ev_door", 7, 7);
+
+      expect(unreachableOf(project)).toHaveLength(0);
+    });
+
+    it("통행 가능한 타일 위의 평범한 이벤트는 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      pushActionEvent(project, "ev_normal", 9, 9);
+
+      expect(unreachableOf(project)).toHaveLength(0);
+    });
+  });
+
   it("256x256 초과 맵을 warning으로 보고한다", () => {
     const project = cloneProject(createBlankProject());
     const huge = createBlankMap("임포트 초대형", 257, 12);

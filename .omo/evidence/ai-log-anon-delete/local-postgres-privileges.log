@@ -1,0 +1,57 @@
+READY container=ulw-rls-pg
+--- apply 20260625000000_rpg_zzu_sync.sql
+--- apply 20260701000000_map_edit_locks.sql
+--- apply 20260706000000_commit_identity.sql
+--- apply 20260709000000_ai_activity_logs.sql
+--- apply 20260713000000_ai_conversations_user_skills.sql
+=== BEFORE: anon DELETE privileges
+ai_activity_logs|t
+ai_conversations|t
+ai_analysis_runs|t
+user_skills|t
+maps|t
+--- apply 20260827000000_ai_log_anon_delete_revoke.sql
+=== AFTER: anon DELETE privileges
+ai_activity_logs|f
+ai_conversations|f
+ai_analysis_runs|f
+user_skills|t
+maps|t
+=== seed one project + rows as owner
+=== anon session: INSERT / SELECT / UPDATE / DELETE
+anon INSERT+UPSERT ai_activity_logs: OK
+anon SELECT ai_activity_logs rows: SET
+anon SELECT ai_activity_logs rows: 1
+anon INSERT+UPSERT ai_conversations: OK
+anon INSERT+UPSERT user_skills: OK
+--- anon DELETE ai_activity_logs (기대: permission denied)
+ERROR:  permission denied for table ai_activity_logs
+EXPECTED FAIL: ERROR:  permission denied for table ai_activity_logs
+--- anon DELETE ai_conversations (기대: permission denied)
+ERROR:  permission denied for table ai_conversations
+EXPECTED FAIL: ERROR:  permission denied for table ai_conversations
+--- anon DELETE user_skills (기대: 성공 — UI 삭제 경로 유지)
+anon DELETE user_skills: OK
+=== rows survive after denied deletes
+activity=1
+conversation=1
+=== grant catalog (applier 가 읽는 뷰)
+ai_activity_logs/INSERT
+ai_activity_logs/SELECT
+ai_activity_logs/UPDATE
+ai_analysis_runs/INSERT
+ai_analysis_runs/SELECT
+ai_analysis_runs/UPDATE
+ai_conversations/INSERT
+ai_conversations/SELECT
+ai_conversations/UPDATE
+=== apply completed Phase8 RLS draft
+--- apply DRAFT_20260706_auth_rls.sql
+ai_activity_logs rls=true
+ai_conversations rls=true
+user_skills rls=true
+ai_activity_logs policies=4
+ai_conversations policies=4
+user_skills policies=4
+anon_any_grant=0
+PROOF DONE

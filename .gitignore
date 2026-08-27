@@ -6,6 +6,7 @@ dist/
 .omo/evidence/*
 !.omo/evidence/rm2003-database-plan/
 !.omo/evidence/ai-compaction/
+!.omo/evidence/ai-apply-without-approval/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -41,6 +42,14 @@ evidence/
 !.omo/evidence/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-compaction/**
+!.omo/evidence/ai-apply-without-approval/
+!.omo/evidence/ai-apply-without-approval/**
+# 실측: 위 `.omo/evidence/*` 와 바로 위 `evidence/` 가 둘 다 이 디렉터리를 잡고 `*.log` 까지 겹친다.
+# 마지막 규칙이 이기므로 추적할 증거 디렉터리는 여기(가장 뒤)에서 다시 예외 처리한다.
+!.omo/evidence/ai-place-passable-20260827/
+!.omo/evidence/ai-place-passable-20260827/**
+!.omo/evidence/ai-log-anon-delete/
+!.omo/evidence/ai-log-anon-delete/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json

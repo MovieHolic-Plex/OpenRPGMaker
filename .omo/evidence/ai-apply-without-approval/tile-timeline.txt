@@ -1,0 +1,5 @@
+map: map_blank_start
+cell: (5,5)
+before=240
+applied=120
+after-undo=240

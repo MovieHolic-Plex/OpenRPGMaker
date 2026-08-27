@@ -1,0 +1,28 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-place-passable
+
+ ✓ test/placementStructure.test.ts (5 tests) 65ms
+ ✓ test/collision.test.ts (19 tests) 718ms
+ ✓ test/eventActions.test.ts (12 tests) 3327ms
+   ✓ shared command resolver consumers > direct event actions use fork, loop, and shop branch paths  1259ms
+   ✓ shared command resolver consumers > event pages create shop transaction branches the same way staging does  881ms
+   ✓ shared command resolver consumers > creates missing shop transaction branches through the shared resolver for page edits  843ms
+   ✓ shared command resolver consumers > keeps canceled staged shop branch edits isolated from the initial command  312ms
+ ✓ test/passabilityTraps.test.ts (6 tests) 23ms
+ ✓ test/eventPages.test.ts (10 tests) 6703ms
+   ✓ event pages > creates new events with a page-backed command model  793ms
+   ✓ event pages > resolves the highest-number matching page by switch condition  1178ms
+   ✓ event pages > selects an adjacent page after deleting the active page  769ms
+   ✓ event pages > selects the page now at the deleted index when deleting a middle page  611ms
+   ✓ event pages > does not update selection when deletion is refused (single page)  941ms
+   ✓ event pages > avoids page name collision after delete and re-add  549ms
+   ✓ event pages > copies and reorders pages without corrupting sibling commands  548ms
+   ✓ event pages > copies a page to a paste buffer and pastes it as a new selected page  463ms
+   ✓ event pages > edits commands inside conditional branch pages without corrupting sibling branches  428ms
+   ✓ event pages > edits commands inside choice cancel branches like regular event branches  409ms
+
+ Test Files  5 passed (5)
+      Tests  52 passed (52)
+   Start at  23:00:18
+   Duration  26.64s (transform 21.06s, setup 0ms, collect 68.92s, tests 10.84s, environment 8ms, prepare 3.05s)
+

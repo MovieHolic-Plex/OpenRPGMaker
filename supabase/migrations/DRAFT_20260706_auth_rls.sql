@@ -59,6 +59,11 @@ ALTER TABLE rpg_zzu.project_commits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rpg_zzu.project_changes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rpg_zzu.ai_analysis_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rpg_zzu.sync_verification_runs ENABLE ROW LEVEL SECURITY;
+-- 0709 · 0713 에서 추가된 테이블 — 이 초안보다 나중에 생겼으므로 목록에 늦게 붙었다.
+-- 빠뜨리면 대화 전문(entries_json) · 툴 호출 로그(payload_json) 가 모든 authenticated 사용자에게 열린다.
+ALTER TABLE rpg_zzu.ai_activity_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE rpg_zzu.ai_conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE rpg_zzu.user_skills ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS profiles_select_visible ON rpg_zzu.profiles;
 CREATE POLICY profiles_select_visible ON rpg_zzu.profiles
@@ -333,6 +338,71 @@ CREATE POLICY sync_verification_runs_update_editor ON rpg_zzu.sync_verification_
 
 DROP POLICY IF EXISTS sync_verification_runs_delete_editor ON rpg_zzu.sync_verification_runs;
 CREATE POLICY sync_verification_runs_delete_editor ON rpg_zzu.sync_verification_runs
+  FOR DELETE TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'editor'));
+
+DROP POLICY IF EXISTS ai_activity_logs_select_member ON rpg_zzu.ai_activity_logs;
+CREATE POLICY ai_activity_logs_select_member ON rpg_zzu.ai_activity_logs
+  FOR SELECT TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'viewer'));
+
+DROP POLICY IF EXISTS ai_activity_logs_insert_editor ON rpg_zzu.ai_activity_logs;
+CREATE POLICY ai_activity_logs_insert_editor ON rpg_zzu.ai_activity_logs
+  FOR INSERT TO authenticated
+  WITH CHECK (rpg_zzu.is_project_member(project_id, 'editor'));
+
+DROP POLICY IF EXISTS ai_activity_logs_update_editor ON rpg_zzu.ai_activity_logs;
+CREATE POLICY ai_activity_logs_update_editor ON rpg_zzu.ai_activity_logs
+  FOR UPDATE TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'editor'))
+  WITH CHECK (rpg_zzu.is_project_member(project_id, 'editor'));
+
+DROP POLICY IF EXISTS ai_activity_logs_delete_owner ON rpg_zzu.ai_activity_logs;
+CREATE POLICY ai_activity_logs_delete_owner ON rpg_zzu.ai_activity_logs
+  FOR DELETE TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'owner'));
+
+DROP POLICY IF EXISTS ai_conversations_select_member ON rpg_zzu.ai_conversations;
+CREATE POLICY ai_conversations_select_member ON rpg_zzu.ai_conversations
+  FOR SELECT TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'viewer'));
+
+DROP POLICY IF EXISTS ai_conversations_insert_editor ON rpg_zzu.ai_conversations;
+CREATE POLICY ai_conversations_insert_editor ON rpg_zzu.ai_conversations
+  FOR INSERT TO authenticated
+  WITH CHECK (rpg_zzu.is_project_member(project_id, 'editor'));
+
+DROP POLICY IF EXISTS ai_conversations_update_editor ON rpg_zzu.ai_conversations;
+CREATE POLICY ai_conversations_update_editor ON rpg_zzu.ai_conversations
+  FOR UPDATE TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'editor'))
+  WITH CHECK (rpg_zzu.is_project_member(project_id, 'editor'));
+
+-- 대화 기록 삭제는 프로젝트 소유자만 — 에디터 UI 의 대화 삭제는 로컬 정본에만 작용한다.
+DROP POLICY IF EXISTS ai_conversations_delete_owner ON rpg_zzu.ai_conversations;
+CREATE POLICY ai_conversations_delete_owner ON rpg_zzu.ai_conversations
+  FOR DELETE TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'owner'));
+
+DROP POLICY IF EXISTS user_skills_select_member ON rpg_zzu.user_skills;
+CREATE POLICY user_skills_select_member ON rpg_zzu.user_skills
+  FOR SELECT TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'viewer'));
+
+DROP POLICY IF EXISTS user_skills_insert_editor ON rpg_zzu.user_skills;
+CREATE POLICY user_skills_insert_editor ON rpg_zzu.user_skills
+  FOR INSERT TO authenticated
+  WITH CHECK (rpg_zzu.is_project_member(project_id, 'editor'));
+
+DROP POLICY IF EXISTS user_skills_update_editor ON rpg_zzu.user_skills;
+CREATE POLICY user_skills_update_editor ON rpg_zzu.user_skills
+  FOR UPDATE TO authenticated
+  USING (rpg_zzu.is_project_member(project_id, 'editor'))
+  WITH CHECK (rpg_zzu.is_project_member(project_id, 'editor'));
+
+-- 사용자 정의 스킬은 에디터 UI 에 삭제 경로가 있다(deleteSupabaseUserSkill).
+DROP POLICY IF EXISTS user_skills_delete_editor ON rpg_zzu.user_skills;
+CREATE POLICY user_skills_delete_editor ON rpg_zzu.user_skills
   FOR DELETE TO authenticated
   USING (rpg_zzu.is_project_member(project_id, 'editor'));
 
