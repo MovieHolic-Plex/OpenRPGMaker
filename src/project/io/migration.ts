@@ -153,7 +153,12 @@ export function migrateV3toV4(data: JsonRecord): Project {
  */
 function splitFacesetPairs(node: unknown): void {
   if (Array.isArray(node)) {
-    for (const entry of node) splitFacesetPairs(entry);
+    // 원시값은 이 함수에서 즉시 return 되는 노드다. 호출 자체를 건너뛴다 — 3.6MB 마을
+    // 저장본의 대부분은 타일 레이어(숫자 배열)라서, 숫자마다 함수를 부르면 로드 한 번에
+    // 수백만 번 호출이 쌓인다.
+    for (const entry of node) {
+      if (entry !== null && typeof entry === "object") splitFacesetPairs(entry);
+    }
     return;
   }
   if (node === null || typeof node !== "object") return;
@@ -194,7 +199,9 @@ function splitFacesetPairs(node: unknown): void {
   // 얼굴 id 가 붙지 않은 칸 번호는 v4 모델에 자리가 없다.
   delete record.faceIndex;
 
-  for (const value of Object.values(record)) splitFacesetPairs(value);
+  for (const value of Object.values(record)) {
+    if (value !== null && typeof value === "object") splitFacesetPairs(value);
+  }
 }
 
 function isPlainObject(value: unknown): value is JsonRecord {
