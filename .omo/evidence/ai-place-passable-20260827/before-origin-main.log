@@ -1,0 +1,90 @@
+== AI 배치 통행 가능 실면 증거 (place_battle_blocker) ==
+surface : runTool(ctx, "place_battle_blocker", args) — src/editor/tools/toolRunner.ts
+project : 잿불의 유산 (createEmberQuestProject, 배포 데모)
+troopId : troop_slime_pair
+
+[1] 실제 맵 5개의 작가가 그린 벽 위에 몬스터를 요청한다
+
+  map_ember_village "잿불 마을" 32x26 tileset=easyrpg_chipset_combined_town
+    requested : (4, 3)  lower=374 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 잿불 마을에 전투 블로커 'troop_slime_pair' 배치 (4, 3) · 나무 상·하 보정: 수관 보완 589칸
+    data      : {"eventId":"ev_battle_proof_map_ember_village","clearSwitchId":"sw_ev_battle_proof_map_ember_village_clear"}
+    FAIL data.adjusted: undefined (기대 true)
+    FAIL 경고 문구 '위치 자동 조정': false (기대 true)
+    final     : ev_battle_proof_map_ember_village at (4, 3)  lower=374 upper=-1
+    FAIL isPassable(최종 좌표): false (기대 true)
+    FAIL 최종 좌표 ≠ 요청 좌표: false (기대 true)
+    FAIL data 좌표 == 커밋된 좌표: undefined,undefined (기대 4,3)
+
+  map_mist_forest "안개 숲" 30x30 tileset=easyrpg_chipset_combined_town
+    requested : (11, 1)  lower=290 upper=260
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 안개 숲에 전투 블로커 'troop_slime_pair' 배치 (11, 1)
+    data      : {"eventId":"ev_battle_proof_map_mist_forest","clearSwitchId":"sw_ev_battle_proof_map_mist_forest_clear"}
+    FAIL data.adjusted: undefined (기대 true)
+    FAIL 경고 문구 '위치 자동 조정': false (기대 true)
+    final     : ev_battle_proof_map_mist_forest at (11, 1)  lower=290 upper=260
+    FAIL isPassable(최종 좌표): false (기대 true)
+    FAIL 최종 좌표 ≠ 요청 좌표: false (기대 true)
+    FAIL data 좌표 == 커밋된 좌표: undefined,undefined (기대 11,1)
+
+  map_dry_mine "메마른 광산" 26x22 tileset=easyrpg_chipset_combined_town
+    requested : (7, 1)  lower=306 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 메마른 광산에 전투 블로커 'troop_slime_pair' 배치 (7, 1)
+    data      : {"eventId":"ev_battle_proof_map_dry_mine","clearSwitchId":"sw_ev_battle_proof_map_dry_mine_clear"}
+    FAIL data.adjusted: undefined (기대 true)
+    FAIL 경고 문구 '위치 자동 조정': false (기대 true)
+    final     : ev_battle_proof_map_dry_mine at (7, 1)  lower=306 upper=-1
+    FAIL isPassable(최종 좌표): false (기대 true)
+    FAIL 최종 좌표 ≠ 요청 좌표: false (기대 true)
+    FAIL data 좌표 == 커밋된 좌표: undefined,undefined (기대 7,1)
+
+  map_ash_pass "잿빛 고개" 24x18 tileset=easyrpg_chipset_combined_town
+    requested : (18, 2)  lower=306 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 잿빛 고개에 전투 블로커 'troop_slime_pair' 배치 (18, 2)
+    data      : {"eventId":"ev_battle_proof_map_ash_pass","clearSwitchId":"sw_ev_battle_proof_map_ash_pass_clear"}
+    FAIL data.adjusted: undefined (기대 true)
+    FAIL 경고 문구 '위치 자동 조정': false (기대 true)
+    final     : ev_battle_proof_map_ash_pass at (18, 2)  lower=306 upper=-1
+    FAIL isPassable(최종 좌표): false (기대 true)
+    FAIL 최종 좌표 ≠ 요청 좌표: false (기대 true)
+    FAIL data 좌표 == 커밋된 좌표: undefined,undefined (기대 18,2)
+
+  map_flame_sanctum "화염 성소" 20x18 tileset=easyrpg_chipset_combined_town
+    requested : (4, 4)  lower=306 upper=-1
+    OK   isPassable(요청 좌표): false (기대 false)
+    OK   result.ok(커밋 게이트 통과): true (기대 true)
+    summary   : 화염 성소에 전투 블로커 'troop_slime_pair' 배치 (4, 4)
+    data      : {"eventId":"ev_battle_proof_map_flame_sanctum","clearSwitchId":"sw_ev_battle_proof_map_flame_sanctum_clear"}
+    FAIL data.adjusted: undefined (기대 true)
+    FAIL 경고 문구 '위치 자동 조정': false (기대 true)
+    final     : ev_battle_proof_map_flame_sanctum at (4, 4)  lower=306 upper=-1
+    FAIL isPassable(최종 좌표): false (기대 true)
+    FAIL 최종 좌표 ≠ 요청 좌표: false (기대 true)
+    FAIL data 좌표 == 커밋된 좌표: undefined,undefined (기대 4,4)
+
+[2] 반경 3이 전부 통행 불가면 착지 대신 거부한다
+  map_mist_forest requested (0, 0)  lower=306 upper=-1
+    summary   : 안개 숲에 전투 블로커 'troop_slime_pair' 배치 (0, 0)
+    issues    : [{"severity":"warning","code":"runtime-support:setSelfSwitch","mapId":"map_mist_forest","x":5,"y":6,"message":"맵 이벤트 ev_forest_herb_1/ev_forest_herb_1_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"},{"severity":"warning","code":"runtime-support:setSelfSwitch","mapId":"map_mist_forest","x":12,"y":21,"message":"맵 이벤트 ev_forest_herb_2/ev_forest_herb_2_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"},{"severity":"warning","code":"runtime-support:setSelfSwitch","mapId":"map_mist_forest","x":25,"y":12,"message":"맵 이벤트 ev_forest_herb_3/ev_forest_herb_3_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"}]
+    FAIL result.ok: true (기대 false)
+    FAIL code: runtime-support:setSelfSwitch (기대 battle-blocker-impassable)
+    FAIL 이벤트가 추가되지 않음: 11 (기대 10)
+
+[3] 프로젝트 전체 불변식 — 모든 맵의 몬스터 이벤트는 통행 가능 칸에 서 있다
+    FAIL map_ember_village ev_battle_proof_map_ember_village (4, 3): false (기대 true)
+    FAIL map_mist_forest ev_battle_proof_map_mist_forest (11, 1): false (기대 true)
+    FAIL map_mist_forest ev_battle_proof_sealed (0, 0): false (기대 true)
+    FAIL map_dry_mine ev_battle_proof_map_dry_mine (7, 1): false (기대 true)
+    FAIL map_ash_pass ev_battle_proof_map_ash_pass (18, 2): false (기대 true)
+    FAIL map_flame_sanctum ev_battle_proof_map_flame_sanctum (4, 4): false (기대 true)
+  검사한 전투 블로커: 6개
+
+VERDICT: FAIL — 34건
