@@ -41,6 +41,11 @@
   position: relative;
   width: 220px;
   scrollbar-gutter: stable;
+  /* ‘모든 자료’를 펼치면 사이드바 내용이 200px 냘게 넘치는데, 오버레이 스크롤바는
+     스크롤 전에 보이지 않아 마지막 항목이 그냥 쟘린 듯이 끝났다 — 스크롤바를 상시
+     노출해 더 내릴 수 있다는 것을 알린다. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.24)) transparent;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body > .db-body.db-shared-workspace {

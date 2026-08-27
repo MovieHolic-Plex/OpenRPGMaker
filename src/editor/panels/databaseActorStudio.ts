@@ -107,7 +107,7 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
             class: "db-actor-name-stack",
             children: [
               el("strong", { class: "db-list-name", text: actor.name }),
-              el("small", { text: actor.nickname || `#${actor.id}` }),
+              el("small", { text: actorSubLabel(actor) }),
             ],
           }),
         ],
@@ -126,4 +126,15 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
 
 function tableCell(text: string, role: "cell" | "columnheader", className = ""): HTMLElement {
   return el("span", { class: className, attrs: { role }, text });
+}
+
+// 목록 두 번째 줄 — 칭호가 있으면 칭호, 없으면 식별용 id.
+// 예제 데이터의 칭호는 빈 문자열 대신 "없음"/"-" 같은 자리표시 값으로 들어오는 경우가 있어
+// 그대로 쓰면 목록에 "없음"이 칭호처럼 박힌다 — 자리표시 값은 칭호 없음으로 취급한다.
+const NICKNAME_PLACEHOLDERS: ReadonlySet<string> = new Set(["없음", "-", "—", "미정", "무"]);
+
+function actorSubLabel(actor: ActorRecord): string {
+  const nickname = (actor.nickname ?? "").trim();
+  if (nickname.length > 0 && !NICKNAME_PLACEHOLDERS.has(nickname)) return nickname;
+  return `#${actor.id}`;
 }
