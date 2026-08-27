@@ -1,8 +1,9 @@
-// 인증 패널의 OAuth / API 키 분리 회귀 스펙.
+// 인증 패널 회귀 스펙 — 두 구독 제공자(Antigravity·Codex)를 고르는 표면.
 //
 // 고정하는 옛 결함(전부 2026-08-21 실측):
 //  ① 키 입력칸이 "ChatGPT 구독" 패널 안에 있고 "API / 게이트웨이" 패널에는 입력이 없었다.
-//  ② 키 칸을 `id === "openai-codex"` 로만 숨겨 나머지 OAuth 제공자 13종에 키 칸이 떴다.
+//  ② 키 칸을 `id === "openai-codex"` 로만 숨겨 나머지 OAuth 제공자에 키 칸이 떴다 —
+//     이제 두 제공자가 모두 구독 로그인이라 **키 입력칸 자체가 없다**(그 부재를 아래서 고정한다).
 //  ③ 제공자 68종을 종류 구분 없이 나열하고 옵션 텍스트에 영어 enum(`· oauth`)이 샜다.
 //  ④ 안내문(companionHint)에 hidden 이 없어 열 때마다 번쩍이고, 성공 경로에서도 미로그인
 //     사용자에게 "서비스가 안 켜졌다"고 오진했다.
@@ -91,19 +92,20 @@ describe("연결 방식은 두 종류다", () => {
     dispose();
   });
 
-  it("종류를 바꿔도 제공자 목록은 Antigravity 하나뿐이다", async () => {
-    // 감독 지시 2026-08-26: 에디터의 모든 AI 를 Antigravity 로 통일하고 잔여 경로를 남기지
-    // 않는다. 예전 계약(oauth 14종 / apiKey 54종으로 갈린다)은 고를 수 없는 목록을 화면에
-    // 세워 두는 것이었다. 하나뿐이면 select 는 결정이 아니라 표시이므로 비활성이다.
+  it("종류를 바꿔도 제공자 목록은 두 구독 제공자 그대로다", async () => {
+    // 예전 계약은 "Antigravity 하나뿐, select 는 비활성" 이었다. Codex 가 1급 선택지가 됐으므로
+    // 목록은 둘이고 select 는 실제 결정 수단이다(활성).
     const { root, dispose } = await render();
     const select = findByTestId(root, "ai-oh-my-pi-provider");
 
-    expect(optionValues(select)).toEqual(["google-antigravity"]);
-    expect(select?.disabled).toBe(true);
+    expect(optionValues(select)).toEqual(["google-antigravity", "openai-codex"]);
+    expect(select?.disabled).toBe(false);
 
     findByTestId(root, "ai-auth-api-key")?.click();
 
-    expect(optionValues(select)).toEqual(["google-antigravity"]);
+    // "API 키" 종류에 내놓을 제공자가 없으므로 같은 두 구독 제공자를 유지한다 — 빈 select 를
+    // 세우면 고를 것이 사라져 화면이 고장난 것처럼 보인다.
+    expect(optionValues(select)).toEqual(["google-antigravity", "openai-codex"]);
     dispose();
   });
 
@@ -116,29 +118,36 @@ describe("연결 방식은 두 종류다", () => {
   });
 });
 
-describe("키 입력칸은 자격 종류로 갈린다", () => {
-  it("OAuth 제공자 14종 전부에서 키 칸이 숨는다", async () => {
+describe("API 키 입력칸은 어느 제공자에도 없다", () => {
+  // 옛 계약은 "자격 종류로 키 칸을 가른다" 였다. 레지스트리에 apiKey 제공자가 없어진 뒤로는
+  // 그 칸이 영구히 숨은 死코드였고, 숨은 input 은 fakeDom·브라우저 자동완성·미래 collect 경로가
+  // 값을 읽을 수 있는 표면이다. 그래서 DOM 자체를 없앴고, 그 부재를 여기서 고정한다.
+  it("두 제공자 모두에서 키 입력 DOM 이 존재하지 않는다", async () => {
     const { providers } = await loadDeps();
-    for (const provider of providers.ohMyPiProvidersByAuthKind("oauth")) {
+    expect(providers.ohMyPiProvidersByAuthKind("apiKey")).toHaveLength(0);
+    for (const provider of providers.OH_MY_PI_PROVIDERS) {
       const { root, dispose } = await render(provider.id);
-      expect(findByTestId(root, "ai-companion-key-row")?.hidden, provider.id).toBe(true);
+      expect(findByTestId(root, "ai-companion-key-row"), provider.id).toBeNull();
+      expect(findByTestId(root, "ai-companion-api-key"), provider.id).toBeNull();
+      expect(findByTestId(root, "ai-companion-save-key"), provider.id).toBeNull();
       dispose();
     }
   });
 
-  it("API 키 제공자에서는 키 칸이 보인다", async () => {
-    const { root, dispose } = await render("zai");
-    expect(findByTestId(root, "ai-companion-key-row")?.hidden).toBe(false);
-    expect(findByTestId(root, "ai-companion-api-key")).not.toBeNull();
-    expect(findByTestId(root, "ai-companion-save-key")).not.toBeNull();
+  it("'API 키' 종류를 눌러도 키 입력칸이 생기지 않는다", async () => {
+    const { root, dispose } = await render();
+    findByTestId(root, "ai-auth-api-key")?.click();
+    expect(findByTestId(root, "ai-companion-api-key")).toBeNull();
     dispose();
   });
 
-  it("로컬 서버 제공자는 키가 필요 없다고 알리고 칸을 숨긴다", async () => {
-    const { root, dispose } = await render("ollama");
-    expect(findByTestId(root, "ai-companion-key-row")?.hidden).toBe(true);
-    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("키가 필요 없");
-    dispose();
+  it("두 제공자 모두 '키는 입력하지 않는다'고 안내한다", async () => {
+    for (const providerId of ["google-antigravity", "openai-codex"]) {
+      const { root, dispose } = await render(providerId);
+      expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "", providerId)
+        .toContain("키는 입력하지 않습니다");
+      dispose();
+    }
   });
 });
 
@@ -293,45 +302,27 @@ describe("기기 로그인", () => {
   });
 });
 
-describe("API 키 저장은 동반 서비스로 간다", () => {
-  it("키를 저장하면 입력칸을 비우고 상태를 갱신한다", async () => {
-    saveCompanionApiKey.mockResolvedValue({ connected: true, env: false, authKind: "apiKey" });
-    const { root, dispose } = await render("zai");
-    await Promise.resolve();
-    const input = findByTestId(root, "ai-companion-api-key") as unknown as HTMLInputElement;
-    input.value = "sk-secret";
-
-    findByTestId(root, "ai-companion-save-key")?.click();
-    await Promise.resolve();
+describe("키 저장 경로는 패널에서 사라졌다", () => {
+  // 옛 스펙 두 개("키를 저장하면 입력칸을 비운다", "빈 키는 저장하지 않는다")가 지켰던 동작은
+  // 이 화면에 더는 존재하지 않는다: 고를 수 있는 제공자가 둘 다 구독 로그인이므로 저장할 키가
+  // 없다. 대신 그 경로가 되살아나지 않는다는 것을 고정한다(saveCompanionApiKey 는 동반 서비스
+  // 클라이언트에 남아 있지만 패널이 부르지 않는다).
+  it("패널은 어떤 조작으로도 saveCompanionApiKey 를 부르지 않는다", async () => {
+    const { root, dispose } = await render();
     await Promise.resolve();
 
-    expect(saveCompanionApiKey).toHaveBeenCalledWith("zai", "sk-secret");
-    // 브라우저에 키를 남기지 않는다 — 저장 후 입력칸을 비운다.
-    expect(input.value).toBe("");
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
-    dispose();
-  });
-
-  it("빈 키는 저장하지 않고 이전 상태를 유지하며 입력 옆에 '키를 입력하세요.'를 띄운다 (회귀)", async () => {
-    saveCompanionApiKey.mockResolvedValue({ connected: true, env: false, authKind: "apiKey" });
-    const { root, dispose } = await render("zai");
+    findByTestId(root, "ai-auth-api-key")?.click();
+    findByTestId(root, "ai-auth-quick-openai-codex")?.click();
+    findByTestId(root, "ai-auth-oauth")?.click();
     await Promise.resolve();
-    await Promise.resolve();
-    const input = findByTestId(root, "ai-companion-api-key") as unknown as HTMLInputElement;
-    input.value = "   ";
-    const help = findByTestId(root, "ai-auth-provider-help");
-    const statusBefore = findByTestId(root, "ai-oauth-status")?.textContent ?? "";
-
-    findByTestId(root, "ai-companion-save-key")?.click();
 
     expect(saveCompanionApiKey).not.toHaveBeenCalled();
-    expect(help?.textContent ?? "").toContain("키를 입력하세요.");
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toBe(statusBefore);
     dispose();
   });
 
   it("API 키 종류에서는 퀵 블록 전체(제목 포함)가 숨는다 (결함 3)", async () => {
-    const { root, dispose } = await render("zai");
+    const { root, dispose } = await render();
+    findByTestId(root, "ai-auth-api-key")?.click();
     const block = findByTestId(root, "ai-auth-quick-block");
     expect(block).not.toBeNull();
     expect(block?.hidden).toBe(true);
@@ -350,25 +341,36 @@ describe("OAuth 빠른 선택", () => {
     return event as KeyboardEvent;
   }
 
-  it("퀵 그룹은 Gemini 카드 하나만 보여 준다 — ChatGPT 카드는 걷었다", async () => {
-    // ChatGPT 카드는 눌러도 제공자가 Antigravity 로 강제되어 아무 일도 하지 않는 거짓
-    // 표면이었으므로 제거했다. 남은 카드는 체크되고 탭 가능해야 한다(a11y 계약 유지).
+  it("퀵 그룹은 Gemini 와 Codex 두 카드를 보여 준다", async () => {
+    // 감독 요구 변경: Codex 도 1급 선택지다. 두 카드 모두 실재하고, 선택된 것만 체크·탭 가능이다
+    // (roving tabindex — 라디오 그룹 표준).
     const { root, dispose } = await render();
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
+    const codex = findByTestId(root, "ai-auth-quick-openai-codex");
     expect(gemini).not.toBeNull();
-    expect(gemini?.hidden).toBe(false);
+    expect(codex).not.toBeNull();
     expect(gemini?.getAttribute("aria-checked")).toBe("true");
     expect(gemini?.getAttribute("tabindex")).toBe("0");
-    expect(findByTestId(root, "ai-auth-quick-openai-codex")).toBeNull();
+    expect(codex?.getAttribute("aria-checked")).toBe("false");
+    expect(codex?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
-  it("다른 제공자로 저장돼 있었어도 OAuth 로 돌아오면 Gemini 카드가 선택돼 있다", async () => {
-    const { root, dispose } = await render("zai");
-    expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(true);
+  it("Codex 로 저장돼 있으면 Codex 카드가 선택돼 있다", async () => {
+    const { root, dispose } = await render("openai-codex");
+    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
+    const codex = findByTestId(root, "ai-auth-quick-openai-codex");
 
-    findByTestId(root, "ai-auth-oauth")?.click();
+    expect(codex?.getAttribute("aria-checked")).toBe("true");
+    expect(codex?.getAttribute("tabindex")).toBe("0");
+    expect(gemini?.getAttribute("aria-checked")).toBe("false");
+    dispose();
+  });
+
+  it("사라진 제공자로 저장돼 있었어도 기본 제공자 카드가 선택돼 있다", async () => {
+    // 옛 레지스트리 id(zai)는 parseOhMyPiProvider 가 기본 제공자로 스냅한다.
+    const { root, dispose } = await render("zai");
 
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
@@ -377,17 +379,36 @@ describe("OAuth 빠른 선택", () => {
     dispose();
   });
 
-  it("카드가 하나뿐이므로 화살표는 그 카드를 유지한다", async () => {
-    // 예전 계약은 "현재 제공자가 퀵 카드에 없으면 화살표가 첫 카드를 고른다" 였다. 제공자가
-    // 강제 통일된 뒤에는 카드 밖 제공자가 존재할 수 없고 이동할 옆 카드도 없다. 남는 계약은
-    // 화살표가 라디오그룹을 깨뜨리지 않는다는 것이다.
+  it("화살표가 두 카드 사이를 순환한다", async () => {
     const { root, dispose } = await render();
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
+    const codex = findByTestId(root, "ai-auth-quick-openai-codex");
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
+    expect(codex?.getAttribute("aria-checked")).toBe("true");
+    expect(codex?.getAttribute("tabindex")).toBe("0");
+    expect(gemini?.getAttribute("aria-checked")).toBe("false");
 
+    findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
     expect(gemini?.getAttribute("aria-checked")).toBe("true");
     expect(gemini?.getAttribute("tabindex")).toBe("0");
+    dispose();
+  });
+
+  it("Codex 카드를 고르면 로그인이 startChatGptLogin('openai-codex') 로 라우팅된다", async () => {
+    startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/c", userCode: "CD" });
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+
+    findByTestId(root, "ai-auth-quick-openai-codex")?.click();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(startChatGptLogin).toHaveBeenCalledWith("openai-codex");
+    expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(false);
     dispose();
   });
 
@@ -474,6 +495,18 @@ describe("OAuth 빠른 선택", () => {
 
     expect(startChatGptLogin).toHaveBeenCalledWith("google-antigravity");
     expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(false);
+    dispose();
+  });
+
+  it("제공자 select 로도 Codex 를 고를 수 있다", async () => {
+    const { root, dispose } = await render();
+    const select = findByTestId(root, "ai-oh-my-pi-provider");
+    if (!select) throw new Error("provider select missing");
+    select.value = "openai-codex";
+    select.dispatchEvent(new Event("change"));
+
+    expect(findByTestId(root, "ai-auth-quick-openai-codex")?.getAttribute("aria-checked")).toBe("true");
+    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("OpenAI Codex");
     dispose();
   });
 

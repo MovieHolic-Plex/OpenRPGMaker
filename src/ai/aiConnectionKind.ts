@@ -9,49 +9,54 @@
 //  - 전송 축  = authMode. 에디터는 **항상** companion 이다(주입 게이트웨이는 UI 가 없다).
 //  - 자격 축  = providerId → ohMyPiAuthKind. 사용자가 고르는 것은 이쪽이다.
 //
-// 동반 서비스는 OAuth 토큰도 API 키도 자기 저장소(~/.rpg-zzu/oh-my-pi-auth.json)에 보관하므로
-// 두 종류 모두 **브라우저에 비밀을 남기지 않는다**. `configForConnectionKind` 가 그것을 강제한다.
+// 레지스트리에는 Antigravity·Codex 두 제공자만 있고 둘 다 oauth 다. 그래서 자격 축은 실질적으로
+// 한 값이고, 사용자의 선택은 "어느 구독으로 갈 것인가"다. 두 제공자 모두 자격을 동반 서비스가
+// 자기 저장소(~/.rpg-zzu/oh-my-pi-auth.json)에 보관하므로 **브라우저에 비밀을 남기지 않는다.**
+// `configForConnectionKind` 가 그것을 강제한다.
 
 import { DEFAULT_BASE_URL, type AiConfig } from "@/ai/llmClient";
 import {
   DEFAULT_OH_MY_PI_PROVIDER,
-  ohMyPiAuthKind,
+  OH_MY_PI_PROVIDERS,
+  ohMyPiAuthKind,
   parseOhMyPiProvider,
-  type OhMyPiProvider, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
+  type OhMyPiProvider,
+} from "@/ai/ohMyPiProviders";
 
-/** 사용자가 고르는 연결 방식. `local` 제공자는 "API 키" 쪽에 접는다(키 불필요 안내를 붙인다). */
+/**
+ * 사용자가 고르는 연결 방식. 두 값을 유지하지만 레지스트리에는 oauth 제공자만 있으므로
+ * "API 키" 쪽에 내놓을 제공자가 없다 — 가짜 apiKey 제공자를 만들어 채우지 않는다.
+ */
 export type AiConnectionKindId = "oauth" | "apiKey";
 
-/** API 키 종류의 기본 제공자. 레지스트리에 실재하는 id 다(`row("openai", …)`). */
-const DEFAULT_API_KEY_PROVIDER = "openai";
-
-/** 설정이 어느 종류에 속하는지 — providerId 에서 파생한다. 저장 필드가 아니다. */
+/**
+ * 설정이 어느 종류에 속하는지 — providerId 에서 파생한다. 저장 필드가 아니다.
+ * 두 제공자가 모두 구독 로그인이므로 실제로 나오는 값은 항상 "oauth" 다.
+ */
 export function editorConnectionKind(config: AiConfig): AiConnectionKindId {
   return ohMyPiAuthKind(config.providerId) === "oauth" ? "oauth" : "apiKey";
 }
 
 /**
- * 종류별 제공자 목록. 구독 로그인은 oauth 14종, API 키는 apiKey 50 + local 4 = 54종이다.
- * 순서는 레지스트리 순서를 유지하되, 구독 로그인은 기본 제공자를 맨 앞으로 올린다 —
- * 첫 항목이 곧 권장값이라는 관례를 목록 자체가 지키게 한다.
+ * 종류별 제공자 목록 — 두 종류 모두 같은 두 제공자(Antigravity·Codex)를 돌려준다.
+ *
+ * 종류로 목록을 갈랐던 이유는 apiKey 제공자가 따로 있었기 때문이다. 지금은 둘 다 구독 로그인이라
+ * "API 키" 쪽에 내놓을 제공자가 없는데, 그렇다고 빈 select 를 세우면 종류를 눌렀을 때 고를 것이
+ * 사라져 화면이 고장난 것처럼 보인다(실측: 제공자를 하나로 강제했을 때 apiKey 필터가 빈 select 를
+ * 만들었다). 순서는 레지스트리 순서 = 기본 제공자 우선이다 — 첫 항목이 곧 권장값이다.
  */
 export function providersForKind(_kind: AiConnectionKindId): readonly OhMyPiProvider[] {
-  // 에디터는 Antigravity 하나만 쓴다 (감독 지시 2026-08-26: 모든 AI 를 Antigravity 로 통일,
-  // 잔여 경로 없음). 예전에는 종류별로 oauth 14종 / apiKey+local 54종을 노출했지만,
-  // loadAiConfig·saveAiConfig 가 제공자를 강제하므로 그 목록은 고를 수 없는 선택지였다 —
-  // 화면에 남겨 두면 고르면 바뀌는 것처럼 보이는 거짓 표면이 된다.
-  const forced = getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER);
-  return forced ? [forced] : [];
+  return OH_MY_PI_PROVIDERS;
 }
 
-/** 종류 축은 제공자에서 파생하고 제공자가 하나뿐이므로 항상 구독 로그인이다. */
+/** 제공자가 둘이므로 사용자에게 실제 선택권이 있다 — UI 는 선택기를 활성화한다. */
 export function editorHasProviderChoice(): boolean {
-  return false;
+  return OH_MY_PI_PROVIDERS.length > 1;
 }
 
-/** 그 종류의 기본 제공자. */
-export function defaultProviderForKind(kind: AiConnectionKindId): string {
-  return kind === "oauth" ? DEFAULT_OH_MY_PI_PROVIDER : DEFAULT_API_KEY_PROVIDER;
+/** 그 종류의 기본 제공자. 두 종류가 같은 목록을 쓰므로 기본값도 하나다. */
+export function defaultProviderForKind(_kind: AiConnectionKindId): string {
+  return DEFAULT_OH_MY_PI_PROVIDER;
 }
 
 /**
@@ -59,22 +64,17 @@ export function defaultProviderForKind(kind: AiConnectionKindId): string {
  *
  * 언제나 전송 축을 companion 으로, `baseUrl`·`apiKey` 를 빈 문자열로 정규화한다 — 에디터가
  * 브라우저에 비밀이나 죽은 게이트웨이 주소를 남기지 못하게 하는 지점이 여기 하나다.
- * 요청한 제공자가 그 종류에 속하지 않으면 종류의 기본 제공자로 스냅한다(모순 상태 금지).
+ * 제공자는 요청값(모르는 문자열이면 기본값으로 스냅)이나 기존 설정값을 그대로 이어받는다:
+ * 두 제공자가 같은 종류라 "종류에 맞지 않는 제공자"라는 모순 상태가 성립하지 않으므로 종류를
+ * 근거로 제공자를 되돌릴 일이 없다.
  */
 export function configForConnectionKind(
   base: AiConfig,
   kind: AiConnectionKindId,
   providerId?: string,
 ): AiConfig {
-  const wanted = providerId === undefined ? undefined : parseOhMyPiProvider(providerId);
-  const fits = wanted !== undefined
-    && (ohMyPiAuthKind(wanted) === "oauth") === (kind === "oauth");
-  const keepsKind = editorConnectionKind(base) === kind;
-  const resolved = fits
-    ? wanted
-    : wanted === undefined && keepsKind
-      ? parseOhMyPiProvider(base.providerId)
-      : defaultProviderForKind(kind);
+  void kind;
+  const resolved = parseOhMyPiProvider(providerId === undefined ? base.providerId : providerId);
   return {
     ...base,
     authMode: "chatgpt",

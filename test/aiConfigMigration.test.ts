@@ -94,11 +94,11 @@ describe("scrubStoredAiCredentials", () => {
   });
 });
 
-describe("loadAiConfig — 제공자 강제 통일", () => {
-  it("저장된 다른 제공자는 Antigravity 로 마이그레이션한다", () => {
-    // 감독 지시 2026-08-26: 에디터의 모든 AI 를 Antigravity 로 통일하고 잔여 경로를 남기지 않는다.
-    // 이 케이스는 예전의 "제공자 보존" 계약을 **뒤집은** 것이다 — 보존은 이미 쓰던 사용자를
-    // zai/codex 에 남겨 두는 잔여였다. 모델도 남의 네임스페이스이므로 함께 교정된다.
+describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => {
+  it("사라진 제공자(zai)는 기본 제공자로 마이그레이션한다", () => {
+    // zai 는 레지스트리에서 사라진 id 다 — parseOhMyPiProvider 가 기본 제공자로 스냅하고,
+    // 모델도 남의 네임스페이스이므로 그 제공자의 기본 모델로 함께 교정된다.
+    // (Codex 는 사라지지 않았으므로 그 선택은 보존된다 — test/aiAntigravityOnly.test.ts)
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "zai", model: "glm-5.3" }));
 
     const config = loadAiConfig();
@@ -120,13 +120,13 @@ describe("loadAiConfig — 제공자 강제 통일", () => {
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt" }));
     const config = loadAiConfig();
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash-high");
+    expect(config.model).toBe("gemini-3.7-flash");
   });
 
   it("providerId 없이 gpt 모델만 남은 옛 blob 도 Antigravity 로 마이그레이션한다", () => {
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", model: "gpt-5.6-sol" }));
     const config = loadAiConfig();
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash-high");
+    expect(config.model).toBe("gemini-3.7-flash");
   });
 });
