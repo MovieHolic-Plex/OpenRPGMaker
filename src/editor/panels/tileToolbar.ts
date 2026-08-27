@@ -1,10 +1,9 @@
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
-import { editorState } from "@/editor/editorState";
 import type { Tool } from "@/editor/editorState";
 import { el } from "@/util/dom";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
-import { isTileToolbarItemActive, selectEyedropperTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
+import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import type { TileToolId } from "@/editor/panels/tileToolbarActions";
 import { makeOverflowDropdown } from "@/editor/panels/tileToolbarMenus";
 import type { TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
@@ -12,6 +11,7 @@ import { store } from "@/project/store";
 
 export {
   selectEyedropperTool,
+  selectMapModeTool,
   selectTileTool,
   setTileBrushSize,
 } from "@/editor/panels/tileToolbarActions";
@@ -130,8 +130,7 @@ function makeMapModeGroup(model: TileToolbarModel): HTMLElement {
         dataset: { testid: `tool-${item.id}` },
         on: {
           click: () => {
-            if (item.id === "eyedropper") selectEyedropperTool();
-            else editorState.set({ tool: item.id });
+            selectMapModeTool(item.id);
             model.rerender();
           },
         },
