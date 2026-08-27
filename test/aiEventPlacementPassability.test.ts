@@ -227,3 +227,41 @@ describe("이동·복제·upsert 배치", () => {
     expect([event.x, event.y]).toEqual([3, 8]);
   });
 });
+
+describe("place_examine_hotspots 도달 가능성", () => {
+  it("사방이 벽으로 갇힌 조사 핫스팟은 통행 가능 칸으로 착지하거나 skip 된다", () => {
+    const { project, map, mapId } = fixture();
+    wallBlock(map, 9, 9, 1);
+globalThis.result = getTool("place_examine_hotspots")!.run(project, {
+      mapId,
+      hotspots: [{ at: { x: 9, y: 9 }, name: "갇힌 액자", lines: ["먼지가 쌓여 있다."] }],
+    });
+globalThis.placed = map.events.filter((event) => event.id.startsWith("ev_examine"));
+    for (const event of placed) {
+globalThis.reachable = [
+        { x: event.x, y: event.y },
+        { x: event.x, y: event.y + 1 },
+        { x: event.x, y: event.y - 1 },
+        { x: event.x + 1, y: event.y },
+        { x: event.x - 1, y: event.y },
+      ].some((cell) => isPassable(project, map, cell.x, cell.y));
+      expect(reachable).toBe(true);
+    }
+    expect(result.warnings?.some((warning) => warning.includes("(9, 9)"))).toBe(true);
+  });
+
+  it("통행 가능 이웃이 있는 벽 위 조사 핫스팟은 그대로 둔다", () => {
+    const { project, map, mapId } = fixture();
+    setWall(map, 12, 12);
+
+    getTool("place_examine_hotspots")!.run(project, {
+      mapId,
+      hotspots: [{ at: { x: 12, y: 12 }, name: "벽에 걸린 액자", lines: ["오래된 그림이다."] }],
+    });
+globalThis.placed = map.events.filter((event) => event.id.startsWith("ev_examine"));
+    expect(placed).toHaveLength(1);
+    expect(placed[0].x).toBe(12);
+    expect(placed[0].y).toBe(12);
+  });
+});
+

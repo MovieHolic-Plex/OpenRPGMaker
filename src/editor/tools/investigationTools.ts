@@ -10,6 +10,7 @@ import { withJosa } from "@/util/josa";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { resolveGraphic, type GraphicSpec } from "./eventCompile";
+import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA, CUTSCENE_BEAT_SCHEMA, GRAPHIC_SPEC_SCHEMA } from "./schemaShapes";
 
@@ -226,6 +227,17 @@ const placeExamineHotspots: ToolDefinition = {
           warnings.push(`hotspots[${index}] '${name}' skip: 좌표 중복/기존 이벤트 겹침 (${at.x}, ${at.y})`);
           return;
         }
+        // 벽 위 조사(문·액자)는 RM2K3 의미대로 허용하되, 사방이 막혀 접근 자체가 불가능한 칸은
+        // 근처 통행 가능 칸으로 착지시킨다. 반경 3까지 전부 막히면 ToolError → 아래 catch 가 skip 처리.
+        const landing = resolveEventPlacement(draft, map, at.x, at.y, {
+          kind: "interaction",
+          label: `조사 핫스팟 '${name}'`,
+          code: "hotspot-impassable",
+        });
+        if (landing.adjusted) {
+          warnings.push(`hotspots[${index}] '${name}' 위치 자동 조정: (${at.x}, ${at.y}) → (${landing.x}, ${landing.y})`);
+        }
+        const placementKey = cellKey(landing);
         const eventId = uniqueEventId(usedIds, `ev_examine_${index + 1}`);
         const graphic = graphicFromUnknown(raw.graphic);
         const commands = commandsForHotspot(draft, map, raw, eventId);
@@ -249,15 +261,15 @@ const placeExamineHotspots: ToolDefinition = {
           : [page({ id: `${eventId}_page`, name, graphic, commands })];
         const event: GameEvent = {
           id: eventId,
-          x: at.x,
-          y: at.y,
+          x: landing.x,
+          y: landing.y,
           trigger: { kind: "action" },
           commands: [],
           pages,
         };
         assertEventShape(event);
         map.events.push(event);
-        occupied.add(key);
+        occupied.add(placementKey);
         eventIds.push(eventId);
       } catch (cause) {
         skipped += 1;
