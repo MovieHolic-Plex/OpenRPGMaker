@@ -8,7 +8,7 @@ import { searchResources } from "@/assets/resourceSearch";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
-import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -28,13 +28,33 @@ import type {
   Project,
   SkillRecord,
   StateRecord,
+  TitleBackgroundLayer,
+  TitleIntroSettings,
+  TitleParticleSettings,
   TroopRecord,
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
-const DATABASE_RECORD_COLLECTIONS = ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "battleAnimations"] as const;
+const DATABASE_RECORD_COLLECTIONS = [
+  "actors",
+  "classes",
+  "skills",
+  "items",
+  "equipment",
+  "enemies",
+  "troops",
+  "states",
+  "battleAnimations",
+  "monsterSpecies",
+  "crops",
+  "lifeSkills",
+  "farmAnimalSpecies",
+  "fishSpecies",
+  "farmBuildingTypes",
+  "homeDecorationTypes",
+] as const;
 type DatabaseRecordCollection = (typeof DATABASE_RECORD_COLLECTIONS)[number];
 const DATABASE_UTILITY_COLLECTIONS = ["elements", "terrains", "battleCommands"] as const;
 
@@ -68,9 +88,19 @@ function parseDatabaseRecordCollection(value: unknown): DatabaseRecordCollection
     case "troops":
     case "states":
     case "battleAnimations":
+    case "monsterSpecies":
+    case "crops":
+    case "lifeSkills":
+    case "farmAnimalSpecies":
+    case "fishSpecies":
+    case "farmBuildingTypes":
+    case "homeDecorationTypes":
       return value;
     default:
-      throw new ToolError(`지원하지 않는 DB collection입니다: ${String(value)}`, { code: "invalid-args" });
+      throw new ToolError(
+        `지원하지 않는 DB collection입니다: ${String(value)}. 사용 가능한 값: ${DATABASE_RECORD_COLLECTIONS.join(", ")}`,
+        { code: "invalid-args" },
+      );
   }
 }
 
@@ -104,6 +134,13 @@ function duplicateFromCollection(draft: Project, collection: DatabaseRecordColle
     case "troops": return duplicateRecord(draft.database.troops, id, newId, name);
     case "states": return duplicateRecord(draft.database.states, id, newId, name);
     case "battleAnimations": return duplicateRecord(draft.database.battleAnimations, id, newId, name);
+    case "monsterSpecies": return duplicateRecord(draft.database.monsterSpecies ??= [], id, newId, name);
+    case "crops": return duplicateRecord(draft.database.crops ??= [], id, newId, name);
+    case "lifeSkills": return duplicateRecord(draft.database.lifeSkills ??= [], id, newId, name);
+    case "farmAnimalSpecies": return duplicateRecord(draft.database.farmAnimalSpecies ??= [], id, newId, name);
+    case "fishSpecies": return duplicateRecord(draft.database.fishSpecies ??= [], id, newId, name);
+    case "farmBuildingTypes": return duplicateRecord(draft.database.farmBuildingTypes ??= [], id, newId, name);
+    case "homeDecorationTypes": return duplicateRecord(draft.database.homeDecorationTypes ??= [], id, newId, name);
   }
 }
 
@@ -118,6 +155,13 @@ function deleteFromCollection(draft: Project, collection: DatabaseRecordCollecti
     case "troops": return deleteRecord(draft.database.troops, id);
     case "states": return deleteRecord(draft.database.states, id);
     case "battleAnimations": return deleteRecord(draft.database.battleAnimations, id);
+    case "monsterSpecies": return deleteRecord(draft.database.monsterSpecies ??= [], id);
+    case "crops": return deleteRecord(draft.database.crops ??= [], id);
+    case "lifeSkills": return deleteRecord(draft.database.lifeSkills ??= [], id);
+    case "farmAnimalSpecies": return deleteRecord(draft.database.farmAnimalSpecies ??= [], id);
+    case "fishSpecies": return deleteRecord(draft.database.fishSpecies ??= [], id);
+    case "farmBuildingTypes": return deleteRecord(draft.database.farmBuildingTypes ??= [], id);
+    case "homeDecorationTypes": return deleteRecord(draft.database.homeDecorationTypes ??= [], id);
   }
 }
 
@@ -1191,9 +1235,109 @@ const setSessionStart: ToolDefinition = {
   },
 };
 
+function parseTitleBackgroundLayers(value: unknown): TitleBackgroundLayer[] {
+  if (!Array.isArray(value)) throw new ToolError("backgroundLayers는 배열이어야 합니다.", { code: "invalid-args" });
+  if (value.length > MAX_TITLE_BACKGROUND_LAYERS) {
+    throw new ToolError(`backgroundLayers는 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개까지 설정할 수 있습니다.`, { code: "invalid-args" });
+  }
+  return value.map((entry, index) => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new ToolError(`backgroundLayers[${index}]는 객체여야 합니다.`, { code: "invalid-args" });
+    }
+    const layer = entry as Record<string, unknown>;
+    const resourceId = typeof layer.resourceId === "string" ? layer.resourceId.trim() : "";
+    if (!resourceId) throw new ToolError(`backgroundLayers[${index}].resourceId가 필요합니다.`, { code: "invalid-args" });
+    const optionalNumber = (key: "scrollXPerSec" | "scrollYPerSec" | "parallax" | "opacity"): number | undefined => {
+      const candidate = layer[key];
+      if (candidate === undefined) return undefined;
+      if (typeof candidate !== "number" || !Number.isFinite(candidate)) {
+        throw new ToolError(`backgroundLayers[${index}].${key}는 유한한 숫자여야 합니다.`, { code: "invalid-args" });
+      }
+      return candidate;
+    };
+    const scrollXPerSec = optionalNumber("scrollXPerSec");
+    const scrollYPerSec = optionalNumber("scrollYPerSec");
+    const parallax = optionalNumber("parallax");
+    const opacity = optionalNumber("opacity");
+    return {
+      resourceId,
+      ...(scrollXPerSec !== undefined ? { scrollXPerSec: Math.max(-480, Math.min(480, scrollXPerSec)) } : {}),
+      ...(scrollYPerSec !== undefined ? { scrollYPerSec: Math.max(-480, Math.min(480, scrollYPerSec)) } : {}),
+      ...(parallax !== undefined ? { parallax: Math.max(0, Math.min(4, parallax)) } : {}),
+      ...(opacity !== undefined ? { opacity: Math.max(0, Math.min(1, opacity)) } : {}),
+    };
+  });
+}
+
+function registerTitleLayerResourceIds(draft: Project, layers: readonly TitleBackgroundLayer[]): void {
+  const known = collectResourceIds(draft);
+  for (const resourceId of new Set(layers.map((layer) => layer.resourceId))) {
+    if (known.has(resourceId)) continue;
+    // resourceProfiles is the project's registry for externally supplied resource ids. Tool calls
+    // carry the id, not an upload payload, so register that opaque id just as the title picker does.
+    draft.resourceProfiles.push({ kind: "title", name: resourceId, assetId: resourceId });
+    known.add(resourceId);
+  }
+}
+
+const TITLE_PARTICLE_PRESETS = ["snow", "rain", "fireflies"] as const;
+
+function parseTitleParticles(value: unknown): TitleParticleSettings {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ToolError("particles는 객체여야 합니다.", { code: "invalid-args" });
+  }
+  const particles = value as Record<string, unknown>;
+  const preset = particles.preset;
+  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies") {
+    throw new ToolError(`particles.preset은 ${TITLE_PARTICLE_PRESETS.join(", ")} 중 하나여야 합니다.`, { code: "invalid-args" });
+  }
+  const density = particles.density;
+  if (density !== undefined && (typeof density !== "number" || !Number.isFinite(density))) {
+    throw new ToolError("particles.density는 0..100의 유한한 숫자여야 합니다.", { code: "invalid-args" });
+  }
+  return {
+    preset,
+    ...(typeof density === "number" ? { density: Math.max(0, Math.min(100, density)) } : {}),
+  };
+}
+
+const TITLE_INTRO_LOGO_ANIMATIONS = ["none", "fadeIn", "riseIn"] as const;
+const TITLE_INTRO_MENU_ANIMATIONS = ["none", "fadeIn", "slideUp"] as const;
+
+function parseTitleIntro(value: unknown): TitleIntroSettings {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ToolError("intro는 객체여야 합니다.", { code: "invalid-args" });
+  }
+  const intro = value as Record<string, unknown>;
+  const logo = intro.logo;
+  if (logo !== undefined && logo !== "none" && logo !== "fadeIn" && logo !== "riseIn") {
+    throw new ToolError(`intro.logo는 ${TITLE_INTRO_LOGO_ANIMATIONS.join(", ")} 중 하나여야 합니다.`, { code: "invalid-args" });
+  }
+  const menu = intro.menu;
+  if (menu !== undefined && menu !== "none" && menu !== "fadeIn" && menu !== "slideUp") {
+    throw new ToolError(`intro.menu는 ${TITLE_INTRO_MENU_ANIMATIONS.join(", ")} 중 하나여야 합니다.`, { code: "invalid-args" });
+  }
+  const integerInRange = (key: "delayMs" | "staggerMs", maximum: number): number | undefined => {
+    const candidate = intro[key];
+    if (candidate === undefined) return undefined;
+    if (typeof candidate !== "number" || !Number.isFinite(candidate)) {
+      throw new ToolError(`intro.${key}는 0..${maximum}의 유한한 숫자여야 합니다.`, { code: "invalid-args" });
+    }
+    return Math.max(0, Math.min(maximum, Math.trunc(candidate)));
+  };
+  const delayMs = integerInRange("delayMs", 10000);
+  const staggerMs = integerInRange("staggerMs", 2000);
+  return {
+    ...(logo !== undefined ? { logo } : {}),
+    ...(menu !== undefined ? { menu } : {}),
+    ...(delayMs !== undefined ? { delayMs } : {}),
+    ...(staggerMs !== undefined ? { staggerMs } : {}),
+  };
+}
+
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
-  description: "타이틀 화면 제목/메뉴/표시/오디오 설정을 갱신한다. titleScreen이 없으면 생성한다.",
+  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출을 갱신한다. titleScreen이 없으면 생성한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1249,15 +1393,50 @@ const setTitleScreen: ToolDefinition = {
       backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
       musicResourceId: { type: "string" },
       showInputHint: { type: "boolean" },
+      backgroundLayers: {
+        type: "array",
+        description: `무한 스크롤 배경 레이어. 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개`,
+        items: {
+          type: "object",
+          properties: {
+            resourceId: { type: "string" },
+            scrollXPerSec: { type: "number", minimum: -480, maximum: 480 },
+            scrollYPerSec: { type: "number", minimum: -480, maximum: 480 },
+            parallax: { type: "number", minimum: 0, maximum: 4 },
+            opacity: { type: "number", minimum: 0, maximum: 1 },
+          },
+          required: ["resourceId"],
+          additionalProperties: false,
+        },
+      },
+      particles: {
+        type: "object",
+        properties: {
+          preset: { type: "string", enum: TITLE_PARTICLE_PRESETS },
+          density: { type: "number", minimum: 0, maximum: 100 },
+        },
+        required: ["preset"],
+        additionalProperties: false,
+      },
+      intro: {
+        type: "object",
+        properties: {
+          logo: { type: "string", enum: TITLE_INTRO_LOGO_ANIMATIONS },
+          menu: { type: "string", enum: TITLE_INTRO_MENU_ANIMATIONS },
+          delayMs: { type: "integer", minimum: 0, maximum: 10000 },
+          staggerMs: { type: "integer", minimum: 0, maximum: 2000 },
+        },
+        additionalProperties: false,
+      },
     },
-    required: ["title"],
+    additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
-    const title = args.title as string;
-    draft.meta = { ...draft.meta, title };
+    const requestedTitle = typeof args.title === "string" ? args.title : undefined;
+    if (requestedTitle !== undefined) draft.meta = { ...draft.meta, title: requestedTitle };
     draft.system.titleScreen ??= defaultTitleScreenSettings();
     const current = draft.system.titleScreen;
-    current.title = title;
+    if (requestedTitle !== undefined) current.title = requestedTitle;
 
     const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
     if (labels) current.menuLabels = { ...current.menuLabels, ...labels };
@@ -1342,7 +1521,23 @@ const setTitleScreen: ToolDefinition = {
       }
     }
 
-    return { summary: `타이틀 화면 제목 설정: "${title}"` };
+    if ("backgroundLayers" in args) {
+      const layers = parseTitleBackgroundLayers(args.backgroundLayers);
+      if (layers.length === 0) delete current.backgroundLayers;
+      else {
+        registerTitleLayerResourceIds(draft, layers);
+        current.backgroundLayers = layers;
+      }
+    }
+
+    if ("particles" in args) current.particles = parseTitleParticles(args.particles);
+    if ("intro" in args) {
+      const intro = parseTitleIntro(args.intro);
+      if (Object.keys(intro).length === 0) delete current.intro;
+      else current.intro = intro;
+    }
+
+    return { summary: `타이틀 화면 설정: "${current.title}"` };
   },
 };
 
