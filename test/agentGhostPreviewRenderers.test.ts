@@ -198,8 +198,12 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     };
     containerFactory = makeContainer;
     mockLayer = {
-      removeAll: vi.fn(),
-      add: vi.fn(),
+      // Phaser 규약 재현: removeAll(true) 는 자식을 파괴하고 parentContainer 를 끊는다.
+      removeAll: vi.fn(() => { mockLayer.list.length = 0; }),
+      add: vi.fn((child: any) => {
+        child.parentContainer = mockLayer;
+        mockLayer.list.push(child);
+      }),
       list: [],
     };
 
@@ -424,17 +428,18 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     const firstGroup = renderer["animGroup"];
     now += 50;
     renderer.update();
-    if ((renderer["tileObjects"] as unknown[]).length === 0) {
-      throw new Error(`STATE animGroup=${!!renderer["animGroup"]} tileLayer=${!!renderer["tileLayer"]} key="${renderer["tileLayerKey"]}" schedLen=${renderer.getCurrentSchedule().length}`);
-    }
     expect((renderer["tileObjects"] as unknown[]).length).toBeGreaterThan(0);
     now += 3000;
     renderer.render();
     const secondGroup = renderer["animGroup"];
     expect(secondGroup).not.toBe(firstGroup);
-    // 빌드가 새 그룹(parent 불일치)에서 이뤄졌는지 — 파괴된 컨테이너 재사용이 아니라.
-    const tileLayer = renderer["tileLayer"];
+    // 파괴된 컨테이너 재사용이 아니라 새 그룹에 실제 재부모됐음을 판별한다:
+    // tileLayer 가 secondGroup 의 자식이고 셀 오브젝트를 실제로 담고 있어야 한다.
+    const tileLayer = renderer["tileLayer"] as any;
     expect(tileLayer).not.toBeNull();
+    expect(tileLayer.parentContainer).toBe(secondGroup);
+    expect(secondGroup.list).toContain(tileLayer);
+    expect(tileLayer.list?.length ?? 0).toBeGreaterThan(0);
     expect(renderer["tileLayerParent"]).toBe(secondGroup);
   });
 });

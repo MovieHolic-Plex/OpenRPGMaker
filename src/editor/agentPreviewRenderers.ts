@@ -666,6 +666,7 @@ export class AgentGhostPreviewRenderer {
     this.startTime = null;
     this.animGroup = null;
     this.tileLayer = null;
+    this.tileLayerParent = null;
     this.tileLayerKey = "";
   }
 
