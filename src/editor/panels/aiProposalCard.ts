@@ -191,7 +191,7 @@ export function setAssistantMessageBadge(bubble: HTMLElement | null, state: AiMe
 
 export type ProposalMapCrop = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
-/** before→after 타일 변경 bbox(+pad). 목업 썸네일 crop 용. */
+/** before→after 타일 변경 bbox(+pad). 목업 썸네일 crop 용. 이벤트 위치 변경도 bbox에 합산한다. */
 export function computeMapTileChangeBounds(before: Project, after: Project, mapId: string, pad = 2): ProposalMapCrop | null {
   const base = before.maps[mapId];
   const next = after.maps[mapId];
@@ -200,16 +200,31 @@ export function computeMapTileChangeBounds(before: Project, after: Project, mapI
   let minY = Infinity;
   let maxX = -Infinity;
   let maxY = -Infinity;
+  const grow = (x: number, y: number): void => {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  };
   for (let y = 0; y < base.height; y += 1) {
     for (let x = 0; x < base.width; x += 1) {
       const i = y * base.width + x;
       if (base.lowerTiles[i] !== next.lowerTiles[i] || base.upperTiles[i] !== next.upperTiles[i]) {
-        if (x < minX) minX = x;
-        if (y < minY) minY = y;
-        if (x > maxX) maxX = x;
-        if (y > maxY) maxY = y;
+        grow(x, y);
       }
     }
+  }
+  // 이벤트 전용 제안(NPC 배치·이동 등)도 썸네일 크롭이 나오도록 이벤트 좌표 diff를 합산한다.
+  const beforeEvents = new Map(base.events.map((event) => [event.id, event]));
+  const afterEvents = new Map(next.events.map((event) => [event.id, event]));
+  for (const [id, event] of afterEvents) {
+    const beforeEvent = beforeEvents.get(id);
+    if (!beforeEvent || beforeEvent.x !== event.x || beforeEvent.y !== event.y) {
+      grow(event.x, event.y);
+    }
+  }
+  for (const [id, event] of beforeEvents) {
+    if (!afterEvents.has(id)) grow(event.x, event.y);
   }
   if (!Number.isFinite(minX)) return null;
   const x0 = Math.max(0, minX - pad);
@@ -228,6 +243,15 @@ export function renderProposalMapThumbnail(
   const map = project.maps[mapId];
   const canvas = document.createElement("canvas") as HTMLCanvasElement;
   canvas.className = "ai-proposal-thumb-canvas";
+  if (!map) {
+    // 신규 생성 맵: before에 원본이 없어 before/after 비교가 불가하다 — 플레이스홀더 카드.
+    const placeholder = el("div", {
+      class: "ai-proposal-thumb ai-proposal-thumb-new-map",
+      dataset: { testid: "ai-proposal-thumb-new-map" },
+      children: [el("span", { class: "ai-proposal-thumb-label", text: "새 맵" })],
+    });
+    return placeholder;
+  }
   const wrap = el("div", {
     class: "ai-proposal-thumb",
     attrs: { role: "img", "aria-label": `${kind === "before" ? "지금" : "적용 후"} 미니맵` },
@@ -259,7 +283,7 @@ export function renderProposalMapThumbnail(
     sliceCtx.imageSmoothingEnabled = false;
     sliceCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
     // 변경 영역 강조
-    sliceCtx.strokeStyle = kind === "after" ? "#8A6B2F" : "#5C5348";
+    sliceCtx.strokeStyle = kind === "after" ? "#4A57D6" : "#5B6472";
     sliceCtx.lineWidth = Math.max(2, Math.floor(tile / 8));
     sliceCtx.strokeRect(1, 1, sw - 2, sh - 2);
     canvas.width = sw;

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   agentGhostPreviewsForMap,
   appendAgentGhostPreviewForToolCall,
+  buildGhostRevealSchedule,
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
   getAgentGhostPreviewState,
@@ -201,6 +202,118 @@ describe("agent ghost preview live draft diff", () => {
       { x: 5, y: 4, layer: "event" },
       { x: 1, y: 1, layer: "event" },
     ]);
+  });
+
+  it("타일 diff 셀은 렌더러가 실제 타일을 그릴 수 있도록 after 타일 id와 맵 tilesetId를 실어 보낸다", () => {
+    const base = projectWithMaps(blankMap("m1", 8, 8));
+    const draft = structuredClone(base);
+    draft.maps.m1.lowerTiles[3 + 2 * 8] = 77;
+    draft.maps.m1.upperTiles[4 + 1 * 8] = 512;
+
+    const previews = summarizeAgentGhostPreviewForProjectDiff(base, draft);
+    const cells = previews[0]?.cells ?? [];
+
+    expect(cells).toEqual([
+      { x: 4, y: 1, layer: "upper", tilesetId: draft.maps.m1.tilesetId, tileId: 512 },
+      { x: 3, y: 2, layer: "lower", tilesetId: draft.maps.m1.tilesetId, tileId: 77 },
+    ]);
+  });
+});
+
+// 목업 계약(proposal-v2.html): 타일은 row-major 로 50ms 간격, 전체 스윕은 2.5s 상한.
+// 이벤트/NPC 는 마지막 타일 뒤부터 x 오름차순으로 100ms 간격.
+describe("buildGhostRevealSchedule", () => {
+  it("타일을 row-major(y→x) 순서로 50ms 간격 배치한다", () => {
+    const schedule = buildGhostRevealSchedule([
+      { x: 2, y: 1, layer: "lower" },
+      { x: 0, y: 1, layer: "upper" },
+      { x: 1, y: 0, layer: "lower" },
+    ]);
+
+    expect(schedule.map((entry) => [entry.cell.x, entry.cell.y, entry.startMs, entry.kind])).toEqual([
+      [1, 0, 0, "tile"],
+      [0, 1, 50, "tile"],
+      [2, 1, 100, "tile"],
+    ]);
+  });
+
+  it("같은 좌표의 lower/upper 는 lower 를 먼저 스탬프한다", () => {
+    const schedule = buildGhostRevealSchedule([
+      { x: 1, y: 1, layer: "upper" },
+      { x: 1, y: 1, layer: "lower" },
+    ]);
+
+    expect(schedule.map((entry) => entry.cell.layer)).toEqual(["lower", "upper"]);
+    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 50]);
+  });
+
+  it("셀이 많으면 총 스윕 2500ms 를 넘지 않도록 간격을 줄인다", () => {
+    const cells = Array.from({ length: 200 }, (_, index) => ({
+      x: index % 20,
+      y: Math.floor(index / 20),
+      layer: "lower" as const,
+    }));
+
+    const schedule = buildGhostRevealSchedule(cells);
+
+    expect(schedule).toHaveLength(200);
+    // step = max(8, min(50, floor(2500/200))) = 12
+    expect(schedule[1].startMs).toBe(12);
+    expect(schedule[199].startMs).toBe(199 * 12);
+    expect(schedule[199].startMs).toBeLessThanOrEqual(2500);
+  });
+
+  it("극단적으로 많은 셀도 최소 간격 8ms 를 유지한다", () => {
+    const cells = Array.from({ length: 400 }, (_, index) => ({
+      x: index % 20,
+      y: Math.floor(index / 20),
+      layer: "lower" as const,
+    }));
+
+    const schedule = buildGhostRevealSchedule(cells);
+
+    expect(schedule[1].startMs).toBe(8);
+  });
+
+  it("이벤트는 마지막 타일 뒤 100ms 부터 x 오름차순으로 100ms 간격 팝인한다", () => {
+    const schedule = buildGhostRevealSchedule([
+      { x: 5, y: 3, layer: "event" },
+      { x: 0, y: 0, layer: "lower" },
+      { x: 1, y: 0, layer: "lower" },
+      { x: 2, y: 9, layer: "event" },
+      { x: 2, y: 1, layer: "event" },
+    ]);
+
+    const events = schedule.filter((entry) => entry.kind === "event");
+    expect(schedule.filter((entry) => entry.kind === "tile").map((entry) => entry.startMs)).toEqual([0, 50]);
+    // 마지막 타일 시작 50ms → 첫 이벤트 150ms.
+    expect(events.map((entry) => [entry.cell.x, entry.cell.y, entry.startMs])).toEqual([
+      [2, 1, 150],
+      [2, 9, 250],
+      [5, 3, 350],
+    ]);
+  });
+
+  it("타일이 없으면 이벤트가 0ms 부터 시작하고, 빈 입력은 빈 스케줄을 낸다", () => {
+    const eventsOnly = buildGhostRevealSchedule([
+      { x: 4, y: 2, layer: "event" },
+      { x: 1, y: 7, layer: "event" },
+    ]);
+
+    expect(eventsOnly.map((entry) => entry.startMs)).toEqual([0, 100]);
+    expect(eventsOnly[0].cell.x).toBe(1);
+    expect(buildGhostRevealSchedule([])).toEqual([]);
+  });
+
+  it("opts 로 간격/상한을 바꿀 수 있고 셀 참조는 그대로 유지된다", () => {
+    const first = { x: 0, y: 0, layer: "lower" as const, tileId: 12, tilesetId: "ts_a" };
+    const schedule = buildGhostRevealSchedule([first, { x: 1, y: 0, layer: "lower" }, { x: 9, y: 9, layer: "event" }], {
+      tileStepMs: 20,
+      eventStepMs: 40,
+    });
+
+    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 20, 60]);
+    expect(schedule[0].cell).toBe(first);
   });
 });
 

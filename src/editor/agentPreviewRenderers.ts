@@ -3,56 +3,618 @@ import { TILE_SIZE } from "@/assets/bundled";
 import type { AgentFocusBounds, AgentFocusCell, AgentFocusTarget } from "@/editor/agentFocus";
 import {
   agentGhostPreviewsForMap,
+  buildGhostRevealSchedule,
+  getAgentGhostDraftMap,
   getAgentGhostPreviewState,
+  type AgentGhostPreviewState,
   isAgentGhostPreviewHidden,
   type AgentGhostBounds,
   type AgentGhostCell,
   type AgentGhostPreview,
+  type GhostRevealStep,
 } from "@/editor/agentGhostPreview";
 import { buildInlineApprovalToolbar, getInlineProposalActions } from "@/editor/proposalInlineApproval";
+import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { ensureTilesetTexture } from "@/editor/tilesetImage";
+import { TILE } from "@/project/defaults/constants";
+import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
 const AGENT_FOCUS_MAX_CELL_RECTS = 256;
 const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
-const AGENT_GHOST_MAX_CELL_RECTS = 256;
+export const AGENT_GHOST_MAX_CELL_RECTS = 256;
 const AGENT_GHOST_FILL_COLOR = 0x20c997;
 const AGENT_GHOST_STROKE_COLOR = 0x63e6be;
+const AGENT_GHOST_INDIGO_COLOR = 0x4a57d6;
+const AGENT_GHOST_AMBER_COLOR = 0xffc078;
+const GHOST_SPRITE_ALPHA = 0.62;
+
+// Animation timing constants
+export const STAMP_POP_DURATION_MS = 180;
+export const RING_FADE_DURATION_MS = 800;
+export const AFTERGLOW_FADE_DURATION_MS = 800;
+export const SPARK_DURATION_MS = 350;
+export const FINISH_SHINE_DURATION_MS = 450;
+const LAST_CELL_DISPLAY_MS = 300;
+
+export type CellPhase = "pending" | "stamping" | "settling" | "done";
+
+export interface GhostCellAnimState {
+  readonly phase: CellPhase;
+  readonly scale: number; // 1.5 -> 1.0 during stamping (180ms), then 1.0
+  readonly ringAlpha: number; // 1.0 -> 0 over 800ms
+  readonly afterglowAlpha: number; // 0.5 -> 0 over 800ms
+  readonly sparkProgress: number; // 0 -> 1 over 350ms
+}
+
+export interface GhostAnimationState {
+  readonly cellStates: readonly GhostCellAnimState[];
+  readonly cursorCell: AgentGhostCell | null;
+  readonly shineProgress: number; // 0 -> 1 over 450ms after full schedule finishes
+  readonly isScheduleComplete: boolean;
+  readonly stampedCount: number;
+}
+
+export function computeGhostAnimationState(
+  schedule: readonly GhostRevealStep[],
+  elapsedMs: number
+): GhostAnimationState {
+  if (schedule.length === 0) {
+    return {
+      cellStates: [],
+      cursorCell: null,
+      shineProgress: 1,
+      isScheduleComplete: true,
+      stampedCount: 0,
+    };
+  }
+
+  let stampedCount = 0;
+  let latestActiveCell: AgentGhostCell | null = null;
+  let latestActiveStart = -1;
+
+  const cellStates: GhostCellAnimState[] = schedule.map((step) => {
+    const cellElapsed = elapsedMs - step.startMs;
+    if (cellElapsed < 0) {
+      return {
+        phase: "pending" as const,
+        scale: 1.5,
+        ringAlpha: 0,
+        afterglowAlpha: 0,
+        sparkProgress: 0,
+      };
+    }
+
+    stampedCount += 1;
+    if (step.startMs >= latestActiveStart) {
+      latestActiveStart = step.startMs;
+      latestActiveCell = step.cell;
+    }
+
+    if (cellElapsed < STAMP_POP_DURATION_MS) {
+      const popT = cellElapsed / STAMP_POP_DURATION_MS;
+      const scale = 1.5 - 0.5 * popT;
+      const ringAlpha = 1 - cellElapsed / RING_FADE_DURATION_MS;
+      const afterglowAlpha = 0.5 * (1 - cellElapsed / AFTERGLOW_FADE_DURATION_MS);
+      const sparkProgress = Math.min(1, cellElapsed / SPARK_DURATION_MS);
+      return {
+        phase: "stamping" as const,
+        scale,
+        ringAlpha: Math.max(0, ringAlpha),
+        afterglowAlpha: Math.max(0, afterglowAlpha),
+        sparkProgress,
+      };
+    }
+
+    if (cellElapsed < RING_FADE_DURATION_MS) {
+      const ringAlpha = 1 - cellElapsed / RING_FADE_DURATION_MS;
+      const afterglowAlpha = 0.5 * (1 - cellElapsed / AFTERGLOW_FADE_DURATION_MS);
+      const sparkProgress = Math.min(1, cellElapsed / SPARK_DURATION_MS);
+      return {
+        phase: "settling" as const,
+        scale: 1.0,
+        ringAlpha: Math.max(0, ringAlpha),
+        afterglowAlpha: Math.max(0, afterglowAlpha),
+        sparkProgress,
+      };
+    }
+
+    return {
+      phase: "done" as const,
+      scale: 1.0,
+      ringAlpha: 0,
+      afterglowAlpha: 0,
+      sparkProgress: 1,
+    };
+  });
+
+  const lastStepStart = schedule[schedule.length - 1].startMs;
+  // 경과 0ms에서 바로 완료로 뜨지 않게: 마지막 셀도 최소 표시 시간을 보장한다.
+  const isScheduleComplete = elapsedMs >= lastStepStart + LAST_CELL_DISPLAY_MS;
+
+  let shineProgress = 0;
+  if (isScheduleComplete) {
+    const shineElapsed = elapsedMs - lastStepStart - LAST_CELL_DISPLAY_MS;
+    shineProgress = Math.min(1, Math.max(0, shineElapsed / FINISH_SHINE_DURATION_MS));
+  }
+
+  return {
+    cellStates,
+    cursorCell: latestActiveCell,
+    shineProgress,
+    isScheduleComplete,
+    stampedCount,
+  };
+}
+
+/** 프로젝트 diff 로 합성된 프리뷰가 쓰는 가짜 도구명 — 칩 라벨로는 쓸모가 없다. */
+export const GHOST_DIFF_PSEUDO_TOOL = "live_project_diff";
+
+/**
+ * 칩에 쓸 도구명을 고른다. diff 프리뷰의 가짜 도구명(live_project_diff)보다
+ * tool_started 로 들어온 실제 도구명을 우선한다.
+ */
+export function preferredGhostToolName(previewToolName: string, runningToolName: string): string {
+  if (previewToolName && previewToolName !== GHOST_DIFF_PSEUDO_TOOL) return previewToolName;
+  if (runningToolName) return runningToolName;
+  return previewToolName;
+}
+
+export function koreanToolLabel(toolName: string): string {
+  if (/^(?:build|author|paint|fill|create|scatter)/u.test(toolName)) {
+    return "시공 중";
+  }
+  if (/^(?:place_npc|make_villager)/u.test(toolName)) {
+    return "주민 배치 중";
+  }
+  if (/^upsert_event/u.test(toolName)) {
+    return "이벤트 연결 중";
+  }
+  return "작업 중";
+}
+
+export interface PhaseChipInfo {
+  readonly koreanLabel: string;
+  readonly text: string;
+  readonly spinner: boolean;
+}
+
+export function ghostPhaseChipInfo(options: {
+  readonly toolName?: string;
+  readonly stampedCount: number;
+  readonly totalCount: number;
+  readonly isScheduleComplete: boolean;
+}): PhaseChipInfo {
+  if (options.isScheduleComplete) {
+    return {
+      koreanLabel: "초안 완성",
+      text: "초안 완성 · 검토 대기",
+      spinner: false,
+    };
+  }
+
+  const tool = options.toolName || "작업";
+  const label = koreanToolLabel(tool);
+  return {
+    koreanLabel: label,
+    text: `${label} · ${options.stampedCount}/${options.totalCount} 셀 · ${tool}`,
+    spinner: true,
+  };
+}
+
+/** 같은 셀 집합인지 판별하는 지문 — 셀 순서까지 같아야 같은 스케줄로 본다. */
+function ghostScheduleKey(schedule: readonly GhostRevealStep[]): string {
+  return schedule.map((step) => `${step.cell.x},${step.cell.y},${step.cell.layer ?? ""},${step.cell.tileId ?? ""}`).join("|");
+}
 
 type SceneWithPhaserObjects = Phaser.Scene & {
   readonly add: Phaser.GameObjects.GameObjectFactory;
   readonly cameras: Phaser.Cameras.Scene2D.CameraManager;
   readonly game: Phaser.Game;
   readonly tweens: Phaser.Tweens.TweenManager;
+  readonly events: Phaser.Events.EventEmitter;
 };
+
+export interface AgentGhostPreviewRendererOptions {
+  readonly clock?: () => number;
+}
 
 export class AgentGhostPreviewRenderer {
   private readonly domMarkers: HTMLElement[] = [];
+  private phaseChip: HTMLElement | null = null;
+  private clock: () => number;
+  private startTime: number | null = null;
+  private schedule: readonly GhostRevealStep[] = [];
+  private tileLayer: Phaser.GameObjects.Container | null = null;
+  private tileLayerKey = "";
+  private currentToolName: string = "";
+  /** 이번 프레임의 FX 오브젝트(경계/이펙트/커서/샤인) — 다음 프레임 머리에 파괴된다. */
+  private fxFrames: Phaser.GameObjects.Graphics[] = [];
+  private tileLayerParent: Phaser.GameObjects.Container | null = null;
+  /** 스케줄 순서의 타일 오브젝트 — 프레임마다 phase 로 visible/스케일 게이팅된다. */
+  private tileObjects: Array<{ obj: Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; baseX: number; baseY: number }> = [];
+
+  private collectFx(fx: Phaser.GameObjects.Graphics): void {
+    this.fxFrames.push(fx);
+    this.animGroup?.add(fx);
+  }
+  private cachedBounds: AgentGhostBounds | null = null;
+  private animGroup: Phaser.GameObjects.Container | null = null;
+  private scheduleKey: string = "";
+  private tickerBound: (() => void) | null = null;
 
   constructor(
     private readonly scene: SceneWithPhaserObjects,
     private readonly layer: Phaser.GameObjects.Container,
-    private readonly mapId: () => MapId | null
-  ) {}
+    private readonly mapId: () => MapId | null,
+    options: AgentGhostPreviewRendererOptions = {}
+  ) {
+    this.clock = options.clock ?? (() => (typeof performance !== "undefined" ? performance.now() : Date.now()));
+  }
+
+  setClock(clock: () => number): void {
+    this.clock = clock;
+  }
+
+  getCurrentSchedule(): readonly GhostRevealStep[] {
+    return this.schedule;
+  }
 
   render(): void {
     this.layer.removeAll(true);
     this.clearDomMarkers();
     const previews = this.currentPreviews();
-    if (previews.length === 0) return;
+    if (previews.length === 0) {
+      this.clearPhaseChip();
+      this.schedule = [];
+      this.scheduleKey = "";
+      this.startTime = null;
+      this.animGroup = null;
+      this.tileLayerParent = null;
+      this.tileLayer = null; // layer.removeAll(true) 가 파괴했다 — 참조와 키를 반드시 리셋
+      this.tileLayerKey = "";
+      this.stopTicker();
+      return;
+    }
+
+    const allCells = previews.flatMap((p) => p.cells);
+    this.schedule = buildGhostRevealSchedule(allCells);
+    // 같은 셀 집합으로 다시 렌더되면(스토어 emit, 카메라 변경 등) 시작 시각을 유지한다.
+    // 아니면 공개 애니메이션이 매 emit 마다 처음으로 되돌아가 첫 프레임에서 얼어붙는다.
+    const nextKey = ghostScheduleKey(this.schedule);
+    if (this.startTime === null || nextKey !== this.scheduleKey) {
+      this.startTime = this.clock();
+    }
+    this.scheduleKey = nextKey;
+    this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", this.currentState().runningToolName ?? "");
+
+    // compute union bounds
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+    for (const preview of previews) {
+      minX = Math.min(minX, preview.bounds.x);
+      minY = Math.min(minY, preview.bounds.y);
+      maxX = Math.max(maxX, preview.bounds.x + preview.bounds.width);
+      maxY = Math.max(maxY, preview.bounds.y + preview.bounds.height);
+    }
+    this.cachedBounds =
+      Number.isFinite(minX) && maxX > minX && maxY > minY
+        ? { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+        : null;
 
     if (!isAgentGhostPreviewHidden()) {
       const group = this.scene.add.container(0, 0);
       group.setName("agent-ghost-preview");
       this.layer.add(group);
-      const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
+      this.animGroup = group;
+
       for (const preview of previews) {
         group.add(this.boundsGraphic(preview.bounds));
-        if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
-          for (const cell of preview.cells) group.add(this.cellRect(cell));
+      }
+    }
+
+    this.renderDomMarkers(previews);
+    this.update();
+    this.startTicker();
+  }
+
+  /**
+   * 씬 update 이벤트에 붙어 공개 스케줄을 프레임마다 진행시킨다.
+   * 스케줄 + 마무리 샤인이 끝나면 스스로 떨어진다(유휴 시 프레임 작업 0).
+   */
+  private startTicker(): void {
+    if (this.tickerBound || this.schedule.length === 0) return;
+    const tick = (): void => {
+      if (this.startTime === null || this.schedule.length === 0) {
+        this.stopTicker();
+        return;
+      }
+      // 한 프레임의 렌더 오류(예: 컴포지터 경로의 예외)가 리빌 전체를 얼리는 것을 막는다 —
+      // 칩 텍스트 갱신은 drawAnimationLayers 보다 앞서므로, 예외가 나도 진행 상태는 살아 있다.
+      try {
+        this.update();
+      } catch (error) {
+        console.warn("[agent-ghost] reveal frame error", error);
+      }
+      const elapsed = this.clock() - this.startTime;
+      const last = this.schedule[this.schedule.length - 1].startMs;
+      if (elapsed >= last + LAST_CELL_DISPLAY_MS + FINISH_SHINE_DURATION_MS) this.stopTicker();
+    };
+    this.tickerBound = tick;
+    this.scene.events.on("update", tick);
+    this.scene.events.once("shutdown", this.stopTicker, this);
+    this.scene.events.once("destroy", this.stopTicker, this);
+  }
+
+  private stopTicker(): void {
+    if (!this.tickerBound) return;
+    this.scene.events.off("update", this.tickerBound);
+    this.tickerBound = null;
+  }
+
+  update(): void {
+    const previews = this.currentPreviews();
+    if (previews.length === 0) {
+      this.clearPhaseChip();
+      return;
+    }
+
+    const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
+    const now = this.clock();
+    const elapsed = this.startTime !== null ? now - this.startTime : 0;
+    // >256셀(bbox-only)에서는 프레임마다 스케줄 전체 상태를 계산하지 않는다 —
+    // 100x100 채움이 셀당 상태 객체를 매 프레임 할당하는 낭비를 막는다. 칩은
+    // 스케줄 길이로 완료 여부를 추정한다(스탬프된 셀 수는 bbox 케이스에서 불필요).
+    const bboxOnly = cellCount > AGENT_GHOST_MAX_CELL_RECTS;
+    const animState = bboxOnly
+      ? {
+          cellStates: [],
+          cursorCell: null,
+          shineProgress: 0,
+          isScheduleComplete:
+            this.schedule.length > 0 &&
+            elapsed >= this.schedule[this.schedule.length - 1].startMs + LAST_CELL_DISPLAY_MS,
+          stampedCount: Math.min(
+            // O(log n): 스케줄은 startMs 오름차순 정렬 — 경과 지난 첫 미스를 이분 탐색한다.
+            (() => {
+              const ends = this.schedule;
+              let lo = 0;
+              let hi = ends.length;
+              while (lo < hi) {
+                const mid = (lo + hi) >> 1;
+                if (elapsed >= ends[mid].startMs) lo = mid + 1;
+                else hi = mid;
+              }
+              return lo;
+            })(),
+            cellCount,
+          ),
+        }
+      : computeGhostAnimationState(this.schedule, elapsed);
+
+    this.renderOrUpdatePhaseChip(cellCount, animState);
+
+    if (isAgentGhostPreviewHidden() || !this.animGroup) return;
+
+    if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
+      this.drawAnimationLayers(animState);
+    }
+  }
+
+  private drawAnimationLayers(animState: GhostAnimationState): void {
+    if (!this.animGroup) return;
+    // 타일/경계 레이어는 스케줄이 바뀔 때 한 번만 만든다 — 매 프레임 removeAll+재생성은
+    // (a) 수백 개 GameObject churn, (b) 재생 중 애님 스프라이트 파괴로 Phaser 메인 루프를
+    // 불안정하게 만들어(실측: 리빌이 도중 정지) 원인이 된다. 프레임 갱신 대상은
+    // 매번 destroy→재생성하는 얇은 FX 레이어(bounds+셀 이펙트+커서+샤인, graphics 뿐)와
+    // 캐시된 타일의 알파/스케일 게이팅뿐이다.
+    this.fxFrames.forEach((fx) => fx.destroy());
+    this.fxFrames.length = 0;
+
+    if (!this.tileLayer || this.tileLayerKey !== this.scheduleKey || this.tileLayerParent !== this.animGroup) {
+      this.buildTileLayer();
+      this.tileLayerKey = this.scheduleKey;
+      this.tileLayerParent = this.animGroup;
+    }
+
+    for (let i = 0; i < this.schedule.length; i++) {
+      const cellAnim = animState.cellStates[i];
+      if (!cellAnim || cellAnim.phase === "pending") continue;
+
+      const px = this.schedule[i].cell.x * TILE_SIZE;
+      const py = this.schedule[i].cell.y * TILE_SIZE;
+
+      const fx = this.scene.add.graphics();
+      if (cellAnim.afterglowAlpha > 0) {
+        fx.fillStyle(AGENT_GHOST_AMBER_COLOR, cellAnim.afterglowAlpha);
+        fx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+      }
+      if (cellAnim.ringAlpha > 0) {
+        fx.lineStyle(2, AGENT_GHOST_INDIGO_COLOR, cellAnim.ringAlpha);
+        const expand = (1 - cellAnim.ringAlpha) * 6;
+        fx.strokeRect(px - expand, py - expand, TILE_SIZE + expand * 2, TILE_SIZE + expand * 2);
+      }
+      if (cellAnim.sparkProgress > 0 && cellAnim.sparkProgress < 1) {
+        fx.fillStyle(AGENT_GHOST_AMBER_COLOR, 1 - cellAnim.sparkProgress);
+        const cx = px + TILE_SIZE / 2;
+        const cy = py + TILE_SIZE / 2;
+        const dist = cellAnim.sparkProgress * 12;
+        fx.fillRect(cx + dist, cy, 2, 2);
+        fx.fillRect(cx - dist, cy, 2, 2);
+        fx.fillRect(cx, cy + dist, 2, 2);
+        fx.fillRect(cx, cy - dist, 2, 2);
+      }
+      if (cellAnim.afterglowAlpha > 0 || cellAnim.ringAlpha > 0 || (cellAnim.sparkProgress > 0 && cellAnim.sparkProgress < 1)) {
+        this.collectFx(fx);
+      } else {
+        fx.destroy();
+      }
+
+      // 타일 게이팅/팝: 미공개 셀은 숨김, 찍히는 셀은 스케일 팝(1.5→1.0), 끝나면 원위치.
+      const tileEntry = this.tileObjects[i];
+      if (tileEntry) {
+        const { obj, baseX, baseY } = tileEntry;
+        obj.setVisible(true);
+        if (cellAnim.scale !== 1.0) {
+          obj.setScale(cellAnim.scale);
+          obj.x = baseX - (TILE_SIZE * (cellAnim.scale - 1)) / 2;
+          obj.y = baseY - (TILE_SIZE * (cellAnim.scale - 1)) / 2;
+        } else {
+          obj.setScale(1);
+          obj.x = baseX;
+          obj.y = baseY;
         }
       }
     }
-    this.renderDomMarkers(previews);
+
+    // 2. Cursor crosshair on latest active stamped cell
+    if (animState.cursorCell && !animState.isScheduleComplete) {
+      const cur = animState.cursorCell;
+      const cx = cur.x * TILE_SIZE;
+      const cy = cur.y * TILE_SIZE;
+
+      const cursorGfx = this.scene.add.graphics();
+      cursorGfx.lineStyle(2, AGENT_GHOST_INDIGO_COLOR, 0.9);
+      cursorGfx.strokeRect(cx + 3, cy + 3, TILE_SIZE - 6, TILE_SIZE - 6);
+
+      cursorGfx.lineStyle(1, 0xffffff, 0.85);
+      cursorGfx.beginPath();
+      cursorGfx.moveTo(cx + TILE_SIZE / 2, cy - 5);
+      cursorGfx.lineTo(cx + TILE_SIZE / 2, cy + TILE_SIZE + 5);
+      cursorGfx.moveTo(cx - 5, cy + TILE_SIZE / 2);
+      cursorGfx.lineTo(cx + TILE_SIZE + 5, cy + TILE_SIZE / 2);
+      cursorGfx.strokePath();
+
+      this.collectFx(cursorGfx);
+    }
+
+    // 3. Diagonal white shine sweep across preview bounds after completion
+    if (this.cachedBounds && animState.isScheduleComplete && animState.shineProgress < 1) {
+      const bx = this.cachedBounds.x * TILE_SIZE;
+      const by = this.cachedBounds.y * TILE_SIZE;
+      const bw = this.cachedBounds.width * TILE_SIZE;
+      const bh = this.cachedBounds.height * TILE_SIZE;
+
+      const shineGfx = this.scene.add.graphics();
+      const t = animState.shineProgress;
+      const diagonalDist = bw + bh;
+      const currentPos = t * diagonalDist;
+
+      shineGfx.lineStyle(16, 0xffffff, 0.35 * (1 - Math.abs(t - 0.5) * 2));
+      shineGfx.beginPath();
+      shineGfx.moveTo(bx + currentPos, by);
+      shineGfx.lineTo(bx + currentPos - bh, by + bh);
+      shineGfx.strokePath();
+
+      this.collectFx(shineGfx);
+    }
+  }
+
+  /** 타일 스탬프 레이어(컴포지터 경로 포함)를 스케줄당 한 번 빌드한다. */
+  private buildTileLayer(): void {
+    this.tileObjects = [];
+    // layer.removeAll(true) 가 animGroup·그 안의 tileLayer 를 파괴한다. 파괴된 컨테이너를
+    // 재사용하면 add 한 셀이 표시 목록에서 빠져 보이지 않는다(라운드3 blocker 1).
+    if (this.tileLayer && this.tileLayer.parentContainer !== this.animGroup) {
+      this.tileLayer = null;
+      this.tileLayerKey = "";
+    }
+    if (this.tileLayer) {
+      this.tileLayer.removeAll(true);
+    } else if (this.animGroup) {
+      this.tileLayer = this.scene.add.container(0, 0);
+      this.animGroup.add(this.tileLayer);
+    }
+    if (!this.tileLayer) return;
+
+    const project = store.getCurrent();
+    const currentMap = this.mapId() ? project.maps[this.mapId()!] : undefined;
+    const defaultTilesetId = currentMap?.tilesetId;
+    const draftMap = getAgentGhostDraftMap(this.mapId() as MapId) ?? null;
+    const objects: Array<{ obj: Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; baseX: number; baseY: number }> = [];
+
+    // 스케줄 순서대로 만들어 cellStates 인덱스와 정렬한다 — 프레임마다 phase 게이팅이
+    // 이 순서에 의존한다(스탬프 팝·순차 공개). 미공개 셀은 visible=false 로 둔다.
+    for (const step of this.schedule) {
+      const cell = step.cell;
+      const px = cell.x * TILE_SIZE;
+      const py = cell.y * TILE_SIZE;
+      const tilesetId = cell.tilesetId ?? defaultTilesetId;
+      const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
+
+      if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
+        // 에디터 본 렌더와 같은 컴포지터 경로(호수 쿼터·지형 쿼터·도로 오토타일·밑동 합성).
+        // 애니메이션 스프라이트가 파괴/재생성되는 churn을 없애려고 스케줄당 한 번만 만든다.
+        const composed = draftMap
+          ? createChipsetTileObject(this.scene, draftMap, tileset, cell.x, cell.y, cell.tileId)
+          : null;
+        if (composed) {
+          composed.setAlpha(GHOST_SPRITE_ALPHA);
+          composed.setVisible(false);
+          this.tileLayer.add(composed);
+          objects.push({ obj: composed, baseX: px, baseY: py });
+          continue;
+        }
+        const textureKey = ensureTilesetTexture(this.scene, tileset);
+        const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
+        tileSprite.setOrigin(0, 0);
+        tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
+        tileSprite.setVisible(false);
+        this.tileLayer.add(tileSprite);
+        objects.push({ obj: tileSprite, baseX: px, baseY: py });
+      } else {
+        const rect = this.cellRect(cell);
+        rect.setVisible(false);
+        this.tileLayer.add(rect);
+        objects.push({ obj: rect, baseX: px, baseY: py });
+      }
+    }
+    this.tileObjects = objects;
+  }
+
+  private renderOrUpdatePhaseChip(totalCount: number, animState: GhostAnimationState): void {
+    if (typeof document === "undefined") return;
+    const host = this.scene.game?.canvas?.parentElement;
+    if (!host) return;
+
+    const info = ghostPhaseChipInfo({
+      toolName: this.currentToolName,
+      stampedCount: animState.stampedCount,
+      totalCount,
+      isScheduleComplete: animState.isScheduleComplete,
+    });
+
+    if (!this.phaseChip) {
+      const chip = document.createElement("div");
+      chip.className = "ai-ghost-phase-chip";
+      chip.dataset.testid = "ai-ghost-phase-chip";
+      host.append(chip);
+      this.phaseChip = chip;
+    }
+
+    if (isAgentGhostPreviewHidden()) {
+      this.phaseChip.classList.add("is-ghost-hidden");
+    } else {
+      this.phaseChip.classList.remove("is-ghost-hidden");
+    }
+
+    this.phaseChip.replaceChildren();
+    if (info.spinner) {
+      const spinner = document.createElement("span");
+      spinner.className = "ai-ghost-phase-spinner";
+      this.phaseChip.append(spinner);
+    }
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "ai-ghost-phase-text";
+    labelSpan.textContent = info.text;
+    this.phaseChip.append(labelSpan);
+  }
+
+  private clearPhaseChip(): void {
+    this.phaseChip?.remove();
+    this.phaseChip = null;
   }
 
   refreshDomMarkers(previews: readonly AgentGhostPreview[] = this.currentPreviews()): void {
@@ -95,8 +657,21 @@ export class AgentGhostPreviewRenderer {
   }
 
   clear(): void {
+    this.stopTicker();
     this.layer.removeAll(true);
     this.clearDomMarkers();
+    this.clearPhaseChip();
+    this.schedule = [];
+    this.scheduleKey = "";
+    this.startTime = null;
+    this.animGroup = null;
+    this.tileLayer = null;
+    this.tileLayerParent = null;
+    this.tileLayerKey = "";
+  }
+
+  private currentState(): AgentGhostPreviewState {
+    return getAgentGhostPreviewState();
   }
 
   private currentPreviews(): readonly AgentGhostPreview[] {
@@ -267,17 +842,21 @@ function drawDashedLine(
 ): void {
   const dx = x1 - x0;
   const dy = y1 - y0;
-  const length = Math.hypot(dx, dy);
-  if (length <= 0) return;
-  const ux = dx / length;
-  const uy = dy / length;
+  const distance = Math.hypot(dx, dy);
+  if (distance === 0) return;
+  const unitX = dx / distance;
+  const unitY = dy / distance;
   let cursor = 0;
-  while (cursor < length) {
-    const next = Math.min(cursor + dash, length);
-    graphics.beginPath();
-    graphics.moveTo(x0 + ux * cursor, y0 + uy * cursor);
-    graphics.lineTo(x0 + ux * next, y0 + uy * next);
-    graphics.strokePath();
-    cursor = next + gap;
+  graphics.beginPath();
+  while (cursor < distance) {
+    const startX = x0 + unitX * cursor;
+    const startY = y0 + unitY * cursor;
+    const endDist = Math.min(cursor + dash, distance);
+    const endX = x0 + unitX * endDist;
+    const endY = y0 + unitY * endDist;
+    graphics.moveTo(startX, startY);
+    graphics.lineTo(endX, endY);
+    cursor += dash + gap;
   }
+  graphics.strokePath();
 }

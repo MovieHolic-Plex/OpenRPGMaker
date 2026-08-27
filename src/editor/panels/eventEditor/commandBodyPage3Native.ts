@@ -11,6 +11,7 @@ import {
   type SegmentOption,
 } from "./recordPicker";
 import { selectedOptionValue } from "./dom";
+import { drawTransferMapPreview, type TransferPreviewSelection } from "./transferMapPreview";
 import {
   bindShowAnimationPlayback,
   renderShowAnimationFallback,
@@ -77,10 +78,10 @@ export function setLightingBody(
   cmd: Extract<Command, { kind: "setLighting" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "set-lighting-command-body");
-  const ambient = numberInput(cmd.ambient, "암전 정도(0~1)", "set-lighting-ambient-input");
-  ambient.setAttribute("step", "0.05");
+  const ambient = numberInput(Math.round(clamp01(cmd.ambient) * 100), "밝기 (%)", "set-lighting-ambient-input");
+  ambient.setAttribute("step", "1");
   ambient.setAttribute("min", "0");
-  ambient.setAttribute("max", "1");
+  ambient.setAttribute("max", "100");
   const ambientSlider = el("input", {
     class: "page3-range-input",
     attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "암전 슬라이더" },
@@ -1248,6 +1249,15 @@ export function changeTileBody(
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "change-tile-preview" },
   });
+  // 초보자 계약(2026-08-27 감사): 텍스트만 있던 타일 변경에 실제 맵 미리보기를 붙인다.
+  const mapCanvas = el("canvas", {
+    dataset: { testid: "change-tile-map-canvas" },
+  }) as HTMLCanvasElement;
+  const mapCanvasHost = el("div", {
+    class: "page3-command-body change-tile-map-preview",
+    dataset: { testid: "change-tile-map-preview" },
+  });
+  let canvasVersion = 0;
   const presets = el("div", {
     class: "actor-m2-presets",
     dataset: { testid: "change-tile-presets" },
@@ -1286,11 +1296,21 @@ export function changeTileBody(
         class: "actor-m2-preview-line",
         text: `${mapName} · ${layerLabel} (${tx}, ${ty}) → ${tileNo < 0 ? "비움" : tileNo === 0 ? "빈 바닥" : tileNo === 1 ? "기본 바닥" : `그림 ${tileNo}`}`,
       }),
+      mapCanvasHost,
       el("p", {
         class: "actor-m2-preview-note",
         text: tileNo < 0 ? "음수면 그 칸을 비웁니다." : "맵 위 그 칸의 타일을 바로 바꿉니다.",
       })
     );
+    renderCanvas(mapId ?? "", tx, ty);
+  };
+
+  const renderCanvas = (mapId: string, tx: number, ty: number) => {
+    const version = ++canvasVersion;
+    const selection: TransferPreviewSelection = { x: tx, y: ty, zoom: 1 };
+    const fit = () => ({ maxWidth: Math.max(1, mapCanvasHost.clientWidth - 8), maxHeight: Math.max(1, Math.min(280, mapCanvasHost.clientHeight || 280)) });
+    const isCurrent = () => version === canvasVersion;
+    void drawTransferMapPreview({ canvas: mapCanvas, project, mapId, selection, fitDisplay: fit(), isCurrent }).catch(() => undefined);
   };
 
   for (const preset of [

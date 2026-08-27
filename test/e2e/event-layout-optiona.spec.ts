@@ -280,7 +280,7 @@ test("C4 interaction — page segment switching, add command, and undo", async (
   await expect(picker).toBeVisible();
 
   // Add a command; the edit dialog opens first (picker stays open until applied).
-  const addText = picker.getByTestId("command-picker-add-text");
+  const addText = picker.locator('[data-testid="command-picker-add-text"][data-command-entry="m2-001-show-text"]');
   await expect(addText).toBeVisible();
   await addText.click();
   await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();

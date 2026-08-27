@@ -27,6 +27,8 @@ import {
   createThrottledAgentGhostPreviewUpdater,
   getAgentGhostPreviewState,
   hasAgentGhostPreviewSubscribers,
+  setAgentGhostDraftMapProvider,
+  setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
 import { classifyApproval } from "@/ai/approvalPolicy";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
@@ -880,6 +882,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       getDraftProject: () => session.getProposedProject(),
       isWriteTool,
     });
+    // 고스트 렌더러가 승인 전 초안 맵을 에디터 컴포지터 경로로 합성해 찍도록 공급한다.
+    setAgentGhostDraftMapProvider((mapId) => session.getProposedProject().maps[mapId]);
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
     let turnResult: TurnResult | null = null;
@@ -941,6 +945,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           assistantBubble.textContent = event.content;
         }
         currentStreamNodes = [];
+      } else if (event.type === "tool_started") {
+        // 상태칩이 실행 중 도구를 즉시 반영 (tool_started는 실행 직전에 발화된다).
+        setAgentGhostRunningTool(event.name);
       } else if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
