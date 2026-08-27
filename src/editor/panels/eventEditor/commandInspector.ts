@@ -9,6 +9,7 @@ import { el } from "@/util/dom";
 import { commandKindLabel } from "./options";
 import { inspectorTitle } from "./inspectorChoicesTitle";
 import { renderCommandBody } from "./commandBody";
+import { renderCommandPreview } from "./commandPreview";
 import type { CommandListActions } from "./types";
 
 type InspectorTarget = {
@@ -90,6 +91,19 @@ export function showCommandInspector(target: InspectorTarget): void {
     ],
   });
 
+  // 프리뷰가 없으면 `↻ 미리보기 새로고침` 은 빈 약속이다(적대적 QA 3라운드 D5).
+  // 편집 모달과 같은 renderCommandPreview 를 인스펙터에도 붙여, 같은 스테이지·재생 컨트롤을 준다.
+  const previewHost = el("div", {
+    class: "event-inspector-preview",
+    dataset: { testid: "event-inspector-preview" },
+  });
+  const drawPreview = (): void => {
+    previewHost.replaceChildren(
+      renderCommandPreview(target.command, target.previewFace ? { face: target.previewFace } : undefined)
+    );
+  };
+  drawPreview();
+
   const previewActions = el("div", {
     class: "event-inspector-preview-actions",
     children: [
@@ -98,7 +112,8 @@ export function showCommandInspector(target: InspectorTarget): void {
         text: "↻ 미리보기 새로고침",
         attrs: { type: "button", title: "현재 명령 데이터로 미리보기를 다시 그립니다." },
         dataset: { testid: "event-inspector-preview-restart" },
-        on: { click: () => showCommandInspector(target) },
+        // 폼까지 다시 그리면 입력 중이던 값·포커스가 날아간다 — 프리뷰만 교체한다.
+        on: { click: () => drawPreview() },
       }),
     ],
   });
@@ -118,7 +133,7 @@ export function showCommandInspector(target: InspectorTarget): void {
     ],
   });
 
-  host.replaceChildren(head, previewActions, formBody);
+  host.replaceChildren(head, previewHost, previewActions, formBody);
 }
 
 function hideInspector(target: HTMLElement): void {
