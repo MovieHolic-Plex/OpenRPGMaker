@@ -329,8 +329,9 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
   if (sprite?.classList.contains("battle-actor-sprite")) {
     // Generated battle sheets: 3 columns × idle/attack/hit along X.
-    // Frame width must match actorBattleImage display frame (192px = 48 × 2 × BATTLE_ASSET_PIXEL_SCALE).
-    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width")) || 192;
+    // Frame width must match actorBattleImage display frame (BATTLE_SHEET_CELL × BATTLE_ASSET_PIXEL_SCALE).
+    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width"))
+      || BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
     const col = pose === "attack" ? 1 : pose === "hit" || pose === "dead" ? 2 : 0;
     sprite.style.backgroundPosition = `-${col * frameW}px 0`;
   }
@@ -864,12 +865,13 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
   if (resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
-    // Generated battle sheets are 3×N grids of 48×64 cells (144×384 source).
+    // 생성 전투 시트는 144×384 새로 48×48 셀을 3열×8행으로 담는다(자산 계획서의 "3x8 battle sheet").
+    // 48×64 로 잘리면 한 프레임에 아랫행 머리 16px 이 따라들어와 발밑에 쟘러기 스프라이트가 보인다.
     // Asset pixels are authored for the old 320×240 stage, so one source pixel maps
     // once through BATTLE_ASSET_PIXEL_SCALE into the 640×480 logical stage. Multiplying
     // by an additional 2 made each actor almost field-height after the stage migration.
-    const frameW = 48 * BATTLE_ASSET_PIXEL_SCALE;
-    const frameH = 64 * BATTLE_ASSET_PIXEL_SCALE;
+    const frameW = BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
+    const frameH = BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
     const sprite = document.createElement("span");
     sprite.className = "battle-actor-sprite";
     sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;
@@ -878,7 +880,7 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     sprite.style.setProperty("--battle-sprite-frame-width", `${frameW}px`);
     sprite.style.setProperty("--battle-sprite-frame-height", `${frameH}px`);
     sprite.style.backgroundPosition = "0 0";
-    sprite.style.backgroundSize = `${frameW * 3}px ${frameH * 6}px`;
+    sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
     sprite.style.backgroundImage = `url("${url}")`;
     return sprite;
   }
@@ -888,6 +890,10 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
   image.src = url;
   return image;
 }
+
+const BATTLE_SHEET_CELL = 48;
+const BATTLE_SHEET_COLUMNS = 3;
+const BATTLE_SHEET_ROWS = 8;
 
 function isGeneratedBattleActor(resourceId: string): boolean {
   return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");
