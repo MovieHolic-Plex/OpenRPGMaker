@@ -70,7 +70,10 @@ export function resolveContextWindow(model: string): number {
 
 // ── 토큰 추정 ────────────────────────────────────────────────────────────────
 
-/** 이미지 한 장의 등가 문자 수(senpi ESTIMATED_IMAGE_CHARS). URL 길이는 세지 않는다. */
+/**
+ * 이미지 한 장의 **최소** 등가 문자 수(senpi ESTIMATED_IMAGE_CHARS). 원격 URL 처럼 본문에
+ * 페이로드가 실리지 않는 경우의 바닥값이다 — 짧은 URL 이어도 공급자는 이미지 토큰을 센다.
+ */
 const ESTIMATED_IMAGE_CHARS = 4800;
 
 /**
@@ -95,7 +98,12 @@ function contentChars(content: string | ContentPart[] | null): number {
   let chars = 0;
   for (const part of content) {
     if (part.type === "text") chars += weightedChars(part.text);
-    else chars += ESTIMATED_IMAGE_CHARS;
+    // senpi 원본은 image 블록을 4800자 고정으로 센다 — 그쪽 image 블록은 공급자 네이티브 첨부라
+    // 본문 크기와 무관하기 때문이다. 이 에디터의 image_url 은 **base64 데이터 URL 이 요청 본문에
+    // 그대로 직렬화**되므로(실측: 뷰포트 6장 요청 본문 115957 bytes) 페이로드를 가중해 세야 한다.
+    // 고정 4800 을 쓰면 스크린샷이 실린 대화가 임계값 아래로 보여 압축이 아예 발동하지 않는다
+    // (실측 RED: 추정 46418 토큰 < 임계 111616).
+    else chars += Math.max(ESTIMATED_IMAGE_CHARS, weightedChars(part.image_url.url));
   }
   return chars;
 }

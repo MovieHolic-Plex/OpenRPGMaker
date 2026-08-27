@@ -68,18 +68,37 @@ describe("estimateMessageTokens", () => {
     expect(estimateMessageTokens(userText("A".repeat(400)))).toBe(100);
   });
 
-  it("Given image_url 파트 When 추정 Then URL 길이와 무관하게 ESTIMATED_IMAGE_CHARS(4800) 로 센다", () => {
-    const shortUrl: ChatMessage = {
+  it("Given 짧은/원격 image_url 파트 When 추정 Then ESTIMATED_IMAGE_CHARS(4800) 바닥값을 쓴다", () => {
+    const shortDataUrl: ChatMessage = {
       role: "user",
       content: [{ type: "image_url", image_url: { url: "data:image/png;base64,AAAA" } }],
     };
-    const longUrl: ChatMessage = {
+    const remoteUrl: ChatMessage = {
+      role: "user",
+      content: [{ type: "image_url", image_url: { url: "https://example.test/map-viewport.png" } }],
+    };
+
+    expect(estimateMessageTokens(shortDataUrl)).toBe(1200);
+    expect(estimateMessageTokens(remoteUrl)).toBe(1200);
+  });
+
+  // senpi 원본은 image 블록을 무조건 4800자 등가로 센다. 그쪽 image 블록은 공급자 네이티브
+  // 첨부라서 본문 크기와 무관하기 때문이다. 이 에디터의 image_url 은 **base64 데이터 URL 이
+  // 요청 본문 안에 그대로 직렬화**된다(실측: 뷰포트 스크린샷 6장이 실린 요청 본문 115957 bytes).
+  // 그래서 데이터 URL 은 페이로드를 가중해 세야 한다 — 4800 고정으로는 스크린샷이 실린 대화가
+  // 임계값 아래로 보여 압축이 아예 발동하지 않는다(실측 RED: 추정 46418 토큰 < 임계 111616).
+  it("Given 큰 base64 데이터 URL image_url When 추정 Then 페이로드를 가중해 4800 고정값보다 크게 센다", () => {
+    const bigDataUrl: ChatMessage = {
       role: "user",
       content: [{ type: "image_url", image_url: { url: `data:image/png;base64,${"B".repeat(20000)}` } }],
     };
 
-    expect(estimateMessageTokens(shortUrl)).toBe(1200);
-    expect(estimateMessageTokens(longUrl)).toBe(1200);
+    // 20000자 base64 런 → 가중 80000자 → 20000 토큰대. 4800 고정 구현이면 1200 이 나와 실패한다.
+    expect(estimateMessageTokens(bigDataUrl)).toBeGreaterThan(19_000);
+    // 같은 길이의 산문 URL 보다 크다(가중치가 실제로 붙었는지).
+    expect(estimateMessageTokens(bigDataUrl)).toBeGreaterThan(
+      estimateMessageTokens({ role: "user", content: prose(20_022) }),
+    );
   });
 
   it("Given assistant tool_calls When 추정 Then 이름 + 인자를 센다", () => {
