@@ -19,10 +19,12 @@ import {
   type PortedOAuthProviderId,
 } from "../../src/ai/oauth/credentials.ts";
 import {
+  exchangeCodexAuthorizationCode,
   pollCodexDeviceAuthorization,
   refreshCodexToken,
   startCodexDeviceAuthorization,
 } from "../../src/ai/oauth/codexDeviceOAuth.ts";
+import { beginCodexLogin } from "../../src/ai/oauth/codexBrowserOAuth.ts";
 import {
   buildAntigravityAuthorizationUrl,
   CALLBACK_PATH,
@@ -179,14 +181,29 @@ export async function startProviderLogin(provider: string, _body: { apiKey?: str
 
   const abort = new AbortController();
   if (id === CODEX_PROVIDER_ID) {
-    const device = await startCodexDeviceAuthorization({});
-    trackLogin(id, abort, pollCodexDeviceAuthorization({ ...device, signal: abort.signal }));
+    const started = await beginCodexLogin({
+      openCallbackServer: (options) => startOAuthCallbackServer(options),
+      startDeviceAuthorization: () => startCodexDeviceAuthorization({}),
+      signal: abort.signal,
+    });
+    if (started.mode === "browser") {
+      trackLogin(id, abort, (async () => {
+        const { code } = await started.waitForCode;
+        return exchangeCodexAuthorizationCode({
+          code,
+          codeVerifier: started.codeVerifier,
+          redirectUri: started.redirectUri,
+        });
+      })());
+    } else {
+      trackLogin(id, abort, pollCodexDeviceAuthorization({ ...started.device, signal: abort.signal }));
+    }
     return {
       connected: false,
       provider: id,
-      verificationUrl: device.verificationUrl,
-      userCode: device.userCode,
-      instructions: `Enter code: ${device.userCode}`,
+      verificationUrl: started.verificationUrl,
+      userCode: started.userCode,
+      instructions: started.instructions,
     };
   }
 

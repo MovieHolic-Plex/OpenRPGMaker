@@ -355,4 +355,15 @@ describe("발견 직후 자격 패킹", () => {
     expect(packed.refreshToken).toBe("rt-pack");
     expect(packed.expiresAt).toBe(creds.expires);
   });
+
+  it("refresh_token 이 없는 교환 응답은 거절한다", async () => {
+    // 빈 refresh 를 저장하면 한 시간 뒤 갱신이 막히는데 상태는 연결됨으로 남는다.
+    const stub = stubFetch([
+      () => jsonResponse({ access_token: "access-only", expires_in: 3600 }),
+    ]);
+
+    await expect(
+      exchangeAntigravityCode({ code: "code-1", redirectUri: REDIRECT_URI, fetch: stub.fetch }),
+    ).rejects.toThrow(/refresh_token/);
+  });
 });

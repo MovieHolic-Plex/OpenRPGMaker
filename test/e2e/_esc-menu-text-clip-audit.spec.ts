@@ -58,10 +58,25 @@ async function measureTextClipping(page: Page, label: string): Promise<unknown> 
       return rank;
     };
 
-    const painted = Array.from(menu.querySelectorAll<HTMLElement>("*")).filter((node) => {
-      const r = node.getBoundingClientRect();
-      return r.width > 2 && r.height > 2 && opaque(getComputedStyle(node));
-    });
+    const visibleBoxOf = (node: HTMLElement, rect: DOMRect | Box): Box | null => {
+      const { box } = clipBoxOf(node);
+      const v: Box = {
+        left: Math.max(box.left, rect.left),
+        top: Math.max(box.top, rect.top),
+        right: Math.min(box.right, rect.right),
+        bottom: Math.min(box.bottom, rect.bottom),
+      };
+      return v.right - v.left > 1 && v.bottom - v.top > 1 ? v : null;
+    };
+
+    const painted = Array.from(menu.querySelectorAll<HTMLElement>("*"))
+      .map((node) => {
+        const r = node.getBoundingClientRect();
+        if (r.width <= 2 || r.height <= 2 || !opaque(getComputedStyle(node))) return null;
+        const v = visibleBoxOf(node, r);
+        return v ? { node, v } : null;
+      })
+      .filter((entry): entry is { node: HTMLElement; v: Box } => entry !== null);
 
     const clipped: unknown[] = [];
     const truncated: unknown[] = [];
@@ -88,8 +103,16 @@ async function measureTextClipping(page: Page, label: string): Promise<unknown> 
         top: round(box.top - ink.top),
         bottom: round(ink.bottom - box.bottom),
       };
+      const scrollFold = (() => {
+        for (let el = node.parentElement; el; el = el.parentElement) {
+          const cs2 = getComputedStyle(el);
+          if (cs2.overflowY === "auto" || cs2.overflowY === "scroll") return el.scrollHeight > el.clientHeight + 1;
+          if (el === menu) break;
+        }
+        return false;
+      })();
       const worst = Math.max(cut.left, cut.right, cut.top, cut.bottom);
-      if (worst > 0.6) {
+      if (worst > 0.6 && !(scrollFold && cut.bottom === worst)) {
         clipped.push({
           ...describe(node),
           text,
@@ -115,13 +138,16 @@ async function measureTextClipping(page: Page, label: string): Promise<unknown> 
         });
       }
 
-      for (const other of painted) {
+      const inkVisible = visibleBoxOf(node, ink);
+      if (!inkVisible) continue;
+      const inkVisibleArea = (inkVisible.right - inkVisible.left) * (inkVisible.bottom - inkVisible.top);
+
+      for (const { node: other, v: r } of painted) {
         if (other === node || other.contains(node) || node.contains(other)) continue;
-        const r = other.getBoundingClientRect();
-        const ix = Math.min(ink.right, r.right) - Math.max(ink.left, r.left);
-        const iy = Math.min(ink.bottom, r.bottom) - Math.max(ink.top, r.top);
+        const ix = Math.min(inkVisible.right, r.right) - Math.max(inkVisible.left, r.left);
+        const iy = Math.min(inkVisible.bottom, r.bottom) - Math.max(inkVisible.top, r.top);
         if (ix <= 1 || iy <= 1) continue;
-        const ratio = (ix * iy) / (ink.width * ink.height);
+        const ratio = (ix * iy) / inkVisibleArea;
         if (ratio < 0.12) continue;
         const laterInDom = (node.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
         const rank = stackRank(other) - stackRank(node);
@@ -131,7 +157,7 @@ async function measureTextClipping(page: Page, label: string): Promise<unknown> 
           text,
           ratio: round(ratio),
           by: describe(other),
-          byRect: { x: round(r.left), y: round(r.top), w: round(r.width), h: round(r.height) },
+          byRect: { x: round(r.left), y: round(r.top), w: round(r.right - r.left), h: round(r.bottom - r.top) },
           zDelta: rank,
         });
       }
@@ -189,10 +215,13 @@ test("audit: status menu text clipping with seeded content", async ({ page }) =>
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 30000 });
   await page.waitForTimeout(900);
 
-  const sizes = [
-    { width: 1280, height: 900 },
-    { width: 960, height: 640 },
-  ];
+  const sizes = (process.env.CLIP_AUDIT_SIZES ?? "1280x900")
+    .split(",")
+    .map((entry) => entry.split("x").map((n) => Number.parseInt(n, 10)))
+    .map(([width, height]) => ({ width: width ?? 1280, height: height ?? 900 }));
+  const persist = (): void => {
+    writeFileSync(`${DIR}/report-${sizes.map((s2) => `${s2.width}x${s2.height}`).join("_")}.json`, JSON.stringify(report, null, 2));
+  };
 
   for (const size of sizes) {
     await page.setViewportSize(size);
@@ -207,6 +236,7 @@ test("audit: status menu text clipping with seeded content", async ({ page }) =>
       }
       await shot(page, `${tag}-${cmd}`);
       report[`${cmd}@${tag}`] = await measureTextClipping(page, `${cmd}@${tag}`);
+      persist();
 
       const drill: Record<string, string[]> = {
         items: ["status-menu-item-item_potion"],
@@ -220,6 +250,7 @@ test("audit: status menu text clipping with seeded content", async ({ page }) =>
         await page.waitForTimeout(360);
         await shot(page, `${tag}-${cmd}-drill`);
         report[`${cmd}-drill@${tag}`] = await measureTextClipping(page, `${cmd}-drill@${tag}`);
+        persist();
         if (cmd === "equipment") {
           const slot = page.getByTestId("status-menu-equipment-slot-weapon");
           if (await slot.count()) {
@@ -227,13 +258,14 @@ test("audit: status menu text clipping with seeded content", async ({ page }) =>
             await page.waitForTimeout(360);
             await shot(page, `${tag}-equipment-candidates`);
             report[`equipment-candidates@${tag}`] = await measureTextClipping(page, `equipment-candidates@${tag}`);
+            persist();
           }
         }
       }
     }
   }
 
-  writeFileSync(`${DIR}/report.json`, JSON.stringify(report, null, 2));
+  persist();
 
   const summary = Object.entries(report).map(([key, value]) => {
     const v = value as { clipped?: unknown[]; truncated?: unknown[]; covered?: unknown[]; error?: string };

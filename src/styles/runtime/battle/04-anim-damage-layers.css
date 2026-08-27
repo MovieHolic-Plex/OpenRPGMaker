@@ -1,10 +1,7 @@
-/* rm2003 스킨만 무대 상단 여백을 8px 로 덮어쓴다(battle-skins/_rm2003.css:26-29 —
-   `.battle-enemy-group/.battle-actor-group { inset: 8px 0 0 0 }`). 그 파일은
-   여기 변수를 모르므로 같은 조건을 변수로 미러링해 레이어가 그룹과 계속 일치하게 둔다.
-   (나머지 11종 스킨은 그룹 inset 을 건드리지 않아 기본 48px 을 그대로 쓴다 — 전수 확인.) */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
-  --battle-stage-inset-top: 8px;
-}
+/* 무대 상단 여백은 `--battle-stage-inset-top`(01-scene-base.css 의 단일 선언) 하나만 산다.
+   스킨은 그 변수를 다시 선언하지 않고 스킨 노브 `--battle-stage-skin-inset-top` 만 재정의하며
+   (rm2003 = 8px — battle-skins/_rm2003.css), 배틀러 그룹(07-640-scene-turn-ribbon.css:184)·
+   애니메이션 레이어·이펙트 레이어가 모두 그 한 값을 읽어 같은 박스로 풀린다. */
 
 /* 애니메이션 레이어는 `.battle-scene`(그리드 컨테이너)의 직계 자식이고, 배틀러 그룹은
    `.battle-field` 안에 있다(battleDom.ts: root.append(field, animationLayer, …)). DOM 을 바꿀

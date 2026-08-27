@@ -142,10 +142,16 @@ export async function exchangeAntigravityCode({
   if (!data.access_token) {
     throw new Error("Antigravity token exchange returned no access_token.");
   }
+  // refresh_token 없이 저장하면 access 가 만료되는 한 시간 뒤부터 갱신이 불가능한데
+  // 상태는 "연결됨" 으로 남아, 사용자는 조용한 401 만 보고 원인을 알 수 없다.
+  // Google 은 이미 동의한 계정에 refresh_token 을 생략할 수 있다(그래서 prompt=consent 를 보낸다).
+  if (!data.refresh_token) {
+    throw new Error("Antigravity token exchange returned no refresh_token. 다시 로그인하세요.");
+  }
 
   return {
     access: data.access_token,
-    refresh: data.refresh_token ?? "",
+    refresh: data.refresh_token,
     expires: Date.now() + (data.expires_in ?? 0) * 1000 - EXPIRY_SKEW_MS,
   };
 }
