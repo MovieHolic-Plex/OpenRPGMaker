@@ -1,0 +1,120 @@
+0|풀밭 속 연못 1|water|solid|high|
+1|풀밭 속 연못 2|water|solid|high|
+2|풀밭 속 연못 3|water|solid|high|
+3|눈밭 속 연못 1|water|solid|high|
+4|눈밭 속 연못 2|water|solid|high|
+5|눈밭 속 연못 3|water|solid|high|
+6|흙길 바닥|terrain|passable|high|
+7|풀밭 바닥|terrain|passable|high|
+8|풀밭 모서리 흙바닥|terrain|passable|high|
+9|모래밭 바닥|terrain|passable|high|
+10|풀밭 바닥|terrain|passable|high|
+11|풀밭 모서리 모래밭|terrain|passable|high|
+12|분홍빛 돌바닥|floor|passable|high|
+13|녹회색 석재 바닥|floor|passable|high|
+14|보라색 벽돌 벽 상단 좌측|wall|solid|high|보라색 벽돌 벽
+15|보라색 벽돌 벽 상단 중앙 1|wall|solid|high|보라색 벽돌 벽
+16|보라색 벽돌 벽 상단 중앙 2|wall|solid|high|보라색 벽돌 벽
+17|보라색 벽돌 벽 상단 우측|wall|solid|high|보라색 벽돌 벽
+18|풀밭 절벽 경사면 상단 좌측|cliff|solid|high|풀밭 절벽
+19|풀밭 절벽 경사면 상단 우측|cliff|solid|high|풀밭 절벽
+20|흙 절벽 경사면 상단 좌측|cliff|solid|high|흙 절벽
+21|흙 절벽 경사면 상단 우측|cliff|solid|high|흙 절벽
+22|눈 절벽 경사면 상단 좌측|cliff|solid|high|눈 절벽
+23|눈 절벽 경사면 상단 우측|cliff|solid|high|눈 절벽
+24|녹색 산봉우리 좌측|cliff|solid|high|녹색 산
+25|녹색 산봉우리 우측|cliff|solid|high|녹색 산
+26|갈색 산봉우리 좌측|cliff|solid|high|갈색 산
+27|갈색 산봉우리 우측|cliff|solid|high|갈색 산
+28|눈 덮인 설산 좌측|cliff|solid|high|설산
+29|눈 덮인 설산 우측|cliff|solid|high|설산
+30|풀밭 속 세로 물길 1|water|solid|high|
+31|풀밭 속 세로 물길 2|water|solid|high|
+32|풀밭 속 세로 물길 3|water|solid|high|
+33|눈밭 속 세로 물길 1|water|solid|high|
+34|눈밭 속 세로 물길 2|water|solid|high|
+35|눈밭 속 세로 물길 3|water|solid|high|
+36|풀밭과 흙길 경계 좌상단|terrain|passable|high|
+37|풀밭과 흙길 경계 상단|terrain|passable|high|
+38|풀밭과 흙길 경계 우상단|terrain|passable|high|
+39|풀밭과 모래밭 경계 좌상단|terrain|passable|high|
+40|풀밭과 모래밭 경계 상단|terrain|passable|high|
+41|풀밭과 모래밭 경계 우상단|terrain|passable|high|
+42|청회색 돌바닥|floor|passable|high|
+43|어두운 석재 바닥|floor|passable|high|
+44|보라색 벽돌 벽 하단 좌측|wall|solid|high|보라색 벽돌 벽
+45|보라색 벽돌 벽 하단 중앙 1|wall|solid|high|보라색 벽돌 벽
+46|보라색 벽돌 벽 하단 중앙 2|wall|solid|high|보라색 벽돌 벽
+47|보라색 벽돌 벽 하단 우측|wall|solid|high|보라색 벽돌 벽
+48|풀밭 절벽 경사면 하단 좌측|cliff|solid|high|풀밭 절벽
+49|풀밭 절벽 경사면 하단 우측|cliff|solid|high|풀밭 절벽
+50|흙 절벽 경사면 하단 좌측|cliff|solid|high|흙 절벽
+51|흙 절벽 경사면 하단 우측|cliff|solid|high|흙 절벽
+52|눈 절벽 경사면 하단 좌측|cliff|solid|high|눈 절벽
+53|눈 절벽 경사면 하단 우측|cliff|solid|high|눈 절벽
+54|목재 울타리 상단 좌측|fence|solid|high|목재 울타리
+55|목재 울타리 가로 상단|fence|solid|high|목재 울타리
+56|목재 울타리 상단 우측|fence|solid|high|목재 울타리
+57|회색 바위|rock|solid|high|
+58|푸른 수정|prop|solid|high|
+59|돌무더기|rock|solid|high|
+60|풀밭 속 가로 물길 1|water|solid|high|
+61|풀밭 속 가로 물길 2|water|solid|high|
+62|풀밭 속 가로 물길 3|water|solid|high|
+63|눈밭 속 가로 물길 1|water|solid|high|
+64|눈밭 속 가로 물길 2|water|solid|high|
+65|눈밭 속 가로 물길 3|water|solid|high|
+66|풀밭과 흙길 경계 좌측|terrain|passable|high|
+67|흙길 중앙 바닥|terrain|passable|high|
+68|풀밭과 흙길 경계 우측|terrain|passable|high|
+69|풀밭과 모래밭 경계 좌측|terrain|passable|high|
+70|모래밭 중앙 바닥|terrain|passable|high|
+71|풀밭과 모래밭 경계 우측|terrain|passable|high|
+72|가로 목재 마루|floor|passable|high|
+73|구멍 난 목재 마루|floor|solid|high|
+74|목조 회벽 상단 좌측|wall|solid|high|목조 회벽
+75|목조 회벽 상단 중앙|wall|solid|high|목조 회벽
+76|목조 회벽 상단 우측|wall|solid|high|목조 회벽
+77|목조 회벽 상단 기둥|wall|solid|high|목조 회벽
+78|풀밭 타일 상단 좌측 경계|terrain|passable|high|
+79|풀밭 타일 상단 경계|terrain|passable|high|
+80|풀밭 타일 상단 우측 경계|terrain|passable|high|
+81|흙길 타일 상단 좌측 경계|terrain|passable|high|
+82|흙길 타일 상단 경계|terrain|passable|high|
+83|흙길 타일 상단 우측 경계|terrain|passable|high|
+84|목재 울타리 세로 좌측|fence|solid|high|목재 울타리
+85|목재 울타리 중앙 연결부|fence|solid|high|목재 울타리
+86|목재 울타리 세로 우측|fence|solid|high|목재 울타리
+87|돌 우물|prop|solid|high|
+88|십자가 묘비|prop|solid|high|
+89|석조 묘비 상단|prop|solid|high|석조 묘비
+90|풀밭 모서리 물타일 1|water|solid|high|
+91|풀밭 모서리 물타일 2|water|solid|high|
+92|풀밭 모서리 물타일 3|water|solid|high|
+93|눈밭 모서리 물타일 1|water|solid|high|
+94|눈밭 모서리 물타일 2|water|solid|high|
+95|눈밭 모서리 물타일 3|water|solid|high|
+96|풀밭과 흙길 경계 하좌단|terrain|passable|high|
+97|풀밭과 흙길 경계 하단|terrain|passable|high|
+98|풀밭과 흙길 경계 하우단|terrain|passable|high|
+99|풀밭과 모래밭 경계 하좌단|terrain|passable|high|
+100|풀밭과 모래밭 경계 하단|terrain|passable|high|
+101|풀밭과 모래밭 경계 하우단|terrain|passable|high|
+102|세로 목재 마루 1|floor|passable|high|
+103|세로 목재 마루 2|floor|passable|high|
+104|목조 회벽 하단 좌측|wall|solid|high|목조 회벽
+105|목조 회벽 하단 중앙|wall|solid|high|목조 회벽
+106|목조 회벽 하단 우측|wall|solid|high|목조 회벽
+107|목조 회벽 하단 기둥|wall|solid|high|목조 회벽
+108|풀밭 타일 하단 좌측 경계|terrain|passable|high|
+109|풀밭 타일 하단 경계|terrain|passable|high|
+110|풀밭 타일 하단 우측 경계|terrain|passable|high|
+111|흙길 타일 하단 좌측 경계|terrain|passable|high|
+112|흙길 타일 하단 경계|terrain|passable|high|
+113|흙길 타일 하단 우측 경계|terrain|passable|high|
+114|목재 울타리 하단 좌측|fence|solid|high|목재 울타리
+115|목재 울타리 가로 하단|fence|solid|high|목재 울타리
+116|나무 표지판|prop|solid|high|
+117|낙엽|decoration|passable|high|
+118|해골과 뼈|decoration|passable|high|
+119|석조 묘비 하단|prop|solid|high|석조 묘비

@@ -1,0 +1,7 @@
+404|흰 사선 유리창|window|solid|high|
+432|보라 회색 석벽 상단|wall|solid|high|보라 회색 석벽
+433|갈금 벽돌벽 상단|wall|solid|high|갈금 벽돌벽
+442|회색 격자 창문|window|solid|high|
+462|보라 회색 석벽 하단|wall|solid|high|보라 회색 석벽
+463|갈금 벽돌벽 하단|wall|solid|high|갈금 벽돌벽
+473|석조 아치 가로보|wall|solid|medium|석조 아치

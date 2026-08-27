@@ -1,0 +1,63 @@
+0|풀밭 물가 좌상단|water|solid|high|연못
+1|풀밭 물가 상단|water|solid|high|연못
+2|풀밭 물가 우상단|water|solid|high|연못
+3|눈밭 물가 좌상단|water|solid|high|연못
+4|눈밭 물가 상단|water|solid|high|연못
+5|눈밭 물가 우상단|water|solid|high|연못
+6|풀밭 자갈 지형 1x1|terrain|passable|high|자갈 지형
+8|자갈 지형|terrain|passable|high|
+9|풀밭 모래 지형 1x1|terrain|passable|high|모래 지형
+11|모래 지형|terrain|passable|high|
+30|풀밭 물가 좌측|water|solid|high|연못
+31|풀밭 물 중앙|water|solid|high|연못
+32|풀밭 물가 우측|water|solid|high|연못
+33|눈밭 물가 좌측|water|solid|high|연못
+34|눈밭 물 중앙|water|solid|high|연못
+35|눈밭 물가 우측|water|solid|high|연못
+36|풀밭 자갈 지형 좌상단|terrain|passable|high|자갈 지형
+37|풀밭 자갈 지형 상단|terrain|passable|high|자갈 지형
+38|풀밭 자갈 지형 우상단|terrain|passable|high|자갈 지형
+39|풀밭 모래 지형 좌상단|terrain|passable|high|모래 지형
+40|풀밭 모래 지형 상단|terrain|passable|high|모래 지형
+41|풀밭 모래 지형 우상단|terrain|passable|high|모래 지형
+60|풀밭 수로 좌측|water|solid|high|수로
+61|풀밭 수로 중앙|water|solid|high|수로
+62|풀밭 수로 우측|water|solid|high|수로
+63|눈밭 수로 좌측|water|solid|high|수로
+64|눈밭 수로 중앙|water|solid|high|수로
+65|눈밭 수로 우측|water|solid|high|수로
+66|풀밭 자갈 지형 좌측|terrain|passable|high|자갈 지형
+67|자갈 지형 중앙|terrain|passable|high|자갈 지형
+68|풀밭 자갈 지형 우측|terrain|passable|high|자갈 지형
+69|풀밭 모래 지형 좌측|terrain|passable|high|모래 지형
+70|모래 지형 중앙|terrain|passable|high|모래 지형
+71|풀밭 모래 지형 우측|terrain|passable|high|모래 지형
+72|가로 나무 바닥|floor|passable|high|
+73|얼룩진 가로 나무 바닥|floor|passable|high|
+78|풀밭 절벽 좌측|cliff|solid|high|절벽
+80|풀밭 절벽 우측|cliff|solid|high|절벽
+81|자갈 절벽 좌상단|cliff|solid|high|절벽
+82|자갈 절벽 상단|cliff|solid|high|절벽
+83|자갈 절벽 우상단|cliff|solid|high|절벽
+88|십자가 묘비|prop|solid|high|
+89|선돌 상단|prop|solid|high|선돌
+90|풀밭 물 모서리|water|solid|high|연못
+91|풀밭 물 모서리|water|solid|high|연못
+92|풀밭 물 모서리|water|solid|high|연못
+93|눈밭 물 모서리|water|solid|high|연못
+94|눈밭 물 모서리|water|solid|high|연못
+95|눈밭 물 모서리|water|solid|high|연못
+96|풀밭 자갈 지형 좌하단|terrain|passable|high|자갈 지형
+97|풀밭 자갈 지형 하단|terrain|passable|high|자갈 지형
+98|풀밭 자갈 지형 우하단|terrain|passable|high|자갈 지형
+99|풀밭 모래 지형 좌하단|terrain|passable|high|모래 지형
+100|풀밭 모래 지형 하단|terrain|passable|high|모래 지형
+101|풀밭 모래 지형 우하단|terrain|passable|high|모래 지형
+103|세로 나무 바닥 하단|floor|passable|high|
+108|풀밭 절벽 좌하단|cliff|solid|high|절벽
+110|풀밭 절벽 우하단|cliff|solid|high|절벽
+111|자갈 절벽 좌측|cliff|solid|high|절벽
+112|자갈 절벽 중앙|cliff|solid|high|절벽
+113|자갈 절벽 우측|cliff|solid|high|절벽
+117|작은 돌멩이|rock|passable|high|
+119|선돌 하단|prop|solid|high|선돌

@@ -1,0 +1,2 @@
+296|밧줄|stairs|passable|high|
+355|동굴 입구 바닥|floor|passable|medium|동굴 입구

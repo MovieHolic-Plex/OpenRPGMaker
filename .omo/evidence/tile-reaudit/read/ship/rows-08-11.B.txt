@@ -1,0 +1,120 @@
+240|모래 바닥|terrain|passable|high|
+241|모래 바닥|terrain|passable|high|
+242|모래 바닥|terrain|passable|high|
+243|모래 위 풀밭 좌측 상단|terrain|passable|high|풀밭
+244|모래 위 풀밭 중앙|terrain|passable|high|풀밭
+245|모래 위 풀밭 우측 상단|terrain|passable|high|풀밭
+246|목재 갑판 바닥 좌측|floor|passable|high|목재 갑판
+247|목재 갑판 바닥|floor|passable|high|목재 갑판
+248|목재 갑판 바닥 우측|floor|passable|high|목재 갑판
+249|목재 바닥 상단|floor|passable|high|목재 바닥
+250|목재 바닥|floor|passable|high|목재 바닥
+251|목재 바닥 가로목|floor|passable|high|목재 바닥
+252|선실 목재 벽 상단 좌측|wall|solid|high|선실 목재 벽
+253|선실 목재 벽 상단|wall|solid|high|선실 목재 벽
+254|선실 목재 벽 상단|wall|solid|high|선실 목재 벽
+255|선실 목재 벽 상단|wall|solid|high|선실 목재 벽
+256|벽면 사다리 상단|stairs|passable|high|사다리
+257|선박 기계 상단|prop|solid|high|선박 기계
+258|빈 슬롯|empty|passable|high|
+259|닻|prop|solid|high|닻
+260|선체 경사 목재|prop|solid|high|선체
+261|돛대 꼭대기|prop|solid|high|돛대
+262|선체 경사 목재|prop|solid|high|선체
+263|똬리 밧줄|prop|solid|high|밧줄
+264|갑판 해치 입구 상단|door|passable|high|갑판 해치
+265|선체 경사 목재|wall|solid|high|선체
+266|선체 경사 목재|wall|solid|high|선체
+267|선체 경사 목재|wall|solid|high|선체
+268|선체 경사 목재|wall|solid|high|선체
+269|선체 경사 목재|wall|solid|high|선체
+270|모래 바닥|terrain|passable|high|
+271|모래 바닥|terrain|passable|high|
+272|모래 바닥|terrain|passable|high|
+273|모래 위 풀밭 좌측 상단 모서리|terrain|passable|high|풀밭
+274|모래 위 풀밭 상단 가장자리|terrain|passable|high|풀밭
+275|모래 위 풀밭 우측 상단 모서리|terrain|passable|high|풀밭
+276|목재 갑판 바닥 좌측|floor|passable|high|목재 갑판
+277|목재 갑판 바닥|floor|passable|high|목재 갑판
+278|목재 갑판 바닥 우측|floor|passable|high|목재 갑판
+279|목재 바닥|floor|passable|high|목재 바닥
+280|목재 바닥 가로목|floor|passable|high|목재 바닥
+281|목재 바닥|floor|passable|high|목재 바닥
+282|선실 목재 벽과 문틀|wall|solid|high|선실 목재 벽
+283|선실 목재 벽면|wall|solid|high|선실 목재 벽
+284|선실 목재 벽면|wall|solid|high|선실 목재 벽
+285|선실 내부 목재 바닥|floor|passable|high|목재 바닥
+286|선실 내부 목재 바닥|floor|passable|high|목재 바닥
+287|선박 기계 하단 지지대|prop|solid|high|선박 기계
+288|붉은 깃발 상단|decoration|solid|high|깃발
+289|선체 경사 난간|prop|solid|high|선체 난간
+290|빈 슬롯|empty|passable|high|
+291|돛대 가로대 교차부|prop|solid|high|돛대
+292|돛대 가로대 우측|prop|solid|high|돛대
+293|선체 경사 난간|prop|solid|high|선체 난간
+294|갑판 해치 계단 하단|stairs|passable|high|갑판 해치
+295|교차된 쌍검|decoration|solid|high|쌍검
+296|선체 경사 외벽|wall|solid|high|선체
+297|선체 경사 외벽|wall|solid|high|선체
+298|활|prop|solid|high|활
+299|통나무 상단|prop|solid|high|통나무
+300|모래 바닥|terrain|passable|high|
+301|모래 바닥|terrain|passable|high|
+302|모래 바닥|terrain|passable|high|
+303|모래 위 풀밭 좌측 가장자리|terrain|passable|high|풀밭
+304|풀밭 중앙|terrain|passable|high|풀밭
+305|모래 위 풀밭 우측 가장자리|terrain|passable|high|풀밭
+306|목재 갑판 바닥 좌측|floor|passable|high|목재 갑판
+307|목재 갑판 바닥|floor|passable|high|목재 갑판
+308|목재 갑판 바닥 우측|floor|passable|high|목재 갑판
+309|목재 바닥 가로목|floor|passable|high|목재 바닥
+310|목재 바닥|floor|passable|high|목재 바닥
+311|목재 바닥 가로목|floor|passable|high|목재 바닥
+312|선실 계단 입구 상단|stairs|passable|high|선실 계단
+313|선실 계단|stairs|passable|high|선실 계단
+314|갑판 바닥|floor|passable|high|갑판 바닥
+315|선체 곡선 난간 좌측|prop|solid|high|선체 난간
+316|선체 곡선 난간 중앙|prop|solid|high|선체 난간
+317|선체 곡선 난간 우측|prop|solid|high|선체 난간
+318|붉은 깃발 중앙|decoration|solid|high|깃발
+319|선체 경사 난간|prop|solid|high|선체 난간
+320|선체 경사 난간|prop|solid|high|선체 난간
+321|돛대 기둥 중앙|prop|solid|high|돛대
+322|선체 경사 난간|prop|solid|high|선체 난간
+323|선체 경사 난간|prop|solid|high|선체 난간
+324|좌향 대포 포신|prop|solid|high|대포
+325|좌향 대포 포가|prop|solid|high|대포
+326|하향 대포 포가|prop|solid|high|대포
+327|상향 대포 포신|prop|solid|high|대포
+328|목재 사다리 상단|stairs|passable|high|목재 사다리
+329|통나무 하단|prop|solid|high|통나무
+330|모래 바닥|terrain|passable|high|
+331|모래 바닥|terrain|passable|high|
+332|모래 바닥|terrain|passable|high|
+333|모래 위 풀밭 좌측 하단 모서리|terrain|passable|high|풀밭
+334|모래 위 풀밭 하단 가장자리|terrain|passable|high|풀밭
+335|모래 위 풀밭 우측 하단 모서리|terrain|passable|high|풀밭
+336|목재 갑판 바닥 좌측 하단|floor|passable|high|목재 갑판
+337|목재 갑판 바닥 하단|floor|passable|high|목재 갑판
+338|목재 갑판 바닥 우측 하단|floor|passable|high|목재 갑판
+339|목재 바닥 하단|floor|passable|high|목재 바닥
+340|목재 바닥 하단|floor|passable|high|목재 바닥
+341|목재 바닥 하단|floor|passable|high|목재 바닥
+342|선실 목재 벽 하단|wall|solid|high|선실 목재 벽
+343|선실 목재 벽 하단|wall|solid|high|선실 목재 벽
+344|선실 목재 벽 하단|wall|solid|high|선실 목재 벽
+345|선실 목재 문 입구|door|passable|high|선실 목재 문
+346|갑판 해치 입구|door|passable|high|갑판 해치
+347|갑판 바닥|floor|passable|high|갑판 바닥
+348|붉은 깃발 하단 깃대|decoration|solid|high|깃발
+349|선체 곡선 난간|prop|solid|high|선체 난간
+350|선체 경사 난간|prop|solid|high|선체 난간
+351|돛대 기둥 하단 지지대|prop|solid|high|돛대
+352|선체 경사 난간|prop|solid|high|선체 난간
+353|선체 곡선 난간|prop|solid|high|선체 난간
+354|우향 대포 포가|prop|solid|high|대포
+355|우향 대포 포신|prop|solid|high|대포
+356|하향 대포 포신|prop|solid|high|대포
+357|상향 대포 포가|prop|solid|high|대포
+358|초원 풍경 액자|decoration|solid|high|액자
+359|화로 그림 액자|decoration|solid|high|액자

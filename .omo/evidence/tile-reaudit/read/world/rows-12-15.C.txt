@@ -1,0 +1,28 @@
+361|풀밭 지형|terrain|passable|high|
+364|풀밭 지형|terrain|passable|high|
+366|석조 벽 통로 개구부|door|passable|low|석조 던전 방
+368|석조 방 상부 어둠(벽 기둥 끝)|wall|solid|low|석조 던전 방
+369|암벽 개구부(동굴 입구)|door|passable|low|암벽 동굴 방
+371|암벽 방 상부 어둠(암석 조각)|wall|solid|low|암벽 동굴 방
+375|붉은 양탄자 좌상단|floor|passable|medium|붉은 양탄자
+376|붉은 양탄자 상단|floor|passable|medium|붉은 양탄자
+377|붉은 양탄자 우상단|floor|passable|medium|붉은 양탄자
+381|석조 탑 상부|wall|solid|high|석조 탑
+382|석조 신전 정면(박공과 기둥)|wall|solid|medium|
+383|아치 성문 상부 지붕|roof|solid|medium|아치형 성문
+389|수정구가 놓인 점술 탁자|furniture|solid|medium|
+404|맑은 유리창|window|solid|medium|
+405|붉은 양탄자 좌측|floor|passable|medium|붉은 양탄자
+406|붉은 양탄자 중앙|floor|passable|medium|붉은 양탄자
+407|붉은 양탄자 우측|floor|passable|medium|붉은 양탄자
+411|석조 탑 하부(출입구)|wall|solid|high|석조 탑
+412|석조 다리 세로 구간|floor|passable|medium|석조 다리
+435|붉은 양탄자 좌하단|floor|passable|medium|붉은 양탄자
+436|붉은 양탄자 하단|floor|passable|medium|붉은 양탄자
+437|붉은 양탄자 우하단|floor|passable|medium|붉은 양탄자
+442|석조 다리 교차 구간|floor|passable|medium|석조 다리
+443|석조 다리 가로 구간|floor|passable|medium|석조 다리
+460|동굴 방 하단 암벽|wall|solid|medium|암벽 동굴 방
+464|격자 창(철망)|window|solid|medium|
+472|석조 다리 세로 구간|floor|passable|medium|석조 다리
+473|석조 다리 가로 구간 하단 가장자리|floor|passable|low|석조 다리

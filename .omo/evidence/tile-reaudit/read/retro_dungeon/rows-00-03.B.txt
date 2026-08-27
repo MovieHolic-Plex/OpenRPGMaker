@@ -1,0 +1,120 @@
+0|풀밭 물웅덩이 상단|water|solid|high|물웅덩이
+1|풀밭 물웅덩이 상단|water|solid|high|물웅덩이
+2|풀밭 물웅덩이 상단|water|solid|high|물웅덩이
+3|석조 수로 상단|water|solid|high|석조 수로
+4|석조 수로 상단|water|solid|high|석조 수로
+5|석조 수로 상단|water|solid|high|석조 수로
+6|눈 바닥|terrain|passable|high|
+7|눈 바닥|terrain|passable|high|
+8|눈 바닥|terrain|passable|high|
+9|눈 위의 작은 얼음|terrain|passable|high|
+10|눈 바닥|terrain|passable|high|
+11|얼음 타일 모서리|terrain|passable|high|빙판
+12|용암 웅덩이 좌상단|water|solid|high|용암 웅덩이
+13|용암 웅덩이 상단|water|solid|high|용암 웅덩이
+14|용암 웅덩이 우상단|water|solid|high|용암 웅덩이
+15|흙 바닥|terrain|passable|high|
+16|흙과 용암 경계|terrain|passable|high|
+17|흙과 용암 경계|terrain|passable|high|
+18|돌 바닥과 벽 경계|terrain|passable|high|
+19|돌 바닥과 벽 경계|terrain|passable|high|
+20|문양이 새겨진 석벽|wall|solid|high|
+21|조약돌 바닥|floor|passable|high|
+22|조약돌 바닥|floor|passable|high|
+23|조약돌 바닥|floor|passable|high|
+24|석판 묘비 좌측|prop|solid|high|석판 묘비
+25|석판 묘비 중앙|prop|solid|high|석판 묘비
+26|석판 묘비 우측|prop|solid|high|석판 묘비
+27|원형 샹들리에 좌측|prop|passable|high|원형 샹들리에
+28|원형 샹들리에 중앙|prop|passable|high|원형 샹들리에
+29|원형 샹들리에 우측|prop|passable|high|원형 샹들리에
+30|풀밭 물웅덩이 좌측|water|solid|high|물웅덩이
+31|풀밭 물웅덩이 좌측|water|solid|high|물웅덩이
+32|풀밭 물웅덩이 좌측|water|solid|high|물웅덩이
+33|석조 수로 좌측|water|solid|high|석조 수로
+34|석조 수로 좌측|water|solid|high|석조 수로
+35|석조 수로 좌측|water|solid|high|석조 수로
+36|눈 바닥|terrain|passable|high|
+37|눈 바닥|terrain|passable|high|
+38|눈 바닥|terrain|passable|high|
+39|빙판 좌상단|terrain|passable|high|빙판
+40|빙판 상단|terrain|passable|high|빙판
+41|빙판 우상단|terrain|passable|high|빙판
+42|용암 웅덩이 좌측|water|solid|high|용암 웅덩이
+43|용암 웅덩이 중앙|water|solid|high|용암 웅덩이
+44|용암 웅덩이 우측|water|solid|high|용암 웅덩이
+45|어두운 흙 바닥|terrain|passable|high|
+46|흙 바닥|terrain|passable|high|
+47|흙 바닥|terrain|passable|high|
+48|검푸른 석벽|wall|solid|high|
+49|검푸른 석벽|wall|solid|high|
+50|검푸른 석벽|wall|solid|high|
+51|조약돌 바닥|floor|passable|high|
+52|조약돌 바닥|floor|passable|high|
+53|조약돌 바닥|floor|passable|high|
+54|원형 철로 좌상단|prop|passable|high|원형 철로
+55|원형 철로 우상단|prop|passable|high|원형 철로
+56|분기 철로|prop|passable|high|철로
+57|교차 철로|prop|passable|high|철로
+58|분기 철로|prop|passable|high|철로
+59|분기 철로|prop|passable|high|철로
+60|풀밭 물웅덩이 하단|water|solid|high|물웅덩이
+61|풀밭 물웅덩이 하단|water|solid|high|물웅덩이
+62|풀밭 물웅덩이 하단|water|solid|high|물웅덩이
+63|석조 수로 하단|water|solid|high|석조 수로
+64|석조 수로 하단|water|solid|high|석조 수로
+65|석조 수로 하단|water|solid|high|석조 수로
+66|눈 바닥|terrain|passable|high|
+67|눈 바닥|terrain|passable|high|
+68|눈 바닥|terrain|passable|high|
+69|빙판 좌측|terrain|passable|high|빙판
+70|빙판 중앙|terrain|passable|high|빙판
+71|빙판 우측|terrain|passable|high|빙판
+72|용암 웅덩이 좌하단|water|solid|high|용암 웅덩이
+73|용암 웅덩이 하단|water|solid|high|용암 웅덩이
+74|용암 웅덩이 우하단|water|solid|high|용암 웅덩이
+75|석조 얼굴 조각|wall|solid|high|
+76|흙과 용암 경계|terrain|passable|high|
+77|흙과 용암 경계|terrain|passable|high|
+78|어두운 조약돌 바닥|floor|passable|high|
+79|적갈색 돌 바닥|floor|passable|high|
+80|분홍빛 돌 바닥|floor|passable|high|
+81|청회색 돌 바닥|floor|passable|high|
+82|황토색 흙 바닥|terrain|passable|high|
+83|어두운 흙 바닥|terrain|passable|high|
+84|원형 철로 좌하단|prop|passable|high|원형 철로
+85|원형 철로 우하단|prop|passable|high|원형 철로
+86|분기 철로|prop|passable|high|철로
+87|분기 철로|prop|passable|high|철로
+88|분기 철로|prop|passable|high|철로
+89|분기 철로|prop|passable|high|철로
+90|풀밭 물웅덩이 안쪽|water|solid|high|물웅덩이
+91|풀밭 물웅덩이 안쪽|water|solid|high|물웅덩이
+92|풀밭 물웅덩이 안쪽|water|solid|high|물웅덩이
+93|석조 수로 안쪽|water|solid|high|석조 수로
+94|석조 수로 안쪽|water|solid|high|석조 수로
+95|석조 수로 안쪽|water|solid|high|석조 수로
+96|눈 바닥|terrain|passable|high|
+97|눈 바닥|terrain|passable|high|
+98|눈 바닥|terrain|passable|high|
+99|빙판 좌하단|terrain|passable|high|빙판
+100|빙판 하단|terrain|passable|high|빙판
+101|빙판 우하단|terrain|passable|high|빙판
+102|흙 바닥|terrain|passable|high|
+103|흙 바닥|terrain|passable|high|
+104|흙 바닥|terrain|passable|high|
+105|붉은 벽돌 벽|wall|solid|high|
+106|붉은 벽돌 벽|wall|solid|high|
+107|붉은 벽돌 벽|wall|solid|high|
+108|밝은 벽돌 바닥|floor|passable|high|
+109|문양 석재 바닥|floor|passable|high|
+110|분홍빛 돌 바닥|floor|passable|high|
+111|녹회색 돌 바닥|floor|passable|high|
+112|풀이 난 흙 바닥|terrain|passable|high|
+113|풀이 난 흙 바닥|terrain|passable|high|
+114|세로 철로|prop|passable|high|철로
+115|분기 철로|prop|passable|high|철로
+116|가로 철로|prop|passable|high|철로
+117|분기 철로|prop|passable|high|철로
+118|푸른 수정|prop|solid|high|
+119|얼음 바위|prop|solid|high|

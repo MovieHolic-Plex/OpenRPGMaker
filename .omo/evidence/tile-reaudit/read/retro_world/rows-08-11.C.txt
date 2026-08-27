@@ -1,0 +1,47 @@
+246|눈 덮인 절벽 모서리|cliff|solid|high|눈 덮인 절벽
+248|설원|terrain|passable|high|
+249|설산 봉우리 좌측|cliff|solid|high|설산
+251|설산 봉우리 우측|cliff|solid|high|설산
+262|마을|prop|solid|high|
+263|눈 덮인 마을|prop|solid|high|
+276|눈 덮인 절벽 좌측|cliff|solid|high|눈 덮인 절벽
+277|설원|terrain|passable|high|
+278|설원 우측 가장자리|terrain|passable|high|설원
+279|설산 상단 좌측|cliff|solid|high|설산
+280|설산 상단 중앙|cliff|solid|high|설산
+281|설산 상단 우측|cliff|solid|high|설산
+291|성채|prop|solid|high|
+292|마을|prop|solid|high|
+293|눈 덮인 마을|prop|solid|high|
+296|밧줄 다리|floor|passable|medium|
+306|눈 덮인 절벽 좌측|cliff|solid|high|눈 덮인 절벽
+307|설원|terrain|passable|high|
+308|설원 우측 가장자리|terrain|passable|high|설원
+309|설산 하단 좌측|cliff|solid|high|설산
+310|설산 하단 중앙|cliff|solid|high|설산
+311|설산 하단 우측|cliff|solid|high|설산
+314|석조 벽 상단|wall|solid|high|석조 벽
+315|석조 벽 상단|wall|solid|high|석조 벽
+316|석조 벽 상단|wall|solid|high|석조 벽
+317|석조 벽 상단|wall|solid|high|석조 벽
+320|석조 성 상단 좌측|prop|solid|high|석조 성
+321|석조 성 상단 우측|prop|solid|high|석조 성
+322|황금 성 상단 좌측|prop|solid|high|황금 성
+323|황금 성 상단 우측|prop|solid|high|황금 성
+329|화장대 거울|furniture|solid|high|화장대
+336|눈 덮인 절벽 좌하단|cliff|solid|high|눈 덮인 절벽
+337|눈 덮인 절벽 하단|cliff|solid|high|눈 덮인 절벽
+338|눈 덮인 절벽 우하단|cliff|solid|high|눈 덮인 절벽
+339|설산 기저 좌측|cliff|solid|high|설산
+340|설산 기저 중앙|cliff|solid|high|설산
+341|설산 기저 우측|cliff|solid|high|설산
+342|새싹 밭|terrain|passable|high|밭
+343|새싹 밭|terrain|passable|high|밭
+344|석조 벽 하단|wall|solid|high|석조 벽
+345|석조 벽 하단|wall|solid|high|석조 벽
+346|석조 벽 하단|wall|solid|high|석조 벽
+347|석조 벽 하단|wall|solid|high|석조 벽
+350|석조 성 하단 좌측|prop|solid|high|석조 성
+351|석조 성 하단 우측|prop|solid|high|석조 성
+352|황금 성 하단 좌측|prop|solid|high|황금 성
+353|황금 성 하단 우측|prop|solid|high|황금 성

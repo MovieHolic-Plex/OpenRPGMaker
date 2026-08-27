@@ -1,0 +1,53 @@
+256|벽면 사다리 상단|stairs|passable|high|벽면 사다리
+257|조타륜 상단|prop|solid|high|조타륜
+260|삼각 돛 좌측 상단|prop|passable|high|돛대 삼각 돛
+261|돛대 상단|prop|solid|high|돛대
+262|삼각 돛 우측 상단|prop|passable|high|돛대 삼각 돛
+263|감긴 밧줄 더미|prop|passable|high|
+264|선실 출입구 상단|door|passable|high|선실 출입구
+282|선실 목조 골조벽 좌측|wall|solid|high|선실 목조 골조벽
+283|선실 목조 장식 벽판|wall|solid|high|선실 목조 골조벽
+287|조타륜 하단|prop|solid|high|조타륜
+288|붉은 깃발 상단|decoration|passable|high|붉은 깃발
+289|삼각 돛 좌측 상중단|prop|passable|high|돛대 삼각 돛
+291|돛대 가로대 교차부|prop|solid|high|돛대
+292|돛대 가로대 오른쪽|prop|solid|high|돛대
+293|삼각 돛 우측 상중단|prop|passable|high|돛대 삼각 돛
+294|선실 출입구 하단|door|passable|high|선실 출입구
+295|교차한 검 장식|decoration|passable|high|
+298|늘어진 밧줄|prop|passable|high|
+299|원형 목재 기둥 상단|prop|solid|high|원형 목재 기둥
+312|갑판 계단 상단|stairs|passable|high|갑판 계단
+313|갑판 계단|stairs|passable|high|갑판 계단
+315|목조 선체 곡선 테두리 왼쪽|wall|solid|high|목조 선체
+316|목조 선체 곡선 테두리 중앙|wall|solid|high|목조 선체
+317|목조 선체 곡선 테두리 오른쪽|wall|solid|high|목조 선체
+318|붉은 깃발 중앙|decoration|passable|high|붉은 깃발
+319|삼각 돛 좌측 중단 바깥|prop|passable|high|돛대 삼각 돛
+320|삼각 돛 좌측 중단 안쪽|prop|passable|high|돛대 삼각 돛
+321|돛대 기둥|prop|solid|high|돛대
+322|삼각 돛 우측 중단 안쪽|prop|passable|high|돛대 삼각 돛
+323|삼각 돛 우측 중단 바깥|prop|passable|high|돛대 삼각 돛
+324|좌향 대포 포신|prop|solid|high|대포
+325|좌향 대포 포가|prop|solid|high|대포
+326|하향 대포 포가|prop|solid|high|대포
+327|상향 대포 포신|prop|solid|high|대포
+328|밧줄 사다리|stairs|passable|high|
+329|원형 목재 기둥 하단|prop|solid|high|원형 목재 기둥
+342|선실 목조 골조벽 하단 왼쪽|wall|solid|high|선실 목조 골조벽
+343|선실 목조 골조벽 하단 중앙|wall|solid|high|선실 목조 골조벽
+344|선실 목조 골조벽 하단 오른쪽|wall|solid|high|선실 목조 골조벽
+345|선실 출입문|door|passable|high|선실 목조 골조벽
+346|선실 출입구 암부|door|passable|high|선실 출입구
+348|붉은 깃발 하단|decoration|passable|high|붉은 깃발
+349|삼각 돛 좌측 하단 바깥|prop|passable|high|돛대 삼각 돛
+350|삼각 돛 좌측 하단 안쪽|prop|passable|high|돛대 삼각 돛
+351|돛대 하단 받침대|prop|solid|high|돛대
+352|삼각 돛 우측 하단 안쪽|prop|passable|high|돛대 삼각 돛
+353|삼각 돛 우측 하단 바깥|prop|passable|high|돛대 삼각 돛
+354|우향 대포 포가|prop|solid|high|대포
+355|우향 대포 포신|prop|solid|high|대포
+356|하향 대포 포신|prop|solid|high|대포
+357|상향 대포 포가|prop|solid|high|대포
+358|초원 풍경 액자|decoration|passable|high|액자
+359|화로 그림 액자|decoration|passable|high|액자

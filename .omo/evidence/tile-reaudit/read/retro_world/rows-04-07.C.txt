@@ -1,0 +1,53 @@
+120|어두운 바닥|floor|passable|medium|
+121|어두운 바닥|floor|passable|medium|
+122|어두운 바닥|floor|passable|medium|
+123|폭포|water|solid|high|폭포
+125|워프 발판|floor|passable|high|워프 발판
+126|작은 덤불|plant|solid|high|
+128|작은 덤불|plant|solid|high|
+138|풀밭 절벽 상단 좌측|cliff|solid|high|풀밭 절벽
+139|풀밭 절벽 상단 중앙|cliff|solid|high|풀밭 절벽
+140|풀밭 절벽 상단 우측|cliff|solid|high|풀밭 절벽
+146|좁은 벽 창문|window|solid|medium|
+150|어두운 바닥 구멍|terrain|solid|medium|
+151|어두운 바닥 구멍|terrain|solid|medium|
+152|어두운 바닥 구멍|terrain|solid|medium|
+153|폭포|water|solid|high|폭포
+155|워프 발판|floor|passable|high|워프 발판
+168|눈 덮인 절벽 상단 좌측|cliff|solid|high|눈 덮인 절벽
+169|눈 덮인 절벽 상단 중앙|cliff|solid|high|눈 덮인 절벽
+170|눈 덮인 절벽 상단 우측|cliff|solid|high|눈 덮인 절벽
+179|석조 십자가|prop|solid|high|
+180|깊은 구멍|terrain|solid|medium|
+181|깊은 구멍|terrain|solid|medium|
+182|깊은 구멍|terrain|solid|medium|
+183|폭포|water|solid|high|폭포
+185|워프 발판|floor|passable|high|워프 발판
+192|어두운 동굴 바닥|floor|passable|high|
+193|동굴 석순|rock|solid|high|
+194|어두운 돌바닥|floor|passable|high|
+195|어두운 돌바닥|floor|passable|high|
+196|어두운 돌바닥|floor|passable|high|
+197|어두운 돌바닥|floor|passable|high|
+198|눈 덮인 절벽 좌측|cliff|solid|high|눈 덮인 절벽
+199|눈 덮인 절벽 중앙|floor|passable|high|눈 덮인 절벽
+200|눈 덮인 절벽 우측|cliff|solid|high|눈 덮인 절벽
+207|무기 거치대 상단|prop|solid|high|무기 거치대
+209|석조 기둥 상단|prop|solid|high|석조 기둥
+210|어둠|terrain|solid|medium|
+211|어둠|terrain|solid|medium|
+212|어둠|terrain|solid|medium|
+213|폭포|water|solid|high|폭포
+215|워프 발판|floor|passable|high|워프 발판
+222|동굴 석순|rock|solid|high|
+223|동굴 석순|rock|solid|high|
+224|어두운 돌바닥|floor|passable|high|
+225|어두운 돌바닥|floor|passable|high|
+226|어두운 돌바닥|floor|passable|high|
+227|어두운 돌바닥|floor|passable|high|
+228|눈 덮인 절벽 하단 좌측|cliff|solid|high|눈 덮인 절벽
+229|눈 덮인 절벽 하단 중앙|cliff|solid|high|눈 덮인 절벽
+230|눈 덮인 절벽 하단 우측|cliff|solid|high|눈 덮인 절벽
+233|빈 슬롯|empty|passable|high|
+237|무기 거치대 하단|prop|solid|high|무기 거치대
+239|석조 기둥 하단|prop|solid|high|석조 기둥

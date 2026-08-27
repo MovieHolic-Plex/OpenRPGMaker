@@ -1,0 +1,2 @@
+18|어두운 석벽 상단 좌측|wall|solid|medium|어두운 석벽
+19|어두운 석벽 상단 우측|wall|solid|medium|어두운 석벽

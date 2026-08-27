@@ -1,0 +1,18 @@
+252|분홍 회벽|wall|solid|medium|
+253|청회색 회벽|wall|solid|medium|
+264|설산 상단|cliff|solid|high|설산
+268|창문 좌측|window|solid|high|창문
+269|창문 우측|window|solid|high|창문
+282|보라 회벽|wall|solid|medium|
+283|녹색 회벽|wall|solid|medium|
+294|설산 중단|cliff|solid|high|설산
+298|책장 좌측|furniture|solid|high|책장
+299|책장 우측|furniture|solid|high|책장
+312|어두운 회벽|wall|solid|medium|
+313|갈색 회벽|wall|solid|medium|
+324|설산 하단|cliff|solid|high|설산
+326|돌 석상 하단|prop|solid|high|돌 석상
+329|어두운 실내|wall|solid|medium|어두운 방
+342|원형 문양 석재|wall|solid|medium|
+343|원형 문양 석재|wall|solid|medium|
+348|흩어진 꽃|plant|passable|high|

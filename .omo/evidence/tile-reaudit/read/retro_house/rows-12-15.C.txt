@@ -1,0 +1,38 @@
+366|청록 석조 골조 벽 상단 결구|wall|solid|medium|청록 석조 골조 벽
+367|청록 석조 골조 벽 상단 보|wall|solid|medium|청록 석조 골조 벽
+368|청록 석조 골조 벽 상단 오른쪽 끝|wall|solid|medium|청록 석조 골조 벽
+369|남색 석조 벽 상단 왼쪽 결구|wall|solid|medium|남색 목조 골조 석조 벽
+370|남색 석조 벽 상단 보|wall|solid|medium|남색 목조 골조 석조 벽
+371|남색 석조 벽 상단 오른쪽 끝|wall|solid|medium|남색 목조 골조 석조 벽
+384|적갈색 기와지붕 왼쪽 사선 끝|roof|solid|high|적갈색 기와지붕
+385|적갈색 기와지붕 오른쪽 사선 끝|roof|solid|high|적갈색 기와지붕
+386|남색 기와지붕 왼쪽 사선 끝|roof|solid|high|남색 기와지붕
+387|남색 기와지붕 오른쪽 사선 끝|roof|solid|high|남색 기와지붕
+396|청록 석조 벽 패널 왼쪽 상단|wall|solid|high|청록 석조 골조 벽
+397|청록 석조 벽 패널 상단|wall|solid|high|청록 석조 골조 벽
+398|청록 석조 벽 패널 오른쪽 상단|wall|solid|high|청록 석조 골조 벽
+399|남색 석조 벽 패널 왼쪽 상단|wall|solid|high|남색 목조 골조 석조 벽
+400|남색 석조 벽 패널 상단|wall|solid|high|남색 목조 골조 석조 벽
+401|남색 석조 벽 패널 오른쪽 상단|wall|solid|high|남색 목조 골조 석조 벽
+417|베이지색 천막 지붕 왼쪽|roof|solid|high|베이지색 천막
+418|베이지색 천막 지붕 중앙|roof|solid|high|베이지색 천막
+419|베이지색 천막 지붕 오른쪽|roof|solid|high|베이지색 천막
+426|청록 석조 벽 패널 왼쪽|wall|solid|high|청록 석조 골조 벽
+427|청록 석조 벽 패널 중앙|wall|solid|high|청록 석조 골조 벽
+428|청록 석조 벽 패널 오른쪽|wall|solid|high|청록 석조 골조 벽
+429|남색 석조 벽 패널 왼쪽|wall|solid|high|남색 목조 골조 석조 벽
+430|남색 석조 벽 패널 중앙|wall|solid|high|남색 목조 골조 석조 벽
+431|남색 석조 벽 패널 오른쪽|wall|solid|high|남색 목조 골조 석조 벽
+447|베이지색 천막 왼쪽 벽면|wall|solid|high|베이지색 천막
+449|베이지색 천막 오른쪽 벽면|wall|solid|high|베이지색 천막
+456|청록 석조 벽 패널 왼쪽 하단|wall|solid|high|청록 석조 골조 벽
+457|청록 석조 벽 패널 하단|wall|solid|high|청록 석조 골조 벽
+458|청록 석조 벽 패널 오른쪽 하단|wall|solid|high|청록 석조 골조 벽
+459|남색 석조 벽 패널 왼쪽 하단|wall|solid|high|남색 목조 골조 석조 벽
+460|남색 석조 벽 패널 하단|wall|solid|high|남색 목조 골조 석조 벽
+461|남색 석조 벽 패널 오른쪽 하단|wall|solid|high|남색 목조 골조 석조 벽
+468|목조 아치 울타리 상단 왼쪽|fence|solid|medium|목조 아치 울타리
+469|목조 아치 울타리 상단 중앙|fence|solid|medium|목조 아치 울타리
+470|목조 아치 울타리 상단 오른쪽|fence|solid|medium|목조 아치 울타리
+477|베이지색 천막 왼쪽 하단 벽면|wall|solid|high|베이지색 천막
+479|베이지색 천막 오른쪽 하단 벽면|wall|solid|high|베이지색 천막

@@ -1,0 +1,3 @@
+retro_world 296: 언덕 비탈(terrain) | 체크무늬 탁자(furniture) | 밧줄 다리(floor) 출하=분홍 체크무늬 침대(bed)
+ship 294: 선실 입구 하단 문턱(floor) | 갑판 해치 계단 하단(stairs) | 선실 출입구 하단(door) 출하=나무 위 검은 구멍(decoration)
+ship 430: 대형 목재 입구 중앙(door) | 대형 목재 해치 내부(empty) | 대형 목조 해치 개구부(prop) 출하=창 너머 어둠(window)

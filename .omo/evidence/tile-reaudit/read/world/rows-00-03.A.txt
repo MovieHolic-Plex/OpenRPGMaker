@@ -1,0 +1,120 @@
+0|잔디 해안 연못 1|water|solid|high|연못
+1|잔디 해안 연못 2|water|solid|high|연못
+2|잔디 해안 연못 3|water|solid|high|연못
+3|눈 해안 연못 1|water|solid|high|연못
+4|눈 해안 연못 2|water|solid|high|연못
+5|눈 해안 연못 3|water|solid|high|연못
+6|흙길 바닥|terrain|passable|high|
+7|잔디 바닥|terrain|passable|high|
+8|잔디 위 흙길|terrain|passable|high|흙길
+9|모래길 바닥|terrain|passable|high|
+10|잔디 바닥|terrain|passable|high|
+11|잔디 위 모래길|terrain|passable|high|모래길
+12|보라색 돌 바닥|floor|passable|high|
+13|청록색 돌 바닥|floor|passable|high|
+14|보라색 벽돌 벽 상단 좌측|wall|solid|high|보라색 벽돌 벽
+15|보라색 벽돌 벽 상단 중앙 1|wall|solid|high|보라색 벽돌 벽
+16|보라색 벽돌 벽 상단 중앙 2|wall|solid|high|보라색 벽돌 벽
+17|보라색 벽돌 벽 상단 우측|wall|solid|high|보라색 벽돌 벽
+18|잔디 절벽 오목 모서리 좌측|cliff|solid|high|잔디 절벽
+19|잔디 절벽 오목 모서리 우측|cliff|solid|high|잔디 절벽
+20|흙 절벽 오목 모서리 좌측|cliff|solid|high|흙 절벽
+21|흙 절벽 오목 모서리 우측|cliff|solid|high|흙 절벽
+22|눈 절벽 오목 모서리 좌측|cliff|solid|high|눈 절벽
+23|눈 절벽 오목 모서리 우측|cliff|solid|high|눈 절벽
+24|초록 산봉우리 좌측|cliff|solid|high|초록 산
+25|초록 산봉우리 우측|cliff|solid|high|초록 산
+26|바위산 봉우리 좌측|cliff|solid|high|바위산
+27|바위산 봉우리 우측|cliff|solid|high|바위산
+28|설산 봉우리 좌측|cliff|solid|high|설산
+29|설산 봉우리 우측|cliff|solid|high|설산
+30|잔디 해안 세로 강 1|water|solid|high|강
+31|잔디 해안 세로 강 2|water|solid|high|강
+32|잔디 해안 세로 강 3|water|solid|high|강
+33|눈 해안 세로 강 1|water|solid|high|강
+34|눈 해안 세로 강 2|water|solid|high|강
+35|눈 해안 세로 강 3|water|solid|high|강
+36|잔디 경계 흙길 좌상단|terrain|passable|high|흙길
+37|잔디 경계 흙길 상단|terrain|passable|high|흙길
+38|잔디 경계 흙길 우상단|terrain|passable|high|흙길
+39|잔디 경계 모래길 좌상단|terrain|passable|high|모래길
+40|잔디 경계 모래길 상단|terrain|passable|high|모래길
+41|잔디 경계 모래길 우상단|terrain|passable|high|모래길
+42|회색 돌 바닥|floor|passable|high|
+43|짙은 회색 돌 바닥|floor|passable|high|
+44|보라색 벽돌 벽 하단 좌측|wall|solid|high|보라색 벽돌 벽
+45|보라색 벽돌 벽 하단 중앙 1|wall|solid|high|보라색 벽돌 벽
+46|보라색 벽돌 벽 하단 중앙 2|wall|solid|high|보라색 벽돌 벽
+47|보라색 벽돌 벽 하단 우측|wall|solid|high|보라색 벽돌 벽
+48|잔디 절벽 볼록 모서리 좌측|cliff|solid|high|잔디 절벽
+49|잔디 절벽 볼록 모서리 우측|cliff|solid|high|잔디 절벽
+50|흙 절벽 볼록 모서리 좌측|cliff|solid|high|흙 절벽
+51|흙 절벽 볼록 모서리 우측|cliff|solid|high|흙 절벽
+52|눈 절벽 볼록 모서리 좌측|cliff|solid|high|눈 절벽
+53|눈 절벽 볼록 모서리 우측|cliff|solid|high|눈 절벽
+54|목재 울타리 좌상단|fence|solid|high|목재 울타리
+55|목재 울타리 상단 가로|fence|solid|high|목재 울타리
+56|목재 울타리 우상단|fence|solid|high|목재 울타리
+57|큰 바위|rock|solid|high|
+58|파란 수정|prop|solid|high|
+59|작은 바위 더미|rock|solid|high|
+60|잔디 해안 가로 강 1|water|solid|high|강
+61|잔디 해안 가로 강 2|water|solid|high|강
+62|잔디 해안 가로 강 3|water|solid|high|강
+63|눈 해안 가로 강 1|water|solid|high|강
+64|눈 해안 가로 강 2|water|solid|high|강
+65|눈 해안 가로 강 3|water|solid|high|강
+66|잔디 경계 흙길 좌측|terrain|passable|high|흙길
+67|흙길 바닥 중앙|terrain|passable|high|흙길
+68|잔디 경계 흙길 우측|terrain|passable|high|흙길
+69|잔디 경계 모래길 좌측|terrain|passable|high|모래길
+70|모래길 바닥 중앙|terrain|passable|high|모래길
+71|잔디 경계 모래길 우측|terrain|passable|high|모래길
+72|가로 목재 바닥|floor|passable|high|
+73|구멍 난 가로 목재 바닥|floor|passable|high|
+74|목조 회벽 상단 좌측|wall|solid|high|목조 회벽
+75|목조 회벽 상단 중앙|wall|solid|high|목조 회벽
+76|목조 회벽 상단 우측|wall|solid|high|목조 회벽
+77|목조 회벽 상단 좁은 기둥|wall|solid|high|목조 회벽
+78|잔디 고원 좌상단 모서리|cliff|solid|high|잔디 고원
+79|잔디 고원 상단 경계|cliff|solid|high|잔디 고원
+80|잔디 고원 우상단 모서리|cliff|solid|high|잔디 고원
+81|흙 고원 좌상단 모서리|cliff|solid|high|흙 고원
+82|흙 고원 상단 경계|cliff|solid|high|흙 고원
+83|흙 고원 우상단 모서리|cliff|solid|high|흙 고원
+84|목재 울타리 좌측 세로 기둥|fence|solid|high|목재 울타리
+85|목재 울타리 가로 구간|fence|solid|high|목재 울타리
+86|목재 울타리 연결부 기둥|fence|solid|high|목재 울타리
+87|돌 우물|prop|solid|high|
+88|십자가 묘비|prop|solid|high|
+89|둥근 비석 상단|prop|solid|high|둥근 비석
+90|잔디 해안 넓은 바다 1|water|solid|high|바다
+91|잔디 해안 넓은 바다 2|water|solid|high|바다
+92|잔디 해안 넓은 바다 3|water|solid|high|바다
+93|눈 해안 넓은 바다 1|water|solid|high|바다
+94|눈 해안 넓은 바다 2|water|solid|high|바다
+95|눈 해안 넓은 바다 3|water|solid|high|바다
+96|잔디 경계 흙길 좌하단|terrain|passable|high|흙길
+97|잔디 경계 흙길 하단|terrain|passable|high|흙길
+98|잔디 경계 흙길 우하단|terrain|passable|high|흙길
+99|잔디 경계 모래길 좌하단|terrain|passable|high|모래길
+100|잔디 경계 모래길 하단|terrain|passable|high|모래길
+101|잔디 경계 모래길 우하단|terrain|passable|high|모래길
+102|세로 목재 바닥 1|floor|passable|high|
+103|세로 목재 바닥 2|floor|passable|high|
+104|목조 회벽 하단 좌측|wall|solid|high|목조 회벽
+105|목조 회벽 하단 중앙|wall|solid|high|목조 회벽
+106|목조 회벽 하단 우측|wall|solid|high|목조 회벽
+107|목조 회벽 하단 좁은 기둥|wall|solid|high|목조 회벽
+108|잔디 고원 좌측 경계|cliff|solid|high|잔디 고원
+109|잔디 고원 중앙|terrain|passable|high|잔디 고원
+110|잔디 고원 우측 경계|cliff|solid|high|잔디 고원
+111|흙 고원 좌측 경계|cliff|solid|high|흙 고원
+112|흙 고원 중앙|terrain|passable|high|흙 고원
+113|흙 고원 우측 경계|cliff|solid|high|흙 고원
+114|목재 울타리 좌하단|fence|solid|high|목재 울타리
+115|목재 울타리 하단 가로|fence|solid|high|목재 울타리
+116|목재 표지판|prop|solid|high|
+117|떨어진 낙엽|decoration|passable|high|
+118|해골과 뼈|decoration|passable|high|
+119|둥근 비석 하단|prop|solid|high|둥근 비석

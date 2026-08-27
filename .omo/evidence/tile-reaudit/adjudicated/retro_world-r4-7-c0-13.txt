@@ -1,0 +1,15 @@
+120|어두운 수면|water|solid|medium|어두운 수면
+121|어두운 수면|water|solid|medium|어두운 수면
+122|어두운 수면|water|solid|medium|어두운 수면
+150|어두운 소용돌이 수면 상부|water|solid|medium|어두운 소용돌이
+151|어두운 소용돌이 수면 상부|water|solid|medium|어두운 소용돌이
+152|어두운 소용돌이 수면 상부|water|solid|medium|어두운 소용돌이
+180|어두운 소용돌이 수면 하부|water|solid|medium|어두운 소용돌이
+181|어두운 소용돌이 수면 하부|water|solid|medium|어두운 소용돌이
+182|어두운 소용돌이 수면 하부|water|solid|medium|어두운 소용돌이
+193|동굴 석순 상부|rock|solid|high|동굴 석순
+210|검은 심해 수면|water|solid|medium|검은 수면
+211|검은 심해 수면|water|solid|medium|검은 수면
+212|검은 심해 수면|water|solid|medium|검은 수면
+222|동굴 석순 좌하부|rock|solid|high|동굴 석순
+223|작은 동굴 석순 무리|rock|solid|high|동굴 석순

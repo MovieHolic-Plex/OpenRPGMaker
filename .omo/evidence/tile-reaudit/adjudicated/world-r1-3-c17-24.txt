@@ -1,0 +1,2 @@
+79|잔디|terrain|passable|high|
+82|흙|terrain|passable|high|

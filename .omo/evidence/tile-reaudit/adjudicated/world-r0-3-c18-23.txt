@@ -1,0 +1,10 @@
+78|잔디 고원 좌상단 모서리|cliff|passable|medium|잔디 고원 지대
+79|잔디 고원 상단 테두리|cliff|passable|low|잔디 고원 지대
+80|잔디 고원 우상단 모서리|cliff|passable|medium|잔디 고원 지대
+81|흙 고원 좌상단 모서리|cliff|passable|medium|흙 고원 지대
+82|흙 고원 상단 테두리|cliff|passable|low|흙 고원 지대
+83|흙 고원 우상단 모서리|cliff|passable|medium|흙 고원 지대
+108|잔디 고원 좌측 테두리|cliff|passable|medium|잔디 고원 지대
+110|잔디 고원 우측 테두리|cliff|passable|medium|잔디 고원 지대
+111|흙 고원 좌측 테두리|cliff|passable|medium|흙 고원 지대
+113|흙 고원 우측 테두리|cliff|passable|medium|흙 고원 지대

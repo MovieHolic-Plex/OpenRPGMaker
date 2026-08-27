@@ -1,0 +1,120 @@
+360|작은 숲|tree|solid|high|
+361|잔디 바닥|floor|passable|high|
+362|작은 숲|tree|solid|high|
+363|작은 산|cliff|solid|high|
+364|잔디 바닥|floor|passable|high|
+365|작은 산|cliff|solid|high|
+366|격자 바닥|floor|passable|high|
+367|격자 구덩이 바닥|floor|passable|high|
+368|격자 구덩이 모서리|floor|passable|high|
+369|어두운 구덩이|floor|passable|high|
+370|검은 어둠 바닥|floor|passable|high|
+371|어두운 구덩이 모서리|floor|passable|high|
+372|상향 화살표 발판|floor|passable|high|
+373|하향 화살표 발판|floor|passable|high|
+374|석재 계단|stairs|passable|high|
+375|붉은 양탄자 좌상단|floor|passable|high|붉은 양탄자
+376|붉은 양탄자 상단|floor|passable|high|붉은 양탄자
+377|붉은 양탄자 우상단|floor|passable|high|붉은 양탄자
+378|큰 산 좌상단|cliff|solid|high|큰 산
+379|큰 산 우상단|cliff|solid|high|큰 산
+380|돌 탑 상단|wall|solid|high|돌 탑
+381|돌 건물 상단|wall|solid|high|돌 건물
+382|신전|prop|solid|high|
+383|석상|prop|solid|high|
+384|침대 상단|furniture|solid|high|침대
+385|목재 탁자 좌측|furniture|solid|high|목재 탁자
+386|목재 탁자 중앙|furniture|solid|high|목재 탁자
+387|목재 탁자 우측|furniture|solid|high|목재 탁자
+388|작은 목재 탁자|furniture|solid|high|
+389|점술 탁자|furniture|solid|high|
+390|숲 좌상단|tree|solid|high|숲
+391|숲 상단|tree|solid|high|숲
+392|숲 우상단|tree|solid|high|숲
+393|산 좌상단|cliff|solid|high|산맥
+394|산 상단|cliff|solid|high|산맥
+395|산 우상단|cliff|solid|high|산맥
+396|격자 구덩이 벽 좌상단|wall|solid|high|격자 구덩이
+397|격자 구덩이 벽 상단|wall|solid|high|격자 구덩이
+398|격자 구덩이 벽 우상단|wall|solid|high|격자 구덩이
+399|어두운 구덩이 좌상단|cliff|solid|high|어두운 구덩이
+400|어두운 구덩이 상단|cliff|solid|high|어두운 구덩이
+401|어두운 구덩이 우상단|cliff|solid|high|어두운 구덩이
+402|좌향 화살표 발판|floor|passable|high|
+403|우향 화살표 발판|floor|passable|high|
+404|유리창 상단|window|solid|high|유리창
+405|붉은 양탄자 좌측|floor|passable|high|붉은 양탄자
+406|붉은 양탄자 중앙|floor|passable|high|붉은 양탄자
+407|붉은 양탄자 우측|floor|passable|high|붉은 양탄자
+408|큰 산 좌하단|cliff|solid|high|큰 산
+409|큰 산 우하단|cliff|solid|high|큰 산
+410|돌 탑 하단|wall|solid|high|돌 탑
+411|돌 건물 하단|wall|solid|high|돌 건물
+412|석조 다리 북단|stairs|passable|high|석조 다리
+413|동굴 입구|door|passable|high|
+414|침대 하단|furniture|solid|high|침대
+415|가로 침대 좌측|furniture|solid|high|가로 침대
+416|가로 침대 우측|furniture|solid|high|가로 침대
+417|빈 슬롯|empty|passable|high|
+418|피아노 좌측|furniture|solid|high|피아노
+419|피아노 우측|furniture|solid|high|피아노
+420|숲 좌측|tree|solid|high|숲
+421|숲 중앙|tree|solid|high|숲
+422|숲 우측|tree|solid|high|숲
+423|산 좌측|cliff|solid|high|산맥
+424|산 중앙|cliff|solid|high|산맥
+425|산 우측|cliff|solid|high|산맥
+426|격자 구덩이 벽 좌측|wall|solid|high|격자 구덩이
+427|격자 구덩이 내부|floor|passable|high|격자 구덩이
+428|격자 구덩이 벽 우측|wall|solid|high|격자 구덩이
+429|어두운 구덩이 좌측|cliff|solid|high|어두운 구덩이
+430|어두운 구덩이 내부|floor|passable|high|어두운 구덩이
+431|어두운 구덩이 우측|cliff|solid|high|어두운 구덩이
+432|갈색 기와 지붕 상단|roof|solid|high|갈색 기와 지붕
+433|붉은 기와 지붕 상단|roof|solid|high|붉은 기와 지붕
+434|유리창 하단|window|solid|high|유리창
+435|붉은 양탄자 좌하단|floor|passable|high|붉은 양탄자
+436|붉은 양탄자 하단|floor|passable|high|붉은 양탄자
+437|붉은 양탄자 우하단|floor|passable|high|붉은 양탄자
+438|화산 좌상단|cliff|solid|high|화산
+439|화산 우상단|cliff|solid|high|화산
+440|성 좌상단|wall|solid|high|성
+441|성 우상단|wall|solid|high|성
+442|석조 다리 교차부|stairs|passable|high|석조 다리
+443|수평 석조 다리 우측|stairs|passable|high|석조 다리
+444|파이프 오르간 좌상단|furniture|solid|high|파이프 오르간
+445|파이프 오르간 우상단|furniture|solid|high|파이프 오르간
+446|붉은 1인용 왕좌 상단|furniture|solid|high|붉은 1인용 왕좌
+447|빈 슬롯|empty|passable|high|
+448|대형 붉은 왕좌 좌상단|furniture|solid|high|대형 붉은 왕좌
+449|대형 붉은 왕좌 우상단|furniture|solid|high|대형 붉은 왕좌
+450|숲 좌하단|tree|solid|high|숲
+451|숲 하단|tree|solid|high|숲
+452|숲 우하단|tree|solid|high|숲
+453|산 좌하단|cliff|solid|high|산맥
+454|산 하단|cliff|solid|high|산맥
+455|산 우하단|cliff|solid|high|산맥
+456|격자 구덩이 벽 좌하단|wall|solid|high|격자 구덩이
+457|격자 구덩이 벽 하단|wall|solid|high|격자 구덩이
+458|격자 구덩이 벽 우하단|wall|solid|high|격자 구덩이
+459|어두운 구덩이 좌하단|cliff|solid|high|어두운 구덩이
+460|어두운 구덩이 하단|floor|passable|high|어두운 구덩이
+461|어두운 구덩이 우하단|cliff|solid|high|어두운 구덩이
+462|갈색 기와 지붕 하단|roof|solid|high|갈색 기와 지붕
+463|붉은 기와 지붕 하단|roof|solid|high|붉은 기와 지붕
+464|환기구|floor|passable|high|
+465|붉은 양탄자 계단 좌측|stairs|passable|high|붉은 양탄자 계단
+466|붉은 양탄자 계단 중앙|stairs|passable|high|붉은 양탄자 계단
+467|붉은 양탄자 계단 우측|stairs|passable|high|붉은 양탄자 계단
+468|화산 좌하단|cliff|solid|high|화산
+469|화산 우하단|cliff|solid|high|화산
+470|성 좌하단|wall|solid|high|성
+471|성 우하단|wall|solid|high|성
+472|석조 다리 남단|stairs|passable|high|석조 다리
+473|수평 석조 다리 난간|stairs|passable|high|석조 다리
+474|파이프 오르간 좌하단|furniture|solid|high|파이프 오르간
+475|파이프 오르간 우하단|furniture|solid|high|파이프 오르간
+476|붉은 1인용 왕좌 하단|furniture|solid|high|붉은 1인용 왕좌
+477|대형 붉은 왕좌 좌하단|furniture|solid|high|대형 붉은 왕좌
+478|대형 붉은 왕좌 중앙|furniture|solid|high|대형 붉은 왕좌
+479|대형 붉은 왕좌 우하단|furniture|solid|high|대형 붉은 왕좌

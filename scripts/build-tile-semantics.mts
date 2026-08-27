@@ -161,14 +161,24 @@ function one(
 `
     : "";
   return `// ${target.title} 칩셋(${target.textureKey}) 타일 그림판의 AI 검색용 큐레이션 시맨틱 테이블.
-// 6x 업스케일 행 스트립(.omo/evidence/chipset-strips/${target.id}/row-00..15.png) 전수 판독으로 작성했다.
+// 이 파일은 생성물이다 — 수기 편집 대신 scripts/build-tile-semantics.mts 로 재생성한다.
+// 판독 절차(지어낸 이름이 아니라 실제 통산 과정):
+//   1. gen-chipset-blocks.mts 가 4행을 경계선 없는 연속 30x4 아틀라스로 굽는다.
+//      격자선을 그리지 않는 이유: 여러 칸에 걸친 물건을 다시 쪼개 놓으면 그게 그대로 오독이 된다.
+//   2. 인덱스 확인은 gen-chipset-strips.mts 의 숫자 라벨로만 한다(스트립은 세로 연속성을 끊는다).
+//   3. 서로 모르는 판독자 2명 이상이 독립 서술하고 role 다수결로 정리한다.
+//      픽셀이 거의 같은 시트(retro_exterior/retro_house, RGB 차이 0.4%)는 판독을 합치므로 한 칸에 최대 4표다.
+//   4. 다수결이 이전 라벨과 어긋나는 칸만 교정한다. 갈리는 칸은 그대로 둔다 —
+//      지울 수 없는 칸을 지어내는 것이 이 테이블을 무너뜨렸던 원인이다. 보류 목록은 tile-reaudit/splits.txt.
+//   5. 사람이 14~20배 크롭으로 확인한 칸은 overrides.json 이 다수결을 이긴다
+//      (판독자 전원이 틀린 사례가 있었다 — 125/155/185/215 는 바닥이 아니라 석조 틀 유리창이다).
 // tileSemanticsDungeon.ts / tileSemanticsInterior.ts 와 동일한 계약: tileset.tileMeta[] 와 별개로
 // 관리되는 검색 전용 데이터다. 통행성/레이어 계약은 tilesetHarness 가, 타일별 정밀 라벨은 여기가 담당한다.
 //
 // 좌표 규약: 30타일/행, ID = 행×30 + 열. 아트가 없는 슬롯(완전 투명 또는 분홍 컬러키 단색)은
 // 서술할 대상이 없으므로 엔트리를 만들지 않는다 — scripts/verify-tile-semantics.mts 가 픽셀에서
 // 그 목록을 직접 구해 커버리지를 검증한다.
-// 판독이 애매한 타일은 단정 대신 형태 서술을 쓰고 "판독보류" 태그를 남겼다(실내 465~467 전례).
+// 도화 가능 여부는 상수가 아니라 PNG 에서 직접 유도한다(불투명·비키색 픽셀이 하나라도 있는가).
 //
 // 실측: 도화 가능 ${entries.length}칸 전수 서술, 고유 라벨 ${distinct}개.
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
