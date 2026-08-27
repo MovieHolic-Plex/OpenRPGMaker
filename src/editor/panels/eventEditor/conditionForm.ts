@@ -996,6 +996,30 @@ export function renderNpcActivityCondition(
   return row;
 }
 
+const BATTLE_RESULT_OPTIONS = [
+  { value: "victory", label: "승리" },
+  { value: "defeat", label: "패배" },
+  { value: "escape", label: "도망" },
+] as const satisfies readonly { readonly value: Extract<Condition, { kind: "battleResult" }>["result"]; readonly label: string }[];
+
+export function renderBattleResultCondition(
+  cond: Extract<Condition, { kind: "battleResult" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly resultTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const result = selectWithOptions(
+    BATTLE_RESULT_OPTIONS,
+    cond.result,
+    options.resultTestId ?? "event-condition-battle-result"
+  );
+  result.addEventListener("change", () => {
+    onChange({ kind: "battleResult", result: selectedOptionValue(result, BATTLE_RESULT_OPTIONS, cond.result) });
+  });
+  row.append(result);
+  return row;
+}
+
 export function renderFriendshipAtLeastCondition(
   cond: Extract<Condition, { kind: "friendshipAtLeast" }>,
   onChange: (condition: Condition) => void,
