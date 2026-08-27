@@ -1,0 +1,12 @@
+       |                                       ^
+    141|     const titleScreen = ctx.project.system.titleScreen;
+    142|     expect(titleScreen?.backgroundLayers?.[0]?.resourceId).toBe("title…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/39]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  39 failed | 1 passed (40)
+   Start at  20:03:52
+   Duration  15.52s (transform 9.76s, setup 0ms, collect 14.01s, tests 126ms, environment 0ms, prepare 266ms)
+

@@ -1,0 +1,18 @@
+## 툴 능력 색인(활성 148개 · 이름만)
+이 목록의 툴은 전부 존재한다. 이번 라운드 tool 스키마만 40개로 잘려 있을 뿐이다.
+- 핵심: tile_query, create_map, resize_map, get_project_summary, list_resources, get_database_records
+- 맵: duplicate_map, manage_map_tree, preview_house, mirror_region, set_start_position, set_map_properties, set_encounter_table, make_hunting_ground, configure_roguelike_room, create_farm_plot, shift_map, remove_map, set_action_combat, generate_map, get_map_region, check_reachability, find_layout_regions, highlight_map_region, show_map_region
+- 타일·배치: author_house, author_village, build_wall, build_roof, place_door, place_window, lay_path, place_props, fill_region, tile_erase, evaluate_village_look, critique_village, list_village_tree_assets, get_village_session, evaluate_village_layer, start_interior_room_session, advance_interior_room_build, run_interior_room_pipeline, furnish_interior_space, evaluate_interior_room, list_interior_room_demos, start_dungeon_room_session, advance_dungeon_room_build, run_dungeon_room_pipeline, evaluate_dungeon_room, list_dungeon_room_themes, build_castle, list_structure_kits, stamp_structure_kit, register_structure_kit, paint_road
+- 이벤트: upsert_event, place_npc, set_npc_schedule, make_villager, set_shop_stock, create_transfer_pair, place_battle_blocker, place_trap, place_chest, place_storage_chest, place_savepoint, make_chase_scene, duplicate_event, remove_event, move_event, script_cutscene, place_examine_hotspots, compile_puzzle, script_cutscene_preset, make_horror_loop, make_gallery_room, set_lighting_volume, set_scene_mood, define_ending, list_endings, author_story_arc, declare_story_flag, get_story_state, find_flag_usage, explain_event, find_events, get_event, find_switch_usage, list_npc_graphics
+- 데이터베이스: make_action_enemy, duplicate_database_record, delete_database_record, upsert_database_utility, upsert_item, upsert_enemy, upsert_troop, define_monster_species, define_crop, set_type_chart, give_starter_monsters, upsert_actor, upsert_skill, upsert_equipment, upsert_class, define_promotion, upsert_state, upsert_common_event, upsert_battle_animation, set_session_start, set_title_screen, upsert_life_skill, upsert_life_system
+- 퀘스트: create_quest_flags, create_quest, define_quest, lint_quest, generate_walkthrough, verify_quest
+- 세계관: query_world, upsert_world_entities, link_world_ref, plan_world, link_maps, build_world, lint_world
+- 전투: simulate_battle, tune_enemy
+- 시스템: reset_project, set_project_settings, upsert_resource, delete_resource, rename_switch, rename_variable, prune_unused, evaluate_game_quality, revert_last_edit, list_edit_history, configure_time_system, configure_monster_system, export_game, play_walkthrough, run_scene_test, run_lint, list_project_commits, present_doc, list_ai_docs
+- 기타: find_tools
+
+### 색인 사용 규칙(반드시 준수)
+1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.
+2. 스키마가 이번 라운드에 없으면 find_tools(query)로 불러와 다음 라운드에 호출한다.
+3. 목록에 있는 기능을 "그 기능이 없습니다"·"지원하지 않습니다"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — find_tools 로 에스컬레이션한다.
+4. 단, UX 정책의 진짜 엔진 한계(3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포 미지원)는 그대로다.
