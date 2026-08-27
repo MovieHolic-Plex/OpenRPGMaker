@@ -8,8 +8,16 @@ export function defaultBattleRecords() {
     enemies: [
       normalizeEnemyRecord({"id":"enemy_slime","name":"슬라임","speciesId":"species_wild_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":15,"maxMp":10,"attack":8,"defense":5,"mind":10,"agility":10},"rewards":{"exp":5,"gold":4,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
       normalizeEnemyRecord({"id":"enemy_meadow_slime","name":"초원 슬라임","speciesId":"species_king_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":20,"maxMp":10,"attack":9,"defense":6,"mind":10,"agility":10},"rewards":{"exp":7,"gold":6,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
-      normalizeEnemyRecord({"id":"enemy_cave_bat","name":"동굴 박쥐","speciesId":"species_cave_bat","monsterResourceId":"generated-enemy-bat-01","stats":{"maxHp":25,"maxMp":10,"attack":11,"defense":7,"mind":10,"agility":10},"rewards":{"exp":9,"gold":8,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
-      normalizeEnemyRecord({"id":"enemy_stone_golem","name":"돌 골렘","speciesId":"species_stone_golem","monsterResourceId":"generated-enemy-golem-01","stats":{"maxHp":30,"maxMp":10,"attack":12,"defense":8,"mind":10,"agility":10},"rewards":{"exp":11,"gold":10,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
+            // ── 액션 전투 리밸런스(2026-08) ─────────────────────────────────────────
+      // 광산 1층(map_mine_1f, actionCombat 옵트인)이 이 레코드들을 실시간 전투로 스폰한다.
+      // 기본 주인공 1레벨 스윙(공격력 45, 보너스 0) 기준 스윙 데미지는
+      // computeSwingDamage = round(45 - defense/2) (분산 0.9~1.1) 이고,
+      // 한방 컷이던 25~30 hp 를 3~8방 컷으로 올렸다(턴제에서도 같은 수치를 읽는다):
+      //   박쥐  hp 150 / def 14 → 스윙 38, 4방
+      //   골렘  hp 200 / def 30 → 스윙 30, 7방
+      //   궁수  hp 130 / def 20 → 스윙 35, 4방
+      normalizeEnemyRecord({"id":"enemy_cave_bat","name":"동굴 박쥐","speciesId":"species_cave_bat","monsterResourceId":"generated-enemy-bat-01","stats":{"maxHp":150,"maxMp":10,"attack":11,"defense":14,"mind":10,"agility":10},"rewards":{"exp":9,"gold":8,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}],"actionProfile":{"contactDamage":10,"aggroRange":7,"moveIntervalMs":220,"knockbackResist":0,"attack":{"kind":"melee","windupMs":300,"recoverMs":250,"damage":14,"range":1,"cooldownMs":800}}}),
+            normalizeEnemyRecord({"id":"enemy_stone_golem","name":"돌 골렘","speciesId":"species_stone_golem","monsterResourceId":"generated-enemy-golem-01","stats":{"maxHp":200,"maxMp":10,"attack":12,"defense":30,"mind":10,"agility":10},"rewards":{"exp":11,"gold":10,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}],"actionProfile":{"contactDamage":24,"aggroRange":5,"moveIntervalMs":600,"knockbackResist":0.8,"attack":{"kind":"melee","windupMs":1100,"recoverMs":500,"damage":40,"range":1,"cooldownMs":1600}}}),
       normalizeEnemyRecord({"id":"enemy_dragon","name":"붉은 드래곤","speciesId":"species_ember_drake","monsterResourceId":"generated-enemy-dragon-01","stats":{"maxHp":35,"maxMp":10,"attack":14,"defense":9,"mind":10,"agility":10},"rewards":{"exp":13,"gold":12,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
       normalizeEnemyRecord({"id":"enemy_extra_006","name":"좀비","speciesId":"species_extra_006","monsterResourceId":"generated-enemy-zombie-01-enemy_extra_006","stats":{"maxHp":40,"maxMp":10,"attack":15,"defense":11,"mind":10,"agility":10},"rewards":{"exp":15,"gold":14,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
       normalizeEnemyRecord({"id":"enemy_extra_007","name":"사마귀","speciesId":"species_extra_007","monsterResourceId":"generated-enemy-mantis-01-enemy_extra_007","stats":{"maxHp":45,"maxMp":10,"attack":17,"defense":12,"mind":10,"agility":10},"rewards":{"exp":17,"gold":16,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
@@ -126,6 +134,9 @@ export function defaultBattleRecords() {
       normalizeEnemyRecord({"id":"enemy_extra_118","name":"용왕","speciesId":"species_extra_118","monsterResourceId":"generated-enemy-dragon-01-enemy_extra_118","stats":{"maxHp":600,"maxMp":10,"attack":183,"defense":145,"mind":10,"agility":10},"rewards":{"exp":239,"gold":238,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
       normalizeEnemyRecord({"id":"enemy_extra_119","name":"야생 슬라임","speciesId":"species_extra_119","monsterResourceId":"generated-enemy-slime-01-enemy_extra_119","stats":{"maxHp":605,"maxMp":10,"attack":185,"defense":146,"mind":10,"agility":10},"rewards":{"exp":241,"gold":240,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
       normalizeEnemyRecord({"id":"enemy_extra_120","name":"엠버 드레이크","speciesId":"species_extra_120","monsterResourceId":"generated-enemy-dragon-01-enemy_extra_120","stats":{"maxHp":610,"maxMp":10,"attack":186,"defense":147,"mind":10,"agility":10},"rewards":{"exp":243,"gold":242,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}]}),
+      // 폐광 원거리 적 — 벽 뒤 갱도에서 투석(투사체) 사격. 박쥐보다 단단하고 사거리가 길다.
+      // hp 130 / def 20 → 기본 스윙 35, 4방. species/리소스는 해골 계열을 재사용한다.
+      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","speciesId":"species_extra_105","monsterResourceId":"generated-enemy-skeleton-01-enemy_extra_105","stats":{"maxHp":130,"maxMp":10,"attack":13,"defense":20,"mind":10,"agility":10},"rewards":{"exp":12,"gold":11,"dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}],"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
       ...generatedEnemyRecords(),
     ],
     troops: [
@@ -189,6 +200,15 @@ export function defaultBattleRecords() {
         name: "석상 수호병",
         // 폐광 보스 — 단단한 본체 + 빠른 호위 둘. 박쥐 떼보다 화력이 높다.
         enemyIds: ["enemy_cave_bat", "enemy_stone_golem", "enemy_cave_bat"],
+        autoAlign: true,
+        previewBackgroundResourceId: "generated-battle-reference-forest",
+        battleEventPages: [],
+      }),
+      normalizeTroopRecord({
+        id: "troop_mine_archers",
+        name: "광산 해골 궁수",
+        // 폐광 갱도의 원거리 견제 — 단독 배치. 액션 전투 맵 스폰 전용.
+        enemyIds: ["enemy_mine_skel_archer"],
         autoAlign: true,
         previewBackgroundResourceId: "generated-battle-reference-forest",
         battleEventPages: [],
