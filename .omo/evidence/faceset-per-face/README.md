@@ -15,6 +15,7 @@ PR #137 이후 사용자 신고: "페이스셋 설정한게 실제 반영이 전
 |---|---|
 | `EV-resource-manager-per-face.png` | 수정 후 리소스 관리자: "Actor1 얼굴 1…16" 낱장 항목 (112장, 48px 초과 0장) |
 | `U1-after-upload.png` | 192×192 Actor2.png 업로드 직후 리소스 관리자 |
+| `U2-uploaded-16-entries.png` | 업로드로 생긴 낱장 항목 — "Actor2 얼굴 11..16", 겁각 **48x48px** 표기 · 칸마다 다른 썰네일 |
 | `upload-log.txt` | C1 업로드 분할 로그: 낱장 16개, dataUrl 16종(진짜 절단), 시트 자산 0 |
 | `P1-picker-open.png` | DB 액터 얼굴 피커: 낱장 목록, 4×4 격자 없음, 인덱스 입력 없음 |
 | `runtime-log.txt` | C4 런타임: 상태 메뉴가 `assets/easyrpg/faceset/Actor1/07.png` 를 background-position 0% 0% 로 그림 |

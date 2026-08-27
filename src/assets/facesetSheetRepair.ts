@@ -22,6 +22,13 @@ function listPendingFaces(project: Project): readonly RepairableFace[] {
   return pending;
 }
 
+// 동기 사전 점검. 호출자가 이걸 먼저 봐서 await 자시합을 건너다— 생산 잠금:
+// 로드 경로에 불필요한 await 를 넣으면 지속화 순서가 어긍나며
+// storePersistence / storeFlushShaEvidence 의 순서 계약이 진다(실머 2026-08-27).
+export function hasPendingFacesetSheetRepair(project: Project): boolean {
+  return listPendingFaces(project).length > 0;
+}
+
 /**
  * 아직 시트 픽셀을 물고 있는 낱장 자산을 실제 48×48 그림으로 바꾼다.
  * canvas 가 없는 환경(테스트·노드)에서는 아무것도 하지 않고 false 를 돌려준다.
