@@ -1,0 +1,34 @@
+BEFORE upload: {"profiles":112,"uploaded":0}
+uploaded sheet file: Actor2.png (192x192, 16칸)
+AFTER upload: {
+ "uploadedFacesetAssets": 16,
+ "ids": [
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-00",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-01",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-02",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-03",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-04",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-05",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-06",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-07",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-08",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-09",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-10",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-11",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-12",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-13",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-14",
+  "faceset_img_1afc553e-1510-4630-ad28-b66d203bfd8f-15"
+ ],
+ "sizes": [
+  "48x48"
+ ],
+ "distinctDataUrls": 16,
+ "sheetSizedAssets": 0,
+ "uploadedProfileCount": 16,
+ "uploadedProfileSizes": [
+  "48x48"
+ ],
+ "totalFaceProfiles": 128
+}
+RENDERED in resource manager: {"count":144,"naturalSizes":{"48x48":144},"over48":0}

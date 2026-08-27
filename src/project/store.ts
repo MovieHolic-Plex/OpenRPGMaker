@@ -2,6 +2,7 @@ import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLega
 import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/defaultProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
@@ -1045,9 +1046,12 @@ class ProjectStore {
       ensureBundledResourceProfiles(this.current),
       ensureDefaultDatabaseIconResources(this.current),
     ].some(Boolean);
+    // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
+    const facesRepaired = await repairUploadedFacesetSheets(this.current);
+    if (facesRepaired) this.emit();
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if (changed && this.remotePersistenceEnabled) {
+    if ((changed || facesRepaired) && this.remotePersistenceEnabled) {
       if (persistIfChanged) await this.persistCurrent();
       else {
         this.dirtySinceLastPersist = true;

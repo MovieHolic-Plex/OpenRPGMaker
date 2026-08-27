@@ -1,0 +1,15 @@
+actor_hero face in loaded project: easyrpg-faceset-actor1-07
+key Escape -> status menu visible: false
+key x -> status menu visible: true
+STATUS MENU FACES: [
+ {
+  "testid": "status-menu-face-0",
+  "tag": "SPAN",
+  "imgSrc": null,
+  "natural": null,
+  "backgroundImage": "url(\"http://127.0.0.1:9861/assets/easyrpg/faceset/Actor1/07.png\")",
+  "backgroundSize": "22px 22px",
+  "backgroundPosition": "0% 0%"
+ }
+]
+failed face requests: 0 []
