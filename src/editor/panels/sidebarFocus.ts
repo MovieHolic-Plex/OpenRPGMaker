@@ -13,6 +13,7 @@ export interface FocusSnapshot {
   readonly testId?: string;
   readonly pathIndices?: readonly number[];
   readonly tagName: string;
+  readonly fallbackAnchorTestId?: string;
 }
 
 /**
@@ -26,11 +27,17 @@ export function captureFocus(container: HTMLElement | null): FocusSnapshot | nul
     return null;
   }
 
+  let fallbackAnchorTestId: string | undefined;
+  if (isInsideOverflowDropdown(active)) {
+    fallbackAnchorTestId = "oprn-tool-overflow";
+  }
+
   const testId = active.dataset.testid;
   if (testId) {
     return {
       testId,
       tagName: active.tagName,
+      fallbackAnchorTestId,
     };
   }
 
@@ -47,6 +54,7 @@ export function captureFocus(container: HTMLElement | null): FocusSnapshot | nul
   return {
     pathIndices: path,
     tagName: active.tagName,
+    fallbackAnchorTestId,
   };
 }
 
@@ -60,6 +68,14 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
     const target = container.querySelector<HTMLElement>(`[data-testid="${cssEscape(snapshot.testId)}"]`);
     if (target && typeof target.focus === "function") {
       target.focus();
+      return;
+    }
+  }
+
+  if (snapshot.fallbackAnchorTestId) {
+    const anchor = container.querySelector<HTMLElement>(`[data-testid="${cssEscape(snapshot.fallbackAnchorTestId)}"]`);
+    if (anchor && typeof anchor.focus === "function") {
+      anchor.focus();
       return;
     }
   }
@@ -89,9 +105,8 @@ export function applyRovingTabindex(container: HTMLElement): void {
   }
 }
 
-function cssEscape(value: string): string {
-  const escape = (globalThis as { CSS?: { escape?: (v: string) => string } }).CSS?.escape;
-  return escape ? escape(value) : value.replace(/["\\]/g, "\\$&");
+export function cssEscape(value: string): string {
+  return value.replace(/["\\]/g, "\\$&");
 }
 
 /**
@@ -124,10 +139,30 @@ function isToolbar(node: HTMLElement): boolean {
   );
 }
 
+/**
+ * 이 노드가 ⋯ 오버플로 드롭다운 안에 있는가.
+ *
+ * `closest('[data-testid="..."], .oprn-overflow-dropdown')` 로 쓰면 실제 브라우저에서는 되지만
+ * 테스트 하네스(test/fakeDom.ts)의 선택자 해석이 쉼표 목록 + 속성 선택자를 못 받아 항상 null 을
+ * 준다(실측: 그 상태에서 드롭다운 제외와 포커스 대체 앵커가 둘 다 조용히 죽었다).
+ * 그래서 조상을 직접 걷는다 — 두 환경에서 같은 답을 준다.
+ */
+function isInsideOverflowDropdown(node: HTMLElement | null): boolean {
+  for (let n: HTMLElement | null = node; n; n = n.parentElement) {
+    if (n.dataset?.testid === "toolbar-overflow-dropdown") return true;
+    if (n.classList?.contains("oprn-overflow-dropdown") || n.classList?.contains("oprn-toolbar-dropdown")) return true;
+  }
+  return false;
+}
+
+function isDropdownButton(btn: HTMLButtonElement): boolean {
+  return isInsideOverflowDropdown(btn);
+}
+
 function setupToolbarRoving(toolbar: HTMLElement): void {
   const getEnabledButtons = (): HTMLButtonElement[] => {
     const buttons = toolbar.querySelectorAll<HTMLButtonElement>("button");
-    return Array.from(buttons).filter((b) => !b.disabled && !b.hidden);
+    return Array.from(buttons).filter((b) => !b.disabled && !b.hidden && !isDropdownButton(b));
   };
 
   const updateTabIndices = (): void => {
@@ -163,6 +198,11 @@ function setupToolbarRoving(toolbar: HTMLElement): void {
   (toolbar as unknown as { __roving_installed?: boolean }).__roving_installed = true;
 
   toolbar.addEventListener("keydown", (event: KeyboardEvent) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && isInsideOverflowDropdown(target)) {
+      return;
+    }
+
     const key = event.key;
     if (
       key !== "ArrowRight" &&
@@ -204,7 +244,7 @@ function setupToolbarRoving(toolbar: HTMLElement): void {
 
   toolbar.addEventListener("focusin", (event: FocusEvent) => {
     const target = event.target;
-    if (target instanceof HTMLButtonElement) {
+    if (target instanceof HTMLButtonElement && !isDropdownButton(target)) {
       const buttons = getEnabledButtons();
       const idx = buttons.indexOf(target);
       if (idx >= 0) {

@@ -251,7 +251,78 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
   }
 
   wrapper.append(menu);
+  scheduleMenuAnchor(menu, toggle);
   return wrapper;
+}
+
+/**
+ * 위치 계산은 **삽입 후에** 해야 한다. makeOverflowDropdown 은 분리된 wrapper 를 만들고
+ * 호출부가 나중에 도구막대에 붙이므로, 이 함수 안에서 바로 재면 트리거 rect 가 전부 0 이다
+ * (그 상태로는 anchorMenuToViewport 가 아무것도 못 하고 조용히 빠져나간다 — 실제로 그렇게
+ * 한 번 놓쳤다). 프레임 하나 뒤에 재고, 창 크기가 바뀌면 다시 잡는다.
+ */
+function scheduleMenuAnchor(menu: HTMLElement, trigger: HTMLElement): void {
+  if (typeof window === "undefined") return;
+  const apply = (): void => {
+    if (!menu.isConnected || !trigger.isConnected) return;
+    anchorMenuToViewport(menu, trigger);
+  };
+  if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(apply);
+  else setTimeout(apply, 0);
+  const onResize = (): void => {
+    if (!menu.isConnected) {
+      window.removeEventListener("resize", onResize);
+      return;
+    }
+    anchorMenuToViewport(menu, trigger);
+  };
+  window.addEventListener("resize", onResize);
+}
+
+/**
+ * 드롭다운을 트리거 기준으로 뷰포트에 고정한다.
+ *
+ * 왜 absolute 가 아니라 fixed 인가: 이 메뉴의 조상 다섯(.palette-work-pane,
+ * .palette-work-shell, .left-panel-stack, .left-panel, body)이 모두 overflow:hidden 이다.
+ * absolute 로 두면 메뉴가 조상의 보이는 상자를 넘는 순간 그 띠가 영구히 안 보이고 클릭도
+ * 되지 않는다 — 원래 F1 과 같은 실패 모양이다. 수리 전 실측:
+ *   1366x768 표준: 메뉴 하단 480 vs palette-root 하단 462 → brush-size-4 가 막힘
+ *   1440x900 표준에서 「작업 기록」을 펼치면 메뉴가 510px → brush-size-3·4 가 상자 밖
+ * 조상 사슬에 transform/filter/contain/will-change 가 없음을 실측으로 확인했으므로 fixed 는
+ * 뷰포트 기준으로 잡히고 모든 클리핑을 벗어난다.
+ *
+ * 높이는 트리거 아래 남은 공간으로 제한하고 부족하면 위로 뒤집는다. 뷰포트가 짧아 그래도
+ * 넘칠 때만 내부 스크롤을 쓴다 — 그때는 메뉴 전체가 보이므로 스크롤바도 사용자에게 보인다.
+ */
+function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): void {
+  if (typeof window === "undefined" || typeof menu.getBoundingClientRect !== "function") return;
+  const rect = trigger.getBoundingClientRect();
+  if (!rect || (rect.width === 0 && rect.height === 0)) return;
+
+  const gap = 4;
+  const margin = 8;
+  const viewportH = window.innerHeight || 900;
+  const viewportW = window.innerWidth || 1440;
+
+  menu.style.position = "fixed";
+  menu.style.maxHeight = "none";
+  const box = menu.getBoundingClientRect();
+  const needed = Math.max(menu.scrollHeight || 0, box.height || 0);
+  const width = box.width || 196;
+
+  const spaceBelow = viewportH - rect.bottom - gap - margin;
+  const spaceAbove = rect.top - gap - margin;
+  const placeAbove = needed > spaceBelow && spaceAbove > spaceBelow;
+  const budget = Math.max(120, Math.floor(placeAbove ? spaceAbove : spaceBelow));
+  const height = Math.min(needed, budget);
+
+  menu.style.maxHeight = `${budget}px`;
+  menu.style.overflowY = needed > budget ? "auto" : "visible";
+  menu.style.top = placeAbove
+    ? `${Math.max(margin, rect.top - gap - height)}px`
+    : `${Math.min(rect.bottom + gap, Math.max(margin, viewportH - margin - height))}px`;
+  menu.style.left = `${Math.min(Math.max(margin, rect.right - width), Math.max(margin, viewportW - margin - width))}px`;
+  menu.dataset.placement = placeAbove ? "above" : "below";
 }
 
 function makeOverflowSectionLabel(label: string): HTMLElement {
