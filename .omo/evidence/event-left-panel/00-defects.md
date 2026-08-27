@@ -66,7 +66,7 @@
 
 ```
 npm run build:player
-npx vite-node scripts/tmp-player-movement-fixture.mts dist/export-player/project.json
+npx vite-node scripts/player-movement-proof-fixture.mts dist/export-player/project.json
 (cd dist/export-player && python3 -m http.server 9873 --bind 127.0.0.1)
 PLAYER_URL=http://127.0.0.1:9873/player.html VILLAGER_ID=ev_mir_elder \
   npx playwright test test/e2e/_player-movement-proof.spec.ts
