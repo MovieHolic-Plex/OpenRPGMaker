@@ -414,8 +414,7 @@ describe("문장 표시 옵션과 페이스셋 상태", () => {
     const cmds: Command[] = [
       {
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-actor1",
-        faceIndex: 0,
+        resourceId: "easyrpg-faceset-actor1-00",
         position: "left",
         flipHorizontally: true,
       },
@@ -426,8 +425,7 @@ describe("문장 표시 옵션과 페이스셋 상태", () => {
     const text = expectTextResult(it.start());
 
     expect(text.face).toEqual({
-      resourceId: "easyrpg-faceset-actor1",
-      faceIndex: 0,
+      resourceId: "easyrpg-faceset-actor1-00",
       position: "left",
       flipHorizontally: true,
     });
@@ -438,14 +436,13 @@ describe("문장 표시 옵션과 페이스셋 상태", () => {
     const first = createInterpreter([
       {
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-actor1",
-        faceIndex: 0,
+        resourceId: "easyrpg-faceset-actor1-00",
         position: "left",
         flipHorizontally: false,
       },
       { kind: "text", body: "첫 이벤트" },
     ], session);
-    expect(expectTextResult(first.start()).face?.resourceId).toBe("easyrpg-faceset-actor1");
+    expect(expectTextResult(first.start()).face?.resourceId).toBe("easyrpg-faceset-actor1-00");
 
     const second = createInterpreter([{ kind: "text", body: "둘째 이벤트" }], session);
     expect(expectTextResult(second.start()).face).toBeUndefined();

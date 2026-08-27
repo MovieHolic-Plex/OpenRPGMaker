@@ -124,11 +124,12 @@ describe("place_npc graphic.query", () => {
       const face = cmds.find((c) => c.kind === "changeFace");
       expect(face, `missing changeFace for ${id}`).toBeTruthy();
       if (face && face.kind === "changeFace") {
-        faces.add(`${face.resourceId}#${face.faceIndex}`);
+        faces.add(face.resourceId);
         const g = event?.pages?.[0]?.graphic;
         const characterIndex = decodeCharsetFrameIndex(g?.pattern ?? 0).characterIndex;
-        // faceset index should track charset characterIndex
-        expect(face.faceIndex).toBe(characterIndex);
+        // 낱장 얼굴 id 의 칸 접미사가 charset characterIndex 를 따라간다.
+        expect(face.resourceId.endsWith(`-${String(characterIndex).padStart(2, "0")}`),
+          `${face.resourceId} 가 charset 칸 ${characterIndex} 와 어긋난다`).toBe(true);
       }
     }
     expect(faces.size).toBeGreaterThanOrEqual(2);

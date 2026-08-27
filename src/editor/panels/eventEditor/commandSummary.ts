@@ -39,7 +39,7 @@ export type CommandSummaryIconPart = {
 // [P1] 인라인 썸네일 토큰. 아이콘 토큰과 같은 규약(text:"" 고정, 16px 상한)으로
 // 얼굴 크롭/캐릭터 스프라이트/맵 미니 썸네일을 리스트 줄에 부가한다.
 export type CommandSummaryVisual =
-  | { readonly type: "faceCrop"; readonly resourceId: string; readonly faceIndex: number }
+  | { readonly type: "faceCrop"; readonly resourceId: string }
   | { readonly type: "charsetSprite"; readonly spriteId: string }
   | { readonly type: "mapThumb"; readonly mapId: string };
 
@@ -89,11 +89,9 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   ),
   changeFace: (cmd) => commandLine(
     "얼굴 바꾸기",
-    ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId, cmd.faceIndex)] : []),
+    ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId)] : []),
     valuePart(faceSheetLabel(cmd.resourceId)),
     plainPart(" · "),
-    valuePart(`${cmd.faceIndex + 1}칸`),
-    plainPart(" "),
     valuePart(facePositionLabel(cmd.position)),
     ...(cmd.flipHorizontally ? [plainPart(" / "), valuePart("좌우 반전")] : [])
   ),
@@ -394,8 +392,8 @@ function iconPart(resourceId: string): CommandSummaryIconPart {
 }
 
 // [P1] 얼굴 크롭 썸네일 토큰 (얼굴 그래픽 변경 줄).
-function faceVisualPart(resourceId: string, faceIndex: number): CommandSummaryVisualPart {
-  return { kind: "visual", visual: { type: "faceCrop", resourceId, faceIndex }, text: "", tone: "plain" };
+function faceVisualPart(resourceId: string): CommandSummaryVisualPart {
+  return { kind: "visual", visual: { type: "faceCrop", resourceId }, text: "", tone: "plain" };
 }
 
 // [P1] 장소 이동 줄의 목적지 맵 미니 썸네일 토큰.
@@ -541,12 +539,7 @@ function changeActorIdentitySummaryParts(
     ? project.database.actors.find((actor) => actor.id === targetRaw)?.name ?? targetRaw
     : "(주인공 선택)";
   const value = String(cmd.fields.value ?? "").trim() || "(값 없음)";
-  const faceIndex = cmd.fields.faceIndex;
-  const faceSuffix =
-    label === "주인공 얼굴 변경" && faceIndex !== undefined && faceIndex !== ""
-      ? ` #${Number(faceIndex) + 1}`
-      : "";
-  return commandLine(label, valuePart(actorName), plainPart(" · "), valuePart(`${value}${faceSuffix}`));
+  return commandLine(label, valuePart(actorName), plainPart(" · "), valuePart(value));
 }
 
 function weightedBranchSummaryParts(

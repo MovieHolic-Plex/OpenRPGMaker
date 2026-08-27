@@ -1,9 +1,5 @@
 import { el } from "@/util/dom";
 import {
-  FACESET_COLUMNS,
-  FACESET_FACE_HEIGHT,
-  FACESET_FACE_WIDTH,
-  FACESET_ROWS,
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 
@@ -245,11 +241,10 @@ export type AvatarChipActor = {
   readonly id: string;
   readonly name: string;
   readonly faceResourceId?: string;
-  readonly faceIndex?: number;
 };
 
 /**
- * 배우 아바타 칩 행 — faceset 원형 칩 버튼(actorThumbnail 과 같은 크롭 수식,
+ * 배우 아바타 칩 행 — 낱장 얼굴 그림을 원형 칩 버튼에 담는다(actorThumbnail 과 같은 수식,
  * 크기만 칩 사이즈로 조정). 미선택 칩은 dim, 선택 상태는 aria-pressed 로 노출.
  * 칩은 네이티브 button — Tab 포커스/Enter·Space 활성화 모두 브라우저 기본 동작.
  */
@@ -289,13 +284,9 @@ function faceChipAvatar(actor: AvatarChipActor): HTMLElement {
     attrs: { "aria-hidden": "true" },
   });
   if (!url) return slot;
-  const faceIndex = actor.faceIndex ?? 0;
-  const column = faceIndex % FACESET_COLUMNS;
-  const row = Math.floor(faceIndex / FACESET_COLUMNS);
-  const scale = size / FACESET_FACE_WIDTH;
   slot.style.backgroundImage = `url("${url}")`;
-  slot.style.backgroundPosition = `-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`;
-  slot.style.backgroundSize = `${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`;
+  slot.style.backgroundPosition = "center";
+  slot.style.backgroundSize = `${size}px ${size}px`;
   return slot;
 }
 

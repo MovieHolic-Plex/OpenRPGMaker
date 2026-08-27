@@ -5,7 +5,6 @@ export const DIALOGUE_SPECS = {
   changeFace: nativeManifestEntry("dialogue", {
     kind: "changeFace",
     resourceId: "resource_contract",
-    faceIndex: 0,
     position: "left",
     flipHorizontally: false,
   }),

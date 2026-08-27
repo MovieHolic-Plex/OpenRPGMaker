@@ -10,8 +10,7 @@ event.id = "ev_face_ui";
 event.commands = [
   {
     kind: "changeFace",
-    resourceId: "easyrpg-faceset-actor1",
-    faceIndex: 0,
+    resourceId: "easyrpg-faceset-actor1-00",
     position: "left",
     flipHorizontally: false,
   },

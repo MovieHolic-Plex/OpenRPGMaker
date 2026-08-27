@@ -188,7 +188,7 @@ test("4) 얼굴 변경 미리보기는 faceset 크롭을 그린다", async ({ pa
     cropPresent,
     "faceset change preview must render a faceset crop, not a handler-less summary fallback",
   ).toBe(true);
-  expect(painted, `faceset crop must paint a sheet image, got ${JSON.stringify(paint)}`).toBe(true);
+  expect(painted, `face preview must paint the face image, got ${JSON.stringify(paint)}`).toBe(true);
 });
 
 

@@ -18,7 +18,7 @@ describe("migrateV1toV2 — 기본 변환", () => {
 
   it("version이 2로 승격", () => {
     expect(v2.version).toBe(2);
-    expect(SCHEMA_VERSION).toBe(3);
+    expect(SCHEMA_VERSION).toBe(4);
   });
 
   it("meta.terms가 추가", () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
-import { resolveActorName, resolveActorNickname, resolveActorFaceResourceId, resolveActorFaceIndex } from "@/project/sessionActorCommands";
+import { resolveActorName, resolveActorNickname, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { createPlayerStatusMenuSnapshot } from "@/player/playerStatusMenuModel";
 import type { PlaySession } from "@/project/session";
 
@@ -37,10 +37,11 @@ describe("T6 actor parity — name/nickname/faceset session overrides", () => {
     expect(resolveActorNickname({ actorNicknames: { [actor.id]: "별명테스트" } }, actor)).toBe("별명테스트");
   });
 
-  it("resolveActorFaceIndex returns session override when set", () => {
+  it("resolveActorFaceResourceId returns session override when set", () => {
     const project = createBlankProject();
     const actor = project.database.actors[0];
-    expect(resolveActorFaceIndex({}, actor)).toBe(actor.faceIndex ?? 0);
-    expect(resolveActorFaceIndex({ actorFaceIndices: { [actor.id]: 7 } }, actor)).toBe(7);
+    expect(resolveActorFaceResourceId({}, actor)).toBe(actor.faceResourceId);
+    expect(resolveActorFaceResourceId({ actorFaceResourceIds: { [actor.id]: "easyrpg-faceset-actor1-07" } }, actor))
+      .toBe("easyrpg-faceset-actor1-07");
   });
 });

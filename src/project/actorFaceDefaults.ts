@@ -1,6 +1,16 @@
+import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
 import type { ActorRecord } from "@/project/types";
 
+/**
+ * 액터 기본 얼굴. 시트가 낱장으로 쪨개진 뒤로는 **그 시트의 0번 칸**을 가리킨다
+ * (예전 `easyrpg-faceset-actor1` + 생략된 인덱스 = 지금의 `easyrpg-faceset-actor1-00`).
+ */
 export function defaultActorFaceResourceId(actor: Pick<ActorRecord, "id" | "characterResourceId">): string | undefined {
+  const sheetResourceId = defaultActorFaceSheetId(actor);
+  return sheetResourceId ? faceIdForSheetCell(sheetResourceId, 0) : undefined;
+}
+
+function defaultActorFaceSheetId(actor: Pick<ActorRecord, "id" | "characterResourceId">): string | undefined {
   switch (actor.characterResourceId) {
     case "easyrpg-charset-actor1":
       return "easyrpg-faceset-actor1";

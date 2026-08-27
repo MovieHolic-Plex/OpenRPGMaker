@@ -98,7 +98,6 @@ function actorFixture(
     id,
     name,
     faceResourceId,
-    faceIndex: 0,
     characterResourceId,
     characterIndex: 0,
   };

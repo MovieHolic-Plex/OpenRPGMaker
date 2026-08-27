@@ -79,7 +79,7 @@ describe("P2 spatial authored schema", () => {
   });
 
   it("rejects duplicate ids, unsafe footprints, non-contiguous levels, and unknown orientations", () => {
-    // Break caught: validateProjectV3 ignores malformed known P2 fields and lets unbounded footprint loops reach runtime.
+    // Break caught: validateProjectV4 ignores malformed known P2 fields and lets unbounded footprint loops reach runtime.
     const cases: Array<{ mutate: (wire: MutableRecord) => void; pattern: RegExp }> = [
       {
         mutate: (wire) => {

@@ -207,7 +207,7 @@ function trackFace(steps: readonly SimulatedStep[], uptoIndex: number, cacheKey?
     const step = steps[i];
     if (!step) continue;
     if (step.command.kind === "changeFace" && step.command.resourceId) {
-      const face = { resourceId: step.command.resourceId, faceIndex: step.command.faceIndex };
+      const face = { resourceId: step.command.resourceId };
       if (cacheKey) {
         if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
         faceCacheByPage.get(cacheKey)!.set(uptoIndex, face);

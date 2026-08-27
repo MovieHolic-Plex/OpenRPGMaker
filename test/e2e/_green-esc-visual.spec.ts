@@ -22,9 +22,10 @@ function project(): Project {
     equip_leather_armor: 1,
   };
   p.session = { ...p.session, partyActorIds: p.database.actors.slice(0, 4).map((a) => a.id) };
-  // 두 번째 파티원에 faceIndex 2 를 저작해 faceIndex 반영을 라이브에서 증명한다.
+  // 두 번째 파티원에 낱장 얼굴 파일(Actor2 시트의 옛 2번 칸)을 저작해, 고른 얼굴 파일이
+  // 그대로 런타임 파티 행에 도달하는지 라이브에서 증명한다.
   const second = p.database.actors[1];
-  if (second) second.faceIndex = 2;
+  if (second) second.faceResourceId = "easyrpg-faceset-actor2-02";
   return p;
 }
 
@@ -35,7 +36,7 @@ type MenuDump = {
   /** 스테이지의 transform: scale(var(--play-scale)) 누적 배율. */
   readonly scale: number;
   readonly images: readonly { readonly testid?: string; readonly cls: string; readonly url: string }[];
-  readonly faces: readonly { readonly testid?: string; readonly cropX: string; readonly cropY: string; readonly sheetW: string; readonly rendering: string; readonly radius: string }[];
+  readonly faces: readonly { readonly testid?: string; readonly url: string; readonly bgSize: string; readonly boxW: string; readonly rendering: string; readonly radius: string }[];
   readonly panelSkin: {
     readonly resource: string | null;
     readonly rootVar: string;
@@ -103,9 +104,9 @@ test("green: esc menu uses the runtime pixel font, renders authored graphics, cr
       if (n.classList.contains("status-menu-face")) {
         faces.push({
           testid: n.dataset.testid,
-          cropX: cs.getPropertyValue("--crop-x").trim(),
-          cropY: cs.getPropertyValue("--crop-y").trim(),
-          sheetW: cs.getPropertyValue("--crop-sheet-width").trim(),
+          url: cs.backgroundImage,
+          bgSize: cs.backgroundSize,
+          boxW: cs.width,
           rendering: cs.imageRendering,
           radius: cs.borderRadius,
         });
@@ -187,14 +188,15 @@ test("green: esc menu uses the runtime pixel font, renders authored graphics, cr
     expect(res.status(), `icon asset ${url}`).toBe(200);
   }
 
-  // C3: 파티 포트레이트 크롭 — faceIndex 2 인 두 번째 파티원은 column 2 (=-44px) 를 봐야 한다.
-  // 상자가 22px 이므로 시트는 22*4 = 88px 로 잡힌다.
+  // C3: 파티 포트레이트 — 얼굴 한 칸 = 파일 한 장. 저작한 낱장 얼굴 파일이 그대로 걸려야 하고
+  // 22px 상자에 그림 한 장이 통째로 들어간다(시트 열/행 오프셋은 없다).
   const faces = dumps[0]!.faces;
   expect(faces.length, "no party face nodes").toBeGreaterThan(1);
   const second = faces.find((f) => f.testid === "status-menu-face-1");
   expect(second, "missing status-menu-face-1").toBeTruthy();
-  expect(second!.cropX).toBe("-44px");
-  expect(second!.sheetW).toBe("88px");
+  expect(second!.url).toContain("/assets/easyrpg/faceset/Actor2/02.png");
+  expect(second!.bgSize).toBe("22px 22px");
+  expect(second!.boxW).toBe("22px");
   for (const face of faces) {
     expect(face.rendering, `face ${face.testid} must render pixelated`).toBe("pixelated");
     expect(face.radius, `face ${face.testid} must not be circle-cropped`).not.toBe("50%");

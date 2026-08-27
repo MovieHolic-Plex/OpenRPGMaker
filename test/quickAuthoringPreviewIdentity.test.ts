@@ -41,12 +41,11 @@ describe("quick-authoring preview identity", () => {
     expect(preview.textContent).toContain("마을에 온 걸 환영하네.");
   });
 
-  it("changeFace preview carries a real faceset sheet image inside a crop box", () => {
+  it("changeFace preview carries the real standalone face image inside the face box", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-actor1",
-        faceIndex: 2,
+        resourceId: "easyrpg-faceset-actor1-02",
         position: "left",
         flipHorizontally: false,
       })
@@ -55,7 +54,7 @@ describe("quick-authoring preview identity", () => {
     expect(crop?.className).toContain("faceset-crop-box");
     const sheet = findByTestId(preview, "faceset-crop-sheet") as FakeElement | null;
     expect(sheet?.tagName).toBe("IMG");
-    expect(sheet?.attrs.src).toContain("/assets/easyrpg/faceset/Actor1.png");
+    expect(sheet?.attrs.src).toContain("/assets/easyrpg/faceset/Actor1/02.png");
   });
 
   it("inputNumber digit caption never carries the variable display name", () => {

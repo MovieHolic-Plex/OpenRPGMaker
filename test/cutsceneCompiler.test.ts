@@ -4,7 +4,7 @@ import { compileCutscene, CutsceneValidationError, validateCutscene, type Cutsce
 describe("compileCutscene", () => {
   it("대표 beat들을 이벤트 command 배열로 컴파일한다", () => {
     const beats: CutsceneBeat[] = [
-      { kind: "say", speaker: "리나", face: { resourceId: "face_memory", faceIndex: 1 }, text: "여기가 시작이었어." },
+      { kind: "say", speaker: "리나", face: { resourceId: "face_memory" }, text: "여기가 시작이었어." },
       { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "right" }], wait: true },
       { kind: "camera", mode: "pan", x: 5, y: 6, durationMs: 400, wait: true },
       { kind: "picture", action: "show", pictureId: "pic_memory", resourceId: "picture_memory", x: 10, y: 12 },
@@ -24,7 +24,6 @@ describe("compileCutscene", () => {
           "skippable": true,
         },
         {
-          "faceIndex": 1,
           "flipHorizontally": false,
           "kind": "changeFace",
           "position": "left",

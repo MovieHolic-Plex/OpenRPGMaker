@@ -77,10 +77,9 @@ export const GRAPHIC_SPEC_SCHEMA: JsonSchema = {
 /** `SimplePage.face` / place_npc `face` — 두 지정 방식의 키 합집합. */
 export const FACE_SCHEMA: JsonSchema = {
   type: "object",
-  description: "{resourceId,faceIndex} 또는 {textureKey,characterIndex}. 생략 시 graphic에서 자동 매핑.",
+  description: "{resourceId} 또는 {textureKey,characterIndex}. resourceId는 얼굴 낱장 리소스 id(48×48 PNG 한 장). 생략 시 graphic에서 자동 매핑.",
   properties: {
-    resourceId: { type: "string" },
-    faceIndex: { type: "integer" },
+    resourceId: { type: "string", description: "얼굴 낱장 리소스 id. 예: easyrpg-faceset-actor1-07" },
     position: { type: "string", enum: ["left", "right"] },
     flipHorizontally: { type: "boolean" },
     textureKey: { type: "string" },

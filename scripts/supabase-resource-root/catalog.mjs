@@ -52,17 +52,9 @@ export const RESOURCE_SLICING = {
   backdrop: { kind: "whole-image", unit: "image" },
   gameOver: { kind: "whole-image", unit: "image" },
   monster: { kind: "whole-image", unit: "image" },
-  faceset: {
-    kind: "grid",
-    unit: "face",
-    cellWidth: 48,
-    cellHeight: 48,
-    columns: 4,
-    rows: 4,
-    count: 16,
-    sheetWidth: 192,
-    sheetHeight: 192,
-  },
+  // 얼굴은 한 칸 = 한 파일이다(48×48 단일 이미지). 4×4 시트 격자는 폐기됐다 —
+  // src/assets/resourceSlicing.ts 와 같은 값을 유지해야 한다.
+  faceset: { kind: "whole-image", unit: "image" },
   picture: { kind: "whole-image", unit: "image" },
   system: { kind: "whole-image", unit: "image" },
   system2: { kind: "whole-image", unit: "image" },

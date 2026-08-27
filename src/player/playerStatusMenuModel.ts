@@ -1,5 +1,4 @@
 import { defaultActorFaceResourceId } from "@/project/actorModel";
-import { FACESET_COLUMNS, FACESET_ROWS } from "@/assets/easyrpgRtp";
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { isGiftSystemEnabled } from "@/project/friendship";
@@ -142,8 +141,7 @@ export type PlayerStatusMenuPartyRow = {
   readonly name: string;
   readonly levelLabel: string;
   readonly condition: string;
-  /** faceset 셀 인덱스(0..15). 렌더러가 이로부터 4×4 시트의 열/행을 계산한다. */
-  readonly faceIndex: number;
+  /** 얼굴 낱장 파일 한 장의 리소스 id. 렌더러는 이 이미지를 통째로 그린다. */
   readonly faceResourceId?: string;
   readonly hpLabel: string;
   readonly mpLabel: string;
@@ -221,7 +219,6 @@ export function createPlayerStatusMenuSnapshot(
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
       condition: "정상",
-      faceIndex: clampActorFaceIndex(actor.faceIndex),
       faceResourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
@@ -281,11 +278,6 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "to-title": return "타이틀";
     default: return assertNever(commandId);
   }
-}
-
-/** faceset 시트(4×4)의 총 셀 개수로 나눈 나머지로 눌러 항상 유효한 셀 인덱스로 만든다. */
-function clampActorFaceIndex(value: number | undefined): number {
-  return Math.max(0, Math.trunc(value ?? 0)) % (FACESET_COLUMNS * FACESET_ROWS);
 }
 
 /** 0 나눗셈·음수·NaN 을 모두 0~1 로 눌러 게이지 폭 계산이 절대 깨지지 않게 한다. */

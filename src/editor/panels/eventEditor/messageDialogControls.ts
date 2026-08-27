@@ -1,9 +1,7 @@
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 let dialogId = 0;
-export const FACESET_FACE_COUNT = RESOURCE_SLICING.faceset.count;
 
 export function dialogForm(testId: string): HTMLFormElement {
   const form = document.createElement("form");
@@ -89,8 +87,4 @@ export function actionRow(okTestId: string, close: () => void): HTMLElement {
       }),
     ],
   });
-}
-
-export function clampFaceIndex(value: string): number {
-  return Math.max(0, Math.min(FACESET_FACE_COUNT - 1, (parseInt(value, 10) || 1) - 1));
 }

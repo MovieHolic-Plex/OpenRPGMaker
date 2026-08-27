@@ -16,7 +16,6 @@ import {
   CHARSET_SHEET_ROWS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { el } from "@/util/dom";
 import type { ActorRecord, Project } from "@/project/types";
 
@@ -470,27 +469,13 @@ export function imageIconOf(project: Pick<Project, "assets">, resourceId: string
   return url === null ? null : { kind: "image", url };
 }
 
-// 페이스셋 한 칸(faceIndex 0..15)을 24px 로 잘라 쓰는 아이콘. 시트 전체 표시 금지.
+// 얼굴 아이콘 — 낱장 그림 한 장을 그대로 24px 로 그린다(시트 크롭 없음).
 export function facesetIconOf(
   project: Pick<Project, "assets">,
   resourceId: string | undefined,
-  faceIndex = 0,
 ): RecordPickerIcon | null {
   const url = resolveAssetResourceUrl(resourceId, { project });
-  if (url === null) return null;
-  const slicing = RESOURCE_SLICING.faceset;
-  const maxIndex = slicing.columns * slicing.rows - 1;
-  const index = clampSheetIndex(faceIndex, maxIndex);
-  return {
-    kind: "sheet",
-    url,
-    cellWidth: slicing.cellWidth,
-    cellHeight: slicing.cellHeight,
-    columns: slicing.columns,
-    index,
-    sheetWidth: slicing.sheetWidth,
-    sheetHeight: slicing.sheetHeight,
-  };
+  return url === null ? null : { kind: "image", url };
 }
 
 // 캐릭셋 시트에서 characterIndex(0..7) 한 명의 idle-front 프레임만 크롭.

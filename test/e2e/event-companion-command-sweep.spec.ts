@@ -191,8 +191,7 @@ function companionActor(template: ActorRecord, id: ActorRecord["id"], name: stri
     id,
     name,
     nickname: name,
-    faceResourceId: "easyrpg-faceset-actor1",
-    faceIndex: 3,
+    faceResourceId: "easyrpg-faceset-actor1-03",
     characterResourceId: "easyrpg-charset-actor1",
     characterIndex: 1,
   };
