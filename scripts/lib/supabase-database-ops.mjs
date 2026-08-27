@@ -29,10 +29,28 @@ export const SUPABASE_MIGRATIONS = Object.freeze([
     relation("rpg_zzu", "user_skills"),
   ]),
   migration("20260814000000_benchmark_runs.sql", [relation("public", "benchmark_runs")]),
+  migration("20260827000000_ai_log_anon_delete_revoke.sql", [
+    revoked("rpg_zzu", "ai_activity_logs", "anon", "DELETE"),
+    revoked("rpg_zzu", "ai_conversations", "anon", "DELETE"),
+    revoked("rpg_zzu", "ai_analysis_runs", "anon", "DELETE"),
+  ]),
 ]);
 
+export const DEFAULT_AI_PROBE_IDS = Object.freeze({
+  activityId: "00000000-0000-4000-8000-00000000a101",
+  conversationId: "schema-probe-conversation",
+});
+
+function grantKey(schema, table, role, privilege) {
+  return `${schema}.${table}.${role}.${String(privilege).toUpperCase()}`;
+}
+
 function relation(schema, table, columns = []) {
-  return Object.freeze({ schema, table, columns: Object.freeze(columns) });
+  return Object.freeze({ kind: "relation", schema, table, columns: Object.freeze(columns) });
+}
+
+function revoked(schema, table, role, privilege) {
+  return Object.freeze({ kind: "revoked-privilege", schema, table, role, privilege, columns: Object.freeze([]) });
 }
 
 function migration(file, contracts) {
@@ -93,15 +111,19 @@ export function migrationPlan(migrations, appliedChecksums, contractStates) {
   });
 }
 
-export function catalogMigrationStates(migrations, columnRows) {
+export function catalogMigrationStates(migrations, columnRows, grantRows = []) {
   const catalog = new Map();
   for (const row of columnRows) {
     const key = `${row.table_schema}.${row.table_name}`;
     if (!catalog.has(key)) catalog.set(key, new Set());
     catalog.get(key).add(row.column_name);
   }
+  const grants = new Set(grantRows.map((row) => grantKey(row.table_schema, row.table_name, row.grantee, row.privilege_type)));
   return Object.fromEntries(migrations.map((entry) => {
     const contractStates = entry.contracts.map((contract) => {
+      if (contract.kind === "revoked-privilege") {
+        return grants.has(grantKey(contract.schema, contract.table, contract.role, contract.privilege)) ? "missing" : "complete";
+      }
       const columns = catalog.get(`${contract.schema}.${contract.table}`);
       if (!columns) return "missing";
       return contract.columns.every((column) => columns.has(column)) ? "complete" : "partial";
@@ -142,7 +164,7 @@ export async function probeSupabaseSchema(config, fetchImplementation = fetch) {
   const details = {};
   for (const entry of SUPABASE_MIGRATIONS) {
     const contractStates = [];
-    for (const contract of entry.contracts) {
+    for (const contract of entry.contracts.filter((item) => item.kind === "relation")) {
       const state = await probeContract(config, contract, fetchImplementation);
       contractStates.push(state);
       details[`${contract.schema}.${contract.table}`] = state;
@@ -177,14 +199,15 @@ async function probeContract(config, contract, fetchImplementation) {
 }
 
 export async function verifyAiPersistence(config, fetchImplementation = fetch, ids = {}) {
-  const activityId = ids.activityId ?? globalThis.crypto.randomUUID();
-  const conversationId = ids.conversationId ?? `schema-probe-${globalThis.crypto.randomUUID()}`;
+  const activityId = ids.activityId ?? DEFAULT_AI_PROBE_IDS.activityId;
+  const conversationId = ids.conversationId ?? DEFAULT_AI_PROBE_IDS.conversationId;
   const base = config.url.replace(/\/$/, "");
   const readHeaders = supabaseHeaders(config, "read");
   const writeHeaders = supabaseHeaders(config, "write");
   let activityInserted = false;
   let conversationInserted = false;
   let completed = false;
+  let probeRetained = false;
   try {
     await expectResponse(fetchImplementation(`${base}/rest/v1/ai_activity_logs?on_conflict=log_id`, {
       method: "POST",
@@ -237,12 +260,20 @@ export async function verifyAiPersistence(config, fetchImplementation = fetch, i
       throw new Error("Supabase AI persistence probe was inserted but could not be reloaded");
     }
     completed = true;
-    return { activityId, conversationId, activityReloaded: true, conversationReloaded: true };
+    return {
+      activityId,
+      conversationId,
+      activityReloaded: true,
+      conversationReloaded: true,
+      get probeRetained() {
+        return probeRetained;
+      },
+    };
   } finally {
     const cleanup = [];
     if (activityInserted) {
       const params = new URLSearchParams({ project_id: `eq.${config.projectId}`, log_id: `eq.${activityId}` });
-      cleanup.push(expectResponse(fetchImplementation(`${base}/rest/v1/ai_activity_logs?${params}`, {
+      cleanup.push(deleteProbeRow(fetchImplementation(`${base}/rest/v1/ai_activity_logs?${params}`, {
         method: "DELETE",
         headers: writeHeaders,
       }), "remove ai_activity_logs probe"));
@@ -252,12 +283,13 @@ export async function verifyAiPersistence(config, fetchImplementation = fetch, i
         project_id: `eq.${config.projectId}`,
         conversation_id: `eq.${conversationId}`,
       });
-      cleanup.push(expectResponse(fetchImplementation(`${base}/rest/v1/ai_conversations?${params}`, {
+      cleanup.push(deleteProbeRow(fetchImplementation(`${base}/rest/v1/ai_conversations?${params}`, {
         method: "DELETE",
         headers: writeHeaders,
       }), "remove ai_conversations probe"));
     }
     const results = await Promise.allSettled(cleanup);
+    if (results.some((result) => result.status === "fulfilled" && result.value === "denied")) probeRetained = true;
     if (completed) {
       const cleanupFailure = results.find((result) => result.status === "rejected");
       if (cleanupFailure?.status === "rejected") throw cleanupFailure.reason;
@@ -273,6 +305,17 @@ function supabaseHeaders(config, mode) {
     "Content-Type": "application/json",
     [mode === "write" ? "Content-Profile" : "Accept-Profile"]: "rpg_zzu",
   };
+}
+
+/**
+ * anon 은 AI 로그·대화 테이블의 DELETE 권한이 없다(20260827 마이그레이션). 그 경우 프로브 행은
+ * 고정 id 로 남고 다음 실행이 upsert 로 덮으므로 실패가 아니다 — 관리자 경로가 정리한다.
+ */
+async function deleteProbeRow(responsePromise, operation) {
+globalThis.response = await responsePromise;
+  if (response.ok) return "removed";
+  if (response.status === 401 || response.status === 403) return "denied";
+  throw new Error(`${operation} failed: HTTP ${response.status} ${await response.text()}`);
 }
 
 async function expectResponse(responsePromise, operation) {

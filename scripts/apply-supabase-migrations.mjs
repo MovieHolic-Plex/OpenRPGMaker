@@ -46,7 +46,8 @@ try {
   const appliedRows = await database.unsafe("select filename, sha256 from rpg_zzu.schema_migrations order by filename");
   const applied = new Map(appliedRows.map((row) => [row.filename, row.sha256]));
   const catalogRows = await readCatalog(database);
-  const states = catalogMigrationStates(SUPABASE_MIGRATIONS, catalogRows);
+  const grantRows = await readGrants(database);
+  const states = catalogMigrationStates(SUPABASE_MIGRATIONS, catalogRows, grantRows);
   const plan = migrationPlan(SUPABASE_MIGRATIONS, applied, states);
 
   for (const item of plan) {
@@ -68,7 +69,8 @@ try {
     await database.begin(async (transaction) => {
       await transaction.file(filePath);
       const afterRows = await readCatalog(transaction);
-      const afterState = catalogMigrationStates([item], afterRows)[item.file];
+      const afterGrants = await readGrants(transaction);
+      const afterState = catalogMigrationStates([item], afterRows, afterGrants)[item.file];
       if (afterState !== "complete") throw new Error(`${item.file} did not satisfy its schema contract`);
       await transaction`
         insert into rpg_zzu.schema_migrations (filename, sha256, baselined)
@@ -96,7 +98,26 @@ if (!report || Object.values(report.states).some((state) => state !== "complete"
   fail(`PostgREST schema cache is still incomplete: ${JSON.stringify(report?.states ?? {})}`);
 }
 const verification = await verifyAiPersistence(restConfig);
-console.log(`VERIFIED project=${restConfig.projectId} activityReloaded=${verification.activityReloaded} conversationReloaded=${verification.conversationReloaded}`);
+if (verification.probeRetained) await removeRetainedProbeRows(verification);
+console.log(`VERIFIED project=${restConfig.projectId} activityReloaded=${verification.activityReloaded} conversationReloaded=${verification.conversationReloaded} probeRetained=${verification.probeRetained}`);
+
+async function removeRetainedProbeRows(probe) {
+  const admin = new SQL(databaseUrl, { max: 1 });
+  try {
+    await admin`delete from rpg_zzu.ai_activity_logs where project_id = ${restConfig.projectId} and log_id = ${probe.activityId}::uuid`;
+    await admin`delete from rpg_zzu.ai_conversations where project_id = ${restConfig.projectId} and conversation_id = ${probe.conversationId}`;
+  } finally {
+    await admin.close();
+  }
+}
+
+async function readGrants(client) {
+  return client.unsafe(`
+    select table_schema, table_name, grantee, privilege_type
+    from information_schema.role_table_grants
+    where table_schema in ('rpg_zzu', 'public')
+  `);
+}
 
 async function readCatalog(client) {
   return client.unsafe(`
