@@ -20,8 +20,6 @@
   border: 1px solid var(--db-studio-border-default);
   border-radius: 10px;
   box-shadow: var(--db-studio-shadow-pop);
-  height: min(900px, calc(100vh - 24px));
-  width: min(1584px, calc(100vw - 24px));
 }
 
 .database-modal-backdrop .database-modal-body .db-elements-classic {
@@ -311,10 +309,6 @@
 }
 
 @media (max-width: 600px) {
-  .database-modal-backdrop:has(.db-elements-classic) {
-    padding: 8px;
-  }
-
   .database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
     overflow: auto;
     padding: 10px;
