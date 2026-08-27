@@ -253,8 +253,13 @@ export class FakeElement extends FakeNode {
   }
 
   focus(_options?: FocusOptions): void {
-    const doc = globalThis.document as unknown as { activeElement?: FakeElement };
+    const doc = globalThis.document as unknown as { activeElement?: FakeElement | null };
     doc.activeElement = this;
+  }
+
+  blur(): void {
+    const doc = globalThis.document as unknown as { activeElement?: FakeElement | null };
+    if (doc.activeElement === this) doc.activeElement = null;
   }
 
   setSelectionRange(start: number | null, end: number | null): void {
