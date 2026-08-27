@@ -110,6 +110,7 @@ function renderEmptyCommandLine(actions: CommandListActions, pickerContext?: M2R
     openEventCommandPicker({
       title: "공통 이벤트 명령",
       context: pickerContext,
+      // 편집 창은 피커를 대체한다. 피커를 먼저 닫아 모달 스택을 한 겹으로 유지한다.
       onSelect: (command) => {
         openNewEventCommandDialog(command, (editedCommand) => {
           actions.addCommand([], editedCommand);

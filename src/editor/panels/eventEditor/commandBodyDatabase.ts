@@ -1,5 +1,5 @@
 ﻿import { craftRecipesOf } from "@/project/craftRecipes";
-import { databasePicker } from "./conditionForm";
+import { openSwitchVariablePicker } from "./recordPickerDialog";
 import { startStateOf } from "@/project/session";
 import { upgradeRulesOf } from "@/project/upgrades";
 import { store } from "@/project/store";
@@ -189,20 +189,22 @@ export function battleProcessingBody(
   });
   const preview = previewStrip("battle-processing-preview", "확인 시 전투 시작 → battleResult 저장");
   const troopField = battleField("적 그룹", troop.root);
-  const variableField = battleField("어느 변수", el("div"));
-  const variablePicker = databasePicker(
-    "variable",
-    troopVariableId,
-    (nextId) => {
+  // 변수 모드는 접힌 한 줄: 이름 있는 변수만 옵션에 올린다. 빈 슬롯 덤프 금지.
+  const variableControl = namedVariablePicker({
+    project,
+    selectedId: troopVariableId,
+    testid: "battle-processing-troop-variable",
+    onChange: (nextId) => {
       troopVariableId = nextId;
       apply();
     },
-    "battle-processing-troop-variable"
-  );
-  variableField.replaceChildren(
-    el("div", { class: "party-member-field-label", text: "어느 변수" }),
-    variablePicker
-  );
+  });
+  const variableField = battleField("어느 변수", variableControl.root);
+  // 「누구와 싸울까」 슬롯은 하나다 — 고정/변수 컨트롤이 동시에 붙지 않는다.
+  const sourceSlot = el("div", {
+    class: "battle-processing-source-slot",
+    dataset: { testid: "battle-processing-source-slot" },
+  });
 
   const branchCheckbox = el("input", {
     attrs: { type: "checkbox" },
@@ -255,6 +257,8 @@ export function battleProcessingBody(
 
   const syncVisibility = (): void => {
     const fixed = troopSource === "fixed";
+    // hidden 속성은 폼 CSS(display:flex)에 밀린다. 슬롯 자체를 교체해 한 컨트롤만 남긴다.
+    sourceSlot.replaceChildren(fixed ? troopField : variableField);
     troopField.hidden = !fixed;
     variableField.hidden = fixed;
     const troopId = troop.select.value.trim();
@@ -271,7 +275,7 @@ export function battleProcessingBody(
     const enemyIds = troopRecord ? troopEnemyIds(troopRecord) : [];
     const reward = troopRewardSummary(project, enemyIds);
     const who = troopSource === "variable"
-      ? `변수 ${troopVariableId || "?"}`
+      ? `변수 ${variableLabelOf(project, troopVariableId)}`
       : (troopRecord?.name ?? (troopId || "(적 그룹 선택)"));
     const members = enemyIds
       .map((id) => project.database.enemies.find((enemy) => enemy.id === id)?.name ?? id)
@@ -366,8 +370,7 @@ export function battleProcessingBody(
       dataset: { testid: "battle-processing-intent" },
     })),
     battleField("누구와 싸울까", source.root),
-    troopField,
-    variableField,
+    sourceSlot,
     warning,
     hover,
     battleField("도망", escape.root),
@@ -430,6 +433,85 @@ function battleField(label: string, control: HTMLElement): HTMLElement {
       control,
     ],
   });
+}
+
+/** 이름이 지정된 변수만. 반환 순서는 프로젝트 순서를 유지한다. */
+export function namedVariablesOf(project: Project): readonly { readonly id: string; readonly name: string }[] {
+  return project.variables
+    .filter((entry) => entry.name.trim().length > 0)
+    .map((entry) => ({ id: entry.id, name: entry.name.trim() }));
+}
+
+/** 변수 한 줄 라벨: 이름이 없으면 id 그대로, 비어 있으면 (변수 선택). */
+export function variableLabelOf(project: Project, variableId: string): string {
+  if (!variableId) return "(변수 선택)";
+  const named = project.variables.find((entry) => entry.id === variableId);
+  const name = named?.name.trim();
+  return name && name.length > 0 ? name : variableId;
+}
+
+// 전투 트룹 변수 픽커 — 이름 있는 슬롯만 옵션이다.
+// 이름 없는 슬롯 20개를 「(이름 없음)」으로 펼치면 적 그룹 선택이 부힌다.
+function namedVariablePicker(options: {
+  readonly project: Project;
+  readonly selectedId: string;
+  readonly testid: string;
+  readonly onChange: (id: string) => void;
+}): { readonly root: HTMLElement; readonly select: HTMLSelectElement } {
+  const named = namedVariablesOf(options.project);
+  const select = el("select", {
+    class: "battle-processing-variable-select",
+    attrs: { "aria-label": "적 그룹 변수" },
+  }) as HTMLSelectElement;
+  const rebuild = (selectedId: string): void => {
+    const optionEls = [el("option", { text: "(변수 선택)", attrs: { value: "" } })];
+    for (const entry of named) {
+      optionEls.push(el("option", { text: entry.name, attrs: { value: entry.id } }));
+    }
+    // 이밌 저장된 이름 없는 변수는 id 로 남개놓는다 — 새 덤프는 아니고 유실도 없다.
+    if (selectedId && !named.some((entry) => entry.id === selectedId)) {
+      optionEls.push(el("option", { text: selectedId, attrs: { value: selectedId } }));
+    }
+    select.replaceChildren(...optionEls);
+    select.value = selectedId;
+  };
+  rebuild(options.selectedId);
+  select.addEventListener("change", () => options.onChange(select.value));
+
+  const browse = el("button", {
+    class: "btn small",
+    text: "변수 목록",
+    attrs: { type: "button", title: "변수 목록에서 고르기 (이름 지정도 여기서)" },
+    dataset: { testid: `${options.testid}-browse` },
+    on: {
+      click: () =>
+        openSwitchVariablePicker({
+          kind: "variable",
+          currentId: select.value,
+          onSelect: (id) => {
+            rebuild(id);
+            options.onChange(id);
+          },
+        }),
+    },
+  });
+
+  const children: HTMLElement[] = [select, browse];
+  if (named.length === 0) {
+    children.push(
+      el("span", {
+        class: "battle-processing-variable-hint",
+        dataset: { testid: `${options.testid}-empty-hint` },
+        text: "이름 지정된 변수가 없습니다. 변수 목록에서 이름을 적으세요.",
+      })
+    );
+  }
+  const root = el("span", {
+    class: "event-record-select battle-processing-variable-row",
+    dataset: { testid: options.testid },
+    children,
+  });
+  return { root, select };
 }
 
 export function changeGoldBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeGold" }>): HTMLElement {

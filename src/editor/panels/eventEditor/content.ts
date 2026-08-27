@@ -638,6 +638,7 @@ function openCommandPickerForActions(actions: CommandListActions): void {
   openEventCommandPicker({
     title: "명령 추가",
     context: "map",
+    // 명령을 고르면 피커를 먼저 닫는다. 편집 창이 피커 위에 쌓이면 확인이 뒤 창에 먹힌다.
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         actions.addCommand([], editedCommand);

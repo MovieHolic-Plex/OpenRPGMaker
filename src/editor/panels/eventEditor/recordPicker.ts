@@ -583,8 +583,8 @@ export type SegmentedSelectHandle = {
 };
 
 // 세그먼트 버튼 + 숨김 네이티브 select.
-// select 는 opacity 0 이지만 크기를 유지해 Playwright selectOption/actionability 를 통과하고,
-// selectOption → change 이벤트 시 세그먼트 하이라이트도 동기화된다.
+// select 는 hidden 속성(및 .rich-native-select)으로 시각적으로 숨기되
+// Playwright selectOption 및 testid/change 이벤트 호환을 그대로 보존한다.
 export function segmentedSelect<T extends string>(options: {
   readonly options: readonly SegmentOption<T>[];
   readonly value: T;
@@ -596,6 +596,7 @@ export function segmentedSelect<T extends string>(options: {
     dataset: { testid: options.testid },
     attrs: options.ariaLabel ? { "aria-label": options.ariaLabel } : {},
   }) as HTMLSelectElement;
+  select.hidden = true;
   for (const option of options.options) {
     select.append(el("option", { text: option.label, attrs: { value: option.value } }));
   }
