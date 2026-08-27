@@ -4,6 +4,7 @@ import type { AgentFocusBounds, AgentFocusCell, AgentFocusTarget } from "@/edito
 import {
   agentGhostPreviewsForMap,
   buildGhostRevealSchedule,
+  getAgentGhostDraftMap,
   getAgentGhostPreviewState,
   type AgentGhostPreviewState,
   isAgentGhostPreviewHidden,
@@ -13,6 +14,7 @@ import {
   type GhostRevealStep,
 } from "@/editor/agentGhostPreview";
 import { buildInlineApprovalToolbar, getInlineProposalActions } from "@/editor/proposalInlineApproval";
+import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
@@ -224,6 +226,8 @@ export class AgentGhostPreviewRenderer {
   private startTime: number | null = null;
   private schedule: readonly GhostRevealStep[] = [];
   private currentToolName: string = "";
+  /** 초안 맵 공급자(선택) — 있으면 타일을 에디터 컴포지터 경로로 합성해 찍는다. */
+  draftMapProvider?: (mapId: MapId) => import("@/project/types").GameMap | null | undefined;
   private cachedBounds: AgentGhostBounds | null = null;
   private animGroup: Phaser.GameObjects.Container | null = null;
   private scheduleKey: string = "";
@@ -314,7 +318,13 @@ export class AgentGhostPreviewRenderer {
         this.stopTicker();
         return;
       }
-      this.update();
+      // 한 프레임의 렌더 오류(예: 컴포지터 경로의 예외)가 리빌 전체를 얼리는 것을 막는다 —
+      // 칩 텍스트 갱신은 drawAnimationLayers 보다 앞서므로, 예외가 나도 진행 상태는 살아 있다.
+      try {
+        this.update();
+      } catch (error) {
+        console.warn("[agent-ghost] reveal frame error", error);
+      }
       const elapsed = this.clock() - this.startTime;
       const last = this.schedule[this.schedule.length - 1].startMs;
       if (elapsed >= last + LAST_CELL_DISPLAY_MS + FINISH_SHINE_DURATION_MS) this.stopTicker();
@@ -412,18 +422,36 @@ export class AgentGhostPreviewRenderer {
       const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
 
       if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
-        const textureKey = ensureTilesetTexture(this.scene, tileset);
-        const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
-        tileSprite.setOrigin(0, 0);
-        tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
-        if (cellAnim.scale !== 1.0) {
-          tileSprite.setScale(cellAnim.scale);
-          // center the scale around cell center
-          const offset = (TILE_SIZE * (cellAnim.scale - 1)) / 2;
-          (tileSprite as any).x = px - offset;
-          (tileSprite as any).y = py - offset;
+        // 에디터 본 렌더와 같은 컴포지터 경로(호수 쿼터·지형 쿼터·도로 오토타일·밑동 합성)로
+        // 찍는다 — raw 프레임 스탬프는 수락 후 결과물과 다른 그림을 보여주는 오덕정이 된다.
+        // 초안 맵을 만들어 다음 셀 좌표를 대입하면 createChipsetTileObject 가
+        // 다음 셀의 이웃 타일까지 반영한 조합을 내려준다.
+        const draftMap = getAgentGhostDraftMap(this.mapId() as MapId) ?? null;
+        const composed = draftMap
+          ? createChipsetTileObject(this.scene, draftMap, tileset, cell.x, cell.y, cell.tileId)
+          : null;
+        if (composed) {
+          composed.setAlpha(GHOST_SPRITE_ALPHA);
+          if (cellAnim.scale !== 1.0) {
+            const s = cellAnim.scale;
+            composed.setScale(s);
+            composed.x = px - (TILE_SIZE * (s - 1)) / 2;
+            composed.y = py - (TILE_SIZE * (s - 1)) / 2;
+          }
+          group.add(composed);
+        } else {
+          const textureKey = ensureTilesetTexture(this.scene, tileset);
+          const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
+          tileSprite.setOrigin(0, 0);
+          tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
+          if (cellAnim.scale !== 1.0) {
+            tileSprite.setScale(cellAnim.scale);
+            const offset = (TILE_SIZE * (cellAnim.scale - 1)) / 2;
+            (tileSprite as any).x = px - offset;
+            (tileSprite as any).y = py - offset;
+          }
+          group.add(tileSprite);
         }
-        group.add(tileSprite);
       } else {
         // Fallback translucent rect for cells without tileId
         const rect = this.cellRect(cell);

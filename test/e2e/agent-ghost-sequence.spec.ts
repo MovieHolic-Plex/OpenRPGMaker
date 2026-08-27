@@ -274,11 +274,21 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
     const turn = startTurn(page, "광장 가운데에 둥근 연못을 만들어줘");
 
     // 경계 2: 애니메이션 중 — 진행 문구(`… 중 · n/N 셀 · <tool>`)가 실제로 붙는다.
+    // 80셀 스윕은 ~3s 만에 끝나므로, 폴링 간격을 짧게 잡아 중간 상태를 놓치지 않는다.
+    // (놓치면 스킵하는 게 아니라 실패하는 플레이크 — 그래서 이 경계는 대신
+    //  “칩이 언젠가는 진행 문구를 노출한다”를 expect.poll 로 관찰한다.)
     const chip = page.locator(CHIP);
     await expect(chip).toHaveCount(1, { timeout: 60_000 });
-    await expect(chip).toContainText("중", { timeout: 60_000 });
-    await expect(chip).toHaveText(/중 · \d+\/\d+ 셀 · \S+/u, { timeout: 60_000 });
-    chipTimeline.push((await chip.textContent()) ?? "");
+    let midPhaseText = "";
+    await expect
+      .poll(async () => {
+        const text = (await chip.textContent().catch(() => "")) ?? "";
+        if (/중 · \d+\/\d+ 셀 · \S+/u.test(text)) midPhaseText = text;
+        return midPhaseText;
+      }, { timeout: 60_000, intervals: [50] })
+      .toMatch(/중 · \d+\/\d+ 셀 · \S+/u);
+    const chipTextNow = (await chip.textContent()) ?? "";
+    if (midPhaseText && chipTextNow.includes("중 ·")) chipTimeline.push(midPhaseText);
 
     // 칩과 고스트 마커는 맵 캔버스 호스트(캔버스의 부모)에 붙는다.
     expect(await chip.evaluate((node) => Boolean(node.parentElement?.querySelector("canvas")))).toBe(true);
