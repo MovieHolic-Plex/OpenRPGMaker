@@ -247,7 +247,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
-    saveToSlot(window.localStorage, slot, createSaveSnapshot(store.getCurrent(), scene.getSession()));
+    const written = saveToSlot(window.localStorage, slot, createSaveSnapshot(store.getCurrent(), scene.getSession()));
+    if (!written.ok) {
+      rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다 — ${written.message}`);
+      return;
+    }
     options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"));
   }
 

@@ -1,6 +1,7 @@
 import {
   listSaveSlots,
   readAutosave,
+  snapshotLoadBlocker,
   type AutosaveTrigger,
   type SaveSlotIndex,
   type SaveSlotReadResult,
@@ -58,11 +59,16 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   });
   // 오토세이브 카드: 최상단, 불러오기 전용(수동 저장 메뉴의 덮어쓰기 대상이 아니다).
   const autosave = readAutosave(window.localStorage);
-  if (autosave.kind === "present" && options.onLoadAutosave) {
+  if (autosave.kind === "present" && options.onLoadAutosave
+    && snapshotLoadBlocker(store.getCurrent(), autosave.snapshot) === null) {
     slots.append(renderAutosaveButton(autosave.snapshot, options.onLoadAutosave));
   }
   for (const slot of listSaveSlots(window.localStorage)) {
     if (slot.kind === "corrupt") slots.append(renderCorruptSlot(slot));
+    // 이어질 수 없는 슬롯은 골라지기 전에 이유가 보여야 한다 — 누를 수 있지만
+    // player.loadSlot 이 같은 사유로 다시 막는다.
+    const blocker = slot.kind === "present" ? snapshotLoadBlocker(store.getCurrent(), slot.snapshot) : null;
+    if (blocker) slots.append(renderIncompatibleSlot(slot.slot, blocker));
     slots.append(renderSlotButton({
       slot,
       testId: `save-slot-${slot.slot}`,
@@ -88,6 +94,14 @@ function renderSlotMessage(message: string): HTMLElement {
     class: "oprn-load-message",
     text: message,
     attrs: { role: "status" },
+  });
+}
+
+function renderIncompatibleSlot(slot: SaveSlotIndex, reason: string): HTMLElement {
+  return el("div", {
+    class: "oprn-load-corrupt",
+    text: `${slot}번 저장 칸을 이어서 할 수 없습니다: ${reason}`,
+    dataset: { testid: `save-slot-incompatible-${slot}` },
   });
 }
 
