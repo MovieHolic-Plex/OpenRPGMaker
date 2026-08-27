@@ -81,7 +81,10 @@ describe("m2 event command catalog", () => {
   it("selects every non-battle PDF row in the map picker and excludes battle-only rows", () => {
     const mapRows = M2_COMMAND_CATALOG.filter((entry) => entry.index <= 108 && isM2CatalogEntrySelectableInMap(entry));
 
-    expect(mapRows.map((entry) => entry.index)).toEqual(Array.from({ length: 97 }, (_, index) => index + 1));
+    // m2-055(Show Animation 중복 등재)는 2026-08-27 초보자 UX 픽스로 맵 피커에서 제외됐다.
+    expect(mapRows.map((entry) => entry.index)).toEqual(
+      Array.from({ length: 97 }, (_, index) => index + 1).filter((index) => index !== 55),
+    );
     const pageOneRows = mapRows.filter((entry) => entry.pickerPage === 1);
     const pageOneGroupsByTitle = new Map(pageOneRows.map((entry) => [entry.title, entry.pickerGroup]));
     expect(pageOneRows.map((entry) => entry.title)).toEqual(

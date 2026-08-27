@@ -136,6 +136,10 @@ export function createDefaultM2Fields(entry: M2CommandCatalogEntry): Record<stri
 }
 
 export function isM2CatalogEntrySelectableInMap(entry: M2CommandCatalogEntry): boolean {
+  // m2-055(Show Animation)는 m2-054와 동일 명령의 중복 등재다(2026-08-27 감사:
+  // 피커에 "애니메이션 표시"가 두 번 보여 초보자가 구분하지 못한다).
+  // 카탈로그 엔트리 자체는 저장된 프로젝트 호환을 위해 유지하고, 맵 피커에서만 숨긴다.
+  if (entry.index === 55) return false;
   return entry.index <= 97 || entry.index >= 200;
 }
 

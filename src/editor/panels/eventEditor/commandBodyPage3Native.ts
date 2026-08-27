@@ -11,6 +11,7 @@ import {
   type SegmentOption,
 } from "./recordPicker";
 import { selectedOptionValue } from "./dom";
+import { drawTransferMapPreview, type TransferPreviewSelection } from "./transferMapPreview";
 import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
 import type { CommandEditContext } from "./types";
 
@@ -66,14 +67,14 @@ export function setLightingBody(
   cmd: Extract<Command, { kind: "setLighting" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "set-lighting-command-body");
-  const ambient = numberInput(cmd.ambient, "암전 정도(0~1)", "set-lighting-ambient-input");
-  ambient.setAttribute("step", "0.05");
+  const ambient = numberInput(Math.round(clamp01(cmd.ambient) * 100), "밝기 (%)", "set-lighting-ambient-input");
+  ambient.setAttribute("step", "1");
   ambient.setAttribute("min", "0");
-  ambient.setAttribute("max", "1");
+  ambient.setAttribute("max", "100");
   const ambientSlider = el("input", {
     class: "page3-range-input",
-    attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "암전 슬라이더" },
-    value: String(clamp01(cmd.ambient)),
+    attrs: { type: "range", min: "0", max: "100", step: "5", "aria-label": "밝기 슬라이더" },
+    value: String(Math.round(clamp01(cmd.ambient) * 100)),
     dataset: { testid: "set-lighting-ambient-slider" },
   }) as HTMLInputElement;
   const color = textInput(cmd.color ?? "#000000", "어둠 색", "set-lighting-color-input");
@@ -101,7 +102,7 @@ export function setLightingBody(
     const nextTransition = Math.max(0, parseInt(transitionMs.value, 10) || 0);
     context.actions.replaceCommand(context.path, {
       kind: "setLighting",
-      ambient: clamp01(parseFloat(ambient.value)),
+      ambient: clamp01(parseFloat(ambient.value) / 100),
       color: color.value.trim() || undefined,
       ...(nextTransition > 0 ? { transitionMs: nextTransition } : {}),
     });
@@ -109,7 +110,7 @@ export function setLightingBody(
   };
 
   const renderPreview = () => {
-    const ambientValue = clamp01(parseFloat(ambient.value));
+    const ambientValue = clamp01(parseFloat(ambient.value) / 100);
     const pct = Math.round(ambientValue * 100);
     const hex = color.value.trim() || "#000000";
     const ms = Math.max(0, parseInt(transitionMs.value, 10) || 0);
@@ -126,7 +127,7 @@ export function setLightingBody(
       stage,
       el("p", {
         class: "actor-m2-preview-line",
-        text: `암전 ${pct}%${ms > 0 ? ` · ${Math.round(ms / 100) / 10}초` : " · 바로"}`,
+        text: `밝기 ${pct}%${ms > 0 ? ` · ${Math.round(ms / 100) / 10}초` : " · 바로"}`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
@@ -144,7 +145,7 @@ export function setLightingBody(
         dataset: { testid: `set-lighting-preset-${preset.id}` },
         on: {
           click: () => {
-            ambient.value = String(preset.ambient);
+            ambient.value = String(Math.round(preset.ambient * 100));
             ambientSlider.value = String(preset.ambient);
             color.value = preset.color;
             colorPicker.value = normalizeHexColor(preset.color);
@@ -157,11 +158,15 @@ export function setLightingBody(
   }
 
   ambient.addEventListener("change", () => {
-    ambientSlider.value = String(clamp01(parseFloat(ambient.value)));
+    ambientSlider.value = String(clamp01(parseFloat(ambient.value) / 100) * 100);
     commit();
   });
   ambient.addEventListener("input", () => {
-    ambientSlider.value = String(clamp01(parseFloat(ambient.value)));
+    ambientSlider.value = String(clamp01(parseFloat(ambient.value) / 100) * 100);
+    renderPreview();
+  });
+  ambientSlider.addEventListener("input", () => {
+    ambient.value = ambientSlider.value;
     renderPreview();
   });
   ambientSlider.addEventListener("input", () => {
@@ -192,7 +197,7 @@ export function setLightingBody(
   wrap.append(
     intentCard(
       "조명 설정",
-      "맵이 얼마나 어두운지와 어둠 색을 바꿉니다. 전환 시간이 있으면 서서히 바뀝니다.",
+      "맵 전체의 밝기를 바꿉니다. 밝기가 낮으면 밤처럼 어두워지고, 색을 고르면 그 색 기운으로 가려집니다.",
       "set-lighting-intent"
     ),
     el("div", {
@@ -202,7 +207,7 @@ export function setLightingBody(
           class: "actor-m2-main page3-command-main",
           children: [
             fieldBlock(
-              "암전 정도",
+              "밝기 (%)",
               el("div", {
                 class: "page3-slider-row",
                 children: [ambientSlider, ambient],
@@ -1064,6 +1069,15 @@ export function changeTileBody(
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "change-tile-preview" },
   });
+  // 초보자 계약(2026-08-27 감사): 텍스트만 있던 타일 변경에 실제 맵 미리보기를 붙인다.
+  const mapCanvas = el("canvas", {
+    dataset: { testid: "change-tile-map-canvas" },
+  }) as HTMLCanvasElement;
+  const mapCanvasHost = el("div", {
+    class: "page3-command-body change-tile-map-preview",
+    dataset: { testid: "change-tile-map-preview" },
+  });
+  let canvasVersion = 0;
   const presets = el("div", {
     class: "actor-m2-presets",
     dataset: { testid: "change-tile-presets" },
@@ -1102,11 +1116,21 @@ export function changeTileBody(
         class: "actor-m2-preview-line",
         text: `${mapName} · ${layerLabel} (${tx}, ${ty}) → ${tileNo < 0 ? "비움" : tileNo === 0 ? "빈 바닥" : tileNo === 1 ? "기본 바닥" : `그림 ${tileNo}`}`,
       }),
+      mapCanvasHost,
       el("p", {
         class: "actor-m2-preview-note",
         text: tileNo < 0 ? "음수면 그 칸을 비웁니다." : "맵 위 그 칸의 타일을 바로 바꿉니다.",
       })
     );
+    renderCanvas(mapId ?? "", tx, ty);
+  };
+
+  const renderCanvas = (mapId: string, tx: number, ty: number) => {
+    const version = ++canvasVersion;
+    const selection: TransferPreviewSelection = { x: tx, y: ty, zoom: 1 };
+    const fit = () => ({ maxWidth: Math.max(1, mapCanvasHost.clientWidth - 8), maxHeight: Math.max(1, Math.min(280, mapCanvasHost.clientHeight || 280)) });
+    const isCurrent = () => version === canvasVersion;
+    void drawTransferMapPreview({ canvas: mapCanvas, project, mapId, selection, fitDisplay: fit(), isCurrent }).catch(() => undefined);
   };
 
   for (const preset of [
