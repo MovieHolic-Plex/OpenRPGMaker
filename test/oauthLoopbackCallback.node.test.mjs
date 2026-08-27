@@ -98,6 +98,7 @@ describe("OAuth 루프백 콜백 서버", () => {
 
   it("abort 신호로도 정리된다", async () => {
     const controller = new AbortController();
+
     const handle = await startOAuthCallbackServer({ preferredPort: 0, signal: controller.signal });
     const port = handle.port;
 
@@ -107,5 +108,29 @@ describe("OAuth 루프백 콜백 서버", () => {
     const again = await startOAuthCallbackServer({ preferredPort: port });
     assert.equal(again.port, port);
     again.close();
+  });
+
+  // OpenAI Codex 는 http://localhost:1455/auth/callback 하나만 허용목록에 두므로 대체 포트가
+  // 곧 403 이다. 그래서 이 경로만은 EADDRINUSE 를 삼키지 않고 그대로 올려, 호출부가 디바이스
+  // 코드 흐름으로 갈 수 있게 해야 한다.
+  it("allowPortFallback:false 는 점유된 포트를 대체하지 않고 EADDRINUSE 를 올린다", async () => {
+    const blocker = createServer(() => {});
+    await new Promise((resolve) => blocker.listen(0, "127.0.0.1", resolve));
+    const busyPort = blocker.address().port;
+    openSockets.push(blocker);
+
+    await assert.rejects(
+      () => startOAuthCallbackServer({ preferredPort: busyPort, allowPortFallback: false }),
+      (error) => {
+        assert.equal(error.code, "EADDRINUSE", `code=${error.code}`);
+        assert.match(error.message, new RegExp(String(busyPort)));
+        return true;
+      },
+    );
+
+    const moved = await startOAuthCallbackServer({ preferredPort: busyPort });
+    assert.notEqual(moved.port, busyPort, "폴백 허용이 기본값이므로 이쪽은 다른 포트로 붙어야 한다");
+    moved.close();
+    blocker.close();
   });
 });

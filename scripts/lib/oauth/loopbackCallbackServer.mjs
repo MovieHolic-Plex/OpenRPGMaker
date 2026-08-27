@@ -21,12 +21,23 @@ const PAGE = (title, message) =>
   `background:#14161a;color:#e8eaed}main{text-align:center;padding:24px}h1{font-size:20px;margin:0 0 8px}` +
   `p{margin:0;color:#9aa0a6}</style></head><body><main><h1>${title}</h1><p>${message}</p></main></body></html>`;
 
-/** 선호 포트 → 실패하면 임의 포트. resolve 시점에 소켓은 이미 듣고 있다. */
-function listenWithFallback(server, preferredPort) {
+/**
+ * 선호 포트 → 실패하면 임의 포트. resolve 시점에 소켓은 이미 듣고 있다.
+ *
+ * `allowPortFallback:false` 는 제공자가 redirect_uri 를 허용목록으로 고정한 경우다(OpenAI Codex:
+ * http://localhost:1455/auth/callback 만 등록). 그때 임의 포트로 옮기면 인가는 통과하고 토큰
+ * 교환이 403 으로 끊겨 원인이 사라지므로, 옮기지 않고 EADDRINUSE 를 그대로 올려 호출부가
+ * 디바이스 코드 같은 다른 경로를 고를 수 있게 한다.
+ */
+function listenWithFallback(server, preferredPort, allowPortFallback) {
   return new Promise((resolve, reject) => {
     const onFirstError = (cause) => {
-      if (cause.code !== "EADDRINUSE" || preferredPort === 0) {
-        reject(new Error(`OAuth callback server failed on ${HOSTNAME}:${preferredPort}: ${cause.message}`));
+      if (cause.code !== "EADDRINUSE" || preferredPort === 0 || !allowPortFallback) {
+        const failure = new Error(
+          `OAuth callback server failed on ${HOSTNAME}:${preferredPort}: ${cause.message}`,
+        );
+        if (cause.code) failure.code = cause.code;
+        reject(failure);
         return;
       }
       server.once("error", (retryCause) => {
@@ -45,7 +56,7 @@ function listenWithFallback(server, preferredPort) {
 /**
  * 콜백 대기를 시작한다. 반환 시점에 포트는 이미 확보돼 있다.
  *
- * @param {{ preferredPort?: number, callbackPath?: string, expectedState?: string, timeoutMs?: number, signal?: AbortSignal }} [options]
+ * @param {{ preferredPort?: number, callbackPath?: string, expectedState?: string, timeoutMs?: number, signal?: AbortSignal, allowPortFallback?: boolean }} [options]
  * @returns {Promise<{ port: number, redirectUri: string, waitForCode: Promise<{ code: string, state: string }>, close: () => void }>}
  */
 export async function startOAuthCallbackServer(options = {}) {
@@ -55,6 +66,7 @@ export async function startOAuthCallbackServer(options = {}) {
     expectedState,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     signal,
+    allowPortFallback = true,
   } = options;
 
   let settle;
@@ -118,7 +130,7 @@ export async function startOAuthCallbackServer(options = {}) {
   // 바인드가 먼저다. 일반 error 핸들러를 listen 보다 먼저 붙이면 EADDRINUSE 가 그 핸들러와
   // 대체 포트 재시도 양쪽에 도달해, 이미 정리된 것으로 표시된 서버가 새 포트에 다시 바인드되고
   // 아무도 닫지 못한다(실측: 살아 있는 리스닝 소켓이 이벤트 루프를 104초 붙잡았다).
-  const port = await listenWithFallback(server, preferredPort);
+  const port = await listenWithFallback(server, preferredPort, allowPortFallback);
   signal?.addEventListener("abort", onAbort, { once: true });
   server.on("error", (cause) => finish(() => settle.reject(cause)));
 
