@@ -128,3 +128,23 @@ Evidence expectations:
 - Definition/placement FK, footprint collision, repair, map cascade and delete guards: `test/p2SpatialReferenceIntegrity.test.ts`.
 - Database CRUD/navigation and runtime visibility: `test/p2SpatialEditorAuthoring.test.ts`, Database sidebar suites, and `test/p2SpatialRuntimeUi.test.ts`.
 - Root integration performs real browser QA at 1024x768 and 1440x900 using `db-tab-farm-spatial`, `db-spatial-workspace`, `db-spatial-hero-image`, CRUD testids, and `life-ledger-tab-spaces`. This isolated implementation does not claim browser evidence.
+
+## 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+
+- `playwright.config.ts` 의 `webServer.command` 는 `npm run dev -- --port <DEV_SERVER_PORT>` 인데
+  `npm run dev` 스크립트가 `--port 9999 --strictPort` 를 하드코딩한다. 메인 세션이 9999 를 점유하면
+  vite 가 즉시 죽고 지정 포트에는 아무것도 LISTEN 하지 않는다 → 모든 스펙이 `edit-canvas` 를 못 찾는다.
+  타임아웃을 15s→120s 로 늘려도 똑같이 실패하므로 "머신이 느려서" 로 오진하기 쉽다.
+- 판별: `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:<port>/` → `000` 이면 서버가 없다.
+- 회피: `DEV_SERVER_NO_TLS=1 npm run dev:worktree -- --port <free>` 로 직접 띄우고
+  `DEV_SERVER_PORT=<free> npx playwright test ...` 로 실행한다(`reuseExistingServer: true`).
+  포트는 `ss -tlnp` 로 실측해서 고른다 — `wt create` 가 배정한 포트도 이미 점유돼 있을 수 있다.
+- 브라우저 QA 중에 다른 에이전트가 `src/` 를 편집하면 HMR 리로드가 끼어들어
+  `ERR_NETWORK_CHANGED` 가 쏟아지고 편집기 부팅이 깨진다. 소스가 조용할 때 브라우저 증거를 잡아라.
+
+## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+
+- `src/testing/sceneTestRunner.ts` 는 추격(chase) 무버만 시뮬레이션하고 무작위·접근·사용자 지정
+  페이지 이동은 굴리지 않는다. 그래서 `{ kind: "expect", eventAt: <원래 좌표> }` 는 NPC 가
+  실제로 움직이든 안 움직이든 통과한다 — "안 움직인다" 류 회귀를 이 러너로 증명하지 말라.
+  단위 레벨은 `test/runtimeEventPageMovement.test.ts`, 실물은 브라우저 Test Play 로 잡는다.
