@@ -80,6 +80,7 @@ describe("computeGhostAnimationState pure function", () => {
   });
 });
 
+
 describe("ghostPhaseChipInfo helper", () => {
   it("translates toolNames into Korean labels and tracks progress vs completion", () => {
     // animating with build/author/paint/fill/create/scatter tool
@@ -174,6 +175,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
   let hostEl: any;
   let mockScene: any;
   let mockLayer: any;
+  let containerFactory: (() => any) | null = null;
 
   beforeEach(() => {
     restoreDom = installFakeDom();
@@ -183,6 +185,18 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     hostEl.append(canvas);
     document.body.append(hostEl);
 
+    const makeContainer = () => {
+      const c: any = {
+        setName: vi.fn(),
+        add: vi.fn((...kids: any[]) => { kids.forEach(k => { c.list.push(k); k.parentContainer = c; }); }),
+        removeAll: vi.fn(() => { c.list.length = 0; }),
+        destroy: vi.fn(() => { c.destroyed = true; }),
+        list: [],
+        parentContainer: null,
+      };
+      return c;
+    };
+    containerFactory = makeContainer;
     mockLayer = {
       removeAll: vi.fn(),
       add: vi.fn(),
@@ -191,13 +205,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
 
     mockScene = {
       add: {
-        container: vi.fn(() => ({
-          setName: vi.fn(),
-          add: vi.fn(),
-          removeAll: vi.fn(),
-          destroy: vi.fn(),
-          list: [],
-        })),
+        container: vi.fn(() => containerFactory()),
         graphics: vi.fn(() => ({
           fillStyle: vi.fn(),
           fillRect: vi.fn(),
@@ -221,6 +229,9 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
         rectangle: vi.fn(() => ({
           setOrigin: vi.fn(),
           setStrokeStyle: vi.fn(),
+          setVisible: vi.fn(),
+          setScale: vi.fn(),
+          setPosition: vi.fn(),
           destroy: vi.fn(),
         })),
       },
@@ -397,5 +408,33 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     const chip = hostEl.querySelector("[data-testid='ai-ghost-phase-chip']");
     expect(chip).not.toBeNull();
     expect(chip?.textContent).toContain("300 셀");
+  });
+
+  it("라운드3 회귀: 두 번째 render() 후에도 타일 레이어가 새 animGroup에 재부모된다", () => {
+    let now = 1000;
+    const renderer = new AgentGhostPreviewRenderer(mockScene, mockLayer, () => "m1", { clock: () => now });
+    const base = createBlankProject();
+    const draft = createBlankProject();
+    base.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"].lowerTiles[0] = 5;
+    store.replace(base);
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+    const firstGroup = renderer["animGroup"];
+    now += 50;
+    renderer.update();
+    if ((renderer["tileObjects"] as unknown[]).length === 0) {
+      throw new Error(`STATE animGroup=${!!renderer["animGroup"]} tileLayer=${!!renderer["tileLayer"]} key="${renderer["tileLayerKey"]}" schedLen=${renderer.getCurrentSchedule().length}`);
+    }
+    expect((renderer["tileObjects"] as unknown[]).length).toBeGreaterThan(0);
+    now += 3000;
+    renderer.render();
+    const secondGroup = renderer["animGroup"];
+    expect(secondGroup).not.toBe(firstGroup);
+    // 빌드가 새 그룹(parent 불일치)에서 이뤄졌는지 — 파괴된 컨테이너 재사용이 아니라.
+    const tileLayer = renderer["tileLayer"];
+    expect(tileLayer).not.toBeNull();
+    expect(renderer["tileLayerParent"]).toBe(secondGroup);
   });
 });

@@ -270,6 +270,7 @@ export class AgentGhostPreviewRenderer {
       this.scheduleKey = "";
       this.startTime = null;
       this.animGroup = null;
+      this.tileLayerParent = null;
       this.tileLayer = null; // layer.removeAll(true) 가 파괴했다 — 참조와 키를 반드시 리셋
       this.tileLayerKey = "";
       this.stopTicker();
@@ -514,6 +515,12 @@ export class AgentGhostPreviewRenderer {
   /** 타일 스탬프 레이어(컴포지터 경로 포함)를 스케줄당 한 번 빌드한다. */
   private buildTileLayer(): void {
     this.tileObjects = [];
+    // layer.removeAll(true) 가 animGroup·그 안의 tileLayer 를 파괴한다. 파괴된 컨테이너를
+    // 재사용하면 add 한 셀이 표시 목록에서 빠져 보이지 않는다(라운드3 blocker 1).
+    if (this.tileLayer && this.tileLayer.parentContainer !== this.animGroup) {
+      this.tileLayer = null;
+      this.tileLayerKey = "";
+    }
     if (this.tileLayer) {
       this.tileLayer.removeAll(true);
     } else if (this.animGroup) {
@@ -564,6 +571,7 @@ export class AgentGhostPreviewRenderer {
         objects.push({ obj: rect, baseX: px, baseY: py });
       }
     }
+    this.tileObjects = objects;
   }
 
   private renderOrUpdatePhaseChip(totalCount: number, animState: GhostAnimationState): void {
