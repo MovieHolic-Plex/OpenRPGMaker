@@ -87,6 +87,21 @@
 
 `base/tile-reaudit` 로 8개 PR 병합, 열린 PR 0개. origin/main 은 건드리지 않았다.
 
+## 정리 영수증
+
+| 대상 | 상태 |
+|---|---|
+| 브라우저 컨텍스트 | chrome/headless_shell 프로세스 **0개** — playwright 종료 시 함께 닫혔다 |
+| playwright 산출물 | `test-results/`, `playwright-report/` **없음** (삭제) |
+| 임시 스크립트 | `/tmp/dump-idx.cjs`, `/tmp/chk24.cjs`, `/tmp/reaudited-exterior.ts` 삭제 |
+| dag 런 / 자식 태스크 | 진행 중 없음 |
+| 작업트리 | `git status --porcelain` **0줄** |
+
+dev server(0.0.0.0:9999)는 **일부러 살려뒀다**. playwright 설정이
+`reuseExistingServer: true` 라서 내가 띄운 게 아니라 이미 돌던 걸 재사용했고,
+이 저장소에는 `dev:keep:detached` 상주 supervisor 스크립트가 따로 있다.
+내가 시작하지 않은 상주 프로세스를 끄는 건 사용자 작업을 끊는 일이라 건드리지 않았다.
+
 ## 미해결 (숨기지 않고 남긴다)
 
 - **3칸** — 물건은 판독자들이 합의했지만 role 이 갈린다. `splits.txt`.
