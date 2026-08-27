@@ -28,6 +28,59 @@ export type TileToolbarModel = {
 };
 
 let openMenu: ToolbarMenuId = null;
+// 열림 상태는 모듈에 남긴다(재렌더 생존). 닫는 길은 밖에서 들어오므로 재렌더 콜백과
+// 문서 리스너가 필요하고, 리스너는 렌더마다 쌓이지 않게 1회만 설치한다(basicLeftRail 과 동일).
+let latestRerender: (() => void) | null = null;
+let detachDocumentListeners: (() => void) | null = null;
+
+export function resetTileToolbarMenusForTests(): void {
+  openMenu = null;
+  latestRerender = null;
+  detachDocumentListeners?.();
+  detachDocumentListeners = null;
+}
+
+function closeMenuFromOutside(restoreFocus: boolean): void {
+  if (openMenu === null) return;
+  openMenu = null;
+  latestRerender?.();
+  if (!restoreFocus || typeof document === "undefined") return;
+  // 재렌더로 버튼 노드가 새로 생기므로 다시 조회해 포커스를 되돌린다.
+  document.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')?.focus();
+}
+
+function isInsideOverflowSurface(target: EventTarget | null): boolean {
+  if (typeof document === "undefined" || typeof Node === "undefined" || !(target instanceof Node)) return false;
+  const surfaces = document.querySelectorAll('[data-testid="toolbar-overflow-menu"], [data-testid="toolbar-overflow-dropdown"]');
+  for (const surface of surfaces) {
+    if (surface.contains(target)) return true;
+  }
+  return false;
+}
+
+function installDocumentListeners(): void {
+  if (detachDocumentListeners || typeof document === "undefined" || typeof document.addEventListener !== "function") return;
+  const onPointerDown = (event: Event): void => {
+    if (openMenu === null || isInsideOverflowSurface(event.target)) return;
+    closeMenuFromOutside(false);
+  };
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape" || openMenu === null) return;
+    const target = event.target;
+    if (typeof HTMLElement !== "undefined" && target instanceof HTMLElement) {
+      const tag = target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
+    }
+    closeMenuFromOutside(true);
+  };
+  document.addEventListener("pointerdown", onPointerDown);
+  document.addEventListener("keydown", onKeyDown);
+  detachDocumentListeners = () => {
+    document.removeEventListener("pointerdown", onPointerDown);
+    document.removeEventListener("keydown", onKeyDown);
+  };
+}
+
 const TOOLBAR_MENU_ICONS = { inspector: "inspector", overflow: "more" } as const satisfies Record<SvgToolbarMenuId, SvgIconName>;
 
 export function makeInspectorDropdown(model: TileToolbarModel): HTMLElement {
@@ -104,6 +157,8 @@ export function makeHistoryDropdown(model: TileToolbarModel): HTMLElement {
  */
 export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
   const { state, map, tileset } = model;
+  latestRerender = model.rerender;
+  installDocumentListeners();
   const wrapper = makeToolbarMenuWrapper("toolbar-overflow-menu");
   const panelOpen = openMenu === "overflow" || openMenu === "inspector" || openMenu === "ruleAudit" || openMenu === "history";
   const ruleCount = ruleAuditViolationCount();
