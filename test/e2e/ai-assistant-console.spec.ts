@@ -99,8 +99,9 @@ test.describe("AI 감독 console contract", () => {
       await assertEmptyQueueHidden(page);
       await shot(page, `first-visit-${viewport.name}`);
 
+      // 스킬 기능 제거 후 `/` 는 평범한 텍스트다 — 슬래시 팝오버가 다시 생기면 회귀다.
       await page.getByTestId("ai-input").fill("/");
-      await expect(page.getByTestId("ai-slash-list")).toBeVisible();
+      expect(await page.getByTestId("ai-slash-list").count()).toBe(0);
       expect(
         await page.locator("[data-testid='ai-rising-overlay'] [data-testid='ai-start-screen']").count(),
       ).toBe(0);

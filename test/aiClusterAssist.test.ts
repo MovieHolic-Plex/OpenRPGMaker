@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
-import { SYSTEM_SKILLS, type SkillRunContext } from "@/ai/skills";
+import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -46,11 +46,21 @@ vi.mock("@/ai/assistantSession", () => ({
   METADATA_ONLY_TOOLS: new Set(["set_tile_metadata", "set_tile_rules", "upsert_tile_group"]),
 }));
 
-const CTX: SkillRunContext = {
-  mapId: "map_1",
-  mapName: "테스트 맵",
-  selection: null,
-};
+/** 킥오프 프롬프트에 실릴 그룹 스냅샷(구 skills.ts 의 clusterGroupSnapshot 로컬 픽스처). */
+function groupSnapshot(tilesetId: string, groupId: string): ClusterGroupSnapshot | null {
+  const group = store.getCurrent().tilesets[tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
+  if (!group) return null;
+  return {
+    id: group.id,
+    name: group.name,
+    role: group.role,
+    defaultLayer: group.defaultLayer,
+    tileIds: [...group.tileIds],
+    description: group.description,
+    placementRules: group.placementRules,
+    patternGrammar: group.patternGrammar ? { kind: group.patternGrammar.kind } : null,
+  };
+}
 
 let restoreDom: (() => void) | null = null;
 let restoreWindow: (() => void) | null = null;
@@ -119,15 +129,13 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-describe("클러스터 AI 스킬", () => {
-  it("클러스터 수정/미분류 분석 스킬이 있고 킥오프에 그룹 JSON과 첫 배치가 들어간다", () => {
-    const cluster = SYSTEM_SKILLS.find((skill) => skill.id === "cluster-edit");
-    const unclassified = SYSTEM_SKILLS.find((skill) => skill.id === "unclassified-analysis");
-
-    expect(cluster?.name).toBe("클러스터 수정");
-    expect(unclassified?.name).toBe("미분류 분석");
-
-    const clusterPrompt = cluster?.buildPrompt?.({ tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" }, CTX) ?? "";
+describe("클러스터 AI 킥오프", () => {
+  it("클러스터 수정/미분류 분석 킥오프에 그룹 JSON과 첫 배치가 들어간다", () => {
+    const clusterPrompt = buildClusterEditKickoff({
+      tilesetId: DEFAULT_TILESET_ID,
+      groupId: "wall_group",
+      group: groupSnapshot(DEFAULT_TILESET_ID, "wall_group"),
+    });
     expect(clusterPrompt).toContain("render_group_sample");
     expect(clusterPrompt).toContain("delete_tile_group");
     expect(clusterPrompt).toContain("\"name\": \"담장\"");
@@ -139,7 +147,11 @@ describe("클러스터 AI 스킬", () => {
     expect(clusterPrompt).toContain("set_group_junction");
     expect(clusterPrompt).toContain("set_group_overlay");
 
-    const analysisPrompt = unclassified?.buildPrompt?.({ tilesetId: DEFAULT_TILESET_ID, sampleTiles: [3, 4, 5], total: 12 }, CTX) ?? "";
+    const analysisPrompt = buildUnclassifiedAnalysisKickoff({
+      tilesetId: DEFAULT_TILESET_ID,
+      sampleTiles: [3, 4, 5],
+      total: 12,
+    });
     expect(analysisPrompt).toContain("render_group_sample");
     expect(analysisPrompt).toContain("list_unclassified_tiles");
     expect(analysisPrompt).toContain("\"sampleTiles\": [");
@@ -149,7 +161,7 @@ describe("클러스터 AI 스킬", () => {
 });
 
 describe("AI 패널 브리지", () => {
-  it("cluster-edit 이벤트가 접힌 패널을 펼치고 스킬 킥오프를 전송 경로로 보낸다", async () => {
+  it("cluster-edit 이벤트가 접힌 패널을 펼치고 클러스터 킥오프를 전송 경로로 보낸다", async () => {
     storage.set("oprn:ai-map-first-collapse-v1", "1");
     storage.set("oprn:ai-panel-collapsed", "1");
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));

@@ -369,7 +369,7 @@ describe("키 온보딩과 설정 접근성", () => {
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-skill-slash-toggle", "ai-new-session"]) {
+    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-new-session"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });

@@ -6,7 +6,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
-import { SYSTEM_SKILLS } from "@/ai/skills";
 
 type LookData = {
   readonly ok: boolean;
@@ -49,15 +48,5 @@ describe("evaluate_village_layer(look) 출력", () => {
     // 100폭 맵의 96타일 직선 도로와 NPC 시간표 0개 — 스크린샷으로 확인한 결함이다.
     expect(text).toContain("도로 직선 구간이 너무 길다");
     expect(text).toContain("시간표가 있는 주민이 부족하다");
-  });
-});
-
-describe("맵 검증 스킬", () => {
-  it("룩 게이트를 호출하도록 지시한다 — 안 부르면 린트만 보고 '문제 없음' 이라 보고한다", () => {
-    const skill = SYSTEM_SKILLS.find((entry) => entry.id === "map-audit");
-    expect(skill).toBeDefined();
-    const prompt = skill!.buildPrompt?.({}, { mapId: "m", mapName: "테스트", selection: null }) ?? "";
-    expect(prompt).toContain("evaluate_village_layer");
-    expect(prompt).toContain("look");
   });
 });

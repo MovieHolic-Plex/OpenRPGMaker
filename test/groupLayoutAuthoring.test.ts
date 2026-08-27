@@ -1,16 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { SYSTEM_SKILLS, type SkillRunContext } from "@/ai/skills";
+import { buildClusterEditKickoff } from "@/ai/clusterAssistPrompt";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 
-const CTX: SkillRunContext = {
-  mapId: "map_1",
-  mapName: "테스트 맵",
-  selection: null,
-};
-
 function clusterEditPrompt(): string {
-  const cluster = SYSTEM_SKILLS.find((skill) => skill.id === "cluster-edit");
-  return cluster?.buildPrompt?.({ tilesetId: DEFAULT_TILESET_ID, groupId: "roof_layout_group" }, CTX) ?? "";
+  return buildClusterEditKickoff({ tilesetId: DEFAULT_TILESET_ID, groupId: "roof_layout_group", group: null });
 }
 
 describe("클러스터 구성 저작", () => {

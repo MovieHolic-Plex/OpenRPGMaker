@@ -4,14 +4,14 @@
 // - 제안 수락은 세션 draft를 store에 반영 → projectLint 게이트 → undo 체크포인트.
 // - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
-import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
+import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, peekPreviousProject, undoMapEdit } from "@/editor/mapEditHistory";
 import {
   clearAiApplyCompletion,
   publishAiApplyCompletion,
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
 } from "@/editor/aiApplyCompletion";
-import type { AiDocument, Project } from "@/project/types";
+import type { AiDocument, ChangeSummary, Project } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import {
   parseAssistantTemperature,
@@ -32,14 +32,13 @@ import {
 } from "@/editor/agentGhostPreview";
 import { classifyApproval, resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
-import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
-import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { store } from "@/project/store";
+import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { renderMarkdown } from "@/util/markdown";
 import { genId } from "@/util/id";
@@ -47,6 +46,7 @@ import { toast } from "@/util/toast";
 import {
   AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
+  type ProposedCall,
   type SessionEvent,
   type TurnResult,
 } from "@/ai/assistantSession";
@@ -63,11 +63,18 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
-import { parseQuickReplies, QUICK_REPLY_MARKER, stripQuickReplyLine } from "@/ai/interviewPrompt";
-import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
-import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
-import { loadAiConfig } from "@/ai/llmClient";
+import {
+  buildInterviewKickoff,
+  buildStructureLearnKickoff,
+  parseQuickReplies,
+  QUICK_REPLY_MARKER,
+  stripQuickReplyLine,
+} from "@/ai/interviewPrompt";
+import { buildDemonstrationMessage } from "@/ai/demonstrationPrompt";
+import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
+import { loadAiConfig } from "@/ai/llmClient";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
@@ -105,13 +112,14 @@ import {
 } from "./aiPanelLayout";
 import { formatAiRunningStatus, parseAutonomousRunBudget, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
 import {
-  appendSkillPromptToggle,
   createConversationLogHost,
   renderStreamedMarkdown,
 } from "./aiConversationLog";
 import { createProposalModalElements } from "./aiProposalModal";
 import { anchoredPopupPosition } from "./popupPosition";
-import { createProposalHost, renderAppliedComparison, setAssistantMessageBadge } from "./aiProposalCard";
+import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
+import { changePreviewChips, renderChangePreviewCard } from "./aiChangePreview";
+import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { findEntityMentions, renderEntityMentionStrip } from "./aiEntityMentions";
 import {
   attachCompletenessWarnings,
@@ -205,6 +213,35 @@ export {
   shouldShowStatusInChat,
   type StatusTransition,
 } from "./aiChatPanelHelpers";
+
+/** 컴포저가 AI 에게 넘기는 현재 맵/선택 영역 컨텍스트. */
+interface PanelMapContext {
+  readonly mapId: string | null;
+  readonly mapName: string | null;
+  readonly selection: {
+    readonly mapId: string;
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  } | null;
+}
+
+/** 클러스터 킥오프 프롬프트에 넣을 그룹 스냅샷 — 없으면 null(프롬프트가 초안부터 시작한다). */
+function clusterGroupSnapshot(project: Project, tilesetId: string, groupId: string): ClusterGroupSnapshot | null {
+  const group = project.tilesets[tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
+  if (!group) return null;
+  return {
+    id: group.id,
+    name: group.name,
+    role: group.role,
+    defaultLayer: group.defaultLayer,
+    tileIds: [...group.tileIds],
+    description: group.description,
+    placementRules: group.placementRules,
+    patternGrammar: group.patternGrammar ? { kind: group.patternGrammar.kind } : null,
+  };
+}
 
 export function foldWorkLogs(bubble: HTMLElement | null): void {
   if (!bubble) return;
@@ -450,10 +487,38 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendTileThumbs,
     appendTileGrid,
     appendAiDocument,
+    appendChangeCard,
     renderConversationEntry,
     clearLastReasoning,
     isLastReasoningBox,
   } = conversationLog;
+
+  // 사용자가 보고 싶은 것은 툴 호출 목록이 아니라 “무엇이 어떻게 바뀌었는가” 다. 자동 적용·수동
+  // 재생 없이 상통 상태로 넘어가는 모든 적용 경로가 이 카드 하나로 모인다.
+  const emitChangeCard = (input: {
+    readonly before: Project;
+    readonly after: Project;
+    readonly mapId: string;
+    readonly title: string;
+    readonly detail?: string;
+    readonly calls: readonly ProposedCall[];
+  }): void => {
+    const diffs = input.calls
+      .map((call) => call.result?.diff)
+      .filter((diff): diff is ChangeSummary => Boolean(diff));
+    const card = renderChangePreviewCard({
+      before: input.before,
+      after: input.after,
+      mapId: input.mapId,
+      title: input.title,
+      ...(input.detail ? { detail: input.detail } : {}),
+      chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
+      onUndo: () => {
+        undoMapEdit();
+      },
+    });
+    appendChangeCard(card);
+  };
 
   const ensureSession = (): AssistantSession => {
     if (!controller.session) {
@@ -494,6 +559,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     setStatus,
     onApplied: (result) => {
       const selection = editorState.get().selection;
+      // 수동 승인 경로도 같은 변경 카드를 남긴다. 적용 직전 통이 undo 스택 상단이므로
+      // peekPreviousProject(1) 이 before, 현재 store 가 after 다.
+      const applied = proposalApi.lastAppliedProposalMessage;
+      const before = peekPreviousProject(1);
+      if (before && applied) {
+        emitChangeCard({
+          before,
+          after: store.getCurrent(),
+          mapId: result.mapId,
+          title: proposalHumanSummaryLine(applied.calls) || result.summary,
+          detail: result.summary,
+          calls: applied.calls,
+        });
+      }
       publishAiApplyCompletion({
         mapId: result.mapId,
         selection: selection?.mapId === result.mapId ? selection : null,
@@ -535,6 +614,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const lastAssistant = [...record.entries].reverse().find((entry) => entry.kind === "assistant" && entry.text.trim());
     if (lastAssistant?.kind === "assistant") renderQuickReplies(lastAssistant.text);
     setStatus(source === "auto" ? "대화 복원됨" : "이전 대화");
+    // 복원된 대화는 로그에 들어가지만 syncGlassIdle 이 다시 돌지 않으면 패널이 is-glass-idle 로
+    // 남아 .ai-glass-log 가 display:none 이라 사용자에게 보이지 않는다(실보 2026-08-27).
+    syncGlassIdle();
     refreshExportButton();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
   };
@@ -602,7 +684,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 사용자 메시지에 현재 맵/선택 영역을 자동 첨부한다 — "여기에 지어줘"의 '여기'를
   // 모델이 좌표로 받는다(공간 산파법의 짝: 사용자가 영역을 지정하면 그게 곧 답).
   const contextFooter = (): string => {
-    const ctx = getSkillContext();
+    const ctx = mapContext();
     const parts = [`현재 맵: ${ctx.mapName ?? "없음"}${ctx.mapId ? ` (${ctx.mapId})` : ""}`];
     // 선택 영역은 '현재 맵의 것'이고 맵 범위 안에 있을 때만 첨부한다.
     // 맵을 전환해도 남아 있던 이전 맵의 선택(예: 10×10 맵에 (11,9))이 모델에 새 좌표로 오인되던 문제(BUG F) 방지.
@@ -617,7 +699,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
   // 큐에 쌓고 "기다리는 메시지 N개"로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
-  const pendingSends: { text: string; displayAs?: string; explicitSkillId?: string }[] = [];
+  const pendingSends: { text: string; displayAs?: string }[] = [];
   const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
   queueIndicator.hidden = true;
   const refreshQueueIndicator = (): void => {
@@ -628,13 +710,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const drainPendingSends = (): void => {
     const next = pendingSends.shift();
     refreshQueueIndicator();
-    if (next) {
-      void sendText(
-        next.text,
-        next.displayAs,
-        next.explicitSkillId ? { explicitSkillId: next.explicitSkillId } : undefined,
-      );
-    }
+    if (next) void sendText(next.text, next.displayAs);
   };
 
   // ── 자율 실행 런 표면(todo 6) ───────────────────────────────────────────
@@ -812,7 +888,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendText = async (
     text: string,
     displayAs?: string,
-    opts?: { readonly explicitSkillId?: string | null; readonly replay?: boolean },
+    opts?: { readonly replay?: boolean },
   ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -821,7 +897,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       pendingSends.push({
         text: trimmed,
         ...(displayAs !== undefined ? { displayAs } : {}),
-        ...(opts?.explicitSkillId ? { explicitSkillId: opts.explicitSkillId } : {}),
       });
       refreshQueueIndicator();
       return;
@@ -829,10 +904,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     chipsHost.replaceChildren();
     closeToolActivity();
     revealVolatileZone();
-    if (!opts?.replay) {
-      const userBubble = appendBubble("user", displayAs ?? trimmed);
-      if (displayAs !== undefined && displayAs !== trimmed) appendSkillPromptToggle(userBubble, trimmed);
-    }
+    if (!opts?.replay) appendBubble("user", displayAs ?? trimmed);
     const session = ensureSession();
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준 — 위 autoApprove 판정과 같은 관례).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
@@ -840,10 +912,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
     if (autonomous) beginAutonomousRun();
     await executeTurn(session, trimmed, (onEvent, signal) =>
-      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, {
-        explicitSkillId: opts?.explicitSkillId,
-        autonomous,
-      }),
+      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, { autonomous }),
       { autonomous }
     );
   };
@@ -1119,34 +1188,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 이미 ❌ 버블로 남긴다).
         // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
         // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
-        // 판단해야 했다. 전/후 썸네일·자동 적용 토글·되돌리기를 한 카드에 모아 로그에 남긴다.
+        // 판단해야 했다. 이제 전/후 큰 비교 카드를 로그에 남기고 넓은 화면으로 열 수 있다.
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
         const applied = await acceptProposal(result.proposedCalls);
         setStatus(applied ? "대기" : "적용 실패");
         if (applied) {
-          const appliedBubble = appendBubble("system", "");
           if (currentMapId) {
-            appliedBubble.append(
-              renderAppliedComparison({
-                before: beforeProject,
-                after: afterProject,
-                mapId: currentMapId,
-                summary: appliedSummary,
-                appliedCount: result.proposedCalls.length,
-                onUndo: () => {
-                  try {
-                    undoMapEdit();
-                    appliedBubble.remove();
-                  } catch {
-                    // undo 스택이 비어진 경우는 카드를 남긴다 — 재시도할 수 있어야 한다.
-                  }
-                },
-              }),
-            );
+            emitChangeCard({
+              before: beforeProject,
+              after: afterProject,
+              mapId: currentMapId,
+              title: proposalHumanSummaryLine(result.proposedCalls) || appliedSummary,
+              detail: appliedSummary,
+              calls: result.proposedCalls,
+            });
           } else {
-            appliedBubble.textContent = `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`;
+            appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
           }
         }
       } else {
@@ -1508,8 +1567,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     toast("AI 응답 완료 — 시연 실행 창 뒤에 결과/제안이 있습니다. '편집으로'를 눌러 확인하세요.", "info");
   };
 
-  // 마지막으로 직접 입력한 요청 — "내 스킬로 저장"의 기본 템플릿이 된다.
-  let lastTypedMessage = "";
   const send = async (): Promise<void> => {
     const text = input.value.trim();
     if (!text) {
@@ -1527,10 +1584,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
-    lastTypedMessage = text;
     input.value = "";
     syncInputHeight();
-    refreshSlash();
     refreshSendEnabled();
     if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
     else await sendText(text);
@@ -1543,12 +1598,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // Escape 우선순위: 열린 팝오버 → 선택 영역 작업. 팝오버가 떠 있는데 선택 컨텍스트가
     // 먼저 해제돼 사용자가 "무엇이 닫혔는지" 알 수 없던 문제를 없앤다.
     if (event.key === "Escape") {
-      if (composerPopoverKind() === "slash") {
-        event.preventDefault();
-        slashDismissed = true;
-        refreshSlash();
-        return;
-      }
       if (composerPopoverKind() !== null) {
         event.preventDefault();
         openComposerPopover(null);
@@ -1560,58 +1609,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       return;
     }
-    // 방향키·Tab 가로채기는 **슬래시 목록이 열려 있을 때만**. 이전엔 값이 "/" 로
-    // 시작하기만 하면 항상 가로채 여러 줄 입력의 캐럿 이동이 죽었다.
-    if (composerPopoverKind() === "slash" && !composing) {
-      const query = slashQuery();
-      const count = query === null ? 0 : slashSkillMatches(query).length;
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
-        if (count > 0) slashActiveIndex = (slashActiveIndex + 1) % count;
-        refreshSlash();
-        return;
-      }
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        if (count > 0) slashActiveIndex = (slashActiveIndex - 1 + count) % count;
-        refreshSlash();
-        return;
-      }
-      if ((event.key === "Enter" && !event.shiftKey) || event.key === "Tab") {
-        if (pickActiveSlashSkill()) {
-          event.preventDefault();
-          return;
-        }
-      }
-    }
     if (event.key === "Enter" && !event.shiftKey && !composing) {
       event.preventDefault();
       void send();
     }
   });
 
-  // 시연으로 가르치기: AI 추측이 틀렸을 때 말 대신 샌드박스에 직접 깔아서 보여준다.
-  // 붓질 순서+설명이 메시지로 전달되고, 시연 결과는 채팅에 그리드 이미지로 남는다.
-  const startDemoTeach = (seed: DemoTeachSeed | null): void => {
-    openDemoTeachModal({
-      seed,
-      onSend: (payload: DemonstrationPayload) => {
-        appendTileGrid({
-          tilesetId: DEFAULT_TILESET_ID,
-          x: payload.seed?.x ?? 0,
-          y: payload.seed?.y ?? 0,
-          w: payload.w,
-          h: payload.h,
-          lower: payload.lower,
-          upper: payload.upper,
-        });
-        void sendText(buildDemonstrationMessage(payload), `✍️ 시연 — 직접 깐 타일(${payload.strokes.length}회 붓질)로 보여줬습니다.`);
-      },
-    });
-  };
-
-  // ── 스킬 서랍 + 슬래시 + 컨텍스트 칩(전면 재배치 2026-07-05) ─────
-  const getSkillContext = (): SkillRunContext => {
+  // 컴포저가 AI 에게 넘기는 현재 맵/선택 영역 컨텍스트(컨텍스트 푸터·칩의 단일 소스).
+  const mapContext = (): PanelMapContext => {
     const state = editorState.get();
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId ?? null;
@@ -1621,35 +1626,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       selection: state.selection
         ? { mapId: state.selection.mapId, x: state.selection.x, y: state.selection.y, width: state.selection.width, height: state.selection.height }
         : null,
-      tileset: currentTilesetSkillContext(),
     };
-  };
-
-  const drawer = renderSkillDrawer({
-    getContext: getSkillContext,
-    onRunPrompt: (prompt, displayAs) => {
-      void sendText(prompt, displayAs);
-    },
-    onAction: (skillId) => {
-      if (skillId !== "demo-teach") return;
-      const selection = editorState.get().selection;
-      startDemoTeach(selection ? { mapId: selection.mapId, x: selection.x, y: selection.y, w: selection.width, h: selection.height } : null);
-    },
-    getSavePrefill: () => lastTypedMessage,
-  });
-
-  const runSkillPrompt = (skill: SkillDef, args: Record<string, SkillArgValue>): void => {
-    const prompt = skill.buildPrompt?.(args, getSkillContext()) ?? "";
-    if (!prompt.trim()) {
-      toast("AI 스킬을 시작할 수 없습니다.", "error");
-      return;
-    }
-    recordSkillUse(skill.id);
-    drawer.element.hidden = true;
-    drawer.element.inert = drawer.element.hidden;
-    // 채팅 표시도 TUI 명령 줄 — "🏠 집 짓기" 같은 앱 라벨 쓰지 않음.
-    // explicitSkillId: 집/실내 되묻기 게이트를 건너뛰고 스킬이 고른 경로를 신뢰한다.
-    void sendText(prompt, `/${skill.id}`, { explicitSkillId: skill.id });
   };
 
   // Overlay empty kit dropped — idle prompts live in the composer as director chips.
@@ -1663,91 +1640,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
   }
 
-  // 스킬 검색은 ☰ 메뉴 항목이다. 컴포저 하단에 `/` 단독 버튼으로 서 있던 것을 걷었다
-  // (감독 지시 2026-08-21: 유리·사이드에서 레일 한 열이 이 버튼 하나만 담아 난장판).
-  // 키보드 경로(입력창에 "/" 타이핑)가 주 진입점이고 이 항목은 발견 가능성용이다.
-  const skillToggle = el("button", {
-    class: "ai-command-menu-item ai-skill-toggle",
-    html: '스킬 찾기<span class="ai-command-menu-key">/</span>',
-    attrs: { type: "button", role: "menuitem", title: "스킬 검색 (/)", "aria-label": "스킬 검색 열기", "aria-expanded": "false" },
-    dataset: { testid: "ai-skill-slash-toggle" },
-    on: {
-      click: () => {
-        if (composerPopoverKind() === "slash") {
-          slashDismissed = true;
-          refreshSlash();
-          return;
-        }
-        // 슬래시 질의의 단일 소스는 입력창이다. 버튼이 별도 질의 상태를 들면 목록과
-        // 실제 전송될 문자열이 갈라지므로, 버튼도 같은 입력창에 "/" 를 채운다.
-        if (!input.value.startsWith("/")) input.value = "/";
-        input.focus();
-        slashDismissed = false;
-        slashActiveIndex = 0;
-        refreshSlash();
-      },
-    },
-  });
-
-  // 슬래시 자동완성: "/집"처럼 입력하면 컴포저 위 팝오버로 스킬 목록이 뜬다.
-  // (구조: 흐름 안이 아니라 absolute 팝오버 — 목록이 바를 밀어올려 입력창 위치가
-  //  움직이던 결함 수정. aiComposer.ts 주석 참조.)
-  const slashHost = el("div", { class: "ai-slash-host", dataset: { testid: "ai-slash-host" } });
-  let slashActiveIndex = 0;
-  // Escape 로 목록만 닫는다 — 입력은 지우지 않는다. 다시 타이핑하면 해제된다.
-  let slashDismissed = false;
-  /** 슬래시 질의(단일 소스 = 입력창). 여러 줄이면 슬래시 모드가 아니다 —
-   *  값이 "/" 로 시작하기만 하면 ↑↓ 를 가로채 캐럿 이동을 먹던 결함 수정. */
-  const slashQuery = (): string | null => {
-    const value = input.value;
-    if (!value.startsWith("/") || value.includes("\n")) return null;
-    return value;
-  };
-  const refreshSlash = (): void => {
-    const query = slashDismissed ? null : slashQuery();
-    if (query === null) {
-      slashHost.replaceChildren();
-      slashActiveIndex = 0;
-      if (composerPopoverKind() === "slash") openComposerPopover(null);
-      ensureStartScreen();
-      return;
-    }
-    if (startScreen?.closest(".ai-rising-overlay")) {
-      removeStartScreen();
-    }
-    const matches = slashSkillMatches(query);
-    slashActiveIndex = Math.max(0, Math.min(slashActiveIndex, Math.max(0, matches.length - 1)));
-    slashHost.replaceChildren(
-      renderSlashList(
-        query,
-        (skill) => {
-          input.value = "";
-          refreshSlash();
-          drawer.run(skill);
-        },
-        {
-          activeIndex: slashActiveIndex,
-          onViewAll: () => {
-            input.value = "";
-            refreshSlash();
-            if (drawer.element.hidden) drawer.toggle();
-            else drawer.refresh();
-          },
-        }
-      )
-    );
-    openComposerPopover("slash");
-  };
-  const pickActiveSlashSkill = (): boolean => {
-    const query = slashQuery();
-    if (query === null) return false;
-    const skill = slashSkillMatches(query)[slashActiveIndex];
-    if (!skill) return false;
-    input.value = "";
-    refreshSlash();
-    drawer.run(skill);
-    return true;
-  };
   // 여러 줄 입력 자동 성장 — 고정 높이 창에 30줄이 갇혀 끝부분만 보이던 결함(적대 평가 P1).
   // 내용 높이에 맞춰 늘리고, 상한(요소 max-height)부터는 스크롤로 전환한다.
   // 바 높이가 변하는 유일한 경로이므로 여기서만 clearance 를 다시 잰다.
@@ -1757,9 +1649,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncCommandBarClearance();
   };
   input.addEventListener("input", () => {
-    slashActiveIndex = 0;
-    slashDismissed = false; // 다시 타이핑하면 Escape 로 닫은 목록이 돌아온다.
-    refreshSlash();
     syncInputHeight();
     refreshComposerChips();
     refreshSendEnabled();
@@ -1925,7 +1814,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     if (currentKey && currentKey !== dismissedSelectionKey) selectionTaskActive = true;
     if (!currentKey) dismissedSelectionKey = null;
-    const ctx = getSkillContext();
+    const ctx = mapContext();
     const chips = [el("span", { class: "ai-context-chip", text: `🗺 ${ctx.mapName ?? "맵 없음"}` })];
     const selection = currentSelectionForRegionTask();
     if (selectionTaskActive && !selection) selectionTaskActive = false;
@@ -2248,6 +2137,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     document.addEventListener("keydown", onMoreMenuKeyDown);
   }
   // 두 메뉴가 공유하는 5개 항목의 유일한 구현(aiActionMenu.ts). 컨테이너·열림 상태만 표면마다 다르다.
+  // 시연으로 가르치기: AI 추측이 틀렸을 때 말 대신 샌드박스에 직접 깔아서 보여준다.
+  // 붓질 순서+설명이 메시지로 전달되고, 시연 결과는 채팅에 그리드 이미지로 남는다.
+  const startDemoTeach = (seed: DemoTeachSeed | null): void => {
+    openDemoTeachModal({
+      seed,
+      onSend: (payload) => {
+        appendTileGrid({
+          tilesetId: DEFAULT_TILESET_ID,
+          x: payload.seed?.x ?? 0,
+          y: payload.seed?.y ?? 0,
+          w: payload.w,
+          h: payload.h,
+          lower: payload.lower,
+          upper: payload.upper,
+        });
+        void sendText(
+          buildDemonstrationMessage(payload),
+          `✍️ 시연 — 직접 깐 타일(${payload.strokes.length}회 붓질)로 보여줬습니다.`,
+        );
+      },
+    });
+  };
+
   const sharedMenuActions: AiActionMenuActions = {
     undoLast: () => undoLastButton.click(),
     exportAudit: () => exportButton?.click(),
@@ -2257,6 +2169,34 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       applyHistoryOpen(true);
     },
     openTools: () => toolsButton.click(),
+    // 가르치기 진입점 — 사라진 스킬 서러에 업혀 있었지만 기능 자신은 살아 있다.
+    startInterview: () => {
+      const state = editorState.get();
+      const mapId = state.currentMapId ?? store.getCurrent().startMapId ?? null;
+      void sendText(
+        buildInterviewKickoff(mapId),
+        "🎓 맵 인터뷰 시작 — 현재 맵의 타일 의밌를 가르츠 주세요.",
+      );
+    },
+    learnStructure: () => {
+      const selection = editorState.get().selection;
+      if (!selection) {
+        toast("맵에서 배울 여역을 먼저 선택하세요.", "error");
+        return;
+      }
+      void sendText(
+        buildStructureLearnKickoff(selection.mapId, selection),
+        "📐 선택 여역 학습 — 구조밌을 배워 주세요.",
+      );
+    },
+    startDemoTeach: () => {
+      const selection = editorState.get().selection;
+      startDemoTeach(
+        selection
+          ? { mapId: selection.mapId, x: selection.x, y: selection.y, w: selection.width, h: selection.height }
+          : null,
+      );
+    },
   };
   // 더보기: 일상 액션 + 설정. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
   const headerMenu = createAiActionMenuItems({
@@ -2326,13 +2266,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   toolbar.inert = true;
 
   // 하단 컴포저: 입력 + 고정 액션 행 한 줄(세로 레일 없음).
-  // 슬래시 목록·추천 칩·액션 메뉴는 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
+  // 추천 칩·액션 메뉴는 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
   const composerShell: ComposerElements = createComposerElements({
     input,
     sendButton,
     abortButton,
-    skillToggle,
-    slashHost,
     contextChips,
     composerChips,
     queueIndicator,
@@ -2385,7 +2323,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-main",
     children: [nextSteps, glassLogMount, historyLogMount, chipsHost],
   });
-  const body = el("div", { class: "ai-chat-body", children: [mainColumn, drawer.element] });
+  const body = el("div", { class: "ai-chat-body", children: [mainColumn] });
 
   const panel = el("aside", {
     class: "ai-chat-panel",
@@ -2700,15 +2638,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyOpen = true;
       panel.classList.remove("is-docked");
       if (typeof document !== "undefined" && document.body) document.body.classList.remove("ai-panel-docked");
-      drawer.element.hidden = false;
-      drawer.element.inert = drawer.element.hidden;
-      drawer.refresh();
       studioButton.setAttribute("aria-label", "AI 스튜디오 되돌리기");
       applyComposerViewPolicy();
     } else {
       panel.classList.remove("is-studio");
-      drawer.element.hidden = true;
-      drawer.element.inert = drawer.element.hidden;
       studioButton.setAttribute("aria-label", "AI 스튜디오 펼치기");
       applyHistoryOpen(false);
     }
@@ -2748,12 +2681,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   commandMenuToggle.addEventListener("click", () => {
     if (!commandMenu.hidden) refreshMoreMenuDockLabel();
   });
-  commandMenu.replaceChildren(
-    composerTemperatureSection,
-    // 스킬 찾기가 첫 항목 — `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
-    skillToggle,
-    ...composerMenu.items,
-  );
+  commandMenu.replaceChildren(composerTemperatureSection, ...composerMenu.items);
   refreshTemperatureChrome();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.
@@ -2763,7 +2691,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const handleAiAssist = (event: Event): void => {
     const detail = event instanceof CustomEvent ? event.detail : null;
     if (!isAiAssistDetail(detail)) return;
-    // 스킬 킥오프는 AI 작업 — 자동 펼침 후 턴 종료 시 다시 접힐 수 있다.
+    // 클러스터 킥오프는 AI 작업 — 자동 펼침 후 턴 종료 시 다시 접힐 수 있다.
     expandForAiWork();
     if (sendButton.disabled) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요");
@@ -2775,17 +2703,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("AI 설정(엔드포인트/키)을 먼저 완료하세요", "error");
       return;
     }
-    const skillId = detail.kind === "cluster-edit" ? "cluster-edit" : "unclassified-analysis";
-    const skill = listAllSkills().find((entry) => entry.id === skillId);
-    if (!skill) {
-      toast("AI 스킬을 찾을 수 없습니다.", "error");
+    const kickoff = detail.kind === "cluster-edit"
+      ? {
+        prompt: buildClusterEditKickoff({
+          tilesetId: detail.tilesetId,
+          groupId: detail.groupId,
+          group: clusterGroupSnapshot(store.getCurrent(), detail.tilesetId, detail.groupId),
+        }),
+        displayAs: `클러스터 수정 — ${detail.groupId}`,
+      }
+      : {
+        prompt: buildUnclassifiedAnalysisKickoff({
+          tilesetId: detail.tilesetId,
+          sampleTiles: detail.sampleTiles,
+          total: detail.total,
+        }),
+        displayAs: `미분류 분석 — ${detail.total}개`,
+      };
+    if (!kickoff.prompt.trim()) {
+      toast("AI 분석을 시작할 수 없습니다.", "error");
       return;
     }
-    const args: Record<string, SkillArgValue> =
-      detail.kind === "cluster-edit"
-        ? { tilesetId: detail.tilesetId, groupId: detail.groupId }
-        : { tilesetId: detail.tilesetId, sampleTiles: detail.sampleTiles, total: detail.total };
-    runSkillPrompt(skill, args);
+    void sendText(kickoff.prompt, kickoff.displayAs);
   };
 
   if (typeof window !== "undefined") {
@@ -2795,22 +2734,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     cleanupAiAssistBridge = () => targetWindow.removeEventListener("oprn:ai-assist", handleAiAssist);
   }
 
-  // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵+스킬). 패널 수명주기와 함께 등록/해제한다.
+  // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵). 패널 수명주기와 함께 등록/해제한다.
   const onCommandPaletteKeyDown = (event: KeyboardEvent): void => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
-      openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
+      openCommandPalette();
     }
   };
   // 단축키를 모르는 사용자를 위한 클릭 경로 — 탑바의 ⌘K 칩이 이 이벤트를 쏜다.
-  // 팔레트를 열려면 스킬 실행기(drawer)가 필요하고 그건 이 패널만 갖고 있으므로,
-  // 열기 요청은 이벤트로 받고 실제 열기는 여기서 한다.
+  // 단축키 등록을 이 패널의 수명주기가 소유하므로 열기 요청도 여기서 처리한다.
   const onCommandPaletteRequest = (): void => {
-    openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
+    openCommandPalette();
   };
   let ownsCommandPaletteHotkey = false;
-  if (typeof window !== "undefined" && !(window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey) {
-    (window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey = true;
+  if (typeof window !== "undefined" && !(window as { __oprnCommandPaletteHotkey?: boolean }).__oprnCommandPaletteHotkey) {
+    (window as { __oprnCommandPaletteHotkey?: boolean }).__oprnCommandPaletteHotkey = true;
     ownsCommandPaletteHotkey = true;
     document.addEventListener?.("keydown", onCommandPaletteKeyDown);
     window.addEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
@@ -3000,7 +2938,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (ownsCommandPaletteHotkey) {
         document.removeEventListener?.("keydown", onCommandPaletteKeyDown);
         window.removeEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
-        delete (window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey;
+        delete (window as { __oprnCommandPaletteHotkey?: boolean }).__oprnCommandPaletteHotkey;
       }
     }
     if (typeof document !== "undefined") {

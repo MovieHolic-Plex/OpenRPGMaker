@@ -192,18 +192,6 @@ export function renderStreamedMarkdown(target: HTMLElement | null): void {
   if (raw.trim()) body.replaceChildren(renderMarkdown(raw));
 }
 
-export function appendSkillPromptToggle(bubble: HTMLElement, prompt: string): void {
-  const details = el("details", {
-    class: "ai-skill-prompt-details",
-    dataset: { testid: "ai-skill-prompt-details" },
-    children: [
-      el("summary", { text: "실제 지시 보기", dataset: { testid: "ai-skill-prompt-toggle" } }),
-      el("pre", { class: "ai-skill-prompt-raw", text: prompt, dataset: { testid: "ai-skill-prompt-raw" } }),
-    ],
-  });
-  bubble.append(details);
-}
-
 export interface ConversationLogHost {
   appendBubble: (role: AiBubbleRole, text: string) => HTMLElement;
   appendReasoning: () => { box: HTMLElement; body: HTMLElement };
@@ -212,6 +200,7 @@ export interface ConversationLogHost {
   appendTileThumbs: (tilesetId: string, tiles: readonly number[]) => void;
   appendTileGrid: (data: TileGridData) => void;
   appendAiDocument: (documentData: AiDocument) => void;
+  appendChangeCard: (card: HTMLElement) => HTMLElement;
   renderConversationEntry: (entry: AuditEntry) => void;
   clearLastReasoning: () => void;
   isLastReasoningBox: (node: HTMLElement) => boolean;
@@ -437,6 +426,28 @@ export function createConversationLogHost(options: {
     log.scrollTop = log.scrollHeight;
   };
 
+  // 변경 카드는 툴 활동보다 먼저 읽혀야 한다 — 사용자의 관심은 "무엇이 바뀌었나"이고
+  // 툴 호출 내역은 각주다. 이미 붙은 툴 활동은 떼어 카드 뒤로 옮기고 조용하게 만든다.
+  const appendChangeCard = (card: HTMLElement): HTMLElement => {
+    revealVolatileZone();
+    removeStartScreen();
+    const host = lastCommandRow(log) ?? log;
+    const wrap = el("div", {
+      class: "ai-command-attachment ai-change-card-host",
+      dataset: { testid: "ai-change-card-host" },
+      children: [card],
+    });
+    const tools = host.querySelector<HTMLElement>(".ai-tool-activity");
+    host.append(wrap);
+    if (tools) {
+      tools.classList.add("is-quiet");
+      tools.remove();
+      host.append(tools);
+    }
+    log.scrollTop = log.scrollHeight;
+    return wrap;
+  };
+
   return {
     appendBubble,
     appendReasoning,
@@ -445,6 +456,7 @@ export function createConversationLogHost(options: {
     appendTileThumbs,
     appendTileGrid,
     appendAiDocument,
+    appendChangeCard,
     renderConversationEntry,
     clearLastReasoning: () => {
       lastReasoning = null;

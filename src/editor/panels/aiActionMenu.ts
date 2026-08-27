@@ -22,6 +22,9 @@ export interface AiActionMenuActions {
   readonly toggleDock: () => void;
   readonly openHistory: () => void;
   readonly openTools: () => void;
+  readonly startInterview: () => void;
+  readonly learnStructure: () => void;
+  readonly startDemoTeach: () => void;
 }
 
 export interface AiActionMenuItems {
@@ -93,5 +96,29 @@ export function createAiActionMenuItems(options: {
     run: options.actions.openTools,
   });
 
-  return { items: [undo, exportItem, dockItem, history, tools], dockItem };
+  // 가르치기 진입점 셋. 사라진 스킬 서러에 업혀 있었던 기능이다 — 서러만 없어지면 되지
+  // 기능이 사라질 이유는 없으므로 동일한 legacy testid 로 ☰ 에 재배치한다.
+  const interview = build({
+    label: "🎓 맵 인터뷰",
+    testid: header ? "ai-interview" : "ai-command-menu-interview",
+    title: "현재 맵의 타일 의믜를 질문으로 배운다",
+    run: options.actions.startInterview,
+  });
+  const learnStructure = build({
+    label: "📐 선택 여역 학습",
+    testid: header ? "ai-learn-structure" : "ai-command-menu-learn-structure",
+    title: "선택한 구조밌을 템플릿으로 배운다(선택 여역 필수)",
+    run: options.actions.learnStructure,
+  });
+  const demoTeach = build({
+    label: "✍️ 시연으로 가르치기",
+    testid: header ? "ai-demo-teach" : "ai-command-menu-demo-teach",
+    title: "샌드박스에 직접 타일을 깔아 교정한다(실제 맵은 바뀌지 않는다)",
+    run: options.actions.startDemoTeach,
+  });
+
+  return {
+    items: [undo, exportItem, dockItem, history, tools, interview, learnStructure, demoTeach],
+    dockItem,
+  };
 }
