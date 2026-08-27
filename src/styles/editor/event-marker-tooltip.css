@@ -113,26 +113,52 @@
   color: var(--accent, #4A57D6);
 }
 
-/* Caret arrow pointing toward the event tile. */
-.event-marker-tooltip.tip-above::after,
-.event-marker-tooltip.tip-below::after {
+/* 말풍선 꼬리 — 카드가 붙은 쪽 모서리에서 이벤트 타일을 가리킨다. */
+.event-marker-tooltip[class*="tip-anchor-"]::before,
+.event-marker-tooltip[class*="tip-anchor-"]::after {
   content: "";
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
   pointer-events: none;
 }
 
-.event-marker-tooltip.tip-above::after {
-  bottom: -6px;
-  border-top: 6px solid color-mix(in srgb, var(--accent, #4A57D6) 42%, var(--border-default, rgba(42, 37, 33, 0.20)));
+.event-marker-tooltip.tip-anchor-top-right::before,
+.event-marker-tooltip.tip-anchor-top-left::before {
+  bottom: -7px;
+  border-top: 7px solid color-mix(in srgb, var(--accent, #4A57D6) 42%, var(--border-default, rgba(42, 37, 33, 0.20)));
 }
 
-.event-marker-tooltip.tip-below::after {
-  top: -6px;
-  border-bottom: 6px solid color-mix(in srgb, var(--accent, #4A57D6) 42%, var(--border-default, rgba(42, 37, 33, 0.20)));
+.event-marker-tooltip.tip-anchor-top-right::after,
+.event-marker-tooltip.tip-anchor-top-left::after {
+  bottom: -5px;
+  border-top: 6px solid color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, #000);
+}
+
+.event-marker-tooltip.tip-anchor-bottom-right::before,
+.event-marker-tooltip.tip-anchor-bottom-left::before {
+  top: -7px;
+  border-bottom: 7px solid color-mix(in srgb, var(--accent, #4A57D6) 42%, var(--border-default, rgba(42, 37, 33, 0.20)));
+}
+
+.event-marker-tooltip.tip-anchor-bottom-right::after,
+.event-marker-tooltip.tip-anchor-bottom-left::after {
+  top: -5px;
+  border-bottom: 6px solid color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, #000);
+}
+
+.event-marker-tooltip.tip-anchor-top-right::before,
+.event-marker-tooltip.tip-anchor-top-right::after,
+.event-marker-tooltip.tip-anchor-bottom-right::before,
+.event-marker-tooltip.tip-anchor-bottom-right::after {
+  left: 14px;
+}
+
+.event-marker-tooltip.tip-anchor-top-left::before,
+.event-marker-tooltip.tip-anchor-top-left::after,
+.event-marker-tooltip.tip-anchor-bottom-left::before,
+.event-marker-tooltip.tip-anchor-bottom-left::after {
+  right: 14px;
 }
