@@ -3,8 +3,32 @@
 // 자율 이동 경로는 mover.directionFix(이동 루트 명령 전용)만 봐서 규칙이 갈라져 있었다.
 import { describe, expect, it } from "vitest";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
-import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
+import {
+  npcMoveDurationMs,
+  npcMoveIntervalMs,
+  registerPageMoveRoutes,
+} from "@/player/playScenePageMoveRoutes";
 import { movementScene } from "./runtimeEventPageFixtures";
+
+describe("이동 속도·빈도가 런타임 타이밍에 전달된다", () => {
+  it("속도 1 과 8 은 서로 다른 이동 지속시간으로 무버에 전달된다", () => {
+    const slow = movementScene({ movement: { type: "random", speed: 1, frequency: 1 } });
+    const fast = movementScene({ movement: { type: "random", speed: 8, frequency: 8 } });
+    registerPageMoveRoutes(slow);
+    registerPageMoveRoutes(fast);
+
+    const slowMover = slow.autonomousNPCs.get("npc");
+    const fastMover = fast.autonomousNPCs.get("npc");
+    expect(slowMover?.moveDurationMs).toBe(npcMoveDurationMs(1));
+    expect(fastMover?.moveDurationMs).toBe(npcMoveDurationMs(8));
+    expect(slowMover!.moveDurationMs).toBeGreaterThan(fastMover!.moveDurationMs);
+    expect(slowMover?.moveIntervalMs).toBe(npcMoveIntervalMs(1));
+    expect(fastMover?.moveIntervalMs).toBe(npcMoveIntervalMs(8));
+    expect(slowMover!.moveIntervalMs).toBeGreaterThan(fastMover!.moveIntervalMs);
+    expect(slowMover?.speedRank).toBe(1);
+    expect(fastMover?.speedRank).toBe(8);
+  });
+});
 
 describe("애니메이션 유형과 자율 이동 방향 고정", () => {
   it("fixedDirection 페이지는 자율 이동 중에도 페이지 방향을 유지한다", () => {
