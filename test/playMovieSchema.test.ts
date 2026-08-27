@@ -95,7 +95,7 @@ describe("playMovie 명령 계약", () => {
   it("피커는 연출 페이지(3)의 미디어 그룹 자리를 예약한다", () => {
     expect(EVENT_COMMAND_PICKER_NATIVE_ONLY_PLACEMENTS).toContainEqual({
       kind: "playMovie",
-      group: "미디어",
+      group: "화면 연출",
       page: 3,
     });
   });
