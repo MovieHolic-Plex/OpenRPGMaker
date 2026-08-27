@@ -23,6 +23,7 @@ interface ReachProbe {
   readonly promptChars: number;
   readonly indexChars: number;
   readonly truncated: boolean;
+  readonly indexSurvivesTruncation: boolean;
   readonly request: string;
   readonly domains: readonly string[];
   readonly domainExposedCount: number;
@@ -87,6 +88,11 @@ test("AI reaches every editor area from the running editor", async ({ page }) =>
       promptChars: prompt.length,
       indexChars: capabilityIndex.length,
       truncated: prompt.includes("[예산 초과"),
+      indexSurvivesTruncation: (() => {
+        const heading = prompt.indexOf("## 툴 능력 색인");
+        const marker = prompt.indexOf("[예산 초과");
+        return heading >= 0 && (marker < 0 || heading < marker);
+      })(),
       request,
       domains: [...domains],
       domainExposedCount: domainExposed.length,
@@ -103,7 +109,11 @@ test("AI reaches every editor area from the running editor", async ({ page }) =>
   expect(probe.missingFromIndex).toEqual([]);
   expect(probe.activeToolCount).toBeGreaterThanOrEqual(140);
   expect(probe.hasRuleBlock).toBe(true);
-  expect(probe.truncated).toBe(false);
+  // 실측(origin/main): 실제 프로젝트 프롬프트는 색인 이전에도 12,077자로 이미 예산을 넘어 꼬리가
+  // 잘렸다(truncated=true). 색인은 그 상태를 바꾸지 않고 문자 비용만 예산에 더한다(15,922 = 12,077+3,845).
+  // 따라서 잘림 자체가 아니라 "색인이 잘리는 쪽에 있지 않다"를 고정한다.
+  expect(probe.indexSurvivesTruncation).toBe(true);
+  expect(probe.indexChars).toBeLessThanOrEqual(4600);
 
   expect(probe.domainExposedHasTool).toBe(false);
   expect(probe.escalatedNames).toContain(NL_EXPECTED_TOOL);

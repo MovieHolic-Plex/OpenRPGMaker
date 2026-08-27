@@ -1,0 +1,21 @@
+{
+  "activeToolCount": 184,
+  "missingFromIndex": [],
+  "hasRuleBlock": true,
+  "promptChars": 15923,
+  "indexChars": 3843,
+  "truncated": true,
+  "indexSurvivesTruncation": true,
+  "request": "타이틀 화면 바꿔줘",
+  "domains": [
+    "core",
+    "tile",
+    "system"
+  ],
+  "domainExposedCount": 40,
+  "domainExposedHasTool": false,
+  "escalatedNames": [
+    "set_title_screen"
+  ],
+  "emptyEscalation": []
+}
