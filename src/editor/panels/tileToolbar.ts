@@ -56,6 +56,11 @@ const MODE_ITEMS: readonly MapModeItem[] = [
 let latestToolbarRerender: (() => void) | null = null;
 let toolbarBadgeRefreshInstalled = false;
 
+/**
+ * 도구막대 한 줄. 가로로 넘치는 도구들은 내부 `.oprn-tile-toolbar-scroll` 이 스크롤하고,
+ * ⋯ 오버플로는 그 형제로 오른쪽 끝에 고정된다 — 트리거가 좌패널(300/320px) 밖으로 밀려
+ * 보이지도 눌리지도 않던 실측 결함(triggerInsideLeftPanel false)의 수정.
+ */
 export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
   installToolbarBadgeRefresh(model.rerender);
   const { state } = model;
@@ -64,10 +69,11 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
     attrs: { role: "toolbar", "aria-label": "타일 그리기 도구" },
     dataset: { testid: "oprn-tile-toolbar" },
   });
+  const scroll = el("div", { class: "oprn-tile-toolbar-scroll" });
   const historyState = getMapEditHistoryState();
 
   for (const item of TOOLBAR_ITEMS) {
-    if (item.id === "select") row.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
+    if (item.id === "select") scroll.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
     const active = item.id !== "undo" && isTileToolbarItemActive(item.id, state.tool, state.paintShape);
     const button = el("button", {
       class: "oprn-tile-tool" + (active ? " active" : ""),
@@ -93,12 +99,12 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
       button.disabled = !historyState.canUndo;
       button.setAttribute("aria-disabled", String(!historyState.canUndo));
     }
-    row.append(button);
+    scroll.append(button);
   }
 
-  row.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
-  row.append(makeMapModeGroup(model));
-  row.append(el("span", { class: "oprn-tile-toolbar-spacer", attrs: { "aria-hidden": "true" } }));
+  scroll.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
+  scroll.append(makeMapModeGroup(model));
+  row.append(scroll);
   // 좁은 팔레트에서도 1줄을 유지하기 위해 검사/기록/인스펙터는 ⋯ overflow 로 흡수.
   row.append(makeOverflowDropdown(model));
 
