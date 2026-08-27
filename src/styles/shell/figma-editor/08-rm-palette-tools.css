@@ -190,8 +190,11 @@
     text-transform: uppercase;
   }
 
+  /* 320px 고정이면 내용(363px)이 자기 접힘선 아래로 내려가, 마지막 항목 「붓 크기 4」의
+     중심이 메뉴 밖에 놓여 클릭이 뒤의 타일 셀로 떨어졌다(실측: 항목 y=446, 메뉴 하단 435).
+     보이지 않는 스크롤을 발견해야 쓸 수 있는 기능은 되찾은 게 아니다. 뷰포트에 맞춰 늘린다. */
   .left-panel-stack[data-testid="left-palette-root"] .oprn-overflow-dropdown {
-    max-height: 320px;
+    max-height: min(70vh, 440px);
     min-width: 196px;
     overflow-y: auto;
   }

@@ -37,6 +37,7 @@ async function hitReachable(page: Page, testid: string): Promise<string> {
   return page.evaluate((id) => {
     const el = document.querySelector(`[data-testid="${id}"]`) as HTMLElement | null;
     if (!el) return "absent";
+    el.scrollIntoView({ block: "nearest" });
     const r = el.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) return "zero-size";
     const cx = r.x + r.width / 2;
