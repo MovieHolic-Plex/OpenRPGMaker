@@ -9,8 +9,12 @@ import { createBlankProject } from "@/project/defaults";
 const WIDE_BUDGET = 40_000;
 // tokenBudget.calibratedBudgetChars 하한(CALIBRATION_CLAMP_MIN_RATIO 0.5 × 12000).
 const CALIBRATED_MIN_BUDGET = 6000;
-// 색인 문자 상한: 툴 생산/설직 변경으로 프롬프트가 조용히 부푸는 것을 막는다.
-const INDEX_CHAR_CEILING = 3200;
+// 색인 문자 상한: 툴 추가/이름 변경으로 프롬프트가 조용히 부푸는 것을 막는 카나리아.
+// 실측: 파사드 37개를 들이기 전 3,170자 → 들인 후 3,843자(활성 툴 185개). 상한은 그 위로 여유를 둔다.
+// 이 상한이 프롬프트 예산을 잡아먹지는 않는다 — buildSystemPrompt 가 색인 길이만큼 예산을 늘려
+// 기존 섹션 자리를 지키기 때문이다(아래 "does not push ... over its budget" 케이스가 그것을 고정한다).
+// 상한을 올릴 때는 이 주석의 실측 자수를 함께 갱신한다 — 조용한 상향은 금지다.
+const INDEX_CHAR_CEILING = 4600;
 
 function liveToolNames(): readonly string[] {
   return activeTools().filter((tool) => tool.supersededBy === undefined).map((tool) => tool.name);
@@ -78,7 +82,7 @@ describe("tool capability index", () => {
   it("does not push the pre-existing prompt over its budget", () => {
     const prompt = buildSystemPrompt(createEmptyToolProject("x"), {});
 
-    // 베이스 실재: 이 fixture 는 색인 이전에 11,978자로 예산(12,000) 이하였다. 색인이 그 자리를 동지 않았음을 고정한다.
+    // 베이스 실측: 이 fixture 는 색인 이전에 11,978자로 예산(12,000) 이하였다. 색인이 그 자리를 먹지 않았음을 고정한다.
     expect(prompt).not.toContain("[예산 초과");
     const withoutIndex = prompt.replace(`${buildToolCapabilityIndex()}\n\n`, "");
     expect(withoutIndex).not.toContain("## 툴 능력 색인");
