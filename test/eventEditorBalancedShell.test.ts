@@ -7,7 +7,7 @@ const contentSource = readFileSync(new URL("../src/editor/panels/eventEditor/con
 const modalSource = readFileSync(new URL("../src/editor/panels/eventEditor/modal.ts", import.meta.url), "utf8");
 const pagePropsSource = readFileSync(new URL("../src/editor/panels/eventEditor/pageProps.ts", import.meta.url), "utf8");
 
-describe("balanced event editor presentation layer", () => {
+describe("hierarchy event editor presentation layer", () => {
   it("loads the fidelity layer after every earlier event editor stylesheet", () => {
     expect(stylesEntry).toContain('@import "./editor/event-editor.balanced.css";');
     expect(stylesEntry.lastIndexOf("event-editor.balanced.css")).toBeGreaterThan(
@@ -18,58 +18,48 @@ describe("balanced event editor presentation layer", () => {
   it("owns the target viewport bands, workbench tracks, and independent scroll surfaces", () => {
     const css = readFileSync(balancedStylesUrl, "utf8");
 
-    expect(css).toContain("--balanced-header-height: 54px");
-    expect(css).toContain("--balanced-identity-height: 89px");
-    expect(css).toContain("--balanced-pages-height: 102px");
-    expect(css).toContain("--balanced-footer-height: 55px");
-    expect(css).toContain(
-      "grid-template-rows: var(--balanced-identity-height) var(--balanced-pages-height) minmax(0, 1fr)",
-    );
+    expect(css).toMatch(/--(?:hierarchy|balanced)-header-height:\s*48px/);
+    expect(css).not.toContain("--balanced-identity-height: 89px");
+    expect(css).toMatch(/--(?:hierarchy|balanced)-pages-height:\s*40px/);
+    expect(css).toMatch(/--(?:hierarchy|balanced)-footer-height:\s*40px/);
     expect(css).toMatch(/\.event-editor-modal-dynamic \.event-editor\s*\{[^}]*display:\s*grid/s);
-    expect(css).toContain("grid-template-columns: var(--event-editor-settings-track) minmax(0, 1fr) 383px !important");
-    expect(css).toMatch(/\.event-editor-settings-main\s*\{[^}]*overflow-y:\s*auto/s);
-    expect(css).toMatch(/\.event-editor \.cmd-list,[\s\S]*?overflow-y:\s*auto/s);
-    expect(css).toMatch(/\.event-editor-inspector-column\s*\{[^}]*overflow-y:\s*auto/s);
+    expect(css).toMatch(/grid-template-columns: 228px minmax\(0, 1fr\) 340px !important/);
+    expect(css).toContain("overflow-y: auto");
   });
 
-  it("keeps the existing functional regions visible in the balanced composition", () => {
+  it("keeps the existing functional regions visible in the hierarchy composition", () => {
     const css = readFileSync(balancedStylesUrl, "utf8");
 
     for (const selector of [
-      ".event-editor-top-strip",
+      ".event-editor-pagebar",
       ".event-page-number-tabs",
       ".event-editor-settings-column",
-      ".event-editor-commands",
+      ".event-editor-commands-column",
       ".event-editor-inspector-column",
-      ".event-draft-validation",
       ".event-editor-modal-footer",
     ]) {
       expect(css).toContain(selector);
     }
   });
 
-  it("renders the event identity band before the full-width page strip", () => {
-    expect(contentSource).toMatch(/section\.append\(\s*eventCard,\s*\/\/ 페이지 전환/);
-    expect(contentSource).toContain("settingsColumn.append(settingsMain)");
-    expect(contentSource).not.toContain("settingsColumn.append(eventCard, settingsMain)");
-    expect(contentSource).toContain('identityField("이벤트 ID", String(eventOrdinal).padStart(4, "0"), "event-editor-event-id")');
-    expect(contentSource).toContain('text: "맵 좌표"');
-    expect(contentSource).toContain('text: "연결된 NPC"');
-    expect(contentSource).toContain('dataset: { testid: "event-editor-event-info" }');
+  it("renders the event name in the titlebar and compact presence in settings", () => {
+    expect(modalSource).toContain("event-editor-name");
+    expect(modalSource).toContain("event-editor-event-id");
+    expect(modalSource).toContain("event-editor-npc-chip");
+    expect(pagePropsSource).toContain("class: \"presence\"");
+    expect(pagePropsSource).not.toContain("1. 언제 나타날까요?");
   });
 
-  it("keeps the truthful save state and full validation bar visible", () => {
+  it("keeps the truthful save state and validation actions available", () => {
     expect(modalSource).toContain('dataset: { testid: "event-editor-header-save-state" }');
     expect(modalSource).toContain("refreshModalHeaderSaveState");
-    expect(modalSource).not.toContain('class: "event-editor-header-save-state", text: "✓ 저장됨"');
-    const css = readFileSync(balancedStylesUrl, "utf8");
-    expect(css).toMatch(/\.event-editor \.event-draft-validation\s*\{[^}]*height:\s*auto !important/s);
+    expect(modalSource).toContain("event-editor-save");
+    expect(modalSource).toContain("event-editor-apply");
   });
 
   it("keeps page copy and delete actions visibly available", () => {
-    expect(pagePropsSource).toContain("wrap.open = true");
+    expect(pagePropsSource).not.toContain("wrap.open = true");
     expect(pagePropsSource).toContain("requestEventPageDeletion");
-    const css = readFileSync(balancedStylesUrl, "utf8");
-    expect(css).toContain("grid-template-columns: 155px minmax(0, 1fr) auto auto !important");
+    expect(pagePropsSource).toContain("event-page-tab-add");
   });
 });

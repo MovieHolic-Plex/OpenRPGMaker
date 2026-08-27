@@ -27,6 +27,12 @@ import { previewAudio } from "./previewAudio";
 import { previewForkFlow } from "./previewForkFlow";
 import { previewMoveRoute } from "./previewMoveRoute";
 import { previewPicture } from "./previewPicture";
+import {
+  playShowAnimationOnce,
+  renderShowAnimationFallback,
+  renderShowAnimationFrame,
+  showAnimationPlaybackSource,
+} from "./showAnimationPlayback";
 import { graphicForPatternPreview } from "./commandBodyAdvanced";
 import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -110,6 +116,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   removeLight: removeLightStage,
   setWeather: weatherStage,
   showAnimation: animationStage,
+  playMovie: movieStage,
   erasePicture: erasePictureStage,
   changeTile: changeTileStage,
   inputWait: inputWaitStage,
@@ -1342,13 +1349,41 @@ function animationStage(cmd: Extract<Command, { kind: "showAnimation" }>): HTMLE
     class: "ecp-stage ecp-animation-stage",
     dataset: { testid: "ecp-animation-stage" },
   });
-  const screen = el("div", { class: "ecp-fx-screen ecp-animation-screen" });
-  screen.append(el("div", { class: "ecp-anim-ring", attrs: { "aria-hidden": "true" } }));
-  screen.append(el("div", { class: "ecp-anim-ring ecp-anim-ring-inner", attrs: { "aria-hidden": "true" } }));
-  screen.append(el("div", { class: "ecp-fx-label", text: cmd.animationId ? "연출" : "연출 없음" }));
+  const screen = el("div", { class: "ecp-fx-screen ecp-animation-screen page3-anim-stage" });
+  // 이 카드도 편집 본문 표시면과 같은 재생기를 쓴다 — 가짜 링 연출은 없다.
+  const project = store.getCurrent();
+  const record = project.database.battleAnimations.find((entry) => entry.id === cmd.animationId);
+  const source = showAnimationPlaybackSource(record, project);
+  if (source) {
+    const cells = el("div", {
+      class: "db-animation-stage-cells page3-anim-cells",
+      dataset: { testid: "ecp-animation-frame-layer" },
+    });
+    screen.append(cells);
+    if (source.frames.length > 1) playShowAnimationOnce(screen, cells, source);
+    else renderShowAnimationFrame(cells, source, 0);
+  } else {
+    renderShowAnimationFallback(screen, record?.name ?? "연출 없음");
+  }
   stage.append(screen);
-  const meta = [animationTargetPreview(cmd.target)];
+  const meta = [record?.name ?? (cmd.animationId || "연출 없음"), animationTargetPreview(cmd.target)];
   if (cmd.wait) meta.push("대기");
+  stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
+  return stage;
+}
+
+// 동영상 무대. 진짜 프레임을 보여줄 수 없으니(리소스 종류가 아직 없다) 재생 리소스 이름과
+// 대기/건너뛰기 선언만 그대로 그린다 — 없는 재생을 있는 식으로 연출하지 않는다.
+function movieStage(cmd: Extract<Command, { kind: "playMovie" }>): HTMLElement {
+  const stage = el("div", {
+    class: "ecp-stage ecp-movie-stage",
+    dataset: { testid: "ecp-movie-stage" },
+  });
+  const screen = el("div", { class: "ecp-fx-screen ecp-movie-screen" });
+  screen.append(el("div", { class: "ecp-fx-label", text: cmd.resourceId ? `▶ ${cmd.resourceId}` : "동영상 없음" }));
+  stage.append(screen);
+  const meta = [cmd.wait === true ? "끝나면 진행" : "바로 진행"];
+  if (cmd.skippable === true) meta.push("건너뛰기 허용");
   stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
   return stage;
 }

@@ -105,6 +105,9 @@ const NATIVE_ONLY_LAYOUT = [
   ["removeLight", 112],
   ["setWeather", 113],
   ["showAnimation", 114],
+  // 동영상은 연출 탭(3)의 어니매이션 바로 다음 자리를 잡는다. 런타임이 editorOnly 인 동안은
+  // descriptor.selectable 이 false 라 그리드에 직접 노출되지 않고 검색 안내로만 보인다.
+  ["playMovie", 115],
   ["ending", 109],
   ["craftRecipe", 211],
   ["applyItemUpgrade", 212],

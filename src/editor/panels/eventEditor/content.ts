@@ -39,7 +39,6 @@ import { newCommand } from "@/editor/eventActions";
 import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
-import { branchesOf } from "./previewSimulation";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   renderClassicPageTabStrip,
@@ -88,7 +87,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   let ev = map.events.find((event) => event.id === eventId);
   if (!ev) {
-    // Autosave/replace races must never blank the open editor — restore from vault once.
     if (store.restoreEventDraftFromVault(mapId, eventId)) {
       ev = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId);
     }
@@ -136,8 +134,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     },
     dataset: { testid: "event-editor-column-resizer" },
   });
-  // 목업의 우측 인스펙터. 명령을 클릭하면 편집 폼이 그 자리에서 열린다(모달 없음).
-  // 리스트를 렌더하기 "전에" 호스트를 붙여야, 재렌더 시 선택된 명령의 인스펙터가 복원된다.
   const inspectorColumn = el("div", {
     class: "event-editor-inspector-column",
     dataset: { testid: "event-editor-inspector" },
@@ -147,7 +143,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const storyboardMode = loadStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
-  // 맵 이벤트 편집기 — 배지/삽입 피커 모두 맵 컨텍스트 판정을 쓴다.
   renderCommandList(cmdList, activePage.commands, [], actions, {
     issues: activePageIssues,
     runtimeSupport: (command) => commandRuntimeSupport(command, "map"),
@@ -171,7 +166,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         if (!cmd) return;
         showCommandInspector({ command: cmd, path, actions });
       },
-      // 장면 추가는 뷰를 갈아타지 않고 그 자리에서 명령 피커를 연다 (적대 평가 스펙).
       onAddNext: () => openCommandPickerForActions(actions),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
       onQuickStart: (kind) => {
@@ -198,38 +192,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   storyboardHost.append(storyboardEl);
   applyViewMode();
   const validationControl = renderEventValidationSummary(validation);
-  const commandHeader = el("div", {
-    class: "event-editor-command-header",
-    dataset: { testid: "event-command-header" },
-    children: [
-      el("span", {
-        class: "event-contents-legend",
-        text: `이 페이지가 하는 일 · ${countAllCommands(activePage.commands)}개`,
-      }),
-    ],
-  });
-  // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
-  // Tool-authored NPC schedules stay compact, but existing rows are editable so
-  // aggregate validation can navigate to and repair their map/coordinate errors.
-  const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
-  const scheduleEditor = renderEventScheduleEditor(mapId, ev);
-  const settingsChildren = [
-    renderEventPageProps(mapId, ev.id, activePage, ev),
-    socialExtras,
-    scheduleEditor,
-  ].filter((node): node is HTMLElement => node !== null);
-  const settingsMain = el("div", {
-    class: "event-editor-settings-main",
-    children: settingsChildren,
-  });
-  // 페이지 탭은 좌측 컬럼이 아니라 상단 전폭 스트립으로 나간다(아래 section.append).
-  // 좁은 컬럼 안에서는 조건 요약을 읽을 폭이 나오지 않는다.
-  const pageTabStrip = renderClassicPageTabStrip(mapId, ev, activePage, validation);
 
-  // 목업의 이벤트 카드 — 레일 상단의 시선 진입점.
-  // 스프라이트 실물 + 이름/캐릭터 ID + 좌표를 한 덩어리로 묶는다.
-  // top-strip 을 카드 안에 넣는 이유: 이름·캐릭터 ID 가 top-strip 안에 있어야 한다는
-  // 기존 계약(eventEditorSettingsLayout.test)을 유지하면서 배치만 목업에 맞추기 위함.
   const characterRelationship = renderEventCharacterIdField(mapId, ev);
   const eventOrdinal = Math.max(0, map.events.findIndex((candidate) => candidate.id === ev.id)) + 1;
   const identityField = (label: string, value: string, testId: string): HTMLElement => el("div", {
@@ -239,9 +202,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       el("strong", { class: "event-editor-identity-value", text: value, dataset: { testid: testId } }),
     ],
   });
+
   const eventCard = el("div", {
     class: "event-editor-card",
     dataset: { testid: "event-editor-card" },
+    attrs: { style: "display: none;" },
     children: [
       el("div", {
         class: "event-editor-card-sprite",
@@ -289,6 +254,20 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       }),
     ],
   });
+
+  const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
+  const scheduleEditor = renderEventScheduleEditor(mapId, ev);
+  const settingsChildren = [
+    renderEventPageProps(mapId, ev.id, activePage, ev),
+    socialExtras,
+    scheduleEditor,
+  ].filter((node): node is HTMLElement => node !== null);
+  const settingsMain = el("div", {
+    class: "event-editor-settings-main",
+    children: settingsChildren,
+  });
+  const pageTabStrip = renderClassicPageTabStrip(mapId, ev, activePage, validation);
+
   settingsColumn.append(settingsMain);
   commandsColumn.append(
     el("fieldset", {
@@ -313,10 +292,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   section.append(
     eventCard,
-    // 페이지 전환, 상태, 보기 전환은 한 줄에 두고 워크벤치가 남은 높이를 전부 갖는다.
     el("div", {
       class: "event-editor-pagebar",
-      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage), commandHeader],
+      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
     }),
     workbench,
     ...(validationControl ? [validationControl] : [])
@@ -344,7 +322,7 @@ function renderCommandToolbar(
   viewToggle?: HTMLElement,
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
-    const selected = cmdList.querySelector<HTMLElement>(".selected");
+    const selected = cmdList.querySelector<HTMLElement>(".selected, .is-selected");
     if (!selected?.dataset.cmdPath) return null;
     try {
       const path = JSON.parse(selected.dataset.cmdPath);
@@ -387,7 +365,7 @@ function renderCommandToolbar(
   });
   const toolsMenu = renderEventToolsMenu(cmdList, actions, mapId, eventId, page);
   const commandSearch = el("input", {
-    class: "event-editor-command-search",
+    class: "search event-editor-command-search",
     attrs: { type: "search", placeholder: "명령 검색", "aria-label": "명령 검색" },
     dataset: { testid: "event-command-search" },
   }) as HTMLInputElement;
@@ -399,12 +377,12 @@ function renderCommandToolbar(
     });
   });
   return el("div", {
-    class: "event-editor-command-toolbar",
+    class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
       toolbarButton(
         "+",
-        "명령 추가",
+        "명령",
         "event-command-toolbar-add",
         () => {
           if (openActiveEventCommandPicker(mapId, eventId)) return;
@@ -449,17 +427,6 @@ function renderCommandQuickTools(): HTMLElement {
       }, false, true),
     ],
   });
-}
-
-// 이 페이지가 하는 일 헤더의 전체 명령 수 — 분기 안까지 센다.
-function countAllCommands(commands: readonly Command[]): number {
-  let n = 0;
-  const walk = (cmd: Command): void => {
-    n += 1;
-    for (const branch of branchesOf(cmd)) branch.commands.forEach(walk);
-  };
-  commands.forEach(walk);
-  return n;
 }
 
 function renderEventToolsMenu(
@@ -701,7 +668,6 @@ function renderEventValidationSummary(validation: EventDraftValidation): HTMLDet
   return details;
 }
 
-
 export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
   if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
   const focusIssue = (): void => {
@@ -710,12 +676,12 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
     let target: HTMLElement | null = null;
     if (issue.commandPath) {
       const encoded = JSON.stringify(issue.commandPath);
-      target = Array.from(root.querySelectorAll<HTMLElement>(".cmd-item"))
+      target = Array.from(root.querySelectorAll<HTMLElement>(".cmd-item, .row, .leaf"))
         .find((candidate) => candidate.dataset.cmdPath === encoded) ?? null;
       if (target) {
-        root.querySelectorAll(".cmd-item.selected").forEach((node) => node.classList.remove("selected"));
-        target.classList.add("selected");
-        target = target.querySelector<HTMLElement>(".cmd-head") ?? target;
+        root.querySelectorAll(".cmd-item.selected, .row.selected, .leaf.selected").forEach((node) => node.classList.remove("selected", "is-selected"));
+        target.classList.add("selected", "is-selected");
+        target = target.querySelector<HTMLElement>(".cmd-head, .line") ?? target;
       }
     }
     if (!target && issue.field) {
@@ -791,5 +757,3 @@ function renderEventPositionControls(mapId: MapId, event: GameEvent): HTMLElemen
     ],
   });
 }
-
-

@@ -45,6 +45,7 @@ import {
   addLightBody,
   changeTileBody,
   erasePictureBody,
+  playMovieBody,
   removeLightBody,
   setLightingBody,
   setWeatherBody,
@@ -150,6 +151,8 @@ export function renderAdvancedCommandBody(
       return setWeatherBody(context, cmd);
     case "showAnimation":
       return showAnimationBody(context, cmd);
+    case "playMovie":
+      return playMovieBody(context, cmd);
     case "changeGold":
       return changeGoldBody(context, cmd);
     case "changeItem":

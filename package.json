@@ -62,9 +62,12 @@
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
     "@playwright/test": "^1.61.0",
+    "fix-webm-duration": "^1.0.6",
     "happy-dom": "^20.10.6",
+    "ts-ebml": "^3.0.2",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "webm-duration-fix": "^1.0.4"
   }
 }

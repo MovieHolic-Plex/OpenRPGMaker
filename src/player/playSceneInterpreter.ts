@@ -26,6 +26,7 @@ import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
@@ -438,6 +439,15 @@ async function consumeBlockingStep(
       const done = playMapAnimation(scene, step, currentEventId);
       if (step.wait) {
         await Promise.race([done, skipController.waitForSkip()]);
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
+      return resumeAfterSurface(scene, interpreter);
+    }
+    case "playMovie": {
+      const played = playMovieOverlay(scene, step);
+      if (step.wait) {
+        await Promise.race([played, skipController.waitForSkip()]);
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
       }

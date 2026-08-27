@@ -120,6 +120,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "erasePicture", pictureId: "pic1" };
     case "playAudio":
       return { kind: "playAudio", resourceId: "", loop: false };
+    case "playMovie":
+      return { kind: "playMovie", resourceId: "", wait: true, skippable: true };
     case "stopAudio":
       return { kind: "stopAudio" };
     case "cutsceneControl":

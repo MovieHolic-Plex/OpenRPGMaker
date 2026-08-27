@@ -130,12 +130,12 @@ describe("event editor settings column layout", () => {
         return [...nodes].indexOf(node as Element);
       });
     expect(order).toEqual([0, 1, 2, 3]);
-    expect(conditions?.querySelector("summary")?.textContent).toContain("1. 언제 나타날까요?");
-    expect(graphic?.querySelector("legend")?.textContent).toContain("2. 모습");
-    expect(trigger?.querySelector("legend")?.textContent).toContain("3. 시작 방식");
-    expect(priority?.querySelector("legend")?.textContent).toContain("4. 우선순위");
-    expect(overlap?.querySelector("legend")?.textContent).toContain("5. 겹침");
-    expect(movement?.querySelector("summary")?.textContent).toContain("6. 움직임");
+    expect(conditions?.querySelector("summary")?.textContent).toContain("조건");
+    expect(graphic?.querySelector("legend")?.textContent).toContain("모습");
+    expect(trigger?.querySelector("legend")?.textContent).toContain("시작 방식");
+    expect(priority?.querySelector("legend")?.textContent).toContain("우선순위");
+    expect(overlap?.querySelector("legend")?.textContent).toContain("겹침");
+    expect(movement?.querySelector("summary")?.textContent).toContain("움직임");
 
     // Disposition B: no bottom-left/right panes.
     expect(host.querySelector('[data-testid="event-page-bottom-left"]')).toBeNull();
