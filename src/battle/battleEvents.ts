@@ -73,11 +73,8 @@ export type BattleEventRuntimeOptions = {
   readonly stopAudio?: () => void;
   // wait 명령(ms): 런타임이 전투 흐름을 지정 ms 동안 일시정지.
   // 배틀 이벤트 루프는 동기식이라 wait 이후의 명령도 즉시 실행되지만,
-  // 런타임 tick 이 pendingWaitMs 를 소진하기 전까지 게이지/턴 진행을 멈춘다.
+  // 런타임이 그 일시정지를 소비한다 — gauge 는 tick(pendingWaitMs), strict 는 타임라인 wait 엔트리.
   readonly wait?: (ms: number) => void;
-  // SC4 (H3): strict 흐름에서는 extra actor action 을 부여할 수 없다(동기식 라운드).
-  // 이 콜백이 false 를 반환하면 actionTimes 명령은 unsupported 로그를 남긴다.
-  readonly canGrantExtraAction?: () => boolean;
   // changeEquipment/promoteActor 가 오버레이(state.actorEquipment/classOverrides)를 갱신한 뒤
   // 해당 액터 배틀러의 파생 스탯을 재계산한다. 산식은 battleBattlers 생성 로직과 공유
   // (refreshActorBattlerDerivedStats) — 런타임이 세션 paramBonuses 를 닫아 주입한다.
@@ -729,15 +726,16 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   function addExtraActorAction(actorId: string, amount: number): void {
-    if (options.canGrantExtraAction && !options.canGrantExtraAction()) {
-      logExternal("m2-108 actionTimes unsupported in strict flow");
-      return;
-    }
     extraActorActions[actorId] = (extraActorActions[actorId] ?? 0) + amount;
+    logExternalMessage(`m2-108 actionTimes +${amount} (${actorId})`);
   }
 
   function logExternal(message: string): void {
     logs.push({ pageId: "external", round: 0, triggerId: "external", kind: "unsupported", detail: message });
+  }
+
+  function logExternalMessage(message: string): void {
+    logs.push({ pageId: "external", round: 0, triggerId: "external", kind: "message", detail: message });
   }
 
   function evaluateCondition(condition: Condition): boolean {

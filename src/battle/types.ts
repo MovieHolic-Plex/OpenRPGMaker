@@ -248,7 +248,9 @@ export type BattleTimelineEntryKind =
   | "stateAdded"
   | "stateRemoved"
   | "incapacitated"
-  | "stalemate";
+  | "stalemate"
+  /** 배틀 이벤트 `wait` 가 요청한 연출 일시정지(strict 흐름). `waitMs` 를 들고 있다. */
+  | "wait";
 
 /** Ordered, append-only battle facts consumed by presentation exactly once. */
 export interface BattleTimelineEntrySnapshot {
@@ -266,6 +268,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;
+  /** kind === "wait" 인 엔트리의 일시정지 시간(ms). 시퀀서가 이 값만큼 다음 비트를 늦춘다. */
+  readonly waitMs?: number;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
   readonly animation?: BattleAnimationSnapshot;

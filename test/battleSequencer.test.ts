@@ -237,6 +237,57 @@ describe("battle sequencer", () => {
     expect(consumed).toEqual(expected);
   });
 
+  it("honors a strict wait timeline entry as a scheduled presentation pause", () => {
+    const project = deserialize(JSON.stringify(battleFixture));
+    const troop = project.database.troops.find((record) => record.id === "troop_slime");
+    if (!troop) throw new Error("missing troop_slime");
+    troop.battleEventPages = [{
+      id: "page_wait",
+      name: "대기",
+      span: "battle",
+      runOnce: true,
+      conditions: [{ kind: "turn", start: 1, interval: 0 }],
+      commands: [{ kind: "wait", ms: 500 }],
+    }];
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "strict",
+      party: { levels: { actor_hero: 1 }, experience: {}, partyActorIds: ["actor_hero"] },
+      rng: () => 0.5,
+    });
+    const delays: number[] = [];
+    const pending: Array<() => void> = [];
+    const sequencer = createBattleSequencer(
+      runtime,
+      {
+        onDirectorState: () => undefined,
+        onSyncView: () => undefined,
+        onDamageFeedback: () => undefined,
+        onResultStage: () => undefined,
+        onSequenceBusy: () => undefined,
+      },
+      (callback, delayMs) => {
+        delays.push(delayMs);
+        pending.push(callback);
+        return pending.length;
+      },
+      () => undefined,
+    );
+    const before = runtime.snapshot();
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    const after = runtime.snapshot();
+    expect(after.timeline.some((entry) => entry.kind === "wait" && entry.waitMs === 500)).toBe(true);
+
+    sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-1" }, before, after);
+    // Drain the queued beats; the authored 500ms pause must appear as one scheduled delay.
+    for (let guard = 0; guard < 100 && pending.length > 0; guard += 1) pending.shift()?.();
+
+    expect(delays).toContain(500);
+  });
+
   it("holds intro lines before releasing command prompt", () => {
     const runtime = battleRuntime();
     const introLines: string[] = [];

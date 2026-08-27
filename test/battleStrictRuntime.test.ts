@@ -5,7 +5,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { commandPanel } from "@/player/battleCommandDom";
 import { deserialize } from "@/project/io";
 import { store } from "@/project/store";
-import type { ActorParameterKey, Project } from "@/project/types";
+import type { ActorParameterKey, Command, Project } from "@/project/types";
 import { installFakeDom, type FakeElement } from "./fakeDom";
 import strictFixture from "./fixtures/projects/battle-strict-v3.json";
 
@@ -28,6 +28,31 @@ function setStrictBattleStats(project: Project): void {
   const enemy = project.database.enemies.find((record) => record.id === "enemy_training_slime");
   if (!enemy) throw new Error("missing enemy_training_slime");
   enemy.stats = { ...enemy.stats, maxHp: 999, attack: 1, agility: 20 };
+}
+
+function installStrictBattleEventPage(project: Project, commands: readonly Command[]): void {
+  const troop = project.database.troops.find((record) => record.id === "troop_strict_training");
+  if (!troop) throw new Error("missing troop_strict_training");
+  troop.battleEventPages = [{
+    id: "page_strict_flow",
+    name: "엄격 흐름",
+    span: "battle",
+    runOnce: true,
+    conditions: [{ kind: "turn", start: 1, interval: 0 }],
+    commands: [...commands],
+  }];
+}
+
+function soloWarriorRuntime(project: Project) {
+  return createBattleRuntime({
+    project,
+    troopId: "troop_strict_training",
+    canEscape: false,
+    canLose: true,
+    battleFlow: "strict",
+    party: { levels: { actor_warrior: 1 }, experience: {}, partyActorIds: ["actor_warrior"] },
+    rng: () => 0,
+  });
 }
 
 function commandPanelTexts(root: FakeElement): string[] {
@@ -171,6 +196,43 @@ describe("battle strict runtime and class commands", () => {
     expect(runtime.snapshot().phase).toBe("charging");
     runtime.tick(1_000);
     expect(runtime.snapshot().phase).toBe("actorCommand");
+  });
+
+  it("exposes an authored wait as a strict timeline pause instead of dropping it", () => {
+    const project = strictProject();
+    setStrictBattleStats(project);
+    setActorParam(project, "actor_warrior", "agility", 99);
+    installStrictBattleEventPage(project, [{ kind: "wait", ms: 500 }]);
+    const runtime = soloWarriorRuntime(project);
+
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+
+    const snapshot = runtime.snapshot();
+    const waitEntries = snapshot.timeline.filter((entry) => entry.kind === "wait");
+    expect(waitEntries.map((entry) => entry.waitMs)).toEqual([500]);
+    // The pause belongs to the round slice the sequencer replays, in order.
+    expect(snapshot.roundLogs[0]?.timeline.some((entry) => entry.kind === "wait")).toBe(true);
+    expect(snapshot.eventLogs.filter((log) => log.kind === "unsupported")).toEqual([]);
+  });
+
+  it("grants an m2-108 extra action inside the same strict round", () => {
+    const project = strictProject();
+    setStrictBattleStats(project);
+    setActorParam(project, "actor_warrior", "agility", 99);
+    installStrictBattleEventPage(project, [
+      { kind: "m2Command", commandId: "m2-108-action-times", fields: { target: "actor_warrior", value: 1 } } as unknown as Command,
+    ]);
+    const runtime = soloWarriorRuntime(project);
+
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+
+    const firstRound = runtime.snapshot().roundLogs[0];
+    // Extra action resolves in the same round, ordered by the round's speed ordering
+    // (agility 99 actor before the agility 20 slime).
+    expect(firstRound?.actions.map((action) => action.userRecordId))
+      .toEqual(["actor_warrior", "actor_warrior", "enemy_training_slime"]);
+    expect(firstRound?.actions.map((action) => action.order)).toEqual([1, 2, 3]);
+    expect(runtime.snapshot().eventLogs.filter((log) => log.kind === "unsupported")).toEqual([]);
   });
 
   it("simulateBattle replays a three-round strict script with round logs", () => {

@@ -20,6 +20,23 @@ function defeatSlime(runtime: ReturnType<typeof createBattleRuntime>): void {
 }
 
 describe("side-view battle runtime", () => {
+  it("system.battleFlow 미설정 프로젝트는 strict 플로우로 시작한다", () => {
+    // Given: a project whose system.battleFlow is undefined (no troop/option override).
+    const project = battleProject();
+    delete (project.system as { battleFlow?: string }).battleFlow;
+    expect(project.system.battleFlow).toBeUndefined();
+
+    // Then: the runtime resolves the final fallback to strict before any tick.
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+    });
+    expect(runtime.snapshot().battleFlow).toBe("strict");
+    expect(runtime.snapshot().phase).toBe("actorCommand");
+  });
+
   it("fills active-time gauges in actor-before-enemy order", () => {
     // Given: a database-backed battle with one party actor and one troop enemy.
     const runtime = createBattleRuntime({
@@ -27,6 +44,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
 
     // When: enough deterministic time passes for the first battler to act.
@@ -46,6 +64,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
     const before = runtime.snapshot().enemies[0]?.hp;
@@ -71,6 +90,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -109,6 +129,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -139,6 +160,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -174,6 +196,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -199,6 +222,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: false,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -230,6 +254,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -269,6 +294,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -308,6 +334,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -327,6 +354,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
+      battleFlow: "gauge",
     });
     runtime.tick(1_000);
 
@@ -353,6 +381,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_dragon",
       canEscape: false,
       canLose: true,
+      battleFlow: "gauge",
     });
 
     runtime.tick(1_500);
@@ -368,6 +397,7 @@ describe("side-view battle runtime", () => {
       troopId: "troop_dragon",
       canEscape: false,
       canLose: true,
+      battleFlow: "gauge",
     });
 
     // When: the enemy receives its active turn.
