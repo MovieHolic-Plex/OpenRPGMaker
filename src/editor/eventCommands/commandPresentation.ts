@@ -44,7 +44,7 @@ const FAMILY_LABELS: Readonly<Record<CommandFamily, string>> = {
   monster: M2_PICKER_BATTLE_GROUP,
   follower: M2_PICKER_PARTY_GROUP,
   atmosphere: "화면/연출",
-  media: M2_PICKER_SOUND_GROUP,
+  media: "미디어",
   commerce: M2_PICKER_TRADE_GROUP,
   system: "시스템/고급",
   compatibility: "호환/고급",
