@@ -51,6 +51,11 @@
   justify-content: flex-end;
 }
 
+/* 공유 .btn 은 flex-grow:1 을 갖고 있어 flex 행 어댑에서 행 폭 전제로 늘어난다. */
+.database-modal-backdrop .db-system-font-actions > .btn {
+  flex: 0 0 auto;
+}
+
 @media (max-width: 720px) {
   .database-modal-backdrop .db-system-font-preview-row {
     grid-template-columns: minmax(0, 1fr);
