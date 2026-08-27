@@ -23,7 +23,6 @@ import {
   renderEventEditorDynamic,
   renderEventEditorStable,
 } from "./content";
-import { renderClassicPageTabStrip } from "./pageProps";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
 import { installEventEditorCustomSelects } from "./customSelect";
@@ -323,7 +322,11 @@ function renderModalHeader(
         dataset: { testid: "event-editor-header-save-state" },
       }),
       pages.length > 0 && activePage
-        ? renderClassicPageTabStrip(mapId, ev!, activePage)
+        ? el("span", {
+            class: "event-editor-header-page-count",
+            text: `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`,
+            dataset: { testid: "event-editor-header-page-count" },
+          })
         : el("span", { attrs: { style: "display: none;" } }),
       el("div", {
         class: "header-actions",
@@ -515,11 +518,9 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
   const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
-  if (!ev || !activePage) return;
-  const next = renderClassicPageTabStrip(request.mapId, ev, activePage);
-  const current = header.querySelector<HTMLElement>('[data-testid="evt-header-page-tabs"]');
-  if (current) current.replaceWith(next);
-  else header.querySelector(".header-actions")?.before(next);
+  const counter = header.querySelector<HTMLElement>('[data-testid="event-editor-header-page-count"]');
+  if (!activePage || !counter) return;
+  counter.textContent = `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`;
 }
 
 function refreshModalHeaderSaveState(header: HTMLElement, footer: HTMLElement): void {
