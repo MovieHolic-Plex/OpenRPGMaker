@@ -195,6 +195,32 @@
     font-size: 10px;
   }
 
+  /* 기본값 뱃지 진정: 전 행이 "보임"이라 초록 알약이 도배되면 표가 시끄럽고
+     예외인 "투명"이 안 보인다. 기본값은 조용한 텍스트로, 예외만 뱃지로 남긴다. */
+  .db-actor-status.is-default {
+    background: none;
+    border: 0;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+
+  /* 목록 pane 에 옅은 바탕을 주어 흰 행이 카드처럼 떠 보이게 한다. 3열이 모두 흰
+     바탕이라 1px 선만으로 갈라져 있어 화면이 종이 한 장처럼 뭉개졌다. */
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
+    background: var(--bg-inset, rgba(15, 23, 42, 0.03));
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-heading,
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-table {
+    background: var(--bg-raised, #fff);
+  }
+
+  /* 개수 중복 제거: 헤더에 이미 "6명" 이 있는데 목록 아래에 "6개" 가 한 번 더 나와
+     40px 짜리 바를 잡아먹었다. 표 헤더 쪽 카운트를 단일 출처로 삼는다. */
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .oprn-record-list-footer {
+    display: none;
+  }
+
   .db-actor-table-row .numeric {
     font-variant-numeric: tabular-nums;
   }

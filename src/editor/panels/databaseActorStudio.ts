@@ -115,8 +115,10 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
       tableCell(className, "cell"),
       tableCell(String(actor.initialLevel), "cell", "numeric"),
       tableCell(NUMBER_FORMAT.format(initialHp), "cell", "numeric"),
+      // 맵 표시: 기본값(보임)까지 초록 알약으로 그리면 모든 행에 같은 뱃지가 도배돼
+      // 정작 예외인 "투명"이 눈에 안 띈다 — 예외일 때만 뱃지를 세운다.
       el("span", {
-        class: `db-actor-status${actor.characterTransparent ? " is-hidden" : ""}`,
+        class: `db-actor-status${actor.characterTransparent ? " is-hidden" : " is-default"}`,
         attrs: { role: "cell" },
         text: actor.characterTransparent ? "투명" : "보임",
       }),
