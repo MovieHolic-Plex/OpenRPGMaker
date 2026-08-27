@@ -29,9 +29,7 @@ test.beforeEach(async ({ page }) => {
 test("every map row shows a real rendered thumbnail of that map", async ({ page }) => {
   // Break named: map rows are text-only, so a beginner cannot tell which map is which.
   test.setTimeout(180_000);
-  await page.setViewportSize({ height: 1000, width: 1600 });
-  await page.goto("/?freshProject=1");
-  await expect(page.getByTestId("map-tree")).toBeVisible({ timeout: 30_000 });
+  await openEditorMapPanel(page);
 
   const houseId = await addChildMap(page, await firstRowMapId(page), "민재의 집");
   await addChildMap(page, houseId, "민재의 집 1층");
@@ -63,9 +61,7 @@ test("every map row shows a real rendered thumbnail of that map", async ({ page 
 test("child maps read as a directory tree with increasing depth", async ({ page }) => {
   // Break named: every nested row uses one flat 16px indent, so 민재의 집 1층 looks like a sibling of 민재의 집.
   test.setTimeout(180_000);
-  await page.setViewportSize({ height: 1000, width: 1600 });
-  await page.goto("/?freshProject=1");
-  await expect(page.getByTestId("map-tree")).toBeVisible({ timeout: 30_000 });
+  await openEditorMapPanel(page);
 
   const rootId = await firstRowMapId(page);
   const houseId = await addChildMap(page, rootId, "민재의 집");
@@ -125,6 +121,15 @@ test("the beginner map flyout shows the same thumbnails and nesting", async ({ p
 
   await page.getByTestId("map-tree").screenshot({ path: join(OUT, "03-beginner-flyout.png") });
 });
+
+/** 맵 패널을 기다리기 전에 에디터 부팅을 먼저 기다린다 — 캔버스가 뜨기 전에는
+ * 좌패널이 아직 마운트되지 않아 map-tree 를 곧바로 기다리면 부팅 지연에 걸린다. */
+async function openEditorMapPanel(page: Page): Promise<void> {
+  await page.setViewportSize({ height: 1000, width: 1600 });
+  await page.goto("/?freshProject=1");
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByTestId("map-tree")).toBeVisible({ timeout: 30_000 });
+}
 
 function required(rows: Map<string, RowFacts>, name: string): RowFacts {
   const row = rows.get(name);
