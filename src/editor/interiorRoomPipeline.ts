@@ -28,6 +28,9 @@ import {
   DARK_WALL_TILE,
 } from "@/project/defaults/darkWallAutotile";
 import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+// 순환 의존(카탈로그 → 이 모듈의 interiorVocabTiles)이므로 import 순서상 마지막에 둔다:
+// 카탈로그 본문이 실행될 때 DARK_WALL_TILE 등 상위 상수가 이미 초기화되어 있어야 한다.
+import { interiorObjectById, type InteriorObjectCell } from "@/editor/interiorObjectCatalog";
 import type {
   ClusterRule,
   GameEvent,
@@ -71,97 +74,106 @@ export const HOUSE_WALL_FACE = {
   DOOR_STEP: 397,
 } as const;
 
-export const VR = {
-  VOID: 430,
-  FLOOR: 72,
-  FLOOR_HOLE: 73,
-  /** Dark wall body / brush (autotile). */
-  BODY: DARK_WALL_TILE.BODY,
-  INNER_L: 104,
-  INNER_R: 106,
-  /** @deprecated legacy dark-wall store variants — render quarters only under Option B */
-  EDGE_W: 396,
-  EDGE_E: 398,
-  EDGE_N: 367,
-  EDGE_S: 427,
-  CORNER_NW: 368,
-  CORNER_NE: 369,
-  BEAM_SW: 426,
-  BEAM_SE: 428,
-  ALCOVE_L: 396,
-  ALCOVE_R: 398,
-  // 책장은 3×3 세트(좌 18/48/78 · 중 19/49/79 가로 반복 · 우 20/50/80) — 2026-07-12 fable 감사 확정.
-  // 2×3 조립은 좌+우 열을 쓴다. (구버그: 하단을 78+79(좌+중)로 조립해 우측 프레임이 사라졌었음)
-  BOOK_TL: 18,
-  BOOK_TR: 20,
-  BOOK_ML: 48,
-  BOOK_MR: 50,
-  BOOK_BL: 78,
-  BOOK_BR: 80,
-  WINDOW: 56,
-  RELIGIOUS: 59,
-  PICTURE_L: 114,
-  PICTURE_R: 115,
-  CABINET_U: 148,
-  CABINET_L: 178,
-  SWORD_RACK: 260,
-  PLANT: 289,
-  TABLE_TOP: 264,
-  TABLE_BOT: 294,
-  BOX: 295,
-  CHAIR_RIGHT: 297,
-  CHAIR_LEFT: 298,
-  BED_L: 355,
-  BED_R: 356,
-  BROKEN_GLASS: 417,
-  GRAIN: 471,
-  STAIRS_DOWN: 475,
-  // 2026-07-12 vision 감사로 추가된 가구 — kitchen/storage/tavern 테마용.
-  /** 화덕 오븐 상단(21)+하단(51) — 불투명 lower 세로쌍, 북벽에 붙여 배치. */
-  STOVE_TOP: 21,
-  STOVE_BOT: 51,
-  /** 벽난로 아궁이(373) — 벽면 매립 화구. 실내 바닥 모닥불(124) 대체(2026-07-20). */
-  HEARTH: 373,
-  CAULDRON: 323,
-  KETTLE: 235,
-  BUCKET: 265,
-  JARS: 350,
-  FRUIT_SHELF: 25,
-  SHELF_JARS: 320,
-  CRATE: 55,
-  BARREL: 205,
-  TAVERN_SIGN: 58,
-  LADDER: 472,
-  /** 가로 긴 탁자 좌(325)|우(326) — 침대와 같은 hard 좌우쌍. */
-  TABLE_L: 325,
-  TABLE_R: 326,
-  STOOL: 266,
-  // 2026-07-12 감사 어휘 확장 — "소재 부족" 리뷰 해소. 전부 tileSemanticsInterior 정본 대조 완료.
-  TABLE_R3: 327, //        긴 탁자 오른끝(325|326*|327 3칸 세트)
-  PIANO_L: 357, //         보완 작화된 왼쪽 측판
-  PIANO_M: 358,
-  PIANO_R: 359,
-  MIRROR_T: 269, //        대형 거울(세로 2칸, 벽 걸침)
-  MIRROR_B: 299,
-  CLOCK_T: 389, //         괘종시계(세로 2칸, 벽 걸침)
-  CLOCK_B: 419,
-  BUST_T: 88, //           흉상(석상, 세로 2칸)
-  BUST_B: 118,
-  ARMOR_T: 87, //          갑옷 전시대(세로 2칸)
-  ARMOR_B: 117,
-  DISPLAY_T: 263, //       물약·검 진열대(세로 2칸)
-  DISPLAY_B: 293,
-  SQUARE_TABLE: 328, //    사각 탁자(1칸) — 의자 짝 규칙의 기준 가구
-  CRYSTAL_BALL: 329, //    수정구 점술대
-  STAIRS_L: 465, //        가로 계단(좌·몸통 반복·우)
-  STAIRS_M: 466,
-  STAIRS_R: 467,
-  BED_V_HEAD: 324, //      세로 침대(머리 북쪽) — 침대 방향 변주
-  BED_V_FOOT: 354,
-  COUNTER_L: 408, //       카운터 일자 런(경로 키트 v1): 좌·몸통 반복·우
-  COUNTER_M: 409,
-  COUNTER_R: 410,
-} as const;
+/**
+ * 실내 어휘 타일 사전 생성자 — 함수 선언은 모듈 인스턴스화 시점에 이미 준비되므로,
+ * 이 모듈을 순환 참조하는 interiorObjectCatalog가 자기 모듈 본문에서 곧바로 어휘를 읽을 수 있다.
+ * (`export const VR`을 순환 초기화 중에 직접 읽으면 TDZ에 걸려 undefined 접근으로 터진다.)
+ */
+export function interiorVocabTiles() {
+  return {
+    VOID: 430,
+    FLOOR: 72,
+    FLOOR_HOLE: 73,
+    /** Dark wall body / brush (autotile). */
+    BODY: DARK_WALL_TILE.BODY,
+    INNER_L: 104,
+    INNER_R: 106,
+    /** @deprecated legacy dark-wall store variants — render quarters only under Option B */
+    EDGE_W: 396,
+    EDGE_E: 398,
+    EDGE_N: 367,
+    EDGE_S: 427,
+    CORNER_NW: 368,
+    CORNER_NE: 369,
+    BEAM_SW: 426,
+    BEAM_SE: 428,
+    ALCOVE_L: 396,
+    ALCOVE_R: 398,
+    // 책장은 3×3 세트(좌 18/48/78 · 중 19/49/79 가로 반복 · 우 20/50/80) — 2026-07-12 fable 감사 확정.
+    // 2×3 조립은 좌+우 열을 쓴다. (구버그: 하단을 78+79(좌+중)로 조립해 우측 프레임이 사라졌었음)
+    BOOK_TL: 18,
+    BOOK_TR: 20,
+    BOOK_ML: 48,
+    BOOK_MR: 50,
+    BOOK_BL: 78,
+    BOOK_BR: 80,
+    WINDOW: 56,
+    RELIGIOUS: 59,
+    PICTURE_L: 114,
+    PICTURE_R: 115,
+    CABINET_U: 148,
+    CABINET_L: 178,
+    SWORD_RACK: 260,
+    PLANT: 289,
+    TABLE_TOP: 264,
+    TABLE_BOT: 294,
+    BOX: 295,
+    CHAIR_RIGHT: 297,
+    CHAIR_LEFT: 298,
+    BED_L: 355,
+    BED_R: 356,
+    BROKEN_GLASS: 417,
+    GRAIN: 471,
+    STAIRS_DOWN: 475,
+    // 2026-07-12 vision 감사로 추가된 가구 — kitchen/storage/tavern 테마용.
+    /** 화덕 오븐 상단(21)+하단(51) — 불투명 lower 세로쌍, 북벽에 붙여 배치. */
+    STOVE_TOP: 21,
+    STOVE_BOT: 51,
+    /** 벽난로 아궁이(373) — 벽면 매립 화구. 실내 바닥 모닥불(124) 대체(2026-07-20). */
+    HEARTH: 373,
+    CAULDRON: 323,
+    KETTLE: 235,
+    BUCKET: 265,
+    JARS: 350,
+    FRUIT_SHELF: 25,
+    SHELF_JARS: 320,
+    CRATE: 55,
+    BARREL: 205,
+    TAVERN_SIGN: 58,
+    LADDER: 472,
+    /** 가로 긴 탁자 좌(325)|우(326) — 침대와 같은 hard 좌우쌍. */
+    TABLE_L: 325,
+    TABLE_R: 326,
+    STOOL: 266,
+    // 2026-07-12 감사 어휘 확장 — "소재 부족" 리뷰 해소. 전부 tileSemanticsInterior 정본 대조 완료.
+    TABLE_R3: 327, //        긴 탁자 오른끝(325|326*|327 3칸 세트)
+    PIANO_L: 357, //         보완 작화된 왼쪽 측판
+    PIANO_M: 358,
+    PIANO_R: 359,
+    MIRROR_T: 269, //        대형 거울(세로 2칸, 벽 걸침)
+    MIRROR_B: 299,
+    CLOCK_T: 389, //         괘종시계(세로 2칸, 벽 걸침)
+    CLOCK_B: 419,
+    BUST_T: 88, //           흉상(석상, 세로 2칸)
+    BUST_B: 118,
+    ARMOR_T: 87, //          갑옷 전시대(세로 2칸)
+    ARMOR_B: 117,
+    DISPLAY_T: 263, //       물약·검 진열대(세로 2칸)
+    DISPLAY_B: 293,
+    SQUARE_TABLE: 328, //    사각 탁자(1칸) — 의자 짝 규칙의 기준 가구
+    CRYSTAL_BALL: 329, //    수정구 점술대
+    STAIRS_L: 465, //        가로 계단(좌·몸통 반복·우)
+    STAIRS_M: 466,
+    STAIRS_R: 467,
+    BED_V_HEAD: 324, //      세로 침대(머리 북쪽) — 침대 방향 변주
+    BED_V_FOOT: 354,
+    COUNTER_L: 408, //       카운터 일자 런(경로 키트 v1): 좌·몸통 반복·우
+    COUNTER_M: 409,
+    COUNTER_R: 410,
+  } as const;
+}
+
+export const VR = interiorVocabTiles();
 
 // 3×3 러그(lower 카펫) — 청록/붉은 카펫 오토타일 세트의 테두리+몸통.
 const RUG_TEAL: readonly (readonly number[])[] = [
@@ -1610,6 +1622,29 @@ function mulberry32(seed: number): () => number {
 }
 let RNG: () => number = mulberry32(1);
 
+/**
+ * 카탈로그 정의(형태 정본: interiorObjectCatalog)의 셀 id를 가져온다.
+ * 정의가 없으면 즉시 실패 — 어휘 오타가 조용히 반쪽 가구로 새어나가지 않게.
+ */
+function objectCells(id: string): readonly InteriorObjectCell[] {
+  const def = interiorObjectById(id);
+  if (!def) throw new Error(`실내 오브젝트 정의 없음: ${id}`);
+  return def.cells;
+}
+
+/** 카탈로그 셀 목록을 (ox,oy) 원점에 찍는다 — 칸별 레이어는 셀이 정본. */
+function paintObjectCells(
+  map: GameMap,
+  cells: readonly InteriorObjectCell[],
+  ox: number,
+  oy: number,
+): void {
+  for (const cell of cells) {
+    if (cell.layer === "upper") setU(map, ox + cell.dx, oy + cell.dy, cell.tile);
+    else setL(map, ox + cell.dx, oy + cell.dy, cell.tile);
+  }
+}
+
 /** 후보 배열을 시드 기반으로 회전 — 침대/화덕/카운터가 매 시드마다 다른 자리에서 시작한다. */
 function rotated<T>(arr: readonly T[]): T[] {
   if (arr.length < 2) return [...arr];
@@ -1685,8 +1720,7 @@ function placeBedVertical(
     if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x, c.y + 1)) continue;
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y + 1)) continue;
     // hard pair — 반쪽 침대 금지 (324 바로 아래 354)
-    setU(map, c.x, c.y, VR.BED_V_HEAD);
-    setU(map, c.x, c.y + 1, VR.BED_V_FOOT);
+    paintObjectCells(map, objectCells("bed_v"), c.x, c.y);
     return { x: c.x, y: c.y, cells: [{ x: c.x, y: c.y }, { x: c.x, y: c.y + 1 }] };
   }
   return null;
@@ -1721,9 +1755,12 @@ function placeCounterRun(
           && isWalkFloor(map, x, northY) && isUpperEmpty(map, x, northY),
       )
       .sort((a, b) => a - b);
+    // 좌 캡 · 반복 몸통 · 우 캡 — 타일 id는 카탈로그 counter 정의(3칸 런)에서 가져온다.
+    const counter = objectCells("counter");
     const place = (start: number, L: number): void => {
       for (let i = 0; i < L; i += 1) {
-        setU(map, start + i, y, i === 0 ? VR.COUNTER_L : i === L - 1 ? VR.COUNTER_R : VR.COUNTER_M);
+        const cell = i === 0 ? counter[0]! : i === L - 1 ? counter[counter.length - 1]! : counter[1]!;
+        setU(map, start + i, y, cell.tile);
       }
     };
     // "떠 있는 카운터" 방지: 런의 서쪽 끝 또는 동쪽 끝에 붙는(코너 앵커) 창만 허용.
@@ -2014,9 +2051,7 @@ function placeLongTable3(
       }
     }
     if (!ok) continue;
-    setU(map, c.x, c.y, VR.TABLE_L);
-    setU(map, c.x + 1, c.y, VR.TABLE_R);
-    setU(map, c.x + 2, c.y, VR.TABLE_R3);
+    paintObjectCells(map, objectCells("table_long"), c.x, c.y);
     setU(map, c.x - 1, c.y, VR.CHAIR_RIGHT);
     setU(map, c.x + 3, c.y, VR.CHAIR_LEFT);
     // 스툴 자동 배치 제거 — 바닥 잡동사니 과다 방지.
@@ -2043,9 +2078,7 @@ function placePianoTriple(
       if (!xs.has(c.x + 1) || !xs.has(c.x + 2)) continue;
       if ([0, 1, 2].some((dx) => c.x + dx === door.x)) continue;
       if ([0, 1, 2].some((dx) => !isWalkFloor(map, c.x + dx, y) || !isUpperEmpty(map, c.x + dx, y))) continue;
-      setU(map, c.x, y, VR.PIANO_L);
-      setU(map, c.x + 1, y, VR.PIANO_M);
-      setU(map, c.x + 2, y, VR.PIANO_R);
+      paintObjectCells(map, objectCells("piano"), c.x, y);
       return true;
     }
   }
@@ -2095,6 +2128,10 @@ function placeBookshelfRow(
   door: DoorSpec,
   count: number,
 ): void {
+  // 카탈로그 책장은 3×3(가운데 열 19/49/79는 가로 반복 몸통) — 서가 열은 좌·우 캡 열만 쓴 2×3 변형.
+  const shelfCells = objectCells("bookshelf")
+    .filter((cell) => cell.dx !== 1)
+    .map((cell) => ({ ...cell, dx: cell.dx === 0 ? 0 : 1 }));
   const sorted = [...northFloor].sort((a, b) => a.x - b.x || a.y - b.y);
   let placed = 0;
   let minNextX = Number.NEGATIVE_INFINITY;
@@ -2109,12 +2146,7 @@ function placeBookshelfRow(
       }
     }
     if (!ok) continue;
-    setL(map, c.x, c.y, VR.BOOK_TL);
-    setL(map, c.x + 1, c.y, VR.BOOK_TR);
-    setL(map, c.x, c.y + 1, VR.BOOK_ML);
-    setL(map, c.x + 1, c.y + 1, VR.BOOK_MR);
-    setL(map, c.x, c.y + 2, VR.BOOK_BL);
-    setL(map, c.x + 1, c.y + 2, VR.BOOK_BR);
+    paintObjectCells(map, shelfCells, c.x, c.y);
     placed += 1;
     minNextX = c.x + 3; // 책장 2칸 + 통로 1칸
   }
@@ -2137,8 +2169,7 @@ function placeStovePair(
     if (!wall.has(getL(map, c.x, c.y - 1))) continue; // 상단이 겹칠 벽면이 있어야 함
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y - 1)) continue;
     // hard pair — never place half stove (21 must be immediately above 51)
-    setU(map, c.x, c.y - 1, VR.STOVE_TOP);
-    setL(map, c.x, c.y, VR.STOVE_BOT);
+    paintObjectCells(map, objectCells("stove"), c.x, c.y - 1);
     return { x: c.x, y: c.y };
   }
   return null;
@@ -2155,8 +2186,7 @@ function placeBedPair(
     if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x + 1, c.y)) continue;
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x + 1, c.y)) continue;
     // hard pair — never place half bed (355 must be immediately left of 356)
-    setU(map, c.x, c.y, VR.BED_L);
-    setU(map, c.x + 1, c.y, VR.BED_R);
+    paintObjectCells(map, objectCells("bed_h"), c.x, c.y);
     return { x: c.x, y: c.y, cells: [{ x: c.x, y: c.y }, { x: c.x + 1, y: c.y }] };
   }
   return null;
