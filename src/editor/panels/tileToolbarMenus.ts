@@ -37,6 +37,8 @@ let detachDocumentListeners: (() => void) | null = null;
 
 export function resetTileToolbarMenusForTests(): void {
   openMenu = null;
+  openAnchor = null;
+  anchorKeepersInstalled = false;
   latestRerender = null;
   detachDocumentListeners?.();
   detachDocumentListeners = null;
@@ -45,6 +47,7 @@ export function resetTileToolbarMenusForTests(): void {
 function closeMenuFromOutside(restoreFocus: boolean): void {
   if (openMenu === null) return;
   openMenu = null;
+  openAnchor = null;
   latestRerender?.();
   if (!restoreFocus || typeof document === "undefined") return;
   // 재렌더로 버튼 노드가 새로 생기므로 다시 조회해 포커스를 되돌린다.

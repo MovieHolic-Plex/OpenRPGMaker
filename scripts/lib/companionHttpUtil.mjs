@@ -32,6 +32,11 @@ export function writeCompanionResult(res, result, extraHeaders = {}) {
     res.end();
     return;
   }
+  if (result.status === 302 && result.headers?.Location) {
+    res.writeHead(302, { Location: result.headers.Location, ...extraHeaders });
+    res.end();
+    return;
+  }
   res.writeHead(result.status ?? 200, headers);
   res.end(JSON.stringify(result.body ?? {}));
 }

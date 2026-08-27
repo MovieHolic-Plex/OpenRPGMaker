@@ -29,3 +29,4 @@
 @import "./tabs-b-assistant-panel/13-assistant-modern.css";
 /* 조수 UX 수리 — 가장 나중에 불어 기존 도크 규칙을 이긴다(힌트 visibility 등). */
 @import "./tabs-b-assistant-panel/14-assistant-ux-repair.css";
+@import "./tabs-b-assistant-panel/15-assistant-readable.css";

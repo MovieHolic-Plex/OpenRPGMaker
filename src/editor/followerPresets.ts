@@ -17,7 +17,6 @@ export type FollowerPreset = {
   readonly textureKey?: string;
   /** DB 초상화(페이스셋/캐릭터셋) — 이미지 칩 렌더용. */
   readonly faceResourceId?: string | undefined;
-  readonly faceIndex?: number | undefined;
   readonly characterResourceId?: string | undefined;
   readonly characterIndex?: number | undefined;
 };
@@ -27,7 +26,6 @@ function projectActors(): readonly {
   id: string;
   name: string;
   faceResourceId?: string;
-  faceIndex?: number;
   characterResourceId?: string;
   characterIndex?: number;
 }[] {
@@ -35,7 +33,6 @@ function projectActors(): readonly {
     id: actor.id,
     name: actor.name,
     faceResourceId: actor.faceResourceId,
-    faceIndex: actor.faceIndex,
     characterResourceId: actor.characterResourceId,
     characterIndex: actor.characterIndex,
   }));
@@ -91,7 +88,6 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
       refId: actor.id,
       displayName: actor.name || "동료",
       faceResourceId: actor.faceResourceId,
-      faceIndex: actor.faceIndex,
       characterResourceId: actor.characterResourceId,
       characterIndex: actor.characterIndex,
     });

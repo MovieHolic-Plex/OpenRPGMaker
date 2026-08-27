@@ -10,20 +10,21 @@
   font-style: italic;
 }
 
-/* ── 얼굴: CSS 배경이 아니라 실제 <img> 시트를 크롭 박스가 잘라 낸다 ────── */
+/* ── 얼굴: CSS 배경이 아니라 실제 <img> 낱장 그림이 박스를 채운다 ────── */
 .event-command-face-crop.faceset-crop-box {
   background-image: none;
   position: relative;
 }
 
 .faceset-crop-box .faceset-crop-sheet {
-  height: var(--face-scaled-sheet-height);
+  height: 100%;
   image-rendering: pixelated;
-  left: var(--face-scaled-x, 0);
+  left: 0;
   max-width: none;
+  object-fit: contain;
   position: absolute;
-  top: var(--face-scaled-y, 0);
-  width: var(--face-scaled-sheet-width);
+  top: 0;
+  width: 100%;
 }
 
 /* ── 숫자 입력: 자리수 캡션과 저장 변수명을 분리한다 ───────────────────── */

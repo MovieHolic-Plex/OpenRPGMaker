@@ -20,14 +20,13 @@ npm run typecheck # 타입 검사만
 npm run dev
 ```
 
-로그인이 없으면 `AI 설정 → ChatGPT 구독 → 구독 연결` 버튼이 Codex 기기 코드 로그인을 시작합니다.
+로그인이 없으면 `AI 설정 → Google Gemini → 로그인`이 Antigravity 기기 코드 로그인을 시작합니다. 기본 모델은 `gemini-3.7-flash`입니다.
 
-- **DEV (`npm run dev`)**: vite dev 서버가 `/auth/*`·`/v1/chat/completions`를 로컬 `codex app-server`에 same-origin으로 브릿지합니다 (`vite.config.ts`의 `codexOAuthPlugin`). 별도 프로세스 불필요.
-- **PREVIEW / 배포본 (`npm run preview`, `dist/`)**: 동일 포트 브릿지가 없으므로 별도 터미널에서 동반 서비스를 실행해야 합니다.
+- **DEV / PREVIEW (`npm run dev`, `npm start`)**: vite가 `/auth/*`·`/v1/chat/completions`를 페이지와 같은 오리진에 붙입니다 (`codexOAuthPlugin`의 `configureServer` + `configurePreviewServer`). 브라우저는 `127.0.0.1:17832`를 치지 않습니다 — 그 포트는 oh-my-pi 단독 동반 서비스가 **이 머신 루프백**에서 듣는 주소입니다.
+- **단독 동반 서비스**가 필요할 때만:
 
 ```bash
-npm run ai:oauth # 127.0.0.1:17832, 토큰은 Codex가 로컬에서 보관
-npm run preview
+npm run ai:oauth # 127.0.0.1:17832, 토큰은 서버의 ~/.rpg-zzu 에 보관
 ```
 
 API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환해 OpenAI 호환 엔드포인트·모델·키를 입력할 수 있습니다. OAuth access/refresh token은 브라우저 localStorage나 프로젝트 데이터에 저장하지 않습니다.

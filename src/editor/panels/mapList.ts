@@ -5,6 +5,7 @@ import { addParentChildTransfers, bestTestStartCell } from "@/editor/mapParentLi
 import { selectEditorMap } from "@/editor/mapSelection";
 import { mapTreeDropRelation, type MapTreeDropRelation } from "@/editor/mapTreeDrop";
 import { openMapCreateDialog, openMapCreateUnder } from "@/editor/panels/mapCreateDialog";
+import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
 import { openTestPlayModal } from "@/editor/panels/testPlayModal";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
@@ -290,10 +291,14 @@ function renderNode(spec: RenderNodeSpec): void {
 
   item.append(treeToggle(node.mapId, hasChildren, isCollapsed));
   item.append(dragHandle(node.mapId, item, depth > 0));
-  item.append(el("span", {
-    class: `map-tree-icon rm-tool-icon oprn-icon-${icon}`,
-    attrs: { "aria-hidden": "true" },
-  }));
+  // 분류 폴더는 그릴 맵이 없으니 글리프를 쓴다. 맵은 자기 그림을 보여준다 —
+  // 하위 맵을 가진 맵도 폴더 글리프가 아니라 자기 썸네일이다.
+  item.append(isFolder
+    ? el("span", {
+      class: `map-tree-icon rm-tool-icon oprn-icon-${icon}`,
+      attrs: { "aria-hidden": "true" },
+    })
+    : createMapThumbnail(node.mapId));
 
   if (renamingMapId === node.mapId) {
     item.append(renameField(node.mapId, map?.name || ""));

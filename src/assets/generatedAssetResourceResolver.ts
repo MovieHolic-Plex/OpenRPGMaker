@@ -6,6 +6,7 @@ import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
 
@@ -42,8 +43,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 그래도 등록은 유지한다 — 등록을 지우면 builtinGeneratedResourceIds() 에서 이 id 가 빠져,
   // resourceReferenceValidation 의 validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다.
   // 그러면 이 id 를 참조하는 프로젝트는 얼굴만 빠지는 게 아니라 **역직렬화 자체가 실패**한다(실측).
-  // 파일이 없어 생기는 404 이미지 로드 실패는 battleFieldDom 의 correctFaceGridOnLoad onerror 가드가
-  // 얼굴 노드를 제거하는 쪽으로 처리한다.
+  // 파일이 없어 생기는 404 이미지 로드 실패는 battleFieldDom 의 removeFaceNodeOnLoadError onerror
+  // 가드가 얼굴 노드를 제거하는 쪽으로 처리한다.
   "generated-actor-hero-03-face": "/assets/generated/starter/hero-03-face.png",
   "generated-actor-hero-04-battle": "/assets/generated/starter/hero-04-battle.png",
   "generated-enemy-bat-01": "/assets/generated/starter/monster-bat-01.png",
@@ -234,7 +235,28 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "windowskin-default": "/assets/ui/windowskin-default.png",
   "windowskin-warm": "/assets/ui/windowskin-warm.png",
   "windowskin-rm2003": "/assets/ui/windowskin-default.png",
+  // 생성 얼굴 낱장 32장(hero-01-face / hero-02-face × 16). 분할 산출물 목록에서 펼쳐 넣는다 —
+  // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
+  ...generatedFacesetFaceUrls(),
 };
+
+function generatedFacesetFaceUrls(): Record<string, string> {
+  const urls: Record<string, string> = {};
+  for (const face of FACESET_FACE_ASSETS) {
+    if (!face.sheetResourceId.startsWith("easyrpg-")) urls[face.id] = `/${face.path}`;
+  }
+  return urls;
+}
+
+// 얼굴 낱장 112장 전부. EasyRPG 낱장은 EASYRPG_RTP_ASSETS 표에 넣지 않았다(생성기가
+// 다시 돌면 지워진다) — 그래서 경로 해석은 이 표가 맡는다.
+const FACESET_FACE_RESOURCE_URLS: Record<string, string> = Object.fromEntries(
+  FACESET_FACE_ASSETS.map((face) => [face.id, `/${face.path}`])
+);
+
+export function resolveFacesetFaceAssetUrl(resourceId: string): string | null {
+  return FACESET_FACE_RESOURCE_URLS[resourceId] ?? null;
+}
 
 const LEGACY_PACKAGED_RESOURCE_URLS: Record<string, string> = {
   sample_title: "/assets/easyrpg/title/Title1.png",
@@ -250,6 +272,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
   const packagedUrl =
     LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ??
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
+    resolveFacesetFaceAssetUrl(resourceId) ??
     resolveScarloxyAssetUrl(resourceId) ??
     resolveGeneratedEffectAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??

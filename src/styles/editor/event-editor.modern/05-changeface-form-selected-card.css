@@ -1,4 +1,4 @@
-/* changeFace form — selected card + 4x4 faceset grid + option chips */
+/* changeFace form — selected card + 낱장 얼굴 갤러리 + option chips */
 .event-command-face-editor {
   align-items: stretch;
   background: var(--bg-raised);
@@ -29,10 +29,6 @@
 
 .event-command-face-editor[data-face-mode="bust"] .event-command-face-preview-copy {
   max-width: none;
-}
-
-.event-command-face-editor[data-face-mode="bust"] .event-command-face-index-input {
-  opacity: 0.55;
 }
 
 .event-command-face-bust-note {
@@ -91,9 +87,9 @@
 
 .event-command-face-crop {
   background-image: var(--face-url);
-  background-position: var(--face-scaled-x) var(--face-scaled-y);
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
+  background-size: contain;
   border: 1px solid var(--border-subtle);
   border-radius: 2px;
   height: var(--face-display-height, 96px);
@@ -194,22 +190,23 @@
   min-width: 0;
 }
 
-.event-command-face-index-grid {
+/* 낱장 얼굴 갤러리 — 칸 번호 개수에 매이지 않게 auto-fill 하고 세로 스토로 둔다. */
+.event-command-face-gallery {
   display: grid;
   gap: 6px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  justify-items: center;
-  max-width: 248px;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  max-height: 260px;
   min-width: 0;
+  overflow-y: auto;
+  padding: 2px;
   width: 100%;
 }
 
-.event-command-face-index-grid[data-empty="true"] {
+.event-command-face-gallery[data-empty="true"] {
   display: block;
-  max-width: none;
 }
 
-.event-command-face-index-grid-empty {
+.event-command-face-gallery-empty {
   background: color-mix(in srgb, var(--event-modern-field-muted) 88%, transparent);
   border: 1px dashed var(--event-modern-line);
   border-radius: 6px;
@@ -219,7 +216,7 @@
   text-align: center;
 }
 
-.event-command-face-index-cell {
+.event-command-face-gallery-cell {
   align-items: center;
   background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 70%, transparent);
   border: 2px solid transparent;
@@ -232,22 +229,27 @@
   place-items: center;
 }
 
-.event-command-face-index-cell:hover {
+.event-command-face-gallery-cell:hover {
   border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
 }
 
-.event-command-face-index-cell.is-selected {
+.event-command-face-gallery-cell.is-selected {
   border-color: var(--accent, #4A57D6);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 45%, transparent);
 }
 
-.event-command-face-index-cell.flipped .event-command-face-crop {
-  transform: scaleX(-1);
-}
-
-.event-command-face-index-cell .event-command-face-crop {
+.event-command-face-gallery-cell .event-command-face-crop {
   border-radius: 3px;
   pointer-events: none;
+}
+
+.event-command-face-gallery-missing {
+  color: var(--text-2);
+  display: grid;
+  font: 700 12px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  height: 48px;
+  place-items: center;
+  width: 48px;
 }
 
 .event-command-face-options {

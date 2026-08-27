@@ -222,6 +222,20 @@
   gap: 8px;
 }
 
+.ai-oauth-paste-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ai-oauth-paste-row[hidden] {
+  display: none;
+}
+
+.ai-oauth-paste-row > .ai-oauth-paste-url {
+  flex: 1;
+  min-width: 0;
+}
+
 /* 코드는 사람이 손으로 옮겨 적는 값이다 — 자간을 벌리고 줄바꿈을 막는다. */
 .ai-oauth-device-usercode {
   background: var(--surface-1);

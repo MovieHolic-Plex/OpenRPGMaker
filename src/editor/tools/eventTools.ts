@@ -52,7 +52,6 @@ function resolvePlaceNpcFaceArg(
     if (typeof rec.resourceId === "string" && rec.resourceId.trim()) {
       return {
         resourceId: rec.resourceId.trim(),
-        faceIndex: typeof rec.faceIndex === "number" ? rec.faceIndex : 0,
         position: rec.position === "right" ? "right" : "left",
         flipHorizontally: rec.flipHorizontally === true,
       };

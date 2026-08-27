@@ -19,7 +19,7 @@ const noopActions: CommandListActions = {
   moveCommandTo: () => {},
 };
 
-const FACE_RESOURCE = "easyrpg-faceset-actor1";
+const FACE_RESOURCE = "easyrpg-faceset-actor1-00";
 
 describe("커맨드 리스트 인라인 썸네일 (P1)", () => {
   let restoreDom: (() => void) | undefined;
@@ -34,11 +34,11 @@ describe("커맨드 리스트 인라인 썸네일 (P1)", () => {
   });
 
   it("changeFace 요약에 얼굴 크롭 썸네일 토큰이 붙고 문자열 요약은 불변이다", () => {
-    const cmd: Command = { kind: "changeFace", resourceId: FACE_RESOURCE, faceIndex: 2, position: "left", flipHorizontally: false };
+    const cmd: Command = { kind: "changeFace", resourceId: FACE_RESOURCE, position: "left", flipHorizontally: false };
     const parts = commandSummaryParts(cmd);
     const visuals = parts.filter(isSummaryVisualPart);
     expect(visuals.length).toBe(1);
-    expect(visuals[0]?.visual).toMatchObject({ type: "faceCrop", resourceId: FACE_RESOURCE, faceIndex: 2 });
+    expect(visuals[0]?.visual).toMatchObject({ type: "faceCrop", resourceId: FACE_RESOURCE });
     expect(commandSummary(cmd)).toContain("얼굴 바꾸기");
     expect(commandSummary(cmd)).not.toContain("undefined");
   });
@@ -63,7 +63,7 @@ describe("커맨드 리스트 인라인 썸네일 (P1)", () => {
   it("문장 표시 줄에는 직전 changeFace 의 얼굴 크롭이 부가된다", () => {
     const commands: Command[] = [
       { kind: "text", body: "얼굴 없음" },
-      { kind: "changeFace", resourceId: FACE_RESOURCE, faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: FACE_RESOURCE, position: "left", flipHorizontally: false },
       { kind: "text", body: "얼굴 있음" },
     ];
     const host = renderWithFakeDom(() => {
@@ -94,7 +94,7 @@ describe("커맨드 리스트 인라인 썸네일 (P1)", () => {
 
   it("문장 프리뷰는 previewFace 문맥이 있으면 얼굴 크롭(에디터 카드 아님)을 포함한다", () => {
     const withFace = renderWithFakeDom(() =>
-      renderCommandPreview({ kind: "text", body: "안녕" }, { face: { resourceId: FACE_RESOURCE, faceIndex: 1 } })
+      renderCommandPreview({ kind: "text", body: "안녕" }, { face: { resourceId: FACE_RESOURCE } })
     );
     expect(findByTestId(withFace, "event-command-face-crop-shell")).not.toBeNull();
     expect(findByTestId(withFace, "event-command-face-crop")).not.toBeNull();

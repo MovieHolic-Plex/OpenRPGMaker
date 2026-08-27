@@ -20,8 +20,8 @@ import {
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const ACTORS: AvatarChipActor[] = [
-  { id: "actor-1", name: "알렉스", faceResourceId: "easyrpg-faceset-actor1", faceIndex: 0 },
-  { id: "actor-2", name: "브라이언", faceResourceId: "easyrpg-faceset-actor1", faceIndex: 1 },
+  { id: "actor-1", name: "알렉스", faceResourceId: "easyrpg-faceset-actor1-00" },
+  { id: "actor-2", name: "브라이언", faceResourceId: "easyrpg-faceset-actor1-01" },
   { id: "actor-3", name: "캐럴", faceResourceId: undefined },
 ];
 

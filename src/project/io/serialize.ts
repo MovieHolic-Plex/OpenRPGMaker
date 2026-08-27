@@ -2,8 +2,8 @@ import { SCHEMA_VERSION } from "../types";
 import type { Project } from "../types";
 import { ProjectFormatError } from "./errors";
 import { requireNumber, requireRecord } from "./guards";
-import { migrateV1toV3, migrateV2toV3 } from "./migration";
-import { validateProjectV1, validateProjectV2, validateProjectV3 } from "./shape";
+import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
+import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 
 /** Drop legacy terrainTemplates from wire format (field removed from product model). */
 function projectJsonReplacer(key: string, value: unknown): unknown {
@@ -37,6 +37,8 @@ export function deserialize(raw: string): Project {
   const version = requireNumber("version", data.version);
   if (version === 1) return migrateV1toV3(validateProjectV1(data));
   if (version === 2) return migrateV2toV3(validateProjectV2(data));
-  if (version === SCHEMA_VERSION) return validateProjectV3(data);
+  // v3 는 얼굴 짝(시트 id + faceIndex)을 들고 있다 — 낱장 얼굴 id 로 바꾼 뒤 검사한다.
+  if (version === 3) return migrateV3toV4(data);
+  if (version === SCHEMA_VERSION) return validateProjectV4(data);
   throw new ProjectFormatError(`지원하지 않는 스키마 버전입니다: ${version} (현재 ${SCHEMA_VERSION})`);
 }

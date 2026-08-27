@@ -897,3 +897,242 @@ footer {
   border-color: transparent;
   color: var(--text-2);
 }
+
+/* Hierarchy zones (2026-08-27): labelled columns, styled rail groups, single page-selector home. */
+.event-editor-modal-window {
+  --balanced-settings-width: 268px;
+}
+
+.event-editor .event-editor-workbench,
+.event-editor .event-editor-workbench:not(.has-command-inspector) {
+  grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr) !important;
+}
+
+.event-editor .event-editor-workbench.has-command-inspector {
+  grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr) var(--balanced-inspector-width) !important;
+}
+
+.event-editor .event-editor-settings-column,
+.event-editor .event-editor-commands-column {
+  display: grid;
+  gap: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 0;
+}
+
+.event-editor .event-editor-column-label {
+  align-items: center;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+  column-gap: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.event-editor .event-editor-column-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-column-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-column-count {
+  background: var(--accent-muted);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+
+.event-editor .event-editor-settings-main {
+  gap: 8px;
+  padding: 10px;
+}
+
+.event-editor .event-editor-settings-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-editor .event-editor-settings-accordion-group {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.event-editor .event-editor-settings-accordion-summary {
+  align-items: center;
+  column-gap: 8px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12px;
+  list-style: none;
+  padding: 8px 11px;
+  row-gap: 1px;
+}
+
+.event-editor .event-editor-settings-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-editor-settings-accordion-summary::after {
+  color: var(--text-3);
+  content: "\25BE";
+  font-size: 10px;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: center;
+}
+
+.event-editor .event-editor-settings-accordion-group[open] > .event-editor-settings-accordion-summary::after {
+  content: "\25B4";
+}
+
+.event-editor .event-editor-settings-accordion-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 650;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.event-editor .event-editor-settings-accordion-meta {
+  color: var(--text-3);
+  font-size: 11px;
+  grid-column: 1;
+  grid-row: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-settings-accordion-body {
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 11px 11px;
+}
+
+.event-editor .event-editor-settings-accordion-body label {
+  min-width: 0;
+}
+
+.event-editor .event-editor-settings-accordion-body .event-oprn-fieldset,
+.event-editor .event-editor-settings-accordion-body fieldset {
+  margin-bottom: 0;
+}
+
+/* The aux openers ride the toolbar instead of floating over the command list. */
+.event-editor .event-editor-command-aux-group {
+  display: flex;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.event-editor .event-editor-command-aux-group .event-editor-command-tool {
+  font-size: 11px;
+  height: 26px;
+  padding: 0 7px;
+}
+
+/* Page selector lives in the page row only, one scrollable line. */
+.event-editor > .event-editor-pagebar {
+  align-items: center;
+  column-gap: 10px;
+  overflow: hidden;
+}
+
+.event-editor .evt-page-segments {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.event-editor .evt-page-segments .evt-page-segment,
+.event-editor .evt-page-segments .evt-page-segment-add {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  height: 28px;
+  max-width: 240px;
+  white-space: nowrap;
+}
+
+.event-editor .evt-page-segment-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .evt-page-segment-cond {
+  color: var(--text-3);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor > .event-editor-pagebar > .event-page-tabs {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* Destructive delete leaves the commit cluster. */
+.event-editor-modal-footer .event-editor-footer-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.event-editor-modal-footer [data-testid="event-delete"] {
+  margin-right: auto;
+}
+
+/* Toolbar reading order: primary add left, secondary middle, view/aux right. */
+.event-editor .event-editor-command-toolbar > * {
+  order: 4;
+}
+
+.event-editor .event-editor-command-toolbar > [data-testid="event-command-toolbar-add"] {
+  order: 0;
+}
+
+.event-editor .event-editor-command-toolbar > .event-editor-command-search {
+  order: 1;
+}
+
+.event-editor .event-editor-command-toolbar > .event-view-toggle {
+  margin-left: auto;
+  order: 8;
+}
+
+.event-editor .event-editor-command-toolbar > .event-editor-command-aux-group {
+  border-left: 1px solid var(--border);
+  margin-left: 6px;
+  order: 9;
+  padding-left: 6px;
+}
+
+/* The validation control keeps its own row instead of being squeezed off-screen. */
+.event-editor-modal-dynamic .event-editor > .event-draft-validation {
+  flex: 0 0 auto;
+}

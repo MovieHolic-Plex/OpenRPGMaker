@@ -245,10 +245,8 @@ export interface PlaySession {
   actorNames?: Record<string, string>;
   // 런타임 액터 별명 오버라이드(Change Actor Nickname). actorId → 별명.
   actorNicknames?: Record<string, string>;
-  // 런타임 액터 얼굴 오버라이드(Change Actor Faceset). actorId → faceResourceId.
+  // 런타임 액터 얼굴 오버라이드(Change Actor Faceset). actorId → 낱장 얼굴 resourceId.
   actorFaceResourceIds?: Record<string, string>;
-  // 런타임 액터 얼굴 인덱스 오버라이드(Change Actor Faceset). actorId → faceIndex.
-  actorFaceIndices?: Record<string, number>;
   // 런타임 주인공 그래픽 오버라이드(Change Actor Graphic). actorId → charset resourceId.
   actorCharacterResourceIds?: Record<string, string>;
   // 런타임 직업 오버라이드(Change Actor Class/승급). actorId → classId.

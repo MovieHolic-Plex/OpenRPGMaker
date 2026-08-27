@@ -111,7 +111,7 @@ describe("Gen1 authored project contracts", () => {
 
     const restored = deserialize(JSON.stringify(raw));
 
-    expect(SCHEMA_VERSION).toBe(3);
+    expect(SCHEMA_VERSION).toBe(4);
     expect(restored.database.skills[0]?.maxPp).toBe(15);
     expect(restored.database.skills[0]?.gen1CriticalRate).toBe("high");
     expect(restored.database.states[0]?.gen1MajorStatus).toBe("poison");

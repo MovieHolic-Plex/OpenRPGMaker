@@ -26,8 +26,58 @@ export function isCompanionPath(url = "") {
     || path === "/auth/key"
     || path === "/auth/logout"
     || path === "/auth/refresh"
+    || path === "/auth/oauth-paste"
+    || path === "/oauth/launch"
     || path === "/v1/chat/completions"
   );
+}
+
+/**
+ * Antigravity OAuth 는 Google 데스크톱 클라라 redirect_uri 가 127.0.0.1 만 통과한다.
+ * 원격 preview(mdc-server:9888) 에서는 런치 URL 만 페이지 origin 으로 바꾸고,
+ * 돌아온 localhost 콜백 URL 은 서버가 대신 받아 완료한다.
+ */
+const LOOPBACK_LAUNCH = new Map();
+
+export function companionPublicOrigin(req = {}, env = process.env) {
+  const fromEnv = String(env.RPG_ZZU_PUBLIC_ORIGIN ?? "").trim().replace(/\/$/, "");
+  if (fromEnv) return fromEnv;
+  const headers = headerMap(req.headers);
+  const origin = (headers.origin ?? "").trim().replace(/\/$/, "");
+  if (/^https?:\/\/(?!127\.|localhost\b)/u.test(origin)) return origin;
+  const host = (headers.host ?? "").trim();
+  if (host && !host.startsWith("127.") && host !== "localhost" && !host.startsWith("localhost:")) {
+    const proto = headers["x-forwarded-proto"] || "http";
+    return `${proto}://${host}`;
+  }
+  return "";
+}
+
+export function publishLoopbackLaunch(payload, publicOrigin) {
+  const url = String(payload?.verificationUrl ?? "");
+  const match = /^http:\/\/127\.0\.0\.1:(\d+)\/launch\/?$/u.exec(url);
+  if (!match || !publicOrigin) return payload;
+  const port = match[1];
+  LOOPBACK_LAUNCH.set(port, url);
+  return {
+    ...payload,
+    verificationUrl: `${publicOrigin}/oauth/launch?port=${port}`,
+    pasteCallback: true,
+  };
+}
+
+function loopbackCallbackUrl(raw) {
+  let parsed;
+  try {
+    parsed = new URL(String(raw ?? ""));
+  } catch {
+    return "";
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "";
+  if (parsed.hostname !== "127.0.0.1" && parsed.hostname !== "localhost") return "";
+  if (parsed.pathname !== "/oauth-callback") return "";
+  if (!parsed.searchParams.get("code")) return "";
+  return parsed.toString();
 }
 
 export function resolveCompanionProvider(req = {}) {
@@ -64,7 +114,36 @@ export async function handleCompanionRequest(req, adapters) {
   }
 
   if (method === "POST" && path === "/auth/login") {
-    return json(200, await adapters.login(provider, body));
+    const payload = await adapters.login(provider, body);
+    return json(200, publishLoopbackLaunch(payload, companionPublicOrigin(req)));
+  }
+
+  if (method === "GET" && path === "/oauth/launch") {
+    const port = new URL(req.url ?? "", "http://companion.local").searchParams.get("port") ?? "";
+    const launch = LOOPBACK_LAUNCH.get(port);
+    if (!launch) return json(404, { error: "OAuth launch expired" });
+    try {
+      const response = await fetch(launch, { redirect: "manual" });
+      const location = response.headers.get("location");
+      if (!location) return json(502, { error: "OAuth launch had no Location" });
+      return { status: 302, headers: { Location: location }, body: null };
+    } catch (error) {
+      return json(502, { error: error instanceof Error ? error.message : "OAuth launch failed" });
+    }
+  }
+
+  if (method === "POST" && path === "/auth/oauth-paste") {
+    const url = loopbackCallbackUrl(body.url);
+    if (!url) return json(400, { error: "127.0.0.1 oauth-callback URL with code is required" });
+    try {
+      const response = await fetch(url, { redirect: "manual" });
+      if (response.status >= 400) {
+        return json(response.status, { error: `loopback callback returned ${response.status}` });
+      }
+      return json(200, { ok: true });
+    } catch (error) {
+      return json(502, { error: error instanceof Error ? error.message : "oauth paste failed" });
+    }
   }
 
   if (method === "POST" && path === "/auth/refresh") {

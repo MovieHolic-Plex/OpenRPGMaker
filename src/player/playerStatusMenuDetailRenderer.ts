@@ -218,19 +218,19 @@ function renderDetailFace(project: Project, face: NonNullable<StatusMenuDetailEn
       dataset: { testid: face.testId },
     });
   }
+  // 얼굴은 낱장 파일 한 장이다 — 32px 상자에 그대로 맞춘다(시트 크롭 없음).
   return el("span", {
-    class: "status-menu-detail-face actor-sheet-crop",
+    class: "status-menu-detail-face",
     attrs: {
       role: "img",
       "aria-label": face.alt,
       style: [
-        `--crop-url:url("${url}")`,
-        "--crop-width:32px",
-        "--crop-height:32px",
-        "--crop-sheet-width:128px",
-        "--crop-sheet-height:128px",
-        "--crop-x:0px",
-        "--crop-y:0px",
+        `background-image:url("${url}")`,
+        "background-size:32px 32px",
+        "background-repeat:no-repeat",
+        "image-rendering:pixelated",
+        "width:32px",
+        "height:32px",
       ].join(";"),
     },
     dataset: { testid: face.testId },

@@ -6,6 +6,7 @@ import { afterEach, test } from "node:test";
 import {
   buildAiActivityUrls,
   catalogMigrationStates,
+  DEFAULT_AI_PROBE_IDS,
   listUntrackedMigrationFiles,
   loadSupabaseEnvironment,
   migrationPlan,
@@ -61,7 +62,8 @@ test("migration plan baselines complete legacy migrations and applies wholly mis
   const plan = migrationPlan(SUPABASE_MIGRATIONS, new Map(), states);
 
   assert.deepEqual(plan.slice(0, 3).map((item) => item.action), ["baseline", "baseline", "baseline"]);
-  assert.deepEqual(plan.slice(3).map((item) => item.action), ["apply", "apply", "apply"]);
+  assert.deepEqual(new Set(plan.slice(3).map((item) => item.action)), new Set(["apply"]));
+  assert.equal(plan.length, SUPABASE_MIGRATIONS.length);
 });
 
 test("migration plan refuses a partial legacy schema instead of replaying unsafe SQL", () => {
@@ -119,7 +121,7 @@ test("schema probe distinguishes missing tables from partially applied columns",
 });
 
 test("catalog classification marks a present table with missing required columns as partial", () => {
-  const rows = SUPABASE_MIGRATIONS.flatMap((migration) => migration.contracts.flatMap((contract) => {
+  const rows = SUPABASE_MIGRATIONS.flatMap((migration) => migration.contracts.filter((contract) => contract.kind === "relation").flatMap((contract) => {
     const columns = contract.columns.length > 0 ? contract.columns : ["id"];
     return columns.map((column) => ({
       table_schema: contract.schema,
@@ -155,4 +157,57 @@ test("AI persistence verification inserts, reloads, and removes project-scoped p
   assert.equal(requests.filter((request) => request.method === "POST").length, 2);
   assert.equal(requests.filter((request) => request.method === "GET").every((request) => request.input.includes("project_id=eq.project-one")), true);
   assert.equal(requests.filter((request) => request.method === "DELETE").length, 2);
+});
+
+test("catalog classification reads revoked-privilege contracts from grant rows", () => {
+globalThis.revokeMigration = SUPABASE_MIGRATIONS.find((migration) => migration.contracts.some((contract) => contract.kind === "revoked-privilege"));
+  assert.ok(revokeMigration, "a migration must declare revoked-privilege contracts");
+globalThis.columnRows = SUPABASE_MIGRATIONS.flatMap((migration) => migration.contracts.filter((contract) => contract.kind === "relation").flatMap((contract) => {
+globalThis.columns = contract.columns.length > 0 ? contract.columns : ["id"];
+    return columns.map((column) => ({ table_schema: contract.schema, table_name: contract.table, column_name: column }));
+  }));
+globalThis.stillGranted = revokeMigration.contracts
+    .filter((contract) => contract.kind === "revoked-privilege")
+    .map((contract) => ({
+      table_schema: contract.schema,
+      table_name: contract.table,
+      grantee: contract.role,
+      privilege_type: contract.privilege,
+    }));
+
+  assert.equal(catalogMigrationStates(SUPABASE_MIGRATIONS, columnRows, stillGranted)[revokeMigration.file], "missing");
+  assert.equal(catalogMigrationStates(SUPABASE_MIGRATIONS, columnRows, [])[revokeMigration.file], "complete");
+});
+
+test("AI persistence probe keeps deterministic ids so repeat upserts need no delete", async () => {
+globalThis.seen = [];
+globalThis.run = () => verifyAiPersistence({ url: "http://dbserver:8100", anonKey: "anon-key", projectId: "project-one" }, async (input, init = {}) => {
+globalThis.method = init.method ?? "GET";
+    seen.push(String(input));
+    if (method === "GET") return new Response(JSON.stringify([{ id: "found" }]), { status: 200 });
+    return new Response(null, { status: method === "POST" ? 201 : 204 });
+  });
+globalThis.first = await run();
+globalThis.second = await run();
+
+  assert.equal(first.activityId, second.activityId);
+  assert.equal(first.activityId, DEFAULT_AI_PROBE_IDS.activityId);
+  assert.equal(first.conversationId, DEFAULT_AI_PROBE_IDS.conversationId);
+  assert.equal(seen.some((url) => url.includes(DEFAULT_AI_PROBE_IDS.conversationId)), true);
+});
+
+test("AI persistence verification treats a revoked probe delete as retained, not failed", async () => {
+globalThis.result = await verifyAiPersistence({
+    url: "http://dbserver:8100",
+    anonKey: "anon-key",
+    projectId: "project-one",
+  }, async (input, init = {}) => {
+globalThis.method = init.method ?? "GET";
+    if (method === "GET") return new Response(JSON.stringify([{ id: "found" }]), { status: 200 });
+    if (method === "DELETE") return new Response("permission denied for table", { status: 403 });
+    return new Response(null, { status: 201 });
+  });
+
+  assert.equal(result.activityReloaded, true);
+  assert.equal(result.probeRetained, true);
 });

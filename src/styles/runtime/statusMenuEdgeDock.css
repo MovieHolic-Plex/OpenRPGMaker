@@ -259,16 +259,6 @@
   width: 22px;
 }
 
-.oprn-status-menu .status-menu-face.actor-sheet-crop {
-  background-image: var(--crop-url);
-  background-position: var(--crop-x) var(--crop-y);
-  background-repeat: no-repeat;
-  background-size: var(--crop-sheet-width) var(--crop-sheet-height);
-  height: 22px;
-  image-rendering: pixelated;
-  width: 22px;
-}
-
 .oprn-status-menu .status-menu-party-info {
   align-content: center;
   display: grid;
@@ -729,8 +719,7 @@
   width: 10px;
 }
 
-.oprn-status-menu .status-menu-entry-icon.actor-sheet-crop,
-.oprn-status-menu .status-menu-detail-face.actor-sheet-crop {
+.oprn-status-menu .status-menu-entry-icon.actor-sheet-crop {
   background-image: var(--crop-url);
   background-position: var(--crop-x) var(--crop-y);
   background-repeat: no-repeat;

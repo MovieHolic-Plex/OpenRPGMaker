@@ -80,6 +80,34 @@ describe("자동 적용 비교 카드", () => {
     expect(findByTestId(card, "ai-auto-applied-thumbs")).toBeTruthy();
   });
 
+  // 감독 지시 2026-08-27: "before after 를 너무 화려하게 보여주는 거 같거든? 지금처럼
+  // 복잡하게 하지 말고 그냥 좌에서 우로 한번에 쏵 바뀌게 해줘." → 2단 나란히 비교를 없애고
+  // before 위에 after 를 겹쳐 좌→우로 한 번 지나가는 와이프 하나로 보여준다.
+  it("전/후를 나란히 놓지 않고 겹친 좌→우 와이프 하나로 보여준다", () => {
+    const card = render();
+
+    const wipe = findByTestId(card, "ai-proposal-wipe");
+    expect(wipe).toBeTruthy();
+    // 같은 자리에서 겹쳐 바뀌므로 before/after 는 와이프 안에 함께 있다.
+    const before = findByTestId(card, "ai-proposal-thumb-before");
+    const after = findByTestId(card, "ai-proposal-thumb-after");
+    expect(wipe!.contains(before!)).toBe(true);
+    expect(wipe!.contains(after!)).toBe(true);
+    // after 만 와이프 대상이다 — 겹침·클립은 is-after 클래스가 CSS 로 건다.
+    expect(after!.className).toContain("is-after");
+    expect(before!.className).toContain("is-before");
+    // 2단 그리드(.ai-proposal-thumbs)는 더 이상 쓰지 않는다.
+    expect(card.querySelector(".ai-proposal-thumbs")).toBeNull();
+  });
+
+  it("칸마다 '지금'·'적용 후' 라벨을 반복하지 않고 방향 캡션 하나만 남긴다", () => {
+    const card = render();
+
+    const caption = findByTestId(card, "ai-proposal-wipe-caption");
+    expect(caption?.textContent).toBe("지금 → 적용 후");
+    expect(card.querySelectorAll(".ai-proposal-thumb-label").length).toBe(0);
+  });
+
   it("카드에서 자동 적용을 바로 끌 수 있다", () => {
     storage.set("oprn:ai-config", JSON.stringify({ autoApprove: true }));
     const card = render();

@@ -9,10 +9,9 @@ import { labelBody } from "./commandBodyLabels";
 import { loopBody } from "./commandBodyLoop";
 import { setVariableBody } from "./commandBodyVariable";
 import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
-import { faceDisplayModeOf, renderFacesetIndexGrid, renderFacesetPreview } from "./facesetPreview";
+import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
 import { renderConditionEvalPreview } from "./conditionEvalPreview";
 import { renderCommandPreview } from "./commandPreview";
-import { clampFaceIndex, FACESET_FACE_COUNT } from "./messageDialogControls";
 import {
   BOOLEAN_OPTIONS,
   TIMER_ACTION_OPTIONS,
@@ -418,7 +417,7 @@ function wrapSelection(body: HTMLTextAreaElement, prefix: string, suffix: string
 
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   // RM-style face picker: selected face card + resource actions on top,
-  // 4×4 faceset index grid as the main work surface, position/flip chips below.
+  // a flat standalone-face gallery as the main work surface, position/flip chips below.
   const wrap = el("div", {
     class: "event-command-face-editor",
     dataset: { testid: "event-command-face-editor" },
@@ -443,18 +442,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     value: cmd.resourceId,
     dataset: { testid: "event-command-face-resource" },
   }) as HTMLInputElement;
-  // 1-based face number for keyboard/e2e compatibility; selection primarily via grid.
-  const faceIndex = el("input", {
-    class: "event-command-face-index-input",
-    attrs: {
-      type: "number",
-      min: "1",
-      max: String(FACESET_FACE_COUNT),
-      "aria-label": "얼굴 칸",
-    },
-    value: String(cmd.faceIndex + 1),
-    dataset: { testid: "event-command-face-index" },
-  }) as HTMLInputElement;
   const position = selectWithOptions(
     [
       { value: "left", label: "왼쪽" },
@@ -470,7 +457,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
     kind: "changeFace",
     resourceId: resource.value.trim(),
-    faceIndex: clampFaceIndex(faceIndex.value),
     position: position.value === "right" ? "right" : "left",
     flipHorizontally: flip.checked,
   });
@@ -481,7 +467,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     previewHost.append(
       renderFacesetPreview({
         resourceId: draft.resourceId,
-        faceIndex: draft.faceIndex,
         position: draft.position,
         flipHorizontally: draft.flipHorizontally,
         displaySize: 96,
@@ -489,13 +474,22 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     );
   };
 
-  const refreshGrid = (): void => {
+  // 갤러리는 한 번만 짓고 이후엔 선택 강조만 갱신한다 — 낱장 수백 장을 매 입력마다 다시 만들지 않는다.
+  const gallery = renderFaceGallery({
+    selectedId: cmd.resourceId,
+    cellSize: 52,
+    onSelect: (resourceId) => {
+      resource.value = resourceId;
+      apply();
+    },
+  });
+
+  const refreshGallery = (): void => {
     const draft = readDraft();
     clearChildren(gridHost);
     const mode = faceDisplayModeOf(draft.resourceId);
     const whole = mode !== "chip";
     wrap.dataset.faceMode = mode;
-    faceIndex.disabled = whole;
     if (whole) {
       gridHost.append(
         el("div", {
@@ -506,31 +500,21 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
             el("p", {
               text:
                 mode === "full"
-                  ? "이 리소스는 통짜 전신 이미지입니다. 4×4 얼굴 번호는 쓰지 않습니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
-                  : "이 리소스는 통짜 흉상 이미지입니다. 4×4 얼굴 번호는 쓰지 않습니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",
+                  ? "이 리소스는 통짜 전신 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
+                  : "이 리소스는 통짜 흉상 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",
             }),
           ],
         })
       );
       return;
     }
-    gridHost.append(
-      renderFacesetIndexGrid({
-        resourceId: draft.resourceId,
-        faceIndex: draft.faceIndex,
-        flipHorizontally: draft.flipHorizontally,
-        cellSize: 52,
-        onSelect: (index) => {
-          faceIndex.value = String(index + 1);
-          apply();
-        },
-      })
-    );
+    gallery.setSelected(draft.resourceId);
+    gridHost.append(gallery.root);
   };
 
   const refreshAll = (): void => {
     refreshPreview();
-    refreshGrid();
+    refreshGallery();
   };
 
   const apply = (): void => {
@@ -540,11 +524,9 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
 
   resource.addEventListener("change", apply);
   resource.addEventListener("input", () => {
-    // Live card/grid refresh while typing; staged commit still on change via apply.
+    // Live card/gallery refresh while typing; staged commit still on change via apply.
     refreshAll();
   });
-  faceIndex.addEventListener("change", apply);
-  faceIndex.addEventListener("input", refreshAll);
   position.addEventListener("change", apply);
   flip.addEventListener("change", apply);
 
@@ -554,12 +536,10 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
       kind: "faceset",
       title: "얼굴 고르기",
       currentId: draft.resourceId,
-      currentFaceIndex: draft.faceIndex,
       allowClear: true,
       testidPrefix: "event-command-face-resource-dialog",
       onConfirm: (result) => {
         resource.value = result.resourceId;
-        faceIndex.value = String((result.faceIndex ?? 0) + 1);
         apply();
       },
     });
@@ -567,7 +547,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
 
   const clearResource = (): void => {
     resource.value = "";
-    faceIndex.value = "1";
     apply();
   };
 
@@ -594,7 +573,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         on: {
           click: () => {
             resource.value = "generated-face-actor1-bust";
-            faceIndex.value = "1";
             apply();
           },
         },
@@ -610,7 +588,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         on: {
           click: () => {
             resource.value = "generated-face-actor1-full";
-            faceIndex.value = "1";
             apply();
           },
         },
@@ -646,7 +623,6 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   const optionsRow = el("div", {
     class: "event-command-face-options",
     children: [
-      fieldControl("얼굴 칸", faceIndex),
       fieldControl("표시 위치", position),
       fieldControl("좌우 반전", flip),
     ],
@@ -668,7 +644,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     optionsRow,
     el("p", {
       class: "event-command-face-hint",
-      text: "얼굴은 4×4 칸에서 고릅니다. 흉상 그림을 고르면 대사 창 위 큰 얼굴로 보이며 칸 선택은 숨깁니다.",
+      text: "얼굴은 그림 한 장을 고릅니다. 흉상 그림을 고르면 대사 창 위 큰 얼굴로 보이며 갤러리는 숨깁니다.",
     })
   );
   return wrap;

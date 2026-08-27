@@ -3,6 +3,7 @@
 // It resolves text advancement and choice selection through promises.
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
 import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
@@ -103,7 +104,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       const box = dialogueBox("", "dialogue-box");
       const position = applyTextSettings(overlay, box, request);
       const portraitMode = dialoguePortraitMode(request.face);
-      const isPortrait = portraitMode !== "chip";
+      const isPortrait = portraitMode !== "face";
       const content = el("div", {
         class: [
           "dialogue-content",
@@ -695,8 +696,8 @@ function cancelChoiceIndex(
   return null;
 }
 
-function dialoguePortraitMode(face: FaceGraphic | undefined): "chip" | "bust" | "full" {
-  if (!face?.resourceId) return "chip";
+function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {
+  if (!face?.resourceId) return "face";
   const id = face.resourceId.trim().toLowerCase();
   if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
     return "full";
@@ -709,7 +710,7 @@ function dialoguePortraitMode(face: FaceGraphic | undefined): "chip" | "bust" | 
   ) {
     return "bust";
   }
-  return "chip";
+  return "face";
 }
 
 function renderFace(face: FaceGraphic): HTMLElement {
@@ -722,7 +723,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
     });
   }
   const mode = dialoguePortraitMode(face);
-  if (mode !== "chip") {
+  if (mode !== "face") {
     const side = face.position === "right" ? "right" : "left";
     return el("div", {
       class: [
@@ -747,28 +748,21 @@ function renderFace(face: FaceGraphic): HTMLElement {
       },
     });
   }
-  const index = Math.max(0, Math.min(15, face.faceIndex));
-  const col = index % 4;
-  const row = Math.floor(index / 4);
-  const scale = 1;
+  // 얼굴은 낱장 파일(48×48) 한 장이다 — 상자 크기만 정하고 이미지를 통째로 그린다.
   const style = [
-    `--crop-url:url("${url}")`,
-    `--crop-width:${48 * scale}px`,
-    `--crop-height:${48 * scale}px`,
-    `--crop-sheet-width:${192 * scale}px`,
-    `--crop-sheet-height:${192 * scale}px`,
-    `--crop-x:-${col * 48 * scale}px`,
-    `--crop-y:-${row * 48 * scale}px`,
+    `--face-url:url("${url}")`,
+    `--face-width:${FACE_IMAGE_SIZE}px`,
+    `--face-height:${FACE_IMAGE_SIZE}px`,
   ];
   if (face.flipHorizontally) style.push("transform:scaleX(-1)");
   return el("div", {
-    class: `dialogue-face actor-sheet-crop${face.flipHorizontally ? " flipped" : ""}`,
+    class: `dialogue-face dialogue-face-image${face.flipHorizontally ? " flipped" : ""}`,
     attrs: {
-      "aria-label": `face ${face.resourceId} ${index + 1}`,
+      "aria-label": `face ${face.resourceId}`,
       role: "img",
       style: style.join(";"),
     },
-    dataset: { testid: "dialogue-face", faceMode: "chip" },
+    dataset: { testid: "dialogue-face", faceMode: "face" },
   });
 }
 

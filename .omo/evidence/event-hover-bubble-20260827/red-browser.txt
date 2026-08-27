@@ -1,0 +1,4 @@
+RED (tree 0876abeb)
+tile rect client: x=884 y=608 right=916 bottom=640
+tooltip box: x=1151 y=802 w=280 h=90  -> host bottom-right corner, not the tile
+canvas title: non-empty (native tooltip overlaps the card)

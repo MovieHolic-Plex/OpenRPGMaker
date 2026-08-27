@@ -7,10 +7,11 @@ import {
   FACESET_FACE_HEIGHT,
   FACESET_FACE_WIDTH,
   FACESET_SLICING,
+  LEGACY_FACESET_SHEET_ASSETS,
   charsetFrameIndex,
   decodeCharsetFrameIndex,
 } from "@/assets/easyrpgRtp";
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
+import { FACE_IMAGE_SIZE, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { defaultResourceProfiles } from "@/project/defaults/defaultAssets";
 
 type FsLike = {
@@ -61,9 +62,19 @@ describe("EasyRPG RTP asset manifest", () => {
     expect(EASYRPG_RTP_CATEGORY_SLICING.faceset).toBe(RESOURCE_SLICING.faceset);
     expect(EASYRPG_RTP_CATEGORY_SLICING.title).toBe(RESOURCE_SLICING.title);
     expect(CHIPSET_SLICING).toMatchObject({ cellWidth: 16, cellHeight: 16, columns: 30, rows: 16 });
-    expect(FACESET_SLICING).toMatchObject({ cellWidth: 48, cellHeight: 48, columns: 4, rows: 4 });
-    expect(FACESET_FACE_WIDTH).toBe(RESOURCE_SLICING.faceset.cellWidth);
-    expect(FACESET_FACE_HEIGHT).toBe(RESOURCE_SLICING.faceset.cellHeight);
+    expect(FACESET_SLICING).toEqual({ kind: "whole-image", unit: "image" });
+    expect(FACESET_FACE_WIDTH).toBe(FACE_IMAGE_SIZE);
+    expect(FACESET_FACE_HEIGHT).toBe(FACE_IMAGE_SIZE);
+  });
+
+  it("keeps the 5 pre-split faceset sheets registered as legacy resources", () => {
+    expect(LEGACY_FACESET_SHEET_ASSETS.map((asset) => asset.id)).toEqual([
+      "easyrpg-faceset-actor1",
+      "easyrpg-faceset-actor2",
+      "easyrpg-faceset-monster",
+      "easyrpg-faceset-people1",
+      "easyrpg-faceset-people2",
+    ]);
   });
 
   it("keeps every generated EasyRPG RTP manifest entry available as a bundled file and resource profile", async () => {

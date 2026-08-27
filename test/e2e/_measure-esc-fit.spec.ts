@@ -13,8 +13,9 @@ function project(): Project {
   const p = createBlankProject();
   p.session.inventory = { item_potion: 3, item_ether: 1, item_antidote: 2, item_hi_potion: 1 };
   p.session = { ...p.session, partyActorIds: p.database.actors.slice(0, 4).map((a) => a.id) };
+  // 얼굴 한 칸 = 파일 한 장 — 칸 번호가 아니라 낱장 얼굴 파일을 저작한다.
   const second = p.database.actors[1];
-  if (second) second.faceIndex = 2;
+  if (second) second.faceResourceId = "easyrpg-faceset-actor2-02";
   return p;
 }
 

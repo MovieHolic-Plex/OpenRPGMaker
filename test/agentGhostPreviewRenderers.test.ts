@@ -7,6 +7,8 @@ import {
 } from "@/editor/agentPreviewRenderers";
 import {
   buildGhostRevealSchedule,
+  GHOST_WIPE_DURATION_MS,
+  GHOST_WIPE_HOLD_MS,
   type AgentGhostCell,
   clearAgentGhostPreview,
   replaceAgentGhostPreviewFromProjectDiff,
@@ -16,67 +18,42 @@ import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 
 describe("computeGhostAnimationState pure function", () => {
-  it("determines cell phases (pending -> stamping -> settling -> done) and shine sweep deterministically", () => {
+  it("와이프 선단이 지난 셀만 드러나고, 선단 앞 셀은 pending 으로 남는다", () => {
     const cells: AgentGhostCell[] = [
       { x: 0, y: 0, layer: "lower", tileId: 10, tilesetId: "ts1" },
       { x: 1, y: 0, layer: "lower", tileId: 11, tilesetId: "ts1" },
     ];
-    const schedule = buildGhostRevealSchedule(cells, { tileStepMs: 50 });
-
-    // At t = -10ms (before anything starts)
-    const stateBefore = computeGhostAnimationState(schedule, -10);
-    expect(stateBefore.cellStates[0].phase).toBe("pending");
-    expect(stateBefore.cellStates[1].phase).toBe("pending");
-    expect(stateBefore.cursorCell).toBeNull();
-    expect(stateBefore.isScheduleComplete).toBe(false);
-    expect(stateBefore.stampedCount).toBe(0);
-
-    // At t = 0ms (first cell just starts stamping: 0 <= elapsed < 180ms)
-    const state0 = computeGhostAnimationState(schedule, 0);
-    expect(state0.cellStates[0].phase).toBe("stamping");
-    expect(state0.cellStates[0].scale).toBeCloseTo(1.5, 2);
-    expect(state0.cellStates[1].phase).toBe("pending");
-    expect(state0.cursorCell).toEqual(cells[0]);
-    expect(state0.stampedCount).toBe(1);
-
-    // At t = 90ms (first cell midway through stamping: elapsed 90ms/180ms -> scale 1.25; second cell stamping: elapsed 40ms/180ms)
-    const state90 = computeGhostAnimationState(schedule, 90);
-    expect(state90.cellStates[0].phase).toBe("stamping");
-    expect(state90.cellStates[0].scale).toBeCloseTo(1.25, 2);
-    expect(state90.cellStates[1].phase).toBe("stamping");
-    expect(state90.cursorCell).toEqual(cells[1]);
-    expect(state90.stampedCount).toBe(2);
-
-    // At t = 200ms (first cell elapsed 200ms -> settling: 180ms..800ms; second cell elapsed 150ms -> stamping)
-    const state200 = computeGhostAnimationState(schedule, 200);
-    expect(state200.cellStates[0].phase).toBe("settling");
-    expect(state200.cellStates[0].scale).toBe(1.0);
-    expect(state200.cellStates[0].ringAlpha).toBeGreaterThan(0);
-    expect(state200.cellStates[0].afterglowAlpha).toBeGreaterThan(0);
-    expect(state200.cellStates[1].phase).toBe("stamping");
-
-    // At t = 900ms (first cell elapsed 900ms > 800ms -> done; second cell elapsed 850ms > 800ms -> done)
-    const state900 = computeGhostAnimationState(schedule, 900);
-    expect(state900.cellStates[0].phase).toBe("done");
-    expect(state900.cellStates[1].phase).toBe("done");
-    expect(state900.cellStates[0].ringAlpha).toBe(0);
-    expect(state900.cellStates[0].afterglowAlpha).toBe(0);
-    expect(state900.isScheduleComplete).toBe(true);
-    expect(state900.stampedCount).toBe(2);
+    const schedule = buildGhostRevealSchedule(cells);
+    const before = computeGhostAnimationState(schedule, -10);
+    expect(before.cellStates.map((cell) => cell.phase)).toEqual(["pending", "pending"]);
+    expect(before.revealedCount).toBe(0);
+    expect(before.isScheduleComplete).toBe(false);
+    const atStart = computeGhostAnimationState(schedule, 0);
+    expect(atStart.cellStates.map((cell) => cell.phase)).toEqual(["revealed", "pending"]);
+    expect(atStart.revealedCount).toBe(1);
+    const midWipe = computeGhostAnimationState(schedule, GHOST_WIPE_DURATION_MS - 1);
+    expect(midWipe.cellStates.map((cell) => cell.phase)).toEqual(["revealed", "pending"]);
+    const atEnd = computeGhostAnimationState(schedule, GHOST_WIPE_DURATION_MS);
+    expect(atEnd.cellStates.map((cell) => cell.phase)).toEqual(["revealed", "revealed"]);
+    expect(atEnd.revealedCount).toBe(2);
+    // 마지막 열이 드러난 직후에는 아직 완료가 아니다 — 짧은 유지 시간 뒤에 완료로 넘어간다.
+    expect(atEnd.isScheduleComplete).toBe(false);
+    const settled = computeGhostAnimationState(schedule, GHOST_WIPE_DURATION_MS + GHOST_WIPE_HOLD_MS);
+    expect(settled.isScheduleComplete).toBe(true);
+    expect(settled.revealedCount).toBe(2);
   });
 
-  it("diagonal shine sweep activates for 450ms after the full reveal schedule completes", () => {
-    const cells: AgentGhostCell[] = [
-      { x: 0, y: 0, layer: "lower", tileId: 10 },
-    ];
-    const schedule = buildGhostRevealSchedule(cells);
-    // last cell start = 0ms + LAST_CELL_DISPLAY_MS(300) hold, then shine 300→750ms.
-    const state500 = computeGhostAnimationState(schedule, 500);
-    expect(state500.shineProgress).toBeGreaterThan(0);
-    expect(state500.shineProgress).toBeLessThan(1);
+  it("빈 스케줄은 즉시 완료 상태다", () => {
+    const empty = computeGhostAnimationState([], 0);
+    expect(empty.cellStates).toEqual([]);
+    expect(empty.revealedCount).toBe(0);
+    expect(empty.isScheduleComplete).toBe(true);
+  });
 
-    const state900 = computeGhostAnimationState(schedule, 900);
-    expect(state900.shineProgress).toBe(1); // completed
+  it("한 열뿐인 변경도 유지 시간 뒤 완료로 수렴한다", () => {
+    const schedule = buildGhostRevealSchedule([{ x: 3, y: 3, layer: "lower", tileId: 7 }]);
+    expect(computeGhostAnimationState(schedule, 0).isScheduleComplete).toBe(false);
+    expect(computeGhostAnimationState(schedule, GHOST_WIPE_HOLD_MS).isScheduleComplete).toBe(true);
   });
 });
 
@@ -86,7 +63,7 @@ describe("ghostPhaseChipInfo helper", () => {
     // animating with build/author/paint/fill/create/scatter tool
     const buildInfo = ghostPhaseChipInfo({
       toolName: "build_house",
-      stampedCount: 3,
+      revealedCount: 3,
       totalCount: 10,
       isScheduleComplete: false,
     });
@@ -97,7 +74,7 @@ describe("ghostPhaseChipInfo helper", () => {
     // place_npc / make_villager
     const npcInfo = ghostPhaseChipInfo({
       toolName: "place_npc",
-      stampedCount: 1,
+      revealedCount: 1,
       totalCount: 1,
       isScheduleComplete: false,
     });
@@ -107,7 +84,7 @@ describe("ghostPhaseChipInfo helper", () => {
     // upsert_event
     const eventInfo = ghostPhaseChipInfo({
       toolName: "upsert_event",
-      stampedCount: 1,
+      revealedCount: 1,
       totalCount: 2,
       isScheduleComplete: false,
     });
@@ -116,7 +93,7 @@ describe("ghostPhaseChipInfo helper", () => {
     // generic tool
     const otherInfo = ghostPhaseChipInfo({
       toolName: "erase_tiles",
-      stampedCount: 0,
+      revealedCount: 0,
       totalCount: 5,
       isScheduleComplete: false,
     });
@@ -125,7 +102,7 @@ describe("ghostPhaseChipInfo helper", () => {
     // completed
     const doneInfo = ghostPhaseChipInfo({
       toolName: "paint_tiles",
-      stampedCount: 10,
+      revealedCount: 10,
       totalCount: 10,
       isScheduleComplete: true,
     });

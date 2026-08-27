@@ -16,7 +16,7 @@ type InspectorTarget = {
   readonly command: Command;
   readonly path: number[];
   readonly actions: CommandListActions;
-  readonly previewFace?: { readonly resourceId: string; readonly faceIndex: number };
+  readonly previewFace?: { readonly resourceId: string };
 };
 
 let host: HTMLElement | undefined;

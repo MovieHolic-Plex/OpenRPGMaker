@@ -1,22 +1,16 @@
-// 감독 크롬 — faceset 크롭 플레이트 + 48px 복귀 얼굴.
+// 감독 크롬 — 낱장 얼굴 플레이트 + 48px 복귀 얼굴.
 
-import {
-  FACESET_COLUMNS,
-  FACESET_FACE_HEIGHT,
-  FACESET_FACE_WIDTH,
-  FACESET_ROWS,
-} from "@/assets/easyrpgRtp";
+import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { idlePresenceLine, readAgentBrief } from "./aiAgentBrief";
 
-const DIRECTOR_FACE_RESOURCE_ID = "easyrpg-faceset-actor1";
-const DIRECTOR_FACE_INDEX = 0;
+const DIRECTOR_FACE_RESOURCE_ID = "easyrpg-faceset-actor1-00";
 const DIRECTOR_NAME = "조수";
 const DIRECTOR_RESTORE_LABEL = "조수";
-const DIRECTOR_FACE_SIZE_PX = FACESET_FACE_WIDTH;
+const DIRECTOR_FACE_SIZE_PX = FACE_IMAGE_SIZE;
 
 export type DirectorPlateHandle = {
   readonly element: HTMLElement;
@@ -30,17 +24,14 @@ type DirectorFaceOptions = {
   readonly testid?: string;
 };
 
-function applyDirectorFaceCrop(face: HTMLElement): void {
+function applyDirectorFace(face: HTMLElement): void {
   face.style.width = `${DIRECTOR_FACE_SIZE_PX}px`;
   face.style.height = `${DIRECTOR_FACE_SIZE_PX}px`;
   const faceUrl = resolveAssetResourceUrl(DIRECTOR_FACE_RESOURCE_ID, { project: store.getCurrent() });
   if (faceUrl === null) return;
-  const column = DIRECTOR_FACE_INDEX % FACESET_COLUMNS;
-  const row = Math.floor(DIRECTOR_FACE_INDEX / FACESET_COLUMNS);
-  const scale = DIRECTOR_FACE_SIZE_PX / FACESET_FACE_WIDTH;
   face.style.backgroundImage = `url("${faceUrl}")`;
-  face.style.backgroundPosition = `-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`;
-  face.style.backgroundSize = `${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`;
+  face.style.backgroundPosition = "center";
+  face.style.backgroundSize = `${DIRECTOR_FACE_SIZE_PX}px ${DIRECTOR_FACE_SIZE_PX}px`;
 }
 
 export function createAssistantFace(options: DirectorFaceOptions = {}): HTMLElement {
@@ -52,27 +43,25 @@ export function createAssistantFace(options: DirectorFaceOptions = {}): HTMLElem
       : { role: "img", "aria-label": ariaLabel },
     ...(options.testid === undefined ? {} : { dataset: { testid: options.testid } }),
   });
-  applyDirectorFaceCrop(face);
+  applyDirectorFace(face);
   return face;
 }
 
 export function createDirectorRestoreButton(): HTMLButtonElement {
-  const button = el("button", {
+  return el("button", {
     class: "ai-collapsed-restore",
     attrs: {
       type: "button",
-      title: DIRECTOR_RESTORE_LABEL,
+      title: "조수 열기",
       "aria-label": DIRECTOR_RESTORE_LABEL,
     },
     dataset: { testid: "ai-collapsed-restore" },
     children: [
       el("span", { class: "ai-collapsed-restore-dot", attrs: { "aria-hidden": "true" } }),
       createAssistantFace(),
+      el("span", { class: "ai-collapsed-restore-name", text: DIRECTOR_NAME }),
     ],
-  });
-  button.style.width = `${DIRECTOR_FACE_SIZE_PX}px`;
-  button.style.height = `${DIRECTOR_FACE_SIZE_PX}px`;
-  return button;
+  }) as HTMLButtonElement;
 }
 
 export function createDirectorPlate(): DirectorPlateHandle {

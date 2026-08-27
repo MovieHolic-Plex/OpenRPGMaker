@@ -74,22 +74,22 @@ describe("default database starter party", () => {
 
     // Then: resource-backed actor and equipment references survive validation.
     expect(hero).toMatchObject({
-      faceResourceId: "easyrpg-faceset-actor1",
+      faceResourceId: "easyrpg-faceset-actor1-00",
       characterResourceId: "easyrpg-charset-actor1",
       battleCharacterResourceId: "generated-actor-hero-01-battle",
     });
     expect(guardian).toMatchObject({
-      faceResourceId: "easyrpg-faceset-actor2",
+      faceResourceId: "easyrpg-faceset-actor2-00",
       characterResourceId: "easyrpg-charset-actor2",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
     });
     expect(mage).toMatchObject({
-      faceResourceId: "easyrpg-faceset-people1",
+      faceResourceId: "easyrpg-faceset-people1-00",
       characterResourceId: "easyrpg-charset-actor3",
       battleCharacterResourceId: "generated-actor-hero-03-battle",
     });
     expect(scout).toMatchObject({
-      faceResourceId: "easyrpg-faceset-people2",
+      faceResourceId: "easyrpg-faceset-people2-00",
       characterResourceId: "easyrpg-charset-actor4",
       battleCharacterResourceId: "generated-actor-hero-04-battle",
     });

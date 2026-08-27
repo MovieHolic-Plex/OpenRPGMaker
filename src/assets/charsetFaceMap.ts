@@ -18,7 +18,7 @@
 //     FaceSet/People2 의 8~15 칸은 사람이 아니라 동물(개·고양이·닭·양·소·말·호랑이·사자)이다.
 //
 // 그래서 이 파일은 두 갈래를 나눈다.
-//   ① `faceGraphicForCharset` — 인덱스 추종(faceIndex = characterIndex). 에디터 저작
+//   ① `faceGraphicForCharset` — 인덱스 추종(고르는 칸 = characterIndex). 에디터 저작
 //      도구(eventCompile/eventTools)가 쓰는 기존 계약이고 test/placeNpcGraphicQuery.test.ts
 //      가 그 항등식을 지킨다. 짝이 없는 시트는 "덜 틀린" 폴백을 준다.
 //   ② `npcFaceGraphic` — **짝이 맞을 때만** 인덱스를 그대로 쓰고, 짝이 없으면
@@ -26,6 +26,7 @@
 //      (skyStairMaps 등)는 이걸 쓴다 — 인덱스가 맞는 것보다 **사람이 맞는** 게 중요하다.
 
 import { findCharsetSemantic, type CharsetAge, type CharsetGender } from "@/assets/charsetSemantics";
+import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { EventPageGraphic, FaceGraphic } from "@/project/types";
 
@@ -58,27 +59,28 @@ const CHARSET_TO_FACESET: Readonly<Record<string, string>> = {
  * **추가 얼굴**이다 — 짝 없는 시트의 NPC 에게 줄 얼굴이 여기 있다.
  */
 const FACESET_PEOPLE1_FACES: readonly {
-  readonly faceIndex: number;
+  /** 낱장 얼굴 리소스 id(과거 People1 시트의 칸 번호에서 옮겨 왔다). */
+  readonly resourceId: string;
   readonly label: string;
   readonly gender: CharsetGender;
   readonly age?: CharsetAge;
 }[] = [
-  { faceIndex: 0, label: "갈색 단발 소년", gender: "male", age: "child" },
-  { faceIndex: 1, label: "금발 소녀", gender: "female", age: "child" },
-  { faceIndex: 2, label: "청발 청년", gender: "male", age: "youth" },
-  { faceIndex: 3, label: "금발 젊은 여성", gender: "female", age: "youth" },
-  { faceIndex: 4, label: "콧수염 중년 남성", gender: "male", age: "middle" },
-  { faceIndex: 5, label: "갈색 머리 여성", gender: "female", age: "youth" },
-  { faceIndex: 6, label: "흰 수염 노인", gender: "male", age: "elder" },
-  { faceIndex: 7, label: "백발 노파", gender: "female", age: "elder" },
-  { faceIndex: 8, label: "검은 머리 청년", gender: "male", age: "youth" },
-  { faceIndex: 9, label: "흰 두건 여성", gender: "female", age: "middle" },
-  { faceIndex: 10, label: "대머리 남성", gender: "male", age: "middle" },
-  { faceIndex: 11, label: "이국적인 여성", gender: "female", age: "youth" },
-  { faceIndex: 12, label: "검은 장발 남성", gender: "male", age: "middle" },
-  { faceIndex: 13, label: "금발 곱슬 여성", gender: "female", age: "middle" },
-  { faceIndex: 14, label: "붉은 머리 여성", gender: "female", age: "youth" },
-  { faceIndex: 15, label: "초록 머리 소녀", gender: "female", age: "child" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 0), label: "갈색 단발 소년", gender: "male", age: "child" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 1), label: "금발 소녀", gender: "female", age: "child" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 2), label: "청발 청년", gender: "male", age: "youth" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 3), label: "금발 젊은 여성", gender: "female", age: "youth" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 4), label: "콧수염 중년 남성", gender: "male", age: "middle" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 5), label: "갈색 머리 여성", gender: "female", age: "youth" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 6), label: "흰 수염 노인", gender: "male", age: "elder" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 7), label: "백발 노파", gender: "female", age: "elder" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 8), label: "검은 머리 청년", gender: "male", age: "youth" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 9), label: "흰 두건 여성", gender: "female", age: "middle" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 10), label: "대머리 남성", gender: "male", age: "middle" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 11), label: "이국적인 여성", gender: "female", age: "youth" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 12), label: "검은 장발 남성", gender: "male", age: "middle" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 13), label: "금발 곱슬 여성", gender: "female", age: "middle" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 14), label: "붉은 머리 여성", gender: "female", age: "youth" },
+  { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 15), label: "초록 머리 소녀", gender: "female", age: "child" },
 ];
 
 /** textureKey(charset) + characterIndex → FaceGraphic. 없으면 null. */
@@ -86,13 +88,11 @@ export function faceGraphicForCharset(
   textureKey: string,
   characterIndex = 0,
 ): FaceGraphic | null {
-  const resourceId = CHARSET_TO_FACESET[textureKey]
+  const sheetResourceId = CHARSET_TO_FACESET[textureKey]
     ?? inferFacesetFromTextureKey(textureKey);
-  if (!resourceId) return null;
-  const faceIndex = Math.max(0, Math.min(15, Math.trunc(characterIndex) || 0));
+  if (!sheetResourceId) return null;
   return {
-    resourceId,
-    faceIndex,
+    resourceId: faceIdForSheetCell(sheetResourceId, characterIndex),
     position: "left",
     flipHorizontally: false,
   };
@@ -125,8 +125,7 @@ export function npcFaceGraphic(textureKey: string, characterIndex = 0): FaceGrap
   const aligned = INDEX_ALIGNED_FACESET[textureKey];
   if (aligned && aligned !== "easyrpg-faceset-monster") {
     return {
-      resourceId: aligned,
-      faceIndex: clampFaceIndex(characterIndex),
+      resourceId: faceIdForSheetCell(aligned, characterIndex),
       position: "left",
       flipHorizontally: false,
     };
@@ -141,7 +140,7 @@ export function npcFaceGraphic(textureKey: string, characterIndex = 0): FaceGrap
   // 성별·나이가 **둘 다** 비어 있으면 고를 근거가 없다 — 얼굴을 붙이지 않는다.
   if (!gender && !age) return null;
 
-  let best: { readonly faceIndex: number; readonly score: number } | null = null;
+  let best: { readonly resourceId: string; readonly score: number } | null = null;
   for (const face of FACESET_PEOPLE1_FACES) {
     if (gender && face.gender !== gender) continue;
     if (age && face.age !== age) continue;
@@ -157,12 +156,11 @@ export function npcFaceGraphic(textureKey: string, characterIndex = 0): FaceGrap
     for (const tag of semantic.tags) {
       if (tag.length >= 2 && face.label.includes(tag)) score += 25;
     }
-    if (!best || score > best.score) best = { faceIndex: face.faceIndex, score };
+    if (!best || score > best.score) best = { resourceId: face.resourceId, score };
   }
   if (!best) return null;
   return {
-    resourceId: "easyrpg-faceset-people1",
-    faceIndex: best.faceIndex,
+    resourceId: best.resourceId,
     position: "left",
     flipHorizontally: false,
   };
@@ -182,10 +180,6 @@ export function npcFaceGraphicFromEventGraphic(graphic: EventPageGraphic): FaceG
     }
   }
   return npcFaceGraphic(sprite.id, characterIndex);
-}
-
-function clampFaceIndex(value: number): number {
-  return Math.max(0, Math.min(15, Math.trunc(value) || 0));
 }
 
 function inferFacesetFromTextureKey(textureKey: string): string | null {

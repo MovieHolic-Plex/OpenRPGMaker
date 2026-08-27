@@ -25,7 +25,6 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "changeFace":
       requireString(`${label}.resourceId`, command.resourceId);
-      requireNumber(`${label}.faceIndex`, command.faceIndex);
       requireFacePosition(`${label}.position`, command.position);
       requireBoolean(`${label}.flipHorizontally`, command.flipHorizontally);
       return;

@@ -150,7 +150,7 @@ describe("AI 패널 자동 펼침/접기", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(true);
   });
 
-  it("접힌 채 전송하면 펼치고, 턴 종료 후 자동으로 다시 접는다 — 저장값은 불변", async () => {
+  it("접힌 채 전송하면 펼치고, 턴이 끝나도 답을 읽도록 열어 둔다", async () => {
     storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
@@ -161,14 +161,13 @@ describe("AI 패널 자동 펼침/접기", () => {
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    // 자동 펼침은 사용자의 저장된 선택을 덮어쓰지 않는다.
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
     expect(assistantMock.sentMessages).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
     await flushAsync();
 
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
   });
 

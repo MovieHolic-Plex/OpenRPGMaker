@@ -12,6 +12,7 @@ import { bgmCatalogResourceIds } from "@/assets/bgmCatalogRuntime";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { GENERATED_EFFECT_RESOURCE_IDS } from "@/assets/generatedEffectSheets";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
@@ -34,6 +35,9 @@ export function collectResourceIds(project: Project): Set<string> {
     if ("textureKey" in asset) ids.add(asset.textureKey);
   }
   for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
+  // 얼굴 낱장 112장. 얼굴 그림은 이제 이 id 로만 지정된다 — 목록에서 빠지면 얼굴을 고른
+  // 프로젝트가 그림만 비는 게 아니라 **역직렬화 자체에 실패**한다(validateOptionalResource 가 assert 로 던진다).
+  for (const face of FACESET_FACE_ASSETS) ids.add(face.id);
   for (const asset of CC0_AUDIO_ASSETS) ids.add(asset.id);
   // 281곡 BGM 카탈로그. 여기서 빠지면 이 곡을 지정한 프로젝트가 **역직렬화 자체에 실패**한다
   // (validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다).

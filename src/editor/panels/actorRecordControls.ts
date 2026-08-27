@@ -4,12 +4,9 @@ import {
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
-  FACESET_COLUMNS,
-  FACESET_FACE_HEIGHT,
-  FACESET_FACE_WIDTH,
-  FACESET_ROWS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
+import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { field } from "@/editor/panels/databaseControls";
 import { store } from "@/project/store";
@@ -68,18 +65,8 @@ function previewVisual(
   previewScale: number
 ): HTMLElement {
   if (kind === "faceset") {
-    const faceIndex = Math.min(15, Math.max(0, Math.trunc(sheetIndex) || 0));
-    const column = faceIndex % FACESET_COLUMNS;
-    const row = Math.floor(faceIndex / FACESET_COLUMNS);
-    return sheetCrop(label, url, {
-      x: column * FACESET_FACE_WIDTH,
-      y: row * FACESET_FACE_HEIGHT,
-      width: FACESET_FACE_WIDTH,
-      height: FACESET_FACE_HEIGHT,
-      sheetWidth: FACESET_COLUMNS * FACESET_FACE_WIDTH,
-      sheetHeight: FACESET_ROWS * FACESET_FACE_HEIGHT,
-      scale: previewScale,
-    });
+    // 얼굴은 그림 한 장이다 — 크롭 없이 통째로 그린다.
+    return faceImageVisual(label, url, previewScale);
   }
   if (kind === "charset") {
     const characterIndex = Math.min(7, Math.max(0, Math.trunc(sheetIndex) || 0));
@@ -103,6 +90,14 @@ function previewVisual(
     });
   }
   return el("img", { attrs: { alt: `${label} 미리보기`, src: url } });
+}
+
+function faceImageVisual(label: string, url: string, previewScale: number): HTMLElement {
+  const size = Math.round(FACE_IMAGE_SIZE * (previewScale > 0 ? previewScale : 1));
+  return el("img", {
+    class: "actor-face-image",
+    attrs: { alt: `${label} 미리보기`, src: url, width: String(size), height: String(size) },
+  });
 }
 
 function isGeneratedBattleActorResource(resourceId: string): boolean {

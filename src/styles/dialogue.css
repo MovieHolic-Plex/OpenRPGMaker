@@ -403,27 +403,27 @@
 }
 
 /**
- * 페이스셋 칩(48×48 한 칸) 자체를 그리는 규칙.
+ * 얼굴 낱장 파일(48×48 한 장) 자체를 그리는 규칙.
  *
  * **왜 여기 있어야 하나:** `dialogue.ts`의 `renderFace()`는 얼굴을
- * `<div class="dialogue-face actor-sheet-crop">` + 인라인 `--crop-*` 커스텀 속성으로 만든다.
- * 그런데 `.actor-sheet-crop` 의 실제 배경·크기 선언은
+ * `<div class="dialogue-face dialogue-face-image">` + 인라인 `--face-*` 커스텀 속성으로 만든다.
+ * 예전에는 이 상자의 배경·크기 선언이 `.actor-sheet-crop` 이라는 이름으로
  * `src/styles/editor/event-editor-legacy.part-1.css` **에디터 전용 CSS 에만** 있었다.
  * 익스포트한 단독 플레이어(`src/player/player.css` → tokens + runtime/playerRuntime)는 그
  * 파일을 불러오지 않으므로, **얼굴이 배경 없는 높이 0 의 빈 테두리로 그려졌다.**
- * (확인: 빌드된 player CSS 에 `dialogue-face` 는 있고 `actor-sheet-crop` 는 0회.)
  * 에디터 테스트 플레이에서는 에디터 CSS 가 같이 로드돼 보였기 때문에 e2e 도 이걸 못 잡았다.
+ * 그래서 런타임 대사창의 얼굴은 런타임 CSS 가 직접 책임진다.
  *
- * 런타임 대사창의 얼굴은 런타임 CSS 가 책임진다. 값은 에디터 규칙과 같되 색 토큰은
- * 대사창 것을 쓴다(플레이어 빌드에 --bg-panel-2 / --border-soft 가 없을 수 있다).
+ * 얼굴은 이제 시트가 아니라 파일 한 장이다 — background-position 으로 칸을 잘라내지 않고
+ * 상자 크기에 이미지 한 장을 그대로 맞춘다(`.actor-sheet-crop` 은 진짜 시트인 charset 전용).
  */
-.dialogue-face.actor-sheet-crop {
-  background-image: var(--crop-url);
-  background-position: var(--crop-x) var(--crop-y);
+.dialogue-face.dialogue-face-image {
+  background-image: var(--face-url);
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: var(--crop-sheet-width) var(--crop-sheet-height);
-  height: var(--crop-height, var(--runtime-dialogue-face-size));
-  width: var(--crop-width, var(--runtime-dialogue-face-size));
+  background-size: contain;
+  height: var(--face-height, var(--runtime-dialogue-face-size));
+  width: var(--face-width, var(--runtime-dialogue-face-size));
 }
 
 .dialogue-face.flipped {

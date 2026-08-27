@@ -361,7 +361,34 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
   });
 
-  it("tile_erase: transfer 목적지 통행을 막는 셀만 제외하고 나머지는 지운다", () => {
+  it("tile_erase: 기본 바닥이 통행을 막을 때만 transfer 목적지 셀을 제외한다", () => {
+    const { ctx } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    const map = ctx.project.maps[MAP_ID];
+    map.events.push({
+      id: "ev_transfer_source",
+      x: 0,
+      y: 0,
+      trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
+    });
+    // 기본 바닥이 물(통행 불가)인 맵 — 지우면 목적지가 막히므로 그 칸은 보호되어야 한다.
+    map.lowerTiles.fill(TILE.WATER);
+    for (let y = 6; y < 9; y += 1) {
+      for (let x = 6; x < 9; x += 1) map.lowerTiles[y * map.width + x] = TILE.PATH;
+    }
+
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "lower" });
+    const after = ctx.project.maps[MAP_ID];
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
+    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1, groundTile: TILE.WATER });
+    expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.WATER);
+    expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.PATH);
+    expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
+  });
+
+  it("tile_erase: 지운 하위 칸은 빈 칸이 아니라 맵의 기본 바닥이다 — 바닥에 구멍을 남기지 않는다", () => {
     const { ctx } = context();
     ctx.project.startPos = { x: 0, y: 0 };
     const map = ctx.project.maps[MAP_ID];
@@ -373,17 +400,45 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
     });
     for (let y = 6; y < 9; y += 1) {
-      for (let x = 6; x < 9; x += 1) map.lowerTiles[y * map.width + x] = TILE.GRASS;
+      for (let x = 6; x < 9; x += 1) map.lowerTiles[y * map.width + x] = TILE.PATH;
     }
 
     const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "lower" });
     const after = ctx.project.maps[MAP_ID];
     expect(result.ok, result.summary).toBe(true);
-    expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
-    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1 });
-    expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.EMPTY);
-    expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.GRASS);
+    // 기본 바닥(잔디)은 통행 가능하니 보호할 칸이 없다 — 9칸 전부 지면으로 되돌아간다.
+    expect(result.data).toMatchObject({ cleared: 9, requested: 9, skipped: 0, groundTile: TILE.GRASS });
+    for (let y = 6; y < 9; y += 1) {
+      for (let x = 6; x < 9; x += 1) {
+        expect(after.lowerTiles[y * after.width + x], `${x},${y}`).toBe(TILE.GRASS);
+      }
+    }
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
+  });
+
+  it("tile_erase: 기본 바닥은 rect 밖 최빈값 — 실내 바닥 맵은 잔디가 아니라 그 바닥으로 되돌린다", () => {
+    const INTERIOR_FLOOR = 222; // 나무 마루 — 실내 바닥으로 쓰이는 통행 가능 타일.
+    const { ctx } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    const map = ctx.project.maps[MAP_ID];
+    map.lowerTiles.fill(INTERIOR_FLOOR);
+    for (let y = 4; y < 6; y += 1) {
+      for (let x = 4; x < 6; x += 1) {
+        map.lowerTiles[y * map.width + x] = TILE.WALL;
+        map.upperTiles[y * map.width + x] = 61;
+      }
+    }
+
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 4, y: 4, w: 2, h: 2 } });
+    const after = ctx.project.maps[MAP_ID];
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ cleared: 4, groundTile: INTERIOR_FLOOR });
+    for (let y = 4; y < 6; y += 1) {
+      for (let x = 4; x < 6; x += 1) {
+        expect(after.lowerTiles[y * after.width + x], `${x},${y} lower`).toBe(INTERIOR_FLOOR);
+        expect(after.upperTiles[y * after.width + x], `${x},${y} upper`).toBe(TILE.EMPTY);
+      }
+    }
   });
 });
 
@@ -463,14 +518,14 @@ describe("tile_erase kind=market (시장 데크만 선택 철거)", () => {
     expect(grassRestored).toBe(formerLowerMarket);
   });
 
-  it("kind 생략(레거시)은 그대로 AABB 전체를 비운다 — 집 타일도 EMPTY", () => {
+  it("kind 생략(레거시)은 AABB 전체를 정리한다 — 집 타일도 상위는 EMPTY·하위는 기본 바닥", () => {
     const { ctx, houseCells } = paintFixture();
     const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: ERASE_RECT });
     expect(result.ok, result.summary).toBe(true);
     const map = ctx.project.maps[MAP_ID];
     for (const cell of houseCells) {
       const index = cell.y * map.width + cell.x;
-      expect(map.lowerTiles[index], `legacy lower ${cell.x},${cell.y}`).toBe(TILE.EMPTY);
+      expect(map.lowerTiles[index], `legacy lower ${cell.x},${cell.y}`).toBe(TILE.GRASS);
       expect(map.upperTiles[index], `legacy upper ${cell.x},${cell.y}`).toBe(TILE.EMPTY);
     }
   });

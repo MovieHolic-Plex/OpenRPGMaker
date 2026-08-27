@@ -1,0 +1,5 @@
+GREEN (tree 0876abeb)
+tile rect client: x=884 y=608 right=916 bottom=640
+tooltip box: x=924 y=510 w=280 h=90 -> starts right of the tile, ends above it
+canvas title: "" (native tooltip gone)
+playwright: 1 passed

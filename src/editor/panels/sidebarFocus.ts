@@ -198,11 +198,9 @@ function setupToolbarRoving(toolbar: HTMLElement): void {
   (toolbar as unknown as { __roving_installed?: boolean }).__roving_installed = true;
 
   toolbar.addEventListener("keydown", (event: KeyboardEvent) => {
-    const target = event.target;
-    if (target instanceof HTMLElement && isInsideOverflowDropdown(target)) {
-      return;
-    }
-
+    // 드롭다운 안의 키 입력을 따로 걸러내지 않는다: getEnabledButtons 가 드롭다운 버튼을
+    // 제외하므로 focusedIndex 가 -1 이 되어 아래에서 그대로 빠져나간다. 같은 판단을 두 번
+    // 쓰면 둘 중 하나가 낡았을 때 어느 쪽이 진짜인지 알 수 없다.
     const key = event.key;
     if (
       key !== "ArrowRight" &&

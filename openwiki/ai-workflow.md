@@ -37,7 +37,7 @@ This page describes how an agent should operate on this project using the local 
   - **tile_query labels/vocab 타일셋**: `tilesetId` 생략 시 `mapId` 또는 `startMap` (`resolveQueryTilesetId`). 실내 맵에서 Combined Town 라벨 place_props 사고 방지. region 가이드에 `mapId` 명시.
   - **place_npc 상점 병합**: 근접(맨하탄≤2) 유사 이름/상점 역할이면 **명시 id여도** 기존 이벤트로 합침. 일반 NPC는 id 생략 시에만 병합.
   - **place_npc graphic diversity:** generic queries (`villager`/`npc`/`사람`/`주민`) pick from top-K via stable seed (`mapId:name:x,y`) and skip charset slots already used on the map (`pickNpcGraphic` + `usedCharsetGraphicKeysOnMap`). Specific roles (상인/할머니/기사…) still take the top match unless avoided.
-  - **place_npc face sync:** `changeFace` is derived from the **resolved** charset after diversity pick (`faceGraphicFromEventGraphic`), not the raw query default — so people1#5 gets faceset people1 index 5, not always #0.
+  - **place_npc face sync:** `changeFace` is derived from the **resolved** charset after diversity pick (`faceGraphicFromEventGraphic`), not the raw query default — so people1#5 gets `easyrpg-faceset-people1-05`, not always `-00`.
   - **material 동의어**: `탁자`/`나무 탁자` 등 모호 쿼리만 확장 — 구체 라벨(`가로 탁자 중`)에 bare 탁자 부분매칭으로 타일셋 교차 오염하지 않음. 동의어는 오케스트레이션 대체재 아님.
   - Fallback `buildDefaultWorkPlan` only if planner API/parse fails on a long request.
 - Do not treat generated evidence, screenshots, or exported projects as source unless the task explicitly asks for evidence updates.

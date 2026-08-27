@@ -84,7 +84,9 @@ describe("Database record tab partial rendering", () => {
     const actorId = store.getCurrent().database.actors[0]?.id ?? "";
     expect(findByTestId(host, `db-record-row-${actorId}`)).not.toBeNull();
     expect(findByTestId(host, "db-detail-form")).not.toBeNull();
-    expect(findByTestId(host, "db-record-hero")?.querySelector(".actor-sheet-crop")).not.toBeNull();
+    // 얼굴 한 칸 = 파일 한 장 — 히어로 헤더는 시트 크롭이 아니라 그림 한 장을 그린다.
+    expect(findByTestId(host, "db-record-hero")?.querySelector(".actor-face-image")).not.toBeNull();
+    expect(findByTestId(host, "db-record-hero")?.querySelector(".actor-sheet-crop")).toBeNull();
   });
 
   it("Given an actor opens When the inspector renders Then hierarchy is expressed by direct tabs without guidance copy", () => {
