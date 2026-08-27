@@ -119,16 +119,7 @@ export function renderAppliedComparison(options: {
 }): HTMLElement {
   const { before, after, mapId, summary, appliedCount } = options;
   const crop = computeMapTileChangeBounds(before, after, mapId);
-  const thumbs = crop
-    ? el("div", {
-        class: "ai-proposal-thumbs ai-auto-applied-thumbs",
-        dataset: { testid: "ai-auto-applied-thumbs" },
-        children: [
-          renderProposalMapThumbnail(before, mapId, "before", crop),
-          renderProposalMapThumbnail(after, mapId, "after", crop),
-        ],
-      })
-    : null;
+  const thumbs = crop ? renderProposalWipe(before, after, mapId, crop, "ai-auto-applied-thumbs") : null;
 
   return el("div", {
     class: "ai-auto-applied-card",
@@ -234,11 +225,48 @@ export function computeMapTileChangeBounds(before: Project, after: Project, mapI
   return { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
 }
 
+/**
+ * before→after 를 한 자리에서 좌→우로 한 번 지나가는 와이프로 보여준다.
+ *
+ * 이전에는 `지금`·`적용 후` 미니맵을 2단 그리드로 나란히 놓아 사람이 두 그림을 스스로
+ * 비교해야 했다(감독 지시 2026-08-27: "복잡하게 하지 말고 그냥 좌에서 우로 한번에 쏵").
+ * 이제 같은 크롭의 after 를 before 위에 겹치고 CSS clip-path 로 한 번 훑는다 — 애니메이션은
+ * `.ai-proposal-thumb.is-after` 에 걸려 있고 `prefers-reduced-motion` 에서는 결과만 남는다.
+ */
+export function renderProposalWipe(
+  before: Project,
+  after: Project,
+  mapId: string,
+  crop: ProposalMapCrop | null,
+  extraClass?: string,
+): HTMLElement {
+  return el("div", {
+    class: `ai-proposal-wipe${extraClass ? ` ${extraClass}` : ""}`,
+    dataset: { testid: extraClass ?? "ai-proposal-wipe-card" },
+    children: [
+      el("div", {
+        class: "ai-proposal-wipe-stack",
+        dataset: { testid: "ai-proposal-wipe" },
+        children: [
+          renderProposalMapThumbnail(before, mapId, "before", crop, false),
+          renderProposalMapThumbnail(after, mapId, "after", crop, false),
+        ],
+      }),
+      el("span", {
+        class: "ai-proposal-wipe-caption",
+        dataset: { testid: "ai-proposal-wipe-caption" },
+        text: "지금 → 적용 후",
+      }),
+    ],
+  });
+}
+
 export function renderProposalMapThumbnail(
   project: Project,
   mapId: string,
   kind: "before" | "after",
   crop: ProposalMapCrop | null = null,
+  showLabel = true,
 ): HTMLElement {
   const map = project.maps[mapId];
   const canvas = document.createElement("canvas") as HTMLCanvasElement;
@@ -253,11 +281,13 @@ export function renderProposalMapThumbnail(
     return placeholder;
   }
   const wrap = el("div", {
-    class: "ai-proposal-thumb",
+    class: `ai-proposal-thumb is-${kind}`,
     attrs: { role: "img", "aria-label": `${kind === "before" ? "지금" : "적용 후"} 미니맵` },
     dataset: { testid: `ai-proposal-thumb-${kind}` },
     children: [
-      el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "지금" : "적용 후" }),
+      ...(showLabel
+        ? [el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "지금" : "적용 후" })]
+        : []),
       canvas,
     ],
   });
@@ -719,15 +749,7 @@ export function createProposalHost(options: {
           dataset: { testid: "ai-proposal-summary" },
           text: humanSummary,
         }),
-        ...(previewMapId
-          ? [el("div", {
-              class: "ai-proposal-thumbs",
-              children: [
-                renderProposalMapThumbnail(beforeProject, previewMapId, "before", mapCrop),
-                renderProposalMapThumbnail(afterProject, previewMapId, "after", mapCrop),
-              ],
-            })]
-          : []),
+        ...(previewMapId ? [renderProposalWipe(beforeProject, afterProject, previewMapId, mapCrop)] : []),
         el("div", {
           class: "ai-proposal-actions",
           children: [
