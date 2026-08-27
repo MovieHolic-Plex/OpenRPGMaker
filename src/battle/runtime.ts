@@ -108,6 +108,10 @@ const FALLBACK_SKILL_POWER = 12;
 // side can end the battle (e.g. all actors asleep with no auto-recovery and a
 // neutered enemy). Exceeding the cap resolves the battle as a stalemate escape.
 const STRICT_MAX_ROUNDS = 200;
+// m2-108 actionTimes 로 한 라운드에 부여할 수 있는 추가 행동 상한. 라운드 카드밀리(STRICT_MAX_ROUNDS)와
+// 같은 이유의 가드다: 행동마다 다시 발화하는 배틀 이벤트 페이지(라운드 중복 제거 밖 조건)가
+// 매번 +1 을 주면 한 라운드 루프가 끝나지 않는다.
+const STRICT_MAX_EXTRA_ACTIONS_PER_ROUND = 20;
 
 type EnemyActionChoice = {
   readonly skillId: SkillId;
@@ -365,10 +369,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     wait: (ms) => {
       // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,
-      // tick 이 pendingWaitMs 를 소진하기 전까지 게이지 충전/턴 진행이 멈춘다.
-      pendingWaitMs = Math.max(pendingWaitMs, Math.max(0, Math.trunc(ms)));
+      // gauge: tick 이 pendingWaitMs 를 읽어 소진한다(게이지 흐름은 종전 그대로).
+      // strict: 라운드를 동기로 해결하고 tick 이 돌지 않으므로, 일시정지를 타임라인 사실로 남긴다.
+      //   시퀀서가 이 엔트리를 만나면 다음 비트를 waitMs 만큼 늦춘다 — JS 스레드를 막지 않고,
+      //   이미 해결된 행동 순서도 바꾸지 않는다.
+      const waitMs = Math.max(0, Math.trunc(ms));
+      if (battleFlow === "strict") {
+        if (waitMs > 0) recordTimeline({ kind: "wait", waitMs });
+        return;
+      }
+      pendingWaitMs = Math.max(pendingWaitMs, waitMs);
     },
-    canGrantExtraAction: () => battleFlow !== "strict",
     // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
     // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
     refreshActorDerivedStats: (battler, refreshOptions) => {
@@ -1158,15 +1169,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     activeActorId = undefined;
     currentActorCommandKind = undefined;
     const round = turn + 1;
+    // 라운드 큐는 실행 중에도 자란다: m2-108 actionTimes 가 부여한 추가 행동이
+    // 같은 라운드의 정렬 규칙에 맞춰 이 배열에 삽입된다(insertStrictExtraAction).
     const actions = strictRoundActions();
-    for (const [index, action] of actions.entries()) {
+    let grantedExtraActions = 0;
+    for (let index = 0; index < actions.length; index += 1) {
+      const action = actions[index];
+      const order = index + 1;
       if (result) break;
       if (action.side === "actor") {
         if (action.actor.hp <= 0) continue;
         activeActorId = action.actor.recordId;
         const beforeResult = lastActionResult;
         applyActorCommandEffect(action.actor, action.command);
-        logStrictAction(round, index + 1, action, beforeResult);
+        logStrictAction(round, order, action, beforeResult);
         if (escaped) {
           result = "escape";
           phase = "resolved";
@@ -1174,6 +1190,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         }
         applyTroopEvents(round);
         resolveOutcome();
+        if (result) continue;
+        // m2-108 Action Times+: 같은 라운드 안에서 추가 행동을 준다. 교체는 제외한다 —
+        // 교체한 액터는 이미 필드를 떠났고 되돌리는 행동이 되어 버린다.
+        if (
+          action.command.kind !== "switch"
+          && action.actor.hp > 0
+          && grantedExtraActions < STRICT_MAX_EXTRA_ACTIONS_PER_ROUND
+          && battleEvents.consumeExtraActorAction(action.actor.recordId)
+        ) {
+          grantedExtraActions += 1;
+          insertStrictExtraAction(actions, index + 1, action);
+        }
         continue;
       }
       if (action.enemy.hp <= 0 || !visibleEnemies().some((enemy) => enemy.id === action.enemy.id)) continue;
@@ -1181,7 +1209,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       currentActorCommandKind = undefined;
       const beforeResult = lastActionResult;
       executeEnemyAction(action.enemy, action.action);
-      logStrictAction(round, index + 1, action, beforeResult);
+      logStrictAction(round, order, action, beforeResult);
       applyTroopEvents(round);
       resolveOutcome();
     }
@@ -1194,6 +1222,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // SC1 (C1): iterate to the next round instead of recursing into
     // startStrictRound(). The round cap in startStrictRound bounds the loop.
     startStrictRound();
+  }
+
+  function insertStrictExtraAction(actions: StrictQueuedAction[], from: number, action: StrictQueuedAction): void {
+    // 추가 행동은 라운드와 동일한 정렬 기준(compareStrictActions)으로 남은 큐에 삽입한다.
+    // 이미 해결된 행동은 건드리지 않고(from 이후만 본다), 더 늦은 행동을 추월하지도 않는다.
+    let at = from;
+    while (at < actions.length && compareStrictActions(action, actions[at]) > 0) at += 1;
+    actions.splice(at, 0, action);
   }
 
   function completeStrictRound(round: number): void {

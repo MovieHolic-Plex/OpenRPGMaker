@@ -249,7 +249,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     avgPotionsUsed: totalPotions / n,
     avgHpRemaining: totalHp / n,
     samples: n,
-    battleFlow: input.battleFlow ?? input.project.database.troops.find((troop) => troop.id === input.troopId)?.battleFlow ?? input.project.system.battleFlow ?? "gauge",
+    battleFlow: input.battleFlow ?? input.project.database.troops.find((troop) => troop.id === input.troopId)?.battleFlow ?? input.project.system.battleFlow ?? "strict",
     participatingActorIds,
     roundLogs,
     eventLogs,

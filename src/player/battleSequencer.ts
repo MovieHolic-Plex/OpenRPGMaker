@@ -251,6 +251,14 @@ export function createBattleSequencer(
     hooks.onTimelineEntry?.(entry);
     const continueNext = (): void =>
       playTimelineEntries(entries, snapshot, done, firstDirector, entryOffset + 1, firstDirectorIndex);
+    // 배틀 이벤트 wait: strict 흐름은 라운드를 동기로 해결하고 일시정지를 이 사실로 넘긴다.
+    // 진짜 연출 지연은 여기서만 생긴다 — 잡고 있는 화면/대사는 그대로 유지한다.
+    if (entry.kind === "wait") {
+      const waitMs = entry.waitMs ?? 0;
+      if (waitMs > 0) delay(continueNext, waitMs);
+      else continueNext();
+      return;
+    }
     // 명령 대사(firstDirector)는 그 명령의 엔트리에만 붙인다. 무조건 0번에 붙이면,
     // 민첩이 빠른 적이 라운드에서 먼저 움직일 때 적의 선공이 아군 명령 대사(도주/공격)로
     // 뒤집히고, 정작 아군 엔트리는 제네릭 재생으로 떨어진다(코덱스 리뷰 C2: 도주 성공
