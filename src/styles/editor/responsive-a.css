@@ -38,7 +38,7 @@
 }
 
 .chipset-scroll-button {
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   height: 24px;
   min-width: 0;
@@ -71,7 +71,7 @@
 .tile-mapping-inspector {
   background: var(--bg);
   border: 1px solid var(--border-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.35;
   margin-top: var(--space-1);

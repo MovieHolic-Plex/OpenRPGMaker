@@ -53,7 +53,7 @@
 .rm-asset-kind {
   font-size: 10px;
   color: var(--text-muted);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
 }
 .rm-asset-dims {
   font-size: 10px;
@@ -105,7 +105,7 @@
   border-radius: 2px;
   color: var(--text-muted);
   display: flex;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   justify-content: center;
 }

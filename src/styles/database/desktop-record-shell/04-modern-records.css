@@ -25,7 +25,7 @@
     border-radius: 7px;
     box-shadow: 0 18px 48px rgba(60, 48, 32, 0.12);
     color: var(--db-modern-text);
-    font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-ui);
   }
 
   .database-modal-window:has(:is(
@@ -478,7 +478,7 @@
 
   .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(button, .btn) {
     border-radius: 4px;
-    font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-ui);
   }
 
   .database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) {
@@ -968,7 +968,7 @@
 
   .database-modal-body .db-utility-form :is(input, button) {
     box-sizing: border-box;
-    font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-ui);
     min-width: 0;
   }
 

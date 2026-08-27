@@ -46,6 +46,7 @@
 @import "./database/overview-dashboard.css";
 @import "./database/title-workbench.css";
 @import "./database/play-resolution.css";
+@import "./database/system-font-section.css";
 @import "./database/system-studio.css";
 @import "./database/studio-theme.css";
 /* Collection-specific studio slices must follow the shared studio reset. */

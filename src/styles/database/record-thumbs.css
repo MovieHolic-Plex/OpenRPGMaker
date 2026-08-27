@@ -484,7 +484,7 @@
 }
 .db-resource-picker-audio-id,
 .db-resource-picker-audio-url {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   word-break: break-all;
 }

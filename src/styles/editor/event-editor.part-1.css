@@ -18,7 +18,7 @@
   box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--text-1);
   display: grid;
-  font-family: "Malgun Gothic", sans-serif;
+  font-family: var(--font-ui);
   grid-template-rows: 42px minmax(0, 1fr);
   height: min(860px, calc(100vh - 18px));
   min-height: 680px;
@@ -588,7 +588,7 @@
   box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--event-rm-text);
   display: grid;
-  font-family: "Malgun Gothic", sans-serif;
+  font-family: var(--font-ui);
   grid-template-rows: 31px minmax(0, 1fr) 40px;
   height: min(936px, calc(100vh - 12px));
   height: min(936px, calc(100dvh - 12px));

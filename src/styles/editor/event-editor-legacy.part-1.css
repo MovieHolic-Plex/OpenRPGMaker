@@ -110,7 +110,7 @@
 .db-id {
   font-size: 10px;
   color: var(--text-muted);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   min-width: 60px;
 }
 .db-meta {
@@ -178,7 +178,7 @@
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm);
   color: var(--text-dim);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   margin: var(--space-1) 0;
   padding: var(--space-2);
@@ -303,7 +303,7 @@
 }
 .actor-graphic-preview strong {
   color: var(--text);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -350,7 +350,7 @@
 }
 .db-image-preview strong {
   color: var(--text);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -381,7 +381,7 @@
 .actor-curve span,
 .actor-exp-row span {
   color: var(--text-dim);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
 }
 .actor-curve-graph {

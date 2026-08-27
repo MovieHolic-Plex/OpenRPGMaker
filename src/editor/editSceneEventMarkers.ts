@@ -4,6 +4,7 @@ import { editorState, type Layer } from "@/editor/editorState";
 import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
+import { projectFontStack } from "@/project/fontRegistry";
 import type { EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 
 const SELECTED_EVENT_RING_COLOR = 0x69db7c;
@@ -23,11 +24,13 @@ const EVENT_CLICK_STROKE_COLOR = 0x0a246a;
 const EVENT_CLICK_STROKE_ALPHA = 0.95;
 const EVENT_CLICK_TEXT_COLOR = "#ffffff";
 const EVENT_CLICK_TEXT_BACKGROUND = "#0a246a";
-/** 라벨 문자열('새 이벤트 위치 12,34')은 한글이 대부분이라 한글 본문 폰트를 앞에 둔다.
- *  모노가 앞에 있으면 한글 글리프가 없어 글자마다 Malgun Gothic 등으로 폴백하며
- *  베이스라인·굵기가 섞여 지저분해 보인다. 모노는 마지막 폴백으로만 남긴다. */
-export const EVENT_LABEL_FONT_FAMILY =
-  "\"Pretendard\", \"Malgun Gothic\", \"Apple SD Gothic Neo\", system-ui, sans-serif, \"Cascadia Mono\", \"JetBrains Mono\", Consolas, monospace";
+/** 라벨 문자열('새 이벤트 위치 12,34')은 한글이 대부분이라 자자가 고른 UI 글꼴을 그대로 쓴다.
+ *  UI 역할 스택은 한글 가능 글꼴로 시작하므로, 모노가 앞에 있을 때처럼 글자마다 폴백해
+ *  베이스라인·굵기가 섞이는 문제가 생기지 않는다. 캔버스는 CSS 변수를 못 읽어 마킹
+ *  시점에 스택 문자열을 집어와야 하므로 상수가 아니라 함수다. */
+export function eventLabelFontFamily(): string {
+  return projectFontStack(store.getCurrent().system.fonts, "ui");
+}
 export const EVENT_LABEL_FONT_SIZE = "12px";
 /** 캔버스 텍스트 래스터화 해상도 하한. Phaser Text의 resolution 기본값은 1이라
  *  고DPI 화면이나 카메라 확대 시 1x로 래스터화된 뒤 뭉개진다. */
@@ -116,7 +119,7 @@ export function renderEventLayerClickFeedback(
   const label = context.scene.add.text(worldX + 2, labelY, `${action} ${feedback.x},${feedback.y}`, {
     backgroundColor: EVENT_CLICK_TEXT_BACKGROUND,
     color: EVENT_CLICK_TEXT_COLOR,
-    fontFamily: EVENT_LABEL_FONT_FAMILY,
+    fontFamily: eventLabelFontFamily(),
     fontSize: EVENT_LABEL_FONT_SIZE,
     // cameras 는 테스트의 가짜 scene 에 없을 수 있다 — 옵셔널 체이닝으로 접근하고 zoom 은 1로 폴백한다.
     // (eventLabelResolution 이 비정상 zoom 을 다시 1로 정규화하므로 안전하다.)
@@ -187,7 +190,7 @@ function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number): Phas
   badge.setStrokeStyle(1, EVENT_BADGE_STROKE_COLOR, EVENT_BADGE_STROKE_ALPHA);
   const label = scene.add.text(0, 0, "E", {
     color: "#dbeafe",
-    fontFamily: "\"Cascadia Mono\", \"JetBrains Mono\", Consolas, monospace",
+    fontFamily: projectFontStack(store.getCurrent().system.fonts, "mono"),
     fontSize: `${TILE_SIZE - 7}px`,
     fontStyle: "bold",
   }).setOrigin(0.5);

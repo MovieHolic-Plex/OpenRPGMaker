@@ -7,7 +7,7 @@
   flex-direction: column;
   gap: 4px;
   pointer-events: none;
-  font-family: "D2Coding", "Consolas", monospace;
+  font-family: var(--font-mono);
 }
 
 /* 메뉴·대화창이 열려 있을 때 액션 HUD 를 숨긴다.

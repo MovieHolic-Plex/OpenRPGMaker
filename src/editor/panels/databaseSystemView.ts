@@ -25,6 +25,17 @@ import {
   DEFAULT_DAYS_PER_SEASON,
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
+import {
+  DEFAULT_FONT_SELECTION,
+  FONT_ROLE_LABELS,
+  FONT_ROLES,
+  fontOptionsForRole,
+  isFontFamilyId,
+  resolveFontSelection,
+  resolveFontStack,
+  type FontFamilyId,
+  type FontRole,
+} from "@/project/fontRegistry";
 import { store } from "@/project/store";
 import type {
   ActorRecord,
@@ -61,12 +72,13 @@ const PLAY_RESOLUTION_PRESETS = ["320x240", "426x240", "640x360", "640x480", "cu
 type PlayResolutionPreset = (typeof PLAY_RESOLUTION_PRESETS)[number];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
-type SystemSectionSlug = "overview" | "party" | "display" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemSectionSlug = "overview" | "party" | "display" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
 
 const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
   { slug: "overview", label: "개요" },
   { slug: "party", label: "초기 파티" },
   { slug: "display", label: "화면" },
+  { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
   { slug: "startup", label: "시작 설정" },
   { slug: "optin", label: "기능 확장" },
@@ -165,6 +177,7 @@ function systemSectionNodes(
       ]),
     ]),
     display: section("display", [playResolutionFieldset(project, rerender)]),
+    font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("리소스", [
         resourcePickerControl({
@@ -359,9 +372,94 @@ function systemSectionNodes(
 }
 
 /**
- * 옵트인 시스템 토글 + 배열 개수 표시. 편집이 아닌 "켰는데 비어 있다"를 보이게 하는 것이 목적.
- * 배열 편집은 각자의 전용 DB 탭/도구가 담당한다.
+ * 글꼴 선택 — 값은 project.system.fonts 에만 쓴다. CSS 변수 적용은 app/fontTheme.ts 가
+ * 스토어 변경마다 다시 하므로 여기서 documentElement 를 건드리지 않는다.
+ * 기본값과 같은 선택은 저장하지 않는다 — normalizeSystemRecords 와 같은 규칙이라
+ * 에디터 상태와 저장 상태가 어긋나지 않는다.
  */
+function systemFontFieldset(project: Project, rerender: () => void): HTMLElement {
+  const selection = resolveFontSelection(project.system.fonts);
+  const preview = el("div", {
+    class: "db-system-font-preview",
+    dataset: { testid: "db-system-font-preview" },
+    children: FONT_ROLES.map((role) =>
+      el("div", {
+        class: "db-system-font-preview-row",
+        dataset: { fontRole: role },
+        children: [
+          el("span", { class: "db-system-font-preview-role", text: FONT_ROLE_LABELS[role] }),
+          fontSampleElement(role, selection[role]),
+        ],
+      }),
+    ),
+  });
+
+  const selects = FONT_ROLES.map((role) => fontRoleField(role, selection[role], rerender));
+
+  return rm2k3Fieldset("글꼴", [
+    el("p", {
+      class: "db-system-font-help",
+      text: "에디터 UI · 런타임 픽셀 · 고정폭 글꼴을 각각 고릅니다. 고른 즉시 화면에 적용됩니다.",
+    }),
+    ...selects,
+    preview,
+    el("div", {
+      class: "db-system-font-actions",
+      children: [
+        el("button", {
+          class: "btn small",
+          text: "기본값으로",
+          attrs: { type: "button" },
+          dataset: { testid: "db-system-font-reset" },
+          on: {
+            click: () => {
+              updateSystem((draft) => {
+                delete draft.system.fonts;
+              });
+              rerender();
+            },
+          },
+        }),
+      ],
+    }),
+  ]);
+}
+
+function fontSampleElement(role: FontRole, id: FontFamilyId): HTMLElement {
+  const sample = el("span", {
+    class: "db-system-font-preview-sample",
+    text: "가나다 ABC 123",
+    dataset: { testid: `db-system-font-sample-${role}`, fontId: id },
+  });
+  sample.style.fontFamily = resolveFontStack(id);
+  return sample;
+}
+
+function fontRoleField(
+  role: FontRole,
+  current: FontFamilyId,
+  rerender: () => void,
+): HTMLElement {
+  const select = el("select", { dataset: { testid: `db-field-system-font-${role}` } }) as HTMLSelectElement;
+  for (const definition of fontOptionsForRole(role)) {
+    select.append(el("option", { text: definition.label, attrs: { value: definition.id } }));
+  }
+  select.value = current;
+  select.addEventListener("change", () => {
+    const next = select.value;
+    if (!isFontFamilyId(next)) return;
+    updateSystem((draft) => {
+      const fonts = { ...(draft.system.fonts ?? {}) };
+      if (next === DEFAULT_FONT_SELECTION[role]) delete fonts[role];
+      else fonts[role] = next;
+      if (Object.keys(fonts).length > 0) draft.system.fonts = fonts;
+      else delete draft.system.fonts;
+    });
+    rerender();
+  });
+  return field(FONT_ROLE_LABELS[role], select);
+}
+
 function playResolutionFieldset(project: Project, rerender: () => void): HTMLElement {
   const { system } = project;
   const resolution = resolvePlayResolution(system);
@@ -507,6 +605,10 @@ function storePlayResolution(system: SystemRecords, value: PlayResolution): void
   else delete system.playResolution;
 }
 
+/**
+ * 옵트인 시스템 토글 + 배열 개수 표시. 편집이 아닌 "켰는데 비어 있다"를 보이게 하는 것이 목적.
+ * 배열 편집은 각자의 전용 DB 탭/도구가 담당한다.
+ */
 function optInSystemFields(project: Project, rerender: () => void): readonly HTMLElement[] {
   const { system } = project;
   const fields: HTMLElement[] = [

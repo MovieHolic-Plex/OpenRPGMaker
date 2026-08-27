@@ -19,7 +19,7 @@
   --mk-t3: #626b7d;
   --mk-cat-flow: #d95926; /* 흐름·분기 마커 (§3.2) */
   --mk-radius: 6px;
-  --mk-mono: "Cascadia Code", "Cascadia Mono", ui-monospace, Consolas, "D2Coding", monospace;
+  --mk-mono: var(--font-mono);
 }
 
 /* ── 페이지 탭: 좌측 세로 스택 → 상단 가로 스트립 ─────────────────── */

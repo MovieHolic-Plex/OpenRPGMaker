@@ -30,7 +30,7 @@
   border: 1px solid var(--border-default);
   box-shadow: 0 18px 48px var(--shadow-pop);
   color: var(--text-1);
-  font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font-family: var(--font-ui);
   width: min(920px, calc(100vw - 24px));
 }
 

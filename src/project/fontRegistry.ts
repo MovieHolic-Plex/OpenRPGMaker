@@ -153,3 +153,12 @@ export const FONT_ROLE_CSS_VARIABLES: Readonly<Record<FontRole, string>> = {
   pixel: "--font-pixel",
   mono: "--font-mono",
 };
+
+/**
+ * Phaser 캔버스 텍스트용 진입점. 캔버스는 CSS 변수를 해석하지 못하므로 생성 시점에
+ * 자자가 골람 스택을 문자열로 집어와야 한다. 기본값을 직접 읽으면 DB 에서 글꼴을
+ * 바꿔도 캔버스 텍스트만 그대로 남는다.
+ */
+export function projectFontStack(fonts: SystemFontConfig | undefined, role: FontRole): string {
+  return resolveFontStack(resolveFontSelection(fonts)[role]);
+}

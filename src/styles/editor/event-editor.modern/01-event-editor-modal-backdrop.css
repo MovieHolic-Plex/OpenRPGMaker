@@ -41,7 +41,7 @@ body.event-editor-modal-open .coach-mark-card {
   box-sizing: border-box;
   color: var(--event-modern-text);
   display: grid;
-  font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font-family: var(--font-ui);
   grid-template-rows: 52px minmax(0, 1fr) 44px;
   height: min(88dvh, 820px);
   max-height: calc(100dvh - 80px);

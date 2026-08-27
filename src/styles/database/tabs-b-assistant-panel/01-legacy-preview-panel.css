@@ -134,7 +134,7 @@ body:has([data-testid='resource-modal']) .right-panel {
   border: 1px solid var(--border-default);
   border-radius: 4px;
   color: var(--text-1);
-  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   min-height: 36px;
   padding: 6px 8px;

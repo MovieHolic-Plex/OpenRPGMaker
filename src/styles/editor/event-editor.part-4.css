@@ -445,7 +445,7 @@
   border-width: 2px;
   box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--event-rm-text);
-  font-family: "Malgun Gothic", sans-serif;
+  font-family: var(--font-ui);
   width: min(628px, calc(100vw - 20px));
 }
 

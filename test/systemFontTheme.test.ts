@@ -17,6 +17,7 @@ import {
   FONT_REGISTRY,
   fontOptionsForRole,
   isFontFamilyId,
+  projectFontStack,
   resolveFontSelection,
   resolveFontStack,
 } from "@/project/fontRegistry";
@@ -129,6 +130,14 @@ describe("SystemRecords.fonts 정규화", () => {
       pixel: "galmuri9",
     });
     expect(resolveFontSelection({ ui: "comic-sans" } as never)).toEqual(DEFAULT_FONT_SELECTION);
+  });
+
+  // Phaser 캡버스 텍스트는 CSS 변수를 해석하지 못해 이 함수로 생성 시점의 스택을 집어온다.
+  it("projectFontStack 은 자자 선택을 따르고 생략 시 기본값으로 돌아간다", () => {
+    expect(projectFontStack({ ui: "galmuri11" }, "ui")).toBe(resolveFontStack("galmuri11"));
+    expect(projectFontStack({ mono: "neodgm" }, "mono")).toBe(resolveFontStack("neodgm"));
+    expect(projectFontStack({ ui: "galmuri11" }, "mono")).toBe(resolveFontStack(DEFAULT_FONT_SELECTION.mono));
+    expect(projectFontStack(undefined, "pixel")).toBe(resolveFontStack(DEFAULT_FONT_SELECTION.pixel));
   });
 });
 
