@@ -219,6 +219,10 @@ export type SaveScreenState = {
   readonly tintDurationMs?: number;
 };
 
+export type SaveWriteResult =
+  | { readonly ok: true }
+  | { readonly ok: false; readonly message: string };
+
 export type SaveSlotReadResult =
   | { readonly kind: "empty"; readonly slot: SaveSlotIndex }
   | { readonly kind: "corrupt"; readonly slot: SaveSlotIndex; readonly message: string }
@@ -384,8 +388,34 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   return { tint, weather, hidden, tintDurationMs };
 }
 
-export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): void {
-  storage.setItem(saveSlotKey(slot), JSON.stringify(snapshot));
+// 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
+// 성공도 실패도 표시되지 않았다. 오토세이브(performAutosave)와 같은 계약으로 결과를 돌려준다.
+export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): SaveWriteResult {
+  try {
+    storage.setItem(saveSlotKey(slot), JSON.stringify(snapshot));
+    return { ok: true };
+  } catch (error) {
+    console.warn("[save] failed to write save slot:", error);
+    return { ok: false, message: saveWriteFailureMessage(error) };
+  }
+}
+
+function saveWriteFailureMessage(error: unknown): string {
+  return isQuotaExceededError(error) ? "저장 공간이 부족합니다" : "이 브라우저에 저장할 수 없습니다";
+}
+
+function isQuotaExceededError(error: unknown): boolean {
+  if (typeof DOMException !== "undefined" && error instanceof DOMException) {
+    return error.name === "QuotaExceededError" || error.name === "NS_ERROR_DOM_QUOTA_REACHED";
+  }
+  return error instanceof Error && /quota/i.test(`${error.name} ${error.message}`);
+}
+
+// 실측 결함: 저장 당시의 맵이 지워진 슬롯을 그대로 적용하면 부팅이 project.maps[id].width 에서
+// 터져 배포 플레이어가 "맵·에셋 불러오는 중…" 화면에 영구히 갇혔다. 적용 전에 막는다.
+export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): string | null {
+  if (!project.maps[snapshot.session.currentMapId]) return "저장 당시의 맵이 이 프로젝트에 없습니다";
+  return null;
 }
 
 export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotReadResult {

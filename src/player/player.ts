@@ -9,6 +9,7 @@ import {
   applySaveSnapshot,
   readAutosave,
   readSaveSlot,
+  snapshotLoadBlocker,
   type SaveSlotIndex,
 } from "@/player/saveSlots";
 import { resetAutosaveDebounce } from "@/player/autosave";
@@ -338,6 +339,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
       return;
     }
+    const blocker = snapshotLoadBlocker(store.getCurrent(), result.snapshot);
+    if (blocker) {
+      renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다 — ${blocker}`);
+      return;
+    }
     const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
     if (fromTitle || !game) {
       startGame(restored);
@@ -355,6 +361,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
       return;
     }
+    const blocker = snapshotLoadBlocker(store.getCurrent(), result.snapshot);
+    if (blocker) {
+      renderLoad(fromTitle, `자동 저장을 불러올 수 없습니다 — ${blocker}`);
+      return;
+    }
     const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
     if (fromTitle || !game) {
       startGame(restored);
@@ -367,7 +378,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 타이틀 메뉴에 "이어하기"를 노출할지 — 오토세이브가 실제 파싱 가능한 상태일 때만.
   const isAutosaveAvailable = (): boolean => {
     try {
-      return readAutosave(window.localStorage).kind === "present";
+      const result = readAutosave(window.localStorage);
+      return result.kind === "present" && snapshotLoadBlocker(store.getCurrent(), result.snapshot) === null;
     } catch {
       return false;
     }
