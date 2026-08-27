@@ -56,6 +56,14 @@ Database tabs, record views, battle database records, utility records, reference
 
 ## Database Editor
 
+- **얼굴은 리소스 목록에서도 낱장이다 (2026-08-27):** 얼굴 한 칸 = 파일 한 장 모델은 피커뿐 아니라 **리소스 관리자(얼굴 그래픽) 목록**에서도 지켜야 한다. `defaultResourceProfiles()` 는 `FACESET_FACE_ASSETS` 112장을 48×48 `kind: "faceset"` 프로필로 등록하고, `EASYRPG_RTP_ASSETS` 의 faceset 행(4×4 시트)은 **건너뛴다** — 시트는 v3 로드 해석용으로만 등록돼 있는 레거시다. 이미 저장된 프로젝트에 남은 시트 프로필은 `ensureBundledResourceProfiles()` 가 `LEGACY_FACESET_SHEET_IDS` 기준으로 걷어내므로, 로드 한 번으로 112장으로 수렴한다. 실측 회귀: 이 등록을 빼먹으면 피커는 낱장 112장인데 리소스 관리자는 192×192 시트 5장만 보여 저자 눈에는 "전혀 나뉘지 않은" 상태가 된다. 얼굴 표면을 손볼 때는 피커·이벤트 명령 미리보기·**리소스 관리자**·런타임 상태 메뉴를 같이 확인하라.
+- **시트 업로드는 앱이 쪼갠다 (2026-08-27):** 저자가 192×192(16칸)·96×96(4칸) 시트를 업로드하면 `planFacesetSheetSplit` → `sliceFacesetSheetDataUrls`(canvas)가 48×48 낱장으로 잘라 `<base>-00..-15` 리소스로 등록한다. `decideFacesetUploadDimensions` 는 더 이상 시트를 거부하지 않는다 — 저자에게 터미널에서 `npm run assets:slice-faces` 를 돌리라고 요구하지 않는다(그 스크립트는 레포 내장 에셋 재생성 전용이다). 계약: `test/facesetSheetSlicing.test.ts`, `test/facesetUploadDimension.test.ts`.
+- **이미 저장된 업로드 시트도 쪼개진다 (2026-08-27):** `faceIdForSheetCell` 은 내장 7장만 알아서 업로드 시트 id 를 그대로 되돌려준다 — 그 상태로 `migrateV3toV4` 가 `faceIndex` 를 지우면 업로드 4×4 시트를 가리킨 액터가 48px 얼굴 칸에 겪자 전제를 다 누른 상태로 남는다. 그래서 마이그레이션은 `faceIdForFace` 로 업로드 시트도 `<시트 id>-NN` 으로 옮긴다. 대상은 **업로드 faceset 자산 중 48 배수 정사각인 id 집합**으로 한정한다 — 이 및장이 없으면 얼굴과 무관한 m2 `fields.value` 가 `-07` 을 달고 망가진다.
+
+  시트 자산·프로필은 낱장 16개로 재작성된다. 단, **마이그레이션은 동기라 항상 canvas 를 쓸 수 없다**(노드 테스트에서도 돌아간다). 그래서 각 칸은 시트 이미지를 물린 상토로 `meta.sheetCell` / `meta.sheetSourceId` 표식을 달고 들어오고, 로드 직후 `repairUploadedFacesetSheets`(`facesetSheetRepair.ts`)가 canvas 로 진짜 절단을 마무리한 뒤 표식을 지운다. **이 순서가 계약이다**: 시트를 먼저 지우고 나중에 낱장을 만들면 `resourceReferenceValidation` 이 아직 없는 낱장 id 를 보고 로드를 토한다.
+
+  호출자 주의: `normalizeCurrentProject` 는 동기 사전 점검 `hasPendingFacesetSheetRepair` 로 거를러 **자를 것이 있을 때만 await** 해야 한다. 로드 경로에 불필요한 자시합을 더하면 지속화 순서가 밀려 `storePersistence`·`storeFlushShaEvidence` 의 순서 계약이 진다(실머 8건). 계약: `test/facesetUploadedSheetMigration.test.ts`.
+
 - Default item catalog ships 100+ JRPG items with matching icons under public/assets/cc0/jetrel/icons. Core Jetrel CC0 icons remain; mismatched/missing icons are generated via local generation scripts when available and registered in src/assets/cc0IconAssets.ts as license generated. `defaultItemRecords()` (and the other `defaultDatabaseStarterRecords`) seed **new** projects via `createBlankProject` → `saveProjectToSupabase`; `ensureDefaultDatabaseIconResources()` runs in `normalizeCurrentProject` to attach bundled icon resources. The Supabase `current_json` row is canonical on load — `repairSupabaseCurrentJson` no longer backfills missing items/skills/states/battleAnimations/battlerAnimations from JSON defaults, so a sparse DB row loads as-is. Local is cache-only; defaults never silently re-add authored records the DB row omits.
 - **Characters ??actors (G006):** Characters are **not** a `database.*` collection and are **not** party Actors. The `characters` database tab (`db-tab-characters`, `databaseCharacterView.ts`) manages the opt-in identity package `project.characters` plus orphan event-used characterIds via `listCharacterIdIndex`. Do **not** confuse these social keys with Actor (`database.actors`) party members. List thumbs come from the first host map-event charset crop (`characterListThumbnail.ts` / `resolveCharacterListThumbSource`: hosts[0] event page graphic only). Never use Actor facesets, `database.actors`, or a CharacterProfile portrait field for list thumbs ??CharacterProfile has displayName/birthday/giftPrefs only, no portrait resource.
 
@@ -149,3 +157,16 @@ The Database modal was modernized in six waves while keeping every hard contract
 - Structural changes use `recordProjectSnapshot`; field changes use `recordCoalescedSnapshot`, preserving Database dirty/undo behavior. The aggregate tab count includes both type tables and both starting-placement arrays.
 - Product artwork is `/assets/farming/life-ui/decorating-card.png` (`db-spatial-hero-image`). CSS is isolated in `styles/database/desktop-record-shell/12-spatial-authoring.css`: a two-column 1440 layout collapses at a 980px container and again at 680px for the 1024 acceptance lane.
 - Stable browser entry points: `db-spatial-workspace`, `db-spatial-add-building-type`, `db-spatial-add-decoration-type`, `db-spatial-add-building-placement`, `db-spatial-add-decoration-placement`, plus record IDs prefixed `db-spatial-building-*` / `db-spatial-decoration-*`. Focused coverage: `test/p2SpatialEditorAuthoring.test.ts` and the Database sidebar suites.
+
+## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
+
+`src/editor/panels/structureKitDbTab.ts` + 데이터 계층 `src/editor/panels/structureKitDbSources.ts`.
+
+- **목록 규약은 합집합**: `builtinHouseStructureKitsFor(tileset)` 먼저, 그 다음 `tileset.structureKits`. `src/editor/tools/structureKitTools.ts` 와 `src/editor/harnessSuggestion/structureKitShelf.ts` 가 쓰는 규약과 같다 — 탭·AI 툴·팔레트 선반의 목록이 갈리면 회귀다. 이전에는 탭만 `tileset.structureKits` 를 읽어 새 프로젝트에서 항상 빈 앨범이었다.
+- **타일셋 레일이 앨범 축, 원본 칩이 그 안의 필터**: `structure-kit-source-all` / `-builtin` / `-interior` / `-user` (라벨 전체 · 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물). 각 칩의 숫자는 그 원본이 지금 나열하는 행 수와 같다.
+- **실내 오브젝트는 실내 칩셋 전용**: `interiorObjectsForTileset` 이 `easyrpg_chipset_interior`(`INTERIOR_ROOM_TILESET_ID`) 에서만 카탈로그를 돌려준다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
+- **행은 실제 래스터**: 오브젝트 행 `structure-kit-object-<id>` 은 `INTERIOR_OBJECT_CATALOG` 의 셀을 `renderTileCellsToCanvas` 로 그린다(받침 타일 `VR.FLOOR`). 킷 행 `structure-kit-db-<kitId>` 은 기존대로 `assembledKitCells`.
+- **방 종류 카드**: `structure-kit-theme-<themeId>` (7종), 카드 안의 역할 칸은 `structure-kit-theme-<themeId>-role-<role>` 이고 그 역할을 대표하는 카탈로그 오브젝트 썸네일이 붙는다. 카드를 누르면 표가 그 테마 오브젝트로 좁혀지고 다시 누르면 풀린다. 필수 역할이 없는 창고·복도는 빈 줄 대신 그 사실을 적는다.
+- **가상 항목은 파괴적 액션이 없다**: 내장 파라메트릭 킷(`learnedFrom === "builtin-parametric"`)과 실내 카탈로그 오브젝트는 프로젝트 데이터가 아니라 코드다 — 이름 변경·삭제를 노출하지 않고 인스펙터가 그 이유를 적는다. 등록 킷의 기존 액션(이름 변경, 부위 삭제, 문에서 입구 추정, 지금 저장, 팔레트에서 쓰기, 삭제)은 그대로다.
+- **빈 상태 카피는 불변**: 앨범에 아무것도 없을 때 `structure-kit-db-empty` + `이 타일셋에는 아직 구조물이 없습니다.`. 원본·검색·테마 필터 때문에 행만 없는 경우는 `structure-kit-source-empty` 로 구분해 안내한다.
+- 커버리지: `test/structureKitDbTab.test.ts` (앨범 기본 선택, 내장 킷 노출, 레일 카운트, 빈 카피, rows 없는 malformed 킷 무크래시, 내장 킷 삭제 버튼 부재, 세 원본 칩 카운트 일치, 오브젝트 인스펙터, 테마 카드 7종·역할 썸네일·필터 토글). 스타일은 `src/styles/editor/harness-suggestion.css`.

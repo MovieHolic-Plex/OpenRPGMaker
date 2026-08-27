@@ -535,3 +535,147 @@
   text-align: center;
   color: var(--text-3, #6B5F52);
 }
+
+/* 원본 칩 — 앨범(타일셋) 안을 내장 건물 · 실내 오브젝트 · 내 저장으로 갈라 보는 필터. */
+.structure-kit-source-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12.5px;
+  font-family: inherit;
+}
+
+.structure-kit-source-item.active {
+  background: #fff;
+  color: var(--accent, #4A57D6);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2)), 0 1px 2px rgba(20, 26, 45, 0.06);
+}
+
+.structure-kit-source-item.active .structure-kit-album-count {
+  color: var(--accent, #4A57D6);
+}
+
+.structure-kit-source-item.zero .structure-kit-album-count {
+  color: var(--text-disabled, #A39789);
+}
+
+.structure-kit-album-rail-title.spaced {
+  padding-top: 12px;
+}
+
+/* 방 종류(테마) 문법 — 카드 한 장이 "이 방에 반드시 있어야 하는 역할"을 그림으로 보여준다. */
+.structure-kit-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 8px;
+  padding: 0 12px 10px;
+}
+
+.structure-kit-theme-grid-title {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--text-3, #6B5F52);
+}
+
+.structure-kit-theme-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 9px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  background: var(--bg-inset, #FAF8F5);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.structure-kit-theme-card:hover {
+  border-color: var(--accent-muted, rgba(74, 87, 214, 0.2));
+}
+
+.structure-kit-theme-card.active {
+  background: #fff;
+  border-color: var(--accent, #4A57D6);
+  box-shadow: 0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2));
+}
+
+.structure-kit-theme-card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-1, #2A2521);
+}
+
+.structure-kit-theme-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.structure-kit-theme-role {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 7px;
+  background: #fff;
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.08));
+}
+
+.structure-kit-theme-role-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+}
+
+.structure-kit-theme-role-thumb canvas {
+  max-width: 100%;
+  max-height: 100%;
+  image-rendering: pixelated;
+}
+
+.structure-kit-theme-role-label {
+  font-size: 11px;
+  color: var(--text-2, #5C5348);
+}
+
+.structure-kit-theme-modifiers {
+  font-size: 10.5px;
+  color: var(--text-3, #6B5F52);
+}
+
+/* 실내 오브젝트 인스펙터의 사실 목록 — 역할 · 레이어 · 배치 규약 · 사용 테마. */
+.structure-kit-object-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.structure-kit-object-fact {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.structure-kit-object-fact-label {
+  flex: none;
+  width: 72px;
+  color: var(--text-3, #6B5F52);
+}
+
+.structure-kit-object-fact-value {
+  color: var(--text-1, #2A2521);
+}

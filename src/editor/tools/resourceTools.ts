@@ -4,32 +4,18 @@
 import type { ResourceKind, UploadedAsset } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-/** 얼굴 한 칸의 변 길이(px). 레거시 시트도 48의 배수 정사각형이었다. */
-const FACE_IMAGE_SIZE = 48;
-
 export type FacesetUploadDecision =
   | { readonly accept: true }
   | { readonly accept: false; readonly reason: string };
 
 /**
  * faceset 업로드 크기 판정(순수 함수 — pngInspection 결과의 width/height를 넣는다).
- * 규칙: 한 얼굴 = 48×48. 한 변이 48의 배수인 정사각형이면서 그보다 크면 시트로 보고
- * 거부한다(192×192 16칸, 96×96 4칸 모두 여기 해당). 비정사각·비배수는 저자가 만든
- * 낱장 아트로 보고 허용한다(48×96 포함). 0 이하 변은 유효하지 않은 이미지.
+ * 48 배수 정사각 시트도 통과시킨다 — 등록 지점이 planFacesetSheetSplit 으로 낱장으로
+ * 쪼개므로 여기서 돌려보낼 이유가 없다. 0 이하 변은 유효하지 않은 이미지.
  */
 export function decideFacesetUploadDimensions(width: number, height: number): FacesetUploadDecision {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
     return { accept: false, reason: `유효하지 않은 이미지 크기입니다: ${width}×${height}` };
-  }
-  if (width === FACE_IMAGE_SIZE && height === FACE_IMAGE_SIZE) return { accept: true };
-  const isSheetSquare = width === height && width > FACE_IMAGE_SIZE && width % FACE_IMAGE_SIZE === 0;
-  if (isSheetSquare) {
-    return {
-      accept: false,
-      reason: `얼굴 이미지는 48×48 한 장이어야 합니다. ${width}×${height} 이미지는 얼굴 시트로 보입니다 — ` +
-        `48×48 얼굴 낱장을 잘라 등록하거나, 터미널에서 'npm run assets:slice-faces' 로 시트를 분할한 뒤 ` +
-        `낱장 파일(예: Actor1/07.png)을 업로드하세요.`,
-    };
   }
   return { accept: true };
 }

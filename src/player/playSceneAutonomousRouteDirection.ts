@@ -27,6 +27,7 @@ export function playerRelativeDirection(
 ): Dir | null {
   const event = scene.map.events.find((entry) => entry.id === eventId);
   const position = eventPositionForPlayerRelativeDirection(scene, eventId, event);
+  if (!position) return null;
   const dx = scene.tileX - position.x;
   const dy = scene.tileY - position.y;
   if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) return horizontalPlayerDirection(dx, towardPlayer);
@@ -59,9 +60,13 @@ function eventPositionForPlayerRelativeDirection(
   scene: AutonomousNpcSceneContext,
   eventId: string,
   event: { readonly x: number; readonly y: number } | undefined
-): { readonly x: number; readonly y: number } {
-  if (event === undefined) return { x: scene.tileX, y: scene.tileY };
-  return scene.eventPositions[eventId] ?? { x: event.x, y: event.y };
+): { readonly x: number; readonly y: number } | null {
+  const runtime = scene.eventPositions[eventId];
+  if (runtime) return { x: runtime.x, y: runtime.y };
+  const location = scene.session.eventLocations?.[eventId];
+  if (location?.mapId === scene.map.id) return { x: location.x, y: location.y };
+  if (event) return { x: event.x, y: event.y };
+  return null;
 }
 
 function horizontalPlayerDirection(dx: number, towardPlayer: boolean): Dir {

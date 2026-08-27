@@ -9,5 +9,5 @@ export async function seedProjectFromSupabaseCanonical(page: Page, project: unkn
     if (uiMode !== null) window.localStorage.setItem("oprn:editor-ui-mode", uiMode);
   }, project);
   await page.goto(path);
-  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15000 });
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: Number(process.env.E2E_BOOT_TIMEOUT_MS ?? 15000) });
 }

@@ -5,6 +5,7 @@ import {
   defaultSystem,
 } from "../defaults";
 import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
+import { faceCellSuffix, faceIdForUploadedSheetCell, planFacesetSheetSplit } from "@/assets/facesetSheetSlicing";
 import { SCHEMA_VERSION } from "../types";
 import type {
   AssetRef,
@@ -140,7 +141,9 @@ export function migrateV2toV3(project: ProjectV2): Project {
  */
 export function migrateV3toV4(data: JsonRecord): Project {
   const upgraded = deepClone(data);
-  splitFacesetPairs(upgraded);
+  const uploadedSheetCells = collectUploadedFacesetSheetIds(upgraded);
+  splitFacesetPairs(upgraded, uploadedSheetCells);
+  splitUploadedFacesetSheetAssets(upgraded, uploadedSheetCells);
   upgraded.version = SCHEMA_VERSION;
   return validateProjectV4(upgraded);
 }
@@ -151,13 +154,13 @@ export function migrateV3toV4(data: JsonRecord): Project {
  * 컨테이너를 열거하는 대신 모든 노드를 한 번 훑는다 — 새 저장 위치를 하나 빠뜨리면 사용자
  * 데이터가 조용히 망가지는 종류의 버그다.
  */
-function splitFacesetPairs(node: unknown): void {
+function splitFacesetPairs(node: unknown, uploadedSheetIds: ReadonlySet<string>): void {
   if (Array.isArray(node)) {
     // 원시값은 이 함수에서 즉시 return 되는 노드다. 호출 자체를 건너뛴다 — 3.6MB 마을
     // 저장본의 대부분은 타일 레이어(숫자 배열)라서, 숫자마다 함수를 부르면 로드 한 번에
     // 수백만 번 호출이 쌓인다.
     for (const entry of node) {
-      if (entry !== null && typeof entry === "object") splitFacesetPairs(entry);
+      if (entry !== null && typeof entry === "object") splitFacesetPairs(entry, uploadedSheetIds);
     }
     return;
   }
@@ -166,11 +169,11 @@ function splitFacesetPairs(node: unknown): void {
 
   // changeFace 명령(및 같은 모양으로 저장된 FaceGraphic 사본).
   if (typeof record.resourceId === "string" && (record.kind === "changeFace" || "faceIndex" in record)) {
-    record.resourceId = faceIdForSheetCell(record.resourceId, faceCell(record.faceIndex));
+    record.resourceId = faceIdForFace(record.resourceId, faceCell(record.faceIndex), uploadedSheetIds);
   }
   // 액터 레코드. 짝 없이 시트 id 만 있는 저장본도 0번 칸으로 옮긴다.
   if (typeof record.faceResourceId === "string") {
-    record.faceResourceId = faceIdForSheetCell(record.faceResourceId, faceCell(record.faceIndex));
+    record.faceResourceId = faceIdForFace(record.faceResourceId, faceCell(record.faceIndex), uploadedSheetIds);
   }
   // m2 Change Actor Faceset: 얼굴은 fields.value, 칸은 fields.faceIndex 에 있다. 칸의 기본값이 0 이라
   // 짧게 직렬화된 저장본에는 faceIndex 키가 아예 없다 — 키가 있을 때만 옮기면 그 명령은 시트 id 를
@@ -181,7 +184,7 @@ function splitFacesetPairs(node: unknown): void {
   const fields = record.fields;
   if (record.kind === "m2Command" && isPlainObject(fields)) {
     if (typeof fields.value === "string") {
-      fields.value = faceIdForSheetCell(fields.value, faceCell(fields.faceIndex));
+      fields.value = faceIdForFace(fields.value, faceCell(fields.faceIndex), uploadedSheetIds);
     }
     delete fields.faceIndex;
   }
@@ -192,7 +195,7 @@ function splitFacesetPairs(node: unknown): void {
     const indexByActor = isPlainObject(indices) ? indices : {};
     for (const [actorId, value] of Object.entries(faceIds)) {
       if (typeof value !== "string") continue;
-      faceIds[actorId] = faceIdForSheetCell(value, faceCell(indexByActor[actorId]));
+      faceIds[actorId] = faceIdForFace(value, faceCell(indexByActor[actorId]), uploadedSheetIds);
     }
   }
   delete record.actorFaceIndices;
@@ -200,7 +203,93 @@ function splitFacesetPairs(node: unknown): void {
   delete record.faceIndex;
 
   for (const value of Object.values(record)) {
-    if (value !== null && typeof value === "object") splitFacesetPairs(value);
+    if (value !== null && typeof value === "object") splitFacesetPairs(value, uploadedSheetIds);
+  }
+}
+
+/**
+ * 내장 시트는 생성된 낱장 목록으로, 프로젝트에 업로드된 시트는 `<시트 id>-NN` 규약으로 옮긴다.
+ * 업로드 시트 집합에 없는 id 는 손대지 않는다 — 얼굴과 무관한 m2 value 를 망치지 않기 위한 방어다.
+ */
+function faceIdForFace(resourceId: string, cell: number | undefined, uploadedSheetIds: ReadonlySet<string>): string {
+  const builtin = faceIdForSheetCell(resourceId, cell);
+  if (builtin !== resourceId) return builtin;
+  if (!uploadedSheetIds.has(resourceId)) return resourceId;
+  return faceIdForUploadedSheetCell(resourceId, clampUploadedCell(cell));
+}
+
+function clampUploadedCell(cell: number | undefined): number {
+  if (cell === undefined || !Number.isFinite(cell)) return 0;
+  return Math.max(0, Math.min(15, Math.trunc(cell)));
+}
+
+/** 업로드 자산 중 48 배수 정사각 얼굴 시트의 id 집합. meta 크기가 없으면 시트로 보지 않는다. */
+function collectUploadedFacesetSheetIds(data: JsonRecord): ReadonlySet<string> {
+  const ids = new Set<string>();
+  const assets = data.assets;
+  if (!isPlainObject(assets)) return ids;
+  const uploaded = assets.uploaded;
+  if (!isPlainObject(uploaded)) return ids;
+  for (const [id, asset] of Object.entries(uploaded)) {
+    if (!isPlainObject(asset) || asset.kind !== "faceset") continue;
+    const meta = isPlainObject(asset.meta) ? asset.meta : {};
+    const width = faceCell(meta.width);
+    const height = faceCell(meta.height);
+    if (width === undefined || height === undefined) continue;
+    if (planFacesetSheetSplit(width, height) !== null) ids.add(id);
+  }
+  return ids;
+}
+
+/**
+ * 업로드된 시트 자산 하나를 낱장 16개 자산으로 바꾼다. 여기서는 픽셀을 자를 수 없으므로
+ * (마이그레이션은 동기 + canvas 없는 환경에서도 돈다) 각 칸이 시트 이미지를 물려받은 상태로
+ * 등록하고, 실제 절단은 로드 직후 `repairUploadedFacesetSheets` 가 canvas 로 마무리한다.
+ * 그래야 낱장 id 참조가 리소스 검사를 통과한다.
+ */
+function splitUploadedFacesetSheetAssets(data: JsonRecord, sheetIds: ReadonlySet<string>): void {
+  if (sheetIds.size === 0) return;
+  const assets = data.assets;
+  if (!isPlainObject(assets)) return;
+  const uploaded = assets.uploaded;
+  if (!isPlainObject(uploaded)) return;
+  for (const sheetId of sheetIds) {
+    const sheet = uploaded[sheetId];
+    if (!isPlainObject(sheet)) continue;
+    const meta = isPlainObject(sheet.meta) ? sheet.meta : {};
+    const plan = planFacesetSheetSplit(faceCell(meta.width) ?? 0, faceCell(meta.height) ?? 0);
+    if (plan === null) continue;
+    for (let index = 0; index < plan.count; index += 1) {
+      const faceId = `${sheetId}-${faceCellSuffix(index)}`;
+      if (uploaded[faceId] !== undefined) continue;
+      uploaded[faceId] = {
+        ...sheet,
+        id: faceId,
+        name: `${typeof sheet.name === "string" ? sheet.name : sheetId} 얼굴 ${index + 1}`,
+        meta: { ...meta, width: plan.cellSize, height: plan.cellSize, frames: 1, sheetCell: index, sheetSourceId: sheetId },
+      };
+    }
+    delete uploaded[sheetId];
+    rewriteResourceProfilesForSplitSheet(data, sheetId, plan.count, plan.cellSize);
+  }
+}
+
+function rewriteResourceProfilesForSplitSheet(data: JsonRecord, sheetId: string, count: number, cellSize: number): void {
+  const profiles = data.resourceProfiles;
+  if (!Array.isArray(profiles)) return;
+  const sheetIndex = profiles.findIndex((entry) => isPlainObject(entry) && entry.assetId === sheetId);
+  const sheetProfile = sheetIndex >= 0 && isPlainObject(profiles[sheetIndex]) ? (profiles[sheetIndex] as JsonRecord) : null;
+  if (sheetIndex >= 0) profiles.splice(sheetIndex, 1);
+  for (let index = 0; index < count; index += 1) {
+    const faceId = `${sheetId}-${faceCellSuffix(index)}`;
+    if (profiles.some((entry) => isPlainObject(entry) && entry.assetId === faceId)) continue;
+    profiles.push({
+      kind: "faceset",
+      name: `${sheetProfile !== null && typeof sheetProfile.name === "string" ? sheetProfile.name : sheetId} 얼굴 ${index + 1}`,
+      imageWidth: cellSize,
+      imageHeight: cellSize,
+      assetId: faceId,
+    });
   }
 }
 
