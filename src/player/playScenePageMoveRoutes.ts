@@ -35,7 +35,11 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
     const key = "key" in route ? route.key : `${view.event.id}:${view.pageId ?? "legacy"}`;
     activeKeys.add(key);
     activePageRouteEventIds.add(view.event.id);
-    if (scene.pageMoveRouteKeys.has(key) && scene.pageMoveRouteEventIds.has(view.event.id)) {
+    if (
+      scene.pageMoveRouteKeys.has(key)
+      && scene.pageMoveRouteEventIds.has(view.event.id)
+      && scene.autonomousNPCs.has(view.event.id)
+    ) {
       const mover = scene.autonomousNPCs.get(view.event.id);
       // 기존 무버는 속도/빈도만 재설정하고 facing 은 보존한다. refreshRuntimeSurfaces
       // 가 이벤트 조사 직후에도 호출되는데, 여기서 facing 을 기본 방향으로 되돌리면
