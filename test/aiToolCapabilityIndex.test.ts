@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSystemPrompt } from "@/ai/contextBuilder";
+import { buildSystemPrompt, DEFAULT_BUDGET_CHARS } from "@/ai/contextBuilder";
 import { buildToolCapabilityIndex } from "@/ai/toolCapabilityIndex";
 import { activeTools, allTools, createEmptyToolProject } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -7,6 +7,10 @@ import { createBlankProject } from "@/project/defaults";
 // 색인은 프롬프트 앞머리에 붙으므로 기본 예산(12000)에서도 살아남지만,
 // 기존 후순위 섹션(현재 맵 요약 등)까지 함께 보려면 예산을 넉넉히 준다.
 const WIDE_BUDGET = 40_000;
+// tokenBudget.calibratedBudgetChars 하한(CALIBRATION_CLAMP_MIN_RATIO 0.5 × 12000).
+const CALIBRATED_MIN_BUDGET = 6000;
+// 색인 문자 상한: 툴 생산/설직 변경으로 프롬프트가 조용히 부푸는 것을 막는다.
+const INDEX_CHAR_CEILING = 3200;
 
 function liveToolNames(): readonly string[] {
   return activeTools().filter((tool) => tool.supersededBy === undefined).map((tool) => tool.name);
@@ -60,6 +64,30 @@ describe("tool capability index", () => {
   it("builds a deterministic string", () => {
     expect(buildToolCapabilityIndex()).toBe(buildToolCapabilityIndex());
     expect(buildToolCapabilityIndex(activeTools())).toBe(buildToolCapabilityIndex(activeTools()));
+  });
+
+  it("survives the smallest calibrated budget", () => {
+    const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: CALIBRATED_MIN_BUDGET });
+    const missing = liveToolNames().filter((name) => !prompt.includes(name));
+
+    expect(missing).toEqual([]);
+    expect(prompt).toContain("find_tools(query)");
+    expect(prompt).toContain("그 기능이 없습니다");
+  });
+
+  it("does not push the pre-existing prompt over its budget", () => {
+    const prompt = buildSystemPrompt(createEmptyToolProject("x"), {});
+
+    // 베이스 실재: 이 fixture 는 색인 이전에 11,978자로 예산(12,000) 이하였다. 색인이 그 자리를 동지 않았음을 고정한다.
+    expect(prompt).not.toContain("[예산 초과");
+    const withoutIndex = prompt.replace(`${buildToolCapabilityIndex()}\n\n`, "");
+    expect(withoutIndex).not.toContain("## 툴 능력 색인");
+    expect(withoutIndex.length).toBeLessThanOrEqual(DEFAULT_BUDGET_CHARS);
+    expect(withoutIndex).toContain("## 프로젝트 요약");
+  });
+
+  it("stays under the stated char ceiling", () => {
+    expect(buildToolCapabilityIndex().length).toBeLessThanOrEqual(INDEX_CHAR_CEILING);
   });
 
   it("covers every live tool exactly once in the index body", () => {

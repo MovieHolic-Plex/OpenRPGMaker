@@ -15,7 +15,7 @@ const RULE_HEADING = "### 색인 사용 규칙(반드시 준수)";
 
 // 에디터 작업 영역 순서(사람이 읽는 순서 = 안정 정렬 키). 도메인이 없거나 미지의 값이면 CATCH_ALL.
 const AREA_ORDER: readonly { readonly domain: ToolDomain; readonly label: string }[] = [
-  { domain: "core", label: "핵심(상시 노출)" },
+  { domain: "core", label: "핵심" },
   { domain: "map", label: "맵" },
   { domain: "tile", label: "타일·배치" },
   { domain: "event", label: "이벤트" },
@@ -51,7 +51,7 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
 
   const lines: string[] = [
     `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${live.length}개 · 이름만)`,
-    "아래는 이 에디터에 **실제로 존재하는 툴 전체 목록**입니다. 이번 라운드의 tool 목록은 40개로 잘려 있을 뿐입니다.",
+    "이 목록의 툴은 전부 존재한다. 이번 라운드 tool 스키마만 40개로 잘려 있을 뿐이다.",
   ];
   for (const { label } of AREA_ORDER) {
     const names = byLabel.get(label);
@@ -64,10 +64,10 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
   lines.push(
     "",
     RULE_HEADING,
-    "1. 위 이름은 전부 존재하고 호출 가능한 툴입니다. 목록에 있으면 그 기능은 이 에디터에 있습니다.",
-    "2. 필요한 툴의 스키마가 이번 라운드 tool 목록에 없으면 find_tools(query)로 스키마를 불러오고, 다음 라운드에서 그 툴을 호출하세요.",
-    "3. 색인에 있는 기능을 \"그 기능이 없습니다\" 또는 \"지원하지 않습니다\"라고 사용자에게 보고하는 것은 결함입니다. 포기하거나 work item 을 skip 하지 말고 find_tools 로 에스컬레이션하세요.",
-    "4. 단, 이 색인은 UX 응답 정책에 적힌 진짜 엔진 한계를 뒤집지 않습니다 — 3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포는 여전히 지원하지 않습니다.",
+    "1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.",
+    "2. 스키마가 이번 라운드에 없으면 find_tools(query)로 불러와 다음 라운드에 호출한다.",
+    "3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — find_tools 로 에스컬레이션한다.",
+    "4. 단, UX 정책의 진짜 엔진 한계(3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포 미지원)는 그대로다.",
   );
   return lines.join("\n");
 }

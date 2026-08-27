@@ -415,12 +415,13 @@ function ruleText(rule: ClusterRuleHint): string {
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
 export function buildSystemPrompt(project: Project, options: ContextOptions = {}): string {
-  // 툴 능력 색인은 INTRO 직후(=예산 슬라이서가 뒤에서 자르므로 절대 안전한 자리)에 넣는다.
-  // 색인이 기존 섹션을 밀어내면 안 되므로 색인 자체의 문자 비용을 예산에 더한다 —
-  // 그러면 기존 섹션들은 색인 도입 전과 동일한 공간을 유지한다.
-  const capabilityIndex = buildToolCapabilityIndex();
-  const budget = (options.budgetChars ?? DEFAULT_BUDGET_CHARS) + capabilityIndex.length + 2;
-  const sections: string[] = [INTRO, capabilityIndex, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
+  // 툴 능력 색인은 예산 슬라이싱 밖의 고정 버지다. 아래 조립·잘라내기는 색인을 모르는 상태로 진행되고
+  // (= 기존 섹션들은 색인 도입 이전과 동일한 예산 공간을 유지), 색인은 마지막에 INTRO 뒤로 삽입된다.
+  // 예산에 더해 재조립하는 방식이 아니라 예산 밖으로 믄 이유: tokenBudget.calibratedBudgetChars 가
+  // 예산을 6000자까지 줄이면 INTRO(8000자+) 지점에서 슬라이싱이 끈기고, 색인을 예산 안에 놓으면
+  // 그 끈김에 통째 사라진다 — 그러면 모델은 존재하는 기능을 다시 "없다"고 오보한다.
+  const budget = options.budgetChars ?? DEFAULT_BUDGET_CHARS;
+  const sections: string[] = [INTRO, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);
   const tileVocabulary = tileVocabularySection(project, options.currentMapId);
@@ -450,7 +451,17 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
     assembled = `${assembled.slice(0, budget)}\n\n[예산 초과: ${trimmed}자 잘림 · 잘린 구간은 조회 툴(get_map_region 등)로 직접 조회하세요. 모델·사용자 모두에게 고지됨]`;
     void overflow;
   }
-  return assembled;
+  return withCapabilityIndex(assembled);
+}
+
+// 색인 삽입 지점: INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
+// 어느 경우도 색인 전부가 남는다(어떤 기능이 존재하는가 = 상세 지침보다 우선하는 정보).
+function withCapabilityIndex(assembled: string): string {
+  const index = buildToolCapabilityIndex();
+  if (assembled.startsWith(INTRO)) {
+    return `${INTRO}\n\n${index}${assembled.slice(INTRO.length)}`;
+  }
+  return `${index}\n\n${assembled}`;
 }
 
 function trimDigestLines(lines: readonly string[], maxTokens: number): string {
