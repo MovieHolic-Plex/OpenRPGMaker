@@ -22,7 +22,8 @@ function words(value: string): readonly string[] {
   return value.toLocaleLowerCase().split(/[^\p{L}\p{N}_-]+/u).filter(Boolean);
 }
 
-function matchScore(name: string, description: string, query: string): number {
+// 매처는 하나다 — find_tools 와 자연어 능력 승격(ai/capabilityEscalation.ts)이 같은 점수를 쓴다.
+export function matchScore(name: string, description: string, query: string): number {
   const normalized = query.trim().toLocaleLowerCase();
   if (!normalized) return 0;
   if (name === normalized) return 100;

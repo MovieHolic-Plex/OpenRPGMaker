@@ -30,6 +30,7 @@ import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
 import {
@@ -1964,28 +1965,46 @@ export class AssistantSession {
       const questPersist = this.currentTurnToolDomains?.has("quest")
         ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
         : [];
-      const escalated = toolSchemasForNames(this.turnEscalatedToolNames);
+      const discoveryEscalated = toolSchemasForNames(this.turnEscalatedToolNames);
       const requiredByName = new Map(
         [
           ...mentioned,
           ...planRequired,
           ...questPersist,
-          ...escalated,
+          ...discoveryEscalated,
           SET_BUILD_SPEC_TOOL,
           ...(planToolsOn ? WORK_PLAN_TOOLS : []),
         ].map((tool) => [tool.function.name, tool] as const),
       );
       const requiredNames = new Set(requiredByName.keys());
       const requiredTools = [...requiredByName.values()].filter((tool) => tool.function.name !== "find_tools");
-      const tools = [
-        ...baseTools.filter((tool) => !requiredNames.has(tool.function.name) && tool.function.name !== "find_tools").slice(0, MAX_BASE_TURN_TOOL_SCHEMAS),
-        ...requiredTools,
-        ...toolSchemasForNames(["find_tools"]),
-      ];
+      const baseCandidates = baseTools
+        .filter((tool) => !requiredNames.has(tool.function.name) && tool.function.name !== "find_tools")
+        .slice(0, MAX_BASE_TURN_TOOL_SCHEMAS);
+      // 자연어 능력 승격: 사용자가 정확한 레지스트리 이름을 안 써도 요청 문장과 실제로 매칭되는
+      // 툴을 같은 라운드에 얹는다. 도메인 40 상한에 밀려 "그 기능이 없습니다"로 답하던 회귀 방지.
+      // 승격분은 required 와 같이 도메인 게이트 밖에서 살아남고, 대신 도메인 작업 세트의 꼬리
+      // (도메인 쿼터가 마지막에 채운, 요청과 가장 관련 없는 항목)를 그만큼 내준다 — 라운드당
+      // 예약 없는 작업 툴 수는 40으로 유지된다.
+      const capability = capabilityEscalationSchemas(
+        this.currentTurnRequestText ?? "",
+        new Set([...baseCandidates.map((tool) => tool.function.name), ...requiredNames, "find_tools"]),
+      );
+      const capabilityNames = new Set(capability.map((tool) => tool.function.name));
+      const baseExposed = baseCandidates.slice(0, Math.max(0, MAX_BASE_TURN_TOOL_SCHEMAS - capability.length));
+      const tools = clampTurnToolSchemas(
+        [...baseExposed, ...requiredTools, ...capability, ...toolSchemasForNames(["find_tools"])],
+        capabilityNames,
+      );
       const toolsChars = JSON.stringify(tools).length;
+      const exposedNames = new Set(tools.map((tool) => tool.function.name));
+      const capabilityExposed = [...capabilityNames].filter((name) => exposedNames.has(name));
+      if (capabilityExposed.length > 0) {
+        this.pushAudit({ kind: "status", text: `tools:escalated ${capabilityExposed.join(",")} (capability)` });
+      }
       this.pushAudit({
         kind: "status",
-        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`.slice(0, 2000),
+        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}${capabilityExposed.length > 0 ? ` | capability:${capabilityExposed.join(",")}` : ""}`.slice(0, 2000),
       });
       // CPEN 64k 메시지 내용 상한(todo 8 실측 422): 전송 사본을 안전 예산으로 압축한다.
       // 원본(this.messages)은 감사/하네스용으로 유지된다.
