@@ -81,6 +81,12 @@
   outline: none;
 }
 
+/* 배경 힌트만으로는 키보드 초점이 보이지 않는다. 링은 셸 토큰을 쓴다. */
+.event-editor-modal-header .event-name:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
 .event-editor-modal-header .meta {
   align-items: center;
   color: var(--text-3);
@@ -839,6 +845,17 @@
   line-height: 1.5;
   min-height: 92px;
   resize: none;
+}
+
+/* editor/core 가 .event-editor 입력물의 outline 을 지우고 테두리 색만 바꿔서
+ * 키보드 초점이 사실상 보이지 않는다. 이벤트 에디터 전역에서 링을 다시 살린다.
+ * 이 시트가 이벤트 에디터의 마지막 계층이라 여기서 소유하는 것이 맞다. */
+.event-editor input:focus-visible,
+.event-editor textarea:focus-visible,
+.event-editor select:focus-visible {
+  border-color: var(--accent);
+  outline: var(--focus-outline);
+  outline-offset: 2px;
 }
 
 .event-editor .count {
