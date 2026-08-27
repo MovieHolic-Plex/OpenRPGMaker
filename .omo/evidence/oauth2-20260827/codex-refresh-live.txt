@@ -1,0 +1,29 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+runtime: node v24.11.1 (bun not used)
+bun executable reachable: installed on this machine (unused by this script)
+--- live device authorization (no side effects, nothing approved) ---
+ok: true
+verificationUrl: https://auth.openai.com/codex/device
+userCode.length: 10
+userCode.shape: XXXX-XXXXX
+deviceAuthId.length: 43
+pollIntervalMs: 8000
+--- live refresh through our own ported code ---
+refreshTokenSource: /home/main/.codex/auth.json
+/home/main/z-project/rpg-zzu-oauth2/src/ai/oauth/codexDeviceOAuth.ts:189
+    throw new Error(
+          ^
+
+Error: openai-codex: token refresh failed: 401 refresh_token_invalidated: Your session has ended. Please log in again.
+    at refreshCodexToken (/home/main/z-project/rpg-zzu-oauth2/src/ai/oauth/codexDeviceOAuth.ts:277:11)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/main/z-project/rpg-zzu-oauth2/scripts/verify-ported-oauth-live.mts:70:19
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.executeFile (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:162:10)
+    at CAC.run (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/cli.mjs:102:28)
+
+Node.js v24.11.1
