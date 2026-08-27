@@ -1,0 +1,120 @@
+0|물가 상단 프레임 1|water|solid|high|
+1|물가 상단 프레임 2|water|solid|high|
+2|물가 상단 프레임 3|water|solid|high|
+3|석조 수로 상단 프레임 1|water|solid|high|
+4|석조 수로 상단 프레임 2|water|solid|high|
+5|석조 수로 상단 프레임 3|water|solid|high|
+6|잔디 위 작은 눈밭|terrain|passable|high|
+7|잔디 바닥|terrain|passable|high|
+8|잔디 위 둥근 눈밭|terrain|passable|high|
+9|잔디 위 작은 덤불|plant|passable|high|
+10|잔디 바닥|terrain|passable|high|
+11|잔디 위 둥근 덤불|plant|passable|high|
+12|목조 벽돌벽 상단 좌측 보|wall|solid|high|목조 벽돌벽
+13|목조 벽돌벽 상단 중앙 보|wall|solid|high|목조 벽돌벽
+14|목조 벽돌벽 상단 우측 보|wall|solid|high|목조 벽돌벽
+15|목조 회벽 상단 좌측 보|wall|solid|high|목조 회벽
+16|목조 회벽 상단 중앙 보|wall|solid|high|목조 회벽
+17|목조 회벽 상단 우측 보|wall|solid|high|목조 회벽
+18|석조 아치문 상단 좌측|wall|solid|high|석조 아치문
+19|석조 아치문 상단 중앙|wall|solid|high|석조 아치문
+20|석조 아치문 상단 우측|wall|solid|high|석조 아치문
+21|어두운 석벽 상단 좌측|wall|solid|high|어두운 석벽
+22|어두운 석벽 상단 중앙|wall|solid|high|어두운 석벽
+23|어두운 석벽 상단 우측|wall|solid|high|어두운 석벽
+24|석조 우물 상단 좌측|prop|solid|high|석조 우물
+25|석조 우물 상단 우측|prop|solid|high|석조 우물
+26|어두운 암석 좌측|rock|solid|medium|암석
+27|어두운 암석 우측|rock|solid|medium|암석
+28|묘비|prop|solid|high|
+29|광석 더미|rock|solid|high|
+30|세로 수로 물 프레임 1|water|solid|high|
+31|세로 수로 물 프레임 2|water|solid|high|
+32|세로 수로 물 프레임 3|water|solid|high|
+33|석조 세로 수로 물 프레임 1|water|solid|high|
+34|석조 세로 수로 물 프레임 2|water|solid|high|
+35|석조 세로 수로 물 프레임 3|water|solid|high|
+36|눈밭 좌상단|terrain|passable|high|
+37|눈밭 상단|terrain|passable|high|
+38|눈밭 우상단|terrain|passable|high|
+39|덤불 좌상단|plant|passable|high|
+40|덤불 상단|plant|passable|high|
+41|덤불 우상단|plant|passable|high|
+42|목조 벽돌벽 중간 좌측 기둥|wall|solid|high|목조 벽돌벽
+43|목조 벽돌벽 중간 벽돌|wall|solid|high|목조 벽돌벽
+44|목조 벽돌벽 중간 우측 기둥|wall|solid|high|목조 벽돌벽
+45|목조 회벽 중간 좌측 기둥|wall|solid|high|목조 회벽
+46|목조 회벽 중간 회벽|wall|solid|high|목조 회벽
+47|목조 회벽 중간 우측 기둥|wall|solid|high|목조 회벽
+48|석조 아치문 좌측 기둥|wall|solid|high|석조 아치문
+49|석조 아치문 통로 바닥 상단|floor|passable|high|석조 아치문 통로
+50|석조 아치문 우측 기둥|wall|solid|high|석조 아치문
+51|어두운 석벽 중간 좌측|wall|solid|high|어두운 석벽
+52|어두운 석벽 중간|wall|solid|high|어두운 석벽
+53|어두운 석벽 중간 우측|wall|solid|high|어두운 석벽
+54|석조 우물 하단 좌측|prop|solid|high|석조 우물
+55|석조 우물 하단 우측|prop|solid|high|석조 우물
+56|눈 덮인 석조 우물 하단 좌측|prop|solid|medium|눈 덮인 석조 우물
+57|눈 덮인 석조 우물 하단 우측|prop|solid|medium|눈 덮인 석조 우물
+58|철창문|door|solid|high|
+59|작은 광석 더미|rock|solid|high|
+60|가로 수로 물 프레임 1|water|solid|high|
+61|가로 수로 물 프레임 2|water|solid|high|
+62|가로 수로 물 프레임 3|water|solid|high|
+63|석조 가로 수로 물 프레임 1|water|solid|high|
+64|석조 가로 수로 물 프레임 2|water|solid|high|
+65|석조 가로 수로 물 프레임 3|water|solid|high|
+66|눈밭 좌측|terrain|passable|high|
+67|눈밭 중앙|terrain|passable|high|
+68|눈밭 우측|terrain|passable|high|
+69|덤불 좌측|plant|passable|high|
+70|덤불 중앙|plant|passable|high|
+71|덤불 우측|plant|passable|high|
+72|목조 벽돌벽 하단 좌측 기둥|wall|solid|high|목조 벽돌벽
+73|목조 벽돌벽 하단 벽돌|wall|solid|high|목조 벽돌벽
+74|목조 벽돌벽 하단 우측 기둥|wall|solid|high|목조 벽돌벽
+75|목조 회벽 하단 좌측 기둥|wall|solid|high|목조 회벽
+76|목조 회벽 하단 회벽|wall|solid|high|목조 회벽
+77|목조 회벽 하단 우측 기둥|wall|solid|high|목조 회벽
+78|석조 아치문 하단 좌측 기둥|wall|solid|high|석조 아치문
+79|석조 아치문 통로 바닥 하단|floor|passable|high|석조 아치문 통로
+80|석조 아치문 하단 우측 기둥|wall|solid|high|석조 아치문
+81|어두운 석벽 하단 좌측|wall|solid|high|어두운 석벽
+82|어두운 석벽 하단|wall|solid|high|어두운 석벽
+83|어두운 석벽 하단 우측|wall|solid|high|어두운 석벽
+84|다채로운 보석 더미|prop|solid|medium|
+85|목재 격자 창문|window|solid|high|
+86|커튼 달린 목재 창문|window|solid|high|
+87|아치형 유리 창문|window|solid|high|
+88|닫힌 목재 덧문 창문|window|solid|high|
+89|얼음 파편|decoration|passable|high|
+90|깊은 수면 물 프레임 1|water|solid|high|
+91|깊은 수면 물 프레임 2|water|solid|high|
+92|깊은 수면 물 프레임 3|water|solid|high|
+93|석조 수로 깊은 물 프레임 1|water|solid|high|
+94|석조 수로 깊은 물 프레임 2|water|solid|high|
+95|석조 수로 깊은 물 프레임 3|water|solid|high|
+96|눈밭 좌하단|terrain|passable|high|
+97|눈밭 하단|terrain|passable|high|
+98|눈밭 우하단|terrain|passable|high|
+99|덤불 좌하단|plant|passable|high|
+100|덤불 하단|plant|passable|high|
+101|덤불 우하단|plant|passable|high|
+102|목재 마루 바닥 좌측|floor|passable|high|
+103|목재 마루 바닥 중앙|floor|passable|high|
+104|목재 마루 바닥 우측|floor|passable|high|
+105|목재 마루 바닥 1|floor|passable|high|
+106|목재 마루 바닥 2|floor|passable|high|
+107|다이아몬드 격자 바닥 타일|floor|passable|high|
+108|어두운 석조 바닥 좌측|floor|passable|high|
+109|어두운 석조 바닥 중앙|floor|passable|high|
+110|어두운 석조 바닥 우측|floor|passable|high|
+111|석벽 하단 좌측|wall|solid|high|석벽
+112|석벽 하단 중앙|wall|solid|high|석벽
+113|석벽 하단 우측|wall|solid|high|석벽
+114|둥근 목재 탁자|furniture|solid|high|
+115|목재 격자 창문 우측|window|solid|high|
+116|목재 문|door|solid|high|
+117|목재 서랍장|furniture|solid|high|
+118|기울어진 목재 판자|furniture|solid|medium|
+119|보라색 바위|rock|solid|high|

@@ -1,7 +1,10 @@
-// 스위치/변수 공용 픽커.
-// - 인라인 검색으로 select 옵션 필터
-// - ... 버튼으로 classic 모달 피커
-// - 네이티브 select 유지 (testid / Playwright selectOption 호환)
+// 스위치/변수 공용 픽커 (2026-08 모달 통일).
+// - UI 는 단일 트리거 버튼(현재 선택값 라벨)뿐이고, 클릭 시 openSwitchVariablePicker
+//   클래식 모달(블록 내비게이션·이름/번호 검색·생성·이름변경 내장)을 연다.
+// - visible 네이티브 <select> 와 인라인 검색 필터는 제거됐다.
+// - 숨은 네이티브 select 는 Playwright selectOption 과 기존 폼 change 파이프라인
+//   (select.value 설정 + change dispatch) 호환을 위해 DOM 에 남는다. 선례:
+//   searchableRecordBrowser 의 record-browser-hidden-select, segmentedSelect 계약.
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { openSwitchVariablePicker } from "./recordPickerDialog";
@@ -14,15 +17,15 @@ export type SwitchVariablePickerOptions = {
   readonly onChange: (id: string) => void;
   /** 루트 컨테이너 testid (명령 폼 등). */
   readonly testId?: string;
-  /** 인라인 검색 입력 testid. 기본: event-${kind}-inline-filter */
+  /** @deprecated 인라인 검색 필터 제거로 사용되지 않는다. 호출부 호환을 위해 시그니처만 유지. */
   readonly filterTestId?: string;
-  /** 네이티브 select testid. 지정 시 select 에 직접 붙인다. */
+  /** 숨은 select testid. 지정 시 select 에 직접 붙인다 (e2e selectOption 호환). */
   readonly selectTestId?: string;
-  /** ... 모달 버튼 testid. 기본: event-${kind}-picker-open */
+  /** 트리거 버튼 testid. 기본: event-${kind}-picker-open */
   readonly pickerTestId?: string;
   /** true 면 삭제/유령 id 도 옵션에 남긴다 (페이지 조건 호환). */
   readonly keepMissingId?: boolean;
-  /** false 면 인라인 검색 필드를 숨긴다 (페이지 조건 슬롯 밀도용). 기본 true. */
+  /** @deprecated 인라인 필터 제거로 무시된다. */
   readonly showFilter?: boolean;
   readonly className?: string;
 };
@@ -38,9 +41,10 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
   const project = store.getCurrent();
   const kind = options.kind;
   const list = kind === "switch" ? project.switches : project.variables;
-  const showFilter = options.showFilter !== false;
 
   const select = el("select", {
+    class: "event-record-modal-select",
+    attrs: { "aria-hidden": "true", tabindex: "-1" },
     dataset: options.selectTestId ? { testid: options.selectTestId } : undefined,
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택)", attrs: { value: "" } }));
@@ -56,34 +60,24 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
     select.append(el("option", { text: options.selectedId, attrs: { value: options.selectedId } }));
   }
   select.value = options.selectedId;
-  select.addEventListener("change", () => options.onChange(select.value));
 
-  const filter = el("input", {
-    class: "event-record-inline-filter",
+  const labelOf = (id: string): string => {
+    if (!id) return "(선택)";
+    return (
+      list.find((entry) => entry.id === id)?.name.trim() ||
+      Array.from(select.querySelectorAll("option")).find((option) => option.value === id)?.textContent ||
+      "(선택)"
+    );
+  };
+
+  const trigger = el("button", {
+    class: "btn small event-record-picker-trigger",
+    text: labelOf(select.value),
     attrs: {
-      type: "search",
-      placeholder: "검색",
-      "aria-label": kind === "switch" ? "스위치 검색" : "변수 검색",
+      type: "button",
+      title: kind === "switch" ? "스위치 선택" : "변수 선택",
+      "aria-haspopup": "dialog",
     },
-    dataset: { testid: options.filterTestId ?? `event-${kind}-inline-filter` },
-  }) as HTMLInputElement;
-  filter.hidden = !showFilter;
-  filter.addEventListener("input", () => {
-    const needle = filter.value.trim().toLowerCase();
-    for (const option of Array.from(select.querySelectorAll("option"))) {
-      if (option.value === "") {
-        option.hidden = false;
-        continue;
-      }
-      const hay = option.textContent?.toLowerCase() ?? "";
-      option.hidden = needle.length > 0 && !hay.includes(needle) && !option.value.toLowerCase().includes(needle);
-    }
-  });
-
-  const pickerButton = el("button", {
-    class: "btn small",
-    text: "찾기",
-    attrs: { type: "button", title: kind === "switch" ? "스위치 찾기" : "변수 찾기" },
     dataset: { testid: options.pickerTestId ?? `event-${kind}-picker-open` },
     on: {
       click: () =>
@@ -93,16 +87,26 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
           onSelect: (id) => {
             ensureOption(select, id);
             select.value = id;
+            trigger.textContent = labelOf(id);
             options.onChange(id);
           },
         }),
     },
+  }) as HTMLButtonElement;
+
+  // select 값이 폼 로직 등 외부에서 바뀌면 트리거 라벨도 따라가야 하지만,
+  // change 이벤트는 onChange 계약상 그대로 호출자에게 맡긴다. 여기선 set 시점 동기화만.
+  select.addEventListener("change", () => {
+    trigger.textContent = labelOf(select.value);
+    options.onChange(select.value);
   });
 
   const root = el("span", {
-    class: options.className ?? (showFilter ? "event-record-select" : "event-condition-id-picker"),
+    // showFilter 는 이제 무시되지만 기존 호출부의 CSS 훅(event-record-select ↔
+    // event-condition-id-picker) 분기를 그대로 유지해 레이아웃 회귀를 막는다.
+    class: options.className ?? ((options.showFilter !== false) ? "event-record-select" : "event-condition-id-picker"),
     dataset: options.testId ? { testid: options.testId } : undefined,
-    children: showFilter ? [filter, select, pickerButton] : [select, pickerButton],
+    children: [select, trigger],
   });
 
   return {
@@ -112,6 +116,7 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
     setSelectedId: (id) => {
       ensureOption(select, id);
       select.value = id;
+      trigger.textContent = labelOf(id);
     },
   };
 }

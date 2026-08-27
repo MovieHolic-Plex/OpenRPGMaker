@@ -1,0 +1,5886 @@
+[
+ {
+  "index": 0,
+  "label": "초원 바다 해안 모서리",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "초원 바다 해안 모서리",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 1,
+  "label": "초원 바다 해안 변형",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "초원 바다 해안 변형",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 2,
+  "label": "초원 해안 곡선 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "초원 해안 곡선 물가",
+   "coast",
+   "해안",
+   "물가",
+   "바다"
+  ]
+ },
+ {
+  "index": 3,
+  "label": "파도 바다 해안 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "파도 바다 해안 물가",
+   "coast",
+   "해안",
+   "파도",
+   "바다"
+  ]
+ },
+ {
+  "index": 4,
+  "label": "물보라 바다 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "물보라 바다 해안",
+   "coast",
+   "해안",
+   "물보라",
+   "파도"
+  ]
+ },
+ {
+  "index": 5,
+  "label": "잔잔한 바다 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 바다 해안",
+   "coast",
+   "해안",
+   "잔잔",
+   "바다"
+  ]
+ },
+ {
+  "index": 6,
+  "label": "갈색 밭 흙바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 밭 흙바닥",
+   "dirt",
+   "밭",
+   "흙",
+   "평원"
+  ]
+ },
+ {
+  "index": 7,
+  "label": "평원 초록 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초록 잔디",
+   "grass",
+   "초원",
+   "잔디",
+   "평야"
+  ]
+ },
+ {
+  "index": 8,
+  "label": "초원 속 갈색 밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 속 갈색 밭",
+   "field",
+   "밭",
+   "초원",
+   "흙"
+  ]
+ },
+ {
+  "index": 9,
+  "label": "모래 사막 바위 지대",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 바위 지대",
+   "desert",
+   "사막",
+   "모래",
+   "바위"
+  ]
+ },
+ {
+  "index": 10,
+  "label": "초원 푸른 잔디 평야",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 푸른 잔디 평야",
+   "grass",
+   "초원",
+   "잔디",
+   "평야"
+  ]
+ },
+ {
+  "index": 11,
+  "label": "모래 사막 초원 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 초원 경계",
+   "desert",
+   "사막",
+   "경계",
+   "모래"
+  ]
+ },
+ {
+  "index": 12,
+  "label": "갈색 바위 산악 지대",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "갈색 바위 산악 지대",
+   "rock",
+   "바위",
+   "산악",
+   "산"
+  ]
+ },
+ {
+  "index": 13,
+  "label": "풀섞인 바위 고지대",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "풀섞인 바위 고지대",
+   "rock",
+   "바위",
+   "고지",
+   "풀"
+  ]
+ },
+ {
+  "index": 14,
+  "label": "늪지 습지 어두운 물",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 습지 어두운 물",
+   "swamp",
+   "늪지",
+   "습지",
+   "물"
+  ]
+ },
+ {
+  "index": 15,
+  "label": "늪지 진흙 물웅덩이",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 진흙 물웅덩이",
+   "swamp",
+   "늪지",
+   "진흙",
+   "습지"
+  ]
+ },
+ {
+  "index": 16,
+  "label": "늪지 습지 검은 물",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 습지 검은 물",
+   "swamp",
+   "늪지",
+   "습지",
+   "검은물"
+  ]
+ },
+ {
+  "index": 17,
+  "label": "늪지 습지 물길",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 습지 물길",
+   "swamp",
+   "늪지",
+   "습지",
+   "물길"
+  ]
+ },
+ {
+  "index": 18,
+  "label": "어두운 갈색 흙바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "어두운 갈색 흙바닥",
+   "dirt",
+   "흙",
+   "갈색",
+   "지면"
+  ]
+ },
+ {
+  "index": 19,
+  "label": "초원 어두운 흙 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 어두운 흙 경계",
+   "dirt",
+   "흙",
+   "초원",
+   "경계"
+  ]
+ },
+ {
+  "index": 20,
+  "label": "갈색 흙 평원 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 평원 바닥",
+   "dirt",
+   "흙",
+   "평원",
+   "평지"
+  ]
+ },
+ {
+  "index": 21,
+  "label": "갈색 밭 흙 평지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 밭 흙 평지",
+   "dirt",
+   "밭",
+   "흙",
+   "평지"
+  ]
+ },
+ {
+  "index": 22,
+  "label": "흙 땅 바다 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "흙 땅 바다 물가",
+   "coast",
+   "물가",
+   "바다",
+   "흙"
+  ]
+ },
+ {
+  "index": 23,
+  "label": "바다 물가 흙 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "바다 물가 흙 해안",
+   "coast",
+   "해안",
+   "바다",
+   "물가"
+  ]
+ },
+ {
+  "index": 24,
+  "label": "초원 언덕 경사면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 언덕 경사면",
+   "hill",
+   "언덕",
+   "초원",
+   "경사"
+  ]
+ },
+ {
+  "index": 25,
+  "label": "언덕 초원 경사면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "언덕 초원 경사면",
+   "hill",
+   "언덕",
+   "경사",
+   "초원"
+  ]
+ },
+ {
+  "index": 26,
+  "label": "갈색 흙 언덕 경사",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 언덕 경사",
+   "hill",
+   "언덕",
+   "흙",
+   "경사"
+  ]
+ },
+ {
+  "index": 27,
+  "label": "흙 언덕 경사 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 언덕 경사 지면",
+   "hill",
+   "언덕",
+   "흙",
+   "경사"
+  ]
+ },
+ {
+  "index": 28,
+  "label": "초원 바다 물가 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "초원 바다 물가 해안",
+   "coast",
+   "물가",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 29,
+  "label": "바다 물가 초원 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "바다 물가 초원 해안",
+   "coast",
+   "해안",
+   "바다",
+   "물가"
+  ]
+ },
+ {
+  "index": 30,
+  "label": "해안 초원 바다 경계",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 경계",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 31,
+  "label": "해안 초원 바다 변형",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 변형",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 32,
+  "label": "해안 초원 바다 모서리",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 모서리",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 33,
+  "label": "얕은 바다 백사 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "얕은 바다 백사 해안",
+   "coast",
+   "해안",
+   "백사",
+   "바다"
+  ]
+ },
+ {
+  "index": 34,
+  "label": "백사장 얕은 바다",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "백사장 얕은 바다",
+   "beach",
+   "백사",
+   "해변",
+   "바다"
+  ]
+ },
+ {
+  "index": 35,
+  "label": "얕은 바다 해안 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "얕은 바다 해안 물가",
+   "coast",
+   "해안",
+   "물가",
+   "바다"
+  ]
+ },
+ {
+  "index": 36,
+  "label": "초원 흙 언덕 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 흙 언덕 경계",
+   "hill",
+   "언덕",
+   "흙",
+   "초원"
+  ]
+ },
+ {
+  "index": 37,
+  "label": "초원 흙 경사면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 흙 경사면",
+   "hill",
+   "언덕",
+   "흙",
+   "경사"
+  ]
+ },
+ {
+  "index": 38,
+  "label": "초원 흙 밭 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 흙 밭 경계",
+   "field",
+   "밭",
+   "흙",
+   "초원"
+  ]
+ },
+ {
+  "index": 39,
+  "label": "초원 사막 모래 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "초원 사막 모래 경계",
+   "desert",
+   "사막",
+   "모래",
+   "경계"
+  ]
+ },
+ {
+  "index": 40,
+  "label": "모래 사막 평원 바닥",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 평원 바닥",
+   "desert",
+   "사막",
+   "모래",
+   "평원"
+  ]
+ },
+ {
+  "index": 41,
+  "label": "모래 사막 언덕 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 언덕 경계",
+   "desert",
+   "사막",
+   "언덕",
+   "모래"
+  ]
+ },
+ {
+  "index": 42,
+  "label": "갈색 바위 산악 암석",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "갈색 바위 산악 암석",
+   "rock",
+   "바위",
+   "산악",
+   "암석"
+  ]
+ },
+ {
+  "index": 43,
+  "label": "풀 낀 바위 산악지대",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "풀 낀 바위 산악지대",
+   "rock",
+   "바위",
+   "풀",
+   "산악"
+  ]
+ },
+ {
+  "index": 44,
+  "label": "늪지 습지 어두운 물가",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 습지 어두운 물가",
+   "swamp",
+   "늪지",
+   "습지",
+   "물가"
+  ]
+ },
+ {
+  "index": 45,
+  "label": "늪지 진흙 습지 물",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 진흙 습지 물",
+   "swamp",
+   "늪지",
+   "진흙",
+   "습지"
+  ]
+ },
+ {
+  "index": 46,
+  "label": "늪지 습지 검은 물가",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 습지 검은 물가",
+   "swamp",
+   "늪지",
+   "습지",
+   "검은"
+  ]
+ },
+ {
+  "index": 47,
+  "label": "늪지 습지 웅덩이",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "늪지 습지 웅덩이",
+   "swamp",
+   "늪지",
+   "습지",
+   "웅덩이"
+  ]
+ },
+ {
+  "index": 48,
+  "label": "초원 언덕 경사 오른쪽",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 언덕 경사 오른쪽",
+   "hill",
+   "언덕",
+   "초원",
+   "경사"
+  ]
+ },
+ {
+  "index": 49,
+  "label": "언덕 초원 경사 언덕",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "언덕 초원 경사 언덕",
+   "hill",
+   "언덕",
+   "경사",
+   "초원"
+  ]
+ },
+ {
+  "index": 50,
+  "label": "갈색 흙 언덕 오른쪽",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 언덕 오른쪽",
+   "hill",
+   "언덕",
+   "흙",
+   "경사"
+  ]
+ },
+ {
+  "index": 51,
+  "label": "흙 언덕 경사 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 언덕 경사 바닥",
+   "hill",
+   "언덕",
+   "흙",
+   "경사"
+  ]
+ },
+ {
+  "index": 52,
+  "label": "초원 바다 물가 오른쪽",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "초원 바다 물가 오른쪽",
+   "coast",
+   "물가",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 53,
+  "label": "바다 물가 초원 언덕",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "바다 물가 초원 언덕",
+   "coast",
+   "물가",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 54,
+  "label": "마을 가옥 지붕 무리",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 가옥 지붕 무리",
+   "town",
+   "마을",
+   "가옥",
+   "지붕"
+  ]
+ },
+ {
+  "index": 55,
+  "label": "마을 초가집 이중 지붕",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 초가집 이중 지붕",
+   "town",
+   "마을",
+   "초가집",
+   "지붕"
+  ]
+ },
+ {
+  "index": 56,
+  "label": "마을 단독 가옥 지붕",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 단독 가옥 지붕",
+   "town",
+   "마을",
+   "가옥",
+   "지붕"
+  ]
+ },
+ {
+  "index": 57,
+  "label": "바위산 봉우리 고원",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "바위산 봉우리 고원",
+   "mountain",
+   "산",
+   "바위",
+   "봉우리"
+  ]
+ },
+ {
+  "index": 58,
+  "label": "심해 소용돌이 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "심해 소용돌이 물결",
+   "water",
+   "물",
+   "소용돌이",
+   "심해"
+  ]
+ },
+ {
+  "index": 59,
+  "label": "바위산 고원 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "바위산 고원 봉우리",
+   "mountain",
+   "산",
+   "바위",
+   "고원"
+  ]
+ },
+ {
+  "index": 60,
+  "label": "해안 초원 바다 북쪽",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 북쪽",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 61,
+  "label": "해안 초원 바다 변형",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 변형",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 62,
+  "label": "해안 초원 바다 곡선",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 곡선",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 63,
+  "label": "얕은 바다 해안 백사",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "얕은 바다 해안 백사",
+   "coast",
+   "해안",
+   "백사",
+   "바다"
+  ]
+ },
+ {
+  "index": 64,
+  "label": "백사장 해안 얕은 물",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "백사장 해안 얕은 물",
+   "beach",
+   "백사",
+   "해변",
+   "물가"
+  ]
+ },
+ {
+  "index": 65,
+  "label": "얕은 바다 해안 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "얕은 바다 해안 물가",
+   "coast",
+   "해안",
+   "물가",
+   "바다"
+  ]
+ },
+ {
+  "index": 66,
+  "label": "초원 흙 구릉 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 흙 구릉 경계",
+   "hill",
+   "구릉",
+   "흙",
+   "초원"
+  ]
+ },
+ {
+  "index": 67,
+  "label": "갈색 흙 평지 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 평지 바닥",
+   "dirt",
+   "흙",
+   "평지",
+   "지면"
+  ]
+ },
+ {
+  "index": 68,
+  "label": "흙 초원 경사 구릉",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 초원 경사 구릉",
+   "hill",
+   "구릉",
+   "경사",
+   "흙"
+  ]
+ },
+ {
+  "index": 69,
+  "label": "초원 사막 모래 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "초원 사막 모래 경계",
+   "desert",
+   "사막",
+   "모래",
+   "경계"
+  ]
+ },
+ {
+  "index": 70,
+  "label": "모래 사막 평야 바닥",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 평야 바닥",
+   "desert",
+   "사막",
+   "모래",
+   "평야"
+  ]
+ },
+ {
+  "index": 71,
+  "label": "모래 사막 구릉 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 구릉 경계",
+   "desert",
+   "사막",
+   "구릉",
+   "모래"
+  ]
+ },
+ {
+  "index": 72,
+  "label": "갈색 흙 두둑 평지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 두둑 평지",
+   "dirt",
+   "흙",
+   "두둑",
+   "평지"
+  ]
+ },
+ {
+  "index": 73,
+  "label": "갈색 밭 이랑 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 밭 이랑 지면",
+   "field",
+   "밭",
+   "이랑",
+   "흙"
+  ]
+ },
+ {
+  "index": 74,
+  "label": "모래 해변 얕은 물가",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 얕은 물가",
+   "beach",
+   "해변",
+   "모래",
+   "물가"
+  ]
+ },
+ {
+  "index": 75,
+  "label": "모래 해변 물굽이",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 물굽이",
+   "beach",
+   "해변",
+   "모래",
+   "물굽이"
+  ]
+ },
+ {
+  "index": 76,
+  "label": "모래 해변 어귀 물가",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 어귀 물가",
+   "beach",
+   "해변",
+   "모래",
+   "어귀"
+  ]
+ },
+ {
+  "index": 77,
+  "label": "모래 해변 바다 어귀",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 바다 어귀",
+   "beach",
+   "해변",
+   "모래",
+   "바다"
+  ]
+ },
+ {
+  "index": 78,
+  "label": "초원 잔디 평원 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 잔디 평원 바닥",
+   "grass",
+   "초원",
+   "잔디",
+   "평원"
+  ]
+ },
+ {
+  "index": 79,
+  "label": "초원 평야 푸른 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 평야 푸른 잔디",
+   "grass",
+   "초원",
+   "잔디",
+   "평야"
+  ]
+ },
+ {
+  "index": 80,
+  "label": "초원 언덕 경사 언덕",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 언덕 경사 언덕",
+   "hill",
+   "언덕",
+   "초원",
+   "경사"
+  ]
+ },
+ {
+  "index": 81,
+  "label": "어두운 갈색 흙 평지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "어두운 갈색 흙 평지",
+   "dirt",
+   "흙",
+   "갈색",
+   "평지"
+  ]
+ },
+ {
+  "index": 82,
+  "label": "갈색 흙 평원 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 평원 지면",
+   "dirt",
+   "흙",
+   "평원",
+   "지면"
+  ]
+ },
+ {
+  "index": 83,
+  "label": "갈색 밭 흙 이랑",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 밭 흙 이랑",
+   "dirt",
+   "밭",
+   "흙",
+   "이랑"
+  ]
+ },
+ {
+  "index": 84,
+  "label": "마을 탑 건물 랜드마크",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 탑 건물 랜드마크",
+   "town",
+   "탑",
+   "마을",
+   "건물"
+  ]
+ },
+ {
+  "index": 85,
+  "label": "마을 가옥 지붕 두 채",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 가옥 지붕 두 채",
+   "town",
+   "마을",
+   "가옥",
+   "지붕"
+  ]
+ },
+ {
+  "index": 86,
+  "label": "마을 탑 단독 랜드마크",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 탑 단독 랜드마크",
+   "town",
+   "탑",
+   "마을",
+   "랜드마크"
+  ]
+ },
+ {
+  "index": 87,
+  "label": "동굴 바위산 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "동굴 바위산 봉우리",
+   "mountain",
+   "동굴",
+   "바위",
+   "산"
+  ]
+ },
+ {
+  "index": 88,
+  "label": "거무튀튀한 암석 구조물",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "거무튀튀한 암석 구조물",
+   "rock",
+   "암석",
+   "구조물",
+   "검은",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 89,
+  "label": "바위산 말단 봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "바위산 말단 봉우리",
+   "mountain",
+   "산",
+   "바위",
+   "말단"
+  ]
+ },
+ {
+  "index": 90,
+  "label": "해안 초원 바다 경계",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 경계",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 91,
+  "label": "해안 초원 바다 변형",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 변형",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 92,
+  "label": "해안 초원 바다 모서리",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 초원 바다 모서리",
+   "coast",
+   "해안",
+   "바다",
+   "초원"
+  ]
+ },
+ {
+  "index": 93,
+  "label": "얕은 바다 해안 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "얕은 바다 해안 물가",
+   "coast",
+   "해안",
+   "바다",
+   "물가"
+  ]
+ },
+ {
+  "index": 94,
+  "label": "백사장 해안 얕은 바다",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "백사장 해안 얕은 바다",
+   "beach",
+   "백사",
+   "해변",
+   "바다"
+  ]
+ },
+ {
+  "index": 95,
+  "label": "얕은 바다 해안 백사",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "얕은 바다 해안 백사",
+   "coast",
+   "해안",
+   "백사",
+   "바다"
+  ]
+ },
+ {
+  "index": 96,
+  "label": "초원 흙 구릉 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 흙 구릉 경계",
+   "hill",
+   "구릉",
+   "흙",
+   "초원"
+  ]
+ },
+ {
+  "index": 97,
+  "label": "갈색 흙 평지 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 평지 지면",
+   "dirt",
+   "흙",
+   "평지",
+   "지면"
+  ]
+ },
+ {
+  "index": 98,
+  "label": "흙 구릉 초원 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "흙 구릉 초원 경계",
+   "hill",
+   "구릉",
+   "흙",
+   "초원"
+  ]
+ },
+ {
+  "index": 99,
+  "label": "초원 사막 모래 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "초원 사막 모래 경계",
+   "desert",
+   "사막",
+   "모래",
+   "경계"
+  ]
+ },
+ {
+  "index": 100,
+  "label": "모래 사막 평원 지면",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 평원 지면",
+   "desert",
+   "사막",
+   "모래",
+   "평원"
+  ]
+ },
+ {
+  "index": 101,
+  "label": "모래 사막 구릉 경계",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 사막 구릉 경계",
+   "desert",
+   "사막",
+   "구릉",
+   "모래"
+  ]
+ },
+ {
+  "index": 102,
+  "label": "갈색 밭 이랑 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 밭 이랑 지면",
+   "field",
+   "밭",
+   "이랑",
+   "흙"
+  ]
+ },
+ {
+  "index": 103,
+  "label": "갈색 밭두둑 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 밭두둑 지면",
+   "field",
+   "밭",
+   "두둑",
+   "흙"
+  ]
+ },
+ {
+  "index": 104,
+  "label": "모래 해변 물가 백사",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 물가 백사",
+   "beach",
+   "해변",
+   "모래",
+   "백사"
+  ]
+ },
+ {
+  "index": 105,
+  "label": "모래 해변 모래 평지",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 모래 평지",
+   "beach",
+   "해변",
+   "모래",
+   "평지"
+  ]
+ },
+ {
+  "index": 106,
+  "label": "모래 해변 어귀 바다",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 어귀 바다",
+   "beach",
+   "해변",
+   "모래",
+   "어귀"
+  ]
+ },
+ {
+  "index": 107,
+  "label": "모래 해변 바다 물가",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 해변 바다 물가",
+   "beach",
+   "해변",
+   "모래",
+   "바다"
+  ]
+ },
+ {
+  "index": 108,
+  "label": "초원 잔디 평원 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 잔디 평원 바닥",
+   "grass",
+   "초원",
+   "잔디",
+   "평원"
+  ]
+ },
+ {
+  "index": 109,
+  "label": "초원 평야 푸른 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 평야 푸른 잔디",
+   "grass",
+   "초원",
+   "잔디",
+   "평야"
+  ]
+ },
+ {
+  "index": 110,
+  "label": "초원 언덕 경사 지면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 언덕 경사 지면",
+   "hill",
+   "언덕",
+   "초원",
+   "경사"
+  ]
+ },
+ {
+  "index": 111,
+  "label": "갈색 흙 다진 평지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 다진 평지",
+   "dirt",
+   "흙",
+   "평지",
+   "흙바닥"
+  ]
+ },
+ {
+  "index": 112,
+  "label": "갈색 흙 평원 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 평원 바닥",
+   "dirt",
+   "흙",
+   "평원",
+   "밭"
+  ]
+ },
+ {
+  "index": 113,
+  "label": "갈색 흙 언덕 경계",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 언덕 경계",
+   "hill",
+   "언덕",
+   "흙",
+   "경계"
+  ]
+ },
+ {
+  "index": 114,
+  "label": "마을 가옥 지붕 랜드마크",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 가옥 지붕 랜드마크",
+   "town",
+   "마을",
+   "가옥",
+   "지붕"
+  ]
+ },
+ {
+  "index": 115,
+  "label": "마을 성곽 가옥 지붕",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "마을 성곽 가옥 지붕",
+   "town",
+   "마을",
+   "성곽",
+   "지붕"
+  ]
+ },
+ {
+  "index": 116,
+  "label": "성채 성곽 랜드마크",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "성채 성곽 랜드마크",
+   "castle",
+   "성",
+   "성채",
+   "랜드마크"
+  ]
+ },
+ {
+  "index": 117,
+  "label": "흩어진 바위 초목 무리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "흩어진 바위 초목 무리",
+   "scattered",
+   "흩어진",
+   "바위",
+   "초목",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 118,
+  "label": "바위 작은 섬 랜드마크",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 작은 섬 랜드마크",
+   "rock",
+   "바위",
+   "섬",
+   "랜드마크"
+  ]
+ },
+ {
+  "index": 119,
+  "label": "바위 암석 덩어리 땅",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 암석 덩어리 땅",
+   "rock",
+   "바위",
+   "암석",
+   "땅"
+  ]
+ },
+ {
+  "index": 120,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 121,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 122,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 123,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 124,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 125,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 126,
+  "label": "진주빛 심해 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "진주빛 심해 물결",
+   "심해",
+   "반짝임",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 127,
+  "label": "초록 삼림 캐노피",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "초록 삼림 캐노피",
+   "삼림",
+   "캐노피",
+   "초록"
+  ]
+ },
+ {
+  "index": 128,
+  "label": "물가 초원 해안",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "물가 초원 해안",
+   "해안",
+   "초원",
+   "물가"
+  ]
+ },
+ {
+  "index": 129,
+  "label": "하얀 물보라 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "하얀 물보라 물가",
+   "물보라",
+   "얕은바다"
+  ]
+ },
+ {
+  "index": 130,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 131,
+  "label": "초원 물가 경계",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "초원 물가 경계",
+   "초원",
+   "경계",
+   "물가"
+  ]
+ },
+ {
+  "index": 132,
+  "label": "잿빛 암반 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "잿빛 암반 지대",
+   "암반",
+   "바위",
+   "잿빛"
+  ]
+ },
+ {
+  "index": 133,
+  "label": "이끼 낀 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "이끼 낀 바위 지대",
+   "바위",
+   "이끼",
+   "지대"
+  ]
+ },
+ {
+  "index": 134,
+  "label": "황사 바위 언덕",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "황사 바위 언덕",
+   "바위",
+   "언덕",
+   "황사"
+  ]
+ },
+ {
+  "index": 135,
+  "label": "자갈 모래 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "자갈 모래 언덕",
+   "자갈",
+   "모래",
+   "언덕"
+  ]
+ },
+ {
+  "index": 136,
+  "label": "황토 바위 사막",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "황토 바위 사막",
+   "황토",
+   "사막",
+   "바위"
+  ]
+ },
+ {
+  "index": 137,
+  "label": "모래 바위 지대",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 바위 지대",
+   "모래",
+   "바위",
+   "지대"
+  ]
+ },
+ {
+  "index": 138,
+  "label": "흙길 난 초원",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 난 초원",
+   "흙길",
+   "초원",
+   "오솔길"
+  ]
+ },
+ {
+  "index": 139,
+  "label": "초록 목초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초록 목초지",
+   "목초지",
+   "초원",
+   "풀밭"
+  ]
+ },
+ {
+  "index": 140,
+  "label": "푸른 평원 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 평원 풀밭",
+   "평원",
+   "풀밭",
+   "푸른"
+  ]
+ },
+ {
+  "index": 141,
+  "label": "갈색 산악 평원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 산악 평원",
+   "산악",
+   "평야",
+   "갈색"
+  ]
+ },
+ {
+  "index": 142,
+  "label": "갈색 언덕 지대",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 언덕 지대",
+   "언덕",
+   "갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 143,
+  "label": "황토 산맥 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "황토 산맥 땅",
+   "산맥",
+   "황토",
+   "땅"
+  ]
+ },
+ {
+  "index": 144,
+  "label": "불꽃 봉수대 아이콘",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "불꽃 봉수대 아이콘",
+   "봉수대",
+   "불꽃",
+   "표지"
+  ]
+ },
+ {
+  "index": 145,
+  "label": "언덕 위 밝은 표지",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "언덕 위 밝은 표지",
+   "언덕",
+   "표지",
+   "등불",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 146,
+  "label": "작은 바위 언덕",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "작은 바위 언덕",
+   "바위",
+   "언덕",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 147,
+  "label": "기와지붕 대형 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "기와지붕 대형 건물",
+   "건물",
+   "지붕",
+   "지도"
+  ]
+ },
+ {
+  "index": 148,
+  "label": "문과 창 큰 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "문과 창 큰 건물",
+   "건물",
+   "창문",
+   "문"
+  ]
+ },
+ {
+  "index": 149,
+  "label": "돌벽 큰 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "돌벽 큰 건물",
+   "건물",
+   "돌벽",
+   "지도"
+  ]
+ },
+ {
+  "index": 150,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 151,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 152,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 153,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 154,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 155,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 156,
+  "label": "진주빛 심해 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "진주빛 심해 물결",
+   "심해",
+   "반짝임",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 157,
+  "label": "물가 풀밭 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "물가 풀밭 땅",
+   "풀밭",
+   "언덕",
+   "물가"
+  ]
+ },
+ {
+  "index": 158,
+  "label": "물가 초원 해안",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "물가 초원 해안",
+   "해안",
+   "초원",
+   "물가"
+  ]
+ },
+ {
+  "index": 159,
+  "label": "하얀 물보라 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "하얀 물보라 물가",
+   "물보라",
+   "휜",
+   "해안"
+  ]
+ },
+ {
+  "index": 160,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 161,
+  "label": "초원 물가 경계",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "초원 물가 경계",
+   "초원",
+   "경계",
+   "물가"
+  ]
+ },
+ {
+  "index": 162,
+  "label": "회색 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 바위 지대",
+   "회색",
+   "바위",
+   "지대"
+  ]
+ },
+ {
+  "index": 163,
+  "label": "회갈색 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회갈색 바위 지대",
+   "바위",
+   "회갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 164,
+  "label": "바위 섞인 황토",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바위 섞인 황토",
+   "바위",
+   "황토",
+   "사막"
+  ]
+ },
+ {
+  "index": 165,
+  "label": "모래 자갈 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 자갈 언덕",
+   "모래",
+   "자갈",
+   "언덕"
+  ]
+ },
+ {
+  "index": 166,
+  "label": "바위 모래 사막",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바위 모래 사막",
+   "바위",
+   "모래",
+   "사막"
+  ]
+ },
+ {
+  "index": 167,
+  "label": "모래 언덕 지대",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 언덕 지대",
+   "모래",
+   "언덕",
+   "지대"
+  ]
+ },
+ {
+  "index": 168,
+  "label": "초원 흙길 지대",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "초원 흙길 지대",
+   "흙길",
+   "초원",
+   "길"
+  ]
+ },
+ {
+  "index": 169,
+  "label": "하얀 눈 설원",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "하얀 눈 설원",
+   "눈",
+   "설원",
+   "하얀"
+  ]
+ },
+ {
+  "index": 170,
+  "label": "푸른 평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 평원 초지",
+   "평원",
+   "초지",
+   "푸른"
+  ]
+ },
+ {
+  "index": 171,
+  "label": "갈색 산악 지대",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 산악 지대",
+   "산악",
+   "갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 172,
+  "label": "갈색 평야 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 평야 땅",
+   "평야",
+   "갈색",
+   "땅"
+  ]
+ },
+ {
+  "index": 173,
+  "label": "황갈색 산맥 언덕",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "황갈색 산맥 언덕",
+   "산맥",
+   "언덕",
+   "황토"
+  ]
+ },
+ {
+  "index": 174,
+  "label": "해자 둘러싼 성",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "해자 둘러싼 성",
+   "성",
+   "해자",
+   "성채"
+  ]
+ },
+ {
+  "index": 175,
+  "label": "불빛 나는 창 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "불빛 나는 창 건물",
+   "건물",
+   "창",
+   "불빛",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 176,
+  "label": "초록 벽 요새",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "초록 벽 요새",
+   "요새",
+   "성벽",
+   "초록"
+  ]
+ },
+ {
+  "index": 177,
+  "label": "건물 좌측 아이콘",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "건물 좌측 아이콘",
+   "건물",
+   "좌측",
+   "지도"
+  ]
+ },
+ {
+  "index": 178,
+  "label": "건물 중앙 아이콘",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "건물 중앙 아이콘",
+   "건물",
+   "중앙",
+   "지도"
+  ]
+ },
+ {
+  "index": 179,
+  "label": "작은 언덕 아이콘",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "작은 언덕 아이콘",
+   "언덕",
+   "작은",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 180,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 181,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 182,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 183,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 184,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 185,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 186,
+  "label": "진주빛 심해 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "진주빛 심해 물결",
+   "심해",
+   "반짝임",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 187,
+  "label": "평야 숲 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평야 숲 초지",
+   "숲",
+   "평야",
+   "초지",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 188,
+  "label": "물가 초원 해안",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "물가 초원 해안",
+   "해안",
+   "초원",
+   "물가"
+  ]
+ },
+ {
+  "index": 189,
+  "label": "하얀 물보라 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "하얀 물보라 물가",
+   "물보라",
+   "얕은바다"
+  ]
+ },
+ {
+  "index": 190,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 191,
+  "label": "초원 물가 경계",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "초원 물가 경계",
+   "초원",
+   "경계",
+   "물가"
+  ]
+ },
+ {
+  "index": 192,
+  "label": "회색 암반 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 암반 지대",
+   "암반",
+   "바위",
+   "회색"
+  ]
+ },
+ {
+  "index": 193,
+  "label": "회갈색 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회갈색 바위 지대",
+   "바위",
+   "회갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 194,
+  "label": "바위 자갈 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바위 자갈 언덕",
+   "바위",
+   "자갈",
+   "언덕"
+  ]
+ },
+ {
+  "index": 195,
+  "label": "모래 바위 사막",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 바위 사막",
+   "모래",
+   "바위",
+   "사막"
+  ]
+ },
+ {
+  "index": 196,
+  "label": "황토 모래 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "황토 모래 언덕",
+   "황토",
+   "모래",
+   "언덕"
+  ]
+ },
+ {
+  "index": 197,
+  "label": "바위 모래 지대",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바위 모래 지대",
+   "바위",
+   "모래",
+   "지대"
+  ]
+ },
+ {
+  "index": 198,
+  "label": "초원 흙길 지대",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "초원 흙길 지대",
+   "흙길",
+   "초원",
+   "길"
+  ]
+ },
+ {
+  "index": 199,
+  "label": "눈 덮인 설원",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈 덮인 설원",
+   "눈",
+   "설원",
+   "덮임"
+  ]
+ },
+ {
+  "index": 200,
+  "label": "푸른 평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 평원 초지",
+   "평원",
+   "초지",
+   "푸른"
+  ]
+ },
+ {
+  "index": 201,
+  "label": "갈색 산악 지대",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 산악 지대",
+   "산악",
+   "갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 202,
+  "label": "갈색 평야 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 평야 땅",
+   "평야",
+   "갈색",
+   "땅"
+  ]
+ },
+ {
+  "index": 203,
+  "label": "황토 언덕 산맥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "황토 언덕 산맥",
+   "언덕",
+   "산맥",
+   "황토"
+  ]
+ },
+ {
+  "index": 204,
+  "label": "작은 집 아이콘",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "작은 집 아이콘",
+   "집",
+   "건물",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 205,
+  "label": "벽돌 쌓인 성벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽돌 쌓인 성벽",
+   "벽돌",
+   "성벽",
+   "담"
+  ]
+ },
+ {
+  "index": 206,
+  "label": "문 달린 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "문 달린 건물",
+   "건물",
+   "문",
+   "지도"
+  ]
+ },
+ {
+  "index": 207,
+  "label": "물 위 목교",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "물 위 목교",
+   "다리",
+   "물",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 208,
+  "label": "모래 언덕 아이콘",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 언덕 아이콘",
+   "모래",
+   "언덕",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 209,
+  "label": "작은 나무 수풀",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "작은 나무 수풀",
+   "나무",
+   "수풀",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 210,
+  "label": "깊은 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바다 물결",
+   "바다",
+   "물",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 211,
+  "label": "먼바다 잔물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "먼바다 잔물결",
+   "파도",
+   "수면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 212,
+  "label": "짙은 심해 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 심해 수면",
+   "심해",
+   "어두운",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 213,
+  "label": "물거품 이는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물거품 이는 바다",
+   "물거품",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 214,
+  "label": "하얀 포말 해면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "하얀 포말 해면",
+   "포말",
+   "하얀",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 215,
+  "label": "부서지는 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "부서지는 파도",
+   "물보라",
+   "파도",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 216,
+  "label": "진주빛 심해 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "진주빛 심해 물결",
+   "심해",
+   "반짝임",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 217,
+  "label": "숲 가장자리 초원",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 가장자리 초원",
+   "숲",
+   "초원",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 218,
+  "label": "물가 초원 해안",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "물가 초원 해안",
+   "해안",
+   "초원",
+   "물가"
+  ]
+ },
+ {
+  "index": 219,
+  "label": "하얀 물보라 물가",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "하얀 물보라 물가",
+   "물보라",
+   "얕은바다"
+  ]
+ },
+ {
+  "index": 220,
+  "label": "평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평원 초지",
+   "평야",
+   "풀밭",
+   "초지"
+  ]
+ },
+ {
+  "index": 221,
+  "label": "초원 물가 경계",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "초원 물가 경계",
+   "초원",
+   "경계",
+   "물가"
+  ]
+ },
+ {
+  "index": 222,
+  "label": "회색 암반 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 암반 지대",
+   "암반",
+   "바위",
+   "회색"
+  ]
+ },
+ {
+  "index": 223,
+  "label": "회갈색 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회갈색 바위 지대",
+   "바위",
+   "회갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 224,
+  "label": "바위 자갈 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바위 자갈 언덕",
+   "바위",
+   "자갈",
+   "언덕"
+  ]
+ },
+ {
+  "index": 225,
+  "label": "모래 바위 사막",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 바위 사막",
+   "모래",
+   "바위",
+   "사막"
+  ]
+ },
+ {
+  "index": 226,
+  "label": "황토 모래 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "황토 모래 언덕",
+   "황토",
+   "모래",
+   "언덕"
+  ]
+ },
+ {
+  "index": 227,
+  "label": "바위 모래 지대",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바위 모래 지대",
+   "바위",
+   "모래",
+   "지대"
+  ]
+ },
+ {
+  "index": 228,
+  "label": "초원 흙길 지대",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "초원 흙길 지대",
+   "흙길",
+   "초원",
+   "길"
+  ]
+ },
+ {
+  "index": 229,
+  "label": "눈 덮인 설원",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈 덮인 설원",
+   "눈",
+   "설원",
+   "덮임"
+  ]
+ },
+ {
+  "index": 230,
+  "label": "푸른 평원 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 평원 초지",
+   "평원",
+   "초지",
+   "푸른"
+  ]
+ },
+ {
+  "index": 231,
+  "label": "갈색 산악 지대",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 산악 지대",
+   "산악",
+   "갈색",
+   "지대"
+  ]
+ },
+ {
+  "index": 232,
+  "label": "갈색 평야 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 평야 땅",
+   "평야",
+   "갈색",
+   "땅"
+  ]
+ },
+ {
+  "index": 234,
+  "label": "불꽃 깃발 탑",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "불꽃 깃발 탑",
+   "탑",
+   "불꽃",
+   "깃발",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 235,
+  "label": "점멸 무늬 프레임",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "점멸 무늬 프레임",
+   "점멸",
+   "애니메이션",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 236,
+  "label": "검은 배경 프레임",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "검은 배경 프레임",
+   "검은",
+   "프레임",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 237,
+  "label": "물가 기둥 구조물",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "물가 기둥 구조물",
+   "기둥",
+   "구조물",
+   "물가",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 238,
+  "label": "모래 바위 아이콘",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 바위 아이콘",
+   "모래",
+   "바위",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 239,
+  "label": "작은 나무 수풀",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "작은 나무 수풀",
+   "나무",
+   "수풀",
+   "아이콘"
+  ]
+ },
+ {
+  "index": 240,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 241,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 242,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 243,
+  "label": "잔디 알갱이 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 알갱이 초원",
+   "초원",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 244,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 245,
+  "label": "풀 포인트 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "풀 포인트 초원",
+   "초원",
+   "speckle",
+   "grass"
+  ]
+ },
+ {
+  "index": 246,
+  "label": "설원 언 얼음물",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 언 얼음물",
+   "눈",
+   "얼음",
+   "물",
+   "설원"
+  ]
+ },
+ {
+  "index": 247,
+  "label": "새하얀 설원 눈",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "새하얀 설원 눈",
+   "설원",
+   "snow",
+   "지면"
+  ]
+ },
+ {
+  "index": 248,
+  "label": "설원 어는 물길",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 어는 물길",
+   "눈",
+   "물",
+   "설원",
+   "water"
+  ]
+ },
+ {
+  "index": 249,
+  "label": "눈 덮인 흙 지면",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈 덮인 흙 지면",
+   "설원",
+   "dirt",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 250,
+  "label": "새하얀 설원 눈",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "새하얀 설원 눈",
+   "설원",
+   "snow",
+   "지면"
+  ]
+ },
+ {
+  "index": 251,
+  "label": "눈덮인 바위 지면",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈덮인 바위 지면",
+   "설원",
+   "rock",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 252,
+  "label": "풀 덮인 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "풀 덮인 바위산",
+   "산",
+   "rock",
+   "언덕"
+  ]
+ },
+ {
+  "index": 253,
+  "label": "눈 붙은 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "눈 붙은 바위산",
+   "산",
+   "rock",
+   "눈"
+  ]
+ },
+ {
+  "index": 254,
+  "label": "어두운 암석산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "어두운 암석산",
+   "산",
+   "암석",
+   "rock"
+  ]
+ },
+ {
+  "index": 255,
+  "label": "회색 바위 능선",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "회색 바위 능선",
+   "산",
+   "능선",
+   "rock"
+  ]
+ },
+ {
+  "index": 256,
+  "label": "바위산 비탈",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "바위산 비탈",
+   "산",
+   "비탈",
+   "rock"
+  ]
+ },
+ {
+  "index": 257,
+  "label": "그늘진 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "그늘진 바위산",
+   "산",
+   "암석",
+   "shadow"
+  ]
+ },
+ {
+  "index": 259,
+  "label": "왕관 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "왕관 초록 나무",
+   "나무",
+   "tree",
+   "숲"
+  ]
+ },
+ {
+  "index": 260,
+  "label": "서 있는 나무 기둥",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "서 있는 나무 기둥",
+   "나무",
+   "trunk",
+   "기둥"
+  ]
+ },
+ {
+  "index": 261,
+  "label": "가로 누운 통나무",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "가로 누운 통나무",
+   "나무",
+   "log",
+   "통나무"
+  ]
+ },
+ {
+  "index": 262,
+  "label": "빨간 열매 관목",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "빨간 열매 관목",
+   "나무",
+   "berry",
+   "수풀",
+   "빨강"
+  ]
+ },
+ {
+  "index": 263,
+  "label": "물가 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "물가 바위 지대",
+   "바위",
+   "물가",
+   "rock"
+  ]
+ },
+ {
+  "index": 264,
+  "label": "바위 언덕",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 언덕",
+   "바위",
+   "언덕",
+   "rock"
+  ]
+ },
+ {
+  "index": 265,
+  "label": "좁은 흙길",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "좁은 흙길",
+   "흙",
+   "길",
+   "path",
+   "dirt"
+  ]
+ },
+ {
+  "index": 266,
+  "label": "어두운 목조 기단",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "어두운 목조 기단",
+   "나무",
+   "structure",
+   "목조"
+  ]
+ },
+ {
+  "index": 267,
+  "label": "나무 판자 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "나무 판자 갑판",
+   "나무",
+   "deck",
+   "갑판"
+  ]
+ },
+ {
+  "index": 268,
+  "label": "나무 판자 마루",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "나무 판자 마루",
+   "나무",
+   "plank",
+   "마루"
+  ]
+ },
+ {
+  "index": 269,
+  "label": "이음새 나무 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "이음새 나무 갑판",
+   "나무",
+   "deck",
+   "이음새"
+  ]
+ },
+ {
+  "index": 270,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 271,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 272,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 273,
+  "label": "그늘진 잔디 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "그늘진 잔디 초원",
+   "초원",
+   "shade",
+   "grass"
+  ]
+ },
+ {
+  "index": 274,
+  "label": "울창한 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "울창한 풀밭",
+   "풀밭",
+   "grass",
+   "텍스처"
+  ]
+ },
+ {
+  "index": 275,
+  "label": "잔디 질감 들판",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 질감 들판",
+   "들판",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 276,
+  "label": "설원 언 물가",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 언 물가",
+   "눈",
+   "얼음",
+   "물",
+   "설원"
+  ]
+ },
+ {
+  "index": 277,
+  "label": "설원 흐르는 물",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 흐르는 물",
+   "눈",
+   "물",
+   "설원",
+   "water"
+  ]
+ },
+ {
+  "index": 278,
+  "label": "설원 물풀 지대",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 물풀 지대",
+   "눈",
+   "물",
+   "풀",
+   "설원"
+  ]
+ },
+ {
+  "index": 279,
+  "label": "눈 섞인 흙밭",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈 섞인 흙밭",
+   "설원",
+   "dirt",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 280,
+  "label": "눈덮인 진흙 지면",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈덮인 진흙 지면",
+   "설원",
+   "dirt",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 281,
+  "label": "흙섞인 설원 지면",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "흙섞인 설원 지면",
+   "설원",
+   "soil",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 282,
+  "label": "숲 낀 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "숲 낀 바위산",
+   "산",
+   "숲",
+   "rock"
+  ]
+ },
+ {
+  "index": 283,
+  "label": "눈솟은 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "눈솟은 바위산",
+   "산",
+   "눈",
+   "rock"
+  ]
+ },
+ {
+  "index": 284,
+  "label": "암벽 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "암벽 바위산",
+   "산",
+   "암벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 285,
+  "label": "잿빛 바위 능선",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "잿빛 바위 능선",
+   "산",
+   "능선",
+   "rock"
+  ]
+ },
+ {
+  "index": 286,
+  "label": "바위산 돌벽",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "바위산 돌벽",
+   "산",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 287,
+  "label": "짙은 암벽 지대",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "짙은 암벽 지대",
+   "산",
+   "암벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 288,
+  "label": "빨간 열매 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "빨간 열매 나무",
+   "나무",
+   "열매",
+   "berry",
+   "빨강"
+  ]
+ },
+ {
+  "index": 289,
+  "label": "초록 왕관 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "초록 왕관 나무",
+   "나무",
+   "canopy",
+   "숲"
+  ]
+ },
+ {
+  "index": 290,
+  "label": "무성한 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "무성한 초록 나무",
+   "나무",
+   "잎",
+   "tree"
+  ]
+ },
+ {
+  "index": 291,
+  "label": "숲속 작은 연못",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "숲속 작은 연못",
+   "연못",
+   "water",
+   "숲"
+  ]
+ },
+ {
+  "index": 292,
+  "label": "나무 선착장",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "나무 선착장",
+   "부두",
+   "wood",
+   "dock"
+  ]
+ },
+ {
+  "index": 293,
+  "label": "물가 목조 부두",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "물가 목조 부두",
+   "부두",
+   "물",
+   "dock"
+  ]
+ },
+ {
+  "index": 294,
+  "label": "모래 벌판",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 벌판",
+   "모래",
+   "sand",
+   "사막"
+  ]
+ },
+ {
+  "index": 295,
+  "label": "마른 모래 땅",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "마른 모래 땅",
+   "모래",
+   "sand",
+   "땅"
+  ]
+ },
+ {
+  "index": 296,
+  "label": "해변 자갈밭",
+  "role": "coast",
+  "passage": "passable",
+  "tags": [
+   "해변 자갈밭",
+   "해변",
+   "자갈",
+   "coast",
+   "sand"
+  ]
+ },
+ {
+  "index": 297,
+  "label": "수상 목조 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "수상 목조 갑판",
+   "갑판",
+   "wood",
+   "물"
+  ]
+ },
+ {
+  "index": 298,
+  "label": "갈색 나무 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "갈색 나무 갑판",
+   "갑판",
+   "wood",
+   "deck"
+  ]
+ },
+ {
+  "index": 299,
+  "label": "나무널 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "나무널 갑판",
+   "갑판",
+   "plank",
+   "deck"
+  ]
+ },
+ {
+  "index": 300,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 301,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 302,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 303,
+  "label": "풀무늬 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "풀무늬 초원",
+   "초원",
+   "pattern",
+   "grass"
+  ]
+ },
+ {
+  "index": 304,
+  "label": "잔디 알갱이 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 알갱이 초원",
+   "초원",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 305,
+  "label": "잔디 섬돌 무늬",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔디 섬돌 무늬",
+   "초원",
+   "pattern",
+   "grass"
+  ]
+ },
+ {
+  "index": 306,
+  "label": "설원 얼음물 지대",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 얼음물 지대",
+   "눈",
+   "얼음",
+   "물",
+   "설원"
+  ]
+ },
+ {
+  "index": 307,
+  "label": "설원 강물 자락",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 강물 자락",
+   "눈",
+   "물",
+   "설원",
+   "water"
+  ]
+ },
+ {
+  "index": 308,
+  "label": "설원 수풀 물가",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 수풀 물가",
+   "눈",
+   "물",
+   "풀",
+   "설원"
+  ]
+ },
+ {
+  "index": 309,
+  "label": "눈덮인 흙 지면",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈덮인 흙 지면",
+   "설원",
+   "dirt",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 310,
+  "label": "진흙설원 경계",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "진흙설원 경계",
+   "설원",
+   "soil",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 311,
+  "label": "흙섞인 설원 가장자리",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "흙섞인 설원 가장자리",
+   "설원",
+   "soil",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 312,
+  "label": "사막 모래 지면",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "사막 모래 지면",
+   "모래",
+   "sand",
+   "사막"
+  ]
+ },
+ {
+  "index": 313,
+  "label": "자갈 언덕",
+  "role": "rock",
+  "passage": "passable",
+  "tags": [
+   "자갈 언덕",
+   "자갈",
+   "rock",
+   "땅"
+  ]
+ },
+ {
+  "index": 314,
+  "label": "눈 덮인 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "눈 덮인 바위산",
+   "산",
+   "눈",
+   "rock"
+  ]
+ },
+ {
+  "index": 315,
+  "label": "자줏빛 산봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "자줏빛 산봉우리",
+   "산",
+   "봉우리",
+   "rock"
+  ]
+ },
+ {
+  "index": 316,
+  "label": "만년설 바위산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "만년설 바위산",
+   "산",
+   "만년설",
+   "rock"
+  ]
+ },
+ {
+  "index": 317,
+  "label": "산 정상 바위",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "산 정상 바위",
+   "산",
+   "정상",
+   "rock"
+  ]
+ },
+ {
+  "index": 318,
+  "label": "숲 캐노피 덩어리",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 캐노피 덩어리",
+   "숲",
+   "canopy",
+   "forest"
+  ]
+ },
+ {
+  "index": 319,
+  "label": "숲 가장자리 캐노피",
+  "role": "forest",
+  "passage": "solid",
+  "tags": [
+   "숲 가장자리 캐노피",
+   "숲",
+   "edge",
+   "forest"
+  ]
+ },
+ {
+  "index": 320,
+  "label": "회색 석조 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "회색 석조 건물",
+   "건물",
+   "stone",
+   "구조물"
+  ]
+ },
+ {
+  "index": 321,
+  "label": "잿빛 석조 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "잿빛 석조 건물",
+   "건물",
+   "stone",
+   "구조물"
+  ]
+ },
+ {
+  "index": 322,
+  "label": "풀둑 낀 연못",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "풀둑 낀 연못",
+   "연못",
+   "풀",
+   "water"
+  ]
+ },
+ {
+  "index": 323,
+  "label": "둑 낀 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "둑 낀 물웅덩이",
+   "물",
+   "둑",
+   "water"
+  ]
+ },
+ {
+  "index": 324,
+  "label": "모래 지면",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "모래 지면",
+   "모래",
+   "sand",
+   "지면"
+  ]
+ },
+ {
+  "index": 325,
+  "label": "바위 언덕 둔덕",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 언덕 둔덕",
+   "바위",
+   "언덕",
+   "mound"
+  ]
+ },
+ {
+  "index": 326,
+  "label": "갈색 둑 땅",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 둑 땅",
+   "흙",
+   "둑",
+   "dirt"
+  ]
+ },
+ {
+  "index": 327,
+  "label": "세로 나무 말뚝",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "세로 나무 말뚝",
+   "나무",
+   "post",
+   "말뚝"
+  ]
+ },
+ {
+  "index": 328,
+  "label": "나무 지주",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 지주",
+   "나무",
+   "post",
+   "지지대"
+  ]
+ },
+ {
+  "index": 329,
+  "label": "둑 사이 수로",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "둑 사이 수로",
+   "수로",
+   "water",
+   "물길"
+  ]
+ },
+ {
+  "index": 330,
+  "label": "넓은 초원 잔디",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "넓은 초원 잔디",
+   "초원",
+   "grass",
+   "terrain"
+  ]
+ },
+ {
+  "index": 331,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 332,
+  "label": "평탄한 들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평탄한 들판 풀밭",
+   "들판",
+   "grassland",
+   "terrain"
+  ]
+ },
+ {
+  "index": 333,
+  "label": "짙은 풀 섞인 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "짙은 풀 섞인 초원",
+   "초원",
+   "섞임",
+   "grass"
+  ]
+ },
+ {
+  "index": 334,
+  "label": "풀 언덕 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "풀 언덕 초지",
+   "초지",
+   "grass",
+   "풀밭"
+  ]
+ },
+ {
+  "index": 335,
+  "label": "들판 풀 텍스처",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "들판 풀 텍스처",
+   "들판",
+   "texture",
+   "grass"
+  ]
+ },
+ {
+  "index": 336,
+  "label": "설원 얼음 물빛",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 얼음 물빛",
+   "눈",
+   "얼음",
+   "물",
+   "설원"
+  ]
+ },
+ {
+  "index": 337,
+  "label": "설원 어는 강",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 어는 강",
+   "눈",
+   "물",
+   "설원",
+   "water"
+  ]
+ },
+ {
+  "index": 338,
+  "label": "설원 흙 물가",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "설원 흙 물가",
+   "눈",
+   "물",
+   "흙",
+   "설원"
+  ]
+ },
+ {
+  "index": 339,
+  "label": "눈덮인 진흙 지면",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "눈덮인 진흙 지면",
+   "설원",
+   "dirt",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 340,
+  "label": "진흙 설원 경계",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "진흙 설원 경계",
+   "설원",
+   "soil",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 341,
+  "label": "흙섞인 눈밭",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "흙섞인 눈밭",
+   "설원",
+   "soil",
+   "눈밭"
+  ]
+ },
+ {
+  "index": 342,
+  "label": "숲 덮인 산",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "숲 덮인 산",
+   "산",
+   "숲",
+   "rock"
+  ]
+ },
+ {
+  "index": 343,
+  "label": "풀 낀 모래 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "풀 낀 모래 언덕",
+   "모래",
+   "풀",
+   "언덕",
+   "sand"
+  ]
+ },
+ {
+  "index": 344,
+  "label": "자주빛 석조 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "자주빛 석조 건물",
+   "건물",
+   "stone",
+   "자주",
+   "구조물"
+  ]
+ },
+ {
+  "index": 345,
+  "label": "자색 돌 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "자색 돌 건물",
+   "건물",
+   "stone",
+   "자주",
+   "구조물"
+  ]
+ },
+ {
+  "index": 346,
+  "label": "보라빛 석조 구조",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "보라빛 석조 구조",
+   "구조물",
+   "stone",
+   "보라"
+  ]
+ },
+ {
+  "index": 347,
+  "label": "그늘진 자주 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "그늘진 자주 건물",
+   "건물",
+   "stone",
+   "그늘",
+   "구조물"
+  ]
+ },
+ {
+  "index": 348,
+  "label": "큰 초록 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "큰 초록 나무",
+   "나무",
+   "숲",
+   "tree"
+  ]
+ },
+ {
+  "index": 349,
+  "label": "숲 진 나무",
+  "role": "tree",
+  "passage": "solid",
+  "tags": [
+   "숲 진 나무",
+   "나무",
+   "숲",
+   "tree"
+  ]
+ },
+ {
+  "index": 350,
+  "label": "회색 석조 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "회색 석조 건물",
+   "건물",
+   "stone",
+   "회색"
+  ]
+ },
+ {
+  "index": 351,
+  "label": "잿빛 돌 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "잿빛 돌 건물",
+   "건물",
+   "stone",
+   "잿빛"
+  ]
+ },
+ {
+  "index": 352,
+  "label": "덩굴 덮인 목조 건물",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "덩굴 덮인 목조 건물",
+   "건물",
+   "wood",
+   "덩굴"
+  ]
+ },
+ {
+  "index": 353,
+  "label": "수풀 두른 갈색 집",
+  "role": "town-icon",
+  "passage": "solid",
+  "tags": [
+   "수풀 두른 갈색 집",
+   "집",
+   "wood",
+   "수풀"
+  ]
+ },
+ {
+  "index": 354,
+  "label": "나무 부두 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "나무 부두 갑판",
+   "부두",
+   "wood",
+   "dock",
+   "갑판"
+  ]
+ },
+ {
+  "index": 355,
+  "label": "갈색 흙 돔 언덕",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 돔 언덕",
+   "흙",
+   "돔",
+   "mound",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 356,
+  "label": "작은 흙 언덕",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "작은 흙 언덕",
+   "흙",
+   "언덕",
+   "mound",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 357,
+  "label": "나무 기둥 받침대",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 기둥 받침대",
+   "나무",
+   "post",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 358,
+  "label": "나무 말뚝 받침",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "나무 말뚝 받침",
+   "나무",
+   "post",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 359,
+  "label": "나무 판자 갑판",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "나무 판자 갑판",
+   "나무",
+   "deck",
+   "갑판"
+  ]
+ },
+ {
+  "index": 360,
+  "label": "초원 잔디 표면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초원 잔디 표면",
+   "풀밭",
+   "grass",
+   "초원"
+  ]
+ },
+ {
+  "index": 361,
+  "label": "푸른 평야 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 평야 초지",
+   "평야",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 362,
+  "label": "숲 그늘 풀바닥",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 그늘 풀바닥",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 363,
+  "label": "잔디 속 흙길",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "잔디 속 흙길",
+   "흙길",
+   "road",
+   "dirt"
+  ]
+ },
+ {
+  "index": 364,
+  "label": "밝은 초장 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "밝은 초장 풀밭",
+   "초장",
+   "green",
+   "풀"
+  ]
+ },
+ {
+  "index": 365,
+  "label": "흙길 난 길목",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 난 길목",
+   "흙길",
+   "path",
+   "dirt"
+  ]
+ },
+ {
+  "index": 366,
+  "label": "짙푸른 바다 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙푸른 바다 물결",
+   "바다",
+   "ocean",
+   "wave"
+  ]
+ },
+ {
+  "index": 367,
+  "label": "깊은 바닷물 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 바닷물 수면",
+   "바다",
+   "ocean",
+   "deep"
+  ]
+ },
+ {
+  "index": 368,
+  "label": "해안 파도 경계",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "해안 파도 경계",
+   "해안",
+   "coast",
+   "wave"
+  ]
+ },
+ {
+  "index": 369,
+  "label": "잔잔한 바다 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 바다 수면",
+   "바다",
+   "calm",
+   "water"
+  ]
+ },
+ {
+  "index": 370,
+  "label": "심해 검은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "심해 검은 물",
+   "심해",
+   "ocean",
+   "dark"
+  ]
+ },
+ {
+  "index": 371,
+  "label": "바다 속 어둠 무늬",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "바다 속 어둠 무늬",
+   "바다",
+   "abyss",
+   "wave"
+  ]
+ },
+ {
+  "index": 372,
+  "label": "노란 마름모 상징",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "노란 마름모 상징",
+   "표식",
+   "diamond",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 373,
+  "label": "노란 마름모 상징",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "노란 마름모 상징",
+   "표식",
+   "diamond",
+   "판독보류",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 374,
+  "label": "푸른 물 위 흰 얼음",
+  "role": "ice",
+  "passage": "solid",
+  "tags": [
+   "푸른 물 위 흰 얼음",
+   "얼음",
+   "ice",
+   "water"
+  ]
+ },
+ {
+  "index": 375,
+  "label": "타오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "타오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 376,
+  "label": "타오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "타오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 377,
+  "label": "타오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "타오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 378,
+  "label": "불길 퍼지는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "불길 퍼지는 용암",
+   "불길",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 379,
+  "label": "불길 퍼지는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "불길 퍼지는 용암",
+   "불길",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 380,
+  "label": "핑크 바탕 무늬",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 무늬",
+   "pattern",
+   "plate",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 381,
+  "label": "회갈색 덤불 무늬",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "회갈색 덤불 무늬",
+   "덤불",
+   "bush",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 382,
+  "label": "회색 자갈 바닥",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 자갈 바닥",
+   "자갈",
+   "gravel",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 383,
+  "label": "연회색 돌 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "연회색 돌 무늬",
+   "돌",
+   "stone",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 384,
+  "label": "흰 눈 덮인 봉우리",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "흰 눈 덮인 봉우리",
+   "눈",
+   "snow",
+   "peak"
+  ]
+ },
+ {
+  "index": 385,
+  "label": "붉은 사막 사구",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "붉은 사막 사구",
+   "사막",
+   "desert",
+   "dune"
+  ]
+ },
+ {
+  "index": 386,
+  "label": "황갈색 사구 능선",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "황갈색 사구 능선",
+   "사구",
+   "dune",
+   "desert"
+  ]
+ },
+ {
+  "index": 387,
+  "label": "붉은 사구 언덕",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "붉은 사구 언덕",
+   "사막",
+   "sand",
+   "dune"
+  ]
+ },
+ {
+  "index": 388,
+  "label": "바랜 사막 모래",
+  "role": "sand",
+  "passage": "passable",
+  "tags": [
+   "바랜 사막 모래",
+   "사막",
+   "desert",
+   "sand"
+  ]
+ },
+ {
+  "index": 389,
+  "label": "보랏빛 무늬 조각",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "보랏빛 무늬 조각",
+   "보라",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 390,
+  "label": "들판 풀밭",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "들판 풀밭",
+   "들판",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 391,
+  "label": "평온한 초원",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "평온한 초원",
+   "초원",
+   "grass",
+   "평야"
+  ]
+ },
+ {
+  "index": 392,
+  "label": "숲 아래 풀 지면",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 아래 풀 지면",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 393,
+  "label": "흙길 낸 초원",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 낸 초원",
+   "흙길",
+   "path",
+   "dirt"
+  ]
+ },
+ {
+  "index": 394,
+  "label": "흙밭 다져진 길",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙밭 다져진 길",
+   "흙길",
+   "dirt",
+   "path"
+  ]
+ },
+ {
+  "index": 395,
+  "label": "흙언덕 길목",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙언덕 길목",
+   "흙길",
+   "hill",
+   "path"
+  ]
+ },
+ {
+  "index": 396,
+  "label": "거품 검바다 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "거품 검바다 수면",
+   "바다",
+   "ocean",
+   "wave"
+  ]
+ },
+ {
+  "index": 397,
+  "label": "짙은 바닷물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 바닷물",
+   "바다",
+   "ocean",
+   "water"
+  ]
+ },
+ {
+  "index": 398,
+  "label": "물결 구르는 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물결 구르는 바다",
+   "바다",
+   "wave",
+   "ocean"
+  ]
+ },
+ {
+  "index": 399,
+  "label": "바다 거품 이랑",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "바다 거품 이랑",
+   "바다",
+   "foam",
+   "wave"
+  ]
+ },
+ {
+  "index": 400,
+  "label": "어둠 가득 심해",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어둠 가득 심해",
+   "심해",
+   "ocean",
+   "dark"
+  ]
+ },
+ {
+  "index": 401,
+  "label": "검푸른 바다 어둠",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검푸른 바다 어둠",
+   "바다",
+   "ocean",
+   "dark"
+  ]
+ },
+ {
+  "index": 402,
+  "label": "노란 삼각 표식",
+  "role": "banner",
+  "passage": "solid",
+  "tags": [
+   "노란 삼각 표식",
+   "깃발",
+   "banner",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 403,
+  "label": "노란 삼각 표식",
+  "role": "banner",
+  "passage": "solid",
+  "tags": [
+   "노란 삼각 표식",
+   "깃발",
+   "banner",
+   "판독보류",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 404,
+  "label": "하얀 눈밭 설원",
+  "role": "snow",
+  "passage": "passable",
+  "tags": [
+   "하얀 눈밭 설원",
+   "눈",
+   "snow",
+   "설원"
+  ]
+ },
+ {
+  "index": 405,
+  "label": "끓어오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "끓어오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 406,
+  "label": "끓어오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "끓어오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 407,
+  "label": "끓어오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "끓어오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 408,
+  "label": "핑크 바탕 갈색 무늬",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 갈색 무늬",
+   "brown",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 409,
+  "label": "핑크 바탕 암석 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 암석 무늬",
+   "암석",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 410,
+  "label": "핑크 바탕 틀 구조",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 틀 구조",
+   "structure",
+   "frame",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 411,
+  "label": "회색 덤불 군락",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "회색 덤불 군락",
+   "덤불",
+   "plant",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 412,
+  "label": "푸른 틀 사각 무늬",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "푸른 틀 사각 무늬",
+   "frame",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 413,
+  "label": "어두운 재 무늬 지면",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "어두운 재 무늬 지면",
+   "재",
+   "ash",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 414,
+  "label": "눈 덮인 설원 벽",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "눈 덮인 설원 벽",
+   "눈",
+   "snow",
+   "ice"
+  ]
+ },
+ {
+  "index": 415,
+  "label": "핑크 바탕 흰 언덕",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 흰 언덕",
+   "눈",
+   "snow",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 416,
+  "label": "흰 눈 벽면",
+  "role": "snow",
+  "passage": "solid",
+  "tags": [
+   "흰 눈 벽면",
+   "눈",
+   "ice",
+   "snow"
+  ]
+ },
+ {
+  "index": 417,
+  "label": "핑크 바탕 붉은 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 붉은 기둥",
+   "기둥",
+   "pillar",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 418,
+  "label": "붉은 지붕 겹층",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "붉은 지붕 겹층",
+   "지붕",
+   "roof",
+   "red"
+  ]
+ },
+ {
+  "index": 419,
+  "label": "핑크 바탕 붉은 무늬",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 붉은 무늬",
+   "red",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 420,
+  "label": "초록 초원 표면",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초록 초원 표면",
+   "초원",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 421,
+  "label": "푸른 들판 초지",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 들판 초지",
+   "들판",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 422,
+  "label": "숲 그늘 초지",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲 그늘 초지",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 423,
+  "label": "흙길 초원 경계",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 초원 경계",
+   "흙길",
+   "edge",
+   "path"
+  ]
+ },
+ {
+  "index": 424,
+  "label": "흙길 흐른 지대",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 흐른 지대",
+   "흙길",
+   "ground",
+   "path"
+  ]
+ },
+ {
+  "index": 425,
+  "label": "흙길 모퉁이",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 모퉁이",
+   "흙길",
+   "corner",
+   "path"
+  ]
+ },
+ {
+  "index": 426,
+  "label": "짙푸른 파도 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙푸른 파도 바다",
+   "바다",
+   "ocean",
+   "wave"
+  ]
+ },
+ {
+  "index": 427,
+  "label": "고요한 깊은 바다",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "고요한 깊은 바다",
+   "바다",
+   "ocean",
+   "deep"
+  ]
+ },
+ {
+  "index": 428,
+  "label": "물결 이는 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "물결 이는 해안",
+   "해안",
+   "coast",
+   "wave"
+  ]
+ },
+ {
+  "index": 429,
+  "label": "잔물결 바다 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 바다 수면",
+   "바다",
+   "wave",
+   "water"
+  ]
+ },
+ {
+  "index": 430,
+  "label": "검은 심해 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검은 심해 물결",
+   "심해",
+   "ocean",
+   "dark"
+  ]
+ },
+ {
+  "index": 431,
+  "label": "바다 물결 어둠",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "바다 물결 어둠",
+   "바다",
+   "wave",
+   "dark"
+  ]
+ },
+ {
+  "index": 432,
+  "label": "황금 무늬 장식",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "황금 무늬 장식",
+   "gold",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 433,
+  "label": "주황 무늬 장식",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "주황 무늬 장식",
+   "orange",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 434,
+  "label": "핑크 바탕 흰 꽃모양",
+  "role": "plant",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 흰 꽃모양",
+   "꽃",
+   "flower",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 435,
+  "label": "활활 타는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "활활 타는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 436,
+  "label": "활활 타는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "활활 타는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 437,
+  "label": "활활 타는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "활활 타는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 438,
+  "label": "핑크 바탕 갈색 덩이",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 갈색 덩이",
+   "brown",
+   "blob",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 439,
+  "label": "핑크 바탕 회색 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 회색 무늬",
+   "rock",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 440,
+  "label": "핑크 바탕 잡석 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 잡석 무늬",
+   "잡석",
+   "stone",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 441,
+  "label": "핑크 바탕 돌무더기",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 돌무더기",
+   "돌무더기",
+   "stone",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 442,
+  "label": "푸른 틀 사각 무늬",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "푸른 틀 사각 무늬",
+   "frame",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 443,
+  "label": "핑크 바탕 짙은 무늬",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 바탕 짙은 무늬",
+   "dark",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 444,
+  "label": "회백색 돌담 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회백색 돌담 벽",
+   "돌담",
+   "wall",
+   "stone"
+  ]
+ },
+ {
+  "index": 445,
+  "label": "회백석 무늬 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회백석 무늬 벽",
+   "돌",
+   "wall",
+   "stone"
+  ]
+ },
+ {
+  "index": 446,
+  "label": "흔들리는 노란 불꽃",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "흔들리는 노란 불꽃",
+   "불꽃",
+   "flame",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 447,
+  "label": "흔들리는 노란 불꽃",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "흔들리는 노란 불꽃",
+   "불꽃",
+   "flame",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 448,
+  "label": "세차게 타는 불꽃",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "세차게 타는 불꽃",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 449,
+  "label": "세차게 타는 불꽃",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "세차게 타는 불꽃",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 450,
+  "label": "초록 평야 풀",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "초록 평야 풀",
+   "평야",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 451,
+  "label": "푸른 초원 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "푸른 초원 바닥",
+   "초원",
+   "grass",
+   "풀"
+  ]
+ },
+ {
+  "index": 452,
+  "label": "숲바닥 초지",
+  "role": "forest",
+  "passage": "passable",
+  "tags": [
+   "숲바닥 초지",
+   "숲",
+   "forest",
+   "초원"
+  ]
+ },
+ {
+  "index": 453,
+  "label": "흙길 초입 지대",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 초입 지대",
+   "흙길",
+   "path",
+   "dirt"
+  ]
+ },
+ {
+  "index": 454,
+  "label": "흙길 넓은 지대",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 넓은 지대",
+   "흙길",
+   "dirt",
+   "ground"
+  ]
+ },
+ {
+  "index": 455,
+  "label": "흙길 트인 길",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "흙길 트인 길",
+   "흙길",
+   "road",
+   "path"
+  ]
+ },
+ {
+  "index": 456,
+  "label": "검푸른 바다 파도",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검푸른 바다 파도",
+   "바다",
+   "ocean",
+   "wave"
+  ]
+ },
+ {
+  "index": 457,
+  "label": "어두운 바닷물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어두운 바닷물",
+   "바다",
+   "ocean",
+   "water"
+  ]
+ },
+ {
+  "index": 458,
+  "label": "거품 물결 해안",
+  "role": "coast",
+  "passage": "solid",
+  "tags": [
+   "거품 물결 해안",
+   "해안",
+   "coast",
+   "foam"
+  ]
+ },
+ {
+  "index": 459,
+  "label": "잔잔한 바다 수면",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 바다 수면",
+   "바다",
+   "calm",
+   "water"
+  ]
+ },
+ {
+  "index": 460,
+  "label": "심해 검푸른 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "심해 검푸른 물",
+   "심해",
+   "ocean",
+   "dark"
+  ]
+ },
+ {
+  "index": 461,
+  "label": "바다 어둠 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "바다 어둠 물결",
+   "바다",
+   "wave",
+   "dark"
+  ]
+ },
+ {
+  "index": 462,
+  "label": "갈색 무늬 장식",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 무늬 장식",
+   "brown",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 463,
+  "label": "주황 무늬 조각",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "주황 무늬 조각",
+   "orange",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 464,
+  "label": "짙회색 무늬 판",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "짙회색 무늬 판",
+   "회색",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 465,
+  "label": "불꽃 치솟는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "불꽃 치솟는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 466,
+  "label": "불꽃 치솟는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "불꽃 치솟는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 467,
+  "label": "불꽃 치솟는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "불꽃 치솟는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 468,
+  "label": "핑크 빛 갈색 무늬",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 빛 갈색 무늬",
+   "brown",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 469,
+  "label": "핑크 빛 잡석 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 빛 잡석 무늬",
+   "잡석",
+   "stone",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 470,
+  "label": "회색 돌무더기 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 돌무더기 지대",
+   "돌무더기",
+   "rock",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 471,
+  "label": "어둑한 바위 지대",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어둑한 바위 지대",
+   "바위",
+   "rock",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 472,
+  "label": "푸른 틀 사각 무늬",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "푸른 틀 사각 무늬",
+   "frame",
+   "border",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 473,
+  "label": "핑크 빛 바위 무늬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "핑크 빛 바위 무늬",
+   "바위",
+   "rock",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 474,
+  "label": "회갈색 돌벽 무늬",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회갈색 돌벽 무늬",
+   "돌벽",
+   "wall",
+   "stone"
+  ]
+ },
+ {
+  "index": 475,
+  "label": "회갈색 벽면 타일",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회갈색 벽면 타일",
+   "벽면",
+   "wall",
+   "tile"
+  ]
+ },
+ {
+  "index": 476,
+  "label": "붉은 불꽃 타오름",
+  "role": "animation",
+  "passage": "solid",
+  "tags": [
+   "붉은 불꽃 타오름",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 477,
+  "label": "핑크 빛 붉은 무늬",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 빛 붉은 무늬",
+   "red",
+   "pattern",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 478,
+  "label": "붉은 줄무늬 지붕",
+  "role": "roof",
+  "passage": "solid",
+  "tags": [
+   "붉은 줄무늬 지붕",
+   "지붕",
+   "roof",
+   "red"
+  ]
+ },
+ {
+  "index": 479,
+  "label": "핑크 빛 붉은 조각",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "핑크 빛 붉은 조각",
+   "red",
+   "dark",
+   "판독보류"
+  ]
+ }
+]

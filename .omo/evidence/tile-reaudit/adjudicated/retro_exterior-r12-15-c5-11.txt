@@ -1,0 +1,4 @@
+367|깨진 암반 구멍 상단 좌측|cliff|solid|medium|깨진 암반 구멍
+368|깨진 암반 구멍 상단 우측|cliff|solid|medium|깨진 암반 구멍
+427|깨진 암반 구멍 내부|cliff|solid|medium|깨진 암반 구멍
+369|석조 틀 어두운 창 단일|window|solid|medium|석조 틀 창

@@ -46,3 +46,6 @@
   font-size: 11px;
   line-height: 1.35;
 }
+.follower-preset-chip .companion-portrait {
+  border-radius: 999px;
+}

@@ -1,0 +1,12 @@
+131|조약돌 바닥 오른쪽 위|terrain|passable|high|조약돌 바닥
+146|사각 나무 탁자|furniture|solid|medium|
+168|세로 판자 바닥 왼쪽 위|floor|passable|high|세로 판자 바닥
+169|세로 판자 바닥 위쪽|floor|passable|high|세로 판자 바닥
+170|세로 판자 바닥 오른쪽 위|floor|passable|high|세로 판자 바닥
+190|조약돌 바닥 가운데|terrain|passable|high|조약돌 바닥
+198|세로 판자 바닥 왼쪽|floor|passable|high|세로 판자 바닥
+199|세로 판자 바닥 중앙|floor|passable|high|세로 판자 바닥
+200|세로 판자 바닥 오른쪽|floor|passable|high|세로 판자 바닥
+228|세로 판자 바닥 왼쪽 아래|floor|passable|high|세로 판자 바닥
+229|세로 판자 바닥 아래쪽|floor|passable|high|세로 판자 바닥
+230|세로 판자 바닥 오른쪽 아래|floor|passable|high|세로 판자 바닥

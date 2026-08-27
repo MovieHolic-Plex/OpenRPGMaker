@@ -1,0 +1,12 @@
+367|돌 테두리 구덩이 내부|cliff|solid|low|돌 테두리 구덩이
+368|돌 테두리 구덩이 모서리|cliff|solid|low|돌 테두리 구덩이
+369|석조 테두리 구덩이|cliff|solid|low|
+396|돌 테두리 구덩이 좌상단|cliff|solid|medium|돌 테두리 구덩이
+397|돌 테두리 구덩이 상단|cliff|solid|medium|돌 테두리 구덩이
+398|돌 테두리 구덩이 우상단|cliff|solid|medium|돌 테두리 구덩이
+426|돌 테두리 구덩이 좌측|cliff|solid|medium|돌 테두리 구덩이
+427|돌 테두리 구덩이 내부|cliff|solid|low|돌 테두리 구덩이
+428|돌 테두리 구덩이 우측|cliff|solid|medium|돌 테두리 구덩이
+456|돌 테두리 구덩이 좌하단|cliff|solid|medium|돌 테두리 구덩이
+457|돌 테두리 구덩이 하단|cliff|solid|medium|돌 테두리 구덩이
+458|돌 테두리 구덩이 우하단|cliff|solid|medium|돌 테두리 구덩이

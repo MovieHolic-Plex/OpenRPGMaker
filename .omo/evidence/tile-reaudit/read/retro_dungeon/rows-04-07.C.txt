@@ -1,0 +1,20 @@
+129|작은 구덩이|cliff|solid|high|
+131|사각 구덩이|cliff|solid|high|
+141|가로 나무 다리 좌측|floor|passable|high|나무 다리
+142|가로 나무 다리 중앙|floor|passable|high|나무 다리
+143|가로 나무 다리 우측|floor|passable|high|나무 다리
+159|대형 구덩이 좌상단|cliff|solid|high|대형 구덩이
+160|대형 구덩이 상단|cliff|solid|high|대형 구덩이
+161|대형 구덩이 우상단|cliff|solid|high|대형 구덩이
+189|대형 구덩이 좌단|cliff|solid|high|대형 구덩이
+190|대형 구덩이 내부|cliff|solid|high|대형 구덩이
+191|대형 구덩이 우단|cliff|solid|high|대형 구덩이
+207|황금빛 액체 튀김 좌측|decoration|passable|medium|황금빛 액체 튀김
+208|황금빛 액체 튀김 중앙|decoration|passable|medium|황금빛 액체 튀김
+209|황금빛 액체 튀김 우측|decoration|passable|medium|황금빛 액체 튀김
+219|대형 구덩이 좌하단|cliff|solid|high|대형 구덩이
+220|대형 구덩이 하단|cliff|solid|high|대형 구덩이
+221|대형 구덩이 우하단|cliff|solid|high|대형 구덩이
+237|눈 바닥 모서리 좌측|decoration|passable|medium|눈 덮인 바닥
+238|눈 바닥 모서리 중앙|decoration|passable|medium|눈 덮인 바닥
+239|눈 바닥 모서리 우측|decoration|passable|medium|눈 덮인 바닥

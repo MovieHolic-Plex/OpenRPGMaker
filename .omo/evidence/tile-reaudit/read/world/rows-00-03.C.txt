@@ -1,0 +1,10 @@
+78|잔디 벽 좌상단|wall|solid|high|잔디 벽
+79|잔디 벽 상단|wall|solid|high|잔디 벽
+80|잔디 벽 우상단|wall|solid|high|잔디 벽
+81|흙벽 좌상단|wall|solid|high|흙벽
+82|흙벽 상단|wall|solid|high|흙벽
+83|흙벽 우상단|wall|solid|high|흙벽
+108|잔디 벽 좌측|wall|solid|high|잔디 벽
+110|잔디 벽 우측|wall|solid|high|잔디 벽
+111|흙벽 좌측|wall|solid|high|흙벽
+113|흙벽 우측|wall|solid|high|흙벽

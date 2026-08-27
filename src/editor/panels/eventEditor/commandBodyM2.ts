@@ -11,6 +11,7 @@ import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { Command, M2CommandValue, ResourceKind, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { switchVariablePicker } from "./switchVariablePicker";
 import { field as fieldRow } from "./dom";
 import type { CommandEditContext } from "./types";
 
@@ -275,7 +276,19 @@ function controlForField(request: FieldControlRequest): HTMLElement {
     return screenColorControl(request);
   }
   const semantic = fieldSemantic(request);
-  if (semantic?.kind === "record") return recordPickerControl({ context: request.context, cmd: request.cmd, key: request.spec.key, semantic, value: String(request.value) });
+  if (semantic?.kind === "record") {
+    // 스위치/변수 레코드는 이벤트 에디터 전체 계약에 맞춰 모달 트리거 픽커로 통일한다.
+    if (request.spec.key === "switchId" || request.spec.key === "variableId") {
+      return m2SwitchVariableControl({
+        context: request.context,
+        cmd: request.cmd,
+        key: request.spec.key,
+        kind: request.spec.key === "switchId" ? "switch" : "variable",
+        value: String(request.value),
+      });
+    }
+    return recordPickerControl({ context: request.context, cmd: request.cmd, key: request.spec.key, semantic, value: String(request.value) });
+  }
   if (semantic?.kind === "resource") return resourcePickerControl({ context: request.context, cmd: request.cmd, key: request.spec.key, semantic, value: String(request.value) });
   if (semantic?.kind === "options") return optionsControl({ context: request.context, cmd: request.cmd, key: request.spec.key, semantic, value: String(request.value) });
   const { context, cmd, spec, value } = request;
@@ -502,6 +515,38 @@ function resourcePickerControl(request: ResourcePickerRequest): HTMLElement {
       resourcePreview({ item: selectedItem, project, selectedName, testId: testIds.preview, value: request.value }),
     ],
   });
+}
+
+/** 스위치/변수 필드 공용: 숨은 select + 선택 카드 + 모달 트리거. */
+function m2SwitchVariableControl(options: {
+  readonly context: CommandEditContext;
+  readonly cmd: M2Command;
+  readonly key: string;
+  readonly kind: "switch" | "variable";
+  readonly value: string;
+}): HTMLElement {
+  let selectedName = options.value ? `목록에 없는 항목: ${options.value}` : "선택 없음";
+  const nameEl = el("div", {
+    class: "m2-record-selected-name",
+    text: selectedName,
+    dataset: { testid: `m2-command-${options.key}-record-selected-name` },
+  });
+  const picker = switchVariablePicker({
+    kind: options.kind,
+    selectedId: options.value,
+    className: "m2-record-modal-picker",
+    pickerTestId: `m2-command-${options.key}-record-open`,
+    selectTestId: `m2-command-${options.key}-record-select`,
+    onChange: (id) => {
+      selectedName = id
+        ? store.getCurrent()[options.kind === "switch" ? "switches" : "variables"].find((entry) => entry.id === id)?.name ?? `목록에 없는 항목: ${id}`
+        : "선택 없음";
+      nameEl.textContent = selectedName;
+      updateField(options.context, options.cmd, options.key, id);
+    },
+  });
+  void picker;
+  return el("div", { class: "m2-record-picker", children: [picker.root, nameEl] });
 }
 
 function recordPickerControl(request: RecordPickerRequest): HTMLElement {

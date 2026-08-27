@@ -1,0 +1,22 @@
+132|갑판 쇠고리|prop|passable|high|
+134|목조 계단 좌측|stairs|passable|high|목조 계단
+135|목조 계단 중앙|stairs|passable|high|목조 계단
+136|목조 계단 우측|stairs|passable|high|목조 계단
+139|목조 골조 벽 좌측 사선|wall|solid|high|목조 골조 벽
+140|목조 골조 벽 중앙 기둥|wall|solid|high|목조 골조 벽
+141|목조 골조 벽 우측 사선|wall|solid|high|목조 골조 벽
+143|1칸 목조 계단|stairs|passable|high|목조 계단
+148|물약 상자|prop|solid|high|
+168|석조 벽 좌측|wall|solid|high|석조 벽
+169|석조 벽 중앙 좌측|wall|solid|high|석조 벽
+170|석조 벽 중앙 우측|wall|solid|high|석조 벽
+171|석조 벽 우측|wall|solid|high|석조 벽
+172|아치형 목조 벽 좌측|wall|solid|high|아치형 목조 벽
+173|아치형 목조 벽 우측|wall|solid|high|아치형 목조 벽
+177|선체 난간 대각선 하단|fence|solid|high|선체 난간
+192|계단 하부 목조 지지대|wall|solid|high|목조 계단
+203|둥근 목조 기둥|wall|solid|high|
+205|해골과 뼈|decoration|passable|high|
+207|선체 난간과 갑판|fence|solid|high|선체 난간
+238|선체 난간 모서리 연결부|fence|solid|high|선체 난간
+239|선체 난간 모서리 금속 부속|fence|solid|high|선체 난간

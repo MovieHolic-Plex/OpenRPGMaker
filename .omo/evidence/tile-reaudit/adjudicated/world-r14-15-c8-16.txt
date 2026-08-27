@@ -1,0 +1,2 @@
+460|구덩이 하단|cliff|solid|medium|구덩이
+464|환기구|prop|passable|medium|

@@ -1,0 +1,120 @@
+240|모래 바닥|terrain|passable|high|
+241|모래 바닥|terrain|passable|high|
+242|모래 바닥|terrain|passable|high|
+243|모래 위 풀밭 좌측 상단|terrain|passable|high|풀밭
+244|모래 위 풀밭 상단|terrain|passable|high|풀밭
+245|모래 위 풀밭 우측 상단|terrain|passable|high|풀밭
+246|목재 갑판 바닥|floor|passable|high|
+247|목재 갑판 바닥|floor|passable|high|
+248|목재 갑판 바닥|floor|passable|high|
+249|목재 갑판 바닥|floor|passable|high|
+250|목재 갑판 바닥|floor|passable|high|
+251|목재 갑판 바닥|floor|passable|high|
+252|목재 벽 상단 좌측|wall|solid|high|목재 벽
+253|목재 벽 상단|wall|solid|high|목재 벽
+254|목재 벽 상단|wall|solid|high|목재 벽
+255|목재 벽 상단|wall|solid|high|목재 벽
+256|벽면 사다리 상단|stairs|passable|high|사다리
+257|조타륜 상단|prop|solid|high|조타륜
+258|빈 슬롯|empty|passable|high|
+259|닻|prop|solid|high|
+260|대각선 선체 난간|wall|solid|high|선체 난간
+261|돛대 상단|prop|solid|high|돛대
+262|대각선 선체 난간|wall|solid|high|선체 난간
+263|밧줄 뭉치|prop|passable|high|
+264|선실 입구 상단|door|passable|high|선실 입구
+265|대각선 선체 외벽|wall|solid|high|선체 외벽
+266|대각선 선체 외벽 모서리|wall|solid|high|선체 외벽
+267|대각선 선체 외벽|wall|solid|high|선체 외벽
+268|대각선 선체 외벽|wall|solid|high|선체 외벽
+269|대각선 선체 외벽 모서리|wall|solid|high|선체 외벽
+270|모래 바닥|terrain|passable|high|
+271|모래 바닥|terrain|passable|high|
+272|모래 바닥|terrain|passable|high|
+273|모래 위 풀밭 좌측 상단|terrain|passable|high|풀밭
+274|모래 위 풀밭 상단|terrain|passable|high|풀밭
+275|모래 위 풀밭 우측 상단|terrain|passable|high|풀밭
+276|목재 갑판 바닥|floor|passable|high|
+277|목재 갑판 바닥|floor|passable|high|
+278|목재 갑판 바닥|floor|passable|high|
+279|목재 갑판 바닥|floor|passable|high|
+280|목재 갑판 바닥|floor|passable|high|
+281|목재 갑판 바닥|floor|passable|high|
+282|목재 벽 출입문|door|passable|high|목재 벽
+283|목재 벽 하단 수납장|furniture|solid|high|목재 벽
+284|목재 벽 하단|wall|solid|high|목재 벽
+285|목재 갑판 바닥|floor|passable|high|
+286|목재 갑판 바닥|floor|passable|high|
+287|조타륜 하단 받침대|prop|solid|high|조타륜
+288|붉은 깃발 상단|prop|solid|high|붉은 깃발
+289|대각선 선체 난간|wall|solid|high|선체 난간
+290|빈 슬롯|empty|passable|high|
+291|돛대 활대 교차부|prop|solid|high|돛대
+292|빈 슬롯|empty|passable|high|
+293|대각선 선체 난간|wall|solid|high|선체 난간
+294|선실 입구 하단 문턱|floor|passable|high|선실 입구
+295|교차된 쌍검|prop|passable|high|
+296|대각선 선체 외벽|wall|solid|high|선체 외벽
+297|대각선 선체 외벽 모서리|wall|solid|high|선체 외벽
+298|돛줄 밧줄|prop|passable|high|
+299|원형 목재 기둥 상단|prop|solid|high|원형 목재 기둥
+300|모래 바닥|terrain|passable|high|
+301|모래 바닥|terrain|passable|high|
+302|모래 바닥|terrain|passable|high|
+303|모래 위 풀밭 좌측 가장자리|terrain|passable|high|풀밭
+304|풀밭 중앙|terrain|passable|high|풀밭
+305|모래 위 풀밭 우측 가장자리|terrain|passable|high|풀밭
+306|목재 갑판 바닥|floor|passable|high|
+307|목재 갑판 바닥|floor|passable|high|
+308|목재 갑판 바닥|floor|passable|high|
+309|목재 갑판 바닥|floor|passable|high|
+310|목재 갑판 바닥|floor|passable|high|
+311|목재 갑판 바닥|floor|passable|high|
+312|갑판 계단 상단 난간|stairs|passable|high|갑판 계단
+313|갑판 사다리 계단|stairs|passable|high|갑판 계단
+314|목재 갑판 바닥|floor|passable|high|
+315|곡선 선체 난간 좌측|wall|solid|high|선체 난간
+316|곡선 선체 난간 중앙|wall|solid|high|선체 난간
+317|곡선 선체 난간 우측|wall|solid|high|선체 난간
+318|붉은 깃발 중단|prop|solid|high|붉은 깃발
+319|대각선 선체 난간|wall|solid|high|선체 난간
+320|대각선 목재 지지대|prop|solid|high|목재 지지대
+321|돛대 기둥|prop|solid|high|돛대
+322|대각선 목재 지지대|prop|solid|high|목재 지지대
+323|대각선 선체 난간|wall|solid|high|선체 난간
+324|좌향 대포 포신|prop|solid|high|대포
+325|좌향 대포 몸체|prop|solid|high|대포
+326|하향 대포 상단|prop|solid|high|대포
+327|상향 대포 상단 포구|prop|solid|high|대포
+328|밧줄 사다리|stairs|passable|high|사다리
+329|원형 목재 기둥 하단|prop|solid|high|원형 목재 기둥
+330|모래 바닥|terrain|passable|high|
+331|모래 바닥|terrain|passable|high|
+332|모래 바닥|terrain|passable|high|
+333|모래 위 풀밭 좌측 하단|terrain|passable|high|풀밭
+334|모래 위 풀밭 하단|terrain|passable|high|풀밭
+335|모래 위 풀밭 우측 하단|terrain|passable|high|풀밭
+336|목재 갑판 바닥|floor|passable|high|
+337|목재 갑판 바닥|floor|passable|high|
+338|목재 갑판 바닥|floor|passable|high|
+339|목재 갑판 바닥|floor|passable|high|
+340|목재 갑판 바닥|floor|passable|high|
+341|목재 갑판 바닥|floor|passable|high|
+342|목재 벽 기둥 좌측|wall|solid|high|목재 벽
+343|목재 벽 기둥 중앙|wall|solid|high|목재 벽
+344|목재 벽 기둥 우측|wall|solid|high|목재 벽
+345|목재 벽 출입문|door|passable|high|목재 벽
+346|선실 입구 암부|door|passable|high|선실 입구
+347|목재 갑판 바닥|floor|passable|high|
+348|붉은 깃발 하단|prop|solid|high|붉은 깃발
+349|곡선 선체 외벽 좌측|wall|solid|high|선체 외벽
+350|대각선 목재 지지대|prop|solid|high|목재 지지대
+351|돛대 하단 받침대|prop|solid|high|돛대
+352|대각선 목재 지지대|prop|solid|high|목재 지지대
+353|곡선 선체 외벽 우측|wall|solid|high|선체 외벽
+354|우향 대포 몸체|prop|solid|high|대포
+355|우향 대포 포신|prop|solid|high|대포
+356|하향 대포 하단 포구|prop|solid|high|대포
+357|상향 대포 하단 몸체|prop|solid|high|대포
+358|풍경화 액자|decoration|solid|high|액자
+359|모닥불 액자|decoration|solid|high|액자

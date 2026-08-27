@@ -62,6 +62,7 @@ afterEach(() => {
   clearCommandInspector();
   host.remove();
   document.querySelector('[data-testid="event-command-picker"]')?.remove();
+  document.querySelector('[data-testid="event-command-edit-dialog"]')?.remove();
   openEventConditions.clear();
   openEventMovement.clear();
 });
@@ -156,7 +157,8 @@ it("does not advertise movement speed on a stationary event", () => {
     host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
     host.querySelector<HTMLButtonElement>("[data-testid='event-storyboard-card-0']")?.click();
 
-    expect(host.querySelector(".event-inspector-kind")?.textContent).toBe("선택지 표시");
+    const dialog = document.querySelector('[data-testid="event-command-edit-dialog"] [role="dialog"]');
+    expect(dialog?.getAttribute("aria-label")).toBe("선택지 표시");
   });
 
   it("keeps complete command and branch text available to storyboard users", () => {

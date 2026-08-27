@@ -5,7 +5,14 @@ import {
 } from "@/project/defaults/darkWallAutotile";
 import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interiorTerrainAutotiles";
 import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
+import type { CombinedTownTileSemanticEntry } from "@/project/defaults/tileSemanticsCombinedTown";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
+import { RETRO_DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroDungeon";
+import { RETRO_EXTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroExterior";
+import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroHouse";
+import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
+import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
+import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
 import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
@@ -18,6 +25,16 @@ export const INTERIOR_METADATA_PACK_ID = "interior-house-v1";
 export const INTERIOR_METADATA_PACK_VERSION = "3";
 export const INTERIOR_TEXTURE_KEY = "tex_easyrpg_chipset_interior";
 export const INTERIOR_HARNESS_PREFIX = "harness-interior-house-v1-";
+
+// 하니스 팝이 없는 번들 칩셋의 textureKey — 칩셋별 시맨핅 테이버 분기가 이 상수로 갈라진다.
+// 통향성/레이어 계약(THEME_PACKS)은 아직 dungeon/interior 만 보유하며, 이 여섯은
+// 통향성은 기본값을 따르고 타일별 라벨은 tileSemantics*.ts 가 공급한다.
+export const RETRO_DUNGEON_TEXTURE_KEY = "tex_easyrpg_chipset_retro_dungeon";
+export const RETRO_EXTERIOR_TEXTURE_KEY = "tex_easyrpg_chipset_retro_exterior";
+export const RETRO_HOUSE_TEXTURE_KEY = "tex_easyrpg_chipset_retro_house";
+export const RETRO_WORLD_TEXTURE_KEY = "tex_easyrpg_chipset_retro_world";
+export const SHIP_TEXTURE_KEY = "tex_easyrpg_chipset_ship";
+export const WORLD_TEXTURE_KEY = "tex_easyrpg_chipset_world";
 
 /** Built-in interior wall-frame autotile (outer ring + top trim/door alcove tiles). */
 export const INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID = `${INTERIOR_HARNESS_PREFIX}wall-frame-autotile`;
@@ -306,7 +323,8 @@ function isInteriorPackTileset(tileset: Pick<TilesetDef, "image">): boolean {
 
 export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
   const pack = themePackForTileset(tileset);
-  if (!pack) return false;
+  // 하니스 팝이 없는 번들 6종(레트로 4종·배·월드맵)은 시맨핅 테이버만으로 tileMeta 를 채운다.
+  if (!pack) return seedBundledSemanticTileMeta(tileset);
   let changed = applyThemeMetadataPack(tileset, pack);
   if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
     // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
@@ -510,6 +528,60 @@ function setTileRuntimeContract(
 
 function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
   return meta?.source === "user" || meta?.userLocked === true;
+}
+
+/**
+ * 하니스 팩이 없는 번들 칩셋 6종의 tileMeta 시드 원천.
+ *
+ * 왜 필요한가: 화면에 보이는 라벨은 전부 tileset.tileMeta 를 읽는다
+ * (tilePalette.ts quickTileName, tilesetSemanticChecker.ts summarizeTileUsage).
+ * 시맨틱 테이블을 검색 경로(resourceSearch / knownTileLabel)에만 걸어 두면
+ * 타일 그림판과 DB 탭에는 "타일 24" 가 그대로 남는다. 실내 칩셋이 이미
+ * 같은 이유로 검색 전용 테이블을 시드 원천으로 승격했다(위 INTERIOR_SEMANTIC_BY_INDEX 주석).
+ */
+const BUNDLED_SEMANTIC_SEEDS: readonly (readonly [string, readonly CombinedTownTileSemanticEntry[]])[] = [
+  [RETRO_DUNGEON_TEXTURE_KEY, RETRO_DUNGEON_TILE_SEMANTICS],
+  [RETRO_EXTERIOR_TEXTURE_KEY, RETRO_EXTERIOR_TILE_SEMANTICS],
+  [RETRO_HOUSE_TEXTURE_KEY, RETRO_HOUSE_TILE_SEMANTICS],
+  [RETRO_WORLD_TEXTURE_KEY, RETRO_WORLD_TILE_SEMANTICS],
+  [SHIP_TEXTURE_KEY, SHIP_TILE_SEMANTICS],
+  [WORLD_TEXTURE_KEY, WORLD_TILE_SEMANTICS],
+];
+const BUNDLED_SEMANTIC_SEED_BY_TEXTURE = new Map(
+  BUNDLED_SEMANTIC_SEEDS.map(([textureKey, table]) => [textureKey, new Map(table.map((entry) => [entry.index, entry]))])
+);
+
+/** 시맨틱 테이블을 tileMeta + 통행성으로 시드한다. 사용자 수기 메타는 건드리지 않는다. */
+function seedBundledSemanticTileMeta(tileset: TilesetDef): boolean {
+  if (tileset.image.type !== "bundled") return false;
+  const seed = BUNDLED_SEMANTIC_SEED_BY_TEXTURE.get(tileset.image.id);
+  if (!seed) return false;
+  ensureTileMetaLength(tileset);
+  let changed = false;
+  for (const [tile, semantic] of seed) {
+    if (tile >= tileset.count) continue;
+    const meta = tileset.tileMeta?.[tile];
+    if (meta?.userLocked === true || meta?.source === "user") continue;
+    const nextMeta: TileAiMetadata = {
+      label: semantic.label,
+      description: "",
+      tags: [...semantic.tags],
+      role: semantic.role,
+      passage: semantic.passage,
+      confidence: "high",
+      source: "bundled-default",
+    };
+    if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
+      tileset.tileMeta![tile] = nextMeta;
+      changed = true;
+    }
+    const passability = semantic.passage === "solid" ? solid : passable;
+    if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
+      tileset.passability[tile] = { ...passability };
+      changed = true;
+    }
+  }
+  return changed;
 }
 
 function ensureTileMetaLength(tileset: TilesetDef): void {

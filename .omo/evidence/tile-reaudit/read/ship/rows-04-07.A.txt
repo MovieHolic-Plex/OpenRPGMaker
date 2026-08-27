@@ -1,0 +1,120 @@
+120|바다|water|solid|high|
+121|바다|water|solid|high|
+122|바다|water|solid|high|
+123|소용돌이치는 바다|water|solid|high|
+124|소용돌이치는 바다|water|solid|high|
+125|소용돌이 중심 바다|water|solid|high|
+126|갑판 작은 구멍|floor|passable|high|갑판 바닥
+127|가로 목재 갑판 바닥|floor|passable|high|갑판 바닥
+128|갑판 바닥 구멍 상단|floor|passable|high|갑판 바닥
+129|갑판 세로 틈새 구멍 상단|floor|passable|high|갑판 바닥
+130|세로 목재 갑판 바닥|floor|passable|high|갑판 바닥
+131|갑판 바닥 구멍 상단|floor|passable|high|갑판 바닥
+132|바닥 고정 고리 상단|floor|passable|high|바닥 고정 고리
+133|가로 목재 갑판 바닥|floor|passable|high|갑판 바닥
+134|목재 벽 상단 좌측|wall|solid|high|목재 벽
+135|목재 벽 상단 중앙|wall|solid|high|목재 벽
+136|목재 벽 상단 우측|wall|solid|high|목재 벽
+137|목재 벽 모서리|wall|solid|high|목재 벽
+138|원통형 권양기 좌측|prop|solid|high|권양기
+139|갑판 난간 대각선 좌상단|fence|solid|high|갑판 난간
+140|갑판 난간 세로 중앙|fence|solid|high|갑판 난간
+141|갑판 난간 대각선 우상단|fence|solid|high|갑판 난간
+142|원통형 권양기 우측|prop|solid|high|권양기
+143|목재 벽 상단|wall|solid|high|목재 벽
+144|밧줄 감긴 목재 기둥 상단|prop|solid|high|목재 기둥
+145|밧줄 감긴 목재 기둥 상단|prop|solid|high|목재 기둥
+146|비스듬한 선체 외벽 좌상단|wall|solid|high|선체 외벽
+147|비스듬한 선체 외벽 우상단|wall|solid|high|선체 외벽
+148|포션 상자 선반|prop|solid|high|
+149|갑판 목재 울타리 난간 상단|fence|solid|high|갑판 울타리
+150|바다|water|solid|high|
+151|바다|water|solid|high|
+152|바다|water|solid|high|
+153|소용돌이치는 바다|water|solid|high|
+154|소용돌이치는 바다|water|solid|high|
+155|소용돌이 중심 바다|water|solid|high|
+156|갑판 큰 구멍 좌상단|floor|passable|high|갑판 큰 구멍
+157|갑판 큰 구멍 상단 중앙|floor|passable|high|갑판 큰 구멍
+158|갑판 큰 구멍 우상단|floor|passable|high|갑판 큰 구멍
+159|갑판 세로 구멍 좌상단|floor|passable|high|갑판 세로 구멍
+160|갑판 세로 구멍 상단 중앙|floor|passable|high|갑판 세로 구멍
+161|갑판 세로 구멍 우상단|floor|passable|high|갑판 세로 구멍
+162|난간 계단 좌상단|stairs|passable|high|목재 계단
+163|난간 계단 중앙 상단|stairs|passable|high|목재 계단
+164|난간 계단 우상단|stairs|passable|high|목재 계단
+165|계단 측면 목재 바닥|floor|passable|high|
+166|계단 측면 목재 벽 좌측|wall|solid|high|계단 측면 벽
+167|계단 측면 목재 벽 우측|wall|solid|high|계단 측면 벽
+168|석재 난간 상단 좌측|fence|solid|high|석재 난간
+169|석재 난간 상단 중앙|fence|solid|high|석재 난간
+170|석재 난간 상단 중앙|fence|solid|high|석재 난간
+171|석재 난간 상단 우측|fence|solid|high|석재 난간
+172|갑판 둥근 난간 좌상단|fence|solid|high|갑판 둥근 난간
+173|갑판 둥근 난간 우상단|fence|solid|high|갑판 둥근 난간
+174|곡선 선체 외벽 좌측|wall|solid|high|선체 외벽
+175|비스듬한 선체 외벽 중앙|wall|solid|high|선체 외벽
+176|비스듬한 선체 외벽 우측|wall|solid|high|선체 외벽
+177|빈 슬롯|empty|passable|high|
+178|비스듬한 선체 외벽 모서리|wall|solid|high|선체 외벽
+179|빈 슬롯|empty|passable|high|
+180|바다|water|solid|high|
+181|바다|water|solid|high|
+182|바다|water|solid|high|
+183|소용돌이치는 바다|water|solid|high|
+184|소용돌이치는 바다|water|solid|high|
+185|소용돌이 중심 바다|water|solid|high|
+186|갑판 큰 구멍 좌측 중앙|floor|passable|high|갑판 큰 구멍
+187|갑판 큰 구멍 내부 중앙|floor|passable|high|갑판 큰 구멍
+188|갑판 큰 구멍 우측 중앙|floor|passable|high|갑판 큰 구멍
+189|갑판 세로 구멍 좌측|floor|passable|high|갑판 세로 구멍
+190|갑판 세로 구멍 내부|floor|passable|high|갑판 세로 구멍
+191|갑판 세로 구멍 우측|floor|passable|high|갑판 세로 구멍
+192|선실 창문 프레임 상단|window|solid|high|선실 창문
+193|선실 목재 벽 상단|wall|solid|high|목재 벽
+194|난간 계단 좌하단|stairs|passable|high|목재 계단
+195|난간 계단 우하단|stairs|passable|high|목재 계단
+196|계단 착지 목재 바닥|floor|passable|high|
+197|목재 벽 하단 그림자|wall|solid|high|계단 측면 벽
+198|목재 벽 상단 좌측|wall|solid|high|목재 벽
+199|목재 벽 상단 중앙|wall|solid|high|목재 벽
+200|목재 벽 상단 중앙|wall|solid|high|목재 벽
+201|목재 벽 상단 우측|wall|solid|high|목재 벽
+202|환기 격자창|window|solid|high|
+203|목재 기둥 상단|wall|solid|high|목재 기둥
+204|밧줄과 도르래|prop|passable|high|
+205|해골과 뼈|prop|passable|high|
+206|선박 뱃머리 돌출봉 끝부분|prop|solid|high|선박 이물
+207|비스듬한 선체 외벽 하단 좌측|wall|solid|high|선체 외벽
+208|비스듬한 선체 외벽 하단 우측|wall|solid|high|선체 외벽
+209|비스듬한 선체 외벽 우하단|wall|solid|high|선체 외벽
+210|바다|water|solid|high|
+211|바다|water|solid|high|
+212|바다|water|solid|high|
+213|소용돌이치는 바다|water|solid|high|
+214|소용돌이치는 바다|water|solid|high|
+215|소용돌이 중심 바다|water|solid|high|
+216|갑판 큰 구멍 좌하단|floor|passable|high|갑판 큰 구멍
+217|갑판 큰 구멍 하단 중앙|floor|passable|high|갑판 큰 구멍
+218|갑판 큰 구멍 우하단|floor|passable|high|갑판 큰 구멍
+219|갑판 세로 구멍 좌하단|floor|passable|high|갑판 세로 구멍
+220|갑판 세로 구멍 하단 중앙|floor|passable|high|갑판 세로 구멍
+221|갑판 세로 구멍 우하단|floor|passable|high|갑판 세로 구멍
+222|선실 기둥 모서리 하단|wall|solid|high|목재 벽
+223|선실 목재 벽 하단|wall|solid|high|목재 벽
+224|계단 난간 지지대 좌측|stairs|passable|high|목재 계단
+225|계단 난간 지지대 우측|stairs|passable|high|목재 계단
+226|원통형 권양기 하단 좌측|prop|solid|high|권양기
+227|원통형 권양기 하단 레버|prop|solid|high|권양기
+228|목재 벽 하단 좌측|wall|solid|high|목재 벽
+229|목재 벽 하단 중앙|wall|solid|high|목재 벽
+230|목재 벽 하단 중앙|wall|solid|high|목재 벽
+231|목재 벽 하단 우측|wall|solid|high|목재 벽
+232|창살 격자 창문|window|solid|high|
+233|빈 슬롯|empty|passable|high|
+234|선박 뱃머리 선수루 좌측|prop|solid|high|선박 이물
+235|선박 뱃머리 선수루 중앙|prop|solid|high|선박 이물
+236|선박 뱃머리 돌출봉 연결부|prop|solid|high|선박 이물
+237|선박 뱃머리 선수루 우측 끝|prop|solid|high|선박 이물
+238|선박 뱃머리 난간 좌하단|fence|solid|high|선박 이물
+239|선박 뱃머리 금속 결합부|fence|solid|high|선박 이물

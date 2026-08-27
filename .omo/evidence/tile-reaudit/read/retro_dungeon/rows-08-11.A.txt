@@ -1,0 +1,120 @@
+240|붉은 암반 바닥|floor|passable|high|
+241|붉은 암반 바닥|floor|passable|high|
+242|붉은 암반 바닥|floor|passable|high|
+243|작은 용암 웅덩이|water|solid|high|
+244|붉은 암반 바닥|floor|passable|high|
+245|둥근 용암 웅덩이|water|solid|high|
+246|1칸 구덩이|cliff|solid|high|
+247|구덩이 상단 좌측|cliff|solid|high|구덩이
+248|구덩이 상단 우측|cliff|solid|high|구덩이
+249|암석 구덩이 상단 좌측|cliff|solid|high|암석 구덩이
+250|암석 구덩이 상단 중앙|cliff|solid|high|암석 구덩이
+251|암석 구덩이 상단 우측|cliff|solid|high|암석 구덩이
+252|어두운 목재 바닥|floor|passable|high|
+253|어두운 목재 바닥|floor|passable|high|
+254|어두운 목재 바닥|floor|passable|high|
+255|갈색 자갈 바닥|floor|passable|high|
+256|갈색 자갈 바닥|floor|passable|high|
+257|갈색 자갈 바닥|floor|passable|high|
+258|빈 슬롯|empty|passable|high|
+259|둥근 나무 아치 좌측|prop|solid|high|둥근 나무 아치
+260|둥근 나무 아치 우측|prop|solid|high|둥근 나무 아치
+261|석순 상단|rock|solid|high|석순
+262|얼음 기둥 상단|prop|solid|high|얼음 기둥
+263|삼각 화로 불꽃|prop|solid|high|삼각 화로
+264|벽걸이 횃불|prop|solid|high|
+265|고대 문자 석판|prop|solid|high|
+266|벽면 열쇠구멍|decoration|passable|high|
+267|어두운 종유석|rock|solid|high|
+268|동굴 천장 좌측|cliff|solid|high|어두운 동굴 입구
+269|동굴 천장 우측|cliff|solid|high|어두운 동굴 입구
+270|붉은 암반 바닥|floor|passable|high|
+271|붉은 암반 바닥|floor|passable|high|
+272|붉은 암반 바닥|floor|passable|high|
+273|용암 웅덩이 좌상단|water|solid|high|용암 웅덩이
+274|용암 웅덩이 상단|water|solid|high|용암 웅덩이
+275|용암 웅덩이 우상단|water|solid|high|용암 웅덩이
+276|구덩이 좌상단|cliff|solid|high|구덩이
+277|구덩이 상단|cliff|solid|high|구덩이
+278|구덩이 우상단|cliff|solid|high|구덩이
+279|암석 구덩이 좌상단|cliff|solid|high|암석 구덩이
+280|암석 구덩이 상단|cliff|solid|high|암석 구덩이
+281|암석 구덩이 우상단|cliff|solid|high|암석 구덩이
+282|눈밭 좌상단|floor|passable|high|설원
+283|눈밭 상단|floor|passable|high|설원
+284|눈밭 우상단|floor|passable|high|설원
+285|얼음 절벽 상단 좌측|cliff|solid|high|얼음 절벽
+286|얼음 절벽 상단 중앙|cliff|solid|high|얼음 절벽
+287|얼음 절벽 상단 우측|cliff|solid|high|얼음 절벽
+288|뾰족한 갈색 암석|rock|solid|high|
+289|작은 얼음 덩어리|rock|solid|high|
+290|작은 회색 바위|rock|solid|high|
+291|석순 하단|rock|solid|high|석순
+292|얼음 기둥 하단|prop|solid|high|얼음 기둥
+293|삼각 화로 받침대|prop|solid|high|삼각 화로
+294|목재 기둥 상단|prop|solid|high|목재 기둥
+295|어두운 통로 상단|door|passable|medium|어두운 통로
+296|늘어진 덩굴|plant|passable|high|
+297|나무 사다리|stairs|passable|high|
+298|목재 표지판|prop|solid|high|
+299|해골 장식|prop|solid|high|
+300|붉은 암반 바닥|floor|passable|high|
+301|붉은 암반 바닥|floor|passable|high|
+302|붉은 암반 바닥|floor|passable|high|
+303|용암 웅덩이 좌측|water|solid|high|용암 웅덩이
+304|용암 웅덩이 중앙|water|solid|high|용암 웅덩이
+305|용암 웅덩이 우측|water|solid|high|용암 웅덩이
+306|구덩이 좌측|cliff|solid|high|구덩이
+307|구덩이 내부|cliff|solid|high|구덩이
+308|구덩이 우측|cliff|solid|high|구덩이
+309|암석 구덩이 좌측|cliff|solid|high|암석 구덩이
+310|암석 구덩이 내부|cliff|solid|high|암석 구덩이
+311|암석 구덩이 우측|cliff|solid|high|암석 구덩이
+312|눈밭 좌측|floor|passable|high|설원
+313|눈 덮인 바위|rock|solid|high|
+314|눈밭 우측|floor|passable|high|설원
+315|얼음 절벽 중앙 좌측|cliff|solid|high|얼음 절벽
+316|얼음 절벽 중앙|cliff|solid|high|얼음 절벽
+317|얼음 절벽 중앙 우측|cliff|solid|high|얼음 절벽
+318|갈색 큰 바위 좌상단|rock|solid|high|갈색 큰 바위
+319|갈색 큰 바위 우상단|rock|solid|high|갈색 큰 바위
+320|빈 슬롯|empty|passable|high|
+321|얼음 결정 상단|prop|solid|high|얼음 결정
+322|큰 회색 바위 좌상단|rock|solid|high|큰 회색 바위
+323|큰 회색 바위 우상단|rock|solid|high|큰 회색 바위
+324|목재 기둥 중앙|prop|solid|high|목재 기둥
+325|어두운 통로 중앙|door|passable|medium|어두운 통로
+326|원형 나무 탁자|furniture|solid|high|
+327|나무 의자 뒷모습|furniture|solid|high|
+328|나무 의자 뒷모습|furniture|solid|high|
+329|목재 책장 상단|furniture|solid|high|목재 책장
+330|붉은 암반 바닥|floor|passable|high|
+331|붉은 암반 바닥|floor|passable|high|
+332|붉은 암반 바닥|floor|passable|high|
+333|용암 웅덩이 좌하단|water|solid|high|용암 웅덩이
+334|용암 웅덩이 하단|water|solid|high|용암 웅덩이
+335|용암 웅덩이 우하단|water|solid|high|용암 웅덩이
+336|구덩이 좌하단|cliff|solid|high|구덩이
+337|구덩이 하단|cliff|solid|high|구덩이
+338|구덩이 우하단|cliff|solid|high|구덩이
+339|암석 구덩이 좌하단|cliff|solid|high|암석 구덩이
+340|암석 구덩이 하단|cliff|solid|high|암석 구덩이
+341|암석 구덩이 우하단|cliff|solid|high|암석 구덩이
+342|눈밭 좌하단|floor|passable|high|설원
+343|눈밭 하단|floor|passable|high|설원
+344|눈밭 우하단|floor|passable|high|설원
+345|눈사람|prop|solid|high|
+346|얼음 절벽 하단 좌측|cliff|solid|high|얼음 절벽
+347|얼음 절벽 하단 우측|cliff|solid|high|얼음 절벽
+348|갈색 큰 바위 좌하단|rock|solid|high|갈색 큰 바위
+349|갈색 큰 바위 우하단|rock|solid|high|갈색 큰 바위
+350|얼음 결정 좌하단|prop|solid|high|얼음 결정
+351|얼음 결정 우하단|prop|solid|high|얼음 결정
+352|큰 회색 바위 좌하단|rock|solid|high|큰 회색 바위
+353|큰 회색 바위 우하단|rock|solid|high|큰 회색 바위
+354|목재 기둥 하단|prop|solid|high|목재 기둥
+355|흙 언덕 통로 입구|stairs|passable|medium|어두운 통로
+356|둥근 목재 스툴|furniture|solid|high|
+357|측면 나무 의자|furniture|solid|high|
+358|측면 나무 의자|furniture|solid|high|
+359|목재 책장 하단|furniture|solid|high|목재 책장

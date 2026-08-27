@@ -1,0 +1,120 @@
+120|푸른 수면 1|water|solid|high|
+121|푸른 수면 2|water|solid|high|
+122|잔잔한 수면 1|water|solid|high|
+123|폭포 상단 1|water|solid|high|폭포
+124|소용돌이 물 1|water|solid|high|소용돌이 물
+125|푸른 마법진 발판 1|floor|passable|high|마법진 발판
+126|보라색 돌 바닥 1|floor|passable|high|
+127|보라색 돌 바닥 2|floor|passable|high|
+128|보라색 돌 바닥 3|floor|passable|high|
+129|작은 구덩이|terrain|solid|high|구덩이
+130|보라색 돌 바닥 4|floor|passable|high|
+131|구덩이 모서리|terrain|solid|high|구덩이
+132|흙 바닥 1|floor|passable|high|
+133|흙 바닥 2|floor|passable|high|
+134|흙 바닥 3|floor|passable|high|
+135|어두운 흙 바닥 좌측 테두리|floor|passable|high|
+136|어두운 흙 바닥|floor|passable|high|
+137|어두운 흙 바닥 우측 테두리|floor|passable|high|
+138|붉은 카펫 좌상단 모서리|decoration|passable|high|붉은 카펫
+139|붉은 카펫 상단 테두리|decoration|passable|high|붉은 카펫
+140|붉은 카펫 우상단 모서리|decoration|passable|high|붉은 카펫
+141|목재 벽 상단 좌측|wall|solid|high|목재 벽
+142|목재 벽 상단 중앙|wall|solid|high|목재 벽
+143|목재 벽 상단 우측|wall|solid|high|목재 벽
+144|목재 사다리 상단|stairs|passable|high|목재 사다리
+145|후드 석상 머리|prop|solid|high|후드 석상
+146|가고일 석상 상단|prop|solid|high|가고일 석상
+147|십자가 묘비|prop|solid|high|
+148|사각 묘비|prop|solid|high|
+149|고드름|decoration|passable|high|
+150|푸른 수면 3|water|solid|high|
+151|푸른 수면 4|water|solid|high|
+152|잔잔한 수면 2|water|solid|high|
+153|폭포 상단 2|water|solid|high|폭포
+154|소용돌이 물 2|water|solid|high|소용돌이 물
+155|푸른 마법진 발판 2|floor|passable|high|마법진 발판
+156|보라색 돌 바닥 5|floor|passable|high|
+157|보라색 돌 바닥 6|floor|passable|high|
+158|보라색 돌 바닥 7|floor|passable|high|
+159|구덩이 좌상단|terrain|solid|high|구덩이
+160|구덩이 상단 테두리|terrain|solid|high|구덩이
+161|구덩이 우상단|terrain|solid|high|구덩이
+162|암벽 대각선 좌상단|cliff|solid|high|암벽
+163|암벽 대각선 우상단|cliff|solid|high|암벽
+164|암벽 상단|cliff|solid|high|암벽
+165|어두운 흙 바닥 좌측|floor|passable|high|
+166|흙 바닥 원형 무늬|floor|passable|high|
+167|어두운 흙 바닥 우측|floor|passable|high|
+168|붉은 카펫 좌측 테두리|decoration|passable|high|붉은 카펫
+169|붉은 카펫 중앙|decoration|passable|high|붉은 카펫
+170|붉은 카펫 우측 테두리|decoration|passable|high|붉은 카펫
+171|목재 바닥 1|floor|passable|high|
+172|위쪽 노란색 화살표 발판|floor|passable|high|화살표 발판
+173|아래쪽 노란색 화살표 발판|floor|passable|high|화살표 발판
+174|목재 사다리 하단|stairs|passable|high|목재 사다리
+175|후드 석상 받침대|prop|solid|high|후드 석상
+176|가고일 석상 받침대|prop|solid|high|가고일 석상
+177|덩굴 가지 상단|plant|passable|high|덩굴
+178|덩굴 줄기 우하향|plant|passable|high|덩굴
+179|덩굴 줄기 우상향|plant|passable|high|덩굴
+180|푸른 수면 5|water|solid|high|
+181|푸른 수면 6|water|solid|high|
+182|잔잔한 수면 3|water|solid|high|
+183|폭포 하단 1|water|solid|high|폭포
+184|소용돌이 물 3|water|solid|high|소용돌이 물
+185|푸른 마법진 발판 3|floor|passable|high|마법진 발판
+186|보라색 돌 바닥 8|floor|passable|high|
+187|보라색 돌 바닥 9|floor|passable|high|
+188|보라색 돌 바닥 10|floor|passable|high|
+189|구덩이 좌측 가장자리|terrain|solid|high|구덩이
+190|구덩이 내부|terrain|solid|high|구덩이
+191|구덩이 우측 가장자리|terrain|solid|high|구덩이
+192|암벽 좌측|cliff|solid|high|암벽
+193|암벽 중앙|cliff|solid|high|암벽
+194|암벽 우측|cliff|solid|high|암벽
+195|어두운 흙 바닥 좌하단 모서리|floor|passable|high|
+196|어두운 흙 바닥 하단 테두리|floor|passable|high|
+197|어두운 흙 바닥 우하단 모서리|floor|passable|high|
+198|붉은 카펫 좌하단 모서리|decoration|passable|high|붉은 카펫
+199|붉은 카펫 하단 테두리|decoration|passable|high|붉은 카펫
+200|붉은 카펫 우하단 모서리|decoration|passable|high|붉은 카펫
+201|목재 바닥 2|floor|passable|high|
+202|왼쪽 노란색 화살표 발판|floor|passable|high|화살표 발판
+203|오른쪽 노란색 화살표 발판|floor|passable|high|화살표 발판
+204|철창 상단 좌측|gate|solid|high|철창
+205|철창 상단 중앙|gate|solid|high|철창
+206|철창 상단 우측|gate|solid|high|철창
+207|황금 덩굴 뿌리 좌측|plant|solid|high|황금 덩굴
+208|황금 덩굴 밑동 중앙|plant|solid|high|황금 덩굴
+209|황금 덩굴 뿌리 우측|plant|solid|high|황금 덩굴
+210|푸른 수면 7|water|solid|high|
+211|푸른 수면 8|water|solid|high|
+212|잔잔한 수면 4|water|solid|high|
+213|폭포 하단 2|water|solid|high|폭포
+214|소용돌이 물 4|water|solid|high|소용돌이 물
+215|푸른 마법진 발판 4|floor|passable|high|마법진 발판
+216|보라색 돌 바닥 11|floor|passable|high|
+217|보라색 돌 바닥 12|floor|passable|high|
+218|보라색 돌 바닥 13|floor|passable|high|
+219|구덩이 좌하단|terrain|solid|high|구덩이
+220|구덩이 하단 테두리|terrain|solid|high|구덩이
+221|구덩이 우하단|terrain|solid|high|구덩이
+222|암벽 대각선 좌하단|cliff|solid|high|암벽
+223|암벽 대각선 우하단|cliff|solid|high|암벽
+224|파란 꽃이 핀 흙 바닥|plant|passable|high|
+225|암벽 하단 좌측|cliff|solid|high|암벽
+226|암벽 하단 중앙|cliff|solid|high|암벽
+227|암벽 하단 우측|cliff|solid|high|암벽
+228|붉은 카펫 세로 무늬 좌측|decoration|passable|high|붉은 카펫
+229|붉은 카펫 세로 무늬 중앙|decoration|passable|high|붉은 카펫
+230|붉은 카펫 세로 무늬 우측|decoration|passable|high|붉은 카펫
+231|목재 바닥 3|floor|passable|high|
+232|투명한 얼음 발판|floor|passable|high|
+233|빈 슬롯|empty|passable|high|
+234|철창 하단 좌측|gate|solid|high|철창
+235|철창 하단 중앙|gate|solid|high|철창
+236|철창 하단 우측|gate|solid|high|철창
+237|눈 덮인 바닥 좌상단|floor|passable|high|눈 덮인 바닥
+238|눈 덮인 바닥 우상단|floor|passable|high|눈 덮인 바닥
+239|눈 덮인 바닥 V자 중앙|floor|passable|high|눈 덮인 바닥

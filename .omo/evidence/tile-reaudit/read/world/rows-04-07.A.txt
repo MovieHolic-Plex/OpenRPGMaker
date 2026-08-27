@@ -1,0 +1,120 @@
+120|깊은 물|water|solid|high|
+121|깊은 물|water|solid|high|
+122|깊은 물|water|solid|high|
+123|소용돌이치는 물|water|solid|high|
+124|소용돌이치는 물|water|solid|high|
+125|마법 샘|water|solid|high|
+126|독 늪|terrain|passable|high|
+127|잔디|terrain|passable|high|
+128|독 늪|terrain|passable|high|
+129|눈밭|terrain|passable|high|
+130|잔디|terrain|passable|high|
+131|눈밭|terrain|passable|high|
+132|자갈길 바닥|floor|passable|high|
+133|이끼 낀 벽돌 바닥|floor|passable|high|
+134|밝은 벽돌 벽 상단|wall|solid|high|밝은 벽돌 벽
+135|밝은 벽돌 벽 상단|wall|solid|high|밝은 벽돌 벽
+136|밝은 벽돌 벽 상단|wall|solid|high|밝은 벽돌 벽
+137|밝은 벽돌 벽 상단 우측 기둥|wall|solid|high|밝은 벽돌 벽
+138|잔디 절벽 상단 좌측|cliff|solid|high|잔디 절벽
+139|잔디 절벽 상단 중앙|cliff|solid|high|잔디 절벽
+140|잔디 절벽 상단 우측|cliff|solid|high|잔디 절벽
+141|흙 절벽 상단 좌측|cliff|solid|high|흙 절벽
+142|흙 절벽 상단 중앙|cliff|solid|high|흙 절벽
+143|흙 절벽 상단 우측|cliff|solid|high|흙 절벽
+144|벽 횃불|prop|solid|high|
+145|물약 선반|furniture|solid|high|
+146|벽 스위치|prop|solid|high|
+147|무기점 간판|prop|solid|high|
+148|방어구점 간판|prop|solid|high|
+149|잡화점 간판|prop|solid|high|
+150|깊은 물|water|solid|high|
+151|깊은 물|water|solid|high|
+152|깊은 물|water|solid|high|
+153|소용돌이치는 물|water|solid|high|
+154|소용돌이치는 물|water|solid|high|
+155|마법 샘|water|solid|high|
+156|독 늪 좌상단|terrain|passable|high|독 늪
+157|독 늪 상단|terrain|passable|high|독 늪
+158|독 늪 우상단|terrain|passable|high|독 늪
+159|눈밭 좌상단|terrain|passable|high|눈밭
+160|눈밭 상단|terrain|passable|high|눈밭
+161|눈밭 우상단|terrain|passable|high|눈밭
+162|밝은 석판 바닥|floor|passable|high|
+163|사각 문양 석판|floor|passable|high|
+164|밝은 벽돌 벽 하단|wall|solid|high|밝은 벽돌 벽
+165|밝은 벽돌 벽 하단|wall|solid|high|밝은 벽돌 벽
+166|밝은 벽돌 벽 하단|wall|solid|high|밝은 벽돌 벽
+167|밝은 벽돌 벽 하단 우측 기둥|wall|solid|high|밝은 벽돌 벽
+168|눈 절벽 좌상단|cliff|solid|high|눈 절벽
+169|눈 절벽 상단|cliff|solid|high|눈 절벽
+170|눈 절벽 우상단|cliff|solid|high|눈 절벽
+171|흙 절벽 상층 좌측|cliff|solid|high|흙 절벽
+172|흙 절벽 상층 중앙|cliff|solid|high|흙 절벽
+173|흙 절벽 상층 우측|cliff|solid|high|흙 절벽
+174|풍경화 액자|decoration|solid|high|
+175|모닥불 그림 액자|decoration|solid|high|
+176|초상화 액자|decoration|solid|high|
+177|여관 간판|prop|solid|high|
+178|주점 간판|prop|solid|high|
+179|신전 간판|prop|solid|high|
+180|깊은 물|water|solid|high|
+181|깊은 물|water|solid|high|
+182|깊은 물|water|solid|high|
+183|소용돌이치는 물|water|solid|high|
+184|소용돌이치는 물|water|solid|high|
+185|마법 샘|water|solid|high|
+186|독 늪 좌측|terrain|passable|high|독 늪
+187|독 늪 중앙|terrain|passable|high|독 늪
+188|독 늪 우측|terrain|passable|high|독 늪
+189|눈밭 좌측|terrain|passable|high|눈밭
+190|눈밭 중앙|terrain|passable|high|눈밭
+191|눈밭 우측|terrain|passable|high|눈밭
+192|어두운 석판 바닥|floor|passable|high|
+193|석순 상단|rock|solid|high|석순
+194|어두운 석벽 상단|wall|solid|high|어두운 석벽
+195|어두운 석벽 상단|wall|solid|high|어두운 석벽
+196|어두운 석벽 상단|wall|solid|high|어두운 석벽
+197|어두운 석벽 상단 우측 기둥|wall|solid|high|어두운 석벽
+198|눈 절벽 중단 좌측|cliff|solid|high|눈 절벽
+199|눈 절벽 중단 중앙|cliff|solid|high|눈 절벽
+200|눈 절벽 중단 우측|cliff|solid|high|눈 절벽
+201|흙 절벽 중층 좌측|cliff|solid|high|흙 절벽
+202|흙 절벽 중층 중앙|cliff|solid|high|흙 절벽
+203|흙 절벽 중층 우측|cliff|solid|high|흙 절벽
+204|아치형 격자 창문|window|solid|high|
+205|나무 창문|window|solid|high|
+206|동굴 그림 액자|decoration|solid|high|
+207|갑옷 거치대 상단|prop|solid|high|갑옷 거치대
+208|석상 상단|prop|solid|high|석상
+209|돌기둥 상단|prop|solid|high|돌기둥
+210|깊은 물|water|solid|high|
+211|깊은 물|water|solid|high|
+212|깊은 물|water|solid|high|
+213|소용돌이치는 물|water|solid|high|
+214|소용돌이치는 물|water|solid|high|
+215|마법 샘|water|solid|high|
+216|독 늪 좌하단|terrain|passable|high|독 늪
+217|독 늪 하단|terrain|passable|high|독 늪
+218|독 늪 우하단|terrain|passable|high|독 늪
+219|눈밭 좌하단|terrain|passable|high|눈밭
+220|눈밭 하단|terrain|passable|high|눈밭
+221|눈밭 우하단|terrain|passable|high|눈밭
+222|작은 돌조각들|rock|passable|high|
+223|석순 하단|rock|solid|high|석순
+224|어두운 석벽 하단|wall|solid|high|어두운 석벽
+225|어두운 석벽 하단|wall|solid|high|어두운 석벽
+226|어두운 석벽 하단|wall|solid|high|어두운 석벽
+227|어두운 석벽 하단 우측 기둥|wall|solid|high|어두운 석벽
+228|눈 절벽 하단 좌측|cliff|solid|high|눈 절벽
+229|눈 절벽 하단 중앙|cliff|solid|high|눈 절벽
+230|눈 절벽 하단 우측|cliff|solid|high|눈 절벽
+231|흙 절벽 하층 좌측|cliff|solid|high|흙 절벽
+232|흙 절벽 하층 중앙|cliff|solid|high|흙 절벽
+233|빈 슬롯|empty|passable|high|
+234|스테인드글라스 창문|window|solid|high|
+235|목재 사다리|stairs|passable|high|
+236|어두운 통로|door|passable|high|
+237|갑옷 거치대 하단|prop|solid|high|갑옷 거치대
+238|석상 하단|prop|solid|high|석상
+239|돌기둥 하단|prop|solid|high|돌기둥

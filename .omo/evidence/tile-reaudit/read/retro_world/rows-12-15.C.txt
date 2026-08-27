@@ -1,0 +1,9 @@
+404|유리창|window|solid|high|
+413|동굴 입구|door|solid|high|
+432|석벽 상단|wall|solid|high|석벽
+433|벽돌 벽 상단|wall|solid|high|벽돌 벽
+442|철망|prop|solid|high|
+447|대형 옥좌 좌상단|furniture|solid|high|대형 옥좌
+462|석벽 하단|wall|solid|high|석벽
+463|벽돌 벽 하단|wall|solid|high|벽돌 벽
+473|돌다리 하단|prop|passable|medium|돌다리

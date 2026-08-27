@@ -1,0 +1,38 @@
+366|돌 테두리 작은 구덩이|terrain|solid|medium|
+367|어두운 구덩이 내부|terrain|solid|medium|큰 어두운 구덩이
+368|어두운 구덩이 내부|terrain|solid|medium|큰 어두운 구덩이
+369|돌 테두리 작은 보라색 구덩이|terrain|solid|medium|
+370|보라색 구덩이 내부|terrain|solid|medium|큰 보라색 구덩이
+371|보라색 구덩이 내부|terrain|solid|medium|큰 보라색 구덩이
+384|주황색 삼각 깃발 왼쪽|decoration|passable|medium|삼각 깃발 장식
+385|주황색 삼각 깃발 오른쪽|decoration|passable|medium|삼각 깃발 장식
+386|파란색 삼각 깃발 왼쪽|decoration|passable|medium|삼각 깃발 장식
+387|파란색 삼각 깃발 오른쪽|decoration|passable|medium|삼각 깃발 장식
+396|어두운 구덩이 상단 왼쪽 테두리|terrain|solid|medium|큰 어두운 구덩이
+397|어두운 구덩이 상단 테두리|terrain|solid|medium|큰 어두운 구덩이
+398|어두운 구덩이 상단 오른쪽 테두리|terrain|solid|medium|큰 어두운 구덩이
+399|보라색 구덩이 상단 왼쪽 테두리|terrain|solid|medium|큰 보라색 구덩이
+400|보라색 구덩이 상단 테두리|terrain|solid|medium|큰 보라색 구덩이
+401|보라색 구덩이 상단 오른쪽 테두리|terrain|solid|medium|큰 보라색 구덩이
+417|둥근 텐트 지붕 왼쪽|roof|solid|high|원형 텐트
+418|둥근 텐트 지붕 중앙|roof|solid|high|원형 텐트
+419|둥근 텐트 지붕 오른쪽|roof|solid|high|원형 텐트
+426|어두운 구덩이 왼쪽 테두리|terrain|solid|medium|큰 어두운 구덩이
+427|어두운 구덩이 내부|terrain|solid|medium|큰 어두운 구덩이
+428|어두운 구덩이 오른쪽 테두리|terrain|solid|medium|큰 어두운 구덩이
+429|보라색 구덩이 왼쪽 테두리|terrain|solid|medium|큰 보라색 구덩이
+430|보라색 구덩이 내부|terrain|solid|medium|큰 보라색 구덩이
+431|보라색 구덩이 오른쪽 테두리|terrain|solid|medium|큰 보라색 구덩이
+447|텐트 왼쪽 천 벽|wall|solid|high|원형 텐트
+449|텐트 오른쪽 천 벽|wall|solid|high|원형 텐트
+456|어두운 구덩이 하단 왼쪽 테두리|terrain|solid|medium|큰 어두운 구덩이
+457|어두운 구덩이 하단 테두리|terrain|solid|medium|큰 어두운 구덩이
+458|어두운 구덩이 하단 오른쪽 테두리|terrain|solid|medium|큰 어두운 구덩이
+459|보라색 구덩이 하단 왼쪽 테두리|terrain|solid|medium|큰 보라색 구덩이
+460|보라색 구덩이 하단 테두리|terrain|solid|medium|큰 보라색 구덩이
+461|보라색 구덩이 하단 오른쪽 테두리|terrain|solid|medium|큰 보라색 구덩이
+468|목조 아치 다리 왼쪽|floor|passable|high|목조 아치 다리
+469|목조 아치 다리 중앙|floor|passable|high|목조 아치 다리
+470|목조 아치 다리 오른쪽|floor|passable|high|목조 아치 다리
+477|텐트 왼쪽 천 벽 하단|wall|solid|high|원형 텐트
+479|텐트 오른쪽 천 벽 하단|wall|solid|high|원형 텐트

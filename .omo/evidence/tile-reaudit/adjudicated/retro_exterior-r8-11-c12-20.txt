@@ -1,0 +1,6 @@
+252|분홍색 거친 자연석 바닥|terrain|passable|medium|
+253|청회색 거친 자연석 바닥|terrain|passable|medium|
+282|연보라색 거친 자연석 바닥|terrain|passable|medium|
+283|회녹색 거친 자연석 바닥|terrain|passable|medium|
+312|어두운 청회색 거친 자연석 바닥|terrain|passable|medium|
+342|베이지색 석판 바닥|floor|passable|medium|

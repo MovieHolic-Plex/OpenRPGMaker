@@ -1,0 +1,120 @@
+120|어두운 남색 타일|terrain|passable|medium|
+121|어두운 남색 타일|terrain|passable|medium|
+122|어두운 남색 타일|terrain|passable|medium|
+123|물결 파동|water|solid|medium|
+124|소용돌이 물결|water|solid|medium|
+125|사각 환기구|decoration|passable|high|
+126|둥근 흙길 테두리|floor|passable|high|
+127|잔디 바닥|floor|passable|high|
+128|흙 바닥|floor|passable|high|
+129|조약돌 바닥 조각|floor|passable|high|
+130|잔디 바닥|floor|passable|high|
+131|조약돌 바닥|floor|passable|high|
+132|금속 장식 목재 벽 좌측 상단|wall|solid|high|금속 장식 목재 벽
+133|목재 벽 상단|wall|solid|high|목재 벽
+134|금속 장식 목재 벽 우측 상단|wall|solid|high|금속 장식 목재 벽
+135|금속 장식 목재 벽 상단|wall|solid|high|금속 장식 목재 벽
+136|금속 장식 목재 벽 상단|wall|solid|high|금속 장식 목재 벽
+137|팀버프레임 회벽 상단|wall|solid|high|팀버프레임 회벽
+138|어두운 석조 아치 입구 좌상단|wall|solid|high|석조 아치 입구
+139|어두운 석조 아치 입구 우상단|wall|solid|high|석조 아치 입구
+140|어두운 석조 벽|wall|solid|high|
+141|어두운 석조 벽|wall|solid|high|
+142|석조 창문 좌측|window|solid|high|석조 창문
+143|석조 창문 우측|window|solid|high|석조 창문
+144|세로 목재 탁자 상단|furniture|solid|high|세로 목재 탁자
+145|푸른 커튼 창문|window|solid|high|
+146|목재 사각 문|door|solid|high|
+147|작은 목재 의자|furniture|solid|high|
+148|목재 협탁|furniture|solid|high|
+149|바위에 꽂힌 곡괭이|prop|solid|high|
+150|어두운 원형 웅덩이 상단|terrain|passable|medium|어두운 원형 웅덩이
+151|어두운 원형 웅덩이 상단|terrain|passable|medium|어두운 원형 웅덩이
+152|어두운 원형 웅덩이 상단|terrain|passable|medium|어두운 원형 웅덩이
+153|물결 파동|water|solid|medium|
+154|소용돌이 물결|water|solid|medium|
+155|사각 환기구|decoration|passable|high|
+156|새싹 밭고랑 좌측|floor|passable|high|새싹 밭고랑
+157|새싹 밭고랑 중앙|floor|passable|high|새싹 밭고랑
+158|새싹 밭고랑 우측|floor|passable|high|새싹 밭고랑
+159|조약돌 바닥 좌상단 테두리|floor|passable|high|조약돌 길
+160|조약돌 바닥 상단 테두리|floor|passable|high|조약돌 길
+161|조약돌 바닥 우상단 테두리|floor|passable|high|조약돌 길
+162|금속 장식 목재 벽 좌측 하단|wall|solid|high|금속 장식 목재 벽
+163|목재 벽 하단|wall|solid|high|목재 벽
+164|금속 장식 목재 벽 우측 하단|wall|solid|high|금속 장식 목재 벽
+165|금속 장식 목재 벽 하단|wall|solid|high|금속 장식 목재 벽
+166|금속 장식 목재 벽 하단|wall|solid|high|금속 장식 목재 벽
+167|팀버프레임 목재 기둥 벽|wall|solid|high|팀버프레임 벽
+168|목재 바닥 상단|floor|passable|high|목재 바닥
+169|목재 바닥 상단|floor|passable|high|목재 바닥
+170|목재 바닥 상단|floor|passable|high|목재 바닥
+171|가로 목재 판자벽 좌측|wall|solid|high|가로 목재 판자벽
+172|가로 목재 판자벽 중앙|wall|solid|high|가로 목재 판자벽
+173|가로 목재 판자벽 우측|wall|solid|high|가로 목재 판자벽
+174|세로 목재 탁자 중앙|furniture|solid|high|세로 목재 탁자
+175|전면 목재 의자|furniture|solid|high|
+176|후면 목재 의자|furniture|solid|high|
+177|목재 술통|prop|solid|high|
+178|통구이 고기 요리|prop|solid|high|
+179|빨간색 문장 깃발|decoration|solid|high|
+180|어두운 원형 웅덩이 하단|terrain|passable|medium|어두운 원형 웅덩이
+181|어두운 원형 웅덩이 하단|terrain|passable|medium|어두운 원형 웅덩이
+182|어두운 원형 웅덩이 하단|terrain|passable|medium|어두운 원형 웅덩이
+183|물결 파동|water|solid|medium|
+184|소용돌이 물결|water|solid|medium|
+185|사각 환기구|decoration|passable|high|
+186|새싹 밭고랑 좌측|floor|passable|high|새싹 밭고랑
+187|새싹 밭고랑 중앙|floor|passable|high|새싹 밭고랑
+188|새싹 밭고랑 우측|floor|passable|high|새싹 밭고랑
+189|조약돌 바닥 좌측 테두리|floor|passable|high|조약돌 길
+190|조약돌 바닥 중앙|floor|passable|high|조약돌 길
+191|조약돌 바닥 우측 테두리|floor|passable|high|조약돌 길
+192|세로 목재 판자벽|wall|solid|high|
+193|구멍 난 목재 판자벽|wall|solid|high|
+194|팀버프레임 돌벽 상단|wall|solid|high|팀버프레임 돌벽
+195|팀버프레임 돌벽 상단|wall|solid|high|팀버프레임 돌벽
+196|팀버프레임 회벽 상단|wall|solid|high|팀버프레임 회벽
+197|팀버프레임 회벽 상단|wall|solid|high|팀버프레임 회벽
+198|목재 바닥|floor|passable|high|목재 바닥
+199|목재 바닥|floor|passable|high|목재 바닥
+200|목재 바닥|floor|passable|high|목재 바닥
+201|철제 배수구 창살|floor|passable|high|
+202|노란 과일 상자|prop|solid|high|
+203|빨간 사과 상자|prop|solid|high|
+204|세로 목재 탁자 하단|furniture|solid|high|세로 목재 탁자
+205|우향 목재 의자|furniture|solid|high|
+206|좌향 목재 의자|furniture|solid|high|
+207|작은 목재 통|prop|solid|high|
+208|빨간색 삼각 깃발|decoration|solid|high|
+209|빨간색 갈래 깃발|decoration|solid|high|
+210|어두운 남색 타일|terrain|passable|medium|
+211|어두운 남색 타일|terrain|passable|medium|
+212|어두운 남색 타일|terrain|passable|medium|
+213|물결 파동|water|solid|medium|
+214|소용돌이 물결|water|solid|medium|
+215|사각 환기구|decoration|passable|high|
+216|새싹 밭고랑 좌측|floor|passable|high|새싹 밭고랑
+217|새싹 밭고랑 중앙|floor|passable|high|새싹 밭고랑
+218|새싹 밭고랑 우측|floor|passable|high|새싹 밭고랑
+219|조약돌 바닥 좌하단 테두리|floor|passable|high|조약돌 길
+220|조약돌 바닥 하단 테두리|floor|passable|high|조약돌 길
+221|조약돌 바닥 우하단 테두리|floor|passable|high|조약돌 길
+222|목재 판자벽|wall|solid|high|
+223|목재 판자벽 하단|wall|solid|high|
+224|목재 기둥 돌벽 하단|wall|solid|high|팀버프레임 돌벽
+225|목재 기둥 돌벽 하단|wall|solid|high|팀버프레임 돌벽
+226|목재 기둥 회벽 하단|wall|solid|high|팀버프레임 회벽
+227|목재 기둥 회벽 하단|wall|solid|high|팀버프레임 회벽
+228|목재 바닥|floor|passable|high|목재 바닥
+229|목재 바닥|floor|passable|high|목재 바닥
+230|목재 바닥|floor|passable|high|목재 바닥
+231|마법진 문양 바닥|floor|passable|high|
+232|반사 유리 바닥|floor|passable|high|
+233|빈 슬롯|empty|passable|high|
+234|긴 목재 탁자 좌측|furniture|solid|high|긴 목재 탁자
+235|긴 목재 탁자 중앙|furniture|solid|high|긴 목재 탁자
+236|긴 목재 탁자 우측|furniture|solid|high|긴 목재 탁자
+237|목재 보관 상자|prop|solid|high|
+238|넓은 빨간색 벽걸이 깃발 좌측|decoration|solid|high|넓은 빨간색 벽걸이 깃발
+239|넓은 빨간색 벽걸이 깃발 우측|decoration|solid|high|넓은 빨간색 벽걸이 깃발

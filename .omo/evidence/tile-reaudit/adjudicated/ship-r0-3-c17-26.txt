@@ -1,0 +1,4 @@
+17|세로 나무 판자 바닥|floor|passable|high|
+26|선수 골조 상단|prop|solid|high|배 선수
+86|선수 골조 우측단|prop|solid|high|배 선수
+108|선체 수평 지지대 좌측|prop|solid|high|배 구조물

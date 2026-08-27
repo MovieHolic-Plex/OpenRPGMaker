@@ -1,0 +1,48 @@
+6|눈 바닥|terrain|passable|high|
+7|눈 바닥|terrain|passable|high|
+8|눈 바닥|terrain|passable|high|
+9|눈 바닥 위 얼음 웅덩이|terrain|passable|high|
+10|눈 바닥|terrain|passable|high|
+11|눈밭 위 얼음 타일|terrain|passable|high|
+12|용암 지대 좌상단|terrain|passable|high|용암 지대
+13|용암 지대 상단|terrain|passable|high|용암 지대
+14|용암 지대 우상단|terrain|passable|high|용암 지대
+18|어두운 석벽 상단 좌측|wall|solid|high|어두운 석벽
+19|어두운 석벽 상단 우측|wall|solid|high|어두운 석벽
+20|문양이 새겨진 어두운 석벽 상단|wall|solid|high|어두운 석벽
+36|눈 바닥|terrain|passable|high|
+37|눈 바닥|terrain|passable|high|
+38|눈 바닥|terrain|passable|high|
+39|얼음판 좌상단|terrain|passable|high|얼음판
+40|얼음판 상단|terrain|passable|high|얼음판
+41|얼음판 우상단|terrain|passable|high|얼음판
+42|용암 지대 좌측|terrain|passable|high|용암 지대
+43|용암 지대 중앙|terrain|passable|high|용암 지대
+44|용암 지대 우측|terrain|passable|high|용암 지대
+45|어두운 흙 바닥|terrain|passable|high|
+46|흙 바닥|terrain|passable|high|
+47|흙 바닥|terrain|passable|high|
+66|눈 바닥|terrain|passable|high|
+67|눈 바닥|terrain|passable|high|
+68|눈 바닥|terrain|passable|high|
+69|얼음판 좌측|terrain|passable|high|얼음판
+70|얼음판 중앙|terrain|passable|high|얼음판
+71|얼음판 우측|terrain|passable|high|얼음판
+72|용암 지대 좌하단|terrain|passable|high|용암 지대
+73|용암 지대 하단|terrain|passable|high|용암 지대
+74|용암 지대 우하단|terrain|passable|high|용암 지대
+75|악마 얼굴 석조 부조|decoration|solid|high|
+82|황갈색 흙 바닥|terrain|passable|high|
+83|어두운 흙 바닥|terrain|passable|high|
+96|눈 바닥|terrain|passable|high|
+97|눈 바닥|terrain|passable|high|
+98|눈 바닥|terrain|passable|high|
+99|얼음판 좌하단|terrain|passable|high|얼음판
+100|얼음판 하단|terrain|passable|high|얼음판
+101|얼음판 우하단|terrain|passable|high|얼음판
+102|흙 바닥|terrain|passable|high|
+103|흙 바닥|terrain|passable|high|
+104|흙 바닥|terrain|passable|high|
+112|새싹이 돋은 흙 바닥|terrain|passable|high|
+113|새싹이 돋은 흙 바닥|terrain|passable|high|
+119|원뿔형 얼음 결정|prop|solid|high|

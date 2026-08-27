@@ -1,0 +1,120 @@
+360|갈색 흙 바닥|terrain|passable|high|
+361|갈색 흙 바닥|terrain|passable|high|
+362|갈색 흙 바닥|terrain|passable|high|
+363|작은 덤불 상단|plant|passable|high|덤불
+364|갈색 흙 바닥|terrain|passable|high|
+365|큰 덤불 상단|plant|passable|high|덤불
+366|얼음 웅덩이 단일 타일|water|solid|high|
+367|얼음 웅덩이 상단 경계|water|solid|high|
+368|얼음 웅덩이 안쪽 모서리|water|solid|high|
+369|어두운 돌 웅덩이 단일 타일|water|solid|high|
+370|어두운 돌 웅덩이 상단 경계|water|solid|high|
+371|어두운 돌 웅덩이 안쪽 모서리|water|solid|high|
+372|얼음 폭포 상단 좌측|water|solid|high|얼음 폭포
+373|얼음 폭포 상단 중앙|water|solid|high|얼음 폭포
+374|얼음 폭포 상단 우측|water|solid|high|얼음 폭포
+375|얼음 벽 상단 좌측|wall|solid|high|얼음 벽
+376|얼음 벽 상단 중앙|wall|solid|high|얼음 벽
+377|얼음 벽 상단 우측|wall|solid|high|얼음 벽
+378|용암 웅덩이 좌상단|water|solid|high|용암 웅덩이
+379|용암 웅덩이 우상단|water|solid|high|용암 웅덩이
+380|흙더미 좌상단|terrain|passable|high|흙더미
+381|흙더미 우상단|terrain|passable|high|흙더미
+382|녹색 자갈 더미|rock|passable|high|
+383|푸른 자갈 더미|rock|passable|high|
+384|침대 머리맡 상단|furniture|solid|high|침대
+385|목재 테이블 상단 좌측|furniture|solid|high|목재 테이블
+386|목재 테이블 상단 중앙좌측|furniture|solid|high|목재 테이블
+387|목재 테이블 상단 중앙우측|furniture|solid|high|목재 테이블
+388|목재 테이블 상단 우측|furniture|solid|high|목재 테이블
+389|목재 협탁|furniture|solid|high|
+390|갈색 흙 바닥|terrain|passable|high|
+391|갈색 흙 바닥|terrain|passable|high|
+392|갈색 흙 바닥|terrain|passable|high|
+393|덤불 숲 좌상단|plant|passable|high|덤불 숲
+394|덤불 숲 상단 중앙|plant|passable|high|덤불 숲
+395|덤불 숲 우상단|plant|passable|high|덤불 숲
+396|얼음 웅덩이 좌상단 모서리|water|solid|high|
+397|얼음 웅덩이 상단 테두리|water|solid|high|
+398|얼음 웅덩이 우상단 모서리|water|solid|high|
+399|어두운 돌 웅덩이 좌상단 모서리|water|solid|high|
+400|어두운 돌 웅덩이 상단 테두리|water|solid|high|
+401|어두운 돌 웅덩이 우상단 모서리|water|solid|high|
+402|얼음 폭포 하단 좌측|water|solid|high|얼음 폭포
+403|얼음 폭포 하단 중앙|water|solid|high|얼음 폭포
+404|얼음 폭포 하단 우측|water|solid|high|얼음 폭포
+405|어두운 던전 벽 상단 좌측|wall|solid|high|어두운 던전 벽
+406|어두운 던전 벽 상단 중앙|wall|solid|high|어두운 던전 벽
+407|어두운 던전 벽 상단 우측|wall|solid|high|어두운 던전 벽
+408|눈더미 좌상단|terrain|passable|high|눈더미
+409|눈더미 우상단|terrain|passable|high|눈더미
+410|어두운 모래더미 좌상단|terrain|passable|high|어두운 모래더미
+411|어두운 모래더미 우상단|terrain|passable|high|어두운 모래더미
+412|갈색 암석 덩어리|rock|solid|high|
+413|얼음 결정 파편|rock|passable|high|
+414|세로 침대 하단|furniture|solid|high|세로 침대
+415|가로 침대 좌측 머리맡|furniture|solid|high|가로 침대
+416|가로 침대 우측 발치|furniture|solid|high|가로 침대
+417|나무 통|prop|solid|high|
+418|자루|prop|solid|high|
+419|나무 스툴 의자|furniture|passable|high|
+420|갈색 흙 바닥|terrain|passable|high|
+421|갈색 흙 바닥|terrain|passable|high|
+422|갈색 흙 바닥|terrain|passable|high|
+423|덤불 숲 좌측 가장자리|plant|passable|high|덤불 숲
+424|덤불 숲 내부|plant|passable|high|덤불 숲
+425|덤불 숲 우측 가장자리|plant|passable|high|덤불 숲
+426|얼음 웅덩이 좌측 테두리|water|solid|high|
+427|얼음 웅덩이 내부 수면|water|solid|high|
+428|얼음 웅덩이 우측 테두리|water|solid|high|
+429|어두운 돌 웅덩이 좌측 테두리|water|solid|high|
+430|어두운 돌 웅덩이 내부 수면|water|solid|high|
+431|어두운 돌 웅덩이 우측 테두리|water|solid|high|
+432|돌길 모서리 좌상단|floor|passable|high|돌길
+433|돌길 모서리 우상단|floor|passable|high|돌길
+434|조약돌 바닥|floor|passable|high|
+435|어두운 던전 벽 하단 좌측|wall|solid|high|어두운 던전 벽
+436|어두운 던전 벽 하단 묘비 장식|wall|solid|high|어두운 던전 벽
+437|어두운 던전 벽 하단 우측|wall|solid|high|어두운 던전 벽
+438|대형 비석 상단 좌측|prop|solid|high|대형 비석
+439|대형 비석 상단 중앙|prop|solid|high|대형 비석
+440|대형 비석 상단 우측|prop|solid|high|대형 비석
+441|샹들리에 상단 좌측|decoration|passable|high|샹들리에
+442|샹들리에 상단 중앙|decoration|passable|high|샹들리에
+443|샹들리에 상단 우측|decoration|passable|high|샹들리에
+444|돌계단 상단 좌측|stairs|passable|high|돌계단
+445|돌계단 상단 우측|stairs|passable|high|돌계단
+446|석재 기둥 상단|prop|solid|high|석재 기둥
+447|왕좌 상단 좌측 팔걸이|furniture|solid|high|왕좌
+448|왕좌 상단 등받이|furniture|solid|high|왕좌
+449|왕좌 상단 우측 팔걸이|furniture|solid|high|왕좌
+450|갈색 흙 바닥|terrain|passable|high|
+451|갈색 흙 바닥|terrain|passable|high|
+452|갈색 흙 바닥|terrain|passable|high|
+453|덤불 숲 좌하단|plant|passable|high|덤불 숲
+454|덤불 숲 하단 중앙|plant|passable|high|덤불 숲
+455|덤불 숲 우하단|plant|passable|high|덤불 숲
+456|얼음 웅덩이 좌하단 모서리|water|solid|high|
+457|얼음 웅덩이 하단 테두리|water|solid|high|
+458|얼음 웅덩이 우하단 모서리|water|solid|high|
+459|어두운 돌 웅덩이 좌하단 모서리|water|solid|high|
+460|어두운 돌 웅덩이 하단 테두리|water|solid|high|
+461|어두운 돌 웅덩이 우하단 모서리|water|solid|high|
+462|돌길 바닥|floor|passable|high|돌길
+463|돌길 바닥|floor|passable|high|돌길
+464|조약돌 바닥|floor|passable|high|
+465|어두운 던전 벽 하단 바닥 좌측|wall|solid|high|어두운 던전 벽
+466|어두운 던전 벽 하단 바닥 중앙|wall|solid|high|어두운 던전 벽
+467|어두운 던전 벽 하단 바닥 우측|wall|solid|high|어두운 던전 벽
+468|대형 비석 하단 좌측|prop|solid|high|대형 비석
+469|대형 비석 하단 중앙|prop|solid|high|대형 비석
+470|대형 비석 하단 우측|prop|solid|high|대형 비석
+471|샹들리에 하단 좌측|decoration|passable|high|샹들리에
+472|샹들리에 하단 중앙|decoration|passable|high|샹들리에
+473|샹들리에 하단 우측|decoration|passable|high|샹들리에
+474|돌계단 하단 좌측|stairs|passable|high|돌계단
+475|돌계단 하단 우측|stairs|passable|high|돌계단
+476|석재 기둥 하단 받침대|prop|solid|high|석재 기둥
+477|왕좌 하단 좌측|furniture|solid|high|왕좌
+478|왕좌 하단 좌석|furniture|solid|high|왕좌
+479|왕좌 하단 우측|furniture|solid|high|왕좌

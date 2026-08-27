@@ -104,6 +104,13 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **전수 감사:** 명령 피커 3탭 45항목을 playwright로 전부 열어 스크린샷(`.omo/evidence/event-map-items/before|after/`)과 항목별 감사(`audit-before.md`)로 남겼다. 고유 다이얼로그 44개가 A형(설명카드+요약+미리보기)과 B형 레거시(기타 명령 껍데기, 9건: m2-026/030/066/078/201/202/205/207/212)로 갈라진다. B형 껍데기 통일은 아직 미착수 — 후속 과제.
 - **적용된 픽스:** (1) `isM2CatalogEntrySelectableInMap`이 m2-055(Show Animation 중복 등재)를 맵 피커에서 제외 — 카탈로그 엔트리는 저장 프로젝트 호환을 위해 유지. (2) 조명 설정(setLighting) 입력을 0~1 → 밝기(%)/100 스케일로 통일하고 암전/AMB/주변광 3중 용어를 "밝기"로 정리(`commandBodyPage3Native.ts`, `commandPreview.ts` lightingStage/caption). (3) 카메라 프리뷰의 내부 토큰(panTo 등)은 `CAMERA_MODE_LABELS`로 한국어화. (4) 타일 변경(changeTile)에 실맵 캔버스 미리보기 추가(`change-tile-map-canvas`, drawTransferMapPreview 재사용). (5) 프리셋 칩 세로 쪼개짐 방지 CSS(`05-force-modern-actor-page3.css`: nowrap+min-width fit-content). (6) parallax 병기 문구 정리.
 - **계약 테스트:** `test/eventMapItemsBeginnerUx.test.ts`. e2e 증거: `_event-map-items-after.spec.ts`.
+
+## Companion roster in the command picker (2026-08-27)
+
+- The 명령 피커 탭 2 (`동료 · 전투`) opens with a `companion-roster` section rendered by `src/editor/panels/eventEditor/companionRoster.ts`. It lists every `project.database.actors` record with a portrait crop (`faceset` cell first, `charset` idle-front fallback; single-cell crops only) and inserting through the standard addFollower edit dialog. Cards carry `companion-card-<actorId>` / thumb testids `companion-thumb-<actorId>`.
+- `buildFollowerPresets()` exposes ALL database actors as follower preset chips (the legacy first-two-only truncation is gone). The first actor's chip keeps the contract id `preset:companion-hero`; its label embeds the actor name (`동료 주인공 (이름)`). Chip buttons use testid prefix `follower-preset-chip-*`, and actor chips render `follower-preset-thumb-*` portraits via the shared renderer.
+- Do not reimplement local actor pickers in companion surfaces — reuse `companionPortraitElement` / existing `actorSheetIcon`. Coverage: `test/companionRoster.test.ts`, `test/followerPresets.test.ts`, and the exhaustive click-through spec `test/e2e/event-companion-command-sweep.spec.ts` (sweeps every tab-2 entry, then asserts DB roster + preset chips with evidence under `.omo/evidence/companion-sweep/`).
+
 ## Presentation and system M2 command bodies
 
 - Rich Page-3 presentation and system command bodies live in `src/editor/panels/eventEditor/commandBodyM2Page3.ts`. They render dedicated two-column intent layouts (`page3-command-body actor-m2-command-body`) for screen tint, flash, shake, weather overlays, parallax background, tile swap, picture controls, vehicles, and coordinate queries.

@@ -1,0 +1,5908 @@
+[
+ {
+  "index": 0,
+  "label": "이끼 낀 동굴 암벽 상단",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "이끼 낀 동굴 암벽 상단",
+   "cave",
+   "동굴",
+   "암벽",
+   "이끼"
+  ]
+ },
+ {
+  "index": 1,
+  "label": "이끼 낀 동굴 암벽 북동",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "이끼 낀 동굴 암벽 북동",
+   "cave",
+   "암벽",
+   "북동"
+  ]
+ },
+ {
+  "index": 2,
+  "label": "이끼 낀 동굴 암벽 북서",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "이끼 낀 동굴 암벽 북서",
+   "cave",
+   "암벽",
+   "북서"
+  ]
+ },
+ {
+  "index": 3,
+  "label": "푸른 석재 벽돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "푸른 석재 벽돌 벽",
+   "masonry",
+   "벽돌",
+   "석재",
+   "벽"
+  ]
+ },
+ {
+  "index": 4,
+  "label": "푸른 석재 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "푸른 석재 벽돌 벽면",
+   "masonry",
+   "벽돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 5,
+  "label": "푸른 벽돌 담벼락",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "푸른 벽돌 담벼락",
+   "벽돌",
+   "담",
+   "담벼락"
+  ]
+ },
+ {
+  "index": 6,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 7,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 8,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 9,
+  "label": "얼음 바닥 물구멍",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "얼음 바닥 물구멍",
+   "ice",
+   "얼음",
+   "물구멍",
+   "water"
+  ]
+ },
+ {
+  "index": 10,
+  "label": "희고 깨끗한 얼음",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "희고 깨끗한 얼음",
+   "ice",
+   "얼음",
+   "백색"
+  ]
+ },
+ {
+  "index": 11,
+  "label": "얼음 낀 물 웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 낀 물 웅덩이",
+   "water",
+   "물",
+   "웅덩이",
+   "얼음"
+  ]
+ },
+ {
+  "index": 12,
+  "label": "적갈색 흙바닥 상단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙바닥 상단",
+   "흙",
+   "바닥",
+   "dirt",
+   "상단"
+  ]
+ },
+ {
+  "index": 13,
+  "label": "적갈색 흙바닥 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙바닥 중앙",
+   "흙",
+   "바닥",
+   "dirt",
+   "중앙"
+  ]
+ },
+ {
+  "index": 14,
+  "label": "적갈색 흙바닥 하단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙바닥 하단",
+   "흙",
+   "바닥",
+   "dirt",
+   "하단"
+  ]
+ },
+ {
+  "index": 15,
+  "label": "갈색 흙바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥",
+   "흙",
+   "바닥",
+   "earth",
+   "갈색"
+  ]
+ },
+ {
+  "index": 16,
+  "label": "갈색 흙바닥 상단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥 상단",
+   "흙",
+   "바닥",
+   "상단"
+  ]
+ },
+ {
+  "index": 17,
+  "label": "갈색 흙바닥 경계",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥 경계",
+   "흙",
+   "바닥",
+   "경계"
+  ]
+ },
+ {
+  "index": 18,
+  "label": "짙은 회색 돌바닥 상단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "짙은 회색 돌바닥 상단",
+   "돌",
+   "바닥",
+   "stone",
+   "상단"
+  ]
+ },
+ {
+  "index": 19,
+  "label": "짙은 회색 돌바닥 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "짙은 회색 돌바닥 중앙",
+   "돌",
+   "바닥",
+   "stone",
+   "중앙"
+  ]
+ },
+ {
+  "index": 20,
+  "label": "짙은 회색 돌바닥 하단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "짙은 회색 돌바닥 하단",
+   "돌",
+   "바닥",
+   "stone",
+   "하단"
+  ]
+ },
+ {
+  "index": 21,
+  "label": "회청색 돌바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회청색 돌바닥",
+   "돌",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 22,
+  "label": "청회색 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "청회색 석재 바닥",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 23,
+  "label": "푸른빛 회색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "푸른빛 회색 바닥",
+   "회색",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 24,
+  "label": "물가 절벽 경계",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물가 절벽 경계",
+   "water",
+   "물가",
+   "절벽",
+   "경계"
+  ]
+ },
+ {
+  "index": 25,
+  "label": "깊은 물 풀",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 물 풀",
+   "water",
+   "물",
+   "깊음"
+  ]
+ },
+ {
+  "index": 26,
+  "label": "물가 암석 가장자리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물가 암석 가장자리",
+   "water",
+   "물가",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 27,
+  "label": "금빛 장식 소품",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "금빛 장식 소품",
+   "금빛",
+   "장식",
+   "gold",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 28,
+  "label": "금빛 조형 소품",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "금빛 조형 소품",
+   "금빛",
+   "조형",
+   "gold",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 29,
+  "label": "금빛 휘날리는 장식",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "금빛 휘날리는 장식",
+   "금빛",
+   "휘날림",
+   "gold",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 30,
+  "label": "동굴 암벽 상단 경계",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 상단 경계",
+   "cave",
+   "암벽",
+   "동굴",
+   "경계"
+  ]
+ },
+ {
+  "index": 31,
+  "label": "동굴 암벽 북동 경계",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 북동 경계",
+   "cave",
+   "암벽",
+   "북동"
+  ]
+ },
+ {
+  "index": 32,
+  "label": "동굴 암벽 북서 경계",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 북서 경계",
+   "cave",
+   "암벽",
+   "북서"
+  ]
+ },
+ {
+  "index": 33,
+  "label": "청회색 벽돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "청회색 벽돌 벽",
+   "masonry",
+   "벽돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 34,
+  "label": "청회색 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "청회색 벽돌 벽면",
+   "masonry",
+   "벽돌",
+   "벽면"
+  ]
+ },
+ {
+  "index": 35,
+  "label": "청회색 벽돌 담",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "청회색 벽돌 담",
+   "벽돌",
+   "담",
+   "wall"
+  ]
+ },
+ {
+  "index": 36,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 37,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 38,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 39,
+  "label": "얼음 가장자리 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 가장자리 물",
+   "water",
+   "얼음",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 40,
+  "label": "얼음 사이 물가",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 사이 물가",
+   "water",
+   "얼음",
+   "물가"
+  ]
+ },
+ {
+  "index": 41,
+  "label": "얼음 낀 물가",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 낀 물가",
+   "water",
+   "얼음",
+   "물가"
+  ]
+ },
+ {
+  "index": 42,
+  "label": "적갈색 벽돌 바닥 상단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 벽돌 바닥 상단",
+   "벽돌",
+   "바닥",
+   "brick",
+   "상단"
+  ]
+ },
+ {
+  "index": 43,
+  "label": "적갈색 벽돌 바닥 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 벽돌 바닥 중앙",
+   "벽돌",
+   "바닥",
+   "brick",
+   "중앙"
+  ]
+ },
+ {
+  "index": 44,
+  "label": "적갈색 벽돌 바닥 하단",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 벽돌 바닥 하단",
+   "벽돌",
+   "바닥",
+   "brick",
+   "하단"
+  ]
+ },
+ {
+  "index": 45,
+  "label": "갈색 토양 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 토양 바닥",
+   "흙",
+   "토양",
+   "바닥"
+  ]
+ },
+ {
+  "index": 46,
+  "label": "갈색 흙밭",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙밭",
+   "흙",
+   "흙밭",
+   "earth"
+  ]
+ },
+ {
+  "index": 47,
+  "label": "갈색 모래흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 모래흙 바닥",
+   "흙",
+   "모래",
+   "바닥"
+  ]
+ },
+ {
+  "index": 48,
+  "label": "깊은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 물",
+   "water",
+   "물",
+   "깊음"
+  ]
+ },
+ {
+  "index": 49,
+  "label": "깊은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 물",
+   "water",
+   "물",
+   "깊음"
+  ]
+ },
+ {
+  "index": 50,
+  "label": "깊은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 물",
+   "water",
+   "물",
+   "깊음"
+  ]
+ },
+ {
+  "index": 51,
+  "label": "얼룩진 회청색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "얼룩진 회청색 바닥",
+   "회색",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 52,
+  "label": "얼룩진 청회색 돌바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "얼룩진 청회색 돌바닥",
+   "돌",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 53,
+  "label": "반점 낀 회청색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "반점 낀 회청색 바닥",
+   "회색",
+   "반점",
+   "바닥"
+  ]
+ },
+ {
+  "index": 54,
+  "label": "나무 난간 상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 상단",
+   "wood",
+   "나무",
+   "난간",
+   "울타리",
+   "상단"
+  ]
+ },
+ {
+  "index": 55,
+  "label": "나무 난간 하단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 하단",
+   "wood",
+   "나무",
+   "난간",
+   "하단"
+  ]
+ },
+ {
+  "index": 56,
+  "label": "나무 울타리 가로대",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 가로대",
+   "wood",
+   "울타리",
+   "가로대"
+  ]
+ },
+ {
+  "index": 57,
+  "label": "나무 울타리 격자",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 격자",
+   "wood",
+   "울타리",
+   "격자"
+  ]
+ },
+ {
+  "index": 58,
+  "label": "나무 난간 격자",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 격자",
+   "wood",
+   "난간",
+   "격자"
+  ]
+ },
+ {
+  "index": 59,
+  "label": "나무 울타리 가로대 경계",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 가로대 경계",
+   "wood",
+   "울타리",
+   "가로대"
+  ]
+ },
+ {
+  "index": 60,
+  "label": "동굴 암벽 상단 모서리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 상단 모서리",
+   "cave",
+   "암벽",
+   "모서리"
+  ]
+ },
+ {
+  "index": 61,
+  "label": "동굴 암벽 북동 모서리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 북동 모서리",
+   "cave",
+   "암벽",
+   "북동"
+  ]
+ },
+ {
+  "index": 62,
+  "label": "동굴 암벽 북서 모서리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 북서 모서리",
+   "cave",
+   "암벽",
+   "북서"
+  ]
+ },
+ {
+  "index": 63,
+  "label": "석재 벽돌 벽 좌측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석재 벽돌 벽 좌측",
+   "masonry",
+   "벽돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 64,
+  "label": "석재 벽돌 벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석재 벽돌 벽 중앙",
+   "masonry",
+   "벽돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 65,
+  "label": "석재 벽돌 벽 우측",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석재 벽돌 벽 우측",
+   "masonry",
+   "벽돌",
+   "벽"
+  ]
+ },
+ {
+  "index": 66,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 67,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 68,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 69,
+  "label": "얼음 위 물 경계",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 위 물 경계",
+   "water",
+   "얼음",
+   "경계"
+  ]
+ },
+ {
+  "index": 70,
+  "label": "깊은 얼음 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 얼음 물",
+   "water",
+   "얼음",
+   "깊음"
+  ]
+ },
+ {
+  "index": 71,
+  "label": "얼음 변두리 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 변두리 물",
+   "water",
+   "얼음",
+   "변두리"
+  ]
+ },
+ {
+  "index": 72,
+  "label": "적갈색 흙 바닥 우측",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙 바닥 우측",
+   "흙",
+   "바닥",
+   "dirt"
+  ]
+ },
+ {
+  "index": 73,
+  "label": "적갈색 흙 바닥 좌측",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙 바닥 좌측",
+   "흙",
+   "바닥",
+   "dirt"
+  ]
+ },
+ {
+  "index": 74,
+  "label": "적갈색 흙 바닥 경계",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙 바닥 경계",
+   "흙",
+   "바닥",
+   "dirt"
+  ]
+ },
+ {
+  "index": 75,
+  "label": "진갈색 흙바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "진갈색 흙바닥",
+   "흙",
+   "바닥",
+   "earth"
+  ]
+ },
+ {
+  "index": 76,
+  "label": "갈색 흙바닥 좌측",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥 좌측",
+   "흙",
+   "바닥",
+   "earth"
+  ]
+ },
+ {
+  "index": 77,
+  "label": "갈색 흙바닥 우측",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥 우측",
+   "흙",
+   "바닥",
+   "earth"
+  ]
+ },
+ {
+  "index": 78,
+  "label": "깊고 어두운 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊고 어두운 물",
+   "water",
+   "물",
+   "어두움"
+  ]
+ },
+ {
+  "index": 79,
+  "label": "분홍빛 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "분홍빛 석재 바닥",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 80,
+  "label": "살구빛 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "살구빛 석재 바닥",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 81,
+  "label": "어두운 물 웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어두운 물 웅덩이",
+   "water",
+   "물",
+   "웅덩이"
+  ]
+ },
+ {
+  "index": 82,
+  "label": "살구빛 흙바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "살구빛 흙바닥",
+   "흙",
+   "바닥",
+   "earth"
+  ]
+ },
+ {
+  "index": 83,
+  "label": "갈색 점토 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 점토 바닥",
+   "흙",
+   "점토",
+   "바닥"
+  ]
+ },
+ {
+  "index": 84,
+  "label": "나무 펜스 상단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 펜스 상단",
+   "wood",
+   "펜스",
+   "울타리",
+   "상단"
+  ]
+ },
+ {
+  "index": 85,
+  "label": "나무 펜스 하단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 펜스 하단",
+   "wood",
+   "펜스",
+   "울타리",
+   "하단"
+  ]
+ },
+ {
+  "index": 86,
+  "label": "나무 울타리 좌측",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 좌측",
+   "wood",
+   "울타리",
+   "좌측"
+  ]
+ },
+ {
+  "index": 87,
+  "label": "나무 울타리 우측",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 우측",
+   "wood",
+   "울타리",
+   "우측"
+  ]
+ },
+ {
+  "index": 88,
+  "label": "나무 난간 중앙",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 중앙",
+   "wood",
+   "난간",
+   "중앙"
+  ]
+ },
+ {
+  "index": 89,
+  "label": "나무 울타리 격자 하단",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 격자 하단",
+   "wood",
+   "울타리",
+   "격자"
+  ]
+ },
+ {
+  "index": 90,
+  "label": "동굴 암벽 측면",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 측면",
+   "cave",
+   "암벽",
+   "측면"
+  ]
+ },
+ {
+  "index": 91,
+  "label": "동굴 암벽 우측 경계",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 우측 경계",
+   "cave",
+   "암벽",
+   "우측"
+  ]
+ },
+ {
+  "index": 92,
+  "label": "동굴 암벽 좌측 경계",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "동굴 암벽 좌측 경계",
+   "cave",
+   "암벽",
+   "좌측"
+  ]
+ },
+ {
+  "index": 93,
+  "label": "벽돌 석벽 상단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽돌 석벽 상단",
+   "masonry",
+   "벽돌",
+   "석벽",
+   "상단"
+  ]
+ },
+ {
+  "index": 94,
+  "label": "벽돌 석벽 중앙",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽돌 석벽 중앙",
+   "masonry",
+   "벽돌",
+   "석벽",
+   "중앙"
+  ]
+ },
+ {
+  "index": 95,
+  "label": "벽돌 석벽 하단",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "벽돌 석벽 하단",
+   "masonry",
+   "벽돌",
+   "석벽",
+   "하단"
+  ]
+ },
+ {
+  "index": 96,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 97,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 98,
+  "label": "하얀 얼음 바닥",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "하얀 얼음 바닥",
+   "ice",
+   "얼음",
+   "바닥"
+  ]
+ },
+ {
+  "index": 99,
+  "label": "얼음 바닥 물줄기",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "얼음 바닥 물줄기",
+   "ice",
+   "얼음",
+   "물줄기",
+   "water"
+  ]
+ },
+ {
+  "index": 100,
+  "label": "물가 얼음 경계",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물가 얼음 경계",
+   "water",
+   "얼음",
+   "물가"
+  ]
+ },
+ {
+  "index": 101,
+  "label": "얼음 낀 물 가장자리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "얼음 낀 물 가장자리",
+   "water",
+   "얼음",
+   "가장자리"
+  ]
+ },
+ {
+  "index": 102,
+  "label": "갈색 흙 지면",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 지면",
+   "흙",
+   "지면",
+   "earth"
+  ]
+ },
+ {
+  "index": 103,
+  "label": "갈색 토양 지면",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 토양 지면",
+   "흙",
+   "토양",
+   "지면"
+  ]
+ },
+ {
+  "index": 104,
+  "label": "갈색 흙바닥 중앙",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥 중앙",
+   "흙",
+   "바닥",
+   "earth"
+  ]
+ },
+ {
+  "index": 105,
+  "label": "어두운 적갈색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "어두운 적갈색 바닥",
+   "흙",
+   "바닥",
+   "dirt",
+   "어두움"
+  ]
+ },
+ {
+  "index": 106,
+  "label": "적갈색 흙 무늬 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 흙 무늬 바닥",
+   "흙",
+   "무늬",
+   "바닥",
+   "dirt"
+  ]
+ },
+ {
+  "index": 107,
+  "label": "적갈색 암석 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "적갈색 암석 바닥",
+   "암석",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 108,
+  "label": "분홍빛 미색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "분홍빛 미색 바닥",
+   "미색",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 109,
+  "label": "살구빛 석회 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "살구빛 석회 바닥",
+   "석회",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 110,
+  "label": "보랏빛 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "보랏빛 석재 바닥",
+   "보랏빛",
+   "석재",
+   "바닥",
+   "stone"
+  ]
+ },
+ {
+  "index": 111,
+  "label": "밝은 회색 석회 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 회색 석회 바닥",
+   "회색",
+   "석회",
+   "바닥"
+  ]
+ },
+ {
+  "index": 112,
+  "label": "풀 낀 흙바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "풀 낀 흙바닥",
+   "풀",
+   "흙",
+   "바닥",
+   "grass"
+  ]
+ },
+ {
+  "index": 113,
+  "label": "잡초 낀 흙바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "잡초 낀 흙바닥",
+   "풀",
+   "잡초",
+   "흙",
+   "grass"
+  ]
+ },
+ {
+  "index": 114,
+  "label": "나무 난간 좌측",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 좌측",
+   "wood",
+   "난간",
+   "좌측"
+  ]
+ },
+ {
+  "index": 115,
+  "label": "나무 난간 우측",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 우측",
+   "wood",
+   "난간",
+   "우측"
+  ]
+ },
+ {
+  "index": 116,
+  "label": "나무 울타리 가로 빗장",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 울타리 가로 빗장",
+   "wood",
+   "울타리",
+   "빗장"
+  ]
+ },
+ {
+  "index": 117,
+  "label": "나무 난간 가로 빗장",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 난간 가로 빗장",
+   "wood",
+   "난간",
+   "빗장"
+  ]
+ },
+ {
+  "index": 118,
+  "label": "뾰족한 청색 창날",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "뾰족한 청색 창날",
+   "창",
+   "창날",
+   "spear",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 119,
+  "label": "사선으로 솟은 창날",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "사선으로 솟은 창날",
+   "창",
+   "창날",
+   "spear",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 120,
+  "label": "파란 깊은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 깊은 물",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 121,
+  "label": "파란 깊은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 깊은 물",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 122,
+  "label": "파란 깊은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 깊은 물",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 123,
+  "label": "물보라 흰 거품",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물보라 흰 거품",
+   "물",
+   "거품",
+   "foam"
+  ]
+ },
+ {
+  "index": 124,
+  "label": "맑은 얕은 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "맑은 얕은 물",
+   "물",
+   "얕음",
+   "water"
+  ]
+ },
+ {
+  "index": 125,
+  "label": "물 위 바위 섬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "물 위 바위 섬",
+   "물",
+   "바위",
+   "island"
+  ]
+ },
+ {
+  "index": 126,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 127,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 128,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 129,
+  "label": "균열 난 검은 바위",
+  "role": "rock",
+  "passage": "passable",
+  "tags": [
+   "균열 난 검은 바위",
+   "바위",
+   "균열",
+   "crack"
+  ]
+ },
+ {
+  "index": 130,
+  "label": "거친 동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "거친 동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 131,
+  "label": "검은 동굴 구멍",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "검은 동굴 구멍",
+   "구멍",
+   "어둠",
+   "hole"
+  ]
+ },
+ {
+  "index": 132,
+  "label": "갈색 벽돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 벽돌 바닥",
+   "벽돌",
+   "brick",
+   "갈색"
+  ]
+ },
+ {
+  "index": 133,
+  "label": "갈색 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "갈색 벽돌 벽면",
+   "벽돌",
+   "wall",
+   "갈색"
+  ]
+ },
+ {
+  "index": 134,
+  "label": "모래색 벽돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "모래색 벽돌 바닥",
+   "벽돌",
+   "brick",
+   "모래"
+  ]
+ },
+ {
+  "index": 135,
+  "label": "회색 돌담 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌담 벽",
+   "돌",
+   "stone",
+   "벽"
+  ]
+ },
+ {
+  "index": 136,
+  "label": "석조 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석조 벽돌 벽면",
+   "돌",
+   "stone",
+   "회색"
+  ]
+ },
+ {
+  "index": 137,
+  "label": "돌 무늬 담벼락",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "돌 무늬 담벼락",
+   "돌",
+   "wall",
+   "무늬"
+  ]
+ },
+ {
+  "index": 138,
+  "label": "타오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "타오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 139,
+  "label": "타오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "타오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 140,
+  "label": "타오르는 용암",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "타오르는 용암",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 141,
+  "label": "갈색 석조 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "갈색 석조 계단",
+   "계단",
+   "돌",
+   "stairs"
+  ]
+ },
+ {
+  "index": 142,
+  "label": "갈색 석조 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "갈색 석조 계단",
+   "계단",
+   "돌",
+   "stairs"
+  ]
+ },
+ {
+  "index": 143,
+  "label": "갈색 석조 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "갈색 석조 계단",
+   "계단",
+   "돌",
+   "stairs"
+  ]
+ },
+ {
+  "index": 144,
+  "label": "물과 돌 섞인 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "물과 돌 섞인 바닥",
+   "물",
+   "돌",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 145,
+  "label": "회백색 석판 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회백색 석판 바닥",
+   "석판",
+   "stone",
+   "회색"
+  ]
+ },
+ {
+  "index": 146,
+  "label": "밝은 석조 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 석조 바닥",
+   "돌",
+   "stone",
+   "밝음"
+  ]
+ },
+ {
+  "index": 147,
+  "label": "회색 돌 무늬 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 무늬 벽",
+   "돌",
+   "wall",
+   "회색"
+  ]
+ },
+ {
+  "index": 148,
+  "label": "어두운 석벽 면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "어두운 석벽 면",
+   "돌",
+   "벽",
+   "어두움"
+  ]
+ },
+ {
+  "index": 149,
+  "label": "물결 섞인 돌 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "물결 섞인 돌 바닥",
+   "물",
+   "돌",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 150,
+  "label": "푸른 파도 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "푸른 파도 물",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 151,
+  "label": "푸른 파도 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "푸른 파도 물",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 152,
+  "label": "푸른 파도 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "푸른 파도 물",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 153,
+  "label": "물보라 이는 물가",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물보라 이는 물가",
+   "물",
+   "거품",
+   "파도"
+  ]
+ },
+ {
+  "index": 154,
+  "label": "깊은 색 물 바닥",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "깊은 색 물 바닥",
+   "물",
+   "water",
+   "깊음"
+  ]
+ },
+ {
+  "index": 155,
+  "label": "물 위 흰 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "물 위 흰 바위",
+   "물",
+   "바위",
+   "rock"
+  ]
+ },
+ {
+  "index": 156,
+  "label": "거친 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "거친 바위 바닥",
+   "바위",
+   "rock",
+   "거침"
+  ]
+ },
+ {
+  "index": 157,
+  "label": "거친 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "거친 바위 바닥",
+   "바위",
+   "rock",
+   "거침"
+  ]
+ },
+ {
+  "index": 158,
+  "label": "거친 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "거친 바위 바닥",
+   "바위",
+   "rock",
+   "거침"
+  ]
+ },
+ {
+  "index": 159,
+  "label": "어두운 바위 틈",
+  "role": "rock",
+  "passage": "passable",
+  "tags": [
+   "어두운 바위 틈",
+   "바위",
+   "틈",
+   "crack"
+  ]
+ },
+ {
+  "index": 160,
+  "label": "검은 바위 구덩이",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "검은 바위 구덩이",
+   "바위",
+   "구덩이",
+   "pit"
+  ]
+ },
+ {
+  "index": 161,
+  "label": "그늘진 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "그늘진 바위 바닥",
+   "바위",
+   "그늘",
+   "rock"
+  ]
+ },
+ {
+  "index": 162,
+  "label": "잔불 깔린 바위",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔불 깔린 바위",
+   "바위",
+   "불씨",
+   "잔불"
+  ]
+ },
+ {
+  "index": 163,
+  "label": "재와 바위 섞인 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "재와 바위 섞인 바닥",
+   "재",
+   "바위",
+   "ash"
+  ]
+ },
+ {
+  "index": 164,
+  "label": "불씨 박힌 흙",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "불씨 박힌 흙",
+   "불씨",
+   "흙",
+   "ember"
+  ]
+ },
+ {
+  "index": 165,
+  "label": "갈흙빛 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈흙빛 돌 바닥",
+   "돌",
+   "stone",
+   "회색"
+  ]
+ },
+ {
+  "index": 166,
+  "label": "갈색 점토 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 점토 바닥",
+   "점토",
+   "갈색",
+   "clay"
+  ]
+ },
+ {
+  "index": 167,
+  "label": "석회암 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "석회암 돌 바닥",
+   "돌",
+   "stone",
+   "밝음"
+  ]
+ },
+ {
+  "index": 168,
+  "label": "붉은 용암 불꽃",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "붉은 용암 불꽃",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 169,
+  "label": "붉은 용암 불꽃",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "붉은 용암 불꽃",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 170,
+  "label": "붉은 용암 불꽃",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "붉은 용암 불꽃",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 171,
+  "label": "갈색 돌 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "갈색 돌 계단",
+   "계단",
+   "돌",
+   "stairs"
+  ]
+ },
+ {
+  "index": 172,
+  "label": "회색 돌 경사로",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "회색 돌 경사로",
+   "경사로",
+   "돌",
+   "slope"
+  ]
+ },
+ {
+  "index": 173,
+  "label": "회색 미끄럼 경사",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "회색 미끄럼 경사",
+   "경사",
+   "돌",
+   "slope"
+  ]
+ },
+ {
+  "index": 174,
+  "label": "물 섞인 회색 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "물 섞인 회색 바닥",
+   "물",
+   "돌",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 175,
+  "label": "회백색 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회백색 돌 바닥",
+   "돌",
+   "stone",
+   "회색"
+  ]
+ },
+ {
+  "index": 176,
+  "label": "회색 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 석재 바닥",
+   "돌",
+   "stone",
+   "석판"
+  ]
+ },
+ {
+  "index": 177,
+  "label": "이끼 낀 밝은 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "이끼 낀 밝은 벽",
+   "이끼",
+   "moss",
+   "돌"
+  ]
+ },
+ {
+  "index": 178,
+  "label": "이끼 낀 석벽 면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "이끼 낀 석벽 면",
+   "이끼",
+   "moss",
+   "돌"
+  ]
+ },
+ {
+  "index": 179,
+  "label": "이끼 낀 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "이끼 낀 돌 바닥",
+   "이끼",
+   "moss",
+   "돌"
+  ]
+ },
+ {
+  "index": 180,
+  "label": "짙은 물 애니메이션",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 물 애니메이션",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 181,
+  "label": "짙은 물 애니메이션",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 물 애니메이션",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 182,
+  "label": "짙은 물 애니메이션",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 물 애니메이션",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 183,
+  "label": "거품 이는 물가",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "거품 이는 물가",
+   "물",
+   "거품",
+   "foam"
+  ]
+ },
+ {
+  "index": 184,
+  "label": "맑은 물 바닥",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "맑은 물 바닥",
+   "물",
+   "water",
+   "맑음"
+  ]
+ },
+ {
+  "index": 185,
+  "label": "물 위 돌 더미",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "물 위 돌 더미",
+   "물",
+   "바위",
+   "돌"
+  ]
+ },
+ {
+  "index": 186,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 187,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 188,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 189,
+  "label": "어두운 돌 구덩이",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어두운 돌 구덩이",
+   "돌",
+   "구덩이",
+   "pit"
+  ]
+ },
+ {
+  "index": 190,
+  "label": "새까만 어둠 구멍",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "새까만 어둠 구멍",
+   "어둠",
+   "구멍",
+   "void"
+  ]
+ },
+ {
+  "index": 191,
+  "label": "어두운 바위 그늘",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "어두운 바위 그늘",
+   "바위",
+   "그늘",
+   "rock"
+  ]
+ },
+ {
+  "index": 192,
+  "label": "잔불 바위 흩뿌림",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔불 바위 흩뿌림",
+   "바위",
+   "불씨",
+   "잔불"
+  ]
+ },
+ {
+  "index": 193,
+  "label": "불탄 돌 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "불탄 돌 바닥",
+   "돌",
+   "불",
+   "burnt"
+  ]
+ },
+ {
+  "index": 194,
+  "label": "재덮인 바위 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "재덮인 바위 바닥",
+   "재",
+   "바위",
+   "ash"
+  ]
+ },
+ {
+  "index": 195,
+  "label": "황토 석조 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "황토 석조 바닥",
+   "황토",
+   "돌",
+   "stone"
+  ]
+ },
+ {
+  "index": 196,
+  "label": "돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "돌 바닥",
+   "돌",
+   "stone",
+   "붉음"
+  ]
+ },
+ {
+  "index": 197,
+  "label": "갈색 석재 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 석재 바닥",
+   "돌",
+   "stone",
+   "갈색"
+  ]
+ },
+ {
+  "index": 198,
+  "label": "용암 불바다",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 불바다",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 199,
+  "label": "용암 불바다",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 불바다",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 200,
+  "label": "용암 불바다",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 불바다",
+   "용암",
+   "lava",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 201,
+  "label": "갈색 돌 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "갈색 돌 계단",
+   "계단",
+   "돌",
+   "stairs"
+  ]
+ },
+ {
+  "index": 202,
+  "label": "회색 돌 경사로",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "회색 돌 경사로",
+   "경사로",
+   "돌",
+   "slope"
+  ]
+ },
+ {
+  "index": 203,
+  "label": "회색 경사 바닥",
+  "role": "path",
+  "passage": "passable",
+  "tags": [
+   "회색 경사 바닥",
+   "경사",
+   "돌",
+   "slope"
+  ]
+ },
+ {
+  "index": 204,
+  "label": "돌 깔린 바닥 무늬",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "돌 깔린 바닥 무늬",
+   "돌",
+   "무늬",
+   "stone"
+  ]
+ },
+ {
+  "index": 205,
+  "label": "회색 바둑돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 바둑돌 바닥",
+   "바둑돌",
+   "돌",
+   "stone"
+  ]
+ },
+ {
+  "index": 206,
+  "label": "돌 판 데크 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "돌 판 데크 바닥",
+   "돌판",
+   "돌",
+   "stone"
+  ]
+ },
+ {
+  "index": 207,
+  "label": "화롯불 불꽃",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "화롯불 불꽃",
+   "불",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 208,
+  "label": "화롯불 불꽃",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "화롯불 불꽃",
+   "불",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 209,
+  "label": "화롯불 불꽃",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "화롯불 불꽃",
+   "불",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 210,
+  "label": "파란 물결 애니메이션",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 물결 애니메이션",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 211,
+  "label": "파란 물결 애니메이션",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 물결 애니메이션",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 212,
+  "label": "파란 물결 애니메이션",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 물결 애니메이션",
+   "물",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 213,
+  "label": "흰 거품 돌아치는 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흰 거품 돌아치는 물",
+   "물",
+   "거품",
+   "foam"
+  ]
+ },
+ {
+  "index": 214,
+  "label": "잔잔한 물 바닥",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 물 바닥",
+   "물",
+   "water",
+   "잔잔"
+  ]
+ },
+ {
+  "index": 215,
+  "label": "물 위 바위 섬",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "물 위 바위 섬",
+   "물",
+   "바위",
+   "island"
+  ]
+ },
+ {
+  "index": 216,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 217,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 218,
+  "label": "동굴 바위 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "동굴 바위 바닥",
+   "바위",
+   "rock",
+   "동굴"
+  ]
+ },
+ {
+  "index": 219,
+  "label": "어두운 바위 굴",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어두운 바위 굴",
+   "바위",
+   "굴",
+   "cave"
+  ]
+ },
+ {
+  "index": 220,
+  "label": "검은 동굴 어둠",
+  "role": "terrain",
+  "passage": "solid",
+  "tags": [
+   "검은 동굴 어둠",
+   "어둠",
+   "동굴",
+   "void"
+  ]
+ },
+ {
+  "index": 221,
+  "label": "어두운 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "어두운 돌 바닥",
+   "돌",
+   "어둠",
+   "stone"
+  ]
+ },
+ {
+  "index": 222,
+  "label": "잔불 섞인 바위",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔불 섞인 바위",
+   "바위",
+   "불씨",
+   "ember"
+  ]
+ },
+ {
+  "index": 223,
+  "label": "불꽃 바위 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "불꽃 바위 바닥",
+   "바위",
+   "불꽃",
+   "fire"
+  ]
+ },
+ {
+  "index": 224,
+  "label": "이끼 낀 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "이끼 낀 돌 바닥",
+   "이끼",
+   "moss",
+   "돌"
+  ]
+ },
+ {
+  "index": 225,
+  "label": "불 타는 바위 층",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "불 타는 바위 층",
+   "바위",
+   "불",
+   "burnt"
+  ]
+ },
+ {
+  "index": 226,
+  "label": "잔불 가득 돌",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "잔불 가득 돌",
+   "돌",
+   "불씨",
+   "ember"
+  ]
+ },
+ {
+  "index": 227,
+  "label": "불씨 바위 바닥",
+  "role": "terrain",
+  "passage": "passable",
+  "tags": [
+   "불씨 바위 바닥",
+   "바위",
+   "불씨",
+   "fire"
+  ]
+ },
+ {
+  "index": 228,
+  "label": "활활 타는 불꽃",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "활활 타는 불꽃",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 229,
+  "label": "활활 타는 불꽃",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "활활 타는 불꽃",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 230,
+  "label": "활활 타는 불꽃",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "활활 타는 불꽃",
+   "불꽃",
+   "fire",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 231,
+  "label": "갈색 돌 계단",
+  "role": "stairs",
+  "passage": "passable",
+  "tags": [
+   "갈색 돌 계단",
+   "계단",
+   "돌",
+   "stairs"
+  ]
+ },
+ {
+  "index": 232,
+  "label": "흰 석판 무늬 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "흰 석판 무늬 벽",
+   "석판",
+   "흰색",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 234,
+  "label": "회색 바둑돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회색 바둑돌 바닥",
+   "바둑돌",
+   "돌",
+   "stone"
+  ]
+ },
+ {
+  "index": 235,
+  "label": "밝은 돌 바닥 무늬",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 돌 바닥 무늬",
+   "돌",
+   "무늬",
+   "stone"
+  ]
+ },
+ {
+  "index": 236,
+  "label": "회백색 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "회백색 돌 바닥",
+   "돌",
+   "stone",
+   "회색"
+  ]
+ },
+ {
+  "index": 237,
+  "label": "흰 석조 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "흰 석조 벽면",
+   "석조",
+   "흰색",
+   "stone"
+  ]
+ },
+ {
+  "index": 238,
+  "label": "하얀 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "하얀 돌 벽",
+   "돌",
+   "흰색",
+   "wall"
+  ]
+ },
+ {
+  "index": 239,
+  "label": "밝은 석조 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "밝은 석조 바닥",
+   "돌",
+   "stone",
+   "밝음"
+  ]
+ },
+ {
+  "index": 240,
+  "label": "용암 바위 지면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 바위 지면",
+   "용암",
+   "lava",
+   "지면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 241,
+  "label": "용암 애니메이션 2프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 2프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 242,
+  "label": "용암 애니메이션 3프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 3프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 243,
+  "label": "뜨거운 용암 표면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "뜨거운 용암 표면",
+   "용암",
+   "lava",
+   "용융",
+   "불길"
+  ]
+ },
+ {
+  "index": 244,
+  "label": "용암 애니메이션 4프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 4프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 245,
+  "label": "용암 웅덩이",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 웅덩이",
+   "용암",
+   "lava",
+   "웅덩이",
+   "반짝"
+  ]
+ },
+ {
+  "index": 246,
+  "label": "닫힌 나무 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "닫힌 나무 상자",
+   "상자",
+   "chest",
+   "나무",
+   "보물"
+  ]
+ },
+ {
+  "index": 247,
+  "label": "어두운 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "어두운 돌 벽",
+   "돌",
+   "wall",
+   "어두움",
+   "동굴"
+  ]
+ },
+ {
+  "index": 248,
+  "label": "장식 띠 나무 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "장식 띠 나무 상자",
+   "상자",
+   "chest",
+   "나무",
+   "장식"
+  ]
+ },
+ {
+  "index": 249,
+  "label": "잔자갈 돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "잔자갈 돌 바닥",
+   "바닥",
+   "floor",
+   "돌",
+   "자갈"
+  ]
+ },
+ {
+  "index": 250,
+  "label": "새까만 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "새까만 돌 벽",
+   "돌",
+   "wall",
+   "검정",
+   "어두움"
+  ]
+ },
+ {
+  "index": 251,
+  "label": "뚜껑 달린 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "뚜껑 달린 상자",
+   "상자",
+   "chest",
+   "뚜껑",
+   "목재"
+  ]
+ },
+ {
+  "index": 252,
+  "label": "나무 판자 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 판자 벽",
+   "나무",
+   "wall",
+   "판자",
+   "목재"
+  ]
+ },
+ {
+  "index": 253,
+  "label": "나무 널빤지 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 널빤지 벽",
+   "나무",
+   "wall",
+   "널빤지",
+   "목재"
+  ]
+ },
+ {
+  "index": 254,
+  "label": "테두리 나무 판자",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "테두리 나무 판자",
+   "나무",
+   "wall",
+   "판자",
+   "테두리"
+  ]
+ },
+ {
+  "index": 255,
+  "label": "흩어진 돌무더기",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "흩어진 돌무더기",
+   "돌",
+   "rock",
+   "무더기",
+   "잔해"
+  ]
+ },
+ {
+  "index": 256,
+  "label": "돌 잔해 무더기",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "돌 잔해 무더기",
+   "돌",
+   "rock",
+   "잔해",
+   "부스러기"
+  ]
+ },
+ {
+  "index": 257,
+  "label": "작은 돌 쪼가리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "작은 돌 쪼가리",
+   "돌",
+   "rock",
+   "쪼가리",
+   "흩어짐"
+  ]
+ },
+ {
+  "index": 259,
+  "label": "바위 모서리 자동타일",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 모서리 자동타일",
+   "바위",
+   "rock",
+   "모서리",
+   "자동타일"
+  ]
+ },
+ {
+  "index": 260,
+  "label": "바위 가장자리 자동타일",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "바위 가장자리 자동타일",
+   "바위",
+   "rock",
+   "가장자리",
+   "자동타일"
+  ]
+ },
+ {
+  "index": 261,
+  "label": "회색 바위 덩어리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 바위 덩어리",
+   "회색",
+   "rock",
+   "바위",
+   "언덕"
+  ]
+ },
+ {
+  "index": 262,
+  "label": "파란 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "파란 물웅덩이",
+   "물",
+   "water",
+   "웅덩이",
+   "파랑"
+  ]
+ },
+ {
+  "index": 263,
+  "label": "타오르는 불꽃 1프레임",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "타오르는 불꽃 1프레임",
+   "불꽃",
+   "fire",
+   "촛불",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 264,
+  "label": "타오르는 불꽃 2프레임",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "타오르는 불꽃 2프레임",
+   "불꽃",
+   "fire",
+   "촛불",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 265,
+  "label": "회색 산봉우리",
+  "role": "mountain",
+  "passage": "solid",
+  "tags": [
+   "회색 산봉우리",
+   "산",
+   "mountain",
+   "봉우리",
+   "회색"
+  ]
+ },
+ {
+  "index": 266,
+  "label": "작은 검은 사각 덩어리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "작은 검은 사각 덩어리",
+   "검정",
+   "rock",
+   "사각",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 267,
+  "label": "진한 남색 타원 덩어리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "진한 남색 타원 덩어리",
+   "남색",
+   "덩어리",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 268,
+  "label": "검푸른 구름 덩어리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "검푸른 구름 덩어리",
+   "검푸름",
+   "덩어리",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 269,
+  "label": "남색 물감 얼룩",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "남색 물감 얼룩",
+   "남색",
+   "얼룩",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 270,
+  "label": "용암 바위 지면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 바위 지면",
+   "용암",
+   "lava",
+   "지면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 271,
+  "label": "용암 애니메이션 2프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 2프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 272,
+  "label": "용암 애니메이션 3프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 3프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 273,
+  "label": "뜨거운 용암 표면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "뜨거운 용암 표면",
+   "용암",
+   "lava",
+   "용융",
+   "불길"
+  ]
+ },
+ {
+  "index": 274,
+  "label": "용암 웅덩이",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 웅덩이",
+   "용암",
+   "lava",
+   "웅덩이",
+   "반짝"
+  ]
+ },
+ {
+  "index": 275,
+  "label": "밝은 용암 물결",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "밝은 용암 물결",
+   "용암",
+   "lava",
+   "밝음",
+   "물결"
+  ]
+ },
+ {
+  "index": 276,
+  "label": "나무 보물상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "나무 보물상자",
+   "보물",
+   "chest",
+   "나무",
+   "목재"
+  ]
+ },
+ {
+  "index": 277,
+  "label": "띠 둘린 어두운 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "띠 둘린 어두운 상자",
+   "상자",
+   "chest",
+   "띠",
+   "어두움"
+  ]
+ },
+ {
+  "index": 278,
+  "label": "목재 장식 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "목재 장식 상자",
+   "상자",
+   "chest",
+   "목재",
+   "장식"
+  ]
+ },
+ {
+  "index": 279,
+  "label": "뚜껑 덮인 석관",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "뚜껑 덮인 석관",
+   "석관",
+   "석재",
+   "뚜껑",
+   "무덤"
+  ]
+ },
+ {
+  "index": 280,
+  "label": "칠흑 같은 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "칠흑 같은 돌 벽",
+   "돌",
+   "wall",
+   "칠흑",
+   "어두움"
+  ]
+ },
+ {
+  "index": 281,
+  "label": "가장자리 어두운 석관",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "가장자리 어두운 석관",
+   "석관",
+   "어두움",
+   "가장자리",
+   "무덤"
+  ]
+ },
+ {
+  "index": 282,
+  "label": "흐르는 물길 1프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 1프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 283,
+  "label": "흐르는 물길 2프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 2프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 284,
+  "label": "흐르는 물길 3프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 3프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 285,
+  "label": "잔잔한 물 표면 1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 물 표면 1",
+   "물",
+   "water",
+   "표면",
+   "잔잔"
+  ]
+ },
+ {
+  "index": 286,
+  "label": "잔잔한 물 표면 2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 물 표면 2",
+   "물",
+   "water",
+   "표면",
+   "잔잔"
+  ]
+ },
+ {
+  "index": 287,
+  "label": "잔잔한 물 표면 3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔잔한 물 표면 3",
+   "물",
+   "water",
+   "표면",
+   "잔잔"
+  ]
+ },
+ {
+  "index": 288,
+  "label": "뾰족한 암석 결정",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "뾰족한 암석 결정",
+   "암석",
+   "rock",
+   "뾰족",
+   "결정"
+  ]
+ },
+ {
+  "index": 289,
+  "label": "작은 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "작은 물웅덩이",
+   "물",
+   "water",
+   "웅덩이",
+   "작음"
+  ]
+ },
+ {
+  "index": 290,
+  "label": "회색 바위 언덕",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 바위 언덕",
+   "회색",
+   "rock",
+   "언덕",
+   "바위"
+  ]
+ },
+ {
+  "index": 291,
+  "label": "둥근 회색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "둥근 회색 바위",
+   "회색",
+   "rock",
+   "둥글",
+   "바위"
+  ]
+ },
+ {
+  "index": 292,
+  "label": "푸른 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "푸른 물웅덩이",
+   "물",
+   "water",
+   "웅덩이",
+   "푸름"
+  ]
+ },
+ {
+  "index": 293,
+  "label": "노란 무늬 갈색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "노란 무늬 갈색 바위",
+   "갈색",
+   "rock",
+   "노랑",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 294,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "floor",
+   "갈색",
+   "땅"
+  ]
+ },
+ {
+  "index": 295,
+  "label": "그늘 진 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "그늘 진 돌 벽",
+   "돌",
+   "wall",
+   "그늘",
+   "어두움"
+  ]
+ },
+ {
+  "index": 296,
+  "label": "세로 나무 말뚝",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "세로 나무 말뚝",
+   "나무",
+   "post",
+   "말뚝",
+   "기둥"
+  ]
+ },
+ {
+  "index": 297,
+  "label": "나무 격자 상자",
+  "role": "crate",
+  "passage": "solid",
+  "tags": [
+   "나무 격자 상자",
+   "나무",
+   "crate",
+   "격자",
+   "상자"
+  ]
+ },
+ {
+  "index": 298,
+  "label": "큰 갈색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "큰 갈색 바위",
+   "갈색",
+   "rock",
+   "바위",
+   "큼"
+  ]
+ },
+ {
+  "index": 299,
+  "label": "매끈 회색 표면 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "매끈 회색 표면 바위",
+   "회색",
+   "rock",
+   "바위",
+   "표면"
+  ]
+ },
+ {
+  "index": 300,
+  "label": "용암 바위 지면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 바위 지면",
+   "용암",
+   "lava",
+   "지면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 301,
+  "label": "용암 애니메이션 2프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 2프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 302,
+  "label": "용암 애니메이션 3프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 3프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 303,
+  "label": "뜨거운 용암 표면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "뜨거운 용암 표면",
+   "용암",
+   "lava",
+   "용융",
+   "불길"
+  ]
+ },
+ {
+  "index": 304,
+  "label": "용암 웅덩이",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 웅덩이",
+   "용암",
+   "lava",
+   "웅덩이",
+   "반짝"
+  ]
+ },
+ {
+  "index": 305,
+  "label": "가장자리 용암 물결",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "가장자리 용암 물결",
+   "용암",
+   "lava",
+   "가장자리",
+   "물결"
+  ]
+ },
+ {
+  "index": 306,
+  "label": "골동 나무 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "골동 나무 상자",
+   "상자",
+   "chest",
+   "나무",
+   "골동"
+  ]
+ },
+ {
+  "index": 307,
+  "label": "먹빛 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "먹빛 돌 벽",
+   "돌",
+   "wall",
+   "먹빛",
+   "어두움"
+  ]
+ },
+ {
+  "index": 308,
+  "label": "쇠장식 보물상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "쇠장식 보물상자",
+   "상자",
+   "chest",
+   "쇠",
+   "보물"
+  ]
+ },
+ {
+  "index": 309,
+  "label": "닫힌 돌 석관",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "닫힌 돌 석관",
+   "석관",
+   "석재",
+   "닫힘",
+   "무덤"
+  ]
+ },
+ {
+  "index": 310,
+  "label": "검은 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "검은 돌 벽",
+   "돌",
+   "wall",
+   "검정",
+   "어두움"
+  ]
+ },
+ {
+  "index": 311,
+  "label": "우측 테두리 석관",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "우측 테두리 석관",
+   "석관",
+   "테두리",
+   "무덤",
+   "어두움"
+  ]
+ },
+ {
+  "index": 312,
+  "label": "흐르는 물길 1프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 1프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 313,
+  "label": "흐르는 물길 2프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 2프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 314,
+  "label": "흐르는 물길 3프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 3프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 315,
+  "label": "고요한 물 표면 1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "고요한 물 표면 1",
+   "물",
+   "water",
+   "표면",
+   "고요"
+  ]
+ },
+ {
+  "index": 316,
+  "label": "고요한 물 표면 2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "고요한 물 표면 2",
+   "물",
+   "water",
+   "표면",
+   "고요"
+  ]
+ },
+ {
+  "index": 317,
+  "label": "고요한 물 표면 3",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "고요한 물 표면 3",
+   "물",
+   "water",
+   "표면",
+   "고요"
+  ]
+ },
+ {
+  "index": 318,
+  "label": "거친 어두운 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "거친 어두운 바위",
+   "바위",
+   "rock",
+   "거침",
+   "어두움"
+  ]
+ },
+ {
+  "index": 319,
+  "label": "갈색 돌덩어리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "갈색 돌덩어리",
+   "돌",
+   "rock",
+   "갈색",
+   "덩어리"
+  ]
+ },
+ {
+  "index": 320,
+  "label": "번지는 물가 가장자리",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "번지는 물가 가장자리",
+   "물",
+   "water",
+   "가장자리",
+   "번짐"
+  ]
+ },
+ {
+  "index": 321,
+  "label": "맑은 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "맑은 물웅덩이",
+   "물",
+   "water",
+   "웅덩이",
+   "맑음"
+  ]
+ },
+ {
+  "index": 322,
+  "label": "포개진 회색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "포개진 회색 바위",
+   "회색",
+   "rock",
+   "바위",
+   "포개짐"
+  ]
+ },
+ {
+  "index": 323,
+  "label": "낮은 회색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "낮은 회색 바위",
+   "회색",
+   "rock",
+   "바위",
+   "낮음"
+  ]
+ },
+ {
+  "index": 324,
+  "label": "갈색 흙바닥 조각",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙바닥 조각",
+   "흙",
+   "floor",
+   "갈색",
+   "땅"
+  ]
+ },
+ {
+  "index": 325,
+  "label": "석재 기단 어두운 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "석재 기단 어두운 벽",
+   "돌",
+   "wall",
+   "기단",
+   "어두움"
+  ]
+ },
+ {
+  "index": 326,
+  "label": "가로 나무 널빤지",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "가로 나무 널빤지",
+   "나무",
+   "plank",
+   "널빤지",
+   "바닥"
+  ]
+ },
+ {
+  "index": 327,
+  "label": "갈색 풀 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 풀 덩어리",
+   "갈색",
+   "풀",
+   "덩어리",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 328,
+  "label": "갈색 뭉치 풀",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 뭉치 풀",
+   "갈색",
+   "풀",
+   "뭉치",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 329,
+  "label": "보석 박힌 장식판",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "보석 박힌 장식판",
+   "보석",
+   "장식",
+   "석판",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 330,
+  "label": "용암 바위 지면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 바위 지면",
+   "용암",
+   "lava",
+   "지면",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 331,
+  "label": "용암 애니메이션 2프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 2프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 332,
+  "label": "용암 애니메이션 3프레임",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 애니메이션 3프레임",
+   "용암",
+   "lava",
+   "바위",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 333,
+  "label": "뜨거운 용암 표면",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "뜨거운 용암 표면",
+   "용암",
+   "lava",
+   "용융",
+   "불길"
+  ]
+ },
+ {
+  "index": 334,
+  "label": "용암 웅덩이",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "용암 웅덩이",
+   "용암",
+   "lava",
+   "웅덩이",
+   "반짝"
+  ]
+ },
+ {
+  "index": 335,
+  "label": "오른쪽 용암 물결",
+  "role": "lava",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 용암 물결",
+   "용암",
+   "lava",
+   "오른쪽",
+   "물결"
+  ]
+ },
+ {
+  "index": 336,
+  "label": "고대 나무 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "고대 나무 상자",
+   "상자",
+   "chest",
+   "나무",
+   "고대"
+  ]
+ },
+ {
+  "index": 337,
+  "label": "밑단 어두운 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "밑단 어두운 돌 벽",
+   "돌",
+   "wall",
+   "밑단",
+   "어두움"
+  ]
+ },
+ {
+  "index": 338,
+  "label": "고대 목재 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "고대 목재 상자",
+   "상자",
+   "chest",
+   "목재",
+   "고대"
+  ]
+ },
+ {
+  "index": 339,
+  "label": "돌 석관",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "돌 석관",
+   "석관",
+   "석재",
+   "관",
+   "무덤"
+  ]
+ },
+ {
+  "index": 340,
+  "label": "아랫단 그늘 돌 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "아랫단 그늘 돌 벽",
+   "돌",
+   "wall",
+   "아랫단",
+   "그늘"
+  ]
+ },
+ {
+  "index": 341,
+  "label": "오른쪽 어두운 석관",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "오른쪽 어두운 석관",
+   "석관",
+   "오른쪽",
+   "무덤",
+   "어두움"
+  ]
+ },
+ {
+  "index": 342,
+  "label": "흐르는 물길 1프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 1프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 343,
+  "label": "흐르는 물길 2프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 2프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 344,
+  "label": "흐르는 물길 3프레임",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "흐르는 물길 3프레임",
+   "물",
+   "water",
+   "물길",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 345,
+  "label": "물 위 디딤돌 다리",
+  "role": "bridge",
+  "passage": "passable",
+  "tags": [
+   "물 위 디딤돌 다리",
+   "다리",
+   "bridge",
+   "디딤돌",
+   "물"
+  ]
+ },
+ {
+  "index": 346,
+  "label": "물결지는 물 표면 1",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물결지는 물 표면 1",
+   "물",
+   "water",
+   "표면",
+   "물결"
+  ]
+ },
+ {
+  "index": 347,
+  "label": "물결지는 물 표면 2",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "물결지는 물 표면 2",
+   "물",
+   "water",
+   "표면",
+   "물결"
+  ]
+ },
+ {
+  "index": 348,
+  "label": "질감 난 어두운 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "질감 난 어두운 바위",
+   "바위",
+   "rock",
+   "질감",
+   "어두움"
+  ]
+ },
+ {
+  "index": 349,
+  "label": "갈색 바위 덩어리",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "갈색 바위 덩어리",
+   "돌",
+   "rock",
+   "갈색",
+   "덩어리"
+  ]
+ },
+ {
+  "index": 350,
+  "label": "넓은 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "넓은 물웅덩이",
+   "물",
+   "water",
+   "웅덩이",
+   "넓음"
+  ]
+ },
+ {
+  "index": 351,
+  "label": "연못 물결",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "연못 물결",
+   "물",
+   "water",
+   "연못",
+   "물결"
+  ]
+ },
+ {
+  "index": 352,
+  "label": "거대 회색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "거대 회색 바위",
+   "회색",
+   "rock",
+   "바위",
+   "거대"
+  ]
+ },
+ {
+  "index": 353,
+  "label": "매끈 회색 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "매끈 회색 바위",
+   "회색",
+   "rock",
+   "바위",
+   "매끈"
+  ]
+ },
+ {
+  "index": 354,
+  "label": "갈색 뻘 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 뻘 바닥",
+   "흙",
+   "floor",
+   "갈색",
+   "뻘"
+  ]
+ },
+ {
+  "index": 355,
+  "label": "겹겹 바위 지형",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "겹겹 바위 지형",
+   "바위",
+   "rock",
+   "지형",
+   "겹겹"
+  ]
+ },
+ {
+  "index": 356,
+  "label": "갈색 돌기 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 돌기 덩어리",
+   "갈색",
+   "돌기",
+   "덩어리",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 357,
+  "label": "갈색 가시 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 가시 덩어리",
+   "갈색",
+   "가시",
+   "덩어리",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 358,
+  "label": "갈색 돌무더기",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "갈색 돌무더기",
+   "갈색",
+   "rock",
+   "무더기",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 359,
+  "label": "화려한 무늬 장식판",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "화려한 무늬 장식판",
+   "장식",
+   "무늬",
+   "석판",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 360,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 361,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 362,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 363,
+  "label": "이끼 낀 갈색 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "이끼 낀 갈색 바닥",
+   "이끼",
+   "moss",
+   "바닥"
+  ]
+ },
+ {
+  "index": 364,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 365,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 366,
+  "label": "푸른 물웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "푸른 물웅덩이",
+   "물",
+   "웅덩이",
+   "water"
+  ]
+ },
+ {
+  "index": 367,
+  "label": "짙은 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 파란 물",
+   "물",
+   "파란",
+   "water"
+  ]
+ },
+ {
+  "index": 368,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 369,
+  "label": "돌 테두리 푸른 웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 푸른 웅덩이",
+   "웅덩이",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 370,
+  "label": "어두운 물구덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어두운 물구덩이",
+   "물",
+   "구덩이",
+   "water"
+  ]
+ },
+ {
+  "index": 371,
+  "label": "돌 테두리 어두운 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 어두운 물",
+   "물",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 372,
+  "label": "잔물결 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 파란 물",
+   "잔물결",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 373,
+  "label": "잔물결 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 파란 물",
+   "잔물결",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 374,
+  "label": "잔물결 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 파란 물",
+   "잔물결",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 375,
+  "label": "파란 무늬 흰 얼음",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "파란 무늬 흰 얼음",
+   "얼음",
+   "ice",
+   "무늬"
+  ]
+ },
+ {
+  "index": 376,
+  "label": "파란 무늬 흰 얼음",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "파란 무늬 흰 얼음",
+   "얼음",
+   "ice",
+   "무늬"
+  ]
+ },
+ {
+  "index": 377,
+  "label": "파란 무늬 흰 얼음",
+  "role": "ice",
+  "passage": "passable",
+  "tags": [
+   "파란 무늬 흰 얼음",
+   "얼음",
+   "ice",
+   "무늬"
+  ]
+ },
+ {
+  "index": 378,
+  "label": "갈색 둥근 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 둥근 덩어리",
+   "둥근",
+   "무더기",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 379,
+  "label": "갈색 둥근 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 둥근 덩어리",
+   "둥근",
+   "무더기",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 380,
+  "label": "갈색 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 덩어리",
+   "덩어리",
+   "prop",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 381,
+  "label": "갈색 덩어리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "갈색 덩어리",
+   "덩어리",
+   "prop",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 382,
+  "label": "회색 둥근 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 둥근 바위",
+   "회색",
+   "바위",
+   "rock"
+  ]
+ },
+ {
+  "index": 383,
+  "label": "회색 둥근 돌",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 둥근 돌",
+   "회색",
+   "돌",
+   "rock"
+  ]
+ },
+ {
+  "index": 384,
+  "label": "푸른 테두리 명판",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "푸른 테두리 명판",
+   "명판",
+   "장식",
+   "sign"
+  ]
+ },
+ {
+  "index": 385,
+  "label": "나무 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 판벽",
+   "wood",
+   "판자",
+   "목재"
+  ]
+ },
+ {
+  "index": 386,
+  "label": "나무 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 판벽",
+   "wood",
+   "판자",
+   "목재"
+  ]
+ },
+ {
+  "index": 387,
+  "label": "나무 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 판벽",
+   "wood",
+   "판자",
+   "목재"
+  ]
+ },
+ {
+  "index": 388,
+  "label": "나무 판벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "나무 판벽",
+   "wood",
+   "판자",
+   "목재"
+  ]
+ },
+ {
+  "index": 389,
+  "label": "나무 상자",
+  "role": "chest",
+  "passage": "solid",
+  "tags": [
+   "나무 상자",
+   "나무",
+   "상자",
+   "wood"
+  ]
+ },
+ {
+  "index": 390,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 391,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 392,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 393,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 394,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 395,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 396,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 397,
+  "label": "짙은 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 파란 물",
+   "물",
+   "파란",
+   "water"
+  ]
+ },
+ {
+  "index": 398,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 399,
+  "label": "돌 테두리 푸른 웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 푸른 웅덩이",
+   "웅덩이",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 400,
+  "label": "어두운 물구덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어두운 물구덩이",
+   "물",
+   "구덩이",
+   "water"
+  ]
+ },
+ {
+  "index": 401,
+  "label": "돌 테두리 어두운 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 어두운 물",
+   "물",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 402,
+  "label": "잔물결 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 파란 물",
+   "잔물결",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 403,
+  "label": "잔물결 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 파란 물",
+   "잔물결",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 404,
+  "label": "잔물결 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "잔물결 파란 물",
+   "잔물결",
+   "water",
+   "애니메이션"
+  ]
+ },
+ {
+  "index": 405,
+  "label": "왼편 그늘 어두운 돌벽",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "왼편 그늘 어두운 돌벽",
+   "그늘",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 406,
+  "label": "어두운 돌 블록",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어두운 돌 블록",
+   "돌",
+   "블록",
+   "rock"
+  ]
+ },
+ {
+  "index": 407,
+  "label": "오른편 그늘 어두운 돌벽",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "오른편 그늘 어두운 돌벽",
+   "그늘",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 408,
+  "label": "흰 뾰족 암석",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "흰 뾰족 암석",
+   "흰",
+   "뾰족",
+   "rock"
+  ]
+ },
+ {
+  "index": 409,
+  "label": "흰 뾰족 바위 조각",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "흰 뾰족 바위 조각",
+   "흰",
+   "바위",
+   "rock"
+  ]
+ },
+ {
+  "index": 410,
+  "label": "어두운 뾰족 암석",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어두운 뾰족 암석",
+   "어두운",
+   "뾰족",
+   "rock"
+  ]
+ },
+ {
+  "index": 411,
+  "label": "어두운 뾰족 바위 조각",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어두운 뾰족 바위 조각",
+   "어두운",
+   "바위",
+   "rock"
+  ]
+ },
+ {
+  "index": 412,
+  "label": "불 붙은 화로",
+  "role": "torch",
+  "passage": "solid",
+  "tags": [
+   "불 붙은 화로",
+   "화로",
+   "불꽃",
+   "brazier"
+  ]
+ },
+ {
+  "index": 413,
+  "label": "푸른 뾰족 장식",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "푸른 뾰족 장식",
+   "푸른",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 414,
+  "label": "푸른 테 흰 문",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "푸른 테 흰 문",
+   "문",
+   "door",
+   "푸른테"
+  ]
+ },
+ {
+  "index": 415,
+  "label": "어두운 문틀 문",
+  "role": "door",
+  "passage": "solid",
+  "tags": [
+   "어두운 문틀 문",
+   "문",
+   "door",
+   "문틀"
+  ]
+ },
+ {
+  "index": 416,
+  "label": "흰 돌 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "흰 돌 기둥",
+   "기둥",
+   "pillar",
+   "흰"
+  ]
+ },
+ {
+  "index": 417,
+  "label": "주황 장식 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "주황 장식 기둥",
+   "기둥",
+   "장식",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 418,
+  "label": "돌 항아리",
+  "role": "prop",
+  "passage": "solid",
+  "tags": [
+   "돌 항아리",
+   "항아리",
+   "pot",
+   "판독보류"
+  ]
+ },
+ {
+  "index": 419,
+  "label": "갈색 돌멩이",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "갈색 돌멩이",
+   "돌",
+   "rock"
+  ]
+ },
+ {
+  "index": 420,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 421,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 422,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 423,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 424,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 425,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 426,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 427,
+  "label": "짙은 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 파란 물",
+   "물",
+   "파란",
+   "water"
+  ]
+ },
+ {
+  "index": 428,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 429,
+  "label": "돌 테두리 푸른 웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 푸른 웅덩이",
+   "웅덩이",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 430,
+  "label": "어두운 물구덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어두운 물구덩이",
+   "물",
+   "구덩이",
+   "water"
+  ]
+ },
+ {
+  "index": 431,
+  "label": "돌 테두리 어두운 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 어두운 물",
+   "물",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 432,
+  "label": "낡은 돌 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "낡은 돌 벽돌 벽면",
+   "벽돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 433,
+  "label": "낡은 돌 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "낡은 돌 벽돌 벽면",
+   "벽돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 434,
+  "label": "회색 돌 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 벽돌 벽면",
+   "벽돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 435,
+  "label": "왼편 그늘 남청 돌벽",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "왼편 그늘 남청 돌벽",
+   "그늘",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 436,
+  "label": "회색 둥근 바위",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "회색 둥근 바위",
+   "회색",
+   "바위",
+   "boulder",
+   "돌덩이"
+  ]
+ },
+ {
+  "index": 437,
+  "label": "오른편 그늘 남청 돌벽",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "오른편 그늘 남청 돌벽",
+   "그늘",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 438,
+  "label": "회색 돌 경계 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 경계 벽",
+   "돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 439,
+  "label": "회청색 돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회청색 돌 벽면",
+   "돌",
+   "벽면",
+   "wall"
+  ]
+ },
+ {
+  "index": 440,
+  "label": "회색 돌 경계 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 경계 벽",
+   "돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 441,
+  "label": "갈색 격자 아치 좌측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 격자 아치 좌측",
+   "격자",
+   "아치",
+   "판독보류",
+   "lattice"
+  ]
+ },
+ {
+  "index": 442,
+  "label": "갈색 격자 아치 중앙",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 격자 아치 중앙",
+   "격자",
+   "아치",
+   "판독보류",
+   "lattice"
+  ]
+ },
+ {
+  "index": 443,
+  "label": "갈색 격자 아치 우측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 격자 아치 우측",
+   "격자",
+   "아치",
+   "판독보류",
+   "lattice"
+  ]
+ },
+ {
+  "index": 444,
+  "label": "나무 살대 울타리 좌",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 살대 울타리 좌",
+   "살대",
+   "목재",
+   "울타리",
+   "fence"
+  ]
+ },
+ {
+  "index": 445,
+  "label": "나무 살대 울타리 우",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "나무 살대 울타리 우",
+   "살대",
+   "목재",
+   "울타리",
+   "fence"
+  ]
+ },
+ {
+  "index": 446,
+  "label": "회색 돌 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 기둥",
+   "기둥",
+   "pillar",
+   "돌"
+  ]
+ },
+ {
+  "index": 447,
+  "label": "황금 왕좌 좌측 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "황금 왕좌 좌측 상단",
+   "왕좌",
+   "금장식",
+   "throne",
+   "옥좌"
+  ]
+ },
+ {
+  "index": 448,
+  "label": "붉은 왕좌 등받이",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "붉은 왕좌 등받이",
+   "왕좌",
+   "등받이",
+   "throne",
+   "옥좌"
+  ]
+ },
+ {
+  "index": 449,
+  "label": "황금 왕좌 우측 상단",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "황금 왕좌 우측 상단",
+   "왕좌",
+   "금장식",
+   "throne",
+   "옥좌"
+  ]
+ },
+ {
+  "index": 450,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 451,
+  "label": "갈색 흙 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙 바닥",
+   "흙",
+   "바닥",
+   "floor"
+  ]
+ },
+ {
+  "index": 452,
+  "label": "갈색 흙돌 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "갈색 흙돌 바닥",
+   "갈색",
+   "흙돌",
+   "floor"
+  ]
+ },
+ {
+  "index": 453,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 454,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 455,
+  "label": "초록 이끼 바닥",
+  "role": "floor",
+  "passage": "passable",
+  "tags": [
+   "초록 이끼 바닥",
+   "초록",
+   "이끼",
+   "moss"
+  ]
+ },
+ {
+  "index": 456,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 457,
+  "label": "짙은 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "짙은 파란 물",
+   "물",
+   "파란",
+   "water"
+  ]
+ },
+ {
+  "index": 458,
+  "label": "가장자리 파란 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "가장자리 파란 물",
+   "물",
+   "가장자리",
+   "water"
+  ]
+ },
+ {
+  "index": 459,
+  "label": "돌 테두리 푸른 웅덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 푸른 웅덩이",
+   "웅덩이",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 460,
+  "label": "어두운 물구덩이",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "어두운 물구덩이",
+   "물",
+   "구덩이",
+   "water"
+  ]
+ },
+ {
+  "index": 461,
+  "label": "돌 테두리 어두운 물",
+  "role": "water",
+  "passage": "solid",
+  "tags": [
+   "돌 테두리 어두운 물",
+   "물",
+   "돌테",
+   "water"
+  ]
+ },
+ {
+  "index": 462,
+  "label": "낡은 돌 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "낡은 돌 벽돌 벽면",
+   "벽돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 463,
+  "label": "낡은 돌 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "낡은 돌 벽돌 벽면",
+   "벽돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 464,
+  "label": "어두운 돌 벽돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "어두운 돌 벽돌 벽면",
+   "벽돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 465,
+  "label": "왼편 그늘 회색 돌벽",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "왼편 그늘 회색 돌벽",
+   "그늘",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 466,
+  "label": "어두운 돌 블록",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "어두운 돌 블록",
+   "돌",
+   "블록",
+   "rock"
+  ]
+ },
+ {
+  "index": 467,
+  "label": "오른편 그늘 회색 돌벽",
+  "role": "rock",
+  "passage": "solid",
+  "tags": [
+   "오른편 그늘 회색 돌벽",
+   "그늘",
+   "돌벽",
+   "rock"
+  ]
+ },
+ {
+  "index": 468,
+  "label": "회색 돌 경계 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 경계 벽",
+   "돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 469,
+  "label": "회청색 돌 벽면",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회청색 돌 벽면",
+   "돌",
+   "벽면",
+   "wall"
+  ]
+ },
+ {
+  "index": 470,
+  "label": "회색 돌 경계 벽",
+  "role": "wall",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 경계 벽",
+   "돌",
+   "벽",
+   "wall"
+  ]
+ },
+ {
+  "index": 471,
+  "label": "갈색 격자 문양 좌측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 격자 문양 좌측",
+   "격자",
+   "문양",
+   "판독보류",
+   "lattice"
+  ]
+ },
+ {
+  "index": 472,
+  "label": "갈색 격자 원형 문양",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 격자 원형 문양",
+   "격자",
+   "원형",
+   "판독보류",
+   "lattice"
+  ]
+ },
+ {
+  "index": 473,
+  "label": "갈색 격자 문양 우측",
+  "role": "decoration",
+  "passage": "solid",
+  "tags": [
+   "갈색 격자 문양 우측",
+   "격자",
+   "문양",
+   "판독보류",
+   "lattice"
+  ]
+ },
+ {
+  "index": 474,
+  "label": "밝은 나무 살대 좌",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "밝은 나무 살대 좌",
+   "살대",
+   "목재",
+   "울타리",
+   "fence"
+  ]
+ },
+ {
+  "index": 475,
+  "label": "밝은 나무 살대 우",
+  "role": "fence",
+  "passage": "solid",
+  "tags": [
+   "밝은 나무 살대 우",
+   "살대",
+   "목재",
+   "울타리",
+   "fence"
+  ]
+ },
+ {
+  "index": 476,
+  "label": "회색 돌 기둥",
+  "role": "pillar",
+  "passage": "solid",
+  "tags": [
+   "회색 돌 기둥",
+   "기둥",
+   "pillar",
+   "돌"
+  ]
+ },
+ {
+  "index": 477,
+  "label": "황금 왕좌 좌측 팔걸이",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "황금 왕좌 좌측 팔걸이",
+   "왕좌",
+   "팔걸이",
+   "throne",
+   "옥좌"
+  ]
+ },
+ {
+  "index": 478,
+  "label": "붉은 왕좌 좌석",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "붉은 왕좌 좌석",
+   "왕좌",
+   "좌석",
+   "throne",
+   "옥좌"
+  ]
+ },
+ {
+  "index": 479,
+  "label": "황금 왕좌 우측 팔걸이",
+  "role": "furniture",
+  "passage": "solid",
+  "tags": [
+   "황금 왕좌 우측 팔걸이",
+   "왕좌",
+   "팔걸이",
+   "throne",
+   "옥좌"
+  ]
+ }
+]
