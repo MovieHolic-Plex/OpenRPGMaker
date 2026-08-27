@@ -145,7 +145,6 @@ export interface BattlePartyProgress {
   readonly names?: Readonly<Record<string, string>>;
   // Change Actor Faceset 런타임 오버라이드. 전투 HUD도 필드/메시지와 같은 현재 얼굴을 사용한다.
   readonly faceResourceIds?: Readonly<Record<string, string>>;
-  readonly faceIndices?: Readonly<Record<string, number>>;
   // 세션 현재 바이탈(필드에서 이어지는 현재 HP/MP). 전투 진입 능력치에 반영.
   readonly vitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number }>>;
   // 세션 영구 파라미터 보정(Change Parameters). 전투 진입 능력치에 반영.
@@ -182,7 +181,6 @@ export interface BattleBattlerSnapshot {
   readonly level?: number;
   /** 현재 배우 식별 그래픽. 런타임 faceset 변경을 포함하며 DOM은 DB를 다시 추측하지 않는다. */
   readonly faceResourceId?: string;
-  readonly faceIndex?: number;
   readonly battleCharacterResourceId?: string;
   /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
   readonly monsterInstanceId?: string;

@@ -78,7 +78,7 @@ describe("actor vital and faceset command previews", () => {
       const preview = renderCommandPreview({
         kind: "m2Command",
         commandId: "m2-025-change-actor-faceset",
-        fields: { target: actor?.id ?? "", value: actor?.faceResourceId ?? "", faceIndex: 0 },
+        fields: { target: actor?.id ?? "", value: actor?.faceResourceId ?? "" },
       }) as unknown as HTMLElement;
       const crop =
         findByTestId(preview as unknown as FakeElement, "event-command-face-crop-shell")

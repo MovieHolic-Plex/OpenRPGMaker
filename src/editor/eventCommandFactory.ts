@@ -8,7 +8,7 @@ export function newCommand(kind: Command["kind"]): Command {
     case "text":
       return { kind: "text", speaker: "", body: "" };
     case "changeFace":
-      return { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 0, position: "left", flipHorizontally: false };
+      return { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-00", position: "left", flipHorizontally: false };
     case "choices":
       return { kind: "choices", prompt: "", options: [{ text: "예", branch: [] }, { text: "아니오", branch: [] }], cancelBehavior: "choice2" };
     case "fork":

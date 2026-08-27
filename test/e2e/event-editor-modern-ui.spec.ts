@@ -17,8 +17,14 @@ test("event editor modern target surface", async ({ page }) => {
 
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
   await expect(command.getByTestId("event-command-face-preview")).toBeVisible();
-  await expect(command.getByTestId("event-command-face-crop")).toHaveCSS("background-size", "280px 280px");
-  await expect(command.getByTestId("event-command-face-crop")).toHaveCSS("background-position", "-70px -70px");
+  // 얼굴 한 칸 = 파일 한 장 — 시트 오프셋 크롭(background-position 음수)이 아니라
+  // 낱장 PNG 한 장이 상자에 그대로 들어간다.
+  const crop = command.getByTestId("event-command-face-crop");
+  await expect(crop).toHaveCSS("background-image", "none");
+  await expect(crop.getByTestId("faceset-crop-sheet")).toHaveAttribute(
+    "src",
+    "/assets/easyrpg/faceset/Actor1/05.png"
+  );
   await screenshotEvidence(page, EVIDENCE_DIR, "event-editor-modern-ui-actual.png");
   await writeEvidenceJson(EVIDENCE_DIR, "event-editor-modern-ui-actual.json", {
     viewport: { width: 1586, height: 992 },
@@ -69,7 +75,7 @@ function targetProject(): Project {
   const page = event?.pages?.[0];
   if (!event || !page) throw new Error("missing starter event page");
   const commands: Command[] = [
-    { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 5, position: "left", flipHorizontally: false },
+    { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-05", position: "left", flipHorizontally: false },
     { kind: "text", body: "", speaker: "" },
   ];
   page.commands = commands;

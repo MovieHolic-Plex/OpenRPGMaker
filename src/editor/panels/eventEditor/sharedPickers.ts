@@ -1,6 +1,6 @@
 // 이벤트 명령 폼 공용 선택 컨트롤 (맵/주인공/아이템/이벤트).
 // 숨은·보이는 <select> + testid 계약을 유지해 e2e selectOption 호환을 지킨다.
-// 페이스셋/캐릭셋 시트는 한 장에 여러 칸이 있으므로 faceIndex·characterIndex로 단일 셀만 크롭한다.
+// 얼굴은 그림 한 장이고, 캐릭셋 시트는 characterIndex 로 단일 셀만 크롭한다.
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { store } from "@/project/store";
 import type { ActorRecord, GameEvent, ItemRecord, MapId, Project } from "@/project/types";
@@ -102,9 +102,9 @@ export function actorPicker(options: ActorPickerOptions): RecordPickerHandle {
   });
 }
 
-/** 페이스셋 faceIndex 칸 우선, 없으면 캐릭셋 characterIndex idle-front 칸. 시트 전체 금지. */
+/** 낱장 얼굴 그림 우선, 없으면 캐릭셋 characterIndex idle-front 칸. 캐릭셋 시트 전체 금지. */
 export function actorSheetIcon(project: Project, record: ActorRecord): RecordPickerIcon | null {
-  const face = facesetIconOf(project, record.faceResourceId, record.faceIndex ?? 0);
+  const face = facesetIconOf(project, record.faceResourceId);
   if (face) return face;
   return charsetIconOf(project, record.characterResourceId, record.characterIndex ?? 0);
 }

@@ -40,7 +40,7 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
 
   it("flattenScript 는 분기 라벨과 시뮬레이션 상태를 스크립트 순서로 기록한다", () => {
     const commands: Command[] = [
-      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 3, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-03", position: "left", flipHorizontally: false },
       { kind: "text", body: "안녕" },
       {
         kind: "fork",

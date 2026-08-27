@@ -138,7 +138,7 @@ function modernDialogueProject(): Project {
   if (!map) throw new Error("blank project start map is missing");
   map.events.push(
     event("ev_modern_chip", 4, 4, [
-      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-00", position: "left", flipHorizontally: false },
       { kind: "text", speaker: "접수원", body: "몬스터 회복 센터에 오신 걸 환영합니다." },
       {
         kind: "choices",
@@ -151,7 +151,7 @@ function modernDialogueProject(): Project {
       },
     ]),
     event("ev_modern_bust", 5, 4, [
-      { kind: "changeFace", resourceId: "generated-face-actor1-bust", faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "generated-face-actor1-bust", position: "left", flipHorizontally: false },
       { kind: "text", speaker: "접수원", body: "큰 초상화도 본문을 가리지 않습니다." },
     ]),
     event("ev_modern_top", 6, 4, [

@@ -77,7 +77,6 @@ type LegacyActorRecord = {
   readonly initialLevel: number;
   readonly maxLevel: number;
   readonly faceResourceId?: string;
-  readonly faceIndex?: number;
   readonly characterResourceId?: string;
   readonly characterIndex?: number;
   readonly characterTransparent?: boolean;
@@ -143,7 +142,6 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     initialLevel,
     maxLevel,
     faceResourceId: cleanOptionalId(actor.faceResourceId) ?? defaultActorFaceResourceId({ ...actor, characterResourceId }),
-    faceIndex: normalizeOptionalSheetIndex(actor.faceIndex, 15),
     characterResourceId,
     characterIndex: normalizeOptionalSheetIndex(actor.characterIndex, 7),
     characterTransparent: actor.characterTransparent ?? false,
@@ -190,7 +188,6 @@ export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorR
   const normalized: Partial<ActorRecord> = { ...patch };
   if (patch.initialLevel !== undefined) normalized.initialLevel = clampLevel(patch.initialLevel);
   if (patch.maxLevel !== undefined) normalized.maxLevel = clampLevel(patch.maxLevel);
-  if (patch.faceIndex !== undefined) normalized.faceIndex = normalizeOptionalSheetIndex(patch.faceIndex, 15);
   if (patch.characterIndex !== undefined) normalized.characterIndex = normalizeOptionalSheetIndex(patch.characterIndex, 7);
   if (patch.critical !== undefined) normalized.critical = normalizeCritical(patch.critical);
   if (patch.parameterCurves !== undefined) normalized.parameterCurves = normalizeParameterCurves(patch.parameterCurves);

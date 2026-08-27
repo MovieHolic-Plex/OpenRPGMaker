@@ -1,9 +1,3 @@
-import {
-  FACESET_COLUMNS,
-  FACESET_FACE_HEIGHT,
-  FACESET_FACE_WIDTH,
-  FACESET_ROWS,
-} from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import type {
@@ -64,14 +58,11 @@ export function recordListThumbnail(
 function actorThumbnail(record: ActorRecord, project: Project, size: number): HTMLElement {
   const url = resolveAssetResourceUrl(record.faceResourceId, { project });
   if (!url) return emptySlot();
-  const faceIndex = record.faceIndex ?? 0;
-  const column = faceIndex % FACESET_COLUMNS;
-  const row = Math.floor(faceIndex / FACESET_COLUMNS);
+  // 얼굴 한 칸 = 파일 한 장이라 크롭이 없다 — 슬롯 크기에 맞춰 그림 한 장을 통째로 깐다.
   const slot = baseSlot("db-list-thumb-crop", `${record.name} 얼굴`);
-  const scale = size / FACESET_FACE_WIDTH;
   slot.style.backgroundImage = `url("${url}")`;
-  slot.style.backgroundPosition = `-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`;
-  slot.style.backgroundSize = `${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`;
+  slot.style.backgroundPosition = "center";
+  slot.style.backgroundSize = `${size}px ${size}px`;
   slot.append(loadProbe(url, slot));
   return slot;
 }

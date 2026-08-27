@@ -23,7 +23,6 @@ export interface ActorBattlerOverrides {
   readonly names?: Readonly<Record<string, string>>;
   // 현재 faceset(Change Actor Faceset 포함). 전투 HUD가 DB 기본 얼굴로 되돌아가지 않게 한다.
   readonly faceResourceIds?: Readonly<Record<string, string>>;
-  readonly faceIndices?: Readonly<Record<string, number>>;
   // 레벨 오버라이드(레벨업 반영값). actorId → 레벨. 없으면 DB initialLevel.
   readonly levels?: Readonly<Record<string, number>>;
   // 현재 바이탈(필드에서 이어지는 현재 HP/MP). actorId → {hp, mp}.
@@ -48,7 +47,6 @@ export interface MutableBattler {
   classId?: string;
   readonly level?: number;
   readonly faceResourceId?: string;
-  readonly faceIndex?: number;
   readonly battleCharacterResourceId?: string;
   // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.
   // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
@@ -111,7 +109,6 @@ export function actorBattlers(
       classId: derived.effectiveClassId,
       level,
       faceResourceId: overrides?.faceResourceIds?.[actorId] ?? normalizedActor.faceResourceId,
-      faceIndex: overrides?.faceIndices?.[actorId] ?? normalizedActor.faceIndex ?? 0,
       battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
       maxHp: derived.maxHp,
@@ -437,7 +434,6 @@ export function battlerSnapshot(
     classId: battler.classId,
     level: battler.level,
     faceResourceId: battler.faceResourceId,
-    faceIndex: battler.faceIndex,
     battleCharacterResourceId: battler.battleCharacterResourceId,
     monsterInstanceId: battler.monsterInstanceId,
     speciesId: battler.speciesId,

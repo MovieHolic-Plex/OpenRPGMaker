@@ -171,8 +171,8 @@ export type MessageWindowSettings = {
   readonly allowEventMovementDuringWait: boolean;
 };
 export type FaceGraphic = {
+  /** 낱장 얼굴 리소스 id. 얼굴 한 칸 = 파일 한 장이라 칸 번호가 없다. */
   readonly resourceId: string;
-  readonly faceIndex: number;
   readonly position: "left" | "right";
   readonly flipHorizontally: boolean;
 };

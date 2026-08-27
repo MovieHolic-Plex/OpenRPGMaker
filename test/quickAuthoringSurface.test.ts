@@ -96,14 +96,15 @@ describe("quick authoring previews are identifiable", () => {
     withProject(() => {
       const root = preview({
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-actor1",
-        faceIndex: 2,
+        resourceId: "easyrpg-faceset-actor1-02",
         position: "left",
         flipHorizontally: false,
       });
 
       expect(root.querySelectorAll(".event-command-face-crop-shell").length).toBeGreaterThanOrEqual(1);
-      expect(findByTestId(root, "ecp-face-caption")?.textContent).toContain("얼굴 3");
+      expect(findByTestId(root, "ecp-face-caption")?.textContent).toContain("왼쪽 · 얼굴");
+      // 낱장 얼굴 모델: 캡션에 칸 순번이 다시 들어가지 않는다.
+      expect(findByTestId(root, "ecp-face-caption")?.textContent).not.toMatch(/얼굴\s*\d/);
       expect(root.querySelectorAll(".ecp-summary-card")).toHaveLength(0);
     });
   });

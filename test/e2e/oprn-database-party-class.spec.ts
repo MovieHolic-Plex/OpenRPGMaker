@@ -50,7 +50,7 @@ test("T4 actor and class tabs persist curves, graphics, equipment, commands, rat
   await page.getByTestId("db-picker-class").selectOption("class_guardian");
   await page.getByTestId("db-field-initial-level").fill("4");
   await page.getByTestId("db-field-max-level").fill("77");
-  await page.getByTestId("db-field-face-resource").fill("easyrpg-faceset-actor2");
+  await page.getByTestId("db-field-face-resource").fill("easyrpg-faceset-actor2-00");
   await page.getByTestId("db-field-character-resource").fill("easyrpg-charset-actor2");
   await page.getByTestId("db-field-character-transparent").check();
   await page.getByTestId("db-field-battle-character-resource").fill("generated-actor-hero-02-battle");
@@ -117,7 +117,7 @@ test("T4 actor and class tabs persist curves, graphics, equipment, commands, rat
   expect(actor?.learnedSkills).toContainEqual({ level: 9, skillId: "skill_attack" });
   expect(actor?.options.dualWield).toBe(true);
   expect(actor?.characterTransparent).toBe(true);
-  expect(actor?.faceResourceId).toBe("easyrpg-faceset-actor2");
+  expect(actor?.faceResourceId).toBe("easyrpg-faceset-actor2-00");
   expect(actor?.parameterCurves.attack).toHaveLength(99);
   expect(actor?.parameterCurves.attack[9]).toBe(321);
   expect(actor?.expCurve).toEqual({ base: 5, extra: 55, acceleration: 11 });

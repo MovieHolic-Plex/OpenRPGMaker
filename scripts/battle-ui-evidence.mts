@@ -26,10 +26,10 @@ const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15);
 const OUT = `evidence/browser-screenshots/${stamp}-battle-ui-${label}`;
 
 const referenceActors = [
-  { id: "actor_hero", name: "히로", battleResourceId: "generated-actor-hero-01-battle", faceResourceId: "generated-actor-hero-01-face" },
-  { id: "actor_guardian", name: "가디언", battleResourceId: "generated-actor-hero-02-battle", faceResourceId: "generated-actor-hero-02-face" },
+  { id: "actor_hero", name: "히로", battleResourceId: "generated-actor-hero-01-battle", faceResourceId: "generated-actor-hero-01-face-00" },
+  { id: "actor_guardian", name: "가디언", battleResourceId: "generated-actor-hero-02-battle", faceResourceId: "generated-actor-hero-02-face-00" },
   { id: "actor_mage", name: "메이지", battleResourceId: "generated-actor-hero-03-battle", faceResourceId: "generated-actor-hero-03-face" },
-  { id: "actor_scout", name: "스카우트", battleResourceId: "generated-actor-hero-04-battle", faceResourceId: "easyrpg-faceset-people2" },
+  { id: "actor_scout", name: "스카우트", battleResourceId: "generated-actor-hero-04-battle", faceResourceId: "easyrpg-faceset-people2-00" },
 ] as const;
 
 async function buildSeedProject(): Promise<unknown> {

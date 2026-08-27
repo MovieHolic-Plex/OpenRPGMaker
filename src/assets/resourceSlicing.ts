@@ -71,17 +71,8 @@ export const RESOURCE_SLICING = {
   backdrop: { kind: "whole-image", unit: "image" },
   gameOver: { kind: "whole-image", unit: "image" },
   monster: { kind: "whole-image", unit: "image" },
-  faceset: {
-    kind: "grid",
-    unit: "face",
-    cellWidth: 48,
-    cellHeight: 48,
-    columns: 4,
-    rows: 4,
-    count: 16,
-    sheetWidth: 192,
-    sheetHeight: 192,
-  },
+  // 얼굴은 그림 한 장이다. 4x4 시트 + 칸 번호 모델은 파일 분할(scripts/slice-faceset-sheets.mjs)로 끝났다.
+  faceset: { kind: "whole-image", unit: "image" },
   picture: { kind: "whole-image", unit: "image" },
   system: { kind: "whole-image", unit: "image" },
   system2: { kind: "whole-image", unit: "image" },
@@ -89,6 +80,9 @@ export const RESOURCE_SLICING = {
   music: { kind: "audio", unit: "audio" },
   sound: { kind: "audio", unit: "audio" },
 } as const satisfies Record<ResourceKind, ResourceSlicingSpec>;
+
+/** 얼굴 낱장 한 장의 크기. 표시 배율 계산의 기준값이다. */
+export const FACE_IMAGE_SIZE = 48;
 
 export const BUILTIN_SPRITE_SLICING = {
   kind: "grid",

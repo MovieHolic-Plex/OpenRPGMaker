@@ -42,7 +42,7 @@ describe("command edit modal — image-rich preview", () => {
     const mapId = project.startMapId;
     const samples: Command[] = [
       { kind: "text", speaker: "용사", body: "안녕\n반가워" },
-      { kind: "changeFace", resourceId: "", faceIndex: 0, position: "left", flipHorizontally: false },
+      { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false },
       { kind: "displayTextSettings", format: "transparent", position: "top", preventObscuringPlayer: false, allowEventMovementDuringWait: false },
       { kind: "choices", options: [{ text: "예", branch: [] }, { text: "아니오", branch: [] }] },
       { kind: "inputNumber", variableId: project.variables[0]?.id ?? "var_0001", digits: 3, prompt: "PIN 입력", showPad: true },
@@ -233,8 +233,7 @@ describe("command edit modal — image-rich preview", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({
         kind: "changeFace",
-        resourceId: "easyrpg-faceset-actor1",
-        faceIndex: 0,
+        resourceId: "easyrpg-faceset-actor1-00",
         position: "left",
         flipHorizontally: false,
       })
@@ -245,7 +244,8 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "event-command-face-preview")).toBeNull();
     expect(preview.textContent).toContain("대사 창에");
     expect(findByTestId(preview, "ecp-face-caption")?.textContent).toContain("왼쪽");
-    expect(findByTestId(preview, "ecp-face-caption")?.textContent).toContain("얼굴 1");
+    // 얼굴 한 칸 = 파일 한 장 — 캡션은 순번("얼굴 1")을 다시 말하지 않는다.
+    expect(findByTestId(preview, "ecp-face-caption")?.textContent).not.toMatch(/얼굴\s*\d/);
   });
 
   it("renders displayTextSettings with clean windowskin mock, position stage, and option badges", () => {

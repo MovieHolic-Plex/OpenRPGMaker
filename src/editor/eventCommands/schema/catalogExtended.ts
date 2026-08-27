@@ -17,15 +17,14 @@ defineCommand({
   family: "dialogue",
   label: "얼굴 그래픽",
   fields: {
-    resourceId: f.record("페이스셋", "image"),
-    faceIndex: f.number("칸 번호", { min: 0 }),
+    resourceId: f.record("얼굴 그림", "image"),
     position: f.enum("표시 위치", [
       { value: "left", label: "왼쪽", key: "left" },
       { value: "right", label: "오른쪽", key: "right" },
     ]),
     flipHorizontally: f.bool("좌우 반전", { optional: true }),
   },
-  summary: (c, l) => `얼굴 ${l.recordName(str(c.resourceId))} #${num(c.faceIndex)}`,
+  summary: (c, l) => `얼굴 ${l.recordName(str(c.resourceId))}`,
 });
 
 defineCommand({

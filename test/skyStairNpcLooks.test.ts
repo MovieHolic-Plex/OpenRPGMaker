@@ -11,6 +11,7 @@
 import { describe, expect, it } from "vitest";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { faceIdForSheetCell, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { skyStairMaps } from "@/editor/content/skyStairMaps";
 import type { GameEvent } from "@/project/types";
 
@@ -119,21 +120,23 @@ describe("천공의 계단 NPC 그래픽", () => {
           continue;
         }
         facedPages += 1;
-        const face = faces[0] as { resourceId: string; faceIndex: number };
+        const face = faces[0] as { resourceId: string };
         const aligned = ALIGNED[cell.textureKey];
         if (aligned) {
-          if (face.resourceId !== aligned || face.faceIndex !== cell.characterIndex) {
+          const expected = faceIdForSheetCell(aligned, cell.characterIndex);
+          if (face.resourceId !== expected) {
             problems.push(
               `${ev.id}/${pg.id}: ${cell.textureKey}#${cell.characterIndex} 는 `
-              + `${aligned}#${cell.characterIndex} 와 짝인데 ${face.resourceId}#${face.faceIndex} 가 붙었다`,
+              + `${expected} 와 짝인데 ${face.resourceId} 가 붙았다`,
             );
           }
-        } else if (face.resourceId !== "easyrpg-faceset-people1") {
+        } else if (!face.resourceId.startsWith("easyrpg-faceset-people1-")) {
           // 짝이 없는 시트는 일반 주민 얼굴 시트에서만 고른다.
           problems.push(`${ev.id}/${pg.id}: 짝 없는 시트에 ${face.resourceId} 를 썼다`);
         }
-        expect(face.faceIndex).toBeGreaterThanOrEqual(0);
-        expect(face.faceIndex).toBeLessThanOrEqual(15);
+        // 얼굴은 낱장 리소스 id 다 — 시트 id 를 그대로 쓰면 칸이 정해지지 않는다.
+        expect(LEGACY_FACESET_SHEET_IDS).not.toContain(face.resourceId);
+        expect(face.resourceId).toMatch(/-\d{2}$/);
       }
     }
     expect(problems, problems.join("\n")).toEqual([]);

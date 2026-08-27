@@ -361,7 +361,7 @@ function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void):
     "얼굴",
     actor.faceResourceId ?? actor.characterResourceId ?? "(없음)",
     "faceset",
-    actor.faceIndex ?? 0,
+    0,
     4 / 3
   );
   face.classList.add("db-record-hero-face");
@@ -499,7 +499,7 @@ function activateInspectorTab(button: HTMLElement, root: HTMLElement, selector: 
 
 function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
   return actorPanel("화면에 보이는 모습", "actor-graphic", [
-    graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset", actor.faceIndex ?? 0),
+    graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset"),
     resourceControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
       updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
       () => openActorResourceDialog(actor, "faceResourceId", rerender)

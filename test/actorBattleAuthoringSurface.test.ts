@@ -154,14 +154,18 @@ describe("actor and battle command previews are authoring surfaces", () => {
       const root = preview({
         kind: "m2Command",
         commandId: "m2-025-change-actor-faceset",
-        fields: { target: actorId, value: "easyrpg-faceset-actor1", faceIndex: 2 },
+        fields: { target: actorId, value: "easyrpg-faceset-actor1-02" },
       });
 
       expect(findByTestId(root, "ecp-faceset-change-stage")).toBeTruthy();
       const after = findByTestId(root, "ecp-faceset-after");
       expect(after).toBeTruthy();
       expect(after?.querySelectorAll(".event-command-face-crop-shell").length).toBeGreaterThanOrEqual(1);
-      expect(findByTestId(root, "ecp-faceset-change-caption")?.textContent).toContain("얼굴 3");
+      // 낱장 얼굴 모델: 캡션은 주인공 이름 + "얼굴" 이고 칸 순번을 말하지 않는다.
+      const caption = findByTestId(root, "ecp-faceset-change-caption")?.textContent ?? "";
+      expect(caption).toContain("얼굴");
+      expect(caption).not.toContain("얼굴 미선택");
+      expect(caption).not.toMatch(/얼굴\s*\d/);
       expect(root.querySelectorAll(".ecp-summary-card")).toHaveLength(0);
     });
   });

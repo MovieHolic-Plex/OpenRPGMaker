@@ -49,8 +49,7 @@ const STARTER_VILLAGE_NPCS = [
     y: 14,
     spriteId: "tex_easyrpg_charset_people1",
     pattern: charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 }),
-    faceResourceId: "easyrpg-faceset-people1",
-    faceIndex: 0,
+    faceResourceId: "easyrpg-faceset-people1-00",
     speaker: "미나",
     body: "어서 와요. 이 마을의 이벤트는 모두 이 에디터 안에서 만들어졌어요.",
   },
@@ -60,8 +59,7 @@ const STARTER_VILLAGE_NPCS = [
     y: 16,
     spriteId: "tex_easyrpg_charset_people2",
     pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
-    faceResourceId: "easyrpg-faceset-people2",
-    faceIndex: 1,
+    faceResourceId: "easyrpg-faceset-people2-01",
     speaker: "로웬",
     body: "트리거를 Action Button으로 두면 말을 걸 때만 대화가 시작됩니다.",
   },
@@ -71,8 +69,7 @@ const STARTER_VILLAGE_NPCS = [
     y: 18,
     spriteId: "tex_easyrpg_charset_actor2",
     pattern: charsetFrameIndex({ characterIndex: 2, direction: "down", pattern: 1 }),
-    faceResourceId: "easyrpg-faceset-actor2",
-    faceIndex: 2,
+    faceResourceId: "easyrpg-faceset-actor2-02",
     speaker: "세라",
     body: "얼굴 그림도 함께 뜨니까 실제 게임에서 보일 대화창을 그대로 확인할 수 있어요.",
   },
@@ -126,7 +123,7 @@ describe("createBlankProject", () => {
   it("스키마 버전 3을 가진다", () => {
     const p = createBlankProject();
     expect(p.version).toBe(SCHEMA_VERSION);
-    expect(SCHEMA_VERSION).toBe(3);
+    expect(SCHEMA_VERSION).toBe(4);
   });
 
   it("startMapId가 maps에 존재한다", () => {
@@ -457,8 +454,8 @@ describe("createStarterMap", () => {
       if (!faceCommand || faceCommand.kind !== "changeFace") {
         throw new Error(`missing face command for ${expected.id}`);
       }
+      // 얼굴 한 칸 = 파일 한 장 — 명령은 낱장 얼굴 id 하나만 들고 있다.
       expect(faceCommand.resourceId).toBe(expected.faceResourceId);
-      expect(faceCommand.faceIndex).toBe(expected.faceIndex);
       expect(faceCommand.position).toBe("left");
 
       const textCommand = page.commands.find((command) => command.kind === "text");

@@ -24,7 +24,6 @@ export interface SimulatedStep {
 
 export interface ActiveFace {
   readonly resourceId: string;
-  readonly faceIndex: number;
 }
 
 export interface SimulationResult {

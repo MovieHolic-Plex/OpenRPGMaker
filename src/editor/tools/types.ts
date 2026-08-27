@@ -114,7 +114,6 @@ export interface SimplePage {
   /** 대화 페이스. 생략 시 place_npc graphic charset에서 자동 매핑. */
   readonly face?: {
     readonly resourceId?: string;
-    readonly faceIndex?: number;
     readonly position?: "left" | "right";
     readonly flipHorizontally?: boolean;
     readonly textureKey?: string;

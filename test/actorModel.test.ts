@@ -57,7 +57,7 @@ describe("RM2K3 actor model", () => {
     });
 
     expect(actor.characterResourceId).toBe("easyrpg-charset-actor1");
-    expect(actor.faceResourceId).toBe("easyrpg-faceset-actor1");
+    expect(actor.faceResourceId).toBe("easyrpg-faceset-actor1-00");
   });
 
   it("does not synthesize non-hero character resources for persisted actors", () => {
@@ -70,7 +70,7 @@ describe("RM2K3 actor model", () => {
     });
 
     expect(actor.characterResourceId).toBeUndefined();
-    expect(actor.faceResourceId).toBe("easyrpg-faceset-people1");
+    expect(actor.faceResourceId).toBe("easyrpg-faceset-people1-00");
   });
 
   it("calculates total EXP from the actor experience curve", () => {

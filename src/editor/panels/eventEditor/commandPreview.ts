@@ -47,7 +47,7 @@ import { getSimSwitch, getSimVariable, getSimItem } from "./previewSimulation";
 const PREVIEW_FACE_SIZE = 96;
 
 export type CommandPreviewContext = {
-  readonly face?: { readonly resourceId: string; readonly faceIndex: number };
+  readonly face?: { readonly resourceId: string };
   readonly simState?: PreviewSimState;
   readonly hostEventId?: string;
   readonly forkTaken?: "then" | "else";
@@ -192,7 +192,6 @@ function messageWindowMock(
     win.append(
       renderFacesetCrop({
         resourceId: shownFace.resourceId,
-        faceIndex: shownFace.faceIndex,
         displaySize: PREVIEW_FACE_SIZE,
       })
     );
@@ -229,7 +228,7 @@ function sampleSpeakerFace(): CommandPreviewContext["face"] | undefined {
   const partyId = project.session?.partyActorIds?.[0];
   const actor = project.database.actors.find((entry) => entry.id === partyId) ?? project.database.actors[0];
   if (!actor?.faceResourceId) return undefined;
-  return { resourceId: actor.faceResourceId, faceIndex: actor.faceIndex ?? 0 };
+  return { resourceId: actor.faceResourceId };
 }
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
@@ -360,7 +359,6 @@ function faceStage(cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   if (whole) {
     const portrait = renderFacesetCrop({
       resourceId: cmd.resourceId,
-      faceIndex: cmd.faceIndex,
       flipHorizontally: cmd.flipHorizontally,
       displaySize: mode === "full" ? 160 : 140,
       position: side,
@@ -382,7 +380,6 @@ function faceStage(cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
     win.append(
       renderFacesetCrop({
         resourceId: cmd.resourceId,
-        faceIndex: cmd.faceIndex,
         flipHorizontally: cmd.flipHorizontally,
         displaySize: PREVIEW_FACE_SIZE,
         position: side,
@@ -400,13 +397,12 @@ function faceStage(cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   }
   stage.append(win);
   const sideLabel = side === "right" ? "오른쪽" : "왼쪽";
-  const faceNo = Math.max(0, Math.trunc(cmd.faceIndex)) + 1;
   stage.append(
     el("div", {
       class: "ecp-face-caption",
       text: whole
         ? `${sideLabel} · ${mode === "full" ? "전신" : "흉상"}${cmd.flipHorizontally ? " · 좌우 반전" : ""}`
-        : `${sideLabel} · 얼굴 ${faceNo}${cmd.flipHorizontally ? " · 좌우 반전" : ""}`,
+        : `${sideLabel} · 얼굴${cmd.flipHorizontally ? " · 좌우 반전" : ""}`,
       dataset: { testid: "ecp-face-caption" },
     })
   );
@@ -1623,7 +1619,6 @@ function weatherPreviewLabel(kind: Extract<Command, { kind: "setWeather" }>["wea
 function m2Preview(cmd: Extract<Command, { kind: "m2Command" }>, context?: CommandPreviewContext): HTMLElement {
   if (cmd.commandId === "m2-025-change-actor-faceset") {
     const resourceId = String(cmd.fields.value ?? "").trim();
-    const faceIndex = Math.max(0, Math.trunc(Number(cmd.fields.faceIndex ?? 0)) || 0);
     const project = store.getCurrent();
     const actor = project.database.actors.find((entry) => entry.id === String(cmd.fields.target ?? ""));
     const stage = el("div", {
@@ -1632,7 +1627,6 @@ function m2Preview(cmd: Extract<Command, { kind: "m2Command" }>, context?: Comma
     });
     stage.append(renderFacesetCrop({
       resourceId: resourceId || actor?.faceResourceId || "",
-      faceIndex: resourceId ? faceIndex : (actor?.faceIndex ?? 0),
       flipHorizontally: false,
       displaySize: PREVIEW_FACE_SIZE,
       position: "left",

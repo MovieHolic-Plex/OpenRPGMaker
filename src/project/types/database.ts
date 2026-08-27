@@ -24,9 +24,8 @@ export interface ActorRecord {
   classId: ClassId;
   initialLevel: number;
   maxLevel: number;
+  /** 낱장 얼굴 리소스 id(예: easyrpg-faceset-actor1-07). 시트+칸 짝은 v4 마이그레이션이 없앴다. */
   faceResourceId?: string;
-  /** Optional faceset cell index (0..15). Omitted means 0 for legacy projects. */
-  faceIndex?: number;
   characterResourceId?: string;
   /** Optional charset character index (0..7). Omitted means 0 for legacy projects. */
   characterIndex?: number;

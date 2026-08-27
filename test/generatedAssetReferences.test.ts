@@ -1,4 +1,9 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it, beforeEach } from "vitest";
+import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { resourceReferenceMessage } from "@/editor/databaseReferences";
 import { updateDatabaseRecord, duplicateDatabaseRecord } from "@/editor/databaseActions";
 import { createBlankProject } from "@/project/defaults";
@@ -173,7 +178,37 @@ describe("generated item and equipment image resources", () => {
   it("imports default EasyRPG runtime package actor resources as known references", () => {
     const restored = deserialize(serialize(createBlankProject()));
 
-    expect(restored.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1");
+    // 한 얼굴 = 한 파일: 기본 얼굴은 낱장 리소스 id(칸 0)다.
+    expect(restored.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1-00");
     expect(restored.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
+  });
+
+  it("resolves every sliced face id to its own file", () => {
+    const unresolved = FACESET_FACE_ASSETS
+      .filter((face) => resolveAssetResourceUrl(face.id) !== `/${face.path}`)
+      .map((face) => `${face.id}:${resolveAssetResourceUrl(face.id)}`);
+    const missingFiles = FACESET_FACE_ASSETS
+      .filter((face) => !existsSync(path.join("public", face.path)))
+      .map((face) => face.path);
+
+    expect(unresolved).toEqual([]);
+    expect(missingFiles).toEqual([]);
+  });
+
+  it("registers every sliced face id as a known project reference", () => {
+    const knownIds = collectResourceIds(createBlankProject());
+    const unregistered = FACESET_FACE_ASSETS.filter((face) => !knownIds.has(face.id)).map((face) => face.id);
+
+    expect(unregistered).toEqual([]);
+  });
+
+  it("deserializes a project whose actor points at a sliced face", () => {
+    const rawProject = record(JSON.parse(serialize(createBlankProject())), "project");
+    const database = record(rawProject.database, "database");
+    firstRecord(database.actors, "database.actors").faceResourceId = "easyrpg-faceset-people1-15";
+
+    const restored = deserialize(JSON.stringify(rawProject));
+
+    expect(restored.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-people1-15");
   });
 });

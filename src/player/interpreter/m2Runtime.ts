@@ -402,15 +402,12 @@ function mutateActorState(
     return;
   }
   if (title === "Change Actor Faceset") {
+    // 얼굴은 낱장 파일 한 장 — 리소스 id 하나만 싣는다(셀 번호 없음).
     const resourceId = fieldString(fields, "value", "");
-    const faceIndex = Math.max(0, Math.trunc(fieldNumber(fields, "faceIndex", 0)));
     actor.faceset = resourceId;
-    actor.faceIndex = faceIndex;
     for (const targetActorId of resolveActorTargets(session, actorId)) {
       session.actorFaceResourceIds ??= {};
-      session.actorFaceIndices ??= {};
       session.actorFaceResourceIds[targetActorId] = resourceId;
-      session.actorFaceIndices[targetActorId] = faceIndex;
     }
     return;
   }

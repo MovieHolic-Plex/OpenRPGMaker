@@ -352,7 +352,6 @@ export function executeCommand(
       state.currentFace = command.resourceId
         ? {
             resourceId: command.resourceId,
-            faceIndex: command.faceIndex,
             position: command.position,
             flipHorizontally: command.flipHorizontally,
           }
