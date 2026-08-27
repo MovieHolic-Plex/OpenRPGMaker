@@ -50,6 +50,8 @@ evidence/
 !.omo/evidence/ai-place-passable-20260827/**
 !.omo/evidence/ai-log-anon-delete/
 !.omo/evidence/ai-log-anon-delete/**
+!.omo/evidence/faceset-per-face/
+!.omo/evidence/faceset-per-face/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json
