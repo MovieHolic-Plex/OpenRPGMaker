@@ -178,10 +178,10 @@ async function authorM2Comment(page: Page): Promise<void> {
   await openCommandEditor(command);
   await screenshot(page, "002-editor-m2-comment-body.png");
   await addCommand(page, "command-picker-add-text", 1);
-  const dialog = page.getByTestId("event-command-text-dialog");
+  const dialog = page.getByTestId("event-command-edit-dialog");
   await expect(dialog).toBeVisible();
   await dialog.getByTestId("event-command-text-body").fill(RUNTIME_TEXT);
-  await dialog.getByTestId("event-command-text-ok").click();
+  await dialog.getByTestId("event-command-edit-ok").click();
   await expect(dialog).toHaveCount(0);
   await page.getByTestId("event-editor-apply").click();
   await page.getByTestId("event-editor-modal-close").click();
