@@ -99,26 +99,32 @@
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
   color: var(--db-studio-text-2, #475569) !important;
   font: 500 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif !important;
-  height: 32px !important;
+  height: 36px !important;
   justify-content: flex-start !important;
   margin: 0 !important;
   padding: 0 8px !important;
   width: 100% !important;
 }
 
-/* Labeled rail only: no glyph column. In the collapsed icon rail the
-   per-tab glyphs below are the only affordance, so they must survive. */
+/* 아이콘은 모든 폭에서 라벨과 함께 남는다. 접힌 56px 레일은 라벨만 사라진
+   같은 디자인이 되고, 220px 라벨 레일도 한글 텍스트 벽이 되지 않는다. */
 @container db-modal (min-width: 800px) {
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-    content: none !important;
-    display: none !important;
+    display: inline-flex !important;
+    justify-content: center;
+    opacity: 0.72;
+    width: 18px !important;
   }
 }
 
+/* 위 컨테이너 쿼리의 미디어 폴백 — 둘이 같은 값을 내야 한다. 예전에는 이 쪽만
+   글리프를 죽이고 있어서 컨테이너 쿼리를 고쳐도 데스크톱 아이콘이 살아나지 않았다. */
 @media (min-width: 800px) {
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-    content: none !important;
-    display: none !important;
+    display: inline-flex !important;
+    justify-content: center;
+    opacity: 0.72;
+    width: 18px !important;
   }
 }
 
@@ -236,11 +242,21 @@
 /* ---- group headers — visible ----------------------------------------- */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+  align-items: center;
+  align-self: stretch;
+  background: var(--db-studio-surface, #FFFFFF);
+  box-sizing: border-box;
+  width: 100%;
   color: var(--db-studio-text-3, #94A3B8);
-  display: block;
+  cursor: pointer;
+  display: flex;
   font: 600 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: 0.04em;
+  position: sticky;
+  text-align: left;
   text-transform: uppercase;
+  top: 0;
+  z-index: 1;
   padding: 12px 8px 4px;
   margin: 0;
   white-space: nowrap;
@@ -262,6 +278,23 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
     display: none;
   }
+}
+
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group::after {
+  color: var(--db-studio-text-3, #94A3B8);
+  content: "\25BE";
+  font-size: 10px;
+  margin-left: auto;
+  transition: transform 120ms ease;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group[aria-expanded="false"]::after {
+  transform: rotate(-90deg);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group:hover {
+  color: var(--db-studio-text-2, #475569);
 }
 
 /* ---- search field — readable ----------------------------------------- */
@@ -395,6 +428,7 @@
   justify-content: center;
   flex: 0 0 auto;
   font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
   margin-left: auto;
   min-width: 20px;
   padding: 1px 6px;

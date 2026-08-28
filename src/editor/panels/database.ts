@@ -123,21 +123,102 @@ const COMMON_TAB_IDS: readonly DatabaseTab[] = ["overview", "actors", "items", "
 
 export type DatabaseTabGroup = {
   readonly label: string;
+  readonly slug: string;
   readonly tabs: readonly DatabaseTab[];
 };
 
 // 사이드바 그룹 라벨/순서만 정의한다 — 탭 id는 tabs/tabOrder 레지스트리에서 역참조하므로
 // 라벨·testid는 여기서 중복 정의하지 않는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
-  { label: "파티", tabs: ["actors", "classes", "skills", "items", "equipment"] },
+  { label: "파티", slug: "party", tabs: ["actors", "classes", "skills", "items", "equipment"] },
   {
     label: "전투·몬스터",
+    slug: "battle",
     tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
-  { label: "생활", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
-  { label: "맵", tabs: ["tilesets", "structureKits", "commonEvents"] },
-  { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
+  { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
+  { label: "맵", slug: "map", tabs: ["tilesets", "structureKits", "commonEvents"] },
+  { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
+
+function groupForTab(id: DatabaseTab): DatabaseTabGroup | undefined {
+  return TAB_GROUPS.find((group) => group.tabs.includes(id));
+}
+
+// 접힘 상태는 첫 렌더에서 읽는다 — 모듈 로드 시점에는 window 가 아직 없을 수 있다.
+let collapsedGroups: Set<string> | null = null;
+
+function collapsedGroupSlugs(): Set<string> {
+  if (collapsedGroups) return collapsedGroups;
+  const stored = readStoredCollapsedGroups();
+  collapsedGroups = stored ?? defaultCollapsedGroups();
+  return collapsedGroups;
+}
+
+function readStoredCollapsedGroups(): Set<string> | null {
+  try {
+    const raw = window.localStorage.getItem(DATABASE_COLLAPSED_GROUPS_KEY);
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+    return new Set(parsed.filter((slug): slug is string => typeof slug === "string"));
+  } catch {
+    return null;
+  }
+}
+
+/** 처음 열 때는 한 그룹만 펼친다 — 29개를 한 줄로 쏟지 않는다. 개요처럼 그룹에
+ *  속하지 않은 탭이 활성이면 첫 그룹을 연다(전부 접으면 레일이 헤더만 남는다). */
+function defaultCollapsedGroups(): Set<string> {
+  const openSlug = groupForTab(activeTab)?.slug ?? TAB_GROUPS[0]?.slug;
+  return new Set(TAB_GROUPS.filter((group) => group.slug !== openSlug).map((group) => group.slug));
+}
+
+function persistCollapsedGroups(): void {
+  try {
+    window.localStorage.setItem(DATABASE_COLLAPSED_GROUPS_KEY, JSON.stringify([...collapsedGroupSlugs()]));
+  } catch {
+    // 저장 실패해도 이번 세션의 접힘 상태는 메모리에 남는다.
+  }
+}
+
+function railChildren(header: HTMLElement): HTMLElement[] {
+  return Array.from(header.children) as HTMLElement[];
+}
+
+function applyGroupCollapse(header: HTMLElement): void {
+  const collapsed = collapsedGroupSlugs();
+  let hidden = false;
+  for (const child of railChildren(header)) {
+    const classes = child.classList;
+    if (!classes) continue;
+    if (classes.contains("db-tab-group")) {
+      hidden = collapsed.has(child.dataset.groupSlug ?? "");
+      child.setAttribute("aria-expanded", String(!hidden));
+      continue;
+    }
+    if (!classes.contains("db-tab")) continue;
+    child.hidden = hidden;
+  }
+}
+
+/** 아코디언: 한 그룹만 펼친다. 두세 그룹이 동시에 열리면 레일이 다시 스크롤된다. */
+function openOnlyGroup(slug: string): void {
+  const collapsed = collapsedGroupSlugs();
+  collapsed.clear();
+  for (const group of TAB_GROUPS) if (group.slug !== slug) collapsed.add(group.slug);
+}
+
+function expandGroupFor(header: HTMLElement, id: DatabaseTab): void {
+  const slug = groupForTab(id)?.slug;
+  if (!slug) return;
+  const collapsed = collapsedGroupSlugs();
+  const alreadyOpenAlone = !collapsed.has(slug) && collapsed.size === TAB_GROUPS.length - 1;
+  if (alreadyOpenAlone) return;
+  openOnlyGroup(slug);
+  persistCollapsedGroups();
+  applyGroupCollapse(header);
+}
 
 function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: string; readonly testid: string } {
   const tab = tabs.find((candidate) => candidate.id === id);
@@ -146,6 +227,7 @@ function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: st
 }
 
 const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
+const DATABASE_COLLAPSED_GROUPS_KEY = "oprn:database.collapsedTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
 
@@ -204,9 +286,24 @@ export function renderDatabasePanel(container: HTMLElement): void {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
-      header.append(el("div", { class: "db-tab-group", text: group.label }));
+      header.append(el("div", {
+        class: "db-tab-group",
+        text: group.label,
+        attrs: { title: `${group.label} 그룹 펼치기/접기` },
+        dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+        on: {
+          click: () => {
+            const collapsed = collapsedGroupSlugs();
+            if (collapsed.has(group.slug)) openOnlyGroup(group.slug);
+            else collapsed.add(group.slug);
+            persistCollapsedGroups();
+            applyGroupCollapse(header);
+          },
+        },
+      }));
       for (const id of group.tabs) appendTabButton(header, body, container, tabFor(id));
     }
+    applyGroupCollapse(header);
   } else {
     appendTabSearch(header);
     for (const tab of orderedTabs) appendTabButton(header, body, container, tab);
@@ -308,7 +405,7 @@ function refreshTabCounts(container: HTMLElement): void {
     const tab = orderedTabs.find((entry) => entry.testid === button.dataset.testid);
     if (!tab) continue;
     const count = databaseTabCount(tab.id);
-    if (count === null) delete button.dataset.count;
+    if (count === null || count === 0) delete button.dataset.count;
     else button.dataset.count = String(count);
   }
 }
@@ -327,6 +424,11 @@ function appendTabSearch(header: HTMLElement): void {
 
 function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   const query = rawQuery.trim().toLowerCase();
+  if (query === "") {
+    for (const child of railChildren(header)) child.hidden = false;
+    applyGroupCollapse(header);
+    return;
+  }
   let currentGroup: HTMLElement | null = null;
   let groupHasMatch = false;
   const closeGroup = (): void => {
@@ -361,13 +463,14 @@ function appendTabButton(
       text: tab.label,
       attrs: { type: "button", title: tab.label, "aria-label": tab.label },
       dataset:
-        count === null
+        count === null || count === 0
           ? { testid: tab.testid, short: tab.label.slice(0, 1) }
           : { testid: tab.testid, short: tab.label.slice(0, 1), count: String(count) },
       on: {
         click: () => {
           if (activeTab === tab.id) return;
           setDatabaseActiveTab(tab.id);
+          expandGroupFor(header, tab.id);
           // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
           updateTabButtons(header);
           renderActiveTab(body, container);
@@ -378,6 +481,8 @@ function appendTabButton(
 }
 
 function updateTabButtons(header: HTMLElement): void {
+  // G006 프로그램 점프가 접힌 그룹으로 들어오면 활성 행이 숨은 채로 남는다 — 항상 펼쳐 준다.
+  expandGroupFor(header, activeTab);
   const activeTestId = orderedTabs.find((tab) => tab.id === activeTab)?.testid;
   for (const button of Array.from(header.querySelectorAll(".db-tab"))) {
     if (!(button instanceof HTMLElement)) continue;
