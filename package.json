@@ -21,6 +21,7 @@
     "db:check": "node scripts/check-supabase-schema.mjs",
     "db:verify-ai": "node scripts/check-supabase-schema.mjs --verify-ai",
     "db:migrate": "bun scripts/apply-supabase-migrations.mjs",
+    "db:prune-ai-logs": "node scripts/prune-ai-logs.mjs",
     "start": "node scripts/start-preview.mjs",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player",
     "build:app": "vite build --configLoader runner",

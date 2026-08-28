@@ -98,6 +98,25 @@ test("remote AI activity URLs are always scoped to the configured project", () =
   assert.match(urls.primary, /limit=25/);
 });
 
+test("run filter narrows the activity query and drops the fallback table", () => {
+  // ai_analysis_runs 에는 run_id 가 없다 — 폴백을 섞으면 다시 옆 런의 턴이 들어온다.
+  const filtered = buildAiActivityUrls({ url: "http://dbserver:8100", projectId: "p1" }, 5, {
+    runId: "11111111-2222-4333-8444-555555555555",
+  });
+
+  assert.match(filtered.primary, /run_id=eq\.11111111-2222-4333-8444-555555555555/);
+  assert.match(filtered.primary, /select=[^&]*run_id/);
+  assert.equal(filtered.fallback, null);
+});
+
+test("no run filter keeps run_id out of select so unmigrated databases still answer", () => {
+  // 20260829000000 미적용 DB 에서 없는 컬럼을 select 하면 PostgREST 가 400 을 준다.
+  const unfiltered = buildAiActivityUrls({ url: "http://dbserver:8100", projectId: "p1" }, 5);
+
+  assert.equal(/run_id/.test(unfiltered.primary), false);
+  assert.notEqual(unfiltered.fallback, null);
+});
+
 test("schema probe distinguishes missing tables from partially applied columns", async () => {
   const requests = [];
   const result = await probeSupabaseSchema({

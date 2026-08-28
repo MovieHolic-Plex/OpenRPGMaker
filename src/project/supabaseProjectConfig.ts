@@ -1,5 +1,10 @@
 import { readProjectFromUrl } from "./projectUrl";
-import { resolveBrowserSupabaseUrl } from "./supabaseProxyPath";
+import {
+  resolveBrowserSupabaseUrl,
+  SUPABASE_PROXY_ANON_SENTINEL,
+  SUPABASE_PROXY_PATH,
+  supabaseProxyModeEnabled,
+} from "./supabaseProxyPath";
 
 export const DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
@@ -28,6 +33,8 @@ export type SupabaseProjectEnv = {
   readonly VITE_SUPABASE_ANON_KEY?: string;
   readonly VITE_SUPABASE_PROJECT_ID?: string;
   readonly VITE_SUPABASE_URL?: string;
+  /** "1"/"true" 면 실 키를 클라이언트에 두지 않고 /supabase 프록시가 주입한다. */
+  readonly VITE_SUPABASE_USE_PROXY?: string;
 };
 
 type StoredSupabaseProjectConfig = SupabaseProjectConfigDraft & {
@@ -170,6 +177,17 @@ function serializedStoredConfig(draft: SupabaseProjectConfigDraft): string {
 }
 
 function supabaseProjectConfigDraftFromEnv(env: SupabaseProjectEnv): SupabaseProjectConfigDraft {
+  // 프록시 모드: URL 은 같은-오리진 경로로 고정하고 자격증명은 센티널만 둔다. 실 키는
+  // 서버 전용 SUPABASE_ANON_KEY 에서 /supabase 프록시가 붙인다(vite.config.ts).
+  // 여기서 url/anonKey 를 둘 다 채워야 아래 병합의 deploymentConfigured 가 성립해서
+  // 브라우저에 남은 레거시 custom 설정(예전 실 키)이 프록시 모드를 되돌리지 못한다.
+  if (supabaseProxyModeEnabled(env.VITE_SUPABASE_USE_PROXY)) {
+    return {
+      anonKey: SUPABASE_PROXY_ANON_SENTINEL,
+      projectId: env.VITE_SUPABASE_PROJECT_ID?.trim() || "",
+      url: SUPABASE_PROXY_PATH,
+    };
+  }
   // projectId 기본값은 병합 단계에서만 적용한다 — env에 키가 없을 때 legacy 저장값을 덮지 않기 위함.
   return {
     anonKey: env.VITE_SUPABASE_ANON_KEY?.trim() || "",
