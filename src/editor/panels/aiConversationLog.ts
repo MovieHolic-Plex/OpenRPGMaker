@@ -36,6 +36,18 @@ function logElements(log: HTMLElement): HTMLElement[] {
   );
 }
 
+function scrollToBottomAfterLayout(log: HTMLElement): void {
+  const pin = (): void => {
+    log.scrollTop = log.scrollHeight;
+  };
+  pin();
+  if (typeof requestAnimationFrame !== "function") return;
+  requestAnimationFrame(() => {
+    pin();
+    requestAnimationFrame(pin);
+  });
+}
+
 function lastCommandRow(log: HTMLElement): HTMLElement | null {
   const children = logElements(log);
   for (let index = children.length - 1; index >= 0; index -= 1) {
@@ -444,7 +456,10 @@ export function createConversationLogHost(options: {
       tools.remove();
       host.append(tools);
     }
-    log.scrollTop = log.scrollHeight;
+    // 변경 카드는 전/후 캔버스 두 장이 들어있어 붙이는 순간의 높이가 최종 높이가 아니다.
+    // 그 자리에서 한 번만 스크롤하면 카드 밑(되돌리기 버튼)이 입력란 뒤로 잠긴다 — 레이아웃이
+    // 자리를 잡은 다음 한 번 더 맞춰준다.
+    scrollToBottomAfterLayout(log);
     return wrap;
   };
 

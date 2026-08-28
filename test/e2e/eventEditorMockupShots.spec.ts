@@ -67,22 +67,14 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await expect(modal.getByTestId("event-script-flowchart")).toHaveAttribute("open", "");
   await expect(modal.getByTestId("event-script-flowchart")).toBeVisible();
   await modal.getByTestId("event-editor-aux-tools").evaluate((details) => { (details as HTMLDetailsElement).open = false; });
-  page.once("dialog", async (dialog) => {
-    expect(dialog.message()).toContain("영구 ID: 0001");
-    expect(dialog.message()).toContain("연결된 NPC: north-gate-guard");
-    await dialog.accept();
-  });
-  await modal.getByTestId("event-editor-event-info").click();
 
   const header = await rect(modal.getByTestId("event-editor-titlebar"));
-  const identity = await rect(modal.getByTestId("event-editor-card"));
   const pages = await rect(modal.locator(".event-editor-pagebar"));
   const settings = await rect(modal.locator(".event-editor-settings-column"));
   const commands = await rect(modal.locator(".event-editor-commands-column"));
   const inspectorBox = await rect(inspector);
   const footer = await rect(modal.locator(".event-editor-modal-footer"));
   expect(header.height).toBeCloseTo(54, 0);
-  expect(identity.height).toBeCloseTo(89, 0);
   expect(pages.height).toBeCloseTo(102, 0);
   expect(settings.width).toBeCloseTo(350, 0);
   expect(inspectorBox.width).toBeCloseTo(383, 0);
@@ -197,14 +189,16 @@ test("required viewport matrix keeps controls reachable and resizer operable", a
     await expect(modal.getByTestId("event-page-delete")).toBeVisible();
     await expect(modal.getByTestId("event-editor-window-fullscreen")).toBeVisible();
     await expect(modal.getByTestId("event-editor-modal-close")).toBeVisible();
+    // 숨어 있던 identity 카드가 삭제되어 이름·ID·NPC 는 헤더와 설정 레일이 나눠 맡는다 —
+    // 모든 실제 토로가 모달 창 안에 들어있는지만 본다.
+    const windowBand = await rect(modal.locator(".event-editor-modal-window"));
     const identityBounds = await Promise.all(
-      ["event-page-name-input", "event-editor-event-id", "event-position-x", "event-character-id-picker-open", "event-editor-event-info"]
+      ["event-page-name-input", "event-editor-event-id", "event-character-id-picker-open"]
         .map(async (id) => rect(modal.getByTestId(id))),
     );
-    const identityBand = await rect(modal.getByTestId("event-editor-card"));
     for (const box of identityBounds) {
-      expect(box.x).toBeGreaterThanOrEqual(identityBand.x);
-      expect(box.x + box.width).toBeLessThanOrEqual(identityBand.x + identityBand.width);
+      expect(box.x).toBeGreaterThanOrEqual(windowBand.x);
+      expect(box.x + box.width).toBeLessThanOrEqual(windowBand.x + windowBand.width);
     }
 
     if (viewport.width <= 1180) {

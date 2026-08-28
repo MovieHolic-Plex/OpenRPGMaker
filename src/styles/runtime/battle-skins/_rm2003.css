@@ -1,4 +1,16 @@
 /* RM2003 battle skin - clean single-pass stylesheet.
+   Cascade contract (audited by test/battleRm2003PixelGrid.test.ts):
+   - **Zero importance flags.** battle.css (battle/01..21) carries none any more,
+     and this file loads after it, so a plain rule scoped to
+     `[data-battle-ui-style="classic"][data-battle-skin="rm2003"]` already wins on
+     specificity + source order. The only later forced declaration that used to
+     reach these elements was the generic battler size in `_battlers.css`; that
+     rule now excludes this skin with a specificity-neutral `:not(:where(...))`.
+   - Every px literal is **even** and every font size comes from the four-step
+     scale 26 / 20 / 16 / 12 px, because the 640x480 logical stage is drawn at
+     half-integer device scales and odd logical px land on half device pixels.
+   - Stage geometry comes from `--battle-stage-skin-inset-top` (see below), never
+     from a second `--battle-stage-inset-top` declaration.
    Replaces all previous override layers with one coherent design.
    Visual reference: RPG Maker 2003 side-view battle.
    - Two-window bottom HUD: command menu (left) + party status (right).
@@ -11,27 +23,30 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
   --battle-hud-height: 192px;
+  /* 무대 상단 여백 8px — `--battle-stage-inset-top` 은 01-scene-base.css 에서 한 번만
+     선언되고, 스킨은 이 노본만 재정의한다. 그래서 배틀러 그룹·에니메이션 레이어·
+     이펙트 레이어가 자동으로 같은 박스가 된다(배틀러 위지는 백분율이다). */
+  --battle-stage-skin-inset-top: 8px;
   background: #000;
-  grid-template-columns: 168px minmax(0, 1fr) !important;
-  grid-template-rows: minmax(0, 1fr) minmax(0, var(--battle-hud-height)) !important;
-  padding: 0 !important;
+  grid-template-columns: 168px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, var(--battle-hud-height));
+  padding: 0;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-list-panel {
-  display: none !important;
+  display: none;
 }
 
-/* ---- Field groups ---- */
-
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-group,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group {
-  inset: 8px 0 0 0 !important;
-}
+/* ---- Field groups ----
+   그룹 박스는 공유 규칙(07-640-scene-turn-ribbon.css:184)이
+   `inset: var(--battle-stage-inset-top) 0 0 0` 로 이미 그린다 — 이 스킨은 위의
+   `--battle-stage-skin-inset-top: 8px` 만 주면 된다(지우기 전 `inset: 8px 0 0 0`
+   재산은 같은 박스를 두 번 적는 짓이었고, 레이어와 어긋나길 수 있는 지점이었다). */
 
 /* ---- Enemy sprites (60% of previous size) ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy {
-  transform: translate(-50%, -100%) !important;
+  transform: translate(-50%, -100%);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-group .battle-enemy {
@@ -39,31 +54,31 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
-  height: 62px !important;
-  object-fit: contain !important;
-  width: 52px !important;
+  height: 62px;
+  object-fit: contain;
+  width: 52px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-name {
-  font-size: 18px !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7) !important;
+  font-size: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-hud {
-  display: none !important;
+  display: none;
 }
 
 /* ---- Actor sprites ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor {
-  height: 72px !important;
-  transform: translate(-50%, -100%) !important;
-  width: 60px !important;
+  height: 72px;
+  transform: translate(-50%, -100%);
+  width: 60px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor .battle-skin-actor-image {
-  height: 64px !important;
-  width: 48px !important;
+  height: 64px;
+  width: 48px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor-sprite {
@@ -78,104 +93,106 @@
 /* ---- Command panel (left window) ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-panel {
-  align-content: start !important;
-  display: grid !important;
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  padding: 8px !important;
-  position: relative !important;
-  z-index: 9 !important;
+  align-content: start;
+  display: grid;
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+  padding: 8px;
+  position: relative;
+  z-index: 9;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu {
-  display: grid !important;
-  gap: 2px !important;
-  grid-template-columns: minmax(0, 1fr) !important;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
+/* 행을 `1fr` 로 늘리면 항목 수에 따라 행 높이가 흔들린다(실측: 루트 22.9px vs 서브메뉴
+   12px). 루트·서브메뉴 모두 고정 행 높이를 쓰고, 넘치는 목록은 메뉴가 스크롤한다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)),
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:has(> .battle-submenu-header) {
-  grid-auto-rows: var(--battle-command-row-height) !important;
-  grid-template-rows: none !important;
+  grid-auto-rows: var(--battle-command-row-height);
+  grid-template-rows: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command {
   align-items: center;
   border: 2px solid transparent;
   display: grid;
-  gap: 6px !important;
+  gap: 6px;
   grid-template-columns: 20px minmax(0, 1fr);
   /* 그리드 항목의 기본 min-width:auto 는 1fr 열을 밀어내며 버튼을 메뉴 밖으로 넓힌다.
      그러면 strong 은 스스로 넘치지 않아 ellipsis 가 걸리지 않고, 메뉴의 overflow-x
      가 글자를 통째로 잘라낸다(실측: "달빛 숲 파수군" → "달빛 숲 파"). */
-  min-height: 0 !important;
-  min-width: 0 !important;
-  padding: 4px 8px !important;
+  min-height: 0;
+  min-width: 0;
+  padding: 4px 8px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-icon {
-  display: none !important;
+  display: none;
 }
 
 /* 행 라벨은 항상 2열(1fr)에 놓는다. 커서 행만 `::before` 내용이 있어 1열을 채우므로,
    자동 배치에 맡기면 커서 없는 행의 라벨이 20px 마커 열로 밀려 한 글자만 남는다(실측:
    text 폭 195px vs 32px, 서브메뉴에서는 "탐침 기술 1" 이 "탐" 으로 잘렸다). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text {
-  display: block !important;
-  grid-column: 2 !important;
+  display: block;
+  grid-column: 2;
   min-width: 0;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong {
   display: block;
-  font-size: 18px !important;
-  line-height: 1.2 !important;
+  font-size: 16px;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-submenu-header {
   color: var(--oprn-battle-muted, #b9c8f4);
-  font-size: 16px !important;
-  padding: 2px 4px !important;
+  font-size: 16px;
+  padding: 2px 4px;
 }
 
 /* ---- Party status (right window) ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party {
-  display: grid !important;
-  gap: 0 !important;
-  grid-auto-rows: minmax(0, 1fr) !important;
-  grid-column: 2 !important;
-  grid-row: 2 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  padding: 4px 10px !important;
-  position: relative !important;
-  z-index: 8 !important;
+  display: grid;
+  gap: 0;
+  grid-auto-rows: minmax(0, 1fr);
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 10px;
+  position: relative;
+  z-index: 8;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
-  align-content: center !important;
+  align-content: center;
   background: rgba(7, 30, 104, 0.25);
   border-bottom: 2px solid rgba(231, 242, 255, 0.18);
-  display: grid !important;
-  gap: 2px !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  grid-template-rows: minmax(0, 1fr) 6px 6px 0px !important;
-  max-height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  padding: 2px 6px !important;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) 6px 6px 0px;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 2px 6px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.battle-acting {
@@ -185,11 +202,11 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-name {
   align-self: center;
-  font-size: 18px !important;
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-  line-height: 1.2 !important;
-  min-height: 0 !important;
+  font-size: 16px;
+  grid-column: 1;
+  grid-row: 1;
+  line-height: 1.2;
+  min-height: 0;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -197,7 +214,7 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-level {
-  font-size: 14px !important;
+  font-size: 12px;
   /* 2px(논리) 이면 "주인공Lv.1" 로 붙어 읽힌다. 레벨은 이름 안에 중첩돼 있어
      이 여백이 유일한 분리 수단이다. 논리 4px = 2배 스케일에서 8px. */
   margin-left: 8px;
@@ -207,161 +224,161 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-vitals {
   align-self: center;
   display: flex;
-  gap: 10px !important;
-  grid-column: 2 !important;
-  grid-row: 1 !important;
+  gap: 10px;
+  grid-column: 2;
+  grid-row: 1;
   justify-content: flex-end;
-  min-height: 0 !important;
+  min-height: 0;
   overflow: hidden;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-hp,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-mp {
-  font-size: 16px !important;
-  line-height: 1.2 !important;
-  min-height: 0 !important;
+  font-size: 16px;
+  line-height: 1.2;
+  min-height: 0;
   overflow: hidden;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-hp {
-  color: #ffd2b5 !important;
+  color: #ffd2b5;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-mp {
-  color: #c9ffbf !important;
+  color: #c9ffbf;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar {
   display: block;
-  grid-column: 1 / -1 !important;
-  height: 6px !important;
-  min-width: 0 !important;
+  grid-column: 1 / -1;
+  height: 6px;
+  min-width: 0;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar-hp {
-  grid-row: 2 !important;
+  grid-row: 2;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar-mp {
-  grid-row: 3 !important;
+  grid-row: 3;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-gauge {
   align-items: center;
   display: flex;
-  gap: 6px !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 4 !important;
+  gap: 6px;
+  grid-column: 1 / -1;
+  grid-row: 4;
   min-width: 0;
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-atb-label {
   color: var(--oprn-battle-muted, #b9c8f4);
-  font-size: 12px !important;
+  font-size: 12px;
   min-width: 32px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-atb-bar {
   flex: 1 1 auto;
-  height: 6px !important;
+  height: 6px;
 }
 
 /* ---- Message window (top of field) ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-window {
-  align-content: center !important;
-  bottom: auto !important;
-  display: grid !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 1 / -1 !important;
-  height: 48px !important;
-  left: 8px !important;
-  max-height: 48px !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  padding: 2px 16px !important;
-  pointer-events: none !important;
-  position: absolute !important;
-  right: 8px !important;
-  top: 8px !important;
-  z-index: 12 !important;
+  align-content: center;
+  bottom: auto;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  height: 48px;
+  left: 8px;
+  max-height: 48px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 2px 16px;
+  pointer-events: none;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 12;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="command"] .battle-message-window,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="result"] .battle-message-window {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-lines {
-  gap: 0 !important;
+  gap: 0;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-line {
-  font-size: 15px !important;
-  line-height: 1.4 !important;
+  font-size: 16px;
+  line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-cursor {
-  font-size: 16px !important;
+  font-size: 16px;
 }
 
 /* ---- Target select phase ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-command-panel {
-  grid-template-rows: auto minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-prompt {
   align-self: start;
-  font-size: 18px !important;
-  grid-row: 1 !important;
-  line-height: 1.1 !important;
-  margin-bottom: 4px !important;
+  font-size: 16px;
+  grid-row: 1;
+  line-height: 1.1;
+  margin-bottom: 4px;
   overflow: hidden;
-  padding: 4px 8px !important;
+  padding: 4px 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
-  align-self: stretch !important;
-  display: grid !important;
-  gap: 2px !important;
-  grid-row: 2 !important;
-  grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  position: static !important;
-  width: 100% !important;
+  align-self: stretch;
+  display: grid;
+  gap: 2px;
+  grid-row: 2;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  min-height: 0;
+  overflow: hidden;
+  position: static;
+  width: 100%;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-submenu-header {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command {
-  align-items: center !important;
-  min-height: 0 !important;
-  min-width: 0 !important;
-  padding: 6px 12px !important;
-  pointer-events: auto !important;
-  position: relative !important;
-  z-index: 11 !important;
+  align-items: center;
+  min-height: 0;
+  min-width: 0;
+  padding: 6px 12px;
+  pointer-events: auto;
+  position: relative;
+  z-index: 11;
 }
 
 /* 타깃 행도 루트/서브메뉴와 같은 한 줄이다. HP 수치는 이미 무대의 타깃 팝업에 있고,
    고정 행 높이에서 small 을 남기면 다음 행(취소) 아래로 흘러나온다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command-text small {
-  display: none !important;
+  display: none;
 }
 
 /* 대상 선택은 키보드 커서 속성 대신 .battle-target-selected 로 현재 행을 표시한다(실측:
-   cursorRows 0, selectedRows 1). 23px 행에서 마커 글자가 잘리지 않게 줄 맞춤만 잡아준다. */
+   cursorRows 0, selectedRows 1). 고정 행 높이에서 마커 글자가 잘리지 않게 줄 맞춤만 잡는다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command::before {
   font-size: 16px;
   line-height: 1;
@@ -369,108 +386,108 @@
 
 /* Key prompts removed entirely - RM2k3 does not show these. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
-  display: none !important;
+  display: none;
 }
 
 /* Target brackets */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets {
-  height: 48px !important;
-  inset: auto !important;
-  left: 50% !important;
-  top: calc(50% + 16px) !important;
-  transform: translate(-50%, -50%) !important;
-  width: 56px !important;
+  height: 48px;
+  inset: auto;
+  left: 50%;
+  top: calc(50% + 16px);
+  transform: translate(-50%, -50%);
+  width: 56px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets::before {
-  border-width: 4px !important;
+  border-width: 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets::after {
-  border-left-width: 6px !important;
-  border-right-width: 6px !important;
-  border-top-width: 12px !important;
-  top: -16px !important;
+  border-left-width: 6px;
+  border-right-width: 6px;
+  border-top-width: 12px;
+  top: -16px;
 }
 
 /* ---- Result panel ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-panel {
-  box-sizing: border-box !important;
-  display: grid !important;
-  gap: 8px !important;
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
   grid-template-areas:
     "title title"
     "cards cards"
-    "confirm confirm" !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: auto minmax(36px, 1fr) auto !important;
-  max-height: none !important;
-  min-height: 160px !important;
-  overflow: hidden !important;
-  padding: 12px 24px !important;
-  width: 400px !important;
+    "confirm confirm";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(36px, 1fr) auto;
+  max-height: none;
+  min-height: 160px;
+  overflow: hidden;
+  padding: 12px 24px;
+  width: 400px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-crest {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-title {
-  color: var(--battle-gold, #ffd75a) !important;
-  font-size: 26px !important;
+  color: var(--battle-gold, #ffd75a);
+  font-size: 26px;
   grid-area: title;
-  line-height: 1 !important;
-  margin: 0 !important;
-  text-align: center !important;
+  line-height: 1;
+  margin: 0;
+  text-align: center;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-cards {
-  display: grid !important;
-  gap: 4px !important;
+  display: grid;
+  gap: 4px;
   grid-area: cards;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-auto-rows: minmax(22px, auto) !important;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(22px, auto);
   min-height: 36px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-card {
-  align-content: center !important;
-  align-items: center !important;
-  display: grid !important;
-  gap: 6px !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  grid-template-rows: none !important;
-  min-height: 24px !important;
-  padding: 2px 8px !important;
+  align-content: center;
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: none;
+  min-height: 24px;
+  padding: 2px 8px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-icon {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-label {
-  font-size: 16px !important;
-  line-height: 1.2 !important;
+  font-size: 16px;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-value {
-  font-size: 18px !important;
-  line-height: 1.2 !important;
+  font-size: 20px;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-confirm {
-  font-size: 16px !important;
+  font-size: 16px;
   grid-area: confirm;
-  line-height: 1 !important;
-  min-width: 0 !important;
-  padding: 8px 20px !important;
+  line-height: 1;
+  min-width: 0;
+  padding: 8px 20px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-next-prompt {
-  display: none !important;
+  display: none;
 }
 
 /* ---- Intro animations ---- */
@@ -518,28 +535,28 @@
    though RM2003 hides enemy HUD details during ordinary command/acting phases. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"]
   .battle-enemy.battle-target-selected .battle-enemy-hud {
-  display: grid !important;
+  display: grid;
 }
 
 /* Accessibility/flow overrides: authored command detail and input help remain
    available, gauge mode exposes ATB, and strict mode exposes pending order. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-panel {
-  grid-template-rows: minmax(0, 1fr) auto !important;
+  grid-template-rows: minmax(0, 1fr) auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu {
-  align-content: start !important;
-  min-height: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  align-content: start;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-/* 행이 고정 높이(--battle-command-row-height)로 변한 뒤로는 줄및음이 계약 위반이다.
-   실측: 대상 행 "달빛 숲 파수군"(strong 폭 114px)은 white-space:normal 로 2줄이 되어
-   둘째 줄이 행 overflow 에 상자로 잘렸다("달빛 숲 파"). 한 줄 + 생략부호로 고정한다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
+  /* 행이 고정 높이(--battle-command-row-height)로 변한 뒤로는 줄바꿈이 계약 위반이다.
+     실측: 대상 행 "달빛 숲 파수군"(strong 폭 114px)은 white-space:normal 로 2줄이 되어
+     둘째 줄이 행 overflow 에 상자로 잘렸다("달빛 숲 파"). 한 줄 + 생략부호로 고정한다. */
   overflow: hidden;
   overflow-wrap: normal;
   text-overflow: ellipsis;
@@ -547,25 +564,25 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
-  display: block !important;
-  font-size: 12px !important;
-  line-height: 1.1 !important;
+  display: block;
+  font-size: 12px;
+  line-height: 1.1;
   opacity: 0.88;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-help,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-prompt,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
-  grid-column: 1 !important;
+  grid-column: 1;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
   align-items: center;
-  display: flex !important;
-  font-size: 11px !important;
-  grid-row: 2 !important;
+  display: flex;
+  font-size: 12px;
+  grid-row: 2;
   justify-content: center;
-  line-height: 1.15 !important;
+  line-height: 1.15;
   min-width: 0;
   overflow-wrap: anywhere;
   padding-top: 2px;
@@ -574,55 +591,55 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-command-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-key-prompts {
-  grid-row: 3 !important;
+  grid-row: 3;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-command-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-flow-status {
   align-self: center;
-  font-size: 11px !important;
-  grid-row: 1 !important;
-  line-height: 1.15 !important;
+  font-size: 12px;
+  grid-row: 1;
+  line-height: 1.15;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-command-menu {
-  grid-row: 2 !important;
+  grid-row: 2;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-key-prompts {
-  grid-row: 3 !important;
+  grid-row: 3;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
-  align-content: start !important;
-  grid-auto-rows: var(--battle-command-row-height) !important;
-  grid-template-rows: none !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  align-content: start;
+  grid-auto-rows: var(--battle-command-row-height);
+  grid-template-rows: none;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
-  grid-template-rows: minmax(0, 1fr) 6px 6px minmax(14px, auto) !important;
+  grid-template-rows: minmax(0, 1fr) 6px 6px minmax(14px, auto);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="gauge"] .battle-actor-gauge {
-  display: flex !important;
+  display: flex;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"] .battle-strict-order {
   align-self: center;
-  display: block !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 4 !important;
+  display: block;
+  grid-column: 1 / -1;
+  grid-row: 4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -630,9 +647,9 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-panel,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-cards {
-  max-width: calc(100% - 16px) !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  max-width: calc(100% - 16px);
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 
@@ -640,25 +657,25 @@
    Authored battle sheets/faces must identify the actual party member. The
    generic skin warrior/mage images are fallback art, never actor identity. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
-  grid-template-columns: 208px minmax(0, 1fr) !important;
+  grid-template-columns: 208px minmax(0, 1fr);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] {
-  height: 96px !important;
-  width: 94px !important;
+  height: 96px;
+  width: 94px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
   background-repeat: no-repeat;
-  height: var(--battle-sprite-frame-height) !important;
+  height: var(--battle-sprite-frame-height);
   image-rendering: pixelated;
-  width: var(--battle-sprite-frame-width) !important;
+  width: var(--battle-sprite-frame-width);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
-  grid-template-columns: 40px minmax(0, 1fr) auto !important;
-  grid-template-rows: minmax(0, 1fr) 6px 6px minmax(14px, auto) !important;
-  padding: 2px 6px 2px 4px !important;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) 6px 6px minmax(14px, auto);
+  padding: 2px 6px 2px 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status .battle-actor-face {
@@ -672,30 +689,30 @@
   background-repeat: no-repeat;
   background-size: calc(var(--rm2003-face-size) * var(--battle-face-grid)) auto;
   border: 2px solid rgba(231, 242, 255, 0.68);
-  box-shadow: inset 0 0 0 1px rgba(4, 11, 40, 0.8);
+  box-shadow: inset 0 0 0 2px rgba(4, 11, 40, 0.8);
   box-sizing: border-box;
-  display: block !important;
-  grid-column: 1 !important;
-  grid-row: 1 / -1 !important;
-  height: var(--rm2003-face-size) !important;
+  display: block;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  height: var(--rm2003-face-size);
   image-rendering: auto;
   justify-self: center;
   overflow: hidden;
-  width: var(--rm2003-face-size) !important;
+  width: var(--rm2003-face-size);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-name {
-  grid-column: 2 !important;
+  grid-column: 2;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-vitals {
-  grid-column: 3 !important;
+  grid-column: 3;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-gauge,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-strict-order {
-  grid-column: 2 / -1 !important;
+  grid-column: 2 / -1;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.is-active-actor {
@@ -716,20 +733,20 @@
 /* Root commands stay one readable line. Rich MP/scope/effect detail remains
    visible in skill/item/target submenus and in each button's title/ARIA. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong {
-  font-size: 20px !important;
+  font-size: 20px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible {
-  background: linear-gradient(180deg, #ffe58a, #d08a2e) !important;
-  border-color: #fff8c9 #6b3a12 #6b3a12 #fff8c9 !important;
-  color: #10152a !important;
-  text-shadow: none !important;
+  background: linear-gradient(180deg, #ffe58a, #d08a2e);
+  border-color: #fff8c9 #6b3a12 #6b3a12 #fff8c9;
+  color: #10152a;
+  text-shadow: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"] .battle-command-text strong,
@@ -738,15 +755,15 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover .battle-command-text small,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text strong,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text small {
-  color: #10152a !important;
+  color: #10152a;
 }
 
 
 /* Field readability: keep pixel battlers large enough to read at the 360×260
    smoke viewport, and make the actor accepting input unambiguous. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
-  height: 104px !important;
-  width: 88px !important;
+  height: 104px;
+  width: 88px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
@@ -761,7 +778,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor.is-active-actor .battle-actor-sprite,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor.is-active-actor .battle-skin-actor-image {
-  filter: brightness(1.12) drop-shadow(0 0 5px rgba(255, 222, 116, 0.72));
+  filter: brightness(1.12) drop-shadow(0 0 6px rgba(255, 222, 116, 0.72));
 }
 
 
@@ -769,12 +786,12 @@
    Two-active-slot battles get readable portraits; 3–4 member parties compact
    back to the classic 36px face without changing the authored party size. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party {
-  grid-template-rows: none !important;
-  grid-auto-rows: minmax(0, 1fr) !important;
+  grid-template-rows: none;
+  grid-auto-rows: minmax(0, 1fr);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
-  grid-template-columns: 56px minmax(0, 1fr) auto !important;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status .battle-actor-face {
@@ -782,7 +799,7 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status {
-  grid-template-columns: 40px minmax(0, 1fr) auto !important;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-face {
@@ -790,61 +807,61 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
-  height: 140px !important;
-  width: 120px !important;
+  height: 140px;
+  width: 120px;
 }
 
 /* Four-member rows prioritize identity and readable numeric HP/MP. Repeating
    those values as two extra rails made every row look like a stack of bars;
    keep only the flow-specific ATB/order rail along the bottom. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status {
-  gap: 1px !important;
-  grid-template-rows: minmax(0, 1fr) 5px !important;
-  padding: 1px 4px !important;
+  gap: 2px;
+  grid-template-rows: minmax(0, 1fr) 6px;
+  padding: 2px 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name {
-  font-size: 14px !important;
-  line-height: 1.25 !important;
+  font-size: 16px;
+  line-height: 1.25;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-level {
-  font-size: 11px !important;
+  font-size: 12px;
   margin-left: 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-vitals {
-  gap: 6px !important;
+  gap: 6px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
-  font-size: 12px !important;
-  line-height: 1.25 !important;
+  font-size: 12px;
+  line-height: 1.25;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status > .battle-stat-bar {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-gauge {
-  gap: 0 !important;
-  grid-row: 2 !important;
-  min-height: 0 !important;
+  gap: 0;
+  grid-row: 2;
+  min-height: 0;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-gauge .battle-atb-label {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-gauge .battle-atb-bar {
-  height: 5px !important;
+  height: 6px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-strict-order {
-  font-size: 10px !important;
-  grid-row: 2 !important;
-  line-height: 1 !important;
+  font-size: 12px;
+  grid-row: 2;
+  line-height: 1;
 }
 
 
@@ -852,12 +869,12 @@
    keyboard help. Their real button box is about 20px tall, so a 24px line box
    necessarily leaks into the next command. Submenus retain their richer type. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command {
-  padding: 0 8px !important;
+  padding: 0 8px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text strong {
-  font-size: 16px !important;
-  line-height: 1 !important;
+  font-size: 16px;
+  line-height: 1;
 }
 
 /* Galmuri glyphs extend beyond a 1.0 line box. The compact four-member row
@@ -865,7 +882,7 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
-  line-height: 1.25 !important;
+  line-height: 1.25;
 }
 
 
@@ -874,25 +891,25 @@
    a neighboring command or actor. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text strong {
-  overflow: visible !important;
+  overflow: visible;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text strong {
-  line-height: 1.2 !important;
-  overflow-wrap: normal !important;
-  white-space: nowrap !important;
+  line-height: 1.2;
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
-  font-size: 10px !important;
-  overflow: hidden !important;
+  font-size: 12px;
+  overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap !important;
+  white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-vitals,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
-  overflow: visible !important;
+  overflow: visible;
 }

@@ -180,7 +180,7 @@ describe("database overview dashboard", () => {
     expect(labelTexts).toContain("Lv50");
   });
 
-  it("scatter chart draws one circle per enemy with title tooltip and boss styling", async () => {
+  it("scatter chart draws one circle per enemy with a <title> tooltip and boss styling", async () => {
     const { store } = await import("@/project/store");
     store.replace(createEmberQuestProject());
     storage.set(ACTIVE_TAB_KEY, "overview");
@@ -195,8 +195,13 @@ describe("database overview dashboard", () => {
     const enemyCount = store.getCurrent().database.enemies.length;
     expect(circles).toHaveLength(enemyCount);
     for (const circle of circles) {
-      const title = circle.getAttribute("title") ?? "";
-      expect(title, "scatter circle must carry a name/exp/gold title").not.toBe("");
+      // 툴팁은 title 속성이 아니라 <title> 자식으로 생긴다 (SVG 사양).
+      expect(circle.getAttribute("title"), "SVG circle must not rely on a title attribute").toBeNull();
+      const titleNode = circle.querySelectorAll("title")[0];
+      expect(titleNode, "scatter circle must carry a <title> child").toBeDefined();
+      expect(titleNode?.textContent ?? "", "scatter <title> must name the enemy with HP/DPS/exp/gold").toMatch(
+        /HP \d+.*DPS \d+.*exp \d+.*gold \d+/,
+      );
     }
     const hasClass = (circle: FakeElement, token: string): boolean => (circle.getAttribute("class") ?? "").split(/\s+/).includes(token);
     const bossCircles = circles.filter((circle) => hasClass(circle, "db-overview-scatter-dot-boss"));

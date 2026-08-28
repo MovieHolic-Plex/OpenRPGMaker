@@ -14,7 +14,7 @@ import { findBlockingRuntimeEventAtInMap,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
-import type { EventAnimationType } from "@/project/types";
+import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
@@ -22,7 +22,7 @@ import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
-import { isFieldSpawnEventId } from "@/player/fieldSpawns";
+import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { tryChestInteraction } from "@/player/playSceneChest";
@@ -138,9 +138,19 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const project = store.getCurrent();
-  // 현재 칸에서 직교 한 칸 통행 가능 여부(대각선은 두 직교로 분해해 판정).
-  const canStep = (dx: number, dy: number): boolean =>
-    canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
+  // 현재 칸에서 (dx,dy) 칸으로 갈 수 있나. 직교는 canMove 한 번.
+  // 대각선은 NPC(canNpcMove)와 같은 L자 2구간 판정: 중간 칸(가로 또는 세로)을 거쳐
+  // 목적지로 진입할 수 있어야 한다. 첫 구간은 호출자(resolveDiagonalStep)가 이미 보므로
+  // 여기서는 중간 칸 → 목적지 구간을 확인한다.
+  const canStep = (dx: number, dy: number): boolean => {
+    if (dx !== 0 && dy !== 0) {
+      return (
+        canMove(project, scene.map, scene.tileX + dx, scene.tileY, scene.tileX + dx, scene.tileY + dy) ||
+        canMove(project, scene.map, scene.tileX, scene.tileY + dy, scene.tileX + dx, scene.tileY + dy)
+      );
+    }
+    return canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
+  };
   // 4방향 모드(서바이벌 호러 감각): 대각 입력을 한 축으로 직교화한다.
   let moveX = input.x;
   let moveY = input.y;
@@ -376,7 +386,7 @@ function setActionEventRuntimeDirection(
 }
 
 function fireTouchTriggers(scene: PlaySceneContext): void {
-  const event = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, ["touch", "playerTouch"]);
+  const event = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, PLAYER_COLLISION_TRIGGER_KINDS);
   if (event) void scene.runEvent(event.event.id);
 }
 
@@ -397,12 +407,8 @@ function findBlockingRuntimeEventInScene(
   return findBlockingRuntimeEventAtInMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions, x, y);
 }
 
-function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: string): void {
-  if (isFieldSpawnEventId(eventId) && triggerKind === "eventTouch") {
-    void scene.runEvent(eventId);
-    return;
-  }
-  if (triggerKind === "touch" || triggerKind === "playerTouch") void scene.runEvent(eventId);
+function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: Trigger["kind"]): void {
+  if (firesOnPlayerCollision(triggerKind)) void scene.runEvent(eventId);
 }
 
 function directionDelta(dir: Dir): { x: number; y: number } {

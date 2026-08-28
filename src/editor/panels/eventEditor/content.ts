@@ -1,5 +1,4 @@
 import { editorState } from "@/editor/editorState";
-import { moveEvent } from "@/editor/eventActions";
 import {
   buildEventBeginnerTemplate,
   type EventBeginnerTemplateId,
@@ -24,10 +23,9 @@ import {
 } from "@/editor/eventPages";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
-import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
+import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import { renderEventGraphicIcon } from "./eventGraphicPreview";
 import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
@@ -45,7 +43,6 @@ import {
   renderClassicPageTabStrip,
   renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
-  renderEventNameControl,
   renderEventPageProps,
   renderPageCommandCatalog,
   renderPageTabs,
@@ -200,68 +197,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   applyViewMode();
   const validationControl = renderEventValidationSummary(validation);
 
-  const characterRelationship = renderEventCharacterIdField(mapId, ev);
-  const eventOrdinal = Math.max(0, map.events.findIndex((candidate) => candidate.id === ev.id)) + 1;
-  const identityField = (label: string, value: string, testId: string): HTMLElement => el("div", {
-    class: "event-editor-identity-field",
-    children: [
-      el("span", { class: "event-editor-identity-label", text: label }),
-      el("strong", { class: "event-editor-identity-value", text: value, dataset: { testid: testId } }),
-    ],
-  });
-
-  const eventCard = el("div", {
-    class: "event-editor-card",
-    dataset: { testid: "event-editor-card" },
-    attrs: { style: "display: none;" },
-    children: [
-      el("div", {
-        class: "event-editor-card-sprite",
-        attrs: { "aria-hidden": "true" },
-        children: [renderEventGraphicIcon(activePage.graphic, { scale: 2 })],
-      }),
-      el("div", {
-        class: "event-editor-card-meta",
-        children: [
-          el("div", {
-            class: "event-editor-top-strip",
-            children: [
-              renderEventNameControl(mapId, ev.id, activePage),
-              identityField("이벤트 ID", String(eventOrdinal).padStart(4, "0"), "event-editor-event-id"),
-              el("div", {
-                class: "event-editor-identity-field event-editor-identity-position",
-                children: [
-                  el("span", { class: "event-editor-identity-label", text: "맵 좌표" }),
-                  renderEventPositionControls(mapId, ev),
-                ],
-              }),
-              el("div", {
-                class: "event-editor-character-field",
-                children: [el("span", { text: "연결된 NPC" }), characterRelationship],
-              }),
-              el("button", {
-                class: "btn event-editor-event-info",
-                text: "ⓘ 이벤트 정보",
-                attrs: { type: "button", title: `이벤트 ${eventOrdinal} · ${ev.id}` },
-                dataset: { testid: "event-editor-event-info" },
-                on: {
-                  click: () => window.alert([
-                    `이벤트 이름: ${activePage.name || "이름 없음"}`,
-                    `영구 ID: ${ev.id}`,
-                    `표시 번호: ${String(eventOrdinal).padStart(4, "0")}`,
-                    `맵 좌표: ${ev.x}, ${ev.y}`,
-                    `연결된 NPC: ${ev.characterId || "없음"}`,
-                    `페이지: ${pages.length}개`,
-                  ].join("\n")),
-                },
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  });
-
+  // NPC 연결 컨트롤은 삭제된 `display: none` identity 카드 안에 살았다 — 이제 그 주제가 속한
+  // 「NPC와 일정」 그룹에서 사용자가 실제로 보고 누를 수 있다.
+  const characterLink = renderEventCharacterIdField(mapId, ev);
   const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
   const scheduleEditor = renderEventScheduleEditor(mapId, ev);
   const pageSettings = renderEventPageProps(mapId, ev.id, activePage, ev);
@@ -271,7 +209,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   appendEventRailGroup(
     pageSettings,
     { slug: "npc", title: "NPC와 일정", summary: npcName, open: false },
-    [socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
+    [characterLink, socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
   );
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
@@ -326,7 +264,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   attachColumnResize(columnResizer, workbench);
 
   section.append(
-    eventCard,
     el("div", {
       class: "event-editor-pagebar",
       children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageTabs(mapId, ev, activePage)],
@@ -428,16 +365,9 @@ function renderCommandToolbar(
     class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
-      toolbarButton(
-        "+",
-        "명령",
-        "event-command-toolbar-add",
-        () => {
-          openCommandPickerForActions(actions);
-        },
-        false,
-        true
-      ),
+      toolbarButton("+", "명령", "event-command-toolbar-add", () => {
+        openCommandPickerForActions(actions);
+      }, false, true),
       commandSearch,
       toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
       toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
@@ -465,14 +395,8 @@ function renderCommandAuxGroup(): HTMLElement {
     attrs: { role: "group", "aria-label": "보조 도구" },
     children: [
       toolbarButton("✧", "AI 명령", "event-command-quick-ai", () => open("[data-testid='ai-event-assist']")),
-      toolbarButton("</>", "스크립트 미리보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),
-      toolbarButton("▣", "스토리보드", "event-command-quick-storyboard", () => {
-        commandsColumn()?.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
-      }),
-      toolbarButton("⌘", "플로우", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
-      toolbarButton("+", "다음 행동", "event-command-quick-next", () => {
-        commandsColumn()?.querySelector<HTMLButtonElement>("[data-testid='event-command-toolbar-add']")?.click();
-      }, false, true),
+      toolbarButton("</>", "스크립트 보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),
+      toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
   });
 }
@@ -530,18 +454,22 @@ function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {
   });
 }
 
+/**
+ * `label` 은 버튼에 그대로 보이는 온전한 한국어 낱말이다 — 공백으로 자르지 않는다.
+ * 더 긴 설명이 필요하면 `title` 을 따로 넘긴다.
+ */
 function toolbarButton(
-  text: string,
-  title: string,
+  icon: string,
+  label: string,
   testId: string,
   onClick?: () => void,
   disabled = false,
-  primary = false
+  primary = false,
+  title: string = label
 ): HTMLButtonElement {
-  const label = title.split(" ")[0] ?? title;
   return el("button", {
     class: "event-editor-command-tool" + (primary ? " primary" : ""),
-    text: `${text} ${label}`,
+    text: `${icon} ${label}`,
     attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,
@@ -578,7 +506,7 @@ function renderEmptyCommandLine(
   const openPicker = () => openCommandPickerForActions(actions);
   const line = el("button", {
     class: "cmd-empty-line",
-    text: "명령 추가 — 더블클릭 또는 아래 템플릿에서 시작",
+    text: "명령 추가 — 더블클릭 또는 위 [+ 명령]",
     attrs: { type: "button", title: "더블클릭해서 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {
@@ -755,53 +683,4 @@ function validationSeverityLabel(severity: EventDraftIssue["severity"]): string 
   if (severity === "error") return "오류";
   if (severity === "warning") return "경고";
   return "안내";
-}
-
-function renderEventPositionControls(mapId: MapId, event: GameEvent): HTMLElement {
-  const map = store.getCurrent().maps[mapId];
-  const coordinateInput = (axis: "x" | "y", value: number): HTMLInputElement => el("input", {
-    class: "event-position-input",
-    attrs: {
-      type: "number",
-      value: String(value),
-      step: "1",
-      min: "0",
-      max: String(Math.max(0, (axis === "x" ? map?.width : map?.height) ?? 1) - 1),
-      "aria-label": `이벤트 ${axis.toUpperCase()} 좌표`,
-    },
-    dataset: { testid: `event-position-${axis}` },
-  }) as HTMLInputElement;
-  const x = coordinateInput("x", event.x);
-  const y = coordinateInput("y", event.y);
-  const clamp = (input: HTMLInputElement, raw: number, maxExclusive: number): number => {
-    const bounded = Math.min(Math.max(Math.trunc(raw), 0), Math.max(0, maxExclusive - 1));
-    if (bounded !== Math.trunc(raw)) {
-      input.value = String(bounded);
-      input.classList.add("is-clamped");
-      input.title = `맵 범위(0~${Math.max(0, maxExclusive - 1)})로 조정됐어요`;
-      window.setTimeout(() => input.classList.remove("is-clamped"), 1200);
-    }
-    return bounded;
-  };
-  const apply = (): void => {
-    const nextX = Number(x.value);
-    const nextY = Number(y.value);
-    if (!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
-    moveEvent(
-      mapId,
-      event.id,
-      clamp(x, nextX, map?.width ?? 1),
-      clamp(y, nextY, map?.height ?? 1)
-    );
-  };
-  x.addEventListener("change", apply);
-  y.addEventListener("change", apply);
-  return el("span", {
-    class: "event-position-controls",
-    dataset: { testid: "event-position-controls" },
-    children: [
-      el("label", { children: [el("span", { text: "X" }), x] }),
-      el("label", { children: [el("span", { text: "Y" }), y] }),
-    ],
-  });
 }

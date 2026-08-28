@@ -185,7 +185,7 @@ describe("event editor M2 command body", () => {
         }) ?? document.createElement("div")
     );
 
-    expect(body.textContent).toContain("값을 고르면 바로 반영됩니다.");
+    expect(body.textContent).toContain("값을 고르고 확인을 누르면 적용됩니다.");
     expect(findByTestId(body, "m2-command-mode-option-select")?.tagName).toBe("SELECT");
     expect(findByTestId(body, "m2-command-target-option-select")?.tagName).toBe("SELECT");
     expect(findByTestId(body, "m2-command-x-input")?.value).toBe("10");

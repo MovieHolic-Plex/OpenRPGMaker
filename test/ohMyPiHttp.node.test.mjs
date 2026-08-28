@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createServer } from "node:http";
 import { describe, it } from "node:test";
 import {
   companionPathname,
@@ -233,5 +234,52 @@ describe("oh-my-pi companion HTTP", () => {
     };
     await handleCompanionRequest({ method: "GET", url: "/auth/status?provider=kimi-code" }, adapters);
     assert.equal(codex, 0);
+  });
+
+  // Codex 브라우저 흐름의 콜백 경로는 /auth/callback 이다(OpenAI 허용목록 값).
+  // 붙여넣기 경로가 /oauth-callback 만 받으면 원격 preview 에서 Codex 로그인을 끝낼 수 없다.
+  it("붙여넣기는 Antigravity(/oauth-callback)와 Codex(/auth/callback) 콜백을 모두 되돌려준다", async () => {
+    const seen = [];
+    const loopback = createServer((req, res) => {
+      seen.push(req.url ?? "");
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end("ok");
+    });
+    await new Promise((resolve) => loopback.listen(0, "127.0.0.1", resolve));
+    const port = loopback.address().port;
+
+    try {
+      for (const path of ["/oauth-callback", "/auth/callback"]) {
+        const response = await handleCompanionRequest(
+          {
+            method: "POST",
+            url: "/auth/oauth-paste",
+            body: { url: `http://127.0.0.1:${port}${path}?code=abc123&state=s` },
+          },
+          {},
+        );
+        assert.equal(response.status, 200, `${path} → ${JSON.stringify(response.body)}`);
+        assert.deepEqual(response.body, { ok: true });
+      }
+
+      const rejected = await handleCompanionRequest(
+        { method: "POST", url: "/auth/oauth-paste", body: { url: `http://127.0.0.1:${port}/nope?code=abc` } },
+        {},
+      );
+      assert.equal(rejected.status, 400);
+
+      const noCode = await handleCompanionRequest(
+        { method: "POST", url: "/auth/oauth-paste", body: { url: `http://127.0.0.1:${port}/auth/callback` } },
+        {},
+      );
+      assert.equal(noCode.status, 400);
+
+      assert.deepEqual(
+        seen.map((url) => url.split("?")[0]),
+        ["/oauth-callback", "/auth/callback"],
+      );
+    } finally {
+      loopback.close();
+    }
   });
 });

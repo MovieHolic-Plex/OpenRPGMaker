@@ -152,7 +152,6 @@ describe("RPG Maker style event editor entry points", () => {
     renderEventEditorContent(content, project.startMapId, "event-1");
 
     const requiredShellMarkers = [
-      "event-classic-name",
       "event-classic-page-controls",
       "event-character-id-field",
       "event-classic-conditions",
@@ -231,7 +230,8 @@ describe("RPG Maker style event editor entry points", () => {
     renderEventEditorContent(content, project.startMapId, "event-1");
     content.querySelector<HTMLElement>('[data-testid="event-page-delete"]')?.click();
 
-    expect(confirm).toHaveBeenCalledWith('"삭제 대상" 페이지와 그 안의 모든 명령을 삭제할까요?');
+    // 삭제는 네이티브 confirm 이 아니라 앱의 showConfirm 을 거친다: 클릭만으로는 아무것도 지워지지 않는다.
+    expect(confirm).not.toHaveBeenCalled();
     expect(store.getCurrent().maps[project.startMapId].events[0]?.pages).toHaveLength(2);
   });
 
@@ -371,8 +371,8 @@ describe("RPG Maker style event editor entry points", () => {
     vi.stubGlobal("confirm", confirmDeletion);
 
     openEventEditorModal(project.startMapId, "event-1");
-    const nameInput = document.querySelector<HTMLElement>('[data-testid="event-page-name-input"]');
-    if (!nameInput) throw new Error("Expected event page name input to render");
+    const nameInput = document.querySelector<HTMLElement>('[data-testid="event-editor-name"]');
+    if (!nameInput) throw new Error("Expected the modal header name input to render");
 
     nameInput.dispatchEvent(deleteKeyEvent());
 

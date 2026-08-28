@@ -2,6 +2,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
+import { gotoWithRetry } from "../../scripts/lib/goto-retry.mjs";
 
 export type EditorLaneMode = "beginner" | "expert";
 
@@ -173,7 +174,7 @@ export async function bootDbLane(page: Page, opts: BootDbLaneOpts): Promise<void
       seed: opts.localStorageSeed ?? null,
     },
   );
-  await page.goto("/?freshProject=1");
+  await gotoWithRetry(page, "/?freshProject=1");
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
   await dismissCoachMarks(page);

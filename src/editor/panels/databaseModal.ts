@@ -1,4 +1,5 @@
 import { openAiAssistantPanel, sendAiAssistantMessage } from "@/editor/aiAssistantBridge";
+import { dismissCoachMarks } from "@/editor/coachMarks";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
@@ -14,7 +15,7 @@ import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { selectedRecordIdForSession } from "@/editor/panels/databaseRecordViewSession";
-import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
+import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import {
   createEditorModalDirtyCloseController,
   EDITOR_MODAL_DIRTY_DECISION,
@@ -49,6 +50,10 @@ export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "bat
 }
 
 export function openDatabaseModal(initialTab?: DatabaseTab): void {
+  // 맵 도구 레일을 가리키는 온보드 코치마크가 body 최상위에 매달려 모달 위를 덮어
+  // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
+  // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
+  dismissCoachMarks();
   // 재오픈 경로: DOM 만 뜯어내면 이전 인스턴스의 document keydown 리스너 2개가 남는다
   // (M11 과 동일 원리) — 반드시 기존 인스턴스의 정식 close() 를 경유해 정리한다.
   activeModal?.close();
@@ -365,7 +370,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       el("button", {
         class: "database-footer-button primary",
         text: "지금 저장",
-        attrs: { type: "button" },
+        attrs: { type: "button", title: DATABASE_APPLY_BUTTON_HINT },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.apply },
         on: {
           click: () => {

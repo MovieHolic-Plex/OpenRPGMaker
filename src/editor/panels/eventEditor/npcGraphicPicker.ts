@@ -1,16 +1,11 @@
 import { projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
+import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
 import {
   CHARSET_CHARACTER_COUNT,
-  CHARSET_FRAME_HEIGHT,
-  CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
   charsetFrameIndex,
-  charsetFrameSource,
   decodeCharsetFrameIndex,
   type CharsetFrameSelection,
 } from "@/assets/easyrpgRtp";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import { updateEventPage } from "@/editor/eventPages";
 import { store } from "@/project/store";
 import type { EventPage, EventPageGraphic, MapId } from "@/project/types";
@@ -173,22 +168,16 @@ function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPicker
 }
 
 function applyPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection, scale: number): void {
-  const source = charsetFrameSource(selection);
   applyFrameDataset(target, selection);
-  target.style.width = `${CHARSET_FRAME_WIDTH * scale}px`;
-  target.style.height = `${CHARSET_FRAME_HEIGHT * scale}px`;
-  applyTransparentColorKeyBackground(target, selection.asset.path);
-  target.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale}px`;
-  target.style.backgroundPosition = `-${source.x * scale}px -${source.y * scale}px`;
+  applyCharsetFrameCrop(target, selection.asset.path, selection, scale);
 }
 
 function applyWalkPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection): void {
   applyPreviewStyle(target, selection, WALK_PREVIEW_SCALE);
   for (const pattern of WALK_PATTERNS) {
-    const source = charsetFrameSource({ ...selection, pattern });
     target.style.setProperty(
       `--npc-walk-frame-${pattern}`,
-      `-${source.x * WALK_PREVIEW_SCALE}px -${source.y * WALK_PREVIEW_SCALE}px`
+      charsetFrameCropPosition({ ...selection, pattern }, WALK_PREVIEW_SCALE)
     );
   }
 }

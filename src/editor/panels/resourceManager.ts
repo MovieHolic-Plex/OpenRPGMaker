@@ -14,6 +14,8 @@ import {
 } from "@/project/resourceProfiles";
 import type { PassFlag, ResourceKind, TilesetDef, UploadedAsset } from "@/project/types";
 import { renderResourceWorkbench, type ResourceCategory } from "./resourceManagerViews";
+import { faceCellSuffix, planFacesetSheetSplit, sliceFacesetSheetDataUrls, type FacesetSheetSplitPlan } from "@/assets/facesetSheetSlicing";
+import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { resourceKindFromUpload } from "./resourceManagerUtils";
 
 type TilesetEnsureResult = {
@@ -158,6 +160,11 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
     }
     const probe = new Image();
     probe.onload = () => {
+      const facesetPlan = kind === "faceset" ? planFacesetSheetSplit(probe.width, probe.height) : null;
+      if (facesetPlan !== null) {
+        void importFacesetSheetAsFaces(dataUrl, file.name, facesetPlan, container);
+        return;
+      }
       const result = validateResourceDimensions(kind, probe.width, probe.height);
       if (!result.ok) {
         toast(result.message, "error");
@@ -201,6 +208,51 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
   reader.readAsDataURL(file);
 }
 
+
+async function importFacesetSheetAsFaces(
+  dataUrl: string,
+  fileName: string,
+  plan: FacesetSheetSplitPlan,
+  container: HTMLElement
+): Promise<void> {
+  const baseName = fileName.replace(/\.[^.]+$/, "");
+  let slices: readonly string[];
+  try {
+    slices = await sliceFacesetSheetDataUrls(dataUrl, plan);
+  } catch {
+    toast("얼굴 시트를 나누지 못했습니다.", "error");
+    return;
+  }
+  const baseId = genId("faceset_img");
+  store.update((project) => {
+    slices.forEach((slice, index) => {
+      const id = `${baseId}-${faceCellSuffix(index)}`;
+      project.assets.uploaded[id] = {
+        id,
+        name: `${baseName} 얼굴 ${index + 1}`,
+        kind: "faceset",
+        dataUrl: slice,
+        meta: {
+          tileSize: FACE_IMAGE_SIZE,
+          frames: 1,
+          frameWidth: FACE_IMAGE_SIZE,
+          frameHeight: FACE_IMAGE_SIZE,
+          width: FACE_IMAGE_SIZE,
+          height: FACE_IMAGE_SIZE,
+        },
+      };
+      project.resourceProfiles.push({
+        kind: "faceset",
+        name: `${baseName} 얼굴 ${index + 1}`,
+        imageWidth: FACE_IMAGE_SIZE,
+        imageHeight: FACE_IMAGE_SIZE,
+        assetId: id,
+      });
+    });
+  });
+  toast(`얼굴 시트를 낱장 ${slices.length}장으로 나눠 등록했습니다.`, "ok");
+  renderResourceManager(container);
+}
 
 function importAudioResource(file: File, kind: ResourceKind, container: HTMLElement): void {
   const maxBytes = 8 * 1024 * 1024;

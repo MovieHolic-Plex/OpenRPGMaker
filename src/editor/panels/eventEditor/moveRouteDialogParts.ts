@@ -3,11 +3,8 @@ import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
-  charsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import type { Dir, MapId, MoveCommand } from "@/project/types";
 import { databasePicker } from "./conditionForm";
 import type { MoveRouteCommandContext } from "./moveRouteCommandCatalog";
@@ -240,13 +237,8 @@ function updateGraphicChip(chip: HTMLElement, textureKey: string): void {
   }
   delete chip.dataset.empty;
   chip.title = asset.name;
-  // 정면(아래) 대기 프레임 크롭. 투명 컬러키 배경 처리 재사용.
-  const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
-  applyTransparentColorKeyBackground(chip, asset.path);
-  chip.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH}px ${
-    CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT
-  }px`;
-  chip.style.backgroundPosition = `-${source.x}px -${source.y}px`;
+  // 정면(아래) 대기 프레임 크롭.
+  applyCharsetFrameCrop(chip, asset.path, { characterIndex: 0, direction: "down", pattern: 1 });
 }
 
 function mapSelect(label: string, value: MapId, onChange: (value: MapId) => void): HTMLElement {

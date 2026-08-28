@@ -53,9 +53,14 @@
      `.battle-enemy-group` / `.battle-actor-group` 은 `.battle-field` 의 패딩 박스에서
      상단만 `--battle-stage-inset-top` 만큼 들어간 박스이고, `.battle-animation-layer` /
      `.battle-effects-layer` 도 아래에서 이 두 변수로 같은 박스를 재현한다.
-     값을 바꿀 때는 이 변수만 바꿔라(스킨은 스킨 스코프에서 재정의). */
+     값을 바꿀 때는 아래 한 줄만 바꿔라. */
   --battle-field-border-width: 2px;
-  --battle-stage-inset-top: 48px;
+  /* 이 한 줄이 `--battle-stage-inset-top` 의 **유일한 선언**이다
+     (감사: test/battleRm2003PixelGrid.test.ts). 스킨은 이 변수를 다시 선언하지 않고
+     스킨 노브 `--battle-stage-skin-inset-top` 만 재정의한다(rm2003 = 8px,
+     나머지 11종 = 미지정 → 48px). 그래서 배틀러 그룹·애니메이션 레이어·이펙트
+     레이어가 어느 스킨에서든 하나의 값으로 같은 박스로 풀린다. */
+  --battle-stage-inset-top: var(--battle-stage-skin-inset-top, 48px);
   left: var(--battle-stage-offset-x);
   top: var(--battle-stage-offset-y);
   width: 640px;

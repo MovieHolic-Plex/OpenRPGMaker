@@ -66,6 +66,13 @@ export function publishLoopbackLaunch(payload, publicOrigin) {
   };
 }
 
+/**
+ * 붙여넣기로 되돌려받을 수 있는 루프백 콜백 경로. Antigravity 는 /oauth-callback,
+ * Codex 브라우저 흐름은 OpenAI 허용목록 값인 /auth/callback 을 쓴다 — 후자를 빼면
+ * 원격 preview 에서 Codex 브라우저 로그인을 완료할 방법이 없다.
+ */
+const LOOPBACK_CALLBACK_PATHS = new Set(["/oauth-callback", "/auth/callback"]);
+
 function loopbackCallbackUrl(raw) {
   let parsed;
   try {
@@ -75,7 +82,7 @@ function loopbackCallbackUrl(raw) {
   }
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "";
   if (parsed.hostname !== "127.0.0.1" && parsed.hostname !== "localhost") return "";
-  if (parsed.pathname !== "/oauth-callback") return "";
+  if (!LOOPBACK_CALLBACK_PATHS.has(parsed.pathname)) return "";
   if (!parsed.searchParams.get("code")) return "";
   return parsed.toString();
 }

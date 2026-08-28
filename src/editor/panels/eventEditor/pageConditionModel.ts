@@ -109,7 +109,7 @@ export function toggleSwitchCondition(
   const next = withoutNthCondition(context.page.conditions, "switch", context.slot);
   const condition = switchConditionAt(context.page, context.slot);
   if (enabled) {
-    if (condition !== undefined) next.push({ ...condition, value: true });
+    if (condition !== undefined) next.push({ ...condition });
     else {
       // slot마다 다른 기본 스위치를 고른다(둘 다 sw[0]이면 동일 조건 중복).
       const switches = store.getCurrent().switches;
@@ -228,7 +228,15 @@ export function advancedConditionEntries(page: EventPage): AdvancedConditionEntr
       entries.push({ index, condition });
       return;
     }
-    if (condition.kind === "run") {
+    // 간단 행이 없는 kind 는 전부 고급 목록에 노출한다 — 누락 시 화면에서 통째로 사라진다.
+    // battleResult 는 고급에서 편집 가능, all/any/not 은 읽기 전용 요약 + 삭제.
+    if (
+      condition.kind === "run" ||
+      condition.kind === "battleResult" ||
+      condition.kind === "all" ||
+      condition.kind === "any" ||
+      condition.kind === "not"
+    ) {
       entries.push({ index, condition });
     }
   });

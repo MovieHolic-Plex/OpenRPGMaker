@@ -1203,19 +1203,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
         const applied = await acceptProposal(result.proposedCalls);
         setStatus(applied ? "대기" : "적용 실패");
-        if (applied) {
-          if (currentMapId) {
-            emitChangeCard({
-              before: beforeProject,
-              after: afterProject,
-              mapId: currentMapId,
-              title: proposalHumanSummaryLine(result.proposedCalls) || appliedSummary,
-              detail: appliedSummary,
-              calls: result.proposedCalls,
-            });
-          } else {
-            appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
-          }
+        // 변경 카드는 proposalApi.onApplied 가 모든 적용 경로(자동·수동)에서 한 장만 남긴다.
+        // 여기서 또 emitChangeCard 를 부를면 자동 적용 한 턴에 카드가 다 장 밥는다(e2e 로 잡혀다).
+        if (applied && !currentMapId) {
+          appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
         }
       } else {
         renderProposal(

@@ -83,6 +83,15 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **Mockup parity maintenance (2026-08-24):** `eventEditorMockupShots.spec.ts` guards the `실행 내용 · N개` header, compact toolbar menus, conditional validation control, and the initial/selected viewport matrix at 1586, 1440, 1280, 1024, 960, and 800px widths. Historical screenshots and `new-editor/REPORT.html` document the earlier layout only; they must not force removed legend, recommendation, or bottom-strip chrome back into the product.
 - **Storyboard trust surface (2026-08-25):** **Storyboard is the default authoring view**; List remains the complete reorder/context-menu surface. Storyboard is a vertical scan view: top-level commands keep full authored dialogue in the DOM, and every path-bearing branch (choice/fork/loop/shop/inn/promotion/evolution/battle) recursively exposes descendants at arbitrary depth with exact selectable command paths. Selected cards publish `.is-selected` plus `aria-current="step"`. The inspector's current-edit action switches persisted card density back to the mounted form before focusing it; closing returns focus to the selected Storyboard control. “미리보기 새로고침” rerenders from current command data rather than claiming runtime playback restart. The add card opens the normal command picker and is labelled as command addition, not scene or AI generation.
 - **Event editor windowing (2026-08-24):** the title bar exposes full view (`Alt+Enter`, title-bar double click); Escape restores windowed geometry before a later Escape reaches the modal close guard. The settings/canvas separator supports pointer drag, Arrow keys (`Shift` for the large step), Home/End, and double-click reset with separator ARIA values. Full view disables outer drag/resize and restores the previous inline width/height/transform.
+- **적대적 UI/UX 정리 (2026-08-27, 위의 「명령 툴바」 항목을 상위 갱신한다):**
+  - **명령 행 클릭 계약이 실제로 배선됐다.** `commandList.ts` 의 행 `click` 은 예전에 곧바로 편집 모달을 열었고 `showCommandInspector()` 는 재렌더 복원 분기(`sameInspectorPath(path, selectedCommandPath())`) 안에서만 호출됐다. 그 조건은 `showCommandInspector()` 자신이 세우는 값이라 영원히 거짓이었고, 그래서 "선택한 명령" 인스펙터 칼럼은 도달 불가능한 빈 칼럼이었다(실측: `hidden=true, width=0`). 이제 **한 번 클릭 = 선택 + 인스펙터**, **더블클릭·Enter/Space·우클릭 「편집」 = 편집 모달** 이고 행 tooltip 도 그대로 말한다. 계약 테스트: `test/eventEditorInspectorSelection.test.ts`.
+  - **툴바 중복 제거.** `event-command-quick-next`(툴바 `+ 명령` 을 대신 클릭) 와 `event-command-quick-storyboard`(목록/스토리 세그먼트를 대신 클릭) 는 삭제됐다. 남은 aux 는 `event-command-quick-ai|preview|flow` 셋이다. e2e 헬퍼 `test/e2e/eventStoryboardPicker.ts` 의 `PickerEntryPoint` 는 `"quick-next"` 이름을 유지하되 살아있는 `event-command-toolbar-add` 를 가리키므로 기존 스펙 8개 호출부는 그대로 돈다.
+  - **라벨은 잘리지 않는다.** `toolbarButton()` 이 `title.split(" ")[0]` 으로 라벨을 만들어 "다시 실행"→"다시", "AI 명령"→"AI", "다음 행동"→"다음" 이 되던 것을 고쳐, 아이콘과 온전한 한국어 라벨을 따로 받는다.
+  - **1024px 툴바는 줄바꿈한다.** 이전에는 `+ 명령` 프라이머리가 열 왼쪽 밖으로 잘렸다(실측: 버튼 `left=222` vs 열 `left=268`). `03-legend-toolbar.css` 가 툴바 행을 `flex-wrap: wrap` + 자동 높이 행으로 고정하고 프라이머리는 라벨 폭을 유지한다.
+  - **죽은 identity 카드 제거.** `display: none` 인 채 DOM 에 남아 있던 `.event-editor-card` 와 그 안의 `window.alert` 기반 「ⓘ 이벤트 정보」 버튼, 도달 불가능한 `event-position-x/y` 좌표 입력이 사라졌다. 이벤트 위치 검증(`event.position.out-of-bounds`) 의 이동 대상은 헤더의 보이는 좌표 표시 `event-editor-coords` 로 옮겼다.
+  - **네이티브 대화상자 금지.** 이벤트 에디터는 `window.alert` / `window.confirm` 을 쓰지 않는다 — 페이지 삭제와 「그 외 분기」 삭제는 앱의 `showConfirm` 을 쓴다.
+  - **문구·프리뷰 정직성.** 좌측 레일 「움직임과 속도」 요약은 raw enum(`fixed`) 대신 `movementTypeChipLabel()` 의 한국어 라벨을 쓴다. m2 명령 본문의 리소스 프리뷰는 종류를 보고 렌더한다 — 오디오(music/sound) 필드는 640×500 "그림을 고르세요" 이미지 우물을 만들지 않고 선택한 음악을 한 줄로 알린다. 도움말도 staged 폼의 현실대로 "값을 고르고 확인을 누르면 적용됩니다." 로 바뀌었다.
+  - **적대적 프로브:** `scripts/qa-event-editor-ux.mjs --label <tag>` 가 위 계약 9개를 실제 브라우저에서 판정하고 하나라도 깨지면 exit 1 이다. 증거는 `.omo/evidence/event-editor-ux/<tag>/`.
 - **셀프 스위치 조건 행:** `selfSwitch`는 간단 행에 표시된다(고급 전용 아님). 컨트롤은 `conditionForm.selfSwitchControl` — 세그먼트 A/B/C/D 버튼 + ON/OFF 토글. 첫 번째 selfSwitch는 간단 행, 초과분은 고급 목록. `setSelfSwitch` 명령 본문도 동일 컨트롤 사용.
 
 
@@ -124,3 +133,31 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - Visual preview panels mount on the right column via `previewPanel(testId)`. Commands publish specific preview testids such as `tint-screen-preview`, `flash-screen-preview`, `set-weather-effects-preview`, `change-parallax-back-preview`, `show-picture-m2-preview`, and `move-to-variable-location-preview`.
 - Screen and weather forms expose interactive color chips and swatch/overlay preview elements (`.actor-m2-chip-grid`, `.actor-m2-preview-actor`, `.actor-m2-preview-copy`). When authors adjust color values, weather intensity, or resource targets, previews update their line and note descriptors immediately.
 - TDD behavior contracts live in `test/page3CommandBodies.test.ts` (with interpreter execution coverage in `test/commandContracts/m2Command.contract.test.ts`). Each contract test exercises DOM inputs, verifies staged command replacement via `replaceFields`, and confirms that `executeM2RuntimeCommand` mutates session state as expected.
+
+## 좌측 설정 레일 그룹 소속 (2026-08-27)
+
+- 레일 그룹은 `pageProps.ts` 의 `wrapPageSettingsAsAccordion` 이 렌더된 DOM 을 재부모화해서 만든다.
+  각 그룹은 **명시 셀렉터로 claim** 하며, claim 대상은 `source` 의 **직속 자식**으로 승격돼야 한다.
+  실측 사고: memory("기억과 정리") 그룹이 겨눈 `event-classic-overlap` 이 `event-page-behavior-sections`
+  안에 있었고 그 부모를 when 그룹이 먼저 claim 해서 memory claim 이 0개가 됐다. 그리고 미claim 자식이
+  `rail.lastElementChild` 로 흘러들어가 그 그룹은 읽기 전용 칩 3개만 담은 쓰레받이가 됐다(편집 컨트롤 0개).
+  그룹 순서만 바꿔도 쓰레받이 위치가 이동하는 위치 의존 버그였다.
+- 지금은 미claim 자식이 남으면 조용히 섞지 않고 `evt-rail-group-other`("기타") 로 드러낸다. 새 컨트롤을
+  추가하면 그룹 셀렉터에도 등록하라 — 등록을 잊으면 "기타" 그룹이 나타나 `test/eventRailGroupComposition.test.ts`
+  가 실패한다.
+- memory 그룹의 실제 내용은 겹침(통행 차단)이므로 제목은 "겹침과 통행" 이다. `page.overlapForbidden` 은
+  **실행 억제가 아니라 같은 칸 통행 차단**이다(런타임 소비는 통행 판정 4곳). 라벨을 "중복 실행 방지" 로
+  되돌리지 말 것.
+- 기본값 규칙은 한 곳으로 통일한다: `overlapForbidden !== false` (헤더 요약·칩·체크박스 전부 동일).
+- 접힌 그룹의 요약은 사용자가 패널을 펼치기 전에 읽는 유일한 정보다. 원시 enum 을 그대로 쓰지 말라 —
+  움직임 그룹은 `movementSummaryText` 로 "정지" / "무작위 · x2 빠름" 을 보여준다.
+
+## 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+
+- 런타임(`src/project/io/pageResolution.ts`)은 `switch.value:false`, `item.present:false`,
+  `actor.present:false` 를 정상 평가한다. 그런데 편집기는 항상 `true` 로만 써서 false 방향을 만들 수도,
+  데이터에 있는 false 를 볼 수도 없었고, id 를 한 번 바꾸면 조용히 true 로 뒤집혔다.
+- 세 조건 행은 각각 극성 select 를 가진다: `event-page-switch-condition-value`(on/off),
+  `event-page-item-condition-present`, `event-page-actor-condition-present`(present/absent).
+  체크박스 재활성 경로는 기존 `condition.value` 를 보존한다. 계약은 `test/eventPageConditionOffValue.test.ts`.
+- 이동 속도 select 는 런타임 `clampSetting` 과 같은 1~8 범위를 제시해야 한다(이전에는 1~6 이라 7·8 저작 불가).

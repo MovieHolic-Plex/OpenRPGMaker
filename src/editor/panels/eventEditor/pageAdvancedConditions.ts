@@ -2,8 +2,10 @@ import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import type { EventPageCondition } from "@/project/types";
 import { selectedOptionValue, selectWithOptions } from "./dom";
+import { commandSummary } from "./commandSummary";
 import {
   renderActorCondition,
+  renderBattleResultCondition,
   renderFriendshipAtLeastCondition,
   renderGoldCondition,
   renderItemCondition,
@@ -40,7 +42,10 @@ const ADVANCED_CONDITION_OPTIONS = [
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
+  { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
+  // all/any/not 은 중첩 에디터가 없어 추가 셀렉트에 넣지 않는다.
+  // 이미 데이터에 있으면 읽기 전용 요약 행으로 보이고 삭제만 할 수 있다.
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {
@@ -49,7 +54,11 @@ export function renderAdvancedConditions(context: PageConditionContext): HTMLEle
     class: "event-advanced-condition-list",
     dataset: { testid: "event-page-advanced-condition-list" },
     children: entries.length > 0
-      ? entries.map((entry, listIndex) => advancedConditionRow(context, entry.index, entry.condition, listIndex))
+      ? entries.map((entry, listIndex) =>
+          isGroupCondition(entry.condition)
+            ? groupConditionRow(context, entry.index, entry.condition, listIndex)
+            : advancedConditionRow(context, entry.index, entry.condition, listIndex)
+        )
       : [el("div", { class: "event-advanced-condition-empty", text: "추가 조건 없음" })],
   });
   const kind = selectWithOptions(ADVANCED_CONDITION_OPTIONS, "switch", "event-page-advanced-condition-kind");
@@ -110,6 +119,57 @@ function advancedConditionRow(
       }),
     ],
   });
+}
+
+type GroupCondition = Extract<EventPageCondition, { kind: "all" | "any" | "not" }>;
+
+function isGroupCondition(condition: EventPageCondition): condition is GroupCondition {
+  return condition.kind === "all" || condition.kind === "any" || condition.kind === "not";
+}
+
+// 중첩 그룹(all/any/not) 은 편집기가 없으므로 사람이 읽는 요약 행 + 삭제만 제공한다.
+function groupConditionRow(
+  context: PageConditionContext,
+  index: number,
+  condition: GroupCondition,
+  listIndex: number
+): HTMLElement {
+  return el("div", {
+    class: "event-advanced-condition-row group",
+    dataset: { testid: `event-page-advanced-condition-row-${listIndex}`, conditionKind: condition.kind },
+    children: [
+      el("span", {
+        class: "event-advanced-condition-summary",
+        text: groupConditionSummary(condition),
+        dataset: { testid: `event-page-advanced-condition-summary-${listIndex}` },
+      }),
+      el("button", {
+        class: "btn small",
+        text: "삭제",
+        attrs: { type: "button" },
+        dataset: { testid: `event-page-advanced-condition-remove-${listIndex}` },
+        on: { click: () => removeConditionAt(context, index) },
+      }),
+    ],
+  });
+}
+
+function groupConditionSummary(condition: GroupCondition): string {
+  if (condition.kind === "not") return `아닐 때: ${describeCondition(condition.condition)}`;
+  const label = condition.kind === "all" ? "모두 만족" : "하나 이상 만족";
+  const children = condition.conditions;
+  const head = children[0];
+  if (!head) return `${label}: 하위 조건 없음`;
+  const rest = children.length - 1;
+  return rest > 0
+    ? `${label}: ${describeCondition(head)} 외 ${rest}개`
+    : `${label}: ${describeCondition(head)}`;
+}
+
+function describeCondition(condition: EventPageCondition): string {
+  const full = commandSummary({ kind: "fork", condition, then: [] });
+  const separator = full.indexOf(": ");
+  return separator >= 0 ? full.slice(separator + 2) : full;
 }
 
 function renderAdvancedConditionContent(
@@ -210,6 +270,11 @@ function renderAdvancedConditionContent(
         npcKeyTestId: `event-page-advanced-condition-friendship-npc-key-${listIndex}`,
         valueTestId: `event-page-advanced-condition-friendship-value-${listIndex}`,
       });
+    case "battleResult":
+      return renderBattleResultCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control battle-result",
+        resultTestId: `event-page-advanced-condition-battle-result-${listIndex}`,
+      });
     case "run":
       return renderRunCondition(condition, (next) => replaceConditionAt(context, index, next));
   }
@@ -242,6 +307,8 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "npcActivity", activity: "work" };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
+    case "battleResult":
+      return { kind: "battleResult", result: "victory" };
     case "run":
       return { kind: "run", query: "active", value: true };
   }

@@ -21,12 +21,8 @@ import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type Comma
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   CHARSET_FRAME_HEIGHT,
-  CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
-  charsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { sameInspectorPath, selectedCommandPath, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
 import { commandRuntimeSupport, type CommandRuntimeSupport, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
@@ -122,7 +118,13 @@ function renderCommandItem(
   item.draggable = false;
   const head = el("div", {
     class: "cmd-head",
-    attrs: { role: "button", tabindex: "0", title: "더블클릭해서 명령 편집" },
+    // 상호작용을 그대로 적는다: 한 번 = 오른쪽 "선택한 명령" 칼럼에 싣기, 두 번 = 편집 창.
+    attrs: {
+      role: "button",
+      tabindex: "0",
+      title: "한 번 클릭하면 선택, 두 번 클릭하면 편집",
+      "aria-keyshortcuts": "Enter Space",
+    },
   });
   // 깊이는 item·head 양쪽에 심는다. CSS 커스텀 속성은 아래로만 상속되므로
   // head 에만 심으면 부모(.cmd-item)에서 읽는 블록 들여쓰기가 항상 폴백 0 이 된다
@@ -160,9 +162,11 @@ function renderCommandItem(
     ...(issueBadge ? [issueBadge] : []),
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
+  // 한 번 클릭은 선택뿐이다 — 오른쪽 인스펙터 칼럼을 채우고 툴바 이동/복사의 대상을 정한다.
+  // 편집 창은 더블클릭·Enter/Space·우클릭 "편집" 이 연다.
   head.addEventListener("click", () => {
     selectCommandLine(item);
-    openEditor();
+    showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
   });
   // 재렌더 뒤에도 선택과 인스펙터가 유지되도록 복원한다.
   if (sameInspectorPath(path, selectedCommandPath())) {
@@ -175,7 +179,9 @@ function renderCommandItem(
     openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
   });
   head.addEventListener("dblclick", (event) => {
-    if (event.target instanceof Element && event.target.closest(".cmd-actions, .cmd-drag-handle")) return;
+    // fakeDom 에는 Element 전역이 없다 — closest 덕타이핑으로 같은 계약을 지킨다.
+    const target = event.target as { closest?: (selector: string) => unknown } | null;
+    if (target?.closest?.(".cmd-actions, .cmd-drag-handle")) return;
     event.preventDefault();
     event.stopPropagation();
     selectCommandLine(item);
@@ -257,17 +263,8 @@ function renderFaceCrop16(resourceId: string): HTMLElement | null {
 function renderCharsetSprite16(spriteId: string): HTMLElement | null {
   const asset = CHARSET_ASSETS.find((entry) => entry.textureKey === spriteId);
   if (!asset) return null;
-  const scale = 16 / CHARSET_FRAME_HEIGHT;
-  const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
   const crop = el("span", { class: "cmd-thumb cmd-thumb-sprite", attrs: { "aria-hidden": "true" } });
-  crop.style.setProperty("width", `${Math.round(CHARSET_FRAME_WIDTH * scale)}px`);
-  crop.style.setProperty("height", "16px");
-  applyTransparentColorKeyBackground(crop, asset.path);
-  crop.style.setProperty(
-    "background-size",
-    `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale}px`
-  );
-  crop.style.setProperty("background-position", `-${source.x * scale}px -${source.y * scale}px`);
+  applyCharsetFrameCrop(crop, asset.path, { characterIndex: 0, direction: "down", pattern: 1 }, 16 / CHARSET_FRAME_HEIGHT);
   return crop;
 }
 
@@ -603,7 +600,8 @@ function renderBranchDropLine(
 }
 
 function selectCommandLine(item: HTMLElement): void {
-  item.parentElement?.querySelectorAll(".cmd-item.selected").forEach((node) => node.classList.remove("selected"));
+  // 복합 클래스 셀렉터 대신 클래스 목록으로 지운다 — 형제 행 중 실제로 선택된 것만 해제한다.
+  item.parentElement?.querySelectorAll(".cmd-item").forEach((node) => node.classList.remove("selected"));
   item.classList.add("selected");
 }
 

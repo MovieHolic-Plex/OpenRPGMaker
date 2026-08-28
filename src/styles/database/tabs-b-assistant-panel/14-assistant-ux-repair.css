@@ -46,52 +46,6 @@
   white-space: nowrap;
 }
 
-/* ── 자동 적용 비교 카드 ────────────────────────────────────────
-   자동 승인 모드도 전/후를 보여준다. 예전엔 3초 뒤 사라지는 한 줄이 전부였다. */
-.ai-auto-applied-card {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--accent);
-  border-radius: 10px;
-  display: grid;
-  gap: 8px;
-  margin-top: 6px;
-  padding: 8px 10px;
-}
-
-.ai-auto-applied-head {
-  align-items: baseline;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.ai-auto-applied-badge {
-  background: var(--accent-soft, var(--control-bg));
-  border-radius: 999px;
-  color: var(--text-1);
-  flex: 0 0 auto;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-}
-
-.ai-auto-applied-summary {
-  color: var(--text-2);
-  font-size: 12px;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ai-auto-applied-actions {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-}
-
 /* ── 제안/자동 카드의 자동 적용 토글 ──────────────────────────── */
 .ai-proposal-auto-approve {
   align-items: center;

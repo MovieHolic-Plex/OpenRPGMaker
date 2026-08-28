@@ -41,7 +41,9 @@
 
 .database-modal-backdrop .db-overview-hero h2 {
   color: var(--db-studio-text-1);
-  font: 800 clamp(24px, 3vw, 34px)/1.1 "Malgun Gothic", system-ui, sans-serif;
+  /* 1.1 clipped Korean descenders (받침) at 800 weight: the line box was
+     37px against a 41px glyph box. 1.25 fits every viewport step. */
+  font: 800 clamp(24px, 3vw, 34px)/1.25 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: -.04em;
   margin: 6px 0 8px;
   word-break: keep-all;
@@ -147,7 +149,8 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat-count {
   color: var(--db-studio-text-1);
-  font: 700 20px/1.1 "Malgun Gothic", system-ui, sans-serif;
+  /* 1.1 gave a 22px line box for a 24px glyph box, shaving the digits. */
+  font: 700 20px/1.2 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -211,14 +214,18 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-hp,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-normal,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-boss {
   align-items: center;
   display: inline-flex;
   gap: 6px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-hp::before,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack::before {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack::before,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-normal::before,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-boss::before {
   border-radius: 99px;
   content: "";
   display: inline-block;
@@ -233,6 +240,15 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack::before {
   background: var(--db-studio-accent);
+}
+
+/* 산점도 도트 색상과 맞춤: 일반=엑센트, 보스=단젤 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-normal::before {
+  background: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-boss::before {
+  background: var(--db-studio-danger);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-note {

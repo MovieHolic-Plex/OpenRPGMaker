@@ -6,7 +6,7 @@
  *    (`ai-proposal-card`, "이 맵에 넣기") 없이 **바로 맵에 적용**된다. 이 턴은 예전 게이트를
  *    통과하지 못하는 조합이다(set_build_spec 은 LOW_RISK_SPATIAL_TOOLS 밖 → classifyProposalSafety
  *    가 review-required 로 분류) — 즉 예전에는 반드시 카드가 떴다.
- *  - 적용 결과는 로그의 자동 적용 비교 카드(`ai-auto-applied-card`)로 남는다.
+ *  - 적용 결과는 로그의 변경 카드(`ai-change-card`)로 남는다.
  *  - **왼쪽 아래 되돌리기(`oprn-tool-undo`)** 한 번으로 그 적용이 원복된다 — 승인 대신 쓰는
  *    복구 경로가 실제로 동작함을 타일 값으로 확인한다.
  *
@@ -24,7 +24,8 @@ import path from "node:path";
 
 const EVIDENCE = path.resolve(".omo/evidence/ai-apply-without-approval");
 const PROPOSAL_CARD = "[data-testid='ai-proposal-card']";
-const APPLIED_CARD = "[data-testid='ai-auto-applied-card']";
+// 적용 결과 표면은 #134/#141 에서 renderAppliedComparison → renderChangePreviewCard(ai-change-card) 로 바뀌었다.
+const APPLIED_CARD = "[data-testid='ai-change-card']";
 const UNDO_BUTTON = "[data-testid='oprn-tool-undo']";
 
 const timeline: string[] = [];
@@ -106,11 +107,23 @@ async function bootEditor(page: Page): Promise<string> {
   // 빈 프로젝트로 띄운다: 샘플 마을(`?freshProject=1`)에는 수관 아래 밑동이 없는 나무가 이미
   // 있어 배치 검증(validateLayoutPlacement)이 이 프로젝트의 모든 AI 적용을 막는다 — 그 기존
   // 결함은 이 스펙의 대상이 아니다.
-  await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
-  const guest = page.getByTestId("login-guest");
-  if (await guest.isVisible().catch(() => false)) await guest.click();
-  await expect(page.getByTestId("login-modal")).toBeHidden({ timeout: 15_000 });
-  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
+  // 워크트리들이 node_modules/.vite 캐시를 공유해서, 다른 세션이 dev 서버를 띄우면 이쪽 서버가
+  // 의존성을 재최적화하며 모듈 요청을 ERR_CONNECTION_RESET 으로 끊는다(실측). 그때는 캔버스가
+  // 아예 안 붙으므로 다시 로드해서 재시도한다 — 제품 결함이 아니라 개발 서버 재시작이다.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
+    const guest = page.getByTestId("login-guest");
+    if (await guest.isVisible().catch(() => false)) await guest.click();
+    await expect(page.getByTestId("login-modal")).toBeHidden({ timeout: 15_000 });
+    const booted = await page
+      .getByTestId("edit-canvas")
+      .waitFor({ state: "visible", timeout: attempt === 3 ? 60_000 : 25_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (booted) break;
+    if (attempt === 3) throw new Error("dev 서버가 세 번 시도해도 편집 캔버스를 띄우지 못했다");
+    await page.waitForTimeout(4_000);
+  }
   const mapId = await page.evaluate(() => (window as unknown as {
     __oprnRegionTaskHarness?: { currentMapId: () => string };
   }).__oprnRegionTaskHarness?.currentMapId());
@@ -196,6 +209,20 @@ test.describe("AI 제안 즉시 적용 + 좌하단 되돌리기", () => {
       .not.toBe(beforeTile);
     const appliedTile = await readCell(page, plan.mapId, center.x, center.y);
     timeline.push(`applied=${String(appliedTile)}`);
+    // 카드가 로그 아래로 잘리면 되돌리기 버튼에 손이 닿지 않는다 — 화면 안에 들어와야 한다.
+    const undoInCard = page.getByTestId("ai-change-undo").first();
+    await expect(undoInCard).toBeVisible({ timeout: 15_000 });
+    // 로그 엘리먼트 안이면 충분하지 않다 — 컴포저가 로그 하단을 덮으므로 히트테스트로 확인한다.
+    const reachable = await undoInCard.evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      if (hit === node || (hit instanceof Node && node.contains(hit))) return "reachable";
+      const blocker = hit instanceof HTMLElement ? (hit.dataset.testid ?? hit.className) : String(hit);
+      const shell = node.closest<HTMLElement>(".ai-glass-log");
+      const shellBottom = shell ? Math.round(shell.getBoundingClientRect().bottom) : -1;
+      return `covered by ${blocker} | undo=${Math.round(rect.top)}..${Math.round(rect.bottom)} shellBottom=${shellBottom}`;
+    });
+    expect(reachable).toBe("reachable");
     await page.screenshot({ path: path.join(EVIDENCE, "applied-without-approval.png"), animations: "disabled" });
     await collapseChatDock(page);
     await page.screenshot({ path: path.join(EVIDENCE, "applied-map.png"), animations: "disabled" });

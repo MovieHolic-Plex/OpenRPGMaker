@@ -96,6 +96,23 @@
   padding-bottom: var(--ai-shell-gutter);
 }
 
+
+/* 로그 껍데기(.ai-glass-log)는 flex 컨테이너가 아니어서 안쪽 .ai-chat-log 의 `flex: 1 1 auto`
+   (13 레이어)가 무시된다. 그러면 로그가 내용 높이로 자라 껍데기 밖으로 밀리고, 껍데기가 잘라낸
+   아래쪽은 스크롤로도 못 본다 — 실측(e2e): 껍데기 167..462 인데 로그 167..581 이어서 변경 카드의
+   되돌리기 줄(507..539)이 영구히 잘렸다. 껍데기를 세로 flex 로 만들어 로그가 껍데기 높이에서
+   자기 스크롤을 갖게 한다. */
+.ai-chat-panel.chat-dock-glass .ai-glass-log {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-chat-panel.chat-dock-glass .ai-glass-log > .ai-chat-log {
+  flex: 1 1 auto;
+  max-height: 100%;
+  min-height: 0;
+}
+
 /* ── 시작 블록 ──────────────────────────────────────────────── */
 .ai-chat-panel .ai-next-steps {
   display: flex;

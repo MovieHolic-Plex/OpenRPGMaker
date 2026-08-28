@@ -340,7 +340,8 @@ describe("event draft aggregate validator", () => {
     expect(codes).toContain("reference.switch.missing");
     expect(result.issues).toContainEqual(expect.objectContaining({
       code: "event.position.out-of-bounds",
-      field: { testId: "event-position-x" },
+      // 좌표 입력물은 죽은 identity 카드와 함께 사라졌다 — 앵커는 헤더의 보이는 좌표 표시다.
+      field: { testId: "event-editor-coords" },
     }));
     expect(result.issues).toContainEqual(expect.objectContaining({
       code: "reference.map.missing",
