@@ -1087,6 +1087,59 @@ function transferEndpoint(
   return null;
 }
 
+/**
+ * 출입구 자리를 못 찾은 **실제 원인**을 짚는다.
+ *
+ * 종전 문구는 원인과 무관하게 "get_map_region으로 주변 구조물과 통행 지형을 확인하세요" 였다.
+ * 2026-08-28 실측에서 대상이 구조물 0인 잔디 단색 맵이었는데도 같은 안내가 나갔고, 모델은
+ * 지형을 확인해 봐야 소용없는 상태에서 3연속 같은 실패를 반복했다. 실패 경로는 셋뿐이므로
+ * (범위 밖 / 이벤트 점유 / 통행 불가) 어느 쪽인지 세어서 알려준다.
+ */
+function transferEndpointFailure(
+  project: Project,
+  map: GameMap,
+  requestedX: number,
+  requestedY: number,
+  maxRadius = 3,
+): string {
+  const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+  let inBounds = 0;
+  let blockedByEvent = 0;
+  let noLanding = 0;
+  let usable = 0;
+  for (let dy = -maxRadius; dy <= maxRadius; dy += 1) {
+    for (let dx = -maxRadius; dx <= maxRadius; dx += 1) {
+      const x = requestedX + dx;
+      const y = requestedY + dy;
+      if (!inMapBounds(map, x, y)) continue;
+      inBounds += 1;
+      if (occupied.has(`${x},${y}`)) {
+        blockedByEvent += 1;
+        continue;
+      }
+      // transferEndpoint 와 같은 판정: 착지 칸이 있고 출입구 칸과 달라야 쓸 수 있다.
+      const landing = passableLanding(project, map, x, y);
+      if (landing && !(landing.x === x && landing.y === y)) usable += 1;
+      else noLanding += 1;
+    }
+  }
+  const where = `'${map.name}'(${map.id}, ${map.width}×${map.height})의 (${requestedX},${requestedY})`;
+  if (inBounds === 0) {
+    return `${where} 는 반경 ${maxRadius}칸까지 전부 맵 밖입니다. 좌표를 맵 크기(0..${map.width - 1}, 0..${map.height - 1}) 안으로 잡으세요.`;
+  }
+  if (blockedByEvent === inBounds) {
+    return `${where} 주변 ${inBounds}칸이 전부 기존 이벤트로 점유돼 있습니다. 빈 자리를 골라 좌표를 옮기세요.`;
+  }
+  // usable > 0 인데 여기까지 왔다면 transferEndpoint 의 반경(3) 밖 후보를 센 것이다 — 좌표만 당기면 된다.
+  if (usable > 0) {
+    return `${where} 기준 반경 ${maxRadius}칸 안에서는 자리를 못 찾았습니다(조금 더 바깥에 쓸 만한 칸 ${usable}개). 출입구 좌표를 그쪽으로 옮기세요.`;
+  }
+  return (
+    `${where} 주변에 통행 가능한 착지 칸이 붙은 자리가 없습니다 — 후보 ${noLanding}칸 모두 이웃 4방향이 통행 불가입니다. ` +
+    `맵이 아직 비어 있다면 먼저 fill_region/author_house 등으로 바닥과 구조를 만든 뒤 연결하세요.`
+  );
+}
+
 function parseNpcSchedule(project: Project, raw: unknown, label: string): NpcScheduleEntry[] {
   if (!Array.isArray(raw)) throw new ToolError(`${label}는 배열이어야 합니다.`, { code: "npc-schedule" });
   return raw.map((entryRaw, index): NpcScheduleEntry => {
@@ -1308,10 +1361,12 @@ const createTransferPair: ToolDefinition = {
     const endpointA = transferEndpoint(draft, mapA, a.x, a.y);
     const endpointB = transferEndpoint(draft, mapB, b.x, b.y);
     if (!endpointA || !endpointB) {
-      throw new ToolError(
-        "출입구 주변 반경 3칸 안에 통행 가능한 착지 칸을 둔 빈 출입구 위치가 없습니다. get_map_region으로 주변 구조물과 통행 지형을 확인하세요.",
-        { code: "transfer-no-landing" },
-      );
+      // 어느 쪽 출입구가 왜 실패했는지 짚는다 — 종전에는 두 쪽을 뭉뚱그려 같은 안내만 냈다.
+      const failures = [
+        endpointA ? null : `A: ${transferEndpointFailure(draft, mapA, a.x, a.y)}`,
+        endpointB ? null : `B: ${transferEndpointFailure(draft, mapB, b.x, b.y)}`,
+      ].filter((entry): entry is string => entry !== null);
+      throw new ToolError(`출입구 자리를 찾지 못했습니다. ${failures.join(" / ")}`, { code: "transfer-no-landing" });
     }
     const { gate: gateA, landing: landingA } = endpointA;
     const { gate: gateB, landing: landingB } = endpointB;
