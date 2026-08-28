@@ -4,7 +4,6 @@ import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";
 import { renderEventGraphicIcon, renderEventGraphicPreview } from "@/editor/panels/eventEditor/eventGraphicPreview";
-import { openFacesetDialog } from "@/editor/panels/eventEditor/messageCommandDialogs";
 import { renderPageConditions } from "@/editor/panels/eventEditor/pageConditions";
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { createBlankProject } from "@/project/defaults";
@@ -397,21 +396,36 @@ it("explains missing face graphic previews instead of leaving a blank slot", () 
     expect(preview?.textContent).toContain("미리보기를 찾을 수 없습니다.");
   });
 
-  it("updates the Change Face dialog preview when the face resource changes", () => {
-    openFacesetDialog({ kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false }, () => undefined);
+  it("updates the Change Face preview when the face resource changes", () => {
+    // 얼굴 편집면은 공용 명령 편집 모달의 본문이다 — 종류별 전용 다이얼로그는 없다.
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        {
+          path: [],
+          actions: {
+            addCommand: () => undefined,
+            deleteCommand: () => undefined,
+            insertCommand: () => undefined,
+            moveCommand: () => undefined,
+            moveCommandTo: () => undefined,
+            replaceCommand: () => undefined,
+          },
+        },
+        { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false }
+      )
+    );
 
-    const dialog = findByTestId(document.body as unknown as FakeElement, "event-command-faceset-dialog");
-    const resource = findByTestId(dialog ?? new FakeElement("div"), "faceset-resource-id");
-
-    if (!resource || !dialog) throw new Error("missing faceset dialog controls");
+    const resource = findByTestId(body, "event-command-face-resource");
+    if (!resource) throw new Error("missing face resource input");
     // 칸 번호 스피너는 삭제됐다.
-    expect(findByTestId(dialog, "faceset-index")).toBeNull();
-    resource.value = "easyrpg-faceset-actor1-05"; resource.dispatchEvent(new Event("input"));
+    expect(findByTestId(body, "faceset-index")).toBeNull();
+    resource.value = "easyrpg-faceset-actor1-05";
+    resource.dispatchEvent(new Event("input"));
 
-    const preview = findByTestId(dialog, "event-command-face-preview");
+    const preview = findByTestId(body, "event-command-face-preview");
     expect(preview?.dataset.resourceId).toBe("easyrpg-faceset-actor1-05");
     expect(preview?.dataset.faceIndex).toBeUndefined();
-    expect(findByTestId(dialog, "faceset-crop-sheet")?.attrs.src).toContain(
+    expect(findByTestId(body, "faceset-crop-sheet")?.attrs.src).toContain(
       "/assets/easyrpg/faceset/Actor1/05.png",
     );
   });

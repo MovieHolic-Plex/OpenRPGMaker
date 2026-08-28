@@ -1281,8 +1281,9 @@
   overflow: hidden;
 }
 
+/* `[hidden]` 은 (0,4,0) 이라 위 display:grid 규칙 (0,3,0) 을 이미 이긴다 — !important 는 불필요했다. */
 .event-editor .event-contents-fieldset > .event-page-preview-host[hidden] {
-  display: none !important;
+  display: none;
 }
 
 /* 목록 모드에서는 빈 스토리보드 호스트가 콘텐츠 트랙을 차지하지 않게 통째로 접는다. */

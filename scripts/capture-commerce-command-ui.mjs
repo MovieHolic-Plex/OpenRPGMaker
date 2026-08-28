@@ -71,27 +71,8 @@ if (openText.ok) {
   });
 }
 
-const openStandalone = await page.evaluate(async () => {
-  try {
-    document.querySelectorAll(".event-subdialog-backdrop").forEach((n) => n.remove());
-    const mod = await import("/src/editor/panels/eventEditor/textCommandDialog.ts");
-    mod.openTextCommandDialog(
-      { kind: "text", speaker: "촌장", body: "마을에 온 걸 환영하네." },
-      () => {}
-    );
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, error: String(error) };
-  }
-});
-console.log("standalone text", openStandalone);
-await page.waitForTimeout(500);
-if (openStandalone.ok) {
-  await page.screenshot({ path: path.join(OUT, "03-text-standalone.png"), fullPage: false });
-  await page.locator("section.event-subdialog-window.wide").last().screenshot({
-    path: path.join(OUT, "03b-text-standalone-only.png"),
-  });
-}
+// 전용 「문장 표시」 창을 따로 찍던 블록은 삭제했다 — 그 창(textCommandDialog)은 프로덕션
+// 호출부가 없는 유산이라 모듈째로 지웠고, 위 02 캡처가 실제 사용자가 보는 화면이다.
 
 await browser.close();
 console.log("wrote evidence to", OUT);

@@ -1,3 +1,4 @@
+import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
@@ -93,6 +94,8 @@ function guardedCloseExistingEventEditorModal(next: () => void): void {
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  // 그래픽/얼굴 피커는 이 모달 안에서 열린다 — 여는 순간이 아니라 지금 받아 둔다.
+  void warmEditorPickerAssets();
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
   clearCommandInspector();
   setCommandInspectorHost(undefined);

@@ -1,10 +1,12 @@
 import type { Command, M2CommandValue } from "@/project/types";
 import {
+  DEPRECATED_M2_COMMAND_IDS,
   EXISTING_KIND_BY_TITLE,
   KOREAN_LABEL_BY_TITLE,
   MODERN_COMMAND_ROWS,
   NO_ELLIPSIS_TITLES,
   PDF_COMMAND_ROWS,
+  type M2CommandDeprecation,
   type M2PdfCommandRow,
 } from "./m2CatalogData";
 import { modernFieldsFor } from "./m2ModernCatalog";
@@ -21,6 +23,7 @@ import {
   type M2RuntimeContext,
 } from "./runtimeSupport";
 
+export type { M2CommandDeprecation } from "./m2CatalogData";
 export type { M2CommandPickerGroup, M2CommandPickerPage } from "./m2PickerLayout";
 export type { CommandRuntimeSupport, M2RuntimeContext } from "./runtimeSupport";
 
@@ -59,6 +62,11 @@ export type M2CommandCatalogEntry = M2PdfCommandRow & {
   readonly bodyStrategy: "existing" | "generic" | "none";
   readonly fields: readonly M2CommandFieldSpec[];
   readonly testId: string;
+  /**
+   * 설정되어 있으면 은퇴한 행이다 — 어느 피커에서도 새로 고를 수 없고, 이미 저장된 행은
+   * 그대로 열리고 실행된다. 정본은 `DEPRECATED_M2_COMMAND_IDS`.
+   */
+  readonly deprecated?: M2CommandDeprecation;
 };
 
 const OPERATION_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -125,6 +133,21 @@ const VEHICLE_OPTIONS: readonly M2CommandFieldOption[] = [
 
 export const M2_COMMAND_CATALOG: readonly M2CommandCatalogEntry[] = [...PDF_COMMAND_ROWS, ...MODERN_COMMAND_ROWS].map(buildCatalogEntry);
 
+// 은퇴 레지스트리는 오타 한 글자로 조용히 뚫린다(실측: 라벨 문자열 필터가 그렇게 뚫렸다).
+// 카탈로그를 빌드하는 자리에서 즉시 터뜨린다.
+for (const [id, deprecation] of Object.entries(DEPRECATED_M2_COMMAND_IDS)) {
+  if (!deprecation) continue;
+  if (!M2_COMMAND_CATALOG.some((entry) => entry.id === id)) {
+    throw new Error(`Deprecated m2 command id is not in the catalog: ${id}`);
+  }
+  if (!M2_COMMAND_CATALOG.some((entry) => entry.id === deprecation.supersededBy)) {
+    throw new Error(`Deprecated m2 command ${id} points at an unknown replacement: ${deprecation.supersededBy}`);
+  }
+  if (DEPRECATED_M2_COMMAND_IDS[deprecation.supersededBy]) {
+    throw new Error(`Deprecated m2 command ${id} points at another deprecated entry: ${deprecation.supersededBy}`);
+  }
+}
+
 export function m2CommandById(commandId: string): M2CommandCatalogEntry | undefined {
   return M2_COMMAND_CATALOG.find((entry) => entry.id === commandId);
 }
@@ -140,14 +163,14 @@ export function createDefaultM2Fields(entry: M2CommandCatalogEntry): Record<stri
 }
 
 export function isM2CatalogEntrySelectableInMap(entry: M2CommandCatalogEntry): boolean {
-  // m2-055(Show Animation)는 m2-054와 동일 명령의 중복 등재다(2026-08-27 감사:
-  // 피커에 "애니메이션 표시"가 두 번 보여 초보자가 구분하지 못한다).
-  // 카탈로그 엔트리 자체는 저장된 프로젝트 호환을 위해 유지하고, 맵 피커에서만 숨긴다.
-  if (entry.index === 55) return false;
+  // 은퇴한 행(중복 등재·다른 명령으로 통합)은 저장 프로젝트 호환을 위해 카탈로그에 남지만
+  // 새로 저작할 수는 없다. 판정은 라벨이 아니라 id 레지스트리가 한다.
+  if (entry.deprecated) return false;
   return entry.index <= 97 || entry.index >= 200;
 }
 
 export function isM2CatalogEntrySelectableInBattleEvent(entry: M2CommandCatalogEntry): boolean {
+  if (entry.deprecated) return false;
   if (entry.index >= 98 && entry.index <= 108) return true;
   // 선택 가능 집합은 배지 정직성 수정 이전과 동일하게 유지한다:
   // 네이티브 변환 행 + 행동 클래스 nativeAlias/full. (배지는 컨텍스트별로 별도 판정.)
@@ -190,6 +213,7 @@ function buildCatalogEntry(row: M2PdfCommandRow): M2CommandCatalogEntry {
     bodyStrategy: existingKind ? "existing" : fields.length > 0 ? "generic" : "none",
     fields,
     testId: `command-picker-add-${id}`,
+    deprecated: DEPRECATED_M2_COMMAND_IDS[id],
   };
 }
 
