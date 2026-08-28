@@ -47,8 +47,39 @@ export type RuntimeQaExpect = {
   readonly playerSpriteResourceNonEmpty?: boolean;
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
-  /** battle-scene 안 모든 텍스트 노드가 상자 안에 오온전히 보이는지. */
   readonly battleTextClean?: boolean;
+  readonly battlerGeometry?: RuntimeQaBattlerGeometrySpec;
+};
+
+export type RuntimeQaRect = {
+  readonly top: number;
+  readonly bottom: number;
+  readonly left: number;
+  readonly right: number;
+  readonly width: number;
+  readonly height: number;
+};
+
+export type RuntimeQaBattler = {
+  readonly id: string;
+  readonly node?: RuntimeQaRect | null;
+  readonly image?: RuntimeQaRect | null;
+  readonly name?: RuntimeQaRect | null;
+};
+
+export type RuntimeQaBattlerGeometry = {
+  readonly skin: string;
+  readonly directorStep?: string;
+  readonly field: RuntimeQaRect;
+  readonly enemyGroup?: RuntimeQaRect;
+  readonly enemies: readonly RuntimeQaBattler[];
+  readonly allies?: readonly RuntimeQaBattler[];
+};
+
+export type RuntimeQaBattlerGeometrySpec = {
+  readonly minEnemies?: number;
+  readonly horizonRatio?: number;
+  readonly groundBandRatio?: number;
 };
 
 export type RuntimeQaBeat = {
@@ -111,6 +142,7 @@ export type RuntimeQaObserved = {
     readonly mounted: boolean;
     readonly nodes: readonly RuntimeQaBattleTextNode[];
   };
+  readonly battlers?: RuntimeQaBattlerGeometry | null;
 };
 
 export type RuntimeQaBeatReport = {
@@ -120,6 +152,7 @@ export type RuntimeQaBeatReport = {
   readonly shot: string | null;
   readonly failures: readonly string[];
   readonly state: RuntimeQaCompactState | null;
+  readonly battlers?: RuntimeQaBattlerGeometry;
 };
 
 export type RuntimeQaReport = {
@@ -143,6 +176,13 @@ export declare function shouldCaptureShot(
 ): boolean;
 export declare function shotFileName(index: number, beatId: string): string;
 export declare function renderSummary(report: RuntimeQaReport): string;
+export declare const BATTLE_HORIZON_RATIO: number;
+export declare const BATTLE_GROUND_BAND_RATIO: number;
+
+export declare function evaluateBattlerGeometry(
+  spec: RuntimeQaBattlerGeometrySpec,
+  battlers: RuntimeQaBattlerGeometry | null,
+): string[];
 export declare function evaluateExpect(
   expected: RuntimeQaExpect,
   observed: RuntimeQaObserved,
