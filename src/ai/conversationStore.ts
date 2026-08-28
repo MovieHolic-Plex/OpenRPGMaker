@@ -1,5 +1,6 @@
 import type { AuditEntry } from "@/ai/assistantSession";
-import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
+import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
+import { recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
@@ -75,18 +76,26 @@ function writeConversations(records: readonly ConversationRecord[]): void {
   storage.setItem(STORAGE_KEY, JSON.stringify(records.slice(0, MAX_CONVERSATIONS)));
 }
 
+registerRemoteOutboxSender("ai-conversation", async (payload) => {
+  const result = await recordSupabaseConversation(payload as SupabaseConversationInput);
+  if (result.kind === "not-configured") throw new Error("supabase not configured");
+});
+
 export function saveConversation(record: ConversationRecord): void {
   writeConversations([record, ...readConversations().filter((conversation) => conversation.id !== record.id)]);
-  // 원격 미러는 best-effort — 미설정/미마이그레이션/네트워크 실패는 조용히 무시(로컬이 정본).
-  void recordSupabaseConversation({
+  const remoteInput: SupabaseConversationInput = {
     conversationId: record.id,
     title: record.title,
     model: record.model,
-    projectContextKey: record.projectContextKey,
+    ...(record.projectContextKey ? { projectContextKey: record.projectContextKey } : {}),
     entries: record.entries,
     savedAt: record.savedAt,
-  }).catch((error: unknown) => {
+  };
+  // 로컬은 50건 링버퍼라 전송 성공/실패와 무관하게 자리를 밀어낸다. 실패를 조용히 무시하면
+  // 원격이 죽은 동안의 대화가 근거 없이 사라지므로, 실패분은 outbox 에 보존하고 나중에 재전송한다.
+  void recordSupabaseConversation(remoteInput).catch((error: unknown) => {
     console.error("[ai-conversation] Supabase mirror failed:", error);
+    enqueueRemoteWrite({ id: record.id, kind: "ai-conversation", payload: remoteInput, error });
   });
 }
 
