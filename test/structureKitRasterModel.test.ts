@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   addPart,
+  bakeCellsToRows,
+  bakeInteriorObject,
+  bakeStructureKit,
   cellAtPoint,
+  copyName,
   normalizeDragRect,
   paintCell,
   removePart,
@@ -9,6 +13,8 @@ import {
   tileAt,
   updatePart,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
+import { BUILTIN_HOUSE_STRUCTURE_KITS } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
+import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { TILE } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 
@@ -207,5 +213,76 @@ describe("부위 CRUD", () => {
     const original = kit3x3();
     addPart(original, { dx: 0, dy: 0, w: 1, h: 1 }, "anchor", "p1");
     expect(original.parts).toBeUndefined();
+  });
+});
+
+describe("bakeCellsToRows", () => {
+  it("셀 목록을 행렬로 편다", () => {
+    const rows = bakeCellsToRows(
+      [
+        { dx: 0, dy: 0, layer: "lower", tile: 240 },
+        { dx: 1, dy: 0, layer: "upper", tile: 208 },
+        { dx: 1, dy: 1, layer: "lower", tile: 116 },
+      ],
+      2,
+      2,
+    );
+    expect(rows).toHaveLength(2);
+    expect(rows[0]!.tiles).toEqual([240, TILE.EMPTY]);
+    expect(rows[0]!.upperTiles).toEqual([TILE.EMPTY, 208]);
+    // 상층이 빈 행은 upperTiles 를 기록하지 않는다 — 기존 직렬화 규약과 같다.
+    expect(rows[1]!.tiles).toEqual([TILE.EMPTY, 116]);
+    expect(rows[1]!.upperTiles).toBeUndefined();
+  });
+});
+
+describe("bakeStructureKit", () => {
+  it("집 킷을 section 으로 굳힌다", () => {
+    const house = BUILTIN_HOUSE_STRUCTURE_KITS[0]!;
+    const baked = bakeStructureKit(house, "kit_baked", "통나무집 사본");
+    expect(baked.kind).toBe("section");
+    expect(baked.id).toBe("kit_baked");
+    expect(baked.name).toBe("통나무집 사본");
+    expect(baked.learnedFrom).toBe("db-authored");
+    expect(baked.width).toBeGreaterThan(0);
+    expect(baked.rows).toHaveLength(baked.height);
+    expect(baked.rows[0]!.tiles).toHaveLength(baked.width);
+    // 실제 타일이 하나라도 들어 있어야 한다 — 빈 껍데기를 구우면 의미가 없다.
+    const painted = baked.rows.some((row) => row.tiles.some((tile) => tile !== TILE.EMPTY));
+    expect(painted).toBe(true);
+  });
+
+  it("section 킷은 부위까지 그대로 복사한다", () => {
+    const source = { ...kit3x3(), parts: [{ id: "p1", kind: "entrance" as const, dx: 1, dy: 1, w: 1, h: 2 }] };
+    const baked = bakeStructureKit(source, "kit_copy", "우물 사본");
+    expect(baked.parts).toHaveLength(1);
+    expect(baked.parts![0]!.id).toBe("p1");
+    expect(baked.rows).toEqual(source.rows);
+  });
+});
+
+describe("bakeInteriorObject", () => {
+  it("실내 오브젝트를 section 으로 굳히고 role·snap·themes 는 버린다", () => {
+    const object = INTERIOR_OBJECT_CATALOG[0]!;
+    const baked = bakeInteriorObject(object, "kit_bed", "침대 사본");
+    expect(baked.kind).toBe("section");
+    expect(baked.width).toBe(object.width);
+    expect(baked.height).toBe(object.height);
+    expect(baked.learnedFrom).toBe("db-authored");
+    expect(baked.parts ?? []).toHaveLength(0);
+    expect(Object.keys(baked)).not.toContain("role");
+    expect(Object.keys(baked)).not.toContain("themes");
+    expect(Object.keys(baked)).not.toContain("snap");
+  });
+});
+
+describe("copyName", () => {
+  it("사본 이름을 만든다", () => {
+    expect(copyName("우물", [])).toBe("우물 사본");
+  });
+
+  it("이미 사본이 있으면 번호를 올린다", () => {
+    expect(copyName("우물", ["우물", "우물 사본"])).toBe("우물 사본 2");
+    expect(copyName("우물", ["우물 사본", "우물 사본 2"])).toBe("우물 사본 3");
   });
 });

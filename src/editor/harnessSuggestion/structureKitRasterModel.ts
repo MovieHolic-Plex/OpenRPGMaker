@@ -7,9 +7,13 @@
 //   테스트에서 항상 (0,0) 이 나와 검증이 무의미해진다. 호출부가 읽어서 넘긴다.
 
 import { TILE_SIZE } from "@/assets/bundled";
+import { structureKitSize, structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
+import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import type { PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { TILE } from "@/project/defaults/constants";
 import type {
   SectionStructureKitDef,
+  StructureKitDef,
   StructureKitPart,
   StructureKitPartKind,
   StructureKitRow,
@@ -186,4 +190,81 @@ export function removePart(kit: SectionStructureKitDef, partId: string): Section
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
+/** 셀 목록 → 행렬. 상층 배열은 내용이 있는 행에만 기록(기존 직렬화 규약과 같다). */
+export function bakeCellsToRows(
+  cells: readonly PaletteStampCell[],
+  width: number,
+  height: number,
+): StructureKitRow[] {
+  const lower: number[][] = [];
+  const upper: number[][] = [];
+  for (let y = 0; y < height; y += 1) {
+    lower.push(new Array<number>(width).fill(TILE.EMPTY));
+    upper.push(new Array<number>(width).fill(TILE.EMPTY));
+  }
+  for (const cell of cells) {
+    if (cell.dx < 0 || cell.dy < 0 || cell.dx >= width || cell.dy >= height) continue;
+    (cell.layer === "upper" ? upper : lower)[cell.dy]![cell.dx] = cell.tile;
+  }
+  return lower.map((tiles, y) => {
+    const upperRow = upper[y]!;
+    return upperRow.some((tile) => tile !== TILE.EMPTY) ? { tiles, upperTiles: upperRow } : { tiles };
+  });
+}
+
+/**
+ * 무엇을 복제하든 결과는 section 이다.
+ * 집 킷의 파라미터성은 여기서 잃지만, 파라메트릭 시공은 원래 build_house_kit 의 일이고
+ * list_structure_kits 는 section 킷에만 rows 를 넘기므로 굽기가 오히려 AI 가독성을 높인다.
+ */
+export function bakeStructureKit(kit: StructureKitDef, id: string, name: string): SectionStructureKitDef {
+  const size = structureKitSize(kit);
+  const rows = kit.kind === "section"
+    ? kit.rows.map((row) => ({ tiles: [...row.tiles], ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}) }))
+    : bakeCellsToRows(structureKitUnitCells(kit), size.width, size.height);
+  return {
+    id,
+    kind: "section",
+    name,
+    width: size.width,
+    height: size.height,
+    rows,
+    ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
+    ...(kit.ai ? { ai: { ...kit.ai, tags: kit.ai.tags ? [...kit.ai.tags] : undefined } } : {}),
+    learnedFrom: "db-authored",
+  };
+}
+
+/**
+ * 실내 오브젝트 → section. role·snap·themes 는 버린다.
+ * 그 메타는 실내 방 생성 파이프라인의 문법이고, 사본은 그 문법에 등록되지 않는다.
+ */
+export function bakeInteriorObject(object: InteriorObjectDef, id: string, name: string): SectionStructureKitDef {
+  return {
+    id,
+    kind: "section",
+    name,
+    width: Math.max(1, object.width),
+    height: Math.max(1, object.height),
+    rows: bakeCellsToRows(
+      object.cells.map((cell) => ({ dx: cell.dx, dy: cell.dy, layer: cell.layer, tile: cell.tile })),
+      Math.max(1, object.width),
+      Math.max(1, object.height),
+    ),
+    learnedFrom: "db-authored",
+  };
+}
+
+/** '우물' → '우물 사본' → '우물 사본 2' … 이미 쓰는 이름을 피한다. */
+export function copyName(baseName: string, existingNames: readonly string[]): string {
+  const taken = new Set(existingNames);
+  const first = `${baseName} 사본`;
+  if (!taken.has(first)) return first;
+  for (let n = 2; n < 1000; n += 1) {
+    const candidate = `${first} ${n}`;
+    if (!taken.has(candidate)) return candidate;
+  }
+  return `${first} ${Date.now()}`;
 }
