@@ -865,6 +865,9 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
     issues.push({ severity: "warning", code: "opt-in:tool-actions-without-farmable", message: "도구 규칙이 있으나 적용될 경작 영역이 없습니다." });
   }
   // 10. actionCombat enabled but no action combat maps
+  if (system.actionCombat?.enabled === true) {
+    issues.push({ severity: "warning", code: "deprecated:action-combat", message: "액션 전투는 지원 종료 예정입니다. 지원 전투는 RM식(rm2k3)과 포켓몬식(gen1) 둘뿐이며, 저장된 프로젝트는 계속 동작합니다." });
+  }
   if (system.actionCombat?.enabled === true && actionCombatMaps.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:action-combat-no-map", message: "액션 전투가 활성이나 opt-in 한 맵이 없어 필드 접촉이 턴제로 갑니다." });
   }
