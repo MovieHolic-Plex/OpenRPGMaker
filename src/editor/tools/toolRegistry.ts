@@ -3,6 +3,7 @@
 // toOpenAiTools()로 OpenAI function calling `tools` 배열을 자동 파생한다.
 
 import { BATTLE_TOOLS } from "./battleTools";
+import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
@@ -184,6 +185,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_ARC_TOOLS, "event"),
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
+  ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),

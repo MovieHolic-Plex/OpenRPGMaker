@@ -507,7 +507,9 @@ const troopRecordSchema = objectSchema({
   previewBackgroundResourceId: stringSchema(),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
-  battleEventPages: { type: "array", description: "BattleEventPageRecord[]", items: { type: "object", additionalProperties: true } },
+  // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
+  // 조건 kind 오타·빈 commands·무한 반복이 무검증으로 저장된다. upsert_troop_battle_page /
+  // author_boss_phases 가 페이지 단위로 검증해서 쓴다(아래 run 의 리다이렉트 참고).
 }) as RecordSchema;
 
 const monsterSpeciesGraphicSchema = objectSchema({
@@ -823,6 +825,16 @@ const upsertTroop: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }),
   run(draft, args): ToolExecResult {
+    // 전투 이벤트 페이지는 이 툴의 계약이 아니다. 일반 unknown-field 오류로 떨어지면 모델은 필드를
+    // 그냥 빼버리고 "보스 연출을 넣었다"고 보고한다 — 어디로 가야 하는지 명시적으로 알려준다.
+    if (args.troop && typeof args.troop === "object" && !Array.isArray(args.troop)
+      && (args.troop as Record<string, unknown>).battleEventPages !== undefined) {
+      throw new ToolError(
+        "troop.battleEventPages 는 upsert_troop 으로 쓸 수 없습니다(무검증 저장을 막았습니다). " +
+          "보스 페이즈는 author_boss_phases, 개별 페이지는 upsert_troop_battle_page 를 쓰세요 — 조건·커맨드·무한반복을 검증합니다.",
+        { code: "use-battle-page-tool" },
+      );
+    }
     const merged = mergeRecord(draft.database.troops, args.troop, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
     const record = normalizeTroopRecord(merged as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;

@@ -46,6 +46,24 @@ export interface SimulateBattleInput {
   readonly battleResult?: "victory" | "defeat" | "escape";
 }
 
+/**
+ * 트룹 전투 이벤트 페이지(= 보스 페이즈)가 **실제로 발동했는지**의 n판 합산 집계.
+ *
+ * `eventLogs` 는 첫 판(i===0)만 보관하므로 "50판 중 한 번도 안 뜬 연출" 이 보이지 않았다.
+ * 저작자가 페이즈를 넣는 이유는 그것이 전투 중에 뜨는 것이므로, 발동 여부는 승률과 같은 급의
+ * 1차 지표다. 한 번도 발동하지 않은 페이지(firedRuns=0)는 조건이 도달 불가하다는 뜻이다.
+ */
+export interface BattlePhaseCoverage {
+  readonly pageId: string;
+  readonly name: string;
+  /** 이 페이지가 최소 1회 발동한 판 수(0 = 한 번도 안 뜬 연출). */
+  readonly firedRuns: number;
+  /** 발동 라운드의 최솟값. 한 번도 발동하지 않았으면 없음. */
+  readonly firstRound?: number;
+  /** 이 페이지에서 런타임이 처리하지 못한(unsupported) 커맨드 로그 수. */
+  readonly unsupported: number;
+}
+
 export interface SimulateBattleResult {
   readonly winRate: number;
   readonly avgTurns: number; // 아군 행동 결정 횟수 평균(≈ 처치까지 걸린 타)
@@ -59,6 +77,8 @@ export interface SimulateBattleResult {
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly capturedCount: number;
   readonly firstRewards?: BattleRewardsSnapshot;
+  /** 트룹의 전투 이벤트 페이지 전부(발동 0회 포함). 페이지가 없으면 빈 배열. */
+  readonly phaseCoverage: readonly BattlePhaseCoverage[];
 }
 
 interface SingleRunResult {
@@ -228,6 +248,10 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   let capturedMonsters: readonly BattleCapturedMonsterSnapshot[] = [];
   let capturedCount = 0;
   let firstRewards: BattleRewardsSnapshot | undefined;
+  // 페이즈 발동은 판마다 다르다(HP 임계 조건은 그 판의 진행에 달렸다) — n판 전부를 합산한다.
+  const firedRuns = new Map<string, number>();
+  const firstFiredRound = new Map<string, number>();
+  const unsupportedByPage = new Map<string, number>();
   for (let i = 0; i < n; i += 1) {
     const run = runSingleBattle(input, rng);
     if (run.victory) wins += 1;
@@ -235,6 +259,19 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     totalPotions += run.potionsUsed;
     totalHp += run.hpRemaining;
     capturedCount += run.capturedMonsters.length;
+    const firedThisRun = new Set<string>();
+    for (const log of run.eventLogs) {
+      if (log.kind === "fired") {
+        if (!firedThisRun.has(log.pageId)) {
+          firedThisRun.add(log.pageId);
+          firedRuns.set(log.pageId, (firedRuns.get(log.pageId) ?? 0) + 1);
+        }
+        const previous = firstFiredRound.get(log.pageId);
+        if (previous === undefined || log.round < previous) firstFiredRound.set(log.pageId, log.round);
+      } else if (log.kind === "unsupported") {
+        unsupportedByPage.set(log.pageId, (unsupportedByPage.get(log.pageId) ?? 0) + 1);
+      }
+    }
     if (i === 0) {
       roundLogs = run.roundLogs;
       eventLogs = run.eventLogs;
@@ -243,16 +280,29 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
       firstRewards = run.rewards;
     }
   }
+  const troopRecord = input.project.database.troops.find((troop) => troop.id === input.troopId);
+  // 저작된 페이지 전부를 나열한다 — 발동 0회를 결과에서 지우면 "안 뜬 연출" 을 볼 방법이 없다.
+  const phaseCoverage: BattlePhaseCoverage[] = (troopRecord?.battleEventPages ?? []).map((page) => {
+    const round = firstFiredRound.get(page.id);
+    return {
+      pageId: page.id,
+      name: page.name,
+      firedRuns: firedRuns.get(page.id) ?? 0,
+      ...(round === undefined ? {} : { firstRound: round }),
+      unsupported: unsupportedByPage.get(page.id) ?? 0,
+    };
+  });
   return {
     winRate: wins / n,
     avgTurns: totalTurns / n,
     avgPotionsUsed: totalPotions / n,
     avgHpRemaining: totalHp / n,
     samples: n,
-    battleFlow: input.battleFlow ?? input.project.database.troops.find((troop) => troop.id === input.troopId)?.battleFlow ?? input.project.system.battleFlow ?? "strict",
+    battleFlow: input.battleFlow ?? troopRecord?.battleFlow ?? input.project.system.battleFlow ?? "strict",
     participatingActorIds,
     roundLogs,
     eventLogs,
+    phaseCoverage,
     capturedMonsters,
     capturedCount,
     firstRewards,
