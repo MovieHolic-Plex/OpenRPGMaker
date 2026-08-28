@@ -304,8 +304,8 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
         `- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height}`
         + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${repeatable ? "반복 가능" : "한 채 완결"})`,
       );
-      if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description}`);
-      if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules}`);
+      if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description.slice(0, 100)}`);
+      if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules.slice(0, 100)}`);
     }
   }
   if (lines.length === 0) return "";

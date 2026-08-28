@@ -95,12 +95,42 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
     expect(map.lowerTiles[2]).not.toBe(421);
   });
 
-  it("repeat 인 킷은 repeat 를 그대로 따른다", () => {
-    const { project, mapId } = projectWithRepeatKit({
-      description: "나무 울타리",
-      placementRules: "마당 둘레",
-      repeatability: "repeat",
+  it("repeat 인 킷은 repeat 를 그대로 따른다 — house 종류라 fallback 이면 false 다", () => {
+    // kind:"section"이면 fallback(kind === "section")도 true라 override 유무를 가리지 못한다.
+    // house는 fallback이 false이므로, ai.repeatability:"repeat"가 실제로 override할 때만 통과한다.
+    const project = createEmptyToolProject("반복 테스트(집)");
+    const context = { project };
+    // 높이를 넉넉히 잡아 맵 중앙(기본 시작 위치)이 y:0-8 집 발자국 밖에 오게 한다.
+    runTool(context, "create_map", { name: "반복맵(집)", width: 30, height: 20 });
+    const mapId = Object.keys(context.project.maps)[0]!;
+    const tilesetId = context.project.maps[mapId]!.tilesetId;
+    context.project.tilesets[tilesetId]!.structureKits = [{
+      id: "kit_house_repeat_test",
+      kind: "house",
+      name: "반복 집 킷",
+      houseKitId: "blue-stone",
+      wings: [{ x: 0, y: 0, w: 9, h: 8 }],
+      learnedFrom: "db-authored",
+      ai: {
+        description: "테스트용 반복 집",
+        placementRules: "테스트",
+        repeatability: "repeat",
+      },
+    }];
+
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId,
+      kitId: "kit_house_repeat_test",
+      origin: { x: 0, y: 0 },
+      repeat: 3,
     });
+
+    expect(result.ok).toBe(true);
+    expect((result.data as { repeat: number }).repeat).toBe(3);
+  });
+
+  it("ai 가 없으면 기존 동작(section 은 반복)을 유지한다", () => {
+    const { project, mapId } = projectWithRepeatKit(undefined);
     const context = { project };
 
     runTool(context, "stamp_structure_kit", {
@@ -109,8 +139,11 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
     expect(context.project.maps[mapId]!.lowerTiles[4]).toBe(421);
   });
 
-  it("ai 가 없으면 기존 동작(section 은 반복)을 유지한다", () => {
-    const { project, mapId } = projectWithRepeatKit(undefined);
+  it("ai 는 있지만 repeatability 가 없으면 기존 동작(section 은 반복)을 유지한다", () => {
+    const { project, mapId } = projectWithRepeatKit({
+      description: "설명은 있지만 반복 여부는 안 정함",
+      placementRules: "아무 데나",
+    });
     const context = { project };
 
     runTool(context, "stamp_structure_kit", {
