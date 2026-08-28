@@ -21,7 +21,7 @@ import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
-import { followerPositions, recordFollowerPlayerStep, resetFollowerTrailNearPlayer } from "@/project/followers";
+import { followerPositions, recordFollowerPlayerStep, removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules, type FollowerWorld } from "@/project/followers";
 import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import {
@@ -657,7 +657,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           if (targetMap) applyMapDefaultLighting(state.session, targetMap);
           if (targetMap) applyMapBgmToSession(state.session.audio, resolveMapBgm(state.project, step.mapId));
         }
-        resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
+        if (resolveCompanionRules(state.project.system.companions).clearOnTransfer) {
+          removeFollowerFromSession(state.session, { all: true });
+        }
+        resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId], state.project.system.companions);
         applyNpcSchedulesForRunner(state);
         refreshChasers(state);
         syncFollowCamera(state);
@@ -1220,13 +1223,13 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     if (distanceFailure) return distanceFailure;
   }
   if (step.followerCount !== undefined && (state.session.followers?.length ?? 0) !== step.followerCount) {
-    return `동행자 수: 기대 ${step.followerCount}, 실제 ${state.session.followers?.length ?? 0}`;
+    return `동료 수: 기대 ${step.followerCount}, 실제 ${state.session.followers?.length ?? 0}`;
   }
   if (step.followerAt) {
-    const actual = followerPositions(state.session).find((entry) => entry.follower.name === step.followerAt?.name);
-    if (!actual) return `동행자 없음: ${step.followerAt.name}`;
+    const actual = followerPositions(state.session, state.project.system.companions, followerWorld(state)).find((entry) => entry.follower.name === step.followerAt?.name);
+    if (!actual) return `동료 없음: ${step.followerAt.name}`;
     if (actual.x !== step.followerAt.x || actual.y !== step.followerAt.y) {
-      return `동행자 ${step.followerAt.name}: 기대 (${step.followerAt.x},${step.followerAt.y}), 실제 (${actual.x},${actual.y})`;
+      return `동료 ${step.followerAt.name}: 기대 (${step.followerAt.x},${step.followerAt.y}), 실제 (${actual.x},${actual.y})`;
     }
   }
   if (step.cameraAt) {
@@ -1453,7 +1456,7 @@ function resolveLightAnchorForRunner(
 ): LightTilePosition | undefined {
   if (anchor === "player") return { x: state.session.x, y: state.session.y };
   if ("eventId" in anchor) {
-    const follower = followerPositions(state.session).find((entry) =>
+    const follower = followerPositions(state.session, state.project.system.companions, followerWorld(state)).find((entry) =>
       entry.follower.eventId === anchor.eventId || entry.follower.name === anchor.eventId
     );
     if (follower) return { x: follower.x, y: follower.y };
@@ -1547,6 +1550,11 @@ function toStringList(value: string | readonly string[] | undefined): readonly s
 
 function currentMap(state: RunnerState): GameMap | undefined {
   return state.runtimeMaps[state.session.currentMapId];
+}
+
+function followerWorld(state: RunnerState): FollowerWorld | undefined {
+  const map = currentMap(state);
+  return map ? { project: state.project, map } : undefined;
 }
 
 function directionDelta(dir: Dir): { readonly x: number; readonly y: number } {
@@ -1832,7 +1840,6 @@ function result(
   gameOver: boolean,
   animationPlaying: boolean
 ): SceneTestResult {
-  void project;
   void eventPositions;
   const lighting = normalizeLightingState(session.lighting);
   return {
@@ -1854,7 +1861,7 @@ function result(
       fieldSpawnCount: fieldSpawnAliveCount(fieldSpawnState),
       spawnedCount: spawnedCount(session),
       followerCount: session.followers?.length ?? 0,
-      followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
+      followers: followerPositions(session, project.system.companions).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
       picturesVisible: Object.keys(session.pictures),
       messages,
       bgm: session.audio.bgm?.resourceId,

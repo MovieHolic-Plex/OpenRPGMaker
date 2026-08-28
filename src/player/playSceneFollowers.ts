@@ -8,7 +8,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 export function syncFollowerSprites(scene: PlaySceneContext): void {
   const expected = new Set<string>();
   const project = store.getCurrent();
-  for (const position of followerPositions(scene.session)) {
+  for (const position of followerPositions(scene.session, project.system.companions, { project, map: scene.map })) {
     const key = followerSpriteKey(position.follower);
     expected.add(key);
     const spriteRef = position.follower.graphic.sprite;

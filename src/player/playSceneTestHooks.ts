@@ -55,6 +55,15 @@ type ActionCombatDebug = {
   readonly swingCooldownMs: number;
   readonly stamina: number;
   readonly facing: string;
+  /** 회피가 열어 둔 남은 무적 창(ms). 0 이면 회피 중이 아니다. */
+  readonly dodgeIframesMs: number;
+  /** 피격 직후 무적 창(ms). */
+  readonly playerIframesMs: number;
+  /** 가드 키를 잡고 있어 감산이 걸린 상태인가. */
+  readonly guarding: boolean;
+  /** 활성 액션 스킬 슬롯 인덱스와 슬롯 목록. */
+  readonly activeSkillSlot: number;
+  readonly skillSlotIds: readonly string[];
 };
 
 type MediaStateDebug = {
@@ -323,6 +332,11 @@ function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
       projectiles: unknown[];
       swingCooldownMs: number;
       stamina: number;
+      dodgeIframesMs: number;
+      playerIframesMs: number;
+      guarding: boolean;
+      activeSkillSlot: number;
+      skillSlotIds: readonly string[];
     } | null;
     facing?: string;
   };
@@ -339,5 +353,10 @@ function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
     swingCooldownMs: state.swingCooldownMs,
     stamina: state.stamina,
     facing: context.facing ?? "down",
+    dodgeIframesMs: state.dodgeIframesMs,
+    playerIframesMs: state.playerIframesMs,
+    guarding: state.guarding,
+    activeSkillSlot: state.activeSkillSlot,
+    skillSlotIds: [...state.skillSlotIds],
   };
 }

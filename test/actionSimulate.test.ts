@@ -21,7 +21,9 @@ describe("simulateActionCombat", () => {
   });
 
   it("windup/recover windows let the player trade favorably", () => {
-    const durablePlayer = { maxHp: 100000, attack: 10, swingCooldownMs: 350 };
+    // 스윙 간격(3000ms)이 선딜(2000ms)보다 길어야 예고된 타격이 틈을 뚫는다 —
+    // 그보다 촘촘하면 매 스윙이 선딜을 경직으로 끊어 버린다(stagger 규칙).
+    const durablePlayer = { maxHp: 100000, attack: 10, swingCooldownMs: 3000 };
     const withPattern = simulateActionCombat(
       durablePlayer,
       { maxHp: 200, defense: 2, contactDamage: 10, attack: { kind: "melee", windupMs: 2000, recoverMs: 2000, damage: 10, range: 1, cooldownMs: 3000 } },

@@ -13,11 +13,27 @@
   --ai-shell-control: 34px;
 }
 
-/* ── 셸 ─────────────────────────────────────────────────────── */
-/* 13 레이어가 `.editor-layout .ai-chat-panel...` 로 한 단계 높은 구상도를 쓰기 때문에
-   셸 표면은 그 짝을 맞춰야 이긴다 — 나중 import 만으로는 지고 밀리는 값이다. */
-.editor-layout .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed),
-.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+/* ── 유리면 ─────────────────────────────────────────────────── */
+/* 이 파일이 조수 표면의 **단일 소유자**다(2026-08-28). 13 레이어는 기하만 잡도록 비웠다.
+   13 이 `.editor-layout .ai-chat-panel...` (0,6,0) 을 쓰므로 여기서도 그 짝을 맞춘다 —
+   나중 import 만으로는 (0,5,0) 이 (0,6,0) 을 못 이긴다.
+
+   왜 background 를 여기서 반드시 선언하는가: 개편 전 이 규칙은 border/radius/shadow 만
+   덮고 background 를 비워 뒀고, 그 결과 13:16 의 `--bg-raised`(=#FFFFFF) 가 끝까지 살아남아
+   `chat-dock-glass` 가 이름만 유리인 **완전 불투명 흰 카드**로 렌더됐다
+   (실측 verify-shots/assistant-glass/before/metrics.json: rgb(255,255,255), backdrop-filter: none).
+
+   `:not(.is-map-first-idle)` — 12:67 이 그 상태에서 패널을 투명·무반응으로 만든다.
+   같은 (0,6,0) 인데 이 파일이 뒤에 import 되므로, 제외하지 않으면 되살려 버린다.
+
+   유리는 도크별로 분기하지 않는다. 유리·입력줄 도크에서는 패널이 맵 위에 떠 있어 프로스티드로
+   읽히고, 사이드 도크는 레이아웃 컬럼이라 뒤가 셸 배경(#F7F8F8)뿐이므로 같은 알파가
+   거의 흰색으로 합성된다 — 규칙 하나로 두 결과가 다 맞는다. */
+.editor-layout .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle),
+.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
+  background: var(--bg-glass-panel);
+  -webkit-backdrop-filter: var(--glass-blur-panel);
+  backdrop-filter: var(--glass-blur-panel);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
   box-shadow:
@@ -26,40 +42,9 @@
 }
 
 /* ── 헤더 ───────────────────────────────────────────────────── */
-.ai-chat-panel.chat-dock-glass .ai-chat-header,
-.ai-chat-panel.chat-dock-side .ai-chat-header {
-  background: var(--bg-raised);
-  gap: 10px;
-  min-height: 64px;
-  padding: 12px var(--ai-shell-gutter);
-}
-
-.ai-director-plate {
-  gap: 12px;
-}
-
-.ai-chat-panel .ai-director-plate .ai-director-face,
-.ai-chat-panel .ai-director-plate [role="img"] {
-  border-radius: 12px;
-  height: 40px;
-  width: 40px;
-}
-
-.ai-director-copy {
-  gap: 3px;
-}
-
-.ai-chat-panel .ai-header-actions {
-  gap: 4px;
-}
-
-.ai-chat-panel .ai-chat-header .ai-chat-icon-btn,
-.ai-chat-panel .ai-chat-header .ai-more-toggle,
-.ai-chat-panel .ai-chat-collapse {
-  border-radius: 10px;
-  height: var(--ai-shell-control);
-  min-width: var(--ai-shell-control);
-}
+/* 없다. `.ai-chat-header` 는 2026-08-28 에 DOM 에서 제거됐다(aiChatPanel.ts).
+   구 규칙은 518×73px 밴드에 --bg-raised 를 칠하고 그 안에 48px 얼굴판을 세웠다.
+   담고 있던 실기능은 ☰ 와 ▾ 둘뿐이었다. */
 
 /* ── 본문 리듬 ──────────────────────────────────────────────── */
 .ai-chat-panel.chat-dock-glass .ai-chat-main,
@@ -69,7 +54,9 @@
   flex-direction: column;
   gap: var(--ai-shell-gap);
   min-height: 0;
-  padding-top: var(--ai-shell-gap);
+  /* 헤더가 사라져 본문이 카드의 첫 자식이 됐다. 12px 는 64px 헤더 **아래** 숨쉴 틈으로
+     맞춘 값이라 이제 부족하다 — 18px 둥근 모서리에 글자가 붙는다. 카드 인셋 16px 로 올린다. */
+  padding-top: var(--ai-shell-gutter);
 }
 
 .ai-chat-panel.chat-dock-glass .ai-glass-log,
@@ -86,7 +73,11 @@
    `:empty` 로는 못 잡는다 — 껍데기 안에 빈 .ai-chat-log 엘리먼트가 실제로 들어 있다. */
 .ai-chat-panel[data-ai-conversation="empty"].chat-dock-glass .ai-glass-log,
 .ai-chat-panel[data-ai-conversation="empty"].chat-dock-glass.is-glass-idle .ai-glass-log,
-.ai-chat-panel[data-ai-conversation="empty"] .ai-history-log-mount {
+.ai-chat-panel[data-ai-conversation="empty"] .ai-history-log-mount,
+/* 사이드 도크가 이 목록에서 빠져 있었다 — 실측(before/10-dock-side-panel.png)에서 대화가
+   비어도 515×400 짜리 빈 회색 상자가 그대로 남았다. 유리와 같은 규칙을 적용한다. */
+.ai-chat-panel[data-ai-conversation="empty"].chat-dock-side .ai-rising-volatile-zone,
+.ai-chat-panel[data-ai-conversation="empty"].chat-dock-side .ai-glass-log {
   display: none;
 }
 
@@ -141,7 +132,11 @@
 }
 
 .ai-chat-panel .ai-authoring-examples-title {
-  color: var(--text-3);
+  /* --text-3(#626E89) 이 아니라 --text-2(#475569) 다. 실측: --text-3 은 **순백 위에서도
+     4.75:1** 뿐이라 유리면의 반투명을 견디지 못하고 마을 잔디 위에서 4.22:1 로 AA 미달이었다.
+     --text-2 는 같은 배경에서 6.2:1 이라 여유가 있다.
+     근거: scripts/analyze-glass-contrast.mjs → verify-shots/assistant-glass/after/contrast.json */
+  color: var(--text-2);
   flex: 1 0 100%;
   font-size: 12px;
   font-weight: 600;
@@ -179,6 +174,9 @@
 
 .ai-chat-panel.chat-dock-glass .ai-composer,
 .ai-chat-panel.chat-dock-side .ai-composer {
+  /* 유리 위에 뜬 불투명 흰 카드로 읽히면 안 된다 — 유리면보다 살짝 밝은 인셋으로 앉힌다.
+     실측 전: rgb(255,255,255) 로 패널과 같은 색이라 경계가 테두리 1px 뿐이었다. */
+  background: color-mix(in srgb, var(--bg-raised) 62%, transparent);
   border: 1px solid var(--border-subtle);
   border-radius: var(--ai-shell-radius);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);

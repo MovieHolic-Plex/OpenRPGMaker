@@ -10,6 +10,8 @@ import {
   isAttackKey,
   isConfirmKey,
   isDashKey,
+  isGuardKey,
+  isSkillCycleKey,
   isSkillKey,
   normalizeKey,
 } from "@/player/keyBindings";
@@ -87,10 +89,12 @@ export function facingForStep(dx: number, dy: number): Dir {
 export class RuntimeKeyHoldTracker {
   private readonly actionKeys = new Set<string>();
   private readonly skillKeys = new Set<string>();
+  private readonly guardKeys = new Set<string>();
   private readonly directions = new Set<Dir>();
   private pendingActionEdge = false;
   private pendingAttackEdge = false;
   private pendingSkillEdge = false;
+  private pendingSkillCycleEdge = false;
   private attackMode = false;
   private dashHeld = false;
 
@@ -110,6 +114,8 @@ export class RuntimeKeyHoldTracker {
       if (!this.skillKeys.has(normalized)) this.pendingSkillEdge = true;
       this.skillKeys.add(normalized);
     }
+    if (isSkillCycleKey(key)) this.pendingSkillCycleEdge = true;
+    if (isGuardKey(key)) this.guardKeys.add(normalized);
     if (isConfirmKey(key)) {
       if (!this.actionKeys.has(normalized)) {
         // 액션 전투 맵에서는 확인 키 하나가 조사와 공격을 겸한다. 정면에 조사 대상이
@@ -129,6 +135,7 @@ export class RuntimeKeyHoldTracker {
     const normalized = normalizeKey(key);
     if (isConfirmKey(key)) this.actionKeys.delete(normalized);
     if (isSkillKey(key)) this.skillKeys.delete(normalized);
+    if (isGuardKey(key)) this.guardKeys.delete(normalized);
     const dir = directionForKey(key);
     if (dir) this.directions.delete(dir);
   }
@@ -138,11 +145,23 @@ export class RuntimeKeyHoldTracker {
   releaseAll(): void {
     this.actionKeys.clear();
     this.skillKeys.clear();
+    this.guardKeys.clear();
     this.directions.clear();
     this.dashHeld = false;
     this.pendingActionEdge = false;
     this.pendingAttackEdge = false;
     this.pendingSkillEdge = false;
+    this.pendingSkillCycleEdge = false;
+  }
+
+  isGuarding(): boolean {
+    return this.guardKeys.size > 0;
+  }
+
+  consumeSkillCycleEdge(): boolean {
+    const edge = this.pendingSkillCycleEdge;
+    this.pendingSkillCycleEdge = false;
+    return edge;
   }
 
   isDashing(): boolean {
@@ -352,6 +371,19 @@ export class Input {
   // 자동화용 스킬 엣지 주입.
   injectSkillEdge(): void {
     this.runtimeKeys.injectSkillEdge();
+  }
+
+  // 액션 전투 슬롯 순환 엣지. update() 가 아니라 액션 전투 갱신이 직접 소모한다 —
+  // 이동/조사 경로와 서로 엣지를 모이지 않게 나눠 둔다.
+  // 입력이 닫힌 동안(인터프리터 진행) 대기한 엣지는 버린다.
+  consumeSkillCycleEdge(): boolean {
+    const edge = this.runtimeKeys.consumeSkillCycleEdge();
+    return this.enabled ? edge : false;
+  }
+
+  // 가드 키가 누렸는가(지속). 입력이 닫힐 동안은 가드도 서지 않는다.
+  isGuardHeld(): boolean {
+    return this.enabled && this.runtimeKeys.isGuarding();
   }
 
   // 방향 지속 입력 주입(자동화용). dir을 눌린 상태로 설정한다.

@@ -280,6 +280,19 @@ function codexOAuthPlugin(): Plugin {
   };
 }
 
+/**
+ * 브라우저 QA 중 dev 서버를 얼릴지 여부.
+ *
+ * 병렬 에이전트가 `src/` 를 편집하면 HMR 이 QA 중인 페이지에 리로드를 밀어넣어
+ * 편집기 부팅이 깨지고 `ERR_NETWORK_CHANGED` 가 쏟아진다(openwiki/testing.md).
+ * Playwright 가 webServer 로 직접 띄운 서버에는 이 플래그가 걸려 파일 감시와 HMR 을
+ * 모두 끈다 — 그 실행 동안 서버가 내주는 번들은 고정된다.
+ *
+ * 개발용 서버는 건드리지 않는다. `reuseExistingServer: true` 라서 이미 떠 있는 서버를
+ * 재사용하면 이 플래그는 안 걸린다 — 그때는 소스가 조용할 때 증거를 잡는 수밖에 없다.
+ */
+const freezeDevServer = () => process.env.E2E_FREEZE_DEV_SERVER === "1";
+
 export default defineConfig(({ mode }) => {
   const apitopiaKey = gatewayApiKey(mode);
   if (!apitopiaKey) {
@@ -347,6 +360,11 @@ export default defineConfig(({ mode }) => {
     };
   }
   return {
+  // 병렬 워크트리는 `node_modules` 를 메인 레포로 심볼릭 링크해 쓴다 — 즉 vite 의 최적화 캐시
+  // (`node_modules/.vite`) 까지 공유된다. 여러 워크트리의 dev 서버가 동시에 돌면 서로의 캐시를
+  // 재최적화하다 "Failed to scan for dependencies" 로 서버가 죽는다(실측: 액션 전투 QA 중 3회).
+  // VITE_CACHE_DIR 을 주면 워크트리 전용 캐시를 써서 이 충돌을 없앤다.
+  cacheDir: process.env.VITE_CACHE_DIR,
   plugins: [aiActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
   resolve: {
     alias: {
@@ -365,8 +383,19 @@ export default defineConfig(({ mode }) => {
     fs: {
       // 워크트리에서 node_modules 를 정션(mklink /J)으로 쓰면 @fs 실경로가 원본 저장소의
       // node_modules 로 풀린다 — 기본 allow(워크스페이스 루트)만으로는 403. 그 경로만 추가 허용.
+      //
+      // `../rpg-zzu/node_modules` 만으로는 부족하다: 그 상대경로는 워크트리가 원본의 **형제**일
+      // 때만 맞는다(scripts/agent-worktree.mjs 배치). Claude Code 의 워크트리는
+      // `<repo>/.claude/worktrees/<name>` 에 생기므로 `../rpg-zzu/...` 가 빗나가고, phaser.min.js
+      // 가 403 으로 막혀 Phaser 가 뜨지 않는다 — 편집기 캔버스가 빈 DIV 로 남는 증상
+      // (2026-08-28 실측: `403 /@fs/.../node_modules/phaser/dist/phaser.min.js`).
+      // 그래서 배치를 가정하지 않고 **로컬 `./node_modules` 의 실경로**를 직접 넣는다.
       allow: (() => {
-        const roots = [fileURLToPath(new URL("./", import.meta.url)), fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url))];
+        const roots = [
+          fileURLToPath(new URL("./", import.meta.url)),
+          fileURLToPath(new URL("./node_modules", import.meta.url)),
+          fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url)),
+        ];
         for (const root of [...roots]) {
           try {
             const real = realpathSync(root);
@@ -377,9 +406,14 @@ export default defineConfig(({ mode }) => {
         return [...new Set(roots)];
       })(),
     },
-    watch: {
-      ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
-    },
+    // E2E 실행 중에는 HMR 도 파일 감시도 끈다. `watch: null` 이면 chokidar 자체가 안 뜨므로
+    // 다른 에이전트가 `src/` 를 저장해도 모듈 무효화·리로드가 발생하지 않는다.
+    hmr: freezeDevServer() ? false : undefined,
+    watch: freezeDevServer()
+      ? null
+      : {
+          ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
+        },
     // 상대 baseUrl(/api/ai, /api/qwen, /api/cpen)을 쓰는 클라이언트는 Authorization 을 보내지 않고
     // 이 프록시가 주입한다. 키가 없는 경로는 등록하지 않는다(빈 Bearer 전송 금지). 접근은
     // localOnlyAiProxyPlugin 이 루프백으로 제한.

@@ -151,11 +151,12 @@ function resolveLightAnchor(
   if ("eventId" in anchor) {
     const eventSprite = scene.eventSprites.get(anchor.eventId);
     if (eventSprite) return spriteToTilePosition(eventSprite);
-    const follower = followerPositions(scene.session).find((entry) =>
+    const project = store.getCurrent();
+    const follower = followerPositions(scene.session, project.system.companions, { project, map: scene.map }).find((entry) =>
       entry.follower.eventId === anchor.eventId || entry.follower.name === anchor.eventId
     );
     if (follower) return { x: follower.x, y: follower.y };
-    const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
+    const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
       .find((entry) => entry.event.id === anchor.eventId);
     return view ? { x: view.x, y: view.y } : undefined;
   }

@@ -15,6 +15,7 @@ import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { actorDerivedStats } from "@/battle/battleBattlers";
 import { normalizeActorRecord } from "@/project/actorModel";
+import { DEFAULT_SWING_COOLDOWN_MS, DEFAULT_SWING_RANGE } from "@/project/actionCombat";
 import {
   effectiveActorEquipment,
   logicalEquipmentIds,
@@ -23,7 +24,7 @@ import {
 } from "@/project/equipmentRules";
 import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
-import type { ActorInitialEquipment, EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags, Project } from "@/project/types";
+import type { ActionWeaponProfile, ActorInitialEquipment, EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
 type CheckboxFieldInput = {
@@ -330,6 +331,12 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                 choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds", refreshOverview)),
               ],
             }))),
+            sectionCard({
+              title: "액션 전투 스윙",
+              hint: "실시간 액션 전투에서만 쓰입니다 — 비우면 시스템 기본값",
+              testid: "db-equipment-card-action-weapon",
+              children: actionWeaponFields(record),
+            }),
             spanCard(sectionCard({
               title: "상태 이상",
               testid: "db-equipment-card-states",
@@ -792,4 +799,40 @@ function currentEquipment(record: EquipmentRecord): EquipmentRecord {
 function toggleId(source: readonly string[], id: string, checked: boolean): string[] {
   if (checked) return source.includes(id) ? [...source] : [...source, id];
   return source.filter((entry) => entry !== id);
+}
+
+function actionWeaponFields(record: EquipmentRecord): HTMLElement[] {
+  const profile = record.actionWeapon;
+  const patch = (key: keyof ActionWeaponProfile, fallback: number, value: number): void => {
+    // 폼 전역 재렌더 없이 연속 편집해도 이전 필드가 사라지지 않도록 살아 있는 레코드를 읽는다.
+    const next: ActionWeaponProfile = { ...(currentEquipment(record).actionWeapon ?? {}) };
+    if (value === fallback) delete next[key];
+    else next[key] = value;
+    updateDatabaseRecord("equipment", record.id, {
+      actionWeapon: Object.keys(next).length > 0 ? next : undefined,
+    });
+  };
+  return [
+    numberField(
+      "스윙 범위",
+      "db-field-equipment-action-weapon-swing-range",
+      profile?.swingRange ?? DEFAULT_SWING_RANGE,
+      (value) => patch("swingRange", DEFAULT_SWING_RANGE, value),
+      { min: 1, max: 5 },
+    ),
+    numberField(
+      "쿨다운(ms)",
+      "db-field-equipment-action-weapon-swing-cooldown",
+      profile?.swingCooldownMs ?? DEFAULT_SWING_COOLDOWN_MS,
+      (value) => patch("swingCooldownMs", DEFAULT_SWING_COOLDOWN_MS, value),
+      { min: 50, max: 5000 },
+    ),
+    numberField(
+      "데미지 가산",
+      "db-field-equipment-action-weapon-swing-bonus",
+      profile?.swingDamageBonus ?? 0,
+      (value) => patch("swingDamageBonus", 0, value),
+      { min: 0, max: 9999 },
+    ),
+  ];
 }

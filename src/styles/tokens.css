@@ -18,6 +18,20 @@
   --bg-inset: #EEF1F4;
   --bg-canvas: #EEF1F4;
   --bg-glass: rgba(247, 248, 248, 0.92);
+  /* 조수 패널 유리면 전용 — --bg-glass(셸 칩·상태바용)와 값이 다르므로 별도 토큰이다.
+     알파 0.78 은 감독 선택값이다(2026-08-28).
+
+     saturate 는 1.4 로 시작했다가 1.08 로 내렸다. 실측 근거
+     (scripts/analyze-glass-contrast.mjs, 실제 합성 스크린샷 픽셀):
+     1.4 에서 마을 잔디 위 합성 결과가 rgb(217,240,210) — "색감만 번지는" 프로스티드가 아니라
+     패널 전체가 초록으로 물들었고, 그 초록이 휘도를 끌어올려 보조 텍스트 대비를 4.22:1 로
+     떨어뜨렸다(AA 4.5 미달). 채도를 낮추면 색 캐스트와 대비가 동시에 해결된다.
+
+     ⚠ 알파를 더 내리지 마라: --text-3(#626E89) 은 **순백 위에서도 4.75:1** 뿐이라
+     반투명 여유가 거의 없다. 유리 위 보조 텍스트는 --text-2 를 써야 한다
+     (17-assistant-modern-shell.css 의 .ai-authoring-examples-title 참고). */
+  --bg-glass-panel: rgba(255, 255, 255, 0.78);
+  --glass-blur-panel: blur(24px) saturate(1.08);
   --bg-scrim: rgba(15, 23, 42, 0.40);
 
   --bg-hover: rgba(15, 23, 42, 0.05);

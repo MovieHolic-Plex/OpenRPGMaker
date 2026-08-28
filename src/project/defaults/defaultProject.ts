@@ -1176,6 +1176,20 @@ function createFarmMineMap(): GameMap {
       },
     },
     {
+      // 갱도 서쪽 막장의 원거리 견제 — 투사체 사격. 액션 전투에서 접근을 강요한다.
+      id: "spawn_mine_archers",
+      troopId: "troop_mine_archers",
+      area: { x: 3, y: 5, w: 2, h: 2 },
+      maxAlive: 1,
+      respawnSec: 40,
+      chase: true,
+      graphic: {
+        sprite: { type: "bundled", id: "tex_easyrpg_charset_monster2" },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }),
+      },
+    },
+    {
       id: "spawn_mine_golems",
       troopId: "troop_golem_guard",
       area: { x: 3, y: 5, w: 6, h: 4 },

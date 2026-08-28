@@ -51,6 +51,7 @@
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
     "verify:genre-packs": "vite-node --script scripts/verify-genre-pack-receipts.mts",
     "content:stardew:save": "vite-node scripts/save-stardew-demo.mts",
+    "content:action:save": "vite-node scripts/save-action-demo.mts",
     "qa:horror": "npx tsx scripts/qa-horror-mystery-prototype.mts",
     "capture:horror": "npx tsx scripts/capture-horror-browser-evidence.mts",
     "build:horror": "npx tsx scripts/build-horror-mystery-prototype.mts",

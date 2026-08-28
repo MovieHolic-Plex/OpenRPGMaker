@@ -1,10 +1,5 @@
 /* 조수 온도 A Quiet Gold / B Ink Only / C Map First + 승인 크롬 계약. */
 
-.ai-chat-header::before {
-  content: none;
-  display: none;
-}
-
 .ai-command-prefix {
   color: var(--gold);
 }
@@ -13,10 +8,6 @@
   background: var(--bg-surface);
   border-left: 1px solid var(--border-subtle);
   box-shadow: none;
-}
-
-.ai-chat-panel.chat-dock-side .ai-chat-header {
-  background: transparent;
 }
 
 .ai-dock-mode-btn[data-dock-mode="side"],
@@ -77,7 +68,6 @@
   width: auto;
 }
 
-.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-header,
 .ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-body,
 .ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-toolbar,
 .ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-resize-handle {

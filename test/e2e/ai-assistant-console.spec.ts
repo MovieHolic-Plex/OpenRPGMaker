@@ -113,13 +113,17 @@ test.describe("AI 감독 console contract", () => {
       await page.getByTestId("ai-command-menu-dock").click();
       const sidePanel = page.getByTestId("chat-side-panel");
       await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
-      await expect(sidePanel.getByTestId("ai-director-plate")).toBeVisible();
-      await expect(sidePanel.getByTestId("ai-director-plate").locator("h2")).toHaveText("조수");
-      await expect(sidePanel.getByTestId("ai-director-plate")).not.toContainText("🤖");
+      // 헤더 명패(ai-director-plate)는 2026-08-28 에 폐기됐다 — 조수의 얼굴을 노출하지 않는다.
+      // 부재를 계약으로 고정해 두어야 되살아나는 것을 잡는다.
+      expect(await sidePanel.getByTestId("ai-director-plate").count()).toBe(0);
+      expect(await sidePanel.getByTestId("ai-director-face").count()).toBe(0);
+      await expect(sidePanel.getByTestId("ai-panel")).not.toContainText("🤖");
       await assertEmptyQueueHidden(page);
       await shot(page, `side-plate-${viewport.name}`);
 
-      await page.getByTestId("ai-collapse").click();
+      // 접기 버튼은 화면에 없다(숨은 훅 컨테이너로 옮겼다). 검사 대상은 버튼의 가시성이 아니라
+      // **접기 상태 기계**이므로 DOM 으로 직접 눌러 같은 경로를 태운다.
+      await page.getByTestId("ai-collapse").evaluate((n) => (n as HTMLButtonElement).click());
       const restore = page.getByTestId("ai-collapsed-restore");
       await expect(restore).toBeVisible();
       await expect(restore).toHaveAttribute("aria-label", "조수");

@@ -38,19 +38,13 @@
   overflow: hidden;
 }
 
-.ai-chat-panel.is-studio .ai-chat-header {
-  border-bottom: 1px solid var(--border-subtle);
-  padding: var(--space-2) var(--space-3);
-}
-
 .ai-chat-panel.is-studio .ai-chat-toolbar {
   border-bottom: 1px solid var(--border-subtle);
   padding: var(--space-1) var(--space-3);
 }
 
 /* ?ㅽ뒠?붿삤???꾩씠肄?踰꾪듉? ?ㅼ궗???덊듃 ?源??뺣낫(湲由ы봽-留뚰븳 ?ш린 湲덉?). */
-.ai-chat-panel.is-studio .ai-chat-toolbar button,
-.ai-chat-panel.is-studio .ai-chat-header .ai-chat-tools-button {
+.ai-chat-panel.is-studio .ai-chat-toolbar button {
   min-height: 28px;
   min-width: 28px;
   padding: var(--space-1) var(--space-2);
@@ -331,9 +325,6 @@
   color: var(--text-1);
   font-weight: 600;
 }
-
-
-
 
 
 .ai-chat-panel.is-history-open:not(.chat-dock-side) {

@@ -216,7 +216,9 @@ describe("database monster species view", () => {
     expect(findByTestId(host, "db-monster-pipeline")).toBeTruthy();
     expect(findByTestId(host, "db-monster-pipeline-links")?.dataset.state).toBe("ready");
     expect(findByTestId(host, "db-monster-pipeline-spawns")?.dataset.state).toBe("needs-setup");
-    expect(findByTestId(host, "db-monster-pipeline-drops")?.dataset.state).toBe("needs-setup");
+    // 기본 DB 는 이제 모든 적에 드롭 아이템을 생산한다(해골 궁수 = item_bone).
+    // 이 칩이 다른 상태도 보고한다는 적은 위의 spawns(needs-setup) 가 직얰한다.
+    expect(findByTestId(host, "db-monster-pipeline-drops")?.dataset.state).toBe("ready");
     expect(findByTestId(host, "db-monster-pipeline-links-action")).toBeTruthy();
     expect(findByTestId(host, "db-monster-pipeline-spawns-action")).toBeTruthy();
     expect(findByTestId(host, "db-monster-pipeline-drops-action")).toBeTruthy();

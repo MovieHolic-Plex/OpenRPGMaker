@@ -1,18 +1,37 @@
+/* 액션 전투 HUD.
+   배치 근거(실측 — .omo/evidence/action-battle/p3/hud-before.png):
+   플레이 스테이지의 논리 좌표계는 320x240 이고, 시간/날씨 패널(.runtime-time-hud)은
+   우상단에서 max-width 210px 를 먹어 좌상단에 88px 밖에 남기지 않는다. 예전 HUD 는
+   좌상단에서 96px 바 + 숫자로 171px 를 차지해 "507/514" 가 패널 글자 위에 겹쳐 있었다.
+   그래서 HUD 를 좌하단으로 내리고, 손 슬롯(.hand-slot) 띠 위에 얹는다 —
+   좌상단(시간/날씨), 하단 중앙(.zone-feedback-prompt), 좌하단(.hand-slot) 을 모두 피하는 자리다.
+   토큰은 handSlot.css/zoneFeedback.css 관례를 따른다(하드코딩 px/hex 금지). */
 .action-hud {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 40;
+  /* 손 슬롯 띠 높이 = 글자 9px*1.4 + 세로 패딩(--space-1 * 2) + 창 테두리(6px * 2) ≒ 33px.
+     그 위로 --space-1 만큼 띄운다. */
+  --action-hud-hand-slot-band: 33px;
+  --action-hud-bar-width: 64px;
+  --action-hud-bar-height: 5px;
+  --action-hud-bar-width-st: 48px;
+  --action-hud-bar-height-st: 4px;
+  --action-hud-bar-radius: 2px;
+  --action-hud-hp-fill: linear-gradient(180deg, #ff8a7a, var(--danger));
+  --action-hud-hp-fill-low: linear-gradient(180deg, #ff4d4d, #a01515);
+  --action-hud-st-fill: linear-gradient(180deg, #9be37e, var(--success));
+
+  bottom: calc(var(--space-2) + var(--action-hud-hand-slot-band) + var(--space-1));
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-9);
+  gap: var(--space-1);
+  left: var(--space-2);
   pointer-events: none;
-  font-family: var(--font-mono);
+  position: absolute;
+  z-index: 40;
 }
 
 /* 메뉴·대화창이 열려 있을 때 액션 HUD 를 숨긴다.
-   둘 다 .play-stage 의 형제로 붙는데 HUD 가 좌상단 절대배치라, 안 숨기면
-   메뉴 첫 항목과 대사 첫 줄을 그대로 덮는다(실측: "아이템" 글자가 HP 바에 가림).
    .dialogue-overlay 는 항상 DOM 에 남아 있고 내용만 비우므로 :empty 로 걸러야 한다. */
 .play-stage:has(> [data-testid="main-menu"]) > .action-hud,
 .play-stage:has(> .dialogue-overlay:not(:empty)) > .action-hud {
@@ -27,65 +46,95 @@
 }
 
 .action-hud-row {
-  display: flex;
   align-items: center;
-  gap: 6px;
+  display: flex;
+  gap: var(--space-1);
 }
 
 .action-hud-icon {
-  font-size: 9px;
-  font-weight: 700;
-  color: #ffd7d7;
-  background: rgba(20, 8, 8, 0.75);
-  border: 1px solid rgba(224, 92, 74, 0.8);
-  border-radius: 4px;
-  padding: 1px 4px;
-  line-height: 1.4;
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--danger);
+  border-radius: var(--action-hud-bar-radius);
+  color: var(--runtime-window-text);
+  line-height: 1.3;
+  padding: 0 var(--space-1);
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
 }
 
 .action-hud-icon-st {
-  color: #d7ffd7;
-  background: rgba(8, 20, 8, 0.75);
-  border-color: rgba(126, 200, 80, 0.8);
+  border-color: var(--success);
 }
 
 .action-hud-bar {
-  width: 96px;
-  height: 8px;
-  background: rgba(0, 0, 0, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 4px;
+  background: var(--runtime-window-shadow);
+  border: 1px solid var(--runtime-window-muted);
+  border-radius: var(--action-hud-bar-radius);
+  box-sizing: border-box;
+  height: var(--action-hud-bar-height);
   overflow: hidden;
+  width: var(--action-hud-bar-width);
 }
 
 .action-hud-bar-fill {
+  background: var(--action-hud-hp-fill);
   height: 100%;
-  background: linear-gradient(180deg, #ff8a7a, #d63c2f);
-  transition: width 120ms ease-out;
+  transition: width var(--transition-fast);
 }
 
 .action-hud-bar-fill.is-low {
-  background: linear-gradient(180deg, #ff4d4d, #a01515);
   animation: action-hud-low-pulse 0.7s ease-in-out infinite;
-}
-
-.action-hud-bar-fill-st {
-  background: linear-gradient(180deg, #9be37e, #4e9b3a);
+  background: var(--action-hud-hp-fill-low);
 }
 
 .action-hud-bar-st {
-  width: 72px;
-  height: 6px;
+  height: var(--action-hud-bar-height-st);
+  width: var(--action-hud-bar-width-st);
+}
+
+.action-hud-bar-fill-st {
+  background: var(--action-hud-st-fill);
 }
 
 .action-hud-num {
-  font-size: 10px;
-  font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 1px 2px #000000, 0 0 4px rgba(0, 0, 0, 0.9);
+  color: var(--runtime-window-text);
+  line-height: 1.3;
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
+}
+
+/* 스킬 슬롯 배지. R 로 순환하며 활성 슬롯만 밝게 표시한다. */
+.action-hud-slot {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-window-muted);
+  border-radius: var(--action-hud-bar-radius);
+  color: var(--runtime-window-muted);
+  line-height: 1.3;
+  max-width: 56px;
+  overflow: hidden;
+  padding: 0 var(--space-1);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-hud-slot.is-active {
+  border-color: var(--accent);
+  color: var(--runtime-window-text);
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
+}
+
+/* 가드 유지 중엔 스태미나 바가 생션다 — 지금 진짜에서 타는 새드를 뒤짐다. */
+.action-hud-stamina.is-guarding .action-hud-bar-fill-st {
+  filter: brightness(1.5) saturate(0.6);
 }
 
 @keyframes action-hud-low-pulse {
   0%, 100% { filter: brightness(1); }
   50% { filter: brightness(1.6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action-hud-bar-fill,
+  .action-hud-bar-fill.is-low {
+    animation: none;
+    transition: none;
+  }
 }

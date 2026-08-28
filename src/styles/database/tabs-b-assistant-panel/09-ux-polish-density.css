@@ -1,21 +1,4 @@
 /* ?? UX ?ㅼ궗 ?쎌뒪(2026-07-05): ?ㅻ뜑 ??? 諛?1以??쒖옉 ?붾㈃ ?뺣룉/鍮??몄뒪???④? ?? */
-.ai-chat-header {
-  align-items: center;
-  display: flex;
-  gap: 6px;
-  border-bottom: 1px solid var(--border-subtle);
-  box-shadow: none;
-  padding-bottom: 8px;
-  position: relative;
-}
-.ai-chat-header::before {
-  content: none;
-  display: none;
-}
-
-.ai-chat-header h2 {
-  margin-right: auto;
-}
 
 .ai-chat-tools-button {
   opacity: 0.9;

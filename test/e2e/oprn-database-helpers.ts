@@ -212,8 +212,21 @@ export async function applyDatabaseChanges(page: Page): Promise<void> {
 }
 
 export async function switchDatabaseTab(page: Page, tab: DatabaseTabSpec): Promise<void> {
-  await page.getByTestId(tab.testId).click({ force: true });
-  await expect(page.getByTestId(tab.testId)).toHaveClass(/active/);
+  const button = page.getByTestId(tab.testId);
+  // 사이드바는 아코디언이다 — 접힌 그룹의 탭은 사용자도 그룹을 먼저 펼쳐야 누른다.
+  if (!(await button.isVisible())) await revealCollapsedSidebarTab(page, button);
+  await button.click({ force: true });
+  await expect(button).toHaveClass(/active/);
+}
+
+async function revealCollapsedSidebarTab(page: Page, button: Locator): Promise<void> {
+  const groups = page.locator('[data-testid^="db-tab-group-"]');
+  const total = await groups.count();
+  for (let index = 0; index < total; index += 1) {
+    await groups.nth(index).click();
+    if (await button.isVisible()) return;
+  }
+  throw new Error("no sidebar group revealed the requested tab");
 }
 
 export async function captureDatabaseShellMetrics(page: Page): Promise<DatabaseShellMetrics> {

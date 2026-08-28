@@ -22,99 +22,10 @@
   flex: 1 1 auto;
 }
 
-/* ── 사이드바: 밀도 + 그룹 접기 ─────────────────────────────────────────────
-   29 개 탭 + 5 개 그룹 헤더 + 검색은 1050px 뷰포트의 레일(≈796px)을 260px 넘겨,
-   아래쪽 그룹이 아무 신호 없이 접힘선 밖에 있었다. 밀도를 조금 올리고(32→28px)
-   그룹을 접을 수 있게 해 전체 분류가 한 화면에 들어오게 한다. */
-
-.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
-  height: 28px !important;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
-  gap: 1px;
-}
-
-/* 접힌 그룹의 탭. `hidden` 속성이 아니라 클래스라서 검색 필터와 충돌하지 않는다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.db-tab-collapsed {
-  display: none !important;
-}
-
-/* `.db-tabs` 는 `align-items: end` 라 flex 자식이 내용 폭으로 줄어든다 — 탭 버튼들은
-   `width: 100% !important` 로 그걸 피해 가고 있었다. 그룹 헤더도 같은 방식으로 편다.
-   sticky 는 쓰지 않는다: 그룹이 다섯이라 스크롤 시 헤더끼리 겹쳐 쌓인다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
-  align-items: center;
-  align-self: stretch;
-  cursor: default;
-  display: flex !important;
-  gap: 4px;
-  padding: 9px 6px 2px;
-  width: 100%;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-toggle {
-  background: transparent;
-  border: 0;
-  color: var(--db-studio-text-3, #94a3b8);
-  cursor: pointer;
-  flex: 0 0 auto;
-  height: 16px;
-  line-height: 1;
-  padding: 0;
-  width: 12px;
-}
-
-/* 셰브런은 CSS 로 그린다 — 버튼에 문자를 넣으면 그룹 div 의 textContent 가 "▾파티" 가
-   되어 databaseSidebarNav.test.ts 의 라벨 동등 비교가 깨진다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-toggle::before {
-  content: "▾";
-  display: block;
-  font-size: 9px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-toggle[aria-expanded="false"]::before {
-  content: "▸";
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-toggle:hover {
-  color: var(--db-studio-text-1, #0f172a);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-toggle:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4a57d6);
-  outline-offset: 1px;
-}
-
-/* 접혀 있어도 그 그룹에 데이터가 얼마나 있는지 보이게 한다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group[data-count]::after {
-  background: var(--db-studio-inset, #f1f5f9);
-  border-radius: 999px;
-  color: var(--db-studio-text-3, #94a3b8);
-  content: attr(data-count);
-  font: 600 9.5px/14px "Malgun Gothic", system-ui, sans-serif;
-  letter-spacing: 0;
-  margin-left: auto;
-  padding: 0 6px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group[data-count="0"]::after {
-  opacity: 0.45;
-}
-
-/* 좁은 폭에서는 그룹 헤더가 숨겨지므로(sidebar.css) 접힘도 함께 무력화해야 한다.
-   그러지 않으면 아이콘 레일에서 24 개 탭이 도달 불가능해진다. */
-@container db-modal (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.db-tab-collapsed {
-    display: flex !important;
-  }
-}
-
-@media (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.db-tab-collapsed {
-    display: flex !important;
-  }
-}
+/* 사이드바 그룹 접기는 main 의 아코디언 구현(database.ts 의 collapsedGroupSlugs /
+   openOnlyGroup / expandGroupFor + sidebar.css)이 담당한다. 이 브랜치가 들고 있던
+   경쟁 구현(.db-tab-collapsed 클래스 + 그룹 안 토글 버튼)은 통합하며 걷어냈다 —
+   main 쪽이 아코디언이라 레일이 아예 안 넘치고, e2e 헬퍼까지 함께 갖췄다. */
 
 /* ── 셸 ──────────────────────────────────────────────────────────────────── */
 

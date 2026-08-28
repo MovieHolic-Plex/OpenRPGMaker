@@ -281,8 +281,8 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   ),
   moveMonster: (cmd) => commandLine("몬스터 이동", valuePart(monsterInstanceLabel(cmd.instanceId)), plainPart(" → "), valuePart(cmd.to === "party" ? "파티" : "보관함")),
   evolveMonster: (cmd) => commandLine("몬스터 진화", valuePart(monsterInstanceLabel(cmd.instanceId)), plainPart(" → "), valuePart(cmd.toSpeciesId ? monsterSpeciesName(cmd.toSpeciesId) : "조건 충족 첫 진화")),
-  addFollower: (cmd) => commandLine("동행자 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
-  removeFollower: (cmd) => commandLine("동행자 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
+  addFollower: (cmd) => commandLine("동료 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
+  removeFollower: (cmd) => commandLine("동료 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
   setLighting: (cmd) => commandLine(
     "조명 설정",
     valuePart(`${Math.round(cmd.ambient * 100)}%`),

@@ -37,18 +37,6 @@
   color: var(--text-1);
 }
 
-.ai-director-plate .ai-director-name {
-  font-size: 16px;
-  font-weight: 750;
-}
-
-.ai-director-line,
-.ai-chat-panel [data-testid="ai-director-line"] {
-  color: var(--text-2);
-  font-size: 12px;
-  white-space: normal;
-}
-
 .ai-collapsed-restore {
   background: var(--bg-raised);
   border: 1px solid var(--border-strong);

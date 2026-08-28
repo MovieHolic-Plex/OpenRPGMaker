@@ -1,5 +1,7 @@
 node_modules/
 dist/
+# 병렬 워크트리가 자습의 vite 옵토마이즈 캐시를 따로 쓸 때 생긴다(VITE_CACHE_DIR).
+.vite-cache/
 .vite/
 .omo/*
 !.omo/evidence/
@@ -8,6 +10,7 @@ dist/
 !.omo/evidence/rm2003-database-plan/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-apply-without-approval/
+!.omo/evidence/action-battle/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
