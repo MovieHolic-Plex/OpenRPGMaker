@@ -133,11 +133,19 @@ test("quick authoring tab is a story work surface: speak, face, map, route, shop
   await expect(shopDialog.getByTestId("shop-header-badge")).toContainText("3");
   await expect(shopDialog.getByTestId("shop-empty-banner")).toHaveCount(0);
   await expect(shopDialog).toContainText("회복약");
-  // 자료집 카탈로그(DB 177개)는 접혀 있다 — 첫 페인트를 아이콘 홍수로 덮지 않는다.
+  // 자료집 카탈로그는 열린 채로 시작한다 — 전체화면에서 오른쪽 열을 통째로 쓰므로 접으면
+  // 그 열이 죽고 담을 후보를 볼 방법이 사라진다. 행은 체크박스+이름+가격+상태 텍스트라
+  // 예전에 걱정했던 아이콘 그리드 홍수가 아니다. 접이식 계약 자체는 아래에서 확인한다.
   const catalogFold = shopDialog.getByTestId("shop-item-catalog-fold");
+  const catalogToggle = shopDialog.getByTestId("shop-item-catalog-summary");
   await expect(catalogFold).toBeVisible();
-  expect(await catalogFold.evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
+  await expect(catalogToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(shopDialog.getByTestId("shop-item-catalog")).toBeVisible();
+  await catalogToggle.click();
+  await expect(catalogToggle).toHaveAttribute("aria-expanded", "false");
   await expect(shopDialog.getByTestId("shop-item-catalog")).toBeHidden();
+  await catalogToggle.click();
+  await expect(shopDialog.getByTestId("shop-item-catalog")).toBeVisible();
   await shot(page, shopDialog, "06-shop-stock.png");
 
   // 상점 미리보기(플레이 창)에도 판매 목록이 최소 하나 그려진다.

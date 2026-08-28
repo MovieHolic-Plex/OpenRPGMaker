@@ -42,7 +42,9 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
     await command.getByTestId("change-party-action-select").selectOption("remove");
   });
   await editCommand(page, "shop", async (command) => {
-    await command.getByTestId("shop-available-items").selectOption(POTION_ID);
+    // 자료집 카탈로그 행을 골라 담기 — 사용자가 실제로 쓰는 경로다. 예전에는
+    // aria-hidden 트레이 안의 보이지 않는 select 를 눌러 통과했다.
+    await command.getByTestId(`shop-catalog-row-${POTION_ID}`).click();
     await command.getByTestId("shop-add-item").click();
   });
   await editCommand(page, "inn", async (command) => fillAndChange(command.getByTestId("inn-price-input"), "25"));
@@ -69,7 +71,9 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
     await expect(command.getByTestId("change-gold-amount-input")).toHaveValue("100");
   });
   await editCommand(page, "shop", async (command) => {
-    await expect(command.getByTestId("shop-selected-items")).toHaveValue(POTION_ID);
+    await expect(
+      command.locator(`[data-testid="shop-sale-list"] [data-testid="shop-item-row-${POTION_ID}"]`)
+    ).toBeVisible();
   });
   await editCommand(page, "inn", async (command) => {
     await expect(command.getByTestId("inn-price-input")).toHaveValue("25");
