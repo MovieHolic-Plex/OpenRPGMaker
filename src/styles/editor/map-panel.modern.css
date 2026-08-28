@@ -383,8 +383,6 @@
 
 .map-tree-panel .map-tree-filter[hidden] { display: none; }
 
-.map-tree-panel .map-tree-filter-label { display: none; }
-
 .map-tree-panel .map-tree-filter-input,
 .map-tree-panel .map-tree-rename {
   background: var(--bg-inset);
@@ -553,6 +551,7 @@
 }
 
 .map-tree-panel.is-basic-flyout .map-tree-more {
+  appearance: none;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-s);
