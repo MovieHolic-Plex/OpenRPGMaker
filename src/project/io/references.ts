@@ -1,6 +1,8 @@
 import type { Command, GameEvent, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
 import {
+  collectCommandItemReferenceIds,
+  collectConditionItemReferenceIds,
   validateBattleEventPages,
   validateCommands,
   validateCondition,
@@ -24,6 +26,98 @@ import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "../spa
 export function validateProjectReferences(project: Project): void {
   const issues = collectProjectReferenceIssues(project);
   assert(issues.length === 0, issues.join("\n"));
+}
+
+/**
+ * 프로젝트 검증기가 하드 참조로 취급하는 아이템 id와 시작 인벤토리 키를 모은다.
+ * 이벤트 명령·페이지 조건 순회는 commandReferenceValidation의 검증 구조를 공유한다.
+ */
+export function collectProjectItemReferenceIds(project: Project): ReadonlySet<string> {
+  const ids = new Set<string>(Object.keys(project.session.inventory));
+  for (const preset of project.testPresets ?? []) {
+    for (const itemId of Object.keys(preset.inventory ?? {})) ids.add(itemId);
+  }
+
+  for (const actorClass of project.database.classes) {
+    for (const promotion of actorClass.promotions ?? []) if (promotion.requires.itemId) ids.add(promotion.requires.itemId);
+  }
+  for (const enemy of project.database.enemies) if (enemy.rewards.dropItemId) ids.add(enemy.rewards.dropItemId);
+  for (const species of project.database.monsterSpecies ?? []) {
+    for (const evolution of species.evolutions ?? []) if (evolution.requires.itemId) ids.add(evolution.requires.itemId);
+  }
+  for (const crop of project.database.crops ?? []) {
+    ids.add(crop.seedItemId);
+    ids.add(crop.harvestItemId);
+  }
+  for (const fish of project.database.fishSpecies ?? []) ids.add(fish.itemId);
+  for (const animal of project.database.farmAnimalSpecies ?? []) {
+    ids.add(animal.feedItemId);
+    ids.add(animal.productItemId);
+  }
+  for (const building of project.database.farmBuildingTypes ?? []) {
+    for (const level of building.levels) for (const cost of level.cost?.items ?? []) ids.add(cost.itemId);
+  }
+  for (const decoration of project.database.homeDecorationTypes ?? []) ids.add(decoration.placementItemId);
+
+  for (const recipe of project.system.craftRecipes ?? []) {
+    ids.add(recipe.outputItemId);
+    for (const ingredient of recipe.ingredients) ids.add(ingredient.itemId);
+  }
+  for (const upgrade of project.system.itemUpgrades ?? []) {
+    ids.add(upgrade.fromItemId);
+    ids.add(upgrade.toItemId);
+    for (const ingredient of upgrade.ingredients ?? []) ids.add(ingredient.itemId);
+  }
+  for (const price of project.system.sellPrices ?? []) ids.add(price.itemId);
+  for (const action of project.system.toolActions ?? []) if (action.itemId) ids.add(action.itemId);
+  for (const itemId of project.system.shipping?.allowedItemIds ?? []) ids.add(itemId);
+  for (const bundle of project.system.bundles ?? []) {
+    for (const requirement of bundle.requirements) ids.add(requirement.itemId);
+    for (const reward of bundle.reward?.itemRewards ?? []) ids.add(reward.itemId);
+  }
+  for (const maker of project.system.makers ?? []) {
+    for (const input of maker.inputs) ids.add(input.itemId);
+    for (const output of maker.outputs) ids.add(output.itemId);
+  }
+  for (const area of project.system.seasonalForage?.areas ?? []) {
+    for (const entry of area.entries) {
+      if (entry.itemId) ids.add(entry.itemId);
+      for (const itemId of Object.values(entry.seasonalDrops ?? {})) if (itemId) ids.add(itemId);
+    }
+  }
+  for (const itemId of project.system.collections?.trackedItemIds ?? []) ids.add(itemId);
+  for (const itemId of project.system.museum?.eligibleItemIds ?? []) ids.add(itemId);
+  for (const reward of project.system.museum?.rewards ?? []) {
+    for (const itemId of reward.requiredItemIds ?? []) ids.add(itemId);
+    for (const item of reward.reward?.itemRewards ?? []) ids.add(item.itemId);
+  }
+  for (const placeable of Object.values(project.session.placeables ?? {})) {
+    if (placeable.itemId) ids.add(placeable.itemId);
+    for (const itemId of Object.values(placeable.seasonalDrops ?? {})) if (itemId) ids.add(itemId);
+  }
+
+  for (const commonEvent of project.commonEvents) collectCommandItemReferenceIds(commonEvent.commands, ids);
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      collectCommandItemReferenceIds(event.commands, ids);
+      if (event.condition) collectConditionItemReferenceIds(event.condition, ids);
+      for (const itemId of [...(event.giftPrefs?.loved ?? []), ...(event.giftPrefs?.liked ?? []), ...(event.giftPrefs?.disliked ?? [])]) ids.add(itemId);
+      for (const page of event.pages ?? []) {
+        for (const condition of page.conditions) collectConditionItemReferenceIds(condition, ids);
+        collectCommandItemReferenceIds(page.commands, ids);
+      }
+    }
+  }
+  for (const profile of Object.values(project.characters ?? {})) {
+    for (const itemId of [...(profile.giftPrefs?.loved ?? []), ...(profile.giftPrefs?.liked ?? []), ...(profile.giftPrefs?.disliked ?? [])]) ids.add(itemId);
+  }
+  for (const troop of project.database.troops) {
+    for (const page of troop.battleEventPages) {
+      for (const condition of page.conditions) collectConditionItemReferenceIds(condition, ids);
+      collectCommandItemReferenceIds(page.commands, ids);
+    }
+  }
+  return ids;
 }
 
 export function collectProjectReferenceIssues(project: Project): string[] {

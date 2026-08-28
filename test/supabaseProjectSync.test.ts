@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createBattleRuntime } from "@/battle/runtime";
+import dewVillageDemo from "./fixtures/projects/dew-village-demo.json";
 import {
   DEFAULT_SUPABASE_PROJECT_ID,
   hydrateLastRemoteCommitTip,
@@ -127,6 +129,86 @@ describe("Supabase project sync", () => {
 
     expect(project?.startMapId).toBe(source.startMapId);
     expect(String(calls[0]?.input)).toContain(`project_id=eq.${DEFAULT_SUPABASE_PROJECT_ID}`);
+  });
+
+  it("옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다", async () => {
+    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const database = source.database as { battleAnimations: { id: string }[] };
+    expect(database.battleAnimations).toHaveLength(12);
+    expect(database.battleAnimations.some((animation) => animation.id.startsWith("anim_gen_"))).toBe(false);
+    vi.stubGlobal("fetch", supabaseRowFetch(source));
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
+
+    expect(project.database.items).toHaveLength(158);
+    expect(project.database.skills).toHaveLength(23);
+    expect(project.database.items.find((item) => item.id === "item_holy_water")).toMatchObject({
+      name: "정화 성수",
+      occasion: "battle",
+      consumable: true,
+      skillId: "skill_item_holy_water",
+    });
+    expect(project.database.items.find((item) => item.id === "item_thunder_stone")).toMatchObject({
+      name: "뇌전석",
+      occasion: "battle",
+      consumable: true,
+      skillId: "skill_item_thunder_stone",
+    });
+    for (const skillId of ["skill_item_holy_water", "skill_item_thunder_stone"]) {
+      const skill = project.database.skills.find((record) => record.id === skillId);
+      expect(skill?.animationId, skillId).toMatch(/^anim_gen_/);
+      expect(project.database.battleAnimations.some((animation) => animation.id === skill?.animationId), skillId).toBe(true);
+    }
+
+    const runtime = createBattleRuntime({
+      project,
+      troopId: project.system.initialTroopId ?? project.database.troops[0]!.id,
+      canEscape: true,
+      canLose: true,
+      rng: () => 0,
+      sessionState: { switches: {}, variables: {}, inventory: { item_holy_water: 1 } },
+      party: {
+        levels: { actor_hero: 1 },
+        experience: { actor_hero: 0 },
+        vitals: { actor_hero: { hp: 100, mp: 100 } },
+        stateIds: {},
+        partyActorIds: ["actor_hero"],
+      },
+    });
+    runtime.tick(1_000);
+    const targetEnemyId = runtime.snapshot().enemies[0]?.id;
+    if (!targetEnemyId) throw new Error("성수 사용 대상이 없습니다");
+    runtime.performActorCommand({ kind: "item", itemId: "item_holy_water", targetEnemyId });
+    expect(runtime.snapshot().eventState.inventory.item_holy_water ?? 0).toBe(0);
+  });
+
+  it("참조된 옛 장비 아이템은 한국어 안내 행으로 보존하고 참조 없는 행은 제거한다", async () => {
+    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const maps = source.maps as Record<string, { events: { pages?: { conditions: unknown[]; commands: unknown[] }[] }[] }>;
+    const page = Object.values(maps).flatMap((map) => map.events).flatMap((event) => event.pages ?? [])[0];
+    if (!page) throw new Error("참조 명령을 넣을 이벤트 페이지가 없습니다");
+    page.conditions.push({ kind: "item", itemId: "item_ring", present: true });
+    page.commands.push(
+      { kind: "shop", itemIds: ["item_ring"] },
+      { kind: "changeItem", itemId: "item_ring", op: "+=", amount: 1 },
+    );
+    (source.session as { inventory: Record<string, number> }).inventory.item_necklace = 1;
+    (source.system as Record<string, unknown>).shipping = { enabled: true, allowedItemIds: ["item_boots"] };
+    vi.stubGlobal("fetch", supabaseRowFetch(source));
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
+
+    expect(project.database.items.find((item) => item.id === "item_ring")).toMatchObject({
+      name: "마력 각인 반지",
+      occasion: "never",
+      consumable: false,
+    });
+    expect(project.database.items.find((item) => item.id === "item_ring")?.description).toContain("장비 탭");
+    expect(project.database.items.find((item) => item.id === "item_necklace")?.name).toBe("청옥 수호 목걸이");
+    expect(project.database.items.find((item) => item.id === "item_boots")?.name).toBe("바람길 가죽 장화");
+    expect(project.database.items.some((item) => item.id === "item_focus_ring")).toBe(false);
   });
 
   it("손대지 않은 영문 아이템 껍데기만 고치고 승격 장비만 추가한다", async () => {
@@ -1024,6 +1106,13 @@ describe("Supabase project sync", () => {
   });
 
 });
+
+function supabaseRowFetch(source: unknown): typeof fetch {
+  return (async (input) => {
+    if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+    return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+  }) satisfies typeof fetch;
+}
 
 function minimalValidProject(): Project {
   // Unit-test asset env lacks generated monster art; strip those resource refs so

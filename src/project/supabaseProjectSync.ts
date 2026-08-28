@@ -1,16 +1,18 @@
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, serialize } from "./io";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { defaultEquipmentRecords } from "./defaults/defaultDatabaseEquipmentRecords";
 import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
+import { collectProjectItemReferenceIds } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
 import type { ChangeSummary } from "@/project/types";
 import type { EditorIdentity } from "./editorIdentity";
-import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
+import type { BattleAnimationRecord, GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
 const DEFAULT_PROJECT_TITLE = PRODUCT_BRAND;
@@ -215,7 +217,7 @@ async function loadProjectSnapshotFromSupabase(
   const rows = await parseProjectRows(response);
   const row = rows[0];
   if (!row) return null;
-  const project = deserialize(JSON.stringify(repairSupabaseCurrentJson(row.current_json)));
+  const project = deserializeSupabaseCurrentJson(row.current_json);
   // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
   // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
   if (options.overlayMaps !== false) {
@@ -1255,15 +1257,29 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function deserializeSupabaseCurrentJson(value: unknown): Project {
+  return deserialize(JSON.stringify(repairSupabaseCurrentJson(value)));
+}
+
 function repairSupabaseCurrentJson(value: unknown): unknown {
   if (!isRecord(value)) return value;
-  // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
-  // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
-  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
-  repairUntouchedDefaultItemCatalogStubs(value);
   pruneInvalidVillageInfoDocuments(value);
   removeLegacySpriteReferences(value);
   appendMissingResourceProfiles(value, defaultResourceProfiles());
+
+  // 복구 스킬의 참조를 먼저 완성한다. 이 단계까지 마쳐야 옛 12개 애니메이션 행도
+  // 참조 검증을 통과해 정규화된 Project에서 아이템 참조를 수집할 수 있다.
+  ensureLoadRepairBattleAnimations(value);
+  appendLoadRepairEquipmentAndSkills(value);
+
+  // 참조 수집기는 정규화된 Project를 단일 권위자로 삼는다. 카탈로그를 건드리기 전의
+  // 유효한 행을 먼저 해석하므로, 이벤트·시스템·시작 인벤토리의 기존 참조를 잃지 않는다.
+  const referencedItemIds = collectProjectItemReferenceIds(deserialize(JSON.stringify(value)));
+
+  // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
+  // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
+  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
+  repairUntouchedDefaultItemCatalogStubs(value, referencedItemIds);
   return value;
 }
 
@@ -1303,7 +1319,10 @@ const LOAD_REPAIR_EQUIPMENT_IDS = new Set([
 
 const LOAD_REPAIR_SKILL_IDS = new Set(["skill_item_holy_water", "skill_item_thunder_stone"]);
 
-function repairUntouchedDefaultItemCatalogStubs(project: Record<string, unknown>): void {
+function repairUntouchedDefaultItemCatalogStubs(
+  project: Record<string, unknown>,
+  referencedItemIds: ReadonlySet<string>,
+): void {
   if (!isRecord(project.database)) return;
   const database = project.database;
   if (!Array.isArray(database.items) || !Array.isArray(database.equipment) || !Array.isArray(database.skills)) return;
@@ -1319,8 +1338,15 @@ function repairUntouchedDefaultItemCatalogStubs(project: Record<string, unknown>
     if (authoredItemIds.has(record.id)) return [];
     const current = itemDefaults.get(record.id);
     if (current) return [cloneRecord(current)];
-    return RETIRED_EQUIPMENT_ITEM_STUB_IDS.has(record.id) ? [] : [record];
+    if (!RETIRED_EQUIPMENT_ITEM_STUB_IDS.has(record.id)) return [record];
+    return referencedItemIds.has(record.id) ? [retiredEquipmentItemReplacement(record)] : [];
   });
+}
+
+function appendLoadRepairEquipmentAndSkills(project: Record<string, unknown>): void {
+  if (!isRecord(project.database)) return;
+  const database = project.database;
+  if (!Array.isArray(database.equipment) || !Array.isArray(database.skills)) return;
 
   const equipmentIds = new Set(
     database.equipment.flatMap((record) => isRecord(record) && typeof record.id === "string" ? [record.id] : []),
@@ -1339,6 +1365,28 @@ function repairUntouchedDefaultItemCatalogStubs(project: Record<string, unknown>
     database.skills.push(cloneRecord(record));
     skillIds.add(record.id);
   }
+}
+
+function retiredEquipmentItemReplacement(record: Record<string, unknown>): Record<string, unknown> {
+  const id = record.id as string;
+  const equipment = defaultEquipmentRecords().find((entry) => entry.id === id.replace(/^item_/, "equip_"));
+  if (!equipment) throw new SupabaseProjectSyncError(`이전 장비 아이템의 대응 장비가 없습니다: ${id}`);
+  return {
+    ...record,
+    name: equipment.name,
+    description: `이전 아이템 목록에 남아 있던 ${equipment.name} 항목입니다. 착용 가능한 버전은 장비 탭에 있습니다.`,
+    occasion: "never",
+    occasionField: false,
+    occasionBattle: false,
+    consumable: false,
+  };
+}
+
+function ensureLoadRepairBattleAnimations(project: Record<string, unknown>): void {
+  if (!isRecord(project.database) || !Array.isArray(project.database.battleAnimations)) return;
+  ensureBundledBattleAnimations({
+    database: { battleAnimations: project.database.battleAnimations as BattleAnimationRecord[] },
+  });
 }
 
 function isUntouchedLegacyItemStub(record: Record<string, unknown>): boolean {
