@@ -122,7 +122,7 @@ Evidence expectations:
 
 ## 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
 
-- 게이트: `npx playwright test test/e2e/event-face-command-visual.spec.ts` (+ `npm run gates:css` 의 graph 검사 — 고아 CSS 0건. 예산 래칫의 `important` 초과는 main 에 이미 있는 빚이다).
+- 게이트: `npx playwright test test/e2e/event-face-command-visual.spec.ts` + `npm run gates:css`(graph 고아 0건, 예산 래칫 회귀 0건).
 - 이 스펙이 잡는 것은 **얼굴이 두 장 겹쳐 보이는** 회귀다. `facesetPreview.faceImage()` 는
   얼굴 상자에 `--face-url` CSS 배경(로드 실패 폴백)을 깔고 그 안에 실제 `<img>` 를 넣는다.
   두 규칙(`<img>` 절대 배치 + 배경 끄기)을 담고 있던
