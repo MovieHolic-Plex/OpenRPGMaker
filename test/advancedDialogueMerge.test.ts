@@ -3,7 +3,13 @@ import { createBlankProject } from "@/project/defaults";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
 import { store } from "@/project/store";
 import { renderCoreCommandBody } from "@/editor/panels/eventEditor/commandBodyCore";
-import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { m2CommandById, M2_COMMAND_CATALOG, isM2CatalogEntrySelectableInMap, isM2CatalogEntrySelectableInBattleEvent } from "@/project/eventCommands/m2Catalog";
+import { DEPRECATED_M2_COMMAND_IDS } from "@/project/eventCommands/m2CatalogData";
+import {
+  eventCommandPickerSearchEntries,
+  eventCommandPickerTabEntries,
+} from "@/editor/panels/eventEditor/commandPicker";
+import type { M2CommandPickerPage } from "@/project/eventCommands/m2Catalog";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { installFakeDom, renderWithFakeDom, findByTestId } from "./fakeDom";
 import type { CommandEditContext } from "@/editor/panels/eventEditor/types";
@@ -103,5 +109,40 @@ describe("advanced dialogue merged into text", () => {
   it("newCommand(text) stays flat without advanced fields", () => {
     const cmd = newCommand("text");
     expect(cmd).toEqual({ kind: "text", speaker: "", body: "" });
+  });
+
+  // 이 세 가지가 "통합됐다"는 말의 증거다. 종전엔 라벨 문자열 필터(`!== "고급 대화"`)가
+  // 말줄임 붙은 실제 라벨("고급 대화...")을 맞추지 못해 탭 1 「말하기」에 그대로 남아 있었다.
+  it("is not authorable from any picker tab", () => {
+    const pages: readonly M2CommandPickerPage[] = [1, 2, 3, 4];
+    for (const page of pages) {
+      const labels = eventCommandPickerTabEntries(page).map((entry) => entry.label);
+      expect(labels.filter((label) => label.startsWith("고급 대화")), `탭 ${page}`).toEqual([]);
+    }
+  });
+
+  it("is not authorable from the all-tab search list either", () => {
+    const entries = eventCommandPickerSearchEntries();
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.filter((entry) => entry.commandId === "m2-209-advanced-dialogue")).toEqual([]);
+  });
+
+  it("marks m2-209 deprecated and unselectable in map and battle pickers", () => {
+    const entry = m2CommandById("m2-209-advanced-dialogue")!;
+    expect(entry.deprecated?.supersededBy).toBe("m2-001-show-text");
+    expect(isM2CatalogEntrySelectableInMap(entry)).toBe(false);
+    expect(isM2CatalogEntrySelectableInBattleEvent(entry)).toBe(false);
+  });
+
+  it("keeps the deprecation registry pointing at live catalog entries", () => {
+    const ids = new Set(M2_COMMAND_CATALOG.map((catalogEntry) => catalogEntry.id));
+    const registered = Object.entries(DEPRECATED_M2_COMMAND_IDS);
+    expect(registered.length).toBeGreaterThan(0);
+    for (const [id, deprecation] of registered) {
+      expect(ids.has(id), id).toBe(true);
+      expect(ids.has(deprecation!.supersededBy), deprecation!.supersededBy).toBe(true);
+      expect(DEPRECATED_M2_COMMAND_IDS[deprecation!.supersededBy]).toBeUndefined();
+      expect(deprecation!.reason.length).toBeGreaterThan(0);
+    }
   });
 });
