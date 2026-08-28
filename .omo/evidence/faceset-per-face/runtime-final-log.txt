@@ -1,0 +1,15 @@
+C4 actor_hero face in loaded project: easyrpg-faceset-actor1-03
+  press x #1 -> status faces: 1
+C4 STATUS MENU FACES: [
+ {
+  "testid": "status-menu-face-0",
+  "tag": "SPAN",
+  "backgroundImage": "url(\"http://127.0.0.1:9861/assets/easyrpg/faceset/Actor1/03.png\")",
+  "backgroundSize": "22px 22px",
+  "backgroundPosition": "0% 0%",
+  "imgSrc": null,
+  "natural": null
+ }
+]
+C4 failed image requests: 0 []
+C4 resolved face image: {"url":"easyrpg/faceset/Actor1/03.png","natural":"48x48"}
