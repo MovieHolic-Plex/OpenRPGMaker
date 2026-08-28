@@ -8,7 +8,12 @@
 
 import { TILE_SIZE } from "@/assets/bundled";
 import { TILE } from "@/project/defaults/constants";
-import type { SectionStructureKitDef, StructureKitPart, StructureKitRow } from "@/project/types";
+import type {
+  SectionStructureKitDef,
+  StructureKitPart,
+  StructureKitPartKind,
+  StructureKitRow,
+} from "@/project/types";
 
 export type KitLayer = "lower" | "upper";
 
@@ -121,4 +126,64 @@ export function resizeKit(kit: SectionStructureKitDef, width: number, height: nu
     clamped,
     dropped,
   };
+}
+
+export interface PartRect {
+  readonly dx: number;
+  readonly dy: number;
+  readonly w: number;
+  readonly h: number;
+}
+
+/** 드래그 두 점(어느 방향이든) → 좌상단 + 크기. */
+export function normalizeDragRect(
+  a: { readonly cx: number; readonly cy: number },
+  b: { readonly cx: number; readonly cy: number },
+): PartRect {
+  const dx = Math.min(a.cx, b.cx);
+  const dy = Math.min(a.cy, b.cy);
+  return { dx, dy, w: Math.abs(a.cx - b.cx) + 1, h: Math.abs(a.cy - b.cy) + 1 };
+}
+
+/** 부위 추가. id 는 호출부가 발급한다 — 순수 함수를 지키기 위해 randomUuid 를 안에서 부르지 않는다. */
+export function addPart(
+  kit: SectionStructureKitDef,
+  rect: PartRect,
+  kind: StructureKitPartKind,
+  id: string,
+): SectionStructureKitDef {
+  const dx = clamp(rect.dx, 0, kit.width - 1);
+  const dy = clamp(rect.dy, 0, kit.height - 1);
+  const part: StructureKitPart = {
+    id,
+    kind,
+    dx,
+    dy,
+    w: clamp(rect.w, 1, kit.width - dx),
+    h: clamp(rect.h, 1, kit.height - dy),
+  };
+  return { ...kit, parts: [...(kit.parts ?? []), part] };
+}
+
+export function updatePart(
+  kit: SectionStructureKitDef,
+  partId: string,
+  patch: Partial<Pick<StructureKitPart, "kind" | "dx" | "dy" | "w" | "h" | "note">>,
+): SectionStructureKitDef {
+  const parts = kit.parts ?? [];
+  if (!parts.some((part) => part.id === partId)) return kit;
+  return {
+    ...kit,
+    parts: parts.map((part) => (part.id === partId ? { ...part, ...patch } : part)),
+  };
+}
+
+export function removePart(kit: SectionStructureKitDef, partId: string): SectionStructureKitDef {
+  const parts = kit.parts ?? [];
+  if (!parts.some((part) => part.id === partId)) return kit;
+  return { ...kit, parts: parts.filter((part) => part.id !== partId) };
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), Math.max(min, max));
 }

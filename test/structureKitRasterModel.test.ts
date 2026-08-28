@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { cellAtPoint, paintCell, resizeKit, tileAt } from "@/editor/harnessSuggestion/structureKitRasterModel";
+import {
+  addPart,
+  cellAtPoint,
+  normalizeDragRect,
+  paintCell,
+  removePart,
+  resizeKit,
+  tileAt,
+  updatePart,
+} from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { TILE } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 
@@ -143,5 +152,60 @@ describe("resizeKit", () => {
     expect(result.kit).toBe(original);
     expect(result.clamped).toBe(0);
     expect(result.dropped).toBe(0);
+  });
+});
+
+describe("normalizeDragRect", () => {
+  it("어느 방향으로 끌어도 좌상단·크기로 정규화한다", () => {
+    expect(normalizeDragRect({ cx: 2, cy: 3 }, { cx: 0, cy: 1 }))
+      .toEqual({ dx: 0, dy: 1, w: 3, h: 3 });
+  });
+
+  it("한 칸 클릭은 1×1 이다", () => {
+    expect(normalizeDragRect({ cx: 1, cy: 1 }, { cx: 1, cy: 1 }))
+      .toEqual({ dx: 1, dy: 1, w: 1, h: 1 });
+  });
+});
+
+describe("부위 CRUD", () => {
+  it("부위를 더한다", () => {
+    const next = addPart(kit3x3(), { dx: 1, dy: 0, w: 1, h: 3 }, "entrance", "p_new");
+    expect(next.parts).toHaveLength(1);
+    expect(next.parts![0]).toEqual({ id: "p_new", kind: "entrance", dx: 1, dy: 0, w: 1, h: 3 });
+  });
+
+  it("킷 경계를 넘는 부위는 클램프해서 더한다", () => {
+    const next = addPart(kit3x3(), { dx: 2, dy: 2, w: 5, h: 5 }, "sign", "p_big");
+    expect(next.parts![0]!.w).toBe(1);
+    expect(next.parts![0]!.h).toBe(1);
+  });
+
+  it("부위를 고친다", () => {
+    const withPart = addPart(kit3x3(), { dx: 0, dy: 0, w: 1, h: 1 }, "anchor", "p1");
+    const next = updatePart(withPart, "p1", { kind: "window", note: "남쪽 창" });
+    expect(next.parts![0]!.kind).toBe("window");
+    expect(next.parts![0]!.note).toBe("남쪽 창");
+    expect(next.parts![0]!.dx).toBe(0);
+  });
+
+  it("없는 부위를 고치면 킷을 그대로 돌려준다", () => {
+    const withPart = addPart(kit3x3(), { dx: 0, dy: 0, w: 1, h: 1 }, "anchor", "p1");
+    expect(updatePart(withPart, "nope", { kind: "sign" })).toBe(withPart);
+  });
+
+  it("부위를 지운다", () => {
+    const withParts = addPart(
+      addPart(kit3x3(), { dx: 0, dy: 0, w: 1, h: 1 }, "anchor", "p1"),
+      { dx: 2, dy: 2, w: 1, h: 1 }, "sign", "p2",
+    );
+    const next = removePart(withParts, "p1");
+    expect(next.parts).toHaveLength(1);
+    expect(next.parts![0]!.id).toBe("p2");
+  });
+
+  it("원본을 변형하지 않는다", () => {
+    const original = kit3x3();
+    addPart(original, { dx: 0, dy: 0, w: 1, h: 1 }, "anchor", "p1");
+    expect(original.parts).toBeUndefined();
   });
 });
