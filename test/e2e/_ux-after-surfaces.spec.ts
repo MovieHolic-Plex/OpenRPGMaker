@@ -101,9 +101,9 @@ test("after: 언급 썸네일 · 적용 스트립 · 자동 적용 비교 카드
       completionButtons: Array.from(host.querySelectorAll("[data-testid='ai-completion-strip'] button")).map(
         (b) => (b as HTMLElement).dataset.testid ?? "?",
       ),
-      appliedCardThumbs: q("[data-testid='ai-auto-applied-thumbs'] canvas"),
+      appliedCardThumbs: q("[data-testid='ai-change-pair'] canvas"),
       appliedCardHasToggle: q("[data-testid='ai-proposal-auto-approve-input']"),
-      appliedCardHasUndo: q("[data-testid='ai-auto-applied-undo']"),
+      appliedCardHasUndo: q("[data-testid='ai-change-undo']"),
     };
   });
 

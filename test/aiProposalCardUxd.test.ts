@@ -30,6 +30,7 @@ import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { layoutValidationBlocking, validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { ChangeSummary } from "@/editor/tools/types";
@@ -811,7 +812,9 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
   });
   // 즉시 적용은 "적용됐다"고 말하기 전에 실제로 적용됐는지 확인해야 한다. 배치 검증(수관 아래
   // 밑동 없음 등)이 막으면 store 는 그대로이므로 자동 적용 카드를 남기면 거짓말이 된다.
-  it("배치 검증이 막은 턴은 자동 적용 카드를 남기지 않는다", async () => {
+  // 예전 계약: 배치 충돌이 있으면 적용을 거부했다. 지금은 repairLayoutPlacement 가 먼저 고치고
+  // 넘어간다(사람에게 되돌리지 않는다) — 이 테스트는 그 바뀐 계약을 지킨다.
+  it("배치 충돌이 있는 턴은 자동 정리한 뒤 적용된다", async () => {
     const baseline = store.getCurrent();
     const mapId = baseline.startMapId;
     const after = structuredClone(baseline);
@@ -831,8 +834,8 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
-    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("배치 검증 실패");
-    expect(findByTestId(panel, "ai-change-card")).toBeNull();
-    expect(store.getCurrent().maps[mapId].upperTiles[brokenIndex]).not.toBe(260);
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).not.toContain("배치 검증 실패");
+    const blocking = layoutValidationBlocking(validateLayoutPlacement(store.getCurrent(), { mapId }));
+    expect(blocking.map((issue) => issue.code)).toEqual([]);
   });
 });

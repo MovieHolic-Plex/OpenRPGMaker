@@ -71,9 +71,9 @@ async function surfaceSnapshot(page: Page): Promise<unknown> {
     const text = (sel: string): string | null =>
       document.querySelector(sel)?.textContent?.trim().replace(/\s+/g, " ").slice(0, 200) ?? null;
     return {
-      appliedCard: count("[data-testid='ai-auto-applied-card']"),
-      appliedThumbs: count("[data-testid='ai-auto-applied-thumbs'] canvas"),
-      appliedSummary: text("[data-testid='ai-auto-applied-card'] .ai-auto-applied-summary"),
+      appliedCard: count("[data-testid='ai-change-card']"),
+      appliedThumbs: count("[data-testid='ai-change-pair'] canvas"),
+      appliedSummary: text("[data-testid='ai-change-card'] .ai-change-title"),
       autoApproveToggle: count("[data-testid='ai-proposal-auto-approve-input']"),
       proposalCard: count("[data-testid='ai-proposal-card'], .ai-proposal-card"),
       proposalThumbs: count(".ai-proposal-thumbs canvas"),
