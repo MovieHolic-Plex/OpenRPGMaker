@@ -14,6 +14,7 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "seed",
+  "setVitals",
   "dir",
   "face",
   "action",
@@ -144,6 +145,7 @@ export function evaluateExpect(expected, observed) {
   scalar("x", (s) => s.x);
   scalar("y", (s) => s.y);
   scalar("gold", (s) => s.gold);
+  scalar("battleResult", (s) => s.battleResult);
 
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);
