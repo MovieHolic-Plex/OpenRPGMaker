@@ -111,3 +111,22 @@ test.describe("맵 패널 헤더 — expert", () => {
     }
   });
 });
+
+test.describe("맵 필터 점진적 노출", () => {
+  test("맵이 적으면 접혀 있고, 토글하면 열리며, 패싯이 활성이면 강제로 열린다", async ({ page }) => {
+    await bootEditor(page, "expert");
+    const filterWrap = page.locator(".map-tree-filter");
+    await expect(filterWrap).toBeHidden();
+
+    await page.getByTestId("map-tree-filter-toggle").click();
+    await expect(filterWrap).toBeVisible();
+    await page.getByTestId("map-tree-filter").fill("시장");
+    await expect(page.getByTestId("map-tree-filter")).toHaveValue("시장");
+
+    // 질의를 지우고 패싯만 켜도 접히지 않아야 한다.
+    await page.getByTestId("map-tree-filter").fill("");
+    await page.getByTestId("map-tree-facet-empty").click();
+    await page.getByTestId("map-tree-filter-toggle").click(); // 사용자 토글을 꺼도
+    await expect(filterWrap).toBeVisible();                    // 패싯이 활성이라 열려 있다
+  });
+});

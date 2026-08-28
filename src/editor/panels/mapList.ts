@@ -35,6 +35,7 @@ type RenderNodeContext = {
 
 type TreeActionSpec = {
   readonly action: () => void;
+  readonly ariaExpanded?: boolean;
   readonly disabled?: boolean;
   readonly icon: string;
   readonly label: string;
@@ -65,6 +66,10 @@ let currentMapListVariant: MapListVariant = "panel";
 let mapFilterQuery = "";
 type MapFilterFacet = "all" | "empty" | "nolink" | "encounter";
 let mapFilterFacet: MapFilterFacet = "all";
+/** 맵이 이 개수 이상이면 필터를 처음부터 펼친다. 행 31px × 8 = 248px 로 기본
+ *  트리 높이(300px)를 채우기 시작하는 지점이다. */
+const FILTER_AUTO_EXPAND_MAPS = 8;
+let filterExpandedByUser = false;
 let lastExpandedMapId: MapId | null = null;
 let draggingMapId: MapId | null = null;
 let draggingMapIds: MapId[] = [];
@@ -104,6 +109,15 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
         ],
       }),
     );
+    header.append(el("button", {
+      class: "map-tree-action",
+      attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
+      dataset: { testid: "map-tree-filter-toggle" },
+      children: [el("span", { class: "rm-tool-icon oprn-icon-search", attrs: { "aria-hidden": "true" } })],
+      on: {
+        click: () => { filterExpandedByUser = !filterExpandedByUser; rerenderMapList(); },
+      },
+    }));
     header.append(
       el("button", {
         class: "map-tree-basic-add",
@@ -116,7 +130,7 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
       }),
     );
     section.append(header);
-    section.append(makeFilterField());
+    section.append(makeFilterField(mapCount));
   } else {
     const header = el("div", { class: "map-tree-header" });
     header.append(el("h3", {
@@ -125,9 +139,9 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
         el("span", { class: "map-tree-count", text: String(mapCount) }),
       ],
     }));
-    header.append(makeMapTreeHeaderActions(project.mapTree));
+    header.append(makeMapTreeHeaderActions(project.mapTree, mapCount));
     section.append(header);
-    section.append(makeFilterField());
+    section.append(makeFilterField(mapCount));
   }
 
   const tree = el("div", {
@@ -153,7 +167,16 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
   }
 }
 
-function makeFilterField(): HTMLElement {
+/** 활성 질의/패싯이 있으면 개수와 무관하게 편다 — 숨겨진 필터 때문에 "맵이 사라졌다"고
+ *  오인하지 않도록 한다. `makeFilterField`와 헤더 토글의 `aria-expanded`가 같은 판단을
+ *  공유해야 두 곳이 어긋나지 않는다. */
+function isFilterExpanded(mapCount: number): boolean {
+  const hasActiveFilter = mapFilterQuery.trim().length > 0 || mapFilterFacet !== "all";
+  return hasActiveFilter || filterExpandedByUser || mapCount >= FILTER_AUTO_EXPAND_MAPS;
+}
+
+function makeFilterField(mapCount: number): HTMLElement {
+  const expanded = isFilterExpanded(mapCount);
   const chips = el("div", { class: "map-tree-filter-facets" });
   for (const [value, label] of [
     ["all", "전체"],
@@ -174,7 +197,7 @@ function makeFilterField(): HTMLElement {
       },
     }));
   }
-  return el("div", {
+  const wrap = el("div", {
     class: "map-tree-filter",
     children: [
       el("input", {
@@ -199,6 +222,8 @@ function makeFilterField(): HTMLElement {
       chips,
     ],
   });
+  if (!expanded) wrap.setAttribute("hidden", "");
+  return wrap;
 }
 
 function renderNode(spec: RenderNodeSpec): void {
@@ -589,11 +614,24 @@ function treeToggle(mapId: MapId, hasChildren: boolean, isCollapsed: boolean): H
   }) as HTMLButtonElement;
 }
 
-function makeMapTreeHeaderActions(root: MapTreeNode): HTMLElement {
+function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElement {
   const allCollapsed = areAllBranchesCollapsed(root);
   return el("div", {
     class: "map-tree-header-actions",
     children: [
+      treeAction({
+        action: () => {
+          filterExpandedByUser = !filterExpandedByUser;
+          rerenderMapList();
+          currentMapListContainer
+            ?.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]')
+            ?.focus();
+        },
+        ariaExpanded: isFilterExpanded(mapCount),
+        icon: "search",
+        label: "맵 필터",
+        testId: "map-tree-filter-toggle",
+      }),
       treeAction({
         action: () => openMapCreateDialog({ preset: "blank" }),
         icon: "map-child",
@@ -1008,7 +1046,12 @@ function clearDropTargets(): void {
 function treeAction(spec: TreeActionSpec): HTMLButtonElement {
   const button = el("button", {
     class: "map-tree-action",
-    attrs: { title: spec.label, "aria-label": spec.label, type: "button" },
+    attrs: {
+      title: spec.label,
+      "aria-label": spec.label,
+      type: "button",
+      ...(spec.ariaExpanded !== undefined ? { "aria-expanded": String(spec.ariaExpanded) } : {}),
+    },
     children: [
       el("span", { class: `rm-tool-icon oprn-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
       ...(spec.text ? [el("span", { class: "map-tree-action-text", text: spec.text })] : []),

@@ -15,6 +15,7 @@ test("capture map tree UX shots for the result report", async ({ page }) => {
 
   const mapTree = page.getByTestId("map-tree");
   await expect(mapTree).toBeVisible();
+  await page.getByTestId("map-tree-filter-toggle").click();
   await expect(page.getByTestId("map-tree-filter")).toBeVisible();
   await page.getByTestId("left-map-root").screenshot({ path: join(OUT, "01-tree-panel.png") });
 

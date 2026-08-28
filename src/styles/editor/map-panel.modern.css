@@ -381,6 +381,8 @@
   width: 100%;
 }
 
+.map-tree-panel .map-tree-filter[hidden] { display: none; }
+
 .map-tree-panel .map-tree-filter-label { display: none; }
 
 .map-tree-panel .map-tree-filter-input,

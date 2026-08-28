@@ -160,4 +160,18 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, `map-tree-node-${project.startMapId}`)).not.toBeNull();
     expect(findByTestId(panel, `map-tree-node-${houseId}`)).toBeNull();
   });
+
+  it("맵이 8개 미만이면 필터를 접고 토글만 노출한다", () => {
+    // 시드 프로젝트는 맵 1개다.
+    const host = document.createElement("div");
+    renderMapList(host);
+    const filter = host.querySelector<HTMLElement>('[data-testid="map-tree-filter"]');
+    const toggle = host.querySelector<HTMLElement>('[data-testid="map-tree-filter-toggle"]');
+    expect(toggle).not.toBeNull();
+    // DOM 에는 남아 있되 hidden 이어야 한다 — 기존 e2e 가 fill() 로 접근한다.
+    // fakeDom 의 FakeElement 는 hasAttribute()를 흉내내지 않으므로(node 환경, happy-dom 아님)
+    // getAttribute() 로 동등하게 검증한다.
+    expect(filter).not.toBeNull();
+    expect(filter?.closest(".map-tree-filter")?.getAttribute("hidden")).not.toBeNull();
+  });
 });
