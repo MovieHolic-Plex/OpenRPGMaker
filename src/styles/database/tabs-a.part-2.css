@@ -422,17 +422,3 @@
   color: var(--text-1);
   font-weight: 600;
 }
-
-/* ?? Map Tree ?? */
-.map-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-.map-tree-icon {
-  font-size: 11px;
-  color: var(--text-muted);
-  width: 14px;
-  text-align: center;
-}

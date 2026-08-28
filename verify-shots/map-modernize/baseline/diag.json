@@ -1,0 +1,38 @@
+[
+  {
+    "mode": "expert",
+    "rootPresent": true,
+    "panelPresent": true,
+    "rootWidth": 319,
+    "rootHeight": 300,
+    "rows": 1,
+    "clippedNames": 0,
+    "rowHeight": 31,
+    "overflowX": 0,
+    "overflowY": 0
+  },
+  {
+    "mode": "standard",
+    "rootPresent": true,
+    "panelPresent": true,
+    "rootWidth": 299,
+    "rootHeight": 300,
+    "rows": 1,
+    "clippedNames": 0,
+    "rowHeight": 31,
+    "overflowX": 0,
+    "overflowY": 0
+  },
+  {
+    "mode": "beginner",
+    "rootPresent": true,
+    "panelPresent": true,
+    "rootWidth": 0,
+    "rootHeight": 0,
+    "rows": 1,
+    "clippedNames": 0,
+    "rowHeight": 51,
+    "overflowX": 0,
+    "overflowY": 0
+  }
+]
