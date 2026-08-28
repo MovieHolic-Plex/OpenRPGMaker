@@ -1,0 +1,154 @@
+battle mounted
+ORGANIC runs: []
+ORGANIC samples: []
+ORGANIC min alpha: n/a
+=== battle-flash-hit: samples=20 minAlpha=0.216
+[
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.35)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.35)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.26)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.216)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.243)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.243)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.243)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.243)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.243)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgba(255, 255, 255, 0.243)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ }
+]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/red/shots-battle-v3/battle-flash-hit-midflash.png
+=== battle-flash-critical: samples=24 minAlpha=1
+[
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -2.03774, 1.3585)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -3.74051, 2.49368)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -5.0605, 3.37367)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -4.31819, 2.87879)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -4.31819, 2.87879)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -4.31819, 2.87879)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -4.31819, 2.87879)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -4.31819, 2.87879)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, -4.31819, 2.87879)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ }
+]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/red/shots-battle-v3/battle-flash-critical-midflash.png
+pageerrors: []
+FLASH_PROBE_DONE

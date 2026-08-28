@@ -17,6 +17,7 @@ dist/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-apply-without-approval/
 !.omo/evidence/action-battle/
+!.omo/evidence/battle-flash-map/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
