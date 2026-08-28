@@ -21,12 +21,8 @@ import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type Comma
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   CHARSET_FRAME_HEIGHT,
-  CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
-  charsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { sameInspectorPath, selectedCommandPath, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
 import { commandRuntimeSupport, type CommandRuntimeSupport, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
@@ -257,17 +253,8 @@ function renderFaceCrop16(resourceId: string): HTMLElement | null {
 function renderCharsetSprite16(spriteId: string): HTMLElement | null {
   const asset = CHARSET_ASSETS.find((entry) => entry.textureKey === spriteId);
   if (!asset) return null;
-  const scale = 16 / CHARSET_FRAME_HEIGHT;
-  const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
   const crop = el("span", { class: "cmd-thumb cmd-thumb-sprite", attrs: { "aria-hidden": "true" } });
-  crop.style.setProperty("width", `${Math.round(CHARSET_FRAME_WIDTH * scale)}px`);
-  crop.style.setProperty("height", "16px");
-  applyTransparentColorKeyBackground(crop, asset.path);
-  crop.style.setProperty(
-    "background-size",
-    `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale}px`
-  );
-  crop.style.setProperty("background-position", `-${source.x * scale}px -${source.y * scale}px`);
+  applyCharsetFrameCrop(crop, asset.path, { characterIndex: 0, direction: "down", pattern: 1 }, 16 / CHARSET_FRAME_HEIGHT);
   return crop;
 }
 

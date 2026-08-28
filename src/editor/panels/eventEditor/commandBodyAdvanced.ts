@@ -56,17 +56,12 @@ import { renderTransferPicker, transferDirectionLabel, transferFadeLabel } from 
 import {
   CHARSET_CHARACTER_COUNT,
   CHARSET_FRAME_COUNT,
-  CHARSET_FRAME_HEIGHT,
-  CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
   charsetFrameIndex,
-  charsetFrameSource,
   decodeCharsetFrameIndex,
   type CharsetDirection,
 } from "@/assets/easyrpgRtp";
 import { projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
+import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
 import {
   renderDirectionRadioGroup,
   renderGraphicResourceList,
@@ -1056,17 +1051,10 @@ function applyCharsetChipStyle(
   scale: number
 ): void {
   const selection = { characterIndex, direction, pattern: walkPattern };
-  const source = charsetFrameSource(selection);
   target.dataset.slot = String(characterIndex);
   target.dataset.direction = direction;
   target.dataset.pattern = String(walkPattern);
-  target.style.width = `${CHARSET_FRAME_WIDTH * scale}px`;
-  target.style.height = `${CHARSET_FRAME_HEIGHT * scale}px`;
-  applyTransparentColorKeyBackground(target, asset.path);
-  target.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${
-    CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale
-  }px`;
-  target.style.backgroundPosition = `-${source.x * scale}px -${source.y * scale}px`;
+  applyCharsetFrameCrop(target, asset.path, selection, scale);
 }
 
 function applyWalkProbeStyle(
@@ -1078,8 +1066,10 @@ function applyWalkProbeStyle(
 ): void {
   applyCharsetChipStyle(target, asset, characterIndex, direction, 1, scale);
   for (const pattern of [0, 1, 2] as const) {
-    const source = charsetFrameSource({ characterIndex, direction, pattern });
-    target.style.setProperty(`--npc-walk-frame-${pattern}`, `-${source.x * scale}px -${source.y * scale}px`);
+    target.style.setProperty(
+      `--npc-walk-frame-${pattern}`,
+      charsetFrameCropPosition({ characterIndex, direction, pattern }, scale)
+    );
   }
 }
 
