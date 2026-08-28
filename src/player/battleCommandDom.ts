@@ -48,18 +48,23 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
     // ("field" 표시) 하단 밴드가 빈 화면이 됐고, 어느 적이 선택됐는지 읽을 곳이 없었다.
     panel.dataset.targetPresentation = "menu";
     panel.append(targetPrompt(snapshot, terms));
-    panel.append(targetSelectionMenu(snapshot, options, terms));
-    panel.append(targetCancelButton(options));
+    const targetMenu = targetSelectionMenu(snapshot, options, terms);
+    targetMenu.append(targetCancelButton(options));
+    panel.append(targetMenu);
     panel.append(keyPrompts());
     return panel;
   }
   if (snapshot.phase !== "actorCommand") return panel;
 
   if (snapshot.battleFlow === "strict") panel.append(strictFlowStatus(snapshot));
-  panel.append(commandGrid(snapshot, options, false));
+  const menu = commandGrid(snapshot, options, false);
+  // 뒤로/취소는 메뉴의 마지막 항목이다. 패널의 형제로 두면 패널 그리드에 암시적 행이
+  // 생기고 그 행이 남은 높이를 전부 가져가 메뉴 행(1fr)이 0px 로 굶는다(실측:
+  // panelRows "0px 13.5px 106.5px", 메뉴 clientHeight 0). 그래서 메뉴 안에 넣는다.
   if (options.submenu && !(options.submenu.kind === "switch" && snapshot.forcedSwitchActorId)) {
-    panel.append(submenuBackButton(options, terms));
+    menu.append(submenuBackButton(options, terms));
   }
+  panel.append(menu);
   panel.append(keyPrompts());
   return panel;
 }
@@ -183,7 +188,7 @@ function commandControl(
       const onlySkill = skillIds.length === 1 ? project.database.skills.find((skill) => skill.id === skillIds[0]) : undefined;
       const failure = onlySkill && actor ? battleSkillUseFailure(project, actor, onlySkill.id) : undefined;
       const reason = failure && actor ? battleSkillUseFailureLabel(failure, onlySkill, actor) : skillIds.length === 0 ? "사용 가능한 스킬이 없습니다." : undefined;
-      return commandButton(label, commandTestId(command), "fire", reason ?? "", () => {
+      return commandButton(label, commandTestId(command), "fire", skillIds.length === 0 ? "없음" : "", () => {
         if (targetMode || skillIds.length === 0) return;
         if ((skillIds.length === 1 || command.skillId) && usable.length === 1) {
           options.beginTargetCommand({ kind: "skill", skillId: usable[0] });
@@ -414,10 +419,11 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
     const skill = project.database.skills.find((record) => record.id === skillId);
     const failure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
     const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor) : failure ? "사용자가 없습니다." : undefined;
-    const detail = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
-    const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", reason ? `${detail} · ${reason}` : detail, () => {
+    const detail = skill && actor ? skillMpDetail(project, skill, terms, actor) : "";
+    const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
+    const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
-    }, Boolean(reason), reason);
+    }, Boolean(reason), reason, hint);
     appendSkillTypeBadge(button, project, skill?.elementId);
     nodes.push(button);
   }
@@ -478,6 +484,17 @@ function appendSkillTypeBadge(
   button.querySelector(".battle-command-text")?.querySelector("strong")?.after(badge);
 }
 
+function skillMpDetail(
+  project: ReturnType<typeof store.getCurrent>,
+  skill: { id: SkillId },
+  terms: ResolvedTerms,
+  actor: BattleBattlerSnapshot,
+): string {
+  const fullSkill = project.database.skills.find((record) => record.id === skill.id);
+  if (!fullSkill) return "";
+  return `${terms.mp} ${battleSkillMpCost(fullSkill, actor.maxMp)}`;
+}
+
 function skillDetailFor(
   project: ReturnType<typeof store.getCurrent>,
   skill: { id: SkillId; power: number; scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies"; effect: { kind: string }; stateEffects?: readonly { stateId: string; operation: string }[] },
@@ -520,10 +537,10 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     const record = project.database.items.find((entry) => entry.id === item.itemId);
     const scope = record ? targetScopeForCommand(project, { kind: "item", itemId: record.id }) : "self";
     const states = record?.stateEffects.map((effect) => project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId).join(", ");
-    const detail = [scopeLabel(scope), states].filter(Boolean).join(" · ");
-    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", detail || `${terms.item} 사용`, () => {
+    const hint = [scopeLabel(scope), states].filter(Boolean).join(" · ");
+    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", "", () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
-    }));
+    }, false, undefined, hint || `${terms.item} 사용`));
   }
   if (isPokemonMonsterActor(project, activeActor(snapshot))) {
     for (const item of captureItems(snapshot)) {
@@ -569,7 +586,7 @@ function switchCandidates(snapshot: BattleSnapshot): BattleBattlerSnapshot[] {
 }
 
 function submenuBackButton(options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement {
-  return commandButton(terms.back, "actor-command-back", "back", "이전 메뉴", () => {
+  return commandButton(terms.back, "actor-command-back", "back", "", () => {
     options.setSubmenu(null);
     options.render();
   });
@@ -639,7 +656,7 @@ function strictFlowStatus(snapshot: BattleSnapshot): HTMLElement {
   status.className = "battle-flow-status battle-flow-status-strict";
   status.dataset.testid = "battle-strict-flow-status";
   const total = snapshot.strictPendingActorIds.length + snapshot.strictQueuedActorIds.length;
-  status.textContent = `ROUND ${Math.max(1, snapshot.strictRound)} · 명령 ${snapshot.strictQueuedActorIds.length + 1}/${Math.max(1, total)}`;
+  status.textContent = `명령 ${snapshot.strictQueuedActorIds.length + 1}/${Math.max(1, total)}`;
   return status;
 }
 
@@ -658,6 +675,7 @@ function commandButton(
   onClick: () => void,
   inert = false,
   disabledReason?: string,
+  hint?: string,
 ): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
@@ -667,9 +685,13 @@ function commandButton(
   if (inert) {
     button.dataset.previewOnly = "true";
     button.disabled = true;
-    const reason = disabledReason || detail || "현재 사용할 수 없습니다.";
+    const reason = disabledReason || hint || detail || "현재 사용할 수 없습니다.";
     button.title = reason;
     button.setAttribute("aria-label", `${label}: ${reason}`);
+  } else if (hint) {
+    // 행에 보이는 설명은 한 토막으로 줄이고, 전체 설명(범위·효과·상태)은 여기로 옮긴다.
+    button.title = hint;
+    button.setAttribute("aria-label", `${label}: ${hint}`);
   }
   const iconNode = document.createElement("span");
   iconNode.className = `battle-command-icon battle-command-icon-${icon}`;

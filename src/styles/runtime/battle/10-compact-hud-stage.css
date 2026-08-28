@@ -14,6 +14,10 @@
 
 .battle-scene {
   --battle-hud-height: 192px;
+  /* 커맨드 행은 목록 길이와 무관하게 같은 높이다. 행을 1fr 로 당기면 항목 수에 따라
+     행이 늘었다 줄었다 하고(실측: 루트 22.9px vs 스킬 서브메뉴 12px), 넘치는 목록은
+     행이 찌그러지는 대신 스크롤로 밀려야 한다. */
+  --battle-command-row-height: 23px;
   gap: 4px;
   grid-template-columns: minmax(0, 1fr) 184px 328px;
   grid-template-rows: minmax(0, 1fr) var(--battle-hud-height);
