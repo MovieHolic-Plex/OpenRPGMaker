@@ -38,123 +38,76 @@ export async function clickMapCenter(page: Page): Promise<void> {
   await canvas.dblclick({ position: { x: Math.floor(box.width / 2), y: Math.floor(box.height / 2) } });
 }
 
+/**
+ * 상점·여관 픽스처. 빈 프로젝트(v4)를 바탕으로 짓는다 — 손으로 쓴 v3 자료집을 쓰던 시절에는
+ * 적재 경로가 기본 아이템 목록(179개)만 채우고 스킬·상태·전투 애니메이션은 비워 둬서
+ * 참조 문제 89개가 생기고 `passesAuthoringTestGate()` 가 시연 실행을 막았다. 그러면
+ * 런타임 스펙이 타이틀 화면조차 못 본다. 기본 자료집은 그 자체로 참조가 성립한다.
+ *
+ * 가격만 덮어쓴다: 회복약 50 → 12, 해독초 30 → 8. 스펙의 소지금 산수(63 · 76 · 82)가
+ * 이 두 값에 걸려 있다.
+ */
 export function makeCommerceProject(): Project {
-  return {
-    version: 3,
-    meta: { title: "상점 여관 테스트", author: "e2e", terms: { gold: "G" } },
-    assets: { sprites: {}, uploaded: {} },
-    resourceProfiles: [],
-    tilesets: {
-      tiles_default: {
-        id: "tiles_default",
-        name: "기본 타일셋",
-        image: { type: "bundled", id: "tex_tiles_default" },
-        tileSize: 16,
-        tilesPerRow: 8,
-        count: 8,
-        passability: [
-          { up: true, down: true, left: true, right: true },
-          { up: false, down: false, left: false, right: false },
-          { up: true, down: true, left: true, right: true },
-          { up: true, down: true, left: true, right: true },
-          { up: true, down: true, left: true, right: true },
-          { up: true, down: true, left: true, right: true },
-          { up: false, down: false, left: false, right: false },
-          { up: true, down: true, left: true, right: true },
-        ],
-        priority: ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
-        terrain: [0, 0, 0, 0, 0, 0, 0, 0],
-      },
+  const project = structuredClone(createBlankProject());
+  project.meta = { ...project.meta, title: "상점 여관 테스트", author: "e2e" };
+  project.commonEvents = [
+    {
+      id: "ce_shop",
+      name: "상점 공용 이벤트",
+      trigger: "none",
+      commands: [{ kind: "shop", itemIds: ["item_potion"] }],
     },
-    switches: [],
-    variables: [],
-    commonEvents: [
-      {
-        id: "ce_shop",
-        name: "상점 공용 이벤트",
-        trigger: "none",
-        commands: [{ kind: "shop", itemIds: ["item_potion"] }],
-      },
-    ],
-    database: {
-      actors: [],
-      classes: [],
-      skills: [],
-      items: [
-        normalizeItemRecord({
-          id: "item_potion",
-          name: "회복약",
-          scope: "ally",
-          price: 12,
-          description: "작은 회복 아이템.",
-          type: "medicine",
-          occasion: "always",
-          consumable: true,
-          stateEffects: [],
-        }),
-        normalizeItemRecord({
-          id: "item_antidote",
-          name: "해독초",
-          scope: "ally",
-          price: 8,
-          description: "독을 치료한다.",
-          type: "medicine",
-          occasion: "always",
-          consumable: true,
-          stateEffects: [],
-        }),
+  ];
+  project.database.items = project.database.items.map((item) => {
+    if (item.id === "item_potion") return normalizeItemRecord({ ...item, price: 12 });
+    if (item.id === "item_antidote") return normalizeItemRecord({ ...item, price: 8 });
+    return item;
+  });
+  project.maps = {
+    map_shop: {
+      id: "map_shop",
+      name: "상점 맵",
+      width: 2,
+      height: 2,
+      // 타일셋은 빈 프로젝트가 들고 있는 것을 그대로 쓴다. 예전 픽스처의 `tiles_default` 는
+      // 이 프로젝트에 없는 id 라 그 자체로 참조 문제 1건이었다.
+      tilesetId: project.maps[project.startMapId]?.tilesetId ?? "easyrpg_chipset_combined_town",
+      tileSize: 16,
+      lowerTiles: [130, 130, 130, 130],
+      upperTiles: [-1, -1, -1, -1],
+      events: [
+        {
+          id: "ev_shopkeeper",
+          x: 0,
+          y: 1,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            {
+              id: "page_shop",
+              name: "상점 주인",
+              conditions: [],
+              graphic: {},
+              trigger: { kind: "action" },
+              priority: "same",
+              movement: { type: "fixed", speed: 3, frequency: 3 },
+              commands: [
+                { kind: "changeGold", op: "+=", amount: 100 },
+                { kind: "shop", itemIds: ["item_potion"] },
+                { kind: "inn", price: 25 },
+              ],
+            },
+          ],
+        },
       ],
-      equipment: [],
-      enemies: [],
-      troops: [],
-      states: [],
-      battleAnimations: [],
     },
-    system: { startActorIds: [] },
-    session: { switches: {}, variables: {}, inventory: {}, partyActorIds: [] },
-    maps: {
-      map_shop: {
-        id: "map_shop",
-        name: "상점 맵",
-        width: 2,
-        height: 2,
-        tilesetId: "tiles_default",
-        tileSize: 16,
-        lowerTiles: [0, 0, 1, 0],
-        upperTiles: [-1, -1, -1, -1],
-        events: [
-          {
-            id: "ev_shopkeeper",
-            x: 0,
-            y: 1,
-            trigger: { kind: "action" },
-            commands: [],
-            pages: [
-              {
-                id: "page_shop",
-                name: "상점 주인",
-                conditions: [],
-                graphic: {},
-                trigger: { kind: "action" },
-                priority: "same",
-                movement: { type: "fixed", speed: 3, frequency: 3 },
-                commands: [
-                  { kind: "changeGold", op: "+=", amount: 100 },
-                  { kind: "shop", itemIds: ["item_potion"] },
-                  { kind: "inn", price: 25 },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    },
-    mapTree: { mapId: "map_shop", children: [] },
-    startMapId: "map_shop",
-    startPos: { x: 0, y: 0 },
-    flags: {},
   };
+  project.mapTree = { mapId: "map_shop", children: [] };
+  project.startMapId = "map_shop";
+  project.startPos = { x: 0, y: 0 };
+  return project;
 }
+
 
 export function makeInsufficientCommerceProject(): Project {
   const project = makeCommerceProject();

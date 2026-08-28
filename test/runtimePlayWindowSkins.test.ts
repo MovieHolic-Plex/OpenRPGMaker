@@ -159,7 +159,8 @@ describe("runtime play window skins — 상점", () => {
     const row = shell.querySelector<HTMLElement>("[data-testid='shop-buy-item_potion']");
     expect(row).not.toBeNull();
     expect(row?.querySelector("[data-testid='shop-item-icon-item_potion']")).not.toBeNull();
-    expect(row?.querySelector("[data-testid='shop-price-item_potion']")?.textContent).toBe("50");
+    // 값만 있으면 단위를 알 수 없다 — 소지금 패널과 같은 단위를 붙인다.
+    expect(row?.querySelector("[data-testid='shop-price-item_potion']")?.textContent).toBe("50G");
     // 파티 소지 수량이 목록에서 바로 읽힌다(구매 전에 창을 옮겨 다니지 않는다).
     expect(row?.querySelector("[data-testid='shop-owned-item_potion']")?.textContent).toBe("x3");
     // 소지금 + 상인 소지금이 같은 화면에 있다.

@@ -6,7 +6,7 @@ import {
 } from "@/project/economyValues";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
-import { resolveTerms } from "@/project/terms";
+import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { resolveShopMerchantGold } from "@/project/shopStock";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
@@ -14,11 +14,18 @@ import {
   adjustShopQuantity,
   createShopOverlay,
   defaultShopMode,
+  refreshShopItemRow,
+  removeShopItemRow,
   renderShopItems,
   renderShopMenu,
+  renderShopNotice,
   sellPrice,
   shopPromptText,
+  updateShopGoldPanel,
+  updateShopHelpLine,
   updateShopOwnedPanel,
+  updateShopQuantityTotal,
+  updateShopStatus,
   type ShopMode,
   type ShopView,
 } from "@/player/playSceneShopDom";
@@ -29,18 +36,19 @@ import type { ItemRecord } from "@/project/types/database";
 export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 
 export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean | "failed"> {
-  const items = shopItems(step);
+  const stockItems = shopItems(step);
   const terms = resolveTerms(store.getCurrent());
+  const failedResult = () => (step.branchOnFailedTransaction ? ("failed" as const) : false);
   // 수리/감정: 빈 풀은 “거래 불가”로 간주 (빈 풀에 수리비 청구 방지)
   const svc = (step as unknown as { shopServiceKind?: string }).shopServiceKind;
   const appraisalPool = (step as unknown as { appraisalUnidentifiedPool?: string[] }).appraisalUnidentifiedPool;
-  if ((svc === "appraisal" && (!appraisalPool || appraisalPool.length === 0)) || (svc === "repair" && items.length === 0)) {
+  if ((svc === "appraisal" && (!appraisalPool || appraisalPool.length === 0)) || (svc === "repair" && stockItems.length === 0)) {
     // 실패로 간주 — 골드 환불 전제(수리비는 handleShopTransaction 이전이므로 차감 없음)
-    return Promise.resolve(step.branchOnFailedTransaction ? ("failed" as const) : false);
+    return showShopNotice(scene, terms, "지금은 해 드릴 일이 없습니다.").then(failedResult);
   }
-  // 빈 상점: 메뉴 노출 대신 안내만 하고 바로 닫음 → 유령 상점(F-07) 방지
-  if (items.length === 0) {
-    return Promise.resolve(step.branchOnFailedTransaction ? "failed" as const : false);
+  // 빈 상점도 안내는 띄운다 — 예전에는 아무것도 안 보여줘서 이벤트가 조용히 지나갔다(유령 상점).
+  if (stockItems.length === 0) {
+    return showShopNotice(scene, terms, "지금은 팔 물건이 없습니다.").then(failedResult);
   }
   // 방문마다 상인 소지금을 명령값(기본 100G)으로 초기화. 방문 중 매입/매도로 증감.
   let merchantGold = resolveShopMerchantGold(step.merchantGold);
@@ -48,7 +56,9 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
     const overlay = createShopOverlay();
     let view: ShopView = "menu";
     let mode: ShopMode = defaultShopMode(step);
-    let statusText = items.length ? shopPromptText(step, mode, terms) : "There are no goods here.";
+    // 판매는 소지품 목록이다 — 진열품을 그대로 보여주면 보유 0 인 행을 눌러 실패만 한다.
+    let viewItems: ItemRecord[] = stockItems;
+    let statusText = shopPromptText(step, mode, terms);
     let transactionCompleted = false;
     // 커서 메뉴는 매 렌더마다 재부착한다(뷰/상태 변경 시 overlay 전체 재빌드).
     // 커서 위치는 뷰별 인덱스로 보존해 상태 메시지 갱신에도 자리를 유지한다.
@@ -75,7 +85,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
           },
         });
       }
-      // 아이템 목록 — ↑↓ 이동, 선택 시 보유 패널 갱신, select 수량모드면 ←→ 로 수량 ±1.
+      // 아이템 목록 — ↑↓ 이동, 선택 시 보유·도움말·합계 갱신, select 수량모드면 ←→ 로 수량 ±1.
       const selectMode = (step.quantityMode ?? "single") === "select";
       return attachCursorMenu(overlay, {
         items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-item-row")),
@@ -83,7 +93,9 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
         initialIndex: itemCursor,
         onSelect: (index) => {
           itemCursor = index;
-          updateShopOwnedPanel(overlay, scene, items[index]);
+          updateShopOwnedPanel(overlay, scene, viewItems[index]);
+          updateShopHelpLine(overlay, step, viewItems[index]);
+          updateShopQuantityTotal(overlay);
         },
         onHorizontal: selectMode ? (dir) => adjustShopQuantity(overlay, dir) : undefined,
       });
@@ -97,7 +109,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
           : renderShopItems({
               scene,
               step,
-              items,
+              items: viewItems,
               mode,
               prompt: statusText,
               terms,
@@ -110,7 +122,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
                   setStatus(result.status);
                   return;
                 }
-                // 상태 메시지 리렌더 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
+                // 상태 메시지 갱신 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
                 merchantGold = result.merchantGold;
                 if (nextMode === "buy") {
                   const _cost2 = item.price * Math.min(99, Math.max(1, Math.floor(count) || 1));
@@ -127,11 +139,9 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
                   scene.syncRuntimeState();
                 }
                 transactionCompleted = true;
-                if (nextMode === "buy") {
-                  finish();
-                  return;
-                }
-                setStatus(result.status);
+                // 구매 후에도 가게에 머문다 — 예전에는 여기서 finish() 를 불러 한 개 사면
+                // 창이 닫히고, 만들어 둔 확인 메시지(result.status)는 버려졌다.
+                applyTransactionResult(item, nextMode, result.status);
               },
             })
       );
@@ -144,16 +154,74 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
     const showItems = (nextMode: ShopMode) => {
       mode = nextMode;
       view = "items";
-      statusText = shopPromptText(step, mode, terms);
+      itemCursor = 0;
+      viewItems = listForMode(nextMode);
+      statusText = viewItems.length === 0 ? emptyListText(nextMode) : shopPromptText(step, mode, terms);
       renderShop();
     };
+    /** 실패 메시지는 제자리에서만 바꾼다 — 전체 재렌더는 커서·포커스를 날리고 낭독도 끊는다. */
     const setStatus = (text: string) => {
       statusText = text;
-      renderShop();
+      updateShopStatus(overlay, statusText);
     };
+    /** 거래 성공 후 화면 반영. 판매로 0개가 된 행은 목록에서 빼고 커서를 다시 잡는다. */
+    const applyTransactionResult = (item: ItemRecord, txMode: ShopMode, status: string) => {
+      statusText = status;
+      if (txMode === "sell" && (scene.session.inventory[item.id] ?? 0) <= 0) {
+        viewItems = viewItems.filter((entry) => entry.id !== item.id);
+        removeShopItemRow(overlay, item.id, txMode);
+        if (viewItems.length === 0) {
+          renderShop();
+          return;
+        }
+        teardownCursor();
+        detachCursor = attachShopCursor();
+      }
+      updateShopStatus(overlay, statusText);
+      updateShopGoldPanel(overlay, scene, terms, merchantGold, mode);
+      for (const entry of viewItems) refreshShopItemRow(overlay, scene, entry, mode, terms, merchantGold);
+      updateShopOwnedPanel(overlay, scene, viewItems[itemCursor]);
+      updateShopQuantityTotal(overlay);
+    };
+    const listForMode = (nextMode: ShopMode): ItemRecord[] =>
+      nextMode === "sell" ? sellableItems(scene, stockItems) : stockItems;
     // 먼저 마운트한 뒤 렌더해야 첫 커서 focus/scrollIntoView 가 연결된 노드에서 동작한다.
     mountCommerceOverlay(scene, overlay);
     renderShop();
+  });
+}
+
+function emptyListText(mode: ShopMode): string {
+  return mode === "sell" ? "팔 물건이 없습니다." : "파는 물건이 없습니다.";
+}
+
+/** 판매 목록 = 지금 가진 물건. 진열품이면 상점이 매긴 가격을 그대로 써서 되팔기 값을 낸다. */
+function sellableItems(scene: PlaySceneContext, stockItems: readonly ItemRecord[]): ItemRecord[] {
+  const priced = new Map(stockItems.map((item) => [item.id, item]));
+  return store
+    .getCurrent()
+    .database.items.filter((item) => (scene.session.inventory[item.id] ?? 0) > 0)
+    .map((item) => priced.get(item.id) ?? item);
+}
+
+/** 거래할 게 없는 상점도 창은 띄운다 — 안내를 읽고 닫는 것까지가 한 흐름이다. */
+function showShopNotice(scene: PlaySceneContext, terms: ResolvedTerms, message: string): Promise<void> {
+  return new Promise((resolve) => {
+    const overlay = createShopOverlay();
+    let detach: (() => void) | null = null;
+    const close = () => {
+      detach?.();
+      detach = null;
+      overlay.remove();
+      scene.syncRuntimeState();
+      resolve();
+    };
+    mountCommerceOverlay(scene, overlay);
+    overlay.append(renderShopNotice(message, terms, close));
+    detach = attachCursorMenu(overlay, {
+      items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
+      cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-notice-close']"),
+    });
   });
 }
 
@@ -181,6 +249,11 @@ export function refundShopMileage(session: PlaySessionLike, cost: number, mileag
   s.shopMileagePoints = Math.max(0, (s.shopMileagePoints ?? 0) - delta);
 }
 
+/** 거래 메시지에 붙는 통화 단위. 자료집 용어를 따라간다(소지금 패널과 같은 단위). */
+function goldUnit(): string {
+  return resolveTerms(store.getCurrent()).gold;
+}
+
 /** 순수 거래 규칙 — 상인 소지금 한도를 포함. 단위 테스트용 export. */
 export function handleShopTransaction(
   scene: PlaySceneContext,
@@ -194,7 +267,7 @@ export function handleShopTransaction(
     const owned = scene.session.inventory[item.id] ?? 0;
     if (owned < qty) {
       scene.syncRuntimeState();
-      return { ok: false, status: "You do not have enough." };
+      return { ok: false, status: "가진 개수가 부족합니다." };
     }
     const payout = sellPrice(item) * qty;
     const economy = scene.session as typeof scene.session & {
@@ -213,7 +286,7 @@ export function handleShopTransaction(
       || (economy.shopMileagePoints !== undefined && !isSafeEconomyValue(economy.shopMileagePoints))
       || currentTrade.sold + qty > GOLD_MAX) {
       scene.syncRuntimeState();
-      return { ok: false, status: "Invalid shop state." };
+      return { ok: false, status: "거래를 처리할 수 없습니다." };
     }
     if (merchantGold < payout) {
       scene.syncRuntimeState();
@@ -221,7 +294,7 @@ export function handleShopTransaction(
     }
     if (!changeItemsAtomically(scene.session, [{ itemId: item.id, op: "-=", amount: qty }])) {
       scene.syncRuntimeState();
-      return { ok: false, status: "Invalid shop state." };
+      return { ok: false, status: "거래를 처리할 수 없습니다." };
     }
     changeGold(scene.session, "+=", payout);
     {
@@ -231,26 +304,26 @@ export function handleShopTransaction(
       // 판매(sell)는 “되팔기”이므로 마일리지 차감 없음. 구매 환불은 handleShopTransaction 밖에서 처리.
     }
     scene.syncRuntimeState();
-    return { ok: true, status: `${item.name} sold.`, merchantGold: merchantGold - payout };
+    return { ok: true, status: `${item.name} 판매 — +${payout}${goldUnit()}`, merchantGold: merchantGold - payout };
   }
   const cost = item.price * qty;
   if (!isSafeEconomyValue(cost) || !isSafeEconomyValue(scene.session.gold) || !isSafeEconomyValue(merchantGold) || merchantGold + cost > GOLD_MAX) {
     scene.syncRuntimeState();
-    return { ok: false, status: "Invalid shop state." };
+    return { ok: false, status: "거래를 처리할 수 없습니다." };
   }
   if (scene.session.gold < cost) {
     scene.syncRuntimeState();
-    return { ok: false, status: "Not enough money." };
+    return { ok: false, status: "소지금이 부족합니다." };
   }
   const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
   const currentTrade = tc[item.id] ?? { sold: 0, bought: 0 };
   if (!isSafeEconomyValue(currentTrade.sold) || !isSafeEconomyValue(currentTrade.bought) || currentTrade.bought + qty > GOLD_MAX) {
     scene.syncRuntimeState();
-    return { ok: false, status: "Invalid shop state." };
+    return { ok: false, status: "거래를 처리할 수 없습니다." };
   }
   if (!changeItemsAtomically(scene.session, [{ itemId: item.id, op: "+=", amount: qty }])) {
     scene.syncRuntimeState();
-    return { ok: false, status: "Inventory is full." };
+    return { ok: false, status: "가방이 꽉 찼습니다." };
   }
   changeGold(scene.session, "-=", cost);
   {
@@ -259,7 +332,7 @@ export function handleShopTransaction(
   }
   scene.syncRuntimeState();
   // 플레이어 구매금은 상인 소지금으로 들어간다(이후 매입 여력 증가).
-  return { ok: true, status: `${item.name} purchased.`, merchantGold: merchantGold + cost };
+  return { ok: true, status: `${item.name} 구매 — -${cost}${goldUnit()}`, merchantGold: merchantGold + cost };
 }
 
 function mountCommerceOverlay(scene: PlaySceneContext, overlay: HTMLElement): void {
