@@ -17,11 +17,12 @@ import {
   reasoningToggleText,
   renderAiChatPanel,
   renderToolActivityEntry,
+  teardownAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { editorState } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
-import { clearConversations, projectConversationContextKey, saveConversation } from "@/ai/conversationStore";
+import { clearConversations, conversationScopeKey, loadLatestConversation, saveConversation } from "@/ai/conversationStore";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -163,6 +164,19 @@ describe("선택 영역 AI 직결 칩", () => {
     expect(logText).toContain("타일 2칸");
     expect(logText).toContain("완료했습니다.");
     expect(logText).toMatch(/완료/);
+
+    const userEntry = loadLatestConversation()?.entries.find((entry) => entry.kind === "user");
+    expect(userEntry?.kind).toBe("user");
+    if (userEntry?.kind !== "user") throw new Error("region user audit entry missing");
+    expect(userEntry.context).toMatchObject({
+      mapId,
+      mapName: project.maps[mapId]?.name,
+      mapWidth: project.maps[mapId]?.width,
+      mapHeight: project.maps[mapId]?.height,
+      selection: { mapId, x: 1, y: 2, width: 3, height: 4 },
+    });
+    teardownAiChatPanel();
+    clearConversations();
   });
 });
 
@@ -248,13 +262,12 @@ describe("도구 로그와 추론 표시", () => {
 
 describe("대화 복원과 내보내기", () => {
   it("같은 프로젝트 컨텍스트의 직전 대화는 부팅 시 자동 복원된다", () => {
-    const project = store.getCurrent();
     saveConversation({
       id: "conv_same",
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: projectConversationContextKey(project),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
       entries: [
         { kind: "user", text: "마을 만들어줘\n\n[컨텍스트] 현재 맵: 빈 맵" },
         { kind: "assistant", text: "초안을 준비했습니다." },
@@ -364,7 +377,7 @@ describe("키 온보딩과 설정 접근성", () => {
     const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(modal).not.toBeNull();
     expect(findByTestId(panel, "ai-config")).toBeNull();
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-oauth"));
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal!, "ai-auth-oauth"));
   });
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {

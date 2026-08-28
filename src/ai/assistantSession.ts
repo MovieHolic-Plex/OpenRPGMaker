@@ -29,7 +29,13 @@ import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistant
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
-import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import {
+  buildConversationTurnContext,
+  mapTransitionNote,
+  type ConversationTurnContext,
+  type TurnSelectionSnapshot,
+} from "./conversationTurnContext";
 import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
@@ -188,7 +194,7 @@ export interface TurnResult {
 // at: ISO 타임스탬프(결함 ⑬ — 상태 전이/툴 호출/오류 타임라인을 export 가능하게).
 // kind:"status"는 턴 수명주기(시작/종료 사유/오류/재시도) 전이 기록이다.
 export type AuditEntry =
-  | { kind: "user"; text: string; at?: string }
+  | { kind: "user"; text: string; at?: string; context?: ConversationTurnContext }
   | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
   | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[]; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
   | { kind: "status"; text: string; at?: string };
@@ -595,6 +601,11 @@ export interface AssistantSessionOptions {
   renderImages?: ToolImageRenderer;
   // 이전 모드 스코핑 호환 옵션. 현재는 computeActiveToolDomains()가 UI 도메인을 직접 계산한다.
   toolMode?: () => ToolDomain | undefined;
+  /**
+   * 턴 시점 선택 영역 조회(에디터 UI 상태). 사용자 감사 항목의 상황 스냅샷에만 쓰이며
+   * 시스템 프롬프트에는 들어가지 않는다 — 그래서 ContextOptions 가 아니라 여기 있다.
+   */
+  getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
 }
 
 export class AssistantSession {
@@ -698,6 +709,9 @@ export class AssistantSession {
    * 모델도 사용자도 무엇이 남았는지 안다(항목 id 만으로 묶으면 두 번째 사유가 조용히 사라진다).
    */
   private lastOutcomeBlockedKey: string | null = null;
+  /** 직전 사용자 턴의 상황 — 맵 이동 경계 판정용. */
+  private lastTurnContext: ConversationTurnContext | null = null;
+  private readonly getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -705,6 +719,7 @@ export class AssistantSession {
     this.peekPendingUserMessage = options.peekPendingUserMessage;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
+    this.getTurnSelection = options.getTurnSelection;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
@@ -1015,9 +1030,20 @@ export class AssistantSession {
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
     // 매 턴: 에디터 뷰포트 좌표(+가능하면 맵 이미지)를 사용자 메시지에 붙여 "여기" 해석을 빠르게 한다.
+    const turnContext = this.captureTurnContext();
+    const transition = mapTransitionNote(this.lastTurnContext, turnContext);
+    this.lastTurnContext = turnContext;
+    // 맵 이동은 대화를 끝내지 않는다. 대신 시스템 프롬프트를 새 맵으로 다시 조립하고
+    // 전사에 경계를 남긴다 — 그러지 않으면 매 턴 새로 부는 뷰포트 바록만 새 맵을 가리키고
+    // 시스템 프롬프트(타일 어휘·구조 키트·맵 요약)는 세션이 시작된 맵에 머별러 둘이 어긋난다.
+    if (transition) {
+      this.rebuildSystemPrompt();
+      this.pushAudit({ kind: "status", text: transition });
+      onEvent({ type: "status", text: transition });
+    }
     const userContent = await this.buildUserTurnContent(text);
     this.messages.push({ role: "user", content: userContent });
-    this.pushAudit({ kind: "user", text });
+    this.pushAudit({ kind: "user", text, context: turnContext });
     beginAssistantToolDomainTurn(text);
     this.currentTurnToolDomains = computeActiveToolDomains(text);
     this.currentTurnRequestText = text;
@@ -1716,6 +1742,25 @@ export class AssistantSession {
     this.audit.push({ ...entry, at: new Date().toISOString() });
   }
 
+  /** 이번 턴의 편집 상황(맵·뷰포트·선택) 스냅샷 — 감사 기록과 맵 이동 판정의 단일 출처. */
+  private captureTurnContext(): ConversationTurnContext {
+    return buildConversationTurnContext(this.ctx.project, {
+      mapId: resolveContextMapId(this.contextOptions) ?? null,
+      viewport: resolveContextViewport(this.contextOptions),
+      selection: this.getTurnSelection?.() ?? null,
+    });
+  }
+
+  /** 시스템 프롬프트를 현재 예산/현재 맵 기준으로 다시 조립한다(messages[0] 교체). */
+  private rebuildSystemPrompt(): void {
+    const system = this.messages[0];
+    if (!system || system.role !== "system") return;
+    system.content = buildSystemPrompt(this.baselineProject, {
+      ...this.contextOptions,
+      budgetChars: this.appliedBudgetChars,
+    });
+  }
+
   // 토큰 보정(문자↔토큰 계수): 관측 누적으로 보정 예산이 바뀌었으면 시스템 프롬프트를
   // 최신 기준 프로젝트(baselineProject)로 재조립한다. 예산이 같으면 no-op(현행 동작 보존).
   // contextOptions.budgetChars가 명시 주입된 세션은 보정하지 않는다.
@@ -1726,7 +1771,7 @@ export class AssistantSession {
     const system = this.messages[0];
     if (!system || system.role !== "system") return;
     this.appliedBudgetChars = budget;
-    system.content = buildSystemPrompt(this.baselineProject, { ...this.contextOptions, budgetChars: budget });
+    this.rebuildSystemPrompt();
     this.pushAudit({ kind: "status", text: `토큰 보정: 컨텍스트 문자 예산 ${budget}자로 재조립` });
   }
 
