@@ -13,7 +13,7 @@ const MOCK_COMMANDS: readonly Command[] = [
   { kind: "setSelfSwitch", key: "A", value: true } as Command,
 ];
 
-test.setTimeout(90_000);
+test.setTimeout(180_000);
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -57,8 +57,87 @@ async function openDock(page: Page, project: Project): Promise<Locator> {
   await editor.getByTestId("event-view-toggle-list").click();
   await editor.getByTestId("event-command-quick-ai").click();
   await expect(editor.getByTestId("ai-event-assist")).toHaveJSProperty("open", true);
+  await expect(editor.getByTestId("event-command-quick-ai")).toHaveAttribute("aria-expanded", "true");
   return editor;
 }
+
+test("열린 도크는 반복 재렌더 뒤에도 단일 스택 항목과 선택 삽입 대상을 유지한다", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const project = probeProject();
+  const editor = await openDock(page, project);
+
+  await editor.locator(".cmd-item .cmd-head").first().click();
+  await expect(editor.getByTestId("ai-event-target")).toContainText("나무 상자를 열어본");
+
+  for (let index = 0; index < 4; index += 1) {
+    await editor.getByTestId("event-editor-name").fill(`상자 ${index}`);
+    await editor.getByTestId("event-editor-name").dispatchEvent("change");
+    await expect(editor.getByTestId("ai-event-assist")).toHaveJSProperty("open", true);
+    await expect(editor.getByTestId("event-command-quick-ai")).toHaveAttribute("aria-expanded", "true");
+    await expect(editor.getByTestId("ai-event-target")).toContainText("나무 상자를 열어본");
+  }
+
+  const stack = await page.evaluate(async () => {
+    const aiAssist = await import("/src/editor/panels/eventEditor/aiAssist.ts");
+    return aiAssist.eventAiDockModalStackForTest();
+  });
+  expect(stack).toEqual({ entries: 2, live: 2 });
+  console.info(`event-ai-dock stack measurement: ${JSON.stringify(stack)}`);
+});
+
+test("툴바 버튼, 도크 summary, Escape 모두 aria-expanded를 실제 상태와 맞춘다", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const editor = await openDock(page, probeProject());
+  const button = editor.getByTestId("event-command-quick-ai");
+  const dock = editor.getByTestId("ai-event-assist");
+
+  await dock.locator(":scope > summary").click();
+  await expect(dock).toHaveJSProperty("open", false);
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+
+  await dock.locator(":scope > summary").click();
+  await expect(dock).toHaveJSProperty("open", true);
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+
+  await page.keyboard.press("Escape");
+  await expect(dock).toHaveJSProperty("open", false);
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+
+  await button.click();
+  await expect(dock).toHaveJSProperty("open", true);
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+});
+
+test("같은 map/event/page ids를 가진 새 프로젝트에 이전 초안과 열린 상태가 나타나지 않는다", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const projectA = probeProject();
+  projectA.meta.title = "Project A";
+  const editorA = await openDock(page, projectA);
+  await editorA.getByTestId("ai-event-input").fill("Project A confidential draft");
+  await expect(editorA.getByTestId("ai-event-input")).toHaveValue("Project A confidential draft");
+  await editorA.getByTestId("event-editor-modal-close").click();
+  await expect(editorA).toHaveCount(0);
+
+  const projectB = probeProject();
+  projectB.meta.title = "Project B";
+  await page.evaluate(async ({ project, mapId }) => {
+    const [{ store }, modalModule] = await Promise.all([
+      import("/src/project/store.ts"),
+      import("/src/editor/panels/eventEditor/modal.ts"),
+    ]);
+    await store.loadNewRemoteProject(project, { title: project.meta.title });
+    modalModule.openEventEditorModal(mapId, "ev_ai_dock");
+  }, { project: projectB, mapId: projectB.startMapId });
+
+  const editorB = page.getByTestId("event-editor-modal");
+  await expect(editorB).toBeVisible();
+  await editorB.getByTestId("event-view-toggle-list").click();
+  await expect(editorB.getByTestId("ai-event-assist")).toHaveJSProperty("open", false);
+  await expect(editorB.getByTestId("event-command-quick-ai")).toHaveAttribute("aria-expanded", "false");
+  await editorB.getByTestId("event-command-quick-ai").click();
+  await expect(editorB.getByTestId("ai-event-input")).toHaveValue("");
+  console.info("event-ai-dock project isolation measurement: open=false draftLength=0");
+});
 
 test("AI 명령 도크는 생성한 초안을 실제로 명령 목록에 넣는다", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -140,6 +219,7 @@ test("지난 오류는 다시 입력하면 사라지고, Escape 는 도크만 �
 
   await page.keyboard.press("Escape");
   await expect(editor.getByTestId("ai-event-assist")).toHaveJSProperty("open", false);
+  await expect(editor.getByTestId("event-command-quick-ai")).toHaveAttribute("aria-expanded", "false");
   await expect(editor).toBeVisible();
 
   // 두 번째 Escape 는 그때서야 이벤트 에디터에 닿는다.

@@ -241,6 +241,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     Array.from(node.childNodes).forEach((child) => replacement.append(child));
     node.replaceWith(replacement);
   });
+  const aiAssist = renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList });
   commandsColumn.append(
     columnLabel(
       "commands",
@@ -260,14 +261,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
           currentMode = "preview";
           applyViewMode();
           previewHost.scrollIntoView({ block: "nearest" });
-        }),
+        }, aiAssist),
         storyboardHost,
         previewHost,
         cmdList,
       ],
     }),
     // AI 작성기는 목록을 덮는 오버레이가 아니라 칼럼 맨 아래 도크다 — 삽입 위치가 계속 보인다.
-    renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
+    aiAssist,
   );
   inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
@@ -324,6 +325,7 @@ function renderCommandToolbar(
   page: EventPage,
   viewToggle?: HTMLElement,
   onOpenPreview?: () => void,
+  aiDock?: HTMLDetailsElement,
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected, .is-selected");
@@ -389,13 +391,15 @@ function renderCommandToolbar(
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
-      renderCommandAuxGroup(onOpenPreview),
+      renderCommandAuxGroup(onOpenPreview, aiDock),
     ],
   });
 }
 
-function renderCommandAuxGroup(onOpenPreview?: () => void): HTMLElement {
-  const commandsColumn = (): HTMLElement | null => document.querySelector(".event-editor-commands-column");
+function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsElement): HTMLElement {
+  // 도크가 있으면 그 조상을 통해 칼럼을 집는다 — 에디터 본문이 동시에 다수 마운트되도 섞이지 않는다.
+  const commandsColumn = (): HTMLElement | null =>
+    aiDock?.closest(".event-editor-commands-column") ?? document.querySelector(".event-editor-commands-column");
   const open = (selector: string): void => {
     const column = commandsColumn();
     const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-editor-aux-tools']");
@@ -406,21 +410,22 @@ function renderCommandAuxGroup(onOpenPreview?: () => void): HTMLElement {
     details.scrollIntoView({ block: "nearest" });
   };
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
-  const toggleAiDock = (button: HTMLButtonElement): void => {
-    const dock = commandsColumn()?.querySelector<HTMLDetailsElement>("[data-testid='ai-event-assist']");
-    if (!dock) return;
-    dock.open = !dock.open;
-    button.setAttribute("aria-expanded", String(dock.open));
-    if (dock.open) dock.scrollIntoView({ block: "nearest" });
-  };
-  const aiButton = toolbarButton("✧", "AI 명령", "event-command-quick-ai");
-  aiButton.setAttribute("aria-expanded", "false");
-  aiButton.addEventListener("click", () => toggleAiDock(aiButton));
+  // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
+  const aiButton = aiDock ? toolbarButton("✧", "AI 명령", "event-command-quick-ai") : null;
+  if (aiDock && aiButton) {
+    const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
+    syncAiExpanded();
+    aiDock.addEventListener("toggle", syncAiExpanded);
+    aiButton.addEventListener("click", () => {
+      aiDock.open = !aiDock.open;
+      if (aiDock.open) aiDock.scrollIntoView({ block: "nearest" });
+    });
+  }
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
     children: [
-      aiButton,
+      ...(aiButton ? [aiButton] : []),
       toolbarButton("▶", "미리보기", "event-command-quick-preview", () => onOpenPreview?.(), false, false, "이 페이지가 하는 일을 차례대로 보여줍니다"),
       toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
