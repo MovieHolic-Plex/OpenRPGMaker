@@ -18,16 +18,23 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import {
+  addPart,
   cellAtPoint,
+  normalizeDragRect,
   paintCell,
+  removePart,
+  resizeKit,
+  updatePart,
   type KitLayer,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
-import type { SectionStructureKitDef, TilesetDef, TilesetId } from "@/project/types";
+import type { SectionStructureKitDef, StructureKitPartKind, TilesetDef, TilesetId } from "@/project/types";
 import { el } from "@/util/dom";
+import { randomUuid } from "@/util/id";
+import { toast } from "@/util/toast";
 
 /** 캔버스 영역이 감당하는 최대 폭(px). 다이얼로그 본문 폭에서 팔레트 열을 뺀 값. */
 const CANVAS_VIEWPORT_PX = 520;
@@ -64,28 +71,56 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     dataset: { testid: "structure-kit-editor-palette" },
   });
   const sizeWrap = el("div", { class: "structure-kit-editor-size" });
+  const partsWrap = el("div", {
+    class: "structure-kit-editor-parts",
+    dataset: { testid: "structure-kit-editor-parts" },
+  });
 
   const redraw = (): void => {
     const current = findKit(session.tilesetId, session.kitId);
     if (!current) return;
     drawCanvas(canvasWrap, tileset, current, session);
     drawPalette(paletteWrap, tileset, session, redraw);
-    drawSize(sizeWrap, current);
+    drawSize(sizeWrap, current, redraw, session);
+    drawParts(partsWrap, current, session, redraw);
   };
+
+  let dragStart: { readonly cx: number; readonly cy: number } | null = null;
+
+  const cellFromEvent = (event: PointerEvent, kit: SectionStructureKitDef) =>
+    cellAtPoint(canvasWrap.getBoundingClientRect(), canvasScale(kit.width), event.clientX, event.clientY, kit);
 
   canvasWrap.addEventListener("pointerdown", (event) => {
     const pointer = event as PointerEvent;
     if (pointer.button !== undefined && pointer.button !== 0) return;
     const current = findKit(session.tilesetId, session.kitId);
     if (!current) return;
-    // rect·scale 은 여기서 읽어 순수 함수에 넘긴다 — 함수 안에서 DOM 을 읽으면
-    // fakeDom(getBoundingClientRect 전부 0)에서 테스트가 무의미해진다.
-    const rect = canvasWrap.getBoundingClientRect();
-    const scale = canvasScale(current.width);
-    const cell = cellAtPoint(rect, scale, pointer.clientX, pointer.clientY, current);
+    const cell = cellFromEvent(pointer, current);
     if (!cell) return;
+
+    if (session.tool === "part") {
+      dragStart = cell;
+      return;
+    }
     const tile = session.tool === "erase" ? TILE.EMPTY : session.tile;
     replaceStructureKit(session.tilesetId, paintCell(current, cell.cx, cell.cy, session.layer, tile));
+    redraw();
+  });
+
+  canvasWrap.addEventListener("pointerup", (event) => {
+    if (session.tool !== "part" || !dragStart) return;
+    const current = findKit(session.tilesetId, session.kitId);
+    if (!current) {
+      dragStart = null;
+      return;
+    }
+    const end = cellFromEvent(event as PointerEvent, current) ?? dragStart;
+    // 새 부위의 기본 종류는 입구다 — 워프를 놓을 자리를 지정하는 것이 가장 잦은 용도다.
+    replaceStructureKit(
+      session.tilesetId,
+      addPart(current, normalizeDragRect(dragStart, end), "entrance", `pt_${randomUuid()}`),
+    );
+    dragStart = null;
     redraw();
   });
 
@@ -99,7 +134,10 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
         class: "structure-kit-editor-grid",
         children: [
           el("div", { class: "structure-kit-editor-left", children: [canvasWrap, sizeWrap] }),
-          el("div", { class: "structure-kit-editor-right", children: [toolRow(session, redraw), paletteWrap] }),
+          el("div", {
+            class: "structure-kit-editor-right",
+            children: [toolRow(session, redraw), paletteWrap, partsWrap],
+          }),
         ],
       }),
     ],
@@ -189,14 +227,135 @@ function toolRow(session: EditorSession, redraw: () => void): HTMLElement {
       button("지우기", "structure-kit-editor-tool-erase", session.tool === "erase", () => { session.tool = "erase"; }),
       button("하층", "structure-kit-editor-layer-lower", session.layer === "lower", () => { session.layer = "lower"; }),
       button("상층", "structure-kit-editor-layer-upper", session.layer === "upper", () => { session.layer = "upper"; }),
+      button("부위 그리기", "structure-kit-editor-tool-part", session.tool === "part", () => { session.tool = "part"; }),
     ],
   });
 }
 
-function drawSize(host: HTMLElement, kit: SectionStructureKitDef): void {
-  // Task 10 이 이 자리에 실제 크기 조절을 채운다. 지금은 읽기 표시만 둔다.
+function drawSize(host: HTMLElement, kit: SectionStructureKitDef, redraw: () => void, session: EditorSession): void {
+  const field = (
+    label: string,
+    testid: string,
+    value: number,
+    apply: (next: number) => { width: number; height: number },
+  ): HTMLElement =>
+    el("label", {
+      class: "structure-kit-editor-size-field",
+      children: [
+        el("span", { text: label }),
+        el("input", {
+          attrs: { type: "number", min: "1", max: "64" },
+          value: String(value),
+          dataset: { testid },
+          on: {
+            change: (event: Event) => {
+              const target = event.currentTarget;
+              if (!(target instanceof HTMLInputElement)) return;
+              const current = findKit(session.tilesetId, session.kitId);
+              if (!current) return;
+              const next = apply(Number(target.value));
+              const result = resizeKit(current, next.width, next.height);
+              replaceStructureKit(session.tilesetId, result.kit);
+              if (result.clamped > 0 || result.dropped > 0) {
+                // 조용히 지우지 않는다 — 사용자가 입구가 사라진 걸 나중에야 알게 하면 안 된다.
+                const parts = [
+                  result.clamped > 0 ? `부위 ${result.clamped}개 잘림` : "",
+                  result.dropped > 0 ? `${result.dropped}개 삭제` : "",
+                ].filter(Boolean);
+                toast(parts.join(", "), "info");
+              }
+              redraw();
+            },
+          },
+        }),
+      ],
+    });
+
   host.replaceChildren(
-    el("span", { dataset: { testid: "structure-kit-editor-width" }, text: `폭 ${kit.width}` }),
-    el("span", { dataset: { testid: "structure-kit-editor-height" }, text: `높이 ${kit.height}` }),
+    field("폭", "structure-kit-editor-width", kit.width, (value) => ({ width: value, height: kit.height })),
+    field("높이", "structure-kit-editor-height", kit.height, (value) => ({ width: kit.width, height: value })),
   );
+}
+
+const PART_KIND_OPTIONS: readonly { readonly value: StructureKitPartKind; readonly label: string }[] = [
+  { value: "entrance", label: "입구" },
+  { value: "window", label: "창문" },
+  { value: "sign", label: "간판" },
+  { value: "anchor", label: "자리" },
+];
+
+function drawParts(
+  host: HTMLElement,
+  kit: SectionStructureKitDef,
+  session: EditorSession,
+  redraw: () => void,
+): void {
+  const parts = kit.parts ?? [];
+  const rows: HTMLElement[] = [
+    el("div", { class: "structure-kit-editor-parts-title", text: `부위 (${parts.length})` }),
+  ];
+
+  if (parts.length === 0) {
+    rows.push(
+      el("p", {
+        class: "structure-kit-quiet",
+        text: "[부위 그리기]로 캔버스를 끌면 입구·창문 자리가 생깁니다.",
+      }),
+    );
+  }
+
+  parts.forEach((part, index) => {
+    const select = el("select", {
+      dataset: { testid: `structure-kit-editor-part-kind-${part.id}` },
+      children: PART_KIND_OPTIONS.map((option) =>
+        el("option", {
+          attrs: part.kind === option.value ? { value: option.value, selected: "" } : { value: option.value },
+          text: option.label,
+        }),
+      ),
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          const current = findKit(session.tilesetId, session.kitId);
+          if (!current) return;
+          replaceStructureKit(
+            session.tilesetId,
+            updatePart(current, part.id, { kind: target.value as StructureKitPartKind }),
+          );
+          redraw();
+        },
+      },
+    });
+
+    rows.push(
+      el("div", {
+        class: "structure-kit-editor-part-row",
+        children: [
+          el("span", { class: "structure-kit-editor-part-index", text: String(index + 1) }),
+          select,
+          el("span", {
+            class: "structure-kit-editor-part-range",
+            text: `(${part.dx},${part.dy}) ${part.w}×${part.h}`,
+          }),
+          el("button", {
+            class: "btn small ghost",
+            attrs: { type: "button" },
+            text: "삭제",
+            dataset: { testid: `structure-kit-editor-part-delete-${part.id}` },
+            on: {
+              click: () => {
+                const current = findKit(session.tilesetId, session.kitId);
+                if (!current) return;
+                replaceStructureKit(session.tilesetId, removePart(current, part.id));
+                redraw();
+              },
+            },
+          }),
+        ],
+      }),
+    );
+  });
+
+  host.replaceChildren(...rows);
 }

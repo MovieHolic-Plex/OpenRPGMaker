@@ -107,3 +107,87 @@ describe("openStructureKitEditor", () => {
     expect(stored.rows[0]!.tiles[0]).toBe(421);
   });
 });
+
+describe("편집기 크기 조절", () => {
+  it("폭을 늘리면 store 의 킷이 넓어진다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    const widthInput = document.querySelector("[data-testid='structure-kit-editor-width']") as unknown as FakeElement;
+    expect(widthInput).not.toBeNull();
+    (widthInput as unknown as HTMLInputElement).value = "5";
+    widthInput.dispatchEvent(new Event("change"));
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.width).toBe(5);
+    expect(stored.rows[0]!.tiles).toHaveLength(5);
+  });
+
+  it("줄여서 부위가 잘리면 개수를 보고한다", () => {
+    seedKit();
+    replaceStructureKit(DEFAULT_TILESET_ID, {
+      ...(store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+        .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef),
+      parts: [{ id: "p_far", kind: "sign", dx: 2, dy: 2, w: 1, h: 1 }],
+    });
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    const widthInput = document.querySelector("[data-testid='structure-kit-editor-width']") as unknown as FakeElement;
+    (widthInput as unknown as HTMLInputElement).value = "1";
+    widthInput.dispatchEvent(new Event("change"));
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.width).toBe(1);
+    expect(stored.parts ?? []).toHaveLength(0);
+  });
+});
+
+describe("편집기 부위 편집", () => {
+  it("부위 도구로 캔버스를 누르고 떼면 부위가 생긴다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    (document.querySelector("[data-testid='structure-kit-editor-tool-part']") as unknown as FakeElement).click();
+
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+    canvas.dispatchEvent(Object.assign(new Event("pointerup"), { clientX: 1, clientY: 1, button: 0 }));
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.parts ?? []).toHaveLength(1);
+    expect(stored.parts![0]!.kind).toBe("entrance");
+    expect(stored.parts![0]!.dx).toBe(0);
+    expect(stored.parts![0]!.dy).toBe(0);
+  });
+
+  it("부위 목록에서 종류를 바꾸고 지울 수 있다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    (document.querySelector("[data-testid='structure-kit-editor-tool-part']") as unknown as FakeElement).click();
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+    canvas.dispatchEvent(Object.assign(new Event("pointerup"), { clientX: 1, clientY: 1, button: 0 }));
+
+    const partId = (store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef).parts![0]!.id;
+
+    const kindSelect = document.querySelector(`[data-testid='structure-kit-editor-part-kind-${partId}']`) as unknown as FakeElement;
+    expect(kindSelect).not.toBeNull();
+    (kindSelect as unknown as HTMLSelectElement).value = "window";
+    kindSelect.dispatchEvent(new Event("change"));
+
+    let stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.parts![0]!.kind).toBe("window");
+
+    (document.querySelector(`[data-testid='structure-kit-editor-part-delete-${partId}']`) as unknown as FakeElement).click();
+
+    stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.parts ?? []).toHaveLength(0);
+  });
+});
