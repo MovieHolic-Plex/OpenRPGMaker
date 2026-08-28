@@ -72,7 +72,11 @@ export const battleScenario = {
         // 인카운터 전환(흰 플래시 → 블라인드 → 인트로 슬라이드)이 끝나야 스프라이트가 제자리에 선다.
         { kind: "wait", ms: 2600 },
       ],
-      expect: { testidPresent: ["battle-scene", "battle-actor-sprites"] },
+      expect: {
+        testidPresent: ["battle-scene", "battle-actor-sprites"],
+        // 적 배치는 실브라우저 rect 로만 참이다 — 상단 클리핑·접지 띠·겹침을 여기서 본다.
+        battlerGeometry: { minEnemies: 3 },
+      },
       shot: true,
     },
     {

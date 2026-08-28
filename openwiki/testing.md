@@ -197,6 +197,18 @@ Evidence expectations:
   패배 처리 경로**이기 때문이다. HP 1 로는 패배가 재현되지 않았다(`battleDamage.ts:175` 는
   `power + floor(atk/2) - floor(def/2) <= 0` 이면 데미지 0 → 약한 적 앞에서 1 HP 파티가
   무적이 되고, 실측에서 레벨 1 파티가 108HP 트룹을 이겨 `battleResult=victory` 가 찍혔다).
+- `battle` 시나리오는 `map_moonwell_forest` 의 봉인 이벤트(14,2 · `movement: fixed`)로
+  `troop_forest_hornets` **3마리 전투**에 들어가고, `battlerGeometry` 기대치가 실브라우저
+  rect 로 배틀러 배치를 판정한다(적 이미지가 필드 안에 온전히 있는지 + 발이 백드롭
+  지평선 33% 아래인지). CSS 레이아웃은 jsdom 으로 재현되지 않으므로 이 기하는 실브라우저
+  측정만이 근거다. 12종 스킨 전수는 `system.battleUiStyle` 만 바꾼 픽스처 사본에
+  `--project` / `--out` 을 붙여 같은 시나리오를 돌려서 본다.
+- `battlerGeometry` 는 네 축이다: 필드 담기 · 발이 지평선 아래 · 스프라이트 크기 0 아님 ·
+  **적끼리 겹침 아님**. 겹침 축이 없던 동안 rm2000/dragonquest/mv 가 3마리를 한 점에 겹쳐
+  그리면서 통과했다 — 담기·지평선만 보면 "완전히 겹친 한 덩어리"가 정답으로 보인다.
+- 스윕은 스킨마다 서버·브라우저를 새로 띄운다. **도는 중에 `git stash` 같은 트리 변경을 하면
+  안 된다** — 실측: 스윕 중 stash 로 ff 런이 "전투가 시작되지 않았다"로 죽었다(내 변경이
+  사라진 트리를 읽었다). 결과가 오염되면 그 스킨만 다시 돌려라.
 
 함정 (전부 실측):
 - `vite.player.config.ts` 는 `publicDir: false` 다. 그대로 dev 서빙하면 번들 텍스처

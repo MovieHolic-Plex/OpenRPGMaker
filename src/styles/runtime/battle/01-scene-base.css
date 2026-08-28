@@ -141,7 +141,10 @@
   left: var(--battle-node-x);
   min-height: 0;
   position: absolute;
-  top: var(--battle-node-y);
+  /* 저작 y 는 스프라이트의 **발**이다. 노드 앵커는 이름표+HUD 아래에 잡히므로
+     그 라벨 스택 높이(`--battle-enemy-label-drop`, battleFieldDom 이 실측 주입)만큼
+     내려 보정한다. 주입 전/jsdom 에서는 0 이라 기존 동작과 같다. */
+  top: calc(var(--battle-node-y) + var(--battle-enemy-label-drop, 0px));
   transform: translate(-50%, -100%);
   border: 0;
   border-radius: 0;
