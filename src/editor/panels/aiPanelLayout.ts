@@ -196,5 +196,5 @@ export function savePanelCollapsed(collapsed: boolean): void {
   localStorage.setItem(PANEL_COLLAPSED_KEY, collapsed ? "1" : "0");
 }
 
-/** AI 작업으로 자동 펼친 뒤, 검토 대기 없이 턴이 끝나면 다시 접기까지 대기(ms). */
+/** AI 작업으로 자동 펼친 뒤 턴이 끝나면 다시 접기까지 대기(ms). */
 export const AUTO_COLLAPSE_AFTER_AI_MS = 0;

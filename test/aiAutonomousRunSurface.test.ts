@@ -280,12 +280,12 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     await flushAsync();
   });
 
-  it("(c) milestone_applied / proposal_paused 이벤트마다 마일스톤 피드 라인이 렌더된다", async () => {
+  it("(c) milestone_applied / proposal_paused 이벤트마다 적용/실패 피드 라인이 렌더된다", async () => {
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });
       onEvent({ type: "milestone_applied", title: "마을 광장", toolCount: 3, commitId: "c1" });
-      onEvent({ type: "proposal_paused", reason: "파괴적 작업 포함", warnings: [] });
+      onEvent({ type: "proposal_paused", reason: "적용 검증 실패", warnings: [] });
     });
     assistantMock.holdNextTurn();
     const sending = bridgeSend("RPG 만들어줘");
@@ -295,9 +295,10 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     expect(applied).not.toBeNull();
     expect(applied?.textContent).toContain("마을 광장");
     expect(applied?.textContent).toContain("3");
-    const paused = findByTestId(panel, "ai-milestone-feed-paused");
-    expect(paused).not.toBeNull();
-    expect(paused?.textContent).toContain("파괴적 작업 포함");
+    const failed = findByTestId(panel, "ai-milestone-feed-apply-failed");
+    expect(failed).not.toBeNull();
+    expect(failed?.textContent).toContain("적용 실패");
+    expect(failed?.textContent).toContain("프로젝트 저장소 변경 없음");
     expect(findByTestId(panel, "ai-run-details")?.contains(applied)).toBe(true);
 
     assistantMock.releaseHeldTurn();

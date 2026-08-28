@@ -195,7 +195,7 @@ export function completenessSpecForProposal(
   return null;
 }
 
-// UI 상태 배지 전이 기록(결함 ⑬) — "검토 대기" 멈춤 같은 문제를 export 로그로 진단 가능하게.
+// UI 상태 배지 전이 기록(결함 ⑬) — 적용 실패 같은 멈춤을 export 로그로 진단한다.
 export interface StatusTransition {
   readonly at: string;
   readonly status: string;
@@ -314,13 +314,12 @@ export function isAiAssistDetail(value: unknown): value is AiAssistDetail {
 }
 
 /** 상태 배지·접힘 FAB 점과 맞추는 톤. UI 폴리시(제안 6). */
-export type AiStatusTone = "idle" | "running" | "review" | "error" | "ok";
+export type AiStatusTone = "idle" | "running" | "error" | "ok";
 
 export function statusToneOf(text: string): AiStatusTone {
   const t = text.trim();
   if (!t) return "idle";
   if (t === "오류" || t.startsWith("오류") || t.includes("실패")) return "error";
-  if (t.includes("검토 대기")) return "review";
   if (
     t === "적용됨" ||
     t === "완료" ||

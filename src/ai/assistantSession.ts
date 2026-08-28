@@ -654,9 +654,9 @@ export class AssistantSession {
   // ── 마일스톤 자동 적용(todo 4) ────────────────────────────────────────
   // 이번 sendUserMessage 진입이 opts.autonomous 인가 — 참일 때만 완료 항목을 자동 적용한다.
   private milestoneAutoApply = false;
-  // 마일스톤 자동 적용이 차단됐다(파괴적/어휘/규칙/완성도). 사용자가 카드를 해결해
-  // rebaseProject 로 세션이 store 와 재동기화되기 전까지 자동 적용·자동 계속을 멈춘다.
-  private milestoneApprovalPaused = false;
+  // 커밋 게이트가 현재 턴의 마일스톤 적용을 거부했다. 저장소는 바뀌지 않았으므로 현재
+  // 자율 런만 멈추고, 다음 사용자 메시지 진입 또는 성공한 rebase 에서 다시 가동한다.
+  private milestoneApplyFailed = false;
   // 직전에 처리한 완료 항목 id — 같은 항목의 중복 complete_work_item 재트리거 방지.
   private lastMilestoneCompletionItemId: string | null = null;
   // ── 레이어 검증 게이트(todo 5) ──────────────────────────────────────────────
@@ -754,10 +754,9 @@ export class AssistantSession {
   rebaseProject(project: Project): void {
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
-    // rebase = 사용자가 제안을 해결(수락/거부)해 세션이 store와 재동기화됐다는 신호 —
-    // 차단됐던 마일스톤 자동 적용을 재개한다. 대기 중인 레이어 검증은 draft 기준이므로
-    // stale 상태를 버린다(다음 완료/최종 응답 시점에 재검한다).
-    this.milestoneApprovalPaused = false;
+    // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패
+    // 상태와 draft 기준의 대기 중 레이어 검증을 버린다(다음 완료/최종 응답 시점에 재검).
+    this.milestoneApplyFailed = false;
     this.verificationPending = null;
   }
 
@@ -938,8 +937,16 @@ export class AssistantSession {
     // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
     // 패널의 sendText 가 autonomous:true 를 주므로 같은 진입점을 공유하고, 브리지 코드는 불변이다.
     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
-    // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다(chat 모드는 카드 대기 유지).
+    // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
+    // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
     this.milestoneAutoApply = opts?.autonomous === true;
+    if (this.milestoneApplyFailed) {
+      // 실패한 proposed draft를 다음 턴으로 가져가면 같은 커밋 오류가 반복된다. 저장소는 실패
+      // 당시 바뀌지 않았으므로 canonical store에서 세션 draft를 다시 시작한다.
+      this.rebaseProject(store.getCurrent());
+    } else {
+      this.milestoneApplyFailed = false;
+    }
     // 검증 게이트 상태는 사용자 진입마다 재가동(re-arm)한다 — 드라이버의 자동 계속 체인
     // 내부에서는 유지되어 3회 시도 한도가 턴 단위로 초기화되지 않는다.
     this.verificationFailed = false;
@@ -983,10 +990,10 @@ export class AssistantSession {
     if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
     // 검증 게이트 3회 실패 — 런을 멈춘다(사용자 진입/replan 으로만 재개).
     if (this.verificationFailed) return false;
-    // 승인 대기 마일스톤이 있으면 런을 멈춘다 — 카드가 렌더되어 사용자가 해결할 때까지
-    // 자동 계속이 다음 항목으로 진행하지 못하게 한다.
-    if (this.milestoneApprovalPaused) {
-      this.pushAudit({ kind: "status", text: "agent_run:paused-approval — 승인 대기 마일스톤으로 자동 계속을 멈춥니다" });
+    // 저장소를 바꾸지 못한 마일스톤이 있으면 현재 자율 런을 멈춘다. 승인 UI는 없으며,
+    // 다음 사용자 메시지가 새 턴을 시작하면 다시 적용을 시도할 수 있다.
+    if (this.milestoneApplyFailed) {
+      this.pushAudit({ kind: "status", text: "agent_run:stopped-apply-failed — 마일스톤 적용 실패로 현재 자율 실행을 멈춥니다 (프로젝트 저장소 변경 없음)" });
       return false;
     }
     if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return false;
@@ -1376,7 +1383,7 @@ export class AssistantSession {
    * 자동 완료 전용 게이트 = 산출물 검사 + 완성도 경고.
    *
    * 완성도 경고는 종전에 `maybeAutoApplyMilestone` 에서 **자동 적용만** 보류시켰다(2026-08-28 실측:
-   * audit[10] 자동 완료 → audit[11] milestone-paused, 항목은 이미 done). 경고가 떴다는 것은
+   * audit[10] 자동 완료 → audit[11] 적용 실패 상태, 항목은 이미 done). 경고가 떴다는 것은
    * 요청 대비 산출물이 모자라다는 뜻이므로 완료 자체를 막는다. 모델이 그래도 끝내야 한다고
    * 판단하면 complete_work_item 을 명시 호출할 수 있다 — 그 경로는 산출물 게이트만 통과하면 되므로
    * 교착되지 않는다.
@@ -1438,12 +1445,11 @@ export class AssistantSession {
    */
   private async maybeAutoApplyMilestone(completed: WorkItem, onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.milestoneAutoApply) return;
-    // 승인 대기 중에는 다음 마일스톤도 적용하지 않고 조용히 넘기지 않는다 — 감사로 남긴다.
-    // (실측: L1-a pause 후 항목 2-7의 적용이 아무 기록 없이 누락돼 저작 내용이 사라졌다.)
-    if (this.milestoneApprovalPaused) {
+    // 같은 턴에서 적용 실패 뒤 후속 완료 신호가 와도 조용히 누락하지 않고 감사로 남긴다.
+    if (this.milestoneApplyFailed) {
       this.pushAudit({
         kind: "status",
-        text: `agent_run:milestone-skipped-paused "${completed.title}" — 승인 대기 마일스톤 해결 전에는 적용하지 않습니다`,
+        text: `agent_run:milestone-skipped-apply-failed "${completed.title}" — 앞선 마일스톤 적용 실패로 현재 턴의 적용을 중단했습니다 (프로젝트 저장소 변경 없음)`,
       });
       return;
     }
@@ -1460,8 +1466,8 @@ export class AssistantSession {
       snapshotLabel: `마일스톤: ${completed.title}`,
     });
     if (!applied.ok) {
-      // 커밋 게이트 차단 — 자동 적용 대신 사용자 검토로 넘긴다(카드 렌더).
-      this.pauseMilestone(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
+      // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
+      this.failMilestoneApply(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
       return;
     }
     this.pushAudit({
@@ -1489,16 +1495,17 @@ export class AssistantSession {
     onEvent({ type: "tool_started", name, index: this.turnToolStartedCount });
   }
 
-  private pauseMilestone(
+  private failMilestoneApply(
     completed: WorkItem,
     reason: string,
     warnings: readonly string[],
     onEvent: (event: SessionEvent) => void,
   ): void {
-    this.milestoneApprovalPaused = true;
-    this.pushAudit({ kind: "status", text: `agent_run:milestone-paused "${completed.title}" — ${reason}` });
+    this.milestoneApplyFailed = true;
+    this.pushAudit({ kind: "status", text: `agent_run:milestone-apply-failed "${completed.title}" — ${reason} (프로젝트 저장소 변경 없음)` });
+    // 이벤트 이름은 기존 패널/테스트 소비 계약을 유지한다. 의미는 적용 실패다.
     onEvent({ type: "proposal_paused", reason, warnings });
-    onEvent({ type: "status", text: `마일스톤 승인 대기: ${completed.title} — ${reason}` });
+    onEvent({ type: "status", text: `마일스톤 적용 실패: ${completed.title} — ${reason} (프로젝트 저장소는 변경되지 않았습니다)` });
   }
 
   // ── 레이어 검증 게이트(todo 5) ────────────────────────────────────────────
@@ -1632,7 +1639,7 @@ export class AssistantSession {
   private async maybeRunEndProof(onEvent: (event: SessionEvent) => void): Promise<void> {
     const plan = this.workPlan;
     if (!plan || !this.milestoneAutoApply) return;
-    if (this.verificationFailed || this.verificationPending || this.milestoneApprovalPaused) return;
+    if (this.verificationFailed || this.verificationPending || this.milestoneApplyFailed) return;
     if (!isWorkPlanComplete(plan)) return;
     if (this.runEndProofPlanId === plan.id) return;
     this.runEndProofPlanId = plan.id;
@@ -2290,11 +2297,10 @@ export class AssistantSession {
       if (toolCalls.length === 0) {
         const finalText = sanitizeAssistantText(messageText ?? "");
         // Ralph loop: incomplete WorkPlan → re-inject current item; do not early-exit.
-        // 단, 승인 대기 마일스톤이 있으면 여기서도 멈춘다 — todo 4 계약: 파괴적/어휘/규칙
-        // 마일스톤은 카드 승인까지 다음 항목 저작을 진행하지 않는다(실측: L1-a pause 후
-        // 항목 2-7이 계속 저작되고 적용은 조용히 누락됐다).
+        // 단, 현재 턴의 마일스톤 적용이 실패했으면 저장소와 draft가 어긋난 채 다음 항목을
+        // 저작하지 않는다. 새 사용자 메시지가 실패 상태를 해제한 뒤 이어갈 수 있다.
         if (
-          !this.milestoneApprovalPaused
+          !this.milestoneApplyFailed
           && shouldRalphContinue(this.workPlan, {
             autoStepsUsed: this.workPlanAutoStepsThisUserMessage,
             assistantText: finalText,

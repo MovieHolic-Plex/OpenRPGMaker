@@ -22,6 +22,7 @@ import {
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { editorState } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { getInlineProposalActions, setInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { clearConversations, conversationScopeKey, loadLatestConversation, saveConversation } from "@/ai/conversationStore";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -90,6 +91,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  setInlineProposalActions(null);
   restoreWindow?.();
   restoreDom?.();
   restoreDom = null;
@@ -135,6 +137,8 @@ describe("선택 영역 AI 직결 칩", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
+      expect(options.gate).toBe("immediate");
+      expect(getInlineProposalActions()).toBeNull();
       options.onEvent?.({ type: "status", text: "영역 작업 시작" });
       options.onEvent?.({ type: "tool_call", name: "paint_tiles", args: { count: 2 }, result: { ok: true, summary: "타일 2칸" } });
       options.onEvent?.({ type: "assistant_message", content: "완료했습니다." });
@@ -154,7 +158,9 @@ describe("선택 영역 AI 직결 칩", () => {
       instruction: "여기를 모래밭으로",
       mapId,
       region: { x: 1, y: 2, width: 3, height: 4 },
+      gate: "immediate",
     });
+    expect(getInlineProposalActions()).toBeNull();
     // Status stays off the work log. Tool names are sanitized; the row is a command row, not a bubble.
     expect(findByTestId(panel, "ai-status")?.textContent).not.toBe("영역 작업 시작");
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
@@ -163,7 +169,9 @@ describe("선택 영역 AI 직결 칩", () => {
     expect(findByTestId(panel, "ai-tool-activity")).toBeTruthy();
     expect(logText).toContain("타일 2칸");
     expect(logText).toContain("완료했습니다.");
-    expect(logText).toMatch(/완료/);
+    expect(logText).toContain("적용됨 — 2칸 타일 · 영역 밖 1칸 차단");
+    expect(logText).not.toContain("적용 여부를 선택하세요");
+    expect(findByTestId(panel, "ai-status")?.textContent).toBe("적용됨");
 
     const userEntry = loadLatestConversation()?.entries.find((entry) => entry.kind === "user");
     expect(userEntry?.kind).toBe("user");

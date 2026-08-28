@@ -165,7 +165,7 @@ export function describeRegionTaskResult(result: RegionTaskResult): string {
   }
   const parts = formatRegionTaskChangeParts(result);
   const clipped = result.clippedCells > 0 ? ` · 영역 밖 ${result.clippedCells}칸 차단` : "";
-  return `완료 — ${parts.join(" · ") || "변경 적용"}${clipped}`;
+  return `적용됨 — ${parts.join(" · ") || "변경 적용"}${clipped}`;
 }
 
 /** proposed에 생기고 base에 없는 맵 수. */

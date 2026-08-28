@@ -252,7 +252,7 @@ export function openDemoTeachModal(options: DemoTeachOptions): HTMLElement {
 
   const closeButton = el("button", { class: "database-modal-close", text: "x", attrs: { type: "button", "aria-label": "닫기" }, dataset: { testid: "demo-teach-close" } });
   const cancelButton = el("button", { class: "ai-assistant-action", text: "취소", attrs: { type: "button" }, dataset: { testid: "demo-teach-cancel" } });
-  const sendButton = el("button", { class: "ai-assistant-action ai-proposal-accept", text: "AI에게 보내기", attrs: { type: "button" }, dataset: { testid: "demo-teach-send" } });
+  const sendButton = el("button", { class: "ai-assistant-action demo-teach-send", text: "AI에게 보내기", attrs: { type: "button" }, dataset: { testid: "demo-teach-send" } });
 
   const backdrop = el("div", {
     class: "database-modal-backdrop",

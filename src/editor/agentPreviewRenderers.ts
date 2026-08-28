@@ -108,7 +108,7 @@ export function ghostPhaseChipInfo(options: {
   if (options.isScheduleComplete) {
     return {
       koreanLabel: "초안 완성",
-      text: "초안 완성 · 검토 대기",
+      text: "초안 완성",
       spinner: false,
     };
   }
