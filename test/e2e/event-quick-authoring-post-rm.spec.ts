@@ -208,9 +208,19 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
   // 목록은 하나뿐이다: 담긴 행이 맨 위 «판매 중» 그룹, DB 나머지는 그 아래 «안 담음».
   const pool = dialog.getByTestId("shop-stock-pool");
   await expect(pool).toBeVisible();
+  // 「보인다」로는 부족하다 — DB 전체가 목록 안에 있고 실제로 스크롤돼야 6번째 이후에 닿는다.
+  // 예전 `<details>` 자료집은 스크롤바를 그려 놓고도 scrollTop 이 0 에 못 박혀 있었다.
+  const catalog = dialog.getByTestId("shop-item-catalog");
+  await expect(catalog).toBeVisible();
+  const catalogScroll = await catalog.evaluate((node) => ({
+    clientH: node.clientHeight,
+    scrollH: node.scrollHeight,
+  }));
+  expect(catalogScroll.scrollH).toBeGreaterThan(catalogScroll.clientH);
   await dumpEvidence(page, "shop-stocked-single-list", {
     saleRows: await saleRows.count(),
     poolRows: await pool.locator('[data-testid^="shop-item-row-"]').count(),
+    catalogScroll,
   });
 });
 
