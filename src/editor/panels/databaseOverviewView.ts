@@ -82,11 +82,15 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
               el("p", { text: "세계, 이야기, 등장인물, 시스템이 어떻게 연결되는지 한눈에 확인합니다." }),
             ],
           }),
+          // 같은 CTA 가 헤더와 차트 그리드 끝에 두 번 렌더되고 있었다. 아래쪽 사본은
+          // 그리드의 암묵 행에 auto-place 돼 1349px 전폭 바가 됐고, 접힘선 아래라
+          // 대부분 보이지도 않았다. 헤더 하나로 합친다 — 테스트가 잡고 있는 계약은
+          // `db-overview-ai` 쪽이라 그 testid 를 여기로 옮긴다.
           el("button", {
-            class: "db-overview-assistant-cta",
+            class: "db-overview-assistant-cta db-overview-ai",
             text: "AI 어시스턴트에게 물어보기",
-            attrs: { type: "button" },
-            dataset: { testid: "db-overview-assistant-cta" },
+            attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
+            dataset: { testid: "db-overview-ai" },
             on: { click: openDatabaseAiBar },
           }),
         ],
@@ -190,13 +194,6 @@ function renderDashboardContent(host: HTMLElement): HTMLElement[] {
     renderCurveSection(partyPowerCurve(project)),
     renderScatterSection(enemyScatter(project)),
     renderIssuesSection(host, detectBalanceIssues(project)),
-    el("button", {
-      class: "db-overview-ai",
-      text: "AI 어시스턴트에게 물어보기",
-      attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
-      dataset: { testid: "db-overview-ai" },
-      on: { click: openDatabaseAiBar },
-    }),
   ];
 }
 
