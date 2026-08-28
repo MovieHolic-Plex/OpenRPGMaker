@@ -7,6 +7,12 @@ import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import {
+  MAX_CLIPPED_AREA_RATIO,
+  MIN_EFFECTIVE_ALPHA,
+  MIN_INK_HEIGHT_PX,
+  auditBattleText,
+} from "./battleTextAudit.mjs";
+import {
   evaluateExpect,
   normalizeScenario,
   renderSummary,
@@ -148,8 +154,8 @@ async function applyOp(page, op) {
   }
 }
 
-async function readObserved(page) {
-  return await page.evaluate(() => {
+async function readObserved(page, { auditBattleTextNodes = false } = {}) {
+  const base = await page.evaluate(() => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
@@ -171,6 +177,14 @@ async function readObserved(page) {
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
     };
   });
+  if (!auditBattleTextNodes) return base;
+  // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
+  const battleText = await page.evaluate(auditBattleText, {
+    minInkHeight: MIN_INK_HEIGHT_PX,
+    maxClippedAreaRatio: MAX_CLIPPED_AREA_RATIO,
+    minAlpha: MIN_EFFECTIVE_ALPHA,
+  });
+  return { ...base, battleText };
 }
 
 /** 리포트를 디스크에 쓴다. SUMMARY.md 가 에이전트가 먼저 읽는 진입점이다. */
@@ -241,7 +255,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
         break; // 같은 비트의 남은 op 은 전제가 깨졌으므로 건너뛴다.
       }
     }
-    const observed = await readObserved(page);
+    const observed = await readObserved(page, {
+      auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
+    });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
     if (shouldCaptureShot(beat, failures)) {
