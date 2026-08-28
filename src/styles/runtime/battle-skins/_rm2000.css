@@ -23,6 +23,13 @@
 }
 
 /* QA r1(fidelity): rm2003과 구분되는 어두운 남색 + 밝은 회백 테두리 창. */
+/* 이 스킨의 커맨드 행은 테두리가 4px×2 라 공유 행 높이 24px 에서 내용이 16px 밖에
+   안 남고, 18px 라벨의 라인박스(18.9px)를 담지 못해 잘렸다(실측: 28건). 28px 로 올리면
+   내용 20px 로 들어간다. 두꺼운 테두리는 이 스킨의 참조 룩이라 건드리지 않는다. */
+.battle-scene[data-battle-skin="rm2000"] {
+  --battle-command-row-height: 30px;
+}
+
 .battle-scene[data-battle-skin="rm2000"] .battle-command-panel,
 .battle-scene[data-battle-skin="rm2000"] .battle-message-window,
 .battle-scene[data-battle-skin="rm2000"] .battle-enemy-list-panel,
