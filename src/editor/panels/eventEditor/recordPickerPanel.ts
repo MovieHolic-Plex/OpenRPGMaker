@@ -14,6 +14,8 @@
 // 유지되는 testid (e2e 3개 스펙이 의존): event-record-picker, -search, -add,
 // -row-{n}, -ok, -name, -no-result.
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { openEventSubdialog } from "./subdialog";
 import {
@@ -55,6 +57,8 @@ type PanelHosts = {
    * 집계 원본은 그대로 유효하다.
    */
   readonly usageOf: (id: string) => number;
+  /** 지금 편집 중인 맵 안에서의 참조 수. 관련 레코드를 위로 올리는 데 쓴다. */
+  readonly mapUsageOf: (id: string) => number;
 };
 
 /** 검색 결과가 아무리 많아도 한 번에 그리는 행 수 상한. 넘치면 안내 문구로 알린다. */
@@ -106,6 +110,7 @@ function renderPanel(options: {
     search,
     summary: el("div", { class: "event-record-picker-summary" }),
     usageOf: createUsageCounter(),
+    mapUsageOf: createUsageCounter(store.getCurrent(), editorState.get().currentMapId),
   };
 
   const commit = (): void => {
@@ -229,7 +234,13 @@ function renderList(
     return;
   }
 
-  for (const entry of matches.slice(0, RENDER_LIMIT)) {
+  const shown = matches.slice(0, RENDER_LIMIT);
+  // 지금 편집 중인 맵이 이미 쓰는 레코드를 위로 올린다 — 수십 개 중에서 관련 있는 것을
+  // 먼저 보여 주는 유일한 단서다. 표시 순서만 바뀌고 행 testid 는 레코드 번호를 따른다.
+  const inMap = shown.filter((entry) => hosts.mapUsageOf(entry.record.id) > 0);
+  const rest = shown.filter((entry) => hosts.mapUsageOf(entry.record.id) === 0);
+
+  const appendRow = (entry: VisibleEntry): void => {
     hosts.list.append(
       recordRow({
         entry,
@@ -250,7 +261,15 @@ function renderList(
         },
       }),
     );
+  };
+
+  if (inMap.length > 0) {
+    hosts.list.append(sectionHeading("이 맵에서 쓰는 중", inMap.length, "map"));
+    inMap.forEach(appendRow);
+    hosts.list.append(sectionHeading("그 밖의 " + kindLabel, rest.length, "rest"));
   }
+  rest.forEach(appendRow);
+
   if (matches.length > RENDER_LIMIT) {
     hosts.list.append(
       el("div", {
@@ -260,6 +279,17 @@ function renderList(
     );
   }
   updateConfirm(hosts.confirm, state);
+}
+
+function sectionHeading(label: string, count: number, slug: string): HTMLElement {
+  return el("div", {
+    class: "event-record-picker-section",
+    dataset: { testid: `event-record-picker-section-${slug}` },
+    children: [
+      el("span", { text: label }),
+      el("span", { class: "event-record-picker-section-count", text: String(count) }),
+    ],
+  });
 }
 
 function updateConfirm(confirm: HTMLButtonElement, state: PanelState): void {
