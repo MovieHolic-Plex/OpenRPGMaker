@@ -1,9 +1,11 @@
+import { isUnauthoredMap } from "@/ai/workItemOutcome";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
-import { projectLint } from "@/project/lint/projectLint";
+import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { buildStoryFlagUsageIndex } from "@/project/storyFlagUsage";
 import { normalizeProjectWorld, lintWorld } from "@/project/world";
 import { visitProjectCommands, type CommandOwnerKind, type NestedBranchKind } from "./commandTraversal";
 import type { ToolDefinition } from "./types";
+import type { Project } from "@/project/types/project";
 
 const LIMITATIONS = [
   "Cannot measure fun.",
@@ -12,6 +14,28 @@ const LIMITATIONS = [
   "Cannot measure pacing quality.",
   "Cannot determine a player's preferred difficulty.",
 ] as const;
+
+/**
+ * 만들기만 하고 비워 둔 맵 — `coverage.content.maps` 는 개수만 세므로 잔디 단색 맵도 "통과"였다.
+ * (2026-08-28 실측: 30×30·20×20 단색 맵 2장이 남은 채 이 평가가 통과 판정을 냈다.)
+ *
+ * 시작 맵은 **warning** 으로 낮춘다 — `createBlankProject()` 가 만드는 20×15 단색 맵이 정확히
+ * 이 상태라, error 로 올리면 새 프로젝트가 전부 `verdict.blocked` 가 되어 신호가 죽는다.
+ * 저작 중 새로 만든 나머지 빈 맵은 명백한 결함이므로 error 로 막는다.
+ */
+function emptyMapIssues(project: Project): LintIssue[] {
+  return Object.values(project.maps)
+    .filter((map) => isUnauthoredMap(map))
+    .map((map) => ({
+      severity: map.id === project.startMapId ? ("warning" as const) : ("error" as const),
+      code: "empty-map",
+      mapId: map.id,
+      message:
+        `'${map.name}'(${map.id}) 은 만들기만 하고 지형·구조·이벤트가 하나도 없습니다` +
+        `(${map.width}×${map.height}, 바닥 타일 1종, 상단 레이어 비어 있음, 이벤트 0).` +
+        (map.id === project.startMapId ? " 시작 맵이라 차단하지는 않지만 플레이어가 빈 벌판에서 시작합니다." : ""),
+    }));
+}
 
 const evaluateGameQuality: ToolDefinition = {
   name: "evaluate_game_quality",
@@ -28,7 +52,8 @@ const evaluateGameQuality: ToolDefinition = {
     },
   },
   run(project, args) {
-    const objectiveIssues = projectLint(project);
+    const emptyMaps = emptyMapIssues(project);
+    const objectiveIssues = [...projectLint(project), ...emptyMaps];
     const worldIssues = lintWorld(normalizeProjectWorld(project), project);
     const paletteIssues = lintTilesetPalettes(project);
     const commandOwners: Record<CommandOwnerKind, number> = { legacyEvent: 0, eventPage: 0, commonEvent: 0, troopPage: 0 };
@@ -59,7 +84,8 @@ const evaluateGameQuality: ToolDefinition = {
       coverage: {
         commandOwners,
         nestedBranches,
-        content: { maps: Object.keys(project.maps).length, events: Object.values(project.maps).reduce((count, map) => count + map.events.length, 0), commonEvents: project.commonEvents.length, commandKinds: Object.keys(kinds).length },
+        // emptyMaps: 맵 개수만으로는 "만들기만 한 잔디밭"과 저작된 맵이 구분되지 않는다.
+        content: { maps: Object.keys(project.maps).length, emptyMaps: emptyMaps.length, events: Object.values(project.maps).reduce((count, map) => count + map.events.length, 0), commonEvents: project.commonEvents.length, commandKinds: Object.keys(kinds).length },
         branches: { choices: kinds.choices ?? 0, forks: kinds.fork ?? 0, loops: kinds.loop ?? 0 },
         quests: { defined: project.quests?.length ?? 0 },
         battles: { commands: kinds.battleProcessing ?? 0, troops: project.database.troops.length },
@@ -76,8 +102,8 @@ const evaluateGameQuality: ToolDefinition = {
     };
     return {
       summary: objectiveErrorCount > 0
-        ? `게임 품질 평가 차단: 객관적 오류 ${objectiveErrorCount}건 (주관적 품질 점수 없음)`
-        : "게임 품질 평가 통과: 객관적 차단 오류 없음 (주관적 품질 점수 없음)",
+        ? `게임 품질 평가 차단: 객관적 오류 ${objectiveErrorCount}건${emptyMaps.length > 0 ? ` (빈 맵 ${emptyMaps.length}개 포함)` : ""} (주관적 품질 점수 없음)`
+        : `게임 품질 평가 통과: 객관적 차단 오류 없음${emptyMaps.length > 0 ? ` — 다만 빈 맵 ${emptyMaps.length}개` : ""} (주관적 품질 점수 없음)`,
       data,
       issues: objectiveIssues,
     };
