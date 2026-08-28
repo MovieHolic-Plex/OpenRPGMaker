@@ -75,6 +75,23 @@ async function run(): Promise<void> {
         const name = r.querySelector<HTMLElement>(".map-tree-name");
         return !!name && name.scrollWidth > name.clientWidth + 1;
       }).length;
+      // 헤드라인 결함(초보 플라이아웃 '시작' 배지가 메타 텍스트를 28px 덮던 것)의 수치를
+      // 산문이 아니라 커밋된 diag.json 에 남긴다 — test/e2e/map-panel-modern.spec.ts 의
+      // readMapPanel()·_map-panel-overlap-probe.mts 와 같은 계산이다. measuredPairs 가
+      // 0이면 badgeOverlapsMetaPx: 0 은 "겹치지 않음"이 아니라 "잴 게 없었음"이라는 뜻이다.
+      let badgeOverlapsMetaPx = 0;
+      let measuredPairs = 0;
+      for (const row of rows) {
+        const meta = row.querySelector<HTMLElement>(".map-tree-meta");
+        const badge = row.querySelector<HTMLElement>(".start-mark");
+        if (!meta || !badge) continue;
+        measuredPairs += 1;
+        const m = meta.getBoundingClientRect();
+        const b = badge.getBoundingClientRect();
+        const ox = Math.min(m.right, b.right) - Math.max(m.left, b.left);
+        const oy = Math.min(m.bottom, b.bottom) - Math.max(m.top, b.top);
+        if (ox > 0 && oy > 0) badgeOverlapsMetaPx = Math.max(badgeOverlapsMetaPx, Math.round(ox));
+      }
       const rect = root?.getBoundingClientRect();
       return {
         rootPresent: !!root,
@@ -86,6 +103,8 @@ async function run(): Promise<void> {
         rowHeight: rows[0] ? Math.round(rows[0].getBoundingClientRect().height) : null,
         overflowX: root ? root.scrollWidth - root.clientWidth : null,
         overflowY: root ? root.scrollHeight - root.clientHeight : null,
+        measuredPairs,
+        badgeOverlapsMetaPx,
       };
     });
     diags.push({ mode, ...diag });

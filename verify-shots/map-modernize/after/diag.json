@@ -9,7 +9,9 @@
     "clippedNames": 0,
     "rowHeight": 30,
     "overflowX": 0,
-    "overflowY": 0
+    "overflowY": 0,
+    "measuredPairs": 1,
+    "badgeOverlapsMetaPx": 0
   },
   {
     "mode": "standard",
@@ -21,7 +23,9 @@
     "clippedNames": 0,
     "rowHeight": 30,
     "overflowX": 0,
-    "overflowY": 0
+    "overflowY": 0,
+    "measuredPairs": 1,
+    "badgeOverlapsMetaPx": 0
   },
   {
     "mode": "beginner",
@@ -33,6 +37,8 @@
     "clippedNames": 0,
     "rowHeight": 40,
     "overflowX": 0,
-    "overflowY": 0
+    "overflowY": 0,
+    "measuredPairs": 1,
+    "badgeOverlapsMetaPx": 0
   }
 ]
