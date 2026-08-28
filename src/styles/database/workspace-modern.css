@@ -931,3 +931,134 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ── 용어: 기본값 대비 상태 ─────────────────────────────────────────────────
+   이 화면의 값은 전부 기본값을 덮어쓰는 것이라 "내가 이걸 바꿨던가 / 원래 뭐였지"
+   가 가장 잦은 질문이다. 상태 칩과 되돌리기를 필드 옆에 붙인다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-meta {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-status {
+  color: var(--db-studio-text-3, #94a3b8);
+  font: 500 10.5px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-status.is-overridden {
+  color: var(--db-studio-accent, #4a57d6);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-revert {
+  background: transparent;
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 6px;
+  color: var(--db-studio-text-2, #475569);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 500 10.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-height: 20px;
+  padding: 0 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-revert:hover {
+  background: var(--db-studio-inset, #f1f5f9);
+  color: var(--db-studio-text-1, #0f172a);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-revert[hidden] {
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-row {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-group {
+  background: var(--db-studio-inset, #f1f5f9);
+  border-radius: 999px;
+  color: var(--db-studio-text-3, #94a3b8);
+  flex: 0 0 auto;
+  font: 600 10px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  padding: 0 7px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-label {
+  color: var(--db-studio-text-2, #475569);
+  flex: 0 0 auto;
+  font: 500 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-from {
+  color: var(--db-studio-text-3, #94a3b8);
+  font: 400 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-to {
+  color: var(--db-studio-text-1, #0f172a);
+  font: 600 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 사용처 목록 ─────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-list {
+  display: grid;
+  gap: 3px;
+  max-height: 220px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-row {
+  align-items: baseline;
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-row:last-child {
+  border-bottom: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-where {
+  background: var(--db-studio-inset, #f1f5f9);
+  border-radius: 999px;
+  color: var(--db-studio-text-3, #94a3b8);
+  flex: 0 0 auto;
+  font: 600 10px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  max-width: 40%;
+  overflow: hidden;
+  padding: 0 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-what {
+  color: var(--db-studio-text-1, #0f172a);
+  font: 500 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

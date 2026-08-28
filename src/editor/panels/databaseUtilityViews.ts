@@ -1,5 +1,6 @@
 import { addSwitch, addVariable, deleteSwitch, deleteVariable } from "@/editor/actions";
 import { bulkRenameSwitches, bulkRenameVariables, type DeleteResult } from "@/editor/databaseActions";
+import { switchVariableReferenceLocations } from "@/editor/databaseCommandReferences";
 import { switchVariableReferenceMessage } from "@/editor/databaseReferences";
 import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
 import {
@@ -347,17 +348,7 @@ function flagInspector(
         ],
         testid: `db-${kind.kind}-runtime-card`,
       }),
-      sectionCard({
-        title: "사용처",
-        children: [
-          el("p", {
-            class: `db-ws-usage${usage ? " db-ws-usage-active" : ""}`,
-            dataset: { testid: `db-${kind.kind}-usage` },
-            text: usage ?? `아직 이 ${kind.label}를 쓰는 이벤트·조건이 없습니다.`,
-          }),
-        ],
-        testid: `db-${kind.kind}-usage-card`,
-      }),
+      usageCard(kind, record.id, usage),
       sectionCard({
         title: `${kind.label} 범위 이름 변경`,
         hint: "시작 번호부터 개수만큼 접두사를 붙여 한 번에 이름을 매깁니다.",
@@ -372,6 +363,53 @@ function flagInspector(
         testid: `db-${kind.kind}-delete-card`,
       }),
     ],
+  });
+}
+
+/**
+ * 사용처. 예전에는 "이벤트/조건이 이 스위치를 사용 중입니다" 한 줄이 전부라, 정작
+ * 어느 맵의 어느 이벤트인지 알 수 없어 찾아갈 수가 없었다(감사 E 축 1/3). 실제 위치를
+ * 나열한다 — 삭제 가드가 참조를 막을 때 무엇을 먼저 끊어야 하는지도 여기서 보인다.
+ */
+function usageCard(kind: FlagKind, id: string, fallbackMessage: string | null): HTMLElement {
+  const locations = switchVariableReferenceLocations(store.getCurrent(), kind.kind, id);
+  const rows = locations.map((location) => {
+    const [where, what] = location.kind === "mapEvent"
+      ? [location.mapName, `${location.eventName} (${location.eventId})`]
+      : location.kind === "commonEvent"
+        ? ["공용 이벤트", `${location.eventName} (${location.eventId})`]
+        : ["전투 이벤트", `${location.troopName} · ${location.pageName}`];
+    return el("div", {
+      class: "db-ws-usage-row",
+      children: [
+        el("span", { class: "db-ws-usage-where", text: where }),
+        el("span", { class: "db-ws-usage-what", text: what }),
+      ],
+    });
+  });
+
+  const body = rows.length > 0
+    ? rows
+    : [el("p", {
+      class: `db-ws-usage${fallbackMessage ? " db-ws-usage-active" : ""}`,
+      text: fallbackMessage ?? `아직 이 ${kind.label}를 쓰는 이벤트·조건이 없습니다.`,
+    })];
+
+  // 참조 위치를 못 잡는 경로(생활 기술 보상·지역 해금·꾸러미 보상)는 문구로만 오므로
+  // 목록이 비어 있어도 메시지가 있으면 함께 보여 준다.
+  if (rows.length > 0 && fallbackMessage) {
+    body.push(el("p", { class: "db-ws-usage db-ws-usage-active", text: fallbackMessage }));
+  }
+
+  return sectionCard({
+    title: "사용처",
+    hint: rows.length > 0 ? `${rows.length}곳` : undefined,
+    children: [el("div", {
+      class: "db-ws-usage-list",
+      dataset: { testid: `db-${kind.kind}-usage` },
+      children: body,
+    })],
+    testid: `db-${kind.kind}-usage-card`,
   });
 }
 
@@ -596,7 +634,43 @@ function termEditor(group: TermGroup, entries: readonly { readonly key: TermKey;
         children: [preview],
         testid: "db-terms-preview-card",
       }),
+      overriddenTermsCard(),
     ],
+  });
+}
+
+/**
+ * 프로젝트 전체에서 기본값을 덮어쓴 용어만 모아 보여준다. 분류를 하나씩 눌러 보지 않고도
+ * "이 게임이 손댄 말"이 한눈에 들어와야 한다 — 스무 개 중 몇 개만 바꾸는 게 보통이다.
+ */
+function overriddenTermsCard(): HTMLElement {
+  const terms = store.getCurrent().meta.terms;
+  const changed = TERM_GROUPS.flatMap((group) =>
+    group.entries
+      .filter((entry) => {
+        const value = terms[entry.key];
+        return value !== undefined && value.trim().length > 0 && value !== defaultTermValue(entry.key);
+      })
+      .map((entry) => ({ group, entry, value: terms[entry.key] as string })),
+  );
+
+  const body = changed.length === 0
+    ? [el("p", { class: "db-ws-usage", text: "아직 바꾼 용어가 없습니다 — 전부 기본값을 씁니다." })]
+    : changed.map(({ group, entry, value }) => el("div", {
+      class: "db-term-diff-row",
+      children: [
+        el("span", { class: "db-term-diff-group", text: group.label }),
+        el("span", { class: "db-term-diff-label", text: entry.label }),
+        el("s", { class: "db-term-diff-from", text: defaultTermValue(entry.key) }),
+        el("strong", { class: "db-term-diff-to", text: value }),
+      ],
+    }));
+
+  return sectionCard({
+    title: "바꾼 용어",
+    hint: `${changed.length} / ${TERM_KEYS.length}개`,
+    children: [el("div", { class: "db-term-diff", dataset: { testid: "db-terms-overrides" }, children: body })],
+    testid: "db-terms-overrides-card",
   });
 }
 
@@ -793,22 +867,58 @@ function focusPendingUtilityName(form: HTMLElement): void {
 
 
 
+/**
+ * 용어 한 줄. 입력 옆에 **기본값 대비 상태**를 붙인다 — 이 화면의 값은 전부 기본값을
+ * 덮어쓰는 것이라, "내가 이걸 바꿨던가?" 와 "원래 뭐였지?" 가 가장 자주 나오는 질문이다.
+ * 바꾼 항목만 되돌리기 버튼이 뜨고, 빈 값은 기본값으로 되돌아간다(기존 동작 유지).
+ */
 function termField(options: TermFieldOptions): HTMLElement {
+  const fallback = defaultTermValue(options.key);
   const input = el("input", {
-    attrs: { type: "text", placeholder: defaultTermValue(options.key) },
+    attrs: { type: "text", placeholder: fallback },
     value: options.value ?? store.getCurrent().meta.terms[options.key] ?? "",
   });
   if (options.testid) input.dataset.testid = options.testid;
-  input.addEventListener("input", () => {
-    const next = input.value;
+
+  const status = el("span", { class: "db-term-status", dataset: { testid: `db-term-status-${options.key}` } });
+  const revert = el("button", {
+    class: "db-term-revert",
+    text: "되돌리기",
+    attrs: { type: "button", title: `기본값 "${fallback}" 으로 되돌립니다` },
+    dataset: { testid: `db-term-revert-${options.key}` },
+  });
+
+  const isOverridden = (): boolean => {
+    const value = store.getCurrent().meta.terms[options.key];
+    return value !== undefined && value.trim().length > 0 && value !== fallback;
+  };
+  const paintStatus = (): void => {
+    const overridden = isOverridden();
+    status.textContent = overridden ? `기본값 ${fallback}` : "기본값";
+    status.classList.toggle("is-overridden", overridden);
+    revert.hidden = !overridden;
+  };
+
+  const commit = (next: string): void => {
     recordCoalescedSnapshot(`db-utility:term:${options.key}`);
     store.update((project) => {
       if (next.trim().length === 0) delete project.meta.terms[options.key];
       else project.meta.terms[options.key] = next;
     });
+    paintStatus();
     // 미리보기를 즉시 따라오게 한다. 입력 중 재렌더로 포커스를 잃지 않도록 미리보기
     // 노드만 갈아끼운다.
     options.onCommit?.();
+  };
+
+  input.addEventListener("input", () => commit(input.value));
+  revert.addEventListener("click", () => {
+    input.value = "";
+    commit("");
   });
-  return field(options.label, input);
+  paintStatus();
+
+  const row = field(options.label, input);
+  row.append(el("div", { class: "db-term-meta", children: [status, revert] }));
+  return row;
 }
