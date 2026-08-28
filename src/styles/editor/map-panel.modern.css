@@ -97,6 +97,20 @@
   color: var(--text-3);
 }
 
+/* 옛 규칙(responsive-a.css)은 `border-left-color: var(--accent-primary)` 도 같이
+   썼지만 `.map-item` 은 이 파일 어디에도 border-width/style 을 선언하지 않는다
+   (box-sizing: border-box 뿐) — 값만 있고 폭이 없어 원래도 화면에 그려지지
+   않던 죽은 선언이었다. `.active` 의 좌측 레일도 border 가 아니라
+   box-shadow(inset 2px 0 0 var(--accent)) 라 같은 패턴을 새로 만들 이유가 없다.
+   포커스 신호는 배경 변화 + outline 만으로 충분해 border-left-color 는 포팅하지
+   않는다. `--accent-primary` 는 TOKENS.md 상 레거시 별칭이라 Task 4 선례(툴 토글의
+   outline)를 따라 `--focus-outline` 으로 옮긴다. */
+.map-tree-panel .map-item:focus-visible {
+  background: var(--bg-hover);
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
 .map-tree-panel .map-item.is-multi-selected {
   background: color-mix(in srgb, var(--accent-muted) 50%, transparent);
 }
@@ -348,6 +362,18 @@
   .map-tree-panel { --map-row-toggle: 10px; --map-row-handle: 10px; }
   .map-tree-panel .map-tree-header { gap: 4px; }
   .map-tree-panel .map-tree-action-text { display: none; }
+}
+
+/* ── 좁은 뷰포트(전문가 모드 1280px 이하) ────────────────────────────────────
+   옛 규칙은 세 파일이 각자 다른 값으로 grid-template-columns 를 재정의해 서로를
+   덮어썼다(캐스케이드 승자가 우연으로 결정됨). 여기서는 열 구조를 바꾸지 않고
+   치수 토큰만 줄인다. 옛 규칙은 `.map-tree-action:not(.map-context-trigger)`·
+   `.map-parent-sel`·`.map-lock-badge` 도 숨겼지만 셋 다 렌더러가 만들지 않는
+   죽은 요소라 옮기지 않는다(행이 만드는 버튼은 `.map-context-trigger` 하나뿐).
+   옛 규칙이 마지막 트랙을 18px 로 고정했던 것도 무의미하다 — 모던 레이어의
+   trailing 트랙은 전부 auto 로, 내용 크기를 따른다. */
+@media (max-width: 1280px) {
+  .map-tree-panel { --map-row-toggle: 10px; }
 }
 
 /* ── 박스 선택 마키 ────────────────────────────────────────────────────────

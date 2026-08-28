@@ -231,29 +231,6 @@
   justify-content: start;
 }
 
-/* .map-item 그리드/배경 규칙은 editor/map-panel.modern.css 로 이관됐다(2026-08).
-   여기 있던 grid-template-columns(3번째 트랙 14px)는 썸네일 44px 트랙과 충돌해
-   실측상 이름/메타 칸이 썸네일 위로 겹치는 회귀를 냈다 — `.left-panel-stack[...]
-   .map-item` 이 (0,3,0)로 모던 레이어의 (0,2,0)를 항상 이겼다. .active 변형은
-   미정의 토큰(--surface-selected, --accent-primary)을 참조해 무효였다. */
-
-.left-panel-stack[data-testid="left-map-root"] .map-item:focus-visible {
-  background: var(--bg-hover);
-  border-left-color: var(--accent-primary);
-  outline: 2px solid var(--accent-primary);
-  outline-offset: -2px;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-parent-sel,
-.left-panel-stack[data-testid="left-map-root"] .map-item:hover .map-parent-sel,
-.left-panel-stack[data-testid="left-map-root"] .map-item:focus-within .map-parent-sel {
-  display: none;
-}
-
-/* .map-tree-action 및 hover/focus/disabled 상태는 editor/map-panel.modern.css 로
-   이관됐다(2026-08). 여기 있던 18×18 값이 (0,3,0)로 모던 레이어의 20×20(0,2,0)를
-   항상 이겨 행 안 ⋮ 버튼이 작아지는 회귀를 냈다. */
-
 .editor-layout.no-right-panel .palette-option-row {
   grid-template-columns: repeat(auto-fill, 28px);
   justify-content: start;
@@ -356,7 +333,3 @@
   top: 5px;
   width: 13px;
 }
-
-/* .map-item/.map-tree-name/.start-mark 중복 규칙은 editor/map-panel.modern.css 로
-   이관됐다(2026-08). 여기 있던 값(썸네일 트랙 14px, 배지 width 14px)은 모던 레이어의
-   44px/auto 와 충돌해 썸네일-텍스트 겹침·배지 찌그러짐을 냈다. */
