@@ -72,10 +72,17 @@
 
 ## §1. 좌표 규약
 
-### 새 프리미티브 — `src/project/footprint.ts` (신규 파일)
+### 새 프리미티브 — 타입은 `types/base.ts`, 함수는 `src/project/footprint.ts`
+
+**타입 두 개(`CharacterFootprint`, `FootprintRect`)는 `types/base.ts` 에 둔다.**
+`EventPage.footprint` 가 이 타입을 참조하는데, 타입을 `footprint.ts` 에 두면
+`types/events.ts` → `footprint.ts` → `types` 순환이 생긴다. `PassFlag` 가
+`types/base.ts` 에 있고 함수가 `collision.ts` 에 있는 기존 선례와 같은 배치다.
+
+순수 함수는 `src/project/footprint.ts` (신규):
 
 ```ts
-export interface CharacterFootprint {
+export interface CharacterFootprint {   // ← types/base.ts
   readonly width: number;
   readonly height: number;
 }
@@ -128,12 +135,15 @@ export function normalizeCharacterFootprint(value: unknown): CharacterFootprint;
 
 ```ts
 export const CHARACTER_FOOTPRINT_AXIS_MAX = 8;
-export const CHARACTER_FOOTPRINT_TILE_MAX = 64;
 ```
 
 기존 `SPATIAL_FOOTPRINT_AXIS_MAX = 16` / `TILE_MAX = 128` 보다 보수적이다.
 그 크기의 "캐릭터"가 걸어다니면 경로탐색이 사실상 항상 실패하기 때문이다.
 건물은 안 움직이므로 상한이 다른 것이 옳다.
+
+**면적 상한(`TILE_MAX`)은 두지 않는다.** `spatialPlacements` 는 축 16에 면적 128이라
+면적 상한이 실제로 구속하지만, 축 8이면 최대 면적이 8×8 = 64로 이미 축 상한에서
+파생된다. 별도 상수를 두면 절대 발동하지 않는 죽은 검사가 된다.
 
 ---
 
@@ -165,15 +175,20 @@ scale: page?.graphic.scale ?? 1,
 
 ### 이벤트 히트테스트
 
-현재 4개 지점이 점 비교를 한다. **3개는 `runtimeEventState.ts` 의 공개 함수라
-래퍼로 처리되지만, 1개는 별도 파일의 사설 `.some()` 루프라 직접 고쳐야 한다.**
+현재 **5개** 지점이 점 비교를 한다. `runtimeEventState.ts` 안에 4개, 별도 파일에 1개다.
 
-| 지점 | 위치 | 처리 |
-|---|---|---|
-| `findRuntimeEventAtInMap` | `runtimeEventState.ts:210` | 래퍼화 |
-| `findBlockingRuntimeEventAt` | `runtimeEventState.ts:223` | 래퍼화 |
-| `findBlockingRuntimeEventAtInMap` | `runtimeEventState.ts:235` | 래퍼화 |
-| `isCharacterBlockedTile` | `playSceneAutonomousMapActions.ts:73` | **사설 루프 직접 수정** |
+| 지점 | 위치 | 형태 | 처리 |
+|---|---|---|---|
+| `findRuntimeEventAt` | `runtimeEventState.ts:197` | 이벤트 배열 + 트리거 | 자체 `.find` 수정 |
+| `findRuntimeEventAtInMap` | `runtimeEventState.ts:210` | 맵 + 트리거 | 사각 질의로 래퍼화 |
+| `findBlockingRuntimeEventAt` | `runtimeEventState.ts:223` | 이벤트 배열 + 차단 | 자체 `.find` 수정 |
+| `findBlockingRuntimeEventAtInMap` | `runtimeEventState.ts:235` | 맵 + 차단 | 사각 질의로 래퍼화 |
+| `isCharacterBlockedTile` | `playSceneAutonomousMapActions.ts:73` | 사설 `.some()` 루프 | **직접 수정** |
+
+배열 형태 2개(`findRuntimeEventAt`, `findBlockingRuntimeEventAt`)는 `map` 을 받지 않아
+`runtimeEventViewsForMap` 을 못 쓴다. 사각 질의 원본에 위임할 수 없으므로 자기
+`.find` 조건만 `rectsOverlap` 으로 바꾼다. `eventBlocksPlayerAt`(238)은 자체 비교가
+없고 `findBlockingRuntimeEventAt` 에 위임하므로 수정 대상이 아니다.
 
 점 질의로는 부족하다. 위 함수들은 "**점** (x,y) 가 이벤트 안인가"를 답하는데,
 플레이어가 커지면 질문이 "**내 사각**이 이벤트 사각과 겹치는가"로 바뀐다.
@@ -265,18 +280,23 @@ export function resolveFootprintLanding(
 
 ## §4. 렌더링
 
-`characterDepth.ts` 에 함수 2개 추가:
+`characterDepth.ts` 에 함수 **1개**만 추가한다:
 
 ```ts
 export function footprintSpriteX(x: number, fp: CharacterFootprint): number {
   return (footprintBounds(x, 0, fp).left + fp.width / 2) * TILE_SIZE;
 }
-export function footprintSpriteY(y: number): number {
-  return (y + 1) * TILE_SIZE;   // 기존 characterSpriteY 와 동일
-}
 ```
 
+Y축은 새 함수가 필요 없다. 발자국 하단은 언제나 `y` 이므로 기존
+`characterSpriteY(y) = y * TILE_SIZE + TILE_SIZE` 가 그대로 맞는다.
+(초안에 있던 `footprintSpriteY` 는 `characterSpriteY` 와 완전히 같은 함수라 폐기했다.)
+
 호출부: `playSceneMapRuntime.ts:344` 의 `scene.add.sprite(...)` + `marker.setScale(scale)`.
+
+`setScale` 호출을 위해 `RenderedEventSprite` 인터페이스(`playSceneMapRuntime.ts:60`)에
+`setScale(value: number): void` 를 추가해야 하고, 그러면 이 인터페이스를 구현하는
+`test/runtimeEventState.test.ts` 의 `MockSprite` 도 같이 고쳐야 한다.
 
 이미 `setOrigin(0.5, 1)` 이라 배율을 걸면 **위·양옆으로 자란다** — 원하는 동작 그대로다.
 
