@@ -244,30 +244,9 @@
     text-align: left;
   }
 
-  .left-panel-stack[data-testid="left-map-root"] .map-item {
-    background: transparent;
-    border-radius: 6px;
-    color: var(--editor-text-muted);
-    font-size: 16px;
-    min-height: 44px;
-    padding: 0 10px !important;
-  }
-
-  .left-panel-stack[data-testid="left-map-root"] .map-item:hover,
-  .left-panel-stack[data-testid="left-map-root"] .map-item.active {
-    background: var(--control-bg-hover);
-    color: var(--editor-text);
-  }
-
-  .left-panel-stack[data-testid="left-map-root"] .start-mark {
-    background: #1f2937;
-    border: 1px solid #111827;
-    border-radius: 999px;
-    color: #fff7d6;
-    font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
-    padding: 3px 6px;
-    width: auto;
-  }
+  /* .map-item/.start-mark 중복 규칙은 editor/map-panel.modern.css 로 이관됐다(2026-08).
+     여기 있던 `padding: 0 10px !important` 가 모던 레이어의 non-!important 패딩을
+     무조건 이겨 행 밀도가 깨졌다. */
 
   .canvas-area {
     border-left: 0 !important;

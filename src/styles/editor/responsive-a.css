@@ -231,29 +231,17 @@
   justify-content: start;
 }
 
-.left-panel-stack[data-testid="left-map-root"] .map-item {
-  border-left: 3px solid transparent;
-  grid-template-columns: 14px 10px 14px minmax(0, 1fr) 36px 14px 18px 18px 18px 18px;
-  padding-right: 2px;
-  transition: background 80ms ease-out, border-color 80ms ease-out;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-item:hover {
-  background: var(--bg-hover);
-  border-left-color: #b9cfe2;
-}
+/* .map-item 그리드/배경 규칙은 editor/map-panel.modern.css 로 이관됐다(2026-08).
+   여기 있던 grid-template-columns(3번째 트랙 14px)는 썸네일 44px 트랙과 충돌해
+   실측상 이름/메타 칸이 썸네일 위로 겹치는 회귀를 냈다 — `.left-panel-stack[...]
+   .map-item` 이 (0,3,0)로 모던 레이어의 (0,2,0)를 항상 이겼다. .active 변형은
+   미정의 토큰(--surface-selected, --accent-primary)을 참조해 무효였다. */
 
 .left-panel-stack[data-testid="left-map-root"] .map-item:focus-visible {
   background: var(--bg-hover);
   border-left-color: var(--accent-primary);
   outline: 2px solid var(--accent-primary);
   outline-offset: -2px;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-item.active,
-.left-panel-stack[data-testid="left-map-root"] .map-item.active:hover {
-  background: var(--surface-selected);
-  border-left-color: var(--accent-primary);
 }
 
 .left-panel-stack[data-testid="left-map-root"] .map-parent-sel,
@@ -392,22 +380,6 @@
   width: 13px;
 }
 
-.left-panel-stack[data-testid="left-map-root"] .map-item {
-  grid-auto-flow: column;
-  grid-template-columns: 14px 10px 14px minmax(0, 1fr) auto 18px;
-  min-height: 20px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-tree-name {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .start-mark {
-  display: inline-block;
-  text-align: center;
-  width: 14px;
-}
+/* .map-item/.map-tree-name/.start-mark 중복 규칙은 editor/map-panel.modern.css 로
+   이관됐다(2026-08). 여기 있던 값(썸네일 트랙 14px, 배지 width 14px)은 모던 레이어의
+   44px/auto 와 충돌해 썸네일-텍스트 겹침·배지 찌그러짐을 냈다. */

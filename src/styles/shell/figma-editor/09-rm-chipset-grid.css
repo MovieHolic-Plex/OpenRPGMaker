@@ -128,11 +128,9 @@
     padding: 4px 4px;
   }
 
-  .left-panel-stack[data-testid="left-map-root"] .map-item.active {
-    background: var(--accent);
-    border-color: var(--accent-border);
-    color: var(--on-accent);
-  }
+  /* .map-item.active 채도 100% 슬래브는 editor/map-panel.modern.css 의 연한 인디고
+     +좌측 레일로 이관됐다(2026-08). 옛 규칙은 (0,4,0)라 모던 레이어의 (0,3,0)를
+     항상 이겼다 — 여기서 지워야 새 디자인이 실제로 보인다. */
 
   .left-panel-stack[data-testid="left-map-root"] .map-tree-panel {
     display: flex;

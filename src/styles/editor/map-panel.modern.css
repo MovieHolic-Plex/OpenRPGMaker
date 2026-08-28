@@ -1,0 +1,332 @@
+/* ============================================================================
+   맵 패널 모던 레이어 (2026-08) — `.map-tree-panel` 서브트리의 단독 소유자.
+
+   왜 이 파일이 생겼나: 맵 패널 스타일이 13개 파일에 흩어져 있었고, 각자
+   `.left-panel-stack[data-testid="left-map-root"]` 라는 컨테이너 testid 로 특이도를
+   확보했다. 그 결과 패널이 두 번째 컨테이너(초보 모드 플라이아웃)에 렌더될 때
+   규칙이 조용히 사라졌다 — `.map-tree-copy` 의 flex 선언이 도달하지 못해 메타
+   span 이 inline 으로 남았고, overflow:hidden 이 무효가 되어 '시작' 배지를 28px
+   침범했다(실측).
+
+   그래서 스코프는 `.map-tree-panel` 이다. 이 클래스는 전문가 패널과 초보
+   플라이아웃 양쪽에 모두 있다. 변종 차이는 `.is-basic-flyout` 하나로만 낸다.
+   셀렉터에 `[data-testid=...]` 를 특이도 목적으로 쓰지 않는다.
+
+   NOTE(로드 순서): index.css 에서 map-props.css 직후에 import 된다.
+   ========================================================================= */
+
+/* ── 행 치수 토큰 — 변종 차이는 전부 여기로 흡수한다 ─────────────────────── */
+
+.map-tree-panel {
+  --map-row-toggle: 14px;
+  --map-row-handle: 10px;
+  --map-row-thumb: 44px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.map-tree-panel.is-basic-flyout {
+  --map-row-toggle: 22px;
+  --map-row-handle: 12px;
+}
+
+/* ── 행 그리드 계약 ────────────────────────────────────────────────────────
+   `.map-tree-copy` 를 grid 로 두는 것이 핵심이다. block 이면 자식 span 이 inline
+   이라 overflow:hidden 이 무효고, 이름·메타가 칸을 뚫고 나가 배지를 덮는다. */
+
+.map-tree-panel .map-item {
+  align-items: center;
+  box-sizing: border-box;
+  display: grid;
+  gap: 4px;
+  grid-template-columns:
+    var(--map-row-toggle) var(--map-row-handle) var(--map-row-thumb)
+    minmax(0, 1fr) auto auto;
+  max-width: 100%;
+  min-height: 30px;
+  min-width: 0;
+  padding: 0 4px;
+  width: 100%;
+}
+
+.map-tree-panel .map-tree-copy {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.map-tree-panel .map-tree-name,
+.map-tree-panel .map-tree-meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-tree-panel .map-tree-name {
+  font: 800 12px/1.2 var(--font-ui);
+}
+
+.map-tree-panel .map-tree-meta {
+  color: var(--text-3);
+  font: 600 10px/1.2 var(--font-ui);
+}
+
+.map-tree-panel .map-tree-meta.is-unlinked {
+  color: var(--warning);
+}
+
+/* ── 선택 행 — TOKENS.md 규정대로 연한 배경 + 좌측 레일 ────────────────────
+   옛 규칙은 `background: var(--accent)` 채도 100% 슬래브였고, 그 위를 읽히게
+   하려고 메타 색을 color-mix(#fff 80%, #4A57D6) 로 하드코딩했다. 둘 다 없앤다. */
+
+.map-tree-panel .map-item:hover {
+  background: var(--bg-hover);
+}
+
+.map-tree-panel .map-item.active {
+  background: var(--accent-muted);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text-1);
+}
+
+.map-tree-panel .map-item.active .map-tree-meta {
+  color: var(--text-3);
+}
+
+.map-tree-panel .map-item.is-multi-selected {
+  background: color-mix(in srgb, var(--accent-muted) 50%, transparent);
+}
+
+/* ── 드롭 표시 ────────────────────────────────────────────────────────────── */
+
+.map-tree-panel .map-item.drop-before { box-shadow: inset 0 2px 0 var(--accent); }
+.map-tree-panel .map-item.drop-after { box-shadow: inset 0 -2px 0 var(--accent); }
+
+.map-tree-panel .map-item.drop-child {
+  outline: 1px dashed var(--accent);
+  outline-offset: -2px;
+}
+
+/* `markDropTarget` 이 붙이는 클래스. 옛 정의는 shell-density.part-2.css 에 있었다. */
+.map-tree-panel .map-item.drop-target {
+  background: var(--accent-muted);
+  outline: 1px dotted var(--accent);
+  outline-offset: -2px;
+}
+
+.map-tree-panel .map-item.dragging { opacity: 0.65; }
+
+.map-tree-panel .map-item.map-node {
+  margin-left: calc(var(--map-depth, 1) * 14px);
+  width: calc(100% - var(--map-depth, 1) * 14px);
+}
+
+/* ── 시작 배지 ────────────────────────────────────────────────────────────── */
+
+.map-tree-panel .start-mark {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  color: var(--accent);
+  font: 700 10px/1 var(--font-ui);
+  padding: 3px 6px;
+  white-space: nowrap;
+  width: auto;
+}
+
+/* ── 토글 · 드래그 핸들 · 아이콘 ──────────────────────────────────────────── */
+
+.map-tree-panel .map-tree-toggle {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  height: 22px;
+  justify-content: center;
+  width: var(--map-row-toggle);
+}
+
+.map-tree-panel .map-tree-icon {
+  color: var(--text-3);
+  font-size: 14px;
+  text-align: center;
+  width: 18px;
+}
+
+.map-tree-panel .map-tree-drag-handle {
+  align-self: center;
+  background:
+    radial-gradient(circle, currentColor 1px, transparent 1.4px) 1px 2px / 4px 4px repeat;
+  color: var(--text-3);
+  cursor: grab;
+  height: 14px;
+  opacity: 0.45;
+  width: var(--map-row-handle);
+}
+
+.map-tree-panel .map-tree-drag-handle.is-disabled {
+  cursor: default;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.map-tree-panel .map-item:hover .map-tree-drag-handle:not(.is-disabled),
+.map-tree-panel .map-item:focus-within .map-tree-drag-handle:not(.is-disabled) {
+  opacity: 0.9;
+}
+
+.map-tree-panel .map-tree-drag-handle:active { cursor: grabbing; }
+
+/* NOTE: `.map-lock-badge` / `.map-parent-sel` / `.map-tree-wide-action` 규칙은 옮기지
+   않는다. `grep -rn "map-lock-badge\|map-parent-sel\|map-tree-wide-action" src/editor/`
+   가 0건 — 렌더러가 만들지 않는 요소를 스타일링하던 죽은 규칙이다. */
+
+/* ── 헤더 · 필터 · 액션 ────────────────────────────────────────────────────── */
+
+.map-tree-panel .map-tree-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  margin: 0 0 6px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.map-tree-panel .map-tree-header h3 {
+  flex: 1 1 auto;
+  font: 800 13px/1.2 var(--font-ui);
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-tree-panel .map-tree-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* 버튼 리셋 전체를 여기 둔다. 예전에는 shell-density.part-2.css 가 appearance·flex
+   정렬·transition 을 대주었는데, 그 파일을 비우는 Task 4 에서 함께 사라지면 버튼이
+   깨진다. 소유자가 하나면 리셋도 소유자가 갖는다. */
+.map-tree-panel .map-tree-action {
+  align-items: center;
+  appearance: none;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  height: 20px;
+  justify-content: center;
+  padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  width: 20px;
+}
+
+.map-tree-panel .map-tree-action:hover { background: var(--control-bg-hover); }
+.map-tree-panel .map-tree-action:active:not(:disabled) { background: var(--control-bg-active); }
+.map-tree-panel .map-tree-action:focus-visible { outline: var(--focus-outline); }
+.map-tree-panel .map-tree-action:disabled {
+  cursor: default;
+  filter: grayscale(0.75);
+  opacity: 0.35;
+}
+
+/* 헤더 액션은 툴 레일과 같은 28px 히트 영역을 쓴다(설계 S3). 행 안의 ⋮ 는 아래에서
+   더 작게 되돌린다 — 행은 밀도가 우선이다. */
+.map-tree-panel .map-tree-header-actions .map-tree-action {
+  height: 28px;
+  width: 28px;
+}
+
+.map-tree-panel .map-item .map-tree-action {
+  background: transparent;
+  border-color: transparent;
+  opacity: 0.55;
+}
+
+.map-tree-panel .map-item:hover .map-tree-action,
+.map-tree-panel .map-item:focus-within .map-tree-action,
+.map-tree-panel .map-tree-action:focus-visible {
+  background: var(--bg-inset);
+  border-color: var(--border-default);
+  opacity: 1;
+}
+
+.map-tree-panel .map-tree-filter {
+  display: block;
+  margin: 0 0 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.map-tree-panel .map-tree-filter-label { display: none; }
+
+.map-tree-panel .map-tree-filter-input,
+.map-tree-panel .map-tree-rename {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 600 12px/1.2 var(--font-ui);
+  min-width: 0;
+  padding: 4px 6px;
+  width: 100%;
+}
+
+.map-tree-panel .map-tree-filter-facets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+/* 두 변종 모두 pill 이다. 초보 변종이 각진 사각형이던 것을 통일한다. */
+.map-tree-panel .map-tree-facet {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-3);
+  cursor: pointer;
+  font: 700 10px/1 var(--font-ui);
+  height: 22px;
+  padding: 0 8px;
+}
+
+.map-tree-panel .map-tree-facet.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+}
+
+/* ── 좁은 패널(컨테이너 쿼리) ─────────────────────────────────────────────── */
+
+@container (max-width: 220px) {
+  .map-tree-panel { --map-row-toggle: 10px; --map-row-handle: 10px; }
+  .map-tree-panel .map-tree-header { gap: 4px; }
+  .map-tree-panel .map-tree-action-text { display: none; }
+}
+
+/* ── 박스 선택 마키 ────────────────────────────────────────────────────────
+   document.body 에 붙는다(mapList.ts:1118). 패널 서브트리 밖이라 전역 규칙이다. */
+
+.map-tree-marquee {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent);
+  pointer-events: none;
+  position: fixed;
+  z-index: 80;
+}

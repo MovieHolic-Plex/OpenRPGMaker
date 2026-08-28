@@ -21,40 +21,11 @@
   margin-bottom: 3px;
 }
 
-.left-panel-stack[data-testid="left-map-root"] .map-item {
-  align-items: center;
-  border-radius: 0;
-  color: var(--text-primary);
-  font-size: 12px;
-  gap: 3px;
-  /* 가로 스크롤 유발하는 과다 컬럼 제거 */
-  grid-template-columns: 14px 10px 14px minmax(0, 1fr) auto 14px;
-  max-width: 100%;
-  min-height: 20px;
-  min-width: 0;
-  padding-bottom: 1px !important;
-  padding-top: 1px !important;
-  display: grid;
-  width: 100%;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-tree-name {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-item:hover {
-  background: var(--bg-hover);
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-item.active {
-  background: var(--surface-selected);
-  color: var(--text-primary);
-  font-weight: 600;
-}
+/* .map-item/.map-tree-name/hover/.active 중복 규칙은 editor/map-panel.modern.css 로
+   이관됐다(2026-08). grid-template-columns 의 3번째 트랙(14px)이 모던 레이어의 썸네일
+   트랙(44px)과 충돌해 썸네일-텍스트 겹침을 냈고, .active 는 미정의 토큰
+   (--surface-selected)을 참조해 무효였다. .map-tree-action 리셋은 Task 4 가 이 파일을
+   비울 때 제거한다 — 지금은 그대로 둔다(map-panel.modern.css 가 이미 흡수). */
 
 .left-panel-stack[data-testid="left-map-root"] .map-lock-badge {
   border: 1px solid transparent;

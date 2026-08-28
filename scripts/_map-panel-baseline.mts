@@ -8,7 +8,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9977";
-const OUT = join(process.cwd(), "verify-shots", "map-modernize", "baseline");
+const OUT = join(process.cwd(), "verify-shots", "map-modernize", process.argv[2] ?? "scratch");
 type Mode = "beginner" | "standard" | "expert";
 
 async function boot(page: Page, mode: Mode): Promise<void> {
