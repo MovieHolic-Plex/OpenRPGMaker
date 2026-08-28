@@ -9,6 +9,7 @@
 
 import { editorState } from "@/editor/editorState";
 import { deleteStructureKit, duplicateIntoTileset, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { paletteStampFromCells, paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -28,6 +29,7 @@ import type {
   StructureKitPartKind,
   TilesetDef,
 } from "@/project/types";
+import { downloadBlob } from "@/util/downloadBlob";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -380,6 +382,26 @@ export function renderInspector(
           },
         },
       }),
+      ...(editable
+        ? [
+            el("button", {
+              class: "btn",
+              attrs: { type: "button" },
+              text: "내보내기",
+              dataset: { testid: `structure-kit-export-${kit.id}` },
+              on: {
+                click: () => {
+                  const text = serializeStructureKitFile(tileset, [kit], new Date().toISOString());
+                  downloadBlob(
+                    new Blob([text], { type: "application/json" }),
+                    structureKitFileName(tileset.name, [kit]),
+                  );
+                  toast(`'${kit.name ?? "구조물"}'을 내보냈습니다`, "ok");
+                },
+              },
+            }),
+          ]
+        : []),
       ...(editable
         ? [
             el("button", {

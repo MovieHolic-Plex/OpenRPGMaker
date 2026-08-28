@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createStructureKitFromHouse, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { createStructureKitFromHouse, importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { buildAiMetaDraftPrompt, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -323,5 +323,46 @@ describe("AI 메타 탭", () => {
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.ai?.description).toBe("돌담을 두른 두레우물");
     expect(stored.ai?.origin).toBe("user");
+  });
+});
+
+describe("importStructureKits", () => {
+  it("새 id 를 발급해 넣고 개수를 돌려준다", () => {
+    seedKit(); // kit_edit 이 이미 있다
+    const added = importStructureKits(DEFAULT_TILESET_ID, [
+      { kit: { ...seedKit(), id: "kit_edit" }, name: "우물 (2)" },
+    ]);
+    expect(added).toBe(1);
+
+    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!;
+    expect(kits).toHaveLength(2);
+    const imported = kits.find((kit) => kit.name === "우물 (2)")!;
+    expect(imported.id).not.toBe("kit_edit");
+    expect(imported.id.startsWith("kit_")).toBe(true);
+  });
+
+  it("가져온 킷은 편집 가능한 계보를 갖는다", () => {
+    const added = importStructureKits(DEFAULT_TILESET_ID, [
+      { kit: { ...seedKit(), id: "x", learnedFrom: "builtin-parametric" }, name: "가져온 집" },
+    ]);
+    expect(added).toBe(1);
+    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!;
+    const imported = kits.find((kit) => kit.name === "가져온 집")!;
+    expect(imported).toBeDefined();
+    expect(imported.learnedFrom).toBe("db-authored");
+  });
+
+  it("origin 을 자동으로 user 로 올리지 않는다", () => {
+    // 제로 부트스트랩: 가져오기 체크는 "이 파일을 받겠다" 이지 "이 설명을 내가 보증한다" 가 아니다.
+    importStructureKits(DEFAULT_TILESET_ID, [
+      {
+        kit: { ...seedKit(), id: "y", ai: { description: "남이 쓴 설명", placementRules: "남이 쓴 규칙", origin: "ai" } },
+        name: "남의 우물",
+      },
+    ]);
+    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!;
+    const imported = kits.find((kit) => kit.name === "남의 우물")!;
+    expect(imported).toBeDefined();
+    expect(imported.ai?.origin).toBe("ai");
   });
 });

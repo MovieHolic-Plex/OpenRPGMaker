@@ -160,3 +160,28 @@ export function createStructureKitFromHouse(
   });
   return kit;
 }
+
+/**
+ * 가져오기 커밋. id 는 새로 발급하고(원본 id 는 사람이 외우는 값이 아니다),
+ * learnedFrom 은 db-authored 로 굳힌다 — builtin-parametric 을 그대로 두면
+ * 프로젝트 데이터인데 편집이 잠긴 유령 킷이 생긴다.
+ * ai.origin 은 손대지 않는다 — 자동 경로가 "user" 를 만들지 않는 제로 부트스트랩 규약.
+ */
+export function importStructureKits(
+  tilesetId: TilesetId,
+  entries: readonly { readonly kit: SectionStructureKitDef; readonly name: string }[],
+): number {
+  if (entries.length === 0) return 0;
+  const prepared = entries.map((entry) => ({
+    ...entry.kit,
+    id: `kit_${randomUuid()}`,
+    name: entry.name,
+    learnedFrom: "db-authored" as const,
+  }));
+  store.update((project) => {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset) return;
+    tileset.structureKits = [...(tileset.structureKits ?? []), ...prepared.map((kit) => structuredClone(kit))];
+  });
+  return prepared.length;
+}

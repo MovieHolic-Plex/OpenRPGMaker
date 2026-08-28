@@ -547,3 +547,44 @@ describe("structureKitDbTab 신규·복제", () => {
     expect(painted).toBe(true);
   });
 });
+
+describe("structureKitDbTab 내보내기", () => {
+  it("내 구조물 행에만 체크박스가 있다", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+
+    expect(host.querySelector("[data-testid='structure-kit-check-kit_mine']")).not.toBeNull();
+    // 내장 킷 행에는 없다 — 내보낼 수 있는 것이 내 구조물뿐이다.
+    expect(host.querySelector("[data-testid='structure-kit-check-kit_house_blue-stone']")).toBeNull();
+  });
+
+  it("체크하면 푸터가 선택 개수와 내보내기로 바뀐다", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+
+    const exportBtn = host.querySelector("[data-testid='structure-kit-export']");
+    expect(exportBtn).not.toBeNull();
+    expect(exportBtn!.textContent).toContain("앨범 내보내기");
+
+    host.querySelector("[data-testid='structure-kit-check-kit_mine']")!.click();
+
+    expect(host.textContent).toContain("1개 선택됨");
+    expect(host.querySelector("[data-testid='structure-kit-export']")!.textContent).toContain("선택 내보내기");
+  });
+
+  it("가져오기 버튼이 도구줄에 있다", () => {
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    expect(host.querySelector("[data-testid='structure-kit-import']")).not.toBeNull();
+  });
+});

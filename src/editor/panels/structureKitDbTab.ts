@@ -9,6 +9,7 @@
 
 import { editorState } from "@/editor/editorState";
 import { createBlankStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -24,6 +25,7 @@ import {
   type StructureKitDbSource,
 } from "@/editor/panels/structureKitDbSources";
 import { openNewStructureKitDialog, openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
+import { pickAndImportStructureKits } from "@/editor/panels/structureKitImportDialog";
 import {
   interiorObjectCanvas,
   partKindName,
@@ -38,7 +40,9 @@ import type {
   StructureKitPartKind,
   TilesetDef,
 } from "@/project/types";
+import { downloadBlob } from "@/util/downloadBlob";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 interface ActiveSessionState {
   tilesetId: string | null;
@@ -47,6 +51,7 @@ interface ActiveSessionState {
   selectedObjectId: string | null;
   searchQuery: string;
   themeFilter: InteriorRoomTheme | null;
+  checkedKitIds: Set<string>;
 }
 
 const session: ActiveSessionState = {
@@ -56,6 +61,7 @@ const session: ActiveSessionState = {
   selectedObjectId: null,
   searchQuery: "",
   themeFilter: null,
+  checkedKitIds: new Set(),
 };
 
 export function resetStructureKitsTabSession(): void {
@@ -66,6 +72,7 @@ export function resetStructureKitsTabSession(): void {
   setInspectorSelectedPartId(null);
   session.searchQuery = "";
   session.themeFilter = null;
+  session.checkedKitIds.clear();
 }
 
 export function renderStructureKitsTab(host: HTMLElement, rerender: () => void): void {
@@ -167,6 +174,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           session.selectedKitId = null;
           session.selectedObjectId = null;
           setInspectorSelectedPartId(null);
+          session.checkedKitIds.clear();
           refresh(host, rerender);
         },
       },
@@ -223,6 +231,37 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
       }),
     ],
   });
+  tools.append(
+    el("button", {
+      class: "btn small",
+      attrs: { type: "button" },
+      text: "가져오기",
+      dataset: { testid: "structure-kit-import" },
+      on: { click: () => { if (session.tilesetId) pickAndImportStructureKits(session.tilesetId, () => { rerender(); refresh(host, rerender); }); } },
+    }),
+    el("button", {
+      class: "btn small",
+      attrs: { type: "button" },
+      text: session.checkedKitIds.size > 0 ? "선택 내보내기" : "앨범 내보내기",
+      dataset: { testid: "structure-kit-export" },
+      on: {
+        click: () => {
+          if (!activeTileset) return;
+          const own = activeTileset.structureKits ?? [];
+          const targets = session.checkedKitIds.size > 0
+            ? own.filter((kit) => session.checkedKitIds.has(kit.id))
+            : own;
+          if (targets.length === 0) {
+            toast("내보낼 구조물이 없습니다. 먼저 [+ 새 구조물]이나 [복제]로 만들어 주세요.", "info");
+            return;
+          }
+          const text = serializeStructureKitFile(activeTileset, targets, new Date().toISOString());
+          downloadBlob(new Blob([text], { type: "application/json" }), structureKitFileName(activeTileset.name, targets));
+          toast(`구조물 ${targets.length}개를 내보냈습니다`, "ok");
+        },
+      },
+    }),
+  );
   tableCol.append(tools);
 
   // 2-a. 방 종류(테마) 문법 — 실내 오브젝트 원본에서만. AI 가 방을 채울 때 요구하는 역할을 그림으로 보여준다.
@@ -271,6 +310,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         children: [
           el("tr", {
             children: [
+              el("th", { class: "structure-kit-check-col", attrs: { style: "width: 28px;" } }),
               el("th", { attrs: { style: "width: 50%;" }, text: "이름" }),
               el("th", { text: "크기" }),
               el("th", { text: lastColumnLabel }),
@@ -295,6 +335,28 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         class: `structure-kit-row${isSelected ? " active" : ""}`,
         dataset: { testid: `structure-kit-db-${kit.id}` },
         children: [
+          el("td", {
+            class: "structure-kit-check-col",
+            children: entry.source === "user"
+              ? [
+                  el("input", {
+                    attrs: session.checkedKitIds.has(kit.id)
+                      ? { type: "checkbox", checked: "" }
+                      : { type: "checkbox" },
+                    dataset: { testid: `structure-kit-check-${kit.id}` },
+                    on: {
+                      click: (event: Event) => {
+                        // 행 클릭(인스펙터 선택)과 겹치지 않게 한다.
+                        event.stopPropagation();
+                        if (session.checkedKitIds.has(kit.id)) session.checkedKitIds.delete(kit.id);
+                        else session.checkedKitIds.add(kit.id);
+                        refresh(host, rerender);
+                      },
+                    },
+                  }),
+                ]
+              : [],
+          }),
           el("td", {
             children: [
               el("div", {
@@ -347,10 +409,13 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     tableWrap.append(table);
     tableCol.append(tableWrap);
 
+    const checkedCount = visibleEntries.filter(
+      (entry) => entry.kind === "kit" && session.checkedKitIds.has(entry.kit.id),
+    ).length;
     const footer = el("div", {
       class: "structure-kit-footer",
       children: [
-        el("span", { text: `${visibleEntries.length}개` }),
+        el("span", { text: checkedCount > 0 ? `${checkedCount}개 선택됨` : `${visibleEntries.length}개` }),
       ],
     });
     tableCol.append(footer);
@@ -482,6 +547,7 @@ function renderObjectRow(
     class: `structure-kit-row${isSelected ? " active" : ""}`,
     dataset: { testid: `structure-kit-object-${object.id}` },
     children: [
+      el("td", { class: "structure-kit-check-col" }),
       el("td", {
         children: [
           el("div", {
