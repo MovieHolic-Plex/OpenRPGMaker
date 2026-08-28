@@ -102,7 +102,7 @@ test("동료·전투 탭을 전수 클릭하고 DB 동료가 이미지로 나온
   const addDialog = page.getByTestId("event-command-edit-dialog");
   await expect(addDialog).toBeVisible();
   await addDialog.screenshot({ path: `${EVIDENCE_DIR}/companion-card-add-dialog.png` });
-  // 보조 도구 > 따라오기 프리셋에도 DB 동료 전원 칩 + 초상화.
+  // 보조 도구 > 동료 프리셋에도 DB 동료 전원 칩 + 초상화.
   await addDialog.getByTestId("event-command-edit-cancel").click();
   await expect(addDialog).toHaveCount(0);
   const pickerHost = page.getByTestId("event-command-picker");

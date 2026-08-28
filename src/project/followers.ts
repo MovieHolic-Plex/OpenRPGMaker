@@ -1,12 +1,48 @@
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import type { Dir, EventPageGraphic, GameMap, MonsterSpeciesGraphic, Project } from "@/project/types";
+import type { CompanionConfig, Dir, EventPageGraphic, GameMap, MonsterSpeciesGraphic, Project } from "@/project/types";
 import type { MonsterInstance, PlaySession, RuntimeFollower } from "@/project/session";
 import { defaultActorCharacterResourceId } from "@/project/actorModel";
-import { inBounds } from "@/project/collision";
+import { inBounds, isPassable } from "@/project/collision";
 
 const MAX_TRAIL_POINTS = 64;
+/** 궤적 버툴 길이. `gap * maxCompanions` 상한의 근거다. */
+export const MAX_FOLLOWER_TRAIL_POINTS = MAX_TRAIL_POINTS;
 const DEFAULT_MONSTER_FIELD_CHARSET = "tex_easyrpg_charset_monster1";
+
+export type ResolvedCompanionRules = {
+  /** 동료 사이 간격(칸). 기본 1. */
+  readonly gap: number;
+  /** 액터 동료 수 상한. undefined = 무제한. */
+  readonly maxCompanions: number | undefined;
+  readonly overflow: "reject" | "replaceOldest";
+  readonly formation: "line" | "beside";
+  readonly clearOnTransfer: boolean;
+};
+
+/** system.companions 원시 값 → 런타임이 쓰는 정규화 규칙. 생략하면 기존 동작(간격 1·무제한). */
+export function resolveCompanionRules(config: CompanionConfig | undefined): ResolvedCompanionRules {
+  const rawGap = config?.gap;
+  const gap = typeof rawGap === "number" && Number.isFinite(rawGap)
+    ? Math.min(MAX_TRAIL_POINTS, Math.max(1, Math.trunc(rawGap)))
+    : 1;
+  const rawMax = config?.maxCompanions;
+  const maxCompanions = typeof rawMax === "number" && Number.isFinite(rawMax) && rawMax > 0
+    ? Math.trunc(rawMax)
+    : undefined;
+  return {
+    gap,
+    maxCompanions,
+    overflow: config?.overflow === "replaceOldest" ? "replaceOldest" : "reject",
+    formation: config?.formation === "beside" ? "beside" : "line",
+    clearOnTransfer: config?.clearOnTransfer === true,
+  };
+}
+
+/** index 번째 동료가 읽는 궤적 지점. gap=1 이면 기존과 같은 trail[index]. */
+function trailIndexFor(index: number, gap: number): number {
+  return (index + 1) * gap - 1;
+}
 
 function uniqueFollowerName(session: PlaySession, desired: string): string {
   const taken = new Set(session.followers.map((f) => f.name));
@@ -51,9 +87,17 @@ export function addFollowerToSession(
   const monsterFollowers = (session.followers ?? []).filter(
     (entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId)
   );
-  session.followers = [...actorFollowers, follower, ...monsterFollowers];
+  // 인원 상한은 액터 동료에만 적용한다 — 몬스터 열차는 monsterParty 가 SSOT 라
+  // 여기서 쟘라내리면 syncMonsterPartyFollowers 와 서로 다리를 잡는다.
+  const rules = resolveCompanionRules(project.system.companions);
+  let keptActors = actorFollowers;
+  if (rules.maxCompanions !== undefined && actorFollowers.length + 1 > rules.maxCompanions) {
+    if (rules.overflow === "reject") return null;
+    keptActors = actorFollowers.slice(actorFollowers.length + 1 - rules.maxCompanions);
+  }
+  session.followers = [...keptActors, follower, ...monsterFollowers];
   if (!session.followerTrail || session.followerTrail.length === 0) {
-    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId]);
+    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions);
   }
   return follower;
 }
@@ -111,7 +155,7 @@ export function syncMonsterPartyFollowers(project: Project, session: PlaySession
     return;
   }
   if (!hadFollowers || !session.followerTrail || session.followerTrail.length === 0) {
-    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId]);
+    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions);
   }
 }
 
@@ -128,13 +172,21 @@ export function recordFollowerPlayerStep(
   ].slice(0, MAX_TRAIL_POINTS);
 }
 
-export function resetFollowerTrailNearPlayer(session: PlaySession, map: GameMap | undefined): void {
+export function resetFollowerTrailNearPlayer(
+  session: PlaySession,
+  map: GameMap | undefined,
+  config?: CompanionConfig
+): void {
   if ((session.followers?.length ?? 0) === 0) {
     session.followerTrail = [];
     return;
   }
+  const { gap } = resolveCompanionRules(config);
   const candidates = adjacentFollowerCandidates(session.x, session.y);
-  const trail = session.followers.map((_, index) => {
+  // 간격이 있으면 동료 한 명당 gap 칸을 소비하므로 그만큼 길게 깔아다 —
+  // 짧게 남기면 뒷사람들이 전부 플레이어 칸으로 겹친다.
+  const slots = trailIndexFor(session.followers.length - 1, gap) + 1;
+  const trail = Array.from({ length: Math.min(slots, MAX_TRAIL_POINTS) }, (_, index) => {
     const candidate = candidates[index % candidates.length] ?? { x: session.x, y: session.y, direction: "down" as const };
     if (!map || inBounds(map, candidate.x, candidate.y)) return candidate;
     return { x: session.x, y: session.y, direction: candidate.direction };
@@ -142,14 +194,42 @@ export function resetFollowerTrailNearPlayer(session: PlaySession, map: GameMap 
   session.followerTrail = trail;
 }
 
-export function followerPositions(session: Pick<PlaySession, "followers" | "followerTrail" | "x" | "y">): readonly {
+/**
+ * "beside" 대형이 쓸 수 있는 플레이어 인접 칸. world 를 주면 맵 밖·통행 불가 칸을 뺀다 —
+ * 일렬 대형은 플레이어가 지나간 칸만 밟으므로 이 검사가 필요 없지만, 옆에 세우는 순간
+ * 강·벽 위에 동료가 서는 게 가능해진다.
+ */
+function besideSlots(
+  session: Pick<PlaySession, "x" | "y">,
+  world: FollowerWorld | undefined
+): readonly { readonly x: number; readonly y: number; readonly direction: Dir }[] {
+  const candidates = adjacentFollowerCandidates(session.x, session.y);
+  if (!world) return candidates;
+  return candidates.filter(
+    (candidate) => inBounds(world.map, candidate.x, candidate.y) && isPassable(world.project, world.map, candidate.x, candidate.y)
+  );
+}
+
+export type FollowerWorld = { readonly project: Project; readonly map: GameMap };
+
+export function followerPositions(
+  session: Pick<PlaySession, "followers" | "followerTrail" | "x" | "y">,
+  config?: CompanionConfig,
+  world?: FollowerWorld
+): readonly {
   readonly follower: RuntimeFollower;
   readonly x: number;
   readonly y: number;
   readonly direction?: Dir;
 }[] {
+  const { gap, formation } = resolveCompanionRules(config);
+  const slots = formation === "beside" ? besideSlots(session, world) : [];
   return (session.followers ?? []).map((follower, index) => {
-    const trail = session.followerTrail?.[index];
+    // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
+    const slot = slots[index];
+    if (slot) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
+    const lineIndex = formation === "beside" ? index - slots.length : index;
+    const trail = session.followerTrail?.[trailIndexFor(lineIndex, gap)];
     return {
       follower,
       x: trail?.x ?? session.x,
@@ -202,7 +282,13 @@ function monsterFieldGraphic(graphic: MonsterSpeciesGraphic | undefined): EventP
   return charsetFollowerGraphic(DEFAULT_MONSTER_FIELD_CHARSET, 0);
 }
 
-function charsetFollowerGraphic(textureKey: string, characterIndex: number): EventPageGraphic {
+/**
+ * 동료 그래픽의 단일 생성 경로. `pattern` 은 "0~3 패턴"이 아니라 **시트 프레임 인덱스**이며,
+ * 런타임(resolveEventSpriteTexture → charsetIdleFrameIndex → decodeCharsetFrameIndex)이 여기서
+ * characterIndex 를 역산한다. 원시 숫자를 손으로 넣으면 캐릭터가 0번으로 고정되므로
+ * 어떤 저작 경로도 charsetFrameIndex 를 우회하지 말고 이 함수를 쓴다.
+ */
+export function charsetFollowerGraphic(textureKey: string, characterIndex: number): EventPageGraphic {
   const asset = CHARSET_ASSETS.find((entry) => entry.id === textureKey || entry.textureKey === textureKey);
   const resolved = asset?.textureKey ?? textureKey;
   return {
@@ -212,12 +298,12 @@ function charsetFollowerGraphic(textureKey: string, characterIndex: number): Eve
   };
 }
 
+/** 플레이어 사방 인접 4칸. 플레이어 칸 자체는 넣지 않는다 — 겹쳐 서면 동료가 안 보인다. */
 function adjacentFollowerCandidates(x: number, y: number): readonly { readonly x: number; readonly y: number; readonly direction: Dir }[] {
   return [
     { x: x - 1, y, direction: "right" },
     { x: x + 1, y, direction: "left" },
     { x, y: y + 1, direction: "up" },
     { x, y: y - 1, direction: "down" },
-    { x, y, direction: "down" },
   ];
 }

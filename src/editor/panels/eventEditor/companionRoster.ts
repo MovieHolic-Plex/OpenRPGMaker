@@ -1,6 +1,6 @@
 // 동료(DB 액터) 이미지 리치 표면 공유 헬퍼.
 // - 초상화: 낱장 얼굴 그림 우선, 없으면 charset idle-front 한 칸(캐릭셋 시트 전체 금지 계약 유지).
-// - 명령 피커 탭2 상단 로스터와 따라오기 프리셋 칩이 같은 렌더러를 쓴다.
+// - 명령 피커 탭2 상단 로스터와 동료 프리셋 칩이 같은 렌더러를 쓴다.
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   CHARSET_FRAME_HEIGHT,
@@ -114,7 +114,7 @@ export function renderCompanionRoster(
   for (const actor of project.database.actors) {
     const card = el("button", {
       class: "companion-card",
-      attrs: { type: "button", title: `${actor.name} 동행 명령 넣기` },
+      attrs: { type: "button", title: `${actor.name} 동료 명령 넣기` },
       dataset: { testid: `companion-card-${actor.id}` },
       children: [
         companionPortraitElement(project, actor, { sizePx: 36, testidPrefix: "companion-thumb" }),

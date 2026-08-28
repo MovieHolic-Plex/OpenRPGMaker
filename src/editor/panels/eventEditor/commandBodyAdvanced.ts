@@ -5,6 +5,8 @@ import {
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { store } from "@/project/store";
+import { charsetSemanticsForTexture } from "@/assets/charsetSemantics";
+import { charsetFollowerGraphic } from "@/project/followers";
 import { editorState } from "@/editor/editorState";
 import { el } from "@/util/dom";
 import { databasePicker } from "./conditionForm";
@@ -400,11 +402,25 @@ function addFollowerBody(
     direction.append(el("option", { text: directionLabels[option], attrs: { value: option } }));
   }
   direction.value = cmd.graphic?.direction ?? "down";
-  const pattern = el("input", {
-    attrs: { type: "number", min: "0", max: "3", step: "1" },
-    value: String(cmd.graphic?.pattern ?? 1),
-    dataset: { testid: "event-command-add-follower-graphic-pattern" },
+  // graphic.pattern 은 "0~3 패턴"이 아니라 시트 프레임 인덱스다. 번들 charset 은 캐릭터 칸을
+  // 골라 charsetFollowerGraphic 이 프레임을 계산하고, 업로드 시트만 원시 프레임을 그대로 받는다.
+  const character = el("select", { dataset: { testid: "event-command-add-follower-graphic-character" } }) as HTMLSelectElement;
+  const rawFrame = el("input", {
+    attrs: { type: "number", min: "0", step: "1" },
+    value: String(cmd.graphic?.pattern ?? 0),
+    dataset: { testid: "event-command-add-follower-graphic-frame" },
   }) as HTMLInputElement;
+  const refreshCharacters = (): void => {
+    const selected = character.value;
+    character.replaceChildren();
+    const labels = charsetSemanticsForTexture(graphicId.value.trim());
+    for (let index = 0; index < 8; index += 1) {
+      const label = labels.find((entry) => entry.characterIndex === index)?.label;
+      character.append(el("option", { text: label ? `${index}. ${label}` : `${index}번 칸`, attrs: { value: String(index) } }));
+    }
+    character.value = selected || String(decodeCharsetFrameIndex(cmd.graphic?.pattern ?? 0).characterIndex);
+  };
+  refreshCharacters();
   const transparent = el("input", {
     attrs: { type: "checkbox" },
     dataset: { testid: "event-command-add-follower-graphic-transparent" },
@@ -426,13 +442,16 @@ function addFollowerBody(
         graphic: {
           ...(graphicId.value.trim() ? { sprite: { type: graphicType.value === "uploaded" ? "uploaded" : "bundled", id: graphicId.value.trim() } } : {}),
           direction: selectedDirection,
-          pattern: Math.max(0, Math.trunc(Number(pattern.value) || 0)),
+          pattern: graphicType.value === "uploaded"
+            ? Math.max(0, Math.trunc(Number(rawFrame.value) || 0))
+            : charsetFollowerGraphic(graphicId.value.trim(), Math.max(0, Math.trunc(Number(character.value) || 0))).pattern ?? 0,
           transparent: transparent.checked,
         },
       } : {}),
     });
   };
-  for (const control of [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent]) {
+  graphicId.addEventListener("change", refreshCharacters);
+  for (const control of [actor, name, useGraphic, graphicType, graphicId, direction, character, rawFrame, transparent]) {
     control.addEventListener("change", commit);
   }
   const graphicFields = el("div", {
@@ -441,14 +460,19 @@ function addFollowerBody(
       inlineField("모습 종류", graphicType),
       inlineField("모습", graphicId),
       inlineField("방향", direction),
-      inlineField("모습 칸", pattern),
+      inlineField("캐릭터 칸", character),
+      inlineField("프레임", rawFrame),
       inlineField("투명", transparent),
     ],
   });
   const syncGraphic = (): void => {
     graphicFields.style.display = useGraphic.checked ? "" : "none";
+    const uploaded = graphicType.value === "uploaded";
+    character.parentElement?.style.setProperty("display", uploaded ? "none" : "");
+    rawFrame.parentElement?.style.setProperty("display", uploaded ? "" : "none");
   };
   useGraphic.addEventListener("change", syncGraphic);
+  graphicType.addEventListener("change", syncGraphic);
   syncGraphic();
   return el("div", {
     class: "rich-command-form cream-command-form",

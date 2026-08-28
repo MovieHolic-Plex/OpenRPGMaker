@@ -1,5 +1,6 @@
-import type { Command } from "@/project/types";
+import type { Command, EventPageGraphic } from "@/project/types";
 import { store } from "@/project/store";
+import { charsetFollowerGraphic } from "@/project/followers";
 
 export type FollowerPresetKind = "actor" | "mascot";
 
@@ -44,28 +45,34 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
 
   const base: FollowerPreset[] = [
     {
+      // id 는 즐겨찾기/테스트 계약이라 고정. 번들 charset 에 개 스프라이트가 없어서
+      // (tex_easyrpg_charset_animal = 주황 고양이/검은 고양이/닭/양/소/말/호랑이/고슴도치)
+      // 이 칩은 검은 고양이로 정정했다. 이전에는 "강아지" 라벨이 붙은 채 고양이 프리셋과
+      // 똑같은 0번 스프라이트를 렌더했다(pattern 을 원시 프레임으로 넣은 탓).
       id: "preset:pet-dog",
       kind: "mascot",
-      label: "강아지 펫",
-      description: "시골 마을에 어울리는 작은 강아지. 주인공 바로 뒤에서 따라온다.",
-      hint: "addFollower(임시 그래픽) — 저장 없이 필드 전용",
-      refId: "__mascot_dog__",
-      displayName: "멍멍이",
+      label: "검은 고양이 동료",
+      description: "주인공 바로 뒤를 따라오는 검은 고양이.",
+      hint: "addFollower(그래픽) — animal charset 1번",
+      refId: "__mascot_black_cat__",
+      displayName: "까망이",
+      textureKey: "tex_easyrpg_charset_animal",
     },
     {
       id: "preset:pet-cat",
       kind: "mascot",
-      label: "고양이 펫",
-      description: "느릿하게 뒤따라오는 고양이. 농장/마을 분위기에 좋다.",
-      hint: "addFollower(임시 그래픽)",
+      label: "고양이 동료",
+      description: "느릿하게 뒤따라오는 주황 고양이. 마을·농장 분위기에 어울린다.",
+      hint: "addFollower(그래픽) — animal charset 0번",
       refId: "__mascot_cat__",
       displayName: "야옹이",
+      textureKey: "tex_easyrpg_charset_animal",
     },
     {
       id: "preset:pet-chick",
       kind: "mascot",
-      label: "병아리",
-      description: "작고 귀여운 병아리. 농장 펫으로 추천.",
+      label: "닭 동료",
+      description: "작고 귀여운 닭. 농장 동료로 추천.",
       hint: "addFollower — farming-charset-chicken 사용",
       refId: "__mascot_chick__",
       displayName: "삐약이",
@@ -82,7 +89,7 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
     base.push({
       id: index === 0 ? "preset:companion-hero" : `preset:actor:${actor.id}`,
       kind: "actor",
-      label: index === 0 ? `동료 주인공 (${actor.name || "동료"})` : `${actor.name} 동행`,
+      label: index === 0 ? `동료 주인공 (${actor.name || "동료"})` : `${actor.name} 동료`,
       description: `${actor.name} 가 뒤따라온다.`,
       hint: "addFollower(actorId)",
       refId: actor.id,
@@ -96,7 +103,7 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
   return base;
 }
 
-/** 프리셋 → 실제 커맨드로 변환. 펫(마스코트)은 addFollower(그래픽), 액터는 addFollower(actorId) 한 줄. */
+/** 프리셋 → 실제 커맨드로 변환. 마스코트는 addFollower(그래픽), 액터는 addFollower(actorId) 한 줄. */
 export function followerPresetToCommands(preset: FollowerPreset): readonly Command[] {
   if (preset.kind === "mascot") {
     const graphic = mascotGraphic(preset.refId);
@@ -106,16 +113,15 @@ export function followerPresetToCommands(preset: FollowerPreset): readonly Comma
   return [{ kind: "addFollower", actorId: preset.refId } as unknown as Command];
 }
 
-type MascotGraphic = { sprite: { type: "bundled"; id: string }; pattern: number; direction: "down"; transparent?: boolean };
+/** 마스코트 refId → 번들 charset 좌표. 프레임 계산은 charsetFollowerGraphic 이 단독으로 책임진다. */
+const MASCOT_CHARSETS: Readonly<Record<string, { readonly textureKey: string; readonly characterIndex: number }>> = {
+  __mascot_cat__: { textureKey: "tex_easyrpg_charset_animal", characterIndex: 0 },
+  __mascot_black_cat__: { textureKey: "tex_easyrpg_charset_animal", characterIndex: 1 },
+  __mascot_chick__: { textureKey: "tex_farming_charset_chicken", characterIndex: 0 },
+};
 
-function mascotGraphic(refId: string): MascotGraphic | undefined {
-  // 프로젝트에 번들로 존재하는 charset만 쓴다 — 없는 텍스처는 playSceneFollowers에서 투명 가드로 스킵된다.
-  // chicken은 farming 에셋, animal은 EasyRPG RTP(정식 텍스처키: tex_easyrpg_charset_animal).
-  if (refId === "__mascot_chick__")
-    return { sprite: { type: "bundled", id: "tex_farming_charset_chicken" }, pattern: 1, direction: "down", transparent: false };
-  if (refId === "__mascot_cat__")
-    return { sprite: { type: "bundled", id: "tex_easyrpg_charset_animal" }, pattern: 0, direction: "down", transparent: false };
-  if (refId === "__mascot_dog__")
-    return { sprite: { type: "bundled", id: "tex_easyrpg_charset_animal" }, pattern: 1, direction: "down", transparent: false };
-  return undefined;
+function mascotGraphic(refId: string): EventPageGraphic | undefined {
+  const entry = MASCOT_CHARSETS[refId];
+  if (!entry) return undefined;
+  return charsetFollowerGraphic(entry.textureKey, entry.characterIndex);
 }
