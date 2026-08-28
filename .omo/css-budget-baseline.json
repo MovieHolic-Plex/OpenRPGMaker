@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-28T18:10:59.150Z",
+  "generatedAt": "2026-08-28T21:25:25.604Z",
   "metrics": {
-    "hexLiterals": 1824,
+    "hexLiterals": 1788,
     "important": 1023,
-    "undefinedVars": 73,
+    "undefinedVars": 72,
     "globalRootFiles": 10,
-    "cssFileCount": 259
+    "cssFileCount": 260
   },
   "details": {
     "hexByFile": {
@@ -75,9 +75,9 @@
       "src/styles/editor/event-editor.command-preview/07-screen-effect-stage.css": 7,
       "src/styles/editor/event-editor.command-preview/08-quick-authoring-surface.css": 17,
       "src/styles/editor/event-editor.command-preview/09-map-screen-authoring-surface.css": 12,
-      "src/styles/editor/event-editor.commerce.css": 43,
+      "src/styles/editor/event-editor.commerce.css": 34,
       "src/styles/editor/event-editor.css": 1,
-      "src/styles/editor/event-editor.mockup.css": 29,
+      "src/styles/editor/event-editor.mockup.css": 22,
       "src/styles/editor/event-editor.modern/03-legend-toolbar.css": 5,
       "src/styles/editor/event-editor.modern/04-depth-parent.css": 8,
       "src/styles/editor/event-editor.modern/05-changeface-form-selected-card.css": 4,
@@ -93,7 +93,7 @@
       "src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css": 16,
       "src/styles/editor/event-editor.part-4.css": 4,
       "src/styles/editor/event-marker-tooltip.css": 20,
-      "src/styles/editor/harness-suggestion.css": 84,
+      "src/styles/editor/harness-suggestion.css": 83,
       "src/styles/editor/help-modal.css": 29,
       "src/styles/editor/inline-assist.css": 35,
       "src/styles/editor/map-event-search.css": 31,
@@ -134,7 +134,6 @@
       "src/styles/runtime/battle-skins/_octopath.css": 8,
       "src/styles/runtime/battle-skins/_pokemon.css": 11,
       "src/styles/runtime/battle-skins/_rm2000.css": 9,
-      "src/styles/runtime/battle-skins/_rm2003.css": 19,
       "src/styles/runtime/battle-skins/_transitions.css": 11,
       "src/styles/runtime/battle-skins/_vxace.css": 35,
       "src/styles/runtime/commerce.css": 3,
@@ -248,7 +247,6 @@
       "--ai-command-bar-height",
       "--ai-dock-width",
       "--ai-proposal-wipe-ms",
-      "--battle-window-skin-width",
       "--bg-input",
       "--border-color",
       "--cluster-cols",
@@ -355,9 +353,6 @@
       ],
       "--ai-proposal-wipe-ms": [
         "src/styles/database/assistant-proposal.css"
-      ],
-      "--battle-window-skin-width": [
-        "src/styles/runtime/battle-skins/_windowskin.css"
       ],
       "--bg-input": [
         "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css"
@@ -614,6 +609,7 @@
       "src/styles/database/modern/crops-characters.css",
       "src/styles/database/modern/enemies.css",
       "src/styles/database/modern/equipment-items.css",
+      "src/styles/database/modern/factions.css",
       "src/styles/database/modern/life-crafting.css",
       "src/styles/database/modern/skills.css",
       "src/styles/database/modern/spatial-collections.css",
