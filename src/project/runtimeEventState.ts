@@ -1,5 +1,5 @@
 import { resolveEventPage } from "@/project/io";
-import { normalizeCharacterFootprint, normalizeCharacterScale } from "@/project/footprint";
+import { footprintBounds, normalizeCharacterFootprint, normalizeCharacterScale, pointRect, rectsOverlap } from "@/project/footprint";
 import type {
   AssetRef,
   CharacterFootprint,
@@ -8,6 +8,7 @@ import type {
   EventPage,
   EventPageMovement,
   EventPriority,
+  FootprintRect,
   GameMap,
   GameEvent,
   Project,
@@ -191,6 +192,31 @@ function legacyMovement(event: GameEvent): EventPageMovement {
     : DEFAULT_PAGE_MOVEMENT;
 }
 
+/** 뷰의 발자국 사각. 1x1 이면 그 칸 자신이다. */
+function viewRect(view: RuntimeEventView): FootprintRect {
+  return footprintBounds(view.x, view.y, view.footprint);
+}
+
+/**
+ * 사각과 겹치는 이벤트를 찾는다 — 이 파일의 히트테스트 원본.
+ * 점 질의(findRuntimeEventAtInMap 등)는 전부 여기에 1x1 사각으로 위임한다.
+ */
+export function findEventOverlappingRect(
+  project: Pick<Project, "maps">,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions,
+  rect: FootprintRect,
+  triggerKind: Trigger["kind"] | readonly Trigger["kind"][]
+): RuntimeEventView | undefined {
+  return runtimeEventViewsForMap(project, map, session, positions)
+    .find((event) => rectsOverlap(viewRect(event), rect) && matchesTrigger(event.trigger.kind, triggerKind));
+}
+
+/**
+ * 이벤트 배열 형태. map 을 안 받아 runtimeEventViewsForMap 을 못 쓰므로
+ * 사각 질의 원본에 위임하지 못하고 자기 .find 조건만 발자국으로 바꾼다.
+ */
 export function findRuntimeEventAt(
   events: readonly GameEvent[],
   session: PlaySessionLike,
@@ -199,10 +225,23 @@ export function findRuntimeEventAt(
   y: number,
   triggerKind: Trigger["kind"] | readonly Trigger["kind"][]
 ): RuntimeEventView | undefined {
+  const rect = pointRect(x, y);
   return events
     .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
-    .find((event) => event.x === x && event.y === y && matchesTrigger(event.trigger.kind, triggerKind));
+    .find((event) => rectsOverlap(viewRect(event), rect) && matchesTrigger(event.trigger.kind, triggerKind));
+}
+
+/** 사각과 겹치면서 통행을 막는 이벤트. */
+export function findBlockingEventOverlappingRect(
+  project: Pick<Project, "maps">,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions,
+  rect: FootprintRect
+): RuntimeEventView | undefined {
+  return runtimeEventViewsForMap(project, map, session, positions)
+    .find((event) => rectsOverlap(viewRect(event), rect) && event.priority === "same" && event.overlapForbidden);
 }
 
 export function findRuntimeEventAtInMap(
@@ -214,8 +253,7 @@ export function findRuntimeEventAtInMap(
   y: number,
   triggerKind: Trigger["kind"] | readonly Trigger["kind"][]
 ): RuntimeEventView | undefined {
-  return runtimeEventViewsForMap(project, map, session, positions)
-    .find((event) => event.x === x && event.y === y && matchesTrigger(event.trigger.kind, triggerKind));
+  return findEventOverlappingRect(project, map, session, positions, pointRect(x, y), triggerKind);
 }
 
 export function findBlockingRuntimeEventAt(
@@ -225,10 +263,11 @@ export function findBlockingRuntimeEventAt(
   x: number,
   y: number
 ): RuntimeEventView | undefined {
+  const rect = pointRect(x, y);
   return events
     .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
-    .find((event) => event.x === x && event.y === y && event.priority === "same" && event.overlapForbidden);
+    .find((event) => rectsOverlap(viewRect(event), rect) && event.priority === "same" && event.overlapForbidden);
 }
 
 export function findBlockingRuntimeEventAtInMap(
@@ -239,8 +278,7 @@ export function findBlockingRuntimeEventAtInMap(
   x: number,
   y: number
 ): RuntimeEventView | undefined {
-  return runtimeEventViewsForMap(project, map, session, positions)
-    .find((event) => event.x === x && event.y === y && event.priority === "same" && event.overlapForbidden);
+  return findBlockingEventOverlappingRect(project, map, session, positions, pointRect(x, y));
 }
 
 export function eventBlocksPlayerAt(

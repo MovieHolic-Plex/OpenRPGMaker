@@ -3,9 +3,19 @@
 // 스펙 docs/superpowers/specs/2026-08-29-multi-tile-character-footprint-design.md §2.
 
 import { describe, expect, it } from "vitest";
-import { UNIT_FOOTPRINT } from "@/project/footprint";
-import { initialRuntimeEventPositions, runtimeEventView } from "@/project/runtimeEventState";
-import type { EventPage, GameEvent } from "@/project/types";
+import { UNIT_FOOTPRINT, pointRect } from "@/project/footprint";
+import {
+  findBlockingEventOverlappingRect,
+  findBlockingRuntimeEventAt,
+  findBlockingRuntimeEventAtInMap,
+  findEventOverlappingRect,
+  findRuntimeEventAt,
+  findRuntimeEventAtInMap,
+  initialRuntimeEventPositions,
+  runtimeEventView,
+} from "@/project/runtimeEventState";
+import { createBlankMap, createBlankProject } from "@/project/defaults";
+import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 
 function page(overrides: Partial<EventPage> = {}): EventPage {
@@ -81,5 +91,128 @@ describe("RuntimeEventView.scale", () => {
     const view = viewOf([page({ graphic: { scale: 3 } })]);
     expect(view.scale).toBe(3);
     expect(view.footprint).toEqual(UNIT_FOOTPRINT);
+  });
+});
+
+function mapWithEvent(target: GameEvent): { project: Project; map: GameMap } {
+  const project = createBlankProject();
+  const map = createBlankMap("발자국 맵", 20, 15, project.maps[project.startMapId].tilesetId);
+  map.events = [target];
+  project.maps[map.id] = map;
+  return { project, map };
+}
+
+function bigEvent(footprint: { width: number; height: number }): GameEvent {
+  return {
+    id: "ev_big",
+    x: 5,
+    y: 7,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [page({ footprint, priority: "same", overlapForbidden: true })],
+  };
+}
+
+describe("사각 질의 승격 — 2x2 이벤트", () => {
+  // (5,7) 에 선 2x2 의 발자국은 (5,6) (6,6) (5,7) (6,7).
+  const OCCUPIED = [[5, 6], [6, 6], [5, 7], [6, 7]] as const;
+  const FREE = [[4, 7], [7, 7], [5, 5], [5, 8]] as const;
+
+  it("발자국 네 칸 어디에서 조사해도 같은 이벤트를 찾는다", () => {
+    const target = bigEvent({ width: 2, height: 2 });
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    for (const [x, y] of OCCUPIED) {
+      const found = findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action");
+      expect(found?.event.id, `(${x},${y})`).toBe("ev_big");
+    }
+  });
+
+  it("발자국 밖에서는 찾지 못한다", () => {
+    const target = bigEvent({ width: 2, height: 2 });
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    for (const [x, y] of FREE) {
+      expect(findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action"), `(${x},${y})`).toBeUndefined();
+    }
+  });
+
+  it("발자국 네 칸 전부가 통행을 막는다", () => {
+    const target = bigEvent({ width: 2, height: 2 });
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    for (const [x, y] of OCCUPIED) {
+      expect(findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y), `(${x},${y})`).toBeDefined();
+    }
+    for (const [x, y] of FREE) {
+      expect(findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y), `(${x},${y})`).toBeUndefined();
+    }
+  });
+});
+
+describe("사각 질의 원본", () => {
+  it("겹치는 사각으로 질의하면 찾는다 — 커진 플레이어 경로", () => {
+    const target = bigEvent({ width: 2, height: 2 });
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    // 이벤트 발자국은 x 5..6 / y 6..7. 아래 사각은 x 6..8 / y 7..9 라 (6,7) 에서 겹친다.
+    const overlapping = { left: 6, right: 8, top: 7, bottom: 9 };
+    expect(findEventOverlappingRect(project, map, session(), positions, overlapping, "action")?.event.id).toBe("ev_big");
+    expect(findBlockingEventOverlappingRect(project, map, session(), positions, overlapping)?.event.id).toBe("ev_big");
+  });
+
+  it("닿지 않는 사각은 못 찾는다", () => {
+    const target = bigEvent({ width: 2, height: 2 });
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    const apart = { left: 7, right: 9, top: 8, bottom: 10 };
+    expect(findEventOverlappingRect(project, map, session(), positions, apart, "action")).toBeUndefined();
+  });
+
+  it("점 질의는 1x1 사각 질의와 같은 답을 준다", () => {
+    const target = bigEvent({ width: 3, height: 2 });
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    for (let y = 4; y <= 10; y += 1) {
+      for (let x = 2; x <= 9; x += 1) {
+        const viaPoint = findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action");
+        const viaRect = findEventOverlappingRect(project, map, session(), positions, pointRect(x, y), "action");
+        expect(viaRect?.event.id, `(${x},${y})`).toBe(viaPoint?.event.id);
+      }
+    }
+  });
+});
+
+describe("배열 형태 finder 도 발자국을 본다", () => {
+  it("findRuntimeEventAt / findBlockingRuntimeEventAt 이 2x2 네 칸에서 잡힌다", () => {
+    const target = bigEvent({ width: 2, height: 2 });
+    const positions = initialRuntimeEventPositions([target]);
+    for (const [x, y] of [[5, 6], [6, 6], [5, 7], [6, 7]]) {
+      expect(findRuntimeEventAt([target], session(), positions, x, y, "action")?.event.id, `조사 (${x},${y})`).toBe("ev_big");
+      expect(findBlockingRuntimeEventAt([target], session(), positions, x, y), `막힘 (${x},${y})`).toBeDefined();
+    }
+    for (const [x, y] of [[4, 7], [7, 7], [5, 5], [5, 8]]) {
+      expect(findRuntimeEventAt([target], session(), positions, x, y, "action"), `조사 (${x},${y})`).toBeUndefined();
+      expect(findBlockingRuntimeEventAt([target], session(), positions, x, y), `막힘 (${x},${y})`).toBeUndefined();
+    }
+  });
+});
+
+describe("1x1 이벤트는 승격 후에도 한 칸만 차지한다", () => {
+  it("자기 칸에서만 잡히고 이웃 칸에서는 안 잡힌다", () => {
+    const target: GameEvent = {
+      id: "ev_small",
+      x: 5,
+      y: 7,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [page({ priority: "same", overlapForbidden: true })],
+    };
+    const { project, map } = mapWithEvent(target);
+    const positions = initialRuntimeEventPositions(map.events);
+    expect(findRuntimeEventAtInMap(project, map, session(), positions, 5, 7, "action")?.event.id).toBe("ev_small");
+    for (const [x, y] of [[4, 7], [6, 7], [5, 6], [5, 8]]) {
+      expect(findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action"), `(${x},${y})`).toBeUndefined();
+    }
   });
 });
