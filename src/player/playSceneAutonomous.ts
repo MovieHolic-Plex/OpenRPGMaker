@@ -1,4 +1,7 @@
 import { store } from "@/project/store";
+// characterSpriteX 는 타일 중앙이다. 폭 2 이상 발자국의 중앙은 footprintSpriteX 이고 아직
+// renderEvents 만 쓴다 — 아래 updateAutonomousNPCs·updateChaseNpc·updateActiveNpcMove 의
+// 걸음 보간은 2차에서 함께 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import {
