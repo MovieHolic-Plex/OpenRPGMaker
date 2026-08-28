@@ -221,22 +221,13 @@
     gap: 12px;
   }
 
-  .database-modal-body .db-animation-rm2003-editor {
-    display: grid;
-    gap: 10px;
-    grid-template-areas:
-      "top top top"
-      "frames stage timing"
-      "cells cells cells"
-      "strip strip strip";
-    grid-template-columns: minmax(190px, 0.42fr) minmax(420px, 1fr) minmax(300px, 0.72fr);
-    min-height: 0;
-  }
+  /* 옛 4행 3열 맵(top/frames·stage·timing/cells/strip)은 제거했다. 지금 DOM 은
+     animationEditor() 가 stage / inspector / timeline 세 섹션으로 감싸므로 그 영역
+     이름들은 어디에도 존재하지 않는다. 실제 배치는 battle-studio.css:157 이 잡는다. */
 
   .database-modal-body .db-animation-top-grid {
     display: grid;
     gap: 10px;
-    grid-area: top;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     min-height: 0;
   }
@@ -294,7 +285,9 @@
   .database-modal-body .db-animation-frame-list-panel { grid-area: frames; max-height: 242px; }
   .database-modal-body .db-animation-stage-panel { grid-area: stage; max-height: 242px; }
   .database-modal-body .db-animation-timing-panel { grid-area: timing; max-height: 242px; }
-  .database-modal-body [data-testid="db-animation-cell-table"] { grid-area: cells; max-height: 164px; }
+  /* `grid-area: cells` 는 사라진 맵의 이름이라 인스펙터에 유령 열을 하나 더 만들었다.
+     셀 표는 폭이 넓으므로(작성 시 min-width 620px) 가로 스크롤로 도달 가능하게 둔다. */
+  .database-modal-body [data-testid="db-animation-cell-table"] { max-height: 164px; min-width: 0; overflow: auto; }
   .database-modal-body .db-animation-pattern-strip-panel { grid-area: strip; max-height: 96px; }
 
   .database-modal-body [data-testid="db-animation-cell-table"] .db-animation-table {
