@@ -59,40 +59,59 @@ async function activateAdjacentEvent(page: Page): Promise<void> {
 async function expectPointerInert(page: Page, selector: string): Promise<void> {
   const surface = page.locator(selector);
   await expect(surface).toBeVisible();
-  const result = await page.evaluate(async ({ selector, watched }) => {
+  const handles = await page.$$(`${selector}, ${selector} *`);
+
+  const nativeTooltips = await page.evaluate((selector) => {
     const root = document.querySelector(selector);
-    if (!(root instanceof HTMLElement)) throw new Error(`missing surface ${selector}`);
-    const visible = (node: Element): node is HTMLElement => {
-      if (!(node instanceof HTMLElement)) return false;
-      const style = getComputedStyle(node);
-      const rect = node.getBoundingClientRect();
-      return style.display !== "none" && style.visibility !== "hidden" && rect.width > 1 && rect.height > 1;
-    };
-    const nodes = [root, ...root.querySelectorAll("*")].filter(visible);
-    const snapshot = () => nodes.map((node) => {
-      const style = getComputedStyle(node);
-      return Object.fromEntries(watched.map((property) => [property, style.getPropertyValue(property)]));
-    });
-    const before = snapshot();
-    const pointerCursor = before.flatMap((styles, index) => styles.cursor === "pointer" ? [index] : []);
-    const nativeTooltips = nodes.flatMap((node, index) => node.hasAttribute("title") ? [index] : []);
-    const hoverChanges: Array<{ index: number; property: string }> = [];
-    for (let index = 0; index < nodes.length; index += 1) {
-      const rect = nodes[index].getBoundingClientRect();
-      const target = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-      await new Promise<void>((resolve) => {
-        const onMove = () => resolve();
-        window.addEventListener("mousemove", onMove, { once: true });
-        window.dispatchEvent(new MouseEvent("mousemove", { clientX: target.x, clientY: target.y }));
-      });
-      const during = snapshot();
-      for (const property of watched) {
-        if (before[index]?.[property] !== during[index]?.[property]) hoverChanges.push({ index, property });
-      }
+    if (!(root instanceof HTMLElement)) return [];
+    return [root, ...root.querySelectorAll("*")]
+      .filter((node) => node.hasAttribute("title"))
+      .map((node) => `${node.getAttribute("data-testid") ?? node.className}=${node.getAttribute("title")}`);
+  }, selector);
+
+  const probe = async (handle: (typeof handles)[number]) =>
+    await handle.evaluate((node, watched) => {
+      const element = node as HTMLElement;
+      const style = getComputedStyle(element);
+      return {
+        testid: element.getAttribute("data-testid") ?? element.className,
+        styles: Object.fromEntries(watched.map((property) => [property, style.getPropertyValue(property)])),
+      };
+    }, WATCHED);
+
+  await page.mouse.move(2, 2);
+  const pointerCursor: string[] = [];
+  const hoverChanges: string[] = [];
+
+  for (const handle of handles) {
+    const box = await handle.boundingBox();
+    if (!box || box.width < 2 || box.height < 2) continue;
+
+    // Reversibility test rather than a plain before/after diff. Battle and dialogue surfaces
+    // mutate their own classes mid-census (turn changes, ATB, acting flags), so a one-way diff
+    // reports animation as a hover leak. A genuine :hover effect appears when the pointer is
+    // over the element and reverts when it leaves; a phase change does not revert. Real
+    // Chromium mouse movement is required because a dispatched MouseEvent never sets :hover.
+    const off = await probe(handle);
+    if (off.styles.cursor === "pointer") pointerCursor.push(String(off.testid));
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    const on = await probe(handle);
+    await page.mouse.move(2, 2);
+    const back = await probe(handle);
+
+    for (const property of WATCHED) {
+      const changedOnHover = off.styles[property] !== on.styles[property];
+      const revertedOnLeave = on.styles[property] !== back.styles[property]
+        && off.styles[property] === back.styles[property];
+      if (changedOnHover && revertedOnLeave) hoverChanges.push(`${on.testid}:${property}`);
     }
-    return { pointerCursor, nativeTooltips, hoverChanges };
-  }, { selector, watched: WATCHED });
-  expect(result).toEqual({ pointerCursor: [], nativeTooltips: [], hoverChanges: [] });
+  }
+
+  expect({ pointerCursor, nativeTooltips, hoverChanges }).toEqual({
+    pointerCursor: [],
+    nativeTooltips: [],
+    hoverChanges: [],
+  });
 }
 
 test("dialogue choices retain keyboard focus styling but expose no pointer affordance", async ({ page }) => {
@@ -106,29 +125,41 @@ test("dialogue choices retain keyboard focus styling but expose no pointer affor
   await expectPointerInert(page, "[data-testid='runtime-choices']");
 });
 
-test("commerce, name entry, terminal, and battle surfaces expose no pointer affordance", async ({ page }) => {
-  const cases = [
-    {
-      project: projectWithCommand({ kind: "shop", itemIds: ["item_potion"], allowSell: true }),
-      surface: "[data-testid='shop-scene']",
-    },
-    {
-      project: projectWithCommand({ kind: "enterHeroName", actorId: "actor_hero", maxLength: 6, showInitialName: true }),
-      surface: "[data-testid='runtime-name-entry']",
-    },
-    {
-      project: projectWithCommand({ kind: "ending", title: "End", message: "Done" }),
-      surface: "[data-testid='ending-screen']",
-    },
-  ];
-  for (const entry of cases) {
-    await boot(page, entry.project);
-    await activateAdjacentEvent(page);
-    await page.locator(entry.surface).waitFor();
-    await expectPointerInert(page, entry.surface);
-    await page.unrouteAll({ behavior: "wait" });
-  }
+test("shop buy list exposes no pointer affordance", async ({ page }) => {
+  await boot(page, projectWithCommand({ kind: "shop", itemIds: ["item_potion"], allowSell: true }));
+  await activateAdjacentEvent(page);
+  await page.getByTestId("shop-scene").waitFor();
+  await expectPointerInert(page, "[data-testid='shop-scene']");
+  // Enter the actual buy list: party faces and the merchant-gold panel only mount here,
+  // which is exactly where two native tooltips previously survived.
+  await page.getByTestId("shop-mode-buy").waitFor();
+  await page.keyboard.press("Enter");
+  await page.getByTestId("shop-buy-item_potion").waitFor();
+  await page.getByTestId("shop-party-sprite-actor_hero").waitFor();
+  await page.getByTestId("shop-merchant-gold").waitFor();
+  await expectPointerInert(page, "[data-testid='shop-scene']");
+});
 
+test("name entry exposes no pointer affordance", async ({ page }) => {
+  await boot(page, projectWithCommand({
+    kind: "enterHeroName",
+    actorId: "actor_hero",
+    maxLength: 6,
+    showInitialName: true,
+  }));
+  await activateAdjacentEvent(page);
+  await page.getByTestId("runtime-name-entry").waitFor();
+  await expectPointerInert(page, "[data-testid='runtime-name-entry']");
+});
+
+test("terminal ending screen exposes no pointer affordance", async ({ page }) => {
+  await boot(page, projectWithCommand({ kind: "ending", title: "End", message: "Done" }));
+  await activateAdjacentEvent(page);
+  await page.getByTestId("ending-screen").waitFor();
+  await expectPointerInert(page, "[data-testid='ending-screen']");
+});
+
+test("battle surface exposes no pointer affordance", async ({ page }) => {
   await boot(page, battle);
   await activateAdjacentEvent(page);
   await page.getByTestId("battle-scene").waitFor();

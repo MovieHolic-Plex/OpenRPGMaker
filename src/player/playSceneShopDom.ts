@@ -553,7 +553,7 @@ function partyPreview(scene: PlaySceneContext): HTMLElement {
     const sprite = el("span", {
       class: "runtime-shop-party-sprite",
       dataset: { testid: `shop-party-sprite-${actorId}` },
-      attrs: { role: "img", "aria-label": name, title: name },
+      attrs: { role: "img", "aria-label": name },
     });
     sprite.dataset.actorSlot = String(index);
     const resourceId = scene.session.actorFaceResourceIds?.[actorId]
@@ -623,7 +623,7 @@ function goldPanel(
     goldLine("소지금", `${scene.session.gold}${terms.gold}`, "shop-player-gold"),
     goldLine("상인", `${merchantGold}${terms.gold}`, "shop-merchant-gold", {
       className: "runtime-shop-merchant-gold",
-      title:
+      description:
         mode === "sell"
           ? "상인이 플레이어 물품을 살 때 남은 소지금"
           : "상인 소지금(플레이어 구매 시 증가)",
@@ -636,12 +636,12 @@ function goldLine(
   label: string,
   value: string,
   testid: string,
-  options?: { readonly className?: string; readonly title?: string }
+  options?: { readonly className?: string; readonly description?: string }
 ): HTMLElement {
   return el("div", {
     class: `runtime-shop-gold-line${options?.className ? ` ${options.className}` : ""}`,
     dataset: { testid },
-    attrs: options?.title ? { title: options.title } : undefined,
+    attrs: options?.description ? { "aria-label": `${label}: ${options.description}` } : undefined,
     children: [
       el("span", { class: "runtime-shop-gold-label", text: label }),
       el("span", { class: "runtime-shop-gold-value", text: value }),
