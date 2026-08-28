@@ -10,6 +10,7 @@ dist/
 !.omo/evidence/rm2003-database-plan/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-apply-without-approval/
+!.omo/evidence/action-battle/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
