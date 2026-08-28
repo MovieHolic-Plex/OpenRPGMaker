@@ -7,7 +7,9 @@ import {
   resolveSkinId,
 } from "@/battle/skins/registry";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { isActionCombatMap } from "@/project/actionCombat";
 import { createBlankProject } from "@/project/defaults";
+import { projectLint } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -80,5 +82,46 @@ describe("editor skin dropdown", () => {
     const saved = options.find((option) => option.value === "octopath");
     expect(saved?.textContent.endsWith("(지원 종료)")).toBe(true);
     expect(findByTestId(host, "db-field-system-battle-ui-style")?.value).toBe("octopath");
+  });
+});
+
+describe("action combat deprecation", () => {
+  it("활성화된 액션 전투를 지원 종료 warning 으로 보고한다", () => {
+    const project = createBlankProject();
+    project.system.actionCombat = { enabled: true };
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.actionCombat = true;
+
+    expect(projectLint(project)).toContainEqual(expect.objectContaining({
+      severity: "warning",
+      code: "deprecated:action-combat",
+    }));
+  });
+
+  it("액션 전투가 비활성화되었거나 없으면 지원 종료 issue 를 내지 않는다", () => {
+    const disabled = createBlankProject();
+    disabled.system.actionCombat = { enabled: false };
+    const absent = createBlankProject();
+    delete absent.system.actionCombat;
+
+    for (const project of [disabled, absent]) {
+      expect(projectLint(project).some((issue) => issue.code === "deprecated:action-combat")).toBe(false);
+    }
+  });
+
+  it("저장된 액션 전투 맵의 런타임 활성 조건은 그대로 유지한다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    project.system.actionCombat = { enabled: true };
+    map.actionCombat = true;
+
+    expect(isActionCombatMap(project, map)).toBe(true);
+    map.actionCombat = false;
+    expect(isActionCombatMap(project, map)).toBe(false);
+    map.actionCombat = true;
+    project.system.actionCombat.enabled = false;
+    expect(isActionCombatMap(project, map)).toBe(false);
   });
 });
