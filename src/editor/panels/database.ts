@@ -372,20 +372,21 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
 const DATABASE_NAV_COLLAPSED_KEY = "oprn:database.navCollapsed";
 
 /**
- * 저장된 선호가 없으면 **전부 접힌 상태**가 기본이다. 다 펼치면 레일 내용이 1058px 로
- * 796px 높이를 262px 넘겨, 아래쪽 그룹이 접힘선 밖에 숨는다 — 그게 원래 문제였다.
- * 지금 보고 있는 탭이 든 그룹은 applyGroupCollapse 가 항상 강제로 편다.
+ * 기본값은 **전부 펼침**이다. 한때 "전부 접힘"을 기본으로 뒀는데, 접힌 탭은
+ * `display: none` 이라 첫 화면에서 29 개 중 24 개가 상자 크기 0 이 된다 — 사람에게는
+ * 안 보이는 게 문제고, Playwright 는 `click({ force: true })` 조차 빈 상자에는 못 쏘므로
+ * 탭 전환으로 시작하는 e2e 스펙이 전부 첫 줄에서 죽었다(qa-crops, common-events 등에서
+ * 실측 확인). 접기는 사용자가 고르는 밀도 도구로 남기고, 선택은 그대로 저장한다.
  */
 function readCollapsedGroups(): Set<string> {
-  const allCollapsed = (): Set<string> => new Set(TAB_GROUPS.map((group) => group.label));
-  if (typeof window === "undefined") return allCollapsed();
+  if (typeof window === "undefined") return new Set();
   try {
     const raw = window.localStorage.getItem(DATABASE_NAV_COLLAPSED_KEY);
-    if (raw === null) return allCollapsed();
+    if (raw === null) return new Set();
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? new Set(parsed.filter((entry): entry is string => typeof entry === "string")) : allCollapsed();
+    return Array.isArray(parsed) ? new Set(parsed.filter((entry): entry is string => typeof entry === "string")) : new Set();
   } catch {
-    return allCollapsed();
+    return new Set();
   }
 }
 
