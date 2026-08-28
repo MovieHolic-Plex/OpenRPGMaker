@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 218개 툴 — 쓰기 167, 읽기 51.
+> 총 221개 툴 — 쓰기 170, 읽기 51.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -160,6 +160,9 @@
 | `author_story_arc` | `id: string`, `title: string`, `mapId: string`, `eventId: string`, `at: object`, `opening: array`, `tutorialObjectives: array`, `branchChoices: array`, `twist: object` | 결정론적 튜토리얼 목표·선택 분기·선택적 반전 템플릿을 기존 이벤트/퀘스트/스토리 플래그로 컴파일한다. 좋은 서사를 자동 판단하거나 발명하지 않는다. |
 | `declare_story_flag` | `action?: declare\|rename\|retire`, `id: string`, `newId?: string`, `kind?: switch\|variable`, `description?: string`, `questId?: string`, `targetId?: string`, `tags?: array` | 스위치/변수 번호에 서사 의미를 등록한다. action=declare/rename/retire 지원. targetId 생략 시 미사용 슬롯을 자동 할당한다. |
 | `tune_enemy` | `enemyId: string`, `targetHitsToKill: integer`, `targetDamageToHeroPerHit: integer`, `heroLevel?: integer` | 데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함. |
+| `author_boss_phases` | `troopId: string`, `enemyId?: string`, `phases: array` | 보스 페이즈를 선언적으로 깐다. 각 페이즈는 'HP x% 이하' 진입 조건 + 대사·애니메이션·상태부여(광폭화)·HP회복·숨은 적 등장·스위치를 전투 이벤트 페이지로 컴파일한다(1회성). 같은 트룹에 다시 호출하면 이전에 이 툴이 만든 페이즈 페이지만 교체하고 수동 페이지는 보존한다. 저작 후 simulate_battle 로 phaseCoverage(발동 여부)를 확인하라. |
+| `upsert_troop_battle_page` | `troopId: string`, `page: object` | 트룹의 전투 이벤트 페이지(보스 페이즈/전투 스크립트)를 페이지 단위로 등록·수정한다. 조건·커맨드·무한반복을 검증하며, 저작 후 simulate_battle 의 phaseCoverage 로 실제 발동을 확인해야 한다. 여러 페이즈를 한 번에 깔려면 author_boss_phases 를 먼저 보라. |
+| `delete_troop_battle_page` | `troopId: string`, `pageId: string` | 트룹의 전투 이벤트 페이지 하나를 삭제한다. |
 | `rename_switch` | `fromId?: string`, `fromName?: string`, `to: string` | 스위치 id를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). fromId 또는 fromName으로 대상 지정. |
 | `rename_variable` | `fromId?: string`, `fromName?: string`, `to: string` | 변수 id를 전 맵/커먼이벤트/트룹에서 일괄 치환한다(정의·세션·setVariable·조건·숫자입력 참조 포함). fromId 또는 fromName으로 대상 지정. |
 | `prune_unused` | `apply?: boolean` | 미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. |
