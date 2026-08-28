@@ -46,11 +46,10 @@
   flex: 0 0 auto;
   align-self: center;
 }
+/* 배경 폴백은 공용 `.event-command-face-crop` 이 한 곳에서 소유한다. 여기서 `background-image` 를
+   다시 선언하면 특이도가 (0,2,0) 으로 같아져 나중에 로드되는 이 파일이 `:has(> .faceset-crop-sheet)`
+   가드를 이기고, 재생 목업에서만 얼굴 두 장이 겹친다. 이 규칙은 테두리 강조만 담당한다. */
 .ecp-message-window .event-command-face-crop {
-  background-image: var(--face-url);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
   border: 1px solid var(--border-default);
   border-radius: 2px;
   height: var(--face-display-height, 96px);
