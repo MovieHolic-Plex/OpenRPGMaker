@@ -2,6 +2,7 @@ import type {
   ActorId,
   AssetRef,
   BattleAnimationId,
+  CharacterFootprint,
   Dir,
   EquipmentId,
   FlagName,
@@ -415,6 +416,11 @@ export interface EventPageGraphic {
   direction?: Dir;
   pattern?: number;
   transparent?: boolean;
+  /**
+   * 스프라이트 렌더 배율. 충돌 발자국과 **독립**이다 —
+   * "그림은 3배인데 발자국은 2x2" 같은 연출을 허용한다. 생략 시 1.
+   */
+  scale?: number;
 }
 
 export interface NpcLivingDestination {
@@ -473,6 +479,12 @@ export interface EventPage {
   priority: EventPriority;
   overlapForbidden?: boolean;
   animationType?: EventAnimationType;
+  /**
+   * 충돌 발자국(타일). (x,y) 는 발자국 **하단 행**의 칸이고 짝수 폭은 왼쪽 치우침.
+   * 생략 시 1x1 — 기존 이벤트는 좌표가 그대로다.
+   * 페이지 단위인 이유: 알 → 드래곤처럼 페이지 전환으로 크기가 바뀌는 연출을 허용한다.
+   */
+  footprint?: CharacterFootprint;
   movement: EventPageMovement;
   commands: Command[];
 }

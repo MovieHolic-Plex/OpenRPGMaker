@@ -1,6 +1,8 @@
 import { resolveEventPage } from "@/project/io";
+import { normalizeCharacterFootprint, normalizeCharacterScale } from "@/project/footprint";
 import type {
   AssetRef,
+  CharacterFootprint,
   Dir,
   EventAnimationType,
   EventPage,
@@ -36,6 +38,10 @@ export interface RuntimeEventView {
   readonly trigger: Trigger;
   readonly priority: EventPriority;
   readonly overlapForbidden: boolean;
+  /** 충돌 발자국. 생략된 페이지는 1x1 로 정규화돼 언제나 존재한다. */
+  readonly footprint: CharacterFootprint;
+  /** 스프라이트 렌더 배율. 생략 시 1. 발자국과 독립. */
+  readonly scale: number;
   readonly transparent: boolean;
   readonly animationType: EventAnimationType;
   readonly movement: EventPageMovement;
@@ -92,6 +98,8 @@ export function runtimeEventView(
     trigger: page?.trigger ?? event.trigger,
     priority: page?.priority ?? "same",
     overlapForbidden: page?.overlapForbidden ?? true,
+    footprint: normalizeCharacterFootprint(page?.footprint),
+    scale: normalizeCharacterScale(page?.graphic.scale),
     transparent,
     animationType: page?.animationType ?? "normal",
     movement: page?.movement ?? legacyMovement(event),
