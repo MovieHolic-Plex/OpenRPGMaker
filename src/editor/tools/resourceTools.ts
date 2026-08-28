@@ -1,7 +1,12 @@
 // Authored resource register/delete. The resource manager can import/delete
 // uploaded assets; list_resources is read-only. Tools stay typed and do not
 // touch the user filesystem — callers pass an existing dataUrl or metadata.
-import type { ResourceKind, UploadedAsset } from "@/project/types";
+import type { Project, ResourceKind, UploadedAsset } from "@/project/types";
+import {
+  faceCellSuffix,
+  planFacesetSheetSplit,
+  type FacesetSheetSplitPlan,
+} from "@/assets/facesetSheetSlicing";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export type FacesetUploadDecision =
@@ -18,6 +23,46 @@ export function decideFacesetUploadDimensions(width: number, height: number): Fa
     return { accept: false, reason: `유효하지 않은 이미지 크기입니다: ${width}×${height}` };
   }
   return { accept: true };
+}
+
+/**
+ * 시트 업로드를 낱장 자산들로 등록한다.
+ *
+ * run() 은 동기라 canvas 로 픽셀을 자를 수 없다. 마이그레이션
+ * (splitUploadedFacesetSheetAssets)과 같은 방식으로 각 칸이 시트 이미지를 물려받은 채
+ * sheetCell/sheetSourceId 표식만 달아 두고, 실제 절단은 로드 직후
+ * repairUploadedFacesetSheets 가 canvas 로 마무리한다.
+ */
+function splitSheetUpload(
+  draft: Project,
+  sheet: { readonly id: string; readonly name: string; readonly kind: ResourceKind; readonly dataUrl: string },
+  plan: FacesetSheetSplitPlan
+): ToolExecResult {
+  const faceIds: string[] = [];
+  for (let cell = 0; cell < plan.count; cell += 1) {
+    const faceId = `${sheet.id}-${faceCellSuffix(cell)}`;
+    draft.assets.uploaded[faceId] = {
+      id: faceId,
+      name: `${sheet.name} 얼굴 ${cell + 1}`,
+      kind: sheet.kind,
+      dataUrl: sheet.dataUrl,
+      meta: {
+        ...(draft.assets.uploaded[faceId]?.meta ?? {}),
+        width: plan.cellSize,
+        height: plan.cellSize,
+        frames: 1,
+        sheetCell: cell,
+        sheetSourceId: sheet.id,
+      },
+    };
+    faceIds.push(faceId);
+  }
+  // 통짜 시트는 남기지 않는다 — 남기면 얼굴 피커에 시트가 그대로 노출된다.
+  delete draft.assets.uploaded[sheet.id];
+  return {
+    summary: `리소스 ${sheet.name} — ${plan.columns}×${plan.rows} 시트를 얼굴 ${plan.count}장으로 나눴습니다.`,
+    data: { resource: { id: sheet.id, name: sheet.name, kind: sheet.kind }, faceIds },
+  };
 }
 
 /** dataUrl PNG 헤더(IHDR)에서 가로·세로를 읽는다. PNG이 아니면 null. */
@@ -86,13 +131,16 @@ const upsertResource: ToolDefinition = {
     const dataUrl = typeof record.dataUrl === "string" && record.dataUrl.trim()
       ? record.dataUrl
       : existing?.dataUrl ?? "";
-    // faceset 은 얼굴 한 장=파일 한 장 계약. 시트 모양(48 배수 정사각) 업로드는 조용히
-    // 낱장으로 저장하지 않고 슬라이스 방법을 안내하며 거부한다.
+    // faceset 은 얼굴 한 장 = 파일 한 장 계약이다. 시트 모양(48 배수 정사각)으로 올라오면
+    // 낱장으로 나눠 등록한다 — 이 배선이 없어서 AI 툴로 올린 192×192 가 통짜로 남았고,
+    // 얼굴 피커에 그대로 나와 48px 칸에 16장이 뭉갠 채 보였다(실측 2026-08-28).
     if (kind === "faceset" && dataUrl.startsWith("data:image/png")) {
       const size = readPngSizeFromDataUrl(dataUrl);
       if (size) {
         const decision = decideFacesetUploadDimensions(size.width, size.height);
         if (!decision.accept) throw new ToolError(decision.reason, { code: "invalid-args" });
+        const plan = planFacesetSheetSplit(size.width, size.height);
+        if (plan !== null) return splitSheetUpload(draft, { id, name, kind, dataUrl }, plan);
       }
     }
     const asset: UploadedAsset = {
