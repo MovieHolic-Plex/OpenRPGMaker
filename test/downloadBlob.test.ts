@@ -37,7 +37,7 @@ describe("downloadBlob", () => {
 
   it("revokeObjectURL 을 즉시 부르지 않는다", () => {
     // 과거 결함 ③: click() 직후 동기 revoke 하면 브라우저가 fetch 를 시작하기 전에 URL 이 무효화된다.
-    const revoke = (globalThis as { URL: { revokeObjectURL: ReturnType<typeof vi.fn> } }).URL.revokeObjectURL;
+    const revoke = (globalThis as unknown as { URL: { revokeObjectURL: ReturnType<typeof vi.fn> } }).URL.revokeObjectURL;
     downloadBlob(new Blob(["x"]), "a.json");
     expect(revoke).not.toHaveBeenCalled();
     vi.advanceTimersByTime(10_000);
