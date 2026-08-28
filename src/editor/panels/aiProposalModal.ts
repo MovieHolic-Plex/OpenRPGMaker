@@ -1,17 +1,19 @@
-import type { ChatDock } from "@/editor/chatDock";
 import { el } from "@/util/dom";
 
 export type ProposalPresentationMode = "modal" | "canvas" | "inline";
 
-/** Decision cards stay in the dock. Float is composer-only — never the overlay pill. */
+/**
+ * 결정 카드는 띠 안에 인라인으로 산다. 유일한 예외는 재열기 알약(pill)로 되돌아온 캔버스 카드다.
+ *
+ * 예전 시그니처는 `dock: ChatDock` 을 받았지만, 세 도크(glass·side·float) 전부가 `"inline"` 로
+ * 떨어져서 도크 값이 결과를 바꾼 적이 없다 — 죽은 분기였다. 도크 개념이 사라진 지금은
+ * 인자 자체를 지운다(테스트가 세 값으로 같은 답을 세 번 확인하던 것도 함께 정리된다).
+ */
 export function resolveProposalPresentation(
   requested: ProposalPresentationMode,
-  dock: ChatDock,
   fromReopenPill = false,
 ): ProposalPresentationMode {
-  if (fromReopenPill && requested === "canvas") return "canvas";
-  if (dock === "glass" || dock === "side" || dock === "float") return "inline";
-  return "inline";
+  return fromReopenPill && requested === "canvas" ? "canvas" : "inline";
 }
 
 export interface ProposalModalElements {

@@ -46,6 +46,13 @@ export interface ComposerOptions {
   readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
   readonly statusGroup: HTMLElement;
+  /**
+   * 띠에 상시 노출되는 진입점 2개. 예전에는 숨은 툴바(`ai-chat-toolbar.is-empty` + hidden
+   * + inert)에 있었고 CSS 가 `:not(.is-empty)` 를 요구해 **영구히 도달 불가**였다. 도크·접기가
+   * 사라진 뒤 조수의 유일한 크롬이 이 액션 행이므로, 여기가 두 버튼의 집이다.
+   */
+  readonly historyButton?: HTMLButtonElement;
+  readonly newSessionButton?: HTMLButtonElement;
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
 }
 
@@ -94,7 +101,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       }),
       el("div", {
         class: "ai-composer-actions-trail",
-        children: [options.statusGroup, hint, options.sendButton, options.abortButton],
+        children: [
+          options.statusGroup,
+          hint,
+          ...(options.newSessionButton ? [options.newSessionButton] : []),
+          ...(options.historyButton ? [options.historyButton] : []),
+          options.sendButton,
+          options.abortButton,
+        ],
       }),
     ],
   });

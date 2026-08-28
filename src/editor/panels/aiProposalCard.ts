@@ -36,7 +36,6 @@ import {
   type VocabularyCardEdit,
 } from "./aiChatRenderers";
 import { resolveProposalPresentation, type ProposalPresentationMode } from "./aiProposalModal";
-import type { ChatDock } from "@/editor/chatDock";
 import {
   collectVocabSoftConfirms,
   markSoftVocabApprovalsOnProject,
@@ -318,7 +317,6 @@ export function createProposalHost(options: {
   readonly proposalModalCount: HTMLElement;
   readonly proposalPill: HTMLButtonElement;
   readonly proposalModalBody: HTMLElement;
-  readonly getChatDock: () => ChatDock;
   readonly openProposalModal: (mode?: ProposalPresentationMode) => void;
   readonly closeProposalModal: () => void;
   readonly controller: ChatController;
@@ -335,7 +333,6 @@ export function createProposalHost(options: {
     proposalModalCount,
     proposalPill,
     proposalModalBody,
-    getChatDock,
     openProposalModal,
     closeProposalModal,
     controller,
@@ -520,7 +517,7 @@ export function createProposalHost(options: {
     assistantBubble: HTMLElement | null = null,
     requestedPresentation: ProposalPresentationMode = "modal",
   ): void => {
-    const presentation = resolveProposalPresentation(requestedPresentation, getChatDock());
+    const presentation = resolveProposalPresentation(requestedPresentation);
     const plainToolNames = getEditorChrome().jargonStyle === "plain";
     const userFacingToolText = (text: string): string =>
       plainToolNames ? sanitizeUserFacingToolId(text) : text;
