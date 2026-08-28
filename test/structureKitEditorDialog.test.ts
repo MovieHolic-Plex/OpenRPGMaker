@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { createStructureKitFromHouse, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -61,6 +61,29 @@ describe("replaceStructureKit", () => {
     replaceStructureKit(DEFAULT_TILESET_ID, { ...seedKit(), id: "kit_nope", name: "유령" });
     const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!;
     expect(kits.map((kit) => kit.id)).not.toContain("kit_nope");
+  });
+});
+
+describe("createStructureKitFromHouse", () => {
+  it("aframe-stone 은 폭·높이 등식이 안 맞으면 null 을 돌려주고 아무것도 등록하지 않는다", () => {
+    // wallBandRows(3) + floor((12-1)/2)(5) + 1 = 9 여야 하는데 8 을 준다 — stampFootprintHouseKit 이 거부한다.
+    const kit = createStructureKitFromHouse(DEFAULT_TILESET_ID, "aframe-stone", { width: 12, height: 8 });
+
+    expect(kit).toBeNull();
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    expect(stored).toHaveLength(0);
+  });
+
+  it("aframe-stone 은 등식이 맞는 크기면 실제로 칠해진 킷을 등록한다", () => {
+    const kit = createStructureKitFromHouse(DEFAULT_TILESET_ID, "aframe-stone", { width: 12, height: 9 });
+
+    expect(kit).not.toBeNull();
+    expect(kit!.kind).toBe("section");
+    const painted = kit!.rows.some((row) => row.tiles.some((tile) => tile !== -1));
+    expect(painted).toBe(true);
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    expect(stored.some((candidate) => candidate.id === kit!.id)).toBe(true);
   });
 });
 

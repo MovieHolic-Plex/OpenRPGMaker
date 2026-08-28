@@ -127,12 +127,18 @@ export function duplicateIntoTileset(
 /**
  * 집 킷 한 채를 전개해 굳힌 새 구조물.
  * 파라메트릭 시공은 build_house_kit 의 일이고, 여기서는 그 결과를 편집 시작점으로만 빌린다.
+ *
+ * 일부 킷(예: aframe-stone)은 폭·높이가 등식 하나를 정확히 맞춰야 시공된다 —
+ * stampFootprintHouseKit 이 그 조건을 어기면 조용히 실패(ok:false)하고,
+ * expandHouseStructureKit 은 그걸 빈 셀 목록으로 삼켜 버린다. 그 결과를 그대로
+ * 저장하면 타일이 하나도 없는 킷이 "구조물"이랍시고 생긴다 — 구운 결과에 실제
+ * 타일이 있는지 확인하고, 없으면 아무것도 등록하지 않은 채 null 을 돌려준다.
  */
 export function createStructureKitFromHouse(
   tilesetId: TilesetId,
   houseKitId: string,
   size: { readonly width: number; readonly height: number },
-): SectionStructureKitDef {
+): SectionStructureKitDef | null {
   const existingNames = (store.getCurrent().tilesets[tilesetId]?.structureKits ?? [])
     .map((kit) => kit.name ?? "구조물");
   const source: HouseStructureKitDef = {
@@ -145,6 +151,8 @@ export function createStructureKitFromHouse(
     learnedFrom: "builtin-parametric",
   };
   const kit = bakeStructureKit(source, `kit_${randomUuid()}`, copyName(source.name ?? "집", existingNames));
+  const hasPaintedTile = kit.rows.some((row) => row.tiles.some((tile) => tile !== TILE.EMPTY));
+  if (!hasPaintedTile) return null;
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset) return;

@@ -221,7 +221,15 @@ export function openNewStructureKitDialog(tilesetId: TilesetId, onCreated: (kitI
       {
         label: "이 집으로 시작",
         testid: "structure-kit-new-house-confirm",
-        action: () => onCreated(createStructureKitFromHouse(tilesetId, houseKitId, { width, height }).id),
+        action: () => {
+          const kit = createStructureKitFromHouse(tilesetId, houseKitId, { width, height });
+          if (!kit) {
+            const kitLabel = HOUSE_KITS[houseKitId as keyof typeof HOUSE_KITS]?.name ?? houseKitId;
+            toast(`'${kitLabel}' 은 ${width}×${height} 크기로 지어지지 않습니다 — 폭·높이를 바꿔 보세요.`, "info");
+            return;
+          }
+          onCreated(kit.id);
+        },
       },
       { label: "취소", testid: "structure-kit-new-cancel" },
     ],
