@@ -6,7 +6,7 @@ import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
-import type { DatabaseTerrainRecord, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import type { EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -30,7 +30,9 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
         balancePanel(record),
         troopBattlePreview(record, selectedIndex, rerender),
         memberEditor(record, member, selectedIndex, selectedEnemy, rerender),
-        terrainPanel(project.database.terrains ?? [], record.previewBackgroundResourceId),
+        // 지형 패널은 두 겹으로 죽어 있었다 — troops.part-2.css 가 display:none 으로 감추고,
+        // 체크박스는 전부 `input.disabled = true` 였다. 만들어서 스타일까지 먹인 뒤 버리는
+        // 셈이라 아예 렌더하지 않는다(되살리려면 git 이력에 그대로 있다).
         renderTroopBattleEventPanel(record, rerender),
       ],
     })
@@ -139,7 +141,7 @@ function balancePanel(record: TroopRecord): HTMLElement {
     runButton.disabled = true;
     runButton.title = "멤버를 추가하면 추정할 수 있습니다";
   }
-  return classicPanel("밸런스", [rollup, levelField, runButton, result]);
+  return classicPanel("밸런스", [rollup, levelField, runButton, result], "db-troop-panel-balance");
 }
 
 function memberEditor(
@@ -319,22 +321,6 @@ function enemySprite(
   return canvas;
 }
 
-function terrainPanel(terrains: readonly DatabaseTerrainRecord[], previewBackgroundResourceId: string | undefined): HTMLElement {
-  return classicPanel("지형", [
-    el("div", {
-      class: "db-troop-terrain-list",
-      children: terrains.map((terrain) => terrainCheckbox(terrain, previewBackgroundResourceId)),
-    }),
-  ]);
-}
-
-function terrainCheckbox(terrain: DatabaseTerrainRecord, previewBackgroundResourceId: string | undefined): HTMLElement {
-  const input = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
-  input.checked = !previewBackgroundResourceId || terrain.battleBackgroundResourceId === previewBackgroundResourceId;
-  input.disabled = true;
-  return el("label", { class: "db-troop-terrain-row", children: [input, el("span", { text: terrain.name })] });
-}
-
 function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
   const members = record.members ?? [];
@@ -449,8 +435,11 @@ function actionButton(label: string, testid: string, onClick: () => void): HTMLB
   return node;
 }
 
-function classicPanel(title: string, children: HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "db-advanced-panel db-troop-classic-panel", children: [el("legend", { text: title }), ...children] });
+function classicPanel(title: string, children: HTMLElement[], extraClass?: string): HTMLElement {
+  return el("fieldset", {
+    class: `db-advanced-panel db-troop-classic-panel${extraClass ? ` ${extraClass}` : ""}`,
+    children: [el("legend", { text: title }), ...children],
+  });
 }
 
 function selectedMemberIndex(record: TroopRecord): number {

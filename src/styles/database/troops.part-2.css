@@ -16,9 +16,9 @@
   height: 20px;
 }
 
-.database-modal-body .db-troop-member-editor + .db-troop-classic-panel {
-  display: none;
-}
+/* 지형 패널을 형제 선택자로 감추던 해킹은 제거했다 — 패널 자체를 더 이상 렌더하지
+   않는다(체크박스가 전부 disabled 인 죽은 UI 였다). 이 규칙을 남겨 두면 나중에
+   .db-troop-classic-panel 을 멤버 편집기 뒤에 새로 놓는 순간 조용히 사라진다. */
 
 .database-modal-body .db-troop-member-rows {
   background: var(--bg-raised);
