@@ -1554,6 +1554,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         mapId: selection.mapId,
         region: selection.region,
         instruction: text,
+        gate: "immediate",
         signal: abortController.signal,
         onEvent,
       });

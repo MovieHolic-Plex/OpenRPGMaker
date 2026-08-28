@@ -96,7 +96,7 @@ describe("openRegionTaskModal", () => {
 
     await flush();
     const summary = findByTestId(root, "region-task-summary")?.textContent ?? "";
-    expect(summary).toContain("완료");
+    expect(summary).toContain("적용됨");
     expect(summary).toContain("5칸");
     expect(summary).toContain("2칸");
     const copy = findByTestId(root, "region-task-copy-log");
