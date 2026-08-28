@@ -64,7 +64,10 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run dev -- --host 127.0.0.1 --port ${devServerPort} --strictPort`,
-    env: { DEV_SERVER_NO_TLS: "1" },
+    // E2E_FREEZE_DEV_SERVER: 이 실행이 서버를 직접 띄웠을 때만 HMR·파일 감시를 끈다.
+    // 병렬 에이전트가 src/ 를 저장해도 QA 중인 페이지가 리로드로 날아가지 않는다.
+    // 이미 떠 있는 서버를 재사용하면(reuseExistingServer) 걸리지 않는다.
+    env: { DEV_SERVER_NO_TLS: "1", E2E_FREEZE_DEV_SERVER: "1" },
     url: devServerUrl,
     reuseExistingServer: true,
     timeout: 30_000,
