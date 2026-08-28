@@ -22,8 +22,11 @@ function makeScene(map: GameMap, playBattleCalls: string[]): PlaySceneContext {
     tileX: 0,
     tileY: 0,
     session: { partyActorIds: [], switches: {}, variables: {} },
-    playBattle: (cmd: { kind: string }) => {
+    // playBattle 은 Promise<BattleResult> 계약이다(playSceneTypes.ts). void 를 돌려주는 페이크는
+    // 인카운터 결과 소모(패배→게임 오버) 경로를 가린다.
+    playBattle: async (cmd: { kind: string }) => {
       playBattleCalls.push(cmd.kind);
+      return "escape" as const;
     },
     setInputEnabled: (enabled: boolean) => {
       scene.inputEnabled = enabled;

@@ -98,6 +98,15 @@ async function applyOp(page, op) {
     case "seed":
       await page.evaluate((seed) => window.__oprnDebug.setSeed(seed), op.seed);
       return;
+    case "setVitals":
+      await page.evaluate(
+        ([hp, mp, actorIds]) => {
+          const ids = actorIds ?? window.__oprnDebug.readState().partyActorIds;
+          for (const actorId of ids) window.__oprnSetActorVitals(actorId, hp, mp);
+        },
+        [op.hp, op.mp ?? 0, op.actorIds ?? null],
+      );
+      return;
     case "teleport":
       await page.evaluate(
         ([mapId, x, y]) => window.__oprnDebug.teleport(mapId, x, y),
@@ -146,7 +155,13 @@ async function readObserved(page) {
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
     // 이 하네스의 목적(컨텍스트 절약)에 역행한다.
     const state = full
-      ? { currentMapId: full.currentMapId, x: full.x, y: full.y, gold: full.gold }
+      ? {
+          currentMapId: full.currentMapId,
+          x: full.x,
+          y: full.y,
+          gold: full.gold,
+          battleResult: full.battleResult ?? null,
+        }
       : null;
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
     return {
@@ -198,7 +213,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     route.fulfill({ status: 200, contentType: "application/json", body: projectJson }),
   );
 
-  await page.goto(`${opts.serverUrl}/player.html`, { waitUntil: "domcontentloaded" });
+  const query = new URLSearchParams(scenario.query ?? {}).toString();
+  const playerUrl = `${opts.serverUrl}/player.html${query ? `?${query}` : ""}`;
+  await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
 
   await rm(outDir, { recursive: true, force: true });

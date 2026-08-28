@@ -189,6 +189,14 @@ Evidence expectations:
   자명하다. 새 증거를 모으려면 30x30 마을 프로젝트(`editor-authored-demo-v3.json`, 시작 맵
   `ev_lantern_training` 이 (20,14))로 띄우면 뒤에 새는 타일이 눈에 보인다. RED/GREEN 실측은
   `.omo/evidence/battle-flash-map/` 에 있다.
+- 시나리오는 `query` 로 `player.html` 쿼리를 붙일 수 있다(예: `{ e2eVitals: "1" }` → 액터
+  바이탈 훅 `__oprnSetActorVitals` 개방). `setVitals` op 은 그 훅으로 파티 전원(또는
+  `actorIds`)의 HP/MP 를 세운다. `expect.battleResult` 는 `session.battleResult` 를 대조한다.
+- `battle-defeat` 시나리오가 전투 패배 → 게임 오버 결말의 실기 증거다. 파티를 HP 0 으로
+  만들어 전투 개시 시점에 `defeat` 을 확정시킨다 — **검증 대상이 전투 산식이 아니라 호스트의
+  패배 처리 경로**이기 때문이다. HP 1 로는 패배가 재현되지 않았다(`battleDamage.ts:175` 는
+  `power + floor(atk/2) - floor(def/2) <= 0` 이면 데미지 0 → 약한 적 앞에서 1 HP 파티가
+  무적이 되고, 실측에서 레벨 1 파티가 108HP 트룹을 이겨 `battleResult=victory` 가 찍혔다).
 
 함정 (전부 실측):
 - `vite.player.config.ts` 는 `publicDir: false` 다. 그대로 dev 서빙하면 번들 텍스처
@@ -202,8 +210,12 @@ Evidence expectations:
   dev 서버가 phaser 를 403 으로 막는다.** 올바른 일반화는 `realpathSync("./node_modules")`.
 - 고정 키 횟수로 대사를 소진하면 닫힌 뒤 남은 Enter 가 NPC 를 재발동시켜 선택지가 다시
   열린다. `pressUntil` op(매 입력 후 조건 확인)을 써라.
-- **같은 맵 안 `__oprnDebug.teleport` 는 상태만 바꾸고 플레이어 스프라이트를 옮기지 않는다**
-  (mapId 가 같으면 `loadMap` 미호출 — `playSceneTestHooks.ts`). 위치 지정에 못 쓴다.
+- **`__oprnDebug.teleport` 는 맵 비교를 세션 쓰기보다 먼저 해야 한다 (2026-08-28 수정).**
+  이전 구현은 `applyAndSync` 로 `session.currentMapId` 를 먼저 갈아치운 뒤
+  `getMapId() !== mapId` 를 비교해서 **`loadMap` 이 한 번도 호출되지 않았다** — 세션만 새 맵을
+  가리키고 화면은 옛 맵을 계속 그렸고, `expect.mapId` 는 세션 값을 읽으니 그 거짓말을 통과시켰다
+  (smoke 시나리오의 맵 전환 비트가 그 상태였다). 지금은 이전 mapId 를 캡처해 비교한다.
+  같은 맵 안 재배치는 여전히 스프라이트를 옮기지 않는다(`loadMap` 을 부를 이유가 없다).
 - `movement` 가 `fixed` 가 아닌 NPC 는 같은 세션 안에서 배회한다. 고정 좌표 인접을 전제한
   상호작용 비트는 취약하다.
 - `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
