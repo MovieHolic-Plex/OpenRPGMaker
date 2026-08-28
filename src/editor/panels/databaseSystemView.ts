@@ -1,6 +1,7 @@
 import {
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import {
   emptyToUndefined,
@@ -13,6 +14,14 @@ import {
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
+import {
+  DEFAULT_DODGE_IFRAMES_MS,
+  DEFAULT_DODGE_STAMINA_COST,
+  DEFAULT_GUARD_DAMAGE_REDUCTION_PERCENT,
+  DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC,
+  DEFAULT_PLAYER_IFRAMES_MS,
+  DEFAULT_SWING_COOLDOWN_MS,
+} from "@/project/actionCombat";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
@@ -34,6 +43,7 @@ import {
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
 import type {
+  ActionCombatHudConfig,
   ActorRecord,
   BattleFlow,
   Project,
@@ -58,6 +68,12 @@ import {
 import type { PlayResolution, SystemRecords } from "@/project/types";
 
 const START_PARTY_SLOTS = 4;
+
+const ENEMY_HP_BAR_OPTIONS: readonly { readonly id: string; readonly name: string }[] = [
+  { id: "damaged", name: "피해 입은 개체만" },
+  { id: "always", name: "항상" },
+  { id: "never", name: "숨김" },
+];
 /** 시작 파티 얼굴 칸 표시 크기(px). 낱장 얼굴 48px 을 그대로 담는다. */
 const START_PARTY_FACE_SIZE = 40;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
@@ -631,28 +647,7 @@ function optInSystemFields(project: Project, rerender: () => void): readonly HTM
   ];
 
   // 액션 전투 상세 필드 (활성일 때만)
-  if (system.actionCombat?.enabled === true) {
-    fields.push(
-      numberField("피격 무적(ms)", "db-field-system-action-combat-iframes", system.actionCombat.playerIframesMs ?? 800, (value) => {
-        updateSystem((draft) => {
-          draft.system.actionCombat ??= { enabled: true };
-          draft.system.actionCombat.playerIframesMs = value;
-        });
-      }),
-      numberField("스윙 쿨다운(ms)", "db-field-system-action-combat-swing-cooldown", system.actionCombat.swingCooldownMs ?? 350, (value) => {
-        updateSystem((draft) => {
-          draft.system.actionCombat ??= { enabled: true };
-          draft.system.actionCombat.swingCooldownMs = value;
-        });
-      }),
-      numberField("스윙 데미지 가산", "db-field-system-action-combat-swing-bonus", system.actionCombat.swingDamageBonus ?? 0, (value) => {
-        updateSystem((draft) => {
-          draft.system.actionCombat ??= { enabled: true };
-          draft.system.actionCombat.swingDamageBonus = value;
-        });
-      }),
-    );
-  }
+  if (system.actionCombat?.enabled === true) fields.push(...actionCombatDetailFields(system.actionCombat));
 
   // 몬스터 돌봄 number fields
   if (system.monsterCare) {
@@ -705,6 +700,89 @@ function optInSystemFields(project: Project, rerender: () => void): readonly HTM
   );
 
   void rerender;
+  return fields;
+}
+
+/**
+ * 액션 전투 상세 필드 — 숫자 경계는 project/actionCombat.ts 의 클램프와 1:1로 맞춘다.
+ * 기본값과 같은 편집은 키를 지운다(normalizeActionCombatConfig 과 같은 "기본값은 저장하지 않는다" 계약).
+ */
+function actionCombatDetailFields(config: NonNullable<SystemRecords["actionCombat"]>): HTMLElement[] {
+  const patchNumber = (
+    key: "playerIframesMs" | "swingCooldownMs" | "swingDamageBonus" | "dodgeStaminaCost" | "dodgeIframesMs" | "guardDamageReductionPercent" | "guardStaminaDrainPerSec",
+    fallback: number,
+    value: number,
+  ): void => {
+    updateSystem((draft) => {
+      draft.system.actionCombat ??= { enabled: true };
+      if (value === fallback) delete draft.system.actionCombat[key];
+      else draft.system.actionCombat[key] = value;
+    }, `system:action-combat-${key}`);
+  };
+  const patchHud = (mutate: (hud: ActionCombatHudConfig) => void): void => {
+    updateSystem((draft) => {
+      draft.system.actionCombat ??= { enabled: true };
+      const hud: ActionCombatHudConfig = { ...(draft.system.actionCombat.hud ?? {}) };
+      mutate(hud);
+      if (hud.hearts === true) delete hud.hearts;
+      if (hud.stamina === false) delete hud.stamina;
+      if (hud.enemyHpBars === "damaged") delete hud.enemyHpBars;
+      if (Object.keys(hud).length > 0) draft.system.actionCombat.hud = hud;
+      else delete draft.system.actionCombat.hud;
+    });
+  };
+  const numeric: readonly {
+    readonly label: string;
+    readonly testid: string;
+    readonly key: "playerIframesMs" | "swingCooldownMs" | "swingDamageBonus" | "dodgeStaminaCost" | "dodgeIframesMs" | "guardDamageReductionPercent" | "guardStaminaDrainPerSec";
+    readonly fallback: number;
+    readonly min: number;
+    readonly max: number;
+  }[] = [
+    { label: "피격 무적(ms)", testid: "db-field-system-action-combat-iframes", key: "playerIframesMs", fallback: DEFAULT_PLAYER_IFRAMES_MS, min: 0, max: 10000 },
+    { label: "스윙 쿨다운(ms)", testid: "db-field-system-action-combat-swing-cooldown", key: "swingCooldownMs", fallback: DEFAULT_SWING_COOLDOWN_MS, min: 50, max: 5000 },
+    { label: "스윙 데미지 가산", testid: "db-field-system-action-combat-swing-bonus", key: "swingDamageBonus", fallback: 0, min: 0, max: 9999 },
+    { label: "회피 스태미나 비용", testid: "db-field-system-action-combat-dodge-stamina-cost", key: "dodgeStaminaCost", fallback: DEFAULT_DODGE_STAMINA_COST, min: 0, max: 100 },
+    { label: "회피 무적(ms)", testid: "db-field-system-action-combat-dodge-iframes", key: "dodgeIframesMs", fallback: DEFAULT_DODGE_IFRAMES_MS, min: 0, max: 3000 },
+    { label: "가드 피해 감소(%)", testid: "db-field-system-action-combat-guard-reduction", key: "guardDamageReductionPercent", fallback: DEFAULT_GUARD_DAMAGE_REDUCTION_PERCENT, min: 0, max: GUARD_MAX_DAMAGE_REDUCTION_PERCENT },
+    { label: "가드 스태미나/초", testid: "db-field-system-action-combat-guard-drain", key: "guardStaminaDrainPerSec", fallback: DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC, min: 0, max: 100 },
+  ];
+  const fields: HTMLElement[] = numeric.map((spec) =>
+    numberField(spec.label, spec.testid, config[spec.key] ?? spec.fallback, (value) => patchNumber(spec.key, spec.fallback, value), {
+      min: spec.min,
+      max: spec.max,
+    }),
+  );
+  fields.push(
+    checkboxField("4방향 이동", "db-field-system-action-combat-four-way", config.fourWayMovement === true, (checked) => {
+      updateSystem((draft) => {
+        draft.system.actionCombat ??= { enabled: true };
+        if (checked) draft.system.actionCombat.fourWayMovement = true;
+        else delete draft.system.actionCombat.fourWayMovement;
+      });
+    }),
+    checkboxField("HUD 하트 바", "db-field-system-action-combat-hud-hearts", config.hud?.hearts !== false, (checked) => {
+      patchHud((hud) => {
+        hud.hearts = checked;
+      });
+    }),
+    checkboxField("HUD 스태미나 바", "db-field-system-action-combat-hud-stamina", config.hud?.stamina === true, (checked) => {
+      patchHud((hud) => {
+        hud.stamina = checked;
+      });
+    }),
+    selectField(
+      "몬스터 HP 바",
+      "db-field-system-action-combat-hud-enemy-hp-bars",
+      config.hud?.enemyHpBars ?? "damaged",
+      ENEMY_HP_BAR_OPTIONS,
+      (value) => {
+        patchHud((hud) => {
+          hud.enemyHpBars = value as NonNullable<ActionCombatHudConfig["enemyHpBars"]>;
+        });
+      },
+    ),
+  );
   return fields;
 }
 

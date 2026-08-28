@@ -14,6 +14,7 @@ import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { actorDerivedStats } from "@/battle/battleBattlers";
 import { normalizeActorRecord } from "@/project/actorModel";
+import { DEFAULT_SWING_COOLDOWN_MS, DEFAULT_SWING_RANGE } from "@/project/actionCombat";
 import {
   effectiveActorEquipment,
   logicalEquipmentIds,
@@ -22,7 +23,7 @@ import {
 } from "@/project/equipmentRules";
 import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
-import type { ActorInitialEquipment, EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags, Project } from "@/project/types";
+import type { ActionWeaponProfile, ActorInitialEquipment, EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
 type CheckboxFieldInput = {
@@ -292,8 +293,55 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
         updateDatabaseRecord("equipment", record.id, { cursed });
         refreshOverview();
       }),
-    ])
+    ]),
+    actionWeaponPanel(record)
   );
+}
+
+/** 상위 panel() 은 gridClass 만 받는다 — 패널 자습을 testid 로 집어야 하므로 dataset 을 여기서 달아 준다. */
+function actionWeaponPanel(record: EquipmentRecord): HTMLElement {
+  const node = panel("액션 전투 스윙", actionWeaponFields(record), "db-equipment-panel-action-weapon");
+  node.dataset.testid = "db-equipment-panel-action-weapon";
+  return node;
+}
+/**
+ * ActionWeaponProfile 편집 — 경계는 normalizeActionWeaponProfile 의 클램과 1:1.
+ * 기본값(시스템 기본 reach 1 / 스윙 쿨다운 350 / 가산 0)은 생략해 저장을 부품리지 않는다.
+ */
+function actionWeaponFields(record: EquipmentRecord): HTMLElement[] {
+  const profile = record.actionWeapon;
+  const patch = (key: keyof ActionWeaponProfile, fallback: number, value: number): void => {
+    // 폼 전역 재렌더 없이 연속 편집해도 이전 필드가 사라지지 않도록 살아 있는 레코드를 읽는다.
+    const next: ActionWeaponProfile = { ...(currentEquipment(record).actionWeapon ?? {}) };
+    if (value === fallback) delete next[key];
+    else next[key] = value;
+    updateDatabaseRecord("equipment", record.id, {
+      actionWeapon: Object.keys(next).length > 0 ? next : undefined,
+    });
+  };
+  return [
+    numberField(
+      "스윙 범위",
+      "db-field-equipment-action-weapon-swing-range",
+      profile?.swingRange ?? DEFAULT_SWING_RANGE,
+      (value) => patch("swingRange", DEFAULT_SWING_RANGE, value),
+      { min: 1, max: 5 },
+    ),
+    numberField(
+      "쿨다운(ms)",
+      "db-field-equipment-action-weapon-swing-cooldown",
+      profile?.swingCooldownMs ?? DEFAULT_SWING_COOLDOWN_MS,
+      (value) => patch("swingCooldownMs", DEFAULT_SWING_COOLDOWN_MS, value),
+      { min: 50, max: 5000 },
+    ),
+    numberField(
+      "데미지 가산",
+      "db-field-equipment-action-weapon-swing-bonus",
+      profile?.swingDamageBonus ?? 0,
+      (value) => patch("swingDamageBonus", 0, value),
+      { min: 0, max: 9999 },
+    ),
+  ];
 }
 
 function equipmentSpecStrip(record: EquipmentRecord): HTMLElement {

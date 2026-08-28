@@ -48,6 +48,8 @@ export type AutonomousMover = {
   sightRange?: number;
   giveUpRange?: number;
   pathfind?: boolean;
+  /** 원거리 적의 거리 유지 밴드(액션 전투 상태기가 심는다). */
+  kite?: import("@/battle/action/kiting").KiteBand;
   chaseRepathTimerMs?: number;
   chasePath?: { readonly x: number; readonly y: number }[];
   chaseActive?: boolean;

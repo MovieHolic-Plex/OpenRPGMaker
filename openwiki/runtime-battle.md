@@ -1,6 +1,8 @@
 # Runtime Battle Behavior
 
-Battle rules, turn flow, damage, rewards, battle events, snapshots, monster collection, and action combat.
+Battle rules, turn flow, damage, rewards, battle events, snapshots, monster collection, and Gen 1 rules.
+
+For real-time action combat on action maps (`system.actionCombat` + `map.actionCombat`), see **`openwiki/runtime-action-combat.md`**.
 
 ## Roguelike run boundary (2026-08-24)
 
