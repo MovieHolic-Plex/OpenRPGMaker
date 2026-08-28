@@ -1,51 +1,18 @@
-// 감독 크롬 — 낱장 얼굴 플레이트 + 48px 복귀 얼굴.
+// 감독 크롬 — 접힌 조수를 되살리는 복귀 버튼 하나뿐이다.
+//
+// 2026-08-28 감독 지시로 **얼굴과 헤더를 폐기**했다. 이전에는 여기서 48px 페이스셋
+// (easyrpg-faceset-actor1-00) 을 잘라 헤더 명패(`.ai-director-plate` = 얼굴 + "조수" +
+// 존재 줄)와 복귀 버튼 양쪽에 심었다. 실측(verify-shots/assistant-glass/before/metrics.json):
+// 헤더가 518×73px 을 먹으면서 그 안의 48px 얼굴판이 패널 높이 620px 의 12% 를 크롬으로
+// 가져갔고, 그 크롬이 담은 실기능은 ☰ 와 ▾ 단 두 개였다. 조수는 이제 얼굴 없이
+// 헤더 없는 유리면 하나로 간다.
+//
+// 복귀 버튼에 이름을 남기는 이유: 접힌 상태에서 이것이 유일한 펼치기 타깃이라
+// 라벨이 없으면 무엇을 여는 점인지 알 수 없다. 얼굴이 아니라 글자다.
 
-import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { editorState } from "@/editor/editorState";
-import { store } from "@/project/store";
 import { el } from "@/util/dom";
-import { idlePresenceLine, readAgentBrief } from "./aiAgentBrief";
 
-const DIRECTOR_FACE_RESOURCE_ID = "easyrpg-faceset-actor1-00";
 const DIRECTOR_NAME = "조수";
-const DIRECTOR_RESTORE_LABEL = "조수";
-const DIRECTOR_FACE_SIZE_PX = FACE_IMAGE_SIZE;
-
-export type DirectorPlateHandle = {
-  readonly element: HTMLElement;
-  readonly setName: (name: string) => void;
-  readonly setLine: (line: string | null) => void;
-  readonly dispose: () => void;
-};
-
-type DirectorFaceOptions = {
-  readonly ariaLabel?: string;
-  readonly testid?: string;
-};
-
-function applyDirectorFace(face: HTMLElement): void {
-  face.style.width = `${DIRECTOR_FACE_SIZE_PX}px`;
-  face.style.height = `${DIRECTOR_FACE_SIZE_PX}px`;
-  const faceUrl = resolveAssetResourceUrl(DIRECTOR_FACE_RESOURCE_ID, { project: store.getCurrent() });
-  if (faceUrl === null) return;
-  face.style.backgroundImage = `url("${faceUrl}")`;
-  face.style.backgroundPosition = "center";
-  face.style.backgroundSize = `${DIRECTOR_FACE_SIZE_PX}px ${DIRECTOR_FACE_SIZE_PX}px`;
-}
-
-export function createAssistantFace(options: DirectorFaceOptions = {}): HTMLElement {
-  const ariaLabel = options.ariaLabel;
-  const face = el("span", {
-    class: "ai-director-face",
-    attrs: ariaLabel === undefined
-      ? { "aria-hidden": "true" }
-      : { role: "img", "aria-label": ariaLabel },
-    ...(options.testid === undefined ? {} : { dataset: { testid: options.testid } }),
-  });
-  applyDirectorFace(face);
-  return face;
-}
 
 export function createDirectorRestoreButton(): HTMLButtonElement {
   return el("button", {
@@ -53,60 +20,12 @@ export function createDirectorRestoreButton(): HTMLButtonElement {
     attrs: {
       type: "button",
       title: "조수 열기",
-      "aria-label": DIRECTOR_RESTORE_LABEL,
+      "aria-label": DIRECTOR_NAME,
     },
     dataset: { testid: "ai-collapsed-restore" },
     children: [
       el("span", { class: "ai-collapsed-restore-dot", attrs: { "aria-hidden": "true" } }),
-      createAssistantFace(),
       el("span", { class: "ai-collapsed-restore-name", text: DIRECTOR_NAME }),
     ],
   }) as HTMLButtonElement;
 }
-
-export function createDirectorPlate(): DirectorPlateHandle {
-  const face = createAssistantFace({
-    ariaLabel: DIRECTOR_NAME,
-    testid: "ai-director-face",
-  });
-
-  const name = el("h2", { class: "ai-director-name", text: DIRECTOR_NAME });
-  const line = el("p", {
-    class: "ai-director-line",
-    dataset: { testid: "ai-director-line" },
-    text: idlePresenceLine(readAgentBrief()),
-  });
-  const element = el("div", {
-    class: "ai-director-plate",
-    dataset: { testid: "ai-director-plate" },
-    children: [
-      face,
-      el("div", { class: "ai-director-copy", children: [name, line] }),
-    ],
-  });
-
-  let override: string | null = null;
-  const refreshLine = (): void => {
-    if (typeof document === "undefined") return;
-    line.textContent = override ?? idlePresenceLine(readAgentBrief());
-  };
-  const unsubscribeEditor = editorState.subscribe(refreshLine);
-  const unsubscribeStore = store.subscribe(refreshLine);
-
-  return {
-    element,
-    setName: (nextName: string) => {
-      name.textContent = nextName;
-      face.setAttribute("aria-label", nextName);
-    },
-    setLine: (nextLine: string | null) => {
-      override = nextLine;
-      refreshLine();
-    },
-    dispose: () => {
-      unsubscribeEditor();
-      unsubscribeStore();
-    },
-  };
-}
-

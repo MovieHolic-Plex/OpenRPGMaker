@@ -11,11 +11,6 @@
   user-select: none;
   white-space: nowrap;
 }
-.ai-header-actions {
-  align-items: center;
-  display: flex;
-  gap: 4px;
-}
 /* ???≪뀡 議? ?낅젰李?諛붾줈 ??怨좎젙 ??寃곗젙???꾩슂??移대뱶留? 鍮꾨㈃ ?듭㎏濡??④릿?? */
 .ai-action-zone:empty {
   display: none;
@@ -44,11 +39,6 @@
 .ai-chat-panel.is-docked .ai-dock-resizer:hover {
   background: var(--accent-border, var(--accent));
   opacity: 0.5;
-}
-.ai-chat-header .ai-assistant-status {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
 }
 .ai-abort-button {
   border-color: var(--danger, #d85c5c);
@@ -124,7 +114,6 @@
   min-width: 0;
   width: auto;
 }
-.ai-chat-panel.is-collapsed > .ai-chat-header,
 .ai-chat-panel.is-collapsed > .ai-chat-toolbar,
 .ai-chat-panel.is-collapsed > .ai-chat-body,
 .ai-chat-panel.is-collapsed > .ai-chat-resize-handle {
@@ -147,10 +136,6 @@
   padding: 0;
   position: relative;
   width: 48px;
-}
-.ai-collapsed-restore .ai-director-face {
-  border: none;
-  flex: none;
 }
 .ai-chat-panel.is-collapsed > .ai-collapsed-restore {
   display: flex;

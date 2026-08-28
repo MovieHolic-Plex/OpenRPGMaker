@@ -37,7 +37,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   width: auto;
 }
 
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-header,
 .ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-toolbar,
 .ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-body,
 .ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-resize-handle,
@@ -141,13 +140,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 .ai-chat-icon-btn:focus-visible {
   background: var(--bg-raised);
   border-color: var(--accent-border);
-}
-
-.ai-header-actions {
-  align-items: center;
-  display: inline-flex;
-  gap: 4px;
-  margin-left: auto;
 }
 
 .ai-more-wrap {

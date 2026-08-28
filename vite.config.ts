@@ -383,8 +383,19 @@ export default defineConfig(({ mode }) => {
     fs: {
       // 워크트리에서 node_modules 를 정션(mklink /J)으로 쓰면 @fs 실경로가 원본 저장소의
       // node_modules 로 풀린다 — 기본 allow(워크스페이스 루트)만으로는 403. 그 경로만 추가 허용.
+      //
+      // `../rpg-zzu/node_modules` 만으로는 부족하다: 그 상대경로는 워크트리가 원본의 **형제**일
+      // 때만 맞는다(scripts/agent-worktree.mjs 배치). Claude Code 의 워크트리는
+      // `<repo>/.claude/worktrees/<name>` 에 생기므로 `../rpg-zzu/...` 가 빗나가고, phaser.min.js
+      // 가 403 으로 막혀 Phaser 가 뜨지 않는다 — 편집기 캔버스가 빈 DIV 로 남는 증상
+      // (2026-08-28 실측: `403 /@fs/.../node_modules/phaser/dist/phaser.min.js`).
+      // 그래서 배치를 가정하지 않고 **로컬 `./node_modules` 의 실경로**를 직접 넣는다.
       allow: (() => {
-        const roots = [fileURLToPath(new URL("./", import.meta.url)), fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url))];
+        const roots = [
+          fileURLToPath(new URL("./", import.meta.url)),
+          fileURLToPath(new URL("./node_modules", import.meta.url)),
+          fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url)),
+        ];
         for (const root of [...roots]) {
           try {
             const real = realpathSync(root);

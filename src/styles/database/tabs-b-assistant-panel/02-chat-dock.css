@@ -222,7 +222,6 @@
 
 /* 입력창만 보기: 대기 중에는 맵을 가리는 카드 본문을 접되, 하단 ⋯ 메뉴로 언제든
    다른 대기 화면을 고를 수 있게 한다. */
-.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-header,
 .ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-body,
 .ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-toolbar,
 .ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-resize-handle {
@@ -269,7 +268,6 @@
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-command-bar,
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-proposal-pin-host,
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-rising-overlay,
-.ai-chat-panel.chat-dock-glass.is-collapsed > .ai-chat-header,
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-chat-body {
   display: none;
 }
@@ -290,7 +288,6 @@
   /* dock 전환에 opacity/transform 애니메이션을 걸지 않는다 — 레이아웃 흔들림 방지. */
 }
 
-.ai-chat-panel.chat-dock-side .ai-chat-header,
 .ai-chat-panel.chat-dock-side .ai-chat-toolbar {
   flex: 0 0 auto;
 }
@@ -306,21 +303,6 @@
 body:has(.database-modal-backdrop) .ai-chat-panel,
 body:has([data-testid='resource-modal']) .ai-chat-panel {
   display: none;
-}
-.ai-chat-header {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-  justify-content: space-between;
-  min-height: 40px;
-}
-.ai-chat-header h2 {
-  color: var(--text-1);
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.2;
-  margin: 0;
-  user-select: none;
 }
 .ai-status-group {
   align-items: center;

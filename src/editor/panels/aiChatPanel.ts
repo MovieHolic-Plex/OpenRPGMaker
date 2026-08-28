@@ -78,7 +78,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
-import { createDirectorPlate, createDirectorRestoreButton } from "./aiDirectorChrome";
+import { createDirectorRestoreButton } from "./aiDirectorChrome";
 // queueController extracted for future use — reserved (aiQueueController.ts).
 import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
@@ -1862,8 +1862,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }) as HTMLButtonElement;
   const collapsedRestore = createDirectorRestoreButton();
 
-  const directorPlate = createDirectorPlate();
-  // 1차 크롬: ＋ 새 대화 · ☰ 더보기 · 접기. AI 설정은 앱 헤더가 단독 소유한다.
+  // 1차 크롬은 없다 — 얼굴 명패(createDirectorPlate)와 헤더는 폐기됐다.
   const openToolsBrowser = (): void => {
     void openToolBrowserModal();
   };
@@ -2067,7 +2066,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applyDockModeChrome = (mode: ChatDock): void => {
     const actionLabel = nextChatDockActionLabel(mode);
     const nextHint = chatDockHint(mode);
-    directorPlate.setName("조수");
     dockModeButton.textContent = actionLabel;
     dockModeButton.dataset.dockMode = mode;
     dockModeButton.setAttribute("title", nextHint);
@@ -2238,20 +2236,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [moreMenuToggle, moreMenu],
   });
 
-  const header = el("div", {
-    class: "ai-chat-header",
-    children: [
-      el("div", {
-        class: "ai-header-title-row",
-        children: [directorPlate.element],
-      }),
-      el("span", {
-        class: "ai-header-actions",
-        children: [newSessionButton, dockModeButton, detachButton, moreWrap],
-      }),
-      collapseButton,
-    ],
-  });
+  // 헤더는 없다 (2026-08-28 감독 지시). `.ai-chat-header` 밴드와 그 안의 얼굴 명패를
+  // 통째로 걷었다 — 실측 518×73px 이 담고 있던 실기능은 ☰ 와 ▾ 뿐이었다.
+  // 남은 버튼들은 아래 숨은 훅 컨테이너(`ai-chat-toolbar`)로 옮긴다. 화면에는 없고
+  // (hidden + inert + display:none) 접기 상태 기계와 테스트 계약만 살아 있다.
+  // 감독 판단: 이 진입점들(더보기 9종·새 대화·도크·떼기)의 소실은 수용됨.
   // 숨은 훅 컨테이너(화면에 안 보임: hidden + inert + CSS display:none).
   // "죽은 버튼" 이 아니다 — 실측(2026-08-22) 결과 여기 담긴 9개 중 8개는 테스트가 직접
   // 참조하고(ai-tools-browser 3파일 · ai-studio-toggle 3 · ai-dock-toggle 3 ·
@@ -2262,7 +2251,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-toolbar is-empty",
     dataset: { testid: "ai-chat-toolbar" },
     attrs: { hidden: "" },
-    children: [toolsButton, harnessButton, studioButton, historyButton, dockToggleButton, exportButton, undoLastButton, fontButton],
+    children: [
+      toolsButton, harnessButton, studioButton, historyButton, dockToggleButton, exportButton, undoLastButton, fontButton,
+      // 구 헤더 잔류물. 화면에서는 사라졌지만 접기 토글은 `collapsedRestore` 의 짝이라
+      // 상태 기계가 계속 필요로 하고, 나머지는 테스트가 직접 click() 으로 참조한다.
+      collapseButton, newSessionButton, dockModeButton, detachButton, moreWrap,
+    ],
   });
   toolbar.inert = true;
 
@@ -2336,7 +2330,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       temperature: readTemperature(),
       aiConversation: "empty",
     },
-    children: [header, toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
+    children: [toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
   });
   panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
@@ -2931,7 +2925,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     completionStripHandle = null;
     commandBarClearanceObserver?.disconnect();
     composerShell.dispose();
-    directorPlate.dispose();
 
     if (typeof window !== "undefined") {
       window.removeEventListener("resize", onViewportResize);
