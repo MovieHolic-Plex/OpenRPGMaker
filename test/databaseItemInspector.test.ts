@@ -309,6 +309,58 @@ describe("database item inspector form", () => {
     expect(findByTestId(secondForm, "db-items-special-panel")).not.toBeNull();
   });
 
+  // Break caught: 같은 record.scope 를 쓰는 컨트롤이 한 화면에 둘(수치 카드의 "범위"
+  // 셀렉트 + 대상 세그먼트) 있으면 한쪽을 바꿔도 다른 쪽은 재렌더 전까지 옛 값을 보여준다
+  // — 장비 부위(slot) 중복 P0 와 같은 모양이다.
+  it("draws exactly one scope control per item type", () => {
+    // 픽스처 item[0] 은 약 계열 — 2지 세그먼트가 권위자다.
+    const medicineForm = renderForm();
+    expect(findByTestId(medicineForm, "db-field-item-scope")).not.toBeNull();
+    expect(findByTestId(medicineForm, "db-field-scope")).toBeNull();
+
+    updateDatabaseRecord("items", firstItem().id, { type: "normalGoods" });
+    const goodsForm = renderForm();
+    expect(findByTestId(goodsForm, "db-field-scope")).not.toBeNull();
+    expect(findByTestId(goodsForm, "db-field-item-scope")).toBeNull();
+  });
+
+  // Break caught: "사용 가능" 카드가 약/책/씨앗/특수 패널에 각각 복제돼 있어 종류를 바꿀
+  // 때마다 같은 카드가 다른 자리에 나타났다. 이제 한 장이 위계상 "사용 제한" 구역을 소유한다.
+  it("renders one shared usable card placed under the limits section", () => {
+    const form = renderForm();
+    expect(form.querySelectorAll("[data-testid='db-item-card-usable']")).toHaveLength(1);
+    const order = workbenchTestids(form);
+    expect(order.indexOf("db-item-section-limits")).toBeLessThan(order.indexOf("db-item-card-usable"));
+  });
+
+  // Break caught: 카드가 오름차순으로 쌓이면 그래픽 카드가 효과 카드 사이에 끼고, 가격·포획
+  // 배율·연결 스킬이 "수치" 한 장에 섞여 이름이 내용을 설명하지 못한다.
+  it("orders workbench cards as summary → definition → effect → limits", () => {
+    expect(workbenchTestids(renderForm())).toEqual([
+      "db-item-card-story",
+      "db-item-section-definition",
+      "db-item-card-basics",
+      "db-item-card-graphic",
+      "db-item-section-effect",
+      "db-item-card-targeting",
+      "db-items-medicine-panel",
+      "db-item-card-skill",
+      "db-item-section-limits",
+      "db-item-card-usable",
+      "db-item-card-capture",
+      "db-field-support-notice",
+    ]);
+  });
+
+  // 가격은 "수치" 대신 정의(기본) 카드가 소유한다. 종류를 바꿔도 사라지지 않아야 한다.
+  it("keeps price, consumption limit and farm tool inside the basics card", () => {
+    const basics = byTestId(renderForm(), "db-item-card-basics");
+    expect(findByTestId(basics, "db-field-price")).not.toBeNull();
+    expect(findByTestId(basics, "db-field-item-type")).not.toBeNull();
+    expect(findByTestId(basics, "db-field-item-consumption-limit")).not.toBeNull();
+    expect(findByTestId(basics, "db-field-item-farm-tool")).not.toBeNull();
+  });
+
   it("weapon type shows an equipment-tab door instead of the legacy equipment form", () => {
     updateDatabaseRecord("items", firstItem().id, { type: "weapon" });
     const form = document.createElement("section") as unknown as FakeElement;
@@ -354,6 +406,13 @@ function renderForm(rerender: () => void = () => undefined): FakeElement {
   const form = document.createElement("section") as unknown as FakeElement;
   renderItemRecordForm(form as unknown as HTMLElement, currentItem(), rerender);
   return form;
+}
+
+/** 워크벤치 격자의 직계 자식 testid 순서 = 화면에서 읽히는 카드 순서. */
+function workbenchTestids(form: FakeElement): string[] {
+  const workbench = findByTestId(form, "db-items-oprn-workbench");
+  if (!workbench) throw new Error("missing db-items-oprn-workbench");
+  return workbench.children.map((child) => child.dataset.testid).filter((testid): testid is string => Boolean(testid));
 }
 
 function currentItem(): ItemRecord {
