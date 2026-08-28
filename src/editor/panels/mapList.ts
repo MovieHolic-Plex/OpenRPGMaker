@@ -114,9 +114,9 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
         class: "map-tree-action",
         attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
         dataset: { testid: "map-tree-filter-toggle" },
-        children: [el("span", { class: "rm-tool-icon oprn-icon-search", attrs: { "aria-hidden": "true" } })],
+        children: [el("span", { class: "rm-tool-icon oprn-icon-map-search", attrs: { "aria-hidden": "true" } })],
         on: {
-          click: () => { filterExpandedByUser = !filterExpandedByUser; rerenderMapList(); },
+          click: () => toggleMapFilterExpansion(),
         },
       }));
     }
@@ -186,6 +186,19 @@ function isFilterExpanded(mapCount: number): boolean {
  *  죽어 있던 것과 같은 결함 형태 — 이번엔 아예 렌더하지 않는 쪽으로 막는다). */
 function canToggleMapFilter(mapCount: number): boolean {
   return !hasActiveMapFilter() && mapCount < FILTER_AUTO_EXPAND_MAPS;
+}
+
+/** 전문가 헤더 토글과 초보 플라이아웃 토글이 공유하는 동작. 마크업(치장된
+ *  `treeAction` vs 맨 `el("button")`)은 서로 다르지만 상태 전이는 하나뿐이라 —
+ *  두 곳에서 따로 구현하면(과거처럼) 한쪽만 펼친 뒤 입력에 포커스를 주는
+ *  드리프트가 생긴다. 접는 클릭에서는 필터 입력이 곧바로 hidden 이 되어
+ *  `.focus()` 가 조용히 no-op 이 되므로 펼침/접힘을 분기할 필요가 없다. */
+function toggleMapFilterExpansion(): void {
+  filterExpandedByUser = !filterExpandedByUser;
+  rerenderMapList();
+  currentMapListContainer
+    ?.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]')
+    ?.focus();
 }
 
 function makeFilterField(mapCount: number): HTMLElement {
@@ -633,15 +646,9 @@ function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElem
     class: "map-tree-header-actions",
     children: [
       ...(canToggleMapFilter(mapCount) ? [treeAction({
-        action: () => {
-          filterExpandedByUser = !filterExpandedByUser;
-          rerenderMapList();
-          currentMapListContainer
-            ?.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]')
-            ?.focus();
-        },
+        action: () => toggleMapFilterExpansion(),
         ariaExpanded: isFilterExpanded(mapCount),
-        icon: "search",
+        icon: "map-search",
         label: "맵 필터",
         testId: "map-tree-filter-toggle",
       })] : []),

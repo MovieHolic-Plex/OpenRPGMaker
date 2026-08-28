@@ -186,6 +186,20 @@ describe("map tree panel", () => {
     expect(host.querySelector('[data-testid="map-tree-filter"]')?.closest(".map-tree-filter")?.getAttribute("hidden")).toBeNull();
   });
 
+  it("초보 플라이아웃 필터 토글도 펼친 뒤 입력에 포커스를 준다(전문가 헤더와 동일 동작)", () => {
+    // Break: 전문가 헤더 토글은 펼친 뒤 필터 입력에 포커스를 주지만 플라이아웃 토글은
+    // 별도 구현이라 포커스를 주지 않았다(리뷰 Finding — 두 구현이 드리프트). 이제
+    // 둘 다 toggleMapFilterExpansion() 하나를 공유한다.
+    const host = document.createElement("div");
+    renderMapList(host, { variant: "basic" });
+    const toggle = host.querySelector<HTMLElement>('[data-testid="map-tree-filter-toggle"]');
+    expect(toggle).not.toBeNull();
+    toggle?.click();
+    const filterInput = host.querySelector<HTMLElement>('[data-testid="map-tree-filter"]');
+    expect(filterInput).not.toBeNull();
+    expect(document.activeElement).toBe(filterInput);
+  });
+
   it("맵이 8개 이상이면 토글 없이 필터가 처음부터 펼쳐진다", () => {
     const project = createBlankProject();
     for (let i = 0; i < 7; i += 1) {
