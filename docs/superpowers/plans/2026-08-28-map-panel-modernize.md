@@ -202,7 +202,9 @@ sed -n '1,40p' src/styles/components/icons.css
 
 - [ ] **Step 2: 글리프 3개를 추가한다**
 
-`src/styles/components/icons.css` 끝에 추가한다. 값은 기존 글리프와 같은 좌표계(부모 `.rm-tool-icon` 이 `position:relative`, 14×14 기준)를 쓴다.
+`src/styles/components/icons.css` 끝에 추가한다.
+
+**좌표계 (pre-flight 에서 실측 정정):** 부모 `.rm-tool-icon` 은 `map/resource-system.part-1.css:716` 에서 `display:block; width:16px; height:16px; position:relative` 이고, `::before`/`::after` 는 이미 `content:""; display:block` 을 공유 규칙에서 받는다. 아래 값은 **16×16 안에서의 비율 힌트**이며, 최종 수치는 브라우저에서 눈으로 확인하고 중앙에 맞춘 값으로 정한다.
 
 ```css
 /* 맵 트리 헤더 — 전체 펼치기/접기. mapList.ts 가 요구하지만 정의가 없어 빈 버튼이었다. */
@@ -1174,10 +1176,13 @@ git commit -m "feat(map): 헤더 제목과 개수를 분리하고 폴더 아이�
 - Modify: `src/editor/panels/mapList.ts` (`makeFilterField`, `renderMapList`)
 - Modify: `src/styles/editor/map-panel.modern.css`
 - Test: `test/mapList.test.ts`, `test/e2e/map-panel-modern.spec.ts`
+- Test: `test/e2e/_map-tree-ux-shots.spec.ts:18` — 기본 접힘 때문에 깨지므로 함께 고친다 (Step 7 참조)
 
 **Interfaces:**
 - Consumes: Task 8 의 `h3 > .map-tree-title + .map-tree-count` 구조
 - Produces: 신규 testid `map-tree-filter-toggle`. 모듈 스코프 변수 `filterExpandedByUser: boolean`.
+
+**알려진 충돌 (pre-flight 에서 판정됨):** `test/e2e/_map-tree-ux-shots.spec.ts` 는 `freshProject`(맵 1개)에서 `expect(page.getByTestId("map-tree-filter")).toBeVisible()`(18행)를 단언하고 35·37행이 `.fill()` 한다. 기본 접힘이면 `hidden` → `display:none` → 세 줄 모두 깨진다. **접힘을 유지하고 그 스펙을 고친다.** 아래 Step 7 에 절차가 있다.
 
 - [ ] **Step 1: 실패하는 단위 테스트를 쓴다**
 
@@ -1349,7 +1354,27 @@ test.describe("맵 필터 점진적 노출", () => {
 .map-tree-panel .map-tree-filter[hidden] { display: none; }
 ```
 
-- [ ] **Step 7: 검증**
+- [ ] **Step 7: 기본 접힘 때문에 깨지는 진단 스펙을 고친다**
+
+`test/e2e/_map-tree-ux-shots.spec.ts` 는 맵 1개짜리 `freshProject` 에서 필터가 보인다고 단언한다. 이제 접히므로 먼저 연다. 18행을 다음으로 바꾼다.
+
+```ts
+  await page.getByTestId("map-tree-filter-toggle").click();
+  await expect(page.getByTestId("map-tree-filter")).toBeVisible();
+```
+
+35·37행의 `.fill()` 은 그대로 둔다 — 위에서 열어 두었으므로 동작한다.
+
+이 스펙은 `_` 접두라 기본 스위트에서 제외되므로, 명시적으로 지목해 돌린다.
+
+Run:
+```bash
+npx playwright test test/e2e/_map-tree-ux-shots.spec.ts --reporter=line
+```
+
+Expected: PASS.
+
+- [ ] **Step 8: 검증**
 
 Run:
 ```bash
@@ -1360,10 +1385,10 @@ npx playwright test test/e2e/map-panel-modern.spec.ts --reporter=line
 
 Expected: 전부 PASS. `기존 testid 가 모두 살아 있다` 테스트가 `map-tree-filter` 를 `toHaveCount(1)` 로 확인하는데, `hidden` 이어도 DOM 에 있으므로 통과한다.
 
-- [ ] **Step 8: 커밋**
+- [ ] **Step 9: 커밋**
 
 ```bash
-git add src/editor/panels/mapList.ts src/styles/editor/map-panel.modern.css test/mapList.test.ts test/e2e/map-panel-modern.spec.ts
+git add src/editor/panels/mapList.ts src/styles/editor/map-panel.modern.css test/mapList.test.ts test/e2e/map-panel-modern.spec.ts test/e2e/_map-tree-ux-shots.spec.ts
 git commit -m "feat(map): 맵이 적을 때 필터 크롬을 접고 활성 시엔 강제로 펼친다"
 ```
 
