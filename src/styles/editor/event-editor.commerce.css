@@ -1035,10 +1035,60 @@
   padding: 4px 8px 8px;
   background: var(--bg-raised);
 }
-.shop-processing-catalog-fold-summary {
+
+/* 접이식 머리 버튼. <details>/<summary> 를 쓰지 않는 이유는 commandBodyCommerce.ts 주석 참고 —
+   UA 의 ::details-content 익명 블록이 안쪽 flex 스크롤러를 무력화한다. */
+.shop-processing-catalog-summary,
+.shop-processing-detail-summary {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
   cursor: pointer;
-  font-weight: 600;
+  display: flex;
+  font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 6px;
   padding: 6px 2px;
+  text-align: left;
+  width: 100%;
+}
+
+.shop-processing-catalog-summary::before,
+.shop-processing-detail-summary::before {
+  content: "▸";
+  display: inline-block;
+  flex: 0 0 auto;
+  transition: transform 120ms ease;
+}
+
+.shop-processing-catalog-fold.is-open > .shop-processing-catalog-summary::before,
+.shop-processing-detail-fold.is-open > .shop-processing-detail-summary::before {
+  transform: rotate(90deg);
+}
+
+.shop-processing-catalog-summary:focus-visible,
+.shop-processing-detail-summary:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid var(--accent, #4A57D6);
+  outline-offset: 1px;
+}
+
+.shop-processing-detail-fold {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 2px 8px 6px;
+}
+
+/* [hidden] 이 항상 이긴다.
+ *
+ * bindFold 는 접을 때 본문에 hidden 을 건다. 그런데 아래 전체화면 규칙이
+ * .shop-processing-catalog-body 에 display:flex 를 주므로 UA 기본 `[hidden]{display:none}` 이
+ * 특이도에서 밀린다 → 접었는데 화면엔 그대로 남는다(ai-auth-connection.css 에 같은 사고 기록).
+ * 전체화면 규칙 (0,3,0) 을 덮으려면 (0,4,0) 이 필요하다. */
+.event-subdialog-window .shop-processing-items [hidden],
+.event-subdialog-window.full .shop-processing-items [hidden] {
+  display: none;
 }
 .shop-processing-sale-list {
   margin-bottom: 8px;
@@ -1053,26 +1103,43 @@
   border-radius: 8px;
   background: var(--bg-inset);
 }
+/* 행 높이를 상속에 맡기면 안 된다. 실측(1280×720): 한 줄짜리 행이 56px 까지 부풀어
+   자료집 179행 중 3행만 보였다. font/line-height/padding 을 여기서 못 박아 ≈30px 로 고정한다. */
 .shop-processing-catalog-row {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 8px;
   align-items: center;
   width: 100%;
-  padding: 6px 8px;
+  padding: 3px 8px;
   border: 1px solid transparent;
   border-radius: 6px;
   background: var(--bg-raised);
   color: var(--text-1);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   text-align: left;
   cursor: pointer;
+}
+.shop-processing-catalog-row > input[type="checkbox"] {
+  block-size: 13px;
+  inline-size: 13px;
+  margin: 0;
 }
 .shop-processing-catalog-row.is-stocked {
   border-color: var(--border-default);
   background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised));
 }
+/* 담기 버튼이 지금 담을 행. 어떤 행이 대상인지 안 보이면 담기 버튼이 도박이 된다. */
+.shop-processing-catalog-row.is-candidate {
+  border-color: var(--accent, #4A57D6);
+  box-shadow: inset 2px 0 0 var(--accent, #4A57D6);
+}
+/* 긴 이름이 두 줄로 넘어가면 위에서 못 박은 행 높이가 무너진다. */
 .shop-processing-catalog-name {
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .shop-processing-catalog-price,
 .shop-processing-catalog-state {
@@ -1325,20 +1392,36 @@
   min-height: 0;
 }
 
+/* 배너·분기 컨트롤은 자기 높이만 쓰고 남는 높이는 목록 패널이 먹는다.
+   grid 로 두면 자식 순서(빈 상점 배너가 있을 때만 1번째)에 따라 1fr 이 엉뚱한 행에
+   붙어 배너가 30px 로 눌렸다 — flex 는 "어느 자식이 늘어날지"를 순서와 무관하게 정한다. */
 .event-subdialog-window.full .shop-processing-main {
-  grid-template-rows: minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  grid-template-rows: none;
   min-height: 0;
 }
 
-/* 목록 패널: 진열대(좌) | 자료집(우), 상세는 아래 전폭 */
+.event-subdialog-window.full .shop-processing-main > * {
+  flex: 0 0 auto;
+}
+
+.event-subdialog-window.full .shop-processing-main > .shop-processing-items {
+  flex: 1 1 auto;
+}
+
+/* 목록 패널: 진열대(좌) | 자료집(우), 상세 접이식은 아래 전폭.
+   두 목록이 같은 1fr 행을 공유하고, 상세는 접혀 있으면 머리 버튼 높이만 쓴다.
+   창이 짧아 최소 높이(6행)를 못 맞추면 fieldset 자체가 스크롤한다 — 잘라내지 않는다. */
 .event-subdialog-window.full .shop-processing-items {
   align-content: stretch;
   display: grid;
   gap: 8px 14px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto minmax(220px, 1fr) auto auto;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .event-subdialog-window.full .shop-processing-items > legend {
@@ -1349,8 +1432,15 @@
 .event-subdialog-window.full .shop-processing-sale-list {
   grid-column: 1;
   grid-row: 2;
+  margin-bottom: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
+}
+
+/* 전체화면에서는 진열 목록이 남는 높이를 다 쓴다 — 기본 280px 캡은 좁은 창용이다. */
+.event-subdialog-window.full .shop-processing-sale-list .shop-processing-item-list {
+  max-height: none;
+  min-height: 0;
 }
 
 .event-subdialog-window.full .shop-processing-item-controls {
@@ -1381,6 +1471,16 @@
   overflow: hidden;
 }
 
+/* fold 가 진짜 div 라 이제 이 사슬이 성립한다: fold(flex, 확정 높이)
+   → body(flex:1, min-height:0) → catalog(flex:1, overflow:auto). */
+.event-subdialog-window.full .shop-processing-catalog-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
 .event-subdialog-window.full .shop-processing-catalog,
 .event-subdialog-window.full .shop-processing-catalog.shop-processing-item-list {
   flex: 1 1 auto;
@@ -1389,10 +1489,14 @@
   overflow: auto;
 }
 
-.event-subdialog-window.full .shop-processing-item-detail {
+.event-subdialog-window.full .shop-processing-detail-fold {
   grid-column: 1 / -1;
   grid-row: 4;
-  max-height: 34vh;
+  min-height: 0;
+}
+
+.event-subdialog-window.full .shop-processing-item-detail {
+  max-height: 30vh;
   overflow: auto;
 }
 

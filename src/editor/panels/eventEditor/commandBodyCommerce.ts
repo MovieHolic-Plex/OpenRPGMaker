@@ -869,10 +869,10 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     emptyText: "아직 담은 물건이 없습니다.",
     onActivate: (itemId) => commitItems(command.itemIds.filter((id) => id !== itemId)),
   });
-  const availableList = shopItemList("shop-available-items", notInShop(), {
-    emptyText: "더 담을 물건이 없습니다.",
-    onActivate: (itemId) => commitItems(addItemId(command.itemIds, itemId)),
-  });
+  // 자료집에서 고른 후보. 예전에는 aria-hidden 트레이 안의 두 번째 목록이 이 상태를 들고
+  // 있었는데, 그 목록은 화면에 없으면서 tabbable 노드 179개를 만들고 검색 한 글자마다
+  // 179행을 DOM 밖에서 다시 그렸다. 이제 카탈로그가 유일한 후보 목록이고 선택은 여기 한 곳이다.
+  let catalogSelection: ItemId | null = notInShop()[0]?.id ?? null;
 
   const countBadge = el("span", {
     class: "shop-processing-list-count",
@@ -890,27 +890,23 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
       if (typeFilter !== "all" && item.type !== typeFilter) return false;
       return itemMatchesQuery(item, searchQuery);
     });
-    rebuildShopItemList(availableList, filtered, {
-      emptyText:
-        notInShop().length === 0
-          ? "더 담을 물건이 없습니다."
-          : searchQuery || typeFilter !== "all"
-            ? "필터에 맞는 아이템 없음"
-            : "더 담을 물건이 없습니다.",
-      onActivate: (itemId) => commitItems(addItemId(command.itemIds, itemId)),
-    });
+    // 필터가 좁아져 고른 항목이 사라지면 첫 후보로 옮긴다 — 담기 버튼이 죽은 id 를 들고 있지 않게.
+    if (!catalogSelection || !filtered.some((item) => item.id === catalogSelection)) {
+      catalogSelection = filtered[0]?.id ?? null;
+    }
     countBadge.textContent = `${command.itemIds.length}/${items.length}`;
     add.disabled = filtered.length === 0;
     rebuildShopCatalog(catalog, items, command.itemIds, {
       typeFilter,
       searchQuery,
+      selectedCandidateId: catalogSelection,
       onToggle: (itemId, nextInShop) => {
         commitItems(nextInShop ? addItemId(command.itemIds, itemId) : command.itemIds.filter((id) => id !== itemId));
       },
       onSelect: (itemId) => {
         const inShop = command.itemIds.includes(itemId);
         if (inShop) selectedList.select.value = itemId;
-        else availableList.select.value = itemId;
+        else catalogSelection = itemId;
         syncDetail(itemId, items);
       },
     });
@@ -951,8 +947,8 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   });
 
   const add = itemMoveButton("담기", "shop-add-item", () => {
-    if (!availableList.value) return;
-    commitItems(addItemId(command.itemIds, availableList.value));
+    if (!catalogSelection) return;
+    commitItems(addItemId(command.itemIds, catalogSelection));
   });
   const remove = itemMoveButton("빼기", "shop-remove-item", () => {
     if (!selectedList.value) return;
@@ -971,9 +967,6 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   moveUp.disabled = selectedItems.length < 2;
   moveDown.disabled = selectedItems.length < 2;
 
-  availableList.select.addEventListener("change", () => {
-    highlightListSelection(availableList.root, availableList.select.value);
-  });
   selectedList.select.addEventListener("change", () => {
     highlightListSelection(selectedList.root, selectedList.select.value);
   });
@@ -1016,9 +1009,6 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   selectedList.root.addEventListener("shop-item-select", ((event: CustomEvent<{ itemId: string }>) => {
     syncDetail(event.detail.itemId, selectedItems);
   }) as EventListener);
-  availableList.root.addEventListener("shop-item-select", ((event: CustomEvent<{ itemId: string }>) => {
-    syncDetail(event.detail.itemId, notInShop());
-  }) as EventListener);
 
   const controls = el("div", {
     class: "shop-processing-item-controls",
@@ -1043,45 +1033,76 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
           search,
         ],
       }),
-      el("span", {
-        class: "commerce-command-hint shop-processing-filter-source",
-        text: `DB ${items.length}개`,
-        dataset: { testid: "shop-item-db-count" },
-      }),
+      // DB 개수는 접이식 머리(`자료집에서 더 담기 · DB N개`)에 이미 있다. 여기 두 번째로 찍으면
+      // 좁은 열에서 한 줄(≈24px)을 통째로 먹고, 그만큼 카탈로그 행이 잘려 나간다.
     ],
   });
 
-  // 카탈로그는 접혀서 시작한다 — 첫 화면은 진열대이고, DB 전체 아이콘 그리드가 아니다.
-  const catalogFold = el("details", {
+  // 자료집 카탈로그는 열린 채로 시작한다 — 전체화면에서 오른쪽 열을 통째로 쓰므로
+  // 접으면 그 열이 죽고, 담을 후보를 볼 방법이 사라진다.
+  //
+  // <details> 는 쓰지 않는다. Chromium 은 summary 이외의 자식을 ::details-content
+  // (display:block, 콘텐츠 높이) 안에 감싸므로 진짜 flex 아이템은 그 익명 블록이고,
+  // 자식에 건 flex:1/min-height:0/overflow:auto 가 레이아웃에 참여하지 못한다.
+  // 실측 결과 fold 는 279px 인데 ::details-content 가 10110px 로 자라 179행이 잘리고
+  // 휠이 전혀 먹지 않았다. div + aria-expanded 로 같은 접이식을 만든다.
+  const catalogBody = el("div", {
+    class: "shop-processing-catalog-body",
+    children: [filterBar, catalog],
+  });
+  const catalogToggle = foldToggle(
+    `자료집에서 더 담기 · DB ${items.length}개`,
+    "shop-item-catalog-summary",
+    "shop-processing-catalog-summary"
+  );
+  const catalogFold = el("div", {
     class: "shop-processing-catalog-fold",
     dataset: { testid: "shop-item-catalog-fold" },
-    children: [
-      el("summary", {
-        class: "shop-processing-catalog-summary",
-        dataset: { testid: "shop-item-catalog-summary" },
-        text: `자료집에서 더 담기 · DB ${items.length}개`,
-      }),
-      filterBar,
-      catalog,
-    ],
-  }) as HTMLDetailsElement;
-  catalogFold.open = true;
+    children: [catalogToggle, catalogBody],
+  });
+  bindFold(catalogFold, catalogToggle, catalogBody, true);
+
+  // 상세·계절 재고는 부차 작업이라 접어서 시작한다 — 펼침이 기본이면 상세가 34vh 를 먼저
+  // 먹어 1280x720 에서 판매 목록이 54px 로 눌렸다.
+  const detailToggle = foldToggle(
+    "선택한 아이템 상세 · 계절 재고",
+    "shop-item-detail-summary",
+    "shop-processing-detail-summary"
+  );
+  const detailFold = el("div", {
+    class: "shop-processing-detail-fold",
+    dataset: { testid: "shop-item-detail-fold" },
+    children: [detailToggle, detail.root],
+  });
+  bindFold(detailFold, detailToggle, detail.root, false);
 
   selectedList.root.classList.add("shop-processing-sale-list");
   selectedList.root.dataset.testid = "shop-sale-list";
-  fieldset.append(
-    selectedList.root,
-    catalogFold,
-    el("div", {
-      class: "shop-processing-e2e-tray",
-      attrs: { "aria-hidden": "true" },
-      children: [availableList.root, add, remove],
-    }),
-    controls,
-    detail.root,
-  );
+  // 진열 목록의 native select 는 선택 상태 모델일 뿐 화면에 없다 — 탭 순서에서 뺀다.
+  selectedList.select.tabIndex = -1;
+  fieldset.append(selectedList.root, catalogFold, controls, detailFold);
   applyAvailableFilter();
   return fieldset;
+}
+
+/** 접이식 패널의 머리 버튼. `<summary>` 대신 실제 버튼이라 ::details-content 함정이 없다. */
+function foldToggle(label: string, testId: string, className: string): HTMLButtonElement {
+  return el("button", {
+    class: className,
+    text: label,
+    dataset: { testid: testId },
+    attrs: { type: "button", "aria-expanded": "false" },
+  }) as HTMLButtonElement;
+}
+
+function bindFold(fold: HTMLElement, toggle: HTMLElement, body: HTMLElement, open: boolean): void {
+  const apply = (next: boolean) => {
+    fold.classList.toggle("is-open", next);
+    toggle.setAttribute("aria-expanded", next ? "true" : "false");
+    body.hidden = !next;
+  };
+  toggle.addEventListener("click", () => apply(toggle.getAttribute("aria-expanded") !== "true"));
+  apply(open);
 }
 
 function rebuildShopCatalog(
@@ -1091,6 +1112,8 @@ function rebuildShopCatalog(
   options: {
     readonly typeFilter: string;
     readonly searchQuery: string;
+    /** 담기 버튼이 지금 담을 항목 — 사용자가 어떤 행이 대상인지 볼 수 있어야 한다. */
+    readonly selectedCandidateId?: string | null;
     readonly onToggle: (itemId: string, nextInShop: boolean) => void;
     readonly onSelect: (itemId: string) => void;
   },
@@ -1117,12 +1140,20 @@ function rebuildShopCatalog(
     check.checked = inShop;
     check.addEventListener("click", (event) => event.stopPropagation());
     check.addEventListener("change", () => options.onToggle(item.id, check.checked));
-    host.append(el("button", {
-      class: `shop-processing-catalog-row${inShop ? " is-stocked" : ""}`,
-      attrs: { type: "button", role: "option", "aria-selected": inShop ? "true" : "false" },
+    const isCandidate = !inShop && item.id === options.selectedCandidateId;
+    const row = el("button", {
+      class: `shop-processing-catalog-row${inShop ? " is-stocked" : ""}${isCandidate ? " is-candidate" : ""}`,
+      attrs: { type: "button", role: "option", "aria-selected": isCandidate ? "true" : "false" },
       dataset: { testid: `shop-catalog-row-${item.id}` },
       on: {
-        click: () => options.onSelect(item.id),
+        click: () => {
+          for (const sibling of host.querySelectorAll<HTMLElement>(".shop-processing-catalog-row")) {
+            const hit = sibling === row;
+            sibling.classList.toggle("is-candidate", hit && !inShop);
+            sibling.setAttribute("aria-selected", hit && !inShop ? "true" : "false");
+          }
+          options.onSelect(item.id);
+        },
         dblclick: () => options.onToggle(item.id, !inShop),
       },
       children: [
@@ -1131,7 +1162,8 @@ function rebuildShopCatalog(
         el("span", { class: "shop-processing-catalog-price", text: formatPrice(item.price) }),
         el("span", { class: "shop-processing-catalog-state", text: inShop ? "판매 중" : "안 담음" }),
       ],
-    }));
+    });
+    host.append(row);
   }
 }
 
@@ -1139,90 +1171,6 @@ function itemMatchesQuery(item: ItemRecord, query: string): boolean {
   if (!query) return true;
   const hay = `${item.name} ${item.description ?? ""} ${item.id} ${itemTypeLabel(item.type)}`.toLowerCase();
   return hay.includes(query);
-}
-
-function rebuildShopItemList(
-  listHandle: ShopItemList,
-  items: readonly ItemRecord[],
-  options: { readonly emptyText: string; readonly onActivate: (itemId: string) => void },
-): void {
-  const project = store.getCurrent();
-  const { select } = listHandle;
-  const list = listHandle.root.querySelector(".shop-processing-item-list");
-  if (!(list instanceof HTMLElement)) return;
-
-  select.replaceChildren();
-  for (const item of items) {
-    const option = document.createElement("option");
-    option.value = item.id;
-    option.textContent = `${item.name}  ·  ${formatPrice(item.price)}`;
-    option.dataset.testid = `shop-list-item-${item.id}`;
-    select.append(option);
-  }
-  select.size = Math.max(2, items.length || 2);
-  if (items.length > 0) {
-    select.selectedIndex = 0;
-    select.value = items[0]!.id;
-  } else {
-    select.value = "";
-  }
-
-  list.replaceChildren();
-  if (items.length === 0) {
-    list.append(el("div", { class: "shop-processing-item-empty", text: options.emptyText }));
-    return;
-  }
-  for (const item of items) {
-    const selected = item.id === select.value;
-    const row = el("button", {
-      class: `shop-processing-item-row${selected ? " is-selected" : ""}`,
-      attrs: {
-        type: "button",
-        role: "option",
-        "aria-selected": selected ? "true" : "false",
-        title: itemDetailTitle(item),
-      },
-      dataset: { testid: `shop-item-row-${item.id}`, itemId: item.id },
-    });
-    row.append(
-      el("div", {
-        class: "shop-processing-item-icon",
-        children: [recordIconElement(imageIconOf(project, item.iconResourceId ?? item.imageResourceId), item.name)],
-      }),
-      el("div", {
-        class: "shop-processing-item-copy",
-        children: [
-          el("div", {
-            class: "shop-processing-item-topline",
-            children: [
-              el("span", { class: "shop-processing-item-name", text: item.name }),
-              el("span", { class: "shop-processing-item-price", text: formatPrice(item.price) }),
-            ],
-          }),
-          el("div", {
-            class: "shop-processing-item-meta",
-            children: [
-              el("span", { class: "shop-processing-item-type", text: itemTypeLabel(item.type) }),
-              el("span", {
-                class: "shop-processing-item-desc",
-                text: item.description?.trim() || "설명 없음",
-              }),
-            ],
-          }),
-        ],
-      }),
-    );
-    row.addEventListener("click", () => {
-      select.value = item.id;
-      highlightListSelection(list, item.id);
-      list.dispatchEvent(new CustomEvent("shop-item-select", { detail: { itemId: item.id }, bubbles: true }));
-    });
-    row.addEventListener("dblclick", (event) => {
-      event.preventDefault();
-      options.onActivate(item.id);
-    });
-    list.append(row);
-  }
 }
 
 function shopItemList(
