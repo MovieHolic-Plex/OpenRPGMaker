@@ -95,56 +95,23 @@
   text-shadow: 2px 2px 0 #374151;
 }
 
-.battle-flash-critical {
-  animation: battle-flash-crit 0.35s ease-out;
-}
+/* 히트 색은 15-juice-capture-fx.css의 .battle-field::after가 그린다.
+   씬 루트 배경을 알파 색으로 애니메이션하면 아래의 맵이 비치므로 루트는 항상 검게 둔다. */
 
-.battle-flash-hit {
-  animation: battle-flash-hit-anim 0.2s ease-out;
-}
-
-@keyframes battle-flash-crit {
-  0% {
-    background-color: rgba(255, 30, 30, 0.45);
-    filter: contrast(1.4) brightness(1.3);
-  }
-  30% {
-    background-color: rgba(255, 230, 100, 0.35);
-  }
-  100% {
-    background-color: transparent;
-  }
-}
-
-@keyframes battle-flash-hit-anim {
-  0% {
-    background-color: rgba(255, 255, 255, 0.35);
-  }
-  100% {
-    background-color: transparent;
-  }
-}
-
-/* 씬 루트에 걸리는 셰이크 — 리터럴 translate 만 쓰면 애니메이션 300ms 동안
-   scale(var(--battle-stage-scale))(01-scene-base.css)를 덮어써 씬이 640px 로
-   붕괴한다(급소 타격 프레임 실측, 8차와 동일 계열). scale 을 항상 곱한다. */
-/* 진폭은 애니메이션 타이밍의 screenShake.power 에서 온다(battleAnimationEffectStyle.ts).
-   변수가 없으면 종전 고정값(6px/4px)으로 떨어져 기존 호출부가 그대로 동작한다. */
-@keyframes battle-screen-shake {
+/* 불투명 배경인 씬 루트 대신 필드 자식만 흔들어 가장자리에도 검은 배경을 남긴다.
+   진폭은 animation timing의 screenShake.power에서 상속된다. */
+@keyframes battle-field-shake {
   25% {
-    transform: translate(calc(var(--battle-shake-x, 6px) * -1), var(--battle-shake-y, 4px))
-      scale(var(--battle-stage-scale, 1));
+    transform: translate(calc(var(--battle-shake-x, 6px) * -1), var(--battle-shake-y, 4px));
   }
   50% {
-    transform: translate(var(--battle-shake-x, 6px), calc(var(--battle-shake-y, 4px) * -1))
-      scale(var(--battle-stage-scale, 1));
+    transform: translate(var(--battle-shake-x, 6px), calc(var(--battle-shake-y, 4px) * -1));
   }
   75% {
-    transform: translate(calc(var(--battle-shake-x, 6px) * -0.67), calc(var(--battle-shake-y, 4px) * -0.5))
-      scale(var(--battle-stage-scale, 1));
+    transform: translate(calc(var(--battle-shake-x, 6px) * -0.67), calc(var(--battle-shake-y, 4px) * -0.5));
   }
   100% {
-    transform: translate(0, 0) scale(var(--battle-stage-scale, 1));
+    transform: translate(0, 0);
   }
 }
 

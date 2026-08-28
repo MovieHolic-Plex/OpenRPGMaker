@@ -200,164 +200,196 @@
   color: var(--text-1);
 }
 
+/* ── 레코드 픽커 (스위치·변수·아이템·주인공 공용) ──────────────────────────
+   구 RM2003 창(20칸 블록 내비 + 모노스페이스 + 파란 반전 행)을 걷어내고
+   검색 우선 목록 하나로 바꿨다. DESIGN.md: 이벤트 편집기에 RM2K3 레트로 표현 금지. */
+
 .event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-window.narrow {
-  border-color: var(--border, var(--border-default));
-  border-radius: 0;
-  width: min(560px, calc(100vw - 36px));
+  width: min(460px, calc(100vw - 36px));
 }
 
-.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-header {
-  background: var(--bg-panel-2, var(--bg-raised));
-  border-bottom: 1px solid var(--border-soft, var(--border-default));
-  min-height: 36px;
-  padding: 8px 10px;
-}
-
-.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-header h3 {
-  font: 500 14px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-
-.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-close {
-  border-radius: 0;
-  height: 24px;
-  min-height: 24px;
-  min-width: 24px;
-}
-
-.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-body {
-  background: var(--bg-panel, var(--bg-raised));
-  gap: 0;
-  padding: 8px;
-}
-
-.event-record-picker.classic {
+.event-record-picker {
   display: grid;
-  gap: 8px;
-}
-
-.event-record-picker-frame {
-  border: 2px groove var(--border-soft, var(--border-default));
-  box-sizing: border-box;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 180px minmax(0, 1fr);
-  height: 520px;
+  gap: var(--space-2);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   min-height: 0;
-  padding: 12px;
 }
 
-.event-record-picker-range-pane {
-  box-sizing: border-box;
+.event-record-picker-head {
   display: grid;
-  gap: 8px;
-  height: 100%;
-  grid-template-rows: 30px minmax(0, 1fr) 32px;
-  min-width: 0;
-  overflow: hidden;
+  gap: var(--space-2);
 }
 
-.event-record-picker-heading {
-  align-items: center;
-  background: var(--accent-primary, var(--accent));
-  border: 1px solid var(--border-default, var(--border-default));
-  color: var(--text-inverse, var(--text-1));
-  display: flex;
-  font: 600 20px/24px "Cascadia Mono", "MS Gothic", monospace;
-  justify-content: center;
-}
-
-.event-record-picker-blocks {
-  align-content: start;
-  background: var(--surface-panel, var(--bg-raised));
-  border: 2px inset var(--border-soft, var(--border-default));
-  display: grid;
-  grid-auto-rows: 21px;
-  min-height: 0;
-  overflow: auto;
-  padding: 2px;
-}
-
-.event-record-picker-block,
-.event-record-picker-row {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  color: var(--text, var(--text-1));
-  font: 500 18px/20px "Cascadia Mono", "MS Gothic", monospace;
-  min-height: 20px;
-  overflow: hidden;
-  padding: 0 4px;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.event-record-picker-block.active,
-.event-record-picker-block:hover,
-.event-record-picker-row:hover,
-.event-record-picker-row.selected {
-  background: var(--accent-primary, var(--accent));
-  color: var(--text-inverse, var(--text-1));
-}
-
-.event-record-picker-max {
+.event-subdialog-body .event-record-picker-search {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  min-height: 34px;
+  padding: 0 10px;
   width: 100%;
 }
 
-.event-record-picker-record-pane {
-  box-sizing: border-box;
-  display: grid;
-  gap: 8px;
-  grid-template-rows: minmax(0, 1fr) 62px;
-  height: 100%;
-  min-height: 0;
-  min-width: 0;
-  overflow: hidden;
+.event-record-picker-summary {
+  color: var(--text-3);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0 2px;
+  text-transform: uppercase;
 }
 
 .event-record-picker-list {
   align-content: start;
-  background: var(--surface-panel, var(--bg-raised));
-  border: 2px inset var(--border-soft, var(--border-default));
   display: grid;
-  grid-auto-rows: 20px;
-  max-height: none;
+  gap: 2px;
+  max-height: min(46vh, 380px);
   min-height: 0;
   overflow: auto;
   padding: 2px;
 }
 
-.event-record-picker-name-box {
+.event-record-picker-section {
   align-items: center;
-  border: 2px groove var(--border-soft, var(--border-default));
-  box-sizing: border-box;
+  color: var(--text-3);
+  display: flex;
+  font-size: 10.5px;
+  font-weight: 700;
+  justify-content: space-between;
+  letter-spacing: 0.06em;
+  padding: 10px 8px 4px;
+  text-transform: uppercase;
+}
+
+.event-record-picker-section:first-child {
+  padding-top: 2px;
+}
+
+.event-record-picker-section-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.event-record-picker-row-group {
   display: grid;
-  gap: 8px;
-  grid-template-columns: auto minmax(0, 1fr);
-  margin: 0;
+  gap: 2px;
+}
+
+.event-record-picker-row {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  min-height: 40px;
+  padding: 5px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-record-picker-row:hover {
+  background: var(--bg-hover);
+}
+
+.event-record-picker-row.selected {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.event-record-picker-row-icon {
+  align-items: center;
+  border-radius: var(--radius-s);
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  overflow: hidden;
+  width: 26px;
+}
+
+.event-record-picker-row-icon img,
+.event-record-picker-row-icon canvas {
+  image-rendering: pixelated;
+}
+
+.event-record-picker-row-main {
+  display: grid;
+  gap: 1px;
   min-width: 0;
-  padding: 8px 10px 6px;
 }
 
-.event-record-picker-name-box legend {
-  color: var(--text, var(--text-1));
-  font: 500 14px/18px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  padding: 0 4px;
-}
-
-.event-record-picker-name-id {
-  font: 500 18px/20px "Cascadia Mono", "MS Gothic", monospace;
+.event-record-picker-row-name {
+  color: var(--text-1);
+  font-size: 13.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.event-subdialog-body .event-record-picker-name-box input {
-  border-radius: 0;
+.event-record-picker-row-name.unnamed {
+  color: var(--text-3);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.event-record-picker-row-meta {
+  color: var(--text-3);
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 아직 아무 데서도 안 쓰이는 레코드 — 지워도 되는 후보라 눈에 띄게 둔다. */
+.event-record-picker-row-meta.unused {
+  color: var(--warning);
+}
+
+.event-record-picker-row-ordinal {
+  color: var(--text-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.event-record-picker-rename-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 0 8px 4px 34px;
+}
+
+.event-record-picker-rename-label {
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+
+.event-subdialog-body .event-record-picker-rename {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
   min-height: 30px;
-  padding: 3px 6px;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.event-record-picker-footer {
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.event-record-picker-footer-spacer {
+  flex: 1;
 }
 
 .event-record-picker-footer .btn:disabled {
-  color: var(--text-muted, var(--text-2));
+  color: var(--text-disabled);
   opacity: 0.54;
 }
 

@@ -1,6 +1,14 @@
 import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ProxyOptions, type ViteDevServer } from "vite";
 import { fileURLToPath, URL } from "node:url";
-import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync, realpathSync } from "node:fs";
+import {
+  mkdirSync,
+  writeFileSync,
+  appendFileSync,
+  readFileSync,
+  existsSync,
+  readdirSync,
+  realpathSync,
+} from "node:fs";
 import { join } from "node:path";
 import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
@@ -416,6 +424,21 @@ export default defineConfig(({ mode }) => {
             if (real !== root) roots.push(real);
           } catch {
           }
+        }
+        // 위 루프는 `node_modules` **자체**가 링크일 때만 통한다. `.herdr/worktrees/<name>/worktree`
+        // 배치에서는 node_modules 는 실디렉터리이고 그 **안의 패키지들**만 원본 저장소로 링크된다
+        // (phaser, jimp, playwright…). 그러면 `@fs` 실경로가 여전히 allow 밖이라 phaser.min.js 가
+        // 403 이고 편집기 캔버스가 빈 DIV 로 남는다. 그래서 링크된 패키지의 실경로도 넣는다.
+        const localModules = fileURLToPath(new URL("./node_modules", import.meta.url));
+        try {
+          for (const entry of readdirSync(localModules, { withFileTypes: true })) {
+            if (!entry.isSymbolicLink()) continue;
+            try {
+              roots.push(realpathSync(`${localModules}/${entry.name}`));
+            } catch {
+            }
+          }
+        } catch {
         }
         return [...new Set(roots)];
       })(),

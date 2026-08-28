@@ -121,6 +121,9 @@ Harness contract:
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
 10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
 11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
+12. Quest / boss items carry a **verification tool** in successTools — the harness re-checks the artifact and blocks completion without it:
+   - 퀘스트/의뢰/스토리 체인 → successTools MUST include ["create_quest","define_quest","verify_quest"]. upsert_event 로 퀘스트를 손으로 조립하지 말 것 — 완주 검증이 불가능해 항목이 완료되지 않는다.
+   - 보스 전투 페이즈/광폭화/HP 임계 연출 → successTools MUST include ["author_boss_phases","simulate_battle"]. 페이즈가 실제로 발동했는지(phaseCoverage)를 시뮬로 확인해야 완료된다.
 ${NARRATIVE_HORROR_PLANNER_RULE}
 
 JSON schema:

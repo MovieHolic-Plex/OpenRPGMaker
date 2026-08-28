@@ -23,6 +23,11 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
   --battle-hud-height: 192px;
+  /* 커맨드 행 높이. 공유 기본값은 23px 인데, 테드리 2px×2 를 밀면 내용이 19px 만
+     남아 라벨 라인박스(16px × 1.2 = 19.2px)를 담지 못하고 살짝 넘쳐 마지막 행이
+     스크롤포트 경계에서 잘렸다. 24px = 내용 20px 로 여유를 남긴다.
+     행 피치를 행 높이와 같게 맞춰야(간격 0) 스크롤포트를 행 수의 배수로 잡을 수 있다. */
+  --battle-command-row-height: 24px;
   /* 무대 상단 여백 8px — `--battle-stage-inset-top` 은 01-scene-base.css 에서 한 번만
      선언되고, 스킨은 이 노본만 재정의한다. 그래서 배틀러 그룹·에니메이션 레이어·
      이펙트 레이어가 자동으로 같은 박스가 된다(배틀러 위지는 백분율이다). */
@@ -131,7 +136,12 @@
      가 글자를 통째로 잘라낸다(실측: "달빛 숲 파수군" → "달빛 숲 파"). */
   min-height: 0;
   min-width: 0;
-  padding: 4px 8px;
+  /* 세로 여백은 0 이다. 행은 이밌 고정 높이(--battle-command-row-height)에
+     align-items: center 로 정렬하고 있으므로 여백은 쓸 수 있는 높이를 깎을 뿐이다:
+     24px 행 − 테드리 4px − 여백 8px = 12px 로 라인박스 19.2px 을 담지 못해
+     행마다 5px 넘쳤고, 대상 목록 3행(75px)이 72px 포트를 넘어 "취소" 가
+     경계에 걸렸다(실측). */
+  padding: 0 8px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-icon {
@@ -339,16 +349,21 @@
   grid-row: 1;
   line-height: 1.1;
   margin-bottom: 4px;
+  /* 생략부호로 자를면 하필 **어떤** 적을 골랐는지가 사라진다(실측: 폭 164 에
+     "대상: 초원 슬라임 1" 168 → 끝의 식별 자리가 잡혀 "대상: 초원 슬라임…" 이 되었다).
+     행이 auto 라 단어 단위로 줌바꿘 수 있으니 자를는 대심 줄을 늘린다. */
   overflow: hidden;
+  overflow-wrap: anywhere;
   padding: 4px 8px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
   align-self: stretch;
   display: grid;
-  gap: 2px;
+  /* 대상 목록도 행 피치 = 행 높이 여야 한다. 2px 간격이 남아 있으면 피치가 30 이
+     되어 84px 포트가 2.8행이 되고 "취소" 가 30% 잘렸다(실측). */
+  gap: 0;
   grid-row: 2;
   grid-template-rows: repeat(2, minmax(0, 1fr));
   min-height: 0;
@@ -365,7 +380,10 @@
   align-items: center;
   min-height: 0;
   min-width: 0;
-  padding: 6px 12px;
+  /* 세로 여백 0 — 이 선택자가 공용 행 여백보다 우선해서 6px×2 가 남아 있으면
+     24px 행 − 테드리 4px − 여백 12px = 8px 로 라인박스 19.2px 을 담지 못하고
+     마지막 행 "취소" 가 포트 경계에 걸린다(실측). */
+  padding: 0 12px;
   pointer-events: auto;
   position: relative;
   z-index: 11;
@@ -541,11 +559,31 @@
 /* Accessibility/flow overrides: authored command detail and input help remain
    available, gauge mode exposes ATB, and strict mode exposes pending order. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-panel {
-  grid-template-rows: minmax(0, 1fr) auto;
+  /* 메뉴 트랙을 1fr 로 당기지 않고 **행 수의 배수로 고정**한다. 1fr 은 키 안내가
+     쓰고 남은 만큼을 주는데, 그 값(실측 120px)은 행 피치 28 의 배수가 아니라
+     마지막 행이 반쯤 잘렸다("도주" 82.5% 밖). max-height 만 주는 것으로는
+     못 고친다 — 가용 트랙이 상한보다 작으면 상한이 무효이다.
+
+     row-gap 은 공유 기본값 24px 를 쓰면 이 168px 패널에서 키 안내 트랙이 2px 로
+     남아 "Z 확인 · X 취소" 가 83% 잘렸다(실측: grid-template-rows 가 `140px 2px`).
+     4px 로 줄이면 140 + 4 + 안내 24 = 168 로 딱 맞는다. */
+  grid-template-rows: calc(5 * var(--battle-command-row-height)) auto;
+  row-gap: 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu {
   align-content: start;
+  /* 행 사이 간격을 0 으로 둔다 — RM2K3 커맨드 창은 행이 밀착하고, 더 중요하게
+     행 피치(= 행 높이 + 간격)가 행 높이와 같아지면 아래 max-height 를 행 수의
+     배수로 잡을 수 있다. 간격이 남아 있으면 피치가 30 이 되어 어떤 정수배로도
+     스크롤포트를 나누지 못하고 마지막 행이 경계에 걸린다. */
+  gap: 0;
+  /* 보이는 행 수를 정수로 못 박으면 마지막 행이 스크롤포트 경계에 걸려 글리프가
+     세로로 반 잘린 채 그려진다(실측: 포트 120px / 피치 25px → 5.71행 → "회복야 효과"
+     가 39% 잘렸고 대상 리스트 "취소" 는 47% 잘렸다). 패널 여유는 168px 이고
+     키 안내가 28px 를 쓰므로 5행(140px)은 항상 패널 안에 들어간다. 더 긴 목록은
+     찌궸러지는 대심 스크롤로 밀린다(openwiki/runtime-battle.md 계약). */
+  max-height: calc(5 * var(--battle-command-row-height));
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -570,6 +608,26 @@
   opacity: 0.88;
 }
 
+/* 서본러우 행은 이름과 상세(MP n)를 **한 줄에** 놓는다. 세로로 쓰으면
+   strong 24px + small 13px = 37px 를 24px 내용 상자에 넣으려다 상세가 행 밖으로
+   밀려나가 통째로 사라진다(실측: "MP 0" 이 잔리버 1.0 → 상자 밖 100%).
+   RM2K3 도 기술이름 오른쯝에 소모 MP 를 붙여 한 줄로 그렸다. 상세는
+   flex-shrink: 0 으로 남기고, 포기해야 하는 쪽은 이름이다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text {
+  align-items: baseline;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong {
+  min-width: 0;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small {
+  flex: 0 0 auto;
+}
+
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-help,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-prompt,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
@@ -591,7 +649,8 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-command-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto calc(3 * var(--battle-command-row-height)) auto;
+  row-gap: 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-key-prompts {
@@ -599,7 +658,8 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-command-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto calc(4 * var(--battle-command-row-height)) auto;
+  row-gap: 4px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-flow-status {
@@ -623,6 +683,10 @@
   align-content: start;
   grid-auto-rows: var(--battle-command-row-height);
   grid-template-rows: none;
+  /* 대상 국면은 프롬프트(2줄까지) + 메뉴 + 키 안내로 나뉰다. 3행(84px)은
+     세 묶음이 전부 들어가는 가장 잡은 슬롯이다(프롬프트 44 + 84 + 안내 28 = 156
+     ≤ 패널 168). 적이 많은 트룹은 이 3행 안에서 스크롤한다. */
+  max-height: calc(3 * var(--battle-command-row-height));
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -657,7 +721,11 @@
    Authored battle sheets/faces must identify the actual party member. The
    generic skin warrior/mage images are fallback art, never actor identity. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
-  grid-template-columns: 208px minmax(0, 1fr);
+  /* 명령 레일 폭. 208px 에서는 저작 이름이 들어가지 않았다 — 대상 행 라벨은
+     쓸 수 있는 폭이 114px 인데 "초원 슬라임 1" 은 130px 라 12.3% 가 생략부호에
+     잡혔고, 그 생략된 부분이 하필 동명 적을 구별하는 순번이라 슬라임 둘이 화면에
+     똑같이 보이게 됐다. 232px 는 라벨 가용 폭을 138px 로 단단하게 담는다. */
+  grid-template-columns: 232px minmax(0, 1fr);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] {
@@ -734,10 +802,6 @@
    visible in skill/item/target submenus and in each button's title/ARIA. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {
   display: none;
-}
-
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong {
-  font-size: 20px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],

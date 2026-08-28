@@ -97,8 +97,15 @@ describe("event editor layout hierarchy", () => {
     render();
     const npcGroup = host.querySelector<HTMLElement>("[data-testid='evt-rail-group-npc']");
     expect(npcGroup).toBeTruthy();
-    expect(npcGroup!.tagName).toBe("DETAILS");
-    expect((npcGroup as HTMLDetailsElement).open).toBe(false);
+    // 레일 그룹은 <details>/<summary> 였다가 <div>/<button> 이 됐다 (2026-08-28).
+    // 열림 상태를 `open` 속성이 아니라 `is-open` 클래스가 들고 있어야 CSS 가 헤더는 좌측
+    // 레일에, 본문은 우측 넓은 면에 놓을 수 있다(`display: contents`). 태그가 아니라
+    // "접힌 상태로 시작한다"는 동작을 고정한다.
+    const npcHeader = npcGroup!.querySelector<HTMLElement>(".event-editor-settings-accordion-header");
+    expect(npcHeader).toBeTruthy();
+    expect(npcHeader!.tagName).toBe("BUTTON");
+    expect(npcGroup!.classList.contains("is-open")).toBe(false);
+    expect(npcHeader!.getAttribute("aria-expanded")).toBe("false");
     expect(npcGroup!.querySelector("[data-testid='event-character-social-extras']")).toBeTruthy();
     expect(npcGroup!.querySelector("[data-testid='event-schedule-editor']")).toBeTruthy();
 

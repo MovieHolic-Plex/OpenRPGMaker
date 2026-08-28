@@ -106,10 +106,10 @@
   position: absolute;
 }
 
-/* 주기와 반복 횟수는 screenShake.speed / durationFrames 에서 온다
-   (battleAnimationEffectStyle.ts). 변수가 없으면 종전 0.3s 1회로 떨어진다. */
-.battle-scene.battle-screen-shake {
-  animation: battle-screen-shake var(--battle-shake-period, 0.3s) ease-out
+/* 주기와 반복 횟수는 screenShake.speed / durationFrames 에서 온다.
+   불투명 배경인 씬 루트를 움직이면 가장자리로 맵이 새므로 필드만 흔든다. */
+.battle-scene.battle-screen-shake .battle-field {
+  animation: battle-field-shake var(--battle-shake-period, 0.3s) ease-out
     var(--battle-shake-iterations, 1);
 }
 

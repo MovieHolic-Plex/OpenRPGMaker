@@ -1,0 +1,11 @@
+field: {"m":"map_lantern_village","x":14,"y":18}
+interaction -> dialogue
+battle mounted on village map
+hit-flash: samples=15 minAlpha=0.055 firstBg=rgba(255, 255, 255, 0.35) transforms=["matrix(0.5, 0, 0, 0.5, 0, 0)"]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/red/shots-village/red-02-hit-flash.png
+critical-shake: samples=12 minAlpha=1 firstBg=rgb(0, 0, 0) transforms=["matrix(0.5, 0, 0, 0.5, 0, 0)","matrix(0.5, 0, 0, 0.5, -2.03931, 1.35954)","matrix(0.5, 0, 0, 0.5, -5.87547, 3.91698)","matrix(0.5, 0, 0, 0.5, 5.9826, -3.99653)"]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/red/shots-village/red-02-critical-shake.png
+shake-only: samples=12 minAlpha=1 firstBg=rgb(0, 0, 0) transforms=["matrix(0.5, 0, 0, 0.5, 0, 0)","matrix(0.5, 0, 0, 0.5, -2.04088, 1.36058)","matrix(0.5, 0, 0, 0.5, -5.06236, 3.3749)","matrix(0.5, 0, 0, 0.5, 5.0996, -3.39973)"]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/red/shots-village/red-02-shake-only.png
+pageerrors: []
+VILLAGE_PROBE_DONE

@@ -754,18 +754,6 @@
 }
 
 
-/* ---- [높음-3] 레코드 피커 검색 ---- */
-
-/* 검색 입력이 추가되면서 레코드 페인 행 구성이 [검색 / 리스트 / 이름 박스] 3행이 된다. */
-.event-record-picker-record-pane {
-  grid-template-rows: auto minmax(0, 1fr) 62px;
-}
-
-.event-record-picker-search {
-  min-height: 24px;
-  width: 100%;
-}
-
 /* ---- [중간-2] 정보 밀도: 좌측 조건 패널 압축 + 안 쓰는 조건 행 시각적 후퇴 ---- */
 
 .event-editor-settings-column {

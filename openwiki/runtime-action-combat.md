@@ -1,5 +1,7 @@
 # Runtime Action Combat
 
+> **지원 종료 (deprecated, 2026-08-28).** 액션 전투는 더 이상 지원 대상이 아니다. 이미 저작된 액션 맵은 계속 동작하고, 아래 런타임 라우팅 계약도 바뀌지 않았다. 달라진 것은 저작 표면이다. 프로젝트 린트가 `system.actionCombat.enabled === true` 인 프로젝트에 `deprecated:action-combat` 코드로 경고를 남긴다. 새 프로젝트는 RM식(`rm2k3`) 또는 포켓몬식(`gen1`) 턴제 전투를 쓴다. 지원 전투 2종 정책과 지원 종료 목록은 `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다 (2026-08-28)" 절이 권위자다. 이 문서의 나머지는 현재 구현에 대한 정확한 참조로 그대로 유지된다.
+
 This page is the authority for the real-time action-combat package in RPG ZZU. It documents the activation contract, pure rule modules under `src/battle/action/`, the scene integration layer, player and enemy capabilities, schema definitions, authoring boundaries, and verification targets.
 
 ## Activation contract
