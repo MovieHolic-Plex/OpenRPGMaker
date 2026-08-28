@@ -512,20 +512,28 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();
     const scene = activeScene();
-    const cutsceneLocked = Boolean(scene && isCutsceneInputLocked(scene.session));
+    // `PlayScene.session` is a `declare` field: type-only, with no runtime initialization, and
+    // it is first assigned partway through create(). This DOM keydown handler is bound to the
+    // document, so it fires independently of Phaser's scene lifecycle and can observe a
+    // constructed scene whose session does not exist yet — reading `.flags` off it threw
+    // "Cannot read properties of undefined (reading 'flags')". The type says `PlaySession`,
+    // never `PlaySession | undefined`, so neither tsc nor a reader can see the gap: do not
+    // "simplify" this guard away as redundant. A scene without a session is not input-ready.
+    const sceneSession = scene?.session as PlaySession | undefined;
+    const cutsceneLocked = Boolean(sceneSession && isCutsceneInputLocked(sceneSession));
     // 손 슬롯 전환은 필드 전용이다. isRuntimeMenuKey 가드보다 앞에 둬야 숫자키가 여기까지
     // 도달하지만(숫자키는 런타임 메뉴 키가 아니다), 대사·모달·상태메뉴·컷신 잠금 중엔 아무 일도 없어야 한다.
-    if (scene && !menu && !overlayActive && !cutsceneLocked) {
+    if (sceneSession && !menu && !overlayActive && !cutsceneLocked) {
       const cycle = handSlotCycleDelta(key);
       const digit = handSlotDigit(key);
       if (cycle !== undefined) {
         event.preventDefault();
-        cycleHandSlot(store.getCurrent(), scene.session, cycle);
+        cycleHandSlot(store.getCurrent(), sceneSession, cycle);
         return;
       }
       if (digit !== undefined) {
         event.preventDefault();
-        selectHandSlot(store.getCurrent(), scene.session, digit);
+        selectHandSlot(store.getCurrent(), sceneSession, digit);
         return;
       }
     }
