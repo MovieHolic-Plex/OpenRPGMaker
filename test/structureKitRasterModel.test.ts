@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cellAtPoint, paintCell, tileAt } from "@/editor/harnessSuggestion/structureKitRasterModel";
+import { cellAtPoint, paintCell, resizeKit, tileAt } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { TILE } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 
@@ -77,5 +77,71 @@ describe("paintCell", () => {
   it("지우개는 EMPTY 를 칠하는 것과 같다", () => {
     const next = paintCell(kit3x3(), 1, 1, "lower", TILE.EMPTY);
     expect(tileAt(next, 1, 1, "lower")).toBe(TILE.EMPTY);
+  });
+});
+
+describe("resizeKit", () => {
+  function kitWithParts(): SectionStructureKitDef {
+    return {
+      ...kit3x3(),
+      parts: [
+        { id: "p_inside", kind: "anchor", dx: 0, dy: 0, w: 1, h: 1 },
+        { id: "p_straddle", kind: "window", dx: 1, dy: 1, w: 2, h: 2 },
+        { id: "p_outside", kind: "sign", dx: 2, dy: 2, w: 1, h: 1 },
+      ],
+    };
+  }
+
+  it("늘리면 새 칸이 EMPTY 로 채워진다", () => {
+    const result = resizeKit(kit3x3(), 5, 4);
+    expect(result.kit.width).toBe(5);
+    expect(result.kit.height).toBe(4);
+    expect(result.kit.rows).toHaveLength(4);
+    expect(result.kit.rows[0]!.tiles).toHaveLength(5);
+    expect(tileAt(result.kit, 4, 0, "lower")).toBe(TILE.EMPTY);
+    expect(tileAt(result.kit, 0, 3, "lower")).toBe(TILE.EMPTY);
+    // 기존 내용은 남는다
+    expect(tileAt(result.kit, 1, 1, "lower")).toBe(116);
+    expect(result.clamped).toBe(0);
+    expect(result.dropped).toBe(0);
+  });
+
+  it("줄이면 잘린 칸이 사라진다", () => {
+    const result = resizeKit(kit3x3(), 2, 2);
+    expect(result.kit.width).toBe(2);
+    expect(result.kit.rows).toHaveLength(2);
+    expect(result.kit.rows[0]!.tiles).toHaveLength(2);
+    expect(tileAt(result.kit, 1, 1, "lower")).toBe(116);
+  });
+
+  it("줄일 때 경계에 걸친 부위는 클램프하고 완전히 밖인 부위는 지운다", () => {
+    const result = resizeKit(kitWithParts(), 2, 2);
+    const ids = (result.kit.parts ?? []).map((part) => part.id);
+    expect(ids).toContain("p_inside");
+    expect(ids).toContain("p_straddle");
+    expect(ids).not.toContain("p_outside");
+
+    const straddle = result.kit.parts!.find((part) => part.id === "p_straddle")!;
+    expect(straddle.dx).toBe(1);
+    expect(straddle.dy).toBe(1);
+    expect(straddle.w).toBe(1); // 1+2=3 → 2 로 클램프
+    expect(straddle.h).toBe(1);
+
+    expect(result.clamped).toBe(1);
+    expect(result.dropped).toBe(1);
+  });
+
+  it("1칸 미만으로는 줄지 않는다", () => {
+    const result = resizeKit(kit3x3(), 0, -2);
+    expect(result.kit.width).toBe(1);
+    expect(result.kit.height).toBe(1);
+  });
+
+  it("크기가 그대로면 킷을 그대로 돌려준다", () => {
+    const original = kit3x3();
+    const result = resizeKit(original, 3, 3);
+    expect(result.kit).toBe(original);
+    expect(result.clamped).toBe(0);
+    expect(result.dropped).toBe(0);
   });
 });

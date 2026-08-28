@@ -8,7 +8,7 @@
 
 import { TILE_SIZE } from "@/assets/bundled";
 import { TILE } from "@/project/defaults/constants";
-import type { SectionStructureKitDef, StructureKitRow } from "@/project/types";
+import type { SectionStructureKitDef, StructureKitPart, StructureKitRow } from "@/project/types";
 
 export type KitLayer = "lower" | "upper";
 
@@ -65,4 +65,60 @@ function writeCell(row: StructureKitRow, width: number, cx: number, layer: KitLa
   const upperTiles = row.upperTiles ? [...row.upperTiles] : new Array<number>(width).fill(TILE.EMPTY);
   upperTiles[cx] = tile;
   return { ...row, upperTiles };
+}
+
+export interface ResizeResult {
+  readonly kit: SectionStructureKitDef;
+  /** 경계에 걸쳐 크기가 줄어든 부위 수. */
+  readonly clamped: number;
+  /** 경계 밖으로 완전히 나가 삭제된 부위 수. */
+  readonly dropped: number;
+}
+
+/**
+ * 킷 크기 조절. 늘린 칸은 EMPTY, 줄이며 잘린 칸은 버린다.
+ * 부위는 조용히 사라지지 않는다 — 클램프·삭제 개수를 돌려주어 호출부가 사용자에게 보고한다.
+ */
+export function resizeKit(kit: SectionStructureKitDef, width: number, height: number): ResizeResult {
+  const nextWidth = Math.max(1, Math.floor(width));
+  const nextHeight = Math.max(1, Math.floor(height));
+  if (nextWidth === kit.width && nextHeight === kit.height) {
+    return { kit, clamped: 0, dropped: 0 };
+  }
+
+  const rows: StructureKitRow[] = [];
+  for (let y = 0; y < nextHeight; y += 1) {
+    const source = kit.rows[y];
+    const tiles = new Array<number>(nextWidth).fill(TILE.EMPTY);
+    let upperTiles: number[] | undefined;
+    for (let x = 0; x < nextWidth; x += 1) {
+      tiles[x] = source?.tiles[x] ?? TILE.EMPTY;
+      const upper = source?.upperTiles?.[x] ?? TILE.EMPTY;
+      if (upper !== TILE.EMPTY) {
+        upperTiles ??= new Array<number>(nextWidth).fill(TILE.EMPTY);
+        upperTiles[x] = upper;
+      }
+    }
+    rows.push(upperTiles ? { tiles, upperTiles } : { tiles });
+  }
+
+  let clamped = 0;
+  let dropped = 0;
+  const parts: StructureKitPart[] = [];
+  for (const part of kit.parts ?? []) {
+    if (part.dx >= nextWidth || part.dy >= nextHeight) {
+      dropped += 1;
+      continue;
+    }
+    const w = Math.min(part.w, nextWidth - part.dx);
+    const h = Math.min(part.h, nextHeight - part.dy);
+    if (w !== part.w || h !== part.h) clamped += 1;
+    parts.push({ ...part, w, h });
+  }
+
+  return {
+    kit: { ...kit, width: nextWidth, height: nextHeight, rows, parts },
+    clamped,
+    dropped,
+  };
 }
