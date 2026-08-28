@@ -12,8 +12,69 @@ import {
 import type { M2CommandPickerPage } from "@/project/eventCommands/m2Catalog";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { installFakeDom, renderWithFakeDom, findByTestId } from "./fakeDom";
+import { commandBranches } from "@/editor/tools/commandTraversal";
+import type { NestedBranchKind } from "@/editor/tools/commandTraversal";
 import type { CommandEditContext } from "@/editor/panels/eventEditor/types";
 import type { Command, GameEvent } from "@/project/types";
+
+function legacyDialogue(marker: string): Extract<Command, { kind: "m2Command" }> {
+  return {
+    kind: "m2Command",
+    commandId: "m2-209-advanced-dialogue",
+    fields: {
+      speaker: `speaker:${marker}`,
+      body: `body:${marker}`,
+      emotion: `emotion:${marker}`,
+      autoAdvance: true,
+    },
+  };
+}
+
+function branchContainers(): Record<NestedBranchKind, Command> {
+  const commands: Record<NestedBranchKind, Command> = {
+    choiceOption: { kind: "choices", options: [{ text: "option", branch: [] }] },
+    choiceCancel: { kind: "choices", options: [], cancelBranch: [] },
+    forkThen: { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [] },
+    forkElse: { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [], else: [] },
+    loopBody: { kind: "loop", body: [] },
+    shopTransaction: { kind: "shop", itemIds: [], transactionBranch: [] },
+    shopFailure: { kind: "shop", itemIds: [], failedTransactionBranch: [] },
+    innNotEnough: { kind: "inn", price: 1, notEnoughBranch: [] },
+    promotionSuccess: { kind: "promoteActor", actorId: "actor-1", successBranch: [] },
+    promotionFailure: { kind: "promoteActor", actorId: "actor-1", failureBranch: [] },
+    evolutionSuccess: { kind: "evolveMonster", instanceId: "monster-1", successBranch: [] },
+    evolutionFailure: { kind: "evolveMonster", instanceId: "monster-1", failureBranch: [] },
+    battleVictory: {
+      kind: "battleProcessing", troopId: "troop-1", canEscape: true, canLose: true, victoryBranch: [],
+    },
+    battleDefeat: {
+      kind: "battleProcessing", troopId: "troop-1", canEscape: true, canLose: true, defeatBranch: [],
+    },
+    battleEscape: {
+      kind: "battleProcessing", troopId: "troop-1", canEscape: true, canLose: true, escapeBranch: [],
+    },
+  };
+  for (const [kind, command] of Object.entries(commands) as [NestedBranchKind, Command][]) {
+    const branch = commandBranches(command).find((candidate) => candidate.kind === kind);
+    if (!branch) throw new Error(`commandBranches did not expose ${kind}`);
+    (branch.commands as Command[]).push(legacyDialogue(kind));
+  }
+  return commands;
+}
+
+function expectLegacyDialogueRewritten(commands: readonly Command[], location: string): void {
+  const remaining = commands.filter(
+    (command) => command.kind === "m2Command" && command.commandId === "m2-209-advanced-dialogue",
+  );
+  expect(remaining, `${location}: legacy m2-209 remained`).toHaveLength(0);
+  expect(commands, `${location}: text rewrite did not preserve legacy fields`).toContainEqual({
+    kind: "text",
+    speaker: `speaker:${location}`,
+    body: `body:${location}`,
+    emotion: `emotion:${location}`,
+    autoAdvance: true,
+  });
+}
 
 function ctx(replaceCommand = vi.fn()): CommandEditContext {
   return {
@@ -88,6 +149,61 @@ describe("advanced dialogue merged into text", () => {
     expect(cmd.body).toBe("숲으로 가자.");
     expect(cmd.emotion).toBe("happy");
     expect(cmd.autoAdvance).toBe(true);
+  });
+
+  it("rewrites legacy m2-209 commands in every canonical branch and root command owner", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const containers = branchContainers();
+    const event: GameEvent = {
+      id: "ev_all_dialogue_locations",
+      x: 2,
+      y: 2,
+      commands: [legacyDialogue("map.events[].commands"), ...Object.values(containers)],
+      pages: [
+        {
+          id: "p1",
+          name: "",
+          conditions: [],
+          commands: [legacyDialogue("event.pages[].commands")],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+        },
+      ],
+      trigger: { kind: "action" },
+    };
+    map.events = [event];
+    project.commonEvents = [{
+      id: "common-dialogue",
+      name: "common dialogue",
+      trigger: "none",
+      commands: [legacyDialogue("project.commonEvents[].commands")],
+    }];
+    const troop = project.database.troops[0]!;
+    troop.battleEventPages = [{
+      id: "troop-dialogue",
+      name: "troop dialogue",
+      conditions: [],
+      span: "battle",
+      commands: [legacyDialogue("database.troops[].battleEventPages[].commands")],
+    }];
+
+    expect(rewriteLegacyAdvancedDialogueInProject(project)).toBe(true);
+
+    expectLegacyDialogueRewritten([event.commands[0]!], "map.events[].commands");
+    expectLegacyDialogueRewritten(event.pages![0]!.commands, "event.pages[].commands");
+    expectLegacyDialogueRewritten(project.commonEvents[0]!.commands, "project.commonEvents[].commands");
+    expectLegacyDialogueRewritten(
+      troop.battleEventPages[0]!.commands,
+      "database.troops[].battleEventPages[].commands",
+    );
+    for (const [kind, container] of Object.entries(containers) as [NestedBranchKind, Command][]) {
+      const branch = commandBranches(container).find((candidate) => candidate.kind === kind);
+      expect(branch, `${kind}: commandBranches no longer exposes this branch`).toBeDefined();
+      expectLegacyDialogueRewritten(branch!.commands, kind);
+    }
   });
 
   it("exposes emotion and autoAdvance on the text form", () => {

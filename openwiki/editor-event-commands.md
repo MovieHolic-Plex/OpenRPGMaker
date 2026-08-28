@@ -41,6 +41,33 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - Quest graph tools live in `src/editor/tools/questTools.ts`. Keep existing `create_quest` step compilation compatible, and use `define_quest` for authored narrative graphs with DAG nodes/edges over storyFlag or switch/variable completion conditions. `lint_quest`, `generate_walkthrough`, and `verify_quest` are read tools; generated walkthrough JSON must stay directly compatible with `run_scene_test`, using `manualHint` + `set` only when a real play step cannot be inferred.
 - `place_npc` SimplePage compilation is intentionally tolerant for common in-editor AI malformed shapes: `conditions` may be omitted, null, an array, or a single condition object; `commands` may be omitted, null, an array, or a single command object; and obvious command-kind aliases such as `command: "text"` or `kind: { command: "text" }` are normalized. Every normalization must emit a tool warning, while unrecoverable shapes should fail with a short `field / expected type / actual type / minimal example` ToolError instead of a raw TypeError.
 
+## 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+
+- 얼굴 한 장은 `facesetPreview.faceImage()` 가 **상자(`.faceset-crop-box`) + 진짜 `<img>`
+  (`.faceset-crop-sheet`)** 로 그린다. 상자의 `--face-url` CSS 배경은 **로드 실패 폴백 전용**이다
+  (`faceImage` 가 `error` 에서 `<img>` 를 떼기 때문). 그래서 계약은 두 줄이다:
+  `<img>` 가 붙어 있으면 `.faceset-crop-box:has(> .faceset-crop-sheet)` 가 배경을 끄고,
+  `<img>` 는 `position:absolute; inset:0; width/height:100%; object-fit:contain` 으로 상자를 채운다.
+- **배경 폴백을 두 곳 이상에서 재선언하지 말 것.** 실측 사고 2건:
+  (1) 그 두 규칙을 담은 `07-identifiable-previews.css` 가 어떤 배럴에도 @import 되지 않은 고아로
+  남았다 — `<img>` 가 원본 크기(48×48) 정적 배치로 흘러가고 배경은 96×96 상자 전체에
+  `contain` 으로 깔려 **얼굴이 두 장 겹쳐 보이고** 있었다(상자 115개 중 114개).
+  (2) `02-changeface-play-mock-larger.css` 의 `.ecp-message-window .event-command-face-crop` 이
+  `background-image` 를 다시 선언해 가드와 특이도가 (0,2,0) 으로 같아졌고, 나중에 로드되는 쪽이
+  이기므로 재생 목업에서만 겹침이 남았다. 지금은 공용 `.event-command-face-crop` 한 곳만 배경을
+  소유하고, 목업 규칙은 테두리만 다룬다.
+- 배경과 `<img>` 를 같은 크기로 맞추는 것으로는 부족하다. nearest-neighbour 래스터화 결과가
+  미묘하게 달라 배경이 테두리에서 1px 새어나온다(실측 8픽셀). 반드시 `:has()` 가드로 막는다.
+- 통짜 모드(흉상/전신) 감지는 `facesetPreview.faceDisplayModeOf()` 하나만 쓴다.
+  `commandPreview.faceStage` 가 정규식으로 모드를 다시 판정하던 사본은 `…/bust` `…/full`
+  접미사에서 폼과 엇갈렸다.
+- 표시 옵션 줄(`.event-command-face-options`)은 필드 수만큼만 열을 만들어야 한다. 얼굴 칸 번호
+  컨트롤이 삭제된 뒤에도 3열 선언이 남아 오른쪽에 죽은 열이 있었다.
+- 미리보기 대화창(`.ecp-message-window`)은 반투명 유리를 불투명 밑판 **위에** 올린다. 순서가
+  뒤집히면 `--bg-surface`(#F7F8F8) 가 유리를 덮어 `--runtime-window-text`(#FFF6E2) 글자가
+  1.0:1 로 사라진다. computed 색은 17.8:1 로 거짓말을 하므로 렌더된 픽셀로 검사한다.
+- 게이트: `test/e2e/event-face-command-visual.spec.ts` + `npm run gates:css`(고아 CSS 0건).
+
 ## Staged edit, history, and nested drag invariants (2026-07-30)
 - Command edit bodies must patch the latest dialog draft through `CommandEditContext.getCurrentCommand?.()`. Never merge a change into the render-time `cmd` closure; consecutive edits in shop, choices, fork conditions, composite all/any conditions, generic M2 fields, and Page 3 rich forms must accumulate in one `stagedCommand`. The dialog OK path does not synthesize `change` events over every control.
 - Event-page command histories use keys shaped as `mapId:eventId:pageId`. `modal.ts` clears every `${mapId}:${eventId}:` history at edit-session start and on every close path through `clearCommandToolbarHistories`; cancelled drafts must never return after reopen + Undo. History wrappers must forward and snapshot `moveCommandAcross` as well as same-container moves.

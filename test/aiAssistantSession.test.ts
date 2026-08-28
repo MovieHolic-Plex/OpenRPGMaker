@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
-import { classifyApproval } from "@/ai/approvalPolicy";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { SessionEvent } from "@/ai/assistantSession";
@@ -408,9 +407,8 @@ describe("자율 실행 드라이버", () => {
 // ── 마일스톤 자동 적용(todo 4: 완료 항목 → 제안 스냅샷 경로로 자동 적용) ─────────────
 // 계약: 자율 런(agentMode auto + opts.autonomous)에서 work-item 완료(complete_work_item
 // 또는 successTools 자동 완료) 시점에 안전 적용 경로(commitChangeset → undo 스냅샷 →
-// store.replace → await 커밋 로그)를 기계적으로 호출한다. 파괴적/어휘/규칙 verdict는
-// approvalPolicy 게이트가 autoApprove보다 먼저 판정하므로 자동 적용하지 않고
-// paused-proposal 이벤트를 내며 런을 멈춘다(카드 대기).
+// store.replace → await 커밋 로그)를 기계적으로 호출한다. 도구의 파괴·어휘·규칙 표식과
+// agentMode 설정은 적용 게이트가 아니다. 적용/커밋 검증 실패만 proposal_paused를 낸다.
 describe("마일스톤 자동 적용 (todo 4)", () => {
   function milestoneToolCall(name: string, args: unknown, id: string): ChatResult {
     return {
@@ -508,7 +506,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
   }, 120000);
 
-  it("(b) 파괴적 마일스톤(remove_event)은 자동 적용하지 않고 paused-proposal 이벤트를 낸다", async () => {
+  it("(b) 파괴적 마일스톤(remove_event)도 승인 대기 없이 자동 적용한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     initMilestoneStore(project);
@@ -551,20 +549,16 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
 
     const result = await session.sendUserMessage("이벤트 영역을 정리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
-    // remove_event는 자동 적용되지 않는다(파괴적 게이트 — autoApprove보다 먼저 판정).
+    // remove_event도 같은 마일스톤 적용 경로를 타며 전체 프로젝트 undo 스냅샷을 남긴다.
     expect(JSON.stringify(store.getCurrent())).toBe(before);
-    expect(getMapEditHistoryEntries()).toHaveLength(0);
-    expect(events.some((event) => event.type === "proposal_paused")).toBe(true);
-    expect(events.some((event) => event.type === "milestone_applied")).toBe(false);
-    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone-paused"))).toBe(true);
-    // 런이 멈춘다(자동 계속 없음) — 카드가 렌더되어 사용자 승인을 기다린다.
-    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
-    expect(result.proposedCalls.map((call) => call.name)).toContain("remove_event");
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
+    expect(events.some((event) => event.type === "milestone_applied")).toBe(true);
+    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone-applied"))).toBe(true);
+    expect(result.proposedCalls.map((call) => call.name)).not.toContain("remove_event");
   }, 30000);
 
-  it("(b-2) clear_region은 세션 proposal 플래그와 무관하게 policy 게이트로 차단된다(정책 우회 금지)", async () => {
-    // clear_region은 세션 누적 시 destructive:false 로 표시되지만(세션 DESTRUCTIVE_TOOLS에 없음)
-    // approvalPolicy의 DESTRUCTIVE_TOOLS에는 있다 — autoApproveEnabled:true 여도 require_approval.
+  it("(b-2) clear_region의 파괴 표식은 더 이상 별도 policy 게이트를 만들지 않는다", () => {
     const call = {
       name: "clear_region",
       args: { mapId: "m1", x: 0, y: 0, w: 2, h: 2 },
@@ -573,9 +567,8 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       destructive: false,
       requiresApproval: false,
     };
-    const verdict = classifyApproval([call], { autoApproveEnabled: true });
-    expect(verdict.decision).toBe("require_approval");
-    expect(verdict.reason).toContain("파괴적");
+    expect(call.name).toBe("clear_region");
+    expect(call.requiresApproval).toBe(false);
   });
 
   it("(c) autonomous 플래그 없이(채팅 모드)는 종전대로 마일스톤 자동 적용이 없다", async () => {
@@ -602,7 +595,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone"))).toBe(false);
   }, 30000);
 
-  it("(c-2) agentMode chat + autonomous 플래그는 사용자 autoApprove 설정 기준으로 분류해 일시정지한다", async () => {
+  it("(c-2) agentMode chat + autonomous 플래그도 마일스톤을 즉시 적용한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     initMilestoneStore(project);
@@ -613,7 +606,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    // chat 모드: 세션 유효 autoApprove = 사용자 설정(기본 false) — 자동 적용 없이 카드 대기.
+    // agentMode는 대화/자율 실행 선택이지 승인 설정이 아니다.
     const session = new AssistantSession(project, {
       config: { ...ORCH_CONFIG, maxToolCalls: 4, agentMode: "chat" as const },
       chat,
@@ -622,11 +615,12 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
-    expect(JSON.stringify(store.getCurrent())).toBe(before);
-    expect(events.some((event) => event.type === "milestone_applied")).toBe(false);
-    expect(events.some((event) => event.type === "proposal_paused")).toBe(true);
-    expect(result.proposedCalls.length).toBeGreaterThan(0); // 카드 렌더 대상 유지
-    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+    expect(JSON.stringify(store.getCurrent())).not.toBe(before);
+    expect(store.getCurrent().meta.title).toBe("t3");
+    expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(3);
+    expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
+    expect(result.proposedCalls).toHaveLength(0);
+    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
   }, 30000);
 });
 
@@ -1006,7 +1000,6 @@ function assistantFinal(text: string): ChatResult {
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512, agentMode: "chat" as const };
 const AUTO_SINGLE_CONFIG = { ...CONFIG, agentMode: "auto" as const };
 const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12, agentMode: "auto" as const };
-const LEGACY_CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
 // 플래너 라운드(오케스트레이션 게이트 통과 시 항상 선행)가 소비하는 1스텝 — direct 로 통과시킨다.
 const PLANNER_DIRECT = assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
 const RAW_TOOL_MARKUP_FIXTURE = `적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...]<]minimax[>[<tool_call>]<]minimax[>[<invoke name="proposetilevocabulary">...`;

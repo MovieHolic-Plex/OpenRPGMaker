@@ -6,6 +6,8 @@ export type PageConditionContext = {
   readonly mapId: MapId;
   readonly eventId: string;
   readonly page: EventPage;
+  /** 이 이벤트에 NPC 관계(`characterId`)가 연결되어 있는가. 호감도 조건의 UI 게이트에 쓴다. */
+  readonly hostHasCharacterId?: boolean;
 };
 
 export type SwitchConditionParams = PageConditionContext & {

@@ -11,7 +11,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 import type { Project, TileGroupMetadata } from "@/project/types";
 
-const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;
@@ -74,15 +74,15 @@ async function proposedCall(
   return result.proposedCalls[0];
 }
 
-describe("rule approval gate", () => {
-  it("hard set_cluster_rule proposals require approval and show a warning", async () => {
+describe("rule proposal metadata", () => {
+  it("hard set_cluster_rule keeps its audit warning", async () => {
     const call = await proposedCall("set_cluster_rule", () => setClusterRuleArgs("hard"));
 
     expect(call.requiresApproval).toBe(true);
     expect(call.approvalWarning).toContain("강한 규칙");
   });
 
-  it("rule write tools always require approval without a warning unless the cluster rule is hard", async () => {
+  it("rule write tools retain audit metadata without creating an apply gate", async () => {
     const medium = await proposedCall("set_cluster_rule", () => setClusterRuleArgs("medium"));
     const soft = await proposedCall("set_cluster_rule", () => setClusterRuleArgs("soft"));
     const junction = await proposedCall("set_group_junction", () => ({
@@ -100,7 +100,7 @@ describe("rule approval gate", () => {
     expect([medium, soft, junction, overlay].map((call) => call.approvalWarning)).toEqual([undefined, undefined, undefined, undefined]);
   });
 
-  it("ordinary write proposals do not require explicit approval", async () => {
+  it("ordinary write proposals carry no approval metadata", async () => {
     const call = await proposedCall("paint_tiles", (project) => ({
       cells: [{ x: 1, y: 1 }],
       layer: "lower",

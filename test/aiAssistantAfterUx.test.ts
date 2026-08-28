@@ -7,7 +7,7 @@ import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
+import { type ToolContext, type ToolResult } from "@/editor/tools";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -91,8 +91,8 @@ function renderPanel(dock: "glass" | "side" | "float" = "glass"): FakeElement {
     apiKey: "sk-test",
     baseUrl: "x",
     model: "m",
+    authMode: "apiKey",
     agentMode: "chat",
-    autoApprove: false,
   }));
   return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
 }
@@ -192,9 +192,6 @@ describe("Assistant After UX contracts", () => {
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아";
     findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
-
-    findByTestId(panel, "ai-proposal-accept")?.click();
     await flushAsync();
 
     // Message has badge applied

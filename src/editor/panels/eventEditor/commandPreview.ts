@@ -4,7 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
-import { renderFacesetCrop } from "./facesetPreview";
+import { faceDisplayModeOf, renderFacesetCrop } from "./facesetPreview";
 import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
 import {
   actorBattleM2Preview,
@@ -333,11 +333,7 @@ function renderPreviewControlBadge(control: DialogueTextControl): HTMLElement {
 
 function faceStage(cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   // Play mock: face graphic as it will appear next to dialogue — not the editor label card.
-  const mode = /(-full|fullbody|-body)/i.test(cmd.resourceId)
-    ? "full"
-    : /(-bust|-portrait|generated-face-)/i.test(cmd.resourceId)
-      ? "bust"
-      : "chip";
+  const mode = faceDisplayModeOf(cmd.resourceId);
   const whole = mode !== "chip";
   const side = cmd.position === "right" ? "right" : "left";
   const stage = el("div", {
