@@ -1304,6 +1304,22 @@ footer {
 
 }
 
+/* 그룹에 저작한 값이 있음을 접힌 채로 알리는 점. */
+.event-editor .event-editor-settings-accordion-title {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-editor .event-editor-settings-accordion-dot {
+  background: var(--accent);
+  border-radius: 50%;
+  flex: 0 0 auto;
+  height: 5px;
+  width: 5px;
+}
+
 /* 조건 요약 문장 — 켜진 조건을 저장 직전에 한 줄로 확인한다. */
 .event-editor .event-conditions-body {
   display: grid;
