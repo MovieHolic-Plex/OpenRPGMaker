@@ -29,6 +29,15 @@ const DEFAULT_EQUIPMENT_ICON_RESOURCE_BY_ID: Readonly<Record<string, string>> = 
   [EQUIPMENT_MYSTIC_ROBE_ID]: "cc0-jetrel-mystic-robe",
   [EQUIPMENT_TRAVELER_HAT_ID]: "cc0-jetrel-traveler-hat",
   [EQUIPMENT_FOCUS_CHARM_ID]: "cc0-jetrel-focus-charm",
+  equip_iron_shield: "cc0-jetrel-iron-shield",
+  equip_steel_armor: "cc0-jetrel-steel-armor",
+  equip_mage_hat: "cc0-jetrel-mage-hat",
+  equip_gloves: "cc0-jetrel-gloves",
+  equip_boots: "cc0-jetrel-boots",
+  equip_cloak: "cc0-jetrel-cloak",
+  equip_ring: "cc0-jetrel-ring",
+  equip_necklace: "cc0-jetrel-necklace",
+  equip_focus_ring: "cc0-jetrel-focus-ring",
 };
 
 export function ensureDefaultDatabaseIconResources(project: Project): boolean {

@@ -23,6 +23,7 @@ Pick validation based on the touched boundary:
 
 - Type-only or low-risk helper changes: run `npm run typecheck` plus a focused unit test if one exists.
 - Project schema, migration, persistence, defaults, or references: run focused Vitest coverage for the changed path and include save/load or migration evidence.
+- Default item/equipment catalog changes run `test/defaultItemCatalogQuality.test.ts` for Korean copy and shape coherence plus `test/itemRuntimeUsability.test.ts` for real field-menu/battle effect and consumption behavior. Keep the icon-coverage and default-database suites in the same focused gate.
 - Terms/runtime label changes should cover `resolveTerms` defaults and overrides, old JSON with missing `meta.terms`, unknown term roundtrips, and focused DOM/model checks for battle command labels, shop text, inn text, and status/common labels when touched.
 - Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must still produce a `projectLint` error, `commitChangeset` must return `ok:true` for cluster-rule-only hard violations, and the fixed map should return `ok:true` without cluster-rule issues.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
