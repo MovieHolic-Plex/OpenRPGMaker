@@ -78,7 +78,7 @@ test("plays the live Modern Exteriors investigation through its ending", async (
   await expect(presetBar.evaluate((node) => node.tagName)).resolves.toBe("DETAILS");
   await expect(presetBar).not.toHaveAttribute("open", "");
   await expect(presetBar.locator(".follower-preset-chip--monster")).toHaveCount(0);
-  await expect(presetBar).toContainText("원하는 펫/동행자를 누르면 이벤트 끝에 커맨드가 추가됩니다.");
+  await expect(presetBar).toContainText("원하는 동료를 누르면 이벤트 끝에 커맨드가 추가됩니다.");
   await expect(presetBar).not.toContainText("몬스터는 파티 편입 후 자동 줄서기");
   await page.getByTestId("event-editor-cancel").click();
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);

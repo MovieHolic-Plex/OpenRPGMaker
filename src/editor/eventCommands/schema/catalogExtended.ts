@@ -216,24 +216,24 @@ defineCommand({
 defineCommand({
   kind: "addFollower",
   family: "follower",
-  label: "동행자 추가",
+  label: "동료 추가",
   fields: {
     actorId: f.record("주인공", "actor", { optional: true, allowEmpty: true }),
-    // 주인공을 고르지 않으면 이름으로 임시 동행자를 만든다.
+    // 주인공을 고르지 않으면 이름으로 임시 동료를 만든다.
     name: f.text("이름", { optional: true, when: (c) => !c.actorId }),
   },
-  summary: (c, l) => `${c.actorId ? l.recordName(str(c.actorId)) : str(c.name) || "동행자"} 합류`,
+  summary: (c, l) => `${c.actorId ? l.recordName(str(c.actorId)) : str(c.name) || "동료"} 합류`,
 });
 
 defineCommand({
   kind: "removeFollower",
   family: "follower",
-  label: "동행자 제거",
+  label: "동료 제거",
   fields: {
     all: f.bool("전원 제거"),
     name: f.text("이름", { optional: true, when: (c) => c.all !== true }),
   },
-  summary: (c) => (c.all === true ? "동행자 전원 제거" : `${str(c.name) || "동행자"} 제거`),
+  summary: (c) => (c.all === true ? "동료 전원 제거" : `${str(c.name) || "동료"} 제거`),
 });
 
 // ── 연출 ──────────────────────────────────────────────────────────

@@ -10,7 +10,7 @@ import { holdScreenFlash } from "@/player/playSceneScreenEffects";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
-import { resetFollowerTrailNearPlayer } from "@/project/followers";
+import { removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { maybeAutosave } from "@/player/autosave";
 
@@ -60,7 +60,10 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   scene.tileY = destination.y;
   scene.session.x = destination.x;
   scene.session.y = destination.y;
-  resetFollowerTrailNearPlayer(scene.session, targetMap);
+  if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
+    removeFollowerFromSession(scene.session, { all: true });
+  }
+  resetFollowerTrailNearPlayer(scene.session, targetMap, project.system.companions);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   scene.player.setPosition(characterSpriteX(destination.x), characterSpriteY(destination.y));

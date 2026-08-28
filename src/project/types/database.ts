@@ -1082,6 +1082,8 @@ export interface SystemRecords {
   museum?: MuseumSystemConfig;
   /** Out-of-battle party monster care (walk ticks + feed/toy items). */
   monsterCare?: MonsterCareConfig;
+  /** 필드에서 플레이어를 따라오는 동료(액터)의 전역 규칙. 생략 시 간격 1칸·인원 무제한. */
+  companions?: CompanionConfig;
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */
   skillSystem?: { enabled: boolean };
   /** 자자가 골람 역할별 글꼴. 생략·기본값은 저장하지 않으며 tokens.css 기본 토큰이 그대로 산다. */
@@ -1118,6 +1120,27 @@ export interface SystemActionCombat {
   /** 가드 유지 초당 스태미나 소모. 기본 20. 0이면 공짜 가드. */
   guardStaminaDrainPerSec?: number;
   hud?: ActionCombatHudConfig;
+}
+
+/**
+ * 동료 추종 규칙. 추종은 경로탐색이 아니라 플레이어 이동 궤적(followerTrail) 재생이므로,
+ * 간격은 "몇 번째 궤적 점을 쓰는가"로 표현된다. 궤적 길이가 유한(MAX_FOLLOWER_TRAIL_POINTS)해서
+ * `gap * maxCompanions` 가 그 길이를 넘으면 뒷 동료가 플레이어 위에 겹친다 — 저작 시점에 거부한다.
+ */
+export interface CompanionConfig {
+  /** 동시에 따라올 수 있는 액터 동료 수 상한. 생략 시 무제한. 몬스터 열차는 monsterParty 가 지배하므로 세지 않는다. */
+  maxCompanions?: number;
+  /** 동료 사이 간격(칸). 1 = 바로 뒤, 4 = 4칸씩 벌어져 따라온다. 생략·1 이면 기존 동작과 동일. */
+  gap?: number;
+  /** 상한 초과 시 정책. "reject"(기본) = 새 동료를 붙이지 않음, "replaceOldest" = 가장 먼저 붙은 동료를 밀어냄. */
+  overflow?: "reject" | "replaceOldest";
+  /**
+   * 대형. "line"(기본) = 궤적을 따라 일렬. "beside" = 플레이어 사방 인접 칸에 붙어 다닌다
+   * (인접 칸이 4개뿐이라 앞 4명만 옆에 서고 나머지는 일렬로 떨어진다. gap 은 무시된다).
+   */
+  formation?: "line" | "beside";
+  /** true 면 맵 이동 시 액터 동료를 해제한다. 생략 시 유지(기존 동작). */
+  clearOnTransfer?: boolean;
 }
 
 export interface MonsterCareConfig {
