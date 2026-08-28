@@ -269,6 +269,8 @@ function renderAdvancedConditionContent(
         className: "event-advanced-condition-control friendship",
         npcKeyTestId: `event-page-advanced-condition-friendship-npc-key-${listIndex}`,
         valueTestId: `event-page-advanced-condition-friendship-value-${listIndex}`,
+        hostHasCharacterId: context.hostHasCharacterId === true,
+        hintTestId: `event-page-advanced-condition-friendship-requires-character-id-${listIndex}`,
       });
     case "battleResult":
       return renderBattleResultCondition(condition, (next) => replaceConditionAt(context, index, next), {

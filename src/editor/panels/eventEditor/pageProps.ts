@@ -820,6 +820,18 @@ function selectRailGroup(group: HTMLElement, slug: string, openKey: string): voi
   activeEventRailGroup.set(openKey, slug);
 }
 
+/**
+ * 이 앵커를 가진 레일 그룹을 열어 준다. 그룹은 `<details>` 가 아니라 CSS 해생(`is-open`) 이라
+ * 검증 이슈 네뱄게이션의 details 여는 로직은 그룹을 못 여는다 — 닫힌 그룹 속 입력에 포서스를 주면
+ * 사용자 눈에는 아무 일도 안 어나나는 것으로 보인다.
+ */
+export function openEventRailGroupFor(target: HTMLElement): void {
+  const group = target.closest<HTMLElement>(".event-editor-settings-accordion-group");
+  const slug = group?.dataset.railGroup;
+  if (!group || !slug) return;
+  selectRailGroup(group, slug, group.parentElement?.dataset.railKey ?? "");
+}
+
 export function appendEventRailGroup(
   propsRoot: HTMLElement,
   spec: EventRailGroupSpec,

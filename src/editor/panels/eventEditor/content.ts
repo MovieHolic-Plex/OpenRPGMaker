@@ -40,6 +40,7 @@ import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   appendEventRailGroup,
+  openEventRailGroupFor,
   renderClassicPageTabStrip,
   renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
@@ -664,6 +665,8 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
       target = root.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
     }
     if (!target) return;
+    // 앵커가 닫힌 설정 레일 그룹 속이면 그 그룹을 여는 것까지 해야 사용자가 고칠 자리를 볼 수 있다.
+    openEventRailGroupFor(target);
     for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
       if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
     }

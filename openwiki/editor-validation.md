@@ -40,6 +40,8 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 
 ## Validation Expectations
 
+- Draft validation reports a friendship page/fork condition that can never be true as warning code `condition.friendship.no-character-id` — empty `npcKey` plus a host event without `characterId` fails closed at runtime (`resolveSocialKey` never falls back to `event.id`). The issue field anchor is `event-page-friendship-condition-npc-key`, and the editor shows the same fact inline through `event-condition-friendship-requires-character-id`. Contract test: `test/friendshipConditionGate.test.ts`.
+
 - Database visual-shell changes must enumerate every registered tab from the product registry rather than a hand-picked subset. At desktop and narrow acceptance widths, assert one invariant `.db-shared-workspace` frame, stable sidebar/workspace geometry, and no document overflow, then capture and inspect screenshots for every tab. Title-screen changes additionally require the real test-play window at its authored runtime viewport.
 
 
