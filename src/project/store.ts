@@ -6,6 +6,7 @@ import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/ass
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
+import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
@@ -1045,6 +1046,9 @@ class ProjectStore {
       removeLegacySpriteReferences(this.current),
       ensureBundledResourceProfiles(this.current),
       ensureDefaultDatabaseIconResources(this.current),
+      // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
+      // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
+      ensureBundledBattleAnimations(this.current),
     ].some(Boolean);
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
     // 쪼갤 것이 없으면 await 조차 하지 않는다 — 로드 경로에 자시합을 더하면 지속화 순서가 바뀐다.
