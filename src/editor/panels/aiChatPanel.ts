@@ -46,6 +46,7 @@ import { toast } from "@/util/toast";
 import {
   AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
+  type AuditEntry,
   type ProposedCall,
   type SessionEvent,
   type TurnResult,
@@ -56,13 +57,14 @@ import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
+  conversationScopeKey,
   deriveTitle,
   loadLatestConversation,
-  projectConversationContextKey,
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
+import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import {
   buildInterviewKickoff,
   buildStructureLearnKickoff,
@@ -330,24 +332,38 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   let disposed = false;
-  const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
+  const initialProjectIdentity = store.getProjectIdentity();
+  const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
   const latestConversation = loadLatestConversation();
   const autoRestoreConversation =
     latestConversation?.projectContextKey === currentProjectContextKey ? latestConversation : null;
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
   // '새 대화' 시 재발급된다.
   let conversationId = autoRestoreConversation?.id ?? genId("conv");
+  // 이 대화가 속한 프로젝트. 저장 시점의 store 를 다시 읽으면, 프로젝트를 바꾼 직후 저장되는
+  // 이전 대화가 **새 프로젝트 키로** 기록돼 다음 부팅에서 남의 프로젝트에 복원된다.
+  let conversationScope = currentProjectContextKey;
+  // 프로젝트 전환 리셋은 저장 범위 키가 아니라 런타임 identity id로 판정한다. 같은 모양의 새
+  // 로컬 프로젝트는 scope가 같아도 새 identity를 발급받으므로 반드시 대화를 갈아야 한다.
+  let projectIdentityId = initialProjectIdentity.id;
+  type ConversationPersistTarget = {
+    readonly id: string;
+    readonly scope: string;
+    readonly entries?: readonly AuditEntry[];
+  };
   // 현재까지의 전체 대화(폐기된 세션 + 현재 세션)를 대화 기록 저장소에 저장한다.
-  const persistConversation = (): void => {
-    const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
+  const persistConversation = (target?: ConversationPersistTarget): void => {
+    const entries = target?.entries
+      ? [...target.entries]
+      : [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
     if (entries.length === 0) return;
     saveConversation({
-      id: conversationId,
+      id: target?.id ?? conversationId,
       title: deriveTitle(entries),
       model: loadAiConfig().model,
       savedAt: Date.now(),
       entries: [...entries],
-      projectContextKey: projectConversationContextKey(store.getCurrent()),
+      projectContextKey: target?.scope ?? conversationScope,
     });
     refreshExportButton();
   };
@@ -540,8 +556,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
           getViewport: () => getEditorMapViewport(),
-
+          // 맵 이동은 세션을 끊지 않지만 시스템 프롬프트는 톨려야 한다 — 고정 값이면
+          // 타일 어휘·구조 키트·맵 요약이 세션 시작 맵에 머버 라이브 뷰포트와 어긋난다.
+          getCurrentMapId: () => editorState.get().currentMapId ?? null,
         },
+        // 감사 항목에 남길 턴 상황의 선택 영역 — 컨텍스트 꼬리표와 같은 조건(활성 선택만).
+        getTurnSelection: () => (selectionTaskActive ? mapContext().selection : null),
         // 자율 실행 드라이버(todo 2): 패널 세션은 플래그 autonomous 로 진입하고
         // pendingSends 큐를 peek 전용 훅으로 노출한다 — 드라이버가 대기 메시지를 보면
         // 자동 계속을 양보하고 이 드레인 루프가 메시지를 전달한다(사용자 우선, 이중 전송 불가).
@@ -632,6 +652,56 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
+  };
+
+  /**
+   * 새 대화 시작 — 헤더의 ＋, 액션 모드(모든 도키에서 열림), 그리고 프로젝트 전환이 공유하는 한 경로.
+   * 닫혀지는 대화는 **자기 프로젝트 키**로 보관된 뒤에 새 스코프로 갈아끓는다.
+   */
+  const startNewConversation = (reason: "manual" | "project-switch"): void => {
+    // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
+    // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
+    const hadConversation = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
+    if (reason === "project-switch") {
+      // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 늦은 finally는 시작 당시 target만 쓴다.
+      activeAbortController?.abort();
+      activeAbortController = null;
+      activeSelectionRegionController = null;
+      activeSelectionRegionKey = null;
+      pendingSends.length = 0;
+      refreshQueueIndicator();
+      turnBusy = false;
+      endTurnProgress();
+      refreshAbortButton();
+    }
+    persistConversation();
+    dropSession(controller);
+    endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
+    controller.auditHistory = [];
+    controller.statusTimeline = [];
+    conversationId = genId("conv");
+    const nextIdentity = store.getProjectIdentity();
+    projectIdentityId = nextIdentity.id;
+    conversationScope = conversationScopeKey(nextIdentity, store.getCurrent());
+    setPendingProposalMessage(null);
+    setLastAppliedProposalMessage(null);
+    proposalApi.clearInlineActionsIfMine();
+    proposalHost.replaceChildren();
+    closeProposalModal();
+    chipsHost.replaceChildren();
+    log.replaceChildren();
+    startScreen = null;
+    closeToolActivity();
+    ensureStartScreen();
+    setStatus(reason === "project-switch" ? "새 프로젝트 — 새 대화" : "새 대화");
+    refreshExportButton();
+    syncGlassIdle();
+    syncConversationState();
+    if (reason === "manual") {
+      toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
+    } else if (hadConversation) {
+      toast("프로젝트가 바뀌어 새 대화를 시작합니다. 이전 대화는 그 프로젝트 기록에 저장됐습니다.", "ok");
+    }
   };
 
   // 수동 대화 복원(id 지정)은 호출 지점이 없다 — 감독 콘솔 전환에서 오버레이 시작 화면의
@@ -943,6 +1013,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     turnBusy = true;
+    const turnConversationId = conversationId;
+    const turnConversationScope = conversationScope;
+    const auditHistoryAtTurnStart = [...controller.auditHistory];
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
@@ -1272,7 +1345,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     } finally {
       ghostPreviewUpdater.cancel();
-      if (!ownsTurn(true)) return;
+      const turnEntries = [...auditHistoryAtTurnStart, ...session.getAuditEntries()];
+      if (!ownsTurn(true)) {
+        // 프로젝트 전환이 ownership을 먼저 끊어도 늦게 정착한 결과는 시작 당시 대화에만 저장한다.
+        if (!disposed) persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries });
+        return;
+      }
       endTurnProgress();
       if (activeAbortController === abortController) activeAbortController = null;
       turnBusy = false;
@@ -1282,7 +1360,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (runOpts?.autonomous) endAutonomousRun();
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (collapsed) panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
-      persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
+      persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.
       // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
       const cfg = loadAiConfig();
       const audit = session.getAuditEntries();
@@ -1303,7 +1381,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void recordAiActivity({
         channel: "chat",
         instruction: requestText,
-        projectContextKey: projectConversationContextKey(store.getCurrent()),
+        projectContextKey: turnConversationScope,
         model: cfg.model,
         liteModel: cfg.liteModel,
         result: {
@@ -1398,6 +1476,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    const regionConversationId = conversationId;
+    const regionConversationScope = conversationScope;
     const abortController = new AbortController();
     const selectionKey = `${selection.mapId}:${selection.region.x}:${selection.region.y}:${selection.region.width}:${selection.region.height}`;
     activeAbortController = abortController;
@@ -1417,7 +1497,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     revealVolatileZone();
     closeToolActivity();
     appendBubble("user", text);
-    controller.auditHistory.push({ kind: "user", text, at: new Date().toISOString() });
+    controller.auditHistory.push({
+      kind: "user",
+      text,
+      at: new Date().toISOString(),
+      context: buildConversationTurnContext(store.getCurrent(), {
+        mapId: selection.mapId,
+        viewport: getEditorMapViewport(),
+        selection: { mapId: selection.mapId, ...selection.region },
+      }),
+    });
     beginTurnProgress();
     refreshAbortButton();
     setStatus("영역 작업 중…");
@@ -1552,7 +1641,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       turnBusy = false;
       refreshAbortButton();
       if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
-      persistConversation();
+      persistConversation({ id: regionConversationId, scope: regionConversationScope });
       if (!cancelled) notifyIfObscuredByTestPlay();
       drainPendingSends();
       if (collapseAfterAiWork) {
@@ -1842,6 +1931,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const unsubscribeContextStore = store.subscribe(() => {
     refreshContextChips();
     refreshComposerChips();
+    // 프로젝트가 바뀌었으면(새 프로젝트 생성·다른 작업 열기·로엄 복원) 대화를 새로 시작한다 —
+    // 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 전부 무의미하거나 해롭다.
+    const identity = store.getProjectIdentity();
+    if (identity.id !== projectIdentityId) startNewConversation("project-switch");
   });
   const activateSelectionTaskContext = (focus = true): void => {
     if (!editorState.get().selection) return;
@@ -2008,27 +2101,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       "aria-label": "새 대화 시작",
     },
     dataset: { testid: "ai-new-session" },
-    on: {
-      click: () => {
-        persistConversation();
-        dropSession(controller);
-        endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
-        controller.auditHistory = [];
-        conversationId = genId("conv");
-        setPendingProposalMessage(null);
-        setLastAppliedProposalMessage(null);
-        proposalApi.clearInlineActionsIfMine();
-        proposalHost.replaceChildren();
-        closeProposalModal();
-        chipsHost.replaceChildren();
-        log.replaceChildren();
-        startScreen = null;
-        ensureStartScreen();
-        setStatus("새 대화");
-        refreshExportButton();
-        toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
-      },
-    },
+    on: { click: () => startNewConversation("manual") },
   });
   abortButton = el("button", {
     class: "ai-assistant-action ai-abort-button",
@@ -2168,6 +2241,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const sharedMenuActions: AiActionMenuActions = {
+    startNewChat: () => startNewConversation("manual"),
     undoLast: () => undoLastButton.click(),
     exportAudit: () => exportButton?.click(),
     toggleDock: () => onDockToggleClick(),
@@ -2279,6 +2353,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerChips,
     queueIndicator,
     statusGroup,
+    onNewChat: () => startNewConversation("manual"),
     onPopoverChange: () => syncCommandBarClearance(),
   });
   const commandBar = composerShell.commandBar;

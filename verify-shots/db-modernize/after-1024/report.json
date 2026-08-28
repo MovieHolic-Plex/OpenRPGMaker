@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "life-crafting",
+    "ok": true,
+    "metrics": {
+      "scrollH": 640,
+      "clientH": 640,
+      "overflow": false,
+      "topLevel": [
+        "div.db-ws-frame"
+      ],
+      "controls": {
+        "inputs": 1,
+        "selects": 0,
+        "buttons": 25,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 4
+      }
+    }
+  }
+]

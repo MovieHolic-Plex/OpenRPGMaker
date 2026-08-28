@@ -55,17 +55,27 @@
   overflow-y: auto;
 }
 
+/* 제목·닫기 한 줄 + 메타(단계·좌표·타일 분포) 한 줄. 380px 팝오버에서 다섯 덩어리를 한 줄에
+   밀어 넣으면 제목과 좌표 칩이 서로를 밀어내 아무것도 읽히지 않았다. */
 .region-task-header {
-  align-items: center;
+  align-items: stretch;
   display: flex;
-  gap: var(--space-2);
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .region-task-title-row {
   align-items: center;
-  display: inline-flex;
-  flex: 0 1 auto;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+}
+
+.region-task-meta-row {
+  align-items: center;
+  display: flex;
   gap: var(--space-2);
   min-width: 0;
 }
@@ -594,8 +604,15 @@
 /* ── 추천 카테고리 줄 (Tier 1: Filter Pills) ── */
 .region-task-categories {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--space-1);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+.region-task-categories .region-task-category-chip {
+  flex: 0 0 auto;
 }
 .region-task-category-chip {
   align-items: center;
@@ -885,20 +902,22 @@
 .region-task-room-checkpoint-preview canvas { height: auto; image-rendering: pixelated; max-width: 100%; }
 .region-task-room-checkpoint-caption { color: var(--editor-text-muted); font-size: 11px; }
 
-/* 액션 1행 — 지금 눌러야 할 것 하나만 강조색. 스크롤 하단에 고정 */
+/* 액션 1행 — 지금 눌러야 할 것 하나만 강조색. 스크롤포트 바닥에 full-bleed 로 고정한다.
+   진단(아래 접힌 details)을 펼쳐 읽는 동안에도 「적용」이 화면에서 사라지지 않아야 한다. */
 .region-task-compare-actions {
   align-items: center;
   background: var(--bg-overlay);
   border-top: 1px solid var(--border-subtle);
-  bottom: 0;
+  bottom: calc(var(--space-4) * -1);
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: flex-end;
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
+  margin-block-start: var(--space-2);
+  margin-inline: calc(var(--space-4) * -1);
+  padding: var(--space-2) var(--space-4);
   position: sticky;
-  z-index: var(--z-base);
+  z-index: 6;
 }
 .region-task-apply {
   background: var(--accent);
@@ -1008,4 +1027,39 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   padding-top: var(--space-2);
+}
+
+/* ── 검토 단계: 결정 우선 배치 ────────────────────────────────────────────────
+   미리보기 → 변경 목록 → 게이트 → 결정 버튼 → (접힌) 진단 순서. 결정 버튼 줄은 팝오버
+   스크롤포트 바닥에 고정해서, 진단을 펼쳐 읽는 동안에도 「적용」이 화면에서 사라지지 않게 한다. */
+.region-task-gates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.region-task-diagnostics {
+  border-top: 1px solid var(--editor-line);
+  padding-top: var(--space-2);
+}
+.region-task-diagnostics-summary {
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 600 11px/1.4 var(--font-ui, system-ui, sans-serif);
+  list-style: none;
+  padding: 2px 0;
+}
+.region-task-diagnostics-summary::-webkit-details-marker {
+  display: none;
+}
+.region-task-diagnostics-summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-inline-end: var(--space-1);
+}
+.region-task-diagnostics[open] > .region-task-diagnostics-summary::before {
+  content: "▾";
+}
+.region-task-diagnostics-summary:hover {
+  color: var(--editor-text);
 }

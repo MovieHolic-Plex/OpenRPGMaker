@@ -16,7 +16,9 @@ export function attachWindowDrag(handle: HTMLElement, windowEl: HTMLElement): vo
   handle.addEventListener("pointerdown", (event) => {
     if (windowEl.classList.contains("is-fullscreen")) return;
     const target = event.target;
-    if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a")) return;
+    // summary 도 제외한다: 여기서 setPointerCapture + preventDefault 를 하면 크롬이 뒤따르는
+    // mousedown/click 을 삼켜 헤더 안 `<details>` 팝오버(검토 알림 종)가 열리지 않는다.
+    if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a, summary")) return;
     const rect = windowEl.getBoundingClientRect();
     drag = {
       pointerId: event.pointerId,

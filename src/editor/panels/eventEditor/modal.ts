@@ -18,11 +18,15 @@ import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import {
-  navigateToEventDraftIssue,
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
   renderEventEditorStable,
 } from "./content";
+import {
+  navigateToEventDraftIssue,
+  refreshEventValidationBell,
+  renderEventValidationBell,
+} from "./validationBell";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
 import { installEventEditorCustomSelects } from "./customSelect";
@@ -196,6 +200,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
     restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
     refreshHeaderPageSegments(header, request);
+    refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
     refreshModalFooterStatus(footer, request);
     refreshModalHeaderSaveState(header, footer);
   };
@@ -331,6 +336,7 @@ function renderModalHeader(
       el("div", {
         class: "header-actions",
         children: [
+          renderEventValidationBell(),
           el("button", {
             class: "btn ghost event-editor-header-test",
             text: "테스트",

@@ -130,22 +130,15 @@ async function addTextCommand(page: Page, speaker: string, body: string): Promis
   await fillOpenTextDialog(page, speaker, body, 0);
 }
 
+// 전용 「문장 표시」 창을 함께 기다리던 분기는 삭제했다 — 그 창은 프로덕션 호출부가 없어
+// 모듈째로 지웠고, 브라우저에서 `event-command-text-dialog` 는 항상 count=0 이었다.
 async function fillOpenTextDialog(page: Page, speaker: string, body: string, baselineEditDialogs: number): Promise<void> {
   await expect
     .poll(async () => {
-      const textDialogs = await page.getByTestId("event-command-text-dialog").count();
       const editDialogs = await page.getByTestId("event-command-edit-dialog").count();
-      return textDialogs + Math.max(0, editDialogs - baselineEditDialogs);
+      return Math.max(0, editDialogs - baselineEditDialogs);
     })
     .toBeGreaterThan(0);
-  const textDialog = page.getByTestId("event-command-text-dialog").last();
-  if (await textDialog.isVisible().catch(() => false)) {
-    await textDialog.getByTestId("event-command-text-speaker").fill(speaker);
-    await textDialog.getByTestId("event-command-text-body").fill(body);
-    await textDialog.getByTestId("event-command-text-ok").click();
-    await expect(textDialog).toBeHidden();
-    return;
-  }
   const commandDialog = page.getByTestId("event-command-edit-dialog").last();
   const speakerInput = commandDialog.locator("input").first();
   const bodyInput = commandDialog.locator("textarea").first();
@@ -186,10 +179,9 @@ async function addChoiceBranchText(page: Page, branch: 1 | 2, speaker: string, b
   const branchWrap = page.getByTestId(`event-choice-branch-${branch}`).last();
   await expect
     .poll(async () => {
-      const textDialogs = await page.getByTestId("event-command-text-dialog").count();
       const editDialogs = await page.getByTestId("event-command-edit-dialog").count();
       const inlineBodies = await branchWrap.locator("textarea").count();
-      return textDialogs + Math.max(0, editDialogs - baselineEditDialogs) + inlineBodies;
+      return Math.max(0, editDialogs - baselineEditDialogs) + inlineBodies;
     })
     .toBeGreaterThan(0);
   if ((await branchWrap.locator("textarea").count()) > 0) {

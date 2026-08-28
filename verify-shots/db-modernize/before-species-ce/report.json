@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "monster-species",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-collection-gate-warn",
+        "div.db-life-header",
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 15,
+        "selects": 2,
+        "buttons": 23,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 2
+      }
+    }
+  },
+  {
+    "slug": "common-events",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "h3.",
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 3,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  }
+]
