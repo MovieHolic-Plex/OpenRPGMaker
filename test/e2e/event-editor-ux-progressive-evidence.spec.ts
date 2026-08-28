@@ -169,12 +169,12 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   await screenshotEvidence(page, EVIDENCE_DIR, "03-movement-expanded.png");
   await modalShot(page, "03b-modal-only-movement-open.png");
 
-  // 4) Aux preview open
-  const preview = modal.getByTestId("event-script-live-preview");
-  await preview.locator("summary").click({ force: true });
-  await page.waitForTimeout(250);
-  await screenshotEvidence(page, EVIDENCE_DIR, "04-aux-preview-open.png");
-  await modalShot(page, "04b-modal-only-aux-preview.png");
+  // 4) Page preview view open
+  await modal.getByTestId("event-view-toggle-preview").click({ force: true });
+  await expect(modal.getByTestId("event-page-preview")).toBeVisible();
+  await screenshotEvidence(page, EVIDENCE_DIR, "04-page-preview-open.png");
+  await modalShot(page, "04b-modal-only-page-preview.png");
+  await modal.getByTestId("event-view-toggle-storyboard").click({ force: true });
 
   // 5) Flow exclusive
   const flow = modal.getByTestId("event-script-flowchart");

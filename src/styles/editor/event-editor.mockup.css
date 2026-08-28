@@ -1314,6 +1314,18 @@
   overflow: auto;
 }
 
+.event-editor .event-contents-fieldset > .event-page-preview-host {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-editor .event-contents-fieldset > .event-page-preview-host[hidden] {
+  display: none !important;
+}
+
 /* 목록 모드에서는 빈 스토리보드 호스트가 콘텐츠 트랙을 차지하지 않게 통째로 접는다. */
 .event-editor .event-contents-fieldset:has(.event-storyboard[hidden]) > .event-storyboard-host {
   display: none;

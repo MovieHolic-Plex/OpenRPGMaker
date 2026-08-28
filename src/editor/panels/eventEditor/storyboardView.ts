@@ -17,7 +17,7 @@ import { el } from "@/util/dom";
 import { commandSummary } from "./commandSummary";
 import { commandKindLabel } from "./options";
 
-export type StoryboardMode = "storyboard" | "list";
+export type StoryboardMode = "storyboard" | "list" | "preview";
 
 const MODE_KEY = "oprn:storyboard-mode";
 
@@ -29,7 +29,9 @@ export function loadStoryboardMode(): StoryboardMode {
   return "storyboard";
 }
 
+/** 미리보기는 저작 뷰가 아니라 확인 뷰라서 다음 열기까지 남기지 않는다. */
 export function saveStoryboardMode(mode: StoryboardMode): void {
+  if (mode === "preview") return;
   try { localStorage.setItem(MODE_KEY, mode); } catch { /* ignore */ }
 }
 
@@ -312,8 +314,8 @@ export function renderViewToggle(
   current: StoryboardMode,
   onChange: (next: StoryboardMode) => void
 ): HTMLElement {
-  const modes: readonly StoryboardMode[] = ["list", "storyboard"];
-  const labels: Record<StoryboardMode, string> = { list: "목록", storyboard: "스토리" };
+  const modes: readonly StoryboardMode[] = ["list", "storyboard", "preview"];
+  const labels: Record<StoryboardMode, string> = { list: "목록", storyboard: "스토리", preview: "미리보기" };
   const bar = el("div", {
     class: "seg event-view-toggle",
     attrs: { role: "group", "aria-label": "보기 방식" },

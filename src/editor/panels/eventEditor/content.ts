@@ -28,7 +28,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
-import { renderEventScriptModernViews } from "./eventScriptModernViews";
+import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
@@ -156,6 +156,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
+  const previewHost = el("div", {
+    class: "event-page-preview-host",
+    dataset: { testid: "event-page-preview-host" },
+  });
   let currentMode: StoryboardMode = storyboardMode;
   const makeStoryboard = () =>
     renderStoryboard(activePage.commands, {
@@ -178,9 +182,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   let storyboardEl = makeStoryboard();
   let viewToggle = renderViewToggle(currentMode, (next) => { currentMode = next; applyViewMode(); });
   function applyViewMode(): void {
+    const isPreview = currentMode === "preview";
     const isStoryboard = currentMode === "storyboard";
-    cmdList.hidden = isStoryboard;
+    cmdList.hidden = isStoryboard || isPreview;
     storyboardEl.hidden = !isStoryboard;
+    previewHost.hidden = !isPreview;
     const nextToggle = renderViewToggle(currentMode, (n) => { currentMode = n; applyViewMode(); });
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
@@ -191,6 +197,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       storyboardEl.hidden = false;
     } else {
       storyboardEl.replaceChildren();
+    }
+    if (isPreview) {
+      previewHost.replaceChildren(renderEventPagePreview({ mapId, eventId, page: activePage }));
+    } else {
+      previewHost.replaceChildren();
     }
   }
   storyboardHost.append(storyboardEl);
@@ -248,8 +259,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       attrs: { "aria-label": "이 페이지가 하는 일" },
       dataset: { testid: "event-script-canvas" },
       children: [
-        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle),
+        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle, () => {
+          currentMode = "preview";
+          applyViewMode();
+          previewHost.scrollIntoView({ block: "nearest" });
+        }),
         storyboardHost,
+        previewHost,
         cmdList,
       ],
     })
@@ -309,6 +325,7 @@ function renderCommandToolbar(
   eventId: string,
   page: EventPage,
   viewToggle?: HTMLElement,
+  onOpenPreview?: () => void,
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected, .is-selected");
@@ -374,12 +391,12 @@ function renderCommandToolbar(
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
-      renderCommandAuxGroup(),
+      renderCommandAuxGroup(onOpenPreview),
     ],
   });
 }
 
-function renderCommandAuxGroup(): HTMLElement {
+function renderCommandAuxGroup(onOpenPreview?: () => void): HTMLElement {
   const commandsColumn = (): HTMLElement | null => document.querySelector(".event-editor-commands-column");
   const open = (selector: string): void => {
     const column = commandsColumn();
@@ -395,7 +412,7 @@ function renderCommandAuxGroup(): HTMLElement {
     attrs: { role: "group", "aria-label": "보조 도구" },
     children: [
       toolbarButton("✧", "AI 명령", "event-command-quick-ai", () => open("[data-testid='ai-event-assist']")),
-      toolbarButton("</>", "스크립트 보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),
+      toolbarButton("▶", "미리보기", "event-command-quick-preview", () => onOpenPreview?.(), false, false, "이 페이지가 하는 일을 차례대로 보여줍니다"),
       toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
   });
@@ -412,7 +429,7 @@ function renderEventToolsMenu(
     class: "event-editor-command-tools-popover event-editor-aux-tools",
     children: [
       renderEventAiAssist({ mapId, eventId, page, actions, cmdList }),
-      renderEventScriptModernViews({ mapId, eventId, page }),
+      renderEventScriptFlowchart({ mapId, eventId, page }),
       renderFollowerPresetBar({
         insertCommandsAt: (index, commands) => {
           for (let i = 0; i < commands.length; i += 1) {
@@ -437,7 +454,7 @@ function renderEventToolsMenu(
       el("summary", {
         class: "event-editor-command-tools-summary",
         text: "도구",
-        attrs: { title: "AI, 미리보기, 플로우와 특수 템플릿" },
+        attrs: { title: "AI, 플로우와 특수 템플릿" },
       }),
       auxTools,
     ],

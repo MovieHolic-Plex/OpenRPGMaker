@@ -157,14 +157,13 @@ async function openEventEditor(page: Page, mapId: string): Promise<Locator> {
   return editor;
 }
 
-/** Prefer live preview; fall back to flowchart / AI chip if preview is absent. */
+/** Prefer the flowchart chip; fall back to the AI chip when absent. */
 async function openAuxChip(editor: Locator): Promise<Locator> {
   const shell = editor.getByTestId("event-editor-aux-tools");
   const shellOpen = await shell.evaluate((node) => node instanceof HTMLDetailsElement && node.open);
   if (!shellOpen) await shell.locator(":scope > summary").click();
 
   const candidates = [
-    "event-script-live-preview",
     "event-script-flowchart",
     "ai-event-assist",
   ] as const;
