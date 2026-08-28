@@ -219,7 +219,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
-      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace };
+      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
     },
     [PROJECT_URL, `runtime-qa:${scenario.id}`],
   );

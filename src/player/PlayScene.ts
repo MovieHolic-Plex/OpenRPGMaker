@@ -6,6 +6,7 @@ import {
 } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
 import { store } from "@/project/store";
+import { resolvePlayResolution } from "@/project/playResolution";
 import { startSession, type PlaySession } from "@/project/session";
 import { Input } from "@/player/input";
 import type { StepResult } from "@/player/interpreter";
@@ -179,6 +180,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     };
     reportStage("map");
     const project = store.getCurrent();
+    const qaInstrumentation = this.game.registry.get("qaInstrumentation") === true;
+    const playResolution = resolvePlayResolution(project.system);
     registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
     this.tileLayer = this.add.container(0, 0);
@@ -189,7 +192,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.runtimeDom = new RuntimeDomOverlay(() => {
       const host: unknown = this.game.registry.get("dialogueHost");
       return host instanceof HTMLElement ? host : undefined;
-    });
+    }, { qaInstrumentation, playResolution });
     this.session = this.initialSession(project);
     this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
     // dialogueHost 는 player.ts 가 게임 생성 후 registry 에 넣으므로 여기선 아직 없을 수 있다.

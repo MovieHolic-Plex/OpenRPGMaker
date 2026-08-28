@@ -78,6 +78,8 @@ export type PlayerRunControls = {
 };
 
 export type RenderPlayerOptions = {
+  /** Explicit export-QA capability. Normal exported players must leave this false. */
+  readonly qaInstrumentation?: boolean;
   readonly onExit?: () => void;
   /** Fires only after the current run has reached a ready PlayScene. */
   readonly onPlayBootSuccess?: () => void;
@@ -250,6 +252,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       loading.setProgress(0.08);
       bootDiag("engine", true, { detail: "startPlayGame" });
       const nextGame = await startPlayGame(phaserContainer, session, {
+        qaInstrumentation: options.qaInstrumentation,
         initialEventTestId: eventTestId,
         trackGlobalGame: options.trackGlobalGame,
         onPlayLoadProgress: (ratio: number) => {

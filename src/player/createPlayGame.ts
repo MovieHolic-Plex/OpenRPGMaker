@@ -5,6 +5,8 @@ import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
 
 export type PlayGameBootOptions = {
+  /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
+  readonly qaInstrumentation?: boolean;
   readonly initialEventTestId?: string;
   /** PlayScene preload progress 0..1 (optional UI hook). */
   readonly onPlayLoadProgress?: (ratio: number) => void;
@@ -38,6 +40,9 @@ export async function createPlayGame(
     scene: [PlayScene],
     callbacks: {
       preBoot: (game) => {
+        if (options.qaInstrumentation === true) {
+          game.registry.set("qaInstrumentation", true);
+        }
         if (initialSession) {
           game.registry.set("initialSession", initialSession);
         }
