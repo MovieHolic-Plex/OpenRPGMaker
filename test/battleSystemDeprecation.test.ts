@@ -125,3 +125,62 @@ describe("action combat deprecation", () => {
     expect(isActionCombatMap(project, map)).toBe(false);
   });
 });
+
+describe("shipped project battle skin authoring", () => {
+  it("출하 프로젝트 팩터리는 지원 중인 배틀 스킨만 저작한다", async () => {
+    const { Module } = await import("node:module");
+    const defaults = await import("@/project/defaults");
+    const villageShoppingStreet = await import("@/editor/content/villageShoppingStreetBuild");
+    const { createSkyStairProject } = await import("@/editor/content/skyStairGame");
+    // Covered: createBlankProject, createDbExtractedHouseTemplateProject, createFarmingDemoProject,
+    // createHouseTemplateGalleryProject, createLogCabinShowcaseProject, createMarketTownProject,
+    // createVillageShoppingStreetProject, createRetroHouseShowcaseProject, createSampleAdventureProject,
+    // createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSnowMountain60Project,
+    // createIcePlain64Project, createTrainingExamplesProject, createShopShowcaseProject,
+    // createSmallHouseVariantProject, createTownArchitectureCityProject, createTownArchitectureTestProject,
+    // createTownCityShowcaseProject, createTownHouseShowcaseProject, createModernNocturneProject,
+    // createSkyStairProject. Factories requiring arguments or network/Supabase access are intentionally skipped.
+    const factories = [
+      ["createBlankProject", defaults.createBlankProject],
+      ["createDbExtractedHouseTemplateProject", defaults.createDbExtractedHouseTemplateProject],
+      ["createFarmingDemoProject", defaults.createFarmingDemoProject],
+      ["createHouseTemplateGalleryProject", defaults.createHouseTemplateGalleryProject],
+      ["createLogCabinShowcaseProject", defaults.createLogCabinShowcaseProject],
+      ["createMarketTownProject", defaults.createMarketTownProject],
+      ["createVillageShoppingStreetProject", defaults.createVillageShoppingStreetProject],
+      ["createRetroHouseShowcaseProject", defaults.createRetroHouseShowcaseProject],
+      ["createSampleAdventureProject", defaults.createSampleAdventureProject],
+      ["createScarloxyDemoProject", defaults.createScarloxyDemoProject],
+      ["createScarloxyPokemonDemoProject", defaults.createScarloxyPokemonDemoProject],
+      ["createSnowMountain60Project", defaults.createSnowMountain60Project],
+      ["createIcePlain64Project", defaults.createIcePlain64Project],
+      ["createTrainingExamplesProject", defaults.createTrainingExamplesProject],
+      ["createShopShowcaseProject", defaults.createShopShowcaseProject],
+      ["createSmallHouseVariantProject", defaults.createSmallHouseVariantProject],
+      ["createTownArchitectureCityProject", defaults.createTownArchitectureCityProject],
+      ["createTownArchitectureTestProject", defaults.createTownArchitectureTestProject],
+      ["createTownCityShowcaseProject", defaults.createTownCityShowcaseProject],
+      ["createTownHouseShowcaseProject", defaults.createTownHouseShowcaseProject],
+      ["createModernNocturneProject", defaults.createModernNocturneProject],
+      ["createSkyStairProject", createSkyStairProject],
+    ] as const;
+
+    const originalRequire = Module.prototype.require;
+    Module.prototype.require = function requireWithViteAlias(id: string): unknown {
+      if (id === "@/editor/content/villageShoppingStreetBuild") return villageShoppingStreet;
+      return originalRequire.call(this, id);
+    };
+    try {
+      for (const [name, factory] of factories) {
+        const project = factory();
+        const skinId = project.system.battleUiStyle;
+        expect(
+          skinId === undefined || !isDeprecatedBattleSkin(resolveSkinId(skinId)),
+          `${name} authors deprecated battle skin ${skinId}`,
+        ).toBe(true);
+      }
+    } finally {
+      Module.prototype.require = originalRequire;
+    }
+  }, 30_000);
+});
