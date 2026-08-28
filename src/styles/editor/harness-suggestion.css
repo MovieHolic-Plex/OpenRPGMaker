@@ -809,3 +809,32 @@
   color: var(--text-3, #6B6259);
   margin-left: auto;
 }
+
+.structure-kit-editor-ai-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.structure-kit-editor-ai-field textarea {
+  min-height: 56px;
+  resize: vertical;
+  font: inherit;
+}
+
+.structure-kit-editor-ai-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.structure-kit-editor-ai-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--warn-bg, rgba(217, 119, 6, 0.14));
+  color: var(--warn-text, #B45309);
+}

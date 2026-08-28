@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createStructureKitFromHouse, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
-import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
+import { buildAiMetaDraftPrompt, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
@@ -247,5 +247,81 @@ describe("편집기 부위 드래그 안전성", () => {
     const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.parts ?? []).toHaveLength(0);
+  });
+});
+
+describe("AI 메타 초안", () => {
+  it("프롬프트에 타일 행렬과 타일 라벨과 기존 이름이 들어간다", () => {
+    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const kit = seedKit();
+    const prompt = buildAiMetaDraftPrompt(kit, tileset, ["울타리", "다리"]);
+
+    expect(prompt).toContain("3×3");
+    expect(prompt).toContain("116");        // 문 타일 번호
+    expect(prompt).toContain("울타리");      // 이름 중복 회피용
+    // 모델이 타일 번호를 추측하지 않도록 사람이 읽는 라벨을 함께 준다.
+    expect(prompt).toMatch(/문|출입/);
+  });
+
+  it("응답 JSON 을 메타로 파싱한다", () => {
+    const meta = parseAiMetaDraft(JSON.stringify({
+      description: "돌 우물",
+      placementRules: "광장 중앙",
+      tags: ["우물"],
+      role: "prop",
+      repeatability: "fixed",
+    }));
+    expect(meta).not.toBeNull();
+    expect(meta!.description).toBe("돌 우물");
+    expect(meta!.repeatability).toBe("fixed");
+    // 초안은 절대 user 가 아니다 — 사람이 수락해야 user 가 된다(제로 부트스트랩).
+    expect(meta!.origin).toBe("ai");
+  });
+
+  it("깨진 응답은 null 을 준다", () => {
+    expect(parseAiMetaDraft("이건 JSON 이 아닙니다")).toBeNull();
+    expect(parseAiMetaDraft(JSON.stringify({ nope: 1 }))).toBeNull();
+  });
+
+  it("모르는 role·repeatability 는 버린다", () => {
+    const meta = parseAiMetaDraft(JSON.stringify({
+      description: "x", placementRules: "y", role: "spaceship", repeatability: "sometimes",
+    }));
+    expect(meta!.role).toBeUndefined();
+    expect(meta!.repeatability).toBeUndefined();
+  });
+});
+
+describe("AI 메타 탭", () => {
+  it("탭을 열면 폼이 나오고 초안은 자동 저장되지 않는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+
+    expect(document.querySelector("[data-testid='structure-kit-editor-ai-description']")).not.toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-editor-ai-placement']")).not.toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-editor-ai-draft']")).not.toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-editor-ai-accept']")).not.toBeNull();
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.ai).toBeUndefined();
+  });
+
+  it("수락하면 폼 값이 저장되고 origin 이 user 가 된다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+
+    const description = document.querySelector("[data-testid='structure-kit-editor-ai-description']") as unknown as HTMLTextAreaElement;
+    description.value = "돌담을 두른 두레우물";
+    (description as unknown as FakeElement).dispatchEvent(new Event("change"));
+
+    (document.querySelector("[data-testid='structure-kit-editor-ai-accept']") as unknown as FakeElement).click();
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.ai?.description).toBe("돌담을 두른 두레우물");
+    expect(stored.ai?.origin).toBe("user");
   });
 });

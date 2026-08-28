@@ -14,6 +14,7 @@
 //   그 함수는 editorState 의 전역 브러시를 바꾼다 — 구조물 편집 중 타일을 고르면
 //   맵 붓까지 같이 바뀐다. 순수 헬퍼 tilesetTileBackgroundStyle 로 격자를 직접 그린다.
 
+import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
 import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import {
@@ -35,9 +36,17 @@ import { HOUSE_KITS } from "@/editor/houseKit";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
+import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
-import type { SectionStructureKitDef, StructureKitPartKind, TilesetDef, TilesetId } from "@/project/types";
+import type {
+  SectionStructureKitDef,
+  StructureKitAiMeta,
+  StructureKitPartKind,
+  TileGroupRole,
+  TilesetDef,
+  TilesetId,
+} from "@/project/types";
 import { el } from "@/util/dom";
 import { randomUuid } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -53,6 +62,9 @@ interface EditorSession {
   tool: EditorTool;
   layer: KitLayer;
   tile: number;
+  tab: "shape" | "ai";
+  /** AI 메타 폼의 미저장 편집 상태. [초안 수락] 전까지 store 에는 닿지 않는다. */
+  draft: StructureKitAiMeta | null;
 }
 
 export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onClosed: () => void): void {
@@ -66,12 +78,16 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     tool: "paint",
     layer: "lower",
     tile: TILE.GRASS,
+    tab: "shape",
+    draft: null,
   };
 
   const canvasWrap = el("div", {
     class: "structure-kit-editor-canvas-wrap",
     dataset: { testid: "structure-kit-editor-canvas" },
   });
+  const tabsWrap = el("div", { class: "structure-kit-editor-tools" });
+  const rightWrap = el("div", { class: "structure-kit-editor-right" });
   const toolsWrap = el("div", { class: "structure-kit-editor-tools" });
   const paletteWrap = el("div", {
     class: "structure-kit-editor-palette",
@@ -82,15 +98,23 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     class: "structure-kit-editor-parts",
     dataset: { testid: "structure-kit-editor-parts" },
   });
+  const aiWrap = el("div", { class: "structure-kit-editor-ai" });
 
   const redraw = (): void => {
     const current = findKit(session.tilesetId, session.kitId);
     if (!current) return;
     drawCanvas(canvasWrap, tileset, current, session);
-    drawTools(toolsWrap, session, redraw);
-    drawPalette(paletteWrap, tileset, session, redraw);
     drawSize(sizeWrap, current, redraw, session);
-    drawParts(partsWrap, current, session, redraw);
+    drawTabs(tabsWrap, session, redraw);
+    if (session.tab === "ai") {
+      drawAiTab(aiWrap, current, tileset, session, redraw);
+      rightWrap.replaceChildren(tabsWrap, aiWrap);
+    } else {
+      drawTools(toolsWrap, session, redraw);
+      drawPalette(paletteWrap, tileset, session, redraw);
+      drawParts(partsWrap, current, session, redraw);
+      rightWrap.replaceChildren(tabsWrap, toolsWrap, paletteWrap, partsWrap);
+    }
   };
 
   let dragStart: { readonly cx: number; readonly cy: number } | null = null;
@@ -152,10 +176,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
         class: "structure-kit-editor-grid",
         children: [
           el("div", { class: "structure-kit-editor-left", children: [canvasWrap, sizeWrap] }),
-          el("div", {
-            class: "structure-kit-editor-right",
-            children: [toolsWrap, paletteWrap, partsWrap],
-          }),
+          rightWrap,
         ],
       }),
     ],
@@ -247,6 +268,93 @@ function findKit(tilesetId: TilesetId, kitId: string): SectionStructureKitDef | 
   return kit?.kind === "section" ? kit : undefined;
 }
 
+const AI_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];
+
+/**
+ * 초안 프롬프트. 모델에 넘기는 것은 이것뿐이다 —
+ * 크기·타일 행렬·각 타일의 사람 읽는 라벨·기존 이름 목록.
+ * 라벨을 함께 주는 이유: 모델이 타일 번호의 의미를 추측하지 않게 한다.
+ */
+export function buildAiMetaDraftPrompt(
+  kit: SectionStructureKitDef,
+  tileset: TilesetDef,
+  existingNames: readonly string[],
+): string {
+  const used = new Set<number>();
+  for (const row of kit.rows) {
+    for (const tile of row.tiles) if (tile !== TILE.EMPTY) used.add(tile);
+    for (const tile of row.upperTiles ?? []) if (tile !== TILE.EMPTY) used.add(tile);
+  }
+  const legend = [...used]
+    .sort((a, b) => a - b)
+    .map((tile) => {
+      // describeChipsetTile 의 label/aiLabel 은 AI 내부용 영문("Wood door top")이라 한글 단서가
+      // 없다 — tileDisplayLabelForIndex 의 한글 표시명("116 나무 문 상")을 앞에 붙여야 실제로
+      // "사람이 읽는 라벨"이 된다. aiLabel 은 배치 힌트(예: "146 바로 위")로 그대로 덧붙인다.
+      const readable = tileDisplayLabelForIndex(tile);
+      const described = describeChipsetTile(tile);
+      return `  ${readable}${described.aiLabel ? ` (${described.aiLabel})` : ""}`;
+    })
+    .join("\n");
+
+  const matrix = kit.rows
+    .map((row) => row.tiles.map((tile) => (tile === TILE.EMPTY ? "." : String(tile))).join(" "))
+    .join("\n");
+
+  return [
+    `타일셋: ${tileset.name}`,
+    `구조물 이름: ${kit.name ?? "구조물"}`,
+    `크기: ${kit.width}×${kit.height}`,
+    "",
+    "타일 행렬(하층):",
+    matrix,
+    "",
+    "타일 뜻:",
+    legend,
+    "",
+    `이미 쓰는 이름(중복 피할 것): ${existingNames.join(", ") || "없음"}`,
+    "",
+    "이 구조물의 description(무엇인지), placementRules(어디에 어떻게 놓는지),",
+    `tags(검색어 배열), role(${AI_ROLES.join("|")}), repeatability(repeat|fixed)를`,
+    "JSON 한 덩어리로만 답하라. repeatability 는 가로로 이어 찍어도 되면 repeat, 한 채로 완결이면 fixed.",
+  ].join("\n");
+}
+
+/** 초안 응답 → 메타. origin 은 언제나 "ai" 다 — 사람이 수락해야 "user" 가 된다. */
+export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
+  let parsed: unknown;
+  try {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start < 0 || end <= start) return null;
+    parsed = JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== "object" || parsed === null) return null;
+  const record = parsed as Record<string, unknown>;
+  const description = typeof record.description === "string" ? record.description : "";
+  const placementRules = typeof record.placementRules === "string" ? record.placementRules : "";
+  if (!description && !placementRules) return null;
+
+  const role = AI_ROLES.find((candidate) => candidate === record.role);
+  const repeatability = record.repeatability === "repeat" || record.repeatability === "fixed"
+    ? record.repeatability
+    : undefined;
+  const tags = Array.isArray(record.tags)
+    ? record.tags.filter((tag): tag is string => typeof tag === "string")
+    : undefined;
+
+  return {
+    description,
+    placementRules,
+    ...(tags && tags.length > 0 ? { tags } : {}),
+    ...(role ? { role } : {}),
+    ...(repeatability ? { repeatability } : {}),
+    origin: "ai",
+  };
+}
+
 function drawCanvas(
   host: HTMLElement,
   tileset: TilesetDef,
@@ -299,6 +407,22 @@ function drawPalette(
     );
   }
   host.replaceChildren(...swatches);
+}
+
+function drawTabs(host: HTMLElement, session: EditorSession, redraw: () => void): void {
+  const button = (label: string, testid: string, tab: EditorSession["tab"]): HTMLElement =>
+    el("button", {
+      class: `btn small${session.tab === tab ? " primary" : ""}`,
+      attrs: { type: "button" },
+      text: label,
+      dataset: { testid },
+      on: { click: () => { session.tab = tab; redraw(); } },
+    });
+
+  host.replaceChildren(
+    button("모양", "structure-kit-editor-tab-shape", "shape"),
+    button("AI 메타", "structure-kit-editor-tab-ai", "ai"),
+  );
 }
 
 function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void): void {
@@ -446,4 +570,117 @@ function drawParts(
   });
 
   host.replaceChildren(...rows);
+}
+
+function drawAiTab(
+  host: HTMLElement,
+  kit: SectionStructureKitDef,
+  tileset: TilesetDef,
+  session: EditorSession,
+  redraw: () => void,
+): void {
+  const current = session.draft ?? kit.ai ?? { description: "", placementRules: "", origin: "ai" as const };
+  const pendingApproval = current.origin !== "user";
+
+  const area = (label: string, testid: string, value: string, apply: (next: string) => void): HTMLElement =>
+    el("label", {
+      class: "structure-kit-editor-ai-field",
+      children: [
+        el("span", { text: label }),
+        el("textarea", {
+          value,
+          dataset: { testid },
+          on: {
+            change: (event: Event) => {
+              const target = event.currentTarget;
+              if (!(target instanceof HTMLTextAreaElement)) return;
+              apply(target.value);
+            },
+          },
+        }),
+      ],
+    });
+
+  const draft: StructureKitAiMeta = { ...current };
+  session.draft = draft;
+
+  host.replaceChildren(
+    el("div", {
+      class: "structure-kit-editor-ai-head",
+      children: [
+        el("button", {
+          class: "btn small",
+          attrs: { type: "button" },
+          text: "✨ AI 초안 받기",
+          dataset: { testid: "structure-kit-editor-ai-draft" },
+          on: { click: () => { void requestAiMetaDraft(kit, tileset, session, redraw); } },
+        }),
+        ...(pendingApproval
+          ? [el("span", { class: "structure-kit-editor-ai-badge", text: "미승인" })]
+          : []),
+      ],
+    }),
+    area("설명", "structure-kit-editor-ai-description", draft.description, (next) => { draft.description = next; }),
+    area("배치 규칙", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
+    el("button", {
+      class: "btn primary",
+      attrs: { type: "button" },
+      text: "초안 수락 — 내가 보증",
+      dataset: { testid: "structure-kit-editor-ai-accept" },
+      on: {
+        click: () => {
+          const target = findKit(session.tilesetId, session.kitId);
+          if (!target) return;
+          // 제로 부트스트랩: 여기가 origin 을 "user" 로 만드는 유일한 지점이다.
+          replaceStructureKit(session.tilesetId, { ...target, ai: { ...draft, origin: "user" } });
+          session.draft = null;
+          toast("AI 메타를 승인했습니다", "ok");
+          redraw();
+        },
+      },
+    }),
+  );
+}
+
+async function requestAiMetaDraft(
+  kit: SectionStructureKitDef,
+  tileset: TilesetDef,
+  session: EditorSession,
+  redraw: () => void,
+): Promise<void> {
+  const existingNames = (store.getCurrent().tilesets[session.tilesetId]?.structureKits ?? [])
+    .filter((candidate) => candidate.id !== kit.id)
+    .map((candidate) => candidate.name ?? "구조물");
+
+  toast("AI 초안을 요청하는 중...", "info");
+  try {
+    const result = await chatCompletion(loadAiConfig(), {
+      messages: [
+        {
+          role: "system",
+          content:
+            "너는 2D 타일 RPG 편집기의 구조물 어휘 사서다."
+            + " 주어진 타일 행렬을 보고 이 구조물이 무엇이고 어디에 놓아야 하는지 기술한다."
+            + " JSON 한 덩어리로만 답하고 다른 말은 붙이지 않는다.",
+        },
+        { role: "user", content: buildAiMetaDraftPrompt(kit, tileset, existingNames) },
+      ],
+    });
+    const text = typeof result.message.content === "string"
+      ? result.message.content
+      : (result.message.content ?? [])
+          .map((part) => (part.type === "text" ? part.text : ""))
+          .join("");
+    const draft = parseAiMetaDraft(text);
+    if (!draft) {
+      // 폼을 비우지 않는다 — 사람이 쓰던 내용을 모델 실패로 날리지 않는다.
+      toast("초안을 읽지 못했습니다. 직접 적어 주세요.", "error");
+      return;
+    }
+    session.draft = draft;
+    redraw();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`초안 요청 실패: ${message}`, "error");
+  }
 }
