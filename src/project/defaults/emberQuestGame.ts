@@ -147,7 +147,7 @@ export function createEmberQuestProject(): Project {
   system.titleScreen = {
     ...(system.titleScreen ?? defaultTitleScreenSettings()),
     title: EMBER_TITLE,
-    menuLabels: { newGame: "모험 시작", continueGame: "이어 하기", quit: "그만두기" },
+    menuLabels: { newGame: "모험 시작", continueGame: "불러오기", quit: "그만두기" },
   };
 
   const project: Project = {

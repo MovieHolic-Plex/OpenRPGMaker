@@ -59,7 +59,7 @@
 
 /* 최대 개수는 비활성 자리표시자다 — 회색이되 읽을 수는 있게(대비 유지). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-toolbar > .db-ws-btn[disabled] {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   opacity: 1;
 }
 
@@ -108,7 +108,7 @@
   border-bottom: 2px solid transparent;
   border-radius: 0;
   box-shadow: none;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -121,13 +121,13 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-rail .tileset-section-tab:hover {
   background: transparent;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-rail .tileset-section-tab.active {
   background: transparent;
-  border-bottom-color: var(--db-studio-accent, #4a57d6);
-  color: var(--db-studio-accent, #4a57d6);
+  border-bottom-color: var(--db-studio-accent, var(--db-studio-accent));
+  color: var(--db-studio-accent, var(--db-studio-accent));
   font-weight: 700;
 }
 

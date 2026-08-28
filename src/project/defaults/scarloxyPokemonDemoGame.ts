@@ -155,7 +155,7 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
           titleScreen: {
             ...titleScreen,
             title: "몬스터 테이머",
-            menuLabels: { newGame: "모험 시작", continueGame: "이어 하기", quit: "그만두기" },
+            menuLabels: { newGame: "모험 시작", continueGame: "불러오기", quit: "그만두기" },
           },
         }
       : {}),

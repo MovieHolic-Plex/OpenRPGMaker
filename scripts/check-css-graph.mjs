@@ -1,0 +1,337 @@
+#!/usr/bin/env node
+// CSS 그래프 게이트 — @import 그래프의 **구조적 무결성**만 본다(스타일 품질이 아니라 배선).
+//
+// 왜 필요한가 (실측 사고 2건):
+//  1. 미등록 고아 파일 — `src/styles/editor/event-editor.command-preview/07-identifiable-previews.css`
+//     는 커밋 cf91ee76 에서 배럴(`event-editor.command-preview.css`)의 @import 와 **같이** 들어왔는데,
+//     PR #98 의 squash merge 가 배럴 한 줄만 조용히 되돌렸다. 파일은 살아남고 등록만 사라졌다.
+//     그 뒤로 실제 시각 버그(faceset 시트가 96px 클립 위에 원본 크기로 그려짐)가 계속 배포됐고,
+//     `test/quickAuthoringPreviewIdentity.test.ts` 의 실패 테스트 2건을 아무도 이 사고와 연결하지 못했다.
+//     빌드는 초록이었다 — 아무도 안 읽는 CSS 파일은 컴파일러가 잡아주지 않기 때문이다.
+//  2. 이중 @import — 같은 번들 안에서 서로 다른 배럴이 같은 파일을 두 번 부르는 케이스가
+//     5건(합계 1,276줄: 226+477+352+129+92) 있다. Vite 의 postcss-import 는 **첫 번째 위치**로
+//     dedup 하므로, 두 번째 배럴이 선언한 cascade 순서 계약은 거짓말이 된다.
+//     나중 배럴을 읽고 우선순위를 추론한 사람은 반드시 틀린 결론에 도달한다.
+//
+// 현재 상태 실측 (2026-08-28): 엔트리 6개 · CSS 249개 · 도달 248개 · 고아 1 · 이중 5 ·
+// 미등록 슬라이스 2 · 번호 충돌 1그룹(3파일). 전부 아래 ALLOWLIST 에 유예돼 있으므로 게이트는 초록이다.
+//
+// 기준선 철학은 scripts/verify-gates.mjs 와 같다: 이 저장소는 이미 빨간불이므로
+// "전부 초록"을 요구하면 게이트가 즉시 비활성화된다. 기존 위반은 아래 ALLOWLIST 로 유예하고
+// **새로 생긴 위반만** 회귀로 취급한다. 유예 항목을 고치면 목록에서 한 줄 지우면 끝이다.
+//
+// 사용:
+//   node scripts/check-css-graph.mjs                 # 검사 + 요약 (exit 1 = 새 위반)
+//   node scripts/check-css-graph.mjs --json          # 기계 판독용 출력
+//   node scripts/check-css-graph.mjs --print-baseline # 현재 상태를 ALLOWLIST 스니펫으로 출력(붙여넣기용)
+import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { join, dirname, resolve, relative, basename } from "node:path";
+
+const ROOT = process.cwd();
+const SRC_DIR = join(ROOT, "src");
+
+// 게이트가 책임지는 CSS 우주. 이 밖(예: node_modules)의 파일은 도달 계산에만 쓰고 위반 판정은 안 한다.
+const CSS_ROOTS = ["src/styles", "src/player", "src/benchmark"];
+
+// 엔트리는 하드코딩하지 않고 src/**/*.ts 의 `import "....css"` 로 **발견**한다.
+// 엔트리가 늘거나 옮겨져도 게이트가 따라가야 하기 때문이다. 스캔이 0건이면 아래 폴백을 쓴다.
+const FALLBACK_ENTRIES = [
+  "src/styles/index.css", // src/main.ts:3
+  "src/player/player.css", // src/player/exportEntry.ts:1
+  "src/benchmark/ui/styles.css", // src/benchmark/ui/landing.ts:6
+  "src/styles/database/curve-editors.css", // actorRecordCurveEditors.ts:9
+  "src/styles/database/battle-studio.css", // databaseUtilityRecordViews.ts:30, databaseAnimationRecordView.ts:21
+  "src/styles/database/animation-editor.css", // databaseAnimationRecordView.ts:20
+];
+
+// ── 유예 목록 (P0 기준선) ───────────────────────────────────────────────────────
+// 여기 있는 항목은 "이미 알고 있는 빚"이다. 고치는 순간 해당 줄을 지우면 게이트가 다시 지켜준다.
+
+// 검사 1: 어떤 엔트리에서도 도달 불가능한 CSS.
+const UNREACHABLE_ALLOWLIST = new Set([
+  // P0-7: 사고 (1) 의 본체. PR #98 squash 가 배럴 @import 만 되돌린 고아 파일.
+  // Phase 1 에서 배럴 재등록 + quickAuthoringPreviewIdentity 테스트 복구 예정.
+  // 지금 바로 @import 를 넣으면 96px 클립 회귀가 같이 살아나므로 Phase 1 에서 함께 처리한다.
+  "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css",
+]);
+
+// 검사 2: 두 곳 이상에서 @import 되는 파일 — postcss-import 가 첫 위치로 dedup 하므로
+// 두 번째 배럴의 cascade 순서 선언은 실제로 적용되지 않는다.
+// 전부 index.css 번들 안에서 겹친다. 합계 1,276 줄.
+const DOUBLE_IMPORT_ALLOWLIST = new Set([
+  // database/tabs-b.css:3  +  runtime/playerRuntime.css:8   (226 줄)
+  "src/styles/database/tabs-b-status-menu-base.css",
+  // database/tabs-b.css:4  +  runtime/playerRuntime.css:9   (477 줄)
+  "src/styles/database/tabs-b-status-menu-main.css",
+  // database/tabs-b.css:2  +  runtime/playerRuntime.css:7   (352 줄)
+  "src/styles/database/tabs-b-title-screen.css",
+  // runtime/playerRuntime.css:20  +  editor/core.part-2.css:1  (129 줄)
+  "src/styles/runtime/playSurface.css",
+  // index.css:5  +  runtime/playerRuntime.css:2             (92 줄)
+  "src/styles/runtime/system.css",
+]);
+
+// 검사 3: NN-*.css 인데 형제 배럴이 @import 하지 않는 슬라이스 파일.
+// (사고 (1) 을 잡아냈어야 할 검사. 유예 항목은 UNREACHABLE 과 중복될 수 있다.)
+const UNREGISTERED_SLICE_ALLOWLIST = new Set([
+  // P0-7: 위 UNREACHABLE_ALLOWLIST 와 동일 원인 — Phase 1 에서 한 번에 제거.
+  "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css",
+  // 배럴(desktop-record-shell.css)이 01~12 만 들여오고 13 은 src/styles/index.css:53 이
+  // 직접 들여온다. 죽지는 않았지만 배럴을 우회하므로 슬라이스 순서 계약이 index.css 로 새어나갔다.
+  // Phase 1 에서 배럴로 이관 예정.
+  "src/styles/database/desktop-record-shell/13-actor-studio.css",
+]);
+
+// 검사 4: 같은 슬라이스 디렉터리에서 NN- 접두사가 겹치는 파일들.
+// 병렬 워크트리에서 각자 다음 번호를 집어 생긴 충돌이다. 번호가 곧 cascade 순서라
+// 겹치면 로드 순서가 배럴 줄 순서에만 의존하게 되고, 리네임 한 번에 조용히 뒤집힌다.
+// 키 형식: "<슬라이스 디렉터리>#<NN>"
+// 실측: 8개 슬라이스 디렉터리(총 94개 번호 파일)를 전수 조사한 결과 충돌 그룹은 **1개**뿐이다.
+// 다만 그 그룹에 파일이 3개라 쌍(pair)으로 세면 3건 — 보고서의 "3건"은 이 쌍 수를 센 것이다.
+const DUPLICATE_PREFIX_ALLOWLIST = new Set([
+  // 07-actor-battle-authoring-surface.css / 07-identifiable-previews.css / 07-screen-effect-stage.css
+  // 세 파일 모두 07 — 병렬 워크트리가 각자 "다음 번호"를 07 로 집었다. P0-7 고아도 이 그룹 소속.
+  "src/styles/editor/event-editor.command-preview#07",
+]);
+
+// ── 도구 ────────────────────────────────────────────────────────────────────────
+const args = process.argv.slice(2);
+const flag = (name) => args.includes(name);
+const asJson = flag("--json");
+
+const toRel = (abs) => relative(ROOT, abs).split("\\").join("/");
+
+function walk(dir, filter, files = []) {
+  if (!existsSync(dir)) return files;
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) walk(full, filter, files);
+    else if (filter(full)) files.push(full);
+  }
+  return files;
+}
+
+// 주석 안의 @import 는 죽은 코드다. 지우지 않고 세면 "등록됐다"는 거짓 초록이 나온다.
+const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "));
+
+// `@import "a.css"` / `@import url(a.css)` / 작은따옴표 / media query 꼬리표를 모두 받는다.
+// `i` 플래그가 필요한 이유: CSS 문법상 at-rule 키워드와 `url(` 은 ASCII 대소문자를 구분하지 않는다.
+// 즉 `@IMPORT` / `@Import` / `URL(...)` 은 브라우저와 postcss-import 가 정상 처리하는 유효한 등록이다.
+// 실측: 현재 저장소의 @import 259건은 전부 소문자라 이 플래그로 집계가 바뀌지 않는다(249/248/1/5/2/1 동일).
+// 하지만 없으면 누가 대문자로 한 줄 쓰는 순간 **정상 배럴 등록을 못 읽어** 멀쩡한 파일을 고아로 오탐한다.
+const CSS_IMPORT_RE =
+  /@import\s+(?:url\(\s*(?:"([^"]*)"|'([^']*)'|([^)"'\s]+))\s*\)|"([^"]*)"|'([^']*)')/gi;
+// TS 쪽 엔트리: `import "@/styles/index.css";` 또는 `import "./styles.css";`
+const TS_CSS_IMPORT_RE = /(?:^|\n)\s*import\s+(?:"([^"]+\.css)"|'([^']+\.css)')\s*;?/g;
+
+// `@/` 별칭은 vite.config.ts 의 alias 와 같게 src/ 로 푼다.
+function resolveSpecifier(spec, fromFile) {
+  const clean = spec.split("?")[0].split("#")[0].trim();
+  if (!clean) return null;
+  if (/^[a-z]+:\/\//i.test(clean)) return null; // 원격 @import 는 그래프 밖
+  const abs = clean.startsWith("@/")
+    ? join(SRC_DIR, clean.slice(2))
+    : resolve(dirname(fromFile), clean);
+  return abs.endsWith(".css") ? abs : `${abs}.css`;
+}
+
+function readImports(file) {
+  const css = stripComments(readFileSync(file, "utf8"));
+  const found = [];
+  for (const match of css.matchAll(CSS_IMPORT_RE)) {
+    const spec = match[1] ?? match[2] ?? match[3] ?? match[4] ?? match[5];
+    const target = resolveSpecifier(spec, file);
+    if (!target) continue;
+    const line = css.slice(0, match.index).split("\n").length;
+    found.push({ spec, target, line });
+  }
+  return found;
+}
+
+// ── 엔트리 발견 ─────────────────────────────────────────────────────────────────
+const tsFiles = walk(SRC_DIR, (f) => /\.(ts|tsx|mts)$/.test(f));
+const entries = new Map(); // 절대경로 → 이 엔트리를 들여온 TS 파일들
+for (const ts of tsFiles) {
+  const source = readFileSync(ts, "utf8");
+  for (const match of source.matchAll(TS_CSS_IMPORT_RE)) {
+    const target = resolveSpecifier(match[1] ?? match[2], ts);
+    if (!target || !existsSync(target)) continue;
+    if (!entries.has(target)) entries.set(target, []);
+    entries.get(target).push(toRel(ts));
+  }
+}
+let entryDiscovery = "scan";
+if (entries.size === 0) {
+  entryDiscovery = "fallback";
+  for (const rel of FALLBACK_ENTRIES) {
+    const abs = join(ROOT, rel);
+    if (existsSync(abs)) entries.set(abs, ["(fallback)"]);
+  }
+}
+
+// ── 그래프 순회 ─────────────────────────────────────────────────────────────────
+// 엔트리마다 **따로** 순회한다. postcss-import 의 dedup 범위는 번들 1개이므로,
+// index.css 번들과 player.css 번들이 각자 tokens.css 를 부르는 건 정상이다(서로 다른 산출물).
+// 전역으로 세면 이 정상 케이스 2건이 위반으로 섞여 들어와 게이트가 양치기 소년이 된다
+// (실측: 전역 집계 7건 → 번들별 집계 5건, 후자가 실제 cascade 거짓말 건수와 일치).
+const reachable = new Set();
+const missingTargets = [];
+const graphs = []; // { entry, sites: Map<대상, [{from,line}]> }
+
+for (const entryAbs of entries.keys()) {
+  const sites = new Map();
+  const seen = new Set([entryAbs]);
+  const queue = [entryAbs];
+  reachable.add(entryAbs);
+  while (queue.length > 0) {
+    const file = queue.shift();
+    if (!existsSync(file)) continue;
+    for (const { spec, target, line } of readImports(file)) {
+      if (!sites.has(target)) sites.set(target, []);
+      sites.get(target).push({ from: toRel(file), line });
+      if (!existsSync(target)) {
+        missingTargets.push({ from: toRel(file), line, spec });
+        continue;
+      }
+      reachable.add(target);
+      if (!seen.has(target)) {
+        seen.add(target);
+        queue.push(target);
+      }
+    }
+  }
+  graphs.push({ entry: toRel(entryAbs), sites });
+}
+
+// ── 검사 대상 우주 ──────────────────────────────────────────────────────────────
+const universe = [];
+for (const root of CSS_ROOTS) universe.push(...walk(join(ROOT, root), (f) => f.endsWith(".css")));
+const universeRel = universe.map(toRel).sort();
+
+let failures = 0;
+const report = { entryDiscovery, entries: [], universe: universeRel.length, reachable: 0, checks: {} };
+for (const [abs, importers] of entries) report.entries.push({ file: toRel(abs), importedBy: importers });
+report.entries.sort((a, b) => a.file.localeCompare(b.file));
+report.reachable = universe.filter((f) => reachable.has(f)).length;
+
+function fail(message) {
+  if (!asJson) console.error(`FAIL: ${message}`);
+  failures++;
+}
+
+// ── 검사 0: 존재하지 않는 @import 대상 (유예 없음 — 항상 새 위반이다) ───────────
+// 같은 파일이 여러 번들에 들어가면 중복 보고되므로 from:line 으로 접는다.
+const uniqueMissing = [...new Map(missingTargets.map((m) => [`${m.from}:${m.line}`, m])).values()];
+report.checks.missingTarget = uniqueMissing;
+for (const { from, line, spec } of uniqueMissing) {
+  fail(`${from}:${line} 이 존재하지 않는 파일을 @import 한다: "${spec}". 경로를 고치거나 그 줄을 지우세요.`);
+}
+
+// ── 검사 1: 도달 불가능 ────────────────────────────────────────────────────────
+const unreachable = universeRel.filter((rel) => !reachable.has(join(ROOT, rel)));
+report.checks.unreachable = { found: unreachable, allowlisted: [...UNREACHABLE_ALLOWLIST], new: [] };
+for (const rel of unreachable) {
+  if (UNREACHABLE_ALLOWLIST.has(rel)) continue;
+  report.checks.unreachable.new.push(rel);
+  fail(`${rel} 은 어떤 엔트리에서도 도달할 수 없다 (죽은 CSS). 배럴에 @import 를 추가하거나 파일을 지우세요.`);
+}
+
+// ── 검사 2: 이중 @import ───────────────────────────────────────────────────────
+const doublesByFile = new Map(); // 파일 → { file, bundles: [{ entry, sites }] }
+for (const { entry, sites } of graphs) {
+  for (const [abs, hits] of sites) {
+    if (hits.length < 2) continue;
+    const rel = toRel(abs);
+    if (!doublesByFile.has(rel)) doublesByFile.set(rel, { file: rel, bundles: [] });
+    doublesByFile.get(rel).bundles.push({ entry, sites: hits.map((s) => `${s.from}:${s.line}`) });
+  }
+}
+const doubles = [...doublesByFile.values()].sort((a, b) => a.file.localeCompare(b.file));
+report.checks.doubleImport = { found: doubles, allowlisted: [...DOUBLE_IMPORT_ALLOWLIST], new: [] };
+for (const hit of doubles) {
+  if (DOUBLE_IMPORT_ALLOWLIST.has(hit.file)) continue;
+  report.checks.doubleImport.new.push(hit.file);
+  const bundle = hit.bundles[0];
+  fail(
+    `${hit.file} 이 번들 ${bundle.entry} 안에서 ${bundle.sites.length} 번 @import 된다 (${bundle.sites.join(", ")}). ` +
+      `postcss-import 는 첫 위치로 dedup 하므로 뒤쪽 배럴이 선언한 cascade 순서는 적용되지 않는다 — 한 곳만 남기세요.`
+  );
+}
+
+// ── 슬라이스 디렉터리 수집 ─────────────────────────────────────────────────────
+// 슬라이스 = NN-*.css 를 가진 디렉터리. 형제 배럴은 `<디렉터리>.css`.
+const NUMBERED_RE = /^(\d{2})-.+\.css$/;
+const sliceDirs = new Map(); // 디렉터리 절대경로 → 번호 파일명 배열
+for (const abs of universe) {
+  if (!NUMBERED_RE.test(basename(abs))) continue;
+  const dir = dirname(abs);
+  if (!sliceDirs.has(dir)) sliceDirs.set(dir, []);
+  sliceDirs.get(dir).push(abs);
+}
+
+// ── 검사 3: 미등록 번호 슬라이스 ───────────────────────────────────────────────
+report.checks.unregisteredSlice = { found: [], allowlisted: [...UNREGISTERED_SLICE_ALLOWLIST], new: [] };
+for (const [dir, files] of [...sliceDirs].sort()) {
+  const barrel = `${dir}.css`;
+  if (!existsSync(barrel)) {
+    fail(`${toRel(dir)} 은 번호 슬라이스인데 형제 배럴 ${toRel(barrel)} 이 없다. 배럴을 만들고 엔트리에 연결하세요.`);
+    continue;
+  }
+  const registered = new Set(readImports(barrel).map((imp) => imp.target));
+  for (const abs of files.sort()) {
+    const rel = toRel(abs);
+    if (registered.has(abs)) continue;
+    report.checks.unregisteredSlice.found.push(rel);
+    if (UNREGISTERED_SLICE_ALLOWLIST.has(rel)) continue;
+    report.checks.unregisteredSlice.new.push(rel);
+    fail(`${rel} 이 형제 배럴 ${toRel(barrel)} 에 등록돼 있지 않다. ${toRel(barrel)} 에 @import 를 추가하거나 파일을 지우세요.`);
+  }
+}
+
+// ── 검사 4: NN- 접두사 중복 ────────────────────────────────────────────────────
+report.checks.duplicatePrefix = { found: [], allowlisted: [...DUPLICATE_PREFIX_ALLOWLIST], new: [] };
+for (const [dir, files] of [...sliceDirs].sort()) {
+  const byPrefix = new Map();
+  for (const abs of files.sort()) {
+    const prefix = NUMBERED_RE.exec(basename(abs))[1];
+    if (!byPrefix.has(prefix)) byPrefix.set(prefix, []);
+    byPrefix.get(prefix).push(basename(abs));
+  }
+  for (const [prefix, names] of [...byPrefix].sort()) {
+    if (names.length < 2) continue;
+    const key = `${toRel(dir)}#${prefix}`;
+    report.checks.duplicatePrefix.found.push({ key, files: names });
+    if (DUPLICATE_PREFIX_ALLOWLIST.has(key)) continue;
+    report.checks.duplicatePrefix.new.push(key);
+    fail(`${toRel(dir)} 에서 ${prefix}- 접두사가 ${names.length} 개 겹친다 (${names.join(", ")}). 번호가 cascade 순서이므로 하나를 다음 번호로 리네임하세요.`);
+  }
+}
+
+// ── 출력 ───────────────────────────────────────────────────────────────────────
+report.failures = failures;
+
+if (asJson) {
+  console.log(JSON.stringify(report, null, 2));
+} else if (flag("--print-baseline")) {
+  // 기준선 갱신용 스니펫 — 아래 출력을 그대로 상수 블록에 붙여넣는다.
+  const quote = (values) => values.map((v) => `  ${JSON.stringify(v)},`).join("\n");
+  console.log(`UNREACHABLE_ALLOWLIST:\n${quote(unreachable)}`);
+  console.log(`DOUBLE_IMPORT_ALLOWLIST:\n${quote(doubles.map((d) => d.file))}`);
+  console.log(`UNREGISTERED_SLICE_ALLOWLIST:\n${quote(report.checks.unregisteredSlice.found)}`);
+  console.log(`DUPLICATE_PREFIX_ALLOWLIST:\n${quote(report.checks.duplicatePrefix.found.map((d) => d.key))}`);
+} else {
+  console.log(
+    `CSS graph gate: entries=${entries.size} (${entryDiscovery}), files=${report.universe}, reachable=${report.reachable}, orphan=${unreachable.length}`
+  );
+  console.log(`  missing @import target : ${missingTargets.length} new (유예 없음)`);
+  console.log(`  unreachable            : ${unreachable.length} found, ${UNREACHABLE_ALLOWLIST.size} allowlisted, ${report.checks.unreachable.new.length} new`);
+  console.log(`  double-imported        : ${doubles.length} found, ${DOUBLE_IMPORT_ALLOWLIST.size} allowlisted, ${report.checks.doubleImport.new.length} new`);
+  console.log(`  unregistered slice     : ${report.checks.unregisteredSlice.found.length} found, ${UNREGISTERED_SLICE_ALLOWLIST.size} allowlisted, ${report.checks.unregisteredSlice.new.length} new`);
+  console.log(`  duplicate NN- prefix   : ${report.checks.duplicatePrefix.found.length} found, ${DUPLICATE_PREFIX_ALLOWLIST.size} allowlisted, ${report.checks.duplicatePrefix.new.length} new`);
+}
+
+if (failures > 0) {
+  if (!asJson) console.error(`\n${failures} 건의 새 CSS 그래프 위반. 유예가 필요하면 scripts/check-css-graph.mjs 의 ALLOWLIST 에 근거와 함께 추가하세요.`);
+  process.exit(1);
+}
+process.exit(0);

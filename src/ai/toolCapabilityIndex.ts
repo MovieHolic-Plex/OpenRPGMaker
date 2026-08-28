@@ -21,7 +21,7 @@ const AREA_ORDER: readonly { readonly domain: ToolDomain; readonly label: string
   { domain: "event", label: "이벤트" },
   { domain: "database", label: "데이터베이스" },
   { domain: "quest", label: "퀘스트" },
-  { domain: "world", label: "세계관" },
+  { domain: "world", label: "월드 그래프" },
   { domain: "battle", label: "전투" },
   { domain: "system", label: "시스템" },
 ];

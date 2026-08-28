@@ -2,7 +2,6 @@ import { isUnauthoredMap } from "@/ai/workItemOutcome";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { buildStoryFlagUsageIndex } from "@/project/storyFlagUsage";
-import { normalizeProjectWorld, lintWorld } from "@/project/world";
 import { visitProjectCommands, type CommandOwnerKind, type NestedBranchKind } from "./commandTraversal";
 import type { ToolDefinition } from "./types";
 import type { Project } from "@/project/types/project";
@@ -54,7 +53,6 @@ const evaluateGameQuality: ToolDefinition = {
   run(project, args) {
     const emptyMaps = emptyMapIssues(project);
     const objectiveIssues = [...projectLint(project), ...emptyMaps];
-    const worldIssues = lintWorld(normalizeProjectWorld(project), project);
     const paletteIssues = lintTilesetPalettes(project);
     const commandOwners: Record<CommandOwnerKind, number> = { legacyEvent: 0, eventPage: 0, commonEvent: 0, troopPage: 0 };
     const nestedBranches: Record<NestedBranchKind, number> = {
@@ -78,7 +76,6 @@ const evaluateGameQuality: ToolDefinition = {
       verdict: { blocked: objectiveErrorCount > 0, objectiveErrorCount },
       integrity: {
         objective: { issues: objectiveIssues },
-        world: { issues: worldIssues },
         palette: { issues: paletteIssues },
       },
       coverage: {

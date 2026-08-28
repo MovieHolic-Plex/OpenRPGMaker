@@ -49,6 +49,46 @@ function offendingDeclarations(css: string): string[] {
   return [...scanned.matchAll(/font-family\s*:\s*([^;}]+)/gu)].map((match) => match[1].trim());
 }
 
+/**
+ * `font:` 단축 속성의 **패밀리 부분**만 떼어 낸다.
+ *
+ * 단축 속성은 `font-family:` 정규식에 걸리지 않아서 가드의 구멍이었다 — `title.css` 가
+ * `font: 800 18px/1.05 "Malgun Gothic", ...` 다섯 줄로 정확히 그 구멍에 앉아 있었고,
+ * 위에 !important 반창고가 덮이면서 통일이 끝난 것처럼 보였다.
+ *
+ * 단축 속성에서 패밀리는 언제나 크기(`<size>` 또는 `<size>/<line-height>`) 뒤 전부다.
+ * 그래서 크기 토큰을 찾아 그 뒤를 반환하고, 나머지 검증은 `font-family:` 와 똑같이
+ * `resolvesToRoleToken` 에 맡긴다.
+ */
+function fontShorthandFamilies(css: string): string[] {
+  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//gu, "");
+  const scanned = stripFontFaceBlocks(withoutComments);
+  const families: string[] = [];
+  // 선행 경계로 font-family/font-size/font-weight 등 롱핸드를 배제한다.
+  for (const match of scanned.matchAll(/(?:^|[;{])\s*font\s*:\s*([^;}]+)/gu)) {
+    const value = match[1].trim();
+    // system/caret 등 시스템 단축 키워드는 패밀리를 담지 않는다.
+    if (/^(inherit|initial|unset|revert|caption|icon|menu|message-box|small-caption|status-bar)$/u.test(value)) continue;
+    const size = value.match(/(?:^|\s)(?:[\d.]+(?:px|em|rem|pt|%|dvh|vh|vw)|clamp\([^)]*\)|x-large|large|medium|small)(?:\s*\/\s*[^\s]+)?\s+/u);
+    if (!size || size.index === undefined) continue;
+    families.push(value.slice(size.index + size[0].length).trim());
+  }
+  return families;
+}
+
+/**
+ * 단축 속성 검사는 **런타임 CSS 에 한정**한다. 플레이어가 보는 화면이 통일 대상이고,
+ * 에디터 CSS(`sidebar.css`, `studio-theme.css`, `system-studio.css`, `event-editor/*`)에는
+ * 리터럴 `font:` 단축 속성이 수십 건 남아 있다 — 갚아야 할 부채지만 별도 스윕 과제다.
+ */
+const SHORTHAND_SCOPE = "src/styles/runtime/";
+
+/**
+ * 픽셀 글꼴에 없는 기하 심볼(U+25C7 U+2726 U+25C8 ...)을 그리는 슬롯. 토큰으로 바꾸면
+ * 두부(□)로 떨어진다. 소비지점 주석에 근거가 남아 있어 명시 예외로 둔다.
+ */
+const SHORTHAND_ALLOWED: readonly string[] = ["src/styles/runtime/statusMenuEdgeDock.css"];
+
 /** `--name: value` 선언 전체를 모은다. 같은 이름이 여러 번 선언되면 값을 모두 보관한다. */
 function customPropertyDeclarations(files: readonly string[]): Map<string, string[]> {
   const declarations = new Map<string, string[]>();
@@ -102,6 +142,45 @@ describe("폰트 토큰 가드", () => {
       }
     }
     expect(violations).toEqual([]);
+  });
+
+  it("런타임 CSS 의 font: 단축 속성도 역할 토큰까지 도달한다", () => {
+    const files = cssFiles();
+    const declarations = customPropertyDeclarations(files);
+    const violations: string[] = [];
+    for (const file of files) {
+      const rel = relative(repoRoot, file).split("\\").join("/");
+      if (!rel.startsWith(SHORTHAND_SCOPE)) continue;
+      if (SHORTHAND_ALLOWED.includes(rel)) continue;
+      for (const family of fontShorthandFamilies(readFileSync(file, "utf8"))) {
+        const bare = family.replace(/\s*!important$/u, "").trim();
+        if (bare === "inherit") continue;
+        if (resolvesToRoleToken(bare, declarations)) continue;
+        violations.push(`${rel}: font: ... ${family}`);
+      }
+    }
+    expect(violations).toEqual([]);
+  });
+
+  // 위 가드가 실제로 잡는지 — 통과만 하는 가드는 통일을 지켜 주지 않는다.
+  it("단축 속성 추출기가 패밀리 부분만 떼어 내고 리터럴을 거른다", () => {
+    const declarations = customPropertyDeclarations(cssFiles());
+
+    // 크기·굵기·line-height 를 넘기고 패밀리만 남긴다.
+    expect(fontShorthandFamilies(`a { font: 800 18px/1.05 "Malgun Gothic", "Segoe UI", sans-serif; }`))
+      .toEqual([`"Malgun Gothic", "Segoe UI", sans-serif`]);
+    expect(fontShorthandFamilies(`a { font: 700 7px/1.2 ui-monospace, Consolas, monospace; }`))
+      .toEqual([`ui-monospace, Consolas, monospace`]);
+    expect(fontShorthandFamilies(`a { font: 500 11px/1.4 var(--font-ui, system-ui, sans-serif); }`))
+      .toEqual([`var(--font-ui, system-ui, sans-serif)`]);
+
+    // font-family / font-size 등 롱핸드는 이 추출기에 걸리지 않는다.
+    expect(fontShorthandFamilies(`a { font-family: var(--font-ui); font-size: 12px; }`)).toEqual([]);
+
+    // 판정: 리터럴 스택은 거부, 역할 토큰은 통과.
+    expect(resolvesToRoleToken(`"Malgun Gothic", "Segoe UI", sans-serif`, declarations)).toBe(false);
+    expect(resolvesToRoleToken(`ui-monospace, Consolas, monospace`, declarations)).toBe(false);
+    expect(resolvesToRoleToken(`var(--runtime-pixel-font)`, declarations)).toBe(true);
   });
 
   // 소비지점이 아직 없는 리터럴 별칭은 위 규칙을 통과하므로 선언 쪽도 따로 막는다.

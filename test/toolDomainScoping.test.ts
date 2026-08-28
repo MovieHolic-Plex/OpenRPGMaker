@@ -47,7 +47,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     }
     expect(exposed.has("propose_tile_vocabulary")).toBe(false);
     for (const name of OLD_TILE_TOOLS) expect(exposed.has(name), name).toBe(false);
-    for (const name of ["upsert_event", "place_npc", "upsert_item", "query_world", "create_quest"]) {
+    for (const name of ["upsert_event", "place_npc", "upsert_item", "plan_world", "create_quest"]) {
       expect(exposed.has(name), name).toBe(false);
     }
     expect(exposed.size).toBeGreaterThanOrEqual(12);
@@ -111,7 +111,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
   it("다도메인 유니온은 노출 상한(40)을 지키고 weak-only 도메인부터 제거하며 database 활성 시 DB 툴 전량을 유지한다", () => {
     const tools = makeExposureTestTools();
     resetAssistantToolDomainMemory();
-    const domains = computeActiveToolDomains("아이템 스킬 벽 퀘스트 세계관");
+    const domains = computeActiveToolDomains("아이템 스킬 벽 퀘스트 월드");
     const exposed = toOpenAiTools(tools, { domains });
     const names = new Set(exposed.map((tool) => tool.function.name));
 

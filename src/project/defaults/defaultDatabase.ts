@@ -107,7 +107,10 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
     },
     menuLabels: {
       newGame: "새 게임",
-      continueGame: "이어하기",
+      // "이어하기"가 아니라 "불러오기" — 이 항목은 저장 슬롯 패널을 열고, 그 패널 제목이 "불러오기"다.
+      // 오토세이브 즉시 재개(resume)가 "이어하기"를 쓰므로, 여기서 겹치면 오토세이브가 생긴 뒤
+      // 타이틀에 같은 글자가 두 줄 뜬다. test/titleScreenMenuLabels.test.ts 가 계약으로 못박음.
+      continueGame: "불러오기",
       quit: "종료",
     },
     menuVisibility: {

@@ -268,7 +268,8 @@ describe("database system view", () => {
     if (!menuPreview) throw new Error("missing menu preview");
     expect(menuPreview.textContent).toContain("새 게임");
     expect(menuPreview.textContent).toContain("종료");
-    expect(menuPreview.textContent).not.toContain("이어하기");
+    // continueGame 의 기본 라벨은 "불러오기"다("이어하기"는 오토세이브 재개 쪽 라벨).
+    expect(menuPreview.textContent).not.toContain("불러오기");
     expect(menuPreview.childNodes).toHaveLength(2);
   });
 
