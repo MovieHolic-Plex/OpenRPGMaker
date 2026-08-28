@@ -1,3 +1,4 @@
+import "@/styles/database/modern/equipment-items.css";
 import {
   avatarChipRow,
   emptyToUndefined,
@@ -12,7 +13,7 @@ import {
   type AvatarChipActor,
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
+import { emptyState, sectionCard } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { itemFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
@@ -156,31 +157,64 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
   });
   const refreshStory = (): void => fillItemEffectStory(storyHost, store.getCurrent(), currentItem(record));
   refreshStory();
+  const specCard = isEquipmentItemType(record.type)
+    ? []
+    : [sectionCard({
+      title: "수치",
+      testid: "db-item-card-spec",
+      children: [itemSpecStrip(record)],
+    })];
+  // 공용 상세 창 골격: 히어로는 고정, 본문(.db-ws-detail-body)만 스크롤한다.
+  // 카드는 db-ws-stack(auto-fit minmax) 이라 폭이 남으면 열이 늘고, 좁아지면 접힌다.
+  form.classList.add("db-item-ws");
   form.append(
+    itemHeader(record),
     el("div", {
-      class: "db-items-oprn-workbench",
-      dataset: { testid: "db-items-oprn-workbench" },
+      class: "db-ws-detail-body",
       children: [
-        itemHeader(record),
-        itemSpecStrip(record),
-        storyHost,
-        resourcePanel(record, rerender),
-        databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"),
-        panel("기본 설정", [
-          textField("설명", "db-field-item-description", record.description, (description) =>
-            updateDatabaseRecord("items", record.id, { description })
-          ),
-          selectLiteral("종류", "db-field-item-type", record.type, ITEM_TYPES, (type) => {
-            updateItemType(record, type);
-            rerender();
-          }),
-          consumptionLimitField(record, refreshStory),
-          farmToolField(record, refreshStory),
-        ]),
-        ...typePanels(record, form, refreshStory),
+        el("div", {
+          class: "db-items-oprn-workbench db-ws-stack",
+          dataset: { testid: "db-items-oprn-workbench" },
+          children: [
+            spanCard(sectionCard({
+              title: "이 아이템을 사용하면",
+              testid: "db-item-card-story",
+              children: [storyHost],
+            })),
+            sectionCard({
+              title: "기본 설정",
+              testid: "db-item-card-basics",
+              children: [
+                textField("설명", "db-field-item-description", record.description, (description) =>
+                  updateDatabaseRecord("items", record.id, { description })
+                ),
+                selectLiteral("종류", "db-field-item-type", record.type, ITEM_TYPES, (type) => {
+                  updateItemType(record, type);
+                  rerender();
+                }),
+                consumptionLimitField(record, refreshStory),
+                farmToolField(record, refreshStory),
+              ],
+            }),
+            ...specCard,
+            sectionCard({
+              title: "아이템 그래픽",
+              testid: "db-item-card-graphic",
+              children: [resourcePanel(record, rerender)],
+            }),
+            ...typePanels(record, form, refreshStory),
+            spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile")),
+          ],
+        }),
       ],
-    })
+    }),
   );
+}
+
+/** `db-ws-stack` 안에서 한 행을 다 쓰는 카드로 표시한다. */
+function spanCard(node: HTMLElement): HTMLElement {
+  node.classList.add("db-ws-span");
+  return node;
 }
 
 function typePanels(record: ItemRecord, form: HTMLElement, refreshStory: () => void): HTMLElement[] {
@@ -190,38 +224,39 @@ function typePanels(record: ItemRecord, form: HTMLElement, refreshStory: () => v
   if (record.type === "seed") return seedPanels(record, refreshStory);
   if (record.type === "special") return specialPanels(record, refreshStory);
   if (record.type === "switch") return switchPanels(record, refreshStory);
-  return [panel("일반 물품", [el("div", { class: "db-preview", text: "효과가 없는 이벤트 제어용 아이템입니다." })])];
+  return [spanCard(sectionCard({
+    title: "일반 물품",
+    testid: "db-item-card-normal",
+    children: [el("p", { class: "db-ws-usage", text: "효과가 없는 이벤트 제어용 아이템입니다. 소지·전달·상점 판매만 가능합니다." })],
+  }))];
 }
 
+// 장비형 아이템은 이 탭에서 편집할 게 없다 — 빈 폼 대신 정규 빈 상태 + 이동 CTA.
 function equipmentRedirect(form: HTMLElement): HTMLElement {
   return el("div", {
-    class: "db-item-equipment-redirect",
+    class: "db-item-equipment-redirect db-ws-span",
     dataset: { testid: "db-item-equipment-redirect" },
     children: [
-      panel("장비는 장비 탭에서", [
-        el("p", {
-          class: "db-item-equipment-redirect-copy",
-          text: "무기·방패·갑옷·머리·장신구의 전투 스탯은 이 탭에서 적용되지 않습니다. 장비 탭에서 만듭니다.",
-        }),
-        el("button", {
-          class: "db-toolbar-button",
-          text: "장비 탭 열기",
-          attrs: { type: "button" },
-          dataset: { testid: "db-item-open-equipment-tab" },
-          on: {
-            click: () => {
-              const root = databasePanelRootFrom(form);
-              if (root) switchDatabaseActiveTab("equipment", root);
-            },
+      emptyState({
+        icon: "⚔",
+        title: "장비 스탯은 장비 탭에서 만듭니다",
+        body: "무기·방패·갑옷·머리·장신구의 전투 스탯은 이 탭에서 적용되지 않습니다. 여기서는 이름·가격·아이콘만 관리합니다.",
+        testid: "db-item-equipment-redirect-empty",
+        action: {
+          label: "장비 탭 열기",
+          testid: "db-item-open-equipment-tab",
+          onClick: () => {
+            const root = databasePanelRootFrom(form);
+            if (root) switchDatabaseActiveTab("equipment", root);
           },
-        }),
-      ]),
+        },
+      }),
     ],
   });
 }
 
 function itemSpecStrip(record: ItemRecord): HTMLElement {
-  const spec = el("div", { class: "db-item-spec-strip", dataset: { testid: "db-item-spec-strip" } });
+  const spec = el("div", { class: "db-item-grid", dataset: { testid: "db-item-spec-strip" } });
   if (!isEquipmentItemType(record.type)) itemFields(spec, record.id);
   return spec;
 }
@@ -236,15 +271,18 @@ function itemHeader(record: ItemRecord): HTMLElement {
   if (url) icon.style.backgroundImage = `url("${url}")`;
   const name = textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("items", record.id, { name }));
   return el("div", {
-    class: "db-item-inspector-header",
+    class: "db-item-inspector-header db-ws-hero",
     dataset: { testid: "db-item-inspector-header" },
     children: [
-      icon,
+      el("div", { class: "db-ws-hero-media", children: [icon] }),
       el("div", {
-        class: "db-item-inspector-title",
+        class: "db-item-inspector-title db-ws-hero-text",
         children: [
           el("div", { class: "db-item-inspector-name", children: [name] }),
-          el("span", { class: "db-item-inspector-type-tag", text: ITEM_TYPE_LABELS[record.type] }),
+          el("div", {
+            class: "db-ws-hero-tags",
+            children: [el("span", { class: "db-ws-tag db-item-inspector-type-tag", text: ITEM_TYPE_LABELS[record.type] })],
+          }),
         ],
       }),
     ],
@@ -252,7 +290,9 @@ function itemHeader(record: ItemRecord): HTMLElement {
 }
 
 function resourcePanel(record: ItemRecord, rerender: () => void): HTMLElement {
-  return panel("아이템 그래픽", [
+  return el("div", {
+    class: "db-item-grid db-item-graphic-grid",
+    children: [
     resourcePickerControl({
       label: "이미지",
       resourceId: record.imageResourceId,
@@ -275,25 +315,37 @@ function resourcePanel(record: ItemRecord, rerender: () => void): HTMLElement {
         updateDatabaseRecord("items", record.id, { iconResourceId: emptyToUndefined(result.resourceId) }),
       rerender,
     }),
-  ]);
+    ],
+  });
+}
+
+// 종류별 패널 묶음. testid 계약(db-items-<type>-panel) 때문에 래퍼 노드는 남기지만
+// 레이아웃에는 참여하지 않는다(`display: contents`) — 카드가 바깥 스택의 남은 칸을
+// 그대로 채우도록 해서, 묶음이 자기 행을 통째로 잡아먹던 여백을 없앤다.
+function typePanelGroup(testid: string, cards: readonly HTMLElement[]): HTMLElement {
+  return el("div", {
+    class: "db-item-type-panels",
+    dataset: { testid },
+    children: [...cards],
+  });
 }
 
 function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
-    el("div", {
-      class: "db-item-type-panels",
-      dataset: { testid: "db-items-medicine-panel" },
-      children: [
-        panel("범위", [
+    typePanelGroup("db-items-medicine-panel", [
+      sectionCard({
+        title: "범위",
+        testid: "db-item-card-scope",
+        children: [
           segmentedControl("대상", "db-field-item-scope", record.scope, MEDICINE_SCOPE_OPTIONS, (scope) =>
             updateItemAndRefresh(record, { scope: scope as ItemScope }, refreshStory)
           ),
-        ]),
-        panel("사용 가능", actorClassChoices(record, refreshStory)),
-        panel("상태 회복", [choiceList("상태", healStateChoices(record, refreshStory))]),
-        panel("HP 회복", recoveryFields(record, "hpRecovery", "hp", refreshStory)),
-        panel("MP 회복", recoveryFields(record, "mpRecovery", "mp", refreshStory)),
-        panel("옵션", [
+        ],
+      }),
+      sectionCard({
+        title: "옵션",
+        testid: "db-item-card-options",
+        children: [
           toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) => {
             updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion });
             refreshStory();
@@ -301,66 +353,119 @@ function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLEleme
           toggleSwitch("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
             updateItemAndRefresh(record, { onlyEffectiveOnDeadActors }, refreshStory)
           ),
-        ]),
-      ],
-    }),
+        ],
+      }),
+      // HP·MP 는 같은 두 필드(%, 고정값)라 카드 두 장으로 나누면 격자에 홀수 칸이
+      // 남는다 — 한 카드 안에서 소제목으로 나눈다.
+      sectionCard({
+        title: "회복량",
+        hint: "% 는 최대치 기준, 고정값과 합산됩니다",
+        testid: "db-item-card-recovery",
+        children: [
+          fieldGroup("HP 회복", recoveryFields(record, "hpRecovery", "hp", refreshStory)),
+          fieldGroup("MP 회복", recoveryFields(record, "mpRecovery", "mp", refreshStory)),
+        ],
+      }),
+      spanCard(sectionCard({
+        title: "상태 회복",
+        testid: "db-item-card-heal-states",
+        children: [choiceList("상태", healStateChoices(record, refreshStory))],
+      })),
+      spanCard(sectionCard({
+        title: "사용 가능",
+        testid: "db-item-card-usable",
+        children: actorClassChoices(record, refreshStory),
+      })),
+    ]),
   ];
 }
 
 function bookPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
-    panel("습득 스킬", [
-      selectField("스킬", "db-picker-item-learned-skill", record.learnedSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
-        updateDatabaseRecord("items", record.id, { learnedSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) });
-        refreshStory();
+    typePanelGroup("db-items-book-panel", [
+      sectionCard({
+        title: "습득 스킬",
+        testid: "db-item-card-learned-skill",
+        children: [
+          selectField("스킬", "db-picker-item-learned-skill", record.learnedSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
+            updateDatabaseRecord("items", record.id, { learnedSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) });
+            refreshStory();
+          }),
+        ],
       }),
+      spanCard(sectionCard({
+        title: "사용 가능",
+        testid: "db-item-card-usable",
+        children: actorClassChoices(record, refreshStory),
+      })),
     ]),
-    panel("사용 가능", actorClassChoices(record, refreshStory)),
   ];
 }
 
 function seedPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
-    panel("능력치 보정", statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed", refreshStory)),
-    panel("사용 가능", actorClassChoices(record, refreshStory)),
+    typePanelGroup("db-items-seed-panel", [
+      sectionCard({
+        title: "영구 능력치 보정",
+        testid: "db-item-card-seed-bonuses",
+        children: [el("div", { class: "db-item-grid", children: statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed", refreshStory) })],
+      }),
+      spanCard(sectionCard({
+        title: "사용 가능",
+        testid: "db-item-card-usable",
+        children: actorClassChoices(record, refreshStory),
+      })),
+    ]),
   ];
 }
 
 function specialPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
-    el("div", {
-      class: "db-item-type-panels",
-      dataset: { testid: "db-items-special-panel" },
-      children: [
-        panel("발동 스킬", [
+    typePanelGroup("db-items-special-panel", [
+      sectionCard({
+        title: "발동 스킬",
+        testid: "db-item-card-activate-skill",
+        children: [
           selectField("발동 스킬", "db-picker-item-activate-skill", record.activateSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
             updateDatabaseRecord("items", record.id, { activateSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) });
             refreshStory();
           }),
-        ]),
-        panel("사용 메시지", [
+        ],
+      }),
+      sectionCard({
+        title: "사용 메시지",
+        testid: "db-item-card-usage-message",
+        children: [
           selectLiteral("메시지", "db-field-item-usage-message", record.usageMessage, ["normal", "skill"], (usageMessage) =>
             updateDatabaseRecord("items", record.id, { usageMessage })
           ),
-        ]),
-        panel("사용 가능", actorClassChoices(record, refreshStory)),
-      ],
-    }),
+        ],
+      }),
+      spanCard(sectionCard({
+        title: "사용 가능",
+        testid: "db-item-card-usable",
+        children: actorClassChoices(record, refreshStory),
+      })),
+    ]),
   ];
 }
 
 function switchPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
-    el("div", {
-      class: "db-item-type-panels",
-      dataset: { testid: "db-items-switch-panel" },
-      children: [
-        panel("스위치 토글 ON/OFF", [
+    typePanelGroup("db-items-switch-panel", [
+      sectionCard({
+        title: "스위치 토글 ON/OFF",
+        testid: "db-item-card-switch",
+        children: [
           selectField("스위치", "db-picker-item-switch", record.switchId ?? "", switchOptions(), (switchId) =>
             updateItemAndRefresh(record, { switchId: emptyToUndefined(switchId) }, refreshStory)
           ),
-        ]),
-        panel("사용 조건", [
+        ],
+      }),
+      sectionCard({
+        title: "사용 조건",
+        testid: "db-item-card-occasion",
+        children: [
           toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) => {
             updateDatabaseRecord("items", record.id, {
               occasionField,
@@ -375,9 +480,9 @@ function switchPanels(record: ItemRecord, refreshStory: () => void): HTMLElement
             });
             refreshStory();
           }),
-        ]),
-      ],
-    }),
+        ],
+      }),
+    ]),
   ];
 }
 
@@ -509,6 +614,11 @@ function checkboxField(label: string, testid: string, checked: boolean, onInput:
 
 function choiceList(title: string, children: HTMLElement[]): HTMLElement {
   return el("div", { class: "db-item-choice-list", children: [el("strong", { text: title }), ...children] });
+}
+
+/** 카드 안 소제목 + 세로 필드 묶음(체크박스 격자인 choiceList 와 달리 필드 폭을 유지). */
+function fieldGroup(title: string, children: HTMLElement[]): HTMLElement {
+  return el("div", { class: "db-item-subgroup", children: [el("strong", { text: title }), ...children] });
 }
 
 function fillItemEffectStory(host: HTMLElement, project: Project, record: ItemRecord): void {

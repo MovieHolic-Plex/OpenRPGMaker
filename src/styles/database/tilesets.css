@@ -1,66 +1,16 @@
-.database-modal-body .oprn-tileset-workspace {
-  background: var(--bg-raised);
-  gap: 8px;
-  grid-template-columns: 168px minmax(0, 1fr);
-  height: 100%;
-  min-height: 0;
-  padding: 4px;
-}
+/* 모던 레이어(새 규칙 전용). index.css 에 따로 넣지 말 것 — 여기서 한 번만 로드한다.
+   셀렉터가 workspace-modern.css 보다 한 클래스 더 구체적이라 순서에 의존하지 않는다. */
+@import "./modern/tilesets.css";
+
+/* 2026-08 모던 개편: 타일셋 탭은 databaseWorkspace 프리미티브(workspaceShell/listPane/
+   detailPane)를 쓴다. 예전 손조립 셸(`.oprn-tileset-workspace` 2열 그리드,
+   `.oprn-tileset-list-pane` 3행 그리드, `.oprn-maximum-button` 전폭 바,
+   `.oprn-tileset-editor` 2행 그리드에 자식 3개)은 전부 지웠다 — 그 3행/2행 불일치가
+   게이트의 clipped:9 overlap:1 을 만들던 원인이다. 새 규칙은
+   `database/modern/tilesets.css` 에 있다. */
 
 .tileset-modal-backdrop {
   z-index: var(--z-popover);
-}
-
-.database-modal-body .oprn-tileset-list-pane {
-  display: grid;
-  grid-template-rows: 20px minmax(0, 1fr) 26px;
-  min-height: 0;
-}
-
-.database-modal-body .oprn-tileset-list-pane .tileset-db-panel-title {
-  background: var(--accent);
-  color: var(--text-1);
-  font: 700 13px/20px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  margin: 0;
-  text-align: center;
-}
-
-.database-modal-body .oprn-tileset-list-pane .tileset-db-listbox {
-  background: var(--bg-raised);
-  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
-  border-style: solid;
-  border-width: 1px;
-  min-height: 0;
-  overflow: auto;
-}
-
-.database-modal-body .oprn-tileset-list-pane .tileset-db-list-row {
-  font: 400 12px/17px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  height: 19px;
-  min-height: 19px;
-  overflow: hidden;
-  padding: 1px 4px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.database-modal-body .oprn-tileset-list-pane .tileset-db-list-row.active {
-  background: var(--accent-muted);
-  color: var(--text-1);
-}
-
-.database-modal-body .oprn-maximum-button {
-  align-self: end;
-  margin-top: 6px;
-  width: 100%;
-}
-
-.database-modal-body .oprn-tileset-editor {
-  display: grid;
-  gap: 6px;
-  grid-template-rows: auto minmax(0, 1fr);
-  height: 100%;
-  min-height: 0;
 }
 
 .database-modal-body .oprn-tileset-properties {
@@ -117,10 +67,13 @@
   white-space: nowrap;
 }
 
+/* "설정..." 세 글자짜리 라벨을 24px(모던 레이어에서는 34px) 정사각형에 못박아 두어
+   글자가 두 줄로 접히며 버튼과 fieldset 밖으로 흘렀다. 내용 폭을 쓴다. */
 .database-modal-body .oprn-browse-button {
-  min-width: 24px;
-  padding: 0;
-  width: 24px;
+  min-width: 0;
+  padding: 0 10px;
+  white-space: nowrap;
+  width: auto;
 }
 
 .database-modal-body .oprn-tileset-transparent-field {
@@ -172,24 +125,26 @@
   min-width: 86px;
 }
 
+/* 세로 크기는 상세 창 본문(`.db-ws-detail-body`)이 정한다. 예전의
+   `min-height: min(72vh,720px)` 은 자기 그리드 트랙보다 커져서 형제(AI 런처)와
+   69px 겹치고 조상 overflow:hidden 에 189px 잘리던 원인이라 뺐다. */
 .database-modal-body .oprn-tileset-main {
   display: grid;
   gap: 6px;
-  /* 칩셋 시트가 주인공 — 좌·우 패널은 최소 폭만 */
-  grid-template-columns: minmax(0, 1fr) minmax(140px, 168px);
-  /* 모달 안에서 세로 공간을 먹고, 시트 영역이 스크롤되게 */
+  /* 칩셋 시트가 주인공 — 우측 보조 패널은 읽을 수 있는 최소 폭만 */
+  grid-template-columns: minmax(0, 1fr) minmax(196px, 232px);
   grid-template-rows: minmax(0, 1fr);
-  height: 100%;
-  min-height: min(72vh, 720px);
-  max-height: calc(100vh - 160px);
+  min-height: 0;
   min-width: 0;
   overflow: hidden;
 }
 
+/* 좌측 편집 도구/선택 타일 열은 128px 이었다 — "자동 / 하위 / 상위" 세 버튼 중 셋째가
+   통째로 잘리고 의미 입력이 한 줄에 6~7자만 들어가던 폭이다. */
 .database-modal-body .oprn-tileset-main .tileset-db-edit-area {
   display: grid;
   gap: 6px;
-  grid-template-columns: 128px minmax(0, 1fr);
+  grid-template-columns: minmax(212px, 244px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   height: 100%;
@@ -239,7 +194,6 @@
 }
 
 .database-modal-body .oprn-browse-button:disabled,
-.database-modal-body .oprn-maximum-button:disabled,
 .database-modal-body .oprn-tileset-layer-tabs button:disabled {
   color: var(--text-2);
   cursor: not-allowed;
@@ -685,24 +639,6 @@
     color: var(--text-1);
   }
 
-  .database-modal-body .oprn-maximum-button {
-    background: var(--bg-raised);
-    border: 1px solid var(--db-modern-line, var(--border-subtle));
-    border-radius: 4px;
-    color: var(--text-2);
-    font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-    margin-top: 12px;
-    min-height: 36px;
-    width: 100%;
-  }
-
-  .database-modal-body .oprn-tileset-editor {
-    gap: 12px;
-    grid-template-rows: auto minmax(0, 1fr);
-    min-height: 0;
-    overflow: hidden;
-  }
-
   .database-modal-body .oprn-tileset-properties {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line, var(--border-subtle));
@@ -736,9 +672,10 @@
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 4px;
     min-height: 34px;
-    min-width: 34px;
-    padding: 0;
-    width: 34px;
+    min-width: 0;
+    padding: 0 12px;
+    white-space: nowrap;
+    width: auto;
   }
 
   .database-modal-body .oprn-global-terrain-button,
@@ -758,19 +695,17 @@
   }
 
   .database-modal-body .oprn-tileset-main {
-    gap: 8px;
-    grid-template-columns: minmax(0, 1fr) minmax(148px, 176px);
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(212px, 248px);
     grid-template-rows: minmax(0, 1fr);
-    height: 100%;
-    min-height: min(74vh, 760px);
-    max-height: calc(100vh - 140px);
+    min-height: 0;
     min-width: 0;
     overflow: hidden;
   }
 
   .database-modal-body .oprn-tileset-main .tileset-db-edit-area {
-    gap: 8px;
-    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 10px;
+    grid-template-columns: minmax(224px, 252px) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
     min-height: 0;
     height: 100%;
@@ -849,23 +784,13 @@
   }
 }
 
-/* ── 타일셋 섹션 3탭 재편(2026-07-05): 규칙/지식/구성 ─────────────── */
-.tileset-section-tabs {
-  align-items: center;
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-}
+/* 섹션 3탭(규칙/지식/구성)은 이제 속성 상자 오른쪽에 떠 있는 버튼 무리가 아니라
+   워크벤치 위의 탭 레일이다 — database/modern/tilesets.css 에서 정의한다. */
 
-.tileset-section-tab.active {
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
-  color: var(--accent);
-  font-weight: 700;
-}
-
+/* 좁은 열에서 셋째 버튼("상위")이 통째로 잘리던 원인: 줄바꿈 금지 flex 행. */
 .tileset-rule-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 
@@ -1378,18 +1303,9 @@
 }
 
 @media (max-width: 900px) {
-  .database-modal-body .oprn-tileset-workspace:has(.knowledge-mode) .oprn-tileset-list-pane {
-    max-height: 144px;
-    min-height: 144px;
-    padding: var(--space-2);
-  }
-
-  .database-modal-body .oprn-tileset-workspace:has(.knowledge-mode) .tileset-db-panel-title {
-    margin-bottom: var(--space-1);
-  }
-
-  .database-modal-body .oprn-tileset-workspace:has(.knowledge-mode) .oprn-maximum-button {
-    display: none;
+  .database-modal-body .db-ws-tilesets:has(.knowledge-mode) .db-ws-list-pane {
+    max-height: 168px;
+    min-height: 168px;
   }
 
   .database-modal-body .oprn-tileset-main:has(.knowledge-mode) {

@@ -58,8 +58,10 @@
    바꾸면 카드가 세로로 촘촘히 쌓인다 — 감사 detailDead 51% → 44%, 폼 스크롤 높이도
    1110px → 903px 로 줄었다(1680×1050 뷰포트 기준 측정). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-stack {
+  /* column-count 고정 대신 column-width — 도킹/좁은 창에서는 자동으로 1 열이 된다
+     (`db-ws-stack` 의 auto-fit minmax(400px,1fr) 과 같은 임계값). */
   column-gap: 10px;
-  columns: 2;
+  columns: 400px;
   display: block;
   flex: 0 0 auto;
 }

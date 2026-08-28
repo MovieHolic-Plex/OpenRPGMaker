@@ -137,13 +137,24 @@
 
 /* ── 카드 격자 ──────────────────────────────────────────────────────────
    `.db-items-oprn-workbench` 는 e2e 가 가시성을 확인하는 노드라 남기고,
-   레이아웃만 공용 `db-ws-stack` 에 넘긴다. 종류별 패널 묶음도 같은 격자다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-items-oprn-workbench,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-type-panels {
+   레이아웃만 공용 `db-ws-stack` 에 넘긴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-items-oprn-workbench {
   align-content: start;
   max-height: none;
   overflow: visible;
   padding: 0;
+}
+
+/* 종류별 패널 묶음(`db-items-medicine-panel` 등)은 testid 계약 때문에 DOM 에 남아야
+   하지만, 자체 행을 차지하면 그 행의 나머지가 통째로 빈다(H 축 여백). `display: contents`
+   로 자식 카드를 바깥 스택에 그대로 흘려보낸다 — 대신 `db-ws-stack > .db-ws-span`
+   직계 규칙이 안 걸리므로 여기서 다시 심는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-type-panels {
+  display: contents;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-type-panels > .db-ws-span {
+  grid-column: 1 / -1;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-stack,
@@ -206,7 +217,39 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-graphic-grid,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-graphic-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* 토글 스위치가 16px 정사각형으로 찌그러지던 문제.
+   04-modern-records.css:526 의 `:is(.oprn-detail-items,.oprn-detail-equipment)
+   input[type="checkbox"] { width:16px }` 이 (0,3,1) 로 `.db-toggle-input` (0,3,0) 을
+   이겨서, 34×18 필 스위치가 체크박스 크기로 눌려 상태를 읽을 수 없었다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-toggle-input,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-toggle-input {
+  flex: 0 0 34px;
+  height: 18px;
+  min-height: 18px;
+  min-width: 34px;
+  width: 34px;
+}
+
+/* 카드 본문을 다시 2열로 — 체크박스 묶음 두 개가 세로로만 길어지던 카드
+   (공격/방어 속성 · 장착 허용)에서 옆 칸이 통째로 비는 걸 막는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-eq-two-col > .db-ws-card-body {
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* 카드 안 소제목 + 필드 묶음. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-subgroup {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-subgroup > strong {
+  color: var(--db-studio-text-2, #475569);
+  font: 700 11px/1.6 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 /* ── 체크박스 묶음 ──────────────────────────────────────────────────────── */
@@ -275,10 +318,15 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-heading .db-field {
   align-items: center;
   display: flex;
-  flex: 1 1 200px;
+  flex: 0 1 320px;
   gap: 8px;
   margin: 0;
   min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-heading .db-field > span {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-stats {

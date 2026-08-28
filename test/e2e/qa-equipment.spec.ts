@@ -33,7 +33,9 @@ test.describe("QA sweep: equipment tab", () => {
     // identity / basic
     await page.getByTestId("db-field-name").fill("QA 장비");
     await page.getByTestId("db-field-price").fill("500");
-    await page.getByTestId("db-field-slot").selectOption("shield");
+    // 부위는 장비 인스펙터 헤더의 세그먼트(네이티브 radio) 하나뿐이다 — 같은 record.slot 을
+    // 쓰던 두 번째 레거시 <select> 는 제거됐다(장비 탭 G축 P0).
+    await page.locator('[data-testid="db-field-equipment-slot-option"][value="shield"]').check();
     await page.getByTestId("db-field-equipment-description").fill("QA 장비 설명 텍스트입니다.");
 
     // stat bonuses
@@ -73,7 +75,7 @@ test.describe("QA sweep: equipment tab", () => {
     await switchDatabaseTab(page, EQUIPMENT_TAB);
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA 장비");
     await expect(page.getByTestId("db-field-price")).toHaveValue("500");
-    await expect(page.getByTestId("db-field-slot")).toHaveValue("shield");
+    await expect(page.locator('[data-testid="db-field-equipment-slot-option"][value="shield"]')).toBeChecked();
     await expect(page.getByTestId("db-field-equipment-attack")).toHaveValue("12");
     await expect(page.getByTestId("db-field-equipment-two-handed")).toBeChecked();
     await expect(page.getByTestId("db-field-equipment-cursed")).toBeChecked();
@@ -112,7 +114,7 @@ test.describe("QA sweep: equipment tab", () => {
 
     await page.getByTestId("db-add-record").click();
     await page.getByTestId("db-field-name").fill("QA 연동 검");
-    await page.getByTestId("db-field-slot").selectOption("weapon");
+    await page.locator('[data-testid="db-field-equipment-slot-option"][value="weapon"]').check();
 
     await switchDatabaseTab(page, ACTORS_TAB);
     const weaponPicker = page.getByTestId("db-picker-actor-equipment-weapon");

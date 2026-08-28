@@ -1,4 +1,4 @@
-﻿import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
@@ -13,13 +13,17 @@ import type { EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
+import { detailHero, emptyState, listToolbar, sectionCard } from "@/editor/panels/databaseWorkspace";
+// JS import 로 넣는다 — 번들 순서상 index.css 의 studio-theme.css 뒤에 오므로,
+// studio-theme 이 남긴 `grid-area: combat !important` 같은 잔재를 !important 남발 없이 이긴다.
+// (databaseUtilityRecordViews.ts 가 modern/utility-records.css 를 넣는 방식과 동일.)
+import "@/styles/database/modern/enemies.css";
 import {
   checkboxField,
   conditionLabel,
   currentEnemy,
   defaultAction,
   enemyGraphicVisual,
-  panel,
   rateField,
   replaceAction,
   skillName,
@@ -28,26 +32,111 @@ import {
 /** 공격 패턴 표에서 편집 대상 행. 레코드 id → 원본 배열 인덱스(정렬 인덱스가 아니다). */
 const selectedActionIndexes = new Map<string, number>();
 
+/**
+ * 패널 상자. 예전에는 `<fieldset><legend>` 였는데, studio-theme.css 가
+ * `.oprn-detail-enemies fieldset { border:0 !important; background:transparent !important }`
+ * 로 11 개 패널의 테두리를 통째로 지워 "능력치"와 "종족"의 경계가 사라져 있었다.
+ * `sectionCard()` 는 `<section class="db-ws-card">` 를 내므로 그 선택자에 아예 걸리지 않는다.
+ *
+ * `db-advanced-panel` + `db-enemy-panel-*` 클래스는 그대로 유지한다 —
+ * test/databasePanelGridClasses.test.ts 가 패널 11 개와 각 고유 클래스를 고정한다.
+ */
+function enemyCard(
+  title: string,
+  key: string,
+  children: readonly HTMLElement[],
+  options: { readonly hint?: string; readonly span?: boolean } = {}
+): HTMLElement {
+  const card = sectionCard({
+    title,
+    ...(options.hint ? { hint: options.hint } : {}),
+    children,
+    testid: `db-enemy-card-${key}`,
+  });
+  card.classList.add("db-advanced-panel", `db-enemy-panel-${key}`);
+  if (options.span) card.classList.add("db-ws-span");
+  return card;
+}
+
 export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, rerender: () => void = () => undefined): void {
+  const hero = enemyHero(record);
   form.append(
     el("div", {
-      class: "db-enemy-bm101-workbench",
+      // 예전 클래스명(db-enemy-bm101-workbench)을 버린다. desktop.css / 05-dense-workbenches.css /
+      // studio-theme.css 가 서로 다른 grid-template-areas 를 같은 이름에 걸어 두고 있어서,
+      // 그 이름을 유지하는 한 어떤 배치를 짜도 마지막에 로드된 맵이 이겨 버린다(겹침 3 건의 원인).
+      // testid 는 e2e 계약이라 그대로 둔다.
+      class: "db-enemy-workbench",
       dataset: { testid: "db-enemies-bm101-workbench" },
       children: [
-        panel("이름", [textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("enemies", record.id, { name }))], "db-enemy-panel-name"),
-        panel("능력치", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })], "db-enemy-panel-stats"),
-        panel("그래픽", graphicFields(record, rerender), "db-enemy-panel-graphic"),
-        panel("종족", speciesFields(record, rerender), "db-enemy-panel-species"),
-        panel("보상", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })], "db-enemy-panel-rewards"),
-        panel("치명타 %", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record) })], "db-enemy-panel-critical"),
-        panel("옵션", optionFields(record), "db-enemy-panel-options"),
-        panel("액션 전투", actionCombatFields(record), "db-enemy-panel-action-combat"),
-        panel("상태 유효도", rateRows(record, "state"), "db-enemy-panel-state"),
-        panel("속성 유효도", rateRows(record, "element"), "db-enemy-panel-element"),
-        panel("공격 패턴", [actionSkillField(record), attackPatternTable(record, rerender)], "db-enemy-panel-actions"),
+        hero.node,
+        el("div", {
+          class: "db-ws-stack db-enemy-stack",
+          children: [
+            enemyCard("이름", "name", identityFields(record, hero.setTitle), { hint: "목록과 전투 로그에 쓰입니다" }),
+            enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })]),
+            enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
+            enemyCard("종족", "species", speciesFields(record, rerender), { hint: "포획해 키우는 몬스터의 원본" }),
+            enemyCard("보상", "rewards", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
+            enemyCard("치명타 %", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record) })]),
+            enemyCard("옵션", "options", optionFields(record)),
+            enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }),
+            enemyCard("상태 유효도", "state", rateRows(record, "state")),
+            enemyCard("속성 유효도", "element", rateRows(record, "element")),
+            enemyCard("공격 패턴", "actions", [actionSkillField(record), attackPatternTable(record, rerender)], { span: true }),
+          ],
+        }),
       ],
     })
   );
+}
+
+/**
+ * 상세 창 상단 고정 헤더. 지금 어떤 몬스터를 편집 중인지(스프라이트/이름/핵심 수치)가
+ * 항상 보인다 — 예전에는 좌측 목록 말고는 단서가 없었고 상세 창 상단 절반이 빈 칸이었다.
+ */
+function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly setTitle: (name: string) => void } {
+  const live = currentEnemy(record);
+  const species = live.speciesId
+    ? store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === live.speciesId)
+    : undefined;
+  const tags = [
+    `Lv ${live.level ?? 1}`,
+    species ? `종족 ${species.name}` : "종족 미설정",
+    `행동 ${live.actions.length}개`,
+    ...(live.flying ? ["비행"] : []),
+    ...(live.transparent ? ["투명"] : []),
+  ];
+  const node = detailHero({
+    eyebrow: "몬스터",
+    title: live.name || "(이름 없음)",
+    subtitle: `HP ${live.stats.maxHp} · 공격 ${live.stats.attack} · 방어 ${live.stats.defense} · 민첩 ${live.stats.agility} · 경험치 ${live.rewards.exp}`,
+    tags,
+    media: enemyGraphicVisual(live),
+    testid: "db-enemy-hero",
+  });
+  const titleNode = node.querySelector(".db-ws-hero-title");
+  return {
+    node,
+    setTitle: (name: string): void => {
+      if (titleNode instanceof HTMLElement) titleNode.textContent = name || "(이름 없음)";
+    },
+  };
+}
+
+function identityFields(record: EnemyRecord, setHeroTitle: (name: string) => void): HTMLElement[] {
+  const level = numberField("레벨", "db-field-enemy-level", record.level ?? 1, (value) =>
+    updateDatabaseRecord("enemies", record.id, { level: value }),
+    { min: 1, max: 99 }
+  );
+  level.title = "경험치 레벨갭 보정과 포획 몬스터의 시작 레벨에 쓰입니다.";
+  return [
+    textField("이름", "db-field-name", record.name, (name) => {
+      updateDatabaseRecord("enemies", record.id, { name });
+      setHeroTitle(name);
+    }),
+    level,
+  ];
 }
 
 function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[] {
@@ -80,7 +169,7 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
           children: [
             speciesStatusChip("info", "db-enemy-species-graphic-mismatch", "그래픽이 종족과 다름"),
             el("button", {
-              class: "btn small",
+              class: "db-ws-btn db-ws-btn-ghost",
               text: "그래픽 복사",
               attrs: { type: "button" },
               dataset: { testid: "db-enemy-species-copy-graphic" },
@@ -115,7 +204,7 @@ function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLEleme
   if (speciesId) {
     actions.push(
       el("button", {
-        class: "btn small",
+        class: "db-ws-btn db-ws-btn-ghost",
         text: "종족 열기",
         attrs: { type: "button" },
         dataset: { testid: "db-enemy-open-species" },
@@ -136,7 +225,7 @@ function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLEleme
 
   actions.push(
     el("button", {
-      class: "btn small",
+      class: "db-ws-btn db-ws-btn-ghost",
       text: "종족 생성",
       attrs: { type: "button" },
       dataset: { testid: "db-enemy-create-species" },
@@ -234,18 +323,12 @@ function speciesStatusChip(kind: "warn" | "info" | "error", testid: string, text
 }
 
 function statFields(record: EnemyRecord): HTMLElement[] {
-  const level = numberField("레벨", "db-field-enemy-level", record.level ?? 1, (value) =>
-    updateDatabaseRecord("enemies", record.id, { level: value }),
-    { min: 1, max: 99 }
-  );
-  level.title = "경험치 레벨갭 보정과 포획 몬스터의 시작 레벨에 쓰입니다.";
   return [
-    level,
     enemyStatField(record, "최대 HP", "maxHp", "db-field-enemy-max-hp", { min: 1, max: 99999 }),
-    enemyStatField(record, "공격력", "attack", "db-field-enemy-attack", { min: 1, max: 999 }),
-    enemyStatField(record, "정신력", "mind", "db-field-enemy-mind", { min: 1, max: 999 }),
     enemyStatField(record, "최대 MP", "maxMp", "db-field-enemy-max-mp", { min: 0, max: 9999 }),
+    enemyStatField(record, "공격력", "attack", "db-field-enemy-attack", { min: 1, max: 999 }),
     enemyStatField(record, "방어력", "defense", "db-field-enemy-defense", { min: 1, max: 999 }),
+    enemyStatField(record, "정신력", "mind", "db-field-enemy-mind", { min: 1, max: 999 }),
     enemyStatField(record, "민첩성", "agility", "db-field-enemy-agility", { min: 1, max: 999 }),
   ];
 }
@@ -264,18 +347,33 @@ function enemyStatField(
 }
 
 function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[] {
+  // 스프라이트 미리보기는 히어로가 갖는다 — 같은 그림을 두 번 그리면
+  // updateGraphicPreviewState 가 어느 쪽을 갱신할지 모호해진다.
   return [
     el("div", {
-      class: "db-enemy-graphic-preview",
-      children: [enemyGraphicVisual(record), el("button", { class: "btn small", text: "설정", dataset: { testid: "db-enemy-graphic-set" }, on: { click: () => openGraphicDialog(record, rerender) } })],
+      class: "db-enemy-graphic-actions",
+      children: [
+        el("button", {
+          class: "db-ws-btn db-ws-btn-primary",
+          text: "설정",
+          attrs: { type: "button" },
+          dataset: { testid: "db-enemy-graphic-set" },
+          on: { click: () => openGraphicDialog(record, rerender) },
+        }),
+      ],
     }),
-    checkboxField("투명", "db-field-enemy-transparent", record.transparent, (transparent) => {
-      updateDatabaseRecord("enemies", record.id, { transparent });
-      updateGraphicPreviewState(transparent, currentEnemy(record).flying);
-    }),
-    checkboxField("비행", "db-field-enemy-flying", record.flying, (flying) => {
-      updateDatabaseRecord("enemies", record.id, { flying });
-      updateGraphicPreviewState(currentEnemy(record).transparent, flying);
+    el("div", {
+      class: "db-enemy-graphic-flags",
+      children: [
+        checkboxField("투명", "db-field-enemy-transparent", record.transparent, (transparent) => {
+          updateDatabaseRecord("enemies", record.id, { transparent });
+          updateGraphicPreviewState(transparent, currentEnemy(record).flying);
+        }),
+        checkboxField("비행", "db-field-enemy-flying", record.flying, (flying) => {
+          updateDatabaseRecord("enemies", record.id, { flying });
+          updateGraphicPreviewState(currentEnemy(record).transparent, flying);
+        }),
+      ],
     }),
     textField("리소스", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
       updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
@@ -349,13 +447,26 @@ function rateRows(record: EnemyRecord, kind: "state" | "element"): HTMLElement[]
       if (kind === "element") updateDatabaseRecord("enemies", record.id, { elementRates: { ...current.elementRates, [entry.id]: grade } });
     });
   });
-  if (kind !== "element") return rows;
+  if (kind !== "element") return [rateList(rows, kind)];
   // 속성 목록에서 사라졌는데 등급이 남아 있는 키 — 런타임은 무시하므로 정리 경로를 준다.
   const known = new Set((database.elements ?? []).map((element) => element.id));
   for (const danglingId of Object.keys(record.elementRates).filter((id) => !known.has(id))) {
     rows.push(danglingElementRateRow(record, danglingId));
   }
-  return rows;
+  return [rateList(rows, kind)];
+}
+
+function rateList(rows: readonly HTMLElement[], kind: "state" | "element"): HTMLElement {
+  if (rows.length === 0) {
+    return emptyState({
+      icon: "○",
+      title: kind === "state" ? "상태가 없습니다" : "속성이 없습니다",
+      body: kind === "state" ? "[상태] 탭에서 상태를 먼저 만드세요." : "[속성] 탭에서 속성을 먼저 만드세요.",
+      compact: true,
+      testid: `db-enemy-${kind}-rates-empty`,
+    });
+  }
+  return el("div", { class: "db-enemy-rate-list", children: [...rows] });
 }
 
 function danglingElementRateRow(record: EnemyRecord, elementId: string): HTMLElement {
@@ -365,7 +476,7 @@ function danglingElementRateRow(record: EnemyRecord, elementId: string): HTMLEle
     children: [
       el("span", { text: `속성 목록에 없는 등급: ${elementId} (${record.elementRates[elementId]})` }),
       el("button", {
-        class: "btn small",
+        class: "db-ws-btn db-ws-btn-danger",
         attrs: { type: "button" },
         text: "삭제",
         dataset: { testid: `db-enemy-element-rate-dangling-delete-${elementId}` },
@@ -382,46 +493,83 @@ function danglingElementRateRow(record: EnemyRecord, elementId: string): HTMLEle
   });
 }
 
+/** 지금 선택된 행의 **원본 배열 인덱스**. 툴바 클로저는 렌더 시점 값이 아니라 이걸 쓴다. */
+function liveSelectedActionIndex(record: EnemyRecord): number {
+  const length = currentEnemy(record).actions.length;
+  return Math.min(selectedActionIndexes.get(record.id) ?? 0, Math.max(0, length - 1));
+}
+
+/** 선택 표시를 형제 행에 직접 옮긴다 — 표를 다시 그리지 않으므로 노드가 살아 있다. */
+function markActiveActionRow(row: HTMLElement | null, index: number): void {
+  const body = row?.parentElement;
+  if (!body) return;
+  for (const sibling of Array.from(body.children)) {
+    if (!(sibling instanceof HTMLElement)) continue;
+    sibling.classList.toggle("active", sibling.dataset.actionIndex === String(index));
+  }
+}
+
 function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElement {
   const actions = record.actions;
-  const selectedIndex = Math.min(selectedActionIndexes.get(record.id) ?? 0, Math.max(0, actions.length - 1));
-  const toolbar = el("div", {
-    class: "db-enemy-action-toolbar",
-    children: [
-      actionButton("행 추가", "db-enemy-action-add", () => {
+  const selectedIndex = liveSelectedActionIndex(record);
+  const toolbar = listToolbar([
+    {
+      label: "행 추가",
+      kind: "primary",
+      testid: "db-enemy-action-add",
+      onClick: () => {
         const current = currentEnemy(record);
         updateDatabaseRecord("enemies", record.id, { actions: [...current.actions, defaultAction()] });
         selectedActionIndexes.set(record.id, current.actions.length);
         rerender();
-      }),
-      actionButton("행 복사", "db-enemy-action-duplicate", () => {
+      },
+    },
+    {
+      label: "행 복사",
+      testid: "db-enemy-action-duplicate",
+      disabled: actions.length === 0,
+      ...(actions.length === 0 ? { title: "행동을 추가하면 사용할 수 있습니다" } : {}),
+      onClick: () => {
         const current = currentEnemy(record);
-        const source = current.actions[selectedIndex];
+        const selected = liveSelectedActionIndex(record);
+        const source = current.actions[selected];
         if (!source) return;
         const next = [...current.actions];
-        next.splice(selectedIndex + 1, 0, { ...source });
+        next.splice(selected + 1, 0, { ...source });
         updateDatabaseRecord("enemies", record.id, { actions: next });
-        selectedActionIndexes.set(record.id, selectedIndex + 1);
+        selectedActionIndexes.set(record.id, selected + 1);
         rerender();
-      }, actions.length === 0),
-      actionButton("행 제거", "db-enemy-action-delete", () => {
+      },
+    },
+    {
+      label: "행 제거",
+      kind: "danger",
+      testid: "db-enemy-action-delete",
+      disabled: actions.length === 0,
+      ...(actions.length === 0 ? { title: "행동을 추가하면 사용할 수 있습니다" } : {}),
+      onClick: () => {
         const current = currentEnemy(record);
         if (current.actions.length === 0) return;
-        updateDatabaseRecord("enemies", record.id, { actions: current.actions.filter((_, index) => index !== selectedIndex) });
-        selectedActionIndexes.set(record.id, Math.max(0, selectedIndex - 1));
+        const selected = liveSelectedActionIndex(record);
+        updateDatabaseRecord("enemies", record.id, { actions: current.actions.filter((_, index) => index !== selected) });
+        selectedActionIndexes.set(record.id, Math.max(0, selected - 1));
         rerender();
-      }, actions.length === 0),
-    ],
-  });
+      },
+    },
+  ]);
+  toolbar.classList.add("db-enemy-action-toolbar");
   if (actions.length === 0) {
     return el("div", {
-      class: "db-enemy-attack-patterns",
+      class: "db-enemy-attack-patterns is-empty",
       children: [
         toolbar,
-        el("p", {
-          class: "db-enemy-actions-empty",
-          dataset: { testid: "db-enemy-actions-empty" },
-          text: "행동이 없습니다 — 전투에서 일반 공격만 사용합니다.",
+        emptyState({
+          // 폰트에 없는 글리프(⚔ 등)는 두부(□)로 떨어진다 — 공용 빈 상태와 같은 기호를 쓴다.
+          icon: "○",
+          title: "행동이 없습니다",
+          body: "전투에서 일반 공격만 사용합니다. [행 추가]로 스킬·조건·우선도를 지정하세요.",
+          compact: true,
+          testid: "db-enemy-actions-empty",
         }),
       ],
     });
@@ -439,9 +587,12 @@ function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElem
         attrs: { role: "button", tabindex: "0", "aria-label": `${label} 공격 패턴 편집` },
         dataset: { testid: `db-enemy-action-row-${index}`, actionIndex: String(index) },
         on: {
-          click: () => {
+          // 선택은 제자리에서 클래스만 바꾼다. 예전처럼 rerender() 하면 첫 클릭에서 행이
+          // DOM 에서 떨어져 나가 두 번째 클릭이 다른 노드에 떨어지고, 그래서 더블클릭으로
+          // 행동 편집 창을 여는 경로가 아예 동작하지 않았다(qa-enemies.spec.ts 주석 참조).
+          click: (event) => {
             selectedActionIndexes.set(record.id, index);
-            rerender();
+            markActiveActionRow(event.currentTarget as HTMLElement | null, index);
           },
           contextmenu: (event) => openActionContextMenu(record, index, action, event as MouseEvent, rerender),
           dblclick: () => openActionDialog(record, index, action, rerender),
@@ -466,21 +617,23 @@ function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElem
     class: "db-enemy-attack-patterns",
     children: [
       toolbar,
-      el("table", {
+      el("div", {
+        class: "db-enemy-attack-table",
         children: [
-          el("thead", { children: [el("tr", { children: [el("th", { text: "행동" }), el("th", { text: "조건" }), priorityHeader] })] }),
-          body,
+          el("table", {
+            children: [
+              el("thead", { children: [el("tr", { children: [el("th", { text: "행동" }), el("th", { text: "조건" }), priorityHeader] })] }),
+              body,
+            ],
+          }),
         ],
+      }),
+      el("p", {
+        class: "db-enemy-attack-hint",
+        text: "행을 더블클릭하거나 Enter 를 눌러 조건·우선도·스위치를 편집합니다.",
       }),
     ],
   });
-}
-
-function actionButton(label: string, testid: string, onClick: () => void, disabled = false): HTMLElement {
-  const button = el("button", { class: "btn small", attrs: { type: "button" }, text: label, dataset: { testid }, on: { click: onClick } }) as HTMLButtonElement;
-  button.disabled = disabled;
-  if (disabled) button.title = "행동을 추가하면 사용할 수 있습니다";
-  return button;
 }
 
 function actionSkillField(record: EnemyRecord): HTMLElement {
@@ -500,6 +653,14 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
     mutate(draft);
     updateDatabaseRecord("enemies", record.id, { actionProfile: draft });
   };
+  const knockback = sliderStepperField("넉백 저항", "db-field-enemy-knockback-resist", profile?.knockbackResist ?? 0, (value) =>
+    patchProfile((draft) => {
+      draft.knockbackResist = value;
+    }),
+    { min: 0, max: 1, step: 0.05 }
+  );
+  // 슬라이더+스테퍼는 2열 수치 그리드 한 칸(≈130px)에 안 들어간다 — 한 줄을 다 쓴다.
+  knockback.classList.add("db-enemy-wide-field");
   const attackKindOptions = [
     { id: "", name: "없음(접촉만)" },
     { id: "melee", name: "근접" },
@@ -525,12 +686,7 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
       }),
       { min: 50, max: 10000 }
     ),
-    sliderStepperField("넉백 저항", "db-field-enemy-knockback-resist", profile?.knockbackResist ?? 0, (value) =>
-      patchProfile((draft) => {
-        draft.knockbackResist = value;
-      }),
-      { min: 0, max: 1, step: 0.05 }
-    ),
+    knockback,
     selectField("공격 종류", "db-field-enemy-action-kind", attack?.kind ?? "", attackKindOptions, (value) => {
       if (!value) {
         updateDatabaseRecord("enemies", record.id, { actionProfile: { ...structuredClone(profile ?? {}), attack: undefined } });

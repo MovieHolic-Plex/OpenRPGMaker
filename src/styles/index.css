@@ -58,6 +58,7 @@
    각 시트는 자기 탭의 클래스만 건드리고 --db-studio-* 토큰만 소비한다. */
 @import "./database/modern/crops-characters.css";
 @import "./database/modern/life-crafting.css";
+@import "./database/modern/skills.css";
 @import "./database/modern/spatial-collections.css";
 @import "./database/modern/troops.css";
 @import "./database/modern/utility-records.css";

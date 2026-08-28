@@ -1,3 +1,4 @@
+import "@/styles/database/modern/equipment-items.css";
 import { equipmentFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
@@ -10,7 +11,7 @@ import {
   toggleSwitch,
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
+import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { actorDerivedStats } from "@/battle/battleBattlers";
 import { normalizeActorRecord } from "@/project/actorModel";
@@ -241,63 +242,130 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
   );
   refreshOverview();
 
+  // 공용 상세 창 골격(databaseWorkspace detailPane 과 같은 구조): 히어로는 고정 행,
+  // 본문(.db-ws-detail-body)만 스크롤한다. 예전에는 폼 자체가 2열 그리드 + overflow:auto
+  // 라 카드가 열 사이에 흩어지고 라벨이 82px 열에 눌려 잘렸다.
+  form.classList.add("db-eq-ws");
   form.append(
     equipmentHeader(record, summaryHost, refreshOverview),
-    equipmentSpecStrip(record),
-    storyHost,
-    comparisonPanel,
-    resourcePanel(record, rerender),
-    databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance"),
-    textField("설명", "db-field-equipment-description", record.description, (description) =>
-      updateDatabaseRecord("equipment", record.id, { description })
-    ),
-    panel("능력치", [
-      statField({ equipment: record, key: "attack", label: "공격력", testid: "db-field-equipment-attack" }, refreshOverview),
-      statField({ equipment: record, key: "defense", label: "방어력", testid: "db-field-equipment-defense" }, refreshOverview),
-      statField({ equipment: record, key: "mind", label: "정신력", testid: "db-field-equipment-mind" }, refreshOverview),
-      statField({ equipment: record, key: "agility", label: "민첩성", testid: "db-field-equipment-agility" }, refreshOverview),
-    ]),
-    panel("장착 허용", [
-      toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
-        updateDatabaseRecord("equipment", record.id, { twoHanded });
-        refreshOverview();
-      }),
-      // 기본 데이터에서 배우명=직업명이라 어느 쪽인지 구분 불가했다(P10) — 소제목으로 구분.
-      choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record, refreshOverview)),
-      choiceGroup("직업별 허용", "db-equipment-class-permission-group", classChoices(record, refreshOverview)),
-    ]),
-    // 아이템 탭 equipmentProfile 블록과 동일한 효과 필드군 이식(P10 — 스키마·런타임은
-    // 이미 지원하는데 UI 만 없어 AI 도구로만 편집 가능했다).
-    panel("효과", equipmentEffectFields(record, refreshOverview)),
-    panel("공격/방어 속성", [
-      choiceGroup("공격 속성", "db-equipment-attack-element-group", elementChoices(record, "attackElementIds", refreshOverview)),
-      choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds", refreshOverview)),
-    ]),
-    panel("상태", [
-      choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds", refreshOverview)),
-      statePercentField(record, "stateInflictionChance", "db-field-equipment-state-infliction", "상태 부여율(%)", refreshOverview),
-      choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshOverview)),
-      segmentedControl("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, STATE_DEFENSE_MODE_OPTIONS, (stateDefenseMode) => {
-        updateDatabaseRecord("equipment", record.id, { stateDefenseMode: stateDefenseMode as EquipmentRecord["stateDefenseMode"] });
-        refreshOverview();
-      }),
-      statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)", refreshOverview),
-    ]),
-    panel("사용 효과", [
-      selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) => {
-        updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) });
-        refreshOverview();
-      }),
-      toggleSwitch("저주", "db-field-equipment-cursed", record.cursed, (cursed) => {
-        updateDatabaseRecord("equipment", record.id, { cursed });
-        refreshOverview();
-      }),
-    ])
+    el("div", {
+      class: "db-ws-detail-body",
+      children: [
+        el("div", {
+          class: "db-ws-stack db-eq-stack",
+          children: [
+            spanCard(sectionCard({
+              title: "이 장비를 착용하면",
+              hint: "DB 초기 레벨·초기 장비 기준 시뮬레이션",
+              testid: "db-equipment-card-overview",
+              children: [storyHost, comparisonPanel],
+            })),
+            sectionCard({
+              title: "기본",
+              testid: "db-equipment-card-basics",
+              children: [
+                equipmentSpecStrip(record),
+                textField("설명", "db-field-equipment-description", record.description, (description) =>
+                  updateDatabaseRecord("equipment", record.id, { description })
+                ),
+              ],
+            }),
+            sectionCard({
+              title: "능력치 보정",
+              hint: "착용 중에만 더해집니다",
+              testid: "db-equipment-card-stats",
+              children: [
+                el("div", {
+                  class: "db-eq-grid",
+                  children: [
+                    statField({ equipment: record, key: "attack", label: "공격력", testid: "db-field-equipment-attack" }, refreshOverview),
+                    statField({ equipment: record, key: "defense", label: "방어력", testid: "db-field-equipment-defense" }, refreshOverview),
+                    statField({ equipment: record, key: "mind", label: "정신력", testid: "db-field-equipment-mind" }, refreshOverview),
+                    statField({ equipment: record, key: "agility", label: "민첩성", testid: "db-field-equipment-agility" }, refreshOverview),
+                  ],
+                }),
+              ],
+            }),
+            sectionCard({
+              title: "장착 규칙",
+              testid: "db-equipment-card-rules",
+              children: [
+                toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
+                  updateDatabaseRecord("equipment", record.id, { twoHanded });
+                  refreshOverview();
+                }),
+                toggleSwitch("저주", "db-field-equipment-cursed", record.cursed, (cursed) => {
+                  updateDatabaseRecord("equipment", record.id, { cursed });
+                  refreshOverview();
+                }),
+                selectField("사용 시 발동 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) => {
+                  updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) });
+                  refreshOverview();
+                }),
+              ],
+            }),
+            graphicCard(record, rerender),
+            twoColumnCard(spanCard(sectionCard({
+              title: "장착 허용",
+              // 기본 데이터에서 배우명=직업명이라 어느 쪽인지 구분 불가했다(P10) — 소제목으로 구분.
+              hint: "아무것도 체크하지 않으면 누구도 장착할 수 없습니다",
+              testid: "db-equipment-card-permissions",
+              children: [
+                choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record, refreshOverview)),
+                choiceGroup("직업별 허용", "db-equipment-class-permission-group", classChoices(record, refreshOverview)),
+              ],
+            }))),
+            // 아이템 탭 equipmentProfile 블록과 동일한 효과 필드군 이식(P10 — 스키마·런타임은
+            // 이미 지원하는데 UI 만 없어 AI 도구로만 편집 가능했다).
+            spanCard(sectionCard({
+              title: "전투 효과",
+              testid: "db-equipment-card-effects",
+              children: [el("div", { class: "db-eq-grid", children: equipmentEffectFields(record, refreshOverview) })],
+            })),
+            twoColumnCard(spanCard(sectionCard({
+              title: "공격/방어 속성",
+              testid: "db-equipment-card-elements",
+              children: [
+                choiceGroup("공격 속성", "db-equipment-attack-element-group", elementChoices(record, "attackElementIds", refreshOverview)),
+                choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds", refreshOverview)),
+              ],
+            }))),
+            spanCard(sectionCard({
+              title: "상태 이상",
+              testid: "db-equipment-card-states",
+              children: [
+                choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds", refreshOverview)),
+                statePercentField(record, "stateInflictionChance", "db-field-equipment-state-infliction", "상태 부여율(%)", refreshOverview),
+                choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshOverview)),
+                segmentedControl("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, STATE_DEFENSE_MODE_OPTIONS, (stateDefenseMode) => {
+                  updateDatabaseRecord("equipment", record.id, { stateDefenseMode: stateDefenseMode as EquipmentRecord["stateDefenseMode"] });
+                  refreshOverview();
+                }),
+                statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)", refreshOverview),
+              ],
+            })),
+            spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance")),
+          ],
+        }),
+      ],
+    }),
   );
 }
 
+/** `db-ws-stack` 안에서 한 행을 다 쓰는 카드로 표시한다. */
+function spanCard(node: HTMLElement): HTMLElement {
+  node.classList.add("db-ws-span");
+  return node;
+}
+
+/** 카드 본문을 다시 2열로 쪼갠다 — 체크박스 묶음 두 개가 세로로 길어지는 걸 막는다. */
+function twoColumnCard(node: HTMLElement): HTMLElement {
+  node.classList.add("db-eq-two-col");
+  return node;
+}
+
 function equipmentSpecStrip(record: EquipmentRecord): HTMLElement {
-  const spec = el("div", { class: "db-item-spec-strip", dataset: { testid: "db-equipment-spec-strip" } });
+  const spec = el("div", { class: "db-eq-grid", dataset: { testid: "db-equipment-spec-strip" } });
   equipmentFields(spec, record.id);
   return spec;
 }
@@ -314,14 +382,17 @@ function equipmentHeader(record: EquipmentRecord, summaryHost: HTMLElement, refr
     updateDatabaseRecord("equipment", record.id, { name })
   );
   return el("div", {
-    class: "db-equipment-inspector-header",
+    class: "db-equipment-inspector-header db-ws-hero",
     dataset: { testid: "db-equipment-inspector-header" },
     children: [
-      icon,
+      el("div", { class: "db-ws-hero-media", children: [icon] }),
       el("div", {
-        class: "db-equipment-inspector-title",
+        class: "db-equipment-inspector-title db-ws-hero-text",
         children: [
           el("div", { class: "db-equipment-inspector-name", children: [name] }),
+          // 부위는 여기 세그먼트 하나뿐이다 — 예전에는 이 컨트롤과 아래 스펙 줄의
+          // 네이티브 <select data-testid="db-field-slot"> 두 개가 같은 record.slot 을
+          // 각각 써서, 하나를 바꿔도 다른 하나는 옛 값을 계속 보여줬다(G축 P0).
           segmentedControl("부위", "db-field-equipment-slot", record.slot, EQUIPMENT_SLOT_OPTIONS, (slot) => {
             updateDatabaseRecord("equipment", record.id, { slot: slot as EquipmentRecord["slot"] });
             refreshSummaryChips();
@@ -471,8 +542,23 @@ function comparisonStatRow(
   });
 }
 
+// 장비 그래픽 카드. `db-advanced-panel db-panel-equipment-graphic` 두 클래스는
+// databasePanelGridClasses.test.ts 의 계약이라 카드로 바뀐 뒤에도 유지한다
+// (아이콘 "설정…" 버튼을 이 카드 안에서 찾을 수 있어야 한다).
+function graphicCard(record: EquipmentRecord, rerender: () => void): HTMLElement {
+  const card = sectionCard({
+    title: "장비 그래픽",
+    testid: "db-equipment-card-graphic",
+    children: [resourcePanel(record, rerender)],
+  });
+  card.classList.add("db-advanced-panel", "db-panel-equipment-graphic");
+  return card;
+}
+
 function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLElement {
-  const graphicPanel = panel("장비 그래픽", [
+  const graphicPanel = el("div", {
+    class: "db-eq-grid db-eq-graphic-grid",
+    children: [
     resourcePickerControl({
       label: "이미지",
       resourceId: record.imageResourceId,
@@ -495,8 +581,8 @@ function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLEleme
         updateDatabaseRecord("equipment", record.id, { iconResourceId: emptyToUndefined(result.resourceId) }),
       rerender,
     }),
-  ]);
-  graphicPanel.classList.add("db-panel-equipment-graphic");
+    ],
+  });
   return graphicPanel;
 }
 
