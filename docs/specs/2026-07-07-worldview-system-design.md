@@ -90,3 +90,16 @@ type ProjectWorld = { entities: readonly WorldEntity[]; relations: readonly Worl
   W4 표면 교체(e520d19, 1882 — '증거 패킷'/'마을 정보' → '세계관' 버튼, 기술 증거 아코디언 격하).
   인터뷰 seed는 신규 프로젝트 인터뷰 흐름 부재로 스킵(향후 인터뷰 도입 시 origin:"interview" 규약 그대로 적용).
   '증거' 어휘는 사용자 표면에서 제거됨(legacy 모달/계약 내부만 잔존, 롤백 1버전 보존).
+- 2026-08-28: **AI 배선 배제 (감독 결정).** 온톨로지 우선 전제가 실제 저작 흐름에 붙지 않은 채
+  비용만 걷어가고 있었다 — 매 턴 다이제스트 최대 700토큰, 툴 4종의 노출 예산, 프로포절마다
+  '세계관 미기재' 경고, NPC·아이템을 만들 때마다 쌓이는 lint warning. 구속력(톤 검사)은 v2로
+  빠져 있어 대가를 회수하는 장치가 없었다. 따라서 **AI 경로만** 끊는다:
+  - 제거: `worldTools.ts`(query_world/upsert_world_entities/link_world_ref), `set_world_relations`,
+    contextBuilder 다이제스트 주입, proposalCompleteness 세계관 경고, run_lint·evaluate_game_quality의 lintWorld.
+  - 유지: `project.world` 데이터·shape guard·villageInfoDocuments 마이그레이션, 세계관 패널과 진입점,
+    패널 자체 lint 배지(`lintWorld`는 패널에서만 호출), 맵 삭제 시 ref 정리 가드,
+    `ChangeSummary.worldEntitiesAdded/Modified` 배관.
+  - 계약: `test/worldAiExclusion.test.ts`(툴 4종 미노출·다이제스트 미주입·경고 없음·lint 미합류).
+  - 되돌리기: 위 테스트를 지우고 git history의 `worldTools.ts`를 복원해 레지스트리에 재등록.
+  - 남은 개념 부채: `project.world`(세계관)와 `project.worldGraph`(맵 연결)의 이름 충돌,
+    `villageInfoDocuments` 이중 상태. 세계관을 다시 켤 때 먼저 정리할 대상.

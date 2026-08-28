@@ -10,7 +10,6 @@ import { HOUSE_KITS } from "@/editor/houseKit";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
-import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import {
@@ -179,18 +178,6 @@ function mapRegionSection(
   return parts.join("\n");
 }
 
-function worldDigestSection(project: Project): string {
-  const world = normalizeProjectWorld(project);
-  if (world.entities.length === 0) return "";
-  const digest = buildWorldDigest(world, { maxTokens: 700 });
-  if (digest === "세계관 없음") return "";
-  return [
-    "## 세계관 다이제스트",
-    "새 NPC/맵/명명 아이템을 만들거나 바꾸면 upsert_world_entities와 link_world_ref로 세계관도 같은 제안에 갱신하세요.",
-    digest,
-  ].join("\n");
-}
-
 function tileVocabularySection(project: Project, mapId: string | undefined): string {
   const tilesetIds = currentTilesetIds(project, mapId);
   const lines: string[] = [];
@@ -242,17 +229,9 @@ function passagePromptLabel(passage: ReturnType<typeof approvedVocabulary>["grou
   return `up:${passage.up ? "open" : "blocked"},down:${passage.down ? "open" : "blocked"},left:${passage.left ? "open" : "blocked"},right:${passage.right ? "open" : "blocked"}`;
 }
 
-function styleSection(project: Project, remaining: number, hasWorldDigest: boolean): string {
+function styleSection(project: Project, remaining: number): string {
   const docs = project.villageInfoDocuments ?? [];
   if (docs.length === 0) return "";
-  if (hasWorldDigest) {
-    return [
-      "## 게임 스타일 문서(원문 보존)",
-      "세계관 다이제스트가 우선입니다. 기존 세계관 원문 문서는 롤백을 위해 프로젝트에 보존됩니다.",
-      ...docs.slice(0, 12).map((doc) => `- ${doc.title} (${doc.mapId})`),
-      docs.length > 12 ? `- …외 ${docs.length - 12}개` : "",
-    ].filter((line) => line.length > 0).join("\n");
-  }
   const lines: string[] = ["## 게임 스타일 문서(발췌)"];
   for (const doc of docs) {
     const excerpt = doc.markdown.slice(0, 400);
@@ -431,9 +410,6 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   sections.push(houseKitSection());
   const clusterRulePreferences = clusterRulePreferenceSection(project, options.currentMapId);
   if (clusterRulePreferences) sections.push(clusterRulePreferences);
-  const worldDigest = worldDigestSection(project);
-  if (worldDigest) sections.push(worldDigest);
-
   const viewport = resolveContextViewport(options);
   const mapSection = mapRegionSection(project, options.currentMapId, viewport);
   if (mapSection) sections.push(mapSection);
@@ -441,7 +417,7 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   let assembled = sections.join("\n\n");
   const remaining = budget - assembled.length;
   if (remaining > 200) {
-    const style = styleSection(project, remaining - 100, worldDigest.length > 0);
+    const style = styleSection(project, remaining - 100);
     if (style) assembled += `\n\n${style}`;
   }
 
