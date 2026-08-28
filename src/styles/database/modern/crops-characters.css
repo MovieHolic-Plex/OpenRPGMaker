@@ -43,78 +43,139 @@
   opacity: 0.4;
 }
 
-/* ── 작물: 빈 상태의 번들 스프라이트 갤러리 ─────────────────────────────── */
-
-/* 빈 상태 카드와 스타터 갤러리를 나란히 둔다 — 세로로 쌓으면 1080px 상세 창의
-   오른쪽 절반이 통째로 빈다(감사 H 축). 갤러리가 남는 폭을 먹는다. */
+/* ── 작물: 빈 상태의 번들 스프라이트 갤러리 ───────────────────────────────
+   1 차 이관은 [빈 상태 카드 | 타일 갤러리] 2 열이었다. 왼쪽 열은 `.db-ws-empty` 의
+   `margin:auto; max-width:420px` 때문에 가운데 상자 하나만 남고 위아래가 통째로 비어
+   상세 창 여백이 73% 였다. 타일도 마지막 프레임 하나만 그려서 "고르기 전에는 어떻게
+   자라는지 모른다"는 문제가 남아 있었다.
+   지금은 한 열이다 — 가로 안내 띠(row 1) + 성장 프레임을 전부 펼친 행 목록(row 2, 1fr). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding {
   align-content: stretch;
   flex: 1 1 auto;
-  grid-template-columns: minmax(260px, 0.62fr) minmax(340px, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-grid {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+/* 빈 상태를 가운데 420px 상자가 아니라 가로 띠로 눕힌다.
+   `min-height` 를 함께 풀어야 한다 — components/empty-state.css 의
+   `.empty-state--large { min-height: 220px }` 가 띠를 220px 로 부풀린다(그 규칙은
+   @layer components 라 여기 언레이어 규칙이 특이도와 무관하게 이긴다).
+   배경/테두리는 studio-theme.css 가 `!important` 로 잡고 있으므로 건드리지 않는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding > .db-ws-empty {
+  align-items: center;
+  box-sizing: border-box;
+  column-gap: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  max-width: none;
+  min-height: 0;
+  padding: 12px 16px;
+  row-gap: 6px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding > .db-ws-empty .db-ws-empty-desc {
+  flex: 1 1 260px;
   min-width: 0;
 }
 
-/* 갤러리 카드가 상세 창 높이를 채우게 두고, 타일이 남는 높이를 나눠 갖게 한다 —
-   그러지 않으면 콘텐츠가 상단 250px 에 몰리고 아래가 통째로 빈다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding > .db-ws-empty .db-ws-empty-actions {
+  margin-top: 0;
+}
+
+/* 갤러리 카드가 남는 높이를 전부 먹고, 행이 그 높이를 나눠 갖는다 —
+   그러지 않으면 콘텐츠가 상단에 몰리고 아래가 통째로 빈다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding > .db-ws-card {
-  align-content: start;
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding .db-cx-starter-grid {
   align-content: stretch;
-  grid-auto-rows: minmax(92px, 1fr);
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding > .db-ws-card > .db-ws-card-body {
+  min-height: 0;
+}
+
+/* 여덟 줄이 스크롤 없이 한 화면에 들어가야 "고르는 판" 으로 읽힌다 — 행 최소 높이(테두리
+   2 + 패딩 6 + 두 줄 34 ≈ 42px)를 1fr 몫보다 작게 잡아 두는 게 그 조건이다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-list {
+  align-content: stretch;
+  display: grid;
+  gap: 5px;
+  grid-auto-rows: minmax(40px, 1fr);
   height: 100%;
+  min-width: 0;
 }
 
-@media (max-width: 1099px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-onboarding {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-tile {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-row {
   align-items: center;
   background: var(--db-studio-surface, #fff);
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 9px;
   box-sizing: border-box;
+  column-gap: 14px;
   cursor: pointer;
   display: grid;
-  gap: 2px;
-  justify-items: center;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   min-width: 0;
-  padding: 10px 8px;
-  text-align: center;
+  padding: 3px 12px;
+  text-align: left;
+  width: 100%;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-tile:hover {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-row:hover {
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
   border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-tile:focus-visible {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-row:focus-visible {
   outline: 2px solid var(--db-studio-accent, #4a57d6);
   outline-offset: 1px;
+}
+
+/* 시트의 모든 프레임을 심은 직후 → 수확기 순서로 편다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-frames {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-arrow {
+  color: var(--db-studio-text-3, #94a3b8);
+  font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-name {
   color: var(--db-studio-text-1, #0f172a);
   font: 600 12.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-meta {
   color: var(--db-studio-text-3, #94a3b8);
   font: 400 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-cta {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  border-radius: 999px;
+  color: var(--db-studio-accent, #4a57d6);
+  font: 600 11.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  padding: 6px 12px;
+  white-space: nowrap;
 }
 
 /* ── 작물: 성장 그래픽 편집기 ───────────────────────────────────────────── */
@@ -157,7 +218,7 @@
   box-sizing: border-box;
   display: grid;
   gap: 8px;
-  grid-template-columns: auto minmax(52px, auto) minmax(160px, 1.6fr) minmax(76px, 0.6fr) minmax(120px, 1fr);
+  grid-template-columns: auto minmax(52px, auto) minmax(150px, 1.4fr) minmax(120px, auto) minmax(120px, 1fr);
   min-width: 0;
   padding: 8px 10px;
 }
@@ -185,6 +246,45 @@
   box-sizing: border-box;
   min-width: 0;
   width: 100%;
+}
+
+/* 프레임을 숫자 대신 눈으로 고른다(감사 F 축) — 시트의 프레임을 전부 깔고 현재 값만 강조. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn {
+  align-items: center;
+  background: var(--db-studio-surface, #fff);
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 7px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: grid;
+  gap: 1px;
+  justify-items: center;
+  padding: 3px 4px 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn small {
+  color: var(--db-studio-text-3, #94a3b8);
+  font: 600 9.5px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn:hover {
+  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn.active {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border-color: var(--db-studio-accent, #4a57d6);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn.active small {
+  color: var(--db-studio-accent, #4a57d6);
 }
 
 /* ── 작물: 계절 선택 ─────────────────────────────────────────────────────── */
