@@ -15,16 +15,24 @@ function makeMap(actionCombat: boolean): GameMap {
 }
 
 function makeScene(map: GameMap, playBattleCalls: string[]): PlaySceneContext {
-  return {
+  const scene = {
     running: false,
+    inputEnabled: true,
     map,
     tileX: 0,
     tileY: 0,
     session: { partyActorIds: [], switches: {}, variables: {} },
-    playBattle: (cmd: { kind: string }) => {
+    // playBattle 은 Promise<BattleResult> 계약이다(playSceneTypes.ts). void 를 돌려주는 페이크는
+    // 인카운터 결과 소모(패배→게임 오버) 경로를 가린다.
+    playBattle: async (cmd: { kind: string }) => {
       playBattleCalls.push(cmd.kind);
+      return "escape" as const;
     },
-  } as unknown as PlaySceneContext;
+    setInputEnabled: (enabled: boolean) => {
+      scene.inputEnabled = enabled;
+    },
+  } as unknown as PlaySceneContext & { inputEnabled: boolean };
+  return scene;
 }
 
 describe("랜덤 인카운트 액션 전투 가드", () => {

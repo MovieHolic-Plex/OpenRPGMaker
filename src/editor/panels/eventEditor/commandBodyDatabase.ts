@@ -1,5 +1,5 @@
 ﻿import { craftRecipesOf } from "@/project/craftRecipes";
-import { openSwitchVariablePicker } from "./recordPickerDialog";
+import { openRecordPickerPanel } from "./recordPickerDialog";
 import { startStateOf } from "@/project/session";
 import { upgradeRulesOf } from "@/project/upgrades";
 import { store } from "@/project/store";
@@ -485,7 +485,7 @@ function namedVariablePicker(options: {
     dataset: { testid: `${options.testid}-browse` },
     on: {
       click: () =>
-        openSwitchVariablePicker({
+        openRecordPickerPanel({
           kind: "variable",
           currentId: select.value,
           onSelect: (id) => {

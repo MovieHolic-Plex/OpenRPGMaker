@@ -1,0 +1,21 @@
+=== typecheck
+test/workPlan.test.ts(88,57): error TS2339: Property 'error' does not exist on type 'OrchestratorParseResult'.
+  Property 'error' does not exist on type '{ readonly decision: OrchestratorDecision; }'.
+test/workPlan.test.ts(89,60): error TS2339: Property 'error' does not exist on type 'OrchestratorParseResult'.
+  Property 'error' does not exist on type '{ readonly decision: OrchestratorDecision; }'.
+vite.config.ts(5,57): error TS7016: Could not find a declaration file for module './scripts/lib/ohMyPiHttp.mjs'. '/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/scripts/lib/ohMyPiHttp.mjs' implicitly has an 'any' type.
+vite.config.ts(6,56): error TS7016: Could not find a declaration file for module './scripts/lib/ohMyPiPiAi.mjs'. '/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/scripts/lib/ohMyPiPiAi.mjs' implicitly has an 'any' type.
+vite.config.ts(7,37): error TS7016: Could not find a declaration file for module './scripts/lib/ohMyPiPiAi.mjs'. '/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/scripts/lib/ohMyPiPiAi.mjs' implicitly has an 'any' type.
+vite.config.ts(8,55): error TS7016: Could not find a declaration file for module './scripts/lib/companionHttpUtil.mjs'. '/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/scripts/lib/companionHttpUtil.mjs' implicitly has an 'any' type.
+=== vitest battle css/anim scope
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map
+
+ ✓ test/battleRm2003PixelGrid.test.ts (4 tests) 46ms
+ ✓ test/battleAnimationEffectStyle.test.ts (12 tests) 34ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  23:37:54
+   Duration  2.39s (transform 384ms, setup 0ms, collect 601ms, tests 80ms, environment 1ms, prepare 565ms)
+

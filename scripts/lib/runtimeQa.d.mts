@@ -5,6 +5,13 @@ export type RuntimeQaDir = "up" | "down" | "left" | "right";
 
 export type RuntimeQaOp =
   | { readonly kind: "seed"; readonly seed: number }
+  | {
+      readonly kind: "setVitals";
+      readonly hp: number;
+      readonly mp?: number;
+      /** 생략하면 현재 파티 전원. */
+      readonly actorIds?: readonly string[];
+    }
   | { readonly kind: "dir"; readonly dir: RuntimeQaDir | null }
   | { readonly kind: "face"; readonly dir: RuntimeQaDir }
   | { readonly kind: "action" }
@@ -33,6 +40,8 @@ export type RuntimeQaExpect = {
   readonly x?: number;
   readonly y?: number;
   readonly gold?: number;
+  /** 직전 전투 처리 결과(session.battleResult). */
+  readonly battleResult?: "victory" | "defeat" | "escape" | null;
   readonly testidPresent?: readonly string[];
   readonly testidAbsent?: readonly string[];
   readonly playerSpriteResourceNonEmpty?: boolean;
@@ -57,6 +66,8 @@ export type RuntimeQaScenario = {
   readonly seed?: number;
   readonly viewport?: RuntimeQaViewport;
   readonly projectFixture?: string;
+  /** player.html 에 붙일 쿼리(예: e2eVitals=1 로 액터 바이탈 훅 개방). */
+  readonly query?: Readonly<Record<string, string>>;
 };
 
 export type RuntimeQaNormalizedBeat = RuntimeQaBeat & {

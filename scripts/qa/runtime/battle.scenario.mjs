@@ -1,20 +1,21 @@
-// 런타임 전투 시나리오 — 출하 플레이어(player.html) 경로에서 턴제 전투가 실제로 뜨는지 본다.
+// 런타임 전투 시나리오 — 출하 플레이어(player.html) 경로로 실제 전투 화면을 띄운다.
 //
-// 왜 별도 시나리오인가: smoke/dialogue 픽스처에는 접촉만으로 전투가 열리는 이벤트가 없다.
-// 여기서는 전투 전용 픽스처를 쓴다(test/fixtures/projects/battle-v3.json, 실물에서 읽음):
-//   startMapId = map_battle (2×1), startPos = (0,0)
-//   이벤트 battle-start@(1,0), trigger=action, commands=[battleProcessing troop_slime]
-//   system.battleUiStyle 미설정 → resolveSkinId 가 기본 스킨 rm2003 으로 떨어진다.
-//     즉 이 시나리오는 **지원 유지되는 RM식 전투 화면**을 그대로 통과한다.
+// 왜 이 시나리오가 필요한가: 전투 캐릭터셋(리소스 kind "n")은 `battle-actor-sprite` 의
+// background-image 로만 화면에 나타난다. 시트 파일을 단위 테스트로 재는 것만으로는
+// "필드에서 적 배틀러와 나란히 놓였을 때 어떻게 보이는가" 를 증명할 수 없다.
 //
-// 편집기 셸을 태우는 test/e2e/oprn-battle-layout-ux.spec.ts 계열은 test-play-window 가
-// 열리지 않아 main 에서도 실패한다(실측 2026-08-28: main 7fbc7fc8 에서 3/3 실패).
-// 게임 화면 증거는 이 하네스로 잡는다 — AGENTS.md 의 편집기/런타임 QA 분리 규칙.
+// 기대치는 픽스처(test/fixtures/projects/editor-authored-demo-v3.json)의 실물에서 읽었다:
+//   startMapId = map_lantern_village, startPos = (14,18)
+//   ev_lantern_training(20,14) trigger=action → 대사 뒤 battleProcessing troop_slime_pair
+//                                              (enemy_meadow_slime × 2)
+//   파티 = actor_hero / actor_guardian / actor_mage / actor_scout
+//        → generated-actor-hero-01..04-battle 네 시트를 한 화면에서 전부 태운다.
+// 전투 씬 testid 는 src/player/battleDom.ts:84 의 `battle-scene`,
+// 아군 스프라이트 그룹은 src/player/battleFieldDom.ts:504 의 `battle-actor-sprites`.
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const battleScenario = {
   id: "battle",
-  projectFixture: "test/fixtures/projects/battle-v3.json",
   beats: [
     {
       id: "title",
@@ -23,37 +24,53 @@ export const battleScenario = {
     },
     {
       id: "field-start",
-      note: "새 게임 → map_battle (0,0), 오른쪽 (1,0) 에 전투 이벤트",
+      note: "새 게임 → 등대 마을 시작 지점",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 2500 },
+        { kind: "wait", ms: 3000 },
         { kind: "seed", seed: 1 },
       ],
       expect: {
-        mapId: "map_battle",
-        x: 0,
-        y: 0,
+        mapId: "map_lantern_village",
+        x: 14,
+        y: 18,
         testidAbsent: ["title-screen", "battle-scene"],
       },
     },
     {
-      id: "battle-open",
-      note: "전투 이벤트 말걸기 → 전투 화면(기본 스킨 rm2003)이 실제로 마운트된다",
+      id: "face-training-event",
+      note: "훈련 이벤트(20,14) 남쪽 칸으로 이동해 위를 본다",
       ops: [
-        { kind: "face", dir: "right" },
-        { kind: "action" },
-        { kind: "waitFor", testid: "battle-scene", state: "present", timeoutMs: 20000 },
+        { kind: "teleport", mapId: "map_lantern_village", x: 20, y: 15 },
+        { kind: "wait", ms: 800 },
+        { kind: "face", dir: "up" },
+        { kind: "wait", ms: 300 },
       ],
-      expect: { testidPresent: ["battle-scene"] },
+      expect: { mapId: "map_lantern_village", x: 20, y: 15 },
+    },
+    {
+      id: "battle-intro",
+      note: "대사를 넘겨 전투 진입 — 아군 4명 시트 + 슬라임 2마리가 한 화면에 선다",
+      ops: [
+        { kind: "action" },
+        { kind: "wait", ms: 600 },
+        { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 16, delayMs: 400 },
+        { kind: "waitFor", testid: "battle-actor-sprites", state: "present" },
+        // 인카운터 전환(흰 플래시 → 블라인드 → 인트로 슬라이드)이 끝나야 스프라이트가 제자리에 선다.
+        { kind: "wait", ms: 2600 },
+      ],
+      expect: { testidPresent: ["battle-scene", "battle-actor-sprites"] },
       shot: true,
     },
     {
-      id: "battle-command",
-      note: "인트로가 끝나면 액터 커맨드(공격)까지 도달한다",
+      id: "battle-attack",
+      note: "공격 커맨드를 확정해 attack/hit 프레임이 실제로 교체되는지 본다",
       ops: [
-        { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 20000 },
+        { kind: "key", key: "z", delayMs: 500 },
+        { kind: "key", key: "z", delayMs: 500 },
+        { kind: "wait", ms: 700 },
       ],
-      expect: { testidPresent: ["battle-scene", "actor-command-attack"] },
+      expect: { testidPresent: ["battle-scene"] },
       shot: true,
     },
   ],
