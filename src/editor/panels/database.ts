@@ -204,9 +204,10 @@ export function renderDatabasePanel(container: HTMLElement): void {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
-      header.append(el("div", { class: "db-tab-group", text: group.label }));
+      header.append(groupHeader(group, header));
       for (const id of group.tabs) appendTabButton(header, body, container, tabFor(id));
     }
+    applyGroupCollapse(header);
   } else {
     appendTabSearch(header);
     for (const tab of orderedTabs) appendTabButton(header, body, container, tab);
@@ -327,6 +328,11 @@ function appendTabSearch(header: HTMLElement): void {
 
 function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   const query = rawQuery.trim().toLowerCase();
+  // 검색 중에는 접힘을 일시 중단한다. 접힌 그룹 안의 일치 항목이 그대로 숨어 있으면
+  // 29 개 중 24 개가 검색으로 도달 불가능해진다.
+  if (query !== "") header.dataset.filtering = "1";
+  else delete header.dataset.filtering;
+
   let currentGroup: HTMLElement | null = null;
   let groupHasMatch = false;
   const closeGroup = (): void => {
@@ -346,6 +352,118 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
     if (matches) groupHasMatch = true;
   }
   closeGroup();
+  if (query === "") applyGroupCollapse(header);
+}
+
+// ---------------------------------------------------------------------------
+// 사이드바 그룹 접기
+//
+// 29 개 탭 + 5 개 그룹 헤더 + 검색은 1050px 뷰포트의 레일(≈798px)을 400px 가까이 넘겨,
+// 아래쪽 그룹이 아무 신호 없이 접힘선 밖으로 밀려나 있었다.
+//
+// DOM 계약은 그대로 둔다 — databaseSidebarKeyboard.test.ts 가 `.db-tab` 버튼 정확히 29 개,
+// `.db-tab-group` 정확히 5 개이며 전부 DIV 일 것을 고정하고, databaseNavMode.test.ts 는
+// 탭이 `<details>` 안에 들어가면 안 된다고 못박는다. 그래서 그룹을 <details> 로 감싸거나
+// 헤더를 <button> 으로 바꾸지 않고, **그룹 div 의 자식**으로 토글 버튼을 넣고 형제
+// `.db-tab` 들에 `hidden` 을 건다 — applyTabFilter 가 이미 쓰는 것과 같은 메커니즘이라
+// 검색과 접힘이 자연스럽게 합성된다.
+// ---------------------------------------------------------------------------
+
+const DATABASE_NAV_COLLAPSED_KEY = "oprn:database.navCollapsed";
+
+/**
+ * 저장된 선호가 없으면 **전부 접힌 상태**가 기본이다. 다 펼치면 레일 내용이 1058px 로
+ * 796px 높이를 262px 넘겨, 아래쪽 그룹이 접힘선 밖에 숨는다 — 그게 원래 문제였다.
+ * 지금 보고 있는 탭이 든 그룹은 applyGroupCollapse 가 항상 강제로 편다.
+ */
+function readCollapsedGroups(): Set<string> {
+  const allCollapsed = (): Set<string> => new Set(TAB_GROUPS.map((group) => group.label));
+  if (typeof window === "undefined") return allCollapsed();
+  try {
+    const raw = window.localStorage.getItem(DATABASE_NAV_COLLAPSED_KEY);
+    if (raw === null) return allCollapsed();
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? new Set(parsed.filter((entry): entry is string => typeof entry === "string")) : allCollapsed();
+  } catch {
+    return allCollapsed();
+  }
+}
+
+function writeCollapsedGroups(collapsed: ReadonlySet<string>): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DATABASE_NAV_COLLAPSED_KEY, JSON.stringify(Array.from(collapsed)));
+  } catch {
+    // 저장 실패는 접힘 상태를 세션 한정으로 만들 뿐이라 조용히 넘긴다.
+  }
+}
+
+function groupHeader(group: DatabaseTabGroup, header: HTMLElement): HTMLElement {
+  // 태그는 DIV 로 유지해야 한다(키보드 탭 순서 계약). 포커스 가능한 건 안쪽 토글뿐.
+  const node = el("div", {
+    class: "db-tab-group",
+    text: group.label,
+    dataset: { group: group.label },
+  });
+  // 셰브런은 CSS(::before)로 그린다. 버튼에 문자를 넣으면 그룹 div 의 textContent 가
+  // "▾파티" 가 되어 databaseSidebarNav.test.ts 의 라벨 동등 비교가 깨진다.
+  const toggle = el("button", {
+    class: "db-tab-group-toggle",
+    attrs: { type: "button", "aria-expanded": "true", "aria-label": `${group.label} 그룹 접기/펼치기` },
+    dataset: { testid: `db-tab-group-toggle-${group.label}` },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        const collapsed = readCollapsedGroups();
+        if (collapsed.has(group.label)) collapsed.delete(group.label);
+        else collapsed.add(group.label);
+        writeCollapsedGroups(collapsed);
+        applyGroupCollapse(header);
+      },
+    },
+  });
+  node.prepend(toggle);
+  return node;
+}
+
+/** 그룹별 탭 수를 헤더에 얹는다 — 접혀 있어도 어디에 데이터가 있는지 보이게. */
+function groupMemberCount(label: string): number {
+  const group = TAB_GROUPS.find((entry) => entry.label === label);
+  if (!group) return 0;
+  return group.tabs.reduce((sum, id) => sum + (databaseTabCount(id) ?? 0), 0);
+}
+
+function applyGroupCollapse(header: HTMLElement): void {
+  // 접힘은 `hidden` 속성이 아니라 클래스로 표현한다. `hidden` 은 applyTabFilter 가
+  // 검색용으로 이미 쓰고 있어 두 기능이 서로를 덮어쓰고, 좁은 폭(≤799px)의 아이콘
+  // 레일에서는 그룹 헤더가 통째로 사라지므로 접힘만 CSS 로 무력화할 수 있어야 한다.
+  if (header.dataset.filtering === "1") {
+    for (const child of Array.from(header.children)) {
+      if (child instanceof HTMLElement) child.classList.remove("db-tab-collapsed");
+    }
+    return;
+  }
+  const collapsed = readCollapsedGroups();
+  const activeGroup = TAB_GROUPS.find((group) => group.tabs.includes(activeTab))?.label;
+
+  let currentLabel: string | null = null;
+  let currentCollapsed = false;
+  for (const child of Array.from(header.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+    if (child.classList.contains("db-tab-group")) {
+      currentLabel = child.dataset.group ?? child.textContent ?? "";
+      // 지금 보고 있는 탭이 든 그룹은 접혀 있어도 강제로 편다.
+      currentCollapsed = collapsed.has(currentLabel) && currentLabel !== activeGroup;
+      child.classList.toggle("collapsed", currentCollapsed);
+      child.dataset.count = String(groupMemberCount(currentLabel));
+      const toggle = child.querySelector(".db-tab-group-toggle");
+      if (toggle instanceof HTMLElement) toggle.setAttribute("aria-expanded", currentCollapsed ? "false" : "true");
+      continue;
+    }
+    if (!child.classList.contains("db-tab")) continue;
+    if (currentLabel === null) continue; // 개요 엔트리는 그룹 밖이라 항상 보인다.
+    child.classList.toggle("db-tab-collapsed", currentCollapsed);
+  }
 }
 
 function appendTabButton(
@@ -384,6 +502,8 @@ function updateTabButtons(header: HTMLElement): void {
     if (button.dataset.testid === activeTestId) button.classList.add("active");
     else button.classList.remove("active");
   }
+  // 새로 활성화된 탭이 접힌 그룹 안이면 그 그룹을 펴 준다.
+  applyGroupCollapse(header);
   revealActiveTab(header);
 }
 
@@ -490,7 +610,7 @@ function renderActiveTab(
       renderSystemTab(body, rerender);
       break;
     case "terms":
-      renderTermsTab(body);
+      renderTermsTab(body, rerender);
       break;
     case "overview":
       renderOverviewTab(body, rerender);

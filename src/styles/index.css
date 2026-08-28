@@ -51,6 +51,9 @@
 @import "./database/studio-theme.css";
 /* Collection-specific studio slices must follow the shared studio reset. */
 @import "./database/desktop-record-shell/13-actor-studio.css";
+/* db-ws-* 워크스페이스 프리미티브. studio-theme 뒤에 와야 팔레트를 소비하면서
+   옛 레이어의 레이아웃 규칙을 로드 순서로 이긴다. */
+@import "./database/workspace-modern.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";
