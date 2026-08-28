@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
+import { normalizeCropRecord } from "@/project/farmModel";
 import { startSession } from "@/project/session";
+import { placeableKey } from "@/project/placeables";
+import { setEquippedTool } from "@/project/toolActions";
 import type { ItemRecord, Project } from "@/project/types";
+import { interactWithFarmPlot } from "@/player/farming";
 import { useItemFromMenu } from "@/player/playerItemUse";
 
 const POISON = "state_poison";
@@ -32,6 +36,54 @@ describe("default item runtime usability", () => {
       expect(result.kind, item.id).toBe("used");
       expect(session.inventory[item.id] ?? 0, item.id).toBe(before - 1);
     }
+  });
+
+  it("drives the three default farm tools through till, water, and mine actions", () => {
+    const project = createBlankProject();
+    project.database.crops ??= [];
+    project.database.crops.push(normalizeCropRecord({
+      id: "crop_tool_probe",
+      name: "도구 시험 작물",
+      seedItemId: "item_seed_bag",
+      harvestItemId: "item_potato",
+      stages: [{ days: 1 }],
+      seasons: ["spring"],
+    }));
+    const sourceMap = project.maps[project.startMapId];
+    if (!sourceMap) throw new Error("default map is missing");
+    const map = { ...sourceMap, farmableArea: [{ x: 2, y: 2, w: 2, h: 1 }] };
+    const session = startSession(project);
+    session.inventory.item_hoe = 1;
+    session.inventory.item_watering_can = 1;
+    session.inventory.item_pickaxe = 1;
+
+    setEquippedTool(session, "item_hoe");
+    expect(interactWithFarmPlot(project, session, map, 2, 2, "till")).toMatchObject({
+      kind: "tilled",
+      itemId: "item_hoe",
+    });
+
+    setEquippedTool(session, "item_watering_can");
+    const plot = session.farmPlots?.[map.id]?.["2,2"];
+    if (!plot) throw new Error("tilled plot is missing");
+    session.farmPlots![map.id]!["2,2"] = { ...plot, cropId: "crop_tool_probe" };
+    expect(interactWithFarmPlot(project, session, map, 2, 2, "water")).toMatchObject({
+      kind: "watered",
+      itemId: "item_watering_can",
+    });
+
+    const rockKey = placeableKey(map.id, 3, 2);
+    session.placeables ??= {};
+    session.placeables[rockKey] = { id: "runtime-tool-rock", mapId: map.id, x: 3, y: 2, kind: "rock", itemId: "item_iron_ore" };
+    const oreBefore = session.inventory.item_iron_ore ?? 0;
+    setEquippedTool(session, "item_pickaxe");
+    expect(interactWithFarmPlot(project, session, map, 3, 2)).toMatchObject({
+      kind: "harvested",
+      itemId: "item_iron_ore",
+      source: "rock",
+    });
+    expect(session.placeables[rockKey]).toBeUndefined();
+    expect(session.inventory.item_iron_ore).toBe(oreBefore + 1);
   });
 
   it("lands a real effect and consumes one copy for every battle item", () => {

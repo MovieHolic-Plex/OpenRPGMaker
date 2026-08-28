@@ -91,14 +91,16 @@ export function expandedDefaultItemRecords(): ItemRecord[] {
     // Battle activators.
     battleItem({ id: "item_bomb", name: "철제 폭탄", price: 100, description: "전투 중 적 하나에게 물리 피해를 주는 소형 폭탄입니다.", icon: "cc0-jetrel-bomb", skillId: "skill_throwing_knife" }),
     battleItem({ id: "item_fire_bomb", name: "화염 폭탄", price: 140, description: "전투 중 적 하나에게 화염 마법 피해를 일으킵니다.", icon: "cc0-jetrel-fire-bomb", skillId: "skill_fire" }),
-    battleItem({ id: "item_holy_water", name: "정화 성수", price: 130, description: "전투 중 적 하나에게 성스러운 마법 피해를 줍니다.", icon: "cc0-jetrel-holy-water", skillId: "skill_arcane_bolt" }),
+    battleItem({ id: "item_holy_water", name: "정화 성수", price: 130, description: "전투 중 적 하나에게 성스러운 마법 피해를 줍니다.", icon: "cc0-jetrel-holy-water", skillId: "skill_item_holy_water" }),
     battleItem({ id: "item_ice_shard", name: "빙결 파편", price: 120, description: "전투 중 적 하나에게 차가운 물 마법 피해를 줍니다.", icon: "cc0-jetrel-ice-shard", skillId: "skill_water" }),
     battleItem({ id: "item_sleeping_powder", name: "수면 가루", price: 110, description: "전투 중 적 하나를 수면 상태에 빠뜨릴 수 있습니다.", icon: "cc0-jetrel-sleeping-powder", skillId: "skill_sleep_mist" }),
-    battleItem({ id: "item_smoke_bomb", name: "약화 연막탄", price: 100, description: "전투 중 적 하나의 공격을 낮추는 연막을 퍼뜨립니다.", icon: "cc0-jetrel-smoke-bomb", skillId: "skill_weaken" }),
-    battleItem({ id: "item_thunder_stone", name: "뇌전석", price: 150, description: "전투 중 적 하나에게 응축된 마법 피해를 방출합니다.", icon: "cc0-jetrel-thunder-stone", skillId: "skill_arcane_bolt" }),
+    battleItem({ id: "item_smoke_bomb", name: "약화 연막탄", price: 100, description: "전투 중 적 하나의 방어를 낮추는 연막을 퍼뜨립니다.", icon: "cc0-jetrel-smoke-bomb", skillId: "skill_weaken" }),
+    battleItem({ id: "item_thunder_stone", name: "뇌전석", price: 150, description: "전투 중 적 하나에게 응축된 번개 마법 피해를 방출합니다.", icon: "cc0-jetrel-thunder-stone", skillId: "skill_item_thunder_stone" }),
 
-    // Skill book and farm tools.
+    // Skill book, scrolls, badges, and farm tools.
     catalogItem({ id: "item_skill_book", name: "집중의 기술서", type: "book", scope: "ally", price: 300, description: "아군 하나가 집중 기술을 익히도록 가르치는 기술서입니다.", icon: "cc0-jetrel-skill-book", learnedSkillId: "skill_focus", occasion: "field", occasionField: true, occasionBattle: false, consumable: true }),
+    catalogItem({ id: "item_blank_scroll", name: "빈 마법 두루마리", price: 40, description: "주문을 기록하거나 마법 문서를 제작할 때 쓰는 빈 두루마리입니다.", icon: "cc0-jetrel-scroll" }),
+    catalogItem({ id: "item_guild_badge", name: "길드 견습 배지", price: 0, description: "모험가 길드의 견습 회원임을 증명하는 황동 배지입니다.", icon: "cc0-jetrel-badge" }),
     catalogItem({ id: "item_hoe", name: "괭이", price: 50, description: "농경지의 흙을 갈아 씨앗을 심을 밭으로 만드는 농기구입니다.", icon: "cc0-jetrel-hoe", farmTool: "hoe" }),
     catalogItem({ id: "item_pickaxe", name: "곡괭이", price: 100, description: "광산과 들판의 바위를 깨뜨려 광물을 캐는 농기구입니다.", icon: "cc0-jetrel-pickaxe", farmTool: "pickaxe" }),
     catalogItem({ id: "item_watering_can", name: "물뿌리개", price: 80, description: "농경지의 작물에 물을 주어 성장을 돕는 농기구입니다.", icon: "cc0-jetrel-watering-can", farmTool: "wateringCan" }),

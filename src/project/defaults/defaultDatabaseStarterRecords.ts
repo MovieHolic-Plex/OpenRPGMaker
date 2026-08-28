@@ -52,6 +52,8 @@ export function defaultSkillRecords(): SkillRecord[] {
     }),
     skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
     skill("skill_water", "물대포", "enemy", 28, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
+    skill("skill_item_holy_water", "성수 효과", "enemy", 30, "anim_magic", "성수 계열 아이템이 사용하는 신성 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "holy" }),
+    skill("skill_item_thunder_stone", "뇌전석 효과", "enemy", 34, "anim_magic", "뇌전석 계열 아이템이 사용하는 번개 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "thunder" }),
     skill("skill_leaf", "잎날", "enemy", 28, "anim_arrow", "풀 타입 공격에 대응하는 기본 기술입니다.", "attack", "hp", { mpCost: 3, variance: 10, elementId: "grass" }),
     skill("skill_heal", "치유", "ally", 32, "anim_heal", "아군 하나의 HP를 회복합니다.", "mind", "hp", { mpCost: 3, kind: "healing" }),
     skill("skill_poison_sting", "독침", "enemy", 8, "anim_poison", "독 상태를 노리는 찌르기 기술입니다.", "mind", "hp", {

@@ -129,6 +129,86 @@ describe("Supabase project sync", () => {
     expect(String(calls[0]?.input)).toContain(`project_id=eq.${DEFAULT_SUPABASE_PROJECT_ID}`);
   });
 
+  it("upgrades untouched English item stubs and adds only promoted equipment on load", async () => {
+    const source = JSON.parse(serialize(minimalValidProject()));
+    const currentItems = new Map(
+      (source.database.items as { id: string }[]).map((item) => [item.id, item]),
+    );
+    const legacyStub = (id: string, slug: string) => ({
+      ...currentItems.get(id),
+      id,
+      name: slug.replaceAll("-", " "),
+      description: `${slug} 기본 아이템입니다.`,
+      type: "normalGoods",
+      scope: "none",
+      price: 20,
+      occasion: "never",
+      occasionField: false,
+      occasionBattle: false,
+      consumable: false,
+      skillId: undefined,
+      activateSkillId: undefined,
+      farmTool: undefined,
+      hpRecovery: { flat: 0, percentMax: 0 },
+      mpRecovery: { flat: 0, percentMax: 0 },
+      healStateIds: [],
+      stateEffects: [],
+    });
+    source.database.items = (source.database.items as { id: string }[]).filter(
+      (item) => !["item_ale", "item_apple", "item_bomb", "item_hoe", "item_watering_can", "item_pickaxe"].includes(item.id),
+    );
+    source.database.items.push(
+      legacyStub("item_ale", "ale"),
+      legacyStub("item_bomb", "bomb"),
+      legacyStub("item_hoe", "hoe"),
+      legacyStub("item_watering_can", "watering-can"),
+      legacyStub("item_pickaxe", "pickaxe"),
+    );
+    source.database.items.push({
+      ...legacyStub("item_apple", "apple"),
+      name: "사과 상인의 기념품",
+      description: "작가가 직접 고친 설명입니다.",
+    });
+    source.database.equipment = (source.database.equipment as { id: string }[]).filter(
+      (equipment) => !["equip_iron_shield", "equip_steel_armor", "equip_mage_hat", "equip_gloves", "equip_boots", "equip_cloak", "equip_ring", "equip_necklace", "equip_focus_ring"].includes(equipment.id),
+    );
+    source.database.skills = (source.database.skills as { id: string }[]).filter(
+      (skill) => !["skill_item_holy_water", "skill_item_thunder_stone"].includes(skill.id),
+    );
+    vi.stubGlobal("fetch", (async (input) => {
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+      return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("expected repaired project");
+
+    expect(project.database.items.find((item) => item.id === "item_ale")).toMatchObject({
+      name: "맥아주",
+      occasion: "field",
+      consumable: true,
+      hpRecovery: { flat: 25, percentMax: 0 },
+    });
+    expect(project.database.items.find((item) => item.id === "item_bomb")).toMatchObject({
+      name: "철제 폭탄",
+      occasion: "battle",
+      skillId: "skill_throwing_knife",
+    });
+    expect(project.database.items.find((item) => item.id === "item_pickaxe")).toMatchObject({
+      name: "곡괭이",
+      farmTool: "pickaxe",
+    });
+    expect(project.database.items.filter((item) => item.id === "item_apple")).toEqual([
+      expect.objectContaining({ name: "사과 상인의 기념품", description: "작가가 직접 고친 설명입니다." }),
+    ]);
+    expect(project.database.equipment.map((equipment) => equipment.id)).toEqual(
+      expect.arrayContaining(["equip_iron_shield", "equip_steel_armor", "equip_mage_hat", "equip_gloves", "equip_boots", "equip_cloak", "equip_ring", "equip_necklace", "equip_focus_ring"]),
+    );
+    expect(project.database.skills.map((skill) => skill.id)).toEqual(
+      expect.arrayContaining(["skill_item_holy_water", "skill_item_thunder_stone"]),
+    );
+  });
+
   it("treats Supabase current_json as canonical — does not backfill removed database records", async () => {
     // DB is the source of truth for authored database records (items, skills, states,
     // animations). A sparse DB row must load as-is; JSON defaults never silently re-add

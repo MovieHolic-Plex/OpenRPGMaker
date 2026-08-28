@@ -28,6 +28,8 @@ export const GENERATED_BATTLE_EFFECT_SKILL_BINDINGS: Readonly<Record<string, str
   skill_item_wake: animation("cleanse-sparkle"),
   skill_item_panacea: animation("cleanse-sparkle"),
   skill_item_guard: animation("guard-barrier"),
+  skill_item_holy_water: animation("holy-beam"),
+  skill_item_thunder_stone: animation("thunder-strike"),
 };
 
 /** Items override their linked skill animation at runtime, so they need their own bindings too. */
