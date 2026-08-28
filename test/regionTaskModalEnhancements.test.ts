@@ -171,6 +171,67 @@ describe("A: 부분 적용", () => {
     }
     expect(partialBtn?.textContent).not.toEqual(beforeText);
   });
+
+  it("settle 뒤 남은 부분 적용 activation 은 applyProject 를 다시 호출하지 않는다", async () => {
+    const base = stubProject([0, 0, 0]);
+    const clipped = stubProject([120, 0, 120]);
+    const onApply = vi.fn();
+    const report = {
+      issues: [],
+      blockers: [],
+      checkpoints: [],
+      metrics: {
+        changedCells: 2, changedEvents: 0, passableChangedCells: 2, isolatedChangedCells: 0,
+        scheduledNpcs: 0, scheduleEntries: 0, timeSystemEnabled: false, roomSessions: 0,
+        roomScoreAverage: null, deterministicRepairs: 0,
+      },
+      repairLimit: 8,
+    } as never;
+    const pending = setPendingRegionApply({
+      baseProject: base,
+      clippedProject: clipped,
+      mapId: "m1",
+      region: REGION,
+      changedCells: 2,
+      changedEvents: 0,
+      instruction: "분리 적용",
+      getCurrentProject: () => base,
+      report,
+      reviewProject: (candidate) => ({ project: candidate, report }),
+      onApply,
+      onDiscard: () => undefined,
+      onSettle: () => undefined,
+    });
+    const applyProject = vi.spyOn(pending, "applyProject");
+    const result: RegionTaskResult = {
+      ok: true, applied: false, changedCells: 2, changedEvents: 0, clippedCells: 0,
+      proposedCalls: 0, assistantText: "", pending,
+    };
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      run: vi.fn(),
+      runDirectRoomDraft: async () => result,
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => base,
+    });
+
+    findByTestId(root, "region-task-direct-room")?.click();
+    await flush();
+    const firstCb = root.querySelector(".region-task-chunk-cb") as HTMLInputElement | null;
+    expect(firstCb).not.toBeNull();
+    if (firstCb) {
+      firstCb.checked = false;
+      firstCb.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    const partialApply = findByTestId(root, "region-task-partial-apply");
+    expect(partialApply?.classList.contains("hidden")).toBe(false);
+
+    findByTestId(root, "region-task-apply")?.click();
+    expect(onApply).toHaveBeenCalledTimes(1);
+    partialApply?.click();
+    expect(applyProject).not.toHaveBeenCalled();
+  });
 });
 
 

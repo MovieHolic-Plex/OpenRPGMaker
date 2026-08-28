@@ -714,7 +714,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: "region-task-partial-apply" },
     }) as HTMLButtonElement;
     partialApplyButton.addEventListener("click", () => {
-      if (!isCurrentExecution(executionId)) return;
+      if (!isCurrentExecution(executionId) || pending.settled) return;
       const ids = Array.from(selectedChunkIds);
       if (ids.length === 0) return;
       selfSettling = true;
@@ -1437,7 +1437,6 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     pendingUnsubscribe = null;
     if (activePending && !activePending.settled) activePending.discard();
     activePending = null;
-    reviewShortcuts = null;
     compareHost.replaceChildren();
     partialHost.replaceChildren();
     partialHost.classList.add("hidden");
@@ -1529,26 +1528,19 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   });
 
-  // ── F: 키보드 단축키 (textarea 비포커스시) + 슬래시 자동완성 ─────────────────
-  // textarea/input 포커스 중에는 단일키가 입력으로 들어가므로 무시.
-  const isTextFocused = (): boolean => {
-    const active = document.activeElement;
-    return active instanceof HTMLTextAreaElement || active instanceof HTMLInputElement;
-  };
+  // ── F: 키보드 단축키 + 슬래시 자동완성 ──────────────────────────────────────
   // 단축키는 **단계별로** 뜻이 달라야 한다. 예전에는 단계와 무관하게 Enter 가 execute() 였고,
   // 그래서 검토 단계에서 결과를 보고 Enter 를 누르면 확정이 아니라 **방금 만든 제안을 버리고
   // AI 를 한 번 더 호출**했다. 결정 화면에 확정 키가 아예 없었던 셈이다.
-  const isModalButtonFocused = (): boolean => {
+  const hasNeutralShortcutFocus = (): boolean => {
     const active = document.activeElement;
-    if (!(active instanceof HTMLElement)) return false;
-    if (active.tagName !== "BUTTON" && active.tagName !== "SUMMARY") return false;
-    return Boolean(active.closest?.(".region-task-modal"));
+    return active === null || active === document.body || active === stageHost || active === modalRoot;
   };
   const onShortcutKey = (event: KeyboardEvent): void => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
-    if (isTextFocused()) return;
-    // 포커스된 버튼/디스클로저는 Enter·Space 가 그 요소의 동작이어야 한다.
-    if (isModalButtonFocused()) return;
+    // 변경 행처럼 탐색용으로 포커스되는 요소의 Enter 가 제안 전체 적용으로 새지 않게,
+    // 문서 단축키는 어떤 자식도 키 동작을 소유하지 않는 중립 지점에서만 받는다.
+    if (!hasNeutralShortcutFocus()) return;
     if (currentStage === "review") {
       if (event.key === "Enter") {
         event.preventDefault();
