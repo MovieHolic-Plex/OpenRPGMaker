@@ -1,16 +1,11 @@
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
 import {
-  CHARSET_FRAME_HEIGHT,
-  CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
   charsetFrameIndex,
-  charsetFrameSource,
   decodeCharsetFrameIndex,
   type CharsetFrameSelection,
   type EasyRpgCharsetAsset,
 } from "@/assets/easyrpgRtp";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import type { AutonomousMovement, EventPageGraphic } from "@/project/types";
 
 const PREVIEW_SCALE = 2;
@@ -95,23 +90,11 @@ type CharsetPreviewStyle = {
 
 function applyCharsetPreviewStyle(style: CharsetPreviewStyle): void {
   const { target, asset, selection, frameIndex, scale, animate } = style;
-  const source = charsetFrameSource(selection);
   target.dataset.slot = String(selection.characterIndex);
   target.dataset.direction = selection.direction;
   target.dataset.pattern = String(frameIndex);
   target.dataset.walkPattern = String(selection.pattern);
-  // The app-wide reset uses border-box, but these dimensions describe the
-  // actual 24×32 charset frame. Keep the decorative border outside the crop;
-  // otherwise two pixels per edge are cut from both editor previews.
-  target.style.boxSizing = "content-box";
-  target.style.width = `${CHARSET_FRAME_WIDTH * scale}px`;
-  target.style.height = `${CHARSET_FRAME_HEIGHT * scale}px`;
-  target.style.backgroundRepeat = "no-repeat";
-  applyTransparentColorKeyBackground(target, asset.path);
-  target.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${
-    CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale
-  }px`;
-  target.style.backgroundPosition = `-${source.x * scale}px -${source.y * scale}px`;
+  applyCharsetFrameCrop(target, asset.path, selection, scale);
   if (animate) setWalkingFrameProperties(target, selection, scale);
 }
 
@@ -121,8 +104,7 @@ function setWalkingFrameProperties(target: HTMLElement, selection: CharsetFrameS
 }
 
 function backgroundPositionForFrame(selection: CharsetFrameSelection, scale: number): string {
-  const source = charsetFrameSource(selection);
-  return `-${source.x * scale}px -${source.y * scale}px`;
+  return charsetFrameCropPosition(selection, scale);
 }
 
 function setStyleVar(target: HTMLElement, name: string, value: string): void {

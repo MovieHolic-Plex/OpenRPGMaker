@@ -1,14 +1,6 @@
-import {
-  CHARSET_FRAME_HEIGHT,
-  CHARSET_FRAME_WIDTH,
-  CHARSET_SHEET_COLUMNS,
-  CHARSET_SHEET_ROWS,
-  charsetFrameSource,
-  type CharsetDirection,
-  type CharsetFrameSelection,
-} from "@/assets/easyrpgRtp";
+import { type CharsetDirection, type CharsetFrameSelection } from "@/assets/easyrpgRtp";
 import type { CharsetPickerAsset } from "@/assets/charsetCatalog";
-import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 
 export type AdvancedSpriteInput = {
   readonly details: HTMLElement;
@@ -211,13 +203,8 @@ function renderResourceIcon(asset?: CharsetPickerAsset): HTMLElement {
 }
 
 function applyResourceThumbnail(icon: HTMLElement, asset: CharsetPickerAsset): void {
-  const source = charsetFrameSource(RESOURCE_THUMB_SELECTION);
   icon.classList.add("charset-thumb");
-  icon.style.width = `${CHARSET_FRAME_WIDTH}px`;
-  icon.style.height = `${CHARSET_FRAME_HEIGHT}px`;
-  applyTransparentColorKeyBackground(icon, asset.path);
-  icon.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH}px ${CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT}px`;
-  icon.style.backgroundPosition = `-${source.x}px -${source.y}px`;
+  applyCharsetFrameCrop(icon, asset.path, RESOURCE_THUMB_SELECTION);
 }
 
 function charsetResourceLabel(asset: CharsetPickerAsset): string {

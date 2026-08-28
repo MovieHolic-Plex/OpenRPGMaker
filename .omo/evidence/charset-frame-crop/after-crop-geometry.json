@@ -1,0 +1,109 @@
+{
+  "geometry": [
+    {
+      "selector": "[data-testid=\"npc-frame-preview\"]",
+      "borderBox": {
+        "w": 2,
+        "h": 2
+      },
+      "paddingBox": {
+        "w": 0,
+        "h": 0
+      },
+      "borderWidth": {
+        "top": 1,
+        "right": 1,
+        "bottom": 1,
+        "left": 1
+      },
+      "borderColor": "rgba(15, 23, 42, 0.125)",
+      "boxSizing": "border-box",
+      "backgroundClip": "border-box",
+      "backgroundOrigin": "padding-box",
+      "backgroundSize": "auto",
+      "backgroundPosition": "0% 0%",
+      "imageRendering": "pixelated",
+      "inlineWidth": "",
+      "inlineHeight": ""
+    },
+    {
+      "selector": ".npc-character-cell[data-slot=\"4\"]",
+      "borderBox": {
+        "w": 52,
+        "h": 68
+      },
+      "paddingBox": {
+        "w": 48,
+        "h": 64
+      },
+      "borderWidth": {
+        "top": 2,
+        "right": 2,
+        "bottom": 2,
+        "left": 2
+      },
+      "borderColor": "rgb(255, 255, 255)",
+      "boxSizing": "content-box",
+      "backgroundClip": "padding-box",
+      "backgroundOrigin": "padding-box",
+      "backgroundSize": "576px 512px",
+      "backgroundPosition": "-96px -384px",
+      "imageRendering": "pixelated",
+      "inlineWidth": "48px",
+      "inlineHeight": "64px"
+    },
+    {
+      "selector": "[data-testid=\"npc-walk-preview\"]",
+      "borderBox": {
+        "w": 50,
+        "h": 66
+      },
+      "paddingBox": {
+        "w": 48,
+        "h": 64
+      },
+      "borderWidth": {
+        "top": 1,
+        "right": 1,
+        "bottom": 1,
+        "left": 1
+      },
+      "borderColor": "rgba(15, 23, 42, 0.125)",
+      "boxSizing": "content-box",
+      "backgroundClip": "padding-box",
+      "backgroundOrigin": "padding-box",
+      "backgroundSize": "576px 512px",
+      "backgroundPosition": "-48px -384px",
+      "imageRendering": "pixelated",
+      "inlineWidth": "48px",
+      "inlineHeight": "64px"
+    },
+    {
+      "selector": ".event-graphic-resource-icon.charset-thumb",
+      "borderBox": {
+        "w": 26,
+        "h": 34
+      },
+      "paddingBox": {
+        "w": 24,
+        "h": 32
+      },
+      "borderWidth": {
+        "top": 1,
+        "right": 1,
+        "bottom": 1,
+        "left": 1
+      },
+      "borderColor": "rgba(15, 23, 42, 0.125)",
+      "boxSizing": "content-box",
+      "backgroundClip": "padding-box",
+      "backgroundOrigin": "padding-box",
+      "backgroundSize": "288px 256px",
+      "backgroundPosition": "-24px -64px",
+      "imageRendering": "pixelated",
+      "inlineWidth": "24px",
+      "inlineHeight": "32px"
+    }
+  ],
+  "errors": []
+}
