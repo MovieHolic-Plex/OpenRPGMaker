@@ -50,8 +50,13 @@ test("얼굴 상자의 <img> 가 배경 폴백을 완전히 덮어 얼굴이 한
 
   expect(boxes.length, "얼굴 폼에 얼굴 상자가 렌더돼 있어야 한다").toBeGreaterThan(0);
   // <img> 가 전부 404 나면 faceImage 가 자기가 떼므로 아래 루프가 통짜로 건너뛰어
-  // 폼이 다 깨진 상태로도 초록이 된다. 실제 로드된 그림 수에 하한을 둔다(실측 115/115).
-  expect(boxes.filter((box) => box.hasImage).length, "얼굴 그림이 실제로 로드도어야 한다").toBeGreaterThan(100);
+  // 폼이 다 깨진 상태로도 초록이 된다. 하한은 개수가 아니라 **비율**로 둔다 — 고정 개수는
+  // 자산이 더 깨져도 통과하고, 카탈로그가 정당하게 줄면 엉뚱하게 실패한다.
+  // 실측 114/115 — 나머지 하나는 `hero-03-face.png` 로, 리소스 등록은 있지만 파일이 없어
+  // (generatedAssetResourceResolver 의 NOTE) 404 로 떨어진다. 그 상자만 배경 폴백으로 남는 게
+  // 정상이며, :has() 가드가 실패한 <img> 를 제대로 놓아준다는 실물 증거다.
+  const loaded = boxes.filter((box) => box.hasImage).length;
+  expect(loaded / boxes.length, `얼굴 그림 로드 성공률 ${loaded}/${boxes.length}`).toBeGreaterThan(0.95);
   for (const box of boxes) {
     if (!box.hasImage) continue;
     expect(box.backgroundImage, `${box.label} 실제 그림이 있으면 배경 폴백은 꺼진다`).toBe("none");
@@ -93,8 +98,8 @@ test("미리보기 대화창 글자가 창 배경과 실제로 구별된다", as
   await expect(body).toBeVisible();
 
   const captured = PNG.sync.read(await body.screenshot());
-  // 전역 최소/최대를 그대로 재면 클립 안의 아무 어두운 어툴트(테두리·배지)만으로도 통과하므로,
-  // 창 배경(= 클립에서 가장 흔한 색)을 기준으로 잡고 가장 멀리 떨어진 픽셀과 대비를 재다.
+  // 전역 최소/최대를 그대로 재면 클립 안의 아무 어두운 요소(테두리·배지)만으로도 통과하므로,
+  // 창 배경(= 클립에서 가장 흔한 색)을 기준으로 잡고 거기서 휘도가 가장 멀리 떨어진 픽셀과 대비를 잰다.
   const histogram = new Map<string, number>();
   const pixels: { luminance: number; key: string }[] = [];
   for (let index = 0; index < captured.data.length; index += 4) {
@@ -118,7 +123,7 @@ test("미리보기 대화창 글자가 창 배경과 실제로 구별된다", as
   const ratio = (lighter + 0.05) / (darker + 0.05);
   expect(
     ratio,
-    `창 배경(${backgroundKey}) 대본문(${farthest.key}) 대비 ${ratio.toFixed(2)}:1 — 글자가 창 배경에 묻혔다`
+    `창 배경(${backgroundKey}) 대 본문(${farthest.key}) 대비 ${ratio.toFixed(2)}:1 — 글자가 창 배경에 묻혔다`
   ).toBeGreaterThan(10);
 });
 
