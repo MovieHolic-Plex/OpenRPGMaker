@@ -69,7 +69,8 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
   },
   // 엔딩 툴(define_ending/list_endings)은 event 도메인으로 태깅돼 있으므로 엔딩 키워드도 event 를 켠다.
   event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "상점", "상인", "재고", "shop", "merchant", "stock", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "컷신", "cutscene", "연출", "선택지", "엔딩", "ending", "결말", "동료", "동행", "펫", "따라오", "따라다니", "companion", "follower", "pet"], weak: [] },
-  world: { strong: ["세계관", "월드", "지역", "관계", "엔티티"], weak: [] },
+  // 세계관(project.world) 툴은 배제됐다 — 여기 남은 world 도메인은 맵 연결 그래프(plan_world/build_world) 전용이다.
+  world: { strong: ["월드", "지역", "맵 연결", "대륙"], weak: [] },
   system: {
     strong: [
       "린트", "타이틀", "시작위치", "시작 위치", "히스토리", "플레이테스트",
@@ -260,7 +261,7 @@ export const TOOL_MODE_LABELS: Readonly<Record<ToolDomain, string>> = {
   map: "🗺 맵",
   event: "⚑ 이벤트",
   database: "🗃 DB",
-  world: "🌍 세계관",
+  world: "🌍 월드",
   quest: "📜 퀘스트",
   battle: "⚔ 전투",
   system: "⚙ 시스템",
