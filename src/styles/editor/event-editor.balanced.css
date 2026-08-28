@@ -1159,11 +1159,6 @@ footer {
   padding-left: 6px;
 }
 
-/* The validation control keeps its own row instead of being squeezed off-screen. */
-.event-editor-modal-dynamic .event-editor > .event-draft-validation {
-  flex: 0 0 auto;
-}
-
 /* ============================================================================
    설정 레일 — 요약 목록 + 넓은 편집면 (2026-08-28)
 
@@ -1366,4 +1361,225 @@ footer {
 
 .event-editor .event-custom-select-trigger[data-custom-select-for="event-page-advanced-condition-kind"] {
   min-width: 124px;
+}
+
+/* ============================================================================
+   검토 알림 종 — 타이틀바 오른쪽 (2026-08-28)
+
+   문제(실측): 검증 요약은 창 **맨 아래** `.event-editor` 마지막 자식으로 붙었고, 스타일은
+   존재하지 않는 래퍼 `.event-editor-command-header` 아래에만 선언돼 있었다. 즉 출하된 화면은
+   브라우저 기본 `<details>` — 삼각형 마커 + 링크색 없는 검은 글씨였다. 경고가 있어도 화면
+   맨 아래 한 줄이라 눈에 걸리지 않았다.
+
+   해결: 개수 배지를 단 종을 타이틀바 오른쪽(테스트 버튼 왼쪽)에 세우고, 목록은 종 아래
+   팝오버로 연다. 색은 심각도 하나로 결정한다 — 오류·경고는 --danger, 안내만 있을 때는
+   --accent. 톤을 지역 변수 하나(--ev-bell-tone)로 두면 배지·테두리·호버가 함께 따라온다.
+
+   종 흔들림은 **오류가 있고 아직 열어보지 않았을 때만** 3회 돌고 멈춘다. 무한 애니메이션은
+   편집 중 계속 시야를 잡아먹고, prefers-reduced-motion 사용자에게는 아예 돌지 않는다.
+   ========================================================================= */
+
+/* 팝오버는 헤더를 벗어나 본문 위로 내려온다. 그런데 헤더가 쌓임 문맥을 만들지 않으면
+   **뒤 형제**인 `.event-editor-modal-body`(자체 쌓임 문맥)가 팝오버 위에 그려진다 —
+   실측: 페이지 탭 줄이 팝오버 첫 줄(제목·집계)을 덮어 잘린 것처럼 보였다.
+   자손의 z-index 로는 못 이긴다. 헤더 자신을 올려야 한다. */
+.event-editor-modal-header {
+  position: relative;
+  z-index: var(--z-popover-high);
+}
+
+.event-editor-modal-header .event-draft-validation {
+  --ev-bell-tone: var(--accent);
+  --ev-bell-wash: var(--accent-muted);
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.event-editor-modal-header .event-draft-validation[data-severity="warning"],
+.event-editor-modal-header .event-draft-validation[data-severity="error"] {
+  --ev-bell-tone: var(--danger);
+  --ev-bell-wash: var(--danger-muted);
+}
+
+.event-editor-modal-header .event-draft-validation-summary {
+  align-items: center;
+  background: var(--ev-bell-wash);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 5px;
+  height: 30px;
+  list-style: none;
+  padding: 0 7px 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.event-editor-modal-header .event-draft-validation-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor-modal-header .event-draft-validation-summary::marker {
+  content: "";
+}
+
+.event-editor-modal-header .event-draft-validation-summary:hover {
+  background: color-mix(in srgb, var(--ev-bell-tone) 15%, transparent);
+  border-color: color-mix(in srgb, var(--ev-bell-tone) 38%, transparent);
+}
+
+.event-editor-modal-header .event-draft-validation-summary:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-summary {
+  background: color-mix(in srgb, var(--ev-bell-tone) 18%, transparent);
+  border-color: color-mix(in srgb, var(--ev-bell-tone) 45%, transparent);
+}
+
+.event-editor-modal-header .event-draft-validation-bell {
+  align-items: center;
+  display: inline-flex;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.event-editor-modal-header .event-draft-validation-count {
+  background: var(--ev-bell-tone);
+  border-radius: 999px;
+  color: var(--on-accent);
+  font: 700 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  min-width: 18px;
+  padding: 4px 5px;
+  text-align: center;
+}
+
+@keyframes event-validation-bell-ring {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(13deg); }
+  20% { transform: rotate(-11deg); }
+  30% { transform: rotate(8deg); }
+  40% { transform: rotate(-6deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.event-editor-modal-header
+  .event-draft-validation[data-severity="error"]:not([open])
+  .event-draft-validation-bell {
+  animation: event-validation-bell-ring 1.6s ease-in-out 3;
+  transform-origin: 50% 18%;
+}
+
+.event-editor-modal-header .event-draft-validation-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(420px, 76vw);
+  z-index: var(--z-popover-high);
+}
+
+.event-editor-modal-header .event-draft-validation:not([open]) > .event-draft-validation-popover {
+  display: none;
+}
+
+@keyframes event-validation-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {
+  animation: event-validation-popover-in var(--transition-med);
+}
+
+.event-editor-modal-header .event-draft-validation-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.event-editor-modal-header .event-draft-validation-title {
+  color: var(--text-1);
+  font: 650 12px/1.2 var(--font-ui);
+}
+
+.event-editor-modal-header .event-draft-validation-tally {
+  background: var(--ev-bell-wash);
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  font: 700 10.5px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+}
+
+.event-editor-modal-header .event-draft-validation-issues {
+  display: grid;
+  gap: 2px;
+  max-height: min(320px, 46vh);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.event-editor-modal-header .event-draft-validation-issue {
+  --ev-issue-tone: var(--accent);
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 500 12px/1.45 var(--font-ui);
+  gap: 8px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  padding: 7px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-editor-modal-header .event-draft-validation-issue[data-severity="error"] {
+  --ev-issue-tone: var(--danger);
+}
+
+.event-editor-modal-header .event-draft-validation-issue[data-severity="warning"] {
+  --ev-issue-tone: var(--warning);
+}
+
+.event-editor-modal-header .event-draft-validation-issue:hover,
+.event-editor-modal-header .event-draft-validation-issue:focus-visible {
+  background: color-mix(in srgb, var(--ev-issue-tone) 8%, transparent);
+  border-color: color-mix(in srgb, var(--ev-issue-tone) 30%, transparent);
+  outline: none;
+}
+
+.event-editor-modal-header .event-draft-validation-severity {
+  background: color-mix(in srgb, var(--ev-issue-tone) 12%, transparent);
+  border-radius: 999px;
+  color: var(--ev-issue-tone);
+  font: 700 10px/1 var(--font-ui);
+  padding: 4px 0;
+  text-align: center;
+}
+
+.event-editor-modal-header .event-draft-validation-message {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor-modal-header .event-draft-validation-bell,
+  .event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {
+    animation: none;
+  }
 }

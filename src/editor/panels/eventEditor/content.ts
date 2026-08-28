@@ -6,8 +6,6 @@ import {
 import {
   eventDraftIssuesForPage,
   validateEventDraftBody,
-  type EventDraftIssue,
-  type EventDraftValidation,
 } from "@/editor/eventDraftValidator";
 import {
   addEventPageCommand,
@@ -195,7 +193,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   }
   storyboardHost.append(storyboardEl);
   applyViewMode();
-  const validationControl = renderEventValidationSummary(validation);
 
   // NPC 연결 컨트롤은 삭제된 `display: none` identity 카드 안에 살았다 — 이제 그 주제가 속한
   // 「NPC와 일정」 그룹에서 사용자가 실제로 보고 누를 수 있다.
@@ -269,7 +266,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageTabs(mapId, ev, activePage)],
     }),
     workbench,
-    ...(validationControl ? [validationControl] : [])
   );
   container.append(section);
 }
@@ -603,84 +599,4 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
     },
   });
   return true;
-}
-
-function renderEventValidationSummary(validation: EventDraftValidation): HTMLDetailsElement | null {
-  if (validation.issues.length === 0) return null;
-  const parts: string[] = [];
-  if (validation.errorCount > 0) parts.push(`오류 ${validation.errorCount}`);
-  if (validation.warningCount > 0) parts.push(`경고 ${validation.warningCount}`);
-  if (validation.infoCount > 0) parts.push(`안내 ${validation.infoCount}`);
-  const label = parts.join(" · ");
-  const details = el("details", {
-    class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " has-info"}`,
-    dataset: { testid: "event-draft-validation" },
-  }) as HTMLDetailsElement;
-  details.append(
-    el("summary", {
-      class: "event-draft-validation-summary",
-      dataset: { testid: "event-draft-validation-summary" },
-      text: label,
-      attrs: { "aria-label": label },
-    }),
-    el("div", {
-      class: "event-draft-validation-issues",
-      children: validation.issues.map((issue, index) => el("button", {
-        class: `event-draft-validation-issue ${issue.severity}`,
-        attrs: { type: "button" },
-        dataset: {
-          testid: `event-draft-validation-issue-${index}`,
-          issueCode: issue.code,
-          severity: issue.severity,
-        },
-        children: [
-          el("span", { class: "event-draft-validation-severity", text: validationSeverityLabel(issue.severity) }),
-          el("span", { class: "event-draft-validation-message", text: issue.message }),
-        ],
-        on: { click: () => navigateToEventDraftIssue(issue) },
-      })),
-    })
-  );
-  return details;
-}
-
-export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
-  if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
-  const focusIssue = (): void => {
-    const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
-    const root = modal ?? document.body;
-    let target: HTMLElement | null = null;
-    if (issue.commandPath) {
-      const encoded = JSON.stringify(issue.commandPath);
-      target = Array.from(root.querySelectorAll<HTMLElement>(".cmd-item, .row, .leaf"))
-        .find((candidate) => candidate.dataset.cmdPath === encoded) ?? null;
-      if (target) {
-        root.querySelectorAll(".cmd-item.selected, .row.selected, .leaf.selected").forEach((node) => node.classList.remove("selected", "is-selected"));
-        target.classList.add("selected", "is-selected");
-        target = target.querySelector<HTMLElement>(".cmd-head, .line") ?? target;
-      }
-    }
-    if (!target && issue.field) {
-      target = root.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
-    }
-    if (!target) return;
-    for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
-      if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
-    }
-    if (target.getAttribute("tabindex") === null && !/^(BUTTON|INPUT|SELECT|TEXTAREA)$/u.test(target.tagName)) {
-      target.setAttribute("tabindex", "-1");
-    }
-    target.focus({ preventScroll: true });
-    target.scrollIntoView?.({ block: "center", inline: "nearest" });
-  };
-  focusIssue();
-  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
-    window.requestAnimationFrame(focusIssue);
-  }
-}
-
-function validationSeverityLabel(severity: EventDraftIssue["severity"]): string {
-  if (severity === "error") return "오류";
-  if (severity === "warning") return "경고";
-  return "안내";
 }
