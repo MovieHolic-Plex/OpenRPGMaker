@@ -177,6 +177,18 @@ Evidence expectations:
   매 실행 재생성되며 gitignore 대상이다.
 - 시나리오는 `scripts/qa/runtime/<name>.scenario.mjs`. 좌표 기대치는 추측하지 말고
   `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
+- 전투 주스가 맵을 드러내는 회귀는 `test/runtime/battle-flash-map.spec.ts` 가 잠근다. 같은 QA
+  서버로 `player.html` 을 띄워 `battle-v3.json` 시작 맵(0,0) 오른쪽 `battleProcessing` 이벤트로
+  **실전투 DOM** 에 들어간 뒤, 한 번의 rAF 샘플 시리즈에서 세 가지를 같이 본다: 루트
+  `background-color` 알파 == 1, `.battle-field::after` 오버레이 알파 > 0(플래시가 사라지지
+  않았다는 증명), 루트 `transform` 의 translate 성분 == 0. 알파를 **클래스 부착 지속 시간에
+  기대어 재지 마라** — 런타임은 `setTimeout` 으로 클래스를 떼므로 판정이 그 뒤로 밀리면
+  오버레이가 `rgba(0,0,0,0)` 으로 읽힌다(실측으로 버진 경합). 샘플러는
+  `getAnimations().playState` 가 running 인 동안만 돌고 스스로 멈춘다.
+- 누출은 필드가 백드롭 이미지로 닫혀 있어서 **필드-HUD 4px 거터와 HUD 패널 사이**에서 가장
+  자명하다. 새 증거를 모으려면 30x30 마을 프로젝트(`editor-authored-demo-v3.json`, 시작 맵
+  `ev_lantern_training` 이 (20,14))로 띄우면 뒤에 새는 타일이 눈에 보인다. RED/GREEN 실측은
+  `.omo/evidence/battle-flash-map/` 에 있다.
 
 함정 (전부 실측):
 - `vite.player.config.ts` 는 `publicDir: false` 다. 그대로 dev 서빙하면 번들 텍스처

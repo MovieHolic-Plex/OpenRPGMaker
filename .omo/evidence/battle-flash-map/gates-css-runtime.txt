@@ -1,0 +1,34 @@
+=== gates:css
+
+> rpg-zzu@0.1.0 gates:css
+> node scripts/check-css-budget.mjs && node scripts/check-css-graph.mjs
+
+CSS 예산 래칫 — 기준선 .omo/css-budget-baseline.json
+   지표                    기준선       현재      증감  설명
+   hexLiterals          1922     1922       0  하드코딩 hex 리터럴 (TOKENS.md §4.1)
+   important            1035     1035       0  !important 선언
+   undefinedVars          74       74       0  정의 없는 커스텀 프로퍼티
+   globalRootFiles        10       10       0  전역 :root 블록을 가진 파일
+   cssFileCount          258      258       0  CSS 파일 수
+
+CSS 예산 게이트 통과: 258개 파일 검사, 회귀 0건, 개선 0건.
+CSS graph gate: entries=9 (scan), files=260, reachable=259, orphan=1
+  missing @import target : 0 new (유예 없음)
+  unreachable            : 1 found, 1 allowlisted, 0 new
+  double-imported        : 5 found, 5 allowlisted, 0 new
+  unregistered slice     : 2 found, 2 allowlisted, 0 new
+  duplicate NN- prefix   : 1 found, 1 allowlisted, 0 new
+=== qa:runtime:gate
+
+> rpg-zzu@0.1.0 qa:runtime:gate
+> playwright test --config playwright.runtime.config.ts
+
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › test/runtime/battle-flash-map.spec.ts:56:1 › hit flash keeps the battle scene opaque (30.7s)
+  ✓  2 [chromium] › test/runtime/battle-flash-map.spec.ts:77:1 › critical flash keeps the battle scene opaque and still renders the flash (20.3s)
+  ✓  3 [chromium] › test/runtime/smoke.spec.ts:20:3 › 런타임 게이트: smoke (20.4s)
+  ✓  4 [chromium] › test/runtime/smoke.spec.ts:20:3 › 런타임 게이트: dialogue (16.0s)
+
+  4 passed (1.5m)
