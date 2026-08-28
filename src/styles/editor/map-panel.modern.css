@@ -295,6 +295,35 @@
   min-width: 0;
 }
 
+/* S3 는 헤더 4버튼 전부 `--text-2` 모노톤 rm-tool-icon 언어로 통일하라고 요구한다.
+   map-child(icons.css:2 + resource-system.part-2.css:411)·map-start(icons.css:11-26)
+   는 공유 정의라 하드코딩 hex(#d8b35e, #216c33, #f5d04a, #7c5e22) 를 그대로 갖고 있고,
+   map-start 는 eventLayerContextMenu.ts 에서도 재사용된다 — 그 메뉴는 이 모던화 범위
+   밖이라 공유 정의는 그대로 두고, 헤더 스코프 안에서만 `background`/`box-shadow` 색상을
+   덮는다. `clip-path`·`border`·크기·좌표(도형 자체)는 건드리지 않는다 — 그대로
+   캐스케이드된다.
+
+   map-child 는 둘 다 곧이곧대로 currentColor 로 덮으면 blob 이 된다(실측) — 몸체(::before,
+   맵 카드)와 플러스 표시(::after + box-shadow 4개 사각형)가 같은 밝기가 되면 플러스의
+   서쪽 사각형이 몸체 오른쪽 경계에 파묻혀 "+"가 아니라 손잡이 달린 가방처럼 보인다.
+   몸체를 currentColor 의 옅은 톤(color-mix, 이 파일이 이미 §맵 노드 좌측 레일에서 쓰는
+   관용구)으로 낮추고 플러스는 currentColor 그대로 둬 — 색상 계열은 하나(모노톤)이되
+   명도 대비로 두 도형을 분리한다. map-start(별+받침)는 그대로 currentColor 로도 별
+   윤곽이 지배적이라 육안 확인 결과 그대로 둔다. */
+.map-tree-panel .map-tree-header-actions .oprn-icon-map-child::before {
+  background: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.map-tree-panel .map-tree-header-actions .oprn-icon-map-child::after {
+  background: currentColor;
+  box-shadow: 0 4px 0 currentColor, -2px 2px 0 currentColor, 2px 2px 0 currentColor;
+}
+
+.map-tree-panel .map-tree-header-actions .oprn-icon-map-start::before,
+.map-tree-panel .map-tree-header-actions .oprn-icon-map-start::after {
+  background: currentColor;
+}
+
 /* 버튼 리셋 전체를 여기 둔다. 예전에는 shell-density.part-2.css 가 appearance·flex
    정렬·transition 을 대주었는데, 그 파일을 비우는 Task 4 에서 함께 사라지면 버튼이
    깨진다. 소유자가 하나면 리셋도 소유자가 갖는다. */

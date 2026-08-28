@@ -39,6 +39,32 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, "map-add-folder")).not.toBeNull();
   });
 
+  it("헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)", () => {
+    const project = createBlankProject();
+    const secondId = "map_second";
+    project.maps[secondId] = { ...project.maps[project.startMapId]!, id: secondId, name: "두번째 맵" };
+    project.mapTree = {
+      mapId: project.startMapId,
+      children: [{ mapId: secondId, children: [] }],
+    };
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+
+    const panel = renderWithFakeDom(() => {
+      const container = document.createElement("div");
+      renderMapList(container);
+      return container;
+    });
+
+    const title = panel.querySelector(".map-tree-title");
+    const count = panel.querySelector(".map-tree-count");
+    expect(title).not.toBeNull();
+    expect(count).not.toBeNull();
+    expect(title).not.toBe(count);
+    expect(title?.textContent).toBe("맵");
+    expect(count?.textContent).toBe(String(Object.keys(project.maps).length));
+  });
+
   it("시작 맵 지정 버튼은 이미 시작 맵이어도 결과를 알린다", () => {
     // Break: 헤더의 「현재 맵을 시작 맵으로」 는 이미 시작 맵일 때 store 갱신이 무효토산되며
     // 토스트도 상태 변화도 없어 사용자에게는 고장으로 보인다(실제 감사에서 dead 로 잡혔다).
