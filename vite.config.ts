@@ -347,6 +347,11 @@ export default defineConfig(({ mode }) => {
     };
   }
   return {
+  // 병렬 워크트리는 `node_modules` 를 메인 레포로 심볼릭 링크해 쓴다 — 즉 vite 의 최적화 캐시
+  // (`node_modules/.vite`) 까지 공유된다. 여러 워크트리의 dev 서버가 동시에 돌면 서로의 캐시를
+  // 재최적화하다 "Failed to scan for dependencies" 로 서버가 죽는다(실측: 액션 전투 QA 중 3회).
+  // VITE_CACHE_DIR 을 주면 워크트리 전용 캐시를 써서 이 충돌을 없앤다.
+  cacheDir: process.env.VITE_CACHE_DIR,
   plugins: [aiActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
   resolve: {
     alias: {

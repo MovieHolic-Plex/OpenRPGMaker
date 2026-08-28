@@ -76,6 +76,18 @@ function upsertById<T extends { id: string }>(list: T[], record: T): void {
   else list.push(record);
 }
 
+/** 액션 전투용 히어로 1 레벨 기준값. 돌진 22 피해가 체력의 1/6 을 깎는 스케일이다. */
+const ACTION_DEMO_HERO_MAX_HP = 120;
+const ACTION_DEMO_HERO_DEFENSE = 12;
+
+/** 곡선의 1 레벨 값을 target 으로 맞추고 나머지 레벨은 같은 비율로 줄인다(단조 증가 유지). */
+function scaleCurve(curve: readonly number[] | undefined, target: number): number[] {
+  const source = curve && curve.length > 0 ? curve : [target];
+  const base = source[0] ?? target;
+  const ratio = base > 0 ? target / base : 1;
+  return source.map((value) => Math.max(1, Math.round(value * ratio)));
+}
+
 /**
  * 액션 전투 데모 프로젝트.
  * 농장 데모를 토대로 쓰는 이유: 폐광 1층이 이미 액션 옵트인 맵이고 melee/projectile 적 스폰이
@@ -104,7 +116,7 @@ export function createActionCombatDemoProject(): Project {
   }));
   const mine = project.maps[ACTION_DEMO_MAP_ID];
   if (mine) {
-    const spawns = [...(mine.fieldSpawns ?? [])].filter((spawn) => spawn.id !== "spawn_mine_hounds");
+    const spawns = [...(mine.fieldSpawns ?? [])].filter((spawn) => spawn.id !== "spawn_mine_hounds" && spawn.id !== "spawn_mine_pressure" && spawn.id !== "spawn_mine_ranged");
     spawns.push({
       id: "spawn_mine_hounds",
       troopId: ACTION_DEMO_DASH_TROOP_ID,
@@ -116,6 +128,38 @@ export function createActionCombatDemoProject(): Project {
         sprite: { type: "bundled", id: "tex_easyrpg_charset_monster2" },
         direction: "down",
         pattern: charsetFrameIndex({ characterIndex: 2, direction: "down", pattern: 1 }),
+      },
+    });
+    // 돌진 사냥개만 곁에 놓으면 싸움이 시작되지 않는다 — 돌진은 거리 2~5 + 상하좁우 정렬에서만
+    // 발동하고, 다른 슬롯은 aggro 밖(맨해튼 14)에 있어 처음부터 wait 이다(실측).
+    // 근접 압박용 슬롯을 시작 칸 옆에 직접 저작해 "예고 → 타객 → 사망" 고리를 열어준다.
+    spawns.push({
+      id: "spawn_mine_pressure",
+      troopId: "troop_bat_swarm",
+      area: { x: ACTION_DEMO_START_POS.x - 1, y: ACTION_DEMO_START_POS.y - 2, w: 4, h: 3 },
+      maxAlive: 2,
+      respawnSec: 12,
+      chase: true,
+      graphic: {
+        sprite: { type: "bundled", id: "tex_easyrpg_charset_monster2" },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
+      },
+    });
+    // 원거리 거리 유지(카이톡)는 뷐다 공간이 있어야 생긴다. 납품 슬롯(3,5)은 2x2 주머니로,
+    // 통행 가능한 이웃이 플레이어 방향뿐이어서 무를 수 있는 칸이 없다(실측).
+    // 여기서는 개방된 방(x7~12, y11~15) 안에 원거리 적을 재배치해 후톴 공간을 준다.
+    spawns.push({
+      id: "spawn_mine_ranged",
+      troopId: "troop_mine_archers",
+      area: { x: 11, y: 11, w: 2, h: 3 },
+      maxAlive: 1,
+      respawnSec: 20,
+      chase: true,
+      graphic: {
+        sprite: { type: "bundled", id: "tex_easyrpg_charset_monster2" },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }),
       },
     });
     mine.fieldSpawns = spawns;
@@ -139,7 +183,7 @@ export function createActionCombatDemoProject(): Project {
     description: "화염탄 1발의 재료. 액션 스킬 캐스트마다 1개 소모.",
     scope: "none",
     price: 6,
-    type: "normal",
+    type: "normalGoods",
     occasion: "never",
     consumable: false,
   }));
@@ -169,6 +213,12 @@ export function createActionCombatDemoProject(): Project {
   const hero = project.database.actors.find((actor) => actor.id === DEFAULT_ACTOR_ID);
   if (hero) {
     hero.initialEquipment = { ...hero.initialEquipment, weapon: ACTION_DEMO_WEAPON_ID };
+    // 농장 데모 히어로는 1 레벨에 maxHp 514 / defense 59 다. 액션 전투에서는 이 수치가
+    // 돌진 22 피해를 무의미하게 만들고, 접촉 피해를 `raw - defense/4` 로 전부 1 까지 깎는다.
+    // 곡선 모양(99 레벨 단조 증가)은 그대로 두고 배율만 액션 스케일로 낮춘다.
+    const curves = (hero as unknown as { parameterCurves: Record<string, number[]> }).parameterCurves;
+    curves.maxHp = scaleCurve(curves.maxHp, ACTION_DEMO_HERO_MAX_HP);
+    curves.defense = scaleCurve(curves.defense, ACTION_DEMO_HERO_DEFENSE);
     // 슬롯 순서 = 배운 순서다. 액션 스킬을 맨 앞에 두어 슬롯 1/2 를 못 박는다.
     const rest = hero.learnedSkills.filter((entry) => !ACTION_DEMO_SKILL_IDS.includes(entry.skillId as typeof ACTION_DEMO_SKILL_IDS[number]));
     hero.learnedSkills = [
