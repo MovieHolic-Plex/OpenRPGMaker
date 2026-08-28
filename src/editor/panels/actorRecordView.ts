@@ -61,9 +61,13 @@ export function renderActorRecordForm(
   const hero = actorHeroHeader(actor, onRename);
   if (layout === "studio") {
     const sections = [
-      actorSection("identity", [identity, actorClass]),
+      // '현재 시작 능력치'는 성장 곡선에서 파생된 읽기 전용 요약이라 성장 탭에 있었는데,
+      // 그 탭은 곡선 + 경험치까지 지고 있어 과밀했고 반대로 기본 탭은 컨트롤 네 개만
+      // 놓인 채 아래 절반이 비어 있었다(감사 H 축). 요약을 기본으로 올리면 처음 보는
+      // 화면이 "이 주인공이 어떤 수치로 시작하는가" 에 답하게 되고 성장도 숨통이 트인다.
+      actorSection("identity", [identity, actorClass, baseStats]),
       actorSection("appearance", [graphics]),
-      actorSection("growth", [baseStats, curves, experience]),
+      actorSection("growth", [curves, experience]),
       actorSection("battle", [battle, critical, rates]),
       actorSection("preview", [buildPreview.element]),
     ];
