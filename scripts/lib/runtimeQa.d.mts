@@ -38,6 +38,8 @@ export type RuntimeQaExpect = {
   readonly playerSpriteResourceNonEmpty?: boolean;
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
+  /** battle-scene 안 모든 텍스트 노드가 상자 안에 오온전히 보이는지. */
+  readonly battleTextClean?: boolean;
 };
 
 export type RuntimeQaBeat = {
@@ -78,12 +80,26 @@ export type RuntimeQaCompactState = {
   readonly gold: number;
 };
 
+export type RuntimeQaBattleTextNode = {
+  readonly text: string;
+  readonly selector: string;
+  readonly reasons: readonly string[];
+  readonly clippedRatio: number;
+  readonly slicedRatio: number;
+  readonly clipper: string | null;
+};
+
 export type RuntimeQaObserved = {
   /** 런타임 훅 설치 전(타이틀 화면 등)에는 null. */
   readonly state: RuntimeQaCompactState | null;
   readonly testids: readonly string[];
   readonly playerSpriteResourceId: string | null;
   readonly playerSpriteTextureKey: string | null;
+  /** `battleTextClean` 을 요구한 비트에서만 칸다. */
+  readonly battleText?: {
+    readonly mounted: boolean;
+    readonly nodes: readonly RuntimeQaBattleTextNode[];
+  };
 };
 
 export type RuntimeQaBeatReport = {

@@ -15,10 +15,19 @@
 .battle-actor-status {
   align-content: center;
   display: grid;
-  gap: 2px;
+  /* 행 간격 0 — 이 카드는 여유가 1~2px 단위로 부족하다(실측: 필요 43 / 여유 42).
+     간격을 접으면 이름·수치 행이 상자 안에 들어온다. 행 구분은 배경과 바가 한다. */
+  gap: 0;
   grid-template-columns: minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
+  padding: 2px 4px;
+}
+
+/* 파티 카드의 세로 여백은 2px 이다. 평이한 `.battle-actor-status` 로 적으면 다른
+   레이어의 같은 특이도 선언에 밀려 6px 로 계산되고(실측), 그 12px 가 이름/수치
+   행을 상자 밖으로 밀어낸다. 부모를 한 단계 붙여 이 선언이 이기게 한다. */
+.battle-party .battle-actor-status {
   padding: 2px 4px;
 }
 
@@ -27,12 +36,24 @@
   display: flex;
   gap: 8px;
   justify-content: space-between;
+  /* 이름행은 자식의 라인박스를 다 담을 만큼 높이가 있어야 한다. 자동 높이로
+     내버려서 18px 로 군어밀리면 이름과 수치가 동시에 잘린다(실측). */
+  min-height: 0;
   min-width: 0;
 }
 
+/* 파티 HUD 이름행은 자기 라인박스를 담지 못해 글자를 상자 밖으로 밀어냈다.
+   실측: `.battle-actor-name` 은 높이 18px 상자인데 16px 글자의 라인박스가 24px
+   (line-height 기본값 normal ≈ 1.5)라 11.9% 가 잘렸고, 그 안에 들어있는 14px
+   Lv/HP/MP 수치는 22.5px 라 6% 가 잘렸다. 12개 스킨 전수에서 이 한 가지 원인이
+   전체 위반의 절대다수여서(한 사이클에 수백 건) 여기 공유 계산에서 맞췔 둔다.
+   line-height 를 명시하면 라인박스가 상자 안에 들어온다 — 1 에 가깝게 주면 한글
+   받침이 잘리므로(battle/19-adversarial-review-3.css:72 의 실측) 1.15 를 쓴다. */
 .battle-actor-name {
   font-size: 16px;
-  line-height: 1.1;
+  /* 1.125 → 라인박스 18px 로 이름행 상자(18px)에 정확히 들어간다. 1.15 는
+     18.4px 로 0.4px 넘어 여전히 잘렸다(실측). */
+  line-height: 1.125;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -40,7 +61,8 @@
 }
 
 .battle-actor-level {
-  font-size: 14px;
+  font-size: 12px;
+  line-height: 1.15;
   margin-left: 4px;
   opacity: 0.85;
 }
@@ -52,10 +74,16 @@
   justify-content: flex-end;
 }
 
+/* 이 수치들은 12px 이어야 한다. 14px 에서는 자기 상자를 넘어 잘렸다 — 실측:
+   `.battle-actor-level`(14px)의 상자는 22.5px 인데 그가 들어있는 이름행은 18px 라
+   Lv/HP/MP 숫자가 통째로 잘려 나갔고, 이 한 가지로 11개 스킨에서 수백 건이 났다.
+   기본 스킨(rm2003)은 이미 12px 로 그려서 같은 상자에 오온전하게 들어간다. */
 .battle-actor-hp,
 .battle-actor-mp {
-  font-size: 14px;
-  line-height: 1.1;
+  font-size: 12px;
+  /* line-height 1 — 이 행은 숫자와 라틴 레이블(Lv/HP/MP)만 다루므로 한글 받침이
+     잘리는 함정(battle/19-adversarial-review-3.css:72)과 무관하다. 이름행은 1.125 유지. */
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -71,13 +99,19 @@
 .battle-actor-status .battle-stat-bar {
   display: block;
   grid-column: auto;
-  height: 6px;
+  /* 마더가 아니라 글자가 우선이다. 바 6px × 2 + 게이지 14px 가 여유를 전부 쓰면
+     이름과 수치 행이 상자(42px) 밖으로 밀려난다(실측: 필요 49px). 4px 로 줄이면
+     바는 여전히 읽힐 수 있고 글자가 들어갈 자리가 생긴다. */
+  height: 4px;
   min-width: 0;
 }
 
 .battle-actor-gauge {
   align-items: center;
   display: flex;
+  /* 게이지 행이 14px 를 쓰면 이름/수치 행이 상자 밖으로 밀린다(실측: 필요 47 / 여유 42).
+     10px 로 줄이면 ATB 바는 그대로 보이고 글자가 들어갈 자리가 생긴다. */
+  max-height: 8px;
   min-width: 0;
 }
 

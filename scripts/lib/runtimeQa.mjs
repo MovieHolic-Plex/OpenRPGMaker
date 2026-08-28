@@ -167,5 +167,24 @@ export function evaluateExpect(expected, observed) {
       );
     }
   }
+  // 전투 글자 가시성: 계측은 runtimeQaRun 이 페이지에서 돌리고, 여기서는 판정만 한다.
+  // `battleTextClean` 은 "이 국면의 battle-scene 안 모든 텍스트 노드가 상자 안에 온전히
+  // 보인다" 는 뜻이다. 씬이 안 떠 있으면 조용히 통과시키지 않고 실패로 만든다 —
+  // 마운트 실패를 '위반 0건' 으로 읽으면 게이트가 거짓말을 한다.
+  if (expected.battleTextClean) {
+    const audit = observed.battleText;
+    if (!audit) failures.push("battleText: 계측이 실행되지 않았다");
+    else if (!audit.mounted) failures.push("battleText: battle-scene 이 마운트되지 않았다");
+    else {
+      for (const node of audit.nodes) {
+        failures.push(
+          `battleText ${node.reasons.join(",")}: "${node.text}" (${node.selector}`
+            + `${node.clipper ? ` ⊂ ${node.clipper}` : ""}`
+            + `, 잘림 ${node.clippedRatio}, 걸침 ${node.slicedRatio})`,
+        );
+      }
+    }
+  }
+
   return failures;
 }
