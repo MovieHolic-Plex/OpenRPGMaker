@@ -3,9 +3,10 @@
 // v2: 4방향 passability 기반(RM2K3 정석). TilesetDef.passability 사용.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.3.
 
-import type { GameMap, Project, TilesetDef, Dir, PassFlag } from "./types";
+import type { GameMap, Project, TilesetDef, Dir, PassFlag, CharacterFootprint } from "./types";
 import { topTileInStack } from "./mapOverlayTiles";
 import { passageMarkForTile } from "./tilesetPassage";
+import { footprintBounds } from "./footprint";
 
 // 주어진 타일 좌표가 맵 경계 안인가?
 export function inBounds(map: GameMap, x: number, y: number): boolean {
@@ -111,4 +112,61 @@ export function isPassable(
   const t = tileAt(map, x, y);
   const pass = tilePassability(tileset, t.lower, t.upper);
   return pass.up || pass.down || pass.left || pass.right;
+}
+
+/**
+ * 발자국 전체가 통과 가능한가. 이동 방향의 **선행 모서리**만 검사한다 —
+ * 3x3 이 오른쪽으로 갈 때 새로 밟는 건 오른쪽 열 3칸뿐이고 9칸 전부가 아니다.
+ *
+ * 1x1 이면 정확히 canMove 1회 호출로 환원된다(= 기존 동작 동일).
+ * canMove 와 같이 **인접 한 칸 이동**을 전제한다.
+ */
+export function canMoveFootprint(
+  project: Project,
+  map: GameMap,
+  fromX: number,
+  fromY: number,
+  fp: CharacterFootprint,
+  toX: number,
+  toY: number
+): boolean {
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  if (dx === 0 && dy === 0) return false;
+  if (dx !== 0 && dy !== 0) {
+    // 기존 대각 관례(playSceneMovement.ts / playSceneAutonomousMapActions.ts):
+    // H·V 로 분해해 둘 중 한 경로가 열려 있으면 통과한다.
+    const horizontalFirst =
+      canMoveFootprint(project, map, fromX, fromY, fp, fromX + dx, fromY) &&
+      canMoveFootprint(project, map, fromX + dx, fromY, fp, toX, toY);
+    if (horizontalFirst) return true;
+    return (
+      canMoveFootprint(project, map, fromX, fromY, fp, fromX, fromY + dy) &&
+      canMoveFootprint(project, map, fromX, fromY + dy, fp, toX, toY)
+    );
+  }
+  for (const cell of leadingEdgeCells(fromX, fromY, fp, dx, dy)) {
+    if (!canMove(project, map, cell.x, cell.y, cell.x + dx, cell.y + dy)) return false;
+  }
+  return true;
+}
+
+/** 이동 방향에서 새로 칸을 밟게 되는 발자국 모서리 셀들. */
+function leadingEdgeCells(
+  x: number,
+  y: number,
+  fp: CharacterFootprint,
+  dx: number,
+  dy: number
+): { x: number; y: number }[] {
+  const rect = footprintBounds(x, y, fp);
+  const cells: { x: number; y: number }[] = [];
+  if (dx !== 0) {
+    const column = dx > 0 ? rect.right : rect.left;
+    for (let cy = rect.top; cy <= rect.bottom; cy += 1) cells.push({ x: column, y: cy });
+    return cells;
+  }
+  const row = dy > 0 ? rect.bottom : rect.top;
+  for (let cx = rect.left; cx <= rect.right; cx += 1) cells.push({ x: cx, y: row });
+  return cells;
 }
