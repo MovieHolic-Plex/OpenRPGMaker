@@ -1419,7 +1419,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
         class: "db-title-menu-option-row",
         dataset: { testid: "db-title-menu-option-continue" },
         children: [
-          textControl("이어 하기", titleScreen.menuLabels.continueGame, (value) => {
+          textControl("불러오기", titleScreen.menuLabels.continueGame, (value) => {
             updateTitleScreen((settings) => {
               settings.menuLabels.continueGame = value;
             }, "system:title-screen:menu-continue");
