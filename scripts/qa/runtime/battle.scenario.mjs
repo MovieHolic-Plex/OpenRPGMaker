@@ -6,10 +6,16 @@
 //
 // 기대치는 픽스처(test/fixtures/projects/editor-authored-demo-v3.json)의 실물에서 읽었다:
 //   startMapId = map_lantern_village, startPos = (14,18)
-//   ev_lantern_training(20,14) trigger=action → 대사 뒤 battleProcessing troop_slime_pair
-//                                              (enemy_meadow_slime × 2)
+//   ev_map_moonwell_forest_seal(14,2) trigger=action, movement=fixed → 대사 뒤
+//                                     battleProcessing troop_forest_hornets
 //   파티 = actor_hero / actor_guardian / actor_mage / actor_scout
 //        → generated-actor-hero-01..04-battle 네 시트를 한 화면에서 전부 태운다.
+//
+// 왜 마을의 ev_lantern_training(20,14) 을 안 쓰는가: 그 페이지는 movement={type:"random"}
+// 이다. 옆으로 텔레포트해 이벤트가 거기 서 있다고 가정하면 NPC 가 돌아다니다 벗어나는
+// 레이스가 된다 — 실측: 한가한 호스트에서는 3회 연속 통과했지만 load 44~82 에서는 3회
+// 연속 실패하고, 실패 샷에는 대사창이 아예 없었다. 전투 화면을 재는 시나리오를 이동하는
+// NPC 에 기대면 안 된다.
 // 전투 씬 testid 는 src/player/battleDom.ts:84 의 `battle-scene`,
 // 아군 스프라이트 그룹은 src/player/battleFieldDom.ts:504 의 `battle-actor-sprites`.
 
@@ -38,23 +44,30 @@ export const battleScenario = {
       },
     },
     {
-      id: "face-training-event",
-      note: "훈련 이벤트(20,14) 남쪽 칸으로 이동해 위를 본다",
+      id: "face-battle-event",
+      note: "달빛우물 숲 봉인(14,2) 남쪽 칸으로 이동해 위를 본다",
       ops: [
-        { kind: "teleport", mapId: "map_lantern_village", x: 20, y: 15 },
-        { kind: "wait", ms: 800 },
+        { kind: "teleport", mapId: "map_moonwell_forest", x: 14, y: 3 },
+        { kind: "wait", ms: 1200 },
         { kind: "face", dir: "up" },
-        { kind: "wait", ms: 300 },
+        { kind: "wait", ms: 400 },
       ],
-      expect: { mapId: "map_lantern_village", x: 20, y: 15 },
+      expect: { mapId: "map_moonwell_forest", x: 14, y: 3 },
     },
     {
       id: "battle-intro",
-      note: "대사를 넘겨 전투 진입 — 아군 4명 시트 + 슬라임 2마리가 한 화면에 선다",
+      note: "대사를 넘겨 전투 진입 — 아군 4명 시트와 적 배틀러가 한 화면에 선다",
       ops: [
+        // 이벤트를 여는 건 `action`(= window.__oprnInput.action() 훅 직접 호출) 뿐이고,
+        // pressUntil 의 z 는 **이미 열린 대사를 넘길 뿐** 이다. 맵 로드 중에 그 한 번이
+        // 삼켜지면 남은 z 를 아무리 눌러도 전투까지 못 간다. 정착 시간을 주고 발동을 한 번
+        // 더 시도한다 — 이미 대사가 열려 있었다면 둘째 발동은 한 줄 넘기는 것으로 끝난다.
+        { kind: "wait", ms: 1200 },
+        { kind: "action" },
+        { kind: "wait", ms: 800 },
         { kind: "action" },
         { kind: "wait", ms: 600 },
-        { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 16, delayMs: 400 },
+        { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 24, delayMs: 500 },
         { kind: "waitFor", testid: "battle-actor-sprites", state: "present" },
         // 인카운터 전환(흰 플래시 → 블라인드 → 인트로 슬라이드)이 끝나야 스프라이트가 제자리에 선다.
         { kind: "wait", ms: 2600 },
