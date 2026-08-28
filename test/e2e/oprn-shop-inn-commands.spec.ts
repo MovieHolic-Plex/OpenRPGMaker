@@ -81,11 +81,14 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await expect(page.getByTestId("event-command-add")).toHaveCount(0);
 
   const shopCommand = await addCommerceCommand(page, { kind: "shop", testId: "command-picker-add-shop" });
-  await shopCommand.getByTestId("shop-available-items").selectOption("item_potion");
-  await shopCommand.getByTestId("shop-add-item").click();
-  await expect(shopCommand.getByTestId("shop-selected-items")).toHaveValue("item_potion");
+  await shopCommand.getByTestId("shop-item-check-item_potion").check();
+  await expect(
+    shopCommand.locator('[data-testid="shop-sale-list"] [data-testid="shop-item-row-item_potion"]')
+  ).toBeVisible();
   await expect(shopCommand).toContainText("상점 종류");
-  await expect(shopCommand).toContainText("아직 안 담음");
+  // 단일 목록의 두 그룹 머리글이 진열 상태를 말해 준다.
+  await expect(shopCommand.getByTestId("shop-sale-list")).toContainText("판매 중");
+  await expect(shopCommand.getByTestId("shop-stock-pool")).toContainText("안 담음");
   await page.screenshot({ path: testInfo.outputPath("shop-editor-readable.png"), fullPage: true });
   await shopCommand.getByTestId("event-command-edit-ok").click();
   await expect(shopCommand).toHaveCount(0);

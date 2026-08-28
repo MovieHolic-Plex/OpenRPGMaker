@@ -205,12 +205,12 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
   const saleRows = dialog.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
   await expect(saleRows.first()).toBeVisible();
   expect(await saleRows.count()).toBeGreaterThanOrEqual(1);
-  const catalogFold = dialog.getByTestId("shop-item-catalog-fold");
-  await expect(catalogFold).toBeVisible();
-  expect(await catalogFold.evaluate((el) => (el as HTMLDetailsElement).open)).toBe(false);
-  await dumpEvidence(page, "shop-stocked-folded-catalog", {
+  // 목록은 하나뿐이다: 담긴 행이 맨 위 «판매 중» 그룹, DB 나머지는 그 아래 «안 담음».
+  const pool = dialog.getByTestId("shop-stock-pool");
+  await expect(pool).toBeVisible();
+  await dumpEvidence(page, "shop-stocked-single-list", {
     saleRows: await saleRows.count(),
-    catalogFoldOpen: false,
+    poolRows: await pool.locator('[data-testid^="shop-item-row-"]').count(),
   });
 });
 
