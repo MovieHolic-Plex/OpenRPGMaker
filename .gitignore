@@ -140,6 +140,9 @@ new-editor/COMPREHENSIVE.html
 !/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3
 
 # 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
+# 런타임 QA 하네스의 라이브 산출물 — 매 실행마다 디렉터리째 재생성된다(scripts/runtime-qa.mjs).
+# 보존할 증거는 verify-shots/runtime-export-charset-missing/ 처럼 별도 경로에 둔다.
+verify-shots/runtime-qa/
 verify-shots/ai-assistant-ux/probe-baseline/
 verify-shots/ai-assistant-ux/probe-after/
 verify-shots/ai-assistant-ux/probe-live/
