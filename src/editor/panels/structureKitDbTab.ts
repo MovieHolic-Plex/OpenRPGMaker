@@ -28,7 +28,13 @@ import {
   type StructureKitDbSource,
 } from "@/editor/panels/structureKitDbSources";
 import { store } from "@/project/store";
-import type { StructureKitDef, StructureKitPart, StructureKitPartKind, TilesetDef } from "@/project/types";
+import type {
+  StructureKitDef,
+  StructureKitLearnedFrom,
+  StructureKitPart,
+  StructureKitPartKind,
+  TilesetDef,
+} from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -605,6 +611,18 @@ function partKindName(kind: StructureKitPartKind): string {
   }
 }
 
+/** 계보 표시 — 편집 잠금과 무관한 순수 표시값. */
+function learnedFromLabel(learnedFrom: StructureKitLearnedFrom): string {
+  switch (learnedFrom) {
+    case "user-paint":
+      return "붓질에서 학습";
+    case "builtin-parametric":
+      return "내장 파라메트릭";
+    case "db-authored":
+      return "데이터베이스에서 작성";
+  }
+}
+
 function renderInspector(
   tileset: TilesetDef,
   kit: StructureKitDef,
@@ -648,7 +666,7 @@ function renderInspector(
   inspector.append(nameField);
 
   // 메타 정보
-  const sourceLabel = kit.learnedFrom === "user-paint" ? "붓질에서 학습" : "내장 파라메트릭";
+  const sourceLabel = learnedFromLabel(kit.learnedFrom);
   inspector.append(
     el("div", {
       class: "structure-kit-inspector-meta",
