@@ -461,8 +461,22 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   encounterAccumulator = 0;
   const troopId = pickEncounterTroopForMap(map, scene.session, position);
   if (!troopId) return;
-  // 전투 시작(비동기). scene.running 가드로 재진입 방지.
-  void scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+  // 전투 시작(비동기). 전투가 끝날 때까지 맵 로직·입력을 잠근다 — 잠그지 않으면 전투
+  // 오버레이 뒤에서 걸음이 계속 완료되어 게이지가 쌓이고 전투가 겹쳐 시작된다.
+  void runRandomEncounterBattle(scene, troopId);
+}
+
+// runFieldSpawnEventBattle(playSceneFieldSpawns.ts) 과 같은 재진입 가드 계약이다.
+async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string): Promise<void> {
+  const previousInputEnabled = scene.inputEnabled;
+  scene.running = true;
+  scene.setInputEnabled(false);
+  try {
+    await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+  } finally {
+    scene.running = false;
+    scene.setInputEnabled(previousInputEnabled);
+  }
 }
 
 // 전투 후/맵 진입 시 스텝 카운터 리셋(외부에서 호출 가능).
