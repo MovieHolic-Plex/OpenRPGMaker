@@ -38,6 +38,10 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
     for (const itemId of Object.keys(preset.inventory ?? {})) ids.add(itemId);
   }
 
+  for (const skill of project.database.skills) {
+    const itemCostId = skill.actionSkill?.itemCost?.itemId;
+    if (itemCostId) ids.add(itemCostId);
+  }
   for (const actorClass of project.database.classes) {
     for (const promotion of actorClass.promotions ?? []) if (promotion.requires.itemId) ids.add(promotion.requires.itemId);
   }

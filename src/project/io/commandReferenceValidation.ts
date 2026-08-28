@@ -73,6 +73,11 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
     case "shop":
       for (const itemId of command.itemIds) ids.add(itemId);
       for (const stock of command.stock ?? []) ids.add(stock.itemId);
+      for (const entry of command.buyback ?? []) ids.add(entry.itemId);
+      for (const line of command.cartLines ?? []) ids.add(line.itemId);
+      for (const consignment of command.consignments ?? []) ids.add(consignment.itemId);
+      for (const ticket of command.pawnTickets ?? []) ids.add(ticket.itemId);
+      for (const itemId of command.appraisalUnidentifiedPool ?? []) ids.add(itemId);
       collectCommandItemReferenceIds(command.transactionBranch ?? [], ids);
       collectCommandItemReferenceIds(command.failedTransactionBranch ?? [], ids);
       return;
