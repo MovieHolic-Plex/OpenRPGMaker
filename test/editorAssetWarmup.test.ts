@@ -3,9 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const colorKeyWarms: string[] = [];
 vi.mock("@/assets/transparentColorKeyBackground", () => ({
-  transparentColorKeyDataUrl: (path: string) => {
+  transparentColorKeyDataUrl: async (path: string) => {
     colorKeyWarms.push(path);
-    return Promise.resolve("data:image/png;base64,");
+    if (blockColorKeyWarms) await new Promise<void>((resolve) => colorKeyResolvers.push(resolve));
+    return "data:image/png;base64,";
   },
 }));
 
@@ -16,7 +17,16 @@ import {
   scheduleEditorAssetWarmup,
   warmEditorPickerAssets,
 } from "@/assets/editorAssetWarmup";
-import { imageWarmCount, resetImageWarmCache } from "@/assets/imageWarmQueue";
+import {
+  listBundledPlayAssetPaths,
+  resetBundledPlayAssetWarmup,
+  warmBundledPlayAssets,
+} from "@/assets/bundledAssetWarmup";
+import {
+  imageWarmCount,
+  resetImageWarmCache,
+  warmImageUrl,
+} from "@/assets/imageWarmQueue";
 
 type FakeImage = {
   src: string;
@@ -30,6 +40,8 @@ type FakeImage = {
 const originalImage = globalThis.Image;
 const originalIdle = (globalThis as { requestIdleCallback?: unknown }).requestIdleCallback;
 let created: FakeImage[] = [];
+let blockColorKeyWarms = false;
+let colorKeyResolvers: Array<() => void> = [];
 
 function installFakeImage(): void {
   class StubImage {
@@ -69,10 +81,15 @@ describe("editorAssetWarmup", () => {
   beforeEach(() => {
     created = [];
     colorKeyWarms.length = 0;
+    blockColorKeyWarms = false;
+    colorKeyResolvers = [];
     installFakeImage();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    for (const resolve of colorKeyResolvers.splice(0)) resolve();
+    await Promise.resolve();
+    resetBundledPlayAssetWarmup();
     resetEditorAssetWarmup();
     resetImageWarmCache();
     (globalThis as { Image: unknown }).Image = originalImage;
@@ -112,11 +129,32 @@ describe("editorAssetWarmup", () => {
     expect(library.some((url) => picker.has(url))).toBe(false);
   });
 
-  it("caps in-flight requests instead of firing the whole catalog at once", async () => {
-    const pending = warmEditorPickerAssets();
-    expect(created.length).toBe(6);
+  it("caps total in-flight requests across concurrent warm callers", async () => {
+    const picker = warmEditorPickerAssets();
+    const play = warmBundledPlayAssets();
+    expect(created.length + colorKeyWarms.length).toBe(6);
     expect(editorWarmupUrls("picker").length).toBeGreaterThan(6);
+    expect(listBundledPlayAssetPaths().length).toBeGreaterThan(6);
+    await drain(Promise.all([picker, play]).then(() => undefined));
+  });
+
+  it("shares the global image budget with picker color-key loads", async () => {
+    blockColorKeyWarms = true;
+    const pending = warmEditorPickerAssets();
+    expect(colorKeyWarms).toHaveLength(6);
+    expect(created).toHaveLength(0);
+    for (const resolve of colorKeyResolvers.splice(0)) resolve();
+    blockColorKeyWarms = false;
     await drain(pending);
+  });
+
+  it("deduplicates relative and root-absolute forms of one url", async () => {
+    const relative = warmImageUrl("assets/easyrpg-chipset-interior-transparent.png");
+    const absolute = warmImageUrl("/assets/easyrpg-chipset-interior-transparent.png");
+    expect(absolute).toBe(relative);
+    expect(created).toHaveLength(1);
+    expect(created[0]?.src).toBe("/assets/easyrpg-chipset-interior-transparent.png");
+    await drain(relative);
   });
 
   it("requests every picker url exactly once across concurrent callers", async () => {
@@ -131,8 +169,8 @@ describe("editorAssetWarmup", () => {
     expect(requested.length).toBe(expected.length);
   });
 
-  it("marks background warms as low priority async decodes", async () => {
-    const pending = warmEditorPickerAssets();
+  it("marks warm loads as low priority async decodes", async () => {
+    const pending = warmImageUrl("assets/easyrpg-chipset-interior-transparent.png", { priority: "low" });
     expect(created[0]?.fetchPriority).toBe("low");
     expect(created[0]?.decoding).toBe("async");
     await drain(pending);
@@ -148,7 +186,7 @@ describe("editorAssetWarmup", () => {
     expect(created.length).toBe(0);
     expect(idleCallbacks.length).toBe(1);
     idleCallbacks[0]?.();
-    expect(created.length).toBeGreaterThan(0);
+    expect(created.length + colorKeyWarms.length).toBeGreaterThan(0);
   });
 
   it("skips the background warm under data saver", () => {

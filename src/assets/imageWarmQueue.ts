@@ -18,6 +18,11 @@ const DEFAULT_CONCURRENCY = 6;
 const LOAD_TIMEOUT_MS = 2_000;
 
 const inFlight = new Map<string, Promise<void>>();
+const pendingLoads: Array<{
+  readonly task: () => Promise<void>;
+  readonly resolve: () => void;
+}> = [];
+let activeLoadCount = 0;
 
 export type WarmImageOptions = {
   readonly priority?: "low" | "auto";
@@ -33,11 +38,12 @@ export function imageWarmSupported(): boolean {
 
 // 워밍은 최적화이므로 실패가 호출자를 깨서는 안 된다 — reject 하지 않고 resolve 한다.
 export function warmImageUrl(url: string, options: WarmImageOptions = {}): Promise<void> {
-  const existing = inFlight.get(url);
+  const normalizedUrl = normalizeWarmUrl(url);
+  const existing = inFlight.get(normalizedUrl);
   if (existing !== undefined) return existing;
   if (!imageWarmSupported()) return Promise.resolve();
-  const promise = loadImage(url, options);
-  inFlight.set(url, promise);
+  const promise = runImageWarmTask(() => loadImage(normalizedUrl, options));
+  inFlight.set(normalizedUrl, promise);
   return promise;
 }
 
@@ -45,7 +51,10 @@ export async function warmImageUrls(
   urls: readonly string[],
   options: WarmImageQueueOptions = {}
 ): Promise<void> {
-  const concurrency = Math.max(1, Math.trunc(options.concurrency ?? DEFAULT_CONCURRENCY));
+  const concurrency = Math.min(
+    DEFAULT_CONCURRENCY,
+    Math.max(1, Math.trunc(options.concurrency ?? DEFAULT_CONCURRENCY))
+  );
   const queue = [...urls];
   const workerCount = Math.min(concurrency, queue.length);
   const workers = Array.from({ length: workerCount }, async () => {
@@ -72,6 +81,33 @@ export function normalizeWarmUrl(url: string): string {
   return `/${url}`;
 }
 
+// 그림을 직접 반환해야 하는 색키 워밍도 같은 슬롯을 쓰도록 작업 단위 진입점을 둔다.
+export function runImageWarmTask(task: () => Promise<void>): Promise<void> {
+  const promise = new Promise<void>((resolve) => {
+    pendingLoads.push({ task, resolve });
+  });
+  drainScheduledLoads();
+  return promise;
+}
+
+function drainScheduledLoads(): void {
+  while (activeLoadCount < DEFAULT_CONCURRENCY) {
+    const next = pendingLoads.shift();
+    if (next === undefined) return;
+    activeLoadCount += 1;
+    void next.task().then(
+      () => finishScheduledLoad(next.resolve),
+      () => finishScheduledLoad(next.resolve)
+    );
+  }
+}
+
+function finishScheduledLoad(resolve: () => void): void {
+  activeLoadCount -= 1;
+  resolve();
+  drainScheduledLoads();
+}
+
 function loadImage(url: string, options: WarmImageOptions): Promise<void> {
   return new Promise((resolve) => {
     let settled = false;
@@ -89,7 +125,7 @@ function loadImage(url: string, options: WarmImageOptions): Promise<void> {
       image.fetchPriority = options.priority === "low" ? "low" : "auto";
       image.onload = () => void decodeThenFinish(image, finish);
       image.onerror = finish;
-      image.src = normalizeWarmUrl(url);
+      image.src = url;
       // 이미 캐시된 경우 complete 가 동기 true 일 수 있다 — onload 가 오지 않는다.
       if (image.complete) void decodeThenFinish(image, finish);
     } catch {
