@@ -2,21 +2,16 @@
    StyleGallery: scroll-body-shell + media-object + feed + imposter.
    Tokens only. No indigo. */
 
-.ai-chat-panel.chat-dock-glass .ai-header-actions .ai-new-session,
-.ai-chat-panel.chat-dock-glass .ai-header-actions .ai-dock-mode-btn,
-.ai-chat-panel.chat-dock-glass .ai-header-actions .ai-chat-detach-btn,
-.ai-chat-panel.chat-dock-side .ai-header-actions .ai-new-session,
-.ai-chat-panel.chat-dock-side .ai-header-actions .ai-dock-mode-btn,
-.ai-chat-panel.chat-dock-side .ai-header-actions .ai-chat-detach-btn {
-  display: none;
-}
+/* 표면(background/border/radius/shadow)은 더 이상 여기서 정하지 않는다 —
+   17-assistant-modern-shell.css 의 유리면 규칙이 단일 소유자다. 이 규칙은 기하만 잡는다.
+   개편 전 여기 line 16 의 `background: var(--bg-raised)`(=#FFFFFF) 가 (0,6,0) 으로
+   끝까지 살아남아 `chat-dock-glass` 를 이름만 유리인 불투명 흰 카드로 만들고 있었다.
 
-.editor-layout .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed),
-.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
-  background: var(--bg-raised);
-  border: 1px solid var(--studio-line, var(--border-subtle));
-  border-radius: 20px;
-  box-shadow: var(--shadow-pop);
+   `:not(.is-map-first-idle)` 를 더한 이유: 12-assistant-temperature.css:67 이 그 상태에서
+   패널을 투명·무반응으로 만들려 하는데, 같은 (0,6,0) 인 이 규칙이 뒤에 import 돼
+   매번 되살렸다. 실측상 '입력줄만' 온도에서 불투명 흰 카드가 그대로 떠 있었다. */
+.editor-layout .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle),
+.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
   height: min(620px, calc(100% - 24px));
   inset: 12px auto auto 12px;
   max-height: calc(100% - 24px);
@@ -34,82 +29,12 @@
   flex-direction: column;
 }
 
-.ai-chat-panel.chat-dock-glass .ai-chat-header,
-.ai-chat-panel.chat-dock-side .ai-chat-header {
-  align-items: center;
-  background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
-  border-bottom: 1px solid var(--studio-line, var(--border-subtle));
-  display: flex;
-  flex: 0 0 auto;
-  gap: 8px;
-  min-height: 56px;
-  padding: 8px 10px 8px 12px;
-}
-
-.ai-header-title-row {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.ai-director-plate {
-  align-items: center;
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  min-width: 0;
-  width: 100%;
-}
-
-.ai-director-copy {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 2px;
-  justify-content: center;
-  min-width: 0;
-}
-
-.ai-director-plate .ai-director-face,
-.ai-director-plate [role="img"] {
-  border-radius: 10px;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 22%, transparent);
-  flex: none;
-}
-
-.ai-director-plate h2,
-.ai-director-plate .ai-director-name {
-  color: var(--text-1);
-  font-family: var(--font-ui, inherit);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ai-director-line,
-.ai-chat-panel [data-testid="ai-director-line"] {
-  color: var(--text-3);
-  font-size: 11px;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ai-header-actions {
-  align-items: center;
-  display: flex;
-  flex: 0 0 auto;
-  gap: 2px;
-}
+/* 헤더 밴드(.ai-chat-header)와 얼굴 명패(.ai-header-title-row / .ai-director-plate /
+   .ai-director-copy / .ai-director-face / .ai-director-name / .ai-director-line /
+   .ai-header-actions) 규칙은 2026-08-28 헤더 폐기와 함께 삭제했다. 셀렉터가 매칭할
+   엘리먼트가 DOM 에 더는 없다 — aiDirectorChrome.ts 는 복귀 버튼 하나만 만든다. */
 
 .ai-dock-mode-btn,
-.ai-chat-header .ai-new-session,
-.ai-chat-header .ai-more-toggle,
 .ai-chat-collapse {
   align-items: center;
   background: transparent;
@@ -127,8 +52,6 @@
 }
 
 .ai-dock-mode-btn:hover,
-.ai-chat-header .ai-new-session:hover,
-.ai-chat-header .ai-more-toggle:hover,
 .ai-chat-collapse:hover {
   background: var(--control-bg-hover, var(--bg-inset));
   color: var(--text-1);
@@ -302,7 +225,6 @@
   box-shadow: none;
 }
 
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-chat-header,
 .ai-chat-panel.chat-dock-side.is-collapsed > .ai-chat-body,
 .ai-chat-panel.chat-dock-side.is-collapsed > .ai-command-bar,
 .ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay,

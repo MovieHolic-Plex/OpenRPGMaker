@@ -56,28 +56,6 @@ function renderPanel(): FakeElement {
   return renderWithFakeDom(() => renderAiChatPanel());
 }
 
-function findByTag(root: FakeElement, tagName: string): FakeElement | null {
-  if (root.tagName === tagName.toUpperCase()) return root;
-  for (const child of root.childNodes) {
-    if (child instanceof FakeElement) {
-      const match = findByTag(child, tagName);
-      if (match) return match;
-    }
-  }
-  return null;
-}
-
-function findByAttr(root: FakeElement, name: string, value: string): FakeElement | null {
-  if (root.getAttribute(name) === value) return root;
-  for (const child of root.childNodes) {
-    if (child instanceof FakeElement) {
-      const match = findByAttr(child, name, value);
-      if (match) return match;
-    }
-  }
-  return null;
-}
-
 const TAB_ORDER_TAGS = new Set(["BUTTON", "TEXTAREA", "INPUT"]);
 const IDLE_FLOAT_TAB_STOPS = [
   "ai-command-menu-toggle",
@@ -109,55 +87,34 @@ function expandPanel(panel: FakeElement): void {
 }
 
 describe("AI 패널 크롬", () => {
-  it("제목을 클릭해도 패널이 접히지 않는다", () => {
+  it("패널에 헤더도 얼굴도 없다", () => {
+    // Break: `.ai-chat-header` 밴드나 `.ai-director-*` 명패가 되살아났다.
+    // 2026-08-28 감독 지시 — 조수의 얼굴을 노출하지 않고 헤더 없는 유리면 하나로 간다.
     const panel = renderPanel();
     expandPanel(panel);
-    const title = findByTag(panel, "h2");
-    if (!title) throw new Error("AI panel title missing");
 
-    title.click();
-
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(panel.querySelector(".ai-chat-header")).toBeNull();
+    expect(findByTestId(panel, "ai-director-plate")).toBeNull();
+    expect(findByTestId(panel, "ai-director-face")).toBeNull();
+    expect(findByTestId(panel, "ai-director-line")).toBeNull();
+    expect(panel.querySelector(".ai-director-name")).toBeNull();
+    expect(panel.querySelector(".ai-header-actions")).toBeNull();
+    // 얼굴 리소스가 어떤 경로로도 다시 그려지지 않는지 — 클래스 자체로 확인한다.
+    expect(panel.querySelector(".ai-director-face")).toBeNull();
   });
 
-  it("헤더 플레이트는 접근 이름이 조수이고 제목이 AI 어시스턴트가 아니다", () => {
-    // Break: header h2 is still "AI 어시스턴트", or the faceset crop lacks aria-label 감독.
+  it("존재 줄 문구는 여전히 계산되지만 화면에 심지 않는다", () => {
+    // 헤더가 사라졌다고 aiAgentBrief 계약까지 죽은 것은 아니다 — 컴포저 플레이스홀더와
+    // 시작 화면 힌트가 같은 브리프를 쓴다. 순수 함수 계약만 남기고 DOM 단언은 걷었다.
     const panel = renderPanel();
     expandPanel(panel);
-    const header = panel.querySelector(".ai-chat-header");
-    if (!header) throw new Error("AI header missing");
-    const title = findByTag(header, "h2");
-    const face = findByAttr(header, "aria-label", "조수");
-    const plate = findByTestId(panel, "ai-director-plate");
 
-    expect(title?.textContent).toBe("조수");
-    expect(title?.textContent).not.toContain("AI 어시스턴트");
-    expect(face?.getAttribute("role")).toBe("img");
-    expect(face?.getAttribute("aria-label")).toBe("조수");
-    expect(plate?.textContent ?? "").not.toContain("🤖");
-    expect(plate?.textContent ?? "").not.toMatch(/지시|질문|계획/u);
-  });
-
-  it("헤더 존재 줄은 친근한 빈 맵 안내다", () => {
-    const panel = renderPanel();
-    expandPanel(panel);
-    const expected = readAgentBrief().line;
-    const line = findByTestId(panel, "ai-director-line");
-
-    expect(expected).toBe("빈 맵 20×15 · 바닥 · 칠하기");
-    expect(line?.textContent).toBe("이 맵에 무엇을 둘까요");
-  });
-
-  it("레이어·도구가 바뀌어도 친근한 빈 맵 안내를 유지한다", () => {
-    const panel = renderPanel();
-    expandPanel(panel);
-    const line = findByTestId(panel, "ai-director-line");
-    if (!line) throw new Error("director line missing");
+    expect(readAgentBrief().line).toBe("빈 맵 20×15 · 바닥 · 칠하기");
+    expect(findByTestId(panel, "ai-director-line")).toBeNull();
 
     editorState.set({ layer: "upper", tool: "fill" });
 
     expect(readAgentBrief().line).toBe("빈 맵 20×15 · 덧그림 · 채우기");
-    expect(line.textContent).toBe("이 맵에 무엇을 둘까요");
   });
 
   it("첫 방문(저장값 없음)은 펼친 채 부팅한다", () => {
@@ -198,7 +155,6 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-docked")).toBe(false);
     expect(panel.classList.contains("is-collapsed")).toBe(true);
     const restore = findByTestId(panel, "ai-collapsed-restore");
-    const restoreFace = restore?.querySelector(".ai-director-face");
     expect(restore).toBeTruthy();
     expect(restore?.getAttribute("type")).toBe("button");
     expect(restore?.getAttribute("aria-label")).toBe("조수");
@@ -208,9 +164,7 @@ describe("AI 패널 크롬", () => {
     expect(restore?.querySelector(".ai-collapsed-restore-float")).toBeNull();
     expect(restore?.querySelector(".ai-collapsed-restore-rail-icon")).toBeNull();
     expect(restore?.querySelector(".ai-collapsed-restore-rail-label")).toBeNull();
-    expect(restoreFace).toBeTruthy();
-    expect(restoreFace?.style.width).toBe("48px");
-    expect(restoreFace?.style.height).toBe("48px");
+    expect(restore?.querySelector(".ai-director-face")).toBeNull();
     expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
     expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
@@ -223,8 +177,8 @@ describe("AI 패널 크롬", () => {
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
-  it("떠 있는 말풍선으로 접어도 48px 얼굴 복귀가 남는다", () => {
-    // Break: restore is still the 🤖 AI ▸ pill, or aria-label is not 조수.
+  it("떠 있는 말풍선으로 접으면 얼굴 없이 이름만 남는다", () => {
+    // Break: 복귀 알약에 얼굴이 다시 붙었거나, aria-label 이 조수가 아니다.
     storage.set("oprn:ai-panel-docked", "0");
     const panel = renderPanel();
     expandPanel(panel);
@@ -240,7 +194,8 @@ describe("AI 패널 크롬", () => {
     expect(restore?.textContent ?? "").toContain("조수");
     expect(restore?.textContent ?? "").not.toContain("🤖");
     expect(restore?.querySelector(".ai-collapsed-restore-float")).toBeNull();
-    expect(restore?.querySelector(".ai-director-face")).toBeTruthy();
+    expect(restore?.querySelector(".ai-director-face")).toBeNull();
+    expect(restore?.querySelector(".ai-collapsed-restore-name")?.textContent).toBe("조수");
   });
 
   it("스튜디오에서 접어도 화면 안 복귀 타깃이 남는다", () => {
@@ -383,7 +338,6 @@ describe("AI 패널 크롬", () => {
     expect(sideLog).toBeTruthy();
     expect(findByTestId(panel, "ai-rising-overlay")?.contains(sideLog)).toBe(true);
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
-    expect(findByTestId(panel, "ai-director-plate")).toBeTruthy();
     expect(sideLog?.hidden).toBe(false);
     expect(findByTestId(panel, "ai-rising-volatile-zone")?.classList.contains("is-faded")).toBe(false);
     expect(findByTestId(panel, "ai-rising-volatile-zone")?.hidden).toBe(false);

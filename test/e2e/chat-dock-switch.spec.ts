@@ -104,8 +104,8 @@ test.describe("chat dock switch", () => {
     await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-panel-docked"))).toBe(false);
     await assertInputUsable(page, "glass input ok");
     await expect(floatHost.getByTestId("ai-command-bar")).toBeVisible();
-    await expect(floatHost.getByTestId("ai-director-plate")).toBeVisible();
-    await expect(floatHost.getByTestId("ai-director-plate")).toContainText("조수");
+    // 헤더 명패는 폐기됐다(2026-08-28). 조수 이름은 접힘 복귀 알약에만 남는다.
+    expect(await floatHost.getByTestId("ai-director-plate").count()).toBe(0);
     expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
 
     // glass 기본: 카드는 캔버스 안에 떠 있다.
@@ -185,24 +185,11 @@ test.describe("chat dock switch", () => {
     expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
   });
 
-  test("glass header menu stays clickable above the assistant card", async ({ page }) => {
-    await page.setViewportSize({ width: 1600, height: 920 });
-    await openEditor(page);
-
-    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
-    await page.getByTestId("ai-more-menu-toggle").click();
-    await expect(page.getByTestId("ai-more-menu")).toBeVisible();
-    const hug = await page.getByTestId("ai-more-menu").boundingBox();
-    expect(hug).not.toBeNull();
-    expect(hug!.height).toBeLessThanOrEqual(200);
-    await expect(page.getByTestId("ai-temperature-quiet-gold")).toHaveText("✦ 추천 함께 보기");
-    await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-2-menu.png" });
-    await revealHeaderActions(page);
-    await page.getByTestId("ai-more-dock").click();
-
-    await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
-    await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-side"))).toBe(true);
-  });
+  // 삭제됨 — "glass header menu stays clickable above the assistant card" (2026-08-28).
+  // 검사 대상이던 헤더 ☰(`ai-more-menu-toggle` / `ai-more-menu`)와 그 안의 온도 전환·도크 항목이
+  // 헤더 폐기와 함께 DOM 에서 사라졌다. 감독 판단으로 이 진입점들의 소실은 수용됐다.
+  // 되살리려면 컴포저 ☰(`ai-command-menu-toggle`)를 유리·사이드에서 다시 노출해야 한다
+  // (지금은 02-chat-dock.css:112 가 display:none 으로 감춘다).
 
   test("idle-screen picker is icon-first, understandable, and escapable", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -262,7 +249,8 @@ test.describe("chat dock switch", () => {
     await clickHeaderDock(page);
     await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
 
-    await page.getByTestId("ai-collapse").click();
+    // 접기 버튼은 숨은 훅이다 — 상태 기계를 검사하려는 것이므로 DOM 으로 직접 누른다.
+    await page.getByTestId("ai-collapse").evaluate((n) => (n as HTMLButtonElement).click());
     await expect(panel).toHaveClass(/is-collapsed/);
     const collapsedSide = await box(panel);
     expect(collapsedSide.width).toBeLessThan(90);
