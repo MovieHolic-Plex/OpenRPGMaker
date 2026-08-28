@@ -199,8 +199,11 @@ describe("database overview dashboard", () => {
       expect(circle.getAttribute("title"), "SVG circle must not rely on a title attribute").toBeNull();
       const titleNode = circle.querySelectorAll("title")[0];
       expect(titleNode, "scatter circle must carry a <title> child").toBeDefined();
-      expect(titleNode?.textContent ?? "", "scatter <title> must name the enemy with HP/DPS/exp/gold").toMatch(
-        /HP \d+.*DPS \d+.*exp \d+.*gold \d+/,
+      // 'DPS' 였던 라벨을 '한 방 피해' 로 고쳤다 — 이 값은 enemyDpsPerAction(공격자=몬스터,
+      // 방어자=파티 평균)이라 **몬스터가 파티에 주는** 피해다. 예전 라벨은 이걸 "파티 DPS"
+      // 라고 불러서 읽는 사람이 정반대 결론을 내리게 만들었다.
+      expect(titleNode?.textContent ?? "", "scatter <title> must name the enemy with HP/피해/exp/gold").toMatch(
+        /HP \d+.*한 방 피해 \d+.*exp \d+.*gold \d+/,
       );
     }
     const hasClass = (circle: FakeElement, token: string): boolean => (circle.getAttribute("class") ?? "").split(/\s+/).includes(token);
