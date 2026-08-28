@@ -175,11 +175,40 @@
   border-top: 0;
   border-top-left-radius: 0;
 }
-/* 손잡이는 크기를 실제로 바꿀 수 있는 유리 도크에서만 보인다 — 사이드는 에디터 셸의 열이,
-   float 은 inset:0 오버레이가 크기를 가지므로 손잡이가 거짓 약속이 된다. */
-.ai-chat-panel:not(.chat-dock-glass) > .ai-chat-resize-handle,
+/* side/float은 실제 표면의 왼쪽 경계에서 폭만 조절한다. 12px hit target을
+   표면 안쪽에 두어 overflow:hidden인 side host에서도 전부 hit-test된다. */
+.ai-chat-resize-handle.is-edge-start {
+  bottom: 0;
+  cursor: ew-resize;
+  height: auto;
+  left: 0;
+  top: 0;
+  width: 12px;
+  z-index: 5;
+}
+.ai-chat-resize-handle.is-edge-start::before {
+  background: var(--border-strong);
+  border: 0;
+  border-radius: var(--radius-s);
+  height: 36px;
+  left: 1px;
+  margin: 0;
+  opacity: 0.55;
+  position: absolute;
+  top: calc(50% - 18px);
+  width: 2px;
+}
+.ai-chat-resize-handle.is-edge-start:hover::before,
+.ai-chat-resize-handle.is-edge-start:focus-visible::before {
+  background: var(--accent);
+  opacity: 1;
+}
+.ai-chat-resize-handle:focus-visible {
+  outline: var(--focus-ring);
+}
 .ai-chat-panel.is-studio > .ai-chat-resize-handle,
-.ai-chat-panel.is-docked > .ai-chat-resize-handle {
+.ai-chat-panel.is-docked > .ai-chat-resize-handle,
+.ai-chat-panel.is-collapsed > .ai-chat-resize-handle {
   display: none;
 }
 

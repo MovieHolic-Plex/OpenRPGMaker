@@ -40,6 +40,7 @@ export interface ComposerElements {
 
 export interface ComposerOptions {
   readonly input: HTMLTextAreaElement;
+  readonly collapseButton: HTMLButtonElement;
   readonly sendButton: HTMLButtonElement;
   readonly abortButton: HTMLButtonElement;
   readonly contextChips: HTMLElement;
@@ -90,7 +91,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("div", {
         class: "ai-composer-actions-lead",
-        children: [commandMenuToggle, options.contextChips, options.queueIndicator],
+        children: [options.collapseButton, commandMenuToggle, options.contextChips, options.queueIndicator],
       }),
       el("div", {
         class: "ai-composer-actions-trail",

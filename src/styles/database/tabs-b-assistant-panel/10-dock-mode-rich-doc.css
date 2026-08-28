@@ -72,7 +72,7 @@
 .ai-chat-panel.chat-dock-float .ai-command-bar {
   margin-bottom: 34px;
   margin-left: auto;
-  width: min(640px, calc(100vw - 24px));
+  width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
 }
 
 /* ── AI 리치 문서 (present_doc) ─────────────────────────────────────────── */

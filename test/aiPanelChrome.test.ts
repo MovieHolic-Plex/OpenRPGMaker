@@ -52,8 +52,8 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-function renderPanel(): FakeElement {
-  return renderWithFakeDom(() => renderAiChatPanel());
+function renderPanel(dock?: "glass" | "side" | "float"): FakeElement {
+  return renderWithFakeDom(() => renderAiChatPanel(dock ? { getChatDock: () => dock } : {}));
 }
 
 const TAB_ORDER_TAGS = new Set(["BUTTON", "TEXTAREA", "INPUT"]);
@@ -139,6 +139,37 @@ describe("AI 패널 크롬", () => {
     expect(openAiAssistantPanel()).toBe(true);
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(document.activeElement).toBe(input);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
+  });
+
+  it.each(["glass", "side", "float"] as const)("%s dock의 실제 composer 접기 버튼과 restore가 aria/persistence를 왕복한다", (dock) => {
+    const panel = renderPanel(dock);
+    const collapse = findByTestId(panel, "ai-collapse");
+    const actions = findByTestId(panel, "ai-composer-actions");
+    const toolbar = findByTestId(panel, "ai-chat-toolbar");
+    const restore = findByTestId(panel, "ai-collapsed-restore");
+    if (!collapse || !actions || !toolbar || !restore) throw new Error("collapse fixtures missing");
+
+    expect(actions.contains(collapse)).toBe(true);
+    expect(toolbar.contains(collapse)).toBe(false);
+    expect(collapse.getAttribute("type")).toBe("button");
+    expect(collapse.getAttribute("aria-label")).toBe("AI 패널 접기");
+    expect(collapse.getAttribute("aria-expanded")).toBe("true");
+    expect(restore.getAttribute("aria-label")).toBe("조수");
+    expect(restore.getAttribute("aria-expanded")).toBe("true");
+
+    collapse.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(collapse.getAttribute("aria-label")).toBe("AI 패널 펼치기");
+    expect(collapse.getAttribute("aria-expanded")).toBe("false");
+    expect(restore.getAttribute("aria-expanded")).toBe("false");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
+
+    restore.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(collapse.getAttribute("aria-label")).toBe("AI 패널 접기");
+    expect(collapse.getAttribute("aria-expanded")).toBe("true");
+    expect(restore.getAttribute("aria-expanded")).toBe("true");
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 

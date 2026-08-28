@@ -48,8 +48,8 @@ function installFakeWindow(innerWidth = 1600, innerHeight = 1000): void {
   };
 }
 
-function renderPanel(dock: "glass" | "side" | "float"): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => dock }) as unknown as FakeElement;
+function renderPanel(dock: "glass" | "side" | "float", options: Parameters<typeof renderAiChatPanel>[0] = {}): FakeElement {
+  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => dock, ...options }) as unknown as FakeElement;
 }
 
 function pointerEvent(type: string, clientX: number, clientY: number): Event {
@@ -57,6 +57,15 @@ function pointerEvent(type: string, clientX: number, clientY: number): Event {
   Object.defineProperty(event, "clientX", { configurable: true, value: clientX });
   Object.defineProperty(event, "clientY", { configurable: true, value: clientY });
   Object.defineProperty(event, "preventDefault", { configurable: true, value: () => undefined });
+  return event;
+}
+
+function keyEvent(key: string, shiftKey = false): Event {
+  const event = new Event("keydown", { cancelable: true });
+  Object.defineProperties(event, {
+    key: { configurable: true, value: key },
+    shiftKey: { configurable: true, value: shiftKey },
+  });
   return event;
 }
 
@@ -111,6 +120,62 @@ describe("유리 카드는 저장된 크기로 열린다", () => {
 
     expect(renderPanel("side").style.width ?? "").toBe("");
     expect(renderPanel("float").style.width ?? "").toBe("");
+  });
+});
+
+describe("도크별 실제 surface를 조절한다", () => {
+  it("side는 왼쪽 edge 드래그로 width callback만 갱신하고 side 키에 저장한다", () => {
+    installFakeWindow();
+    storage.set("oprn:ai-panel-size:side", JSON.stringify({ width: 480, height: 851 }));
+    const preview = vi.fn();
+    const commit = vi.fn();
+    const panel = renderPanel("side", { onSideWidthPreview: preview, onSideWidthCommit: commit });
+    const handle = findByTestId(panel, "ai-resize-handle");
+    if (!handle) throw new Error("resize handle missing");
+
+    handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 380, 420));
+    expect(preview).toHaveBeenLastCalledWith(600, 851);
+    globalThis.window.dispatchEvent(pointerEvent("pointerup", 380, 420));
+    expect(commit).toHaveBeenLastCalledWith(600, 851);
+    expect(panel.style.height ?? "").toBe("");
+  });
+
+  it("float는 command bar width만 바꾸고 높이는 저장값 그대로 유지한다", () => {
+    installFakeWindow();
+    storage.set("oprn:ai-panel-size:float", JSON.stringify({ width: 640, height: 400 }));
+    const panel = renderPanel("float");
+    const handle = findByTestId(panel, "ai-resize-handle");
+    const commandBar = findByTestId(panel, "ai-command-bar");
+    if (!handle || !commandBar) throw new Error("float resize fixtures missing");
+
+    expect(handle.parentElement).toBe(commandBar);
+    handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 340, 450));
+    globalThis.window.dispatchEvent(pointerEvent("pointerup", 340, 450));
+
+    expect(commandBar.style.getPropertyValue("--ai-float-bar-width")).toBe("800px");
+    expect(JSON.parse(storage.get("oprn:ai-panel-size:float") ?? "{}")).toEqual({ width: 800, height: 400 });
+    expect(panel.style.width ?? "").toBe("");
+    expect(panel.style.height ?? "").toBe("");
+  });
+
+  it("키보드는 width를 조절하고 glass에서만 height 화살표를 허용한다", () => {
+    installFakeWindow();
+    storage.set("oprn:ai-panel-size:glass", JSON.stringify({ width: 400, height: 600 }));
+    const panel = renderPanel("glass");
+    const handle = findByTestId(panel, "ai-resize-handle");
+    if (!handle) throw new Error("resize handle missing");
+
+    expect(handle.getAttribute("role")).toBe("separator");
+    expect(handle.getAttribute("tabindex")).toBe("0");
+    handle.dispatchEvent(keyEvent("ArrowRight"));
+    handle.dispatchEvent(keyEvent("ArrowDown", true));
+
+    expect(panel.style.width).toBe("408px");
+    expect(panel.style.height).toBe("632px");
+    expect(handle.getAttribute("aria-valuenow")).toBe("408");
+    expect(JSON.parse(storage.get("oprn:ai-panel-size:glass") ?? "{}")).toEqual({ width: 408, height: 632 });
   });
 });
 
