@@ -200,7 +200,7 @@ export function renderEditor(main: HTMLElement): void {
   maybeStartStandardWelcomeCard();
 }
 
-/** AI 독은 자기 호스트(`chatSidePanel`)를 갖는다 — 좌측 도크가 만들지 않는다. */
+/** 조수는 `canvasArea` 안 `chatFloatHost` 에 산다 — 좌측 도크가 만들지 않는다. */
 const LEFT_DOCK_EXTERNAL: readonly PanelId[] = ["assistant"];
 
 function leftDockPanels(): readonly PanelId[] {

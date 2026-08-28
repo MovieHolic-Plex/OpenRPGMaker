@@ -416,7 +416,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 이 파일이 이미 쓰는 패턴(syncRisen 등)과 동일.
   let openComposerPopover: (kind: ComposerPopover | null) => void = () => {};
   let composerPopoverKind: () => ComposerPopover | null = () => null;
-  let syncCommandBarClearance: () => void = () => {};
 
   // 설정은 전용 모달로 연다(채팅 본문 인라인 폼 제거 — UX P0/P1).
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
@@ -1564,11 +1563,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 여러 줄 입력 자동 성장 — 고정 높이 창에 30줄이 갇혀 끝부분만 보이던 결함(적대 평가 P1).
   // 내용 높이에 맞춰 늘리고, 상한(요소 max-height)부터는 스크롤로 전환한다.
-  // 바 높이가 변하는 유일한 경로이므로 여기서만 clearance 를 다시 잰다.
   const syncInputHeight = (): void => {
     input.style.height = "auto";
     input.style.height = `${input.scrollHeight + 2}px`; // +2: 테두리로 인한 1줄 스크롤 잔상 방지
-    syncCommandBarClearance();
   };
   input.addEventListener("input", () => {
     syncInputHeight();
@@ -1604,9 +1601,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       || Boolean(log.querySelector("[data-testid=ai-command-row]"));
     syncConversationState();
     const busy = hasLog || Boolean(turnBusy || runningProgress);
-    // 단일 띠라 도크·대기화면 게이팅이 없다. 초대 문구는 "대화가 비었고 한가하고 입력도
-    // 비었을 때"만 — 즉 유휴 56px 상태에서만 보인다.
-    const show = !busy && input.value.trim() === "";
+    // 단일 띠라 도크·대기화면 게이팅이 없다. 초대 문구와 예시 칩은 **자람 상태에서만** 보인다 —
+    // 유휴는 56px 한 줄이고 칩 행이 거기 들어가면 그 자체로 높이 계약이 깨진다(스펙 §2).
+    // CSS 도 유휴에서 `.ai-chat-body` 를 숨기므로, 여기서 같은 조건을 걸어 TS 가 보이지 않는
+    // DOM 을 만들지 않게 한다(두 곳이 서로 다른 답을 들면 반드시 갈라진다).
+    const show = !busy && input.value.trim() === "" && panel.classList.contains("is-risen");
     nextSteps.hidden = !show;
     if (!show) {
       nextSteps.replaceChildren();
@@ -1914,24 +1913,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     openTools: () => {
       void openToolBrowserModal();
     },
-    // 가르치기 진입점 — 사라진 스킬 서러에 업혀 있었지만 기능 자신은 살아 있다.
+    // 가르치기 진입점 — 사라진 스킬 서랍에 업혀 있었지만 기능 자체는 살아 있다.
     startInterview: () => {
       const state = editorState.get();
       const mapId = state.currentMapId ?? store.getCurrent().startMapId ?? null;
       void sendText(
         buildInterviewKickoff(mapId),
-        "🎓 맵 인터뷰 시작 — 현재 맵의 타일 의밌를 가르츠 주세요.",
+        "🎓 맵 인터뷰 시작 — 현재 맵의 타일 의미를 가르쳐 주세요.",
       );
     },
     learnStructure: () => {
       const selection = editorState.get().selection;
       if (!selection) {
-        toast("맵에서 배울 여역을 먼저 선택하세요.", "error");
+        toast("맵에서 배울 영역을 먼저 선택하세요.", "error");
         return;
       }
       void sendText(
         buildStructureLearnKickoff(selection.mapId, selection),
-        "📐 선택 여역 학습 — 구조밌을 배워 주세요.",
+        "📐 선택 영역 학습 — 구조물을 배워 주세요.",
       );
     },
     startDemoTeach: () => {
@@ -1973,7 +1972,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     statusGroup,
     historyButton,
     newSessionButton,
-    onPopoverChange: () => syncCommandBarClearance(),
   });
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;
@@ -2027,20 +2025,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [body, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
   });
   panelRoot = panel;
-  // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
-  // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
-  // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
-  // 바 높이와 어긋나 있었고, 두 값이 서로 다른 소스를 보면 반드시 갈라진다.
-  syncCommandBarClearance = (): void => {
-    const rect = commandBar.getBoundingClientRect();
-    if (rect.height <= 0 || typeof window === "undefined") return;
-    const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
-    panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
-    document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
-  };
-  const commandBarClearanceObserver =
-    typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;
-  commandBarClearanceObserver?.observe(commandBar);
+  // 예전에는 여기서 "바 + 열린 팝오버"의 최상단을 ResizeObserver 로 실측해
+  // `--ai-command-bar-clearance`(fixed 오버레이 bottom)와 `--ai-command-bar-inset`
+  // (`.editor-layout` 의 padding-bottom)로 흘렸다. 둘 다 **전면 고정 바가 캔버스를 덮는 것**을
+  // 보상하려고 있었던 값이다. 띠는 캔버스 안 우하단에 absolute 로 앉고 컴포저는 그 마지막
+  // flex 줄이므로 덮을 대상이 없다 — 관측자와 두 변수를 함께 지운다. inset 은 스펙이 금지한
+  // reflow(바 높이가 편집 레이아웃을 밀어 올리는 동작) 그 자체였다.
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
@@ -2114,7 +2104,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   input.addEventListener("blur", () => syncRisen());
 
   refreshSendEnabled(); // 부트 직후도 보낼 게 없으므로 전송은 비활성에서 시작해야 한다.
-  if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
 
   let completionStripHandle: AiCompletionStripHandle | null = null;
   const renderCompletion = (context: AiApplyCompletionContext | null): void => {
@@ -2146,10 +2135,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     historyButton.setAttribute("title", historyOpen ? "전체 기록 닫기" : "전체 기록 열기");
     historyButton.setAttribute("aria-label", historyOpen ? "전체 기록 닫기" : "전체 기록 열기");
     historyButton.setAttribute("aria-expanded", String(historyOpen));
-    if (typeof document !== "undefined" && document.body) {
-      document.body.classList.remove("ai-panel-docked");
-      document.body.classList.add("ai-command-bar-active");
-    }
     applyComposerViewPolicy();
   };
   historyButton.addEventListener("click", () => applyHistoryOpen(!historyOpen));
@@ -2167,7 +2152,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   commandMenu.replaceChildren(...composerMenu.items);
 
   applyHistoryOpen(false);
-  syncCommandBarClearance();
 
   const handleAiAssist = (event: Event): void => {
     const detail = event instanceof CustomEvent ? event.detail : null;
@@ -2403,7 +2387,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     unsubscribeCompletion();
     completionStripHandle?.dispose();
     completionStripHandle = null;
-    commandBarClearanceObserver?.disconnect();
     composerShell.dispose();
 
     if (typeof window !== "undefined") {
@@ -2416,10 +2399,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         delete (window as { __oprnCommandPaletteHotkey?: boolean }).__oprnCommandPaletteHotkey;
       }
     }
-    if (typeof document !== "undefined") {
-      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked");
-    }
-
     cleanupAiAssistBridge?.();
     cleanupAiAssistBridge = null;
     unregisterAiAssistantBridge();

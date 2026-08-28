@@ -1,6 +1,9 @@
-/* DB 3파 M8 — 데이터베이스 모달 사이드 도킹(맵 보며 조정).
-   백드롭은 투명 + 포인터 통과(맵 캔버스가 Phaser 입력을 그대로 받는다),
-   창만 우측 고정(폭 40%, 높이 100%)으로 포인터를 받는다. */
+/* 데이터베이스 모달의 도킹 모드 — 조수와 무관하다.
+ *
+ * 「조수 CSS」 번들에 얹혀 있었을 뿐이라 자기 파일로 나왔다. `is-docked` 라는 이름을
+ * 조수 패널도 쓰고 있어서 조수 상태를 걷어낼 때 같이 지워질 뻔했다 — 이름이 겹치는
+ * 규칙을 남의 번들에 두면 정확히 이런 사고가 난다.
+ */
 
 .database-modal-backdrop.is-docked {
   background: transparent !important;
@@ -10,7 +13,6 @@
 }
 
 .database-modal-backdrop.is-docked .database-modal-window {
-  height: 100vh !important;
   height: 100dvh !important;
   max-width: none !important;
   pointer-events: auto !important;
@@ -21,12 +23,10 @@
   width: 40vw !important;
 }
 
-/* 도크에서는 드래그 이동이 없다 — 헤더의 move 커서를 되돌린다. */
 .database-modal-backdrop.is-docked .database-modal-header {
   cursor: default;
 }
 
-/* 최대화는 도크에서 비활성(스크립트 가드와 동일 신호). */
 .database-modal-backdrop.is-docked .database-modal-maximize {
   cursor: default;
   opacity: 0.45;

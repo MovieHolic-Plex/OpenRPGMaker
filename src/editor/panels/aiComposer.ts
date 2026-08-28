@@ -6,6 +6,8 @@
 //    입력창 위에 쌓았다. 칩이 나타났다 사라질 때마다 바 높이가 바뀌고, ResizeObserver 가
 //    `--ai-command-bar-clearance` 를 다시 재서 rising overlay 하단·맵 여백까지 같이 흔들렸다.
 //    실측: 슬래시 목록을 열면 유리 93→377(+284), 사이드 156→401(+245).
+//    (그 clearance 변수는 2026-08-29 조수 띠에서 사라졌다 — 오버레이가 fixed 가 아니라 띠의
+//    보통 flex 자식이 되면서, 바 높이를 재서 남의 위치를 고쳐 줄 일이 없어졌다.)
 //  - 그래서 규칙 하나: **바 높이 = f(textarea 줄 수)뿐.** 슬래시 목록·액션 메뉴·추천 칩은
 //    전부 absolute 팝오버로 흐름에서 빼고, 컨텍스트·대기 큐·상태는 **항상 존재하는**
 //    고정 높이 액션 행에 한 줄로 넣는다(나타남/사라짐 자체를 없앤다).
@@ -33,8 +35,6 @@ export interface ComposerElements {
   readonly hint: HTMLElement;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
-  /** 바 + 열려 있는 팝오버를 합친 최상단 y — clearance 계산의 단일 소스. */
-  readonly measuredTop: () => number;
   readonly dispose: () => void;
 }
 
@@ -53,7 +53,6 @@ export interface ComposerOptions {
    */
   readonly historyButton?: HTMLButtonElement;
   readonly newSessionButton?: HTMLButtonElement;
-  readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
 }
 
 export function createComposerElements(options: ComposerOptions): ComposerElements {
@@ -149,7 +148,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       toggleOf(candidate)?.classList.toggle("is-active", open);
     }
     commandBar.classList.toggle("has-popover", kind !== null);
-    options.onPopoverChange?.(kind);
   };
 
   // 바깥 클릭·Escape 로 닫힌다 — 이전엔 토글 재클릭만이 유일한 닫기 경로여서
@@ -170,13 +168,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     document.addEventListener("keydown", onDocumentKeyDown);
   }
 
-  const measuredTop = (): number => {
-    const barTop = commandBar.getBoundingClientRect().top;
-    if (openState === null) return barTop;
-    const popoverRect = popoverOf(openState).getBoundingClientRect();
-    return popoverRect.height > 0 ? Math.min(barTop, popoverRect.top) : barTop;
-  };
-
   return {
     commandBar,
     composer,
@@ -186,7 +177,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     hint,
     openPopover,
     openKind: () => openState,
-    measuredTop,
     dispose: () => {
       options.input.removeEventListener("focus", onInputFocus);
       options.input.removeEventListener("blur", onInputBlur);

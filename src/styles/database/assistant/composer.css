@@ -1,0 +1,642 @@
+/* 조수 컴포저 — 입력 · 액션 행 · 팝오버 · 상태 알약 · 초대 칩.
+ *
+ * 이 파일이 띠의 마지막 줄을 소유한다. 바 높이는 f(textarea 줄 수) 뿐이다 —
+ * 슬래시 목록·액션 메뉴·추천 칩은 전부 absolute 팝오버라 흐름에서 빠져 있다.
+ *
+ * 유휴/자람이 컴포저 배치를 바꾸는 유일한 축이다:
+ *   유휴  한 줄  [☰] [입력…………] [⑧] [↑]
+ *   자람  두 줄  [입력…………………………]
+ *                [☰ 칩·큐]        [상태 ⌫ ⑧ ↑]
+ */
+
+.ai-command-bar {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  position: relative;
+}
+
+.ai-composer {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 7px 9px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.ai-composer:focus-within {
+  border-color: color-mix(in srgb, var(--gold) 55%, var(--border-subtle));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 16%, transparent);
+}
+
+/* 유휴 한 줄: 입력과 액션 행이 같은 행에 나란히 앉는다. 입력은 1줄 높이로 고정되고,
+ * 액션 행은 필요한 폭만 쓴다. 56px 계약은 이 한 행 + 컴포저 패딩으로 맞는다. */
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-composer {
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* ── 입력 ────────────────────────────────────────────────────────── */
+.ai-assistant-input {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: calc(15px * var(--ai-font-scale, 1));
+  line-height: 1.55;
+  max-height: min(32vh, 260px);
+  overflow-y: auto;
+  padding: 0;
+  resize: none;
+  width: 100%;
+}
+
+.ai-assistant-input::placeholder {
+  color: var(--text-2);
+  opacity: 1;
+}
+
+.ai-assistant-input:focus,
+.ai-assistant-input:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+
+/* 자람에서는 여러 줄을 미리 내준다 — 지시를 다시 읽으면서 고치는 자리다.
+ * 유휴에서는 정확히 1줄(24px)이라야 56px 안에 들어간다. */
+.ai-chat-panel:is(.is-risen, .is-history-open) .ai-assistant-input {
+  min-height: 64px;
+}
+
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-assistant-input {
+  height: 24px;
+  min-height: 24px;
+  overflow-y: hidden;
+}
+
+/* ── 액션 행 ──────────────────────────────────────────────────────── */
+.ai-composer-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-height: var(--ai-strip-control);
+}
+
+.ai-composer-actions-lead {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+
+.ai-composer-actions-lead::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-composer-actions-trail {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.ai-composer-actions .ai-context-chips,
+.ai-composer-actions .ai-pending-queue {
+  flex-wrap: nowrap;
+  margin: 0;
+}
+
+/* 유휴 한 줄에 들어가는 것은 ☰ · ⑧ · ↑ 뿐이다. 컨텍스트 칩 · 대기 큐 · 상태 알약 ·
+ * 힌트 · ⌫ 는 자람에서만 — 유휴에 넣으면 56px 안에서 서로를 밀어낸다. */
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-composer-actions {
+  flex: 0 0 auto;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-composer-actions-lead {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-context-chips,
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-pending-queue,
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-status-group,
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-composer-hint,
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-new-session {
+  display: none;
+}
+
+.ai-composer-menu-btn {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: grid;
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  height: 28px;
+  line-height: 1;
+  padding: 0;
+  place-items: center;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  width: 28px;
+}
+
+.ai-composer-menu-btn:hover,
+.ai-composer-menu-btn:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+  outline: none;
+}
+
+.ai-composer-menu-btn.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+}
+
+.ai-composer-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+  transition: opacity var(--transition-fast);
+  visibility: hidden;
+  white-space: nowrap;
+}
+
+.ai-composer-actions.is-input-focused .ai-composer-hint {
+  visibility: visible;
+}
+
+/* ── 전송 · 중단 ─────────────────────────────────────────────────────
+ * `↑전송` 은 accent 배경 + 흰 글자다. `--text-3` 는 순백 배경에서도 4.75:1 뿐이라
+ * 주 액션에 쓸 수 없다(스펙 §2 내용 계약). */
+.ai-chat-send,
+.ai-abort-button {
+  align-self: center;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 28px;
+  padding: 0 13px;
+}
+
+.ai-chat-send {
+  background: var(--accent);
+  border: 1.5px solid transparent;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 25%, transparent);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.ai-chat-send:hover:not(:disabled) {
+  background: var(--accent-hover, var(--accent));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateY(-1px);
+}
+
+.ai-chat-send:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.ai-chat-send.is-not-ready {
+  filter: saturate(0.35);
+  opacity: 0.55;
+}
+
+.ai-abort-button {
+  background: var(--control-bg);
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.ai-new-session {
+  border-color: var(--gold);
+  color: var(--gold-deep);
+}
+
+/* ── 팝오버 (흐름 밖) ────────────────────────────────────────────────
+ * 바 위쪽으로 열린다. 닫히면 `display: none` — 투명 전면 레이어를 남기면 맵 클릭을
+ * 삼킨다(2026-08-19 P0). */
+.ai-composer-popover {
+  bottom: calc(100% + 6px);
+  left: 0;
+  position: absolute;
+  z-index: 5;
+}
+
+.ai-command-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 2px;
+  min-width: 176px;
+  padding: 6px;
+}
+
+.ai-command-menu-item {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 9px;
+  text-align: left;
+}
+
+.ai-command-menu-item:hover,
+.ai-command-menu-item:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+
+.ai-composer-suggest {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-pop);
+  max-width: 560px;
+  padding: 7px;
+}
+
+.ai-composer-suggest .ai-composer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.ai-composer-chip {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: var(--space-1) var(--space-2);
+}
+
+.ai-composer-chip:hover,
+.ai-composer-chip:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+/* ── 상태 알약 · 대기 큐 ─────────────────────────────────────────── */
+.ai-status-group {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.ai-assistant-status {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 2px 9px;
+  text-overflow: ellipsis;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+/* 한가한 상태 알약과, 알약도 중단 버튼도 없는 빈 그룹은 자리를 차지하지 않는다. */
+.ai-assistant-status[data-status-tone="idle"],
+.ai-status-group:not(:has(.ai-abort-button:not([hidden]))):not(:has(.ai-assistant-status:not([data-status-tone="idle"]))) {
+  display: none;
+}
+
+.ai-assistant-status[data-status-tone="running"] {
+  animation: ai-status-pulse 1.1s ease-in-out infinite;
+  background: var(--warning-muted);
+  border-color: color-mix(in srgb, var(--warning) 55%, transparent);
+  color: var(--warning);
+}
+
+.ai-assistant-status[data-status-tone="review"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-hover);
+}
+
+.ai-assistant-status[data-status-tone="error"] {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+  color: var(--danger);
+}
+
+.ai-assistant-status[data-status-tone="ok"] {
+  background: var(--success-muted);
+  border-color: color-mix(in srgb, var(--success) 55%, transparent);
+  color: var(--success);
+}
+
+.ai-assistant-status[data-status-tone="running"]::before,
+.ai-assistant-status[data-status-tone="thinking"]::before {
+  animation: ai-status-pulse 1s ease-in-out infinite;
+  color: var(--accent);
+  content: "●";
+  margin-right: 6px;
+}
+
+@keyframes ai-status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.ai-pending-queue {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-surface) 92%, var(--accent) 10%);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  border-radius: 999px;
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 4px 10px;
+}
+
+.ai-pending-queue::before {
+  animation: ai-queue-pulse 1.2s ease-in-out infinite;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  content: "";
+  height: 7px;
+  width: 7px;
+}
+
+@keyframes ai-queue-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* ── 컨텍스트 · 선택 영역 칩 ─────────────────────────────────────── */
+.ai-context-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ai-context-chip {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 11px;
+  padding: 2px 8px;
+}
+
+.ai-selection-chip {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.ai-selection-chip-clear {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 14px;
+}
+
+.ai-selection-chip-clear:hover {
+  color: var(--text-1);
+}
+
+/* ── 초대 문구 + 예시 칩 ─────────────────────────────────────────────
+ * 자람 첫 줄에만 나타난다(TS `refreshNextSteps` 가 `is-risen` 을 함께 본다). */
+.ai-next-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-next-steps-hint {
+  color: var(--text-1);
+  font-size: calc(15px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ai-authoring-examples,
+.ai-next-steps [role="group"] {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-authoring-examples-title {
+  color: var(--text-2);
+  flex: 1 0 100%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ai-authoring-example-chips {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-authoring-example-chip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 12px/1 var(--font-ui);
+  min-height: var(--ai-strip-control);
+  padding: 0 14px;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.ai-authoring-example-chip:hover,
+.ai-authoring-example-chip:focus-visible {
+  background: var(--bg-inset);
+  border-color: color-mix(in srgb, var(--gold) 45%, var(--border-subtle));
+  color: var(--text-1);
+  outline: none;
+}
+
+/* ── 빠른 응답 칩 (선택지 블록) ──────────────────────────────────── */
+.ai-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-quick-replies:empty {
+  display: none;
+}
+
+.ai-quick-replies.ai-choice-block {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.ai-quick-reply-chip {
+  background: var(--control-bg);
+  border: 1.5px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 14px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.ai-quick-reply-chip:hover {
+  background: var(--gold-wash);
+  border-color: var(--gold-soft);
+  color: var(--gold-deep);
+  transform: translateY(-1px);
+}
+
+/* ── 대화 한 줄 (사용자/조수 지시 행) ────────────────────────────── */
+.ai-command-row {
+  align-items: start;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  column-gap: var(--space-2);
+  display: grid;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  grid-template-columns: auto minmax(0, 1fr);
+  line-height: 1.6;
+  max-width: 100%;
+  padding: var(--space-1) 0;
+  row-gap: var(--space-1);
+  width: 100%;
+}
+
+.ai-command-row + .ai-command-row {
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+}
+
+.ai-command-prefix {
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-3));
+  font-weight: 700;
+  line-height: 1.6;
+  user-select: none;
+}
+
+.ai-command-row-body {
+  color: var(--text-1);
+  line-height: 1.6;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ai-command-row-body.is-discarded,
+.ai-command-row-body.is-reverted {
+  opacity: 0.62;
+}
+
+.ai-command-attachment {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.ai-command-attachment.ai-chat-doc {
+  max-width: 100%;
+  padding: 10px 12px;
+}
+
+/* ── 숨김 ────────────────────────────────────────────────────────────
+ * 기반 규칙 뒤에 모아 둔다 — `display: flex/grid` 를 특이도 동률로 이겨야 한다. */
+.ai-next-steps[hidden],
+.ai-abort-button[hidden],
+.ai-chat-send[hidden],
+.ai-pending-queue[hidden],
+.ai-composer-popover[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .ai-composer-hint {
+    display: none;
+  }
+
+  .ai-assistant-input {
+    font-size: calc(14px * var(--ai-font-scale, 1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-assistant-status[data-status-tone="running"],
+  .ai-assistant-status[data-status-tone="running"]::before,
+  .ai-assistant-status[data-status-tone="thinking"]::before,
+  .ai-pending-queue::before {
+    animation: none;
+  }
+
+  .ai-chat-send:hover:not(:disabled),
+  .ai-quick-reply-chip:hover {
+    transform: none;
+  }
+}

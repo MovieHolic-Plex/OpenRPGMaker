@@ -1,0 +1,37 @@
+/* 좌패널 스택 오버라이드 — 조수와 무관하다.
+ *
+ * 정본은 `src/styles/shell/` 에 10장 더 있고 이것은 그 위에 얹히는 오버라이드다.
+ * 캐스케이드 위치가 바뀌면 어느 쪽이 이기는지가 달라지므로, 옛 배럴이 있던 자리를
+ * 그대로 유지하기 위해 조수 배럴과 같은 지점에서 불러온다.
+ */
+
+.left-panel-stack {
+  background: var(--bg-panel);
+  border: 1px solid;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow-anchor: none;
+  position: relative;
+  scrollbar-gutter: stable;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) {
+  order: 1;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) {
+  order: 2;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(3) {
+  order: 3;
+}

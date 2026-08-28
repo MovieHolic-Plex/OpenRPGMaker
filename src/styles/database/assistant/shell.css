@@ -1,0 +1,266 @@
+/* 조수 띠 — 기하 · 앵커 · 자람 전이 · 표면 · 상태 5종.
+ *
+ * 이 파일이 띠의 위치와 크기를 **단독으로** 소유한다. 다른 조수 CSS 는 띠의
+ * position/inset/width/height 를 건드리지 않는다 — 구 구현이 22장에 걸쳐 같은 네 속성을
+ * 도크별로 다시 선언했고, 그래서 "어느 파일이 이기는가" 가 실제 배치를 정하고 있었다.
+ *
+ * 상태는 다섯 개다:
+ *   (없음)           유휴 — 56px 한 줄
+ *   is-risen         자람 — 내용만큼, 상한 480px
+ *   is-history-open  전체 기록 오버레이 열림
+ *   is-turn-running / is-turn-error / is-turn-attention   턴 결과 점
+ */
+
+/* 캔버스 안 우하단 앵커. 띠는 이 호스트의 자식으로만 산다(재부모화 없음).
+ * `pointer-events: none` 은 호스트가 캔버스 클릭을 삼키지 않게 하고, 띠 자신이 되살린다. */
+.ai-chat-float-host {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 40;
+}
+
+/* 띠 본체.
+ *
+ * `height` 를 쓰지 않는다 — `height: 100%` 가 구 600px 공백의 원인이었다. 내용이 결정하는
+ * 높이(`auto`)에 상한만 걸고, 유휴 높이는 아래 `:not(.is-risen)` 에서 한 줄로 고정한다.
+ * `position: absolute` 이므로 캔버스를 밀어내지 않는다(줌/스크롤이 튀지 않는다). */
+.ai-chat-panel {
+  --ai-strip-gutter: 16px;
+  --ai-strip-gap: 10px;
+  --ai-strip-radius: 14px;
+  --ai-strip-control: 32px;
+  --ai-strip-max-height: 480px;
+  --ai-strip-idle-height: 56px;
+  --ai-font-scale: 1;
+
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--ai-strip-radius);
+  box-shadow: var(--shadow-modal);
+  box-sizing: border-box;
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ai-strip-gap);
+  inset: auto var(--ai-strip-gutter) var(--ai-strip-gutter) auto;
+  max-height: var(--ai-strip-max-height);
+  max-width: calc(100vw - 2 * var(--ai-strip-gutter));
+  /* `overflow: hidden` 을 쓰지 않는다 — 컴포저 팝오버(☰ 메뉴 · 추천 칩)가 바 위쪽으로
+   * 열리므로 잘려 나간다. 높이 상한은 내부 스크롤러(로그 · sticky 존)가 지키고,
+   * 그 사이의 flex 자식들은 `min-height: 0` 으로 줄어든다. */
+  overflow: visible;
+  padding: var(--ai-strip-gap);
+  pointer-events: auto;
+  position: absolute;
+  /* 폭: 제안 카드 + 두 버튼이 한 줄에 들어가는 최소폭. 좌측 레일(0~73px)과 겹치지 않도록
+   * 96px 를 뺀다 — 겹치면 복귀 알약이 `…수` 로 잘렸던 것과 같은 결함이 된다. */
+  width: min(640px, calc(100vw - 96px));
+  z-index: 1;
+}
+
+/* 기하 상태는 한 축에 셋이고 **선택자로 서로 배타적**이다. 같은 속성을 두 규칙이 순서로
+ * 다투지 않게 하려면 각 규칙이 자기 상태를 이름으로 밝혀야 한다 — 구 구현이
+ * `:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side)…` 를
+ * 파일마다 다시 쓰다가 어긋난 지점이 정확히 여기다.
+ *
+ * 유휴: 입력 1줄 + 좌우 패딩. 나머지 슬롯은 문서에서 빠진다 — 빈 껍데기를 남기면 그 높이가
+ * 그대로 공백이 된다(구 600px 공백의 원인 축). */
+.ai-chat-panel:not(.is-risen):not(.is-history-open) {
+  height: var(--ai-strip-idle-height);
+  justify-content: center;
+  padding-block: 0;
+}
+
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-chat-body,
+.ai-chat-panel:not(.is-risen):not(.is-history-open) .ai-rising-overlay {
+  display: none;
+}
+
+/* 자람: 높이는 내용이 정한다 — 기반 규칙의 `max-height` 만 상한이므로 선언이 필요 없다. */
+
+/* 전체 기록: 우측 전면 오버레이. 캔버스 기준 전체 높이라 `100vh` 가 아니라 `100%` 다 —
+ * 구 규칙은 `height: 100vh` 였고 상단 헤더 높이만큼 캔버스 밖으로 넘쳤다.
+ * `--ai-dock-width` 는 정의된 곳이 없는 폴백이었다(스펙 §4). 여기서 값을 정의한다. */
+.ai-chat-panel.is-history-open {
+  --ai-history-width: 520px;
+
+  border-bottom: none;
+  border-radius: 0;
+  border-right: none;
+  border-top: none;
+  height: 100%;
+  inset: 0 0 0 auto;
+  max-height: none;
+  max-width: 52vw;
+  width: var(--ai-history-width);
+}
+
+.ai-chat-panel > .ai-command-bar {
+  flex: 0 0 auto;
+}
+
+/* 팝오버가 열린 동안만 바를 같은 패널 안에서 올린다 — 닫혀 있을 때 올려 두면 sticky 존의
+ * 승인 버튼이 바 뒤로 들어간다. */
+.ai-command-bar.has-popover {
+  z-index: 3;
+}
+
+.ai-chat-panel .ai-chat-body,
+.ai-chat-panel .ai-rising-overlay {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ai-chat-panel .ai-chat-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: 0;
+}
+
+/* 자람 전이. 높이는 `auto` 라 보간되지 않으므로 상한과 그림자만 움직인다 —
+ * 유휴↔자람이 튀지 않게 하려면 이 두 축으로 충분하다. */
+@media (prefers-reduced-motion: no-preference) {
+  .ai-chat-panel {
+    transition: max-height var(--transition-med), box-shadow var(--transition-fast);
+  }
+}
+
+/* 좁은 뷰포트: 좌측 레일을 피할 여유가 없으므로 거터만 남기고 폭을 다 쓴다. */
+@media (max-width: 720px) {
+  .ai-chat-panel {
+    --ai-strip-gutter: 8px;
+    --ai-strip-max-height: min(480px, 70vh);
+    width: calc(100vw - 2 * var(--ai-strip-gutter));
+  }
+}
+
+/* 다른 모달이 열려 있으면 띠를 숨긴다 — 우하단에서 모달 위로 뜨면 클릭을 가로챈다. */
+body:has(.database-modal-backdrop) .ai-chat-panel,
+body:has([data-testid='resource-modal']) .ai-chat-panel {
+  display: none;
+}
+
+/* ── 턴 결과 점 ──────────────────────────────────────────────────────
+ * 구 구현은 이 세 상태를 접힘 복귀 알약의 점(`.ai-collapsed-restore-dot`)에만 걸었고,
+ * 접힘이 사라지면서 표시할 자리가 없어졌다. 띠 좌상단 모서리에 붙인다 — 유휴 56px 에서도
+ * 보이고, 레이아웃을 차지하지 않는다(`position: absolute`). */
+.ai-chat-panel::before {
+  border-radius: 50%;
+  content: "";
+  height: 7px;
+  left: 10px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 10px;
+  transition: opacity var(--transition-fast);
+  width: 7px;
+  z-index: 2;
+}
+
+.ai-chat-panel.is-turn-running::before {
+  animation: ai-rail-dot-pulse 1.4s ease-in-out infinite;
+  background: var(--accent);
+  opacity: 1;
+}
+
+.ai-chat-panel.is-turn-attention::before {
+  background: var(--success);
+  opacity: 1;
+}
+
+.ai-chat-panel.is-turn-error::before {
+  background: var(--danger);
+  opacity: 1;
+}
+
+@keyframes ai-rail-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.72);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-chat-panel.is-turn-running::before {
+    animation: none;
+  }
+}
+
+/* ── 글자 크기 ───────────────────────────────────────────────────────
+ * 배율만 여기서 정하고, 실제로 곱하는 곳은 각 내용 파일이다. */
+.ai-chat-panel[data-ai-font-size="small"] {
+  --ai-font-scale: 0.85;
+}
+
+.ai-chat-panel[data-ai-font-size="large"] {
+  --ai-font-scale: 1.2;
+}
+
+/* ── 띠 안에서 공유하는 컨트롤 두 종 ────────────────────────────────
+ * 아이콘 버튼(⑧ ⌫ ☰)과 보조 액션 버튼(제안 카드·완료 카드가 쓴다). */
+.ai-chat-icon-btn {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-grid;
+  font-size: 16px;
+  font-weight: 700;
+  height: var(--ai-strip-control);
+  place-items: center;
+  width: var(--ai-strip-control);
+}
+
+.ai-chat-icon-btn:hover,
+.ai-chat-icon-btn:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+}
+
+.ai-chat-icon-btn:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.ai-assistant-action {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 28px;
+  padding: 4px 9px;
+  text-align: left;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.ai-assistant-action:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.ai-assistant-action:active:not(:disabled) {
+  background: var(--control-bg-active);
+}
+
+.ai-assistant-action:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.ai-assistant-action:disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
