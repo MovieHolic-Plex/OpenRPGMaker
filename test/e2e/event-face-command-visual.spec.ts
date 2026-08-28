@@ -50,7 +50,10 @@ test("얼굴 상자의 <img> 가 배경 폴백을 완전히 덮어 얼굴이 한
 
   expect(boxes.length, "얼굴 폼에 얼굴 상자가 렌더돼 있어야 한다").toBeGreaterThan(0);
   // <img> 가 전부 404 나면 faceImage 가 자기가 떼므로 아래 루프가 통짜로 건너뛰어
-  // 폼이 다 깨진 상태로도 초록이 된다. 실제 로드된 그림 수에 하한을 둔다(실측 115/115).
+  // 폼이 다 깨진 상태로도 초록이 된다. 실제 로드된 그림 수에 하한을 둔다.
+  // 실측 114/115 — 나머지 하나는 `hero-03-face.png` 로, 리소스 등록은 있지만 파일이 없어
+  // (generatedAssetResourceResolver 의 NOTE) 404 로 떨어진다. 그 상자만 배경 폴백으로 남는 게
+  // 정상이며, :has() 가드가 실패한 <img> 를 제대로 놓아준다는 실물 증거다.
   expect(boxes.filter((box) => box.hasImage).length, "얼굴 그림이 실제로 로드도어야 한다").toBeGreaterThan(100);
   for (const box of boxes) {
     if (!box.hasImage) continue;
