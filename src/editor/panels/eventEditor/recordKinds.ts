@@ -104,7 +104,11 @@ export function recordSubtitleOf(
  * "이건 쓰이는 것 / 이건 죽은 것"을 가르는 유일한 단서라 픽커 행마다 보여 준다.
  * `recordUsageHint` 가 쓰던 JSON 스캔과 같은 방식이며, 한 번 직렬화한 뒤 종류별로 재사용한다.
  */
-export function createUsageCounter(project: Project = store.getCurrent()): (id: string) => number {
+export function createUsageCounter(
+  project: Project = store.getCurrent(),
+  /** 주면 그 맵 안의 참조만 센다. 없으면 프로젝트 전체(공통 이벤트 포함). */
+  scopeMapId?: string | null,
+): (id: string) => number {
   let haystack: string | null = null;
   const cache = new Map<string, number>();
   return (id: string): number => {
@@ -113,7 +117,9 @@ export function createUsageCounter(project: Project = store.getCurrent()): (id: 
     if (cached !== undefined) return cached;
     if (haystack === null) {
       try {
-        haystack = JSON.stringify(project.maps) + JSON.stringify(project.commonEvents ?? []);
+        haystack = scopeMapId
+          ? JSON.stringify(project.maps[scopeMapId] ?? {})
+          : JSON.stringify(project.maps) + JSON.stringify(project.commonEvents ?? []);
       } catch {
         haystack = "";
       }

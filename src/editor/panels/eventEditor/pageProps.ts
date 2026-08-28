@@ -22,6 +22,7 @@ import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
+import { pageConditionSentence } from "./pageConditionSentence";
 import { renderPageMovement } from "./pageMovement";
 import {
   type EventEditorTriggerKind,
@@ -679,7 +680,13 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       openSet: openEventConditions,
       openKey,
       summaryExtra: renderConditionSummaryBadges(conditions),
-      body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
+      body: el("div", {
+        class: "event-conditions-body",
+        children: [
+          renderConditionSentence(conditions),
+          el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
+        ],
+      }),
     }),
     rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
     el("div", {
@@ -719,11 +726,38 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   return wrapPageSettingsAsAccordion(wrap, page, conditions, openKey);
 }
 
+/**
+ * 켜진 조건을 한 문장으로 되읽어 준다.
+ *
+ * 조건 12행을 다 채워도 "그래서 이 페이지는 언제 보이지?"는 저작자가 머릿속에서
+ * 조립해야 했다. 저장 직전에 눈으로 확인할 한 줄이 없었다. 값 조각만 강조해
+ * 무엇이 저작자가 고른 값인지 구분한다.
+ */
+function renderConditionSentence(conditions: readonly EventPageCondition[]): HTMLElement {
+  const sentence = pageConditionSentence(conditions);
+  return el("p", {
+    class: `event-conditions-sentence${conditions.length === 0 ? " is-empty" : ""}`,
+    dataset: { testid: "event-conditions-sentence" },
+    children: sentence.parts.map((part) =>
+      part.kind === "value"
+        ? el("em", { class: "event-conditions-sentence-value", text: part.text })
+        : el("span", { text: part.text }),
+    ),
+  });
+}
+
 type EventRailGroupSpec = {
   readonly slug: string;
   readonly title: string;
   readonly summary: string;
   readonly open: boolean;
+  /**
+   * 저작자가 이 그룹에 손댄 값이 있는가(기본값이 아닌가).
+   *
+   * 레일은 한 번에 한 그룹만 연다 — 나머지 넷은 접혀 있으므로, 어디에 내용이 있는지
+   * 열어 보지 않고 알 수 있어야 한다.
+   */
+  readonly authored?: boolean;
 };
 
 /**
@@ -742,7 +776,19 @@ function railGroup(spec: EventRailGroupSpec, body: HTMLElement, openKey: string)
     class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
     attrs: { type: "button", "aria-expanded": spec.open ? "true" : "false" },
     children: [
-      el("span", { class: "event-editor-settings-accordion-title", text: spec.title }),
+      el("span", {
+        class: "event-editor-settings-accordion-title",
+        children: [
+          el("span", { text: spec.title }),
+          ...(spec.authored
+            ? [el("i", {
+                class: "event-editor-settings-accordion-dot",
+                attrs: { title: "이 그룹에 설정한 값이 있습니다", "aria-label": "설정 있음" },
+                dataset: { testid: `evt-rail-dot-${spec.slug}` },
+              })]
+            : []),
+        ],
+      }),
       el("span", {
         class: "event-editor-settings-accordion-meta",
         text: spec.summary,
@@ -804,10 +850,12 @@ function wrapPageSettingsAsAccordion(
   // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
   const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
-    { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", nodes: look },
-    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, nodes: when },
-    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), nodes: move },
-    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), nodes: memory },
+    { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", authored: Boolean(page.graphic.sprite), nodes: look },
+    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
+    // RM 계약상 새 이벤트의 기본 이동은 «정지»다. 그 밖이면 저작자가 고른 값이다.
+    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), authored: page.movement.type !== "fixed", nodes: move },
+    // 기본값은 «겹침 금지»(overlapForbidden !== false). 통행을 허용했다면 손댄 것이다.
+    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), authored: page.overlapForbidden === false, nodes: memory },
   ].map((group) => ({ ...group, open: group.slug === activeSlug }));
   const rail = el("div", {
     class: "event-editor-settings-accordion",
