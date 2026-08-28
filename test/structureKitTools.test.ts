@@ -120,6 +120,69 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
   });
 });
 
+// 설명·배치규칙까지 갖춘 우물 킷 — AI 가 "언제 쓸지" 판단할 근거를 전부 가진 상태.
+function projectWithDescribedKit(): { project: Project; mapId: string } {
+  const project = createEmptyToolProject("설명 테스트");
+  const context = { project };
+  runTool(context, "create_map", { name: "설명맵", width: 20, height: 15 });
+  const mapId = Object.keys(context.project.maps)[0]!;
+  const tilesetId = context.project.maps[mapId]!.tilesetId;
+  context.project.tilesets[tilesetId]!.structureKits = [{
+    id: "kit_well",
+    kind: "section",
+    name: "우물",
+    width: 3,
+    height: 3,
+    rows: [{ tiles: [421, 421, 421] }, { tiles: [421, 421, 421] }, { tiles: [421, 421, 421] }],
+    learnedFrom: "db-authored",
+    ai: {
+      description: "돌담을 두른 두레우물.",
+      placementRules: "마을 광장 중앙. 물가·숲 금지.",
+      tags: ["우물", "물"],
+      role: "prop",
+      repeatability: "fixed",
+      origin: "user",
+    },
+  }];
+  return { project: context.project, mapId };
+}
+
+describe("AI 가 받는 구조물 정보", () => {
+  it("list_structure_kits 가 설명·배치규칙·반복여부를 넘긴다", () => {
+    const { project, mapId } = projectWithDescribedKit();
+
+    const result = runTool({ project }, "list_structure_kits", { mapId });
+    expect(result.ok).toBe(true);
+
+    const data = result.data as {
+      kits: { kitId: string; ai?: { description: string; placementRules: string }; repeatable: boolean }[];
+    };
+    const entry = data.kits.find((kit) => kit.kitId === "kit_well")!;
+    expect(entry.ai?.description).toBe("돌담을 두른 두레우물.");
+    expect(entry.ai?.placementRules).toContain("물가·숲 금지");
+    expect(entry.repeatable).toBe(false);
+  });
+
+  it("설명이 없는 킷은 ai 없이 그대로 실린다", () => {
+    const { project, mapId } = projectWithKit(); // 기존 픽스처 — WALL_KIT 은 ai 가 없다
+    const data = runTool({ project }, "list_structure_kits", { mapId }).data as {
+      kits: { kitId: string; ai?: unknown; repeatable: boolean }[];
+    };
+    const wall = data.kits.find((kit) => kit.kitId === "kit_wall_test")!;
+    expect(wall.ai).toBeUndefined();
+    expect(wall.repeatable).toBe(true); // section 기본값 유지
+  });
+
+  it("시스템 프롬프트가 설명과 배치규칙을 싣는다", () => {
+    const { project, mapId } = projectWithDescribedKit();
+    const prompt = buildSystemPrompt(project, { currentMapId: mapId });
+
+    expect(prompt).toContain("돌담을 두른 두레우물.");
+    expect(prompt).toContain("마을 광장 중앙");
+    expect(prompt).toContain("한 채 완결");
+  });
+});
+
 describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시공한다", () => {
   it("list_structure_kits가 킷의 타일 행렬(기계 표면)을 그대로 돌려준다", () => {
     const { project, mapId } = projectWithKit();

@@ -7,6 +7,7 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
+import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
@@ -298,7 +299,13 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
             height: Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1),
           }
         : { width: kit.width, height: kit.height };
-      lines.push(`- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"}, ${kit.learnedFrom})`);
+      const repeatable = structureKitRepeatable(kit);
+      lines.push(
+        `- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height}`
+        + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${repeatable ? "반복 가능" : "한 채 완결"})`,
+      );
+      if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description}`);
+      if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules}`);
     }
   }
   if (lines.length === 0) return "";
