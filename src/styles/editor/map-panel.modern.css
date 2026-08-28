@@ -134,7 +134,10 @@
 
 .map-tree-panel .map-item.dragging { opacity: 0.65; }
 
+/* border-left 는 map-props.css 의 스코프 없는 전역 셀렉터에서 이관됐다(2026-08,
+   Task 6 후속) — margin-left/width 는 이미 여기 있었다. */
 .map-tree-panel .map-item.map-node {
+  border-left: 2px solid color-mix(in srgb, var(--accent) 28%, transparent);
   margin-left: calc(var(--map-depth, 1) * 14px);
   width: calc(100% - var(--map-depth, 1) * 14px);
 }
@@ -202,6 +205,26 @@
   font-size: 14px;
   text-align: center;
   width: 18px;
+}
+
+/* 맵 트리 행 썸네일(mapThumbnail.ts 의 createMapThumbnail 캔버스) — 스코프 없는
+   전역 셀렉터에서 이관됐다(2026-08, Task 6 후속). 이 클래스는 mapList.ts 한 곳에서만
+   만들어져 패널 밖에서 쓰이지 않는다. 배경 #111827 은 토큰화하지 않는다 —
+   mapThumbnail.ts 가 같은 값을 캔버스 fillStyle 로도 그려(대체 무늬·렌더 중 배경)
+   테마와 무관하게 항상 어두운 프레임이어야 캔버스와 이음매 없이 맞는다
+   (TOKENS.md §4-1 "게임 아트웍 위 기능적 마커" 예외). */
+.map-tree-panel .map-tree-thumb {
+  background: #111827;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: block;
+  height: 30px;
+  width: 40px;
+}
+
+.map-tree-panel .map-item.active .map-tree-thumb {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .map-tree-panel .map-tree-drag-handle {
@@ -395,10 +418,9 @@
    (0,2,0)을 항상 이겨, 값을 플라이아웃용으로 통째로 다시 썼다. 그 결과 이름·메타가
    28px 폭 예산을 못 채워 말줄임됐다(실측 원인, task-6-brief 참조).
 
-   `.map-tree-add-child-quick`(하위 추가 + 버튼)는 여기 없다 — editor/map-props.css
-   304~329행이 이미 소유하고 있고(행 hover 시에만 노출) 이 태스크의 삭제 범위(같은
-   파일 441~457행) 밖이라 손대지 않는다; 여기서 다시 정의하면 그 hover 노출/색
-   전환을 덮어써버린다. */
+   하위 추가 + 버튼(행 hover 시에만 노출)은 원래 map-props.css 에 스코프 없이
+   있었다 — 이 절 끝에서 스코프를 좁혀 이관했다(Task 6 후속), 노출 조건과 크기는
+   그대로 두었다. */
 
 .map-tree-panel.is-basic-flyout {
   display: flex;
@@ -505,4 +527,35 @@
   border-color: var(--border-strong);
   color: var(--text-1);
   outline: none;
+}
+
+/* 하위 추가 + 버튼 — map-props.css 의 스코프 없는 전역 셀렉터에서 이관됐다(2026-08,
+   Task 6 후속). 행에 마우스를 올려야 나타나는 기존 동작은 그대로 유지한다 — 이
+   태스크는 소유권 이관이지 재설계가 아니다. `.map-tree-more` 처럼 28px 로 키우지
+   않은 것도 같은 이유다. */
+.map-tree-panel.is-basic-flyout .map-tree-add-child-quick {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--text-3);
+  cursor: pointer;
+  display: none;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  height: 18px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: auto;
+  width: 18px;
+}
+
+.map-tree-panel.is-basic-flyout .map-item-basic:hover .map-tree-add-child-quick {
+  color: var(--accent);
+  display: flex;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-add-child-quick:hover {
+  background: var(--bg-hover);
 }

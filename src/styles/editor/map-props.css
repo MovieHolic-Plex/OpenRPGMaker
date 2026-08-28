@@ -300,33 +300,8 @@
   border-top: 1px dashed var(--border-color, rgba(42, 37, 33, 0.20));
 }
 
-/* Quick add-child button in basic map tree rows */
-.map-tree-add-child-quick {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin-left: auto;
-  border: none;
-  border-radius: 3px;
-  background: transparent;
-  color: var(--text-muted, #6B5F52);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.map-item-basic:hover .map-tree-add-child-quick {
-  display: flex;
-  color: var(--accent, #4A57D6);
-}
-
-.map-tree-add-child-quick:hover {
-  background: var(--hover-bg, rgba(42, 37, 33, 0.06));
-}
+/* 하위 추가 + 버튼(초보 전용)은 editor/map-panel.modern.css 의 is-basic-flyout 절로
+   이관됐다(2026-08, Task 6 후속) — 여기서는 스코프 없는 전역 셀렉터였다. */
 
 /* Delete confirmation dialog — child map options */
 .map-delete-children-option {
@@ -413,32 +388,11 @@
   margin: 0;
 }
 
-/* 맵 트리 행 썸네일 — 실제 맵을 40×30 으로 렌더한 캔버스. 초보자가 이름만 보고
-   맵을 고르지 않아도 되게 한다. 크기는 세 변형(패널/좁은 패널/초보 플라이아웃)의
-   그리드 3번째 칸 44px 과 함께 유지한다. */
-.map-tree-thumb {
-  background: #111827;
-  border: 1px solid color-mix(in srgb, var(--editor-line, #d6cbb8) 70%, transparent);
-  border-radius: 4px;
-  box-sizing: border-box;
-  display: block;
-  height: 30px;
-  width: 40px;
-}
-
-.map-item.active .map-tree-thumb {
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 60%, transparent);
-}
-
-/* 계층 들여쓰기 — --map-depth 를 실제로 쓴다. 이전에는 이 변수를 행에 심어놓고도
-   어떤 CSS 도 읽지 않아, 3층이든 1층이든 같은 위치에 그려졌다(초보 플라이아웃은
-   들여쓰기 규칙 자체가 없었다). 왼쪽 선이 부모-자식 관계를 눈으로 잇는다. */
-.map-item.map-node {
-  border-left: 2px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
-  margin-left: calc(var(--map-depth, 1) * 14px);
-  width: calc(100% - var(--map-depth, 1) * 14px);
-}
-
-/* 이 자리(구 442~457행)에 있던 플라이아웃 들여쓰기·말줄임 규칙은 전부
-   editor/map-panel.modern.css 의 is-basic-flyout 절로 이관됐다(2026-08, Task 6) —
-   바로 위 공용 들여쓰기 규칙, 그리고 복사영역·메타 규칙과 완전히 중복이었다. */
+/* 아래 세 규칙(행 썸네일, 활성 썸네일 보더, 계층 들여쓰기 — 전부 스코프 없는
+   전역 셀렉터였다)은 editor/map-panel.modern.css 의 패널 절로 이관됐다(2026-08,
+   Task 6 후속). 썸네일 클래스는 mapThumbnail.ts 의 생성 함수 한 곳에서만 만들고,
+   그 호출자도 mapList.ts 한 곳뿐이라 맵 트리 행 밖에서 쓰이지 않는다 — 패널
+   스코프로 좁혀도 안전하다. 들여쓰기 규칙은 여백/너비 부분만 모던 레이어에
+   이미 있었고 왼쪽 보더는 여기 한 곳뿐이었다(합쳐서 이관). 이 자리(구
+   442~457행)에 있던 플라이아웃 들여쓰기·말줄임 규칙도 같은 이관에 포함됐다 —
+   바로 위 공용 규칙, 그리고 복사영역·메타 규칙과 완전히 중복이었다. */
