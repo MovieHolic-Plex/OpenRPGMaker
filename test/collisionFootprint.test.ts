@@ -87,6 +87,49 @@ describe("좁은 통로", () => {
   });
 });
 
+describe("짝수 폭은 앵커가 왼쪽 끝이다", () => {
+  // 다른 통행 테스트는 전부 홀수 폭(3)이라 이 계약을 못 잡는다. 홀짝이 갈리는 곳은
+  // **왼쪽 모서리 하나뿐**이다: left = x − ⌊(width−1)/2⌋ 이므로
+  //   폭 2 → left = x      (앵커가 발자국의 왼쪽 끝)
+  //   폭 3 → left = x − 1
+  // 오른쪽은 폭 2·3 모두 right = x + 1 이라 우향 이동으로는 둘을 구분할 수 없다.
+  // 그래서 짝수 폭의 **좌향** 이동만이 추가 커버리지다.
+  //
+  // 이 테스트가 실패하려면: left 를 x − ⌊width/2⌋ 로 잡는 흔한 오구현이면 폭 2 의
+  // left 가 x−1 로 밀려 선행 칸이 (4,5) 가 되고, 검사 대상이 (4,5)→(3,5) 로 바뀌어
+  // 열린 칸을 보게 되므로 첫 단정이 true 로 뒤집힌다. 폭 3 에서는 그 오구현도
+  // left = 4 로 같은 값이 나오기 때문에 기존 테스트가 통과해 버린다.
+  it("폭 2 는 왼쪽으로 x, 오른쪽으로 x+1 까지만 뻗는다", () => {
+    const { project, map } = scene();
+    const fp = { width: 2, height: 1 };
+    // (5,5) 에 선 폭 2 의 발자국은 (5,5) (6,5) — 왼쪽 끝이 앵커다.
+    setLower(map, 4, 5, TILE.WALL); // 왼쪽 선행 칸 (5,5) 의 목적지
+    setLower(map, 7, 5, TILE.WALL); // 오른쪽 선행 칸 (6,5) 의 목적지
+
+    expect(canMoveFootprint(project, map, 5, 5, fp, 4, 5), "좌향 — 앵커 칸이 선행이다").toBe(false);
+    expect(canMoveFootprint(project, map, 5, 5, fp, 6, 5), "우향 — (6,5) 가 선행이다").toBe(false);
+
+    // 벽이 한 칸 더 밖에 있으면 양쪽 다 열린다 — 발자국이 그보다 넓지 않다는 뜻이다.
+    const open = scene();
+    setLower(open.map, 3, 5, TILE.WALL);
+    setLower(open.map, 8, 5, TILE.WALL);
+    expect(canMoveFootprint(open.project, open.map, 5, 5, fp, 4, 5), "좌향 여유").toBe(true);
+    expect(canMoveFootprint(open.project, open.map, 5, 5, fp, 6, 5), "우향 여유").toBe(true);
+  });
+
+  it("폭 4 도 같은 규칙이다 — 왼쪽 1칸, 오른쪽 2칸", () => {
+    const { project, map } = scene();
+    // left = 5 − ⌊3/2⌋ = 4, right = 4 + 3 = 7. 발자국 (4,5)..(7,5).
+    const fp = { width: 4, height: 1 };
+    setLower(map, 3, 5, TILE.WALL); // 좌향 선행 칸 (4,5) 의 목적지
+    expect(canMoveFootprint(project, map, 5, 5, fp, 4, 5), "좌향").toBe(false);
+
+    const right = scene();
+    setLower(right.map, 8, 5, TILE.WALL); // 우향 선행 칸 (7,5) 의 목적지
+    expect(canMoveFootprint(right.project, right.map, 5, 5, fp, 6, 5), "우향").toBe(false);
+  });
+});
+
 describe("경계 조건", () => {
   it("같은 칸으로의 이동은 false 다", () => {
     const { project, map } = scene();
