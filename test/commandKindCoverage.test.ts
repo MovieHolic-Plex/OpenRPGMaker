@@ -76,6 +76,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   equipTool: { kind: "equipTool", itemId: "item1" },
   openChest: { kind: "openChest", chestId: "chest1" },
   changeFriendship: { kind: "changeFriendship", npcKey: "ev1", delta: 10 },
+  changeFactionStance: { kind: "changeFactionStance", a: "player", b: "enemy", op: "+=", value: 1 },
   getFriendship: { kind: "getFriendship", npcKey: "ev1", variableId: "var1" },
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
   giveMonster: { kind: "giveMonster", speciesId: "species1", level: 5 },

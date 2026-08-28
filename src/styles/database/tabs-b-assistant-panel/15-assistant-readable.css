@@ -62,6 +62,21 @@
   display: flex;
 }
 
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore {
+  border-radius: 0;
+  gap: 0;
+  min-width: 48px;
+  padding: 0;
+  width: 48px;
+}
+
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore .ai-collapsed-restore-name {
+  display: block;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .ai-chat-panel.chat-dock-glass .ai-composer,
 .ai-chat-panel.chat-dock-side .ai-composer {
   background: var(--bg-raised);

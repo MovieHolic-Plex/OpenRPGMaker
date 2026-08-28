@@ -31,6 +31,7 @@ import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { downloadBlob } from "@/util/downloadBlob";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
@@ -756,10 +757,9 @@ function doLoad(topbar: HTMLElement): void {
   });
 }
 
-// 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 기존 미동작 원인 3가지:
-// 1) `await store.flush()`가 저장 오류 시 reject → 함수 전체가 무반응으로 중단(다운로드 없음).
-// 2) anchor가 DOM에 붙지 않은 채 click() — 일부 환경에서 다운로드가 시작되지 않음.
-// 3) click() 직후 동기 revokeObjectURL — 브라우저가 fetch를 시작하기 전에 URL이 무효화될 수 있음.
+// 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 과거 결함 ①: `await store.flush()`가 저장 오류 시
+// reject → 함수 전체가 무반응으로 중단(다운로드 없음). anchor 부착·revoke 지연(과거 결함 ②③)은
+// downloadBlob 로 옮겼다.
 export async function exportProjectPackage(): Promise<void> {
   try {
     // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).
@@ -769,14 +769,7 @@ export async function exportProjectPackage(): Promise<void> {
     });
     const project = projectWithoutEventDrafts(store.getCurrent());
     const blob = createProjectPackage(project);
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = projectPackageFileName(project);
-    document.body.append(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    downloadBlob(blob, projectPackageFileName(project));
     toast("내보냈습니다", "ok");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -793,14 +786,7 @@ async function doExportWebGame(): Promise<void> {
     toast("게임 번들을 만드는 중...", "info");
     const project = store.getCurrent();
     const result = await createWebPlayerExportPackage(project);
-    const url = URL.createObjectURL(result.blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = webExportFileName(project);
-    document.body.append(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    downloadBlob(result.blob, webExportFileName(project));
     toast(`게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`, "ok");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

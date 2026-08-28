@@ -165,6 +165,7 @@ export interface InterpreterState {
   currentFace?: FaceGraphic;
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
+  onFactionStanceChanged?: () => void;
   // 루프 무한 반복 가드. 루프 본문이 한 번 완료될 때마다 증가.
   loopIterations?: number;
   maxLoopIterations: number;
@@ -176,6 +177,8 @@ export interface InterpreterOptions {
   readonly maxLoopIterations?: number;
   readonly maxInstructions?: number;
   readonly currentEventId?: string;
+  /** 진영 태도가 바뀐 프레임에 액션 전투의 타깃 캐시를 비우는 런타임 훅. */
+  readonly onFactionStanceChanged?: () => void;
 }
 
 export interface Interpreter {

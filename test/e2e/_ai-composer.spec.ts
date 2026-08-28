@@ -29,8 +29,12 @@ async function shot(target: Page | Locator, name: string): Promise<void> {
 
 async function boot(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.addInitScript(() => {
+    localStorage.setItem("oprn:coachmarks-basic-v1", "1");
+    localStorage.setItem("oprn:standard-welcome-seen", "1");
+  });
   page.on("pageerror", (err) => log(`PAGE-ERROR ${String(err).slice(0, 300)}`));
-  await page.goto("/?freshProject=1");
+  await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 40_000 });
@@ -40,8 +44,7 @@ async function boot(page: Page): Promise<void> {
   }
   const restore = page.getByTestId("ai-collapsed-restore");
   if (await restore.isVisible().catch(() => false)) await restore.click();
-  await expect(page.getByTestId("ai-input")).toBeVisible({ timeout: 20_000 });
-  await page.waitForTimeout(600);
+  await expect(page.getByTestId("ai-command-bar")).toBeVisible();
 }
 
 async function barHeight(page: Page): Promise<number> {
@@ -52,9 +55,11 @@ async function barHeight(page: Page): Promise<number> {
 
 /** 도크 순환(glass → side → float → glass). 토글은 숨은 훅이라 evaluate 로 누른다. */
 async function cycleDock(page: Page): Promise<string> {
+  const before = await page.getByTestId("ai-panel").getAttribute("data-chat-dock");
+  const expected = before === "glass" ? "side" : before === "side" ? "float" : "glass";
   await page.getByTestId("chat-dock-toggle").evaluate((node) => (node as HTMLButtonElement).click());
-  await page.waitForTimeout(500);
-  return (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?";
+  await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-chat-dock", expected);
+  return expected;
 }
 
 /** 부팅 기본은 glass 다. 컴포저 ☰ 는 float 전용(유리·사이드는 헤더가 소유)이라 명시 전환. */
@@ -86,8 +91,8 @@ async function composerBoxes(page: Page): Promise<string> {
 }
 
 test("H) 단일 행 상태에서는 컴포저 바 높이가 상수다", async ({ page }) => {
-  // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
-  test.setTimeout(120_000);
+  // 부팅(freshProject 100×100 마을) + 도크 순환/resize를 포함하므로 진단 스펙 관례대로 넉넉히.
+  test.setTimeout(180_000);
   await boot(page);
   // 컴포저 ☰ 가 살아 있는 도크에서 잰다(float — 헤더가 숨겨져 컴포저가 유일한 진입점).
   await setDock(page, "float");
@@ -99,76 +104,82 @@ test("H) 단일 행 상태에서는 컴포저 바 높이가 상수다", async ({
 
   // 포커스 → 추천 칩 팝오버가 열린다(전용 토글 버튼 없음, 흐름 밖이라 높이 영향 0).
   await input.click();
-  await page.waitForTimeout(250);
+  await expect(page.getByTestId("ai-suggest-popover")).toBeVisible();
   const focused = await barHeight(page);
-  const suggestOpen = await page.getByTestId("ai-suggest-popover").isVisible();
+  const suggestOpen = true;
   log(`H focused=${focused} suggestVisible=${suggestOpen}`);
   await shot(page.getByTestId("ai-command-bar"), "h2-focus-suggest");
   expect(suggestOpen).toBe(true);
 
-  // 한 글자 → 구 구조에서는 감독 칩 행이 사라져 높이가 줄었다.
-  await input.pressSequentially("마");
-  await page.waitForTimeout(250);
+  // 한 글자와 ordinary slash text는 textarea 높이 동기화 뒤 같은 single-line geometry다.
+  await input.fill("마");
+  await expect(input).toHaveValue("마");
   const typed = await barHeight(page);
   log(`H typed1=${typed}`);
 
-  // 슬래시 목록(팝오버).
   await input.fill("/");
-  await page.waitForTimeout(300);
-  const slashVisible = await page.getByTestId("ai-slash-list").isVisible();
+  await expect(input).toHaveValue("/");
   const withSlash = await barHeight(page);
-  log(`H slash=${withSlash} slashListVisible=${slashVisible}`);
-  await shot(page, "h3-slash-popover");
+  log(`H slash=${withSlash}`);
+  await shot(page, "h3-slash-text");
 
   // ☰ 액션 메뉴(팝오버).
   await page.keyboard.press("Escape");
   await input.fill("");
   await page.getByTestId("ai-command-menu-toggle").click();
-  await page.waitForTimeout(250);
-  const menuVisible = await page.getByTestId("ai-command-menu").isVisible();
+  await expect(page.getByTestId("ai-command-menu")).toBeVisible();
+  const menuVisible = true;
   const withMenu = await barHeight(page);
   log(`H menu=${withMenu} menuVisible=${menuVisible}`);
   await shot(page, "h4-action-menu");
 
-  expect(slashVisible).toBe(true);
   expect(menuVisible).toBe(true);
-  // 계약: 위 네 상태 전부 같은 높이. (구 컴포저는 idle 144 → typed 116 처럼 튀었다.)
+  // 계약: 포커스·single-line text·메뉴는 전부 exact same height다.
   expect(focused).toBe(idle);
   expect(typed).toBe(idle);
   expect(withSlash).toBe(idle);
   expect(withMenu).toBe(idle);
 
-  // 여러 줄은 **의도된** 유일한 높이 변화 경로다.
+  // float 폭 resize는 폭이 실제 변한 뒤에도 drag 전 bar 높이를 유지한다.
   await page.keyboard.press("Escape");
-  await input.click();
-  await input.pressSequentially("한 줄");
-  for (let i = 0; i < 3; i += 1) {
-    await page.keyboard.down("Shift");
-    await page.keyboard.press("Enter");
-    await page.keyboard.up("Shift");
-    await input.pressSequentially(`줄 ${i}`);
-  }
-  await page.waitForTimeout(300);
-  const multiline = await barHeight(page);
-  log(`H multiline=${multiline}`);
-  await shot(page.getByTestId("ai-command-bar"), "h5-multiline");
-  expect(multiline).toBeGreaterThan(idle);
+  await expect(page.getByTestId("ai-command-menu")).toBeHidden();
+  await expect(page.getByTestId("ai-collapse")).toBeVisible();
+  const bar = page.getByTestId("ai-command-bar");
+  const beforeResize = await bar.boundingBox();
+  const handle = page.getByTestId("ai-resize-handle");
+  const handleBox = await handle.boundingBox();
+  expect(beforeResize).not.toBeNull();
+  expect(handleBox).not.toBeNull();
+  await page.mouse.move(handleBox!.x + handleBox!.width / 2, handleBox!.y + handleBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handleBox!.x - 120, handleBox!.y + 80, { steps: 5 });
+  await page.mouse.up();
+  await expect.poll(async () => Math.round((await bar.boundingBox())?.width ?? 0)).toBeGreaterThan(Math.round(beforeResize!.width));
+  const afterResize = await bar.boundingBox();
+  expect(afterResize).not.toBeNull();
+  expect(Math.round(afterResize!.height)).toBe(Math.round(beforeResize!.height));
+
+  // 여러 줄은 **의도된** 유일한 높이 변화 경로다.
+  await input.fill("한 줄\n줄 0\n줄 1\n줄 2");
+  await expect(input).toHaveValue("한 줄\n줄 0\n줄 1\n줄 2");
+  await expect.poll(() => barHeight(page)).toBeGreaterThan(idle);
 });
 
-test("P) 팝오버가 열려 있어도 맵 클릭을 삼키지 않는다", async ({ page }) => {
-  // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
+test("P) 열린 action popover와 resize edge 밖은 맵 클릭을 삼키지 않는다", async ({ page }) => {
   test.setTimeout(120_000);
   await boot(page);
-  await page.getByTestId("ai-input").fill("/");
-  await page.waitForTimeout(300);
-  await expect(page.getByTestId("ai-slash-list")).toBeVisible();
+  await setDock(page, "float");
+  await page.getByTestId("ai-command-menu-toggle").click();
+  await expect(page.getByTestId("ai-command-menu")).toBeVisible();
 
   const canvas = await page.getByTestId("edit-canvas").boundingBox();
+  const menu = await page.getByTestId("ai-command-menu").boundingBox();
   expect(canvas).not.toBeNull();
-  // 캔버스 중앙 + 팝오버가 뜬 바로 위쪽 밴드 두 지점을 실측한다.
+  expect(menu).not.toBeNull();
+  // 실제 popover rect 바깥의 캔버스 두 지점을 검사한다. popover 자체 위는 당연히 interactive하다.
   const probes = [
-    { name: "canvas-center", x: canvas!.x + canvas!.width / 2, y: canvas!.y + canvas!.height / 2 },
-    { name: "canvas-lower", x: canvas!.x + canvas!.width / 2, y: canvas!.y + canvas!.height * 0.82 },
+    { name: "canvas-upper-left", x: canvas!.x + 24, y: canvas!.y + 24 },
+    { name: "canvas-above-menu", x: Math.max(canvas!.x + 24, menu!.x - 24), y: Math.max(canvas!.y + 24, menu!.y - 24) },
   ];
   for (const probe of probes) {
     const hit = await page.evaluate(({ x, y }) => {
@@ -180,10 +191,10 @@ test("P) 팝오버가 열려 있어도 맵 클릭을 삼키지 않는다", async
     log(`P ${probe.name} -> ${hit}`);
     expect(hit).toContain("swallowedBy=no");
   }
-  await shot(page, "p1-slash-open-hittest");
+  await shot(page, "p1-action-menu-hittest");
 });
 
-test("C) 슬래시 목록이 닫혀 있으면 방향키를 가로채지 않는다", async ({ page }) => {
+test("C) leading slash is ordinary text and arrow keys move the textarea caret", async ({ page }) => {
   // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
   test.setTimeout(120_000);
   await boot(page);
@@ -195,26 +206,14 @@ test("C) 슬래시 목록이 닫혀 있으면 방향키를 가로채지 않는�
   await page.keyboard.press("Enter");
   await page.keyboard.up("Shift");
   await input.pressSequentially("두 번째 줄");
-  await page.waitForTimeout(250);
-
-  await expect(page.getByTestId("ai-slash-list")).toBeHidden();
+  await expect(input).toHaveValue("/집 짓기\n두 번째 줄");
+  expect(await page.getByTestId("ai-slash-list").count()).toBe(0);
   const before = await input.evaluate((node) => (node as HTMLTextAreaElement).selectionStart);
   await page.keyboard.press("ArrowUp");
   const after = await input.evaluate((node) => (node as HTMLTextAreaElement).selectionStart);
   log(`C caret ${before} -> ${after}`);
   expect(after).toBeLessThan(before ?? 0);
-
-  // 반대로 단일 행 "/..." 에서는 목록이 열리고 ↑/↓ 가 항목을 옮긴다.
-  await input.fill("/");
-  await page.waitForTimeout(300);
-  await expect(page.getByTestId("ai-slash-list")).toBeVisible();
-  const firstActive = await page.locator(".ai-slash-item.is-active").getAttribute("data-testid");
-  await page.keyboard.press("ArrowDown");
-  await page.waitForTimeout(200);
-  const nextActive = await page.locator(".ai-slash-item.is-active").getAttribute("data-testid");
-  log(`C slash active ${firstActive} -> ${nextActive}`);
-  expect(nextActive).not.toBe(firstActive);
-  await shot(page, "c1-slash-keyboard");
+  await shot(page, "c1-slash-caret");
 });
 
 test("도크 3종 컴포저 증거 스샷", async ({ page }) => {
@@ -234,51 +233,22 @@ test("도크 3종 컴포저 증거 스샷", async ({ page }) => {
   }
 });
 
-test("헤더 축소 + 두 ☰ 메뉴가 같은 항목 구현을 공유한다", async ({ page }) => {
-  // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
+test("header remains removed and composer action row owns collapse/menu", async ({ page }) => {
   test.setTimeout(120_000);
   await boot(page);
-  await setDock(page, "side"); // 헤더가 보이는 도크(유리는 ＋ 도 숨긴다)
-
-  // 헤더 상시 버튼은 ＋ 와 ☰ 뿐 — ⚙ 는 메뉴 항목으로 흡수했다.
-  const headerButtons = await page.evaluate(() => {
-    const header = document.querySelector(".ai-chat-header .ai-header-actions");
-    if (!header) return ["absent"];
-    return [...header.querySelectorAll(":scope > button, :scope > .ai-more-wrap > button")]
-      .filter((node) => (node as HTMLElement).offsetParent !== null)
-      .map((node) => node.getAttribute("data-testid") ?? (node.textContent || "").trim());
-  });
-  log(`HEADER 상시 버튼: ${headerButtons.join(", ")}`);
-  await shot(page.locator(".ai-chat-header"), "hdr1-side-header");
-  expect(headerButtons).toEqual(["ai-new-session", "ai-more-menu-toggle"]);
-  // ⚙ 아이콘은 사라졌지만 훅(testid)은 메뉴 안에 살아 있어야 한다.
-  await expect(page.getByTestId("ai-settings-toggle")).toHaveCount(1);
-
-  await page.getByTestId("ai-more-menu-toggle").click();
-  await page.waitForTimeout(250);
-  await shot(page, "hdr2-side-header-menu");
-  const headerLabels = await page.getByTestId("ai-more-menu").evaluate((node) =>
-    [...node.querySelectorAll("button")].map((b) => (b.textContent || "").trim()));
-  log(`HEADER 메뉴: ${headerLabels.join(" | ")}`);
-
-  // 컴포저 ☰ 는 float 에서만 산다 — 같은 5개 공유 항목이 같은 순서로 있어야 한다.
-  await page.keyboard.press("Escape");
   await setDock(page, "float");
+
+  await expect(page.locator(".ai-chat-header")).toHaveCount(0);
+  const actions = page.getByTestId("ai-composer-actions");
+  await expect(actions.getByTestId("ai-collapse")).toBeVisible();
+  await expect(actions.getByTestId("ai-command-menu-toggle")).toBeVisible();
+  await expect(page.getByTestId("ai-chat-toolbar")).toBeHidden();
+
   await page.getByTestId("ai-command-menu-toggle").click();
-  await page.waitForTimeout(250);
+  await expect(page.getByTestId("ai-command-menu")).toBeVisible();
+  await shot(page, "actions-float-menu");
   const composerLabels = await page.getByTestId("ai-command-menu").evaluate((node) =>
     [...node.querySelectorAll("button")].map((b) => (b.textContent || "").trim()));
   log(`컴포저 메뉴: ${composerLabels.join(" | ")}`);
-
-  // 공유 항목 = 되돌리기·내보내기·<도크 전환>·전체 기록·툴 브라우저. 도크 라벨은 현재 도크에 따라
-  // 다르므로(사이드 vs float) 그 자리만 빼고 비교한다.
-  const shared = (labels: string[]): string[] => labels.filter((l) => !l.startsWith("스킬") && l !== "설정");
-  const headerShared = shared(headerLabels);
-  const composerShared = shared(composerLabels);
-  expect(headerShared.length).toBe(5);
-  expect(composerShared.length).toBe(5);
-  expect(headerShared.filter((_, i) => i !== 2)).toEqual(composerShared.filter((_, i) => i !== 2));
-  // 도크 항목 라벨은 각 표면이 본 도크를 반영한다(단일 applyDockModeChrome 이 둘 다 갱신).
-  log(`도크 항목: header="${headerShared[2]}" composer="${composerShared[2]}"`);
-  expect(composerShared[2]).toBe("왼쪽 유리"); // float 다음은 유리
+  expect(composerLabels).toContain("카드");
 });

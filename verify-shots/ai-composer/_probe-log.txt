@@ -114,3 +114,103 @@ SHOT hdr2-side-header-menu
 HEADER 메뉴: 설정 | 되돌리기 | 내보내기 | 아래 바로 | 전체 기록 | 툴 브라우저
 컴포저 메뉴: 스킬 찾기/ | 설정 | 되돌리기 | 내보내기 | 왼쪽 유리 | 전체 기록 | 툴 브라우저
 도크 항목: header="아래 바로" composer="왼쪽 유리"
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=144
+H slash=144
+SHOT h3-slash-text
+H menu=144 menuVisible=true
+SHOT h4-action-menu
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=142
+H slash=142
+SHOT h3-slash-text
+H menu=142 menuVisible=true
+SHOT h4-action-menu
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=142
+H slash=142
+SHOT h3-slash-text
+H menu=142 menuVisible=true
+SHOT h4-action-menu
+P canvas-upper-left -> CANVAS.|swallowedBy=no
+P canvas-above-menu -> CANVAS.|swallowedBy=no
+SHOT p1-action-menu-hittest
+C caret 12 -> 5
+SHOT c1-slash-caret
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=142
+H slash=142
+SHOT h3-slash-text
+H menu=142 menuVisible=true
+SHOT h4-action-menu
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=142
+H slash=142
+SHOT h3-slash-text
+H menu=142 menuVisible=true
+SHOT h4-action-menu
+P canvas-upper-left -> CANVAS.|swallowedBy=no
+P canvas-above-menu -> CANVAS.|swallowedBy=no
+SHOT p1-action-menu-hittest
+C caret 12 -> 5
+SHOT c1-slash-caret
+DOCK side barHeight=156 | .ai-command-bar=515x156 .ai-composer=483x128 .ai-composer-menu-btn=30x30 .ai-assistant-input=457x68 .ai-composer-actions=457x30
+SHOT dock-side-full
+SHOT dock-side-bar
+DOCK float barHeight=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT dock-float-full
+SHOT dock-float-bar
+DOCK glass barHeight=156 | .ai-command-bar=518x156 .ai-composer=486x128 .ai-composer-menu-btn=30x30 .ai-assistant-input=460x68 .ai-composer-actions=460x30
+SHOT dock-glass-full
+SHOT dock-glass-bar
+SHOT actions-float-menu
+컴포저 메뉴: ✦ 추천 함께 보기 | ◫ 조수만 보기 | ⌨ 입력창만 보기 | 되돌리기 | 내보내기 | 카드 | 전체 기록 | 툴 브라우저 | 🎓 맵 인터뷰 | 📐 선택 여역 학습 | ✍️ 시연으로 가르치기
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=142
+H slash=142
+SHOT h3-slash-text
+H menu=142 menuVisible=true
+SHOT h4-action-menu
+P canvas-upper-left -> CANVAS.|swallowedBy=no
+P canvas-above-menu -> CANVAS.|swallowedBy=no
+SHOT p1-action-menu-hittest
+C caret 12 -> 5
+SHOT c1-slash-caret
+DOCK side barHeight=156 | .ai-command-bar=515x156 .ai-composer=483x128 .ai-composer-menu-btn=30x30 .ai-assistant-input=457x68 .ai-composer-actions=457x30
+SHOT dock-side-full
+SHOT dock-side-bar
+DOCK float barHeight=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT dock-float-full
+SHOT dock-float-bar
+DOCK glass barHeight=156 | .ai-command-bar=518x156 .ai-composer=486x128 .ai-composer-menu-btn=30x30 .ai-assistant-input=460x68 .ai-composer-actions=460x30
+SHOT dock-glass-full
+SHOT dock-glass-bar
+SHOT actions-float-menu
+컴포저 메뉴: ✦ 추천 함께 보기 | ◫ 조수만 보기 | ⌨ 입력창만 보기 | 되돌리기 | 내보내기 | 카드 | 전체 기록 | 툴 브라우저 | 🎓 맵 인터뷰 | 📐 선택 여역 학습 | ✍️ 시연으로 가르치기
+H idle=142 | .ai-command-bar=640x142 .ai-composer=614x120 .ai-composer-menu-btn=30x30 .ai-assistant-input=592x68 .ai-composer-actions=592x30
+SHOT h1-idle
+H focused=142 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=142
+H slash=142
+SHOT h3-slash-text
+H menu=142 menuVisible=true
+SHOT h4-action-menu

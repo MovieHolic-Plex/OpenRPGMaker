@@ -12,6 +12,21 @@ import { guardedDamage, resolveGuardStep } from "@/battle/action/guard";
 import { kiteBandForAttack } from "@/battle/action/kiting";
 import { activeActionSkillId, cycleActionSkillSlot, resolveActionSkillSlots } from "@/battle/action/skillSlots";
 import { shouldApplyContactDamage } from "@/battle/action/contact";
+import { resolveHostileTarget, resolveNpcDamage, type FactionCombatantRef } from "@/battle/action/factionTargeting";
+import {
+  applyPlayerKillReputation,
+  effectiveFactionStance,
+} from "@/project/factionRuntime";
+import {
+  DEFAULT_ENEMY_FACTION_ID,
+  factionAggression,
+  isHittableByFaction,
+  isProtectedFromNpcs,
+  PLAYER_FACTION_ID,
+  resolveFactionTable,
+  stanceBarColor,
+  willAttackOnSight,
+} from "@/project/factions";
 import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
@@ -35,6 +50,9 @@ import {
   ACTION_STAMINA_MAX,
   ACTION_STAMINA_REGEN_PER_SEC,
   ACTION_SWING_STAMINA_COST,
+  PLAYER_COMBATANT_ID,
+  RETALIATION_LATCH_MS,
+  TARGET_RETARGET_MS,
   type ActionCombatSceneState,
   type ActionEnemyState,
 } from "@/player/actionCombatTypes";
@@ -60,6 +78,8 @@ const SE_PLAYER_HURT_RESOURCE_ID = "easyrpg-sound-damage2";
 // 적 공격 예고: windup 중 스프라이트 붉은 tint 점멸.
 const WINDUP_TINT_COLOR = 0xff5544;
 const WINDUP_TINT_DURATION_MS = 160;
+// 생략된 aggroRange 에 대한 타깃 탐색 시야. fieldSpawns 의 sightRange 기본값과 맞췄다.
+const DEFAULT_TARGET_SIGHT_RANGE = 8;
 
 export function isActionCombatSceneActive(scene: PlaySceneContext): boolean {
   return scene.actionCombatState !== null;
@@ -76,6 +96,8 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
   const config = resolveActionCombatConfig(project);
   const state: ActionCombatSceneState = {
     config,
+    factions: resolveFactionTable(project.factions),
+    factionStanceOverrides: scene.session.factionStanceOverrides ??= {},
     enemies: new Map(),
     projectiles: [],
     projectileSerial: 0,
@@ -162,6 +184,11 @@ function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState
       enemy.flashMs = Math.max(0, enemy.flashMs - deltaMs);
       if (enemy.flashMs === 0) scene.eventSprites.get(enemy.eventId)?.clearTint();
     }
+    enemy.retargetMs = Math.max(0, enemy.retargetMs - deltaMs);
+    if (enemy.forcedTargetMs > 0) {
+      enemy.forcedTargetMs = Math.max(0, enemy.forcedTargetMs - deltaMs);
+      if (enemy.forcedTargetMs === 0) enemy.forcedTargetId = undefined;
+    }
   }
 }
 
@@ -186,6 +213,7 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
       state.enemies.set(instance.eventId, {
         eventId: instance.eventId,
         enemyId: record.id,
+        factionId: resolveSpawnFactionId(scene, instance.eventId, record),
         hp: record.stats.maxHp,
         maxHp: record.stats.maxHp,
         defense: record.stats.defense,
@@ -201,6 +229,8 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
         mode: "combat",
         modeTimerMs: 0,
         attackCooldownMs: 0,
+        retargetMs: 0,
+        forcedTargetMs: 0,
       });
     }
   }
@@ -214,6 +244,153 @@ function resolveSpawnEnemyRecord(project: Project, troopId: string): EnemyRecord
   const enemyId = troop?.members?.[0]?.enemyId ?? troop?.enemyIds[0];
   if (!enemyId) return undefined;
   return project.database.enemies.find((entry) => entry.id === enemyId);
+}
+
+// 진영 우선순위: 스폰 정의 > 적 레코드 > 예약 진영 enemy. 스폰 쪽이 이기는 이유는
+// 같은 적 레코드를 산적/경비병 양쪽에 배치할 수 있어야 하기 때문이다.
+function resolveSpawnFactionId(scene: PlaySceneContext, eventId: string, record: EnemyRecord): string {
+  for (const entry of scene.fieldSpawnState?.entries ?? []) {
+    if (!entry.alive.some((instance) => instance.eventId === eventId)) continue;
+    if (entry.spawn.factionId !== undefined && entry.spawn.factionId.length > 0) return entry.spawn.factionId;
+    break;
+  }
+  return record.factionId !== undefined && record.factionId.length > 0 ? record.factionId : DEFAULT_ENEMY_FACTION_ID;
+}
+
+// 전투원 스냅샷. 플레이어와 살아 있는 액션 적을 하나의 목록으로 합쳐 타깃 탐색에 넘긴다.
+function combatantRefs(scene: PlaySceneContext, state: ActionCombatSceneState): FactionCombatantRef[] {
+  const refs: FactionCombatantRef[] = [{
+    id: PLAYER_COMBATANT_ID,
+    factionId: PLAYER_FACTION_ID,
+    x: scene.tileX,
+    y: scene.tileY,
+  }];
+  for (const enemy of state.enemies.values()) {
+    if (enemy.dying === true || enemy.hp <= 0) continue;
+    const pos = enemyTilePosition(scene, enemy.eventId);
+    if (!pos) continue;
+    refs.push({ id: enemy.eventId, factionId: enemy.factionId, x: pos.x, y: pos.y });
+  }
+  return refs;
+}
+
+// 대상이 이번 프레임에 점유한 칸들. 플레이어는 이동 중 예약 칸까지 포함한다(기존 판정과 동일).
+function targetTiles(scene: PlaySceneContext, targetId: string): { x: number; y: number }[] {
+  if (targetId === PLAYER_COMBATANT_ID) {
+    const tiles = [{ x: scene.tileX, y: scene.tileY }];
+    if (scene.moving) tiles.push({ x: scene.movingTo.x, y: scene.movingTo.y });
+    return tiles;
+  }
+  const pos = enemyTilePosition(scene, targetId);
+  return pos ? [pos] : [];
+}
+
+function acquireEnemyTarget(
+  scene: PlaySceneContext,
+  state: ActionCombatSceneState,
+  enemy: ActionEnemyState,
+  pos: { x: number; y: number },
+  refs: readonly FactionCombatantRef[]
+): FactionCombatantRef | null {
+  const cached = enemy.targetId === undefined
+    ? undefined
+    : refs.find((ref) => ref.id === enemy.targetId);
+  // 예고한 공격은 예고한 자리에 떨어진다 — 선딜/돌진 중에는 대상을 바꾸지 않는다.
+  if (enemy.mode === "windup" || enemy.mode === "dash") return cached ?? null;
+  const cachedStillHostile = cached && (
+    enemy.forcedTargetId === cached.id
+    || willAttackOnSight(
+      effectiveFactionStance(state.factions, state.factionStanceOverrides, enemy.factionId, cached.factionId),
+      factionAggression(state.factions, enemy.factionId),
+    )
+  );
+  if (enemy.retargetMs > 0 && cachedStillHostile) return cached;
+  enemy.retargetMs = TARGET_RETARGET_MS;
+  const sightRange = scene.autonomousNPCs.get(enemy.eventId)?.sightRange ?? DEFAULT_TARGET_SIGHT_RANGE;
+  const target = resolveHostileTarget({
+    self: { id: enemy.eventId, factionId: enemy.factionId, x: pos.x, y: pos.y },
+    candidates: refs,
+    table: state.factions,
+    stanceOverrides: state.factionStanceOverrides,
+    aggroRange: sightRange,
+    forcedTargetId: enemy.forcedTargetId,
+  });
+  enemy.targetId = target?.id;
+  return target;
+}
+
+// 보복 래치. 태도가 중립이어도 맞은 쪽은 가해자를 노린다.
+function latchRetaliation(victim: ActionEnemyState, attackerId: string): void {
+  if (victim.eventId === attackerId) return;
+  victim.forcedTargetId = attackerId;
+  victim.forcedTargetMs = RETALIATION_LATCH_MS;
+  victim.targetId = attackerId;
+  victim.retargetMs = TARGET_RETARGET_MS;
+}
+
+// 적 공격의 단일 피해 출구. 대상이 플레이어면 기존 게이트를, NPC 면 NPC 전용 경로를 탄다.
+function damageActionTarget(
+  scene: PlaySceneContext,
+  state: ActionCombatSceneState,
+  attacker: ActionEnemyState,
+  targetId: string,
+  damage: number,
+  fromTileX: number,
+  fromTileY: number
+): void {
+  if (targetId === PLAYER_COMBATANT_ID) {
+    damagePlayer(scene, state, damage, fromTileX, fromTileY);
+    return;
+  }
+  const victim = state.enemies.get(targetId);
+  if (!victim) return;
+  damageEnemyByNpc(scene, state, victim, attacker.eventId, damage);
+}
+
+// NPC 가 NPC 를 때린 결과. 플레이어 보상·처치 영속·킬 스위치는 일부러 건드리지 않는다 —
+// 저작자의 진행 트리거가 앰비언트 싸움으로 저절로 켜지면 안 된다.
+function damageEnemyByNpc(
+  scene: PlaySceneContext,
+  state: ActionCombatSceneState,
+  victim: ActionEnemyState,
+  attackerId: string,
+  damage: number
+): void {
+  if (victim.dying === true) return;
+  const pos = enemyTilePosition(scene, victim.eventId);
+  const outcome = resolveNpcDamage({
+    hp: victim.hp,
+    damage,
+    protectedFromNpcs: isProtectedFromNpcs(state.factions, victim.factionId),
+  });
+  victim.hp = outcome.hp;
+  victim.flashMs = ENEMY_FLASH_MS;
+  scene.eventSprites.get(victim.eventId)?.setTintFill(0xffffff);
+  if (pos) {
+    spawnDamageNumber(scene, characterSpriteX(pos.x), characterSpriteY(pos.y) - 20, String(Math.max(0, Math.round(damage))), "#d7c7ff");
+  }
+  latchRetaliation(victim, attackerId);
+  if (!outcome.died) {
+    staggerActionEnemy(scene, victim);
+    return;
+  }
+  victim.dying = true;
+  playEnemyDeathBeat(scene, victim);
+  cleanupEnemyVisuals(scene, victim);
+  state.enemies.delete(victim.eventId);
+  for (const other of state.enemies.values()) {
+    if (other.targetId === victim.eventId) other.targetId = undefined;
+    if (other.forcedTargetId === victim.eventId) {
+      other.forcedTargetId = undefined;
+      other.forcedTargetMs = 0;
+    }
+  }
+  if (scene.fieldSpawnState) {
+    resolveFieldSpawnVictory(scene.fieldSpawnState, victim.eventId);
+    syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
+    scene.renderTiles();
+    scene.registerPageMoveRoutes();
+  }
 }
 
 // 보간 중인 적의 소수 타일 좌표. 라운딩 전 값이라 서브타일 겹침 판정에 쓴다.
@@ -287,6 +464,9 @@ function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneSta
   for (const enemy of state.enemies.values()) {
     // 경직 중인 적은 거리를 종힐 수 없으니 접촉 피해도 없다.
     if (!canActInMode(enemy.mode)) continue;
+    // 접촉 피해는 플레이어 전용이며, 그재도 플레이어를 노리는 적만 주다.
+    // NPC 간 피해는 전부 예고된 공격만 거친다 — 매 프레임 접촉 피해는 방어 무적 창이 없어 서로 녹아버린다.
+    if (enemy.targetId !== PLAYER_COMBATANT_ID) continue;
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
     const moving = scene.autonomousNPCs.get(enemy.eventId)?.activeMove != null;
@@ -404,6 +584,8 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   const dir = dirDelta(scene.facing);
   spawnProjectileFrom(scene, state, {
     faction: "player",
+    ownerId: PLAYER_COMBATANT_ID,
+    ownerFactionId: PLAYER_FACTION_ID,
     x: scene.tileX,
     y: scene.tileY,
     dirX: dir.x,
@@ -459,6 +641,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   scene.cameras.main.shake(60, 0.004);
   playActionSe(SE_HIT_ENEMY_RESOURCE_ID);
   spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 20, String(damage), "#ffe066");
+  latchRetaliation(enemy, PLAYER_COMBATANT_ID);
   if (enemy.hp > 0) {
     staggerActionEnemy(scene, enemy);
     applyKnockback(scene, state, enemy);
@@ -466,6 +649,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   }
   // 사망: 보상은 여기서 정확히 한 번 떨어지고, 사라지는 연출만 뒤로 미룬다.
   enemy.dying = true;
+  applyKillReputation(state, enemy.factionId);
   grantActionKillRewards(scene, enemy, tileX, tileY);
   playEnemyDeathBeat(scene, enemy);
   cleanupEnemyVisuals(scene, enemy);
@@ -518,6 +702,29 @@ function staggerActionEnemy(scene: PlaySceneContext, enemy: ActionEnemyState): v
     mover.actionFrozen = true;
     mover.activeMove = null;
   }
+}
+
+function applyKillReputation(state: ActionCombatSceneState, defeatedFactionId: string): void {
+  const config = store.getCurrent().factions?.playerKillReputation;
+  if (!config) return;
+  const next = applyPlayerKillReputation(
+    state.factions,
+    state.factionStanceOverrides,
+    defeatedFactionId,
+    config.weight,
+  );
+  replaceFactionStanceOverrides(state.factionStanceOverrides, next);
+  // 타깃 캐시는 최대 400ms 남아 있을 수 있다. 평판 변경 직후 전원이 다시 판단해야
+  // "진행 중 싸움이 반응한다"는 계약이 프레임 단위로 지켜진다.
+  for (const combatant of state.enemies.values()) combatant.retargetMs = 0;
+}
+
+function replaceFactionStanceOverrides(
+  target: Record<string, number>,
+  source: Readonly<Record<string, number>>,
+): void {
+  for (const key of Object.keys(target)) delete target[key];
+  Object.assign(target, source);
 }
 
 function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState, tileX: number, tileY: number): void {
@@ -734,7 +941,8 @@ function redrawEnemyHpBars(scene: PlaySceneContext, state: ActionCombatSceneStat
     const x = sprite.x - barWidth / 2;
     const y = sprite.y - sprite.displayHeight - 6;
     const ratio = enemy.maxHp > 0 ? enemy.hp / enemy.maxHp : 0;
-    graphics.fillStyle(0x000000, 0.7);
+    // 테두리 색 = 플레이어 기준 태도. NPC 난전에서 누가 적인지 읽힐 유일한 단서다.
+    graphics.fillStyle(stanceBarColor(effectiveFactionStance(state.factions, state.factionStanceOverrides, PLAYER_FACTION_ID, enemy.factionId)), 0.9);
     graphics.fillRect(x - 1, y - 1, barWidth + 2, 5);
     graphics.fillStyle(ratio > 0.3 ? 0x7ec850 : 0xe05c4a, 1);
     graphics.fillRect(x, y, Math.max(0, Math.round(barWidth * ratio)), 3);
@@ -837,6 +1045,7 @@ function dirDelta(dir: Dir): { x: -1 | 0 | 1; y: -1 | 0 | 1 } {
 }
 
 function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
+  const refs = combatantRefs(scene, state);
   for (const enemy of state.enemies.values()) {
     enemy.attackCooldownMs = Math.max(0, enemy.attackCooldownMs - deltaMs);
     const pos = enemyTilePosition(scene, enemy.eventId);
@@ -844,13 +1053,20 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
     // 원거리 적은 거리를 지킨다: 추객 묘버에 밴드를 심어 주면 붙지 않게 한다.
     const mover = scene.autonomousNPCs.get(enemy.eventId);
     if (mover) mover.kite = kiteBandForAttack(enemy.actionAttack) ?? undefined;
-    const dx = scene.tileX - pos.x;
-    const dy = scene.tileY - pos.y;
-    const cheby = Math.max(Math.abs(dx), Math.abs(dy));
+    const target = acquireEnemyTarget(scene, state, enemy, pos, refs);
+    // 믄버는 기본적으로 플레이어를 췔는다. NPC 를 노릴 때만 목표 좌표를 심어 준다.
+    if (mover) {
+      mover.chaseTarget = target !== null && target.id !== PLAYER_COMBATANT_ID
+        ? { x: target.x, y: target.y }
+        : undefined;
+    }
+    const dx = (target?.x ?? pos.x) - pos.x;
+    const dy = (target?.y ?? pos.y) - pos.y;
+    const cheby = target ? Math.max(Math.abs(dx), Math.abs(dy)) : Number.POSITIVE_INFINITY;
     const attack = enemy.actionAttack;
     switch (enemy.mode) {
       case "combat": {
-        if (!attack || enemy.attackCooldownMs > 0) break;
+        if (!attack || enemy.attackCooldownMs > 0 || !target) break;
         if (attack.kind === "melee" && cheby <= attack.range) startWindup(scene, enemy, attack, pos.x, pos.y, dx, dy);
         else if (attack.kind === "projectile" && cheby <= attack.range && cheby >= 2) startWindup(scene, enemy, attack, pos.x, pos.y, dx, dy);
         else if (attack.kind === "dash" && cheby <= attack.range && cheby >= 2 && (dx === 0 || dy === 0)) {
@@ -972,10 +1188,13 @@ function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, e
     return;
   }
   const dir = scene.eventPositions[enemy.eventId]?.direction ?? "down";
+  const targetId = enemy.targetId;
+  const tiles = targetId !== undefined ? targetTiles(scene, targetId) : [];
   if (attack.kind === "melee") {
     const arc = swingArcCells(dir, pos.x, pos.y, attack.range);
-    if (cellInArc(arc, scene.tileX, scene.tileY) || (scene.moving && cellInArc(arc, scene.movingTo.x, scene.movingTo.y))) {
-      damagePlayer(scene, state, attack.damage, scene.tileX, scene.tileY);
+    const hit = tiles.find((tile) => cellInArc(arc, tile.x, tile.y));
+    if (hit && targetId !== undefined) {
+      damageActionTarget(scene, state, enemy, targetId, attack.damage, hit.x, hit.y);
     }
     enterRecover(enemy, attack);
     return;
@@ -983,11 +1202,13 @@ function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, e
   if (attack.kind === "projectile") {
     spawnProjectileFrom(scene, state, {
       faction: "enemy",
+      ownerId: enemy.eventId,
+      ownerFactionId: enemy.factionId,
       x: pos.x,
       y: pos.y,
       dirX: 0,
       dirY: 0,
-      aimAtPlayer: true,
+      aimAt: tiles[0],
       speedTilesPerSec: attack.projectileSpeedTilesPerSec ?? DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC,
       damage: attack.damage,
       elementId: undefined,
@@ -1039,18 +1260,23 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
   }
   dash.stepProgressMs = 0;
   const project = store.getCurrent();
-  const hitsPlayer = (dash.toX === scene.tileX && dash.toY === scene.tileY)
-    || (scene.moving && dash.toX === scene.movingTo.x && dash.toY === scene.movingTo.y);
-  if (hitsPlayer || !inBounds(scene.map, dash.toX, dash.toY) || !isPassable(project, scene.map, dash.toX, dash.toY)) {
-    if (hitsPlayer) damagePlayer(scene, state, attack.damage, dash.fromX, dash.fromY);
+  const targetId = enemy.targetId;
+  const tiles = targetId !== undefined ? targetTiles(scene, targetId) : [];
+  const hitsTarget = tiles.some((tile) => tile.x === dash.toX && tile.y === dash.toY);
+  if (hitsTarget || !inBounds(scene.map, dash.toX, dash.toY) || !isPassable(project, scene.map, dash.toX, dash.toY)) {
+    if (hitsTarget && targetId !== undefined) {
+      damageActionTarget(scene, state, enemy, targetId, attack.damage, dash.fromX, dash.fromY);
+    }
     if (sprite) sprite.setPosition(characterSpriteX(dash.fromX), characterSpriteY(dash.fromY));
     enterRecover(enemy, attack);
     return;
   }
   moveRuntimeEventPosition(scene.eventPositions, enemy.eventId, dash.toX, dash.toY, scene.eventPositions[enemy.eventId]?.direction ?? "down");
   dash.tilesLeft -= 1;
-  const adjacentToPlayer = Math.max(Math.abs(dash.toX - scene.tileX), Math.abs(dash.toY - scene.tileY)) <= 1;
-  if (dash.tilesLeft <= 0 || adjacentToPlayer) {
+  const adjacentToTarget = tiles.some((tile) => (
+    Math.max(Math.abs(dash.toX - tile.x), Math.abs(dash.toY - tile.y)) <= 1
+  ));
+  if (dash.tilesLeft <= 0 || adjacentToTarget) {
     enterRecover(enemy, attack);
     return;
   }
@@ -1062,11 +1288,13 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
 
 interface ProjectileSpawnSpec {
   readonly faction: "enemy" | "player";
+  readonly ownerId: string;
+  readonly ownerFactionId: string;
   readonly x: number;
   readonly y: number;
   readonly dirX: number;
   readonly dirY: number;
-  readonly aimAtPlayer?: boolean;
+  readonly aimAt?: { readonly x: number; readonly y: number } | undefined;
   readonly speedTilesPerSec: number;
   readonly damage: number;
   readonly elementId: string | undefined;
@@ -1077,9 +1305,9 @@ interface ProjectileSpawnSpec {
 function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneState, spec: ProjectileSpawnSpec): void {
   let dirX = spec.dirX;
   let dirY = spec.dirY;
-  if (spec.aimAtPlayer) {
-    const dx = scene.tileX - spec.x;
-    const dy = scene.tileY - spec.y;
+  if (spec.aimAt) {
+    const dx = spec.aimAt.x - spec.x;
+    const dy = spec.aimAt.y - spec.y;
     const len = Math.max(0.001, Math.hypot(dx, dy));
     dirX = dx / len;
     dirY = dy / len;
@@ -1091,6 +1319,8 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
   state.projectiles.push({
     id: state.projectileSerial,
     faction: spec.faction,
+    ownerId: spec.ownerId,
+    ownerFactionId: spec.ownerFactionId,
     x: spec.x,
     y: spec.y,
     dirX,
@@ -1124,20 +1354,28 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
       const ty = Math.round(p.y);
       blocked = p.traveledTiles >= p.maxRangeTiles || !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty);
       if (blocked) break;
-      if (p.faction === "enemy") {
-        if (playerTiles.some((t) => t.x === tx && t.y === ty)) {
-          damagePlayer(scene, state, p.damage, tx, ty);
-          consumed = true;
-        }
-      } else {
-        for (const enemy of [...state.enemies.values()]) {
-          const pos = enemyTilePosition(scene, enemy.eventId);
-          if (!pos || pos.x !== tx || pos.y !== ty) continue;
-          const multiplier = typeChartMultiplierForTypes(project, p.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
-          hitActionEnemy(scene, state, enemy, Math.max(1, Math.round(p.damage * multiplier)), tx, ty);
-          consumed = true;
-          break;
-        }
+      // 유탄 명중: 발사자 진영에 우호(1 이상)가 아닌 전투원은 전부 맞는다.
+      // 같은 진영은 대각선 기본값이 동맹(2)이라 자연하게 아군 오사에서 면제된다.
+      if (
+        p.ownerId !== PLAYER_COMBATANT_ID
+        && isHittableByFaction(effectiveFactionStance(state.factions, state.factionStanceOverrides, p.ownerFactionId, PLAYER_FACTION_ID))
+        && playerTiles.some((t) => t.x === tx && t.y === ty)
+      ) {
+        damagePlayer(scene, state, p.damage, tx, ty);
+        consumed = true;
+        break;
+      }
+      for (const enemy of [...state.enemies.values()]) {
+        if (enemy.eventId === p.ownerId) continue;
+        const pos = enemyTilePosition(scene, enemy.eventId);
+        if (!pos || pos.x !== tx || pos.y !== ty) continue;
+        if (!isHittableByFaction(effectiveFactionStance(state.factions, state.factionStanceOverrides, p.ownerFactionId, enemy.factionId))) continue;
+        const multiplier = typeChartMultiplierForTypes(project, p.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
+        const damage = Math.max(1, Math.round(p.damage * multiplier));
+        if (p.ownerId === PLAYER_COMBATANT_ID) hitActionEnemy(scene, state, enemy, damage, tx, ty);
+        else damageEnemyByNpc(scene, state, enemy, p.ownerId, damage);
+        consumed = true;
+        break;
       }
     }
     p.object.setPosition(characterSpriteX(p.x), characterSpriteY(p.y) - TILE_SIZE / 2);

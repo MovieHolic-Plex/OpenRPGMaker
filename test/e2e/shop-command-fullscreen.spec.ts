@@ -42,6 +42,9 @@ test("shop command edit dialog opens fullscreen while ordinary commands stay wid
   }
   await screenshotEvidence(page, EVIDENCE_DIR, "C001-shop-dialog-fullscreen.png");
 
+  // 「한 화면에 다 보인다」는 창 크기 비율이 아니라 **도달 가능성**으로 확인한다. 예전 이
+  // 스펙은 비율과 레일 testid 가시성만 봤고, 그 사이 담기 버튼이 aria-hidden 트레이로
+  // 옮겨가고 자료집 179행이 전부 잘려도 계속 통과했다.
   const reach = await measureReachability(page, shopDialog);
   await writeEvidenceJson(EVIDENCE_DIR, "C003-shop-goods-reachability.json", reach);
   // 1600×1000 에서 DB 전체가 목록 스크롤로 닿아야 한다. 예전 `<details>` 자료집은
@@ -54,6 +57,9 @@ test("shop command edit dialog opens fullscreen while ordinary commands stay wid
   expect(reach.mainColumnScrollers).toEqual(["shop-item-catalog"]);
   // aria-hidden 안에 포커스 가능한 노드가 없다 (WCAG 4.1.2 / axe aria-hidden-focus).
   expect(reach.ariaHiddenFocusables).toBe(0);
+  // 「스크롤은 되는데 두 줄만 보인다」로 퇴화하지 않도록 쓸 만한 높이도 못 박는다. #183 이
+  // 듀얼 리스트 시절 진열 목록에 걸어 둔 6행 바닥인데, 단일 목록으로 합치면서 사라졌다.
+  expect(reach.clientHeight, "상품 목록이 최소 6행(약 160px)은 보여야 한다").toBeGreaterThanOrEqual(160);
 
   // 가장 좁은 지원 해상도에서도 판매 중 행이 최소 하나는 온전히 보인다.
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -83,7 +89,9 @@ test("shop command edit dialog opens fullscreen while ordinary commands stay wid
     cleanup: "Playwright closes the browser context; the dev server is the shared worktree server.",
     shop: shopMetrics,
     text: textMetrics,
-    proves: "Shop command opens a fullscreen subdialog with every option on one rail; ordinary commands keep the wide window.",
+    reach,
+    proves:
+      "Shop command opens a fullscreen subdialog with every option on one rail and one checkbox list that reaches the whole item DB (wheel scrolls, last row reachable, single scroller in the main column, no focusable node inside aria-hidden, list at least 6 rows tall); ordinary commands keep the wide window.",
   });
 });
 

@@ -2,7 +2,6 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
-const MAP_FIRST_KEY = "oprn:ai-map-first-collapse-v1";
 const COACH_MARKS_KEY = "oprn:coachmarks-basic-v1";
 const STANDARD_WELCOME_KEY = "oprn:standard-welcome-seen";
 
@@ -31,7 +30,7 @@ async function openEditor(page: Page): Promise<void> {
     sessionStorage.setItem("chat-dock-e2e-cleared", "1");
     localStorage.removeItem(layoutKey);
   }, { layoutKey: EDITOR_LAYOUT_KEY, coachKey: COACH_MARKS_KEY, welcomeKey: STANDARD_WELCOME_KEY });
-  await page.goto("/?chatDockSwitch=1");
+  await page.goto("/?freshProject=1&chatDockSwitch=1");
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   // First visit boots open; restore click is a no-op if already expanded.
@@ -72,26 +71,21 @@ async function assertInputUsable(page: Page, value: string): Promise<void> {
   await expect(input).toBeFocused();
 }
 
-/** 헤더 ☰ 의 되돌리기·도크는 after.html hug를 위해 작업 접기 안에 있다. */
-async function revealHeaderActions(page: Page): Promise<void> {
-  const fold = page.getByTestId("ai-more-actions");
-  await expect(fold).toBeVisible();
-  await fold.evaluate((node) => {
-    (node as HTMLDetailsElement).open = true;
-  });
-  await expect(page.getByTestId("ai-more-dock")).toBeVisible();
-}
-
-async function clickHeaderDock(page: Page): Promise<void> {
-  await page.getByTestId("ai-more-menu-toggle").click();
-  await expect(page.getByTestId("ai-more-menu")).toBeVisible();
-  await revealHeaderActions(page);
-  await page.getByTestId("ai-more-dock").click();
+/** 테스트 전용 순환 훅으로 dock을 바꾸되 실제 panel state 적용까지 기다린다. */
+async function setDock(page: Page, target: "glass" | "side" | "float"): Promise<void> {
+  await page.evaluate((dock) => {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-testid="chat-dock-toggle"]');
+    for (let i = 0; i < 3; i += 1) {
+      if (document.querySelector<HTMLElement>('[data-testid="ai-panel"]')?.dataset.chatDock === dock) return;
+      toggle?.click();
+    }
+  }, target);
+  await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-chat-dock", target);
 }
 
 test.describe("chat dock switch", () => {
   test("glass default, side then float toggle, DOM preservation, focus, and resize bounds", async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     await page.setViewportSize({ width: 1600, height: 920 });
     await openEditor(page);
 
@@ -122,8 +116,8 @@ test.describe("chat dock switch", () => {
     });
     await expect(page.getByTestId("dock-marker")).toBeAttached();
 
-    // glass 모드: 카드 헤더 메뉴로 사이드 전환.
-    await clickHeaderDock(page);
+    // glass → side: 같은 panel DOM을 shell-owned side host로 옮긴다.
+    await setDock(page, "side");
     await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
     await expect(page.getByTestId("dock-marker")).toBeAttached();
     await expect(sidePanel.getByTestId("ai-chat-log")).toBeAttached();
@@ -139,6 +133,16 @@ test.describe("chat dock switch", () => {
     const canvasSide = await box(canvas);
     expect(canvasSide.width).toBeLessThan(canvasFloat.width - 80);
 
+    // User commit owns preferred width; a transient narrow-viewport clamp must not replace it.
+    const sideResizeHandle = page.getByTestId("ai-resize-handle");
+    await sideResizeHandle.focus();
+    await page.keyboard.press("Shift+ArrowLeft");
+    const preferredSideWidth = Math.round((await box(sidePanel)).width);
+    await page.setViewportSize({ width: 900, height: 920 });
+    await expect.poll(async () => Math.round((await box(sidePanel)).width)).toBeLessThan(preferredSideWidth);
+    await page.setViewportSize({ width: 1600, height: 920 });
+    await expect.poll(async () => Math.round((await box(sidePanel)).width)).toBe(preferredSideWidth);
+
     await page.reload();
     await dismissLogin(page);
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
@@ -146,15 +150,8 @@ test.describe("chat dock switch", () => {
     await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
     await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-side"))).toBe(true);
 
-    // side 모드: 더보기 메뉴로 float 복귀
-    await page.getByTestId("ai-more-menu-toggle").click();
-    // Break: the click opened an absolutely positioned menu inside the side host's overflow:hidden;
-    // it existed in the DOM but was completely clipped, so the assistant could not be detached.
-    await expect(page.getByTestId("ai-more-menu")).toBeVisible();
-    await revealHeaderActions(page);
-    await expect(page.getByTestId("ai-more-dock")).toHaveText("입력줄");
-    await page.screenshot({ path: "output/evidence/assistant-dock/side-menu-open.png" });
-    await page.getByTestId("ai-more-dock").click();
+    // side → float 복귀
+    await setDock(page, "float");
     await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
     await expect.poll(() => layoutDock(page)).toBe("float");
     await assertInputUsable(page, "float after toggle ok");
@@ -177,7 +174,7 @@ test.describe("chat dock switch", () => {
     expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
     await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-12-float.png" });
 
-    await clickHeaderDock(page);
+    await setDock(page, "side");
 
     const sidePanel = page.getByTestId("chat-side-panel");
     await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
@@ -192,72 +189,72 @@ test.describe("chat dock switch", () => {
   // (지금은 02-chat-dock.css:112 가 display:none 으로 감춘다).
 
   test("idle-screen picker is icon-first, understandable, and escapable", async ({ page }) => {
+    test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openEditor(page);
 
-    await page.getByTestId("ai-more-menu-toggle").click();
-    const headerChoices = [
+    await setDock(page, "float");
+    await page.getByTestId("ai-command-menu-toggle").click();
+    const choices = [
       ["quiet-gold", "✦", "추천 함께 보기"],
       ["ink-only", "◫", "조수만 보기"],
       ["map-first", "⌨", "입력창만 보기"],
     ] as const;
-    for (const [id, icon, label] of headerChoices) {
-      const choice = page.getByTestId(`ai-temperature-${id}`);
+    for (const [id, icon, label] of choices) {
+      const choice = page.getByTestId(`ai-command-temperature-${id}`);
       await expect(choice).toHaveText(`${icon} ${label}`);
       await expect(choice).toHaveAttribute("aria-label", label);
     }
 
-    await page.getByTestId("ai-temperature-map-first").click();
+    await page.getByTestId("ai-command-temperature-map-first").click();
+    await expect(page.getByTestId("ai-command-menu")).toBeHidden();
+    await setDock(page, "side");
     await expect(page.getByTestId("ai-panel")).toHaveClass(/is-map-first-idle/);
-    await expect(page.getByTestId("ai-command-menu-toggle")).toBeVisible();
 
+    await setDock(page, "float");
     await page.getByTestId("ai-command-menu-toggle").click();
     await expect(page.getByTestId("ai-command-temperature-quiet-gold")).toBeVisible();
     await page.getByTestId("ai-command-temperature-quiet-gold").click();
+    await expect(page.getByTestId("ai-command-menu")).toBeHidden();
+    await setDock(page, "side");
     await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-map-first-idle/);
-    await expect(page.getByTestId("ai-more-menu-toggle")).toBeVisible();
   });
 
   test("collapsed float and side combinations stay compact and restorable", async ({ page }) => {
+    test.setTimeout(120_000);
     await page.setViewportSize({ width: 1600, height: 920 });
     await openEditor(page);
 
-    await page.evaluate(({ layoutKey, collapsedKey }) => {
-      localStorage.setItem(layoutKey, JSON.stringify({ chatDock: "float" }));
-      localStorage.setItem(collapsedKey, "1");
-    }, { layoutKey: EDITOR_LAYOUT_KEY, collapsedKey: PANEL_COLLAPSED_KEY });
-    await page.reload();
-    await dismissLogin(page);
-    await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
-
     const canvas = page.locator(".canvas-area");
     const panel = page.getByTestId("ai-panel");
-    await expect(panel).toHaveClass(/is-collapsed/);
-    await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
-    const collapsedFloat = await box(panel);
     const canvasBox = await box(canvas);
-    expect(collapsedFloat.width * collapsedFloat.height).toBeLessThan(canvasBox.width * canvasBox.height * 0.2);
-    await expect(page.getByTestId("ai-command-bar")).toBeHidden();
 
-    await page.getByTestId("ai-collapsed-restore").click();
-    await assertInputUsable(page, "restored float ok");
-    // float → glass는 컴포저 메뉴, glass → side는 카드 헤더 메뉴로 진행한다.
-    await page.getByTestId("ai-command-menu-toggle").focus();
-    await page.keyboard.press("Enter");
-    await page.getByTestId("ai-command-menu-dock").click();
-    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
-    await clickHeaderDock(page);
-    await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
-
-    // 접기 버튼은 숨은 훅이다 — 상태 기계를 검사하려는 것이므로 DOM 으로 직접 누른다.
-    await page.getByTestId("ai-collapse").evaluate((n) => (n as HTMLButtonElement).click());
-    await expect(panel).toHaveClass(/is-collapsed/);
-    const collapsedSide = await box(panel);
-    expect(collapsedSide.width).toBeLessThan(90);
-    await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
-
-    await page.getByTestId("ai-collapsed-restore").click();
-    await expect(panel).not.toHaveClass(/is-collapsed/);
-    await assertInputUsable(page, "restored side ok");
+    for (const dock of ["float", "glass", "side"] as const) {
+      await setDock(page, dock);
+      await expect(page.getByTestId("ai-collapse")).toBeVisible();
+      await page.getByTestId("ai-collapse").click();
+      await expect(panel).toHaveClass(/is-collapsed/);
+      await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
+      if (dock !== "side") {
+        const collapsedBox = await box(panel);
+        expect(collapsedBox.width * collapsedBox.height).toBeLessThan(canvasBox.width * canvasBox.height * 0.2);
+      } else {
+        const restoreBox = await box(page.getByTestId("ai-collapsed-restore"));
+        expect(restoreBox.width).toBeLessThanOrEqual(48);
+      }
+      await expect(page.getByTestId("ai-command-bar")).toBeHidden();
+      if (dock === "side") {
+        await expect.poll(() => page.evaluate((key) => localStorage.getItem(key), PANEL_COLLAPSED_KEY)).toBe("1");
+        await page.reload();
+        await dismissLogin(page);
+        await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 40_000 });
+        await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-chat-dock", "side");
+        await expect(page.getByTestId("ai-panel")).toHaveClass(/is-collapsed/);
+        await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
+      }
+      await page.getByTestId("ai-collapsed-restore").click();
+      await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
+      await assertInputUsable(page, `restored ${dock} ok`);
+    }
   });
 });

@@ -14,6 +14,7 @@ import {
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type {
@@ -178,6 +179,11 @@ function referenceSets(project: Project, mapId: MapId) {
     commonEvents: new Set(project.commonEvents.map((entry) => entry.id)),
     endings: new Set((project.endings ?? []).map((entry) => entry.id)),
     equipment: new Set(project.database.equipment.map((entry) => entry.id)),
+    factions: new Set([
+      PLAYER_FACTION_ID,
+      DEFAULT_ENEMY_FACTION_ID,
+      ...(project.factions?.defs ?? []).map((entry) => entry.id),
+    ]),
     events: new Set((map?.events ?? []).map((entry) => entry.id)),
     eventTemplates: new Set(
       Object.values(project.maps).flatMap((projectMap) => projectMap.events.map((entry) => entry.id)),
@@ -678,6 +684,28 @@ function validateCommand(
     case "applyItemUpgrade": require("reference.upgrade.missing", "업그레이드", command.upgradeId, refs.upgrades); return;
     case "equipTool": require("reference.item.missing", "도구 아이템", command.itemId, refs.items, true); return;
     case "getFriendship": require("reference.variable.missing", "호감도 저장 변수", command.variableId, refs.variables); return;
+    case "changeFactionStance":
+      requireReference(
+        issues,
+        pageId,
+        "reference.faction.missing",
+        "진영 A",
+        command.a,
+        refs.factions,
+        { testId: "event-command-faction-a" },
+        path,
+      );
+      requireReference(
+        issues,
+        pageId,
+        "reference.faction.missing",
+        "진영 B",
+        command.b,
+        refs.factions,
+        { testId: "event-command-faction-b" },
+        path,
+      );
+      return;
     case "giveMonster": require("reference.species.missing", "몬스터 종", command.speciesId, refs.species); return;
     case "evolveMonster": require("reference.species.missing", "진화 대상 종", command.toSpeciesId, refs.species, true); return;
     case "addFollower":

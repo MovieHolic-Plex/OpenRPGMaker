@@ -1,0 +1,508 @@
+{
+  "label": "before",
+  "base": "http://127.0.0.1:9823",
+  "at": "2026-08-28T14:22:24.573Z",
+  "docks": {
+    "glass": {
+      "probe": {
+        "dock": "glass",
+        "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+        "panel": {
+          "w": 520,
+          "h": 620,
+          "x": 318,
+          "y": 61
+        },
+        "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 388px;",
+        "collapsed": false,
+        "controls": {
+          "collapse": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "restore": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "resizeHandle": {
+            "present": true,
+            "visible": true,
+            "w": 16,
+            "h": 16,
+            "x": 821,
+            "y": 664,
+            "hit": {
+              "tag": "div",
+              "cls": "ai-chat-resize-handle is-corner-end",
+              "testid": "ai-resize-handle"
+            }
+          }
+        },
+        "handleCornerHit": {
+          "tag": "div",
+          "cls": "ai-chat-resize-handle is-corner-end",
+          "testid": "ai-resize-handle"
+        },
+        "visibleButtons": [
+          {
+            "testid": "ai-authoring-example-road",
+            "label": "길"
+          },
+          {
+            "testid": "ai-authoring-example-npc",
+            "label": "NPC"
+          },
+          {
+            "testid": "ai-authoring-example-shop",
+            "label": "상점"
+          },
+          {
+            "testid": "ai-authoring-example-chest",
+            "label": "상자"
+          },
+          {
+            "testid": "ai-send",
+            "label": "↑ 전송"
+          }
+        ]
+      },
+      "resizeGrow": {
+        "attempted": true,
+        "dx": 160,
+        "dy": 120,
+        "before": {
+          "w": 520,
+          "h": 620
+        },
+        "after": {
+          "w": 680,
+          "h": 740
+        },
+        "changedW": 160,
+        "changedH": 120,
+        "worked": true
+      },
+      "resizeShrink": {
+        "attempted": true,
+        "dx": -160,
+        "dy": -120,
+        "before": {
+          "w": 680,
+          "h": 740
+        },
+        "after": {
+          "w": 520,
+          "h": 620
+        },
+        "changedW": -160,
+        "changedH": -120,
+        "worked": true
+      },
+      "collapse": {
+        "possible": false,
+        "reason": "ai-collapse exists but is not visible (hidden/inert toolbar)"
+      },
+      "shots": [
+        "output/evidence/assistant-resize-collapse/before-glass-idle.png"
+      ]
+    },
+    "side": {
+      "probe": {
+        "dock": "side",
+        "panelClass": "ai-chat-panel is-assistant-idle chat-dock-side",
+        "panel": {
+          "w": 478,
+          "h": 851,
+          "x": 961,
+          "y": 49
+        },
+        "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 176px;",
+        "collapsed": false,
+        "controls": {
+          "collapse": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "restore": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "resizeHandle": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          }
+        },
+        "handleCornerHit": null,
+        "visibleButtons": [
+          {
+            "testid": "ai-authoring-example-road",
+            "label": "길"
+          },
+          {
+            "testid": "ai-authoring-example-npc",
+            "label": "NPC"
+          },
+          {
+            "testid": "ai-authoring-example-shop",
+            "label": "상점"
+          },
+          {
+            "testid": "ai-authoring-example-chest",
+            "label": "상자"
+          },
+          {
+            "testid": "ai-send",
+            "label": "↑ 전송"
+          }
+        ]
+      },
+      "resizeGrow": {
+        "attempted": false,
+        "reason": "handle not visible",
+        "before": {
+          "dock": "side",
+          "panelClass": "ai-chat-panel is-assistant-idle chat-dock-side",
+          "panel": {
+            "w": 478,
+            "h": 851,
+            "x": 961,
+            "y": 49
+          },
+          "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 176px;",
+          "collapsed": false,
+          "controls": {
+            "collapse": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "restore": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "resizeHandle": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            }
+          },
+          "handleCornerHit": null,
+          "visibleButtons": [
+            {
+              "testid": "ai-authoring-example-road",
+              "label": "길"
+            },
+            {
+              "testid": "ai-authoring-example-npc",
+              "label": "NPC"
+            },
+            {
+              "testid": "ai-authoring-example-shop",
+              "label": "상점"
+            },
+            {
+              "testid": "ai-authoring-example-chest",
+              "label": "상자"
+            },
+            {
+              "testid": "ai-send",
+              "label": "↑ 전송"
+            }
+          ]
+        },
+        "after": {
+          "dock": "side",
+          "panelClass": "ai-chat-panel is-assistant-idle chat-dock-side",
+          "panel": {
+            "w": 478,
+            "h": 851,
+            "x": 961,
+            "y": 49
+          },
+          "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 176px;",
+          "collapsed": false,
+          "controls": {
+            "collapse": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "restore": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "resizeHandle": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            }
+          },
+          "handleCornerHit": null,
+          "visibleButtons": [
+            {
+              "testid": "ai-authoring-example-road",
+              "label": "길"
+            },
+            {
+              "testid": "ai-authoring-example-npc",
+              "label": "NPC"
+            },
+            {
+              "testid": "ai-authoring-example-shop",
+              "label": "상점"
+            },
+            {
+              "testid": "ai-authoring-example-chest",
+              "label": "상자"
+            },
+            {
+              "testid": "ai-send",
+              "label": "↑ 전송"
+            }
+          ]
+        }
+      },
+      "resizeShrink": {
+        "attempted": false,
+        "reason": "grow failed"
+      },
+      "collapse": {
+        "possible": false,
+        "reason": "ai-collapse exists but is not visible (hidden/inert toolbar)"
+      },
+      "shots": [
+        "output/evidence/assistant-resize-collapse/before-side-idle.png"
+      ]
+    },
+    "float": {
+      "probe": {
+        "dock": "float",
+        "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
+        "panel": {
+          "w": 1133,
+          "h": 851,
+          "x": 306,
+          "y": 49
+        },
+        "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 202px;",
+        "collapsed": false,
+        "controls": {
+          "collapse": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "restore": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "resizeHandle": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          }
+        },
+        "handleCornerHit": null,
+        "visibleButtons": [
+          {
+            "testid": "ai-command-menu-toggle",
+            "label": "더보기 메뉴"
+          },
+          {
+            "testid": "ai-send",
+            "label": "↑ 전송"
+          }
+        ]
+      },
+      "resizeGrow": {
+        "attempted": false,
+        "reason": "handle not visible",
+        "before": {
+          "dock": "float",
+          "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
+          "panel": {
+            "w": 1133,
+            "h": 851,
+            "x": 306,
+            "y": 49
+          },
+          "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 202px;",
+          "collapsed": false,
+          "controls": {
+            "collapse": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "restore": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "resizeHandle": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            }
+          },
+          "handleCornerHit": null,
+          "visibleButtons": [
+            {
+              "testid": "ai-command-menu-toggle",
+              "label": "더보기 메뉴"
+            },
+            {
+              "testid": "ai-send",
+              "label": "↑ 전송"
+            }
+          ]
+        },
+        "after": {
+          "dock": "float",
+          "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
+          "panel": {
+            "w": 1133,
+            "h": 851,
+            "x": 306,
+            "y": 49
+          },
+          "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 202px;",
+          "collapsed": false,
+          "controls": {
+            "collapse": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "restore": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            },
+            "resizeHandle": {
+              "present": true,
+              "visible": false,
+              "w": 0,
+              "h": 0,
+              "x": 0,
+              "y": 0,
+              "hit": null
+            }
+          },
+          "handleCornerHit": null,
+          "visibleButtons": [
+            {
+              "testid": "ai-command-menu-toggle",
+              "label": "더보기 메뉴"
+            },
+            {
+              "testid": "ai-send",
+              "label": "↑ 전송"
+            }
+          ]
+        }
+      },
+      "resizeShrink": {
+        "attempted": false,
+        "reason": "grow failed"
+      },
+      "collapse": {
+        "possible": false,
+        "reason": "ai-collapse exists but is not visible (hidden/inert toolbar)"
+      },
+      "shots": [
+        "output/evidence/assistant-resize-collapse/before-float-idle.png"
+      ]
+    }
+  },
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}

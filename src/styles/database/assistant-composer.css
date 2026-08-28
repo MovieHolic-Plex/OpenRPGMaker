@@ -50,6 +50,13 @@
   width: 28px;
 }
 
+/* 접기 버튼도 같은 28px action chrome을 쓴다. 이전 ai-chat-collapse 규칙의 min-width가
+   넓은 전역 버튼 규칙에 밀리지 않도록 액션 행 안에서 정사각형을 확정한다. */
+.ai-composer-actions .ai-chat-collapse {
+  flex: 0 0 28px;
+  width: 28px;
+}
+
 .ai-composer-menu-btn:hover,
 .ai-composer-menu-btn:focus-visible {
   background: var(--control-bg-hover);

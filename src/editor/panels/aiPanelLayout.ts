@@ -128,15 +128,27 @@ export const SIDE_CHAT_WIDTH = {
  * side dock 컬럼 폭(px). `usableWidth`는 레이아웃 content 폭(패딩 제외).
  * `reservedForCanvas`는 좌패널+리사이저+캔버스 최소 등 사이드 외 예산.
  */
-export function computeSideChatWidth(usableWidth: number, reservedForCanvas = 0): number {
+export function resolveSideChatWidth(
+  usableWidth: number,
+  reservedForCanvas = 0,
+  preferredWidth?: number | null,
+): number {
   if (!Number.isFinite(usableWidth) || usableWidth <= 0) return SIDE_CHAT_WIDTH.min;
-  const third = Math.floor(usableWidth * SIDE_CHAT_WIDTH.ratio);
+  const fallback = Math.floor(usableWidth * SIDE_CHAT_WIDTH.ratio);
+  const preferred = Number.isFinite(preferredWidth) && Number(preferredWidth) > 0
+    ? Number(preferredWidth)
+    : fallback;
   const maxByCanvas =
     reservedForCanvas > 0
       ? Math.max(SIDE_CHAT_WIDTH.min, Math.floor(usableWidth - reservedForCanvas))
       : SIDE_CHAT_WIDTH.max;
   const upper = Math.min(SIDE_CHAT_WIDTH.max, maxByCanvas);
-  return Math.round(Math.min(upper, Math.max(SIDE_CHAT_WIDTH.min, third)));
+  return Math.round(Math.min(upper, Math.max(SIDE_CHAT_WIDTH.min, preferred)));
+}
+
+/** @deprecated Use resolveSideChatWidth when a persisted/user preferred width is available. */
+export function computeSideChatWidth(usableWidth: number, reservedForCanvas = 0): number {
+  return resolveSideChatWidth(usableWidth, reservedForCanvas);
 }
 
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────

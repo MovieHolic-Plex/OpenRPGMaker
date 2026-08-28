@@ -3,6 +3,7 @@
 // v2: switches/variables/timers/commonEvents 포함.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
+import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { FarmPlots, MonsterInstance } from "@/project/session";
 import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
@@ -288,6 +289,7 @@ export interface PlaySessionLike {
   npcActivities?: Record<string, string>;
   npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
   farmPlots?: FarmPlots;
+  factionStanceOverrides?: FactionStanceOverrides;
   friendship?: Record<string, number>;
   dailyGifts?: Record<string, string>;
   followers?: RuntimeFollowerLike[];

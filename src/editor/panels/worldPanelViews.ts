@@ -20,6 +20,7 @@ import {
   ORIGIN_LABELS,
   RELATION_KIND_LABELS,
   relationsForEntity,
+  renderFactionMaterialization,
   saveDraft,
   SEVERITY_LABELS,
   startNewDraft,
@@ -103,6 +104,7 @@ export function renderMain(
     children: [
       renderTabs(state, refresh),
       ...(state.tab === "overview" ? [renderOverview(world, state, refresh)] : []),
+      ...(state.tab === "place-faction" ? [renderFactionMaterialization(refresh)] : []),
       renderCardGrid(state, world, project, lint, refresh),
     ],
   });

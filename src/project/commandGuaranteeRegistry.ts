@@ -176,6 +176,12 @@ export const COMMAND_GUARANTEES = {
     troopAuthoring: true,
     support: { ...scopedPartial, troop: "full" },
   }),
+  changeFactionStance: guarantee("social", {
+    direct: false,
+    quick: true,
+    ai: false,
+    support: scopedPartial,
+  }),
   getFriendship: guarantee("social", {
     direct: false,
     troopAuthoring: true,

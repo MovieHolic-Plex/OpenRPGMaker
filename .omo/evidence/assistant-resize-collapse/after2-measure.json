@@ -1,0 +1,424 @@
+{
+  "label": "after2",
+  "base": "http://127.0.0.1:9823",
+  "at": "2026-08-28T17:57:23.736Z",
+  "docks": {
+    "glass": {
+      "probe": {
+        "dock": "glass",
+        "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+        "target": {
+          "testid": "ai-panel",
+          "rect": {
+            "w": 520,
+            "h": 620,
+            "x": 318,
+            "y": 61
+          }
+        },
+        "panel": {
+          "w": 520,
+          "h": 620,
+          "x": 318,
+          "y": 61
+        },
+        "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 388px;",
+        "collapsed": false,
+        "controls": {
+          "collapse": {
+            "present": true,
+            "visible": true,
+            "w": 30,
+            "h": 30,
+            "x": 348,
+            "y": 623,
+            "hit": {
+              "tag": "button",
+              "cls": "ai-chat-collapse ai-composer-menu-btn",
+              "testid": "ai-collapse"
+            }
+          },
+          "restore": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "resizeHandle": {
+            "present": true,
+            "visible": true,
+            "w": 16,
+            "h": 16,
+            "x": 821,
+            "y": 664,
+            "hit": {
+              "tag": "div",
+              "cls": "ai-chat-resize-handle is-corner-end",
+              "testid": "ai-resize-handle"
+            }
+          }
+        },
+        "handleCornerHit": {
+          "tag": "div",
+          "cls": "ai-chat-resize-handle is-corner-end",
+          "testid": "ai-resize-handle"
+        },
+        "visibleButtons": [
+          {
+            "testid": "ai-authoring-example-road",
+            "label": "길"
+          },
+          {
+            "testid": "ai-authoring-example-npc",
+            "label": "NPC"
+          },
+          {
+            "testid": "ai-authoring-example-shop",
+            "label": "상점"
+          },
+          {
+            "testid": "ai-authoring-example-chest",
+            "label": "상자"
+          },
+          {
+            "testid": "ai-collapse",
+            "label": "AI 패널 접기"
+          },
+          {
+            "testid": "ai-send",
+            "label": "↑ 전송"
+          }
+        ]
+      },
+      "resizeGrow": {
+        "attempted": true,
+        "targetTestid": "ai-panel",
+        "dx": 160,
+        "dy": 120,
+        "before": {
+          "w": 520,
+          "h": 620,
+          "x": 318,
+          "y": 61
+        },
+        "after": {
+          "w": 680,
+          "h": 740,
+          "x": 318,
+          "y": 61
+        },
+        "changedW": 160,
+        "changedH": 120,
+        "worked": true
+      },
+      "resizeShrink": {
+        "attempted": true,
+        "targetTestid": "ai-panel",
+        "dx": -160,
+        "dy": -120,
+        "before": {
+          "w": 680,
+          "h": 740,
+          "x": 318,
+          "y": 61
+        },
+        "after": {
+          "w": 520,
+          "h": 620,
+          "x": 318,
+          "y": 61
+        },
+        "changedW": -160,
+        "changedH": -120,
+        "worked": true
+      },
+      "collapse": {
+        "possible": true,
+        "reason": "collapsed via visible control"
+      },
+      "shots": [
+        "output/evidence/assistant-resize-collapse/after2-glass-idle.png",
+        "output/evidence/assistant-resize-collapse/after2-glass-collapsed.png"
+      ]
+    },
+    "side": {
+      "probe": {
+        "dock": "side",
+        "panelClass": "ai-chat-panel is-assistant-idle chat-dock-side",
+        "target": {
+          "testid": "ai-panel",
+          "rect": {
+            "w": 478,
+            "h": 851,
+            "x": 961,
+            "y": 49
+          }
+        },
+        "panel": {
+          "w": 478,
+          "h": 851,
+          "x": 961,
+          "y": 49
+        },
+        "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 176px;",
+        "collapsed": false,
+        "controls": {
+          "collapse": {
+            "present": true,
+            "visible": true,
+            "w": 30,
+            "h": 30,
+            "x": 998,
+            "y": 835,
+            "hit": {
+              "tag": "button",
+              "cls": "ai-chat-collapse ai-composer-menu-btn",
+              "testid": "ai-collapse"
+            }
+          },
+          "restore": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "resizeHandle": {
+            "present": true,
+            "visible": true,
+            "w": 12,
+            "h": 851,
+            "x": 961,
+            "y": 49,
+            "hit": {
+              "tag": "div",
+              "cls": "ai-chat-resize-handle is-edge-start",
+              "testid": "ai-resize-handle"
+            }
+          }
+        },
+        "handleCornerHit": {
+          "tag": "div",
+          "cls": "ai-chat-resize-handle is-edge-start",
+          "testid": "ai-resize-handle"
+        },
+        "visibleButtons": [
+          {
+            "testid": "ai-authoring-example-road",
+            "label": "길"
+          },
+          {
+            "testid": "ai-authoring-example-npc",
+            "label": "NPC"
+          },
+          {
+            "testid": "ai-authoring-example-shop",
+            "label": "상점"
+          },
+          {
+            "testid": "ai-authoring-example-chest",
+            "label": "상자"
+          },
+          {
+            "testid": "ai-collapse",
+            "label": "AI 패널 접기"
+          },
+          {
+            "testid": "ai-send",
+            "label": "↑ 전송"
+          }
+        ]
+      },
+      "resizeGrow": {
+        "attempted": true,
+        "targetTestid": "ai-panel",
+        "dx": -160,
+        "dy": 120,
+        "before": {
+          "w": 478,
+          "h": 851,
+          "x": 961,
+          "y": 49
+        },
+        "after": {
+          "w": 636,
+          "h": 851,
+          "x": 803,
+          "y": 49
+        },
+        "changedW": 158,
+        "changedH": 0,
+        "worked": true
+      },
+      "resizeShrink": {
+        "attempted": true,
+        "targetTestid": "ai-panel",
+        "dx": 160,
+        "dy": -120,
+        "before": {
+          "w": 636,
+          "h": 851,
+          "x": 803,
+          "y": 49
+        },
+        "after": {
+          "w": 474,
+          "h": 851,
+          "x": 965,
+          "y": 49
+        },
+        "changedW": -162,
+        "changedH": 0,
+        "worked": true
+      },
+      "collapse": {
+        "possible": true,
+        "reason": "collapsed via visible control"
+      },
+      "shots": [
+        "output/evidence/assistant-resize-collapse/after2-side-idle.png",
+        "output/evidence/assistant-resize-collapse/after2-side-collapsed.png"
+      ]
+    },
+    "float": {
+      "probe": {
+        "dock": "float",
+        "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
+        "target": {
+          "testid": "ai-command-bar",
+          "rect": {
+            "w": 640,
+            "h": 142,
+            "x": 787,
+            "y": 710
+          }
+        },
+        "panel": {
+          "w": 1133,
+          "h": 851,
+          "x": 306,
+          "y": 49
+        },
+        "inlineStyle": "--ai-font-scale: 1; --ai-command-bar-clearance: 202px;",
+        "collapsed": false,
+        "controls": {
+          "collapse": {
+            "present": true,
+            "visible": true,
+            "w": 30,
+            "h": 30,
+            "x": 811,
+            "y": 802,
+            "hit": {
+              "tag": "button",
+              "cls": "ai-chat-collapse ai-composer-menu-btn",
+              "testid": "ai-collapse"
+            }
+          },
+          "restore": {
+            "present": true,
+            "visible": false,
+            "w": 0,
+            "h": 0,
+            "x": 0,
+            "y": 0,
+            "hit": null
+          },
+          "resizeHandle": {
+            "present": true,
+            "visible": true,
+            "w": 12,
+            "h": 140,
+            "x": 788,
+            "y": 711,
+            "hit": {
+              "tag": "div",
+              "cls": "ai-chat-resize-handle is-edge-start",
+              "testid": "ai-resize-handle"
+            }
+          }
+        },
+        "handleCornerHit": {
+          "tag": "div",
+          "cls": "ai-chat-resize-handle is-edge-start",
+          "testid": "ai-resize-handle"
+        },
+        "visibleButtons": [
+          {
+            "testid": "ai-collapse",
+            "label": "AI 패널 접기"
+          },
+          {
+            "testid": "ai-command-menu-toggle",
+            "label": "더보기 메뉴"
+          },
+          {
+            "testid": "ai-send",
+            "label": "↑ 전송"
+          }
+        ]
+      },
+      "resizeGrow": {
+        "attempted": true,
+        "targetTestid": "ai-command-bar",
+        "dx": -160,
+        "dy": 120,
+        "before": {
+          "w": 640,
+          "h": 142,
+          "x": 787,
+          "y": 710
+        },
+        "after": {
+          "w": 800,
+          "h": 142,
+          "x": 627,
+          "y": 710
+        },
+        "changedW": 160,
+        "changedH": 0,
+        "worked": true
+      },
+      "resizeShrink": {
+        "attempted": true,
+        "targetTestid": "ai-command-bar",
+        "dx": 160,
+        "dy": -120,
+        "before": {
+          "w": 800,
+          "h": 142,
+          "x": 627,
+          "y": 710
+        },
+        "after": {
+          "w": 640,
+          "h": 142,
+          "x": 787,
+          "y": 710
+        },
+        "changedW": -160,
+        "changedH": 0,
+        "worked": true
+      },
+      "collapse": {
+        "possible": true,
+        "reason": "collapsed via visible control"
+      },
+      "shots": [
+        "output/evidence/assistant-resize-collapse/after2-float-idle.png",
+        "output/evidence/assistant-resize-collapse/after2-float-collapsed.png"
+      ]
+    }
+  },
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}

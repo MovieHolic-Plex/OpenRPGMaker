@@ -677,6 +677,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "moveEvent":
       case "setEventGraphicPattern":
       case "changeTile":
+      case "changeFactionStance":
+        logUnsupported(page, context, command.kind);
+        return false;
       case "battleProcessing":
       case "showPicture":
       case "erasePicture":
