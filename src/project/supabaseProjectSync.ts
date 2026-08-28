@@ -1257,9 +1257,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function repairSupabaseCurrentJson(value: unknown): unknown {
   if (!isRecord(value)) return value;
-  // DB current_json is the canonical source of truth for authored database records.
-  // General default backfill remains forbidden. This one bounded migration repairs only the
-  // measured 2026-08 item seed: untouched English stubs otherwise survive every Supabase load.
+  // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
+  // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
+  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
   repairUntouchedDefaultItemCatalogStubs(value);
   pruneInvalidVillageInfoDocuments(value);
   removeLegacySpriteReferences(value);
@@ -1345,7 +1345,7 @@ function isUntouchedLegacyItemStub(record: Record<string, unknown>): boolean {
   if (typeof record.id !== "string" || !record.id.startsWith("item_")) return false;
   const slug = record.id.slice("item_".length).replaceAll("_", "-");
   const oldName = slug.replaceAll("-", " ");
-  // Both fields must still have the seed shape. A custom name or description is authored data.
+  // 두 필드가 모두 옛 시드 모양이어야 한다. 이름이나 설명 하나라도 다르면 저작 데이터다.
   return record.name === oldName && record.description === `${slug} 기본 아이템입니다.`;
 }
 
