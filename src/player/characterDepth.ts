@@ -1,6 +1,8 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { EventPriority, TilesetDef } from "@/project/types";
 import { passageMarkForTile } from "@/project/tilesetPassage";
+import { footprintBounds } from "@/project/footprint";
+import type { CharacterFootprint } from "@/project/types";
 
 const PRIORITY_DEPTH_BASE: Record<EventPriority, number> = {
   below: 100_000,
@@ -31,6 +33,16 @@ export function characterSpriteX(tileX: number): number {
 
 export function characterSpriteY(tileY: number): number {
   return tileY * TILE_SIZE + TILE_SIZE;
+}
+
+/**
+ * 발자국 가로 중앙의 월드 X. 스프라이트 원점이 (0.5, 1) 이라 이 값이 곧 중심선이다.
+ * 1x1·홀수 폭이면 characterSpriteX 와 같고, 짝수 폭이면 두 칸 경계에 온다.
+ *
+ * Y 는 별도 함수가 필요 없다 — 발자국 하단은 언제나 y 이므로 characterSpriteY 가 그대로 맞는다.
+ */
+export function footprintSpriteX(tileX: number, footprint: CharacterFootprint): number {
+  return (footprintBounds(tileX, 0, footprint).left + footprint.width / 2) * TILE_SIZE;
 }
 
 export function characterDepth(priority: EventPriority, worldY: number): number {

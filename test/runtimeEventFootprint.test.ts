@@ -17,6 +17,11 @@ import {
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
+import { TILE_SIZE } from "@/assets/bundled";
+import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
+import { startSession } from "@/project/session";
+import { store } from "@/project/store";
+import { renderTiles } from "@/player/playSceneMapRuntime";
 
 function page(overrides: Partial<EventPage> = {}): EventPage {
   return {
@@ -229,5 +234,138 @@ describe("1x1 이벤트는 승격 후에도 한 칸만 차지한다", () => {
     for (const [x, y] of [[4, 7], [6, 7], [5, 6], [5, 8]]) {
       expect(findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action"), `(${x},${y})`).toBeUndefined();
     }
+  });
+});
+
+describe("footprintSpriteX — 발자국 가로 중앙", () => {
+  it("1x1 은 기존 characterSpriteX 와 같다", () => {
+    for (let x = 0; x <= 12; x += 1) {
+      expect(footprintSpriteX(x, UNIT_FOOTPRINT)).toBe(characterSpriteX(x));
+    }
+  });
+
+  it("홀수 폭도 기존과 같다 — 발밑 칸 중앙이 곧 발자국 중앙이다", () => {
+    expect(footprintSpriteX(5, { width: 3, height: 3 })).toBe(characterSpriteX(5));
+    expect(footprintSpriteX(5, { width: 5, height: 1 })).toBe(characterSpriteX(5));
+  });
+
+  it("짝수 폭은 두 칸 경계에 온다", () => {
+    expect(footprintSpriteX(5, { width: 2, height: 2 })).toBe(6 * TILE_SIZE);
+    expect(footprintSpriteX(5, { width: 4, height: 1 })).toBe(6 * TILE_SIZE);
+  });
+
+  it("Y 는 발자국 높이와 무관하게 발밑 칸 하단이다", () => {
+    expect(characterSpriteY(7)).toBe(8 * TILE_SIZE);
+  });
+});
+
+type CapturedSprite = {
+  x: number;
+  y: number;
+  scale: number;
+  setOrigin(originX: number, originY: number): void;
+  setDepth(depth: number): void;
+  play(key: string): CapturedSprite;
+  setPosition(x: number, y: number): void;
+  setFrame(frame: string | number): void;
+  setScale(value: number): void;
+  destroy(): void;
+};
+
+function renderSceneFor(target: GameEvent): {
+  created: CapturedSprite[];
+  scene: Parameters<typeof renderTiles>[0];
+} {
+  const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  map.events = [target];
+  store.replace(project);
+
+  const created: CapturedSprite[] = [];
+  const scene: Parameters<typeof renderTiles>[0] = {
+    map,
+    session: startSession(project),
+    eventPositions: initialRuntimeEventPositions(map.events),
+    tileLayer: { removeAll: () => undefined, add: () => undefined },
+    eventSprites: new Map(),
+    runtimeDom: {
+      clearEventMarkers: () => undefined,
+      upsertEventMarker: () => undefined,
+      syncMissingResourceError: () => undefined,
+    },
+    missingResources: new Set<string>(),
+    add: {
+      image: () => ({ y: 0, setOrigin: () => undefined, setDepth: () => undefined }),
+      sprite: (x: number, y: number) => {
+        const sprite: CapturedSprite = {
+          x,
+          y,
+          scale: 1,
+          setOrigin: () => undefined,
+          setDepth: () => undefined,
+          play: () => sprite,
+          setPosition: (px, py) => {
+            sprite.x = px;
+            sprite.y = py;
+          },
+          setFrame: () => undefined,
+          setScale: (value) => {
+            sprite.scale = value;
+          },
+          destroy: () => undefined,
+        };
+        created.push(sprite);
+        return sprite;
+      },
+    },
+    runEvent: async () => undefined,
+    syncRuntimeState: () => undefined,
+  };
+  return { created, scene };
+}
+
+function golemEvent(footprint: { width: number; height: number }, scale: number): GameEvent {
+  return {
+    id: "ev_golem",
+    x: 5,
+    y: 7,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [page({
+      footprint,
+      graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_monster1" }, scale },
+      priority: "same",
+      overlapForbidden: true,
+    })],
+  };
+}
+
+describe("renderEvents 는 발자국 중앙에 배율을 걸어 그린다", () => {
+  it("2x2 배율 2 는 두 칸 경계에 배율 2 로 놓인다", () => {
+    const { created, scene } = renderSceneFor(golemEvent({ width: 2, height: 2 }, 2));
+    renderTiles(scene);
+
+    expect(created).toHaveLength(1);
+    expect(created[0].x).toBe(6 * TILE_SIZE);
+    expect(created[0].y).toBe(8 * TILE_SIZE);
+    expect(created[0].scale).toBe(2);
+  });
+
+  it("1x1 배율 1 은 기존 좌표와 배율 그대로다", () => {
+    const { created, scene } = renderSceneFor(golemEvent({ width: 1, height: 1 }, 1));
+    renderTiles(scene);
+
+    expect(created).toHaveLength(1);
+    expect(created[0].x).toBe(characterSpriteX(5));
+    expect(created[0].y).toBe(characterSpriteY(7));
+    expect(created[0].scale).toBe(1);
+  });
+
+  it("배율만 크고 발자국은 1x1 인 조합도 성립한다", () => {
+    const { created, scene } = renderSceneFor(golemEvent({ width: 1, height: 1 }, 3));
+    renderTiles(scene);
+
+    expect(created[0].x).toBe(characterSpriteX(5));
+    expect(created[0].scale).toBe(3);
   });
 });
