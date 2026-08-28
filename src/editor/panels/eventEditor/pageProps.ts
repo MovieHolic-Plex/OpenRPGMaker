@@ -22,6 +22,7 @@ import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
+import { pageConditionSentence } from "./pageConditionSentence";
 import { renderPageMovement } from "./pageMovement";
 import {
   type EventEditorTriggerKind,
@@ -679,7 +680,13 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       openSet: openEventConditions,
       openKey,
       summaryExtra: renderConditionSummaryBadges(conditions),
-      body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
+      body: el("div", {
+        class: "event-conditions-body",
+        children: [
+          renderConditionSentence(conditions),
+          el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
+        ],
+      }),
     }),
     rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
     el("div", {
@@ -717,6 +724,26 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     })
   );
   return wrapPageSettingsAsAccordion(wrap, page, conditions, openKey);
+}
+
+/**
+ * 켜진 조건을 한 문장으로 되읽어 준다.
+ *
+ * 조건 12행을 다 채워도 "그래서 이 페이지는 언제 보이지?"는 저작자가 머릿속에서
+ * 조립해야 했다. 저장 직전에 눈으로 확인할 한 줄이 없었다. 값 조각만 강조해
+ * 무엇이 저작자가 고른 값인지 구분한다.
+ */
+function renderConditionSentence(conditions: readonly EventPageCondition[]): HTMLElement {
+  const sentence = pageConditionSentence(conditions);
+  return el("p", {
+    class: `event-conditions-sentence${conditions.length === 0 ? " is-empty" : ""}`,
+    dataset: { testid: "event-conditions-sentence" },
+    children: sentence.parts.map((part) =>
+      part.kind === "value"
+        ? el("em", { class: "event-conditions-sentence-value", text: part.text })
+        : el("span", { text: part.text }),
+    ),
+  });
 }
 
 type EventRailGroupSpec = {
