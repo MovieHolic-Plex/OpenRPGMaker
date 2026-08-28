@@ -197,7 +197,7 @@ scale: page?.graphic.scale ?? 1,
 
 ```ts
 // 새 원본
-export function findEventOverlapping(
+export function findEventOverlappingRect(
   project, map, session, positions,
   rect: FootprintRect,
   triggerKind?,
@@ -205,7 +205,7 @@ export function findEventOverlapping(
 
 // 기존 시그니처 유지 — 호출부 무수정
 export function findRuntimeEventAtInMap(project, map, session, positions, x, y, triggerKind) {
-  return findEventOverlapping(project, map, session, positions, pointRect(x, y), triggerKind);
+  return findEventOverlappingRect(project, map, session, positions, pointRect(x, y), triggerKind);
 }
 ```
 
@@ -258,7 +258,7 @@ export function resolveFootprintLanding(
 ```
 
 `session` / `positions` 를 받는 이유: 아래 표의 "차단 이벤트 미겹침" 조건을 판정하려면
-`findEventOverlapping` 을 호출해야 하고, 그 함수가 둘을 요구하기 때문이다.
+`findEventOverlappingRect` 을 호출해야 하고, 그 함수가 둘을 요구하기 때문이다.
 지형만 보는 축약 버전을 따로 두지 않는다 — 벽은 피했는데 NPC 위에 착지하면
 같은 버그를 다른 이름으로 만드는 것이다.
 
