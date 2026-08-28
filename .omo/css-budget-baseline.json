@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-28T18:10:59.150Z",
+  "generatedAt": "2026-08-28T20:37:34.838Z",
   "metrics": {
-    "hexLiterals": 1824,
-    "important": 1023,
+    "hexLiterals": 1823,
+    "important": 1030,
     "undefinedVars": 73,
     "globalRootFiles": 10,
-    "cssFileCount": 259
+    "cssFileCount": 260
   },
   "details": {
     "hexByFile": {
@@ -93,7 +93,7 @@
       "src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css": 16,
       "src/styles/editor/event-editor.part-4.css": 4,
       "src/styles/editor/event-marker-tooltip.css": 20,
-      "src/styles/editor/harness-suggestion.css": 84,
+      "src/styles/editor/harness-suggestion.css": 83,
       "src/styles/editor/help-modal.css": 29,
       "src/styles/editor/inline-assist.css": 35,
       "src/styles/editor/map-event-search.css": 31,
@@ -218,7 +218,7 @@
       "src/styles/shell/figma-editor/05-canvas-statusbar.css": 2,
       "src/styles/shell/figma-editor/09-rm-chipset-grid.css": 8,
       "src/styles/shell/shell-density.part-1.css": 1,
-      "src/player/player.css": 1
+      "src/player/player.css": 8
     },
     "globalRootFileList": [
       "src/styles/database/enemies.part-1.css",
@@ -614,6 +614,7 @@
       "src/styles/database/modern/crops-characters.css",
       "src/styles/database/modern/enemies.css",
       "src/styles/database/modern/equipment-items.css",
+      "src/styles/database/modern/factions.css",
       "src/styles/database/modern/life-crafting.css",
       "src/styles/database/modern/skills.css",
       "src/styles/database/modern/spatial-collections.css",
