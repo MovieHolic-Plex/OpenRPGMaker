@@ -502,7 +502,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
             el("p", {
               text:
                 mode === "full"
-                  ? "이 리소스는 통짜 전신 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
+                  ? "전신 레이아웃으로 대사 창 위에 크게 세웁니다. 번들 프리셋(generated-face-actor1-full)은 아직 흉상 그림을 공유하므로 그림 자체는 흉상입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
                   : "이 리소스는 통짜 흉상 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",
             }),
           ],

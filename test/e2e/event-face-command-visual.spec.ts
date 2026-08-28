@@ -49,14 +49,17 @@ test("얼굴 상자의 <img> 가 배경 폴백을 완전히 덮어 얼굴이 한
   );
 
   expect(boxes.length, "얼굴 폼에 얼굴 상자가 렌더돼 있어야 한다").toBeGreaterThan(0);
+  // <img> 가 전부 404 나면 faceImage 가 자기가 떼므로 아래 루프가 통짜로 건너뛰어
+  // 폼이 다 깨진 상태로도 초록이 된다. 실제 그림 수에 밑반을 둔다(실측 115/115).
+  expect(boxes.filter((box) => box.hasImage).length, "얼굴 그림이 실제로 로드도어야 한다").toBeGreaterThan(100);
   for (const box of boxes) {
     if (!box.hasImage) continue;
     expect(box.backgroundImage, `${box.label} 실제 그림이 있으면 배경 폴백은 꺼진다`).toBe("none");
     expect(box.imgPosition, `${box.label} <img> 는 상자 안에 배치돼야 한다`).toBe("absolute");
-    expect(box.fillWidth ?? 999, `${box.label} <img> 폭이 상자 내부를 채운다`).toBeCloseTo(0, 0);
-    expect(box.fillHeight ?? 999, `${box.label} <img> 높이가 상자 내부를 채운다`).toBeCloseTo(0, 0);
-    expect(box.offsetX ?? 999, `${box.label} <img> 가로 위치`).toBeCloseTo(0, 0);
-    expect(box.offsetY ?? 999, `${box.label} <img> 세로 위치`).toBeCloseTo(0, 0);
+    expect(box.fillWidth ?? 999, `${box.label} <img> 폭이 상자 내부를 채운다`).toBeCloseTo(0, 1);
+    expect(box.fillHeight ?? 999, `${box.label} <img> 높이가 상자 내부를 채운다`).toBeCloseTo(0, 1);
+    expect(box.offsetX ?? 999, `${box.label} <img> 가로 위치`).toBeCloseTo(0, 1);
+    expect(box.offsetY ?? 999, `${box.label} <img> 세로 위치`).toBeCloseTo(0, 1);
   }
 
   // 폴백 계약: <img> 가 떨어지면(로드 실패) 배경 그림이 다시 들어와야 한다.
@@ -74,7 +77,9 @@ test("얼굴 상자의 <img> 가 배경 폴백을 완전히 덮어 얼굴이 한
 test("표시 옵션 줄은 실제 필드 수만큼만 열을 만든다", async ({ page }) => {
   const form = await openFaceCommandForm(page);
   const row = await form.locator(".event-command-face-options").evaluate((node) => ({
-    columns: getComputedStyle(node).gridTemplateColumns.split(" ").filter((part) => part.length > 0).length,
+    columns: getComputedStyle(node)
+      .gridTemplateColumns.split(/\s+(?![^(]*\))/)
+      .filter((part) => part.length > 0).length,
     fields: node.children.length,
   }));
   expect(row.fields, "표시 위치 · 좌우 반전").toBe(2);
@@ -88,19 +93,33 @@ test("미리보기 대화창 글자가 창 배경과 실제로 구별된다", as
   await expect(body).toBeVisible();
 
   const captured = PNG.sync.read(await body.screenshot());
-  let darkest = 1;
-  let lightest = 0;
+  // 전역 최소/최대를 그대로 재면 클립 안의 아무 어두운 어툴트(테두리·배지)만으로도 통과하므로,
+  // 창 배경(= 클립에서 가장 흔한 색)을 기준으로 잡고 가장 멀리 떨어진 픽셀과 대비를 재다.
+  const histogram = new Map<string, number>();
+  const pixels: { luminance: number; key: string }[] = [];
   for (let index = 0; index < captured.data.length; index += 4) {
-    const value = relativeLuminance(
-      captured.data[index] ?? 0,
-      captured.data[index + 1] ?? 0,
-      captured.data[index + 2] ?? 0
-    );
-    darkest = Math.min(darkest, value);
-    lightest = Math.max(lightest, value);
+    const red = captured.data[index] ?? 0;
+    const green = captured.data[index + 1] ?? 0;
+    const blue = captured.data[index + 2] ?? 0;
+    const key = `${red},${green},${blue}`;
+    histogram.set(key, (histogram.get(key) ?? 0) + 1);
+    pixels.push({ luminance: relativeLuminance(red, green, blue), key });
   }
-  const ratio = (lightest + 0.05) / (darkest + 0.05);
-  expect(ratio, `렌더된 대비 ${ratio.toFixed(2)}:1 — 글자가 창 배경에 묻혔다`).toBeGreaterThan(3);
+  const [backgroundKey] = [...histogram.entries()].sort((left, right) => right[1] - left[1])[0] ?? ["0,0,0"];
+  const [bgRed, bgGreen, bgBlue] = backgroundKey.split(",").map(Number);
+  const backgroundLuminance = relativeLuminance(bgRed ?? 0, bgGreen ?? 0, bgBlue ?? 0);
+  const farthest = pixels.reduce(
+    (best, pixel) =>
+      Math.abs(pixel.luminance - backgroundLuminance) > Math.abs(best.luminance - backgroundLuminance) ? pixel : best,
+    pixels[0] ?? { luminance: backgroundLuminance, key: backgroundKey }
+  );
+  const lighter = Math.max(backgroundLuminance, farthest.luminance);
+  const darker = Math.min(backgroundLuminance, farthest.luminance);
+  const ratio = (lighter + 0.05) / (darker + 0.05);
+  expect(
+    ratio,
+    `창 배경(${backgroundKey}) 대본문(${farthest.key}) 대비 ${ratio.toFixed(2)}:1 — 글자가 창 배경에 묻혔다`
+  ).toBeGreaterThan(10);
 });
 
 function relativeLuminance(red: number, green: number, blue: number): number {
