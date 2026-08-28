@@ -17,6 +17,30 @@ export type OverlayPoint = {
   readonly y: number;
 };
 
+/**
+ * 타일 사각형 -> 클라이언트(뷰포트) 사각형. `position: fixed` 오버레이용.
+ *
+ * 카메라 기준은 `worldView` 다. `scrollX/scrollY` 를 쓰면 zoom !== 1 에서
+ * `(캔버스폭/2)(zoom-1)` 만큼 어긋난다 — Phaser 의 scroll 은 줌 이전 좌상단이고,
+ * 실제로 보이는 월드 사각형은 worldView 이기 때문이다. 편집기는 `cam.setZoom(state.zoom)`
+ * 으로 진짜 카메라 줌을 쓰므로(`editSceneRender.ts`) 이 구분이 실제로 드러난다.
+ */
+export function tileRectToClientRect(input: {
+  readonly tileRect: OverlayRect;
+  readonly worldView: OverlayPoint;
+  readonly zoom: number;
+  readonly canvasOrigin: OverlayPoint;
+  readonly tileSize: number;
+}): OverlayRect {
+  const { tileRect, worldView, zoom, canvasOrigin, tileSize } = input;
+  return {
+    x: Math.round(canvasOrigin.x + (tileRect.x * tileSize - worldView.x) * zoom),
+    y: Math.round(canvasOrigin.y + (tileRect.y * tileSize - worldView.y) * zoom),
+    width: Math.max(1, Math.round(tileRect.width * tileSize * zoom)),
+    height: Math.max(1, Math.round(tileRect.height * tileSize * zoom)),
+  };
+}
+
 export const SELECTION_OVERLAY_GAP_PX = 8;
 export const SELECTION_OVERLAY_PADDING_PX = 8;
 

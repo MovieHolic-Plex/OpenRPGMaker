@@ -63,6 +63,22 @@ describe("safe CC0 item and equipment icons", () => {
       imageResourceId: "cc0-jetrel-capture-orb",
       iconResourceId: "cc0-jetrel-capture-orb",
     });
+    expect(project.database.items.find((item) => item.id === "item_warp_scroll")).toMatchObject({
+      imageResourceId: "cc0-jetrel-warp-scroll",
+      iconResourceId: "cc0-jetrel-warp-scroll",
+    });
+    expect(project.database.items.find((item) => item.id === "item_blank_scroll")).toMatchObject({
+      imageResourceId: "cc0-jetrel-scroll",
+      iconResourceId: "cc0-jetrel-scroll",
+    });
+    expect(project.database.items.find((item) => item.id === "item_traveler_badge")).toMatchObject({
+      imageResourceId: "cc0-jetrel-traveler-badge",
+      iconResourceId: "cc0-jetrel-traveler-badge",
+    });
+    expect(project.database.items.find((item) => item.id === "item_guild_badge")).toMatchObject({
+      imageResourceId: "cc0-jetrel-badge",
+      iconResourceId: "cc0-jetrel-badge",
+    });
   });
 
   it("upgrades existing default database rows that are missing item and equipment icons", () => {

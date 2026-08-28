@@ -3,7 +3,8 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeEquipmentRecord, normalizeItemRecord } from "@/project/databaseRecordModel";
 import { store } from "@/project/store";
-import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { ITEM_CHIP_CLUSTERS, renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderSwitchesTab } from "@/editor/panels/databaseUtilityViews";
 import * as session from "@/editor/panels/databaseRecordViewSession";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -206,6 +207,49 @@ describe("database category filter chips", () => {
     expect(visibleRecordIds(host)).toHaveLength(0);
     expect(host.querySelector(".db-list")).not.toBeNull();
   });
+
+  // Break caught: 라벨만 있는 평평한 칩 12개는 "무엇이 몇 개인지" 를 숨긴다. 개수 배지가
+  // 사라지면 저자는 칩을 하나씩 눌러보며 빈 카테고리를 탐색해야 한다.
+  it("아이템 칩은 전체 컬렉션 기준 개수 배지와 소비/장비/물품 묶음 캡션을 함께 그린다", () => {
+    seedItems();
+    const host = renderRecordHost("items");
+
+    expect(chipCount(host, "all")).toBe("20");
+    expect(chipCount(host, "weapon")).toBe("3");
+    expect(chipCount(host, "medicine")).toBe("3");
+    expect(chipCount(host, "body")).toBe("1");
+    // 0 개 카테고리는 배지 없이 흐리게만 남는다(폭 절약 + 클릭은 계속 허용).
+    expect(chipCount(host, "switch")).toBeUndefined();
+    expect(findByTestId(host, "db-filter-chip-switch")?.className).toContain("is-empty");
+    expect(findByTestId(host, "db-filter-chip-weapon")?.className).not.toContain("is-empty");
+    expect(host.querySelectorAll(".db-filter-cluster").map((node) => node.textContent)).toEqual(["소비", "장비"]);
+
+    // 개수는 **필터 적용 전** 컬렉션에서 센다. 필터된 배열로 세면 한 번 좁힌 뒤
+    // 나머지 칩이 모두 0 으로 보여 되돌아갈 길이 사라진다.
+    const weaponChip = findByTestId(host, "db-filter-chip-weapon");
+    if (!weaponChip) throw new Error("missing weapon chip");
+    weaponChip.click();
+    expect(chipCount(host, "medicine")).toBe("3");
+    expect(chipCount(host, "all")).toBe("20");
+  });
+
+  it("장비 칩도 슬롯별 개수를 보여준다", () => {
+    seedEquipment();
+    const host = renderRecordHost("equipment");
+
+    expect(chipCount(host, "all")).toBe("5");
+    expect(chipCount(host, "weapon")).toBe("1");
+    expect(chipCount(host, "armor")).toBe("1");
+    // 장비는 슬롯이 5개뿐이라 묶음 캡션을 쓰지 않는다.
+    expect(host.querySelectorAll(".db-filter-cluster")).toHaveLength(0);
+  });
+
+  // Break caught: 새 ItemType 을 추가하고 묶음에 넣지 않으면 그 종류의 칩이 조용히 사라져
+  // 해당 아이템을 카테고리로 찾을 수 없게 된다.
+  it("칩 묶음은 ITEM_TYPES 를 빠짐없이 한 번씩 덮는다", () => {
+    const clustered = ITEM_CHIP_CLUSTERS.flatMap((cluster) => cluster.types);
+    expect([...clustered].sort()).toEqual([...ITEM_TYPES].sort());
+  });
 });
 
 // 시드 픽스처: 아이템 20개(weapon 3 / medicine 3 / book 2 / seed 2 / special 2 /
@@ -279,6 +323,11 @@ function visibleRecordIds(host: FakeElement): string[] {
     ...host.querySelectorAll(".db-list-row"),
     ...host.querySelectorAll(".db-gallery-card"),
   ].map((row) => row.dataset.recordId ?? "");
+}
+
+/** 칩 안 개수 배지 텍스트. 없으면 배지가 사라진 것이므로 undefined 로 실패시킨다. */
+function chipCount(host: FakeElement, id: string): string | undefined {
+  return findByTestId(host, `db-filter-chip-${id}`)?.querySelector(".db-filter-chip-count")?.textContent;
 }
 
 function createFakeLocalStorage(): Storage {

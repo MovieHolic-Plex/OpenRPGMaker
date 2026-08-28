@@ -1,6 +1,9 @@
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, serialize } from "./io";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { defaultEquipmentRecords } from "./defaults/defaultDatabaseEquipmentRecords";
+import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
+import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
@@ -1254,14 +1257,96 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function repairSupabaseCurrentJson(value: unknown): unknown {
   if (!isRecord(value)) return value;
-  // DB current_json is the canonical source of truth for authored database records
-  // (items, skills, states, animations). Do NOT backfill from JSON defaults on load —
-  // defaults seed new projects via createBlankProject -> saveProjectToSupabase, and
-  // every load returns exactly what the DB row holds. Local is cache-only.
+  // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
+  // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
+  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
+  repairUntouchedDefaultItemCatalogStubs(value);
   pruneInvalidVillageInfoDocuments(value);
   removeLegacySpriteReferences(value);
   appendMissingResourceProfiles(value, defaultResourceProfiles());
   return value;
+}
+
+const RETIRED_EQUIPMENT_ITEM_STUB_IDS = new Set([
+  "item_bronze_sword",
+  "item_iron_sword",
+  "item_steel_sword",
+  "item_scout_dagger",
+  "item_mage_staff",
+  "item_oak_shield",
+  "item_leather_armor",
+  "item_mystic_robe",
+  "item_traveler_hat",
+  "item_focus_charm",
+  "item_iron_shield",
+  "item_steel_armor",
+  "item_mage_hat",
+  "item_gloves",
+  "item_boots",
+  "item_cloak",
+  "item_ring",
+  "item_necklace",
+  "item_focus_ring",
+]);
+
+const LOAD_REPAIR_EQUIPMENT_IDS = new Set([
+  "equip_iron_shield",
+  "equip_steel_armor",
+  "equip_mage_hat",
+  "equip_gloves",
+  "equip_boots",
+  "equip_cloak",
+  "equip_ring",
+  "equip_necklace",
+  "equip_focus_ring",
+]);
+
+const LOAD_REPAIR_SKILL_IDS = new Set(["skill_item_holy_water", "skill_item_thunder_stone"]);
+
+function repairUntouchedDefaultItemCatalogStubs(project: Record<string, unknown>): void {
+  if (!isRecord(project.database)) return;
+  const database = project.database;
+  if (!Array.isArray(database.items) || !Array.isArray(database.equipment) || !Array.isArray(database.skills)) return;
+
+  const itemDefaults = new Map(defaultItemRecords().map((record) => [record.id, record]));
+  const authoredItemIds = new Set(
+    database.items
+      .filter((record) => isRecord(record) && typeof record.id === "string" && !isUntouchedLegacyItemStub(record))
+      .map((record) => (record as Record<string, unknown>).id as string),
+  );
+  database.items = database.items.flatMap((record) => {
+    if (!isRecord(record) || typeof record.id !== "string" || !isUntouchedLegacyItemStub(record)) return [record];
+    if (authoredItemIds.has(record.id)) return [];
+    const current = itemDefaults.get(record.id);
+    if (current) return [cloneRecord(current)];
+    return RETIRED_EQUIPMENT_ITEM_STUB_IDS.has(record.id) ? [] : [record];
+  });
+
+  const equipmentIds = new Set(
+    database.equipment.flatMap((record) => isRecord(record) && typeof record.id === "string" ? [record.id] : []),
+  );
+  for (const record of defaultEquipmentRecords()) {
+    if (!LOAD_REPAIR_EQUIPMENT_IDS.has(record.id) || equipmentIds.has(record.id)) continue;
+    database.equipment.push(cloneRecord(record));
+    equipmentIds.add(record.id);
+  }
+
+  const skillIds = new Set(
+    database.skills.flatMap((record) => isRecord(record) && typeof record.id === "string" ? [record.id] : []),
+  );
+  for (const record of defaultSkillRecords()) {
+    if (!LOAD_REPAIR_SKILL_IDS.has(record.id) || skillIds.has(record.id)) continue;
+    database.skills.push(cloneRecord(record));
+    skillIds.add(record.id);
+  }
+}
+
+function isUntouchedLegacyItemStub(record: Record<string, unknown>): boolean {
+  if (typeof record.id !== "string" || !record.id.startsWith("item_")) return false;
+  const slug = record.id.slice("item_".length).replaceAll("_", "-");
+  const oldName = slug.replaceAll("-", " ");
+  // 두 필드가 모두 옛 시드 모양이어야 한다. 이름이나 설명 하나라도 다르면 저작 데이터다.
+  return record.name === oldName && record.description === `${slug} 기본 아이템입니다.`;
 }
 
 function pruneInvalidVillageInfoDocuments(project: Record<string, unknown>): void {

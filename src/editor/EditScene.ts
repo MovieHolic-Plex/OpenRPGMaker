@@ -124,6 +124,7 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 }
 
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
+import { tileRectToClientRect } from "@/editor/selectionOverlayAnchor";
 export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export class EditScene extends PhaserRuntime.Scene {
@@ -650,17 +651,13 @@ export class EditScene extends PhaserRuntime.Scene {
     const camera = this.cameras?.main;
     if (!canvas || !camera || typeof canvas.getBoundingClientRect !== "function") return null;
     const canvasRect = canvas.getBoundingClientRect();
-    const rect = tileRectToScreenRect(region, {
-      scrollX: camera.scrollX,
-      scrollY: camera.scrollY,
+    return tileRectToClientRect({
+      tileRect: region,
+      worldView: { x: camera.worldView.x, y: camera.worldView.y },
       zoom: camera.zoom,
+      canvasOrigin: { x: canvasRect.left, y: canvasRect.top },
+      tileSize: TILE_SIZE,
     });
-    return {
-      x: canvasRect.left + rect.x,
-      y: canvasRect.top + rect.y,
-      width: rect.width,
-      height: rect.height,
-    };
   }
 
   private startPan(ptr: Phaser.Input.Pointer): void {

@@ -28,6 +28,8 @@ const EXPECTED_SKILL_ANIMATIONS = {
   skill_item_wake: "anim_gen_cleanse_sparkle",
   skill_item_panacea: "anim_gen_cleanse_sparkle",
   skill_item_guard: "anim_gen_guard_barrier",
+  skill_item_holy_water: "anim_gen_holy_beam",
+  skill_item_thunder_stone: "anim_gen_thunder_strike",
 } as const;
 
 const EXPECTED_ITEM_ANIMATIONS = {
