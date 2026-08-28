@@ -97,6 +97,11 @@ export function modalStackDepthForTest(): number {
   return stack.length;
 }
 
+/** Test helper: raw entry count, including stale detached entries that indicate teardown leaks. */
+export function modalStackEntryCountForTest(): number {
+  return stack.length;
+}
+
 /** Test helper: clear stack without invoking closeUi. */
 export function resetModalStackForTest(): void {
   stack.length = 0;

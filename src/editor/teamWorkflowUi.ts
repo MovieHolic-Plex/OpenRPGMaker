@@ -20,8 +20,8 @@ export function openLoginModalIfNeeded(onIdentityChanged?: () => void): void {
   if (!canRenderFloatingUi()) return;
   if (isAutomationBootContext()) return;
   if (browserLocalStorage()?.getItem(LAST_LOGIN_METHOD_KEY)) return;
-  // AI 제안 카드가 떠 있으면 로그인 모달이 클릭을 가로채므로 게스트로 조용히 통과.
-  if (document.querySelector("[data-testid='ai-proposal-card'], [data-testid='ai-proposal-accept']")) {
+  // AI 변경 카드가 떠 있으면 로그인 모달이 클릭을 가로채므로 게스트로 조용히 통과.
+  if (document.querySelector("[data-testid='ai-change-card']")) {
     completeMockLogin("게스트", "guest", onIdentityChanged);
     return;
   }

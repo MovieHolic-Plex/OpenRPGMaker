@@ -41,6 +41,7 @@ export function normalizeEnemyRecord(
       const actionProfile = normalizeEnemyActionProfile(record.actionProfile);
       return actionProfile ? { actionProfile } : {};
     })(),
+    ...(typeof record.factionId === "string" && record.factionId.length > 0 ? { factionId: record.factionId } : {}),
     stateRates: record.stateRates === undefined
       ? { state_death: "C" }
       : normalizeRates(record.stateRates),

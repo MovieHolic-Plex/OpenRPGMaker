@@ -28,6 +28,7 @@ export function createInterpreter(
     maxInstructions: Math.max(1, Math.trunc(options?.maxInstructions ?? 100000)),
     instructionsExecuted: 0,
     currentEventId: options?.currentEventId,
+    onFactionStanceChanged: options?.onFactionStanceChanged,
     project,
   };
   let done = false;

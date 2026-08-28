@@ -71,13 +71,13 @@
   background: var(--runtime-window-fill-fallback);
   border: 1px solid rgba(245, 251, 255, 0.64);
   border-radius: 0;
-  cursor: pointer;
+  cursor: default;
   font-size: var(--runtime-font-size-11);
   transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
     border-color var(--transition-fast, 120ms ease);
 }
 
-.name-entry-tab:hover {
+.name-entry-tab:focus-visible {
   border-color: #55639c;
   color: #fff;
 }
@@ -116,14 +116,14 @@
   background: transparent;
   border: 1px solid #2c3868;
   border-radius: 0;
-  cursor: pointer;
+  cursor: default;
   font-size: var(--runtime-font-size-11);
   line-height: 1;
   transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
     border-color var(--transition-fast, 120ms ease);
 }
 
-.name-entry-key:hover,
+.name-entry-key:focus-visible,
 .name-entry-key.selected {
   color: var(--runtime-window-text);
   background: var(--runtime-window-selected-bg);
@@ -143,7 +143,7 @@
   border-image-source: var(--runtime-window-skin);
   border-image-width: var(--runtime-window-border-tight);
   border-radius: 0;
-  cursor: pointer;
+  cursor: default;
   font-size: var(--runtime-font-size-11);
 }
 

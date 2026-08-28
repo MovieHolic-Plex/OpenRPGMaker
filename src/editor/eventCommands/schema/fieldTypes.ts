@@ -53,11 +53,12 @@ export type FieldSpec =
   | (FieldBase & { readonly type: "text"; readonly placeholder?: string })
   /** 여러 줄 본문. preview 를 주면 해당 미리보기 위젯이 따라붙는다. */
   | (FieldBase & { readonly type: "multiline"; readonly preview?: "messageWindow" })
-  /** 정수 입력 + 스테퍼. */
+  /** 정수 또는 소수 입력 + 스테퍼. */
   | (FieldBase & {
       readonly type: "number";
-      readonly min?: number;
-      readonly max?: number;
+      readonly min?: number | ((command: Record<string, unknown>) => number);
+      readonly max?: number | ((command: Record<string, unknown>) => number);
+      readonly step?: number;
       readonly unit?: string;
     })
   /** 0–N 범위 슬라이더. */

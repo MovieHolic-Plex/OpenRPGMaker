@@ -10,6 +10,13 @@ import type { RuntimeQaOp, RuntimeQaReport } from "../scripts/lib/runtimeQa.d.mt
 const minimal = { id: "smoke", beats: [{ id: "start" }] };
 
 describe("normalizeScenario", () => {
+  it("gate scenarios reject fixed waits", () => {
+    expect(() => normalizeScenario({
+      id: "fixed-wait",
+      beats: [{ id: "start", ops: [{ kind: "wait", ms: 1 }] }],
+    })).toThrow(/고정 wait op/);
+  });
+
   it("생략된 값에 기본값을 채운다", () => {
     const normalized = normalizeScenario(minimal);
 

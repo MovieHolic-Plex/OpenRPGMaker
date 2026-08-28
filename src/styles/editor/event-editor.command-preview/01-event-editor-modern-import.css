@@ -173,9 +173,13 @@
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-image: none;
   border-radius: var(--runtime-dialogue-radius);
+  /* 반투명한 대화창 유리가 불투명 밑판 **위에** 와야 한다. background-color 는 항상 맨
+     아래에 깔리므로 유리를 색으로 두면 밑판 그라디언트가 그 위를 덮는다. 그러면 창이
+     밝아지고 `--runtime-window-text` 크림색 글자가 사라진다(실측: #FFF6E2 on
+     #F7F8F8 = 1.0:1). computed 값만 읽으면 17.8:1 로 보이니 렌더된 픽셀로 확인한다. */
   background:
-    linear-gradient(180deg, var(--bg-surface), var(--bg-surface)),
-    var(--runtime-dialogue-glass-surface);
+    linear-gradient(180deg, var(--runtime-dialogue-glass-surface), var(--runtime-dialogue-glass-surface)),
+    var(--bg-surface);
   color: var(--runtime-window-text);
   font: 400 13px/1.45 "Malgun Gothic", Tahoma, sans-serif;
   box-shadow: var(--runtime-dialogue-glass-shadow);
@@ -224,8 +228,8 @@
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-radius: var(--runtime-dialogue-radius-small);
   background:
-    linear-gradient(180deg, var(--bg-surface), var(--bg-surface)),
-    var(--runtime-dialogue-glass-surface-strong);
+    linear-gradient(180deg, var(--runtime-dialogue-glass-surface-strong), var(--runtime-dialogue-glass-surface-strong)),
+    var(--bg-surface);
   box-shadow: 0 3px 8px var(--shadow-pop);
   color: var(--runtime-window-text);
   font: 700 12px/1.2 "Malgun Gothic", Tahoma, sans-serif;

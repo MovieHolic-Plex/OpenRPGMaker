@@ -17,9 +17,16 @@ export type RuntimeQaOp =
   | { readonly kind: "action" }
   | { readonly kind: "attack" }
   | { readonly kind: "skill" }
-  | { readonly kind: "key"; readonly key: string; readonly times?: number; readonly delayMs?: number }
+  | { readonly kind: "key"; readonly key: string; readonly times?: number }
   | { readonly kind: "teleport"; readonly mapId: string; readonly x: number; readonly y: number }
-  | { readonly kind: "wait"; readonly ms: number }
+  | { readonly kind: "waitForRuntime"; readonly timeoutMs?: number }
+  | {
+      readonly kind: "waitForPosition";
+      readonly mapId: string;
+      readonly x: number;
+      readonly y: number;
+      readonly timeoutMs?: number;
+    }
   | {
       readonly kind: "waitFor";
       readonly testid: string;
@@ -32,7 +39,7 @@ export type RuntimeQaOp =
       readonly testid: string;
       readonly state: "present" | "absent";
       readonly maxPresses?: number;
-      readonly delayMs?: number;
+      readonly timeoutMs?: number;
     };
 
 export type RuntimeQaExpect = {

@@ -25,6 +25,8 @@ export type ReferenceContext = {
   troopIds: ReadonlySet<string>;
   speciesIds: ReadonlySet<string>;
   resourceIds: ReadonlySet<string>;
+  /** 생략하면 기존 호출자처럼 진영 명령을 참조 없는 명령으로 취급한다. */
+  factionIds?: ReadonlySet<string>;
 };
 
 export function validateEventPages(pages: readonly EventPage[], context: ReferenceContext): void {
@@ -160,6 +162,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "ending":
     case "returnToTitle":
     case "displayTextSettings":
+      return;
+    case "changeFactionStance":
+      if (!context.factionIds) return;
+      assert(context.factionIds.has(command.a), `changeFactionStance: faction A가 존재하지 않습니다: ${command.a}`);
+      assert(context.factionIds.has(command.b), `changeFactionStance: faction B가 존재하지 않습니다: ${command.b}`);
       return;
     case "triggerEnding":
       if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);

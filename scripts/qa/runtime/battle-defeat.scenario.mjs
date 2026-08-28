@@ -41,7 +41,7 @@ export const battleDefeatScenario = {
       note: "폐광 봉인 앞으로 이동 + 파티 전원 HP 0 — 다음 전투는 개시 시점에 패배가 확정된다",
       ops: [
         { kind: "teleport", mapId: "map_old_copper_mine", x: 27, y: 15 },
-        { kind: "wait", ms: 1500 },
+        { kind: "waitForPosition", mapId: "map_old_copper_mine", x: 27, y: 15 },
         { kind: "setVitals", hp: 0, mp: 0 },
         { kind: "face", dir: "up" },
       ],
@@ -53,7 +53,7 @@ export const battleDefeatScenario = {
       note: "봉인 이벤트(canLose=false) 전투 → 패배 → 게임 오버 화면(판정점)",
       ops: [
         { kind: "action" },
-        { kind: "pressUntil", key: "z", testid: "game-over-screen", state: "present", maxPresses: 40, delayMs: 400 },
+        { kind: "pressUntil", key: "z", testid: "game-over-screen", state: "present", maxPresses: 40 },
       ],
       expect: {
         battleResult: "defeat",

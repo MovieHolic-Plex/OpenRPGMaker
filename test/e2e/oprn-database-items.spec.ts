@@ -28,7 +28,9 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
   await page.getByTestId("db-field-item-mp-percent-stepper").fill("25");
   await page.getByTestId("db-field-item-only-menu").check();
   await expect(page.getByTestId("db-items-medicine-panel")).toContainText("HP 회복");
-  await expect(page.getByTestId("db-items-medicine-panel")).toContainText("사용 가능");
+  // "사용 가능"은 약/책/씨앗/특수 패널에 각각 복제되지 않고 "사용 제한" 구역의 공용 카드
+  // 한 장이 소유한다 — 패널 안이 아니라 해당 카드로 확인한다.
+  await expect(page.getByTestId("db-item-card-usable")).toContainText("사용 가능");
 
   await page.getByTestId("db-field-item-type").selectOption("special");
   await page.getByTestId("db-picker-item-activate-skill").selectOption({ label: "치유" });

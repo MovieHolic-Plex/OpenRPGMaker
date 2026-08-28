@@ -1,17 +1,17 @@
 // editor/panels/aiProposalCard.ts
-// 제안 카드 렌더 + 수락/거부. 패널 클로저 밖 의존성은 deps로 주입.
+// 턴이 만든 변경을 즉시 적용하고 결과를 로그에 남긴다. 승인 카드([이 맵에 넣기]·[취소]),
+// 항목 선택 체크박스, [앞으로 자동 적용] 토글, 검토 모달/핀은 없다 — 복구는 되돌리기다
+// (근거는 @/ai/approvalPolicy 머리말). 패널 클로저 밖 의존성은 deps로 주입.
 
 import {
-  proposalApprovalWarnings,
   type ProposedCall,
   type TurnResult,
 } from "@/ai/assistantSession";
-import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
+import { loadAiConfig } from "@/ai/llmClient";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
-import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import {
   formatLayoutRepairSummary,
   layoutRepairDidWork,
@@ -21,7 +21,6 @@ import {
   formatLayoutValidationSummary,
   layoutValidationBlocking,
 } from "@/project/lint/layoutPlacementValidate";
-import { combineDiffs } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -30,90 +29,33 @@ import { ensureGuestIdentityForAiSurface } from "@/editor/teamWorkflowUi";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import {
-  callsWithVocabularyEdits,
-  hasVocabularyEdits,
-  renderVocabularyCardList,
-  type VocabularyCardEdit,
-} from "./aiChatRenderers";
-import { resolveProposalPresentation, type ProposalPresentationMode } from "./aiProposalModal";
-import type { ChatDock } from "@/editor/chatDock";
-import {
   collectVocabSoftConfirms,
   markSoftVocabApprovalsOnProject,
-  proposalAcceptButtonLabel,
-  proposalAcceptWithMaterialButtonLabel,
 } from "./aiProposalFusion";
-import { clearProposalPin, refreshProposalPinAccept, replaceProposalPin } from "./aiProposalPin";
 import {
-  enforceProposalDependencies,
-  proposalDecisionTitle,
-  proposalDetailsToggleLabel,
-  proposalDependencyIndexes,
   proposalHumanSummaryLine,
   proposalSummaryLines,
-  proposalTechnicalDetailLines,
-  reassembleSelectedProposalProject,
 } from "./aiProposalSummary";
 import {
   aiHistoryLabel,
-  confirmRuleApproval,
   currentHistoryMapId,
   EMPTY_PROPOSAL_NOTICE_DISMISS_MS,
-  hasDestructiveCall,
   proposalPreviewMapId,
   renderEmptyProposalNotice,
-  showConfirm,
   type ChatController,
 } from "./aiChatPanelHelpers";
 
-export type AiMessageBadgeState = "proposal" | "applied" | "discarded" | "reverted";
-
-/**
- * 제안 카드 내 자동 승인 체크박스 토글.
- * 사용자가 설정 모달을 찾아가지 않고도 결정 시점에 바로 앞으로의 자동 적용 여부를 전환할 수 있게 한다.
- */
-export function renderAutoApproveToggle(options: {
-  readonly checked: boolean;
-  readonly onChange: (next: boolean) => void;
-}): HTMLElement {
-  const checkbox = el("input", {
-    attrs: { type: "checkbox" },
-    dataset: { testid: "ai-proposal-auto-approve-input" },
-    on: {
-      change: (event) => {
-        const target = event.target as HTMLInputElement | null;
-        options.onChange(target ? target.checked : false);
-      },
-    },
-  }) as HTMLInputElement;
-  checkbox.checked = options.checked;
-
-  const labelSpan = el("span", {
-    class: "ai-proposal-auto-approve-label",
-    text: "앞으로 자동 적용",
-  });
-
-  return el("label", {
-    class: "ai-proposal-auto-approve",
-    dataset: { testid: "ai-proposal-auto-approve" },
-    attrs: {
-      title: "켜면 안전한 변경은 검토 없이 바로 적용됩니다. 파괴적 변경과 재료 합의는 계속 승인을 요구합니다.",
-    },
-    children: [checkbox, labelSpan],
-  });
-}
+export type AiMessageBadgeState = "applied" | "reverted";
 
 const AI_MESSAGE_BADGE_LABELS: Record<AiMessageBadgeState, string> = {
-  proposal: "제안",
   applied: "적용됨",
-  discarded: "폐기됨",
   reverted: "되돌려짐",
 };
 
 export function setAssistantMessageBadge(bubble: HTMLElement | null, state: AiMessageBadgeState): void {
   if (!bubble) return;
   bubble.querySelector(".ai-msg-badge")?.remove();
-  bubble.classList.remove("is-proposal", "is-applied", "is-discarded", "is-reverted");
+  bubble.classList.remove("is-applied", "is-reverted");
   bubble.classList.add(`is-${state}`);
   const badge = el("span", {
     class: `ai-msg-badge is-${state}`,
@@ -125,7 +67,7 @@ export function setAssistantMessageBadge(bubble: HTMLElement | null, state: AiMe
 
 export type ProposalMapCrop = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
-/** before→after 타일 변경 bbox(+pad). 목업 썸네일 crop 용. 이벤트 위치 변경도 bbox에 합산한다. */
+/** before→after 타일 변경 bbox(+pad). 변경 카드 썸네일 crop 용. 이벤트 위치 변경도 bbox에 합산한다. */
 export function computeMapTileChangeBounds(before: Project, after: Project, mapId: string, pad = 2): ProposalMapCrop | null {
   const base = before.maps[mapId];
   const next = after.maps[mapId];
@@ -166,42 +108,6 @@ export function computeMapTileChangeBounds(before: Project, after: Project, mapI
   const x1 = Math.min(base.width - 1, maxX + pad);
   const y1 = Math.min(base.height - 1, maxY + pad);
   return { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
-}
-
-/**
- * before→after 를 한 자리에서 좌→우로 한 번 지나가는 와이프로 보여준다.
- *
- * 이전에는 `지금`·`적용 후` 미니맵을 2단 그리드로 나란히 놓아 사람이 두 그림을 스스로
- * 비교해야 했다(감독 지시 2026-08-27: "복잡하게 하지 말고 그냥 좌에서 우로 한번에 쏵").
- * 이제 같은 크롭의 after 를 before 위에 겹치고 CSS clip-path 로 한 번 훑는다 — 애니메이션은
- * `.ai-proposal-thumb.is-after` 에 걸려 있고 `prefers-reduced-motion` 에서는 결과만 남는다.
- */
-export function renderProposalWipe(
-  before: Project,
-  after: Project,
-  mapId: string,
-  crop: ProposalMapCrop | null,
-  extraClass?: string,
-): HTMLElement {
-  return el("div", {
-    class: `ai-proposal-wipe${extraClass ? ` ${extraClass}` : ""}`,
-    dataset: { testid: extraClass ?? "ai-proposal-wipe-card" },
-    children: [
-      el("div", {
-        class: "ai-proposal-wipe-stack",
-        dataset: { testid: "ai-proposal-wipe" },
-        children: [
-          renderProposalMapThumbnail(before, mapId, "before", crop, false),
-          renderProposalMapThumbnail(after, mapId, "after", crop, false),
-        ],
-      }),
-      el("span", {
-        class: "ai-proposal-wipe-caption",
-        dataset: { testid: "ai-proposal-wipe-caption" },
-        text: "지금 → 적용 후",
-      }),
-    ],
-  });
 }
 
 export function renderProposalMapThumbnail(
@@ -298,46 +204,23 @@ export interface ProposalAppliedResult {
 export interface ProposalHostApi {
   pendingProposalMessage: ProposalMessageState | null;
   lastAppliedProposalMessage: ProposalMessageState | null;
-  renderProposal: (
-    result: TurnResult,
-    extraWarnings?: readonly string[],
-    assistantBubble?: HTMLElement | null,
-    presentation?: ProposalPresentationMode,
-  ) => void;
-  /** 실제로 적용되었으때만 true — 즐시 적용 경로가 "적용됨" 카드를 붙이기 전에 이것을 기다린다. */
-  acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean, approveMaterials?: boolean) => Promise<boolean>;
-  rejectProposal: () => void;
-  /** 이 호스트가 마지막으로 등록한 인라인 승인 actions가 여전히 현재 슬롯이면(CAS) 해제한다. */
-  clearInlineActionsIfMine: () => void;
+  /** 변경 0건 턴의 안내(완성도 린트 경고 포함) — 적용할 것이 없을 때만 부른다. */
+  noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
+  /** 실제로 적용되었을 때만 true — 호출자가 "적용됨" 로그를 붙이기 전에 이것을 기다린다. */
+  applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<boolean>;
 }
 
 export function createProposalHost(options: {
-  readonly proposalHost: HTMLElement;
-  readonly pinHost: HTMLElement;
   readonly proposalNoticeHost: HTMLElement;
-  readonly proposalModalCount: HTMLElement;
-  readonly proposalPill: HTMLButtonElement;
-  readonly proposalModalBody: HTMLElement;
-  readonly getChatDock: () => ChatDock;
-  readonly openProposalModal: (mode?: ProposalPresentationMode) => void;
-  readonly closeProposalModal: () => void;
   readonly controller: ChatController;
   readonly appendBubble: (role: "user" | "assistant" | "tool" | "system", text: string) => HTMLElement;
   readonly setStatus: (text: string, record?: boolean) => void;
   readonly onApplied?: (result: ProposalAppliedResult) => void;
-  /** 제안 적용/거부 직후 — AI 자동 펼침 패널을 다시 접을 때 사용. */
+  /** 적용 직후 — AI 자동 펼침 패널을 다시 접을 때 사용. */
   readonly onProposalSettled?: () => void;
 }): ProposalHostApi {
   const {
-    proposalHost,
-    pinHost,
     proposalNoticeHost,
-    proposalModalCount,
-    proposalPill,
-    proposalModalBody,
-    getChatDock,
-    openProposalModal,
-    closeProposalModal,
     controller,
     appendBubble,
     setStatus,
@@ -345,55 +228,24 @@ export function createProposalHost(options: {
     onProposalSettled,
   } = options;
 
-  const mountProposalHost = (target: HTMLElement): void => {
-    if (proposalHost.parentElement === target) return;
-    proposalHost.remove();
-    target.append(proposalHost);
-  };
-
-  const clearDecisionSurface = (): void => {
-    proposalHost.replaceChildren();
-    proposalHost.classList.remove("is-sticky-empty");
-    clearProposalPin(pinHost);
-    mountProposalHost(proposalModalBody);
-    closeProposalModal();
-  };
-
   let pendingProposalMessage: ProposalMessageState | null = null;
   let lastAppliedProposalMessage: ProposalMessageState | null = null;
-  // 이 호스트가 마지막으로 setInlineProposalActions에 넘긴 객체 참조 — CAS 해제용(전역 슬롯 경합 방지).
-  let myInlineActions: InlineProposalActions | null = null;
-  const clearInlineActionsIfMine = (): void => {
-    if (getInlineProposalActions() === myInlineActions) setInlineProposalActions(null);
-    myInlineActions = null;
-  };
 
-  const applyAcceptedProposal = async (
+  const applyProposal = async (
     calls: readonly ProposedCall[],
-    selected: readonly boolean[],
-    selectedCalls: readonly ProposedCall[],
-    hasEdits: boolean,
-    approveMaterials = false,
+    assistantBubble: HTMLElement | null = null,
   ): Promise<boolean> => {
     const session = controller.session;
-    if (!session) return false;
+    if (!session || calls.length === 0) return false;
+    ensureGuestIdentityForAiSurface();
+    const humanSummary = proposalHumanSummaryLine(calls);
+    pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };
     const before = store.getCurrent();
-    const fullAccept = selectedCalls.length === calls.length && !hasEdits;
-    const reassembled = fullAccept
-      ? null
-      : reassembleSelectedProposalProject(session.baselineProject, calls, selected);
-    if (reassembled && !reassembled.ok) {
-      setStatus("적용 실패");
-      toast(`적용 실패: ${reassembled.message}`, "error");
-      return false;
-    }
-    const proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
-
-    // soft-confirm 재료 합의는 옵션: approveMaterials=true 일 때만 origin:user.
-    const softList = collectVocabSoftConfirms(calls, selected);
-    const softMarked = approveMaterials
-      ? markSoftVocabApprovalsOnProject(proposed, calls, selected)
-      : 0;
+    const proposed = session.getProposedProject();
+    // 재료(어휘) 합의도 AI 가 마무리한다 — 사람이 확정할 버튼이 없어졌고, 미합의로 남기면
+    // 다음 턴이 같은 재료를 다시 제안한다. 되돌리면 배치와 함께 합의도 원복된다.
+    const softList = collectVocabSoftConfirms(calls);
+    const softMarked = markSoftVocabApprovalsOnProject(proposed, calls);
 
     // 배치 충돌은 사람에게 되돌리지 않는다. 물/벽 위 소품은 육지로 옮기거나 정리한다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
@@ -401,7 +253,7 @@ export function createProposalHost(options: {
     const repaired = repairLayoutPlacement(proposed, {
       mapId: currentHistoryMapId() ?? undefined,
       instruction,
-      toolNames: selectedCalls.map((call) => call.name),
+      toolNames: calls.map((call) => call.name),
     });
     const layoutBlocking = layoutValidationBlocking(repaired.remaining);
     if (layoutBlocking.length > 0) {
@@ -415,390 +267,62 @@ export function createProposalHost(options: {
 
     // 커밋 게이트 검증 → undo 스냅샷 → store.replace → await 커밋 로그는
     // 공유 적용 함수(applyProposedProject)가 수행한다 — 마일스톤 자동 적용과 같은 경로.
-    const completionMapId = proposalPreviewMapId(selectedCalls, before, applyProject)
+    const completionMapId = proposalPreviewMapId(calls, before, applyProject)
       ?? currentHistoryMapId()
       ?? applyProject.startMapId;
     const completionInstruction = instruction.split("\n\n[컨텍스트]")[0]?.trim() ?? instruction.trim();
-    const completionSummary = proposalHumanSummaryLine(selectedCalls);
     clearAgentGhostPreview();
-    const actualDiff = reassembled?.ok
-      ? combineDiffs(reassembled.results.map((result) => result.diff))
-      : summarizeChanges(before, applyProject);
     const applied = await applyProposedProject(applyProject, {
       source: "agent",
       agentName: loadAiConfig().model,
-      summary: aiHistoryLabel(selectedCalls),
-      toolNames: selectedCalls.map((call) => call.name),
-      diff: actualDiff,
-      snapshotLabel: aiHistoryLabel(selectedCalls),
+      summary: aiHistoryLabel(calls),
+      toolNames: calls.map((call) => call.name),
+      diff: summarizeChanges(before, applyProject),
+      snapshotLabel: aiHistoryLabel(calls),
       snapshotMapId: currentHistoryMapId(),
-      resetProject: selectedCalls.some((call) => call.name === "reset_project"),
+      resetProject: calls.some((call) => call.name === "reset_project"),
     });
     if (!applied.ok) {
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
       return false;
     }
-    clearDecisionSurface();
     setStatus("대기");
-    const messageState = pendingProposalMessage;
-    setAssistantMessageBadge(messageState?.assistantBubble ?? null, "applied");
-    lastAppliedProposalMessage = messageState
-      ? { ...messageState, calls: selectedCalls, summary: proposalHumanSummaryLine(selectedCalls) }
-      : { calls: selectedCalls, assistantBubble: null, summary: proposalHumanSummaryLine(selectedCalls) };
+    setAssistantMessageBadge(assistantBubble, "applied");
+    lastAppliedProposalMessage = pendingProposalMessage;
     pendingProposalMessage = null;
-    appendBubble("system", `변경 ${selectedCalls.length}건을 프로젝트에 적용했습니다.`);
+    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
     if (layoutRepairDidWork(repaired.counts)) {
       appendBubble("system", formatLayoutRepairSummary(repaired.counts));
     }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
     }
-    toast(
-      softMarked > 0
-        ? "배치를 적용하고 재료를 합의했습니다."
-        : "AI 변경안을 적용했습니다.",
-      "ok",
-    );
+    toast("AI 변경안을 적용했습니다.", "ok");
     controller.session?.rebaseProject(store.getCurrent());
-    if (completionMapId && proposed.maps[completionMapId]) {
+    if (completionMapId && applyProject.maps[completionMapId]) {
       onApplied?.({
         mapId: completionMapId,
         instruction: completionInstruction,
-        summary: completionSummary,
+        summary: humanSummary,
       });
     }
     onProposalSettled?.();
     return true;
   };
 
-  const acceptProposal = (
-    calls: readonly ProposedCall[],
-    selectedState?: readonly boolean[],
-    hasEdits = false,
-    approveMaterials = false,
-  ): Promise<boolean> => {
-    clearInlineActionsIfMine();
-    const session = controller.session;
-    if (!session) return Promise.resolve(false);
-    const selected = selectedState ? enforceProposalDependencies(selectedState, proposalDependencyIndexes(calls)) : calls.map(() => true);
-    const selectedCalls = calls.filter((_, index) => selected[index]);
-    if (selectedCalls.length === 0) return Promise.resolve(false);
-    const warnings = proposalApprovalWarnings(selectedCalls);
-    const hasDestructive = selectedCalls.some((c) => c.destructive || c.name === "clear_region" || c.name === "remove_event" || c.name === "remove_map" || c.name === "delete_tile_group" || c.name === "reset_project");
-    if (hasDestructive) {
-      const plainToolNames = getEditorChrome().jargonStyle === "plain";
-      const summary = selectedCalls
-        .map((c) => `• ${plainToolNames ? sanitizeUserFacingToolId(c.summary || c.name) : c.summary || c.name}`)
-        .join("\n");
-      const msg = `파괴적 작업이 포함되어 있습니다 — 아래 내역을 확인하세요:\n${summary}\n\n체크박스는 기본 해제 상태입니다. 적용하려면 직접 체크 후 [확인 후 적용]을 누르세요.`;
-      return showConfirm({ title: "파괴적 변경 — 3단 확인", message: msg, confirmLabel: "확인 후 적용" })
-        .then((ok: boolean) => (ok ? applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials) : false));
-    }
-    const decision = confirmRuleApproval(warnings);
-    if (decision !== true) {
-      return decision.then((confirmed) => (confirmed ? applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials) : false));
-    }
-    return applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
-  };
-
-  const rejectProposal = (): void => {
-    clearInlineActionsIfMine();
-    clearDecisionSurface();
-    clearAgentGhostPreview();
-    setStatus("제안 거부됨");
-    setAssistantMessageBadge(pendingProposalMessage?.assistantBubble ?? null, "discarded");
-    pendingProposalMessage = null;
-    appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
-    controller.session?.rebaseProject(store.getCurrent());
-    onProposalSettled?.();
-  };
-
-  const renderProposal = (
-    result: TurnResult,
-    extraWarnings: readonly string[] = [],
-    assistantBubble: HTMLElement | null = null,
-    requestedPresentation: ProposalPresentationMode = "modal",
-  ): void => {
-    const presentation = resolveProposalPresentation(requestedPresentation, getChatDock());
+  const noteNoChanges = (result: TurnResult, extraWarnings: readonly string[] = []): void => {
+    if (result.proposedCalls.length > 0) return;
     const plainToolNames = getEditorChrome().jargonStyle === "plain";
-    const userFacingToolText = (text: string): string =>
-      plainToolNames ? sanitizeUserFacingToolId(text) : text;
-    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings).map(userFacingToolText);
-    // 제안·경고 모두 없는 턴(순수 채팅 응답)은 기존 대기 카드를 건드리지 않는다.
-    // 예전에는 여기서 replaceChildren 후 early return 해서 모달 헤더(N건)만 남고
-    // 본문이 빈 껍데기로 남는 버그가 있었다(큐 연속 전송·후속 질문 시 재현).
-    if (result.proposedCalls.length === 0 && lines.length === 0) return;
-
-    clearDecisionSurface();
-
-    if (result.proposedCalls.length === 0) {
-      appendBubble("system", ["변경 제안 없음(0건) — 완성도 린트:", ...lines].join("\n"));
-      const notice = renderEmptyProposalNotice(lines, () => notice.remove());
-      proposalNoticeHost.append(notice);
-      if (typeof window !== "undefined" && typeof window.setTimeout === "function") {
-        window.setTimeout(() => notice.remove(), EMPTY_PROPOSAL_NOTICE_DISMISS_MS);
-      }
-      return;
+    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings)
+      .map((line) => (plainToolNames ? sanitizeUserFacingToolId(line) : line));
+    if (lines.length === 0) return;
+    appendBubble("system", ["변경 제안 없음(0건) — 완성도 린트:", ...lines].join("\n"));
+    const notice = renderEmptyProposalNotice(lines, () => notice.remove());
+    proposalNoticeHost.append(notice);
+    if (typeof window !== "undefined" && typeof window.setTimeout === "function") {
+      window.setTimeout(() => notice.remove(), EMPTY_PROPOSAL_NOTICE_DISMISS_MS);
     }
-
-    ensureGuestIdentityForAiSurface();
-    const warnings = proposalApprovalWarnings(result.proposedCalls);
-    const softConfirms = collectVocabSoftConfirms(result.proposedCalls);
-    const beforeProject = store.getCurrent();
-    const afterProject = controller.session?.getProposedProject() ?? beforeProject;
-    const previewMapId = proposalPreviewMapId(result.proposedCalls, beforeProject, afterProject);
-    const mapCrop = previewMapId ? computeMapTileChangeBounds(beforeProject, afterProject, previewMapId) : null;
-    const dependencies = proposalDependencyIndexes(result.proposedCalls);
-    let selected = result.proposedCalls.map(() => true);
-    const itemRows: HTMLElement[] = [];
-    let acceptButton: HTMLButtonElement | null = null;
-    let rejectButton: HTMLButtonElement | null = null;
-    let proposalCardEl: HTMLElement | null = null;
-
-    const refreshSelectionUi = (): void => {
-      selected = enforceProposalDependencies(selected, dependencies);
-      itemRows.forEach((row, index) => {
-        const checkbox = row.querySelector("input") as HTMLInputElement | null;
-        const note = row.querySelector(".ai-proposal-item-note") as HTMLElement | null;
-        const blockedBy = dependencies[index]?.filter((dependency) => !selected[dependency]) ?? [];
-        if (checkbox) {
-          checkbox.checked = selected[index] === true;
-          checkbox.disabled = blockedBy.length > 0;
-          checkbox.setAttribute("aria-disabled", String(blockedBy.length > 0));
-        }
-        if (note) {
-          note.textContent = blockedBy.length > 0 ? `상위 항목 ${blockedBy.map((dependency) => dependency + 1).join(", ")} 제외로 함께 제외됨` : "";
-          note.hidden = blockedBy.length === 0;
-        }
-        row.classList[blockedBy.length > 0 || !selected[index] ? "add" : "remove"]("is-excluded");
-      });
-      if (acceptButton) {
-        const count = selected.filter(Boolean).length;
-        acceptButton.disabled = count === 0;
-        acceptButton.textContent = proposalAcceptButtonLabel(count, result.proposedCalls.length);
-        refreshProposalPinAccept(pinHost, count, result.proposedCalls.length);
-      }
-    };
-
-    const vocabEditsByCall = new Map<number, Map<number, VocabularyCardEdit>>();
-    const itemElements: HTMLElement[] = [];
-    let vocabCardNumber = 1;
-    result.proposedCalls.forEach((call, index) => {
-      const checkbox = el("input", {
-        attrs: { type: "checkbox", "aria-label": `${index + 1}번 변경 포함` },
-        dataset: { testid: `ai-proposal-item-${index + 1}` },
-      }) as HTMLInputElement;
-      checkbox.checked = true;
-      checkbox.addEventListener("change", () => {
-        selected[index] = checkbox.checked;
-        if (!checkbox.checked) {
-          for (let candidate = 0; candidate < selected.length; candidate += 1) {
-            if (dependencies[candidate]?.includes(index)) selected[candidate] = false;
-          }
-        }
-        refreshSelectionUi();
-      });
-      const row = el("label", {
-        class: "ai-proposal-item",
-        children: [
-          checkbox,
-          el("span", {
-            class: "ai-proposal-item-main",
-            text: userFacingToolText(call.summary || call.name),
-          }),
-          el("span", { class: "ai-proposal-item-note", attrs: { hidden: "" } }),
-        ],
-      });
-      itemRows.push(row);
-      itemElements.push(row);
-      const cards = renderVocabularyCardList(beforeProject, call, vocabCardNumber, (cardIndex, field, value) => {
-        const edits = vocabEditsByCall.get(index) ?? new Map<number, VocabularyCardEdit>();
-        vocabEditsByCall.set(index, edits);
-        const entry = edits.get(cardIndex) ?? {};
-        entry[field] = value;
-        edits.set(cardIndex, entry);
-      });
-      if (cards) {
-        vocabCardNumber += cards.count;
-        itemElements.push(cards.element);
-      }
-    });
-
-    const humanSummary = proposalHumanSummaryLine(result.proposedCalls);
-    const decisionTitle = proposalDecisionTitle(result.proposedCalls, result.assistantText);
-    const dumpLines = lines.filter((line) => line !== humanSummary);
-    const technicalLines = plainToolNames
-      ? result.proposedCalls.map((call) => {
-          const flag = call.destructive ? "⚠️ 파괴적 " : "";
-          return `${flag}${sanitizeUserFacingToolId(call.name)} — ${userFacingToolText(call.summary)}`;
-        })
-      : proposalTechnicalDetailLines(result.proposedCalls);
-    const dumpChildren: HTMLElement[] = [
-      ...warnings.map((warning) => el("div", {
-        class: "ai-proposal-warning",
-        text: warning,
-        dataset: { testid: "ai-proposal-warning" },
-      })),
-      ...dumpLines.map((line) => el("div", {
-        class: "ai-proposal-warning",
-        text: line,
-        dataset: { testid: "ai-proposal-warning" },
-      })),
-      el("div", { class: "ai-proposal-items", children: itemElements }),
-      ...(softConfirms.length > 0
-        ? [el("div", {
-            class: "ai-proposal-soft-vocab",
-            dataset: { testid: "ai-proposal-soft-vocab" },
-            children: [
-              el("div", { class: "ai-proposal-soft-vocab-title", text: "배치 초안 + 미합의 재료" }),
-              ...softConfirms.map((soft) => el("div", {
-                class: "ai-proposal-soft-vocab-row",
-                text: `${soft.name} (${soft.role}) · 타일 ${soft.tileIds.slice(0, 4).join(",")}${soft.tileIds.length > 4 ? "…" : ""}`,
-              })),
-              el("div", {
-                class: "ai-proposal-soft-vocab-hint",
-                text: "[이 맵에 넣기]는 배치만 반영합니다. [맵 적용 + 재료 합의]를 눌러야 재료가 origin:user로 영구 합의됩니다.",
-              }),
-            ],
-          })]
-        : []),
-      ...(softConfirms.length > 0
-        ? [el("button", {
-            class: "ai-assistant-action ai-proposal-accept-materials",
-            text: proposalAcceptWithMaterialButtonLabel(result.proposedCalls.length, result.proposedCalls.length),
-            attrs: { type: "button" },
-            dataset: { testid: "ai-proposal-accept-materials" },
-            on: {
-              click: () =>
-                void acceptProposal(
-                  callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
-                  selected,
-                  hasVocabularyEdits(vocabEditsByCall),
-                  true,
-                ),
-            },
-          })]
-        : []),
-      el("div", {
-        class: "ai-proposal-lines",
-        dataset: { testid: "ai-proposal-technical-lines" },
-        children: technicalLines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
-      }),
-    ];
-    const card = el("div", {
-      class: `ai-proposal-card${hasDestructiveCall(result.proposedCalls) ? " is-destructive" : ""}`,
-      dataset: { testid: "ai-proposal-card" },
-      children: [
-        el("div", { class: "ai-proposal-title", dataset: { testid: "ai-proposal-title" }, text: decisionTitle }),
-        el("div", {
-          class: "ai-proposal-summary",
-          dataset: { testid: "ai-proposal-summary" },
-          text: humanSummary,
-        }),
-        ...(previewMapId ? [renderProposalWipe(beforeProject, afterProject, previewMapId, mapCrop)] : []),
-        el("div", {
-          class: "ai-proposal-actions",
-          children: [
-            renderAutoApproveToggle({
-              checked: loadAiConfig().autoApprove === true,
-              onChange: (next) => {
-                saveAiConfig({ ...loadAiConfig(), autoApprove: next });
-              },
-            }),
-            (acceptButton = el("button", {
-              class: "ai-assistant-action ai-proposal-accept",
-              text: proposalAcceptButtonLabel(result.proposedCalls.length, result.proposedCalls.length),
-              attrs: { type: "button" },
-              dataset: { testid: "ai-proposal-accept" },
-              on: {
-                click: () =>
-                  void acceptProposal(
-                    callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
-                    selected,
-                    hasVocabularyEdits(vocabEditsByCall),
-                    false,
-                  ),
-              },
-            }) as HTMLButtonElement),
-            (rejectButton = el("button", {
-              class: "ai-assistant-action ai-proposal-reject",
-              text: "취소",
-              attrs: { type: "button" },
-              dataset: { testid: "ai-proposal-reject" },
-              on: { click: () => rejectProposal() },
-            }) as HTMLButtonElement),
-          ],
-        }),
-        el("details", {
-          class: "ai-proposal-details",
-          dataset: { testid: "ai-proposal-details" },
-          children: [
-            el("summary", {
-              class: "ai-proposal-details-toggle",
-              dataset: { testid: "ai-proposal-details-toggle" },
-              text: proposalDetailsToggleLabel(result.proposedCalls.length),
-            }),
-            ...dumpChildren,
-          ],
-        }),
-      ],
-    });
-    proposalCardEl = card;
-    const modalTitle = proposalModalCount.parentElement?.querySelector(".ai-proposal-modal-title");
-    if (modalTitle) modalTitle.textContent = decisionTitle;
-    pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: humanSummary };
-    setAssistantMessageBadge(assistantBubble, "proposal");
-    if (presentation !== "inline") {
-      replaceProposalPin(
-        pinHost,
-        {
-          summary: humanSummary,
-          selectedCount: result.proposedCalls.length,
-          total: result.proposedCalls.length,
-        },
-        {
-          onAccept: () => void acceptProposal(
-            callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
-            selected,
-            hasVocabularyEdits(vocabEditsByCall),
-            false,
-          ),
-          onReject: () => rejectProposal(),
-        },
-      );
-    }
-    refreshSelectionUi();
-    // 인라인 승인(캔버스 고스트 마커) — 카드의 실제 버튼 경로를 그대로 태운다.
-    myInlineActions = {
-      accept: () => { if (acceptButton && !acceptButton.disabled) acceptButton.click(); },
-      reject: () => rejectButton?.click(),
-      presentation: presentation === "canvas" ? "canvas-first" : "default",
-      summary: humanSummary,
-      focusCard: () => {
-        if (presentation === "inline") {
-          const focusInline = (): void => proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
-          if (typeof requestAnimationFrame === "function") requestAnimationFrame(focusInline);
-          else focusInline();
-          return;
-        }
-        mountProposalHost(proposalModalBody);
-        openProposalModal("modal");
-        const focus = (): void => proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
-        if (typeof requestAnimationFrame === "function") requestAnimationFrame(focus);
-        else focus();
-      },
-    };
-    setInlineProposalActions(myInlineActions);
-    if (presentation === "inline") mountProposalHost(pinHost);
-    else mountProposalHost(proposalModalBody);
-    proposalHost.append(card);
-    proposalModalCount.textContent = `${result.proposedCalls.length}건`;
-    proposalPill.textContent = presentation === "canvas"
-      ? `맵에서 변경 ${result.proposedCalls.length}건 검토 중 — 전체 보기`
-      : `변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;
-    if (presentation === "inline") closeProposalModal();
-    else openProposalModal(presentation);
   };
 
   return {
@@ -814,9 +338,7 @@ export function createProposalHost(options: {
     set lastAppliedProposalMessage(value) {
       lastAppliedProposalMessage = value;
     },
-    renderProposal,
-    acceptProposal,
-    rejectProposal,
-    clearInlineActionsIfMine,
+    noteNoChanges,
+    applyProposal,
   };
 }

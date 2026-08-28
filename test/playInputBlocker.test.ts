@@ -39,14 +39,17 @@ describe("play pointer blocker", () => {
     }
   });
 
-  it("allows only touch-control-owned descendants through the capture blocker", () => {
+  it("allows only explicitly owned touch and host-fullscreen descendants", () => {
     const touchOwner = document.createElement("div");
     touchOwner.dataset.playInputOwner = "touch-controls";
     const control = document.createElement("button");
     touchOwner.append(control);
+    const fullscreen = document.createElement("button");
+    fullscreen.dataset.playInputOwner = "host-fullscreen";
     const ordinaryStage = document.createElement("div");
 
     expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: control })).toBe(false);
+    expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: fullscreen })).toBe(false);
     expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: ordinaryStage })).toBe(true);
   });
 
@@ -70,19 +73,14 @@ describe("play pointer blocker", () => {
     cleanup();
   });
 
-  it("자동화(webdriver)에서는 허용하되 __oprnForcePointerBlock 강제 시 다시 차단한다", () => {
-    const g = globalThis as { __oprnForcePointerBlock?: boolean };
+  it("automation receives the same production pointer semantics", () => {
     const navigatorPrototype = Object.getPrototypeOf(navigator);
     const original = Object.getOwnPropertyDescriptor(navigatorPrototype, "webdriver");
     Object.defineProperty(navigator, "webdriver", { configurable: true, value: true });
     try {
-      delete g.__oprnForcePointerBlock;
-      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1 })).toBe(false);
-      expect(shouldBlockPlayPointerEvent({ type: "pointerdown" })).toBe(false);
-      g.__oprnForcePointerBlock = true;
       expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1 })).toBe(true);
+      expect(shouldBlockPlayPointerEvent({ type: "pointerdown" })).toBe(true);
     } finally {
-      delete g.__oprnForcePointerBlock;
       if (original) Object.defineProperty(navigatorPrototype, "webdriver", original);
       else Object.defineProperty(navigator, "webdriver", { configurable: true, value: undefined });
     }

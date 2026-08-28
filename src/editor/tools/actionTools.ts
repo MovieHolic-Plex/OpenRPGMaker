@@ -1,8 +1,9 @@
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeActionCombatConfig, normalizeEnemyActionProfile } from "@/project/actionCombat";
+import { normalizeProjectFactions, PLAYER_FACTION_ID } from "@/project/factions";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
-import type { EnemyActionProfile, EnemyRecord, FieldSpawnDef, Project } from "@/project/types";
+import type { EnemyActionProfile, EnemyRecord, FactionDef, FactionRelationDef, FieldSpawnDef, Project } from "@/project/types";
 
 const enemyHpBarsSchema: JsonSchema = { type: "string", enum: ["always", "damaged", "never"] };
 
@@ -83,8 +84,10 @@ function upsertActionEnemy(draft: Project, args: Record<string, unknown>): { ene
   const profile = normalizeEnemyActionProfile(args.actionProfile as Partial<EnemyActionProfile> | undefined);
   if (!profile) throw new ToolError("actionProfile이 비었거나 유효하지 않습니다. attack.kind는 melee/projectile/dash 중 하나여야 합니다.", { code: "invalid-action-profile" });
   const existing = draft.database.enemies.find((entry) => entry.id === enemyId);
+  const factionId = typeof args.factionId === "string" && args.factionId.length > 0 ? args.factionId : undefined;
   if (existing) {
     existing.actionProfile = profile;
+    if (factionId !== undefined) existing.factionId = factionId;
     return { enemy: existing, outcome: "modified" };
   }
   if (typeof args.name !== "string" || args.name.length === 0) {
@@ -104,6 +107,7 @@ function upsertActionEnemy(draft: Project, args: Record<string, unknown>): { ene
     },
   });
   enemy.actionProfile = profile;
+  if (factionId !== undefined) enemy.factionId = factionId;
   draft.database.enemies.push(enemy);
   return { enemy, outcome: "added" };
 }
@@ -126,6 +130,7 @@ const makeActionEnemy: ToolDefinition = {
         },
       },
       actionProfile: actionProfileSchema,
+      factionId: { type: "string" },
       spawn: {
         type: "object",
         properties: {
@@ -139,6 +144,7 @@ const makeActionEnemy: ToolDefinition = {
           maxAlive: { type: "integer" },
           respawnSec: { type: "integer" },
           chase: { type: "boolean" },
+          factionId: { type: "string" },
           graphic: { type: "object", additionalProperties: true },
         },
         required: ["mapId", "troopId", "area"],
@@ -172,6 +178,7 @@ const makeActionEnemy: ToolDefinition = {
         ...(spawn.maxAlive !== undefined ? { maxAlive: Math.max(1, Math.trunc(spawn.maxAlive as number)) } : {}),
         ...(spawn.respawnSec !== undefined ? { respawnSec: Math.max(1, Math.trunc(spawn.respawnSec as number)) } : {}),
         chase: spawn.chase !== false,
+        ...(typeof spawn.factionId === "string" && spawn.factionId.length > 0 ? { factionId: spawn.factionId } : {}),
         ...(spawn.graphic !== undefined ? { graphic: structuredClone(spawn.graphic) as FieldSpawnDef["graphic"] } : {}),
       };
       map.fieldSpawns = [...(map.fieldSpawns ?? []), def];
@@ -182,4 +189,77 @@ const makeActionEnemy: ToolDefinition = {
   },
 };
 
-export const ACTION_TOOLS: readonly ToolDefinition[] = [setActionCombat, makeActionEnemy];
+const setFactions: ToolDefinition = {
+  name: "set_factions",
+  description: "진영(faction) 레지스트리와 진영 간 태도를 설정한다. 태도는 -2 최악의 적 / -1 적 / 0 중립 / 1 우호 / 2 동맹이며, 적지 않은 쌍은 중립이다. aggression 은 0 비공격 / 1 적에게만 선공 / 2 중립에게도 선공 / 3 광폭. 예약 id 'player'와 'enemy'는 자동으로 있고 서로 적이다. 적 레코드나 필드 스폰에 factionId 를 줘서 소속을 지정하면 NPC 들이 서로 싸운다.",
+  mode: "write",
+  domains: ["database"],
+  parameters: {
+    type: "object",
+    properties: {
+      defs: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            color: { type: "string" },
+            aggression: { type: "integer" },
+            protectedFromNpcs: { type: "boolean" },
+          },
+          required: ["id", "name"],
+        },
+      },
+      relations: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            a: { type: "string" },
+            b: { type: "string" },
+            stance: { type: "integer" },
+          },
+          required: ["a", "b", "stance"],
+        },
+      },
+      replace: { type: "boolean" },
+    },
+  },
+  run(draft, args): ToolExecResult {
+    const incomingDefs = (args.defs ?? []) as FactionDef[];
+    const incomingRelations = (args.relations ?? []) as FactionRelationDef[];
+    const replace = args.replace === true;
+    const baseDefs = replace ? [] : [...(draft.factions?.defs ?? [])];
+    const baseRelations = replace ? [] : [...(draft.factions?.relations ?? [])];
+    for (const def of incomingDefs) {
+      const index = baseDefs.findIndex((entry) => entry.id === def.id);
+      if (index >= 0) baseDefs[index] = { ...baseDefs[index], ...def };
+      else baseDefs.push(def);
+    }
+    for (const relation of incomingRelations) {
+      const index = baseRelations.findIndex((entry) => (
+        (entry.a === relation.a && entry.b === relation.b) || (entry.a === relation.b && entry.b === relation.a)
+      ));
+      if (index >= 0) baseRelations[index] = relation;
+      else baseRelations.push(relation);
+    }
+    const normalized = normalizeProjectFactions({ defs: baseDefs, relations: baseRelations });
+    const declared = new Set([PLAYER_FACTION_ID, "enemy", ...(normalized?.defs ?? []).map((def) => def.id)]);
+    const dropped = incomingRelations.filter((relation) => !declared.has(relation.a) || !declared.has(relation.b));
+    if (dropped.length > 0) {
+      throw new ToolError(
+        `정의되지 않은 진영을 가리키는 관계가 있습니다: ${dropped.map((relation) => `${relation.a}↔${relation.b}`).join(", ")} — defs 에 먼저 추가하세요.`,
+        { code: "unknown-faction" }
+      );
+    }
+    if (normalized) draft.factions = normalized;
+    else delete draft.factions;
+    return {
+      summary: `진영 ${normalized?.defs.length ?? 0}개 / 관계 ${normalized?.relations.length ?? 0}개 설정`,
+      data: { factions: normalized ?? null },
+    };
+  },
+};
+
+export const ACTION_TOOLS: readonly ToolDefinition[] = [setActionCombat, makeActionEnemy, setFactions];

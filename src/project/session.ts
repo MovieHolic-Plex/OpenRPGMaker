@@ -4,6 +4,7 @@
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -255,6 +256,8 @@ export interface PlaySession {
   actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;
   // 필드/전투로 이어지는 런타임 상태 이상(Change State).
   actorStateIds?: Record<string, string[]>;
+  /** 저작 태도표와 다른 진영 쌍만 담는 런타임 평판 오버레이. */
+  factionStanceOverrides?: FactionStanceOverrides;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;
@@ -387,6 +390,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     classOverrides: {},
     actorParamBonuses: {},
     actorStateIds: {},
+    factionStanceOverrides: {},
     currentMapId: project.startMapId,
     x: project.startPos.x,
     y: project.startPos.y,

@@ -107,7 +107,7 @@ describe("ghostPhaseChipInfo helper", () => {
       isScheduleComplete: true,
     });
     expect(doneInfo.spinner).toBe(false);
-    expect(doneInfo.text).toBe("초안 완성 · 검토 대기");
+    expect(doneInfo.text).toBe("초안 완성");
   });
 });
 

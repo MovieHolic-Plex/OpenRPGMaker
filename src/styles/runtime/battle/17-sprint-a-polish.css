@@ -40,7 +40,6 @@
 }
 
 /* Classic command focus: stop blue-on-blue washout. */
-.battle-command:hover,
 .battle-command:focus-visible,
 .battle-command[data-battle-command-cursor="true"] {
   background: linear-gradient(180deg, #3a5f9a 0%, #2a4574 100%);
@@ -54,7 +53,6 @@
 }
 
 /* Pokemon command selected state stays cream + red rim, slightly larger type. */
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
   background: #fff6f0;
@@ -145,7 +143,7 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
-.battle-command[data-preview-only="true"]:hover {
+.battle-command[data-preview-only="true"]:focus-visible {
   background: inherit;
 }
 
@@ -163,7 +161,7 @@
   opacity: 0.48;
 }
 
-.battle-command:disabled:hover {
+.battle-command:disabled:focus-visible {
   background: inherit;
   border-color: rgba(154, 180, 220, 0.42);
   box-shadow: none;
@@ -202,7 +200,7 @@
 }
 
 .battle-actor[data-battle-targetable="true"] {
-  cursor: pointer;
+  cursor: default;
   pointer-events: auto;
 }
 

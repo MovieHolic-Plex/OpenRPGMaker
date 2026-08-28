@@ -36,10 +36,10 @@ async function seedConversationRecord(page: Page, storageKey: string): Promise<s
   return await page.evaluate(async (key) => {
     const load = async <T>(url: string): Promise<T> => (await import(/* @vite-ignore */ url)) as T;
     const { store } = await load<typeof import("@/project/store")>("/src/project/store.ts");
-    const { projectConversationContextKey } = await load<typeof import("@/ai/conversationStore")>(
+    const { conversationScopeKey } = await load<typeof import("@/ai/conversationStore")>(
       "/src/ai/conversationStore.ts",
     );
-    const contextKey = projectConversationContextKey(store.getCurrent());
+    const contextKey = conversationScopeKey(store.getProjectIdentity(), store.getCurrent());
     const record = {
       id: "qa-change-preview",
       title: "광장에 길을 이어줘",

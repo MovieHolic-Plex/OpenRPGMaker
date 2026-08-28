@@ -548,41 +548,86 @@ function galleryColumnsFor(container: HTMLElement): number {
   return width > GALLERY_COLUMNS_BREAKPOINT ? GALLERY_COLUMNS_WIDE : GALLERY_COLUMNS_NARROW;
 }
 
+// 아이템 카테고리는 11 종류다. 라벨만 있는 칩 12 개를 평평하게 흘리면 목록 창 상단이
+// 세 줄(실측 88px)을 먹으면서도 어느 것이 소비품이고 어느 것이 장비인지, 각 종류에 몇
+// 개가 있는지 알려주지 않는다. 그래서 저장값(ItemType)은 그대로 두고 **표시만** 개수
+// 배지 + 소비/장비 묶음으로 나눈다. 칩 id·testid·필터 저장값은 불변이라 자동화 계약은
+// 그대로다.
+export const ITEM_CHIP_CLUSTERS: readonly { readonly caption: string; readonly types: readonly (typeof ITEM_TYPES)[number][] }[] = [
+  // 첫 묶음은 캡션이 없다 — '전체' 바로 뒤에 붙는 무분류 물품이고, 캡션을 달면 한 줄이
+  // 늘어나는 값에 비해 알려주는 게 없다.
+  { caption: "", types: ["normalGoods"] },
+  { caption: "소비", types: ["medicine", "book", "seed", "special", "switch"] },
+  { caption: "장비", types: ["weapon", "shield", "body", "head", "accessory"] },
+];
+
 // 아이템/장비 카테고리 필터 칩 행 — 다른 컬렉션(배우/스킬/스위치 등)에서는 null.
 // 클릭 시 세션 필터를 즉시 갱신하고 rerender 로 목록/갤러리를 다시 그린다(디바운스 없음).
+// 개수는 **필터 적용 전 전체 컬렉션**에서 센다 — 필터된 배열로 세면 한 번 좁힌 뒤
+// 다른 칩이 모두 0 으로 보인다.
 function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
-  const chips: readonly { readonly id: string; readonly label: string }[] | null =
-    collection === "items"
-      ? ITEM_TYPES.map((type) => ({ id: type, label: ITEM_TYPE_CHIP_LABELS[type] }))
-      : collection === "equipment"
-        ? EQUIPMENT_SLOT_CHIPS.map(({ slot, label }) => ({ id: slot, label }))
-        : null;
-  if (!chips) return null;
+  if (collection !== "items" && collection !== "equipment") return null;
   const current = effectiveCategoryFilter(collection);
-  const row = el("div", { class: "db-filter-chips", attrs: { role: "group", "aria-label": "카테고리 필터" } });
-  row.append(
-    filterChipButton("all", "전체", current === "all", () => {
-      if (categoryFilterForCollection(collection) === "all") return;
-      setCategoryFilterForCollection(collection, "all");
+  const counts = categoryCounts(collection);
+  const total = store.getCurrent().database[collection].length;
+  const chipFor = (id: string, label: string): HTMLElement =>
+    filterChipButton(id, label, counts.get(id) ?? 0, current === id, () => {
+      if (categoryFilterForCollection(collection) === id) return;
+      setCategoryFilterForCollection(collection, id);
       rerender();
-    }),
-    ...chips.map(({ id, label }) =>
-      filterChipButton(id, label, current === id, () => {
-        if (categoryFilterForCollection(collection) === id) return;
-        setCategoryFilterForCollection(collection, id);
-        rerender();
-      })
-    )
-  );
+    });
+
+  const allChip = filterChipButton("all", "전체", total, current === "all", () => {
+    if (categoryFilterForCollection(collection) === "all") return;
+    setCategoryFilterForCollection(collection, "all");
+    rerender();
+  });
+  const row = el("div", { class: "db-filter-chips", attrs: { role: "group", "aria-label": "카테고리 필터" } });
+  if (collection === "equipment") {
+    row.append(chipCluster("", [allChip, ...EQUIPMENT_SLOT_CHIPS.map(({ slot, label }) => chipFor(slot, label))]));
+    return row;
+  }
+  // 캡션은 **자기 묶음 위 줄**에 둔다. 캡션을 칩과 같은 줄에 흘려보내면 줄바꿈 위치에 따라
+  // "소비"/"장비" 가 줄 끝에 고아로 남아 어느 묶음의 머리인지 읽히지 않는다(실측).
+  const [lead, ...rest] = ITEM_CHIP_CLUSTERS;
+  row.append(chipCluster("", [allChip, ...(lead?.types ?? []).map((type) => chipFor(type, ITEM_TYPE_CHIP_LABELS[type]))]));
+  for (const cluster of rest) {
+    row.append(chipCluster(cluster.caption, cluster.types.map((type) => chipFor(type, ITEM_TYPE_CHIP_LABELS[type]))));
+  }
   return row;
 }
 
-function filterChipButton(id: string, label: string, active: boolean, onClick: () => void): HTMLElement {
+function chipCluster(caption: string, chips: readonly HTMLElement[]): HTMLElement {
+  return el("div", {
+    class: "db-filter-cluster-group",
+    children: [
+      ...(caption ? [el("span", { class: "db-filter-cluster", text: caption })] : []),
+      el("div", { class: "db-filter-cluster-chips", children: [...chips] }),
+    ],
+  });
+}
+
+/** 칩 id별 레코드 수. 아이템은 type, 장비는 slot 이 카테고리 키다. */
+function categoryCounts(collection: "items" | "equipment"): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const record of store.getCurrent().database[collection]) {
+    const key = collection === "items" ? (record as ItemRecord).type : (record as EquipmentRecord).slot;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function filterChipButton(id: string, label: string, count: number, active: boolean, onClick: () => void): HTMLElement {
   return el("button", {
-    class: `db-filter-chip${active ? " active" : ""}`,
-    attrs: { "aria-pressed": String(active), type: "button" },
+    class: `db-filter-chip${active ? " active" : ""}${count === 0 ? " is-empty" : ""}`,
+    attrs: { "aria-pressed": String(active), type: "button", "aria-label": `${label} ${count}개` },
     dataset: { testid: `db-filter-chip-${id}` },
-    text: label,
+    children: [
+      el("span", { class: "db-filter-chip-label", text: label }),
+      // 0 은 배지를 그리지 않는다 — 칩 11 개가 모두 배지를 달면 좁은 목록 창에서 한 줄이
+      // 더 늘어나고, `is-empty` 흐림이 "비어 있다"를 이미 말한다.
+      ...(count > 0 ? [el("span", { class: "db-filter-chip-count", text: String(count) })] : []),
+    ],
     on: { click: onClick },
   });
 }

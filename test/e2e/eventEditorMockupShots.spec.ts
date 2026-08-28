@@ -57,12 +57,16 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await nested.click();
 
   await modal.getByTestId("event-command-quick-ai").click();
-  await expect(modal.getByTestId("event-editor-aux-tools")).toHaveAttribute("open", "");
+  // AI 도크는 도구 팝오버와 분리된 칼럼 맨 아래 서확이다 — 팝오버를 여지 않는다.
+  await expect(modal.getByTestId("event-editor-aux-tools")).not.toHaveAttribute("open", "");
   await expect(modal.getByTestId("ai-event-assist")).toHaveAttribute("open", "");
   await expect(modal.getByTestId("ai-event-assist")).toBeVisible();
+  await modal.getByTestId("event-command-quick-ai").click();
+  await expect(modal.getByTestId("ai-event-assist")).not.toHaveAttribute("open", "");
   await modal.getByTestId("event-command-quick-preview").click();
-  await expect(modal.getByTestId("event-script-live-preview")).toHaveAttribute("open", "");
-  await expect(modal.getByTestId("event-script-live-preview")).toBeVisible();
+  await expect(modal.getByTestId("event-page-preview")).toBeVisible();
+  await expect(modal.getByTestId("event-view-toggle-preview")).toHaveAttribute("aria-pressed", "true");
+  await modal.getByTestId("event-view-toggle-storyboard").click();
   await modal.getByTestId("event-command-quick-flow").click();
   await expect(modal.getByTestId("event-script-flowchart")).toHaveAttribute("open", "");
   await expect(modal.getByTestId("event-script-flowchart")).toBeVisible();

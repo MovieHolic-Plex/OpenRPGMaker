@@ -138,7 +138,8 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(true);
-    expect(host.querySelector('[data-testid="event-draft-validation"]')?.parentElement).toBe(host.querySelector(".event-editor"));
+    // 검토 알림은 모달 헤더의 종이 소유한다 — 편집면 아래쪽에는 남지 않는다.
+    expect(host.querySelector('[data-testid="event-draft-validation"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
   });
 
@@ -169,18 +170,15 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-draft-validation"]')).toBeNull();
   });
 
-  it("shows validation only when the draft has actionable issues", () => {
+  it("keeps the editing surface free of validation chrome even when the draft has issues", () => {
     const project = store.getCurrent();
     project.maps[project.startMapId]!.events = [baseEvent({ x: 999, y: 999 })];
     store.replace(project);
 
     renderEventEditorDynamic(host, project.startMapId, "ev_herbalist");
 
-    const validation = host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]');
-    expect(validation).toBeTruthy();
-    expect(validation?.open).toBe(false);
-    expect(validation?.parentElement).toBe(host.querySelector(".event-editor"));
-    expect(validation?.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-draft-validation"]')).toBeNull();
+    expect(host.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeNull();
   });
 
   it("keeps the command inspector hidden until a command is selected", () => {

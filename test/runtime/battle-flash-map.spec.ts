@@ -102,6 +102,9 @@ async function withRealBattle(page: Page, run: () => Promise<void>): Promise<voi
       (window as Window & { __OPENRPG_BOOT__?: object }).__OPENRPG_BOOT__ = {
         projectUrl: "/__runtime-qa/project.json",
         saveNamespace: "runtime-qa:battle-flash-map",
+        // Debug hooks/state mirrors are an explicit export-QA capability; this probe drives
+        // __oprnDebug, so it must opt in like the runtime QA harness does.
+        qaInstrumentation: true,
       };
     });
     await page.route("**/__runtime-qa/project.json", (route) =>

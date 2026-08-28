@@ -6,7 +6,8 @@ import { openCommandPicker, openMapEventEditor, openPickerTab, pickerGrid } from
  *
  * 탭 3 헤딩은 카탈로그 분류명(`화면 효과`)이 아니라 저작면 이름(`화면 연출`)이다.
  * 탭 번호는 재분류(picker-ia) 이후 **실제 소속**을 따른다: 카메라 제어는 연출이라 탭3,
- * 고급 대화는 대화라 탭1, UI 명령·데이터 조회는 시스템·도구라 탭4다.
+ * 고급 대화는 「문장 표시」로 통합된 은퇴 행이라 어느 탭에도 없어야 하고, UI 명령·데이터 조회는
+ * 시스템·도구라 탭4다.
  * 탭4 버튼 24개 같은 고정 개수 단언은 카탈로그 드리프트라 폐기했다.
  */
 
@@ -16,10 +17,12 @@ test.setTimeout(120_000);
 
 const MODERN_COMMAND_TABS = [
   { label: "카메라 제어...", tab: 3, group: "화면 연출" },
-  { label: "고급 대화...", tab: 1, group: "말하기" },
   { label: "UI 명령...", tab: 4, group: "도구" },
   { label: "데이터 조회...", tab: 4, group: "도구" },
 ] as const satisfies readonly { readonly label: string; readonly tab: 1 | 2 | 3 | 4; readonly group: string }[];
+
+/** 「문장 표시」로 통합된 은퇴 행 — 안정적인 버튼 testid가 어느 탭에도 없어야 한다. */
+const DEPRECATED_COMMAND_TEST_IDS = ["command-picker-add-m2-209-advanced-dialogue"] as const;
 
 test("modern commands live on their own IA tab and are reachable from the storyboard CTA", async ({ page }) => {
   await page.setViewportSize({ width: 1478, height: 926 });
@@ -38,6 +41,17 @@ test("modern commands live on their own IA tab and are reachable from the storyb
       if (otherTab === modern.tab) continue;
       await openPickerTab(picker, otherTab);
       await expect(pickerGrid(picker).getByRole("button", { name: modern.label, exact: true })).toHaveCount(0);
+    }
+  }
+
+  // 은퇴한 행은 어느 탭에도 없다 — 통합했다면 새로 저작하는 경로도 사라지는 것이 계약이다.
+  for (const testId of DEPRECATED_COMMAND_TEST_IDS) {
+    for (const tab of [1, 2, 3, 4] as const) {
+      await openPickerTab(picker, tab);
+      await expect(
+        pickerGrid(picker).getByTestId(testId),
+        `${testId} 는 탭 ${tab} 에도 없어야 한다`
+      ).toHaveCount(0);
     }
   }
 

@@ -90,6 +90,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "openChest", chestId: "" };
     case "changeFriendship":
       return { kind: "changeFriendship", npcKey: "", delta: 20 };
+    case "changeFactionStance":
+      return { kind: "changeFactionStance", a: "player", b: "enemy", op: "+=", value: 1 };
     case "getFriendship":
       return { kind: "getFriendship", npcKey: "", variableId: "" };
     case "changeParty":

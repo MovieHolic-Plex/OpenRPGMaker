@@ -90,15 +90,35 @@ async function waitForTestid(page, op) {
   );
 }
 
+async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30_000) {
+  await page.waitForFunction(
+    ([predicateSource, value]) => {
+      const debug = window.__oprnDebug;
+      if (!debug || typeof debug.readState !== "function") return false;
+      const state = debug.readState();
+      return Function("state", "value", `return (${predicateSource})(state, value)`)(state, value);
+    },
+    [predicate.toString(), argument],
+    { timeout: timeoutMs },
+  );
+}
+
 async function applyOp(page, op) {
   switch (op.kind) {
-    case "wait":
-      await page.waitForTimeout(op.ms);
+    case "waitForRuntime":
+      await waitForRuntimePredicate(page, (state) => Boolean(state.currentMapId), null, op.timeoutMs);
+      return;
+    case "waitForPosition":
+      await waitForRuntimePredicate(
+        page,
+        (state, target) => state.currentMapId === target.mapId && state.x === target.x && state.y === target.y,
+        { mapId: op.mapId, x: op.x, y: op.y },
+        op.timeoutMs,
+      );
       return;
     case "key":
       for (let i = 0; i < (op.times ?? 1); i += 1) {
         await page.keyboard.press(op.key);
-        await page.waitForTimeout(op.delayMs ?? 250);
       }
       return;
     case "seed":
@@ -140,7 +160,14 @@ async function applyOp(page, op) {
       for (let i = 0; i < max; i += 1) {
         if (await testidMatches(page, op)) return;
         await page.keyboard.press(op.key);
-        await page.waitForTimeout(op.delayMs ?? 250);
+        await page.waitForFunction(
+          ([testid, state]) => {
+            const present = document.querySelector(`[data-testid='${testid}']`) !== null;
+            return state === "absent" ? !present : present;
+          },
+          [op.testid, op.state],
+          { timeout: op.timeoutMs ?? 30_000 },
+        ).catch(() => undefined);
       }
       if (!(await testidMatches(page, op))) {
         throw new Error(
@@ -283,7 +310,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
-      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace };
+      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
     },
     [PROJECT_URL, `runtime-qa:${scenario.id}`],
   );

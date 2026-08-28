@@ -311,6 +311,35 @@ export const EXISTING_KIND_BY_TITLE: Partial<Record<string, Command["kind"]>> = 
   "Wait": "wait",
 };
 
+/**
+ * 저작면에서 은퇴한 카탈로그 행. 저장된 프로젝트가 계속 열리도록 카탈로그 엔트리와 런타임
+ * 실행 경로는 남기고, **모든 피커(맵·공통·배틀)에서만** 빼낸다. 여기 등록된 행은 새로
+ * 저작할 수 없다.
+ *
+ * 왜 id 로 거는가(실측 2026-08-28): `commandPicker` 가 `pickerLabel !== "고급 대화"` 로
+ * 걸렀는데 실제 라벨은 `pickerLabelFor` 가 말줄임을 붙인 `"고급 대화..."` 라서 필터가 한 번도
+ * 맞지 않았다. 「문장 표시」로 통합했다고 적어둔 명령이 탭 1 「말하기」에 그대로 남아 있었다.
+ * 라벨은 제품 문구라 언제든 바뀌므로 필터 열쇠로 쓰지 않는다.
+ */
+export type M2CommandDeprecation = {
+  /** 이 행을 대신하는 카탈로그 id. 대체 경로의 정본. */
+  readonly supersededBy: string;
+  /** 왜 은퇴했는지 — 되살리려는 다음 사람이 읽을 근거. */
+  readonly reason: string;
+};
+
+export const DEPRECATED_M2_COMMAND_IDS: Partial<Record<string, M2CommandDeprecation>> = {
+  "m2-055-show-animation": {
+    supersededBy: "m2-054-show-animation",
+    reason: "Show Animation 중복 등재 — 같은 명령이 피커에 두 번 보여 초보자가 구분하지 못했다(2026-08-27).",
+  },
+  "m2-209-advanced-dialogue": {
+    supersededBy: "m2-001-show-text",
+    reason:
+      "「문장 표시」로 통합 — 감정·자동 넘김은 문장 표시의 고급 옵션이고, 얼굴은 「얼굴 바꾸기」 명령이다. 저장된 행은 로드 시 text 로 정규화된다(project/io/rewriteLegacyDialogue.ts).",
+  },
+};
+
 export const NO_ELLIPSIS_TITLES: ReadonlySet<string> = new Set([
   "Abort Battle",
   "Battle Events",

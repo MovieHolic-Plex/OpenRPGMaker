@@ -4,7 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
-import { renderFacesetCrop } from "./facesetPreview";
+import { faceDisplayModeOf, renderFacesetCrop } from "./facesetPreview";
 import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
 import {
   actorBattleM2Preview,
@@ -333,11 +333,7 @@ function renderPreviewControlBadge(control: DialogueTextControl): HTMLElement {
 
 function faceStage(cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   // Play mock: face graphic as it will appear next to dialogue — not the editor label card.
-  const mode = /(-full|fullbody|-body)/i.test(cmd.resourceId)
-    ? "full"
-    : /(-bust|-portrait|generated-face-)/i.test(cmd.resourceId)
-      ? "bust"
-      : "chip";
+  const mode = faceDisplayModeOf(cmd.resourceId);
   const whole = mode !== "chip";
   const side = cmd.position === "right" ? "right" : "left";
   const stage = el("div", {
@@ -1671,6 +1667,8 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
       return cmd.action === "set" ? `타이머 ${cmd.seconds}초 설정` : `타이머 ${cmd.action}`;
     case "changeFriendship":
       return `호감도 ${cmd.delta >= 0 ? "+" : ""}${cmd.delta}`;
+    case "changeFactionStance":
+      return `진영 태도 ${cmd.a} ↔ ${cmd.b} ${cmd.op} ${cmd.value}`;
     case "checkpointSave":
       return cmd.label ? `체크포인트 저장: ${cmd.label}` : "체크포인트 저장";
     case "setEventGraphicPattern":

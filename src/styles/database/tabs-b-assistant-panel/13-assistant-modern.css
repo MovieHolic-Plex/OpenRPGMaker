@@ -227,8 +227,7 @@
 
 .ai-chat-panel.chat-dock-side.is-collapsed > .ai-chat-body,
 .ai-chat-panel.chat-dock-side.is-collapsed > .ai-command-bar,
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay,
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-proposal-pin-host {
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay {
   display: none;
 }
 
@@ -298,100 +297,4 @@
   border-left: 1px solid var(--studio-line, var(--border-subtle));
   box-shadow: none;
   min-width: min(320px, 36vw);
-}
-
-.editor-layout .ai-chat-panel.chat-dock-glass .ai-proposal-pin-host:not(:empty),
-.editor-layout .ai-chat-panel.chat-dock-side .ai-proposal-pin-host:not(:empty),
-.editor-layout .ai-chat-panel.chat-dock-float .ai-proposal-pin-host:not(:empty) {
-  background: color-mix(in srgb, var(--bg-canvas) 28%, transparent);
-  display: grid;
-  inset: 0;
-  overflow: auto;
-  padding: 28px 24px;
-  place-items: center;
-  pointer-events: none;
-  position: fixed;
-  z-index: 80;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host:not(:empty) .ai-proposal-card {
-  border: 1px solid var(--studio-line, var(--border-subtle));
-  border-left: 3px solid var(--gold);
-  border-radius: 18px;
-  box-shadow: var(--shadow-modal);
-  gap: 14px;
-  max-height: min(72vh, 680px);
-  max-width: min(520px, 92vw);
-  overflow: auto;
-  padding: 20px 22px 18px;
-  pointer-events: auto;
-  width: min(520px, 92vw);
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-title {
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: -0.03em;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-summary {
-  font-size: 14px;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-wipe-stack {
-  background: var(--bg-inset);
-  border: 1px solid var(--studio-line, var(--border-subtle));
-  border-radius: 12px;
-  min-height: 168px;
-  padding: 8px;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-wipe-stack .ai-proposal-thumb.is-after {
-  inset: 8px;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-thumb {
-  background: var(--bg-inset);
-  border: 1px solid var(--studio-line, var(--border-subtle));
-  border-radius: 12px;
-  display: grid;
-  gap: 6px;
-  min-height: 168px;
-  padding: 8px;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-wipe-stack .ai-proposal-thumb {
-  border: 0;
-  min-height: 0;
-  padding: 0;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-thumb-label {
-  color: var(--text-2);
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.04em;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-thumb-canvas {
-  height: auto !important;
-  image-rendering: pixelated;
-  max-height: 200px;
-  width: 100% !important;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-assistant-action.ai-proposal-accept {
-  background: var(--gold);
-  border: 0;
-  border-radius: 12px;
-  color: #fff;
-  flex: 1;
-  font-size: 15px;
-  font-weight: 750;
-  min-height: 44px;
-}
-
-.editor-layout .ai-chat-panel .ai-proposal-pin-host .ai-proposal-reject {
-  min-height: 44px;
-  min-width: 88px;
 }

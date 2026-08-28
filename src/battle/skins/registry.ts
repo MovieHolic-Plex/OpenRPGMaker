@@ -13,7 +13,7 @@
 //
 // 2026-08-21: 12개 라벨 전부 교체 완료. 예전에는 타사 프랜차이즈 이름을 그대로 썼다.
 // 라벨은 이제 **창 색 + 레이아웃/HUD 특징**을 말하고 12개가 서로 구분된다:
-//   흰 창·박스 HUD / 군청 창·사이드뷰 / 감청 창·정면 / 먹빛 창·최소 HUD /
+//   흰 창·박스 HUD / 유리 창·사이드뷰 / 감청 창·정면 / 먹빛 창·최소 HUD /
 //   청람 창·링 게이지 / 세피아 창·주황 강조 / 검은 창·1인칭 시점 /
 //   코발트 창·청록 강조 / 암전 창·형광 분홍 / 금갈색 창·박스 HUD /
 //   밝은 창·정면 / 심야 창·박스 HUD
@@ -41,22 +41,22 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   rm2003: {
-    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "군청 창 · 사이드뷰", layout: "sideview", showAllySprites: true,
+    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 사이드뷰", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue",
     themeVars: {
-      "--battle-window-bg": "#163a9a",
-      "--battle-window-edge": "#3b5fc0",
-      "--battle-window-inner": "#1e4ab8",
-      "--battle-text": "#f0f6ff",
-      "--battle-text-muted": "#a8b8e0",
-      "--battle-accent": "#ffd54f",
-      "--battle-accent-soft": "rgba(255,213,79,.16)",
-      "--battle-hp-high": "#4ade80",
-      "--battle-hp-mid": "#facc15",
-      "--battle-hp-low": "#f87171",
-      "--battle-shadow": "0 6px 20px rgba(0,0,0,.35)",
-      "--battle-cursor": "#ffd54f",
-      "--battle-backdrop-filter": "saturate(1.02) brightness(1.02)",
+      "--battle-window-bg": "rgba(14,18,34,.96)",
+      "--battle-window-edge": "rgba(154,170,226,.32)",
+      "--battle-window-inner": "rgba(4,6,16,.66)",
+      "--battle-text": "#eef1fb",
+      "--battle-text-muted": "#9aa4c4",
+      "--battle-accent": "#7c8cff",
+      "--battle-accent-soft": "rgba(124,140,255,.20)",
+      "--battle-hp-high": "#3ddc97",
+      "--battle-hp-mid": "#ffc857",
+      "--battle-hp-low": "#ff5f6d",
+      "--battle-shadow": "0 8px 24px rgba(3,5,14,.55)",
+      "--battle-cursor": "#7c8cff",
+      "--battle-backdrop-filter": "saturate(1.04) contrast(1.06)",
     },
   },
   rm2000: {

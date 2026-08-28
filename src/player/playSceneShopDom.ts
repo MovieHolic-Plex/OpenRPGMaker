@@ -258,7 +258,7 @@ function shopItemButton(request: ShopItemsRenderRequest, item: ItemRecord, index
       class: "runtime-shop-item-owned",
       text: `x${owned}`,
       dataset: { testid: `shop-owned-${item.id}` },
-      attrs: { title: "파티 소지 수" },
+      attrs: { "aria-label": "파티 소지 수" },
     }),
     el("span", {
       class: "runtime-shop-item-price",
@@ -292,7 +292,8 @@ function applyAffordability(
   else delete row.dataset.unaffordable;
   const label = `${item.name} · ${price}${terms.gold} · 보유 ${owned}개`;
   row.setAttribute("aria-label", blocked ? `${label} · ${reason}` : label);
-  row.title = blocked ? reason : "";
+  // 네이티브 title 툴팁은 키보드 전용 계약이 금지하는 마우스 어포던스다.
+  // 위 aria-label 이 blocked 사유를 이밌 포함하묀로 정보 손실은 없다.
 }
 
 /** 자료집이 이미 저작해 둔 아이콘을 가게 목록에 그린다(상태 메뉴와 같은 우선순위:
@@ -327,8 +328,9 @@ function quantityControl(terms: ResolvedTerms, item: ItemRecord | undefined, mod
   input.value = "1";
   input.className = "runtime-commerce-quantity-input";
   input.dataset.testid = "shop-quantity-input";
-  input.title = "←/→ 로 1~99 수량 조절";
-  input.setAttribute("aria-label", "수량");
+  // 네이티브 title 툴팁은 키보드 전용 계약에서 금지다(마우스 어포던스). 같은 정보는
+  // 화면의 hint 스팬("←/→ 1~99")과 aria-label 로 전달한다.
+  input.setAttribute("aria-label", "수량: 좌우 방향키로 1에서 99까지 조절");
   const clamp = () => {
     const raw = Number.parseInt(input.value, 10);
     const clamped = Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
@@ -442,7 +444,7 @@ function shopMenuButton(
   const emptyPool = stepForPoolCheck ? isServicePoolEmpty(stepForPoolCheck) : false;
   if (emptyPool && action !== "cancel") {
     button.disabled = true;
-    button.title = "대상 없음 — 서비스 불가";
+    button.setAttribute("aria-label", `${button.textContent ?? "서비스"}: 대상 없음 — 서비스 불가`);
     (button as unknown as { dataset: Record<string,string> }).dataset["disabledReason"] = "empty-pool";
   }
   button.addEventListener("click", () => {
@@ -551,7 +553,7 @@ function partyPreview(scene: PlaySceneContext): HTMLElement {
     const sprite = el("span", {
       class: "runtime-shop-party-sprite",
       dataset: { testid: `shop-party-sprite-${actorId}` },
-      attrs: { role: "img", "aria-label": name, title: name },
+      attrs: { role: "img", "aria-label": name },
     });
     sprite.dataset.actorSlot = String(index);
     const resourceId = scene.session.actorFaceResourceIds?.[actorId]
@@ -621,7 +623,7 @@ function goldPanel(
     goldLine("소지금", `${scene.session.gold}${terms.gold}`, "shop-player-gold"),
     goldLine("상인", `${merchantGold}${terms.gold}`, "shop-merchant-gold", {
       className: "runtime-shop-merchant-gold",
-      title:
+      description:
         mode === "sell"
           ? "상인이 플레이어 물품을 살 때 남은 소지금"
           : "상인 소지금(플레이어 구매 시 증가)",
@@ -634,12 +636,12 @@ function goldLine(
   label: string,
   value: string,
   testid: string,
-  options?: { readonly className?: string; readonly title?: string }
+  options?: { readonly className?: string; readonly description?: string }
 ): HTMLElement {
   return el("div", {
     class: `runtime-shop-gold-line${options?.className ? ` ${options.className}` : ""}`,
     dataset: { testid },
-    attrs: options?.title ? { title: options.title } : undefined,
+    attrs: options?.description ? { "aria-label": `${label}: ${options.description}` } : undefined,
     children: [
       el("span", { class: "runtime-shop-gold-label", text: label }),
       el("span", { class: "runtime-shop-gold-value", text: value }),

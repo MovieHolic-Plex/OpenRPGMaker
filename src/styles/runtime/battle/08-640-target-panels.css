@@ -278,7 +278,6 @@
 }
 
 .battle-command[data-battle-command-cursor="true"],
-.battle-command:hover,
 .battle-command:focus-visible,
 .battle-command.battle-target-selected {
   background: linear-gradient(180deg, #f5c95d, #9e5a1f);
@@ -324,7 +323,7 @@
 }
 
 .battle-command[data-battle-command-cursor="true"] small,
-.battle-command:hover small,
+.battle-command:focus-visible small,
 .battle-command:focus-visible small,
 .battle-command.battle-target-selected small {
   color: #17203a;

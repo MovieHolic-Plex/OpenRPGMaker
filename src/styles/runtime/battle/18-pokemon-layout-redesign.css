@@ -229,8 +229,7 @@
   padding: 4px 26px;
   margin-top: 8px;
 }
-.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm:hover,
-.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm:focus-visible {
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm:focus-visible{
   border-color: var(--pkmn-accent);
   background: #fff6f0;
   outline: none;

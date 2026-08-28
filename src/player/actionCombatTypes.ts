@@ -1,6 +1,8 @@
 import type Phaser from "phaser";
 import type { AttackBufferState } from "@/battle/action/attackWindow";
 import type { ResolvedActionCombatConfig } from "@/project/actionCombat";
+import type { ResolvedFactionTable } from "@/project/factions";
+import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { EnemyActionAttack } from "@/project/types";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 
@@ -21,6 +23,10 @@ export interface ActionEnemyDashState {
 export interface ActionProjectile {
   readonly id: number;
   readonly faction: "enemy" | "player";
+  /** 명중 판정에 쓰는 발사자 진영. 발사 시점에 스냅샷한다 — 비행 중 발사자가 죽거나 사라져도 귀속이 남는다. */
+  readonly ownerFactionId: string;
+  /** 보복 래치 귀속 대상. 플레이어 발사체는 PLAYER_COMBATANT_ID. */
+  readonly ownerId: string;
   x: number;
   y: number;
   readonly dirX: number;
@@ -36,6 +42,7 @@ export interface ActionProjectile {
 export interface ActionEnemyState {
   readonly eventId: string;
   readonly enemyId: string;
+  readonly factionId: string;
   hp: number;
   readonly maxHp: number;
   readonly defense: number;
@@ -58,10 +65,20 @@ export interface ActionEnemyState {
   dying?: boolean;
   /** 넉백 스프라이트 트윈. 연속 타격 때 이전 트윈을 먼저 멈춘다. */
   knockbackTween?: Phaser.Tweens.Tween;
+  /** 현재 교전 대상 id. 플레이어면 PLAYER_COMBATANT_ID, NPC 면 그 이벤트 id. */
+  targetId?: string;
+  /** 대상 재탐색까지 남은 시간. 매 프레임 전체 후보를 다시 훑지 않게 하는 예산. */
+  retargetMs: number;
+  /** 보복 래치 대상과 남은 시간. 태도와 무관하게 이 대상을 우선한다. */
+  forcedTargetId?: string;
+  forcedTargetMs: number;
 }
 
 export interface ActionCombatSceneState {
   readonly config: ResolvedActionCombatConfig;
+  readonly factions: ResolvedFactionTable;
+  /** 세션 객체와 같은 참조를 유지해 이벤트 명령 변경이 진행 중 전투에 즉시 보인다. */
+  readonly factionStanceOverrides: FactionStanceOverrides;
   readonly enemies: Map<string, ActionEnemyState>;
   readonly projectiles: ActionProjectile[];
   projectileSerial: number;
@@ -103,3 +120,10 @@ export interface ActionHudModel {
 export const ACTION_STAMINA_MAX = 100;
 export const ACTION_SWING_STAMINA_COST = 10;
 export const ACTION_STAMINA_REGEN_PER_SEC = 20;
+
+/** 전투원 목록에서 플레이어 파티를 가리키는 예약 id. 이벤트 id 와 절대 충돌하지 않는다. */
+export const PLAYER_COMBATANT_ID = "__player__";
+/** 대상 재탐색 주기. */
+export const TARGET_RETARGET_MS = 400;
+/** 피격 보복 래치 유지 시간. */
+export const RETALIATION_LATCH_MS = 4000;

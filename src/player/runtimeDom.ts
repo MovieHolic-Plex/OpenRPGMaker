@@ -20,7 +20,7 @@ import {
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
-import { resolvePlayResolution } from "@/project/playResolution";
+import type { PlayResolution } from "@/project/types";
 
 type RuntimeAssetProject = Pick<Project, "assets">;
 
@@ -91,13 +91,65 @@ export interface RuntimeStateSnapshot {
   readonly lifeCalendarHudLines?: readonly string[];
 }
 
+export type RuntimeDomOverlayOptions = {
+  readonly qaInstrumentation?: boolean;
+  readonly playResolution?: PlayResolution;
+  /** Test seam for proving resize reads are cached outside marker write batches. */
+  readonly stageSizeProvider?: (resolution: PlayResolution) => PlayResolution;
+  /** Test seam for counting marker write operations without depending on DOM internals. */
+  readonly onMarkerWrite?: (marker: HTMLElement) => void;
+};
+
 export class RuntimeDomOverlay {
   private readonly eventMarkers: Map<string, HTMLElement> = new Map();
   private readonly spriteMarkers: Map<string, HTMLElement> = new Map();
   private readonly pictureSlots: Map<string, PictureSlot> = new Map();
+  private readonly qaInstrumentation: boolean;
+  private readonly playResolution: PlayResolution;
+  private readonly stageSizeProvider: (resolution: PlayResolution) => PlayResolution;
+  private readonly onMarkerWrite: ((marker: HTMLElement) => void) | undefined;
+  private stageBounds: PlayResolution;
   private pictureRafId = 0;
 
-  constructor(private readonly host: () => HTMLElement | undefined) {}
+  constructor(
+    private readonly host: () => HTMLElement | undefined,
+    options: RuntimeDomOverlayOptions = {},
+  ) {
+    this.qaInstrumentation = options.qaInstrumentation === true;
+    this.playResolution = options.playResolution ?? { width: 320, height: 240 };
+    this.stageSizeProvider = options.stageSizeProvider ?? ((resolution) => resolution);
+    this.onMarkerWrite = options.onMarkerWrite;
+    this.stageBounds = this.qaInstrumentation
+      ? this.stageSizeProvider(this.playResolution)
+      : this.playResolution;
+  }
+
+  /** True only under an explicit export-QA boot capability. Never true for a shipped player. */
+  get instrumented(): boolean {
+    return this.qaInstrumentation;
+  }
+
+  /**
+   * Visible runtime HUD only (timer + calendar). This is the production path: it must not
+   * depend on the debug snapshot, which exists solely for QA instrumentation.
+   */
+  syncVisibleHud(state: {
+    readonly timers: Record<string, number>;
+    readonly timerActive: Record<string, boolean>;
+    readonly gameTime?: GameTime;
+    readonly timePhase?: TimePhase;
+    readonly lifeCalendarHudLines?: readonly string[];
+  }): void {
+    this.syncTimerHud(state.timers, state.timerActive);
+    this.syncTimeHud(state.gameTime, state.timePhase, state.lifeCalendarHudLines);
+  }
+
+  /** Refresh cached logical bounds after an explicit play-surface resize signal. */
+  signalResize(): void {
+    if (!this.qaInstrumentation) return;
+    this.stageBounds = this.stageSizeProvider(this.playResolution);
+    this.placeAllMarkers();
+  }
 
   /**
    * 카메라 스크롤(px). 마커를 **화면 좌표**로 놓기 위해 필요하다.
@@ -116,9 +168,13 @@ export class RuntimeDomOverlay {
 
   /** 매 프레임 카메라 스크롤을 반영해 마커를 화면 좌표로 재배치한다. */
   syncCameraOffset(cameraX: number, cameraY: number): void {
-    if (cameraX === this.cameraX && cameraY === this.cameraY) return;
+    if (!this.qaInstrumentation || (cameraX === this.cameraX && cameraY === this.cameraY)) return;
     this.cameraX = cameraX;
     this.cameraY = cameraY;
+    this.placeAllMarkers();
+  }
+
+  private placeAllMarkers(): void {
     for (const marker of this.eventMarkers.values()) this.placeMarker(marker);
     for (const marker of this.spriteMarkers.values()) this.placeMarker(marker);
   }
@@ -133,28 +189,21 @@ export class RuntimeDomOverlay {
     const mapY = Number(marker.dataset.mapY ?? "0");
     const screenX = mapX - this.cameraX;
     const screenY = mapY - this.cameraY;
-    const { width: stageWidth, height: stageHeight } = this.stageSize();
     const visible =
-      screenX > -TILE_SIZE && screenY > -TILE_SIZE && screenX < stageWidth && screenY < stageHeight;
+      screenX > -TILE_SIZE
+      && screenY > -TILE_SIZE
+      && screenX < this.stageBounds.width
+      && screenY < this.stageBounds.height;
     marker.dataset.offscreen = visible ? "" : "1";
     marker.style.left = `${visible ? screenX : 0}px`;
     marker.style.top = `${visible ? screenY : 0}px`;
     marker.style.visibility = visible ? "" : "hidden";
     marker.style.pointerEvents = visible ? "" : "none";
-  }
-
-  private stageSize(): { readonly width: number; readonly height: number } {
-    const host = this.host();
-    const width = host?.clientWidth || Number.parseFloat(host?.style.width ?? "");
-    const height = host?.clientHeight || Number.parseFloat(host?.style.height ?? "");
-    const fallback = resolvePlayResolution(store.getCurrent().system);
-    return {
-      width: Number.isFinite(width) && width > 0 ? width : fallback.width,
-      height: Number.isFinite(height) && height > 0 ? height : fallback.height,
-    };
+    this.onMarkerWrite?.(marker);
   }
 
   upsertEventMarker(view: RuntimeEventView, onActivate?: (eventId: string) => void): void {
+    if (!this.qaInstrumentation) return;
     const host = this.host();
     if (!host) return;
     let marker = this.eventMarkers.get(view.event.id);
@@ -228,6 +277,13 @@ export class RuntimeDomOverlay {
   syncRuntimeState(snapshot: RuntimeStateSnapshot): void {
     const host = this.host();
     if (!host) return;
+    // The hidden JSON mirror is QA instrumentation, not player-visible UI. A shipped player
+    // must not create the node or serialize session state; visible HUD sync still runs.
+    if (!this.qaInstrumentation) {
+      this.syncTimerHud(snapshot.timers, snapshot.timerActive);
+      this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
+      return;
+    }
     const existing = host.querySelector("[data-testid='runtime-state-json']");
     const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
     if (!existing) {
@@ -243,6 +299,8 @@ export class RuntimeDomOverlay {
   syncAudioState(audio: AudioCommandState): void {
     const host = this.host();
     if (!host) return;
+    // QA-only mirror; audio playback itself is owned by the audio engine.
+    if (!this.qaInstrumentation) return;
     const existing = host.querySelector("[data-testid='audio-state-json']");
     const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
     if (!existing) {

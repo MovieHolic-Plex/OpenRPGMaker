@@ -229,7 +229,11 @@ describe("shared MP validation and target UI", () => {
     const actor = runtime.snapshot().actors[0];
     const cost = battleSkillMpCost(fire, actor?.maxMp ?? 0);
     expect(button?.disabled).toBe(true);
-    expect(button?.title).toContain(`필요 ${cost}`);
+    // 키보드 전용 포인터 계약: 네이티당 title 툴팁은 마우스 어포던스이묀로 금지다.
+    // 버튼이 쓰지 못하는 사유와 필요 MP 는 aria-label 로만 전달한다
+    // (battleSkillUseFailureLabel: "MP 부족 (필요 N / 현재 M)").
+    expect(button?.title ?? "").toBe("");
+    expect(button?.getAttribute("aria-label")).toContain(`필요 ${cost}`);
     expect(button?.getAttribute("aria-label")).toContain("MP 부족");
 
     pressKey("ArrowDown");

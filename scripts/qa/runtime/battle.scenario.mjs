@@ -33,7 +33,7 @@ export const battleScenario = {
       note: "새 게임 → 등대 마을 시작 지점",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 3000 },
+        { kind: "waitForRuntime" },
         { kind: "seed", seed: 1 },
       ],
       expect: {
@@ -48,9 +48,8 @@ export const battleScenario = {
       note: "달빛우물 숲 봉인(14,2) 남쪽 칸으로 이동해 위를 본다",
       ops: [
         { kind: "teleport", mapId: "map_moonwell_forest", x: 14, y: 3 },
-        { kind: "wait", ms: 1200 },
+        { kind: "waitForPosition", mapId: "map_moonwell_forest", x: 14, y: 3 },
         { kind: "face", dir: "up" },
-        { kind: "wait", ms: 400 },
       ],
       expect: { mapId: "map_moonwell_forest", x: 14, y: 3 },
     },
@@ -58,19 +57,11 @@ export const battleScenario = {
       id: "battle-intro",
       note: "대사를 넘겨 전투 진입 — 아군 4명 시트와 적 배틀러가 한 화면에 선다",
       ops: [
-        // 이벤트를 여는 건 `action`(= window.__oprnInput.action() 훅 직접 호출) 뿐이고,
-        // pressUntil 의 z 는 **이미 열린 대사를 넘길 뿐** 이다. 맵 로드 중에 그 한 번이
-        // 삼켜지면 남은 z 를 아무리 눌러도 전투까지 못 간다. 정착 시간을 주고 발동을 한 번
-        // 더 시도한다 — 이미 대사가 열려 있었다면 둘째 발동은 한 줄 넘기는 것으로 끝난다.
-        { kind: "wait", ms: 1200 },
         { kind: "action" },
-        { kind: "wait", ms: 800 },
-        { kind: "action" },
-        { kind: "wait", ms: 600 },
-        { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 24, delayMs: 500 },
+        { kind: "waitFor", testid: "dialogue-box", state: "present" },
+        { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 24 },
         { kind: "waitFor", testid: "battle-actor-sprites", state: "present" },
-        // 인카운터 전환(흰 플래시 → 블라인드 → 인트로 슬라이드)이 끝나야 스프라이트가 제자리에 선다.
-        { kind: "wait", ms: 2600 },
+        { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 20000 },
       ],
       expect: {
         testidPresent: ["battle-scene", "battle-actor-sprites"],
@@ -83,9 +74,8 @@ export const battleScenario = {
       id: "battle-attack",
       note: "공격 커맨드를 확정해 attack/hit 프레임이 실제로 교체되는지 본다",
       ops: [
-        { kind: "key", key: "z", delayMs: 500 },
-        { kind: "key", key: "z", delayMs: 500 },
-        { kind: "wait", ms: 700 },
+        { kind: "key", key: "z" },
+        { kind: "key", key: "z" },
       ],
       expect: { testidPresent: ["battle-scene"] },
       shot: true,

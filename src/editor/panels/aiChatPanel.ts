@@ -22,16 +22,12 @@ import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } f
 import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
-  agentGhostPreviewsForMap,
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
-  getAgentGhostPreviewState,
-  hasAgentGhostPreviewSubscribers,
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
-import { classifyApproval, resolveProposalApplyMode } from "@/ai/approvalPolicy";
-import { classifyProposalSafety } from "@/editor/proposalSafety";
+import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
@@ -46,6 +42,7 @@ import { toast } from "@/util/toast";
 import {
   AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
+  type AuditEntry,
   type ProposedCall,
   type SessionEvent,
   type TurnResult,
@@ -56,13 +53,14 @@ import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
+  conversationScopeKey,
   deriveTitle,
   loadLatestConversation,
-  projectConversationContextKey,
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
+import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import {
   buildInterviewKickoff,
   buildStructureLearnKickoff,
@@ -117,7 +115,6 @@ import {
   createConversationLogHost,
   renderStreamedMarkdown,
 } from "./aiConversationLog";
-import { createProposalModalElements } from "./aiProposalModal";
 import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changePreviewChips, renderChangePreviewCard } from "./aiChangePreview";
@@ -180,7 +177,6 @@ export {
   mapIdsReferencedByCall,
   reassembleSelectedProposalProject,
 } from "./aiProposalSummary";
-export { proposalAcceptButtonLabel } from "./aiProposalFusion";
 export {
   applyVocabularyCardEdits,
   callsWithVocabularyEdits,
@@ -330,24 +326,43 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   let disposed = false;
-  const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
+  const initialProjectIdentity = store.getProjectIdentity();
+  const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
   const latestConversation = loadLatestConversation();
   const autoRestoreConversation =
     latestConversation?.projectContextKey === currentProjectContextKey ? latestConversation : null;
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
   // '새 대화' 시 재발급된다.
   let conversationId = autoRestoreConversation?.id ?? genId("conv");
+  // 이 대화가 속한 프로젝트. 저장 시점의 store 를 다시 읽으면, 프로젝트를 바꾼 직후 저장되는
+  // 이전 대화가 **새 프로젝트 키로** 기록돼 다음 부팅에서 남의 프로젝트에 복원된다.
+  let conversationScope = currentProjectContextKey;
+  // 프로젝트 전환 리셋은 저장 범위 키가 아니라 런타임 identity id로 판정한다. 같은 모양의 새
+  // 로컬 프로젝트는 scope가 같아도 새 identity를 발급받으므로 반드시 대화를 갈아야 한다.
+  let projectIdentityId = initialProjectIdentity.id;
+  // 조수가 적용하는 동안의 정체성 교체는 전환이 아니다. reset_project 는 바로 이 턴에서 새
+  // identity 를 발급받으므로, 이 표식이 없으면 전환 리셋이 방금 붙은 「적용됨」 카드와
+  // 그 턴의 대화를 통째로 지운다(스토어 구독은 applyProposal 안에서 동기로 터진다).
+  let applyingProposal = false;
+  type ConversationPersistTarget = {
+    readonly id: string;
+    readonly scope: string;
+    readonly entries: readonly AuditEntry[];
+  };
   // 현재까지의 전체 대화(폐기된 세션 + 현재 세션)를 대화 기록 저장소에 저장한다.
-  const persistConversation = (): void => {
-    const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
+  // 캡처한 id/scope를 지정할 때는 같은 시점의 entries도 반드시 함께 넘겨 대화 간 오염을 막는다.
+  const persistConversation = (target?: ConversationPersistTarget): void => {
+    const entries = target
+      ? [...target.entries]
+      : [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
     if (entries.length === 0) return;
     saveConversation({
-      id: conversationId,
+      id: target?.id ?? conversationId,
       title: deriveTitle(entries),
       model: loadAiConfig().model,
       savedAt: Date.now(),
       entries: [...entries],
-      projectContextKey: projectConversationContextKey(store.getCurrent()),
+      projectContextKey: target?.scope ?? conversationScope,
     });
     refreshExportButton();
   };
@@ -357,7 +372,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     text: "대기",
     dataset: { testid: "ai-status", statusTone: "idle" },
   });
-  // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 로그 export로 "검토 대기" 멈춤을 진단 가능.
+  // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 적용 실패 같은 멈춤을 로그 export로 진단한다.
   const setStatus = (text: string, record = true): void => {
     status.textContent = text;
     status.dataset.statusTone = statusToneOf(text);
@@ -373,24 +388,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const syncConversationState = (): void => {
     if (panelRoot) panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
   };
-  const pinHost = el("div", {
-    class: "ai-proposal-pin-host",
-    dataset: { testid: "ai-proposal-pin-host" },
-  });
-  // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 비면 숨김(CSS :empty).
-  const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
-
-  // ── 변경 제안 몰입 모달: 제안 카드는 중앙 모달에서 검토한다(채팅 오버레이에 얹으면 답답하다는 UX 피드백).
-  // proposalHost가 모달 본문에 상주하므로 카드 렌더/승인/융합 로직은 그대로다.
-  // '나중에'(Esc/백드롭 포함)는 최소화 — 커맨드 바 위 pill로 남아 승인 대기를 잃지 않는다. 폐기는 오직 [거부] 버튼.
-  const proposalModal = createProposalModalElements(proposalHost);
-  const proposalNoticeHost = proposalModal.noticeHost;
-  const proposalPill = proposalModal.pill;
-  const proposalModalCount = proposalModal.count;
-  const proposalModalBody = proposalModal.body;
-  const proposalModalRoot = proposalModal.root;
-  const openProposalModal = proposalModal.open;
-  const closeProposalModal = proposalModal.close;
+  // 변경 0건 알림 전용 호스트 — 쓰기가 있는 턴은 승인 없이 바로 적용되므로 결정 카드·핀·모달이 없다.
+  const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
   let turnBusy = false;
   // 전송 버튼은 "보낼 것이 있고 한가할 때"만 준버된 상태로 보이며, 이전엔 turnBusy 만 보서
   // 보낼 게 없을 때도 흔함 없이 활성이었고, 눌러도 send() 가 `if (!text) return` 으로
@@ -411,7 +410,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let dockToggleLock: HTMLButtonElement | null = null;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
-  // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 검토 대기·오류면 유지.
+  // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 오류면 열린 상태를 유지한다.
   let collapseAfterAiWork = false;
   // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
   // 같은 초기화 구간에 둔다. 아래 크롬 구간에서 선언하면 자동 복원 sendText가
@@ -540,8 +539,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
           getViewport: () => getEditorMapViewport(),
-
+          // 맵 이동은 세션을 끊지 않지만 시스템 프롬프트는 톨려야 한다 — 고정 값이면
+          // 타일 어휘·구조 키트·맵 요약이 세션 시작 맵에 머버 라이브 뷰포트와 어긋난다.
+          getCurrentMapId: () => editorState.get().currentMapId ?? null,
         },
+        // 감사 항목에 남길 턴 상황의 선택 영역 — 컨텍스트 꼬리표와 같은 조건(활성 선택만).
+        getTurnSelection: () => (selectionTaskActive ? mapContext().selection : null),
         // 자율 실행 드라이버(todo 2): 패널 세션은 플래그 autonomous 로 진입하고
         // pendingSends 큐를 peek 전용 훅으로 노출한다 — 드라이버가 대기 메시지를 보면
         // 자동 계속을 양보하고 이 드레인 루프가 메시지를 전달한다(사용자 우선, 이중 전송 불가).
@@ -557,22 +560,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const proposalApi = createProposalHost({
-    proposalHost,
-    pinHost,
     proposalNoticeHost,
-    proposalModalCount,
-    proposalPill,
-    proposalModalBody,
-    getChatDock: readChatDock,
-    openProposalModal,
-    closeProposalModal,
     controller,
     appendBubble,
     setStatus,
     onApplied: (result) => {
       const selection = editorState.get().selection;
-      // 수동 승인 경로도 같은 변경 카드를 남긴다. 적용 직전 통이 undo 스택 상단이므로
-      // peekPreviousProject(1) 이 before, 현재 store 가 after 다.
       const applied = proposalApi.lastAppliedProposalMessage;
       const before = peekPreviousProject(1);
       if (before && applied) {
@@ -597,8 +590,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (!turnBusy) scheduleCollapseAfterAiWork();
     },
   });
-  const renderProposal = proposalApi.renderProposal;
-  const acceptProposal = proposalApi.acceptProposal;
+  const noteNoChanges = proposalApi.noteNoChanges;
+  const applyProposal = proposalApi.applyProposal;
   // pending/last-applied message state is owned by proposalApi (getters/setters).
   const setPendingProposalMessage = (value: typeof proposalApi.pendingProposalMessage) => {
     proposalApi.pendingProposalMessage = value;
@@ -615,9 +608,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     conversationId = record.id;
     setPendingProposalMessage(null);
     setLastAppliedProposalMessage(null);
-    proposalApi.clearInlineActionsIfMine();
-    proposalHost.replaceChildren();
-    closeProposalModal();
     chipsHost.replaceChildren();
     log.replaceChildren();
     startScreen = null;
@@ -632,6 +622,54 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
+  };
+
+  /**
+   * 새 대화 시작 — 헤더의 ＋, 액션 모드(모든 도키에서 열림), 그리고 프로젝트 전환이 공유하는 한 경로.
+   * 닫혀지는 대화는 **자기 프로젝트 키**로 보관된 뒤에 새 스코프로 갈아끓는다.
+   */
+  const startNewConversation = (reason: "manual" | "project-switch"): void => {
+    // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
+    // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
+    const hadConversation = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
+    // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
+    // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
+    activeAbortController?.abort();
+    activeAbortController = null;
+    activeSelectionRegionController = null;
+    activeSelectionRegionKey = null;
+    pendingSends.length = 0;
+    refreshQueueIndicator();
+    turnBusy = false;
+    endTurnProgress();
+    refreshAbortButton();
+    persistConversation();
+    dropSession(controller);
+    endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
+    controller.auditHistory = [];
+    controller.statusTimeline = [];
+    conversationId = genId("conv");
+    const nextIdentity = store.getProjectIdentity();
+    projectIdentityId = nextIdentity.id;
+    conversationScope = conversationScopeKey(nextIdentity, store.getCurrent());
+    setPendingProposalMessage(null);
+    setLastAppliedProposalMessage(null);
+    // #211 이 승인 게이트를 걷어내 인라인 삹인 버튼과 제안 모달이 없다 — 남은 자운은 안내뿐이다.
+    proposalNoticeHost.replaceChildren();
+    chipsHost.replaceChildren();
+    log.replaceChildren();
+    startScreen = null;
+    closeToolActivity();
+    ensureStartScreen();
+    setStatus(reason === "project-switch" ? "새 프로젝트 — 새 대화" : "새 대화");
+    refreshExportButton();
+    syncGlassIdle();
+    syncConversationState();
+    if (reason === "manual") {
+      toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
+    } else if (hadConversation) {
+      toast("프로젝트가 바뀌어 새 대화를 시작합니다. 이전 대화는 그 프로젝트 기록에 저장됐습니다.", "ok");
+    }
   };
 
   // 수동 대화 복원(id 지정)은 호출 지점이 없다 — 감독 콘솔 전환에서 오버레이 시작 화면의
@@ -776,8 +814,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(autonomousFeedHost!);
     surface.replaceChildren(checklist);
   };
-  // 마일스톤 자동 적용/승인 대기 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
-  const appendMilestoneFeedLine = (kind: "applied" | "paused", title: string, detail: string): void => {
+  // 마일스톤 자동 적용/적용 실패 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
+  const appendMilestoneFeedLine = (kind: "applied" | "apply-failed", title: string, detail: string): void => {
     if (!autonomousRunState) return;
     ensureAutonomousRunSurface();
     refreshAutonomousRunSurface();
@@ -786,10 +824,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         class: `ai-autonomous-feed-line is-${kind}`,
         dataset: { testid: `ai-milestone-feed-${kind}` },
         children: [
-          el("span", { class: "ai-autonomous-feed-mark", text: kind === "applied" ? "✓" : "⏸" }),
+          el("span", { class: "ai-autonomous-feed-mark", text: kind === "applied" ? "✓" : "!" }),
           el("span", {
             class: "ai-autonomous-feed-text",
-            text: `${kind === "applied" ? "마일스톤 적용" : "승인 대기"}: ${title}${detail ? ` — ${detail}` : ""}`,
+            text: `${kind === "applied" ? "마일스톤 적용" : "적용 실패"}: ${title}${detail ? ` — ${detail}` : ""}`,
           }),
         ],
       })
@@ -919,7 +957,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     revealVolatileZone();
     if (!opts?.replay) appendBubble("user", displayAs ?? trimmed);
     const session = ensureSession();
-    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준 — 위 autoApprove 판정과 같은 관례).
+    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
@@ -943,6 +981,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     turnBusy = true;
+    const turnConversationId = conversationId;
+    const turnConversationScope = conversationScope;
+    const auditHistoryAtTurnStart = [...controller.auditHistory];
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
@@ -1127,7 +1168,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } else if (event.type === "milestone_applied") {
         appendMilestoneFeedLine("applied", event.title, `도구 ${event.toolCount}건${event.commitId ? ` · 커밋 ${event.commitId}` : ""}`);
       } else if (event.type === "proposal_paused") {
-        appendMilestoneFeedLine("paused", event.reason, "");
+        appendMilestoneFeedLine("apply-failed", event.reason, "프로젝트 저장소 변경 없음");
       }
     };
 
@@ -1171,68 +1212,38 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         foldWorkLogs(assistantBubble);
       }
       const beforeProject = store.getCurrent();
-      const afterProject = session.getProposedProject();
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
-      const autoApproveEnabled = loadAiConfig().agentMode === "auto" || loadAiConfig().autoApprove === true;
-      const verdict = classifyApproval(result.proposedCalls, { autoApproveEnabled });
-      const explicitApprovalRequired = verdict.decision === "require_approval";
-      const safety = classifyProposalSafety({
-        calls: result.proposedCalls,
-        before: beforeProject,
-        after: afterProject,
-        currentMapId,
-        warnings: completenessWarnings,
-      });
-      const hasCurrentMapGhost = currentMapId && hasAgentGhostPreviewSubscribers()
-        ? agentGhostPreviewsForMap(getAgentGhostPreviewState(), currentMapId).length > 0
-        : false;
-      const canvasFirst = safety.safe && !explicitApprovalRequired && hasCurrentMapGhost;
-      // 승인 카드는 파괴적·재료합의 변경과 자동 적용 off 에만 남는다. 안전 분류와 완성도 린트
-      // 경고는 더 이상 게이트가 아니다 — 되돌리기가 있는 변경을 카드로 막으면 마찰만 남는다.
-      const applyMode = resolveProposalApplyMode({
-        callCount: result.proposedCalls.length,
-        autoApplyEnabled: autoApproveEnabled,
-        approvalDecision: verdict.decision,
-        turnErrored: result.stoppedReason === "error",
-      });
+      // 승인 카드는 없다 — 쓰기가 있으면 그대로 적용하고, 복구는 되돌리기다(approvalPolicy 머리말).
+      const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
       if (applyMode === "apply-now") {
-        // 적용을 먼저 하고 그 결과를 기다린 다음에 카드를 붙인다 — 배치 검증·커밋 게이트가 적용을
-        // 거부하면 store 는 그대로이므로 "자동 적용 N건" 은 거짓이 된다(사유는 acceptProposal 이
+        // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
+        // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 applyProposal 이
         // 이미 ❌ 버블로 남긴다).
-        // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
-        // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
-        // 판단해야 했다. 이제 전/후 큰 비교 카드를 로그에 남기고 넓은 화면으로 열 수 있다.
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
-        const applied = await acceptProposal(result.proposedCalls);
+        applyingProposal = true;
+        let applied: boolean;
+        try {
+          applied = await applyProposal(result.proposedCalls, assistantBubble);
+        } finally {
+          applyingProposal = false;
+          projectIdentityId = store.getProjectIdentity().id;
+        }
         setStatus(applied ? "대기" : "적용 실패");
-        // 변경 카드는 proposalApi.onApplied 가 모든 적용 경로(자동·수동)에서 한 장만 남긴다.
-        // 여기서 또 emitChangeCard 를 부를면 자동 적용 한 턴에 카드가 다 장 밥는다(e2e 로 잡혀다).
+        // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
+        // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
         if (applied && !currentMapId) {
-          appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
+          appendBubble("system", `적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
         }
       } else {
-        renderProposal(
-          result,
-          result.proposedCalls.length === 0 ? completenessWarnings : [],
-          assistantBubble,
-          canvasFirst ? "canvas" : "modal",
-        );
-        if (result.proposedCalls.length === 0 && result.stoppedReason !== "error") {
+        noteNoChanges(result, completenessWarnings);
+        if (result.stoppedReason !== "error") {
           const silenced = result.assistantText ? ` — ${result.assistantText.slice(0, 80)}` : "";
           const emptyLabel = completenessWarnings.length > 0 ? `변경 없음(린트 경고 ${completenessWarnings.length}건)` : `변경 없음(0건)${silenced ? " · 되묻기/재시도 필요" : ""}`;
           setStatus(emptyLabel);
         } else {
-          setStatus(
-            result.stoppedReason === "error"
-              ? "오류"
-              : result.proposedCalls.length > 0
-              ? "검토 대기"
-              : !runningProgress
-              ? "완료"
-              : status.textContent ?? ""
-          );
+          setStatus("오류");
         }
       }
       if (result.assistantText) {
@@ -1272,17 +1283,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     } finally {
       ghostPreviewUpdater.cancel();
-      if (!ownsTurn(true)) return;
+      const turnEntries = [...auditHistoryAtTurnStart, ...session.getAuditEntries()];
+      if (!ownsTurn(true)) {
+        // 프로젝트 전환이 ownership을 먼저 끊어도 늦게 정착한 결과는 시작 당시 대화에만 저장한다.
+        if (!disposed) persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries });
+        return;
+      }
       endTurnProgress();
       if (activeAbortController === abortController) activeAbortController = null;
       turnBusy = false;
       refreshAbortButton();
-      // 자율 런 종료(정상 완료·중단·승인 대기 포함): 런 표면을 정리하고 자동 접기를 재개한다.
+      // 자율 런 종료(정상 완료·중단·적용 실패 포함): 런 표면을 정리하고 자동 접기를 재개한다.
       // 다음 사용자 턴이 autonomous 로 시작되면 beginAutonomousRun 이 새 표면을 만든다.
       if (runOpts?.autonomous) endAutonomousRun();
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (collapsed) panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
-      persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
+      persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.
       // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
       const cfg = loadAiConfig();
       const audit = session.getAuditEntries();
@@ -1303,7 +1319,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void recordAiActivity({
         channel: "chat",
         instruction: requestText,
-        projectContextKey: projectConversationContextKey(store.getCurrent()),
+        projectContextKey: turnConversationScope,
         model: cfg.model,
         liteModel: cfg.liteModel,
         result: {
@@ -1324,8 +1340,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (collapseAfterAiWork) {
         if (turnFailed) {
           collapseAfterAiWork = false;
-        } else if ((status.textContent ?? "") === "검토 대기") {
-          /* stay open until onProposalSettled */
         } else if (hasPendingQuestion()) {
           /* AI가 답을 기다리는 중 — 사용자가 답하거나 직접 접을 때까지 열어 둔다
              (2026-08-18 UX 리뷰 P1-4: 질문이 자동 접힘으로 증발하던 결함) */
@@ -1398,6 +1412,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    const regionConversationId = conversationId;
+    const regionConversationScope = conversationScope;
+    const auditHistoryAtRegionStart = [
+      ...controller.auditHistory,
+      ...(controller.session?.getAuditEntries() ?? []),
+    ];
+    const regionAuditEntries: AuditEntry[] = [];
+    const recordRegionAudit = (entry: AuditEntry): void => {
+      regionAuditEntries.push(entry);
+      controller.auditHistory.push(entry);
+    };
     const abortController = new AbortController();
     const selectionKey = `${selection.mapId}:${selection.region.x}:${selection.region.y}:${selection.region.width}:${selection.region.height}`;
     activeAbortController = abortController;
@@ -1417,7 +1442,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     revealVolatileZone();
     closeToolActivity();
     appendBubble("user", text);
-    controller.auditHistory.push({ kind: "user", text, at: new Date().toISOString() });
+    recordRegionAudit({
+      kind: "user",
+      text,
+      at: new Date().toISOString(),
+      context: buildConversationTurnContext(store.getCurrent(), {
+        mapId: selection.mapId,
+        viewport: getEditorMapViewport(),
+        selection: { mapId: selection.mapId, ...selection.region },
+      }),
+    });
     beginTurnProgress();
     refreshAbortButton();
     setStatus("영역 작업 중…");
@@ -1445,7 +1479,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       assistantMessageDisplayed = true;
       closeToolActivity();
       appendBubble("assistant", content);
-      controller.auditHistory.push({ kind: "assistant", text: content, at: new Date().toISOString() });
+      recordRegionAudit({ kind: "assistant", text: content, at: new Date().toISOString() });
     };
     const onEvent = (event: SessionEvent): void => {
       if (!ownsRegionRun()) return;
@@ -1494,7 +1528,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
-        controller.auditHistory.push({
+        recordRegionAudit({
           kind: "tool",
           name: event.name,
           args: event.args,
@@ -1510,7 +1544,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (event.type === "status") {
         setStatus(event.text);
-        controller.auditHistory.push({ kind: "status", text: event.text, at: new Date().toISOString() });
+        recordRegionAudit({ kind: "status", text: event.text, at: new Date().toISOString() });
         if (shouldShowStatusInChat(event.text)) appendBubble("system", event.text);
       }
     };
@@ -1520,6 +1554,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         mapId: selection.mapId,
         region: selection.region,
         instruction: text,
+        gate: "immediate",
         signal: abortController.signal,
         onEvent,
       });
@@ -1531,7 +1566,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(result.assistantText);
       const summary = describeRegionTaskResult(result);
       appendBubble("system", summary);
-      controller.auditHistory.push({ kind: "status", text: summary, at: new Date().toISOString() });
+      recordRegionAudit({ kind: "status", text: summary, at: new Date().toISOString() });
       setStatus(result.ok ? (result.applied ? "적용됨" : "완료") : "오류");
       if (!result.ok && result.error) toast(`영역 작업 실패: ${result.error}`, "error");
     } catch (cause) {
@@ -1539,9 +1574,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const message = cause instanceof Error ? cause.message : String(cause);
       setStatus("오류");
       appendBubble("system", `오류: ${message}`);
-      controller.auditHistory.push({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
+      recordRegionAudit({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
     } finally {
-      if (!ownsRegionRun(true)) return;
+      const regionEntries = [...auditHistoryAtRegionStart, ...regionAuditEntries];
+      if (!ownsRegionRun(true)) {
+        if (!disposed) {
+          persistConversation({
+            id: regionConversationId,
+            scope: regionConversationScope,
+            entries: regionEntries,
+          });
+        }
+        return;
+      }
       const cancelled = abortController.signal.aborted;
       activeSelectionRegionController = null;
       activeSelectionRegionKey = null;
@@ -1552,7 +1597,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       turnBusy = false;
       refreshAbortButton();
       if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
-      persistConversation();
+      persistConversation({
+        id: regionConversationId,
+        scope: regionConversationScope,
+        entries: regionEntries,
+      });
       if (!cancelled) notifyIfObscuredByTestPlay();
       drainPendingSends();
       if (collapseAfterAiWork) {
@@ -1842,6 +1891,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const unsubscribeContextStore = store.subscribe(() => {
     refreshContextChips();
     refreshComposerChips();
+    // 프로젝트가 바뀌었으면(새 프로젝트 생성·다른 작업 열기·로엄 복원) 대화를 새로 시작한다 —
+    // 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 전부 무의미하거나 해롭다.
+    const identity = store.getProjectIdentity();
+    if (identity.id === projectIdentityId) return;
+    if (applyingProposal) {
+      projectIdentityId = identity.id;
+      return;
+    }
+    startNewConversation("project-switch");
   });
   const activateSelectionTaskContext = (focus = true): void => {
     if (!editorState.get().selection) return;
@@ -2008,27 +2066,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       "aria-label": "새 대화 시작",
     },
     dataset: { testid: "ai-new-session" },
-    on: {
-      click: () => {
-        persistConversation();
-        dropSession(controller);
-        endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
-        controller.auditHistory = [];
-        conversationId = genId("conv");
-        setPendingProposalMessage(null);
-        setLastAppliedProposalMessage(null);
-        proposalApi.clearInlineActionsIfMine();
-        proposalHost.replaceChildren();
-        closeProposalModal();
-        chipsHost.replaceChildren();
-        log.replaceChildren();
-        startScreen = null;
-        ensureStartScreen();
-        setStatus("새 대화");
-        refreshExportButton();
-        toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
-      },
-    },
+    on: { click: () => startNewConversation("manual") },
   });
   abortButton = el("button", {
     class: "ai-assistant-action ai-abort-button",
@@ -2168,6 +2206,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const sharedMenuActions: AiActionMenuActions = {
+    startNewChat: () => startNewConversation("manual"),
     undoLast: () => undoLastButton.click(),
     exportAudit: () => exportButton?.click(),
     toggleDock: () => onDockToggleClick(),
@@ -2279,6 +2318,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerChips,
     queueIndicator,
     statusGroup,
+    onNewChat: () => startNewConversation("manual"),
     onPopoverChange: () => syncCommandBarClearance(),
   });
   const commandBar = composerShell.commandBar;
@@ -2304,14 +2344,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
-    // 적용 완료 액션과 0건 알림, '검토 대기' pill은 맵 위에서 잃지 않는 고정 영역이다.
-    children: [completionHost, proposalNoticeHost, proposalPill],
+    // 적용 완료 액션과 0건 알림을 맵 위에서 잃지 않는 고정 영역에 둔다.
+    children: [completionHost, proposalNoticeHost],
   });
-  // 오버레이는 **휘발 로그 전용**이다. 제안 pill·완료 스트립(stickyProposalZone)은 여기 두면
-  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로, 기본 도크인 유리와 float 에서는
-  // 스티키 존이 문서에서 통째로 빠져 "나중에" 로 최소화한 pill 과 적용 완료 스트립이 사라졌다
-  // (2026-08-23 실측: glass/float 에서 .ai-proposal-pill 조회 결과 없음). 그래서 스티키 존은
-  // 도크와 무관하게 패널 자식으로 붙이고, 위치는 CSS 가 도크별로 잡는다.
+  // 오버레이는 **휘발 로그 전용**이다. 완료 스트립/알림(stickyProposalZone)은 여기 두면
+  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로 기본 도크인 유리와 float 에서는
+  // 스티키 존이 문서에서 빠진다. 도크와 무관하게 패널 자식으로 붙이고 위치는 CSS가 잡는다.
   const risingOverlay = el("div", {
     class: "ai-rising-overlay",
     dataset: { testid: "ai-rising-overlay" },
@@ -2339,7 +2377,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       temperature: readTemperature(),
       aiConversation: "empty",
     },
-    children: [toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
+    children: [toolbar, body, collapsedRestore, risingOverlay, stickyProposalZone, commandBar],
   });
   panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
@@ -2518,8 +2556,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const remountComposerTail = (includeOverlay: boolean): void => {
     const tail: HTMLElement[] = includeOverlay
-      ? [risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot]
-      : [pinHost, stickyProposalZone, commandBar, proposalModalRoot];
+      ? [risingOverlay, stickyProposalZone, commandBar]
+      : [stickyProposalZone, commandBar];
     for (const node of tail) node.remove();
     panel.append(...tail);
     mountResizeHandle();
@@ -2564,7 +2602,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   syncGlassIdle = (): void => {
     const busy = panel.classList.contains("is-turn-running")
-      || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
       || Boolean(turnBusy || runningProgress);
@@ -2586,9 +2623,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applyComposerViewPolicy = (): void => {
     const mode = readChatDock();
     if (!historyOpen && !studio) removeStartScreen();
-    // 오버레이(혼발 존 + 고정 제안 영역)는 사이드 도크만 가진다. 유리는 카드 본밸에
-    // 로그를 단고, float 은 바만 남긴다 — 테스트 계약이다(aiPanelChrome:
-    // "side dock mounts the work log, and switching back to float unmounts it").
+    // 오버레이(휘발 존)는 사이드 도크만 가진다. 유리는 카드 본문에 로그를 달고,
+    // float도 유리 로그 마운트를 사용한다 — 테스트 계약이다.
     if (mode === "side") {
       if (!panel.contains(risingOverlay)) remountComposerTail(true);
     } else {
@@ -3030,8 +3066,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     cleanupAiAssistBridge = null;
     unregisterAiAssistantBridge();
     registerAiBootIntentTarget(null);
-    proposalApi.clearInlineActionsIfMine();
-    closeProposalModal();
     clearAgentGhostPreview();
     panel.remove();
   };

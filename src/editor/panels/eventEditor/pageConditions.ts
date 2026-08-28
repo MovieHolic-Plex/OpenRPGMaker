@@ -3,6 +3,7 @@ import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { CONDITION_OP_OPTIONS } from "./options";
 import { renderFriendshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
+import { hasCharacterId } from "@/project/socialKey";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
 import {
@@ -39,9 +40,10 @@ export function renderPageConditions(
   mapId: MapId,
   eventId: string,
   page: EventPage,
-  _event?: { characterId?: string },
+  event?: { characterId?: string },
 ): HTMLElement[] {
-  const context = { mapId, eventId, page };
+  // 호감도 조건은 이 이벤트의 NPC 관계 연결 여부에 따라 살아있는지가 갈린다 — 컨트롤에 그 사실을 준다.
+  const context = { mapId, eventId, page, hostHasCharacterId: hasCharacterId(event) };
   // RM 계약: 핵심 조건 행은 항상 표시. 체크 OFF여도 라벨·컨트롤 자리 유지.
   return [
     conditionRow(
@@ -397,6 +399,7 @@ function friendshipConditionInputs(context: PageConditionContext): HTMLElement {
       className: "event-condition-control friendship",
       npcKeyTestId: "event-page-friendship-condition-npc-key",
      valueTestId: "event-page-friendship-condition-value",
+      hostHasCharacterId: context.hostHasCharacterId === true,
    }
  );
 }

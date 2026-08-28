@@ -55,6 +55,65 @@ describe("worldPanel", () => {
     expect(findByTestId(panel, "world-card-w_char")).toBeNull();
   });
 
+  it("previews and explicitly applies lore factions from the place and faction tab", () => {
+    const project = worldProject();
+    project.world = {
+      entities: [
+        ...project.world!.entities,
+        entity({ id: "w_rivals", type: "faction", name: "별등 경쟁 상단" }),
+      ],
+      relations: [
+        ...project.world!.relations,
+        { a: "w_faction", b: "w_rivals", kind: "enemyOf" },
+      ],
+    };
+    store.replace(project);
+    const panel = renderPanel();
+
+    requireTestId(panel, "world-tab-place-faction").click();
+    expect(requireTestId(panel, "world-faction-materialization")).toBeTruthy();
+    requireTestId(panel, "world-faction-materialization-preview").click();
+
+    expect(store.getCurrent().factions).toBeUndefined();
+    expect(requireTestId(panel, "world-faction-materialization-summary").textContent).toContain("진영 추가 2");
+    expect(requireTestId(panel, "world-faction-materialization-summary").textContent).toContain("관계 추가 1");
+
+    requireTestId(panel, "world-faction-materialization-apply").click();
+
+    expect(store.getCurrent().factions?.defs.map((def) => def.id)).toEqual(["w_faction", "w_rivals"]);
+    expect(store.getCurrent().factions?.relations).toEqual([{ a: "w_faction", b: "w_rivals", stance: -1 }]);
+  });
+
+  it("replans instead of overwriting faction edits made after preview", () => {
+    const project = worldProject();
+    project.world = {
+      entities: [
+        ...project.world!.entities,
+        entity({ id: "w_rivals", type: "faction", name: "별등 경쟁 상단" }),
+      ],
+      relations: [{ a: "w_faction", b: "w_rivals", kind: "enemyOf" }],
+    };
+    store.replace(project);
+    const panel = renderPanel();
+    requireTestId(panel, "world-tab-place-faction").click();
+    requireTestId(panel, "world-faction-materialization-preview").click();
+
+    store.update((draft) => {
+      draft.factions = { defs: [{ id: "hand_authored", name: "수기 진영" }], relations: [] };
+    });
+    requireTestId(panel, "world-faction-materialization-apply").click();
+
+    expect(store.getCurrent().factions?.defs).toEqual([{ id: "hand_authored", name: "수기 진영" }]);
+    expect(requireTestId(panel, "world-faction-materialization-summary").textContent).toContain("진영 추가 2");
+
+    requireTestId(panel, "world-faction-materialization-apply").click();
+    expect(store.getCurrent().factions?.defs).toEqual([
+      { id: "hand_authored", name: "수기 진영" },
+      { id: "w_faction", name: "별등 상단", aggression: 1 },
+      { id: "w_rivals", name: "별등 경쟁 상단", aggression: 1 },
+    ]);
+  });
+
   it("filters the event tab to event cards", () => {
     const panel = renderPanel();
 

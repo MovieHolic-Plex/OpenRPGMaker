@@ -97,7 +97,7 @@
   border-radius: 0;
   box-shadow: none;
   color: var(--status-edge-muted);
-  cursor: pointer;
+  cursor: default;
   display: flex;
   flex: none;
   flex-direction: column;
@@ -424,7 +424,7 @@
 
 .oprn-status-menu .status-menu-detail-action {
   appearance: none;
-  cursor: pointer;
+  cursor: default;
   text-align: left;
   width: 100%;
 }

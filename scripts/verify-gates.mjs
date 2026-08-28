@@ -13,7 +13,7 @@
 //   node scripts/verify-gates.mjs --save-baseline          # 현재 상태를 기준선으로 저장
 //   node scripts/verify-gates.mjs --baseline <path>        # 기준선 대비 회귀만 실패 처리
 //   node scripts/verify-gates.mjs --json                   # 기계 판독용 출력
-//   node scripts/verify-gates.mjs --only typecheck|tests
+//   node scripts/verify-gates.mjs --only typecheck|tests|css   # css 는 수 초, 나머지는 수 분
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -110,9 +110,38 @@ function testsGate() {
   return { name: "vitest", exitCode: code, totalCount, failedCount, passedCount, failedFiles };
 }
 
+// CSS 게이트 — 자체 기준선을 가진 두 정적 분석 스크립트를 그대로 실행한다.
+//
+// 여기 붙이는 이유: 이 저장소는 GitHub Actions 가 리포지터리 수준에서 꺼져 있고
+// (`actions/permissions` → enabled:false, 마지막 실행 2026-08-04),
+// 그 뒤로도 1,109 커밋(그중 CSS 330 커밋)이 들어왔다. 즉 CI 는 집행 경로가 아니다.
+// AGENTS.md:79 가 지정한 실제 집행 경로는 "감독자가 직접 `npm run gates`" 이므로,
+// 래칫도 거기 있어야 한다. 따로 `npm run gates:css` 로만 두면 별도로 기억해야 하고,
+// 그건 §4.1(하드코딩 hex)이 593 → 1,940 으로 3.2배 늘어난 것과 같은 실패 경로다.
+//
+// typecheck/tests 와 달리 기준선 대비 비교를 하지 않는다 — 두 스크립트가 각자
+// `.omo/css-budget-baseline.json` 과 인라인 유예 목록으로 이미 래칫을 구현하고 있어서,
+// exit != 0 은 그 자체로 "새 위반"을 뜻한다. 여기서 또 기준선을 씌우면 이중 유예가 된다.
+function cssGate() {
+  const budget = run("node", ["scripts/check-css-budget.mjs"]);
+  const graph = run("node", ["scripts/check-css-graph.mjs"]);
+  return {
+    name: "css",
+    exitCode: budget.code === 0 && graph.code === 0 ? 0 : 1,
+    budgetExitCode: budget.code,
+    graphExitCode: graph.code,
+    failures: [
+      ...(budget.code === 0 ? [] : [`check-css-budget.mjs exit=${budget.code}`]),
+      ...(graph.code === 0 ? [] : [`check-css-graph.mjs exit=${graph.code}`]),
+    ],
+    out: `${budget.out}${graph.out}`.trimEnd(),
+  };
+}
+
 const report = { ranAt: new Date().toISOString(), cwd: process.cwd() };
-if (only !== "tests") report.typecheck = typecheckGate();
-if (only !== "typecheck") report.tests = testsGate();
+if (only !== "tests" && only !== "css") report.typecheck = typecheckGate();
+if (only !== "typecheck" && only !== "css") report.tests = testsGate();
+if (only !== "typecheck" && only !== "tests") report.css = cssGate();
 
 if (flag("--save-baseline")) {
   mkdirSync(dirname(baselinePath), { recursive: true });
@@ -121,7 +150,12 @@ if (flag("--save-baseline")) {
   // 더럽혀져 매번 의미 없는 diff 가 생긴다. 실행 시점 진단용으로는 --json 에 그대로 남기고,
   // 저장본에서만 뺀다. `ranAt` 도 같은 이유로 재저장 때마다 바뀌지만, 그건 언제 갱신했는지를
   // 알려주는 유용한 정보라 남긴다.
-  const { cwd: _cwd, ...persisted } = report;
+  const { cwd: _cwd, css: cssReport, ...rest } = report;
+  // CSS 게이트의 `out` 은 사람이 읽는 콘솔 출력이라 기준선에 넣으면 수백 줄이 쌓인다.
+  // 애초에 CSS 게이트는 기준선 대비 비교를 하지 않으므로 종료 코드만 기록으로 남긴다.
+  const persisted = cssReport
+    ? { ...rest, css: { name: cssReport.name, exitCode: cssReport.exitCode } }
+    : rest;
   writeFileSync(baselinePath, `${JSON.stringify(persisted, null, 2)}\n`, "utf8");
   console.log(`기준선 저장: ${baselinePath}`);
 }
@@ -146,6 +180,10 @@ if (baseline) {
     }
   }
 }
+
+// CSS 게이트는 기준선 유무와 무관하게 실패가 곧 회귀다(자체 래칫을 이미 통과한 뒤이므로).
+// 기준선이 있을 때 종료 코드가 regressions 로만 결정되기 때문에 여기서 함께 넣어야 한다.
+for (const failure of report.css?.failures ?? []) regressions.push(`css ${failure}`);
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;
 
@@ -163,6 +201,15 @@ if (asJson) {
     const gate = report.tests;
     console.log(`vitest         exit=${gate.exitCode}  failed=${gate.failedCount}  passed=${gate.passedCount}  files=${gate.failedFiles.length}`);
   }
+  if (report.css) {
+    const gate = report.css;
+    console.log(`css            exit=${gate.exitCode}  budget=${gate.budgetExitCode}  graph=${gate.graphExitCode}`);
+    // 실패했을 때만 스크립트 출력을 그대로 보여준다 — 어느 지표가 얼마나 늘었는지,
+    // 어느 파일이 고아인지는 그 출력에 이미 파일 경로까지 찍혀 있다.
+    if (gate.exitCode !== 0 && gate.out) {
+      for (const line of gate.out.split("\n")) console.log(`   ${line}`);
+    }
+  }
   if (baseline) {
     console.log(regressions.length === 0
       ? `\n기준선 대비 회귀 없음 (${baselinePath})`
@@ -174,5 +221,12 @@ if (asJson) {
 }
 
 // 기준선이 있으면 회귀 여부로, 없으면 게이트 종료 코드로 판정한다.
+// (CSS 게이트는 위에서 이미 regressions 에 합류했으므로 두 경로 모두에서 반영된다.)
 if (baseline) process.exit(regressions.length === 0 ? 0 : 1);
-process.exit((report.typecheck?.exitCode ?? 0) === 0 && (report.tests?.exitCode ?? 0) === 0 ? 0 : 1);
+process.exit(
+  (report.typecheck?.exitCode ?? 0) === 0 &&
+    (report.tests?.exitCode ?? 0) === 0 &&
+    (report.css?.exitCode ?? 0) === 0
+    ? 0
+    : 1
+);

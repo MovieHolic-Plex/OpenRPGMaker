@@ -98,8 +98,8 @@ beforeEach(() => {
   previousLocalStorage = globalThis.localStorage;
   storage = new MemoryStorage();
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+    authMode: "apiKey",
     apiKey: "test-key",
-    autoApprove: false,
     baseUrl: "https://example.test",
     maxTokens: 1024,
     model: "gpt-5.6-sol",
@@ -160,7 +160,7 @@ describe("cluster AI modal", () => {
       expect.stringContaining("클러스터 수정"),
       expect.any(Function)
     );
-    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gpt-5.4-mini");
+    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gemini-3.7-flash");
   });
 
   it("accepts proposed changes into the store and rebases the session", async () => {

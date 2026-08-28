@@ -17,6 +17,7 @@ import { el } from "@/util/dom";
 export type AiActionMenuVariant = "header" | "composer";
 
 export interface AiActionMenuActions {
+  readonly startNewChat: () => void;
   readonly undoLast: () => void;
   readonly exportAudit: () => void;
   readonly toggleDock: () => void;
@@ -67,6 +68,12 @@ export function createAiActionMenuItems(options: {
       },
     }) as HTMLButtonElement;
 
+  const newChat = build({
+    label: "새 대화",
+    testid: header ? "ai-more-new-chat" : "ai-command-menu-new-chat",
+    title: "지금 대화를 기록에 저장하고 빈 대화를 시작한다",
+    run: options.actions.startNewChat,
+  });
   const undo = build({
     label: "되돌리기",
     testid: header ? "ai-more-undo" : "ai-command-menu-undo",
@@ -118,7 +125,7 @@ export function createAiActionMenuItems(options: {
   });
 
   return {
-    items: [undo, exportItem, dockItem, history, tools, interview, learnStructure, demoTeach],
+    items: [newChat, undo, exportItem, dockItem, history, tools, interview, learnStructure, demoTeach],
     dockItem,
   };
 }

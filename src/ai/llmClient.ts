@@ -50,8 +50,6 @@ export interface AiConfig {
   // "chat" = 종래 동작(감독·실행 모델이 다를 때만 플래너). 미지정(구형 blob/테스트 주입)은
   // loadAiConfig가 "auto"로 백필하지만, 직접 주입된 config는 종래 판정을 유지한다.
   agentMode?: "auto" | "chat";
-  // 현재 맵의 경고 없는 저위험 타일 변경만 검토 없이 적용(그 외 제안은 항상 검토).
-  autoApprove?: boolean;
 }
 
 // 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
@@ -115,7 +113,6 @@ export function defaultAiConfig(): AiConfig {
     // 장문 reasoning 모델(MiniMax 등)을 감독으로 쓸 때만 low 캡이 의미 있음.
     reasoningEffort: "low",
     agentMode: "auto",
-    autoApprove: false,
   };
 }
 
@@ -236,7 +233,6 @@ export function loadAiConfig(): AiConfig {
       // agentMode 백필(위 liteModel 패턴과 동일): 필드가 없는 옛 blob과 이상한 값은
       // 기본값 "auto"로 정규화한다. "chat"만 명시적으로 유지된다.
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
-      autoApprove: parsed.autoApprove === true,
     };
   } catch {
     return base;

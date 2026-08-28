@@ -66,10 +66,10 @@
   background: var(--runtime-window-fill-fallback);
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-  cursor: pointer;
+  cursor: default;
 }
 
-.runtime-commerce-actions button:hover {
+.runtime-commerce-actions button:focus-visible {
   background: var(--runtime-window-selected-bg);
   color: var(--runtime-window-text);
 }
@@ -185,10 +185,10 @@
   background: var(--runtime-window-fill-fallback);
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-  cursor: pointer;
+  cursor: default;
 }
-.runtime-shop-menu-choice:hover,
-.runtime-shop-cancel:hover {
+.runtime-shop-menu-choice:focus-visible,
+.runtime-shop-cancel:focus-visible {
   background: var(--runtime-window-selected-bg);
   color: var(--runtime-window-text);
 }
@@ -246,7 +246,7 @@
   font-size: var(--runtime-font-size-11);
   text-align: left;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: default;
   width: 100%;
 }
 
@@ -282,7 +282,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.runtime-shop-item-row:hover,
+.runtime-shop-item-row:focus-visible,
 .runtime-shop-item-row.selected {
   background: var(--runtime-window-selected-bg);
   border-color: rgba(245, 251, 255, 0.76);
@@ -492,12 +492,12 @@
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
-.runtime-gift-item:hover,
+.runtime-gift-item:focus-visible,
 .runtime-gift-item.selected,
-.runtime-gift-cancel:hover {
+.runtime-gift-cancel:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: rgba(245, 251, 255, 0.76);
 }
@@ -588,12 +588,12 @@
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
-.runtime-chest-item:hover,
+.runtime-chest-item:focus-visible,
 .runtime-chest-item.selected,
-.runtime-chest-cancel:hover {
+.runtime-chest-cancel:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: rgba(245, 251, 255, 0.76);
 }

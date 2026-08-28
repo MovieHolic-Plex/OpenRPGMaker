@@ -91,18 +91,17 @@
 }
 
 .battle-result-confirm {
-  cursor: pointer;
+  cursor: default;
   transition: background var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease);
 }
 
-.battle-result-confirm:hover,
-.battle-result-confirm:focus-visible {
+.battle-result-confirm:focus-visible{
   background: linear-gradient(180deg, var(--battle-panel-hi, #123b82), var(--battle-panel-low, #020a1d));
   border-color: var(--battle-gold, #ffd866);
 }
 
 .battle-command,
 .battle-enemy-list-row {
-  cursor: pointer;
+  cursor: default;
 }
 

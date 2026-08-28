@@ -21,7 +21,7 @@ export const dialogueScenario = {
       note: "새 게임 → 마을 시작 지점(0,1), 우측 (1,1) 에 town-npc",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 2500 },
+        { kind: "waitForRuntime" },
         { kind: "seed", seed: 1 },
       ],
       expect: {

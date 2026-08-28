@@ -134,6 +134,21 @@
   padding: 6px 8px;
   resize: vertical;
 }
+.demo-teach-send {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+  flex: 1;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 36px;
+  text-align: center;
+}
+.demo-teach-send:hover:not(:disabled) {
+  background: var(--gold-deep, #6E5424);
+  border-color: var(--gold-deep, #6E5424);
+  color: #fff;
+}
 
 /* ?⑤꼸 ?ш린 議곗젅 ?몃뱾(醫뚯긽??肄붾꼫 ???ㅻⅨ履승룹븘??怨좎젙 ?꾪궧?대씪 ?쇱そ쨌?꾨줈 ?뚮㈃ 而ㅼ쭚) */
 .ai-chat-resize-handle {

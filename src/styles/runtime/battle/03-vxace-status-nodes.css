@@ -80,10 +80,8 @@
   width: 0.7em;
 }
 
-.battle-command:hover,
 .battle-command:focus-visible,
 .battle-command[data-battle-command-cursor="true"],
-.battle-enemy-list-row:hover,
 .battle-enemy-list-row:focus-visible {
   border-color: #eef4ff #081849 #081849 #eef4ff;
   color: #fff;
@@ -99,21 +97,17 @@
 }
 
 .battle-target-menu .battle-command.battle-target-selected,
-.battle-target-menu .battle-command:hover,
 .battle-target-menu .battle-command:focus-visible {
   border-color: #eef4ff #081849 #081849 #eef4ff;
 }
 
 .battle-target-menu .battle-command.battle-target-selected::before,
-.battle-target-menu .battle-command:hover::before,
 .battle-target-menu .battle-command:focus-visible::before {
   content: ">";
 }
 
-.battle-command:hover::before,
 .battle-command:focus-visible::before,
 .battle-command[data-battle-command-cursor="true"]::before,
-.battle-enemy-list-row:hover::before,
 .battle-enemy-list-row:focus-visible::before {
   content: ">";
 }

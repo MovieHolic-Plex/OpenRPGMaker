@@ -93,9 +93,13 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # CSS 래칫: 다섯 지표는 내려갈 수만 있다. 가드 없는 규칙은 반드시 되돌아간다 —
-      # TOKENS.md §4.1(하드코딩 hex 금지)은 테스트가 없어 8주 만에 600 → 1,940 으로
-      # 3.2배 늘었고, 같은 문서 §4.7(font-family 토큰)은 테스트가 있어 247개 파일 위반 0건이다.
+      # CSS 래칫: 다섯 지표는 내려갈 수만 있다. TOKENS.md §4.1(하드코딩 hex 금지)은
+      # 기계 가드가 없어 593건(2026-07-06) → 1,940건(2026-08-28), 3.27배로 무너졌다.
+      #
+      # 주의: 이 저장소에서 Actions 는 리포지터리 수준에서 꺼져 있다
+      # (actions/permissions → enabled:false, 마지막 실행 2026-08-04). 이 job 은 Actions 를
+      # 다시 켜기 전까지 돌지 않는다. 실제 집행 경로는 AGENTS.md:79 가 지정한
+      # `npm run gates` 이고, 그쪽에 같은 두 스크립트가 css 게이트로 물려 있다.
       - run: node scripts/check-css-budget.mjs
       # CSS import 그래프 구조 검사. PR #98 의 스쿼시 머지가 배럴의 @import 한 줄만 조용히
       # 되돌려 07-identifiable-previews.css 가 고아가 됐고, 그 시각 버그가 계속 출하됐다.

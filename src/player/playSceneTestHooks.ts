@@ -51,7 +51,14 @@ type TestHookWindow = Window & {
 };
 
 type ActionCombatDebug = {
-  readonly enemies: readonly { readonly eventId: string; readonly hp: number; readonly maxHp: number; readonly mode: string }[];
+  readonly enemies: readonly {
+    readonly eventId: string;
+    readonly hp: number;
+    readonly maxHp: number;
+    readonly mode: string;
+    readonly factionId: string;
+    readonly targetId: string | null;
+  }[];
   readonly projectiles: number;
   readonly swingCooldownMs: number;
   readonly stamina: number;
@@ -174,14 +181,13 @@ export function installPlaySceneTestHooks(
       // 맵 전환 비트가 세션 값만 보고 통과하고 있었다).
       const previousMapId = context.getMapId?.();
       applyAndSync({ kind: "teleport", mapId, x, y });
+      // Exactly one load per changed map. A merge of two independent fixes left this branch
+      // duplicated, which loaded the destination twice and weakened QA evidence.
       if (typeof context.loadMap === "function" && previousMapId !== mapId) {
         context.loadMap(mapId);
       }
       context.tileX = x;
       context.tileY = y;
-      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
-        context.loadMap(mapId);
-      }
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);
@@ -338,7 +344,7 @@ function parseDirection(value: string | null): Dir | null {
 function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
   const context = scene as unknown as {
     actionCombatState?: {
-      enemies: Map<string, { hp: number; maxHp: number; mode: string }>;
+      enemies: Map<string, { hp: number; maxHp: number; mode: string; factionId: string; targetId?: string }>;
       projectiles: unknown[];
       swingCooldownMs: number;
       stamina: number;
@@ -358,6 +364,8 @@ function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
       hp: enemy.hp,
       maxHp: enemy.maxHp,
       mode: enemy.mode,
+      factionId: enemy.factionId,
+      targetId: enemy.targetId ?? null,
     })),
     projectiles: state.projectiles.length,
     swingCooldownMs: state.swingCooldownMs,

@@ -340,3 +340,25 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-equipment-redirect {
   min-width: 0;
 }
+
+/* ── 카드 묶음 구분자 (아이템 정보 위계 3단계) ─────────────────────────────
+   카드가 8~10 장이라 제목(2단계)만으로는 "정의 / 효과 / 사용 제한" 경계가 보이지 않는다.
+   `.db-item-section-label` 은 격자 전폭을 차지하는 얇은 캡션 행으로, 스크롤 중에도
+   지금 어느 묶음을 편집하는지 알려준다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-section-label {
+  align-items: center;
+  color: var(--db-studio-text-3);
+  display: flex;
+  font: 700 10.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 8px;
+  letter-spacing: 0.1em;
+  margin: 6px 0 -2px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-section-label::after {
+  background: var(--db-studio-border-subtle);
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+}
