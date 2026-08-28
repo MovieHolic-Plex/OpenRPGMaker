@@ -280,6 +280,19 @@ function codexOAuthPlugin(): Plugin {
   };
 }
 
+/**
+ * 브라우저 QA 중 dev 서버를 얼릴지 여부.
+ *
+ * 병렬 에이전트가 `src/` 를 편집하면 HMR 이 QA 중인 페이지에 리로드를 밀어넣어
+ * 편집기 부팅이 깨지고 `ERR_NETWORK_CHANGED` 가 쏟아진다(openwiki/testing.md).
+ * Playwright 가 webServer 로 직접 띄운 서버에는 이 플래그가 걸려 파일 감시와 HMR 을
+ * 모두 끈다 — 그 실행 동안 서버가 내주는 번들은 고정된다.
+ *
+ * 개발용 서버는 건드리지 않는다. `reuseExistingServer: true` 라서 이미 떠 있는 서버를
+ * 재사용하면 이 플래그는 안 걸린다 — 그때는 소스가 조용할 때 증거를 잡는 수밖에 없다.
+ */
+const freezeDevServer = () => process.env.E2E_FREEZE_DEV_SERVER === "1";
+
 export default defineConfig(({ mode }) => {
   const apitopiaKey = gatewayApiKey(mode);
   if (!apitopiaKey) {
@@ -377,9 +390,14 @@ export default defineConfig(({ mode }) => {
         return [...new Set(roots)];
       })(),
     },
-    watch: {
-      ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
-    },
+    // E2E 실행 중에는 HMR 도 파일 감시도 끈다. `watch: null` 이면 chokidar 자체가 안 뜨므로
+    // 다른 에이전트가 `src/` 를 저장해도 모듈 무효화·리로드가 발생하지 않는다.
+    hmr: freezeDevServer() ? false : undefined,
+    watch: freezeDevServer()
+      ? null
+      : {
+          ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
+        },
     // 상대 baseUrl(/api/ai, /api/qwen, /api/cpen)을 쓰는 클라이언트는 Authorization 을 보내지 않고
     // 이 프록시가 주입한다. 키가 없는 경로는 등록하지 않는다(빈 Bearer 전송 금지). 접근은
     // localOnlyAiProxyPlugin 이 루프백으로 제한.
