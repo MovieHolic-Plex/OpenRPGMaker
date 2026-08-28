@@ -132,7 +132,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
           y: options.initialSession.y,
         }
       : undefined);
-  const layout = el("div", { class: "player-layout system-shell" });
+  const layout = el("div", {
+    class: "player-layout system-shell",
+    dataset: { playInputOwner: "keyboard-only" },
+  });
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   main.append(layout);
 
@@ -253,6 +256,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       bootDiag("engine", true, { detail: "startPlayGame" });
       const nextGame = await startPlayGame(phaserContainer, session, {
         qaInstrumentation: options.qaInstrumentation,
+        keyboardOnly: true,
         initialEventTestId: eventTestId,
         trackGlobalGame: options.trackGlobalGame,
         onPlayLoadProgress: (ratio: number) => {

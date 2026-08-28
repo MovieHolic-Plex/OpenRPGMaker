@@ -120,7 +120,7 @@
   border-radius: var(--runtime-dialogue-radius);
   box-shadow: var(--runtime-dialogue-glass-shadow);
   box-sizing: border-box;
-  cursor: pointer;
+  cursor: default;
   image-rendering: pixelated;
   margin: 0;
   display: flex;
@@ -208,7 +208,6 @@
 }
 
 .dialogue-overlay.choices-active .choice-list .choice-btn.selected,
-.dialogue-overlay.choices-active .choice-list .choice-btn:hover,
 .dialogue-overlay.choices-active .choice-list .choice-btn:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
   border-color: var(--runtime-dialogue-glass-border);
@@ -575,7 +574,7 @@
   border-image: none;
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-18);
   font-weight: 700;
@@ -585,7 +584,7 @@
   transition: border-color 0.12s, background 0.12s;
 }
 
-.choices .choice-btn:hover {
+.choices .choice-btn:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
   border-color: var(--runtime-dialogue-glass-border-strong);
 }
@@ -673,7 +672,7 @@
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-18);
   font-weight: 700;
@@ -681,7 +680,7 @@
   padding: 2px 4px;
 }
 
-.number-input-pad-key:hover {
+.number-input-pad-key:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
   border-color: var(--runtime-dialogue-glass-border-strong);
 }
@@ -701,7 +700,7 @@
   border-image: none;
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-18);
   font-weight: 700;
@@ -709,7 +708,7 @@
   padding: 2px 8px;
 }
 
-.number-input-ok:hover {
+.number-input-ok:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
 }
 

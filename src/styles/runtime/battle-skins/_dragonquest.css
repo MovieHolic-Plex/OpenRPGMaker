@@ -41,7 +41,6 @@
   color: #f8f8f8;
 }
 
-.battle-scene[data-battle-skin="dragonquest"] .battle-command:hover,
 .battle-scene[data-battle-skin="dragonquest"] .battle-command:focus-visible,
 .battle-scene[data-battle-skin="dragonquest"] .battle-command[data-battle-command-cursor="true"] {
   background: transparent;

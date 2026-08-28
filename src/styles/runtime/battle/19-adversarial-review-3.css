@@ -78,12 +78,12 @@
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command {
-  cursor: pointer;
+  cursor: default;
   pointer-events: auto;
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] [data-battle-targetable="true"] {
-  cursor: pointer;
+  cursor: default;
   pointer-events: auto;
 }
 

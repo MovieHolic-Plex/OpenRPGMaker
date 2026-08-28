@@ -276,7 +276,7 @@
    (`is-selected`/`aria-selected` 가 아니다 — keyboardNav.css 확인). */
 .battle-scene[data-battle-skin="vxace"] .battle-command[data-battle-command-cursor="true"],
 .battle-scene[data-battle-skin="vxace"] .battle-command.selected,
-.battle-scene[data-battle-skin="vxace"] .battle-command:hover,
+.battle-scene[data-battle-skin="vxace"] .battle-command:focus-visible,
 .battle-scene[data-battle-skin="vxace"] .battle-command:focus,
 .battle-scene[data-battle-skin="vxace"] .battle-command:focus-visible {
   background: rgba(226, 232, 240, 0.22) !important;

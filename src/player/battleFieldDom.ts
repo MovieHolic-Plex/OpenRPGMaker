@@ -391,7 +391,7 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
     ?? (!effectiveId ? "/generated/battle-reference-forest.png" : undefined);
   if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
-  backdrop.title = "전투 배경";
+  backdrop.setAttribute("aria-label", "전투 배경");
   if (url) {
     backdrop.style.backgroundImage = `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
   }
@@ -741,7 +741,7 @@ function actorRoleNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   const node = document.createElement("span");
   node.className = "battle-actor-role";
   node.dataset.testid = `battle-actor-role-${actor.recordId}`;
-  node.title = className ?? "";
+  node.setAttribute("aria-label", className ?? "");
   node.textContent = initial;
   return node;
 }
@@ -855,7 +855,6 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.className = `battle-status-icon battle-status-icon-${entry.icon}`;
     node.dataset.statusIcon = entry.icon;
     node.dataset.statusName = entry.name;
-    node.title = entry.name;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);

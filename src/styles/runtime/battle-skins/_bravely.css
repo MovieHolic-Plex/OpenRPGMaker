@@ -56,7 +56,6 @@
   border: 2px solid #8a6f4d;
 }
 
-.battle-scene[data-battle-skin="bravely"] .battle-command:hover,
 .battle-scene[data-battle-skin="bravely"] .battle-command:focus-visible,
 .battle-scene[data-battle-skin="bravely"] .battle-command.battle-target-selected,
 .battle-scene[data-battle-skin="bravely"] .battle-command[data-battle-command-cursor="true"] {

@@ -55,7 +55,6 @@
   padding: 2px 10px;
   text-align: left;
 }
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
   background: rgba(228, 59, 68, 0.1);

@@ -163,7 +163,7 @@ function shopItemButton(
       class: "runtime-shop-item-owned",
       text: `x${owned}`,
       dataset: { testid: `shop-owned-${item.id}` },
-      attrs: { title: "파티 소지 수" },
+      attrs: { "aria-label": "파티 소지 수" },
     }),
     el("span", {
       class: "runtime-shop-item-price",
@@ -206,7 +206,7 @@ function quantityControl(): HTMLElement {
   input.value = "1";
   input.className = "runtime-commerce-quantity-input";
   input.dataset.testid = "shop-quantity-input";
-  input.title = "←/→ 로 1~99 수량 조절";
+  input.setAttribute("aria-label", "수량: 좌우 방향키로 1에서 99까지 조절");
   input.addEventListener("input", () => {
     const raw = Number.parseInt(input.value, 10);
     const clamped = Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
@@ -275,7 +275,7 @@ function shopMenuButton(
   const emptyPool = stepForPoolCheck ? isServicePoolEmpty(stepForPoolCheck) : false;
   if (emptyPool && action !== "cancel") {
     button.disabled = true;
-    button.title = "대상 없음 — 서비스 불가";
+    button.setAttribute("aria-label", `${button.textContent ?? "서비스"}: 대상 없음 — 서비스 불가`);
     (button as unknown as { dataset: Record<string,string> }).dataset["disabledReason"] = "empty-pool";
   }
   button.addEventListener("click", () => {

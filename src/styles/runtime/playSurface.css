@@ -26,7 +26,7 @@
 /* 호스트 셸 전체화면 토글(⛶) — hostFeatures에 "fullscreen"이 있을 때만 마운트된다(hostBridge.ts).
    스테이지는 transform: scale() 이라 버튼을 뷰포트에 붙이고 --play-scale 로 스테이지
    우상단 모서리(중앙 기준 ±160/120px)를 역산한다. 포인터 전용 — 키보드 포커스 없음. */
-.play-viewport > .play-fullscreen-toggle {
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle {
   align-items: center;
   background: rgba(8, 10, 18, 0.68);
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -46,8 +46,8 @@
   width: 22px;
   z-index: 60;
 }
-.play-viewport > .play-fullscreen-toggle:hover,
-.play-viewport > .play-fullscreen-toggle[aria-pressed="true"] {
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle:hover,
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle[aria-pressed="true"] {
   opacity: 1;
 }
 .play-stage {

@@ -133,7 +133,7 @@
 }
 
 .battle-target-candidate {
-  cursor: pointer;
+  cursor: default;
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
 }
 

@@ -164,7 +164,7 @@ describe("mountHostFullscreenToggle — 버튼 마운트/미마운트 조건", (
     expect(button).not.toBeNull();
     // 키보드 전용 게임 입력과 간섭 금지: Tab 순회 제외 + 포인터 소유권 표식.
     expect(button?.getAttribute("tabindex")).toBe("-1");
-    expect(button?.dataset.playInputOwner).toBe("touch-controls");
+    expect(button?.dataset.playInputOwner).toBe("host-fullscreen");
     expect(button?.getAttribute("aria-pressed")).toBe("false");
     cleanup?.();
     expect(viewport.querySelector("[data-testid='play-fullscreen-toggle']")).toBeNull();

@@ -805,8 +805,7 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible{
   background: linear-gradient(180deg, #ffe58a, #d08a2e);
   border-color: #fff8c9 #6b3a12 #6b3a12 #fff8c9;
   color: #10152a;
@@ -815,8 +814,8 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"] .battle-command-text strong,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"] .battle-command-text small,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover .battle-command-text strong,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover .battle-command-text small,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text strong,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text small,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text strong,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text small {
   color: #10152a;
