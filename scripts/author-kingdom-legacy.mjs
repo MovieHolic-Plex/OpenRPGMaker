@@ -191,18 +191,13 @@ async function main() {
     await picker.waitFor({ state: "visible" });
     await picker.getByTestId("command-picker-add-text").click();
 
-    const textDialog = page.getByTestId("event-command-text-dialog");
-    if (await textDialog.isVisible().catch(() => false)) {
-      await textDialog.getByTestId("event-command-text-speaker").fill(npc.speaker);
-      await textDialog.getByTestId("event-command-text-body").fill(npc.text);
-      await textDialog.getByTestId("event-command-text-ok").click();
-    } else {
-      const edit = page.getByTestId("event-command-edit-dialog").last();
-      await edit.locator("input").first().fill(npc.speaker);
-      await edit.locator("textarea").first().fill(npc.text);
-      await edit.locator("textarea").first().dispatchEvent("change");
-      await edit.getByTestId("event-command-edit-ok").click();
-    }
+    // 전용 「문장 표시」 창을 먼저 보던 분기는 삭제했다 — 그 창(textCommandDialog)은 프로덕션
+    // 호출부가 없어 모듈째로 지웠고, 아래 공용 편집창이 실제로 열리는 유일한 경로다.
+    const edit = page.getByTestId("event-command-edit-dialog").last();
+    await edit.locator("input").first().fill(npc.speaker);
+    await edit.locator("textarea").first().fill(npc.text);
+    await edit.locator("textarea").first().dispatchEvent("change");
+    await edit.getByTestId("event-command-edit-ok").click();
 
     await page.getByTestId("event-editor-ok").click();
     await page.getByTestId("event-editor-modal").waitFor({ state: "hidden", timeout: 10_000 }).catch(() => {});
