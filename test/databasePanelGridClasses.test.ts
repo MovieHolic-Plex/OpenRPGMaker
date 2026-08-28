@@ -103,7 +103,11 @@ describe("Database record panel grid-area classes (P1 재발 방지)", () => {
     const host = renderRecordHost("enemies");
     const panels = host.querySelectorAll(".db-advanced-panel");
 
-    expect(panels.length).toBe(10);
+    // "액션 전투" 패널(db-enemy-panel-action-combat)이 뒤늦게 추가되면서 11 개가 됐는데
+    // 이 기대값만 10 에 멈춰 있어 계속 빨간불이었다. 소스가 맞다 — studio-theme.css:339
+    // 의 area 맵에 `combat` 행이 있고 :353 이 그 패널에 grid-area 를 준다. 기대값을
+    // 실제 배치 순서에 맞춘다.
+    expect(panels.length).toBe(11);
 
     const assigned = panels.map((panel) => panelGridClasses(panel, "db-enemy-panel-"));
     expect(assigned.every((classes) => classes.length === 1)).toBe(true);
@@ -118,6 +122,7 @@ describe("Database record panel grid-area classes (P1 재발 방지)", () => {
       "db-enemy-panel-rewards",
       "db-enemy-panel-critical",
       "db-enemy-panel-options",
+      "db-enemy-panel-action-combat",
       "db-enemy-panel-state",
       "db-enemy-panel-element",
       "db-enemy-panel-actions",
