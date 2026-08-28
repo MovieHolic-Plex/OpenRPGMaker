@@ -191,6 +191,26 @@ describe("검토 단계 배치", () => {
   });
 });
 
+describe("자동완성 Escape", () => {
+  it("드롭다운만 닫고 창은 살려 둔다", async () => {
+    restoreDom = installFakeDom();
+    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn() });
+    const input = findByTestId(root, "region-task-input");
+    if (input) input.value = "/";
+    input?.dispatchEvent(new Event("input", { bubbles: true }));
+    const autocomplete = findByTestId(root, "region-task-autocomplete");
+    expect(autocomplete?.classList.contains("hidden")).toBe(false);
+
+    const escape = new Event("keydown", { bubbles: true }) as Event & { key?: string };
+    escape.key = "Escape";
+    input?.dispatchEvent(escape);
+
+    expect(autocomplete?.classList.contains("hidden")).toBe(true);
+    expect(findByTestId(root, "region-task-input")).not.toBeNull();
+    expect(root.parentNode).not.toBeNull();
+  });
+});
+
 describe("검토 단계 단축키", () => {
   it("Enter 는 재실행이 아니라 적용이다", async () => {
     const onApply = vi.fn();

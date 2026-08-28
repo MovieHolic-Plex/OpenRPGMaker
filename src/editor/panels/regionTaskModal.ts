@@ -1647,6 +1647,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       const target = items[autocompleteSelected] as HTMLElement | undefined;
       target?.click();
     } else if (event.key === "Escape") {
+      // 드롭다운만 닫는다. stopPropagation 이 없으면 backdrop 의 keydown 까지 올라가
+      // 창 전체가 닫혔다 — 자동완성을 물리려던 Escape 가 작업을 날렸다.
+      event.preventDefault();
+      event.stopPropagation();
       closeAutocomplete();
     }
   });
