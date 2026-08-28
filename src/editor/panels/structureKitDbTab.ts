@@ -88,6 +88,8 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     .filter((entry) => matchesThemeFilter(entry, themeFilterActive));
 
   // 선택 유효성 확인 — 보이는 행 안에서만 선택을 유지하고, 없으면 첫 행으로 되돌린다.
+  // 이 재계산은 매 렌더 무조건 실행된다 — 인스펙터의 삭제·복제 액션이 지운 킷/오브젝트의
+  // 선택을 저절로 걸러내므로, 그쪽에서 session.selectedKitId 를 따로 비우지 않는다.
   const selectedId = session.selectedObjectId ?? session.selectedKitId;
   const selectedEntry =
     visibleEntries.find((entry) => albumEntryId(entry) === selectedId) ?? visibleEntries[0] ?? null;
