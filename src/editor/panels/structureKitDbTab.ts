@@ -8,6 +8,7 @@
 // 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
 
 import { editorState } from "@/editor/editorState";
+import { createBlankStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -22,6 +23,7 @@ import {
   type StructureAlbumEntry,
   type StructureKitDbSource,
 } from "@/editor/panels/structureKitDbSources";
+import { openNewStructureKitDialog, openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
 import {
   interiorObjectCanvas,
   partKindName,
@@ -29,6 +31,7 @@ import {
   renderObjectInspector,
   setInspectorSelectedPartId,
 } from "@/editor/panels/structureKitInspector";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type {
   StructureKitPart,
@@ -191,12 +194,32 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           },
         },
       }),
-      el("div", {
-        class: "structure-kit-hint-chip",
-        children: [
-          el("span", { text: "맵에서 영역 선택 → " }),
-          el("b", { text: "구조물로 저장" }),
-        ],
+      el("button", {
+        class: "btn small primary",
+        attrs: { type: "button" },
+        text: "+ 새 구조물",
+        dataset: { testid: "structure-kit-new" },
+        on: {
+          click: () => {
+            const tilesetId = session.tilesetId;
+            if (!tilesetId) return;
+            const openEditorFor = (kitId: string): void => {
+              session.selectedKitId = kitId;
+              session.selectedObjectId = null;
+              rerender();
+              refresh(host, rerender);
+              openStructureKitEditor(tilesetId, kitId, () => {
+                rerender();
+                refresh(host, rerender);
+              });
+            };
+            if (tilesetId !== DEFAULT_TILESET_ID) {
+              openEditorFor(createBlankStructureKit(tilesetId).id);
+              return;
+            }
+            openNewStructureKitDialog(tilesetId, openEditorFor);
+          },
+        },
       }),
     ],
   });
@@ -309,6 +332,13 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
             setInspectorSelectedPartId(null);
             refresh(host, rerender);
           },
+          dblclick: () => {
+            if (entry.source !== "user") return;
+            openStructureKitEditor(activeTileset!.id, kit.id, () => {
+              rerender();
+              refresh(host, rerender);
+            });
+          },
         },
       });
       tbody.append(row);
@@ -330,7 +360,9 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
 
   // 3. 인스펙터 (오른쪽 열)
   if (selectedObject && activeTileset) {
-    workspace.append(renderObjectInspector(activeTileset, selectedObject));
+    workspace.append(
+      renderObjectInspector(activeTileset, selectedObject, () => refresh(host, rerender), rerender)
+    );
   } else if (selectedKit && activeTileset) {
     // 편집 잠금의 축은 "어떻게 만들어졌나"(learnedFrom)가 아니라 "프로젝트 데이터에 있나"(source)다.
     // learnedFrom 으로 판정하면 내장 킷을 내보낸 파일을 가져왔을 때 영구히 잠긴 유령 킷이 생긴다.

@@ -3,7 +3,7 @@ import { renderStructureKitsTab, resetStructureKitsTabSession } from "@/editor/p
 import { registerStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
-import type { StructureKitDef } from "@/project/types";
+import type { SectionStructureKitDef, StructureKitDef } from "@/project/types";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_THEME_CATALOG, INTERIOR_ROOM_THEMES, INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
@@ -469,5 +469,81 @@ describe("structureKitDbTab 방 종류 테마 문법 뷰", () => {
     host.querySelector("[data-testid='structure-kit-theme-study']")!.click();
     expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).not.toBeNull();
     expect(host.querySelectorAll(".structure-kit-row").length).toBe(INTERIOR_OBJECT_CATALOG.length);
+  });
+});
+
+describe("structureKitDbTab 신규·복제", () => {
+  it("도구줄에 [+ 새 구조물]과 힌트칩 제거가 반영된다", () => {
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+
+    expect(host.querySelector("[data-testid='structure-kit-new']")).not.toBeNull();
+    // 힌트칩의 문구는 빈 상태 안내에 이미 똑같이 있어 중복이었다.
+    expect(host.querySelector(".structure-kit-hint-chip")).toBeNull();
+  });
+
+  it("내장 킷 인스펙터의 [내 구조물로 복제]가 section 사본을 만든다", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    host.querySelector("[data-testid='structure-kit-db-kit_house_blue-stone']")!.click();
+
+    const dup = host.querySelector("[data-testid='structure-kit-duplicate-kit_house_blue-stone']");
+    expect(dup).not.toBeNull();
+    dup!.click();
+
+    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    expect(kits).toHaveLength(1);
+    expect(kits[0]!.kind).toBe("section");
+    expect(kits[0]!.learnedFrom).toBe("db-authored");
+    expect(kits[0]!.name).toContain("사본");
+  });
+
+  it("실내 오브젝트 인스펙터에도 복제가 있다", () => {
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)!.click();
+
+    const first = INTERIOR_OBJECT_CATALOG[0]!;
+    host.querySelector(`[data-testid='structure-kit-object-${first.id}']`)!.click();
+
+    const dup = host.querySelector(`[data-testid='structure-kit-duplicate-${first.id}']`);
+    expect(dup).not.toBeNull();
+    dup!.click();
+
+    const kits = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.structureKits ?? [];
+    expect(kits).toHaveLength(1);
+    expect(kits[0]!.kind).toBe("section");
+    expect(kits[0]!.width).toBe(first.width);
+  });
+
+  it("combined_town 앨범에서 [+ 새 구조물]은 시작점을 묻는다", () => {
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    host.querySelector(`[data-testid='structure-kit-tileset-${DEFAULT_TILESET_ID}']`)!.click();
+    host.querySelector("[data-testid='structure-kit-new']")!.click();
+
+    expect(document.querySelector("[data-testid='structure-kit-new']")).not.toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-new-blank']")).not.toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-new-house-confirm']")).not.toBeNull();
+  });
+
+  it("[이 집으로 시작]이 section 킷을 만든다", () => {
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+    host.querySelector(`[data-testid='structure-kit-tileset-${DEFAULT_TILESET_ID}']`)!.click();
+    host.querySelector("[data-testid='structure-kit-new']")!.click();
+    (document.querySelector("[data-testid='structure-kit-new-house-confirm']") as unknown as FakeElement).click();
+
+    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    expect(kits).toHaveLength(1);
+    expect(kits[0]!.kind).toBe("section");
+    expect(kits[0]!.learnedFrom).toBe("db-authored");
+    // 빈 껍데기가 아니라 실제 타일이 들어 있어야 한다.
+    const painted = (kits[0] as SectionStructureKitDef).rows.some((row) => row.tiles.some((tile) => tile !== -1));
+    expect(painted).toBe(true);
   });
 });

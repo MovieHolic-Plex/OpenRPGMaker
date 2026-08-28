@@ -16,7 +16,11 @@
 
 import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import {
+  createBlankStructureKit,
+  createStructureKitFromHouse,
+  replaceStructureKit,
+} from "@/editor/harnessSuggestion/structureKitActions";
 import {
   addPart,
   cellAtPoint,
@@ -27,8 +31,10 @@ import {
   updatePart,
   type KitLayer,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
+import { HOUSE_KITS } from "@/editor/houseKit";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef, StructureKitPartKind, TilesetDef, TilesetId } from "@/project/types";
@@ -154,6 +160,71 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
       }),
     ],
     [{ label: "닫기", testid: "structure-kit-editor-close", action: onClosed }],
+  );
+}
+
+/** 시작점 선택 — 빈 칸이냐, 집 한 채냐. 집 갈래는 combined_town 앨범에서만 열린다. */
+export function openNewStructureKitDialog(tilesetId: TilesetId, onCreated: (kitId: string) => void): void {
+  let houseKitId: string = PUBLIC_HOUSE_KIT_IDS[0]!;
+  let width = 9;
+  let height = 8;
+
+  const kitSelect = el("select", {
+    dataset: { testid: "structure-kit-new-house-kit" },
+    children: PUBLIC_HOUSE_KIT_IDS.map((id) =>
+      el("option", { attrs: { value: id }, text: HOUSE_KITS[id]?.name ?? id }),
+    ),
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (target instanceof HTMLSelectElement) houseKitId = target.value;
+      },
+    },
+  });
+
+  const numberField = (label: string, testid: string, value: number, apply: (next: number) => void): HTMLElement =>
+    el("label", {
+      class: "structure-kit-editor-size-field",
+      children: [
+        el("span", { text: label }),
+        el("input", {
+          attrs: { type: "number", min: "3", max: "32" },
+          value: String(value),
+          dataset: { testid },
+          on: {
+            change: (event: Event) => {
+              const target = event.currentTarget;
+              if (target instanceof HTMLInputElement) apply(Number(target.value));
+            },
+          },
+        }),
+      ],
+    });
+
+  openDialog(
+    "structure-kit-new",
+    "새 구조물",
+    [
+      el("p", { class: "structure-kit-quiet", text: "빈 칸에서 시작하거나, 집 한 채를 놓고 고쳐 나갈 수 있습니다." }),
+      el("div", {
+        class: "structure-kit-new-house",
+        children: [kitSelect, numberField("폭", "structure-kit-new-width", width, (n) => { width = n; }),
+          numberField("높이", "structure-kit-new-height", height, (n) => { height = n; })],
+      }),
+    ],
+    [
+      {
+        label: "빈 3×3 으로 시작",
+        testid: "structure-kit-new-blank",
+        action: () => onCreated(createBlankStructureKit(tilesetId).id),
+      },
+      {
+        label: "이 집으로 시작",
+        testid: "structure-kit-new-house-confirm",
+        action: () => onCreated(createStructureKitFromHouse(tilesetId, houseKitId, { width, height }).id),
+      },
+      { label: "취소", testid: "structure-kit-new-cancel" },
+    ],
   );
 }
 

@@ -8,7 +8,7 @@
 // 의존 방향은 탭 → 인스펙터 한 방향이다(순환 없음).
 
 import { editorState } from "@/editor/editorState";
-import { deleteStructureKit, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { deleteStructureKit, duplicateIntoTileset, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { paletteStampFromCells, paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -19,6 +19,7 @@ import {
   interiorObjectSnapLabel,
   interiorObjectThemeLabels,
 } from "@/editor/panels/structureKitDbSources";
+import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import type {
   StructureKitDef,
@@ -53,7 +54,12 @@ export function interiorObjectCanvas(tileset: TilesetDef, object: InteriorObject
 }
 
 /** 실내 오브젝트 인스펙터 — 카탈로그는 프로젝트 데이터가 아니라 코드문이라 이름 변경·삭제가 없다. */
-export function renderObjectInspector(tileset: TilesetDef, object: InteriorObjectDef): HTMLElement {
+export function renderObjectInspector(
+  tileset: TilesetDef,
+  object: InteriorObjectDef,
+  refresh: () => void,
+  rerender: () => void,
+): HTMLElement {
   const themeLabels = interiorObjectThemeLabels(object);
   const canvas = interiorObjectCanvas(tileset, object, 3);
   canvas.className = "structure-kit-raster-canvas";
@@ -102,6 +108,20 @@ export function renderObjectInspector(tileset: TilesetDef, object: InteriorObjec
                   tool: "paint",
                 });
                 toast(`'${object.label}'을 브러시로 선택했습니다`, "ok");
+              },
+            },
+          }),
+          el("button", {
+            class: "btn primary",
+            attrs: { type: "button" },
+            text: "내 구조물로 복제",
+            dataset: { testid: `structure-kit-duplicate-${object.id}` },
+            on: {
+              click: () => {
+                const copy = duplicateIntoTileset(tileset.id, object);
+                toast(`'${copy.name}' — 사본은 그림만 가져옵니다. AI 실내 방 채우기는 원본 카탈로그만 씁니다.`, "info");
+                rerender();
+                refresh();
               },
             },
           }),
@@ -324,10 +344,42 @@ export function renderInspector(
     })
   );
 
-  // 하단 액션 버튼들 (팔레트에서 쓰기, 삭제 — 프로젝트 데이터가 아니면 삭제 제외)
+  // 하단 액션 버튼들 (편집, 복제, 삭제 — 프로젝트 데이터가 아니면 편집·삭제 제외, 팔레트에서 쓰기)
   const actions = el("div", {
     class: "structure-kit-actions",
     children: [
+      ...(editable
+        ? [
+            el("button", {
+              class: "btn primary",
+              attrs: { type: "button" },
+              text: "편집",
+              dataset: { testid: `structure-kit-edit-${kit.id}` },
+              on: {
+                click: () => {
+                  openStructureKitEditor(tileset.id, kit.id, () => {
+                    rerender();
+                    refresh();
+                  });
+                },
+              },
+            }),
+          ]
+        : []),
+      el("button", {
+        class: editable ? "btn" : "btn primary",
+        attrs: { type: "button" },
+        text: editable ? "복제" : "내 구조물로 복제",
+        dataset: { testid: `structure-kit-duplicate-${kit.id}` },
+        on: {
+          click: () => {
+            const copy = duplicateIntoTileset(tileset.id, kit);
+            toast(`'${copy.name}' 을 만들었습니다`, "ok");
+            rerender();
+            refresh();
+          },
+        },
+      }),
       ...(editable
         ? [
             el("button", {
@@ -339,7 +391,7 @@ export function renderInspector(
                 click: () => {
                   deleteStructureKit(tileset.id, kit.id);
                   toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
-                  selectedPartId = null;
+                  setInspectorSelectedPartId(null);
                   rerender();
                   refresh();
                 },
