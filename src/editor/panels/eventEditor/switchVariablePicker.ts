@@ -1,18 +1,18 @@
-// 스위치/변수 공용 픽커 (2026-08 모달 통일).
-// - UI 는 단일 트리거 버튼(현재 선택값 라벨)뿐이고, 클릭 시 openSwitchVariablePicker
-//   클래식 모달(블록 내비게이션·이름/번호 검색·생성·이름변경 내장)을 연다.
-// - visible 네이티브 <select> 와 인라인 검색 필터는 제거됐다.
-// - 숨은 네이티브 select 는 Playwright selectOption 과 기존 폼 change 파이프라인
+// 레코드 공용 픽커 컨트롤 (스위치·변수·아이템·주인공).
+// - UI 는 단일 트리거 버튼(현재 선택값 라벨)뿐이고, 클릭 시 openRecordPickerPanel
+//   (검색·참조 수·이름 편집 내장)을 연다.
+// - 숨은 네이티브 <select> 는 Playwright selectOption 과 기존 폼 change 파이프라인
 //   (select.value 설정 + change dispatch) 호환을 위해 DOM 에 남는다. 선례:
 //   searchableRecordBrowser 의 record-browser-hidden-select, segmentedSelect 계약.
-import { store } from "@/project/store";
 import { el } from "@/util/dom";
-import { openSwitchVariablePicker } from "./recordPickerDialog";
+import { openRecordPickerPanel } from "./recordPickerDialog";
+import { recordKindLabel, recordsOf, type RecordKind } from "./recordKinds";
 
-export type SwitchVariableKind = "switch" | "variable";
+/** @deprecated 이름 호환용. 새 코드는 RecordKind 를 쓴다. */
+export type SwitchVariableKind = RecordKind;
 
 export type SwitchVariablePickerOptions = {
-  readonly kind: SwitchVariableKind;
+  readonly kind: RecordKind;
   readonly selectedId: string;
   readonly onChange: (id: string) => void;
   /** 루트 컨테이너 testid (명령 폼 등). */
@@ -38,9 +38,8 @@ export type SwitchVariablePickerHandle = {
 };
 
 export function switchVariablePicker(options: SwitchVariablePickerOptions): SwitchVariablePickerHandle {
-  const project = store.getCurrent();
   const kind = options.kind;
-  const list = kind === "switch" ? project.switches : project.variables;
+  const list = recordsOf(kind);
 
   const select = el("select", {
     class: "event-record-modal-select",
@@ -75,13 +74,13 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
     text: labelOf(select.value),
     attrs: {
       type: "button",
-      title: kind === "switch" ? "스위치 선택" : "변수 선택",
+      title: `${recordKindLabel(kind)} 선택`,
       "aria-haspopup": "dialog",
     },
     dataset: { testid: options.pickerTestId ?? `event-${kind}-picker-open` },
     on: {
       click: () =>
-        openSwitchVariablePicker({
+        openRecordPickerPanel({
           kind,
           currentId: select.value,
           onSelect: (id) => {
@@ -123,7 +122,7 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
 
 /** 레거시 이름 — 명령/조건 폼이 쓰던 databasePicker API. */
 export function databasePicker(
-  kind: SwitchVariableKind,
+  kind: RecordKind,
   currentId: string,
   onChange: (id: string) => void,
   testId?: string

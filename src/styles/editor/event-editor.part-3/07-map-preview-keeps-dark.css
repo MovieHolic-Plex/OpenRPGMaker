@@ -126,8 +126,7 @@
 
   .event-command-picker-grid,
   .transfer-player-dialog,
-  .event-graphic-picker-frame,
-  .event-record-picker-frame {
+  .event-graphic-picker-frame {
     grid-template-columns: minmax(0, 1fr);
   }
 
