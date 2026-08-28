@@ -327,8 +327,10 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   if (selectedObject && activeTileset) {
     workspace.append(renderObjectInspector(activeTileset, selectedObject));
   } else if (selectedKit && activeTileset) {
-    const inspector = renderInspector(activeTileset, selectedKit, host, rerender);
-    workspace.append(inspector);
+    // 편집 잠금의 축은 "어떻게 만들어졌나"(learnedFrom)가 아니라 "프로젝트 데이터에 있나"(source)다.
+    // learnedFrom 으로 판정하면 내장 킷을 내보낸 파일을 가져왔을 때 영구히 잠긴 유령 킷이 생긴다.
+    const editable = selectedEntry?.source === "user";
+    workspace.append(renderInspector(activeTileset, selectedKit, editable, host, rerender));
   }
 }
 
@@ -581,11 +583,10 @@ function partKindName(kind: StructureKitPartKind): string {
 function renderInspector(
   tileset: TilesetDef,
   kit: StructureKitDef,
+  editable: boolean,
   host: HTMLElement,
   rerender: () => void
 ): HTMLElement {
-  // 내장 파라메트릭 킷은 프로젝트 데이터에 없는 가상 킷 — 이름 변경·삭제 같은 파괴적 액션을 노출하지 않는다.
-  const isBuiltin = kit.learnedFrom === "builtin-parametric";
   const size = structureKitSize(kit);
   const inspector = el("div", {
     class: "structure-kit-inspector",
@@ -603,11 +604,10 @@ function renderInspector(
       el("label", { text: "이름" }),
       el("input", {
         value: kit.name ?? "구조물",
-        attrs: isBuiltin ? { type: "text", disabled: "" } : { type: "text" },
+        attrs: editable ? { type: "text" } : { type: "text", disabled: "" },
         dataset: { testid: `structure-kit-db-name-${kit.id}` },
-        on: isBuiltin
-          ? undefined
-          : {
+        on: editable
+          ? {
               change: (event: Event) => {
                 const target = event.currentTarget;
                 if (!(target instanceof HTMLInputElement)) return;
@@ -615,7 +615,8 @@ function renderInspector(
                 rerender();
                 refresh(host, rerender);
               },
-            },
+            }
+          : undefined,
       }),
     ],
   });
@@ -748,17 +749,16 @@ function renderInspector(
   inspector.append(
     el("p", {
       class: "structure-kit-quiet",
-      text: "이 래스터를 드래그하면 부위가 붙습니다. 흰 점이 워프 칸입니다.",
+      text: "흰 점이 워프 칸입니다.",
     })
   );
 
-  // 하단 액션 버튼들 (지금 저장, 팔레트에서 쓰기, 삭제 — 내장 킷은 저장되지 않아 제외)
+  // 하단 액션 버튼들 (팔레트에서 쓰기, 삭제 — 프로젝트 데이터가 아니면 삭제 제외)
   const actions = el("div", {
     class: "structure-kit-actions",
     children: [
-      ...(isBuiltin
-        ? []
-        : [
+      ...(editable
+        ? [
             el("button", {
               class: "btn ghost structure-kit-delete",
               attrs: { type: "button" },
@@ -775,19 +775,8 @@ function renderInspector(
                 },
               },
             }),
-          ]),
-      el("button", {
-        class: "btn primary",
-        attrs: { type: "button" },
-        text: "지금 저장",
-        dataset: { testid: "structure-kit-save-now" },
-        on: {
-          click: () => {
-            toast("구조물이 저장되었습니다.", "ok");
-            rerender();
-          },
-        },
-      }),
+          ]
+        : []),
       el("button", {
         class: "btn",
         attrs: { type: "button" },
@@ -807,12 +796,12 @@ function renderInspector(
   });
   inspector.append(actions);
 
-  if (isBuiltin) {
+  if (!editable) {
     inspector.append(
       el("p", {
         class: "structure-kit-quiet",
         dataset: { testid: "structure-kit-builtin-hint" },
-        text: "내장 파라메트릭 킷은 프로젝트에 저장되지 않아 이름 변경이나 삭제를 할 수 없습니다.",
+        text: "이 목록은 코드로 관리됩니다 — 편집하려면 [내 구조물로 복제]를 쓰세요.",
       })
     );
   }

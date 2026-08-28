@@ -93,7 +93,7 @@ describe("structureKitDbTab album UI contract", () => {
     expect(host.textContent).toContain("이 타일셋에는 아직 구조물이 없습니다.");
   });
 
-  it("renders inspector with name, parts list with instance numbers, 문에서 입구 추정, 지금 저장, 팔레트에서 쓰기, 삭제", () => {
+  it("renders inspector with name, parts list with instance numbers, 문에서 입구 추정, 팔레트에서 쓰기, 삭제", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     const firstTilesetId = current.maps[mapId]!.tilesetId;
@@ -127,9 +127,14 @@ describe("structureKitDbTab album UI contract", () => {
     expect(estimateEntranceBtn).not.toBeNull();
     expect(estimateEntranceBtn?.textContent).toContain("문에서 입구 추정");
 
-    const saveNowBtn = host.querySelector("[data-testid='structure-kit-save-now']");
-    expect(saveNowBtn).not.toBeNull();
-    expect(saveNowBtn?.textContent).toContain("지금 저장");
+    // 아무것도 저장하지 않던 가짜 버튼 — 제거됐는지 못을 박는다.
+    expect(host.querySelector("[data-testid='structure-kit-save-now']")).toBeNull();
+    expect(inspector?.textContent).not.toContain("지금 저장");
+
+    // 이 파일에는 pointer 핸들러가 없다 — 드래그를 약속하지 않는다.
+    expect(inspector?.textContent).not.toContain("드래그하면");
+    // 워프 칸 안내는 사실이므로 남는다.
+    expect(inspector?.textContent).toContain("워프 칸");
 
     const useInPaletteBtn = host.querySelector(`[data-testid='structure-kit-db-use-${kitWithParts.id}']`);
     expect(useInPaletteBtn).not.toBeNull();
@@ -231,6 +236,31 @@ describe("structureKitDbTab 내장 파라메트릭 킷 노출", () => {
     const registeredDelete = host.querySelector("[data-testid='structure-kit-db-delete-kit_registered']");
     expect(registeredDelete).not.toBeNull();
     expect(registeredDelete!.textContent).toContain("삭제");
+  });
+
+  it("가져온 builtin-parametric 킷도 프로젝트 데이터면 편집 가능하다", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+
+    // 내장 집을 내보낸 파일을 가져온 상황 — learnedFrom 은 남아 있지만 프로젝트 데이터다.
+    registerStructureKit(DEFAULT_TILESET_ID, {
+      ...createTestSectionKit("kit_imported", "가져온 통나무집"),
+      learnedFrom: "builtin-parametric",
+    });
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+
+    const row = host.querySelector("[data-testid='structure-kit-db-kit_imported']");
+    expect(row).not.toBeNull();
+    row!.click();
+
+    expect(host.querySelector("[data-testid='structure-kit-db-delete-kit_imported']")).not.toBeNull();
+    const nameInput = host.querySelector("[data-testid='structure-kit-db-name-kit_imported']");
+    expect(nameInput).not.toBeNull();
+    expect(nameInput!.getAttribute("disabled")).toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-builtin-hint']")).toBeNull();
   });
 });
 
