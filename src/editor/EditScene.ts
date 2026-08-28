@@ -626,11 +626,41 @@ export class EditScene extends PhaserRuntime.Scene {
       { mapId, x: region.x, y: region.y, width: region.width, height: region.height },
       false,
     );
+    const avoid = this.regionClientRect(region);
     openRegionTaskModal({
       mapId,
       region,
       anchor: { x: screen.x, y: screen.y },
+      ...(avoid ? { avoid } : {}),
     });
+  }
+
+  /**
+   * 타일 영역의 클라이언트(화면) 사각형. 영역 작업 팝오버가 대상 영역과 캔버스 고스트
+   * 미리보기를 덮지 않도록 넘긴다. 카메라/캔버스를 못 읽는 환경에서는 null 이고, 그때는
+   * 팝오버가 기존 anchor 배치를 그대로 쓴다.
+   */
+  private regionClientRect(region: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  }): { readonly x: number; readonly y: number; readonly width: number; readonly height: number } | null {
+    const canvas = this.game?.canvas;
+    const camera = this.cameras?.main;
+    if (!canvas || !camera || typeof canvas.getBoundingClientRect !== "function") return null;
+    const canvasRect = canvas.getBoundingClientRect();
+    const rect = tileRectToScreenRect(region, {
+      scrollX: camera.scrollX,
+      scrollY: camera.scrollY,
+      zoom: camera.zoom,
+    });
+    return {
+      x: canvasRect.left + rect.x,
+      y: canvasRect.top + rect.y,
+      width: rect.width,
+      height: rect.height,
+    };
   }
 
   private startPan(ptr: Phaser.Input.Pointer): void {
