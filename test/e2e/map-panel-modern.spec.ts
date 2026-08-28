@@ -1,5 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
+/* 이 스펙의 bootEditor 는 에디터 전체 부팅을 기다린다. 이 저장소는 워크트리가 여럿이라
+   다른 세션의 vite/playwright 가 동시에 도는 일이 흔하고, 그때 부팅이 기본 30초
+   테스트 타임아웃을 넘긴다. 로케이터 대기(90초)가 도달 가능하도록 테스트 타임아웃을
+   그 위로 올린다 — 게이트가 부하로 흔들리면 이후 태스크의 회귀 판정이 무의미해진다. */
+test.beforeEach(() => {
+  test.setTimeout(120_000);
+});
+
 type Mode = "expert" | "standard" | "beginner";
 
 /** 초보 모드는 맵이 좌측 레일의 플라이아웃으로 뜬다. 나머지는 좌패널에 상주한다. */
