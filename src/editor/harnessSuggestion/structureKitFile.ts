@@ -7,6 +7,7 @@
 //   받는 프로젝트에 그 houseKitId 가 있는지 걱정할 필요도 없다.
 
 import { bakeStructureKit } from "@/editor/harnessSuggestion/structureKitRasterModel";
+import { structureKitSignature } from "@/editor/harnessSuggestion/structureKitModel";
 import type { SectionStructureKitDef, StructureKitDef, StructureKitAiMeta, TilesetDef } from "@/project/types";
 
 export class StructureKitFileError extends Error {
@@ -204,4 +205,72 @@ function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
 export function structureKitFileName(tilesetName: string, kits: readonly StructureKitDef[]): string {
   if (kits.length === 1) return `${kits[0]!.name ?? "구조물"}.rpgzzu-kit.json`;
   return `${tilesetName}-구조물-${kits.length}개.rpgzzu-kit.json`;
+}
+
+export interface ImportCandidate {
+  readonly kit: SectionStructureKitDef;
+  /** 같은 모양이 이미 앨범에 있다. */
+  readonly duplicate: boolean;
+  /** 같은 이름의 다른 모양이 이미 있다. */
+  readonly nameConflict: boolean;
+  /** 충돌을 푼 최종 이름. */
+  readonly resolvedName: string;
+  readonly defaultChecked: boolean;
+}
+
+export interface ImportPlan {
+  /** 파일의 칩셋이 지금 앨범과 다르다 — 타일 번호의 뜻이 달라 그림이 깨진다. */
+  readonly tilesetMismatch: boolean;
+  readonly fileTilesetId: string;
+  readonly fileTilesetName: string;
+  readonly candidates: readonly ImportCandidate[];
+  readonly diagnostics: readonly KitDiagnostic[];
+}
+
+/**
+ * 가져오기 판정을 전부 미리 끝낸다 — 확인창은 이 계획을 그리기만 한다.
+ * 대화상자 없이 충돌 정책 전부를 유닛 테스트할 수 있게 하려는 경계다.
+ */
+export function planImport(
+  file: StructureKitFile,
+  targetTileset: TilesetDef,
+  existingKits: readonly StructureKitDef[],
+  diagnostics: readonly KitDiagnostic[],
+): ImportPlan {
+  const existingSignatures = new Set(existingKits.map((kit) => structureKitSignature(kit)));
+  const takenNames = new Set(existingKits.map((kit) => kit.name ?? "구조물"));
+
+  const candidates: ImportCandidate[] = [];
+  for (const kit of file.kits) {
+    const duplicate = existingSignatures.has(structureKitSignature(kit));
+    const baseName = kit.name ?? "구조물";
+    const nameConflict = takenNames.has(baseName);
+    const resolvedName = nameConflict ? uniqueName(baseName, takenNames) : baseName;
+    takenNames.add(resolvedName);
+    candidates.push({
+      kit,
+      duplicate,
+      nameConflict,
+      resolvedName,
+      // 같은 모양은 기본 해제 — 같은 파일을 두 번 가져와도 사본이 쌓이지 않는다.
+      defaultChecked: !duplicate,
+    });
+  }
+
+  return {
+    tilesetMismatch: file.tileset.id !== targetTileset.id,
+    fileTilesetId: file.tileset.id,
+    fileTilesetName: file.tileset.name,
+    candidates,
+    diagnostics,
+  };
+}
+
+/** AI 가 kitName 부분 일치로 킷을 지목하므로, 같은 이름 둘은 조회를 불안정하게 만든다. */
+function uniqueName(baseName: string, taken: ReadonlySet<string>): string {
+  for (let n = 2; n < 1000; n += 1) {
+    const candidate = `${baseName} (${n})`;
+    if (!taken.has(candidate)) return candidate;
+  }
+  return `${baseName} (${taken.size + 1})`;
 }

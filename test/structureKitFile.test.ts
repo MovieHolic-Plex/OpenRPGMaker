@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   parseStructureKitFile,
+  planImport,
   serializeStructureKitFile,
   structureKitFileName,
   StructureKitFileError,
@@ -142,5 +143,63 @@ describe("structureKitFileName", () => {
   it("묶음은 타일셋 이름과 개수를 쓴다", () => {
     expect(structureKitFileName("합본 마을", [well(), { ...well(), id: "k2" }]))
       .toBe("합본 마을-구조물-2개.rpgzzu-kit.json");
+  });
+});
+
+describe("planImport", () => {
+  function fileWith(kits: SectionStructureKitDef[], tilesetId = DEFAULT_TILESET_ID) {
+    return parseStructureKitFile(JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: STRUCTURE_KIT_FILE_VERSION,
+      tileset: { id: tilesetId, name: "합본 마을" },
+      kits,
+    }));
+  }
+
+  it("같은 칩셋이면 경고가 없다", () => {
+    const { file, diagnostics } = fileWith([well()]);
+    const plan = planImport(file, tileset(), [], diagnostics);
+    expect(plan.tilesetMismatch).toBe(false);
+    expect(plan.candidates).toHaveLength(1);
+    expect(plan.candidates[0]!.defaultChecked).toBe(true);
+  });
+
+  it("다른 칩셋이면 경고 플래그가 선다", () => {
+    const { file, diagnostics } = fileWith([well()], "easyrpg_chipset_dungeon");
+    const plan = planImport(file, tileset(), [], diagnostics);
+    expect(plan.tilesetMismatch).toBe(true);
+    expect(plan.fileTilesetName).toBe("합본 마을");
+  });
+
+  it("같은 모양이 이미 있으면 기본 체크를 푼다", () => {
+    const existing = well();
+    const { file, diagnostics } = fileWith([{ ...well(), id: "other_id", name: "다른 이름" }]);
+    const plan = planImport(file, tileset(), [existing], diagnostics);
+    expect(plan.candidates[0]!.duplicate).toBe(true);
+    expect(plan.candidates[0]!.defaultChecked).toBe(false);
+  });
+
+  it("이름이 겹치고 모양이 다르면 개명한다", () => {
+    const existing = { ...well(), id: "existing", rows: [{ tiles: [1, 1] }, { tiles: [1, 1] }] };
+    const { file, diagnostics } = fileWith([well()]);
+    const plan = planImport(file, tileset(), [existing], diagnostics);
+    expect(plan.candidates[0]!.duplicate).toBe(false);
+    expect(plan.candidates[0]!.nameConflict).toBe(true);
+    expect(plan.candidates[0]!.resolvedName).toBe("우물 (2)");
+  });
+
+  it("파일 안에서 이름이 겹쳐도 서로 어긋나게 개명한다", () => {
+    const a = well();
+    const b = { ...well(), id: "k2", rows: [{ tiles: [9, 9] }, { tiles: [9, 9] }] };
+    const { file, diagnostics } = fileWith([a, b]);
+    const plan = planImport(file, tileset(), [], diagnostics);
+    expect(plan.candidates.map((c) => c.resolvedName)).toEqual(["우물", "우물 (2)"]);
+  });
+
+  it("진단을 그대로 들고 간다", () => {
+    const { file, diagnostics } = fileWith([{ ...well(), rows: [] } as unknown as SectionStructureKitDef]);
+    const plan = planImport(file, tileset(), [], diagnostics);
+    expect(plan.candidates).toHaveLength(0);
+    expect(plan.diagnostics).toHaveLength(1);
   });
 });
