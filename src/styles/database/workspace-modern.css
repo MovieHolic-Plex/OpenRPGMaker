@@ -54,7 +54,7 @@
 /* ── 목록 창 ─────────────────────────────────────────────────────────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-list-pane {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 10px;
   box-sizing: border-box;
@@ -85,7 +85,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-list-title {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0;
   margin: 0;
@@ -97,27 +97,27 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-count {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
   border-radius: 999px;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   flex: 0 0 auto;
   font: 600 11px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 0 8px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-search input {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 8px;
   box-sizing: border-box;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 6px 10px;
   width: 100%;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-search input:focus-visible {
-  border-color: var(--db-studio-accent, #4a57d6);
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: none;
   box-shadow: 0 0 0 3px var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
 }
@@ -159,10 +159,10 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn {
   align-items: center;
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 8px;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -175,11 +175,11 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn:hover {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4a57d6);
+  outline: 2px solid var(--db-studio-accent, var(--db-studio-accent));
   outline-offset: 1px;
 }
 
@@ -189,14 +189,14 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-primary {
-  background: var(--db-studio-accent, #4a57d6);
-  border-color: var(--db-studio-accent, #4a57d6);
-  color: #fff;
+  background: var(--db-studio-accent, var(--db-studio-accent));
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
+  color: var(--db-studio-on-accent);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-primary:hover {
-  background: var(--db-studio-accent-hover, #3c48c4);
-  border-color: var(--db-studio-accent-hover, #3c48c4);
+  background: var(--db-studio-accent-hover, var(--db-studio-accent-hover));
+  border-color: var(--db-studio-accent-hover, var(--db-studio-accent-hover));
 }
 
 /* 파괴적 액션은 기본적으로 "조용한" 상태로 둔다 — 목록 행마다 빨간 버튼이 줄지어
@@ -205,20 +205,20 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-danger {
   background: transparent;
   border-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-danger:hover,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-danger.confirming {
   background: rgba(220, 38, 38, 0.08);
-  border-color: var(--db-studio-danger, #dc2626);
-  color: var(--db-studio-danger, #dc2626);
+  border-color: var(--db-studio-danger, var(--db-studio-danger));
+  color: var(--db-studio-danger, var(--db-studio-danger));
 }
 
 /* ── 상세 창 ─────────────────────────────────────────────────────────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 10px;
   box-sizing: border-box;
@@ -253,7 +253,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero {
   align-items: center;
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   box-sizing: border-box;
   display: flex;
@@ -283,14 +283,14 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-eyebrow {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-title {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 17px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
   min-width: 0;
@@ -301,7 +301,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-sub {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
 }
@@ -317,7 +317,7 @@
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
   border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
   border-radius: 999px;
-  color: var(--db-studio-accent, #4a57d6);
+  color: var(--db-studio-accent, var(--db-studio-accent));
   font: 600 11px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 0 8px;
 }
@@ -350,7 +350,7 @@
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -363,18 +363,18 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab:hover {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab.active {
-  border-bottom-color: var(--db-studio-accent, #4a57d6);
-  color: var(--db-studio-accent, #4a57d6);
+  border-bottom-color: var(--db-studio-accent, var(--db-studio-accent));
+  color: var(--db-studio-accent, var(--db-studio-accent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-badge {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
   border-radius: 999px;
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 600 10.5px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 0 6px;
 }
@@ -403,7 +403,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card {
   align-content: start;
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 10px;
   box-sizing: border-box;
@@ -421,7 +421,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-title {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 12.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
   text-transform: none;
@@ -429,7 +429,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-hint {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 400 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
 }
@@ -437,7 +437,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-toggle {
   background: transparent;
   border: 0;
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   cursor: pointer;
   font-size: 11px;
   line-height: 1;
@@ -488,23 +488,23 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-readout {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 8px;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 15px/1 "Cascadia Mono", Consolas, monospace;
   justify-self: start;
   padding: 8px 14px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 400 12px/1.6 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-active {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font-weight: 500;
 }
 
@@ -523,16 +523,16 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-range-label {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 600 10.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-range input {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 7px;
   box-sizing: border-box;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-height: 30px;
   padding: 4px 8px;
@@ -541,7 +541,7 @@
 
 /* 스토리 플래그 목록도 카드 어휘에 맞춘다(마크업은 계약상 그대로). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail-body .db-story-flag-list {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 10px;
   display: grid;
@@ -550,7 +550,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail-body .db-story-flag-list .db-utility-heading {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 12.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -568,8 +568,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-preview-window {
-  background: #12172a;
-  border: 1px solid #2c3557;
+  background: var(--db-ws-preview-bg);
+  border: 1px solid var(--db-ws-preview-border);
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   display: grid;
@@ -579,7 +579,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-preview-title {
-  color: #8fa0d8;
+  color: var(--db-ws-preview-text-dim);
   font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -594,7 +594,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-preview-item {
-  color: #eef1ff;
+  color: var(--db-ws-preview-text);
   font: 500 12.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
   overflow: hidden;
@@ -603,12 +603,12 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-preview-item:first-child::before {
-  color: #ffd166;
+  color: var(--db-ws-preview-highlight);
   content: "▸ ";
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-preview-line {
-  color: #eef1ff;
+  color: var(--db-ws-preview-text);
   font: 400 12.5px/1.55 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
   min-width: 0;
@@ -635,7 +635,7 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   cursor: pointer;
   flex: 0 0 auto;
   font: 500 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
@@ -653,8 +653,8 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-delete:hover,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-delete.confirming {
   background: rgba(220, 38, 38, 0.1);
-  border-color: var(--db-studio-danger, #dc2626);
-  color: var(--db-studio-danger, #dc2626);
+  border-color: var(--db-studio-danger, var(--db-studio-danger));
+  color: var(--db-studio-danger, var(--db-studio-danger));
   opacity: 1;
 }
 
@@ -684,7 +684,7 @@
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
   border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
   border-radius: 12px;
-  color: var(--db-studio-accent, #4a57d6);
+  color: var(--db-studio-accent, var(--db-studio-accent));
   display: inline-flex;
   font-size: 20px;
   height: 44px;
@@ -700,7 +700,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-empty-title {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 14px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
   text-transform: none;
@@ -711,7 +711,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-empty-desc {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   font: 400 12px/1.6 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
 }
@@ -734,7 +734,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-left: 3px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 9px;
@@ -751,26 +751,26 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-clickable:hover {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-good { border-left-color: var(--db-studio-success, #0f7a4a); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-warn { border-left-color: #b45309; }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-bad { border-left-color: var(--db-studio-danger, #dc2626); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-good { border-left-color: var(--db-studio-success, var(--db-studio-success)); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-warn { border-left-color: var(--db-studio-warning); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-bad { border-left-color: var(--db-studio-danger, var(--db-studio-danger)); }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-label {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 600 10.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.02em;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-value {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 700 17px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-hint {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   font: 400 11px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -798,7 +798,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice-text {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 500 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
 }
@@ -830,10 +830,10 @@
    테두리·배경·높이·폰트가 옆의 살아 있는 숫자 필드와 똑같아서, 클릭해 타이핑해도
    아무 일이 안 일어나는데 이유를 알 수 없었다(감사 G 축). 입력처럼 보이지 않게 한다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-state-derived-value {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
   border: 0;
   border-radius: 6px;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   display: inline-block;
   font: 500 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
@@ -855,7 +855,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-status {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 500 10.5px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
   overflow: hidden;
@@ -864,14 +864,14 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-status.is-overridden {
-  color: var(--db-studio-accent, #4a57d6);
+  color: var(--db-studio-accent, var(--db-studio-accent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-revert {
   background: transparent;
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 6px;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   cursor: pointer;
   flex: 0 0 auto;
   font: 500 10.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
@@ -880,8 +880,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-revert:hover {
-  background: var(--db-studio-inset, #f1f5f9);
-  color: var(--db-studio-text-1, #0f172a);
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-revert[hidden] {
@@ -902,27 +902,27 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-group {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
   border-radius: 999px;
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   flex: 0 0 auto;
   font: 600 10px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 0 7px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-label {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   flex: 0 0 auto;
   font: 500 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-from {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 400 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-term-diff-to {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 600 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
   overflow: hidden;
@@ -953,9 +953,9 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-where {
-  background: var(--db-studio-inset, #f1f5f9);
+  background: var(--db-studio-inset, var(--db-studio-inset));
   border-radius: 999px;
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   flex: 0 0 auto;
   font: 600 10px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   max-width: 40%;
@@ -966,7 +966,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-usage-what {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 500 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
   overflow: hidden;

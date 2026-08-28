@@ -101,7 +101,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-empty-graphic {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 500 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field > span {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0;
   min-width: 0;
@@ -151,10 +151,10 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select) {
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.14));
   border-radius: 6px;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 400 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-height: 30px;
   min-width: 0;
@@ -163,13 +163,13 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select):focus-visible {
-  border-color: var(--db-studio-accent, #4a57d6);
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.28));
   outline-offset: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench input[type="checkbox"] {
-  accent-color: var(--db-studio-accent, #4a57d6);
+  accent-color: var(--db-studio-accent, var(--db-studio-accent));
   flex: 0 0 auto;
   height: 16px;
   margin: 0;
@@ -180,7 +180,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .actor-check {
   align-items: center;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   display: inline-flex;
   font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   gap: 8px;
@@ -246,7 +246,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-capture-preview {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
 }
@@ -285,7 +285,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row > span {
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
   order: 1;
@@ -304,7 +304,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row.is-dangling > span {
-  color: var(--db-studio-danger, #dc2626);
+  color: var(--db-studio-danger, var(--db-studio-danger));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row.is-dangling {
@@ -339,7 +339,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table table {
   border-collapse: collapse;
-  color: var(--db-studio-text-1, #0f172a);
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
   font: 400 13px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   width: 100%;
 }
@@ -347,7 +347,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table th {
   background: var(--db-studio-surface-2, rgba(15, 23, 42, 0.03));
   border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
   font: 700 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   height: 30px;
   padding: 0 10px;
@@ -381,7 +381,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr.active td {
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.12));
-  color: var(--db-studio-accent, #4a57d6);
+  color: var(--db-studio-accent, var(--db-studio-accent));
   font-weight: 600;
 }
 
@@ -390,11 +390,11 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr.is-dangling td {
-  color: var(--db-studio-danger, #dc2626);
+  color: var(--db-studio-danger, var(--db-studio-danger));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-hint {
-  color: var(--db-studio-text-3, #94a3b8);
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 400 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
 }
