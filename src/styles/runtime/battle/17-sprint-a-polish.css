@@ -182,7 +182,7 @@
 
 .battle-command-menu:has(> .battle-submenu-header) {
   align-content: start;
-  grid-auto-rows: minmax(28px, auto);
+  grid-auto-rows: var(--battle-command-row-height);
   grid-template-rows: none;
 }
 

@@ -87,14 +87,14 @@
   pointer-events: auto;
 }
 
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu
   > .battle-command[data-testid="actor-command-back"] small {
   display: none;
 }
 
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu
   > .battle-command[data-testid="actor-command-back"],
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu
   > .battle-command[data-testid="battle-target-cancel"] {
   flex: 0 0 auto;
   min-height: 42px;

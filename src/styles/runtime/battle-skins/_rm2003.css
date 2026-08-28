@@ -97,12 +97,9 @@
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) {
-  grid-template-rows: repeat(5, minmax(0, 1fr)) !important;
-}
-
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)),
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:has(> .battle-submenu-header) {
-  grid-auto-rows: minmax(0, 1fr) !important;
+  grid-auto-rows: var(--battle-command-row-height) !important;
   grid-template-rows: none !important;
 }
 
@@ -112,7 +109,11 @@
   display: grid;
   gap: 6px !important;
   grid-template-columns: 20px minmax(0, 1fr);
+  /* 그리드 항목의 기본 min-width:auto 는 1fr 열을 밀어내며 버튼을 메뉴 밖으로 넓힌다.
+     그러면 strong 은 스스로 넘치지 않아 ellipsis 가 걸리지 않고, 메뉴의 overflow-x
+     가 글자를 통째로 잘라낸다(실측: "달빛 숲 파수군" → "달빛 숲 파"). */
   min-height: 0 !important;
+  min-width: 0 !important;
   padding: 4px 8px !important;
 }
 
@@ -120,8 +121,12 @@
   display: none !important;
 }
 
+/* 행 라벨은 항상 2열(1fr)에 놓는다. 커서 행만 `::before` 내용이 있어 1열을 채우므로,
+   자동 배치에 맡기면 커서 없는 행의 라벨이 20px 마커 열로 밀려 한 글자만 남는다(실측:
+   text 폭 195px vs 32px, 서브메뉴에서는 "탐침 기술 1" 이 "탐" 으로 잘렸다). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text {
   display: block !important;
+  grid-column: 2 !important;
   min-width: 0;
 }
 
@@ -342,10 +347,24 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command {
   align-items: center !important;
   min-height: 0 !important;
+  min-width: 0 !important;
   padding: 6px 12px !important;
   pointer-events: auto !important;
   position: relative !important;
   z-index: 11 !important;
+}
+
+/* 타깃 행도 루트/서브메뉴와 같은 한 줄이다. HP 수치는 이미 무대의 타깃 팝업에 있고,
+   고정 행 높이에서 small 을 남기면 다음 행(취소) 아래로 흘러나온다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command-text small {
+  display: none !important;
+}
+
+/* 대상 선택은 키보드 커서 속성 대신 .battle-target-selected 로 현재 행을 표시한다(실측:
+   cursorRows 0, selectedRows 1). 23px 행에서 마커 글자가 잘리지 않게 줄 맞춤만 잡아준다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command::before {
+  font-size: 16px;
+  line-height: 1;
 }
 
 /* Key prompts removed entirely - RM2k3 does not show these. */
@@ -516,11 +535,15 @@
   overscroll-behavior: contain;
 }
 
+/* 행이 고정 높이(--battle-command-row-height)로 변한 뒤로는 줄및음이 계약 위반이다.
+   실측: 대상 행 "달빛 숲 파수군"(strong 폭 114px)은 white-space:normal 로 2줄이 되어
+   둘째 줄이 행 overflow 에 상자로 잘렸다("달빛 숲 파"). 한 줄 + 생략부호로 고정한다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
-  overflow-wrap: anywhere;
-  text-overflow: clip;
-  white-space: normal;
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
@@ -581,7 +604,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
   align-content: start !important;
-  grid-auto-rows: minmax(30px, auto) !important;
+  grid-auto-rows: var(--battle-command-row-height) !important;
   grid-template-rows: none !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
