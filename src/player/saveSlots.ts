@@ -7,6 +7,7 @@ import {
   type PictureState,
   type PlaySession,
 } from "@/project/session";
+import { parseFactionStanceOverrides } from "@/project/factionRuntime";
 import { normalizeItemTransitionState } from "@/project/itemTransitions";
 import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
 import {
@@ -128,6 +129,7 @@ export type SaveSnapshot = {
     readonly inventory?: Record<string, number>;
     readonly itemUseCharges?: Record<string, number>;
     readonly killedFieldSpawns?: Record<string, Record<string, number>>;
+    readonly factionStanceOverrides?: PlaySession["factionStanceOverrides"];
     readonly partyActorIds?: readonly string[];
     readonly shopLoyaltySpend?: PlaySession["shopLoyaltySpend"];
     readonly shopTradeCounts?: PlaySession["shopTradeCounts"];
@@ -289,6 +291,9 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       inventory: structuredClone(normalizedItems.inventory),
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
       killedFieldSpawns: structuredClone(session.killedFieldSpawns ?? {}),
+      factionStanceOverrides: session.factionStanceOverrides && Object.keys(session.factionStanceOverrides).length > 0
+        ? structuredClone(session.factionStanceOverrides)
+        : undefined,
       partyActorIds: structuredClone(session.partyActorIds),
       shopLoyaltySpend: sanitizeEconomyRecord(session.shopLoyaltySpend),
       shopTradeCounts: sanitizeShopTradeCounts(session.shopTradeCounts),
@@ -459,6 +464,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.inventory = normalizedItems.inventory;
   session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
+  session.factionStanceOverrides = parseFactionStanceOverrides(snapshot.session.factionStanceOverrides);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
   session.shopLoyaltySpend = sanitizeEconomyRecord(snapshot.session.shopLoyaltySpend);
   session.shopTradeCounts = sanitizeShopTradeCounts(snapshot.session.shopTradeCounts);
@@ -778,6 +784,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   }
   const battleResult = parseBattleResult(session.battleResult);
   if (battleResult === "invalid") return { ok: false, message: "Invalid battle result" };
+  const parsedOverrides = parseFactionStanceOverrides(session.factionStanceOverrides);
   const audio = parseAudioState(session.audio);
   if (!audio.ok) return { ok: false, message: audio.message };
   return {
@@ -791,6 +798,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),
       killedFieldSpawns: isNestedNumberRecord(session.killedFieldSpawns) ? session.killedFieldSpawns : undefined,
+      factionStanceOverrides: Object.keys(parsedOverrides).length > 0 ? parsedOverrides : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
       shopLoyaltySpend: sanitizeEconomyRecord(session.shopLoyaltySpend),
       shopTradeCounts: sanitizeShopTradeCounts(session.shopTradeCounts),

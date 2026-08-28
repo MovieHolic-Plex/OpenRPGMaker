@@ -1,3 +1,8 @@
+import {
+  adjustEffectiveFactionStance,
+  setEffectiveFactionStance,
+} from "@/project/factionRuntime";
+import { resolveFactionTable } from "@/project/factions";
 import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
 import { craftRecipe } from "@/project/craftRecipes";
@@ -689,6 +694,19 @@ export function executeCommand(
     case "changeFriendship":
       changeFriendship(state.session, command.npcKey, command.delta, resolveSocialHost(state));
       return resumeNext(frame);
+    case "changeFactionStance": {
+      if (!state.project) return resumeNext(frame);
+      const table = resolveFactionTable(state.project.factions);
+      const delta = command.op === "-=" ? -command.value : command.value;
+      const next = command.op === "="
+        ? setEffectiveFactionStance(table, state.session.factionStanceOverrides, command.a, command.b, command.value)
+        : adjustEffectiveFactionStance(table, state.session.factionStanceOverrides, command.a, command.b, delta);
+      state.session.factionStanceOverrides ??= {};
+      for (const key of Object.keys(state.session.factionStanceOverrides)) delete state.session.factionStanceOverrides[key];
+      Object.assign(state.session.factionStanceOverrides, next);
+      state.onFactionStanceChanged?.();
+      return resumeNext(frame);
+    }
     case "getFriendship":
       setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, resolveSocialHost(state)));
       return resumeNext(frame);

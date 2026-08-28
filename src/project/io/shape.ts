@@ -96,7 +96,8 @@ export function validateProjectV4(data: JsonRecord): Project {
   normalizeStoryFlags(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
-  if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);  if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
+  if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);
+  if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
@@ -197,6 +198,13 @@ function validateEndings(value: unknown): void {
 function validateFactions(value: unknown): void {
   if (value === undefined) return;
   const factions = requireRecord("factions", value);
+  if (factions.playerKillReputation !== undefined) {
+    const reputation = requireRecord("factions.playerKillReputation", factions.playerKillReputation);
+    if (reputation.weight !== undefined) {
+      const weight = requireNumber("factions.playerKillReputation.weight", reputation.weight);
+      assert(weight >= 0, "factions.playerKillReputation.weight는 0 이상이어야 합니다.");
+    }
+  }
   for (const [index, entry] of requireArray("factions.defs", factions.defs).entries()) {
     const def = requireRecord(`factions.defs[${index}]`, entry);
     requireString(`factions.defs[${index}].id`, def.id);

@@ -2,6 +2,7 @@ import type Phaser from "phaser";
 import type { AttackBufferState } from "@/battle/action/attackWindow";
 import type { ResolvedActionCombatConfig } from "@/project/actionCombat";
 import type { ResolvedFactionTable } from "@/project/factions";
+import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { EnemyActionAttack } from "@/project/types";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 
@@ -76,6 +77,8 @@ export interface ActionEnemyState {
 export interface ActionCombatSceneState {
   readonly config: ResolvedActionCombatConfig;
   readonly factions: ResolvedFactionTable;
+  /** 세션 객체와 같은 참조를 유지해 이벤트 명령 변경이 진행 중 전투에 즉시 보인다. */
+  readonly factionStanceOverrides: FactionStanceOverrides;
   readonly enemies: Map<string, ActionEnemyState>;
   readonly projectiles: ActionProjectile[];
   projectileSerial: number;

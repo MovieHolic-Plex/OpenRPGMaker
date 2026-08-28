@@ -8,7 +8,7 @@ type FakeBrowserGlobals = {
   readonly window: typeof globalThis.window | undefined;
 };
 
-// tabs/tabOrder 레지스트리(database.ts)에 정의된 24개 testid — 그룹 재구성 + 상단 고정
+// tabs/tabOrder 레지스트리(database.ts)에 정의된 30개 testid — 그룹 재구성 + 상단 고정
 // '개요' 엔트리(todo 13) 이후에도 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
 const EXPECTED_TABS = [
   // 상단 고정 (그룹 밖)
@@ -23,6 +23,7 @@ const EXPECTED_TABS = [
   "db-tab-enemies",
   "db-tab-monster-species",
   "db-tab-troops",
+  "db-tab-factions",
   "db-tab-elements",
   "db-tab-states",
   "db-tab-animations",
@@ -113,14 +114,14 @@ describe("database sidebar navigation", () => {
   });
 
   // Break caught: life-skill, weather, and animal records remain hidden behind System counts.
-  it("keeps all 29 tab testids, including the discoverable life authoring surfaces", () => {
+  it("keeps all 30 tab testids, including faction and life authoring surfaces", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(29);
+    expect(EXPECTED_TABS.length).toBe(30);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(29);
+    expect(new Set(EXPECTED_TABS).size).toBe(30);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();

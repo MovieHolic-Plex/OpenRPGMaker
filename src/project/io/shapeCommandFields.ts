@@ -77,6 +77,14 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
       requireNumber(`${label}.delta`, command.delta);
       return;
+    case "changeFactionStance": {
+      requireString(`${label}.a`, command.a);
+      requireString(`${label}.b`, command.b);
+      const op = requireString(`${label}.op`, command.op);
+      if (op !== "=" && op !== "+=" && op !== "-=") throw new ProjectFormatError(`${label}.op가 잘못되었습니다.`);
+      requireNumber(`${label}.value`, command.value);
+      return;
+    }
     case "getFriendship":
       if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
       requireString(`${label}.variableId`, command.variableId);

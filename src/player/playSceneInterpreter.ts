@@ -180,7 +180,10 @@ export async function runCommands(
   scene.setInputEnabled(false);
   const project = store.getCurrent();
   scene.session.commonEvents = project.commonEvents;
-  const interpreter = createInterpreter([...commands], scene.session, project, { currentEventId });
+  const interpreter = createInterpreter([...commands], scene.session, project, {
+    currentEventId,
+    onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
+  });
   const skipController = createCutsceneSkipController(scene, interpreter);
   try {
     let result = interpreter.start();
@@ -588,6 +591,10 @@ function stopCommandMovement(scene: PlaySceneContext): void {
     scene.movingTo = { ...scene.movingFrom };
     scene.player.setPosition(characterSpriteX(scene.tileX), characterSpriteY(scene.tileY));
   }
+}
+
+function invalidateFactionRetargetCache(scene: PlaySceneContext): void {
+  for (const combatant of scene.actionCombatState?.enemies.values() ?? []) combatant.retargetMs = 0;
 }
 
 function resumeAfterSurface(scene: PlaySceneContext, interpreter: Interpreter): StepResult {

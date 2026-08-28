@@ -1,6 +1,9 @@
 import {
+  effectiveFactionStance,
+  type FactionStanceOverrides,
+} from "@/project/factionRuntime";
+import {
   factionAggression,
-  factionStance,
   willAttackOnSight,
   type ResolvedFactionTable,
 } from "@/project/factions";
@@ -16,6 +19,7 @@ export interface HostileTargetInput {
   readonly self: FactionCombatantRef;
   readonly candidates: readonly FactionCombatantRef[];
   readonly table: ResolvedFactionTable;
+  readonly stanceOverrides?: Readonly<FactionStanceOverrides>;
   readonly aggroRange: number;
   /**
    * 피격 보복 래치. 후보 목록에 아직 살아 있으면 태도·시야와 무관하게 이 대상을 유지한다.
@@ -41,7 +45,7 @@ export function resolveHostileTarget(input: HostileTargetInput): FactionCombatan
     if (candidate.id === self.id) continue;
     const distance = Math.max(Math.abs(candidate.x - self.x), Math.abs(candidate.y - self.y));
     if (distance > input.aggroRange) continue;
-    if (!willAttackOnSight(factionStance(table, self.factionId, candidate.factionId), aggression)) continue;
+    if (!willAttackOnSight(effectiveFactionStance(table, input.stanceOverrides, self.factionId, candidate.factionId), aggression)) continue;
     if (distance > bestDistance) continue;
     if (distance === bestDistance && (best === null || candidate.id >= best.id)) continue;
     best = candidate;

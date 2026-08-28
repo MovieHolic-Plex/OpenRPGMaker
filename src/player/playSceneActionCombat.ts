@@ -14,13 +14,18 @@ import { activeActionSkillId, cycleActionSkillSlot, resolveActionSkillSlots } fr
 import { shouldApplyContactDamage } from "@/battle/action/contact";
 import { resolveHostileTarget, resolveNpcDamage, type FactionCombatantRef } from "@/battle/action/factionTargeting";
 import {
+  applyPlayerKillReputation,
+  effectiveFactionStance,
+} from "@/project/factionRuntime";
+import {
   DEFAULT_ENEMY_FACTION_ID,
-  factionStance,
+  factionAggression,
   isHittableByFaction,
   isProtectedFromNpcs,
   PLAYER_FACTION_ID,
   resolveFactionTable,
   stanceBarColor,
+  willAttackOnSight,
 } from "@/project/factions";
 import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
@@ -92,6 +97,7 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
   const state: ActionCombatSceneState = {
     config,
     factions: resolveFactionTable(project.factions),
+    factionStanceOverrides: scene.session.factionStanceOverrides ??= {},
     enemies: new Map(),
     projectiles: [],
     projectileSerial: 0,
@@ -291,13 +297,21 @@ function acquireEnemyTarget(
     : refs.find((ref) => ref.id === enemy.targetId);
   // 예고한 공격은 예고한 자리에 떨어진다 — 선딜/돌진 중에는 대상을 바꾸지 않는다.
   if (enemy.mode === "windup" || enemy.mode === "dash") return cached ?? null;
-  if (enemy.retargetMs > 0 && cached) return cached;
+  const cachedStillHostile = cached && (
+    enemy.forcedTargetId === cached.id
+    || willAttackOnSight(
+      effectiveFactionStance(state.factions, state.factionStanceOverrides, enemy.factionId, cached.factionId),
+      factionAggression(state.factions, enemy.factionId),
+    )
+  );
+  if (enemy.retargetMs > 0 && cachedStillHostile) return cached;
   enemy.retargetMs = TARGET_RETARGET_MS;
   const sightRange = scene.autonomousNPCs.get(enemy.eventId)?.sightRange ?? DEFAULT_TARGET_SIGHT_RANGE;
   const target = resolveHostileTarget({
     self: { id: enemy.eventId, factionId: enemy.factionId, x: pos.x, y: pos.y },
     candidates: refs,
     table: state.factions,
+    stanceOverrides: state.factionStanceOverrides,
     aggroRange: sightRange,
     forcedTargetId: enemy.forcedTargetId,
   });
@@ -635,6 +649,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   }
   // 사망: 보상은 여기서 정확히 한 번 떨어지고, 사라지는 연출만 뒤로 미룬다.
   enemy.dying = true;
+  applyKillReputation(state, enemy.factionId);
   grantActionKillRewards(scene, enemy, tileX, tileY);
   playEnemyDeathBeat(scene, enemy);
   cleanupEnemyVisuals(scene, enemy);
@@ -687,6 +702,29 @@ function staggerActionEnemy(scene: PlaySceneContext, enemy: ActionEnemyState): v
     mover.actionFrozen = true;
     mover.activeMove = null;
   }
+}
+
+function applyKillReputation(state: ActionCombatSceneState, defeatedFactionId: string): void {
+  const config = store.getCurrent().factions?.playerKillReputation;
+  if (!config) return;
+  const next = applyPlayerKillReputation(
+    state.factions,
+    state.factionStanceOverrides,
+    defeatedFactionId,
+    config.weight,
+  );
+  replaceFactionStanceOverrides(state.factionStanceOverrides, next);
+  // 타깃 캐시는 최대 400ms 남아 있을 수 있다. 평판 변경 직후 전원이 다시 판단해야
+  // "진행 중 싸움이 반응한다"는 계약이 프레임 단위로 지켜진다.
+  for (const combatant of state.enemies.values()) combatant.retargetMs = 0;
+}
+
+function replaceFactionStanceOverrides(
+  target: Record<string, number>,
+  source: Readonly<Record<string, number>>,
+): void {
+  for (const key of Object.keys(target)) delete target[key];
+  Object.assign(target, source);
 }
 
 function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState, tileX: number, tileY: number): void {
@@ -904,7 +942,7 @@ function redrawEnemyHpBars(scene: PlaySceneContext, state: ActionCombatSceneStat
     const y = sprite.y - sprite.displayHeight - 6;
     const ratio = enemy.maxHp > 0 ? enemy.hp / enemy.maxHp : 0;
     // 테두리 색 = 플레이어 기준 태도. NPC 난전에서 누가 적인지 읽힐 유일한 단서다.
-    graphics.fillStyle(stanceBarColor(factionStance(state.factions, PLAYER_FACTION_ID, enemy.factionId)), 0.9);
+    graphics.fillStyle(stanceBarColor(effectiveFactionStance(state.factions, state.factionStanceOverrides, PLAYER_FACTION_ID, enemy.factionId)), 0.9);
     graphics.fillRect(x - 1, y - 1, barWidth + 2, 5);
     graphics.fillStyle(ratio > 0.3 ? 0x7ec850 : 0xe05c4a, 1);
     graphics.fillRect(x, y, Math.max(0, Math.round(barWidth * ratio)), 3);
@@ -1320,7 +1358,7 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
       // 같은 진영은 대각선 기본값이 동맹(2)이라 자연하게 아군 오사에서 면제된다.
       if (
         p.ownerId !== PLAYER_COMBATANT_ID
-        && isHittableByFaction(factionStance(state.factions, p.ownerFactionId, PLAYER_FACTION_ID))
+        && isHittableByFaction(effectiveFactionStance(state.factions, state.factionStanceOverrides, p.ownerFactionId, PLAYER_FACTION_ID))
         && playerTiles.some((t) => t.x === tx && t.y === ty)
       ) {
         damagePlayer(scene, state, p.damage, tx, ty);
@@ -1331,7 +1369,7 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
         if (enemy.eventId === p.ownerId) continue;
         const pos = enemyTilePosition(scene, enemy.eventId);
         if (!pos || pos.x !== tx || pos.y !== ty) continue;
-        if (!isHittableByFaction(factionStance(state.factions, p.ownerFactionId, enemy.factionId))) continue;
+        if (!isHittableByFaction(effectiveFactionStance(state.factions, state.factionStanceOverrides, p.ownerFactionId, enemy.factionId))) continue;
         const multiplier = typeChartMultiplierForTypes(project, p.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
         const damage = Math.max(1, Math.round(p.damage * multiplier));
         if (p.ownerId === PLAYER_COMBATANT_ID) hitActionEnemy(scene, state, enemy, damage, tx, ty);

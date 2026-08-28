@@ -8,7 +8,9 @@
 // - 범위: "커맨드 배열 생성"만. 페이지 분리/조건 편집은 다루지 않는다.
 
 import { newCommand } from "@/editor/eventCommandFactory";
+import { commandBranches } from "@/editor/tools/commandTraversal";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
+import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
   validateCommands,
   type ReferenceContext,
@@ -44,14 +46,16 @@ const MAX_EXISTING_CHARS = 2000;
 // 최초 1회 + 자가수정 2회.
 const MAX_ATTEMPTS = 3;
 
-// m2Command는 카탈로그 id 의존이라 AI 생성 대상에서 제외한다.
-const EXCLUDED_KINDS: ReadonlySet<string> = new Set(["m2Command"]);
+// 선언된 저작 표면을 우회해 명령을 프롬프트에 노출하면 해당 명령의 참조 계약도 우회된다.
+const AI_COMMAND_KINDS = COMMAND_KINDS.filter(
+  (kind) => COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai"),
+);
 
 // ── 프롬프트 조립 ────────────────────────────────────────────────────────────
 
 // newCommand 기본값들을 그대로 직렬화한 kind별 JSON 예시(단일 진실 소스 유지).
 function commandExampleLines(): string[] {
-  return COMMAND_KINDS.filter((kind) => !EXCLUDED_KINDS.has(kind)).map(
+  return AI_COMMAND_KINDS.map(
     (kind) => `- ${kind}: ${JSON.stringify(newCommand(kind))}`
   );
 }
@@ -94,7 +98,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   sections.push(
     [
       "## Command 스키마",
-      `사용 가능한 kind: ${COMMAND_KINDS.filter((kind) => !EXCLUDED_KINDS.has(kind)).join(", ")}`,
+      `사용 가능한 kind: ${AI_COMMAND_KINDS.join(", ")}`,
       "",
       "kind별 기본값 JSON 예시(필드 구조 참고 — 값은 요청에 맞게 채울 것):",
       ...commandExampleLines(),
@@ -195,7 +199,14 @@ export function parseAndValidate(project: Project, text: string): AssistParseRes
   }
   const commands = parsed as Command[];
 
-  // 2) 참조 검증 — 존재하지 않는 itemId/switchId 등을 잡는다.
+  // 2) AI 저작 표면 검증 — 프롬프트에서 숨긴 명령을 모델이 임의로 반환해도 받아들이지 않는다.
+  try {
+    validateAiAuthoringSurfaces(commands);
+  } catch (cause) {
+    return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
+  }
+
+  // 3) 참조 검증 — 존재하지 않는 itemId/switchId 등을 잡는다.
   const referenceContext = buildReferenceContext(project);
   try {
     validateCommands(commands, referenceContext);
@@ -205,6 +216,15 @@ export function parseAndValidate(project: Project, text: string): AssistParseRes
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
   return { ok: true, commands };
+}
+
+function validateAiAuthoringSurfaces(commands: readonly Command[]): void {
+  for (const command of commands) {
+    if (!COMMAND_GUARANTEES[command.kind].authoringSurfaces.includes("ai")) {
+      throw new Error(`${command.kind}: AI 저작 표면에서 사용할 수 없는 명령입니다.`);
+    }
+    for (const branch of commandBranches(command)) validateAiAuthoringSurfaces(branch.commands);
+  }
 }
 
 // io/commandReferenceValidation이 커버하지 않는 참조를 중첩 포함해 검증한다.

@@ -82,8 +82,15 @@ export function normalizeProjectFactions(input: Partial<ProjectFactions> | undef
       && declared.has(raw.a) && declared.has(raw.b)
     ))
     .map((raw) => ({ a: raw.a, b: raw.b, stance: clampStance(raw.stance) }));
-  if (defs.length === 0 && relations.length === 0) return undefined;
-  return { defs, relations };
+  const playerKillReputation = input.playerKillReputation && typeof input.playerKillReputation === "object"
+    ? {
+        ...(typeof input.playerKillReputation.weight === "number" && Number.isFinite(input.playerKillReputation.weight)
+          ? { weight: Math.max(0, input.playerKillReputation.weight) }
+          : {}),
+      }
+    : undefined;
+  if (defs.length === 0 && relations.length === 0 && playerKillReputation === undefined) return undefined;
+  return { defs, relations, ...(playerKillReputation ? { playerKillReputation } : {}) };
 }
 
 /**
@@ -190,7 +197,7 @@ export function factionName(table: ResolvedFactionTable, factionId: string | und
  * 2 매우 공격적: 중립(0)까지 먼저 때린다.
  * 3 광폭: 아군까지 가린다.
  */
-export function willAttackOnSight(stance: FactionStance, aggression: FactionAggression): boolean {
+export function willAttackOnSight(stance: number, aggression: FactionAggression): boolean {
   switch (aggression) {
     case 0:
       return false;
@@ -204,13 +211,13 @@ export function willAttackOnSight(stance: FactionStance, aggression: FactionAggr
 }
 
 /** 유탄/광역이 맞는 대상인가. 우호(1) 이상은 아군 오사에서 면제된다. */
-export function isHittableByFaction(stance: FactionStance): boolean {
+export function isHittableByFaction(stance: number): boolean {
   return stance <= 0;
 }
 
 /** 플레이어 기준 태도를 HP 바 테두리 색으로 바꾼다. 적대 빨강 / 중립 호박 / 우호 청록. */
-export function stanceBarColor(stance: FactionStance): number {
+export function stanceBarColor(stance: number): number {
   if (stance <= -1) return STANCE_BAR_COLOR_HOSTILE;
-  if (stance === 0) return STANCE_BAR_COLOR_NEUTRAL;
-  return STANCE_BAR_COLOR_FRIENDLY;
+  if (stance >= 1) return STANCE_BAR_COLOR_FRIENDLY;
+  return STANCE_BAR_COLOR_NEUTRAL;
 }

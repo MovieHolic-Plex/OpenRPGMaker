@@ -3,9 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 import {
   initializeActionCombatForScene,
   syncActionEnemiesForScene,
+  tryActionCombatSwing,
   updateActionCombatForScene,
 } from "@/player/playSceneActionCombat";
 import { createFieldSpawnRuntime } from "@/player/fieldSpawns";
+import { effectiveFactionStance } from "@/project/factionRuntime";
 import { PLAYER_FACTION_ID } from "@/project/factions";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
@@ -260,6 +262,24 @@ describe("NPC vs NPC action combat", () => {
 
     // 산적은 경비병과 교전 중이고 플레이어와는 중립이므로 인접해도 접촉 피해가 없다.
     expect(scene.session.actorVitals[leadId]?.hp).toBe(hpBefore);
+  });
+
+  it("applies opt-in kill reputation exactly once on a player kill", () => {
+    const { project, map } = warProject({ banditFaction: "bandit" });
+    project.factions!.playerKillReputation = {};
+    store.replace(project);
+    const scene = fakeScene(project, map, { x: 2, y: 3 });
+    scene.facing = "up";
+    initializeActionCombatForScene(scene);
+    const state = scene.actionCombatState!;
+    const bandit = [...state.enemies.values()].find((enemy) => enemy.factionId === "bandit");
+    if (!bandit) throw new Error("bandit missing");
+    bandit.hp = 1;
+
+    tryActionCombatSwing(scene);
+
+    expect(effectiveFactionStance(state.factions, scene.session.factionStanceOverrides, "guard", PLAYER_FACTION_ID)).toBe(1.25);
+    expect(effectiveFactionStance(state.factions, scene.session.factionStanceOverrides, "bandit", PLAYER_FACTION_ID)).toBe(-0.25);
   });
 
   it("still routes hostile enemies onto the player when the player is the nearest hostile", () => {

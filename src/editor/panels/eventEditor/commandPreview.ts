@@ -1671,6 +1671,8 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
       return cmd.action === "set" ? `타이머 ${cmd.seconds}초 설정` : `타이머 ${cmd.action}`;
     case "changeFriendship":
       return `호감도 ${cmd.delta >= 0 ? "+" : ""}${cmd.delta}`;
+    case "changeFactionStance":
+      return `진영 태도 ${cmd.a} ↔ ${cmd.b} ${cmd.op} ${cmd.value}`;
     case "checkpointSave":
       return cmd.label ? `체크포인트 저장: ${cmd.label}` : "체크포인트 저장";
     case "setEventGraphicPattern":

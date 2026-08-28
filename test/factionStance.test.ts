@@ -107,6 +107,8 @@ describe("faction readability helpers", () => {
     const neutral = stanceBarColor(0);
     const friendly = stanceBarColor(2);
     expect(new Set([hostile, neutral, friendly]).size).toBe(3);
+    expect(stanceBarColor(0.25)).toBe(neutral);
+    expect(stanceBarColor(-0.25)).toBe(neutral);
     expect(stanceBarColor(-2)).toBe(hostile);
     expect(stanceBarColor(1)).toBe(friendly);
   });
@@ -156,6 +158,18 @@ describe("project persistence", () => {
     expect(factionStance(resolveFactionTable(restored.factions), "bandit", "guard")).toBe(-1);
   });
 
+  it("preserves an explicitly authored default aggression across normalization and persistence", () => {
+    const project = createBlankProject();
+    project.factions = {
+      defs: [{ id: "guard", name: "경비병", aggression: 1 }],
+      relations: [],
+    };
+    const restored = deserialize(serialize(project));
+
+    expect(restored.factions).toEqual(project.factions);
+    expect(restored.factions?.defs[0]?.aggression).toBe(1);
+  });
+
   it("normalizes malformed authored data on load instead of trusting it", () => {
     const project = createBlankProject();
     project.factions = {
@@ -164,6 +178,22 @@ describe("project persistence", () => {
     };
     const restored = deserialize(serialize(project));
     expect(restored.factions?.relations).toEqual([]);
+  });
+
+  it("round-trips opt-in kill reputation while absence stays field-free", () => {
+    const project = createBlankProject();
+    project.factions = { ...TWO_SIDES, playerKillReputation: {} };
+    expect(deserialize(serialize(project)).factions?.playerKillReputation).toEqual({});
+    expect(deserialize(serialize(createBlankProject())).factions).toBeUndefined();
+  });
+
+  it("rejects negative authored reputation weights", () => {
+    const project = createBlankProject();
+    project.factions = {
+      ...TWO_SIDES,
+      playerKillReputation: { weight: -0.5 },
+    };
+    expect(() => deserialize(serialize(project))).toThrow(/playerKillReputation\.weight/u);
   });
 
   it("keeps a blank project free of the field", () => {

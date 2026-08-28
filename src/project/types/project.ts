@@ -197,9 +197,16 @@ export interface FactionRelationDef {
  * 저작된 진영 레지스트리. optional 이라 마이그레이션 불필요.
  * 생략하면 예약 진영(player/enemy)만 존재해 기존 프로젝트 동작이 그대로 유지된다.
  */
+export interface PlayerKillReputationConfig {
+  /** 처치 1회가 각 관련 진영의 플레이어 태도에 더해지는 양. 생략 시 0.25. */
+  readonly weight?: number;
+}
+
 export interface ProjectFactions {
   defs: FactionDef[];
   relations: FactionRelationDef[];
+  /** 플레이어의 NPC 처치가 평판에 번지는 규칙. 필드가 없으면 기존처럼 자동 변화가 전혀 없다. */
+  playerKillReputation?: PlayerKillReputationConfig;
 }
 
 export interface FieldSpawnDef {

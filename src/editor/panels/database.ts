@@ -8,6 +8,7 @@ import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView"
 import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
 import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
 import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
+import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
 import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
@@ -26,6 +27,7 @@ import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { uiLabel } from "@/editor/uiCopy";
+import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -43,6 +45,7 @@ export type DatabaseTab =
   | "dailyWeather"
   | "farmAnimals"
   | "farmSpatial"
+  | "factions"
   | "lifeCollections"
   | "elements"
   | "monsterSpecies"
@@ -75,6 +78,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
+  { id: "factions", label: "진영", testid: "db-tab-factions" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
@@ -96,6 +100,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "enemies",
   "monsterSpecies",
   "troops",
+  "factions",
   "elements",
   "states",
   "animations",
@@ -134,7 +139,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   {
     label: "전투·몬스터",
     slug: "battle",
-    tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
+    tabs: ["enemies", "monsterSpecies", "troops", "factions", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", slug: "map", tabs: ["tilesets", "structureKits", "commonEvents"] },
@@ -385,6 +390,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
+    case "factions":
+      return 2 + new Set((project.factions?.defs ?? [])
+        .map((def) => def.id)
+        .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
     case "tilesets":
       return Object.keys(project.tilesets).length;
     case "structureKits":
@@ -575,6 +584,9 @@ function renderActiveTab(
       break;
     case "lifeCollections":
       renderLifeCollectionsTab(body, rerender);
+      break;
+    case "factions":
+      renderFactionsTab(body, rerender);
       break;
     case "switches":
       renderSwitchesTab(body, rerender);
