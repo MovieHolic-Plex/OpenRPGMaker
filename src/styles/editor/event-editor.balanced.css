@@ -1285,6 +1285,36 @@ footer {
   }
 }
 
+/* 조건 요약 문장 — 켜진 조건을 저장 직전에 한 줄로 확인한다. */
+.event-editor .event-conditions-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-editor .event-conditions-sentence {
+  background: var(--bg-inset);
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1.7;
+  margin: 0;
+  padding: 9px 12px;
+}
+
+.event-editor .event-conditions-sentence.is-empty {
+  color: var(--text-3);
+}
+
+.event-editor .event-conditions-sentence-value {
+  background: var(--accent-muted);
+  border-radius: 5px;
+  color: var(--text-1);
+  font-style: normal;
+  font-weight: 650;
+  padding: 1px 5px;
+}
+
 /* 커스텀 셀렉트는 콘텐츠 폭을 요구하지 않아 그리드가 0까지 눌러 버린다.
    «이상» 이 «이..» 로 잘리던 원인. */
 .event-editor .event-conditions-grid select,
