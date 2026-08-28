@@ -2,7 +2,7 @@ import {
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
-import { BATTLE_SKINS, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import {
   emptyToUndefined,
   field,
@@ -273,11 +273,17 @@ function systemSectionNodes(
         ),
         field("전투 UI 스타일", (() => {
           // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
+          // 지원 스킨은 2종뿐이다. 저장된 프로젝트가 지원 종료 스킨을 쓰고 있으면 그 항목만 추가로 남겨
+          // 저작자가 자기 설정을 보고 유지할 수 있게 한다(암묵 remap 금지).
           const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
-          for (const id of BATTLE_UI_STYLE_OPTIONS) {
+          const savedId = resolveSkinId(project.system.battleUiStyle);
+          for (const id of listActiveBattleSkinIds()) {
             select.append(el("option", { text: BATTLE_SKINS[id].label, attrs: { value: id } }));
           }
-          select.value = resolveSkinId(project.system.battleUiStyle);
+          if (isDeprecatedBattleSkin(savedId)) {
+            select.append(el("option", { text: `${BATTLE_SKINS[savedId].label} (지원 종료)`, attrs: { value: savedId } }));
+          }
+          select.value = savedId;
           select.addEventListener("change", () => {
             updateSystem((draft) => {
               draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
