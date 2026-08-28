@@ -126,7 +126,14 @@ test.describe("맵 필터 점진적 노출", () => {
     // 질의를 지우고 패싯만 켜도 접히지 않아야 한다.
     await page.getByTestId("map-tree-filter").fill("");
     await page.getByTestId("map-tree-facet-empty").click();
-    await page.getByTestId("map-tree-filter-toggle").click(); // 사용자 토글을 꺼도
-    await expect(filterWrap).toBeVisible();                    // 패싯이 활성이라 열려 있다
+    // 패싯이 활성인 동안은 토글을 눌러도 상태가 안 바뀌는 죽은 컨트롤이 되므로 아예 사라진다.
+    await expect(page.getByTestId("map-tree-filter-toggle")).toBeHidden();
+    await expect(filterWrap).toBeVisible(); // 패싯이 활성이라 열려 있다
+
+    // 패싯을 다시 끄면 토글이 돌아오고, 맵이 적으니 다시 접을 수 있다.
+    await page.getByTestId("map-tree-facet-all").click();
+    await expect(page.getByTestId("map-tree-filter-toggle")).toBeVisible();
+    await page.getByTestId("map-tree-filter-toggle").click();
+    await expect(filterWrap).toBeHidden();
   });
 });

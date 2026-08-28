@@ -15,7 +15,9 @@ test("capture map tree UX shots for the result report", async ({ page }) => {
 
   const mapTree = page.getByTestId("map-tree");
   await expect(mapTree).toBeVisible();
-  await page.getByTestId("map-tree-filter-toggle").click();
+  // freshProject 픽스처(dew-village-demo)는 맵 16개라 FILTER_AUTO_EXPAND_MAPS(8) 를 넘어
+  // 필터가 처음부터 펼쳐져 있다 — 토글이 죽은 컨트롤로 남지 않도록 아예 렌더되지 않으므로
+  // (Task 9 fix round 1) 누를 필요가 없다.
   await expect(page.getByTestId("map-tree-filter")).toBeVisible();
   await page.getByTestId("left-map-root").screenshot({ path: join(OUT, "01-tree-panel.png") });
 

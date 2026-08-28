@@ -109,15 +109,17 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
         ],
       }),
     );
-    header.append(el("button", {
-      class: "map-tree-action",
-      attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
-      dataset: { testid: "map-tree-filter-toggle" },
-      children: [el("span", { class: "rm-tool-icon oprn-icon-search", attrs: { "aria-hidden": "true" } })],
-      on: {
-        click: () => { filterExpandedByUser = !filterExpandedByUser; rerenderMapList(); },
-      },
-    }));
+    if (canToggleMapFilter(mapCount)) {
+      header.append(el("button", {
+        class: "map-tree-action",
+        attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
+        dataset: { testid: "map-tree-filter-toggle" },
+        children: [el("span", { class: "rm-tool-icon oprn-icon-search", attrs: { "aria-hidden": "true" } })],
+        on: {
+          click: () => { filterExpandedByUser = !filterExpandedByUser; rerenderMapList(); },
+        },
+      }));
+    }
     header.append(
       el("button", {
         class: "map-tree-basic-add",
@@ -167,12 +169,23 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
   }
 }
 
+function hasActiveMapFilter(): boolean {
+  return mapFilterQuery.trim().length > 0 || mapFilterFacet !== "all";
+}
+
 /** 활성 질의/패싯이 있으면 개수와 무관하게 편다 — 숨겨진 필터 때문에 "맵이 사라졌다"고
  *  오인하지 않도록 한다. `makeFilterField`와 헤더 토글의 `aria-expanded`가 같은 판단을
  *  공유해야 두 곳이 어긋나지 않는다. */
 function isFilterExpanded(mapCount: number): boolean {
-  const hasActiveFilter = mapFilterQuery.trim().length > 0 || mapFilterFacet !== "all";
-  return hasActiveFilter || filterExpandedByUser || mapCount >= FILTER_AUTO_EXPAND_MAPS;
+  return hasActiveMapFilter() || filterExpandedByUser || mapCount >= FILTER_AUTO_EXPAND_MAPS;
+}
+
+/** 토글을 눌러도 상태가 안 바뀌는 경우엔 아예 그리지 않는다 — 질의/패싯이 활성이거나
+ *  맵이 많아 이미 강제로 펼쳐져 있으면 `filterExpandedByUser` 를 뒤집어도 `isFilterExpanded`
+ *  결과가 그대로라, 눌러도 아무 일 없는 죽은 버튼이 된다(행 접기 화살표가 disabled 표시 없이
+ *  죽어 있던 것과 같은 결함 형태 — 이번엔 아예 렌더하지 않는 쪽으로 막는다). */
+function canToggleMapFilter(mapCount: number): boolean {
+  return !hasActiveMapFilter() && mapCount < FILTER_AUTO_EXPAND_MAPS;
 }
 
 function makeFilterField(mapCount: number): HTMLElement {
@@ -619,7 +632,7 @@ function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElem
   return el("div", {
     class: "map-tree-header-actions",
     children: [
-      treeAction({
+      ...(canToggleMapFilter(mapCount) ? [treeAction({
         action: () => {
           filterExpandedByUser = !filterExpandedByUser;
           rerenderMapList();
@@ -631,7 +644,7 @@ function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElem
         icon: "search",
         label: "맵 필터",
         testId: "map-tree-filter-toggle",
-      }),
+      })] : []),
       treeAction({
         action: () => openMapCreateDialog({ preset: "blank" }),
         icon: "map-child",
@@ -1199,6 +1212,7 @@ function beginTreeBoxSelect(event: Event, tree: HTMLElement): void {
 export function resetMapListUiStateForTests(): void {
   mapFilterQuery = "";
   mapFilterFacet = "all";
+  filterExpandedByUser = false;
   lastExpandedMapId = null;
   draggingMapId = null;
   draggingMapIds = [];

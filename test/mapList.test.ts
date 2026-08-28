@@ -174,4 +174,32 @@ describe("map tree panel", () => {
     expect(filter).not.toBeNull();
     expect(filter?.closest(".map-tree-filter")?.getAttribute("hidden")).not.toBeNull();
   });
+
+  it("패싯이 활성이면 토글이 죽은 버튼으로 남지 않도록 렌더하지 않는다", () => {
+    // 강제로 펼쳐진 상태에서는 filterExpandedByUser 를 뒤집어도 결과가 안 바뀐다 —
+    // 누르면 아무 일 없는 컨트롤을 남기지 않고 아예 그리지 않는다.
+    const host = document.createElement("div");
+    renderMapList(host);
+    const facetButton = host.querySelector<HTMLElement>('[data-testid="map-tree-facet-empty"]');
+    facetButton?.click();
+    expect(host.querySelector('[data-testid="map-tree-filter-toggle"]')).toBeNull();
+    expect(host.querySelector('[data-testid="map-tree-filter"]')?.closest(".map-tree-filter")?.getAttribute("hidden")).toBeNull();
+  });
+
+  it("맵이 8개 이상이면 토글 없이 필터가 처음부터 펼쳐진다", () => {
+    const project = createBlankProject();
+    for (let i = 0; i < 7; i += 1) {
+      const id = `map_extra_${i}`;
+      project.maps[id] = { ...project.maps[project.startMapId]!, id, name: `여분 맵 ${i}` };
+      project.mapTree.children.push({ mapId: id, children: [] });
+    }
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+
+    const host = document.createElement("div");
+    renderMapList(host);
+    expect(Object.keys(store.getCurrent().maps).length).toBe(8);
+    expect(host.querySelector('[data-testid="map-tree-filter-toggle"]')).toBeNull();
+    expect(host.querySelector('[data-testid="map-tree-filter"]')?.closest(".map-tree-filter")?.getAttribute("hidden")).toBeNull();
+  });
 });
