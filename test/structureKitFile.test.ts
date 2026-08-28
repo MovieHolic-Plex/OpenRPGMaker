@@ -78,6 +78,43 @@ describe("parseStructureKitFile", () => {
     expect(file.kits[0]!.rows[1]!.upperTiles).toEqual([-1, 208]);
   });
 
+  it("origin 을 파일에 적힌 그대로 보존한다 — 제로 부트스트랩", () => {
+    const { file } = parseStructureKitFile(serializeStructureKitFile(tileset(), [well()], AT));
+    expect(file.kits[0]!.ai?.origin).toBe("user");
+  });
+
+  it("origin 이 없으면 만들어내지 않는다", () => {
+    const noOrigin = { ...well(), ai: { description: "d", placementRules: "p" } };
+    const { file } = parseStructureKitFile(serializeStructureKitFile(tileset(), [noOrigin], AT));
+    expect(file.kits[0]!.ai?.origin).toBeUndefined();
+  });
+
+  it("origin 이 알 수 없는 값이면 거른다 — user/ai 가 아닌 값을 통과시키지 않는다", () => {
+    const text = JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: STRUCTURE_KIT_FILE_VERSION,
+      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      kits: [{ ...well(), ai: { description: "d", placementRules: "p", origin: "system" } }],
+    });
+    const { file } = parseStructureKitFile(text);
+    expect(file.kits[0]!.ai?.origin).toBeUndefined();
+  });
+
+  it("role 이 알 수 없는 값이면 거르고, 알려진 값이면 통과시킨다", () => {
+    const text = JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: STRUCTURE_KIT_FILE_VERSION,
+      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      kits: [
+        { ...well(), id: "k_bad", ai: { description: "d", placementRules: "p", role: "garbage" } },
+        { ...well(), id: "k_good", ai: { description: "d", placementRules: "p", role: "fence" } },
+      ],
+    });
+    const { file } = parseStructureKitFile(text);
+    expect(file.kits[0]!.ai?.role).toBeUndefined();
+    expect(file.kits[1]!.ai?.role).toBe("fence");
+  });
+
   it("JSON 이 아니면 던진다", () => {
     expect(() => parseStructureKitFile("이건 JSON 이 아님")).toThrow(StructureKitFileError);
   });

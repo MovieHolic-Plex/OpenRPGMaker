@@ -137,6 +137,7 @@ function readKit(raw: unknown, index: number): SectionStructureKitDef | KitDiagn
     );
   }
 
+  const ai = readAiMeta(record.ai);
   return {
     id: typeof record.id === "string" && record.id ? record.id : `kit_imported_${index}`,
     kind: "section",
@@ -147,7 +148,7 @@ function readKit(raw: unknown, index: number): SectionStructureKitDef | KitDiagn
     ...(Array.isArray(record.parts) ? { parts: readParts(record.parts) } : {}),
     // 파일에 적힌 origin 을 그대로 보존한다 — 가져오기 체크는 "이 파일을 받겠다" 이지
     // "이 설명을 내가 보증한다" 가 아니다(제로 부트스트랩).
-    ...(readAiMeta(record.ai) ? { ai: readAiMeta(record.ai)! } : {}),
+    ...(ai ? { ai } : {}),
     learnedFrom: "db-authored",
     ...(typeof record.createdAt === "string" ? { createdAt: record.createdAt } : {}),
   };
@@ -178,6 +179,17 @@ function readParts(raw: readonly unknown[]): SectionStructureKitDef["parts"] {
   return parts;
 }
 
+const TILE_GROUP_ROLES = new Set([
+  "building",
+  "castle",
+  "fence",
+  "roof",
+  "terrain",
+  "water",
+  "wall",
+  "prop",
+]);
+
 function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
   if (typeof raw !== "object" || raw === null) return undefined;
   const record = raw as Record<string, unknown>;
@@ -190,7 +202,9 @@ function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
     ...(Array.isArray(record.tags)
       ? { tags: record.tags.filter((tag): tag is string => typeof tag === "string") }
       : {}),
-    ...(typeof record.role === "string" ? { role: record.role as StructureKitAiMeta["role"] } : {}),
+    ...(typeof record.role === "string" && TILE_GROUP_ROLES.has(record.role)
+      ? { role: record.role as StructureKitAiMeta["role"] }
+      : {}),
     ...(record.repeatability === "repeat" || record.repeatability === "fixed"
       ? { repeatability: record.repeatability }
       : {}),
