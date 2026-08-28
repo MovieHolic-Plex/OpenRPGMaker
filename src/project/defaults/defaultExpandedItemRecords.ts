@@ -88,7 +88,7 @@ export function expandedDefaultItemRecords(): ItemRecord[] {
     fieldFood({ id: "item_water_flask", name: "가죽 물통", price: 10, description: "야영 중 아군 하나의 HP를 10 회복하는 깨끗한 물입니다.", icon: "cc0-jetrel-water-flask", hp: 10 }),
     fieldFood({ id: "item_wine", name: "포도주", price: 45, description: "야영 중 아군 하나의 HP를 35, MP를 8 회복하는 과실주입니다.", icon: "cc0-jetrel-wine", hp: 35, mp: 8 }),
 
-    // Battle activators.
+    // 전투 발동품.
     battleItem({ id: "item_bomb", name: "철제 폭탄", price: 100, description: "전투 중 적 하나에게 물리 피해를 주는 소형 폭탄입니다.", icon: "cc0-jetrel-bomb", skillId: "skill_throwing_knife" }),
     battleItem({ id: "item_fire_bomb", name: "화염 폭탄", price: 140, description: "전투 중 적 하나에게 화염 마법 피해를 일으킵니다.", icon: "cc0-jetrel-fire-bomb", skillId: "skill_fire" }),
     battleItem({ id: "item_holy_water", name: "정화 성수", price: 130, description: "전투 중 적 하나에게 성스러운 마법 피해를 줍니다.", icon: "cc0-jetrel-holy-water", skillId: "skill_item_holy_water" }),
@@ -97,7 +97,7 @@ export function expandedDefaultItemRecords(): ItemRecord[] {
     battleItem({ id: "item_smoke_bomb", name: "약화 연막탄", price: 100, description: "전투 중 적 하나의 방어를 낮추는 연막을 퍼뜨립니다.", icon: "cc0-jetrel-smoke-bomb", skillId: "skill_weaken" }),
     battleItem({ id: "item_thunder_stone", name: "뇌전석", price: 150, description: "전투 중 적 하나에게 응축된 번개 마법 피해를 방출합니다.", icon: "cc0-jetrel-thunder-stone", skillId: "skill_item_thunder_stone" }),
 
-    // Skill book, scrolls, badges, and farm tools.
+    // 기술서, 두루마리, 배지, 농기구.
     catalogItem({ id: "item_skill_book", name: "집중의 기술서", type: "book", scope: "ally", price: 300, description: "아군 하나가 집중 기술을 익히도록 가르치는 기술서입니다.", icon: "cc0-jetrel-skill-book", learnedSkillId: "skill_focus", occasion: "field", occasionField: true, occasionBattle: false, consumable: true }),
     catalogItem({ id: "item_blank_scroll", name: "빈 마법 두루마리", price: 40, description: "주문을 기록하거나 마법 문서를 제작할 때 쓰는 빈 두루마리입니다.", icon: "cc0-jetrel-scroll" }),
     catalogItem({ id: "item_guild_badge", name: "길드 견습 배지", price: 0, description: "모험가 길드의 견습 회원임을 증명하는 황동 배지입니다.", icon: "cc0-jetrel-badge" }),

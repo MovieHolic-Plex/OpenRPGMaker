@@ -24,7 +24,7 @@ describe("default item catalog quality", () => {
     expect(new Set(records.map((record) => record.description)).size).toBe(records.length);
   });
 
-  it("keeps occasion, consumption, executable effects, and animation references coherent", () => {
+  it("사용 시점과 소모 여부, 실행 효과, 애니메이션 참조가 서로 맞는다", () => {
     const project = createBlankProject();
     const items = project.database.items;
     const animationIds = new Set(project.database.battleAnimations.map((animation) => animation.id));

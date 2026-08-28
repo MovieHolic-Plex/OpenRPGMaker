@@ -129,7 +129,7 @@ describe("Supabase project sync", () => {
     expect(String(calls[0]?.input)).toContain(`project_id=eq.${DEFAULT_SUPABASE_PROJECT_ID}`);
   });
 
-  it("upgrades untouched English item stubs and adds only promoted equipment on load", async () => {
+  it("손대지 않은 영문 아이템 껍데기만 고치고 승격 장비만 추가한다", async () => {
     const source = JSON.parse(serialize(minimalValidProject()));
     const currentItems = new Map(
       (source.database.items as { id: string }[]).map((item) => [item.id, item]),
@@ -181,7 +181,7 @@ describe("Supabase project sync", () => {
     }) satisfies typeof fetch);
 
     const project = await loadProjectFromSupabase(TEST_CONFIG);
-    if (!project) throw new Error("expected repaired project");
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
 
     expect(project.database.items.find((item) => item.id === "item_ale")).toMatchObject({
       name: "맥아주",

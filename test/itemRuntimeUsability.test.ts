@@ -38,7 +38,7 @@ describe("default item runtime usability", () => {
     }
   });
 
-  it("drives the three default farm tools through till, water, and mine actions", () => {
+  it("기본 농기구 세 개로 경작, 물주기, 채굴 경로를 실행한다", () => {
     const project = createBlankProject();
     project.database.crops ??= [];
     project.database.crops.push(normalizeCropRecord({
@@ -50,7 +50,7 @@ describe("default item runtime usability", () => {
       seasons: ["spring"],
     }));
     const sourceMap = project.maps[project.startMapId];
-    if (!sourceMap) throw new Error("default map is missing");
+    if (!sourceMap) throw new Error("기본 맵이 없습니다");
     const map = { ...sourceMap, farmableArea: [{ x: 2, y: 2, w: 2, h: 1 }] };
     const session = startSession(project);
     session.inventory.item_hoe = 1;
@@ -65,7 +65,7 @@ describe("default item runtime usability", () => {
 
     setEquippedTool(session, "item_watering_can");
     const plot = session.farmPlots?.[map.id]?.["2,2"];
-    if (!plot) throw new Error("tilled plot is missing");
+    if (!plot) throw new Error("경작된 밭이 없습니다");
     session.farmPlots![map.id]!["2,2"] = { ...plot, cropId: "crop_tool_probe" };
     expect(interactWithFarmPlot(project, session, map, 2, 2, "water")).toMatchObject({
       kind: "watered",
