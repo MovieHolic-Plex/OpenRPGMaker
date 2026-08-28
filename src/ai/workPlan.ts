@@ -116,7 +116,7 @@ Harness contract:
    - title (short)
    - instruction (concrete tools/numbers: author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room, … — 건설 지시는 목표 맵과 정확한 수량을 반드시 명시)
    - doneWhen (acceptance: what must be true when this item is complete)
-   - successTools (optional tool names that must ALL succeed before the item auto-completes; list only tools required by doneWhen, never alternatives)
+   - successTools (tool names that must ALL succeed before the item auto-completes; they must cover **every clause of doneWhen**, not just the first one. If doneWhen also requires painting/decorating/placing after a map is created, list those tools too — e.g. doneWhen "맵이 생성되고 지형이 칠해짐" → ["create_map","fill_region"]. Listing only the creation tool for such an item is a contract violation: the harness completes the item the moment those tools succeed, so the rest of doneWhen never runs. Never list alternatives.)
 8. Typical RPG content layers: meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
 10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
@@ -603,10 +603,20 @@ export function shouldRalphContinue(
   return true;
 }
 
+/**
+ * 산출물 게이트 — successTools 이름 매칭을 통과한 뒤 **결과물 상태**를 한 번 더 본다.
+ *
+ * 2026-08-28 실측: doneWhen 이 "생성되고 칠해짐" 이어도 successTools 가 ["create_map"] 이면
+ * create_map 성공 즉시 done 이 됐다. doneWhen 은 자연어라 기계가 못 읽으므로, 대신 산출물이
+ * 비어 있는지를 코드가 직접 확인한다(`workItemOutcome.verifyCreatedMapsAuthored`).
+ */
+export type WorkItemOutcomeGate = (item: WorkItem) => { ok: true } | { ok: false; reason: string };
+
 export function advanceWorkPlanFromTools(
   plan: WorkPlan,
-  successfulTools: readonly string[]
-): { completed: WorkItem | null; next: WorkItem | null } {
+  successfulTools: readonly string[],
+  gate?: WorkItemOutcomeGate
+): { completed: WorkItem | null; next: WorkItem | null; blocked?: { item: WorkItem; reason: string } } {
   const current = getCurrentWorkItem(plan);
   if (!current || current.status !== "in_progress") {
     return { completed: null, next: activateFirstPending(plan) };
@@ -619,6 +629,10 @@ export function advanceWorkPlanFromTools(
   const tools = new Set(successfulTools);
   const allSucceeded = needed.every((name) => tools.has(name));
   if (!allSucceeded) return { completed: null, next: current };
+  const verdict = gate?.(current);
+  if (verdict && !verdict.ok) {
+    return { completed: null, next: current, blocked: { item: current, reason: verdict.reason } };
+  }
 
   current.status = "done";
   const next = activateFirstPending(plan);
@@ -633,6 +647,7 @@ export function advanceWorkPlanFromTools(
 export function canCompleteWorkItem(
   item: WorkItem,
   successfulTools: readonly string[] | undefined,
+  gate?: WorkItemOutcomeGate,
 ): { ok: true } | { ok: false; reason: string } {
   const needed = item.successTools ?? [];
   if (item.requiresAnyWrite) {
@@ -644,10 +659,10 @@ export function canCompleteWorkItem(
       };
     }
   }
-  if (needed.length === 0) return { ok: true };
+  if (needed.length === 0) return gate?.(item) ?? { ok: true };
   const tools = new Set(successfulTools ?? []);
   const missing = needed.filter((name) => !tools.has(name));
-  if (missing.length === 0) return { ok: true };
+  if (missing.length === 0) return gate?.(item) ?? { ok: true };
   return {
     ok: false,
     reason:
@@ -664,13 +679,13 @@ export function completeWorkItemById(
   plan: WorkPlan,
   itemId: string,
   note?: string,
-  options?: { successfulTools?: readonly string[]; force?: boolean },
+  options?: { successfulTools?: readonly string[]; force?: boolean; outcomeGate?: WorkItemOutcomeGate },
 ): CompleteWorkItemResult {
   for (const layer of plan.layers) {
     const it = layer.items.find((i) => i.id === itemId);
     if (!it) continue;
     if (!options?.force) {
-      const gate = canCompleteWorkItem(it, options?.successfulTools);
+      const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate);
       if (!gate.ok) return { ok: false, reason: gate.reason, item: it };
     }
     it.status = "done";
