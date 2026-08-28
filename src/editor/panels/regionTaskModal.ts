@@ -87,7 +87,7 @@ export interface RegionTaskModalOptions {
   /**
    * 작업 대상 영역의 화면 사각형. 주면 팝오버를 그 옆에 세운다 — 우클릭 드래그는 놓은 자리가
    * 곧 대상 영역 안이라, anchor 만 쓰면 창이 **자기가 바꾸는 곳을 덮는다**(캔버스 고스트
-   * 미리보기까지 가린다). 옆에 자리가 없으면 기존 anchor 배치로 되돌아간다.
+   * 미리보기까지 가린다). 옆에 자리가 좁으면 간격을 줄이거나 겹침이 가장 적은 쪽에 세운다.
    */
   readonly avoid?: RegionTaskAvoidRect;
   // 테스트 주입: 기본은 실제 runRegionTask.
@@ -1206,6 +1206,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       ],
     });
     if (pending.blockers.length > 0 || errorIssues > 0) diagnostics.setAttribute("open", "");
+    diagnostics.addEventListener("toggle", schedulePopoverReposition);
 
     compareHost.replaceChildren(
       figures,
@@ -1220,6 +1221,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       diagnostics,
     );
     setStage("review");
+    // 검토 DOM이 한꺼번에 자란 뒤 다음 프레임까지 이전 높이의 좌표를 유지하면 하단이 잘린 채
+    // 노출된다. CSS가 검토 내용을 드러낸 직후 실측하고, 아래 rAF 재측정도 그대로 둔다.
+    if (asPopover && options.anchor) positionRegionTaskPopover(windowNode, options.anchor, options.avoid);
     // 결정 화면에 들어오면 기본 결정(적용)에 포커스를 준다. 브라우저는 Enter/Space 를 포커스된
     // 버튼의 동작으로 처리하므로, 이것만으로 "결과를 보고 Enter" 가 확정이 된다. 입력창은 이
     // 단계에서 display:none 이라 포커스를 잃는데, 그 포커스가 body 로 흘러가면 어떤 키도
@@ -1791,10 +1795,14 @@ export function positionRegionTaskPopover(
 
   // 회피 영역(=작업 대상 선택 영역)이 주어지면 그 옆에 세운다. 우클릭 드래그는 놓은 자리가
   // 곧 대상 영역 안이므로 anchor 만 쓰면 창이 자기가 바꾸는 곳과 캔버스 고스트 미리보기를
-  // 덮는다. 사방에 자리가 없을 때만 아래 anchor 클램프로 되돌아간다.
-  const beside = avoid
-    ? placePopoverBesideRect({ avoid, width, height, viewport: { width: vw, height: vh }, margin })
-    : null;
+  // 덮는다. 완전히 비켜설 수 없어도 anchor 로 돌아가지 않고 겹침이 가장 적은 쪽을 고른다.
+  const beside = placePopoverBesideRect({
+    avoid,
+    width,
+    height,
+    viewport: { width: vw, height: vh },
+    margin,
+  });
   if (beside) {
     panel.style.left = `${Math.round(beside.x)}px`;
     panel.style.top = `${Math.round(beside.y)}px`;
@@ -1818,12 +1826,13 @@ export function positionRegionTaskPopover(
 }
 
 /**
- * 회피 사각형(대상 영역)과 겹치지 않는 팝오버 좌상단을 고른다. 오른쪽 → 왼쪽 → 아래 → 위 순으로
- * 보고, 뷰포트 안에 완전히 들어가는 첫 자리를 쓴다. 어디에도 못 세우면 null(호출부가 기존
- * anchor 클램프로 되돌린다). DOM 없이 검증할 수 있게 순수 함수로 분리했다.
+ * 회피 사각형(대상 영역) 옆의 팝오버 좌상단을 고른다. 오른쪽 → 왼쪽 → 아래 → 위 순으로
+ * 먼저 요청 간격, 다음 0 간격에서 겹치지 않는 자리를 찾는다. 그래도 없으면 뷰포트 안으로
+ * 클램프한 네 자리 중 대상 영역과의 겹침이 가장 작은 곳을 쓴다. 회피 영역이 없을 때만
+ * null을 반환해 호출부의 anchor 배치를 유지한다. DOM 없이 검증할 수 있게 순수 함수로 분리했다.
  */
 export function placePopoverBesideRect(opts: {
-  readonly avoid: RegionTaskAvoidRect;
+  readonly avoid?: RegionTaskAvoidRect;
   readonly width: number;
   readonly height: number;
   readonly viewport: { readonly width: number; readonly height: number };
@@ -1831,6 +1840,8 @@ export function placePopoverBesideRect(opts: {
   readonly gap?: number;
 }): { readonly x: number; readonly y: number } | null {
   const { avoid, width, height, viewport, margin } = opts;
+  if (!avoid) return null;
+
   const gap = opts.gap ?? 12;
   const clamp = (value: number, min: number, max: number): number =>
     max < min ? min : Math.min(Math.max(value, min), max);
@@ -1839,18 +1850,37 @@ export function placePopoverBesideRect(opts: {
   // 세로 배치는 영역의 세로 중앙에, 가로 배치는 영역의 가로 중앙에 맞춘다.
   const centeredTop = clamp(avoid.y + avoid.height / 2 - height / 2, margin, maxTop);
   const centeredLeft = clamp(avoid.x + avoid.width / 2 - width / 2, margin, maxLeft);
-  const candidates: ReadonlyArray<{ readonly x: number; readonly y: number }> = [
-    { x: avoid.x + avoid.width + gap, y: centeredTop },
-    { x: avoid.x - width - gap, y: centeredTop },
-    { x: centeredLeft, y: avoid.y + avoid.height + gap },
-    { x: centeredLeft, y: avoid.y - height - gap },
+  const candidates = (candidateGap: number): ReadonlyArray<{ readonly x: number; readonly y: number }> => [
+    { x: avoid.x + avoid.width + candidateGap, y: centeredTop },
+    { x: avoid.x - width - candidateGap, y: centeredTop },
+    { x: centeredLeft, y: avoid.y + avoid.height + candidateGap },
+    { x: centeredLeft, y: avoid.y - height - candidateGap },
   ];
-  for (const candidate of candidates) {
-    if (candidate.x < margin || candidate.x > maxLeft) continue;
-    if (candidate.y < margin || candidate.y > maxTop) continue;
-    return candidate;
+  const insideViewport = (candidate: { readonly x: number; readonly y: number }): boolean =>
+    candidate.x >= margin && candidate.x <= maxLeft && candidate.y >= margin && candidate.y <= maxTop;
+
+  for (const candidateGap of gap === 0 ? [0] : [gap, 0]) {
+    const placed = candidates(candidateGap).find(insideViewport);
+    if (placed) return placed;
   }
-  return null;
+
+  const overlapArea = (candidate: { readonly x: number; readonly y: number }): number => {
+    const overlapWidth = Math.max(
+      0,
+      Math.min(candidate.x + width, avoid.x + avoid.width) - Math.max(candidate.x, avoid.x),
+    );
+    const overlapHeight = Math.max(
+      0,
+      Math.min(candidate.y + height, avoid.y + avoid.height) - Math.max(candidate.y, avoid.y),
+    );
+    return overlapWidth * overlapHeight;
+  };
+  const clamped = candidates(0).map((candidate) => ({
+    x: clamp(candidate.x, margin, maxLeft),
+    y: clamp(candidate.y, margin, maxTop),
+  }));
+  return clamped.reduce((best, candidate) =>
+    overlapArea(candidate) < overlapArea(best) ? candidate : best);
 }
 
 /** 클립보드 복사 — Clipboard API 실패 시 textarea fallback. */

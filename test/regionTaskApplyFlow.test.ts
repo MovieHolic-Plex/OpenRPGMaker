@@ -14,7 +14,7 @@ import {
 } from "@/editor/panels/regionTaskModal";
 import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
-import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { type FakeElement, findByTestId, flushFakeAnimationFrames, installFakeDom } from "./fakeDom";
 
 const REGION = { x: 0, y: 0, width: 2, height: 2 };
 
@@ -132,9 +132,29 @@ describe("placePopoverBesideRect", () => {
     expect(placed?.y).toBe(wide.y + wide.height + 12);
   });
 
-  it("사방에 자리가 없으면 null (호출부가 anchor 배치로 되돌린다)", () => {
-    const huge = { x: 0, y: 0, width: 1200, height: 800 };
-    expect(placePopoverBesideRect({ avoid: huge, width: 380, height: 400, viewport, margin: 12 })).toBeNull();
+  it("기본 간격만 좁으면 간격 0으로 줄여 영역에 닿게 세운다", () => {
+    const placed = placePopoverBesideRect({
+      avoid: { x: 400, y: 0, width: 8, height: 600 },
+      width: 380,
+      height: 400,
+      viewport: { width: 800, height: 600 },
+      margin: 12,
+    });
+    expect(placed).toEqual({ x: 408, y: 100 });
+  });
+
+  it("완전히 비킬 수 없으면 뷰포트 안에서 겹침이 가장 작은 쪽을 고른다", () => {
+    const huge = { x: 100, y: 20, width: 1000, height: 760 };
+    const placed = placePopoverBesideRect({ avoid: huge, width: 380, height: 400, viewport, margin: 12 });
+    expect(placed).toEqual({ x: 808, y: 200 });
+    expect(placed!.x).toBeGreaterThanOrEqual(12);
+    expect(placed!.x + 380).toBeLessThanOrEqual(viewport.width - 12);
+    expect(placed!.y).toBeGreaterThanOrEqual(12);
+    expect(placed!.y + 400).toBeLessThanOrEqual(viewport.height - 12);
+  });
+
+  it("회피 영역이 없을 때만 null을 반환한다", () => {
+    expect(placePopoverBesideRect({ width: 380, height: 400, viewport, margin: 12 })).toBeNull();
   });
 
   it("세로 배치도 뷰포트 안으로 클램프한다", () => {
@@ -151,6 +171,62 @@ describe("placePopoverBesideRect", () => {
 });
 
 describe("검토 단계 배치", () => {
+  it("검토 DOM 삽입 직후 동기 재배치하고 진단 토글 뒤에도 다시 맞춘다", async () => {
+    restoreDom = installFakeDom({ animationFrames: "manual" });
+    const g = globalThis as typeof globalThis & { innerWidth?: number; innerHeight?: number };
+    const prevW = Object.getOwnPropertyDescriptor(globalThis, "innerWidth");
+    const prevH = Object.getOwnPropertyDescriptor(globalThis, "innerHeight");
+    Object.defineProperty(globalThis, "innerWidth", { configurable: true, value: 1000 });
+    Object.defineProperty(globalThis, "innerHeight", { configurable: true, value: 600 });
+
+    let signalRepositioned: (() => void) | undefined;
+    const repositioned = new Promise<void>((resolve) => { signalRepositioned = resolve; });
+    try {
+      const root = openModal({
+        mapId: "m1",
+        region: REGION,
+        initialInstruction: "테스트",
+        autoRun: true,
+        anchor: { x: 100, y: 500 },
+        avoid: { x: 50, y: 450, width: 100, height: 100 },
+        run: async () => fakePendingResult({ onApply: () => {} }),
+        renderSnapshot: () => Promise.resolve(document.createElement("div")),
+      });
+      const popover = findByTestId(root, "region-task-popover")!;
+      Object.defineProperty(popover, "isConnected", { configurable: true, value: true });
+      popover.getBoundingClientRect = () => {
+        const diagnostics = findByTestId(popover, "region-task-diagnostics");
+        const reviewVisible = popover.dataset.stage === "review";
+        const height = reviewVisible
+          ? diagnostics?.getAttribute("open") !== null ? 500 : 300
+          : 200;
+        if (diagnostics && reviewVisible) signalRepositioned?.();
+        return {
+          width: 380, height, left: 0, top: 0, right: 380, bottom: height,
+          x: 0, y: 0, toJSON: () => ({}),
+        } as DOMRect;
+      };
+
+      await Promise.race([
+        repositioned,
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("synchronous reposition was not observed")), 1000)),
+      ]);
+      expect(popover.style.top).toBe("288px");
+
+      flushFakeAnimationFrames();
+      const diagnostics = findByTestId(root, "region-task-diagnostics")!;
+      diagnostics.setAttribute("open", "");
+      diagnostics.dispatchEvent(new Event("toggle"));
+      flushFakeAnimationFrames();
+      expect(popover.style.top).toBe("88px");
+    } finally {
+      if (prevW) Object.defineProperty(globalThis, "innerWidth", prevW);
+      else Reflect.deleteProperty(g, "innerWidth");
+      if (prevH) Object.defineProperty(globalThis, "innerHeight", prevH);
+      else Reflect.deleteProperty(g, "innerHeight");
+    }
+  });
+
   it("결정 버튼 줄이 진단 접이식보다 앞에 온다", async () => {
     const { root } = await openInReview({ onApply: () => {} });
     const actionsIndex = childIndexByTestId(root, "region-task-compare-actions");
