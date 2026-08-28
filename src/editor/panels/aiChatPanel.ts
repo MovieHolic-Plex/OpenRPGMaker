@@ -650,9 +650,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     conversationScope = conversationScopeKey(nextIdentity, store.getCurrent());
     setPendingProposalMessage(null);
     setLastAppliedProposalMessage(null);
-    proposalApi.clearInlineActionsIfMine();
-    proposalHost.replaceChildren();
-    closeProposalModal();
+    // #211 이 승인 게이트를 걷어내 인라인 삹인 버튼과 제안 모달이 없다 — 남은 자운은 안내뿐이다.
+    proposalNoticeHost.replaceChildren();
     chipsHost.replaceChildren();
     log.replaceChildren();
     startScreen = null;
