@@ -164,6 +164,42 @@ Evidence expectations:
 - 실측 사례: DB 사이드바 레일 작업(#160)에서 크로미움으로 두 번 연속 백지가 나 증거를 못 잡았고,
   파이어폭스로 바꾸자 같은 트리에서 즉시 통과했다. 그 스펙은 지금도 파이어폭스로 돈다.
 
+## 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+
+게임 화면을 브라우저로 QA 할 때 **편집기 셸을 통과하지 마라.** `npm run qa:runtime`
+(반복) / `npm run qa:runtime:gate` (게이트). `player.html` 을 전용 vite 서버로 띄워
+편집기 크롬 0, HMR 유지, 출하 shim 경로를 그대로 통과한다. 편집기 play 모드는 실제
+`@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
+경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
+
+- 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
+  표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
+  매 실행 재생성되며 gitignore 대상이다.
+- 시나리오는 `scripts/qa/runtime/<name>.scenario.mjs`. 좌표 기대치는 추측하지 말고
+  `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
+
+함정 (전부 실측):
+- `vite.player.config.ts` 는 `publicDir: false` 다. 그대로 dev 서빙하면 번들 텍스처
+  (`assets/easyrpg-*.png`, `public/assets/` 34개)가 전부 404 → **조용한 검은 스크린샷**.
+  `vite.player-qa.config.ts` 가 되살린다.
+- 워크트리는 `node_modules` 를 메인 레포로 심링크해 `node_modules/.vite` 까지 공유한다.
+  다른 config 로 서버를 띄우면 공유 캐시를 재최적화해 **남의 dev 서버를 죽인다**
+  (`vite.config.ts:350-354`, 실측 3회). 반드시 전용 `cacheDir` / `VITE_CACHE_DIR`.
+- `vite.config.ts` 의 `server.fs.allow` 는 `../rpg-zzu/node_modules`(구 형제 워크트리
+  `rpg-zzu-*`)만 넓힌다. **`.claude/worktrees/*` 에서는 존재하지 않는 경로로 풀려 편집기
+  dev 서버가 phaser 를 403 으로 막는다.** 올바른 일반화는 `realpathSync("./node_modules")`.
+- 고정 키 횟수로 대사를 소진하면 닫힌 뒤 남은 Enter 가 NPC 를 재발동시켜 선택지가 다시
+  열린다. `pressUntil` op(매 입력 후 조건 확인)을 써라.
+- **같은 맵 안 `__oprnDebug.teleport` 는 상태만 바꾸고 플레이어 스프라이트를 옮기지 않는다**
+  (mapId 가 같으면 `loadMap` 미호출 — `playSceneTestHooks.ts`). 위치 지정에 못 쓴다.
+- `movement` 가 `fixed` 가 아닌 NPC 는 같은 세션 안에서 배회한다. 고정 좌표 인접을 전제한
+  상호작용 비트는 취약하다.
+- `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
+  (Phaser 초록 와이어프레임). 게이트는 `playerSpriteTextureLoaded` 축으로 봐야 한다.
+- `test/fixtures/projects/oprn-sample-v3.json` 은 플레이어 캐릭셋이 `__MISSING` 으로 그려진다
+  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 기본 픽스처는
+  `editor-authored-demo-v3.json` 을 쓴다.
+
 ## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
 
 - `src/testing/sceneTestRunner.ts` 는 추격(chase) 무버만 시뮬레이션하고 무작위·접근·사용자 지정
