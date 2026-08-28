@@ -1285,6 +1285,25 @@ footer {
   }
 }
 
+/* 좁은 폭(레일 아래로 펼치는 폴백)에서 남던 잘림 2건.
+   268px 컬럼에서는 라벨 칸을 넓힐 여유가 없으므로 줄바꿈을 허용하고,
+   컨트롤에는 접미사 칸까지 내준다. 실측: `이 이벤트 기억` 67/72px,
+   `파티에 있음`(커스텀 셀렉트 값) 44/63px. */
+@media (max-width: 1320px) {
+  /* 라벨은 줄바꿈이 되므로 칸을 좁혀도 잘리지 않는다. 아낀 폭은 컨트롤로 간다. */
+  .event-editor .event-editor-settings-accordion-body .event-condition-row {
+    grid-template-columns: 16px 3rem minmax(0, 1fr) auto;
+  }
+
+  .event-editor .event-editor-settings-accordion-body .event-condition-label {
+    line-height: 1.25;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+}
+
 /* 조건 요약 문장 — 켜진 조건을 저장 직전에 한 줄로 확인한다. */
 .event-editor .event-conditions-body {
   display: grid;
