@@ -398,8 +398,10 @@
   z-index: 1;
 }
 
-/* 얼굴 초상 = 셀 전체 배경. faceset 시트(4×4)에서 한 칸을 골라 셀 폭에 맞춰 확대한다.
-   시트를 셀 폭의 4배로 그리면 한 칸이 정확히 셀 폭이 되고, 칸 좌표만큼 밀어 잘라낸다. */
+/* 얼굴 초상 = 셀 전체 배경. 시트를 셀 폭 × 격자수로 그리고 칸 좌표만큼 밀어 잘라내는
+   식인데, 얼굴은 이제 파일 한 장이라 battleFieldDom 이 격자 1 · 열 0 · 행 0 을 넣는다 —
+   그러면 이 계산이 "이미지 한 장을 셀 폭에 맞춰 통째로"로 자연히 접힌다. 시트 크롭 경로는
+   남겨 두되 실제로 쓰이지 않는다. */
 .battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-actor-face {
   background-image: var(--battle-face-url);
   background-position:

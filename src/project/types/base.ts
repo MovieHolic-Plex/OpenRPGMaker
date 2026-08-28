@@ -375,6 +375,13 @@ export interface UploadedAsset {
     width?: number;
     height?: number;
     transparentColor?: string;
+    /**
+     * 얼굴 시트 지연 절단 표식. 시트를 낱장 id 로 등록한 시점에는 아직 픽셀이 시트
+     * 그대로라, 로드 직후 `repairUploadedFacesetSheets` 가 이 두 값을 보고 canvas 로
+     * 해당 칸만 잘라 넣은 뒤 표식을 지운다. 붙이는 쪽은 마이그레이션과 upsert_resource.
+     */
+    sheetCell?: number;
+    sheetSourceId?: string;
   };
 }
 
