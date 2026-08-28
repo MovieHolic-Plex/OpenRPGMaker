@@ -154,8 +154,15 @@ export function structureKitUnitCells(kit: StructureKitDef): PaletteStampCell[] 
   return cells;
 }
 
-/** 반복(가로 이어 찍기) 가능 여부 — 단면(section)만. 집은 한 채가 완결 단위다. */
+/**
+ * 반복(가로 이어 찍기) 가능 여부.
+ * ai.repeatability 가 있으면 그것이 정본 — 사람이 "한 채 완결"이라 표시한 우물·간판을
+ * stamp_structure_kit 의 repeat 기본값 3 이 3개로 늘리는 것을 막는다.
+ * 없으면 기존 동작(section 은 반복, house 는 한 채) 유지 — 하위 호환.
+ */
 export function structureKitRepeatable(kit: StructureKitDef): boolean {
+  if (kit.ai?.repeatability === "fixed") return false;
+  if (kit.ai?.repeatability === "repeat") return true;
   return kit.kind === "section";
 }
 

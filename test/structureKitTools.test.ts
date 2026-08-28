@@ -50,6 +50,76 @@ function projectWithPartsKit(): { project: Project; mapId: string } {
   return { project, mapId };
 }
 
+// 폭 2, 높이 1 짜리 최소 킷 — repeat 동작만 본다.
+function projectWithRepeatKit(ai: StructureKitDef["ai"]): { project: Project; mapId: string } {
+  const project = createEmptyToolProject("반복 테스트");
+  const context = { project };
+  runTool(context, "create_map", { name: "반복맵", width: 20, height: 15 });
+  const mapId = Object.keys(context.project.maps)[0]!;
+  const tilesetId = context.project.maps[mapId]!.tilesetId;
+  context.project.tilesets[tilesetId]!.structureKits = [{
+    id: "kit_repeat_test",
+    kind: "section",
+    name: "반복 킷",
+    width: 2,
+    height: 1,
+    rows: [{ tiles: [421, 421] }],
+    learnedFrom: "db-authored",
+    ...(ai ? { ai } : {}),
+  }];
+  return { project: context.project, mapId };
+}
+
+describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는다", () => {
+  it("fixed 인 킷은 repeat 를 줘도 1회만 찍는다", () => {
+    // 우물·간판처럼 한 채로 완결인 구조물. repeat 기본값 3 때문에 3개가 찍히던 문제.
+    const { project, mapId } = projectWithRepeatKit({
+      description: "돌 우물",
+      placementRules: "광장 중앙",
+      repeatability: "fixed",
+    });
+    const context = { project };
+
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId,
+      kitId: "kit_repeat_test",
+      origin: { x: 0, y: 0 },
+      repeat: 5,
+    });
+    expect(result.ok).toBe(true);
+
+    const map = context.project.maps[mapId]!;
+    expect(map.lowerTiles[0]).toBe(421);
+    expect(map.lowerTiles[1]).toBe(421);
+    // 폭 2 킷이 1회만 찍혔다면 x=2 는 원래 타일 그대로다.
+    expect(map.lowerTiles[2]).not.toBe(421);
+  });
+
+  it("repeat 인 킷은 repeat 를 그대로 따른다", () => {
+    const { project, mapId } = projectWithRepeatKit({
+      description: "나무 울타리",
+      placementRules: "마당 둘레",
+      repeatability: "repeat",
+    });
+    const context = { project };
+
+    runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_repeat_test", origin: { x: 0, y: 0 }, repeat: 3,
+    });
+    expect(context.project.maps[mapId]!.lowerTiles[4]).toBe(421);
+  });
+
+  it("ai 가 없으면 기존 동작(section 은 반복)을 유지한다", () => {
+    const { project, mapId } = projectWithRepeatKit(undefined);
+    const context = { project };
+
+    runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_repeat_test", origin: { x: 0, y: 0 }, repeat: 3,
+    });
+    expect(context.project.maps[mapId]!.lowerTiles[4]).toBe(421);
+  });
+});
+
 describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시공한다", () => {
   it("list_structure_kits가 킷의 타일 행렬(기계 표면)을 그대로 돌려준다", () => {
     const { project, mapId } = projectWithKit();
