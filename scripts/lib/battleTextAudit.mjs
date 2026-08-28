@@ -102,6 +102,7 @@ export function auditBattleText(options) {
   };
 
   const nodes = [];
+  let intentionallyHidden = 0;
   const walker = document.createTreeWalker(scene, NodeFilter.SHOW_TEXT);
   for (let text = walker.nextNode(); text; text = walker.nextNode()) {
     const value = (text.nodeValue ?? "").replace(/\s+/g, " ").trim();
@@ -129,6 +130,16 @@ export function auditBattleText(options) {
       alpha *= Number.parseFloat(cs.opacity || "1");
     }
     if (hidden) continue;
+
+    // `font-size: 0` 은 사고로 나오는 값이 아니다 — 글자를 화면에서만 지우고 textContent·
+    // 접긌성 트리는 남기는 새록이다. vxace 는 참조 HUD 가 이름 대심 얼굴로 인물을
+    // 알려준다고 보고 이름을 이 방식으로 숨긴다(_vxace.css:423 의 주석). 그 상자 안에
+    // 중첩된 레뱨은 자기 font-size 로 그려지므로 부모를 토리는 sr-only 로는 바꿀 수 없다.
+    // 의도를 재판하지 않고 건너맜다. 단, 조용히 버리지 않고 숫자로 남긴다.
+    if (Number.parseFloat(getComputedStyle(el).fontSize || "0") === 0) {
+      intentionallyHidden += 1;
+      continue;
+    }
 
     // 에니모이션 진행 중인 노드는 **보이기 함**을 부정하는 프레임을 지나간다. 전투 도입부는
     // 파티 HUD 를 opacity 0→1 로 드러내므로(battle/02-intro-reveal.css), 그 사이를 재면
@@ -303,7 +314,7 @@ export function auditBattleText(options) {
       alpha: Math.round(alpha * colorAlpha * 100) / 100,
     });
   }
-  return { mounted: true, nodes };
+  return { mounted: true, nodes, intentionallyHidden };
 }
 
 /** 국면별 계측 결과를 하나의 판정으로 접는다. 순수 함수 — 브라우저 없이 테스트한다. */

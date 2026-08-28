@@ -109,10 +109,16 @@
 .battle-actor-gauge {
   align-items: center;
   display: flex;
-  /* 게이지 행이 14px 를 쓰면 이름/수치 행이 상자 밖으로 밀린다(실측: 필요 47 / 여유 42).
-     10px 로 줄이면 ATB 바는 그대로 보이고 글자가 들어갈 자리가 생긴다. */
-  max-height: 8px;
   min-width: 0;
+}
+
+/* ATB 라벨/수치는 10px 로 둔다. 게이지 행에 `max-height` 를 걸어 높이를 뺐더니
+   그 안의 **글자가 잘렸다**(실측: .battle-atb-label/-value 가 스킨당 24건씩).
+   높이를 자르는 대신 글자를 작게 해서 행이 자연히 낮아지게 한다. */
+.battle-actor-gauge .battle-atb-label,
+.battle-actor-gauge .battle-atb-value {
+  font-size: 10px;
+  line-height: 1;
 }
 
 .battle-atb-bar {
