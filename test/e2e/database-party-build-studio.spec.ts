@@ -21,11 +21,20 @@ function partyBuildFixture() {
   return { project, actor, klass, skill, equipment };
 }
 
+/** 주인공 탭에 다시 들어오면 뷰가 새로 그려져 섹션이 "기본"으로 돌아간다 —
+ *  결과 미리보기 링크를 누르려면 "결과" 섹션을 다시 열어야 한다. */
+async function openPreviewSection(page: Page): Promise<void> {
+  await page.getByTestId("db-actor-tab-preview").click();
+  await expect(page.getByTestId("db-actor-build-preview")).toBeVisible();
+}
+
 async function openActorBuild(page: Page, actorId: string): Promise<void> {
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-tab-actors").click();
   await page.getByTestId(`db-record-row-${actorId}`).click();
-  await expect(page.getByTestId("db-actor-build-preview")).toBeVisible();
+  // 배우 편집기는 섹션 탭으로 갈렸고 기본은 "기본"(identity) 뿐이다 — actorSection() 이
+  // key !== "identity" 인 패널에 hidden 을 건다. 결과 미리보기는 "결과" 섹션에 있다.
+  await openPreviewSection(page);
 }
 
 test("Party Studio follows exact non-first records and keeps broken references inert", async ({ page }) => {
@@ -54,7 +63,9 @@ test("Party Studio follows exact non-first records and keeps broken references i
   await expect(modal).toHaveAttribute("data-party-build-instance", "same");
 
   await page.getByTestId(`db-class-build-open-actor-${actor.id}`).click();
-  await expect(page.getByTestId(`db-record-row-${actor.id}`)).toHaveAttribute("aria-pressed", "true");
+  // 주인공 목록은 선택 가능한 role=grid 표라 aria-selected 를 쓴다(다른 목록은 aria-pressed).
+  await expect(page.getByTestId(`db-record-row-${actor.id}`)).toHaveAttribute("aria-selected", "true");
+  await openPreviewSection(page);
   await page.getByTestId(`db-actor-build-open-equipment-${equipment.id}`).click();
   await expect(page.getByTestId("db-tab-equipment")).toHaveClass(/active/);
   await expect(page.getByTestId(`db-record-row-${equipment.id}`)).toHaveAttribute("aria-pressed", "true");
@@ -62,6 +73,7 @@ test("Party Studio follows exact non-first records and keeps broken references i
 
   await page.getByTestId("db-tab-actors").click();
   await page.getByTestId(`db-record-row-${actor.id}`).click();
+  await openPreviewSection(page);
   await page.getByTestId(`db-actor-build-open-skill-${skill.id}`).click();
   await expect(page.getByTestId("db-tab-skills")).toHaveClass(/active/);
   await expect(page.getByTestId(`db-record-row-${skill.id}`)).toHaveAttribute("aria-pressed", "true");

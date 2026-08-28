@@ -142,6 +142,28 @@ Evidence expectations:
 - 브라우저 QA 중에 다른 에이전트가 `src/` 를 편집하면 HMR 리로드가 끼어들어
   `ERR_NETWORK_CHANGED` 가 쏟아지고 편집기 부팅이 깨진다. 소스가 조용할 때 브라우저 증거를 잡아라.
 
+### `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+
+- 증상: `page.goto` 는 성공했는데 화면이 **완전 백지**이고 aria 스냅샷이 비어 있다. 콘솔에 앱
+  에러는 없고 `net::ERR_NETWORK_CHANGED` 만 모듈 요청 수십 개에 붙는다. `edit-canvas` 대기가
+  120s 까지 늘려도 실패한다 → "머신이 느리다" / "앱이 깨졌다" 로 오진하기 쉽다.
+- 원인: 크로미움은 OS 네트워크 변경 알림(리눅스 netlink)을 받으면 **진행 중인 요청을 전부 취소**한다.
+  알림이 요청별이 아니라 프로세스 전역이라 `127.0.0.1` dev 서버 접속까지 함께 죽는다. 이 박스에서는
+  **도커 브리지가 오르내리는 것**(`ip -br link` 에 `br-*` 가 `NO-CARRIER` 로 뜬다)이 방아쇠였다.
+  다른 에이전트가 컨테이너를 띄우거나 내리는 동안 e2e 가 돌면 재현된다. HMR 과 무관하게 발생한다.
+- 판별: `ip -br link | grep NO-CARRIER` 로 흔들리는 인터페이스를 확인한다. dev 서버는 정상
+  (`curl` 200)인데 브라우저만 백지면 이쪽이다.
+- 회피 1: `gotoWithRetry`(#154, `test/e2e/oprn-database-helpers.ts`)를 쓴다 — 전송 계층 중단을
+  한 번 재시도한다. 계약은 `test/e2e/goto-retry-network-change.spec.ts` 가 고정한다.
+- 회피 2: 인터페이스가 계속 흔들리는 동안에는 **파이어폭스로 돌린다.** 파이어폭스는 그 알림에
+  반응하지 않는다. 스펙 파일 맨 위에 한 줄이면 된다:
+  `test.use({ browserName: "firefox", viewport: { width: 1600, height: 1000 } });`
+  프로젝트 이름은 그대로 `[chromium]` 으로 찍히지만 실제 엔진은 파이어폭스다 — 로그 라벨을
+  근거로 "크로미움에서 통과했다" 고 보고하지 말 것. 파이어폭스 바이너리가 없으면
+  `npx playwright install firefox` 로 받는다.
+- 실측 사례: DB 사이드바 레일 작업(#160)에서 크로미움으로 두 번 연속 백지가 나 증거를 못 잡았고,
+  파이어폭스로 바꾸자 같은 트리에서 즉시 통과했다. 그 스펙은 지금도 파이어폭스로 돈다.
+
 ## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
 
 - `src/testing/sceneTestRunner.ts` 는 추격(chase) 무버만 시뮬레이션하고 무작위·접근·사용자 지정

@@ -27,7 +27,8 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
   const classNames = new Map(options.project.database.classes.map((record) => [record.id, record.name]));
   const table = el("div", {
     class: "db-list db-actor-studio-table",
-    attrs: { role: "table", "aria-label": "주인공 데이터 표" },
+    // 행을 고를 수 있는 표라서 role=grid 다 — role=table 의 행은 aria-selected 를 갖지 못한다.
+    attrs: { role: "grid", "aria-label": "주인공 데이터 표" },
     children: [
       el("div", {
         class: "db-actor-table-row db-actor-table-header",
@@ -95,7 +96,10 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
   const thumbnail = recordListThumbnail("actors", actor, project, 36);
   return el("button", {
     class: `db-list-row db-actor-table-row${selected ? " active" : ""}`,
-    attrs: { role: "row", type: "button" },
+    // 선택 상태를 CSS 클래스로만 알리면 보조기술이 못 읽는다. 다른 레코드 목록은
+    // databaseRecordViews.ts 에서 aria-pressed 를 세우지만, 여기는 role=row 이므로
+    // 유효한 상태 속성은 aria-selected 다.
+    attrs: { role: "row", type: "button", "aria-selected": String(selected) },
     dataset: { recordId: actor.id, testid: `db-record-row-${actor.id}` },
     children: [
       el("span", {
