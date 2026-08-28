@@ -1,0 +1,1349 @@
+{
+  "port": "9988",
+  "states": {
+    "boot": {
+      "url": "http://127.0.0.1:9988/?freshProject=1&map=map_village_30_100x100",
+      "dock": "glass",
+      "conversation": "empty",
+      "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+      "panel": {
+        "rect": [
+          84,
+          61,
+          520,
+          620
+        ],
+        "display": "flex",
+        "overflow": "hidden/hidden",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "31",
+        "pos": "absolute",
+        "scroll": [
+          518,
+          618,
+          518,
+          618
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾🧰🔬스튜디오🕒내보내기되돌리기글자 크기길이 없어요. 장소를 만들어 길이 이어지게 해 보세요"
+      },
+      "header": {
+        "rect": [
+          85,
+          62,
+          518,
+          73
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "relative",
+        "scroll": [
+          518,
+          72,
+          518,
+          72
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾"
+      },
+      "main": {
+        "rect": [
+          85,
+          143,
+          518,
+          365
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          365,
+          518,
+          365
+        ],
+        "text": "길이 없어요. 장소를 만들어 길이 이어지게 해 보세요.이런 것도 만들 수 있어요길NPC상점상자"
+      },
+      "log": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "auto/auto",
+        "bg": "rgb(238, 241, 244)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/21.7px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "welcome": null,
+      "nextSteps": {
+        "rect": [
+          85,
+          277,
+          518,
+          93
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          93,
+          518,
+          93
+        ],
+        "text": "길이 없어요. 장소를 만들어 길이 이어지게 해 보세요.이런 것도 만들 수 있어요길NPC상점상자"
+      },
+      "commandBar": {
+        "rect": [
+          85,
+          524,
+          518,
+          156
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "1",
+        "pos": "relative",
+        "scroll": [
+          518,
+          156,
+          518,
+          156
+        ],
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "composer": {
+        "rect": [
+          101,
+          536,
+          486,
+          128
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          484,
+          126,
+          484,
+          126
+        ],
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "input": {
+        "rect": [
+          114,
+          547,
+          460,
+          68
+        ],
+        "display": "block",
+        "overflow": "auto/auto",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "15px/24px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          460,
+          68,
+          460,
+          68
+        ],
+        "text": ""
+      },
+      "send": {
+        "rect": [
+          515,
+          623,
+          59,
+          30
+        ],
+        "display": "block",
+        "overflow": "visible/visible",
+        "bg": "rgb(74, 87, 214)",
+        "color": "rgb(255, 255, 255)",
+        "font": "12px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          59,
+          30,
+          59,
+          30
+        ],
+        "text": "↑ 전송"
+      },
+      "chips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기"
+      },
+      "ctxChips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "🗺 이슬 장터 마을"
+      },
+      "queue": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "color(srgb 0.902115 0.91065 0.959477)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "status": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "hidden/hidden",
+        "bg": "rgba(15, 23, 42, 0.04)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/13.2px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "대기"
+      }
+    },
+    "focus": {
+      "url": "http://127.0.0.1:9988/?freshProject=1&map=map_village_30_100x100",
+      "dock": "glass",
+      "conversation": "empty",
+      "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+      "panel": {
+        "rect": [
+          84,
+          61,
+          520,
+          620
+        ],
+        "display": "flex",
+        "overflow": "hidden/hidden",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "31",
+        "pos": "absolute",
+        "scroll": [
+          518,
+          618,
+          518,
+          618
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾🧰🔬스튜디오🕒내보내기되돌리기글자 크기길이 없어요. 장소를 만들어 길이 이어지게 해 보세요"
+      },
+      "header": {
+        "rect": [
+          85,
+          62,
+          518,
+          73
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "relative",
+        "scroll": [
+          518,
+          72,
+          518,
+          72
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾"
+      },
+      "main": {
+        "rect": [
+          85,
+          143,
+          518,
+          365
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          365,
+          518,
+          365
+        ],
+        "text": "길이 없어요. 장소를 만들어 길이 이어지게 해 보세요.이런 것도 만들 수 있어요길NPC상점상자"
+      },
+      "log": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "auto/auto",
+        "bg": "rgb(238, 241, 244)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/21.7px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "welcome": null,
+      "nextSteps": {
+        "rect": [
+          85,
+          277,
+          518,
+          93
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          93,
+          518,
+          93
+        ],
+        "text": "길이 없어요. 장소를 만들어 길이 이어지게 해 보세요.이런 것도 만들 수 있어요길NPC상점상자"
+      },
+      "commandBar": {
+        "rect": [
+          85,
+          524,
+          518,
+          156
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "1",
+        "pos": "relative",
+        "scroll": [
+          518,
+          156,
+          518,
+          156
+        ],
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "composer": {
+        "rect": [
+          101,
+          536,
+          486,
+          128
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          484,
+          126,
+          484,
+          126
+        ],
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "input": {
+        "rect": [
+          114,
+          547,
+          460,
+          68
+        ],
+        "display": "block",
+        "overflow": "auto/auto",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "15px/24px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          460,
+          68,
+          460,
+          68
+        ],
+        "text": ""
+      },
+      "send": {
+        "rect": [
+          515,
+          623,
+          59,
+          30
+        ],
+        "display": "block",
+        "overflow": "visible/visible",
+        "bg": "rgb(74, 87, 214)",
+        "color": "rgb(255, 255, 255)",
+        "font": "12px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          59,
+          30,
+          59,
+          30
+        ],
+        "text": "↑ 전송"
+      },
+      "chips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기"
+      },
+      "ctxChips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "🗺 이슬 장터 마을"
+      },
+      "queue": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "color(srgb 0.902115 0.91065 0.959477)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "status": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "hidden/hidden",
+        "bg": "rgba(15, 23, 42, 0.04)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/13.2px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "대기"
+      }
+    },
+    "typed": {
+      "url": "http://127.0.0.1:9988/?freshProject=1&map=map_village_30_100x100",
+      "dock": "glass",
+      "conversation": "empty",
+      "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+      "panel": {
+        "rect": [
+          84,
+          61,
+          520,
+          620
+        ],
+        "display": "flex",
+        "overflow": "hidden/hidden",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "31",
+        "pos": "absolute",
+        "scroll": [
+          518,
+          618,
+          518,
+          618
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾🧰🔬스튜디오🕒내보내기되돌리기글자 크기조수등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦"
+      },
+      "header": {
+        "rect": [
+          85,
+          62,
+          518,
+          73
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "relative",
+        "scroll": [
+          518,
+          72,
+          518,
+          72
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾"
+      },
+      "main": {
+        "rect": [
+          85,
+          143,
+          518,
+          363
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          363,
+          518,
+          363
+        ],
+        "text": ""
+      },
+      "log": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "auto/auto",
+        "bg": "rgb(238, 241, 244)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/21.7px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "welcome": null,
+      "nextSteps": {
+        "rect": [
+          85,
+          323,
+          518,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "commandBar": {
+        "rect": [
+          85,
+          522,
+          518,
+          158
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "1",
+        "pos": "relative",
+        "scroll": [
+          518,
+          158,
+          518,
+          158
+        ],
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "composer": {
+        "rect": [
+          101,
+          534,
+          486,
+          130
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          484,
+          128,
+          484,
+          128
+        ],
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "input": {
+        "rect": [
+          114,
+          545,
+          460,
+          70
+        ],
+        "display": "block",
+        "overflow": "auto/auto",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "15px/24px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          460,
+          70,
+          460,
+          70
+        ],
+        "text": ""
+      },
+      "send": {
+        "rect": [
+          515,
+          623,
+          59,
+          30
+        ],
+        "display": "block",
+        "overflow": "visible/visible",
+        "bg": "rgb(74, 87, 214)",
+        "color": "rgb(255, 255, 255)",
+        "font": "12px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          59,
+          30,
+          59,
+          30
+        ],
+        "text": "↑ 전송"
+      },
+      "chips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기"
+      },
+      "ctxChips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "🗺 이슬 장터 마을"
+      },
+      "queue": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "color(srgb 0.902115 0.91065 0.959477)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "status": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "hidden/hidden",
+        "bg": "rgba(15, 23, 42, 0.04)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/13.2px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "대기"
+      }
+    },
+    "multiline": {
+      "url": "http://127.0.0.1:9988/?freshProject=1&map=map_village_30_100x100",
+      "dock": "glass",
+      "conversation": "empty",
+      "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+      "panel": {
+        "rect": [
+          84,
+          61,
+          520,
+          620
+        ],
+        "display": "flex",
+        "overflow": "hidden/hidden",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "31",
+        "pos": "absolute",
+        "scroll": [
+          518,
+          618,
+          518,
+          618
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾🧰🔬스튜디오🕒내보내기되돌리기글자 크기조수등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦"
+      },
+      "header": {
+        "rect": [
+          85,
+          62,
+          518,
+          73
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "relative",
+        "scroll": [
+          518,
+          72,
+          518,
+          72
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾"
+      },
+      "main": {
+        "rect": [
+          85,
+          143,
+          518,
+          143
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          143,
+          518,
+          143
+        ],
+        "text": ""
+      },
+      "log": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "auto/auto",
+        "bg": "rgb(238, 241, 244)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/21.7px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "welcome": null,
+      "nextSteps": {
+        "rect": [
+          85,
+          213,
+          518,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "commandBar": {
+        "rect": [
+          85,
+          302,
+          518,
+          378
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "1",
+        "pos": "relative",
+        "scroll": [
+          518,
+          378,
+          518,
+          378
+        ],
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "composer": {
+        "rect": [
+          101,
+          314,
+          486,
+          350
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          484,
+          348,
+          484,
+          348
+        ],
+        "text": "☰🗺 이슬 장터 마을대기Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "input": {
+        "rect": [
+          114,
+          325,
+          460,
+          290
+        ],
+        "display": "block",
+        "overflow": "auto/auto",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "15px/24px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          460,
+          290,
+          460,
+          290
+        ],
+        "text": ""
+      },
+      "send": {
+        "rect": [
+          515,
+          623,
+          59,
+          30
+        ],
+        "display": "block",
+        "overflow": "visible/visible",
+        "bg": "rgb(74, 87, 214)",
+        "color": "rgb(255, 255, 255)",
+        "font": "12px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          59,
+          30,
+          59,
+          30
+        ],
+        "text": "↑ 전송"
+      },
+      "chips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기"
+      },
+      "ctxChips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "🗺 이슬 장터 마을"
+      },
+      "queue": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "color(srgb 0.902115 0.91065 0.959477)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "status": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "hidden/hidden",
+        "bg": "rgba(15, 23, 42, 0.04)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/13.2px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "대기"
+      }
+    },
+    "afterSend": {
+      "url": "http://127.0.0.1:9988/?freshProject=1&map=map_village_30_100x100",
+      "dock": "glass",
+      "conversation": "active",
+      "panelClass": "ai-chat-panel chat-dock-glass",
+      "panel": {
+        "rect": [
+          84,
+          61,
+          520,
+          620
+        ],
+        "display": "flex",
+        "overflow": "hidden/hidden",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "31",
+        "pos": "absolute",
+        "scroll": [
+          518,
+          618,
+          518,
+          618
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾🧰🔬스튜디오🕒내보내기되돌리기글자 크기2026년 8월 28일 금@>테스트 지시@>오류: 요"
+      },
+      "header": {
+        "rect": [
+          85,
+          62,
+          518,
+          73
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "relative",
+        "scroll": [
+          518,
+          72,
+          518,
+          72
+        ],
+        "text": "조수이 맵에 무엇을 둘까요＋오른쪽↗☰대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기작업되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기▾"
+      },
+      "main": {
+        "rect": [
+          85,
+          143,
+          518,
+          363
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          518,
+          363,
+          518,
+          363
+        ],
+        "text": "2026년 8월 28일 금@>테스트 지시@>오류: 요청 실패(404).재시도 — 같은 문맥에서 1회 재시도설정 열기"
+      },
+      "log": {
+        "rect": [
+          101,
+          167,
+          486,
+          254
+        ],
+        "display": "flex",
+        "overflow": "auto/auto",
+        "bg": "rgb(238, 241, 244)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/21.7px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          484,
+          252,
+          484,
+          252
+        ],
+        "text": "2026년 8월 28일 금@>테스트 지시@>오류: 요청 실패(404).재시도 — 같은 문맥에서 1회 재시도설정 열기"
+      },
+      "welcome": null,
+      "nextSteps": {
+        "rect": [
+          85,
+          155,
+          518,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "commandBar": {
+        "rect": [
+          85,
+          522,
+          518,
+          158
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "1",
+        "pos": "relative",
+        "scroll": [
+          518,
+          158,
+          518,
+          158
+        ],
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기대기 화면✦ 추천 함께 보기◫ 조수만 보기⌨ 입력창만 보기되돌리기내보내기오른쪽전체 기록툴 브라우저🎓 맵 인터뷰📐 선택 여역 학습✍️ 시연으로 가르치기☰🗺 이슬 장터 마을오류Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "composer": {
+        "rect": [
+          101,
+          534,
+          486,
+          130
+        ],
+        "display": "grid",
+        "overflow": "visible/visible",
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          484,
+          128,
+          484,
+          128
+        ],
+        "text": "☰🗺 이슬 장터 마을오류Enter 전송 · Shift+Enter 줄바꿈↑ 전송중단"
+      },
+      "input": {
+        "rect": [
+          114,
+          545,
+          460,
+          70
+        ],
+        "display": "block",
+        "overflow": "auto/auto",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "15px/24px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          460,
+          70,
+          460,
+          70
+        ],
+        "text": ""
+      },
+      "send": {
+        "rect": [
+          515,
+          623,
+          59,
+          30
+        ],
+        "display": "block",
+        "overflow": "visible/visible",
+        "bg": "rgb(74, 87, 214)",
+        "color": "rgb(255, 255, 255)",
+        "font": "12px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          59,
+          30,
+          59,
+          30
+        ],
+        "text": "↑ 전송"
+      },
+      "chips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "flex",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "등장인물 만들기퀘스트 만들기장소 만들기"
+      },
+      "ctxChips": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(15, 23, 42)",
+        "font": "14px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": "🗺 이슬 장터 마을"
+      },
+      "queue": {
+        "rect": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display": "none",
+        "overflow": "visible/visible",
+        "bg": "color(srgb 0.902115 0.91065 0.959477)",
+        "color": "rgb(71, 85, 105)",
+        "font": "11px/normal",
+        "z": "auto",
+        "pos": "static",
+        "scroll": null,
+        "text": ""
+      },
+      "status": {
+        "rect": [
+          473,
+          628,
+          34,
+          19
+        ],
+        "display": "block",
+        "overflow": "hidden/hidden",
+        "bg": "rgba(198, 64, 61, 0.13)",
+        "color": "rgb(198, 64, 61)",
+        "font": "11px/13.2px",
+        "z": "auto",
+        "pos": "static",
+        "scroll": [
+          32,
+          17,
+          32,
+          17
+        ],
+        "text": "오류"
+      }
+    }
+  },
+  "bodyText": "조수\n\n이 맵에 무엇을 둘까요\n\n☰\n▾\n2026년 8월 28일 금\n@>\n테스트 지시\n@>\n\n오류: 요청 실패(404).\n\n재시도 — 같은 문맥에서 1회 재시도설정 열기\n오류\n↑ 전송",
+  "consoleErrors": [
+    "[warning] [.WebGL-0x2214017d8400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x2214017d8400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x2214017d8400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x2214017d8400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}
