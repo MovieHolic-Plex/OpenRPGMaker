@@ -57,10 +57,14 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   이기므로 재생 목업에서만 겹침이 남았다. 지금은 공용 `.event-command-face-crop` 한 곳만 배경을
   소유하고, 목업 규칙은 테두리만 다룬다.
 - 배경과 `<img>` 를 같은 크기로 맞추는 것으로는 부족하다. nearest-neighbour 래스터화 결과가
-  미묘하게 달라 배경이 테두리에서 1px 새어나온다(실측 8픽셀). 반드시 `:has()` 가드로 막는다.
+  미묘하게 달라 배경이 테두리에서 1px 새어나온다. 반드시 `:has()` 가드로 막는다.
 - 통짜 모드(흉상/전신) 감지는 `facesetPreview.faceDisplayModeOf()` 하나만 쓴다.
   `commandPreview.faceStage` 가 정규식으로 모드를 다시 판정하던 사본은 `…/bust` `…/full`
-  접미사에서 폼과 엇갈렸다.
+  접미사를 `chip` 으로 떨어뜨렸다. 지금은 미리보기가 폼과 런타임(`player/dialogue.ts`)에
+  맞는다. 현재 저장소에 그 접미사를 쓰는 id 는 없어 잠재 결함이었다.
+- 전신 프리셋(`generated-face-actor1-full`)은 `actor1-bust.png` 를 공유한다
+  (`generatedAssetResourceResolver` 의 기존 관례). 그림은 흉상, 다른 것은 레이아웃뿐이므로
+  폼 문구가 "통짜 전신 이미지"라고 말하지 않게 고쳤다.
 - 표시 옵션 줄(`.event-command-face-options`)은 필드 수만큼만 열을 만들어야 한다. 얼굴 칸 번호
   컨트롤이 삭제된 뒤에도 3열 선언이 남아 오른쪽에 죽은 열이 있었다.
 - 미리보기 대화창(`.ecp-message-window`)은 반투명 유리를 불투명 밑판 **위에** 올린다. 순서가

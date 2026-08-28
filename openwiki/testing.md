@@ -123,7 +123,7 @@ Evidence expectations:
 
 ## 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
 
-- 게이트: `npx playwright test test/e2e/event-face-command-visual.spec.ts` (+ `npm run gates:css`).
+- 게이트: `npx playwright test test/e2e/event-face-command-visual.spec.ts` (+ `npm run gates:css` 의 graph 검사 — 고아 CSS 0건. 예산 래칫의 `important` 초과는 main 에 이미 있는 빚이다).
 - 이 스펙이 잡는 것은 **얼굴이 두 장 겹쳐 보이는** 회귀다. `facesetPreview.faceImage()` 는
   얼굴 상자에 `--face-url` CSS 배경(로드 실패 폴백)을 깔고 그 안에 실제 `<img>` 를 넣는다.
   두 규칙(`<img>` 절대 배치 + 배경 끄기)을 담고 있던
@@ -133,7 +133,7 @@ Evidence expectations:
 - 계약 3줄: (1) `<img>` 가 있으면 상자의 computed `background-image` 는 `none`,
   (2) `<img>` 는 `position:absolute` 로 상자 내부를 정확히 채운다, (3) `<img>` 를 떼면
   배경 폴백이 되살아난다. 배경/`<img>` 를 **같은 크기로 맞추는 것만으로는 부족하다** —
-  nearest-neighbour 래스터화 결과가 미묘하게 달라 배경이 테두리에서 1px 새어나온다(실측 8픽셀).
+  nearest-neighbour 래스터화 결과가 미묘하게 달라 배경이 테두리에서 1px 새어나온다.
 - 대비는 computed 색이 아니라 **렌더된 픽셀**로 본다. `.ecp-message-window` 가 불투명
   `--bg-surface` 층을 어두운 유리 색 위에 깔고 있던 동안 computed 대비는 17.8:1 로
   보였지만 실제 페인트는 #FFF6E2 on #F7F8F8 = **1.0:1** 이었다.
