@@ -220,6 +220,11 @@ export class FakeElement extends FakeNode {
     this.listeners[type] = listeners.filter((candidate) => candidate !== listener);
   }
 
+  /** 테스트 편의: 이 요소에 해당 종류의 리스너가 붙었는지. */
+  hasListener(type: string): boolean {
+    return (this.listeners[type]?.length ?? 0) > 0;
+  }
+
 
   dispatchEvent(event: Event): boolean {
     if (event.target === null) Object.defineProperty(event, "target", { configurable: true, value: this });

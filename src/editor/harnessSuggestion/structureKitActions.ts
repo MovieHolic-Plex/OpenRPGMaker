@@ -55,3 +55,15 @@ export function deleteStructureKit(tilesetId: TilesetId, kitId: string): void {
     tileset.structureKits = tileset.structureKits.filter((kit) => kit.id !== kitId);
   });
 }
+
+/** DB 편집기: 킷을 통째로 갈아끼운다. 없는 id 면 아무것도 하지 않는다(유령 킷 생성 방지). */
+export function replaceStructureKit(tilesetId: TilesetId, kit: StructureKitDef): void {
+  store.update((project) => {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset?.structureKits) return;
+    if (!tileset.structureKits.some((candidate) => candidate.id === kit.id)) return;
+    tileset.structureKits = tileset.structureKits.map((candidate) =>
+      candidate.id === kit.id ? structuredClone(kit) : candidate,
+    );
+  });
+}
