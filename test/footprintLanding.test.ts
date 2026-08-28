@@ -75,6 +75,32 @@ describe("다중 타일 착지", () => {
     expect(Math.max(Math.abs(landed.x - 8), Math.abs(landed.y - 8))).toBe(1);
   });
 
+  it("같은 거리에 여러 칸이 비면 링 순서가 승자를 정한다 — 열 교대 순서를 고정한다", () => {
+    // 링 순서 계약을 고정하는 테스트다. 반경 1 링의 실제 방출 순서는 열 단위 교대인
+    // (7,7) (7,9) (8,7) (8,9) (9,7) (9,9) (7,8) (9,8) 이고, 행 우선이라면
+    // (7,7) (8,7) (9,7) (7,9) ... 가 된다. 두 순서가 갈리는 건 두 번째 자리다.
+    //
+    // 그래서 (8,8) 자신과 첫 후보 (7,7) 만 막고 (7,9) 와 (8,7) 은 둘 다 열어 둔다.
+    // 열 교대면 (7,9) 가, 행 우선이면 (8,7) 이 이긴다. 거리만 보는 단정은 둘을
+    // 구분하지 못하므로 칸을 직접 못박는다.
+    const { project, map } = scene();
+    const fp = { width: 2, height: 2 };
+    setLower(map, 9, 8, TILE.WALL); // (8,8) 자신의 발자국 (8,7)(9,7)(8,8)(9,8) 을 깬다
+    setLower(map, 7, 6, TILE.WALL); // 첫 후보 (7,7) 의 발자국 (7,6)(8,6)(7,7)(8,7) 을 깬다
+
+    const landed = land(project, map, [], 8, 8, fp);
+
+    expect(landed).toEqual({ x: 7, y: 9 });
+    // 승자가 실제로 유효해야 한다 — 순서만 맞고 자리가 안 맞으면 의미가 없다.
+    for (const cell of footprintCells(landed.x, landed.y, fp)) {
+      expect(isPassable(project, map, cell.x, cell.y), `(${cell.x},${cell.y})`).toBe(true);
+    }
+    // 행 우선이면 이겼을 칸도 실제로 비어 있어야 이 테스트가 순서를 구분한다.
+    for (const cell of footprintCells(8, 7, fp)) {
+      expect(isPassable(project, map, cell.x, cell.y), `행 우선 후보 (${cell.x},${cell.y})`).toBe(true);
+    }
+  });
+
   it("맵 경계를 넘으면 안쪽으로 밀린다", () => {
     const { project, map } = scene();
     // (0,0) 3x3 의 발자국은 x -1..1 / y -2..0 이라 경계를 벗어난다.
@@ -112,11 +138,9 @@ describe("다중 타일 착지", () => {
     expect(land(project, map, [], 8, 8, { width: 3, height: 3 }, 2)).toEqual({ x: 8, y: 8 });
   });
 
-  it("탐색은 결정적이다 — 같은 입력이면 같은 칸이 나온다", () => {
-    const { project, map } = scene();
-    setLower(map, 9, 7, TILE.WALL);
-    const first = land(project, map, [], 8, 8, { width: 2, height: 2 });
-    const second = land(project, map, [], 8, 8, { width: 2, height: 2 });
-    expect(second).toEqual(first);
-  });
+  // 원래 여기 "탐색은 결정적이다 — 같은 입력이면 같은 칸이 나온다" 테스트가 있었다.
+  // 같은 인자로 두 번 부르고 결과를 비교하는 형태였는데, 무작위성도 불안정한 순회도
+  // 없는 순수 함수에서는 필연적으로 참이라 링 순서가 틀린 구현도 통과했다. 실제로
+  // 지켜야 할 계약은 "여러 칸이 동순위일 때 어느 칸이 이기는가" 이고, 위의 동순위
+  // 테스트가 그걸 못박으므로 이 테스트는 그쪽으로 대체했다.
 });
