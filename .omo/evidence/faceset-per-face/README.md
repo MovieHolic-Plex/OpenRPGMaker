@@ -15,18 +15,26 @@ PR #137 이후 사용자 신고: "페이스셋 설정한게 실제 반영이 전
 |---|---|
 | `EV-resource-manager-per-face.png` | 수정 후 리소스 관리자: "Actor1 얼굴 1…16" 낱장 항목 (112장, 48px 초과 0장) |
 | `U1-after-upload.png` | 192×192 Actor2.png 업로드 직후 리소스 관리자 |
-| `U2-uploaded-16-entries.png` | 업로드로 생긴 낱장 항목 — "Actor2 얼굴 11..16", 겁각 **48x48px** 표기 · 칸마다 다른 썰네일 |
+| `U2-uploaded-16-entries.png` | 업로드로 생긴 낱장 항목 — "Actor2 얼굴 11..16", 각각 **48x48px** 표기 · 칸마다 다른 썸네일 |
 | `upload-log.txt` | C1 업로드 분할 로그: 낱장 16개, dataUrl 16종(진짜 절단), 시트 자산 0 |
 | `P1-picker-open.png` | DB 액터 얼굴 피커: 낱장 목록, 4×4 격자 없음, 인덱스 입력 없음 |
-| `runtime-log.txt` | C4 런타임: 상태 메뉴가 `assets/easyrpg/faceset/Actor1/07.png` 를 background-position 0% 0% 로 그림 |
+| `runtime-log.txt` | C4 런타임(1차, `-07`): 상태 메뉴가 `assets/easyrpg/faceset/Actor1/07.png` 를 background-position 0% 0% 로 그림 |
+| `F1-picker.png` | C3 최종 코드로 다시 연 피커 — 옵션 113개(낱장 112 + 미지정), 전부 48×48 |
+| `final-log.txt` | C3+C5 로그: 피커에서 `-03` 선택 → Supabase 저장 → project id 로 재로드 후에도 유지 |
+| `R1-runtime-status.png` | C4 플레이 모드 상태 메뉴 스크린샷 |
+| `runtime-final-log.txt` | C4 최종 로그: `easyrpg/faceset/Actor1/03.png` · natural **48x48** · 이미지 요청 실패 0 |
 
 ## 실측 수치
 
 - 리소스 관리자 얼굴 목록: 112 항목 / 전부 48×48 / 48px 초과 0
 - 업로드 분할: 16 자산 (`…-00`..`-15`), 전부 48×48, **distinctDataUrls 16** (칸마다 다른 픽셀)
-- 실제 Supabase 프로젝트 `rpg-zzu-house-template-gallery`: faceset 프로필 112, 시트 프로필 0,
-  `actor_hero.faceResourceId = easyrpg-faceset-actor1-07`, 저장본 내 `faceIndex` 0건
-- 런타임 상태 메뉴: `background-size: 22px 22px`, `background-position: 0% 0%` — 잘라내기 오프셋 없음
+- 피커(최종 코드): 옵션 113 / 이미지 112장 전부 48×48 / 48px 초과 0 /
+  `hasIndexControl: false` / `hasGridControl: 0` — 시트 격자도, 칸 번호 입력도 없다
+- 실제 Supabase 프로젝트 `rpg-zzu-house-template-gallery`: 피커에서 `easyrpg-faceset-actor1-03`
+  배치 → 원격 저장 → **project id 로 재로드 후에도 유지**. faceset 프로필 112, 시트 프로필 0,
+  저장본 내 `faceIndex` 0건
+- 런타임 상태 메뉴: `assets/easyrpg/faceset/Actor1/03.png` · **natural 48x48**(192×192 격자가 아니다) ·
+  `background-size: 22px 22px` · `background-position: 0% 0%` — 잘라내기 오프셋 없음 · 이미지 요청 실패 0
 
 ## 주의 (같은 실수 반복 방지)
 

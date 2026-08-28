@@ -1,0 +1,8 @@
+C5 project id: rpg-zzu-house-template-gallery
+BEFORE: {"projectId":"rpg-zzu-house-template-gallery","actorFace":"easyrpg-faceset-actor1-00","faceProfiles":112,"sheetProfiles":0,"faceIndexHits":0}
+C3 picker: {"optionCount":113,"naturalSizes":{"48x48":112},"over48":0,"hasIndexControl":false,"hasGridControl":0}
+C3 picked: easyrpg-faceset-actor1-03 -> {"projectId":"rpg-zzu-house-template-gallery","actorFace":"easyrpg-faceset-actor1-03","faceProfiles":112,"sheetProfiles":0,"faceIndexHits":0}
+C5 saved; reloading by project id...
+C5 AFTER RELOAD: {"projectId":"rpg-zzu-house-template-gallery","actorFace":"easyrpg-faceset-actor1-03","faceProfiles":112,"sheetProfiles":0,"faceIndexHits":0}
+C5 PASS: 낱장 얼굴이 재로드 후에도 유지됨
+C4 runtime faces: []
