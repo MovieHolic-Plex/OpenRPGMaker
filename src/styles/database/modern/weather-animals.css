@@ -239,7 +239,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-chip-mono {
-  font-family: "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-chip-bad {
