@@ -59,6 +59,77 @@ export function validateCommands(commands: readonly Command[], context: Referenc
   for (const command of commands) validateCommandReferences(command, context);
 }
 
+/** 이벤트 명령 트리에서 아이템 참조를 모은다. 검증과 같은 중첩 분기 구조를 순회한다. */
+export function collectCommandItemReferenceIds(commands: readonly Command[], ids: Set<string>): void {
+  for (const command of commands) collectCommandItemReferences(command, ids);
+}
+
+function collectCommandItemReferences(command: Command, ids: Set<string>): void {
+  switch (command.kind) {
+    case "changeItem":
+      ids.add(command.itemId);
+      return;
+    case "equipTool":
+      if (command.itemId) ids.add(command.itemId);
+      return;
+    case "shop":
+      for (const itemId of command.itemIds) ids.add(itemId);
+      for (const stock of command.stock ?? []) ids.add(stock.itemId);
+      for (const entry of command.buyback ?? []) ids.add(entry.itemId);
+      for (const line of command.cartLines ?? []) ids.add(line.itemId);
+      for (const consignment of command.consignments ?? []) ids.add(consignment.itemId);
+      for (const ticket of command.pawnTickets ?? []) ids.add(ticket.itemId);
+      for (const itemId of command.appraisalUnidentifiedPool ?? []) ids.add(itemId);
+      collectCommandItemReferenceIds(command.transactionBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.failedTransactionBranch ?? [], ids);
+      return;
+    case "choices":
+      for (const option of command.options) collectCommandItemReferenceIds(option.branch, ids);
+      collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
+      return;
+    case "fork":
+      collectConditionItemReferenceIds(command.condition, ids);
+      collectCommandItemReferenceIds(command.then, ids);
+      collectCommandItemReferenceIds(command.else ?? [], ids);
+      return;
+    case "loop":
+      collectCommandItemReferenceIds(command.body, ids);
+      return;
+    case "battleProcessing":
+      collectCommandItemReferenceIds(command.victoryBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.defeatBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.escapeBranch ?? [], ids);
+      return;
+    case "promoteActor":
+    case "evolveMonster":
+      collectCommandItemReferenceIds(command.successBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.failureBranch ?? [], ids);
+      return;
+    case "inn":
+      collectCommandItemReferenceIds(command.notEnoughBranch ?? [], ids);
+      return;
+    default:
+      return;
+  }
+}
+
+export function collectConditionItemReferenceIds(condition: Condition | BattleEventCondition, ids: Set<string>): void {
+  switch (condition.kind) {
+    case "item":
+      ids.add(condition.itemId);
+      return;
+    case "all":
+    case "any":
+      for (const child of condition.conditions) collectConditionItemReferenceIds(child, ids);
+      return;
+    case "not":
+      collectConditionItemReferenceIds(condition.condition, ids);
+      return;
+    default:
+      return;
+  }
+}
+
 function validateCommandReferences(command: Command, context: ReferenceContext): void {
   switch (command.kind) {
     case "text":
