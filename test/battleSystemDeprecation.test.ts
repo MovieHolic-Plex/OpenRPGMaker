@@ -128,18 +128,19 @@ describe("action combat deprecation", () => {
 
 describe("shipped project battle skin authoring", () => {
   it("출하 프로젝트 팩터리는 지원 중인 배틀 스킨만 저작한다", async () => {
-    const { Module } = await import("node:module");
     const defaults = await import("@/project/defaults");
-    const villageShoppingStreet = await import("@/editor/content/villageShoppingStreetBuild");
     const { createSkyStairProject } = await import("@/editor/content/skyStairGame");
     // Covered: createBlankProject, createDbExtractedHouseTemplateProject, createFarmingDemoProject,
     // createHouseTemplateGalleryProject, createLogCabinShowcaseProject, createMarketTownProject,
-    // createVillageShoppingStreetProject, createRetroHouseShowcaseProject, createSampleAdventureProject,
+    // createRetroHouseShowcaseProject, createSampleAdventureProject,
     // createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSnowMountain60Project,
     // createIcePlain64Project, createTrainingExamplesProject, createShopShowcaseProject,
     // createSmallHouseVariantProject, createTownArchitectureCityProject, createTownArchitectureTestProject,
     // createTownCityShowcaseProject, createTownHouseShowcaseProject, createModernNocturneProject,
     // createSkyStairProject. Factories requiring arguments or network/Supabase access are intentionally skipped.
+    // createVillageShoppingStreetProject 는 제외한다 — defaultProject.ts:198 의 순환 차단용 CJS
+    // require("@/...") 가 vitest 에서 vite alias 를 못 풀어서, 포함하려면 Module.prototype.require
+    // 를 몽키패치해야 한다. 그 팩터리는 battleUiStyle 을 저작하지 않으므로 이 가드의 대상이 아니다.
     const factories = [
       ["createBlankProject", defaults.createBlankProject],
       ["createDbExtractedHouseTemplateProject", defaults.createDbExtractedHouseTemplateProject],
@@ -147,7 +148,6 @@ describe("shipped project battle skin authoring", () => {
       ["createHouseTemplateGalleryProject", defaults.createHouseTemplateGalleryProject],
       ["createLogCabinShowcaseProject", defaults.createLogCabinShowcaseProject],
       ["createMarketTownProject", defaults.createMarketTownProject],
-      ["createVillageShoppingStreetProject", defaults.createVillageShoppingStreetProject],
       ["createRetroHouseShowcaseProject", defaults.createRetroHouseShowcaseProject],
       ["createSampleAdventureProject", defaults.createSampleAdventureProject],
       ["createScarloxyDemoProject", defaults.createScarloxyDemoProject],
@@ -165,22 +165,13 @@ describe("shipped project battle skin authoring", () => {
       ["createSkyStairProject", createSkyStairProject],
     ] as const;
 
-    const originalRequire = Module.prototype.require;
-    Module.prototype.require = function requireWithViteAlias(id: string): unknown {
-      if (id === "@/editor/content/villageShoppingStreetBuild") return villageShoppingStreet;
-      return originalRequire.call(this, id);
-    };
-    try {
-      for (const [name, factory] of factories) {
-        const project = factory();
-        const skinId = project.system.battleUiStyle;
-        expect(
-          skinId === undefined || !isDeprecatedBattleSkin(resolveSkinId(skinId)),
-          `${name} authors deprecated battle skin ${skinId}`,
-        ).toBe(true);
-      }
-    } finally {
-      Module.prototype.require = originalRequire;
+    for (const [name, factory] of factories) {
+      const project = factory();
+      const skinId = project.system.battleUiStyle;
+      expect(
+        skinId === undefined || !isDeprecatedBattleSkin(resolveSkinId(skinId)),
+        `${name} authors deprecated battle skin ${skinId}`,
+      ).toBe(true);
     }
   }, 30_000);
 });
