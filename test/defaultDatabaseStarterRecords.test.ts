@@ -73,6 +73,8 @@ describe("default database starter records", () => {
         "skill_item_poison_vial",
         "skill_item_antidote",
         "skill_item_guard",
+        "skill_item_holy_water",
+        "skill_item_thunder_stone",
       ])
     );
   });

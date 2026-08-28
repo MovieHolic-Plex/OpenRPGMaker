@@ -296,9 +296,9 @@ export function createFarmingDemoProject(): Project {
     },
     placeables: farmMineRockPlaceables(),
   };
-  // 기본 CC0 카탈로그에 이미 item_hoe / item_watering_can / item_potato / item_tomato 가 있다.
-  // push 로 뒤에 덧붙이면 모든 조회가 쓰는 `items.find` 가 farmTool 없는 옛 레코드를 먼저 집어
-  // 손에 든 괭이가 도구 판정을 통과하지 못한다. 그래서 같은 id 는 교체(upsert)한다.
+  // 기본 CC0 카탈로그에 이미 세 도구와 주요 수확물이 있고, 세 도구 모두 farmTool까지 갖춘다.
+  // 아래 도구 행은 데모 인벤토리와 가격을 한곳에서 명시하려는 중복 저작이다. push 대신 교체(upsert)해
+  // 같은 id가 둘 생기거나 데모 전용 값이 기본 카탈로그보다 뒤에서 무시되지 않도록 한다.
   /**
    * **수확물 가격은 씨앗값의 2배를 넘어야 한다.** 상점 매도가는 정가의 절반이므로
    * (`playSceneShopDom.ts` 의 `floor(price/2)`), 정가가 씨앗값의 정확히 2배면 순이익이 0 이다.
@@ -310,7 +310,6 @@ export function createFarmingDemoProject(): Project {
   upsertDemoItems(project, [
     { id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" },
     { id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" },
-    // 카탈로그의 item_pickaxe 는 farmTool 이 비어 있어 도구 판정을 통과하지 못한다 — 여기서 붙인다.
     { id: "item_pickaxe", name: "곡괭이", scope: "none", price: 100, type: "normalGoods", farmTool: "pickaxe" },
     // 광산 산출물. 파는 곳이 없으면 채굴이 인벤토리만 채우고 끝나므로 씨앗 상인이 사들인다.
     { id: "item_stone", name: "돌", scope: "none", price: 30, type: "normalGoods", iconResourceId: "cc0-jetrel-earth-ore", imageResourceId: "cc0-jetrel-earth-ore" },
