@@ -453,7 +453,12 @@ export async function enterMode(mode: Mode): Promise<void> {
   } else {
     const { renderPlayer } = await import("@/player/player");
     if (run !== modeRun) return;
-    renderPlayer(elements.main, { diagnosticSink: editorPlayBootDiagnosticSink });
+    // Editor play mode is an authoring surface, not the shipped export player: QA
+    // instrumentation stays on so debug hooks/state mirrors remain available here.
+    renderPlayer(elements.main, {
+      qaInstrumentation: true,
+      diagnosticSink: editorPlayBootDiagnosticSink,
+    });
   }
   modeMounted = true;
 

@@ -124,6 +124,26 @@ export class RuntimeDomOverlay {
       : this.playResolution;
   }
 
+  /** True only under an explicit export-QA boot capability. Never true for a shipped player. */
+  get instrumented(): boolean {
+    return this.qaInstrumentation;
+  }
+
+  /**
+   * Visible runtime HUD only (timer + calendar). This is the production path: it must not
+   * depend on the debug snapshot, which exists solely for QA instrumentation.
+   */
+  syncVisibleHud(state: {
+    readonly timers: Record<string, number>;
+    readonly timerActive: Record<string, boolean>;
+    readonly gameTime?: GameTime;
+    readonly timePhase?: TimePhase;
+    readonly lifeCalendarHudLines?: readonly string[];
+  }): void {
+    this.syncTimerHud(state.timers, state.timerActive);
+    this.syncTimeHud(state.gameTime, state.timePhase, state.lifeCalendarHudLines);
+  }
+
   /** Refresh cached logical bounds after an explicit play-surface resize signal. */
   signalResize(): void {
     if (!this.qaInstrumentation) return;
@@ -257,6 +277,13 @@ export class RuntimeDomOverlay {
   syncRuntimeState(snapshot: RuntimeStateSnapshot): void {
     const host = this.host();
     if (!host) return;
+    // The hidden JSON mirror is QA instrumentation, not player-visible UI. A shipped player
+    // must not create the node or serialize session state; visible HUD sync still runs.
+    if (!this.qaInstrumentation) {
+      this.syncTimerHud(snapshot.timers, snapshot.timerActive);
+      this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
+      return;
+    }
     const existing = host.querySelector("[data-testid='runtime-state-json']");
     const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
     if (!existing) {
@@ -272,6 +299,8 @@ export class RuntimeDomOverlay {
   syncAudioState(audio: AudioCommandState): void {
     const host = this.host();
     if (!host) return;
+    // QA-only mirror; audio playback itself is owned by the audio engine.
+    if (!this.qaInstrumentation) return;
     const existing = host.querySelector("[data-testid='audio-state-json']");
     const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
     if (!existing) {

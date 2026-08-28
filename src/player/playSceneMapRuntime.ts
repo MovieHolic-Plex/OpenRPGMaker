@@ -386,6 +386,21 @@ export function activeRuntimeEvents(
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
   const project = store.getCurrent();
+  // Production boundary: the broad debug snapshot (all runtime event views, session records,
+  // mover snapshots) exists only for QA instrumentation. A shipped player syncs the visible
+  // HUD and picture layer directly and never builds or serializes that payload.
+  if (!scene.runtimeDom.instrumented) {
+    const timed = resolveTimeSystem(project);
+    scene.runtimeDom.syncVisibleHud({
+      timers: scene.session.timers,
+      timerActive: runtimeTimerActivity(scene.runtimeTimers),
+      gameTime: timed ? scene.session.gameTime : undefined,
+      timePhase: timed ? timePhaseFor(scene.session.gameTime) : undefined,
+      lifeCalendarHudLines: timed ? lifeCalendarHudLines(project, scene.session) : undefined,
+    });
+    scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+    return;
+  }
   const events: Record<string, RuntimeEventSnapshot> = {};
   for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
     events[view.event.id] = {

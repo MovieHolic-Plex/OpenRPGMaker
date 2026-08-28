@@ -174,14 +174,13 @@ export function installPlaySceneTestHooks(
       // 맵 전환 비트가 세션 값만 보고 통과하고 있었다).
       const previousMapId = context.getMapId?.();
       applyAndSync({ kind: "teleport", mapId, x, y });
+      // Exactly one load per changed map. A merge of two independent fixes left this branch
+      // duplicated, which loaded the destination twice and weakened QA evidence.
       if (typeof context.loadMap === "function" && previousMapId !== mapId) {
         context.loadMap(mapId);
       }
       context.tileX = x;
       context.tileY = y;
-      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
-        context.loadMap(mapId);
-      }
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);

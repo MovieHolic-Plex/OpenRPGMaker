@@ -246,7 +246,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // Phaser keyboard 매니저에 도달하지 않아 실제 키보드 입력이 잡히지 않는다.
     // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
     // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 쓰이지 않는다.
-    installPlaySceneTestHooks(this, this.input_, () => this.session, () => this.syncRuntimeState());
+    // Debug/mutation globals are QA instrumentation. A normal export boot installs none of
+    // them; the runtime QA harness opts in through the boot config capability.
+    if (qaInstrumentation) {
+      installPlaySceneTestHooks(this, this.input_, () => this.session, () => this.syncRuntimeState());
+    }
     // 세이브 로드로 진입한 세션이면 저장된 BGM/BGS 를 재개(원샷은 복원 안 함).
     resumeAudioState(this.session.audio, project);
     // 새 게임(저장된 BGM 없음)이면 시작 맵의 BGM 으로 시작한다 — 이게 없으면 게임이 무음으로 켜진다.
