@@ -457,3 +457,43 @@
 .oprn-icon-close::after {
   transform: rotate(-45deg);
 }
+
+/* 맵 트리 헤더 — 전체 펼치기/접기. mapList.ts 가 요구하지만 시트 어디에도 정의가 없어
+   빈 버튼이었다. 갈매기(셰브런) 한 개를 16x16 중심(8,8)에 맞춰 그린다. */
+.oprn-icon-tree-open::after,
+.oprn-icon-tree-closed::after {
+  border-bottom: 2px solid var(--text-2);
+  border-right: 2px solid var(--text-2);
+  height: 6px;
+  left: 5px;
+  top: 5px;
+  width: 6px;
+}
+
+/* 펼침 = 아래를 향한 갈매기, 접힘 = 오른쪽을 향한 갈매기. */
+.oprn-icon-tree-open::after {
+  transform: rotate(45deg);
+}
+
+.oprn-icon-tree-closed::after {
+  transform: rotate(-45deg);
+}
+
+/* 맵 분류 폴더. 리소스 매니저 전용 시트(map/resource-system.part-2.css)의
+   .oprn-icon-folder 는 그쪽이 계속 쓰므로 그대로 두고, 맵 패널 쪽 의존만 여기로 끊는다. */
+.oprn-icon-map-folder::before {
+  border: 1px solid var(--text-2);
+  border-radius: 1px;
+  height: 8px;
+  left: 1px;
+  top: 5px;
+  width: 14px;
+}
+
+.oprn-icon-map-folder::after {
+  background: var(--text-2);
+  height: 2px;
+  left: 1px;
+  top: 3px;
+  width: 6px;
+}
