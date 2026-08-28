@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { gotoWithRetry } from "../../scripts/lib/goto-retry.mjs";
 
 export async function seedProjectFromSupabaseCanonical(page: Page, project: unknown, path = "/"): Promise<void> {
   await page.addInitScript((seed) => {
@@ -8,6 +9,6 @@ export async function seedProjectFromSupabaseCanonical(page: Page, project: unkn
     window.localStorage.clear();
     if (uiMode !== null) window.localStorage.setItem("oprn:editor-ui-mode", uiMode);
   }, project);
-  await page.goto(path);
+  await gotoWithRetry(page, path);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: Number(process.env.E2E_BOOT_TIMEOUT_MS ?? 15000) });
 }

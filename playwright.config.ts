@@ -25,9 +25,23 @@ const diagnosticsRequested =
   process.argv.slice(2).some((arg) => !arg.startsWith("-") && /(^|[\\/])_/.test(arg));
 const testIgnore = diagnosticsRequested ? [] : ["**/_*.spec.ts"];
 
+/* 재시도는 "실패를 감추는 장치"가 아니라 **호스트 네트워크 변동** 대응이다.
+ * 크로미움은 OS 의 네트워크 변경 알림(리눅스 netlink)을 받으면 진행 중인 요청을
+ * 전부 취소한다. VPN/Tailscale 인터페이스가 흔들리거나 Wi-Fi 가 로밍하거나
+ * docker/WSL 가상 NIC 이 재생성되면 `net::ERR_NETWORK_CHANGED` 로 네비게이션이
+ * 죽는다. 알림이 요청별이 아니라 프로세스 전역이라 **127.0.0.1 dev 서버 접속도
+ * 같이 죽는다** — 로컬 전용 스위트에서 네트워크 에러가 나는 이유가 이것이다.
+ * 재시도된 테스트는 리포터가 "flaky" 로 따로 찍으므로 진짜 불안정 테스트가
+ * 조용히 묻히지는 않는다. `E2E_RETRIES=0` 으로 끌 수 있다.
+ * 스펙 러너를 안 타는 `scripts/*.mjs` 캡처 스크립트는 이 설정이 안 걸리므로
+ * `scripts/lib/goto-retry.mjs` 의 `gotoWithRetry` 를 쓴다. */
+const retriesRaw = Number.parseInt(process.env.E2E_RETRIES ?? "1", 10);
+const retries = Number.isFinite(retriesRaw) && retriesRaw >= 0 ? retriesRaw : 1;
+
 export default defineConfig({
   testDir: "test/e2e",
   testIgnore,
+  retries,
   timeout: 30_000,
   expect: { timeout: 5_000 },
   workers: 1,
