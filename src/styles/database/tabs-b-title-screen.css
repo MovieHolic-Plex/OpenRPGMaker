@@ -2,49 +2,14 @@
    Neo둥근모 + 갈색 윈도우스킨: 타이틀 화면 텍스트 및 서피스 규칙
    ========================================================================= */
 
-/* 타이틀 화면 루트: 런타임 픽셀 폰트(Neo둥근모)와 시스템 창 테마를 상속 */
-html body .player-layout.system-shell .rm-title-screen.rm-title-screen-editorial,
+/* 타이틀 화면 루트: 런타임 픽셀 폰트(Neo둥근모)와 시스템 창 테마를 상속.
+   개별 텍스트(제목·키커·부제·메뉴·힌트)를 !important 로 덮던 블록은 걷어냈다 —
+   리터럴 Malgun Gothic 스택을 title.css 에서 직접 제거했으므로 반창고가 필요 없다.
+   그 패치는 font-family 만 강제해서, 타이틀에 새 텍스트를 추가하면 조용히
+   Malgun Gothic 으로 돌아가는 함정이기도 했다. */
 .rm-title-screen {
   font-family: var(--runtime-pixel-font);
-}
 
-/* 제목 텍스트: 기존 Malgun Gothic(18px)에서 런타임 픽셀 폰트로 통일.
-   Malgun Gothic 선언 시 line-height 1.05로 인해 2px 상하 잘림(scrollHeight 21 vs clientHeight 19, 실측: clipY=2)이 발생했음.
-   18px 픽셀 폰트와 넉넉한 line-height(1.2)로 잘림을 해소한다. */
-html body .player-layout.system-shell .rm-title-screen.rm-title-screen-editorial .rm-title-screen-title,
-.player-layout.system-shell .rm-title-screen-editorial .rm-title-screen-title {
-  font-family: var(--runtime-pixel-font) !important;
-  line-height: 1.2 !important;
-}
-
-/* 키커(A NEW ADVENTURE): 런타임 픽셀 폰트 적용 */
-html body .player-layout.system-shell .rm-title-kicker,
-.player-layout.system-shell .rm-title-kicker {
-  font-family: var(--runtime-pixel-font) !important;
-}
-
-/* 부제목(이야기가 시작되는 곳): 런타임 픽셀 폰트 적용 */
-html body .player-layout.system-shell .rm-title-subtitle,
-.player-layout.system-shell .rm-title-subtitle {
-  font-family: var(--runtime-pixel-font) !important;
-}
-
-/* 타이틀 메뉴 버튼: Neo둥근모 픽셀 폰트 적용.
-   Neo둥근모 글자폭에 맞춰 충분한 높이와 패딩 확보. */
-html body .player-layout.system-shell .rm-title-screen-editorial .rm-title-menu-button,
-.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu-button {
-  font-family: var(--runtime-pixel-font) !important;
-  font-weight: 700 !important;
-}
-
-/* 조작 안내 힌트: Neo둥근모 픽셀 폰트 적용 */
-html body .player-layout.system-shell .rm-title-screen-editorial .rm-title-input-hint,
-.player-layout.system-shell .rm-title-screen-editorial .rm-title-input-hint {
-  font-family: var(--runtime-pixel-font) !important;
-  font-weight: 700 !important;
-}
-
-.rm-title-screen {
   --oprn-title-sky-glow: rgba(255, 255, 255, 0.12);
   --oprn-title-vignette: rgba(42, 37, 33, 0.14);
   --oprn-title-window-hi: #4a5a8a;
