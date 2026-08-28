@@ -67,6 +67,31 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 
 **Do not create a new agent config dir.** If your agent isn't listed, add it to this table with its purpose.
 
+## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
+
+**게임(런타임)을 브라우저로 QA 할 때 편집기 셸을 통과하지 마라. 전용 하네스가 있다.**
+
+```bash
+npm run qa:runtime          # 반복 작업 (--project <path> --scenario <name> --headed)
+npm run qa:runtime:gate     # 게이트: 두 시나리오
+```
+
+결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고, 거기서
+"즉시 확인" 으로 표시된 PNG 만 열어라. 전량 열람은 컨텍스트 낭비다. 새 시나리오는
+`scripts/qa/runtime/<name>.scenario.mjs`. 설계·근거는
+`docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md`, 함정 목록은
+`openwiki/testing.md`.
+
+왜 편집기 경로로 하면 안 되는가 (실측):
+- `src/app/mode.ts` 의 `enterMode` 는 play 모드에서도 `renderTopbar()` 를 호출한다 —
+  톱바가 모든 스크린샷에 남고 편집기 번들·DB 연결·welcome 게이트를 전부 태운다.
+- 편집기 play 모드는 실제 `@/project/store`, 출하되는 내보내기 플레이어는
+  `exportProjectStoreShim` 을 쓴다. 즉 **편집기 경로로 하는 런타임 QA 는 출하물을
+  검증하지 않는다.** 하네스는 `player.html` 을 띄워 shim 경로를 그대로 통과한다.
+
+편집기 자체의 시각 QA(패널·모달·레일)는 기존 `test/e2e/` + `scripts/capture-*` 경로를
+그대로 쓴다. 이 하네스는 게임 화면 전용이다.
+
 ## Parallel coding agents (hard rule)
 
 **두 개 이상의 에이전트가 코드를 동시에 편집하지 않는다.** 하나의 워킹트리를 공유하면 서로의
