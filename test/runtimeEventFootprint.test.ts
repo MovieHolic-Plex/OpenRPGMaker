@@ -369,3 +369,58 @@ describe("renderEvents 는 발자국 중앙에 배율을 걸어 그린다", () =
     expect(created[0].scale).toBe(3);
   });
 });
+
+describe("골렘 시나리오 — 2x2 가 길을 막고 어디서든 말이 걸린다", () => {
+  // 여태 프리미티브·통행·히트테스트·렌더를 따로 검증해 왔다. 여기서 보는 것은
+  // **저작물 한 개**에서 넷이 동시에 맞는지다. 그래서 같은 golem 객체를 통행/조사
+  // 질의와 renderTiles 양쪽에 통과시킨다 — 서로 다른 이벤트를 쓰면 "페이지에서
+  // 읽는 경로"와 "그리는 경로"가 갈라져 있어도 통과해버린다.
+  //
+  // 이 테스트가 실패하려면 무엇이 깨져야 하는가:
+  //  - 발자국 4칸 막힘 → findBlockingEventOverlappingRect 가 발자국 사각 대신 앵커
+  //    점만 보면 (5,6) (6,6) (6,7) 세 칸이 undefined 로 떨어진다.
+  //  - 서는 칸 4개가 안 막힘 → footprintBounds 가 반대로 전개하면(left 를
+  //    x-(width-1) 로 잡으면) (4,7) 이 막혀버린다.
+  //  - 4방향 조사 → 점 질의를 사각으로 승격하지 않으면 앵커 (5,7) 말고 세 칸이 빈다.
+  //  - 렌더 x → renderEvents 가 footprintSpriteX 대신 characterSpriteX 를 쓰면
+  //    5.5*TILE_SIZE 가 나온다(짝수 폭의 두 칸 경계가 아니라 한 칸 중앙).
+  //  - 렌더 scale → graphic.scale 배선이 끊기면 1 이 나온다.
+  it("발자국 네 칸이 통행을 막고 인접 네 방향에서 조사가 걸리고 두 칸 경계에 그려진다", () => {
+    const golem = golemEvent({ width: 2, height: 2 }, 2);
+    const { project, map } = mapWithEvent(golem);
+    const positions = initialRuntimeEventPositions(map.events);
+
+    // 발자국은 (5,6) (6,6) (5,7) (6,7).
+    for (const [x, y] of [[5, 6], [6, 6], [5, 7], [6, 7]]) {
+      expect(findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y), `막힘 (${x},${y})`).toBeDefined();
+    }
+
+    // 발자국 바로 바깥에서 정면 조사 — 각 방향에서 인접 칸을 조사하면 골렘이 잡힌다.
+    // 서는 칸이 비어 있다는 단정을 같이 두는 이유: 발자국이 과도하게 커져도
+    // "조사가 걸린다" 쪽만 보면 통과하기 때문이다.
+    const probes = [
+      [4, 7, 5, 7], // 왼쪽에서 오른쪽 보기 — 앵커 칸이라 1x1 이어도 잡힌다
+      [7, 6, 6, 6], // 오른쪽에서 왼쪽 보기 — 앵커 아님. 발자국 없으면 빈 칸이다
+      [5, 5, 5, 6], // 위에서 아래 보기 — 앵커 아님
+      [6, 8, 6, 7], // 아래에서 위 보기 — 앵커 아님
+    ] as const;
+    for (const [px, py, tx, ty] of probes) {
+      expect(findBlockingRuntimeEventAtInMap(project, map, session(), positions, px, py), `서는 칸 (${px},${py})`).toBeUndefined();
+      expect(findRuntimeEventAtInMap(project, map, session(), positions, tx, ty, "action")?.event.id, `조사 (${tx},${ty})`).toBe("ev_golem");
+    }
+
+    // 렌더 좌표: 2x2 라 두 칸 경계, 배율 2.
+    const view = runtimeEventView(golem, session(), positions);
+    expect(footprintSpriteX(view.x, view.footprint)).toBe(6 * TILE_SIZE);
+    expect(view.scale).toBe(2);
+
+    // 같은 골렘을 실제 렌더 경로에 태운다. 위 두 줄은 footprintSpriteX 를 직접 부르므로
+    // renderEvents 가 그 함수를 **쓴다는 것**은 증명하지 않는다.
+    const { created, scene } = renderSceneFor(golem);
+    renderTiles(scene);
+    expect(created).toHaveLength(1);
+    expect(created[0].x, "렌더된 스프라이트 x").toBe(6 * TILE_SIZE);
+    expect(created[0].y, "렌더된 스프라이트 y — 발밑 칸 하단").toBe(characterSpriteY(7));
+    expect(created[0].scale, "렌더된 스프라이트 배율").toBe(2);
+  });
+});
