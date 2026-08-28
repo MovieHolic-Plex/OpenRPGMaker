@@ -233,7 +233,6 @@
   height: 48px;
   border-radius: 6px;
   overflow: hidden;
-  background: #101318;
   flex: none;
   box-shadow: 0 0 0 1px rgba(20, 26, 45, 0.12);
   display: flex;
@@ -366,7 +365,6 @@
   height: 288px;
   border-radius: 8px;
   overflow: hidden;
-  background: #101318;
   box-shadow: 0 1px 6px rgba(20, 26, 45, 0.16);
   align-self: center;
   user-select: none;
@@ -713,7 +711,6 @@
 .structure-kit-editor-canvas-wrap {
   position: relative;
   display: inline-block;
-  background: #101318;
   border-radius: 8px;
   cursor: crosshair;
   touch-action: none;
@@ -738,7 +735,7 @@
   max-height: 320px;
   overflow-y: auto;
   padding: 4px;
-  background: var(--bg-sunken, rgba(42, 37, 33, 0.06));
+  background: var(--bg-inset);
   border-radius: 6px;
 }
 
@@ -754,8 +751,8 @@
 }
 
 .structure-kit-editor-swatch.active {
-  border-color: var(--accent, #3B82F6);
-  box-shadow: 0 0 0 1px var(--accent, #3B82F6);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .structure-kit-editor-size {
@@ -785,13 +782,13 @@
 }
 
 .structure-kit-new-house select {
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 6px 8px;
   font: inherit;
   font-size: 12.5px;
-  color: var(--text-1, #2A2521);
-  background: #fff;
+  color: var(--text-1);
+  background: var(--bg-raised);
 }
 
 .structure-kit-editor-parts {
@@ -804,7 +801,7 @@
 .structure-kit-editor-parts-title {
   font-size: 12px;
   font-weight: 700;
-  color: var(--text-1, #2A2521);
+  color: var(--text-1);
 }
 
 .structure-kit-editor-part-row {
@@ -821,14 +818,14 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--accent, #3B82F6);
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg-raised);
   font-size: 11px;
   flex: none;
 }
 
 .structure-kit-editor-part-range {
-  color: var(--text-3, #6B6259);
+  color: var(--text-3);
   margin-left: auto;
 }
 
@@ -857,8 +854,8 @@
   font-size: 11px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: var(--warn-bg, rgba(217, 119, 6, 0.14));
-  color: var(--warn-text, #B45309);
+  background: var(--warning-muted);
+  color: var(--warning);
 }
 
 .structure-kit-check-col {
@@ -875,8 +872,8 @@
 .structure-kit-import-warn {
   padding: 10px 12px;
   border-radius: 8px;
-  background: var(--warn-bg, rgba(217, 119, 6, 0.12));
-  color: var(--warn-text, #B45309);
+  background: var(--warning-muted);
+  color: var(--warning);
   margin-bottom: 10px;
   font-size: 12px;
 }
@@ -909,10 +906,19 @@
 }
 
 .structure-kit-import-size {
-  color: var(--text-3, #6B6259);
+  color: var(--text-3);
 }
 
 .structure-kit-import-reason {
-  color: var(--danger-text, #B91C1C);
+  color: var(--danger);
   margin-left: auto;
+}
+
+/* 픽셀 캔버스 배경 한 곳. 행 썸네일·래스터 판·편집기 캔버스가 같은 어두운 판을 깔며,
+   예전에는 같은 값을 세 규칙에 하드코딩해 CSS 예산 게이트의 hex 카운트를 셋씩 먹었다.
+   :root 에 토큰을 새로 심지 않는다 — 이 파일은 전역 :root 를 갖지 않는 쪽 계약이다. */
+.structure-kit-row-thumb,
+.structure-kit-raster-wrap,
+.structure-kit-editor-canvas-wrap {
+  background: #101318;
 }
