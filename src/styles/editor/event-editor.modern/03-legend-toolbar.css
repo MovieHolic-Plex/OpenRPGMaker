@@ -132,7 +132,8 @@
   opacity: 0.55;
 }
 
-/* 툴바 도구 팝오버 안의 기능 칩. 본문도 오버레이로 열어 캔버스 기하를 유지한다. */
+/* 툴바 도구 팝오버 안의 기능 칩. 본문도 오버레이로 열어 캔버스 기하를 유지한다.
+   AI 작성기는 여기 살지 않는다 — 명령 칼럼 맨 아래 인플로우 도크다(event-editor-ai.css). */
 .event-editor-aux-tools {
   align-items: start;
   display: flex;
@@ -144,20 +145,6 @@
   z-index: 2;
 }
 
-/* 1180px 이하에서는 명령 인스펙터가 z-index:12 오버레이가 된다.
-   사용자가 AI 칩을 연 동안에는 활성 작업 카드가 그 위에 보여야 한다. */
-.event-editor-aux-tools:has(> .ai-event-assist[open]) {
-  z-index: 14;
-}
-
-@media (max-width: 1180px) {
-  .event-editor-workbench:has(.event-editor-aux-tools > .ai-event-assist[open])
-    .event-editor-inspector-column {
-    z-index: 1;
-  }
-}
-
-.event-editor-aux-tools > .ai-event-assist,
 .event-editor-aux-tools .event-script-live-preview,
 .event-editor-aux-tools .event-script-flowchart {
   background: var(--event-modern-field);
@@ -168,7 +155,6 @@
   min-width: 0;
 }
 
-.event-editor-aux-tools > .ai-event-assist[open],
 .event-editor-aux-tools .event-script-live-preview[open],
 .event-editor-aux-tools .event-script-flowchart[open] {
   border-color: color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border));
@@ -250,7 +236,6 @@
   display: none;
 }
 
-.event-editor-aux-tools > .ai-event-assist[open] > .event-aux-chip-summary,
 .event-editor-aux-tools .event-script-live-preview[open] > .event-aux-chip-summary,
 .event-editor-aux-tools .event-script-flowchart[open] > .event-aux-chip-summary {
   color: var(--text-1);
@@ -260,7 +245,6 @@
 }
 
 /* 기능 본문은 도구 칩 행 아래 오버레이로 열려 캔버스 높이를 바꾸지 않는다. */
-.event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body,
 .event-editor-aux-tools .event-script-live-preview[open] > .event-script-live-preview-body,
 .event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
   background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #FFFDF8));
@@ -278,14 +262,6 @@
   right: 0;
   width: auto;
   z-index: 8;
-}
-
-/* AI 입력은 긴 한 줄보다 읽기 쉬운 작업 카드 폭을 유지한다.
-   작은 모달에서는 가용 폭으로 줄고, command list 기하는 계속 점유하지 않는다. */
-.event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body {
-  max-height: min(500px, 58vh);
-  right: auto;
-  width: min(680px, calc(100% - 8px));
 }
 
 .event-contents-fieldset .cmd-list {

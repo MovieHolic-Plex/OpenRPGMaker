@@ -943,7 +943,9 @@ footer {
 .event-editor .event-editor-commands-column {
   display: grid;
   gap: 0;
-  grid-template-rows: auto minmax(0, 1fr);
+  /* 3번 행 = AI 명령 도크. 암시 행으로 내버려 두면 1fr 이 줄지 않아
+     도크가 모달 밑밖으로 밀려난다(실직: 900 높이에서 도크 밑이 1016). */
+  grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 0;
 }
 

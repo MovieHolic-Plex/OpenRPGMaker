@@ -84,7 +84,7 @@ test("event editor preset and toolbar do not overlap the command list", async ({
   expect(viewSwitcherBox.y + viewSwitcherBox.height).toBeLessThanOrEqual(cmdListBox.y);
 });
 
-test("AI assist stays readable above the compact inspector", async ({ page }) => {
+test("AI 명령 도크는 명령 목록을 덮지 않고 모달 안에 머밃다", async ({ page }) => {
   await page.setViewportSize({ width: 960, height: 900 });
   const { project, eventId } = mockupProject();
   await seedProjectFromSupabaseCanonical(page, project);
@@ -99,48 +99,56 @@ test("AI assist stays readable above the compact inspector", async ({ page }) =>
   await editor.locator(".cmd-item .cmd-head").first().click();
   await expect(editor.getByTestId("event-editor-inspector")).toBeVisible();
 
-  const auxShell = editor.getByTestId("event-editor-aux-tools");
-  await auxShell.locator(":scope > summary").click();
+  // 단일 진입점: 툴바 AI 버튼 하나로 도크가 열린다(도구 팝오버 경유 없이).
+  await editor.getByTestId("event-command-quick-ai").click();
   const ai = editor.getByTestId("ai-event-assist");
-  await ai.locator(":scope > summary").click();
+  await expect(ai).toHaveJSProperty("open", true);
+  await expect(editor.getByTestId("event-editor-aux-tools")).toHaveJSProperty("open", false);
   const card = ai.locator(".ai-event-assist-body");
   await expect(card).toBeVisible();
+  await expect(editor.getByTestId("ai-event-input")).toBeFocused();
 
   const probe = await card.evaluate((body) => {
     const cardRect = body.getBoundingClientRect();
     const modalRect = body.closest<HTMLElement>('[role="dialog"]')?.getBoundingClientRect();
-    const summaryRect = body.parentElement?.querySelector("summary")?.getBoundingClientRect();
-    const inspectorRect = body.closest<HTMLElement>(".event-editor-workbench")
-      ?.querySelector<HTMLElement>(".event-editor-inspector-column")
+    const listRect = body.closest<HTMLElement>(".event-editor-commands-column")
+      ?.querySelector<HTMLElement>(".event-contents-fieldset .cmd-list")
       ?.getBoundingClientRect();
     const input = body.querySelector<HTMLElement>(".ai-event-input");
     const inputStyle = input ? getComputedStyle(input) : null;
-    const overlapX = inspectorRect ? Math.max(cardRect.left, inspectorRect.left) + 12 : cardRect.right - 12;
-    const overlapY = inspectorRect ? Math.max(cardRect.top, inspectorRect.top) + 12 : cardRect.top + 12;
-    const topNode = document.elementFromPoint(overlapX, overlapY);
+    const overlapWidth = listRect
+      ? Math.max(0, Math.min(listRect.right, cardRect.right) - Math.max(listRect.left, cardRect.left))
+      : 0;
+    const overlapHeight = listRect
+      ? Math.max(0, Math.min(listRect.bottom, cardRect.bottom) - Math.max(listRect.top, cardRect.top))
+      : 0;
 
     return {
-      cardAboveInspector: Boolean(topNode && body.contains(topNode)),
       cardWithinModal: Boolean(
         modalRect &&
-          cardRect.left >= modalRect.left &&
-          cardRect.right <= modalRect.right &&
-          cardRect.top >= modalRect.top &&
-          cardRect.bottom <= modalRect.bottom
+          cardRect.left >= modalRect.left - 1 &&
+          cardRect.right <= modalRect.right + 1 &&
+          cardRect.top >= modalRect.top - 1 &&
+          cardRect.bottom <= modalRect.bottom + 1
       ),
-      clearsChipRow: Boolean(summaryRect && cardRect.bottom < summaryRect.top),
+      listOverlapArea: Math.round(overlapWidth * overlapHeight),
+      listHeight: listRect ? Math.round(listRect.height) : 0,
       inputLineHeight: Number.parseFloat(inputStyle?.lineHeight ?? "0"),
       inputHeight: input?.getBoundingClientRect().height ?? 0,
-      width: cardRect.width,
     };
   });
 
-  expect(probe.cardAboveInspector).toBe(true);
   expect(probe.cardWithinModal).toBe(true);
-  expect(probe.clearsChipRow).toBe(true);
-  expect(probe.width).toBeLessThanOrEqual(680);
+  // 오버레이 시절의 결함: 작업 카드가 자기가 명령을 넣을 목록을 덮었다(실직 46%).
+  expect(probe.listOverlapArea).toBe(0);
+  expect(probe.listHeight).toBeGreaterThan(CMD_LIST_MIN_HEIGHT_PX);
   expect(probe.inputLineHeight).toBeGreaterThanOrEqual(21);
-  expect(probe.inputHeight).toBeGreaterThanOrEqual(96);
+  expect(probe.inputHeight).toBeGreaterThanOrEqual(66);
+
+  // Escape 는 도크만 닫는다 — 이벤트 에디터가 함까 닫힐가 모든 입력을 사라지게 하면 안 된다.
+  await page.keyboard.press("Escape");
+  await expect(ai).toHaveJSProperty("open", false);
+  await expect(editor).toBeVisible();
 
   await mkdir("output/evidence/event-ai-assist-ux", { recursive: true });
   await editor.screenshot({ path: "output/evidence/event-ai-assist-ux/960x900-compact.png" });

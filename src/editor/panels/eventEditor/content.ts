@@ -252,7 +252,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         storyboardHost,
         cmdList,
       ],
-    })
+    }),
+    // AI 작성기는 목록을 덮는 오버레이가 아니라 칼럼 맨 아래 도크다 — 삽입 위치가 계속 보인다.
+    renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
   );
   inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
@@ -348,7 +350,7 @@ function renderCommandToolbar(
       }),
     ],
   });
-  const toolsMenu = renderEventToolsMenu(cmdList, actions, mapId, eventId, page);
+  const toolsMenu = renderEventToolsMenu(mapId, eventId, page);
   const commandSearch = el("input", {
     class: "search event-editor-command-search",
     attrs: { type: "search", placeholder: "명령 검색", "aria-label": "명령 검색" },
@@ -390,11 +392,22 @@ function renderCommandAuxGroup(): HTMLElement {
     details.open = true;
     details.scrollIntoView({ block: "nearest" });
   };
+  // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
+  const toggleAiDock = (button: HTMLButtonElement): void => {
+    const dock = commandsColumn()?.querySelector<HTMLDetailsElement>("[data-testid='ai-event-assist']");
+    if (!dock) return;
+    dock.open = !dock.open;
+    button.setAttribute("aria-expanded", String(dock.open));
+    if (dock.open) dock.scrollIntoView({ block: "nearest" });
+  };
+  const aiButton = toolbarButton("✧", "AI 명령", "event-command-quick-ai");
+  aiButton.setAttribute("aria-expanded", "false");
+  aiButton.addEventListener("click", () => toggleAiDock(aiButton));
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
     children: [
-      toolbarButton("✧", "AI 명령", "event-command-quick-ai", () => open("[data-testid='ai-event-assist']")),
+      aiButton,
       toolbarButton("</>", "스크립트 보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),
       toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
@@ -402,8 +415,6 @@ function renderCommandAuxGroup(): HTMLElement {
 }
 
 function renderEventToolsMenu(
-  cmdList: HTMLElement,
-  actions: CommandListActions,
   mapId: MapId,
   eventId: string,
   page: EventPage
@@ -411,7 +422,6 @@ function renderEventToolsMenu(
   const auxTools = el("div", {
     class: "event-editor-command-tools-popover event-editor-aux-tools",
     children: [
-      renderEventAiAssist({ mapId, eventId, page, actions, cmdList }),
       renderEventScriptModernViews({ mapId, eventId, page }),
       renderFollowerPresetBar({
         insertCommandsAt: (index, commands) => {
@@ -437,7 +447,7 @@ function renderEventToolsMenu(
       el("summary", {
         class: "event-editor-command-tools-summary",
         text: "도구",
-        attrs: { title: "AI, 미리보기, 플로우와 특수 템플릿" },
+        attrs: { title: "미리보기, 플로우와 특수 템플릿" },
       }),
       auxTools,
     ],
