@@ -17,6 +17,7 @@ import {
   validateOptionalResource,
   validateSystemResources,
 } from "./resourceReferenceValidation";
+import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "../factions";
 import { monsterEvolutionCycleSpeciesIds } from "../monsterCollection";
 import { inBounds, isPassable } from "../collision";
 import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "../spatialPlacements";
@@ -66,6 +67,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     troopIds,
     speciesIds,
     resourceIds,
+    factionIds: new Set([
+      PLAYER_FACTION_ID,
+      DEFAULT_ENEMY_FACTION_ID,
+      ...(project.factions?.defs ?? []).map((record) => record.id),
+    ]),
   };
 
   validateActorRecords(project, classIds, animationIds, context, issues);

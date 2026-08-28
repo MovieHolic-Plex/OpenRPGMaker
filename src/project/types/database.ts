@@ -397,6 +397,8 @@ export interface EnemyRecord {
   actions: EnemyActionPattern[];
   /** 실시간 액션 전투용 필드 프로필. 생략 시 턴제 전용 적. */
   actionProfile?: EnemyActionProfile;
+  /** 소속 진영 id(project.factions.defs). 생략 시 예약 진영 enemy — 기존 프로젝트와 동일하게 플레이어만 적대한다. */
+  factionId?: string;
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
 }

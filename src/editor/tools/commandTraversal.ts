@@ -7,28 +7,83 @@ export type NestedBranchKind =
   | "promotionSuccess" | "promotionFailure" | "evolutionSuccess" | "evolutionFailure"
   | "battleVictory" | "battleDefeat" | "battleEscape";
 
+export type ProjectCommandLocation =
+  | {
+      readonly kind: "legacyEvent";
+      readonly mapId: string;
+      readonly mapName: string;
+      readonly eventId: string;
+    }
+  | {
+      readonly kind: "eventPage";
+      readonly mapId: string;
+      readonly mapName: string;
+      readonly eventId: string;
+      readonly pageId: string;
+      readonly pageName: string;
+    }
+  | {
+      readonly kind: "commonEvent";
+      readonly commonEventId: string;
+      readonly commonEventName: string;
+    }
+  | {
+      readonly kind: "troopPage";
+      readonly troopId: string;
+      readonly troopName: string;
+      readonly pageId: string;
+      readonly pageName: string;
+    };
+
 export interface ProjectCommandVisit {
   readonly command: Command;
   readonly owner: CommandOwnerKind;
+  readonly location: ProjectCommandLocation;
   readonly branch?: NestedBranchKind;
 }
 
 export function visitProjectCommands(project: Project, visitor: (visit: ProjectCommandVisit) => void): void {
-  const visitList = (commands: readonly Command[], owner: CommandOwnerKind, branch?: NestedBranchKind): void => {
+  const visitList = (
+    commands: readonly Command[],
+    location: ProjectCommandLocation,
+    branch?: NestedBranchKind,
+  ): void => {
     for (const command of commands) {
-      visitor({ command, owner, branch });
-      for (const child of commandBranches(command)) visitList(child.commands, owner, child.kind);
+      visitor({ command, owner: location.kind, location, branch });
+      for (const child of commandBranches(command)) visitList(child.commands, location, child.kind);
     }
   };
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      visitList(event.commands, "legacyEvent");
-      for (const page of event.pages ?? []) visitList(page.commands, "eventPage");
+      visitList(event.commands, {
+        kind: "legacyEvent",
+        mapId: map.id,
+        mapName: map.name,
+        eventId: event.id,
+      });
+      for (const page of event.pages ?? []) visitList(page.commands, {
+        kind: "eventPage",
+        mapId: map.id,
+        mapName: map.name,
+        eventId: event.id,
+        pageId: page.id,
+        pageName: page.name,
+      });
     }
   }
-  for (const commonEvent of project.commonEvents) visitList(commonEvent.commands, "commonEvent");
+  for (const commonEvent of project.commonEvents) visitList(commonEvent.commands, {
+    kind: "commonEvent",
+    commonEventId: commonEvent.id,
+    commonEventName: commonEvent.name,
+  });
   for (const troop of project.database.troops) {
-    for (const page of troop.battleEventPages ?? []) visitList(page.commands, "troopPage");
+    for (const page of troop.battleEventPages ?? []) visitList(page.commands, {
+      kind: "troopPage",
+      troopId: troop.id,
+      troopName: troop.name,
+      pageId: page.id,
+      pageName: page.name,
+    });
   }
 }
 

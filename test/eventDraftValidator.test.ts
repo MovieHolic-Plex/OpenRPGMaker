@@ -46,6 +46,28 @@ describe("event draft aggregate validator", () => {
     }));
   });
 
+  it("treats an unknown faction as an error and blocks the draft", () => {
+    const project = createBlankProject();
+    project.factions = { defs: [{ id: "guard", name: "경비대" }], relations: [] };
+    const mapId = project.startMapId;
+    const event = gameEvent(page({ commands: [
+      { kind: "changeFactionStance", a: "gaurd", b: "player", op: "-=", value: 0.25 },
+    ] }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+
+    expect(result.issues).toContainEqual(expect.objectContaining({
+      severity: "error",
+      code: "reference.faction.missing",
+      message: expect.stringContaining("gaurd"),
+      commandPath: [0],
+      field: { testId: "event-command-faction-a" },
+    }));
+    expect(result.issues.some((issue) => issue.message.includes("player"))).toBe(false);
+    expect(result.canCommit).toBe(false);
+  });
+
   it("treats every recursively nested condition leaf as an auto/parallel gate", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;

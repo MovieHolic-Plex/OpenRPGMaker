@@ -51,6 +51,7 @@ export interface NormalizedFieldSpawn {
   readonly graphic: EventPageGraphic;
   readonly chase: boolean;
   readonly persistKill: boolean;
+  readonly factionId?: string;
   readonly onKillSwitchId?: string;
 }
 
@@ -360,6 +361,7 @@ function normalizeFieldSpawn(project: Project, spawn: FieldSpawnDef): Normalized
     graphic: spawn.graphic ?? defaultFieldSpawnGraphic(project, spawn.troopId),
     chase: spawn.chase === true,
     persistKill: spawn.persistKill === true,
+    ...(spawn.factionId ? { factionId: spawn.factionId } : {}),
     ...(spawn.onKillSwitchId ? { onKillSwitchId: spawn.onKillSwitchId } : {}),
   };
 }

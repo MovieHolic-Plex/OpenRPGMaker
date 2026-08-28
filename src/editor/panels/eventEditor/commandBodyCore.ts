@@ -71,6 +71,7 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   setSwitch: setSwitchBody,
   setVariable: setVariableBody,
   changeFriendship: changeFriendshipBody,
+  changeFactionStance: changeFactionStanceBody,
   getFriendship: getFriendshipBody,
   timer: timerBody,
   inputWait: inputWaitBody,
@@ -992,6 +993,66 @@ function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command,
   delta.addEventListener("change", apply);
   wrap.append(fieldControl("누구", npcKey), fieldControl("변화량", delta));
   appendFriendshipCharacterHint(wrap, cmd.npcKey);
+  return wrap;
+}
+
+function changeFactionStanceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFactionStance" }>): HTMLElement {
+  const wrap = el("div", { class: "event-command-record-form cream-command-form" });
+  const factionA = el("input", {
+    attrs: { type: "text", placeholder: "player" },
+    value: cmd.a,
+    dataset: { testid: "event-command-faction-a" },
+  }) as HTMLInputElement;
+  const factionB = el("input", {
+    attrs: { type: "text", placeholder: "enemy" },
+    value: cmd.b,
+    dataset: { testid: "event-command-faction-b" },
+  }) as HTMLInputElement;
+  const op = selectWithOptions([
+    { value: "=", label: "설정" },
+    { value: "+=", label: "올리기" },
+    { value: "-=", label: "내리기" },
+  ] as const, cmd.op, "event-command-faction-op");
+  const value = el("input", {
+    attrs: {
+      type: "number",
+      min: cmd.op === "=" ? "-2" : "0",
+      max: cmd.op === "=" ? "2" : "4",
+      step: "0.25",
+    },
+    value: String(cmd.value),
+    dataset: { testid: "event-command-faction-value" },
+  }) as HTMLInputElement;
+  const apply = () => context.actions.replaceCommand(context.path, {
+    kind: "changeFactionStance",
+    a: factionA.value.trim() || "player",
+    b: factionB.value.trim() || "enemy",
+    op: selectedOptionValue(op, [
+      { value: "=", label: "설정" },
+      { value: "+=", label: "올리기" },
+      { value: "-=", label: "내리기" },
+    ] as const, cmd.op),
+    value: Number.isFinite(value.valueAsNumber) ? value.valueAsNumber : 0,
+  });
+  factionA.addEventListener("change", apply);
+  factionB.addEventListener("change", apply);
+  op.addEventListener("change", () => {
+    const selected = selectedOptionValue(op, [
+      { value: "=", label: "설정" },
+      { value: "+=", label: "올리기" },
+      { value: "-=", label: "내리기" },
+    ] as const, cmd.op);
+    value.min = selected === "=" ? "-2" : "0";
+    value.max = selected === "=" ? "2" : "4";
+    apply();
+  });
+  value.addEventListener("change", apply);
+  wrap.append(
+    fieldControl("진영 A", factionA),
+    fieldControl("진영 B", factionB),
+    fieldControl("연산", op),
+    fieldControl("값", value),
+  );
   return wrap;
 }
 

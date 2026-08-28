@@ -2,6 +2,7 @@ import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
 import { normalizeWorld } from "../world/guards";
+import { normalizeProjectFactions } from "../factions";
 import type { ProjectWorld } from "../world/types";
 import { normalizeWorldGraph } from "../worldGraph";
 import { normalizePalettePresetId } from "../tilesetPalette";
@@ -78,6 +79,7 @@ export function validateProjectV4(data: JsonRecord): Project {
   validateQuests(data.quests, new Set(Object.keys(maps)));
   validateTestPresets(data.testPresets, new Set(Object.keys(maps)));
   validateEndings(data.endings);
+  validateFactions(data.factions);
   validateCharacters(data.characters);
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
@@ -94,6 +96,7 @@ export function validateProjectV4(data: JsonRecord): Project {
   normalizeStoryFlags(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
+  if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);
   if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
@@ -189,6 +192,31 @@ function validateEndings(value: unknown): void {
         requireRecord(`endings[${index}].epilogue[${beatIndex}]`, beat);
       }
     }
+  }
+}
+
+function validateFactions(value: unknown): void {
+  if (value === undefined) return;
+  const factions = requireRecord("factions", value);
+  if (factions.playerKillReputation !== undefined) {
+    const reputation = requireRecord("factions.playerKillReputation", factions.playerKillReputation);
+    if (reputation.weight !== undefined) {
+      const weight = requireNumber("factions.playerKillReputation.weight", reputation.weight);
+      assert(weight >= 0, "factions.playerKillReputation.weight는 0 이상이어야 합니다.");
+    }
+  }
+  for (const [index, entry] of requireArray("factions.defs", factions.defs).entries()) {
+    const def = requireRecord(`factions.defs[${index}]`, entry);
+    requireString(`factions.defs[${index}].id`, def.id);
+    requireString(`factions.defs[${index}].name`, def.name);
+    if (def.color !== undefined) requireString(`factions.defs[${index}].color`, def.color);
+    if (def.aggression !== undefined) requireNumber(`factions.defs[${index}].aggression`, def.aggression);
+  }
+  for (const [index, entry] of requireArray("factions.relations", factions.relations).entries()) {
+    const relation = requireRecord(`factions.relations[${index}]`, entry);
+    requireString(`factions.relations[${index}].a`, relation.a);
+    requireString(`factions.relations[${index}].b`, relation.b);
+    requireNumber(`factions.relations[${index}].stance`, relation.stance);
   }
 }
 

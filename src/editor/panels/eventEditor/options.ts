@@ -66,6 +66,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "equipTool", label: "도구 장착" },
   { value: "openChest", label: "보관 상자" },
   { value: "changeFriendship", label: "호감도 변경" },
+  { value: "changeFactionStance", label: "진영 태도 변경" },
   { value: "getFriendship", label: "호감도 읽기" },
   { value: "changeParty", label: "파티 변경" },
   { value: "giveMonster", label: "몬스터 지급" },

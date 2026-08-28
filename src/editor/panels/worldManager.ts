@@ -3,6 +3,12 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import {
+  applyFactionsFromWorldPlan,
+  planFactionsFromWorld,
+  type FactionsFromWorldPlan,
+} from "@/project/factionsFromWorld";
+import { normalizeProjectFactions } from "@/project/factions";
 import { lintWorld, normalizeProjectWorld, normalizeWorld } from "@/project/world";
 import {
   WORLD_ENTITY_TYPES,
@@ -272,6 +278,149 @@ export function visibleEntities(entities: readonly WorldEntity[], tab: WorldTabK
 
 export function currentWorld(project: Project): ProjectWorld {
   return normalizeProjectWorld(project);
+}
+
+/**
+ * 장소·세력 탭의 명시적 세계관→전투 진영 반영 표면.
+ * 미리보기와 적용을 한 컨트롤 안에 묶어, 버튼을 눌렀다는 이유만으로 프로젝트가 바뀌지 않게 한다.
+ */
+export function renderFactionMaterialization(refresh: () => void): HTMLElement {
+  const host = el("section", {
+    class: "world-overview",
+    dataset: { testid: "world-faction-materialization" },
+  });
+  const renderClosed = (): void => {
+    host.replaceChildren(
+      el("div", {
+        children: [
+          el("strong", { text: "전투 진영으로 반영" }),
+          el("p", {
+            class: "world-counts",
+            text: "세계관 세력과 적대·동맹 관계를 전투 진영표의 빈 칸에만 옮깁니다. 수기 데이터는 덮어쓰지 않습니다.",
+          }),
+        ],
+      }),
+      el("button", {
+        class: "btn small primary",
+        text: "변경안 미리보기",
+        attrs: { type: "button" },
+        dataset: { testid: "world-faction-materialization-preview" },
+        on: { click: renderPreview },
+      }),
+    );
+  };
+  const renderPreview = (): void => {
+    const latestProject = store.getCurrent();
+    const latestWorld = currentWorld(latestProject);
+    const plan = planFactionsFromWorld(latestWorld, latestProject.factions);
+    host.replaceChildren(...factionPlanPreviewNodes(host, plan, refresh));
+  };
+  renderClosed();
+  return host;
+}
+
+function factionPlanPreviewNodes(
+  host: HTMLElement,
+  plan: FactionsFromWorldPlan,
+  refresh: () => void,
+): HTMLElement[] {
+  const conflicts = plan.issues.filter((issue) => issue.severity === "conflict").length;
+  const warnings = plan.issues.length - conflicts;
+  const mapped = plan.mapping.filter((entry) => entry.status !== "blocked");
+  const mappingRows = mapped.map((entry) =>
+    el("li", {
+      text: `${entry.worldEntityName}: ${entry.worldEntityId} → ${entry.combatFactionId}${entry.status === "existing" ? " (이미 있음)" : ""}`,
+    })
+  );
+  const relationRows = plan.diff.relations.added.map((relation) =>
+    el("li", { text: `${relation.a} ↔ ${relation.b}: ${relation.stance}` })
+  );
+  const issueRows = plan.issues.map((issue) =>
+    el("li", {
+      class: `world-lint-item ${issue.severity === "conflict" ? "warning" : "info"}`,
+      text: `${issue.severity === "conflict" ? "충돌" : "안내"} · ${issue.message}`,
+    })
+  );
+  const apply = el("button", {
+    class: "btn small primary",
+    text: plan.hasChanges ? "변경안 적용" : "적용할 변경 없음",
+    attrs: { type: "button", ...(plan.hasChanges ? {} : { disabled: "true" }) },
+    dataset: { testid: "world-faction-materialization-apply" },
+    on: {
+      click: () => {
+        if (!plan.hasChanges) return;
+        const latestProject = store.getCurrent();
+        const latestPlan = planFactionsFromWorld(currentWorld(latestProject), latestProject.factions);
+        if (!sameFactionMaterializationPreview(plan, latestPlan)) {
+          host.replaceChildren(...factionPlanPreviewNodes(host, latestPlan, refresh));
+          toast("프로젝트가 바뀌어 최신 변경안을 다시 표시했습니다. 내용을 확인한 뒤 적용하세요.", "info");
+          return;
+        }
+        recordProjectSnapshot("세계관 세력을 전투 진영으로 반영");
+        store.update((draft) => {
+          const factions = normalizeProjectFactions(applyFactionsFromWorldPlan(latestPlan));
+          if (factions) draft.factions = factions;
+          else delete draft.factions;
+        }, { scope: "database", collection: "factions" });
+        toast(
+          `전투 진영 반영: 진영 ${latestPlan.diff.defs.added.length}개 · 관계 ${latestPlan.diff.relations.added.length}개`,
+          "ok",
+        );
+        refresh();
+      },
+    },
+  });
+  return [
+    el("div", {
+      children: [
+        el("strong", { text: "전투 진영 변경안" }),
+        el("p", {
+          class: "world-counts",
+          dataset: { testid: "world-faction-materialization-summary" },
+          text:
+            `진영 추가 ${plan.diff.defs.added.length} · 변경 ${plan.diff.defs.changed.length} · 삭제 ${plan.diff.defs.removed.length} / ` +
+            `관계 추가 ${plan.diff.relations.added.length} · 변경 ${plan.diff.relations.changed.length} · 삭제 ${plan.diff.relations.removed.length} / ` +
+            `충돌 ${conflicts} · 안내 ${warnings}`,
+        }),
+      ],
+    }),
+    ...(mappingRows.length > 0
+      ? [el("div", { children: [el("strong", { text: "세력 ID" }), el("ul", { children: mappingRows })] })]
+      : []),
+    ...(relationRows.length > 0
+      ? [el("div", { children: [el("strong", { text: "전투 태도" }), el("ul", { children: relationRows })] })]
+      : []),
+    ...(issueRows.length > 0
+      ? [el("div", { class: "world-lint-list", children: [el("strong", { text: "충돌·안내" }), el("ul", { children: issueRows })] })]
+      : []),
+    el("div", {
+      class: "world-chip-row",
+      children: [
+        apply,
+        el("button", {
+          class: "btn small",
+          text: "미리보기 닫기",
+          attrs: { type: "button" },
+          dataset: { testid: "world-faction-materialization-cancel" },
+          on: {
+            click: () => {
+              host.replaceChildren();
+              refresh();
+            },
+          },
+        }),
+      ],
+    }),
+  ];
+}
+
+function sameFactionMaterializationPreview(
+  shown: FactionsFromWorldPlan,
+  latest: FactionsFromWorldPlan,
+): boolean {
+  // 적용 대상뿐 아니라 충돌·ID 매핑까지 같아야 사용자가 확인한 변경안으로 본다.
+  return JSON.stringify({ mapping: shown.mapping, diff: shown.diff, issues: shown.issues, result: shown.result })
+    === JSON.stringify({ mapping: latest.mapping, diff: latest.diff, issues: latest.issues, result: latest.result });
 }
 
 export function ensureSelectedEntity(state: WorldPanelState, world: ProjectWorld): void {
