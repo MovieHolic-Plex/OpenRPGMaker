@@ -6,9 +6,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
-import { conversationScopeKey, clearConversations, listConversations, saveConversation } from "@/ai/conversationStore";
+import { conversationScopeKey, clearConversations, listConversations, loadConversation, saveConversation } from "@/ai/conversationStore";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -74,6 +74,39 @@ function stubChat(): { chat: (config: AiConfig, req: ChatRequest) => Promise<Cha
   };
 }
 
+/**
+ * LLM 라운드만 세는 계측. 전역 fetch 를 세면 Supabase 미러·활동 로그 같은 best-effort
+ * 쓰기까지 함께 잡혀(실측: 첫 전송 직후 2건) 라운드 수 단정이 무너지고, 그 resolver 가
+ * 대기 큐에 섞여 `settle` 이 엉뚱한 요청을 깨운다. 채팅 요청은 본문에 messages 가 있다.
+ */
+function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (content: string) => void } {
+  const rounds: unknown[] = [];
+  const pending: Array<(response: Response) => void> = [];
+  vi.stubGlobal("fetch", vi.fn((_url: unknown, init?: RequestInit) => {
+    let body: { messages?: unknown } = {};
+    try {
+      body = JSON.parse(String(init?.body ?? "{}")) as { messages?: unknown };
+    } catch {
+      body = {};
+    }
+    if (!Array.isArray(body.messages)) {
+      return Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } }));
+    }
+    rounds.push(body);
+    return new Promise<Response>((resolve) => pending.push(resolve));
+  }));
+  return {
+    rounds,
+    settleNext: (content: string) => {
+      const resolve = pending.shift();
+      if (!resolve) throw new Error("대기 중인 LLM 요청이 없습니다");
+      resolve(new Response(JSON.stringify({
+        choices: [{ message: { role: "assistant", content }, finish_reason: "stop" }],
+      }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    },
+  };
+}
+
 beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
@@ -81,9 +114,14 @@ beforeEach(() => {
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
+  clearConversations();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  // 패널을 먼저 내려 세션·턴의 늦은 비동기 꼬리가 다음 테스트의 새 저장소에 대화를 쓰지
+  // 못하게 한다. 이게 없으면 복원 대상(최신 대화)이 테스트 순서·타이밍에 따라 달라진다.
+  teardownAiChatPanel();
+  await flushAsync();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -134,6 +172,61 @@ describe("새 대화 진입점", () => {
       expect(findByTestId(composer!, "ai-new-chat")).toBe(newChat);
       expect(findByTestId(panel, "ai-chat-toolbar")?.inert).toBe(true);
     }
+  });
+
+  it("Given an in-flight turn with a queued send When 새 대화 is clicked Then the outgoing turn cannot contaminate or replay into the new chat", async () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(CONFIG));
+    const llm = stubLlmFetch();
+
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    const send = findByTestId(panel, "ai-send");
+    const queue = findByTestId(panel, "ai-pending-queue");
+
+    input.value = "이전 대화 요청";
+    send?.click();
+    await flushAsync();
+    expect(llm.rounds).toHaveLength(1);
+
+    input.value = "이전 대화 대기 메시지";
+    send?.click();
+    expect(queue?.textContent).toContain("기다리는 메시지 1개");
+
+    findByTestId(panel, "ai-new-chat")?.click();
+    expect(panel.dataset.aiConversation).toBe("empty");
+    expect(queue?.hidden).toBe(true);
+
+    llm.settleNext("이전 대화 늦은 응답");
+    await flushAsync();
+
+    const resetLog = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(resetLog).not.toContain("이전 대화 늦은 응답");
+    expect(resetLog).not.toContain("이전 대화 대기 메시지");
+    // 중단된 턴도, 버려진 대기 메시지도 새 라운드를 열지 않는다.
+    expect(llm.rounds).toHaveLength(1);
+
+    input.value = "새 대화 요청";
+    send?.click();
+    await flushAsync();
+    expect(llm.rounds).toHaveLength(2);
+    llm.settleNext("새 대화 응답");
+    await flushAsync();
+
+    const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(logText).toContain("새 대화 요청");
+    expect(logText).toContain("새 대화 응답");
+    expect(logText).not.toContain("이전 대화 늦은 응답");
+    expect(logText).not.toContain("이전 대화 대기 메시지");
+
+    const records = listConversations().map((summary) => loadConversation(summary.id)!);
+    const oldRecord = records.find((record) => record.entries.some((entry) => entry.kind === "user" && entry.text.includes("이전 대화 요청")));
+    const newRecord = records.find((record) => record.entries.some((entry) => entry.kind === "user" && entry.text.includes("새 대화 요청")));
+    expect(oldRecord?.id).toBeTruthy();
+    expect(newRecord?.id).toBeTruthy();
+    expect(newRecord?.id).not.toBe(oldRecord?.id);
+    expect(oldRecord?.entries.some((entry) => "text" in entry && entry.text.includes("새 대화"))).toBe(false);
+    expect(oldRecord?.entries.some((entry) => "text" in entry && entry.text.includes("대기 메시지"))).toBe(false);
+    expect(newRecord?.entries.some((entry) => "text" in entry && entry.text.includes("이전 대화"))).toBe(false);
   });
 
   it("Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty", () => {
@@ -197,23 +290,19 @@ describe("프로젝트 전환", () => {
     identity.mockReturnValue({ kind: "remote", id: "project-one" });
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(CONFIG));
 
-    let settle!: (response: Response) => void;
-    const response = new Promise<Response>((resolve) => { settle = resolve; });
-    vi.stubGlobal("fetch", vi.fn(() => response));
+    const llm = stubLlmFetch();
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "첫 프로젝트에서 시작한 요청";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(llm.rounds).toHaveLength(1);
 
     identity.mockReturnValue({ kind: "remote", id: "project-two" });
     store.replace(createBlankProject());
     expect(panel.dataset.aiConversation).toBe("empty");
 
-    settle(new Response(JSON.stringify({
-      choices: [{ message: { role: "assistant", content: "늦게 도착한 응답" }, finish_reason: "stop" }],
-    }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    llm.settleNext("늦게 도착한 응답");
     await flushAsync();
 
     const stored = listConversations().filter((conversation) => conversation.turnCount > 0);

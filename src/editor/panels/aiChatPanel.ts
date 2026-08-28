@@ -347,11 +347,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   type ConversationPersistTarget = {
     readonly id: string;
     readonly scope: string;
-    readonly entries?: readonly AuditEntry[];
+    readonly entries: readonly AuditEntry[];
   };
   // 현재까지의 전체 대화(폐기된 세션 + 현재 세션)를 대화 기록 저장소에 저장한다.
+  // 캡처한 id/scope를 지정할 때는 같은 시점의 entries도 반드시 함께 넘겨 대화 간 오염을 막는다.
   const persistConversation = (target?: ConversationPersistTarget): void => {
-    const entries = target?.entries
+    const entries = target
       ? [...target.entries]
       : [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
     if (entries.length === 0) return;
@@ -631,18 +632,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
     const hadConversation = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
-    if (reason === "project-switch") {
-      // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 늦은 finally는 시작 당시 target만 쓴다.
-      activeAbortController?.abort();
-      activeAbortController = null;
-      activeSelectionRegionController = null;
-      activeSelectionRegionKey = null;
-      pendingSends.length = 0;
-      refreshQueueIndicator();
-      turnBusy = false;
-      endTurnProgress();
-      refreshAbortButton();
-    }
+    // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
+    // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
+    activeAbortController?.abort();
+    activeAbortController = null;
+    activeSelectionRegionController = null;
+    activeSelectionRegionKey = null;
+    pendingSends.length = 0;
+    refreshQueueIndicator();
+    turnBusy = false;
+    endTurnProgress();
+    refreshAbortButton();
     persistConversation();
     dropSession(controller);
     endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
@@ -1416,6 +1416,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     const regionConversationId = conversationId;
     const regionConversationScope = conversationScope;
+    const auditHistoryAtRegionStart = [
+      ...controller.auditHistory,
+      ...(controller.session?.getAuditEntries() ?? []),
+    ];
+    const regionAuditEntries: AuditEntry[] = [];
+    const recordRegionAudit = (entry: AuditEntry): void => {
+      regionAuditEntries.push(entry);
+      controller.auditHistory.push(entry);
+    };
     const abortController = new AbortController();
     const selectionKey = `${selection.mapId}:${selection.region.x}:${selection.region.y}:${selection.region.width}:${selection.region.height}`;
     activeAbortController = abortController;
@@ -1435,7 +1444,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     revealVolatileZone();
     closeToolActivity();
     appendBubble("user", text);
-    controller.auditHistory.push({
+    recordRegionAudit({
       kind: "user",
       text,
       at: new Date().toISOString(),
@@ -1472,7 +1481,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       assistantMessageDisplayed = true;
       closeToolActivity();
       appendBubble("assistant", content);
-      controller.auditHistory.push({ kind: "assistant", text: content, at: new Date().toISOString() });
+      recordRegionAudit({ kind: "assistant", text: content, at: new Date().toISOString() });
     };
     const onEvent = (event: SessionEvent): void => {
       if (!ownsRegionRun()) return;
@@ -1521,7 +1530,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
-        controller.auditHistory.push({
+        recordRegionAudit({
           kind: "tool",
           name: event.name,
           args: event.args,
@@ -1537,7 +1546,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (event.type === "status") {
         setStatus(event.text);
-        controller.auditHistory.push({ kind: "status", text: event.text, at: new Date().toISOString() });
+        recordRegionAudit({ kind: "status", text: event.text, at: new Date().toISOString() });
         if (shouldShowStatusInChat(event.text)) appendBubble("system", event.text);
       }
     };
@@ -1558,7 +1567,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(result.assistantText);
       const summary = describeRegionTaskResult(result);
       appendBubble("system", summary);
-      controller.auditHistory.push({ kind: "status", text: summary, at: new Date().toISOString() });
+      recordRegionAudit({ kind: "status", text: summary, at: new Date().toISOString() });
       setStatus(result.ok ? (result.applied ? "적용됨" : "완료") : "오류");
       if (!result.ok && result.error) toast(`영역 작업 실패: ${result.error}`, "error");
     } catch (cause) {
@@ -1566,9 +1575,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const message = cause instanceof Error ? cause.message : String(cause);
       setStatus("오류");
       appendBubble("system", `오류: ${message}`);
-      controller.auditHistory.push({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
+      recordRegionAudit({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
     } finally {
-      if (!ownsRegionRun(true)) return;
+      const regionEntries = [...auditHistoryAtRegionStart, ...regionAuditEntries];
+      if (!ownsRegionRun(true)) {
+        if (!disposed) {
+          persistConversation({
+            id: regionConversationId,
+            scope: regionConversationScope,
+            entries: regionEntries,
+          });
+        }
+        return;
+      }
       const cancelled = abortController.signal.aborted;
       activeSelectionRegionController = null;
       activeSelectionRegionKey = null;
@@ -1579,7 +1598,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       turnBusy = false;
       refreshAbortButton();
       if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
-      persistConversation({ id: regionConversationId, scope: regionConversationScope });
+      persistConversation({
+        id: regionConversationId,
+        scope: regionConversationScope,
+        entries: regionEntries,
+      });
       if (!cancelled) notifyIfObscuredByTestPlay();
       drainPendingSends();
       if (collapseAfterAiWork) {

@@ -15,7 +15,12 @@ import { BUNDLED_EASYRPG_CHIPSET_ASSETS } from "@/assets/bundled";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
-import { imageWarmSupported, normalizeWarmUrl, warmImageUrls } from "@/assets/imageWarmQueue";
+import {
+  imageWarmSupported,
+  normalizeWarmUrl,
+  runImageWarmTask,
+  warmImageUrls,
+} from "@/assets/imageWarmQueue";
 import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackground";
 
 export type EditorWarmupTier = "picker" | "library";
@@ -92,7 +97,9 @@ async function warmColorKeyPaths(paths: readonly string[], concurrency: number):
       const next = queue.shift();
       if (next === undefined) return;
       try {
-        await transparentColorKeyDataUrl(next);
+        await runImageWarmTask(async () => {
+          await transparentColorKeyDataUrl(next);
+        });
       } catch {
         // 워밍 실패는 무해하다 — 피커가 열릴 때 같은 경로로 다시 시도하고 폴백도 있다.
       }
