@@ -234,17 +234,38 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
   }
 
   function renderPanel(actions: CommandListActions, apiKey = "sk-test"): FakeElement {
+    return renderPanelFor("event-1", actions, apiKey);
+  }
+
+  function renderPanelFor(eventId: string, actions: CommandListActions, apiKey = "sk-test"): FakeElement {
     const cmdList = new FakeElement("div") as unknown as HTMLElement;
     const mapId = store.getCurrent().startMapId;
     return renderEventAiAssist({
       mapId,
-      eventId: "event-1",
+      eventId,
       page: testPage(),
       actions,
       cmdList,
       loadConfig: () => ({ ...CONFIG, apiKey }),
     }) as unknown as FakeElement;
   }
+
+  it("같은 ids를 가진 다른 프로젝트로 바꾸면 초안과 열린 상태를 공유하지 않는다", () => {
+    const { actions } = recordingActions();
+    const panelA = renderPanelFor("shared-event", actions);
+    const inputA = findByTestId(panelA, "ai-event-input")!;
+    inputA.value = "Project A private draft";
+    inputA.dispatchEvent(new Event("input"));
+    (panelA as unknown as HTMLDetailsElement).open = true;
+    panelA.dispatchEvent(new Event("toggle"));
+
+    const projectB = createBlankProject();
+    store.replaceProject(projectB);
+    const panelB = renderPanelFor("shared-event", actions);
+
+    expect(findByTestId(panelB, "ai-event-input")!.value).toBe("");
+    expect((panelB as unknown as HTMLDetailsElement).open).toBe(false);
+  });
 
   it("프롬프트 입력과 생성 상태, 결과 영역을 보이는 레이블로 연결한다", () => {
     const { actions } = recordingActions();

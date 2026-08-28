@@ -15,7 +15,7 @@ import { runEventCommandAssist } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -46,6 +46,10 @@ type PanelState = {
 };
 
 const panelStates = new Map<string, PanelState>();
+let panelStatesProjectKey = "";
+let currentDockRoot: HTMLDetailsElement | null = null;
+let registeredDockRoot: HTMLDetailsElement | null = null;
+let currentSelectionTeardown: (() => void) | null = null;
 let panelInstanceId = 0;
 
 const TARGET_NAME_MAX = 18;
@@ -66,7 +70,13 @@ const PROMPT_EXAMPLES: readonly { readonly label: string; readonly prompt: strin
   },
 ];
 
-function stateOf(key: string): PanelState {
+function stateOf(projectKey: string, key: string): PanelState {
+  // Prompt text is private to the loaded project. Keep only the current project's
+  // entries so a long editing session cannot grow this module cache without bound.
+  if (panelStatesProjectKey !== projectKey) {
+    panelStates.clear();
+    panelStatesProjectKey = projectKey;
+  }
   const existing = panelStates.get(key);
   if (existing) return existing;
   const fresh: PanelState = { open: false, draft: "", preview: null, status: "", statusKind: "" };
@@ -86,10 +96,12 @@ function chipStatusOf(state: PanelState): { text: string; kind: string; quiet: b
   return { text: "", kind: "idle", quiet: true };
 }
 
-export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement {
+export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsElement {
   const { mapId, eventId, page, actions, cmdList } = options;
-  const key = auxCompositeKey(mapId, eventId, page.id);
-  const state = stateOf(key);
+  const identity = store.getProjectIdentity();
+  const projectKey = `${identity.kind}:${identity.id}`;
+  const key = `${projectKey}:${auxCompositeKey(mapId, eventId, page.id)}`;
+  const state = stateOf(projectKey, key);
   const instanceId = ++panelInstanceId;
   const headingId = `event-ai-heading-${instanceId}`;
   const inputId = `event-ai-input-${instanceId}`;
@@ -168,7 +180,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
     }
   };
   refreshTarget();
-  cmdList.addEventListener("click", refreshTarget);
+  bindCurrentDockRoot(root, cmdList, refreshTarget);
 
   input.addEventListener("input", () => {
     state.draft = input.value;
@@ -345,16 +357,20 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
   // Escape 는 모달 스택 최상단만 닫는다. 도크가 열려 있으면 도크가 최상단이므로
   // 예전처럼 «프롬프트 쓰다가 Escape → 이벤트 에디터 전체가 닫힘» 이 나지 않는다.
   root.addEventListener("toggle", () => {
+    // A queued toggle from a detached pre-rerender root must never replace the
+    // registration belonging to the current dock instance.
+    if (currentDockRoot !== root) {
+      unregisterModal(root);
+      return;
+    }
     state.open = root.open;
+    syncDockModalRegistration(root);
     if (root.open) {
-      registerModal(root, () => { root.open = false; });
       refreshTarget();
       input.focus();
-    } else {
-      unregisterModal(root);
     }
   });
-  if (root.open) registerModal(root, () => { root.open = false; });
+  syncDockModalRegistration(root);
 
   root.append(
     el("summary", {
@@ -399,6 +415,48 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
   );
   renderPreview();
   return root;
+}
+
+export function eventAiDockModalStackForTest(): { readonly entries: number; readonly live: number } {
+  return {
+    entries: modalStackEntryCountForTest(),
+    live: modalStackDepthForTest(),
+  };
+}
+
+function bindCurrentDockRoot(
+  root: HTMLDetailsElement,
+  cmdList: HTMLElement,
+  refreshTarget: () => void,
+): void {
+  if (currentDockRoot !== root) {
+    currentSelectionTeardown?.();
+    currentSelectionTeardown = null;
+    if (registeredDockRoot) unregisterModal(registeredDockRoot);
+    registeredDockRoot = null;
+    currentDockRoot = root;
+  }
+  const Observer = globalThis.MutationObserver;
+  if (!Observer) return;
+  const selectionObserver = new Observer(refreshTarget);
+  selectionObserver.observe(cmdList, { attributeFilter: ["class"], attributes: true, subtree: true });
+  currentSelectionTeardown = () => selectionObserver.disconnect();
+}
+
+function syncDockModalRegistration(root: HTMLDetailsElement): void {
+  if (currentDockRoot !== root) return;
+  if (!root.open) {
+    unregisterModal(root);
+    if (registeredDockRoot === root) registeredDockRoot = null;
+    return;
+  }
+  if (registeredDockRoot === root) return;
+  if (registeredDockRoot) unregisterModal(registeredDockRoot);
+  registeredDockRoot = root;
+  registerModal(root, () => {
+    if (registeredDockRoot === root) registeredDockRoot = null;
+    root.open = false;
+  });
 }
 
 // 현재 선택된 커맨드의 경로(.cmd-item.selected → data-cmd-path). 없으면 null.
