@@ -660,7 +660,9 @@ function displayTextSettingsBody(
     class: "event-command-message-settings",
     dataset: { testid: "event-command-message-settings" },
   });
-  // 드롭다운 대신 세그먼트 버튼으로 즉시 선택. 숨김 select 는 testid/selectOption 호환.
+  // 드롭다운 대신 세그먼트 버튼으로 즉시 선택. 숨김 select 는 testid 와 change 파이프라인을
+  // 유지하지만 Playwright `selectOption` 은 못 받는다(hidden 이라 액셔너빌리티에서 막힌다) —
+  // 테스트는 `...-segment-<key>` 버튼을 누르고 `aria-pressed` 로 상태를 읽는다.
   const format = segmentedSelect({
     options: MESSAGE_WINDOW_FORMAT_SEGMENTS,
     value: cmd.format,
