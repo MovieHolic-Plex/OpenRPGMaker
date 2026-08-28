@@ -90,7 +90,7 @@ export function markPriorTurns(log: HTMLElement): void {
   const toWrap: HTMLElement[] = [];
   const pins: HTMLElement[] = [];
   for (const child of children) {
-    if (child.classList.contains("ai-start-screen") || child.classList.contains("ai-day-divider")) {
+    if (child.classList.contains("ai-day-divider")) {
       keep.push(child);
       continue;
     }
@@ -155,12 +155,10 @@ export function appendConversationBubble(options: {
   readonly role: AiBubbleRole;
   readonly text: string;
   readonly revealVolatileZone: () => void;
-  readonly removeStartScreen: () => void;
   /** 복원·감사 로그용 시각(날짜 구분선). */
   readonly at?: Date | string | null;
 }): HTMLElement {
   options.revealVolatileZone();
-  options.removeStartScreen();
   if (options.role === "user") {
     ensureDayDivider(options.log, parseAiDayDate(options.at));
     markPriorTurns(options.log);
@@ -221,12 +219,11 @@ export interface ConversationLogHost {
 export function createConversationLogHost(options: {
   readonly log: HTMLElement;
   readonly revealVolatileZone: () => void;
-  readonly removeStartScreen: () => void;
 }): ConversationLogHost {
-  const { log, revealVolatileZone, removeStartScreen } = options;
+  const { log, revealVolatileZone } = options;
 
   const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
-    appendConversationBubble({ log, role, text, revealVolatileZone, removeStartScreen, at });
+    appendConversationBubble({ log, role, text, revealVolatileZone, at });
 
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
   // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
@@ -238,7 +235,6 @@ export function createConversationLogHost(options: {
   };
   const appendReasoning = (): { box: HTMLElement; body: HTMLElement } => {
     revealVolatileZone();
-    removeStartScreen();
     const lastRow = lastCommandRow(log);
     const reasoningCurrent = lastReasoning?.box.parentNode === log
       ? log.childNodes[log.childNodes.length - 1] === lastReasoning.box
@@ -363,7 +359,6 @@ export function createConversationLogHost(options: {
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜).
   const appendTileThumbs = (tilesetId: string, tiles: readonly number[]): void => {
     revealVolatileZone();
-    removeStartScreen();
     const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
     const bubble = el("div", {
@@ -390,7 +385,6 @@ export function createConversationLogHost(options: {
   // AI 리치 문서(present_doc)를 마지막 커맨드 줄에 붙인다.
   const appendAiDocument = (documentData: AiDocument): void => {
     revealVolatileZone();
-    removeStartScreen();
     const bubble = el("div", {
       class: "ai-command-attachment ai-chat-doc",
       dataset: { testid: "ai-bubble-doc" },
@@ -403,7 +397,6 @@ export function createConversationLogHost(options: {
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
     revealVolatileZone();
-    removeStartScreen();
     const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
     const rows: HTMLElement[] = [];
@@ -442,7 +435,6 @@ export function createConversationLogHost(options: {
   // 툴 호출 내역은 각주다. 이미 붙은 툴 활동은 떼어 카드 뒤로 옮기고 조용하게 만든다.
   const appendChangeCard = (card: HTMLElement): HTMLElement => {
     revealVolatileZone();
-    removeStartScreen();
     const host = lastCommandRow(log) ?? log;
     const wrap = el("div", {
       class: "ai-command-attachment ai-change-card-host",

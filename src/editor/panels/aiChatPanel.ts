@@ -431,23 +431,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
   };
 
-  // 시작 화면(빈 대화) — 첫 콘텐츠가 붙는 순간 제거된다.
-  let startScreen: HTMLElement | null = null;
-  const removeStartScreen = (): void => {
-    startScreen?.remove();
-    startScreen = null;
-  };
-  // 대화가 비어 있고(시작 화면만) 진행 중이 아니면 휘발 존을 접어 맵을 가리지 않는다.
-  // (입력창 포커스 시에는 revealVolatileZone으로 다시 펼쳐 웰컴/스킬 카드를 보여준다.)
-  const hideVolatileIfIdle = (): void => {
-    if (startScreen === null || turnBusy || runningProgress || !volatileZone) return;
-    volatileZone.hidden = true;
-  };
-
   const conversationLog = createConversationLogHost({
     log,
     revealVolatileZone,
-    removeStartScreen,
   });
   const {
     appendBubble,
@@ -577,7 +563,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     closeProposalModal();
     chipsHost.replaceChildren();
     log.replaceChildren();
-    startScreen = null;
     closeToolActivity();
     for (const entry of record.entries) renderConversationEntry(entry);
     const lastAssistant = [...record.entries].reverse().find((entry) => entry.kind === "assistant" && entry.text.trim());
@@ -1568,7 +1553,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   // Overlay empty kit dropped — idle prompts live in the composer as director chips.
-  const ensureStartScreen = (): void => {};
   let autoRestoreReplayText: string | null = null;
   if (autoRestoreConversation) {
     const entries = autoRestoreConversation.entries;
@@ -1602,7 +1586,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     window.setTimeout(() => {
       if (typeof document !== "undefined" && document.activeElement === input) return;
       if (composerPopoverKind() === "suggest") openComposerPopover(null);
-      hideVolatileIfIdle();
     }, 160);
   });
 
@@ -1869,8 +1852,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         closeProposalModal();
         chipsHost.replaceChildren();
         log.replaceChildren();
-        startScreen = null;
-        ensureStartScreen();
         setStatus("새 대화");
         refreshExportButton();
         toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
@@ -2124,7 +2105,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshNextSteps();
   };
   const applyComposerViewPolicy = (): void => {
-    if (!historyOpen) removeStartScreen();
     mountLog();
     syncRisen();
   };
