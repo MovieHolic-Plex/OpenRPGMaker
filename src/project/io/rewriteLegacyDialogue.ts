@@ -22,12 +22,17 @@ export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolea
         walk(cmd.body);
       } else if (cmd.kind === "shop") {
         walk(cmd.transactionBranch);
+        walk(cmd.failedTransactionBranch);
       } else if (cmd.kind === "inn") {
         walk(cmd.notEnoughBranch);
       } else if (cmd.kind === "battleProcessing") {
+        walk(cmd.victoryBranch);
         walk(cmd.defeatBranch);
         walk(cmd.escapeBranch);
       } else if (cmd.kind === "promoteActor") {
+        walk(cmd.successBranch);
+        walk(cmd.failureBranch);
+      } else if (cmd.kind === "evolveMonster") {
         walk(cmd.successBranch);
         walk(cmd.failureBranch);
       }

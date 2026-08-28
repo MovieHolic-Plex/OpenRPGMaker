@@ -127,6 +127,14 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **적용된 픽스:** (1) `isM2CatalogEntrySelectableInMap`이 m2-055(Show Animation 중복 등재)를 맵 피커에서 제외 — 카탈로그 엔트리는 저장 프로젝트 호환을 위해 유지. (2) 조명 설정(setLighting) 입력을 0~1 → 밝기(%)/100 스케일로 통일하고 암전/AMB/주변광 3중 용어를 "밝기"로 정리(`commandBodyPage3Native.ts`, `commandPreview.ts` lightingStage/caption). (3) 카메라 프리뷰의 내부 토큰(panTo 등)은 `CAMERA_MODE_LABELS`로 한국어화. (4) 타일 변경(changeTile)에 실맵 캔버스 미리보기 추가(`change-tile-map-canvas`, drawTransferMapPreview 재사용). (5) 프리셋 칩 세로 쪼개짐 방지 CSS(`05-force-modern-actor-page3.css`: nowrap+min-width fit-content). (6) parallax 병기 문구 정리.
 - **계약 테스트:** `test/eventMapItemsBeginnerUx.test.ts`. e2e 증거: `_event-map-items-after.spec.ts`.
 
+## 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+
+- 정본은 `src/project/eventCommands/m2CatalogData.ts` 의 **`DEPRECATED_M2_COMMAND_IDS`** 다: `카탈로그 id → { supersededBy, reason }`. 엔트리는 `entry.deprecated` 로 굽혀 나오고, `isM2CatalogEntrySelectableInMap` · `isM2CatalogEntrySelectableInBattleEvent` · `commandPicker` 의 `COMMAND_PAGES` 세 곳이 모든 피커(탭 그리드 + 전교 검색)에서 그 행을 배제한다. 카탈로그 엔트리와 런타임 실행 경로는 남는다 — **저장된 프로젝트는 계속 열리고 돌아간다**. 새로 저작하는 경로만 사라진다.
+- 현재 등록: `m2-055-show-animation` → `m2-054-show-animation` (중복 등재, 종전 `entry.index === 55` 하드코딩을 대체), `m2-209-advanced-dialogue` → `m2-001-show-text` (「고급 대화」를 「문장 표시」로 통합).
+- **라벨 문자열로 걸지 말 것.** 종전 `commandPicker` 는 `entry.pickerLabel !== "고급 대화"` 로 걸렀는데, `pickerLabelFor` 가 말줄임을 붙여 실제 라벨은 `"고급 대화..."` 이다 — 필터가 한 번도 맞지 않아 "통합했다"고 적어둔 명령이 탭 1 「말하기」에 그대로 살아있었다(실측 2026-08-28).
+- 레지스트리 무결성은 카탈로그 모듈을 로드하는 자리에서 즉시 터리는 방식으로 강제한다(없는 id · 없는 `supersededBy` · `supersededBy` 가 다시 은퇴 행). 계약 테스트는 `test/advancedDialogueMerge.test.ts`, e2e 는 `test/e2e/oprn-modern-event-commands.spec.ts` 의 `DEPRECATED_COMMAND_TEST_IDS` 전 탭 부재 단언이다(라벨이 아니라 버튼 testid 로 건다 — 라벨로 걸면 말줄임 드리파트에 단언이 공허하게 통과한다).
+- 고급 대화가 남긴 것: 감정·자동 넘김은 문장 표시 폼의 고급 옵션(`event-command-text-advanced`)이고 얼굴은 「얼굴 바꾸기」 명령이다. 저장된 m2-209 행은 로드 시 `rewriteLegacyAdvancedDialogueInProject` (`src/project/io/rewriteLegacyDialogue.ts`) 가 맵 이벤트·페이지·공통 이벤트·전투 이벤트의 최상위 명령 배열과 `commandBranches` 가 열거하는 모든 중첩 분기 배열을 네이티브 `text` 로 1회 정규화하고, 그전에 남은 행은 `m2ModernRuntime` · `commandPreview` 가 그대로 받아 연산한다. `test/advancedDialogueMerge.test.ts` 는 중첩 위치를 `commandBranches` 에서 파생하므로 새 분기 종류가 추가되면 정규화 누락을 분기 이름과 함께 실패시킨다.
+
 ## Companion roster in the command picker (2026-08-27)
 
 - The 명령 피커 탭 2 (`동료 · 전투`) opens with a `companion-roster` section rendered by `src/editor/panels/eventEditor/companionRoster.ts`. It lists every `project.database.actors` record with a portrait crop (standalone `faceset` face file first, `charset` idle-front fallback; charset frames are the only single-cell crops left) and inserting through the standard addFollower edit dialog. Cards carry `companion-card-<actorId>` / thumb testids `companion-thumb-<actorId>`.
