@@ -478,7 +478,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       toast(appliedSummary, "ok");
       // 이 함수는 pending.apply() 직후 동기적으로 불린다. 여기서 바로 닫으면 호출부(버튼
       // 핸들러)가 이미 사라진 DOM 을 계속 만지므로, 현재 콜스택을 빠져나온 뒤 닫는다.
-      const close = (): void => closeRegionTaskModal();
+      // 그 사이에 다른 경로(하네스·빌드 팔레트·새 우클릭 드래그)가 새 모달을 열었다면 그것을
+      // 닫아서는 안 된다 — 예약 당시의 root 가 아직 살아 있을 때만 닫는다.
+      const ownRoot = modalRoot;
+      const close = (): void => {
+        if (modalRoot !== ownRoot) return;
+        closeRegionTaskModal();
+      };
       if (typeof globalThis.setTimeout === "function") globalThis.setTimeout(close, 0);
       else close();
       return;

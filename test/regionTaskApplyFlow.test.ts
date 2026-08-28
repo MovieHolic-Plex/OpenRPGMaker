@@ -207,6 +207,39 @@ describe("검토 단계 단축키", () => {
     await flush();
   });
 
+  it("적용 버튼이 포커스인 상태에서는 document 단축키가 물러난다", async () => {
+    // 실제 앱의 검토 진입 상태는 apply 포커스다. 그때 document 핸들러까지 Enter 를 처리하면
+    // 브라우저의 버튼 기본 동작과 겹쳐 pending.apply() 가 두 번 불린다.
+    const onApply = vi.fn();
+    const { root } = await openInReview({ onApply });
+    const apply = findByTestId(root, "region-task-apply");
+    expect((document as unknown as { activeElement: unknown }).activeElement).toBe(apply);
+
+    pressKeyOnDocument("Enter");
+    expect(onApply).not.toHaveBeenCalled();
+
+    apply?.dispatchEvent(new Event("click"));
+    expect(onApply).toHaveBeenCalledTimes(1);
+    await flush();
+  });
+
+  it("적용 뒤 예약된 닫기는 그 사이 새로 열린 모달을 닫지 않는다", async () => {
+    const onApply = vi.fn();
+    const { root } = await openInReview({ onApply });
+    (document as unknown as { activeElement: unknown }).activeElement = null;
+    pressKeyOnDocument("Enter");
+    expect(onApply).toHaveBeenCalledTimes(1);
+
+    // 예약된 close 가 아직 안 돌았는데 다른 경로가 새 모달을 연다.
+    const replacement = openModal({ mapId: "m1", region: REGION, run: vi.fn() });
+    expect(findByTestId(replacement, "region-task-input")).not.toBeNull();
+    await flush();
+
+    expect(findByTestId(replacement, "region-task-input")).not.toBeNull();
+    expect(replacement.parentNode).not.toBeNull();
+    expect(root.parentNode).toBeNull();
+  });
+
   it("R 은 같은 지시로 다시 생성한다", async () => {
     const onApply = vi.fn();
     const { run } = await openInReview({ onApply });
