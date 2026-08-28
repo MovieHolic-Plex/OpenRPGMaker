@@ -178,6 +178,11 @@ const DERIVED_COMMAND_ENTRIES: readonly CommandEntry[] = COMMAND_PRESENTATION_DE
  *
  * 종전에는 픽커 목록에서 라벨 문자열("고급 대화")로 걸러 중복을 피하려 했는데, 라벨이
  * 바뀌면 조용히 뚫리고 실제로 뚫려 있었다. 구조로 막는다.
+ *
+ * 은퇴한 카탈로그 행(중복 등재·다른 명령으로 통합)은 라벨이 아니라 `entry.deprecated`
+ * (= `DEPRECATED_M2_COMMAND_IDS`) 로 걸러낸다. 라벨 필터는 `pickerLabelFor` 가 붙이는
+ * 말줄임("고급 대화...") 때문에 한 번도 맞지 않아, 문장 표시로 통합한 「고급 대화」가 탭 1
+ * 「말하기」에 그대로 남아 있었다(실측 2026-08-28).
  */
 const CANONICAL_CATALOG_ID_BY_KIND: ReadonlyMap<CommandKind, string> = (() => {
   const canonical = new Map<CommandKind, string>();
@@ -197,7 +202,7 @@ function catalogEntryTestId(entry: M2CommandCatalogEntry, kind: CommandKind): st
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
   entries: [
-    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && entry.pickerLabel !== "고급 대화").map(
+    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && !entry.deprecated).map(
       commandEntryFromCatalog
     ),
     ...NATIVE_ONLY_ENTRIES.filter((entry) => entry.page === page),

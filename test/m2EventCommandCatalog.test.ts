@@ -83,6 +83,7 @@ describe("m2 event command catalog", () => {
     const mapRows = M2_COMMAND_CATALOG.filter((entry) => entry.index <= 108 && isM2CatalogEntrySelectableInMap(entry));
 
     // m2-055(Show Animation 중복 등재)는 2026-08-27 초보자 UX 픽스로 맵 피커에서 제외됐다.
+    // 판정 정본은 `DEPRECATED_M2_COMMAND_IDS` (은퇴 레지스트리) 다.
     expect(mapRows.map((entry) => entry.index)).toEqual(
       Array.from({ length: 97 }, (_, index) => index + 1).filter((index) => index !== 55),
     );
@@ -238,7 +239,8 @@ describe("m2 event command catalog", () => {
         expect(createDefaultM2Fields(entry)).not.toEqual({});
       }
       expect(entry.pickerPage).toBe(modernPageByTitle[title]);
-      expect(isM2CatalogEntrySelectableInMap(entry)).toBe(true);
+      // Advanced Dialogue 는 「문장 표시」로 통합된 은퇴 행이다 — 새로 저작하는 경로가 없어야 한다.
+      expect(isM2CatalogEntrySelectableInMap(entry)).toBe(title !== "Advanced Dialogue");
       expect(entry.label).not.toBe(title);
     }
   });
