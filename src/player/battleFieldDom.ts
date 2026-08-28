@@ -35,31 +35,67 @@ interface SkinBattlerPlacement {
   readonly partyScale?: number;
 }
 
-const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
+// 세로 배치의 단일 규칙(12종 공통):
+//  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 라 앵커가 원래
+//    이름표+HUD 스택 **아래**에 잡혔고(그래서 스프라이트가 그만큼 떠 있었다), 지금은
+//    `alignEnemyFeetToAuthoredY` 가 그 스택 높이를 실측해 노드를 내려 보정한다.
+//    실측 스택 높이: rm2003 33px · vxace 60 · rm2000·dragonquest 97 · octopath·bravely 109
+//    · mv 115 · chrono·ff·mother·goldensun 133.
+//  · 그래서 y 의 상한은 "발 + 스택이 필드 안" 이다 — 스택이 두꺼운 스킨은 y 를 더 못 내린다.
+//    ff·goldensun 은 접지 띠(발 ≥ 60%)와 그 상한 사이가 36px 뿐이라 두 줄을 세우면 줄 간격이
+//    이름표 높이(38px)보다 좁아 이름이 겹쳤다(실측 교차 109×4px) → 1열로 바꿨다.
+//  · 좌표계는 필드에서 `--battle-stage-inset-top` 만큼 들어간 배틀러 그룹 박스다
+//    (rm2003 8px, 나머지 11종 48px — `01-scene-base.css` 의 단일 선언).
+//  · 그래서 스프라이트 상자가 큰 스킨은 y 가 작을 때 **위로 잘린다**(필드는 overflow:hidden).
+//  · 백드롭 그라디언트는 필드 높이 33% 에 지평선을 둔다 → 발(이미지 bottom)이 그보다
+//    위면 몬스터가 하늘에 떠 보인다.
+// 아래 y 값은 이 두 축을 실브라우저 rect 로 측정해 정한 것이다. 게이트:
+//   node scripts/runtime-qa.mjs --scenario battle  (+ 12종 스킨 스윕, `battlerGeometry` 기대치)
+// 가로 간격의 하한은 스프라이트 폭이 아니라 **공용 적 이름표**가 정한다:
+//   `03-vxace-status-nodes.css` 의 `.battle-enemy-hud { min-width: 104px }` + 이름 18px.
+//   간격이 그보다 훨씬 좁으면 스프라이트는 안 겹쳐도 이름/게이지 글자가 뭉개진다
+//   (실측: chrono 38 → 이름 잉크 24px 교차, mother 42 → 11px 교차, mv 44 → 판독 불가).
+//   그래서 chrono 38→50, mother 42→50 으로 넓혔고 mv 는 44→52 + `_mv.css` 에서 열 폭을 좁혔다.
+//   게이트의 `battlerGeometry` 이름표 축이 이 하한을 지킨다.
+export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
-  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 90 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
+  // 다마리 분기 y +10: 148px 스프라이트가 y=76 줄에서 필드 위로 11px 잘렸다(실측).
+  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
   // RM2003 사이드뷰: 고전 2×2 그리드 — 적 좌열, 아군 우열, 지그재그 없음.
-  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 58, y: 78 + Math.floor(i / 2) * 56 }), party: (i) => ({ x: 224 + (i % 2) * 46, y: 78 + Math.floor(i / 2) * 56 }) },
+  // y 96/152 는 임의값이 아니다(실측 기하에서 역산). 노드는 `translate(-50%, -100%)` 라
+  // 저작 y 가 노드의 **바닥**이고, 이 스킨의 적 노드는 논리 161px(이미지 140 + 이름표 21)이다.
+  // 좌표계는 필드에서 `--battle-stage-inset-top`(8px) 만큼 들어간 배틀러 그룹 박스(논리 272px)다.
+  //   앞줄 상단이 필드 안:  8 + y/160*272 - 161 >= 0  → y >= 90
+  //   뒷줄 바닥이 필드 안:  y + 56 <= 160             → y <= 104
+  // 예전 값 78 은 첫 조건을 14 단위 어겨 앞줄 몬스터가 필드 위로 잘렸고(실측: 1024×768 에서
+  // image.top=-13 vs field.top=24, 37px 잘림) 필드 하단 100px 가 비어 있었다. 96 은 그 구간의
+  // 가운데라 위아래 여백이 균형을 이룬다. 아군도 같은 두 줄에 세운다 — 사이드뷰는 양쪽이
+  // 같은 지면 띠에 서야 대치 구도가 성립한다(아군 노드는 논리 96px 라 애초에 잘리지 않았다).
+  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 58, y: 96 + Math.floor(i / 2) * 46 }), party: (i) => ({ x: 224 + (i % 2) * 46, y: 96 + Math.floor(i / 2) * 56 }) },
   // RM2000 프론트뷰: 숨김 파티, 적 중앙 수평.
-  rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 82 }), party: () => ({ x: 160, y: 150 }) },
+  rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 76 }), party: () => ({ x: 160, y: 150 }) },
   // 옥토패스 HD-2D: 오버숄더 — 적 상단 얕게, 아군 하단 깊게, HD 간격.
-  octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 74 + Math.floor(i / 2) * 60 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
+  octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
   // 크로노 액티브: 대각 액티브 — 적 우상 일렬, 아군 좌하 클러스터.
-  chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 220 - i * 38, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
+  // y 48 → 86: 한 줄 전원이 필드 위로 55px 잘리고 발이 지평선보다 66px 위에 떠 있었다(실측).
+  chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 250 - i * 50, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
   // 브레이블리: 사이드뷰 회화풍 — 더 촘촘, 아군 대형 스케일.
-  bravely: { partyFacing: "back", partyScale: 1.35, enemy: (i) => ({ x: 64 + (i % 2) * 60, y: 80 + Math.floor(i / 2) * 54 }), party: (i) => ({ x: 218 + (i % 2) * 50, y: 84 + Math.floor(i / 2) * 56 }) },
+  bravely: { partyFacing: "back", partyScale: 1.35, enemy: (i) => ({ x: 64 + (i % 2) * 60, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 218 + (i % 2) * 50, y: 84 + Math.floor(i / 2) * 56 }) },
   // 드퀘 1인칭: 대형 단일 적 중앙, 아군 없음.
   dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 60, y: 68 }), party: () => ({ x: 160, y: 150 }) },
   // FF 정통 사이드뷰: 적 좌측 2열, 아군 우측 세로 1열(진짜 칼럼).
-  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 70 + (i % 2) * 52, y: 76 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 242, y: 62 + i * 36 }) },
+  // 앞줄 y 76 → 82: 발이 지평선보다 5px 위였다(실측) — 줄 간격 58 은 그대로.
+  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i, n) => ({ x: 120 + (i - (n - 1) / 2) * 52, y: 46 }), party: (i) => ({ x: 242, y: 62 + i * 36 }) },
   // 마더: 사이키델릭 프론트뷰 — 적 상단, 간격 좁게.
-  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 42, y: 62 }), party: () => ({ x: 160, y: 150 }) },
+  // y 62 → 84: 한 줄 전원이 필드 위로 24px 잘리고 발이 지평선보다 36px 위였다(실측).
+  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 50, y: 48 }), party: () => ({ x: 160, y: 150 }) },
   // 골든선 저앵글: 로우앵글 — 아군 대형·전방, 적 원경.
-  goldensun: { partyFacing: "back", partyScale: 1.4, enemy: (i) => ({ x: 74 + (i % 2) * 50, y: 86 + Math.floor(i / 2) * 54 }), party: (i) => ({ x: 232 + (i % 2) * 40, y: 92 + Math.floor(i / 2) * 48 }) },
+  goldensun: { partyFacing: "back", partyScale: 1.4, enemy: (i, n) => ({ x: 116 + (i - (n - 1) / 2) * 50, y: 46 }), party: (i) => ({ x: 232 + (i % 2) * 40, y: 92 + Math.floor(i / 2) * 48 }) },
   // MV 프론트뷰: 숨김 파티, RM2000보다 살짝 높은 중앙.
-  mv: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 44, y: 86 }), party: () => ({ x: 160, y: 150 }) },
+  // y 86 → 96: 필드 위로 2px 잘리고 발이 지평선보다 11px 위였다(실측).
+  mv: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 52, y: 60 }), party: () => ({ x: 160, y: 150 }) },
   // VX Ace 프론트뷰: 좌측 2/3 정렬 — 우측 세로 명령창 회피.
-  vxace: { partyFacing: "hidden", enemy: (i, n) => ({ x: 112 + (i - (n - 1) / 2) * 52, y: 104 }), party: () => ({ x: 112, y: 150 }) },
+  vxace: { partyFacing: "hidden", enemy: (i, n) => ({ x: 112 + (i - (n - 1) / 2) * 52, y: 96 }), party: () => ({ x: 112, y: 150 }) },
 };
 
 function skinPlacement(): SkinBattlerPlacement {
@@ -242,6 +278,26 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     }
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
+  }
+  alignEnemyFeetToAuthoredY(group);
+}
+
+/** 저작 y 가 **스프라이트의 발**을 뜻하도록 노드를 라벨 스택 높이만큼 내린다.
+ *  `.battle-enemy` 는 이미지 → 이름 → HUD 순 흐름 열인데 노드가 `translate(-50%, -100%)` 라
+ *  앵커가 라벨 스택 **아래**에 잡힌다. 그래서 스프라이트는 저작 y 보다 라벨 높이만큼 떠 있었다
+ *  (실측 node.bottom − image.bottom: rm2003 33px, rm2000 97px, octopath·bravely 109px,
+ *  chrono 133px). 이게 "몬스터가 너무 위에 달려 있다"의 뿌리다 — y 값을 스킨마다 만지는 건
+ *  증상 치료였다.
+ *  라벨 높이는 스킨·이름 길이·게이지 수마다 달라 CSS 상수로 박을 수 없어 실측해서 심는다.
+ *  오프셋은 노드 **높이**를 바꾸지 않으므로 (node.bottom − image.bottom) 이 불변이고,
+ *  한 번의 패스로 수렴한다(재진입해도 같은 값). jsdom 은 rect 가 0 이라 자동으로 무해하다. */
+function alignEnemyFeetToAuthoredY(group: Element): void {
+  for (const node of group.querySelectorAll<HTMLElement>(".battle-enemy")) {
+    const image = node.querySelector<HTMLElement>(".battle-enemy-image");
+    if (!image) continue;
+    const drop = node.getBoundingClientRect().bottom - image.getBoundingClientRect().bottom;
+    if (!Number.isFinite(drop) || drop <= 0) continue;
+    node.style.setProperty("--battle-enemy-label-drop", `${Math.round(drop)}px`);
   }
 }
 

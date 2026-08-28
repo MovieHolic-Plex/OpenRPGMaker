@@ -161,18 +161,24 @@ export function installPlaySceneTestHooks(
     setGold: (amount) => applyAndSync({ kind: "setGold", amount }),
     heal: () => applyAndSync({ kind: "heal" }),
     teleport: (mapId, x, y) => {
-      applyAndSync({ kind: "teleport", mapId, x, y });
       const context = scene as unknown as {
         getMapId?: () => string;
         loadMap?: (id: string) => void;
         tileX: number;
         tileY: number;
       };
-      if (typeof context.loadMap === "function" && context.getMapId?.() !== mapId) {
-        context.loadMap(mapId);
-      }
+      // 현재 맵 id 는 **세션을 바꾸기 전에** 읽어야 한다. `getMapId()` 는
+      // `session.currentMapId` 를 그대로 돌려주므로(PlayScene.getMapId), applyAndSync 뒤에
+      // 비교하면 항상 같아져 loadMap 분기가 죽는다 — 상태만 옮겨지고 화면은 이전 맵에
+      // 그대로 남았다(실측: 런타임 QA teleport 뒤 스크린샷이 출발 맵이었고, 도착 맵의
+      // 이벤트가 하나도 붙지 않아 말걸기가 실패했다).
+      const previousMapId = context.getMapId?.();
+      applyAndSync({ kind: "teleport", mapId, x, y });
       context.tileX = x;
       context.tileY = y;
+      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
+        context.loadMap(mapId);
+      }
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);
