@@ -29,23 +29,25 @@ Status guide for documentation files. Agents should check this index before trus
 
 HTML files in docs/ are generated reports/analyses. They may reference old wiki page names (pre-split). Always cross-reference with current openwiki/ pages.
 
+**읽기 전 주의:** 이 리포트들은 이미지를 base64 로 인라인한 단일 파일이라 한 줄이 수 MB 다.
+`read`/`grep` 으로 통째로 열면 에이전트 컨텍스트가 날아간다. 브라우저로 열어라.
+
 - `2026-07-18-castle-grammar.html` — generated report (may have stale wiki references)
-- `2026-07-18-castle-scale-analysis.html` — generated report (may have stale wiki references)
 - `2026-07-18-castle-town-50.html` — generated report (may have stale wiki references)
-- `2026-07-18-castle-variants.html` — generated report (may have stale wiki references)
 - `2026-07-18-harness-tileset-failure-log.html` — generated report (may have stale wiki references)
 - `2026-07-18-user-editable-harness-design.html` — generated report (may have stale wiki references)
-- `2026-07-19-castle-town-100.html` — generated report (may have stale wiki references)
 - `2026-07-19-harness-ai-db-evidence.html` — generated report (may have stale wiki references)
-- `2026-07-19-harness-proto-screens.html` — generated report (may have stale wiki references)
 - `2026-07-19-invisible-harness-ux.html` — generated report (may have stale wiki references)
-- `2026-07-19-stamp-concept.html` — generated report (may have stale wiki references)
-- `2026-07-19-stamp-house-variation.html` — generated report (may have stale wiki references)
-- `2026-07-19-stamp-transforms.html` — generated report (may have stale wiki references)
-- `2026-07-20-house-decor-stamp-report.html` — generated report (may have stale wiki references)
-- `2026-07-20-house-variety-catalog.html` — generated report (may have stale wiki references)
-- `2026-07-20-interior-ceiling-canon-report.html` — generated report (may have stale wiki references)
-- `2026-07-20-showcase-project.html` — generated report (may have stale wiki references)
+- `2026-07-30-ai-three-map-rpg-evidence.html` — generated report (`scripts/build-ai-three-map-rpg-report.mjs`; `test/e2e/_ai-three-map-report-renders.spec.ts` 가 렌더를 검사한다)
+- `2026-07-30-battle-ui-ux-critique.html` — generated report (may have stale wiki references)
+- `2026-07-30-event-battle-playtest-report.html` — generated report (may have stale wiki references)
+- `2026-07-30-event-editor-ui-ux-critique.html` — generated report (may have stale wiki references)
+- `2026-08-03-ingame-menu-uiux-proposal.html` — generated report (may have stale wiki references)
+- `2026-08-06-shop-tileset-resource-adversarial-review.html` — generated report (may have stale wiki references)
+- `2026-08-07-event-editor-shell-hostile-review.html` — generated report (may have stale wiki references)
+- `2026-08-07-event-editor-shell-modal-verification.html` — generated report (may have stale wiki references)
+- `2026-08-07-shop-core-adversarial-review.html` — generated report (may have stale wiki references)
+- `2026-08-07-shop-sab-full-adversarial-review.html` — generated report (may have stale wiki references)
 - `ai-assistant-how-it-works.html` — generated report (may have stale wiki references)
 - `battle-command-ux-plan.html` — generated report (may have stale wiki references)
 - `chief-house-harness-flow.html` — generated report (may have stale wiki references)
@@ -62,3 +64,24 @@ HTML files in docs/ are generated reports/analyses. They may reference old wiki 
 - `shop-command-ux-plan.html` — generated report (may have stale wiki references)
 - `target-games-matrix.html` — generated report (may have stale wiki references)
 - `weighted-branch-how-it-works.html` — generated report (may have stale wiki references)
+
+### 워크트리에서 제거된 리포트 (2026-08-28)
+
+base64 인라인 때문에 개당 1.3~11.9MB 였고, 합계 46MB 가 `docs/` 를 차지하면서 에이전트가
+디렉터리를 훑을 때마다 컨텍스트를 태웠다. 전부 git 히스토리에 남아 있다 —
+`git checkout HEAD -- docs/<파일>` 로 되살릴 수 있고, 생성 스크립트가 있는 넷은 다시 만들면 된다.
+
+| 제거된 파일 | 복구 방법 |
+|---|---|
+| `2026-07-20-showcase-project.html` (11.9MB) | `npx tsx scripts/gen-showcase-project-html.mts` |
+| `2026-07-20-house-variety-catalog.html` (6.0MB) | `npx tsx scripts/gen-house-variety-catalog-html.mts` |
+| `2026-07-20-interior-ceiling-canon-report.html` (3.3MB) | `npx tsx scripts/gen-interior-ceiling-report-html.mts` |
+| `2026-07-20-house-decor-stamp-report.html` (1.6MB) | `npx tsx scripts/gen-house-decor-stamp-report-html.mts` |
+| `2026-07-19-castle-town-100.html` (3.0MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-19-stamp-house-variation.html` (2.1MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-18-castle-variants.html` (2.0MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-19-stamp-concept.html` (1.8MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-18-castle-scale-analysis.html` (1.4MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-19-stamp-transforms.html` (1.3MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-19-harness-proto-screens.html` (0.8MB) | git 히스토리 (생성 스크립트 없음) |
+| `2026-07-31-editor-game-ceiling-adversarial-report.html` (0.7MB) | `node scripts/build-adversarial-editor-ceiling-report.mjs` |

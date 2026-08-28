@@ -199,6 +199,16 @@
   font-size: var(--runtime-font-size-11);
   color: var(--runtime-window-muted);
 }
+/* 도움말 창은 커서가 얹힌 물건의 설명이다 — 두 줄까지 보여주고 넘치면 자른다. */
+.runtime-shop-help-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  min-height: calc(var(--runtime-font-size-11) * 1.35);
+  overflow: hidden;
+  text-align: left;
+}
 
 .runtime-shop-main {
   display: grid;
@@ -225,9 +235,9 @@
 }
 .runtime-shop-item-row {
   display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) auto auto;
+  grid-template-columns: 20px minmax(0, 1fr) 3.6em 5.8em;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 5px 8px;
   border: 1px solid transparent;
   border-radius: 0;
@@ -254,14 +264,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--runtime-window-selected-bg);
-  color: var(--runtime-window-text);
+  background: rgba(8, 14, 26, 0.42);
+  color: var(--runtime-window-muted);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
 }
 
 .runtime-shop-item-owned {
   color: var(--runtime-window-muted);
   font-size: var(--runtime-font-size-11);
+  text-align: right;
 }
 
 .runtime-shop-panel-title {
@@ -283,6 +294,31 @@
 .runtime-shop-item-price {
   color: var(--runtime-window-highlight);
   font-weight: 600;
+  text-align: right;
+}
+
+/* 살 수 없는(또는 상인이 못 사주는) 행. 커서는 얹히되 값이 죽어 보여야 한다 —
+   예전에는 300G 로 9999G 왕관이 살 수 있는 물건과 똑같이 그려졌다. */
+.runtime-shop-item-row.is-unaffordable .runtime-shop-item-name,
+.runtime-shop-item-row.is-unaffordable .runtime-shop-item-owned {
+  opacity: 0.5;
+}
+.runtime-shop-item-row.is-unaffordable .runtime-shop-item-price {
+  color: var(--runtime-window-muted);
+  opacity: 0.72;
+  text-decoration: line-through;
+}
+.runtime-shop-item-row.is-unaffordable .runtime-shop-item-icon {
+  opacity: 0.45;
+}
+
+/* 키보드 포커스 표시 — 커서 강조와 별개로 브라우저 포커스가 어디인지 보여야 한다. */
+.runtime-shop-item-row:focus-visible,
+.runtime-shop-menu-choice:focus-visible,
+.runtime-shop-cancel:focus-visible,
+.runtime-commerce-quantity-input:focus-visible {
+  outline: 2px solid var(--runtime-window-highlight, #ffe07a);
+  outline-offset: -2px;
 }
 
 .runtime-shop-gold {
@@ -292,7 +328,17 @@
   font-weight: 700;
 }
 .runtime-shop-gold-line {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
   white-space: nowrap;
+}
+.runtime-shop-gold-label {
+  color: var(--runtime-window-muted);
+  font-weight: 600;
+}
+.runtime-shop-gold-value {
+  font-weight: 700;
 }
 .runtime-shop-merchant-gold {
   color: var(--runtime-window-highlight, #ffe07a);
@@ -320,8 +366,19 @@
 .runtime-shop-party-sprite {
   width: 24px;
   height: 24px;
-  background: var(--bg-inset);
+  background-color: rgba(8, 14, 26, 0.42);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
   border-radius: 0;
+  image-rendering: pixelated;
+}
+.runtime-shop-party-sprite-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--runtime-window-muted);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
 }
 .runtime-shop-owned {
   display: grid;
@@ -348,6 +405,29 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+.runtime-shop-status {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 수량·합계는 프롬프트 줄에 둔다 — 목록 마지막 자식이던 예전 자리에서는 화면 밖이었다. */
+.runtime-shop-quantity-wrap {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+.runtime-shop-quantity-label {
+  color: var(--runtime-window-muted);
+  font-weight: 600;
+}
+.runtime-shop-quantity-total {
+  color: var(--runtime-window-highlight);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .runtime-commerce-quantity-input {

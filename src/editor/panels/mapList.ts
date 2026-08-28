@@ -35,6 +35,7 @@ type RenderNodeContext = {
 
 type TreeActionSpec = {
   readonly action: () => void;
+  readonly ariaExpanded?: boolean;
   readonly disabled?: boolean;
   readonly icon: string;
   readonly label: string;
@@ -65,6 +66,10 @@ let currentMapListVariant: MapListVariant = "panel";
 let mapFilterQuery = "";
 type MapFilterFacet = "all" | "empty" | "nolink" | "encounter";
 let mapFilterFacet: MapFilterFacet = "all";
+/** 맵이 이 개수 이상이면 필터를 처음부터 펼친다. 행 31px × 8 = 248px 로 기본
+ *  트리 높이(300px)를 채우기 시작하는 지점이다. */
+const FILTER_AUTO_EXPAND_MAPS = 8;
+let filterExpandedByUser = false;
 let lastExpandedMapId: MapId | null = null;
 let draggingMapId: MapId | null = null;
 let draggingMapIds: MapId[] = [];
@@ -104,6 +109,17 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
         ],
       }),
     );
+    if (canToggleMapFilter(mapCount)) {
+      header.append(el("button", {
+        class: "map-tree-action",
+        attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
+        dataset: { testid: "map-tree-filter-toggle" },
+        children: [el("span", { class: "rm-tool-icon oprn-icon-map-search", attrs: { "aria-hidden": "true" } })],
+        on: {
+          click: () => toggleMapFilterExpansion(),
+        },
+      }));
+    }
     header.append(
       el("button", {
         class: "map-tree-basic-add",
@@ -116,13 +132,18 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
       }),
     );
     section.append(header);
-    section.append(makeFilterField());
+    section.append(makeFilterField(mapCount));
   } else {
     const header = el("div", { class: "map-tree-header" });
-    header.append(el("h3", { text: `맵 ${mapCount}` }));
-    header.append(makeMapTreeHeaderActions(project.mapTree));
+    header.append(el("h3", {
+      children: [
+        el("span", { class: "map-tree-title", text: "맵" }),
+        el("span", { class: "map-tree-count", text: String(mapCount) }),
+      ],
+    }));
+    header.append(makeMapTreeHeaderActions(project.mapTree, mapCount));
     section.append(header);
-    section.append(makeFilterField());
+    section.append(makeFilterField(mapCount));
   }
 
   const tree = el("div", {
@@ -148,7 +169,40 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
   }
 }
 
-function makeFilterField(): HTMLElement {
+function hasActiveMapFilter(): boolean {
+  return mapFilterQuery.trim().length > 0 || mapFilterFacet !== "all";
+}
+
+/** 활성 질의/패싯이 있으면 개수와 무관하게 편다 — 숨겨진 필터 때문에 "맵이 사라졌다"고
+ *  오인하지 않도록 한다. `makeFilterField`와 헤더 토글의 `aria-expanded`가 같은 판단을
+ *  공유해야 두 곳이 어긋나지 않는다. */
+function isFilterExpanded(mapCount: number): boolean {
+  return hasActiveMapFilter() || filterExpandedByUser || mapCount >= FILTER_AUTO_EXPAND_MAPS;
+}
+
+/** 토글을 눌러도 상태가 안 바뀌는 경우엔 아예 그리지 않는다 — 질의/패싯이 활성이거나
+ *  맵이 많아 이미 강제로 펼쳐져 있으면 `filterExpandedByUser` 를 뒤집어도 `isFilterExpanded`
+ *  결과가 그대로라, 눌러도 아무 일 없는 죽은 버튼이 된다(행 접기 화살표가 disabled 표시 없이
+ *  죽어 있던 것과 같은 결함 형태 — 이번엔 아예 렌더하지 않는 쪽으로 막는다). */
+function canToggleMapFilter(mapCount: number): boolean {
+  return !hasActiveMapFilter() && mapCount < FILTER_AUTO_EXPAND_MAPS;
+}
+
+/** 전문가 헤더 토글과 초보 플라이아웃 토글이 공유하는 동작. 마크업(치장된
+ *  `treeAction` vs 맨 `el("button")`)은 서로 다르지만 상태 전이는 하나뿐이라 —
+ *  두 곳에서 따로 구현하면(과거처럼) 한쪽만 펼친 뒤 입력에 포커스를 주는
+ *  드리프트가 생긴다. 접는 클릭에서는 필터 입력이 곧바로 hidden 이 되어
+ *  `.focus()` 가 조용히 no-op 이 되므로 펼침/접힘을 분기할 필요가 없다. */
+function toggleMapFilterExpansion(): void {
+  filterExpandedByUser = !filterExpandedByUser;
+  rerenderMapList();
+  currentMapListContainer
+    ?.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]')
+    ?.focus();
+}
+
+function makeFilterField(mapCount: number): HTMLElement {
+  const expanded = isFilterExpanded(mapCount);
   const chips = el("div", { class: "map-tree-filter-facets" });
   for (const [value, label] of [
     ["all", "전체"],
@@ -169,7 +223,7 @@ function makeFilterField(): HTMLElement {
       },
     }));
   }
-  return el("div", {
+  const wrap = el("div", {
     class: "map-tree-filter",
     children: [
       el("input", {
@@ -194,6 +248,8 @@ function makeFilterField(): HTMLElement {
       chips,
     ],
   });
+  if (!expanded) wrap.setAttribute("hidden", "");
+  return wrap;
 }
 
 function renderNode(spec: RenderNodeSpec): void {
@@ -584,11 +640,18 @@ function treeToggle(mapId: MapId, hasChildren: boolean, isCollapsed: boolean): H
   }) as HTMLButtonElement;
 }
 
-function makeMapTreeHeaderActions(root: MapTreeNode): HTMLElement {
+function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElement {
   const allCollapsed = areAllBranchesCollapsed(root);
   return el("div", {
     class: "map-tree-header-actions",
     children: [
+      ...(canToggleMapFilter(mapCount) ? [treeAction({
+        action: () => toggleMapFilterExpansion(),
+        ariaExpanded: isFilterExpanded(mapCount),
+        icon: "map-search",
+        label: "맵 필터",
+        testId: "map-tree-filter-toggle",
+      })] : []),
       treeAction({
         action: () => openMapCreateDialog({ preset: "blank" }),
         icon: "map-child",
@@ -604,7 +667,7 @@ function makeMapTreeHeaderActions(root: MapTreeNode): HTMLElement {
           rerenderMapList();
           beginRename(id);
         },
-        icon: "folder",
+        icon: "map-folder",
         label: "분류 추가",
         testId: "map-add-folder",
       }),
@@ -1003,7 +1066,12 @@ function clearDropTargets(): void {
 function treeAction(spec: TreeActionSpec): HTMLButtonElement {
   const button = el("button", {
     class: "map-tree-action",
-    attrs: { title: spec.label, "aria-label": spec.label, type: "button" },
+    attrs: {
+      title: spec.label,
+      "aria-label": spec.label,
+      type: "button",
+      ...(spec.ariaExpanded !== undefined ? { "aria-expanded": String(spec.ariaExpanded) } : {}),
+    },
     children: [
       el("span", { class: `rm-tool-icon oprn-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
       ...(spec.text ? [el("span", { class: "map-tree-action-text", text: spec.text })] : []),
@@ -1151,6 +1219,7 @@ function beginTreeBoxSelect(event: Event, tree: HTMLElement): void {
 export function resetMapListUiStateForTests(): void {
   mapFilterQuery = "";
   mapFilterFacet = "all";
+  filterExpandedByUser = false;
   lastExpandedMapId = null;
   draggingMapId = null;
   draggingMapIds = [];

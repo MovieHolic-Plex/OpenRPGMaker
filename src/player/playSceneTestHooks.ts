@@ -179,6 +179,9 @@ export function installPlaySceneTestHooks(
       }
       context.tileX = x;
       context.tileY = y;
+      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
+        context.loadMap(mapId);
+      }
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);

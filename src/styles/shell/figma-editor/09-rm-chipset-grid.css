@@ -127,20 +127,3 @@
     justify-items: center;
     padding: 4px 4px;
   }
-
-  .left-panel-stack[data-testid="left-map-root"] .map-item.active {
-    background: var(--accent);
-    border-color: var(--accent-border);
-    color: var(--on-accent);
-  }
-
-  .left-panel-stack[data-testid="left-map-root"] .map-tree-panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    max-width: 100%;
-    min-height: 0;
-    min-width: 0;
-    overflow-x: hidden;
-  }
-

@@ -61,10 +61,7 @@
   .tool-grid .btn,
   .layer-btn,
   .brush-size-btn,
-  .tool-command-row .icon-btn,
-  .left-panel-stack[data-testid="left-map-root"] .map-tree-action,
-  .left-panel-stack[data-testid="left-map-root"] .btn,
-  .left-panel-stack[data-testid="left-map-root"] .map-tree-wide-action {
+  .tool-command-row .icon-btn {
     background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;

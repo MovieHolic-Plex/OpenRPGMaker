@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-28T12:11:14.651Z",
+  "generatedAt": "2026-08-28T18:10:59.150Z",
   "metrics": {
-    "hexLiterals": 1922,
-    "important": 1035,
-    "undefinedVars": 74,
+    "hexLiterals": 1824,
+    "important": 1023,
+    "undefinedVars": 73,
     "globalRootFiles": 10,
-    "cssFileCount": 258
+    "cssFileCount": 259
   },
   "details": {
     "hexByFile": {
@@ -75,7 +75,7 @@
       "src/styles/editor/event-editor.command-preview/07-screen-effect-stage.css": 7,
       "src/styles/editor/event-editor.command-preview/08-quick-authoring-surface.css": 17,
       "src/styles/editor/event-editor.command-preview/09-map-screen-authoring-surface.css": 12,
-      "src/styles/editor/event-editor.commerce.css": 87,
+      "src/styles/editor/event-editor.commerce.css": 43,
       "src/styles/editor/event-editor.css": 1,
       "src/styles/editor/event-editor.mockup.css": 29,
       "src/styles/editor/event-editor.modern/03-legend-toolbar.css": 5,
@@ -97,9 +97,10 @@
       "src/styles/editor/help-modal.css": 29,
       "src/styles/editor/inline-assist.css": 35,
       "src/styles/editor/map-event-search.css": 31,
-      "src/styles/editor/map-props.css": 41,
+      "src/styles/editor/map-panel.modern.css": 1,
+      "src/styles/editor/map-props.css": 35,
       "src/styles/editor/palette-player.css": 4,
-      "src/styles/editor/responsive-a.css": 17,
+      "src/styles/editor/responsive-a.css": 16,
       "src/styles/editor/storyboard.css": 3,
       "src/styles/editor/tile-palette-clusters.css": 1,
       "src/styles/map/resource-system.part-1.css": 5,
@@ -136,7 +137,7 @@
       "src/styles/runtime/battle-skins/_rm2003.css": 19,
       "src/styles/runtime/battle-skins/_transitions.css": 11,
       "src/styles/runtime/battle-skins/_vxace.css": 35,
-      "src/styles/runtime/commerce.css": 2,
+      "src/styles/runtime/commerce.css": 3,
       "src/styles/runtime/keyboardNav.css": 6,
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/nameEntry.css": 11,
@@ -149,12 +150,9 @@
       "src/styles/runtime/title.css": 4,
       "src/styles/runtime/touchpad.css": 2,
       "src/styles/runtime/transitions.css": 5,
-      "src/styles/shell/editor-ui-modes.css": 61,
+      "src/styles/shell/editor-ui-modes.css": 46,
       "src/styles/shell/editor-welcome.css": 1,
-      "src/styles/shell/figma-editor/04-chipset-events.css": 3,
-      "src/styles/shell/figma-editor/10-map-tree.css": 25,
       "src/styles/shell/shell-density.part-1.css": 2,
-      "src/styles/shell/shell-density.part-2.css": 6,
       "src/styles/tokens.css": 24,
       "src/player/player.css": 1
     },
@@ -202,26 +200,24 @@
       "src/styles/runtime/battle-skins/_battlers.css": 11,
       "src/styles/runtime/battle-skins/_bravely.css": 5,
       "src/styles/runtime/battle-skins/_chrono.css": 3,
-      "src/styles/runtime/battle-skins/_dragonquest.css": 3,
+      "src/styles/runtime/battle-skins/_dragonquest.css": 1,
       "src/styles/runtime/battle-skins/_ff.css": 2,
       "src/styles/runtime/battle-skins/_goldensun.css": 1,
       "src/styles/runtime/battle-skins/_mother.css": 2,
-      "src/styles/runtime/battle-skins/_mv.css": 65,
+      "src/styles/runtime/battle-skins/_mv.css": 63,
       "src/styles/runtime/battle-skins/_octopath.css": 2,
       "src/styles/runtime/battle-skins/_pokemon.css": 18,
-      "src/styles/runtime/battle-skins/_rm2000.css": 4,
+      "src/styles/runtime/battle-skins/_rm2000.css": 2,
       "src/styles/runtime/battle-skins/_vxace.css": 264,
       "src/styles/runtime/battle-skins/_windowskin.css": 5,
       "src/styles/runtime/title.css": 1,
-      "src/styles/shell/editor-ui-modes.css": 31,
+      "src/styles/shell/editor-ui-modes.css": 30,
       "src/styles/shell/editor-welcome.css": 1,
       "src/styles/shell/figma-editor/03-layout-left-palette.css": 2,
-      "src/styles/shell/figma-editor/04-chipset-events.css": 2,
+      "src/styles/shell/figma-editor/04-chipset-events.css": 1,
       "src/styles/shell/figma-editor/05-canvas-statusbar.css": 2,
       "src/styles/shell/figma-editor/09-rm-chipset-grid.css": 8,
-      "src/styles/shell/figma-editor/10-map-tree.css": 2,
       "src/styles/shell/shell-density.part-1.css": 1,
-      "src/styles/shell/shell-density.part-2.css": 2,
       "src/player/player.css": 1
     },
     "globalRootFileList": [
@@ -302,7 +298,6 @@
       "--studio-surface-3",
       "--studio-violet",
       "--studio-violet-soft",
-      "--surface",
       "--surface-1",
       "--surface-raised",
       "--surface-soft",
@@ -398,7 +393,6 @@
         "src/styles/database/desktop-record-shell/11-life-authoring.css"
       ],
       "--hover-bg": [
-        "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css"
       ],
@@ -546,9 +540,6 @@
       "--studio-violet-soft": [
         "src/styles/database/system-studio.css",
         "src/styles/database/system-studio.css"
-      ],
-      "--surface": [
-        "src/styles/shell/figma-editor/10-map-tree.css"
       ],
       "--surface-1": [
         "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css",
@@ -748,6 +739,7 @@
       "src/styles/editor/inline-assist.css",
       "src/styles/editor/map-event-search.css",
       "src/styles/editor/map-history.css",
+      "src/styles/editor/map-panel.modern.css",
       "src/styles/editor/map-props.css",
       "src/styles/editor/palette-player.css",
       "src/styles/editor/region-task.css",

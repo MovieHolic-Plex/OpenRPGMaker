@@ -125,6 +125,150 @@ export function renderSummary(report) {
 }
 
 /**
+ * 적 배치 기하 판정.
+ *
+ * 근거는 관측값이 아니라 **저작 의도**다:
+ *  - `.battle-backdrop` 의 그라디언트가 필드 높이 33% 에 지평선을 둔다
+ *    (`01-scene-base.css`: `#a7d6f3 32%` → `--oprn-battle-backdrop-mid 33%`).
+ *    따라서 적의 발(이미지 bottom)은 지평선 **아래**, 즉 필드 상단에서 33% 넘는 곳에
+ *    닿아야 땅에 서 있는 것으로 보인다.
+ *  - 스프라이트는 필드 박스를 벗어나면 잘린다(`.battle-field { overflow: hidden }`).
+ *    상단 잘림은 "몬스터가 너무 위에 달려 있다"의 직접 증상이다.
+ * 임계값을 관측값에서 역산하지 않기 위해 두 축(필드 포함 · 지평선 아래) 모두
+ * CSS 상수에서 끌어온다.
+ */
+export const BATTLE_HORIZON_RATIO = 0.33;
+
+/** 접지 띠: 발(이미지 bottom)이 필드 **하위 40%** 안에 닿아야 땅에 선 것으로 본다.
+ *  지평선(33%) 축만으로는 "발이 지평선 바로 아래"인 상태가 통과하는데, 그건 여전히
+ *  필드 하단 절반이 텅 빈 채 몬스터가 중상단에 달려 있는 그림이다(실측: chrono 발 37%,
+ *  mv 46%, vxace 57% — 전부 지평선 축 통과). 그래서 띠 축을 따로 둔다. */
+export const BATTLE_GROUND_BAND_RATIO = 0.6;
+
+export function evaluateBattlerGeometry(spec, battlers) {
+  const failures = [];
+  if (!battlers) {
+    failures.push("battlerGeometry: 전투 화면(battle-scene/battle-field)이 없다 — 기하를 읽을 수 없다");
+    return failures;
+  }
+  const { field, enemies } = battlers;
+  const minEnemies = spec.minEnemies ?? 1;
+  if (enemies.length < minEnemies) {
+    failures.push(`battlerGeometry: 적 노드 ${enemies.length}개 — 최소 ${minEnemies}개 기대`);
+  }
+  const horizon = field.top + field.height * (spec.horizonRatio ?? BATTLE_HORIZON_RATIO);
+  const groundBand = field.top + field.height * (spec.groundBandRatio ?? BATTLE_GROUND_BAND_RATIO);
+  for (const enemy of enemies) {
+    const label = enemy.id ?? "(id 없음)";
+    const rect = enemy.image;
+    if (!rect) {
+      failures.push(`battlerGeometry[${label}]: .battle-enemy-image 노드가 없다`);
+      continue;
+    }
+    if (rect.height <= 0 || rect.width <= 0) {
+      failures.push(`battlerGeometry[${label}]: 스프라이트 크기가 0 (${rect.width}×${rect.height})`);
+      continue;
+    }
+    if (rect.top < field.top) {
+      failures.push(
+        `battlerGeometry[${label}]: 필드 상단 밖으로 ${Math.round(field.top - rect.top)}px 잘렸다`
+          + ` (image.top=${rect.top} < field.top=${field.top})`,
+      );
+    }
+    if (rect.bottom > field.bottom) {
+      failures.push(
+        `battlerGeometry[${label}]: 필드 하단 밖으로 ${Math.round(rect.bottom - field.bottom)}px 잘렸다`
+          + ` (image.bottom=${rect.bottom} > field.bottom=${field.bottom})`,
+      );
+    }
+    // 라벨 축(하단): 노드는 스프라이트 **아래**에 이름표+HP/MP/ATB 를 쌓는다. 발을 접지 띠까지
+    // 내리면 이 라벨 스택이 필드 밖으로 밀려 이름·수치가 잘린다(실측: rm2003 앞줄 node.bottom=464
+    // vs field.bottom=444 → 20px 잘림). 이미지 축만으로는 통과하므로 노드 상자를 따로 본다.
+    if (enemy.node && enemy.node.bottom > field.bottom) {
+      failures.push(
+        `battlerGeometry[${label}]: 이름표/게이지가 필드 하단 밖으로 ${Math.round(enemy.node.bottom - field.bottom)}px 잘렸다`
+          + ` (node.bottom=${enemy.node.bottom} > field.bottom=${field.bottom})`,
+      );
+    }
+    if (rect.bottom < horizon) {
+      failures.push(
+        `battlerGeometry[${label}]: 발이 지평선 위에 떠 있다`
+          + ` (image.bottom=${rect.bottom} < 지평선=${Math.round(horizon)}`
+          + `, field=${field.top}..${field.bottom})`,
+      );
+    } else if (rect.bottom < groundBand) {
+      failures.push(
+        `battlerGeometry[${label}]: 발이 접지 띠 위에 떠 있다`
+          + ` (image.bottom=${rect.bottom} < 하위 40% 시작=${Math.round(groundBand)}`
+          + `, field=${field.top}..${field.bottom})`,
+      );
+    }
+  }
+  // 겹침 축: 여러 마리가 **같은 점**에 쌓이면 화면에는 한 마리로 보인다. 담기·지평선 축만으로는
+  // 통과하므로(실측: rm2000/dragonquest/mv 가 3마리 트룹을 완전히 같은 rect 에 겹쳐 그리면서
+  // 게이트를 통과했다) 중심 간 거리를 따로 본다. 기준은 더 작은 스프라이트 상자의 25%.
+  const minCenterGap = spec.minCenterGap ?? 0.25;
+  const centerX = (rect) => (rect.left + rect.right) / 2;
+  const centerY = (rect) => (rect.top + rect.bottom) / 2;
+  for (let a = 0; a < enemies.length; a += 1) {
+    for (let b = a + 1; b < enemies.length; b += 1) {
+      const first = enemies[a]?.image;
+      const second = enemies[b]?.image;
+      if (!first || !second) continue;
+      const gapX = Math.abs(centerX(first) - centerX(second));
+      const gapY = Math.abs(centerY(first) - centerY(second));
+      const needX = Math.min(first.width, second.width) * minCenterGap;
+      const needY = Math.min(first.height, second.height) * minCenterGap;
+      if (gapX >= needX || gapY >= needY) continue;
+      failures.push(
+        `battlerGeometry[${enemies[a].id ?? a}/${enemies[b].id ?? b}]: 두 적이 같은 자리에 겹쳐 있다`
+          + ` (중심 거리 ${Math.round(gapX)}×${Math.round(gapY)}px, 최소 ${Math.round(needX)}×${Math.round(needY)}px)`,
+      );
+    }
+  }
+  // 아군 겹침 축: 적을 접지 띠까지 내리면 **아군 진형의 세로 띠**로 내려온다. 그러면 사이드뷰
+  // 스킨에서 적 스프라이트·이름표가 아군 스프라이트와 포개져 양쪽 다 안 읽힌다(실측: chrono 를
+  // y 86→48 로 내렸을 때 적 3마리 이름줄이 아군 3명 위로 지나갔다). 적끼리의 겹침 축으로는
+  // 안 잡히므로 따로 본다. 판정은 스프라이트 상자 교차 — 접촉(0px)은 통과.
+  for (const enemy of enemies) {
+    const rect = enemy.image;
+    if (!rect) continue;
+    for (const ally of battlers.allies ?? []) {
+      // 노드가 아니라 **스프라이트 잉크**끼리 본다. pokemon 처럼 아군이 화면 위에 뜬 HUD 카드로
+      // 표현되는 스킨에서는 노드 상자가 필드를 넓게 덮어서, 노드 기준으로 보면 의도된 HUD
+      // 오버레이(실측 3건)를 결함으로 잡는다.
+      const box = ally.image;
+      if (!box) continue;
+      const overlapX = Math.min(rect.right, box.right) - Math.max(rect.left, box.left);
+      const overlapY = Math.min(rect.bottom, box.bottom) - Math.max(rect.top, box.top);
+      if (overlapX <= 0 || overlapY <= 0) continue;
+      failures.push(
+        `battlerGeometry[${enemy.id ?? "(id 없음)"}/${ally.id ?? "(아군)"}]: 적이 아군 스프라이트와 겹쳐 있다`
+          + ` (교차 ${Math.round(overlapX)}×${Math.round(overlapY)}px)`,
+      );
+    }
+  }
+  // 이름표 축: 스프라이트가 안 겹쳐도 **이름/게이지가 겹치면 글자가 뭉개진다**(실측: chrono·mv 는
+  // 적 간격이 38~44px 인데 공용 이름표가 훨씬 넓어 "슬라임동굴 박쥐슬라임" 으로 뭉개졌다).
+  // 잉크 박스(Range 실측)끼리 교차하면 실패. 스프라이트 축과 독립이라 따로 본다.
+  for (let a = 0; a < enemies.length; a += 1) {
+    for (let b = a + 1; b < enemies.length; b += 1) {
+      const first = enemies[a]?.name;
+      const second = enemies[b]?.name;
+      if (!first || !second) continue;
+      const overlapX = Math.min(first.right, second.right) - Math.max(first.left, second.left);
+      const overlapY = Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top);
+      if (overlapX <= 0 || overlapY <= 0) continue;
+      failures.push(
+        `battlerGeometry[${enemies[a].id ?? a}/${enemies[b].id ?? b}]: 적 이름표가 겹쳐 글자가 뭉개진다`
+          + ` (교차 ${Math.round(overlapX)}×${Math.round(overlapY)}px)`,
+      );
+    }
+  }
+  return failures;
+}
+
+/**
  * 비트의 기대치를 관측값과 대조해 실패 사유를 모은다.
  * 빈 배열 = 통과. 게이트는 이 결과만 보고 판정한다.
  */
@@ -190,5 +334,8 @@ export function evaluateExpect(expected, observed) {
     }
   }
 
+  if (expected.battlerGeometry) {
+    failures.push(...evaluateBattlerGeometry(expected.battlerGeometry, observed.battlers ?? null));
+  }
   return failures;
 }

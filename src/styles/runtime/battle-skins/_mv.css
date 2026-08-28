@@ -25,17 +25,29 @@
   display: none;
 }
 
-/* result 스텝의 승리 연출 좌표는 유지 — 그 외 단계에서만 적을 필드 중앙에. */
-.battle-scene[data-battle-skin="mv"]:not([data-battle-director-step="result"]) .battle-enemy {
-  left: 50% !important;
-  top: 46% !important;
-}
+/* 적 좌표는 `BATTLER_PLACEMENTS`(battleFieldDom.ts)의 `--battle-node-x/y` 가 정한다.
+   예전에는 여기서 `left/top` 을 강제로 한 점에 고정했는데, 단일 적을 가운데 두려던 규칙이
+   **다마리 트룹까지 같은 점에 쌓았다**(실측: 3마리 트룹의 세 rect 가 완전히 동일 → 화면에는
+   한 마리). 배치 함수가 이미 단일 적을 x=160(=50%)에 두므로 그 강제 선언은 불필요했다. */
 
 /* 적 HUD를 스프라이트 바로 아래에 세로로 쌓아 표시. */
 .battle-scene[data-battle-skin="mv"] .battle-enemy {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* 적을 한 점에 고정하던 규칙을 없애자 이름·게이지가 각자 제 스프라이트 아래로 갔는데, 공용
+   노드는 이름 18px + HUD `min-width: 104px` 라 MV 진형 간격(약 72px)에서 옆 적 것과 겹쳐
+   글자가 뭉갰다(실측 스크린샷). MV 만 자기 스프라이트 열 폭으로 좁힌다. */
+.battle-scene[data-battle-skin="mv"] .battle-enemy-hud {
+  min-width: 0;
+  width: 60px;
+}
+
+.battle-scene[data-battle-skin="mv"] .battle-enemy-name {
+  font-size: 10px;
+  max-width: 64px;
 }
 
 .battle-scene[data-battle-skin="mv"] .battle-enemy-hud {

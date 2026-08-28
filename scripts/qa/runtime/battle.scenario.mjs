@@ -63,7 +63,11 @@ export const battleScenario = {
         { kind: "waitFor", testid: "battle-actor-sprites", state: "present" },
         { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 20000 },
       ],
-      expect: { testidPresent: ["battle-scene", "battle-actor-sprites"] },
+      expect: {
+        testidPresent: ["battle-scene", "battle-actor-sprites"],
+        // 적 배치는 실브라우저 rect 로만 참이다 — 상단 클리핑·접지 띠·겹침을 여기서 본다.
+        battlerGeometry: { minEnemies: 3 },
+      },
       shot: true,
     },
     {

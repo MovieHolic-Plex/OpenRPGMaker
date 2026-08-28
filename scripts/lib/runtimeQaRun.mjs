@@ -181,6 +181,69 @@ async function applyOp(page, op) {
   }
 }
 
+/** 전투 배틀러 기하 — 실브라우저 rect. CSS 레이아웃은 jsdom 으로 재현되지 않으므로
+ *  적 배치 검증은 이 측정값만이 근거가 된다. 전투 화면이 없으면 null. */
+function readBattlerGeometryInPage() {
+  const scene = document.querySelector("[data-testid='battle-scene']");
+  const field = scene?.querySelector("[data-testid='battle-field']");
+  if (!scene || !field) return null;
+  const boxOf = (r) => ({
+    top: Math.round(r.top),
+    bottom: Math.round(r.bottom),
+    left: Math.round(r.left),
+    right: Math.round(r.right),
+    width: Math.round(r.width),
+    height: Math.round(r.height),
+  });
+  const box = (node) => {
+    const r = node.getBoundingClientRect();
+    return {
+      top: Math.round(r.top),
+      bottom: Math.round(r.bottom),
+      left: Math.round(r.left),
+      right: Math.round(r.right),
+      width: Math.round(r.width),
+      height: Math.round(r.height),
+    };
+  };
+  const enemies = [...field.querySelectorAll(".battle-enemy")].map((node) => {
+    const image = node.querySelector(".battle-enemy-image");
+    // 이름표는 **텍스트 실측 폭**이 필요하다. `.battle-enemy-hud` 는 고정 min-width 상자라
+    // 서로 겹쳐도 글자는 안 겹칠 수 있고, 반대로 이름이 길면 상자를 넘어 옆 적과 겹친다.
+    // Range 로 텍스트 노드의 실제 잉크 박스를 잰다.
+    const nameNode = node.querySelector(".battle-enemy-name");
+    let name = null;
+    if (nameNode) {
+      const range = document.createRange();
+      range.selectNodeContents(nameNode);
+      const inkRect = range.getBoundingClientRect();
+      name = inkRect.width > 0 ? boxOf(inkRect) : box(nameNode);
+      range.detach();
+    }
+    return {
+      id: node.dataset.testid ?? null,
+      node: box(node),
+      image: image ? box(image) : null,
+      name,
+    };
+  });
+  const allies = [...field.querySelectorAll(".battle-actor-group .battle-actor")].map((node) => ({
+    id: node.dataset.testid ?? null,
+    node: box(node),
+  }));
+  // 적 그룹 박스: 저작 좌표(0..160)가 실제 px 로 어떻게 매핑되는지 재현하려면 필요하다.
+  // 필드 != 그룹 박스다(`--battle-stage-inset-*` 만큼 안으로 들어간다).
+  const enemyGroup = field.querySelector(".battle-enemy-group");
+  return {
+    skin: scene.dataset.battleSkin ?? null,
+    directorStep: scene.dataset.battleDirectorStep ?? null,
+    field: box(field),
+    enemyGroup: enemyGroup ? box(enemyGroup) : null,
+    enemies,
+    allies,
+  };
+}
+
 async function readObserved(page, { auditBattleTextNodes = false } = {}) {
   const base = await page.evaluate(() => {
     const debug = window.__oprnDebug;
@@ -202,6 +265,7 @@ async function readObserved(page, { auditBattleTextNodes = false } = {}) {
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
   });
   if (!auditBattleTextNodes) return base;
@@ -254,6 +318,11 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     route.fulfill({ status: 200, contentType: "application/json", body: projectJson }),
   );
 
+  // 배틀러 기하 측정기를 페이지에 심는다(readObserved 가 매 비트마다 호출).
+  await page.addInitScript(
+    `window.__oprnReadBattlerGeometry = ${readBattlerGeometryInPage.toString()};`,
+  );
+
   const query = new URLSearchParams(scenario.query ?? {}).toString();
   const playerUrl = `${opts.serverUrl}/player.html${query ? `?${query}` : ""}`;
   await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
@@ -291,7 +360,16 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       shot = shotFileName(index, beat.id);
       await page.screenshot({ path: join(outDir, shot) });
     }
-    beats.push({ index, id: beat.id, note: beat.note, shot, failures, state: observed.state });
+    beats.push({
+      index,
+      id: beat.id,
+      note: beat.note,
+      shot,
+      failures,
+      state: observed.state,
+      // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
+      battlers: observed.battlers ?? undefined,
+    });
   }
 
   const report = {

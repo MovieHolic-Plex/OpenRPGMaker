@@ -75,6 +75,7 @@
 @import "./editor/cluster-ai-modal.css";
 @import "./editor/map-history.css";
 @import "./editor/map-props.css";
+@import "./editor/map-panel.modern.css";
 @import "./editor/rule-audit.css";
 @import "./editor/region-task.css";
 @import "./editor/build-palette.css";
