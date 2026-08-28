@@ -52,7 +52,7 @@ function lastCommandRow(log: HTMLElement): HTMLElement | null {
   const children = logElements(log);
   for (let index = children.length - 1; index >= 0; index -= 1) {
     const child = children[index];
-    if (child?.classList.contains("ai-command-row") && !child.classList.contains("ai-proposal-pin")) return child;
+    if (child?.classList.contains("ai-command-row")) return child;
   }
   return null;
 }
@@ -81,21 +81,15 @@ export function ensureDayDivider(log: HTMLElement, at: Date = new Date()): HTMLE
 
 /**
  * 새 사용자 턴이 시작되면 직전 턴 노드를 접이식 그룹으로 묶는다.
- * 미니 스트림(rising overlay)은 `.is-prior-turn` 숨김을 유지하고,
- * 전체 기록/사이드 도크에서는 토글로 펼친다.
+ * 새 턴을 시작할 때 기존 노드를 그룹으로 묶고, 실제 축약은 `.is-collapsed`가 맡는다.
  */
 export function markPriorTurns(log: HTMLElement): void {
   const children = logElements(log);
   const keep: HTMLElement[] = [];
   const toWrap: HTMLElement[] = [];
-  const pins: HTMLElement[] = [];
   for (const child of children) {
     if (child.classList.contains("ai-start-screen") || child.classList.contains("ai-day-divider")) {
       keep.push(child);
-      continue;
-    }
-    if (child.classList.contains("ai-proposal-pin")) {
-      pins.push(child);
       continue;
     }
     if (child.classList.contains("ai-turn-group") || child.classList.contains("is-prior-turn")) {
@@ -147,7 +141,6 @@ export function markPriorTurns(log: HTMLElement): void {
   });
   group.append(toggle, body);
   log.replaceChildren(...keep, group);
-  for (const pin of pins) log.append(pin);
 }
 
 export function appendConversationBubble(options: {
@@ -188,11 +181,6 @@ export function appendConversationBubble(options: {
   if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
-  const pin = options.log.querySelector("[data-testid=ai-proposal-pin]");
-  if (pin) {
-    pin.remove();
-    options.log.append(pin);
-  }
   options.log.scrollTop = options.log.scrollHeight;
   return body;
 }

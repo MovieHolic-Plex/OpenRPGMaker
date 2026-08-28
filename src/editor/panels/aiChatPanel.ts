@@ -372,7 +372,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     text: "대기",
     dataset: { testid: "ai-status", statusTone: "idle" },
   });
-  // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 로그 export로 "검토 대기" 멈춤을 진단 가능.
+  // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 적용 실패 같은 멈춤을 로그 export로 진단한다.
   const setStatus = (text: string, record = true): void => {
     status.textContent = text;
     status.dataset.statusTone = statusToneOf(text);
@@ -410,7 +410,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let dockToggleLock: HTMLButtonElement | null = null;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
-  // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 검토 대기·오류면 유지.
+  // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 오류면 열린 상태를 유지한다.
   let collapseAfterAiWork = false;
   // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
   // 같은 초기화 구간에 둔다. 아래 크롬 구간에서 선언하면 자동 복원 sendText가
@@ -814,8 +814,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(autonomousFeedHost!);
     surface.replaceChildren(checklist);
   };
-  // 마일스톤 자동 적용/승인 대기 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
-  const appendMilestoneFeedLine = (kind: "applied" | "paused", title: string, detail: string): void => {
+  // 마일스톤 자동 적용/적용 실패 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
+  const appendMilestoneFeedLine = (kind: "applied" | "apply-failed", title: string, detail: string): void => {
     if (!autonomousRunState) return;
     ensureAutonomousRunSurface();
     refreshAutonomousRunSurface();
@@ -824,10 +824,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         class: `ai-autonomous-feed-line is-${kind}`,
         dataset: { testid: `ai-milestone-feed-${kind}` },
         children: [
-          el("span", { class: "ai-autonomous-feed-mark", text: kind === "applied" ? "✓" : "⏸" }),
+          el("span", { class: "ai-autonomous-feed-mark", text: kind === "applied" ? "✓" : "!" }),
           el("span", {
             class: "ai-autonomous-feed-text",
-            text: `${kind === "applied" ? "마일스톤 적용" : "승인 대기"}: ${title}${detail ? ` — ${detail}` : ""}`,
+            text: `${kind === "applied" ? "마일스톤 적용" : "적용 실패"}: ${title}${detail ? ` — ${detail}` : ""}`,
           }),
         ],
       })
@@ -1168,7 +1168,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } else if (event.type === "milestone_applied") {
         appendMilestoneFeedLine("applied", event.title, `도구 ${event.toolCount}건${event.commitId ? ` · 커밋 ${event.commitId}` : ""}`);
       } else if (event.type === "proposal_paused") {
-        appendMilestoneFeedLine("paused", event.reason, "");
+        appendMilestoneFeedLine("apply-failed", event.reason, "프로젝트 저장소 변경 없음");
       }
     };
 
@@ -1293,7 +1293,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (activeAbortController === abortController) activeAbortController = null;
       turnBusy = false;
       refreshAbortButton();
-      // 자율 런 종료(정상 완료·중단·승인 대기 포함): 런 표면을 정리하고 자동 접기를 재개한다.
+      // 자율 런 종료(정상 완료·중단·적용 실패 포함): 런 표면을 정리하고 자동 접기를 재개한다.
       // 다음 사용자 턴이 autonomous 로 시작되면 beginAutonomousRun 이 새 표면을 만든다.
       if (runOpts?.autonomous) endAutonomousRun();
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
@@ -1340,8 +1340,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (collapseAfterAiWork) {
         if (turnFailed) {
           collapseAfterAiWork = false;
-        } else if ((status.textContent ?? "") === "검토 대기") {
-          /* stay open until onProposalSettled */
         } else if (hasPendingQuestion()) {
           /* AI가 답을 기다리는 중 — 사용자가 답하거나 직접 접을 때까지 열어 둔다
              (2026-08-18 UX 리뷰 P1-4: 질문이 자동 접힘으로 증발하던 결함) */
@@ -2345,14 +2343,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
-    // 적용 완료 액션과 0건 알림, '검토 대기' pill은 맵 위에서 잃지 않는 고정 영역이다.
+    // 적용 완료 액션과 0건 알림을 맵 위에서 잃지 않는 고정 영역에 둔다.
     children: [completionHost, proposalNoticeHost],
   });
-  // 오버레이는 **휘발 로그 전용**이다. 제안 pill·완료 스트립(stickyProposalZone)은 여기 두면
-  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로, 기본 도크인 유리와 float 에서는
-  // 스티키 존이 문서에서 통째로 빠져 "나중에" 로 최소화한 pill 과 적용 완료 스트립이 사라졌다
-  // (2026-08-23 실측: glass/float 에서 .ai-proposal-pill 조회 결과 없음). 그래서 스티키 존은
-  // 도크와 무관하게 패널 자식으로 붙이고, 위치는 CSS 가 도크별로 잡는다.
+  // 오버레이는 **휘발 로그 전용**이다. 완료 스트립/알림(stickyProposalZone)은 여기 두면
+  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로 기본 도크인 유리와 float 에서는
+  // 스티키 존이 문서에서 빠진다. 도크와 무관하게 패널 자식으로 붙이고 위치는 CSS가 잡는다.
   const risingOverlay = el("div", {
     class: "ai-rising-overlay",
     dataset: { testid: "ai-rising-overlay" },
@@ -2605,7 +2601,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   syncGlassIdle = (): void => {
     const busy = panel.classList.contains("is-turn-running")
-      || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
       || Boolean(turnBusy || runningProgress);
@@ -2627,9 +2622,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applyComposerViewPolicy = (): void => {
     const mode = readChatDock();
     if (!historyOpen && !studio) removeStartScreen();
-    // 오버레이(혼발 존 + 고정 제안 영역)는 사이드 도크만 가진다. 유리는 카드 본밸에
-    // 로그를 단고, float 은 바만 남긴다 — 테스트 계약이다(aiPanelChrome:
-    // "side dock mounts the work log, and switching back to float unmounts it").
+    // 오버레이(휘발 존)는 사이드 도크만 가진다. 유리는 카드 본문에 로그를 달고,
+    // float도 유리 로그 마운트를 사용한다 — 테스트 계약이다.
     if (mode === "side") {
       if (!panel.contains(risingOverlay)) remountComposerTail(true);
     } else {

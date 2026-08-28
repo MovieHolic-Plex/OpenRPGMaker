@@ -622,6 +622,64 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(result.proposedCalls).toHaveLength(0);
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
   }, 30000);
+  it("(c-3) 커밋 게이트 적용 실패는 현재 런만 멈추고 다음 사용자 턴의 자동 적용을 다시 허용한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const TWO_ITEM_PLAN = {
+      goal: "타이틀 두 단계 적용",
+      layers: [{
+        title: "타이틀",
+        items: [
+          { title: "깨진 적용", instruction: "set_title_screen {title:'first'}", successTools: ["set_title_screen"] },
+          { title: "다음 적용", instruction: "set_title_screen {title:'second'}", successTools: ["set_title_screen"] },
+        ],
+      }],
+    };
+    const steps: ChatResult[] = [
+      milestoneFinal(JSON.stringify({ action: "new_plan", ...TWO_ITEM_PLAN })),
+      milestoneToolCall("set_work_plan", TWO_ITEM_PLAN, "c_plan"),
+      titleWrite("c_first", "first"),
+      milestoneFinal("첫 항목을 마쳤습니다."),
+      milestoneFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
+      titleWrite("c_second", "second"),
+      milestoneFinal("두 번째 항목을 마쳤습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) milestoneExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const firstEvents: SessionEvent[] = [];
+    let corruptFirstDraft = true;
+
+    await session.sendUserMessage("타이틀을 두 단계로 바꿔줘", (event) => {
+      firstEvents.push(event);
+      if (corruptFirstDraft && event.type === "tool_call" && event.name === "set_title_screen" && event.result.ok) {
+        corruptFirstDraft = false;
+        // 적용 직전 draft에 새 무결성 오류를 넣어 commitChangeset 거부 경계를 결정적으로 구동한다.
+        (session as unknown as { ctx: { project: Project } }).ctx.project.startMapId = "missing-map";
+      }
+    }, undefined, { autonomous: true });
+
+    expect(store.getCurrent().meta.title).not.toBe("first");
+    expect(firstEvents.some((event) => event.type === "proposal_paused")).toBe(true);
+    expect(firstEvents.some((event) => event.type === "status" && event.text.includes("마일스톤 적용 실패"))).toBe(true);
+    expect(firstEvents.some((event) => event.type === "status" && event.text.includes("프로젝트 저장소는 변경되지 않았습니다"))).toBe(true);
+    const firstAudits = milestoneStatusTexts(session);
+    expect(firstAudits.some((text) => text.includes("agent_run:milestone-apply-failed"))).toBe(true);
+    expect(firstAudits.some((text) => text.includes("agent_run:stopped-apply-failed"))).toBe(true);
+    expect(firstAudits.some((text) => text.includes("승인 대기") || text.includes("paused-approval"))).toBe(false);
+
+    const secondEvents: SessionEvent[] = [];
+    await session.sendUserMessage("다음 항목을 계속해줘", (event) => { secondEvents.push(event); }, undefined, { autonomous: true });
+
+    expect(store.getCurrent().meta.title).toBe("second");
+    expect(secondEvents.some((event) => event.type === "milestone_applied" && event.title === "다음 적용")).toBe(true);
+    expect(secondEvents.some((event) => event.type === "proposal_paused")).toBe(false);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+  }, 30000);
 });
 
 // ── 레이어 검증 게이트 + run-end 저장 증명(todo 5) ──────────────────────────
