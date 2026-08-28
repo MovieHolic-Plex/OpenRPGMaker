@@ -110,7 +110,10 @@
   font: 600 12px/1.6 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   color: var(--text-2, #5B5347);
 }
-.shop-processing-catalog-fold:not([open]) .shop-processing-catalog {
+/* fold 는 <details> 가 아니라 <div>.is-open 이다(::details-content 가 안쪽 flex 스크롤러를
+   무력화해서 갈아탰다). 예전 `:not([open])` 은 div 에 [open] 이 영원히 안 붙으니 항상 참이 되어
+   카탈로그를 display:none 으로 죽였다 — 실측 rect 0×0, scrollHeight 0, 179행 전부 도달 불가. */
+.shop-processing-catalog-fold:not(.is-open) .shop-processing-catalog {
   display: none;
 }
 

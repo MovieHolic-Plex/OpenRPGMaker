@@ -46,4 +46,6 @@ export interface BattleSkin {
   /** --battle-* CSS 변수 오버라이드 — 12 vars, 렌더에서 style.setProperty로 주입. */
   readonly themeVars: BattleThemeVars;
   readonly defaultBackdropResourceId?: string;
+  /** 지원 종료 스킨 — 저장된 프로젝트에서는 계속 로드·렌더되지만 새 저작 UI에서는 숨긴다. */
+  readonly deprecated?: true;
 }

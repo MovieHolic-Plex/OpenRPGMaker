@@ -161,12 +161,6 @@ describe("산출물 게이트 통합 스모크 — 만들고 안 채운 맵", ()
           { mapId: FIELD_MAP_ID, rect: { x: 4, y: 4, w: 10, h: 10 }, material: "물", shape: "circle" },
           "c_fill",
         ),
-        // 완성도 경고(세계관 미기재)까지 해소해야 자동 완료가 열린다 — 실제 런에서도 모델이 부른 툴.
-        toolCallResult(
-          "upsert_world_entities",
-          { entities: [{ type: "place", name: "초록바람 숲길", summary: "마을 북쪽 숲길", refs: [{ kind: "map", id: FIELD_MAP_ID }] }] },
-          "c_world",
-        ),
         finalResult("야외 필드 맵을 만들고 호수를 칠했습니다."),
       ]),
     });
@@ -191,7 +185,15 @@ describe("산출물 게이트 통합 스모크 — 만들고 안 채운 맵", ()
         createMapCall("c_map"),
         toolCallResult(
           "set_build_spec",
-          { mapId: FIELD_MAP_ID, title: "숲길 호수", assets: [{ id: "lake", kind: "terrain", x: 4, y: 4, w: 10, h: 10 }] },
+          {
+            mapId: FIELD_MAP_ID,
+            title: "숲길 호수",
+            assets: [
+              { id: "lake", kind: "terrain", x: 4, y: 4, w: 10, h: 10 },
+              // 밑그림에만 있고 끝까지 칠하지 않는 에셋 — 완성도 경고의 근거다.
+              { id: "grove", kind: "decor", x: 16, y: 2, w: 4, h: 4 },
+            ],
+          },
           "c_spec",
         ),
         toolCallResult(
@@ -199,8 +201,8 @@ describe("산출물 게이트 통합 스모크 — 만들고 안 채운 맵", ()
           { mapId: FIELD_MAP_ID, rect: { x: 4, y: 4, w: 10, h: 10 }, material: "물", shape: "circle" },
           "c_fill",
         ),
-        // 세계관 갱신을 생략해 완성도 경고를 남긴 채로 명시 완료를 시도한다.
-        toolCallResult("complete_work_item", { note: "세계관은 다음 항목에서 정리" }, "c_done"),
+        // 밑그림 에셋 하나를 안 칠한 채로 명시 완료를 시도해 완성도 경고를 남긴다.
+        toolCallResult("complete_work_item", { note: "숲은 다음 항목에서 정리" }, "c_done"),
         finalResult("완료했습니다."),
       ]),
     });

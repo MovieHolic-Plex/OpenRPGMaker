@@ -1,4 +1,4 @@
-// 맵 연결·세계관 관계·마을 문서·리소스 프로필·인물 프로필·테스트 프리셋·플래그 슬롯 저작.
+// 맵 연결·마을 문서·리소스 프로필·인물 프로필·테스트 프리셋·플래그 슬롯 저작.
 import { extractQuestGraphConditions } from "@/project/quest/questGraph";
 import { isQuestGraphDef, questDefId } from "@/project/quest/questDef";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
@@ -13,14 +13,12 @@ import type {
   TestPreset,
   VillageInfoDocument,
 } from "@/project/types";
-import { WORLD_RELATION_KINDS, type WorldRelation, type WorldRelationKind } from "@/project/world/types";
 import {
   DELETE_MAP_CONNECTION_SCHEMA,
   DELETE_RESOURCE_PROFILE_SCHEMA,
   DELETE_TEST_PRESET_SCHEMA,
   DELETE_VILLAGE_DOCUMENT_SCHEMA,
   MANAGE_FLAG_SLOT_SCHEMA,
-  SET_WORLD_RELATIONS_SCHEMA,
   UPSERT_CHARACTER_PROFILE_SCHEMA,
   UPSERT_MAP_CONNECTION_SCHEMA,
   UPSERT_RESOURCE_PROFILE_SCHEMA,
@@ -159,58 +157,6 @@ const deleteMapConnection: ToolDefinition = {
     const connectionId = requiredString(args.connectionId, "connectionId");
     draft.mapConnections = deleteById(draft.mapConnections ?? [], connectionId, "맵 연결");
     return { summary: `맵 연결 ${connectionId} 삭제`, data: { connectionId } };
-  },
-};
-
-function parseRelation(value: unknown): WorldRelation {
-  const record = recordArg(value, "relation");
-  const kind = requiredString(record.kind, "relation.kind");
-  if (!WORLD_RELATION_KINDS.includes(kind as WorldRelationKind)) {
-    throw new ToolError(`relation.kind는 ${WORLD_RELATION_KINDS.join("/")} 중 하나여야 합니다.`, { code: "invalid-args" });
-  }
-  return {
-    a: requiredString(record.a, "relation.a"),
-    b: requiredString(record.b, "relation.b"),
-    kind: kind as WorldRelationKind,
-    ...(optionalString(record.note) ? { note: optionalString(record.note) } : {}),
-  };
-}
-
-function relationMatches(left: WorldRelation, right: WorldRelation): boolean {
-  return left.a === right.a && left.b === right.b && left.kind === right.kind;
-}
-
-const setWorldRelations: ToolDefinition = {
-  name: "set_world_relations",
-  description: "세계관 엔티티 사이 관계를 등록하거나 제거하며 world.entities는 그대로 보존한다.",
-  mode: "write",
-  domains: ["world"],
-  parameters: SET_WORLD_RELATIONS_SCHEMA,
-  run(draft, args): ToolExecResult {
-    if (!draft.world) throw new ToolError("world가 없습니다. 먼저 world 엔티티를 작성하세요.", { code: "world-not-found" });
-    const relation = parseRelation(args.relation);
-    const entityIds = draft.world.entities.map((entity) => entity.id);
-    for (const endpoint of [relation.a, relation.b]) {
-      if (!entityIds.includes(endpoint)) {
-        throw new ToolError(`world entity를 찾을 수 없습니다: ${endpoint} (유효한 entity id: ${validValues(entityIds)})`, { code: "world-entity-not-found" });
-      }
-    }
-    const action = requiredString(args.action, "action");
-    const relations = [...draft.world.relations];
-    if (action === "upsert") {
-      const index = relations.findIndex((candidate) => relationMatches(candidate, relation));
-      if (index < 0) relations.push(relation);
-      else relations[index] = relation;
-    } else {
-      const index = relations.findIndex((candidate) => relationMatches(candidate, relation));
-      if (index < 0) {
-        const known = relations.map((candidate) => `${candidate.a}-${candidate.kind}-${candidate.b}`);
-        throw new ToolError(`world relation을 찾을 수 없습니다: ${relation.a}-${relation.kind}-${relation.b} (유효한 관계: ${validValues(known)})`, { code: "world-relation-not-found" });
-      }
-      relations.splice(index, 1);
-    }
-    draft.world = { entities: draft.world.entities, relations };
-    return { summary: `세계관 관계 ${action}: ${relation.a}-${relation.kind}-${relation.b}`, data: { relation, action } };
   },
 };
 
@@ -536,7 +482,6 @@ const manageFlagSlot: ToolDefinition = {
 export const AUTHORING_MISC_TOOLS: readonly ToolDefinition[] = [
   upsertMapConnection,
   deleteMapConnection,
-  setWorldRelations,
   upsertVillageDocument,
   deleteVillageDocument,
   upsertResourceProfile,

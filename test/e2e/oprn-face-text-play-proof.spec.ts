@@ -4,7 +4,10 @@ import { startNewGameFromTitle } from "./runtimeInput";
 // SIZE_OK: This proof keeps editor-authoring helpers and screenshot assertions
 // together so the generated gameplay evidence remains reproducible.
 
-test.setTimeout(60_000);
+// 명령을 하나 추가할 때마다 편집 모달이 자동으로 열려 닫아 줘야 한다 — 저작 흐름이
+// 길어져 60초로는 모자란다(실측 2026-08-28: 헬퍼 도중 페이지가 강제로 닫혔다).
+// 같은 계열의 oprn-dialogue-choice-ux-cert 도 120초를 쓴다.
+test.setTimeout(120_000);
 
 type EventCommand = {
   readonly kind: string;
@@ -71,7 +74,19 @@ async function clickMapCenter(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("missing editor canvas");
-  await canvas.dblclick({ position: { x: Math.floor(box.width / 2), y: Math.floor(box.height / 2) }, timeout: 1500 });
+  // 가운데를 찍지 않는다 — AI 조수 패널이 캔버스 중앙을 덮고 있어 히트 테스트가 통과하지
+  // 못한다(실측 2026-08-28: 실패 스크린샷에서 패널이 x 320~840 을 가림). 오른쪽 3/4 지점은
+  // 항상 맵이다. 1500ms 는 WebGL 캔버스 안정화에 빠듯해 여유를 준다.
+  const position = { x: Math.floor(box.width * 0.75), y: Math.floor(box.height / 2) };
+  try {
+    await canvas.dblclick({ position, timeout: 5000 });
+  } catch (error) {
+    // 빈 칸을 찍으면 첫 클릭만으로 새 이벤트가 만들어지고 편집기가 바로 열린다. 그러면
+    // 두 번째 클릭이 모달에 가려 dblclick 자체는 완료되지 않는다(실측 2026-08-28: 실패
+    // 스크린샷에 이미 "새 이벤트" 편집기가 떠 있었다). 이 함수의 목적은 편집기를 여는
+    // 것이므로 열렸으면 성공으로 본다.
+    if (!(await page.getByTestId("event-editor-modal").isVisible().catch(() => false))) throw error;
+  }
 }
 
 async function tryOpenSelectedEvent(page: Page): Promise<boolean> {
@@ -99,10 +114,33 @@ async function openEventEditor(page: Page): Promise<void> {
 async function openRootCommandPicker(page: Page): Promise<void> {
   const picker = page.getByTestId("event-command-picker");
   if (await picker.isVisible().catch(() => false)) return;
+  // 명령 목록에는 두 가지 추가 진입점이 있고, 어느 쪽이 보이는지는 목록/스토리 뷰에 따라
+  // 다르다. 기본이 스토리 뷰라 event-command-empty-line 은 없고 "+ 첫 명령 추가"
+  // (event-storyboard-add)만 있다(실측 2026-08-28).
   const emptyLine = page.getByTestId("event-command-empty-line");
-  await expect(emptyLine).toBeVisible();
-  await emptyLine.dblclick();
+  const storyboardAdd = page.getByTestId("event-storyboard-add");
+  if (await emptyLine.isVisible().catch(() => false)) await emptyLine.dblclick();
+  else {
+    await expect(storyboardAdd).toBeVisible();
+    await storyboardAdd.click();
+  }
   await expect(picker).toBeVisible();
+}
+
+/**
+ * 명령을 고르면 곧바로 명령 편집 모달이 열린다. 목록/스토리의 명령 줄은 그 모달이 닫혀야
+ * 나타나므로, 추가 직후 확인으로 닫아 준다(실측 2026-08-28). 전용 서브다이얼로그
+ * (문장 표시 / 표시 옵션 등)를 이미 닫은 경로에서는 아무 일도 하지 않는다.
+ */
+async function closeCommandEditDialog(page: Page): Promise<void> {
+  const backdrop = page.getByTestId("event-command-edit-dialog");
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (!(await backdrop.first().isVisible().catch(() => false))) return;
+    const ok = page.getByRole("button", { name: "확인", exact: true });
+    if (await ok.first().isVisible().catch(() => false)) await ok.first().click();
+    else await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+  }
 }
 
 async function addFaceCommand(page: Page): Promise<void> {
@@ -110,6 +148,7 @@ async function addFaceCommand(page: Page): Promise<void> {
   const picker = page.getByTestId("event-command-picker");
   await picker.getByTestId("command-picker-add-changeFace").click();
   await expect(picker).toBeHidden();
+  await closeCommandEditDialog(page);
   await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 바꾸기");
 }
 
@@ -117,13 +156,22 @@ async function addTextCommand(page: Page, body = FACE_TEXT_BODY): Promise<void> 
   await openRootCommandPicker(page);
   const picker = page.getByTestId("event-command-picker");
   await picker.getByTestId("command-picker-add-text").click();
+  // 전용 「문장 표시」 다이얼로그로 열릴 수도, 공용 명령 편집 모달 안에 같은 입력들이
+  // 들어올 수도 있다(실측 2026-08-28: 지금은 후자다). 필드는 testid 가 같으므로 어느
+  // 쪽이든 그대로 채우고, 열려 있는 창을 닫는다.
   const dialog = page.getByTestId("event-command-text-dialog");
-  await expect(dialog).toBeVisible();
-  await dialog.getByTestId("event-command-text-speaker").fill("증거 NPC");
-  await dialog.getByTestId("event-command-text-body").fill(body);
-  await dialog.getByTestId("event-command-text-ok").click();
-  await expect(dialog).toBeHidden();
+  const speaker = page.getByTestId("event-command-text-speaker");
+  await expect(speaker.first()).toBeVisible();
+  await speaker.first().fill("증거 NPC");
+  await page.getByTestId("event-command-text-body").first().fill(body);
+  const ok = page.getByTestId("event-command-text-ok");
+  if (await ok.first().isVisible().catch(() => false)) {
+    await ok.first().click();
+    await expect(dialog).toBeHidden();
+  }
   await expect(picker).toBeHidden();
+  await closeCommandEditDialog(page);
+  await expect(page.getByTestId("event-command-text")).toContainText(body);
 }
 
 async function addDisplayTextSettingsCommand(page: Page): Promise<void> {
@@ -131,6 +179,7 @@ async function addDisplayTextSettingsCommand(page: Page): Promise<void> {
   const picker = page.getByTestId("event-command-picker");
   await picker.getByTestId("command-picker-add-displayTextSettings").click();
   await expect(picker).toBeHidden();
+  await closeCommandEditDialog(page);
   await expect(page.getByTestId("event-command-displayTextSettings")).toContainText("문장 표시 설정");
 }
 
@@ -147,6 +196,7 @@ async function addDisplayOptionsViaDialog(page: Page): Promise<void> {
   await dialog.getByTestId("display-options-ok").click();
   await expect(dialog).toBeHidden();
   await expect(picker).toBeHidden();
+  await closeCommandEditDialog(page);
   await expect(page.getByTestId("event-command-displayTextSettings")).toContainText("일반");
 }
 

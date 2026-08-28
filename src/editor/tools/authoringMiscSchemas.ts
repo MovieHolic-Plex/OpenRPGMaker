@@ -5,7 +5,6 @@ const RESOURCE_KINDS = [
   "chipset", "charset", "battle", "battleCharset", "battleWeapon", "backdrop",
   "gameOver", "monster", "faceset", "picture", "system", "system2", "title", "music", "sound",
 ] as const;
-const RELATION_KINDS = ["memberOf", "locatedIn", "knows", "enemyOf", "allyOf", "causedBy", "owns", "custom"] as const;
 const SEASONS = ["spring", "summer", "fall", "winter"] as const;
 
 const ENDPOINT_SCHEMA: JsonSchema = {
@@ -17,18 +16,6 @@ const ENDPOINT_SCHEMA: JsonSchema = {
     direction: { type: "string", enum: [...DIRECTIONS] },
   },
   required: ["mapId", "x", "y"],
-  additionalProperties: false,
-};
-
-const RELATION_SCHEMA: JsonSchema = {
-  type: "object",
-  properties: {
-    a: { type: "string" },
-    b: { type: "string" },
-    kind: { type: "string", enum: [...RELATION_KINDS] },
-    note: { type: "string" },
-  },
-  required: ["a", "b", "kind"],
   additionalProperties: false,
 };
 
@@ -59,16 +46,6 @@ export const DELETE_MAP_CONNECTION_SCHEMA: JsonSchema = {
   type: "object",
   properties: { connectionId: { type: "string" } },
   required: ["connectionId"],
-  additionalProperties: false,
-};
-
-export const SET_WORLD_RELATIONS_SCHEMA: JsonSchema = {
-  type: "object",
-  properties: {
-    action: { type: "string", enum: ["upsert", "remove"] },
-    relation: RELATION_SCHEMA,
-  },
-  required: ["action", "relation"],
   additionalProperties: false,
 };
 

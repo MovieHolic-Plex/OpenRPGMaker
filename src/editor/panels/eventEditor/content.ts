@@ -208,7 +208,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     : "연결 안 됨";
   appendEventRailGroup(
     pageSettings,
-    { slug: "npc", title: "NPC와 일정", summary: npcName, open: false },
+    { slug: "npc", title: "NPC와 일정", summary: npcName, open: false, authored: Boolean(ev.characterId) },
     [characterLink, socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
   );
   const settingsMain = el("div", {

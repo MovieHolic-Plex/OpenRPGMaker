@@ -444,7 +444,7 @@ describe("command edit modal — image-rich preview", () => {
     expect(applied).toEqual(original);
   });
 
-  it("rebuilds shop dual lists after add so selected items stay in sync", () => {
+  it("rebuilds shop lists after add so selected items stay in sync", () => {
     const project = store.getCurrent();
     const first = project.database.items[0];
     const second = project.database.items[1];
@@ -457,13 +457,14 @@ describe("command edit modal — image-rich preview", () => {
       onApply: () => {},
     });
     const body = globalThis.document.body as unknown as FakeNode;
-    const available = findByTestId(body, "shop-available-items") as FakeElement | null;
+    // 후보 선택은 화면에 보이는 자료집 카탈로그 행으로 한다. 예전에는 aria-hidden 트레이
+    // 안의 select 를 눌렀는데, 그건 사용자가 만질 수 없는 컨트롤이었다.
+    const candidate = findByTestId(body, `shop-catalog-row-${second.id}`);
     const add = findByTestId(body, "shop-add-item");
-    expect(available && add).toBeTruthy();
-    if (!available || !add) return;
+    expect(candidate && add).toBeTruthy();
+    if (!candidate || !add) return;
 
-    // select second item from available list
-    available.value = second.id;
+    candidate.click();
     add.click();
 
     const selected = findByTestId(body, "shop-selected-items") as FakeElement | null;

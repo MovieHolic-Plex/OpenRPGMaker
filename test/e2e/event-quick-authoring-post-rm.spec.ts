@@ -205,12 +205,21 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
   const saleRows = dialog.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
   await expect(saleRows.first()).toBeVisible();
   expect(await saleRows.count()).toBeGreaterThanOrEqual(1);
+  // 자료집은 열린 채 시작하고 실제로 스크롤된다 — 열려 있어도 179행이 잘려 있으면 의미가 없다.
   const catalogFold = dialog.getByTestId("shop-item-catalog-fold");
   await expect(catalogFold).toBeVisible();
-  expect(await catalogFold.evaluate((el) => (el as HTMLDetailsElement).open)).toBe(false);
-  await dumpEvidence(page, "shop-stocked-folded-catalog", {
+  await expect(dialog.getByTestId("shop-item-catalog-summary")).toHaveAttribute("aria-expanded", "true");
+  const catalog = dialog.getByTestId("shop-item-catalog");
+  await expect(catalog).toBeVisible();
+  const catalogScroll = await catalog.evaluate((node) => ({
+    clientH: node.clientHeight,
+    scrollH: node.scrollHeight,
+  }));
+  expect(catalogScroll.scrollH).toBeGreaterThan(catalogScroll.clientH);
+  await dumpEvidence(page, "shop-stocked-scrollable-catalog", {
     saleRows: await saleRows.count(),
-    catalogFoldOpen: false,
+    catalogFoldOpen: true,
+    catalogScroll,
   });
 });
 

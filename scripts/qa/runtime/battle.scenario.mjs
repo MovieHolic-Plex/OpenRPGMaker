@@ -1,20 +1,33 @@
-// 전투 화면 시나리오 — 몬스터(적) 배치 검증용.
+// 런타임 전투 시나리오 — 출하 플레이어(player.html) 경로로 실제 전투 화면을 띄운다.
 //
-// 픽스처는 smoke 와 같은 editor-authored-demo-v3.json 을 쓴다. 이유(실측):
-//   - `map_moonwell_forest` 의 `ev_map_moonwell_forest_seal`(14,2) 은 `movement: fixed` 라
-//     배회하지 않는다 → 고정 좌표 인접 가정이 성립한다(배회 NPC 로는 못 한다).
-//   - 그 이벤트 1페이지는 `text` → `battleProcessing(troop_forest_hornets)` 이라
-//     **3마리 트룹**이 뜬다. 뒷줄까지 있는 배치를 한 번에 본다.
-//   - 시작 맵(map_lantern_village)에서 다른 맵으로의 teleport 는 loadMap 을 태우므로
-//     스프라이트까지 실제로 옮겨진다(같은 맵 teleport 는 상태만 바꾼다 — smoke 주석 참조).
+// 왜 이 시나리오가 필요한가: 전투 캐릭터셋(리소스 kind "n")은 `battle-actor-sprite` 의
+// background-image 로만 화면에 나타난다. 시트 파일을 단위 테스트로 재는 것만으로는
+// "필드에서 적 배틀러와 나란히 놓였을 때 어떻게 보이는가" 를 증명할 수 없다.
 //
-// 배치 판정은 `battlerGeometry` 기대치가 실제 브라우저 rect 로 한다. CSS 레이아웃은
-// jsdom 으로 재현되지 않으므로 이 기하는 실브라우저에서만 참이다.
+// 기대치는 픽스처(test/fixtures/projects/editor-authored-demo-v3.json)의 실물에서 읽었다:
+//   startMapId = map_lantern_village, startPos = (14,18)
+//   ev_map_moonwell_forest_seal(14,2) trigger=action, movement=fixed → 대사 뒤
+//                                     battleProcessing troop_forest_hornets
+//   파티 = actor_hero / actor_guardian / actor_mage / actor_scout
+//        → generated-actor-hero-01..04-battle 네 시트를 한 화면에서 전부 태운다.
+//
+// 왜 마을의 ev_lantern_training(20,14) 을 안 쓰는가: 그 페이지는 movement={type:"random"}
+// 이다. 옆으로 텔레포트해 이벤트가 거기 서 있다고 가정하면 NPC 가 돌아다니다 벗어나는
+// 레이스가 된다 — 실측: 한가한 호스트에서는 3회 연속 통과했지만 load 44~82 에서는 3회
+// 연속 실패하고, 실패 샷에는 대사창이 아예 없었다. 전투 화면을 재는 시나리오를 이동하는
+// NPC 에 기대면 안 된다.
+// 전투 씬 testid 는 src/player/battleDom.ts:84 의 `battle-scene`,
+// 아군 스프라이트 그룹은 src/player/battleFieldDom.ts:504 의 `battle-actor-sprites`.
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const battleScenario = {
   id: "battle",
   beats: [
+    {
+      id: "title",
+      note: "타이틀 화면이 뜬다",
+      expect: { testidPresent: ["title-screen"] },
+    },
     {
       id: "field-start",
       note: "새 게임 → 등대 마을 시작 지점",
@@ -25,34 +38,56 @@ export const battleScenario = {
       ],
       expect: {
         mapId: "map_lantern_village",
+        x: 14,
+        y: 18,
         testidAbsent: ["title-screen", "battle-scene"],
       },
     },
     {
-      id: "approach-seal",
-      note: "달우물 숲 봉인(14,2) 아래 칸으로 이동 → 말 걸면 전투 이벤트",
+      id: "face-battle-event",
+      note: "달빛우물 숲 봉인(14,2) 남쪽 칸으로 이동해 위를 본다",
       ops: [
         { kind: "teleport", mapId: "map_moonwell_forest", x: 14, y: 3 },
-        { kind: "wait", ms: 1500 },
+        { kind: "wait", ms: 1200 },
         { kind: "face", dir: "up" },
-        { kind: "action" },
-        { kind: "waitFor", testid: "dialogue-box", state: "present" },
+        { kind: "wait", ms: 400 },
       ],
-      expect: { mapId: "map_moonwell_forest", testidPresent: ["dialogue-box"] },
+      expect: { mapId: "map_moonwell_forest", x: 14, y: 3 },
     },
     {
       id: "battle-intro",
-      note: "대사 소진 → 전투 진입(3마리 트룹)",
+      note: "대사를 넘겨 전투 진입 — 아군 4명 시트와 적 배틀러가 한 화면에 선다",
       ops: [
-        { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20 },
-        { kind: "waitFor", testid: "battle-command-grid", state: "present", timeoutMs: 30000 },
-        // 인트로 슬라이드-인이 끝난 정지 상태를 찍는다(애니메이션 중간 프레임은 배치 근거가 못 된다).
+        // 이벤트를 여는 건 `action`(= window.__oprnInput.action() 훅 직접 호출) 뿐이고,
+        // pressUntil 의 z 는 **이미 열린 대사를 넘길 뿐** 이다. 맵 로드 중에 그 한 번이
+        // 삼켜지면 남은 z 를 아무리 눌러도 전투까지 못 간다. 정착 시간을 주고 발동을 한 번
+        // 더 시도한다 — 이미 대사가 열려 있었다면 둘째 발동은 한 줄 넘기는 것으로 끝난다.
         { kind: "wait", ms: 1200 },
+        { kind: "action" },
+        { kind: "wait", ms: 800 },
+        { kind: "action" },
+        { kind: "wait", ms: 600 },
+        { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 24, delayMs: 500 },
+        { kind: "waitFor", testid: "battle-actor-sprites", state: "present" },
+        // 인카운터 전환(흰 플래시 → 블라인드 → 인트로 슬라이드)이 끝나야 스프라이트가 제자리에 선다.
+        { kind: "wait", ms: 2600 },
       ],
       expect: {
-        testidPresent: ["battle-scene", "battle-field", "battle-command-grid"],
+        testidPresent: ["battle-scene", "battle-actor-sprites"],
+        // 적 배치는 실브라우저 rect 로만 참이다 — 상단 클리핑·접지 띠·겹침을 여기서 본다.
         battlerGeometry: { minEnemies: 3 },
       },
+      shot: true,
+    },
+    {
+      id: "battle-attack",
+      note: "공격 커맨드를 확정해 attack/hit 프레임이 실제로 교체되는지 본다",
+      ops: [
+        { kind: "key", key: "z", delayMs: 500 },
+        { kind: "key", key: "z", delayMs: 500 },
+        { kind: "wait", ms: 700 },
+      ],
+      expect: { testidPresent: ["battle-scene"] },
       shot: true,
     },
   ],

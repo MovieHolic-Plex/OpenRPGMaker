@@ -32,6 +32,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
    - Runtime pre-edit routing & cautions (read first): `openwiki/runtime-pre-edit-routing.md`
    - Runtime battle: `openwiki/runtime-battle.md`
+   - 지원 전투 시스템 2종(RM식 `rm2k3`/`rm2003`, 포켓몬식 `gen1`/`pokemon`) 정책과 지원 종료 목록: `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다 (2026-08-28)" 절
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`

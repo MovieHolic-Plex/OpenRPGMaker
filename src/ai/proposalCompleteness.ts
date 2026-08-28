@@ -32,7 +32,6 @@ export function proposalCompletenessWarnings(input: ProposalCompletenessInput): 
   return dedupe([
     ...base,
     ...interiorCompletenessWarnings(input.requestText ?? "", input.calls),
-    ...worldCompletenessWarnings(input.calls),
     ...questGraphCompletenessWarnings(input.calls),
   ]);
 }
@@ -132,19 +131,6 @@ function interiorCompletenessWarnings(requestText: string, calls: readonly Propo
   return [];
 }
 
-function worldCompletenessWarnings(calls: readonly ProposalCompletenessCall[]): string[] {
-  const changedCalls = calls.filter((call) => call.result.ok && hasMeaningfulDiff(call.result.diff));
-  if (changedCalls.length === 0) return [];
-  if (changedCalls.some((call) => call.name === "upsert_world_entities" || call.name === "link_world_ref")) return [];
-  const missingKinds = [
-    changedCalls.some(isNpcWorldRelevantCall) ? "NPC" : null,
-    changedCalls.some(isMapWorldRelevantCall) ? "맵" : null,
-    changedCalls.some(isItemWorldRelevantCall) ? "아이템" : null,
-  ].filter((kind): kind is string => kind !== null);
-  if (missingKinds.length === 0) return [];
-  return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 세계관 미기재 — ${missingKinds.join("/")} 생성·수정 제안에 세계관 업데이트가 없습니다.`];
-}
-
 function questGraphCompletenessWarnings(calls: readonly ProposalCompletenessCall[]): string[] {
   if (calls.some((call) => call.result.ok && call.name === "define_quest")) return [];
   const newStoryFlags = calls.filter((call) => {
@@ -154,35 +140,6 @@ function questGraphCompletenessWarnings(calls: readonly ProposalCompletenessCall
   }).length;
   if (newStoryFlags < 3) return [];
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 퀘스트 그래프 등록 권장 — 이번 턴에서 storyFlag ${newStoryFlags}개를 새로 등록했지만 define_quest가 없습니다.`];
-}
-
-function isNpcWorldRelevantCall(call: ProposalCompletenessCall): boolean {
-  if (call.name === "place_npc" || call.name === "make_villager") return (call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) > 0;
-  if (call.name !== "upsert_event") return false;
-  if ((call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) <= 0) return false;
-  const event = isRecord(call.args.event) ? call.args.event : null;
-  return event !== null && eventHasNamedNpcPage(event);
-}
-
-function isMapWorldRelevantCall(call: ProposalCompletenessCall): boolean {
-  return (call.name === "create_map" || call.name === "generate_map") && (call.result.diff?.mapsAdded ?? 0) > 0;
-}
-
-function isItemWorldRelevantCall(call: ProposalCompletenessCall): boolean {
-  if (call.name !== "upsert_item" || (call.result.diff?.dbRecordsChanged ?? 0) <= 0) return false;
-  const item = isRecord(call.args.item) ? call.args.item : null;
-  return typeof item?.name === "string" && item.name.trim().length > 0;
-}
-
-function eventHasNamedNpcPage(event: Record<string, unknown>): boolean {
-  const pages = Array.isArray(event.pages) ? event.pages : [];
-  return pages.some((page) => {
-    if (!isRecord(page)) return false;
-    const name = typeof page.name === "string" ? page.name.trim() : "";
-    if (!name || /^(페이지|page)\s*\d+$/iu.test(name)) return false;
-    const graphic = isRecord(page.graphic) ? page.graphic : null;
-    return graphic !== null && graphic.transparent !== true && isRecord(graphic.sprite);
-  });
 }
 
 function formatMissingSpecAssets(missing: readonly SpecAsset[]): string {

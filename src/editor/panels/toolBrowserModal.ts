@@ -16,7 +16,7 @@ const DOMAIN_LABEL: Record<string, string> = {
   map: "맵",
   event: "이벤트/NPC",
   database: "데이터베이스",
-  world: "세계관",
+  world: "월드 그래프",
   quest: "퀘스트/서사",
   battle: "전투",
   system: "시스템",

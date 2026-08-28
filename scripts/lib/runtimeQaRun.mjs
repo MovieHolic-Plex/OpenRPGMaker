@@ -7,6 +7,12 @@ import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import {
+  MAX_CLIPPED_AREA_RATIO,
+  MIN_EFFECTIVE_ALPHA,
+  MIN_INK_HEIGHT_PX,
+  auditBattleText,
+} from "./battleTextAudit.mjs";
+import {
   evaluateExpect,
   normalizeScenario,
   renderSummary,
@@ -97,6 +103,15 @@ async function applyOp(page, op) {
       return;
     case "seed":
       await page.evaluate((seed) => window.__oprnDebug.setSeed(seed), op.seed);
+      return;
+    case "setVitals":
+      await page.evaluate(
+        ([hp, mp, actorIds]) => {
+          const ids = actorIds ?? window.__oprnDebug.readState().partyActorIds;
+          for (const actorId of ids) window.__oprnSetActorVitals(actorId, hp, mp);
+        },
+        [op.hp, op.mp ?? 0, op.actorIds ?? null],
+      );
       return;
     case "teleport":
       await page.evaluate(
@@ -202,14 +217,20 @@ function readBattlerGeometryInPage() {
   };
 }
 
-async function readObserved(page) {
-  return await page.evaluate(() => {
+async function readObserved(page, { auditBattleTextNodes = false } = {}) {
+  const base = await page.evaluate(() => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
     // 이 하네스의 목적(컨텍스트 절약)에 역행한다.
     const state = full
-      ? { currentMapId: full.currentMapId, x: full.x, y: full.y, gold: full.gold }
+      ? {
+          currentMapId: full.currentMapId,
+          x: full.x,
+          y: full.y,
+          gold: full.gold,
+          battleResult: full.battleResult ?? null,
+        }
       : null;
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
     return {
@@ -220,6 +241,14 @@ async function readObserved(page) {
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
   });
+  if (!auditBattleTextNodes) return base;
+  // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
+  const battleText = await page.evaluate(auditBattleText, {
+    minInkHeight: MIN_INK_HEIGHT_PX,
+    maxClippedAreaRatio: MAX_CLIPPED_AREA_RATIO,
+    minAlpha: MIN_EFFECTIVE_ALPHA,
+  });
+  return { ...base, battleText };
 }
 
 /** 리포트를 디스크에 쓴다. SUMMARY.md 가 에이전트가 먼저 읽는 진입점이다. */
@@ -267,7 +296,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     `window.__oprnReadBattlerGeometry = ${readBattlerGeometryInPage.toString()};`,
   );
 
-  await page.goto(`${opts.serverUrl}/player.html`, { waitUntil: "domcontentloaded" });
+  const query = new URLSearchParams(scenario.query ?? {}).toString();
+  const playerUrl = `${opts.serverUrl}/player.html${query ? `?${query}` : ""}`;
+  await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
 
   await rm(outDir, { recursive: true, force: true });
@@ -293,7 +324,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
         break; // 같은 비트의 남은 op 은 전제가 깨졌으므로 건너뛴다.
       }
     }
-    const observed = await readObserved(page);
+    const observed = await readObserved(page, {
+      auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
+    });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
     if (shouldCaptureShot(beat, failures)) {

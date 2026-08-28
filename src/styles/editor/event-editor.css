@@ -107,12 +107,5 @@
   font-size: 13px;
   font-weight: 700;
 }
-.shop-processing-e2e-tray {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
 .event-command-text-limit-hint{margin-top:4px;font-size:11px;color:var(--text-2);}
 .event-command-text-limit-hint[data-over="1"]{color:var(--danger,#f0716f);font-weight:600;}

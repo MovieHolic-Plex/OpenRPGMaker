@@ -54,6 +54,27 @@
   min-height: 96px;
 }
 
+/* 「얼굴 바꾸기」 창의 2단 배치. 마크업(messageCommandDialogs.openFacesetDialog)은 왼쪽
+   얼굴 / 오른쪽 표시위치·옵션을 의도했는데 대응 규칙이 아예 없어 그냥 세로로 쌓였다
+   (실측 2026-08-28: 전체 *.css grep 0건). 좁은 폭에서는 한 단으로 접는다. */
+.event-command-faceset-grid {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, auto);
+}
+
+.event-command-faceset-side {
+  display: grid;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .event-command-faceset-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .event-command-face-preview {
   align-items: center;
   background: var(--surface-recessed, var(--bg-raised));

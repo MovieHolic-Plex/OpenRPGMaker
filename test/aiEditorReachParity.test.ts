@@ -40,7 +40,8 @@ const REQUIRED_FACADES: readonly ReachCase[] = [
   { tool: "set_tile_grafts", field: "tilesets[*].tileGrafts" },
   { tool: "upsert_map_connection", field: "mapConnections" },
   { tool: "delete_map_connection", field: "mapConnections" },
-  { tool: "set_world_relations", field: "world.relations" },
+  // world.entities / world.relations 는 의도적으로 AI 사정거리 밖이다 — 2026-08-28 세계관 AI 배제.
+  // 커버리지 구멍이 아니라 결정이므로 여기 다시 넣지 말 것. 계약: test/worldAiExclusion.test.ts.
   { tool: "upsert_village_document", field: "villageInfoDocuments" },
   { tool: "delete_village_document", field: "villageInfoDocuments" },
   { tool: "upsert_resource_profile", field: "resourceProfiles" },

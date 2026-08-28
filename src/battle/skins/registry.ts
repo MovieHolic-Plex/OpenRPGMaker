@@ -60,6 +60,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   rm2000: {
+    deprecated: true,
     id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2000-backdrop", label: "감청 창 · 정면", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-black",
     themeVars: {
@@ -79,6 +80,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   octopath: {
+    deprecated: true,
     id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "먹빛 창 · 최소 HUD", layout: "sideview", showAllySprites: true,
     hudTemplate: "minimal", transition: "focus-blur",
     themeVars: {
@@ -98,6 +100,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   chrono: {
+    deprecated: true,
     id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "청람 창 · 링 게이지", layout: "active", showAllySprites: true,
     hudTemplate: "ring", transition: "sweep-cyan",
     themeVars: {
@@ -117,6 +120,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   bravely: {
+    deprecated: true,
     id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "세피아 창 · 주황 강조", layout: "sideview", showAllySprites: true,
     hudTemplate: "minimal", transition: "brave-shift",
     themeVars: {
@@ -136,6 +140,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   dragonquest: {
+    deprecated: true,
     id: "dragonquest", defaultBackdropResourceId: "battle-skin-dragonquest-backdrop", label: "검은 창 · 1인칭 시점", layout: "firstperson", showAllySprites: false,
     hudTemplate: "rows", transition: "curtain-dq",
     themeVars: {
@@ -155,6 +160,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   ff: {
+    deprecated: true,
     id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "코발트 창 · 청록 강조", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue",
     themeVars: {
@@ -174,6 +180,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   mother: {
+    deprecated: true,
     id: "mother", defaultBackdropResourceId: "battle-skin-mother-backdrop", label: "암전 창 · 형광 분홍", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "psychedelic",
     themeVars: {
@@ -193,6 +200,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   goldensun: {
+    deprecated: true,
     id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "금갈색 창 · 박스 HUD", layout: "sideview", showAllySprites: true,
     hudTemplate: "boxes", transition: "sweep-cyan",
     themeVars: {
@@ -212,6 +220,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   mv: {
+    deprecated: true,
     id: "mv", defaultBackdropResourceId: "battle-skin-mv-backdrop", label: "밝은 창 · 정면", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "fade",
     themeVars: {
@@ -231,6 +240,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   vxace: {
+    deprecated: true,
     id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "심야 창 · 박스 HUD", layout: "frontview", showAllySprites: false,
     hudTemplate: "boxes", transition: "fade",
     themeVars: {
@@ -259,6 +269,18 @@ export function getBattleSkin(id: BattleSkinId): BattleSkin {
 
 export function listBattleSkinIds(): BattleSkinId[] {
   return Object.keys(BATTLE_SKINS) as BattleSkinId[];
+}
+
+/** 지원이 이어지는 스킨 2종 — 새 저작 UI가 노출하는 집합. */
+export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["pokemon", "rm2003"];
+
+/** BATTLE_SKINS 에서 deprecated 표식이 없는 id 만 추린다(ACTIVE_BATTLE_SKIN_IDS 와 동일해야 함). */
+export function listActiveBattleSkinIds(): BattleSkinId[] {
+  return listBattleSkinIds().filter((id) => !BATTLE_SKINS[id].deprecated);
+}
+
+export function isDeprecatedBattleSkin(id: BattleSkinId): boolean {
+  return BATTLE_SKINS[id].deprecated === true;
 }
 
 /** 미설정/미지의 값이 떨어지는 기본 스킨. */

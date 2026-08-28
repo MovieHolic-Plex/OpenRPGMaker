@@ -171,7 +171,6 @@ describe("proposal completeness lint", () => {
       requestText: "24×18 맵 만들어줘",
       calls: [
         call("create_map", { id: "m2", name: "새 맵", width: 24, height: 18 }, { mapsAdded: 1 }),
-        call("upsert_world_entities", { entities: [{ type: "place", name: "새 맵", summary: "새로 만든 장소" }] }, { worldEntitiesAdded: 1 }),
       ],
     });
 

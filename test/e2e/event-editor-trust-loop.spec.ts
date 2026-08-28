@@ -41,7 +41,9 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
 
   await editor.getByTestId("event-template-shop").click();
   await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();
-  await expect(page.getByTestId("shop-selected-items").locator("option")).not.toHaveCount(0);
+  await expect(
+    page.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]').first()
+  ).toBeVisible();
   await page.getByTestId("event-command-edit-cancel").click();
 
   await editor.getByTestId("event-template-battle").click();
@@ -78,14 +80,15 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   await editor.getByTestId("event-command-text").locator(".cmd-head").press("Delete");
   await expect(editor.getByTestId("event-command-empty-experience")).toBeVisible();
   await editor.getByTestId("event-template-shop").click();
-  const selectedItems = page.getByTestId("shop-selected-items");
-  while (await selectedItems.locator("option").count() > 0) {
-    const itemId = await selectedItems.locator("option").first().getAttribute("value");
-    if (!itemId) throw new Error("expected selected shop item id");
-    await selectedItems.selectOption(itemId);
-    await page.getByTestId("shop-remove-item").click();
+  // 보이는 진열 행을 골라 보이는 빼기 버튼으로 비운다.
+  const saleRows = page.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
+  const remove = page.getByTestId("shop-remove-item");
+  await expect(remove).toBeVisible();
+  for (let guard = 0; guard < 50 && (await saleRows.count()) > 0; guard += 1) {
+    await saleRows.first().click();
+    await remove.click();
   }
-  await expect(selectedItems.locator("option")).toHaveCount(0);
+  await expect(saleRows).toHaveCount(0);
   await page.getByTestId("event-command-edit-ok").click();
   await expect(editor.getByTestId("event-command-shop")).toBeVisible();
 

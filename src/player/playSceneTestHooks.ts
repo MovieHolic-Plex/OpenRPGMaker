@@ -19,6 +19,7 @@ export type RuntimeDebugHook = {
     x: number;
     y: number;
     gold: number;
+    battleResult: PlaySession["battleResult"];
     switches: Record<string, boolean>;
     variables: Record<string, number>;
     selfSwitches: PlaySession["selfSwitches"];
@@ -167,13 +168,15 @@ export function installPlaySceneTestHooks(
         tileX: number;
         tileY: number;
       };
-      // 현재 맵 id 는 **세션을 바꾸기 전에** 읽어야 한다. `getMapId()` 는
-      // `session.currentMapId` 를 그대로 돌려주므로(PlayScene.getMapId), applyAndSync 뒤에
-      // 비교하면 항상 같아져 loadMap 분기가 죽는다 — 상태만 옮겨지고 화면은 이전 맵에
-      // 그대로 남았다(실측: 런타임 QA teleport 뒤 스크린샷이 출발 맵이었고, 도착 맵의
-      // 이벤트가 하나도 붙지 않아 말걸기가 실패했다).
+      // 맵 비교는 세션을 쓰기 **전에** 해야 한다. applyAndSync 가 session.currentMapId 를 먼저
+      // 갈아치우면 getMapId() === mapId 가 항상 참이 되어 loadMap 이 한 번도 불리지 않고,
+      // 세션만 새 맵을 가리킨 채 화면은 옛 맵을 계속 그린다(실측 2026-08-28: 런타임 QA 의
+      // 맵 전환 비트가 세션 값만 보고 통과하고 있었다).
       const previousMapId = context.getMapId?.();
       applyAndSync({ kind: "teleport", mapId, x, y });
+      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
+        context.loadMap(mapId);
+      }
       context.tileX = x;
       context.tileY = y;
       if (typeof context.loadMap === "function" && previousMapId !== mapId) {
@@ -195,6 +198,7 @@ export function installPlaySceneTestHooks(
         x: session.x,
         y: session.y,
         gold: session.gold,
+        battleResult: session.battleResult,
         switches: { ...session.switches },
         variables: { ...session.variables },
         selfSwitches: structuredClone(session.selfSwitches),

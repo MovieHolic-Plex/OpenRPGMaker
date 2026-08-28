@@ -1,0 +1,154 @@
+battle mounted
+ORGANIC runs: []
+ORGANIC samples: []
+ORGANIC min alpha: n/a
+=== battle-flash-hit: samples=24 minAlpha=1
+[
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ },
+ {
+  "classes": "battle-flash-hit",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 255, 255, 0.34)"
+ }
+]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/green/shots-battle-v3/battle-flash-hit-midflash.png
+=== battle-flash-critical: samples=25 minAlpha=1
+[
+ {
+  "classes": "",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(0, 0, 0, 0)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ },
+ {
+  "classes": "battle-flash-critical battle-screen-shake",
+  "bg": "rgb(0, 0, 0)",
+  "transform": "matrix(0.5, 0, 0, 0.5, 0, 0)",
+  "filter": "none",
+  "fieldAfterBg": "rgba(255, 214, 138, 0.5)"
+ }
+]
+shot /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/.omo/evidence/battle-flash-map/green/shots-battle-v3/battle-flash-critical-midflash.png
+pageerrors: []
+FLASH_PROBE_DONE

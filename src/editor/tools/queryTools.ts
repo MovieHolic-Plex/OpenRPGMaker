@@ -22,7 +22,6 @@ import {
   tileMetaOrigin,
 } from "@/project/tilesetPalette";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
-import { lintWorld, normalizeProjectWorld } from "@/project/world";
 import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -417,7 +416,7 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
 
 const runLint: ToolDefinition = {
   name: "run_lint",
-  description: "projectLint, 세계관 lint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
+  description: "projectLint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -440,7 +439,6 @@ const runLint: ToolDefinition = {
   run(project, args): ToolExecResult {
     const issues: LintIssue[] = [
       ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
-      ...lintWorld(normalizeProjectWorld(project), project),
       ...lintTilesetPalettes(project),
     ];
     const errors = issues.filter((issue) => issue.severity === "error").length;
