@@ -15,8 +15,9 @@ function makeMap(actionCombat: boolean): GameMap {
 }
 
 function makeScene(map: GameMap, playBattleCalls: string[]): PlaySceneContext {
-  return {
+  const scene = {
     running: false,
+    inputEnabled: true,
     map,
     tileX: 0,
     tileY: 0,
@@ -24,7 +25,11 @@ function makeScene(map: GameMap, playBattleCalls: string[]): PlaySceneContext {
     playBattle: (cmd: { kind: string }) => {
       playBattleCalls.push(cmd.kind);
     },
-  } as unknown as PlaySceneContext;
+    setInputEnabled: (enabled: boolean) => {
+      scene.inputEnabled = enabled;
+    },
+  } as unknown as PlaySceneContext & { inputEnabled: boolean };
+  return scene;
 }
 
 describe("랜덤 인카운트 액션 전투 가드", () => {
