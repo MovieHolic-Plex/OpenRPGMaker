@@ -26,7 +26,11 @@
       "options state element"
       "equipment equipment equipment";
     grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1fr) minmax(270px, 0.82fr);
-    grid-template-rows: 84px 190px 118px 84px minmax(64px, auto);
+    /* 고정 px 행(84/190/118/84)은 내용이 그보다 크면 패널 `overflow: hidden` 과 맞물려
+       조용히 잘라냈다 — 애니메이션 패널(legend + 스프라이트 미리보기 + 셀렉트)과
+       상태·속성 유효도 패널이 84px 안에 들어갈 리가 없었다(감사 H 축 P0).
+       내용이 행 높이를 정하게 하고, 스크롤은 바깥 `.oprn-detail-form` 이 맡는다. */
+    grid-template-rows: repeat(4, minmax(0, auto)) minmax(64px, auto);
     min-height: 100%;
     min-width: 0;
   }
@@ -38,7 +42,6 @@
     margin: 0;
     min-height: 0;
     min-width: 0;
-    overflow: hidden;
     padding: 10px;
   }
 

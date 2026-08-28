@@ -79,76 +79,28 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
   refreshCurves();
   refreshExp();
 
-  const curvesPanel = el("div", {
-    class: "db-class-section-panel active",
-    dataset: { section: "curves", testid: "db-class-section-curves" },
-    children: [panel("능력치 곡선", [curveGrid], "db-class-panel-curves"), panel("경험치 곡선", [expPanel], "db-class-panel-exp")],
-  });
-  const commandsPanel = el("div", {
-    class: "db-class-section-panel",
-    dataset: { section: "commands", testid: "db-class-section-commands" },
-    children: [panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands")],
-  });
-  const skillsPanel = el("div", {
-    class: "db-class-section-panel",
-    dataset: { section: "skills", testid: "db-class-section-skills" },
-    children: [panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills")],
-  });
-  const promotionPanel = el("div", {
-    class: "db-class-section-panel",
-    dataset: { section: "promotion", testid: "db-class-section-promotion" },
-    children: [panel("승급", promotionControls(record, refreshBuildSummary), "db-class-panel-promotion")],
-  });
-
-  const sectionPanels: readonly HTMLElement[] = [curvesPanel, commandsPanel, skillsPanel, promotionPanel];
-  const sectionTabs = el("div", {
-    class: "db-class-section-tabs",
-    dataset: { testid: "db-class-section-tabs" },
-    attrs: { role: "tablist" },
-  });
-  const tabDefs: readonly { readonly id: string; readonly label: string; readonly panel: HTMLElement }[] = [
-    { id: "curves", label: "곡선", panel: curvesPanel },
-    { id: "commands", label: "명령", panel: commandsPanel },
-    { id: "skills", label: "스킬", panel: skillsPanel },
-    { id: "promotion", label: "승급", panel: promotionPanel },
-  ];
-  const tabButtons: HTMLElement[] = [];
-  for (const def of tabDefs) {
-    const btn = el("button", {
-      class: def.id === "curves" ? "db-class-section-tab active" : "db-class-section-tab",
-      text: def.label,
-      attrs: { type: "button", role: "tab", "aria-selected": String(def.id === "curves"), "aria-controls": `db-class-section-${def.id}` },
-      dataset: { testid: `db-class-section-tab-${def.id}`, section: def.id },
-    });
-    btn.addEventListener("click", () => {
-      for (const b of tabButtons) {
-        const isActive = b === btn;
-        b.classList.toggle("active", isActive);
-        b.setAttribute("aria-selected", String(isActive));
-      }
-      for (const p of sectionPanels) p.classList.toggle("active", p === def.panel);
-    });
-    tabButtons.push(btn);
-  }
-  sectionTabs.append(...tabButtons);
-  // assign ids for aria-controls targets
-  curvesPanel.id = "db-class-section-curves";
-  commandsPanel.id = "db-class-section-commands";
-  skillsPanel.id = "db-class-section-skills";
-  promotionPanel.id = "db-class-section-promotion";
-
+  // 예전에는 곡선/명령/스킬/승급 을 `.db-class-section-panel` 래퍼로 감싸고 그 위에
+  // 탭 스트립을 얹었는데, 대응 CSS 가 저장소 어디에도 없어(`grep -r db-class-section-panel
+  // src/**/*.css` → 0 건) `.active` 토글이 아무 일도 안 했다. 네 섹션이 늘 동시에
+  // 보였고, 탭 스트립은 세로 공간만 먹는 거짓 안내였다. 게다가 래퍼가 한 겹 끼면서
+  // 03-class-panels.css 의 `> .db-class-panel-*` 자식 결합자가 전부 빗나가, 이름·
+  // 애니메이션 등 named area 패널과 래퍼가 같은 칸에서 겹치고 잘렸다(감사 A 축 P0).
+  //
+  // 거짓 탭을 지우고 11 개 패널을 워크벤치의 **직계 자식**으로 되돌린다. 그러면 CSS
+  // 자식 결합자가 다시 맞고, 순서도 databasePanelGridClasses.test.ts 가 고정한
+  // 계약과 일치한다.
   form.append(buildSummaryHost, el("div", {
     class: "db-class-bm88-workbench",
     dataset: { testid: "db-classes-bm88-workbench" },
     children: [
       panel("이름", [nameInput(record)], "db-class-panel-name"),
       panel("애니메이션", [spritePreview(record), animationSelect(record)], "db-class-panel-animation"),
-      sectionTabs,
-      curvesPanel,
-      commandsPanel,
-      skillsPanel,
-      promotionPanel,
+      panel("능력치 곡선", [curveGrid], "db-class-panel-curves"),
+      panel("경험치 곡선", [expPanel], "db-class-panel-exp"),
+      panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands"),
       panel("옵션", optionControls(record), "db-class-panel-options"),
+      panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills"),
+      panel("승급", promotionControls(record, refreshBuildSummary), "db-class-panel-promotion"),
       panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state"),
       panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element"),
       panel("장비", [equipmentSelect(record, refreshBuildSummary)], "db-class-panel-equipment"),
