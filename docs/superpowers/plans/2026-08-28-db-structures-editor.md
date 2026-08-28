@@ -76,7 +76,7 @@
 - Consumes: `albumEntries()` 가 각 행에 붙여주는 `entry.source: "builtin" | "interior" | "user"` (`structureKitDbSources.ts:46`)
 - Produces: `renderInspector(tileset, kit, editable: boolean, host, rerender)` — Task 8 이 이 시그니처 그대로 `structureKitInspector.ts` 로 옮긴다
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitDbTab.test.ts` 의 기존 테스트 두 개를 고치고 새 테스트 하나를 더한다.
 
@@ -136,13 +136,13 @@
   });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: FAIL — `structure-kit-save-now` 가 아직 존재하고, `kit_imported` 의 삭제 버튼이 `null` 이며, `structure-kit-builtin-hint` 가 남아 있다.
 
-- [ ] **Step 3: 호출부에서 편집 가능 여부를 계산해 넘긴다**
+- [x] **Step 3: 호출부에서 편집 가능 여부를 계산해 넘긴다**
 
 `src/editor/panels/structureKitDbTab.ts:326-333` 을 이렇게 바꾼다:
 
@@ -158,7 +158,7 @@ Expected: FAIL — `structure-kit-save-now` 가 아직 존재하고, `kit_import
   }
 ```
 
-- [ ] **Step 4: 인스펙터 시그니처를 바꾸고 `isBuiltin` 을 걷어낸다**
+- [x] **Step 4: 인스펙터 시그니처를 바꾸고 `isBuiltin` 을 걷어낸다**
 
 `:581-588` 을 이렇게 바꾼다:
 
@@ -192,7 +192,7 @@ function renderInspector(
   }
 ```
 
-- [ ] **Step 5: 거짓 안내문에서 거짓만 걷어낸다**
+- [x] **Step 5: 거짓 안내문에서 거짓만 걷어낸다**
 
 `:748-753` 의 안내문에서 드래그 약속만 지운다. 워프 칸 설명은 사실이므로 남긴다:
 
@@ -205,7 +205,7 @@ function renderInspector(
   );
 ```
 
-- [ ] **Step 6: 가짜 [지금 저장] 버튼을 지운다**
+- [x] **Step 6: 가짜 [지금 저장] 버튼을 지운다**
 
 `:779-790` 의 이 블록을 통째로 삭제한다:
 
@@ -226,19 +226,19 @@ function renderInspector(
 
 이 버튼은 `toast()` 만 부르고 아무것도 저장하지 않았다. DB 모달은 이미 모든 편집을 `store.update()` 로 즉시 반영하므로, 이 버튼은 *"안 누르면 안 저장되나?"* 하는 없는 불안만 만들었다.
 
-- [ ] **Step 7: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 7: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: PASS (16 tests)
 
-- [ ] **Step 8: 타입 검사**
+- [x] **Step 8: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 이 파일 관련 오류 없음
 
-- [ ] **Step 9: 커밋**
+- [x] **Step 9: 커밋**
 
 ```bash
 git add src/editor/panels/structureKitDbTab.ts test/structureKitDbTab.test.ts
@@ -272,7 +272,7 @@ EOF
 - Consumes: `InteriorObjectDef.cells: readonly {dx, dy, layer, tile}[]`, `editorState.set({ activePaletteStamp, tool })`
 - Produces: `paletteStampFromInteriorObject(object): PaletteStamp` — Task 7 의 `bakeToSection` 이 같은 `cells` 를 읽는다
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitDbTab.test.ts` 의 실내 오브젝트 describe 블록에 추가한다. 파일 상단 import 에 `INTERIOR_ROOM_TILESET_ID` 가 이미 있다.
 
@@ -295,13 +295,13 @@ EOF
   });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: FAIL — `structure-kit-object-use-*` 가 `null`
 
-- [ ] **Step 3: 셀 → 스탬프 변환을 더한다**
+- [x] **Step 3: 셀 → 스탬프 변환을 더한다**
 
 `src/editor/harnessSuggestion/structureKitModel.ts` 끝에 추가한다:
 
@@ -324,7 +324,7 @@ export function paletteStampFromCells(input: {
 }
 ```
 
-- [ ] **Step 4: 인스펙터에 버튼을 붙인다**
+- [x] **Step 4: 인스펙터에 버튼을 붙인다**
 
 `structureKitDbTab.ts` 의 `renderObjectInspector` 에서, 마지막 안내문 `el("p", { ... structure-kit-object-hint ... })` **앞에** 액션 줄을 끼운다:
 
@@ -358,7 +358,7 @@ export function paletteStampFromCells(input: {
 
 `paletteStampFromCells` 를 import 목록의 `paletteStampFromKit` 옆에 더한다.
 
-- [ ] **Step 5: 안내문을 사실에 맞게 고친다**
+- [x] **Step 5: 안내문을 사실에 맞게 고친다**
 
 같은 함수의 `structure-kit-object-hint` 문구를 바꾼다. 지금 문구는 "이름 변경이나 삭제는 할 수 없습니다" 로 끝나 막다른 길처럼 읽힌다:
 
@@ -372,19 +372,19 @@ export function paletteStampFromCells(input: {
 
 (복제 버튼은 Task 11 에서 붙는다. 그전까지 이 문구는 앞서갈 수 있으므로, Task 11 을 같은 브랜치에서 마치기 전에는 이 문구 변경을 커밋하지 않아도 된다 — 하지만 계획대로 순서대로 진행하면 문제없다.)
 
-- [ ] **Step 6: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 6: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: PASS (17 tests)
 
-- [ ] **Step 7: 타입 검사**
+- [x] **Step 7: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add src/editor/panels/structureKitDbTab.ts src/editor/harnessSuggestion/structureKitModel.ts test/structureKitDbTab.test.ts
@@ -418,7 +418,7 @@ DOM 없이 로직을 먼저 고정한다. `environment: "node"` 라 여기가 �
   - `interface StructureKitAiMeta { description: string; placementRules: string; tags?: string[]; role?: TileGroupRole; repeatability?: "repeat" | "fixed"; origin?: "user" | "ai"; confidence?: "high" | "medium" | "low" }`
   - `SectionStructureKitDef.ai?: StructureKitAiMeta` · `HouseStructureKitDef.ai?: StructureKitAiMeta`
 
-- [ ] **Step 1: `learnedFrom` 유니언에 값을 더한다**
+- [x] **Step 1: `learnedFrom` 유니언에 값을 더한다**
 
 `src/project/types/base.ts:236` 을 바꾼다:
 
@@ -429,7 +429,7 @@ DOM 없이 로직을 먼저 고정한다. `environment: "node"` 라 여기가 �
 export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric" | "db-authored";
 ```
 
-- [ ] **Step 2: AI 메타 타입을 더한다**
+- [x] **Step 2: AI 메타 타입을 더한다**
 
 `StructureKitPart` 정의 바로 뒤(`:252` 다음)에 넣는다:
 
@@ -467,7 +467,7 @@ export interface StructureKitAiMeta {
 
 `TileGroupRole` 은 같은 파일 `:77` 에 이미 있으므로 import 가 필요 없다.
 
-- [ ] **Step 3: 두 킷 정의에 optional 필드를 단다**
+- [x] **Step 3: 두 킷 정의에 optional 필드를 단다**
 
 `SectionStructureKitDef` 의 `learnedFrom` 줄 앞과 `HouseStructureKitDef` 의 같은 자리에 각각 넣는다:
 
@@ -476,13 +476,13 @@ export interface StructureKitAiMeta {
   ai?: StructureKitAiMeta;
 ```
 
-- [ ] **Step 4: 타입 검사로 기존 코드가 깨지지 않는지 확인한다**
+- [x] **Step 4: 타입 검사로 기존 코드가 깨지지 않는지 확인한다**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음. 유니언에 값을 더하는 것과 optional 필드 추가는 기존 코드를 깨지 않는다. 단 `structureKitDbTab.ts:625` 의 `sourceLabel` 이 삼항이라 `db-authored` 를 "내장 파라메트릭" 으로 표시하게 되므로 다음 스텝에서 고친다.
 
-- [ ] **Step 5: 계보 표시를 세 값 모두 다루게 고친다**
+- [x] **Step 5: 계보 표시를 세 값 모두 다루게 고친다**
 
 `src/editor/panels/structureKitDbTab.ts:625` 의 삼항을 함수로 바꾼다. `partKindName` 옆에 추가한다:
 
@@ -502,13 +502,13 @@ function learnedFromLabel(learnedFrom: StructureKitLearnedFrom): string {
 
 그리고 `:625` 를 `const sourceLabel = learnedFromLabel(kit.learnedFrom);` 로 바꾼다. import 에 `StructureKitLearnedFrom` 타입을 더한다.
 
-- [ ] **Step 6: 테스트와 타입 검사**
+- [x] **Step 6: 테스트와 타입 검사**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts && npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: PASS, 오류 없음
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add src/project/types/base.ts src/editor/panels/structureKitDbTab.ts
@@ -544,7 +544,7 @@ EOF
   - `paintCell(kit: SectionStructureKitDef, cx: number, cy: number, layer: "lower"|"upper", tile: number): SectionStructureKitDef`
   - `tileAt(kit: SectionStructureKitDef, cx: number, cy: number, layer: "lower"|"upper"): number`
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitRasterModel.test.ts` 를 만든다:
 
@@ -632,13 +632,13 @@ describe("paintCell", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: FAIL — 모듈을 찾을 수 없음
 
-- [ ] **Step 3: 최소 구현을 쓴다**
+- [x] **Step 3: 최소 구현을 쓴다**
 
 `src/editor/harnessSuggestion/structureKitRasterModel.ts` 를 만든다:
 
@@ -713,13 +713,13 @@ function writeCell(row: StructureKitRow, width: number, cx: number, layer: KitLa
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: PASS (9 tests)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitRasterModel.ts test/structureKitRasterModel.test.ts
@@ -748,7 +748,7 @@ EOF
 **Interfaces:**
 - Produces: `resizeKit(kit: SectionStructureKitDef, width: number, height: number): { kit: SectionStructureKitDef; clamped: number; dropped: number }`
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitRasterModel.test.ts` 에 추가한다. import 에 `resizeKit` 을 더한다.
 
@@ -820,13 +820,13 @@ describe("resizeKit", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: FAIL — `resizeKit is not a function`
 
-- [ ] **Step 3: 구현을 더한다**
+- [x] **Step 3: 구현을 더한다**
 
 `structureKitRasterModel.ts` 에 추가한다. import 에 `StructureKitPart` 를 더한다.
 
@@ -888,13 +888,13 @@ export function resizeKit(kit: SectionStructureKitDef, width: number, height: nu
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: PASS (14 tests)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitRasterModel.ts test/structureKitRasterModel.test.ts
@@ -926,7 +926,7 @@ EOF
 
 `addPart` 가 `id` 를 인자로 받는 이유: `randomUuid()` 를 안에서 부르면 순수 함수가 아니게 되고 테스트가 결과를 단언할 수 없다. 호출부가 발급한다.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 import 에 `addPart, updatePart, removePart, normalizeDragRect` 를 더하고 추가한다:
 
@@ -987,13 +987,13 @@ describe("부위 CRUD", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: FAIL — 함수 없음
 
-- [ ] **Step 3: 구현을 더한다**
+- [x] **Step 3: 구현을 더한다**
 
 import 에 `StructureKitPartKind` 를 더하고 추가한다:
 
@@ -1059,13 +1059,13 @@ function clamp(value: number, min: number, max: number): number {
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: PASS (22 tests)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitRasterModel.ts test/structureKitRasterModel.test.ts
@@ -1099,7 +1099,7 @@ EOF
   - `bakeInteriorObject(object: InteriorObjectDef, id: string, name: string): SectionStructureKitDef`
   - `copyName(baseName: string, existingNames: readonly string[]): string`
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```ts
 import { bakeCellsToRows, bakeInteriorObject, bakeStructureKit, copyName } from "@/editor/harnessSuggestion/structureKitRasterModel";
@@ -1178,13 +1178,13 @@ describe("copyName", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: FAIL — 함수 없음
 
-- [ ] **Step 3: 구현을 더한다**
+- [x] **Step 3: 구현을 더한다**
 
 ```ts
 import { structureKitSize, structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
@@ -1270,19 +1270,19 @@ export function copyName(baseName: string, existingNames: readonly string[]): st
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitRasterModel.test.ts`
 
 Expected: PASS (29 tests)
 
-- [ ] **Step 5: 타입 검사**
+- [x] **Step 5: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitRasterModel.ts test/structureKitRasterModel.test.ts
@@ -1325,13 +1325,13 @@ EOF
   - `setInspectorSelectedPartId(id: string | null): void` / `inspectorSelectedPartId(): string | null` — `session.selectedPartId` 를 대신하는 접근자
 - Consumes: Task 1 이 확정한 `renderInspector(..., editable, ...)` 시그니처
 
-- [ ] **Step 1: 기준선을 잡는다**
+- [x] **Step 1: 기준선을 잡는다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: PASS (17 tests). 이 숫자가 이동 후에도 같아야 한다.
 
-- [ ] **Step 2: 새 파일을 만들고 함수를 그대로 옮긴다**
+- [x] **Step 2: 새 파일을 만들고 함수를 그대로 옮긴다**
 
 `src/editor/panels/structureKitInspector.ts` 를 만들고, `structureKitDbTab.ts` 에서 아래 함수들을 **본문 변경 없이** 잘라 붙인다:
 
@@ -1393,7 +1393,7 @@ export function setInspectorSelectedPartId(id: string | null): void {
 }
 ```
 
-- [ ] **Step 3: 옮긴 본문에서 `session.selectedPartId` 참조를 접근자로 바꾼다**
+- [x] **Step 3: 옮긴 본문에서 `session.selectedPartId` 참조를 접근자로 바꾼다**
 
 `renderInspector` 안의 두 곳:
 
@@ -1424,7 +1424,7 @@ export function renderInspector(
 
 본문의 `refresh(host, rerender)` 호출을 전부 `refresh()` 로, `rerender(); refresh(host, rerender);` 는 `rerender(); refresh();` 로 바꾼다. `host` 인자는 더 이상 필요 없다.
 
-- [ ] **Step 4: 탭에서 잘라낸 자리를 import 로 메운다**
+- [x] **Step 4: 탭에서 잘라낸 자리를 import 로 메운다**
 
 `structureKitDbTab.ts` 의 import 블록에 더한다:
 
@@ -1455,19 +1455,19 @@ import {
 
 이제 `structureKitDbTab.ts` 에 남지 않아야 하는 것: `renderInspector`, `renderObjectInspector`, `objectFact`, `partKindName`, `learnedFromLabel`, `interiorObjectCanvas`, `saveKitParts`, `autoEstimateEntranceParts`, `session.selectedPartId`.
 
-- [ ] **Step 5: 테스트를 돌려 같은 결과를 확인한다**
+- [x] **Step 5: 테스트를 돌려 같은 결과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: PASS (17 tests) — Step 1 과 같은 숫자
 
-- [ ] **Step 6: 타입 검사와 줄 수 확인**
+- [x] **Step 6: 타입 검사와 줄 수 확인**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json && wc -l src/editor/panels/structureKitDbTab.ts src/editor/panels/structureKitInspector.ts`
 
 Expected: 오류 없음. `structureKitDbTab.ts` 가 500줄 아래로 내려온다.
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add src/editor/panels/structureKitDbTab.ts src/editor/panels/structureKitInspector.ts
@@ -1499,7 +1499,7 @@ EOF
   - `openStructureKitEditor(tilesetId: TilesetId, kitId: string, onClosed: () => void): void`
   - `replaceStructureKit(tilesetId: TilesetId, kit: SectionStructureKitDef): void` (actions)
 
-- [ ] **Step 1: 킷 통째 저장 접점을 먼저 더한다 (테스트 포함)**
+- [x] **Step 1: 킷 통째 저장 접점을 먼저 더한다 (테스트 포함)**
 
 `test/structureKitRasterModel.test.ts` 가 아니라 새 파일 `test/structureKitEditorDialog.test.ts` 에 쓴다:
 
@@ -1570,13 +1570,13 @@ describe("replaceStructureKit", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: FAIL — `replaceStructureKit` 이 없다
 
-- [ ] **Step 3: 저장 접점을 구현한다**
+- [x] **Step 3: 저장 접점을 구현한다**
 
 `src/editor/harnessSuggestion/structureKitActions.ts` 에 추가한다:
 
@@ -1594,13 +1594,13 @@ export function replaceStructureKit(tilesetId: TilesetId, kit: StructureKitDef):
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: PASS (2 tests)
 
-- [ ] **Step 5: 다이얼로그의 실패 테스트를 쓴다**
+- [x] **Step 5: 다이얼로그의 실패 테스트를 쓴다**
 
 같은 파일에 추가한다. import 에 `openStructureKitEditor` 를 더한다.
 
@@ -1659,13 +1659,13 @@ describe("openStructureKitEditor", () => {
   }
 ```
 
-- [ ] **Step 6: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 6: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: FAIL — `openStructureKitEditor` 가 없다
 
-- [ ] **Step 7: 다이얼로그를 구현한다**
+- [x] **Step 7: 다이얼로그를 구현한다**
 
 `src/editor/panels/structureKitEditorDialog.ts` 를 만든다:
 
@@ -1881,7 +1881,7 @@ function drawSize(
 }
 ```
 
-- [ ] **Step 8: CSS 를 더한다**
+- [x] **Step 8: CSS 를 더한다**
 
 `src/styles/editor/harness-suggestion.css` 끝에 추가한다:
 
@@ -1951,19 +1951,19 @@ function drawSize(
 }
 ```
 
-- [ ] **Step 9: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 9: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: PASS (5 tests)
 
-- [ ] **Step 10: 타입 검사**
+- [x] **Step 10: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 11: 커밋**
+- [x] **Step 11: 커밋**
 
 ```bash
 git add src/editor/panels/structureKitEditorDialog.ts src/editor/harnessSuggestion/structureKitActions.ts src/styles/editor/harness-suggestion.css test/structureKitEditorDialog.test.ts test/fakeDom.ts
@@ -1997,7 +1997,7 @@ EOF
 - Consumes: `resizeKit` (Task 5) · `addPart`, `removePart`, `updatePart`, `normalizeDragRect` (Task 6) · `randomUuid` (`@/util/id`)
 - Produces: 없음(다이얼로그 내부 완결)
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitEditorDialog.test.ts` 에 추가한다:
 
@@ -2089,13 +2089,13 @@ describe("편집기 부위 편집", () => {
 
 `replaceStructureKit` 을 이 파일 import 에 이미 넣었으므로 추가 import 는 필요 없다.
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: FAIL — `structure-kit-editor-tool-part` 가 없고, width 가 `<span>` 이라 `change` 가 아무 일도 하지 않는다
 
-- [ ] **Step 3: 부위 도구를 도구 줄에 더한다**
+- [x] **Step 3: 부위 도구를 도구 줄에 더한다**
 
 `toolRow` 의 children 배열 끝에 추가한다:
 
@@ -2103,7 +2103,7 @@ Expected: FAIL — `structure-kit-editor-tool-part` 가 없고, width 가 `<span
       button("부위 그리기", "structure-kit-editor-tool-part", session.tool === "part", () => { session.tool = "part"; }),
 ```
 
-- [ ] **Step 4: `drawSize` 를 진짜 입력으로 바꾼다**
+- [x] **Step 4: `drawSize` 를 진짜 입력으로 바꾼다**
 
 `drawSize` 를 통째로 교체한다:
 
@@ -2156,7 +2156,7 @@ function drawSize(host: HTMLElement, kit: SectionStructureKitDef, redraw: () => 
 
 import 에 `resizeKit` 과 `toast` 를 더한다.
 
-- [ ] **Step 5: 캔버스 포인터 처리에 부위 드래그를 더한다**
+- [x] **Step 5: 캔버스 포인터 처리에 부위 드래그를 더한다**
 
 `canvasWrap.addEventListener("pointerdown", ...)` 를 교체하고 `pointerup` 을 더한다:
 
@@ -2203,7 +2203,7 @@ import 에 `resizeKit` 과 `toast` 를 더한다.
 
 import 에 `addPart`, `normalizeDragRect`, `randomUuid` 를 더한다.
 
-- [ ] **Step 6: 부위 목록 패널을 더한다**
+- [x] **Step 6: 부위 목록 패널을 더한다**
 
 `openStructureKitEditor` 안에 `partsWrap` 을 만들고 `redraw` 에서 갱신한다:
 
@@ -2305,7 +2305,7 @@ function drawParts(
 
 import 에 `removePart`, `updatePart`, `StructureKitPartKind` 를 더한다.
 
-- [ ] **Step 7: CSS 를 더한다**
+- [x] **Step 7: CSS 를 더한다**
 
 `harness-suggestion.css` 에 추가한다:
 
@@ -2359,19 +2359,19 @@ import 에 `removePart`, `updatePart`, `StructureKitPartKind` 를 더한다.
 }
 ```
 
-- [ ] **Step 8: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 8: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: PASS (9 tests)
 
-- [ ] **Step 9: 타입 검사**
+- [x] **Step 9: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 10: 커밋**
+- [x] **Step 10: 커밋**
 
 ```bash
 git add src/editor/panels/structureKitEditorDialog.ts src/styles/editor/harness-suggestion.css test/structureKitEditorDialog.test.ts
@@ -2407,7 +2407,7 @@ EOF
   - `createBlankStructureKit(tilesetId: TilesetId): SectionStructureKitDef`
   - `duplicateIntoTileset(tilesetId: TilesetId, source: StructureKitDef | InteriorObjectDef): SectionStructureKitDef`
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitDbTab.test.ts` 에 새 describe 를 더한다. import 에 `INTERIOR_ROOM_TILESET_ID` 와 `INTERIOR_OBJECT_CATALOG` 는 이미 있다.
 
@@ -2462,13 +2462,13 @@ describe("structureKitDbTab 신규·복제", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: FAIL — `structure-kit-new` · `structure-kit-duplicate-*` 가 없다
 
-- [ ] **Step 3: store 접점 두 개를 더한다**
+- [x] **Step 3: store 접점 두 개를 더한다**
 
 `src/editor/harnessSuggestion/structureKitActions.ts` 에 추가한다:
 
@@ -2522,7 +2522,7 @@ export function duplicateIntoTileset(
 
 import 에 `bakeInteriorObject`, `bakeStructureKit`, `copyName`(rasterModel), `InteriorObjectDef`, `SectionStructureKitDef`, `TILE` 를 더한다.
 
-- [ ] **Step 4: 인스펙터에 복제·편집 버튼을 붙인다**
+- [x] **Step 4: 인스펙터에 복제·편집 버튼을 붙인다**
 
 `structureKitInspector.ts` 의 `renderInspector` 액션 배열을, 편집 가능 여부에 따라 이렇게 구성한다. 기존 `삭제`/`팔레트에서 쓰기` 항목은 유지하고 앞에 두 개를 더한다:
 
@@ -2620,7 +2620,7 @@ import 에 `bakeInteriorObject`, `bakeStructureKit`, `copyName`(rasterModel), `I
 
 import 에 `duplicateIntoTileset`, `openStructureKitEditor` 를 더한다.
 
-- [ ] **Step 5: 도구줄에서 힌트칩을 버튼으로 바꾼다**
+- [x] **Step 5: 도구줄에서 힌트칩을 버튼으로 바꾼다**
 
 `structureKitDbTab.ts` 의 `tools` 정의에서 `structure-kit-hint-chip` 블록을 지우고 버튼을 넣는다:
 
@@ -2649,7 +2649,7 @@ import 에 `duplicateIntoTileset`, `openStructureKitEditor` 를 더한다.
 
 import 에 `createBlankStructureKit`, `openStructureKitEditor` 를 더한다.
 
-- [ ] **Step 6: 행 더블클릭으로 편집기를 연다**
+- [x] **Step 6: 행 더블클릭으로 편집기를 연다**
 
 표의 킷 행(`el("tr", ...)`)의 `on` 에 더한다. 읽기 전용 행에서는 열지 않는다:
 
@@ -2663,7 +2663,7 @@ import 에 `createBlankStructureKit`, `openStructureKitEditor` 를 더한다.
           },
 ```
 
-- [ ] **Step 7: `+ 새 구조물` 에 시작점 선택을 붙인다**
+- [x] **Step 7: `+ 새 구조물` 에 시작점 선택을 붙인다**
 
 빈 3×3 만으로는 집 한 채를 손으로 다 그려야 한다. 이미 있는 집 킷 전개를 재사용해 시작점을 하나 더 준다. 집 킷은 `combined_town` 문법이므로 **그 앨범에서만** 이 갈래를 노출한다.
 
@@ -2838,19 +2838,19 @@ import { createBlankStructureKit, createStructureKitFromHouse } from "@/editor/h
 
 테스트 파일 import 에 `SectionStructureKitDef` 타입을 더한다(`store` 와 `DEFAULT_TILESET_ID` 는 이미 있다).
 
-- [ ] **Step 8: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 8: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts test/structureKitEditorDialog.test.ts`
 
 Expected: PASS (22 + 9 tests)
 
-- [ ] **Step 9: 타입 검사**
+- [x] **Step 9: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 10: 커밋**
+- [x] **Step 10: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitActions.ts src/editor/panels/structureKitInspector.ts src/editor/panels/structureKitDbTab.ts test/structureKitDbTab.test.ts
@@ -2886,7 +2886,7 @@ EOF
 **Interfaces:**
 - Produces: `structureKitRepeatable(kit)` 가 `kit.ai?.repeatability` 를 우선한다 (시그니처 불변)
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitTools.test.ts` 에 추가한다. 이 파일은 `store` 를 쓰지 않고 `createEmptyToolProject` + `runTool({ project }, name, args)` 로 자체 프로젝트를 만든다 — 그 관행을 그대로 따른다.
 
@@ -2962,13 +2962,13 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitTools.test.ts`
 
 Expected: FAIL — 첫 번째 테스트에서 `map.lowerTiles[2]` 가 421 이다 (우물이 3개 찍혔다)
 
-- [ ] **Step 3: 판정에 `ai.repeatability` 를 우선시킨다**
+- [x] **Step 3: 판정에 `ai.repeatability` 를 우선시킨다**
 
 `src/editor/harnessSuggestion/structureKitModel.ts:157-160` 을 바꾼다:
 
@@ -2986,13 +2986,13 @@ export function structureKitRepeatable(kit: StructureKitDef): boolean {
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitTools.test.ts`
 
 Expected: PASS
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitModel.ts test/structureKitTools.test.ts
@@ -3023,7 +3023,7 @@ EOF
 - Consumes: `StructureKitAiMeta` (Task 3), `structureKitRepeatable` (Task 12)
 - Produces: `list_structure_kits` 응답 엔트리에 `ai?: StructureKitAiMeta`, `repeatable: boolean` 추가
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 이 파일은 `buildSystemPrompt` 를 이미 import 하고 있다(`test/structureKitTools.test.ts:3`).
 
@@ -3092,13 +3092,13 @@ describe("AI 가 받는 구조물 정보", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitTools.test.ts`
 
 Expected: FAIL — `entry.ai` 가 `undefined`
 
-- [ ] **Step 3: 도구 응답을 넓힌다**
+- [x] **Step 3: 도구 응답을 넓힌다**
 
 `src/editor/tools/structureKitTools.ts` 의 `entries` 타입에 두 필드를 더한다:
 
@@ -3126,7 +3126,7 @@ Expected: FAIL — `entry.ai` 가 `undefined`
 
 import 에 `structureKitRepeatable` 과 `StructureKitAiMeta` 를 더한다.
 
-- [ ] **Step 4: 프롬프트 컨텍스트를 넓힌다**
+- [x] **Step 4: 프롬프트 컨텍스트를 넓힌다**
 
 `src/ai/contextBuilder.ts` 의 `structureKitSection` 안 `lines.push(...)` 를 여러 줄 출력으로 바꾼다:
 
@@ -3142,19 +3142,19 @@ import 에 `structureKitRepeatable` 과 `StructureKitAiMeta` 를 더한다.
 
 import 에 `structureKitRepeatable` 을 더한다.
 
-- [ ] **Step 5: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 5: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitTools.test.ts`
 
 Expected: PASS
 
-- [ ] **Step 6: 타입 검사**
+- [x] **Step 6: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add src/editor/tools/structureKitTools.ts src/ai/contextBuilder.ts test/structureKitTools.test.ts
@@ -3189,7 +3189,7 @@ EOF
 
 초안 요청 자체(LLM 호출)는 기존 `ai/llmClient.ts` 경로를 쓰되, **프롬프트 조립과 응답 파싱은 순수 함수로 뽑아** 유닛 테스트한다. `environment: "node"` 에서 네트워크를 타지 않는다.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```ts
 describe("AI 메타 초안", () => {
@@ -3269,13 +3269,13 @@ describe("AI 메타 탭", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: FAIL — 함수와 테스트 id 가 없다
 
-- [ ] **Step 3: 순수 함수 두 개를 구현한다**
+- [x] **Step 3: 순수 함수 두 개를 구현한다**
 
 `structureKitEditorDialog.ts` 에 추가한다:
 
@@ -3366,7 +3366,7 @@ export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
 
 import 에 `describeChipsetTile`(`@/project/defaults/chipsetMapping`), `StructureKitAiMeta`, `TileGroupRole` 을 더한다.
 
-- [ ] **Step 4: 탭 전환과 AI 메타 폼을 더한다**
+- [x] **Step 4: 탭 전환과 AI 메타 폼을 더한다**
 
 `EditorSession` 에 `tab: "shape" | "ai"` 와 `draft: StructureKitAiMeta | null` 을 더하고, 다이얼로그 오른쪽 열 위에 탭 버튼 두 개를 둔다. `redraw` 에서 `session.tab` 에 따라 `structure-kit-editor-right` 의 내용을 갈아끼운다.
 
@@ -3493,7 +3493,7 @@ async function requestAiMetaDraft(
 
 import 에 `chatCompletion`, `loadAiConfig`(`@/ai/llmClient`), `store` 를 더한다.
 
-- [ ] **Step 5: CSS 를 더한다**
+- [x] **Step 5: CSS 를 더한다**
 
 ```css
 .structure-kit-editor-ai-field {
@@ -3526,19 +3526,19 @@ import 에 `chatCompletion`, `loadAiConfig`(`@/ai/llmClient`), `store` 를 더�
 }
 ```
 
-- [ ] **Step 6: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 6: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: PASS (15 tests)
 
-- [ ] **Step 7: 타입 검사**
+- [x] **Step 7: 타입 검사**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add src/editor/panels/structureKitEditorDialog.ts src/styles/editor/harness-suggestion.css test/structureKitEditorDialog.test.ts
@@ -3573,7 +3573,7 @@ EOF
 **Interfaces:**
 - Produces: `downloadBlob(blob: Blob, fileName: string): void`
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/downloadBlob.test.ts` 를 만든다:
 
@@ -3626,13 +3626,13 @@ describe("downloadBlob", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/downloadBlob.test.ts`
 
 Expected: FAIL — 모듈이 없다
 
-- [ ] **Step 3: 헬퍼를 구현한다**
+- [x] **Step 3: 헬퍼를 구현한다**
 
 `src/util/downloadBlob.ts`:
 
@@ -3658,7 +3658,7 @@ export function downloadBlob(blob: Blob, fileName: string): void {
 }
 ```
 
-- [ ] **Step 4: `menu.ts` 의 두 사용처를 이관한다**
+- [x] **Step 4: `menu.ts` 의 두 사용처를 이관한다**
 
 `exportProjectPackage` 의 다섯 줄
 
@@ -3675,13 +3675,13 @@ export function downloadBlob(blob: Blob, fileName: string): void {
 
 을 `downloadBlob(blob, projectPackageFileName(project));` 로 바꾼다. `doExportWebGame` 도 같은 방식으로 `downloadBlob(result.blob, webExportFileName(project));` 로 바꾼다. import 를 더한다.
 
-- [ ] **Step 5: 테스트와 타입 검사**
+- [x] **Step 5: 테스트와 타입 검사**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/downloadBlob.test.ts && npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: PASS (2 tests), 오류 없음
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add src/util/downloadBlob.ts src/editor/panels/menu.ts test/downloadBlob.test.ts
@@ -3717,7 +3717,7 @@ EOF
 
 `exportedAt` 을 인자로 받는 이유: `new Date()` 를 안에서 부르면 순수 함수가 아니게 되어 직렬화 결과를 단언할 수 없다.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 `test/structureKitFile.test.ts`:
 
@@ -3870,13 +3870,13 @@ describe("structureKitFileName", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitFile.test.ts`
 
 Expected: FAIL — 모듈이 없다
 
-- [ ] **Step 3: 구현한다**
+- [x] **Step 3: 구현한다**
 
 `src/editor/harnessSuggestion/structureKitFile.ts`:
 
@@ -4090,13 +4090,13 @@ export function structureKitFileName(tilesetName: string, kits: readonly Structu
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitFile.test.ts`
 
 Expected: PASS (11 tests)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitFile.ts test/structureKitFile.test.ts
@@ -4132,7 +4132,7 @@ EOF
 
 `planImport` 가 모든 판정을 미리 끝내므로 확인창은 계획을 그리기만 한다 — 대화상자 없이 충돌 정책 전부를 테스트할 수 있다.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```ts
 describe("planImport", () => {
@@ -4196,13 +4196,13 @@ describe("planImport", () => {
 
 import 에 `planImport` 를 더한다.
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitFile.test.ts`
 
 Expected: FAIL — `planImport` 이 없다
 
-- [ ] **Step 3: 구현한다**
+- [x] **Step 3: 구현한다**
 
 `structureKitFile.ts` 에 추가한다:
 
@@ -4278,13 +4278,13 @@ function uniqueName(baseName: string, taken: ReadonlySet<string>): string {
 }
 ```
 
-- [ ] **Step 4: 테스트를 돌려 통과를 확인한다**
+- [x] **Step 4: 테스트를 돌려 통과를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitFile.test.ts`
 
 Expected: PASS (17 tests)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/editor/harnessSuggestion/structureKitFile.ts test/structureKitFile.test.ts
@@ -4317,7 +4317,7 @@ EOF
 - Consumes: `serializeStructureKitFile`, `structureKitFileName` (Task 16), `downloadBlob` (Task 15)
 - Produces: 없음(UI 완결)
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```ts
 describe("structureKitDbTab 내보내기", () => {
@@ -4362,17 +4362,17 @@ describe("structureKitDbTab 내보내기", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts`
 
 Expected: FAIL — 체크박스와 버튼이 없다
 
-- [ ] **Step 3: 세션에 선택 집합을 더한다**
+- [x] **Step 3: 세션에 선택 집합을 더한다**
 
 `ActiveSessionState` 에 `checkedKitIds: Set<string>` 을 더하고 `resetStructureKitsTabSession` 에서 비운다. 타일셋을 바꿀 때도 비운다 — 앨범이 바뀌면 선택은 뜻을 잃는다.
 
-- [ ] **Step 4: 표에 체크박스 열을 더한다**
+- [x] **Step 4: 표에 체크박스 열을 더한다**
 
 `thead` 의 `tr` children 맨 앞에 넣는다:
 
@@ -4409,7 +4409,7 @@ Expected: FAIL — 체크박스와 버튼이 없다
 
 오브젝트 행(`renderObjectRow`)에도 같은 위치에 빈 `<td class="structure-kit-check-col">` 을 넣어 열이 어긋나지 않게 한다.
 
-- [ ] **Step 5: 푸터를 선택 상태에 반응시킨다**
+- [x] **Step 5: 푸터를 선택 상태에 반응시킨다**
 
 `footer` 를 이렇게 바꾼다:
 
@@ -4425,7 +4425,7 @@ Expected: FAIL — 체크박스와 버튼이 없다
     });
 ```
 
-- [ ] **Step 6: 도구줄에 내보내기·가져오기 버튼을 더한다**
+- [x] **Step 6: 도구줄에 내보내기·가져오기 버튼을 더한다**
 
 Task 11 에서 만든 `+ 새 구조물` 옆에 넣는다:
 
@@ -4463,7 +4463,7 @@ Task 11 에서 만든 `+ 새 구조물` 옆에 넣는다:
 
 `pickAndImportStructureKits` 는 Task 19 에서 만든다. 이 태스크에서는 import 만 걸고, Task 19 전까지는 컴파일을 위해 임시로 두지 말고 **Task 19 를 이어서 진행한다.**
 
-- [ ] **Step 7: 인스펙터에 낱개 내보내기 버튼을 더한다**
+- [x] **Step 7: 인스펙터에 낱개 내보내기 버튼을 더한다**
 
 `renderInspector` 의 액션 배열, `복제` 뒤(편집 가능한 경우에만)에 넣는다:
 
@@ -4486,7 +4486,7 @@ Task 11 에서 만든 `+ 새 구조물` 옆에 넣는다:
             }),
 ```
 
-- [ ] **Step 8: CSS 를 더한다**
+- [x] **Step 8: CSS 를 더한다**
 
 ```css
 .structure-kit-check-col {
@@ -4501,7 +4501,7 @@ Task 11 에서 만든 `+ 새 구조물` 옆에 넣는다:
 }
 ```
 
-- [ ] **Step 9: Task 19 를 먼저 마친 뒤 테스트를 돌린다**
+- [x] **Step 9: Task 19 를 먼저 마친 뒤 테스트를 돌린다**
 
 `pickAndImportStructureKits` 가 아직 없어 타입 검사가 실패한다. Task 19 를 이어서 구현한 뒤 함께 검증하고 커밋한다.
 
@@ -4522,7 +4522,7 @@ Task 11 에서 만든 `+ 새 구조물` 옆에 넣는다:
   - `openStructureKitImportDialog(tilesetId: TilesetId, plan: ImportPlan, onDone: () => void): void`
   - `importStructureKits(tilesetId: TilesetId, entries: readonly { kit: SectionStructureKitDef; name: string }[]): number` (actions)
 
-- [ ] **Step 1: 저장 접점의 실패 테스트를 쓴다**
+- [x] **Step 1: 저장 접점의 실패 테스트를 쓴다**
 
 `test/structureKitEditorDialog.test.ts` 에 추가한다:
 
@@ -4565,13 +4565,13 @@ describe("importStructureKits", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
+- [x] **Step 2: 테스트를 돌려 실패를 확인한다**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitEditorDialog.test.ts`
 
 Expected: FAIL — `importStructureKits` 이 없다
 
-- [ ] **Step 3: 저장 접점을 구현한다**
+- [x] **Step 3: 저장 접점을 구현한다**
 
 `structureKitActions.ts` 에 추가한다:
 
@@ -4602,7 +4602,7 @@ export function importStructureKits(
 }
 ```
 
-- [ ] **Step 4: 파일 선택과 다이얼로그를 구현한다**
+- [x] **Step 4: 파일 선택과 다이얼로그를 구현한다**
 
 `src/editor/panels/structureKitImportDialog.ts`:
 
@@ -4754,7 +4754,7 @@ export function openStructureKitImportDialog(tilesetId: TilesetId, plan: ImportP
 }
 ```
 
-- [ ] **Step 5: CSS 를 더한다**
+- [x] **Step 5: CSS 를 더한다**
 
 ```css
 .structure-kit-import-warn {
@@ -4803,17 +4803,17 @@ export function openStructureKitImportDialog(tilesetId: TilesetId, plan: ImportP
 }
 ```
 
-- [ ] **Step 6: Task 18 의 import 를 연결한다**
+- [x] **Step 6: Task 18 의 import 를 연결한다**
 
 `structureKitDbTab.ts` 에 `import { pickAndImportStructureKits } from "@/editor/panels/structureKitImportDialog";` 를 더한다. `serializeStructureKitFile`·`structureKitFileName`·`downloadBlob` import 도 함께 건다. 인스펙터에도 같은 세 개를 건다.
 
-- [ ] **Step 7: 전체 테스트와 타입 검사**
+- [x] **Step 7: 전체 테스트와 타입 검사**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle test/structureKitDbTab.test.ts test/structureKitEditorDialog.test.ts test/structureKitFile.test.ts test/structureKitRasterModel.test.ts test/structureKitTools.test.ts test/downloadBlob.test.ts && npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 전부 PASS, 오류 없음
 
-- [ ] **Step 8: 커밋 (Task 18 과 함께)**
+- [x] **Step 8: 커밋 (Task 18 과 함께)**
 
 ```bash
 git add src/editor/panels/structureKitDbTab.ts src/editor/panels/structureKitInspector.ts src/editor/panels/structureKitImportDialog.ts src/editor/harnessSuggestion/structureKitActions.ts src/styles/editor/harness-suggestion.css test/structureKitDbTab.test.ts test/structureKitEditorDialog.test.ts
@@ -4847,7 +4847,7 @@ EOF
 **Interfaces:**
 - Consumes: 앞선 모든 태스크의 `data-testid`
 
-- [ ] **Step 1: e2e 를 쓴다**
+- [x] **Step 1: e2e 를 쓴다**
 
 진입 경로는 기존 DB e2e 들이 쓰는 것과 같다 — `/?freshProject=1` → `toolbar-database` → `database-modal` → `db-tab-structure-kits` (`test/e2e/_db-modern-overhaul-spot.spec.ts:20-35`, `database.ts:81`).
 
@@ -4939,25 +4939,25 @@ test.describe("데이터베이스 구조물 편집기", () => {
 });
 ```
 
-- [ ] **Step 2: e2e 를 돌린다**
+- [x] **Step 2: e2e 를 돌린다**
 
 Run: `npx playwright test test/e2e/db-structure-editor.spec.ts`
 
 Expected: 3 passed
 
-- [ ] **Step 3: 전체 유닛 테스트 회귀 확인**
+- [x] **Step 3: 전체 유닛 테스트 회귀 확인**
 
 Run: `node scripts/run-vitest.mjs run --configLoader bundle`
 
 Expected: 기존 스위트가 이 작업 전과 같은 수로 통과한다. 실패가 있으면 이 계획이 건드린 파일과 관련된 것인지 확인하고 고친다.
 
-- [ ] **Step 4: 빌드 확인**
+- [x] **Step 4: 빌드 확인**
 
 Run: `npx tsc --noEmit -p tsconfig.app.json`
 
 Expected: 오류 없음
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add test/e2e/db-structure-editor.spec.ts

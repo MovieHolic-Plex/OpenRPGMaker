@@ -3,6 +3,11 @@ import { expect, test, type Page } from "@playwright/test";
 // 유닛 테스트(environment:"node" + FakeElement)는 캔버스를 그리지 않고
 // getBoundingClientRect 가 전부 0 이라, 실제 클릭 좌표 → 칸 매핑과
 // 다운로드·파일 선택 왕복은 브라우저에서만 증명된다.
+//
+// 실행 주의: 손으로 만든 워크트리에서는 `DEV_SERVER_PORT=<고유 포트>` 를 주고 돌려라.
+// playwright.config.ts 의 기본 포트 9173 + reuseExistingServer:true 조합 때문에, 다른
+// 워크트리가 9173 을 점유하고 있으면 그 서버를 재사용해 **다른 브랜치 코드를 검증한다**
+// (실측 2026-08-29: 이 스펙 3케이스가 옛 도구줄을 보고 전부 실패했다). openwiki/agent-worktrees.md 참조.
 
 async function openStructureTab(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1440, height: 900 });

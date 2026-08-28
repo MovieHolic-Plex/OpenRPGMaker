@@ -72,6 +72,23 @@ Herd New worktree 훅은 `npm run wt adopt -- --path <checkout>` (또는 `WT_WOR
 워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. `npm run dev` 는 9999를
 하드코딩하므로 메인과 충돌한다.
 
+### e2e 는 `DEV_SERVER_PORT` 없이 돌리면 **남의 코드를 검증한다** (실측 2026-08-29)
+
+`playwright.config.ts` 의 기본 포트는 9173 이고 `webServer.reuseExistingServer` 가 `true` 다.
+다른 워크트리가 9173 을 이미 점유하고 있으면 playwright 는 **서버를 새로 띄우지 않고 그것을
+재사용한다**. 실측: `.claude/worktrees/db-structures-editor` 에서 돌린 구조물 편집기 e2e 3케이스가
+전부 실패했는데, 실패 스냅샷의 도구줄에는 그 브랜치가 지운 옛 힌트칩이 그대로 있었다 —
+브라우저가 보던 것은 `/home/main/.herdr/worktrees/rpg-zzu/worktree`(다른 브랜치)의 dev 서버였다.
+`DEV_SERVER_PORT=<고유 포트>` 를 주고 다시 돌리자 3/3 통과했다.
+
+- `npm run wt create` 로 만든 워크트리는 9801부터 고유 포트를 받으므로 이 함정에 걸리지 않는다.
+- **손으로 만든 워크트리**(`.claude/worktrees/*`, `git worktree add` 직접 호출 등)는 배정이 없어
+  기본 9173 으로 떨어진다. `npm run wt adopt -- --path <checkout>` 을 돌리거나, 최소한
+  e2e 실행 때 `DEV_SERVER_PORT` 를 명시한다.
+- 이 실패 모드는 **조용하다**. 운이 나쁘면 실패가 아니라 "통과"로 보인다 — 남의 워크트리가
+  같은 기능을 이미 갖고 있으면 내 변경을 검증하지 않고 초록이 뜬다. 확인 방법:
+  `ss -tlnp | grep <port>` 로 pid 를 얻고 `ls -l /proc/<pid>/cwd` 로 그 서버의 워크트리를 본다.
+
 ## 검증 게이트
 
 ```bash
