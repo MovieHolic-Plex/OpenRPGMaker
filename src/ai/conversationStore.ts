@@ -1,6 +1,7 @@
 import type { AuditEntry } from "@/ai/assistantSession";
+import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
-import type { Project } from "@/project/types";
+import type { ProjectIdentity } from "@/project/store";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
 export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
@@ -25,7 +26,7 @@ function isAuditEntry(value: unknown): value is AuditEntry {
   if (!isObject(value) || typeof value.kind !== "string") return false;
   switch (value.kind) {
     case "user":
-      return typeof value.text === "string";
+      return typeof value.text === "string" && (value.context === undefined || isConversationTurnContext(value.context));
     case "assistant":
       return typeof value.text === "string";
     case "status": // 상태 전이/턴 수명주기 기록(결함 ⑬).
@@ -117,9 +118,15 @@ export function loadLatestConversation(): ConversationRecord | null {
   return readConversations()[0] ?? null;
 }
 
-export function projectConversationContextKey(project: Project): string {
-  const title = project.meta.title.trim() || "(untitled)";
-  return `${title}::${project.startMapId}`;
+/**
+ * 대화가 속한 프로젝트를 가리키는 키. **편집 중인 프로젝트의 실제 신원**을 쓴다.
+ *
+ * 왜 제목·시작맵이 아니가: `createBlankProject()` 의 시작맵 id 는 상수(`map_blank_start`)이고
+ * 새 프로젝트 제목도 항상 "새 프로젝트" 다 — 제목::시작맵 키는 새 프로젝트마다 같은 값이 나와
+ * 이전 프로젝트의 대화가 새 프로젝트에 복원됐다. 거꾸로 제목을 바꾸면 자기 대화를 잃었다.
+ */
+export function conversationScopeKey(identity: ProjectIdentity): string {
+  return `${identity.kind}:${identity.id}`;
 }
 
 export function deleteConversation(id: string): void {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { projectConversationContextKey, saveConversation } from "@/ai/conversationStore";
+import { conversationScopeKey, saveConversation } from "@/ai/conversationStore";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -109,7 +109,7 @@ describe("컴포저 입력과 시작 화면 배타", () => {
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: projectConversationContextKey(store.getCurrent()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
       entries: [
         { kind: "user", text: "마을 만들어줘" },
         { kind: "assistant", text: "초안을 준비했습니다." },

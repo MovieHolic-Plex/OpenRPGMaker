@@ -21,7 +21,7 @@ import {
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { editorState } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
-import { clearConversations, projectConversationContextKey, saveConversation } from "@/ai/conversationStore";
+import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -248,13 +248,12 @@ describe("도구 로그와 추론 표시", () => {
 
 describe("대화 복원과 내보내기", () => {
   it("같은 프로젝트 컨텍스트의 직전 대화는 부팅 시 자동 복원된다", () => {
-    const project = store.getCurrent();
     saveConversation({
       id: "conv_same",
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: projectConversationContextKey(project),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
       entries: [
         { kind: "user", text: "마을 만들어줘\n\n[컨텍스트] 현재 맵: 빈 맵" },
         { kind: "assistant", text: "초안을 준비했습니다." },

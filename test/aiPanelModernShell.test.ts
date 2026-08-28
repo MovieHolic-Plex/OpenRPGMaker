@@ -4,7 +4,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
-import { saveConversation, projectConversationContextKey } from "@/ai/conversationStore";
+import { saveConversation, conversationScopeKey } from "@/ai/conversationStore";
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -70,7 +70,7 @@ describe("조수 패널 모던 셸", () => {
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: projectConversationContextKey(store.getCurrent()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
       entries: [
         { kind: "user", text: "마을 만들어줘" },
         { kind: "assistant", text: "초안을 준버했습니다." },

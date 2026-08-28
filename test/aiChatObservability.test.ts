@@ -9,7 +9,7 @@ import {
   saveAiFontSize,
 } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
-import { clearConversations, projectConversationContextKey, saveConversation } from "@/ai/conversationStore";
+import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
 import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -134,7 +134,7 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
       title: "복원",
       model: "m",
       savedAt: 100,
-      projectContextKey: projectConversationContextKey(store.getCurrent()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
       entries: [
         { kind: "user", text: "칠해줘" },
         { kind: "tool", name: "paint_tiles", args: { mapId: "map_a", tile: 9 }, ok: true, summary: "타일 3칸" },
