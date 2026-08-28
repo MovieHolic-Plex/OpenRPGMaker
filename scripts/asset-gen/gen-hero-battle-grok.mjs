@@ -109,7 +109,7 @@ const POSES = [
   {
     id: "hit",
     col: 2,
-    beat: "Pose: staggering backwards to the right after taking a hit, feet planted apart with the front knee bent, torso leaning back a little, head tilted back with the eyes squeezed shut and teeth clenched in pain, the free hand clutched against the chest, and the weapon still held firmly in the other hand and lowered across the front of the body. The whole body stays in a clear left-facing side view.",
+    beat: "Pose: staggering backwards to the right after taking a hit, feet planted apart with the front knee bent, torso leaning back a little, head tilted back with the eyes squeezed shut and teeth clenched in pain, the free hand clutched against the chest, and the weapon still held firmly in the other hand and lowered across the front of the body. The whole body stays in a clear left-facing side view. Draw the character at exactly the same scale and the same head-to-body proportion as a calm standing full-body view: the head must be no more than one quarter of the total body height, and the complete figure from the crown of the head to the soles of both boots must sit inside the frame with a margin. Do not zoom in on the face or upper body.",
   },
 ];
 
@@ -229,9 +229,16 @@ async function generateFrame(hero, pose, tag) {
   const cwd = join(TMP, "sessions", `${hero.slug}-${pose.id}-${tag}`);
   mkdirSync(cwd, { recursive: true });
   const savePath = join(cwd, "raw.png");
-  const sessionId = sessionIdFor(`${hero.slug}/${pose.id}/${tag}`);
+  // grok 은 이미 쓴 세션 id 를 거부한다. 같은 프레임을 다시 뽑을 때는 재시도 번호를
+  // 씨앗에 섞어 새 id 를 얻는다 — 옛 세션은 그대로 남겨 원본 그림을 다시 볼 수 있다.
+  let attempt = 0;
+  let sessionId = sessionIdFor(`${hero.slug}/${pose.id}/${tag}`);
+  while (existsSync(sessionDir(cwd, sessionId))) {
+    attempt += 1;
+    sessionId = sessionIdFor(`${hero.slug}/${pose.id}/${tag}#retry${attempt}`);
+  }
   const dir = sessionDir(cwd, sessionId);
-  log(`generate ${hero.slug}/${pose.id} session=${sessionId}`);
+  log(`generate ${hero.slug}/${pose.id} session=${sessionId}${attempt > 0 ? ` (retry ${attempt})` : ""}`);
   await runGrok(prompt(hero, pose, savePath), cwd, sessionId);
   // 지시대로 복사했으면 raw.png 가 있다. grok 이 무시했을 때만 세션 images/ 를 뒤진다.
   const raw = existsSync(savePath) ? savePath : newestImage(dir);

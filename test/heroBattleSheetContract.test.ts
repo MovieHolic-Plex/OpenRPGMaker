@@ -14,9 +14,12 @@ import { describe, expect, it } from "vitest";
 //  3. 세 열이 서로 다르다 — 같으면 공격/피격 프레임 교체가 눈에 보이지 않는다.
 //  4. 행 0 바로 아래 8px 띠가 완전히 투명하다 — 과거 48×64 오슬라이스 버그(발밑에
 //     아랫행 머리 16px 이 따라오던 증상)의 구조적 재발 방지선.
-//  5. 세 열 중 가장 큰 실루엣이 셀 높이의 90% 이상을 채운다 — 전투 필드에서 적 배틀러
-//     이미지는 88×104 논리 px 인데 아군 프레임은 96×96 이다. 셀 안에서 작게 그려진
-//     시트는 적보다 절반 크기로 보인다(2026-08-28 교체 전 실측: 최대 37/48px).
+//  5. 세 열이 각각 셀 높이의 70% 이상, 그중 가장 큰 실루엣은 90% 이상을 채우고, idle 열
+//     실루엣이 900px 이상이다 — 전투 필드에서 적 배틀러 이미지는 88×104 논리 px 인데 아군
+//     프레임은 96×96 이다. 셀 안에서 작게 그려진 시트는 적보다 절반 크기로 보인다.
+//     2026-08-28 교체 전 실측: 높이는 70.8~77.1% 로 70% 문턱을 넘었지만 최대 채움이 77.1%,
+//     idle 실루엣이 527~663px 이었다. 즉 **높이 70% 만으로는 회귀가 안 잡힌다** — 교체 전
+//     원본도 통과한다. 최대 채움 90% 와 idle 면적 900px 이 실제 쐐기다.
 type BinaryFsReader = {
   readonly readFileSync: (path: URL) => Uint8Array;
 };
@@ -44,11 +47,15 @@ const SHEET_WIDTH = CELL * COLUMNS;
 const SHEET_HEIGHT = CELL * ROWS;
 const OPAQUE = 32;
 /** 최소 실루엣 면적 — 이보다 적으면 사실상 빈 프레임이다. */
-const MIN_OPAQUE_PIXELS = 200;
+const MIN_OPAQUE_PIXELS = 350;
 /** 열 사이 최소 차이(셀 면적 대비 %). */
 const MIN_POSE_DIFF_RATIO = 0.02;
+/** 모든 열이 채워야 하는 셀 높이 비율. */
+const MIN_CELL_FILL = 0.7;
 /** 가장 큰 실루엣이 채워야 하는 셀 높이 비율. */
 const MIN_TALLEST_FILL = 0.9;
+/** idle 열의 최소 실루엣 면적 — 교체 전 오버월드 프레임(527~663px)을 되돌리지 못하게 막는다. */
+const MIN_IDLE_AREA = 900;
 /** 오슬라이스 방어 띠 높이 — 과거 버그가 아랫행 16px 을 끌어왔으므로 그 절반을 잰다. */
 const BLEED_GUARD_HEIGHT = 8;
 
@@ -73,7 +80,10 @@ describe("hero battle charset sheets", () => {
 
     for (const [column, cell] of cells.entries()) {
       expect(cell.opaque, `col ${column} 실루엣 면적`).toBeGreaterThanOrEqual(MIN_OPAQUE_PIXELS);
+      expect(cell.height / CELL, `col ${column} 셀 높이 점유율`).toBeGreaterThanOrEqual(MIN_CELL_FILL);
     }
+
+    expect(cells[0]?.opaque ?? 0, "idle 실루엣 면적").toBeGreaterThanOrEqual(MIN_IDLE_AREA);
 
     expect(diffRatio(sheet, 0, 1), "idle vs attack").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
     expect(diffRatio(sheet, 0, 2), "idle vs hit").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
