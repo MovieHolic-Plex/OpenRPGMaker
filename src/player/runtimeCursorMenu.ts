@@ -96,6 +96,20 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
     el.addEventListener("mouseenter", () => setIndex(i), { signal });
   });
 
+  // Tab 포커스 → 커서 동기화. 이게 없으면 브라우저 포커스는 A 행에 있는데 결정키는
+  // items[index](=B 행)를 click 해서 "포커스한 것과 다른 항목이 실행"된다(실측: 포커스
+  // shop-buy-k_b, 커서 다 → Enter 로 k_c 구매). 커서가 포커스를 따라가면 두 모델이 하나가 된다.
+  root.addEventListener(
+    "focusin",
+    ((event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const hit = items.findIndex((el) => el === target || el.contains(target));
+      if (hit >= 0) setIndex(hit);
+    }) as EventListener,
+    { signal }
+  );
+
   if (typeof root.tabIndex === "number" && root.tabIndex < 0) root.tabIndex = 0;
   root.addEventListener("keydown", handle as EventListener, { signal });
   // root 가 포커스를 못 받아도 동작하도록 window 폴백(battleDom 패턴).

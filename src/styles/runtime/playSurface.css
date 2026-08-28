@@ -124,6 +124,8 @@
   height: min(calc(100% - 24px), calc(var(--play-logical-height) * var(--play-scale) - 24px));
   align-items: center;
 }
+/* 560px 고정이던 시절에는 1600x1000(재생 영역 1203px)에서 목록 열이 362px 라 긴 이름이
+   잘리고 사이드 열 아래로 600px 가 비었다. 재생 영역을 더 쓰되 상한은 남긴다. */
 .player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-shell {
-  width: min(100%, 560px);
+  width: min(100%, 720px);
 }
