@@ -164,6 +164,78 @@ Evidence expectations:
 - 실측 사례: DB 사이드바 레일 작업(#160)에서 크로미움으로 두 번 연속 백지가 나 증거를 못 잡았고,
   파이어폭스로 바꾸자 같은 트리에서 즉시 통과했다. 그 스펙은 지금도 파이어폭스로 돈다.
 
+## 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+
+게임 화면을 브라우저로 QA 할 때 **편집기 셸을 통과하지 마라.** `npm run qa:runtime`
+(반복) / `npm run qa:runtime:gate` (게이트). `player.html` 을 전용 vite 서버로 띄워
+편집기 크롬 0, HMR 유지, 출하 shim 경로를 그대로 통과한다. 편집기 play 모드는 실제
+`@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
+경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
+
+- 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
+  표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
+  매 실행 재생성되며 gitignore 대상이다.
+- 시나리오는 `scripts/qa/runtime/<name>.scenario.mjs`. 좌표 기대치는 추측하지 말고
+  `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
+- 전투 주스가 맵을 드러내는 회귀는 `test/runtime/battle-flash-map.spec.ts` 가 잠근다. 같은 QA
+  서버로 `player.html` 을 띄워 `battle-v3.json` 시작 맵(0,0) 오른쪽 `battleProcessing` 이벤트로
+  **실전투 DOM** 에 들어간 뒤, 한 번의 rAF 샘플 시리즈에서 세 가지를 같이 본다: 루트
+  `background-color` 알파 == 1, `.battle-field::after` 오버레이 알파 > 0(플래시가 사라지지
+  않았다는 증명), 루트 `transform` 의 translate 성분 == 0. 알파를 **클래스 부착 지속 시간에
+  기대어 재지 마라** — 런타임은 `setTimeout` 으로 클래스를 떼므로 판정이 그 뒤로 밀리면
+  오버레이가 `rgba(0,0,0,0)` 으로 읽힌다(실측으로 버진 경합). 샘플러는
+  `getAnimations().playState` 가 running 인 동안만 돌고 스스로 멈춘다.
+- 누출은 필드가 백드롭 이미지로 닫혀 있어서 **필드-HUD 4px 거터와 HUD 패널 사이**에서 가장
+  자명하다. 새 증거를 모으려면 30x30 마을 프로젝트(`editor-authored-demo-v3.json`, 시작 맵
+  `ev_lantern_training` 이 (20,14))로 띄우면 뒤에 새는 타일이 눈에 보인다. RED/GREEN 실측은
+  `.omo/evidence/battle-flash-map/` 에 있다.
+- 시나리오는 `query` 로 `player.html` 쿼리를 붙일 수 있다(예: `{ e2eVitals: "1" }` → 액터
+  바이탈 훅 `__oprnSetActorVitals` 개방). `setVitals` op 은 그 훅으로 파티 전원(또는
+  `actorIds`)의 HP/MP 를 세운다. `expect.battleResult` 는 `session.battleResult` 를 대조한다.
+- `battle-defeat` 시나리오가 전투 패배 → 게임 오버 결말의 실기 증거다. 파티를 HP 0 으로
+  만들어 전투 개시 시점에 `defeat` 을 확정시킨다 — **검증 대상이 전투 산식이 아니라 호스트의
+  패배 처리 경로**이기 때문이다. HP 1 로는 패배가 재현되지 않았다(`battleDamage.ts:175` 는
+  `power + floor(atk/2) - floor(def/2) <= 0` 이면 데미지 0 → 약한 적 앞에서 1 HP 파티가
+  무적이 되고, 실측에서 레벨 1 파티가 108HP 트룹을 이겨 `battleResult=victory` 가 찍혔다).
+- `battle` 시나리오는 `map_moonwell_forest` 의 봉인 이벤트(14,2 · `movement: fixed`)로
+  `troop_forest_hornets` **3마리 전투**에 들어가고, `battlerGeometry` 기대치가 실브라우저
+  rect 로 배틀러 배치를 판정한다(적 이미지가 필드 안에 온전히 있는지 + 발이 백드롭
+  지평선 33% 아래인지). CSS 레이아웃은 jsdom 으로 재현되지 않으므로 이 기하는 실브라우저
+  측정만이 근거다. 12종 스킨 전수는 `system.battleUiStyle` 만 바꾼 픽스처 사본에
+  `--project` / `--out` 을 붙여 같은 시나리오를 돌려서 본다.
+- `battlerGeometry` 는 네 축이다: 필드 담기 · 발이 지평선 아래 · 스프라이트 크기 0 아님 ·
+  **적끼리 겹침 아님**. 겹침 축이 없던 동안 rm2000/dragonquest/mv 가 3마리를 한 점에 겹쳐
+  그리면서 통과했다 — 담기·지평선만 보면 "완전히 겹친 한 덩어리"가 정답으로 보인다.
+- 스윕은 스킨마다 서버·브라우저를 새로 띄운다. **도는 중에 `git stash` 같은 트리 변경을 하면
+  안 된다** — 실측: 스윕 중 stash 로 ff 런이 "전투가 시작되지 않았다"로 죽었다(내 변경이
+  사라진 트리를 읽었다). 결과가 오염되면 그 스킨만 다시 돌려라.
+
+함정 (전부 실측):
+- `vite.player.config.ts` 는 `publicDir: false` 다. 그대로 dev 서빙하면 번들 텍스처
+  (`assets/easyrpg-*.png`, `public/assets/` 34개)가 전부 404 → **조용한 검은 스크린샷**.
+  `vite.player-qa.config.ts` 가 되살린다.
+- 워크트리는 `node_modules` 를 메인 레포로 심링크해 `node_modules/.vite` 까지 공유한다.
+  다른 config 로 서버를 띄우면 공유 캐시를 재최적화해 **남의 dev 서버를 죽인다**
+  (`vite.config.ts:350-354`, 실측 3회). 반드시 전용 `cacheDir` / `VITE_CACHE_DIR`.
+- `vite.config.ts` 의 `server.fs.allow` 는 `../rpg-zzu/node_modules`(구 형제 워크트리
+  `rpg-zzu-*`)만 넓힌다. **`.claude/worktrees/*` 에서는 존재하지 않는 경로로 풀려 편집기
+  dev 서버가 phaser 를 403 으로 막는다.** 올바른 일반화는 `realpathSync("./node_modules")`.
+- 고정 키 횟수로 대사를 소진하면 닫힌 뒤 남은 Enter 가 NPC 를 재발동시켜 선택지가 다시
+  열린다. `pressUntil` op(매 입력 후 조건 확인)을 써라.
+- **`__oprnDebug.teleport` 는 맵 비교를 세션 쓰기보다 먼저 해야 한다 (2026-08-28 수정).**
+  이전 구현은 `applyAndSync` 로 `session.currentMapId` 를 먼저 갈아치운 뒤
+  `getMapId() !== mapId` 를 비교해서 **`loadMap` 이 한 번도 호출되지 않았다** — 세션만 새 맵을
+  가리키고 화면은 옛 맵을 계속 그렸고, `expect.mapId` 는 세션 값을 읽으니 그 거짓말을 통과시켰다
+  (smoke 시나리오의 맵 전환 비트가 그 상태였다). 지금은 이전 mapId 를 캡처해 비교한다.
+  같은 맵 안 재배치는 여전히 스프라이트를 옮기지 않는다(`loadMap` 을 부를 이유가 없다).
+- `movement` 가 `fixed` 가 아닌 NPC 는 같은 세션 안에서 배회한다. 고정 좌표 인접을 전제한
+  상호작용 비트는 취약하다.
+- `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
+  (Phaser 초록 와이어프레임). 게이트는 `playerSpriteTextureLoaded` 축으로 봐야 한다.
+- `test/fixtures/projects/oprn-sample-v3.json` 은 플레이어 캐릭셋이 `__MISSING` 으로 그려진다
+  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 기본 픽스처는
+  `editor-authored-demo-v3.json` 을 쓴다.
+
 ## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
 
 - `src/testing/sceneTestRunner.ts` 는 추격(chase) 무버만 시뮬레이션하고 무작위·접근·사용자 지정

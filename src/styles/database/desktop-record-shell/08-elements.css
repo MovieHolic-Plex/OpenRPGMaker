@@ -1,56 +1,15 @@
+/* 속성 탭 데스크톱 오버라이드.
+ *
+ * 2026-08: 이 파일이 갖고 있던 규칙은 전부 삭제한 마크업(.db-elements-classic-inner /
+ * .db-elements-editor / .db-elements-fieldset / .db-elements-list-pane / .db-elements-row)
+ * 을 겨냥하고 있었다. 특히 `.db-elements-editor { grid-template-rows: 88px 160px minmax(0,1fr) }`
+ * + `nth-child(3) { grid-column:2; grid-row:1/4 }` 조합이 1열 3행을 영구 공백으로 만든
+ * H 축 P0 의 절반이었다(나머지 절반은 elements.css). 속성 탭은 이제 databaseWorkspace
+ * 프리미티브를 쓰므로 데스크톱 전용 오버라이드가 필요 없다. */
+
 @media (min-width: 981px) {
-  .database-modal-backdrop .database-modal-body .db-elements-classic,
-  .database-modal-backdrop .database-modal-body .db-elements-classic-inner {
+  .database-modal-backdrop .database-modal-body .db-elements-classic {
     height: 100%;
     min-height: 0;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-classic-inner {
-    gap: 14px;
-    grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-editor {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
-    grid-template-rows: 88px 160px minmax(0, 1fr);
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-editor .db-elements-fieldset:nth-child(3) {
-    grid-column: 2;
-    grid-row: 1 / 4;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-list-pane,
-  .database-modal-backdrop .database-modal-body .db-elements-editor {
-    background: var(--db-studio-surface);
-    border: 1px solid var(--db-studio-border-default);
-    border-radius: 8px;
-    box-shadow: var(--db-studio-shadow);
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-list-title {
-    background: transparent;
-    color: var(--db-studio-text-1);
-    font: 600 13px/20px "Malgun Gothic", system-ui, sans-serif;
-    justify-content: flex-start;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-row,
-  .database-modal-backdrop .database-modal-body button.db-elements-row {
-    border: 1px solid var(--db-studio-border-subtle);
-    border-radius: 6px;
-    font: 400 13px/20px "Malgun Gothic", system-ui, sans-serif;
-    height: 36px;
-    min-height: 36px;
-    padding: 0 10px;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-elements-row.is-selected,
-  .database-modal-backdrop .database-modal-body button.db-elements-row.is-selected {
-    background: var(--db-studio-accent-soft);
-    border-color: var(--db-studio-accent-border);
-    color: var(--db-studio-text-1);
   }
 }

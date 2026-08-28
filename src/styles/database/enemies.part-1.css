@@ -16,45 +16,13 @@
   --oprn-enemy-graphic-preview-width: 242px;
 }
 
-/* 좁은(<901px) 폭에서는 이름 순서대로 세로 1열 스택 — 아래 desktop 오버라이드가
-   901px+ 에서 grid-template-areas 를 깔아주면 .db-enemy-panel-* 클래스가 자동으로
-   해당 영역에 배치된다(참조하는 area 이름이 없으면 grid-area는 조용히 무시되고
-   DOM 순서대로 auto-place 되므로 이 규칙 하나로 두 폭 모두 안전하다). */
-.database-modal-body .db-enemy-bm101-workbench {
-  display: grid;
-  gap: 6px;
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1fr);
-}
+/* 2026-08 모던 개편: 몬스터 워크벤치는 databaseWorkspace 의 카드 스택으로 옮겼다
+   (.db-enemy-workbench / .db-ws-stack, modern/enemies.css). 여기 있던
+   `.db-enemy-bm101-workbench` grid-template-areas 맵과 패널 상자 스타일은
+   desktop.css / desktop-record-shell/05-dense-workbenches.css / studio-theme.css 의
+   서로 다른 area 맵과 충돌해 패널 겹침·클리핑을 만들던 원인이라 통째로 삭제했다.
+   이 파일에는 다이얼로그/컨텍스트 메뉴 등 워크벤치 바깥 자산만 남긴다. */
 
-/* grid-area 이름은 아래 @media(≥901px)의 template-areas에서만 정의된다 — 톱레벨에 두면
-   미정의 이름을 받은 아이템이 전부 같은 암시적 셀에 겹친다(<901px 패널 겹침, 2파 리뷰 #1). */
-@media (min-width: 901px) {
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-name { grid-area: name; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-stats { grid-area: stats; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic { grid-area: graphic; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-species { grid-area: species; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-rewards { grid-area: rewards; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-critical { grid-area: critical; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-options { grid-area: options; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-state { grid-area: state; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element { grid-area: element; }
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-actions { grid-area: actions; }
-}
-
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
-  background: var(--oprn-field);
-  border-color: var(--oprn-shadow) var(--oprn-light) var(--oprn-light) var(--oprn-shadow);
-  border-style: solid;
-  border-width: 1px;
-  display: grid;
-  gap: 4px;
-  margin: 0;
-  min-width: 0;
-  padding: 8px 6px 6px;
-}
-
-.database-modal-body .db-enemy-bm101-workbench .db-field,
 .database-modal-body .db-enemy-dialog .db-field {
   align-items: center;
   display: grid;
@@ -63,8 +31,6 @@
   margin: 0;
 }
 
-.database-modal-body .db-enemy-bm101-workbench input,
-.database-modal-body .db-enemy-bm101-workbench select,
 .db-enemy-dialog input,
 .db-enemy-dialog select {
   background: var(--oprn-enemy-table-bg);
@@ -75,13 +41,6 @@
   font: 12px/1.2 "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
   min-height: 20px;
   min-width: 0;
-}
-
-.database-modal-body .db-enemy-graphic-preview {
-  align-items: end;
-  display: grid;
-  gap: 6px;
-  grid-template-columns: minmax(0, 1fr) 56px;
 }
 
 .database-modal-body .db-enemy-species-status {
@@ -108,85 +67,9 @@
   gap: 6px;
 }
 
-.database-modal-body .db-enemy-graphic-stage,
-.db-enemy-graphic-dialog-preview .db-enemy-graphic-stage {
-  align-items: center;
-  background: var(--oprn-enemy-preview-bg);
-  border: 1px inset var(--oprn-shadow);
-  display: flex;
-  height: var(--oprn-enemy-graphic-height);
-  justify-content: center;
-  overflow: hidden;
-}
-
-.database-modal-body .db-enemy-graphic-stage img,
-.db-enemy-graphic-dialog-preview .db-enemy-graphic-stage img {
-  image-rendering: pixelated;
-  max-height: var(--oprn-enemy-graphic-max);
-  max-width: 132px;
-}
-
-.database-modal-body .db-enemy-graphic-stage img.flying,
-.db-enemy-graphic-dialog-preview .db-enemy-graphic-stage img.flying {
-  transform: translateY(-12px);
-}
-
 .database-modal-body .db-enemy-empty-graphic {
   color: var(--oprn-enemy-preview-text);
   font: 12px/1.2 var(--font-mono);
-}
-
-.database-modal-body .db-enemy-rate-row {
-  align-items: center;
-  display: grid;
-  gap: 4px;
-  grid-template-columns: 26px minmax(0, 1fr);
-}
-
-.database-modal-body .db-enemy-rate-row span {
-  order: 2;
-}
-
-.database-modal-body .db-enemy-rate-row select {
-  font-weight: 700;
-  order: 1;
-}
-
-.database-modal-body .db-enemy-attack-patterns {
-  background: var(--oprn-enemy-table-bg);
-  border: 1px inset var(--oprn-shadow);
-  min-height: var(--oprn-enemy-action-height);
-  overflow: auto;
-}
-
-.database-modal-body .db-enemy-attack-patterns table {
-  border-collapse: collapse;
-  color: var(--oprn-enemy-table-text);
-  font: 12px/1.35 "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
-  width: 100%;
-}
-
-.database-modal-body .db-enemy-attack-patterns th {
-  background: var(--oprn-chrome);
-  border-bottom: 1px solid var(--oprn-shadow);
-  border-right: 1px solid var(--oprn-shadow);
-  font-weight: 400;
-  text-align: left;
-}
-
-.database-modal-body .db-enemy-attack-patterns td {
-  border-right: 1px solid var(--oprn-enemy-table-separator);
-  padding: 2px 4px;
-}
-
-.database-modal-body .db-enemy-attack-patterns tr:hover td {
-  background: var(--oprn-highlight);
-  color: var(--oprn-light);
-}
-
-.database-modal-body .db-enemy-attack-patterns tr.db-enemy-action-context-target td {
-  background: var(--oprn-highlight);
-  color: var(--oprn-light);
 }
 
 .db-enemy-dialog-backdrop {
@@ -440,29 +323,11 @@
   }
 }
 
-.database-modal-body .db-enemy-action-toolbar {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
 .database-modal-body .db-enemy-actions-empty,
 .database-modal-body .db-capture-preview {
   color: var(--text-2);
   font-size: 12px;
   margin: 2px 0;
-}
-
-.database-modal-body .db-enemy-attack-patterns tr.is-dangling td,
-.database-modal-body .db-enemy-rate-row.is-dangling {
-  color: #ff6b6b;
-}
-
-.database-modal-body .db-enemy-rate-row {
-  align-items: center;
-  display: flex;
-  gap: 6px;
-  justify-content: space-between;
 }
 
 .database-modal-body .db-collection-gate-warn {

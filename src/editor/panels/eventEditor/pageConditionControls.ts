@@ -1,11 +1,8 @@
-import { numberedName } from "@/editor/panels/databaseDisplay";
-import { store } from "@/project/store";
-import { el } from "@/util/dom";
 import { switchVariablePicker } from "./switchVariablePicker";
+import type { RecordKind } from "./recordKinds";
 
 type SwitchVariableKind = "switch" | "variable";
 type DatabaseRecordKind = "item" | "actor";
-type NamedRecord = { readonly id: string; readonly name: string };
 
 type IdPickerParams = {
   readonly kind: SwitchVariableKind;
@@ -20,6 +17,11 @@ type RecordSelectParams = {
   readonly currentId: string;
   readonly testId: string;
   readonly onChange: (id: string) => void;
+  /**
+   * 트리거 버튼 testid. 생략하면 `${testId}` 에서 `-input` 을 떼고 `-picker-open` 을 붙인다
+   * (event-page-item-condition-input → event-page-item-condition-picker-open).
+   */
+  readonly pickerTestId?: string;
 };
 
 /** 페이지 조건 슬롯용 — 공용 switchVariablePicker 를 밀도 높은 레이아웃으로 감싼다. */
@@ -36,24 +38,32 @@ export function switchVariableIdPicker(params: IdPickerParams): HTMLElement {
   }).root;
 }
 
-export function databaseRecordSelect(params: RecordSelectParams): HTMLSelectElement {
-  const records = databaseRecords(params.kind);
-  const select = el("select", { dataset: { testid: params.testId } }) as HTMLSelectElement;
-  select.append(el("option", { text: "(선택)", attrs: { value: "" } }));
-  for (const [index, record] of records.entries()) {
-    select.append(el("option", { text: numberedName(index, record.name), attrs: { value: record.id } }));
-  }
-  // 삭제된/유령 itemId·actorId도 선택 상태로 보이게 한다(스위치 피커와 동일).
-  // 없으면 select.value가 조용히 첫 옵션("(선택)")으로 떨어져 조건이 비어 보이는 착시가 난다.
-  if (params.currentId && !records.some((record) => record.id === params.currentId)) {
-    select.append(el("option", { text: `${params.currentId} (없음)`, attrs: { value: params.currentId } }));
-  }
-  select.value = params.currentId;
-  select.addEventListener("change", () => params.onChange(select.value));
-  return select;
+/**
+ * 아이템·주인공 조건 슬롯.
+ *
+ * 예전에는 네이티브 <select> 를 그대로 돌려줬다. 좁은 조건 칸에서 폭이 눌려
+ * "0001: 회복약" 같은 값이 읽히지 않았고, 같은 폼의 스위치·변수는 모달 픽커라
+ * 한 화면에서 선택 방식이 두 갈래로 갈렸다. 이제 넷 다 같은 트리거 컨트롤을 쓴다.
+ *
+ * 반환 타입이 HTMLSelectElement → HTMLElement 로 바뀌었다. 숨은 select 는 루트 안에
+ * 그대로 남으므로 `[data-testid=...-input]` 셀렉터와 selectOption 은 계속 동작한다.
+ */
+export function databaseRecordSelect(params: RecordSelectParams): HTMLElement {
+  return switchVariablePicker({
+    kind: params.kind as RecordKind,
+    selectedId: params.currentId,
+    onChange: params.onChange,
+    selectTestId: params.testId,
+    pickerTestId: params.pickerTestId ?? defaultPickerTestId(params.testId),
+    // 삭제된/유령 itemId·actorId도 선택 상태로 보이게 한다(스위치 피커와 동일).
+    // 없으면 값이 조용히 "(선택)"으로 떨어져 조건이 비어 보이는 착시가 난다.
+    keepMissingId: true,
+    showFilter: false,
+    className: "event-condition-id-picker",
+  }).root;
 }
 
-function databaseRecords(kind: DatabaseRecordKind): readonly NamedRecord[] {
-  const project = store.getCurrent();
-  return kind === "item" ? project.database.items : project.database.actors;
+function defaultPickerTestId(inputTestId: string): string {
+  const base = inputTestId.endsWith("-input") ? inputTestId.slice(0, -"-input".length) : inputTestId;
+  return `${base}-picker-open`;
 }

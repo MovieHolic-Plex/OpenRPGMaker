@@ -65,9 +65,33 @@ const simulateBattleTool: ToolDefinition = {
       activeSlots: args.activeSlots as number | undefined,
       strictScript: args.strictScript as Parameters<typeof simulateBattle>[0]["strictScript"],
     });
+    // 페이즈(전투 이벤트 페이지)는 승률과 같은 급의 1차 지표다 — 넣은 연출이 실제로 떴는지를
+    // data 안쪽에 묻어두면 모델이 안 읽는다. 요약과 경고로 올린다.
+    const phases = result.phaseCoverage;
+    const silent = phases.filter((phase) => phase.firedRuns === 0);
+    const unsupported = phases.filter((phase) => phase.unsupported > 0);
+    const phaseNote = phases.length === 0
+      ? ""
+      : `, 페이즈 ${phases.length - silent.length}/${phases.length} 발동`;
+    const warnings: string[] = [];
+    if (silent.length > 0) {
+      warnings.push(
+        `${result.samples}판 동안 한 번도 발동하지 않은 전투 이벤트 페이지: ` +
+          `${silent.map((phase) => `${phase.name || phase.pageId}(${phase.pageId})`).join(", ")} — ` +
+          `조건이 도달 불가합니다(HP 임계가 너무 낮거나 라운드 조건이 전투 길이보다 깁니다). ` +
+          `upsert_troop_battle_page 로 조건을 고치거나 heroLevel/n 을 바꿔 다시 확인하세요.`,
+      );
+    }
+    if (unsupported.length > 0) {
+      warnings.push(
+        `런타임이 처리하지 못한 커맨드가 있는 페이지: ` +
+          `${unsupported.map((phase) => `${phase.pageId}(${phase.unsupported}건)`).join(", ")} — 연출이 조용히 생략됩니다.`,
+      );
+    }
     return {
-      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타`,
+      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}`,
       data: result,
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

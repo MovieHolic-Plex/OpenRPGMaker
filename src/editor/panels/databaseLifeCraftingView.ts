@@ -1,5 +1,18 @@
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { commandsReferenceLocations } from "@/editor/databaseCommandReferences";
+import { field as wsField, matchesNameOrId } from "@/editor/panels/databaseControls";
+import {
+  detailHero,
+  detailPane,
+  emptyState as wsEmptyState,
+  listPane,
+  listRow,
+  listSearch,
+  listToolbar,
+  sectionCard,
+  statStrip,
+  workspaceShell,
+} from "@/editor/panels/databaseWorkspace";
 import type { CraftIngredient, CraftRecipe } from "@/project/craftRecipes";
 import { store } from "@/project/store";
 import type { ToolActionRule, ToolWorldAction } from "@/project/toolActions";
@@ -24,17 +37,230 @@ type ConfigSection = "energy" | "shipping";
 type LifeSection = RecordSection | ConfigSection;
 type LifeRecord = LifeSkillRecord | CraftRecipe | ItemUpgradeRule | SellPriceEntry | ToolActionRule | WorldUnlockDefinition | BundleDefinition | MakerDefinition;
 
-const SECTIONS: readonly { readonly id: LifeSection; readonly label: string; readonly testid: string }[] = [
-  { id: "skills", label: "생활 기술", testid: "db-life-section-skills" },
-  { id: "recipes", label: "제작법", testid: "db-life-section-recipes" },
-  { id: "upgrades", label: "도구 강화", testid: "db-life-section-upgrades" },
-  { id: "sellPrices", label: "판매 가격", testid: "db-life-section-sell-prices" },
-  { id: "toolActions", label: "도구 행동", testid: "db-life-section-tool-actions" },
-  { id: "energy", label: "에너지", testid: "db-life-section-energy" },
-  { id: "shipping", label: "출하", testid: "db-life-section-shipping" },
-  { id: "worldUnlocks", label: "지역 해금", testid: "db-life-section-world-unlocks" },
-  { id: "bundles", label: "꾸러미", testid: "db-life-section-bundles" },
-  { id: "makers", label: "가공 설비", testid: "db-life-section-makers" },
+// ---------------------------------------------------------------------------
+// 섹션 사전
+//
+// 이 탭은 여덟 종류의 레코드 + 두 개의 설정 패키지를 한 화면에서 다룬다. 예전에는
+// 그 열 개가 `justify-content: flex-end; max-width: 760px` 알약 줄에 몰려 있어서
+// 1680px 에서 마지막 '가공 설비' 하나가 오른쪽 둘째 줄에 홀로 떨어졌다 — 유일한
+// 이동 수단이 고장 난 장식처럼 보였다. 그리고 어느 섹션을 골라도 신규 프로젝트에서는
+// `<strong>아직 레코드가 없습니다.</strong>` 한 줄뿐이라, "이게 뭘 하는 데이터인지"
+// 를 알 방법이 없었다(감사: 상세 창 여백 99%).
+//
+// 그래서 섹션마다 설명·선행 조건·이웃 섹션을 여기 한 곳에 적어 두고, 레일/빈 상태/
+// 히어로가 전부 같은 사전을 읽게 한다.
+// ---------------------------------------------------------------------------
+
+type SectionMeta = {
+  readonly id: LifeSection;
+  readonly label: string;
+  readonly testid: string;
+  /** 히어로 눈썹 라벨. */
+  readonly eyebrow: string;
+  /** 한 줄 요약 — 레일 칩 title, 히어로 subtitle, 현황 보드 카드에 공용. */
+  readonly blurb: string;
+  /** 빈 상태 본문 — "이게 뭔지" 를 모르는 사람에게 하는 설명. */
+  readonly emptyBody: string;
+  readonly searchPlaceholder: string;
+  /** "이 섹션이 하는 일" 카드 줄들. */
+  readonly purpose: readonly string[];
+  /** "먼저 준비할 것" 카드 줄들. */
+  readonly prep: readonly string[];
+  /** 빈 상태의 보조 CTA 가 데려갈 이웃 섹션. */
+  readonly related?: LifeSection;
+};
+
+const SECTIONS: readonly SectionMeta[] = [
+  {
+    id: "skills",
+    label: "생활 기술",
+    testid: "db-life-section-skills",
+    eyebrow: "LIFE SKILL",
+    blurb: "농사·채광·낚시 같은 활동의 숙련도와 레벨 보상을 정의합니다.",
+    emptyBody: "생활 기술은 플레이어가 활동할 때 오르는 숙련도입니다. 레벨이 오를 때 스위치를 켜거나 제작법을 해금할 수 있습니다.",
+    searchPlaceholder: "생활 기술 검색",
+    purpose: [
+      "기술 종류(농사·채광·채집·낚시·전투)마다 최대 레벨을 정합니다.",
+      "레벨업 보상으로 스위치를 켜거나 제작법을 해금합니다.",
+      "이벤트 명령 '생활 기술 경험치 변경'이 여기 등록한 ID를 참조합니다.",
+    ],
+    prep: [
+      "보상으로 켤 스위치는 스위치 탭에서 먼저 만들어 두세요.",
+      "보상으로 해금할 제작법은 제작법 섹션에서 먼저 만듭니다.",
+    ],
+    related: "recipes",
+  },
+  {
+    id: "recipes",
+    label: "제작법",
+    testid: "db-life-section-recipes",
+    eyebrow: "RECIPE",
+    blurb: "재료와 골드를 결과 아이템으로 바꾸는 규칙입니다.",
+    emptyBody: "제작법은 '재료 + 골드 → 결과 아이템' 한 줄짜리 규칙입니다. 이벤트 명령 '제작'이 이 목록을 그대로 씁니다.",
+    searchPlaceholder: "제작법 검색",
+    purpose: [
+      "재료 아이템과 수량, 결과 아이템과 수량을 짝짓습니다.",
+      "골드 비용을 함께 요구할 수 있습니다.",
+      "'해금 후 제작 가능'을 켜면 꾸러미·레벨 보상으로 열기 전까지 잠깁니다.",
+    ],
+    prep: [
+      "재료와 결과로 쓸 아이템을 아이템 탭에서 먼저 등록하세요.",
+      "잠금 제작법을 쓸 거라면 해금 경로(꾸러미 또는 생활 기술 보상)를 함께 정합니다.",
+    ],
+    related: "skills",
+  },
+  {
+    id: "upgrades",
+    label: "도구 강화",
+    testid: "db-life-section-upgrades",
+    eyebrow: "UPGRADE",
+    blurb: "도구 아이템을 상위 도구로 바꾸고 작업 범위를 넓힙니다.",
+    emptyBody: "도구 강화는 '강화 전 아이템 → 강화 후 아이템' 교체 규칙입니다. 강화된 도구가 한 번에 갈아엎는 칸 수와 에너지 배율도 여기서 정합니다.",
+    searchPlaceholder: "도구 강화 검색",
+    purpose: [
+      "강화 전/후 아이템과 필요한 재료·골드를 정합니다.",
+      "강화 도구 능력을 켜면 효과 범위(최대 9×9)와 에너지 배율을 지정합니다.",
+      "이벤트 명령 '도구 강화 적용'이 여기 등록한 ID를 참조합니다.",
+    ],
+    prep: [
+      "강화 전/후 도구 아이템을 아이템 탭에서 먼저 만듭니다.",
+      "에너지 배율을 쓰려면 에너지 섹션의 설정이 있어야 체감됩니다.",
+    ],
+    related: "energy",
+  },
+  {
+    id: "sellPrices",
+    label: "판매 가격",
+    testid: "db-life-section-sell-prices",
+    eyebrow: "SELL PRICE",
+    blurb: "아이템 한 개를 팔았을 때 받는 골드입니다.",
+    emptyBody: "판매 가격은 아이템당 한 줄입니다. 출하 상자와 상점 판매가 이 값을 그대로 씁니다.",
+    searchPlaceholder: "아이템 검색",
+    purpose: [
+      "아이템 하나당 판매가를 한 번만 등록합니다(중복 등록은 막힙니다).",
+      "출하 정산이 이 가격으로 하루 수입을 계산합니다.",
+      "가격이 없는 아이템은 출하 상자에서 값이 매겨지지 않습니다.",
+    ],
+    prep: [
+      "팔 아이템을 아이템 탭에서 먼저 등록하세요.",
+      "출하로 정산하려면 출하 섹션의 설정을 만들어 둡니다.",
+    ],
+    related: "shipping",
+  },
+  {
+    id: "toolActions",
+    label: "도구 행동",
+    testid: "db-life-section-tool-actions",
+    eyebrow: "TOOL ACTION",
+    blurb: "어떤 도구가 맵의 무엇에 어떤 작업을 하는지 연결합니다.",
+    emptyBody: "도구 행동은 '이 도구를 들고 이 지형/오브젝트를 누르면 이 작업이 일어난다'는 규칙입니다. 밭 갈기·물 주기·채광·낚시가 전부 여기서 열립니다.",
+    searchPlaceholder: "도구 행동 검색",
+    purpose: [
+      "아이템 또는 도구 종류(괭이·물뿌리개·도끼·곡괭이)를 조건으로 겁니다.",
+      "밭 갈기·물 주기·베기·채광·낚시·수확 중 하나를 행동으로 정합니다.",
+      "경작 가능 구역이나 대상 오브젝트 종류로 범위를 좁힐 수 있습니다.",
+    ],
+    prep: [
+      "도구로 쓸 아이템을 아이템 탭에서 먼저 만듭니다.",
+      "경작 가능 구역은 지형·타일셋 설정에서 표시해 둬야 합니다.",
+    ],
+    related: "upgrades",
+  },
+  {
+    id: "energy",
+    label: "에너지",
+    testid: "db-life-section-energy",
+    eyebrow: "ENERGY",
+    blurb: "하루 동안 쓸 수 있는 작업량의 총량입니다.",
+    emptyBody: "에너지는 도구 작업 한 번마다 줄어드는 하루치 체력입니다. 설정을 만들면 최대치·시작값·하루 회복량을 정할 수 있습니다.",
+    searchPlaceholder: "",
+    purpose: [
+      "최대 에너지와 하루를 시작할 때의 값을 정합니다.",
+      "잠을 자면 회복되는 양을 정합니다.",
+      "도구 강화의 에너지 배율이 이 값에 곱해집니다.",
+    ],
+    prep: ["도구 행동을 먼저 만들어야 에너지가 실제로 줄어드는 걸 볼 수 있습니다."],
+    related: "toolActions",
+  },
+  {
+    id: "shipping",
+    label: "출하",
+    testid: "db-life-section-shipping",
+    eyebrow: "SHIPPING",
+    blurb: "하루가 끝날 때 출하 상자를 정산하고 기록을 남깁니다.",
+    emptyBody: "출하는 상자에 넣어 둔 물건을 자정에 판매 가격으로 정산하는 규칙입니다. 설정을 만들면 기록 보관 일수와 허용 아이템을 고를 수 있습니다.",
+    searchPlaceholder: "",
+    purpose: [
+      "하루가 끝날 때 상자 안 아이템을 판매 가격으로 정산합니다.",
+      "기록 보관 일수만큼 수입 내역을 남깁니다.",
+      "출하 가능한 아이템을 전체 허용 또는 목록으로 제한할 수 있습니다.",
+    ],
+    prep: ["정산 대상 아이템의 판매 가격을 먼저 등록해야 값이 매겨집니다."],
+    related: "sellPrices",
+  },
+  {
+    id: "worldUnlocks",
+    label: "지역 해금",
+    testid: "db-life-section-world-unlocks",
+    eyebrow: "WORLD UNLOCK",
+    blurb: "다리 수리·광산 개방 같은 지역 개방 상태에 이름을 붙입니다.",
+    emptyBody: "지역 해금은 '어디가 열렸는가'를 이름으로 관리하는 목록입니다. 꾸러미 보상이 이 항목을 열고, 연결된 스위치가 맵 이벤트를 움직입니다.",
+    searchPlaceholder: "지역 해금 검색",
+    purpose: [
+      "해금 항목마다 이름과 연결 스위치를 정합니다.",
+      "꾸러미 완료 보상이 이 항목을 열 수 있습니다.",
+      "연결한 스위치로 맵 이벤트의 통행/출현 조건을 겁니다.",
+    ],
+    prep: ["연결할 스위치를 스위치 탭에서 먼저 만들어 두세요."],
+    related: "bundles",
+  },
+  {
+    id: "bundles",
+    label: "꾸러미",
+    testid: "db-life-section-bundles",
+    eyebrow: "BUNDLE",
+    blurb: "아이템을 모아 바치면 보상과 해금을 주는 수집 과제입니다.",
+    emptyBody: "꾸러미는 '요구 아이템을 모두 채우면 보상을 준다'는 수집 과제입니다. 골드·아이템·스위치·지역 해금·제작법을 한 번에 보상으로 줄 수 있습니다.",
+    searchPlaceholder: "꾸러미 검색",
+    purpose: [
+      "필요한 아이템과 수량을 나열합니다.",
+      "완료 보상으로 골드·아이템·스위치를 줍니다.",
+      "지역 해금과 제작법을 함께 열 수 있습니다.",
+    ],
+    prep: [
+      "요구/보상 아이템을 아이템 탭에서 먼저 등록합니다.",
+      "보상으로 열 지역 해금과 제작법을 각 섹션에서 먼저 만듭니다.",
+    ],
+    related: "worldUnlocks",
+  },
+  {
+    id: "makers",
+    label: "가공 설비",
+    testid: "db-life-section-makers",
+    eyebrow: "MAKER",
+    blurb: "시간을 들여 투입 아이템을 생산 아이템으로 바꾸는 설비입니다.",
+    emptyBody: "가공 설비는 '넣고 기다리면 나오는' 장치입니다. 치즈 프레스·양조통처럼 투입 아이템과 가공 시간을 정하면 됩니다.",
+    searchPlaceholder: "가공 설비 검색",
+    purpose: [
+      "투입 아이템과 생산 아이템을 짝짓습니다.",
+      "가공에 걸리는 게임 내 시간(분)을 정합니다.",
+      "제작법과 달리 즉시 완성되지 않고 시간이 흘러야 나옵니다.",
+    ],
+    prep: ["투입/생산 아이템을 아이템 탭에서 먼저 등록하세요."],
+    related: "recipes",
+  },
+];
+
+const SKILL_TYPE_LABELS: readonly (readonly [LifeSkillType, string])[] = [
+  ["farming", "농사"], ["mining", "채광"], ["foraging", "채집"], ["fishing", "낚시"], ["combat", "전투"],
+];
+
+const TOOL_ACTION_LABELS: readonly (readonly [ToolWorldAction, string])[] = [
+  ["till", "밭 갈기"], ["water", "물 주기"], ["chop", "베기"], ["mine", "채광"], ["fish", "낚시"], ["harvest", "수확"],
+];
+
+const FARM_TOOL_LABELS: readonly (readonly [string, string])[] = [
+  ["", "도구 종류 조건 없음"], ["hoe", "괭이"], ["wateringCan", "물뿌리개"], ["axe", "도끼"], ["pickaxe", "곡괭이"],
 ];
 
 let activeSection: LifeSection = "skills";
@@ -48,342 +274,827 @@ const selectedIndex: Record<RecordSection, number> = {
   bundles: 0,
   makers: 0,
 };
+const sectionSearch: Record<RecordSection, string> = {
+  skills: "",
+  recipes: "",
+  upgrades: "",
+  sellPrices: "",
+  toolActions: "",
+  worldUnlocks: "",
+  bundles: "",
+  makers: "",
+};
 
 export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
-  const recordSection = isRecordSection(activeSection) ? activeSection : undefined;
-  const records = recordSection ? recordsFor(project, recordSection) : [];
-  if (recordSection) selectedIndex[recordSection] = clampIndex(selectedIndex[recordSection], records.length);
-  const selected = recordSection ? records[selectedIndex[recordSection]] : undefined;
+  const header = sectionRailHeader(project, rerender);
 
-  host.append(
-    el("section", {
-      class: "db-life-crafting-header",
-      dataset: { testid: "db-life-crafting-header" },
-      children: [
-        el("div", {
-          children: [
-            el("span", { class: "db-life-panel-eyebrow", text: "생활 데이터" }),
-            el("h2", { text: "생활 기술·제작" }),
-            el("p", { text: "기술 성장, 제작 재료, 도구 강화와 판매 규칙을 레코드로 연결합니다." }),
-          ],
-        }),
-        el("div", {
-          class: "db-life-section-tabs",
-          attrs: { role: "tablist", "aria-label": "생활 데이터 종류" },
-          children: SECTIONS.map((section) => el("button", {
-            class: `db-life-section-tab${activeSection === section.id ? " active" : ""}`,
-            text: `${section.label} ${sectionCount(project, section.id)}`,
-            attrs: { type: "button", role: "tab", "aria-selected": String(activeSection === section.id) },
-            dataset: { testid: section.testid, section: section.id },
-            on: {
-              click: () => {
-                activeSection = section.id;
-                rerender();
-              },
-            },
-          })),
-        }),
-      ],
-    }),
-    recordSection
-      ? el("div", {
-          class: "db-record-workspace db-life-crafting-workspace",
-          dataset: { testid: "db-life-workspace", section: activeSection },
-          children: [
-            renderListPane(recordSection, records, rerender),
-            el("div", {
-              class: "db-detail-pane db-life-detail-pane",
-              children: [selected ? renderDetail(recordSection, selected, selectedIndex[recordSection], rerender) : emptyState(recordSection, rerender)],
-            }),
-          ],
-        })
-      : renderConfigSection(activeSection as ConfigSection, rerender),
-  );
+  if (!isRecordSection(activeSection)) {
+    const shell = workspaceShell({
+      header,
+      detail: configDetail(activeSection, rerender),
+      testid: "db-life-workspace",
+    });
+    shell.dataset.section = activeSection;
+    host.append(shell);
+    return;
+  }
+
+  const recordSection = activeSection;
+  const records = recordsFor(project, recordSection);
+  selectedIndex[recordSection] = clampIndex(selectedIndex[recordSection], records.length);
+  const selected = records[selectedIndex[recordSection]];
+
+  const shell = workspaceShell({
+    header,
+    list: recordListPane(recordSection, records, rerender),
+    detail: selected
+      ? recordDetail(recordSection, selected, selectedIndex[recordSection], rerender)
+      : sectionBriefing(recordSection, rerender),
+    testid: "db-life-workspace",
+  });
+  shell.dataset.section = activeSection;
+  host.append(shell);
 }
 
-function renderListPane(activeRecordSection: RecordSection, records: readonly LifeRecord[], rerender: () => void): HTMLElement {
-  const section = SECTIONS.find((entry) => entry.id === activeRecordSection)!;
-  return el("div", {
-    class: "db-list-pane db-life-list-pane",
+// ---------------------------------------------------------------------------
+// 섹션 레일 (헤더)
+// ---------------------------------------------------------------------------
+
+/**
+ * 열 개 섹션 칩을 **왼쪽부터 자연스럽게 흘려 채운다**. 예전 `.db-life-section-tabs` 의
+ * `justify-content: flex-end; max-width: 760px` 조합이 마지막 칩을 오른쪽 둘째 줄에
+ * 홀로 남기던 P0 를 구조적으로 없앤다 — 여기서는 폭 제한도, 오른쪽 정렬도 없다.
+ * 칩 자체는 이미 스타일이 있는 `.db-filter-chip` 을 그대로 쓴다.
+ */
+function sectionRailHeader(project: Project, rerender: () => void): HTMLElement {
+  const title = el("div", {
+    class: "db-life-rail-title",
     children: [
-      el("div", {
-        class: "db-life-list-heading",
-        children: [el("h3", { text: section.label }), el("span", { text: `${records.length}개` })],
-      }),
-      el("div", {
-        class: "db-list db-life-record-list",
-        children: records.map((record, index) => el("button", {
-          class: `db-list-row${selectedIndex[activeRecordSection] === index ? " active" : ""}`,
-          text: labelFor(activeRecordSection, record, index),
-          attrs: { type: "button" },
-          dataset: { testid: `db-life-row-${recordKey(activeRecordSection, record, index)}`, recordIndex: String(index) },
-          on: { click: () => { selectedIndex[activeRecordSection] = index; rerender(); } },
-        })),
-      }),
-      el("div", {
-        class: "db-life-list-actions",
+      el("span", { class: "db-ws-hero-eyebrow", text: "생활 데이터" }),
+      el("h2", { class: "db-ws-hero-title", text: "생활 기술·제작" }),
+      el("p", { class: "db-ws-hero-sub", text: "기술 성장, 제작 재료, 도구 강화와 판매 규칙을 열 개 섹션으로 나눠 관리합니다." }),
+    ],
+  });
+
+  const rail = el("div", {
+    class: "db-filter-chips db-life-rail",
+    attrs: { role: "tablist", "aria-label": "생활 데이터 종류" },
+    children: SECTIONS.map((section) => {
+      const count = sectionCount(project, section.id);
+      const active = activeSection === section.id;
+      return el("button", {
+        class: `db-filter-chip db-life-rail-chip${active ? " active" : ""}`,
+        attrs: {
+          type: "button",
+          role: "tab",
+          title: section.blurb,
+          "aria-selected": String(active),
+        },
+        dataset: { testid: section.testid, section: section.id },
         children: [
-          actionButton("+ 추가", "db-life-add", () => addRecord(activeRecordSection, rerender)),
-          actionButton("복제", "db-life-duplicate", () => duplicateRecord(activeRecordSection, rerender), records.length === 0),
-          actionButton("삭제", "db-life-delete", () => deleteRecord(activeRecordSection, rerender), records.length === 0, "danger"),
+          el("span", { class: "db-life-rail-label", text: section.label }),
+          el("span", { class: "db-ws-count db-life-rail-count", text: String(count) }),
+        ],
+        on: {
+          click: () => {
+            activeSection = section.id;
+            rerender();
+          },
+        },
+      });
+    }),
+  });
+
+  return sectionCard({ children: [title, rail], testid: "db-life-crafting-header" });
+}
+
+// ---------------------------------------------------------------------------
+// 목록 창
+// ---------------------------------------------------------------------------
+
+function recordListPane(section: RecordSection, records: readonly LifeRecord[], rerender: () => void): HTMLElement {
+  const meta = sectionMeta(section);
+  const query = sectionSearch[section];
+
+  const rows: HTMLElement[] = [];
+  for (const [index, record] of records.entries()) {
+    const name = labelFor(section, record, index);
+    if (query && !matchesNameOrId(name, recordKey(section, record, index), query)) continue;
+    rows.push(listRow({
+      name,
+      sub: rowSub(section, record),
+      number: index + 1,
+      active: selectedIndex[section] === index,
+      title: recordKey(section, record, index),
+      testid: `db-life-row-${recordKey(section, record, index)}`,
+      dataset: { recordIndex: String(index) },
+      onSelect: () => {
+        selectedIndex[section] = index;
+        rerender();
+      },
+    }));
+  }
+
+  return listPane({
+    title: meta.label,
+    count: records.length,
+    search: listSearch({
+      placeholder: meta.searchPlaceholder,
+      value: query,
+      testid: `db-life-search-${section}`,
+      onInput: (value) => {
+        sectionSearch[section] = value;
+        rerender();
+      },
+    }),
+    rows,
+    empty: query.length > 0
+      ? wsEmptyState({
+        icon: "⌕",
+        title: "검색 결과가 없습니다",
+        body: `"${query}" 와 일치하는 ${meta.label} 레코드가 없습니다.`,
+        compact: true,
+        testid: "db-life-list-empty",
+      })
+      : wsEmptyState({
+        icon: "○",
+        title: `${meta.label} 레코드 없음`,
+        body: "아래 '+ 추가'로 첫 레코드를 만드세요.",
+        compact: true,
+        testid: "db-life-list-empty",
+      }),
+    toolbar: listToolbar([
+      { label: "+ 추가", kind: "primary", testid: "db-life-add", onClick: () => addRecord(section, rerender) },
+      { label: "복제", testid: "db-life-duplicate", disabled: records.length === 0, onClick: () => duplicateRecord(section, rerender) },
+      { label: "삭제", kind: "danger", testid: "db-life-delete", disabled: records.length === 0, onClick: () => deleteRecord(section, rerender) },
+    ]),
+    testid: `db-life-list-pane-${section}`,
+  });
+}
+
+/** 행의 핵심 수치 한 조각. 예전 목록은 이름 문자열 하나뿐이라 스캔이 불가능했다. */
+function rowSub(section: RecordSection, record: LifeRecord): string | undefined {
+  switch (section) {
+    case "skills": {
+      const skill = record as LifeSkillRecord;
+      return `${skillTypeLabel(skill.skillType)} · Lv${skill.maxLevel}`;
+    }
+    case "recipes": {
+      const recipe = record as CraftRecipe;
+      return `재료 ${recipe.ingredients.length}종`;
+    }
+    case "upgrades": {
+      const upgrade = record as ItemUpgradeRule;
+      return upgrade.goldCost ? `${upgrade.goldCost}G` : `재료 ${(upgrade.ingredients ?? []).length}종`;
+    }
+    case "sellPrices":
+      return `${(record as SellPriceEntry).price}G`;
+    case "toolActions": {
+      const rule = record as ToolActionRule;
+      return farmToolLabel(rule.farmTool);
+    }
+    case "worldUnlocks":
+      return (record as WorldUnlockDefinition).switchId ? "스위치 연결" : "스위치 없음";
+    case "bundles":
+      return `필요 ${(record as BundleDefinition).requirements.length}종`;
+    case "makers":
+      return `${(record as MakerDefinition).durationMinutes}분`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 빈 섹션 브리핑
+//
+// 감사에서 가장 나빴던 자리. 여덟 섹션 전부가 신규 프로젝트에서 보여 주던 화면이
+// `아직 레코드가 없습니다.` 한 줄이었고, 상세 창의 99% 가 흰 여백이었다. 이제는
+// "이게 무슨 데이터인지 / 무엇을 먼저 만들어야 하는지 / 다른 섹션은 지금 몇 개인지"
+// 를 같은 자리에서 답한다.
+// ---------------------------------------------------------------------------
+
+function sectionBriefing(section: RecordSection, rerender: () => void): HTMLElement {
+  const meta = sectionMeta(section);
+  const project = store.getCurrent();
+  const related = meta.related ? sectionMeta(meta.related) : undefined;
+
+  return detailPane({
+    hero: detailHero({
+      eyebrow: meta.eyebrow,
+      title: meta.label,
+      subtitle: meta.blurb,
+      tags: ["0개", "레코드를 만들면 여기에 편집기가 열립니다"],
+      testid: `db-life-hero-${section}`,
+    }),
+    body: [
+      lifeStatStrip(project, section),
+      el("div", {
+        class: "db-ws-stack",
+        children: [
+          // 빈 상태는 카드 안에 넣는다. 그냥 두면 `.db-ws-empty { max-width: 420px; margin: auto }`
+          // 때문에 1000px 짜리 상세 창 한 줄이 통째로 흰 띠가 된다(감사 H 축이 잡던 바로 그 모양).
+          sectionCard({
+            children: [
+              wsEmptyState({
+                icon: "＋",
+                title: `${meta.label} 레코드가 아직 없습니다`,
+                body: meta.emptyBody,
+                compact: true,
+                action: {
+                  label: `첫 ${meta.label} 만들기`,
+                  kind: "primary",
+                  testid: "db-life-empty-add",
+                  onClick: () => addRecord(section, rerender),
+                },
+                ...(related
+                  ? {
+                    secondary: {
+                      label: `${related.label} 섹션 열기`,
+                      kind: "ghost" as const,
+                      testid: "db-life-empty-related",
+                      onClick: () => {
+                        activeSection = related.id;
+                        rerender();
+                      },
+                    },
+                  }
+                  : {}),
+                testid: "db-life-empty",
+              }),
+            ],
+            testid: `db-life-empty-card-${section}`,
+          }),
+          sectionCard({
+            title: "이 섹션이 하는 일",
+            children: meta.purpose.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
+            testid: `db-life-purpose-${section}`,
+          }),
+          sectionCard({
+            title: "먼저 준비할 것",
+            children: meta.prep.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
+            testid: `db-life-prep-${section}`,
+          }),
+          ...SECTIONS.map((entry) => sectionBoardCard(project, entry, rerender)),
         ],
       }),
     ],
+    testid: `db-life-detail-${section}`,
   });
 }
 
-function renderDetail(section: RecordSection, record: LifeRecord, index: number, rerender: () => void): HTMLElement {
-  switch (section) {
-    case "skills": return skillForm(record as LifeSkillRecord, index, rerender);
-    case "recipes": return recipeForm(record as CraftRecipe, index, rerender);
-    case "upgrades": return upgradeForm(record as ItemUpgradeRule, index, rerender);
-    case "sellPrices": return sellPriceForm(record as SellPriceEntry, index);
-    case "toolActions": return toolActionForm(record as ToolActionRule, index);
-    case "worldUnlocks": return worldUnlockForm(record as WorldUnlockDefinition, index);
-    case "bundles": return bundleForm(record as BundleDefinition, index, rerender);
-    case "makers": return makerForm(record as MakerDefinition, index, rerender);
-  }
+/** 생활 데이터 전체의 준비 상태. 어느 섹션이 비어 있어도 "다음에 뭘 할지"가 보인다. */
+function lifeStatStrip(project: Project, section: LifeSection): HTMLElement {
+  const meta = sectionMeta(section);
+  const total = SECTIONS.filter((entry) => isRecordSection(entry.id))
+    .reduce((sum, entry) => sum + sectionCount(project, entry.id), 0);
+  const packages = (project.system.energy ? 1 : 0) + (project.system.shipping ? 1 : 0);
+  const items = project.database.items.length;
+  return statStrip([
+    {
+      label: "이 섹션",
+      value: isRecordSection(section) ? `${sectionCount(project, section)}개` : sectionCount(project, section) === 1 ? "설정됨" : "설정 없음",
+      hint: meta.label,
+      tone: sectionCount(project, section) === 0 ? "warn" : "good",
+      testid: "db-life-stat-section",
+    },
+    {
+      label: "생활 레코드 전체",
+      value: `${total}개`,
+      hint: "여덟 개 레코드 섹션 합계",
+      tone: total === 0 ? "warn" : "neutral",
+      testid: "db-life-stat-total",
+    },
+    {
+      label: "설정 패키지",
+      value: `${packages}/2`,
+      hint: "에너지 · 출하",
+      tone: packages === 2 ? "good" : "neutral",
+      testid: "db-life-stat-packages",
+    },
+    {
+      label: "아이템",
+      value: `${items}개`,
+      hint: "재료·결과로 고를 수 있는 아이템",
+      tone: items === 0 ? "bad" : "neutral",
+      testid: "db-life-stat-items",
+    },
+  ], { testid: "db-life-stats" });
 }
 
-function skillForm(record: LifeSkillRecord, index: number, rerender: () => void): HTMLElement {
+/** 현황 보드의 섹션 카드 — 지금 몇 개인지 + 무슨 데이터인지 + 바로 이동. */
+function sectionBoardCard(project: Project, meta: SectionMeta, rerender: () => void): HTMLElement {
+  const count = sectionCount(project, meta.id);
+  const configured = isRecordSection(meta.id) ? count > 0 : count === 1;
+  return sectionCard({
+    title: meta.label,
+    hint: isRecordSection(meta.id) ? `${count}개` : configured ? "설정됨" : "설정 없음",
+    children: [
+      el("p", { class: "db-life-help", text: meta.blurb }),
+      el("button", {
+        class: "db-ws-btn db-ws-btn-ghost",
+        text: meta.id === activeSection ? "지금 보는 섹션" : configured ? "열기" : "만들러 가기",
+        attrs: { type: "button", ...(meta.id === activeSection ? { disabled: "true" } : {}) },
+        dataset: { testid: `db-life-board-${meta.id}` },
+        on: {
+          click: () => {
+            activeSection = meta.id;
+            rerender();
+          },
+        },
+      }),
+    ],
+    testid: `db-life-board-card-${meta.id}`,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 레코드 상세
+// ---------------------------------------------------------------------------
+
+function recordDetail(section: RecordSection, record: LifeRecord, index: number, rerender: () => void): HTMLElement {
+  const meta = sectionMeta(section);
+  return detailPane({
+    hero: detailHero({
+      eyebrow: meta.eyebrow,
+      title: labelFor(section, record, index),
+      subtitle: meta.blurb,
+      tags: [`#${index + 1}`, ...(rowSub(section, record) ? [rowSub(section, record) as string] : [])],
+      testid: `db-life-hero-${section}`,
+    }),
+    body: recordInspector(section, record, index, rerender),
+    testid: `db-life-detail-${section}`,
+  });
+}
+
+function recordInspector(section: RecordSection, record: LifeRecord, index: number, rerender: () => void): HTMLElement {
+  const cards = ((): readonly HTMLElement[] => {
+    switch (section) {
+      case "skills": return skillCards(record as LifeSkillRecord, index, rerender);
+      case "recipes": return recipeCards(record as CraftRecipe, index, rerender);
+      case "upgrades": return upgradeCards(record as ItemUpgradeRule, index, rerender);
+      case "sellPrices": return sellPriceCards(record as SellPriceEntry, index);
+      case "toolActions": return toolActionCards(record as ToolActionRule, index);
+      case "worldUnlocks": return worldUnlockCards(record as WorldUnlockDefinition, index);
+      case "bundles": return bundleCards(record as BundleDefinition, index, rerender);
+      case "makers": return makerCards(record as MakerDefinition, index, rerender);
+    }
+  })();
+  return el("div", { class: "db-ws-stack db-life-inspector", children: [...cards] });
+}
+
+function skillCards(record: LifeSkillRecord, index: number, rerender: () => void): readonly HTMLElement[] {
   const project = store.getCurrent();
   const enabled = project.system.skillSystem?.enabled === true;
-  return detailShell("생활 기술", [
-    checkboxControl("레벨업 시스템 사용", "db-life-skill-enabled", enabled, (checked) => {
-      updateProject("skills:enabled", (draft) => { draft.system.skillSystem = { enabled: checked }; });
-    }),
-    textControl("ID", "db-life-skill-id", record.id, (value) => updateUniqueId("skills", index, value, record.id)),
-    textControl("이름", "db-life-skill-name", record.name, (value) => updateSkill(index, { name: value })),
-    selectControl("종류", "db-life-skill-type", record.skillType, [
-      ["farming", "농사"], ["mining", "채광"], ["foraging", "채집"], ["fishing", "낚시"], ["combat", "전투"],
-    ], (value) => updateSkill(index, { skillType: value as LifeSkillType })),
-    numberControl("최대 레벨", "db-life-skill-max-level", record.maxLevel, (value) => updateSkill(index, { maxLevel: positiveInteger(value) })),
-    el("section", {
-      class: "db-life-nested-section",
+  return [
+    sectionCard({
+      title: "기본",
+      hint: "이벤트 명령이 참조하는 ID 입니다.",
       children: [
-        el("div", {
-          class: "db-life-nested-heading",
-          children: [
-            el("h4", { text: "레벨 보상" }),
-            actionButton("+ 보상", "db-life-skill-reward-add", () => {
-              updateSkill(index, { levelUpRewards: [...record.levelUpRewards, { level: 1 }] }, false);
-              rerender();
-            }),
-          ],
-        }),
-        ...(record.levelUpRewards.length === 0 ? [emptyHint("보상이 없습니다.")] : record.levelUpRewards.map((reward, rewardIndex) => el("div", {
-          class: "db-life-nested-row",
-          dataset: { testid: `db-life-skill-reward-row-${rewardIndex}` },
-          children: [
-            numberControl("레벨", `db-life-skill-reward-level-${rewardIndex}`, reward.level, (value) => updateReward(index, rewardIndex, { level: positiveInteger(value) })),
-            selectControl("스위치", `db-life-skill-reward-switch-${rewardIndex}`, reward.switchId ?? "", idOptions(project.switches, "없음"), (value) => updateReward(index, rewardIndex, { switchId: value || undefined })),
-            selectControl("제작법", `db-life-skill-reward-recipe-${rewardIndex}`, reward.recipeId ?? "", idOptions(project.system.craftRecipes ?? [], "없음"), (value) => updateReward(index, rewardIndex, { recipeId: value || undefined })),
-            actionButton("제거", `db-life-skill-reward-delete-${rewardIndex}`, () => {
-              updateSkill(index, { levelUpRewards: record.levelUpRewards.filter((_entry, i) => i !== rewardIndex) }, false);
-              rerender();
-            }, false, "danger"),
-          ],
-        }))),
+        textControl("ID", "db-life-skill-id", record.id, (value) => updateUniqueId("skills", index, value, record.id)),
+        textControl("이름", "db-life-skill-name", record.name, (value) => updateSkill(index, { name: value })),
       ],
+      testid: "db-life-skill-basic-card",
     }),
-  ]);
+    sectionCard({
+      title: "성장",
+      hint: enabled ? "레벨업 시스템이 켜져 있습니다." : "레벨업 시스템이 꺼져 있어 경험치가 쌓이지 않습니다.",
+      children: [
+        selectControl("종류", "db-life-skill-type", record.skillType, SKILL_TYPE_LABELS as readonly (readonly [string, string])[], (value) => updateSkill(index, { skillType: value as LifeSkillType })),
+        numberControl("최대 레벨", "db-life-skill-max-level", record.maxLevel, (value) => updateSkill(index, { maxLevel: positiveInteger(value) })),
+        checkboxControl("레벨업 시스템 사용", "db-life-skill-enabled", enabled, (checked) => {
+          updateProject("skills:enabled", (draft) => { draft.system.skillSystem = { enabled: checked }; });
+        }),
+      ],
+      testid: "db-life-skill-growth-card",
+    }),
+    rowsCard({
+      title: "레벨 보상",
+      hint: "지정한 레벨에 도달하면 스위치를 켜거나 제작법을 엽니다.",
+      addLabel: "+ 보상",
+      addTestId: "db-life-skill-reward-add",
+      onAdd: () => {
+        updateSkill(index, { levelUpRewards: [...record.levelUpRewards, { level: 1 }] }, false);
+        rerender();
+      },
+      emptyText: "아직 레벨 보상이 없습니다.",
+      rows: record.levelUpRewards.map((reward, rewardIndex) => el("div", {
+        // 필드가 셋 + 제거 버튼이라 amountEditor 의 3열 격자로는 모자란다. 전용 4열 클래스는
+        // modern/life-crafting.css 가 정의하고, 그 시트가 없어도 기본 3열로 접혀 읽을 수는 있다.
+        class: "db-life-nested-row db-life-reward-row",
+        dataset: { testid: `db-life-skill-reward-row-${rewardIndex}` },
+        children: [
+          numberControl("레벨", `db-life-skill-reward-level-${rewardIndex}`, reward.level, (value) => updateReward(index, rewardIndex, { level: positiveInteger(value) })),
+          selectControl("스위치", `db-life-skill-reward-switch-${rewardIndex}`, reward.switchId ?? "", idOptions(project.switches, "없음"), (value) => updateReward(index, rewardIndex, { switchId: value || undefined })),
+          selectControl("제작법", `db-life-skill-reward-recipe-${rewardIndex}`, reward.recipeId ?? "", idOptions(project.system.craftRecipes ?? [], "없음"), (value) => updateReward(index, rewardIndex, { recipeId: value || undefined })),
+          removeButton(`db-life-skill-reward-delete-${rewardIndex}`, () => {
+            updateSkill(index, { levelUpRewards: record.levelUpRewards.filter((_entry, i) => i !== rewardIndex) }, false);
+            rerender();
+          }),
+        ],
+      })),
+      testid: "db-life-skill-reward-card",
+    }),
+  ];
 }
 
-function recipeForm(record: CraftRecipe, index: number, rerender: () => void): HTMLElement {
+function recipeCards(record: CraftRecipe, index: number, rerender: () => void): readonly HTMLElement[] {
   const items = store.getCurrent().database.items;
-  return detailShell("제작법", [
-    textControl("ID", "db-life-recipe-id", record.id, (value) => updateUniqueId("recipes", index, value, record.id)),
-    textControl("이름", "db-life-recipe-name", record.name ?? "", (value) => updateRecipe(index, { name: value.trim() || undefined })),
-    selectControl("결과 아이템", "db-life-recipe-output-item", record.outputItemId, idOptions(items), (value) => updateRecipe(index, { outputItemId: value })),
-    numberControl("결과 수량", "db-life-recipe-output-count", record.outputCount ?? 1, (value) => updateRecipe(index, { outputCount: positiveInteger(value) })),
-    numberControl("골드 비용", "db-life-recipe-gold-cost", record.goldCost ?? 0, (value) => updateRecipe(index, { goldCost: nonNegativeInteger(value) || undefined })),
-    checkboxControl("해금 후 제작 가능", "db-life-recipe-requires-unlock", record.requiresUnlock === true, (checked) => updateRecipe(index, { requiresUnlock: checked || undefined })),
-    ingredientEditor("재료", "db-life-recipe", record.ingredients, (ingredients, shouldRender = false) => {
+  return [
+    sectionCard({
+      title: "기본",
+      hint: "이벤트 명령 '제작'이 이 ID 를 참조합니다.",
+      children: [
+        textControl("ID", "db-life-recipe-id", record.id, (value) => updateUniqueId("recipes", index, value, record.id)),
+        textControl("이름", "db-life-recipe-name", record.name ?? "", (value) => updateRecipe(index, { name: value.trim() || undefined })),
+        checkboxControl("해금 후 제작 가능", "db-life-recipe-requires-unlock", record.requiresUnlock === true, (checked) => updateRecipe(index, { requiresUnlock: checked || undefined })),
+      ],
+      testid: "db-life-recipe-basic-card",
+    }),
+    sectionCard({
+      title: "결과물",
+      hint: "제작에 성공하면 지급되는 아이템입니다.",
+      children: [
+        selectControl("결과 아이템", "db-life-recipe-output-item", record.outputItemId, idOptions(items), (value) => updateRecipe(index, { outputItemId: value })),
+        numberControl("결과 수량", "db-life-recipe-output-count", record.outputCount ?? 1, (value) => updateRecipe(index, { outputCount: positiveInteger(value) })),
+        numberControl("골드 비용", "db-life-recipe-gold-cost", record.goldCost ?? 0, (value) => updateRecipe(index, { goldCost: nonNegativeInteger(value) || undefined })),
+      ],
+      testid: "db-life-recipe-output-card",
+    }),
+    amountEditor("재료", "db-life-recipe-ingredient", record.ingredients, (ingredients: readonly CraftIngredient[], shouldRender = false) => {
       updateRecipe(index, { ingredients });
       if (shouldRender) rerender();
     }),
-  ]);
+  ];
 }
 
-function upgradeForm(record: ItemUpgradeRule, index: number, rerender: () => void): HTMLElement {
+function upgradeCards(record: ItemUpgradeRule, index: number, rerender: () => void): readonly HTMLElement[] {
   const items = store.getCurrent().database.items;
-  return detailShell("도구 강화", [
-    textControl("ID", "db-life-upgrade-id", record.id, (value) => updateUniqueId("upgrades", index, value, record.id)),
-    selectControl("강화 전", "db-life-upgrade-from-item", record.fromItemId, idOptions(items), (value) => updateUpgrade(index, { fromItemId: value })),
-    selectControl("강화 후", "db-life-upgrade-to-item", record.toItemId, idOptions(items), (value) => updateUpgrade(index, { toItemId: value })),
-    numberControl("골드 비용", "db-life-upgrade-gold-cost", record.goldCost ?? 0, (value) => updateUpgrade(index, { goldCost: nonNegativeInteger(value) || undefined })),
-    checkboxControl("강화 도구 능력 설정", "db-life-upgrade-capability-enabled", record.capability !== undefined, (checked) => {
-      updateUpgrade(index, { capability: checked ? record.capability ?? { areaWidth: 1, areaHeight: 1, energyMultiplier: 1 } : undefined }, false);
-      rerender();
+  return [
+    sectionCard({
+      title: "교체",
+      hint: "이벤트 명령 '도구 강화 적용'이 이 ID 를 참조합니다.",
+      children: [
+        textControl("ID", "db-life-upgrade-id", record.id, (value) => updateUniqueId("upgrades", index, value, record.id)),
+        selectControl("강화 전", "db-life-upgrade-from-item", record.fromItemId, idOptions(items), (value) => updateUpgrade(index, { fromItemId: value })),
+        selectControl("강화 후", "db-life-upgrade-to-item", record.toItemId, idOptions(items), (value) => updateUpgrade(index, { toItemId: value })),
+        numberControl("골드 비용", "db-life-upgrade-gold-cost", record.goldCost ?? 0, (value) => updateUpgrade(index, { goldCost: nonNegativeInteger(value) || undefined })),
+      ],
+      testid: "db-life-upgrade-basic-card",
     }),
-    ...(record.capability ? [
-      numberControl("효과 가로 칸", "db-life-upgrade-area-width", record.capability.areaWidth, (value) => updateUpgradeCapability(index, { areaWidth: boundedInteger(value, 1, TOOL_CAPABILITY_AXIS_MAX) })),
-      numberControl("효과 세로 칸", "db-life-upgrade-area-height", record.capability.areaHeight, (value) => updateUpgradeCapability(index, { areaHeight: boundedInteger(value, 1, TOOL_CAPABILITY_AXIS_MAX) })),
-      decimalControl("에너지 배율", "db-life-upgrade-energy-multiplier", record.capability.energyMultiplier, (value) => updateUpgradeCapability(index, { energyMultiplier: positiveNumber(value) })),
-    ] : []),
-    ingredientEditor("강화 재료", "db-life-upgrade", record.ingredients ?? [], (ingredients, shouldRender = false) => {
-      updateUpgrade(index, { ingredients: ingredients.length ? ingredients : undefined });
+    sectionCard({
+      title: "강화 도구 능력",
+      hint: `한 번에 작업하는 칸 수는 축마다 최대 ${TOOL_CAPABILITY_AXIS_MAX} 입니다.`,
+      children: [
+        checkboxControl("강화 도구 능력 설정", "db-life-upgrade-capability-enabled", record.capability !== undefined, (checked) => {
+          updateUpgrade(index, { capability: checked ? record.capability ?? { areaWidth: 1, areaHeight: 1, energyMultiplier: 1 } : undefined }, false);
+          rerender();
+        }),
+        ...(record.capability
+          ? [
+            numberControl("효과 가로 칸", "db-life-upgrade-area-width", record.capability.areaWidth, (value) => updateUpgradeCapability(index, { areaWidth: boundedInteger(value, 1, TOOL_CAPABILITY_AXIS_MAX) })),
+            numberControl("효과 세로 칸", "db-life-upgrade-area-height", record.capability.areaHeight, (value) => updateUpgradeCapability(index, { areaHeight: boundedInteger(value, 1, TOOL_CAPABILITY_AXIS_MAX) })),
+            decimalControl("에너지 배율", "db-life-upgrade-energy-multiplier", record.capability.energyMultiplier, (value) => updateUpgradeCapability(index, { energyMultiplier: positiveNumber(value) })),
+          ]
+          : [el("p", { class: "db-life-help", text: "꺼 두면 강화 후에도 기본 도구와 같은 범위·에너지로 작동합니다." })]),
+      ],
+      testid: "db-life-upgrade-capability-card",
+    }),
+    amountEditor("강화 재료", "db-life-upgrade-ingredient", record.ingredients ?? [], (ingredients: readonly ItemAmount[], shouldRender = false) => {
+      updateUpgrade(index, { ingredients: ingredients.length ? [...ingredients] : undefined });
       if (shouldRender) rerender();
     }),
-  ]);
+  ];
 }
 
-function sellPriceForm(record: SellPriceEntry, index: number): HTMLElement {
-  return detailShell("판매 가격", [
-    selectControl("아이템", "db-life-sell-item", record.itemId, idOptions(store.getCurrent().database.items), (value) => updateSellPrice(index, { itemId: value })),
-    numberControl("판매 가격", "db-life-sell-price", record.price, (value) => updateSellPrice(index, { price: nonNegativeInteger(value) })),
-  ]);
+function sellPriceCards(record: SellPriceEntry, index: number): readonly HTMLElement[] {
+  return [
+    sectionCard({
+      title: "판매 가격",
+      hint: "아이템 하나당 한 줄만 등록할 수 있습니다.",
+      children: [
+        selectControl("아이템", "db-life-sell-item", record.itemId, idOptions(store.getCurrent().database.items), (value) => updateSellPrice(index, { itemId: value })),
+        numberControl("판매 가격", "db-life-sell-price", record.price, (value) => updateSellPrice(index, { price: nonNegativeInteger(value) })),
+      ],
+      testid: "db-life-sell-card",
+    }),
+    sectionCard({
+      title: "어디에 쓰이나",
+      children: [
+        el("p", { class: "db-life-help", text: "· 출하 상자 정산이 이 가격으로 하루 수입을 계산합니다." }),
+        el("p", { class: "db-life-help", text: "· 상점 판매 가격의 기준값으로도 쓰입니다." }),
+      ],
+      testid: "db-life-sell-usage-card",
+    }),
+  ];
 }
 
-function toolActionForm(record: ToolActionRule, index: number): HTMLElement {
-  return detailShell("도구 행동", [
-    textControl("ID", "db-life-tool-id", record.id, (value) => updateUniqueId("toolActions", index, value, record.id)),
-    selectControl("아이템", "db-life-tool-item", record.itemId ?? "", idOptions(store.getCurrent().database.items, "아이템 조건 없음"), (value) => updateToolAction(index, { itemId: value || undefined })),
-    selectControl("도구 종류", "db-life-tool-farm-tool", record.farmTool ?? "", [
-      ["", "도구 종류 조건 없음"], ["hoe", "괭이"], ["wateringCan", "물뿌리개"], ["axe", "도끼"], ["pickaxe", "곡괭이"],
-    ], (value) => updateToolAction(index, { farmTool: value ? value as FarmTool : undefined })),
-    selectControl("행동", "db-life-tool-action", record.action, [
-      ["till", "밭 갈기"], ["water", "물 주기"], ["chop", "베기"], ["mine", "채광"], ["fish", "낚시"], ["harvest", "수확"],
-    ], (value) => updateToolAction(index, { action: value as ToolWorldAction })),
-    checkboxControl("경작 가능 구역 필요", "db-life-tool-requires-farmable", record.requiresFarmable === true, (checked) => updateToolAction(index, { requiresFarmable: checked || undefined })),
-    textControl("대상 오브젝트 종류", "db-life-tool-target-kind", record.targetPlaceableKind ?? "", (value) => updateToolAction(index, { targetPlaceableKind: value.trim() || undefined })),
-  ]);
+function toolActionCards(record: ToolActionRule, index: number): readonly HTMLElement[] {
+  return [
+    sectionCard({
+      title: "조건",
+      hint: "둘 다 비우면 모든 도구에 적용됩니다.",
+      children: [
+        textControl("ID", "db-life-tool-id", record.id, (value) => updateUniqueId("toolActions", index, value, record.id)),
+        selectControl("아이템", "db-life-tool-item", record.itemId ?? "", idOptions(store.getCurrent().database.items, "아이템 조건 없음"), (value) => updateToolAction(index, { itemId: value || undefined })),
+        selectControl("도구 종류", "db-life-tool-farm-tool", record.farmTool ?? "", FARM_TOOL_LABELS, (value) => updateToolAction(index, { farmTool: value ? value as FarmTool : undefined })),
+      ],
+      testid: "db-life-tool-condition-card",
+    }),
+    sectionCard({
+      title: "행동",
+      hint: "조건이 맞을 때 맵에서 실제로 일어나는 작업입니다.",
+      children: [
+        selectControl("행동", "db-life-tool-action", record.action, TOOL_ACTION_LABELS as readonly (readonly [string, string])[], (value) => updateToolAction(index, { action: value as ToolWorldAction })),
+        checkboxControl("경작 가능 구역 필요", "db-life-tool-requires-farmable", record.requiresFarmable === true, (checked) => updateToolAction(index, { requiresFarmable: checked || undefined })),
+        textControl("대상 오브젝트 종류", "db-life-tool-target-kind", record.targetPlaceableKind ?? "", (value) => updateToolAction(index, { targetPlaceableKind: value.trim() || undefined })),
+      ],
+      testid: "db-life-tool-action-card",
+    }),
+  ];
 }
 
-function renderConfigSection(section: ConfigSection, rerender: () => void): HTMLElement {
+function worldUnlockCards(record: WorldUnlockDefinition, index: number): readonly HTMLElement[] {
+  return [
+    sectionCard({
+      title: "기본",
+      hint: "꾸러미 보상이 이 ID 로 해금을 지목합니다.",
+      children: [
+        textControl("ID", "db-life-world-unlock-id", record.id, (value) => updateUniqueId("worldUnlocks", index, value, record.id)),
+        textControl("이름", "db-life-world-unlock-name", record.name ?? "", (value) => updateWorldUnlock(index, { name: value.trim() || undefined })),
+      ],
+      testid: "db-life-world-unlock-basic-card",
+    }),
+    sectionCard({
+      title: "맵 연결",
+      hint: "해금되면 이 스위치가 켜집니다. 맵 이벤트의 출현 조건에 쓰세요.",
+      children: [
+        selectControl("연결 스위치", "db-life-world-unlock-switch", record.switchId ?? "", idOptions(store.getCurrent().switches, "연결하지 않음"), (value) => updateWorldUnlock(index, { switchId: value || undefined })),
+      ],
+      testid: "db-life-world-unlock-switch-card",
+    }),
+  ];
+}
+
+function bundleCards(record: BundleDefinition, index: number, rerender: () => void): readonly HTMLElement[] {
+  const project = store.getCurrent();
+  const reward = record.reward;
+  return [
+    sectionCard({
+      title: "기본",
+      children: [
+        textControl("ID", "db-life-bundle-id", record.id, (value) => updateUniqueId("bundles", index, value, record.id)),
+        textControl("이름", "db-life-bundle-name", record.name ?? "", (value) => updateBundle(index, { name: value.trim() || undefined })),
+      ],
+      testid: "db-life-bundle-basic-card",
+    }),
+    sectionCard({
+      title: "완료 보상",
+      hint: "필요 아이템을 모두 채웠을 때 한 번 지급됩니다.",
+      children: [
+        numberControl("골드", "db-life-bundle-reward-gold", reward?.gold ?? 0, (value) => updateBundleReward(index, { gold: nonNegativeInteger(value) || undefined })),
+        selectControl("켜질 스위치", "db-life-bundle-reward-switch", reward?.switchId ?? "", idOptions(project.switches, "없음"), (value) => updateBundleReward(index, { switchId: value || undefined })),
+        ...(reward
+          ? [el("button", {
+            class: "db-ws-btn db-ws-btn-danger",
+            text: "보상 비우기",
+            attrs: { type: "button" },
+            dataset: { testid: "db-life-bundle-reward-remove" },
+            on: {
+              click: () => {
+                updateBundle(index, { reward: undefined }, false);
+                rerender();
+              },
+            },
+          })]
+          : []),
+      ],
+      testid: "db-life-bundle-reward-card",
+    }),
+    amountEditor("필요 아이템", "db-life-bundle-requirement", record.requirements, (requirements: readonly ItemAmount[], shouldRender = false) => {
+      updateBundle(index, { requirements: [...requirements] });
+      if (shouldRender) rerender();
+    }),
+    amountEditor("보상 아이템", "db-life-bundle-reward-item", reward?.itemRewards ?? [], (itemRewards: readonly ItemAmount[], shouldRender = false) => {
+      updateBundleReward(index, { itemRewards: itemRewards.length ? [...itemRewards] : undefined });
+      if (shouldRender) rerender();
+    }),
+    checkboxListCard("지역 해금", "db-life-bundle-unlock", project.system.worldUnlocks ?? [], reward?.worldUnlockIds ?? [], (worldUnlockIds) => updateBundleReward(index, { worldUnlockIds: worldUnlockIds.length ? worldUnlockIds : undefined })),
+    checkboxListCard("제작법 해금", "db-life-bundle-recipe", project.system.craftRecipes ?? [], reward?.recipeIds ?? [], (recipeIds) => updateBundleReward(index, { recipeIds: recipeIds.length ? recipeIds : undefined })),
+  ];
+}
+
+function makerCards(record: MakerDefinition, index: number, rerender: () => void): readonly HTMLElement[] {
+  return [
+    sectionCard({
+      title: "기본",
+      hint: "가공은 즉시 끝나지 않고 게임 내 시간이 흘러야 완성됩니다.",
+      children: [
+        textControl("ID", "db-life-maker-id", record.id, (value) => updateUniqueId("makers", index, value, record.id)),
+        textControl("이름", "db-life-maker-name", record.name ?? "", (value) => updateMaker(index, { name: value.trim() || undefined })),
+        numberControl("가공 시간(분)", "db-life-maker-duration", record.durationMinutes, (value) => updateMaker(index, { durationMinutes: positiveInteger(value) })),
+      ],
+      testid: "db-life-maker-basic-card",
+    }),
+    amountEditor("투입 아이템", "db-life-maker-input", record.inputs, (inputs: readonly ItemAmount[], shouldRender = false) => {
+      updateMaker(index, { inputs: [...inputs] });
+      if (shouldRender) rerender();
+    }),
+    amountEditor("생산 아이템", "db-life-maker-output", record.outputs, (outputs: readonly ItemAmount[], shouldRender = false) => {
+      updateMaker(index, { outputs: [...outputs] });
+      if (shouldRender) rerender();
+    }),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// 설정 패키지 (에너지 / 출하)
+// ---------------------------------------------------------------------------
+
+function configDetail(section: ConfigSection, rerender: () => void): HTMLElement {
+  const meta = sectionMeta(section);
   const project = store.getCurrent();
   const value = section === "energy" ? project.system.energy : project.system.shipping;
+
   if (!value) {
-    return el("div", {
-      class: "db-detail-pane db-life-package-pane",
-      dataset: { testid: "db-life-package-empty", section },
-      children: [
+    return detailPane({
+      hero: detailHero({
+        eyebrow: meta.eyebrow,
+        title: meta.label,
+        subtitle: meta.blurb,
+        tags: ["설정 없음"],
+        testid: `db-life-hero-${section}`,
+      }),
+      body: [
+        lifeStatStrip(project, section),
         el("div", {
-          class: "db-empty db-life-empty",
+          class: "db-ws-stack",
           children: [
-            el("strong", { text: section === "energy" ? "에너지 규칙이 꺼져 있습니다." : "출하 규칙이 아직 없습니다." }),
-            el("p", { text: "설정을 만들면 모든 값이 프로젝트에 저장됩니다." }),
-            actionButton("설정 만들기", "db-life-package-create", () => createConfigPackage(section, rerender)),
+            sectionCard({
+              children: [
+                wsEmptyState({
+                  icon: "＋",
+                  title: section === "energy" ? "에너지 규칙이 아직 없습니다" : "출하 규칙이 아직 없습니다",
+                  body: meta.emptyBody,
+                  compact: true,
+                  action: {
+                    label: "설정 만들기",
+                    kind: "primary",
+                    testid: "db-life-package-create",
+                    onClick: () => createConfigPackage(section, rerender),
+                  },
+                  testid: "db-life-package-empty",
+                }),
+              ],
+              testid: `db-life-empty-card-${section}`,
+            }),
+            sectionCard({
+              title: "이 설정이 하는 일",
+              children: meta.purpose.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
+              testid: `db-life-purpose-${section}`,
+            }),
+            sectionCard({
+              title: "먼저 준비할 것",
+              children: meta.prep.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
+              testid: `db-life-prep-${section}`,
+            }),
+            ...SECTIONS.map((entry) => sectionBoardCard(project, entry, rerender)),
           ],
         }),
       ],
+      testid: `db-life-package-pane-${section}`,
     });
   }
-  return el("div", {
-    class: "db-detail-pane db-life-package-pane",
-    dataset: { testid: "db-life-package-pane", section },
-    children: [section === "energy" ? energyForm(rerender) : shippingForm(rerender)],
+
+  return detailPane({
+    hero: detailHero({
+      eyebrow: meta.eyebrow,
+      title: meta.label,
+      subtitle: meta.blurb,
+      tags: ["설정됨"],
+      testid: `db-life-hero-${section}`,
+    }),
+    body: [
+      lifeStatStrip(project, section),
+      el("div", {
+        class: "db-ws-stack db-life-inspector",
+        children: section === "energy" ? [...energyCards(rerender)] : [...shippingCards(rerender)],
+      }),
+    ],
+    testid: `db-life-package-pane-${section}`,
   });
 }
 
-function energyForm(rerender: () => void): HTMLElement {
+function energyCards(rerender: () => void): readonly HTMLElement[] {
   const energy = store.getCurrent().system.energy!;
-  return detailShell("에너지", [
-    el("p", { class: "db-life-help", text: "작업에 쓰는 최대 에너지와 하루 시작·회복량을 정합니다." }),
-    numberControl("최대 에너지", "db-life-energy-max", energy.max, (value) => updateEnergy({ max: positiveInteger(value) })),
-    numberControl("시작 에너지", "db-life-energy-initial", energy.initial ?? energy.max, (value) => updateEnergy({ initial: boundedInteger(value, 0, store.getCurrent().system.energy?.max ?? energy.max) })),
-    numberControl("하루 회복량", "db-life-energy-restore", energy.restorePerDay ?? energy.max, (value) => updateEnergy({ restorePerDay: boundedInteger(value, 0, store.getCurrent().system.energy?.max ?? energy.max) })),
-    explicitRemoveAction("에너지 설정 영구 제거", "에너지 규칙과 입력값을 프로젝트에서 제거합니다.", () => removeConfigPackage("energy", rerender)),
-  ]);
+  return [
+    sectionCard({
+      title: "에너지 값",
+      hint: "작업에 쓰는 최대 에너지와 하루 시작·회복량을 정합니다.",
+      children: [
+        numberControl("최대 에너지", "db-life-energy-max", energy.max, (value) => updateEnergy({ max: positiveInteger(value) })),
+        numberControl("시작 에너지", "db-life-energy-initial", energy.initial ?? energy.max, (value) => updateEnergy({ initial: boundedInteger(value, 0, store.getCurrent().system.energy?.max ?? energy.max) })),
+        numberControl("하루 회복량", "db-life-energy-restore", energy.restorePerDay ?? energy.max, (value) => updateEnergy({ restorePerDay: boundedInteger(value, 0, store.getCurrent().system.energy?.max ?? energy.max) })),
+      ],
+      testid: "db-life-energy-card",
+    }),
+    sectionCard({
+      title: "어떻게 줄어드나",
+      children: [
+        el("p", { class: "db-life-help", text: "· 도구 행동 한 번마다 에너지가 줄어듭니다." }),
+        el("p", { class: "db-life-help", text: "· 도구 강화의 에너지 배율이 여기에 곱해집니다." }),
+        el("p", { class: "db-life-help", text: "· 잠을 자면 하루 회복량만큼 되돌아옵니다." }),
+      ],
+      testid: "db-life-energy-usage-card",
+    }),
+    removeCard("에너지 설정 영구 제거", "에너지 규칙과 입력값을 프로젝트에서 제거합니다.", () => removeConfigPackage("energy", rerender)),
+  ];
 }
 
-function shippingForm(rerender: () => void): HTMLElement {
+function shippingCards(rerender: () => void): readonly HTMLElement[] {
   const project = store.getCurrent();
   const shipping = project.system.shipping!;
   const selected = shipping.allowedItemIds;
-  return detailShell("출하", [
-    el("p", { class: "db-life-help", text: "하루가 끝날 때 출하 상자를 정산하고 기록을 보관합니다." }),
-    checkboxControl("출하 사용", "db-life-shipping-enabled", shipping.enabled, (checked) => updateShipping({ enabled: checked })),
-    numberControl("기록 보관 일수", "db-life-shipping-history-limit", shipping.historyLimit ?? 30, (value) => updateShipping({ historyLimit: boundedInteger(value, 1, 365) })),
-    el("section", {
-      class: "db-life-nested-section",
+  return [
+    sectionCard({
+      title: "정산 규칙",
+      hint: "하루가 끝날 때 출하 상자를 정산하고 기록을 보관합니다.",
       children: [
-        el("div", { class: "db-life-nested-heading", children: [el("h4", { text: "출하 허용 아이템" }), el("span", { text: selected === undefined ? "판매 가능한 모든 아이템" : `${selected.length}개 선택` })] }),
+        checkboxControl("출하 사용", "db-life-shipping-enabled", shipping.enabled, (checked) => updateShipping({ enabled: checked })),
+        numberControl("기록 보관 일수", "db-life-shipping-history-limit", shipping.historyLimit ?? 30, (value) => updateShipping({ historyLimit: boundedInteger(value, 1, 365) })),
+      ],
+      testid: "db-life-shipping-card",
+    }),
+    sectionCard({
+      title: "어떻게 정산되나",
+      children: [
+        el("p", { class: "db-life-help", text: "· 자정에 출하 상자 안의 아이템이 판매 가격으로 환산됩니다." }),
+        el("p", { class: "db-life-help", text: "· 판매 가격이 없는 아이템은 0G 로 처리됩니다." }),
+        el("p", { class: "db-life-help", text: "· '출하 사용'을 꺼도 아래 목록과 보관 일수는 그대로 남습니다." }),
+      ],
+      testid: "db-life-shipping-usage-card",
+    }),
+    removeCard("출하 설정 영구 제거", "사용 중지만 하려면 위의 '출하 사용'을 끄세요. 이 버튼은 입력값도 제거합니다.", () => removeConfigPackage("shipping", rerender)),
+    spanned(sectionCard({
+      title: "출하 허용 아이템",
+      hint: selected === undefined ? "판매 가능한 모든 아이템" : `${selected.length}개 선택`,
+      children: [
         checkboxControl("판매 가능한 모든 아이템", "db-life-shipping-all-items", selected === undefined, (checked) => {
           updateShipping({ allowedItemIds: checked ? undefined : [] }, false);
           rerender();
         }),
-        ...project.database.items.map((item) => checkboxControl(item.name || item.id, `db-life-shipping-item-${item.id}`, selected?.includes(item.id) ?? selected === undefined, (checked) => {
-          const current = store.getCurrent().system.shipping?.allowedItemIds;
-          const ids = new Set(current ?? []);
-          if (checked) ids.add(item.id);
-          else ids.delete(item.id);
-          updateShipping({ allowedItemIds: [...ids] });
-        })),
-      ],
-    }),
-    explicitRemoveAction("출하 설정 영구 제거", "사용 중지만 하려면 위의 '출하 사용'을 끄세요. 이 버튼은 입력값도 제거합니다.", () => removeConfigPackage("shipping", rerender)),
-  ]);
-}
-
-function worldUnlockForm(record: WorldUnlockDefinition, index: number): HTMLElement {
-  return detailShell("지역 해금", [
-    textControl("ID", "db-life-world-unlock-id", record.id, (value) => updateUniqueId("worldUnlocks", index, value, record.id)),
-    textControl("이름", "db-life-world-unlock-name", record.name ?? "", (value) => updateWorldUnlock(index, { name: value.trim() || undefined })),
-    selectControl("연결 스위치", "db-life-world-unlock-switch", record.switchId ?? "", idOptions(store.getCurrent().switches, "연결하지 않음"), (value) => updateWorldUnlock(index, { switchId: value || undefined })),
-  ]);
-}
-
-function bundleForm(record: BundleDefinition, index: number, rerender: () => void): HTMLElement {
-  const project = store.getCurrent();
-  const reward = record.reward;
-  return detailShell("꾸러미", [
-    textControl("ID", "db-life-bundle-id", record.id, (value) => updateUniqueId("bundles", index, value, record.id)),
-    textControl("이름", "db-life-bundle-name", record.name ?? "", (value) => updateBundle(index, { name: value.trim() || undefined })),
-    amountEditor("필요 아이템", "db-life-bundle-requirement", record.requirements, (requirements, shouldRender = false) => {
-      updateBundle(index, { requirements: [...requirements] });
-      if (shouldRender) rerender();
-    }),
-    el("section", {
-      class: "db-life-nested-section db-life-reward-section",
-      children: [
         el("div", {
-          class: "db-life-nested-heading",
-          children: [
-            el("h4", { text: "완료 보상" }),
-            ...(reward ? [actionButton("보상 비우기", "db-life-bundle-reward-remove", () => {
-              updateBundle(index, { reward: undefined }, false);
-              rerender();
-            }, false, "danger")] : []),
-          ],
+          class: "db-life-checkbox-list",
+          children: project.database.items.map((item) => checkboxControl(
+            item.name || item.id,
+            `db-life-shipping-item-${item.id}`,
+            selected?.includes(item.id) ?? selected === undefined,
+            (checked) => {
+              const current = store.getCurrent().system.shipping?.allowedItemIds;
+              const ids = new Set(current ?? []);
+              if (checked) ids.add(item.id);
+              else ids.delete(item.id);
+              updateShipping({ allowedItemIds: [...ids] });
+            },
+            true,
+          )),
         }),
-        numberControl("골드", "db-life-bundle-reward-gold", reward?.gold ?? 0, (value) => updateBundleReward(index, { gold: nonNegativeInteger(value) || undefined })),
-        amountEditor("보상 아이템", "db-life-bundle-reward-item", reward?.itemRewards ?? [], (itemRewards, shouldRender = false) => {
-          updateBundleReward(index, { itemRewards: itemRewards.length ? [...itemRewards] : undefined });
-          if (shouldRender) rerender();
-        }),
-        selectControl("켜질 스위치", "db-life-bundle-reward-switch", reward?.switchId ?? "", idOptions(project.switches, "없음"), (value) => updateBundleReward(index, { switchId: value || undefined })),
-        checkboxList("지역 해금", "db-life-bundle-unlock", project.system.worldUnlocks ?? [], reward?.worldUnlockIds ?? [], (worldUnlockIds) => updateBundleReward(index, { worldUnlockIds: worldUnlockIds.length ? worldUnlockIds : undefined })),
-        checkboxList("제작법 해금", "db-life-bundle-recipe", project.system.craftRecipes ?? [], reward?.recipeIds ?? [], (recipeIds) => updateBundleReward(index, { recipeIds: recipeIds.length ? recipeIds : undefined })),
       ],
-    }),
-  ]);
+      testid: "db-life-shipping-items-card",
+    })),
+  ];
 }
 
-function makerForm(record: MakerDefinition, index: number, rerender: () => void): HTMLElement {
-  return detailShell("가공 설비", [
-    textControl("ID", "db-life-maker-id", record.id, (value) => updateUniqueId("makers", index, value, record.id)),
-    textControl("이름", "db-life-maker-name", record.name ?? "", (value) => updateMaker(index, { name: value.trim() || undefined })),
-    numberControl("가공 시간(분)", "db-life-maker-duration", record.durationMinutes, (value) => updateMaker(index, { durationMinutes: positiveInteger(value) })),
-    amountEditor("투입 아이템", "db-life-maker-input", record.inputs, (inputs, shouldRender = false) => {
-      updateMaker(index, { inputs: [...inputs] });
-      if (shouldRender) rerender();
-    }),
-    amountEditor("생산 아이템", "db-life-maker-output", record.outputs, (outputs, shouldRender = false) => {
-      updateMaker(index, { outputs: [...outputs] });
-      if (shouldRender) rerender();
-    }),
-  ]);
-}
+// ---------------------------------------------------------------------------
+// 재사용 카드 조각
+// ---------------------------------------------------------------------------
 
-function ingredientEditor(
-  title: string,
-  prefix: string,
-  ingredients: readonly CraftIngredient[],
-  onChange: (ingredients: readonly CraftIngredient[], rerender?: boolean) => void,
-): HTMLElement {
-  return amountEditor(title, `${prefix}-ingredient`, ingredients, onChange);
+/** 행 목록 + 추가 버튼을 담는 전폭 카드. fieldset/legend 대신 sectionCard 를 쓴다. */
+function rowsCard(options: {
+  readonly title: string;
+  readonly hint?: string;
+  readonly addLabel: string;
+  readonly addTestId: string;
+  readonly onAdd: () => void;
+  readonly emptyText: string;
+  readonly rows: readonly HTMLElement[];
+  readonly testid: string;
+}): HTMLElement {
+  return spanned(sectionCard({
+    title: options.title,
+    ...(options.hint ? { hint: options.hint } : {}),
+    children: [
+      el("button", {
+        class: "db-ws-btn db-ws-btn-ghost",
+        text: options.addLabel,
+        attrs: { type: "button" },
+        dataset: { testid: options.addTestId },
+        on: { click: options.onAdd },
+      }),
+      ...(options.rows.length === 0
+        ? [el("p", { class: "db-life-help", text: options.emptyText })]
+        : options.rows),
+    ],
+    testid: options.testid,
+  }));
 }
 
 function amountEditor(
@@ -393,39 +1104,38 @@ function amountEditor(
   onChange: (amounts: readonly ItemAmount[], rerender?: boolean) => void,
 ): HTMLElement {
   const items = store.getCurrent().database.items;
-  return el("section", {
-    class: "db-life-nested-section",
-    children: [
-      el("div", {
-        class: "db-life-nested-heading",
-        children: [el("h4", { text: title }), actionButton("+ 아이템", `${prefix}-add`, () => {
-          const unused = items.find((item) => !amounts.some((amount) => amount.itemId === item.id))?.id;
-          if (!unused) {
-            toast("추가할 수 있는 미등록 아이템이 없습니다.");
+  return rowsCard({
+    title,
+    addLabel: "+ 아이템",
+    addTestId: `${prefix}-add`,
+    onAdd: () => {
+      const unused = items.find((item) => !amounts.some((amount) => amount.itemId === item.id))?.id;
+      if (!unused) {
+        toast("추가할 수 있는 미등록 아이템이 없습니다.");
+        return;
+      }
+      onChange([...amounts, { itemId: unused, count: 1 }], true);
+    },
+    emptyText: "아직 아이템이 없습니다.",
+    rows: amounts.map((amount, amountIndex) => el("div", {
+      class: "db-life-nested-row",
+      children: [
+        selectControl("아이템", `${prefix}-item-${amountIndex}`, amount.itemId, idOptions(items), (value) => {
+          if (amounts.some((entry, index) => index !== amountIndex && entry.itemId === value)) {
+            toast("같은 아이템은 한 번만 등록할 수 있습니다.");
             return;
           }
-          onChange([...amounts, { itemId: unused, count: 1 }], true);
-        })],
-      }),
-      ...(amounts.length === 0 ? [emptyHint("아이템이 없습니다.")] : amounts.map((amount, amountIndex) => el("div", {
-        class: "db-life-nested-row",
-        children: [
-          selectControl("아이템", `${prefix}-item-${amountIndex}`, amount.itemId, idOptions(items), (value) => {
-            if (amounts.some((entry, index) => index !== amountIndex && entry.itemId === value)) {
-              toast("같은 아이템은 한 번만 등록할 수 있습니다.");
-              return;
-            }
-            onChange(replaceAt(amounts, amountIndex, { ...amount, itemId: value }));
-          }),
-          numberControl("수량", `${prefix}-count-${amountIndex}`, amount.count, (value) => onChange(replaceAt(amounts, amountIndex, { ...amount, count: positiveInteger(value) }))),
-          actionButton("제거", `${prefix}-delete-${amountIndex}`, () => onChange(amounts.filter((_entry, index) => index !== amountIndex), true), false, "danger"),
-        ],
-      }))),
-    ],
+          onChange(replaceAt(amounts, amountIndex, { ...amount, itemId: value }));
+        }),
+        numberControl("수량", `${prefix}-count-${amountIndex}`, amount.count, (value) => onChange(replaceAt(amounts, amountIndex, { ...amount, count: positiveInteger(value) }))),
+        removeButton(`${prefix}-delete-${amountIndex}`, () => onChange(amounts.filter((_entry, index) => index !== amountIndex), true)),
+      ],
+    })),
+    testid: `${prefix}-card`,
   });
 }
 
-function checkboxList(
+function checkboxListCard(
   title: string,
   prefix: string,
   records: readonly { readonly id: string; readonly name?: string }[],
@@ -433,18 +1143,66 @@ function checkboxList(
   onChange: (ids: string[]) => void,
 ): HTMLElement {
   const selected = new Set(selectedIds);
-  return el("fieldset", {
-    class: "db-life-checkbox-list",
-    children: [
-      el("legend", { text: title }),
-      ...(records.length === 0 ? [emptyHint("선택할 레코드가 없습니다.")] : records.map((record) => checkboxControl(record.name || record.id, `${prefix}-${record.id}`, selectedIds.includes(record.id), (checked) => {
-        if (checked) selected.add(record.id);
-        else selected.delete(record.id);
-        onChange([...selected]);
-      }))),
-    ],
+  return sectionCard({
+    title,
+    hint: records.length === 0 ? "선택할 레코드가 없습니다." : `${selectedIds.length}/${records.length} 선택`,
+    children: records.length === 0
+      ? [el("p", { class: "db-life-help", text: "먼저 해당 섹션에서 레코드를 만들면 여기에 나타납니다." })]
+      : [el("div", {
+        class: "db-life-checkbox-list",
+        children: records.map((record) => checkboxControl(
+          record.name || record.id,
+          `${prefix}-${record.id}`,
+          selectedIds.includes(record.id),
+          (checked) => {
+            if (checked) selected.add(record.id);
+            else selected.delete(record.id);
+            onChange([...selected]);
+          },
+          true,
+        )),
+      })],
+    testid: `${prefix}-card`,
   });
 }
+
+function removeCard(label: string, description: string, onRemove: () => void): HTMLElement {
+  return sectionCard({
+    title: "설정 제거",
+    hint: "되돌리려면 Ctrl+Z 를 누르세요.",
+    children: [
+      el("p", { class: "db-life-help", text: description }),
+      el("button", {
+        class: "db-ws-btn db-ws-btn-danger",
+        text: label,
+        attrs: { type: "button" },
+        dataset: { testid: "db-life-package-remove" },
+        on: { click: onRemove },
+      }),
+    ],
+    testid: "db-life-package-remove-card",
+  });
+}
+
+/** `db-ws-stack` 에서 한 줄을 다 쓰게 한다(표·긴 목록용 opt-in). */
+function spanned(card: HTMLElement): HTMLElement {
+  card.classList.add("db-ws-span");
+  return card;
+}
+
+function removeButton(testid: string, onClick: () => void): HTMLElement {
+  return el("button", {
+    class: "db-ws-btn db-ws-btn-danger db-life-row-remove",
+    text: "제거",
+    attrs: { type: "button" },
+    dataset: { testid },
+    on: { click: onClick },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 컬렉션 액션 (기존 동작 그대로)
+// ---------------------------------------------------------------------------
 
 function addRecord(section: RecordSection, rerender: () => void): void {
   const project = store.getCurrent();
@@ -501,6 +1259,8 @@ function addRecord(section: RecordSection, rerender: () => void): void {
         break;
     }
   }, { scope: "database", collection: section });
+  // 새 레코드는 검색 필터에 걸려 안 보일 수 있다 — 추가 직후에는 목록을 원상 복구한다.
+  sectionSearch[section] = "";
   rerender();
 }
 
@@ -527,7 +1287,7 @@ function deleteRecord(section: RecordSection, rerender: () => void): void {
   if (commandCollection && "id" in selected) {
     const locations = commandsReferenceLocations(store.getCurrent(), commandCollection, selected.id);
     if (locations.length > 0) {
-      toast(`이벤트 명령 ${locations.length}곳에서 이 ${SECTIONS.find((entry) => entry.id === section)?.label ?? "레코드"}을 사용 중입니다.`);
+      toast(`이벤트 명령 ${locations.length}곳에서 이 ${sectionMeta(section).label}을 사용 중입니다.`);
       return;
     }
   }
@@ -708,6 +1468,10 @@ function sectionCount(project: Project, section: LifeSection): number {
   return recordsFor(project, section).length;
 }
 
+function sectionMeta(section: LifeSection): SectionMeta {
+  return SECTIONS.find((entry) => entry.id === section) ?? SECTIONS[0];
+}
+
 function isRecordSection(section: LifeSection): section is RecordSection {
   return section !== "energy" && section !== "shipping";
 }
@@ -742,41 +1506,45 @@ function pushRecord(project: Project, section: RecordSection, record: LifeRecord
   replaceRecords(project, section, [...recordsFor(project, section), record]);
 }
 
-function detailShell(title: string, children: readonly HTMLElement[]): HTMLElement {
-  return el("div", { class: "db-life-detail-form", children: [el("h3", { text: title }), ...children] });
-}
-
-function emptyState(section: RecordSection, rerender: () => void): HTMLElement {
-  return el("div", {
-    class: "db-empty db-life-empty",
-    dataset: { testid: "db-life-empty" },
-    children: [el("strong", { text: "아직 레코드가 없습니다." }), actionButton("첫 레코드 만들기", "db-life-empty-add", () => addRecord(section, rerender))],
-  });
-}
+// ---------------------------------------------------------------------------
+// 입력 컨트롤
+//
+// 커밋 시점은 예전 그대로 `change` 다 — 유닛 테스트와 e2e 가 값 세팅 후 change 를
+// 던지는 계약에 맞춘다. 바뀐 건 라벨/컨트롤을 감싸는 클래스뿐이다.
+// ---------------------------------------------------------------------------
 
 function textControl(label: string, testid: string, value: string, onChange: (value: string) => void): HTMLElement {
   const input = el("input", { attrs: { type: "text" }, value, dataset: { testid } }) as HTMLInputElement;
   input.addEventListener("change", () => onChange(input.value));
-  return field(label, input);
+  return wsField(label, input);
 }
 
 function numberControl(label: string, testid: string, value: number, onChange: (value: number) => void): HTMLElement {
   const input = el("input", { attrs: { type: "number", step: "1" }, value: String(value), dataset: { testid } }) as HTMLInputElement;
   input.addEventListener("change", () => onChange(Number(input.value)));
-  return field(label, input);
+  return wsField(label, input);
 }
 
 function decimalControl(label: string, testid: string, value: number, onChange: (value: number) => void): HTMLElement {
   const input = el("input", { attrs: { type: "number", step: "0.01", min: "0.01" }, value: String(value), dataset: { testid } }) as HTMLInputElement;
   input.addEventListener("change", () => onChange(Number(input.value)));
-  return field(label, input);
+  return wsField(label, input);
 }
 
-function checkboxControl(label: string, testid: string, value: boolean, onChange: (value: boolean) => void): HTMLElement {
+function checkboxControl(
+  label: string,
+  testid: string,
+  value: boolean,
+  onChange: (value: boolean) => void,
+  inline = false,
+): HTMLElement {
   const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
   input.checked = value;
   input.addEventListener("change", () => onChange(input.checked));
-  return field(label, input, "is-checkbox");
+  const row = wsField(label, input);
+  row.classList.add("db-life-field", "is-checkbox");
+  if (inline) row.classList.add("db-life-field-inline");
+  return row;
 }
 
 function selectControl(
@@ -792,28 +1560,7 @@ function selectControl(
   }) as HTMLSelectElement;
   select.value = value;
   select.addEventListener("change", () => onChange(select.value));
-  return field(label, select);
-}
-
-function field(label: string, control: HTMLElement, className = ""): HTMLElement {
-  return el("label", { class: `db-field db-life-field ${className}`.trim(), children: [el("span", { text: label }), control] });
-}
-
-function actionButton(label: string, testid: string, onClick: () => void, disabled = false, variant = ""): HTMLElement {
-  return el("button", {
-    class: `btn small ${variant}`.trim(),
-    text: label,
-    attrs: { type: "button", ...(disabled ? { disabled: "" } : {}) },
-    dataset: { testid },
-    on: { click: onClick },
-  });
-}
-
-function explicitRemoveAction(label: string, description: string, onRemove: () => void): HTMLElement {
-  return el("section", {
-    class: "db-life-explicit-remove",
-    children: [el("p", { text: description }), actionButton(label, "db-life-package-remove", onRemove, false, "danger")],
-  });
+  return wsField(label, select);
 }
 
 function idOptions(records: readonly { readonly id: string; readonly name?: string }[], emptyLabel?: string): readonly (readonly [string, string])[] {
@@ -823,19 +1570,36 @@ function idOptions(records: readonly { readonly id: string; readonly name?: stri
   ];
 }
 
-function emptyHint(text: string): HTMLElement {
-  return el("p", { class: "db-life-empty-hint", text });
-}
+// ---------------------------------------------------------------------------
+// 표시 라벨
+// ---------------------------------------------------------------------------
 
 function labelFor(section: RecordSection, record: LifeRecord, index: number): string {
   if (section === "skills") return (record as LifeSkillRecord).name || `(기술 ${index + 1})`;
   if (section === "recipes") return (record as CraftRecipe).name || (record as CraftRecipe).id;
-  if (section === "upgrades") return `${(record as ItemUpgradeRule).fromItemId} → ${(record as ItemUpgradeRule).toItemId}`;
-  if (section === "sellPrices") return `${(record as SellPriceEntry).itemId} · ${(record as SellPriceEntry).price}G`;
+  if (section === "upgrades") return `${itemLabel((record as ItemUpgradeRule).fromItemId)} → ${itemLabel((record as ItemUpgradeRule).toItemId)}`;
+  if (section === "sellPrices") return itemLabel((record as SellPriceEntry).itemId);
   if (section === "worldUnlocks") return (record as WorldUnlockDefinition).name || (record as WorldUnlockDefinition).id;
   if (section === "bundles") return (record as BundleDefinition).name || (record as BundleDefinition).id;
   if (section === "makers") return (record as MakerDefinition).name || (record as MakerDefinition).id;
-  return (record as ToolActionRule).id;
+  return toolActionLabel((record as ToolActionRule).action);
+}
+
+function itemLabel(itemId: string): string {
+  const item = store.getCurrent().database.items.find((entry) => entry.id === itemId);
+  return item?.name || itemId || "(아이템 없음)";
+}
+
+function skillTypeLabel(type: LifeSkillType): string {
+  return SKILL_TYPE_LABELS.find(([value]) => value === type)?.[1] ?? type;
+}
+
+function toolActionLabel(action: ToolWorldAction): string {
+  return TOOL_ACTION_LABELS.find(([value]) => value === action)?.[1] ?? action;
+}
+
+function farmToolLabel(tool: FarmTool | undefined): string {
+  return FARM_TOOL_LABELS.find(([value]) => value === (tool ?? ""))?.[1] ?? String(tool);
 }
 
 function recordKey(section: RecordSection, record: LifeRecord, index: number): string {

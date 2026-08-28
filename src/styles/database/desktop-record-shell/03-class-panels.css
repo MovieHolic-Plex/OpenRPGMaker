@@ -1,6 +1,12 @@
 @media (min-width: 901px) {
   .database-modal-body .oprn-record-classes .oprn-record-detail-pane {
     grid-template-rows: minmax(0, 1fr);
+    /* 그리드 아이템은 기본 min-height:auto 라 내용만큼 자란다 — 실측에서 상세 창이
+       768px 행 안에서 890px 로 부풀어, 조상 `.db-record-workspace{overflow:hidden}` 이
+       아래 122px 를 잘라냈다. 안쪽 `.oprn-detail-form` 이 이미 스크롤러이므로 창 자체는
+       행 높이에 못 박는다. */
+    max-height: 100%;
+    min-height: 0;
   }
 
   .database-modal-body .oprn-record-classes .oprn-record-identity {
@@ -26,7 +32,11 @@
       "options state element"
       "equipment equipment equipment";
     grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1fr) minmax(270px, 0.82fr);
-    grid-template-rows: 84px 190px 118px 84px minmax(64px, auto);
+    /* 고정 px 행(84/190/118/84)은 내용이 그보다 크면 패널 `overflow: hidden` 과 맞물려
+       조용히 잘라냈다 — 애니메이션 패널(legend + 스프라이트 미리보기 + 셀렉트)과
+       상태·속성 유효도 패널이 84px 안에 들어갈 리가 없었다(감사 H 축 P0).
+       내용이 행 높이를 정하게 하고, 스크롤은 바깥 `.oprn-detail-form` 이 맡는다. */
+    grid-template-rows: repeat(4, minmax(0, auto)) minmax(64px, auto);
     min-height: 100%;
     min-width: 0;
   }
@@ -38,7 +48,6 @@
     margin: 0;
     min-height: 0;
     min-width: 0;
-    overflow: hidden;
     padding: 10px;
   }
 

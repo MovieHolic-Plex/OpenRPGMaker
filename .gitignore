@@ -17,6 +17,7 @@ dist/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-apply-without-approval/
 !.omo/evidence/action-battle/
+!.omo/evidence/battle-flash-map/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -138,6 +139,38 @@ db_ui_mockup.png
 docs/2026-08-05-house-harness-adversarial-review.md
 new-editor/COMPREHENSIVE.html
 
+# base64 를 인라인한 생성 리포트 HTML. 실측(2026-08-28): 500KB 이상 21건 58.5MB 였고
+# 최악은 docs/2026-07-20-showcase-project.html 11.9MB 가 285줄 — 한 줄이 수 MB 라서
+# 에이전트가 read/grep 한 번에 컨텍스트를 태웠다. 아래는 전부 생성 스크립트가 다시 만든다
+# (docs/INDEX.md 의 "워크트리에서 제거된 리포트" 표에 복구 명령이 있다).
+# 스크립트가 없는 과거 산출물은 git 히스토리에만 두고 여기 규칙도 두지 않는다.
+new-editor/REPORT.html
+docs/2026-07-20-showcase-project.html
+docs/2026-07-20-house-variety-catalog.html
+docs/2026-07-20-interior-ceiling-canon-report.html
+docs/2026-07-20-house-decor-stamp-report.html
+docs/2026-07-31-editor-game-ceiling-adversarial-report.html
+reports/generated-effect-showcase-2026-08-24.html
+reports/effect-audit-2026-08-21.html
+reports/effect-catalog-2026-08-21.html
+reports/effect-p0-fix-2026-08-21.html
+reports/left-sidebar-tools-adversarial-review.html
+
+# 일회용 프로브·세션 산출물. 실측(2026-08-28): scripts/ 503개 중 60개가 tmp-/scratch-/
+# probe-/_ 접두사 일회용이라 모든 glob 에 노이즈를 얹었고, .playwright-cli/ 8건은
+# 2026-07-23 세션 잔재였다. 남긴 예외: openwiki 가 감사 하네스로 지목한
+# probe-editor-surface.mjs, build-left-sidebar-review-report.mjs 가 spawn 하는 probe 3건,
+# src/assets/charsetFaceMap.ts 가 검증 방법으로 인용한 scratch-face-pair/faceset-grid.
+/scripts/tmp-*
+/scripts/probe-*
+!/scripts/probe-editor-surface.mjs
+!/scripts/probe-toolbar-clipping.mts
+!/scripts/probe-sidebar-keyboard.mts
+!/scripts/probe-overflow-dropdown-clip.mts
+!/scripts/scratch-face-pair.cjs
+!/scripts/scratch-faceset-grid.cjs
+/.playwright-cli/
+
 # CC0 BGM 카탈로그 오디오. 281곡/1.21GB 는 레포에 담지 않는다 —
 # 정본은 CDN(DigitalOcean Spaces)이고 레포에는 카탈로그(파일명+sha256)만 둔다.
 # 예외: 기본 프로젝트가 CDN 없이도 소리를 내야 하므로 스타터 3곡은 추적한다
@@ -148,7 +181,12 @@ new-editor/COMPREHENSIVE.html
 !/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3
 
 # 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
+# 런타임 QA 하네스의 라이브 산출물 — 매 실행마다 디렉터리째 재생성된다(scripts/runtime-qa.mjs).
+# 보존할 증거는 verify-shots/runtime-export-charset-missing/ 처럼 별도 경로에 둔다.
+verify-shots/runtime-qa/
 verify-shots/ai-assistant-ux/probe-baseline/
 verify-shots/ai-assistant-ux/probe-after/
 verify-shots/ai-assistant-ux/probe-live/
 verify-shots/ai-assistant-ux/probe-model/
+.omo/evidence/battle-flash-map/shots/
+verify-shots/map-modernize/scratch/

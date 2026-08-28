@@ -1,6 +1,11 @@
 /* Elements — neutral cool studio scoped to .database-modal-backdrop.
- * List: name first + 24px thumb + muted trailing #n. No 0001: prefix.
- * Damage grades display as Korean (매우 강함/강함/보통/약함/무효) with grade letter in title. */
+ *
+ * 2026-08: 목록/에디터 레이아웃은 databaseWorkspace 프리미티브(.db-ws-*)와
+ * modern/utility-records.css 로 옮겼다. 여기 남은 건 속성 탭 고유의 컨트롤 외형뿐이다.
+ * 특히 `.db-elements-editor { grid-template-columns/rows }` + `nth-child(3) { grid-row:1/4 }`
+ * 하드코딩 그리드는 삭제했다 — 1열 3행이 영구히 비어 상세 카드의 65% 가 죽어 있었다(H 축 P0).
+ * `.db-elements-damage-input { width: 112px }` 도 삭제했다: 새 배율 표는 그리드가 폭을
+ * 정하는데 고정 폭이 "%" 라벨 위로 10px 씩 겹쳤다. */
 
 .database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
   background: var(--db-studio-canvas);
@@ -28,179 +33,6 @@
   height: 100%;
   min-height: 0;
   padding: 0;
-}
-
-.database-modal-backdrop .db-elements-classic-inner {
-  color: var(--db-studio-text-1);
-  display: grid;
-  font: 400 13px/20px "Malgun Gothic", system-ui, sans-serif;
-  gap: 14px;
-  grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
-  height: 100%;
-  min-height: 0;
-}
-
-.database-modal-backdrop .db-elements-list-pane,
-.database-modal-backdrop .db-elements-editor {
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-default);
-  border-radius: 8px;
-  box-shadow: var(--db-studio-shadow);
-  min-height: 0;
-  min-width: 0;
-}
-
-.database-modal-backdrop .db-elements-list-pane {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  padding: 16px 14px 12px;
-}
-
-.database-modal-backdrop .db-elements-list-title {
-  color: var(--db-studio-text-1);
-  font: 600 13px/20px "Malgun Gothic", system-ui, sans-serif;
-  letter-spacing: -0.01em;
-  margin-bottom: 10px;
-}
-
-.database-modal-backdrop .db-elements-list {
-  background: transparent;
-  border: 0;
-  display: grid;
-  gap: 2px;
-  overflow: auto;
-  padding: 0;
-}
-
-.database-modal-backdrop .db-elements-row {
-  align-items: center;
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-subtle);
-  border-radius: 6px;
-  box-shadow: none;
-  color: var(--db-studio-text-1);
-  display: flex;
-  gap: 8px;
-  font: 400 13px/20px "Malgun Gothic", system-ui, sans-serif;
-  height: 36px;
-  min-height: 36px;
-  min-width: 0;
-  overflow: hidden;
-  padding: 0 10px;
-  position: relative;
-  text-align: left;
-  width: 100%;
-}
-
-.database-modal-backdrop .db-elements-row:hover {
-  background: var(--db-studio-inset);
-  border-color: var(--db-studio-border-default);
-}
-
-/* thumb 24px */
-.database-modal-backdrop .db-elements-thumb {
-  align-items: center;
-  background: var(--db-studio-inset);
-  border: 1px solid var(--db-studio-border-subtle);
-  border-radius: 4px;
-  color: var(--db-studio-text-2);
-  display: inline-flex;
-  flex: 0 0 24px;
-  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
-  height: 24px;
-  justify-content: center;
-  width: 24px;
-}
-
-.database-modal-backdrop .db-elements-row-name {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.database-modal-backdrop .db-elements-row-meta {
-  color: var(--db-studio-text-3);
-  flex: 0 0 auto;
-  font: 400 11px/1 "Malgun Gothic", system-ui, sans-serif;
-}
-
-.database-modal-backdrop button.db-elements-row {
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-subtle);
-  color: var(--db-studio-text-1);
-  cursor: pointer;
-}
-
-.database-modal-backdrop .db-elements-row.is-selected,
-.database-modal-backdrop button.db-elements-row.is-selected {
-  background: var(--db-studio-accent-soft);
-  border-color: var(--db-studio-accent-border);
-  color: var(--db-studio-text-1);
-}
-
-.database-modal-backdrop .db-elements-row.is-selected .db-elements-thumb {
-  background: var(--db-studio-surface);
-  border-color: var(--db-studio-accent-border);
-  color: var(--db-studio-accent);
-}
-
-.database-modal-backdrop .db-elements-maximum {
-  align-self: end;
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-default);
-  border-radius: 6px;
-  color: var(--db-studio-text-2);
-  cursor: pointer;
-  font: 500 12px/20px "Malgun Gothic", system-ui, sans-serif;
-  height: 32px;
-  margin-top: 12px;
-  padding: 0 10px;
-  text-align: center;
-}
-
-.database-modal-backdrop .db-elements-maximum:hover {
-  background: var(--db-studio-inset);
-  color: var(--db-studio-text-1);
-}
-
-.database-modal-backdrop .db-elements-editor {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
-  grid-template-rows: 88px 160px minmax(0, 1fr);
-  padding: 12px;
-}
-
-.database-modal-backdrop .db-elements-editor .db-elements-fieldset:nth-child(3) {
-  grid-column: 2;
-  grid-row: 1 / 4;
-}
-
-.database-modal-backdrop .db-elements-fieldset {
-  align-content: start;
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-subtle);
-  border-radius: 8px;
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  min-height: 0;
-  min-width: 0;
-  padding: 12px;
-}
-
-.database-modal-backdrop .db-elements-fieldset legend {
-  background: transparent;
-  color: var(--db-studio-text-3);
-  float: left;
-  font: 600 11px/12px "Malgun Gothic", system-ui, sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  padding: 0 4px;
-  width: 100%;
 }
 
 .database-modal-backdrop .db-elements-name-input,
@@ -243,20 +75,6 @@
   width: 16px;
 }
 
-.database-modal-backdrop .db-elements-damage-row {
-  align-items: center;
-  border-bottom: 1px solid var(--db-studio-border-subtle);
-  display: grid;
-  gap: 8px;
-  grid-template-columns: 72px minmax(0, 112px) 24px;
-  height: 38px;
-  margin: 0;
-}
-
-.database-modal-backdrop .db-elements-damage-row:last-child {
-  border-bottom: 0;
-}
-
 .database-modal-backdrop .db-elements-grade {
   color: var(--db-studio-text-2);
   font: 600 12px/20px "Malgun Gothic", system-ui, sans-serif;
@@ -272,39 +90,14 @@
 .database-modal-backdrop .db-elements-grade.grade-d { color: var(--db-studio-accent); }
 .database-modal-backdrop .db-elements-grade.grade-e { color: var(--db-studio-text-3); }
 
-.database-modal-backdrop .db-elements-damage-input,
-.database-modal-backdrop .database-modal-body .db-elements-classic .db-elements-damage-input {
-  width: 112px;
-}
-
 .database-modal-backdrop .db-elements-percent {
   color: var(--db-studio-text-3);
   font: 400 12px/20px "Malgun Gothic", system-ui, sans-serif;
 }
 
-.database-modal-backdrop .db-elements-lower-blank,
-.database-modal-backdrop .db-elements-right-blank {
-  display: none;
-}
-
-@media (max-width: 1100px) {
-  .database-modal-backdrop .db-elements-classic-inner {
-    gap: 10px;
-  }
-}
-
 @media (max-width: 900px) {
   .database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
     overflow: auto;
-  }
-
-  .database-modal-backdrop .db-elements-classic-inner {
-    grid-template-columns: minmax(230px, 285px) minmax(380px, 1fr);
-    min-width: 680px;
-  }
-
-  .database-modal-backdrop .db-elements-editor {
-    grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1.1fr);
   }
 }
 
@@ -312,25 +105,5 @@
   .database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
     overflow: auto;
     padding: 10px;
-  }
-
-  .database-modal-backdrop .db-elements-classic-inner {
-    gap: 10px;
-    grid-template-columns: minmax(210px, 1fr);
-    min-width: 0;
-  }
-
-  .database-modal-backdrop .db-elements-list-pane {
-    min-height: 300px;
-  }
-
-  .database-modal-backdrop .db-elements-editor {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 88px 112px minmax(250px, 1fr);
-  }
-
-  .database-modal-backdrop .db-elements-editor .db-elements-fieldset:nth-child(3) {
-    grid-column: 1;
-    grid-row: auto;
   }
 }

@@ -1,0 +1,262 @@
+/* ============================================================================
+   타일셋 탭 모던 레이어 (2026-08).
+
+   이 탭은 게이트에서 clipped:9 / overlap:1 로 29 탭 중 최악이었다. 원인은 전부 구조:
+     1. `.tileset-db-editor.simplified` 가 2행 그리드인데 자식이 셋 → AI 런처가 암시
+        행으로 밀려 나가 잘리고(overY 189) 시트와 69px 겹쳤다.
+     2. 목록 창이 168px 고정 → 타일셋 이름 8 개가 전부 말줄임(overX 12~58)으로 잘렸다.
+     3. 편집 사이드바가 128px 고정 → "자동/하위/상위" 셋째 버튼이 통째로 사라졌다.
+
+   이제 셸은 databaseWorkspace 프리미티브가 만들고, 여기서는 그 위에 얹히는 것만 정의한다:
+     - 목록 이름을 말줄임 대신 접히게 (구조적으로 clip 0)
+     - 섹션 3탭(규칙/지식/구성)을 워크벤치 위 탭 레일로
+     - 속성 fieldset 3 개를 자동 배치 카드 그리드로 (설정... 버튼 폭 해방)
+     - 워크벤치를 상세 본문의 1fr 로 늘려 남는 세로를 칩셋 시트가 먹게
+
+   팔레트는 studio-theme.css 의 --db-studio-* 만 소비한다. 새 hex 없음.
+
+   NOTE(로드 순서): 이 파일은 `database/tilesets.css` 첫 줄에서 @import 된다 —
+   index.css 에 다시 추가하지 말 것(중복 로드). 그래서 셀렉터는 workspace-modern.css
+   보다 항상 한 클래스 더 구체적으로 쓴다(순서 독립).
+   ========================================================================= */
+
+/* ── 셸: 이름이 긴 칩셋 목록이라 기본(240~268px)보다 조금 넓게 ───────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws.db-ws-tilesets {
+  grid-template-columns: minmax(256px, 300px) minmax(0, 1fr);
+}
+
+/* ── 목록: 말줄임 금지 ───────────────────────────────────────────────────
+   `.db-list-name` 은 공용 레이어에서 overflow:hidden + ellipsis 다. 타일셋 이름은
+   "합본 마을 · EasyRPG (CC0)" 처럼 길어서 그 규칙 그대로면 8 행 전부가 게이트의
+   clipped 로 잡히고, 사용자는 어떤 칩셋인지 못 읽는다. 접히게 두면 잘림이 0 이 된다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row .db-list-name {
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row {
+  align-items: center;
+  min-height: 34px;
+  padding-bottom: 6px;
+  padding-top: 6px;
+}
+
+/* 이름 → 사용 맵 배지 → #n 순서. 공용 레이어 기본은 name/#n/배지라 배지가 번호
+   뒤로 밀려 "…#6 12개 맵" 처럼 읽혔다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row .db-list-sub {
+  flex: 0 0 auto;
+  order: 2;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row .db-list-number {
+  order: 3;
+}
+
+/* 최대 개수는 비활성 자리표시자다 — 회색이되 읽을 수는 있게(대비 유지). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-toolbar > .db-ws-btn[disabled] {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  opacity: 1;
+}
+
+/* ── 상세 본문: 속성 카드 / 탭 레일 / 워크벤치 ──────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body > .db-ws-card,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body > .tileset-section-tabs {
+  flex: 0 0 auto;
+}
+
+/* 이 탭의 주인공은 칩셋 그림판이다 — 그 위 띠(속성/탭)는 최소한만 차지한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body {
+  gap: 8px;
+  padding: 10px 14px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body > .db-ws-card {
+  padding: 10px 12px;
+}
+
+/* 워크벤치가 남는 세로를 전부 먹는다. 예전에는 min-height:72vh 로 "요구"해서
+   조상 밖으로 넘쳤다 — 이제는 flex 로 "받는다". */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body > .db-ws-tileset-workbench {
+  flex: 1 1 auto;
+  min-height: 420px;
+}
+
+/* ── 섹션 3탭 레일 ───────────────────────────────────────────────────────
+   예전에는 `margin-left:auto` 로 속성 상자 오른쪽 끝에 붙어, 무엇을 전환하는
+   탭인지 알 수 없는 버튼 세 개였다. 워크벤치 바로 위에 밑줄 탭으로 세운다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-section-tabs.db-ws-tileset-rail {
+  align-items: stretch;
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 2px 0 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-rail .tileset-section-tab {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 600 12.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin-bottom: -1px;
+  min-height: 34px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-rail .tileset-section-tab:hover {
+  background: transparent;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-rail .tileset-section-tab.active {
+  background: transparent;
+  border-bottom-color: var(--db-studio-accent, var(--db-studio-accent));
+  color: var(--db-studio-accent, var(--db-studio-accent));
+  font-weight: 700;
+}
+
+/* ── 속성 카드 안쪽 ──────────────────────────────────────────────────────
+   `.oprn-tileset-properties` 는 자기 배경/테두리를 갖는 상자였다. 이제 카드 안에
+   들어가므로 껍데기를 벗기고, 고정 4열 대신 자동 배치로 둔다(탭이 빠져 3 개). */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-card-body > .oprn-tileset-properties {
+  align-items: end;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(228px, 1fr));
+  padding: 0;
+}
+
+/* "설정..." 은 라벨을 가진 버튼이다 — 아이콘 정사각형이 아니라 내용 폭을 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-graphic-field {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-browse-button {
+  min-height: 32px;
+  min-width: 0;
+  padding: 0 12px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-transparent-row {
+  grid-template-columns: 30px minmax(72px, 1fr) auto;
+}
+
+/* ── 워크벤치 내부 ───────────────────────────────────────────────────────
+   스크롤 경계를 한 겹으로 만든다: 좌측 도구/선택 타일 열 하나만 세로 스크롤하고,
+   그 안의 `.tileset-db-selected-tile` 은 자기 max-height 를 포기한다(이중 스크롤바
+   + "52vh 안에서 또 잘림" 방지). 가운데 시트는 원래대로 자기 스크롤을 갖는다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-sidebar {
+  align-content: start;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-sidebar .tileset-db-selected-tile {
+  max-height: none;
+  overflow: visible;
+}
+
+/* 편집 도구(통행/지형)는 128px 열 시절에 한 줄 한 개로 쌓여 있었다. 열이 240px 이
+   된 지금은 두 개씩 나란히 — 세로 40px 을 그림판에 돌려준다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-tools {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* `::before` 가 "편집 도구" 머리글이라 첫 칸을 차지한다 — 줄 전체를 쓰게 해서
+   통행/지형이 나란히 앉게 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-tools::before {
+  grid-column: 1 / -1;
+}
+
+/* 자동/하위/상위, 통행/차단은 같은 폭으로 한 줄에 — 줄바꿈으로 세로를 먹지 않게. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-rule-buttons {
+  display: grid;
+  gap: 4px;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-rule-buttons > button {
+  min-width: 0;
+  overflow: visible;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+/* 사이드바 안내문은 도움말이지 본문이 아니다 — 그림판 세로를 뺏지 않게 축소. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-sidebar .tileset-rule-note {
+  font-size: 11px;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* 우측 보조 패널(범례 / 검사 요약 / 오토타일)도 카드처럼 보이게. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-terrain-pane {
+  align-content: start;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+/* 좁은 열에서 액션 버튼 라벨이 잘리지 않게 — 줄바꿈 허용 + 자동 높이. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-terrain-pane .database-footer-button {
+  height: auto;
+  line-height: 1.35;
+  overflow: visible;
+  padding: 7px 10px;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* ── 좁은 화면 ──────────────────────────────────────────────────────────
+   1180px 아래에서는 워크벤치를 두 줄로 접는다(시트 위 / 보조 패널 아래). 예전에는
+   같은 3열을 그대로 유지해 사이드바가 40px 까지 눌리며 내용을 잘라먹었다. */
+
+@media (max-width: 1180px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(320px, 1fr) auto;
+    overflow-y: auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area {
+    grid-template-columns: minmax(200px, 236px) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(280px, 1fr);
+    overflow-y: auto;
+  }
+}

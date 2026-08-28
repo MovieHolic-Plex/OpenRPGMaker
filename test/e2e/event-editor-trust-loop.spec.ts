@@ -4,6 +4,11 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 test.setTimeout(60_000);
 
+/** 상점 단일 목록의 «판매 중» 그룹 행들. 담김/빼기 상태를 읽는 유일한 표면이다. */
+function saleListRows(page: Page) {
+  return page.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
+}
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -41,7 +46,8 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
 
   await editor.getByTestId("event-template-shop").click();
   await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();
-  await expect(page.getByTestId("shop-selected-items").locator("option")).not.toHaveCount(0);
+  // 상점 서식은 진열을 미리 채워 준다 — 판매 중 그룹에 행이 있어야 한다.
+  await expect(saleListRows(page)).not.toHaveCount(0);
   await page.getByTestId("event-command-edit-cancel").click();
 
   await editor.getByTestId("event-template-battle").click();
@@ -78,14 +84,13 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   await editor.getByTestId("event-command-text").locator(".cmd-head").press("Delete");
   await expect(editor.getByTestId("event-command-empty-experience")).toBeVisible();
   await editor.getByTestId("event-template-shop").click();
-  const selectedItems = page.getByTestId("shop-selected-items");
-  while (await selectedItems.locator("option").count() > 0) {
-    const itemId = await selectedItems.locator("option").first().getAttribute("value");
-    if (!itemId) throw new Error("expected selected shop item id");
-    await selectedItems.selectOption(itemId);
-    await page.getByTestId("shop-remove-item").click();
+  // 체크 해제가 유일한 빼기 경로다. 해제하면 행이 안 담음 그룹으로 옮겨 가므로
+  // 매번 판매 중 그룹을 다시 조회해야 한다(목록이 통째로 재빌드된다).
+  const rows = saleListRows(page);
+  for (let guard = 0; guard < 20 && (await rows.count()) > 0; guard += 1) {
+    await rows.first().locator('input[type="checkbox"]').uncheck();
   }
-  await expect(selectedItems.locator("option")).toHaveCount(0);
+  await expect(rows).toHaveCount(0);
   await page.getByTestId("event-command-edit-ok").click();
   await expect(editor.getByTestId("event-command-shop")).toBeVisible();
 

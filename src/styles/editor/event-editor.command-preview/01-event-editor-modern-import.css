@@ -45,7 +45,8 @@
   width: min(920px, calc(100vw - 24px));
 }
 
-/* 얼굴 그래픽 변경: 선택 카드 + 4×4 그리드가 들어가도록 폭 확보. */
+/* 얼굴 그래픽 변경: 선택 카드 + 낱장 얼굴 갤러리가 들어가도록 폭 확보.
+   (4×4 칸 번호 격자는 폐기됐다 — 갤러리는 등록된 얼굴 파일 전부를 auto-fill 로 깐다.) */
 .event-subdialog-window.wide:has(.event-command-face-editor) {
   width: min(900px, calc(100vw - 24px));
 }

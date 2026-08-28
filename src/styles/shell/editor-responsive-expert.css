@@ -31,30 +31,8 @@
   .palette-work-tab { font-size: 11px; padding-left: 6px; padding-right: 6px; }
 }
 
-/* 3) 맵 트리: 이름 우선(ellipsis), 행 액션은 hover/focus에서만 */
-.map-item .map-tree-name {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@media (max-width: 1280px) {
-  /* 좁은 폭: 고정 액션 컬럼이 이름(1fr)을 0으로 붕괴시키므로,
-     ⋮(컨텍스트 메뉴)와 시작★만 남기고 개별 액션·잠금 배지를 접는다.
-     figma-editor.css가 이 파일보다 나중에 import되어 동일 특이도에서 캐스케이드를
-     이기므로, body 접두사로 특이도를 한 단계 올려 폭 붕괴 규칙이 항상 이기게 한다. */
-  body .left-panel-stack[data-testid="left-map-root"] .map-item {
-    grid-template-columns: 10px 10px 44px minmax(0, 1fr) auto 18px;
-  }
-
-  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-tree-action:not(.map-context-trigger),
-  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-parent-sel,
-  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-lock-badge {
-    display: none;
-  }
-}
+/* 3) 맵 트리 규칙(이름 ellipsis, 좁은 폭 액션 축소)은 editor/map-panel.modern.css 로
+   이관됐다(2026-08) — 좁은 뷰포트 대응은 그리드 재정의가 아니라 치수 토큰 재정의다. */
 
 /* 4) AI 패널: 입력 행이 절대 잘리지 않게 */
 .ai-composer,

@@ -1,0 +1,141 @@
+/* 스킬 탭 모던 인스펙터 (2026-08).
+ *
+ * 이 파일은 index.css 의 modern/* 묶음(= studio-theme.css / workspace-modern.css /
+ * desktop-record-shell/04-modern-records.css 보다 늦게)에서 import 한다. 여기 있는
+ * 규칙은 전부 "늦게 로드돼야만 이길 수 있는 것"이다:
+ *
+ *  - 04-modern-records.css:513 이 `.oprn-detail-skills .db-field > span` 에
+ *    `white-space: nowrap; overflow: hidden; text-overflow: ellipsis` 를 걸고,
+ *    같은 파일 :507 이 라벨 열을 `minmax(82px, 0.22fr)` 로 잡는다. 그 조합이
+ *    감사 게이트의 clipped:1 (라벨 `최대 PP (0=무제한)` clientWidth 87 / scrollWidth 119)
+ *    이었다. 라벨 텍스트는 TS 쪽에서 줄였고, 여기서는 **재발 방지**로 줄바꿈을 허용한다.
+ *  - studio-theme.css:320 이 `.oprn-detail-skills` 를 `display:flex !important` 로
+ *    바꿔 놨으므로 카드 스택은 그 안에서 자기 그리드를 직접 만든다.
+ */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio {
+  align-content: start;
+  padding-bottom: 4px;
+}
+
+/* ── 요약 스트립 ────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio > .db-skill-composer {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  border-radius: 10px;
+  flex: 0 0 auto;
+  padding: 10px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-composer-label {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 700 10.5px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-composer-chip {
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-composer-chip[data-chip-kind="activation"] {
+  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  color: var(--db-studio-accent, var(--db-studio-accent));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-effect-icon {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  color: var(--db-studio-accent, var(--db-studio-accent));
+}
+
+/* ── 카드 스택 ──────────────────────────────────────────────────────────── */
+
+/* `db-ws-stack` 의 auto-fit 그리드는 카드 높이가 제각각인 이 탭에서 행마다 빈 오른쪽
+   반쪽(효과 카드 옆 493×196)과 stretch 로 늘어난 카드의 빈 아래쪽을 만든다. 멀티컬럼으로
+   바꾸면 카드가 세로로 촘촘히 쌓인다 — 감사 detailDead 51% → 44%, 폼 스크롤 높이도
+   1110px → 903px 로 줄었다(1680×1050 뷰포트 기준 측정). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-stack {
+  /* column-count 고정 대신 column-width — 도킹/좁은 창에서는 자동으로 1 열이 된다
+     (`db-ws-stack` 의 auto-fit minmax(400px,1fr) 과 같은 임계값). */
+  column-gap: 10px;
+  columns: 400px;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-stack > .db-ws-card {
+  break-inside: avoid;
+  margin: 0 0 10px;
+}
+
+/* 사용처는 목록이라 폭이 넓을수록 읽기 좋다 — 마지막 카드이므로 열을 가로지른다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-stack > [data-testid="db-skill-card-used-by"] {
+  column-span: all;
+  margin-bottom: 0;
+}
+
+/* ── 카드 안의 필드 ─────────────────────────────────────────────────────── */
+
+/* clipped:1 의 구조적 원인 차단 — 라벨은 잘리는 대신 줄바꿈한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio :is(.field, .db-field) > span {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio :is(.field, .db-field) {
+  grid-template-columns: minmax(88px, 0.3fr) minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-ws-card-body {
+  align-content: start;
+}
+
+/* 상태 변화 행은 카드 안에서 라벨 열 그리드를 상속받지 않는다(자연 폭 flex). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-state-effect-row :is(.field, .db-field) {
+  display: flex;
+  grid-template-columns: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-state-effect-row :is(.field, .db-field) > span {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-state-effect-row input[type="number"] {
+  width: 76px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-state-effect-row select {
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-card-note {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font-family: var(--font-ui);
+}
+
+/* ── 사용처 ─────────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-backlink {
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border-color: var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-backlink:hover {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-backlink-arrow {
+  color: var(--db-studio-accent, var(--db-studio-accent));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-used-by-more {
+  justify-self: start;
+  margin-top: 2px;
+}

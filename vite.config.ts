@@ -1,6 +1,14 @@
 import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ProxyOptions, type ViteDevServer } from "vite";
 import { fileURLToPath, URL } from "node:url";
-import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync, realpathSync } from "node:fs";
+import {
+  mkdirSync,
+  writeFileSync,
+  appendFileSync,
+  readFileSync,
+  existsSync,
+  readdirSync,
+  realpathSync,
+} from "node:fs";
 import { join } from "node:path";
 import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
@@ -131,10 +139,11 @@ function devCorsOrigin(req: { headers: { origin?: string | string[] } }): string
 /** AI 활동 로그를 output/ai-activity/ 에 미러 — 에이전트가 디스크에서 바로 읽음. */
 function aiActivityDiskPlugin(): Plugin {
   const dir = join(process.cwd(), "output", "ai-activity");
-  return {
-    name: "rpgzzu-ai-activity-disk",
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
+  // dev 와 preview 양쪽에 같은 미들웨어를 단다. configureServer 만 있던 동안 `vite preview`
+  // (9888/9988)로 접속한 에디터의 AI 활동 로그는 POST 가 404 로 떨어지고 클라이언트가 catch{} 로
+  // 삼켜서 디스크에 한 줄도 남지 않았다(2026-08-28 실측: 사용자가 실제로 친 지시가 유실).
+  function attachActivityMirror(server: ViteDevServer | PreviewServer) {
+    server.middlewares.use((req, res, next) => {
         if (!req.url?.startsWith(AI_ACTIVITY_DISK_ENDPOINT)) return next();
         const allowedOrigin = devCorsOrigin(req);
         if (req.method === "OPTIONS") {
@@ -219,7 +228,15 @@ function aiActivityDiskPlugin(): Plugin {
             res.end(error instanceof Error ? error.message : "bad request");
           }
         });
-      });
+    });
+  }
+  return {
+    name: "rpgzzu-ai-activity-disk",
+    configureServer(server) {
+      attachActivityMirror(server);
+    },
+    configurePreviewServer(server) {
+      attachActivityMirror(server);
     },
   };
 }
@@ -407,6 +424,21 @@ export default defineConfig(({ mode }) => {
             if (real !== root) roots.push(real);
           } catch {
           }
+        }
+        // 위 루프는 `node_modules` **자체**가 링크일 때만 통한다. `.herdr/worktrees/<name>/worktree`
+        // 배치에서는 node_modules 는 실디렉터리이고 그 **안의 패키지들**만 원본 저장소로 링크된다
+        // (phaser, jimp, playwright…). 그러면 `@fs` 실경로가 여전히 allow 밖이라 phaser.min.js 가
+        // 403 이고 편집기 캔버스가 빈 DIV 로 남는다. 그래서 링크된 패키지의 실경로도 넣는다.
+        const localModules = fileURLToPath(new URL("./node_modules", import.meta.url));
+        try {
+          for (const entry of readdirSync(localModules, { withFileTypes: true })) {
+            if (!entry.isSymbolicLink()) continue;
+            try {
+              roots.push(realpathSync(`${localModules}/${entry.name}`));
+            } catch {
+            }
+          }
+        } catch {
         }
         return [...new Set(roots)];
       })(),

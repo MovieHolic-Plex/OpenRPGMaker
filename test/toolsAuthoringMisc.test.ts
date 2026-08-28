@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { getTool, runTool, type ToolContext, type ToolDomain } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import type { WorldEntity } from "@/project/world/types";
 
 function context(): ToolContext {
   return { project: createBlankProject() };
@@ -30,10 +29,6 @@ function addSecondMap(ctx: ToolContext): string {
   const result = runTool(ctx, "create_map", { id: "map_second", name: "둘째 맵", width: 8, height: 7 });
   expect(result.ok, result.summary).toBe(true);
   return "map_second";
-}
-
-function worldEntity(id: string, name: string): WorldEntity {
-  return { id, name, type: "place", summary: `${name} 설명`, origin: "user" };
 }
 
 function expectRejectedWith(result: ReturnType<typeof runTool>, ...values: string[]): void {
@@ -89,24 +84,6 @@ describe("authoring misc facades", () => {
       npcEnabled: true,
     }];
     expectRejectedWith(runTool(ctx, "delete_map_connection", { connectionId: "missing" }), "known-road");
-  });
-
-  it("upserts and removes world.relations without disturbing entities", () => {
-    const ctx = context();
-    const entities = [worldEntity("capital", "왕도"), worldEntity("guild", "길드")];
-    ctx.project.world = { entities, relations: [] };
-    const relation = { a: "guild", b: "capital", kind: "locatedIn" as const, note: "중앙 광장" };
-
-    expect(runTool(ctx, "set_world_relations", { action: "upsert", relation }).ok).toBe(true);
-    expect(ctx.project.world).toEqual({ entities, relations: [relation] });
-    expect(runTool(ctx, "set_world_relations", { action: "remove", relation }).ok).toBe(true);
-    expect(ctx.project.world).toEqual({ entities, relations: [] });
-
-    const rejected = runTool(ctx, "set_world_relations", {
-      action: "upsert",
-      relation: { a: "ghost", b: "capital", kind: "knows" },
-    });
-    expectRejectedWith(rejected, "capital", "guild");
   });
 
   it("upserts villageInfoDocuments and validates mapId", () => {
@@ -249,7 +226,6 @@ describe("authoring misc facades", () => {
     const expected: Readonly<Record<string, readonly ToolDomain[]>> = {
       upsert_map_connection: ["map"],
       delete_map_connection: ["map"],
-      set_world_relations: ["world"],
       upsert_village_document: ["map"],
       delete_village_document: ["map"],
       upsert_resource_profile: ["system"],

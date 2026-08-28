@@ -743,7 +743,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
       runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }),
       proposed("place_npc", { mapId, x: 1, y: 1 }, { eventsAdded: 1 }, "NPC 1명"),
     ];
-    // 이 제안은 예전 게이트를 둘 다 못 넘는다: safety 불통과 + 세계관 미기재 린트 경고.
+    // 이 제안은 예전 게이트를 둘 다 못 넘는다: safety 불통과 + 수량 미이행 린트 경고.
     expect(classifyProposalSafety({ calls, before: baseline, after: ctx.project, currentMapId: mapId }).safe).toBe(false);
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
       turn({ assistantText: "NPC 1명과 길 1칸을 놓았습니다.", proposedCalls: calls }),
@@ -752,7 +752,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     editorState.set({ currentMapId: mapId, selection: null });
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "여기 NPC 넣고 길 깔아줘";
+    input.value = "여기 NPC 3명 넣고 길 깔아줘";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
@@ -762,7 +762,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     const map = store.getCurrent().maps[mapId];
     expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.PATH);
     // 린트 경고는 게이트가 아니라 로그로 전달된다.
-    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("세계관 미기재");
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("요청 수량 3개");
   });
 
   it("파괴적 제안은 여전히 검토 카드로 간다", async () => {

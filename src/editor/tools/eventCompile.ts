@@ -13,9 +13,40 @@ import { ToolError } from "./types";
 import type { SimplePage } from "./types";
 
 const PASSIVE_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
-const COMMAND_KIND_SET: ReadonlySet<string> = new Set(COMMAND_KINDS);
 const CONDITION_KIND_SET: ReadonlySet<string> = new Set(CONDITION_KINDS);
 const SIMPLE_PAGE_EXAMPLE = `{"pages":[{"lines":["안녕하세요"],"conditions":[],"commands":[{"kind":"text","body":"안녕하세요"}]}]}`;
+
+/**
+ * 모델이 반복해서 내는 커맨드 kind 오표기 → 정규 이름.
+ *
+ * 2026-08-28 실측: place_npc 가 `kind:"dialogue"` 로 한 번 튕기고 재시도해서야 통과했다.
+ * 의미가 1:1 로 대응하는 표기만 넣는다 — 애매한 이름은 그대로 오류를 내야 모델이 스키마를 다시 본다.
+ */
+const COMMAND_KIND_ALIASES: Readonly<Record<string, string>> = {
+  dialogue: "text",
+  message: "text",
+  say: "text",
+  showtext: "text",
+  showmessage: "text",
+  choice: "choices",
+  conditionalbranch: "fork",
+  teleport: "transfer",
+  transferplayer: "transfer",
+};
+
+const COMMAND_KIND_SET: ReadonlySet<string> = new Set(COMMAND_KINDS);
+/** 대소문자·구분자만 다른 표기를 정규 이름으로 되돌리는 색인(`change_gold` → `changeGold`). */
+const COMMAND_KIND_BY_NORMALIZED: ReadonlyMap<string, string> = new Map(
+  COMMAND_KINDS.map((kind) => [kind.toLowerCase(), kind]),
+);
+
+/** 정규 이름이면 그대로, 알려진 오표기면 정규 이름으로, 그 외에는 null. */
+export function resolveCommandKind(raw: string): string | null {
+  if (COMMAND_KIND_SET.has(raw)) return raw;
+  // 구분자 제거 + 소문자화로 snake_case/kebab-case/PascalCase 를 한 번에 흡수한다.
+  const normalized = raw.replace(/[\s_-]/gu, "").toLowerCase();
+  return COMMAND_KIND_BY_NORMALIZED.get(normalized) ?? COMMAND_KIND_ALIASES[normalized] ?? null;
+}
 
 type EventCompileOptions = {
   readonly movement?: EventPage["movement"];
@@ -256,14 +287,18 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
   if (!isRecord(raw)) throw simplePageFieldError(path, "Command object", raw);
   const command: RecordValue = { ...raw };
   const rawKind = command.kind;
-  const kind = typeof rawKind === "string" ? rawKind : recoverCommandKind(command, path, warnings);
-  if (!kind) {
+  const requestedKind = typeof rawKind === "string" ? rawKind : recoverCommandKind(command, path, warnings);
+  if (!requestedKind) {
     throw simplePageFieldError(`${path}.kind`, "string", rawKind);
   }
-  command.kind = kind;
-  if (!COMMAND_KIND_SET.has(kind)) {
-    throw simplePageFieldError(`${path}.kind`, "known command kind string", kind);
+  const kind = resolveCommandKind(requestedKind);
+  if (!kind) {
+    throw simplePageFieldError(`${path}.kind`, "known command kind string", requestedKind);
   }
+  if (kind !== requestedKind) {
+    warnings?.push(`SimplePage 정규화: ${path}.kind "${requestedKind}" 를 "${kind}" 로 해석했습니다.`);
+  }
+  command.kind = kind;
   if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
     command.key = command.id;
     delete command.id;

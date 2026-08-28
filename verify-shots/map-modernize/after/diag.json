@@ -1,0 +1,44 @@
+[
+  {
+    "mode": "expert",
+    "rootPresent": true,
+    "panelPresent": true,
+    "rootWidth": 319,
+    "rootHeight": 300,
+    "rows": 1,
+    "clippedNames": 0,
+    "rowHeight": 30,
+    "overflowX": 0,
+    "overflowY": 0,
+    "measuredPairs": 1,
+    "badgeOverlapsMetaPx": 0
+  },
+  {
+    "mode": "standard",
+    "rootPresent": true,
+    "panelPresent": true,
+    "rootWidth": 299,
+    "rootHeight": 300,
+    "rows": 1,
+    "clippedNames": 0,
+    "rowHeight": 30,
+    "overflowX": 0,
+    "overflowY": 0,
+    "measuredPairs": 1,
+    "badgeOverlapsMetaPx": 0
+  },
+  {
+    "mode": "beginner",
+    "rootPresent": true,
+    "panelPresent": true,
+    "rootWidth": 0,
+    "rootHeight": 0,
+    "rows": 1,
+    "clippedNames": 0,
+    "rowHeight": 40,
+    "overflowX": 0,
+    "overflowY": 0,
+    "measuredPairs": 1,
+    "badgeOverlapsMetaPx": 0
+  }
+]

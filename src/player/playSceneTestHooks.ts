@@ -19,6 +19,7 @@ export type RuntimeDebugHook = {
     x: number;
     y: number;
     gold: number;
+    battleResult: PlaySession["battleResult"];
     switches: Record<string, boolean>;
     variables: Record<string, number>;
     selfSwitches: PlaySession["selfSwitches"];
@@ -161,18 +162,26 @@ export function installPlaySceneTestHooks(
     setGold: (amount) => applyAndSync({ kind: "setGold", amount }),
     heal: () => applyAndSync({ kind: "heal" }),
     teleport: (mapId, x, y) => {
-      applyAndSync({ kind: "teleport", mapId, x, y });
       const context = scene as unknown as {
         getMapId?: () => string;
         loadMap?: (id: string) => void;
         tileX: number;
         tileY: number;
       };
-      if (typeof context.loadMap === "function" && context.getMapId?.() !== mapId) {
+      // 맵 비교는 세션을 쓰기 **전에** 해야 한다. applyAndSync 가 session.currentMapId 를 먼저
+      // 갈아치우면 getMapId() === mapId 가 항상 참이 되어 loadMap 이 한 번도 불리지 않고,
+      // 세션만 새 맵을 가리킨 채 화면은 옛 맵을 계속 그린다(실측 2026-08-28: 런타임 QA 의
+      // 맵 전환 비트가 세션 값만 보고 통과하고 있었다).
+      const previousMapId = context.getMapId?.();
+      applyAndSync({ kind: "teleport", mapId, x, y });
+      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
         context.loadMap(mapId);
       }
       context.tileX = x;
       context.tileY = y;
+      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
+        context.loadMap(mapId);
+      }
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);
@@ -189,6 +198,7 @@ export function installPlaySceneTestHooks(
         x: session.x,
         y: session.y,
         gold: session.gold,
+        battleResult: session.battleResult,
         switches: { ...session.switches },
         variables: { ...session.variables },
         selfSwitches: structuredClone(session.selfSwitches),

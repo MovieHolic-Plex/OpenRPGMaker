@@ -149,41 +149,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   image-rendering: pixelated;
 }
 
-.map-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 6px var(--space-2);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.1s;
-}
-.map-item:hover {
-  background: var(--bg-panel-2);
-}
-.map-item.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 500;
-}
-.map-item .start-mark {
-  color: var(--gold);
-  font-size: 11px;
-}
-.map-item .del {
-  margin-left: auto;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 11px;
-  padding: 0 2px;
-  border-radius: 2px;
-}
-.map-item .del:hover {
-  color: var(--danger);
-  background: var(--danger-muted);
-}
-
 /* ?? ?뚮젅?댁뼱 ?덉씠?꾩썐 ?? */
 .player-layout {
   position: relative;

@@ -49,6 +49,8 @@
     "test:ai-oauth": "node scripts/run-node-tests.mjs ohMyPi",
     "test:oh-my-pi": "node scripts/run-node-tests.mjs ohMyPi && bun test test/ohMyPiComplete.bun.test.ts",
     "test:e2e": "playwright test",
+    "qa:runtime": "node scripts/runtime-qa.mjs",
+    "qa:runtime:gate": "playwright test --config playwright.runtime.config.ts",
     "construction:harness": "node scripts/run-construction-harness.mjs",
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
     "verify:genre-packs": "vite-node --script scripts/verify-genre-pack-receipts.mts",

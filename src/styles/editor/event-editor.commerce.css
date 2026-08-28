@@ -3,15 +3,12 @@
 
 /* ---- 공통 commerce 골격 ---- */
 
-/* 우측 프리뷰가 요약 역할을 하므로 상점/문장 폼의 상단 mono 요약 줄은 숨긴다.
-   auto-fit 그리드보다 높은 특이도로 이겨야 한다. */
-.event-command-edit-body > div > .event-command-edit-summary:is(
-  :has(+ .shop-processing-command-body),
-  :has(+ .commerce-command-body),
-  :has(+ .event-command-text-editor)
-),
-.event-command-edit-body:has(.shop-processing-command-body) > div > .event-command-edit-summary,
-.event-command-edit-body:has(.event-command-text-editor) > div > .event-command-edit-summary {
+/* 창 헤더가 이미 "상점" 제목을 갖고 있으므로 폼 위의 중복 제목 줄을 숨긴다.
+   commandBody.ts 는 이 줄을 `class="cream-command-form-head"` +
+   `data-testid="event-command-edit-summary"` 로 그린다 — `.event-command-edit-summary`
+   **클래스**를 노리던 이전 규칙은 그런 클래스가 코드에 없어서 아무것도 숨기지 못했다.
+   상점 폼만 좁혀서 고친다(다른 명령 창은 지금 모습을 유지). */
+.cream-command-form-head:has(+ .shop-processing-command-body) {
   display: none !important;
 }
 
@@ -64,10 +61,9 @@
 }
 
 .commerce-command-input:focus,
-.shop-processing-message-select:focus,
-.shop-processing-item-select:focus {
-  border-color: var(--accent, #4A57D6);
-  outline: 2px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
+.shop-processing-message-select:focus {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 28%, transparent);
   outline-offset: 0;
 }
 
@@ -77,29 +73,6 @@
   display: inline-flex;
   gap: 8px;
   font: 500 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-
-.commerce-command-empty {
-  display: grid;
-  place-items: center;
-  gap: 10px;
-  min-height: 140px;
-  background: var(--bg-surface);
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-m);
-  color: var(--text-2);
-  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  padding: 16px;
-  text-align: center;
-}
-
-.commerce-command-summary {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
-  border-radius: 6px;
-  color: var(--text-2, #5C5348);
-  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  padding: 8px 10px;
 }
 
 /* ---- 상점 설정 카드 ---- */
@@ -138,53 +111,10 @@
 }
 
 .shop-processing-fieldset > legend {
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent));
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: 0.02em;
   padding: 0 4px;
-}
-
-.shop-processing-segment {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.shop-processing-segment-option {
-  align-items: center;
-  background: var(--bg-inset, #EFE9DC);
-  border: 1px solid var(--border-default, rgba(42,37,33,.20));
-  border-radius: 6px;
-  color: var(--text-2, #5C5348);
-  cursor: pointer;
-  display: flex;
-  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  justify-content: center;
-  min-height: 34px;
-  padding: 6px 8px;
-  text-align: center;
-  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
-}
-
-.shop-processing-segment-option:hover {
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 45%, transparent);
-  color: var(--text-1, #2A2521);
-}
-
-.shop-processing-segment-option.is-selected,
-.shop-processing-segment-option:has(.shop-processing-segment-input:checked) {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.18)) 90%, transparent);
-  border-color: var(--accent, #4A57D6);
-  color: var(--text-1, #2A2521);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent);
-}
-
-.shop-processing-segment-input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
-  height: 0;
 }
 
 .shop-processing-check {
@@ -195,24 +125,13 @@
   margin-top: 2px;
 }
 
-/* ---- 판매 아이템 듀얼 리스트 ---- */
-
-.shop-processing-items {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.shop-processing-items-hint {
-  margin: -2px 0 2px;
-}
-
+/* ---- 상품 단일 목록 ---- */
 
 .shop-processing-filter-bar {
   align-items: end;
   display: grid;
   gap: 8px;
-  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(110px, 150px) minmax(120px, 1fr);
   min-width: 0;
 }
 .shop-processing-filter-field {
@@ -232,203 +151,182 @@
   min-width: 0;
   width: 100%;
 }
-.shop-processing-filter-source {
-  padding-bottom: 6px;
-  white-space: nowrap;
-}
 @media (max-width: 720px) {
   .shop-processing-filter-bar {
     grid-template-columns: minmax(0, 1fr);
   }
 }
-.shop-processing-item-grid {
-  align-items: stretch;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  min-height: 220px;
-  min-width: 0;
-}
 
-.shop-processing-list-column {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+/* 이 창에서 스크롤하는 건 여기 하나다. `<details>` 를 쓰지 않는 이유는
+   commandBodyCommerce.ts 의 shopGoodsSection 주석 참고(UA ::details-content 함정). */
+.shop-goods {
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 8px;
   min-height: 0;
   min-width: 0;
+  overflow: auto;
+  padding: 0 0 4px;
 }
 
-.shop-processing-list-head {
+.shop-goods-group + .shop-goods-group {
+  border-top: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+}
+
+.shop-goods-head {
   align-items: center;
+  background: var(--bg-inset, #EFE9DC);
+  border-bottom: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   display: flex;
   gap: 8px;
   justify-content: space-between;
+  padding: 6px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-.shop-processing-list-title {
+.shop-goods-head-label {
   color: var(--text-1, #2A2521);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
-.shop-processing-list-count {
-  background: var(--bg-inset, #EFE9DC);
+.shop-goods-head-count {
+  background: var(--bg-raised, #FFFDF8);
   border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 999px;
   color: var(--text-2, #5C5348);
   font: 700 11px/1 Inter, "Segoe UI", system-ui, sans-serif;
-  min-width: 22px;
   padding: 3px 7px;
-  text-align: center;
 }
 
-/* e2e/selectOption 호환용 네이티브 select — 크기 유지, 시각적으로만 숨김 */
-.shop-processing-native-select {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+.shop-goods-rows {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
   margin: 0;
-  padding: 0;
-  border: 0;
-  opacity: 0.01;
-  overflow: hidden;
-  pointer-events: none;
+  padding: 2px 4px;
 }
 
-.shop-processing-item-list-shell {
-  position: relative;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 200px;
-  min-width: 0;
-}
-
-.shop-processing-item-list {
-  background: var(--bg-inset, #EFE9DC);
-  border: 1px solid var(--border-default, rgba(42,37,33,.20));
-  border-radius: 8px;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 280px;
-  min-height: 180px;
-  overflow: auto;
-  padding: 6px;
-}
-
-.shop-processing-item-empty {
-  color: var(--text-2, #5C5348);
-  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  margin: auto;
-  padding: 16px 8px;
-  text-align: center;
-}
-
-.shop-processing-item-row {
-  align-items: flex-start;
-  background: transparent;
+.shop-goods-row {
+  align-items: center;
   border: 1px solid transparent;
   border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+  padding: 1px 4px;
+}
+
+.shop-goods-row.is-stocked {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+
+.shop-goods-row:hover {
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent);
+}
+
+.shop-goods-row.is-selected {
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent);
+  border-color: var(--accent);
+}
+
+.shop-goods-row:focus-within {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: -1px;
+}
+
+.shop-goods-check {
+  cursor: pointer;
+  margin: 0 2px;
+}
+
+.shop-goods-pick {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
   color: var(--text-1, #2A2521);
   cursor: pointer;
-  display: grid;
-  gap: 8px;
-  grid-template-columns: 28px minmax(0, 1fr);
-  padding: 7px 8px;
-  text-align: left;
-  width: 100%;
-}
-
-.shop-processing-item-row:hover {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent);
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
-}
-
-.shop-processing-item-row.is-selected {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent);
-  border-color: var(--accent, #4A57D6);
-}
-
-.shop-processing-item-icon {
-  display: grid;
-  height: 28px;
-  place-items: center;
-  width: 28px;
-}
-
-.shop-processing-item-icon .rich-record-icon,
-.shop-processing-item-icon .rich-record-icon-crop,
-.shop-processing-item-icon .rich-record-initial,
-.shop-processing-item-icon img {
-  height: 24px;
-  image-rendering: pixelated;
-  width: 24px;
-}
-
-.shop-processing-item-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.shop-processing-item-topline {
-  align-items: baseline;
   display: flex;
   gap: 8px;
   justify-content: space-between;
   min-width: 0;
+  padding: 4px 2px;
+  text-align: left;
+  width: 100%;
 }
 
-.shop-processing-item-name {
-  font: 700 12px/1.25 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+.shop-goods-name {
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.shop-processing-item-price {
-  color: var(--text-1);
+.shop-goods-facts {
+  color: var(--text-2, #5C5348);
   flex: none;
-  font: 700 11px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   white-space: nowrap;
 }
 
-.shop-processing-item-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
+.shop-goods-facts.is-overridden {
+  color: var(--accent);
 }
 
-.shop-processing-item-type {
-  color: var(--accent, #4A57D6);
-  font: 700 10px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.shop-processing-item-desc {
+.shop-goods-move {
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 5px;
   color: var(--text-2, #5C5348);
-  display: -webkit-box;
-  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  cursor: pointer;
+  font: 700 10px/1 Inter, system-ui, sans-serif;
+  padding: 4px 6px;
 }
 
+.shop-goods-move:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.shop-goods-empty {
+  color: var(--text-2, #5C5348);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+  padding: 12px 10px;
+}
+
+/* 아이템 정보(왼쪽) + 계절·가격(오른쪽)을 나란히 놓아 상세 칸을 낮게 유지한다. */
 .shop-processing-item-detail {
+  align-items: start;
   background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, var(--accent-muted, rgba(74, 87, 214, 0.12)));
   border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
+  column-gap: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   margin-top: 4px;
   padding: 10px 12px;
+  row-gap: 8px;
 }
 
-.shop-processing-item-detail-empty {
-  color: var(--text-2, #5C5348);
-  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  text-align: center;
+@media (min-width: 1101px) {
+  .event-subdialog-window.full .shop-processing-item-detail {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .event-subdialog-window.full .shop-stock-editor {
+    border-left: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+    border-top: 0;
+    padding-left: 14px;
+    padding-top: 0;
+  }
+}
+
+/* 고른 게 없으면 상세는 아무것도 그리지 않는다 — 빈 칸이 자리를 먹지 않게 접는다. */
+.shop-processing-item-detail:empty {
+  display: none;
 }
 
 .shop-processing-item-detail-main {
@@ -496,24 +394,6 @@
   margin: 8px 0 0;
 }
 
-.shop-processing-item-controls {
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 22px;
-}
-
-.shop-processing-move-button {
-  min-width: 72px;
-  padding: 6px 10px;
-  white-space: nowrap;
-}
-
-.shop-processing-move-button:disabled {
-  opacity: 0.45;
-}
-
 /* ---- 거래 분기 컨트롤 ---- */
 
 .shop-processing-branch-controls {
@@ -526,7 +406,11 @@
   padding: 10px 12px;
 }
 
-.shop-processing-branch-controls.is-hidden {
+/* 카드 전체와 개별 줄 모두 숨길 수 있어야 한다. 줄 규칙이 없던 동안 체크하지 않은
+   분기 줄까지 계속 보였다 — 끄면 사라지는 게 사용자가 기대하는 동작이다. */
+.shop-processing-branch-controls.is-hidden,
+.shop-processing-branch-head.is-hidden,
+.shop-processing-branch-row.is-hidden {
   display: none;
 }
 
@@ -539,7 +423,7 @@
 }
 
 .shop-processing-branch-title {
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent));
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -559,21 +443,6 @@
   .shop-processing-settings {
     grid-template-columns: 1fr;
   }
-
-  .shop-processing-item-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .shop-processing-item-controls {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-top: 0;
-  }
-
-  .shop-processing-segment {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* 명령 편집 모달 2열에서 왼쪽 폼이 세로로 넘치지 않게 */
@@ -583,99 +452,11 @@
   padding-right: 2px;
 }
 
-/* ---- 상점 검색 / 재고 레이어 / 미리보기 토글 ---- */
-
-.shop-processing-search-row {
-  align-items: center;
-  display: grid;
-  gap: 8px;
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-.shop-processing-search-label {
-  color: var(--text-2, #5C5348);
-  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
+/* ---- 미리보기 토글 ---- */
 
 .shop-processing-item-search {
   min-width: 0;
   width: 100%;
-}
-
-.shop-processing-stock-layers {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.shop-processing-stock-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.shop-processing-stock-field {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-}
-
-.shop-processing-stock-label {
-  color: var(--text-2, #5C5348);
-  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-
-.shop-processing-season-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.shop-processing-season-chip {
-  align-items: center;
-  background: var(--bg-inset, #EFE9DC);
-  border: 1px solid var(--border-default, rgba(42,37,33,.20));
-  border-radius: 999px;
-  color: var(--text-1, #2A2521);
-  cursor: pointer;
-  display: inline-flex;
-  font: 600 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  gap: 6px;
-  padding: 6px 10px;
-}
-
-.shop-processing-season-chip:has(input:checked) {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.18)) 90%, transparent);
-  border-color: var(--accent, #4A57D6);
-}
-
-.shop-processing-season-chip input {
-  margin: 0;
-}
-
-.shop-processing-stock-price-row {
-  align-items: center;
-  display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 160px) auto;
-}
-
-.shop-processing-layer-note {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.1)) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 24%, transparent);
-  border-radius: 8px;
-  display: grid;
-  gap: 4px;
-  padding: 8px 10px;
-}
-
-.shop-processing-layer-note strong {
-  color: var(--accent, #4A57D6);
-  font: 700 11px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
-}
-
-.shop-processing-layer-note span {
-  color: var(--text-2, #5C5348);
-  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .event-command-edit-actions .shop-preview-toggle {
@@ -754,8 +535,8 @@
 
 .event-command-text-label > input:focus,
 .event-command-text-label > textarea:focus {
-  border-color: var(--accent, #4A57D6);
-  outline: 2px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .event-command-text-body-label {
@@ -798,8 +579,8 @@
 }
 
 .event-command-text-action.primary {
-  background: var(--accent, #4A57D6);
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 86%, white);
+  background: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 86%, white);
   color: var(--text-inverse, #E7E0D0);
 }
 
@@ -809,7 +590,7 @@
 }
 
 .event-command-text-action:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .event-subdialog-window.wide:has(.event-command-text-dialog) {
@@ -858,15 +639,15 @@
 }
 
 .inn-command-preset.active {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, var(--bg-raised, #FFFDF8));
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-raised, #FFFDF8));
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .inn-command-dialog-mock,
 .ecp-inn-window {
   background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, rgba(42,37,33,.20));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, rgba(42,37,33,.20));
   border-radius: 10px;
   box-shadow: inset 0 1px 0 var(--shadow-pop);
   display: grid;
@@ -876,7 +657,7 @@
 
 .inn-command-dialog-title,
 .ecp-inn-title {
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent));
   font: 700 13px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -914,9 +695,9 @@
 
 .inn-command-dialog-choice.selected,
 .ecp-inn-choice.selected {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 18%, transparent);
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .ecp-inn-stage {
@@ -940,49 +721,21 @@
   display: grid;
   gap: 12px;
   /* 목록이 주인공. 설정은 좁은 사이드. */
-  grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
   min-width: 0;
   width: 100%;
 }
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .shop-processing-layout { grid-template-columns: minmax(0, 1fr); }
 }
 .shop-processing-main,
 .shop-processing-side { display: grid; gap: 8px; min-width: 0; }
 .shop-processing-intent {
   background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.14)) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 8px;
   display: grid;
   gap: 4px;
-  padding: 8px 10px;
-}
-.shop-processing-intent-compact {
-  align-items: baseline;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-}
-.shop-processing-intent-title {
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
-  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-.shop-processing-intent-body {
-  color: var(--text-2, #5C5348);
-  font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  margin: 0;
-}
-.shop-processing-intent-flow {
-  color: var(--text-1, #2A2521);
-  font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  opacity: 0.9;
-}
-.shop-processing-empty-banner {
-  background: color-mix(in srgb, var(--bg-surface) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border-default) 45%, transparent);
-  border-radius: 8px;
-  color: var(--text-1);
-  font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 8px 10px;
 }
 .shop-processing-presets {
@@ -1011,12 +764,6 @@
   gap: 4px;
 }
 .shop-processing-type-select { width: 100%; }
-.shop-processing-type-legacy {
-  height: 0;
-  overflow: hidden;
-  position: absolute;
-  width: 0;
-}
 .shop-processing-v2 .shop-processing-fieldset {
   padding: 8px 10px 10px;
 }
@@ -1024,84 +771,12 @@
   font-size: 11px;
   line-height: 1.35;
 }
-/* dual-list가 좁아지지 않게 최소 폭 확보 */
-.shop-processing-v2 .shop-processing-item-grid {
-  grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
-  min-height: 200px;
-}
-.shop-processing-catalog-fold {
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 4px 8px 8px;
-  background: var(--bg-raised);
-}
-.shop-processing-catalog-fold-summary {
-  cursor: pointer;
-  font-weight: 600;
-  padding: 6px 2px;
-}
-.shop-processing-sale-list {
-  margin-bottom: 8px;
-}
-.shop-processing-catalog {
-  display: grid;
-  gap: 4px;
-  max-height: 240px;
-  overflow: auto;
-  padding: 4px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  background: var(--bg-inset);
-}
-.shop-processing-catalog-row {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: var(--bg-raised);
-  color: var(--text-1);
-  text-align: left;
-  cursor: pointer;
-}
-.shop-processing-catalog-row.is-stocked {
-  border-color: var(--border-default);
-  background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised));
-}
-.shop-processing-catalog-name {
-  font-weight: 600;
-}
-.shop-processing-catalog-price,
-.shop-processing-catalog-state {
-  color: var(--text-2);
-  font-size: 11px;
-}
-.shop-processing-item-grid-legacy {
-  margin-top: 8px;
-}
-.shop-processing-v2 .shop-processing-item-list-shell {
-  min-height: 160px;
-}
-.shop-processing-v2 .shop-processing-item-list {
-  max-height: 240px;
-  min-height: 160px;
-}
-.shop-processing-v2 .shop-processing-item-controls {
-  min-width: 72px;
-}
-.shop-processing-v2 .shop-processing-move-button {
-  min-width: 64px;
-  padding: 5px 8px;
+/* 목록이 짧은 창(wide)에서도 몇 줄은 보이게 최소 높이를 준다. */
+.shop-processing-v2 .shop-goods {
+  min-height: 180px;
 }
 
-.event-command-edit-actions .shop-preview-toggle {
-  margin-right: auto;
-}
-
-/* 상점 미리보기 기본 접힘 — dual-list 폭 확보 */
+/* 상점 미리보기 기본 접힘 — 목록 폭 확보 */
 .event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -1122,21 +797,30 @@
 .event-subdialog-window.wide:has(.event-command-edit-columns.is-shop-preview-open .shop-processing-command-body) {
   width: min(980px, calc(100vw - 24px));
 }
+/* 계절 칩 · 가격 · 경고를 한 줄에 눕힌다. 세로로 쌓으면 상세 칸이 자기 상한을
+   넘겨 두 번째 스크롤러가 생긴다(상품 목록이 창의 유일한 스크롤러여야 한다). */
 .shop-stock-editor {
+  align-items: end;
   border-top: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  column-gap: 12px;
   display: grid;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
+  grid-template-columns: auto minmax(88px, 120px) minmax(0, 1fr);
+  padding-top: 8px;
+  row-gap: 6px;
 }
-.shop-stock-editor-title {
-  color: var(--text-1, #2A2521);
-  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+.shop-stock-editor.is-locked {
+  opacity: 0.55;
+}
+.shop-stock-warning {
+  margin: 0;
+  align-self: center;
 }
 .shop-stock-season-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+/* 한 글자씩 줄바꿈되면 «여 름» 처럼 보인다 — 칩은 절대 줄바꿈하지 않는다. */
+.shop-stock-season-chip { white-space: nowrap; }
 .shop-stock-season-chip.is-active {
-  border-color: var(--accent, #4A57D6);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
   color: var(--text-1, #2A2521);
 }
 .shop-stock-price-field { display: grid; gap: 4px; }
@@ -1190,57 +874,8 @@
   background: var(--bg-surface);
   border-color: var(--border-default);
 }
-.shop-empty-illust {
-  display: grid;
-  grid-template-columns: 44px 1fr auto;
-  gap: 10px;
-  align-items: center;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px dashed var(--border-default);
-  background: var(--bg-surface);
-}
-.shop-empty-illust-icon {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  font-size: 18px;
-}
-.shop-empty-illust-title { font: 700 13px/1.2 Inter, sans-serif; color: var(--text-1); }
-.shop-empty-illust-sub { font: 500 11px/1.4 Inter, sans-serif; color: var(--text-1); margin-top: 2px; }
-.shop-empty-illust-cta {
-  font: 800 11px/1 Inter, sans-serif;
-  color: var(--text-1);
-  background: var(--bg-surface);
-  padding: 8px 12px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
 .shop-branch-card { border-color: var(--border-default); }
 .shop-branch-card legend { color: var(--text-1); }
-
-.shop-processing-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
-  gap: 16px;
-  align-items: start;
-}
-.shop-processing-side { position: sticky; top: 12px; }
-.shop-search-row { position: sticky; top: 0; z-index: 1; background: var(--bg-surface); backdrop-filter: blur(6px); padding: 6px 0 8px; }
-.shop-item-row:focus-within { outline: 2px solid var(--border-default); outline-offset: -1px; border-radius: 8px; }
-.shop-processing-list-count { background: var(--bg-surface); color: var(--bg-surface); font-weight: 800; }
-
-.shop-processing-layout { gap: 16px; }
-.shop-processing-items { gap: 10px; }
-@media (max-width: 920px) {
-  .shop-processing-layout { grid-template-columns: 1fr; }
-  .shop-empty-illust { grid-template-columns: 44px 1fr; }
-  .shop-empty-illust-cta { grid-column: 1 / -1; justify-self: start; }
-}
 
 /* ============================================================
    상점 전용 전체화면 (subdialog width: "full")
@@ -1301,11 +936,11 @@
 .event-subdialog-window.full .shop-processing-command-body {
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: minmax(0, 1fr);
   min-height: 0;
 }
 
-/* 상단 툴바: 상태 배지 + 프리셋 한 줄 (제목은 창 헤더가 이미 갖고 있다) */
+/* 상단 툴바: 상태 배지 + 프리셋 + 종류·검색 필터 한 줄 (제목은 창 헤더가 갖고 있다) */
 .shop-processing-toolbar {
   align-items: center;
   display: flex;
@@ -1313,97 +948,33 @@
   gap: 8px 12px;
 }
 
-.shop-processing-toolbar .shop-processing-presets {
+.shop-processing-toolbar .shop-processing-filter-bar {
   margin-left: auto;
 }
 
-/* 진열/자료집 | 옵션 레일 */
+/* 상품 목록 | 옵션 레일 */
 .event-subdialog-window.full .shop-processing-layout {
   align-items: stretch;
   gap: 14px;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
   min-height: 0;
 }
 
+/*
+ * 툴바 / 목록 / 상세 / 분기. 줄어드는 건 1fr 인 목록 하나뿐이고, 목록에 최소 높이를 줘서
+ * 1280x720 처럼 좁은 화면에서도 굶지 않는다(이전 규칙은 minmax(0,1fr) 이라 54px → 0px 까지
+ * 눌렸다). 상세·분기는 자기 콘텐츠 높이를 갖되 상세는 뷰포트 비례로 잘라 목록 몫을 남긴다.
+ */
 .event-subdialog-window.full .shop-processing-main {
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(160px, 1fr) auto auto;
   min-height: 0;
-}
-
-/* 목록 패널: 진열대(좌) | 자료집(우), 상세는 아래 전폭 */
-.event-subdialog-window.full .shop-processing-items {
-  align-content: stretch;
-  display: grid;
-  gap: 8px 14px;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.event-subdialog-window.full .shop-processing-items > legend {
-  grid-column: 1 / -1;
-  grid-row: 1;
-}
-
-.event-subdialog-window.full .shop-processing-sale-list {
-  grid-column: 1;
-  grid-row: 2;
-  min-height: 0;
-  overflow: auto;
-}
-
-.event-subdialog-window.full .shop-processing-item-controls {
-  align-self: start;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 6px;
-  grid-column: 1;
-  grid-row: 3;
-  justify-content: flex-start;
-  padding-top: 0;
-}
-
-.event-subdialog-window.full .shop-processing-item-controls > button {
-  flex: 0 0 auto;
-  min-width: 56px;
-  width: auto;
-}
-
-.event-subdialog-window.full .shop-processing-catalog-fold {
-  display: flex;
-  flex-direction: column;
-  grid-column: 2;
-  grid-row: 2 / span 2;
-  min-height: 0;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.event-subdialog-window.full .shop-processing-catalog,
-.event-subdialog-window.full .shop-processing-catalog.shop-processing-item-list {
-  flex: 1 1 auto;
-  max-height: none;
-  min-height: 0;
-  overflow: auto;
 }
 
 .event-subdialog-window.full .shop-processing-item-detail {
-  grid-column: 1 / -1;
-  grid-row: 4;
-  max-height: 34vh;
+  max-height: clamp(84px, 18vh, 190px);
   overflow: auto;
 }
 
 /* 옵션 레일: 설명 문단 없이 컨트롤만 밀도 있게, 넘치면 레일이 스크롤한다 */
-.shop-options-rail-title {
-  color: var(--text-2, #5C5348);
-  font: 800 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .shop-processing-side[data-testid="shop-options-rail"] {
   align-content: start;
   background: var(--bg-surface);
@@ -1423,45 +994,60 @@
   margin: 0;
 }
 
-.shop-processing-stock-chip {
-  background: var(--bg-inset, #EFE9DC);
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.2));
-  border-radius: 999px;
-  color: var(--text-2, #5C5348);
-  font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  justify-self: start;
-  padding: 6px 10px;
+/* 고급(서비스·투자·마일리지) — `<details>` 대신 button + [hidden] 이라 같은 함정이 없다. */
+.shop-advanced {
+  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.2));
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
 }
 
-.shop-sab-extra {
+.shop-advanced-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  font: 800 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-self: start;
+  letter-spacing: 0.04em;
+  padding: 4px 2px;
+  text-transform: uppercase;
+}
+
+.shop-advanced-toggle::before {
+  content: "▸ ";
+}
+
+.shop-advanced-toggle[aria-expanded="true"]::before {
+  content: "▾ ";
+}
+
+.shop-advanced-body {
   display: grid;
   gap: 6px;
 }
 
-.shop-sab-row {
+/* 작성자 규칙이 UA 의 `[hidden] { display: none }` 을 이기므로 다시 눌러 준다. */
+.shop-advanced-body[hidden] {
+  display: none;
+}
+
+.shop-advanced-row {
   align-items: center;
   display: grid;
   gap: 8px;
   grid-template-columns: minmax(64px, auto) minmax(0, 1fr);
 }
 
-.shop-sab-title {
+.shop-advanced-label {
   color: var(--text-2, #5C5348);
-  font: 800 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 @media (max-width: 1100px) {
-  .event-subdialog-window.full .shop-processing-layout,
-  .event-subdialog-window.full .shop-processing-items {
+  .event-subdialog-window.full .shop-processing-layout {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .event-subdialog-window.full .shop-processing-catalog-fold {
-    grid-column: 1;
-    grid-row: auto;
-  }
-  .event-subdialog-window.full .shop-processing-item-detail {
-    grid-row: auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    overflow: auto;
   }
 }

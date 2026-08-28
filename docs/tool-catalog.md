@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 220개 툴 — 쓰기 168, 읽기 52.
+> 총 221개 툴 — 쓰기 170, 읽기 51.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -82,6 +82,8 @@
 | `remove_event` | `mapId: string`, `eventId: string` | 맵에서 이벤트를 제거한다(파괴적). |
 | `move_event` | `mapId: string`, `eventId: string`, `x: integer`, `y: integer` | 이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요). |
 | `script_cutscene` | `mapId: string`, `eventId?: string`, `x?: integer`, `y?: integer`, `trigger?: action\|auto\|parallel`, `beats: array`, `skippable?: boolean` | 한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. beat 종류: say{speaker,face,text\|lines}, moveActor{target:'player'\|eventId,moves,wait}, camera{mode:'pan\|follow\|fixed\|return',target\|x,y,durationMs,wait}, picture{action:'show\|move\|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm\|se\|fade\|stop',resourceId}, tint{color\|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. 예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]} |
+| `add_companion` | `action?: add\|remove`, `who?: object`, `target: object`, `trigger?: talk\|autorun`, `name?: string`, `hidden?: boolean`, `all?: boolean` | 플레이어를 따라오는 동료를 저작한다. target.eventId 면 그 이벤트 커맨드 끝에 붙이고, target.mapId/x/y 면 새 이벤트를 만든다(trigger:"talk"=말 걸면 합류하고 사라짐, "autorun"=맵 진입 시 1회 자동 합류). who 는 {actorId} 또는 {query:"고양이"} 또는 {textureKey, characterIndex}. action:"remove" 면 동료를 해제하는 커맨드를 넣는다. 간격·인원 상한 같은 전역 규칙은 configure_companion_rules 가 담당한다. |
+| `configure_companion_rules` | `gap?: integer`, `maxCompanions?: integer`, `overflow?: reject\|replaceOldest`, `formation?: line\|beside`, `clearOnTransfer?: boolean`, `reset?: boolean` | 동료 추종 규칙을 설정한다. formation 은 대형(line=일렬, beside=플레이어 옆에 붙어 다니기). gap 은 일렬 대형의 동료 사이 간격(칸, 1~16): 1이면 바로 뒤, 8이면 여덟 칸씩 벌어져 멀리서 따라온다. maxCompanions 는 동시 추종 인원 상한이고 overflow 는 상한 초과 시 정책(reject=새 동료 거부, replaceOldest=가장 오래된 동료를 밀어냄). clearOnTransfer:true 면 맵 이동 시 동료가 해제된다. reset:true 면 규칙을 지워 기본값(일렬·간격 1·무제한·유지)으로 되돌린다. 몬스터 열차는 monsterParty 가 지배하므로 상한에 포함되지 않는다. |
 | `place_examine_hotspots` | `mapId: string`, `hotspots: array` | 조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다. |
 | `compile_puzzle` | `mapId: string`, `puzzleId: string`, `kind: switch-sequence\|password\|item-gate\|push-switches`, `onSolve: object`, `reset?: boolean`, `nodes?: array`, `order?: array`, `at?: object`, `name?: string`, `answer?: string`, `prompt?: string`, `requiredItemId?: string`, `consumeItem?: boolean`, `lockedMessage?: string`, `unlockedMessage?: string`, `plates?: array`, `all?: boolean` | 선언형 퍼즐을 이벤트로 컴파일한다. 공통 {mapId,puzzleId,kind,onSolve:{setSwitch?,beats?,message?},reset?}. kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다. |
 | `script_cutscene_preset` | `mapId: string`, `preset: memory_opening\|bedside_monologue\|ending_fade`, `eventId?: string`, `x?: integer`, `y?: integer`, `speaker?: string`, `lines?: array`, `endingId?: string`, `endingName?: string`, `endingSwitchId?: string`, `skippable?: boolean` | 투더문식 연출 프리셋 컷신을 한 번에 배치한다. preset=memory_opening\|bedside_monologue\|ending_fade. lines/speaker/endingId를 받아 script_cutscene(+define_ending)으로 컴파일하고 호흡 lint warning을 반환한다. |
@@ -138,7 +140,6 @@
 | `set_tile_grafts` | `tilesetId: string`, `grafts?: array`, `remove?: array` | 타일셋 슬롯에 다른 칩셋 타일을 이식하고, targetTile 목록으로 기존 이식을 제거한다. |
 | `upsert_map_connection` | `connection: object` | NPC 생활 이동과 플레이어 이동에 쓰는 프로젝트 맵 연결 레코드를 등록하거나 수정한다. |
 | `delete_map_connection` | `connectionId: string` | 프로젝트 맵 연결 레코드를 id로 삭제한다. |
-| `set_world_relations` | `action: upsert\|remove`, `relation: object` | 세계관 엔티티 사이 관계를 등록하거나 제거하며 world.entities는 그대로 보존한다. |
 | `upsert_village_document` | `document: object` | 맵에 연결되는 마을 정보 Markdown 문서를 등록하거나 수정한다. AI 표시 문서와 별도 필드다. |
 | `delete_village_document` | `documentId: string` | 마을 정보 문서를 id로 삭제한다. aiDocuments는 건드리지 않는다. |
 | `upsert_resource_profile` | `profile: object` | 기존 리소스 assetId의 표시·분할 치수 프로필을 등록하거나 수정한다. 소재 등록은 upsert_resource가 담당한다. |
@@ -149,8 +150,6 @@
 | `manage_flag_slot` | `action: add\|delete`, `kind: switch\|variable`, `id: string`, `name?: string`, `switchValue?: boolean`, `variableValue?: number` | 이벤트용 이름 있는 스위치/변수 슬롯과 세션 시작값을 추가하거나, 참조가 없을 때 함께 삭제한다. |
 | `upsert_resource` | `resource: object` | 리소스 가져오기: 업로드 소재를 등록/수정한다. id·name·kind와 선택 dataUrl. 파일 선택 UI 없이 저작 데이터를 쓴다. |
 | `delete_resource` | `resourceId: string` | 업로드 리소스를 삭제한다. 맵/타일셋이 참조하면 거부한다. |
-| `upsert_world_entities` | `entities: array` | 세계관 개체를 배치 추가/수정한다. 새 NPC/맵/명명 아이템을 만들 때 같은 제안에 반드시 세계관 갱신을 동봉하라. 잠긴 세계관 개체는 AI가 수정할 수 없다. |
-| `link_world_ref` | `entityId: string`, `kind: map\|event\|item\|skill\|actor`, `id: string`, `action: link\|unlink` | 기존 세계관 개체에 게임 개체 ref(kind+id)를 연결하거나 해제한다. 새 NPC/맵/명명 아이템 생성 시 upsert_world_entities와 함께 실제 게임 id를 연결하라. |
 | `plan_world` | `nodes: array`, `edges: array` | 선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. |
 | `link_maps` | `from: object`, `to: object`, `bidirectional?: boolean`, `fade?: black\|white\|none` | 두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true. |
 | `build_world` | `plan: object`, `fade?: black\|white\|none` | worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. |
@@ -161,6 +160,9 @@
 | `author_story_arc` | `id: string`, `title: string`, `mapId: string`, `eventId: string`, `at: object`, `opening: array`, `tutorialObjectives: array`, `branchChoices: array`, `twist: object` | 결정론적 튜토리얼 목표·선택 분기·선택적 반전 템플릿을 기존 이벤트/퀘스트/스토리 플래그로 컴파일한다. 좋은 서사를 자동 판단하거나 발명하지 않는다. |
 | `declare_story_flag` | `action?: declare\|rename\|retire`, `id: string`, `newId?: string`, `kind?: switch\|variable`, `description?: string`, `questId?: string`, `targetId?: string`, `tags?: array` | 스위치/변수 번호에 서사 의미를 등록한다. action=declare/rename/retire 지원. targetId 생략 시 미사용 슬롯을 자동 할당한다. |
 | `tune_enemy` | `enemyId: string`, `targetHitsToKill: integer`, `targetDamageToHeroPerHit: integer`, `heroLevel?: integer` | 데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함. |
+| `author_boss_phases` | `troopId: string`, `enemyId?: string`, `phases: array` | 보스 페이즈를 선언적으로 깐다. 각 페이즈는 'HP x% 이하' 진입 조건 + 대사·애니메이션·상태부여(광폭화)·HP회복·숨은 적 등장·스위치를 전투 이벤트 페이지로 컴파일한다(1회성). 같은 트룹에 다시 호출하면 이전에 이 툴이 만든 페이즈 페이지만 교체하고 수동 페이지는 보존한다. 저작 후 simulate_battle 로 phaseCoverage(발동 여부)를 확인하라. |
+| `upsert_troop_battle_page` | `troopId: string`, `page: object` | 트룹의 전투 이벤트 페이지(보스 페이즈/전투 스크립트)를 페이지 단위로 등록·수정한다. 조건·커맨드·무한반복을 검증하며, 저작 후 simulate_battle 의 phaseCoverage 로 실제 발동을 확인해야 한다. 여러 페이즈를 한 번에 깔려면 author_boss_phases 를 먼저 보라. |
+| `delete_troop_battle_page` | `troopId: string`, `pageId: string` | 트룹의 전투 이벤트 페이지 하나를 삭제한다. |
 | `rename_switch` | `fromId?: string`, `fromName?: string`, `to: string` | 스위치 id를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). fromId 또는 fromName으로 대상 지정. |
 | `rename_variable` | `fromId?: string`, `fromName?: string`, `to: string` | 변수 id를 전 맵/커먼이벤트/트룹에서 일괄 치환한다(정의·세션·setVariable·조건·숫자입력 참조 포함). fromId 또는 fromName으로 대상 지정. |
 | `prune_unused` | `apply?: boolean` | 미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. |
@@ -196,7 +198,6 @@
 | `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|unapproved\|vocab\|labels`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer`, `query?: string` | 타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). labels/vocab/unapproved는 tilesetId 생략 시 mapId 또는 startMap 타일셋을 쓴다(place_props와 동일 타일셋). |
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `list_endings` | (없음) | 프로젝트 엔딩 레지스트리를 나열하고 조건 충돌/priority 그림자 warning을 함께 반환한다. |
-| `query_world` | `type?: character\|place\|faction\|event\|item\|concept\|guideline`, `tags?: array`, `text?: string`, `limit?: integer` | 세계관 개체와 관계를 조회한다. type/tags/text로 필터링해 상세(body/refs/relations)를 읽고, 세계관을 수정하기 전 현재 내용을 확인하라. |
 | `lint_world` | (없음) | worldGraph의 맵 참조, transfer 목적지, adjacent 경계 통행성 일관성을 검사한다. |
 | `lint_quest` | `questId: string` | 퀘스트 그래프 하나의 dead-end, 도달 불가, 고아 노드 lint를 반환한다. |
 | `generate_walkthrough` | `questId: string` | 퀘스트 그래프를 위상 순서로 따라가며 run_scene_test 입력 JSON을 생성한다. 자동 유도 불가 구간은 manualHint가 붙은 set 스텝으로 폴백한다. |
@@ -219,7 +220,7 @@
 | `list_resources` | `kind: tile\|charset\|monster\|backdrop\|bgm\|se`, `query: string` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/monster/backdrop/bgm/se. |
 | `query_tiles` | `tilesetId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라. |
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps\|elements\|monsterSpecies\|lifeSkills\|farmAnimalSpecies\|crops`, `include?: ids\|full` | 컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops. |
-| `run_lint` | `reachability?: array` | projectLint, 세계관 lint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
+| `run_lint` | `reachability?: array` | projectLint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
 | `list_project_commits` | `limit?: integer` | Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다. |
 | `find_layout_regions` | `mapId: string`, `query: string` | 맵의 설계 bbox 영역(layoutPlan.regions)을 질의로 검색한다. 한국어/영문 부분일치(상점·시장·장터→market, 집→house, 파란→blue, 가운데/중앙→중심 영역). query에 '가운데'/'중앙'이 있으면 맵 중앙에 가까운 순으로 정렬한다. 영역 bbox를 특정하거나 시공 좌표를 추론할 때 쓴다. |

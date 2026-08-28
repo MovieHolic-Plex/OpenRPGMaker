@@ -17,7 +17,10 @@
   /* 커맨드 행은 목록 길이와 무관하게 같은 높이다. 행을 1fr 로 당기면 항목 수에 따라
      행이 늘었다 줄었다 하고(실측: 루트 22.9px vs 스킬 서브메뉴 12px), 넘치는 목록은
      행이 찌그러지는 대신 스크롤로 밀려야 한다. */
-  --battle-command-row-height: 23px;
+  /* 24px = 테두리 2px×2 를 뺀 내용 20px. 18px 라벨의 잉크 상자가 20px 이라 23px
+     행(내용 19px)에서는 1px 이 잘렸다(실측: 스킨당 26건, 잘림비 0.053). 짝수라
+     640×480 논리 무대의 반정수 배율에서도 디바이스 픽셀 격자에 맞는다. */
+  --battle-command-row-height: 26px;
   gap: 4px;
   grid-template-columns: minmax(0, 1fr) 184px 328px;
   grid-template-rows: minmax(0, 1fr) var(--battle-hud-height);

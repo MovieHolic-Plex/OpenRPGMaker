@@ -115,9 +115,20 @@ import {
   workPlanFromOrchestratorDecision,
   workPlanFromSetToolArgs,
   type WorkItem,
+  type WorkItemOutcomeGate,
   type WorkLayer,
   type WorkPlan,
 } from "./workPlan";
+import {
+  authoredQuestIdFrom,
+  authoredTroopIdFrom,
+  battlePhaseSimulationFrom,
+  createdMapIdFrom,
+  verifyAuthoredBossPhases,
+  verifyAuthoredQuestsPlayable,
+  verifyCreatedMapsAuthored,
+  type BattlePhaseSimulation,
+} from "./workItemOutcome";
 
 const MAX_ESCALATED_TOOLS_PER_TURN = 16;
 const MAX_BASE_TURN_TOOL_SCHEMAS = 40;
@@ -673,6 +684,20 @@ export class AssistantSession {
   /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
   private turnSuccessfulTools = new Set<string>();
   private successfulToolsWorkItemId: string | null = null;
+  /** 현재 WorkItem 이 새로 만든 맵 id — 산출물 게이트가 "만들고 안 채운 맵"을 잡는 근거. */
+  private turnItemCreatedMapIds = new Set<string>();
+  /** 현재 WorkItem 이 전투 이벤트 페이지를 쓴 트룹 id — 페이즈 발동 검증 대상. */
+  private turnItemAuthoredTroopIds = new Set<string>();
+  /** 현재 WorkItem 에서 돌린 simulate_battle 의 페이즈 발동 근거(troopId → 결과). */
+  private turnItemBattleSimulations = new Map<string, BattlePhaseSimulation>();
+  /** 현재 WorkItem 이 등록한 퀘스트 id — 완주 검증 대상. */
+  private turnItemQuestIds = new Set<string>();
+  /**
+   * 같은 항목이 매 라운드 같은 차단 사유를 다시 찍지 않도록 하는 중복 방지 키(`항목id::사유`).
+   * 사유까지 키에 넣는다 — 산출물 미완성 → 완성도 경고처럼 차단 이유가 바뀌면 다시 알려야
+   * 모델도 사용자도 무엇이 남았는지 안다(항목 id 만으로 묶으면 두 번째 사유가 조용히 사라진다).
+   */
+  private lastOutcomeBlockedKey: string | null = null;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -1011,6 +1036,11 @@ export class AssistantSession {
     this.turnEscalatedToolNames = [];
     this.compactionFailedThisTurn = false;
     this.turnSuccessfulTools = new Set();
+    this.turnItemCreatedMapIds = new Set();
+    this.turnItemAuthoredTroopIds = new Set();
+    this.turnItemBattleSimulations = new Map();
+    this.turnItemQuestIds = new Set();
+    this.lastOutcomeBlockedKey = null;
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
 
@@ -1243,6 +1273,7 @@ export class AssistantSession {
       this.syncSuccessfulToolsToCurrentWorkItem();
       const result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
+        outcomeGate: this.outcomeGate(),
       });
       if (!result.ok) {
         return {
@@ -1281,7 +1312,34 @@ export class AssistantSession {
     const currentItemId = this.workPlan?.currentItemId ?? null;
     if (currentItemId === this.successfulToolsWorkItemId) return;
     this.turnSuccessfulTools.clear();
+    // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
+    this.turnItemCreatedMapIds.clear();
+    this.turnItemAuthoredTroopIds.clear();
+    this.turnItemBattleSimulations.clear();
+    this.turnItemQuestIds.clear();
+    this.lastOutcomeBlockedKey = null;
     this.successfulToolsWorkItemId = currentItemId;
+  }
+
+  /**
+   * 산출물 게이트 — doneWhen 은 자연어라 기계가 못 읽으므로 successTools 이름 매칭 다음에 결과물을 직접 본다.
+   *  - 맵: 만들기만 하고 안 채운 맵이 없는지(2026-08-28 실측: create_map 성공 3초 만에 자동 완료 → 잔디 단색 맵 2장).
+   *  - 보스 페이즈: 쓴 페이지가 simulate_battle 에서 실제로 발동했는지.
+   *  - 퀘스트: lint 0 + walkthrough 로 씬을 완주하는지(2026-08-24 감사: 퀘스트 툴 호출 0회).
+   */
+  private outcomeGate(): WorkItemOutcomeGate {
+    return () => {
+      const project = this.getProposedProject();
+      const maps = verifyCreatedMapsAuthored(project, this.turnItemCreatedMapIds);
+      if (!maps.ok) return maps;
+      const phases = verifyAuthoredBossPhases(
+        project,
+        this.turnItemAuthoredTroopIds,
+        this.turnItemBattleSimulations,
+      );
+      if (!phases.ok) return phases;
+      return verifyAuthoredQuestsPlayable(project, this.turnItemQuestIds);
+    };
   }
 
   private recordSuccessfulTool(name: string): void {
@@ -1289,9 +1347,48 @@ export class AssistantSession {
     this.turnSuccessfulTools.add(name);
   }
 
+  /**
+   * 자동 완료 전용 게이트 = 산출물 검사 + 완성도 경고.
+   *
+   * 완성도 경고는 종전에 `maybeAutoApplyMilestone` 에서 **자동 적용만** 보류시켰다(2026-08-28 실측:
+   * audit[10] 자동 완료 → audit[11] milestone-paused, 항목은 이미 done). 경고가 떴다는 것은
+   * 요청 대비 산출물이 모자라다는 뜻이므로 완료 자체를 막는다. 모델이 그래도 끝내야 한다고
+   * 판단하면 complete_work_item 을 명시 호출할 수 있다 — 그 경로는 산출물 게이트만 통과하면 되므로
+   * 교착되지 않는다.
+   */
+  private autoCompleteGate(): WorkItemOutcomeGate {
+    const outcome = this.outcomeGate();
+    return (item) => {
+      const verdict = outcome(item);
+      if (!verdict.ok) return verdict;
+      const calls = this.finalizeProposals(this.turnProposals);
+      if (calls.length === 0) return { ok: true };
+      const warnings = proposalCompletenessWarnings({
+        requestText: this.currentTurnRequestText,
+        buildSpec: this.reviewBuildSpecForProposal(calls),
+        calls,
+      });
+      if (warnings.length === 0) return { ok: true };
+      return {
+        ok: false,
+        reason: `완성도 경고 ${warnings.length}건 — ${warnings.slice(0, 3).join(" / ")}`,
+      };
+    };
+  }
+
   private async noteSuccessfulTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.workPlan || names.length === 0) return;
-    const { completed, next } = advanceWorkPlanFromTools(this.workPlan, names);
+    const { completed, next, blocked } = advanceWorkPlanFromTools(this.workPlan, names, this.autoCompleteGate());
+    const blockedKey = blocked ? `${blocked.item.id}::${blocked.reason}` : null;
+    if (blocked && blockedKey !== this.lastOutcomeBlockedKey) {
+      // 항목은 in_progress 로 남는다 — Ralph 재주입과 모델의 다음 라운드가 이어서 채우게 한다.
+      this.lastOutcomeBlockedKey = blockedKey;
+      this.pushAudit({ kind: "status", text: `WorkPlan 자동 완료 차단: ${blocked.item.title} — ${blocked.reason}` });
+      this.pushOrchestrationMessage(
+        `HARNESS: 항목 '${blocked.item.title}' 은 아직 완료할 수 없습니다. ${blocked.reason}`,
+      );
+      onEvent({ type: "status", text: `완료 보류: ${blocked.item.title} — ${blocked.reason}` });
+    }
     if (completed) {
       this.pushAudit({ kind: "status", text: `WorkPlan 자동 완료: ${completed.title}` });
       this.emitWorkPlan(onEvent);
@@ -2315,6 +2412,23 @@ export class AssistantSession {
         // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
         // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
         if (toolResult.ok) this.recordSuccessfulTool(name);
+        if (toolResult.ok) {
+          // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
+          const createdMapId = createdMapIdFrom(name, args, toolResult.data);
+          if (createdMapId) this.turnItemCreatedMapIds.add(createdMapId);
+          // 보스 페이즈: 페이지를 쓴 트룹과 시뮬 근거를 짝지어 둔다(발동 여부는 프로젝트 상태에 안 남는다).
+          const authoredTroopId = authoredTroopIdFrom(name, args, toolResult.data);
+          if (authoredTroopId) {
+            this.turnItemAuthoredTroopIds.add(authoredTroopId);
+            // 페이지가 바뀌면 이전 시뮬 근거는 무효다 — 다시 돌려야 한다.
+            this.turnItemBattleSimulations.delete(authoredTroopId);
+          }
+          const simulation = battlePhaseSimulationFrom(name, args, toolResult.data);
+          if (simulation) this.turnItemBattleSimulations.set(simulation.troopId, simulation);
+          // 퀘스트: 등록한 id 를 기록한다 — 완주 검증은 게이트가 직접 돌린다.
+          const questId = authoredQuestIdFrom(name, args);
+          if (questId) this.turnItemQuestIds.add(questId);
+        }
         if (name === "find_tools") {
           const discovered = discoveredToolNames(toolResult);
           const next = [...this.turnEscalatedToolNames];

@@ -58,7 +58,11 @@
   gap: 0;
   grid-template-columns: minmax(0, 1fr);
   min-height: 20px;
-  padding: 2px 6px;
+  /* 세로 여백 0 — 행은 이미 고정 높이(--battle-command-row-height)이고 여백은 내용
+     상자를 깎을 뿐이다. 2px×2 가 남아 있으면 23px 행의 내용이 15px 로 줄어 18px
+     라벨의 라인박스(18.9px)를 담지 못하고, 서브메뉴에서는 strong+small 33px 가
+     15px 상자에 들어가려다 통째로 밀려났다(실측: 스킨당 41건). */
+  padding: 0 6px;
   pointer-events: auto;
   position: relative;
   z-index: 10;
@@ -76,7 +80,10 @@
   display: block;
   font-size: 18px;
   letter-spacing: 0;
-  line-height: 1.05;
+  /* line-height 는 글꼴의 실제 잉크(ascent+descent)보다 커야 한다. 1.05 는 18px 글자에
+     18.9px 상자를 주는데 이 글꼴의 잉크는 20px 이라 strong 자신의 overflow: hidden 이
+     글리프 위아래를 1px 씩 깎았다(실측: 잘림비 0.053이 스킨당 21건). 1.2 = 21.6px. */
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -90,6 +97,32 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 루트 커맨드 행에는 설명이 없다 — `_battle-menu-fixed.spec.ts` 가 계약으로 박고 있고
+   기본 스킨도 그렇게 그린다. 그런데 공용 레이어에는 숨기는 규칙이 없어서 나머지 스킨의
+   루트 행이 strong 아래 small 을 한 줄 더 쌓았다(실측: 행 내용 16px 에 내용 51px).
+   서브메뉴에서만 상세를 보인다. */
+.battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {
+  display: none;
+}
+
+/* 서브메뉴 행은 이름과 상세(MP n)를 **한 줄**에 놓는다. 세로로 쌓으면
+   strong 18.9px + small 14px = 33px 가 19px 내용 상자에 못 들어가 상세가
+   통째로 사라진다(실측). 잘라내야 할 쪽은 이름이므로 상세는 flex-shrink: 0. */
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text {
+  align-items: baseline;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong {
+  min-width: 0;
+}
+
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text small {
+  flex: 0 0 auto;
 }
 
 /* Root command menu keeps RM2003's one-line entries; the detail line only
@@ -110,6 +143,10 @@
 .battle-target-prompt {
   font-size: 16px;
   line-height: 1.15;
+  /* 생략부호로 자르면 하필 동명 적을 구분하는 순번이 사라진다(실측: 폭 148 에
+     "대상: 초원 슬라임 1" 192 → 끝이 잘려 어느 적인지 알 수 없다). 줄을 늘린다. */
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .battle-key-prompts {

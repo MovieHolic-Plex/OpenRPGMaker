@@ -1,0 +1,38 @@
+{
+  "pass": true,
+  "blank": {
+    "value": "rm2003",
+    "options": [
+      {
+        "value": "pokemon",
+        "text": "흰 창 · 박스 HUD"
+      },
+      {
+        "value": "rm2003",
+        "text": "군청 창 · 사이드뷰"
+      }
+    ]
+  },
+  "saved": {
+    "value": "octopath",
+    "options": [
+      {
+        "value": "pokemon",
+        "text": "흰 창 · 박스 HUD"
+      },
+      {
+        "value": "rm2003",
+        "text": "군청 창 · 사이드뷰"
+      },
+      {
+        "value": "octopath",
+        "text": "먹빛 창 · 최소 HUD (지원 종료)"
+      }
+    ]
+  },
+  "log": [
+    "skin-dropdown-active-two.png: value=rm2003 options=[\"pokemon\",\"rm2003\"]",
+    "store.battleUiStyle = octopath",
+    "skin-dropdown-saved-deprecated.png: value=octopath options=[\"pokemon\",\"rm2003\",\"octopath\"]"
+  ]
+}
