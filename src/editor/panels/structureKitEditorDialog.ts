@@ -66,6 +66,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     class: "structure-kit-editor-canvas-wrap",
     dataset: { testid: "structure-kit-editor-canvas" },
   });
+  const toolsWrap = el("div", { class: "structure-kit-editor-tools" });
   const paletteWrap = el("div", {
     class: "structure-kit-editor-palette",
     dataset: { testid: "structure-kit-editor-palette" },
@@ -80,6 +81,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     const current = findKit(session.tilesetId, session.kitId);
     if (!current) return;
     drawCanvas(canvasWrap, tileset, current, session);
+    drawTools(toolsWrap, session, redraw);
     drawPalette(paletteWrap, tileset, session, redraw);
     drawSize(sizeWrap, current, redraw, session);
     drawParts(partsWrap, current, session, redraw);
@@ -100,6 +102,10 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
 
     if (session.tool === "part") {
       dragStart = cell;
+      // 드래그 도중 포인터가 캔버스 밖(도구 줄·팔레트·부위 목록)으로 나가도 pointerup 이
+      // 이 리스너에 도착하도록 캡처한다 — 캡처가 없으면 밖에서 뗀 제스처는 dragStart 를
+      // 영영 못 지우고, 나중에 엉뚱한 pointerup 과 짝지어져 유령 부위를 만든다.
+      if (pointer.pointerId !== undefined) canvasWrap.setPointerCapture(pointer.pointerId);
       return;
     }
     const tile = session.tool === "erase" ? TILE.EMPTY : session.tile;
@@ -108,19 +114,25 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
   });
 
   canvasWrap.addEventListener("pointerup", (event) => {
-    if (session.tool !== "part" || !dragStart) return;
-    const current = findKit(session.tilesetId, session.kitId);
-    if (!current) {
-      dragStart = null;
-      return;
+    const pointer = event as PointerEvent;
+    if (pointer.button !== undefined && pointer.button !== 0) return;
+    if (pointer.pointerId !== undefined && canvasWrap.hasPointerCapture(pointer.pointerId)) {
+      canvasWrap.releasePointerCapture(pointer.pointerId);
     }
-    const end = cellFromEvent(event as PointerEvent, current) ?? dragStart;
+    // dragStart 는 도구 전환·리사이즈를 거쳐도 여기서 반드시 비운다 — 성공 경로에서만
+    // 지우면 도구를 바꾼 채로 뗀 제스처가 dragStart 를 남기고, 나중에 도구를 part 로
+    // 되돌린 뒤의 무관한 pointerup 이 그 낡은 시작점으로 유령 부위를 만든다.
+    const start = dragStart;
+    dragStart = null;
+    if (session.tool !== "part" || !start) return;
+    const current = findKit(session.tilesetId, session.kitId);
+    if (!current) return;
+    const end = cellFromEvent(pointer, current) ?? start;
     // 새 부위의 기본 종류는 입구다 — 워프를 놓을 자리를 지정하는 것이 가장 잦은 용도다.
     replaceStructureKit(
       session.tilesetId,
-      addPart(current, normalizeDragRect(dragStart, end), "entrance", `pt_${randomUuid()}`),
+      addPart(current, normalizeDragRect(start, end), "entrance", `pt_${randomUuid()}`),
     );
-    dragStart = null;
     redraw();
   });
 
@@ -136,7 +148,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
           el("div", { class: "structure-kit-editor-left", children: [canvasWrap, sizeWrap] }),
           el("div", {
             class: "structure-kit-editor-right",
-            children: [toolRow(session, redraw), paletteWrap, partsWrap],
+            children: [toolsWrap, paletteWrap, partsWrap],
           }),
         ],
       }),
@@ -210,7 +222,7 @@ function drawPalette(
   host.replaceChildren(...swatches);
 }
 
-function toolRow(session: EditorSession, redraw: () => void): HTMLElement {
+function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void): void {
   const button = (label: string, testid: string, active: boolean, onClick: () => void): HTMLElement =>
     el("button", {
       class: `btn small${active ? " primary" : ""}`,
@@ -220,16 +232,13 @@ function toolRow(session: EditorSession, redraw: () => void): HTMLElement {
       on: { click: () => { onClick(); redraw(); } },
     });
 
-  return el("div", {
-    class: "structure-kit-editor-tools",
-    children: [
-      button("칠하기", "structure-kit-editor-tool-paint", session.tool === "paint", () => { session.tool = "paint"; }),
-      button("지우기", "structure-kit-editor-tool-erase", session.tool === "erase", () => { session.tool = "erase"; }),
-      button("하층", "structure-kit-editor-layer-lower", session.layer === "lower", () => { session.layer = "lower"; }),
-      button("상층", "structure-kit-editor-layer-upper", session.layer === "upper", () => { session.layer = "upper"; }),
-      button("부위 그리기", "structure-kit-editor-tool-part", session.tool === "part", () => { session.tool = "part"; }),
-    ],
-  });
+  host.replaceChildren(
+    button("칠하기", "structure-kit-editor-tool-paint", session.tool === "paint", () => { session.tool = "paint"; }),
+    button("지우기", "structure-kit-editor-tool-erase", session.tool === "erase", () => { session.tool = "erase"; }),
+    button("하층", "structure-kit-editor-layer-lower", session.layer === "lower", () => { session.layer = "lower"; }),
+    button("상층", "structure-kit-editor-layer-upper", session.layer === "upper", () => { session.layer = "upper"; }),
+    button("부위 그리기", "structure-kit-editor-tool-part", session.tool === "part", () => { session.tool = "part"; }),
+  );
 }
 
 function drawSize(host: HTMLElement, kit: SectionStructureKitDef, redraw: () => void, session: EditorSession): void {

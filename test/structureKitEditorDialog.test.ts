@@ -191,3 +191,38 @@ describe("편집기 부위 편집", () => {
     expect(stored.parts ?? []).toHaveLength(0);
   });
 });
+
+describe("편집기 도구 표시", () => {
+  it("도구를 바꾸면 활성 표시가 갱신된다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    (document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement).click();
+
+    const eraseBtn = document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement;
+    const paintBtn = document.querySelector("[data-testid='structure-kit-editor-tool-paint']") as unknown as FakeElement;
+    expect(eraseBtn.classList.contains("primary")).toBe(true);
+    expect(paintBtn.classList.contains("primary")).toBe(false);
+  });
+});
+
+describe("편집기 부위 드래그 안전성", () => {
+  it("도구를 바꾼 뒤에도 남은 드래그가 새 부위를 만들지 않는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    (document.querySelector("[data-testid='structure-kit-editor-tool-part']") as unknown as FakeElement).click();
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+
+    (document.querySelector("[data-testid='structure-kit-editor-tool-paint']") as unknown as FakeElement).click();
+    canvas.dispatchEvent(Object.assign(new Event("pointerup"), { clientX: 1, clientY: 1, button: 0 }));
+
+    (document.querySelector("[data-testid='structure-kit-editor-tool-part']") as unknown as FakeElement).click();
+    canvas.dispatchEvent(Object.assign(new Event("pointerup"), { clientX: 1, clientY: 1, button: 0 }));
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.parts ?? []).toHaveLength(0);
+  });
+});
