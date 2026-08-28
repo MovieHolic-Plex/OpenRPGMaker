@@ -80,7 +80,10 @@
   display: block;
   font-size: 18px;
   letter-spacing: 0;
-  line-height: 1.05;
+  /* line-height 는 글꼴의 실제 잉크(ascent+descent)보다 커야 한다. 1.05 는 18px 글자에
+     18.9px 상자를 주는데 이 글꼴의 잉크는 20px 이라 strong 자신의 overflow: hidden 이
+     글리프 위아래를 1px 씩 깎았다(실측: 잘림비 0.053이 스킨당 21건). 1.2 = 21.6px. */
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -94,6 +97,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 루트 커맨드 행에는 설명이 없다 — `_battle-menu-fixed.spec.ts` 가 계약으로 박고 있고
+   기본 스킨도 그렇게 그린다. 그런데 공용 레이어에는 숨기는 규칙이 없어서 나머지 스킨의
+   루트 행이 strong 아래 small 을 한 줄 더 쌓았다(실측: 행 내용 16px 에 내용 51px).
+   서브메뉴에서만 상세를 보인다. */
+.battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {
+  display: none;
 }
 
 /* 서브메뉴 행은 이름과 상세(MP n)를 **한 줄**에 놓는다. 세로로 쌓으면

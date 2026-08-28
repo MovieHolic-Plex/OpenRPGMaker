@@ -8,7 +8,7 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PROJECT_URL = "/__runtime-qa/project.json";
 
 const raw = JSON.parse(await readFile(new URL("test/fixtures/projects/editor-authored-demo-v3.json", `file://${REPO_ROOT}`), "utf8"));
-raw.system = { ...raw.system, battleUiStyle: "rm2003" };
+raw.system = { ...raw.system, battleUiStyle: process.argv[2] ?? "rm2003" };
 const skillIds = raw.database.skills.slice(0, 6).map((s) => s.id);
 for (const actor of raw.database.actors) actor.learnedSkills = skillIds.map((id) => ({ skillId: id, level: 1 }));
 const startMap = raw.maps[raw.startMapId];
@@ -80,6 +80,23 @@ const dump = async (label) => {
 };
 
 await dump("actorCommand");
+const rowInfo = await page.evaluate(() => {
+  const row = document.querySelector("[data-testid='battle-command-grid'] .battle-command");
+  if (!row) return null;
+  const strong = row.querySelector("strong");
+  const cs = getComputedStyle(row);
+  const ss = strong ? getComputedStyle(strong) : null;
+  const range = document.createRange();
+  let ink = null;
+  if (strong && strong.firstChild) { range.selectNodeContents(strong); const r = range.getBoundingClientRect(); ink = [Math.round(r.width*100)/100, Math.round(r.height*100)/100]; }
+  return {
+    row: { rectH: row.getBoundingClientRect().height, client: row.clientHeight, scroll: row.scrollHeight, pad: cs.paddingTop+"/"+cs.paddingBottom, bd: cs.borderTopWidth+"/"+cs.borderBottomWidth, minH: cs.minHeight },
+    strong: ss ? { fs: ss.fontSize, lh: ss.lineHeight, client: strong.clientHeight, scroll: strong.scrollHeight, rectH: Math.round(strong.getBoundingClientRect().height*100)/100, of: ss.overflow } : null,
+    inkDevice: ink,
+    rowVar: getComputedStyle(document.querySelector("[data-testid='battle-scene']")).getPropertyValue("--battle-command-row-height"),
+  };
+});
+console.log("  ROW:", JSON.stringify(rowInfo, null, 1).replace(/\n\s*/g, " "));
 await page.locator("[data-testid='battle-command-grid'] [data-testid='actor-command-attack']").first().evaluate((n) => n.click());
 await page.waitForTimeout(400);
 await dump("targetSelect");
