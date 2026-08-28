@@ -154,8 +154,15 @@ export function structureKitUnitCells(kit: StructureKitDef): PaletteStampCell[] 
   return cells;
 }
 
-/** 반복(가로 이어 찍기) 가능 여부 — 단면(section)만. 집은 한 채가 완결 단위다. */
+/**
+ * 반복(가로 이어 찍기) 가능 여부.
+ * ai.repeatability 가 있으면 그것이 정본 — 사람이 "한 채 완결"이라 표시한 우물·간판을
+ * stamp_structure_kit 의 repeat 기본값 3 이 3개로 늘리는 것을 막는다.
+ * 없으면 기존 동작(section 은 반복, house 는 한 채) 유지 — 하위 호환.
+ */
 export function structureKitRepeatable(kit: StructureKitDef): boolean {
+  if (kit.ai?.repeatability === "fixed") return false;
+  if (kit.ai?.repeatability === "repeat") return true;
   return kit.kind === "section";
 }
 
@@ -226,4 +233,21 @@ function autoKitName(pattern: DetectedSectionPattern): string {
   if (bestTile === null) return "패턴 스탬프";
   const label = describeChipsetTile(bestTile).label;
   return label ? `${label} 단면` : "패턴 스탬프";
+}
+
+/** 실내 오브젝트 셀 목록 → 팔레트 스탬프. 킷과 달리 오브젝트는 rows 가 없고 cells 가 정본이다. */
+export function paletteStampFromCells(input: {
+  readonly cells: readonly PaletteStampCell[];
+  readonly width: number;
+  readonly height: number;
+  readonly kitId: string;
+}): PaletteStamp {
+  const firstTile = input.cells[0]?.tile ?? 0;
+  return {
+    cells: input.cells.map((cell) => ({ ...cell })),
+    height: Math.max(1, input.height),
+    width: Math.max(1, input.width),
+    kitId: input.kitId,
+    source: { endTile: firstTile, startTile: firstTile },
+  };
 }

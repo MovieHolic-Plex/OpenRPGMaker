@@ -233,7 +233,9 @@ export interface StructureKitRow {
 }
 
 // 스탬프 출처 유니언(2026-07-20, 스탬프 3부작 선행과제): 붓질 학습 외에 내장 파라메트릭 킷.
-export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric";
+// db-authored(2026-08-28): 데이터베이스 '구조물' 탭에서 직접 만들거나 복제·가져온 킷.
+// 이 값은 계보 표시 전용이다 — 편집 잠금은 앨범 엔트리의 source 로 판정한다(structureKitDbTab).
+export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric" | "db-authored";
 
 // 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
 // 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.
@@ -251,6 +253,36 @@ export interface StructureKitPart {
   note?: string;
 }
 
+/**
+ * 구조물의 AI 어휘 메타데이터(2026-08-28).
+ * 필드명은 TileGroupMetadata / TileAiMetadata 와 의도적으로 같다 — AI 가 이미 그 단어들을 읽고 있다.
+ * 구조물은 사람이 모양을 만들어 이름 붙이면 AI 가 그 이름으로 골라 시공하는 어휘이므로,
+ * "이게 뭔지"와 "어디에 놓는지"가 없으면 AI 는 이름만 보고 추측할 수밖에 없다.
+ */
+export interface StructureKitAiMeta {
+  /** 이게 무엇인지. TileGroupMetadata.description 과 같은 이름. */
+  description: string;
+  /** 어디에 어떻게 놓는지. TileGroupMetadata.placementRules 와 같은 이름. */
+  placementRules: string;
+  /** 검색·매칭용. TileAiMetadata.tags 와 같은 이름. */
+  tags?: string[];
+  /** 분류. TileGroupRole enum 재사용. */
+  role?: TileGroupRole;
+  /**
+   * 가로로 이어 찍어도 되는지. stamp_structure_kit 의 repeat 기본값이 3 이라,
+   * 이 값이 없으면 우물·간판 같은 완결 구조물도 3개 이어 찍힌다.
+   * TileAiMetadata 는 4값이지만 "center" 는 구조물에 뜻이 없어 2값으로 줄인다.
+   * undefined 는 현재 동작(kind === "section" → 반복) 유지 — 하위 호환.
+   */
+  repeatability?: "repeat" | "fixed";
+  /**
+   * v3 승인 보캐뷸러리 규약(원칙 0 Zero-Trust Perception).
+   * 사용자 명시 수락으로 커밋될 때만 "user" 다 — 어떤 자동 경로도 이 값을 "user" 로 만들지 않는다.
+   */
+  origin?: "user" | "ai";
+  confidence?: "high" | "medium" | "low";
+}
+
 export interface SectionStructureKitDef {
   id: string;
   kind: "section";
@@ -261,6 +293,8 @@ export interface SectionStructureKitDef {
   rows: StructureKitRow[];
   /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
   parts?: StructureKitPart[];
+  /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
+  ai?: StructureKitAiMeta;
   learnedFrom: StructureKitLearnedFrom;
   createdAt?: string;
 }
@@ -285,6 +319,8 @@ export interface HouseStructureKitDef {
   chimney?: boolean;
   /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
   parts?: StructureKitPart[];
+  /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
+  ai?: StructureKitAiMeta;
   learnedFrom: StructureKitLearnedFrom;
   createdAt?: string;
 }
