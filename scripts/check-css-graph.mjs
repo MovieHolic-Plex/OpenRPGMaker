@@ -48,12 +48,7 @@ const FALLBACK_ENTRIES = [
 // 여기 있는 항목은 "이미 알고 있는 빚"이다. 고치는 순간 해당 줄을 지우면 게이트가 다시 지켜준다.
 
 // 검사 1: 어떤 엔트리에서도 도달 불가능한 CSS.
-const UNREACHABLE_ALLOWLIST = new Set([
-  // P0-7: 사고 (1) 의 본체. PR #98 squash 가 배럴 @import 만 되돌린 고아 파일.
-  // Phase 1 에서 배럴 재등록 + quickAuthoringPreviewIdentity 테스트 복구 예정.
-  // 지금 바로 @import 를 넣으면 96px 클립 회귀가 같이 살아나므로 Phase 1 에서 함께 처리한다.
-  "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css",
-]);
+const UNREACHABLE_ALLOWLIST = new Set([]);
 
 // 검사 2: 두 곳 이상에서 @import 되는 파일 — postcss-import 가 첫 위치로 dedup 하므로
 // 두 번째 배럴의 cascade 순서 선언은 실제로 적용되지 않는다.
@@ -74,8 +69,6 @@ const DOUBLE_IMPORT_ALLOWLIST = new Set([
 // 검사 3: NN-*.css 인데 형제 배럴이 @import 하지 않는 슬라이스 파일.
 // (사고 (1) 을 잡아냈어야 할 검사. 유예 항목은 UNREACHABLE 과 중복될 수 있다.)
 const UNREGISTERED_SLICE_ALLOWLIST = new Set([
-  // P0-7: 위 UNREACHABLE_ALLOWLIST 와 동일 원인 — Phase 1 에서 한 번에 제거.
-  "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css",
   // 배럴(desktop-record-shell.css)이 01~12 만 들여오고 13 은 src/styles/index.css:53 이
   // 직접 들여온다. 죽지는 않았지만 배럴을 우회하므로 슬라이스 순서 계약이 index.css 로 새어나갔다.
   // Phase 1 에서 배럴로 이관 예정.
