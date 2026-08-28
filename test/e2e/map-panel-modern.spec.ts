@@ -35,6 +35,11 @@ async function bootEditor(page: Page, mode: Mode): Promise<void> {
 
 type PanelReading = {
   readonly rows: number;
+  /** meta+badge 쌍을 실제로 찾아 겹침을 잰 행 수. `rows > 0` 는 행 존재만 보장할 뿐
+   *  `.start-mark`(시작 맵에만 렌더)가 하나라도 있었는지는 보장하지 않는다 — 이
+   *  카운터가 0이면 아래 maxBadgeOverlapPx 는 "겹치지 않았다"가 아니라 "잴 게 없었다"는
+   *  뜻이므로, 헤드라인 결함(28px 배지 겹침) 게이트는 이 값이 0보다 커야 유효하다. */
+  readonly measuredPairs: number;
   readonly maxBadgeOverlapPx: number;
   readonly clippedTexts: number;
 };
@@ -44,6 +49,7 @@ async function readMapPanel(page: Page): Promise<PanelReading> {
     const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-testid^="map-tree-node-"]'));
     let maxBadgeOverlapPx = 0;
     let clippedTexts = 0;
+    let measuredPairs = 0;
     for (const row of rows) {
       const meta = row.querySelector<HTMLElement>(".map-tree-meta");
       const name = row.querySelector<HTMLElement>(".map-tree-name");
@@ -52,6 +58,7 @@ async function readMapPanel(page: Page): Promise<PanelReading> {
         if (text && text.scrollWidth > text.clientWidth + 1) clippedTexts += 1;
       }
       if (meta && badge) {
+        measuredPairs += 1;
         const m = meta.getBoundingClientRect();
         const b = badge.getBoundingClientRect();
         const ox = Math.min(m.right, b.right) - Math.max(m.left, b.left);
@@ -59,7 +66,7 @@ async function readMapPanel(page: Page): Promise<PanelReading> {
         if (ox > 0 && oy > 0) maxBadgeOverlapPx = Math.max(maxBadgeOverlapPx, Math.round(ox));
       }
     }
-    return { rows: rows.length, maxBadgeOverlapPx, clippedTexts };
+    return { rows: rows.length, measuredPairs, maxBadgeOverlapPx, clippedTexts };
   });
 }
 
@@ -69,6 +76,10 @@ for (const mode of MODES) {
       await bootEditor(page, mode);
       const reading = await readMapPanel(page);
       expect(reading.rows).toBeGreaterThan(0);
+      // 이 게이트가 유일한 헤드라인 결함(28px 배지 겹침) 회귀 그물이다 — meta+badge
+      // 쌍을 하나도 못 찾으면 maxBadgeOverlapPx 도 0 이라 겹침이 없어서 통과하는 것과
+      // 구분이 안 된다. 쌍이 실제로 측정됐음을 먼저 단정한다.
+      expect(reading.measuredPairs).toBeGreaterThan(0);
       expect(reading.maxBadgeOverlapPx).toBe(0);
     });
 
@@ -91,9 +102,13 @@ for (const mode of MODES) {
 }
 
 test.describe("맵 패널 헤더 — expert", () => {
-  const HEADER_BUTTONS = ["map-add", "map-add-folder", "map-set-start", "map-toggle-all"] as const;
+  // 필터 토글(map-tree-filter-toggle)이 5번째 버튼이다. 예전엔 이 그물에서
+  // 의도적으로 빠져 있었다 — `.oprn-icon-search` 가 컬러 PNG 라 ::before/::after 가
+  // 0px 였고, 넣으면 실패했기 때문이다(리뷰 Finding 1). `.oprn-icon-map-search` CSS
+  // 도형으로 바꾼 지금은 다섯 버튼 전부 같은 그물로 검증한다.
+  const HEADER_BUTTONS = ["map-add", "map-add-folder", "map-set-start", "map-toggle-all", "map-tree-filter-toggle"] as const;
 
-  test("헤더 버튼 4개가 모두 보이는 글리프를 가진다", async ({ page }) => {
+  test("헤더 버튼 5개가 모두 보이는 글리프를 가진다", async ({ page }) => {
     await bootEditor(page, "expert");
     for (const testid of HEADER_BUTTONS) {
       const button = page.getByTestId(testid);
