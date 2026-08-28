@@ -169,15 +169,30 @@ describe("사각 질의 원본", () => {
     expect(findEventOverlappingRect(project, map, session(), positions, apart, "action")).toBeUndefined();
   });
 
-  it("점 질의는 1x1 사각 질의와 같은 답을 준다", () => {
-    const target = bigEvent({ width: 3, height: 2 });
+  it("점 질의는 1x1 사각 질의와 같은 답을 준다 — 독립적으로 손으로 계산한 정답과 대조한다", () => {
+    // 1x1 이벤트 하나를 (5,7) 에 놓는다. 1x1 의 사각은 그 칸 자신이므로 정답은
+    // "(5,7) 에서만 defined, 나머지 55 좌표는 전부 undefined" 라고 손으로 안다 —
+    // 함수 자체를 서로 비교하면(피검사 함수를 정답으로 쓰면) 이 비교는 아무것도
+    // 보장하지 않는다(findRuntimeEventAtInMap 이 findEventOverlappingRect 를
+    // pointRect 로 위임하는 래퍼라 자기 자신과 비교하는 꼴이 되기 때문).
+    const anchor = { x: 5, y: 7 };
+    const target: GameEvent = {
+      id: "ev_unit",
+      x: anchor.x,
+      y: anchor.y,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [page({ priority: "same", overlapForbidden: true })],
+    };
     const { project, map } = mapWithEvent(target);
     const positions = initialRuntimeEventPositions(map.events);
     for (let y = 4; y <= 10; y += 1) {
       for (let x = 2; x <= 9; x += 1) {
+        const expectedId = x === anchor.x && y === anchor.y ? "ev_unit" : undefined;
         const viaPoint = findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action");
         const viaRect = findEventOverlappingRect(project, map, session(), positions, pointRect(x, y), "action");
-        expect(viaRect?.event.id, `(${x},${y})`).toBe(viaPoint?.event.id);
+        expect(viaPoint?.event.id, `점 질의 (${x},${y})`).toBe(expectedId);
+        expect(viaRect?.event.id, `사각 질의 (${x},${y})`).toBe(expectedId);
       }
     }
   });
