@@ -1,8 +1,41 @@
+// 주민 관계 탭 — 2026-08 DB 모던 워크스페이스 이식.
+//
+// 감사에서 잡힌 P0/P1:
+//  1) 목록 창 카운트를 `db-list-footer` 로 넣어 모던 그리드의 ROW 2(=검색 슬롯)에 auto-place
+//     시켰다. 카운트가 목록 위에 뜨고 검색은 아예 없었다(listWithoutSearch).
+//     listPane() 이 카운트를 제목 배지로, 검색을 전용 행으로 빌더 차원에서 고정한다.
+//  2) `.db-character-orphan-create` 가 `display:grid` 기본 stretch 라서 '프로필 만들기'
+//     primary 버튼이 상세 창 전폭(~980px) 바가 됐다(fullBleed:1).
+//     이제 그 자리는 sectionCard 이고, 버튼은 `.db-ws-card-body > .db-ws-btn`
+//     (justify-self:start) 규칙을 그대로 받는다 — 레거시 grid 컨테이너 자체를 안 쓴다.
+//  3) 상세 창이 세로 폼 덤프라 1300px 폭에서 오른쪽 절반이 통째로 비었다(detailDead 57%).
+//     카드 스택(auto-fit minmax(400px,1fr))으로 바꾼다.
+//
+// 계약상 살려야 하는 훅: `db-characters-list`(목록 컨테이너), `db-detail-form`(상세 본문),
+// `db-character-status` / `db-character-id`(히어로), `.empty-hint` 정확 문구 두 개.
+
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectEditorMap } from "@/editor/mapSelection";
-import { emptyToUndefined, numberField, selectField, textControl } from "@/editor/panels/databaseControls";
+import {
+  emptyToUndefined,
+  matchesNameOrId,
+  numberField,
+  selectField,
+  textControl,
+} from "@/editor/panels/databaseControls";
 import { clickDatabaseTabFrom, renderLifePanel } from "@/editor/panels/databaseLifeUi";
+import {
+  detailHero,
+  emptyState,
+  listPane,
+  listRow,
+  listSearch,
+  listToolbar,
+  detailPane as makeDetailPane,
+  sectionCard,
+  workspaceShell,
+} from "@/editor/panels/databaseWorkspace";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { SEASON_OPTIONS } from "@/editor/panels/eventEditor/conditionForm";
 import { characterListThumbnail } from "@/editor/panels/characterListThumbnail";
@@ -23,7 +56,13 @@ const DELETE_CONFIRM_LABEL = "정말 삭제?";
 const DELETE_IDLE_LABEL = "프로필 삭제";
 const DELETE_CONFIRM_WINDOW_MS = 3000;
 
+// qa-characters.spec.ts 가 이 두 문구를 정확히 비교한다 — 바꾸면 계약이 깨진다.
+const ORPHAN_HINT = "이벤트에서 쓰이는 characterId이지만 프로필이 없습니다. 표시 이름을 넣고 프로필을 만들 수 있습니다.";
+const USAGE_EMPTY_HINT = "이 characterId를 쓰는 맵 이벤트가 없습니다.";
+
 let selectedCharacterId: string | undefined;
+let characterSearch = "";
+let restoreCharacterSearchFocus = false;
 
 export function renderCharactersTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
@@ -33,71 +72,79 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
   }
   const selected = entries.find((entry) => entry.characterId === selectedCharacterId);
 
-  const list = el("div", { class: "db-list", dataset: { testid: "db-characters-list" } });
-  for (let index = 0; index < entries.length; index += 1) {
-    const entry = entries[index]!;
+  const rows: HTMLElement[] = [];
+  for (const [index, entry] of entries.entries()) {
     const label = entry.profile?.displayName?.trim() || `주민 ${index + 1}`;
+    if (characterSearch && !matchesNameOrId(label, entry.characterId, characterSearch)) continue;
     const badges: string[] = [];
     if (entry.isOrphan) badges.push("연결만 있음");
     if (entry.isUnusedProfile) badges.push("미등장");
     if (entry.usageCount > 0) badges.push(`이벤트 ${entry.usageCount}`);
-    const trailing = `#${index + 1}`;
-    const meta = badges.length > 0 ? `${trailing} · ${badges.join(" · ")}` : trailing;
-    list.append(
-      el("button", {
-        class: `db-list-row db-list-row-has-thumb${entry.characterId === selectedCharacterId ? " active" : ""}`,
-        attrs: {
-          type: "button",
-          title: `${label} ${trailing} — ${entry.characterId}`,
-        },
-        dataset: {
-          testid: `db-character-row-${entry.characterId}`,
-          recordId: entry.characterId,
-          recordName: label,
-        },
-        on: {
-          click: () => {
-            selectedCharacterId = entry.characterId;
-            rerender();
-          },
-        },
-        children: [
-          characterListThumbnail(project, entry),
-          el("span", { class: "db-list-name", text: label }),
-          el("small", {
-            class: "db-list-meta",
-            text: meta,
-            attrs: { title: entry.characterId },
-          }),
-        ],
-      }),
-    );
+    rows.push(listRow({
+      name: label,
+      sub: badges.length > 0 ? badges.join(" · ") : undefined,
+      thumb: characterListThumbnail(project, entry),
+      active: entry.characterId === selectedCharacterId,
+      title: `${label} #${index + 1} — ${entry.characterId}`,
+      testid: `db-character-row-${entry.characterId}`,
+      dataset: { recordId: entry.characterId, recordName: label, recordIndex: String(index + 1) },
+      onSelect: () => {
+        selectedCharacterId = entry.characterId;
+        rerender();
+      },
+    }));
   }
 
-  const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
-  listPane.append(
-    el("h3", { text: "주민 관계" }),
-    list,
-    el("div", { class: "db-list-footer", text: `${entries.length}개` }),
-    toolbar(entries, rerender),
-  );
-
-  const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
-  detailPane.append(
-    selected
-      ? characterDetail(selected, project, rerender)
-      : characterEmptyState(rerender),
-  );
-
-  host.append(
-    characterLifeHeader(project, entries, rerender),
-    el("div", {
-      class: "db-record-workspace oprn-record-workspace oprn-record-characters",
-      dataset: { testid: "db-characters-workspace" },
-      children: [listPane, detailPane],
+  const list = listPane({
+    title: "주민 관계",
+    count: entries.length,
+    search: listSearch({
+      placeholder: "주민 검색",
+      value: characterSearch,
+      testid: "db-character-search",
+      onInput: (value) => {
+        characterSearch = value;
+        restoreCharacterSearchFocus = true;
+        rerender();
+      },
     }),
-  );
+    rows,
+    empty: characterSearch.length > 0
+      ? emptyState({ icon: "⌕", title: "검색 결과가 없습니다", body: `"${characterSearch}" 와 일치하는 주민이 없습니다.`, compact: true })
+      : emptyState({ icon: "♡", title: "아직 주민이 없습니다", compact: true }),
+    toolbar: characterToolbar(entries, rerender),
+    testid: "db-character-list-pane",
+  });
+  // 목록 컨테이너 훅 계약 — qa-characters.spec.ts 가 `[data-testid=db-characters-list] .db-list-row`
+  // 로 행 수를 센다.
+  list.querySelector(".db-ws-list")?.setAttribute("data-testid", "db-characters-list");
+
+  const detail = selected
+    ? characterDetail(selected, project, rerender)
+    : characterOnboarding(rerender);
+  detail.querySelector(".db-ws-detail-body")?.setAttribute("data-testid", "db-detail-form");
+
+  host.append(workspaceShell({
+    header: characterLifeHeader(project, entries, rerender),
+    list,
+    detail,
+    testid: "db-characters-workspace",
+  }));
+
+  if (restoreCharacterSearchFocus) {
+    restoreCharacterSearchFocus = false;
+    const input = host.querySelector<HTMLInputElement>("[data-testid='db-character-search']");
+    if (input) {
+      input.focus();
+      const end = input.value.length;
+      input.setSelectionRange?.(end, end);
+    }
+  }
 }
+
+// ---------------------------------------------------------------------------
+// 헤더 — 관계 준비 상태 (기존 그대로, workspaceShell 헤더 자리로 이동)
+// ---------------------------------------------------------------------------
 
 function characterLifeHeader(project: Project, entries: readonly CharacterIdIndexEntry[], rerender: () => void): HTMLElement {
   const giftReady = project.system.giftSystem === true;
@@ -181,55 +228,38 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
   });
 }
 
-function characterEmptyState(rerender: () => void): HTMLElement {
-  return el("section", {
-    class: "db-detail-form",
-    dataset: { testid: "db-detail-form" },
-    children: [
-      el("div", {
-        class: "empty-state empty-state--large empty-state--inset",
-        dataset: { testid: "db-character-empty" },
-        children: [
-          el("span", { class: "empty-state__icon", text: "♡", attrs: { "aria-hidden": "true" } }),
-          el("h3", { class: "empty-state__title", text: "아직 등록된 주민이 없습니다" }),
-          el("p", {
-            class: "empty-state__desc",
-            text: "주민 프로필을 만든 뒤 맵 이벤트에서 연결하면 등장 장소가 달라도 같은 호감도와 선물 기록을 공유합니다.",
-          }),
-          el("div", {
-            class: "empty-state__actions",
-            children: [
-              el("button", {
-                class: "empty-state__action empty-state__action--primary",
-                text: "첫 주민 만들기",
-                attrs: { type: "button" },
-                dataset: { testid: "db-character-empty-add" },
-                on: { click: () => addProfile(rerender) },
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  });
-}
+// ---------------------------------------------------------------------------
+// 목록 창 툴바 / 빈 상태
+// ---------------------------------------------------------------------------
 
-function toolbar(entries: readonly CharacterIdIndexEntry[], rerender: () => void): HTMLElement {
-  return el("div", {
-    class: "db-toolbar",
-    children: [addProfileButton(rerender), deleteProfileButton(entries, rerender)],
-  });
-}
-
-function addProfileButton(rerender: () => void): HTMLElement {
-  return el("button", {
-    class: "db-toolbar-button",
-    text: "+ 프로필 추가",
-    attrs: { type: "button" },
-    dataset: { testid: "db-character-add" },
-    on: {
-      click: () => addProfile(rerender),
+function characterToolbar(entries: readonly CharacterIdIndexEntry[], rerender: () => void): HTMLElement {
+  const bar = listToolbar([
+    {
+      label: "+ 프로필 추가",
+      kind: "primary",
+      testid: "db-character-add",
+      onClick: () => addProfile(rerender),
     },
+  ]);
+  bar.append(deleteProfileButton(entries, rerender));
+  return bar;
+}
+
+function characterOnboarding(rerender: () => void): HTMLElement {
+  return makeDetailPane({
+    body: emptyState({
+      icon: "♡",
+      title: "아직 등록된 주민이 없습니다",
+      body: "주민 프로필을 만든 뒤 맵 이벤트에서 연결하면 등장 장소가 달라도 같은 호감도와 선물 기록을 공유합니다.",
+      testid: "db-character-empty",
+      action: {
+        label: "첫 주민 만들기",
+        kind: "primary",
+        testid: "db-character-empty-add",
+        onClick: () => addProfile(rerender),
+      },
+    }),
+    testid: "db-character-detail-pane",
   });
 }
 
@@ -252,7 +282,7 @@ function deleteProfileButton(entries: readonly CharacterIdIndexEntry[], rerender
   let resetTimer: number | null = null;
 
   const button = el("button", {
-    class: "db-toolbar-button danger",
+    class: "db-ws-btn db-ws-btn-danger",
     text: DELETE_IDLE_LABEL,
     attrs: { type: "button" },
     dataset: { testid: "db-character-delete" },
@@ -311,49 +341,72 @@ function deleteProfileButton(entries: readonly CharacterIdIndexEntry[], rerender
   return button;
 }
 
+// ---------------------------------------------------------------------------
+// 상세 창
+// ---------------------------------------------------------------------------
+
 function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerender: () => void): HTMLElement {
-  const form = el("section", {
-    class: "db-detail-form oprn-detail-form",
-    dataset: { testid: "db-detail-form" },
-  });
   const displayName = entry.profile?.displayName?.trim() || "이름 없는 주민";
-  form.append(
-    el("div", {
-      class: "db-record-hero",
-      children: [
-        el("div", {
-          class: "db-record-hero-main",
-          children: [
-            el("h3", { text: displayName, attrs: { title: entry.characterId } }),
-            el("code", {
-              class: "db-record-meta",
-              text: entry.characterId,
-              dataset: { testid: "db-character-id" },
-              attrs: { title: entry.characterId },
-            }),
-          ],
-        }),
-        el("div", {
-          class: "db-character-status",
-          dataset: { testid: "db-character-status" },
-          children: [
-            el("span", { text: entry.hasProfile ? "프로필 있음" : "이벤트 연결만 있음" }),
-            el("span", { text: `이벤트 ${entry.usageCount} · 맵 ${entry.mapCount}` }),
-          ],
-        }),
+  const hero = detailHero({
+    eyebrow: "RESIDENT",
+    title: displayName,
+    subtitle: entry.hasProfile
+      ? "이 프로필의 호감도·선물 기록은 등장 맵과 무관하게 공유됩니다."
+      : "맵 이벤트가 이 characterId를 쓰고 있지만 프로필이 없습니다.",
+    media: heroThumbnail(project, entry),
+    testid: "db-character-hero",
+  });
+  // 상태 배지 + 원본 id 는 히어로 텍스트 줄에 붙인다(계약 훅 두 개를 그대로 유지).
+  hero.querySelector(".db-ws-hero-text")?.append(el("div", {
+    class: "db-cx-status",
+    dataset: { testid: "db-character-status" },
+    children: [
+      el("span", {
+        class: `db-cx-status-chip${entry.hasProfile ? " is-ready" : " is-warn"}`,
+        text: entry.hasProfile ? "프로필 있음" : "이벤트 연결만 있음",
+      }),
+      el("span", { class: "db-cx-status-chip", text: `이벤트 ${entry.usageCount} · 맵 ${entry.mapCount}` }),
+      el("code", {
+        class: "db-cx-status-id",
+        text: entry.characterId,
+        dataset: { testid: "db-character-id" },
+        attrs: { title: entry.characterId },
+      }),
+    ],
+  }));
+
+  const body = el("div", {
+    class: "db-ws-stack",
+    children: entry.hasProfile
+      ? [
+        spanning(characterOverview(entry)),
+        profileCards(entry.characterId, entry.profile ?? {}, project, rerender),
+        spanning(usageCard(entry, project)),
+      ]
+      : [
+        // 고아 ID 도 "몇 개 이벤트·몇 개 맵에서 쓰이는지"가 곧 복구 판단 근거다 —
+        // 프로필이 없다고 요약을 숨기면 상세 창이 카드 두 장짜리 빈 판이 된다.
+        spanning(characterOverview(entry)),
+        orphanCreateCard(entry, rerender),
+        usageCard(entry, project),
       ],
-    }),
-  );
+  });
 
-  if (!entry.hasProfile) {
-    form.append(orphanCreatePanel(entry, rerender));
-  } else {
-    form.append(characterOverview(entry));
-    form.append(profileFields(entry.characterId, entry.profile ?? {}, project, rerender));
+  return makeDetailPane({ hero, body, testid: "db-character-detail-pane" });
+}
+
+/**
+ * 히어로용 캐릭셋 썸네일. workspace-modern.css 의 `.db-ws-hero-media img { width/height: 56px }`
+ * 가 `.db-list-thumb-probe`(1x1 로드 감지용 투명 img)까지 잡아 늘려서 32px 슬롯을 17px 넘치게
+ * 만든다(clipped 위반). 프로브는 보이지 않는 계측용이므로 인라인으로 크기를 되돌린다.
+ */
+function heroThumbnail(project: Project, entry: CharacterIdIndexEntry): HTMLElement {
+  const thumb = characterListThumbnail(project, entry);
+  for (const probe of thumb.querySelectorAll<HTMLElement>(".db-list-thumb-probe")) {
+    probe.style.width = "1px";
+    probe.style.height = "1px";
   }
-
-  form.append(usagePanel(entry, project));
-  return form;
+  return thumb;
 }
 
 function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
@@ -402,7 +455,12 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
   });
 }
 
-function orphanCreatePanel(entry: CharacterIdIndexEntry, rerender: () => void): HTMLElement {
+/**
+ * 고아 characterId 복구 카드. 예전에는 `display:grid` 컨테이너였고 자식 stretch 로 primary
+ * 버튼이 전폭 바가 됐다(fullBleed P1). 이제 sectionCard 안에서 `.db-ws-card-body > .db-ws-btn`
+ * 규칙(justify-self:start)을 그대로 받으므로 버튼이 내용 폭만 쓴다.
+ */
+function orphanCreateCard(entry: CharacterIdIndexEntry, rerender: () => void): HTMLElement {
   let displayName = "";
   const nameInput = el("input", {
     attrs: { type: "text", placeholder: "표시 이름 (선택)" },
@@ -413,7 +471,7 @@ function orphanCreatePanel(entry: CharacterIdIndexEntry, rerender: () => void): 
   });
 
   const createButton = el("button", {
-    class: "btn primary",
+    class: "db-ws-btn db-ws-btn-primary",
     text: "프로필 만들기",
     attrs: { type: "button" },
     dataset: { testid: "db-character-create-profile" },
@@ -436,54 +494,52 @@ function orphanCreatePanel(entry: CharacterIdIndexEntry, rerender: () => void): 
     },
   });
 
-  return el("div", {
-    class: "db-character-orphan-create",
-    dataset: { testid: "db-character-orphan-create" },
+  return sectionCard({
+    title: "프로필 만들기",
+    hint: "이벤트 참조는 그대로 유지됩니다.",
+    testid: "db-character-orphan-create",
     children: [
-      el("p", {
-        class: "empty-hint",
-        text: "이벤트에서 쓰이는 characterId이지만 프로필이 없습니다. 표시 이름을 넣고 프로필을 만들 수 있습니다.",
-      }),
-      el("label", {
-        class: "db-field",
-        children: [el("span", { text: "표시 이름" }), nameInput],
-      }),
+      el("p", { class: "empty-hint", text: ORPHAN_HINT }),
+      el("label", { class: "db-field", children: [el("span", { text: "표시 이름" }), nameInput] }),
       createButton,
     ],
   });
 }
 
-function profileFields(
+function profileCards(
   characterId: string,
   profile: CharacterProfile,
   project: Project,
   rerender: () => void,
 ): HTMLElement {
-  const wrap = el("div", {
-    class: "db-character-profile-fields",
+  return el("div", {
+    class: "db-ws-span db-ws-stack",
     dataset: { testid: "db-character-profile-fields" },
+    children: [
+      sectionCard({
+        title: "기본",
+        hint: "이벤트 메시지의 이름 표시에 쓰입니다.",
+        testid: "db-character-basics-card",
+        children: [
+          textControl(
+            "표시 이름",
+            profile.displayName ?? "",
+            (value) => {
+              const next = emptyToUndefined(value);
+              patchProfile(characterId, { displayName: next }, { clearDisplayName: !next });
+            },
+            "db-character-display-name",
+          ),
+        ],
+      }),
+      birthdayCard(characterId, profile, rerender),
+      spanning(giftPrefsCard(characterId, profile.giftPrefs, project, rerender)),
+      spanning(giftResponsesCard(characterId, profile.giftResponses)),
+    ],
   });
-
-  wrap.append(
-    textControl(
-      "표시 이름",
-      profile.displayName ?? "",
-      (value) => {
-        const next = emptyToUndefined(value);
-        patchProfile(characterId, {
-          displayName: next,
-        }, { clearDisplayName: !next });
-      },
-      "db-character-display-name",
-    ),
-    birthdayFields(characterId, profile, rerender),
-    giftPrefsFields(characterId, profile.giftPrefs, project, rerender),
-    giftResponsesFields(characterId, profile.giftResponses),
-  );
-  return wrap;
 }
 
-function birthdayFields(characterId: string, profile: CharacterProfile, rerender: () => void): HTMLElement {
+function birthdayCard(characterId: string, profile: CharacterProfile, rerender: () => void): HTMLElement {
   const enabled = profile.birthday !== undefined;
   const season = profile.birthday?.season ?? "spring";
   const day = profile.birthday?.day ?? 1;
@@ -494,11 +550,8 @@ function birthdayFields(characterId: string, profile: CharacterProfile, rerender
   }) as HTMLInputElement;
   enable.checked = enabled;
   enable.addEventListener("change", () => {
-    if (enable.checked) {
-      patchProfile(characterId, { birthday: { season, day } });
-    } else {
-      patchProfile(characterId, {}, { clearBirthday: true });
-    }
+    if (enable.checked) patchProfile(characterId, { birthday: { season, day } });
+    else patchProfile(characterId, {}, { clearBirthday: true });
     rerender();
   });
 
@@ -538,21 +591,21 @@ function birthdayFields(characterId: string, profile: CharacterProfile, rerender
     dayField.querySelector("input")?.setAttribute("disabled", "true");
   }
 
-  return el("div", {
-    class: "db-character-birthday",
-    dataset: { testid: "db-character-birthday" },
+  return sectionCard({
+    title: "생일",
+    hint: enabled ? "생일 선물 보너스에 사용됩니다." : "시간 기능이 켜져 있어야 판정됩니다.",
+    testid: "db-character-birthday",
     children: [
       el("label", {
         class: "db-checkbox-field",
         children: [enable, el("span", { text: "생일 사용" })],
       }),
-      seasonSelect,
-      dayField,
+      el("div", { class: "db-cx-inline-fields", children: [seasonSelect, dayField] }),
     ],
   });
 }
 
-function giftPrefsFields(
+function giftPrefsCard(
   characterId: string,
   prefs: GiftPrefs | undefined,
   project: Project,
@@ -565,10 +618,10 @@ function giftPrefsFields(
     { key: "disliked", label: "싫어하는 선물 (disliked)", testid: "db-character-gift-disliked" },
   ];
 
-  const sections = ranks.map((rank) => {
+  const columns = ranks.map((rank) => {
     const selected = [...(prefs?.[rank.key] ?? [])];
     const list = el("div", {
-      class: "db-character-gift-list",
+      class: "db-cx-gift-list",
       dataset: { testid: `${rank.testid}-list` },
     });
     if (selected.length === 0) {
@@ -576,27 +629,25 @@ function giftPrefsFields(
     } else {
       for (const itemId of selected) {
         const itemName = items.find((item) => item.id === itemId)?.name ?? itemId;
-        list.append(
-          el("div", {
-            class: "db-character-gift-row",
-            dataset: { testid: `${rank.testid}-row-${itemId}` },
-            children: [
-              el("span", { text: itemName }),
-              el("button", {
-                class: "btn small",
-                text: "제거",
-                attrs: { type: "button" },
-                dataset: { testid: `${rank.testid}-remove-${itemId}` },
-                on: {
-                  click: () => {
-                    patchGiftPrefs(characterId, rank.key, (ids) => ids.filter((id) => id !== itemId));
-                    rerender();
-                  },
+        list.append(el("div", {
+          class: "db-cx-gift-row",
+          dataset: { testid: `${rank.testid}-row-${itemId}` },
+          children: [
+            el("span", { text: itemName }),
+            el("button", {
+              class: "db-ws-btn db-ws-btn-ghost db-cx-gift-remove",
+              text: "제거",
+              attrs: { type: "button", "aria-label": `${itemName} 제거` },
+              dataset: { testid: `${rank.testid}-remove-${itemId}` },
+              on: {
+                click: () => {
+                  patchGiftPrefs(characterId, rank.key, (ids) => ids.filter((id) => id !== itemId));
+                  rerender();
                 },
-              }),
-            ],
-          }),
-        );
+              },
+            }),
+          ],
+        }));
       }
     }
 
@@ -609,7 +660,7 @@ function giftPrefsFields(
       picker.append(el("option", { text: item.name, attrs: { value: item.id } }));
     }
     const addButton = el("button", {
-      class: "btn small",
+      class: "db-ws-btn db-ws-btn-ghost",
       text: "추가",
       attrs: available.length === 0 ? { type: "button", disabled: "true" } : { type: "button" },
       dataset: { testid: `${rank.testid}-add` },
@@ -628,24 +679,25 @@ function giftPrefsFields(
     });
 
     return el("div", {
-      class: "db-character-gift-rank",
+      class: "db-cx-gift-rank",
       dataset: { testid: rank.testid },
       children: [
-        el("strong", { text: rank.label }),
+        el("strong", { class: "db-cx-gift-rank-title", text: rank.label }),
         list,
-        el("div", { class: "db-character-gift-add-row", children: [picker, addButton] }),
+        el("div", { class: "db-cx-gift-add-row", children: [picker, addButton] }),
       ],
     });
   });
 
-  return el("div", {
-    class: "db-character-gift-prefs",
-    dataset: { testid: "db-character-gift-prefs" },
-    children: [el("h4", { text: "선물 선호 (프로필 기본값)" }), ...sections],
+  return sectionCard({
+    title: "선물 선호 (프로필 기본값)",
+    hint: "맵 이벤트에서 개별로 덮어쓸 수 있습니다.",
+    testid: "db-character-gift-prefs",
+    children: [el("div", { class: "db-cx-gift-grid", children: columns })],
   });
 }
 
-function giftResponsesFields(characterId: string, responses: GiftResponses | undefined): HTMLElement {
+function giftResponsesCard(characterId: string, responses: GiftResponses | undefined): HTMLElement {
   const keys: readonly { readonly key: keyof GiftResponses; readonly label: string; readonly testid: string }[] = [
     { key: "loved", label: "loved 반응", testid: "db-character-response-loved" },
     { key: "liked", label: "liked 반응", testid: "db-character-response-liked" },
@@ -655,50 +707,50 @@ function giftResponsesFields(characterId: string, responses: GiftResponses | und
     { key: "noItems", label: "아이템 없음", testid: "db-character-response-no-items" },
   ];
 
-  return el("div", {
-    class: "db-character-gift-responses",
-    dataset: { testid: "db-character-gift-responses" },
+  return sectionCard({
+    title: "선물 반응 문구 (프로필 기본값)",
+    hint: "비우면 시스템 기본 대사가 나옵니다.",
+    testid: "db-character-gift-responses",
     children: [
-      el("h4", { text: "선물 반응 문구 (프로필 기본값)" }),
-      ...keys.map((entry) =>
-        textControl(
+      el("div", {
+        class: "db-cx-response-grid",
+        children: keys.map((entry) => textControl(
           entry.label,
           responses?.[entry.key] ?? "",
-          (value) => {
-            const trimmed = emptyToUndefined(value);
-            patchGiftResponse(characterId, entry.key, trimmed);
-          },
+          (value) => patchGiftResponse(characterId, entry.key, emptyToUndefined(value)),
           entry.testid,
-        ),
-      ),
+        )),
+      }),
     ],
   });
 }
 
-function usagePanel(entry: CharacterIdIndexEntry, project: Project): HTMLElement {
-  const wrap = el("div", {
-    class: "db-character-usage",
-    dataset: { testid: "db-character-usage" },
-  });
-  wrap.append(el("h4", { text: "사용 중인 이벤트" }));
-
+function usageCard(entry: CharacterIdIndexEntry, project: Project): HTMLElement {
   if (entry.hosts.length === 0) {
-    wrap.append(
-      el("p", {
-        class: "empty-hint",
-        text: "이 characterId를 쓰는 맵 이벤트가 없습니다.",
-        dataset: { testid: "db-character-usage-empty" },
-      }),
-    );
-    return wrap;
+    return sectionCard({
+      title: "사용 중인 이벤트",
+      testid: "db-character-usage",
+      children: [
+        el("p", {
+          class: "empty-hint",
+          text: USAGE_EMPTY_HINT,
+          dataset: { testid: "db-character-usage-empty" },
+        }),
+      ],
+    });
   }
 
-  const list = el("div", { class: "db-character-usage-list" });
-  for (const host of entry.hosts) {
-    list.append(usageRow(host, project));
-  }
-  wrap.append(list);
-  return wrap;
+  return sectionCard({
+    title: "사용 중인 이벤트",
+    hint: `${entry.hosts.length}곳에서 이 characterId를 씁니다.`,
+    testid: "db-character-usage",
+    children: [
+      el("div", {
+        class: "db-cx-usage-list",
+        children: entry.hosts.map((host) => usageRow(host, project)),
+      }),
+    ],
+  });
 }
 
 function usageRow(host: CharacterIdUsageHost, project: Project): HTMLElement {
@@ -706,22 +758,16 @@ function usageRow(host: CharacterIdUsageHost, project: Project): HTMLElement {
   const event = project.maps[host.mapId]?.events.find((entry) => entry.id === host.eventId);
   const eventLabel = event ? eventDisplayName(event) : host.eventId;
   return el("div", {
-    class: "db-character-usage-row",
-    dataset: {
-      testid: `db-character-usage-${host.mapId}-${host.eventId}`,
-    },
+    class: "db-cx-usage-row",
+    dataset: { testid: `db-character-usage-${host.mapId}-${host.eventId}` },
     children: [
-      el("span", {
-        text: `${mapName} / ${eventLabel} (${host.x},${host.y})`,
-      }),
+      el("span", { class: "db-cx-usage-name", text: `${mapName} / ${eventLabel} (${host.x},${host.y})` }),
       el("button", {
-        class: "btn small",
+        class: "db-ws-btn db-ws-btn-ghost",
         text: "이벤트로 이동",
         attrs: { type: "button" },
         dataset: { testid: `db-character-jump-${host.mapId}-${host.eventId}` },
-        on: {
-          click: () => jumpToHost(host),
-        },
+        on: { click: () => jumpToHost(host) },
       }),
     ],
   });
@@ -741,6 +787,10 @@ function jumpToHost(host: CharacterIdUsageHost): void {
   }
   openEventEditorModal(host.mapId, host.eventId);
 }
+
+// ---------------------------------------------------------------------------
+// 저장 (변경 없음 — 에디터 UI 개편이므로 mutation 경로는 그대로 둔다)
+// ---------------------------------------------------------------------------
 
 function patchProfile(
   characterId: string,
@@ -849,4 +899,10 @@ function allocateUniqueCharacterId(project: Project): string {
   }
   // Extremely unlikely fallback — still unique enough for editor use.
   return `char_${Date.now().toString(36)}`;
+}
+
+/** `db-ws-stack` 안에서 한 줄을 통째로 쓰는 요소. */
+function spanning(node: HTMLElement): HTMLElement {
+  node.classList.add("db-ws-span");
+  return node;
 }

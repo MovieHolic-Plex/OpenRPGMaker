@@ -44,13 +44,15 @@ export function itemFields(form: HTMLElement, id: string): void {
   skillPicker(form, "items", id);
 }
 
+// 부위(slot)는 여기서 그리지 않는다. 장비 인스펙터 헤더의 세그먼트
+// (db-field-equipment-slot)가 유일한 부위 컨트롤이다 — 예전에는 이 함수가
+// 두 번째 <select data-testid="db-field-slot"> 을 같은 화면에 덧그려서
+// 두 컨트롤이 같은 record.slot 을 각각 쓰고, 한쪽을 바꿔도 다른 쪽은
+// 폼이 재렌더될 때까지 옛 값을 표시했다(장비 탭 G축 P0, 리드 확인).
 export function equipmentFields(form: HTMLElement, id: string): void {
   const equipment = store.getCurrent().database.equipment.find((record) => record.id === id);
   if (!equipment) return;
   form.append(numberField("가격", "db-field-price", equipment.price, (value) => updateDatabaseRecord("equipment", id, { price: value }), { min: 0, max: 999999 }));
-  form.append(selectLiteral("부위", "db-field-slot", equipment.slot, ["weapon", "shield", "armor", "helmet", "accessory"], (value) =>
-    updateDatabaseRecord("equipment", id, { slot: value })
-  ));
   skillPicker(form, "equipment", id);
 }
 

@@ -1,0 +1,221 @@
+/* ============================================================================
+   유틸리티 레코드 4탭 (속성 / 지형 / 전투 화면 / 전투 명령) 모던 레이어.
+
+   databaseWorkspace.ts 프리미티브로 표현할 수 없는 것만 여기 둔다:
+     1. 전투 스튜디오 표면을 `heading + 워크스페이스` 2행 그리드로 고정 (스크롤 경계).
+     2. 속성 탭의 대미지 배율 막대 (배율이 실제로 얼마의 피해가 되는지 보여주는 척도).
+     3. 지형 탭의 "다른 지형 빠른 편집" 표.
+     4. 전투 명령 카드의 순서 이동/복제/삭제 액션 줄.
+
+   팔레트는 studio-theme.css 의 --db-studio-* 만 소비한다. 새 hex 없음.
+   ========================================================================= */
+
+/* ── 전투 스튜디오 표면: heading(auto) + 워크스페이스(1fr) ────────────────────
+   battle-studio.css 의 `.db-battle-studio-surface` 는 `height:auto; align-content:start`
+   라 자식 `.db-ws { height:100% }` 가 기댈 행 높이가 없다. 그러면 상세 창 본문이
+   스크롤 컨테이너가 되지 못하고 표면이 통째로 늘어나 `.db-body{overflow:hidden}` 에
+   잘린다. 워크스페이스를 쓰는 탭에서만 2행 그리드로 못박는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-battle-studio-surface.db-ws-studio {
+  align-content: stretch;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-studio > .db-ws {
+  padding: 0 14px;
+}
+
+/* 상세 창 본문 안에 들어가는 어두운 미리보기 무대. battle-studio.css 가 460/390px
+   최소 높이를 걸어 두어 스크롤 본문 안에서는 첫 화면을 통째로 먹는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail-body > .db-studio-dark-stage {
+  border-radius: 10px;
+  flex: 0 0 auto;
+  min-height: 214px;
+  position: relative;
+}
+
+/* 전투 메뉴 모형은 실제 창 크기만 있으면 된다 — 214px 은 대부분 빈 검정이었다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail-body > .db-battle-command-preview {
+  min-height: 166px;
+}
+
+/* ── 속성: 대미지 배율 척도 ─────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-scale-head {
+  align-items: center;
+  color: var(--db-studio-text-3);
+  display: flex;
+  font: 400 11.5px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-scale-head .db-el-reference {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  height: 26px;
+  padding: 0 6px;
+  width: 76px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-damage-row {
+  align-items: center;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 76px 92px 14px minmax(90px, 1fr) 78px;
+  margin: 0;
+  min-height: 38px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-damage-row:last-child {
+  border-bottom: 0;
+}
+
+/* 배율 입력은 그리드 열이 폭을 정한다 — elements.css 의 고정 112px 이 "%" 라벨을 덮었다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-damage-row .db-elements-damage-input {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar {
+  background: var(--db-studio-well);
+  border-radius: 999px;
+  height: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-fill {
+  background: var(--db-studio-text-3);
+  border-radius: 999px;
+  display: block;
+  height: 100%;
+  transition: width 90ms linear;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-bad .db-el-bar-fill { background: var(--db-studio-danger); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-neutral .db-el-bar-fill { background: var(--db-studio-accent); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-good .db-el-bar-fill { background: var(--db-studio-success); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-none .db-el-bar-fill { background: var(--db-studio-text-3); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result {
+  color: var(--db-studio-text-2);
+  font: 600 12px/1.2 "Cascadia Mono", Consolas, monospace;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result-bad { color: var(--db-studio-danger); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result-good { color: var(--db-studio-success); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result-none { color: var(--db-studio-text-3); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-choices {
+  display: flex;
+  gap: 18px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-thumb {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  display: inline-flex;
+  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
+  height: 24px;
+  justify-content: center;
+  overflow: hidden;
+  width: 24px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-magical {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+/* ── 지형: 다른 지형 빠른 편집 표 ───────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row {
+  align-items: end;
+  border-top: 1px solid var(--db-studio-border-subtle);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(120px, 1.6fr) minmax(76px, 0.7fr) minmax(76px, 0.7fr) auto;
+  min-width: 0;
+  padding-top: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row .db-field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row .db-field > span {
+  color: var(--db-studio-text-3);
+  font: 400 10.5px/1.2 "Malgun Gothic", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row .db-field input {
+  min-width: 0;
+  width: 100%;
+}
+
+/* ── 전투 명령: 카드 액션 줄 ────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-card-actions .db-ws-btn {
+  min-height: 24px;
+  padding: 0 7px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-kind-guide {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-kind-guide-row {
+  color: var(--db-studio-text-2);
+  display: grid;
+  font: 400 11.5px/1.5 "Malgun Gothic", system-ui, sans-serif;
+  gap: 8px;
+  grid-template-columns: 74px minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-kind-guide-row > strong {
+  color: var(--db-studio-text-1);
+  font-weight: 600;
+}
+
+/* 명령 카드 목록은 상세 창 폭이 되는 만큼 열을 늘린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-card-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  min-width: 0;
+}

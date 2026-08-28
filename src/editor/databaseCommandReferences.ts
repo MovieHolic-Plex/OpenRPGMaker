@@ -69,6 +69,52 @@ export function commandsResourceReference(project: Project, resourceId: string):
   );
 }
 
+/**
+ * 스위치/변수를 **어디서** 쓰는지 전부 모은다. 기존 `switchVariableReferencedInProject`
+ * 는 boolean 만 돌려줘서 스위치 탭이 "이벤트/조건이 이 스위치를 사용 중입니다" 한 줄밖에
+ * 보여줄 수 없었다 — 어느 맵의 어느 이벤트인지 알 수 없으니 실제로 찾아갈 수가 없었다.
+ * 판정 로직은 그 함수와 같은 술어를 그대로 쓰고, 참/거짓 대신 위치를 쌓는다.
+ */
+export function switchVariableReferenceLocations(
+  project: Project,
+  kind: "switch" | "variable",
+  id: string,
+): DatabaseReferenceLocation[] {
+  const locations: DatabaseReferenceLocation[] = [];
+
+  for (const event of project.commonEvents) {
+    const matches =
+      (kind === "switch" && event.conditionSwitchId === id) ||
+      commandListReferencesSwitchVariable(event.commands, kind, id);
+    if (matches) locations.push({ kind: "commonEvent", eventName: event.name, eventId: event.id });
+  }
+
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const matches =
+        conditionReferencesSwitchVariable(event.condition, kind, id) ||
+        commandListReferencesSwitchVariable(event.commands, kind, id) ||
+        (event.pages ?? []).some(
+          (page) =>
+            page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
+            commandListReferencesSwitchVariable(page.commands, kind, id)
+        );
+      if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
+    }
+  }
+
+  for (const troop of project.database.troops) {
+    for (const page of troop.battleEventPages) {
+      const matches =
+        page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
+        commandListReferencesSwitchVariable(page.commands, kind, id);
+      if (matches) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: page.name });
+    }
+  }
+
+  return locations;
+}
+
 export function switchVariableReferencedInProject(project: Project, kind: "switch" | "variable", id: string): boolean {
   return (
     project.commonEvents.some(

@@ -595,7 +595,7 @@ function renderActiveTab(
       renderSystemTab(body, rerender);
       break;
     case "terms":
-      renderTermsTab(body);
+      renderTermsTab(body, rerender);
       break;
     case "overview":
       renderOverviewTab(body, rerender);

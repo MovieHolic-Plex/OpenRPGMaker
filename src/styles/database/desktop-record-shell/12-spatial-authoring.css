@@ -1,39 +1,16 @@
-.database-modal-backdrop .db-spatial-workspace {
-  container-type: inline-size;
-}
+/* 농장 건물·집 꾸미기(farm-spatial) 레거시 레이어.
+ *
+ * 2026-08 모던 개편에서 이 탭은 폼 덤프 → db-ws-* 워크스페이스로 옮겨갔다. 예전 마크업
+ * (`db-spatial-hero` / `db-spatial-grid` / `db-spatial-panel` / `db-spatial-record-card` /
+ * `db-spatial-placement-fields` / `db-spatial-check-grid` / `db-spatial-optional-fields`)은
+ * 더 이상 만들어지지 않으므로 관련 규칙을 지웠다. 새 시각 계층은
+ * styles/database/modern/spatial-collections.css 에 있다.
+ *
+ * 여기 남은 `.db-studio-empty` 는 이 탭 전용이 아니다 — 다른 생활 탭들의 빈 상태 카드가
+ * 이 라운드/패딩/정렬을 그대로 쓰고 있어서(11-life-authoring.css 에는 배경/테두리만 있다)
+ * 함께 지우면 그 탭들이 회귀한다. 그래서 남긴다.
+ */
 
-.database-modal-backdrop .db-spatial-hero {
-  align-items: center;
-  background: var(--db-studio-surface, var(--bg-raised));
-  border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
-  border-radius: 10px;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(180px, 30%) minmax(0, 1fr);
-  overflow: hidden;
-  padding: 10px;
-}
-
-.database-modal-backdrop .db-spatial-hero img {
-  aspect-ratio: 16 / 9;
-  border-radius: 7px;
-  object-fit: cover;
-  width: 100%;
-}
-
-.database-modal-backdrop .db-spatial-hero h2,
-.database-modal-backdrop .db-spatial-hero p,
-.database-modal-backdrop .db-spatial-empty-state p,
-.database-modal-backdrop .db-spatial-panel h3,
-.database-modal-backdrop .db-spatial-panel > p,
-.database-modal-backdrop .db-spatial-level-card h4 {
-  margin: 0;
-}
-
-.database-modal-backdrop .db-spatial-hero h2 { font-size: 20px; }
-.database-modal-backdrop .db-spatial-hero p { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin-top: 4px; }
-
-.database-modal-backdrop .db-spatial-empty-state,
 .database-modal-backdrop .db-studio-empty {
   background: var(--db-studio-surface) !important;
   border: 1px solid var(--db-studio-border-subtle) !important;
@@ -41,72 +18,9 @@
   padding: 18px 16px;
   text-align: center;
 }
-.database-modal-backdrop .db-spatial-empty-state .empty-state__action--primary,
+
 .database-modal-backdrop .db-studio-empty .empty-state__action--primary {
   background: var(--db-studio-accent) !important;
   border-color: var(--db-studio-accent) !important;
   color: #fff !important;
-}
-
-.database-modal-backdrop .db-spatial-empty-state p { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
-
-.database-modal-backdrop .db-spatial-grid {
-  align-items: start;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.database-modal-backdrop .db-spatial-panel,
-.database-modal-backdrop .db-spatial-record-card,
-.database-modal-backdrop .db-spatial-level-card {
-  display: grid;
-  gap: 7px;
-}
-
-.database-modal-backdrop .db-spatial-level-card {
-  background: var(--db-studio-surface, var(--bg-raised));
-  border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
-  border-radius: 6px;
-  padding: 8px;
-}
-
-.database-modal-backdrop .db-spatial-level-card h4 { color: var(--text-primary); font-size: 12px; }
-
-.database-modal-backdrop .db-spatial-inline-row,
-.database-modal-backdrop .db-spatial-placement-fields {
-  align-items: end;
-  display: grid;
-  gap: 6px;
-  grid-template-columns: minmax(0, 1.4fr) minmax(72px, .7fr) auto;
-}
-
-.database-modal-backdrop .db-spatial-placement-fields { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(70px, .7fr)); }
-
-.database-modal-backdrop .db-spatial-check-grid {
-  border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
-  border-radius: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px 10px;
-  margin: 0;
-  padding: 6px 8px 8px;
-}
-
-.database-modal-backdrop .db-spatial-check-grid legend { color: var(--text-muted); font-size: 9px; font-weight: 700; padding: 0 3px; }
-.database-modal-backdrop .db-spatial-checkbox { align-items: center; display: inline-flex; font-size: 10px; gap: 4px; }
-.database-modal-backdrop .db-spatial-checkbox input { margin: 0; width: auto; }
-.database-modal-backdrop .db-spatial-optional-fields { border: 1px solid var(--db-studio-border-subtle, var(--border-subtle)); border-radius: 6px; padding: 6px; }
-.database-modal-backdrop .db-spatial-optional-fields summary { color: var(--text-muted); cursor: pointer; font-size: 10px; font-weight: 700; }
-
-@container (max-width: 980px) {
-  .database-modal-backdrop .db-spatial-grid { grid-template-columns: minmax(0, 1fr); }
-  .database-modal-backdrop .db-spatial-hero { grid-template-columns: minmax(150px, 34%) minmax(0, 1fr); }
-}
-
-@container (max-width: 680px) {
-  .database-modal-backdrop .db-spatial-hero { grid-template-columns: minmax(0, 1fr); }
-  .database-modal-backdrop .db-spatial-hero img { max-height: 170px; }
-  .database-modal-backdrop .db-spatial-inline-row,
-  .database-modal-backdrop .db-spatial-placement-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

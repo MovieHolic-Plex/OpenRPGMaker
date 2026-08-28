@@ -11,6 +11,7 @@ import {
   TROOP_EVENT_CONDITION_KINDS,
 } from "@/editor/panels/databaseTroopBattleEventConditions";
 import { updateTroopBattleEventPage } from "@/editor/panels/databaseTroopBattleEventActions";
+import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { BattleEventPageRecord, TroopRecord } from "@/project/types/database";
@@ -26,14 +27,28 @@ export function renderTroopBattleEventPanel(record: TroopRecord, rerender: () =>
   const page = selectedBattleEventPage(record);
   return el("section", {
     class: "db-troop-event-panel",
+    dataset: { testid: "db-troop-event-panel" },
     children: [
-      el("h3", { text: "전투 이벤트" }),
+      el("header", {
+        class: "db-troop-event-head",
+        children: [
+          el("h3", { text: "전투 이벤트" }),
+          el("span", {
+            class: "db-troop-event-head-hint",
+            text: `페이지 ${record.battleEventPages.length}개 · 조건이 맞는 페이지가 전투 중 실행됩니다.`,
+          }),
+        ],
+      }),
       eventToolbar(record, page, rerender),
       qualityStrip(page),
       pageTabs(record, page, rerender),
-      commandArea(record, page, rerender),
       conditionStrip(record, page, rerender),
-      el("div", { class: "db-troop-event-details", children: page ? pageControls(record, page, rerender) : emptyPageControls() }),
+      el("div", {
+        class: "db-troop-event-details",
+        dataset: { testid: "db-troop-event-details" },
+        children: page ? pageControls(record, page, rerender) : emptyPageControls(record, rerender),
+      }),
+      commandArea(record, page, rerender),
     ],
   });
 }
@@ -51,8 +66,28 @@ function selectedBattleEventPage(record: TroopRecord): BattleEventPageRecord | u
   return first;
 }
 
-function emptyPageControls(): HTMLElement[] {
-  return [el("div", { class: "db-preview", text: "페이지: 0 / 조건: 없음" })];
+function emptyPageControls(record: TroopRecord, rerender: () => void): HTMLElement[] {
+  return [
+    emptyState({
+      icon: "◈",
+      title: "전투 이벤트 페이지가 없습니다",
+      body: "페이지는 조건이 맞을 때 전투 중에 실행되는 명령 묶음입니다. 승리 대사·중간 등장·강제 도주 같은 연출을 여기에 넣습니다.",
+      compact: true,
+      testid: "db-troop-event-empty",
+      action: {
+        label: "첫 페이지 만들기",
+        kind: "primary",
+        testid: "db-troop-event-empty-add-page",
+        onClick: () => addPage(record, rerender),
+      },
+      secondary: {
+        label: "보상 흐름 템플릿",
+        kind: "ghost",
+        testid: "db-troop-event-empty-template",
+        onClick: () => applyPayoffTemplate(record, undefined, rerender),
+      },
+    }),
+  ];
 }
 
 const EVENT_SPAN_OPTIONS = [
@@ -85,35 +120,49 @@ function pageControls(record: TroopRecord, page: BattleEventPageRecord, rerender
 }
 
 function eventToolbar(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
+  // 예전 툴바는 `1.2fr 1.4fr 1fr 1fr 1fr` 고정 5열 격자여서, 좁아지면 다섯 번째 버튼이
+  // 패널 오른쪽 밖으로 81px 밀려나 잘렸다(게이트 clipped:1). 이제 줄바꿈되는 flex 툴바다.
   return el("div", {
-    class: "db-troop-event-toolbar",
+    class: "db-toolbar db-ws-toolbar db-troop-event-toolbar",
     children: [
-      button("새로 만들기", "db-troop-event-add-page", () => addPage(record, rerender), "new"),
-      button("보상 흐름 템플릿", "db-troop-event-apply-payoff-template", () => applyPayoffTemplate(record, page, rerender), "new"),
-      inertButton("복사", "copy"),
-      inertButton("붙여넣기", "paste"),
+      button("＋ 새 페이지", "db-troop-event-add-page", () => addPage(record, rerender), "primary"),
+      button("보상 흐름 템플릿", "db-troop-event-apply-payoff-template", () => applyPayoffTemplate(record, page, rerender), "ghost", "등장 → 배경 전환 → 결과 요약 명령을 한 번에 넣습니다"),
+      // P9: 동작하지 않는 컨트롤을 말없이 두지 않는다 — 왜 잠겨 있는지 툴팁으로 알린다.
+      inertButton("복사", "전투 이벤트 페이지 클립보드는 아직 없습니다 — 명령 목록에서 개별 명령을 복사하세요"),
+      inertButton("붙여넣기", "전투 이벤트 페이지 클립보드는 아직 없습니다 — 명령 목록에서 개별 명령을 붙여넣으세요"),
       button("삭제", "db-troop-event-delete-page", () => {
         if (page) removePage(record, page.id, rerender);
-      }, "delete"),
+      }, "danger", page ? "지금 보고 있는 페이지를 지웁니다 (Ctrl+Z 로 복구)" : "지울 페이지가 없습니다", !page),
     ],
   });
 }
 
+/**
+ * 이 페이지가 "전투 후에 뭔가 해 주는가"를 한 줄로 알려 준다. 결과 요약 템플릿에만
+ * 한정하지 않는다 — 텍스트/아이템/골드 지급도 전투 후 연출이라 "없음" 경고를 내면
+ * 오탐이 된다. 다만 템플릿을 그대로 적용한 경우는 따로 구분해 준다(무엇이 들어갔는지
+ * 사용자가 알 수 있어야 하고, qa-troops.spec.ts:245 도 그 문구를 본다).
+ */
 function qualityStrip(page: BattleEventPageRecord | undefined): HTMLElement {
-  // 후속 연출 판정은 결과 요약 템플릿에 한정하지 않는다 — 텍스트/아이템/골드 지급도
-  // 전투 후 연출이므로 "없음" 경고를 내면 오탐이 된다.
+  const hasTemplate = page?.commands.some((command) => command.kind === "m2Command" && command.commandId === RESULT_SUMMARY_ID) ?? false;
   const hasPayoff =
-    page?.commands.some(
-      (command) =>
-        (command.kind === "m2Command" && command.commandId === RESULT_SUMMARY_ID) ||
-        command.kind === "text" ||
-        command.kind === "changeItem" ||
-        command.kind === "changeGold"
-    ) ?? false;
+    hasTemplate ||
+    (page?.commands.some(
+      (command) => command.kind === "text" || command.kind === "changeItem" || command.kind === "changeGold"
+    ) ?? false);
+  const tone = hasPayoff ? "good" : "warn";
+  const text = hasTemplate
+    ? "보상 흐름 템플릿 적용됨 — 결과 요약 명령이 들어 있습니다"
+    : hasPayoff
+      ? "후속 연출 있음 — 전투 후 대사/보상 명령이 있습니다"
+      : "전투 후 보상/후속 연출 없음";
   return el("div", {
-    class: "db-troop-event-quality",
-    text: hasPayoff ? "후속 연출 있음" : "전투 후 보상/후속 연출 없음",
+    class: `db-troop-event-quality db-troop-event-quality-${tone}`,
     dataset: { testid: "db-troop-event-quality" },
+    children: [
+      el("span", { class: "db-troop-event-quality-dot", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "db-troop-event-quality-text", text }),
+    ],
   });
 }
 
@@ -145,7 +194,7 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
   if (!page) {
     return el("div", {
       class: "db-troop-event-condition-strip",
-      children: [el("span", { text: "조건" }), el("strong", { text: "(없음)" }), inertButton("...", "condition")],
+      children: [el("span", { text: "조건" }), el("strong", { text: "(없음)" })],
     });
   }
   const conditionKind = kindOfBattleEventCondition(page.conditions[0]);
@@ -186,7 +235,6 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
         updateTroopBattleEventPage(record, page, { conditions: initialBattleEventConditions(kind) });
         rerender();
       }),
-      inertButton("...", "condition"),
       ...extras,
     ],
   });
@@ -197,7 +245,19 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
     return el("div", {
       class: "db-troop-event-command-area",
       dataset: { testid: "db-troop-event-command-area" },
-      children: [el("div", { class: "db-troop-command-line", text: "◆" })],
+      children: [
+        el("div", {
+          class: "db-troop-command-empty",
+          children: [
+            // ◆ 는 명령 목록의 행 표식이자 e2e 계약이라 남기고, 옆에 왜 비어 있는지를 적는다.
+            el("div", { class: "db-troop-command-line", text: "◆" }),
+            el("p", {
+              class: "db-troop-command-empty-text",
+              text: "페이지를 만들면 여기에 전투 중 실행할 명령이 ◆ 줄로 쌓입니다.",
+            }),
+          ],
+        }),
+      ],
     });
   }
   const host = el("div", { class: "cmd-list", dataset: { testid: "db-troop-event-command-list" } });
@@ -274,19 +334,40 @@ function currentTroop(record: TroopRecord): TroopRecord {
   return store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? record;
 }
 
-function button(label: string, testid: string, onClick: () => void, icon?: string): HTMLButtonElement {
+/**
+ * 툴바 버튼. 예전에는 클래스가 `db-troop-event-tool <icon>` 뿐이라 위계가 없었고,
+ * 다섯 개가 고정 격자에서 같은 회색 상자로 늘어섰다 — 공용 `db-ws-btn` 어휘를 쓴다.
+ */
+function button(
+  label: string,
+  testid: string,
+  onClick: () => void,
+  kind: "primary" | "ghost" | "danger" = "ghost",
+  title?: string,
+  disabled = false
+): HTMLButtonElement {
   const node = el("button", {
-    class: icon ? `db-troop-event-tool ${icon}` : "",
+    class: `db-ws-btn db-ws-btn-${kind} db-troop-event-tool`,
     text: label,
-    attrs: { type: "button" },
+    attrs: { type: "button", ...(title ? { title } : {}) },
     dataset: { testid },
   }) as HTMLButtonElement;
+  node.disabled = disabled;
   node.addEventListener("click", onClick);
   return node;
 }
 
-function inertButton(label: string, icon: string): HTMLButtonElement {
-  const node = el("button", { class: `db-troop-event-tool ${icon}`, text: label, attrs: { type: "button", disabled: "true" } }) as HTMLButtonElement;
+/**
+ * 아직 동작하지 않는 컨트롤. qa-troops.spec.ts:269-272 가 복사/붙여넣기가 **존재하고
+ * 비활성** 인 것을 계약으로 확인하므로 지우지 않고, 대신 왜 잠겨 있는지 툴팁으로
+ * 설명한다(P9: 말없이 죽어 있는 버튼 금지).
+ */
+function inertButton(label: string, reason: string): HTMLButtonElement {
+  const node = el("button", {
+    class: "db-ws-btn db-ws-btn-ghost db-troop-event-tool is-inert",
+    text: label,
+    attrs: { type: "button", disabled: "true", title: reason, "aria-disabled": "true" },
+  }) as HTMLButtonElement;
   node.disabled = true;
   return node;
 }
