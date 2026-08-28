@@ -22,7 +22,8 @@ export const OP_KINDS = [
   "skill",
   "key",
   "teleport",
-  "wait",
+  "waitForRuntime",
+  "waitForPosition",
   // 조건 대기. 고정 sleep 만으로 UI 전이를 기다리면 느린 호스트에서 flaky 해지고,
   // 키를 정해진 횟수만큼 눌러 대사를 소진하려 하면 **NPC 를 재발동시켜 초과 입력**이 된다
   // (실측: 선택지 NPC 옆에서 Enter 8회 → 선택지가 다시 열림).
@@ -46,6 +47,7 @@ export function normalizeScenario(scenario) {
     if (seen.has(beat.id)) throw new Error(`중복된 비트 ID: ${beat.id}`);
     seen.add(beat.id);
     for (const op of beat.ops ?? []) {
+      if (op.kind === "wait") throw new Error(`고정 wait op 은 런타임 게이트에서 금지됨: ${beat.id}`);
       if (!OP_KINDS.includes(op.kind)) throw new Error(`알 수 없는 op: ${op.kind}`);
     }
     return { ...beat, ops: beat.ops ?? [], shot: beat.shot ?? false };

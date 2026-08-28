@@ -26,7 +26,7 @@ export const battleRm2003Scenario = {
       note: "새 게임 → map_battle (0,0), 오른쪽 (1,0) 에 전투 이벤트",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 2500 },
+        { kind: "waitForRuntime" },
         { kind: "seed", seed: 1 },
       ],
       expect: {
