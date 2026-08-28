@@ -250,32 +250,9 @@
   display: none;
 }
 
-.left-panel-stack[data-testid="left-map-root"] .map-tree-action {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-  height: 18px;
-  opacity: 0.55;
-  width: 18px;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-item:hover .map-tree-action,
-.left-panel-stack[data-testid="left-map-root"] .map-item:focus-within .map-tree-action,
-.left-panel-stack[data-testid="left-map-root"] .map-tree-action:focus-visible {
-  background: var(--bg-inset);
-  border-color: var(--border-default);
-  opacity: 1;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-tree-action:disabled,
-.left-panel-stack[data-testid="left-map-root"] .map-item:hover .map-tree-action:disabled,
-.left-panel-stack[data-testid="left-map-root"] .map-item:focus-within .map-tree-action:disabled {
-  background: transparent;
-  border-color: transparent;
-  cursor: default;
-  filter: grayscale(0.75);
-  opacity: 0.35;
-}
+/* .map-tree-action 및 hover/focus/disabled 상태는 editor/map-panel.modern.css 로
+   이관됐다(2026-08). 여기 있던 18×18 값이 (0,3,0)로 모던 레이어의 20×20(0,2,0)를
+   항상 이겨 행 안 ⋮ 버튼이 작아지는 회귀를 냈다. */
 
 .editor-layout.no-right-panel .palette-option-row {
   grid-template-columns: repeat(auto-fill, 28px);

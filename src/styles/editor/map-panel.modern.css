@@ -153,6 +153,13 @@
   width: var(--map-row-toggle);
 }
 
+/* 하위 맵이 없는 행의 토글은 눌러도 아무 일이 없다(treeToggle 이 !hasChildren 이면
+   즉시 반환한다). 글리프가 정의되기 전에는 아무것도 안 그려져 문제가 안 보였다.
+   자리는 남겨 형제 행들의 이름 시작점을 맞추고, 표시만 감춘다. */
+.map-tree-panel .map-item:not(.has-children) .map-tree-toggle {
+  visibility: hidden;
+}
+
 .map-tree-panel .map-tree-icon {
   color: var(--text-3);
   font-size: 14px;
