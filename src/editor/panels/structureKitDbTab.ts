@@ -36,6 +36,7 @@ import {
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type {
+  StructureKitDef,
   StructureKitPart,
   StructureKitPartKind,
   TilesetDef,
@@ -96,6 +97,13 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   const visibleEntries = entriesForSource(allEntries, session.source)
     .filter((entry) => matchesQuery(entry, query))
     .filter((entry) => matchesThemeFilter(entry, themeFilterActive));
+
+  // 체크는 지금 보이는 행에만 뜻이 있다 — 원본 칩·검색으로 가려지면 그 선택은 화면에서 사라진다.
+  // 푸터 개수·내보내기 버튼 라벨·실제 내보내기 대상을 전부 이 한 배열에서 갈라내 서로 어긋나지
+  // 않게 한다. 지워진 킷의 남은 id 도 visibleEntries 에 없으니 따로 걸러낼 필요가 없다.
+  const checkedVisibleKits: StructureKitDef[] = visibleEntries.flatMap((entry) =>
+    entry.kind === "kit" && session.checkedKitIds.has(entry.kit.id) ? [entry.kit] : [],
+  );
 
   // 선택 유효성 확인 — 보이는 행 안에서만 선택을 유지하고, 없으면 첫 행으로 되돌린다.
   // 이 재계산은 매 렌더 무조건 실행된다 — 인스펙터의 삭제·복제 액션이 지운 킷/오브젝트의
@@ -242,15 +250,14 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     el("button", {
       class: "btn small",
       attrs: { type: "button" },
-      text: session.checkedKitIds.size > 0 ? "선택 내보내기" : "앨범 내보내기",
+      text: checkedVisibleKits.length > 0 ? "선택 내보내기" : "앨범 내보내기",
       dataset: { testid: "structure-kit-export" },
       on: {
         click: () => {
           if (!activeTileset) return;
-          const own = activeTileset.structureKits ?? [];
-          const targets = session.checkedKitIds.size > 0
-            ? own.filter((kit) => session.checkedKitIds.has(kit.id))
-            : own;
+          const targets = checkedVisibleKits.length > 0
+            ? checkedVisibleKits
+            : (activeTileset.structureKits ?? []);
           if (targets.length === 0) {
             toast("내보낼 구조물이 없습니다. 먼저 [+ 새 구조물]이나 [복제]로 만들어 주세요.", "info");
             return;
@@ -409,13 +416,14 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     tableWrap.append(table);
     tableCol.append(tableWrap);
 
-    const checkedCount = visibleEntries.filter(
-      (entry) => entry.kind === "kit" && session.checkedKitIds.has(entry.kit.id),
-    ).length;
     const footer = el("div", {
       class: "structure-kit-footer",
       children: [
-        el("span", { text: checkedCount > 0 ? `${checkedCount}개 선택됨` : `${visibleEntries.length}개` }),
+        el("span", {
+          text: checkedVisibleKits.length > 0
+            ? `${checkedVisibleKits.length}개 선택됨`
+            : `${visibleEntries.length}개`,
+        }),
       ],
     });
     tableCol.append(footer);

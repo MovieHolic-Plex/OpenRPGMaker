@@ -587,4 +587,25 @@ describe("structureKitDbTab 내보내기", () => {
     renderStructureKitsTab(host, () => {});
     expect(host.querySelector("[data-testid='structure-kit-import']")).not.toBeNull();
   });
+
+  it("체크한 킷이 다른 원본 칩으로 가려지면 라벨이 앨범 내보내기로 되돌아간다", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+
+    host.querySelector("[data-testid='structure-kit-check-kit_mine']")!.click();
+    expect(host.querySelector("[data-testid='structure-kit-export']")!.textContent).toContain("선택 내보내기");
+
+    // 체크는 그대로 둔 채, 지금 보이는 행에서 그 킷이 빠지도록 다른 원본으로 옮긴다.
+    host.querySelector("[data-testid='structure-kit-source-builtin']")!.click();
+
+    expect(host.querySelector("[data-testid='structure-kit-check-kit_mine']")).toBeNull();
+    const exportBtn = host.querySelector("[data-testid='structure-kit-export']")!;
+    expect(exportBtn.textContent).toContain("앨범 내보내기");
+    expect(exportBtn.textContent).not.toContain("선택 내보내기");
+  });
 });
