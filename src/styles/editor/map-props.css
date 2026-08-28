@@ -439,19 +439,6 @@
   width: calc(100% - var(--map-depth, 1) * 14px);
 }
 
-.basic-flyout-map-host .map-item.map-item-basic.map-node {
-  margin-left: calc(var(--map-depth, 1) * 14px);
-  width: calc(100% - var(--map-depth, 1) * 14px);
-}
-
-/* 썸네일 칸(44px)이 이름·메타 칸을 좁히므로, 좁은 초보 플라이아웃에서 메타가 두 줄로
-   접히지 않게 한 줄 + 줄임표로 고정한다(전문가 패널은 10-map-tree.css 가 이미 같은 처리). */
-.basic-flyout-map-host .map-item.map-item-basic .map-tree-copy {
-  min-width: 0;
-}
-
-.basic-flyout-map-host .map-item.map-item-basic .map-tree-meta {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+/* 이 자리(구 442~457행)에 있던 플라이아웃 들여쓰기·말줄임 규칙은 전부
+   editor/map-panel.modern.css 의 is-basic-flyout 절로 이관됐다(2026-08, Task 6) —
+   바로 위 공용 들여쓰기 규칙, 그리고 복사영역·메타 규칙과 완전히 중복이었다. */

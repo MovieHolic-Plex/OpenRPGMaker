@@ -386,3 +386,123 @@
   position: fixed;
   z-index: 80;
 }
+
+/* ── 초보 플라이아웃 전용 (Task 6, 2026-08) ──────────────────────────────────
+   여기 있는 것은 마크업이 실제로 다른 것뿐이다 — 초보 전용 헤더(.map-tree-header-basic
+   과 그 자식들) · 행 밀도(패딩·트랙 폭) · 카드 배경 · 목록 스크롤 영역. 이름·아이콘·
+   핸들·토글·배지·선택 상태·필터 입력은 위 공용 규칙이 그대로 적용된다 — 예전에는
+   `.basic-flyout-map-host` 컨테이너 프리픽스(특이도 0,3,0)가 이 파일의 공용 규칙
+   (0,2,0)을 항상 이겨, 값을 플라이아웃용으로 통째로 다시 썼다. 그 결과 이름·메타가
+   28px 폭 예산을 못 채워 말줄임됐다(실측 원인, task-6-brief 참조).
+
+   `.map-tree-add-child-quick`(하위 추가 + 버튼)는 여기 없다 — editor/map-props.css
+   304~329행이 이미 소유하고 있고(행 hover 시에만 노출) 이 태스크의 삭제 범위(같은
+   파일 441~457행) 밖이라 손대지 않는다; 여기서 다시 정의하면 그 hover 노출/색
+   전환을 덮어써버린다. */
+
+.map-tree-panel.is-basic-flyout {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-list-basic {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  padding: 2px 0 4px;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-header-basic {
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-basic-meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-basic-count {
+  color: var(--text-1);
+  font: 800 13px/1.2 var(--font-ui);
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-basic-hint {
+  color: var(--text-3);
+  font: 500 11px/1.4 var(--font-ui);
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-basic-add {
+  background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  border-radius: var(--radius-m);
+  color: var(--on-accent);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 700 12px/1 var(--font-ui);
+  height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-basic-add:hover,
+.map-tree-panel.is-basic-flyout .map-tree-basic-add:focus-visible {
+  background: color-mix(in srgb, var(--accent) 38%, var(--mix-base));
+  outline: none;
+}
+
+/* 행 밀도 + 그리드 계약 — 초보 행은 `+`(하위 추가) 버튼이 하나 더 붙어 공용 6열에
+   한 칸 더(auto)가 필요하다. 마지막 3칸을 전부 auto 로 둔 것이 핵심이다: 옛 규칙은
+   마지막 칸을 28px 로 고정해 그 칸이 비어 있을 때도(하위 추가 버튼은 hover 전까지
+   렌더에서 빠진다) 공간을 낭비했다 — 실측 1fr 트랙 93.59px, 메타 텍스트 필요폭
+   98px, 4px 부족. auto 트랙은 내용이 없으면 폭을 그대로 반납한다. */
+.map-tree-panel.is-basic-flyout .map-item-basic {
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  grid-template-columns:
+    var(--map-row-toggle) var(--map-row-handle) var(--map-row-thumb)
+    minmax(0, 1fr) auto auto auto;
+  min-height: 40px;
+  padding: 4px 6px;
+}
+
+/* 카드 틴트 — `.active` 는 제외한다. 모던 레이어의 인디고 선택 배경(위 § 선택 행)이
+   대신 적용돼야 하기 때문이다. 원래 값은 `88% control-bg + #000` 였다; #000 대신
+   --text-1 로 섞는다 — control-bg 의 RGB 성분(15,23,42)이 --text-1(#0F172A) 과
+   같은 값이라 합성 결과가 사실상 동일하다(실측: 흰 배경 위 합성 시 원래
+   rgb(216,216,217) vs 토큰화 후 rgb(218,219,222), 1 이내 오차). */
+.map-tree-panel.is-basic-flyout .map-item-basic:not(.active) {
+  background: color-mix(in srgb, var(--control-bg) 88%, var(--text-1));
+  color: var(--text-1);
+}
+
+.map-tree-panel.is-basic-flyout .map-item-basic:hover,
+.map-tree-panel.is-basic-flyout .map-item-basic:focus-visible {
+  border-color: var(--border-strong);
+  outline: none;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-more {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  font: 700 16px/1 var(--font-ui);
+  height: 28px;
+  letter-spacing: 0.02em;
+  width: 28px;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-more:hover,
+.map-tree-panel.is-basic-flyout .map-tree-more:focus-visible {
+  background: color-mix(in srgb, var(--on-accent) 10%, transparent);
+  border-color: var(--border-strong);
+  color: var(--text-1);
+  outline: none;
+}
