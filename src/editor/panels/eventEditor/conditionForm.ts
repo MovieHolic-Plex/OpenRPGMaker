@@ -1020,14 +1020,30 @@ export function renderBattleResultCondition(
   return row;
 }
 
+/**
+ * 호감도 조건 컨트롤.
+ *
+ * 런타임은 하드 게이트다: `resolveSocialKey` 는 `event.id` 로 폴백하지 않으므로 NPC 키가 비고
+ * 이 이벤트에 NPC 관계(`characterId`)도 없으면 이 조건은 **항상 거짓**이다
+ * (docs/specs/2026-07-14-character-id-relationship-gate.md §1-7). 그래서 미연결 상태에서는
+ * 자리표시자로 "이 이벤트" 를 약속하지 않고, 왜 안 켜지는지 행 안에서 말한다(§1-8 UI 게이트).
+ * 행을 숨기거나 잠그지는 않는다 — NPC 키를 직접 적는 저작 경로는 미연결에서도 유효하다.
+ */
 export function renderFriendshipAtLeastCondition(
   cond: Extract<Condition, { kind: "friendshipAtLeast" }>,
   onChange: (condition: Condition) => void,
-  options: { readonly className?: string; readonly npcKeyTestId?: string; readonly valueTestId?: string } = {}
+  options: {
+    readonly className?: string;
+    readonly npcKeyTestId?: string;
+    readonly valueTestId?: string;
+    readonly hostHasCharacterId?: boolean;
+    readonly hintTestId?: string;
+  } = {}
 ): HTMLElement {
+  const unlinked = options.hostHasCharacterId === false;
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   const npcKey = el("input", {
-    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    attrs: { type: "text", placeholder: unlinked ? "NPC 키를 적어야 합니다" : "비우면 이 이벤트" },
     value: cond.npcKey ?? "",
     dataset: { testid: options.npcKeyTestId ?? "event-condition-friendship-npc-key" },
   }) as HTMLInputElement;
@@ -1046,6 +1062,15 @@ export function renderFriendshipAtLeastCondition(
   npcKey.addEventListener("change", apply);
   value.addEventListener("change", apply);
   row.append(npcKey, value);
+  if (unlinked && !(cond.npcKey ?? "").trim()) {
+    row.append(
+      el("span", {
+        class: "empty-hint event-condition-friendship-hint",
+        dataset: { testid: options.hintTestId ?? "event-condition-friendship-requires-character-id" },
+        text: "이 이벤트에 NPC 관계가 없어 항상 거짓입니다. 「NPC와 일정」에서 연결하거나 NPC 키를 적으세요.",
+      })
+    );
+  }
   return row;
 }
 

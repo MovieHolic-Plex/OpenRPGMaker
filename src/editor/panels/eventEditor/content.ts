@@ -38,6 +38,7 @@ import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   appendEventRailGroup,
+  openEventRailGroupFor,
   renderClassicPageTabStrip,
   renderEventCharacterIdField,
   renderEventCharacterSocialExtras,

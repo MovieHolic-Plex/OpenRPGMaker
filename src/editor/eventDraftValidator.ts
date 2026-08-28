@@ -17,6 +17,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { hasCharacterId } from "@/project/socialKey";
 import type {
   Command,
   Condition,
@@ -116,7 +117,7 @@ export function validateEventDraftBody(
   event: GameEvent,
 ): EventDraftValidation {
   const issues: EventDraftIssue[] = [];
-  const refs = referenceSets(project, mapId);
+  const refs = referenceSets(project, mapId, event);
   const pages = event.pages ?? [];
 
   if (pages.length === 0) {
@@ -170,7 +171,7 @@ function validationFromIssues(issues: readonly EventDraftIssue[]): EventDraftVal
   return { issues, errorCount, warningCount, infoCount, canCommit: errorCount === 0 };
 }
 
-function referenceSets(project: Project, mapId: MapId) {
+function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
   const map = project.maps[mapId];
   return {
     actors: new Set(project.database.actors.map((entry) => entry.id)),
@@ -199,6 +200,8 @@ function referenceSets(project: Project, mapId: MapId) {
     troops: new Set(project.database.troops.map((entry) => entry.id)),
     upgrades: new Set((project.system.itemUpgrades ?? []).map((entry) => entry.id)),
     variables: new Set(project.variables.map((entry) => entry.id)),
+    // 사회 기능은 이름표가 아니라 이 이벤트의 신원을 참조한다 — 같은 사전에 싣어 재긍 없이 나른다.
+    hostHasCharacterId: hasCharacterId(host),
   };
 }
 
@@ -399,8 +402,20 @@ function validateCondition(
     case "timePhase":
     case "season":
     case "npcActivity":
-    case "friendshipAtLeast":
     case "battleResult":
+      return;
+    case "friendshipAtLeast":
+      // 런타임 하드 게이트: NPC 키가 비었고 이 이벤트에 characterId 도 없으면 항상 거짓이다.
+      if (!condition.npcKey?.trim() && !refs.hostHasCharacterId) {
+        issues.push({
+          severity: "warning",
+          code: "condition.friendship.no-character-id",
+          message: "호감도 조건에 쓸 NPC 관계가 없어 이 조건은 항상 거짓입니다. 「NPC와 일정」에서 인물을 연결하거나 NPC 키를 적으세요.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-page-friendship-condition-npc-key" },
+        });
+      }
       return;
     case "run":
       if (condition.query === "flag" && !condition.flag.trim()) {
