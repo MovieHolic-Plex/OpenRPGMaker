@@ -21,14 +21,34 @@ function latestShop(context: ShopEditContext, fallback: ShopCommand): ShopComman
   const current = context.getCurrentCommand?.();
   return current?.kind === "shop" ? current : fallback;
 }
-type ShopItemList = {
-  readonly root: HTMLElement;
-  readonly select: HTMLSelectElement;
-  get value(): string;
+type ShopGoodsSection = {
+  /** 툴바에 얹는 종류·검색 필터 묶음. */
+  readonly filters: HTMLElement;
+  /** 판매 중 / 안 담음 두 그룹을 담은, 이 창에서 유일한 스크롤러. */
+  readonly goods: HTMLElement;
+  readonly detail: HTMLElement;
+};
+
+/** 재빌드를 건너 살려야 하는 목록 상태. */
+type ShopGoodsView = {
+  readonly scrollTop: number;
+  readonly searchQuery: string;
+  readonly typeFilter: string;
+};
+
+const SHOP_SEARCH_DEBOUNCE_MS = 120;
+
+const SEASON_ORDER = ["spring", "summer", "fall", "winter"] as const;
+type ShopSeason = (typeof SEASON_ORDER)[number];
+const SEASON_LABELS: Record<ShopSeason, string> = {
+  spring: "봄",
+  summer: "여름",
+  fall: "가을",
+  winter: "겨울",
 };
 
 const SHOP_TYPE_OPTIONS: readonly ShopTypeOption[] = [
-  { value: "normal", label: "구매/판매", hint: "사고팔기 모두 가능" },
+  { value: "normal", label: "구매/판매", hint: "플레이어가 사고팔 수 있습니다" },
   { value: "buyOnly", label: "구매 전용", hint: "플레이어만 구매" },
   { value: "sellOnly", label: "판매 전용", hint: "플레이어만 판매" },
 ];
@@ -55,61 +75,54 @@ const ITEM_TYPE_LABELS: Record<ItemType, string> = {
 
 export function shopBody(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const project = store.getCurrent();
+  const items = project.database.items;
   const wrap = el("div", {
     class: "commerce-command-body shop-processing-command-body shop-processing-v2 cream-command-form",
     dataset: { testid: "shop-command-body" },
   });
-  const badgeState = (() => {
-    const orphanCount = (command.stock ?? []).filter((row) => !command.itemIds.includes(row.itemId)).length;
-    if (command.itemIds.length === 0) return { kind: "empty", text: "빈 상점" } as const;
-    if (orphanCount > 0) return { kind: "warn", text: `유령 재고 ${orphanCount}` } as const;
-    return { kind: "ok", text: `${command.itemIds.length}개` } as const;
-  })();
-  const headerBadge = el("span", {
-    class: `shop-header-badge shop-header-badge-${badgeState.kind}`,
-    dataset: { testid: "shop-header-badge" },
-    text: badgeState.text,
-    attrs: { title: badgeState.kind === "empty" ? "빈 상점은 플레이에서 목록이 비어 보입니다" : badgeState.text },
-  });
-  const emptyWarn =
-    command.itemIds.length === 0
-      ? el("div", {
-          class: "shop-empty-illust",
-          dataset: { testid: "shop-empty-banner" },
-          children: [
-            el("div", { class: "shop-empty-illust-icon", text: "🛒", attrs: { "aria-hidden": "true" } }),
-            el("div", { class: "shop-empty-illust-copy", text: "진열이 비었습니다 — 프리셋이나 자료집에서 담으세요." }),
-          ],
-        })
-      : null;
+  const section = shopGoodsSection(context, command, items);
   const main = el("div", {
     class: "shop-processing-main",
     children: [
-      ...(emptyWarn ? [emptyWarn] : []),
-      shopItemsPanel(context, command, project.database.items),
+      shopToolbar(context, command, items, shopHeaderBadge(command), section.filters),
+      section.goods,
+      section.detail,
       shopTransactionBranchControls(context, command),
     ],
   });
   const side = el("div", {
     class: "shop-processing-side",
     dataset: { testid: "shop-options-rail" },
-    children: [shopSettingsCard(context, command)],
+    children: [shopSettingsCard(context, command), shopAdvancedCard(context, command)],
   });
-  try { side.append(shopSabExtraCard(context, command)); } catch {}
-  wrap.append(
-    shopToolbar(context, command, project.database.items, headerBadge),
-    el("div", { class: "shop-processing-layout", children: [main, side] }),
-    selectedSummary(project.database.items, command.itemIds)
-  );
+  wrap.append(el("div", { class: "shop-processing-layout", children: [main, side] }));
   return wrap;
 }
 
-/** 제목·진열 상황·프리셋을 한 줄로 모은 상단 툴바 — 설명 문단 없이 상태만 보여준다. */
+/** 진열 상황 한 칩 — 개수, 빈 상점, itemIds 에 없는 유령 재고를 알린다. */
+function shopHeaderBadge(command: ShopCommand): HTMLElement {
+  const orphanCount = (command.stock ?? []).filter((row) => !command.itemIds.includes(row.itemId)).length;
+  const state =
+    command.itemIds.length === 0
+      ? ({ kind: "empty", text: "빈 상점" } as const)
+      : orphanCount > 0
+        ? ({ kind: "warn", text: `유령 재고 ${orphanCount}` } as const)
+        : ({ kind: "ok", text: `${command.itemIds.length}개` } as const);
+  return el("span", {
+    class: `shop-header-badge shop-header-badge-${state.kind}`,
+    dataset: { testid: "shop-header-badge" },
+    text: state.text,
+    attrs: { title: state.kind === "empty" ? "빈 상점은 플레이에서 목록이 비어 보입니다" : state.text },
+  });
+}
+
+/** 진열 상황·프리셋·필터를 한 줄로 모은 상단 툴바 — 설명 문단 없이 컨트롤만 둔다. */
 function shopToolbar(
   context: CommandEditContext,
   command: ShopCommand,
   items: readonly ItemRecord[],
-  badge: HTMLElement
+  badge: HTMLElement,
+  filters: HTMLElement
 ): HTMLElement {
   return el("div", {
     class: "shop-processing-intent shop-intent-header shop-processing-toolbar",
@@ -117,6 +130,7 @@ function shopToolbar(
     children: [
       badge,
       shopPresetsBar(context, command, items),
+      filters,
     ],
   });
 }
@@ -543,39 +557,88 @@ function normalizeDuration(value: number | undefined, fallback: number): number 
   return next === fallback ? undefined : next;
 }
 
-function shopSabExtraCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
-  const ext = command as unknown as Record<string, unknown>;
-  const row = (label: string, input: HTMLElement) => el("div", { class: "shop-sab-row", children: [el("span", { class: "shop-sab-label", text: label }), input] });
-  const wrap = el("div", { class: "shop-sab-extra", dataset: { testid: "shop-sab-extra" }, children: [el("div", { class: "shop-sab-title", text: "추가 서비스" })] });
-  const serviceSel = el("select", { dataset: { testid: "shop-serviceKind" }, children: [el("option", { text: "없음", attrs: { value: "" } }), el("option", { text: "수리", attrs: { value: "repair" } }), el("option", { text: "감정", attrs: { value: "appraisal" } }), el("option", { text: "전당포", attrs: { value: "pawn" } })] }) as HTMLSelectElement;
+/**
+ * 드물게 쓰는 서비스·투자·마일리지는 접어 둔다. `<details>` 대신 button + hidden 으로 만든다 —
+ * 이 창에서 `<details>` 는 UA `::details-content` 때문에 레이아웃이 새기 때문이다.
+ */
+function shopAdvancedCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
+  const row = (label: string, input: HTMLElement) =>
+    el("label", { class: "shop-advanced-row", children: [el("span", { class: "shop-advanced-label", text: label }), input] });
+
+  const serviceSel = el("select", {
+    class: "commerce-command-input",
+    dataset: { testid: "shop-serviceKind" },
+    children: [
+      el("option", { text: "없음", attrs: { value: "" } }),
+      el("option", { text: "수리", attrs: { value: "repair" } }),
+      el("option", { text: "감정", attrs: { value: "appraisal" } }),
+      el("option", { text: "전당포", attrs: { value: "pawn" } }),
+    ],
+  }) as HTMLSelectElement;
   serviceSel.title = "축제·행상은 이벤트 조건(fork)으로 감싸세요 — 이 상점이 닫혔을 때 보이지 않게 됩니다.";
-  (serviceSel as HTMLSelectElement).value = String(ext.shopServiceKind ?? "");
-  serviceSel.addEventListener("change", () => { const v = (serviceSel as HTMLSelectElement).value || undefined; context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), shopServiceKind: v } as unknown as Command); });
-  const invest = el("input", { attrs: { type: "number", min: "0", max: "5", step: "1" }, dataset: { testid: "shop-investmentLevel" } }) as HTMLInputElement;
-  (invest as HTMLInputElement).value = String((ext.investmentLevel as number) ?? 0);
-  invest.addEventListener("change", () => { const n = Math.max(0, Math.min(5, Math.floor(Number((invest as HTMLInputElement).value)||0))); context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), investmentLevel: n } as unknown as Command); });
-  const mileage = el("input", { attrs: { type: "number", min: "0", max: "0.1", step: "0.01" }, dataset: { testid: "shop-mileageRate" } }) as HTMLInputElement;
-  (mileage as HTMLInputElement).value = String((ext.mileageRate as number) ?? "");
-  mileage.addEventListener("change", () => { const n = Number((mileage as HTMLInputElement).value); context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), mileageRate: Number.isFinite(n) ? Math.max(0, Math.min(0.1, n)) : undefined } as unknown as Command); });
-  invest.title = "투자 단계 0~5 — 진열 가격에 반영됩니다";
-  mileage.title = "마일리지 적립률 0~0.1";
-  serviceSel.className = "commerce-command-input";
-  invest.className = "commerce-command-input";
-  mileage.className = "commerce-command-input";
-  wrap.append(row("서비스", serviceSel), row("투자 Lv", invest), row("마일리지", mileage));
-  return wrap;
+  serviceSel.value = command.shopServiceKind ?? "";
+  serviceSel.addEventListener("change", () => {
+    context.actions.replaceCommand(context.path, {
+      ...latestShop(context, command),
+      shopServiceKind: (serviceSel.value || undefined) as ShopCommand["shopServiceKind"],
+    });
+  });
+
+  const invest = el("input", {
+    class: "commerce-command-input",
+    attrs: { type: "number", min: "0", max: "5", step: "1", title: "투자 단계 0~5 — 진열 가격에 반영됩니다" },
+    dataset: { testid: "shop-investmentLevel" },
+  }) as HTMLInputElement;
+  invest.value = String(command.investmentLevel ?? 0);
+  invest.addEventListener("change", () => {
+    const parsed = Math.max(0, Math.min(5, Math.floor(Number(invest.value) || 0)));
+    invest.value = String(parsed);
+    context.actions.replaceCommand(context.path, { ...latestShop(context, command), investmentLevel: parsed });
+  });
+
+  const mileage = el("input", {
+    class: "commerce-command-input",
+    attrs: { type: "number", min: "0", max: "0.1", step: "0.01", title: "마일리지 적립률 0~0.1" },
+    dataset: { testid: "shop-mileageRate" },
+  }) as HTMLInputElement;
+  mileage.value = command.mileageRate === undefined ? "" : String(command.mileageRate);
+  mileage.addEventListener("change", () => {
+    const parsed = Number(mileage.value);
+    context.actions.replaceCommand(context.path, {
+      ...latestShop(context, command),
+      mileageRate: mileage.value.trim() !== "" && Number.isFinite(parsed) ? Math.max(0, Math.min(0.1, parsed)) : undefined,
+    });
+  });
+
+  const body = el("div", {
+    class: "shop-advanced-body",
+    dataset: { testid: "shop-advanced-body" },
+    children: [row("서비스", serviceSel), row("투자 Lv", invest), row("마일리지", mileage)],
+  });
+  body.hidden = true;
+  const toggle = el("button", {
+    class: "shop-advanced-toggle",
+    text: "고급",
+    attrs: { type: "button", "aria-expanded": "false" },
+    dataset: { testid: "shop-advanced-toggle" },
+  }) as HTMLButtonElement;
+  toggle.addEventListener("click", () => {
+    const open = body.hidden;
+    body.hidden = !open;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  return el("div", { class: "shop-advanced", dataset: { testid: "shop-sab-extra" }, children: [toggle, body] });
 }
+
 function shopSettingsCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
   return el("div", {
     class: "shop-processing-settings shop-processing-settings-compact",
     children: [
-      el("div", { class: "shop-options-rail-title", text: "상점 설정" }),
       shopTypeGroup(context, command),
       shopQuantityModeGroup(context, command),
       shopMessageSelect(context, command),
       shopMerchantGoldField(context, command),
       shopBranchOption(context, command),
-      shopStockSummary(command),
     ],
   });
 }
@@ -605,18 +668,16 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
     input.value = String(merchantGold);
     context.actions.replaceCommand(context.path, { ...latestShop(context, command), merchantGold });
   });
-  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-merchant-gold" });
-  fieldset.append(
-    el("legend", { text: "상인 소지금" }),
-    el("div", {
-      class: "shop-processing-merchant-gold-row",
-      children: [
-        input,
-        el("span", { class: "shop-processing-merchant-gold-unit", text: "G" }),
-      ],
-    })
-  );
-  return fieldset;
+  return el("div", {
+    class: "commerce-command-field shop-processing-merchant-gold",
+    children: [
+      el("label", { class: "commerce-command-title", text: "상인 소지금" }),
+      el("div", {
+        class: "shop-processing-merchant-gold-row",
+        children: [input, el("span", { class: "shop-processing-merchant-gold-unit", text: "G" })],
+      }),
+    ],
+  });
 }
 
 
@@ -650,61 +711,31 @@ function shopQuantityModeGroup(context: CommandEditContext, command: ShopCommand
   });
 }
 
-function shopStockSummary(command: ShopCommand): HTMLElement {
-  const stock = command.stock ?? [];
-  const seasonal = stock.filter((row) => Boolean(row.seasons && row.seasons.length > 0)).length;
-  const text = stock.length === 0 ? "재고 기본" : "재고 " + String(stock.length) + " · 계절한정 " + String(seasonal);
-  return el("div", {
-    class: "shop-processing-stock-chip",
-    text,
-    dataset: { testid: "shop-stock-summary" },
-    attrs: { title: "계절 재고를 넣으면 판매 기준이 그쪽으로 바랍니다" },
-  });
-}
-
 function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const current = shopTypeValue(command);
   const select = document.createElement("select");
   select.className = "commerce-command-input shop-processing-type-select";
   select.dataset.testid = "shop-type-select";
-  select.title = "상점 종류";
   for (const option of SHOP_TYPE_OPTIONS) {
     const opt = document.createElement("option");
     opt.value = option.value;
-    opt.textContent = `${option.label} — ${option.hint}`;
+    opt.textContent = option.label;
+    opt.title = option.hint;
     opt.dataset.testid = `shop-type-${option.value}`;
     if (option.value === current) opt.selected = true;
     select.append(opt);
   }
-  // e2e/구 UI 호환: 숨은 radio 유지 (shop-type-normal 등)
-  const legacy = el("div", {
-    class: "shop-processing-type-legacy",
-    attrs: { "aria-hidden": "true" },
-  });
-  for (const option of SHOP_TYPE_OPTIONS) {
-    const radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = `shop-type-${context.path.join("-") || "root"}`;
-    radio.value = option.value;
-    radio.checked = current === option.value;
-    radio.dataset.testid = `shop-type-${option.value}`;
-    radio.className = "shop-processing-segment-input";
-    radio.tabIndex = -1;
-    legacy.append(radio);
-  }
+  select.title = SHOP_TYPE_OPTIONS.find((entry) => entry.value === current)?.hint ?? "상점 종류";
   select.addEventListener("change", () => {
-    const next = SHOP_TYPE_OPTIONS.find((entry) => entry.value === select.value)?.value ?? "normal";
-    for (const radio of legacy.querySelectorAll<HTMLInputElement>("input[type=radio]")) {
-      radio.checked = radio.value === next;
-    }
-    context.actions.replaceCommand(context.path, withShopType(latestShop(context, command), next));
+    const next = SHOP_TYPE_OPTIONS.find((entry) => entry.value === select.value) ?? SHOP_TYPE_OPTIONS[0]!;
+    select.title = next.hint;
+    context.actions.replaceCommand(context.path, withShopType(latestShop(context, command), next.value));
   });
   return el("div", {
     class: "commerce-command-field shop-processing-type-field",
     children: [
       el("label", { class: "commerce-command-title", text: "상점 종류" }),
       select,
-      legacy,
     ],
   });
 }
@@ -724,10 +755,10 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
   });
   const failCheckbox = document.createElement("input");
   failCheckbox.type = "checkbox";
-  failCheckbox.checked = (command as unknown as { branchOnFailedTransaction?: boolean }).branchOnFailedTransaction ?? false;
+  failCheckbox.checked = command.branchOnFailedTransaction ?? false;
   failCheckbox.dataset.testid = "shop-branch-on-failed-transaction";
   failCheckbox.addEventListener("change", () => {
-    const latest = latestShop(context, command) as unknown as ShopCommand & { branchOnFailedTransaction?: boolean; failedTransactionBranch?: Command[] };
+    const latest = latestShop(context, command);
     context.actions.replaceCommand(context.path, {
       ...latest,
       branchOnFailedTransaction: failCheckbox.checked,
@@ -751,7 +782,7 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
 
 const SHOP_FAILED_BRANCH_INDEX = SHOP_FAILED_TRANSACTION_BRANCH_INDEX;
 const SHOP_MESSAGE_PREVIEWS: Record<ShopMessageType, string> = {
-  welcome: "어심 오세요! 무엇이 필요하신가요?",
+  welcome: "어서 오세요! 무엇이 필요하신가요?",
   business: "무엇이 필요하신가요?",
   direct: "물건을 고르세요.",
   festival: "축제 한정 특가! 오늘만 이 가격!",
@@ -773,7 +804,7 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
       },
     },
   });
-  const failedBranch = (command as unknown as { branchOnFailedTransaction?: boolean }).branchOnFailedTransaction ?? false;
+  const failedBranch = command.branchOnFailedTransaction ?? false;
   const hiddenClass = command.branchOnTransaction || failedBranch ? "" : " is-hidden";
   const txHidden = command.branchOnTransaction ? "" : " is-hidden";
   const failHidden = failedBranch ? "" : " is-hidden";
@@ -791,12 +822,12 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
   return el("div", {
     class: `shop-processing-branch-controls${hiddenClass}`,
     dataset: { testid: "shop-transaction-branch-controls" },
+    // 두 분기 줄은 「제목 + (명령 select | 추가)」로 모양이 같다. 예전에는 실패 분기만
+    // 제목까지 같은 행에 넣어 select 와 버튼 폭이 위아래로 어긋나 보였다.
     children: [
       el("div", {
-        class: "shop-processing-branch-head",
-        children: [
-          el("span", { class: "shop-processing-branch-title", text: "구매/판매 분기" }),
-        ],
+        class: `shop-processing-branch-head${txHidden}`,
+        children: [el("span", { class: "shop-processing-branch-title", text: "구매/판매 분기" })],
       }),
       el("div", {
         class: `shop-processing-branch-row${txHidden}`,
@@ -804,52 +835,70 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
         children: [branchSel, add],
       }),
       el("div", {
+        class: `shop-processing-branch-head${failHidden}`,
+        children: [el("span", { class: "shop-processing-branch-title", text: "빈 상점/취소 분기" })],
+      }),
+      el("div", {
         class: `shop-processing-branch-row shop-processing-failed-branch-row${failHidden}`,
         dataset: { testid: "shop-failed-branch-row" },
-        children: [el("span", { class: "shop-processing-branch-title", text: "빈 상점/취소 분기" }), failedSel, failedAdd],
+        children: [failedSel, failedAdd],
       }),
     ],
   });
 }
 
 function shopMessageSelect(context: CommandEditContext, command: ShopCommand): HTMLElement {
+  const current = messageTypeValue(command);
   const select = document.createElement("select");
   select.dataset.testid = "shop-message-type";
   select.className = "commerce-command-input shop-processing-message-select";
-  select.value = messageTypeValue(command);
   for (const option of SHOP_MESSAGE_OPTIONS) {
     const optionNode = document.createElement("option");
     optionNode.value = option.value;
     optionNode.textContent = option.label;
+    optionNode.title = SHOP_MESSAGE_PREVIEWS[option.value] ?? "";
+    if (option.value === current) optionNode.selected = true;
     select.append(optionNode);
   }
+  // 옵션을 붙인 뒤에 값을 잡는다 — 빈 select 에 value 를 쓰면 무시돼 저장값이 안 보였다.
+  select.value = current;
+  select.title = SHOP_MESSAGE_PREVIEWS[current] ?? "";
   select.addEventListener("change", () => {
-    context.actions.replaceCommand(context.path, {
-      ...latestShop(context, command),
-      messageType: selectedMessageType(select.value),
-    });
+    const next = selectedMessageType(select.value);
+    select.title = SHOP_MESSAGE_PREVIEWS[next] ?? "";
+    context.actions.replaceCommand(context.path, { ...latestShop(context, command), messageType: next });
   });
-  const preview = el("p", {
-    class: "commerce-command-hint shop-message-preview",
-    dataset: { testid: "shop-message-preview" },
-    text: SHOP_MESSAGE_PREVIEWS[messageTypeValue(command)] ?? "",
+  // 컨트롤 하나짜리는 fieldset+legend 가 아니라 다른 레일 항목과 같은 label+컨트롤로 간다 —
+  // fieldset 은 관련 컨트롤 묶음용이고, 섞어 쓰면 레일에 테두리 박스가 들쭉날쭉 생긴다.
+  return el("div", {
+    class: "commerce-command-field shop-processing-message",
+    children: [el("label", { class: "commerce-command-title", text: "메시지 유형" }), select],
   });
-  select.addEventListener("change", () => {
-    preview.textContent = SHOP_MESSAGE_PREVIEWS[selectedMessageType(select.value)] ?? "";
-  });
-  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-message" });
-  fieldset.append(el("legend", { text: "메시지 유형" }), select, preview);
-  return fieldset;
 }
 
-function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items: readonly ItemRecord[]): HTMLElement {
-  const selectedItems = command.itemIds
+/**
+ * 상품 목록 한 판. 진열/자료집 두 목록을 **체크박스 단일 목록**으로 합친다.
+ *
+ * `<details>` 는 쓰지 않는다 — Chromium 131+ 는 summary 외 자식을 UA `::details-content`
+ * (`display:block`, 콘텐츠 높이) 로 감싸므로 자식에 준 `flex:1/overflow:auto` 가 레이아웃에
+ * 참여하지 못하고 목록이 잘린 채 스크롤도 안 됐다. 스크롤러는 평범한 `<div>` 하나뿐이다.
+ */
+function shopGoodsSection(
+  context: CommandEditContext,
+  command: ShopCommand,
+  items: readonly ItemRecord[]
+): ShopGoodsSection {
+  // 폼은 itemIds 가 바뀌면 통째로 재빌드된다(commandEditDialog.shouldRerenderCommandForm).
+  // 그래서 이 클로저가 사는 동안 판매 여부는 고정이고, 필터·검색만 목록을 다시 그린다.
+  const stockedItems = command.itemIds
     .map((id) => items.find((item) => item.id === id))
     .filter((item): item is ItemRecord => Boolean(item));
-  const notInShop = () => items.filter((item) => !command.itemIds.includes(item.id));
+  const poolItems = items.filter((item) => !command.itemIds.includes(item.id));
+  const stockByItem = new Map((command.stock ?? []).map((row) => [row.itemId, row] as const));
 
   let typeFilter: ItemType | "all" = "all";
   let searchQuery = "";
+  let selectedItemId: string | null = stockedItems[0]?.id ?? poolItems[0]?.id ?? null;
 
   const commitItems = (itemIds: readonly ItemId[]) => {
     // 단일 진실원: itemIds가 정답, stock는 커스텀(계절/가격) 있을 때만 유지. 순서도 itemIds에 맞춤.
@@ -865,51 +914,159 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     });
   };
 
-  const selectedList = shopItemList("shop-selected-items", selectedItems, {
-    emptyText: "아직 담은 물건이 없습니다.",
-    onActivate: (itemId) => commitItems(command.itemIds.filter((id) => id !== itemId)),
-  });
-  // 자료집에서 고른 후보. 예전에는 aria-hidden 트레이 안의 두 번째 목록이 이 상태를 들고
-  // 있었는데, 그 목록은 화면에 없으면서 tabbable 노드 179개를 만들고 검색 한 글자마다
-  // 179행을 DOM 밖에서 다시 그렸다. 이제 카탈로그가 유일한 후보 목록이고 선택은 여기 한 곳이다.
-  let catalogSelection: ItemId | null = notInShop()[0]?.id ?? null;
-
-  const countBadge = el("span", {
-    class: "shop-processing-list-count",
-    text: `${selectedItems.length}/${items.length}`,
-    dataset: { testid: "shop-available-count" },
-  });
-  const catalog = el("div", {
-    class: "shop-processing-catalog",
+  const goods = el("div", {
+    class: "shop-goods",
     dataset: { testid: "shop-item-catalog" },
-    attrs: { role: "listbox", "aria-label": "상점 상품" },
+    attrs: { role: "group", "aria-label": "상점 상품" },
   });
 
-  const applyAvailableFilter = () => {
-    const filtered = notInShop().filter((item) => {
-      if (typeFilter !== "all" && item.type !== typeFilter) return false;
-      return itemMatchesQuery(item, searchQuery);
-    });
-    // 필터가 좁아져 고른 항목이 사라지면 첫 후보로 옮긴다 — 담기 버튼이 죽은 id 를 들고 있지 않게.
-    if (!catalogSelection || !filtered.some((item) => item.id === catalogSelection)) {
-      catalogSelection = filtered[0]?.id ?? null;
+  const detail = itemDetailPanel(null, {
+    command,
+    onStockChange: (nextStock) => {
+      const latest = latestShop(context, command);
+      // stock에 생긴 id가 itemIds에 없으면(수동 편집 잔재) itemIds에도 추가해 이중기록 해소
+      const known = new Set(latest.itemIds);
+      const missingIds = nextStock.map((e) => e.itemId).filter((id) => !known.has(id));
+      const nextItemIds = missingIds.length > 0 ? [...latest.itemIds, ...missingIds] : latest.itemIds;
+      const byId = new Map(nextStock.map((e) => [e.itemId, e] as const));
+      const orderedStock = nextItemIds.map((id) => byId.get(id)).filter((e): e is NonNullable<typeof e> => Boolean(e));
+      context.actions.replaceCommand(context.path, {
+        ...latest,
+        itemIds: nextItemIds,
+        ...(orderedStock.length > 0 ? { stock: orderedStock } : { stock: undefined }),
+      });
+    },
+  });
+
+  const selectItem = (itemId: string) => {
+    selectedItemId = itemId;
+    for (const row of goods.querySelectorAll<HTMLElement>(".shop-goods-row")) {
+      row.classList.toggle("is-selected", row.dataset.itemId === itemId);
     }
-    countBadge.textContent = `${command.itemIds.length}/${items.length}`;
-    add.disabled = filtered.length === 0;
-    rebuildShopCatalog(catalog, items, command.itemIds, {
-      typeFilter,
-      searchQuery,
-      selectedCandidateId: catalogSelection,
-      onToggle: (itemId, nextInShop) => {
-        commitItems(nextInShop ? addItemId(command.itemIds, itemId) : command.itemIds.filter((id) => id !== itemId));
-      },
-      onSelect: (itemId) => {
-        const inShop = command.itemIds.includes(itemId);
-        if (inShop) selectedList.select.value = itemId;
-        else catalogSelection = itemId;
-        syncDetail(itemId, items);
-      },
+    detail.render(items.find((item) => item.id === itemId) ?? null);
+  };
+
+  /**
+   * 담기/빼기는 폼을 통째로 재빌드한다. 179행 목록에서 스크롤 위치가 맨 위로 튀면 연달아 담을 수
+   * 없으므로, 토글 직전 위치를 재고 재빌드된 새 DOM 에 그대로 되돌린다. 포커스는 `preventScroll`
+   * 로 옮겨서 키보드 사용자는 방금 만진 행에 남고 마우스 사용자는 보던 자리를 지킨다.
+   */
+  const toggleItem = (itemId: string, nextInShop: boolean) => {
+    const view: ShopGoodsView = { scrollTop: goods.scrollTop, searchQuery, typeFilter: String(typeFilter) };
+    commitItems(
+      nextInShop ? addItemId(command.itemIds, itemId) : command.itemIds.filter((id) => id !== itemId)
+    );
+    restoreGoodsView(view, itemId);
+  };
+
+  const rowFor = (item: ItemRecord, inShop: boolean, orderIndex: number, orderCount: number): HTMLElement => {
+    const check = el("input", {
+      class: "shop-goods-check",
+      attrs: { type: "checkbox", "aria-label": `${item.name} 판매` },
+    }) as HTMLInputElement;
+    check.checked = inShop;
+    check.dataset.testid = `shop-item-check-${item.id}`;
+    check.addEventListener("change", () => toggleItem(item.id, check.checked));
+
+    const entry = stockByItem.get(item.id);
+    const seasons = (entry?.seasons ?? []).filter((season): season is ShopSeason => SEASON_ORDER.includes(season));
+    const priced = entry?.priceOverride;
+    const facts = [
+      itemTypeLabel(item.type),
+      typeof priced === "number" ? formatPrice(priced) : formatPrice(item.price),
+      ...(seasons.length > 0 ? [seasons.map((season) => SEASON_LABELS[season]).join(" ")] : []),
+    ];
+    const pick = el("button", {
+      class: "shop-goods-pick",
+      attrs: { type: "button", title: itemDetailTitle(item) },
+      children: [
+        el("span", { class: "shop-goods-name", text: item.name }),
+        el("span", {
+          class: `shop-goods-facts${typeof priced === "number" ? " is-overridden" : ""}`,
+          text: facts.join(" · "),
+        }),
+      ],
+      on: { click: () => selectItem(item.id) },
     });
+
+    const children: HTMLElement[] = [check, pick];
+    if (inShop) {
+      children.push(
+        moveRowButton("▲", `shop-move-up-${item.id}`, `${item.name} 위로`, orderIndex === 0, () =>
+          commitItems(moveItemId(command.itemIds, item.id, -1))
+        ),
+        moveRowButton("▼", `shop-move-down-${item.id}`, `${item.name} 아래로`, orderIndex >= orderCount - 1, () =>
+          commitItems(moveItemId(command.itemIds, item.id, 1))
+        )
+      );
+    }
+    return el("li", {
+      class: `shop-goods-row${inShop ? " is-stocked" : ""}${item.id === selectedItemId ? " is-selected" : ""}`,
+      dataset: { testid: `shop-item-row-${item.id}`, itemId: item.id },
+      children,
+    });
+  };
+
+  const groupFor = (
+    testId: string,
+    label: string,
+    all: readonly ItemRecord[],
+    visible: readonly ItemRecord[],
+    inShop: boolean,
+    emptyText: string
+  ): HTMLElement => {
+    const count = visible.length === all.length ? String(all.length) : `${visible.length} / ${all.length}`;
+    const body =
+      visible.length === 0
+        ? el("p", { class: "shop-goods-empty", text: emptyText })
+        : el("ul", {
+            class: "shop-goods-rows",
+            children: visible.map((item, index) => rowFor(item, inShop, index, visible.length)),
+          });
+    return el("div", {
+      class: "shop-goods-group",
+      dataset: { testid: testId },
+      children: [
+        el("div", {
+          class: "shop-goods-head",
+          children: [
+            el("span", { class: "shop-goods-head-label", text: label }),
+            el("span", { class: "shop-goods-head-count", text: count }),
+          ],
+        }),
+        body,
+      ],
+    });
+  };
+
+  const matches = (item: ItemRecord): boolean =>
+    (typeFilter === "all" || item.type === typeFilter) && itemMatchesQuery(item, searchQuery);
+
+  const rebuild = () => {
+    const filtering = Boolean(searchQuery) || typeFilter !== "all";
+    const visibleStocked = stockedItems.filter(matches);
+    const visiblePool = poolItems.filter(matches);
+    goods.replaceChildren(
+      groupFor(
+        "shop-sale-list",
+        "판매 중",
+        stockedItems,
+        visibleStocked,
+        true,
+        stockedItems.length === 0 ? "아직 담은 물건이 없습니다." : "필터에 맞는 물건이 없습니다."
+      ),
+      groupFor(
+        "shop-stock-pool",
+        "안 담음",
+        poolItems,
+        visiblePool,
+        false,
+        poolItems.length === 0 ? "더 담을 물건이 없습니다." : "필터에 맞는 물건이 없습니다."
+      )
+    );
+    if (filtering && visibleStocked.length === 0 && visiblePool.length === 0) {
+      goods.append(el("p", { class: "shop-goods-empty shop-goods-empty-all", text: "필터에 맞는 물건이 없습니다." }));
+    }
   };
 
   const search = document.createElement("input");
@@ -917,10 +1074,22 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   search.className = "commerce-command-input shop-processing-item-search";
   search.placeholder = "이름 · 설명 검색";
   search.dataset.testid = "shop-item-search";
-  search.title = "상품 검색";
+  search.title = "이름·설명·종류·id 로 상품을 찾습니다";
+  const applySearch = () => {
+    const next = search.value.trim().toLowerCase();
+    if (next === searchQuery) return;
+    searchQuery = next;
+    rebuild();
+  };
+  // 179행을 키 입력마다 다시 그리지 않도록 타이핑은 눌러 모으고, 확정 입력은 곧바로 반영한다.
+  let searchTimer: ReturnType<typeof setTimeout> | undefined;
   search.addEventListener("input", () => {
-    searchQuery = search.value.trim().toLowerCase();
-    applyAvailableFilter();
+    if (searchTimer !== undefined) clearTimeout(searchTimer);
+    searchTimer = setTimeout(applySearch, SHOP_SEARCH_DEBOUNCE_MS);
+  });
+  search.addEventListener("change", () => {
+    if (searchTimer !== undefined) clearTimeout(searchTimer);
+    applySearch();
   });
 
   // 카테고리 = ItemRecord.type (데이터베이스 아이템 종류)
@@ -943,344 +1112,90 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   }
   typeSelect.addEventListener("change", () => {
     typeFilter = typeSelect.value === "all" ? "all" : (typeSelect.value as ItemType);
-    applyAvailableFilter();
+    rebuild();
   });
 
-  const add = itemMoveButton("담기", "shop-add-item", () => {
-    if (!catalogSelection) return;
-    commitItems(addItemId(command.itemIds, catalogSelection));
-  });
-  const remove = itemMoveButton("빼기", "shop-remove-item", () => {
-    if (!selectedList.value) return;
-    commitItems(command.itemIds.filter((id) => id !== selectedList.value));
-  });
-  const moveUp = itemMoveButton("▲", "shop-move-item-up", () => {
-    if (!selectedList.value) return;
-    commitItems(moveItemId(command.itemIds, selectedList.value, -1));
-  });
-  const moveDown = itemMoveButton("▼", "shop-move-item-down", () => {
-    if (!selectedList.value) return;
-    commitItems(moveItemId(command.itemIds, selectedList.value, 1));
-  });
-  add.disabled = notInShop().length === 0;
-  remove.disabled = selectedItems.length === 0;
-  moveUp.disabled = selectedItems.length < 2;
-  moveDown.disabled = selectedItems.length < 2;
-
-  selectedList.select.addEventListener("change", () => {
-    highlightListSelection(selectedList.root, selectedList.select.value);
-  });
-
-  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-items" });
-  fieldset.append(
-    el("legend", { text: "판매 목록" })
-  );
-  if (items.length === 0) {
-    fieldset.append(
-      el("div", {
-        class: "commerce-command-empty",
-        text: "등록된 아이템이 없습니다. 데이터베이스 → 아이템에서 추가하세요.",
-      }),
-    );
-    return fieldset;
-  }
-
-  const detail = itemDetailPanel(selectedItems[0] ?? notInShop()[0] ?? null, {
-    command,
-    onStockChange: (nextStock) => {
-      const latest = latestShop(context, command);
-      // stock에 생긴 id가 itemIds에 없으면(수동 편집 잔재) itemIds에도 추가해 이중기록 해소
-      const known = new Set(latest.itemIds);
-      const missingIds = nextStock.map((e) => e.itemId).filter((id) => !known.has(id));
-      const nextItemIds = missingIds.length > 0 ? [...latest.itemIds, ...missingIds] : latest.itemIds;
-      const byId = new Map(nextStock.map((e) => [e.itemId, e] as const));
-      const orderedStock = nextItemIds.map((id) => byId.get(id)).filter((e): e is NonNullable<typeof e> => Boolean(e));
-      context.actions.replaceCommand(context.path, {
-        ...latest,
-        itemIds: nextItemIds,
-        ...(orderedStock.length > 0 ? { stock: orderedStock } : { stock: undefined }),
-      });
-    },
-  });
-  const syncDetail = (itemId: string, pool: readonly ItemRecord[]) => {
-    const record = pool.find((item) => item.id === itemId) ?? null;
-    detail.render(record);
-  };
-  selectedList.root.addEventListener("shop-item-select", ((event: CustomEvent<{ itemId: string }>) => {
-    syncDetail(event.detail.itemId, selectedItems);
-  }) as EventListener);
-
-  const controls = el("div", {
-    class: "shop-processing-item-controls",
-    children: [add, remove, moveUp, moveDown],
-  });
-
-  const filterBar = el("div", {
+  const filters = el("div", {
     class: "shop-processing-filter-bar",
     dataset: { testid: "shop-item-filter-bar" },
     children: [
       el("label", {
         class: "shop-processing-filter-field",
-        children: [
-          el("span", { class: "shop-processing-filter-label", text: "종류" }),
-          typeSelect,
-        ],
+        children: [el("span", { class: "shop-processing-filter-label", text: "종류" }), typeSelect],
       }),
       el("label", {
         class: "shop-processing-filter-field shop-processing-filter-search",
-        children: [
-          el("span", { class: "shop-processing-filter-label", text: "검색" }),
-          search,
-        ],
+        children: [el("span", { class: "shop-processing-filter-label", text: "검색" }), search],
       }),
-      // DB 개수는 접이식 머리(`자료집에서 더 담기 · DB N개`)에 이미 있다. 여기 두 번째로 찍으면
-      // 좁은 열에서 한 줄(≈24px)을 통째로 먹고, 그만큼 카탈로그 행이 잘려 나간다.
     ],
   });
 
-  // 자료집 카탈로그는 열린 채로 시작한다 — 전체화면에서 오른쪽 열을 통째로 쓰므로
-  // 접으면 그 열이 죽고, 담을 후보를 볼 방법이 사라진다.
-  //
-  // <details> 는 쓰지 않는다. Chromium 은 summary 이외의 자식을 ::details-content
-  // (display:block, 콘텐츠 높이) 안에 감싸므로 진짜 flex 아이템은 그 익명 블록이고,
-  // 자식에 건 flex:1/min-height:0/overflow:auto 가 레이아웃에 참여하지 못한다.
-  // 실측 결과 fold 는 279px 인데 ::details-content 가 10110px 로 자라 179행이 잘리고
-  // 휠이 전혀 먹지 않았다. div + aria-expanded 로 같은 접이식을 만든다.
-  const catalogBody = el("div", {
-    class: "shop-processing-catalog-body",
-    children: [filterBar, catalog],
-  });
-  const catalogToggle = foldToggle(
-    `자료집에서 더 담기 · DB ${items.length}개`,
-    "shop-item-catalog-summary",
-    "shop-processing-catalog-summary"
-  );
-  const catalogFold = el("div", {
-    class: "shop-processing-catalog-fold",
-    dataset: { testid: "shop-item-catalog-fold" },
-    children: [catalogToggle, catalogBody],
-  });
-  bindFold(catalogFold, catalogToggle, catalogBody, true);
+  if (items.length === 0) {
+    goods.append(
+      el("p", {
+        class: "shop-goods-empty",
+        text: "등록된 아이템이 없습니다. 데이터베이스 → 아이템에서 추가하세요.",
+      })
+    );
+    return { filters, goods, detail: detail.root };
+  }
 
-  // 상세·계절 재고는 부차 작업이라 접어서 시작한다 — 펼침이 기본이면 상세가 34vh 를 먼저
-  // 먹어 1280x720 에서 판매 목록이 54px 로 눌렸다.
-  const detailToggle = foldToggle(
-    "선택한 아이템 상세 · 계절 재고",
-    "shop-item-detail-summary",
-    "shop-processing-detail-summary"
-  );
-  const detailFold = el("div", {
-    class: "shop-processing-detail-fold",
-    dataset: { testid: "shop-item-detail-fold" },
-    children: [detailToggle, detail.root],
-  });
-  bindFold(detailFold, detailToggle, detail.root, false);
-
-  selectedList.root.classList.add("shop-processing-sale-list");
-  selectedList.root.dataset.testid = "shop-sale-list";
-  // 진열 목록의 native select 는 선택 상태 모델일 뿐 화면에 없다 — 탭 순서에서 뺀다.
-  selectedList.select.tabIndex = -1;
-  fieldset.append(selectedList.root, catalogFold, controls, detailFold);
-  applyAvailableFilter();
-  return fieldset;
+  rebuild();
+  if (selectedItemId) selectItem(selectedItemId);
+  return { filters, goods, detail: detail.root };
 }
 
-/** 접이식 패널의 머리 버튼. `<summary>` 대신 실제 버튼이라 ::details-content 함정이 없다. */
-function foldToggle(label: string, testId: string, className: string): HTMLButtonElement {
-  return el("button", {
-    class: className,
-    text: label,
+function moveRowButton(
+  glyph: string,
+  testId: string,
+  label: string,
+  disabled: boolean,
+  click: () => void
+): HTMLButtonElement {
+  const button = el("button", {
+    class: "shop-goods-move",
+    text: glyph,
+    attrs: { type: "button", "aria-label": label, title: label },
     dataset: { testid: testId },
-    attrs: { type: "button", "aria-expanded": "false" },
+    on: { click },
   }) as HTMLButtonElement;
+  button.disabled = disabled;
+  return button;
 }
 
-function bindFold(fold: HTMLElement, toggle: HTMLElement, body: HTMLElement, open: boolean): void {
-  const apply = (next: boolean) => {
-    fold.classList.toggle("is-open", next);
-    toggle.setAttribute("aria-expanded", next ? "true" : "false");
-    body.hidden = !next;
-  };
-  toggle.addEventListener("click", () => apply(toggle.getAttribute("aria-expanded") !== "true"));
-  apply(open);
-}
-
-function rebuildShopCatalog(
-  host: HTMLElement,
-  items: readonly ItemRecord[],
-  selectedIds: readonly string[],
-  options: {
-    readonly typeFilter: string;
-    readonly searchQuery: string;
-    /** 담기 버튼이 지금 담을 항목 — 사용자가 어떤 행이 대상인지 볼 수 있어야 한다. */
-    readonly selectedCandidateId?: string | null;
-    readonly onToggle: (itemId: string, nextInShop: boolean) => void;
-    readonly onSelect: (itemId: string) => void;
-  },
-): void {
-  const selected = new Set(selectedIds);
-  const visible = items.filter((item) => {
-    if (options.typeFilter !== "all" && item.type !== options.typeFilter) return false;
-    return itemMatchesQuery(item, options.searchQuery);
-  });
-  const ordered = [
-    ...selectedIds.map((id) => visible.find((item) => item.id === id)).filter((item): item is ItemRecord => Boolean(item)),
-    ...visible.filter((item) => !selected.has(item.id)),
-  ];
-  host.replaceChildren();
-  if (ordered.length === 0) {
-    host.append(el("div", { class: "shop-processing-item-empty", text: "필터에 맞는 물건이 없습니다." }));
-    return;
+/**
+ * 재빌드된 폼에서 목록 위치·필터·포커스를 되돌린다. 재빌드는 `replaceCommand` 안에서
+ * 동기로 끝나므로 호출 시점엔 새 DOM 이 이미 문서에 붙어 있다.
+ */
+function restoreGoodsView(view: ShopGoodsView, focusItemId: string | null): void {
+  const scope = typeof document === "undefined" ? null : document;
+  const goods = scope?.querySelector<HTMLElement>('[data-testid="shop-item-catalog"]');
+  if (!goods) return;
+  const form = goods.closest<HTMLElement>(".shop-processing-command-body") ?? goods;
+  if (view.typeFilter !== "all") {
+    const typeSelect = form.querySelector<HTMLSelectElement>('[data-testid="shop-item-type-filter"]');
+    if (typeSelect) {
+      typeSelect.value = view.typeFilter;
+      typeSelect.dispatchEvent(new Event("change"));
+    }
   }
-  for (const item of ordered) {
-    const inShop = selected.has(item.id);
-    const check = el("input", {
-      attrs: { type: "checkbox", "aria-label": `${item.name} 판매` },
-    }) as HTMLInputElement;
-    check.checked = inShop;
-    check.addEventListener("click", (event) => event.stopPropagation());
-    check.addEventListener("change", () => options.onToggle(item.id, check.checked));
-    const isCandidate = !inShop && item.id === options.selectedCandidateId;
-    const row = el("button", {
-      class: `shop-processing-catalog-row${inShop ? " is-stocked" : ""}${isCandidate ? " is-candidate" : ""}`,
-      attrs: { type: "button", role: "option", "aria-selected": isCandidate ? "true" : "false" },
-      dataset: { testid: `shop-catalog-row-${item.id}` },
-      on: {
-        click: () => {
-          for (const sibling of host.querySelectorAll<HTMLElement>(".shop-processing-catalog-row")) {
-            const hit = sibling === row;
-            sibling.classList.toggle("is-candidate", hit && !inShop);
-            sibling.setAttribute("aria-selected", hit && !inShop ? "true" : "false");
-          }
-          options.onSelect(item.id);
-        },
-        dblclick: () => options.onToggle(item.id, !inShop),
-      },
-      children: [
-        check,
-        el("span", { class: "shop-processing-catalog-name", text: item.name }),
-        el("span", { class: "shop-processing-catalog-price", text: formatPrice(item.price) }),
-        el("span", { class: "shop-processing-catalog-state", text: inShop ? "판매 중" : "안 담음" }),
-      ],
-    });
-    host.append(row);
+  if (view.searchQuery) {
+    const search = form.querySelector<HTMLInputElement>('[data-testid="shop-item-search"]');
+    if (search) {
+      search.value = view.searchQuery;
+      search.dispatchEvent(new Event("change"));
+    }
   }
+  goods.scrollTop = view.scrollTop;
+  if (!focusItemId) return;
+  const check = form.querySelector<HTMLInputElement>(`[data-testid="shop-item-check-${focusItemId}"]`);
+  check?.focus({ preventScroll: true });
 }
 
 function itemMatchesQuery(item: ItemRecord, query: string): boolean {
   if (!query) return true;
   const hay = `${item.name} ${item.description ?? ""} ${item.id} ${itemTypeLabel(item.type)}`.toLowerCase();
   return hay.includes(query);
-}
-
-function shopItemList(
-  testId: string,
-  items: readonly ItemRecord[],
-  options: { readonly emptyText: string; readonly onActivate: (itemId: string) => void }
-): ShopItemList {
-  const project = store.getCurrent();
-  const select = document.createElement("select");
-  select.className = "shop-processing-native-select";
-  select.dataset.testid = testId;
-  select.size = Math.max(2, items.length || 2);
-  select.multiple = false;
-  for (const item of items) {
-    const option = document.createElement("option");
-    option.value = item.id;
-    option.textContent = `${item.name}  ·  ${formatPrice(item.price)}`;
-    option.dataset.testid = `shop-list-item-${item.id}`;
-    select.append(option);
-  }
-  if (items.length > 0) {
-    select.selectedIndex = 0;
-    select.value = items[0]!.id;
-  }
-
-  const list = el("div", {
-    class: "shop-processing-item-list",
-    attrs: { role: "listbox", "aria-label": testId },
-  });
-
-  if (items.length === 0) {
-    list.append(el("div", { class: "shop-processing-item-empty", text: options.emptyText }));
-  } else {
-    for (const item of items) {
-      const selected = item.id === select.value;
-      const row = el("button", {
-        class: `shop-processing-item-row${selected ? " is-selected" : ""}`,
-        attrs: {
-          type: "button",
-          role: "option",
-          "aria-selected": selected ? "true" : "false",
-          title: itemDetailTitle(item),
-        },
-        dataset: { testid: `shop-item-row-${item.id}`, itemId: item.id },
-      });
-      row.append(
-        el("div", {
-          class: "shop-processing-item-icon",
-          children: [recordIconElement(imageIconOf(project, item.iconResourceId ?? item.imageResourceId), item.name)],
-        }),
-        el("div", {
-          class: "shop-processing-item-copy",
-          children: [
-            el("div", {
-              class: "shop-processing-item-topline",
-              children: [
-                el("span", { class: "shop-processing-item-name", text: item.name }),
-                el("span", { class: "shop-processing-item-price", text: formatPrice(item.price) }),
-              ],
-            }),
-            el("div", {
-              class: "shop-processing-item-meta",
-              children: [
-                el("span", { class: "shop-processing-item-type", text: itemTypeLabel(item.type) }),
-                el("span", {
-                  class: "shop-processing-item-desc",
-                  text: item.description?.trim() || "설명 없음",
-                }),
-              ],
-            }),
-          ],
-        })
-      );
-      row.addEventListener("click", () => {
-        select.value = item.id;
-        highlightListSelection(list, item.id);
-        list.dispatchEvent(new CustomEvent("shop-item-select", { detail: { itemId: item.id }, bubbles: true }));
-      });
-      row.addEventListener("dblclick", (event) => {
-        event.preventDefault();
-        options.onActivate(item.id);
-      });
-      list.append(row);
-    }
-  }
-
-  const root = el("div", {
-    class: "shop-processing-item-list-shell",
-    children: [select, list],
-  });
-
-  return {
-    root,
-    select,
-    get value() {
-      return select.value;
-    },
-  };
-}
-
-function highlightListSelection(listRoot: HTMLElement, itemId: string): void {
-  const list = listRoot.classList.contains("shop-processing-item-list")
-    ? listRoot
-    : listRoot.querySelector(".shop-processing-item-list");
-  if (!(list instanceof HTMLElement)) return;
-  for (const row of list.querySelectorAll<HTMLElement>(".shop-processing-item-row")) {
-    const selected = row.dataset.itemId === itemId;
-    row.classList.toggle("is-selected", selected);
-    row.setAttribute("aria-selected", selected ? "true" : "false");
-  }
 }
 
 function itemDetailPanel(
@@ -1298,15 +1213,8 @@ function itemDetailPanel(
 
   const render = (item: ItemRecord | null) => {
     root.replaceChildren();
-    if (!item) {
-      root.append(
-        el("div", {
-          class: "shop-processing-item-detail-empty",
-          text: "아이템을 선택하면 상세 정보와 계절 재고를 편집할 수 있습니다.",
-        })
-      );
-      return;
-    }
+    // 고른 게 없으면 아무것도 그리지 않는다 — 빈 안내문 대신 칸 자체가 접힌다(CSS `:empty`).
+    if (!item) return;
     const icon = recordIconElement(imageIconOf(project, item.iconResourceId ?? item.imageResourceId), item.name);
     icon.classList.add("shop-processing-item-detail-icon");
     root.append(
@@ -1332,10 +1240,9 @@ function itemDetailPanel(
                   el("span", { class: "shop-processing-badge", text: occasionLabel(item) }),
                 ],
               }),
-              el("p", {
-                class: "shop-processing-item-detail-desc",
-                text: item.description?.trim() || "설명이 없습니다.",
-              }),
+              ...(item.description?.trim()
+                ? [el("p", { class: "shop-processing-item-detail-desc", text: item.description.trim() })]
+                : []),
             ],
           }),
         ],
@@ -1344,15 +1251,9 @@ function itemDetailPanel(
 
     if (!options) return;
     const command = options.command;
-    if (!command.itemIds.includes(item.id)) {
-      root.append(
-        el("p", {
-          class: "commerce-command-hint",
-          text: "판매 목록에 추가된 아이템만 계절 재고를 편집할 수 있습니다.",
-        })
-      );
-      return;
-    }
+    // 안 담은 아이템도 상세는 보여준다. 계절·가격은 담긴 뒤에만 의미가 있으므로 잠가 둔다.
+    const stocked = command.itemIds.includes(item.id);
+    const lockedTitle = "판매 목록에 담으면 편집할 수 있습니다";
 
     const entry = (command.stock ?? []).find((row) => row.itemId === item.id);
     const seasons = new Set(entry?.seasons ?? []);
@@ -1364,14 +1265,8 @@ function itemDetailPanel(
     priceInput.dataset.testid = "shop-stock-price-override";
     priceInput.placeholder = "DB " + String(item.price);
     if (typeof entry?.priceOverride === "number") priceInput.value = String(entry.priceOverride);
-
-    const seasonOrder = ["spring", "summer", "fall", "winter"] as const;
-    const seasonLabels: Record<(typeof seasonOrder)[number], string> = {
-      spring: "봄",
-      summer: "여름",
-      fall: "가을",
-      winter: "겨울",
-    };
+    priceInput.disabled = !stocked;
+    if (!stocked) priceInput.title = lockedTitle;
 
     const sellFloor = Math.floor(item.price / 2);
     const stockWarning = el("p", {
@@ -1395,7 +1290,7 @@ function itemDetailPanel(
       }
       const v = Math.max(0, parsed);
       if (v < sellFloor) {
-        stockWarning.textContent = `⚠ 매입가(${sellFloor}G)보다 싸게 팔면(H-02 차익) 되팔아 돈이 생깁니다. 런타임은 ${sellFloor}G로 보정됩니다.`;
+        stockWarning.textContent = `⚠ 매입가 ${sellFloor}G 보다 싸게 팔면 되팔아 돈이 생깁니다. 런타임은 ${sellFloor}G로 보정됩니다.`;
         stockWarning.style.display = "";
       } else {
         stockWarning.style.display = "none";
@@ -1403,7 +1298,7 @@ function itemDetailPanel(
       }
     };
     const commitStock = () => {
-      const nextSeasons = seasonOrder.filter((s) => seasons.has(s));
+      const nextSeasons = SEASON_ORDER.filter((s) => seasons.has(s));
       const raw = priceInput.value.trim();
       const parsed = raw === "" ? undefined : Number.parseInt(raw, 10);
       const priceOverride =
@@ -1431,43 +1326,42 @@ function itemDetailPanel(
       class: "shop-stock-season-chips",
       dataset: { testid: "shop-stock-season-chips" },
     });
-    for (const season of seasonOrder) {
+    for (const season of SEASON_ORDER) {
       const active = seasons.has(season);
-      chips.append(
-        el("button", {
-          class: "btn small shop-stock-season-chip" + (active ? " is-active" : ""),
-          text: seasonLabels[season],
-          attrs: { type: "button", "aria-pressed": active ? "true" : "false" },
-          dataset: { testid: "shop-stock-season-" + season, season },
-          on: {
-            click: (event) => {
-              const btn = event.currentTarget as HTMLButtonElement;
-              if (seasons.has(season)) seasons.delete(season);
-              else seasons.add(season);
-              const on = seasons.has(season);
-              btn.classList.toggle("is-active", on);
-              btn.setAttribute("aria-pressed", on ? "true" : "false");
-              commitStock();
-            },
+      const chip = el("button", {
+        class: "btn small shop-stock-season-chip" + (active ? " is-active" : ""),
+        text: SEASON_LABELS[season],
+        attrs: {
+          type: "button",
+          "aria-pressed": active ? "true" : "false",
+          title: stocked ? "고른 계절에만 판매합니다 (하나도 안 고르면 사계절)" : lockedTitle,
+        },
+        dataset: { testid: "shop-stock-season-" + season, season },
+        on: {
+          click: (event) => {
+            const btn = event.currentTarget as HTMLButtonElement;
+            if (seasons.has(season)) seasons.delete(season);
+            else seasons.add(season);
+            const on = seasons.has(season);
+            btn.classList.toggle("is-active", on);
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
+            commitStock();
           },
-        })
-      );
+        },
+      }) as HTMLButtonElement;
+      chip.disabled = !stocked;
+      chips.append(chip);
     }
 
     root.append(
       el("div", {
-        class: "shop-stock-editor",
+        class: `shop-stock-editor${stocked ? "" : " is-locked"}`,
         dataset: { testid: "shop-stock-editor" },
         children: [
-          el("div", { class: "shop-stock-editor-title", text: "계절 재고 · 가격 오버라이드" }),
-          el("p", {
-            class: "commerce-command-hint",
-            text: "계절을 하나도 고르지 않으면 사계절 판매. 가격 칸을 비우면 DB 가격을 씁니다.",
-          }),
           chips,
           el("label", {
             class: "shop-stock-price-field",
-            children: [el("span", { text: "가격 오버라이드 (G)" }), priceInput],
+            children: [el("span", { text: "가격" }), priceInput],
           }),
           stockWarning,
         ],
@@ -1477,16 +1371,6 @@ function itemDetailPanel(
 
   render(initial);
   return { root, render };
-}
-
-function itemMoveButton(text: string, testId: string, click: () => void): HTMLButtonElement {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "btn shop-processing-move-button";
-  button.textContent = text;
-  button.dataset.testid = testId;
-  button.addEventListener("click", click);
-  return button;
 }
 
 function itemTypeLabel(type: ItemType): string {
@@ -1550,13 +1434,3 @@ function selectedMessageType(value: string): ShopMessageType {
   return option?.value ?? "welcome";
 }
 
-function selectedSummary(items: readonly ItemRecord[], itemIds: readonly string[]): HTMLElement {
-  const selectedItems = itemIds
-    .map((id) => items.find((item) => item.id === id)?.name)
-    .filter((name): name is string => Boolean(name));
-  return el("div", {
-    class: "commerce-command-summary",
-    text: selectedItems.length ? `선택한 아이템: ${selectedItems.join(", ")}` : "선택한 아이템: 없음",
-    dataset: { testid: "shop-selection-summary" },
-  });
-}

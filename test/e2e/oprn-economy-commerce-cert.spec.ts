@@ -42,10 +42,11 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
     await command.getByTestId("change-party-action-select").selectOption("remove");
   });
   await editCommand(page, "shop", async (command) => {
-    // 자료집 카탈로그 행을 골라 담기 — 사용자가 실제로 쓰는 경로다. 예전에는
-    // aria-hidden 트레이 안의 보이지 않는 select 를 눌러 통과했다.
-    await command.getByTestId(`shop-catalog-row-${POTION_ID}`).click();
-    await command.getByTestId("shop-add-item").click();
+    // 목록 행의 체크박스가 유일한 담기 경로다 — 예전 aria-hidden 트레이의 select+버튼은 없다.
+    await command.getByTestId(`shop-item-check-${POTION_ID}`).check();
+    await expect(
+      command.locator(`[data-testid="shop-sale-list"] [data-testid="shop-item-row-${POTION_ID}"]`)
+    ).toBeVisible();
   });
   await editCommand(page, "inn", async (command) => fillAndChange(command.getByTestId("inn-price-input"), "25"));
   await screenshot(page, "002-editor-economy-commerce.png");
@@ -74,6 +75,7 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
     await expect(
       command.locator(`[data-testid="shop-sale-list"] [data-testid="shop-item-row-${POTION_ID}"]`)
     ).toBeVisible();
+    await expect(command.getByTestId(`shop-item-check-${POTION_ID}`)).toBeChecked();
   });
   await editCommand(page, "inn", async (command) => {
     await expect(command.getByTestId("inn-price-input")).toHaveValue("25");

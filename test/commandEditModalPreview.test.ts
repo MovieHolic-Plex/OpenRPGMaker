@@ -444,7 +444,7 @@ describe("command edit modal — image-rich preview", () => {
     expect(applied).toEqual(original);
   });
 
-  it("rebuilds shop lists after add so selected items stay in sync", () => {
+  it("rebuilds the shop goods list after a checkbox add so both groups stay in sync", () => {
     const project = store.getCurrent();
     const first = project.database.items[0];
     const second = project.database.items[1];
@@ -457,29 +457,24 @@ describe("command edit modal — image-rich preview", () => {
       onApply: () => {},
     });
     const body = globalThis.document.body as unknown as FakeNode;
-    // 후보 선택은 화면에 보이는 자료집 카탈로그 행으로 한다. 예전에는 aria-hidden 트레이
-    // 안의 select 를 눌렀는데, 그건 사용자가 만질 수 없는 컨트롤이었다.
-    const candidate = findByTestId(body, `shop-catalog-row-${second.id}`);
-    const add = findByTestId(body, "shop-add-item");
-    expect(candidate && add).toBeTruthy();
-    if (!candidate || !add) return;
+    // 담기는 목록 행의 체크박스로 한다 — 예전의 aria-hidden 트레이 안 select+버튼은 없어졌다.
+    expect(findByTestId(body, "shop-available-items")).toBeNull();
+    expect(findByTestId(body, "shop-add-item")).toBeNull();
 
-    candidate.click();
-    add.click();
+    const check = findByTestId(body, `shop-item-check-${second.id}`) as FakeElement | null;
+    expect(check).toBeTruthy();
+    if (!check) return;
+    check.checked = true;
+    check.dispatchEvent(new Event("change", { bubbles: true }));
 
-    const selected = findByTestId(body, "shop-selected-items") as FakeElement | null;
-    expect(selected).toBeTruthy();
-    const optionValues = selected
-      ? [...selected.childNodes]
-          .filter((node): node is FakeElement => node instanceof FakeElement && node.tagName === "OPTION")
-          .map((option) => option.value)
-      : [];
-    expect(optionValues).toContain(first.id);
-    expect(optionValues).toContain(second.id);
-
-    const summary = findByTestId(body, "shop-selection-summary");
-    expect(summary?.textContent).toContain(first.name);
-    expect(summary?.textContent).toContain(second.name);
+    const saleList = findByTestId(body, "shop-sale-list") as FakeElement | null;
+    expect(saleList).toBeTruthy();
+    expect(findByTestId(saleList!, `shop-item-row-${first.id}`)).toBeTruthy();
+    expect(findByTestId(saleList!, `shop-item-row-${second.id}`)).toBeTruthy();
+    // 담긴 아이템은 "안 담음" 그룹에서 빠진다.
+    const pool = findByTestId(body, "shop-stock-pool") as FakeElement | null;
+    expect(pool).toBeTruthy();
+    expect(findByTestId(pool!, `shop-item-row-${second.id}`)).toBeNull();
   });
 
   it("shows shop transaction branch controls when branch checkbox is enabled", () => {

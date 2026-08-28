@@ -113,15 +113,14 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await expect(page.getByTestId("event-command-add")).toHaveCount(0);
 
   const shopCommand = await addCommerceCommand(page, { kind: "shop", testId: "command-picker-add-shop" });
-  await shopCommand.getByTestId("shop-catalog-row-item_potion").click();
-  await shopCommand.getByTestId("shop-add-item").click();
+  await shopCommand.getByTestId("shop-item-check-item_potion").check();
   await expect(
     shopCommand.locator('[data-testid="shop-sale-list"] [data-testid="shop-item-row-item_potion"]')
   ).toBeVisible();
   await expect(shopCommand).toContainText("상점 종류");
-  // 카탈로그 행의 상태 라벨. 문구는 "안 담음" 이다 — "아직 안 담음" 은 제품에 없던 문자열이라
-  // 이 단정은 이 변경 이전부터 실패하고 있었다.
-  await expect(shopCommand).toContainText("안 담음");
+  // 단일 목록의 두 그룹 머리글이 진열 상태를 말해 준다.
+  await expect(shopCommand.getByTestId("shop-sale-list")).toContainText("판매 중");
+  await expect(shopCommand.getByTestId("shop-stock-pool")).toContainText("안 담음");
   await page.screenshot({ path: testInfo.outputPath("shop-editor-readable.png"), fullPage: true });
   await shopCommand.getByTestId("event-command-edit-ok").click();
   await expect(shopCommand).toHaveCount(0);
