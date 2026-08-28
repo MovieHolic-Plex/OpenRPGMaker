@@ -11,7 +11,12 @@ import { editorState } from "@/editor/editorState";
 import { deleteStructureKit, duplicateIntoTileset, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { paletteStampFromCells, paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
+import {
+  paletteStampFromCells,
+  paletteStampFromKit,
+  structureKitRepeatable,
+  structureKitSize,
+} from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import {
   INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
@@ -20,9 +25,10 @@ import {
   interiorObjectSnapLabel,
   interiorObjectThemeLabels,
 } from "@/editor/panels/structureKitDbSources";
-import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
+import { aiRoleLabel, openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import type {
+  StructureKitAiMeta,
   StructureKitDef,
   StructureKitLearnedFrom,
   StructureKitPart,
@@ -35,10 +41,6 @@ import { toast } from "@/util/toast";
 
 /** 인스펙터가 강조 중인 부위. 탭 세션이 아니라 여기서 들고 있는다. */
 let selectedPartId: string | null = null;
-
-export function inspectorSelectedPartId(): string | null {
-  return selectedPartId;
-}
 
 export function setInspectorSelectedPartId(id: string | null): void {
   selectedPartId = id;
@@ -173,6 +175,53 @@ function learnedFromLabel(learnedFrom: StructureKitLearnedFrom): string {
   }
 }
 
+/** 인스펙터 열(352px)에 한 줄로 들어가도록 첫 줄만 자른다 — 나머지는 CSS ellipsis 가 받는다. */
+function firstLineForColumn(text: string): string {
+  const line = text.split("\n")[0]?.trim() ?? "";
+  return line.length > 48 ? `${line.slice(0, 47)}…` : line;
+}
+
+/**
+ * §5.3 이 요구하는 AI 메타 요약 — 설명 첫 줄 · 분류 · 반복 여부 · 미승인 배지.
+ * ai 가 아예 없으면 빈 블록을 그리지 않고 그 사실을 말하는 한 줄만 둔다.
+ * 반복 여부는 structureKitRepeatable() 로 구해 AI 가 실제로 받는 값과 어긋나지 않게 한다.
+ */
+function renderAiSummary(kit: StructureKitDef): HTMLElement {
+  const ai: StructureKitAiMeta | undefined = kit.ai;
+  if (!ai) {
+    return el("p", {
+      class: "structure-kit-quiet",
+      dataset: { testid: "structure-kit-ai-summary" },
+      text: "AI 메타가 아직 없습니다.",
+    });
+  }
+
+  const repeatable = structureKitRepeatable(kit);
+  const descLine = firstLineForColumn(ai.description);
+
+  return el("div", {
+    class: "structure-kit-ai-summary",
+    dataset: { testid: "structure-kit-ai-summary" },
+    children: [
+      el("div", {
+        class: "structure-kit-ai-summary-badges",
+        children: [
+          el("span", { class: "structure-kit-part-badge", text: repeatable ? "반복 가능" : "한 채 완결" }),
+          ...(ai.role ? [el("span", { class: "structure-kit-part-badge teal", text: aiRoleLabel(ai.role) })] : []),
+          ...(ai.origin !== "user"
+            ? [el("span", {
+                class: "structure-kit-editor-ai-badge",
+                dataset: { testid: "structure-kit-ai-unapproved" },
+                text: "미승인",
+              })]
+            : []),
+        ],
+      }),
+      ...(descLine ? [el("p", { class: "structure-kit-quiet structure-kit-ai-summary-desc", text: descLine })] : []),
+    ],
+  });
+}
+
 export function renderInspector(
   tileset: TilesetDef,
   kit: StructureKitDef,
@@ -223,6 +272,8 @@ export function renderInspector(
       text: `${size.width}×${size.height} · ${tileset.name} · ${sourceLabel}`,
     })
   );
+
+  inspector.append(renderAiSummary(kit));
 
   // 래스터 뷰 + 부위 오버레이
   const rasterWrap = el("div", {
@@ -316,28 +367,33 @@ export function renderInspector(
   });
   inspector.append(partsList);
 
-  // 문에서 입구 추정 버튼
-  const estimateBtn = el("button", {
-    class: "btn small structure-kit-estimate",
-    attrs: { type: "button" },
-    text: "문에서 입구 추정",
-    dataset: { testid: "structure-kit-estimate-entrance" },
-    on: {
-      click: () => {
-        const estimated = autoEstimateEntranceParts(kit);
-        if (estimated.length === 0) {
-          toast("문 타일을 찾지 못했습니다.", "info");
-          return;
-        }
-        const merged = [...(kit.parts ?? []).filter((p) => p.kind !== "entrance"), ...estimated];
-        saveKitParts(tileset.id, kit, merged);
-        toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
-        rerender();
-        refresh();
-      },
-    },
-  });
-  inspector.append(estimateBtn);
+  // 문에서 입구 추정 버튼 — autoEstimateEntranceParts 는 kind === "section" 킷에서만 결과를
+  // 낼 수 있는데 내장 앨범 행은 전부 읽기 전용이라, editable 이 아니면 누를 수 있어도
+  // "문 타일을 찾지 못했습니다" 만 뜨는 죽은 버튼이 된다. 편집·복제·내보내기·삭제와 같은 축으로 가른다.
+  if (editable) {
+    inspector.append(
+      el("button", {
+        class: "btn small structure-kit-estimate",
+        attrs: { type: "button" },
+        text: "문에서 입구 추정",
+        dataset: { testid: "structure-kit-estimate-entrance" },
+        on: {
+          click: () => {
+            const estimated = autoEstimateEntranceParts(kit);
+            if (estimated.length === 0) {
+              toast("문 타일을 찾지 못했습니다.", "info");
+              return;
+            }
+            const merged = [...(kit.parts ?? []).filter((p) => p.kind !== "entrance"), ...estimated];
+            saveKitParts(tileset.id, kit, merged);
+            toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
+            rerender();
+            refresh();
+          },
+        },
+      }),
+    );
+  }
 
   inspector.append(
     el("p", {

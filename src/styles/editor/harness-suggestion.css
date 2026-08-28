@@ -338,6 +338,28 @@
   color: var(--text-3, #6B5F52);
 }
 
+/* AI 메타 요약(§5.3) — 배지는 .structure-kit-part-badge/.structure-kit-editor-ai-badge 를 그대로 쓰고,
+   여기서는 레이아웃(줄바꿈 배지 열 + 한 줄 말줄임 설명)만 더한다. */
+.structure-kit-ai-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.structure-kit-ai-summary-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.structure-kit-ai-summary-desc {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .structure-kit-raster-wrap {
   position: relative;
   width: 288px;

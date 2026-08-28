@@ -270,6 +270,28 @@ function findKit(tilesetId: TilesetId, kitId: string): SectionStructureKitDef | 
 
 const AI_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];
 
+const AI_ROLE_LABELS: Record<TileGroupRole, string> = {
+  building: "건물",
+  castle: "성",
+  fence: "울타리",
+  roof: "지붕",
+  terrain: "지형",
+  water: "물",
+  wall: "벽",
+  prop: "소품",
+};
+
+/** 분류(TileGroupRole)의 한글 라벨 — 인스펙터의 AI 메타 요약도 이 라벨을 그대로 쓴다. */
+export function aiRoleLabel(role: TileGroupRole): string {
+  return AI_ROLE_LABELS[role];
+}
+
+const REPEATABILITY_OPTIONS: readonly { readonly value: "" | "repeat" | "fixed"; readonly label: string }[] = [
+  { value: "", label: "미지정" },
+  { value: "repeat", label: "반복 가능" },
+  { value: "fixed", label: "한 채 완결" },
+];
+
 /**
  * 초안 프롬프트. 모델에 넘기는 것은 이것뿐이다 —
  * 크기·타일 행렬·각 타일의 사람 읽는 라벨·기존 이름 목록.
@@ -335,7 +357,10 @@ export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
   const record = parsed as Record<string, unknown>;
   const description = typeof record.description === "string" ? record.description : "";
   const placementRules = typeof record.placementRules === "string" ? record.placementRules : "";
-  if (!description && !placementRules) return null;
+  // 공백뿐인 문자열은 "내용 있음"으로 치지 않는다 — 그렇지 않으면 모델이 빈 프롬프트를
+  // 돌려줘도 이 함수가 non-null 을 반환해 session.draft 를 덮어써, 사람이 요청 전에
+  // 이미 입력해 두었던 값(반복·분류 포함)을 조용히 지워 버린다.
+  if (!description.trim() && !placementRules.trim()) return null;
 
   const role = AI_ROLES.find((candidate) => candidate === record.role);
   const repeatability = record.repeatability === "repeat" || record.repeatability === "fixed"
@@ -604,6 +629,58 @@ function drawAiTab(
   const draft: StructureKitAiMeta = { ...current };
   session.draft = draft;
 
+  const repeatabilitySelect = el("select", {
+    dataset: { testid: "structure-kit-editor-ai-repeatability" },
+    children: REPEATABILITY_OPTIONS.map((option) =>
+      el("option", {
+        attrs: (draft.repeatability ?? "") === option.value
+          ? { value: option.value, selected: "" }
+          : { value: option.value },
+        text: option.label,
+      }),
+    ),
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLSelectElement)) return;
+        // "미지정" 은 undefined 를 저장하는 게 아니라 키 자체를 지운다 — 다른 optional 메타
+        // 필드와 같은 규약(예: bakeStructureKit 의 tags 처리)이다.
+        if (target.value === "repeat" || target.value === "fixed") draft.repeatability = target.value;
+        else delete draft.repeatability;
+      },
+    },
+  });
+
+  const roleSelect = el("select", {
+    dataset: { testid: "structure-kit-editor-ai-role" },
+    children: [
+      el("option", {
+        attrs: draft.role === undefined ? { value: "", selected: "" } : { value: "" },
+        text: "미지정",
+      }),
+      ...AI_ROLES.map((role) =>
+        el("option", {
+          attrs: draft.role === role ? { value: role, selected: "" } : { value: role },
+          text: aiRoleLabel(role),
+        }),
+      ),
+    ],
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLSelectElement)) return;
+        if (target.value) draft.role = target.value as TileGroupRole;
+        else delete draft.role;
+      },
+    },
+  });
+
+  const selectField = (label: string, select: HTMLElement): HTMLElement =>
+    el("label", {
+      class: "structure-kit-editor-ai-field",
+      children: [el("span", { text: label }), select],
+    });
+
   host.replaceChildren(
     el("div", {
       class: "structure-kit-editor-ai-head",
@@ -622,6 +699,8 @@ function drawAiTab(
     }),
     area("설명", "structure-kit-editor-ai-description", draft.description, (next) => { draft.description = next; }),
     area("배치 규칙", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
+    selectField("반복", repeatabilitySelect),
+    selectField("분류", roleSelect),
     el("button", {
       class: "btn primary",
       attrs: { type: "button" },

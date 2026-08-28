@@ -4,7 +4,7 @@
 // 1. 타일셋 레일은 필터가 아니라 앨범. 기본 앨범은 현재 맵 타일셋(editorState.currentMapId).
 // 2. 표에는 선택된 타일셋의 구조물만 표시.
 // 3. 빈 상태 정확한 카피: "이 타일셋에는 아직 구조물이 없습니다."
-// 4. 인스펙터: 이름, 래스터, 부위 목록(인스턴스 번호), 문에서 입구 추정, 팔레트에서 쓰기, 삭제.
+// 4. 인스펙터는 이 파일이 배치만 한다 — 내용·액션 계약은 structureKitInspector.ts 를 본다.
 // 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
 
 import { editorState } from "@/editor/editorState";
@@ -284,7 +284,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         el("strong", { text: "이 타일셋에는 아직 구조물이 없습니다." }),
         el("p", {
           class: "structure-kit-quiet",
-          text: "맵에서 타일 영역을 선택한 후 [구조물로 저장]을 누르면 이 앨범에 추가됩니다.",
+          text: "[+ 새 구조물]로 바로 만들거나, 맵에서 타일 영역을 선택한 후 [구조물로 저장]을 누르면 이 앨범에 추가됩니다.",
         }),
       ],
     });

@@ -290,6 +290,13 @@ describe("AI 메타 초안", () => {
     expect(meta!.role).toBeUndefined();
     expect(meta!.repeatability).toBeUndefined();
   });
+
+  it("설명과 배치 규칙이 공백뿐이면 초안을 거부한다", () => {
+    // 공백 문자열은 truthy 라 트림 없이는 "내용 있음"으로 통과한다 — 모델이 빈 프롬프트를
+    // 돌려줘도 session.draft 를 덮어써 사람이 이미 입력한 값을 지워 버리는 경로였다.
+    const meta = parseAiMetaDraft(JSON.stringify({ description: "   ", placementRules: "\n\t " }));
+    expect(meta).toBeNull();
+  });
 });
 
 describe("AI 메타 탭", () => {
@@ -323,6 +330,66 @@ describe("AI 메타 탭", () => {
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.ai?.description).toBe("돌담을 두른 두레우물");
     expect(stored.ai?.origin).toBe("user");
+  });
+});
+
+describe("AI 메타 탭 — 반복·분류", () => {
+  // I1: repeatability 는 이전까지 모델의 JSON 초안이나 가져오기 파일로만 채워질 수 있었다 —
+  // 폼에 컨트롤이 없어 사람이 직접 "한 채 완결"로 고정할 방법이 없었다.
+  it("반복에서 '한 채 완결'을 고르고 수락하면 repeatability 가 fixed 로 저장된다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+
+    const repeatabilitySelect = document.querySelector("[data-testid='structure-kit-editor-ai-repeatability']") as unknown as FakeElement;
+    expect(repeatabilitySelect).not.toBeNull();
+    (repeatabilitySelect as unknown as HTMLSelectElement).value = "fixed";
+    repeatabilitySelect.dispatchEvent(new Event("change"));
+
+    (document.querySelector("[data-testid='structure-kit-editor-ai-accept']") as unknown as FakeElement).click();
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.ai?.repeatability).toBe("fixed");
+  });
+
+  it("반복을 '미지정'으로 되돌리면 repeatability 키 자체가 사라진다", () => {
+    seedKit();
+    replaceStructureKit(DEFAULT_TILESET_ID, {
+      ...(store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+        .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef),
+      ai: { description: "설명", placementRules: "규칙", repeatability: "repeat", origin: "user" },
+    });
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+
+    const repeatabilitySelect = document.querySelector("[data-testid='structure-kit-editor-ai-repeatability']") as unknown as FakeElement;
+    (repeatabilitySelect as unknown as HTMLSelectElement).value = "";
+    repeatabilitySelect.dispatchEvent(new Event("change"));
+
+    (document.querySelector("[data-testid='structure-kit-editor-ai-accept']") as unknown as FakeElement).click();
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.ai).toBeDefined();
+    expect("repeatability" in (stored.ai as object)).toBe(false);
+  });
+
+  it("분류에서 역할을 고르고 수락하면 role 이 저장된다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+
+    const roleSelect = document.querySelector("[data-testid='structure-kit-editor-ai-role']") as unknown as FakeElement;
+    expect(roleSelect).not.toBeNull();
+    (roleSelect as unknown as HTMLSelectElement).value = "prop";
+    roleSelect.dispatchEvent(new Event("change"));
+
+    (document.querySelector("[data-testid='structure-kit-editor-ai-accept']") as unknown as FakeElement).click();
+
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
+    expect(stored.ai?.role).toBe("prop");
   });
 });
 
