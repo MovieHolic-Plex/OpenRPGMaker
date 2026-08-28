@@ -2,6 +2,7 @@ import type { AuditEntry } from "@/ai/assistantSession";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
 import type { ProjectIdentity } from "@/project/store";
+import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
 export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
@@ -119,14 +120,14 @@ export function loadLatestConversation(): ConversationRecord | null {
 }
 
 /**
- * 대화가 속한 프로젝트를 가리키는 키. **편집 중인 프로젝트의 실제 신원**을 쓴다.
- *
- * 왜 제목·시작맵이 아니가: `createBlankProject()` 의 시작맵 id 는 상수(`map_blank_start`)이고
- * 새 프로젝트 제목도 항상 "새 프로젝트" 다 — 제목::시작맵 키는 새 프로젝트마다 같은 값이 나와
- * 이전 프로젝트의 대화가 새 프로젝트에 복원됐다. 거꾸로 제목을 바꾸면 자기 대화를 잃었다.
+ * 대화 저장/복원 범위. 원격 프로젝트는 durable row id를 쓰고, durable row가 없는 로컬 세션은
+ * 새로고침 뒤에도 재구성 가능한 프로젝트 모양(제목 + 시작 맵)을 쓴다. 로컬 세션의 런타임 identity
+ * id는 별도로 프로젝트 전환 감지에만 사용한다.
  */
-export function conversationScopeKey(identity: ProjectIdentity): string {
-  return `${identity.kind}:${identity.id}`;
+export function conversationScopeKey(identity: ProjectIdentity, project: Pick<Project, "meta" | "startMapId">): string {
+  if (identity.kind === "remote") return `remote:${identity.id}`;
+  const title = project.meta.title.trim() || "(untitled)";
+  return `local:${title}::${project.startMapId}`;
 }
 
 export function deleteConversation(id: string): void {

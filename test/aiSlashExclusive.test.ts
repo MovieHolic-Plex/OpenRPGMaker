@@ -109,7 +109,7 @@ describe("컴포저 입력과 시작 화면 배타", () => {
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
       entries: [
         { kind: "user", text: "마을 만들어줘" },
         { kind: "assistant", text: "초안을 준비했습니다." },

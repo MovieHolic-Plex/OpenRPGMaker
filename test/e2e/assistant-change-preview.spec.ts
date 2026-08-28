@@ -39,7 +39,7 @@ async function seedConversationRecord(page: Page, storageKey: string): Promise<s
     const { conversationScopeKey } = await load<typeof import("@/ai/conversationStore")>(
       "/src/ai/conversationStore.ts",
     );
-    const contextKey = conversationScopeKey(store.getProjectIdentity());
+    const contextKey = conversationScopeKey(store.getProjectIdentity(), store.getCurrent());
     const record = {
       id: "qa-change-preview",
       title: "광장에 길을 이어줘",

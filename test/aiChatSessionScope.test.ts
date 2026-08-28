@@ -5,6 +5,7 @@
 // 계약의 면이다. 프로젝트 전환은 대화를 갈고, 맵 이동은 갈지 않고 기록만 남긴다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
+import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { conversationScopeKey, clearConversations, listConversations, saveConversation } from "@/ai/conversationStore";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -40,6 +41,10 @@ function installFakeLocalStorage(): void {
       clear: () => storage.clear(),
     },
   });
+}
+
+async function flushAsync(): Promise<void> {
+  for (let index = 0; index < 30; index += 1) await Promise.resolve();
 }
 
 function renderPanel(dock: "side" | "float" | "glass" = "side"): FakeElement {
@@ -86,6 +91,26 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
+describe("대화 저장 범위", () => {
+  it("Given local sessions across reloads When the project shape is unchanged Then the scope is stable", () => {
+    const project = createBlankProject();
+
+    expect(conversationScopeKey({ kind: "local-session", id: "boot-a" }, project)).toBe(
+      conversationScopeKey({ kind: "local-session", id: "boot-b" }, structuredClone(project)),
+    );
+    expect(conversationScopeKey({ kind: "local-session", id: "boot-a" }, project)).toBe(
+      `local:새 프로젝트::${project.startMapId}`,
+    );
+  });
+
+  it("Given remote projects with identical shapes When scoped Then each durable row id stays distinct", () => {
+    const project = createBlankProject();
+
+    expect(conversationScopeKey({ kind: "remote", id: "project-a" }, project)).toBe("remote:project-a");
+    expect(conversationScopeKey({ kind: "remote", id: "project-b" }, project)).toBe("remote:project-b");
+  });
+});
+
 describe("새 대화 진입점", () => {
   it("Given any dock When the action menus render Then 새 대화 is available in both surfaces", () => {
     const side = renderPanel("side");
@@ -97,13 +122,27 @@ describe("새 대화 진입점", () => {
     expect(findByTestId(float, "ai-command-menu-new-chat")?.textContent).toBe("새 대화");
   });
 
+  it("Given any dock When the composer renders Then its fixed action row owns the visible new-chat control", () => {
+    for (const dock of ["glass", "side", "float"] as const) {
+      const panel = renderPanel(dock);
+      const composer = findByTestId(panel, "ai-composer");
+      const newChat = findByTestId(panel, "ai-new-chat");
+
+      expect(newChat).toBeTruthy();
+      expect(newChat?.getAttribute("title")).toBe("새 대화");
+      expect(newChat?.getAttribute("aria-label")).toBe("새 대화 시작");
+      expect(findByTestId(composer!, "ai-new-chat")).toBe(newChat);
+      expect(findByTestId(panel, "ai-chat-toolbar")?.inert).toBe(true);
+    }
+  });
+
   it("Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty", () => {
     saveConversation({
       id: "conv_scope_a",
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
       entries: [
         { kind: "user", text: "마을 만들어줘" },
         { kind: "assistant", text: "초안을 준비했습니다." },
@@ -124,7 +163,7 @@ describe("새 대화 진입점", () => {
 describe("프로젝트 전환", () => {
   it("Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope", () => {
     clearConversations();
-    const firstScope = conversationScopeKey(store.getProjectIdentity());
+    const firstScope = conversationScopeKey(store.getProjectIdentity(), store.getCurrent());
     saveConversation({
       id: "conv_project_one",
       title: "이전 프로젝트 대화",
@@ -148,6 +187,39 @@ describe("프로젝트 전환", () => {
 
     const stored = listConversations();
     expect(stored.find((conversation) => conversation.id === "conv_project_one")?.projectContextKey).toBe(firstScope);
+  });
+
+  it("Given an in-flight turn When the project identity changes Then it can only persist to its captured scope", async () => {
+    const firstProject = createBlankProject();
+    firstProject.meta.title = "첫 작업";
+    store.replace(firstProject);
+    const identity = vi.spyOn(store, "getProjectIdentity");
+    identity.mockReturnValue({ kind: "remote", id: "project-one" });
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(CONFIG));
+
+    let settle!: (response: Response) => void;
+    const response = new Promise<Response>((resolve) => { settle = resolve; });
+    vi.stubGlobal("fetch", vi.fn(() => response));
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "첫 프로젝트에서 시작한 요청";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    identity.mockReturnValue({ kind: "remote", id: "project-two" });
+    store.replace(createBlankProject());
+    expect(panel.dataset.aiConversation).toBe("empty");
+
+    settle(new Response(JSON.stringify({
+      choices: [{ message: { role: "assistant", content: "늦게 도착한 응답" }, finish_reason: "stop" }],
+    }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    await flushAsync();
+
+    const stored = listConversations().filter((conversation) => conversation.turnCount > 0);
+    expect(stored.length).toBeGreaterThan(0);
+    expect(stored.every((conversation) => conversation.projectContextKey === "remote:project-one")).toBe(true);
+    expect(stored.some((conversation) => conversation.projectContextKey === "remote:project-two")).toBe(false);
   });
 
   it("Given a conversation saved for another project When the panel mounts Then it is not restored", () => {

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   buildConversationTurnContext,
-  describeTurnContext,
   isConversationTurnContext,
   mapTransitionNote,
   type ConversationTurnContext,
@@ -58,10 +57,10 @@ describe("conversationTurnContext", () => {
     expect(context.mapId).toBe("map_b");
   });
 
-  it("Given a selection outside the map bounds When building Then it is dropped", () => {
+  it("Given a selection extending past the map bounds When building Then it is dropped", () => {
     const context = buildConversationTurnContext(projectWithMaps(), {
       mapId: "map_a",
-      selection: { mapId: "map_a", x: 25, y: 2, width: 2, height: 2 },
+      selection: { mapId: "map_a", x: 18, y: 13, width: 3, height: 3 },
     });
 
     expect(context.selection).toBeUndefined();
@@ -86,18 +85,6 @@ describe("conversationTurnContext", () => {
     expect(mapTransitionNote(null, a)).toBeNull();
     expect(mapTransitionNote(a, a)).toBeNull();
     expect(mapTransitionNote(a, b)).toBe("맵 이동: 마을 광장 → 숲길");
-  });
-
-  it("Given a turn context When described Then the summary names map, size, viewport and selection", () => {
-    const context = buildConversationTurnContext(projectWithMaps(), {
-      mapId: "map_a",
-      viewport: viewport("map_a"),
-      selection: { mapId: "map_a", x: 3, y: 4, width: 5, height: 6 },
-    });
-
-    expect(describeTurnContext(context)).toBe(
-      "맵 마을 광장 (map_a) · 크기 20×15 · 화면 (2,1)~(12,9) · 선택 (3,4) 5×6",
-    );
   });
 
   it("Given stored payloads When validated Then only well-formed contexts pass", () => {

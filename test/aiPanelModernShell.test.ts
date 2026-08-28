@@ -70,7 +70,7 @@ describe("조수 패널 모던 셸", () => {
       title: "마을",
       model: "m",
       savedAt: 100,
-      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
       entries: [
         { kind: "user", text: "마을 만들어줘" },
         { kind: "assistant", text: "초안을 준버했습니다." },

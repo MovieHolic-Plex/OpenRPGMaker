@@ -30,6 +30,7 @@ export interface ComposerElements {
   readonly actions: HTMLElement;
   readonly commandMenu: HTMLElement;
   readonly commandMenuToggle: HTMLButtonElement;
+  readonly newChatButton: HTMLButtonElement;
   readonly hint: HTMLElement;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
@@ -46,6 +47,7 @@ export interface ComposerOptions {
   readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
   readonly statusGroup: HTMLElement;
+  readonly onNewChat: () => void;
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
 }
 
@@ -58,6 +60,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     attrs: { type: "button", title: "더보기", "aria-label": "더보기 메뉴", "aria-expanded": "false", "aria-haspopup": "menu" },
     dataset: { testid: "ai-command-menu-toggle" },
     on: { click: () => openPopover(openState === "menu" ? null : "menu") },
+  }) as HTMLButtonElement;
+
+  const newChatButton = el("button", {
+    class: "ai-composer-menu-btn ai-new-chat",
+    text: "+",
+    attrs: { type: "button", title: "새 대화", "aria-label": "새 대화 시작" },
+    dataset: { testid: "ai-new-chat" },
+    on: { click: options.onNewChat },
   }) as HTMLButtonElement;
 
   const commandMenu = el("div", {
@@ -90,7 +100,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("div", {
         class: "ai-composer-actions-lead",
-        children: [commandMenuToggle, options.contextChips, options.queueIndicator],
+        children: [newChatButton, commandMenuToggle, options.contextChips, options.queueIndicator],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
@@ -169,6 +179,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     actions,
     commandMenu,
     commandMenuToggle,
+    newChatButton,
     hint,
     openPopover,
     openKind: () => openState,

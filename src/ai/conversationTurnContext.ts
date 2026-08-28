@@ -41,8 +41,17 @@ function withinMap(
   map: { readonly width: number; readonly height: number } | undefined,
   selection: TurnSelectionSnapshot,
 ): boolean {
-  if (!map) return true;
-  return selection.x >= 0 && selection.y >= 0 && selection.x < map.width && selection.y < map.height;
+  if (!map) {
+    return selection.width > 0 && selection.height > 0;
+  }
+  return (
+    selection.width > 0 &&
+    selection.height > 0 &&
+    selection.x >= 0 &&
+    selection.y >= 0 &&
+    selection.x + selection.width <= map.width &&
+    selection.y + selection.height <= map.height
+  );
 }
 
 export function buildConversationTurnContext(
@@ -63,24 +72,6 @@ export function buildConversationTurnContext(
     ...(viewport ? { viewport } : {}),
     ...(selection ? { selection } : {}),
   };
-}
-
-/** 기록/내보내기용 한 줄 요약. */
-export function describeTurnContext(context: ConversationTurnContext): string {
-  const mapLabel = context.mapName
-    ? `${context.mapName}${context.mapId ? ` (${context.mapId})` : ""}`
-    : context.mapId ?? "맵 없음";
-  const parts = [`맵 ${mapLabel}`];
-  if (context.mapWidth !== undefined && context.mapHeight !== undefined) {
-    parts.push(`크기 ${context.mapWidth}×${context.mapHeight}`);
-  }
-  const viewport = context.viewport;
-  if (viewport) {
-    parts.push(`화면 (${viewport.x},${viewport.y})~(${viewport.x + viewport.w},${viewport.y + viewport.h})`);
-  }
-  const selection = context.selection;
-  if (selection) parts.push(`선택 (${selection.x},${selection.y}) ${selection.width}×${selection.height}`);
-  return parts.join(" · ");
 }
 
 /**

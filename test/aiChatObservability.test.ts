@@ -134,7 +134,7 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
       title: "복원",
       model: "m",
       savedAt: 100,
-      projectContextKey: conversationScopeKey(store.getProjectIdentity()),
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
       entries: [
         { kind: "user", text: "칠해줘" },
         { kind: "tool", name: "paint_tiles", args: { mapId: "map_a", tile: 9 }, ok: true, summary: "타일 3칸" },
