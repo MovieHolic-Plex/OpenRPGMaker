@@ -34,6 +34,19 @@ export const SUPABASE_MIGRATIONS = Object.freeze([
     revoked("rpg_zzu", "ai_conversations", "anon", "DELETE"),
     revoked("rpg_zzu", "ai_analysis_runs", "anon", "DELETE"),
   ]),
+  migration("20260829000000_ai_activity_run_id.sql", [
+    relation("rpg_zzu", "ai_activity_logs", ["run_id"]),
+  ]),
+  migration("20260829000001_anon_privilege_tighten.sql", [
+    revoked("rpg_zzu", "projects", "anon", "DELETE"),
+    revoked("rpg_zzu", "project_commits", "anon", "DELETE"),
+    revoked("rpg_zzu", "project_changes", "anon", "DELETE"),
+    revoked("rpg_zzu", "terrain_templates", "anon", "DELETE"),
+    revoked("rpg_zzu", "sync_verification_runs", "anon", "DELETE"),
+    revoked("rpg_zzu", "user_skills", "anon", "DELETE"),
+    revoked("rpg_zzu", "project_commits", "anon", "UPDATE"),
+    revoked("rpg_zzu", "project_changes", "anon", "UPDATE"),
+  ]),
 ]);
 
 export const DEFAULT_AI_PROBE_IDS = Object.freeze({
@@ -137,14 +150,25 @@ export function catalogMigrationStates(migrations, columnRows, grantRows = []) {
   }));
 }
 
-export function buildAiActivityUrls(config, limit) {
+/**
+ * AI 활동 로그 조회 URL. `options.runId` 를 주면 그 런의 턴만 본다 — 같은 project_id 를
+ * 여러 워크트리·탭이 공유하므로 필터 없는 최신 정렬은 옆 런의 턴을 준다.
+ * 폴백 테이블(ai_analysis_runs)에는 런 정보가 없어서 run 필터가 있으면 폴백 URL 은 null 이다.
+ */
+export function buildAiActivityUrls(config, limit, options = {}) {
   const base = config.url.replace(/\/$/, "");
   const count = Math.max(1, Math.min(100, Math.floor(limit)));
+  const runId = options.runId ? String(options.runId) : "";
   const primary = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
-    select: "log_id,channel,instruction,map_id,created_at",
+    // run_id 는 20260829000000 이후에만 있다 — 필터를 걸 때만 select 에 넣어 미적용 DB 에서
+    // 목록이 통째로 400 나지 않게 한다.
+    select: runId
+      ? "log_id,run_id,channel,instruction,map_id,created_at"
+      : "log_id,channel,instruction,map_id,created_at",
     order: "created_at.desc",
     limit: String(count),
+    ...(runId ? { run_id: `eq.${runId}` } : {}),
   });
   const fallback = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
@@ -155,7 +179,7 @@ export function buildAiActivityUrls(config, limit) {
   });
   return {
     primary: `${base}/rest/v1/ai_activity_logs?${primary.toString()}`,
-    fallback: `${base}/rest/v1/ai_analysis_runs?${fallback.toString()}`,
+    fallback: runId ? null : `${base}/rest/v1/ai_analysis_runs?${fallback.toString()}`,
   };
 }
 

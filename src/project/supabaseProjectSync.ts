@@ -318,6 +318,8 @@ export async function recordSupabaseAiAnalysisRun(
 
 export type SupabaseAiActivityLogInput = {
   readonly logId: string;
+  /** 탭 1개당 uuid 하나. 같은 project_id 를 쓰는 다른 워크트리/탭의 턴과 갈라내는 유일한 키. */
+  readonly runId?: string;
   readonly channel: string;
   readonly instruction: string;
   readonly mapId?: string;
@@ -327,15 +329,27 @@ export type SupabaseAiActivityLogInput = {
 /** 채팅/영역 AI 활동 로그 1건. 과거 폴백 행은 조회만 하고 새 로그는 전용 테이블에만 쓴다. */
 export const AI_ACTIVITY_FALLBACK_TILESET_ID = "__ai_activity__";
 
+/** run_id 컬럼이 없는 DB 를 한 번 확인하면 이후 요청에서 그 키를 빼서 왕복을 아낀다. */
+let aiActivityRunIdColumnMissing = false;
+
 export async function recordSupabaseAiActivityLog(
   input: SupabaseAiActivityLogInput,
   config = supabaseProjectConfig(),
 ): Promise<SupabaseSaveResult> {
   if (!config) return { kind: "not-configured" };
   try {
-    await upsertRows(config, "ai_activity_logs", "log_id", [aiActivityLogRow(config.projectId, input)]);
+    await upsertRows(config, "ai_activity_logs", "log_id", [
+      aiActivityLogRow(config.projectId, input, { omitRunId: aiActivityRunIdColumnMissing }),
+    ]);
     return { kind: "saved" };
   } catch (error) {
+    if (input.runId && !aiActivityRunIdColumnMissing && isUnknownColumnError(error, "run_id")) {
+      aiActivityRunIdColumnMissing = true;
+      await upsertRows(config, "ai_activity_logs", "log_id", [
+        aiActivityLogRow(config.projectId, input, { omitRunId: true }),
+      ]);
+      return { kind: "saved" };
+    }
     const missingPrimary =
       (error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error);
     if (!missingPrimary) throw error;
@@ -346,10 +360,22 @@ export async function recordSupabaseAiActivityLog(
   }
 }
 
-/** 전용 테이블 + 폴백 테이블에서 최근 AI 활동 로그를 읽어 온다. */
+/** 테스트 전용 — 컬럼 없음 캐시를 되돌린다. */
+export function resetAiActivityRunIdColumnProbeForTest(): void {
+  aiActivityRunIdColumnMissing = false;
+}
+
+/**
+ * 전용 테이블 + 폴백 테이블에서 최근 AI 활동 로그를 읽어 온다.
+ *
+ * `runId` 를 주면 그 런의 턴만 본다 — 같은 project_id 를 여러 워크트리·탭이 공유하므로
+ * 필터 없는 최신 정렬은 옆 런의 e2e 턴을 준다. 폴백 테이블(ai_analysis_runs)에는 런 정보가
+ * 없으므로 runId 를 준 호출에서는 폴백을 섞지 않는다.
+ */
 export async function listSupabaseAiActivityLogs(
   limit = 20,
   config = supabaseProjectConfig(),
+  options: { readonly runId?: string } = {},
 ): Promise<readonly Record<string, unknown>[]> {
   if (!config) return [];
   const n = Math.max(1, Math.min(100, Math.floor(limit)));
@@ -358,14 +384,20 @@ export async function listSupabaseAiActivityLogs(
   try {
     const primaryParams = new URLSearchParams({
       project_id: `eq.${config.projectId}`,
-      select: "log_id,channel,instruction,map_id,payload_json,created_at",
+      // run_id 는 필터를 걸 때만 select 에 넣는다 — 20260829000000 미적용 DB 에서
+      // 없는 컬럼을 select 하면 400 이고, 이 경로는 오류를 삼키므로 목록이 통째로 빈다.
+      select: options.runId
+        ? "log_id,run_id,channel,instruction,map_id,payload_json,created_at"
+        : "log_id,channel,instruction,map_id,payload_json,created_at",
       order: "created_at.desc",
       limit: String(n),
+      ...(options.runId ? { run_id: `eq.${options.runId}` } : {}),
     });
     primary = await fetchJsonArray(`${config.url}/rest/v1/ai_activity_logs?${primaryParams.toString()}`, config);
   } catch {
     /* primary missing or network — still try fallback */
   }
+  if (options.runId) return primary.slice(0, n);
   try {
     const fallbackParams = new URLSearchParams({
       project_id: `eq.${config.projectId}`,
@@ -903,13 +935,20 @@ function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput):
   };
 }
 
-function aiActivityLogRow(projectId: string, input: SupabaseAiActivityLogInput): Record<string, unknown> {
+function aiActivityLogRow(
+  projectId: string,
+  input: SupabaseAiActivityLogInput,
+  options: { readonly omitRunId?: boolean } = {},
+): Record<string, unknown> {
   return {
     log_id: input.logId,
     project_id: projectId,
     channel: input.channel,
     instruction: input.instruction.slice(0, 4000),
     map_id: input.mapId ?? null,
+    // run_id 는 20260829000000 이후에만 존재한다. 미적용 DB 에서는 PostgREST 가 PGRST204 로
+    // 400 을 주므로, 그때는 이 키를 빼고 한 번 더 보낸다(로그가 아예 안 남는 것보다 낫다).
+    ...(input.runId && options.omitRunId !== true ? { run_id: input.runId } : {}),
     payload_json: input.payload,
   };
 }
@@ -1197,6 +1236,16 @@ function supabaseListValue(value: string): string {
 
 function isOptionalTableMissingError(error: unknown): boolean {
   return error instanceof SupabaseProjectSyncError && error.status === 404 && error.message.includes("PGRST205");
+}
+
+/**
+ * PostgREST 가 "그 컬럼 없음" 으로 거절했는지. 쓰기 경로는 PGRST204 로 400 을 준다.
+ * 마이그레이션이 밀린 DB 에서 새 컬럼 때문에 기능 전체가 죽지 않게 하는 판별기다.
+ */
+function isUnknownColumnError(error: unknown, column: string): boolean {
+  if (!(error instanceof SupabaseProjectSyncError) || error.status !== 400) return false;
+  if (!error.message.includes(column)) return false;
+  return error.message.includes("PGRST204") || /does not exist|could not find/iu.test(error.message);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

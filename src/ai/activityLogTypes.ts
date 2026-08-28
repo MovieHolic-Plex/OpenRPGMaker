@@ -40,6 +40,8 @@ export type AiActivityDiagnostics = {
 
 export type AiActivityLogRecord = {
   readonly id: string;
+  /** 탭 1개 = 런 1개. DB 에서 "내 런의 최신 턴"을 고르는 키(src/ai/activityRunId.ts). */
+  readonly runId?: string;
   readonly at: string;
   readonly channel: AiActivityChannel;
   readonly projectContextKey?: string;
@@ -71,6 +73,8 @@ export type AiActivityLogInput = {
   readonly audit?: readonly AuditEntry[];
   readonly uiEvents?: readonly unknown[];
   readonly id?: string;
+  /** 생략하면 이 탭의 런 식별자가 자동으로 붙는다. 테스트에서만 명시한다. */
+  readonly runId?: string;
   readonly at?: string;
 };
 

@@ -2,6 +2,23 @@
 export const SUPABASE_PROXY_PATH = "/supabase";
 
 /**
+ * 프록시 모드에서 클라이언트가 들고 있는 자리표시자. 실제 자격증명이 아니다 —
+ * `/supabase` 프록시가 서버 전용 `SUPABASE_ANON_KEY` 로 apikey/authorization 을 덮어쓴다.
+ *
+ * 빈 문자열이 아니라 센티널을 쓰는 이유: 저장 가능 여부·자격증명 변경 감지·헤더 구성 등
+ * 이미 `Boolean(anonKey)` 를 보는 지점이 여러 곳(store.ts, persistenceStatus.ts,
+ * editorToolHook.ts, mapEditLocks.ts, queryTools.ts)이라, 빈 값을 흘리면 그 전부가
+ * "미설정"으로 뒤집힌다. 센티널은 그 계약을 건드리지 않고 실 키만 번들에서 빼낸다.
+ */
+export const SUPABASE_PROXY_ANON_SENTINEL = "proxy-injected";
+
+/** 프록시 모드 여부 — 이 값이 켜지면 URL 은 항상 같은-오리진 경로이고 실 키는 서버에만 있다. */
+export function supabaseProxyModeEnabled(raw: string | undefined): boolean {
+  const value = raw?.trim();
+  return value === "1" || value === "true";
+}
+
+/**
  * https 페이지 → http 백엔드 fetch 는 브라우저가 mixed content 로 **무조건** 차단한다.
  * 그래서 http Supabase 를 쓰는 한 https 페이지에서는 항상 같은-오리진 /supabase 로 접는다.
  * dev 서버와 vite preview 모두 프록시를 등록해 둠(vite.config.ts §preview.proxy).
