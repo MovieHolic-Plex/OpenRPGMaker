@@ -377,6 +377,23 @@ describe("structureKitDbTab 3원본 앨범(내장·실내 오브젝트·내가 �
     expect(hint).not.toBeNull();
     expect(hint!.textContent).toContain("코드");
   });
+
+  it("실내 오브젝트 인스펙터에 [팔레트에서 쓰기]가 있다", () => {
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host, () => {});
+
+    // 실내 칩셋 앨범으로 이동
+    host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)!.click();
+
+    const first = INTERIOR_OBJECT_CATALOG[0]!;
+    const row = host.querySelector(`[data-testid='structure-kit-object-${first.id}']`);
+    expect(row).not.toBeNull();
+    row!.click();
+
+    const useBtn = host.querySelector(`[data-testid='structure-kit-object-use-${first.id}']`);
+    expect(useBtn).not.toBeNull();
+    expect(useBtn!.textContent).toContain("팔레트에서 쓰기");
+  });
 });
 
 describe("structureKitDbTab 방 종류 테마 문법 뷰", () => {

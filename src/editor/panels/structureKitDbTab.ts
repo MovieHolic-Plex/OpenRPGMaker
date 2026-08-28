@@ -4,13 +4,13 @@
 // 1. 타일셋 레일은 필터가 아니라 앨범. 기본 앨범은 현재 맵 타일셋(editorState.currentMapId).
 // 2. 표에는 선택된 타일셋의 구조물만 표시.
 // 3. 빈 상태 정확한 카피: "이 타일셋에는 아직 구조물이 없습니다."
-// 4. 인스펙터: 이름, 래스터, 부위 목록(인스턴스 번호), 문에서 입구 추정, 지금 저장(filled primary), 팔레트에서 쓰기, 삭제.
+// 4. 인스펙터: 이름, 래스터, 부위 목록(인스턴스 번호), 문에서 입구 추정, 팔레트에서 쓰기, 삭제.
 // 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
 
 import { editorState } from "@/editor/editorState";
 import { deleteStructureKit, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
+import { paletteStampFromCells, paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID, type InteriorRoomTheme } from "@/editor/interiorRoomPipeline";
 import {
@@ -523,10 +523,35 @@ function renderObjectInspector(tileset: TilesetDef, object: InteriorObjectDef): 
           objectFact("사용 테마", themeLabels.length > 0 ? themeLabels.join(", ") : "없음"),
         ],
       }),
+      el("div", {
+        class: "structure-kit-actions",
+        children: [
+          el("button", {
+            class: "btn",
+            attrs: { type: "button" },
+            text: "팔레트에서 쓰기",
+            dataset: { testid: `structure-kit-object-use-${object.id}` },
+            on: {
+              click: () => {
+                editorState.set({
+                  activePaletteStamp: paletteStampFromCells({
+                    cells: object.cells.map((cell) => ({ ...cell })),
+                    width: object.width,
+                    height: object.height,
+                    kitId: object.id,
+                  }),
+                  tool: "paint",
+                });
+                toast(`'${object.label}'을 브러시로 선택했습니다`, "ok");
+              },
+            },
+          }),
+        ],
+      }),
       el("p", {
         class: "structure-kit-quiet",
         dataset: { testid: "structure-kit-object-hint" },
-        text: "실내 오브젝트는 코드로 관리되는 카탈로그입니다 — 이름 변경이나 삭제는 할 수 없습니다.",
+        text: "실내 오브젝트는 코드로 관리되는 카탈로그입니다 — 고치려면 [내 구조물로 복제]를 쓰세요.",
       }),
     ],
   });

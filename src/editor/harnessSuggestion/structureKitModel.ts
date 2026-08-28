@@ -227,3 +227,20 @@ function autoKitName(pattern: DetectedSectionPattern): string {
   const label = describeChipsetTile(bestTile).label;
   return label ? `${label} 단면` : "패턴 스탬프";
 }
+
+/** 실내 오브젝트 셀 목록 → 팔레트 스탬프. 킷과 달리 오브젝트는 rows 가 없고 cells 가 정본이다. */
+export function paletteStampFromCells(input: {
+  readonly cells: readonly PaletteStampCell[];
+  readonly width: number;
+  readonly height: number;
+  readonly kitId: string;
+}): PaletteStamp {
+  const firstTile = input.cells[0]?.tile ?? 0;
+  return {
+    cells: input.cells.map((cell) => ({ ...cell })),
+    height: Math.max(1, input.height),
+    width: Math.max(1, input.width),
+    kitId: input.kitId,
+    source: { endTile: firstTile, startTile: firstTile },
+  };
+}
