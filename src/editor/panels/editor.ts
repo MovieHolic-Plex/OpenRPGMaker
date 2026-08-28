@@ -1,4 +1,5 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import {
   DEFAULT_ASSISTANT_TEMPERATURE,
   parseAssistantTemperature,
@@ -271,6 +272,7 @@ export function renderEditor(main: HTMLElement): void {
   unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
   installSelectionChipHint();
   installToolCursor();
+  scheduleEditorAssetWarmup();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();
 }
