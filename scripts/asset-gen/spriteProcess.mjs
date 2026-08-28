@@ -122,10 +122,15 @@ function erodeAlpha(image, radius) {
 }
 
 /**
+ * @param {number} [filter] Jimp.RESIZE_* 축소 필터. 기본 NEAREST_NEIGHBOR.
+ *   16~96px 아이콘·몬스터는 원본 대비 축소율이 작아 니어리스트가 가장 선명하다.
+ *   48px 전투 프레임처럼 20배 이상 줄일 때는 니어리스트가 한 픽셀만 찍어
+ *   칼날 같은 얇은 형태를 잃고 JPEG 노이즈를 그대로 굳힌다(실측: 48px 에 705색).
+ *   그 경우 가중 평균 필터를 넘겨라.
  * @returns {Promise<{ keyedRatio: number, content: {w: number, h: number} }>}
  * @throws 배경이 마젠타가 아니거나 내용이 없으면 던진다.
  */
-export async function processSprite(inputPath, outputPath, size) {
+export async function processSprite(inputPath, outputPath, size, filter = Jimp.RESIZE_NEAREST_NEIGHBOR) {
   const image = await Jimp.read(inputPath);
   const reference = floodFillBackground(image.bitmap);
   // 피사체에 둘러싸여 테두리에서 못 닿는 내부 구멍(활과 팔 사이, 날개 틈 등)은
@@ -177,7 +182,7 @@ export async function processSprite(inputPath, outputPath, size) {
   image.crop(cropX, cropY, Math.min(side, image.bitmap.width - cropX), Math.min(side, image.bitmap.height - cropY));
 
   // 픽셀아트는 보간하면 뭉개진다.
-  image.resize(size, size, Jimp.RESIZE_NEAREST_NEIGHBOR);
+  image.resize(size, size, filter);
   // 축소로 생긴 반투명 픽셀을 이진화한다 — 런타임이 알파 블렌딩을 하지 않는다.
   image.scan(0, 0, image.bitmap.width, image.bitmap.height, function (x, y, idx) {
     this.bitmap.data[idx + 3] = this.bitmap.data[idx + 3] >= 128 ? 255 : 0;
