@@ -12,7 +12,7 @@ import {
   syncFieldSpawnEventsIntoMap,
   type NormalizedFieldSpawn,
 } from "@/player/fieldSpawns";
-import { syncActorVitals } from "@/project/sessionVitals";
+import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import { initialRuntimeEventPositions } from "@/project/runtimeEventState";
@@ -102,8 +102,7 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
       scene.renderTiles();
       scene.registerPageMoveRoutes();
     } else if (result === "defeat") {
-      killPartyForFieldBattle(scene);
-      scene.showGameOverScreen("전투에서 패배했습니다.");
+      applyBattleDefeat(scene);
     }
   } finally {
     scene.running = false;
@@ -148,17 +147,4 @@ export function despawnFieldEnemyForScene(scene: PlaySceneContext, spawnId: stri
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();
   scene.registerPageMoveRoutes();
-}
-
-function killPartyForFieldBattle(scene: PlaySceneContext): void {
-  const project = store.getCurrent();
-  for (const actorId of scene.session.partyActorIds) {
-    syncActorVitals(project, scene.session.actorVitals, actorId);
-    const vitals = scene.session.actorVitals[actorId];
-    if (vitals) vitals.hp = 0;
-    scene.session.actorStateIds ??= {};
-    const states = new Set(scene.session.actorStateIds[actorId] ?? []);
-    states.add("state_death");
-    scene.session.actorStateIds[actorId] = [...states];
-  }
 }

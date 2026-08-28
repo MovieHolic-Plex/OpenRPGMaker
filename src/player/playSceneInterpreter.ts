@@ -37,6 +37,7 @@ import {
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { isActionCombatSceneActive } from "@/player/playSceneActionCombat";
 import { despawnFieldEnemyForScene, runFieldSpawnEventBattle, spawnFieldEnemyForScene } from "@/player/playSceneFieldSpawns";
+import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
@@ -388,6 +389,13 @@ async function consumeBlockingStep(
     case "battleProcessing": {
       const troopId = resolveBattleTroopId(scene, step);
       scene.session.battleResult = await scene.playBattle({ ...step, troopId });
+      // canLose=false 패배는 게임 오버다(sceneTestRunner/walkthroughRunner 와 같은 계약).
+      // 이벤트를 여기서 끝낸다 — 전멸한 파티로 뒷 커맨드가 이어지면 안 되고, 게임 오버
+      // 오버레이의 '다시 시도'(restoreCheckpoint)가 살아 있는 인터프리터와 충돌한다.
+      if (scene.session.battleResult === "defeat" && step.canLose !== true) {
+        applyBattleDefeat(scene);
+        return { kind: "done" };
+      }
       return resumeWithValue(scene, interpreter, scene.session.battleResult);
     }
     case "showPicture":

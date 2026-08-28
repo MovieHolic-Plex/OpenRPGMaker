@@ -27,6 +27,7 @@ import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/pl
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
+import { applyBattleDefeat } from "@/player/playSceneDefeat";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -472,7 +473,11 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
   scene.running = true;
   scene.setInputEnabled(false);
   try {
-    await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+    // 결과를 버리면 안 된다: battleResult 는 페이지 조건·분기의 SSOT 이고, 랜덤 인카운터는
+    // canLose=false 라 패배가 곧 게임 오버다(sceneTestRunner 의 인카운터 경로와 같은 계약).
+    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+    scene.session.battleResult = result;
+    if (result === "defeat") applyBattleDefeat(scene);
   } finally {
     scene.running = false;
     scene.setInputEnabled(previousInputEnabled);
