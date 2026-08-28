@@ -99,11 +99,12 @@ function updateChaseNpc(
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
+  const pursuit = mover.chaseTarget ?? { x: scene.tileX, y: scene.tileY };
   const decision = nextChaseDecision({
     project,
     map: scene.map,
     from: { x: view.x, y: view.y },
-    player: { x: scene.tileX, y: scene.tileY },
+    player: pursuit,
     deltaMs,
     mover,
     sightRange: mover.sightRange,
@@ -117,6 +118,12 @@ function updateChaseNpc(
   }
   const frameDir = applyFacing(mover, decision.dir);
   if (decision.kind === "touch") {
+    // NPC 를 추겁하는 중이면 접촉은 이벤트 트리거가 아니다 —
+    // 진영 전투의 피해는 액션 전투 상태기가 예고된 공격으로만 주므로 그자리에 선다.
+    if (mover.chaseTarget) {
+      setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      return;
+    }
     fireEventTouch(scene, eventId, view.trigger.kind);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;

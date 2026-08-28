@@ -50,7 +50,14 @@ type TestHookWindow = Window & {
 };
 
 type ActionCombatDebug = {
-  readonly enemies: readonly { readonly eventId: string; readonly hp: number; readonly maxHp: number; readonly mode: string }[];
+  readonly enemies: readonly {
+    readonly eventId: string;
+    readonly hp: number;
+    readonly maxHp: number;
+    readonly mode: string;
+    readonly factionId: string;
+    readonly targetId: string | null;
+  }[];
   readonly projectiles: number;
   readonly swingCooldownMs: number;
   readonly stamina: number;
@@ -328,7 +335,7 @@ function parseDirection(value: string | null): Dir | null {
 function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
   const context = scene as unknown as {
     actionCombatState?: {
-      enemies: Map<string, { hp: number; maxHp: number; mode: string }>;
+      enemies: Map<string, { hp: number; maxHp: number; mode: string; factionId: string; targetId?: string }>;
       projectiles: unknown[];
       swingCooldownMs: number;
       stamina: number;
@@ -348,6 +355,8 @@ function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
       hp: enemy.hp,
       maxHp: enemy.maxHp,
       mode: enemy.mode,
+      factionId: enemy.factionId,
+      targetId: enemy.targetId ?? null,
     })),
     projectiles: state.projectiles.length,
     swingCooldownMs: state.swingCooldownMs,

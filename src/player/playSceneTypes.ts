@@ -50,6 +50,11 @@ export type AutonomousMover = {
   pathfind?: boolean;
   /** 원거리 적의 거리 유지 밴드(액션 전투 상태기가 심는다). */
   kite?: import("@/battle/action/kiting").KiteBand;
+  /**
+   * 추겁 목표 좌표 오버라이드. 진영 전투에서 적이 플레이어 대심 NPC 를 노릴 때
+   * 액션 전투 상태기가 매 프레임 심는다. 있으면 추겁 경로가 이 칸을 목표로 삼는다.
+   */
+  chaseTarget?: { readonly x: number; readonly y: number } | undefined;
   chaseRepathTimerMs?: number;
   chasePath?: { readonly x: number; readonly y: number }[];
   chaseActive?: boolean;

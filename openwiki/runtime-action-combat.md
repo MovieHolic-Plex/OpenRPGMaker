@@ -147,6 +147,38 @@ Key reasons:
 3. **Seamless mode coexistence**: A project can have standard RPG exploration maps alongside action-combat maps without divergent collision geometries.
 4. **Predictable tactical spacing**: Weapon swing arcs, telegraph zones, dodge distances, and knockback steps are clear and readable on 16x16 / 32x32 grids.
 
+## Factions and NPC-vs-NPC combat
+
+Action combat is no longer player-centric. Combatants carry a faction, and each enemy's target is resolved from the roster instead of being hardcoded to the player.
+
+### Data flow
+
+`project.factions` (see `openwiki/runtime-project-schema.md`) is resolved once per scene into `ActionCombatSceneState.factions` via `resolveFactionTable`. Each `ActionEnemyState` gets a `factionId` at sync time with precedence spawn definition > enemy record > reserved `enemy`. The party is the reserved `player` faction under the sentinel combatant id `PLAYER_COMBATANT_ID` (`"__player__"`).
+
+### Pure rule module
+
+`src/battle/action/factionTargeting.ts`:
+- `resolveHostileTarget({ self, candidates, table, aggroRange, forcedTargetId })` returns the nearest combatant the actor will attack on sight, or `null`. Distance is Chebyshev and ties break by **lowest id**, so the result never depends on candidate array order (that is, on `Map` insertion order or spawn history). A live `forcedTargetId` wins over both stance and range.
+- `resolveNpcDamage({ hp, damage, protectedFromNpcs })` applies NPC-inflicted damage; a protected faction floors at 1 HP instead of dying.
+
+Stance and aggression resolution live in `src/project/factions.ts`: `factionStance` symmetrizes with `Math.min`, `willAttackOnSight` gates the four aggression levels, and `isHittableByFaction` exempts friend/ally from stray projectiles.
+
+### Scene behaviour
+
+- **Target acquisition** (`acquireEnemyTarget`) re-resolves every `TARGET_RETARGET_MS` (400ms) rather than every frame, and is **frozen during `windup` and `dash`** so a telegraphed attack lands where it was telegraphed. `aggroRange` comes from the mover's `sightRange`, defaulting to 8.
+- **Chasing an NPC** is expressed through `AutonomousMover.chaseTarget`, which `playSceneAutonomous.ts` feeds into `nextChaseDecision` in place of the player tile. When `chaseTarget` is set, a `touch` decision does **not** fire `eventTouch` — inter-NPC contact is not an authoring trigger.
+- **Damage routing**: melee arc hits, dash impacts, and projectiles all funnel through `damageActionTarget`, which dispatches to the existing `damagePlayer` gate or to `damageEnemyByNpc`.
+- **Contact damage stays player-only**, and only from an enemy whose current target *is* the player. Between NPCs there are no invulnerability frames, so per-frame contact damage would melt both sides instantly; NPC-vs-NPC damage therefore flows exclusively through telegraphed attacks. A neutral enemy walking past the player deals nothing.
+- **Projectiles** carry `ownerId` and `ownerFactionId` snapshotted at spawn, so attribution survives the owner dying mid-flight. A projectile hits any combatant that is not friendly to the owner faction (`stance <= 0`); same-faction members are exempt because the matrix diagonal defaults to ally.
+- **Retaliation latch**: any damage sets the victim's `forcedTargetId` to the attacker for `RETALIATION_LATCH_MS` (4000ms), including damage from the player. Without it, stray projectiles and friendly fire read as a bug.
+- **NPC kills grant the player nothing.** `damageEnemyByNpc` calls `resolveFieldSpawnVictory` (despawn plus respawn timer) but deliberately **not** `recordFieldSpawnKill`, so `session.killedFieldSpawns` persistence and `onKillSwitchId` stay player-only. Ambient skirmishes must not advance authored progress.
+- **Readability**: the enemy HP bar frame is drawn in `stanceBarColor(stance to player)` — hostile red, neutral amber, friendly teal. It replaced the flat black backdrop and is the only cue distinguishing sides in a three-way fight.
+- **Knockback remains player-sourced only** (`resolveKnockback` still takes the player tile); NPC hits stagger but do not displace.
+
+### Bounding the simulation
+
+There is no new budget system. Field spawns already cap concurrency with `maxAlive` (default 3) and `respawnSec` (default 10), which is the spawn budget for a faction war. Raising `maxAlive` raises target-scan cost linearly: the scan is O(combatants) per enemy and runs on the 400ms retarget tick, not per frame.
+
 ## Out of scope / deliberately unsupported
 
 - **Pixel-physics collision**: No Box2D, Arcade Physics bodies, or non-grid velocity vectors.
@@ -176,6 +208,9 @@ Key reasons:
 - `test/actionSimulate.test.ts` & `test/actionSimulateSharedRules.test.ts`: Headless simulation using shared rule modules.
 - `test/actionDemoProject.test.ts`: Action demo project schema and wiring.
 - `test/actionTools.test.ts`: AI tools for configuring action combat and enemies.
+- `test/factionStance.test.ts`: stance matrix defaults, `Math.min` symmetrization, aggression gating, unknown-id fallback, reserved-faction override, `protectedFromNpcs`, normalization drops, and a serialize/deserialize roundtrip that does not bump the schema version.
+- `test/factionTargeting.test.ts`: nearest-hostile selection, candidate-order independence with id tiebreak, aggro range gate, own-faction and self exclusion, all four aggression levels, retaliation latch precedence and fallback, NPC damage and protection floor, plus a 40-tick order-independence check.
+- `test/factionNpcCombat.test.ts`: scene-level integration on a stubbed Phaser surface — faction precedence (spawn > record > reserved), hostile factions killing each other with the player away, no gold/exp/kill-persistence from NPC kills, neutral factions never engaging, a protected faction surviving at 1 HP, no contact damage from an enemy engaged elsewhere, and the legacy path where a hostile enemy still attacks the player.
 
 ### E2E browser specifications
 - `test/e2e/action-combat.spec.ts`: Full real-time attack, dodge, guard, and enemy response in browser player.
