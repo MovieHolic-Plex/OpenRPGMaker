@@ -276,6 +276,18 @@
   white-space: nowrap;
 }
 
+/* 개수가 라벨과 같은 크기·굵기로 경쟁하지 않게 분리한다. */
+.map-tree-panel .map-tree-header h3 { align-items: center; display: flex; gap: 6px; }
+.map-tree-panel .map-tree-title { color: var(--text-1); }
+
+.map-tree-panel .map-tree-count {
+  background: var(--control-bg);
+  border-radius: 999px;
+  color: var(--text-3);
+  font: 700 10px/1 var(--font-ui);
+  padding: 3px 7px;
+}
+
 .map-tree-panel .map-tree-header-actions {
   display: flex;
   flex: 0 0 auto;

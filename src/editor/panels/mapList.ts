@@ -119,7 +119,12 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     section.append(makeFilterField());
   } else {
     const header = el("div", { class: "map-tree-header" });
-    header.append(el("h3", { text: `맵 ${mapCount}` }));
+    header.append(el("h3", {
+      children: [
+        el("span", { class: "map-tree-title", text: "맵" }),
+        el("span", { class: "map-tree-count", text: String(mapCount) }),
+      ],
+    }));
     header.append(makeMapTreeHeaderActions(project.mapTree));
     section.append(header);
     section.append(makeFilterField());
@@ -604,7 +609,7 @@ function makeMapTreeHeaderActions(root: MapTreeNode): HTMLElement {
           rerenderMapList();
           beginRename(id);
         },
-        icon: "folder",
+        icon: "map-folder",
         label: "분류 추가",
         testId: "map-add-folder",
       }),
