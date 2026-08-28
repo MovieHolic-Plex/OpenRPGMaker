@@ -1,7 +1,7 @@
 // 진단 스펙 — 턴 없이 두 표면을 실제 브라우저에서 렌더해 눈으로 확인한다.
 //  (1) 언급 썸네일 스트립(C3): 실제 프로젝트 DB 레코드로 findEntityMentions + renderEntityMentionStrip
 //  (2) 적용 완료 스트립(C5): buildAiCompletionStrip — 요약 + 되돌리기 하나뿐인지
-//  (3) 자동 적용 비교 카드(C1): renderAppliedComparison — 전/후 썸네일 + 자동 적용 토글 + 되돌리기
+//  (3) 즉시 적용 비교 카드(C1): renderChangePreviewCard — 전/후 썸네일 + 되돌리기, 승인 UI 없음
 // dev 서버는 소스를 ES 모듈로 서브하므로 페이지 안에서 직접 import 할 수 있다.
 // 실행: DEV_SERVER_PORT=9816 npx playwright test test/e2e/_ux-after-surfaces.spec.ts --project=chromium
 import { expect, test, type Page } from "@playwright/test";
@@ -20,14 +20,14 @@ async function boot(page: Page): Promise<void> {
   await page.waitForTimeout(800);
 }
 
-test("after: 언급 썸네일 · 적용 스트립 · 자동 적용 비교 카드", async ({ page }) => {
+test("after: 언급 썸네일 · 적용 스트립 · 즉시 적용 비교 카드", async ({ page }) => {
   test.setTimeout(180_000);
   await boot(page);
 
   const result = await page.evaluate(async () => {
     const mentions = await import("/src/editor/panels/aiEntityMentions.ts");
     const strip = await import("/src/editor/panels/aiCompletionStrip.ts");
-    const card = await import("/src/editor/panels/aiProposalCard.ts");
+    const card = await import("/src/editor/panels/aiChangePreview.ts");
     const storeMod = await import("/src/project/store.ts");
     const project = storeMod.store.getCurrent();
 
@@ -69,19 +69,19 @@ test("after: 언급 썸네일 · 적용 스트립 · 자동 적용 비교 카드
     });
     host.append(completion.element);
 
-    host.append(label("3) 자동 적용 비교 카드 — 전/후 + 자동 적용 토글 + 되돌리기"));
+    host.append(label("3) 즉시 적용 비교 카드 — 전/후 + 되돌리기"));
     const mapId = project.startMapId;
     const base = project.maps[mapId];
     const lowerTiles = [...base.lowerTiles];
     for (let i = 0; i < Math.min(40, lowerTiles.length); i += 1) lowerTiles[i] = (lowerTiles[i] ?? 0) + 1;
     const after = { ...project, maps: { ...project.maps, [mapId]: { ...base, lowerTiles } } };
     host.append(
-      card.renderAppliedComparison({
+      card.renderChangePreviewCard({
         before: project,
         after,
         mapId,
-        summary: "집 1 · 길 12칸 · 울타리 6",
-        appliedCount: 3,
+        title: "집 1 · 길 12칸 · 울타리 6",
+        chips: ["변경 3건"],
         onUndo: () => undefined,
       }),
     );
@@ -102,7 +102,7 @@ test("after: 언급 썸네일 · 적용 스트립 · 자동 적용 비교 카드
         (b) => (b as HTMLElement).dataset.testid ?? "?",
       ),
       appliedCardThumbs: q("[data-testid='ai-change-pair'] canvas"),
-      appliedCardHasToggle: q("[data-testid='ai-proposal-auto-approve-input']"),
+      approvalUiCount: q("[data-testid='ai-proposal-auto-approve-input'], [data-testid='ai-proposal-card'], [data-testid='ai-proposal-modal']"),
       appliedCardHasUndo: q("[data-testid='ai-change-undo']"),
     };
   });

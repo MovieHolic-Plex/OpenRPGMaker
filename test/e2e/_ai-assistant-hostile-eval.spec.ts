@@ -514,30 +514,22 @@ test("I 빈 상태 CTA → 실작업 제안 흐름", async ({ page }) => {
   await abort.waitFor({ state: "detached", timeout: 300_000 }).catch(() => undefined);
   await page.waitForTimeout(1_500);
   await shot(page, "I04-after-turn-full");
-  // 제안 pill/카드/완료 스트립 — 승인 UX의 핵심 표면
-  for (const [tid, name] of [
-    ["ai-proposal-pill", "I05-proposal-pill"],
-    ["ai-proposal-card", "I06-proposal-card"],
-    ["ai-completion-strip", "I07-completion-strip"],
-    ["ai-proposal-modal", "I08-proposal-modal"],
-  ] as const) {
-    const el2 = page.locator(`[data-testid="${tid}"]`).first();
-    if (await el2.isVisible().catch(() => false)) await shot(el2, name);
-    else log(`ABSENT ${tid} after CTA turn`);
+  // 적용 완료 표면만 남고 승인 pill/카드/모달은 없어야 한다.
+  const completion = page.locator('[data-testid="ai-completion-strip"]').first();
+  if (await completion.isVisible().catch(() => false)) await shot(completion, "I05-completion-strip");
+  else log("ABSENT ai-completion-strip after CTA turn");
+  for (const tid of ["ai-proposal-pill", "ai-proposal-card", "ai-proposal-modal"] as const) {
+    const count = await page.locator(`[data-testid="${tid}"]`).count();
+    log(`${tid} count after CTA turn: ${count}`);
+    expect(count).toBe(0);
   }
-  const pill = page.locator('[data-testid="ai-proposal-pill"]').first();
-  if (await pill.isVisible().catch(() => false)) {
-    await pill.click().catch(() => undefined);
-    await page.waitForTimeout(800);
-    await shot(page, "I09-proposal-opened");
-  }
-  await probePanel(page, "I-proposal");
+  await probePanel(page, "I-applied");
 });
 test("J 실제 복합 턴 — 다중 도구 실패 자동복구·디스크 진단", async ({ page }) => {
   test.setTimeout(900_000);
   collectErrors(page, "J");
   await boot(page, "expert", { width: 1600, height: 1000 }, "/?blankProject=1");
-  const instruction = "적대적 통합 QA다. 시작 마을에 야외 집 2채와 주민 2명을 만들고, 별도의 실내 방 하나도 모두 만들어라. 불/얼음/번개 속성 상성표와 각 속성 몬스터, 선택지가 있는 컷신, switch ending_flag가 켜졌을 때 진엔딩을 정의해라. 각 단계 결과를 다시 읽어 검증하고 변경은 제안으로 남겨라.";
+  const instruction = "적대적 통합 QA다. 시작 마을에 야외 집 2채와 주민 2명을 만들고, 별도의 실내 방 하나도 모두 만들어라. 불/얼음/번개 속성 상성표와 각 속성 몬스터, 선택지가 있는 컷신, switch ending_flag가 켜졌을 때 진엔딩을 정의해라. 각 단계 결과를 다시 읽어 검증하고 즉시 적용해라.";
   const input = page.getByTestId("ai-input");
   const send = page.getByTestId("ai-send");
   await input.fill(instruction);

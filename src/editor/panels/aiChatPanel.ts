@@ -22,16 +22,12 @@ import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } f
 import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
-  agentGhostPreviewsForMap,
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
-  getAgentGhostPreviewState,
-  hasAgentGhostPreviewSubscribers,
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
-import { classifyApproval, resolveProposalApplyMode } from "@/ai/approvalPolicy";
-import { classifyProposalSafety } from "@/editor/proposalSafety";
+import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
@@ -117,7 +113,6 @@ import {
   createConversationLogHost,
   renderStreamedMarkdown,
 } from "./aiConversationLog";
-import { createProposalModalElements } from "./aiProposalModal";
 import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changePreviewChips, renderChangePreviewCard } from "./aiChangePreview";
@@ -180,7 +175,6 @@ export {
   mapIdsReferencedByCall,
   reassembleSelectedProposalProject,
 } from "./aiProposalSummary";
-export { proposalAcceptButtonLabel } from "./aiProposalFusion";
 export {
   applyVocabularyCardEdits,
   callsWithVocabularyEdits,
@@ -373,24 +367,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const syncConversationState = (): void => {
     if (panelRoot) panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
   };
-  const pinHost = el("div", {
-    class: "ai-proposal-pin-host",
-    dataset: { testid: "ai-proposal-pin-host" },
-  });
-  // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 비면 숨김(CSS :empty).
-  const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
-
-  // ── 변경 제안 몰입 모달: 제안 카드는 중앙 모달에서 검토한다(채팅 오버레이에 얹으면 답답하다는 UX 피드백).
-  // proposalHost가 모달 본문에 상주하므로 카드 렌더/승인/융합 로직은 그대로다.
-  // '나중에'(Esc/백드롭 포함)는 최소화 — 커맨드 바 위 pill로 남아 승인 대기를 잃지 않는다. 폐기는 오직 [거부] 버튼.
-  const proposalModal = createProposalModalElements(proposalHost);
-  const proposalNoticeHost = proposalModal.noticeHost;
-  const proposalPill = proposalModal.pill;
-  const proposalModalCount = proposalModal.count;
-  const proposalModalBody = proposalModal.body;
-  const proposalModalRoot = proposalModal.root;
-  const openProposalModal = proposalModal.open;
-  const closeProposalModal = proposalModal.close;
+  // 변경 0건 알림 전용 호스트 — 쓰기가 있는 턴은 승인 없이 바로 적용되므로 결정 카드·핀·모달이 없다.
+  const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
   let turnBusy = false;
   // 전송 버튼은 "보낼 것이 있고 한가할 때"만 준버된 상태로 보이며, 이전엔 turnBusy 만 보서
   // 보낼 게 없을 때도 흔함 없이 활성이었고, 눌러도 send() 가 `if (!text) return` 으로
@@ -557,22 +535,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const proposalApi = createProposalHost({
-    proposalHost,
-    pinHost,
     proposalNoticeHost,
-    proposalModalCount,
-    proposalPill,
-    proposalModalBody,
-    getChatDock: readChatDock,
-    openProposalModal,
-    closeProposalModal,
     controller,
     appendBubble,
     setStatus,
     onApplied: (result) => {
       const selection = editorState.get().selection;
-      // 수동 승인 경로도 같은 변경 카드를 남긴다. 적용 직전 통이 undo 스택 상단이므로
-      // peekPreviousProject(1) 이 before, 현재 store 가 after 다.
       const applied = proposalApi.lastAppliedProposalMessage;
       const before = peekPreviousProject(1);
       if (before && applied) {
@@ -597,8 +565,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (!turnBusy) scheduleCollapseAfterAiWork();
     },
   });
-  const renderProposal = proposalApi.renderProposal;
-  const acceptProposal = proposalApi.acceptProposal;
+  const noteNoChanges = proposalApi.noteNoChanges;
+  const applyProposal = proposalApi.applyProposal;
   // pending/last-applied message state is owned by proposalApi (getters/setters).
   const setPendingProposalMessage = (value: typeof proposalApi.pendingProposalMessage) => {
     proposalApi.pendingProposalMessage = value;
@@ -615,9 +583,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     conversationId = record.id;
     setPendingProposalMessage(null);
     setLastAppliedProposalMessage(null);
-    proposalApi.clearInlineActionsIfMine();
-    proposalHost.replaceChildren();
-    closeProposalModal();
     chipsHost.replaceChildren();
     log.replaceChildren();
     startScreen = null;
@@ -919,7 +884,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     revealVolatileZone();
     if (!opts?.replay) appendBubble("user", displayAs ?? trimmed);
     const session = ensureSession();
-    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준 — 위 autoApprove 판정과 같은 관례).
+    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
@@ -1171,68 +1136,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         foldWorkLogs(assistantBubble);
       }
       const beforeProject = store.getCurrent();
-      const afterProject = session.getProposedProject();
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
-      const autoApproveEnabled = loadAiConfig().agentMode === "auto" || loadAiConfig().autoApprove === true;
-      const verdict = classifyApproval(result.proposedCalls, { autoApproveEnabled });
-      const explicitApprovalRequired = verdict.decision === "require_approval";
-      const safety = classifyProposalSafety({
-        calls: result.proposedCalls,
-        before: beforeProject,
-        after: afterProject,
-        currentMapId,
-        warnings: completenessWarnings,
-      });
-      const hasCurrentMapGhost = currentMapId && hasAgentGhostPreviewSubscribers()
-        ? agentGhostPreviewsForMap(getAgentGhostPreviewState(), currentMapId).length > 0
-        : false;
-      const canvasFirst = safety.safe && !explicitApprovalRequired && hasCurrentMapGhost;
-      // 승인 카드는 파괴적·재료합의 변경과 자동 적용 off 에만 남는다. 안전 분류와 완성도 린트
-      // 경고는 더 이상 게이트가 아니다 — 되돌리기가 있는 변경을 카드로 막으면 마찰만 남는다.
-      const applyMode = resolveProposalApplyMode({
-        callCount: result.proposedCalls.length,
-        autoApplyEnabled: autoApproveEnabled,
-        approvalDecision: verdict.decision,
-        turnErrored: result.stoppedReason === "error",
-      });
+      // 승인 카드는 없다 — 쓰기가 있으면 그대로 적용하고, 복구는 되돌리기다(approvalPolicy 머리말).
+      const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
       if (applyMode === "apply-now") {
-        // 적용을 먼저 하고 그 결과를 기다린 다음에 카드를 붙인다 — 배치 검증·커밋 게이트가 적용을
-        // 거부하면 store 는 그대로이므로 "자동 적용 N건" 은 거짓이 된다(사유는 acceptProposal 이
+        // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
+        // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 applyProposal 이
         // 이미 ❌ 버블로 남긴다).
-        // 자동 적용도 전/후 비교를 보여준다. 이전엔 한 줄 시스템 버블 + 3초 뒤 setTimeout 으로
-        // 사라지는 실행취소 버튼이 전부여서, 사용자는 무엇이 바뀌었는지 보지 못한 채 3초 안에
-        // 판단해야 했다. 이제 전/후 큰 비교 카드를 로그에 남기고 넓은 화면으로 열 수 있다.
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
-        const applied = await acceptProposal(result.proposedCalls);
+        const applied = await applyProposal(result.proposedCalls, assistantBubble);
         setStatus(applied ? "대기" : "적용 실패");
-        // 변경 카드는 proposalApi.onApplied 가 모든 적용 경로(자동·수동)에서 한 장만 남긴다.
-        // 여기서 또 emitChangeCard 를 부를면 자동 적용 한 턴에 카드가 다 장 밥는다(e2e 로 잡혀다).
+        // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
+        // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
         if (applied && !currentMapId) {
-          appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
+          appendBubble("system", `적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
         }
       } else {
-        renderProposal(
-          result,
-          result.proposedCalls.length === 0 ? completenessWarnings : [],
-          assistantBubble,
-          canvasFirst ? "canvas" : "modal",
-        );
-        if (result.proposedCalls.length === 0 && result.stoppedReason !== "error") {
+        noteNoChanges(result, completenessWarnings);
+        if (result.stoppedReason !== "error") {
           const silenced = result.assistantText ? ` — ${result.assistantText.slice(0, 80)}` : "";
           const emptyLabel = completenessWarnings.length > 0 ? `변경 없음(린트 경고 ${completenessWarnings.length}건)` : `변경 없음(0건)${silenced ? " · 되묻기/재시도 필요" : ""}`;
           setStatus(emptyLabel);
         } else {
-          setStatus(
-            result.stoppedReason === "error"
-              ? "오류"
-              : result.proposedCalls.length > 0
-              ? "검토 대기"
-              : !runningProgress
-              ? "완료"
-              : status.textContent ?? ""
-          );
+          setStatus("오류");
         }
       }
       if (result.assistantText) {
@@ -2017,9 +1945,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         conversationId = genId("conv");
         setPendingProposalMessage(null);
         setLastAppliedProposalMessage(null);
-        proposalApi.clearInlineActionsIfMine();
-        proposalHost.replaceChildren();
-        closeProposalModal();
         chipsHost.replaceChildren();
         log.replaceChildren();
         startScreen = null;
@@ -2305,7 +2230,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
     // 적용 완료 액션과 0건 알림, '검토 대기' pill은 맵 위에서 잃지 않는 고정 영역이다.
-    children: [completionHost, proposalNoticeHost, proposalPill],
+    children: [completionHost, proposalNoticeHost],
   });
   // 오버레이는 **휘발 로그 전용**이다. 제안 pill·완료 스트립(stickyProposalZone)은 여기 두면
   // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로, 기본 도크인 유리와 float 에서는
@@ -2339,7 +2264,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       temperature: readTemperature(),
       aiConversation: "empty",
     },
-    children: [toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
+    children: [toolbar, body, collapsedRestore, risingOverlay, stickyProposalZone, commandBar],
   });
   panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
@@ -2518,8 +2443,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const remountComposerTail = (includeOverlay: boolean): void => {
     const tail: HTMLElement[] = includeOverlay
-      ? [risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot]
-      : [pinHost, stickyProposalZone, commandBar, proposalModalRoot];
+      ? [risingOverlay, stickyProposalZone, commandBar]
+      : [stickyProposalZone, commandBar];
     for (const node of tail) node.remove();
     panel.append(...tail);
     mountResizeHandle();
@@ -3030,8 +2955,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     cleanupAiAssistBridge = null;
     unregisterAiAssistantBridge();
     registerAiBootIntentTarget(null);
-    proposalApi.clearInlineActionsIfMine();
-    closeProposalModal();
     clearAgentGhostPreview();
     panel.remove();
   };

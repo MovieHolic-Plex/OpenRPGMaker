@@ -70,10 +70,9 @@ describe("aiConfig 저장/로드", () => {
     expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
 
     // 병합 자체를 보는 테스트. 모델은 Codex 카탈로그 안의 값이어야 교정에 걸리지 않는다.
-    saveAiConfig({ ...initial, maxTokens: 4000, autoApprove: true });
+    saveAiConfig({ ...initial, maxTokens: 4000 });
     const reloaded = loadAiConfig();
     expect(reloaded.maxTokens).toBe(4000);
-    expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다. 옛 기본값 cpen/gpt-5-6-luna 는 게이트웨이

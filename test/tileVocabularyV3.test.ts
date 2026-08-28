@@ -3,11 +3,10 @@
 // 고정하는 계약: (1) 제로 부트스트랩 — 새 프로젝트 승인 집합은 공집합
 // (2) 승인 표식은 origin:"user" 뿐(source:"user"는 불인정)
 // (3) propose_tile_vocabulary 커밋 = 승인 마킹, 사실 배지는 마킹 전 분류로 계산
-// (4) assistantSession이 requiresApproval로 자동 수락(autoApprove) 경로를 차단.
+// (4) assistantSession의 제안 메타데이터와 무관하게 패널 적용 경로가 즉시 반영.
 
 import { describe, expect, it } from "vitest";
-import { AssistantSession, proposalNeedsExplicitApproval, VOCABULARY_PROPOSAL_TOOLS } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import { VOCABULARY_PROPOSAL_TOOLS } from "@/ai/assistantSession";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { getGrammarProfile, tilesetGrammarProfile } from "@/editor/tools/v3";
@@ -267,58 +266,30 @@ describe("suggestVocabGroups", () => {
   });
 });
 
-describe("assistantSession 승인 게이트 (명시 수락만 커밋)", () => {
-  it("propose_tile_vocabulary 제안은 requiresApproval — autoApprove 자동 수락 경로가 차단된다", async () => {
+describe("assistantSession 어휘 제안", () => {
+  it("propose_tile_vocabulary 커밋이 그룹을 origin:user 로 합의 표시한다", () => {
     expect(VOCABULARY_PROPOSAL_TOOLS.has("propose_tile_vocabulary")).toBe(true);
     const project = createBlankProject();
-    const groupId = project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].id;
-    // 승인 게이트 자체(명시 수락 전에는 무변경) 검증이 목적이므로, 번들 신뢰 시드를
-    // 제거해 groupId를 미승인 상태로 되돌린다.
-    project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].source = undefined;
-    const steps: ChatResult[] = [
-      // planner (no tools) → direct
-      {
-        message: {
-          role: "assistant",
-          content: JSON.stringify({ action: "direct", reason: "single vocab proposal" }),
-        },
-        finishReason: "stop",
-      } as ChatResult,
-      {
-        message: {
-          role: "assistant",
-          content: null,
-          tool_calls: [
-            {
-              id: "c1",
-              type: "function",
-              function: {
-                name: "propose_tile_vocabulary",
-                arguments: JSON.stringify({ items: [{ kind: "group", groupId, name: "석벽", role: "wall", layerHome: "lower" }] }),
-              },
-            },
-          ],
-        },
-        finishReason: "tool_calls",
-      } as ChatResult,
-      { message: { role: "assistant", content: "어휘 승인을 제안합니다.", tool_calls: undefined }, finishReason: "stop" } as ChatResult,
-    ];
-    let index = 0;
-    const session = new AssistantSession(project, {
-      config: { baseUrl: "x", model: "m", liteModel: "m", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 },
-      chat: async (_cfg, req) => {
-        // 플래너 호출은 tools 없음 — steps[0] direct 고정, 이후 순차.
-        const hasTools = Array.isArray((req as { tools?: unknown }).tools);
-        if (!hasTools && index === 0) return steps[index++]!;
-        return steps[index++] ?? steps[steps.length - 1]!;
-      },
+    const groupId = "session-unapproved-wall";
+    project.tilesets[DEFAULT_TILESET_ID].tileGroups!.push({
+      id: groupId,
+      name: "미합의 벽",
+      role: "wall",
+      defaultLayer: "lower",
+      tileIds: [301, 302, 303, 331, 332, 333, 361, 362, 363],
+      description: "세션 즉시 적용 테스트",
+      placementRules: "nine slice",
+      origin: "ai",
+      source: "ai",
     });
-    const result = await session.sendUserMessage("이 벽 타일들 승인해줘");
-    expect(result.proposedCalls).toHaveLength(1);
-    expect(result.proposedCalls[0].requiresApproval).toBe(true);
-    expect(result.proposedCalls[0].approvalWarning).toMatch(/재료 합의|어휘 승인/);
-    expect(proposalNeedsExplicitApproval(result.proposedCalls)).toBe(true);
-    // 원 프로젝트는 아직 무변경 — 마킹은 명시 수락(스토어 반영) 전이다.
     expect(isApprovedGroup(project.tilesets[DEFAULT_TILESET_ID], groupId)).toBe(false);
+
+    const context: ToolContext = { project };
+    const result = runTool(context, "propose_tile_vocabulary", {
+      items: [{ kind: "group", groupId, name: "석벽", role: "wall", layerHome: "lower" }],
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(isApprovedGroup(context.project.tilesets[DEFAULT_TILESET_ID], groupId)).toBe(true);
   });
 });

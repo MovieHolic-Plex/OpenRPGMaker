@@ -133,18 +133,18 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 
-  it("완료 스트립은 모든 도크에 남고 제안 reopen pill은 인라인 결정 카드로 대체된다", () => {
+  it("완료 스트립과 0건 알림 호스트는 남고 승인 UI는 어느 도크에도 없다", () => {
     const panel = renderPanel();
 
     for (const dock of ["glass", "side", "float"]) {
       setDock(panel, dock);
       expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
       expect(findByTestId(panel, "ai-completion-host"), dock).toBeTruthy();
-      // pill은 항상 마운트되나 hidden — 인라인 결정 카드가 대신 보이므로 노출되지 않아야 한다
-      const pill = findByTestId(panel, "ai-proposal-reopen");
-      const pillHidden = pill == null || pill.hidden === true || (pill as { attrs?: { hidden?: string } }).attrs?.hidden !== undefined;
-      expect(pillHidden, dock).toBe(true);
-      expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeTruthy();
+      expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-host"), dock).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-modal"), dock).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-card"), dock).toBeNull();
     }
   });
 

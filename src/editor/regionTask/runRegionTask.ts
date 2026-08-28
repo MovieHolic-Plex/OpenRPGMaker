@@ -750,7 +750,7 @@ export async function runRegionTask(
     const proposed = session.getProposedProject();
     if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
     // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
-    // (채팅 카드의 [맵 적용 + 재료 합의]만 영구 합의 스탬프)
+    // (영구 합의 스탬프는 채팅 적용 경로가 찍는다 — markSoftVocabApprovalsOnProject)
     // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
     // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
     const clippedResult = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
