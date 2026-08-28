@@ -4,12 +4,10 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { TILE } from "@/project/defaults/constants";
 import { approvedVocabulary, unapprovedVocabulary } from "@/project/tileVocabulary";
 import { buildRegionTaskMessage, ensureRegionPlacementHarness, runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
-import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
 import { AssistantSession } from "@/ai/assistantSession";
 import { loadAiConfig, configForLiteModel, AI_CONFIG_STORAGE_KEY, DEFAULT_BASE_URL } from "@/ai/llmClient";
 import { toOpenAiTools } from "@/editor/tools";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains } from "@/editor/assistantToolMode";
-import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import type { Project } from "@/project/types";
 import fs from "node:fs";
 
@@ -60,7 +58,7 @@ describe("region AI house/tree/npc probe", () => {
       kitId: "blue-stone",
       wings: [{ x: 3, y: 3, w: 6, h: 6 }],
     });
-    console.log("HOUSE", house.ok, house.summary, house.error);
+    console.log("HOUSE", house.ok, house.summary);
 
     ensureRegionPlacementHarness(tileset);
         const props = runTool(ctx, "place_props", {
@@ -70,7 +68,7 @@ describe("region AI house/tree/npc probe", () => {
       count: 1,
       seed: 1,
     });
-    console.log("PROPS", props.ok, props.summary, props.error, "material=침엽수");
+    console.log("PROPS", props.ok, props.summary, "material=침엽수");
 
     const npc = runTool(ctx, "place_npc", {
       mapId: MAP_ID,
@@ -79,7 +77,7 @@ describe("region AI house/tree/npc probe", () => {
       name: "테스트주민",
       pages: [{ lines: ["안녕"] }],
     });
-    console.log("NPC", npc.ok, npc.summary, npc.error);
+    console.log("NPC", npc.ok, npc.summary);
     if (npc.ok) {
       const ev = ctx.project.maps[MAP_ID].events?.find((e) => e.pages?.[0]?.name === "테스트주민");
       console.log("NPC_GRAPHIC", JSON.stringify(ev?.pages?.[0]?.graphic ?? null));
@@ -121,6 +119,7 @@ describe("region AI house/tree/npc probe", () => {
     storage.set(
       AI_CONFIG_STORAGE_KEY,
       JSON.stringify({
+        authMode: "apiKey",
         apiKey: creds.apiKey,
         baseUrl: creds.baseUrl,
         model: "minimax/minimax-m3",
@@ -128,7 +127,6 @@ describe("region AI house/tree/npc probe", () => {
         maxTokens: 8192,
         maxToolCalls: 40,
         reasoningEffort: "low",
-        autoApprove: true,
       }),
     );
     Object.defineProperty(globalThis, "localStorage", {
@@ -167,14 +165,13 @@ describe("region AI house/tree/npc probe", () => {
       deps,
     );
 
-    // 승인 게이트(gate 기본값 "approval") 아래서는 runRegionTask가 store/project에
-    // 즉시 반영하지 않고 pending으로만 들고 있는다 — 라이브 LLM 결과가 실제로 맵에
-    // 반영되는지 검증하는 것이 이 프로브의 목적이므로, 여기서 명시적으로 승인한다.
+    // 영역 작업 자체의 pending/apply 계약은 채팅 승인 카드와 별개다. 라이브 결과를
+    // 실제 프로젝트에 반영해 배치 결과를 검증한다.
     result.pending?.apply();
 
     const map = project.maps[MAP_ID];
     const upperNonEmpty = map.upperTiles.filter((t) => t >= 0 && t !== TILE.EMPTY).length;
-    const lowerDiff = map.lowerTiles.filter((t, i) => t !== TILE.GRASS).length;
+    const lowerDiff = map.lowerTiles.filter((t) => t !== TILE.GRASS).length;
     const events = map.events ?? [];
     console.log(
       "LIVE_RESULT",
@@ -193,7 +190,7 @@ describe("region AI house/tree/npc probe", () => {
           lowerDiff,
           events: events.map((e) => ({
             id: e.id,
-            name: e.name,
+            name: e.pages?.[0]?.name ?? e.id,
             x: e.x,
             y: e.y,
             graphic: e.pages?.[0]?.graphic ?? null,

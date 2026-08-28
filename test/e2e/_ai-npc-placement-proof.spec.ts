@@ -67,9 +67,7 @@ test.describe("내부 AI NPC 배치", () => {
       localStorage.setItem("oprn:editor-ui-mode", "expert");
       // 코치마크가 AI 패널을 덮지 않게 첫 방문 플래그를 미리 소진시킨다.
       localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
-      // ai-config 는 건드리지 않는다 — autoApprove 를 주입해 덮어쓰면 대화 세션이
-      // 초기화되어 로그가 시작 화면으로 돌아간다(실측: 242초 대기 후 이벤트 0건).
-      // 대신 제안 카드를 명시적으로 수락한다.
+      // ai-config 는 건드리지 않는다. 변경은 승인 카드 없이 즉시 적용된다.
     });
     await page.setViewportSize({ width: 1680, height: 1000 });
 
@@ -85,29 +83,21 @@ test.describe("내부 AI NPC 배치", () => {
     expect(await readEvents(page)).toHaveLength(0);
     await page.screenshot({ path: `${SHOTS}/01-editor-ready.png` });
 
-    // 한 명씩 요청하고, 제안 카드를 수락한 뒤 이벤트가 실제로 늘어나는지 확인한다.
+    // 한 명씩 요청하고, 즉시 적용된 뒤 이벤트가 실제로 늘어나는지 확인한다.
     const placed: { label: string; total: number }[] = [];
     for (const [index, order] of ORDERS.entries()) {
       const before = (await readEvents(page)).length;
       await input.fill(order.text);
       await page.getByTestId("ai-send").click();
 
-      // 변경은 제안으로 먼저 쌓인다. 카드가 뜨면 수락해야 프로젝트에 반영된다.
-      const accept = page.getByTestId("ai-proposal-accept").first();
       await expect
-        .poll(async () => (await readEvents(page)).length > before || (await accept.isVisible().catch(() => false)), {
+        .poll(async () => (await readEvents(page)).length, {
           timeout: 300_000,
           intervals: [2_000],
         })
-        .toBe(true);
-      if (await accept.isVisible().catch(() => false)) {
-        if (index === 0) await page.screenshot({ path: `${SHOTS}/02-proposal-card.png` });
-        await accept.click();
-      }
-
-      await expect
-        .poll(async () => (await readEvents(page)).length, { timeout: 120_000, intervals: [2_000] })
         .toBeGreaterThan(before);
+      await expect(page.getByTestId("ai-proposal-card")).toHaveCount(0);
+      if (index === 0) await page.screenshot({ path: `${SHOTS}/02-applied-without-approval.png` });
 
       const total = (await readEvents(page)).length;
       placed.push({ label: order.label, total });

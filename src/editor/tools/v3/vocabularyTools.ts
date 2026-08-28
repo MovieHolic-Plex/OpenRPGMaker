@@ -6,9 +6,8 @@
 // 모순되면 warnings로 노출한다(카드의 '사실 배지'). 이미지 픽셀 검사는 브라우저 전용이므로
 // 헤드리스 툴 계층에서는 tileLayerHome(투명 배경 칩 판정 포함)·priority·passability로 대체한다.
 //
-// 승인 마킹: run()은 draft에 origin:"user"를 기록하지만, assistantSession이 이 툴을
-// requiresApproval로 태깅하므로 자동 수락(메타데이터 자동 커밋/autoApprove) 경로는 차단되고
-// 커밋은 사용자 명시 수락으로만 일어난다 — 즉 커밋된 origin:"user"는 곧 사용자 승인이다.
+// 승인 마킹: run()은 draft에 origin:"user"를 기록하고, 적용 경로(aiProposalCard)가 soft-confirm
+// 재료를 origin:user 로 확정한다 — 승인 버튼은 없고 되돌리기가 원복 경로다.
 // UI 카드(인라인 편집)는 V3B 몫 — 여기서는 카드 렌더용 데이터만 반환한다.
 
 import { tileLayerHome } from "@/editor/tileLayerClassification";

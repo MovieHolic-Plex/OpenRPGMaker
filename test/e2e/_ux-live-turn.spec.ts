@@ -74,9 +74,7 @@ async function surfaceSnapshot(page: Page): Promise<unknown> {
       appliedCard: count("[data-testid='ai-change-card']"),
       appliedThumbs: count("[data-testid='ai-change-pair'] canvas"),
       appliedSummary: text("[data-testid='ai-change-card'] .ai-change-title"),
-      autoApproveToggle: count("[data-testid='ai-proposal-auto-approve-input']"),
-      proposalCard: count("[data-testid='ai-proposal-card'], .ai-proposal-card"),
-      proposalThumbs: count(".ai-proposal-thumbs canvas"),
+      approvalUi: count("[data-testid='ai-proposal-auto-approve-input'], [data-testid='ai-proposal-card'], .ai-proposal-card, [data-testid='ai-proposal-modal']"),
       completionStripButtons: count("[data-testid='ai-completion-strip'] button"),
       mentionStrips: count("[data-testid='ai-mention-strip']"),
       mentionChips: count("[data-testid='ai-mention-strip'] .ai-mention-chip"),
@@ -116,7 +114,7 @@ test("live: 실제 턴에서 자동 적용 비교 카드와 언급 썸네일", a
   const report: Record<string, unknown> = {};
   await page.screenshot({ path: `${OUT}/00-boot.png` });
 
-  // C1 — 낮은 위험 쓰기: 자동 승인 조건을 만족하면 클릭 없이 적용되고 전/후 카드가 남아야 한다.
+  // C1 — 쓰기 턴은 클릭 없이 적용되고 전/후 카드가 남으며 승인 UI는 없어야 한다.
   report.turnApply = await sendTurn(
     page,
     "지금 맵의 빈 풀밭 한 곳에 3x3 크기로 꽃밭을 깔아줘. 작게 딱 한 군데만.",

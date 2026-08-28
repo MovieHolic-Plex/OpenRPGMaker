@@ -212,27 +212,6 @@ export function renderAiSettingsForm(options: {
     children: [el("span", { class: "ai-config-label", text: "글자 크기" }), fontSizeSelect],
   });
 
-  const autoApprove = el("input", {
-    class: "ai-config-checkbox",
-    attrs: { type: "checkbox" },
-    dataset: { testid: "ai-config-autoapprove" },
-  }) as HTMLInputElement;
-  autoApprove.checked = config.autoApprove === true;
-  const autoApproveRow = el("label", {
-    class: "ai-config-row ai-config-check-row",
-    attrs: {
-      title: "현재 맵의 같은 크기 타일만 바꾸는 안전한 꾸미기 제안에만 적용됩니다. 이벤트·DB·퀘스트·전투·삭제·맵 생성/크기 변경·경고가 있는 제안은 항상 검토합니다.",
-    },
-    children: [
-      el("span", { class: "ai-config-label", text: "안전한 맵 꾸미기 자동 적용" }),
-      autoApprove,
-      el("span", {
-        class: "ai-config-help",
-        text: "타일 꾸미기만 바로 반영합니다. 이벤트·데이터·삭제·여러 맵 변경은 항상 먼저 보여 드립니다.",
-      }),
-    ],
-  });
-
   const savedHint = el("span", {
     class: "ai-config-saved-hint",
     text: "",
@@ -252,7 +231,6 @@ export function renderAiSettingsForm(options: {
     maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
     reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
     agentMode: agentModeSelect.value === "chat" ? "chat" : "auto",
-    autoApprove: autoApprove.checked,
   });
 
   let autoSaveTimer: number | null = null;
@@ -300,7 +278,6 @@ export function renderAiSettingsForm(options: {
       persist(false);
     });
   }
-  autoApprove.addEventListener("change", () => persist(false));
   reasoningSelect.addEventListener("change", () => persist(false));
 
   const saveButton = el("button", {
@@ -330,7 +307,6 @@ export function renderAiSettingsForm(options: {
               maxTokens.row,
               reasoningRow,
               agentModeRow,
-              autoApproveRow,
               fontSizeRow,
             ],
           }),

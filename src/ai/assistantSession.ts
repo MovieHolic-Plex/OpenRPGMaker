@@ -8,7 +8,6 @@ import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
-import { classifyApproval } from "@/ai/approvalPolicy";
 import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
@@ -215,12 +214,12 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 // 파괴적으로 간주하는 툴 이름.
 const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map", "reset_project"]);
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
-// 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인) 수락 시에만 origin:user.
-// requiresApproval 이 메타데이터 자동 커밋·autoApprove 를 막아 명시 수락만 합의로 친다.
+// 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인)이 적용될 때 origin:user 로 확정된다
+// (적용 경로가 markSoftVocabApprovalsOnProject 를 부른다 — 승인 버튼은 없다).
 export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
-const VOCABULARY_APPROVAL_WARNING = "🔒 재료 합의 제안: 적용하면 해당 타일/그룹을 다음부터 바로 씁니다. 자동 적용되지 않습니다.";
+const VOCABULARY_APPROVAL_WARNING = "🔒 재료 합의: 적용하면 해당 타일/그룹을 다음부터 바로 씁니다(되돌리기로 원복).";
 const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
-  "🖼 맵 배치 초안입니다. [맵만 적용]은 배치만, [맵 적용 + 재료 합의]는 배치와 재료 영구 합의(origin:user)를 함께 합니다.";
+  "🖼 맵 배치와 함께 재료를 합의했습니다(origin:user). 되돌리면 배치와 합의가 함께 원복됩니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).";
@@ -1433,10 +1432,9 @@ export class AssistantSession {
 
   /**
    * 마일스톤 자동 적용(todo 4): 완료된 work-item의 제안을 안전 적용 경로로 기계적으로 반영한다.
-   * 자율 런(opts.autonomous)에서만 동작한다. 승인 정책 분류는 approvalPolicy를 그대로 쓰는데,
-   * 파괴적/어휘/규칙 게이트가 autoApprove 검사보다 먼저 판정하므로 안전한 일반 쓰기만 "auto"로
-   * 분류된다 — 자동 적용이 정책 게이트를 우회하지 않는다. auto verdict + 완성도 경고 없음일 때만
-   * 적용하고, 그 외에는 paused-proposal 이벤트를 내고 런을 멈춘다(카드 렌더 → 사용자 승인 대기).
+   * 자율 런(opts.autonomous)에서만 동작한다. 승인 분류·완성도 경고 게이트는 없다 — 승인 카드를
+   * 없앴으므로 보류는 사용자가 풀 수 없는 교착이 된다. 남은 보류 사유는 적용 검증 실패
+   * (커밋 게이트 차단) 하나뿐이다.
    */
   private async maybeAutoApplyMilestone(completed: WorkItem, onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.milestoneAutoApply) return;
@@ -1453,23 +1451,6 @@ export class AssistantSession {
     this.lastMilestoneCompletionItemId = completed.id;
     const calls = this.finalizeProposals(this.turnProposals);
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
-    // F-06: autoApproveEnabled = (agentMode==="auto") || config.autoApprove
-    // classifyApproval은 DESTRUCTIVE_TOOLS를 먼저 require_approval로 분류하므로 파괴적 변경은 auto여도 승인 필요.
-    const autoApproveEnabled = this.config.agentMode === "auto" || this.config.autoApprove === true;
-    const verdict = classifyApproval(calls, { autoApproveEnabled });
-    if (verdict.decision !== "auto") {
-      this.pauseMilestone(completed, verdict.reason, verdict.warnings, onEvent);
-      return;
-    }
-    const completenessWarnings = proposalCompletenessWarnings({
-      requestText: this.currentTurnRequestText,
-      buildSpec: this.reviewBuildSpecForProposal(calls),
-      calls,
-    });
-    if (completenessWarnings.length > 0) {
-      this.pauseMilestone(completed, "완성도 경고로 자동 적용을 보류합니다.", completenessWarnings, onEvent);
-      return;
-    }
     const proposed = this.getProposedProject();
     const applied = await applyProposedProject(proposed, {
       source: "agent-milestone",
