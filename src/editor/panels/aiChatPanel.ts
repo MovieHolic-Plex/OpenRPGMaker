@@ -340,6 +340,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 프로젝트 전환 리셋은 저장 범위 키가 아니라 런타임 identity id로 판정한다. 같은 모양의 새
   // 로컬 프로젝트는 scope가 같아도 새 identity를 발급받으므로 반드시 대화를 갈아야 한다.
   let projectIdentityId = initialProjectIdentity.id;
+  // 조수가 적용하는 동안의 정체성 교체는 전환이 아니다. reset_project 는 바로 이 턴에서 새
+  // identity 를 발급받으므로, 이 표식이 없으면 전환 리셋이 방금 붙은 「적용됨」 카드와
+  // 그 턴의 대화를 통째로 지운다(스토어 구독은 applyProposal 안에서 동기로 터진다).
+  let applyingProposal = false;
   type ConversationPersistTarget = {
     readonly id: string;
     readonly scope: string;
@@ -1218,7 +1222,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) appendBubble("system", completenessWarnings.join("\n"));
-        const applied = await applyProposal(result.proposedCalls, assistantBubble);
+        applyingProposal = true;
+        let applied: boolean;
+        try {
+          applied = await applyProposal(result.proposedCalls, assistantBubble);
+        } finally {
+          applyingProposal = false;
+          projectIdentityId = store.getProjectIdentity().id;
+        }
         setStatus(applied ? "대기" : "적용 실패");
         // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
         // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
@@ -1861,7 +1872,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 프로젝트가 바뀌었으면(새 프로젝트 생성·다른 작업 열기·로엄 복원) 대화를 새로 시작한다 —
     // 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 전부 무의미하거나 해롭다.
     const identity = store.getProjectIdentity();
-    if (identity.id !== projectIdentityId) startNewConversation("project-switch");
+    if (identity.id === projectIdentityId) return;
+    if (applyingProposal) {
+      projectIdentityId = identity.id;
+      return;
+    }
+    startNewConversation("project-switch");
   });
   const activateSelectionTaskContext = (focus = true): void => {
     if (!editorState.get().selection) return;
