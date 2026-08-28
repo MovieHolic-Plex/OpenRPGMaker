@@ -2,7 +2,7 @@
 //
 // todo 13 셸(9개 컬렉션 통계 칩)을 유지하고, 아래를 채운다:
 //   - 파티 전투력 곡선  (partyPowerCurve → 인라인 SVG 라인 차트, 외부 라이브러리 없음)
-//   - 몬스터 HP vs DPS  (enemyScatter → 인라인 SVG 산점도)
+//   - 몬스터 HP vs 한 방 피해 (enemyScatter → 인라인 SVG 산점도)
 //   - 문제 감지 카드    (detectBalanceIssues → amber 카드 + '해당 탭' 점프, G006)
 //   - AI 분석 버튼      (모달 헤더의 database-ai-toggle 을 같은 경로로 연다)
 //
@@ -82,11 +82,15 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
               el("p", { text: "세계, 이야기, 등장인물, 시스템이 어떻게 연결되는지 한눈에 확인합니다." }),
             ],
           }),
+          // 같은 CTA 가 헤더와 차트 그리드 끝에 두 번 렌더되고 있었다. 아래쪽 사본은
+          // 그리드의 암묵 행에 auto-place 돼 1349px 전폭 바가 됐고, 접힘선 아래라
+          // 대부분 보이지도 않았다. 헤더 하나로 합친다 — 테스트가 잡고 있는 계약은
+          // `db-overview-ai` 쪽이라 그 testid 를 여기로 옮긴다.
           el("button", {
-            class: "db-overview-assistant-cta",
+            class: "db-overview-assistant-cta db-overview-ai",
             text: "AI 어시스턴트에게 물어보기",
-            attrs: { type: "button" },
-            dataset: { testid: "db-overview-assistant-cta" },
+            attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
+            dataset: { testid: "db-overview-ai" },
             on: { click: openDatabaseAiBar },
           }),
         ],
@@ -190,13 +194,6 @@ function renderDashboardContent(host: HTMLElement): HTMLElement[] {
     renderCurveSection(partyPowerCurve(project)),
     renderScatterSection(enemyScatter(project)),
     renderIssuesSection(host, detectBalanceIssues(project)),
-    el("button", {
-      class: "db-overview-ai",
-      text: "AI 어시스턴트에게 물어보기",
-      attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
-      dataset: { testid: "db-overview-ai" },
-      on: { click: openDatabaseAiBar },
-    }),
   ];
 }
 
@@ -319,11 +316,17 @@ function polylinePath(points: readonly (readonly [number, number])[]): string {
     .join(" ");
 }
 
-// --- 몬스터 HP vs 파티 DPS 산점도 ---
+// --- 몬스터 HP vs 한 방 피해 산점도 ---
+//
+// y 축은 **몬스터가 파티에 주는** 피해다. enemyScatter 가 채우는 값은
+// enemyDpsPerAction(project, enemySnapshot, partyAverageDefender) 이고, 그 함수는
+// predictAttackDamage(공격자=몬스터, 방어자=파티) 의 최대치를 고른다. 예전 라벨은
+// 이걸 "파티 DPS" 라고 불러서, 읽는 사람이 "우리 파티가 0~1 밖에 못 때린다" 로
+// 정반대 결론을 내리게 만들었다.
 
 function renderScatterSection(points: readonly EnemyScatterPoint[]): HTMLElement {
   const section = el("section", { class: "db-overview-section" });
-  section.append(el("h3", { class: "db-overview-section-title", text: "몬스터 HP vs 파티 DPS" }));
+  section.append(el("h3", { class: "db-overview-section-title", text: "몬스터 HP vs 한 방 피해" }));
   if (points.length === 0) {
     // 빈 적 목록: 빈 캔버스 대신 빈 상태 카드.
     section.append(
@@ -342,7 +345,7 @@ function renderScatterSection(points: readonly EnemyScatterPoint[]): HTMLElement
       children: [
         el("span", { class: "db-overview-legend-normal", text: "일반" }),
         el("span", { class: "db-overview-legend-boss", text: "보스" }),
-        el("span", { class: "db-overview-legend-note", text: "x축 HP(로그) · y축 파티 DPS" }),
+        el("span", { class: "db-overview-legend-note", text: "x축 HP(로그) · y축 몬스터가 파티에 주는 피해" }),
       ],
     }),
   );
@@ -376,7 +379,7 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
     preserveAspectRatio: "xMidYMid meet",
     "data-testid": "db-overview-scatter",
     role: "img",
-    "aria-label": "몬스터 HP vs 파티 DPS 산점도",
+    "aria-label": "몬스터 HP vs 몬스터가 파티에 주는 한 방 피해 산점도",
   });
   // Y grid + labels
   for (let index = 0; index <= yTickCount; index += 1) {
@@ -470,7 +473,7 @@ function scatterChart(points: readonly EnemyScatterPoint[]): SVGElement {
       svgElement(
         "title",
         {},
-        `${point.name} — HP ${point.hp}, DPS ${point.dps}, exp ${point.exp}, gold ${point.gold}`,
+        `${point.name} — HP ${point.hp}, 한 방 피해 ${point.dps}, exp ${point.exp}, gold ${point.gold}`,
       ),
     );
     svg.append(dot);

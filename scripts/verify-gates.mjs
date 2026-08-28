@@ -116,7 +116,13 @@ if (only !== "typecheck") report.tests = testsGate();
 
 if (flag("--save-baseline")) {
   mkdirSync(dirname(baselinePath), { recursive: true });
-  writeFileSync(baselinePath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  // 기준선은 이제 git 추적 대상이다(.gitignore 예외). AGENTS.md 는 병렬 에이전트마다 새
+  // 워크트리를 강제하므로, 절대 경로인 `cwd` 를 그대로 저장하면 워크트리마다 기준선이
+  // 더럽혀져 매번 의미 없는 diff 가 생긴다. 실행 시점 진단용으로는 --json 에 그대로 남기고,
+  // 저장본에서만 뺀다. `ranAt` 도 같은 이유로 재저장 때마다 바뀌지만, 그건 언제 갱신했는지를
+  // 알려주는 유용한 정보라 남긴다.
+  const { cwd: _cwd, ...persisted } = report;
+  writeFileSync(baselinePath, `${JSON.stringify(persisted, null, 2)}\n`, "utf8");
   console.log(`기준선 저장: ${baselinePath}`);
 }
 

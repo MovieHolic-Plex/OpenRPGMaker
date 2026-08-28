@@ -196,7 +196,9 @@ describe("액션 무기 프로필 편집", () => {
     // Break named: ActionWeaponProfile 은 스키마·런타임만 있고 편집 패널이 없다.
     const form = renderWeaponForm();
 
-    expect(findByTestId(form, "db-equipment-panel-action-weapon")).not.toBeNull();
+    // #166 이 29개 탭을 공용 워크스페이스로 옮기며 panel → card 로 이름을 바꿨다.
+    // 필드 testid(db-field-equipment-action-weapon-*)와 동작은 그대로다.
+    expect(findByTestId(form, "db-equipment-card-action-weapon")).not.toBeNull();
     const bounds: readonly (readonly [string, number, number])[] = [
       ["db-field-equipment-action-weapon-swing-range", 1, 5],
       ["db-field-equipment-action-weapon-swing-cooldown", 50, 5000],

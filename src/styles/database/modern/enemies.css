@@ -1,0 +1,412 @@
+/* 몬스터(enemies) 탭 — 2026-08 모던 개편.
+ *
+ * 감사 게이트(before): clipped:1 overlap:3 detailDead:55%.
+ *
+ * 근본 원인 세 가지:
+ *  1) `.db-enemy-bm101-workbench` 라는 한 이름에 서로 다른 grid-template-areas 가 세 벌
+ *     걸려 있었다 — enemies.part-2.css(5행 고정 트랙) / desktop-record-shell/05-dense-
+ *     workbenches.css / studio-theme.css:339(6행 + `combat` 행). 마지막에 로드되는
+ *     studio-theme 이 이겼고, 나머지 맵이 준 `grid-area` 이름은 존재하지 않는 라인이라
+ *     암시적 트랙을 만들어 패널이 상세 창 밖으로 밀려났다. → 뷰가 클래스명을
+ *     `.db-enemy-workbench` 로 바꿔 세 맵을 모두 무력화했고, 배치는 databaseWorkspace 의
+ *     `.db-ws-stack` 카드 스택 하나로 통일했다.
+ *  2) 상세 폼(`.oprn-detail-enemies`)이 `overflow:hidden` 인데 워크벤치는 `height:auto`
+ *     라 내용이 973px 넘쳐 잘렸다(상태/속성 유효도·액션 전투 패널이 화면 밖). → 스크롤
+ *     경계를 워크벤치 안쪽으로 옮긴다.
+ *  3) 겹침 3 건은 접힌 `<details class="db-field-support-notice">` 의 `<p>` 가 레이아웃
+ *     박스를 유지한 채 남아, 여러 줄 인라인 `<span>` 의 합집합 rect 가 `<strong>` 을
+ *     통째로 덮은 것이었다. 접혔을 때는 아예 배치에서 뺀다.
+ *
+ * 모든 규칙은 `.database-modal-backdrop .database-modal-window .database-modal-body` 아래로
+ * 스코프하고 `--db-studio-*` 토큰만 쓴다.
+ */
+
+/* ── 스크롤 체인: 상세 창 → 폼 → 워크벤치(여기서 스크롤이 끝난다) ─────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .oprn-detail-enemies {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 0 14px;
+}
+
+/* studio-theme.css:353 이 액션 전투 패널을 사라진 `combat` 영역에 못 박아 둔다.
+   이름이 없는 라인이라 스택 그리드에서 암시적 트랙을 만들어 카드를 밀어낸다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-enemy-panel-action-combat {
+  grid-area: auto !important;
+}
+
+/* studio-theme.css:422 의 `overflow:hidden` — 카드 안에서 내용이 자라면 잘린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-enemy-panel-graphic {
+  overflow: visible;
+}
+
+/* ── 히어로 ─────────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench > .db-ws-hero {
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-ws-hero-media .db-enemy-graphic-stage {
+  align-items: center;
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 10px;
+  display: flex;
+  height: 78px;
+  justify-content: center;
+  overflow: hidden;
+  width: 78px;
+}
+
+/* workspace-modern.css 의 히어로 미디어는 56px `object-fit:cover` 라 스프라이트를
+   잘라 먹는다 — 몬스터 그림은 비율을 지켜 통째로 보여야 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-ws-hero-media :is(img, canvas) {
+  border: 0;
+  border-radius: 0;
+  height: auto;
+  image-rendering: pixelated;
+  max-height: 68px;
+  max-width: 68px;
+  object-fit: contain;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-ws-hero-media :is(img, canvas).flying {
+  transform: translateY(-8px);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-empty-graphic {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 500 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ── 카드 스택 ──────────────────────────────────────────────────────────── */
+
+/* 카드 높이가 제각각이라 grid 행 정렬로는 짧은 카드 아래가 통째로 비어 버린다
+   (감사 detailDead 축). 멀티컬럼으로 흘려 카드가 세로로 촘촘히 쌓이게 한다 —
+   공격 패턴만 `column-span:all` 로 폭을 다 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack {
+  column-gap: 10px;
+  columns: 3 304px;
+  display: block;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-ws-card {
+  break-inside: avoid;
+  margin: 0 0 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-ws-span {
+  column-span: all;
+  grid-column: auto;
+}
+
+/* ── 카드 안 필드: 라벨 왼쪽 고정폭 + 컨트롤 1fr ───────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(64px, 84px) minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field > span {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select) {
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.14));
+  border-radius: 6px;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 400 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-height: 30px;
+  min-width: 0;
+  padding: 4px 8px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select):focus-visible {
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
+  outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.28));
+  outline-offset: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench input[type="checkbox"] {
+  accent-color: var(--db-studio-accent, var(--db-studio-accent));
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 0;
+  min-height: 16px;
+  padding: 0;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .actor-check {
+  align-items: center;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  display: inline-flex;
+  font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 8px;
+  letter-spacing: 0;
+  min-height: 28px;
+  text-transform: none;
+}
+
+/* 2열 수치 그리드(능력치 / 보상 / 액션 전투). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(.db-enemy-stat-grid, .db-enemy-reward-grid) {
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(.db-enemy-stat-grid, .db-enemy-reward-grid) .db-field {
+  grid-template-columns: minmax(56px, 72px) minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-wide-field {
+  grid-column: 1 / -1;
+}
+
+/* 슬라이더+스테퍼 쌍은 flex 라 위 `width:100%` 규칙에 걸리면 두 줄로 접힌다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-slider-stepper .db-slider-input {
+  flex: 1 1 90px;
+  min-width: 80px;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-slider-stepper .db-stepper-input {
+  flex: 0 0 64px;
+  min-height: 30px;
+  width: 64px;
+}
+
+/* ── 그래픽 / 종족 / 치명타 카드 ────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-graphic-actions,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-graphic-flags,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-species-nav-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-critical-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-critical-row .db-field {
+  grid-template-columns: 24px 84px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-species-status {
+  font: 500 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-capture-preview {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+}
+
+/* 접힌 안내는 배치에서 완전히 빠져야 한다 — 남아 있으면 여러 줄 인라인 span 의
+   합집합 rect 가 앞선 strong 을 덮어 "형제 겹침"으로 잡힌다(감사 overlap 3 건). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field-support-notice:not([open]) > :not(summary) {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field-support-notice p {
+  margin: 0;
+}
+
+/* ── 유효도(상태/속성) 목록 ─────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-list {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row {
+  align-items: center;
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  margin: 0;
+  min-height: 32px;
+  padding: 3px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-list > .db-enemy-rate-row:last-child {
+  border-bottom: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row > span {
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-width: 0;
+  order: 1;
+  overflow: hidden;
+  /* 유효도 행 라벨은 상태/속성 레코드 이름 그대로여야 한다 — 어딘가의
+     `text-transform: uppercase` 가 "sword" 를 "SWORD" 로 바꿔 놓고 있었다. */
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row select {
+  font-weight: 600;
+  order: 2;
+  width: 92px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row.is-dangling > span {
+  color: var(--db-studio-danger, var(--db-studio-danger));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row.is-dangling {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* ── 공격 패턴 ──────────────────────────────────────────────────────────── */
+
+/* 공격 패턴 카드는 폭을 다 쓰지만 스킬 드롭다운까지 1000px 로 늘릴 이유는 없다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-action-skill-field {
+  grid-template-columns: minmax(44px, 56px) minmax(0, 340px);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-patterns {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-action-toolbar {
+  justify-content: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table {
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  max-height: 260px;
+  min-height: 96px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table table {
+  border-collapse: collapse;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 400 13px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table th {
+  background: var(--db-studio-surface-2, rgba(15, 23, 42, 0.03));
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 700 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  height: 30px;
+  padding: 0 10px;
+  position: sticky;
+  text-align: left;
+  top: 0;
+  z-index: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table td {
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.06));
+  height: 30px;
+  padding: 0 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table :is(th, td):nth-child(2) {
+  width: 30%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table :is(th, td):nth-child(3) {
+  width: 16%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr {
+  cursor: pointer;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr:hover td {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr.active td {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.12));
+  color: var(--db-studio-accent, var(--db-studio-accent));
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr.db-enemy-action-context-target td {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.16));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table tbody tr.is-dangling td {
+  color: var(--db-studio-danger, var(--db-studio-danger));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-hint {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+}
+
+/* ── 좁은 폭 ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench > .db-ws-hero {
+    flex-wrap: wrap;
+  }
+}

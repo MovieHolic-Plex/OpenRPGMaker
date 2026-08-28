@@ -4,6 +4,12 @@ dist/
 .vite-cache/
 .vite/
 .omo/*
+# 게이트 기준선은 추적한다. AGENTS.md 는 병렬 에이전트마다 새 워크트리를 강제하는데,
+# 기준선이 무시되면 새 워크트리에는 항상 기준선이 없다 — 즉 verify-gates.mjs 가
+# "기준선 없음"으로 떨어져 회귀 판정이 통째로 비활성화된다(실측: 이 파일은 한 번도
+# 추적된 적이 없어, 명령된 게이트가 명령된 워크플로에서 항상 열화돼 있었다).
+!.omo/gates-baseline.json
+!.omo/css-budget-baseline.json
 !.omo/evidence/
 .omo/evidence/*
 !.omo/evidence/event-editor-ux/
@@ -11,6 +17,7 @@ dist/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-apply-without-approval/
 !.omo/evidence/action-battle/
+!.omo/evidence/battle-flash-map/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -140,7 +147,11 @@ new-editor/COMPREHENSIVE.html
 !/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3
 
 # 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
+# 런타임 QA 하네스의 라이브 산출물 — 매 실행마다 디렉터리째 재생성된다(scripts/runtime-qa.mjs).
+# 보존할 증거는 verify-shots/runtime-export-charset-missing/ 처럼 별도 경로에 둔다.
+verify-shots/runtime-qa/
 verify-shots/ai-assistant-ux/probe-baseline/
 verify-shots/ai-assistant-ux/probe-after/
 verify-shots/ai-assistant-ux/probe-live/
 verify-shots/ai-assistant-ux/probe-model/
+.omo/evidence/battle-flash-map/shots/

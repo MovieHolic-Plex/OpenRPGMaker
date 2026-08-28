@@ -29,6 +29,21 @@
   --db-studio-success: #0F7A4A;
   --db-studio-success-muted: rgba(15, 122, 74, 0.10);
   --db-studio-danger: #DC2626;
+  /* 액센트/위험 배경 위에 얹는 글자색. 흰 배경 표면(--db-studio-surface)과 값은 같지만
+     의미가 달라 따로 둔다 — 표면색을 글자에 쓰면 다크 테마에서 같이 뒤집혀 글자가 사라진다. */
+  --db-studio-on-accent: #FFFFFF;
+  /* modern/enemies.css 가 폴백과 함께 쓰던 미정의 변수. 정식 토큰으로 승격한다. */
+  --db-studio-surface-2: rgba(15, 23, 42, 0.03);
+  /* 경고 계열. 기존 --warning(#8A5E00) 은 올리브-골드라 이 앰버와 색이 달라 재사용하지
+     않는다 — 재사용하면 카운터는 줄지만 화면이 바뀐다. 값은 그대로 두고 이름만 준다. */
+  --db-studio-warning: #B45309;
+  --db-studio-warning-strong: #92400E;
+  /* 워크스페이스 미리보기 패널(어두운 네이비). --db-studio-dark* 는 중성 회색이라 다른 색이다. */
+  --db-ws-preview-bg: #12172A;
+  --db-ws-preview-border: #2C3557;
+  --db-ws-preview-text: #EEF1FF;
+  --db-ws-preview-text-dim: #8FA0D8;
+  --db-ws-preview-highlight: #FFD166;
 
   /* ---- cream -> studio remap (legacy token bridge) -------------------- */
   --bg-base: var(--db-studio-canvas);
@@ -454,11 +469,25 @@
 
 /* Troops: drop the 1048×554 RM canvas so members/backdrop stay above the footer */
 .database-modal-backdrop .database-modal-window .db-troops-classic-workbench {
+  /* troops.part-1.css:212 의 옛 맵은 영역이 넷(top/preview/members/events)뿐인데 워크벤치는
+     자식을 다섯 개 렌더한다 — 밸런스 패널이 이름을 못 받아 암묵 행으로 밀려나 화면 밖에서
+     잘렸고, '난이도 추정' 에 손이 닿지 않았다. 여기서 트랙과 영역을 함께 다시 정의한다
+     (트랙만 덮고 영역을 안 덮으면 칸 수가 어긋난 채로 옛 맵이 살아남는다). */
+  grid-template-areas:
+    "top top"
+    "preview events"
+    "members events"
+    "balance events" !important;
   grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr) !important;
-  grid-template-rows: auto minmax(180px, 1fr) auto !important;
+  grid-template-rows: auto minmax(180px, 1fr) auto auto !important;
   height: auto !important;
   min-width: 0 !important;
   width: 100% !important;
+}
+
+.database-modal-backdrop .database-modal-window .db-troop-panel-balance {
+  grid-area: balance !important;
+  min-width: 0 !important;
 }
 .database-modal-backdrop .database-modal-window .db-troop-top-controls {
   grid-template-columns: minmax(160px, 1fr) repeat(4, auto) !important;

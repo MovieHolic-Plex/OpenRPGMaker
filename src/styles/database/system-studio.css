@@ -687,6 +687,11 @@
   background: var(--db-studio-surface) !important;
   border-bottom: 1px solid var(--db-studio-border-subtle) !important;
   display: flex !important;
+  /* light-theme.css:754 가 이 요소를 `flex-direction: column` 으로 세워 둔다. 여기서
+     display/flex-wrap/align-items 만 덮고 flex-direction 을 빠뜨리면 column 이 그대로
+     살아남아, 가로 세그먼티드 스트립이어야 할 섹션 내비게이션이 열 두 줄짜리 알약
+     구름으로 무너진다(감사 A 축 P0). 명시적으로 되돌린다. */
+  flex-direction: row !important;
   flex-wrap: wrap !important;
   gap: 6px !important;
   overflow-x: auto !important;
@@ -738,7 +743,10 @@
 .db-system-studio {
   color: var(--db-studio-text-1);
   margin: 0 auto;
-  max-width: 1160px;
+  /* 1160px 상한은 1680px 화면에서 내용 열(~1400px) 오른쪽에 240px 넘는 흰 띠를 남겼다.
+     본문이 긴 글이 아니라 auto-fit 카드 그리드라 폭을 주면 열이 늘어나 그만큼 채워진다.
+     초광폭에서만 걸리도록 상한을 올린다. */
+  max-width: 1560px;
   min-width: 0;
 }
 

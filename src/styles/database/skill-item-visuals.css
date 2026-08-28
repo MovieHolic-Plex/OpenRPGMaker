@@ -1,14 +1,18 @@
-/* 스킬/아이템 시각 패널 스타일 (database-overhaul, 신규 클래스 전용) */
-
-.database-modal-backdrop .oprn-detail-skills > .db-skill-composer {
-  grid-column: 1 / -1;
-}
+/* 스킬 시각 요소 기본 스타일.
+ *
+ * 2026-08 모던 개편으로 DOM 이 바뀌었다. 사라진 마크업(`.db-skill-composer-heading`,
+ * `.db-skill-composer-eyebrow`, `.db-skill-used-by-heading`, `.db-skill-used-by-count`)
+ * 규칙은 삭제했고, `사용처` 는 이제 접히는 `sectionCard` 안의 목록이라 예전
+ * "2 열 무제한 그리드" 규칙도 없앴다.
+ *
+ * 배치/밀도 관련 최신 규칙은 database/modern/skills.css 에 있다 — 04-modern-records.css
+ * 와 studio-theme.css 보다 늦게 로드돼야 이길 수 있는 것들만 그쪽에 둔다. */
 
 .database-modal-backdrop .db-skill-composer {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  padding: 16px;
+  padding: 12px 14px;
   border: 1px solid var(--accent-border);
   border-radius: 10px;
   background:
@@ -16,41 +20,31 @@
     var(--bg-raised);
 }
 
-.database-modal-backdrop .db-skill-composer-heading {
-  display: grid;
-  gap: 2px;
+.database-modal-backdrop .db-skill-composer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  min-width: 0;
 }
 
-.database-modal-backdrop .db-skill-composer-heading strong {
+.database-modal-backdrop .db-skill-composer-label {
   color: var(--text-1);
-  font-size: 18px;
-  line-height: 1.25;
-}
-
-.database-modal-backdrop .db-skill-composer-heading p {
-  margin: 0;
-  color: var(--text-2);
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.database-modal-backdrop .db-skill-composer-eyebrow {
-  color: var(--accent);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.12em;
 }
 
 .database-modal-backdrop .db-skill-composer-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
 }
 
 .database-modal-backdrop .db-skill-composer-chip {
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
+  min-height: 24px;
   padding: 0 10px;
   border: 1px solid var(--border-default);
   border-radius: 999px;
@@ -68,16 +62,16 @@
 .database-modal-backdrop .db-skill-effect-blocks {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
 }
 
 .database-modal-backdrop .db-skill-effect-block {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
-  gap: 9px;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 8px;
   align-items: start;
   min-width: 0;
-  padding: 10px;
+  padding: 8px 9px;
   border: 1px solid var(--border-subtle);
   border-radius: 7px;
   background: var(--bg-surface);
@@ -86,8 +80,8 @@
 .database-modal-backdrop .db-skill-effect-icon {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 7px;
   background: var(--accent-muted);
   color: var(--accent);
@@ -96,7 +90,7 @@
 
 .database-modal-backdrop .db-skill-effect-copy {
   display: grid;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -109,46 +103,19 @@
 .database-modal-backdrop .db-skill-effect-copy span {
   overflow-wrap: anywhere;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.4;
 }
 
+/* ── 사용처(백링크) ─────────────────────────────────────────────────────── */
+
 .database-modal-backdrop .db-skill-used-by {
   display: grid;
-  gap: 7px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding-top: 2px;
-}
-
-.database-modal-backdrop .db-skill-used-by-heading,
-.database-modal-backdrop .db-skill-used-by-empty {
-  grid-column: 1 / -1;
-}
-
-.database-modal-backdrop .db-skill-used-by-heading {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-}
-
-.database-modal-backdrop .db-skill-used-by-heading h4 {
-  margin: 0;
-  padding: 0;
-  color: var(--text-1);
-  font-size: 13px;
-}
-
-.database-modal-backdrop .db-skill-used-by-count {
-  display: inline-grid;
-  place-items: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--control-bg);
-  color: var(--text-2);
-  font-size: 10px;
-  font-weight: 800;
+  gap: 6px;
+  /* 220px 하한: 한 열이 되면 백링크 버튼이 카드 폭을 통째로 먹어 감사 게이트의
+     fullBleed 판정(폭 > 420px && 부모의 90% 이상)에 걸린다. */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  min-width: 0;
 }
 
 .database-modal-backdrop .db-skill-backlink {
@@ -160,12 +127,18 @@
   gap: 1px 8px;
   align-items: center;
   min-width: 0;
-  padding: 8px 9px;
+  padding: 7px 9px;
   border: 1px solid var(--border-subtle);
   border-radius: 7px;
   background: var(--bg-raised);
   color: var(--text-1);
   text-align: left;
+}
+
+/* `[hidden]` 은 UA 스타일시트라 위의 `display: grid` 가 이겨 버린다 — 접힌 항목이
+   그대로 보이는 회귀를 막으려면 클래스 선택자로 다시 눌러야 한다. */
+.database-modal-backdrop .db-skill-backlink[hidden] {
+  display: none;
 }
 
 .database-modal-backdrop .db-skill-backlink:hover {
@@ -220,12 +193,35 @@
   font-size: 12px;
 }
 
-@media (max-width: 1120px) {
-  .database-modal-backdrop .db-skill-effect-blocks,
-  .database-modal-backdrop .db-skill-used-by {
-    grid-template-columns: minmax(0, 1fr);
-  }
+/* ── 카드 안 필드 묶음 ──────────────────────────────────────────────────── */
+/* `.db-field` 는 04-modern-records.css 가 `margin: 0` 으로 눌러 놓아서, 담는 쪽이
+   간격을 책임져야 한다. 이 세 컨테이너는 스킬 탭 전용 신규 클래스라 경쟁 규칙이 없다. */
+
+.database-modal-backdrop .db-skill-effect-fields,
+.database-modal-backdrop .db-skill-action-fields,
+.database-modal-backdrop .db-skill-state-effects {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
 }
+
+.database-modal-backdrop .db-skill-state-effects {
+  gap: 6px;
+}
+
+.database-modal-backdrop .db-skill-state-effects > .db-skill-state-effect-add {
+  justify-self: start;
+  margin-top: 2px;
+}
+
+.database-modal-backdrop .db-skill-card-note {
+  margin: -2px 0 0;
+  color: var(--text-3);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+/* ── 애니메이션 미리보기 / 상태 변화 행 ─────────────────────────────────── */
 
 .db-skill-animation-preview {
   display: grid;
@@ -293,11 +289,6 @@
   width: 72px;
 }
 
-.db-skill-state-effect-row .btn.danger {
+.db-skill-state-effect-row .db-skill-state-effect-delete {
   margin-left: auto;
-}
-
-.db-skill-state-effect-add {
-  justify-self: start;
-  margin-top: 6px;
 }

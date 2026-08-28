@@ -5,21 +5,21 @@ import {
   switchVariablePicker,
   variablePicker,
 } from "@/editor/panels/eventEditor/switchVariablePicker";
-import { openSwitchVariablePicker } from "@/editor/panels/eventEditor/recordPickerDialog";
+import { openRecordPickerPanel } from "@/editor/panels/eventEditor/recordPickerDialog";
 import type { FakeElement } from "./fakeDom";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 vi.mock("@/editor/panels/eventEditor/recordPickerDialog", () => ({
-  openSwitchVariablePicker: vi.fn(),
+  openRecordPickerPanel: vi.fn(),
 }));
 
 /**
  * 변수·스위치 선택 UX 통일 계약 (2026-08):
  * - visible 네이티브 드롭다운과 인라인 검색 필터는 제거된다.
  * - 현재 선택값을 보여 주는 단일 트리거 버튼만 남고, 클릭 시 커스텀 모달
- *   (openSwitchVariablePicker → 검색/생성/이름변경 내장)을 연다.
+ *   (openRecordPickerPanel → 검색/참조 수/이름 편집 내장)을 연다.
  * - 숨은 네이티브 select 는 Playwright selectOption / 폼 change 파이프라인 호환을 위해
  *   DOM 에 유지되며(`event-record-modal-select` 마커), 값·레이블 동기화 계약을 지킨다.
  */
@@ -32,7 +32,7 @@ describe("switch/variable modal-trigger picker", () => {
     project.variables[0]!.name = "골드 랭킹";
     project.switches[0]!.name = "문 열림";
     store.replace(project);
-    vi.mocked(openSwitchVariablePicker).mockClear();
+    vi.mocked(openRecordPickerPanel).mockClear();
   });
 
   afterEach(() => {
@@ -74,8 +74,8 @@ describe("switch/variable modal-trigger picker", () => {
     const trigger = findByTestId(body, "event-variable-picker-open") as FakeElement;
     trigger.dispatchEvent(new Event("click"));
 
-    expect(openSwitchVariablePicker).toHaveBeenCalledTimes(1);
-    const request = vi.mocked(openSwitchVariablePicker).mock.calls[0]?.[0] as {
+    expect(openRecordPickerPanel).toHaveBeenCalledTimes(1);
+    const request = vi.mocked(openRecordPickerPanel).mock.calls[0]?.[0] as {
       kind: string;
       currentId: string;
       onSelect: (id: string) => void;
@@ -131,7 +131,7 @@ describe("switch/variable modal-trigger picker", () => {
     const request = (() => {
       const trigger = findByTestId(body, "event-variable-picker-open") as FakeElement;
       trigger.dispatchEvent(new Event("click"));
-      return vi.mocked(openSwitchVariablePicker).mock.calls.at(-1)?.[0] as {
+      return vi.mocked(openRecordPickerPanel).mock.calls.at(-1)?.[0] as {
         onSelect: (id: string) => void;
       };
     })();

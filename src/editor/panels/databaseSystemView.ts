@@ -2,7 +2,7 @@ import {
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
-import { BATTLE_SKINS, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import {
   emptyToUndefined,
   field,
@@ -273,11 +273,17 @@ function systemSectionNodes(
         ),
         field("전투 UI 스타일", (() => {
           // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
+          // 지원 스킨은 2종뿐이다. 저장된 프로젝트가 지원 종료 스킨을 쓰고 있으면 그 항목만 추가로 남겨
+          // 저작자가 자기 설정을 보고 유지할 수 있게 한다(암묵 remap 금지).
           const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
-          for (const id of BATTLE_UI_STYLE_OPTIONS) {
+          const savedId = resolveSkinId(project.system.battleUiStyle);
+          for (const id of listActiveBattleSkinIds()) {
             select.append(el("option", { text: BATTLE_SKINS[id].label, attrs: { value: id } }));
           }
-          select.value = resolveSkinId(project.system.battleUiStyle);
+          if (isDeprecatedBattleSkin(savedId)) {
+            select.append(el("option", { text: `${BATTLE_SKINS[savedId].label} (지원 종료)`, attrs: { value: savedId } }));
+          }
+          select.value = savedId;
           select.addEventListener("change", () => {
             updateSystem((draft) => {
               draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
@@ -625,25 +631,27 @@ function storePlayResolution(system: SystemRecords, value: PlayResolution): void
  */
 function optInSystemFields(project: Project, rerender: () => void): readonly HTMLElement[] {
   const { system } = project;
+  const actionCombatField = checkboxField("액션 전투 (지원 종료)", "db-field-system-action-combat", system.actionCombat?.enabled === true, (checked) => {
+    updateSystem((draft) => {
+      if (checked) {
+        draft.system.actionCombat = {
+          enabled: true,
+          ...(draft.system.actionCombat ?? {}),
+        };
+      } else {
+        if (draft.system.actionCombat) draft.system.actionCombat.enabled = false;
+        else draft.system.actionCombat = { enabled: false };
+      }
+    });
+  });
+  actionCombatField.setAttribute("title", "지원 전투는 RM식(rm2k3)과 포켓몬식(gen1) 둘뿐이며, 기존 액션 전투 맵은 계속 동작합니다.");
   const fields: HTMLElement[] = [
     checkboxField("생활 스킬 레벨링", "db-field-system-skill-system", system.skillSystem?.enabled === true, (checked) => {
       updateSystem((draft) => {
         draft.system.skillSystem = { enabled: checked };
       });
     }),
-    checkboxField("액션 전투", "db-field-system-action-combat", system.actionCombat?.enabled === true, (checked) => {
-      updateSystem((draft) => {
-        if (checked) {
-          draft.system.actionCombat = {
-            enabled: true,
-            ...(draft.system.actionCombat ?? {}),
-          };
-        } else {
-          if (draft.system.actionCombat) draft.system.actionCombat.enabled = false;
-          else draft.system.actionCombat = { enabled: false };
-        }
-      });
-    }),
+    actionCombatField,
   ];
 
   // 액션 전투 상세 필드 (활성일 때만)
@@ -1419,7 +1427,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
         class: "db-title-menu-option-row",
         dataset: { testid: "db-title-menu-option-continue" },
         children: [
-          textControl("이어 하기", titleScreen.menuLabels.continueGame, (value) => {
+          textControl("불러오기", titleScreen.menuLabels.continueGame, (value) => {
             updateTitleScreen((settings) => {
               settings.menuLabels.continueGame = value;
             }, "system:title-screen:menu-continue");

@@ -1,0 +1,148 @@
+
+Running 2 tests using 1 worker
+
+  ✘  1 [chromium] › test/runtime/battle-flash-map.spec.ts:56:1 › hit flash keeps the battle scene opaque (40.2s)
+  ✘  2 [chromium] › test/runtime/battle-flash-map.spec.ts:56:1 › hit flash keeps the battle scene opaque (retry #1) (33.5s)
+  ✘  3 [chromium] › test/runtime/battle-flash-map.spec.ts:77:1 › critical flash keeps the battle scene opaque and still renders the flash (22.4s)
+  ✘  4 [chromium] › test/runtime/battle-flash-map.spec.ts:77:1 › critical flash keeps the battle scene opaque and still renders the flash (retry #1) (22.2s)
+
+
+  1) [chromium] › test/runtime/battle-flash-map.spec.ts:56:1 › hit flash keeps the battle scene opaque 
+
+    Error: hit 플래시 3프레임 중 씬 루트가 투명해졌다: background-color "rgba(255, 255, 255, 0.243)" (classes: battle-flash-hit)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0.243
+
+      299 |     `${kind} 플래시 ${samples.length}프레임 중 씬 루트가 투명해졌다: `
+      300 |       + `background-color "${weakest.sceneBackground}" (classes: ${weakest.classes})`,
+    > 301 |   ).toBe(1);
+          |     ^
+      302 | }
+      303 |
+      304 | function expectFlashStillVisible(samples: FlashSample[], kind: string): void {
+        at expectOpaqueRoot (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:301:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:71:5
+        at withRealBattle (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:139:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:57:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: hit 플래시 9프레임 중 씬 루트가 투명해졌다: background-color "rgba(255, 255, 255, 0)" (classes: battle-flash-hit)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      299 |     `${kind} 플래시 ${samples.length}프레임 중 씬 루트가 투명해졌다: `
+      300 |       + `background-color "${weakest.sceneBackground}" (classes: ${weakest.classes})`,
+    > 301 |   ).toBe(1);
+          |     ^
+      302 | }
+      303 |
+      304 | function expectFlashStillVisible(samples: FlashSample[], kind: string): void {
+        at expectOpaqueRoot (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:301:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:71:5
+        at withRealBattle (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:139:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:57:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/battle-flash-map-hit-flash-keeps-the-battle-scene-opaque-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › test/runtime/battle-flash-map.spec.ts:77:1 › critical flash keeps the battle scene opaque and still renders the flash 
+
+    Error: critical 플래시 동안 씬 루트가 이동했다 — 불투명 배경이 밀려 가장자리로 맵이 샌다
+
+    expect(received).toBeNull()
+
+    Received: "matrix(0.5, 0, 0, 0.5, -3.73676, 2.49117) (classes: battle-flash-critical battle-screen-shake)"
+
+      321 |     moved ? `${moved.sceneTransform} (classes: ${moved.classes})` : null,
+      322 |     `${kind} 플래시 동안 씬 루트가 이동했다 — 불투명 배경이 밀려 가장자리로 맵이 샌다`,
+    > 323 |   ).toBeNull();
+          |     ^
+      324 | }
+      325 |
+        at expectRootNotTranslated (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:323:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:90:5
+        at withRealBattle (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:139:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:78:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: critical 플래시 동안 씬 루트가 이동했다 — 불투명 배경이 밀려 가장자리로 맵이 샌다
+
+    expect(received).toBeNull()
+
+    Received: "matrix(0.5, 0, 0, 0.5, -3.73511, 2.49007) (classes: battle-flash-critical battle-screen-shake)"
+
+      321 |     moved ? `${moved.sceneTransform} (classes: ${moved.classes})` : null,
+      322 |     `${kind} 플래시 동안 씬 루트가 이동했다 — 불투명 배경이 밀려 가장자리로 맵이 샌다`,
+    > 323 |   ).toBeNull();
+          |     ^
+      324 | }
+      325 |
+        at expectRootNotTranslated (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:323:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:90:5
+        at withRealBattle (/home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:139:5)
+        at /home/main/.herdr/worktrees/rpg-zzu/battle-battle-flash-map/test/runtime/battle-flash-map.spec.ts:78:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/battle-flash-map-critical--71a12-and-still-renders-the-flash-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › test/runtime/battle-flash-map.spec.ts:56:1 › hit flash keeps the battle scene opaque 
+    [chromium] › test/runtime/battle-flash-map.spec.ts:77:1 › critical flash keeps the battle scene opaque and still renders the flash 

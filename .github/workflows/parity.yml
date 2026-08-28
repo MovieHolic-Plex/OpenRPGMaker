@@ -39,7 +39,21 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build
+      # 빌드 경고를 실패로 승격시킨다. esbuild 는 CSS 문법 오류를 경고로만 내고 exit 0 을
+      # 주기 때문에, src/benchmark/ui/styles.css 가 규칙 0개로 출하되는 동안에도 CI 는
+      # 계속 초록이었다(실측: 경고 8건이 매 빌드마다 찍혔으나 아무도 grep 하지 않았다).
+      # pipefail 이 없으면 tee 의 종료 코드가 npm 의 것을 덮어써 빌드 실패 자체를 놓친다.
+      - name: Build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee /tmp/build.log
+      - name: Assert no build warnings
+        run: |
+          if grep -n '▲ \[WARNING\]' /tmp/build.log; then
+            echo "::error::빌드가 경고를 냈다(위 라인 참조). 고치거나, 정당하면 이 게이트를 함께 수정하라."
+            exit 1
+          fi
+          echo "빌드 경고 0건."
 
   e2e:
     runs-on: ubuntu-latest
@@ -65,3 +79,24 @@ jobs:
       - run: node scripts/check-file-loc.mjs
       - run: node scripts/check-supabase-content-gate.mjs
       - run: npm run openwiki:verify
+
+  # CSS 게이트는 ax-gates 와 **별도 job** 이다. GitHub Actions 는 job 안에서 첫 실패 step 에서
+  # 멈추는데, ax-gates 의 check-file-loc.mjs 는 이미 빨간불이다(실측: 이 브랜치의 clean HEAD
+  # 에서도 exit 1, 미유예 위반 19건). 같은 job 에 넣으면 CSS 게이트는 영원히 실행되지 않는다.
+  # 별도 job 이면 PR 에 독립된 status check 로 뜨고, 선행 게이트의 부채와 무관하게 동작한다.
+  css-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # CSS 래칫: 다섯 지표는 내려갈 수만 있다. 가드 없는 규칙은 반드시 되돌아간다 —
+      # TOKENS.md §4.1(하드코딩 hex 금지)은 테스트가 없어 8주 만에 600 → 1,940 으로
+      # 3.2배 늘었고, 같은 문서 §4.7(font-family 토큰)은 테스트가 있어 247개 파일 위반 0건이다.
+      - run: node scripts/check-css-budget.mjs
+      # CSS import 그래프 구조 검사. PR #98 의 스쿼시 머지가 배럴의 @import 한 줄만 조용히
+      # 되돌려 07-identifiable-previews.css 가 고아가 됐고, 그 시각 버그가 계속 출하됐다.
+      - run: node scripts/check-css-graph.mjs

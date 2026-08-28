@@ -31,18 +31,18 @@
     padding: 12px 12px 10px;
   }
 
-  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7),
-  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-hp,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-mp {
     min-height: 136px;
   }
 
-  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7) .db-state-control,
-  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) .db-state-control {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-hp .db-state-control,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-mp .db-state-control {
     grid-template-columns: 52px minmax(0, 1fr);
   }
 
-  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7) .db-state-control input,
-  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) .db-state-control input {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-hp .db-state-control input,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-mp .db-state-control input {
     font-size: 12px;
     padding-left: 5px;
     padding-right: 5px;

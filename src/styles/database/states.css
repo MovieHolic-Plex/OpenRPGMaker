@@ -58,15 +58,18 @@
   padding: 12px 6px 6px;
 }
 
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(1) { grid-area: base; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(2) { grid-area: acc; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(3) { grid-area: special; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(4) { grid-area: rate; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(5) { grid-area: heal; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(6) { grid-area: restrict; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7) { grid-area: hp; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) { grid-area: mp; }
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(9) { grid-area: anim; }
+/* 배치는 패널이 직접 들고 있는 클래스로 정한다. nth-child(1..9) 매핑이던 시절에는
+   중간에 패널을 하나 끼우면 이후 전부가 다른 영역으로 밀렸고, 소스 쪽에 "이 패널은
+   반드시 맨 뒤에 둘 것" 이라는 주석까지 남아 있었다(감사 A 축 P0). */
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-base { grid-area: base; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-acc { grid-area: acc; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-special { grid-area: special; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-rate { grid-area: rate; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-heal { grid-area: heal; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-restrict { grid-area: restrict; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-hp { grid-area: hp; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-mp { grid-area: mp; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-anim { grid-area: anim; }
 .database-modal-body .db-state-oprn-workbench > .db-state-reference-panel { grid-area: refs; }
 
 /* Gen1 knob 패널 — DOM 에서는 맨 뒤(요약 앞)지만 화면에서는 HP/MP 아래 전폭 한 줄이다.
@@ -135,11 +138,11 @@
   width: 100%;
 }
 
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(2) .db-state-control {
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-acc .db-state-control {
   grid-template-columns: 60px minmax(58px, 1fr);
 }
 
-.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(6) .db-state-control {
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-restrict .db-state-control {
   grid-template-columns: 64px minmax(190px, 1fr);
 }
 

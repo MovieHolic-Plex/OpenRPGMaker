@@ -34,6 +34,8 @@ import { openCharacterIdPicker } from "./characterIdPickerDialog";
 import { attachCharacterIdAutocomplete } from "./characterIdAutocomplete";
 import type { Command, EventPage, EventPageCondition, GameEvent, MapId, Trigger } from "@/project/types";
 import {
+  activeEventRailGroup,
+  activeRailGroupSlug,
   bindEventSectionOpenState,
   eventEditorOpenKey,
   openEventConditions,
@@ -714,7 +716,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       }),
     })
   );
-  return wrapPageSettingsAsAccordion(wrap, page, conditions);
+  return wrapPageSettingsAsAccordion(wrap, page, conditions, openKey);
 }
 
 type EventRailGroupSpec = {
@@ -724,26 +726,52 @@ type EventRailGroupSpec = {
   readonly open: boolean;
 };
 
-function railGroup(spec: EventRailGroupSpec, body: HTMLElement): HTMLDetailsElement {
-  return el("details", {
-    class: `event-editor-settings-accordion-group${spec.open ? " is-open" : ""}`,
-    attrs: spec.open ? { open: "" } : {},
-    dataset: { testid: `evt-rail-group-${spec.slug}`, railGroup: spec.slug },
+/**
+ * 레일 그룹 한 칸.
+ *
+ * 예전에는 `<details>/<summary>` 였고 본문이 233px 컬럼 안에서 그대로 펼쳐졌다. 조건 12행이
+ * 그 폭에 들어가지 못해 라벨과 컨트롤이 서로를 밀어냈고(실측 잘림 3건), 레일 높이는 1370px 로
+ * 흘러넘쳤다. 지금은 `<div>/<button>` 이고, CSS 가 헤더를 좌측 레일에·본문을 우측 넓은 면에
+ * 배치한다(`display: contents`). 한 번에 한 그룹만 열린다.
+ *
+ * DOM 계층(그룹이 헤더와 본문을 모두 소유)은 그대로다 — 그룹 소속 계약을 고정한
+ * `eventRailGroupComposition.test.ts` 가 이에 의존한다.
+ */
+function railGroup(spec: EventRailGroupSpec, body: HTMLElement, openKey: string): HTMLElement {
+  const header = el("button", {
+    class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
+    attrs: { type: "button", "aria-expanded": spec.open ? "true" : "false" },
     children: [
-      el("summary", {
-        class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
-        children: [
-          el("span", { class: "event-editor-settings-accordion-title", text: spec.title }),
-          el("span", {
-            class: "event-editor-settings-accordion-meta",
-            text: spec.summary,
-            dataset: { testid: `evt-rail-meta-${spec.slug}` },
-          }),
-        ],
+      el("span", { class: "event-editor-settings-accordion-title", text: spec.title }),
+      el("span", {
+        class: "event-editor-settings-accordion-meta",
+        text: spec.summary,
+        dataset: { testid: `evt-rail-meta-${spec.slug}` },
       }),
-      body,
     ],
-  }) as HTMLDetailsElement;
+  });
+  const group = el("div", {
+    class: `event-editor-settings-accordion-group${spec.open ? " is-open" : ""}`,
+    dataset: { testid: `evt-rail-group-${spec.slug}`, railGroup: spec.slug },
+    children: [header, body],
+  });
+  header.addEventListener("click", () => selectRailGroup(group, spec.slug, openKey));
+  return group;
+}
+
+/** 형제 그룹을 모두 닫고 이 그룹만 연다. 다시 그리지 않으므로 포커스·스크롤이 유지된다. */
+function selectRailGroup(group: HTMLElement, slug: string, openKey: string): void {
+  const rail = group.parentElement;
+  if (!rail) return;
+  for (const sibling of Array.from(rail.children)) {
+    if (!(sibling instanceof HTMLElement)) continue;
+    const active = sibling === group;
+    sibling.classList.toggle("is-open", active);
+    sibling
+      .querySelector(".event-editor-settings-accordion-header")
+      ?.setAttribute("aria-expanded", active ? "true" : "false");
+  }
+  activeEventRailGroup.set(openKey, slug);
 }
 
 export function appendEventRailGroup(
@@ -755,27 +783,35 @@ export function appendEventRailGroup(
   if (!rail || nodes.length === 0) return;
   const body = el("div", { class: "event-editor-settings-accordion-body" });
   nodes.forEach((node) => body.append(node));
-  rail.append(railGroup(spec, body));
+  const openKey = rail.dataset.railKey ?? "";
+  // 나중에 붙는 그룹(NPC와 일정)도 저장된 활성 slug 를 존중해야 한다.
+  const open = activeEventRailGroup.get(openKey) === spec.slug;
+  const group = railGroup({ ...spec, open }, body, openKey);
+  rail.append(group);
+  if (open) selectRailGroup(group, spec.slug, openKey);
 }
 
 function wrapPageSettingsAsAccordion(
   source: HTMLElement,
   page: EventPage,
   conditions: EventPageCondition[],
+  openKey: string,
 ): HTMLElement {
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
   const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
+  // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
+  const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
-    { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", open: true, nodes: look },
-    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, open: false, nodes: when },
-    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), open: false, nodes: move },
-    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), open: false, nodes: memory },
-  ] as const;
+    { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", nodes: look },
+    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, nodes: when },
+    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), nodes: move },
+    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), nodes: memory },
+  ].map((group) => ({ ...group, open: group.slug === activeSlug }));
   const rail = el("div", {
     class: "event-editor-settings-accordion",
-    dataset: { testid: "event-editor-settings-accordion" },
+    dataset: { testid: "event-editor-settings-accordion", railKey: openKey },
   });
   const claimed = new Set<HTMLElement>();
   for (const group of groups) {
@@ -791,7 +827,7 @@ function wrapPageSettingsAsAccordion(
       claimed.add(host);
       body.append(host);
     }
-    rail.append(railGroup(group, body));
+    rail.append(railGroup(group, body, openKey));
   }
   const leftovers = Array.from(source.children).filter(
     (child): child is HTMLElement => child instanceof HTMLElement && child !== rail,
@@ -799,7 +835,7 @@ function wrapPageSettingsAsAccordion(
   if (leftovers.length > 0) {
     const body = el("div", { class: "event-editor-settings-accordion-body" });
     leftovers.forEach((child) => body.append(child));
-    rail.append(railGroup({ slug: "other", title: "기타", summary: `분료 없음 ${leftovers.length}개`, open: false }, body));
+    rail.append(railGroup({ slug: "other", title: "기타", summary: `분류 없음 ${leftovers.length}개`, open: false }, body, openKey));
   }
   rail.querySelectorAll("details").forEach((node) => {
     if (node.classList.contains("event-editor-settings-accordion-group")) return;

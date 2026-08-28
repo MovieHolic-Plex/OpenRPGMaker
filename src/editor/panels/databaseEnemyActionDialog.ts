@@ -1,7 +1,7 @@
 import { applyEnemyActionBehaviourMode, enemyActionBehaviourMode, type EnemyActionBehaviourMode } from "@/editor/databaseEnemyActionMode";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectField } from "@/editor/panels/databaseControls";
-import { openSwitchVariablePicker } from "@/editor/panels/eventEditor/recordPickerDialog";
+import { openRecordPickerPanel } from "@/editor/panels/eventEditor/recordPickerDialog";
 import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/databaseEnemyRecordSupport";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
@@ -200,7 +200,7 @@ function switchPickerButton(testid: string, label: string, enabled: boolean, cur
     on: {
       click: () => {
         if (!enabled) return;
-        openSwitchVariablePicker({ kind: "switch", currentId, onSelect });
+        openRecordPickerPanel({ kind: "switch", currentId, onSelect });
       },
     },
   }) as HTMLButtonElement;

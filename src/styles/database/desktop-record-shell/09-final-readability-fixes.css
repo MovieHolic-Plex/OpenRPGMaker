@@ -106,8 +106,8 @@
     min-width: 260px;
   }
 
-  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel:nth-child(7) .db-state-control,
-  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel:nth-child(8) .db-state-control {
+  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel-hp .db-state-control,
+  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel-mp .db-state-control {
     grid-template-columns: 52px minmax(124px, 1fr);
   }
 

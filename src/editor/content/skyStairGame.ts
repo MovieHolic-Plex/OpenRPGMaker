@@ -238,8 +238,8 @@ export function createSkyStairProject(): Project {
   const system = defaultSystem();
   system.startActorIds = [...STARTER_ACTOR_IDS];
   system.initialTroopId = SKY_TROOP.fieldPests;
-  // 사이드뷰 + 아군 스프라이트 표시 — 4인 파티를 화면에 실제로 세우는 스킨이다.
-  system.battleUiStyle = "ff";
+  // 출하 콘텐츠는 지원하는 두 스킨(rm2003 / pokemon)만 저작한다. ff는 지원 종료됐지만 기존 저장 프로젝트에서는 계속 로드된다.
+  system.battleUiStyle = "rm2003";
   system.battleBgmResourceId = "cc0-bgm-battle";
   system.defaultBgmResourceId = SKY_BGM.harbor;
   system.titleScreen = {
