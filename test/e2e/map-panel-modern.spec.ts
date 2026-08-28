@@ -67,6 +67,7 @@ for (const mode of MODES) {
     test("이름과 메타가 자기 칸 안에서 말줄임된다", async ({ page }) => {
       await bootEditor(page, mode);
       const reading = await readMapPanel(page);
+      expect(reading.rows).toBeGreaterThan(0);
       expect(reading.clippedTexts).toBe(0);
     });
 
