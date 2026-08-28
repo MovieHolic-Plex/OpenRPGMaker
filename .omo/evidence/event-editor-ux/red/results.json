@@ -1,0 +1,176 @@
+{
+  "label": "red",
+  "baseUrl": "http://127.0.0.1:9828",
+  "results": [
+    {
+      "id": "C1",
+      "title": "단일 인디고 액센트",
+      "pass": false,
+      "detail": {
+        "accent": {
+          "toolbarAdd": {
+            "bg": "rgb(217, 164, 65)",
+            "color": "rgb(42, 37, 33)"
+          },
+          "footerSave": {
+            "bg": "rgb(74, 87, 214)",
+            "color": "rgb(255, 255, 255)"
+          }
+        },
+        "brassHits": [
+          "src/styles/editor/palette-player.css:422:  border: 1px solid color-mix(in srgb, var(--warning, #d9a441) 45%, var(--border-default));",
+          "src/styles/editor/palette-player.css:424:  background: color-mix(in srgb, var(--warning, #d9a441) 14%, transparent);",
+          "src/styles/editor/palette-player.css:425:  color: var(--warning, #d9a441);",
+          "src/styles/editor/event-editor.part-2.css:382:  border: 1px solid color-mix(in srgb, var(--warning, #d9a441) 45%, var(--border-default));",
+          "src/styles/editor/event-editor.part-2.css:384:  background: color-mix(in srgb, var(--warning, #d9a441) 14%, transparent);",
+          "src/styles/editor/event-editor.part-2.css:385:  color: var(--warning, #d9a441);",
+          "src/styles/editor/event-editor.blocks.css:89:  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 22%, var(--border-default, var(--mk-line, #2a3449)));",
+          "src/styles/editor/event-editor.blocks.css:115:  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(42,37,33,.10);",
+          "src/styles/editor/event-editor.blocks.css:116:  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #FFFDF8)));",
+          "src/styles/editor/event-editor.blocks.css:157:  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 12%, transparent);",
+          "src/styles/editor/event-editor.mockup.css:9:  --mk-accent: #d9a441; /* 황동 — 목업의 유일한 온색 */",
+          "src/styles/editor/event-editor.mockup.css:338:  box-shadow: inset 0 0 0 1px #d9a441;",
+          "src/styles/editor/event-editor.mockup.css:658:  background: #d9a441;",
+          "src/styles/editor/event-editor.mockup.css:659:  border-color: #d9a441;",
+          "src/styles/editor/event-editor.modern/04-depth-parent.css:49:  background-color: color-mix(in srgb, var(--warning, #d9a441) 10%, transparent);",
+          "src/styles/editor/event-editor.modern/04-depth-parent.css:55:  color: var(--warning, #d9a441);",
+          "src/styles/editor/event-editor.modern/04-depth-parent.css:56:  background-color: color-mix(in srgb, var(--warning, #d9a441) 12%, transparent);",
+          "src/styles/editor/event-editor.modern/03-legend-toolbar.css:275:  --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));"
+        ]
+      }
+    },
+    {
+      "id": "C2",
+      "title": "툴바 중복 컨트롤 없음 + 라벨 완전어",
+      "pass": false,
+      "detail": {
+        "duplicateAddButtons": 1,
+        "duplicateStoryboardButtons": 1,
+        "slicedLabels": [
+          "↷ 다시 <- 다시 실행",
+          "✧ AI <- AI 명령",
+          "+ 다음 <- 다음 행동"
+        ],
+        "labels": [
+          "+ 명령",
+          "↶ 되돌리기",
+          "↷ 다시",
+          "↑ 위로",
+          "↓ 아래로",
+          "▣ 복사",
+          "✂ 잘라내기",
+          "초안 생성",
+          "선택 위치에 삽입",
+          "버리기",
+          "강아지 펫",
+          "고양이 펫",
+          "병아리",
+          "동료 주인공 (주인공)",
+          "수호자 동행",
+          "마도사 동행",
+          "정찰병 동행",
+          "성직자 동행",
+          "궁수 동행",
+          "☠ 필드 몬스터 템플릿",
+          "목록",
+          "스토리",
+          "✧ AI",
+          "</> 스크립트",
+          "▣ 스토리보드",
+          "⌘ 플로우",
+          "+ 다음"
+        ]
+      }
+    },
+    {
+      "id": "C5a",
+      "title": "레일 요약에 raw enum 없음",
+      "pass": false,
+      "detail": {
+        "match": "fixed",
+        "railSample": "이 페이지 설정 어떻게 보이고 언제 켜지는지 모습과 대화 그래픽 없음 이 페이지 말을 걸면 같은 층 · 정지 모습 이미지 선택 맵에서 숨기기 언제 보이나요 조건 없음 움직임과 속도 fixed 기억과 정리 중복 허용 NPC와 일정 연결 안 됨"
+      }
+    },
+    {
+      "id": "C6",
+      "title": "이벤트 이름 입력 포커스 링",
+      "pass": false,
+      "detail": {
+        "outlineStyle": "none",
+        "outlineWidth": "3px",
+        "outlineColor": "rgb(15, 23, 42)",
+        "boxShadow": "none"
+      }
+    },
+    {
+      "id": "C4a",
+      "title": "단일 클릭 = 인스펙터 표시, 모달 없음",
+      "pass": false,
+      "detail": {
+        "inspector": {
+          "hidden": true,
+          "width": 0,
+          "height": 0,
+          "hasBody": false,
+          "text": "선택한 명령명령을 고르면 여기에서 고칩니다"
+        },
+        "dialogOpened": true
+      }
+    },
+    {
+      "id": "C4b",
+      "title": "더블 클릭 = 편집 모달",
+      "pass": true,
+      "detail": {
+        "dialogOpened": true
+      }
+    },
+    {
+      "id": "C5b",
+      "title": "오디오 명령 다이얼로그 정직성",
+      "pass": true,
+      "detail": {
+        "hasImageWellCopy": false,
+        "hasLyingCopy": false,
+        "dialog": {
+          "w": 780,
+          "h": 555
+        }
+      }
+    },
+    {
+      "id": "C5c",
+      "title": "네이티브 alert/confirm 없음",
+      "pass": false,
+      "detail": {
+        "hits": [
+          "src/editor/panels/eventEditor/content.ts:248:                  click: () => window.alert([",
+          "src/editor/panels/eventEditor/commandBodyCore.ts:806:    if ((latest.else?.length ?? 0) > 0 && !window.confirm(\"그 외 분기의 명령을 삭제할까요?\")) {",
+          "src/editor/panels/eventEditor/pageProps.ts:105:  if (!window.confirm(`\"${page.name}\" 페이지와 그 안의 모든 명령을 삭제할까요?`)) return;"
+        ]
+      }
+    },
+    {
+      "id": "C3",
+      "title": "1024px 툴바 클리핑 없음",
+      "pass": false,
+      "detail": {
+        "add": {
+          "left": 222,
+          "right": 306,
+          "width": 84
+        },
+        "column": {
+          "left": 268,
+          "right": 1024
+        },
+        "toolbarOverflow": false,
+        "toolbarScroll": {
+          "scrollWidth": 755,
+          "clientWidth": 755
+        },
+        "barBottomInsideColumn": true
+      }
+    }
+  ]
+}

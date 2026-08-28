@@ -137,7 +137,8 @@ export function validateEventDraftBody(
       code: "event.position.out-of-bounds",
       message: `이벤트 위치 (${event.x}, ${event.y})가 맵 범위를 벗어났습니다.`,
       pageId: firstPageId,
-      field: { testId: "event-position-x" },
+      // 이동 문제는 헤더의 살아있는 좌표 표시로 데려간다 — 숨어 있던 identity 카드의 좌표 입력물은 삭제됐다.
+      field: { testId: "event-editor-coords" },
     });
   }
   if (event.condition) validateCondition(event.condition, firstPageId, refs, issues);

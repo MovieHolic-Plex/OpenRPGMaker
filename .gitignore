@@ -4,6 +4,7 @@ dist/
 .omo/*
 !.omo/evidence/
 .omo/evidence/*
+!.omo/evidence/event-editor-ux/
 !.omo/evidence/rm2003-database-plan/
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-apply-without-approval/
@@ -40,6 +41,8 @@ evidence/
 # 무력화한다(실측: git check-ignore -v 가 .gitignore 의 evidence/ 행을 지목했다). 증거로
 # 추적하는 .omo/evidence 하위 디렉터리는 이 뒤에서 다시 예외 처리해야 한다.
 !.omo/evidence/
+!.omo/evidence/event-editor-ux/
+!.omo/evidence/event-editor-ux/**
 !.omo/evidence/ai-compaction/
 !.omo/evidence/ai-compaction/**
 !.omo/evidence/ai-apply-without-approval/

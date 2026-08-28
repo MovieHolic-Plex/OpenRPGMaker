@@ -1,4 +1,5 @@
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
+import { showConfirm } from "@/editor/ui/modal";
 import { clearChildren, el } from "@/util/dom";
 import { recordUsageHint } from "./recordUsageHint";
 import { selectedOptionValue, selectWithOptions } from "./dom";
@@ -803,11 +804,26 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       context.actions.replaceCommand(context.path, { ...latest, else: latest.else ?? [] });
       return;
     }
-    if ((latest.else?.length ?? 0) > 0 && !window.confirm("그 외 분기의 명령을 삭제할까요?")) {
-      elseCheck.checked = true;
+    const dropElseBranch = (): void => {
+      context.actions.replaceCommand(context.path, { kind: "fork", condition: latest.condition, then: latest.then });
+    };
+    if ((latest.else?.length ?? 0) === 0) {
+      dropElseBranch();
       return;
     }
-    context.actions.replaceCommand(context.path, { kind: "fork", condition: latest.condition, then: latest.then });
+    // 네이티밌 confirm 은 에디터의 다이얼로그와 모양이 다르다 — 물어보는 동안은 체탁을 되돌려 끈다.
+    elseCheck.checked = true;
+    void showConfirm({
+      title: "그 외 분기 삭제",
+      message: "그 외 분기에 들어있는 명령이 함까 삭제됩니다. 진행할까요?",
+      confirmLabel: "삭제",
+      cancelLabel: "유지",
+      danger: true,
+    }).then((confirmed) => {
+      if (!confirmed) return;
+      elseCheck.checked = false;
+      dropElseBranch();
+    });
   });
 
   const optionsSection = el("section", {

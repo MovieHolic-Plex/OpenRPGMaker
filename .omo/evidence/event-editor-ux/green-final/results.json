@@ -1,0 +1,210 @@
+{
+  "label": "green-final",
+  "baseUrl": "http://127.0.0.1:9828",
+  "results": [
+    {
+      "id": "C1",
+      "title": "단일 인디고 액센트",
+      "pass": true,
+      "detail": {
+        "accent": {
+          "toolbarAdd": {
+            "bg": "rgb(74, 87, 214)",
+            "color": "rgb(255, 255, 255)"
+          },
+          "footerSave": {
+            "bg": "rgb(74, 87, 214)",
+            "color": "rgb(255, 255, 255)"
+          }
+        },
+        "accentVars": {
+          "mkAccent": "#4A57D6",
+          "commandOrange": "#4A57D6",
+          "accent": "#4A57D6"
+        },
+        "brassHits": []
+      }
+    },
+    {
+      "id": "C2",
+      "title": "툴바 중복 컨트롤 없음 + 라벨 완전어",
+      "pass": true,
+      "detail": {
+        "duplicateAddButtons": 0,
+        "duplicateStoryboardButtons": 0,
+        "slicedLabels": [],
+        "labels": [
+          "+ 명령",
+          "↶ 되돌리기",
+          "↷ 다시 실행",
+          "↑ 위로 이동",
+          "↓ 아래로 이동",
+          "▣ 복사",
+          "✂ 잘라내기",
+          "초안 생성",
+          "선택 위치에 삽입",
+          "버리기",
+          "강아지 펫",
+          "고양이 펫",
+          "병아리",
+          "동료 주인공 (주인공)",
+          "수호자 동행",
+          "마도사 동행",
+          "정찰병 동행",
+          "성직자 동행",
+          "궁수 동행",
+          "☠ 필드 몬스터 템플릿",
+          "목록",
+          "스토리",
+          "✧ AI 명령",
+          "</> 스크립트 보기",
+          "⌘ 플로우 보기"
+        ]
+      }
+    },
+    {
+      "id": "C5a",
+      "title": "레일 요약에 raw enum 없음",
+      "pass": true,
+      "detail": {
+        "match": null,
+        "railSample": "이 페이지 설정 어떻게 보이고 언제 켜지는지 모습과 대화 그래픽 없음 이 페이지 말을 걸면 같은 층 · 정지 모습 이미지 선택 맵에서 숨기기 언제 보이나요 조건 없음 움직임과 속도 정지 겹침과 통행 겹침 금지 NPC와 일정 연결 안 됨"
+      }
+    },
+    {
+      "id": "C6",
+      "title": "이벤트 이름 입력 포커스 링",
+      "pass": true,
+      "detail": {
+        "outlineStyle": "solid",
+        "outlineWidth": "2px",
+        "outlineColor": "rgb(74, 87, 214)",
+        "boxShadow": "none"
+      }
+    },
+    {
+      "id": "C4a",
+      "title": "단일 클릭 = 인스펙터 표시, 모달 없음",
+      "pass": true,
+      "detail": {
+        "inspector": {
+          "hidden": false,
+          "width": 340,
+          "height": 752,
+          "hasBody": true,
+          "text": "문장 표시 촌장: 우물이 말라붙었네. 도와주겠나? × ↻ 미리보기 새로고침 문장 표시 게임 화면 미리보기 입력한 문장이 실제 창에서 보이는 모습"
+        },
+        "dialogOpened": false
+      }
+    },
+    {
+      "id": "C4b",
+      "title": "더블 클릭 = 편집 모달",
+      "pass": true,
+      "detail": {
+        "dialogOpened": true
+      }
+    },
+    {
+      "id": "L1",
+      "title": "1440 인스펙터 열림 — 죽은 띠·겹침 없음",
+      "pass": true,
+      "detail": {
+        "settings": {
+          "left": 0,
+          "right": 268,
+          "width": 268
+        },
+        "commands": {
+          "left": 268,
+          "right": 1100,
+          "width": 832
+        },
+        "inspector": {
+          "left": 1100,
+          "right": 1440,
+          "width": 340
+        },
+        "gapSettingsToCommands": 0,
+        "gapCommandsToInspector": 0
+      }
+    },
+    {
+      "id": "L3",
+      "title": "인스펙터 프리뷰 중복 없음",
+      "pass": true,
+      "detail": {
+        "stageCount": 1,
+        "roots": [
+          "event-command-text-live-preview"
+        ],
+        "titleOccurrences": 2
+      }
+    },
+    {
+      "id": "C5b",
+      "title": "오디오 명령 다이얼로그 정직성",
+      "pass": true,
+      "detail": {
+        "hasImageWellCopy": false,
+        "hasLyingCopy": false,
+        "dialog": {
+          "w": 780,
+          "h": 378
+        }
+      }
+    },
+    {
+      "id": "C5c",
+      "title": "네이티브 alert/confirm 없음",
+      "pass": true,
+      "detail": {
+        "hits": []
+      }
+    },
+    {
+      "id": "C3",
+      "title": "1024px 툴바 클리핑 없음",
+      "pass": true,
+      "detail": {
+        "add": {
+          "left": 236,
+          "right": 320,
+          "width": 84
+        },
+        "column": {
+          "left": 236,
+          "right": 700
+        },
+        "toolbarOverflow": false,
+        "toolbarScroll": {
+          "scrollWidth": 463,
+          "clientWidth": 463
+        },
+        "barBottomInsideColumn": true
+      }
+    },
+    {
+      "id": "L2",
+      "title": "1024 인스펙터가 명령 열을 가리지 않음",
+      "pass": true,
+      "detail": {
+        "inspectorVisible": true,
+        "commandsWidth": 464,
+        "overlap": 0,
+        "addHit": {
+          "testid": "event-command-toolbar-add",
+          "cls": "event-editor-command-tool primary",
+          "inCommands": true,
+          "inInspector": false
+        },
+        "rowHit": {
+          "testid": null,
+          "cls": "cmd-head",
+          "inCommands": true,
+          "inInspector": false
+        }
+      }
+    }
+  ]
+}

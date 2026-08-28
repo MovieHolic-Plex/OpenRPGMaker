@@ -25,7 +25,7 @@ type FieldSemantic = OptionsFieldSemantic | RecordFieldSemantic | ResourceFieldS
 type FieldControlRequest = { readonly context: CommandEditContext; readonly cmd: M2Command; readonly spec: M2CommandFieldSpec; readonly title: string; readonly value: M2CommandValue };
 type OptionsControlRequest = { readonly context: CommandEditContext; readonly cmd: M2Command; readonly key: string; readonly semantic: OptionsFieldSemantic; readonly value: string };
 type ResourcePickerRequest = { readonly context: CommandEditContext; readonly cmd: M2Command; readonly key: string; readonly semantic: ResourceFieldSemantic; readonly value: string };
-type ResourcePreviewOptions = { readonly item: ResourcePickerItem | undefined; readonly project: ReturnType<typeof store.getCurrent>; readonly selectedName: string; readonly testId: string; readonly value: string };
+type ResourcePreviewOptions = { readonly item: ResourcePickerItem | undefined; readonly project: ReturnType<typeof store.getCurrent>; readonly selectedName: string; readonly semantic: ResourceFieldSemantic; readonly testId: string; readonly value: string };
 type RecordPickerRequest = { readonly context: CommandEditContext; readonly cmd: M2Command; readonly key: string; readonly semantic: RecordFieldSemantic; readonly value: string };
 
 const IMAGE_RESOURCE_KINDS: ReadonlySet<ResourceKind> = new Set(["backdrop", "battle", "battleCharset", "battleWeapon", "charset", "chipset", "faceset", "gameOver", "monster", "picture", "system", "system2", "title"]);
@@ -267,7 +267,7 @@ function eraseEventCommandBody(context: CommandEditContext, cmd: M2Command): HTM
 }
 
 function m2CommandHelpText(fieldCount: number): string {
-  return fieldCount > 0 ? "값을 고르면 바로 반영됩니다." : "이 명령은 추가 설정 없이 실행됩니다.";
+  return fieldCount > 0 ? "값을 고르고 확인을 누르면 적용됩니다." : "이 명령은 추가 설정 없이 실행됩니다.";
 }
 
 function controlForField(request: FieldControlRequest): HTMLElement {
@@ -512,7 +512,7 @@ function resourcePickerControl(request: ResourcePickerRequest): HTMLElement {
         text: selectedName,
         dataset: { testid: testIds.selectedName },
       }),
-      resourcePreview({ item: selectedItem, project, selectedName, testId: testIds.preview, value: request.value }),
+      resourcePreview({ item: selectedItem, project, selectedName, semantic: request.semantic, testId: testIds.preview, value: request.value }),
     ],
   });
 }
@@ -611,7 +611,20 @@ function resourcePickerItems(
   return items;
 }
 
+function isAudioResourceSemantic(semantic: ResourceFieldSemantic): boolean {
+  return semantic.resourceKinds.size > 0 && Array.from(semantic.resourceKinds).every((kind) => kind === "music" || kind === "sound");
+}
+
 function resourcePreview(options: ResourcePreviewOptions): HTMLElement {
+  // 오디오 필드는 그림 미리보기 우물을 만들지 않는다 — 빈 640x500 상자에 "그림을 고르세요" 는 거짓말.
+  if (isAudioResourceSemantic(options.semantic)) {
+    return el("div", {
+      class: "m2-resource-audio-note",
+      attrs: { "aria-label": "오디오 리소스 선택" },
+      dataset: { testid: options.testId, resourceId: options.item?.id ?? options.value },
+      text: options.value ? `선택한 음악: ${options.selectedName}` : "선택한 음악이 여기에 표시됩니다",
+    });
+  }
   const resourceId = options.item?.id ?? options.value;
   const url = resolveAssetResourceUrl(resourceId, { project: options.project });
   const canPreview = options.item !== undefined && IMAGE_RESOURCE_KINDS.has(options.item.kind) && url !== null;
