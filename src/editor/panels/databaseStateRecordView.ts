@@ -52,14 +52,14 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           selectLiteral("제한", "db-state-restriction", ontology.restriction, RESTRICTION_OPTIONS, (restriction) =>
             update({ restriction })
           ),
-        ]),
+        ], "db-state-panel-base"),
         panel("명중률 보정", [
           numberField("성공률", "db-state-accuracy", ontology.accuracyModifier, (accuracyModifier) =>
             update({ accuracyModifier }), { min: 0, max: 100 }
           ),
-        ]),
-        panel("특수", specialFlags(baseOntology, state, update)),
-        panel("상태 유효도", rateRows(ontology)),
+        ], "db-state-panel-acc"),
+        panel("특수", specialFlags(baseOntology, state, update), "db-state-panel-special"),
+        panel("상태 유효도", rateRows(ontology), "db-state-panel-rate"),
         panel("회복 방법", [
           numberField("자연 회복(턴부터)", "db-state-recover-turn", ontology.recoverNaturallyFromTurn, (recoverNaturallyFromTurn) =>
             update({ recoverNaturallyFromTurn }), { min: 0, max: 999 }
@@ -70,12 +70,12 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("피격 회복(%)", "db-state-hit-recover", ontology.recoverWhenHitChance, (recoverWhenHitChance) =>
             update({ recoverWhenHitChance }), { min: 0, max: 100 }
           ),
-        ]),
+        ], "db-state-panel-heal"),
         panel("행동 제한", [
           readonlyControl("능력치", ontology.actorStatus, "db-state-actor-status"),
           readonlyControl("스킬 제한", ontology.skillLimit, "db-state-skill-limit"),
           readonlyControl("고정 항목", ontology.lockedParameters.join(", ") || "없음", "db-state-locked-params"),
-        ]),
+        ], "db-state-panel-restrict"),
         panel("HP", [
           numberField("전투 중(턴당%)", "db-state-hp-turn", numericRelease(state.hpReleaseTurn, baseOntology.hpTurn), (hpReleaseTurn) =>
             update({ hpReleaseTurn }), { min: -100, max: 100 }
@@ -83,7 +83,7 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("맵 이동(걸음당)", "db-state-hp-move", numericRelease(state.hpReleaseStep, baseOntology.hpMove), (hpReleaseStep) =>
             update({ hpReleaseStep }), { min: -999, max: 999 }
           ),
-        ]),
+        ], "db-state-panel-hp"),
         panel("MP", [
           numberField("전투 중(턴당%)", "db-state-mp-turn", numericRelease(state.mpReleaseTurn, baseOntology.mpTurn), (mpReleaseTurn) =>
             update({ mpReleaseTurn }), { min: -100, max: 100 }
@@ -91,12 +91,13 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("맵 이동(걸음당)", "db-state-mp-move", numericRelease(state.mpReleaseStep, baseOntology.mpMove), (mpReleaseStep) =>
             update({ mpReleaseStep }), { min: -999, max: 999 }
           ),
-        ]),
+        ], "db-state-panel-mp"),
         animationPanel(state, ontology, update),
         referencePanel(referencingSkills.map((skill) => `${skill.name} (${skill.id})`), referencingItems.map((item) => `${item.name} (${item.id})`)),
-        // 맨 뒤에 둔다 — states.css 가 nth-child(1..9) → grid-area 로 패널 위치를 잡으므로
-        // 중간에 끼우면 이후 패널 전부가 다른 영역으로 밀린다(실제로 그렇게 깨졌다).
-        // 화면상의 자리는 DOM 순서와 무관하게 grid-area: runtime 이 정한다.
+        // 배치는 DOM 순서가 아니라 패널이 직접 들고 있는 `db-state-panel-*` 클래스가 정한다.
+        // 예전에는 states.css 가 nth-child(1..9) → grid-area 로 잡아서, 중간에 패널을
+        // 하나 끼우면 이후 전부가 다른 영역으로 밀렸다(실제로 그렇게 깨졌고 이 주석이
+        // 그 흔적이었다). 이제는 어디에 넣어도 안전하다.
         runtimeEffectsPanel(state, update),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
@@ -162,12 +163,18 @@ function checkControl(label: string, testid: string, checked: boolean, onChange:
   return el("label", { class: "db-state-check", children: [input, el("span", { text: label })] });
 }
 
+/**
+ * 파생 값(온톨로지에서 계산돼 여기서는 못 고치는 값)은 **입력처럼 보이면 안 된다**.
+ * 예전에는 `<input readonly>` 였고 테두리·배경·높이·폰트가 옆의 살아 있는 숫자 필드와
+ * 똑같아서, 클릭해 타이핑해도 아무 일이 안 일어나는데 이유를 알 수 없었다(감사 G 축).
+ * 값은 칩으로 두고 "어디서 온 값인지"를 함께 적는다.
+ */
 function readonlyControl(label: string, value: string, testid: string): HTMLElement {
-  return el("label", {
-    class: "db-state-control",
+  return el("div", {
+    class: "db-state-control db-state-derived",
     children: [
       el("span", { text: label }),
-      el("input", { attrs: { readonly: "true", type: "text" }, dataset: { testid }, value }),
+      el("output", { class: "db-state-derived-value", dataset: { testid }, text: value }),
     ],
   });
 }
@@ -178,7 +185,8 @@ function colorControl(ontology: ReturnType<typeof stateOntologyFor>): HTMLElemen
     children: [
       el("span", { text: "색상" }),
       el("i", { attrs: { "aria-hidden": "true", style: `background:${ontology.colorHex}` } }),
-      el("input", { attrs: { readonly: "true", type: "text" }, dataset: { testid: "db-state-color" }, value: ontology.color }),
+      // 색상도 온톨로지 파생값이라 여기서는 못 바꾼다 — readonly 입력으로 위장하지 않는다.
+      el("output", { class: "db-state-derived-value", dataset: { testid: "db-state-color" }, text: ontology.color }),
     ],
   });
 }
@@ -224,7 +232,7 @@ function animationPanel(
   return panel("애니메이션", [
     el("div", { class: "db-state-animation-preview", text: "상태" }),
     numberField("번호", "db-state-animation-index", index, (animationIndex) => update({ animationIndex }), { min: 0, max: 999 }),
-  ]);
+  ], "db-state-panel-anim");
 }
 
 function referencePanel(skills: readonly string[], items: readonly string[]): HTMLElement {
