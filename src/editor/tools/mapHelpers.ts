@@ -100,6 +100,24 @@ export function floodFillCells(map: GameMap, start: Point, tile: number): Point[
   return filled;
 }
 
+/**
+ * 직사각 영역 안에서 아직 걸어 들어갈 수 있는 칸 수. "아예 통행불가능하게" 같은 지시가
+ * 실제로 달성됐는지 말하려면 결과를 세어야 한다 — 배치 개수만으로는 알 수 없다.
+ */
+export function passableCellCount(
+  project: Project,
+  map: GameMap,
+  area: { readonly x: number; readonly y: number; readonly w: number; readonly h: number },
+): number {
+  let passable = 0;
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      if (inMapBounds(map, x, y) && isPassable(project, map, x, y)) passable += 1;
+    }
+  }
+  return passable;
+}
+
 // 지정 칸들 중 통행 불가가 된 셀 수를 세어 경고 문구를 만든다(passability 변화 감지용).
 export function passabilityWarning(project: Project, map: GameMap, cells: readonly Point[]): string | null {
   let blocked = 0;

@@ -7,7 +7,7 @@ import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isTreeCanopyTileId, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, PaletteSlotRole, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
-import { inMapBounds, passabilityWarning, requireMap, setLower, type Point } from "./mapHelpers";
+import { inMapBounds, passabilityWarning, passableCellCount, requireMap, setLower, type Point } from "./mapHelpers";
 import { hardClusterRuleCount, nonEmptyFootprintTileCount } from "./clusterRulePlacement";
 import { clusterScatter, poissonScatter, type ScatterBounds } from "./naturalScatter";
 import { naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool, seedForTool } from "./naturalToolArgs";
@@ -20,6 +20,8 @@ type Area = { readonly x: number; readonly y: number; readonly w: number; readon
 type Rect = Area;
 type ScatterMode = "uniform" | "poisson" | "cluster";
 type RecordValue = { readonly [key: string]: unknown };
+/** natural = 지금까지의 자연 산포. dense = 빈틈 없이 채워 통행을 막는다. */
+export type ScatterPacking = "natural" | "dense";
 type ScatterArgs = {
   readonly mapId: string;
   readonly groupId?: string;
@@ -33,6 +35,7 @@ type ScatterArgs = {
   readonly avoidProtected: boolean;
   readonly preferSoftRules: boolean;
   readonly applyStructure: boolean;
+  readonly packing: ScatterPacking;
 };
 type Footprint = { readonly w: number; readonly h: number; readonly lower: readonly number[]; readonly upper: readonly number[] };
 type ChooseInput = {
@@ -98,13 +101,20 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
     const candidates = origins(map, args.area, footprint).filter((origin) => footprintFits(map, footprint, origin, protectedCells));
     const legacySeed = scatterSeedSignature(map, args);
     const seed = args.seed === undefined ? legacySeed : String(args.seed);
-    const ranked = args.mode === "uniform" ? null : rankedNaturalCandidates({ args, candidates, footprint, legacySeed, map });
+    const ranked = args.mode === "uniform" || args.packing === "dense"
+      ? null
+      : rankedNaturalCandidates({ args, candidates, footprint, legacySeed, map });
+    const stepFootprintAt = (step: number): Footprint => (bagProp ? bagPropFootprint(group, tileset, seed, step) : footprint);
+    const passableBefore = passableCellCount(draft, map, args.area);
     const placed: Rect[] = [];
     const footprints: Footprint[] = [];
-    for (let step = 0; step < args.count; step += 1) {
-      const stepFootprint = bagProp
-        ? bagPropFootprint(group, tileset, seed, step)
-        : footprint;
+    if (args.packing === "dense") {
+      const dense = planDensePlacements({ map, area: args.area, count: args.count, protectedCells, footprintAt: stepFootprintAt });
+      placed.push(...dense.placed);
+      footprints.push(...dense.footprints);
+    }
+    for (let step = 0; args.packing !== "dense" && step < args.count; step += 1) {
+      const stepFootprint = stepFootprintAt(step);
       const sourceCandidates = ranked?.ordered ?? candidates;
       // 성능 캡(2026-07-17): 스텝마다 전 후보(면적 규모)를 재검사·재채점하면 대형 맵에서
       // count×면적 곱으로 폭주한다(100×100 침엽수 84그루 = 수백 초). ranked는 이미
@@ -151,9 +161,27 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
       ? ` = ${placed.length * atomicTileCount}타일(클러스터 동반 배치 포함)`
       : "";
     const sourceName = picker ? `${picker.presetId}/${picker.role}` : group.name;
+    const passableAfter = passableCellCount(draft, map, args.area);
+    // dense 를 시킨 쪽은 "정말 못 지나가나" 를 알고 싶어 한다. 남은 통행 칸을 세서 말해준다.
+    const passabilityNote = args.packing === "dense"
+      ? ` — 영역 ${args.area.w}×${args.area.h} 통행 가능 칸 ${passableBefore}→${passableAfter}${passableAfter === 0 ? " (완전 차단)" : ""}`
+      : "";
+    const dressing = args.packing === "dense"
+      ? `밀집, 간격 0${passabilityNote}`
+      : `${args.mode}, 자연도 ${naturalnessLabel(args.naturalness)}, 간격 ${args.minGap}~${args.maxGap}`;
     return {
-      summary: `${map.name}에 ${sourceName} ${placed.length}개${clusterNote} 배치(${args.mode}, 자연도 ${naturalnessLabel(args.naturalness)}, 간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
-      data: { mode: args.mode, naturalness: args.naturalness, placed: placed.length, requested: args.count, skipped, tilesPlaced: placed.length * atomicTileCount },
+      summary: `${map.name}에 ${sourceName} ${placed.length}개${clusterNote} 배치(${dressing})${skipped > 0 && args.packing !== "dense" ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}${skipped > 0 && args.packing === "dense" ? ` — 자리가 다 차서 ${skipped}개는 놓지 못했습니다` : ""}`,
+      data: {
+        mode: args.mode,
+        packing: args.packing,
+        naturalness: args.naturalness,
+        placed: placed.length,
+        requested: args.count,
+        skipped,
+        tilesPlaced: placed.length * atomicTileCount,
+        passableBefore,
+        passableAfter,
+      },
       warnings: warning ? [warning] : undefined,
     };
 }
@@ -176,6 +204,11 @@ const scatterObject: ToolDefinition = {
       naturalness: { type: "number", description: "0~1 자연도. <0.3 uniform, 0.3~0.7 poisson, >0.7 cluster(기본 0.5)" },
       mode: { type: "string", enum: ["uniform", "poisson", "cluster"], description: "자연산포 모드 명시 오버라이드" },
       seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 산포)" },
+      packing: {
+        type: "string",
+        enum: ["natural", "dense"],
+        description: '"dense"는 빈틈 없이 맞닿게 채운다(간격 0, 자연도 무시). 통행을 막아 달라는 요청에 쓴다. 기본 "natural"',
+      },
       avoidProtected: { type: "boolean", description: "시작칸/이벤트/transfer/상위 타일/물·흙길/모래길·통행 불가 하층 회피(기본 true)" },
       preferSoftRules: { type: "boolean", description: "soft/medium 규칙 만족을 우선(기본 true)" },
       applyStructure: { type: "boolean", description: "overlay/처마 생략 등 구조 규칙 자동 적용(기본 true)" },
@@ -196,6 +229,7 @@ function parseArgs(args: Record<string, unknown>): ScatterArgs {
   const naturalness = naturalnessArg(args);
   const mode = modeArg(args["mode"], naturalness);
   const seed = optionalInt(args["seed"], "seed");
+  const packing = packingArg(args["packing"]);
   if (area.w < 1 || area.h < 1) throw new ToolError("area.w/h는 1 이상이어야 합니다.", { code: "invalid-args" });
   if (count < 1) throw new ToolError("count는 1 이상이어야 합니다.", { code: "invalid-args" });
   if (minGap < 0 || maxGap < minGap) throw new ToolError("간격은 0 이상이고 maxGap은 minGap 이상이어야 합니다.", { code: "invalid-args" });
@@ -204,8 +238,11 @@ function parseArgs(args: Record<string, unknown>): ScatterArgs {
     ...(typeof args["groupId"] === "string" && args["groupId"].trim() !== "" ? { groupId: str(args["groupId"], "groupId") } : {}),
     area,
     count,
-    minGap,
-    maxGap,
+    // dense 는 "빈틈 없이" 라는 뜻이라 간격 인자를 0 으로 눕힌다. 모델이 minGap:1 을
+    // 같이 보내도 dense 의 의미가 이긴다(2026-08-29 "아예 통행불가능하게" 지시).
+    minGap: packing === "dense" ? 0 : minGap,
+    maxGap: packing === "dense" ? 0 : maxGap,
+    packing,
     naturalness,
     mode,
     ...(seed === undefined ? {} : { seed }),
@@ -242,6 +279,12 @@ function optionalInt(value: unknown, label: string): number | undefined {
 function bool(value: unknown, label: string): boolean {
   if (typeof value !== "boolean") throw new ToolError(`${label}(boolean)가 필요합니다.`, { code: "invalid-args" });
   return value;
+}
+
+function packingArg(value: unknown): ScatterPacking {
+  if (value === undefined) return "natural";
+  if (value === "natural" || value === "dense") return value;
+  throw new ToolError('packing은 "natural" 또는 "dense"여야 합니다.', { code: "invalid-args" });
 }
 
 function modeArg(value: unknown, naturalness: number): ScatterMode {
@@ -613,6 +656,81 @@ function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protec
 
 function rectAt(origin: Point, footprint: Footprint): Rect {
   return { x: origin.x, y: origin.y, w: footprint.w, h: footprint.h };
+}
+
+/**
+ * 밀집 배치(packing: "dense") — 영역을 행 우선으로 훑으며 발자국이 들어가는 곳마다 바로 놓는다.
+ *
+ * 왜 별도 경로인가: 자연 산포는 스텝마다 전 후보를 재검사·재채점하고(상위 512 캡) 자연도 rank 로
+ * 고른다. "빈틈 없이 채워라"는 순서가 무의미하고, count 가 커지면 count×후보 곱으로 폭주한다.
+ * 여기서는 점유 격자를 들고 한 번만 훑어 O(면적×발자국) 으로 끝낸다.
+ *
+ * 겹침 규칙은 자연 경로와 같다 — 같은 레이어를 두 번 쓰지만 않으면 수관(upper)이 남의 밑동(lower)
+ * 칸을 덮어도 된다. 그래야 나무가 실제로 맞닿아 통행이 막힌다.
+ */
+function planDensePlacements(input: {
+  readonly map: GameMap;
+  readonly area: Area;
+  readonly count: number;
+  readonly protectedCells: ReadonlySet<string>;
+  readonly footprintAt: (step: number) => Footprint;
+}): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } {
+  const { map, area, count, protectedCells, footprintAt } = input;
+  const usedUpper = new Set<number>();
+  const usedLower = new Set<number>();
+  const placed: Rect[] = [];
+  const footprints: Footprint[] = [];
+  const maxX = area.x + area.w - 1;
+  const maxY = area.y + area.h - 1;
+  for (let y = area.y; y <= maxY; y += 1) {
+    for (let x = area.x; x <= maxX; x += 1) {
+      if (placed.length >= count) return { placed, footprints };
+      const footprint = footprintAt(placed.length);
+      if (x + footprint.w - 1 > maxX || y + footprint.h - 1 > maxY) continue;
+      const origin = { x, y };
+      if (!footprintFits(map, footprint, origin, protectedCells)) continue;
+      if (!denseCellsFree(map, footprint, origin, usedUpper, usedLower)) continue;
+      occupyDenseCells(map, footprint, origin, usedUpper, usedLower);
+      placed.push(rectAt(origin, footprint));
+      footprints.push(footprint);
+    }
+  }
+  return { placed, footprints };
+}
+
+function denseCellsFree(
+  map: GameMap,
+  footprint: Footprint,
+  origin: Point,
+  usedUpper: ReadonlySet<number>,
+  usedLower: ReadonlySet<number>,
+): boolean {
+  for (let y = 0; y < footprint.h; y += 1) {
+    for (let x = 0; x < footprint.w; x += 1) {
+      const source = y * footprint.w + x;
+      const index = (origin.y + y) * map.width + (origin.x + x);
+      if ((footprint.upper[source] ?? TILE.EMPTY) !== TILE.EMPTY && usedUpper.has(index)) return false;
+      if ((footprint.lower[source] ?? TILE.EMPTY) !== TILE.EMPTY && usedLower.has(index)) return false;
+    }
+  }
+  return true;
+}
+
+function occupyDenseCells(
+  map: GameMap,
+  footprint: Footprint,
+  origin: Point,
+  usedUpper: Set<number>,
+  usedLower: Set<number>,
+): void {
+  for (let y = 0; y < footprint.h; y += 1) {
+    for (let x = 0; x < footprint.w; x += 1) {
+      const source = y * footprint.w + x;
+      const index = (origin.y + y) * map.width + (origin.x + x);
+      if ((footprint.upper[source] ?? TILE.EMPTY) !== TILE.EMPTY) usedUpper.add(index);
+      if ((footprint.lower[source] ?? TILE.EMPTY) !== TILE.EMPTY) usedLower.add(index);
+    }
+  }
 }
 
 function spaced(candidate: Rect, placed: readonly Rect[], minGap: number): boolean {

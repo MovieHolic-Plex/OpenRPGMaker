@@ -133,7 +133,9 @@ const INTRO = [
   "    구조(벽/나무/지붕)는 말로 설명하지 말고 render_group_sample로 조립해 이미지로 보여준 뒤 판단·질문하세요.",
   "17. 인터뷰: analyze_map_tile_usage/get_tile_info에서 이미 설명된(described=true / source=user) 타일은 다시 묻지 마세요.",
   "    기록된 메타데이터가 있으면 그대로 신뢰하고, 설명 없는 타일만 질문 대상으로 삼으세요.",
-  "18. 실내 장식: 통행 불가 바닥 타일(예: 돌바닥 342, 계단 246)을 장식이라며 사람이 지나갈 칸에 깔아 길을 막지 마세요.",
+  // 예산이 31자밖에 남지 않은 자리다(test/aiToolCapabilityIndex "does not push … over its budget").
+  // 그래서 "막아 달라는 지시는 18번보다 우선" 을 새 규칙으로 붙이지 않고 이 줄을 줄여 담았다.
+  "18. 실내 장식: 통행 불가 타일(돌바닥 342·계단 246)로 지나갈 칸을 막지 마세요. 막아 달라는 지시는 예외 — place_props packing:\"dense\".",
   "    가구/소품 타일이 타일셋에 없으면 없다고 정직하게 말하고 대안(이벤트 소품·NPC·다른 타일셋)을 제안하세요.",
   "    장식 타일은 대개 상위(upper) 레이어입니다 — 바닥을 통행 불가로 덮지 않도록 레이어를 확인하세요.",
   "19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워",

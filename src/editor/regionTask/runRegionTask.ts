@@ -153,14 +153,33 @@ function formatRegionTaskChangeParts(result: Pick<RegionTaskResult, "changedCell
   return parts;
 }
 
+/**
+ * 승인 대기 턴의 안내 문장. 모델이 "시공했습니다" 라고 단정해도 실제로는 아직 아무것도
+ * 맵에 없다 — 그 어긋남이 2026-08-29 15:41·15:44 의 "명령이 이행되지 않았다" 신고의 절반이었다.
+ * 그래서 모델 문장 앞에 사실(미반영 + 대기 규모 + 다음 동작)을 먼저 박는다.
+ */
+export function pendingApprovalText(
+  assistantText: string,
+  changed: Pick<RegionTaskResult, "changedCells" | "changedEvents" | "mapsAdded">,
+): string {
+  const scale = formatRegionTaskChangeParts(changed).join(" · ");
+  const notice = hasRegionTaskChanges(changed)
+    ? `아직 맵에 반영되지 않았습니다 — ${scale} 변경안이 승인 대기 중입니다. [적용]을 누르면 반영되고, [버리기]를 누르면 사라집니다.`
+    : "아직 맵에 반영되지 않았습니다 — 바뀐 칸이 없어 적용할 것이 없습니다.";
+  const body = assistantText.trim();
+  return body ? `${notice}\n\n${body}` : notice;
+}
+
 export function describeRegionTaskResult(result: RegionTaskResult): string {
   if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
   if (result.pending && !result.pending.settled) {
-    return `제안 준비 — ${formatRegionTaskChangeParts(result).join(" · ") || "변경"} · 적용 여부를 선택하세요`;
+    return `승인 대기 — ${formatRegionTaskChangeParts(result).join(" · ") || "변경"} · 아직 반영되지 않았습니다`;
   }
   if (!result.applied) {
+    // hasRegionTaskChanges 가 참이면 "만들어 두고 반영하지 않은 변경" 이 있다는 뜻이다.
+    // 이전 판은 두 문구가 뒤집혀 있어서, 313칸이 대기 중일 때 "적용할 변경이 없습니다" 라고 답했다.
     return hasRegionTaskChanges(result)
-      ? "적용할 변경이 없습니다."
+      ? `반영하지 않았습니다 — ${formatRegionTaskChangeParts(result).join(" · ")} 변경안을 버렸습니다.`
       : "이 영역에서 바뀐 것이 없습니다.";
   }
   const parts = formatRegionTaskChangeParts(result);
@@ -949,7 +968,8 @@ export async function runRegionTask(
       mapsAdded,
       clippedCells,
       proposedCalls: turn.proposedCalls.length,
-      assistantText: turn.assistantText,
+      // 모델 문장만 그대로 흘리면 "시공했습니다" 가 마지막 말이 되어 이미 반영된 것처럼 읽힌다.
+      assistantText: pendingApprovalText(turn.assistantText, { changedCells, changedEvents, mapsAdded }),
       review: reviewed.report,
     }, turn);
     return { ...gated, pending };

@@ -8,10 +8,10 @@ import {
   type VocabSoftConfirm,
 } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
-import { inMapBounds, setLower, setUpper } from "./mapHelpers";
+import { inMapBounds, passableCellCount, setLower, setUpper } from "./mapHelpers";
 import { poissonScatter } from "./naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "./naturalToolArgs";
-import { isPathSurfaceTile, runScatterObject } from "./placementTools";
+import { isPathSurfaceTile, runScatterObject, type ScatterPacking } from "./placementTools";
 import { ToolError, type ToolExecResult } from "./types";
 import { layerForVocabTile, type Rect } from "./v3/rmTypeExpander";
 
@@ -25,6 +25,8 @@ export type PlacePropsInput = {
   readonly minGap?: number;
   readonly naturalness?: number;
   readonly seed?: number;
+  /** "dense"는 빈틈 없이 채워 통행을 막는다. 기본 "natural". */
+  readonly packing?: ScatterPacking;
 };
 
 export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolExecResult {
@@ -41,6 +43,7 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     ...(input.minGap === undefined ? {} : { minGap: input.minGap }),
     ...(input.naturalness === undefined ? {} : { naturalness: input.naturalness }),
     ...(input.seed === undefined ? {} : { seed: input.seed }),
+    ...(input.packing === undefined ? {} : { packing: input.packing }),
   };
   const access = resolveMaterialByLabel(tileset, input.material, {
     preferGroup: true,
@@ -66,19 +69,27 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   const tileId = access.tileId;
   const soft = access.status === "soft" ? access.softConfirm : undefined;
   const naturalness = naturalnessArg(args);
-  const minGap = typeof input.minGap === "number" && Number.isInteger(input.minGap) ? Math.max(0, input.minGap) : 1;
+  const dense = input.packing === "dense";
+  const minGap = dense
+    ? 0
+    : typeof input.minGap === "number" && Number.isInteger(input.minGap) ? Math.max(0, input.minGap) : 1;
   const signature = `place_props|${map.id}|${input.area.x},${input.area.y},${input.area.w},${input.area.h}|${tileId}|${input.count}|${naturalnessLabel(naturalness)}`;
-  const scatter = poissonScatter(
-    { x: input.area.x, y: input.area.y, width: input.area.w, height: input.area.h },
-    input.count,
-    minGap,
-    rngForTool(args, signature),
-  );
+  // 밀집은 산포가 아니다 — 영역을 행 우선으로 훑어 놓을 수 있는 칸마다 놓는다.
+  const targets = dense
+    ? denseCells(input.area)
+    : poissonScatter(
+      { x: input.area.x, y: input.area.y, width: input.area.w, height: input.area.h },
+      input.count,
+      minGap,
+      rngForTool(args, signature),
+    ).points;
   const declared = tileset.tileMeta?.[tileId]?.defaultLayer;
   const tileHome: VocabLayerHome = declared === "lower" || declared === "upper" ? declared : "perCell";
   const home = layerForVocabTile(tileset, tileHome, tileId);
+  const passableBefore = passableCellCount(draft, map, input.area);
   let placed = 0;
-  for (const cell of scatter.points) {
+  for (const cell of targets) {
+    if (placed >= input.count) break;
     if (!inMapBounds(map, cell.x, cell.y)) continue;
     const index = cell.y * map.width + cell.x;
     if (map.upperTiles[index] !== TILE.EMPTY) continue;
@@ -88,10 +99,31 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     else setLower(map, cell.x, cell.y, tileId);
     placed += 1;
   }
+  const passableAfter = passableCellCount(draft, map, input.area);
+  const dressing = dense
+    ? `빈틈 없이 배치 — 통행 가능 칸 ${passableBefore}→${passableAfter}${passableAfter === 0 ? " (완전 차단)" : ""}`
+    : `자연도 ${naturalnessLabel(naturalness)}`;
   return withSoftConfirm({
-    summary: `${map.name} (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h}에 소품(${access.matchedLabel || tileId}) ${placed}/${input.count}개 산포 — 자연도 ${naturalnessLabel(naturalness)}.`,
-    data: { placed, requested: input.count, tileId, material: access.matchedLabel },
+    summary: `${map.name} (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h}에 소품(${access.matchedLabel || tileId}) ${placed}/${input.count}개 산포 — ${dressing}.`,
+    data: {
+      placed,
+      requested: input.count,
+      tileId,
+      material: access.matchedLabel,
+      packing: dense ? "dense" : "natural",
+      passableBefore,
+      passableAfter,
+    },
   }, soft);
+}
+
+/** 영역의 모든 칸을 행 우선으로 — 밀집 배치 대상. */
+function denseCells(area: Rect): readonly { readonly x: number; readonly y: number }[] {
+  const cells: { x: number; y: number }[] = [];
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) cells.push({ x, y });
+  }
+  return cells;
 }
 
 function withSoftConfirm(result: ToolExecResult, soft: VocabSoftConfirm | undefined): ToolExecResult {
