@@ -20,6 +20,20 @@ export {
   type Expansion,
   type Rect,
 } from "./rmTypeExpander";
+export {
+  atomFromGroup,
+  fillRun,
+  hardAdjacencyViolation,
+  mirrorTile,
+  planRows,
+  rowThickness,
+  type AisleAxis,
+  type RowAtom,
+  type RowPlan,
+  type RowSide,
+  type RunCell,
+  type RunFill,
+} from "./rowArrangement";
 export { VOCABULARY_TOOLS_V3 } from "./vocabularyTools";
 export type { VocabularyFactBadge, VocabularyProposalCard } from "./vocabularyTools";
 export {
