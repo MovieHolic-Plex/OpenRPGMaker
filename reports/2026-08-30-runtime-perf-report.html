@@ -95,9 +95,11 @@
   <h1>런타임 성능 보고서 — 큰 맵·다수 NPC 렉 원인 9건</h1>
   <p class="meta">
     작성일 2026-08-30 · 브랜치 <code>agent/perf</code> · PR
-    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/263">#263</a><br>
+    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/263">#263</a>(1차, 합병됨) ·
+    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/271">#271</a>(2차 성분 색인)<br>
     대조 기준 <code>origin/main</code> @ <code>be171a32</code> ·
-    측정 커밋 <code>fe7a1519</code> + 합병 <code>d319bf24</code> + 성분 색인 <code>2aa8f1e4</code> ·
+    측정 커밋 <code>fe7a1519</code> + 합병 <code>d319bf24</code> + 성분 색인 <code>2aa8f1e4</code>
+    + 재합병 <code>cc7ef056</code> ·
     프레임 예산 16.7ms (60fps)
   </p>
 </header>
@@ -231,6 +233,12 @@
     </tr>
   </tbody>
 </table>
+<p class="meta">
+  <code>origin/main</code> 을 한 번 더 합병한 뒤(<code>cc7ef056</code>, 충돌 없음 — 상류가
+  <code>chaseAi</code>·<code>collision</code>·<code>playSceneMapRuntime</code> 를 건드리지 않았다)
+  같은 벤치를 다시 돌렸다: 도달 불가 26.5 µs, 경계 후보 30.2 µs, 도달 가능 118 µs, 구축 3.3 ms.
+  표의 수치와 측정 잡음 범위 안이다.
+</p>
 
 <h2>2. 원인과 수정</h2>
 
