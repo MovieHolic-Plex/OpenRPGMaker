@@ -7,6 +7,7 @@
 //
 // 유니온 shape 은 `oneOf`/`anyOf` 를 쓰지 않는다 — Gemini 계열 게이트웨이가 요청 전체를 400 으로
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
+import { RELATIONSHIP_STATES } from "@/project/relationshipState";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import type { JsonSchema } from "./types";
 
@@ -142,7 +143,7 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
 };
 
 /**
- * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 16 variant.
+ * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
  * `kind` 와 식별 필드만 선언하고 variant 전용 값(`value` 는 boolean|number 로 타입이 갈린다)은
  * `additionalProperties` 로 넘긴다. 단일 `type` 만 허용되는 스키마에서 boolean|number 는 표현 불가다.
  */
@@ -167,12 +168,14 @@ export const CONDITION_SCHEMA: JsonSchema = {
         "season",
         "npcActivity",
         "friendshipAtLeast",
+        "relationshipAtLeast",
         "battleResult",
         "all",
         "any",
         "not",
       ],
     },
+    state: { type: "string", enum: [...RELATIONSHIP_STATES] },
     switchId: { type: "string" },
     variableId: { type: "string" },
     itemId: { type: "string" },

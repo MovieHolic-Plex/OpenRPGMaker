@@ -19,8 +19,8 @@ import { NATIVE_MANIFEST } from "./nativeManifest";
 
 describe("native command guarantee registry", () => {
   it("has one valid guarantee for every command and condition", () => {
-    expect(COMMAND_KINDS).toHaveLength(76);
-    expect(CONDITION_KINDS).toHaveLength(16);
+    expect(COMMAND_KINDS).toHaveLength(78);
+    expect(CONDITION_KINDS).toHaveLength(17);
     expect(Object.keys(COMMAND_GUARANTEES).sort()).toEqual([...COMMAND_KINDS].sort());
     expect(Object.keys(NATIVE_MANIFEST).sort()).toEqual([...COMMAND_KINDS].sort());
     for (const kind of COMMAND_KINDS) {
@@ -115,6 +115,7 @@ describe("native command guarantee registry", () => {
       "learnSkill",
       "changeParty",
       "changeFriendship",
+      "setRelationship",
       "getFriendship",
       "wait",
       "playAudio",

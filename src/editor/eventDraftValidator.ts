@@ -503,6 +503,18 @@ function validateCondition(
         });
       }
       return;
+    case "relationshipAtLeast":
+      if (!condition.npcKey?.trim() && !refs.hostHasCharacterId) {
+        issues.push({
+          severity: "warning",
+          code: "condition.relationship.no-character-id",
+          message: "관계 조건에 쓸 NPC 관계가 없어 이 조건은 항상 거짓입니다. 「NPC와 일정」에서 인물을 연결하거나 NPC 키를 적으세요.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-page-relationship-condition-npc-key" },
+        });
+      }
+      return;
     case "run":
       if (condition.query === "flag" && !condition.flag.trim()) {
         issues.push({
@@ -938,6 +950,7 @@ function validateCommand(
     case "moveMonster":
     case "openChest":
     case "changeFriendship":
+    case "setRelationship":
     case "removeFollower":
     case "setLighting":
     case "removeLight":

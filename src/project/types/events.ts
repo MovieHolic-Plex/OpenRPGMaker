@@ -16,6 +16,7 @@ import type {
 import type { Season, TimePhase } from "../gameTime";
 import type { FieldSpawnDef } from "./project";
 import type { RoguelikeRunCondition } from "../roguelikeRun";
+import type { RelationshipCondition, RelationshipState } from "../relationshipState";
 
 export type Trigger =
   | { kind: "action" }
@@ -46,6 +47,7 @@ export type Condition =
   | { kind: "season"; season: Season }
   | { kind: "npcActivity"; activity: string }
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
+  | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
   | RoguelikeRunCondition
   | { kind: "all"; conditions: Condition[] }
@@ -300,6 +302,7 @@ export type Command =
   | { kind: "equipTool"; itemId?: ItemId }
   | { kind: "openChest"; chestId?: string }
   | { kind: "changeFriendship"; npcKey?: string; delta: number }
+  | { kind: "setRelationship"; npcKey?: string; state: RelationshipState }
   | { kind: "changeFactionStance"; a: string; b: string; op: "=" | "+=" | "-="; value: number }
   | { kind: "getFriendship"; npcKey?: string; variableId: string }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }

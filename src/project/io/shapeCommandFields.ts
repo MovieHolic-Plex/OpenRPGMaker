@@ -3,6 +3,7 @@ import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecor
 import { validateLightSource } from "./shapeLightingFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
 
+import { isRelationshipState } from "@/project/relationshipState";
 export function validateCommandArray(label: string, value: unknown): void {
   for (const [index, command] of requireArray(label, value).entries()) {
     validateCommandShape(`${label}[${index}]`, command);
@@ -73,6 +74,12 @@ function validateCommandShape(label: string, value: unknown): void {
     case "advanceCropGrowth":
       requireNumber(`${label}.days`, command.days);
       return;
+    case "setRelationship": {
+      if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
+      const state = requireString(`${label}.state`, command.state);
+      if (isRelationshipState(state)) return;
+      throw new ProjectFormatError(`${label}.state 값이 올바르지 않습니다: ${state}`);
+    }
     case "changeFriendship":
       if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
       requireNumber(`${label}.delta`, command.delta);
@@ -523,6 +530,12 @@ export function validateConditionShape(label: string, value: unknown): void {
       if (condition.npcKey !== undefined) requireString(`${label}.npcKey`, condition.npcKey);
       requireNumber(`${label}.value`, condition.value);
       return;
+    case "relationshipAtLeast": {
+      if (condition.npcKey !== undefined) requireString(`${label}.npcKey`, condition.npcKey);
+      const state = requireString(`${label}.state`, condition.state);
+      if (isRelationshipState(state)) return;
+      throw new ProjectFormatError(`${label}.state 값이 올바르지 않습니다: ${state}`);
+    }
     case "battleResult": {
       const result = requireString(`${label}.result`, condition.result);
       if (result === "victory" || result === "defeat" || result === "escape") return;

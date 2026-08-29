@@ -18,6 +18,7 @@ import type { EventPage, EventPageCondition, GameEvent } from "@/project/types";
 import { el } from "@/util/dom";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
+import type { RelationshipState } from "@/project/relationshipState";
 const SIMPLE_KINDS: readonly SimpleConditionKind[] = [
   "variable",
   "item",
@@ -26,6 +27,7 @@ const SIMPLE_KINDS: readonly SimpleConditionKind[] = [
   "season",
   "npcActivity",
   "friendshipAtLeast",
+  "relationshipAtLeast",
 ];
 
 const RUN_STATE: RoguelikeRunState = {
@@ -105,6 +107,8 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "npcActivity", activity: "work" };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 50 };
+    case "relationshipAtLeast":
+      return { kind: "relationshipAtLeast", state: "dating" };
     case "battleResult":
       return { kind: "battleResult", result: "victory" };
     case "run":
@@ -215,6 +219,8 @@ describe("page conditions working guarantee (all kinds)", () => {
       sampleCondition("npcActivity"),
       { kind: "npcActivity", activity: "sleep" },
       sampleCondition("friendshipAtLeast"),
+      sampleCondition("relationshipAtLeast"),
+      { kind: "relationshipAtLeast", state: "married" },
       { kind: "friendshipAtLeast", value: 200 },
       sampleCondition("timer"),
       { kind: "timer", timerId: "timer1", seconds: 5 },
@@ -345,7 +351,7 @@ describe("page conditions working guarantee (all kinds)", () => {
     const emptyRoot = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", emptyPage) }));
     expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBe(0);
     expect(findByTestId(emptyRoot, "event-condition-empty")).not.toBeNull();
-    expect(emptyRoot.querySelectorAll(".event-condition-chip").length).toBe(12);
+    expect(emptyRoot.querySelectorAll(".event-condition-chip").length).toBe(13);
     for (const key of ["switch1", "switch2", "variable", "item", "actor", "timer1", "timer2", "timePhase", "season", "npcActivity", "friendship", "selfSwitch"]) {
       const chip = findByTestId(emptyRoot, `event-condition-chip-${key}`);
       expect(chip, `chip missing: ${key}`).not.toBeNull();
@@ -386,6 +392,7 @@ describe("page conditions working guarantee (all kinds)", () => {
       gameTime: { minute: 0, hour: 12, day: 1, season: "spring" as const, year: 1 },
       npcActivities: { ev_runtime: "work" },
       friendship: { ev_runtime: 50 },
+      relationships: { ev_runtime: "dating" as const },
       battleResult: "victory" as const,
       roguelikeRun: RUN_STATE,
     };
@@ -441,6 +448,7 @@ describe("page conditions working guarantee (all kinds)", () => {
         gameTime: undefined as undefined | { minute: number; hour: number; day: number; season: "spring" | "summer" | "fall" | "winter"; year: number },
         npcActivities: {} as Record<string, string>,
         friendship: {} as Record<string, number>,
+        relationships: {} as Record<string, RelationshipState>,
         battleResult: undefined as undefined | "victory" | "defeat" | "escape",
         roguelikeRun: undefined as undefined | RoguelikeRunState,
       };
@@ -524,6 +532,10 @@ describe("page conditions working guarantee (all kinds)", () => {
         case "friendshipAtLeast":
           event.characterId = event.id;
           pass.friendship[event.id] = condition.value;
+          break;
+        case "relationshipAtLeast":
+          event.characterId = event.id;
+          pass.relationships = { [event.id]: condition.state };
           break;
         case "battleResult":
           pass.battleResult = condition.result;

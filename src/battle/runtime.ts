@@ -330,6 +330,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     npcActivities: "npcActivities" in sessionState ? { ...(sessionState.npcActivities ?? {}) } : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
+    relationships: "relationships" in sessionState ? { ...(sessionState.relationships ?? {}) } : undefined,
   };
   const battleEvents = createBattleEventRuntime({
     project: options.project,

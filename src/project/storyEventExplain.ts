@@ -7,6 +7,8 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export type StoryEventSessionSource = "live-play-session" | "editor-default";
 
+import { getRelationshipState } from "@/project/relationshipState";
+import { resolveSocialKey } from "@/project/socialKey";
 export interface StoryConditionTrace {
   readonly index: number;
   readonly kind: Condition["kind"];
@@ -233,6 +235,20 @@ function traceCondition(
         expected: condition.value,
         op: ">=",
         summary: `friendship:${condition.npcKey ?? event.id}=${actual} >= ${condition.value}`,
+      };
+    }
+    case "relationshipAtLeast": {
+      const npcKey = resolveSocialKey(event, condition.npcKey) ?? event.id;
+      const actual = getRelationshipState(session, npcKey);
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        targetId: npcKey,
+        actual,
+        expected: condition.state,
+        op: ">=",
+        summary: `relationship:${npcKey}=${actual} >= ${condition.state}`,
       };
     }
     case "battleResult":

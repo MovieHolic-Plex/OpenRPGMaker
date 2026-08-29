@@ -1,6 +1,7 @@
 ﻿import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { Layer } from "@/editor/editorState";
 import { store } from "@/project/store";
+import { relationshipStateName } from "@/project/relationshipState";
 import type {
   Command,
   EventPage,
@@ -391,6 +392,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+    case "relationshipAtLeast":
+      return `관계 ${condition.npcKey || "이 이벤트"} >= ${relationshipStateName(condition.state)}`;
   }
   return "";
 }
