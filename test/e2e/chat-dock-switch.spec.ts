@@ -185,8 +185,10 @@ test.describe("chat dock switch", () => {
   // 삭제됨 — "glass header menu stays clickable above the assistant card" (2026-08-28).
   // 검사 대상이던 헤더 ☰(`ai-more-menu-toggle` / `ai-more-menu`)와 그 안의 온도 전환·도크 항목이
   // 헤더 폐기와 함께 DOM 에서 사라졌다. 감독 판단으로 이 진입점들의 소실은 수용됐다.
-  // 되살리려면 컴포저 ☰(`ai-command-menu-toggle`)를 유리·사이드에서 다시 노출해야 한다
-  // (지금은 02-chat-dock.css:112 가 display:none 으로 감춘다).
+  // 2026-08-30: 그 자리를 컴포저 ☰ 가 이어받았다. 유리·사이드에서 그 버튼을 감추던 규칙
+  // (02-chat-dock.css)은 걷혔다 — 헤더 훅 컨테이너가 hidden + inert 라 두 도크에는 메타 메뉴로
+  // 갈 표면이 하나도 없었기 때문이다. 지금 상태의 증거는 test/e2e/_ai-harness-basics-shots.spec.ts
+  // (실제 클릭 + 캡처) 와 test/aiPanelDockChrome.test.ts(CSS 계약) 가 든다.
 
   test("idle-screen picker is icon-first, understandable, and escapable", async ({ page }) => {
     test.setTimeout(120_000);

@@ -166,16 +166,30 @@
 /* ── 이전 대화 목록 모달 (aiConversationHistoryModal) ──────────────────────
    database-modal-* 껍데기를 그대로 쓰고 목록만 정의한다. 행 하나 = [열기 버튼][삭제].
    열기 버튼이 행 전체를 먹는 이유: 목표는 "이 대화를 잇는다" 이고 삭제는 부차다. */
-.ai-history-window {
+/* 높이를 되찾는다 — DB 스튜디오 기준의 `.database-modal-window` 가 `height: min(820px, …)`
+   (database/desktop.css, @media >=800px)를 박아 목록 3줄짜리 창이 화면 높이를 다 먹었다.
+   그 규칙과 같은 (0,1,0) 으로는 못 이긴다(desktop.css 가 더 늦게 실린다) → 창 클래스를
+   함께 물어 (0,2,0) 으로 올린다. 실측 2026-08-30: height 620px(= 내 max-height 에 걸린 값). */
+.database-modal-window.ai-history-window {
   display: flex;
   flex-direction: column;
+  height: auto;
+  max-height: min(86vh, 680px);
   max-width: min(92vw, 560px);
   width: 92vw;
 }
+/* 본문은 `database-modal-body` 를 쓰지 않으므로(위 주석) 그 클래스가 주던
+   flex/overflow/padding 을 여기서 직접 갖춘다. */
 .ai-history-body {
+  /* align-content: start — 그리드 기본값(stretch)은 남는 높이를 행에 나눠 넣어서
+     검색창 하나가 200px 로 늘어난다. */
+  align-content: start;
   display: grid;
+  flex: 1 1 auto;
   gap: var(--space-2);
   min-height: 0;
+  overflow: auto;
+  padding: var(--space-3);
 }
 .ai-history-search {
   background: var(--control-bg);
@@ -198,6 +212,7 @@
   margin: 0;
 }
 .ai-history-list {
+  align-content: start;
   display: grid;
   gap: var(--space-1);
   max-height: min(56vh, 460px);
@@ -276,13 +291,20 @@
 }
 
 /* ── 감독 지침 모달 (aiInstructionsModal) ───────────────────────────────── */
-.ai-instructions-window {
+.database-modal-window.ai-instructions-window {
+  height: auto; /* 위 .ai-history-window 주석과 같은 이유 — (0,2,0) 이어야 이긴다 */
+  max-height: min(86vh, 620px);
   max-width: min(92vw, 560px);
   width: 92vw;
 }
 .ai-instructions-body {
+  align-content: start; /* 위와 같은 이유 */
   display: grid;
+  flex: 1 1 auto;
   gap: var(--space-2);
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3);
 }
 .ai-instructions-note {
   color: var(--text-3);

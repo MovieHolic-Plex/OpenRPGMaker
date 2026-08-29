@@ -160,6 +160,14 @@ describe("conversationStore", () => {
     expect(deriveTitle([user("   ")])).toBe("(빈 대화)");
   });
 
+  it("Given a machine-appended context footer When deriving a title Then only the human sentence survives", () => {
+    // 이전 대화 목록의 모든 줄이 "… [컨텍스트] 현재 맵: 이슬 장터 마을 (…" 로 이어져 서로
+    // 구별이 안 됐다(2026-08-30 실측). footer 는 패널이 붙이는 기계 텍스트라 제목에서 뺀다.
+    expect(deriveTitle([user("우물을 놔줘\n\n[컨텍스트] 현재 맵: 이슬 장터 마을 (100x100)")])).toBe("우물을 놔줘");
+    // footer 가 없으면 예전과 똑같이 동작한다.
+    expect(deriveTitle([user("표지판을 세워줘")])).toBe("표지판을 세워줘");
+  });
+
   it("Given Node without localStorage When functions are called Then they no-op safely", () => {
     Reflect.deleteProperty(globalThis, "localStorage");
 

@@ -167,8 +167,12 @@ export function openAiConversationHistoryModal(options: {
             class: "database-modal-header",
             children: [el("h2", { text: "이전 대화" }), closeButton],
           }),
+          // `database-modal-body` 를 **쓰지 않는다**: sidebar.css 가
+          // `.database-modal-backdrop .database-modal-window .database-modal-body` (0,3,0) 로
+          // `display:flex; flex-direction:row` 를 박아 둔다(DB 스튜디오 사이드바 전제).
+          // 그 클래스를 달면 검색·안내·목록이 가로 3열로 늘어선다(실측 2026-08-30).
           el("div", {
-            class: "database-modal-body ai-history-body",
+            class: "ai-history-body",
             dataset: { testid: "ai-history-body" },
             children: [
               search,

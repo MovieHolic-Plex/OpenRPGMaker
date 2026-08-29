@@ -95,8 +95,11 @@ export function openAiInstructionsModal(options: {
             class: "database-modal-header",
             children: [el("h2", { text: "감독 지침" }), closeButton],
           }),
+          // `database-modal-body` 는 붙이지 않는다 — sidebar.css 의 (0,3,0) 규칙이 그 클래스에
+          // `display:flex; flex-direction:row` 를 박아 안내·입력·저장이 가로로 늘어선다.
+          // 자세한 근거는 aiConversationHistoryModal.ts 의 같은 자리 주석.
           el("div", {
-            class: "database-modal-body ai-instructions-body",
+            class: "ai-instructions-body",
             dataset: { testid: "ai-instructions-body" },
             children: [
               el("p", {
