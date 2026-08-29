@@ -891,7 +891,32 @@
   white-space: nowrap;
 }
 
+/* 플로우 보기 — 「이 페이지가 하는 일」 칼럼의 네 번째 보기 방식.
+   예전에는 도구 팝오버 안 618×280 오버레이라 미리보기의 재생 컨트롤을 덮고
+   최상위 명령 7개 중 2개만 보였다. 이제 형제 보기라서 칼럼 높이를 그대로 쓴다. */
+.event-page-flow {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.event-page-flow-status {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  flex-wrap: wrap;
+  font: 600 11px/1.5 var(--font-ui);
+  gap: 4px 12px;
+  padding: 2px 14px 8px;
+}
+
+/* 미리보기에서 이어받은 단계. 아직 볼 단계가 없을 때도 자리를 지켜 흔들리지 않는다. */
+.event-page-flow-current {
+  color: var(--event-modern-accent);
+}
+
 .event-flowchart-body {
+  min-height: 0;
   overflow: auto;
   padding: 12px 14px 16px;
 }
@@ -940,6 +965,27 @@
 .event-flow-node:hover {
   border-color: color-mix(in srgb, var(--cmdcat, var(--accent)) 60%, var(--border-default));
   box-shadow: 0 2px 7px color-mix(in srgb, var(--cmdcat, var(--accent)) 24%, rgba(42,37,33,.10));
+}
+
+/* 노드는 인스펙터를 채우는 버튼이다 — UA 버튼 기본값(가운데 정렬·상속 안 되는 색)만 되돌린다. */
+.event-flow-node {
+  color: var(--text-1);
+  cursor: pointer;
+  text-align: left;
+}
+
+.event-flow-node:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 미리보기가 보던 단계. 두 보기를 잇는 유일한 표시라 색 하나로는 부족하다 — 링까지 둘러
+   스크롤 안에서 눈에 띄게 한다(`aria-current="step"` 도 같이 붙는다). */
+.event-flow-node.is-current {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent),
+    0 2px 8px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .event-flow-node[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }

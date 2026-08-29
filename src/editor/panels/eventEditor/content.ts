@@ -26,7 +26,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
-import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScriptModernViews";
+import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
@@ -182,6 +182,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-page-preview-host",
     dataset: { testid: "event-page-preview-host" },
   });
+  const flowHost = el("div", {
+    class: "event-page-flow-host",
+    dataset: { testid: "event-page-flow-host" },
+  });
   let currentMode: StoryboardMode = storyboardMode;
   // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
   // 곧바로 편집 모달을 열어서, 기본 보기인 스토리에서는 오른쪽 「선택한 명령」 칼럼이
@@ -225,9 +229,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   function applyViewMode(): void {
     const isPreview = currentMode === "preview";
     const isStoryboard = currentMode === "storyboard";
-    cmdList.hidden = isStoryboard || isPreview;
+    const isFlow = currentMode === "flow";
+    cmdList.hidden = isStoryboard || isPreview || isFlow;
     storyboardEl.hidden = !isStoryboard;
     previewHost.hidden = !isPreview;
+    flowHost.hidden = !isFlow;
     const nextToggle = renderViewToggle(currentMode, changeMode);
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
@@ -246,6 +252,18 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       previewHost.replaceChildren(renderEventPagePreview({ mapId, eventId, page: activePage }));
     } else {
       previewHost.replaceChildren();
+    }
+    // 플로우는 미리보기가 마지막으로 보던 단계를 짚는다. 미리보기에서 넘어온 직후에
+    // 다시 그려야 그 단계가 반영되므로 보기 전환마다 새로 만든다.
+    if (isFlow) {
+      flowHost.replaceChildren(renderEventPageFlow({
+        mapId,
+        eventId,
+        page: activePage,
+        onSelect: selectStoryboardCommand,
+      }));
+    } else {
+      flowHost.replaceChildren();
     }
     syncToolbarState();
   }
@@ -323,6 +341,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         commandToolbar.element,
         storyboardHost,
         previewHost,
+        flowHost,
         cmdList,
       ],
     }),
@@ -637,18 +656,6 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 }
 
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
-  // 도크가 있으면 그 조상을 통해 칼럼을 집는다 — 에디터 본문이 동시에 다수 마운트되도 섞이지 않는다.
-  const commandsColumn = (): HTMLElement | null =>
-    aiDock?.closest(".event-editor-commands-column") ?? document.querySelector(".event-editor-commands-column");
-  const open = (selector: string): void => {
-    const column = commandsColumn();
-    const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-editor-aux-tools']");
-    const details = column?.querySelector<HTMLDetailsElement>(selector);
-    if (!details) return;
-    if (tools) tools.open = true;
-    details.open = true;
-    details.scrollIntoView({ block: "nearest" });
-  };
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
   const aiButton = aiDock ? toolbarButton("✧", "AI 명령", "event-command-quick-ai") : null;
@@ -664,13 +671,11 @@ function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
-    // «▶ 미리보기» 버튼은 없다. 보기 방식 세그먼트(`event-view-toggle-preview`)와 같은
-    // `changeMode("preview")` 로 들어가는 중복 컨트롤이었고, 같은 라벨로 나란히 서 있었다.
-    // 미리보기는 세그먼트가 소유한다. 플로우는 팝오버를 여는 별개 동작이라 남는다.
-    children: [
-      ...(aiButton ? [aiButton] : []),
-      toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
-    ],
+    // «▶ 미리보기»·«⌘ 플로우 보기» 버튼은 없다. 둘 다 보기 방식 세그먼트
+    // (`event-view-toggle-preview` / `event-view-toggle-flow`)와 같은 화면으로 들어가는
+    // 중복 컨트롤이었다. 플로우는 그 위에 팝오버로 떠서 미리보기의 재생 컨트롤을 덮기까지 했다.
+    // 파생 보기의 입구는 세그먼트 하나다.
+    children: aiButton ? [aiButton] : [],
   });
 }
 
@@ -679,10 +684,10 @@ function renderEventToolsMenu(
   eventId: string,
   page: EventPage
 ): HTMLDetailsElement {
+  // 플로우차트는 여기 없다 — 보기 방식 세그먼트의 「플로우」가 칼럼 전체를 쓴다.
   const auxTools = el("div", {
     class: "event-editor-command-tools-popover event-editor-aux-tools",
     children: [
-      renderEventScriptFlowchart({ mapId, eventId, page }),
       renderFollowerPresetBar({
         insertCommandsAt: (index, commands) => {
           for (let i = 0; i < commands.length; i += 1) {

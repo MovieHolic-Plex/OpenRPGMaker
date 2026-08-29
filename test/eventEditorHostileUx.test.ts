@@ -182,7 +182,12 @@ it("does not advertise movement speed on a stationary event", () => {
 
     expect(host.querySelector(".event-storyboard-card-detail")?.textContent).toContain(longBody);
     expect(host.querySelector("[data-testid='event-storyboard-card-0']")?.getAttribute("aria-label")).toContain("번째 명령");
-    expect(host.querySelector(".event-storyboard-branch-label")?.textContent).toBe(longChoice.slice(0, 12));
+    // 분기 이름은 DOM 에 **온전히** 남는다. 이 테스트가 원래 12자 절단을 기대했던 것은,
+    // 그때 첫 번째 `.event-storyboard-branch-label` 이 중복 칩 줄(2026-08-30 에 제거)이었기
+    // 때문이다. 살아남은 것은 분기 패널 제목이고, 시각적 말줄임은 CSS
+    // (`text-overflow: ellipsis`)가 한다 — JS 로 자르면 보조 기술에서 글자가 사라지므로
+    // 이 테스트 이름(«온전히 읽혀야 한다»)과 정반대가 된다.
+    expect(host.querySelector(".event-storyboard-branch-label")?.textContent).toBe(longChoice);
   });
 
   it("moves to the complete command list from a truncated branch", () => {
