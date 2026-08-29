@@ -267,6 +267,11 @@ describe("에디터 헤더 용어", () => {
     expect(paletteTitle, "삭제된 조수 스킬을 광고하면 안 된다").not.toContain("스킬");
     expect(paletteTitle, "찾기 표면 이름을 나눠 쓰면 안 된다").not.toBe(canonical);
     expect(paletteTitle, "팔레트는 찾기 표면이 아니다").not.toMatch(/찾기/u);
+    // 같은 버튼의 title 과 aria-label 은 한 이름을 쓴다 — 한쪽이 「명령 실행 · 맵 이동」,
+    // 다른 쪽이 「명령 팔레트 열기」면 이 작업이 지우려는 분열을 그대로 재생산하는 것이다.
+    const paletteName = "명령 팔레트";
+    expect(displayName(paletteTitle), "title 은 정본 이름으로 시작하고 설명은 — 뒤에 단다").toBe(paletteName);
+    expect(palette?.getAttribute("aria-label") ?? "", "aria-label 도 같은 이름을 쓴다").toContain(paletteName);
 
     // 헤더 전체에서 `…찾기` 로 끝나는 이름은 맵·이벤트 찾기 정본과 그 축약뿐이다.
     const allowed = new Set([canonical, uiLabel("mapEventSearchShort", style)]);
