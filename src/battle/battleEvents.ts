@@ -44,6 +44,29 @@ export type BattleEventRuntimeState = {
   readonly friendship?: Record<string, number>;
 };
 
+// Condition evaluation must read session-derived state through this declared surface.
+// The player bridge contract test consumes the same keys, so a newly stateful condition
+// cannot be added without also requiring that field at the real play-to-battle boundary.
+export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
+  "switches",
+  "variables",
+  "selfSwitches",
+  "battleResult",
+  "roguelikeRun",
+  "inventory",
+  "partyActorIds",
+  "gold",
+  "timers",
+  "gameTime",
+  "npcActivities",
+  "friendship",
+] as const satisfies readonly (keyof BattleEventRuntimeState)[];
+
+type BattleConditionRuntimeState = Pick<
+  BattleEventRuntimeState,
+  (typeof BATTLE_CONDITION_SESSION_STATE_FIELDS)[number]
+>;
+
 export type BattleEventContext = {
   readonly turn: number;
   readonly activeActorId?: ActorId;
@@ -124,6 +147,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const extraActorActions: Record<string, number> = {};
   const logs: BattleEventLogSnapshot[] = [];
   const ownerEvent = options.ownerEvent ?? findProjectEvent(options.project, options.ownerEventId);
+  const conditionState: BattleConditionRuntimeState = options.state;
   // 소유 이벤트 없는 전투에서 소유자 의존 조건이 평가되면 종류별로 1회만 추적 로그를 남긴다
   // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
   const loggedOwnerlessConditions = new Set<"selfSwitch" | "npcActivity">();
@@ -752,9 +776,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   function evaluateCondition(condition: Condition): boolean {
     switch (condition.kind) {
       case "switch":
-        return (options.state.switches[condition.switchId] ?? false) === condition.value;
+        return (conditionState.switches[condition.switchId] ?? false) === condition.value;
       case "variable": {
-        const current = options.state.variables[condition.variableId] ?? 0;
+        const current = conditionState.variables[condition.variableId] ?? 0;
         return compareVariableValue(current, condition.op, condition.value);
       }
       case "selfSwitch": {
@@ -765,44 +789,44 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           logOwnerlessConditionOnce("selfSwitch");
           return condition.value === false;
         }
-        const own = (options.state.selfSwitches ?? {})[ownerEventId];
+        const own = (conditionState.selfSwitches ?? {})[ownerEventId];
         return (own?.[condition.key] ?? false) === condition.value;
       }
       case "actor":
-        return (options.state.partyActorIds ?? []).includes(condition.actorId) === condition.present;
+        return (conditionState.partyActorIds ?? []).includes(condition.actorId) === condition.present;
       case "item":
-        return ((options.state.inventory[condition.itemId] ?? 0) > 0) === condition.present;
+        return ((conditionState.inventory[condition.itemId] ?? 0) > 0) === condition.present;
       case "gold":
-        return compareVariableValue(options.state.gold ?? 0, condition.op, condition.amount);
+        return compareVariableValue(conditionState.gold ?? 0, condition.op, condition.amount);
       case "timer": {
-        const remaining = (options.state.timers ?? {})[condition.timerId] ?? 0;
+        const remaining = (conditionState.timers ?? {})[condition.timerId] ?? 0;
         return remaining <= condition.seconds;
       }
       case "timePhase":
-        return conditionMatchesTimePhase(options.state.gameTime, condition.phase);
+        return conditionMatchesTimePhase(conditionState.gameTime, condition.phase);
       case "season":
-        return conditionMatchesSeason(options.state.gameTime, condition.season);
+        return conditionMatchesSeason(conditionState.gameTime, condition.season);
       case "npcActivity": {
         const ownerEventId = options.ownerEventId;
         if (!ownerEventId) {
           logOwnerlessConditionOnce("npcActivity");
           return false;
         }
-        return options.state.npcActivities?.[ownerEventId] === condition.activity;
+        return conditionState.npcActivities?.[ownerEventId] === condition.activity;
       }
       case "friendshipAtLeast": {
         const npcKey = ownerEvent
           ? resolveSocialKey(ownerEvent, condition.npcKey)
           : condition.npcKey?.trim() || null;
         if (!npcKey) return false;
-        return clampFriendship(options.state.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+        return clampFriendship(conditionState.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
       }
       case "battleResult":
         // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷)로 실제 평가.
         // 진행 중인 이 전투의 결과가 아니라 "직전" 전투의 결과다(RM2K3 정합).
-        return options.state.battleResult === condition.result;
+        return conditionState.battleResult === condition.result;
       case "run":
-        return evalRoguelikeRunCondition(options.state, condition);
+        return evalRoguelikeRunCondition(conditionState, condition);
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":
