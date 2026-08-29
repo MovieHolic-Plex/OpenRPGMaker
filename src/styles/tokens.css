@@ -120,11 +120,19 @@
 
   --brand-blue: #4A57D6;
   --mix-base: #F7F8F8;
-  /* 레거시 이름. 값은 인디고 — 골드 크롬을 일괄 폐기한다. */
-  --gold: #4A57D6;
-  --gold-deep: #3C48C4;
-  --gold-soft: rgba(74, 87, 214, 0.22);
-  --gold-wash: rgba(74, 87, 214, 0.10);
+  /* 셸 액센트(인디고)와 구분되는 보조 강조색 — 조수 패널 1차 액션·보상/보물 크롬.
+     4a732471(2026-08-25)이 "골드 크롬 일괄 폐기"로 이 네 값을 인디고로 눌렀는데,
+     같은 커밋이 DESIGN.md:268/286 에 "Focus ring uses --gold, not indigo" 와
+     "gold filled 보내기" 를 **새로 추가**했다 — 자기모순이라 의도가 아니라 부수 피해다.
+     하루 전 653ff184 이 조수 패널을 일부러 골드로 맞춘 것도 되돌렸고,
+     713f1745 의 CSS 보물상자(.storage-chest-glyph-*)는 파란 상자가 됐다.
+     DESIGN.md:87 이 지금도 캐논 값으로 #8A6B2F 를 명시한다. 89f4cf56 크림 리튠 값으로
+     되돌린다. 인디고 단일 액센트 계약(--mk-*)은 event-editor.mockup.css:11 이
+     .event-editor 스코프에서 이미 --accent 로 고정하므로 영향받지 않는다. */
+  --gold: #8A6B2F;
+  --gold-deep: #6E5424;
+  --gold-soft: #E8D9A8;
+  --gold-wash: rgba(138, 107, 47, 0.12);
   --bg-well: #EEF1F4;
   --scrollbar-thumb: rgba(15, 23, 42, 0.18);
   --scrollbar-thumb-hover: rgba(15, 23, 42, 0.30);

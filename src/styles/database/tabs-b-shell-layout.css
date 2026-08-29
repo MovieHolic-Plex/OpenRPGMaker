@@ -13,7 +13,9 @@
   --text-muted: var(--text-3);
   --accent-soft: var(--accent-muted);
   --ok: var(--success);
-  --gold: #4A57D6;
+  /* --gold 재정의 삭제: tokens.css 가 단독 소유한다(TOKENS.md §4.3 — :root 에서 공용
+     이름 재정의 금지). 이 줄이 import 순서상 마지막 전역 :root 라 tokens.css 를 이겨
+     var(--gold) 55곳을 전부 인디고로 렌더시키고 있었다. */
   --surface-app: var(--bg-base);
   --accent-secondary: var(--gold);
   --accent-editor: var(--success);
@@ -224,29 +226,11 @@
   padding: 0 6px;
   white-space: nowrap;
 }
-button.btn {
-  background: var(--surface-panel);
-  border: 1px solid var(--border-default);
-  border-radius: 2px;
-  box-shadow: none;
-  color: var(--text-primary);
-  padding: 4px 8px;
-}
-button.btn:hover:not(:disabled) {
-  background: var(--surface-workbench);
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-button.btn:active:not(:disabled) {
-  background: var(--surface-selected);
-  box-shadow: inset 0 0 0 1px var(--accent-border);
-  transform: none;
-}
-button.btn.primary {
-  background: var(--surface-selected);
-  border-color: var(--accent-primary);
-  color: var(--text-primary);
-}
+/* button.btn 은 editor/core.part-1.css:97 이 단독 소유한다. 여기 있던 블록은 삭제된
+   RM2K3/Win2k 셸 스킨(0864daf9)의 잔재인데, 이 파일이 index.css 상 core 보다 뒤에
+   import 되는 것만으로 앱 전역 버튼 룩을 뒤집고 있었다(둘 다 특정도 (0,1,1) → 순서 승부).
+   TOKENS.md §3 버튼 패턴과 어긋났고, .primary 대비는 2.53:1 로 AA 미달이었다.
+   이 파일에는 database 선택자가 하나도 없어 스코프를 좁힐 대상 자체가 없다 — 그래서 삭제다. */
 .editor-layout .left-panel,
 .editor-layout .right-panel {
   padding: var(--space-1);
