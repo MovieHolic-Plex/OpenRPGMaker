@@ -1,8 +1,8 @@
-// 데이터베이스 사이드바 레일 아이콘 — 29개 탭의 SVG 선 아이콘 세트.
+// 데이터베이스 사이드바 레일 아이콘 — 30개 탭의 SVG 선 아이콘 세트.
 //
 // 왜 CSS 가 아니라 여기인가 (실측):
 //   전에는 글리프가 `sidebar.css` 의 per-testid 규칙 24줄(`content: "<유니코드 글리프>" !important`)이었다.
-//   1) 29개 탭 중 24개만 규칙이 있어서 생활 탭 5개(생활 기술·계절·동물·농장 건물·낚시)는
+//   1) 30개 탭 중 24개만 규칙이 있어서 생활 탭 5개(생활 기술·계절·동물·농장 건물·낚시)는
 //      `content: attr(data-short)` 폴백으로 떨어져 **한글 첫 글자**가 아이콘 자리에 떴다.
 //      레지스트리에 탭을 추가하면서 CSS 를 잊는 걸 막을 장치가 없었다.
 //   2) `system-studio.css` 가 같은 `::before` 를 `content: none !important` 로 덮어서
@@ -82,6 +82,11 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "7.9", cy: "8.3", r: "3.4" } },
     { tag: "circle", attrs: { cx: "14.1", cy: "8.3", r: "3.4" } },
     { tag: "circle", attrs: { cx: "11", cy: "14.2", r: "3.4" } },
+  ],
+  // 진영 — 깃대에 걸린 깃발
+  factions: [
+    { tag: "path", attrs: { d: "M6.4 3.6v14.8" } },
+    { tag: "path", attrs: { d: "M6.4 4.6h9.8l-2.3 3.2 2.3 3.2H6.4z" } },
   ],
 
   // ── 전투 규칙 ──

@@ -22,6 +22,25 @@ export function resolveShopMerchantGold(merchantGold: number | undefined): numbe
 }
 
 /**
+ * 가게 투자 레벨(0..5) → 상인 매입 예산 배수. Lv당 +25%.
+ * 「가게에 투자하면 상인이 더 많이 사줄 수 있다」는 한 줄 규칙이다.
+ * 예전에는 investmentLevel 을 읽는 런타임 경로가 아예 없어 저장만 되는 죽은 설정이었다.
+ */
+export function resolveShopInvestmentMultiplier(investmentLevel: number | undefined): number {
+  if (typeof investmentLevel !== "number" || !Number.isFinite(investmentLevel)) return 1;
+  return 1 + 0.25 * Math.min(5, Math.max(0, Math.floor(investmentLevel)));
+}
+
+/** 투자 레벨을 반영한 방문 시작 시 상인 소지금. */
+export function resolveShopMerchantBudget(
+  merchantGold: number | undefined,
+  investmentLevel: number | undefined
+): number {
+  const base = resolveShopMerchantGold(merchantGold);
+  return Math.floor(base * resolveShopInvestmentMultiplier(investmentLevel));
+}
+
+/**
  * Buy-price multiplier from GameEvent.socialShop when merchant has characterId
  * and session friendship for that social key is >= minFriendship.
  * Without characterId / socialShop / enough bond => 1 (no discount).

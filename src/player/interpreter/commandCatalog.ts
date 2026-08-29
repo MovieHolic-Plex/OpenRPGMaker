@@ -544,6 +544,14 @@ export function executeCommand(
         messageType: command.messageType,
         merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,
+        // 아래 필드들이 빠져 있어서 에디터의 「빈 상점 분기」·「추가 서비스」 카드가
+        // 저장은 되지만 런타임에 도달하지 않았다(설정해도 게임이 달라지지 않음).
+        branchOnFailedTransaction: command.branchOnFailedTransaction,
+        shopServiceKind: command.shopServiceKind,
+        appraisalUnidentifiedPool: command.appraisalUnidentifiedPool,
+        loyaltyTierId: command.loyaltyTierId,
+        mileageRate: command.mileageRate,
+        investmentLevel: command.investmentLevel,
       });
 
     case "inn": {
