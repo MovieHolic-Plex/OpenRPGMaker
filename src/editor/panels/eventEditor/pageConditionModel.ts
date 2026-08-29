@@ -20,7 +20,7 @@ export type AdvancedConditionEntry = {
   readonly condition: EventPageCondition;
 };
 
-export type SimpleConditionKind = "actor" | "item" | "variable" | "timePhase" | "season" | "npcActivity" | "friendshipAtLeast";
+export type SimpleConditionKind = "actor" | "item" | "variable" | "timePhase" | "season" | "npcActivity" | "friendshipAtLeast" | "relationshipAtLeast";
 
 export function switchConditionAt(page: EventPage, slot: 0 | 1): Extract<Condition, { kind: "switch" }> | undefined {
   return page.conditions.filter((item): item is Extract<Condition, { kind: "switch" }> => item.kind === "switch")[slot];
@@ -101,6 +101,8 @@ export function defaultSimpleCondition(kind: SimpleConditionKind): EventPageCond
       return { kind: "npcActivity", activity: "work" };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
+    case "relationshipAtLeast":
+      return { kind: "relationshipAtLeast", state: "dating" };
   }
 }
 
@@ -167,7 +169,7 @@ export function toggleSelfSwitchCondition(
 }
 
 export function advancedConditionEntries(page: EventPage): AdvancedConditionEntry[] {
-  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, friendshipAtLeast: 0, selfSwitch: 0, timer1: 0, timer2: 0 };
+  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, friendshipAtLeast: 0, relationshipAtLeast: 0, selfSwitch: 0, timer1: 0, timer2: 0 };
   const entries: AdvancedConditionEntry[] = [];
   page.conditions.forEach((condition, index) => {
     if (condition.kind === "switch") {
@@ -203,6 +205,11 @@ export function advancedConditionEntries(page: EventPage): AdvancedConditionEntr
     if (condition.kind === "npcActivity") {
       seen.npcActivity += 1;
       if (seen.npcActivity > 1) entries.push({ index, condition });
+      return;
+    }
+    if (condition.kind === "relationshipAtLeast") {
+      seen.relationshipAtLeast += 1;
+      if (seen.relationshipAtLeast > 1) entries.push({ index, condition });
       return;
     }
     if (condition.kind === "friendshipAtLeast") {

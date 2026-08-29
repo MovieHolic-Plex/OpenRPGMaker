@@ -9,7 +9,7 @@ import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
-import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import { friendshipKey, changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
@@ -42,6 +42,7 @@ import {
 } from "@/project/roguelikeRun";
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
+import { setRelationshipState } from "@/project/relationshipState";
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
 }
@@ -702,6 +703,11 @@ export function executeCommand(
     case "changeFriendship":
       changeFriendship(state.session, command.npcKey, command.delta, resolveSocialHost(state));
       return resumeNext(frame);
+    case "setRelationship": {
+      const npcKey = friendshipKey(command.npcKey, resolveSocialHost(state));
+      if (npcKey) setRelationshipState(state.session, npcKey, command.state);
+      return resumeNext(frame);
+    }
     case "changeFactionStance": {
       if (!state.project) return resumeNext(frame);
       const table = resolveFactionTable(state.project.factions);

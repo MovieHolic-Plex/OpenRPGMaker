@@ -13,6 +13,7 @@ import type {
   SkillId,
   TroopId,
 } from "@/project/types";
+import type { RelationshipState } from "@/project/relationshipState";
 import type { BattleResult, GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
 import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
@@ -137,6 +138,7 @@ export interface BattleSessionState {
   readonly gameTime?: GameTime;
   readonly npcActivities?: Readonly<Record<string, string>>;
   readonly friendship?: Readonly<Record<string, number>>;
+  readonly relationships?: Readonly<Record<string, RelationshipState>>;
 }
 
 export interface BattlePartyProgress {
@@ -377,6 +379,8 @@ export interface BattleEventStateSnapshot {
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  // 이산 관계 상태(setRelationship) — applyBattleRewardsToSession 이 세션 relationships 로 되돌려 쓴다.
+  readonly relationships?: Readonly<Record<string, RelationshipState>>;
   // 레거시 호환 플래그(setFlag) — applyBattleRewardsToSession 이 세션 flags 로 되돌려 쓴다.
   readonly flags?: Readonly<Record<string, boolean>>;
   // 타이머 잔여 초(timer 커맨드) — applyBattleRewardsToSession 이 세션 timers 로 되돌려 쓴다.

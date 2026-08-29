@@ -15,6 +15,10 @@ RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type BattleResult, type GameTime, type Season } from "@/project/gameTime";
+import {
+  evalRelationshipCondition,
+  type RelationshipState,
+} from "./relationshipState";
 import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
@@ -280,6 +284,7 @@ export interface PlaySession {
   // farmPlots 성장 틱이 적용된 마지막 달력 날짜. 시계가 날짜를 넘길 때마다 여기까지의 차이만큼만 성장시킨다.
   farmPlotsAdvancedThrough?: { readonly day: number; readonly season: Season; readonly year: number };
   friendship?: Record<string, number>;
+  relationships?: Record<string, RelationshipState>;
   dailyGifts?: DailyGiftLog;
   dailyTalks?: DailyTalkLog;
   /** Accumulated player steps toward the next monster walk-care tick. */
@@ -413,6 +418,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     placeables: structuredClone(start.placeables ?? {}),
     farmPlotsAdvancedThrough: gameTime && { day: gameTime.day, season: gameTime.season, year: gameTime.year },
     friendship: {},
+    relationships: {},
     dailyGifts: {},
     dailyTalks: {},
     flags: { ...project.flags },
@@ -780,6 +786,8 @@ export function evalCondition(
       return eventId ? session.npcActivities?.[eventId] === condition.activity : false;
     case "friendshipAtLeast":
       return getFriendship(session, condition.npcKey, hostSocial(host)) >= clampFriendship(condition.value);
+    case "relationshipAtLeast":
+      return evalRelationshipCondition(session, condition, friendshipKey(condition.npcKey, hostSocial(host)) ?? null);
     case "battleResult":
       return session.battleResult === condition.result;
     case "run":

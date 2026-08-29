@@ -4,6 +4,7 @@ import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
+import { evalRelationshipCondition, setRelationshipState, type RelationshipState } from "@/project/relationshipState";
 import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
@@ -42,6 +43,10 @@ export type BattleEventRuntimeState = {
   readonly gameTime?: GameTime;
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
+  readonly relationships?: Record<string, RelationshipState>;
+  // 전투가 실제로 쓴 관계 키만 모은다. 스냅숏에 지도 전체를 실으면 전투 중 맵에서 지운
+  // 관계를 write-back 이 되살린다(setRelationshipState 는 single 을 삭제로 처리한다).
+  relationshipWrites?: Record<string, RelationshipState>;
 };
 
 // Condition evaluation must read session-derived state through this declared surface.
@@ -60,6 +65,7 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "gameTime",
   "npcActivities",
   "friendship",
+  "relationships",
 ] as const satisfies readonly (keyof BattleEventRuntimeState)[];
 
 type BattleConditionRuntimeState = Pick<
@@ -205,6 +211,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
+      relationships: { ...(options.state.relationshipWrites ?? {}) },
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
       actorEquipment: Object.fromEntries(
@@ -494,6 +501,17 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           return false;
         }
         options.state.friendship[npcKey] = clampFriendship((options.state.friendship[npcKey] ?? 0) + command.delta);
+        return false;
+      }
+      case "setRelationship": {
+        const npcKey = command.npcKey?.trim();
+        if (!npcKey || !options.state.relationships) {
+          logUnsupported(page, context, command.kind);
+          return false;
+        }
+        setRelationshipState(options.state, npcKey, command.state);
+        options.state.relationshipWrites ??= {};
+        options.state.relationshipWrites[npcKey] = command.state;
         return false;
       }
       case "getFriendship": {
@@ -820,6 +838,12 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           : condition.npcKey?.trim() || null;
         if (!npcKey) return false;
         return clampFriendship(conditionState.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+      }
+      case "relationshipAtLeast": {
+        const npcKey = ownerEvent
+          ? resolveSocialKey(ownerEvent, condition.npcKey)
+          : condition.npcKey?.trim() || null;
+        return evalRelationshipCondition(conditionState, condition, npcKey);
       }
       case "battleResult":
         // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷)로 실제 평가.
