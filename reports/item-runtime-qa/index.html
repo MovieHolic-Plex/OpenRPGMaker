@@ -95,9 +95,9 @@
 
 <div class="cards">
   <div class="card"><div class="k">시나리오</div><div class="v acc">4</div><div class="u">런 5회 · 장비는 A/B 2회</div></div>
-  <div class="card"><div class="k">검증 비트</div><div class="v ok">34 / 34</div><div class="u">실패 0 · 런타임 에러 0</div></div>
+  <div class="card"><div class="k">검증 비트</div><div class="v ok">36 / 36</div><div class="u">실패 0 · 런타임 에러 0</div></div>
   <div class="card"><div class="k">고친 결함</div><div class="v bad">3</div><div class="u">전부 출하 경로</div></div>
-  <div class="card"><div class="k">증거 샷</div><div class="v vio">18</div><div class="u">GREEN 16 · 수정 전 대조 2</div></div>
+  <div class="card"><div class="k">증거 샷</div><div class="v vio">20</div><div class="u">GREEN 18 · 수정 전 대조 2</div></div>
 </div>
 
 <h2><span class="n">1</span>검증 방식</h2>
@@ -108,6 +108,7 @@
 <ul>
   <li>준비 단계에서만 QA 부트 훅으로 초기 조건을 만든다(HP·MP 낮추기, 시드 주입, 고정 전투 이벤트 앞으로 이동). 효과 판정은 건드리지 않는다.</li>
   <li>각 비트는 <b>기대 문자열이 실제 DOM에 있는지</b>로 통과·실패를 가른다. 예: <code>HP 100/514</code> → 사용 후 <code>HP 150/514</code>.</li>
+  <li>회복량뿐 아니라 <b>재고 수량</b>도 같은 방식으로 단정한다. 쓴 칸은 <code>5개</code> → <code>4개</code>, 쓰지 않은 칸은 그대로여야 통과다.</li>
   <li>스크린샷은 판정 근거가 아니라 사람이 눈으로 재확인하는 증거다. 판정이 통과여도 화면이 깨졌으면 결함으로 처리했다(§5의 두 건이 여기서 나왔다).</li>
 </ul>
 
@@ -162,6 +163,12 @@
     <figcaption><b>전투의 묘약 · 전</b> 주인공에게 상태 아이콘이 없다</figcaption></figure>
   <figure><img src="assets/battle-buff-after.png" alt="전투의 묘약 사용 후 공격 상승 배지">
     <figcaption><b>전투의 묘약 · 후</b> 공격 상승 배지가 붙는다 — §5.3에서 고친 배지 표기가 적용된 화면</figcaption></figure>
+</div>
+<div class="grid2">
+  <figure><img src="assets/stock-before.png" alt="아이템 사용 전 목록, 다섯 칸 모두 x5">
+    <figcaption><b>재고 · 전</b> 목록의 다섯 칸이 모두 <code>x5</code></figcaption></figure>
+  <figure><img src="assets/stock-after.png" alt="두 아이템 사용 후 목록, 해당 두 칸만 x4">
+    <figcaption><b>재고 · 후</b> 실제로 쓴 <code>전투의 묘약</code>·<code>서리 유리병</code>만 <code>x4</code>로 줄고 나머지 세 칸은 <code>x5</code> 유지 — 소모가 엉뚱한 칸으로 새지 않는다. 주인공 머리 위 <code>ATK↑</code>도 같은 프레임에 남아 있다.</figcaption></figure>
 </div>
 
 <h2><span class="n">4</span>장비 축이 피해에 반영되는가 (A/B)</h2>
@@ -291,6 +298,7 @@
   <li>피해 수치는 시드 101에 묶인 관측값이다. 수식 자체의 정확성 검증이 아니라 <b>축이 결과에 도달하는지</b>의 증거로 읽어야 한다.</li>
   <li>상태 배지 색·화살표는 rm2003과 VXAce 계열 스킨에서 확인했다. 나머지 스킨은 동일 토큰을 쓰지만 눈으로 확인하지 않았다.</li>
   <li>전수 테스트에서 <code>transactionalNewRemoteProject.test.ts</code>가 플래키인 것을 확인했다. 이 작업의 원인은 아니지만 별도로 안정화할 값어치가 있다.</li>
+  <li>비트 판정은 <b>DOM 문자열</b>을 본다. 목록이 길어 해당 줄이 화면 밖으로 밀려도 판정은 통과하므로, 수량 증거는 목록이 한 프레임에 다 들어오는 상태에서 다시 촬영해 눈으로 맞췄다. 판정과 프레임을 함께 봐야 하는 이유다.</li>
   <li>WCAG 적합성은 이 QA 범위가 아니다. 배지 구분에 색 외에 화살표 기호를 함께 넣었지만, 정식 검증은 보조기술 실사용 테스트가 필요하다.</li>
 </ul>
 
