@@ -21,8 +21,13 @@ function forkProgram(condition: Condition, prefix: string): Command[] {
   ];
 }
 
-function expectBranch(condition: Condition, expected: "then" | "else", mutateSession?: MutateSession): void {
-  const result = runCommandContract(forkProgram(condition, "branch"), { mutateSession });
+function expectBranch(
+  condition: Condition,
+  expected: "then" | "else",
+  mutateSession?: MutateSession,
+  mutateProject?: (project: Project) => void,
+): void {
+  const result = runCommandContract(forkProgram(condition, "branch"), { mutateSession, mutateProject });
 
   expect(result.session.switches[`branch_${expected}`]).toBe(true);
   expect(result.session.switches[`branch_${expected === "then" ? "else" : "then"}`]).toBeUndefined();
@@ -121,6 +126,82 @@ describe("fork 계약", () => {
 
     expect(result.pauses).toEqual([]);
     expect(result.finished).toBe(true);
+  });
+
+  // 종전 이 파일은 16종 중 10종만 덮었다. 나머지 6종(timePhase/season/npcActivity/
+  // friendshipAtLeast/battleResult/run)은 evalCondition 단위로만 증명돼 있어서, 실제
+  // 인터프리터 drain 을 통과하는 then/else 선택이 고정돼 있지 않았다. 조건 종류가
+  // 늘어날 때 fork 분기에서만 조용히 빠지는 것을 막는다.
+  const stateCases: readonly [string, Condition, MutateSession][] = [
+    [
+      "timePhase",
+      { kind: "timePhase", phase: "day" },
+      (session) => { session.gameTime = { minute: 0, hour: 12, day: 1, season: "spring", year: 1 }; },
+    ],
+    [
+      "season",
+      { kind: "season", season: "summer" },
+      (session) => { session.gameTime = { minute: 0, hour: 12, day: 1, season: "summer", year: 1 }; },
+    ],
+    [
+      "npcActivity",
+      { kind: "npcActivity", activity: "work" },
+      (session) => { session.npcActivities = { [CONTRACT_EVENT_ID]: "work" }; },
+    ],
+    [
+      "friendshipAtLeast",
+      { kind: "friendshipAtLeast", npcKey: "npc_fork_gate", value: 20 },
+      (session) => { session.friendship = { npc_fork_gate: 20 }; },
+    ],
+    [
+      "battleResult",
+      { kind: "battleResult", result: "victory" },
+      (session) => { session.battleResult = "victory"; },
+    ],
+    [
+      "run",
+      { kind: "run", query: "active", value: true },
+      (session) => {
+        session.roguelikeRun = {
+          version: 1,
+          runId: "fork-contract-run",
+          seed: 1,
+          floor: 1,
+          status: "active",
+          flags: {},
+          roomResetCounts: {},
+          roomEventGenerationKeys: {},
+        };
+      },
+    ],
+  ];
+
+  it.each(stateCases)(
+    "세션 상태 조건(true): %s 조건이 참이면 then branch 만 실행한다",
+    (_label, condition, mutateSession) => {
+      expectBranch(condition, "then", mutateSession);
+    }
+  );
+
+  it.each(stateCases)(
+    "세션 상태 조건(false): %s 조건이 상태 없이 거짓이면 else branch 만 실행한다",
+    (_label, condition) => {
+      expectBranch(condition, "else");
+    }
+  );
+
+  // 빈 npcKey 는 호스트 이벤트의 characterId 로 해석된다(resolveSocialKey). 이 경로가
+  // 끊기면 「비우면 이 이벤트」 저작이 조용히 항상 거짓이 된다.
+  it("friendshipAtLeast: 빈 npcKey 는 호스트 이벤트의 characterId 로 해석된다", () => {
+    expectBranch(
+      { kind: "friendshipAtLeast", value: 30 },
+      "then",
+      (session) => { session.friendship = { character_fork_host: 30 }; },
+      (project) => {
+        const event = project.maps[project.startMapId].events.find((entry) => entry.id === CONTRACT_EVENT_ID);
+        if (event) event.characterId = "character_fork_host";
+      },
+    );
   });
 
   it("복합 조건: all/any/not 이 then/else 분기를 올바르게 고른다", () => {

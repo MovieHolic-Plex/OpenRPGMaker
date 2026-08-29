@@ -91,18 +91,19 @@ describe("page item possession condition", () => {
   });
 
   it("존재하지 않는 itemId도 셀렉트에 표시된다", () => {
-    const select = renderWithFakeDom(() =>
+    const root = renderWithFakeDom(() =>
       databaseRecordSelect({
         kind: "item",
         currentId: "missing-item",
         testId: "event-page-item-condition-input",
         onChange: () => {},
       })
-    ) as FakeElement & { value: string };
+    ) as FakeElement;
+    const select = findByTestId(root, "event-page-item-condition-input");
 
-    expect(select.value).toBe("missing-item");
-    expect(select.textContent).toContain("missing-item");
-    expect(select.textContent).toContain("(없음)");
+    expect(select?.value).toBe("missing-item");
+    expect(root.textContent).toContain("missing-item");
+    expect(root.textContent).toContain("(없음)");
   });
 
   it("페이지 조건 행에서 아이템 셀렉트가 현재 값을 유지한다", () => {
