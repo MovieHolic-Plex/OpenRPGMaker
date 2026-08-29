@@ -364,6 +364,13 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   if (!node.querySelector(".battle-enemy-hud")) {
     node.append(enemyHpHud(enemy));
   }
+  // 한 번이라도 피해를 입은 적은 HP 를 계속 보여준다.
+  //
+  // rm2003 스킨은 원작 고증을 이유로 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다.
+  // 그 결과 "한 방 더면 죽는다" 는 판단이 구조적으로 불가능해 모든 턴이 같은 무게가
+  // 됐다. 아직 안 때린 적은 그대로 감추고(정보 수집도 플레이다), 때린 순간부터 남은
+  // 체력을 노출한다. CSS 가 [data-battle-hp-revealed="true"] 로 HUD 를 펼친다.
+  node.dataset.battleHpRevealed = presented.hp < enemy.maxHp ? "true" : "false";
   const hpText = node.querySelector<HTMLElement>(".battle-enemy-hp-text");
   if (hpText) hpText.textContent = `${presented.hp}/${enemy.maxHp}`;
   const hpBar = node.querySelector<HTMLElement>(".battle-enemy-hp-bar");
@@ -403,7 +410,16 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
   popup.classList.toggle("battle-damage-popup-critical", feedback.critical);
   popup.classList.toggle("battle-damage-popup-heal", feedback.healing);
   popup.classList.toggle("battle-damage-popup-miss", feedback.miss === true);
-  popup.textContent = feedback.miss ? "MISS" : feedback.healing ? `+${feedback.amount}` : `-${feedback.amount}`;
+  // 완전 방어(명중했지만 0 피해)는 "0" 으로 분명히 보여준다. 예전에는 이 경우
+  // 피드백 자체가 만들어지지 않아 화면이 조용했다.
+  popup.classList.toggle("battle-damage-popup-blocked", feedback.blocked === true);
+  popup.textContent = feedback.miss
+    ? "MISS"
+    : feedback.blocked
+      ? "0"
+      : feedback.healing
+        ? `+${feedback.amount}`
+        : `-${feedback.amount}`;
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));

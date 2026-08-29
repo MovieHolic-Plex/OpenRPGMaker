@@ -26,9 +26,9 @@ import {
 } from "@/player/battleDirectorDom";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
-import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
+import { emitBattleJuice, flashBattleField, playBattleCue } from "@/player/battleJuice";
 import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
-import { playBattleSfx, unlockBattleSfx } from "@/player/battleSfx";
+import { unlockBattleSfx } from "@/player/battleSfx";
 import {
   createBattleSequencer,
   type DamageFeedback,
@@ -50,6 +50,8 @@ export interface BattleDomController {
 }
 
 const BATTLE_TICK_MS = 200;
+/** 연출 중 확인/취소를 누를 때 걸리는 1회성 빨리감기 배속. */
+const SKIP_SPEED = 5.0;
 
 // host 기준으로 활성 전투 컨트롤러를 추적한다. 같은 host에 다시 마운트할 때
 // 이전 컨트롤러의 destroy()를 먼저 불러 setInterval(200ms 틱)·window keydown 리스너·
@@ -134,6 +136,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   let autoBattle = false;
   let speedMultiplier = 1.0;
+  // 연출 중 확인/취소로 켜지는 1회성 빨리감기. 시퀀스가 끝나면 배속이 원래대로 돌아온다.
+  let skipping = false;
 
   // 우상단 자동/배속 버튼 바는 제거했다(감독 지적 3) — 게임 화면 위에 뜬 에디터풍
   // 크롬이었고 런타임은 키보드 전용이다. 자동전투(A)·배속(Shift) 토글은 키로만 받고,
@@ -156,8 +160,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function setSpeed(spd: number): void {
     speedMultiplier = spd;
-    sequencer.speedMultiplier = spd;
+    if (!skipping) sequencer.speedMultiplier = spd;
     root.dataset.battleSpeed = spd.toFixed(1);
+  }
+
+  /** 이 시퀀스 한 번만 빨리감기. onSequenceBusy(false) 에서 원래 배속으로 되돌린다. */
+  function beginSkip(): void {
+    if (skipping) return;
+    skipping = true;
+    sequencer.speedMultiplier = SKIP_SPEED;
+    root.dataset.battleSkipping = "true";
+  }
+
+  function endSkip(): void {
+    if (!skipping) return;
+    skipping = false;
+    sequencer.speedMultiplier = speedMultiplier;
+    root.dataset.battleSkipping = "false";
   }
 
   const panelOptions: {
@@ -212,18 +231,28 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (feedback) {
         const wasAlive = !presentation?.vitalsFor(feedback.targetId)?.defeated;
         presentation?.applyFeedback(feedback);
-        // 타격/급소/회복/빗나감 효과음 — 화면 연출과 같은 비트(impact)에서 울린다.
-        playBattleSfx(feedback.miss ? "miss" : feedback.critical ? "critical" : feedback.healing ? "heal" : "hit");
-        // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다.
-        if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
-          window.setTimeout(() => playBattleSfx("faint"), 260);
-        }
         const targetNode =
           field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`)
           ?? field.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${feedback.targetId}"]`)
           ?? field.querySelector<HTMLElement>(`[data-testid="battle-actor-${feedback.targetId}"]`);
-        emitBattleJuice(feedback.critical ? "hit-critical" : feedback.healing ? "command-confirm" : "hit-damage", targetNode);
-        if (!feedback.healing) flashBattleField(root, feedback.critical ? "critical" : "hit");
+        // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
+        // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
+        // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
+        emitBattleJuice(
+          feedback.miss
+            ? "hit-miss"
+            : feedback.critical
+              ? "hit-critical"
+              : feedback.healing
+                ? "hit-heal"
+                : "hit-damage",
+          targetNode,
+        );
+        // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다.
+        if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
+          window.setTimeout(() => playBattleCue("faint"), 260);
+        }
+        if (!feedback.healing && !feedback.miss) flashBattleField(root, feedback.critical ? "critical" : "hit");
       }
     },
     onHitFeel(active, feedback) {
@@ -245,6 +274,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onSequenceBusy(busy) {
       sequenceBusy = busy;
+      if (!busy) endSkip();
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
       // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
       if (!busy) presentation = undefined;
@@ -334,7 +364,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       shiftCombined = false;
       return;
     }
-    if (sequenceBusy) return;
+    if (sequenceBusy) {
+      // 연출 중 확인/취소는 **남은 재생을 빨리감는다**. 예전에는 입력 1회당 2초 넘게
+      // 아무 것도 못 하고 기다려야 했고 스킵 수단도 없었다 — 처음엔 연출, 세 번째부터는
+      // 지연이다. 배속(Shift) 토글과 달리 이건 이 시퀀스 한 번에만 걸리고 끝나면 복귀한다.
+      if (isBattleConfirmKey(event) || isBattleCancelKey(event)) {
+        event.preventDefault();
+        beginSkip();
+      }
+      return;
+    }
     if (shiftHeld) shiftCombined = true;
     if (isBattleCancelKey(event)) {
       event.preventDefault();
@@ -461,7 +500,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (button.disabled || !commandHost.contains(button)) return;
     const testId = button.dataset.testid;
     if (!testId) return;
-    if (cursorByContext.get(menuContext(snapshot)) !== testId) playBattleSfx("cursor");
+    if (cursorByContext.get(menuContext(snapshot)) !== testId) playBattleCue("command-select");
     cursorByContext.set(menuContext(snapshot), testId);
     const selected = markMenuCursor(snapshot, testId);
     const targetId = button.dataset.battleTargetId;
@@ -484,7 +523,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const selectedIndex = ids.indexOf(selectedId);
     const baseIndex = selectedIndex >= 0 ? selectedIndex : direction > 0 ? -1 : 0;
     const nextId = ids[(baseIndex + direction + ids.length) % ids.length];
-    if (nextId !== selectedId) playBattleSfx("cursor");
+    if (nextId !== selectedId) playBattleCue("command-select");
     options.runtime.setSelectedTarget(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
     syncView();
@@ -572,12 +611,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function handleCancel(snapshot: BattleSnapshot): void {
     if (snapshot.phase === "targetSelect") {
-      playBattleSfx("cancel");
+      playBattleCue("command-cancel");
       cancelTargetSelectionAndRestore();
       return;
     }
     if (submenu !== null) {
-      playBattleSfx("cancel");
+      playBattleCue("command-cancel");
       submenu = null;
       panelOptions.submenu = null;
       syncView();
@@ -608,7 +647,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const button = event.target instanceof Element
       ? event.target.closest<HTMLButtonElement>("button.battle-command:not(:disabled)")
       : null;
-    if (button) playBattleSfx("confirm");
+    if (button) playBattleCue("command-confirm");
   });
 
   function syncView(): void {
@@ -736,9 +775,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       panel = created;
       // 뒤늦게 살아있는 데미지 팝업이 결과 화면 위로 새지 않도록 정리하고, 결과 연출을 1회 발화.
       for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
+      // 결과 팡파레도 사건 1개 = 소리 1개. emitBattleJuice 가 큐를 울리므로
+      // 여기서 합성 보이스를 겹쳐 부르지 않는다(예전 결함).
       emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
       flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
-      playBattleSfx(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape");
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }

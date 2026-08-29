@@ -5,8 +5,10 @@ import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
   planActionBeats,
   planEnemyActionBeats,
+  weightForFeedback,
   type BattleActionBeat,
 } from "@/player/battleActionBeats";
+import { store } from "@/project/store";
 import {
   actorCommandDirectorState,
   battleResultRewardRowCount,
@@ -21,13 +23,23 @@ import {
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 
 export const BATTLE_INTRO_MS = 1_200;
-export const BATTLE_ACTING_MS = 550;
+// 아래 3개는 **normal 무게** 기준값이다. light/heavy 는 battleActionBeats 가 배율로 늘리거나 줄인다.
+export const BATTLE_ACTING_MS = 470;
 /** Brief freeze on a damaging connect before impact UI continues. */
-export const BATTLE_HITSTOP_MS = 120;
-export const BATTLE_IMPACT_MS = 750;
+export const BATTLE_HITSTOP_MS = 110;
+/**
+ * 임팩트 여운. 750 → 430.
+ *
+ * 실측: 입력 1회당 비인터랙티브 2.09초 중 마지막 ~470ms 는 모션도 팝업도 없는
+ * 완전 정적 구간이었다. 히트스톱(=절정)은 1샘플 폭인데 여운이 900ms 넘게 흘러
+ * 임팩트 대비 여운의 비율이 거꾸로였다.
+ */
+export const BATTLE_IMPACT_MS = 430;
 /** "○○을(를) 쓰러뜨렸다!" 격파 대사가 화면에 머무는 시간. */
-export const BATTLE_KILL_LINE_MS = 780;
-export const BATTLE_RESOLVE_MS = 400;
+export const BATTLE_KILL_LINE_MS = 660;
+export const BATTLE_RESOLVE_MS = 260;
+/** 시각 효과가 없는 로그 엔트리(상태 부여/해제 등)가 화면에 머무는 최소 시간. */
+export const BATTLE_LOG_MS = 520;
 export const BATTLE_RESULT_STAGE_MS = 450;
 export const BATTLE_RESULT_HOLD_MS = 900;
 
@@ -37,6 +49,8 @@ export interface DamageFeedback {
   readonly critical: boolean;
   readonly healing: boolean;
   readonly miss?: boolean;
+  /** 명중했지만 피해가 0 인 타격(완전 방어·무효). 화면에 반드시 표시한다. */
+  readonly blocked?: boolean;
 }
 
 export type ScheduleFn = (callback: () => void, delayMs: number) => number;
@@ -114,12 +128,19 @@ export function createBattleSequencer(
       return { targetId: entry.targetId, amount: 0, critical: false, healing: false, miss: true };
     }
     const amount = Math.abs(entry.amount ?? 0);
-    if (amount === 0) return undefined;
+    const healing = entry.kind === "healing" || (entry.amount ?? 0) < 0;
+    if (amount === 0) {
+      // 예전에는 여기서 undefined 를 돌려줘 0 피해가 화면에 **아무 흔적도** 남기지
+      // 않았다. 실측에서 기본 적 24종 중 12종이 정확히 0 을 주고 있었으니, 초반 전투의
+      // 절반은 적이 때렸는지조차 알 수 없었다 — 버그로 보인다. 0 도 사건이므로 표시한다.
+      if (entry.kind !== "damage") return undefined;
+      return { targetId: entry.targetId, amount: 0, critical: false, healing: false, blocked: true };
+    }
     return {
       targetId: entry.targetId,
       amount,
       critical: Boolean(entry.critical),
-      healing: entry.kind === "healing" || (entry.amount ?? 0) < 0,
+      healing,
     };
   }
 
@@ -274,19 +295,29 @@ export function createBattleSequencer(
     if (!visual) {
       hooks.onDirectorState(directorBase);
       hooks.onSyncView();
-      continueNext();
+      // 시각 효과가 없는 엔트리(상태 부여·해제·행동 불가·MP 소모 등)도 **읽을 시간**을
+      // 준다. 예전에는 지연이 0 이라 여러 줄이 같은 프레임에 뭉쳐 사라졌다 — 읽을 수
+      // 없는 로그는 없는 로그다.
+      if (directorBase.lines.length > 0) delay(continueNext, BATTLE_LOG_MS);
+      else continueNext();
       return;
     }
     hooks.onEntryAnimation?.(entry.animation);
     const cinematicMs = entry.kind === "capture" && entry.targetId
       ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true) ?? 0
       : 0;
+    // 격파 대사 비트 — 이 타격이 대상을 쓰러뜨리면, recover 후 대사가 잠시 머문다.
+    // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.
+    const killLine = killLineFor(entries, entryOffset, snapshot);
+    // 행동의 무게 — 급소·막타는 heavy(길게 눌러 잡고), 빗나감·0 피해·회복은 light.
+    const weight = weightForFeedback(feedback, Boolean(killLine));
     const beats = entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
           impactMs: BATTLE_IMPACT_MS,
+          weight,
         })
       : planActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "actor",
@@ -295,10 +326,8 @@ export function createBattleSequencer(
           actingMs: Math.max(BATTLE_ACTING_MS, cinematicMs),
           hitStopMs: BATTLE_HITSTOP_MS,
           impactMs: BATTLE_IMPACT_MS,
+          weight,
         });
-    // 격파 대사 비트 — 이 타격이 대상을 쓰러뜨리면, recover 후 대사가 잠시 머문다.
-    // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.
-    const killLine = killLineFor(entries, entryOffset, snapshot);
     const afterBeats = killLine
       ? (): void => {
         hooks.onActionMotion?.(undefined);
@@ -339,11 +368,21 @@ export function createBattleSequencer(
     return undefined;
   }
 
+  /** 내부 state id 대신 DB 의 상태 이름을 돌려준다. 플레이어에게 `state_poison_01`
+   *  같은 문자열을 읽히면 상태 시스템이 있다는 사실 자체가 전달되지 않는다. */
+  function stateLabel(stateId: string | undefined): string {
+    if (!stateId) return "상태";
+    const record = store.getCurrent().database.states.find((entry) => entry.id === stateId);
+    return record?.name ?? stateId;
+  }
+
   function timelineDirectorState(entry: BattleTimelineEntrySnapshot): BattleDirectorState {
-    const detail = entry.kind === "stateAdded" ? `상태가 부여되었다: ${entry.stateId ?? "상태"}`
-      : entry.kind === "stateRemoved" ? `상태가 해제되었다: ${entry.stateId ?? "상태"}`
-      : entry.kind === "stateUpkeep" ? `상태 지속 피해 ${entry.amount ?? 0}`
-      : entry.kind === "stateRecovery" ? `상태 지속 회복 ${entry.amount ?? 0}`
+    // 문장 스타일은 #253 판(조사 붙은 이름 + 완결 문장). stateRecovery 는 main 에만 있던
+    // 갈래라 같은 어투로 옮겨 남긴다 — 빼면 상태 회복이 «행동을 실행했다» 로 뭉개진다.
+    const detail = entry.kind === "stateAdded" ? `${withJosa(stateLabel(entry.stateId), "이/가")} 걸렸다!`
+      : entry.kind === "stateRemoved" ? `${withJosa(stateLabel(entry.stateId), "이/가")} 풀렸다.`
+      : entry.kind === "stateUpkeep" ? `상태 이상으로 ${entry.amount ?? 0} 피해를 입었다.`
+      : entry.kind === "stateRecovery" ? `상태로 ${entry.amount ?? 0} 회복했다.`
       : entry.kind === "incapacitated" ? "상태 이상으로 행동할 수 없다."
       : entry.kind === "switch" ? "전열을 교체했다."
       : entry.kind === "capture" ? (entry.success ? "포획에 성공했다!" : "포획에 실패했다.")
