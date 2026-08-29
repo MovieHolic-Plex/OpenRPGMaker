@@ -3,12 +3,12 @@
 // finishEditorBoot wires presentEditorWelcome (mode.ts) after enterMode(edit).
 
 import {
-  DIRECTOR_BRIEFING_CARDS,
   WELCOME_GENRE_PRESETS,
+  WELCOME_MORE_WORLDS,
+  WELCOME_POSTER_CARDS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   type WelcomeGenrePresetId,
-  welcomeGenrePresetById,
   welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
 import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
@@ -20,47 +20,17 @@ export const EDITOR_WELCOME_DISMISSED_KEY = "oprn:editor-welcome-dismissed";
 
 export const EDITOR_WELCOME_TESTIDS = {
   host: "editor-welcome",
-  input: "editor-welcome-input",
-  start: "editor-welcome-start",
   skip: "editor-welcome-skip",
-  dismiss: "editor-welcome-dismiss",
-  genreStart: "editor-welcome-genre-start",
   systemPresetError: "editor-welcome-system-preset-error",
-  inspirationStrip: "editor-welcome-inspiration",
   promptInput: "editor-welcome-prompt-input",
   promptSubmit: "editor-welcome-prompt-submit",
-  quickPick: "editor-welcome-quick-pick",
+  /** Poster button — one per genre preset, in WELCOME_POSTER_CARDS order. */
   templateCard: "editor-welcome-template-card",
+  /** Gear on a poster — applies that pack's system preset without AI. */
   starterCard: "editor-welcome-starter-card",
-  chips: [
-    "editor-welcome-chip-0",
-    "editor-welcome-chip-1",
-    "editor-welcome-chip-2",
-    "editor-welcome-chip-3",
-    "editor-welcome-chip-4",
-    "editor-welcome-chip-5",
-  ],
-  slide: "editor-welcome-slide",
+  moreToggle: "editor-welcome-more-toggle",
+  moreCard: "editor-welcome-more-card",
 } as const;
-
-export const WELCOME_SLIDE_URLS = [
-  "/assets/generated/welcome/slide-00-hero.png",
-  "/assets/generated/welcome/slide-01.png",
-  "/assets/generated/welcome/slide-02.png",
-  "/assets/generated/welcome/slide-03.png",
-  "/assets/generated/welcome/slide-04.png",
-  "/assets/generated/welcome/slide-05.png",
-  "/assets/generated/welcome/slide-06.png",
-] as const;
-
-/** Crossfade interval. Kept for callers that still import the cinematic constant. */
-export const WELCOME_SLIDE_INTERVAL_MS = 4000;
-
-/** Chip labels for UI/tests — source of truth is WELCOME_GENRE_PRESETS. */
-export const WELCOME_CHIPS = WELCOME_GENRE_PRESETS.map((preset) => ({
-  id: preset.id,
-  label: preset.label,
-}));
 
 export type EditorWelcomeAction = "start" | "skip";
 
@@ -188,13 +158,16 @@ export function shouldPresentEditorWelcome(
   return true;
 }
 
-function preloadCardImages(): void {
-  if (typeof Image === "undefined") return;
-  for (const card of DIRECTOR_BRIEFING_CARDS) {
-    const img = new Image();
-    img.decoding = "async";
-    img.src = card.thumb;
-  }
+/**
+ * Poster art. `loading="lazy"` matters here: the second tier stays collapsed, and each source PNG is
+ * ~1MB, so the browser must not fetch the ten hidden tiles until the user opens them.
+ */
+function posterImage(src: string): HTMLElement {
+  // alt="" — the enclosing button already carries the accessible name, so the art is decorative.
+  return el("img", {
+    class: "editor-welcome-poster-img",
+    attrs: { src, alt: "", loading: "lazy", decoding: "async", draggable: "false" },
+  });
 }
 
 function syncBriefingPosition(root: HTMLElement): void {
@@ -228,7 +201,6 @@ export function presentEditorWelcome(
   return new Promise((resolve) => {
     let settled = false;
     const reduceMotion = prefersReducedMotion();
-    preloadCardImages();
 
     const promptInput = el("input", {
       class: "editor-welcome-prompt-input",
@@ -367,69 +339,106 @@ export function presentEditorWelcome(
 
     const cards = el("div", {
       class: "editor-welcome-briefing-cards",
-      children: DIRECTOR_BRIEFING_CARDS.map((card, index) =>
-        el("div", {
+      children: WELCOME_POSTER_CARDS.map((card, index) => {
+        const { preset } = card;
+        return el("div", {
           class: "editor-welcome-template-option",
-          dataset: { packId: card.packId },
+          // Anchor posters carry data-pack-id; sibling variants of an already-anchored pack do not,
+          // which keeps "each official pack once" true without demoting the variant visually.
+          dataset: {
+            presetId: preset.id,
+            ...(card.packAnchor ? { packId: card.packAnchor } : {}),
+          },
           children: [
             el("button", {
-              class: "editor-welcome-template-card",
+              class: "editor-welcome-template-card editor-welcome-poster",
               attrs: {
                 type: "button",
-                "aria-label": `${card.label} — ${card.blurb}`,
+                "aria-label": `${preset.label} — ${preset.blurb}`,
               },
               dataset: {
                 testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
-                templateId: card.id,
+                templateId: preset.id,
               },
               on: {
-                click: () => startPreset(card.id, card.label),
+                click: () => startPreset(preset.id, preset.label),
               },
               children: [
+                posterImage(preset.thumb),
+                el("span", { class: "editor-welcome-poster-veil", attrs: { "aria-hidden": "true" } }),
                 el("span", {
-                  class: "editor-welcome-template-thumb",
-                  attrs: { style: `background-image:url('${card.thumb}')` },
+                  class: "editor-welcome-poster-text",
+                  children: [
+                    ...(card.reference
+                      ? [el("span", { class: "editor-welcome-poster-eyebrow", text: card.reference })]
+                      : []),
+                    el("span", { class: "editor-welcome-poster-title", text: card.title }),
+                    el("span", { class: "editor-welcome-poster-blurb", text: preset.blurb }),
+                  ],
                 }),
-                el("span", { class: "editor-welcome-template-label", text: card.label }),
-                el("span", { class: "editor-welcome-template-blurb", text: card.blurb }),
               ],
             }),
-            ...(card.inspirationPresetIds.length > 0
-              ? [
-                  el("div", {
-                    class: "editor-welcome-card-inspirations",
-                    dataset: { testid: EDITOR_WELCOME_TESTIDS.inspirationStrip },
-                    children: card.inspirationPresetIds.map((presetId) => {
-                      const preset = welcomeGenrePresetById(presetId);
-                      if (!preset) throw new Error(`Unknown welcome inspiration preset: ${presetId}`);
-                      return el("button", {
-                        class: "editor-welcome-card-inspiration",
-                        text: preset.label,
-                        attrs: {
-                          type: "button",
-                          "aria-label": `${card.label} 영감: ${preset.label}`,
-                        },
-                        dataset: { presetId: preset.id },
-                        on: { click: () => startPreset(preset.id, preset.label) },
-                      });
-                    }),
-                  }),
-                ]
-              : []),
             el("button", {
-              class: "editor-welcome-template-starter",
-              text: "빈 프로젝트 시스템 설정",
-              attrs: { type: "button", "aria-label": `${card.label} 빈 프로젝트 시스템 프리셋 적용` },
+              class: "editor-welcome-poster-system",
+              text: "⚙",
+              attrs: {
+                type: "button",
+                title: `${preset.label} — AI 없이 시스템 설정만 적용`,
+                "aria-label": `${preset.label} 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)`,
+              },
               dataset: {
                 testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
-                templateId: card.id,
+                templateId: preset.id,
               },
-              on: { click: () => void startManualPreset(card.id, card.label) },
+              on: { click: () => void startManualPreset(preset.id, preset.label) },
+            }),
+          ],
+        });
+      }),
+    });
+
+    const moreGrid = el("div", {
+      class: "editor-welcome-more-grid",
+      attrs: { hidden: "" },
+      children: WELCOME_MORE_WORLDS.map((world, index) =>
+        el("button", {
+          class: "editor-welcome-poster editor-welcome-more-card",
+          attrs: { type: "button", "aria-label": `${world.label} — ${world.blurb}` },
+          dataset: {
+            testid: `${EDITOR_WELCOME_TESTIDS.moreCard}-${index}`,
+            worldId: world.id,
+          },
+          on: { click: () => startFreeText(world.intent) },
+          children: [
+            posterImage(world.thumb),
+            el("span", { class: "editor-welcome-poster-veil", attrs: { "aria-hidden": "true" } }),
+            el("span", {
+              class: "editor-welcome-poster-text",
+              children: [
+                el("span", { class: "editor-welcome-poster-title", text: world.label }),
+                el("span", { class: "editor-welcome-poster-blurb", text: world.blurb }),
+              ],
             }),
           ],
         }),
       ),
     });
+
+    const moreToggle = el("button", {
+      class: "editor-welcome-more-toggle",
+      text: `이런 세계도 있어요 (${WELCOME_MORE_WORLDS.length})`,
+      attrs: { type: "button", "aria-expanded": "false", "aria-controls": "editor-welcome-more-grid" },
+      dataset: { testid: EDITOR_WELCOME_TESTIDS.moreToggle },
+      on: {
+        click: () => {
+          const opening = moreGrid.hidden;
+          moreGrid.hidden = !opening;
+          moreToggle.setAttribute("aria-expanded", opening ? "true" : "false");
+          moreToggle.classList.toggle("is-open", opening);
+        },
+      },
+    });
+    moreGrid.id = "editor-welcome-more-grid";
 
     const stage = el("div", {
       class: "editor-welcome-stage",
@@ -454,13 +463,24 @@ export function presentEditorWelcome(
           children: [promptInput, submit],
         }),
         cards,
+        el("p", {
+          class: "editor-welcome-note",
+          text: "포스터 오른쪽 위 ⚙ 는 AI 생성 없이 그 장르의 시스템 설정만 적용합니다.",
+        }),
         systemPresetError,
-        el("button", {
-          class: "editor-welcome-skip",
-          text: "빈 맵으로 시작",
-          attrs: { type: "button" },
-          dataset: { testid: EDITOR_WELCOME_TESTIDS.skip },
-          on: { click: () => finishSkip() },
+        // Toggle sits directly above the tier it opens; skip stays last so it never lands mid-dialog.
+        el("div", { class: "editor-welcome-more", children: [moreToggle, moreGrid] }),
+        el("div", {
+          class: "editor-welcome-footer",
+          children: [
+            el("button", {
+              class: "editor-welcome-skip",
+              text: "빈 맵으로 시작",
+              attrs: { type: "button" },
+              dataset: { testid: EDITOR_WELCOME_TESTIDS.skip },
+              on: { click: () => finishSkip() },
+            }),
+          ],
         }),
       ],
     });
