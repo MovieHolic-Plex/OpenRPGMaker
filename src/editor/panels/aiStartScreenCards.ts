@@ -1,13 +1,17 @@
-// editor/panels/aiStartScreenCards.ts
-// 조수 컴포저의 **추천 지시 문구 원천**. 파일 이름의 "시작 화면"은 역사적 잔재다 —
-// 대기화면 3종(비주얼 갤러리 · 빠른 예시 카드 · 최근 작업 카드)은 2026-08-29 조수 띠로
-// 넘어오면서 폐기됐다. 그 카드들이 쓰던 타일 모자이크·캐릭터셋 썸네일 렌더러도 함께 지웠다.
-//
-// 왜 문구만 남기나: 폐기된 것은 **카드라는 표면**이지 "무엇을 만들 수 있는지 알려주는 일"이
-// 아니다. 지금 그 일은 컴포저 추천 칩(`ai-composer-chip`)과 팝오버가 한다 — 입력창이 비고
-// 포커스가 있을 때만 뜨므로 띠 높이를 건드리지 않는다. 그래서 라벨·지시문만 남기고
-// 그림 데이터는 버렸다(모자이크 배열 ~80줄은 사라진 갤러리 전용이었다).
-
+// AI 시작 화면 — 텍스트 나열 대신 타일/캐릭터 프리뷰 소수 개.
+import type { AiActivityLogRecord } from "@/ai/activityLog";
+import {
+  CHARSET_FRAME_HEIGHT,
+  CHARSET_FRAME_WIDTH,
+  CHARSET_SHEET_COLUMNS,
+  charsetFrameSource,
+  EASYRPG_CHARSET_ASSETS,
+} from "@/assets/easyrpgRtp";
+import { HOUSE_KITS } from "@/editor/houseKit";
+import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import type { SuggestedRegionCommand } from "@/editor/regionTask/suggestedCommands";
+import { TILE } from "@/project/defaults/constants";
+import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 export type AiAuthoringExampleKind = "road" | "npc" | "shop" | "chest" | "house" | "quest";
@@ -19,7 +23,7 @@ export type AiAuthoringExample = {
   readonly instruction: string;
 };
 
-/** 에디터 AI가 실제로 저작할 수 있는 대표 사례. */
+/** 에디터 AI가 실제로 저작할 수 있는 대표 사례. 카드 3개 제한과 별개인 작은 프롬프트 칩이다. */
 export const AI_AUTHORING_EXAMPLES: readonly AiAuthoringExample[] = [
   {
     id: "road",
@@ -85,44 +89,279 @@ export function buildAiAuthoringExamples(opts: {
   });
 }
 
-/**
- * 추천 지시 한 건. 예전에는 `mosaicTiles` · `mosaicCols` · `charset` 으로 카드 그림까지
- * 실었지만 그 카드를 그리는 곳이 없어졌고, 지금 소비자(`directorStartPrompts` → 컴포저 칩)는
- * 라벨과 지시문만 읽는다.
- */
+export function formatRelativeTime(iso: string, now: Date): string {
+  const then = new Date(iso).getTime();
+  const diffMs = Math.max(0, now.getTime() - then);
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 1) return "방금 전";
+  if (minutes < 60) return `${minutes}분 전`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}시간 전`;
+  return `${Math.floor(hours / 24)}일 전`;
+}
+
+export function summarizeActivityResult(record: AiActivityLogRecord): string {
+  if (!record.result.ok) return "오류";
+  const cells = record.result.changedCells ?? 0;
+  const events = record.result.changedEvents ?? 0;
+  if (cells === 0 && events === 0) return "변경 없음";
+  const parts: string[] = [];
+  if (cells > 0) parts.push(`${cells}칸`);
+  if (events > 0) parts.push(`이벤트 ${events}건`);
+  return parts.join(" · ");
+}
+
+/** 시작 화면 비주얼 프롬프트 — 초보자용 결과 중심 5개. */
 export type AiVisualStartPrompt = {
   readonly id: string;
   readonly label: string;
   readonly instruction: string;
+  /** 타일 모자이크(행 우선 1D). */
+  readonly mosaicTiles?: readonly number[];
+  readonly mosaicCols?: number;
+  /** 캐릭터셋 미리보기. */
+  readonly charset?: {
+    readonly textureKey: string;
+    readonly path: string;
+    readonly characterIndex: number;
+  };
 };
 
-/** 처음 바로 시도할 수 있는 결과 중심 5개. 내부 도구/스킬 이름은 노출하지 않는다. */
+const BLUE = HOUSE_KITS["blue-stone"];
+
+/** 처음 바로 시도할 수 있는 결과 중심 5개 카드. 내부 도구/스킬 이름은 노출하지 않는다. */
 export function defaultAiVisualStartPrompts(): readonly AiVisualStartPrompt[] {
+  const people = EASYRPG_CHARSET_ASSETS.find((asset) => asset.textureKey === "tex_easyrpg_charset_people1");
   return [
     {
       id: "place",
       label: "장소 만들기",
       instruction: "현재 맵에 집과 길, 나무가 자연스럽게 이어지는 작은 장소를 만들어줘.",
+      mosaicCols: 3,
+      mosaicTiles: [
+        BLUE.roof.body,
+        BLUE.roof.body,
+        TILE.TREE,
+        BLUE.wall.mid[0],
+        BLUE.windowTile,
+        TILE.PATH,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.FLOWERS,
+      ],
     },
     {
       id: "character",
       label: "등장인물 만들기",
       instruction: "현재 장소에 어울리는 등장인물 한 명을 만들고, 말을 걸면 자연스럽게 인사하도록 해줘.",
+      charset: people
+        ? {
+            textureKey: people.textureKey,
+            path: people.path,
+            characterIndex: 0,
+          }
+        : undefined,
+      mosaicCols: 1,
+      mosaicTiles: [TILE.PATH],
     },
     {
       id: "quest",
       label: "퀘스트 만들기",
       instruction: "현재 맵의 등장인물과 장소를 활용한 짧은 퀘스트를 만들어줘. 시작 조건과 완료 보상도 포함해줘.",
+      charset: people
+        ? {
+            textureKey: people.textureKey,
+            path: people.path,
+            characterIndex: 1,
+          }
+        : undefined,
+      mosaicCols: 1,
+      mosaicTiles: [TILE.GRASS],
     },
     {
       id: "selection",
       label: "선택 영역 꾸미기",
       instruction: "선택한 영역을 나무와 풀, 꽃, 자연스러운 길이 어울리도록 꾸며줘.",
+      mosaicCols: 3,
+      mosaicTiles: [
+        TILE.DARK_GRASS,
+        TILE.TREE,
+        TILE.DARK_GRASS,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.FLOWERS,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.GRASS,
+      ],
     },
     {
       id: "audit",
       label: "문제 검사/수정",
       instruction: "현재 맵에서 이동 불가, 막힌 입구, 어색한 타일이나 이벤트 문제를 검사하고 안전하게 고칠 변경안을 보여줘.",
+      mosaicCols: 3,
+      mosaicTiles: [
+        TILE.WALL,
+        TILE.PATH,
+        TILE.WALL,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.FLOWERS,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.GRASS,
+      ],
     },
   ];
+}
+
+function renderTileCell(tileset: TilesetDef | null, tile: number, size: number): HTMLElement {
+  const cell = el("div", {
+    class: "ai-start-visual-tile",
+    attrs: {
+      style: tileset
+        ? `width:${size}px;height:${size}px;${tilesetTileBackgroundStyle(tileset, tile, size)}`
+        : `width:${size}px;height:${size}px;background:var(--control-bg)`,
+      title: `tile ${tile}`,
+    },
+  });
+  return cell;
+}
+
+function renderCharsetThumb(charset: NonNullable<AiVisualStartPrompt["charset"]>, displayHeight = 48): HTMLElement {
+  const source = charsetFrameSource({
+    characterIndex: charset.characterIndex,
+    direction: "down",
+    pattern: 1,
+  });
+  const scale = displayHeight / CHARSET_FRAME_HEIGHT;
+  const width = Math.round(CHARSET_FRAME_WIDTH * scale);
+  const height = Math.round(CHARSET_FRAME_HEIGHT * scale);
+  return el("div", {
+    class: "ai-start-visual-charset",
+    attrs: {
+      style: [
+        `width:${width}px`,
+        `height:${height}px`,
+        `background-image:url("/${charset.path.replaceAll('"', '\\"')}")`,
+        `background-repeat:no-repeat`,
+        `background-size:${CHARSET_SHEET_COLUMNS * width}px auto`,
+        `background-position:-${Math.round(source.x * scale)}px -${Math.round(source.y * scale)}px`,
+        `image-rendering:pixelated`,
+      ].join(";"),
+      title: charset.textureKey,
+    },
+  });
+}
+
+function renderVisualPreview(
+  prompt: AiVisualStartPrompt,
+  tileset: TilesetDef | null,
+  tileSize = 20,
+  charsetHeight = 48,
+): HTMLElement {
+  const stage = el("div", { class: "ai-start-visual-stage", dataset: { testid: `ai-start-visual-stage-${prompt.id}` } });
+  if (prompt.charset) {
+    stage.append(renderCharsetThumb(prompt.charset, charsetHeight));
+    return stage;
+  }
+  const tiles = prompt.mosaicTiles ?? [];
+  const cols = Math.max(1, prompt.mosaicCols ?? 3);
+  const size = tileSize;
+  const grid = el("div", {
+    class: "ai-start-visual-mosaic",
+    attrs: {
+      style: `grid-template-columns:repeat(${cols}, ${size}px)`,
+    },
+  });
+  for (const tile of tiles) {
+    grid.append(renderTileCell(tileset, tile, size));
+  }
+  stage.append(grid);
+  return stage;
+}
+
+/**
+ * 이미지 리치 시작 갤러리 — 결과 중심 카드 5개. 클릭 시 instruction을 넘긴다.
+ */
+export function buildVisualStartGallery(opts: {
+  readonly tileset: TilesetDef | null;
+  readonly prompts?: readonly AiVisualStartPrompt[];
+  readonly onPick: (instruction: string, id: string) => void;
+  readonly tileSize?: number;
+  readonly charsetHeight?: number;
+}): HTMLElement {
+  const prompts = opts.prompts ?? defaultAiVisualStartPrompts();
+  const cards = prompts.map((prompt) =>
+    el("button", {
+      class: "ai-start-visual-card",
+      attrs: {
+        type: "button",
+        title: prompt.instruction,
+      },
+      // 집 카드는 기존 testid 유지(ai-start-build-house).
+      dataset: {
+        testid: prompt.id === "house" ? "ai-start-build-house" : `ai-start-visual-${prompt.id}`,
+      },
+      children: [
+        renderVisualPreview(prompt, opts.tileset, opts.tileSize, opts.charsetHeight),
+        el("span", { class: "ai-start-visual-label", text: prompt.label }),
+      ],
+      on: {
+        click: () => opts.onPick(prompt.instruction, prompt.id),
+      },
+    })
+  );
+
+  return el("div", {
+    class: "ai-start-visual-gallery",
+    dataset: { testid: "ai-start-visual-gallery" },
+    children: cards,
+  });
+}
+
+export function buildTryRegionCard(opts: {
+  readonly commands: readonly SuggestedRegionCommand[];
+  readonly onPick: (instruction: string) => void;
+}): HTMLElement {
+  return el("div", {
+    class: "ai-start-basic-card",
+    dataset: { testid: "ai-start-try-region" },
+    children: [
+      el("div", { class: "ai-start-basic-card-title", text: "빠른 예시" }),
+      el("div", {
+        class: "ai-start-basic-chips",
+        children: opts.commands.map((command) =>
+          el("button", {
+            class: "ai-start-basic-chip",
+            text: command.label,
+            attrs: { type: "button", title: command.instruction },
+            dataset: { testid: `ai-start-try-${command.id}` },
+            on: { click: () => opts.onPick(command.instruction) },
+          })
+        ),
+      }),
+    ],
+  });
+}
+
+export function buildRecentAiWorkCard(records: readonly AiActivityLogRecord[], now: Date): HTMLElement | null {
+  if (records.length === 0) return null;
+  const rows = records.slice(0, 3).map((record) =>
+    el("div", {
+      class: "ai-start-recent-row",
+      children: [
+        el("span", { class: "ai-start-recent-instruction", text: record.instruction.slice(0, 40) }),
+        el("span", {
+          class: "ai-start-recent-meta",
+          text: `${summarizeActivityResult(record)} · ${formatRelativeTime(record.at, now)}`,
+        }),
+      ],
+    })
+  );
+  return el("div", {
+    class: "ai-start-basic-card",
+    dataset: { testid: "ai-start-recent-work" },
+    children: [el("div", { class: "ai-start-basic-card-title", text: "최근 AI 작업" }), ...rows],
+  });
 }

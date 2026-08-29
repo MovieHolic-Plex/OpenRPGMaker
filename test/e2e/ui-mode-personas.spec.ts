@@ -35,14 +35,15 @@ async function bootPersona(page: Page, mode: Persona, width: number, height: num
   await page.addInitScript(({ layoutKeys, modeKey, persona }) => {
     localStorage.setItem(modeKey, persona);
     for (const key of layoutKeys) localStorage.removeItem(key);
+    localStorage.removeItem("oprn:ai-panel-collapsed");
   }, { layoutKeys: LAYOUT_KEYS, modeKey: UI_MODE_KEY, persona: mode });
   await page.goto(`/?freshProject=1&persona=${mode}-${width}x${height}`);
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
   await dismissCoachMarks(page);
 
-  // 예전에는 여기서 접힘 복귀 알약을 눌러 컴포저를 되살렸다. 띠는 유휴에도 컴포저를
-  // 상주시키므로(스펙 §2) 되살릴 것이 없다 — 바로 보이는지만 확인한다.
+  const restore = page.getByTestId("ai-collapsed-restore");
+  if (await restore.isVisible().catch(() => false)) await restore.click();
   await expect(page.getByTestId("ai-command-bar")).toBeVisible({ timeout: 10_000 });
 }
 
@@ -69,10 +70,8 @@ async function openPaletteResult(page: Page, query: string, commandId: string): 
 }
 
 async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<void> {
-  // `editor-layout` 의 `chat-dock-glass` 를 재던 자리. 배치 클래스 3종은 스펙 §1 에서
-  // 삭제됐다(띠는 캔버스 안 부유 호스트 하나에만 산다). 대신 조수가 그 호스트에
-  // 있다는 것을 직접 잰다 — 클래스는 배치의 그림자였고, 이쪽이 배치 자체다.
-  await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
+  const layout = page.getByTestId("editor-layout");
+  await expect(layout).toHaveClass(/chat-dock-glass/);
   await expect(page.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode}`));
   // 페르소나(밀도)는 body 클래스로 확인하고, 탑바 앞면은 실제 저작 작업을 실행한다.
   await expect(page.getByTestId("editor-ui-mode-toggle")).toHaveCount(0);
@@ -146,30 +145,20 @@ for (const mode of PERSONAS) {
   }
 }
 
-// 원래 이 자리는 "float versus side visual pair" 였다 — ☰ 메뉴로 배치를 바꿔 두 장을 찍고,
-// 사이드 도크가 좌패널보다 왼쪽에 오는지 재는 테스트. 배치가 하나가 되면서 비교할 짝이
-// 사라졌으므로, 같은 뷰포트에서 **유휴 ↔ 자람** 두 장을 찍고 자람이 좌패널·작업 런처를
-// 침범하지 않는지 잰다. 자랄 때가 겹침이 생기는 유일한 순간이라 여기가 재는 값이 있다.
-test("idle versus risen visual pair at 1280x800", async ({ page }) => {
+test("float versus side visual pair at 1280x800", async ({ page }) => {
   test.setTimeout(60_000);
   await bootPersona(page, "expert", 1280, 800);
   await assertCommonPersonaContract(page, "expert");
-  const panel = page.getByTestId("ai-panel");
-  await expect(panel).not.toHaveClass(/is-risen/);
-  await page.screenshot({ path: path.join(EVIDENCE_DIR, "persona-expert-1280x800-idle.png"), fullPage: true });
+  await page.screenshot({ path: path.join(EVIDENCE_DIR, "persona-expert-1280x800-float.png"), fullPage: true });
 
-  await page.getByTestId("ai-input").fill("항구 마을을 하나 만들어 줘");
-  await expect(panel).toHaveClass(/is-risen/);
-  const risen = await rect(panel);
+  await page.getByTestId("ai-command-menu-toggle").click();
+  await page.getByTestId("ai-command-menu-dock").click();
+  await expect(page.getByTestId("editor-layout")).toHaveClass(/chat-dock-side/);
+  await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
+  const sidePanel = await rect(page.getByTestId("chat-side-panel"));
   const leftPanel = await rect(page.locator(".left-panel"));
-  expect(risen.x, "risen strip must stay right of the left panel").toBeGreaterThanOrEqual(
-    leftPanel.x + leftPanel.width - 1,
-  );
-  expect(
-    intersectionArea(risen, await rect(page.getByTestId("authoring-task-launcher"))),
-    "risen strip must not intersect the authoring task launcher",
-  ).toBe(0);
-  await page.screenshot({ path: path.join(EVIDENCE_DIR, "persona-expert-1280x800-risen.png"), fullPage: true });
+  expect(sidePanel.x).toBeLessThan(leftPanel.x);
+  await page.screenshot({ path: path.join(EVIDENCE_DIR, "persona-expert-1280x800-side.png"), fullPage: true });
 });
 
 test.afterAll(() => {
@@ -179,10 +168,9 @@ test.afterAll(() => {
       "# Persona matrix visual QA",
       "",
       "Automated visual-QA skill/scripts were not present in this worktree.",
-      "The six persona screenshots and the 1280x800 idle/risen pair were inspected through",
+      "The six persona screenshots and the 1280x800 float/side pair were inspected through",
       "machine geometry contracts in this spec: viewport containment, leftmost tool chrome,",
-      "assistant-strip host placement, and zero-area intersection against the task launcher",
-      "in both the idle and risen states.",
+      "float/side class and host placement, and zero-area preset-toggle/AI-bar intersection.",
       "Screenshots are evidence only and do not replace those assertions.",
       "",
     ].join("\n"),

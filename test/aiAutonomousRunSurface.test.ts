@@ -5,6 +5,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import {
+  AUTO_COLLAPSE_AFTER_AI_MS,
   renderAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
@@ -305,13 +306,10 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     await flushAsync();
   });
 
-  it("(d) 런이 도는 동안과 끝난 뒤 모두 띠가 자람을 유지한다", async () => {
-    // 원래 이름은 "자동 접기가 비활성화되고 … 재개된다" 였다. 자동 접기 타이머와
-    // `AUTO_COLLAPSE_AFTER_AI_MS` 는 스펙 §1 에서 삭제됐으므로 "비활성화/재개" 라는 축이
-    // 없다. 남는 계약은 하나다: **런 중에도 끝난 뒤에도 유휴로 내려가지 않는다.**
-    // 시간을 넉넉히 흘려 그 사이 아무 타이머도 띠를 접지 않는지 확인한다.
+  it("(d) 런 진행 중에는 자동 접기가 비활성화되고, 런 종료 후에는 재개된다", async () => {
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
-    expect(panel.classList.contains("is-risen")).toBe(false);
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
 
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });
@@ -321,21 +319,21 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     const sending = bridgeSend("RPG 만들어줘");
     await flushAsync();
 
-    // 런 진행 중: 자람 + 체크리스트 표시.
-    expect(panel.classList.contains("is-risen")).toBe(true);
+    // 런 진행 중: 자동 펼침 + 체크리스트 표시, 접히지 않는다.
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(findByTestId(panel, "ai-work-plan-checklist")).not.toBeNull();
-    await vi.advanceTimersByTimeAsync(60_000);
+    await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS * 2);
     await flushAsync();
-    expect(panel.classList.contains("is-risen")).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
 
     // 런 종료 뒤에도 조수는 열어 둔다 — 답을 읽어야 한다.
     assistantMock.releaseHeldTurn();
     await sending;
     await flushAsync();
     expect(findByTestId(panel, "ai-autonomous-run-surface")).toBeNull();
-    await vi.advanceTimersByTimeAsync(60_000);
+    await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
     await flushAsync();
-    expect(panel.classList.contains("is-risen")).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
   it("런이 끝나면 체크리스트가 정리되고 다음 런은 새 계획으로 다시 그린다", async () => {
@@ -371,6 +369,7 @@ describe("자율 실행 런 표면 (todo 6)", () => {
   });
 
   it("런 중 중단하면 표면이 정리되고 중단 상태로 끝난다", async () => {
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });

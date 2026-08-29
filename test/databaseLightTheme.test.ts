@@ -50,42 +50,23 @@ describe("DB 모달 라이트 팔레트 스코프 (W1)", () => {
     }
   });
 
-  /**
-   * `@import` 그래프를 깊이우선으로 펼쳐 **실제 로드 순서**를 만든다.
-   *
-   * 예전 판은 `index.css` 의 한 줄짜리 임포트 목록만 훑고 `dock.css` 라는 **파일명**을
-   * 찾았다. 그 파일이 `database-modal-docked.css` 로 개명하고 배럴 아래로 내려가자
-   * 검사는 "임포트가 없다" 로 죽었다 — 캐스케이드는 그대로였는데도. 파일명이 아니라
-   * 순서를 재야 개명에 부러지지 않고, 배럴을 거쳐 들어오는 규칙도 같이 잡힌다.
-   */
-  function flattenImports(entry: string, seen = new Set<string>()): string[] {
-    if (seen.has(entry)) return [];
-    seen.add(entry);
-    const order: string[] = [];
-    for (const line of read(entry).split("\n")) {
-      const match = /^\s*@import\s+"([^"]+)"/u.exec(line);
-      if (!match) continue;
-      const target = resolve(root, entry, "..", match[1]).slice(`${root}/`.length);
-      order.push(target, ...flattenImports(target, seen));
-    }
-    return order;
-  }
-
-  it("라이트 팔레트가 도킹 레이아웃보다 나중에 로드된다", () => {
-    const order = flattenImports("src/styles/index.css");
-    const lightIndex = order.indexOf("src/styles/database/light-theme.css");
-    const dockedIndex = order.indexOf("src/styles/database/database-modal-docked.css");
+  it("index.css 가 light-theme.css 를 dock.css 다음에 임포트한다", () => {
+    const indexCss = read("src/styles/index.css");
+    const dbImports = indexCss
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.startsWith('@import "./database/'));
+    const dockIndex = dbImports.findIndex((line) => line.includes("dock.css"));
+    const lightIndex = dbImports.findIndex((line) => line.includes("light-theme.css"));
+    expect(dockIndex, "index.css 에 ./database/dock.css 임포트가 없다").toBeGreaterThanOrEqual(0);
     expect(
       lightIndex,
-      "light-theme.css 가 로드 그래프에 없다 — 라이트 팔레트가 아예 적용되지 않는다.",
-    ).toBeGreaterThanOrEqual(0);
-    expect(
-      dockedIndex,
-      "database-modal-docked.css 가 로드 그래프에 없다 — DB 모달 사이드 도킹이 스타일 없이 뜬다.",
+      "index.css 에 ./database/light-theme.css 임포트가 없다 — 라이트 팔레트가 로드되지 않는다.",
     ).toBeGreaterThanOrEqual(0);
     expect(
       lightIndex,
-      "light-theme.css 는 도킹 레이아웃 다음에 와야 한다 — 앞서면 도킹 규칙이 팔레트를 덮는다.",
-    ).toBeGreaterThan(dockedIndex);
+      "light-theme.css 는 dock.css 다음(마지막 database 임포트 블록)에 와야 한다 — " +
+      "뒤의 database CSS 가 라이트 팔레트를 덮어쓸 수 있다.",
+    ).toBeGreaterThan(dockIndex);
   });
 });

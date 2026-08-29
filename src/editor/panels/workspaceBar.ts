@@ -13,7 +13,9 @@
 
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
+import { editorState } from "@/editor/editorState";
 import { getEditorUiMode, setEditorUiMode, type EditorUiMode } from "@/editor/editorUiMode";
+import type { ChatDock } from "@/editor/chatDock";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
 import {
   dockOf,
@@ -101,6 +103,7 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     },
     dataset: { testid: "workspace-panels-button" },
   });
+  let refreshAssistantPlacement = (): void => {};
   // `.oprn-menu-popup` 은 `position: fixed` + `display: none` 이고 `.open` 이 붙어야 보인다.
   // hidden 만 바꾸면 열리지 않는다(같은 파일의 standard-more-tools 가 그 상태다).
   const close = (): void => {
@@ -115,6 +118,7 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     close();
   };
   const open = (): void => {
+    refreshAssistantPlacement();
     const rect = button.getBoundingClientRect?.();
     if (rect) {
       menu.style.left = `${Math.round(rect.left)}px`;
@@ -155,6 +159,12 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
       }),
     );
   }
+  const assistantPlacement = renderAssistantPlacement(close);
+  refreshAssistantPlacement = assistantPlacement.refresh;
+  menu.append(
+    el("div", { class: "workspace-menu-group", text: "조수 위치" }),
+    assistantPlacement.element,
+  );
   menu.append(el("div", { class: "workspace-menu-group", text: "밀도" }));
   for (const option of DENSITY_OPTIONS) {
     const active = layout.density === option.id;
@@ -195,6 +205,56 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     );
   }
   return [button, menu];
+}
+
+function renderAssistantPlacement(close: () => void): {
+  readonly element: HTMLElement;
+  readonly refresh: () => void;
+} {
+  const choices: readonly { readonly dock: ChatDock; readonly icon: string; readonly label: string }[] = [
+    { dock: "glass", icon: "◧", label: "왼쪽 카드" },
+    { dock: "side", icon: "▥", label: "오른쪽 고정" },
+    { dock: "float", icon: "⌨", label: "입력줄" },
+  ];
+  const buttons: HTMLButtonElement[] = [];
+  const refresh = (): void => {
+    const current = editorState.get().chatDock;
+    for (const button of buttons) {
+      button.setAttribute("aria-checked", button.dataset["chatDock"] === current ? "true" : "false");
+    }
+  };
+  for (const choice of choices) {
+    buttons.push(el("button", {
+      class: "workspace-assistant-dock-option",
+      text: choice.icon,
+      attrs: {
+        type: "button",
+        role: "menuitemradio",
+        title: choice.label,
+        "aria-label": choice.label,
+        "aria-checked": choice.dock === editorState.get().chatDock ? "true" : "false",
+      },
+      dataset: { testid: `workspace-assistant-dock-${choice.dock}`, chatDock: choice.dock },
+      on: {
+        click: (event) => {
+          event.stopPropagation();
+          for (const button of buttons) {
+            button.setAttribute("aria-checked", button.dataset["chatDock"] === choice.dock ? "true" : "false");
+          }
+          close();
+          void import("@/editor/panels/editor").then((module) => module.setChatDock(choice.dock));
+        },
+      },
+    }) as HTMLButtonElement);
+  }
+  return {
+    element: el("div", {
+      class: "workspace-assistant-dock-picker",
+      attrs: { role: "group", "aria-label": "조수 위치" },
+      children: buttons,
+    }),
+    refresh,
+  };
 }
 
 /** 패널 한 줄 = 표시 토글 + 도크 이동 칩. */

@@ -17,7 +17,7 @@ import {
   type MapEditLockStatus,
 } from "@/editor/mapEditLocks";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
-import { persistenceModeBannerText } from "@/editor/panels/editor";
+import { normalizeAiDockButtonChrome, persistenceModeBannerText } from "@/editor/panels/editor";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { createBlankProject } from "@/project/defaults";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -211,9 +211,20 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
     }
   });
 
-  // 「AI 패널 언독 버튼 툴팁」 테스트는 `normalizeAiDockButtonChrome` 과 함께 사라졌다.
-  // 그 함수는 프로덕션 호출자가 없었고(이 테스트만 붙잡고 있었다), 보정하던 두 문구는
-  // 도크가 있을 때만 뜻이 있었다 — 조수 띠는 붙였다 떼는 자리가 없다.
+  it("AI 패널 언독 버튼 툴팁을 패널 분리로 보정한다", () => {
+    const panel = document.createElement("aside");
+    panel.className = "ai-chat-panel is-docked";
+    const button = document.createElement("button");
+    button.dataset.testid = "ai-dock-toggle";
+    panel.append(button);
+
+    normalizeAiDockButtonChrome(panel);
+    expect(button.getAttribute("title")).toBe("패널 분리");
+
+    panel.classList.remove("is-docked");
+    button.click();
+    expect(button.getAttribute("title")).toBe("오른쪽 사이드바에 고정");
+  });
 });
 
 describe("UXC D20 편집 잠금 UX", () => {

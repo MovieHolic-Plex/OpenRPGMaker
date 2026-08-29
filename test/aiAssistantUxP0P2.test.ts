@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_CHAT_DOCK } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
@@ -31,6 +32,7 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
+  editorState.set({ chatDock: "float" });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
 });
@@ -50,8 +52,9 @@ afterEach(() => {
 });
 
 describe("AI assistant UX P0–P2", () => {
-  // 「defaults chatDock preference to glass」는 `DEFAULT_CHAT_DOCK` 과 함께 사라졌다 —
-  // 배치가 하나뿐이면 기본값도 없다(스펙 §1).
+  it("defaults chatDock preference to glass", () => {
+    expect(DEFAULT_CHAT_DOCK).toBe("glass");
+  });
 
   it("keeps routine AI settings out of the assistant panel chrome", () => {
     // Break: a header or command-bar settings button is duplicated inside the assistant panel.
@@ -59,18 +62,18 @@ describe("AI assistant UX P0–P2", () => {
     const barSettings = findByTestId(panel, "ai-settings-command-bar");
     const headerSettings = findByTestId(panel, "ai-settings-toggle");
     const newChat = findByTestId(panel, "ai-new-session");
-    // 헤더 ☰(`ai-more-menu-toggle`)는 숨은 툴바 안에 살아 열 방법이 없었다 — 남은 ☰ 는
-    // 컴포저 액션 행의 것 하나뿐이다.
-    const more = findByTestId(panel, "ai-command-menu-toggle");
+    const more = findByTestId(panel, "ai-more-menu-toggle");
     expect(barSettings).toBeNull();
     expect(headerSettings).toBeNull();
-    expect(findByTestId(panel, "ai-more-menu-toggle")).toBeNull();
     expect(newChat?.getAttribute("aria-label")).toContain("새 대화");
     expect(more?.textContent).toContain("☰");
-    // 내보내기는 그 ☰ 안에 남는다. 도크 항목은 전환할 대상이 없어져 사라졌다.
-    more?.click();
-    expect(findByTestId(panel, "ai-command-menu-export")).not.toBeNull();
-    expect(findByTestId(panel, "ai-more-dock")).toBeNull();
+    // 내보내기·도크는 햄버거 안 작업 접기
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    const moreMenu = findByTestId(panel, "ai-more-menu");
+    const fold = findByTestId(moreMenu!, "ai-more-actions");
+    expect(fold).not.toBeNull();
+    expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
+    expect(findByTestId(fold!, "ai-more-dock")).not.toBeNull();
   });
 
   it("opens a dedicated settings modal with config fields", () => {

@@ -112,37 +112,20 @@ describe("isMetadataOnlyProposal", () => {
   });
 });
 
-/**
- * 세 진입점(🎓 인터뷰 · 📐 구조 학습 · ✍️ 시연)의 **testid 가 한 벌로 줄었다**.
- *
- * 예전에는 같은 세 항목이 헤더 ☰ 와 컴포저 ☰ 에 각각 있었고, `aiActionMenu.ts` 가
- * `header ? "ai-interview" : "ai-command-menu-interview"` 로 testid 두 벌을 냈다. 조수 띠에는
- * 헤더가 없어서(스펙 §1) 헤더 쪽 벌이 사라졌다 — 기능은 그대로 컴포저 ☰ 에 있다.
- *
- * 그래서 옛 이름으로 재면 "버튼이 없다" 로 읽히지만 실제로는 이름만 하나가 된 것이다.
- * 항목이 정말 없어지는 회귀와 구별하려면 지금 이름으로 재고, 옛 이름의 부재도 같이 못박는다.
- */
 describe("패널 인터뷰 UI", () => {
-  it("🎓 맵 인터뷰 항목과 원탭 칩 호스트가 렌더된다", () => {
+  it("🎓 맵 인터뷰 버튼과 원탭 칩 호스트가 렌더된다", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-command-menu-interview")).toBeTruthy();
+    expect(findByTestId(panel, "ai-interview")).toBeTruthy();
     expect(findByTestId(panel, "ai-quick-replies")).toBeTruthy();
   });
 
-  it("📐 선택 영역 학습 항목이 렌더된다", () => {
+  it("📐 선택 영역 학습 버튼이 렌더된다", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-command-menu-learn-structure")).toBeTruthy();
+    expect(findByTestId(panel, "ai-learn-structure")).toBeTruthy();
   });
 
-  it("✍️ 시연 항목이 렌더된다 — 틀린 추측을 직접 깔아서 교정하는 진입점", () => {
+  it("✍️ 시연 버튼이 렌더된다 — 틀린 추측을 직접 깔아서 교정하는 진입점", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-command-menu-demo-teach")).toBeTruthy();
-  });
-
-  it("헤더 ☰ 용 testid 두 번째 벌은 되살아나지 않는다", () => {
-    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    for (const dead of ["ai-interview", "ai-learn-structure", "ai-demo-teach"]) {
-      expect(findByTestId(panel, dead), `${dead} — 헤더가 없는데 헤더용 testid 가 돌아왔다`).toBeNull();
-    }
+    expect(findByTestId(panel, "ai-demo-teach")).toBeTruthy();
   });
 });

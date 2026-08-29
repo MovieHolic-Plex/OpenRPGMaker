@@ -50,12 +50,32 @@ function renderPanel(): FakeElement {
   return renderWithFakeDom(() => renderAiChatPanel());
 }
 
-// ── 삭제한 describe「패널 접기」 2건 ────────────────────────────────────────────
-//   접기 버튼 클릭으로 접히고 상태가 localStorage에 저장된다
-//   부팅 시 저장된 펼침 선택('0')을 복원한다
-//
-// `ai-collapse` · `is-collapsed` · `oprn:ai-panel-collapsed` 이 함께 삭제됐다 — 유휴가
-// 56px 한 줄이면 접어서 아낄 공간이 없다(스펙 §3 작성자 판단).
+describe("패널 접기", () => {
+  it("접기 버튼 클릭으로 접히고 상태가 localStorage에 저장된다", () => {
+    const panel = renderPanel();
+    // First visit boots open; restore click is a no-op if already expanded.
+    if (panel.classList.contains("is-collapsed")) {
+      findByTestId(panel, "ai-collapsed-restore")?.click();
+    }
+    const collapse = findByTestId(panel, "ai-collapse");
+    expect(collapse).not.toBeNull();
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+
+    collapse?.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
+
+    collapse?.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
+  });
+
+  it("부팅 시 저장된 펼침 선택('0')을 복원한다", () => {
+    storage.set("oprn:ai-panel-collapsed", "0");
+    const panel = renderPanel();
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+  });
+});
 
 function openSettingsSurface(panel: FakeElement): FakeElement {
   expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();

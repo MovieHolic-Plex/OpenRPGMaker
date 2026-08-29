@@ -2,55 +2,11 @@
   "dir": "verify-shots/assistant-glass/after",
   "states": [
     {
-      "state": "village_idle",
-      "risen": false,
-      "historyOpen": false,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 26,
-      "backdropIsFlat": false,
-      "rows": [
-        {
-          "label": "입력 플레이스홀더",
-          "fg": "rgb(15, 23, 42)",
-          "fontSize": 15,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            255,
-            255,
-            255
-          ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            164,
-            167,
-            191
-          ],
-          "contrast": 2.37,
-          "disabled": true,
-          "passesAA": true,
-          "exempt": true
-        }
-      ]
-    },
-    {
-      "state": "village_focus",
-      "risen": true,
-      "historyOpen": false,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 25,
+      "state": "basic_boot",
+      "dock": "glass",
+      "panelBg": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(24px) saturate(1.08)",
+      "backdropVariety": 9,
       "backdropIsFlat": false,
       "rows": [
         {
@@ -60,14 +16,12 @@
           "large": false,
           "threshold": 4.5,
           "background": [
-            255,
-            255,
-            255
+            219,
+            238,
+            214
           ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "contrast": 14.63,
+          "passesAA": true
         },
         {
           "label": "예시 라벨",
@@ -76,17 +30,133 @@
           "large": false,
           "threshold": 4.5,
           "background": [
-            255,
-            255,
-            255
+            219,
+            238,
+            214
           ],
-          "contrast": 7.58,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "contrast": 6.21,
+          "passesAA": true
         },
         {
           "label": "예시 칩",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 13,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            238,
+            241,
+            244
+          ],
+          "contrast": 15.75,
+          "passesAA": true
+        },
+        {
+          "label": "입력 플레이스홀더",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 15,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            250,
+            251,
+            245
+          ],
+          "contrast": 17.16,
+          "passesAA": true
+        }
+      ]
+    },
+    {
+      "state": "basic_focus",
+      "dock": "glass",
+      "panelBg": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(24px) saturate(1.08)",
+      "backdropVariety": 9,
+      "backdropIsFlat": false,
+      "rows": [
+        {
+          "label": "빈화면 안내문",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 15,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            219,
+            238,
+            214
+          ],
+          "contrast": 14.63,
+          "passesAA": true
+        },
+        {
+          "label": "예시 라벨",
+          "fg": "rgb(71, 85, 105)",
+          "fontSize": 12,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            219,
+            238,
+            214
+          ],
+          "contrast": 6.21,
+          "passesAA": true
+        },
+        {
+          "label": "예시 칩",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 13,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            238,
+            241,
+            244
+          ],
+          "contrast": 15.75,
+          "passesAA": true
+        },
+        {
+          "label": "입력 플레이스홀더",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 15,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            250,
+            251,
+            245
+          ],
+          "contrast": 17.16,
+          "passesAA": true
+        }
+      ]
+    },
+    {
+      "state": "dock_side",
+      "dock": "side",
+      "panelBg": "rgb(247, 248, 248)",
+      "backdropFilter": "none",
+      "backdropVariety": 15,
+      "backdropIsFlat": false,
+      "rows": [
+        {
+          "label": "빈화면 안내문",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 15,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            247,
+            248,
+            248
+          ],
+          "contrast": 16.78,
+          "passesAA": true
+        },
+        {
+          "label": "예시 라벨",
           "fg": "rgb(71, 85, 105)",
           "fontSize": 12,
           "large": false,
@@ -97,9 +167,21 @@
             248
           ],
           "contrast": 7.12,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "passesAA": true
+        },
+        {
+          "label": "예시 칩",
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 13,
+          "large": false,
+          "threshold": 4.5,
+          "background": [
+            239,
+            241,
+            244
+          ],
+          "contrast": 15.78,
+          "passesAA": true
         },
         {
           "label": "입력 플레이스홀더",
@@ -108,40 +190,21 @@
           "large": false,
           "threshold": 4.5,
           "background": [
-            255,
-            255,
-            255
+            252,
+            252,
+            252
           ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            164,
-            167,
-            191
-          ],
-          "contrast": 2.37,
-          "disabled": true,
-          "passesAA": true,
-          "exempt": true
+          "contrast": 17.4,
+          "passesAA": true
         }
       ]
     },
     {
-      "state": "village_risen",
-      "risen": true,
-      "historyOpen": false,
-      "panelBg": "rgb(255, 255, 255)",
+      "state": "dock_float",
+      "dock": "float",
+      "panelBg": "rgba(0, 0, 0, 0)",
       "backdropFilter": "none",
-      "backdropVariety": 53,
+      "backdropVariety": 37,
       "backdropIsFlat": false,
       "rows": [
         {
@@ -156,121 +219,16 @@
             255
           ],
           "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            79,
-            92,
-            215
-          ],
-          "contrast": 5.46,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "passesAA": true
         }
       ]
     },
     {
-      "state": "village_history",
-      "risen": false,
-      "historyOpen": true,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 17,
-      "backdropIsFlat": false,
-      "rows": [
-        {
-          "label": "입력 플레이스홀더",
-          "fg": "rgb(15, 23, 42)",
-          "fontSize": 15,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            255,
-            255,
-            255
-          ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            164,
-            167,
-            191
-          ],
-          "contrast": 2.37,
-          "disabled": true,
-          "passesAA": true,
-          "exempt": true
-        }
-      ]
-    },
-    {
-      "state": "blank_idle",
-      "risen": false,
-      "historyOpen": false,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 13,
-      "backdropIsFlat": false,
-      "rows": [
-        {
-          "label": "입력 플레이스홀더",
-          "fg": "rgb(15, 23, 42)",
-          "fontSize": 15,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            255,
-            255,
-            255
-          ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            164,
-            167,
-            191
-          ],
-          "contrast": 2.37,
-          "disabled": true,
-          "passesAA": true,
-          "exempt": true
-        }
-      ]
-    },
-    {
-      "state": "blank_focus",
-      "risen": true,
-      "historyOpen": false,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 25,
+      "state": "dock_glass",
+      "dock": "glass",
+      "panelBg": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(24px) saturate(1.08)",
+      "backdropVariety": 9,
       "backdropIsFlat": false,
       "rows": [
         {
@@ -280,14 +238,12 @@
           "large": false,
           "threshold": 4.5,
           "background": [
-            255,
-            255,
-            255
+            219,
+            238,
+            214
           ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "contrast": 14.63,
+          "passesAA": true
         },
         {
           "label": "예시 라벨",
@@ -296,30 +252,26 @@
           "large": false,
           "threshold": 4.5,
           "background": [
-            255,
-            255,
-            255
+            219,
+            238,
+            214
           ],
-          "contrast": 7.58,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "contrast": 6.21,
+          "passesAA": true
         },
         {
           "label": "예시 칩",
-          "fg": "rgb(71, 85, 105)",
-          "fontSize": 12,
+          "fg": "rgb(15, 23, 42)",
+          "fontSize": 13,
           "large": false,
           "threshold": 4.5,
           "background": [
-            247,
-            248,
-            248
+            238,
+            241,
+            244
           ],
-          "contrast": 7.12,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
+          "contrast": 15.75,
+          "passesAA": true
         },
         {
           "label": "입력 플레이스홀더",
@@ -328,116 +280,12 @@
           "large": false,
           "threshold": 4.5,
           "background": [
-            255,
-            255,
-            255
+            250,
+            251,
+            245
           ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            164,
-            167,
-            191
-          ],
-          "contrast": 2.37,
-          "disabled": true,
-          "passesAA": true,
-          "exempt": true
-        }
-      ]
-    },
-    {
-      "state": "blank_risen",
-      "risen": true,
-      "historyOpen": false,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 31,
-      "backdropIsFlat": false,
-      "rows": [
-        {
-          "label": "입력 플레이스홀더",
-          "fg": "rgb(15, 23, 42)",
-          "fontSize": 15,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            255,
-            255,
-            255
-          ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            79,
-            92,
-            215
-          ],
-          "contrast": 5.46,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        }
-      ]
-    },
-    {
-      "state": "blank_history",
-      "risen": false,
-      "historyOpen": true,
-      "panelBg": "rgb(255, 255, 255)",
-      "backdropFilter": "none",
-      "backdropVariety": 17,
-      "backdropIsFlat": false,
-      "rows": [
-        {
-          "label": "입력 플레이스홀더",
-          "fg": "rgb(15, 23, 42)",
-          "fontSize": 15,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            255,
-            255,
-            255
-          ],
-          "contrast": 17.85,
-          "disabled": false,
-          "passesAA": true,
-          "exempt": false
-        },
-        {
-          "label": "전송 버튼",
-          "fg": "rgb(255, 255, 255)",
-          "fontSize": 12,
-          "large": false,
-          "threshold": 4.5,
-          "background": [
-            164,
-            167,
-            191
-          ],
-          "contrast": 2.37,
-          "disabled": true,
-          "passesAA": true,
-          "exempt": true
+          "contrast": 17.16,
+          "passesAA": true
         }
       ]
     }

@@ -380,8 +380,7 @@ export function advanceRoomBuild(project: Project, sessionId: string, forceLayer
   // 마지막 레이어까지 끝난 시점에만 보정한다. 시작 시점(빈 맵)에는 통행 가능한 칸이 없어
   // 착지점을 옮길 곳이 없고, 중간 레이어에서 옮기면 다음 레이어가 그 칸을 다시 막을 수 있다.
   const reconcileWarnings = nextLayer === null ? reconcileMapReplacement(project, session.mapId) : [];
-  // 교체 가드 경고(#262)까지 합친다 — 기존 맵을 덮어썼다는 사실이 결과에 남아야 한다.
-  const warnings = [...replaceWarnings, ...result.warnings, ...reconcileWarnings];
+  const warnings = [...result.warnings, ...reconcileWarnings];
   return {
     summary: result.summary,
     warnings,

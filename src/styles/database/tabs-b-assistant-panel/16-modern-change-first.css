@@ -1,0 +1,604 @@
+/* 변경 우선(change-first) 조수 채팅 — 계획 .omo/plans/assistant-modern-chat.md §C.
+   원칙: 턴의 주인공은 "무엇이 어떻게 바뀌었는가"(변경 카드)이고 내부 툴 호출은 각주다.
+   - 색·간격·라운드·그림자·전환은 전부 src/styles/tokens.css 토큰만 쓴다(새 팔레트 금지).
+   - 패널 글자 크기 3단(data-ai-font-size)은 --ai-font-scale 로 계속 스케일된다.
+   - 이 파일은 tabs-b-assistant-panel.css 의 마지막 @import 다. 따라서 09/13 의
+     동일 특이도 규칙(툴 활동 배경·폰트 크기 등)을 !important 없이 이긴다.
+   ========================================================================= */
+
+/* ── 1. 변경 카드 ────────────────────────────────────────────────
+   커맨드 줄(.ai-command-row)은 `auto minmax(0,1fr)` 2열 그리드다. 카드를 그냥 넣으면
+   1열(프리픽스 열, auto)에 떨어져 찌그러지므로 두 열을 모두 차지하게 못 박는다. */
+.ai-command-row > .ai-change-card {
+  grid-column: 1 / -1;
+}
+
+.ai-change-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  /* 카드 폭 기준 컨테이너 쿼리로 before/after 배치를 결정한다(뷰포트가 아니라 패널 폭이 기준). */
+  container-type: inline-size;
+  display: grid;
+  font-family: var(--font-ui);
+  gap: var(--space-3);
+  line-height: 1.6;
+  margin: var(--space-2) 0;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+.ai-change-card-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ai-change-badge {
+  background: var(--accent-muted);
+  border-radius: 999px;
+  color: var(--accent-active);
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  padding: 2px var(--space-2);
+}
+
+.ai-change-title {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font-size: calc(15px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-change-expand,
+.ai-change-undo,
+.ai-change-wide-close,
+.ai-change-wide-mode {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-weight: 650;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.ai-change-expand:hover,
+.ai-change-undo:hover,
+.ai-change-wide-close:hover,
+.ai-change-wide-mode:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.ai-change-expand {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.ai-change-expand:hover {
+  background: var(--accent-muted);
+  color: var(--accent-active);
+}
+
+.ai-change-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ai-change-chip {
+  background: var(--bg-inset);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 650;
+  line-height: 1.6;
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+
+/* before → after 는 나란히가 기본이다. 320px 패널까지 좌우 배치를 유지한다:
+   패널 320 − 로그 패딩 16(8+8) − 카드 패딩 32(16+16) − 테두리 4 ≈ 268px 이 카드 안쪽 폭이므로
+   아래 스택 임계값(250px)은 패널 ~305px 미만에서만 걸린다. */
+.ai-change-pair {
+  align-items: stretch;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.ai-change-shot {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-1);
+  grid-template-rows: auto minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--space-2);
+}
+
+.ai-change-shot[data-kind="after"] {
+  border-color: var(--accent-border);
+  box-shadow: inset 0 0 0 1px var(--accent-muted);
+}
+
+.ai-change-shot-label {
+  color: var(--text-3);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+.ai-change-shot[data-kind="after"] .ai-change-shot-label {
+  color: var(--accent);
+}
+
+.ai-change-shot-canvas {
+  align-items: center;
+  background: var(--bg-raised);
+  border-radius: var(--radius-s);
+  display: flex;
+  justify-content: center;
+  min-height: 88px;
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--space-1);
+}
+
+/* 스냅숏은 픽셀 아트다 — 보간하면 뭉개진다. renderRegionSnapshot 은 인라인 style 없이
+   width/height 속성만 세우므로 !important 없이 여기서 크기를 잡을 수 있다. */
+.ai-change-shot-canvas canvas,
+.ai-change-shot-canvas img,
+/* 넓게 보기에서는 큰 그림이 목적이다. 변경 사각형은 작아서 renderRegionSnapshot 이 2배에서
+   포화하므로(regionSnapshotScale MAX_SCALE), 나머지 확대는 CSS 가 맡는다 — pixelated 로 또런하게. */
+.ai-change-wide-shot canvas,
+.ai-change-wide-shot img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  margin: 0 auto;
+  max-width: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.ai-change-shot-canvas canvas,
+.ai-change-shot-canvas img {
+  max-height: 200px;
+  width: auto;
+}
+
+/* 인라인 카드의 200px 상한은 넓게 보기에선 발목이다 — 같은 상세도에서 늵에 오는 위 규칙을
+   달고 재지정한다. 동일 원소가 두 클래스를 함께 달으므로 이중 클래스로 이긴다. */
+.ai-change-shot-canvas.ai-change-wide-shot {
+  width: 100%;
+}
+
+.ai-change-shot-canvas.ai-change-wide-shot canvas,
+.ai-change-shot-canvas.ai-change-wide-shot img {
+  max-height: none;
+  width: 100%;
+}
+
+.ai-change-shot-fallback {
+  color: var(--text-3);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  line-height: 1.6;
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+}
+
+.ai-change-arrow {
+  align-self: center;
+  color: var(--accent);
+  flex: 0 0 auto;
+  font-size: calc(14px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+
+.ai-change-detail {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.ai-change-card-actions {
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  margin: 0;
+  padding-top: var(--space-2);
+}
+
+.ai-change-undo {
+  color: var(--danger);
+}
+
+.ai-change-undo:hover {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  color: var(--danger);
+}
+
+/* 아주 좁은 패널에서만 위/아래로 쌓고 화살표를 아래 방향으로 돌린다. */
+@container (max-width: 250px) {
+  .ai-change-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-change-arrow {
+    justify-self: center;
+    rotate: 90deg;
+  }
+}
+
+/* ── 2. 넓은 비교 뷰어 ──────────────────────────────────────────
+   사이드 패널(최대 720/960px)에서는 큰 비교가 불가능하다. body 직속 오버레이로
+   에디터 크롬과 모달(--z-app-modal 2600) 위에 띄우고 화면 전체를 쓴다.
+   실제 DOM(aiChangePreview.ts): .ai-change-wide > .ai-change-wide-head + .ai-change-wide-body,
+   본문의 두 자식은 카드와 같은 figure.ai-change-shot[data-kind] 이고 그 안의 캔버스 컨테이너가
+   .ai-change-shot-canvas.ai-change-wide-shot 다. 모드 슬라이더는 머리말(.ai-change-wide-modes)
+   안에 있으므로 겹쳐 보기에서는 :has() 로 모드를 읽어 본문 아래 가운데로 내려 앉힌다. */
+.ai-change-wide {
+  align-content: center;
+  background: var(--bg-scrim);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-rows: auto minmax(0, 1fr);
+  inset: 0;
+  justify-items: stretch;
+  padding: var(--space-4);
+  position: fixed;
+  z-index: calc(var(--z-app-modal) + 20);
+}
+
+.ai-change-wide-head {
+  align-items: center;
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-ui);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-change-wide-title {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font-size: calc(17px * var(--ai-font-scale, 1));
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-change-wide-modes {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+}
+
+/* 현재 모드 버튼을 눌린 상태로 보여준다 — 모드는 본문 data-mode 에만 있으므로 :has() 로 읽는다. */
+.ai-change-wide:has(.ai-change-wide-body[data-mode="side"]) .ai-change-wide-mode.is-side,
+.ai-change-wide:has(.ai-change-wide-body[data-mode="overlay"]) .ai-change-wide-mode.is-overlay,
+.ai-change-wide-mode[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-active);
+}
+
+.ai-change-wide-close {
+  margin-left: auto;
+}
+
+.ai-change-wide-body {
+  align-content: center;
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.ai-change-wide-body[data-mode="side"] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+/* 본문의 figure 는 카드와 같은 .ai-change-shot 이지만 넓은 화면에서는 훨씬 크게 쓴다. */
+.ai-change-wide-body > .ai-change-shot {
+  background: transparent;
+  border: 0;
+  justify-items: center;
+  max-width: 100%;
+  padding: 0;
+  position: relative;
+}
+
+.ai-change-wide-body[data-mode="side"] > .ai-change-shot {
+  max-width: 45vw;
+  width: 45vw;
+}
+
+.ai-change-wide-body .ai-change-shot-label {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  justify-self: start;
+}
+
+.ai-change-wide-shot {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  max-height: none;
+  max-width: 100%;
+  min-height: 0;
+  padding: var(--space-2);
+}
+
+.ai-change-wide-shot canvas,
+.ai-change-wide-shot img {
+  max-height: 72vh;
+  width: auto;
+}
+
+/* 겹쳐 보기: 두 장을 한 프레임에 쌓는다(after 캔버스 컨테이너는 JS 가 clip-path 로 노출).
+   라벨은 절대 배치로 빼서 두 캔버스가 픽셀 단위로 겹치게 만든다. */
+.ai-change-wide-body[data-mode="overlay"] {
+  align-content: center;
+  grid-template: "frame" minmax(0, 1fr) / minmax(0, 1fr);
+  justify-content: center;
+  padding-bottom: var(--space-6);
+}
+
+.ai-change-wide-body[data-mode="overlay"] > .ai-change-shot {
+  align-self: center;
+  grid-area: frame;
+  justify-self: center;
+  max-width: min(92vw, 1400px);
+}
+
+.ai-change-wide-body[data-mode="overlay"] > .ai-change-shot[data-kind="after"] {
+  z-index: var(--z-raised);
+}
+
+.ai-change-wide-body[data-mode="overlay"] .ai-change-shot-label {
+  background: color-mix(in srgb, var(--bg-raised) 82%, transparent);
+  border-radius: var(--radius-s);
+  left: var(--space-2);
+  padding: 2px var(--space-2);
+  position: absolute;
+  top: var(--space-2);
+  z-index: var(--z-canvas-decor);
+}
+
+.ai-change-wide-body[data-mode="overlay"] > .ai-change-shot[data-kind="after"] .ai-change-shot-label {
+  left: auto;
+  right: var(--space-2);
+}
+
+.ai-change-wide-slider {
+  accent-color: var(--accent);
+  cursor: ew-resize;
+  max-width: 100%;
+  width: min(240px, 22vw);
+}
+
+/* 나란히 보기에서는 노출 비율 자체가 의미 없다. */
+.ai-change-wide:has(.ai-change-wide-body[data-mode="side"]) .ai-change-wide-slider {
+  display: none;
+}
+
+/* 겹쳐 보기에서는 슬라이더가 두 장 바로 아래 가운데 있어야 손이 간다. 머리말 안에 있는
+   입력을 오버레이(position: fixed 로 이미 컨테이닝 블록) 기준 하단 중앙으로 내린다. */
+.ai-change-wide:has(.ai-change-wide-body[data-mode="overlay"]) .ai-change-wide-slider {
+  background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
+  border-radius: 999px;
+  bottom: calc(var(--space-4) + var(--space-2));
+  left: 50%;
+  padding: var(--space-1) var(--space-3);
+  position: absolute;
+  translate: -50% 0;
+  width: min(520px, 60vw);
+  z-index: var(--z-raised);
+}
+
+/* ── 3. 툴 호출 후경화 ──────────────────────────────────────────
+   내부 실행 내역은 각주다: 테두리·배경 없이 작고 낮은 대비로. 다만 읽을 수는 있어야 하고
+   키보드로 접근 가능해야 한다(초점 링 유지). is-quiet 는 색만 더 물러난다(크기는 그대로). */
+.ai-tool-activity {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin-top: var(--space-1);
+  padding: 0;
+}
+
+.ai-tool-activity-toggle {
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-3);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  padding: 2px var(--space-1);
+  text-align: left;
+}
+
+.ai-tool-activity-toggle:hover {
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+
+.ai-tool-activity-list {
+  border: 0;
+  display: grid;
+  gap: 2px;
+  padding: 2px 0 0 var(--space-2);
+}
+
+/* hidden 은 UA 스타일시트의 display:none 이라 위/07 파티션의 author display 규칙에 밀린다.
+   접힘이 기본값이어야 하므로 [hidden] 을 다시 세워 준다(실측: 복원된 대화에서 목록이 펼쳐져 있었다). */
+.ai-tool-activity-list[hidden] {
+  display: none;
+}
+
+.ai-tool-activity-line {
+  background: transparent;
+  border: 0;
+  color: var(--text-3);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  line-height: 1.6;
+  padding: 0;
+}
+
+.ai-tool-failure {
+  color: var(--text-2);
+}
+
+.ai-tool-failure > summary {
+  cursor: pointer;
+  padding: 1px 0;
+}
+
+.ai-tool-failure-body {
+  color: var(--text-3);
+  padding: 2px 0 2px var(--space-2);
+}
+
+.ai-tool-detail {
+  border-left: 1px solid var(--border-subtle);
+  margin: var(--space-1) 0 var(--space-1) 2px;
+  padding-left: var(--space-2);
+}
+
+.ai-tool-detail-label {
+  color: var(--text-3);
+}
+
+.ai-tool-detail-pre {
+  background: var(--bg-inset);
+  border-radius: var(--radius-s);
+  color: var(--text-3);
+}
+
+.ai-tool-activity.is-quiet .ai-tool-activity-toggle,
+.ai-tool-activity.is-quiet .ai-tool-activity-line,
+.ai-tool-activity.is-quiet .ai-tool-failure-body,
+.ai-tool-activity.is-quiet .ai-tool-detail-label {
+  color: color-mix(in srgb, var(--text-3) 72%, var(--bg-surface));
+}
+
+.ai-tool-activity.is-quiet .ai-tool-activity-toggle:hover,
+.ai-tool-activity.is-quiet .ai-tool-activity-toggle:focus-visible {
+  color: var(--text-2);
+}
+
+/* 후경화해도 초점은 또렷하게 보여야 한다. */
+.ai-tool-activity-toggle:focus-visible,
+.ai-tool-failure > summary:focus-visible,
+.ai-change-expand:focus-visible,
+.ai-change-undo:focus-visible,
+.ai-change-wide-close:focus-visible,
+.ai-change-wide-mode:focus-visible,
+.ai-change-wide-slider:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* ── 4. 현대적 채팅 타이포·간격 (8px 그리드, 라인하이트 1.6) ───── */
+.ai-chat-log {
+  border-radius: var(--radius-l);
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.ai-command-row {
+  column-gap: var(--space-2);
+  /* 13번 파일이 고정 12px 로 덮어 글자 크기 3단이 커맨드 줄에서 죽어 있었다 — 스케일 복구. */
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  line-height: 1.6;
+  padding: var(--space-1) 0;
+  row-gap: var(--space-1);
+}
+
+.ai-command-row + .ai-command-row {
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+}
+
+.ai-command-prefix {
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-3));
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.ai-command-row-body {
+  color: var(--text-1);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.ai-completion-strip {
+  border-radius: var(--radius-l);
+  gap: var(--space-2);
+  line-height: 1.6;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ── 5. 모션 감축 ───────────────────────────────────────────────
+   위에서 추가한 전환은 전부 무효화한다(clip-path 는 JS 가 직접 세우므로 전환 대상이 아니다). */
+@media (prefers-reduced-motion: reduce) {
+  .ai-change-expand,
+  .ai-change-undo,
+  .ai-change-wide-close,
+  .ai-change-wide-mode {
+    transition: none;
+  }
+}

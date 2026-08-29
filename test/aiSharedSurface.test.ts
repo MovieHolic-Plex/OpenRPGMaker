@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setEditorUiMode } from "@/editor/editorUiMode";
+import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -24,6 +25,7 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
+  editorState.set({ chatDock: "float" });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
   document.body.className = "";
@@ -59,15 +61,37 @@ describe("AI shared surface", () => {
     expect(expertPanel.dataset.uiDensity).toBe("shared");
   });
 
-  // 삭제한 두 테스트: 「labels the dock toggle by its next action」 와
-  // 「keeps dock escape and idle-screen choices reachable from every assistant menu」.
-  //
-  // 둘이 재던 것 셋 다 조수 띠에서 없어졌다:
-  //   ai-dock-mode-btn / ai-chat-detach   도크가 하나뿐이라 전환할 대상이 없다(스펙 §1).
-  //   ai-more-menu(-toggle)               숨은 툴바 안에 살아 열 방법이 없던 두 번째 ☰.
-  //                                       ☰ 는 이제 컴포저 액션 행의 것 하나다.
-  //   ai-temperature-*                    대기화면 3종과 함께 삭제된 색 온도 선택.
-  //
-  // 남은 ☰ 항목 도달성은 aiChatPanelUxRepairs.test.ts 가 `ai-command-menu-*` 로 잰다 —
-  // 여기서 또 재면 같은 계약을 두 곳이 들게 된다.
+  it("labels the dock toggle by its next action and updates menu copy", () => {
+    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
+    const modeBtn = findByTestId(panel, "ai-dock-mode-btn");
+    // 헤더 뱃지는 제거 — 커맨드 바 토글 + 더보기 메뉴만 유지.
+    expect(findByTestId(panel, "ai-dock-mode-btn-header")).toBeNull();
+    expect(modeBtn?.textContent).toBe("카드");
+    expect(modeBtn?.dataset.dockMode).toBe("float");
+
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    const moreDock = findByTestId(panel, "ai-more-dock");
+    expect(moreDock?.textContent).toContain("카드");
+  });
+
+  it("keeps dock escape and idle-screen choices reachable from every assistant menu", () => {
+    editorState.set({ chatDock: "side", assistantTemperature: "quiet-gold" });
+    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
+
+    const menu = findByTestId(panel, "ai-more-menu");
+    // FakeElement does not reflect the HTML hidden attribute onto .hidden automatically.
+    if (menu) menu.hidden = true;
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    expect(menu?.hidden).toBe(false);
+    expect(menu?.classList.contains("is-viewport-anchored")).toBe(true);
+    expect(findByTestId(panel, "ai-temperature-quiet-gold")).toBeTruthy();
+    expect(findByTestId(panel, "ai-command-temperature-quiet-gold")).toBeTruthy();
+
+    findByTestId(panel, "ai-temperature-ink-only")?.click();
+    expect(editorState.get().assistantTemperature).toBe("ink-only");
+    expect(panel.dataset.temperature).toBe("ink-only");
+
+    findByTestId(panel, "ai-chat-detach")?.click();
+    expect(editorState.get().chatDock).toBe("float");
+  });
 });

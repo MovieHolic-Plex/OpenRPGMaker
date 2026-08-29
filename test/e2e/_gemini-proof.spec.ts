@@ -78,6 +78,8 @@ test("에디터 AI 가 cpen/gemini-3-flash 로 응답한다", async ({ page }) =
   if (await guest.isVisible().catch(() => false)) await guest.click();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 25_000 });
 
+  const restore = page.getByTestId("ai-collapsed-restore");
+  if (await restore.isVisible().catch(() => false)) await restore.click();
   await expect(page.getByTestId("ai-command-bar")).toBeVisible({ timeout: 15_000 });
 
   const input = page.getByTestId("ai-input");

@@ -1,0 +1,318 @@
+/* ?? 3-議?IA (2026-07-07 짠2.3) ????????????????????????????????? */
+/* ???ㅻ뜑: 紐⑤뱶 諛곗?(?꾩옱 而⑦뀓?ㅽ듃 쨌 ?몄텧 ???? + ?≪빻?몃· ?섎졃. */
+.ai-mode-badge {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 9px;
+  user-select: none;
+  white-space: nowrap;
+}
+/* ???≪뀡 議? ?낅젰李?諛붾줈 ??怨좎젙 ??寃곗젙???꾩슂??移대뱶留? 鍮꾨㈃ ?듭㎏濡??④릿?? */
+.ai-action-zone:empty {
+  display: none;
+}
+.ai-action-zone {
+  border-top: 2px solid var(--accent-border, var(--border-strong));
+  flex: 0 0 auto;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding-top: var(--space-2);
+}
+/* ?꾪궧 ??由ъ궗?댁?(짠2.3 ??G4): ?꾪궧 紐⑤뱶?먯꽌留?醫뚯륫 ?ｌ????몄텧. */
+.ai-dock-resizer {
+  display: none;
+}
+.ai-chat-panel.is-docked .ai-dock-resizer {
+  bottom: 0;
+  cursor: ew-resize;
+  display: block;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 6px;
+  z-index: 2;
+}
+.ai-chat-panel.is-docked .ai-dock-resizer:hover {
+  background: var(--accent-border, var(--accent));
+  opacity: 0.5;
+}
+.ai-abort-button {
+  border-color: var(--danger, #d85c5c);
+  color: var(--danger, #d85c5c);
+  font-size: 11px;
+  min-height: 24px;
+  padding: 2px 8px;
+}
+.ai-abort-button[hidden] {
+  display: none;
+}
+.ai-chat-collapse {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-grid;
+  font-size: 15px;
+  height: 28px;
+  line-height: 1;
+  min-width: 28px;
+  padding: 0;
+  place-items: center;
+  white-space: nowrap;
+}
+.ai-chat-collapse:hover {
+  background: var(--control-bg);
+  color: var(--text-1);
+}
+/* ?꾧뎄以???二쇱슂 ?≪뀡??洹몃９?쇰줈 ?뺣━(????붋룸줈洹?| ?ㅼ젙쨌??| ?꾪궧쨌?ㅽ뒠?붿삤). ?ㅻ뜑 ?꾩씠肄?萸됱묠 ?댁냼. */
+.ai-chat-toolbar:not([hidden]):not(.is-empty) {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+.ai-toolbar-sep {
+  align-self: stretch;
+  background: var(--border-subtle);
+  margin: 2px 2px;
+  width: 1px;
+}
+.ai-new-session,
+.ai-export-button {
+  font-size: 11px;
+  min-height: 28px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.ai-export-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.ai-new-session {
+  border-color: var(--gold);
+  color: var(--gold-deep);
+}
+/* ?꾧뎄以꾩쓽 ?꾩씠肄?踰꾪듉? ?쇰꺼 踰꾪듉怨??믪씠瑜?留욎텣?? */
+.ai-chat-toolbar .ai-chat-tools-button {
+  font-size: 13px;
+  height: 28px;
+  line-height: 1;
+  min-width: 28px;
+  padding: 0;
+}
+.ai-chat-panel.is-collapsed {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-modal);
+  max-height: none;
+  min-width: 0;
+  width: auto;
+}
+.ai-chat-panel.is-collapsed > .ai-chat-toolbar,
+.ai-chat-panel.is-collapsed > .ai-chat-body,
+.ai-chat-panel.is-collapsed > .ai-chat-resize-handle {
+  display: none;
+}
+.ai-collapsed-restore {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  cursor: pointer;
+  display: none;
+  height: 48px;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 48px;
+}
+.ai-chat-panel.is-collapsed > .ai-collapsed-restore {
+  display: flex;
+}
+.ai-collapsed-restore:hover,
+.ai-collapsed-restore:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+.ai-collapsed-restore:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+/* ?? ?꾪궧 ?ъ씠?쒕컮 紐⑤뱶(湲곕낯媛? ???ㅻⅨ履??꾩껜 ?믪씠. ???덈뒗 留먰뭾?좎? ??踰꾪듉?쇰줈 ?꾪솚?섎뒗 ?듭뀡. ?? */
+.ai-chat-panel.is-docked {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  /* ???뺣?(2026-07-07 짠2.3 ??G4): 湲곕낯 520px, 醫뚯륫 由ъ궗?댁?濡?議곗젅(localStorage ?좎?). */
+  width: var(--ai-dock-width, 520px);
+  max-width: 52vw;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: var(--shadow-modal);
+}
+/* ?꾪궧 ??濡쒓렇媛 ?꾩껜 ?믪씠瑜?梨꾩슦怨??낅젰李쎌씠 諛붾떏??遺숆쾶 ?쒕떎(吏㏃? ?뚮줈???덉씠?꾩썐 ?ъ궗?⑹쑝濡??앷릿 ?곷떒 ?좊┝쨌諛붾떏 ?щ갚 ?닿껐). */
+.ai-chat-panel.is-docked .ai-chat-log {
+  max-height: none;
+  flex: 1 1 auto;
+}
+/* ?꾪궧 ???먮뵒???몄쓣 ?쇱そ?쇰줈 諛???ъ씠?쒕컮??媛?ㅼ?吏 ?딄쾶 ?쒕떎(?ㅻ쾭?덉씠媛 ?꾨땲??吏꾩쭨 ?ъ씠?쒕컮). ??? ?⑤꼸怨??쇱튂. */
+body.ai-panel-docked {
+  --ai-docked-panel-inset: calc(min(var(--ai-dock-width, 520px), 52vw) + 4px);
+}
+
+body.ai-panel-docked .topbar {
+  padding-right: var(--ai-docked-panel-inset);
+}
+
+body.ai-panel-docked .editor-layout {
+  padding-right: var(--ai-docked-panel-inset);
+}
+.ai-chat-panel.is-docked.is-collapsed {
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  max-width: 48px;
+  min-width: 48px;
+  padding: 0;
+  width: 48px;
+  border: 1px solid var(--accent-border);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
+}
+.ai-chat-panel.is-docked.is-collapsed > .ai-collapsed-restore {
+  background: var(--bg-raised);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  height: 48px;
+  min-height: 48px;
+  width: 48px;
+}
+
+/* ?ъ씠???꾪겕 ?묓옒: 1/3 而щ읆???듭㎏濡??⑤뜕 媛???湲곕줉 ?꾪겕? ?숈씪??44px ?덉씪濡?利됱떆 ?ㅻ깄. */
+.editor-layout .ai-chat-side-panel:has(.ai-chat-panel.is-collapsed) {
+  flex-basis: 48px !important;
+  min-width: 48px;
+  width: 48px !important;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed {
+  padding: 0;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore {
+  background: var(--bg-raised);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  height: 48px;
+  min-height: 48px;
+  width: 48px;
+}
+/* ?묓옒 ?덉씪 蹂몃Ц ?꾩텧 ?섏젙: float ?묓옒(231?됰?)怨??숈씪?섍쾶 而ㅻ㎤?쒕컮쨌?쇱씠吏??ㅻ쾭?덉씠瑜??④릿??
+   鍮좊쑉由щ㈃ 44px ?덉씪???쒖옉 ?붾㈃/?낅젰李쎌씠 吏쒕??쇱졇 ?덉뼱 ?섏삩??2026-07-09 ?ㅼ륫). */
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-command-bar,
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay,
+.ai-chat-panel.is-docked.is-collapsed > .ai-command-bar,
+.ai-chat-panel.is-docked.is-collapsed > .ai-rising-overlay {
+  display: none;
+}
+/* ?묓옒 ?곹깭 ?뚮┝ ????吏꾪뻾(?몃컯 ?꾩뒪)/?꾨즺 誘명솗??珥덈줉)/?ㅻ쪟(鍮④컯). ?쇱튂硫??뚭굅?쒕떎. */
+.ai-collapsed-restore-dot {
+  border-radius: 50%;
+  display: none;
+  flex: none;
+  height: 9px;
+  position: absolute;
+  right: var(--space-1);
+  top: var(--space-1);
+  width: 9px;
+}
+.ai-chat-panel.is-turn-running .ai-collapsed-restore-dot {
+  animation: ai-rail-dot-pulse 1.1s ease-in-out infinite;
+  background: var(--warning);
+  display: inline-block;
+}
+.ai-chat-panel.is-turn-attention .ai-collapsed-restore-dot {
+  background: var(--success);
+  display: inline-block;
+}
+.ai-chat-panel.is-turn-error .ai-collapsed-restore-dot {
+  background: var(--danger);
+  display: inline-block;
+}
+@keyframes ai-rail-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.ai-config-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.ai-config-saved-hint {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.ai-chat-log {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: 120px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+.ai-chat-log,
+.ai-proposal-lines,
+.ai-skill-drawer,
+.ai-skill-pinbar,
+.ai-slash-list,
+.ai-skill-palette-list {
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+.ai-chat-log::-webkit-scrollbar,
+.ai-proposal-lines::-webkit-scrollbar,
+.ai-skill-drawer::-webkit-scrollbar,
+.ai-skill-pinbar::-webkit-scrollbar,
+.ai-slash-list::-webkit-scrollbar,
+.ai-skill-palette-list::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.ai-chat-log::-webkit-scrollbar-thumb,
+.ai-proposal-lines::-webkit-scrollbar-thumb,
+.ai-skill-drawer::-webkit-scrollbar-thumb,
+.ai-skill-pinbar::-webkit-scrollbar-thumb,
+.ai-slash-list::-webkit-scrollbar-thumb,
+.ai-skill-palette-list::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+.ai-skill-drawer[hidden] {
+  display: none !important;
+}
+

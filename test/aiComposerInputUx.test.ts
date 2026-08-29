@@ -34,7 +34,7 @@ function installFakeLocalStorage(): void {
 }
 
 function renderPanel(dock: "glass" | "side" | "float" = "glass"): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000}) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => dock }) as unknown as FakeElement;
 }
 
 function typeInto(input: HTMLTextAreaElement, value: string): void {

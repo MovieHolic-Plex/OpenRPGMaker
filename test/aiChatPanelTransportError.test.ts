@@ -49,8 +49,9 @@ describe("transport failure paints recovery CTA and keeps Send mounted", () => {
     vi.useFakeTimers();
     // Any transport failure counts — network throw
     vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
-    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000})) as unknown as FakeElement;
+    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
     // expand if collapsed
+    findByTestId(panel, "ai-collapsed-restore")?.click();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send") as unknown as FakeElement;
     const abort = findByTestId(panel, "ai-abort") as unknown as FakeElement;
@@ -76,7 +77,8 @@ describe("transport failure paints recovery CTA and keeps Send mounted", () => {
 
   it("401 also mounts settings opener", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 401, headers: { "Content-Type": "text/plain" } })));
-    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000})) as unknown as FakeElement;
+    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
+    findByTestId(panel, "ai-collapsed-restore")?.click();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "hello";
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();

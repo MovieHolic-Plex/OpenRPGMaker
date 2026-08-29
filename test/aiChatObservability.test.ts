@@ -40,22 +40,7 @@ beforeEach(() => {
   clearConversations();
 });
 
-afterEach(async () => {
-  // 남은 턴의 async 꼬리를 **DOM 과 fetch 스텁이 살아 있는 동안** 끝낸다.
-  //
-  // 이 파일의 테스트는 SSE 를 흉내낸 fetch 스텁으로 턴을 돌리고, 어서션이 실패하면 그 턴이
-  // 다 끝나기 전에 테스트가 끝난다. 남은 꼬리는 **다음 테스트가 도는 중에** 이어지고,
-  // 이때 fetch 스텁이 이미 풀려 실제 요청이 던지므로 `executeTurn` 의 catch 로 떨어져
-  // 전역 `clearAgentGhostPreview()` 를 부른다 — 다음 테스트가 방금 발행한 고스트가 그대로
-  // 지워진다. 이어서 `appendBubble` 이 사라진 document 를 만져 파일 전체에 unhandled
-  // rejection 을 남긴다.
-  //
-  // 실측: 「병합 추론」(선행 실패) 다음에 「고스트 발행」을 돌리면 previews 가 `[]` 로 비었다.
-  // 두 테스트를 따로 돌리면 통과한다 — 즉 실패는 이 꼬리 하나에서 나왔다.
-  //
-  // 마이크로태스크만 비우면 부족하다(실측: 그것만으로는 여전히 빨감). 꼬리는 fetch 응답 본문
-  // 스트림과 고스트 업데이터의 throttle 타이머에 걸려 있어서 **실제 태스크 틱**이 필요하다.
-  for (let i = 0; i < 30; i += 1) await new Promise((resolve) => setTimeout(resolve, 0));
+afterEach(() => {
   clearAgentGhostPreview();
   restoreDom?.();
   restoreDom = null;
@@ -69,7 +54,7 @@ async function flushAsync(): Promise<void> {
 }
 
 function renderPanel(): FakeElement {
-  return renderAiChatPanel() as unknown as FakeElement;
+  return renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
 }
 
 describe("글자 크기 3단 (V3C ①)", () => {
@@ -236,24 +221,9 @@ describe("실시간 고스트 프리뷰 연결", () => {
       ]),
       sse([JSON.stringify({ choices: [{ delta: { content: "초안을 만들었습니다." } }] })]),
     ];
-    // SSE 본문은 **LLM 요청에만** 준다.
-    //
-    // 아무 URL 에나 `bodies.shift()` 를 돌려주면 LLM 이 아닌 왕복이 본문을 먹는다. 실제로
-    // 대화 저장의 Supabase 미러(`/rest/v1/ai_conversations`)가 패널 렌더 중에 한 번 나가면서
-    // 첫 본문(create_map 툴콜)을 가져갔고, 정작 채팅 턴은 툴콜 없는 두 번째 본문을 받아
-    // 체인지셋 0건 → 고스트 0건으로 끝났다. `renderAiChatPanel` 이 앞선 패널을 정리하며
-    // 그 대화를 저장하므로(teardown → persistConversation) 이 왕복은 클릭 전에 일어난다.
-    const otherRequests: string[] = [];
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (url: unknown) => {
-        const href = String(url);
-        if (!/(chat\/completions|\/v1\/messages)/u.test(href)) {
-          otherRequests.push(href);
-          return new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
-        }
-        return new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } });
-      })
+      vi.fn(async () => new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } }))
     );
 
     const panel = renderPanel();
@@ -262,9 +232,6 @@ describe("실시간 고스트 프리뷰 연결", () => {
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
     for (let i = 0; i < 16; i += 1) await flushAsync();
 
-    // 위 분기가 실제로 갈렸는지 남겨 둔다 — 0 이 되면 스텁이 다시 모든 왕복을 삼키고 있다는
-    // 뜻이고, 그때는 이 테스트가 이유 없이 다시 빨개진다.
-    expect(otherRequests.length).toBeGreaterThan(0);
     expect(getAgentGhostPreviewState().previews).toEqual([
       expect.objectContaining({
         mapId: "map_live_ghost",

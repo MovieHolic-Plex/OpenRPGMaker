@@ -28,6 +28,7 @@ async function bootBriefing(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript((keys) => {
     localStorage.removeItem("oprn:editor-ui-mode");
+    localStorage.removeItem("oprn:ai-panel-collapsed");
     localStorage.removeItem("oprn:coachmarks-basic-v1");
     localStorage.removeItem("oprn:standard-welcome-seen");
     localStorage.removeItem("oprn:editor-welcome-dismissed");

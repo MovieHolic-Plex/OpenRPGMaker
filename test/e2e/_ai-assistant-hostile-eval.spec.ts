@@ -45,15 +45,18 @@ async function boot(
     const btn = page.getByRole("button", { name: label }).first();
     if (await btn.isVisible().catch(() => false)) await btn.click().catch(() => undefined);
   }
+  const restore = page.getByTestId("ai-collapsed-restore");
+  if (await restore.isVisible().catch(() => false)) await restore.click();
   await expect(page.getByTestId("ai-input")).toBeVisible({ timeout: 20_000 });
   await page.waitForTimeout(800);
 }
 
-/**
- * 스크린샷 대상 패널. 예전에는 접힘 복귀 알약을 눌러 펼쳤다 — 띠는 상주하므로 펼칠 것이
- * 없다(스펙 §2). 그대로 돌려주고, 이름은 호출부가 많아 유지한다.
- */
-function ensurePanel(page: Page): Locator {
+async function ensurePanel(page: Page): Promise<Locator> {
+  const restore = page.getByTestId("ai-collapsed-restore");
+  if (await restore.isVisible().catch(() => false)) {
+    await restore.click();
+    await page.waitForTimeout(500);
+  }
   return page.getByTestId("ai-panel");
 }
 
@@ -262,16 +265,14 @@ test("C 모달·툴바 — 설정/도구/더보기/도킹/글꼴", async ({ page
     await page.keyboard.press("Escape");
   } else log("ABSENT ai-more-menu-toggle/ai-command-menu-toggle(초보)");
 
-  // `ai-dock-toggle` 배치 순환 탐침이 있던 자리. 배치가 하나라 순환할 것이 없다(스펙 §1).
-  // 대신 전체 기록 오버레이를 열고 닫는다 — 띠에 남은 유일한 표면 전환이다.
-  const history = page.getByTestId("ai-chat-history");
-  if (await history.isVisible().catch(() => false)) {
-    await history.click();
+  const dock = page.getByTestId("ai-dock-toggle");
+  if (await dock.isVisible().catch(() => false)) {
+    await dock.click();
     await page.waitForTimeout(600);
-    await shot(page, "C07-history-open");
-    await history.click();
+    await shot(page, "C07-dock-toggled");
+    await dock.click();
     await page.waitForTimeout(600);
-  } else log("ABSENT ai-chat-history");
+  } else log("ABSENT ai-dock-toggle");
 
   const font = page.getByTestId("ai-font-cycle");
   if (await font.isVisible().catch(() => false)) {
@@ -305,20 +306,16 @@ test("D 실제 대화 한 턴 — 상태 전이·말풍선·후속 UI", async ({
   await abort.waitFor({ state: "visible", timeout: 20_000 }).catch(() => undefined);
   await abort.waitFor({ state: "detached", timeout: 240_000 }).catch(() => undefined);
   await page.waitForTimeout(1200);
-  // 턴 종료 후에도 띠가 자람을 유지하는가? 접힘이 없어졌으므로(스펙 §1) 재는 값이
-  // "접혔나" 에서 "답이 보이게 남아 있나" 로 바뀐다 — `syncRisen` 의 `hasTurn` 계약.
-  const stillRisen = await page
-    .getByTestId("ai-panel")
-    .evaluate((node) => node.classList.contains("is-risen"))
-    .catch(() => false);
-  log(`PANEL-STILL-RISEN-AFTER-TURN: ${stillRisen}`);
-  await shot(ensurePanel(page), "D03-answer");
+  // 턴 종료 후 패널이 저절로 접혔는가?
+  const collapsed = await page.getByTestId("ai-collapsed-restore").isVisible().catch(() => false);
+  log(`PANEL-AUTO-COLLAPSED-AFTER-TURN: ${collapsed}`);
+  await shot(await ensurePanel(page), "D03-answer");
   await shot(page, "D04-answer-full");
   const toolToggle = page.getByTestId("ai-tool-activity-toggle").first();
   if (await toolToggle.isVisible().catch(() => false)) {
     await toolToggle.click();
     await page.waitForTimeout(500);
-    await shot(ensurePanel(page), "D05-tool-activity");
+    await shot(await ensurePanel(page), "D05-tool-activity");
   }
   const quick = page.getByTestId("ai-quick-replies");
   if (await quick.isVisible().catch(() => false)) await shot(quick, "D06-quick-replies");
@@ -364,23 +361,19 @@ test("E 리사이즈·접기 — 극단값", async ({ page }) => {
     }
   } else log("ABSENT ai-resize-handle");
 
-  // 접기 → 복귀 알약 탐침이 있던 자리. 둘 다 삭제됐다(스펙 §1). 남은 기하 축은 유휴↔자람
-  // 하나이므로 새 세션으로 로그를 비워 유휴로 되돌리고 두 상태를 각각 찍는다.
-  const newSession = page.getByTestId("ai-new-session");
-  if (await newSession.isVisible().catch(() => false)) {
-    await newSession.click();
+  const collapse = page.getByTestId("ai-collapse");
+  if (await collapse.isVisible().catch(() => false)) {
+    await collapse.click();
     await page.waitForTimeout(600);
-    const risen = await page
-      .getByTestId("ai-panel")
-      .evaluate((node) => node.classList.contains("is-risen"))
-      .catch(() => true);
-    log(`IDLE-AFTER-NEW-SESSION: ${!risen}`);
-    await shot(page, "E03-idle");
-    await page.getByTestId("ai-input").fill("여기에 마을을 하나 만들어 줘");
-    await page.waitForTimeout(400);
-    await shot(page, "E05-risen");
-    await page.getByTestId("ai-input").fill("");
-  } else log("ABSENT ai-new-session");
+    await shot(page, "E03-collapsed");
+    const restore = page.getByTestId("ai-collapsed-restore");
+    if (await restore.isVisible().catch(() => false)) {
+      await shot(restore, "E04-collapsed-restore-chip");
+      await restore.click();
+      await page.waitForTimeout(500);
+      await shot(page, "E05-restored");
+    } else log("COLLAPSED BUT NO RESTORE CHIP VISIBLE");
+  } else log("ABSENT ai-collapse");
 });
 
 test("F 뷰포트 — 1280·1024·1920", async ({ page }) => {
@@ -404,7 +397,7 @@ test("G 전문가 모드 — 선택 칩·영역 팝오버·히스토리", async 
   collectErrors(page, "G");
   await boot(page, "expert");
   await shot(page, "G01-expert-boot");
-  await shot(ensurePanel(page), "G02-expert-panel");
+  await shot(await ensurePanel(page), "G02-expert-panel");
   await probePanel(page, "G-expert");
 
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
@@ -423,7 +416,7 @@ test("G 전문가 모드 — 선택 칩·영역 팝오버·히스토리", async 
     } else await shot(page, "G05-canvas-selection-no-popover");
     const chip = page.getByTestId("ai-selection-chip");
     if (await chip.isVisible().catch(() => false)) {
-      await shot(ensurePanel(page), "G06-selection-chip");
+      await shot(await ensurePanel(page), "G06-selection-chip");
     } else log("ABSENT ai-selection-chip after right-drag");
   }
 
