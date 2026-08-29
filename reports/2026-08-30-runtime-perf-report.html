@@ -95,9 +95,12 @@
   <h1>런타임 성능 보고서 — 큰 맵·다수 NPC 렉 원인 9건</h1>
   <p class="meta">
     작성일 2026-08-30 · 브랜치 <code>agent/perf</code> · PR
-    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/263">#263</a><br>
+    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/263">#263</a>(1차, 합병됨) ·
+    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/271">#271</a>(2차 성분 색인)<br>
     대조 기준 <code>origin/main</code> @ <code>be171a32</code> ·
-    측정 커밋 <code>fe7a1519</code> + 합병 <code>d319bf24</code> · 프레임 예산 16.7ms (60fps)
+    측정 커밋 <code>fe7a1519</code> + 합병 <code>d319bf24</code> + 성분 색인 <code>2aa8f1e4</code>
+    + 재합병 <code>cc7ef056</code> ·
+    프레임 예산 16.7ms (60fps)
   </p>
 </header>
 
@@ -124,9 +127,9 @@
     <div class="sub">47.609 ms → 9.219 ms</div>
   </div>
   <div class="card">
-    <div class="label">차단 이벤트 판정</div>
-    <div class="value ratio">1.47×</div>
-    <div class="sub">15.11 µs → 10.30 µs</div>
+    <div class="label">도달 불가 판정 (성분 색인)</div>
+    <div class="value ratio">265×</div>
+    <div class="sub">6726 µs → 26 µs</div>
   </div>
 </div>
 
@@ -199,6 +202,44 @@
   </tbody>
 </table>
 
+<h3>도달 불가 판정을 전체 탐색에서 걷어낸 뒤 (2차)</h3>
+<p class="meta">
+  위 표의 A* 수치는 재탐색 <em>빈도</em>를 막은 상태다. 단발 비용 자체를 없앤 결과가 아래다.
+</p>
+<table>
+  <thead>
+    <tr><th>측정 항목</th><th class="num">색인 없음</th><th class="num">색인 있음</th><th class="num">배수</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A* 도달 불가 (벽으로 갈린 100×100)</td>
+      <td class="num before">6726 µs</td><td class="num after">26 µs</td>
+      <td class="num ratio">265×</td>
+    </tr>
+    <tr>
+      <td>경계 후보 100개가 전부 도달 불가 (갇힌 주민)</td>
+      <td class="num before">1864 µs</td><td class="num after">29 µs</td>
+      <td class="num ratio">64×</td>
+    </tr>
+    <tr>
+      <td>A* 도달 가능 (색인이 줄일 수 없는 경로)</td>
+      <td class="num">150 µs</td><td class="num">113 µs</td>
+      <td class="num"><span class="pill same">새 비용 없음</span></td>
+    </tr>
+    <tr>
+      <td>색인 구축 (맵당 1회, 실패한 탐색 뒤에만)</td>
+      <td class="num">—</td><td class="num">2.9 ms</td>
+      <td class="num meta">방금 치른 6.7ms 보다 싸다</td>
+    </tr>
+  </tbody>
+</table>
+<p class="meta">
+  <code>origin/main</code> 을 한 번 더 합병한 뒤(<code>cc7ef056</code>, 충돌 없음 — 상류가
+  <code>chaseAi</code>·<code>collision</code>·<code>playSceneMapRuntime</code> 를 건드리지 않았다)
+  같은 벤치를 다시 돌렸다: 도달 불가 26.5 µs, 경계 후보 30.2 µs, 도달 가능 118 µs, 구축 3.3 ms.
+  표의 수치와 측정 잡음 범위 안이다.
+</p>
+
 <h2>2. 원인과 수정</h2>
 
 <h3>A. 매 프레임 전체 맵 탐색 — 가장 큰 원인</h3>
@@ -238,6 +279,55 @@
   (<code>nearestReachableCandidate</code>)로 바꿨다. 한 칸 비용이 1 이므로 BFS 깊이가 곧 최단 거리다.
   동률 규칙(candidates 배열에서 앞선 것)까지 예전 안정 정렬과 같고, <code>accept</code> 판정은
   실제로 닿은 후보에만 돌려 396칸 전수 검사를 없앴다.
+</p>
+
+<h3>B2. 도달 불가는 아예 탐색하지 않는다 — 통행 성분 색인</h3>
+<p>
+  재탐색 스로틀은 <em>빈도</em>만 막았다. 단발 비용은 여전히 6.7ms 였고, 갇힌 NPC 30명이면
+  500ms 마다 200ms 를 쓴다. 4방향 통행 그래프의 연결 성분을 색인해 도달 불가를 탐색 없이
+  판정한다.
+</p>
+<div class="note-box">
+  <strong>정확한 판정인 근거 — <code>canMove</code> 는 대칭이다:</strong>
+  <pre style="margin: 10px 0 0; background: var(--panel);"><code>canMove(a→b) = a.&lt;dir&gt;      &amp;&amp; b.&lt;opposite&gt;
+canMove(b→a) = b.&lt;opposite&gt; &amp;&amp; a.&lt;dir&gt;     ← 같은 논리곱</code></pre>
+  <p style="margin: 10px 0 0;">
+    그래서 인접 통행 관계는 무향 그래프이고, 유니온-파인드 연결 성분은 <code>findChasePath</code> 의
+    도달 가능성과 <strong>정확히 일치한다</strong>. 근사가 아니라 같은 답이다. 이 정리는
+    인접 쌍 300여 개로 테스트에서 직접 확인한다.
+  </p>
+</div>
+<p>비용을 어디에 두었는지가 이 수정의 핵심이다.</p>
+<ul>
+  <li>
+    <strong>미리 만들지 않는다.</strong> A* 가 실제로 빈 경로를 낸 뒤 — 이미 6.7ms 를 쓴 뒤 —
+    에만 색인을 만든다(2.9ms). 도달 불가가 없는 맵은 값을 치르지 않는다.
+  </li>
+  <li>
+    <strong>도달 가능 질의는 지문을 타지 않는다.</strong> 라벨 두 번 읽기로 끝난다. 낙관적으로 낸
+    "도달 가능" 은 틀려도 호출부가 A* 를 돌려 스스로 바로잡기 때문에 검증할 필요가 없다.
+  </li>
+  <li>
+    <strong>결과를 바꾸는 답에만 검증을 붙인다.</strong> 낡은 색인이 낼 수 있는 위험한 오답은
+    "도달 불가" 하나다 — 그러면 호출부가 탐색을 건너뛰어, 벽이 열렸는데 추격을 포기한다.
+    그 답을 낼 때만 지문(25µs)을 확인하고 낡았으면 그 자리에서 다시 만든다.
+  </li>
+  <li>
+    판정기를 <strong>질의당 한 번</strong> 만들어 돌려 쓴다. 후보마다 검증하면 경계 100칸
+    질의가 100 × 25µs = 2.5ms 로 되돌아간다(실측하고 고쳤다).
+  </li>
+</ul>
+<p>
+  <strong>낡은 색인 대책이 두 겹이다.</strong> 런타임에서 타일이 바뀌는 유일한 지점
+  (<code>applyMapOverrides</code>)은 <code>lowerTiles[i]</code> 를 <em>제자리에서</em> 고쳐
+  배열 identity 로는 잡히지 않는다. 그 지점에서 명시적으로 버리고, 그와 별개로 지문
+  (FNV-1a, 셀당 배열 읽기 2회)이 무효화 누락을 구조적으로 막는다. 무효화 한 곳을 빠뜨려도
+  조용한 게임 버그가 되지 않는다.
+</p>
+<p class="meta">
+  안 덮는 것: 발자국이 1×1 보다 큰 이동. <code>canMoveFootprint</code> 는 이동 방향의 선행
+  모서리만 보므로 폭 2 이상에서 대칭이 깨진다(오른쪽으로 갈 때는 오른쪽 열, 왼쪽으로 갈 때는
+  왼쪽 열). <code>pass</code> 가 있으면 색인을 쓰지도 만들지도 않으며, 그걸 테스트로 고정했다.
 </p>
 
 <h3>C. 이벤트 뷰 질의</h3>
@@ -342,7 +432,7 @@
     </tr>
     <tr>
       <td>전체 vitest — 실패 파일 수</td>
-      <td>93 / 1164</td><td>97 / 1166</td>
+      <td>93 / 1164</td><td>98 / 1167</td>
       <td><span class="pill same">동률</span></td>
     </tr>
     <tr>
@@ -370,17 +460,27 @@
 
 <h3>실패 파일 차이를 하나씩 확인했다</h3>
 <p>
-  전체 실행에서 이 브랜치만 실패한 10개 파일은 <strong>전부</strong>
-  <code>Test timed out in 15000ms</code> 였다. 격리 실행하면 10개 파일 52개 테스트가 모두 통과한다.
-  전체 실행 시간 차이(1000s vs 419s)가 곧 부하 차이다 — 워크트리는 <code>node_modules</code> 를
-  공유하고 두 실행의 머신 부하가 달랐다. 반대로 <code>origin/main</code> 만 실패한 6개는 이 브랜치에서
-  통과한다. <strong>실제 회귀 0건.</strong>
+  전체 실행을 두 번 했고, 두 번 모두 이 브랜치만 실패한 파일은 <strong>전부</strong>
+  <code>Test timed out in 15000ms</code> 였다. 결정적인 대목: 두 실행에서 갈린 파일 목록이
+  <strong>서로 달랐다</strong>(1차 10개, 2차 8개, 겹치는 건 <code>playerBootFactory</code> 하나뿐).
+  같은 코드에서 실패 집합이 흔들린다는 것이 곧 부하 흔들림의 증거다. 격리 실행하면 두 묶음 다
+  전부 통과한다. 반대로 <code>origin/main</code> 만 실패한 파일들은 이 브랜치에서 통과한다.
+  <strong>실제 회귀 0건.</strong>
 </p>
-<pre><code># 이 브랜치만 실패했던 10개 파일 — 격리 실행
+<pre><code># 1차에서 갈린 10개 파일 — 격리 실행
 Test Files  10 passed (10)
       Tests  52 passed (52)
      Errors  1 error   ← mapEditLockScratchSession 의 jsdom Response 잡음.
-                          origin/main 에서 같은 파일을 격리 실행해도 동일하게 나온다(기존 잡음).</code></pre>
+                          origin/main 에서 같은 파일을 격리 실행해도 동일하게 나온다(기존 잡음).
+
+# 2차에서 갈린 8개 파일 — 격리 실행
+Test Files  8 passed (8)
+      Tests  78 passed (78)</code></pre>
+<p class="meta">
+  갈린 파일 어느 것도 이 브랜치의 diff 영역(<code>chaseAi</code>, <code>npcSchedules</code>,
+  <code>runtimeEventState</code>, <code>tilePassabilityComponents</code>, 컬링)에 속하지 않는다 —
+  마을 생성기·부팅 복구·농장 공간 질의 쪽이다.
+</p>
 
 <h3>500줄 WARN 을 새로 넘긴 파일은 없다</h3>
 <table class="files">
@@ -408,6 +508,14 @@ Test Files  10 passed (10)
           <code>accept</code> 가 닿은 후보에만 불리는지, 추격 재탐색 스로틀과 <code>chasePathBlocked</code> 해제,
           시간표 틱 스로틀(음수 delta 포함), <code>runtimeEventViewById</code> 동등성,
           <code>tileStackAt</code> 순수성</td>
+    </tr>
+    <tr>
+      <td>test/tilePassabilityComponents.test.ts</td><td class="num">8</td>
+      <td><code>canMove</code> 대칭 정리를 인접 쌍 300여 개로 직접 확인, 무작위 맵 48개에서
+          색인 없음/있음의 <code>findChasePath</code>·<code>nearestReachableCandidate</code> 결과
+          대조(참조 BFS 와도 대조), <strong>벽을 제자리에서 열면 추격이 다시 경로를 찾는지</strong>,
+          벽을 막으면 도달 불가로 바뀌는지, 무효화가 낙관 판정으로 되돌리는지,
+          발자국 경로가 색인을 남기지 않는지</td>
     </tr>
     <tr>
       <td>test/playSceneTileCulling.test.ts</td><td class="num">7</td>
@@ -452,7 +560,15 @@ Test Files  10 passed (10)
 <ul>
   <li>프레임 예산 계측을 CI 게이트로 만들지 않았다. 벤치 하네스는 <code>scratch/</code>(gitignore)에 있고 커밋되지 않는다.</li>
   <li>플레이어 자신의 발자국은 상류 후속 태스크로 남아 있다 — <code>isCharacterBlockedRect</code> 의 플레이어 쪽은 아직 점이다.</li>
-  <li>도달 불가 A* 는 고친 뒤에도 9.2ms 다. 재탐색 스로틀로 빈도를 막았을 뿐 한 번의 비용은 크다. 계층 경로 탐색이나 연결 성분 사전 계산이 다음 후보다.</li>
+  <li>
+    발자국이 1×1 보다 큰 이동은 성분 색인을 쓰지 못한다(§B2). 그 경로의 도달 불가는 아직
+    전체 탐색이다. 방향별 성분(강한 연결 성분)을 따로 색인하면 덮을 수 있지만, 발자국 크기마다
+    색인이 필요해 값이 맞는지 먼저 재 봐야 한다.
+  </li>
+  <li>
+    <strong>도달 가능</strong> 경로의 A* 자체는 그대로다(113µs). 프레임 예산 안이므로 손대지 않았다.
+    더 줄이려면 계층 경로 탐색(성분 안에서 관문 그래프)이 다음 후보다.
+  </li>
 </ul>
 
 <p class="meta" style="margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);">
