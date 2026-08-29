@@ -20,6 +20,7 @@ import { inMapBounds, requireMap, setLower, setUpper, type Point } from "../mapH
 import { wobblePath } from "../naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
 import { placePropsOnDraft } from "../placePropsDomain";
+import type { ScatterPacking } from "../placementTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
 import { coerceInt, coercePoint, coercePointArray, failWithExample } from "../toolArgCoerce";
 import { tilesetGrammarProfile } from "./grammarProfiles";
@@ -549,7 +550,8 @@ const layPath: ToolDefinition = {
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "소품을 area 안에 자연 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.",
+    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region. "
+    + "사용자가 빽빽하게·통행 불가·길 막기를 요구하면 packing:\"dense\" 로 보내고 count 는 area 면적만큼 크게 잡는다(결과에 남은 통행 칸 수가 나온다).",
   mode: "write",
   version: 3,
   parameters: {
@@ -566,6 +568,11 @@ const placeProps: ToolDefinition = {
       count: { type: "integer", description: "배치 개수" },
       minGap: { type: "integer", description: "간격(기본 1; 마을 산포는 2+ 권장)" },
       naturalness: { type: "number", description: "0~1(기본 0.5). <0.3=한곳 뭉침(uniform), 0.3~0.7=poisson 산포, >0.7=cluster" },
+      packing: {
+        type: "string",
+        enum: ["natural", "dense"],
+        description: "\"dense\"=빈틈 없이 맞닿게 채워 통행을 막는다(간격 0, 자연도 무시). 기본 \"natural\"",
+      },
       seed: { type: "integer" },
     },
     required: ["mapId", "area", "material", "count"],
@@ -578,6 +585,7 @@ const placeProps: ToolDefinition = {
     if (!material) failWithExample("material(타일 라벨/설명, 예: \"침엽수\"·\"나무 상자\")이 필요합니다", PROPS_EXAMPLE);
     const minGap = typeof args.minGap === "number" && Number.isInteger(args.minGap) ? args.minGap : undefined;
     const seed = args.seed === undefined ? undefined : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
+    const packing = args.packing === undefined ? undefined : coercePacking(args.packing);
     return placePropsOnDraft(draft, {
       mapId: map.id,
       area,
@@ -586,9 +594,15 @@ const placeProps: ToolDefinition = {
       ...(minGap === undefined ? {} : { minGap }),
       naturalness: naturalnessArg(args),
       ...(seed === undefined ? {} : { seed }),
+      ...(packing === undefined ? {} : { packing }),
     });
   },
 };
+
+function coercePacking(value: unknown): ScatterPacking {
+  if (value === "natural" || value === "dense") return value;
+  failWithExample('packing은 "natural" 또는 "dense"여야 합니다', PROPS_EXAMPLE);
+}
 
 function fillBodyTile(group: TileGroupMetadata, autotile: AutotileGroup | null): number | null {
   const center = group.patternGrammar?.parts.find((part) => part.role === "center")?.tileIds[0];

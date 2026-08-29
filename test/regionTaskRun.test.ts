@@ -431,13 +431,15 @@ describe("승인 게이트 (gate: approval 기본)", () => {
 });
 
 describe("describeRegionTaskResult — pending", () => {
-  it("pending이면 확인 대기 문구", () => {
+  // 문구가 "제안 준비 … 적용 여부를 선택하세요" 였을 때는 반영 여부가 드러나지 않았다.
+  // 2026-08-29 실측(모델은 "시공했습니다", 맵은 그대로)에 맞춰 미반영을 명시한다.
+  it("pending이면 아직 반영되지 않았다고 말한다", () => {
     const text = describeRegionTaskResult({
       ok: true, applied: false, changedCells: 34, changedEvents: 2, clippedCells: 0,
       proposedCalls: 3, assistantText: "",
       pending: { settled: false } as never,
     });
-    expect(text).toBe("제안 준비 — 34칸 타일 · 이벤트 2건 · 적용 여부를 선택하세요");
+    expect(text).toBe("승인 대기 — 34칸 타일 · 이벤트 2건 · 아직 반영되지 않았습니다");
   });
 });
 

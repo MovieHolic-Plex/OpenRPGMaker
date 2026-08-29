@@ -25,6 +25,7 @@ import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
+import { passableCellCount } from "@/editor/tools/mapHelpers";
 import {
   store,
   type ProjectE2ESnapshot,
@@ -90,6 +91,8 @@ type RegionTaskHarness = {
   currentMapId: () => MapId;
   setSelection: (selection: { mapId: MapId; x: number; y: number; width: number; height: number } | null) => void;
   readCell: (mapId: MapId, layer: "lower" | "upper", x: number, y: number) => number | null;
+  /** 영역 안에서 아직 걸어 들어갈 수 있는 칸 수 — "아예 통행불가능하게" 를 실측할 유일한 창구. */
+  passableCount: (mapId: MapId, area: { x: number; y: number; w: number; h: number }) => number | null;
   runMock: (mapId: MapId, region: RegionRect, writes: readonly RegionWrite[]) => Promise<RegionTaskResult>;
   /** writes 를 주면 모달이 그 결과로 자동 실행되어 제안 검토 UI 까지 렌더된다. */
   openModal: (
@@ -206,6 +209,12 @@ export function installEditorToolHook(): void {
       const index = y * map.width + x;
       const value = layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index];
       return value ?? null;
+    },
+    passableCount: (mapId, area) => {
+      const project = store.getCurrent();
+      const map = project.maps[mapId];
+      if (!map) return null;
+      return passableCellCount(project, map, area);
     },
     // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
     // 적용하려면 반환된 result.pending.apply() 또는 window.__oprnRegionTaskPending.apply()를 호출.
