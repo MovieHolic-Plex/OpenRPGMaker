@@ -150,11 +150,14 @@ const readState = () =>
   page.evaluate(() => {
     const fn = window.__oprnAudioState;
     const engine = typeof fn === "function" ? fn() : null;
-    // `new Audio(url)` 는 **DOM 에 붙지 않는 detached 엘리먼트**다(audioEngine.ts 의 createElement).
-    // 그러니 document.querySelectorAll("audio") 는 **항상 불 배열**이고, 거기에 교차 검증을
-    // 걸었다가 항상 실패하는 사고가 난다. 엘리먼트 실제값은 엔진이 스냅샷의 tracks[] 로
-    // 노출하는 것만이 관측 경로다.
-    return { engine, tracks: engine?.tracks ?? null };
+    // 엔진은 재생 엘리먼트를 `data-oprn-audio` 마킹과 함께 DOM 에 등록한다
+    // (audioEngine.ts). 그러므로 엔진이 보고하는 값과 **실제 미디어의 값**을 따로 읽어
+    // 둘이 갈라지는 지점(= 소리는 그대로인데 필드만 바뀌는 회귀)을 잡을 수 있다.
+    const media = document.querySelector("audio[data-oprn-audio]");
+    return {
+      engine,
+      media: media ? { volume: media.volume, playbackRate: media.playbackRate, paused: media.paused } : null,
+    };
   });
 
 const beforeSliders = await readState();
@@ -204,13 +207,14 @@ record("C3-페이드인이-엔진에-반영", (engineAfter?.fadeInMs ?? -1) === 
   expected: EXPECT.fadeInMs,
 });
 // 엔진 필드에만 잡힐 들어가고 **미디어에는 안 닿는** 회귀를 잡는 교차 검증.
-// tracks[] 가 없으면 그 자실을 사실로 기록한다(몰래 통과시키지 않는다).
-const liveTrack = (afterSliders.tracks ?? [])[0] ?? null;
-record("C3-엔진값이-실제-미디어에-닿는다", liveTrack !== null
-  && Math.abs(liveTrack.playbackRate - EXPECT.rate) < 0.02
-  && Math.abs(liveTrack.volume - EXPECT.volume) < 0.05, {
-  liveTrack,
-  note: liveTrack === null ? "__oprnAudioState().tracks 미노출 — 엔진/미디어 일치를 증명할 수 없다" : undefined,
+// 엘리먼트를 못 찾으면 그 자실을 사실로 기록한다(몰래 통과시키지 않는다).
+const liveMedia = afterSliders.media;
+record("C3-엔진값이-실제-미디어에-닿는다", liveMedia !== null
+  && Math.abs(liveMedia.playbackRate - EXPECT.rate) < 0.02
+  && Math.abs(liveMedia.volume - EXPECT.volume) < 0.05, {
+  liveMedia,
+  expected: { volume: EXPECT.volume, rate: EXPECT.rate },
+  note: liveMedia === null ? "audio[data-oprn-audio] 미발견 — 엔진/미디어 일치를 증명할 수 없다" : undefined,
 });
 
 await page.getByTestId("audio-test-stop").click();
