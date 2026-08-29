@@ -67,3 +67,65 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 - If an editor change affects saved JSON, update `openwiki/runtime-project-schema.md` guidance and verify migration/serialization paths.
 - For UI changes, drive the actual editor surface and keep screenshot or Playwright evidence.
 
+
+## 헤더 용어 정본과 중복 감사 (2026-08-30)
+
+에디터 헤더(메뉴바 · 톱바 트레일링 클러스터 · 클래식 툴바)의 사용자 가시 문구는 **`src/editor/uiCopy.ts`
+한 곳**에서만 나온다. `menu.ts` 의 `headerLabel(key)` 가 현재 모드의 `jargonStyle` 로 그 표를 읽는
+유일한 통로다. 한국어를 새로 하드코딩하지 말고 키를 추가하라.
+
+규칙: **title 과 aria-label 은 언제나 정본**(긴 키), label 은 정본 또는 `*Short` 축약형.
+설명 문구는 정본 뒤에 `—` 로 잇는다(`랜덤 전투 테스트 — 적 그룹을 뽑아 즉시 전투`) — 정본 자리에
+설명문을 쓰면 같은 동작이 또 다른 이름을 얻는다.
+
+| 개념 | uiCopy 키 | plain | technical |
+|---|---|---|---|
+| DB 편집기 | `database` / `databaseShort` | 자료집 / 자료집 | 데이터베이스 / DB |
+| 보관함 | `resourceLibrary` (+ `resources`) | 소재 보관함 (+ 소재) | 리소스 보관함 (+ 리소스) |
+| 세계관 | `world` | 세계관 | 세계관 |
+| 음악·효과음 | `audio` / `audioShort` | 음악·효과음 / 음악 | 동일 |
+| 맵·이벤트 찾기 | `mapEventSearch` / `mapEventSearchShort` | 맵·이벤트 찾기 / 찾기 | 동일 |
+| 테스트 실행 | `testPlay` / `testPlayShort` | 테스트 실행 / 테스트 | 동일 |
+| 랜덤 전투 테스트 | `battleTest` / `battleTestShort` | 랜덤 전투 테스트 / 전투 | 동일 |
+| 레이어 | `layerLower` / `layerUpper` / `layerEvent` | 바닥 / 덧그림 / 이벤트 | 동일 |
+
+**코드에 남으면 안 되는 폐기 문자열:** `자료 보관함`, `시연 실행`(및 `전체 프로젝트 시연 실행`,
+`현재 프로젝트 시연 실행`), `음악/효과음`, `맵/이벤트 찾기`, 레이어 의미의 `하위`/`상위`,
+`databaseShort` 의 `자료` 단독형, 이 검색 표면 명칭으로서의 `검색`.
+계약 테스트 `test/editorHeaderTerminology.test.ts` 가 expert 모드 `renderTopbar` 를 실제로 렌더해
+톱바 DOM 전체의 텍스트·title·aria-label(도구·게임 팝업 포함)에서 이들을 잡는다.
+
+`layerShortLabel` / `toolShortLabel` 의 정본은 **`src/editor/panels/aiAgentBrief.ts`** 다.
+`menu.ts` 는 2026-08-30 까지 자기 사본을 들고 `"하위"`/`"상위"` 를 반환했고, 그 값이 visually-hidden
+`layer-selector` 스팬으로 스크린리더에 읽혔다 — 사본을 만들지 말고 import 하라.
+
+### 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+
+| 동작 | 진입점 전부(testid) | 판정 | 근거 |
+|---|---|---|---|
+| 테스트 실행 | `menu-game-play`, `mode-play`(=`topbar-test-play`), `authoring-task-test`, play 모드 클래식 `mode-play` | 의도됨 | 세 표면이 모두 `openTestPlayWindow()` 한 경계를 지난다. 톱바 버튼은 가장 잦은 동작의 단축 경로이고 e2e 다수가 `mode-play` 를 계약으로 쓴다 |
+| 랜덤 전투 테스트 | `menu-game-battle-test`, `topbar-battle-test`(⚔), `toolbar-battle-test` | 의도됨 | `test/randomBattleTestToolbar.test.ts`, `test/menuWorldSurface.test.ts`, `test/e2e/editor-map-focused-shell.spec.ts` 가 ⚔ 버튼을 명시적으로 고정한다 |
+| AI 설정 | `menu-tools-ai-settings`, `topbar-ai-settings` | 의도됨 | `test/menuWorldSurface.test.ts` 「헤더의 AI 설정 버튼이 설정 모달을 연다」 + `editor-map-focused-shell.spec.ts` 가 계약으로 고정 |
+| DB 편집기 | `menu-tools-database`, `toolbar-database`, `authoring-task-data` | 의도됨(legacy) | 클래식 툴바는 전문가 전용 legacy 표면(`is-legacy-surface`)이고 RM 관례다. DB e2e 다수가 `toolbar-database` 를 쓴다 |
+| 보관함 | `menu-tools-resources`, `toolbar-resource-manager` | 의도됨(legacy) | 위와 같음(`supabase-root-cache.spec.ts`, `oprn-sample-game.spec.ts`) |
+| 세계관 | `menu-tools-world`, `toolbar-world` | 의도됨(legacy) | 위와 같음 |
+| 음악·효과음 | `menu-tools-audio`, `toolbar-sound-test` | 의도됨(legacy) | 메뉴 항목은 초보·표준에서 유일한 도달 경로(2026-08-26), 툴바는 `play-audio-editor-proof.spec.ts` 계약 |
+| 맵·이벤트 찾기 | `menu-tools-search`, `toolbar-search` | 의도됨(legacy) | 위와 같음 |
+| 새 프로젝트 | `menu-project-new`, `toolbar-new` | 의도됨(legacy) | RM 관례의 툴바 첫 칸 |
+| 저장 | `menu-project-save`, `toolbar-save` | 의도됨(legacy) | Ctrl+S 와 같은 `saveProjectNow()` |
+| 저장본 다시 불러오기 | `menu-project-reload-db`, `toolbar-reload-db` | 의도됨(legacy) | 같은 `reloadProjectFromDbNow()` |
+| 열기 | `menu-project-load`, `toolbar-load` | 의도됨(legacy) | 같은 `openDbConnectionSettings` |
+| 가져오기 | `menu-project-import`, `toolbar-import` | 의도됨(legacy) | 같은 `doImport()` |
+| 도움말 | `menu-help-shortcuts`, `toolbar-help` | 의도됨(legacy) | 같은 `openHelpModal()`. `menu-help` 자체는 expert 전용(`chrome.helpMenu`) |
+| 맵 복사 | `toolbar-map-copy` | 단독 | 메뉴바에 없음 |
+| 선택 이벤트 테스트 | `toolbar-event-test` | 단독 | 선택 이벤트가 없으면 disabled + 안내 title |
+| 저장 상태·재시도 | `topbar-save-status`(→ `db-autosave-retry`) | 단독 | 하단 상태바 폐지 후 유일한 호스트 |
+| 커밋 히스토리 / 신원 | `commit-history-toggle`, `topbar-identity` | 단독 | 트레일링 아이콘 클러스터 |
+| 명령 팔레트 | `workspace-command-palette-button` | 단독(예외) | Ctrl+K 팔레트는 전 표면 검색이라 IA 계약의 예외. title 은 `명령 팔레트 (Ctrl+K)` — 구 `명령·맵·스킬 찾기` 는 삭제된 조수 스킬을 가리키고 `찾기` 표면과 충돌했다 |
+| 패널·밀도·편집 모드 | `workspace-panels-button` → `workspace-panels-menu` | 단독 | 편집 모드 전환의 집(2026-08-26) |
+| 창 컨트롤 | `window-toolbar-collapse`, `window-fullscreen` | 단독 | — |
+| 레이어·도구 현재 상태 | `layer-selector` (visually-hidden) | 표시 전용 | 전환은 좌측 사이드바가 소유한다. 문구는 `aiAgentBrief.layerShortLabel` 정본 |
+
+**이 감사에서 지운 것은 진입점이 아니라 용어를 중복 정의한 코드다.** 메뉴바 ↔ 클래식 툴바 중복은
+전문가 전용 legacy 표면이라 유지하고, `topbar-ai-settings` · `topbar-battle-test` 는 기존 테스트가
+계약으로 고정한 의도된 단축 경로다.
