@@ -54,12 +54,19 @@ import {
   ROAD_TILES,
   uniqueId,
   type BuiltHouse,
+  type HouseTemplate,
   type Plaza,
   type Point,
   type Rect,
   type SettlementLayout,
   type VillageIntent,
 } from "./constants";
+import {
+  presetOverrides,
+  villagePresetById,
+  villageTemplateCatalog,
+  type PresetOverrides,
+} from "./authoringData";
 import { auditVillage, critiqueBuiltVillage, critiqueVillageMap, roadComponentNotes } from "./audit";
 import { placeVillageDecor } from "./decor";
 import { placeHouseLotFences } from "./fences";
@@ -103,10 +110,25 @@ export function buildVillageDomain(
   const doorEventEnabled = merged.doorEvent !== false;
   const fencesEnabled = merged.fences !== false;
   const decorEnabled = merged.decor !== false;
-  const intent = resolveVillageIntent(merged, housePlan);
+  const warnings: string[] = [];
+  // 사용자 저작 데이터 층 — 데이터베이스 「마을」탭 레코드가 코드 기본값을 이긴다.
+  // 우선순위: 명시 인자 > 프리셋 > 테마 추론 > 씨앗값 파생.
+  const presetId = typeof merged.presetId === "string" ? merged.presetId.trim() : "";
+  const preset = presetId ? villagePresetById(draft, presetId) : undefined;
+  if (presetId && !preset) {
+    warnings.push(`마을 프리셋 '${presetId}'을 찾을 수 없어 코드 기본값으로 시공했다.`);
+  }
+  const presetValues = presetOverrides(preset);
+  const catalog = villageTemplateCatalog(draft, presetValues.templateIds);
+  warnings.push(...catalog.warnings);
+  if (preset) {
+    warnings.push(`마을 프리셋 적용: ${preset.name || preset.id} (형태 후보 ${catalog.templates.length}종).`);
+  }
+  if (merged.npcCount === undefined && presetValues.npcCount !== undefined) merged.npcCount = presetValues.npcCount;
+  if (merged.groundTheme === undefined && presetValues.groundTheme !== undefined) merged.groundTheme = presetValues.groundTheme;
+  const intent = resolveVillageIntent(merged, housePlan, presetValues, catalog.templates, preset?.id, preset?.name);
   const windows = coerceWindows(merged.windows);
   const overrides = npcOverrides(merged.npcs);
-  const warnings: string[] = [];
   if (!intent.theme && !hasExplicitVillageIntent(merged) && !merged.planId) {
     warnings.push(
       "계획/의도 없이 기본 레시피로 시공했다. " +
@@ -158,7 +180,8 @@ export function buildVillageDomain(
   // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
   const targetHouses = housePlan.explicit
     ? housePlan.count
-    : Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
+    : presetValues.houseCount
+      ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
   // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
   const boulevard = villageBoulevard(area, plaza);
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
@@ -1155,29 +1178,37 @@ function hasExplicitVillageIntent(args: Record<string, unknown>): boolean {
   );
 }
 
-function resolveVillageIntent(args: Record<string, unknown>, housePlan: HousePlanCoerced): VillageIntent {
+function resolveVillageIntent(
+  args: Record<string, unknown>,
+  housePlan: HousePlanCoerced,
+  presetValues: PresetOverrides,
+  templateCatalog: readonly HouseTemplate[],
+  presetId: string | undefined,
+  presetName: string | undefined,
+): VillageIntent {
   const theme = typeof args.theme === "string" ? args.theme.trim() : "";
   const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
-  const inferred = inferIntentFromTheme(theme);
+  // 프리셋이 있으면 테마 추론보다 앞선다 — 사용자가 직접 정한 값이 휴리스틱을 이긴다.
+  const inferred = { ...inferIntentFromTheme(theme), ...presetValues };
   const pathStyle = args.pathStyle !== undefined ? coercePathStyle(args.pathStyle) : (inferred.pathStyle ?? DEFAULT_ROAD_STYLE);
   const kitMix = coerceEnum(args.kitMix, ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood"] as const, inferred.kitMix ?? "mixed", "kitMix");
   const yardStyle = coerceEnum(args.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle");
   const plazaStyle = coerceEnum(args.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "market", "plazaStyle");
   const edgeTrees = coerceEnum(args.edgeTrees, ["conifer", "dense", "none"] as const, inferred.edgeTrees ?? "conifer", "edgeTrees");
   const plazaLayout = coerceEnum(args.plazaLayout, ["center", "north", "south", "west", "east"] as const, inferred.plazaLayout ?? "center", "plazaLayout");
-  // 길 폭·자연도·배치 패턴: 명시 인자 없으면 seed로 다양화 (전부 1칸 직선 금지)
+  // 길 폭·자연도·배치 패턴: 명시 인자 → 프리셋 → seed 파생 (전부 1칸 직선 금지)
   const roadWidth = typeof args.roadWidth === "number" && Number.isInteger(args.roadWidth)
     ? Math.min(MAX_ROAD_WIDTH, Math.max(2, args.roadWidth))
-    : (seed % 2 === 0 ? 3 : DEFAULT_ROAD_WIDTH);
+    : presetValues.roadWidth ?? (seed % 2 === 0 ? 3 : DEFAULT_ROAD_WIDTH);
   const roadNaturalness = typeof args.roadNaturalness === "number" && Number.isFinite(args.roadNaturalness)
     ? Math.min(1, Math.max(0.35, args.roadNaturalness))
-    : 0.4 + ((seed >>> 3) % 4) * 0.1; // 0.4~0.7
+    : presetValues.roadNaturalness ?? 0.4 + ((seed >>> 3) % 4) * 0.1; // 0.4~0.7
   // plaza-ring을 기본으로 두고 seed로 가끔만 변형 (항상 clusters면 집 수가 줄어 회귀)
-  const defaultSettlement: SettlementLayout = seed % 5 === 0
+  const defaultSettlement: SettlementLayout = presetValues.settlementLayout ?? (seed % 5 === 0
     ? "clusters"
     : seed % 3 === 0
       ? "street-grid"
-      : "plaza-ring";
+      : "plaza-ring");
   const settlementLayout = coerceEnum(
     args.settlementLayout,
     ["plaza-ring", "street-grid", "clusters"] as const,
@@ -1186,6 +1217,9 @@ function resolveVillageIntent(args: Record<string, unknown>, housePlan: HousePla
   );
   return {
     theme,
+    templateCatalog,
+    ...(presetId ? { presetId } : {}),
+    ...(presetName ? { presetName } : {}),
     pathStyle,
     kitMix,
     yardStyle,
@@ -1470,6 +1504,8 @@ function setVillageHarnessLayoutPlan(
           "commons",
           "road-loop",
           ...(settlementLayout === "street-grid" ? ["street-grid"] : []),
+          // 어떤 사용자 프리셋으로 지었는지 — 같은 마을을 다시 뽑을 때의 단서.
+          ...(intent.presetId ? [`preset:${intent.presetId}`] : []),
           intent.plazaStyle,
           `kit-target:${kitTarget}`,
           `shape-target:${shapeTarget}`,

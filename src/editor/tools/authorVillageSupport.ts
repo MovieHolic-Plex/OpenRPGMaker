@@ -64,6 +64,7 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     ...(request.settlementLayout === undefined ? {} : { settlementLayout: request.settlementLayout }),
     ...(request.npcCount === undefined ? {} : { npcCount: request.npcCount }),
     ...(request.seed === undefined ? {} : { seed: request.seed }),
+    ...(request.presetId === undefined ? {} : { presetId: request.presetId }),
     interior: request.interior ?? true,
     doorEvent: request.interior ?? true,
   };

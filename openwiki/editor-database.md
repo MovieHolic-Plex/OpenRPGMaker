@@ -205,3 +205,20 @@ The Database modal was modernized in six waves while keeping every hard contract
 - **파일 포맷은 `rpgzzu-structure-kits` v1**(`structureKitFile.ts`). 파일에 들어가는 순간 사진이 된다 — house 킷도 구운 래스터로 나가므로 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
 - 내보내기·가져오기 진입점: 도구줄 `structure-kit-export`(체크된 행이 있으면 **지금 보이는 그 선택**만, 없으면 앨범 전체) / `structure-kit-import`, 확인창은 `structure-kit-import-list` + `structure-kit-import-confirm`. 다운로드는 `src/util/downloadBlob.ts` 한 곳을 지난다 — anchor 를 DOM 에 붙였다 떼고 `revokeObjectURL` 을 동기 호출하지 않는, `menu.ts` 에서 겪은 3-버그 회피 패턴이다.
 - 커버리지: `test/structureKitRasterModel.test.ts`(칸 계산·페인트·크기조절·부위 CRUD·굽기), `test/structureKitFile.test.ts`(직렬화·검증·`planImport`·origin 보존), `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`(repeatability), `test/downloadBlob.test.ts`, 그리고 브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 3케이스.
+
+---
+
+## '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+
+마을 생성의 값은 전부 코드 상수였다. 집 형태 34종은 `HOUSE_TEMPLATES` 의 `wingsAt()` 함수였고, 길 폭·광장 모양·마당 스타일은 씨앗값과 테마 문자열에서 파생됐다. 사용자가 바꿀 자리가 없었고, AI 도 코드 요약만 읽었으므로 "내가 정한 대로 깔아 줘" 가 성립하지 않았다. 이 탭이 그 입력단이다.
+
+- **레일 위치**: 세계 그룹, `구조물` 과 `지형` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
+- **두 종류를 한 탭에서 저작한다.** 목록 창 칩(`db-village-kind-template` / `db-village-kind-preset`)이 축이고, 오른쪽 상세는 고른 종류를 편집한다. 저장 위치는 `project.villageTemplates` / `project.villagePresets` — 프로젝트에 있으면 **전부 사용자 저작**이다(내장 카탈로그는 코드에 남고 레코드가 되지 않는다).
+- **제로 부트스트랩**: 탭을 열기만 해서는 아무 레코드도 생기지 않는다. 두 배열은 그대로 `undefined` 다.
+- **화면의 선택지와 하네스가 받는 값은 같은 상수에서 나온다.** select 옵션은 `village/authoringData.ts` 의 `VILLAGE_PATH_STYLES` · `VILLAGE_PLAZA_LAYOUTS` · `VILLAGE_RANGE` 등을 그대로 쓴다. 예전에 화면과 하네스가 갈라졌던 항목(`roadWidth` 2~3, `roadNaturalness` 하한 0.35)이 여기 있다 — 갈라지면 사용자가 고른 값이 조용히 무시된다.
+- **집 형태**: 폭 3~8 · 높이 4~24 바운딩 박스 + 날개(직사각형) 목록. 날개 합집합이 집 바닥이므로 숫자만으로는 L 자인지 ㄷ 자인지 알 수 없어 `db-village-footprint-large` 격자 미리보기를 함께 그린다. `박스 맞추기`(`db-village-wing-tighten`)는 빈 줄·열을 없애고, `내장 형태에서 값 가져오기`(`db-village-import-apply`)는 값을 **베껴** 온다(`clonedFrom` 만 계보로 남고, 이후 내장이 바뀌어도 사본은 그대로다).
+- **규약 위반은 막지 않고 보여준다.** `templateFromRecord()` 가 거절한 레코드는 목록 행에 `규약 위반`, 상세에 `db-village-template-warning` 으로 뜨고, 시공에서는 그 형태만 건너뛴다(경고 1줄, 시공 실패 아님).
+- **배치 프리셋은 모든 값이 「지정 안 함」에서 시작한다.** 고른 값만 키로 남고(`undefined` 는 키째 지운다), 비운 값은 코드 기본값/씨앗값이 담당한다. `쓸 집 형태 고르기` 는 카탈로그 전체(내장+사용자)를 체크박스로 내주고 고른 id 만 `templateIds` 로 저장한다 — 하나도 안 고르면 전체를 쓴다.
+- **참조는 따라간다.** 집 형태를 지우면 프리셋 화이트리스트에서도 빠지고, id 를 바꾸면 프리셋이 새 id 를 가리킨다. 죽은 id 를 남기면 시공 때 경고가 되기 때문이다.
+- **사슬**: 이 레코드가 `village/authoringData.ts` → `buildVillageDomain` 의 `VillageIntent.templateCatalog` 로 들어가고, 동시에 `ai/contextBuilder.ts` 의 `## 마을 저작 데이터` 섹션에 실려 모델이 `author_village({ presetId })` / `housePlans[].templateId` 로 지목할 수 있게 된다. 우선순위는 **명시 인자 > 사용자 프리셋 > 테마 추론 > 씨앗값 파생**.
+- 커버리지: `test/databaseVillageView.test.ts`(15케이스 — 규약 통과·내장 복제·날개 편집·프리셋 키 생성/삭제·참조 정리), `test/villageAuthoringData.test.ts`(읽기·AI 컨텍스트·시공 반영), `test/houseTemplateCatalog.test.ts`(내장 34종 데이터화 등가성).

@@ -170,6 +170,14 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M4 6.9 11 10.9 18 6.9" } },
     { tag: "path", attrs: { d: "M11 10.9v8.2" } },
   ],
+  // 마을 — 집 두 채와 길
+  villages: [
+    { tag: "path", attrs: { d: "M3.2 9 6.9 5.4 10.6 9" } },
+    { tag: "rect", attrs: { x: "4.4", y: "9", width: "5", height: "5.2", rx: "0.6" } },
+    { tag: "path", attrs: { d: "M12.2 11.2 15.4 8.2 18.6 11.2" } },
+    { tag: "rect", attrs: { x: "13.3", y: "11.2", width: "4.2", height: "3.4", rx: "0.6" } },
+    { tag: "path", attrs: { d: "M2.8 18.6c3.2 0 3.6-2.2 6.8-2.2s4.2 2.2 8.2 2.2" } },
+  ],
   // 지형 — 산
   terrain: [
     { tag: "path", attrs: { d: "M2.6 17.4l5.5-8.5 4 6" } },
