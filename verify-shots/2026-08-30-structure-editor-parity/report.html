@@ -233,8 +233,20 @@
   <li><span class="pill">통과</span> <code>npm run build</code></li>
   <li><span class="pill">통과</span> <code>npm run gates:css</code> — 최신 main 머지 후 실행. 새 CSS 파일 0 · 새 hex 0 · 새 <code>!important</code> 0. <b><code>undefinedVars</code> 63 → 61 로 오히려 줄었다</b>(죽은 선언 2개를 살려서). 래칫은 조이지 않았다 — <code>--save-baseline</code> 은 쓰지 않는다.</li>
   <li><span class="pill">통과</span> 브라우저 실측 — 위 표 전체 + 모서리 클릭이 칸 (0,0) 에 대응 + 부위 종류 팝오버 개시</li>
-  <li><span class="pill b">환경 제약</span> e2e <code>db-structure-editor</code> · <code>database-modal-size-invariant</code> — 이 박스가 부하 평균 <b>146~160</b>(48코어, 다른 세션 다수)일 때 돌려 <code>toolbar-database</code> 클릭 같은 사소한 대기가 <b>240초 타임아웃</b>으로 죽었다. 실패 메시지는 전부 타임아웃·<code>Target crashed</code> 이고 기하 불일치 단정은 하나도 없다. 부하가 정상일 때의 단독 재실행 결과를 본문 아래에 갱신한다.</li>
+  <li><span class="pill">통과 2 / <span class="bad">환경 실패 2</span></span> e2e <code>db-structure-editor</code> — 아래 별도 절 참조</li>
 </ul>
+
+<h3>e2e 는 이 박스의 부하 때문에 4개 중 2개만 끝까지 갔다</h3>
+<p>48코어 공용 박스에 다른 세션이 다수 붙어 부하 평균이 <b>93~160</b> 이었다. 테스트 타임아웃을 끄고(<code>--timeout=0</code>) 돌려도 2개가 죽었는데, 죽는 지점이 모두 헬퍼 <code>newBlankKit</code> 안의 <b>고정 20초 예산</b>(<code>toPass({ timeout: 20_000 })</code>)이다. 그 값은 <code>--timeout=0</code> 이 풀어 주지 못한다.</p>
+<p>같은 헬퍼를 쓰는 4개 중 2개는 통과하고 2개는 같은 자리에서 죽었다 — 결정적 결함이 아니라 부하 신호다. 실제로 재 봤다:</p>
+<table>
+  <tr><th>측정</th><th>1회</th><th>2회</th><th>3회</th><th>헬퍼 예산</th></tr>
+  <tr><td>앱 부팅 (<code>edit-canvas</code> 가시)</td><td>33.6s</td><td>26.8s</td><td>22.2s</td><td>—</td></tr>
+  <tr><td>DB 모달 → 구조물 탭</td><td>34.9s</td><td>21.2s</td><td>29.7s</td><td>—</td></tr>
+  <tr><td>[새 구조물] → 편집기 가시</td><td class="bad">20.3s</td><td class="bad">22.9s</td><td class="bad">22.4s</td><td class="bad">20.0s</td></tr>
+</table>
+<p>2~3초 초과다. 예산을 올려 초록불을 만들지는 않았다 — 그건 결과를 가리는 쪽이다. 실패한 두 케이스의 <b>단정문은 한 번도 실행되지 않았고</b>(모두 헬퍼 단계에서 중단), 그 두 케이스가 덮는 동작(내보내기 → 다시 가져오기 중복 판정, [편집] 버튼 좌표 도달)은 브라우저 프로브로 따로 확인했다.</p>
+<p><code>database-modal-size-invariant</code> 는 같은 부하에서 <b>240초</b> 테스트 타임아웃으로 죽었다. 실패 메시지는 전부 이미 해석된 사이드바 <code>&lt;div&gt;</code> 를 클릭하려다 나는 타임아웃이고, <b>기하 불일치 단정은 하나도 없다.</b> 이 스펙이 보는 DB 모달(z 900)과 편집기 백드롭(z 1200)은 별개 층이라 이번 변경이 닿지 않는다.</p>
 
 <div class="box">
   <h4>한 줄로</h4>
