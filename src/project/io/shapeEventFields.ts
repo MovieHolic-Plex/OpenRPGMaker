@@ -97,6 +97,8 @@ function validateFieldSpawns(label: string, value: unknown): void {
     }
     if (entry.chase !== undefined) requireBoolean(`${label}[${index}].chase`, entry.chase);
     if (entry.graphic !== undefined) validateEventGraphic(`${label}[${index}].graphic`, entry.graphic);
+    // 스폰도 몸 크기를 싣는다(2차). 페이지와 **같은 경계**로 막아 스폰만 검증을 비켜 가는 구멍을 없앤다.
+    validateCharacterFootprintFields(`${label}[${index}]`, entry);
   }
 }
 

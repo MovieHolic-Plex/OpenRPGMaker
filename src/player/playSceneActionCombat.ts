@@ -1,7 +1,12 @@
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
-import { swingArcCells, cellInArc, swingArcOverlapsPoint } from "@/battle/action/hitbox";
+import {
+  cellInArc,
+  expandRect,
+  swingArcCellsFromBody,
+  swingArcOverlapsBody,
+} from "@/battle/action/hitbox";
 import { bufferAttackPress, createAttackBuffer, tickAttackBuffer } from "@/battle/action/attackWindow";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 import { consumeHitstop } from "@/battle/action/hitstop";
@@ -18,10 +23,17 @@ import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { nextSessionRandom } from "@/project/session";
-// 데미지 숫자·파티클·텔레그래프·스윙 아크는 타일 중앙이 맞다. 다만 적 스프라이트를 다시
-// 놓는 applyKnockback·startWindup·stepDash 는 폭 2 이상이면 발자국 중앙(footprintSpriteX)
-// 이어야 한다 — 2차에서 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
-import { characterSpriteX, characterSpriteY, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
+// 데미지 숫자·파티클·텔레그래프·스윙 아크는 **타일 중앙**(characterSpriteX)이 맞다 —
+// 캐릭터 그림이 아니라 칸을 가리키는 표식이다. 적 스프라이트를 다시 놓는
+// applyKnockback·startWindup·stepDash 만 발자국 중앙(footprintSpriteX)을 쓴다.
+// 같은 파일에 둘이 섞여 있으니 일괄 치환은 오답이다.
+import {
+  characterSpriteX,
+  characterSpriteY,
+  footprintSpriteX,
+  MAP_UPPER_LAYER_DEPTH,
+} from "@/player/characterDepth";
+import { footprintBounds, pointRect, rectsOverlap } from "@/project/footprint";
 import { TILE_SIZE } from "@/assets/bundled";
 import { inBounds, isPassable } from "@/project/collision";
 import { moveRuntimeEventPosition } from "@/project/runtimeEventState"
@@ -32,7 +44,7 @@ import { battleSkillMpCost } from "@/battle/battleSkillUse";
 import { effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { transitionItemState } from "@/project/itemTransitions";
-import type { Dir, EnemyActionAttack, EnemyRecord, Project } from "@/project/types";
+import type { Dir, EnemyActionAttack, EnemyRecord, FootprintRect, Project } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   ACTION_STAMINA_MAX,
@@ -200,6 +212,8 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
         dropItemId: record.rewards.dropItemId,
         dropRatePercent: record.rewards.dropRatePercent,
         knockbackResist: record.actionProfile?.knockbackResist ?? 0,
+        footprint: instance.footprint,
+        passRows: instance.passRows,
         flashMs: 0,
         mode: "combat",
         modeTimerMs: 0,
@@ -248,6 +262,14 @@ function enemyTilePosition(scene: PlaySceneContext, eventId: string): { x: numbe
   return { x: Math.round(pos.x), y: Math.round(pos.y) };
 }
 
+/**
+ * 적의 **몸 사각**(정수 칸). 전투 판정 전부가 이것을 쓴다.
+ * 발자국 없는 적은 앵커 한 칸이라 사각 판정이 곧 점 판정이다(항등).
+ */
+function enemyBodyRectAt(enemy: ActionEnemyState, x: number, y: number): FootprintRect {
+  return footprintBounds(x, y, enemy.footprint);
+}
+
 // 대시 걸음마다 회피를 시도한다. 성공하면 스태미나를 쓰고 짧은 무적 창만 열린다.
 // 스태미나가 비용보다 적으면 회피가 열리지 않고 그대로 맞는다(예전의 무한 무적 제거).
 function updatePlayerDodge(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
@@ -293,7 +315,14 @@ function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneSta
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
     const moving = scene.autonomousNPCs.get(enemy.eventId)?.activeMove != null;
-    if (!shouldApplyContactDamage({ enemyTile: pos, playerTiles: targets, mode: enemy.mode, moving })) continue;
+    if (!shouldApplyContactDamage({
+      enemyTile: pos,
+      // 몸 사각을 준다 — 3x3 골렘의 머리 옆에 선 플레이어는 앵커에서 2칸이라 안 닿았다.
+      enemyBody: enemyBodyRectAt(enemy, pos.x, pos.y),
+      playerTiles: targets,
+      mode: enemy.mode,
+      moving,
+    })) continue;
     const lead = leadActorStats(scene);
     if (!lead) return;
     const damage = computeContactDamage({
@@ -369,7 +398,8 @@ function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSc
   // 보간 중인 적은 반올림 타일이 아니라 몸이 실제로 호와 겹치는지로 판정한다.
   for (const enemy of [...state.enemies.values()]) {
     const pos = enemyFractionalTilePosition(scene, enemy.eventId);
-    if (!pos || !swingArcOverlapsPoint(scene.facing, scene.tileX, scene.tileY, lead.range, pos.x, pos.y)) continue;
+    // 몸 전체가 맞는다(사용자 결정). 3x3 골렘의 상체만 호에 걸려도 유효타다.
+    if (!pos || !swingArcOverlapsBody(scene.facing, scene.tileX, scene.tileY, lead.range, pos.x, pos.y, enemy.footprint)) continue;
     const base = computeSwingDamage({
       attackerAttack: lead.attack,
       defenderDefense: enemy.defense,
@@ -805,22 +835,24 @@ function applyKnockback(scene: PlaySceneContext, state: ActionCombatSceneState, 
   enemy.knockbackTween?.stop();
   enemy.knockbackTween = scene.tweens.add({
     targets: sprite,
-    x: characterSpriteX(outcome.x),
+    x: footprintSpriteX(outcome.x, enemy.footprint),
     y: characterSpriteY(outcome.y),
     duration: KNOCKBACK_TWEEN_MS,
     ease: "Quad.easeOut",
     onComplete: () => {
       enemy.knockbackTween = undefined;
-      sprite.setPosition(characterSpriteX(outcome.x), characterSpriteY(outcome.y));
+      sprite.setPosition(footprintSpriteX(outcome.x, enemy.footprint), characterSpriteY(outcome.y));
     },
   });
 }
 
+// 넉백 목적지가 다른 적의 **몸** 안인가. 앵커 비교만 하던 시절에는 3x3 적의 몸통 안으로
+// 다른 적을 밀어 넣을 수 있었다.
 function otherEnemyOccupiesTile(scene: PlaySceneContext, state: ActionCombatSceneState, selfEventId: string, x: number, y: number): boolean {
   for (const other of state.enemies.values()) {
     if (other.eventId === selfEventId) continue;
     const pos = enemyTilePosition(scene, other.eventId);
-    if (pos && pos.x === x && pos.y === y) return true;
+    if (pos && rectsOverlap(enemyBodyRectAt(other, pos.x, pos.y), pointRect(x, y))) return true;
   }
   return false;
 }
@@ -901,7 +933,7 @@ function startWindup(scene: PlaySceneContext, enemy: ActionEnemyState, attack: E
     mover.activeMove = null;
   }
   const sprite = scene.eventSprites.get(enemy.eventId);
-  if (sprite) sprite.setPosition(characterSpriteX(ex), characterSpriteY(ey));
+  if (sprite) sprite.setPosition(footprintSpriteX(ex, enemy.footprint), characterSpriteY(ey));
   const dir = dominantAxisDir(dx, dy);
   moveRuntimeEventPosition(scene.eventPositions, enemy.eventId, ex, ey, dir);
   startWindupTelegraph(scene, enemy, sprite);
@@ -942,7 +974,8 @@ function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack:
   const project = store.getCurrent();
   const cells: { x: number; y: number }[] = [];
   if (attack.kind === "melee") {
-    cells.push(...swingArcCells(dir, ex, ey, attack.range));
+    // 예고는 executeStrike 와 **같은 호**를 그려야 한다 — 몸 사각에서 뻗는 호로 맞춘다.
+    cells.push(...swingArcCellsFromBody(dir, ex, ey, attack.range, enemy.footprint));
   } else if (attack.kind === "dash") {
     const delta = dirDelta(dir);
     for (let step = 1; step <= attack.range; step += 1) {
@@ -976,7 +1009,7 @@ function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, e
   }
   const dir = scene.eventPositions[enemy.eventId]?.direction ?? "down";
   if (attack.kind === "melee") {
-    const arc = swingArcCells(dir, pos.x, pos.y, attack.range);
+    const arc = swingArcCellsFromBody(dir, pos.x, pos.y, attack.range, enemy.footprint);
     if (cellInArc(arc, scene.tileX, scene.tileY) || (scene.moving && cellInArc(arc, scene.movingTo.x, scene.movingTo.y))) {
       damagePlayer(scene, state, attack.damage, scene.tileX, scene.tileY);
     }
@@ -1034,7 +1067,7 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
     if (sprite) {
       const progress = dash.stepProgressMs / DASH_STEP_MS;
       sprite.setPosition(
-        characterSpriteX(dash.fromX + (dash.toX - dash.fromX) * progress),
+        footprintSpriteX(dash.fromX + (dash.toX - dash.fromX) * progress, enemy.footprint),
         characterSpriteY(dash.fromY + (dash.toY - dash.fromY) * progress)
       );
     }
@@ -1042,17 +1075,20 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
   }
   dash.stepProgressMs = 0;
   const project = store.getCurrent();
-  const hitsPlayer = (dash.toX === scene.tileX && dash.toY === scene.tileY)
-    || (scene.moving && dash.toX === scene.movingTo.x && dash.toY === scene.movingTo.y);
+  // 돌진 명중은 도착 칸의 **몸 사각**이 플레이어 칸을 덮는지로 본다. 앵커 일치만 보면
+  // 3x3 적이 플레이어를 몸으로 관통하며 지나간다.
+  const dashBody = enemyBodyRectAt(enemy, dash.toX, dash.toY);
+  const hitsPlayer = rectsOverlap(dashBody, pointRect(scene.tileX, scene.tileY))
+    || (scene.moving && rectsOverlap(dashBody, pointRect(scene.movingTo.x, scene.movingTo.y)));
   if (hitsPlayer || !inBounds(scene.map, dash.toX, dash.toY) || !isPassable(project, scene.map, dash.toX, dash.toY)) {
     if (hitsPlayer) damagePlayer(scene, state, attack.damage, dash.fromX, dash.fromY);
-    if (sprite) sprite.setPosition(characterSpriteX(dash.fromX), characterSpriteY(dash.fromY));
+    if (sprite) sprite.setPosition(footprintSpriteX(dash.fromX, enemy.footprint), characterSpriteY(dash.fromY));
     enterRecover(enemy, attack);
     return;
   }
   moveRuntimeEventPosition(scene.eventPositions, enemy.eventId, dash.toX, dash.toY, scene.eventPositions[enemy.eventId]?.direction ?? "down");
   dash.tilesLeft -= 1;
-  const adjacentToPlayer = Math.max(Math.abs(dash.toX - scene.tileX), Math.abs(dash.toY - scene.tileY)) <= 1;
+  const adjacentToPlayer = rectsOverlap(expandRect(dashBody, 1), pointRect(scene.tileX, scene.tileY));
   if (dash.tilesLeft <= 0 || adjacentToPlayer) {
     enterRecover(enemy, attack);
     return;
@@ -1135,7 +1171,8 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
       } else {
         for (const enemy of [...state.enemies.values()]) {
           const pos = enemyTilePosition(scene, enemy.eventId);
-          if (!pos || pos.x !== tx || pos.y !== ty) continue;
+          // 투사체는 몸 사각 어디에 닿아도 명중이다 — 앵커 칸만 보면 3x3 적을 관통했다.
+          if (!pos || !rectsOverlap(enemyBodyRectAt(enemy, pos.x, pos.y), pointRect(tx, ty))) continue;
           const multiplier = typeChartMultiplierForTypes(project, p.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
           hitActionEnemy(scene, state, enemy, Math.max(1, Math.round(p.damage * multiplier)), tx, ty);
           consumed = true;

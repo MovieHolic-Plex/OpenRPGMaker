@@ -1,6 +1,7 @@
 import type {
   AssetSet,
   ActorId,
+  CharacterFootprint,
   Dir,
   FlagName,
   MapId,
@@ -174,6 +175,10 @@ export interface FieldSpawnDef {
   maxAlive?: number;
   respawnSec?: number;
   graphic?: EventPageGraphic;
+  /** 스폰되는 몸 크기(타일). 생략하면 1x1 — 기존 스폰과 같다. */
+  footprint?: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 길을 막는가. 생략하면 몸 높이 전체(항등). */
+  passRows?: number;
   chase?: boolean;
   /** 처치 수를 세이브에 영속한다. 로드/맵 재진입 시 처치 수만큼 배치 상한이 줄어, 전부 처치한 방은 계속 비어 있다(생존 호러용). */
   persistKill?: boolean;

@@ -1,5 +1,20 @@
 import { inBounds, isPassable } from "@/project/collision";
-import type { Dir, EventPageGraphic, FieldSpawnDef, GameEvent, GameMap, Project, Rect } from "@/project/types";
+import {
+  characterFootprintCells,
+  normalizeCharacterFootprint,
+  normalizePassRows,
+} from "@/project/footprint";
+import type {
+  CharacterFootprint,
+  Dir,
+  EventPageGraphic,
+  FieldSpawnDef,
+  GameEvent,
+  GameMap,
+  Project,
+  Rect,
+} from "@/project/types";
+import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { RuntimeEventPositions } from "@/project/runtimeEventState"
 import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import { resolveRoguelikeRoomFieldSpawns, roguelikeRoomGenerationKey } from "@/project/roguelikeRooms";
@@ -16,6 +31,10 @@ export interface FieldSpawnInstance {
   readonly x: number;
   readonly y: number;
   readonly graphic: EventPageGraphic;
+  /** 몸 크기. 스폰 정의에서 그대로 내려오고 합성 페이지에 실린다. */
+  readonly footprint: CharacterFootprint;
+  /** 통행 차단 행. 몸 높이 전체면 통행 사각 === 몸 사각(항등). */
+  readonly passRows: number;
   readonly chase: boolean;
   /** EnemyActionProfile.aggroRange에서 온 시야. 생략 시 기본 8. */
   readonly sightRange?: number;
@@ -49,6 +68,8 @@ export interface NormalizedFieldSpawn {
   readonly maxAlive: number;
   readonly respawnMs: number;
   readonly graphic: EventPageGraphic;
+  readonly footprint: CharacterFootprint;
+  readonly passRows: number;
   readonly chase: boolean;
   readonly persistKill: boolean;
   readonly onKillSwitchId?: string;
@@ -250,6 +271,8 @@ function trySpawnInstance(
     x: point.x,
     y: point.y,
     graphic: entry.spawn.graphic,
+    footprint: entry.spawn.footprint,
+    passRows: entry.spawn.passRows,
     chase: entry.spawn.chase,
     ...(tuning.sightRange !== undefined ? { sightRange: tuning.sightRange } : {}),
     ...(tuning.moveIntervalMs !== undefined ? { moveIntervalMs: tuning.moveIntervalMs } : {}),
@@ -286,13 +309,30 @@ function nextSpawnPoint(
     const index = (entry.cursor + offset) % total;
     const x = Math.trunc(area.x) + (index % width);
     const y = Math.trunc(area.y) + Math.floor(index / width);
-    if (!inBounds(map, x, y)) continue;
-    if (occupied.has(pointKey(x, y))) continue;
-    if (!isPassable(project, map, x, y)) continue;
+    // 앵커 한 칸이 아니라 **스폰될 몸 전체**가 비어 있고 통행 가능해야 한다. 앵커만 보면
+    // 3x3 스폰이 벽에 절반 박히거나 남의 몸통을 뚫고 나온다. 1x1 이면 검사가 한 칸이다(항등).
+    if (!bodyFitsAt(project, map, occupied, x, y, entry.spawn.footprint)) continue;
     entry.cursor = (index + 1) % total;
     return { x, y };
   }
   return null;
+}
+
+/** 이 앵커에 몸을 놓을 수 있는가 — 몸 사각 전 칸이 맵 안이고 통행 가능하고 비어 있는가. */
+function bodyFitsAt(
+  project: Project,
+  map: GameMap,
+  occupied: ReadonlySet<string>,
+  x: number,
+  y: number,
+  footprint: CharacterFootprint
+): boolean {
+  for (const cell of characterFootprintCells(x, y, footprint)) {
+    if (!inBounds(map, cell.x, cell.y)) return false;
+    if (occupied.has(pointKey(cell.x, cell.y))) return false;
+    if (!isPassable(project, map, cell.x, cell.y)) return false;
+  }
+  return true;
 }
 
 function occupiedCells(
@@ -303,10 +343,19 @@ function occupiedCells(
   const occupied = new Set<string>([pointKey(player.x, player.y)]);
   for (const event of map.events) {
     if (isFieldSpawnEventId(event.id)) continue;
-    occupied.add(pointKey(event.x, event.y));
+    // 이벤트의 **몸 사각 전 칸**을 점유로 등록한다. 앵커 한 칸만 등록하던 시절에는
+    // 2x2 골렘의 몸통 안에서 몬스터가 솟았다.
+    const rect = eventBodyRect(event);
+    for (let y = rect.top; y <= rect.bottom; y += 1) {
+      for (let x = rect.left; x <= rect.right; x += 1) occupied.add(pointKey(x, y));
+    }
   }
   for (const entry of state.entries) {
-    for (const instance of entry.alive) occupied.add(pointKey(instance.x, instance.y));
+    for (const instance of entry.alive) {
+      for (const cell of characterFootprintCells(instance.x, instance.y, instance.footprint)) {
+        occupied.add(pointKey(cell.x, cell.y));
+      }
+    }
   }
   return occupied;
 }
@@ -324,6 +373,10 @@ function fieldSpawnEvent(instance: FieldSpawnInstance): GameEvent {
         name: "필드 몬스터",
         conditions: [],
         graphic: instance.graphic,
+        // 몸 크기를 합성 페이지에 실어야 런타임 뷰·전투·통행이 다중 타일로 본다.
+        // 예전에는 안 실려서 어떤 스폰도 1x1 이었고, 전투의 몸 사각 판정은 도달 불가였다.
+        footprint: instance.footprint,
+        passRows: instance.passRows,
         trigger: { kind: "eventTouch" },
         priority: "same",
         overlapForbidden: true,
@@ -358,6 +411,8 @@ function normalizeFieldSpawn(project: Project, spawn: FieldSpawnDef): Normalized
     maxAlive: positiveInteger(spawn.maxAlive, DEFAULT_FIELD_SPAWN_MAX_ALIVE),
     respawnMs: Math.max(0, Math.round((spawn.respawnSec ?? DEFAULT_FIELD_SPAWN_RESPAWN_SEC) * 1000)),
     graphic: spawn.graphic ?? defaultFieldSpawnGraphic(project, spawn.troopId),
+    footprint: normalizeCharacterFootprint(spawn.footprint),
+    passRows: normalizePassRows(spawn.passRows, normalizeCharacterFootprint(spawn.footprint).height),
     chase: spawn.chase === true,
     persistKill: spawn.persistKill === true,
     ...(spawn.onKillSwitchId ? { onKillSwitchId: spawn.onKillSwitchId } : {}),

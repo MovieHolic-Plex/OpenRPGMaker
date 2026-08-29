@@ -1,7 +1,7 @@
 import type Phaser from "phaser";
 import type { AttackBufferState } from "@/battle/action/attackWindow";
 import type { ResolvedActionCombatConfig } from "@/project/actionCombat";
-import type { EnemyActionAttack } from "@/project/types";
+import type { CharacterFootprint, EnemyActionAttack } from "@/project/types";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 
 // "stagger" = 피겪 경직. 진행 중이던 선딜/돌진을 끊고 짧게 허점을 여는다(src/battle/action/stagger.ts).
@@ -36,6 +36,16 @@ export interface ActionProjectile {
 export interface ActionEnemyState {
   readonly eventId: string;
   readonly enemyId: string;
+  /**
+   * 적의 몸 크기. 전투 판정 전부(접촉·스윙·투사체·대시·점유)가 이 발자국의 **몸 사각**을 쓴다.
+   * 발자국 없는 적은 1x1 이라 모든 판정이 앵커 한 칸으로 환원된다(항등).
+   *
+   * 사각을 캐시하지 않는 이유: 적은 매 프레임 움직이므로 저장된 사각은 곧 낡는다.
+   * 크기는 정적이고, 사각은 쓰는 자리에서 현재 좌표와 합쳐 만든다.
+   */
+  readonly footprint: CharacterFootprint;
+  /** 통행 차단 행. 이동 판정에만 쓰고 전투 판정에는 쓰지 않는다(사용자 결정: 전투는 몸 전체). */
+  readonly passRows: number;
   hp: number;
   readonly maxHp: number;
   readonly defense: number;

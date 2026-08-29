@@ -21,6 +21,19 @@ export interface ContactDamageInput extends ContactClosingInput {
   readonly enemyTile: ContactTile;
   /** 플레이어가 점유한 칸들(이동 중이면 목표 칸 포함). */
   readonly playerTiles: readonly ContactTile[];
+  /**
+   * 적의 **몸 사각**. 주면 앵커 대신 이 사각의 인접으로 판정한다 — 3x3 골렘의 머리 옆에 선
+   * 플레이어는 앵커에서 2칸이라 앵커 판정으로는 안 닿았다.
+   * 생략하면 앵커 한 칸이므로 기존 동작과 완전히 같다.
+   */
+  readonly enemyBody?: ContactRect;
+}
+
+export interface ContactRect {
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly bottom: number;
 }
 
 export function enemyIsClosing(input: ContactClosingInput): boolean {
@@ -33,7 +46,19 @@ export function contactTouches(enemyTile: ContactTile, playerTiles: readonly Con
   return playerTiles.some((tile) => Math.max(Math.abs(enemyTile.x - tile.x), Math.abs(enemyTile.y - tile.y)) <= 1);
 }
 
+/**
+ * 몸 사각 판. 사각을 사방 한 칸 넓힌 영역에 플레이어 칸이 들어오면 접촉이다.
+ * 1x1 사각이면 체비셰프 1 과 같은 집합이라 {@link contactTouches} 와 동일하다.
+ */
+export function contactRectTouches(body: ContactRect, playerTiles: readonly ContactTile[]): boolean {
+  return playerTiles.some(
+    (tile) =>
+      tile.x >= body.left - 1 && tile.x <= body.right + 1 && tile.y >= body.top - 1 && tile.y <= body.bottom + 1
+  );
+}
+
 export function shouldApplyContactDamage(input: ContactDamageInput): boolean {
   if (!enemyIsClosing(input)) return false;
+  if (input.enemyBody) return contactRectTouches(input.enemyBody, input.playerTiles);
   return contactTouches(input.enemyTile, input.playerTiles);
 }
