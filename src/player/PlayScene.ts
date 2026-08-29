@@ -74,7 +74,7 @@ import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { initializeActionCombatForScene, updateActionCombatForScene } from "@/player/playSceneActionCombat";
 import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
 import { tickNpcSchedules, updateNpcSchedules } from "@/player/npcSchedules";
-import { syncTileCulling } from "@/player/playSceneTileCulling";
+import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
   createPlaySceneZoneFeedback,
   destroyPlaySceneZoneFeedback,
@@ -285,6 +285,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.events.once("destroy", destroyMinimapLocal);
     this.events.once("shutdown", destroyZoneFeedback);
     this.events.once("destroy", destroyZoneFeedback);
+    // 컬링의 직전 짝 기억은 모듈 스코프의 **강한** 참조다(WeakMap 인 본체와 다르다).
+    // 풀지 않으면 내려간 씬과 타일 GameObject 1만~2.1만개가 그대로 남는다.
+    const releaseCulling = (): void => resetCullableTiles(this);
+    this.events.once("shutdown", releaseCulling);
+    this.events.once("destroy", releaseCulling);
     // player.ts 로딩 오버레이가 create 완료를 기다릴 수 있게 신호.
     reportStage("ready");
     const onReady: unknown = this.game.registry.get("onPlaySceneReady");
@@ -368,6 +373,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   refreshRuntimeEntities(): void {
+    // 이벤트 스프라이트를 다시 만드는 쪽(refreshSceneRuntimeEntities)이 카메라 재바인딩까지
+    // 책임진다 — playSceneMapRuntime §rebindEventFollowCamera.
     refreshSceneRuntimeEntities(this);
     syncFollowerSprites(this);
   }

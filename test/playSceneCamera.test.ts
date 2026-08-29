@@ -8,6 +8,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { createSaveSnapshot, applySaveSnapshot } from "@/player/saveSlots";
+import { rebindEventFollowCamera } from "@/player/playSceneMapRuntime";
 
 type CameraListener = () => void;
 
@@ -167,5 +168,62 @@ describe("playSceneCamera camera control", () => {
     const restored = applySaveSnapshot(project, snapshot);
 
     expect(restored.camera).toEqual(scene.session.camera);
+  });
+});
+
+// 이벤트 스프라이트를 파괴·재생성하는 갱신 경로(refreshRuntimeEntities)는 카메라를 새
+// 객체에 다시 걸어야 한다. 안 걸면 Phaser 가 파괴된 옛 객체의 x/y 를 계속 읽어 카메라가
+// 그 자리에 영구히 얼어붙는다 — 시간표 변경 한 번으로 그렇게 된다.
+// (여기서는 재바인딩 단위를 직접 시험한다. refreshRuntimeEntities 에서 이 함수를 부르는
+//  한 줄은 코드로 확인했다 — 그 경로 전체는 렌더 하네스가 필요해 e2e 영역이다.)
+describe("이벤트 추적 카메라는 스프라이트 재생성 뒤 다시 걸린다", () => {
+  it("새 스프라이트로 재바인딩한다", async () => {
+    const scene = cameraScene();
+    const oldSprite = { x: 88, y: 104 };
+    scene.eventSprites.set("npc", oldSprite as never);
+    await applyCameraControl(scene, {
+      mode: "follow",
+      target: { kind: "event", eventId: "npc" },
+      durationMs: 0,
+      wait: true,
+      returnToPlayer: false,
+    });
+    expect(scene.camera.followTarget).toBe(oldSprite);
+
+    // renderEventLayer 가 하는 일: 옛 스프라이트를 파괴하고 새 객체로 갈아치운다.
+    const newSprite = { x: 200, y: 216 };
+    scene.eventSprites.set("npc", newSprite as never);
+
+    rebindEventFollowCamera(scene);
+
+    expect(
+      scene.camera.followTarget,
+      "카메라가 파괴된 옛 스프라이트를 계속 따라간다 — 그 자리에 얼어붙는다"
+    ).toBe(newSprite);
+  });
+
+  it("플레이어 추적은 건드리지 않는다 (startFollow 가 러프를 죽인다)", () => {
+    const scene = cameraScene();
+    scene.camera.startFollow(scene.player);
+    scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: 1 } as never;
+
+    rebindEventFollowCamera(scene);
+
+    expect(scene.camera.followTarget).toBe(scene.player);
+    expect(scene.camera.stopFollowCalls, "플레이어 추적을 건드렸다").toBe(0);
+  });
+
+  it("고정(fixed) 카메라도 건드리지 않는다", () => {
+    const scene = cameraScene();
+    scene.session.camera = {
+      mode: "fixed",
+      target: { kind: "event", eventId: "npc" },
+      zoom: 1,
+    } as never;
+
+    rebindEventFollowCamera(scene);
+
+    expect(scene.camera.followTarget).toBeNull();
+    expect(scene.camera.centerCalls).toEqual([]);
   });
 });
