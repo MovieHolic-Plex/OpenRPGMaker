@@ -693,19 +693,36 @@ describe("compile_puzzle", () => {
     expect(itemGate.ok).toBe(false);
     expect(itemGate.issues?.[0]?.message).toContain("DB에 존재하지 않습니다");
 
-    const plateCtx = { project: createBlankProject() };
-    const plateMap = startMap(plateCtx.project);
-    plateMap.lowerTiles[2 + 2 * plateMap.width] = TILE.WATER;
-    const plate = runTool(plateCtx, "compile_puzzle", {
-      mapId: plateMap.id,
-      puzzleId: "bad_plate",
+    const openPlateCtx = { project: createBlankProject() };
+    const openPlateMap = startMap(openPlateCtx.project);
+    openPlateMap.lowerTiles[2 + 2 * openPlateMap.width] = TILE.WATER;
+    const openPlate = runTool(openPlateCtx, "compile_puzzle", {
+      mapId: openPlateMap.id,
+      puzzleId: "adjusted_plate",
       kind: "push-switches",
       plates: [{ at: { x: 2, y: 2 } }],
       all: true,
       onSolve: {},
     });
-    expect(plate.ok).toBe(false);
-    expect(plate.issues?.[0]?.message).toContain("통행 불가");
+    expect(openPlate.ok).toBe(true);
+    expect(openPlate.diff?.warnings.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
+
+    const blockedPlateCtx = { project: createBlankProject() };
+    const blockedPlateMap = startMap(blockedPlateCtx.project);
+    for (let y = 0; y <= 5; y += 1) {
+      for (let x = 0; x <= 5; x += 1) blockedPlateMap.lowerTiles[x + y * blockedPlateMap.width] = TILE.WATER;
+    }
+    const blockedPlate = runTool(blockedPlateCtx, "compile_puzzle", {
+      mapId: blockedPlateMap.id,
+      puzzleId: "blocked_plate",
+      kind: "push-switches",
+      plates: [{ at: { x: 2, y: 2 } }],
+      all: true,
+      onSolve: {},
+    });
+    expect(blockedPlate.ok).toBe(true);
+    expect(blockedPlate.data).toMatchObject({ created: 0, skipped: 1 });
+    expect(blockedPlate.diff?.warnings.some((warning) => warning.includes("총 1개 skip"))).toBe(true);
   });
 });
 

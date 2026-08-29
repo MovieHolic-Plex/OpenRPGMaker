@@ -143,12 +143,19 @@ export function passableCellCount(
   return passable;
 }
 
-// 지정 칸들 중 통행 불가가 된 셀 수를 세어 경고 문구를 만든다(passability 변화 감지용).
+// 지정 칸들 중 통행 불가가 된 셀 수와 그 칸에 남은 이벤트를 경고한다(passability 변화 감지용).
 export function passabilityWarning(project: Project, map: GameMap, cells: readonly Point[]): string | null {
-  let blocked = 0;
+  const blockedCells = new Set<string>();
   for (const cell of cells) {
-    if (inMapBounds(map, cell.x, cell.y) && !isPassable(project, map, cell.x, cell.y)) blocked += 1;
+    if (inMapBounds(map, cell.x, cell.y) && !isPassable(project, map, cell.x, cell.y)) {
+      blockedCells.add(`${cell.x},${cell.y}`);
+    }
   }
-  if (blocked === 0) return null;
-  return `경고: ${blocked}개 칸이 통행 불가가 되었습니다(${map.id}).`;
+  if (blockedCells.size === 0) return null;
+  const base = `경고: ${blockedCells.size}개 칸이 통행 불가가 되었습니다(${map.id}).`;
+  const stranded = map.events.filter((event) => blockedCells.has(`${event.x},${event.y}`));
+  if (stranded.length === 0) return base;
+  const samples = stranded.slice(0, 5).map((event) => `${event.id}(${event.x},${event.y})`);
+  const extra = stranded.length > samples.length ? ` 외 ${stranded.length - samples.length}건` : "";
+  return `${base} 해당 칸의 이벤트: ${samples.join(", ")}${extra}`;
 }

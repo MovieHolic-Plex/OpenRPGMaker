@@ -7,6 +7,14 @@
 
 Use the lightest command that proves the change.
 
+## AI 이벤트 배치 통행성 focused gate (2026-08-30)
+
+- 가벼운 순서: `node scripts/run-vitest.mjs run test/aiEventPlacementPassability.test.ts test/aiEventPlacementSurfaceGate.test.ts --configLoader bundle` 로 계약 + 구조 게이트를 먼저 본다. 배치 툴을 건드렸으면 해당 툴의 spec(`test/aiPlacement*.test.ts`)을, 컨텍스트를 건드렸으면 `test/aiMapContextPassability*.test.ts` 를 더한다.
+- **새 배치 툴을 추가하면 게이트가 먼저 실패한다.** `test/aiEventPlacementSurfaceGate.test.ts` 는 `src/editor/tools/**`·`src/project/quest/**` 를 AST 로 훑어 `map.events` 직접 쓰기를 찾고, 같은 함수(또는 그 함수가 부르는 같은 파일 헬퍼)에 `resolveEventPlacement`/`passableLanding`/`nearestPassableCell`/`isPassable` 이 없으면 file:line 을 지목한다. 통과 방법은 두 가지뿐이다: 계약을 지나게 고치거나, `file#function` 키와 한국어 이유를 허용목록에 적는다. 쓰이지 않는 허용목록 항목은 stale 로 실패하므로 리팩터 후 정리가 강제된다.
+- 함정: 계약 이름을 주석이나 문자열에 적어두면 통과할 것 같지만 안 된다(AST 호출식만 센다). 그 위장 케이스도 게이트 자신의 테스트에 들어 있다.
+- 함정: `formatViewportContextBlock(viewport, name, project?)` 의 `project` 는 optional 이라 호출부가 안 넘기면 통행 그리드가 조용히 사라진다. 단위 테스트는 인자를 직접 넘기므로 그 누락을 **못 본다** — 실측으로 그렇게 죽어 있었다. 출하 경로(`buildSystemPrompt`, `AssistantSession` 턴 블록)를 고정하는 `test/aiMapContextPassabilityWiring.test.ts` 가 그 계약이다.
+- 배치 자체의 판정 규칙(캐릭터형·밟기형 vs action 트리거, 단일 대상 자동 착지 vs 영역 건너뛰기)은 `openwiki/editor-ai-tools.md` 의 2026-08-30 항목이 정본이다.
+
 ## 체공(점프·낙하) focused gate (2026-08-29)
 
 - `test/characterHop.test.ts`: 순수 곡선·클램프 계약. 아크 대칭성과 양끝 0, 낙하의 감가속 비대칭, `hopOriginY` 가 `height × scaleY` 로 나누는지(`hopOriginY(16,32,2) === 1.25`), 착지 충격 계획이 `MIN_IMPACT_LIFT_PX` 미만이면 `null` 인지, `prefers-reduced-motion` 에서 흔들림·먼지가 빠지고 SE 만 남는지.

@@ -2026,7 +2026,7 @@ export class AssistantSession {
 
     const map = this.ctx.project.maps[viewport.mapId];
     const mapName = map?.name ?? viewport.mapId;
-    const viewportBlock = formatViewportContextBlock(viewport, mapName);
+    const viewportBlock = formatViewportContextBlock(viewport, mapName, this.ctx.project);
     const combinedText = `${viewportBlock}\n\n---\n\n${text}`;
 
     if (!this.renderImages || !map) return combinedText;

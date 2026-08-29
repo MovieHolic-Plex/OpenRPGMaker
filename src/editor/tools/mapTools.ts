@@ -50,6 +50,7 @@ import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolA
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
+import { resolveEventPlacement } from "./eventTools";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -1640,6 +1641,17 @@ interface CopyProtectedSkip {
   readonly reason: string;
 }
 
+interface CopyEventSkip {
+  readonly eventId: string;
+  readonly x: number;
+  readonly y: number;
+}
+
+interface CopyEventAdjustment extends CopyEventSkip {
+  readonly toX: number;
+  readonly toY: number;
+}
+
 function copyRegionRect(args: Record<string, unknown>, field: string): { mapId: string; x: number; y: number; w: number; h: number } {
   const raw = args[field];
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
@@ -1659,11 +1671,42 @@ function copyProtectedCells(project: Project, map: GameMap): Map<string, string>
   return cells;
 }
 
-function copySkipWarnings(skipped: readonly CopyProtectedSkip[]): string[] | undefined {
-  if (skipped.length === 0) return undefined;
+function copySkipWarnings(skipped: readonly CopyProtectedSkip[]): string[] {
+  if (skipped.length === 0) return [];
   const samples = skipped.slice(0, 3).map((cell) => `(${cell.x},${cell.y})은 ${cell.reason}라 제외했습니다`);
   const extra = skipped.length > samples.length ? ` 외 ${skipped.length - samples.length}칸` : "";
   return [`${samples.join(", ")}${extra}`];
+}
+
+function copyEventWarnings(skipped: readonly CopyEventSkip[], adjusted: readonly CopyEventAdjustment[]): string[] {
+  const warnings: string[] = [];
+  if (skipped.length > 0) {
+    const samples = skipped.slice(0, 5).map((event) => `${event.eventId}(${event.x},${event.y})`);
+    const extra = skipped.length > samples.length ? ` 외 ${skipped.length - samples.length}건` : "";
+    warnings.push(`통행 가능한 착지점을 찾지 못한 이벤트 ${skipped.length}개 제외: ${samples.join(", ")}${extra}`);
+  }
+  if (adjusted.length > 0) {
+    const samples = adjusted.slice(0, 5).map((event) => `${event.eventId} (${event.x},${event.y}) → (${event.toX},${event.toY})`);
+    const extra = adjusted.length > samples.length ? ` 외 ${adjusted.length - samples.length}건` : "";
+    warnings.push(`이벤트 ${adjusted.length}개 위치 자동 조정: ${samples.join(", ")}${extra}`);
+  }
+  return warnings;
+}
+
+// 그래픽이 보이거나 자율 이동하는 페이지는 action 트리거여도 문이 아니라 캐릭터다.
+function copyEventIsCharacter(event: GameEvent): boolean {
+  return (event.pages ?? []).some((page) =>
+    (page.graphic.transparent !== true && page.graphic.sprite !== undefined)
+    || page.movement.type !== "fixed"
+  );
+}
+
+// duplicate_event 와 같은 판정: 페이지가 있으면 페이지 trigger/priority를, 없으면 본체 trigger를 읽는다.
+function copyEventIsSteppable(event: GameEvent): boolean {
+  const pages = event.pages ?? [];
+  if (pages.some((page) => (page.trigger.kind === "touch" || page.trigger.kind === "playerTouch") && page.priority !== "same")) return true;
+  if (pages.length > 0) return false;
+  return event.trigger.kind === "touch" || event.trigger.kind === "playerTouch";
 }
 
 // duplicate_map/duplicate_event 와 같은 발급 방식(genId + 프로젝트 전역 사용 중 id 회피)을 쓴다.
@@ -1778,23 +1821,46 @@ const copyMapRegion: ToolDefinition = {
     }
 
     const copiedEventIds: string[] = [];
+    const skippedEvents: CopyEventSkip[] = [];
+    const adjustedEvents: CopyEventAdjustment[] = [];
     if (withEvents) {
       const nextId = copyEventIdAllocator(draft);
       const inside = source.events.filter(
         (event) => event.x >= from.x && event.x < from.x + from.w && event.y >= from.y && event.y < from.y + from.h
       );
       for (const event of inside) {
+        const requestedX = to.x + (event.x - from.x);
+        const requestedY = to.y + (event.y - from.y);
+        const cloneId = nextId();
+        let placement: { x: number; y: number; adjusted: boolean };
+        try {
+          placement = resolveEventPlacement(draft, target, requestedX, requestedY, {
+            kind: copyEventIsCharacter(event) ? "character" : "interaction",
+            steppable: copyEventIsSteppable(event),
+            ignoreEventId: cloneId,
+            label: `복제 이벤트 '${event.id}'`,
+            code: "copy-region-event-impassable",
+          });
+        } catch (error) {
+          if (!(error instanceof ToolError)) throw error;
+          skippedEvents.push({ eventId: event.id, x: requestedX, y: requestedY });
+          continue;
+        }
+        // duplicate_event도 같은 캐릭터 판정 약점이 있지만, 단건 사용자 지시인 그 경로와 달리 이 경로는 대량 복제라 여기서 분류한다.
         // duplicate_event 와 같은 규약: 커맨드는 그대로 두고 id·좌표만 새로 잡는다
         // (transfer 목적지를 임의로 다시 배선하면 저자 의도를 조용히 바꾼다).
         const clone: GameEvent = {
           ...structuredClone(event),
-          id: nextId(),
-          x: to.x + (event.x - from.x),
-          y: to.y + (event.y - from.y),
+          id: cloneId,
+          x: placement.x,
+          y: placement.y,
         };
         if (clone.pages) clone.pages = clone.pages.map((page) => ({ ...page, id: nextId() }));
         target.events.push(clone);
         copiedEventIds.push(clone.id);
+        if (placement.adjusted) {
+          adjustedEvents.push({ eventId: event.id, x: requestedX, y: requestedY, toX: placement.x, toY: placement.y });
+        }
       }
     }
 
@@ -1803,10 +1869,12 @@ const copyMapRegion: ToolDefinition = {
       kept > 0 ? `기존 유지 ${kept}칸` : null,
       skipped.length > 0 ? `보호 ${skipped.length}칸 제외` : null,
       copiedEventIds.length > 0 ? `이벤트 ${copiedEventIds.length}개 복제` : null,
+      skippedEvents.length > 0 ? `이벤트 ${skippedEvents.length}개 제외` : null,
     ].filter((note): note is string => note !== null);
+    const warnings = [...copySkipWarnings(skipped), ...copyEventWarnings(skippedEvents, adjustedEvents)];
     return {
       summary: `${source.name} (${from.x},${from.y}) ${from.w}×${from.h} → ${where} (${to.x},${to.y}) 복사 — ${copied}/${buffer.length}칸(${layers})${notes.length > 0 ? `, ${notes.join(", ")}` : ""}`,
-      warnings: copySkipWarnings(skipped),
+      warnings: warnings.length > 0 ? warnings : undefined,
       data: {
         fromMapId: source.id,
         toMapId: target.id,
@@ -1817,6 +1885,8 @@ const copyMapRegion: ToolDefinition = {
         layers,
         overExisting,
         events: copiedEventIds,
+        eventsCopied: copiedEventIds.length,
+        eventsSkipped: skippedEvents.length,
       },
     };
   },

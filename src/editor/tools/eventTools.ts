@@ -301,14 +301,16 @@ export function resolveEventPlacement(
     readonly kind: "character" | "interaction";
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
+    readonly reserved?: ReadonlySet<string>;
     readonly label: string;
     readonly code: string;
   },
 ): { x: number; y: number; adjusted: boolean } {
   const mustStandOnPassable = options.kind === "character" || options.steppable === true;
-  if (isPassable(project, map, x, y)) return { x, y, adjusted: false };
-  if (!mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
-  const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId);
+  const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
+  if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
+  if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
+  const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
   if (!landing) {
     throw new ToolError(
       `${options.label}을 놓을 통행 가능 칸이 없습니다: (${x}, ${y}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
@@ -1043,12 +1045,14 @@ function nearestPassableCell(
   y: number,
   maxRadius: number,
   ignoreEventId?: string,
+  reserved?: ReadonlySet<string>,
 ): Point | null {
-  const occupied = new Set(
-    map.events
+  const occupied = new Set([
+    ...map.events
       .filter((event) => event.id !== ignoreEventId)
       .map((event) => `${event.x},${event.y}`),
-  );
+    ...(reserved ?? []),
+  ]);
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
@@ -1530,7 +1534,7 @@ const placeTrap: ToolDefinition = {
       upsertEventIntoMap(map, event);
       eventIds.push(id);
     }
-    const checkpointEventId = args.respawnCheckpoint === true ? ensureMapCheckpointEvent(map) : undefined;
+    const checkpointEventId = args.respawnCheckpoint === true ? ensureMapCheckpointEvent(draft, map) : undefined;
     return {
       summary: `${map.name}에 즉사 트랩 ${eventIds.length}개 배치${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}${warnings.length > 0 ? ` — 위치 자동 조정 ${warnings.length}건` : ""}`,
       data: { eventIds, checkpointEventId, adjusted: warnings.length > 0 },
@@ -1628,7 +1632,7 @@ const makeChaseScene: ToolDefinition = {
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(map) : undefined;
+    const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
     const warnings = placement.adjusted
       ? [placementAdjustedWarning("추격자", chaser.at, placement)]
       : [];
@@ -1980,14 +1984,15 @@ function trapEvent(
   };
 }
 
-function ensureMapCheckpointEvent(map: GameMap): string {
+function ensureMapCheckpointEvent(project: Project, map: GameMap): string {
   const existing = map.events.find((event) => event.id === `${map.id}_checkpoint_auto`);
   if (existing) return existing.id;
   const id = `${map.id}_checkpoint_auto`;
+  const spot = checkpointSpot(project, map, id);
   map.events.push({
     id,
-    x: 0,
-    y: 0,
+    x: spot.x,
+    y: spot.y,
     trigger: { kind: "auto" },
     commands: [],
     pages: [
@@ -2106,18 +2111,51 @@ const moveEvent: ToolDefinition = {
   },
 };
 
+/**
+ * 진입 체크포인트(auto 트리거)의 자리.
+ *
+ * auto 는 좌표와 무관하게 발동하므로 지형 안에 있어도 기능은 살아 있다 — 문제는
+ * `event-unreachable` 린트뿐이다. 그래서 통행 가능 칸을 **선호**하되, 좌상단 반경 3이 전부
+ * 막혔다고 ToolError 를 올려 place_trap/make_chase_scene 전체를 죽이지는 않는다
+ * (동굴·두꺼운 벽 맵에서 그렇게 되면 고치려던 버그보다 나쁘다). 맵 전체를 훑어 첫 통행 칸을
+ * 쓰고, 통행 칸이 하나도 없으면 종전대로 (0,0).
+ */
+function checkpointSpot(project: Project, map: GameMap, id: string): Point {
+  try {
+    const placement = resolveEventPlacement(project, map, 0, 0, {
+      kind: "character",
+      ignoreEventId: id,
+      label: "진입 체크포인트",
+      code: "checkpoint-impassable",
+    });
+    return { x: placement.x, y: placement.y };
+  } catch (cause) {
+    if (!(cause instanceof ToolError)) throw cause;
+  }
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (isPassable(project, map, x, y)) return { x, y };
+    }
+  }
+  return { x: 0, y: 0 };
+}
+
 function triggerFromArg(value: unknown): Trigger {
   switch (value) {
     case "auto":
       return { kind: "auto" };
     case "parallel":
       return { kind: "parallel" };
+    case "playerTouch":
+      return { kind: "playerTouch" };
+    case "touch":
+      return { kind: "touch" };
     case "action":
     case undefined:
     case null:
       return { kind: "action" };
     default:
-      throw new ToolError("trigger는 action, auto, parallel 중 하나여야 합니다.", { code: "cutscene-trigger" });
+      throw new ToolError("trigger는 action, auto, parallel, playerTouch, touch 중 하나여야 합니다.", { code: "cutscene-trigger" });
   }
 }
 
@@ -2181,7 +2219,7 @@ const scriptCutscene: ToolDefinition = {
       eventId: { type: "string", description: "기존 이벤트 id. 없으면 새 투명 이벤트를 생성합니다." },
       x: { type: "integer", description: "새 이벤트 생성 시 X. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
       y: { type: "integer", description: "새 이벤트 생성 시 Y. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
-      trigger: { type: "string", enum: ["action", "auto", "parallel"], description: "기본 action" },
+      trigger: { type: "string", enum: ["action", "auto", "parallel", "playerTouch", "touch"], description: "기본 action. playerTouch/touch 는 통행 가능 칸에 착지한다." },
       beats: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
     },
@@ -2223,11 +2261,34 @@ const scriptCutscene: ToolDefinition = {
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;
     if (existing) {
+      if (isSteppableTrigger(trigger, page.priority)) {
+        // 새 페이지가 밟혀야 하는데 기존 좌표가 물이면 페이지만 붙여 죽은 컷신을 만들므로, 이벤트 전체를 먼저 옮긴다.
+        const placement = resolveEventPlacement(draft, map, existing.x, existing.y, {
+          kind: "interaction",
+          steppable: true,
+          ignoreEventId: eventId,
+          label: "컷신",
+          code: "cutscene-impassable",
+        });
+        if (placement.adjusted) {
+          warnings.push(placementAdjustedWarning("컷신", { x: existing.x, y: existing.y }, placement));
+          existing.x = placement.x;
+          existing.y = placement.y;
+        }
+      }
       existing.pages = [...(existing.pages ?? []), page];
       event = existing;
     } else {
       const pos = cutsceneEventPosition(draft, map, args);
-      event = { id: eventId, x: pos.x, y: pos.y, trigger, commands: [], pages: [page] };
+      const placement = resolveEventPlacement(draft, map, pos.x, pos.y, {
+        kind: "interaction",
+        steppable: isSteppableTrigger(trigger, page.priority),
+        ignoreEventId: eventId,
+        label: "컷신",
+        code: "cutscene-impassable",
+      });
+      if (placement.adjusted) warnings.push(placementAdjustedWarning("컷신", pos, placement));
+      event = { id: eventId, x: placement.x, y: placement.y, trigger, commands: [], pages: [page] };
       map.events.push(event);
     }
     assertEventShape(event);

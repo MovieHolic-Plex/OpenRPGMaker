@@ -2,6 +2,7 @@
 // 순수 함수(브라우저/Phaser 비의존) — 테스트·세션·contextBuilder가 공유한다.
 
 import type { GameMap, Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 
 /** 카메라/캔버스 입력(월드 픽셀 기준 scroll, 화면 픽셀 크기). */
@@ -101,20 +102,54 @@ export function mapRegionForContext(
   };
 }
 
+/** 뷰포트 통행 그리드. `#`=isPassable false, `.`=true. 행마다 한 줄, 칸마다 한 글자. */
+export const VIEWPORT_PASSABILITY_MARK = { blocked: "#", open: "." } as const;
+
+/** `pass:x,y` — 다음 h줄이 각 행 마커. */
+export const VIEWPORT_PASSABILITY_ORIGIN_PREFIX = "pass:";
+
 export function formatViewportContextBlock(
   viewport: MapViewportSnapshot,
   mapName: string,
+  project?: Project,
 ): string {
   const x1 = viewport.x + viewport.w;
   const y1 = viewport.y + viewport.h;
-  return [
+  const lines = [
     "## 에디터 뷰포트(사용자가 지금 보고 있는 맵 화면)",
     `- 맵: ${mapName} (\`${viewport.mapId}\`)`,
     `- 화면 중앙 타일: **(${viewport.centerX}, ${viewport.centerY})**`,
     `- 가시 영역(타일): (${viewport.x},${viewport.y})~(${x1},${y1}) — ${viewport.w}×${viewport.h}`,
     "- 사용자 말의 \"여기/이 근처/화면/가운데\"는 위 좌표를 기준으로 해석하세요.",
     "- 상세 타일/이벤트는 get_map_region / show_map_region으로 이 영역 또는 주변을 조회하세요.",
-  ].join("\n");
+  ];
+  const grid = formatPassabilityGrid(viewport, project);
+  if (grid) lines.push(...grid);
+  return lines.join("\n");
+}
+
+/**
+ * 배치 계약과 같은 isPassable 로 그리드를 짠다.
+ * queryTools 의 passable 필드는 passageMarkForTile(...) !== "x" 라서 타일 단위(합성 레이어 무시) — 출처가 갈라질 수 있다.
+ */
+function formatPassabilityGrid(
+  viewport: MapViewportSnapshot,
+  project: Project | undefined,
+): string[] | null {
+  if (!project) return null;
+  const map = project.maps[viewport.mapId];
+  if (!map) return null;
+  const rows: string[] = [`${VIEWPORT_PASSABILITY_ORIGIN_PREFIX}${viewport.x},${viewport.y}`];
+  for (let row = 0; row < viewport.h; row += 1) {
+    let line = "";
+    const y = viewport.y + row;
+    for (let col = 0; col < viewport.w; col += 1) {
+      const x = viewport.x + col;
+      line += isPassable(project, map, x, y) ? VIEWPORT_PASSABILITY_MARK.open : VIEWPORT_PASSABILITY_MARK.blocked;
+    }
+    rows.push(line);
+  }
+  return rows;
 }
 
 /** show_map_region 과 동일한 lower/upper 2D 배열 페이로드(비전 렌더용). */
