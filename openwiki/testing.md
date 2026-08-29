@@ -14,6 +14,18 @@ Use the lightest command that proves the change.
 - `test/commandContracts/runControl.contract.test.ts`: all action variants, inactive no-op behavior, non-blocking completion, and project serialization.
 - `test/roguelikeRooms.test.ts`: exact deterministic slot selection, generation invalidation after floor/reset changes and same-seed restart, real `run_scene_test` enemy and one-shot loot reset behavior, live event-surface rebuild, save/load generation stability, event-reset opt-out, real-time enemy HP/projectile cleanup, active-run kill persistence isolation, AI tool authoring, import validation, and project roundtrip.
 - Registry/shape coverage includes `runControl` and `run`; native manifest counts are 75 commands and 16 conditions at this phase.
+- **Condition coverage (2026-08-29).** `test/conditionEvaluatorParity.test.ts` is the parity spine: it feeds identical `(condition, state)` pairs for all 16 kinds, in both a satisfying and a non-satisfying state, to all three evaluators (`pageResolution.evalPageCondition`, `session.evalCondition`, the battle runtime's `evaluateCondition`) and asserts identical verdicts. It also asserts `Object.keys(CASES)` equals `CONDITION_KINDS` in order, so a new union member fails the test until it is classified. `ALLOWLISTED_DIVERGENCES` is currently empty — record evidence before adding to it.
+  `test/commandContracts/fork.contract.test.ts` covers all 16 kinds through the real interpreter drain; it previously covered only 10, with `timePhase`/`season`/`npcActivity`/`friendshipAtLeast`/`battleResult`/`run` proven at the `evalCondition` unit level but never through branch selection. It also pins that an empty friendship `npcKey` resolves via the host event's `characterId`.
+  `test/pageConditionAuthoringIntegrity.test.ts` pins that a page condition survives an emptied reference (inline error, not deletion) and that touching a disabled row activates it visibly. `test/conditionEvalPreview.test.ts` pins the three-state 판정 불가 verdict. `test/conditionCopyTokens.test.ts` is the internal-token gate for condition copy.
+
+### 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+
+`.omo/gates-baseline.json` 은 `baselineTrustworthy: false` 이고 이유가 적혀 있다 — 동일 코드로
+연속 실행해도 실패 수가 170/187/195/203 으로 흔들리고 `failedFiles` 는 **합집합**이다.
+실측: playwright 시간 QA 가 dev 서버를 돎리는 동시에 `npm run gates` 를 돌렸다가 24개 파일이
+「새로 실패」로 찍혔고, 그 중에는 바로 전에 개별 실행으로 두 번 초록을 본 파일도 섞여 있었다.
+따라서 게이트 회귀 파정은 **조용한 상태에서 해당 파일을 개별 재실행**해서 마무리해야 한다.
+`typecheck:app` 은 기준선이 0 오류 + `baselineTrustworthy: true` 이므로 그곳의 오류는 바로 회귀다.
 
 ## Agent validation rule
 

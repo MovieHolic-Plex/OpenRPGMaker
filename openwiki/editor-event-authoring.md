@@ -187,3 +187,74 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   `event-page-item-condition-present`, `event-page-actor-condition-present`(present/absent).
   체크박스 재활성 경로는 기존 `condition.value` 를 보존한다. 계약은 `test/eventPageConditionOffValue.test.ts`.
 - 이동 속도 select 는 런타임 `clampSetting` 과 같은 1~8 범위를 제시해야 한다(이전에는 1~6 이라 7·8 저작 불가).
+
+## 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+
+같은 16종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+`src/project/commandKindRegistry.ts:103-120`)을 **세 곳**이 각자 평가한다:
+
+| 평가기 | 위치 | 쓰는 곳 |
+|---|---|---|
+| `evalPageCondition` | `src/project/io/pageResolution.ts:31` | 이벤트 페이지 출현 판정 |
+| `evalCondition` | `src/project/session.ts:735` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
+| `evaluateCondition` | `src/battle/battleEvents.ts` (내부 함수) | 전투 분기 + 트룹 페이지 |
+
+**셋이 갈라져 있었다(실측).** `npcActivity` 는 전투에서 하드코딩 `false` 였고,
+`friendshipAtLeast` 는 빈 `npcKey` 를 소유 이벤트 `characterId` 로 해석하지 않아 항상 거짓이었다.
+둘 다 `src/editor/tools/troopBattlePageTools.ts` 가 모든 `CONDITION_KINDS` 를 받으므로
+**저작은 되는데 절대 참이 될 수 없는** 상태였다. 지금은 전투도 소유 이벤트의 활동을 보고,
+`resolveSocialKey` 를 **재사용**한다(두 번째 해석 규칙을 만들지 않는다).
+
+**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 16종 × (만족/불만족) 을 세 평가기에
+동일 입력으로 먹여 판정 일치를 단언하고, `Object.keys(CASES)` 를 `CONDITION_KINDS` 와 순서까지
+비교하므로 **종류를 빠뜨리면 실패한다**. 허용 예외 목록(`ALLOWLISTED_DIVERGENCES`)은 현재 **비어 있다** —
+지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라.
+
+### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+
+세 평가기 모두 `(timers[timerId] ?? 0) <= condition.seconds` 다. 따라서 **타이머가 한 번도 켜지지
+않았어도** `seconds >= 0` 조건은 참이다(`0초 이하` 도 참). 이것은 이 엔진의 **의도된 계약**이며
+`test/pageConditionsGuarantee.test.ts`, `test/commandContracts/fork.contract.test.ts`,
+`test/selfSwitch.test.ts` 가 고정하고 있다 — 거짓으로 만드는 유일한 방법은 **음수** 임계값이다.
+
+RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
+비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
+저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
+
+### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+
+`pageAdvancedConditions.ts` 의 오버플로 행(3번째 스위치, 2번째 아이템/주인공)은 한때
+`showValue: false` + `forceTrueOnSwitchChange: true` 로 극성을 **강제**했다. 그래서 그 행은
+꺼짐/보유 안 함/파티에 없음을 저작할 수 없었고, 대상 id 를 바꾸면 저장된 `false` 가 조용히 `true` 로
+뒤집혔다. 이것은 `ab8f9714` 가 단순 행에서 이미 고친 **P0 결함 D08 이 다른 목록에 남아 있던** 것이다.
+계약: `test/eventPageConditionOffValue.test.ts` (오버플로 조건까지 왕복 단언).
+
+### 참조를 비워도 조건을 삭제하지 않는다
+
+대상 id 가 비면 조건을 지우는 대신 **인라인 오류**를 띄운다(분기 폼과 같은 규약).
+DB 에서 지워진 유령 참조는 `<id> (없음)` 라벨로 **계속 보인다** — 안 보이게 하면 저작자가 설정한
+극성이 조용히 유실된다. 회귀: `test/pageItemCondition.test.ts`(유령 itemId 표시),
+`test/pageConditionAuthoringIntegrity.test.ts`(빈 참조 보존 + 비활성 행 조작 시 자동 활성화).
+
+### 조건 미리보기는 모르면 모른다고 말한다
+
+`conditionEvalPreview` 의 판정값은 `boolean | undefined` **3상태**다. 편집기 상태로 판정할 수 없는
+조건은 「판정 불가」(`event-condition-eval-undetermined`)를 띄우고, `all`/`any`/`not` 은 3값 논리로
+전파한다. 리프는 **값이 아니라 존재**로 게이트한다 — `timer` 는 `Object.hasOwn(timers, timerId)` 일
+때만 판정한다. 종전에는 빈 세션으로 평가해서 16종 중 **7종**(timer/timePhase/season/npcActivity/
+friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모든 타이머 조건이 「충족」으로
+보였다. 계약: `test/conditionEvalPreview.test.ts`.
+
+### 조건 문구에 내부 토큰을 넣지 마라
+
+`ON`/`OFF`, `AND()`/`OR()`/`NOT`, 생 비교 연산자, `timer1`/`timer2`, `run`,
+`completed`/`failed`/`abandoned` 는 사용자에게 보이면 안 된다. 통일 어휘는 켜짐/꺼짐,
+보유 중/보유 안 함, 파티에 있음/파티에 없음, 타이머 1/타이머 2,
+모두 맞을 때/하나라도 맞을 때/아닐 때, 완료/실패/포기 다. 문장·배지·탭 요약·명령 요약이 전부
+대상이며(`pageConditionSentence.ts`, `pageProps.ts`, `commandSummary.ts`) 게이트는
+`test/conditionCopyTokens.test.ts` 다.
+
+**조건 행을 접거나 숨기지 마라.** 접기 안은 D09(battleResult·all·any·not 이 화면에서 통째로
+사라진 P1 결함)로 되돌아가는 일이라며 명시적으로 거부됐다
+(`docs/proposals/2026-08-28-event-editor-ui-improvement.html`). `all`/`any`/`not` 은 페이지 표면에서
+읽기 전용 요약 + 삭제로 유지되며, 중첩 저작은 분기(fork) 폼이 담당한다.

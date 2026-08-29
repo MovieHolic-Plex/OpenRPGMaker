@@ -47,6 +47,16 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 
 - Draft validation reports a friendship page/fork condition that can never be true as warning code `condition.friendship.no-character-id` — empty `npcKey` plus a host event without `characterId` fails closed at runtime (`resolveSocialKey` never falls back to `event.id`). The issue field anchor is `event-page-friendship-condition-npc-key`, and the editor shows the same fact inline through `event-condition-friendship-requires-character-id`. Contract test: `test/friendshipConditionGate.test.ts`.
 
+- **Always-true / always-false condition traps are author-visible (2026-08-29).** `validateCondition` used to `return` with no checks at all for `selfSwitch`, `gold`, `timer`, `timePhase`, `season`, `npcActivity`, and `battleResult`, so a condition that could never do what the author meant produced no issue. New codes, all `warning` severity because the projects that contain them are still valid and must not be blocked from Apply/OK:
+  - `condition.timer.always-true` — a `N초 이하` threshold is satisfied when no timer is running, because all three evaluators read an absent timer as `0`. The runtime rule is a deliberate pinned contract; this warning is the author-facing half of it.
+  - `condition.npcActivity.empty` — an empty activity string can never match `session.npcActivities[eventId]`.
+  - `condition.timePhase.no-time-system` / `condition.season.no-time-system` — without `system.timeSystem`, `gameTime` is undefined and `conditionMatchesTimePhase` / `conditionMatchesSeason` are permanently false.
+  - `condition.gold.impossible` — the comparison cannot hold anywhere in the reachable gold range.
+  - `condition.battleResult.no-preceding-battle` — see the caution below.
+  Contract test: `test/eventDraftValidator.test.ts`.
+
+- **Only warn where you can prove it — `battleResult` is the cautionary case.** The page-condition form of `condition.battleResult.no-preceding-battle` first shipped firing **unconditionally** on every page-level `battleResult` condition. That is a permanent false positive: whether a battle precedes a page is a runtime fact, and a page `battleResult` condition legitimately reads a result left by another event or a common event (real authored uses exist under `src/project/defaults/` and `src/editor/content/`). It now fires only when the whole project contains no `battleProcessing` anywhere — the one case that is provably always false. The fork-level form is kept because it genuinely tracks a preceding `battleProcessing` inside the same page command tree. Do not widen the page form back to an unconditional warning; warning noise on a valid pattern is worse than no warning.
+
 - Database visual-shell changes must enumerate every registered tab from the product registry rather than a hand-picked subset. At desktop and narrow acceptance widths, assert one invariant `.db-shared-workspace` frame, stable sidebar/workspace geometry, and no document overflow, then capture and inspect screenshots for every tab. Title-screen changes additionally require the real test-play window at its authored runtime viewport.
 
 
