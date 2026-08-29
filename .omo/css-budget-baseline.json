@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T05:52:47.416Z",
+  "generatedAt": "2026-08-29T09:34:47.237Z",
   "metrics": {
     "hexLiterals": 1761,
     "important": 986,
     "undefinedVars": 63,
     "globalRootFiles": 10,
-    "cssFileCount": 260
+    "cssFileCount": 261
   },
   "details": {
     "hexByFile": {
@@ -744,6 +744,7 @@
       "src/styles/runtime/battle/21-gen1-hud-type-badge.css",
       "src/styles/runtime/commerce.css",
       "src/styles/runtime/handSlot.css",
+      "src/styles/runtime/juice.css",
       "src/styles/runtime/keyboardNav.css",
       "src/styles/runtime/minimap.css",
       "src/styles/runtime/nameEntry.css",

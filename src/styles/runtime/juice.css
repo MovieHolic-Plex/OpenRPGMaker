@@ -22,7 +22,7 @@
 .juice-menu-invalid {
   animation: juice-menu-invalid-shake 140ms ease-in-out;
   /* 흔들림만으로는 '거절'인지 '움직였다'인지 애매하다 — 붉은 테두리를 함께 준다. */
-  outline: 2px solid color-mix(in oklab, #c62f3d 78%, transparent);
+  outline: 2px solid color-mix(in oklab, var(--danger) 78%, transparent);
   outline-offset: 1px;
 }
 
