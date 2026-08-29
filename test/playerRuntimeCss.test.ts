@@ -17,6 +17,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
   // 익스포트 플레이어에 규칙이 실렸는지는 이 빌드 검사만 판정할 수 있다.
   "dialogue-box-enter",
   "dialogue-box-exit",
+  "dialogue-char-enter",
   ".touch-pad",
   ".action-hud",
   ".battle-transition-overlay",

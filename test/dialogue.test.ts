@@ -151,6 +151,33 @@ describe("dialogue control playback", () => {
     await shown;
   });
 
+  it("타이핑은 이미 떠 있는 글자의 노드를 교체하지 않는다", async () => {
+    // 배선까지 확인하는 단정이다. dialogueTextRenderer 자체는 자기 테스트가 지키지만,
+    // dialogue.ts 가 다시 전량 재생성으로 돌아가면 글자별 CSS 연출이 매 틱 되감기고
+    // 그 회귀는 화면으로도 computed style 로도 보이지 않는다.
+    const host = document.createElement("div");
+    document.body.append(host);
+    const dialogue = createDialogueUI(host);
+    const shown = dialogue.showText(textRequest("가나다"));
+
+    await vi.advanceTimersByTimeAsync(24);
+    const first = host.querySelector<HTMLElement>(".dialogue-box .body .dialogue-char");
+    expect(first?.textContent).toBe("가");
+
+    await vi.advanceTimersByTimeAsync(24);
+    const grown = [...host.querySelectorAll<HTMLElement>(".dialogue-box .body .dialogue-char")];
+    expect(grown).toHaveLength(2);
+    expect(grown[0]).toBe(first);
+    expect(dialogueBody(host)).toBe("가나");
+
+    await vi.advanceTimersByTimeAsync(48);
+    expect(dialogueBody(host)).toBe("가나다");
+    expect(host.querySelectorAll(".dialogue-box .body .dialogue-char")[0]).toBe(first);
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
+  });
+
   it("shows the live session gold window", async () => {
     const host = document.createElement("div");
     document.body.append(host);

@@ -107,6 +107,31 @@ async function closeMessage(page: Page): Promise<void> {
   await page.keyboard.press("Enter");
 }
 
+/**
+ * 글자별 연출은 정착한 뒤에 읽어도 된다. 상자의 phase 와 달리 char-reveal 게이트는
+ * 세션 내내 남으므로 선언이 사라지지 않는다 — 재생이 끝난 span 도 animationName 을
+ * 그대로 들고 있다. 그래서 타이밍을 맞출 필요가 없다.
+ */
+async function readCharReveal(page: Page): Promise<{
+  readonly count: number;
+  readonly gate: string | null;
+  readonly animationName: string;
+  readonly animationDuration: string;
+}> {
+  return page.evaluate(() => {
+    const box = document.querySelector<HTMLElement>(".dialogue-box");
+    const chars = box?.querySelectorAll<HTMLElement>(".body .dialogue-char") ?? [];
+    const first = chars[0];
+    const style = first ? getComputedStyle(first) : undefined;
+    return {
+      count: chars.length,
+      gate: box?.getAttribute("data-dialogue-char-reveal") ?? null,
+      animationName: style?.animationName ?? "",
+      animationDuration: style?.animationDuration ?? "",
+    };
+  });
+}
+
 async function bootRuntime(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.addInitScript(() => {
@@ -142,6 +167,14 @@ test("진입 연출이 감정별 keyframe 과 주입된 길이로 실제 재생�
   const box = page.getByTestId("dialogue-box");
   await expect(box).toHaveAttribute("data-dialogue-phase", "shown");
   expect(await box.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+
+  // 본문이 글자별 노드로 깔렸고 그 노드가 실제로 연출을 받는다. 노드가 0 이면 증분
+  // 렌더러가 배선되지 않은 것이고, animationName 이 none 이면 게이트나 var 가 죽은 것이다.
+  const reveal = await readCharReveal(page);
+  expect(reveal.count).toBeGreaterThan(NEUTRAL_BODY.length - 2);
+  expect(reveal.gate).toBe("1");
+  expect(reveal.animationName).toBe("dialogue-char-enter");
+  expect(reveal.animationDuration).toBe("0.11s");
   await closeMessage(page);
 
   // 슬픔은 오버슈트 없는 느린 곡선을, 놀람은 강한 팝을 쓴다 — 감정이 실제로 갈린다.
@@ -179,6 +212,12 @@ test("reducedMotion 은 움직임을 죽이지만 창은 그대로 뜬다", asyn
   });
   expect(settled.opacity).toBeGreaterThan(0.9);
   expect(settled.transform === "none" || settled.transform === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
+
+  // 글자는 여전히 노드로 깔리지만(본문 구조는 연출과 무관하다) 연출은 걸리지 않는다.
+  const reveal = await readCharReveal(page);
+  expect(reveal.count).toBeGreaterThan(NEUTRAL_BODY.length - 2);
+  expect(reveal.gate, "reducedMotion 인데 글자 연출 게이트가 심겼다").toBeNull();
+  expect(reveal.animationName).toBe("none");
 
   // 감정별 규칙(특이도 0,3,0)이 안전망을 이겨 버리면 여기서 잡힌다.
   await closeMessage(page);

@@ -18,6 +18,11 @@ import {
 } from "@/player/dialoguePagination";
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
 import {
+  mountDialoguePage,
+  renderDialogueSegments,
+  type DialoguePageRenderer,
+} from "@/player/dialogueTextRenderer";
+import {
   dialoguePresentationCssVars,
   dialoguePresentationProfile,
   dialogueScaledCharDelayMs,
@@ -262,6 +267,9 @@ export function createDialogueUI(
       let fastMode = false;
       let timer = 0;
       let goldWindow: HTMLElement | undefined;
+      // 페이지마다 새로 마운트한다. 타이핑은 이 렌더러에 "몇 글자까지" 만 알려주고
+      // 이미 붙은 글자 노드는 건드리지 않는다 — 그래야 글자 연출이 되감기지 않는다.
+      let pageRenderer: DialoguePageRenderer | undefined;
 
       const currentSegments = (): readonly DialogueTextSegment[] => pages[pageIndex]?.segments ?? [];
       const currentTokens = (): readonly DialoguePlaybackToken[] => dialoguePlaybackTokens(currentSegments());
@@ -326,12 +334,12 @@ export function createDialogueUI(
             executeControl(token.control, true);
           }
         }
-        renderDialogueSegments(bodyEl, currentSegments());
+        pageRenderer?.revealAll();
         markPageReady();
         if (autoClosePage) timer = window.setTimeout(advance, 0);
       };
       const completeTypedPage = (): void => {
-        renderDialogueSegments(bodyEl, currentSegments());
+        pageRenderer?.revealAll();
         markPageReady();
         if (autoClosePage) timer = window.setTimeout(advance, 0);
       };
@@ -355,7 +363,7 @@ export function createDialogueUI(
           }
           if (token?.kind === "char") {
             visibleChars += 1;
-            renderDialogueSegments(bodyEl, currentSegments(), visibleChars);
+            pageRenderer?.reveal(visibleChars);
             timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
             return;
           }
@@ -371,7 +379,7 @@ export function createDialogueUI(
         waitingForControl = false;
         autoClosePage = request.autoAdvance === true;
         box.classList.remove("page-ready");
-        renderDialogueSegments(bodyEl, currentSegments(), 0);
+        pageRenderer = mountDialoguePage(bodyEl, currentSegments());
         timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
       };
       const advance = () => {
@@ -646,26 +654,6 @@ function resolveActorName(context: DialogueTextContext | undefined, index: numbe
 function clampDialogueColor(index: number): number {
   if (!Number.isFinite(index)) return 0;
   return Math.max(0, Math.min(19, Math.trunc(index)));
-}
-
-function renderDialogueSegments(target: HTMLElement, segments: readonly DialogueTextSegment[], visibleChars = Infinity): void {
-  clearChildren(target);
-  let remaining = visibleChars;
-  for (const segment of segments) {
-    if (remaining <= 0) break;
-    const chars = Array.from(segment.text);
-    const text = chars.slice(0, remaining).join("");
-    remaining -= chars.length;
-    if (!text) continue;
-    if (segment.colorIndex === 0) {
-      target.append(document.createTextNode(text));
-      continue;
-    }
-    target.append(el("span", {
-      class: `dialogue-color dialogue-color-${segment.colorIndex}`,
-      text,
-    }));
-  }
 }
 
 function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition, hostWidth: number): number {

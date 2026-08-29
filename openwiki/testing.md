@@ -56,6 +56,18 @@ node node_modules/vitest/vitest.mjs run --configLoader bundle \
   --root /home/main/.herdr/worktrees/rpg-zzu/<name> test/characterHop.test.ts
 ```
 
+**단, `cwd` 를 보는 테스트는 이 우회로 조용히 남의 코드를 잰다** (2026-08-30 실측).
+`--root` 는 vitest 의 탐색 루트만 옮기고 `process.cwd()` 는 그대로 본 레포다. `test/playerRuntimeCss.test.ts` 는
+`build({ configFile: resolve("vite.player.config.ts") })` 로 **cwd 기준** 설정을 읽어 익스포트 플레이어를
+빌드하므로, 이 우회로 돌리면 워크트리 CSS 가 아니라 **main 의 CSS** 를 검사한다. 증상이 고약하다 —
+공통 선택자(`.dialogue-overlay`)는 통과하고 이번 브랜치가 새로 넣은 이름만 "누락"으로 뜬다.
+빌드·플러그인·설정 파일을 cwd 로 찾는 테스트는 워크트리 안에서 직접 돌린다(위 심볼릭 링크가 있으면 된다).
+
+```bash
+cd /home/main/.herdr/worktrees/rpg-zzu/<name>
+node node_modules/vitest/vitest.mjs run test/playerRuntimeCss.test.ts
+```
+
 타입체크는 워크트리 tsconfig 를 상속한 임시 설정에 `node_modules` 경로를 얹는다. `"*": ["*", ".../node_modules/*"]` 매핑을 빼면 `phaser` 가 TS2307 로 터지면서 수백 개 가짜 에러가 번진다.
 
 ```json
@@ -258,6 +270,11 @@ Evidence expectations:
   ③ `dialogue-box-*` keyframes 가 `scaleX`/등방 `scale()` 을 쓰지 않는지,
   ④ reduced-motion 안전망 선택자가 `[data-dialogue-emotion]` 을 물어 감정별 규칙(특이도 0,3,0)을 이기는지.
   ①③④ 는 다른 어떤 검사로도 잡히지 않는다.
+- `test/dialogueTextRenderer.test.ts` — 증분 본문 렌더러. 핵심은 **노드 동일성**이다.
+  전량 재생성으로 되돌아가면 글자별 CSS 애니메이션이 매 틱 되감기는데, 그 회귀는 화면으로도
+  computed style 로도 보이지 않는다("매번 처음부터"인 동안에도 계속 재생 중으로 읽힌다).
+  노드가 유지되는지를 직접 재는 것만이 판정이다. `test/dialogue.test.ts` 에 **배선**까지 확인하는
+  같은 단정이 하나 더 있다 — 렌더러만 멀쩡하고 `dialogue.ts` 가 옛 경로로 돌아가는 경우를 잡는다.
 - `test/dialogue.test.ts` — 생명주기. `schedule` 을 주입해 fake timer 없이 결정적으로 검사한다
   (세션 첫 창만 진입 재생, `close()` 는 연출 후 비움 / `hide()` 는 즉시 컷, 연출 상태가 `resetOverlay` 의
   className 통짜 대입에 지워지지 않음). **타이핑 타이밍 기대값(24ms·159ms 단위)은 손대지 않는다** —
@@ -271,9 +288,10 @@ Evidence expectations:
     `runtimeDom.ts` 의 `upsertEventMarker` 는 **마커를 처음 만들 때만** 클릭 리스너를 붙이는데
     `playSceneAutonomous.ts:99,179` 는 `onActivate` 없이 같은 함수를 부른다. 자율이동 경로가 마커를
     먼저 그리면 그 마커는 영구히 클릭이 안 먹는다. 클릭 기반 대화 e2e 가 원래 불안정한 이유다.
-- `test/playerRuntimeCss.test.ts` 의 `REQUIRED_RUNTIME_SELECTORS` 에 `dialogue-box-enter`/`-exit` 를 넣어 둔다.
-  에디터 테스트플레이는 에디터 CSS 가 같이 로드돼 정상으로 보이므로, **익스포트 플레이어에 규칙이 실렸는지는
-  실제 vite 빌드를 돌리는 이 검사만 판정한다.**
+- `test/playerRuntimeCss.test.ts` 의 `REQUIRED_RUNTIME_SELECTORS` 에 `dialogue-box-enter`/`-exit`/`dialogue-char-enter`
+  를 넣어 둔다. 에디터 테스트플레이는 에디터 CSS 가 같이 로드돼 정상으로 보이므로, **익스포트 플레이어에
+  규칙이 실렸는지는 실제 vite 빌드를 돌리는 이 검사만 판정한다.** 이 검사는 `cwd` 기준으로 설정을 읽으므로
+  워크트리 안에서 직접 돌려야 한다(위 "워크트리에 `node_modules` 가 없을 때" 참고).
 - 4단계 스크림의 `.play-stage` 크롭 inset 정합은 계산으로 확정할 수 없다 —
   `npm run qa:runtime -- --scenario dialogue` 의 실측으로만 확인한다.
 

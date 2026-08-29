@@ -30,6 +30,11 @@
   /* 이름표 길이는 감정에 따라 변하지 않는다(지연만 변한다) — 그래서 TS 가 아니라 여기 있다. */
   --runtime-dialogue-nameplate-ms: 150ms;
 
+  /* 글자 한 칸이 밝아지는 시간. 감정별로 변하는 것은 글자 *간격*(charDelayScale) 쪽이고
+     한 글자의 페이드 길이는 고정이라 이름표와 같은 이유로 CSS 가 갖는다.
+     기본 간격 24ms 보다 길어서 4~5 자가 겹쳐 밝아지며 부드러운 선두가 생긴다. */
+  --runtime-dialogue-char-ms: 110ms;
+
   /* 이징은 CSS 만의 것이다 — TS 는 길이만 정하고 곡선은 여기서 고른다. */
   --runtime-dialogue-enter-ease: cubic-bezier(0.16, 0.84, 0.3, 1);
   --runtime-dialogue-enter-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -959,6 +964,36 @@
 }
 
 @keyframes dialogue-child-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* === 글자별 등장 ===
+   src/player/dialogueTextRenderer.ts 가 글자를 하나씩 append 하고 이미 붙은 노드는
+   절대 건드리지 않는다. 그래서 각 span 은 삽입될 때 딱 한 번 재생된다 — 예전처럼
+   본문을 매 틱 전량 재생성하면 이 애니메이션이 프레임마다 되감겼다.
+
+   phase 게이트를 걸지 않는다. 이름표·초상화와 달리 글자 연출은 "세션 첫 창"이 아니라
+   **글자가 새로 붙을 때마다** 일어나는 것이 정상이다. 대신 프로파일이 켰을 때만
+   돈다 — reducedMotion 이면 TS 가 data-dialogue-char-reveal 을 아예 심지 않는다.
+
+   opacity 만 쓴다. span 은 인라인 박스이고 인라인 박스는 transform 을 무시한다.
+   inline-block 으로 바꾸면 픽셀 폰트의 베이스라인·줄높이와 줄바꿈 단위가 흔들린다. */
+.dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char {
+  animation: dialogue-char-enter var(--runtime-dialogue-char-ms) linear both;
+}
+
+/* 건너뛰기로 한꺼번에 붙은 글자. 수십 자가 동시에 밝아지면 어수선하다. */
+.dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char.dialogue-char-instant {
+  animation: none;
+}
+
+@keyframes dialogue-char-enter {
   0% {
     opacity: 0;
   }

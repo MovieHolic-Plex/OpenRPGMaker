@@ -22,6 +22,25 @@
   - 상자 keyframes 는 **가로로 커지지 않는다**(`scaleY` 만 쓴다). 전폭 상자를 가로로 부풀리면 1280 뷰포트에서
     좌우 여백 16px 하한이 깨져 `test/e2e/dialogue-modern-skin.spec.ts` 가 무너지고, 대칭으로 몇 px 벌어지는
     변화는 눈에 잡히지도 않는다. `test/dialoguePresentationCss.test.ts` 가 이 제약을 잠근다.
+  - **본문은 증분 렌더러가 그린다** (`src/player/dialogueTextRenderer.ts`). 예전 경로는 글자가 하나 늘 때마다
+    `clearChildren` + 전량 재생성이라 **이미 떠 있던 글자의 노드까지 매 틱 교체**됐고, 그래서 글자별 CSS
+    애니메이션이 프레임마다 처음으로 되감겼다 — 글자 연출을 붙일 수단이 아예 없었다.
+    `mountDialoguePage(bodyEl, segments)` 는 페이지마다 새로 마운트하고 `reveal(n)`/`revealAll()` 로
+    **뒤에만 덧붙인다.** 이미 붙은 노드는 절대 건드리지 않는다(회귀: `test/dialogueTextRenderer.test.ts` 의
+    노드 동일성 단정 + `test/dialogue.test.ts` 의 배선 단정). 선택지·프롬프트는 타이핑이 없으니 일괄
+    `renderDialogueSegments` 를 그대로 쓴다(색이 같은 글자를 한 노드로 묶는다).
+    - 페이지 전체를 미리 깔고 `opacity:0` 으로 숨기지 **않는다**. 그러면 `.body.textContent` 가 항상
+      페이지 전문이 되어 타이핑 회귀 테스트와 스크린 리더가 본문 전체를 먼저 읽는다. 덧붙이기 방식은
+      되감김만 정확히 없애고 그 계약은 건드리지 않는다. 리플로 걱정도 없다 — 줄바꿈은 페이지네이터가
+      명시 `"\n"` 으로 확정했고 글자는 줄 오른쪽으로만 늘어난다.
+    - 글자 연출은 **opacity 만** 쓴다. span 은 인라인 박스이고 인라인 박스는 `transform` 을 무시한다.
+      `inline-block` 으로 바꾸면 픽셀 폰트의 베이스라인·줄높이와 줄바꿈 단위가 흔들린다.
+    - 글자 연출은 phase 게이트를 걸지 않는다 — 이름표·초상화와 달리 글자는 새로 붙을 때마다 재생되는 것이
+      정상이다. 대신 `data-dialogue-char-reveal="1"` 이 게이트고, `reducedMotion` 이면 TS 가 아예 심지 않는다.
+      건너뛰기로 한꺼번에 붙는 글자는 `dialogue-char-instant` 로 연출을 뺀다(수십 자가 동시에 밝아진다).
+    - 감정별로 변하는 것은 글자 **간격**(`charDelayScale`)이고 한 글자의 페이드 길이는 고정이다 —
+      그래서 `--runtime-dialogue-char-ms` 는 이름표 길이와 같은 이유로 TS 가 아니라 `:root` 가 갖는다.
+      `\s[n]` 로 명시한 속도는 배율 없이 그대로 이긴다.
   - `createDialogueUI(host, schedule?)` 의 `schedule` 은 테스트용 타이머 주입 구멍이다
     (`createBattleTransition(host, schedule)` 과 같은 형태).
 - **자율 이동 등록·복귀 (2026-08-27 실측 수정).** 페이지 이동(무작위/접근/추격/사용자 지정/생활)은
