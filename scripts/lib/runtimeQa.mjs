@@ -147,6 +147,22 @@ export function evaluateExpect(expected, observed) {
   scalar("gold", (s) => s.gold);
   scalar("battleResult", (s) => s.battleResult);
 
+  // 부등 기대치 — "값이 **아니어야** 한다". 동등만으로는 대조군을 표현할 수 없다:
+  // "골렘이 있으면 안 움직인다"(x 동등)는 입력이 아예 죽어도 통과하므로, 골렘 없는 대조군에서
+  // "움직였다"를 단정해야 비로소 증거가 된다. 그것이 `xNot`/`yNot` 이다.
+  // 기존 키(x/y/…)의 의미는 건드리지 않는다 — 다른 시나리오가 이 파일을 공유한다.
+  const scalarNot = (key, read) => {
+    if (expected[key] === undefined) return;
+    if (state === null) {
+      failures.push(`런타임 훅 없음 — 상태를 읽을 수 없다(${key} 확인 불가)`);
+      return;
+    }
+    const actual = read(state);
+    if (actual === expected[key]) failures.push(`${key}: 기대 ≠ ${expected[key]}, 실제 ${actual}`);
+  };
+  scalarNot("xNot", (s) => s.x);
+  scalarNot("yNot", (s) => s.y);
+
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);
   }

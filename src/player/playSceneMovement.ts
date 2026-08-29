@@ -280,13 +280,17 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const key = `${tx},${ty}`;
   const event = findRuntimeEventInScene(scene, tx, ty, "action");
   if (event) {
     // 같은 대상 연타 디바운스. 실행은 안 하지만 정면에 대상이 있는 건 맞으므로
     // 상호작용으로 보고한다(여기서 false 를 주면 대화 중에 칼을 휘두른다).
-    if (key === scene.lastActionTargetKey) return true;
-    scene.lastActionTargetKey = key;
+    //
+    // 키는 **이벤트 단위**다. 타일 단위였을 때는 다중 타일 이벤트가 제자리 회전만으로
+    // 재발동했다 — 3x3 NPC 앞에서 방향만 바꾸면 정면 칸(tx,ty)이 달라지지만 여전히 같은 몸을
+    // 가리키므로, 타일 키로는 매번 새 대상으로 보였다. 1x1 에서는 대상 이벤트와 정면 칸이
+    // 1:1 이라 동작이 같다(이동을 시작하면 어느 쪽이든 키가 비워진다).
+    if (event.event.id === scene.lastActionTargetKey) return true;
+    scene.lastActionTargetKey = event.event.id;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
     return true;
@@ -298,9 +302,8 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
   if (underfoot) {
-    const underfootKey = `${scene.tileX},${scene.tileY}`;
-    if (underfootKey === scene.lastActionTargetKey) return true;
-    scene.lastActionTargetKey = underfootKey;
+    if (underfoot.event.id === scene.lastActionTargetKey) return true;
+    scene.lastActionTargetKey = underfoot.event.id;
     void scene.runEvent(underfoot.event.id);
     return true;
   }

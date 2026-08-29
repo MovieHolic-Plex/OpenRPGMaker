@@ -110,7 +110,14 @@ export function characterFootprintCells(
   y: number,
   fp: CharacterFootprint
 ): { readonly x: number; readonly y: number }[] {
-  const rect = footprintBounds(x, y, fp);
+  return rectCells(footprintBounds(x, y, fp));
+}
+
+/**
+ * 사각이 덮는 모든 칸. 통행 사각처럼 이미 사각으로 들고 있는 값을 순회할 때 쓴다
+ * (그걸 다시 크기+앵커로 되돌려 characterFootprintCells 에 넣으면 top 이 복원되지 않는다).
+ */
+export function rectCells(rect: FootprintRect): { readonly x: number; readonly y: number }[] {
   const cells: { x: number; y: number }[] = [];
   for (let cy = rect.top; cy <= rect.bottom; cy += 1) {
     for (let cx = rect.left; cx <= rect.right; cx += 1) cells.push({ x: cx, y: cy });

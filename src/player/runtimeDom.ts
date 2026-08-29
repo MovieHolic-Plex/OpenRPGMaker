@@ -18,7 +18,7 @@ import {
   type PictureTransform,
 } from "@/player/pictures/pictureTween";
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import type { CharacterFootprint, FootprintRect, Project } from "@/project/types";
 import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
 import { resolvePlayResolution } from "@/project/playResolution";
 
@@ -58,6 +58,14 @@ function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView): void 
   marker.style.height = `${height}px`;
 }
 
+/**
+ * `__oprnDebug` 가 노출하는 이벤트 상태. QA 시나리오가 단정할 수 있는 것은 여기 있는 것뿐이다.
+ *
+ * 사각을 **파생값까지 실어 보내는** 이유: 크기(footprint/passRows)만 주면 소비자가 발밑 앵커
+ * 규약(top = y - (height-1), 짝수 폭은 앵커가 중앙 왼쪽)을 손으로 다시 구현해야 하고, 그 계산이
+ * 어긋나면 시나리오가 조용히 엉뚱한 칸을 단정한다. 실제로 1차 QA 는 발자국 좌표를 시나리오
+ * 주석에 손으로 적어 두는 것이 전부였다.
+ */
 export interface RuntimeEventSnapshot {
   readonly x: number;
   readonly y: number;
@@ -65,6 +73,14 @@ export interface RuntimeEventSnapshot {
   readonly priority: string;
   readonly trigger: string;
   readonly direction?: string;
+  /** 활성 페이지의 몸 크기(타일). 저작이 없으면 1x1. */
+  readonly footprint: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 통행을 막는가. 생략 저작이면 몸 높이와 같다. */
+  readonly passRows: number;
+  /** 조사·전투·클릭이 쓰는 사각. */
+  readonly bodyRect: FootprintRect;
+  /** 통행 차단이 쓰는 사각. passRows 가 몸 높이면 bodyRect 와 같다. */
+  readonly passRect: FootprintRect;
 }
 
 export interface RuntimeStateSnapshot {

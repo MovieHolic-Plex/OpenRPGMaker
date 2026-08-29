@@ -39,6 +39,13 @@ export type RuntimeQaExpect = {
   readonly mapId?: string;
   readonly x?: number;
   readonly y?: number;
+  /**
+   * "x 가 이 값이 **아니어야** 한다". 대조군을 표현하기 위한 부등 기대치다 — 동등만으로는
+   * "골렘이 없으면 움직인다" 를 단정할 수 없고, 그러면 입력이 죽어도 "안 움직였다" 가 통과한다.
+   */
+  readonly xNot?: number;
+  /** y 의 부등 기대치. {@link RuntimeQaExpect.xNot} 참조. */
+  readonly yNot?: number;
   readonly gold?: number;
   /** 직전 전투 처리 결과(session.battleResult). */
   readonly battleResult?: "victory" | "defeat" | "escape" | null;

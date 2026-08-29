@@ -7,7 +7,14 @@
 // 통행 사각이 아니라 몸 사각인 이유: 머리를 클릭해도 선택돼야 한다. 통행이 열린 상체는
 // 지나갈 수 있을 뿐이고, 조사·클릭·선택은 몸 전체가 받는다(사용자 결정).
 
-import { footprintBounds, normalizeCharacterFootprint, pointRect, rectsOverlap } from "@/project/footprint";
+import {
+  footprintBounds,
+  normalizeCharacterFootprint,
+  normalizePassRows,
+  passageBounds,
+  pointRect,
+  rectsOverlap,
+} from "@/project/footprint";
 import type { FootprintRect, GameEvent, GameMap } from "@/project/types";
 
 /**
@@ -20,6 +27,19 @@ import type { FootprintRect, GameEvent, GameMap } from "@/project/types";
  */
 export function eventBodyRect(event: GameEvent): FootprintRect {
   return footprintBounds(event.x, event.y, normalizeCharacterFootprint(event.pages?.[0]?.footprint));
+}
+
+/**
+ * 이벤트의 통행 사각 — 몸 사각의 하단 `passRows` 행. 발자국과 마찬가지로 **첫 페이지**에서 읽는다.
+ *
+ * 런타임(`runtimeEventView`)은 조건을 평가해 활성 페이지의 사각을 쓰지만, 저작 시점 검사는
+ * 조건을 평가할 수 없다(스위치 상태가 없다). 첫 페이지는 편집 맵이 그리는 것과 같은 페이지라,
+ * 경고 좌표가 작성자가 화면에서 보는 사각과 일치한다.
+ */
+export function eventPassageRect(event: GameEvent): FootprintRect {
+  const page = event.pages?.[0];
+  const footprint = normalizeCharacterFootprint(page?.footprint);
+  return passageBounds(event.x, event.y, footprint, normalizePassRows(page?.passRows, footprint.height));
 }
 
 /** 이 칸이 이벤트의 몸 사각 안인가. 1x1 이면 앵커 점 비교와 같다. */
