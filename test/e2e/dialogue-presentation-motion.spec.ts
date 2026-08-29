@@ -41,6 +41,9 @@ type EnterSample = {
   readonly animationDuration: string;
   readonly animationFillMode: string;
   readonly enterVar: string;
+  /** 이름표는 창보다 늦게 들어온다 — 지연이 0 이면 같이 튀어나온다. */
+  readonly nameplateAnimationName: string;
+  readonly nameplateAnimationDelay: string;
 };
 
 declare global {
@@ -55,7 +58,11 @@ async function installEnterProbe(page: Page): Promise<void> {
     window.__dialogueEnterSamples = [];
     const sample = (box: HTMLElement): void => {
       const style = getComputedStyle(box);
+      const plate = box.querySelector<HTMLElement>(".speaker.speaker-nameplate");
+      const plateStyle = plate ? getComputedStyle(plate) : undefined;
       window.__dialogueEnterSamples?.push({
+        nameplateAnimationName: plateStyle?.animationName ?? "",
+        nameplateAnimationDelay: plateStyle?.animationDelay ?? "",
         emotion: box.dataset.dialogueEmotion ?? "",
         phase: box.dataset.dialoguePhase ?? "",
         motion: box.dataset.dialogueMotion ?? "",
@@ -127,6 +134,9 @@ test("진입 연출이 감정별 keyframe 과 주입된 길이로 실제 재생�
   expect(neutral.animationDuration).toBe("0.17s");
   expect(neutral.enterVar).toBe("170ms");
   expect(neutral.animationFillMode).toBe("both");
+  // 이름표는 창이 자리잡은 뒤 40ms 늦게 들어온다(neutral 프로파일).
+  expect(neutral.nameplateAnimationName).toBe("dialogue-nameplate-enter");
+  expect(neutral.nameplateAnimationDelay).toBe("0.04s");
 
   // 연출이 끝나면 정착 상태로 넘어가고 transform 이 풀린다.
   const box = page.getByTestId("dialogue-box");
@@ -156,6 +166,9 @@ test("reducedMotion 은 움직임을 죽이지만 창은 그대로 뜬다", asyn
   expect(reduced.motion, "TS 가 prefers-reduced-motion 을 못 읽었다").toBe("off");
   expect(reduced.animationName).toBe("dialogue-box-enter-fade");
   expect(reduced.animationDuration).toBe("0.06s");
+  // 이름표도 이동을 잃고 지연 없이 페이드만 남는다.
+  expect(reduced.nameplateAnimationName).toBe("dialogue-child-enter-fade");
+  expect(reduced.nameplateAnimationDelay).toBe("0s");
 
   // 창은 여전히 나타나야 한다 — opacity 0 으로 남으면 대사를 읽을 수 없다.
   const box = page.getByTestId("dialogue-box");

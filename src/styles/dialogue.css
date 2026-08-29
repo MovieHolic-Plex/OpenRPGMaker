@@ -27,6 +27,9 @@
   --dialogue-scrim-ms: 180ms;
   --dialogue-scrim-opacity: 0.28;
 
+  /* 이름표 길이는 감정에 따라 변하지 않는다(지연만 변한다) — 그래서 TS 가 아니라 여기 있다. */
+  --runtime-dialogue-nameplate-ms: 150ms;
+
   /* 이징은 CSS 만의 것이다 — TS 는 길이만 정하고 곡선은 여기서 고른다. */
   --runtime-dialogue-enter-ease: cubic-bezier(0.16, 0.84, 0.3, 1);
   --runtime-dialogue-enter-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -444,8 +447,16 @@
   width: var(--face-width, var(--runtime-dialogue-face-size));
 }
 
+/* 뒤집기를 변수로 둔다. 진입 연출의 translateX 가 transform 을 통째로 덮어써서
+   200ms 동안 초상화가 제자리로 펴지는 것을 막는 유일한 방법이다 —
+   keyframe 이 scaleX(var(--face-flip)) 로 같이 실어야 한다. */
+.dialogue-face {
+  --face-flip: 1;
+}
+
 .dialogue-face.flipped {
-  transform: scaleX(-1);
+  --face-flip: -1;
+  transform: scaleX(var(--face-flip));
 }
 
 .dialogue-face.missing {
@@ -878,6 +889,82 @@
   100% {
     opacity: 0;
     transform: translate3d(0, 4px, 0) scaleY(0.96);
+  }
+}
+
+/* === 화자 이름표·초상화 진입 ===
+   상자의 진입 단계에만 걸린다 — 세션 첫 창에서만 phase="enter" 가 나타나므로
+   연속 대사에서 이름표가 매 줄 다시 튀어나오지 않는다.
+
+   transform 과 opacity 만 건드린다. 레이아웃 속성은 절대 애니메이션하지 않는다 —
+   .dialogue-box.has-speaker 의 padding-top 은 페이지당 줄 수 계산(dialogueMaxLines)에
+   직접 들어가서, 움직이면 대사가 페이지 중간에서 잘린다. */
+.dialogue-box[data-dialogue-phase="enter"] .speaker.speaker-nameplate {
+  animation:
+    dialogue-nameplate-enter var(--runtime-dialogue-nameplate-ms)
+    var(--runtime-dialogue-enter-ease) var(--dialogue-nameplate-delay-ms) both;
+}
+
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-face {
+  animation: dialogue-face-enter var(--dialogue-portrait-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+/* 초상화는 자기 쪽에서 들어온다. 오른쪽 배치는 오른쪽에서. */
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-face.dialogue-face-side-right,
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-content.face-right .dialogue-face {
+  animation-name: dialogue-face-enter-right;
+}
+
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] .speaker.speaker-nameplate,
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] .dialogue-face {
+  animation-name: dialogue-child-enter-fade;
+  animation-delay: 0s;
+  animation-timing-function: linear;
+}
+
+@keyframes dialogue-nameplate-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialogue-face-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scaleX(var(--face-flip));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleX(var(--face-flip));
+  }
+}
+
+@keyframes dialogue-face-enter-right {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scaleX(var(--face-flip));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleX(var(--face-flip));
+  }
+}
+
+@keyframes dialogue-child-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 

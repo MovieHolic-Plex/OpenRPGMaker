@@ -102,6 +102,49 @@ describe("대화창 연출 CSS", () => {
     }
   });
 
+  it("이름표·초상화 연출은 상자의 진입 단계에만 걸린다", () => {
+    // 게이트가 없으면 연속 대사마다 이름표가 다시 튀어나온다 — phase="enter" 는
+    // 세션 첫 창에만 붙으므로 그게 곧 세션 경계 게이트다.
+    const childRules = [...css.matchAll(/^([^{}\n][^{}]*?)\{/gm)]
+      .map(([, selector]) => selector!.trim())
+      .filter((selector) => /\.speaker\.speaker-nameplate|\.dialogue-face/.test(selector))
+      .filter((selector) => /animation/.test(css.slice(css.indexOf(selector) + selector.length, css.indexOf(selector) + selector.length + 300)));
+    for (const selector of childRules) {
+      expect(
+        selector,
+        `${selector} 가 상자 phase 게이트 없이 애니메이션을 건다 — 매 대사마다 재생된다.`
+      ).toContain('[data-dialogue-phase="enter"]');
+    }
+  });
+
+  it("초상화 진입이 좌우 뒤집기를 지우지 않는다", () => {
+    // .dialogue-face.flipped 는 transform: scaleX(-1) 을 쓴다. 진입의 translateX 가
+    // transform 을 통째로 덮으므로 keyframe 이 뒤집기를 같이 실어야 한다.
+    // 안 실으면 초상화가 진입하는 동안만 제자리로 펴진다.
+    expect(css, ".dialogue-face.flipped 가 --face-flip 을 안 쓴다").toMatch(
+      /\.dialogue-face\.flipped\s*\{[^}]*--face-flip/
+    );
+    for (const [name, body] of keyframeBlocks()) {
+      if (!name.startsWith("dialogue-face-")) continue;
+      if (!body.includes("translateX")) continue;
+      expect(body, `${name} 이 뒤집기를 빼먹었다 — flipped 초상화가 진입 중 펴진다.`).toContain(
+        "scaleX(var(--face-flip))"
+      );
+    }
+  });
+
+  it("레이아웃 속성은 애니메이션하지 않는다", () => {
+    // has-speaker 의 padding-top 은 페이지당 줄 수 계산(dialogueMaxLines)에 직접 들어간다.
+    // 움직이면 측정이 프레임마다 달라져 대사가 페이지 중간에서 잘린다.
+    const forbidden = /(?:^|\s)(padding|margin|width|height|top|left|right|bottom|font-size|line-height)\s*:/m;
+    for (const [name, body] of keyframeBlocks()) {
+      if (!name.startsWith("dialogue-")) continue;
+      expect(body, `${name} 이 레이아웃 속성을 애니메이션한다 — transform/opacity 만 써라.`).not.toMatch(
+        forbidden
+      );
+    }
+  });
+
   it("움직임을 끈 자리에도 창은 뜬다", () => {
     // opacity 만 남기고 이동·신축을 없앤다. 애니메이션을 통째로 none 으로 만들면
     // fill-mode 로 잡혀 있던 opacity 가 풀려 창이 안 보이거나, 반대로 퇴장이 안 끝난다.
