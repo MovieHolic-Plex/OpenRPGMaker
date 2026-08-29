@@ -64,7 +64,7 @@ afterEach(() => {
 describe("database tab icons", () => {
   // Break caught: a tab ships without an icon and silently falls back to a Korean letter.
   it("covers every rail tab, overview included", () => {
-    expect(RAIL_TABS.length).toBe(29);
+    expect(RAIL_TABS.length).toBe(30);
     const missing = RAIL_TABS.filter((tab) => !DATABASE_TAB_ICONS[tab]);
     expect(missing, "탭에 아이콘이 없다 — TAB_ICONS 에 추가할 것").toEqual([]);
   });
@@ -125,7 +125,7 @@ describe("database tab icons", () => {
     renderDatabasePanel(panelRoot as unknown as HTMLElement);
 
     const buttons = panelRoot.querySelectorAll(".db-tab");
-    expect(buttons.length).toBe(29);
+    expect(buttons.length).toBe(30);
     for (const button of buttons) {
       const icon = button.children[0];
       expect(icon?.tagName.toLowerCase(), `${button.dataset.testid} first child`).toBe("svg");

@@ -27,6 +27,8 @@
   --shop-line: rgba(255, 255, 255, 0.1);
   --shop-line-strong: rgba(255, 255, 255, 0.18);
   --shop-accent: #efb14a;
+  /* 강조색 위에 얹는 잉크. 여섯 곳이 같은 값을 하드코딩하고 있었다. */
+  --shop-on-accent: #201704;
   --shop-accent-soft: rgba(239, 177, 74, 0.16);
   --shop-gain: #6fd08c;
   --shop-loss: #f2727f;
@@ -212,7 +214,7 @@
 
 .runtime-shop-tab.is-active {
   background: var(--shop-accent);
-  color: #201704;
+  color: var(--shop-on-accent);
   box-shadow: 0 4px 14px -6px rgba(239, 177, 74, 0.9);
 }
 
@@ -364,7 +366,7 @@
 }
 
 .runtime-shop-chip.is-active {
-  color: #201704;
+  color: var(--shop-on-accent);
   background: var(--shop-accent);
   border-color: transparent;
 }
@@ -748,7 +750,7 @@
 .runtime-shop-confirm {
   background: var(--shop-accent);
   border-color: transparent;
-  color: #201704;
+  color: var(--shop-on-accent);
 }
 
 /* ── 수량 스테퍼 ─────────────────────────────────────────────────────────
@@ -911,7 +913,7 @@
 .runtime-shop-menu-choice.selected {
   background: var(--shop-accent);
   border-color: transparent;
-  color: #201704;
+  color: var(--shop-on-accent);
   box-shadow: 0 8px 22px -10px rgba(239, 177, 74, 0.95);
 }
 
@@ -927,7 +929,7 @@
 }
 
 .runtime-shop-menu-choice-cancel.selected {
-  color: #201704;
+  color: var(--shop-on-accent);
 }
 
 /* ── 좁은 화면 ───────────────────────────────────────────────────────────
@@ -985,7 +987,7 @@
 .runtime-shop-overlay .runtime-shop-menu-choice.rm-nav-item.selected {
   background: var(--shop-accent);
   border-color: transparent;
-  color: #201704;
+  color: var(--shop-on-accent);
   box-shadow: 0 8px 22px -10px rgba(239, 177, 74, 0.95);
 }
 

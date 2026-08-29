@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T05:01:12.491Z",
+  "generatedAt": "2026-08-29T05:52:47.416Z",
   "metrics": {
-    "hexLiterals": 1763,
-    "important": 1028,
+    "hexLiterals": 1761,
+    "important": 986,
     "undefinedVars": 63,
     "globalRootFiles": 10,
-    "cssFileCount": 259
+    "cssFileCount": 260
   },
   "details": {
     "hexByFile": {
@@ -135,13 +135,14 @@
       "src/styles/runtime/battle-skins/_rm2000.css": 9,
       "src/styles/runtime/battle-skins/_transitions.css": 11,
       "src/styles/runtime/battle-skins/_vxace.css": 35,
-      "src/styles/runtime/commerce.css": 3,
+      "src/styles/runtime/commerce.css": 1,
       "src/styles/runtime/keyboardNav.css": 6,
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/nameEntry.css": 11,
       "src/styles/runtime/pictures.css": 1,
       "src/styles/runtime/playLoading.css": 7,
       "src/styles/runtime/playSurface.css": 2,
+      "src/styles/runtime/shop.css": 7,
       "src/styles/runtime/statusMenuEdgeDock.css": 14,
       "src/styles/runtime/system.css": 7,
       "src/styles/runtime/timer.css": 1,
@@ -750,6 +751,7 @@
       "src/styles/runtime/playLoading.css",
       "src/styles/runtime/playSurface.css",
       "src/styles/runtime/playerRuntime.css",
+      "src/styles/runtime/shop.css",
       "src/styles/runtime/statusMenuEdgeDock.css",
       "src/styles/runtime/system.css",
       "src/styles/runtime/timer.css",
