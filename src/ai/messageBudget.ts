@@ -1,15 +1,89 @@
 // ai/messageBudget.ts
-// CPEN 공급자 실측 상한: 요청 총 메시지 내용이 64,000자를 넘으면 422(validation_error)로
-// 턴이 중단된다. 자율 런(48단계 예산)은 뷰포트 이미지(베이스64 수만 자)와 누적 툴 결과로
-// 금방 상한을 넘는다(todo 8 실측: 88,408자 → 422). 전송 직전 오래된 메시지를 요약·이미지
-// 제거로 압축해 요청을 안전 예산 안에 가둔다. 영구 대화(this.messages)는 건드리지 않고
-// 요청 전용 사본을 만든다 — 감사/하네스 원본 보존.
-import type { ChatMessage, ContentPart } from "./llmClient";
+// 요청 총 문자 클램프 — 공급자가 받아들일 수 있는 크기 안에 요청을 가둔다. 자율 런(48단계 예산)은
+// 뷰포트 이미지(베이스64 수만 자)와 누적 툴 결과로 금방 커진다(CPEN 실측: 88,408자 → 422
+// validation_error). 전송 직전 오래된 메시지를 요약·이미지 제거로 압축한다. 영구 대화
+// (this.messages)는 건드리지 않고 요청 전용 사본을 만든다 — 감사/하네스 원본 보존.
+//
+// 예산은 **모델에서 끌어낸다**(resolveRequestCharBudget). 고정 52,000자는 사라진 공급자(CPEN)의
+// 검증 상한이었고, 그것이 창 1M 토큰짜리 모델의 기억까지 잘라내고 있었다.
+import { DEFAULT_CONTEXT_WINDOW, resolveContextWindow } from "./contextCompaction";
+import type { AiConfig, ChatMessage, ContentPart } from "./llmClient";
+import { DEFAULT_CHARS_PER_TOKEN } from "./tokenBudget";
 
-/** 안전 예산 — CPEN 하드 상한 64,000 대비 검수 프롬프트/도구 스키마 여유를 남긴다. */
+/**
+ * 공급자를 모를 때 쓰는 안전 예산 — CPEN 하드 상한 64,000 대비 여유를 남긴 값이다.
+ *
+ * **이 값은 폴백이고, 모델을 알면 resolveRequestCharBudget 이 대신 쓰인다.** 그대로 두면
+ * CPEN(레지스트리에서 사라진 공급자)의 검증 상한이 창 1M 토큰짜리 모델에도 걸린다 —
+ * 근거는 resolveRequestCharBudget 주석.
+ */
 export const REQUEST_MESSAGE_CHAR_BUDGET = 52_000;
 /** 최근 메시지는 압축하지 않는다(모델이 지금 보고 있는 턴 컨텍스트). */
 const KEEP_RECENT_MESSAGES = 6;
+
+/**
+ * 작업 창 상한(토큰) — **제품 선택**이다. 모델 창이 이보다 커도 여기서 멈춘다.
+ *
+ * DEFAULT_CONTEXT_WINDOW(128,000)를 그대로 쓴다. 이 값은 이미 "모델을 모를 때" 의 보수적 기본이고
+ * 압축 문턱도 그 기준으로 잡혀 있었으므로(128,000 - reserve 16,384 = 111,616토큰), 이걸 상한으로
+ * 삼으면 **압축이 켜지는 지점이 지금과 같다**. 이 변경은 요약 시점을 옮기는 게 아니라 문자
+ * 클램프가 그 지점보다 79배 좁게 걸려 있던 것을 바로잡는 것이다.
+ *
+ * gemini-3.7-flash 의 실제 창은 1,048,576 토큰이지만(pi-catalog google-antigravity) 창을 다 쓰면
+ * 요청당 입력이 최대 1M 토큰(입력 $0.75/1M)까지 자란다 — 창이 남는다고 다 쓸 이유가 없다.
+ */
+export const WORKING_CONTEXT_TOKEN_CAP = DEFAULT_CONTEXT_WINDOW;
+
+/** cpenrouter 경로 판정 — llmClient.isCpenGateway 와 같은 규칙(순환 import 회피용 국소 사본). */
+function isCpenRoute(model: string, baseUrl: string): boolean {
+  if (model.trim().toLowerCase().startsWith("cpen/")) return true;
+  return baseUrl.trim().toLowerCase().includes("/api/cpen");
+}
+
+/**
+ * 요청 총 문자 예산을 **모델에서** 끌어낸다.
+ *
+ * 왜 필요한가(2026-08-30 조사): 옛 구현은 어느 공급자든 52,000자로 클램프했다. 그 숫자의 출처는
+ * CPEN 의 64,000자 검증 상한(422)인데 **CPEN 은 제공자 레지스트리에서 사라졌다** — 지금 고를 수
+ * 있는 것은 Antigravity 와 Codex 둘뿐이고 CPEN 전송 코드는 `cpen/` 접두사로 게이트돼 있어
+ * 주입 게이트웨이 외에는 닿지 않는다. 그런데도 클램프만 무조건 걸려서, 창 1,048,576 토큰짜리
+ * gemini-3.7-flash 가 **창의 1.3% 지점에서 대화 기억을 버렸다**
+ * (pi-catalog `google-antigravity/gemini-3.7-flash`: contextWindow 1048576 / maxTokens 65536).
+ *
+ * 두 계층의 크기가 서로 어긋나 있던 것이 더 나쁘다. 압축(contextCompaction)은 요약으로 기억을
+ * **옮기고**, 이 문자 클램프는 오래된 assistant/tool 을 통째로 **버린다**. 압축 계약이 남기기로
+ * 한 분량(keepRecentTokens 20,000토큰 ≈ 80,000자)이 클램프(52,000자)보다 커서, 압축이 성공해도
+ * 그 결과가 곧바로 클램프에 잘렸다 — 즉 똑똑한 계층은 사실상 돌 자리가 없었다.
+ *
+ * 그래서 예산을 압축 계약에서 끌어낸다: 남기기로 한 분량 + 요약·응답 여유 + 시스템 프롬프트 자리.
+ * 이러면 클램프는 압축이 방금 한 일을 되돌리지 않는 **뒷받침**이 되고, 순서가 제자리로 온다.
+ * 모델 창으로 한 번 더 조이고, CPEN 경로에서는 그 공급자의 하드 상한을 그대로 지킨다.
+ */
+export function resolveRequestCharBudget(config: Pick<AiConfig, "model" | "baseUrl">): number {
+  if (isCpenRoute(config.model, config.baseUrl)) return REQUEST_MESSAGE_CHAR_BUDGET;
+  // 클램프는 작업 창 전체를 담는다 — 그래야 압축이 방금 만든 결과(요약 + 잔존 꼬리)가 다시
+  // 잘리지 않는다. 폴백(52,000)보다 좁아지지는 않는다.
+  const workingChars = resolveWorkingContextTokens(config) * DEFAULT_CHARS_PER_TOKEN;
+  return Math.max(REQUEST_MESSAGE_CHAR_BUDGET, workingChars);
+}
+
+/**
+ * 압축 문턱과 문자 클램프가 **같이 보는 작업 창**(토큰).
+ *
+ * 모델 창을 그대로 쓰면 gemini(1M)의 문턱이 1,032,192 토큰이 되는데 클램프가 그 79분의 1 지점에서
+ * 먼저 걸려 요약이 영영 돌지 않았다. 둘을 같은 창에 묶어 요약 → 클램프 순서를 세운다.
+ *
+ * CPEN 경로는 예외다. 그 공급자의 하드 상한(52,000자 = 13,000토큰)은 압축 계약(잔존 20,000 +
+ * 여유 16,384 = 36,384토큰)을 애초에 담지 못한다. 여기서 작업 창을 클램프에 맞추면 문턱이
+ * `13,000 - 16,384 = -3,384` 로 **음수가 되어 매 라운드 요약 LLM 이 돈다**(구현 중 실측으로 잡음).
+ * 요약해도 결과가 클램프에 안 들어가 이득이 없으므로, 옛 동작(모델 창 = 사실상 요약 없음)을
+ * 유지하고 클램프에 맡긴다.
+ */
+export function resolveWorkingContextTokens(config: Pick<AiConfig, "model" | "baseUrl">): number {
+  const window = resolveContextWindow(config.model);
+  if (isCpenRoute(config.model, config.baseUrl)) return window;
+  return Math.min(window, WORKING_CONTEXT_TOKEN_CAP);
+}
 
 export function messageCharLength(message: ChatMessage): number {
   const content = message.content;
