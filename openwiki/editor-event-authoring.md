@@ -187,3 +187,38 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   `event-page-item-condition-present`, `event-page-actor-condition-present`(present/absent).
   체크박스 재활성 경로는 기존 `condition.value` 를 보존한다. 계약은 `test/eventPageConditionOffValue.test.ts`.
 - 이동 속도 select 는 런타임 `clampSetting` 과 같은 1~8 범위를 제시해야 한다(이전에는 1~6 이라 7·8 저작 불가).
+
+## 「움직임과 속도」 부피 정리 (2026-08-29)
+
+- **생활 이동은 두 행이다.** 예전에는 233px 레일에 컨트롤 13개(목적지 5 + 맵 연결 8)를
+  `auto-fit minmax(148px, 1fr)` 로 깔았고, 그 폭에서 그리드는 1열이 되므로 실측 13행 세로 스택이었다.
+  지금은 「목적지」 행(맵 select + 「맵에서 찍기」)과 X/Y/방향/반복 4칸 행으로 조인다.
+  실측(1440 뷰포트, 편집면 529px): 같은 맵 목적지 **10행**, 연결이 있는 다른 맵 목적지 **11행**.
+- **맵 연결은 조건부다.** 목적지가 같은 맵이면 `renderMapLinkBlock` 이 빈 블록을 낸다
+  (`.event-page-map-link-block:empty { display: none }`) — 같은 맵에서 맵 연결은 뜻이 없다.
+  다른 맵인데 연결이 없으면 한 줄로 「‘X’로 나가는 연결이 없습니다」(`--danger`) 만 알리고 폼을 펼친다.
+  연결이 이미 있으면 폼을 접고 `event-page-map-link-toggle`(연결 편집/연결 접기) 로만 연다.
+  **연결이 없을 때 토글을 같이 내지 말 것** — 할 일이 「연결 추가」 하나인데 버튼 두 개는 어느 쪽이
+  본 행동인지 흐린다. 펼침 상태는 `openEventMapLink`(`eventEditorOpenState.ts`) 가 들고 있다.
+  패널은 `<details>` 가 아니라 `hidden` 이다 — 레일 그룹이 `<details>` 를 `<div>` 로 갈아치우므로.
+- **좌표는 찍는다.** `mapPointDialog.ts` 의 `openMapPointDialog()` 가 「장소 이동」 과 같은
+  `drawTransferMapPreview` 미리보기를 띄우고 클릭한 칸을 돌려준다(testid 접두사 방식:
+  `<prefix>-dialog|-canvas|-status|-map|-ok|-cancel`). 「맵에서 찍기」 는 숨은 필드가 아니라
+  **보이는 select/X/Y 를 갱신**한다 — 검증기 앵커(`event-page-living-target-map`/`-x`)와 손입력
+  e2e 경로가 둘 다 살아야 한다.
+- **선택 칸 표시는 십자선이다.** 캔버스는 맵 해상도로 그린 뒤 CSS 로 축소되므로, 100×100 맵을 상자에
+  맞추면 배율이 0.4 밑으로 내려가 타일 한 칸 테두리(2px)가 1px 미만이 되어 사실상 보이지 않았다.
+  `drawMarker()` 는 맵 전체를 가로지르는 십자 안내선(어두운 밑선 + 흰 선) 뒤에 반투명 채움과 2겹
+  테두리를 **마지막에** 올린다. 「장소 이동」 미리보기도 같은 함수를 쓴다.
+- **사용자 지정 경로는 궤적으로 읽는다.** `previewMoveRoute.ts` 의 `tracePath`/`renderTrajectory`/
+  `renderTape`/`svgSupported` 를 내보내 레일에서 재사용한다 — 궤적 썸네일(`event-page-route-thumb`,
+  누르면 경로 편집) + 화살표 칩 테이프 + 전체 라벨 한 줄이 가로로 나란히 선다.
+  전체 라벨(`event-page-movement-route-summary`) 의 한국어 텍스트는 그대로 둘 것 —
+  `test/e2e/oprn-event-pages.spec.ts` 가 "오른쪽 이동" 을 이 요소에서 찾는다.
+- **`.event-page-movement-label` 은 `.event-editor` 를 앞에 붙여야 산다.** `core.part-2.css` 의
+  `.event-editor label { display: block }` 은 특이도 (0,1,1) 이라 (0,1,0) 짜리 `display: grid` 를
+  이기고 있었고, 그래서 이동 그룹의 모든 라벨 행이 세로로 쌓여 높이를 두 배로 먹었다.
+- **시각 QA:** `node scripts/qa-event-movement-ux.mjs --label <tag>` 가 정지 → 사용자 지정 →
+  생활 이동(같은 맵) → 맵 찍기 → 다른 맵 → 연결 생성 8단계를 실제 브라우저에서 캡처하고
+  섹션 높이·행 수·`overflowX` 를 잰다. 증거는 `.omo/evidence/event-movement-ux/<tag>/`.
+  기준선(main)에서도 돌아가야 하므로 새 testid 는 optional 로만 본다.
