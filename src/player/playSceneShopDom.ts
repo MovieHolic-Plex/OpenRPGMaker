@@ -1,25 +1,46 @@
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
-import { store } from "@/project/store";
+import { shopBuyPromptText, shopGreetingText, shopListHeaderText } from "@/project/shopMessages";
 import { el } from "@/util/dom";
+import {
+  goodsSellPrice,
+  type ShopCategory,
+  type ShopGoods,
+} from "@/player/playSceneShopGoods";
+import {
+  applyAffordability,
+  detailHero,
+  detailStatGrid,
+  entryPurse,
+  goldPanel,
+  keyHints,
+  listingPrice,
+  ownedPanel,
+  partyPreview,
+  quantityControl,
+  shopBrandBlock,
+  shopCategoryBar,
+  shopItemRow,
+  shopModeTabs,
+  toGoods,
+  updateShopQuantityTotalIn,
+  type ShopListing,
+  type ShopMode,
+} from "@/player/playSceneShopParts";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import type { ItemRecord } from "@/project/types/database";
 import type { ResolvedTerms } from "@/project/terms";
 
-export type ShopMode = "buy" | "sell";
+export type { ShopMode } from "@/player/playSceneShopParts";
 export type ShopView = "menu" | "items";
 
 type ShopType = NonNullable<ShopStep["shopType"]>;
-type ShopMessageType = NonNullable<ShopStep["messageType"]>;
 type ShopMenuAction = ShopMode | "cancel";
-type ShopItemAction = (item: ItemRecord, mode: ShopMode, count: number) => void;
+type ShopItemAction = (item: ShopGoods, mode: ShopMode, count: number) => void;
 
 type ShopItemsRenderRequest = {
   readonly scene: PlaySceneContext;
   readonly step: ShopStep;
-  readonly items: readonly ItemRecord[];
+  readonly items: readonly ShopListing[];
   readonly mode: ShopMode;
   readonly prompt: string;
   readonly terms: ResolvedTerms;
@@ -28,16 +49,19 @@ type ShopItemsRenderRequest = {
   readonly setStatus: (text: string) => void;
   readonly showMenu: () => void;
   readonly onItem: ShopItemAction;
+  /** 카테고리 칩. 없으면 칩을 만들지 않는다(단위 테스트 등 최소 호출 경로). */
+  readonly category?: ShopCategory | "all";
+  readonly onCategory?: (next: ShopCategory | "all") => void;
+  /**
+   * 칩을 만드는 원본 목록 — 필터 걸기 전의 이 모드 전체 진열이다. `items` 로 칩을 만들면
+   * 「장비」를 누른 순간 남는 종류가 하나뿐이라 칩줄이 사라지고 「전체」로 돌아올 길이 없어진다.
+   */
+  readonly categorySource?: readonly ShopListing[];
+  /** 탭으로 구매/판매를 그 자리에서 바꾼다. 없으면 탭을 만들지 않는다. */
+  readonly onMode?: (mode: ShopMode) => void;
 };
 
-/** 장비 슬롯을 가진 아이템 종류 — '장비' 줄은 이 종류에만 뜬다(잡화에 항상 0 은 잡음). */
-const EQUIPPABLE_ITEM_TYPES: ReadonlySet<string> = new Set([
-  "weapon",
-  "shield",
-  "body",
-  "head",
-  "accessory",
-]);
+export { flashGoldDelta } from "@/player/playSceneShopParts";
 
 export function createShopOverlay(): HTMLElement {
   const overlay = document.createElement("section");
@@ -48,54 +72,98 @@ export function createShopOverlay(): HTMLElement {
   overlay.setAttribute("aria-modal", "true");
   overlay.setAttribute("aria-label", "상점");
   // 오버레이는 스크림이다 — 윈도스킨 변수만 심고(border-image 없이) 표면은
-  // 개별 창(.runtime-shop-panel)이 그린다. 이 노드에 fill 을 걸면 가게가 아니라
-  // 플레이 영역 전제를 덮는 한 장의 파란 상자가 된다.
+  // 개별 창이 그린다. 이 노드에 fill 을 걸면 가게가 아니라 플레이 영역 전체를 덮는 한 장의 상자가 된다.
   applySystemWindowSkinVariable(overlay);
   return overlay;
 }
 
+/**
+ * 입구 화면. 상인 얼굴 + 가게 정체성 + 인사말 + 소지금 + 큰 선택 카드.
+ * 2003 클론 삼단 껍질(빈 상단/중단 패널 2개)은 예전에 덜어냈고, 이제 표면도 모던 카드다.
+ *
+ * `scene` 은 선택 인자다 — 단위 테스트는 4 인자로 부른다. 넘기면 상인 얼굴과 소지금이 실제
+ * 세션 값으로 채워진다. 예전에는 항상 빈 스텁을 써서 입구에 얼굴도 지갑도 없었다.
+ */
 export function renderShopMenu(
   step: ShopStep,
   terms: ResolvedTerms,
   showItems: (mode: ShopMode) => void,
-  finish: () => void
+  finish: () => void,
+  scene?: PlaySceneContext
 ): HTMLElement {
-  const shell = document.createElement("div");
-  shell.className = "runtime-shop-shell runtime-shop-menu-shell";
-  // 2003 클론 삼단 껍질(빈 상단/중단 패널 2개)을 덜어냈다 — 입구는 인사말 + 세 선택이다.
-  const menu = document.createElement("div");
-  menu.className = "runtime-shop-menu";
-  menu.append(shopMenuMessage(messageLine(step, terms)));
-  const choices = document.createElement("div");
-  choices.className = "runtime-shop-menu-choices";
-  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, terms, showItems, finish, step));
-  menu.append(choices);
+  const shell = el("div", { class: "runtime-shop-shell runtime-shop-menu-shell" });
+  const context = scene ?? ({ session: { partyActorIds: [], gold: 0, inventory: {} } } as unknown as PlaySceneContext);
+  const menu = el("div", { class: "runtime-shop-menu" });
+  // 부제는 가게가 무엇을 하는 곳인지다. 인사말을 여기에도 넣으면 같은 문장이 두 줄로 겹친다.
+  menu.append(
+    shopBrandBlock(context, shopTitle(step), shopTagline(step)),
+    shopMenuMessage(shopGreetingText(step.messageType, terms))
+  );
+  if (scene) menu.append(entryPurse(scene, terms));
+  const choices = el("div", { class: "runtime-shop-menu-choices" });
+  for (const action of shopMenuActions(step)) {
+    choices.append(shopMenuButton(action, terms, showItems, finish, step));
+  }
+  menu.append(choices, keyHints([["↑↓", "선택"], ["Enter", "결정"], ["Esc", "나가기"]]));
   shell.append(shopWindow("runtime-shop-greeting-panel", [menu]));
   return shell;
 }
 
+/** 가게가 무엇을 하는 곳인지 한 줄. 서비스 종류마다 다르다. */
+function shopTagline(step: ShopStep): string {
+  if (step.shopServiceKind === "repair") return "장비를 손봐 드립니다.";
+  if (step.shopServiceKind === "appraisal") return "물건의 값을 봐 드립니다.";
+  if (step.shopServiceKind === "pawn") return "물건을 맡기고 돈을 받습니다.";
+  if (step.shopType === "buyOnly") return "물건을 팝니다.";
+  if (step.shopType === "sellOnly") return "물건을 사들입니다.";
+  return "물건을 사고팝니다.";
+}
+
 export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
-  const shell = document.createElement("div");
-  shell.className = "runtime-shop-shell runtime-shop-items-shell";
-  // 상단 창은 RM2003의 도움말 창이다 — 커서가 얹힌 물건의 설명을 보여준다.
-  shell.append(shopWindow("runtime-shop-message-panel", [shopHelpLine(request.step, request.items[0])]));
-  const main = document.createElement("div");
-  main.className = "runtime-shop-main";
-  main.append(shopWindow("runtime-shop-list-panel", [shopItemList(request)]));
-  const side = document.createElement("div");
-  side.className = "runtime-shop-side";
-  side.append(shopWindow("runtime-shop-party-panel", [partyPreview(request.scene)]));
-  side.append(shopWindow("runtime-shop-owned-panel", [ownedPanel(request.scene, request.items[0])]));
-  side.append(
+  const goods = request.items.map(toGoods);
+  const shell = el("div", { class: "runtime-shop-shell runtime-shop-items-shell" });
+  const first = goods[0];
+
+  // ── 상단 바: 정체성(상인·가게) + 모드 탭 + 소지금. 한 줄에 "여기가 어디고 내가 얼마 있나"가 다 있다.
+  const topbar = el("div", { class: "runtime-shop-topbar" });
+  topbar.append(shopBrandBlock(request.scene, shopTitle(request.step), shopListHeaderText(request.step.messageType)));
+  if (request.onMode) {
+    const modes = shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel");
+    if (modes.length > 1) topbar.append(shopModeTabs(modes, request.mode, request.terms, request.onMode));
+  }
+  topbar.append(
     shopWindow("runtime-shop-gold-panel", [
       goldPanel(request.scene, request.terms, request.merchantGold, request.mode),
     ])
   );
-  main.append(side);
+  shell.append(topbar);
+
+  // ── 본문: 목록 + 상세 카드.
+  const body = el("div", { class: "runtime-shop-main" });
+  const listChildren: HTMLElement[] = [];
+  if (request.onCategory) {
+    const source = request.categorySource ? request.categorySource.map(toGoods) : goods;
+    const bar = shopCategoryBar(source, request.category ?? "all", request.onCategory);
+    if (bar) listChildren.push(bar);
+  }
+  listChildren.push(shopItemList(request, goods));
+  body.append(shopWindow("runtime-shop-list-panel", listChildren));
+
+  const side = el("div", { class: "runtime-shop-side" });
+  side.append(shopWindow("runtime-shop-detail-panel", [detailCard(request.scene, request.step, first)]));
+  side.append(shopWindow("runtime-shop-party-panel", [partyPreview(request.scene)]));
+  body.append(side);
+  shell.append(body);
+
+  // ── 하단: 상태 문구 + 수량 + 결정/취소 + 키 힌트.
   shell.append(
-    main,
     shopWindow("runtime-shop-prompt-panel", [
-      shopPrompt(request.prompt, request.terms, request.showMenu, request.step, request.items[0], request.mode),
+      shopPrompt(request, first),
+      keyHints(
+        (request.step.quantityMode ?? "single") === "select"
+          ? [["↑↓", "선택"], ["←→", "수량"], ["Enter", "결정"], ["Esc", "뒤로"]]
+          : [["↑↓", "선택"], ["Enter", "결정"], ["Esc", "뒤로"]]
+      ),
     ])
   );
   return shell;
@@ -103,19 +171,17 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
 
 /** 빈 상점 안내 — 예전에는 아무것도 안 띄우고 이벤트가 조용히 지나갔다(유령 상점). */
 export function renderShopNotice(message: string, terms: ResolvedTerms, close: () => void): HTMLElement {
-  const shell = document.createElement("div");
-  shell.className = "runtime-shop-shell runtime-shop-menu-shell";
-  const menu = document.createElement("div");
-  menu.className = "runtime-shop-menu";
+  const shell = el("div", { class: "runtime-shop-shell runtime-shop-menu-shell" });
+  const menu = el("div", { class: "runtime-shop-menu runtime-shop-menu-notice" });
   menu.append(shopMenuMessage(message));
-  const choices = document.createElement("div");
-  choices.className = "runtime-shop-menu-choices";
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "runtime-shop-menu-choice";
-  button.dataset.testid = "shop-notice-close";
-  button.textContent = terms.shopCancel;
-  button.addEventListener("click", close);
+  const choices = el("div", { class: "runtime-shop-menu-choices" });
+  const button = el("button", {
+    class: "runtime-shop-menu-choice",
+    text: terms.shopCancel,
+    dataset: { testid: "shop-notice-close" },
+    attrs: { type: "button" },
+    on: { click: close },
+  });
   choices.append(button);
   menu.append(choices);
   shell.append(shopWindow("runtime-shop-greeting-panel", [menu]));
@@ -128,36 +194,51 @@ export function defaultShopMode(step: ShopStep): ShopMode {
 
 export function shopPromptText(step: ShopStep, mode: ShopMode, terms: ResolvedTerms): string {
   if (mode === "sell") return terms.shopSellPrompt;
-  return messageType(step) === "welcome" ? "무엇을 구매하시겠습니까?" : "구매할 물건을 고르세요.";
+  return shopBuyPromptText(step.messageType);
 }
 
-export function sellPrice(item: ItemRecord): number {
-  // price 0/1이면 floor/2==0 → 팔아도 0G, UX 혼란. 최소 1G는 보장하되 price 0은 판매 자체를 에디터에서 막는 게 정답. 런타임은 0이면 0 유지(에디터 경고).
-  if (item.price <= 0) return 0;
-  return Math.max(1, Math.floor(item.price / 2));
+/** 되팔기 값 — 정가의 절반, 최소 1G. 정가 0이면 0 유지(에디터에서 막는 게 정답). */
+export function sellPrice(item: { readonly price: number }): number {
+  return goodsSellPrice(item);
 }
 
-// 커서가 아이템을 옮길 때 우측 '보유' 패널을 선택 아이템 기준으로 갱신(RM2003 감각).
+/** 커서가 아이템을 옮길 때 상세 카드의 보유 줄을 갱신. */
 export function updateShopOwnedPanel(
   overlay: HTMLElement,
   scene: PlaySceneContext,
-  item: ItemRecord | undefined
+  item: ShopListing | undefined
 ): void {
-  const panel = overlay.querySelector(".runtime-shop-owned-panel");
-  if (!panel) return;
-  while (panel.firstChild) panel.firstChild.remove();
-  panel.append(ownedPanel(scene, item));
+  const host = overlay.querySelector<HTMLElement>("[data-testid='shop-owned-slot']");
+  if (!host) return;
+  clear(host);
+  host.append(ownedPanel(scene, item ? toGoods(item) : undefined));
 }
 
-/** 도움말 창을 커서가 얹힌 물건의 설명으로 갱신. 설명이 비면 목록 안내문으로 되돌린다. */
-export function updateShopHelpLine(overlay: HTMLElement, step: ShopStep, item: ItemRecord | undefined): void {
+/**
+ * 도움말을 커서가 얹힌 물건으로 갱신 — 설명 문장, 큰 아이콘, 장비 능력치까지 함께 바뀐다.
+ * 설명이 비면 목록 안내문으로 되돌린다.
+ */
+export function updateShopHelpLine(overlay: HTMLElement, step: ShopStep, item: ShopListing | undefined): void {
+  const goods = item ? toGoods(item) : undefined;
   const node = overlay.querySelector<HTMLElement>("[data-testid='shop-help-line']");
-  if (!node) return;
-  node.textContent = helpLineText(step, item);
+  if (node) node.textContent = helpLineText(step, goods);
+  const heroSlot = overlay.querySelector<HTMLElement>("[data-testid='shop-hero-slot']");
+  if (heroSlot) {
+    clear(heroSlot);
+    heroSlot.append(detailHero(goods));
+  }
+  const statSlot = overlay.querySelector<HTMLElement>("[data-testid='shop-stat-slot']");
+  if (statSlot) {
+    clear(statSlot);
+    const grid = detailStatGrid(goods);
+    if (grid) statSlot.append(grid);
+  }
 }
 
-/** 프롬프트 문구만 제자리에서 바꾼다 — 오버레이 전체를 다시 그리면 커서·포커스가 날아가고
- *  live region 이 새로 생겨 낭독도 안 된다. */
+/**
+ * 프롬프트 문구만 제자리에서 바꾼다 — 오버레이 전체를 다시 그리면 커서·포커스가 날아가고
+ * live region 이 새로 생겨 낭독도 안 된다.
+ */
 export function updateShopStatus(overlay: HTMLElement, text: string): void {
   const node = overlay.querySelector<HTMLElement>("[data-testid='shop-status-text']");
   if (!node) return;
@@ -172,9 +253,9 @@ export function updateShopGoldPanel(
   merchantGold: number,
   mode: ShopMode
 ): void {
-  const panel = overlay.querySelector(".runtime-shop-gold-panel");
+  const panel = overlay.querySelector<HTMLElement>(".runtime-shop-gold-panel");
   if (!panel) return;
-  while (panel.firstChild) panel.firstChild.remove();
+  clear(panel);
   panel.append(goldPanel(scene, terms, merchantGold, mode));
 }
 
@@ -182,17 +263,18 @@ export function updateShopGoldPanel(
 export function refreshShopItemRow(
   overlay: HTMLElement,
   scene: PlaySceneContext,
-  item: ItemRecord,
+  item: ShopListing,
   mode: ShopMode,
   terms: ResolvedTerms,
   merchantGold: number
 ): void {
-  const row = overlay.querySelector<HTMLElement>(`[data-testid='shop-${mode}-${item.id}']`);
+  const goods = toGoods(item);
+  const row = overlay.querySelector<HTMLElement>(`[data-testid='shop-${mode}-${goods.id}']`);
   if (!row) return;
-  const owned = scene.session.inventory[item.id] ?? 0;
+  const owned = scene.session.inventory[goods.id] ?? 0;
   const ownedNode = row.querySelector<HTMLElement>(".runtime-shop-item-owned");
   if (ownedNode) ownedNode.textContent = `x${owned}`;
-  applyAffordability(row, item, mode, terms, scene.session.gold, merchantGold, owned);
+  applyAffordability(row, goods, mode, terms, scene.session.gold, merchantGold, owned);
 }
 
 /** 다 팔아서 0개가 된 행은 목록에서 뺀다 — 판매 목록은 소지품 목록이다. */
@@ -200,7 +282,7 @@ export function removeShopItemRow(overlay: HTMLElement, itemId: string, mode: Sh
   overlay.querySelector(`[data-testid='shop-${mode}-${itemId}']`)?.remove();
 }
 
-// 수량 select 모드에서 ←(-1)/→(+1) 로 수량 입력을 1~99 범위로 조절. 항상 소비(true).
+/** 수량 select 모드에서 ←(-1)/→(+1) 로 수량 입력을 1~99 범위로 조절. 항상 소비(true). */
 export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1): boolean {
   const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
   if (!input) return true;
@@ -210,23 +292,21 @@ export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1): boolean {
   return true;
 }
 
-/** 수량 × 단가 합계. 커서 이동·수량 변경마다 다시 계산한다(합계가 없으면 얼마 나갈지 모른다). */
 export function updateShopQuantityTotal(overlay: HTMLElement): void {
-  const total = overlay.querySelector<HTMLElement>("[data-testid='shop-quantity-total']");
-  if (!total) return;
-  const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
-  const qty = Math.min(99, Math.max(1, Number.parseInt(input?.value ?? "1", 10) || 1));
-  const row = overlay.querySelector<HTMLElement>(".runtime-shop-item-row.selected")
-    ?? overlay.querySelector<HTMLElement>(".runtime-shop-item-row");
-  const unit = Math.max(0, Number.parseInt(row?.dataset.unitPrice ?? "0", 10) || 0);
-  total.textContent = `합계 ${unit * qty}${total.dataset.goldUnit ?? ""}`;
+  updateShopQuantityTotalIn(overlay);
 }
 
-function shopItemList(request: ShopItemsRenderRequest): HTMLElement {
-  const wrap = document.createElement("div");
-  wrap.className = "runtime-shop-item-list";
-  wrap.setAttribute("role", "list");
-  if (request.items.length === 0) {
+/** 결정 버튼 라벨을 현재 모드에 맞춘다(구입/판매). */
+export function updateShopConfirmLabel(overlay: HTMLElement, terms: ResolvedTerms, mode: ShopMode): void {
+  const node = overlay.querySelector<HTMLElement>("[data-testid='shop-confirm']");
+  if (node) node.textContent = mode === "sell" ? terms.shopSell : terms.shopBuy;
+}
+
+/* ────────────────────────── 내부 ────────────────────────── */
+
+function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods[]): HTMLElement {
+  const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "list" } });
+  if (goods.length === 0) {
     wrap.append(
       el("div", {
         class: "runtime-shop-empty",
@@ -236,127 +316,94 @@ function shopItemList(request: ShopItemsRenderRequest): HTMLElement {
     );
     return wrap;
   }
-  for (const [index, item] of request.items.entries()) wrap.append(shopItemButton(request, item, index));
+  for (const [index, entry] of goods.entries()) {
+    wrap.append(
+      shopItemRow({
+        goods: entry,
+        scene: request.scene,
+        mode: request.mode,
+        terms: request.terms,
+        merchantGold: request.merchantGold,
+        selected: index === 0,
+        onActivate: () => request.onItem(entry, request.mode, currentQuantity(request.step)),
+      })
+    );
+  }
   return wrap;
 }
 
-function shopItemButton(request: ShopItemsRenderRequest, item: ItemRecord, index: number): HTMLButtonElement {
-  const { scene, step, mode, terms, merchantGold } = request;
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "runtime-shop-item-row";
-  button.dataset.testid = `shop-${mode}-${item.id}`;
-  button.setAttribute("role", "listitem");
-  const price = mode === "sell" ? sellPrice(item) : item.price;
-  const owned = scene.session.inventory[item.id] ?? 0;
-  // 합계 계산이 선택 행의 단가를 읽어간다.
-  button.dataset.unitPrice = String(price);
-  button.append(
-    shopItemIcon(item),
-    el("span", { class: "runtime-shop-item-name", text: item.name }),
+/**
+ * 상세 카드. 슬롯(hero/help/owned/stat)으로 쪼개 둔 이유는 커서가 움직일 때
+ * 카드 전체가 아니라 바뀐 조각만 갈아끼우기 때문이다 — 전체 재렌더는 포커스와 낭독을 끊는다.
+ */
+function detailCard(scene: PlaySceneContext, step: ShopStep, goods: ShopGoods | undefined): HTMLElement {
+  const card = el("div", { class: "runtime-shop-detail", dataset: { testid: "shop-detail-card" } });
+  const heroSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "shop-hero-slot" } });
+  heroSlot.append(detailHero(goods));
+  const helpLine = el("div", {
+    class: "runtime-shop-message runtime-shop-help-line",
+    dataset: { testid: "shop-help-line" },
+    text: helpLineText(step, goods),
+  });
+  const ownedSlot = el("div", { class: "runtime-shop-slot runtime-shop-owned-panel", dataset: { testid: "shop-owned-slot" } });
+  ownedSlot.append(ownedPanel(scene, goods));
+  const statSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "shop-stat-slot" } });
+  const grid = detailStatGrid(goods);
+  if (grid) statSlot.append(grid);
+  card.append(heroSlot, helpLine, statSlot, ownedSlot);
+  return card;
+}
+
+function helpLineText(step: ShopStep, goods: ShopGoods | undefined): string {
+  const description = goods?.description?.trim();
+  return description && description.length > 0 ? description : shopListHeaderText(step.messageType);
+}
+
+function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefined): HTMLElement {
+  const { terms, step, mode } = request;
+  const wrap = el("div", { class: "runtime-shop-prompt" });
+  // live region — 거래 결과가 제자리 갱신되므로 보조기술이 낭독할 수 있다.
+  wrap.append(
     el("span", {
-      class: "runtime-shop-item-owned",
-      text: `x${owned}`,
-      dataset: { testid: `shop-owned-${item.id}` },
-      attrs: { title: "파티 소지 수" },
-    }),
-    el("span", {
-      class: "runtime-shop-item-price",
-      // 값만 있으면 단위를 알 수 없다 — 소지금 패널과 같은 단위를 붙인다.
-      text: `${price}${terms.gold}`,
-      dataset: { testid: `shop-price-${item.id}` },
+      class: "runtime-shop-status",
+      dataset: { testid: "shop-status-text" },
+      attrs: { role: "status", "aria-live": "polite" },
+      text: request.prompt,
     })
   );
-  applyAffordability(button, item, mode, terms, scene.session.gold, merchantGold, owned);
-  if (index === 0) button.classList.add("selected");
-  button.addEventListener("click", () => request.onItem(item, mode, currentQuantity(step)));
-  return button;
-}
-
-/** 살 수 있는지/팔 수 있는지를 행에 표시한다. disabled 로 막지 않는 이유: 커서가 못 얹히면
- *  비싼 물건의 설명조차 볼 수 없다(RM2003 도 커서는 얹히고 결정만 거절한다). */
-function applyAffordability(
-  row: HTMLElement,
-  item: ItemRecord,
-  mode: ShopMode,
-  terms: ResolvedTerms,
-  gold: number,
-  merchantGold: number,
-  owned: number
-): void {
-  const price = mode === "sell" ? sellPrice(item) : item.price;
-  const blocked = mode === "sell" ? merchantGold < price : gold < price;
-  const reason = mode === "sell" ? "상인 소지금 부족" : "소지금 부족";
-  row.classList.toggle("is-unaffordable", blocked);
-  if (blocked) row.dataset.unaffordable = "1";
-  else delete row.dataset.unaffordable;
-  const label = `${item.name} · ${price}${terms.gold} · 보유 ${owned}개`;
-  row.setAttribute("aria-label", blocked ? `${label} · ${reason}` : label);
-  row.title = blocked ? reason : "";
-}
-
-/** 자료집이 이미 저작해 둔 아이콘을 가게 목록에 그린다(상태 메뉴와 같은 우선순위:
- *  iconResourceId → imageResourceId). 글자만 있는 목록은 '무엇을 파는 가게'인지 안 보인다. */
-function shopItemIcon(item: ItemRecord): HTMLElement {
-  const icon = el("span", {
-    class: "runtime-shop-item-icon",
-    dataset: { testid: `shop-item-icon-${item.id}` },
-  });
-  const resourceId = item.iconResourceId ?? item.imageResourceId;
-  const url = resourceId ? resolveAssetResourceUrl(resourceId) : undefined;
-  if (url) {
-    icon.style.backgroundImage = `url("${url}")`;
-    icon.dataset.itemIconResource = resourceId ?? "";
-  } else {
-    // 아이콘이 없는 아이템은 이름 첫 글자 칩 — 빈 칸보다 읽힌다.
-    icon.classList.add("runtime-shop-item-icon-fallback");
-    icon.textContent = item.name.trim().slice(0, 1) || "?";
+  if ((step.quantityMode ?? "single") === "select") {
+    wrap.append(quantityControl(terms, first, mode, (dir) => adjustShopQuantity(wrapOverlay(wrap), dir)));
   }
-  return icon;
-}
-
-/** 수량 입력 + 합계. 예전에는 18행 목록의 마지막 자식이라 화면 밖에 있었다(1280x800 실측:
- *  입력칸 y=760, 목록 접힘선 밖). 프롬프트 줄로 올려 항상 보이게 한다. */
-function quantityControl(terms: ResolvedTerms, item: ItemRecord | undefined, mode: ShopMode): HTMLElement {
-  const wrap = document.createElement("div");
-  wrap.className = "runtime-commerce-quantity-wrap runtime-shop-quantity-wrap";
-  const input = document.createElement("input");
-  input.type = "number";
-  input.min = "1";
-  input.max = "99";
-  input.value = "1";
-  input.className = "runtime-commerce-quantity-input";
-  input.dataset.testid = "shop-quantity-input";
-  input.title = "←/→ 로 1~99 수량 조절";
-  input.setAttribute("aria-label", "수량");
-  const clamp = () => {
-    const raw = Number.parseInt(input.value, 10);
-    const clamped = Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
-    if (String(clamped) !== input.value.trim()) input.value = String(clamped);
-  };
-  input.addEventListener("input", () => {
-    clamp();
-    bubbleTotal(input);
-  });
-  input.addEventListener("change", () => {
-    const raw = Number.parseInt(input.value, 10);
-    input.value = String(Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1)));
-    bubbleTotal(input);
-  });
-  const hint = el("span", { class: "runtime-commerce-quantity-hint", text: "←/→ 1~99" });
-  const unitPrice = item ? (mode === "sell" ? sellPrice(item) : item.price) : 0;
-  const total = el("span", {
-    class: "runtime-shop-quantity-total",
-    dataset: { testid: "shop-quantity-total", goldUnit: terms.gold },
-    text: `합계 ${unitPrice}${terms.gold}`,
-  });
-  wrap.append(el("span", { class: "runtime-shop-quantity-label", text: "수량" }), input, hint, total);
+  const actions = el("div", { class: "runtime-shop-prompt-actions" });
+  actions.append(
+    el("button", {
+      class: "runtime-shop-confirm",
+      text: mode === "sell" ? terms.shopSell : terms.shopBuy,
+      dataset: { testid: "shop-confirm" },
+      attrs: { type: "button", tabindex: "-1" },
+      on: {
+        click: () => {
+          // 마우스로 결정 버튼을 눌렀을 때는 커서가 얹힌 행을 거래한다.
+          const overlay = wrapOverlay(wrap);
+          const row = overlay.querySelector<HTMLElement>(".runtime-shop-item-row.selected");
+          row?.click();
+        },
+      },
+    }),
+    el("button", {
+      class: "runtime-shop-cancel",
+      text: terms.shopCancel,
+      dataset: { testid: "shop-item-cancel" },
+      attrs: { type: "button" },
+      on: { click: request.showMenu },
+    })
+  );
+  wrap.append(actions);
   return wrap;
 }
 
-function bubbleTotal(node: HTMLElement): void {
-  const overlay = node.closest<HTMLElement>(".runtime-shop-overlay");
-  if (overlay) updateShopQuantityTotal(overlay);
+function wrapOverlay(node: HTMLElement): HTMLElement {
+  return node.closest<HTMLElement>(".runtime-shop-overlay") ?? node;
 }
 
 function currentQuantity(step: ShopStep): number {
@@ -369,62 +416,19 @@ function currentQuantity(step: ShopStep): number {
   return Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
 }
 
-/** 가게 창 한 칸. 과거 이름은 `shopBluePanel` 이었고 색까지 2003 클론 파랑 고정이었다 —
- *  이제 표면은 commerce.css 가 자료집 System 윈도스킨 변수로 그린다. */
+/**
+ * 가게 창 한 칸. 과거 이름은 `shopBluePanel` 이었고 색까지 2003 클론 파랑 고정이었다 —
+ * 표면은 commerce.css 가 그린다. 기본은 모던 글래스 카드고, backdrop-filter 를 못 쓰는
+ * 환경에서는 자료집 System 윈도스킨 border-image 로 되돌아간다.
+ */
 function shopWindow(className: string, children: readonly Node[]): HTMLElement {
-  const panel = document.createElement("div");
-  panel.className = `runtime-shop-panel ${className}`;
+  const panel = el("div", { class: `runtime-shop-panel ${className}` });
   panel.append(...children);
   return panel;
 }
 
 function shopMenuMessage(text: string): HTMLElement {
   return el("div", { class: "runtime-shop-message", text });
-}
-
-/** 도움말 창 — 커서가 얹힌 물건의 설명. 예전 welcome 분기는 "모든 캐릭터를 회복합니다…"
- *  라는 아이템 효과 문장이 머리글에 박혀 있었다. */
-function shopHelpLine(step: ShopStep, item: ItemRecord | undefined): HTMLElement {
-  return el("div", {
-    class: "runtime-shop-message runtime-shop-help-line",
-    dataset: { testid: "shop-help-line" },
-    text: helpLineText(step, item),
-  });
-}
-
-function helpLineText(step: ShopStep, item: ItemRecord | undefined): string {
-  const description = item?.description?.trim();
-  return description && description.length > 0 ? description : itemHeaderText(step);
-}
-
-function shopPrompt(
-  text: string,
-  terms: ResolvedTerms,
-  showMenu: () => void,
-  step: ShopStep,
-  firstItem: ItemRecord | undefined,
-  mode: ShopMode
-): HTMLElement {
-  const wrap = document.createElement("div");
-  wrap.className = "runtime-shop-prompt";
-  // live region — 거래 결과가 제자리 갱신되므로 보조기술이 낭독할 수 있다.
-  wrap.append(
-    el("span", {
-      class: "runtime-shop-status",
-      dataset: { testid: "shop-status-text" },
-      attrs: { role: "status", "aria-live": "polite" },
-      text,
-    })
-  );
-  if ((step.quantityMode ?? "single") === "select") wrap.append(quantityControl(terms, firstItem, mode));
-  const back = document.createElement("button");
-  back.type = "button";
-  back.className = "runtime-shop-cancel";
-  back.dataset.testid = "shop-item-cancel";
-  back.textContent = terms.shopCancel;
-  back.addEventListener("click", showMenu);
-  wrap.append(back);
-  return wrap;
 }
 
 function shopMenuButton(
@@ -436,43 +440,46 @@ function shopMenuButton(
 ): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "runtime-shop-menu-choice";
-  button.textContent = menuActionLabel(action, terms);
+  button.className = `runtime-shop-menu-choice runtime-shop-menu-choice-${action}`;
+  // 라벨 + 한 줄 설명. 이름만 있는 버튼 세 개는 무엇이 다른지 읽히지 않는다.
+  button.append(
+    el("span", { class: "runtime-shop-menu-choice-label", text: menuActionLabel(action, terms) }),
+    el("span", { class: "runtime-shop-menu-choice-hint", text: menuActionHint(action) })
+  );
   button.dataset.testid = action === "cancel" ? "shop-menu-cancel" : `shop-mode-${action}`;
   const emptyPool = stepForPoolCheck ? isServicePoolEmpty(stepForPoolCheck) : false;
   if (emptyPool && action !== "cancel") {
     button.disabled = true;
     button.title = "대상 없음 — 서비스 불가";
-    (button as unknown as { dataset: Record<string,string> }).dataset["disabledReason"] = "empty-pool";
+    button.dataset.disabledReason = "empty-pool";
   }
   button.addEventListener("click", () => {
-    if ((button as HTMLButtonElement).disabled) return;
+    if (button.disabled) return;
     if (action === "cancel") finish();
     else showItems(action);
   });
   return button;
 }
 
+function menuActionHint(action: ShopMenuAction): string {
+  if (action === "buy") return "진열된 물건을 산다";
+  if (action === "sell") return "가진 물건을 넘긴다";
+  return "가게에서 나간다";
+}
+
 function isServicePoolEmpty(step: ShopStep): boolean {
-  const svc = (step as unknown as { shopServiceKind?: string }).shopServiceKind;
-  const pool = (step as unknown as { appraisalUnidentifiedPool?: string[] }).appraisalUnidentifiedPool;
-  if (svc === "appraisal") return !pool || pool.length === 0;
+  if (step.shopServiceKind === "appraisal") {
+    return !step.appraisalUnidentifiedPool || step.appraisalUnidentifiedPool.length === 0;
+  }
   return false;
 }
+
 function shopMenuActions(step: ShopStep): ShopMenuAction[] {
   switch (shopType(step)) {
-    case "normal":
-      return ["buy", "sell", "cancel"];
     case "buyOnly":
       return ["buy", "cancel"];
     case "sellOnly":
       return ["sell", "cancel"];
-    case "repair":
-    case "appraisal":
-    case "pawn":
-    case "blackMarket":
-    case "consignment":
-      return ["buy", "sell", "cancel"];
     default:
       return ["buy", "sell", "cancel"];
   }
@@ -494,155 +501,26 @@ function shopType(step: ShopStep): ShopType {
   return step.allowSell ? "normal" : "buyOnly";
 }
 
-function messageType(step: ShopStep): ShopMessageType {
-  return (step.messageType as ShopMessageType | undefined) ?? "welcome";
-}
-
-function messageLine(step: ShopStep, terms: ResolvedTerms): string {
-  switch (messageType(step)) {
-    case "welcome":
-      return terms.shopGreeting;
-    case "business":
-      return "무엇이 필요하신가요?";
-    case "direct":
-      return "물건을 고르세요.";
-    case "festival":
-      return "축제 특가! 오늘만 이 가격!";
-    case "closingSale":
-      return "마감 세일 중! 어서 고르세요!";
-    case "vip":
-      return "VIP 고객님, 어서 오세요.";
+/**
+ * 헤더에 걸리는 가게 이름. 「추가 서비스」를 고른 상점은 그 이름으로 불린다 —
+ * 예전에는 서비스 설정이 런타임에 도달하지 않아 수리점도 감정소도 그냥 '상점'이었다.
+ */
+function shopTitle(step: ShopStep): string {
+  switch (step.shopServiceKind) {
+    case "repair":
+      return "수리점";
+    case "appraisal":
+      return "감정소";
+    case "pawn":
+      return "전당포";
     default:
-      return terms.shopGreeting;
+      return "상점";
   }
 }
 
-function itemHeaderText(step: ShopStep): string {
-  switch (messageType(step)) {
-    case "welcome":
-      return "목록에서 물건을 고르세요.";
-    case "business":
-      return "목록에서 물건을 고르세요.";
-    case "direct":
-      return "물건 하나를 고르세요.";
-    case "festival":
-      return "축제 한정 특가 목록입니다.";
-    case "closingSale":
-      return "마감 세일 목록 — 서두르세요!";
-    case "vip":
-      return "VIP 전용 혜택 목록입니다.";
-    default:
-      return "목록에서 물건을 고르세요.";
-  }
+function clear(node: HTMLElement): void {
+  while (node.firstChild) node.firstChild.remove();
 }
 
-/** 파티 얼굴. 예전에는 스프라이트를 넣는 코드가 없어 --bg-inset(에디터 밝은 회색) 로 칠한
- *  빈 사각형이 갈색 창틀 위에 흰 박스로 떠 있었다. */
-function partyPreview(scene: PlaySceneContext): HTMLElement {
-  const wrap = document.createElement("div");
-  wrap.className = "runtime-shop-party";
-  const project = store.getCurrent();
-  const actorIds = scene.session.partyActorIds.length
-    ? scene.session.partyActorIds
-    : ["actor_1", "actor_2", "actor_3", "actor_4"];
-  for (const [index, actorId] of actorIds.slice(0, 4).entries()) {
-    const record = project.database.actors.find((entry) => entry.id === actorId);
-    const name = record?.name ?? actorId;
-    const sprite = el("span", {
-      class: "runtime-shop-party-sprite",
-      dataset: { testid: `shop-party-sprite-${actorId}` },
-      attrs: { role: "img", "aria-label": name, title: name },
-    });
-    sprite.dataset.actorSlot = String(index);
-    const resourceId = scene.session.actorFaceResourceIds?.[actorId]
-      ?? record?.faceResourceId
-      ?? (record ? defaultActorFaceResourceId(record) : undefined);
-    const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
-    if (url) {
-      sprite.style.backgroundImage = `url("${url}")`;
-      sprite.dataset.faceResourceId = resourceId ?? "";
-    } else {
-      // 얼굴이 없으면 이름 첫 글자 — 빈 흰 박스보다 읽힌다.
-      sprite.classList.add("runtime-shop-party-sprite-fallback");
-      sprite.textContent = name.trim().slice(0, 1) || "?";
-    }
-    wrap.append(sprite);
-  }
-  return wrap;
-}
-
-function ownedPanel(scene: PlaySceneContext, item: ItemRecord | undefined): HTMLElement {
-  const owned = item ? scene.session.inventory[item.id] ?? 0 : 0;
-  const children: HTMLElement[] = [
-    el("div", { class: "runtime-shop-panel-title", text: item?.name ?? "보유" }),
-    statLine("보유", owned),
-  ];
-  // '장비' 는 장비 종류에만 붙인다 — 예전에는 종류와 무관하게 상수 0 이었다.
-  if (item && EQUIPPABLE_ITEM_TYPES.has(item.type)) children.push(statLine("장비", equippedCount(scene, item.id)));
-  return el("div", {
-    class: "runtime-shop-owned",
-    dataset: { testid: "shop-owned-panel" },
-    children,
-  });
-}
-
-/** 파티가 지금 차고 있는 개수. */
-function equippedCount(scene: PlaySceneContext, itemId: string): number {
-  const equipment = scene.session.actorEquipment;
-  if (!equipment) return 0;
-  let count = 0;
-  for (const actorId of scene.session.partyActorIds) {
-    const slots = equipment[actorId];
-    if (!slots) continue;
-    for (const value of Object.values(slots)) if (value === itemId) count += 1;
-  }
-  return count;
-}
-
-function statLine(label: string, value: number): HTMLElement {
-  return el("div", {
-    class: "runtime-shop-stat-line",
-    children: [el("span", { text: label }), el("span", { text: String(value) })],
-  });
-}
-
-function goldPanel(
-  scene: PlaySceneContext,
-  terms: ResolvedTerms,
-  merchantGold: number,
-  mode: ShopMode
-): HTMLElement {
-  const wrap = el("div", {
-    class: "runtime-shop-gold",
-    dataset: { testid: "shop-gold-panel" },
-  });
-  // 예전에는 플레이어 금액만 라벨 없이 "300G", 상인 쪽만 "상인 100G" 로 비대칭이었다.
-  wrap.append(
-    goldLine("소지금", `${scene.session.gold}${terms.gold}`, "shop-player-gold"),
-    goldLine("상인", `${merchantGold}${terms.gold}`, "shop-merchant-gold", {
-      className: "runtime-shop-merchant-gold",
-      title:
-        mode === "sell"
-          ? "상인이 플레이어 물품을 살 때 남은 소지금"
-          : "상인 소지금(플레이어 구매 시 증가)",
-    })
-  );
-  return wrap;
-}
-
-function goldLine(
-  label: string,
-  value: string,
-  testid: string,
-  options?: { readonly className?: string; readonly title?: string }
-): HTMLElement {
-  return el("div", {
-    class: `runtime-shop-gold-line${options?.className ? ` ${options.className}` : ""}`,
-    dataset: { testid },
-    attrs: options?.title ? { title: options.title } : undefined,
-    children: [
-      el("span", { class: "runtime-shop-gold-label", text: label }),
-      el("span", { class: "runtime-shop-gold-value", text: value }),
-    ],
-  });
-}
+/** 목록 행에서 현재 단가를 읽어야 하는 곳이 있어 재노출한다. */
+export { listingPrice };
