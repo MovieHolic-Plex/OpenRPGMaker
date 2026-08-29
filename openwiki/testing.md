@@ -274,6 +274,14 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
 
+좁은 예외는 `scripts/qa/testplay-recovery-browser-qa.mts` 하나다. 편집기 **테스트 플레이**
+경로의 게이트라 편집기 셸을 통과한다. 결함이 톱바 `mode-play` 뒤의 저장·예비검사·복구 흐름에
+있어 `player.html` 로는 진입할 수 없기 때문이다. 살아 있는 WebGL 캔버스를 `drawImage` /
+`getImageData` 로 다시 읽으면 플레이 중에도 `distinct=1` 이므로 색 다양성은
+`scripts/lib/runtimeQaRun.mjs:435` 처럼 pngjs 로 스크린샷 PNG 를 읽어 잰다.
+`test/fixtures/projects/battle-v3.json` 은 거의 검으므로 렌더 여부 판정에는
+`editor-authored-demo-v3.json` 을 쓴다.
+
 - 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
   표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
   매 실행 재생성되며 gitignore 대상이다.

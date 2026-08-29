@@ -212,11 +212,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     return isPlayScene(scene) ? scene : undefined;
   };
 
-  // 새 세션 생성. spawn 이 있으면 시작 맵/좌표를 오버라이드한다("여기서 테스트").
-  // 반드시 예비검사가 프로젝트를 고친 **뒤에** 불러야 한다 — 없는 시작 맵을 세션이 다시 물어온다.
-  const newSession = (spawn = options.startOverride): PlaySession => {
-    const project = store.getCurrent();
-    const session = startSession(project);
+  // 새 세션 생성. 예비검사가 고친 프로젝트를 명시적으로 받고, spawn 이 있으면 시작 맵/좌표를
+  // 오버라이드한다("여기서 테스트"). store 스냅숏 지원 여부와 무관하게 이 프로젝트만 쓴다.
+  const newSession = (
+    spawn: { readonly mapId: string; readonly x: number; readonly y: number } | undefined,
+    bootProject: ReturnType<typeof store.getCurrent>,
+  ): PlaySession => {
+    const session = startSession(bootProject);
     if (spawn) {
       applyStatePreset(session, testHerePreset(spawn.mapId, spawn.x, spawn.y));
     }
@@ -267,7 +269,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       return;
     }
     // 세션은 고친 프로젝트에서 만든다(요청이 세션을 들고 왔으면 그것을 그대로 쓴다).
-    const session = request.session ?? newSession(effectiveSpawn(request, bootProject));
+    const session = request.session ?? newSession(effectiveSpawn(request, bootProject), bootProject);
     void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
   };
 

@@ -29,7 +29,7 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 /** 콜드 dev 서버 + 포화된 공유 머신을 견디는 예산. 환경변수로 올릴 수 있다. */
 const NAV_TIMEOUT_MS = Number(process.env.QA_NAV_TIMEOUT_MS ?? 240_000);
 const BOOT_TIMEOUT_MS = Number(process.env.QA_BOOT_TIMEOUT_MS ?? 240_000);
-/** 부팅이 ready / recovery / 실패 중 하나로 정량하기를 기다리는 상한. */
+/** 부팅이 ready / recovery / 실패 중 하나로 결정되기를 기다리는 상한. */
 const SETTLE_TIMEOUT_MS = Number(process.env.QA_SETTLE_TIMEOUT_MS ?? 120_000);
 
 function parseArgs(argv: readonly string[]): { port: string; outDir: string } {
@@ -54,8 +54,8 @@ type CaseResult = {
   readonly shot: string;
 };
 
-/** 정상 프로젝트: 런타임 QA smoke 가 사용하는 **실제로 녹다고 입증된** 픽스처를 쓴다.
- *  battle-v3.json 은 상자 배경이 거의 검은 전통 픽스처라 "그려졌는가" 판정에 부적사하다. */
+/** 정상 프로젝트: 런타임 QA smoke 가 사용하는 **실제로 렌더링된다고 입증된** 픽스처를 쓴다.
+ *  battle-v3.json 은 화면이 거의 검은 전통 픽스처라 "그려졌는가" 판정에 부적합하다. */
 async function validProject(): Promise<Project> {
   const raw = await readFile(join(REPO_ROOT, "test/fixtures/projects/editor-authored-demo-v3.json"), "utf8");
   return deserialize(raw);
@@ -76,10 +76,10 @@ async function brokenProject(): Promise<Project> {
 }
 
 /**
- * 색 다양성은 **스톰샷 PNG** 에서 재다. 살아 있는 WebGL 추상화 버툴은 표시 후
- * `drawImage` 로 다시 읽으면 밍 번다 — preserveDrawingBuffer 가 없으면 정상 동작이다.
- * 실제로 이 함정에 한 번 밟혔다: 명함하게 플레이 중이었는 화면이 distinct=1 로 재혔다.
- * 레토의 기존 QA(`scripts/lib/runtimeQaRun.mjs:435`)도 pngjs 로 PNG 를 읽는다 — 그 방식을 따른다.
+ * 색 다양성은 **스크린샷 PNG** 에서 잰다. 살아 있는 WebGL 캔버스를 표시 후
+ * `drawImage` / `getImageData` 로 다시 읽으면 빈 버퍼가 나온다 — preserveDrawingBuffer 가 없으면 정상 동작이다.
+ * 실제로 이 함정에 한 번 밟혔다: 플레이 중인 화면도 distinct=1 로 측정됐다.
+ * 레포의 기존 QA(`scripts/lib/runtimeQaRun.mjs:435`)도 pngjs 로 PNG 를 읽는다 — 그 방식을 따른다.
  */
 function distinctColorsFromPng(buffer: Buffer): number {
   const png = PNG.sync.read(buffer);
@@ -93,10 +93,10 @@ function distinctColorsFromPng(buffer: Buffer): number {
 type BootOutcome = "ready" | "recovery" | "boot-failed" | "stuck";
 
 /**
- * 부팅 종리를 **제품 자신의 상태 변화**로 기다린다. sleep 은 없다.
- * playBootDiagnostics.ts 가 window.__oprnPlayBootLog 를 심으므로 그것을 관심한다.
- * 주의: PlayScene.create 안에서 던진 예상은 Phaser 내부에서 삼키므로 진단 항목이
- * 아에 생기지 않는다 — 그래서 pageerror 도 종리 신호로 함메 넣는다.
+ * 부팅 종료를 **제품 자신의 상태 변화**로 기다린다. sleep 은 없다.
+ * playBootDiagnostics.ts 가 window.__oprnPlayBootLog 를 심으므로 그것을 관찰한다.
+ * 주의: PlayScene.create 안에서 던진 예외는 Phaser 내부에서 삼키므로 진단 항목이
+ * 아예 생기지 않는다 — 그래서 pageerror 도 종료 신호로 함께 넣는다.
  */
 async function waitForBootOutcome(page: Page, sawPageError: () => boolean): Promise<BootOutcome> {
   const deadline = Date.now() + SETTLE_TIMEOUT_MS;
@@ -158,7 +158,7 @@ async function runCase(
     : "";
   const distinctColors = distinctColorsFromPng(await readFile(shotPath));
 
-  // "놀 수 있다" 는 제품의 ready 신호로 정하고, 화소 수는 보조 근거로만 실는다.
+  // "놀 수 있다" 는 제품의 ready 신호로 정하고, 화소 수는 보조 근거로만 싣는다.
   // 화소만으로 판정하면 검은 배경 맵이 오판된다(실제로 battle 픽스처에서 겪었다).
   const playable = outcome === "ready";
   let verdict: "PASS" | "FAIL";
@@ -166,22 +166,22 @@ async function runCase(
   if (expectPlayable) {
     verdict = playable && !recoveryPanel ? "PASS" : "FAIL";
     outcomeText = playable
-      ? (recoveryPanel ? "부팅은 됐는데 복구 패널도 뜼다(정상 프로젝트에서는 실패)" : "툴레이 화면이 ready 까지 도달했다")
-      : `정상 프로젝트인데 ready 에 도달하지 모했다 (outcome=${outcome})`;
+      ? (recoveryPanel ? "부팅은 됐는데 복구 패널도 떴다(정상 프로젝트에서는 실패)" : "플레이 화면이 ready 까지 도달했다")
+      : `정상 프로젝트인데 ready 에 도달하지 못했다 (outcome=${outcome})`;
   } else if (playable) {
     verdict = "PASS";
-    outcomeText = "예미검사가 수리해서 그대로 플레이됅다";
+    outcomeText = "예비검사가 수리해서 그대로 플레이됐다";
   } else if (recoveryPanel && recoveryReason.trim().length > 0) {
     verdict = "PASS";
-    outcomeText = "복구 패널이 사유와 함게 뜼다 — 정직한 실패";
+    outcomeText = "복구 패널이 사유와 함께 떴다 — 정직한 실패";
   } else if (recoveryPanel) {
     verdict = "FAIL";
-    outcomeText = "복구 패널은 뜼지만 사유가 버어 있다";
+    outcomeText = "복구 패널은 떴지만 사유가 비어 있다";
   } else {
     verdict = "FAIL";
     outcomeText = outcome === "stuck"
-      ? "마다른 길: 로드 오버레이에서 진행도 중단도 없이 얼어붙었다(복구 패널 없음)"
-      : `마다른 길: 부팅이 실패했는다 복구 패널이 없다 (outcome=${outcome})`;
+      ? "막다른 길: 로드 오버레이에서 진행도 중단도 없이 얼어붙었다(복구 패널 없음)"
+      : `막다른 길: 부팅이 실패했는데 복구 패널이 없다 (outcome=${outcome})`;
   }
 
   return {

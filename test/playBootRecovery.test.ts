@@ -21,6 +21,8 @@ vi.mock("@/player/runtimeDebugPanel", () => ({
 import { AUTHORING_TEST_BOOT_SUCCESS_EVENT } from "@/editor/authoringJourney";
 import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
 import { clearRecentPlayBootDiagnosticsForTest } from "@/player/playBootDiagnostics";
+import { setExportedProject, store as exportProjectStore } from "@/player/exportProjectStoreShim";
+import { renderPlayer, teardownPlayer } from "@/player/player";
 import { createBlankProject } from "@/project/defaults";
 import type { PlaySession } from "@/project/session";
 import { store } from "@/project/store";
@@ -220,6 +222,52 @@ describe("test play boot recovery", () => {
     expect(bootProjectStartMapId).toBe(expectedMapId);
     expect(bootSession?.currentMapId).toBe(expectedMapId);
     expect(document.querySelector("[data-testid='toast']")?.textContent).toContain("missing-start-map");
+  });
+
+  it("creates the session from the repaired project without snapshot support", async () => {
+    const project = createBlankProject();
+    const expectedMapId = Object.keys(project.maps)[0]!;
+    project.startMapId = "missing-start-map";
+    store.replaceProject(project);
+    Object.defineProperty(store, "beginReadOnlyProjectSnapshot", {
+      configurable: true,
+      value: undefined,
+    });
+    let bootSession: PlaySession | undefined;
+    modeMocks.startPlayGame.mockImplementation(async (_host: HTMLElement, session: PlaySession | undefined) => {
+      bootSession = session;
+      return fakeGame(5);
+    });
+    const host = document.createElement("div");
+    document.body.append(host);
+
+    try {
+      await new Promise<void>((resolve) => {
+        renderPlayer(host, { autoStartRun: true, onPlayBootSuccess: resolve });
+      });
+
+      expect(bootSession?.currentMapId).toBe(expectedMapId);
+    } finally {
+      teardownPlayer();
+      delete (store as { beginReadOnlyProjectSnapshot?: unknown }).beginReadOnlyProjectSnapshot;
+      host.remove();
+    }
+  });
+
+  it("exposes an idempotent repaired-project snapshot in the export store", () => {
+    const original = createBlankProject();
+    const repaired = structuredClone(original);
+    repaired.startMapId = "repaired-start-map";
+    setExportedProject(original);
+
+    const release = exportProjectStore.beginReadOnlyProjectSnapshot(repaired);
+
+    expect(exportProjectStore.getCurrent()).not.toBe(repaired);
+    expect(exportProjectStore.getCurrent().startMapId).toBe("repaired-start-map");
+    release();
+    expect(exportProjectStore.getCurrent()).toBe(original);
+    release();
+    expect(exportProjectStore.getCurrent()).toBe(original);
   });
 
   it("does not let a stale failed run paint a recovery panel over a newer run", async () => {

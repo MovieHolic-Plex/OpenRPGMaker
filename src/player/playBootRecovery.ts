@@ -101,9 +101,8 @@ export function repairSummaries(repairs: readonly PlayPreflightRepair[]): readon
  * 예비검사로 고친 프로젝트를 **런타임이 실제로 읽는 자리**에 올린다. PlayScene 은 언제나
  * `store.getCurrent()` 에서 프로젝트를 읽으므로 이 통로 말고는 고친 프로젝트를 넘길 방법이 없다.
  *
- * 내보낸 플레이어는 `@/project/store` 를 읽기 전용 대역으로 갈아 끼우고(exportProjectStoreShim)
- * 그 대역에는 스냅숏 기능이 없다 → 능력이 없으면 조용히 no-op 이고, 그때도 세션은 고친
- * 프로젝트에서 만들어지므로 시작 맵/좌표 복구는 그대로 살아 있다.
+ * 내보낸 플레이어의 읽기 전용 대역(exportProjectStoreShim)도 같은 스냅숏 기능을 제공한다.
+ * 세션 생성은 이 스냅숏과 별개로 고친 프로젝트를 명시적으로 받아 시작 맵/좌표를 복구한다.
  */
 export function installBootProject(project: Project): () => void {
   const host = store as { beginReadOnlyProjectSnapshot?: (snapshot: Project) => () => void };

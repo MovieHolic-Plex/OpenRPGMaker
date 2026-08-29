@@ -5,12 +5,12 @@
 
 | 케이스 | 판정 | 결과 | 캔버스 색 | 복구 패널 | pageerror | console.error |
 |---|---|---|---|---|---|---|
-| valid-project | **PASS** | 툴레이 화면이 ready 까지 도달했다 | 2947 | 없음 | 0 | 4 |
-| broken-project | **FAIL** | 마다른 길: 부팅이 실패했는다 복구 패널이 없다 (outcome=boot-failed) | 2505 | 없음 | 1 | 7 |
+| valid-project | **PASS** | 플레이 화면이 ready 까지 도달했다 | 2947 | 없음 | 0 | 4 |
+| broken-project | **FAIL** | 막다른 길: 부팅이 실패했는데 복구 패널이 없다 (outcome=boot-failed) | 2505 | 없음 | 1 | 7 |
 
 ## valid-project — PASS
 
-- 결과: 툴레이 화면이 ready 까지 도달했다
+- 결과: 플레이 화면이 ready 까지 도달했다
 - 캔버스 distinct color: 2947
 - 스크린샷: `verify-shots/testplay-resilient-RED/valid-project.png`
 - console.error:
@@ -21,7 +21,7 @@
 
 ## broken-project — FAIL
 
-- 결과: 마다른 길: 부팅이 실패했는다 복구 패널이 없다 (outcome=boot-failed)
+- 결과: 막다른 길: 부팅이 실패했는데 복구 패널이 없다 (outcome=boot-failed)
 - 캔버스 distinct color: 2505
 - 스크린샷: `verify-shots/testplay-resilient-RED/broken-project.png`
 - pageerror:
