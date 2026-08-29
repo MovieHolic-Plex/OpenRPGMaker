@@ -14,7 +14,9 @@ import {
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { GOLD_MAX } from "@/project/economyValues";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
+import { resolveTimeSystem } from "@/project/gameTime";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { hasCharacterId } from "@/project/socialKey";
@@ -202,6 +204,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     variables: new Set(project.variables.map((entry) => entry.id)),
     // 사회 기능은 이름표가 아니라 이 이벤트의 신원을 참조한다 — 같은 사전에 싣어 재긍 없이 나른다.
     hostHasCharacterId: hasCharacterId(host),
+    hasTimeSystem: resolveTimeSystem(project) !== undefined,
   };
 }
 
@@ -220,6 +223,7 @@ function validatePage(
   }
 
   page.conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
+  validateBattleResultForks(page.commands, page.id, issues);
   validateMovement(project, page, refs, issues);
 
   const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
@@ -397,12 +401,93 @@ function validateCondition(
       validateCondition(condition.condition, pageId, refs, issues, commandPath);
       return;
     case "selfSwitch":
-    case "gold":
-    case "timer":
+      return;
+    case "gold": {
+      const trap = goldConditionTrap(condition.op, condition.amount);
+      if (trap) {
+        issues.push({
+          severity: "warning",
+          code: "condition.gold.impossible",
+          message: trap === "always-false"
+            ? "소지금이 가질 수 있는 값으로는 이 비교가 항상 거짓입니다."
+            : "소지금이 가질 수 있는 값으로는 이 비교가 항상 참입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-gold-amount" },
+        });
+      }
+      return;
+    }
+    case "timer": {
+      if (condition.seconds === 0) {
+        const timerLabel = condition.timerId === "timer2" ? "타이머 2" : "타이머 1";
+        issues.push({
+          severity: "warning",
+          code: "condition.timer.always-true",
+          message: `${timerLabel} · 0초 이하 조건은 타이머가 꺼져 있으면 남은 시간을 0초로 보아 항상 참입니다. 페이지가 항상 보일 수 있습니다.`,
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath
+              ? "event-condition-timer-seconds"
+              : `event-page-${condition.timerId}-condition-seconds`,
+          },
+        });
+      }
+      return;
+    }
     case "timePhase":
+      if (!refs.hasTimeSystem) {
+        issues.push({
+          severity: "warning",
+          code: "condition.timePhase.no-time-system",
+          message: "시간 시스템이 꺼져 있어 시간대 조건은 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-time-phase" : "event-page-time-phase-condition-input",
+          },
+        });
+      }
+      return;
     case "season":
+      if (!refs.hasTimeSystem) {
+        issues.push({
+          severity: "warning",
+          code: "condition.season.no-time-system",
+          message: "시간 시스템이 꺼져 있어 계절 조건은 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-season" : "event-page-season-condition-input",
+          },
+        });
+      }
+      return;
     case "npcActivity":
+      if (!condition.activity.trim()) {
+        issues.push({
+          severity: "warning",
+          code: "condition.npcActivity.empty",
+          message: "활동 이름이 비어 있어 이 조건은 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-npc-activity" : "event-page-npc-activity-condition-input",
+          },
+        });
+      }
+      return;
     case "battleResult":
+      if (!commandPath) {
+        issues.push({
+          severity: "warning",
+          code: "condition.battleResult.no-preceding-battle",
+          message: "전투 결과 조건은 직전 전투의 결과를 봅니다. 이 페이지가 나타나기 전에 전투가 없으면 항상 거짓입니다.",
+          pageId,
+          field: { testId: "event-condition-battle-result" },
+        });
+      }
       return;
     case "friendshipAtLeast":
       // 런타임 하드 게이트: NPC 키가 비었고 이 이벤트에 characterId 도 없으면 항상 거짓이다.
@@ -440,6 +525,78 @@ function conditionHasLeaf(condition: Condition): boolean {
   }
   if (condition.kind === "not") return conditionHasLeaf(condition.condition);
   return true;
+}
+
+function goldConditionTrap(
+  op: Extract<Condition, { kind: "gold" }>["op"],
+  amount: number,
+): "always-true" | "always-false" | undefined {
+  if (!Number.isFinite(amount)) return "always-false";
+  switch (op) {
+    case ">=":
+      if (amount <= 0) return "always-true";
+      if (amount > GOLD_MAX) return "always-false";
+      return undefined;
+    case ">":
+      if (amount < 0) return "always-true";
+      if (amount >= GOLD_MAX) return "always-false";
+      return undefined;
+    case "<=":
+      if (amount >= GOLD_MAX) return "always-true";
+      if (amount < 0) return "always-false";
+      return undefined;
+    case "<":
+      if (amount > GOLD_MAX) return "always-true";
+      if (amount <= 0) return "always-false";
+      return undefined;
+    case "==":
+      if (amount < 0 || amount > GOLD_MAX) return "always-false";
+      return undefined;
+    case "!=":
+      if (amount < 0 || amount > GOLD_MAX) return "always-true";
+      return undefined;
+  }
+}
+
+function conditionHasBattleResult(condition: Condition): boolean {
+  if (condition.kind === "battleResult") return true;
+  if (condition.kind === "all" || condition.kind === "any") {
+    return condition.conditions.some(conditionHasBattleResult);
+  }
+  if (condition.kind === "not") return conditionHasBattleResult(condition.condition);
+  return false;
+}
+
+function commandTreeHasBattleProcessing(command: Command): boolean {
+  if (command.kind === "battleProcessing") return true;
+  return commandBranches(command).some((branch) => branch.commands.some(commandTreeHasBattleProcessing));
+}
+
+function validateBattleResultForks(
+  commands: readonly Command[],
+  pageId: string,
+  issues: EventDraftIssue[],
+  containerPath: readonly number[] = [],
+  battleSeen = false,
+): void {
+  let seen = battleSeen;
+  commands.forEach((command, index) => {
+    const path = [...containerPath, index];
+    if (command.kind === "fork" && conditionHasBattleResult(command.condition) && !seen) {
+      issues.push({
+        severity: "warning",
+        code: "condition.battleResult.no-preceding-battle",
+        message: "전투 결과 조건은 직전 전투의 결과를 봅니다. 이 분기 앞에 전투가 없으면 항상 거짓입니다.",
+        pageId,
+        commandPath: path,
+        field: { testId: "event-condition-battle-result" },
+      });
+    }
+    for (const branch of commandBranches(command)) {
+      validateBattleResultForks(branch.commands, pageId, issues, [...path, branch.branchIndex], seen);
+    }
+    if (commandTreeHasBattleProcessing(command)) seen = true;
+  });
 }
 
 function validateLabels(

@@ -498,3 +498,113 @@ describe("event draft aggregate validator", () => {
     expect(result.canCommit).toBe(true);
   });
 });
+
+function issueOf(result: ReturnType<typeof validateEventDraftBody>, code: string) {
+  const issue = result.issues.find((entry) => entry.code === code);
+  expect(issue, `expected issue ${code}`).toBeDefined();
+  return issue!;
+}
+
+describe("always-true / always-false condition traps", () => {
+  it("warns when a timer threshold of 0 is always true while no timer is running", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "timer", timerId: "timer1", seconds: 0 }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.timer.always-true");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-timer1-condition-seconds" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when an npc activity name is empty and can never match", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "npcActivity", activity: "" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.npcActivity.empty");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-npc-activity-condition-input" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when a page-level battle result has no preceding battle path", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "battleResult", result: "victory" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.battleResult.no-preceding-battle");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-condition-battle-result" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when a gold comparison can never hold for the 0..GOLD_MAX range", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "gold", op: "<", amount: -1 }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.gold.impossible");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-condition-gold-amount" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when a time-phase condition is authored without a time system", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "timePhase", phase: "night" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.timePhase.no-time-system");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-time-phase-condition-input" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when a season condition is authored without a time system", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "season", season: "winter" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.season.no-time-system");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-season-condition-input" });
+    expect(result.canCommit).toBe(true);
+  });
+});
