@@ -141,7 +141,7 @@ log.warn("편집 행위 기록 실패", error);
 | 공백 | 실측 근거 | 결과 / 이어서 할 일 |
 |---|---|---|
 | store 를 바꾸면서 되돌리기 스냅샷을 남기지 않는 파일 21개 | 아래 재측정 명령 | 그 경로로 바뀐 것은 Ctrl+Z 로 되돌아가지 않는다(감사 로그에는 남는다). **명단을 손으로 관리하면 썩는다 — 구조 테스트로 고정하는 것이 후속 과제다** |
-| `resetMapEditHistory()` 프로덕션 호출 0건 | `grep -rn "resetMapEditHistory" src/` → 정의 1건뿐, 호출은 테스트에만 | 프로젝트를 갈아탄 뒤 Ctrl+Z 를 누르면 **이전 프로젝트의 스냅샷**이 적용된다. `replaceProject` / `loadNewRemoteProject` / `clearAll` 경로에 리셋을 걸어야 한다 |
+| ~~`resetMapEditHistory()` 프로덕션 호출 0건~~ **고침 (2026-08-29)** | 이전 실측: `grep -rn "resetMapEditHistory" src/` → 정의 1건뿐, 호출은 테스트에만. 그래서 프로젝트를 갈아탄 뒤 Ctrl+Z 가 **이전 프로젝트의 스냅샷**을 새 프로젝트에 적용했다 | `ProjectChangeAnnotation.projectSwitch` 신호로 끝난다. 이미 이벤트 초안 보관함을 비우는 단 두 경로만 그 신호를 싣는다 — `replaceProject()` 와 `loadNewRemoteProject()`. `mapEditHistory` 가 `store.subscribe` 로 받아 스스로 리셋한다(`installProjectSwitchHistoryReset`, `tileActions.ts` 의 lazy-guard 패턴). **`store.replace()` 자신에 리셋을 걸지 마라** — undo 가 스냅샷을 적용하는 경로가 바로 `store.replace()` 다(`mapEditHistory.ts:122`, `:304`). 교체 호출부마다 리셋을 박는 방식도 기각했다(교체 경로가 4곳 이상이라 이 버그가 생긴 방식을 반복한다). 계약 테스트: `test/mapEditHistoryProjectSwitch.test.ts` |
 | `getCurrent()` 가 라이브 참조를 반환한다 | `return this.readOnlyProjectSnapshot ?? this.current` (`store.ts:552`). `interface Project` 에 `readonly` 0개 | 호출자가 반환값을 직접 고치면 store 를 지나지 않은 변경이 되어 계측·generation·자동저장 전부를 우회한다. 지금은 규율로만 유지된다(`beginReadOnlyProjectSnapshot` 은 런타임 소비자용 임시 창) |
 | `project_changes.patch_json` 이 write-only | 쓰기는 `supabaseProjectSync.ts:993` 1곳, 읽는 프로덕션 코드 0건(테스트 1건) | 원격에 상세 패치를 쌓고 있으나 아무도 읽지 않는다. 읽는 화면을 만들 것인지, 쓰기를 줄일 것인지 결정이 필요하다 |
 | `scope: "assets"` 는 타입에만 있다 | `ProjectChangeDescriptor` 와 `EditActivityScope` 에는 있으나 emit 사이트 0건 | 리소스 매니저·타일셋 메타데이터 편집이 `project`/`system` 으로 뭉쳐 기록된다. 에셋 편집을 이 스코프로 라우팅하거나 타입에서 뺄 것 |

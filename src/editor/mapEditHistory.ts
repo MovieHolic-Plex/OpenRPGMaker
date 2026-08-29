@@ -122,6 +122,21 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
   store.replace(applySnapshotToProject(store.getCurrent(), snapshot));
 }
 
+// 프로젝트를 교체하면 이전 프로젝트의 스냅샷은 어떤 새 프로젝트에도 유효하지 않다.
+// store.replace() 자신은 undo 적용 경로기도 하므로, 교체 마커(projectSwitch)가 붙은
+// 변경에서만 혀스토리를 날린다.
+let projectSwitchResetInstalled = false;
+
+function installProjectSwitchHistoryReset(): void {
+  if (projectSwitchResetInstalled) return;
+  projectSwitchResetInstalled = true;
+  store.subscribe((_project, change) => {
+    if (change.projectSwitch === true) resetMapEditHistory();
+  });
+}
+
+installProjectSwitchHistoryReset();
+
 /**
  * 스냅샷을 undo 스택에 밀어넣는다. 직전 스냅샷과 상태가 동일하면(직렬화 일치)
  * 불필요한 메모리 증가를 막기 위해 push 하지 않는다.

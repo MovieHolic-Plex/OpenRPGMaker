@@ -74,6 +74,8 @@ export type ProjectChangeAnnotation = {
   /** 호출자가 **이미 계산해 둔** 필드 단위 변경만 넘긴다. 여기서 diff 를 계산하지 않는다. */
   readonly fields?: readonly EditActivityField[];
   readonly eventId?: string;
+  /** 프로젝트 전체 교체 표시 — 프로젝트 단위 에디터 캐시가 무효화할 신호다. */
+  readonly projectSwitch?: true;
 };
 
 export type ProjectChangeDescriptor =
@@ -348,7 +350,7 @@ class ProjectStore {
     // 플레이크 한 번에 부팅이 벨려졌다(2026-08-18). 쓰기는 아래 scheduleAutoSave의
     // 재시도/백오프 경로가 책임진다(load()의 부팅 지연 저장과 동일한 원칙).
     await this.normalizeCurrentProject({ persistIfChanged: false });
-    this.emit({ scope: "project" });
+    this.emit({ scope: "project", projectSwitch: true });
     if (this.remotePersistenceEnabled) this.scheduleAutoSave();
     return { projectId };
   }
@@ -723,7 +725,7 @@ class ProjectStore {
       syncEventDraftVaultFromProject(this.current);
     }
     this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
-    this.emit({ scope: "project" });
+    this.emit({ scope: "project", ...(options.change ?? {}) });
     this.scheduleAutoSave();
   }
 
@@ -734,7 +736,7 @@ class ProjectStore {
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.replace(project, {
       preserveEventDrafts: false,
-      change: { label: "프로젝트 교체", ...(change ?? {}) },
+      change: { label: "프로젝트 교체", projectSwitch: true, ...(change ?? {}) },
     });
   }
 
