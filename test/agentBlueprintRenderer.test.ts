@@ -6,6 +6,7 @@ import {
   blueprintStatusStyle,
 } from "@/editor/agentBlueprintRenderer";
 import { clearAgentBlueprint, markAgentBlueprintProgress, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
+import { setAgentGhostPreviewHidden } from "@/editor/agentGhostPreview";
 import type { BuildSpec } from "@/ai/buildSpec";
 import type { BlueprintEntry } from "@/editor/agentBlueprint";
 
@@ -101,9 +102,27 @@ describe("AgentBlueprintRenderer", () => {
     expect(textCalls[0].style.resolution).toBeGreaterThanOrEqual(2);
   });
 
+  it("원본 보기(꾹 누름) 중에는 청사진도 숨는다 — 고스트와 같은 토글을 따른다", () => {
+    setAgentBlueprintFromSpec(spec());
+    const renderer = new AgentBlueprintRenderer(mockScene, mockLayer, () => "m1");
+    // 고스트의 스프라이트·애니메이션·DOM 마커는 이 토글을 보는데(agentPreviewRenderers) 청사진만
+    // 보지 않아, 맵 원본을 보려고 꾹 누르면 사각형과 라벨 40장이 그대로 위에 남았다.
+    setAgentGhostPreviewHidden(true);
+    try {
+      renderer.render();
+      expect(graphicsCalls).toHaveLength(0);
+      expect(textCalls).toHaveLength(0);
+      expect(mockLayer.removeAll).toHaveBeenCalledWith(true);
+    } finally {
+      setAgentGhostPreviewHidden(false);
+    }
+    renderer.render();
+    expect(graphicsCalls).toHaveLength(2);
+  });
+
   it("진행 중인 칸은 더 굵은 선으로 그려진다", () => {
     setAgentBlueprintFromSpec(spec());
-    markAgentBlueprintProgress("build_house", { mapId: "m1", x: 10, y: 10, w: 4, h: 4 }, { write: true });
+    markAgentBlueprintProgress("build_wall", { mapId: "m1", rect: { x: 10, y: 10, w: 4, h: 4 }, material: "흰 집 벽" }, { write: true });
     const renderer = new AgentBlueprintRenderer(mockScene, mockLayer, () => "m1");
     renderer.render();
     const [roadStroke, houseStroke] = graphicsCalls.map((record) => record.strokes[0][0]);
