@@ -115,9 +115,9 @@ function fallbackCommandName(project: Project, kind: RuntimeBattleCommandKind): 
     case "capture":
       return terms.capture;
     case "defend":
-      return "방어";
+      return terms.defend;
     case "escape":
-      return "도주";
+      return terms.escape;
     case "switch":
       return "교체";
   }

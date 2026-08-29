@@ -4,7 +4,7 @@ import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
-import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
+import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -887,7 +887,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const equipment = actorEquipment.get(actor.recordId as ActorId);
     if (!equipment?.weapon && actorRecord?.unarmedAnimationId) return actorRecord.unarmedAnimationId;
     const classAnimationId = options.project.database.classes.find((record) => record.id === actor.classId)?.animationId;
-    return classAnimationId ?? actorRecord?.unarmedAnimationId ?? lookupSkill(DEFAULT_SKILL_ID)?.animationId;
+    return classAnimationId
+      ?? actorRecord?.unarmedAnimationId
+      ?? lookupSkill(DEFAULT_SKILL_ID)?.animationId
+      ?? fallbackHitAnimationId();
+  }
+
+  /**
+   * 통상공격 애니메이션의 **최후 폴백**.
+   *
+   * 액터에 unarmedAnimationId 도, 클래스 animationId 도 없고 기본 스킬 레코드까지
+   * 없는 프로젝트에서는 통상공격이 아무 그림도 없이 지나갔다(실측: 필름스트립 전
+   * 구간 animation=null). 가장 많이 쓰는 행동에 시각 피드백이 숫자와 밀림뿐이었다.
+   * 표준 타격 애니메이션이 있으면 그것, 없으면 DB 의 첫 애니메이션을 쓴다.
+   */
+  function fallbackHitAnimationId(): string | undefined {
+    const records = options.project.database.battleAnimations;
+    if (records.length === 0) return undefined;
+    return records.find((record) => record.id === DEFAULT_ANIMATION_ID)?.id ?? records[0].id;
   }
 
   function applyGen1Struggle(

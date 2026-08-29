@@ -441,6 +441,11 @@ export interface Terms {
   skill?: string;
   item?: string;
   capture?: string;
+  /** 방어 커맨드 라벨. 예전에는 하드코딩 "방어" 라, attack/skill/item 만 영어로
+   *  덮은 프로젝트가 "Attack / Skill / Item / 방어 / 도주" 로 섞여 보였다. */
+  defend?: string;
+  /** 도주 커맨드 라벨. defend 와 같은 이유로 용어에 편입한다. */
+  escape?: string;
   back?: string;
   target?: string;
   shopGreeting?: string;
