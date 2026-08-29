@@ -183,11 +183,13 @@ export function duplicateFaction(
   source: FactionDef,
   id: string,
 ): ProjectFactions {
-  const duplicate: FactionDef = { ...source, id, name: `${source.name} 복사본` };
+  // 세계관 출처는 원본과 복제본이 함께 주장하면 재구체화 링크를 빼앗는다. 사람이 저작한
+  // 속성만 복사하고, 출처와 관계처럼 원본을 가리키는 연결은 새 진영에 물려주지 않는다.
+  const { worldEntityId: _dropped, ...authoredIdentity } = source;
+  const duplicate: FactionDef = { ...authoredIdentity, id, name: `${source.name} 복사본` };
   return withFactionOptions(
     factions,
     [...cloneDefs(factions?.defs), duplicate],
-    // 관계까지 복제하면 원본의 동맹과 적을 조용히 물려받는다. 복제는 정체성만 복사한다.
     cloneRelations(factions?.relations),
   );
 }

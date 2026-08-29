@@ -180,6 +180,8 @@ export type FactionAggression = 0 | 1 | 2 | 3;
 export interface FactionDef {
   id: string;
   name: string;
+  /** 세계관에서 구체화된 진영이면 원본 WorldEntity.id. 전투 ID를 바꿔도 출처 정체성을 유지한다. */
+  worldEntityId?: string;
   /** 진영 식별 색(#RRGGBB). 난전에서 누가 어느 편인지 읽히게 하는 유일한 UI 수단이다. */
   color?: string;
   /** 생략 시 1(공격적) — 적(-1 이하) 에게만 선공한다. */

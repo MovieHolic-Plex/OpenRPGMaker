@@ -963,6 +963,16 @@ const fieldGraphicSchema: JsonSchema = {
   additionalProperties: true,
 };
 
+const characterFootprintSchema: JsonSchema = {
+  type: "object",
+  description: "스폰 몸 크기(타일). 생략하면 1x1.",
+  properties: {
+    width: { type: "integer" },
+    height: { type: "integer" },
+  },
+  required: ["width", "height"],
+};
+
 const roguelikeEncounterChoiceSchema: JsonSchema = {
   type: "object",
   properties: {
@@ -1056,6 +1066,28 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
   }
   if (input.chase !== undefined) spawn.chase = booleanField(input, "chase", label);
   if (input.graphic !== undefined) spawn.graphic = structuredClone(input.graphic) as FieldSpawnDef["graphic"];
+  // 진영·발자국·킬 필드를 드롭하면 make_action_enemy 와 스폰 계약이 갈라지고,
+  // 저작한 덮어쓰기가 툴 한 번에 조용히 사라진다. 생략 시 키를 안 쓰는 기존 동작은 유지.
+  if (input.factionId !== undefined) {
+    const factionId = stringField(input, "factionId", label).trim();
+    if (!factionId) throw new ToolError(`${label}.factionId는 비울 수 없습니다.`, { code: "invalid-faction-id", mapId: map.id });
+    spawn.factionId = factionId;
+  }
+  if (input.footprint !== undefined) spawn.footprint = parseCharacterFootprint(input.footprint, `${label}.footprint`, map.id);
+  if (input.passRows !== undefined) {
+    const passRows = integerField(input, "passRows", label);
+    if (passRows <= 0) throw new ToolError(`${label}.passRows는 1 이상이어야 합니다.`, { code: "invalid-pass-rows", mapId: map.id });
+    spawn.passRows = passRows;
+  }
+  if (input.persistKill !== undefined) spawn.persistKill = booleanField(input, "persistKill", label);
+  if (input.onKillSwitchId !== undefined) {
+    const onKillSwitchId = stringField(input, "onKillSwitchId", label).trim();
+    if (!onKillSwitchId) throw new ToolError(`${label}.onKillSwitchId는 비울 수 없습니다.`, { code: "invalid-kill-switch", mapId: map.id });
+    if (!draft.switches.some((sw) => sw.id === onKillSwitchId)) {
+      throw new ToolError(`${label}.onKillSwitchId가 존재하지 않습니다: ${onKillSwitchId}`, { code: "switch-not-found", mapId: map.id });
+    }
+    spawn.onKillSwitchId = onKillSwitchId;
+  }
   return spawn;
 }
 
@@ -1143,6 +1175,18 @@ function parseRect(value: unknown, label: string, map: GameMap): Rect {
     throw new ToolError(`${label}가 맵 범위를 벗어납니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}`, { code: "rect-out-of-bounds", mapId: map.id });
   }
   return rect;
+}
+
+function parseCharacterFootprint(value: unknown, label: string, mapId: string): NonNullable<FieldSpawnDef["footprint"]> {
+  const input = requireRecordValue(value, label);
+  const footprint = {
+    width: integerField(input, "width", label),
+    height: integerField(input, "height", label),
+  };
+  if (footprint.width <= 0 || footprint.height <= 0) {
+    throw new ToolError(`${label}.width/height는 1 이상이어야 합니다.`, { code: "invalid-footprint", mapId });
+  }
+  return footprint;
 }
 
 function assertKnownTroop(project: Project, troopId: string): void {
@@ -1362,6 +1406,11 @@ const makeHuntingGround: ToolDefinition = {
       respawnSec: { type: "integer" },
       chase: { type: "boolean" },
       graphic: fieldGraphicSchema,
+      factionId: { type: "string" },
+      footprint: characterFootprintSchema,
+      passRows: { type: "integer" },
+      persistKill: { type: "boolean" },
+      onKillSwitchId: { type: "string" },
       encounterEntries: { type: "array", items: encounterEntrySchema },
     },
     required: ["mapId", "area", "troopId"],
@@ -1379,6 +1428,11 @@ const makeHuntingGround: ToolDefinition = {
       ...(args.respawnSec !== undefined ? { respawnSec: args.respawnSec } : {}),
       chase: args.chase === true,
       ...(args.graphic !== undefined ? { graphic: args.graphic } : {}),
+      ...(args.factionId !== undefined ? { factionId: args.factionId } : {}),
+      ...(args.footprint !== undefined ? { footprint: args.footprint } : {}),
+      ...(args.passRows !== undefined ? { passRows: args.passRows } : {}),
+      ...(args.persistKill !== undefined ? { persistKill: args.persistKill } : {}),
+      ...(args.onKillSwitchId !== undefined ? { onKillSwitchId: args.onKillSwitchId } : {}),
     }, "fieldSpawn");
     map.fieldSpawns = [...(map.fieldSpawns ?? []), spawn];
     const entries = args.encounterEntries !== undefined

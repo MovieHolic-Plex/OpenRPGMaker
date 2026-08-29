@@ -109,8 +109,8 @@ describe("worldPanel", () => {
     requireTestId(panel, "world-faction-materialization-apply").click();
     expect(store.getCurrent().factions?.defs).toEqual([
       { id: "hand_authored", name: "수기 진영" },
-      { id: "w_faction", name: "별등 상단", aggression: 1 },
-      { id: "w_rivals", name: "별등 경쟁 상단", aggression: 1 },
+      { id: "w_faction", name: "별등 상단", aggression: 1, worldEntityId: "w_faction" },
+      { id: "w_rivals", name: "별등 경쟁 상단", aggression: 1, worldEntityId: "w_rivals" },
     ]);
   });
 
