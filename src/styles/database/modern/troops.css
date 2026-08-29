@@ -117,6 +117,11 @@
   width: 100%;
 }
 
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 9px 로 덮어 글자가 화살표를 침범한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select {
+  padding-right: 24px;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:focus-visible,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select:focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
