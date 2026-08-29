@@ -77,6 +77,53 @@ describe("조사 퍼즐 이벤트 통행 가능 배치", () => {
     expect(wiring).not.toContain("sw_water_plates_plate_2");
   });
 
+  it("push-switches는 같은 자동 착지 칸을 재사용하지 않고 남은 발판을 건너뛴다", () => {
+    const { project, map, mapId } = fixture();
+    solidBlock(map, 8, 8, 3, TILE.WATER);
+    solidBlock(map, 9, 8, 3, TILE.WATER);
+    setSolid(map, 6, 5, TILE.GRASS);
+
+    const result = getTool("compile_puzzle")!.run(project, {
+      mapId,
+      puzzleId: "reserved_plates",
+      kind: "push-switches",
+      plates: [{ at: { x: 8, y: 8 } }, { at: { x: 9, y: 8 } }],
+      all: true,
+      onSolve: {},
+    });
+
+    const data = result.data as PuzzleData;
+    expect(data).toMatchObject({ created: 1, skipped: 1 });
+    const positions = eventsByIds(map, data.eventIds).map((event) => `${event.x},${event.y}`);
+    expect(new Set(positions).size).toBe(positions.length);
+    expect(result.warnings?.some((warning) => warning.includes("총 1개 skip"))).toBe(true);
+  });
+
+  it("switch-sequence는 같은 자동 착지 칸을 재사용하지 않고 남은 노드를 건너뛴다", () => {
+    const { project, map, mapId } = fixture();
+    solidBlock(map, 8, 8, 3, TILE.WATER);
+    solidBlock(map, 9, 8, 3, TILE.WATER);
+    setSolid(map, 6, 5, TILE.GRASS);
+
+    const result = getTool("compile_puzzle")!.run(project, {
+      mapId,
+      puzzleId: "reserved_sequence",
+      kind: "switch-sequence",
+      nodes: [
+        { at: { x: 8, y: 8 }, name: "첫 장치" },
+        { at: { x: 9, y: 8 }, name: "둘째 장치" },
+      ],
+      order: [0, 1],
+      onSolve: {},
+    });
+
+    const data = result.data as PuzzleData;
+    expect(data).toMatchObject({ created: 1, skipped: 1 });
+    const positions = eventsByIds(map, data.eventIds).map((event) => `${event.x},${event.y}`);
+    expect(new Set(positions).size).toBe(positions.length);
+    expect(result.warnings?.some((warning) => warning.includes("총 1개 skip"))).toBe(true);
+  });
+
   it("switch-sequence는 접근 가능한 물 노드는 유지하고 사방이 막힌 노드는 자동 착지시킨다", () => {
     const { project, map, mapId } = fixture();
     setSolid(map, 3, 3, TILE.WATER);

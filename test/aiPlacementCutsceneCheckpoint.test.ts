@@ -102,6 +102,31 @@ describe("script_cutscene 통행 가능 착지", () => {
     expect(isPassable(project, map, event.x, event.y)).toBe(true);
   });
 
+  it("물 위 기존 action 컷신에 playerTouch 페이지를 더하면 이벤트를 통행 가능 칸으로 옮긴다", () => {
+    const { project, map, mapId } = fixture();
+    setWater(map, 5, 5);
+
+    getTool("script_cutscene")!.run(project, {
+      mapId,
+      eventId: "ev_existing_water",
+      x: 5,
+      y: 5,
+      trigger: "action",
+      beats: [SAY_BEAT],
+    });
+    const result = getTool("script_cutscene")!.run(project, {
+      mapId,
+      eventId: "ev_existing_water",
+      trigger: "playerTouch",
+      beats: [{ kind: "say", speaker: "나", text: "밟으면 시작한다." }],
+    });
+
+    const event = eventById(map, "ev_existing_water");
+    expect(isPassable(project, map, event.x, event.y)).toBe(true);
+    expect(event.pages).toHaveLength(2);
+    expect(result.warnings?.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
+  });
+
   it("통행 가능 이웃이 있는 물 위 action 컷신은 작성 좌표를 유지한다", () => {
     const { project, map, mapId } = fixture();
     setWater(map, 4, 4);

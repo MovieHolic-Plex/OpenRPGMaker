@@ -392,6 +392,7 @@ function compileSwitchSequence(draft: Project, map: GameMap, args: RecordValue):
   rejectIfEventOverlap(map, parsedNodes.map((node) => node.at), "switch-sequence");
 
   const warnings: string[] = [];
+  const reserved = new Set<string>();
   const placedNodes: Array<(typeof parsedNodes)[number] & { readonly originalIndex: number; readonly x: number; readonly y: number }> = [];
   let skipped = 0;
   let reportedSkipped = 0;
@@ -399,6 +400,7 @@ function compileSwitchSequence(draft: Project, map: GameMap, args: RecordValue):
     try {
       const landing = resolveEventPlacement(draft, map, node.at.x, node.at.y, {
         kind: "interaction",
+        reserved,
         label: `switch-sequence 노드 '${node.name}'`,
         code: "puzzle-node-impassable",
       });
@@ -406,6 +408,7 @@ function compileSwitchSequence(draft: Project, map: GameMap, args: RecordValue):
         warnings.push(`nodes[${index}] '${node.name}' 위치 자동 조정: (${node.at.x}, ${node.at.y}) → (${landing.x}, ${landing.y})`);
       }
       placedNodes.push({ ...node, originalIndex: index, x: landing.x, y: landing.y });
+      reserved.add(`${landing.x},${landing.y}`);
     } catch (cause) {
       if (!(cause instanceof ToolError)) throw cause;
       skipped += 1;
@@ -672,6 +675,7 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
   rejectIfEventOverlap(map, parsedPlates, "push-switches");
 
   const warnings: string[] = [];
+  const reserved = new Set<string>();
   const placedPlates: Array<Point & { readonly originalIndex: number }> = [];
   let skipped = 0;
   let reportedSkipped = 0;
@@ -680,6 +684,7 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
       const landing = resolveEventPlacement(draft, map, point.x, point.y, {
         kind: "interaction",
         steppable: true,
+        reserved,
         label: `push-switches 발판 ${index + 1}`,
         code: "puzzle-plate-impassable",
       });
@@ -687,6 +692,7 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
         warnings.push(`plates[${index}] 위치 자동 조정: (${point.x}, ${point.y}) → (${landing.x}, ${landing.y})`);
       }
       placedPlates.push({ x: landing.x, y: landing.y, originalIndex: index });
+      reserved.add(`${landing.x},${landing.y}`);
     } catch (cause) {
       if (!(cause instanceof ToolError)) throw cause;
       skipped += 1;

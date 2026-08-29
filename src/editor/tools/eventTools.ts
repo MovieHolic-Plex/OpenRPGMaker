@@ -301,14 +301,16 @@ export function resolveEventPlacement(
     readonly kind: "character" | "interaction";
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
+    readonly reserved?: ReadonlySet<string>;
     readonly label: string;
     readonly code: string;
   },
 ): { x: number; y: number; adjusted: boolean } {
   const mustStandOnPassable = options.kind === "character" || options.steppable === true;
-  if (isPassable(project, map, x, y)) return { x, y, adjusted: false };
-  if (!mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
-  const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId);
+  const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
+  if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
+  if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
+  const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
   if (!landing) {
     throw new ToolError(
       `${options.label}을 놓을 통행 가능 칸이 없습니다: (${x}, ${y}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
@@ -1043,12 +1045,14 @@ function nearestPassableCell(
   y: number,
   maxRadius: number,
   ignoreEventId?: string,
+  reserved?: ReadonlySet<string>,
 ): Point | null {
-  const occupied = new Set(
-    map.events
+  const occupied = new Set([
+    ...map.events
       .filter((event) => event.id !== ignoreEventId)
       .map((event) => `${event.x},${event.y}`),
-  );
+    ...(reserved ?? []),
+  ]);
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
@@ -2257,6 +2261,21 @@ const scriptCutscene: ToolDefinition = {
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;
     if (existing) {
+      if (isSteppableTrigger(trigger, page.priority)) {
+        // 새 페이지가 밟혀야 하는데 기존 좌표가 물이면 페이지만 붙여 죽은 컷신을 만들므로, 이벤트 전체를 먼저 옮긴다.
+        const placement = resolveEventPlacement(draft, map, existing.x, existing.y, {
+          kind: "interaction",
+          steppable: true,
+          ignoreEventId: eventId,
+          label: "컷신",
+          code: "cutscene-impassable",
+        });
+        if (placement.adjusted) {
+          warnings.push(placementAdjustedWarning("컷신", { x: existing.x, y: existing.y }, placement));
+          existing.x = placement.x;
+          existing.y = placement.y;
+        }
+      }
       existing.pages = [...(existing.pages ?? []), page];
       event = existing;
     } else {
