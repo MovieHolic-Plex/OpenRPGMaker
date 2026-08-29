@@ -206,8 +206,13 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
 
   // 헤더
   host.append(
-    el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
-    el("p", { text: "타일셋에 묶입니다. 한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." })
+    el("header", {
+      class: "db-tab-note",
+      children: [
+        el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
+        el("p", { text: "타일셋에 묶입니다. 한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." }),
+      ],
+    }),
   );
 
   const workspace = el("div", {
