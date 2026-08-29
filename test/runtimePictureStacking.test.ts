@@ -1,67 +1,96 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
-import { pictureZIndex } from "@/player/pictures/pictureTween";
+import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { chromium, type Browser } from "playwright";
+import { build } from "vite";
 
-// 픽처 슬롯의 z-index 는 CSS 가 아니라 JS 가 `20 + pictureZIndex(pictureId)` 로 인라인
-// 지정한다(runtimeDom.syncPictureSlot). `.picture-layer` 에 스태킹 컨텍스트가 없으면 그 값이
-// .play-stage 컨텍스트로 새어나가 pic20 이상이 대사창·HUD 를 덮는다. 컨텍스트는 position 이
-// static 이 아니고 z-index 가 auto 가 아닐 때만 생기므로 둘을 함께 검사한다.
+const PLAYER_BUILD_TIMEOUT_MS = 120_000;
+const STACK_SELECTORS = [
+  ".picture-layer",
+  ".runtime-timer-hud",
+  ".runtime-time-hud",
+  ".minimap-root",
+  ".hand-slot",
+  ".zone-feedback",
+  ".dialogue-overlay",
+  ".action-hud",
+] as const;
 
-const ROOT = resolve(__dirname, "..");
+type ComputedStack = Record<(typeof STACK_SELECTORS)[number], {
+  readonly position: string;
+  readonly zIndex: string;
+}>;
 
-function readCss(relativePath: string): string {
-  return readFileSync(resolve(ROOT, relativePath), "utf8");
-}
+describe("런타임 computed z-index 밴드", () => {
+  let browser: Browser;
+  let computed: ComputedStack;
 
-function ruleBody(css: string, selector: string): string {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = new RegExp(`(?:^|[},])\\s*${escaped}\\s*\\{([^}]*)\\}`, "m").exec(css);
-  if (!match) throw new Error(`규칙을 찾지 못했다: ${selector}`);
-  return match[1]!;
-}
+  beforeAll(async () => {
+    const outputDirectory = await mkdtemp(join(tmpdir(), "rpgzzu-picture-stacking-"));
+    try {
+      await build({
+        configFile: false,
+        publicDir: false,
+        root: resolve("."),
+        logLevel: "silent",
+        build: {
+          emptyOutDir: true,
+          outDir: outputDirectory,
+          rollupOptions: { input: resolve("src/player/player.css") },
+        },
+      });
+      const cssFile = (await listFiles(outputDirectory)).find((file) => file.endsWith(".css"));
+      if (!cssFile) throw new Error("player.css build did not emit CSS");
+      const css = await readFile(cssFile, "utf8");
+      browser = await chromium.launch({ headless: true });
+      const page = await browser.newPage();
+      await page.setContent(`<style>${css}</style><div class="play-stage">${STACK_SELECTORS.map(
+        (selector) => `<div class="${selector.slice(1)}"></div>`,
+      ).join("")}</div>`);
+      computed = await page.evaluate((selectors) => Object.fromEntries(selectors.map((selector) => {
+        const element = document.querySelector(selector);
+        if (!(element instanceof HTMLElement)) throw new Error(`missing fixture element: ${selector}`);
+        const style = getComputedStyle(element);
+        return [selector, { position: style.position, zIndex: style.zIndex }];
+      })) as ComputedStack, STACK_SELECTORS);
+    } finally {
+      await rm(outputDirectory, { force: true, recursive: true });
+    }
+  }, PLAYER_BUILD_TIMEOUT_MS);
 
-function declaration(body: string, property: string): string | null {
-  const match = new RegExp(`(?:^|;)\\s*${property}\\s*:\\s*([^;]+)`, "i").exec(body);
-  return match ? match[1]!.trim() : null;
-}
-
-function zIndexOf(css: string, selector: string): number {
-  const raw = declaration(ruleBody(css, selector), "z-index");
-  expect(raw, `${selector} 에 z-index 선언이 없다`).not.toBeNull();
-  const parsed = Number(raw);
-  expect(Number.isFinite(parsed), `${selector} 의 z-index 가 숫자가 아니다: ${raw}`).toBe(true);
-  return parsed;
-}
-
-const picturesCss = readCss("src/styles/runtime/pictures.css");
-const dialogueCss = readCss("src/styles/dialogue.css");
-const actionHudCss = readCss("src/styles/runtime/actionHud.css");
-
-describe("런타임 z-index 밴드 — 픽처 < 대사창 < HUD", () => {
-  it(".picture-layer 는 스태킹 컨텍스트를 만든다(position + z-index)", () => {
-    const body = ruleBody(picturesCss, ".picture-layer");
-    const position = declaration(body, "position");
-    expect(position).not.toBeNull();
-    expect(position).not.toBe("static");
-    expect(Number.isFinite(zIndexOf(picturesCss, ".picture-layer"))).toBe(true);
+  afterAll(async () => {
+    await browser?.close();
   });
 
-  it("대사창은 픽처 레이어보다 위, action-hud 보다 아래다", () => {
-    const picture = zIndexOf(picturesCss, ".picture-layer");
-    const dialogue = zIndexOf(dialogueCss, ".dialogue-overlay");
-    const hud = zIndexOf(actionHudCss, ".action-hud");
-
-    expect(picture).toBeLessThan(dialogue);
-    expect(dialogue).toBeLessThan(hud);
+  it("picture layer keeps a positioned stacking context below dialogue", () => {
+    expect(computed[".picture-layer"]).toEqual({ position: "absolute", zIndex: "26" });
+    expect(Number(computed[".picture-layer"].zIndex)).toBeLessThan(Number(computed[".dialogue-overlay"].zIndex));
   });
 
-  it("픽처 번호가 커도 밴드를 넘지 못한다", () => {
-    const layer = zIndexOf(picturesCss, ".picture-layer");
-    const dialogue = zIndexOf(dialogueCss, ".dialogue-overlay");
-    const highestSlotZIndexWithoutContext = 20 + pictureZIndex("pic50");
-
-    expect(highestSlotZIndexWithoutContext).toBeGreaterThan(dialogue);
-    expect(layer).toBeLessThan(dialogue);
+  it("resolves the complete shipped band through the player.css import closure", () => {
+    expect(Object.fromEntries(STACK_SELECTORS.map((selector) => [selector, computed[selector].zIndex]))).toEqual({
+      ".picture-layer": "26",
+      ".runtime-timer-hud": "29",
+      ".runtime-time-hud": "29",
+      ".minimap-root": "30",
+      ".hand-slot": "30",
+      ".zone-feedback": "30",
+      ".dialogue-overlay": "39",
+      ".action-hud": "40",
+    });
   });
 });
+
+async function listFiles(root: string): Promise<readonly string[]> {
+  const found: string[] = [];
+  async function walk(directory: string): Promise<void> {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) await walk(path);
+      else found.push(path);
+    }
+  }
+  await walk(root);
+  return found;
+}

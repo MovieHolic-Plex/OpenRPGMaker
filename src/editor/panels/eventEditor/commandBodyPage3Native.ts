@@ -1040,10 +1040,9 @@ export function showPictureBody(
     // 프리뷰가 같은 순서로 걸어야 감독이 폼에서 본 것과 게임에서 보는 것이 일치한다.
     const previewScale = (parseInt(scale.value, 10) || 100) / 100;
     const previewRotation = parseInt(rotation.value, 10) || 0;
+    const previewOpacityPercent = intInRange(opacity, 100, 0, 100);
     marker.style.transform = `scale(${previewScale}) rotate(${previewRotation}deg)`;
-    // opacity 입력은 퍼센트(0~100)다 — opacityToPercent 가 0~255 를 환산해 넣었고 라벨도 "불투명도(%)".
-    // 255 로 나누면 100% 가 0.39 로 보인다. 런타임(pictureCssOpacity)은 0~255 를 받으므로 단위가 다르다.
-    marker.style.opacity = String(clampPct(parseInt(opacity.value, 10) || 0) / 100);
+    marker.style.opacity = String(clampPct(previewOpacityPercent) / 100);
     if (url) {
       marker.append(
         el("img", {

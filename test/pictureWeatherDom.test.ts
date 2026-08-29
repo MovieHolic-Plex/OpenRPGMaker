@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
+import { showPictureState } from "@/project/session";
+import { createSaveSnapshot, applySaveSnapshot, readSaveSlot, saveToSlot } from "@/player/saveSlots";
+import { createBlankProject } from "@/project/defaults";
+import { startSession } from "@/project/session";
 import { FakeElement, installFakeDom, findByTestId, flushFakeAnimationFrames } from "./fakeDom";
 import type { PictureState } from "@/project/session";
 
@@ -14,6 +18,16 @@ class TestHost extends FakeElement {
     if (match) return findByTestId(this, match[1]!) ?? null;
     return super.querySelector(selector);
   }
+}
+
+class MemoryStorage implements Storage {
+  private readonly values = new Map<string, string>();
+  get length(): number { return this.values.size; }
+  clear(): void { this.values.clear(); }
+  getItem(key: string): string | null { return this.values.get(key) ?? null; }
+  key(index: number): string | null { return [...this.values.keys()][index] ?? null; }
+  removeItem(key: string): void { this.values.delete(key); }
+  setItem(key: string, value: string): void { this.values.set(key, value); }
 }
 
 let restore: (() => void) | null = null;
@@ -96,10 +110,10 @@ describe("syncPictureLayer — 첫 표시 + 전환 시간(페이드인)", () => 
   it("첫 표시에 durationMs 가 있어도 위치·확대는 즉시 적용된다", () => {
     const host = new TestHost();
     const overlay = new RuntimeDomOverlay(() => asHost(host));
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 48, y: 72, scale: 150, durationMs: 300 }));
 
-    overlay.syncPictureLayer({
-      pic1: pic({ pictureId: "pic1", resourceId: "hero", x: 48, y: 72, scale: 150, durationMs: 300 }),
-    });
+    overlay.syncPictureLayer(session.pictures);
 
     const slot = findByTestId(host, "picture-pic1")!;
     // 버그 시절에는 left/top/transform 이 전부 빈 문자열이었다.
@@ -111,46 +125,106 @@ describe("syncPictureLayer — 첫 표시 + 전환 시간(페이드인)", () => 
   it("rAF 미지원 환경에서는 페이드인을 생략하고 목표 상태로 확정한다", () => {
     const host = new TestHost();
     const overlay = new RuntimeDomOverlay(() => asHost(host));
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", opacity: 255, durationMs: 300 }));
 
-    overlay.syncPictureLayer({
-      pic1: pic({ pictureId: "pic1", resourceId: "hero", opacity: 255, durationMs: 300 }),
-    });
+    overlay.syncPictureLayer(session.pictures);
 
     // 페이드인 시작값(0)에서 멈추면 픽처가 영구히 보이지 않는다.
     expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(1);
   });
 
-  it("페이드인은 목표 불투명도까지 도달한다", () => {
-    const restoreManual = installFakeDom({ animationFrames: "manual" });
-    try {
-      const host = new TestHost();
-      const overlay = new RuntimeDomOverlay(() => asHost(host));
-      // durationMs=1 이면 첫 프레임에서 이미 경과 시간이 지나 트윈이 끝난다(결정적).
-      overlay.syncPictureLayer({
-        pic1: pic({ pictureId: "pic1", resourceId: "hero", opacity: 255, durationMs: 1 }),
-      });
-      expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(0);
+  it("프레임마다 같은 상태를 동기화해도 페이드인이 목표 불투명도까지 완료된다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", opacity: 255, durationMs: 1000 }));
 
-      flushFakeAnimationFrames(1000);
+    overlay.syncPictureLayer(session.pictures);
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(0);
 
-      expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(1);
-    } finally {
-      restoreManual();
+    for (clock = 100; clock <= 1000; clock += 100) {
+      flushFakeAnimationFrames(0, 1);
+      overlay.syncPictureLayer(session.pictures);
     }
+
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(1);
+  });
+
+  it("진행 중 새 Move Picture 목표는 현재 표시값에서 새 트윈을 시작한다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 100, durationMs: 1000 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    clock = 500;
+    flushFakeAnimationFrames(0, 1);
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBeCloseTo(0.5, 3);
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 200, durationMs: 1000 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    clock = 1000;
+    flushFakeAnimationFrames(0, 1);
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("150px");
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBeCloseTo(0.75, 3);
+  });
+
+  it("settled slot의 새 Move Picture 목표도 duration 동안 트윈한다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 10 }));
+    overlay.syncPictureLayer(session.pictures);
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 210, durationMs: 1000 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    clock = 500;
+    flushFakeAnimationFrames(0, 1);
+
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("110px");
+  });
+
+  it("세이브를 storage 왕복해 복원한 픽처는 authored opacity로 즉시 표시된다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    const project = createBlankProject();
+    const session = startSession(project);
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", opacity: 200, durationMs: 1000 }));
+    const storage = new MemoryStorage();
+    expect(saveToSlot(storage, 1, createSaveSnapshot(project, session))).toEqual({ ok: true });
+    const saved = readSaveSlot(storage, 1);
+    expect(saved.kind).toBe("present");
+    if (saved.kind !== "present") throw new Error("expected present save slot");
+    const restored = applySaveSnapshot(project, saved.snapshot);
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => 0 });
+
+    overlay.syncPictureLayer(restored.pictures);
+
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBeCloseTo(200 / 255, 3);
   });
 
   it("이미 떠 있는 픽처의 이동은 현재 상태에서 트윈한다(0 으로 리셋하지 않는다)", () => {
     const host = new TestHost();
     const overlay = new RuntimeDomOverlay(() => asHost(host));
+    const session = startSession(createBlankProject());
 
-    // 1) 전환 시간 없이 표시 → 목표 상태가 즉시 적용된다.
-    overlay.syncPictureLayer({ pic1: pic({ pictureId: "pic1", resourceId: "hero", x: 10, y: 10 }) });
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 10, y: 10 }));
+    overlay.syncPictureLayer(session.pictures);
     expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(1);
 
-    // 2) 같은 픽처를 전환 시간과 함께 이동 → 첫 표시가 아니므로 페이드인 분기를 타면 안 된다.
-    overlay.syncPictureLayer({
-      pic1: pic({ pictureId: "pic1", resourceId: "hero", x: 200, y: 10, durationMs: 300 }),
-    });
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 200, y: 10, durationMs: 300 }));
+    overlay.syncPictureLayer(session.pictures);
 
     expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(1);
   });
