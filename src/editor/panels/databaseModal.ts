@@ -15,6 +15,7 @@ import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { selectedRecordIdForSession } from "@/editor/panels/databaseRecordViewSession";
+import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
 import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import {
   createEditorModalDirtyCloseController,
@@ -193,6 +194,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   // 데이터베이스 모달이 열려 있어도 Ctrl+Z/Y 로 undo/redo 하고, 복원된 프로젝트 상태를
   // 패널에 다시 반영한다(입력 필드 포커스 중에는 브라우저 텍스트 undo 우선 — 가드 유지).
   const handleHistoryKeyDown = (event: KeyboardEvent): void => {
+    // 구조물 편집기가 떠 있으면 undo/redo 를 통째로 넘긴다. undo 는 프로젝트를 갈아치우므로
+    // 편집기가 보고 있던 킷이 사라지고, 그 뒤의 칠하기가 전부 헛일이 된다.
+    // (편집기를 닫은 다음에는 평소대로 되돌릴 수 있다.)
+    if (isStructureKitEditorOpen()) return;
     // undo/redo 후에도 부분 갱신 경로를 타서 스크롤/선택/검색 상태를 보존한다.
     if (handleHistoryHotkey(event)) refreshDatabasePanel(body);
   };

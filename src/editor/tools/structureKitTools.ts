@@ -11,6 +11,7 @@ import {
   structureKitSize,
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
+import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import type {
   GameMap,
   Project,
@@ -104,7 +105,8 @@ const stampStructureKit: ToolDefinition = {
   description:
     "등록된 구조 킷(내 스탬프)을 맵에 시공한다. 단위 단면(width×height)을 origin 좌상단부터 가로로 repeat회 이어 찍는다. "
     + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인. "
-    + "부위가 있는 킷은 parts를 절대좌표(x,y)로 돌려주며 이벤트는 생성하지 않는다 — 워프는 그 좌표로 따로 만든다.",
+    + "부위가 있는 킷은 parts를 절대좌표(x,y)로 돌려주며 이벤트는 생성하지 않는다 — 워프는 그 좌표로 따로 만든다. "
+    + "반복 1회마다 배치 기록(map.structurePlacements)이 하나씩 남아 나중에 그 한 채만 다시 찍거나 지울 수 있다(placementIds).",
   mode: "write",
   parameters: {
     type: "object",
@@ -137,7 +139,17 @@ const stampStructureKit: ToolDefinition = {
         { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y },
       );
     }
-    const painted = stampKitCells(map, kit, origin, repeat);
+    // 반복마다 배치를 따로 기록한다 — 하나로 뭉치면 "가운데 집만 지워줘"가 불가능해진다.
+    // before 는 시공 전에 뜨고, afterHash 는 시공 직후 드래프트 맵을 되읽어 계산한다(킷 정의 아님).
+    let painted = 0;
+    const placementIds: string[] = [];
+    for (let repeatIndex = 0; repeatIndex < repeat; repeatIndex += 1) {
+      const unitOrigin = { x: origin.x + repeatIndex * size.width, y: origin.y };
+      const rect = { x: unitOrigin.x, y: unitOrigin.y, w: size.width, h: size.height };
+      const before = captureStructureTiles(map, rect);
+      painted += stampKitCells(map, kit, unitOrigin, 1);
+      placementIds.push(appendStructurePlacement(map, { kitId: kit.id, rect, before }).id);
+    }
     const parts = absoluteKitParts(kit, origin);
     return {
       summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×${repeat}회, ${painted}칸`,
@@ -148,6 +160,7 @@ const stampStructureKit: ToolDefinition = {
         height: size.height,
         width: totalWidth,
         painted,
+        placementIds,
         ...(parts.length > 0 ? { parts } : {}),
       },
     };

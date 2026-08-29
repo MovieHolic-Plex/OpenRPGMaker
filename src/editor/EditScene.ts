@@ -57,6 +57,7 @@ import {
 import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
+import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlacementContextMenu";
 import {
   isRegionTaskModalOpen,
   openRegionTaskModal,
@@ -642,6 +643,18 @@ export class EditScene extends PhaserRuntime.Scene {
     const sel = editorState.get().selection;
     if (sel && sel.width <= 1 && sel.height <= 1 && sel.mapId === gesture.mapId) {
       editorState.set({ selection: null });
+    }
+    // 찍어 둔 구조물을 덮은 칸이면 구조물 메뉴(다시 찍기·지우기·킷 편집 + 스포이트). 아니면 곧장 스포이트.
+    if (
+      openStructurePlacementContextMenu({
+        mapId: gesture.mapId,
+        x: end.x,
+        y: end.y,
+        point: screen,
+        onPickTile: () => this.getTilePaintEngine().pickVisibleTileAt(gesture.mapId, end.x, end.y),
+      })
+    ) {
+      return;
     }
     this.getTilePaintEngine().pickTileAtPointer(ptr);
   }

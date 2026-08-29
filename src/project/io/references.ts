@@ -1,5 +1,6 @@
-import type { Command, GameEvent, NpcScheduleEntry, Project } from "../types";
+import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
+import { structurePlacementBeforeIsWellFormed, structureRectFitsMap } from "../structurePlacements";
 import {
   collectCommandItemReferenceIds,
   collectConditionItemReferenceIds,
@@ -346,6 +347,7 @@ export function repairProjectReferences(project: Project): void {
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
   repairFarmAnimalReferences(project);
   repairSpatialReferences(project);
+  repairStructurePlacements(project);
   repairP2References(project);
   if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
     const { onDayEnd: _removed, ...rest } = project.system.timeSystem;
@@ -1124,6 +1126,7 @@ function validateMapRecords(
         }
       }
     }
+    validateStructurePlacements(map, issues);
     for (const [eventIndex, event] of map.events.entries()) {
       validateNpcScheduleReferences(project, hostMapId, event, eventIndex, issues);
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
@@ -1135,6 +1138,47 @@ function validateMapRecords(
     }
   }
   validateCharacterGiftPreferenceReferences(project, context.itemIds, issues);
+}
+
+/**
+ * 구조물 배치(map.structurePlacements) 검증 — FarmBuildingPlacement 선례와 같은 규약으로
+ * **repairStructurePlacements 가 떨어뜨리는 것만** 이슈로 본다(중복 id · 맵 밖 · 손상된 before).
+ *
+ * 킷이 삭제된 배치는 일부러 이슈가 아니다: 사용자가 데이터베이스에서 킷을 지우는 순간
+ * 프로젝트가 열리지 않게 되기 때문이다. 고아 배치는 드롭하지 않고 UI 에서 고아로 표시하며
+ * (지우기는 되고 재시공만 막힌다), 정합성 계층은 손대지 않는다.
+ */
+function validateStructurePlacements(map: GameMap, issues: string[]): void {
+  const placements = map.structurePlacements ?? [];
+  collectDuplicateValuePathIssues(`map ${map.id}: structurePlacements`, "id", placements.map((row) => row.id), issues);
+  for (const [index, placement] of placements.entries()) {
+    const path = `map ${map.id}: structurePlacements[${index}]`;
+    if (!structureRectFitsMap(placement, map)) {
+      issues.push(`${path} is out of bounds for map ${map.id}: (${placement.x},${placement.y}) ${placement.w}x${placement.h}`);
+      continue;
+    }
+    if (!structurePlacementBeforeIsWellFormed(placement)) {
+      issues.push(`${path}.before length does not match ${placement.w}x${placement.h}`);
+    }
+  }
+}
+
+/**
+ * 맵 축소 등으로 범위를 벗어난 배치와 손상된 기록을 드롭한다. 킷 삭제로 생긴 고아는 **남긴다** —
+ * 지우기로 찍기 전 타일을 되돌릴 수 있어야 하고, 그 정보는 배치 레코드에만 있다.
+ */
+function repairStructurePlacements(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    if (map.structurePlacements === undefined) continue;
+    const seen = new Set<string>();
+    map.structurePlacements = map.structurePlacements.filter((placement) => {
+      if (seen.has(placement.id)) return false;
+      if (!structureRectFitsMap(placement, map)) return false;
+      if (!structurePlacementBeforeIsWellFormed(placement)) return false;
+      seen.add(placement.id);
+      return true;
+    });
+  }
 }
 
 function validateNpcScheduleReferences(

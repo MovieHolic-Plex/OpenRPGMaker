@@ -11,6 +11,7 @@ import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { beginKitStampCapture, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { visibleTilePickAt } from "@/editor/tilePicking";
 import { topTileInStack } from "@/project/mapOverlayTiles";
@@ -88,7 +89,11 @@ export class TilePaintEngine {
         if (firstStrokeTile) recordTileEditSnapshot(mid);
         {
           if (activePaletteStamp) {
+            // 구조물 배치 기록은 **스트로크의 첫 타일에서 한 번만** — 드래그로 배치가 수십 개 생기는 것을 막는다.
+            // 구조물 킷이 아닌 스탬프(일반 드래그 선택·실내 오브젝트)는 beginKitStampCapture 가 null 을 준다.
+            const capture = firstStrokeTile ? beginKitStampCapture(mid, activePaletteStamp, x, y) : null;
             applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y, autoConnect: autoConnectMode });
+            if (capture) commitKitStampCapture(capture);
             break;
           }
           // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
@@ -137,6 +142,11 @@ export class TilePaintEngine {
     const mapId = this.deps.mapId();
     if (!mapId) return;
     const { x, y } = this.deps.pointerToTile(ptr);
+    this.pickVisibleTileAt(mapId, x, y);
+  }
+
+  /** 좌표 기반 스포이트. 우클릭 메뉴처럼 포인터가 이미 지나간 뒤 실행되는 경로가 쓴다. */
+  pickVisibleTileAt(mapId: MapId, x: number, y: number): void {
     const map = store.getCurrent().maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
     const pick = visibleTilePickAt(map, y * map.width + x);

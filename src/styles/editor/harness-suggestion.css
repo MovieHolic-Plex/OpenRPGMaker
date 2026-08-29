@@ -62,11 +62,26 @@
 
 /* ── 데이터베이스 '구조물' 탭 — 구조 킷 관리(타일 실렌더가 주인공) ── */
 
+/* 담는 그릇을 세로 flex 로 만든다. sidebar.css 의 .db-body.db-shared-workspace 는
+   display 를 지정하지 않는 block + overflow:auto 라서, 앨범이 앞선 h3+p(실측 67px)를
+   없는 것처럼 높이를 잡고 그만큼 아래로 삐져나갔다. 인스펙터 액션 줄은 margin-top:auto 로
+   그 바닥에 붙으므로 [편집] 이 정확히 67px 밖으로 밀려 elementFromPoint 가 푸터 상태줄을
+   돌려줬다(1366×768·1440×900·1920×1080 모두 동일). 형제 탭은 tabs-a.part-2.css:25 /
+   desktop.css:20 에서 :has(.tileset-db-workspace) 로 같은 문제를 이미 고쳐 뒀고 구조물 탭만
+   빠져 있었다. TS 에서 마커 클래스를 붙이면 안 된다 — renderActiveTab 이 body 를
+   replaceChildren 만 해서 className/dataset 이 탭 전환 후에도 남아 다른 탭으로 샌다.
+   sidebar.css 쪽이 특이도가 높지만 display 를 건드리지 않으므로 충돌하지 않는다. */
+.db-body.db-shared-workspace:has(.structure-kit-album-workspace) {
+  display: flex;
+  flex-direction: column;
+}
+
 .structure-kit-album-workspace {
   display: flex;
+  /* height:100% 를 두면 안 된다 — 위 그릇 높이(= h3+p 포함)를 그대로 받아 잘림이 되살아난다.
+     세로 flex 안에서는 flex:1 이 남은 높이를 정확히 준다. */
   flex: 1;
   min-height: 0;
-  height: 100%;
   overflow: hidden;
   background: var(--bg-raised, #FFFDF8);
   border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
@@ -252,6 +267,53 @@
   color: var(--text-3, #6B5F52);
   font-size: 12px;
 }
+
+/* 행 hover 액션 — mapList 의 `.map-tree-action` 규약을 그대로 따른다.
+   `display:none` 으로 숨기지 않는 이유: 숨기면 키보드 포커스가 못 닿고,
+   유닛 테스트의 FakeDom 은 `:hover` 를 몰라 요소를 아예 찾지 못한다. */
+.structure-kit-action-col {
+  text-align: right;
+  white-space: nowrap;
+  width: 104px;
+}
+
+.structure-kit-row-actions {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.structure-kit-row-action {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  height: 22px;
+  justify-content: center;
+  opacity: 0.55;
+  padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
+  width: 22px;
+}
+
+.structure-kit-row:hover .structure-kit-row-action,
+.structure-kit-row:focus-within .structure-kit-row-action,
+.structure-kit-row-action:focus-visible {
+  background: var(--bg-inset);
+  border-color: var(--border-default);
+  opacity: 1;
+}
+
+.structure-kit-row-action:hover { background: var(--control-bg-hover); }
+.structure-kit-row-action:focus-visible { outline: var(--focus-outline); }
+
+/* 지우기만 위험한 색으로 — 아이콘 넷이 나란히 있어 글리프만으로는 구분이 약하다. */
+.structure-kit-row-action.structure-kit-delete { color: var(--danger); }
 
 .structure-kit-part-badge {
   display: inline-block;
@@ -478,7 +540,6 @@
 }
 
 .structure-kit-estimate { align-self: flex-start; }
-.structure-kit-delete { color: var(--danger, #b02a37); }
 .structure-kit-part-dot.entrance { background: #4A57D6; }
 .structure-kit-part-dot.window { background: #0f8f86; }
 .structure-kit-part-dot.sign { background: #4A57D6; }
@@ -514,21 +575,6 @@
   border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: 6px;
   padding: 4px 7px;
-}
-
-.structure-kit-part-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-}
-
-.structure-kit-part-delete-btn {
-  background: transparent;
-  border: none;
-  color: var(--danger, #b02a37);
-  font-size: 11px;
-  cursor: pointer;
-  padding: 2px 4px;
 }
 
 .structure-kit-quiet {
@@ -798,11 +844,52 @@
   gap: 6px;
 }
 
+/* 부위 종류 팝오버 — 맵 컨텍스트 메뉴 위젯을 빌려 쓴다. 그 위젯의 기본 층은 맵 셸 기준
+   (`z-index: var(--z-status)`)이라 편집기 다이얼로그(`--z-popover-high`) 뒤에 깔린다.
+   위젯 파일을 건드리지 않고 이 쓰임만 한 층 올린다. */
+.map-context-menu.structure-kit-part-kind-menu {
+  z-index: var(--z-popover-top);
+}
+
+.structure-kit-editor-parts-head {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
 .structure-kit-editor-parts-title {
   font-size: 12px;
   font-weight: 700;
   color: var(--text-1);
 }
+
+.structure-kit-editor-part-kind { font-weight: 700; }
+
+/* 부위 행의 ✎ · ✕ — 행이 좁아 글씨 버튼은 들어가지 않는다. */
+.structure-kit-editor-part-action {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: none;
+  font-size: 12px;
+  height: 20px;
+  justify-content: center;
+  padding: 0;
+  width: 20px;
+}
+
+.structure-kit-editor-part-action:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-default);
+}
+
+.structure-kit-editor-part-action:focus-visible { outline: var(--focus-outline); }
 
 .structure-kit-editor-part-row {
   display: flex;

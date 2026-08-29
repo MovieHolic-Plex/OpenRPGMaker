@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>구조물을 고칠 수 없던 이유와 고친 결과 — 2026-08-29</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#171a22; --card2:#1d2130; --line:#2b3040;
+    --tx:#e6e9f2; --dim:#9aa3b8; --dim2:#6f7893;
+    --bad:#ff6b6b; --good:#4ade80; --warn:#fbbf24; --accent:#7dd3fc;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:48px 28px 120px}
+  h1{font-size:30px;line-height:1.35;margin:0 0 6px;letter-spacing:-.02em}
+  .sub{color:var(--dim);font-size:15px;margin:0 0 40px}
+  h2{font-size:23px;margin:64px 0 8px;padding-top:26px;border-top:1px solid var(--line);letter-spacing:-.01em}
+  h3{font-size:18px;margin:36px 0 8px;color:var(--accent)}
+  p{margin:12px 0}
+  .lede{font-size:18px;line-height:1.8;background:var(--card);border-left:3px solid var(--accent);
+    padding:20px 24px;border-radius:0 10px 10px 0;margin:24px 0 8px}
+  .note{color:var(--dim);font-size:14.5px}
+  figure{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  figure img{display:block;width:100%;height:auto;background:#000}
+  figcaption{padding:13px 18px;font-size:14.5px;color:var(--dim);border-top:1px solid var(--line);line-height:1.65}
+  figcaption b{color:var(--tx)}
+  .look{color:var(--warn);font-weight:600}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:22px 0}
+  .pair figure{margin:0}
+  .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 9px;border-radius:5px;margin-right:8px;vertical-align:2px}
+  .t-bad{background:rgba(255,107,107,.16);color:var(--bad)}
+  .t-good{background:rgba(74,222,128,.16);color:var(--good)}
+  table{width:100%;border-collapse:collapse;margin:22px 0;font-size:15px}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:600;font-size:13.5px;letter-spacing:.03em;background:var(--card)}
+  td code,p code,li code,figcaption code{background:var(--card2);padding:2px 6px;border-radius:4px;
+    font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#c8d3ee}
+  .num{font-variant-numeric:tabular-nums;font-weight:700}
+  .n-bad{color:var(--bad)} .n-good{color:var(--good)}
+  ul{margin:12px 0;padding-left:22px} li{margin:7px 0}
+  /* CSS 박스 그림 */
+  .diag{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:26px 0}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .box h4{margin:0 0 14px;font-size:15px;letter-spacing:.02em}
+  .frame{position:relative;border:2px dashed var(--dim2);border-radius:8px;height:250px;padding:9px}
+  .frame .lbl{position:absolute;right:8px;bottom:-11px;background:var(--card);padding:0 7px;
+    font-size:11.5px;color:var(--dim2)}
+  .hd{background:rgba(125,211,252,.14);border:1px solid rgba(125,211,252,.4);border-radius:5px;
+    padding:5px 9px;font-size:12px;color:var(--accent);margin-bottom:6px}
+  .ws{border:1px solid var(--line);border-radius:6px;background:var(--card2);padding:7px;
+    display:flex;flex-direction:column;font-size:11.5px;color:var(--dim)}
+  .ws.over{height:230px}
+  .ws.fit{height:174px}
+  .grow{flex:1;border:1px dashed var(--line);border-radius:4px;margin-bottom:6px;
+    display:flex;align-items:center;justify-content:center;color:var(--dim2);font-size:11px}
+  .acts{display:flex;gap:5px}
+  .acts span{flex:1;text-align:center;border-radius:4px;padding:4px 0;font-size:11px;font-weight:700}
+  .acts.cut span{background:rgba(255,107,107,.2);color:var(--bad);border:1px solid rgba(255,107,107,.45)}
+  .acts.ok span{background:rgba(74,222,128,.2);color:var(--good);border:1px solid rgba(74,222,128,.45)}
+  .spill{position:absolute;left:0;right:0;bottom:-2px;height:60px;
+    background:repeating-linear-gradient(45deg,rgba(255,107,107,.12) 0 7px,transparent 7px 14px);
+    border-top:2px solid var(--bad);border-radius:0 0 8px 8px;pointer-events:none}
+  .spill b{position:absolute;left:9px;top:5px;font-size:11.5px;color:var(--bad)}
+  .code{background:#0b0d13;border:1px solid var(--line);border-radius:9px;padding:15px 18px;
+    font:13.5px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c8d3ee;overflow-x:auto;margin:16px 0}
+  .code .c{color:var(--dim2)} .code .del{color:var(--bad)} .code .add{color:var(--good)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14.5px;margin:14px 0}
+  .kv dt{color:var(--dim)} .kv dd{margin:0}
+  @media(max-width:880px){.pair,.diag{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>구조물을 고칠 수 없던 이유와, 고친 결과</h1>
+<p class="sub">2026-08-29 · 실제 브라우저 계측 · 스크린샷 31장 · 이미지를 누르면 원본 크기로 열립니다</p>
+
+<div class="lede">
+  <p style="margin:0 0 10px"><b>편집기는 처음부터 다 만들어져 있었습니다. 버튼이 화면 밖 67px 에 있어서 아무도 누를 수 없었을 뿐입니다.</b></p>
+  <p style="margin:0;color:var(--dim);font-size:16px">
+  큰 모니터로 바꿔도 안 보입니다. 삐져나간 양이 화면 크기와 상관없이 항상 67px 이기 때문입니다.
+  여기서 시작해 구조물을 못 고치게 만드는 원인을 다섯 개 찾아 전부 고쳤습니다.</p>
+</div>
+
+<h2>1. 무엇이 보였나</h2>
+
+<p>데이터베이스 → 세계 → 구조물 로 들어가면 표와 오른쪽 미리보기는 정상으로 나옵니다.
+그런데 <b>그 아래 있어야 할 동작 버튼이 없습니다.</b> 스크롤을 내려야 나타납니다.</p>
+
+<div class="pair">
+  <figure>
+    <a href="shots/40-editbtn-scrolltop0.png"><img src="shots/40-editbtn-scrolltop0.png" alt="스크롤 맨 위 — 버튼이 안 보인다"></a>
+    <figcaption><span class="tag t-bad">고치기 전</span>스크롤 맨 위. <span class="look">화면 아래쪽을 보세요</span> — 미리보기 밑이 잘려 있고 버튼 줄이 없습니다.</figcaption>
+  </figure>
+  <figure>
+    <a href="shots/41-editbtn-scrolled.png"><img src="shots/41-editbtn-scrolled.png" alt="스크롤을 내리면 버튼이 나타난다"></a>
+    <figcaption><span class="tag t-bad">고치기 전</span>스크롤을 끝까지 내리면 <b>그때서야</b> <code>[편집]</code> 이 나타납니다. 스크롤 막대가 잘 안 보이니 사람은 버튼이 없다고 판단합니다.</figcaption>
+  </figure>
+</div>
+
+<p>세 가지 해상도로 재봤습니다. <b>1366×768, 1440×900, 1920×1080 — 삐져나간 양이 전부 똑같이 67px 입니다.</b>
+모니터를 키워도 해결되지 않는 종류의 문제입니다.</p>
+
+<div class="pair" style="grid-template-columns:1fr 1fr 1fr">
+  <figure><a href="shots/50-vp-1366x768.png"><img src="shots/50-vp-1366x768.png" alt="1366x768"></a>
+    <figcaption>1366×768 · 삐짐 <span class="num n-bad">67px</span></figcaption></figure>
+  <figure><a href="shots/50-vp-1440x900.png"><img src="shots/50-vp-1440x900.png" alt="1440x900"></a>
+    <figcaption>1440×900 · 삐짐 <span class="num n-bad">67px</span></figcaption></figure>
+  <figure><a href="shots/50-vp-1920x1080.png"><img src="shots/50-vp-1920x1080.png" alt="1920x1080"></a>
+    <figcaption>1920×1080 · 삐짐 <span class="num n-bad">67px</span></figcaption></figure>
+</div>
+
+<h2>2. 왜 그랬나 — 그림으로</h2>
+
+<p>구조물 화면은 이렇게 쌓여 있습니다. 제목 <b>"구조물"</b>, 그 아래 설명 한 줄, 그 아래 본체(표 + 미리보기 + 버튼).
+문제는 <b>본체가 자기 높이를 "담는 그릇 전체"로 잡았다</b>는 점입니다. 앞에 있는 제목과 설명 <b>67px 을 없는 것처럼</b> 계산했습니다.</p>
+
+<div class="diag">
+  <div class="box">
+    <h4 style="color:var(--bad)">고치기 전 — 본체가 67px 만큼 넘친다</h4>
+    <div class="frame">
+      <div class="hd">제목 "구조물" + 설명 한 줄 &nbsp;=&nbsp; 67px</div>
+      <div class="ws over">
+        <div class="grow">표 · 미리보기</div>
+        <div class="acts cut"><span>편집</span><span>복제</span><span>내보내기</span><span>삭제</span><span>팔레트</span></div>
+      </div>
+      <div class="spill"><b>↓ 보이는 영역 밖 67px — 버튼 줄이 여기 있다</b></div>
+      <span class="lbl">보이는 영역 (잘리는 경계)</span>
+    </div>
+    <p class="note" style="margin:16px 0 0">본체에 <code>height:100%</code> 가 붙어 있었습니다.
+    담는 그릇이 <code>display</code> 지정 없는 일반 블록이라, <code>100%</code> 가 <b>제목·설명을 포함한 전체 높이</b>를 뜻합니다.
+    버튼 줄은 <code>margin-top:auto</code> 로 본체 바닥에 붙으니, 본체가 67px 넘친 만큼 정확히 밖으로 밀립니다.</p>
+  </div>
+  <div class="box">
+    <h4 style="color:var(--good)">고친 뒤 — 남은 높이만 정확히 쓴다</h4>
+    <div class="frame">
+      <div class="hd">제목 "구조물" + 설명 한 줄 &nbsp;=&nbsp; 67px</div>
+      <div class="ws fit">
+        <div class="grow">표 · 미리보기</div>
+        <div class="acts ok"><span>편집</span><span>복제</span><span>팔레트에서 쓰기</span></div>
+      </div>
+      <span class="lbl">보이는 영역 (잘리는 경계)</span>
+    </div>
+    <p class="note" style="margin:16px 0 0">담는 그릇을 <b>세로 flex</b> 로 바꾸고 본체의 <code>height:100%</code> 를 <b>뺐습니다</b>.
+    세로 flex 안에서는 <code>flex:1</code> 이 "제목·설명을 뺀 남은 높이"를 정확히 줍니다.
+    버튼도 5개 → 3개로 줄여 줄이 접히지 않게 했습니다.</p>
+  </div>
+</div>
+
+<div class="code">
+<span class="c">/* src/styles/editor/harness-suggestion.css */</span>
+.db-body.db-shared-workspace:has(.structure-kit-album-workspace) {
+<span class="add">  display: flex;            /* 일반 블록 → 세로 flex */</span>
+<span class="add">  flex-direction: column;</span>
+}
+.structure-kit-album-workspace {
+<span class="del">- height: 100%;            /* ← 이 줄이 원인의 절반. 제목·설명 높이까지 받아온다 */</span>
+<span class="add">+ flex: 1;                 /* 남은 높이만 정확히 */</span>
+<span class="add">+ min-height: 0;           /* flex 자식이 안 줄어드는 기본값 해제 */</span>
+}
+</div>
+
+<p><b>새로 발명한 것이 없습니다.</b> 옆에 있는 타일셋 탭은 이미 같은 처방을 갖고 있었습니다
+(<code>:has(.tileset-db-workspace)</code>). <b>구조물 탭만 빠져 있었습니다.</b></p>
+
+<p class="note"><b>주의할 함정</b> — 이걸 <code>flex-wrap: wrap</code> 으로 고치려 들면 <b>더 나빠집니다.</b>
+버튼 줄이 두 단이 되어 오히려 높아집니다. 실제로 버튼 5개가 352px 폭에 안 들어가 글자가 두 줄로 접혀
+줄 높이가 38px → 53px 로 두꺼워진 것이 이 버그를 아슬아슬한 상태에서 완전히 넘어가게 만든 요인이었습니다.
+해법은 <b>버튼 개수를 줄이는 것</b>입니다.</p>
+
+<h2>3. 고친 결과</h2>
+
+<h3>고침 ① 버튼이 제자리에 있다</h3>
+<div class="pair">
+  <figure>
+    <a href="shots/06-user-row-inspector.png"><img src="shots/06-user-row-inspector.png" alt="고치기 전"></a>
+    <figcaption><span class="tag t-bad">전</span>버튼 5개가 두 줄로 접혀 줄 높이 <span class="num">53px</span>. <code>[편집]</code> 바닥이 <span class="num n-bad">y=831</span>, 잘리는 경계는 <span class="num">y=829</span> → <b>화면 밖</b>. 그 좌표를 찍어보면 <code>div.database-footer-status</code> 가 잡힙니다.</figcaption>
+  </figure>
+  <figure>
+    <a href="after/06-user-inspector-3-actions.png"><img src="after/06-user-inspector-3-actions.png" alt="고친 뒤"></a>
+    <figcaption><span class="tag t-good">후</span>버튼 <b>3개</b> 한 줄, 줄 높이 <span class="num n-good">38px</span>. <code>[편집]</code> 바닥이 <span class="num n-good">y=807</span> — 경계 <b>안쪽 22px</b>. 스크롤 여지 0. 그 좌표를 찍으면 실제 <b>버튼</b>이 잡힙니다.</figcaption>
+  </figure>
+</div>
+
+<h3>고침 ② 복제가 막다른 길이 아니다</h3>
+<p>내장 건물은 편집이 잠겨 있고 화면은 <b>"복제해서 쓰세요"</b> 라고 안내합니다.
+그런데 복제를 눌러도 아무 일도 안 일어나 보였습니다. 사본은 만들어졌지만
+<b>오른쪽 미리보기가 계속 원본(잠긴 것)을 보고 있었기 때문</b>입니다.</p>
+
+<div class="pair">
+  <figure>
+    <a href="shots/04-after-duplicate.png"><img src="shots/04-after-duplicate.png" alt="복제해도 원본을 본다"></a>
+    <figcaption><span class="tag t-bad">전</span>복제 직후. <span class="look">오른쪽 제목을 보세요</span> — 사본이 아니라 <b>원본 이름</b>입니다. 버튼도 여전히 "내 구조물로 복제" 라 사용자는 같은 버튼을 계속 누릅니다.</figcaption>
+  </figure>
+  <figure>
+    <a href="after/03-duplicate-opens-editor.png"><img src="after/03-duplicate-opens-editor.png" alt="복제하면 편집기가 열린다"></a>
+    <figcaption><span class="tag t-good">후</span>복제하면 <b>편집기가 바로 열립니다.</b> 사본이 선택된 상태로 넘어가므로 다음에 무엇을 할지 헷갈릴 일이 없습니다.</figcaption>
+  </figure>
+</div>
+
+<p class="note">고치는 데 값 <b>세 개</b>를 함께 맞춰야 했습니다. 선택만 사본으로 옮기면 원본 칩이 여전히
+"내장 건물"이라 사용자 구조물이 목록에서 통째로 걸러지고, 검색어가 남아 있으면 사본 이름이 걸러집니다.
+그러면 화면을 다시 그리는 순간 선택이 <b>목록 첫 줄로 되돌아갑니다.</b>
+그래서 선택·원본·검색어를 한 번에 바꾸는 함수 하나로 묶었습니다.</p>
+
+<h3>고침 ③ 표에서 바로 편집으로 들어간다</h3>
+<p>전에는 편집으로 가는 길이 오른쪽 미리보기 아래 버튼 하나뿐이었습니다 — 그것도 화면 밖에 있던 버튼입니다.
+이제 <b>표의 각 줄에 마우스를 올리면 동작 아이콘이 나타납니다.</b></p>
+
+<div class="pair">
+  <figure>
+    <a href="after/07-user-row-hover-4-icons.png"><img src="after/07-user-row-hover-4-icons.png" alt="내 구조물 행 아이콘 4개"></a>
+    <figcaption><span class="tag t-good">후</span>내가 저장한 구조물: <code>✎</code> 편집 · <code>⧉</code> 복제 · <code>↓</code> 내보내기 · <code>✕</code> 삭제</figcaption>
+  </figure>
+  <figure>
+    <a href="after/02-builtin-row-hover-duplicate-icon.png"><img src="after/02-builtin-row-hover-duplicate-icon.png" alt="내장 건물 행 아이콘"></a>
+    <figcaption><span class="tag t-good">후</span>내장 건물: <code>⧉</code> 하나만. 누르면 사본을 만들고 편집기까지 이어집니다. 내장 줄을 <b>두 번 클릭</b>해도 같습니다 — 전에는 아무 반응이 없었습니다.</figcaption>
+  </figure>
+</div>
+
+<h3>고침 ④ 창문·간판을 그릴 수 있다</h3>
+<p>구조물에는 "부위"를 표시합니다 — 여기가 입구, 여기가 창문 같은 정보입니다.
+그런데 <b>드래그로 부위를 그리면 종류가 항상 "입구"로 고정</b>돼 있었습니다.
+창문이나 간판을 만들 방법이 코드에 아예 없었습니다.</p>
+
+<div class="pair">
+  <figure>
+    <a href="after/04-part-kind-popover.png"><img src="after/04-part-kind-popover.png" alt="부위 종류 팝오버"></a>
+    <figcaption><span class="tag t-good">후</span>드래그를 끝내면 <b>종류를 고르는 창</b>이 그 자리에 뜹니다. 맵 편집기의 기존 우클릭 메뉴 부품을 그대로 재사용했습니다.</figcaption>
+  </figure>
+  <figure>
+    <a href="after/05-part-kind-window-chosen.png"><img src="after/05-part-kind-window-chosen.png" alt="창문 선택됨"></a>
+    <figcaption><span class="tag t-good">후</span><b>창문</b>을 고른 결과가 부위 목록에 들어갔습니다. 각 줄의 <code>✎</code> 로 나중에 종류를 바꾸고 <code>✕</code> 로 지웁니다.</figcaption>
+  </figure>
+</div>
+
+<h3>고침 ⑤ 맵에 놓은 구조물이 개체로 남는다</h3>
+<p>가장 큰 변화입니다. 전에는 구조물을 맵에 찍으면 <b>생타일로 녹아버렸습니다.</b>
+"여기에 이 집이 있다"는 기록이 남지 않으니, 놓은 집을 다시 고르거나 깔끔히 지울 방법이 없었습니다.
+잘못 놓으면 타일을 하나하나 손으로 되돌려야 했습니다.</p>
+
+<div class="pair" style="grid-template-columns:1fr 1fr 1fr">
+  <figure><a href="after/12-map-stamped.png"><img src="after/12-map-stamped.png" alt="맵에 찍음"></a>
+    <figcaption><span class="tag t-good">후</span>맵에 한 번 클릭 → 집이 찍히고 <b>배치 기록 1건</b>이 남습니다.</figcaption></figure>
+  <figure><a href="after/13-placement-menu.png"><img src="after/13-placement-menu.png" alt="우클릭 메뉴"></a>
+    <figcaption><span class="tag t-good">후</span>그 자리를 <b>우클릭</b>하면 메뉴가 뜹니다 — 다시 찍기 · 지우기 · 킷 편집 · 스포이트.</figcaption></figure>
+  <figure><a href="after/14-placement-erased.png"><img src="after/14-placement-erased.png" alt="지운 뒤 복원"></a>
+    <figcaption><span class="tag t-good">후</span><code>[이 자리 지우기]</code> → <b>찍기 전 타일이 그대로 돌아옵니다.</b></figcaption></figure>
+</div>
+
+<p>실제 프로젝트 데이터를 읽어 확인한 배치 기록입니다. 클릭 <b>한 번에 정확히 한 건</b>이고
+(드래그로 수십 개가 생기지 않습니다), 찍기 전 타일 <b>72칸</b>(9×8)을 함께 저장해 두었습니다.</p>
+
+<div class="code">{
+  "kitId": "kit_d2c9c650-92f1-4402-8d78-a5967ae1a059",
+  "x": 59, "y": 50, "w": 9, "h": 8,
+  "before": { "lower": [<span class="c">…72칸…</span>], "upper": [<span class="c">…72칸…</span>] },  <span class="c">← 지우기 복원용</span>
+  "afterHash": "6ccad1d674…"                        <span class="c">← 나중에 덧칠됐는지 판별용</span>
+}</div>
+
+<dl class="kv">
+  <dt>다시 찍기</dt><dd>킷을 고친 뒤 그 자리만 새 모습으로 다시 시공합니다. 배치별 수동입니다 — 킷을 고쳐도 맵 전체가 저절로 바뀌지 않습니다.</dd>
+  <dt>덧칠 판별</dt><dd>찍은 직후 <b>실제로 맵에 써진 타일</b>을 되읽어 해시로 남깁니다. 킷이 의도한 그림이 아니라 결과를 기준으로 하기 때문에, 오토타일이 모양을 다듬어도 오판하지 않습니다. 누가 덧칠했으면 조용히 막지 않고 물어봅니다.</dd>
+  <dt>지우기</dt><dd>저장해 둔 타일을 <b>날것으로 그대로 대입</b>합니다. 일반 페인트 경로로 되돌리면 오토타일이 다시 손대서 원본과 달라집니다.</dd>
+  <dt>겹침</dt><dd>나중에 찍은 것이 이깁니다. 오래된 배치를 지울 때는 나중 배치가 덮은 칸을 건드리지 않습니다.</dd>
+  <dt>되돌리기</dt><dd>기존 Ctrl+Z 가 프로젝트 전체를 저장하므로 배치 기록도 같이 되돌아갑니다. 따로 만든 것이 없습니다.</dd>
+</dl>
+
+<h2>4. 재본 숫자</h2>
+
+<table>
+<thead><tr><th>항목</th><th>고치기 전</th><th>고친 뒤</th></tr></thead>
+<tbody>
+<tr><td>보이는 영역 밖으로 삐진 양</td><td class="num n-bad">67px</td><td class="num n-good">0px</td></tr>
+<tr><td><code>[편집]</code> 버튼 바닥 위치</td><td class="num n-bad">y = 831</td><td class="num n-good">y = 807 <span class="note">(경계 829보다 22px 안쪽)</span></td></tr>
+<tr><td>그 좌표에 실제로 있는 것</td><td><code class="n-bad">div.database-footer-status</code></td><td><code class="n-good">button</code> <span class="note">(진짜 버튼)</span></td></tr>
+<tr><td>남은 스크롤 여지</td><td class="num n-bad">67px</td><td class="num n-good">0px</td></tr>
+<tr><td>동작 버튼 개수 / 줄 높이</td><td class="num n-bad">5개 / 53px</td><td class="num n-good">3개 / 38px</td></tr>
+<tr><td>해상도 1366·1440·1920</td><td class="n-bad">셋 다 삐짐 67px</td><td class="n-good">셋 다 0px</td></tr>
+<tr><td>부위 종류 고를 수 있나</td><td class="n-bad">아니오 — "입구" 고정</td><td class="n-good">예 — 드래그 후 팝오버</td></tr>
+<tr><td>맵에 놓은 구조물 다시 고르기</td><td class="n-bad">불가 — 생타일로 녹음</td><td class="n-good">우클릭 메뉴 4항목</td></tr>
+</tbody>
+</table>
+
+<h2>5. 어떻게 확인했나</h2>
+
+<p><b>클릭이 되는지로는 확인할 수 없습니다.</b> 자동 테스트의 클릭은 누르기 전에 요소를 화면 안으로 스크롤합니다 —
+사람은 못 누르는 버튼도 테스트는 스크롤해서 누릅니다. 그래서 이 버그가 있는 동안에도 테스트는 초록불이었습니다.
+"보인다"는 검사도 부족합니다. 조상 요소의 <b>넘침 잘림</b>은 보지 않기 때문입니다.</p>
+
+<p>그래서 <b>좌표로</b> 판정했습니다. 스크롤을 맨 위로 되돌린 뒤 버튼 위치를 재고,
+<b>그 좌표에 실제로 무엇이 있는지</b> 찍어보고, 스크롤 여지가 0인지 확인하고,
+마지막으로 <b>좌표를 직접 클릭</b>했습니다. 이건 자동 스크롤을 거치지 않는 진짜 증명입니다.</p>
+
+<table>
+<thead><tr><th>검증</th><th>결과</th></tr></thead>
+<tbody>
+<tr><td>유닛 테스트 (구조물 관련 9개 파일)</td><td class="n-good">156 / 156 통과</td></tr>
+<tr><td>배치 기능 신규 유닛</td><td class="n-good">18 / 18 통과</td></tr>
+<tr><td>브라우저 e2e <code>db-structure-editor</code></td><td class="n-good">4 / 4 통과</td></tr>
+<tr><td>데이터베이스 창 크기 불변식</td><td class="n-good">3 / 3 통과 — 구조물 탭 <code>1000×744</code>, 다른 탭과 동일</td></tr>
+<tr><td>타입 검사 <code>tsc</code></td><td class="n-good">이번에 만진 파일 오류 0건</td></tr>
+<tr><td>CSS 예산 게이트</td><td class="n-good">회귀 0건 · 새 CSS 파일 0개 · 하드코딩 색 2개 감소</td></tr>
+<tr><td>전체 빌드 <code>npm run build</code></td><td class="n-good">통과 (출하 플레이어 산출물 포함)</td></tr>
+<tr><td>브라우저 왕복 실측</td><td class="n-good">찍기 → 배치 1건 → 우클릭 메뉴 4항목 → 지우기 → 배치 0건</td></tr>
+</tbody>
+</table>
+
+<h2>6. 하지 않은 것</h2>
+<ul>
+  <li><b>킷을 고쳤을 때 맵 전체에 자동 반영</b>은 하지 않습니다. 배치마다 <code>[다시 찍기]</code> 를 눌러야 합니다. 의도한 범위입니다 — 자동 전파는 사람이 손댄 맵을 조용히 덮어쓸 위험이 큽니다.</li>
+  <li><b>마을 자동 생성이 세우는 집</b>은 배치로 기록하지 않습니다. 이번 범위 밖입니다.</li>
+  <li><b>맵 가장자리에 걸쳐 찍은 경우</b> 맵 안쪽으로 잘린 사각형만 기록합니다. 왼쪽·위로 삐져나갔다면 나중에 다시 찍을 때 원래 위치와 한두 칸 다를 수 있습니다.</li>
+  <li><b>내장 파라메트릭 킷</b>은 <code>[킷 편집]</code> 로 구조물 탭까지만 열립니다. 그 킷 자체는 코드라서 편집기가 없고, "복제해 쓰세요" 안내가 뜹니다.</li>
+  <li>배치 우클릭 메뉴에 대한 <b>브라우저 자동 테스트는 아직 없습니다.</b> 유닛과 이번 수동 실측으로만 확인했습니다.</li>
+  <li>이번 변경과 무관한 기존 실패 2건이 남아 있습니다 — 프로젝트 왕복 바이트 안정성(<code>titleGraphic</code> 유실), 투명 소품 타일 라우팅. 실패 출력에 이번 새 필드가 <b>한 번도 등장하지 않는 것</b>으로 무관함을 확인했습니다.</li>
+</ul>
+
+<h2>7. 만진 곳</h2>
+<table>
+<thead><tr><th>무엇</th><th>어디</th></tr></thead>
+<tbody>
+<tr><td>잘림 수정</td><td><code>src/styles/editor/harness-suggestion.css</code></td></tr>
+<tr><td>복제 → 편집 연결, 행 아이콘</td><td><code>src/editor/panels/structureKitDbTab.ts</code></td></tr>
+<tr><td>부위 종류 팝오버, 편집기 방어</td><td><code>src/editor/panels/structureKitEditorDialog.ts</code></td></tr>
+<tr><td>인스펙터 동작 3개로 축소</td><td><code>src/editor/panels/structureKitInspector.ts</code></td></tr>
+<tr><td>배치 자료구조와 순수 계산</td><td><code>src/project/structurePlacements.ts</code> <span class="note">(신규)</span></td></tr>
+<tr><td>배치 기록·복원·재시공</td><td><code>src/editor/structurePlacementActions.ts</code> <span class="note">(신규)</span></td></tr>
+<tr><td>배치 우클릭 메뉴</td><td><code>src/editor/panels/structurePlacementContextMenu.ts</code> <span class="note">(신규)</span></td></tr>
+<tr><td>찍을 때 기록 연결</td><td><code>src/editor/TilePaintEngine.ts</code> · <code>src/editor/EditScene.ts</code></td></tr>
+<tr><td>AI 도구가 찍을 때도 기록</td><td><code>src/editor/tools/structureKitTools.ts</code></td></tr>
+<tr><td>정합성 검사·수리</td><td><code>src/project/io/references.ts</code></td></tr>
+<tr><td>테스트</td><td><code>test/structurePlacements.test.ts</code> <span class="note">(신규)</span> · <code>test/structureKitPartKindMenu.test.ts</code> <span class="note">(신규)</span> · <code>test/structureKitDbTab.test.ts</code> · <code>test/e2e/db-structure-editor.spec.ts</code></td></tr>
+<tr><td>남긴 기록</td><td><code>openwiki/editor-database.md</code> · <code>openwiki/testing.md</code></td></tr>
+</tbody>
+</table>
+
+<p class="note" style="margin-top:44px;padding-top:22px;border-top:1px solid var(--line)">
+이 보고서에 쓰인 스크린샷은 모두 실제 브라우저에서 이 저장소 코드를 띄워 찍은 것입니다.
+<code>shots/</code> 는 고치기 전, <code>after/</code> 는 고친 뒤입니다. 숫자는 화면에서 직접 잰 값입니다.
+</p>
+
+</div>
+</body>
+</html>
