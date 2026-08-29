@@ -138,8 +138,10 @@ describe("automation boot context", () => {
 });
 
 describe("presentEditorWelcome", () => {
-  // BREAK: the production welcome rendered only three genres and represented variant presets as peer packs.
-  it("renders each canonical pack exactly once and nests variant inspirations", () => {
+  // BREAK: variant worlds (이브/아오오니) were grey sub-chips under a pack card, so the title the user
+  // actually arrives with was the weakest thing on screen. Every preset is now a peer poster, and
+  // data-pack-id marks the one anchor poster per official pack.
+  it("gives every genre a peer poster and anchors each official pack exactly once", () => {
     const host = document.createElement("div");
     document.body.append(host);
     void presentEditorWelcome(host);
@@ -149,14 +151,17 @@ describe("presentEditorWelcome", () => {
     for (const packId of GENRE_PACK_IDS) {
       expect(host.querySelectorAll(`[data-pack-id='${packId}']`)).toHaveLength(1);
     }
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(5);
-    expect(host.querySelector("[data-preset-id='partner-raise']")?.closest("[data-pack-id]")?.getAttribute("data-pack-id"))
-      .toBe("monster-collect");
-    expect(host.querySelector("[data-preset-id='school-horror']")?.closest("[data-pack-id]")?.getAttribute("data-pack-id"))
-      .toBe("horror-chase");
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(7);
+    for (const presetId of ["partner-raise", "school-horror"]) {
+      const variant = host.querySelector<HTMLElement>(`[data-preset-id='${presetId}']`);
+      expect(variant).toBeTruthy();
+      // A variant is a top-level poster, not nested under — and not an anchor for — its pack.
+      expect(variant?.dataset.packId).toBeUndefined();
+      expect(variant?.closest("[data-pack-id]")).toBeNull();
+    }
   });
 
-  it("mounts a canvas briefing with one question, one input, and five canonical result cards", () => {
+  it("mounts a canvas briefing with one question, one input, and seven genre posters", () => {
     const host = document.createElement("div");
     document.body.append(host);
     void presentEditorWelcome(host);
@@ -168,15 +173,48 @@ describe("presentEditorWelcome", () => {
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)).toBeTruthy();
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.textContent).toContain("만들기");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.textContent).toContain("빈 맵으로 시작");
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(5);
-    expect(host.textContent).toContain("모험 마을");
-    expect(host.textContent).toContain("농장 하루");
-    expect(host.textContent).toContain("몬스터 수집");
-    expect(host.textContent).toContain("호러 추격");
-    expect(host.textContent).toContain("스토리 컷신");
-    expect(host.querySelectorAll("[data-testid='editor-welcome-inspiration']")).toHaveLength(2);
-    expect(host.querySelector("[data-testid='editor-welcome-slide']")).toBeNull();
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(7);
+    for (const caption of ["이브 같은", "갤러리 호러", "아오오니 같은", "학교 호러", "몬스터 수집", "파트너 육성", "농장 생활", "모험 JRPG", "회상 스토리"]) {
+      expect(host.textContent).toContain(caption);
+    }
+    // The system-preset action is one gear per poster, not a repeated full-width button.
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(7);
+    expect(host.querySelector("[data-testid='editor-welcome-starter-card-0']")?.textContent).not.toContain("빈 프로젝트");
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
+  });
+
+  it("keeps the free-text second tier collapsed until asked for", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    void presentEditorWelcome(host);
+
+    const toggle = host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.moreToggle}']`);
+    const grid = host.querySelector<HTMLElement>("#editor-welcome-more-grid");
+    expect(toggle?.getAttribute("aria-expanded")).toBe("false");
+    expect(grid?.hidden).toBe(true);
+    expect(host.querySelectorAll(`[data-testid^='${EDITOR_WELCOME_TESTIDS.moreCard}-']`).length).toBeGreaterThanOrEqual(10);
+    // Hidden posters must not fetch ~1MB art each before the tier is opened.
+    for (const img of Array.from(host.querySelectorAll<HTMLImageElement>(".editor-welcome-poster-img"))) {
+      expect(img.getAttribute("loading")).toBe("lazy");
+    }
+
+    toggle?.click();
+    expect(grid?.hidden).toBe(false);
+    expect(toggle?.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("second-tier poster sends its intent through the free-text path", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const pending = presentEditorWelcome(host);
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.moreToggle}']`)?.click();
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.moreCard}-0']`)?.click();
+
+    const result = await pending;
+    expect(result.source).toBe("free-text");
+    expect(result.autoSend).toBe(true);
+    expect(result.presetId).toBeUndefined();
+    expect(result.intent).toBeTruthy();
   });
 
   it("sends free-text to the current map without replacing the project", async () => {
@@ -231,9 +269,9 @@ describe("presentEditorWelcome", () => {
     expect(result.replaceWithBlank).toBe(false);
     expect(result.autoSend).toBe(true);
     expect(result.source).toBe("chip");
-    expect(result.intent).toBe("모험 마을");
-    expect(result.presetId).toBe("adventure-jrpg");
-    expect(result.prompt).toContain("모험 JRPG");
+    expect(result.intent).toBe("이브 같은 갤러리 호러");
+    expect(result.presetId).toBe("horror-gallery");
+    expect(result.prompt).toContain("make_gallery_room");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
   });
 
@@ -258,12 +296,12 @@ describe("presentEditorWelcome", () => {
       prompt: null,
       autoSend: false,
       replaceWithBlank: false,
-      presetId: "adventure-jrpg",
+      presetId: "horror-gallery",
       source: "manual-system-preset",
       systemPresetPlan: {
         kind: "blank-project-system-preset",
-        packId: "adventure-jrpg",
-        recipeId: "adventure-system",
+        packId: "horror-chase",
+        recipeId: "horror-system",
         preservesOpenProjectUntilRemoteVerified: true,
         aiRequired: false,
       },
