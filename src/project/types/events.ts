@@ -480,11 +480,21 @@ export interface EventPage {
   overlapForbidden?: boolean;
   animationType?: EventAnimationType;
   /**
-   * 충돌 발자국(타일). (x,y) 는 발자국 **하단 행**의 칸이고 짝수 폭은 왼쪽 치우침.
+   * **몸 사각**(타일). (x,y) 는 사각 **하단 행**의 칸이고 짝수 폭은 왼쪽 치우침.
    * 생략 시 1x1 — 기존 이벤트는 좌표가 그대로다.
+   * 조사·접촉 발동, 전투 히트, 점유, 렌더 중앙, 편집 클릭을 지배한다.
    * 페이지 단위인 이유: 알 → 드래곤처럼 페이지 전환으로 크기가 바뀌는 연출을 허용한다.
    */
   footprint?: CharacterFootprint;
+  /**
+   * 통행을 차단하는 행 수 — 몸 사각의 **하단 N행**만 막는다.
+   * 3x3 몸에 1 이면 발밑 한 줄만 막히고 상체 두 줄은 뒤로 지나갈 수 있다.
+   * 그래도 조사·전투는 몸 전체가 받는다(상체를 보고 말을 걸 수 있다).
+   *
+   * 생략 시 `footprint.height` = 몸 전체 = **1차와 동일한 동작**. 비정규 값도 전체로
+   * 올린다(fail-closed — 적은 행 수가 벽을 여는 것보다 다 막는 쪽이 안전하다).
+   */
+  passRows?: number;
   movement: EventPageMovement;
   commands: Command[];
 }

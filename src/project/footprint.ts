@@ -22,7 +22,11 @@ export const CHARACTER_SCALE_MIN = 0.25;
 export const CHARACTER_SCALE_MAX = 8;
 
 /**
- * 발밑 앵커 (x,y) 와 크기로 발자국 사각을 만든다. 네 값 모두 포함(inclusive).
+ * 발밑 앵커 (x,y) 와 크기로 **몸 사각**을 만든다. 네 값 모두 포함(inclusive).
+ *
+ * 몸 사각이 지배하는 것: 조사·접촉 발동, 전투 히트, 점유, 렌더 중앙, depth, 편집 클릭.
+ * **통행 차단은 이 사각이 아니다** — {@link passageBounds} 가 하단 일부만 쓴다.
+ * 2차 스펙 docs/superpowers/specs/2026-08-30-character-body-vs-passage-rect-design.md §1.
  *
  * 축은 1 미만이면 1 로 올린다. 정규화(normalizeCharacterFootprint)는 runtimeEventView
  * 한 곳에만 있고 이 함수는 원시 CharacterFootprint 를 받으므로, 폭 0 이 그대로
@@ -40,6 +44,26 @@ export function footprintBounds(x: number, y: number, fp: CharacterFootprint): F
     top: y - (height - 1),
     bottom: y,
   };
+}
+
+/**
+ * **통행 차단 사각** — 몸 사각의 하단 `passRows` 행. left·right·bottom 은 몸과 같고
+ * top 만 올라온다. 3x3 몸에 passRows 1 이면 발밑 한 줄만 막히고 상체 두 줄은 지나갈 수 있다.
+ *
+ * `passRows` 가 몸 높이와 같으면(= 정규화 기본값) **정확히 footprintBounds 와 같다.**
+ * 그 항등이 이 설계의 안전줄이다 — passRows 없는 기존 데이터는 동작이 안 바뀐다.
+ *
+ * ⚠ 하단 고정이다. "공중에 뜬 대상의 가운데만 히트" 는 표현할 수 없다(스펙 범위 밖).
+ */
+export function passageBounds(
+  x: number,
+  y: number,
+  fp: CharacterFootprint,
+  passRows: number
+): FootprintRect {
+  const body = footprintBounds(x, y, fp);
+  const rows = safePassRows(passRows, body.bottom - body.top + 1);
+  return { ...body, top: body.bottom - (rows - 1) };
 }
 
 /** 사각 안으로 점을 끌어당긴다 — 밖이면 최근접 모서리 칸, 안이면 그 점 자신. */
@@ -100,6 +124,21 @@ export function normalizeCharacterFootprint(value: unknown): CharacterFootprint 
   return { width: clampAxis(raw.width), height: clampAxis(raw.height) };
 }
 
+/**
+ * 통행 차단 행 수를 굳힌다. 비정규(정수 아님·0 이하·NaN·문자열·null)면 **몸 높이 전체**다.
+ *
+ * fail-closed 방향이 위쪽인 이유: 행 수가 적을수록 통행이 열린다. 잘못된 값이 벽을 여는
+ * 것보다 다 막는 쪽이 안전하고, 게다가 전체 높이는 곧 **생략 시 항등 기본값**이라
+ * 실수와 기본값이 같은 곳으로 수렴한다. 1차 safeAxis 가 폭 0 을 1 로 올린 것과 같은 방향이다.
+ */
+export function normalizePassRows(value: unknown, height: number): number {
+  const max = clampAxis(height);
+  // 1 미만은 max 로 올린다. **1 로 클램프하면 안 된다** — 0 이나 -3 이 "발밑 한 줄만
+  // 막힘" 이 되어 3x3 의 상체 두 줄이 조용히 열린다. 그게 fail-open 이다.
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1) return max;
+  return Math.min(max, value);
+}
+
 export function normalizeCharacterScale(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return 1;
   return Math.max(CHARACTER_SCALE_MIN, Math.min(CHARACTER_SCALE_MAX, value));
@@ -117,4 +156,15 @@ function clampAxis(value: unknown): number {
  */
 function safeAxis(value: number): number {
   return Number.isFinite(value) && value >= 1 ? Math.floor(value) : 1;
+}
+
+/**
+ * 이미 number 로 타이핑된 통행 행 수를 [1, height] 로 굳힌다.
+ * normalizePassRows 와 달리 정규화를 안 거친 경로(passageBounds 직접 호출)를 위한 것이고,
+ * 비정규는 height 로 올린다 — 위쪽이 fail-closed 다.
+ */
+function safePassRows(value: number, height: number): number {
+  // normalizePassRows 와 같은 이유로 1 미만은 height 로 **올린다**(1 로 클램프 금지).
+  if (!Number.isFinite(value) || value < 1) return height;
+  return Math.min(height, Math.floor(value));
 }
