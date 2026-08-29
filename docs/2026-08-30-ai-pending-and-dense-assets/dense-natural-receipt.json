@@ -1,0 +1,51 @@
+{
+  "packing": "natural",
+  "area": {
+    "x": 3,
+    "y": 3,
+    "w": 14,
+    "h": 14
+  },
+  "count": 400,
+  "passableBefore": 168,
+  "passableAfter": 112,
+  "result": {
+    "ok": true,
+    "summary": "빈 맵에 활엽수 2x2 28개 = 112타일(클러스터 동반 배치 포함) 배치(poisson, 자연도 0.5, 간격 1~3) — 372개 건너뜀: 보호셀/간격/공간 부족 · 나무 상·하 보정: 수관 보완 15칸",
+    "diff": {
+      "tilesChanged": 86,
+      "mapPropertiesChanged": 0,
+      "eventsAdded": 0,
+      "eventsModified": 0,
+      "eventsRemoved": 0,
+      "mapsAdded": 0,
+      "mapsRemoved": 0,
+      "dbRecordsChanged": 0,
+      "tilesetsChanged": 0,
+      "switchesAdded": 0,
+      "variablesAdded": 0,
+      "worldEntitiesAdded": 0,
+      "worldEntitiesModified": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "endingsChanged": 0,
+      "sessionChanged": false,
+      "systemChanged": false,
+      "warnings": [
+        "경고: 82개 칸이 통행 불가가 되었습니다(map_blank_start).",
+        "나무 상·하 보정: 수관 보완 15칸"
+      ]
+    },
+    "data": {
+      "mode": "poisson",
+      "packing": "natural",
+      "naturalness": 0.5,
+      "placed": 28,
+      "requested": 400,
+      "skipped": 372,
+      "tilesPlaced": 112,
+      "passableBefore": 168,
+      "passableAfter": 112
+    }
+  }
+}
