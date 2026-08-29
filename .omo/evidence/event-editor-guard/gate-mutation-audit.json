@@ -1,0 +1,212 @@
+{
+ "total": 6,
+ "applied": 6,
+ "caught": 6,
+ "results": [
+  {
+   "name": "commit-배선-삭제",
+   "hole": "구멍 1 — 컨트롤은 남고 배선만 죽는다 (표면 스냅샷으로는 안 보인다)",
+   "applied": true,
+   "verdicts": {
+    "commit": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "text: ★ 커밋 배선이 죽었다(1건, text): event-command-text-auto-advance — 컨트롤은 남아 있고 조작해도 아무 액션도 불리지 않는다: expected [ '하한선 미달: text.commitCount 3 < 4' ] to deeply equal []",
+      "text: ★ 커밋 배선이 죽었다(1건, text): event-command-text-auto-advance — 컨트롤은 남아 있고 조작해도 아무 액션도 불리지 않는다: expected [ '하한선 미달: text.commitCount 3 < 4' ] to deeply equal []",
+      "+   \"text :: event-command-text-auto-advance\","
+     ],
+     "detail": [
+      "× 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다 26ms",
+      "→ [커밋 프로브] 하한선 위반",
+      "하한선 미달: text.commitCount 3 < 4",
+      "── 함께 관측된 표면 변화 1건 (원인은 여기 있다) ──",
+      "text: ★ 커밋 배선이 죽었다(1건, text): event-command-text-auto-advance — 컨트롤은 남아 있고 조작해도 아무 액션도 불리지 않는다: expected [ '하한선 미달: text.commitCount 3 < 4' ] to deeply equal []",
+      "× no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다 4ms",
+      "→ 무커밋 컨트롤이 새로 생겼다 — 커밋 배선이 죽었는지 확인하고, 의도적이면 test/fixtures/commitProbeNoCommitAllowlist.json 의 intentional 에 근거와 함께 추가하라: expected [ Array(1) ] to deeply equal []",
+      "Test Files  1 failed (1)",
+      "Tests  2 failed | 11 passed (13)",
+      "Start at  02:55:46",
+      "Duration  9.25s (transform 5.49s, setup 0ms, collect 8.45s, tests 79ms, environment 0ms, prepare 162ms)",
+      "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+     ]
+    }
+   },
+   "caught": true
+  },
+  {
+   "name": "choices-분기-소실",
+   "hole": "구멍 2 — 선택지 안의 명령이 통째로 날아간다 (사용자 데이터 파괴)",
+   "applied": true,
+   "verdicts": {
+    "commit": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "× 분기 보존 하드 계약 > 1층: 어떤 컨트롤을 조작해도 분기 구조(길이·kind 시퀀스)가 그대로다 24ms",
+      "→ 분기 구조가 깨진 커밋 8건: expected [ …(8) ] to deeply equal []",
+      "× 분기 보존 하드 계약 > 2층: 분기 편집기가 아닌 컨트롤은 분기 내용을 바꾸지 않는다 12ms",
+      "→ 분기 편집기가 아닌데 분기를 바꾼 커밋 16건: expected [ …(16) ] to deeply equal []"
+     ],
+     "detail": [
+      "× 분기 보존 하드 계약 > 1층: 어떤 컨트롤을 조작해도 분기 구조(길이·kind 시퀀스)가 그대로다 24ms",
+      "→ 분기 구조가 깨진 커밋 8건: expected [ …(8) ] to deeply equal []",
+      "× 분기 보존 하드 계약 > 2층: 분기 편집기가 아닌 컨트롤은 분기 내용을 바꾸지 않는다 12ms",
+      "→ 분기 편집기가 아닌데 분기를 바꾼 커밋 16건: expected [ …(16) ] to deeply equal []",
+      "Test Files  1 failed (1)",
+      "Tests  2 failed | 11 passed (13)",
+      "Start at  02:55:56",
+      "Duration  11.02s (transform 6.47s, setup 0ms, collect 10.10s, tests 60ms, environment 0ms, prepare 179ms)",
+      "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > 분기 보존 하드 계약 > 1층: 어떤 컨트롤을 조작해도 분기 구조(길이·kind 시퀀스)가 그대로다",
+      "AssertionError: 분기 구조가 깨진 커밋 8건: expected [ …(8) ] to deeply equal []",
+      "- Expected"
+     ]
+    }
+   },
+   "caught": true
+  },
+  {
+   "name": "showPicture-xy-뒤바꿈",
+   "hole": "구멍 3 — 값이 엉뚱한 필드로 저장된다 (컨트롤 수·클래스는 그대로다)",
+   "applied": true,
+   "verdicts": {
+    "commit": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "showPicture: 값 변경 show-picture-x-input: replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":7343,\"y\":0} → replaceComma",
+      "showPicture: 값 변경 show-picture-x-input: replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":7343,\"y\":0} → replaceComma",
+      "+   \"showPicture: 값 변경 show-picture-x-input: replaceCommand {\\\"durationMs\\\":0,\\\"kind\\\":\\\"showPicture\\\",\\\"opacity\\\":255,\\\"pictureId\\\":\\\"pic1\\\",\\\"resourceId\\\":\\\"res1\\\",\\\"rotation\\\":0,\\\"scale\\\":100,\\\"x\\\""
+     ],
+     "detail": [
+      "× 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다 24ms",
+      "→ [커밋 프로브] 표면이 기준선과 다르다 (1건)",
+      "showPicture: 값 변경 show-picture-x-input: replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":7343,\"y\":0} → replaceComma",
+      "Test Files  1 failed (1)",
+      "Tests  1 failed | 12 passed (13)",
+      "Start at  02:56:08",
+      "Duration  11.74s (transform 6.89s, setup 0ms, collect 10.66s, tests 54ms, environment 1ms, prepare 205ms)",
+      "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "AssertionError: [커밋 프로브] 표면이 기준선과 다르다 (1건)",
+      "showPicture: 값 변경 show-picture-x-input: replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":7343,\"y\":0} → replaceComma",
+      "- Expected"
+     ]
+    }
+   },
+   "caught": true
+  },
+  {
+   "name": "syncVisibility-초기호출-누락",
+   "hole": "구멍 4 — hidden/disabled 상태를 아무도 안 본다",
+   "applied": true,
+   "verdicts": {
+    "form": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "setVariable: 컨트롤 값 변경 2개 [event-command-variable-operand>select#0: select{hidden}→select{}, event-variable-picker-open~2: button{hidden}→button{}]: expected [ Array(1) ] to deeply equal []",
+      "setVariable: 컨트롤 값 변경 2개 [event-command-variable-operand>select#0: select{hidden}→select{}, event-variable-picker-open~2: button{hidden}→button{}]: expected [ Array(1) ] to deeply equal []",
+      "+   \"setVariable: 컨트롤 값 변경 2개 [event-command-variable-operand>select#0: select{hidden}→select{}, event-variable-picker-open~2: button{hidden}→button{}]\","
+     ],
+     "detail": [
+      "× 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다 22ms",
+      "→ [폼(kind)] 표면이 기준선과 다르다 (1건)",
+      "setVariable: 컨트롤 값 변경 2개 [event-command-variable-operand>select#0: select{hidden}→select{}, event-variable-picker-open~2: button{hidden}→button{}]: expected [ Array(1) ] to deeply equal []",
+      "Test Files  1 failed (1)",
+      "Tests  1 failed | 6 passed (7)",
+      "Start at  02:56:20",
+      "Duration  17.64s (transform 6.31s, setup 0ms, collect 15.32s, tests 880ms, environment 408ms, prepare 173ms)",
+      "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+      "FAIL  test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "AssertionError: [폼(kind)] 표면이 기준선과 다르다 (1건)",
+      "setVariable: 컨트롤 값 변경 2개 [event-command-variable-operand>select#0: select{hidden}→select{}, event-variable-picker-open~2: button{hidden}→button{}]: expected [ Array(1) ] to deeply equal []",
+      "- Expected"
+     ]
+    }
+   },
+   "caught": true
+  },
+  {
+   "name": "details-div-후처리-무력화",
+   "hole": "구멍 5 — ::details-content 회피 후처리가 조용히 죽는다 (셸 하한선이 비지 않았음을 증명)",
+   "applied": true,
+   "verdicts": {
+    "shell": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "× 이벤트에디터 셸 표면 스냅샷 > details→div 후처리가 실제로 발동한다 15ms",
+      "→ page1: event-collapsible-section/event-character-social-extras/event-character-social-advanced 중 details 로 남은 노드가 있다 — 후처리가 일부를 놓쳤다: expected 2 to be +0 // Object.is equality",
+      "하한선 미달: page1.detailsConverted 2 < 4",
+      "하한선 미달: page2.detailsConverted 2 < 4"
+     ],
+     "detail": [
+      "× 이벤트에디터 셸 표면 스냅샷 > details→div 후처리가 실제로 발동한다 15ms",
+      "→ page1: event-collapsible-section/event-character-social-extras/event-character-social-advanced 중 details 로 남은 노드가 있다 — 후처리가 일부를 놓쳤다: expected 2 to be +0 // Object.is equality",
+      "× 이벤트에디터 셸 표면 스냅샷 > 기준선과 일치한다 11ms",
+      "→ [셸] 하한선 위반",
+      "하한선 미달: page1.detailsConverted 2 < 4",
+      "하한선 미달: page2.detailsConverted 2 < 4",
+      "── 함께 관측된 표면 변화 2건 (원인은 여기 있다) ──",
+      "page1: 태그 details 7→9 | 태그 div 127→125 | tagByTestid 변경 2건 [event-character-social-advanced div→details, event-character-social-extras div→details] | detailsConverted 4→2 | detailsUnconverted 0→2",
+      "page2: 태그 details 7→9 | 태그 div 194→192 | tagByTestid 변경 2건 [event-character-social-advanced div→details, event-character-social-extras div→details] | detailsConverted 4→2 | detailsUnconverted 0→2: exp",
+      "Test Files  1 failed (1)",
+      "Tests  2 failed | 19 passed (21)",
+      "Start at  02:56:39"
+     ]
+    }
+   },
+   "caught": true
+  },
+  {
+   "name": "포털-is-favorite-소실",
+   "hole": "구멍 6 — 특정 상태에서만 붙는 클래스가 사라진다 (기본 상태 렌더로는 안 보인다)",
+   "applied": true,
+   "verdicts": {
+    "portal": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "commandPickerFavorites: 클래스 소실 1종: is-favorite | classCount 31→30: expected [ Array(1) ] to deeply equal []",
+      "commandPickerFavorites: 클래스 소실 1종: is-favorite | classCount 31→30: expected [ Array(1) ] to deeply equal []"
+     ],
+     "detail": [
+      "× 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다 19ms",
+      "→ [포털(피커/모달)] 하한선 위반",
+      "하한선 미달: commandPickerFavorites.classCount 30 < 31",
+      "── 함께 관측된 표면 변화 1건 (원인은 여기 있다) ──",
+      "commandPickerFavorites: 클래스 소실 1종: is-favorite | classCount 31→30: expected [ Array(1) ] to deeply equal []",
+      "Test Files  1 failed (1)",
+      "Tests  1 failed | 14 passed (15)",
+      "Start at  02:56:56",
+      "Duration  11.52s (transform 5.71s, setup 0ms, collect 9.23s, tests 1.06s, environment 371ms, prepare 142ms)",
+      "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+      "FAIL  test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다",
+      "AssertionError: [포털(피커/모달)] 하한선 위반"
+     ]
+    }
+   },
+   "caught": true
+  }
+ ]
+}

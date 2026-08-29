@@ -1,0 +1,6677 @@
+{
+ "m2-014-change-parameters": {
+  "testids": [
+   "change-parameters-actor-field",
+   "change-parameters-actor-select",
+   "change-parameters-actor-select-card",
+   "change-parameters-command-body",
+   "change-parameters-intent",
+   "change-parameters-number-field",
+   "change-parameters-operation",
+   "change-parameters-operation-segment-add",
+   "change-parameters-operation-segment-remove",
+   "change-parameters-operation-segment-set",
+   "change-parameters-param-agility",
+   "change-parameters-param-attack",
+   "change-parameters-param-chips",
+   "change-parameters-param-defense",
+   "change-parameters-param-maxHp",
+   "change-parameters-param-maxMp",
+   "change-parameters-param-mind",
+   "change-parameters-preview",
+   "change-parameters-target-mode",
+   "change-parameters-target-mode-segment-actor",
+   "change-parameters-target-mode-segment-party",
+   "change-parameters-value-input",
+   "change-parameters-value-source",
+   "change-parameters-value-source-segment-number",
+   "change-parameters-value-source-segment-variable",
+   "change-parameters-value-variable",
+   "change-parameters-variable-field",
+   "event-command-edit-summary",
+   "event-variable-picker-open"
+  ],
+  "classes": [
+   "actor-m2-chip",
+   "actor-m2-chip-grid",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-command-body",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "change-parameters-layout",
+   "change-parameters-main",
+   "change-parameters-param-chips",
+   "change-parameters-preview",
+   "cream-command-form-head",
+   "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "is-active",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected",
+   "small"
+  ],
+  "controls": {
+   "change-parameters-actor-select": "select{hidden}",
+   "change-parameters-operation": "select{hidden}",
+   "change-parameters-operation-segment-add": "button{}",
+   "change-parameters-operation-segment-remove": "button{}",
+   "change-parameters-operation-segment-set": "button{}",
+   "change-parameters-param-agility": "button{}",
+   "change-parameters-param-attack": "button{}",
+   "change-parameters-param-defense": "button{}",
+   "change-parameters-param-maxHp": "button{}",
+   "change-parameters-param-maxMp": "button{}",
+   "change-parameters-param-mind": "button{}",
+   "change-parameters-target-mode": "select{hidden}",
+   "change-parameters-target-mode-segment-actor": "button{}",
+   "change-parameters-target-mode-segment-party": "button{}",
+   "change-parameters-value-input": "input[number]{}",
+   "change-parameters-value-source": "select{hidden}",
+   "change-parameters-value-source-segment-number": "button{}",
+   "change-parameters-value-source-segment-variable": "button{}",
+   "change-parameters-value-variable>select#0": "select{hidden}",
+   "event-variable-picker-open": "button{hidden}"
+  },
+  "selectOptions": {
+   "change-parameters-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "change-parameters-operation": [
+    "add",
+    "remove",
+    "set"
+   ],
+   "change-parameters-target-mode": [
+    "party",
+    "actor"
+   ],
+   "change-parameters-value-source": [
+    "number",
+    "variable"
+   ],
+   "change-parameters-value-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "−",
+   "공격",
+   "민첩",
+   "방어",
+   "변수",
+   "숫자",
+   "정신",
+   "주인공",
+   "최대 HP",
+   "최대 MP",
+   "파티 전체",
+   "＋",
+   "＝"
+  ],
+  "tags": {
+   "button": 14,
+   "div": 23,
+   "input": 1,
+   "option": 32,
+   "p": 3,
+   "select": 5,
+   "span": 8
+  },
+  "tagByTestid": {
+   "change-parameters-actor-field": "div",
+   "change-parameters-actor-select": "select",
+   "change-parameters-actor-select-card": "span",
+   "change-parameters-command-body": "div",
+   "change-parameters-intent": "div",
+   "change-parameters-number-field": "div",
+   "change-parameters-operation": "select",
+   "change-parameters-operation-segment-add": "button",
+   "change-parameters-operation-segment-remove": "button",
+   "change-parameters-operation-segment-set": "button",
+   "change-parameters-param-agility": "button",
+   "change-parameters-param-attack": "button",
+   "change-parameters-param-chips": "div",
+   "change-parameters-param-defense": "button",
+   "change-parameters-param-maxHp": "button",
+   "change-parameters-param-maxMp": "button",
+   "change-parameters-param-mind": "button",
+   "change-parameters-preview": "div",
+   "change-parameters-target-mode": "select",
+   "change-parameters-target-mode-segment-actor": "button",
+   "change-parameters-target-mode-segment-party": "button",
+   "change-parameters-value-input": "input",
+   "change-parameters-value-source": "select",
+   "change-parameters-value-source-segment-number": "button",
+   "change-parameters-value-source-segment-variable": "button",
+   "change-parameters-value-variable": "span",
+   "change-parameters-variable-field": "div",
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button"
+  },
+  "texts": {
+   "change-parameters-intent": "능력치 변경최대 HP/MP·공격 등 영구 보정을 더하거나 줄이거나 이 값으로 바꿉니다. 값은 숫자 또는 변수.",
+   "change-parameters-preview": "파티 전체 · 최대 HP ＋#능력치 변경은 영구 보정입니다. 지금 체력이나 마력을 바로 채우려면 체력/마력 변경을 쓰세요.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 29,
+  "controlCount": 20
+ },
+ "m2-019-change-state": {
+  "testids": [
+   "change-state-actor-select",
+   "change-state-actor-select-card",
+   "change-state-chip-state_attack_up",
+   "change-state-chip-state_poison",
+   "change-state-chip-state_sleep",
+   "change-state-command-body",
+   "change-state-grid",
+   "change-state-intent",
+   "change-state-operation",
+   "change-state-operation-segment-add",
+   "change-state-operation-segment-remove",
+   "change-state-preview",
+   "change-state-state-select",
+   "change-state-target-mode",
+   "change-state-target-mode-segment-actor",
+   "change-state-target-mode-segment-party",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-chip",
+   "actor-m2-chip-grid",
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "is-active",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-browser-hidden-select",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected",
+   "small"
+  ],
+  "controls": {
+   "change-state-actor-select": "select{hidden}",
+   "change-state-chip-state_attack_up": "button{}",
+   "change-state-chip-state_poison": "button{}",
+   "change-state-chip-state_sleep": "button{}",
+   "change-state-operation": "select{hidden}",
+   "change-state-operation-segment-add": "button{}",
+   "change-state-operation-segment-remove": "button{}",
+   "change-state-state-select": "select{}",
+   "change-state-target-mode": "select{hidden}",
+   "change-state-target-mode-segment-actor": "button{}",
+   "change-state-target-mode-segment-party": "button{}"
+  },
+  "selectOptions": {
+   "change-state-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "change-state-operation": [
+    "add",
+    "remove"
+   ],
+   "change-state-state-select": [
+    "",
+    "state_poison",
+    "state_sleep",
+    "state_attack_up"
+   ],
+   "change-state-target-mode": [
+    "party",
+    "actor"
+   ]
+  },
+  "labels": [
+   "공격 상승",
+   "독",
+   "부여",
+   "수면",
+   "주인공",
+   "파티 전체",
+   "해제"
+  ],
+  "tags": {
+   "button": 7,
+   "div": 17,
+   "option": 12,
+   "p": 3,
+   "select": 4,
+   "span": 6
+  },
+  "tagByTestid": {
+   "change-state-actor-select": "select",
+   "change-state-actor-select-card": "span",
+   "change-state-chip-state_attack_up": "button",
+   "change-state-chip-state_poison": "button",
+   "change-state-chip-state_sleep": "button",
+   "change-state-command-body": "div",
+   "change-state-grid": "div",
+   "change-state-intent": "div",
+   "change-state-operation": "select",
+   "change-state-operation-segment-add": "button",
+   "change-state-operation-segment-remove": "button",
+   "change-state-preview": "div",
+   "change-state-state-select": "select",
+   "change-state-target-mode": "select",
+   "change-state-target-mode-segment-actor": "button",
+   "change-state-target-mode-segment-party": "button",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-state-intent": "상태 변경상태 이상을 부여하거나 해제합니다.",
+   "change-state-preview": "파티 전체 · 독 부여독·수면 같은 상태 이상을 붙이거나 뗍니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 17,
+  "controlCount": 11
+ },
+ "m2-021-damage-processing": {
+  "testids": [
+   "damage-processing-actor-select",
+   "damage-processing-actor-select-card",
+   "damage-processing-command-body",
+   "damage-processing-intent",
+   "damage-processing-number-field",
+   "damage-processing-operation",
+   "damage-processing-operation-segment-add",
+   "damage-processing-operation-segment-remove",
+   "damage-processing-preset-10",
+   "damage-processing-preset-100",
+   "damage-processing-preset-25",
+   "damage-processing-preset-50",
+   "damage-processing-presets",
+   "damage-processing-preview",
+   "damage-processing-target-mode",
+   "damage-processing-target-mode-segment-actor",
+   "damage-processing-target-mode-segment-party",
+   "damage-processing-value-input",
+   "damage-processing-value-source",
+   "damage-processing-value-source-segment-number",
+   "damage-processing-value-source-segment-variable",
+   "damage-processing-value-variable",
+   "damage-processing-variable-field",
+   "event-command-edit-summary",
+   "event-variable-picker-open"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-presets",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected",
+   "small"
+  ],
+  "controls": {
+   "damage-processing-actor-select": "select{hidden}",
+   "damage-processing-operation": "select{hidden}",
+   "damage-processing-operation-segment-add": "button{}",
+   "damage-processing-operation-segment-remove": "button{}",
+   "damage-processing-preset-10": "button{}",
+   "damage-processing-preset-100": "button{}",
+   "damage-processing-preset-25": "button{}",
+   "damage-processing-preset-50": "button{}",
+   "damage-processing-target-mode": "select{hidden}",
+   "damage-processing-target-mode-segment-actor": "button{}",
+   "damage-processing-target-mode-segment-party": "button{}",
+   "damage-processing-value-input": "input[number]{}",
+   "damage-processing-value-source": "select{hidden}",
+   "damage-processing-value-source-segment-number": "button{}",
+   "damage-processing-value-source-segment-variable": "button{}",
+   "damage-processing-value-variable>select#0": "select{hidden}",
+   "event-variable-picker-open": "button{hidden}"
+  },
+  "selectOptions": {
+   "damage-processing-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "damage-processing-operation": [
+    "add",
+    "remove"
+   ],
+   "damage-processing-target-mode": [
+    "party",
+    "actor"
+   ],
+   "damage-processing-value-source": [
+    "number",
+    "variable"
+   ],
+   "damage-processing-value-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "10",
+   "100",
+   "25",
+   "50",
+   "데미지",
+   "변수",
+   "숫자",
+   "주인공",
+   "파티 전체",
+   "회복"
+  ],
+  "tags": {
+   "button": 11,
+   "div": 23,
+   "input": 1,
+   "option": 31,
+   "p": 3,
+   "select": 5,
+   "span": 8
+  },
+  "tagByTestid": {
+   "damage-processing-actor-select": "select",
+   "damage-processing-actor-select-card": "span",
+   "damage-processing-command-body": "div",
+   "damage-processing-intent": "div",
+   "damage-processing-number-field": "div",
+   "damage-processing-operation": "select",
+   "damage-processing-operation-segment-add": "button",
+   "damage-processing-operation-segment-remove": "button",
+   "damage-processing-preset-10": "button",
+   "damage-processing-preset-100": "button",
+   "damage-processing-preset-25": "button",
+   "damage-processing-preset-50": "button",
+   "damage-processing-presets": "div",
+   "damage-processing-preview": "div",
+   "damage-processing-target-mode": "select",
+   "damage-processing-target-mode-segment-actor": "button",
+   "damage-processing-target-mode-segment-party": "button",
+   "damage-processing-value-input": "input",
+   "damage-processing-value-source": "select",
+   "damage-processing-value-source-segment-number": "button",
+   "damage-processing-value-source-segment-variable": "button",
+   "damage-processing-value-variable": "span",
+   "damage-processing-variable-field": "div",
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button"
+  },
+  "texts": {
+   "damage-processing-intent": "데미지현재 HP를 깎거나 회복합니다. 숫자 고정값 또는 변수 값을 쓸 수 있습니다.",
+   "damage-processing-preview": "파티 전체 · HP 데미지 #현재 HP에 즉시 반영됩니다. 변수로 정하면 그때의 변수 값을 씁니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 25,
+  "controlCount": 17
+ },
+ "m2-022-change-actor-name": {
+  "testids": [
+   "change-actor-name-actor-select",
+   "change-actor-name-actor-select-card",
+   "change-actor-name-command-body",
+   "change-actor-name-intent",
+   "change-actor-name-preview",
+   "change-actor-name-value-input",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-actor",
+   "actor-m2-preview-copy",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "actor-m2-text-input",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "change-actor-name-actor-select": "select{}",
+   "change-actor-name-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "change-actor-name-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 14,
+   "input": 1,
+   "option": 4,
+   "p": 3,
+   "select": 1,
+   "span": 5
+  },
+  "tagByTestid": {
+   "change-actor-name-actor-select": "select",
+   "change-actor-name-actor-select-card": "span",
+   "change-actor-name-command-body": "div",
+   "change-actor-name-intent": "div",
+   "change-actor-name-preview": "div",
+   "change-actor-name-value-input": "input",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-actor-name-intent": "주인공 이름 변경선택한 주인공의 표시 이름을 바꿉니다.",
+   "change-actor-name-preview": "—주인공 선택 · (이름 비움)대화와 메뉴에 보이는 이름에 반영됩니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 2
+ },
+ "m2-023-change-actor-nickname": {
+  "testids": [
+   "change-actor-nickname-actor-select",
+   "change-actor-nickname-actor-select-card",
+   "change-actor-nickname-command-body",
+   "change-actor-nickname-intent",
+   "change-actor-nickname-preview",
+   "change-actor-nickname-value-input",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-actor",
+   "actor-m2-preview-copy",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "actor-m2-text-input",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "change-actor-nickname-actor-select": "select{}",
+   "change-actor-nickname-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "change-actor-nickname-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 14,
+   "input": 1,
+   "option": 4,
+   "p": 3,
+   "select": 1,
+   "span": 5
+  },
+  "tagByTestid": {
+   "change-actor-nickname-actor-select": "select",
+   "change-actor-nickname-actor-select-card": "span",
+   "change-actor-nickname-command-body": "div",
+   "change-actor-nickname-intent": "div",
+   "change-actor-nickname-preview": "div",
+   "change-actor-nickname-value-input": "input",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-actor-nickname-intent": "주인공 별명 변경선택한 주인공의 별명을 바꿉니다.",
+   "change-actor-nickname-preview": "—주인공 선택 · (별명 비움)별명은 상태 창·일부 대화 치환에 쓰입니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 2
+ },
+ "m2-024-change-actor-graphic": {
+  "testids": [
+   "change-actor-graphic-actor-select",
+   "change-actor-graphic-actor-select-card",
+   "change-actor-graphic-command-body",
+   "change-actor-graphic-intent",
+   "change-actor-graphic-preview",
+   "change-actor-graphic-resource-picker",
+   "change-actor-graphic-resource-select",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-inline",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-actor",
+   "actor-m2-preview-copy",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial",
+   "small"
+  ],
+  "controls": {
+   "change-actor-graphic-actor-select": "select{}",
+   "change-actor-graphic-resource-picker": "button{}",
+   "change-actor-graphic-resource-select": "select{}"
+  },
+  "selectOptions": {
+   "change-actor-graphic-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "change-actor-graphic-resource-select": [
+    "",
+    "tex_easyrpg_charset_actor1",
+    "tex_easyrpg_charset_actor2",
+    "tex_easyrpg_charset_actor3"
+   ]
+  },
+  "labels": [
+   "그림 고르기…"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 15,
+   "option": 8,
+   "p": 3,
+   "select": 2,
+   "span": 5
+  },
+  "tagByTestid": {
+   "change-actor-graphic-actor-select": "select",
+   "change-actor-graphic-actor-select-card": "span",
+   "change-actor-graphic-command-body": "div",
+   "change-actor-graphic-intent": "div",
+   "change-actor-graphic-preview": "div",
+   "change-actor-graphic-resource-picker": "button",
+   "change-actor-graphic-resource-select": "select",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-actor-graphic-intent": "주인공 모습 변경맵에서 보이는 모습을 바꿉니다.",
+   "change-actor-graphic-preview": "선주인공 선택 · (선택 없음)맵에서 보이는 모습을 바꿉니다. 대화 얼굴과는 별개입니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 8,
+  "controlCount": 3
+ },
+ "m2-025-change-actor-faceset": {
+  "testids": [
+   "change-actor-faceset-actor-select",
+   "change-actor-faceset-actor-select-card",
+   "change-actor-faceset-command-body",
+   "change-actor-faceset-face-grid",
+   "change-actor-faceset-face-preview",
+   "change-actor-faceset-intent",
+   "change-actor-faceset-preview",
+   "change-actor-faceset-resource-picker",
+   "change-actor-faceset-resource-select",
+   "event-command-edit-summary",
+   "event-command-face-crop",
+   "event-command-face-gallery",
+   "event-command-face-option-easyrpg-faceset-actor1-00",
+   "event-command-face-option-easyrpg-faceset-actor1-01",
+   "event-command-face-option-easyrpg-faceset-actor1-02",
+   "event-command-face-option-easyrpg-faceset-actor1-03",
+   "event-command-face-option-easyrpg-faceset-actor1-04",
+   "event-command-face-option-easyrpg-faceset-actor1-05",
+   "event-command-face-option-easyrpg-faceset-actor1-06",
+   "event-command-face-option-easyrpg-faceset-actor1-07",
+   "event-command-face-option-easyrpg-faceset-actor1-08",
+   "event-command-face-option-easyrpg-faceset-actor1-09",
+   "event-command-face-option-easyrpg-faceset-actor1-10",
+   "event-command-face-option-easyrpg-faceset-actor1-11",
+   "event-command-face-option-easyrpg-faceset-actor1-12",
+   "event-command-face-option-easyrpg-faceset-actor1-13",
+   "event-command-face-option-easyrpg-faceset-actor1-14",
+   "event-command-face-option-easyrpg-faceset-actor1-15",
+   "event-command-face-option-easyrpg-faceset-actor2-00",
+   "event-command-face-option-easyrpg-faceset-actor2-01",
+   "event-command-face-option-easyrpg-faceset-actor2-02",
+   "event-command-face-option-easyrpg-faceset-actor2-03",
+   "event-command-face-option-easyrpg-faceset-actor2-04",
+   "event-command-face-option-easyrpg-faceset-actor2-05",
+   "event-command-face-option-easyrpg-faceset-actor2-06",
+   "event-command-face-option-easyrpg-faceset-actor2-07",
+   "event-command-face-option-easyrpg-faceset-actor2-08",
+   "event-command-face-option-easyrpg-faceset-actor2-09",
+   "event-command-face-option-easyrpg-faceset-actor2-10",
+   "event-command-face-option-easyrpg-faceset-actor2-11",
+   "event-command-face-option-easyrpg-faceset-actor2-12",
+   "event-command-face-option-easyrpg-faceset-actor2-13",
+   "event-command-face-option-easyrpg-faceset-actor2-14",
+   "event-command-face-option-easyrpg-faceset-actor2-15",
+   "event-command-face-option-easyrpg-faceset-monster-00",
+   "event-command-face-option-easyrpg-faceset-monster-01",
+   "event-command-face-option-easyrpg-faceset-monster-02",
+   "event-command-face-option-easyrpg-faceset-monster-03",
+   "event-command-face-option-easyrpg-faceset-monster-04",
+   "event-command-face-option-easyrpg-faceset-monster-05",
+   "event-command-face-option-easyrpg-faceset-monster-06",
+   "event-command-face-option-easyrpg-faceset-monster-07",
+   "event-command-face-option-easyrpg-faceset-monster-08",
+   "event-command-face-option-easyrpg-faceset-monster-09",
+   "event-command-face-option-easyrpg-faceset-monster-10",
+   "event-command-face-option-easyrpg-faceset-monster-11",
+   "event-command-face-option-easyrpg-faceset-monster-12",
+   "event-command-face-option-easyrpg-faceset-monster-13",
+   "event-command-face-option-easyrpg-faceset-monster-14",
+   "event-command-face-option-easyrpg-faceset-monster-15",
+   "event-command-face-option-easyrpg-faceset-people1-00",
+   "event-command-face-option-easyrpg-faceset-people1-01",
+   "event-command-face-option-easyrpg-faceset-people1-02",
+   "event-command-face-option-easyrpg-faceset-people1-03",
+   "event-command-face-option-easyrpg-faceset-people1-04",
+   "event-command-face-option-easyrpg-faceset-people1-05",
+   "event-command-face-option-easyrpg-faceset-people1-06",
+   "event-command-face-option-easyrpg-faceset-people1-07",
+   "event-command-face-option-easyrpg-faceset-people1-08",
+   "event-command-face-option-easyrpg-faceset-people1-09",
+   "event-command-face-option-easyrpg-faceset-people1-10",
+   "event-command-face-option-easyrpg-faceset-people1-11",
+   "event-command-face-option-easyrpg-faceset-people1-12",
+   "event-command-face-option-easyrpg-faceset-people1-13",
+   "event-command-face-option-easyrpg-faceset-people1-14",
+   "event-command-face-option-easyrpg-faceset-people1-15",
+   "event-command-face-option-easyrpg-faceset-people2-00",
+   "event-command-face-option-easyrpg-faceset-people2-01",
+   "event-command-face-option-easyrpg-faceset-people2-02",
+   "event-command-face-option-easyrpg-faceset-people2-03",
+   "event-command-face-option-easyrpg-faceset-people2-04",
+   "event-command-face-option-easyrpg-faceset-people2-05",
+   "event-command-face-option-easyrpg-faceset-people2-06",
+   "event-command-face-option-easyrpg-faceset-people2-07",
+   "event-command-face-option-easyrpg-faceset-people2-08",
+   "event-command-face-option-easyrpg-faceset-people2-09",
+   "event-command-face-option-easyrpg-faceset-people2-10",
+   "event-command-face-option-easyrpg-faceset-people2-11",
+   "event-command-face-option-easyrpg-faceset-people2-12",
+   "event-command-face-option-easyrpg-faceset-people2-13",
+   "event-command-face-option-easyrpg-faceset-people2-14",
+   "event-command-face-option-easyrpg-faceset-people2-15",
+   "event-command-face-option-generated-actor-hero-01-face-00",
+   "event-command-face-option-generated-actor-hero-01-face-01",
+   "event-command-face-option-generated-actor-hero-01-face-02",
+   "event-command-face-option-generated-actor-hero-01-face-03",
+   "event-command-face-option-generated-actor-hero-01-face-04",
+   "event-command-face-option-generated-actor-hero-01-face-05",
+   "event-command-face-option-generated-actor-hero-01-face-06",
+   "event-command-face-option-generated-actor-hero-01-face-07",
+   "event-command-face-option-generated-actor-hero-01-face-08",
+   "event-command-face-option-generated-actor-hero-01-face-09",
+   "event-command-face-option-generated-actor-hero-01-face-10",
+   "event-command-face-option-generated-actor-hero-01-face-11",
+   "event-command-face-option-generated-actor-hero-01-face-12",
+   "event-command-face-option-generated-actor-hero-01-face-13",
+   "event-command-face-option-generated-actor-hero-01-face-14",
+   "event-command-face-option-generated-actor-hero-01-face-15",
+   "event-command-face-option-generated-actor-hero-02-face-00",
+   "event-command-face-option-generated-actor-hero-02-face-01",
+   "event-command-face-option-generated-actor-hero-02-face-02",
+   "event-command-face-option-generated-actor-hero-02-face-03",
+   "event-command-face-option-generated-actor-hero-02-face-04",
+   "event-command-face-option-generated-actor-hero-02-face-05",
+   "event-command-face-option-generated-actor-hero-02-face-06",
+   "event-command-face-option-generated-actor-hero-02-face-07",
+   "event-command-face-option-generated-actor-hero-02-face-08",
+   "event-command-face-option-generated-actor-hero-02-face-09",
+   "event-command-face-option-generated-actor-hero-02-face-10",
+   "event-command-face-option-generated-actor-hero-02-face-11",
+   "event-command-face-option-generated-actor-hero-02-face-12",
+   "event-command-face-option-generated-actor-hero-02-face-13",
+   "event-command-face-option-generated-actor-hero-02-face-14",
+   "event-command-face-option-generated-actor-hero-02-face-15",
+   "event-command-face-option-generated-actor-hero-03-face",
+   "faceset-crop-sheet"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-faceset-gallery",
+   "actor-m2-faceset-preview",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-inline",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "event-command-face-crop",
+   "event-command-face-gallery",
+   "event-command-face-gallery-cell",
+   "faceset-crop-box",
+   "faceset-crop-sheet",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-preview-hint",
+   "rich-record-initial",
+   "small"
+  ],
+  "controls": {
+   "change-actor-faceset-actor-select": "select{}",
+   "change-actor-faceset-resource-picker": "button{}",
+   "change-actor-faceset-resource-select": "select{}",
+   "event-command-face-option-easyrpg-faceset-actor1-00": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-01": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-02": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-03": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-04": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-05": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-06": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-07": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-08": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-09": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-10": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-11": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-12": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-13": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-14": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor1-15": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-00": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-01": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-02": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-03": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-04": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-05": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-06": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-07": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-08": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-09": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-10": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-11": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-12": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-13": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-14": "button{}",
+   "event-command-face-option-easyrpg-faceset-actor2-15": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-00": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-01": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-02": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-03": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-04": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-05": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-06": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-07": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-08": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-09": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-10": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-11": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-12": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-13": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-14": "button{}",
+   "event-command-face-option-easyrpg-faceset-monster-15": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-00": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-01": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-02": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-03": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-04": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-05": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-06": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-07": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-08": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-09": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-10": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-11": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-12": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-13": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-14": "button{}",
+   "event-command-face-option-easyrpg-faceset-people1-15": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-00": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-01": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-02": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-03": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-04": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-05": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-06": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-07": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-08": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-09": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-10": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-11": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-12": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-13": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-14": "button{}",
+   "event-command-face-option-easyrpg-faceset-people2-15": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-00": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-01": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-02": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-03": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-04": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-05": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-06": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-07": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-08": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-09": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-10": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-11": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-12": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-13": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-14": "button{}",
+   "event-command-face-option-generated-actor-hero-01-face-15": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-00": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-01": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-02": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-03": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-04": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-05": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-06": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-07": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-08": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-09": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-10": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-11": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-12": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-13": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-14": "button{}",
+   "event-command-face-option-generated-actor-hero-02-face-15": "button{}",
+   "event-command-face-option-generated-actor-hero-03-face": "button{}"
+  },
+  "selectOptions": {
+   "change-actor-faceset-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "change-actor-faceset-resource-select": [
+    "",
+    "easyrpg-faceset-actor1-00",
+    "easyrpg-faceset-actor1-01",
+    "easyrpg-faceset-actor1-02"
+   ]
+  },
+  "labels": [
+   "그림 고르기…"
+  ],
+  "tags": {
+   "button": 114,
+   "div": 129,
+   "img": 113,
+   "option": 8,
+   "p": 3,
+   "select": 2,
+   "span": 5
+  },
+  "tagByTestid": {
+   "change-actor-faceset-actor-select": "select",
+   "change-actor-faceset-actor-select-card": "span",
+   "change-actor-faceset-command-body": "div",
+   "change-actor-faceset-face-grid": "div",
+   "change-actor-faceset-face-preview": "div",
+   "change-actor-faceset-intent": "div",
+   "change-actor-faceset-preview": "div",
+   "change-actor-faceset-resource-picker": "button",
+   "change-actor-faceset-resource-select": "select",
+   "event-command-edit-summary": "div",
+   "event-command-face-crop": "div",
+   "event-command-face-gallery": "div",
+   "event-command-face-option-easyrpg-faceset-actor1-00": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-01": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-02": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-03": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-04": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-05": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-06": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-07": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-08": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-09": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-10": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-11": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-12": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-13": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-14": "button",
+   "event-command-face-option-easyrpg-faceset-actor1-15": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-00": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-01": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-02": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-03": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-04": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-05": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-06": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-07": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-08": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-09": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-10": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-11": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-12": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-13": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-14": "button",
+   "event-command-face-option-easyrpg-faceset-actor2-15": "button",
+   "event-command-face-option-easyrpg-faceset-monster-00": "button",
+   "event-command-face-option-easyrpg-faceset-monster-01": "button",
+   "event-command-face-option-easyrpg-faceset-monster-02": "button",
+   "event-command-face-option-easyrpg-faceset-monster-03": "button",
+   "event-command-face-option-easyrpg-faceset-monster-04": "button",
+   "event-command-face-option-easyrpg-faceset-monster-05": "button",
+   "event-command-face-option-easyrpg-faceset-monster-06": "button",
+   "event-command-face-option-easyrpg-faceset-monster-07": "button",
+   "event-command-face-option-easyrpg-faceset-monster-08": "button",
+   "event-command-face-option-easyrpg-faceset-monster-09": "button",
+   "event-command-face-option-easyrpg-faceset-monster-10": "button",
+   "event-command-face-option-easyrpg-faceset-monster-11": "button",
+   "event-command-face-option-easyrpg-faceset-monster-12": "button",
+   "event-command-face-option-easyrpg-faceset-monster-13": "button",
+   "event-command-face-option-easyrpg-faceset-monster-14": "button",
+   "event-command-face-option-easyrpg-faceset-monster-15": "button",
+   "event-command-face-option-easyrpg-faceset-people1-00": "button",
+   "event-command-face-option-easyrpg-faceset-people1-01": "button",
+   "event-command-face-option-easyrpg-faceset-people1-02": "button",
+   "event-command-face-option-easyrpg-faceset-people1-03": "button",
+   "event-command-face-option-easyrpg-faceset-people1-04": "button",
+   "event-command-face-option-easyrpg-faceset-people1-05": "button",
+   "event-command-face-option-easyrpg-faceset-people1-06": "button",
+   "event-command-face-option-easyrpg-faceset-people1-07": "button",
+   "event-command-face-option-easyrpg-faceset-people1-08": "button",
+   "event-command-face-option-easyrpg-faceset-people1-09": "button",
+   "event-command-face-option-easyrpg-faceset-people1-10": "button",
+   "event-command-face-option-easyrpg-faceset-people1-11": "button",
+   "event-command-face-option-easyrpg-faceset-people1-12": "button",
+   "event-command-face-option-easyrpg-faceset-people1-13": "button",
+   "event-command-face-option-easyrpg-faceset-people1-14": "button",
+   "event-command-face-option-easyrpg-faceset-people1-15": "button",
+   "event-command-face-option-easyrpg-faceset-people2-00": "button",
+   "event-command-face-option-easyrpg-faceset-people2-01": "button",
+   "event-command-face-option-easyrpg-faceset-people2-02": "button",
+   "event-command-face-option-easyrpg-faceset-people2-03": "button",
+   "event-command-face-option-easyrpg-faceset-people2-04": "button",
+   "event-command-face-option-easyrpg-faceset-people2-05": "button",
+   "event-command-face-option-easyrpg-faceset-people2-06": "button",
+   "event-command-face-option-easyrpg-faceset-people2-07": "button",
+   "event-command-face-option-easyrpg-faceset-people2-08": "button",
+   "event-command-face-option-easyrpg-faceset-people2-09": "button",
+   "event-command-face-option-easyrpg-faceset-people2-10": "button",
+   "event-command-face-option-easyrpg-faceset-people2-11": "button",
+   "event-command-face-option-easyrpg-faceset-people2-12": "button",
+   "event-command-face-option-easyrpg-faceset-people2-13": "button",
+   "event-command-face-option-easyrpg-faceset-people2-14": "button",
+   "event-command-face-option-easyrpg-faceset-people2-15": "button",
+   "event-command-face-option-generated-actor-hero-01-face-00": "button",
+   "event-command-face-option-generated-actor-hero-01-face-01": "button",
+   "event-command-face-option-generated-actor-hero-01-face-02": "button",
+   "event-command-face-option-generated-actor-hero-01-face-03": "button",
+   "event-command-face-option-generated-actor-hero-01-face-04": "button",
+   "event-command-face-option-generated-actor-hero-01-face-05": "button",
+   "event-command-face-option-generated-actor-hero-01-face-06": "button",
+   "event-command-face-option-generated-actor-hero-01-face-07": "button",
+   "event-command-face-option-generated-actor-hero-01-face-08": "button",
+   "event-command-face-option-generated-actor-hero-01-face-09": "button",
+   "event-command-face-option-generated-actor-hero-01-face-10": "button",
+   "event-command-face-option-generated-actor-hero-01-face-11": "button",
+   "event-command-face-option-generated-actor-hero-01-face-12": "button",
+   "event-command-face-option-generated-actor-hero-01-face-13": "button",
+   "event-command-face-option-generated-actor-hero-01-face-14": "button",
+   "event-command-face-option-generated-actor-hero-01-face-15": "button",
+   "event-command-face-option-generated-actor-hero-02-face-00": "button",
+   "event-command-face-option-generated-actor-hero-02-face-01": "button",
+   "event-command-face-option-generated-actor-hero-02-face-02": "button",
+   "event-command-face-option-generated-actor-hero-02-face-03": "button",
+   "event-command-face-option-generated-actor-hero-02-face-04": "button",
+   "event-command-face-option-generated-actor-hero-02-face-05": "button",
+   "event-command-face-option-generated-actor-hero-02-face-06": "button",
+   "event-command-face-option-generated-actor-hero-02-face-07": "button",
+   "event-command-face-option-generated-actor-hero-02-face-08": "button",
+   "event-command-face-option-generated-actor-hero-02-face-09": "button",
+   "event-command-face-option-generated-actor-hero-02-face-10": "button",
+   "event-command-face-option-generated-actor-hero-02-face-11": "button",
+   "event-command-face-option-generated-actor-hero-02-face-12": "button",
+   "event-command-face-option-generated-actor-hero-02-face-13": "button",
+   "event-command-face-option-generated-actor-hero-02-face-14": "button",
+   "event-command-face-option-generated-actor-hero-02-face-15": "button",
+   "event-command-face-option-generated-actor-hero-03-face": "button",
+   "faceset-crop-sheet": "img"
+  },
+  "texts": {
+   "change-actor-faceset-face-preview": "얼굴을 고르세요.",
+   "change-actor-faceset-intent": "주인공 얼굴 변경대화와 메뉴에 쓰이는 얼굴을 바꿉니다.",
+   "change-actor-faceset-preview": "주인공 선택 · (선택 없음)얼굴 그림 한 장을 고르면 그 얼굴이 저장됩니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 126,
+  "controlCount": 116
+ },
+ "m2-026-change-vehicle-graphic": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-026-change-vehicle-graphic",
+   "m2-command-operation-option-select",
+   "m2-command-target-option-select",
+   "m2-command-value-resource-picker",
+   "m2-command-value-resource-preview",
+   "m2-command-value-resource-selected-name"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-picker",
+   "m2-resource-preview",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-option-select": "select{}",
+   "m2-command-value-resource-picker": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ],
+   "m2-command-target-option-select": [
+    "boat",
+    "ship",
+    "airship"
+   ],
+   "m2-command-value-resource-picker": [
+    "",
+    "tex_easyrpg_charset_actor1",
+    "tex_easyrpg_charset_actor2",
+    "tex_easyrpg_charset_actor3"
+   ]
+  },
+  "labels": [
+   "모습",
+   "어떻게",
+   "탈것"
+  ],
+  "tags": {
+   "div": 11,
+   "label": 3,
+   "option": 11,
+   "select": 3
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-026-change-vehicle-graphic": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-option-select": "select",
+   "m2-command-value-resource-picker": "select",
+   "m2-command-value-resource-preview": "div",
+   "m2-command-value-resource-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-value-resource-preview": "그림을 고르세요"
+  },
+  "testidCount": 7,
+  "controlCount": 3
+ },
+ "m2-027-change-system-bgm": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-027-change-system-bgm",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name",
+   "m2-command-volume-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-audio-note",
+   "m2-resource-picker",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-resourceId-picker": "select{}",
+   "m2-command-volume-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-resourceId-picker": [
+    "",
+    "cc0-music-field-loop",
+    "cc0-bgm-field",
+    "cc0-bgm-town"
+   ]
+  },
+  "labels": [
+   "BGM",
+   "볼륨"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 2,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-027-change-system-bgm": "div",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div",
+   "m2-command-volume-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+  },
+  "testidCount": 6,
+  "controlCount": 2
+ },
+ "m2-028-change-system-se": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-028-change-system-se",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name",
+   "m2-command-volume-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-audio-note",
+   "m2-resource-picker",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-resourceId-picker": "select{}",
+   "m2-command-volume-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-resourceId-picker": [
+    "",
+    "cc0-sound-ui-confirm",
+    "easyrpg-sound-absorb1",
+    "easyrpg-sound-absorb2"
+   ]
+  },
+  "labels": [
+   "볼륨",
+   "효과음"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 2,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-028-change-system-se": "div",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div",
+   "m2-command-volume-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+  },
+  "testidCount": 6,
+  "controlCount": 2
+ },
+ "m2-029-change-system-graphic": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-029-change-system-graphic",
+   "m2-command-operation-option-select",
+   "m2-command-target-input",
+   "m2-command-value-resource-picker",
+   "m2-command-value-resource-preview",
+   "m2-command-value-resource-selected-name"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-picker",
+   "m2-resource-preview",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-value-resource-picker": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ],
+   "m2-command-value-resource-picker": [
+    "",
+    "easyrpg-system-royal",
+    "easyrpg-system-system",
+    "easyrpg-system-system-a",
+    "easyrpg-system2-system2-a",
+    "easyrpg-system2-system2-b",
+    "easyrpg-system2-system2-c"
+   ]
+  },
+  "labels": [
+   "누구에게",
+   "메뉴 모습",
+   "어떻게"
+  ],
+  "tags": {
+   "div": 11,
+   "input": 1,
+   "label": 3,
+   "option": 11,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-029-change-system-graphic": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-input": "input",
+   "m2-command-value-resource-picker": "select",
+   "m2-command-value-resource-preview": "div",
+   "m2-command-value-resource-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-value-resource-preview": "그림을 고르세요"
+  },
+  "testidCount": 7,
+  "controlCount": 3
+ },
+ "m2-030-change-screen-transition": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-030-change-screen-transition",
+   "m2-command-operation-option-select",
+   "m2-command-target-input",
+   "m2-command-value-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ]
+  },
+  "labels": [
+   "값",
+   "누구에게",
+   "어떻게"
+  ],
+  "tags": {
+   "div": 8,
+   "input": 2,
+   "label": 3,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-030-change-screen-transition": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-input": "input",
+   "m2-command-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 3
+ },
+ "m2-036-get-player-location": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "get-player-location-command-body",
+   "get-player-location-intent",
+   "get-player-location-preview",
+   "get-player-location-variable",
+   "get-player-location-variable-field"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "small"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{}",
+   "get-player-location-variable>select#0": "select{}"
+  },
+  "selectOptions": {
+   "get-player-location-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 10,
+   "option": 21,
+   "p": 3,
+   "select": 1,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "get-player-location-command-body": "div",
+   "get-player-location-intent": "div",
+   "get-player-location-preview": "div",
+   "get-player-location-variable": "span",
+   "get-player-location-variable-field": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "get-player-location-intent": "주인공 위치 얻기현재 맵과 좌표를 지정한 변수 묶음에 저장합니다.",
+   "get-player-location-preview": "주인공 위치 → 변수 (미선택)맵/X/Y를 각각 변수_map / 변수_x / 변수_y 에 기록합니다."
+  },
+  "testidCount": 7,
+  "controlCount": 2
+ },
+ "m2-037-move-to-variable-location": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "move-to-variable-location-command-body",
+   "move-to-variable-location-intent",
+   "move-to-variable-location-map-variable",
+   "move-to-variable-location-preview",
+   "move-to-variable-location-x-variable",
+   "move-to-variable-location-y-variable"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "small"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{}",
+   "event-variable-picker-open~2": "button{}",
+   "event-variable-picker-open~3": "button{}",
+   "move-to-variable-location-map-variable>select#0": "select{}",
+   "move-to-variable-location-x-variable>select#0": "select{}",
+   "move-to-variable-location-y-variable>select#0": "select{}"
+  },
+  "selectOptions": {
+   "move-to-variable-location-map-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ],
+   "move-to-variable-location-x-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ],
+   "move-to-variable-location-y-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)"
+  ],
+  "tags": {
+   "button": 3,
+   "div": 14,
+   "option": 63,
+   "p": 3,
+   "select": 3,
+   "span": 3
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "move-to-variable-location-command-body": "div",
+   "move-to-variable-location-intent": "div",
+   "move-to-variable-location-map-variable": "span",
+   "move-to-variable-location-preview": "div",
+   "move-to-variable-location-x-variable": "span",
+   "move-to-variable-location-y-variable": "span"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "move-to-variable-location-intent": "변수 위치로 이동맵/X/Y 변수에 담긴 좌표로 주인공을 이동시킵니다.",
+   "move-to-variable-location-preview": "변수 위치로 이동 · 맵 (미선택) / X (미선택) / Y (미선택)맵·좌표 변수 값을 읽어 주인공을 이동시킵니다."
+  },
+  "testidCount": 8,
+  "controlCount": 6
+ },
+ "m2-038-get-on-off-vehicle": {
+  "testids": [
+   "event-command-edit-summary",
+   "get-on-off-vehicle-command-body",
+   "get-on-off-vehicle-enabled",
+   "get-on-off-vehicle-enabled-segment-false",
+   "get-on-off-vehicle-enabled-segment-true",
+   "get-on-off-vehicle-intent",
+   "get-on-off-vehicle-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "get-on-off-vehicle-enabled": "select{hidden}",
+   "get-on-off-vehicle-enabled-segment-false": "button{}",
+   "get-on-off-vehicle-enabled-segment-true": "button{}"
+  },
+  "selectOptions": {
+   "get-on-off-vehicle-enabled": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "끄기",
+   "켜기"
+  ],
+  "tags": {
+   "button": 2,
+   "div": 10,
+   "option": 2,
+   "p": 3,
+   "select": 1,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "get-on-off-vehicle-command-body": "div",
+   "get-on-off-vehicle-enabled": "select",
+   "get-on-off-vehicle-enabled-segment-false": "button",
+   "get-on-off-vehicle-enabled-segment-true": "button",
+   "get-on-off-vehicle-intent": "div",
+   "get-on-off-vehicle-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "get-on-off-vehicle-intent": "탈것 승하차현재 타일 위 탈것에 타거나 내립니다.",
+   "get-on-off-vehicle-preview": "탈것 탑승현재 위치의 탈것에 타거나 내립니다."
+  },
+  "testidCount": 7,
+  "controlCount": 3
+ },
+ "m2-039-set-vehicle-location": {
+  "testids": [
+   "event-command-edit-summary",
+   "set-vehicle-location-command-body",
+   "set-vehicle-location-intent",
+   "set-vehicle-location-map-select",
+   "set-vehicle-location-map-select-card",
+   "set-vehicle-location-preview",
+   "set-vehicle-location-vehicle",
+   "set-vehicle-location-vehicle-segment-airship",
+   "set-vehicle-location-vehicle-segment-boat",
+   "set-vehicle-location-vehicle-segment-ship",
+   "set-vehicle-location-x-input",
+   "set-vehicle-location-y-input"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "set-vehicle-location-map-select": "select{}",
+   "set-vehicle-location-vehicle": "select{hidden}",
+   "set-vehicle-location-vehicle-segment-airship": "button{}",
+   "set-vehicle-location-vehicle-segment-boat": "button{}",
+   "set-vehicle-location-vehicle-segment-ship": "button{}",
+   "set-vehicle-location-x-input": "input[number]{}",
+   "set-vehicle-location-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "set-vehicle-location-map-select": [
+    "",
+    "map_blank_start"
+   ],
+   "set-vehicle-location-vehicle": [
+    "boat",
+    "ship",
+    "airship"
+   ]
+  },
+  "labels": [
+   "대형선",
+   "비행선",
+   "소형선"
+  ],
+  "tags": {
+   "button": 3,
+   "div": 16,
+   "input": 2,
+   "option": 5,
+   "p": 3,
+   "select": 2,
+   "span": 5
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "set-vehicle-location-command-body": "div",
+   "set-vehicle-location-intent": "div",
+   "set-vehicle-location-map-select": "select",
+   "set-vehicle-location-map-select-card": "span",
+   "set-vehicle-location-preview": "div",
+   "set-vehicle-location-vehicle": "select",
+   "set-vehicle-location-vehicle-segment-airship": "button",
+   "set-vehicle-location-vehicle-segment-boat": "button",
+   "set-vehicle-location-vehicle-segment-ship": "button",
+   "set-vehicle-location-x-input": "input",
+   "set-vehicle-location-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "set-vehicle-location-intent": "탈것 위치 설정소형선·대형선·비행선 위치를 지정합니다.",
+   "set-vehicle-location-preview": "소형선 → (맵 미선택) (#, #)지정 맵 좌표로 탈것을 옮깁니다."
+  },
+  "testidCount": 12,
+  "controlCount": 7
+ },
+ "m2-040-set-event-location": {
+  "testids": [
+   "event-command-edit-summary",
+   "set-event-location-command-body",
+   "set-event-location-event-select",
+   "set-event-location-event-select-card",
+   "set-event-location-intent",
+   "set-event-location-map-select",
+   "set-event-location-map-select-card",
+   "set-event-location-preview",
+   "set-event-location-x-input",
+   "set-event-location-y-input"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "set-event-location-event-select": "select{}",
+   "set-event-location-map-select": "select{}",
+   "set-event-location-x-input": "input[number]{}",
+   "set-event-location-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "set-event-location-event-select": [
+    ""
+   ],
+   "set-event-location-map-select": [
+    "",
+    "map_blank_start"
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 16,
+   "input": 2,
+   "option": 3,
+   "p": 3,
+   "select": 2,
+   "span": 8
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "set-event-location-command-body": "div",
+   "set-event-location-event-select": "select",
+   "set-event-location-event-select-card": "span",
+   "set-event-location-intent": "div",
+   "set-event-location-map-select": "select",
+   "set-event-location-map-select-card": "span",
+   "set-event-location-preview": "div",
+   "set-event-location-x-input": "input",
+   "set-event-location-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "set-event-location-intent": "이벤트 위치 설정맵 위 이벤트를 그 칸으로 옮깁니다.",
+   "set-event-location-preview": "이벤트 → (맵 미선택) (#, #)이벤트를 지정 좌표로 순간이동합니다."
+  },
+  "testidCount": 10,
+  "controlCount": 4
+ },
+ "m2-041-swap-event-location": {
+  "testids": [
+   "event-command-edit-summary",
+   "swap-event-location-command-body",
+   "swap-event-location-event-a",
+   "swap-event-location-event-a-card",
+   "swap-event-location-event-b",
+   "swap-event-location-event-b-card",
+   "swap-event-location-intent",
+   "swap-event-location-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "swap-event-location-event-a": "select{}",
+   "swap-event-location-event-b": "select{}"
+  },
+  "selectOptions": {
+   "swap-event-location-event-a": [
+    ""
+   ],
+   "swap-event-location-event-b": [
+    ""
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 12,
+   "option": 2,
+   "p": 3,
+   "select": 2,
+   "span": 8
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "swap-event-location-command-body": "div",
+   "swap-event-location-event-a": "select",
+   "swap-event-location-event-a-card": "span",
+   "swap-event-location-event-b": "select",
+   "swap-event-location-event-b-card": "span",
+   "swap-event-location-intent": "div",
+   "swap-event-location-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "swap-event-location-intent": "이벤트 위치 교환두 이벤트의 좌표를 서로 맞바꿉니다.",
+   "swap-event-location-preview": "A ↔ B두 이벤트의 위치를 서로 바꿉니다."
+  },
+  "testidCount": 8,
+  "controlCount": 2
+ },
+ "m2-042-get-terrain-id": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "get-terrain-id-command-body",
+   "get-terrain-id-intent",
+   "get-terrain-id-map-select",
+   "get-terrain-id-map-select-card",
+   "get-terrain-id-preview",
+   "get-terrain-id-variable",
+   "get-terrain-id-x-input",
+   "get-terrain-id-y-input"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial",
+   "small"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{}",
+   "get-terrain-id-map-select": "select{}",
+   "get-terrain-id-variable>select#0": "select{}",
+   "get-terrain-id-x-input": "input[number]{}",
+   "get-terrain-id-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "get-terrain-id-map-select": [
+    "",
+    "map_blank_start"
+   ],
+   "get-terrain-id-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 16,
+   "input": 2,
+   "option": 23,
+   "p": 3,
+   "select": 2,
+   "span": 5
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "get-terrain-id-command-body": "div",
+   "get-terrain-id-intent": "div",
+   "get-terrain-id-map-select": "select",
+   "get-terrain-id-map-select-card": "span",
+   "get-terrain-id-preview": "div",
+   "get-terrain-id-variable": "span",
+   "get-terrain-id-x-input": "input",
+   "get-terrain-id-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "get-terrain-id-intent": "어느 지형인지 알기그 칸이 어떤 지형인지 변수에 넣습니다.",
+   "get-terrain-id-preview": "어느 지형인지 알기 · (맵 미선택) (#, #) → (미선택)그 칸의 지형 종류를 읽어 조건 분기에 씁니다."
+  },
+  "testidCount": 10,
+  "controlCount": 5
+ },
+ "m2-043-get-event-id": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "get-event-id-command-body",
+   "get-event-id-intent",
+   "get-event-id-map-select",
+   "get-event-id-map-select-card",
+   "get-event-id-preview",
+   "get-event-id-variable",
+   "get-event-id-x-input",
+   "get-event-id-y-input"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial",
+   "small"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{}",
+   "get-event-id-map-select": "select{}",
+   "get-event-id-variable>select#0": "select{}",
+   "get-event-id-x-input": "input[number]{}",
+   "get-event-id-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "get-event-id-map-select": [
+    "",
+    "map_blank_start"
+   ],
+   "get-event-id-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 16,
+   "input": 2,
+   "option": 23,
+   "p": 3,
+   "select": 2,
+   "span": 5
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "get-event-id-command-body": "div",
+   "get-event-id-intent": "div",
+   "get-event-id-map-select": "select",
+   "get-event-id-map-select-card": "span",
+   "get-event-id-preview": "div",
+   "get-event-id-variable": "span",
+   "get-event-id-x-input": "input",
+   "get-event-id-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "get-event-id-intent": "어느 이벤트인지 알기그 칸에 있는 이벤트가 누구인지 변수에 넣습니다.",
+   "get-event-id-preview": "어느 이벤트인지 알기 · (맵 미선택) (#, #) → (미선택)그 칸에 이벤트가 없으면 아무도 없다고 기록합니다."
+  },
+  "testidCount": 10,
+  "controlCount": 5
+ },
+ "m2-044-hide-screen": {
+  "testids": [
+   "event-command-edit-summary",
+   "hide-screen-command-body",
+   "hide-screen-intent",
+   "hide-screen-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 8,
+   "p": 4
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "hide-screen-command-body": "div",
+   "hide-screen-intent": "div",
+   "hide-screen-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "hide-screen-intent": "화면 숨기기화면을 어둡게 가립니다.",
+   "hide-screen-preview": "화면 숨김 (페이드 아웃)맵 화면을 가립니다."
+  },
+  "testidCount": 4,
+  "controlCount": 0
+ },
+ "m2-045-show-screen": {
+  "testids": [
+   "event-command-edit-summary",
+   "show-screen-command-body",
+   "show-screen-intent",
+   "show-screen-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 8,
+   "p": 4
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "show-screen-command-body": "div",
+   "show-screen-intent": "div",
+   "show-screen-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "show-screen-intent": "화면 표시숨긴 화면을 다시 표시합니다.",
+   "show-screen-preview": "화면 표시 (페이드 인)가려진 화면을 다시 보여줍니다."
+  },
+  "testidCount": 4,
+  "controlCount": 0
+ },
+ "m2-046-tint-screen": {
+  "testids": [
+   "event-command-edit-summary",
+   "tint-screen-color-black",
+   "tint-screen-color-blue",
+   "tint-screen-color-chips",
+   "tint-screen-color-green",
+   "tint-screen-color-neutral",
+   "tint-screen-color-purple",
+   "tint-screen-color-red",
+   "tint-screen-color-white",
+   "tint-screen-color-yellow",
+   "tint-screen-command-body",
+   "tint-screen-duration-input",
+   "tint-screen-intent",
+   "tint-screen-preview",
+   "tint-screen-preview-stage",
+   "tint-screen-preview-swatch",
+   "tint-screen-value-input"
+  ],
+  "classes": [
+   "actor-m2-chip",
+   "actor-m2-chip-grid",
+   "actor-m2-command-body",
+   "actor-m2-effect-swatch",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "actor-m2-preview-stage",
+   "actor-m2-stage-label",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "is-active",
+   "page3-command-body",
+   "page3-preview-stage",
+   "page3-preview-stage-label",
+   "page3-tint-preview",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "small"
+  ],
+  "controls": {
+   "tint-screen-color-black": "button{}",
+   "tint-screen-color-blue": "button{}",
+   "tint-screen-color-green": "button{}",
+   "tint-screen-color-neutral": "button{}",
+   "tint-screen-color-purple": "button{}",
+   "tint-screen-color-red": "button{}",
+   "tint-screen-color-white": "button{}",
+   "tint-screen-color-yellow": "button{}",
+   "tint-screen-duration-input": "input[number]{}",
+   "tint-screen-value-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "검정",
+   "기본",
+   "노랑",
+   "보라",
+   "빨강",
+   "초록",
+   "파랑",
+   "흰색"
+  ],
+  "tags": {
+   "button": 8,
+   "div": 17,
+   "input": 2,
+   "p": 3,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "tint-screen-color-black": "button",
+   "tint-screen-color-blue": "button",
+   "tint-screen-color-chips": "div",
+   "tint-screen-color-green": "button",
+   "tint-screen-color-neutral": "button",
+   "tint-screen-color-purple": "button",
+   "tint-screen-color-red": "button",
+   "tint-screen-color-white": "button",
+   "tint-screen-color-yellow": "button",
+   "tint-screen-command-body": "div",
+   "tint-screen-duration-input": "input",
+   "tint-screen-intent": "div",
+   "tint-screen-preview": "div",
+   "tint-screen-preview-stage": "div",
+   "tint-screen-preview-swatch": "div",
+   "tint-screen-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "tint-screen-intent": "화면 색조 변경맵 전체에 색 필터를 적용합니다.",
+   "tint-screen-preview": "기본기본 색조 · 즉시 전환직접 색을 입력하면 프리셋보다 우선합니다.",
+   "tint-screen-preview-stage": "기본",
+   "tint-screen-preview-swatch": ""
+  },
+  "testidCount": 17,
+  "controlCount": 10
+ },
+ "m2-047-flash-screen": {
+  "testids": [
+   "event-command-edit-summary",
+   "flash-screen-color",
+   "flash-screen-color-segment-black",
+   "flash-screen-color-segment-blue",
+   "flash-screen-color-segment-green",
+   "flash-screen-color-segment-purple",
+   "flash-screen-color-segment-red",
+   "flash-screen-color-segment-white",
+   "flash-screen-color-segment-yellow",
+   "flash-screen-command-body",
+   "flash-screen-duration-input",
+   "flash-screen-intent",
+   "flash-screen-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "flash-screen-color": "select{hidden}",
+   "flash-screen-color-segment-black": "button{}",
+   "flash-screen-color-segment-blue": "button{}",
+   "flash-screen-color-segment-green": "button{}",
+   "flash-screen-color-segment-purple": "button{}",
+   "flash-screen-color-segment-red": "button{}",
+   "flash-screen-color-segment-white": "button{}",
+   "flash-screen-color-segment-yellow": "button{}",
+   "flash-screen-duration-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "flash-screen-color": [
+    "white",
+    "red",
+    "green",
+    "blue",
+    "yellow",
+    "purple",
+    "black"
+   ]
+  },
+  "labels": [
+   "검정",
+   "노랑",
+   "보라",
+   "빨강",
+   "초록",
+   "파랑",
+   "흰색"
+  ],
+  "tags": {
+   "button": 7,
+   "div": 12,
+   "input": 1,
+   "option": 7,
+   "p": 3,
+   "select": 1,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "flash-screen-color": "select",
+   "flash-screen-color-segment-black": "button",
+   "flash-screen-color-segment-blue": "button",
+   "flash-screen-color-segment-green": "button",
+   "flash-screen-color-segment-purple": "button",
+   "flash-screen-color-segment-red": "button",
+   "flash-screen-color-segment-white": "button",
+   "flash-screen-color-segment-yellow": "button",
+   "flash-screen-command-body": "div",
+   "flash-screen-duration-input": "input",
+   "flash-screen-intent": "div",
+   "flash-screen-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "flash-screen-intent": "화면 플래시화면을 지정 색으로 번쩍입니다.",
+   "flash-screen-preview": "플래시 흰색 · #ms화면 전체를 순간 번쩍입니다."
+  },
+  "testidCount": 13,
+  "controlCount": 9
+ },
+ "m2-048-shake-screen": {
+  "testids": [
+   "event-command-edit-summary",
+   "shake-screen-command-body",
+   "shake-screen-duration-input",
+   "shake-screen-intensity",
+   "shake-screen-intensity-segment-1",
+   "shake-screen-intensity-segment-10",
+   "shake-screen-intensity-segment-3",
+   "shake-screen-intensity-segment-6",
+   "shake-screen-intent",
+   "shake-screen-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "shake-screen-duration-input": "input[number]{}",
+   "shake-screen-intensity": "select{hidden}",
+   "shake-screen-intensity-segment-1": "button{}",
+   "shake-screen-intensity-segment-10": "button{}",
+   "shake-screen-intensity-segment-3": "button{}",
+   "shake-screen-intensity-segment-6": "button{}"
+  },
+  "selectOptions": {
+   "shake-screen-intensity": [
+    "1",
+    "3",
+    "6",
+    "10"
+   ]
+  },
+  "labels": [
+   "강하게",
+   "매우 강하게",
+   "보통",
+   "약하게"
+  ],
+  "tags": {
+   "button": 4,
+   "div": 12,
+   "input": 1,
+   "option": 4,
+   "p": 3,
+   "select": 1,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "shake-screen-command-body": "div",
+   "shake-screen-duration-input": "input",
+   "shake-screen-intensity": "select",
+   "shake-screen-intensity-segment-1": "button",
+   "shake-screen-intensity-segment-10": "button",
+   "shake-screen-intensity-segment-3": "button",
+   "shake-screen-intensity-segment-6": "button",
+   "shake-screen-intent": "div",
+   "shake-screen-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "shake-screen-intent": "화면 흔들기카메라 흔들림으로 충격을 표현합니다.",
+   "shake-screen-preview": "화면 흔들기 보통 · #ms카메라 흔들림 연출."
+  },
+  "testidCount": 10,
+  "controlCount": 6
+ },
+ "m2-049-scroll-map": {
+  "testids": [
+   "event-command-edit-summary",
+   "scroll-map-command-body",
+   "scroll-map-direction",
+   "scroll-map-direction-segment-down",
+   "scroll-map-direction-segment-left",
+   "scroll-map-direction-segment-right",
+   "scroll-map-direction-segment-up",
+   "scroll-map-distance-input",
+   "scroll-map-intent",
+   "scroll-map-mode",
+   "scroll-map-mode-segment-lock",
+   "scroll-map-mode-segment-pan",
+   "scroll-map-mode-segment-return",
+   "scroll-map-preview",
+   "scroll-map-speed-input",
+   "scroll-map-wait",
+   "scroll-map-wait-segment-false",
+   "scroll-map-wait-segment-true"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "scroll-map-direction": "select{hidden}",
+   "scroll-map-direction-segment-down": "button{}",
+   "scroll-map-direction-segment-left": "button{}",
+   "scroll-map-direction-segment-right": "button{}",
+   "scroll-map-direction-segment-up": "button{}",
+   "scroll-map-distance-input": "input[number]{}",
+   "scroll-map-mode": "select{hidden}",
+   "scroll-map-mode-segment-lock": "button{}",
+   "scroll-map-mode-segment-pan": "button{}",
+   "scroll-map-mode-segment-return": "button{}",
+   "scroll-map-speed-input": "input[number]{}",
+   "scroll-map-wait": "select{hidden}",
+   "scroll-map-wait-segment-false": "button{}",
+   "scroll-map-wait-segment-true": "button{}"
+  },
+  "selectOptions": {
+   "scroll-map-direction": [
+    "up",
+    "down",
+    "left",
+    "right"
+   ],
+   "scroll-map-mode": [
+    "return",
+    "lock",
+    "pan"
+   ],
+   "scroll-map-wait": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "고정",
+   "끄기",
+   "복귀",
+   "아래",
+   "오른쪽",
+   "왼쪽",
+   "위",
+   "켜기",
+   "패닝"
+  ],
+  "tags": {
+   "button": 9,
+   "div": 18,
+   "input": 2,
+   "option": 9,
+   "p": 3,
+   "select": 3,
+   "span": 3
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "scroll-map-command-body": "div",
+   "scroll-map-direction": "select",
+   "scroll-map-direction-segment-down": "button",
+   "scroll-map-direction-segment-left": "button",
+   "scroll-map-direction-segment-right": "button",
+   "scroll-map-direction-segment-up": "button",
+   "scroll-map-distance-input": "input",
+   "scroll-map-intent": "div",
+   "scroll-map-mode": "select",
+   "scroll-map-mode-segment-lock": "button",
+   "scroll-map-mode-segment-pan": "button",
+   "scroll-map-mode-segment-return": "button",
+   "scroll-map-preview": "div",
+   "scroll-map-speed-input": "input",
+   "scroll-map-wait": "select",
+   "scroll-map-wait-segment-false": "button",
+   "scroll-map-wait-segment-true": "button"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "scroll-map-intent": "맵 스크롤카메라를 지정 방향/거리로 패닝합니다.",
+   "scroll-map-preview": "맵 스크롤 아래 #칸 · 복귀 · 대기카메라만 이동하며 주인공 위치는 그대로입니다."
+  },
+  "testidCount": 18,
+  "controlCount": 14
+ },
+ "m2-050-set-weather-effects": {
+  "testids": [
+   "event-command-edit-summary",
+   "set-weather-effects-command-body",
+   "set-weather-effects-intensity-input",
+   "set-weather-effects-intensity-slider",
+   "set-weather-effects-intent",
+   "set-weather-effects-kind-chips",
+   "set-weather-effects-kind-fog",
+   "set-weather-effects-kind-fog-dot",
+   "set-weather-effects-kind-none",
+   "set-weather-effects-kind-none-dot",
+   "set-weather-effects-kind-rain",
+   "set-weather-effects-kind-rain-dot",
+   "set-weather-effects-kind-snow",
+   "set-weather-effects-kind-snow-dot",
+   "set-weather-effects-kind-storm",
+   "set-weather-effects-kind-storm-dot",
+   "set-weather-effects-preview",
+   "set-weather-effects-preview-overlay",
+   "set-weather-effects-preview-stage",
+   "set-weather-effects-transition-input"
+  ],
+  "classes": [
+   "actor-m2-chip",
+   "actor-m2-chip-grid",
+   "actor-m2-chip-label",
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-inline",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "actor-m2-preview-stage",
+   "actor-m2-stage-label",
+   "actor-m2-weather-dot",
+   "actor-m2-weather-overlay",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "is-active",
+   "page3-command-body",
+   "page3-preview-stage",
+   "page3-preview-stage-label",
+   "page3-preview-weather",
+   "page3-range-input",
+   "page3-weather-preview",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "small"
+  ],
+  "controls": {
+   "set-weather-effects-intensity-input": "input[number]{}",
+   "set-weather-effects-intensity-slider": "input[range]{}",
+   "set-weather-effects-kind-fog": "button{}",
+   "set-weather-effects-kind-none": "button{}",
+   "set-weather-effects-kind-rain": "button{}",
+   "set-weather-effects-kind-snow": "button{}",
+   "set-weather-effects-kind-storm": "button{}",
+   "set-weather-effects-transition-input": "input[number]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "눈",
+   "비",
+   "안개",
+   "없음",
+   "폭풍"
+  ],
+  "tags": {
+   "button": 5,
+   "div": 18,
+   "input": 3,
+   "p": 3,
+   "span": 11
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "set-weather-effects-command-body": "div",
+   "set-weather-effects-intensity-input": "input",
+   "set-weather-effects-intensity-slider": "input",
+   "set-weather-effects-intent": "div",
+   "set-weather-effects-kind-chips": "div",
+   "set-weather-effects-kind-fog": "button",
+   "set-weather-effects-kind-fog-dot": "span",
+   "set-weather-effects-kind-none": "button",
+   "set-weather-effects-kind-none-dot": "span",
+   "set-weather-effects-kind-rain": "button",
+   "set-weather-effects-kind-rain-dot": "span",
+   "set-weather-effects-kind-snow": "button",
+   "set-weather-effects-kind-snow-dot": "span",
+   "set-weather-effects-kind-storm": "button",
+   "set-weather-effects-kind-storm-dot": "span",
+   "set-weather-effects-preview": "div",
+   "set-weather-effects-preview-overlay": "div",
+   "set-weather-effects-preview-stage": "div",
+   "set-weather-effects-transition-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "set-weather-effects-intent": "날씨 효과 설정맵 날씨 오버레이를 바꿉니다.",
+   "set-weather-effects-preview": "없음날씨 없음화면에 깔린 날씨 오버레이를 걷어냅니다.",
+   "set-weather-effects-preview-overlay": "",
+   "set-weather-effects-preview-stage": "없음"
+  },
+  "testidCount": 20,
+  "controlCount": 8
+ },
+ "m2-051-show-picture": {
+  "testids": [
+   "event-command-edit-summary",
+   "show-picture-m2-command-body",
+   "show-picture-m2-id-input",
+   "show-picture-m2-intent",
+   "show-picture-m2-preview",
+   "show-picture-m2-resource-picker",
+   "show-picture-m2-resource-select",
+   "show-picture-m2-x-input",
+   "show-picture-m2-y-input"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-inline",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-actor",
+   "actor-m2-preview-copy",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-record-initial",
+   "small"
+  ],
+  "controls": {
+   "show-picture-m2-id-input": "input[text]{}",
+   "show-picture-m2-resource-picker": "button{}",
+   "show-picture-m2-resource-select": "select{}",
+   "show-picture-m2-x-input": "input[number]{}",
+   "show-picture-m2-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "show-picture-m2-resource-select": [
+    "",
+    "cc0-jetrel-ale",
+    "cc0-jetrel-antidote-green",
+    "cc0-jetrel-antidote-plus",
+    "easyrpg-system-royal",
+    "easyrpg-system-system",
+    "easyrpg-system-system-a"
+   ]
+  },
+  "labels": [
+   "그림 고르기…"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 19,
+   "input": 3,
+   "option": 7,
+   "p": 3,
+   "select": 1,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "show-picture-m2-command-body": "div",
+   "show-picture-m2-id-input": "input",
+   "show-picture-m2-intent": "div",
+   "show-picture-m2-preview": "div",
+   "show-picture-m2-resource-picker": "button",
+   "show-picture-m2-resource-select": "select",
+   "show-picture-m2-x-input": "input",
+   "show-picture-m2-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "show-picture-m2-intent": "그림 표시지정 번호 슬롯에 그림을 띄웁니다.",
+   "show-picture-m2-preview": "선pic# · (리소스 없음) @ (#, #)지정 번호 슬롯에 그림을 띄웁니다."
+  },
+  "testidCount": 9,
+  "controlCount": 5
+ },
+ "m2-052-move-picture": {
+  "testids": [
+   "event-command-edit-summary",
+   "move-picture-m2-command-body",
+   "move-picture-m2-duration-input",
+   "move-picture-m2-id-input",
+   "move-picture-m2-intent",
+   "move-picture-m2-preview",
+   "move-picture-m2-x-input",
+   "move-picture-m2-y-input"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-actor",
+   "actor-m2-preview-copy",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "move-picture-m2-duration-input": "input[number]{}",
+   "move-picture-m2-id-input": "input[text]{}",
+   "move-picture-m2-x-input": "input[number]{}",
+   "move-picture-m2-y-input": "input[number]{}"
+  },
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 18,
+   "input": 4,
+   "p": 3,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "move-picture-m2-command-body": "div",
+   "move-picture-m2-duration-input": "input",
+   "move-picture-m2-id-input": "input",
+   "move-picture-m2-intent": "div",
+   "move-picture-m2-preview": "div",
+   "move-picture-m2-x-input": "input",
+   "move-picture-m2-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "move-picture-m2-intent": "그림 이동이미 표시된 그림을 좌표·투명도로 옮깁니다.",
+   "move-picture-m2-preview": "선pic# → (#, #)이미 표시된 그림을 좌표·투명도로 옮깁니다."
+  },
+  "testidCount": 8,
+  "controlCount": 4
+ },
+ "m2-053-erase-picture": {
+  "testids": [
+   "erase-picture-m2-command-body",
+   "erase-picture-m2-id-input",
+   "erase-picture-m2-intent",
+   "erase-picture-m2-preview",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form"
+  ],
+  "controls": {
+   "erase-picture-m2-id-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "p": 3
+  },
+  "tagByTestid": {
+   "erase-picture-m2-command-body": "div",
+   "erase-picture-m2-id-input": "input",
+   "erase-picture-m2-intent": "div",
+   "erase-picture-m2-preview": "div",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "erase-picture-m2-intent": "그림 지우기표시 중인 그림 슬롯을 비웁니다.",
+   "erase-picture-m2-preview": "그림 지우기 · 자리 pic#그 자리의 그림을 화면에서 지웁니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 1
+ },
+ "m2-054-show-animation": {
+  "testids": [
+   "event-command-edit-summary",
+   "show-animation-m2-animation-select",
+   "show-animation-m2-animation-select-card",
+   "show-animation-m2-command-body",
+   "show-animation-m2-event-field",
+   "show-animation-m2-event-select",
+   "show-animation-m2-event-select-card",
+   "show-animation-m2-intent",
+   "show-animation-m2-preview",
+   "show-animation-m2-target-mode",
+   "show-animation-m2-target-mode-segment-event",
+   "show-animation-m2-target-mode-segment-player"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "show-animation-m2-animation-select": "select{}",
+   "show-animation-m2-event-select": "select{hidden}",
+   "show-animation-m2-target-mode": "select{hidden}",
+   "show-animation-m2-target-mode-segment-event": "button{}",
+   "show-animation-m2-target-mode-segment-player": "button{}"
+  },
+  "selectOptions": {
+   "show-animation-m2-animation-select": [
+    "",
+    "anim_hit",
+    "anim_sword",
+    "anim_arrow"
+   ],
+   "show-animation-m2-event-select": [
+    ""
+   ],
+   "show-animation-m2-target-mode": [
+    "player",
+    "event"
+   ]
+  },
+  "labels": [
+   "이벤트",
+   "주인공"
+  ],
+  "tags": {
+   "button": 2,
+   "div": 14,
+   "option": 7,
+   "p": 3,
+   "select": 3,
+   "span": 9
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "show-animation-m2-animation-select": "select",
+   "show-animation-m2-animation-select-card": "span",
+   "show-animation-m2-command-body": "div",
+   "show-animation-m2-event-field": "div",
+   "show-animation-m2-event-select": "select",
+   "show-animation-m2-event-select-card": "span",
+   "show-animation-m2-intent": "div",
+   "show-animation-m2-preview": "div",
+   "show-animation-m2-target-mode": "select",
+   "show-animation-m2-target-mode-segment-event": "button",
+   "show-animation-m2-target-mode-segment-player": "button"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "show-animation-m2-intent": "애니메이션 표시대상 위에 전투 애니메이션을 재생합니다.",
+   "show-animation-m2-preview": "주인공 · (미선택)전투 애니메이션을 맵에서 재생합니다."
+  },
+  "testidCount": 12,
+  "controlCount": 5
+ },
+ "m2-055-show-animation": {
+  "testids": [
+   "event-command-edit-summary",
+   "show-animation-m2-animation-select",
+   "show-animation-m2-animation-select-card",
+   "show-animation-m2-command-body",
+   "show-animation-m2-event-field",
+   "show-animation-m2-event-select",
+   "show-animation-m2-event-select-card",
+   "show-animation-m2-intent",
+   "show-animation-m2-preview",
+   "show-animation-m2-target-mode",
+   "show-animation-m2-target-mode-segment-event",
+   "show-animation-m2-target-mode-segment-player"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "show-animation-m2-animation-select": "select{}",
+   "show-animation-m2-event-select": "select{hidden}",
+   "show-animation-m2-target-mode": "select{hidden}",
+   "show-animation-m2-target-mode-segment-event": "button{}",
+   "show-animation-m2-target-mode-segment-player": "button{}"
+  },
+  "selectOptions": {
+   "show-animation-m2-animation-select": [
+    "",
+    "anim_hit",
+    "anim_sword",
+    "anim_arrow"
+   ],
+   "show-animation-m2-event-select": [
+    ""
+   ],
+   "show-animation-m2-target-mode": [
+    "player",
+    "event"
+   ]
+  },
+  "labels": [
+   "이벤트",
+   "주인공"
+  ],
+  "tags": {
+   "button": 2,
+   "div": 14,
+   "option": 7,
+   "p": 3,
+   "select": 3,
+   "span": 9
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "show-animation-m2-animation-select": "select",
+   "show-animation-m2-animation-select-card": "span",
+   "show-animation-m2-command-body": "div",
+   "show-animation-m2-event-field": "div",
+   "show-animation-m2-event-select": "select",
+   "show-animation-m2-event-select-card": "span",
+   "show-animation-m2-intent": "div",
+   "show-animation-m2-preview": "div",
+   "show-animation-m2-target-mode": "select",
+   "show-animation-m2-target-mode-segment-event": "button",
+   "show-animation-m2-target-mode-segment-player": "button"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "show-animation-m2-intent": "애니메이션 표시대상 위에 전투 애니메이션을 재생합니다.",
+   "show-animation-m2-preview": "주인공 · (미선택)전투 애니메이션을 맵에서 재생합니다."
+  },
+  "testidCount": 12,
+  "controlCount": 5
+ },
+ "m2-056-flash-event": {
+  "testids": [
+   "event-command-edit-summary",
+   "flash-event-color",
+   "flash-event-color-segment-black",
+   "flash-event-color-segment-blue",
+   "flash-event-color-segment-green",
+   "flash-event-color-segment-purple",
+   "flash-event-color-segment-red",
+   "flash-event-color-segment-white",
+   "flash-event-color-segment-yellow",
+   "flash-event-command-body",
+   "flash-event-event-select",
+   "flash-event-event-select-card",
+   "flash-event-intent",
+   "flash-event-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "flash-event-color": "select{hidden}",
+   "flash-event-color-segment-black": "button{}",
+   "flash-event-color-segment-blue": "button{}",
+   "flash-event-color-segment-green": "button{}",
+   "flash-event-color-segment-purple": "button{}",
+   "flash-event-color-segment-red": "button{}",
+   "flash-event-color-segment-white": "button{}",
+   "flash-event-color-segment-yellow": "button{}",
+   "flash-event-event-select": "select{}"
+  },
+  "selectOptions": {
+   "flash-event-color": [
+    "white",
+    "red",
+    "green",
+    "blue",
+    "yellow",
+    "purple",
+    "black"
+   ],
+   "flash-event-event-select": [
+    ""
+   ]
+  },
+  "labels": [
+   "검정",
+   "노랑",
+   "보라",
+   "빨강",
+   "초록",
+   "파랑",
+   "흰색"
+  ],
+  "tags": {
+   "button": 7,
+   "div": 12,
+   "option": 8,
+   "p": 3,
+   "select": 2,
+   "span": 5
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "flash-event-color": "select",
+   "flash-event-color-segment-black": "button",
+   "flash-event-color-segment-blue": "button",
+   "flash-event-color-segment-green": "button",
+   "flash-event-color-segment-purple": "button",
+   "flash-event-color-segment-red": "button",
+   "flash-event-color-segment-white": "button",
+   "flash-event-color-segment-yellow": "button",
+   "flash-event-command-body": "div",
+   "flash-event-event-select": "select",
+   "flash-event-event-select-card": "span",
+   "flash-event-intent": "div",
+   "flash-event-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "flash-event-intent": "이벤트 플래시특정 이벤트를 색으로 번쩍입니다.",
+   "flash-event-preview": "이벤트 · 흰색 플래시이벤트 스프라이트를 번쩍입니다."
+  },
+  "testidCount": 14,
+  "controlCount": 9
+ },
+ "m2-058-wait-for-all-movement": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-058-wait-for-all-movement"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "m2-command-body"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 6
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-058-wait-for-all-movement": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 2,
+  "controlCount": 0
+ },
+ "m2-059-stop-all-movement": {
+  "testids": [
+   "event-command-edit-summary",
+   "stop-all-movement-command-body",
+   "stop-all-movement-intent",
+   "stop-all-movement-preview"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 8,
+   "p": 4
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "stop-all-movement-command-body": "div",
+   "stop-all-movement-intent": "div",
+   "stop-all-movement-preview": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "stop-all-movement-intent": "모든 이동 중지맵 위 이동을 일제히 정지합니다.",
+   "stop-all-movement-preview": "모든 이동 중지진행 중인 이동 경로를 즉시 멈춥니다."
+  },
+  "testidCount": 4,
+  "controlCount": 0
+ },
+ "m2-063-memorize-current-bgm": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-063-memorize-current-bgm",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name",
+   "m2-command-volume-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-audio-note",
+   "m2-resource-picker",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-resourceId-picker": "select{}",
+   "m2-command-volume-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-resourceId-picker": [
+    "",
+    "cc0-music-field-loop",
+    "cc0-bgm-field",
+    "cc0-bgm-town"
+   ]
+  },
+  "labels": [
+   "BGM",
+   "볼륨"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 2,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-063-memorize-current-bgm": "div",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div",
+   "m2-command-volume-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+  },
+  "testidCount": 6,
+  "controlCount": 2
+ },
+ "m2-064-play-memorized-bgm": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-064-play-memorized-bgm",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name",
+   "m2-command-volume-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-audio-note",
+   "m2-resource-picker",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-resourceId-picker": "select{}",
+   "m2-command-volume-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-resourceId-picker": [
+    "",
+    "cc0-music-field-loop",
+    "cc0-bgm-field",
+    "cc0-bgm-town"
+   ]
+  },
+  "labels": [
+   "BGM",
+   "볼륨"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 2,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-064-play-memorized-bgm": "div",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div",
+   "m2-command-volume-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+  },
+  "testidCount": 6,
+  "controlCount": 2
+ },
+ "m2-066-play-movie": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-066-play-movie",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name",
+   "m2-command-volume-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-picker",
+   "m2-resource-preview",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-resourceId-picker": "select{}",
+   "m2-command-volume-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-resourceId-picker": [
+    "",
+    "tex_easyrpg_chipset_combined_town",
+    "tex_easyrpg_chipset_dungeon",
+    "tex_easyrpg_chipset_interior",
+    "tex_easyrpg_charset_actor1",
+    "tex_easyrpg_charset_actor2",
+    "tex_easyrpg_charset_actor3",
+    "cc0-jetrel-ale",
+    "cc0-jetrel-antidote-green",
+    "cc0-jetrel-antidote-plus",
+    "easyrpg-faceset-actor1-00",
+    "easyrpg-faceset-actor1-01",
+    "easyrpg-faceset-actor1-02",
+    "easyrpg-battle-arrow",
+    "easyrpg-battle-blow",
+    "easyrpg-battle-sword1",
+    "easyrpg-battle-weapon-weapon",
+    "easyrpg-game-over-game-over",
+    "easyrpg-monster-hornet",
+    "easyrpg-backdrop-cosmos1",
+    "easyrpg-backdrop-dawn1",
+    "easyrpg-backdrop-dawn2",
+    "easyrpg-system-royal",
+    "easyrpg-system-system",
+    "easyrpg-system-system-a",
+    "easyrpg-system2-system2-a",
+    "easyrpg-system2-system2-b",
+    "easyrpg-system2-system2-c",
+    "easyrpg-title-title1",
+    "easyrpg-title-title2",
+    "easyrpg-title-title3"
+   ]
+  },
+  "labels": [
+   "리소스",
+   "볼륨"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 2,
+   "option": 31,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-066-play-movie": "div",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div",
+   "m2-command-volume-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "그림을 고르세요"
+  },
+  "testidCount": 6,
+  "controlCount": 2
+ },
+ "m2-067-key-input-processing": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "key-input-processing-command-body",
+   "key-input-processing-intent",
+   "key-input-processing-keycap-1",
+   "key-input-processing-keycap-2",
+   "key-input-processing-keycap-3",
+   "key-input-processing-keycap-4",
+   "key-input-processing-keycap-5",
+   "key-input-processing-keycap-6",
+   "key-input-processing-keycap-7",
+   "key-input-processing-keycap-digits",
+   "key-input-processing-keycaps",
+   "key-input-processing-preview",
+   "key-input-processing-preview-target",
+   "key-input-processing-preview-wait",
+   "key-input-processing-variable",
+   "key-input-processing-wait",
+   "key-input-processing-wait-segment-false",
+   "key-input-processing-wait-segment-true"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-keycap",
+   "actor-m2-keycap-code",
+   "actor-m2-keycap-keys",
+   "actor-m2-keycap-label",
+   "actor-m2-keycaps",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-badge",
+   "actor-m2-preview-badges",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected",
+   "small"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{}",
+   "key-input-processing-variable>select#0": "select{}",
+   "key-input-processing-wait": "select{hidden}",
+   "key-input-processing-wait-segment-false": "button{}",
+   "key-input-processing-wait-segment-true": "button{}"
+  },
+  "selectOptions": {
+   "key-input-processing-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ],
+   "key-input-processing-wait": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "끄기",
+   "켜기"
+  ],
+  "tags": {
+   "button": 3,
+   "div": 22,
+   "option": 23,
+   "p": 3,
+   "select": 2,
+   "span": 28
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "key-input-processing-command-body": "div",
+   "key-input-processing-intent": "div",
+   "key-input-processing-keycap-1": "div",
+   "key-input-processing-keycap-2": "div",
+   "key-input-processing-keycap-3": "div",
+   "key-input-processing-keycap-4": "div",
+   "key-input-processing-keycap-5": "div",
+   "key-input-processing-keycap-6": "div",
+   "key-input-processing-keycap-7": "div",
+   "key-input-processing-keycap-digits": "div",
+   "key-input-processing-keycaps": "div",
+   "key-input-processing-preview": "div",
+   "key-input-processing-preview-target": "span",
+   "key-input-processing-preview-wait": "span",
+   "key-input-processing-variable": "span",
+   "key-input-processing-wait": "select",
+   "key-input-processing-wait-segment-false": "button",
+   "key-input-processing-wait-segment-true": "button"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "key-input-processing-intent": "키 입력키 입력을 읽어 변수에 넣습니다.",
+   "key-input-processing-preview": "↓ / S#아래← / A#왼쪽→ / D#오른쪽↑ / W#위Enter / Z#결정Esc / X#취소Shift#보조# – #~#숫자키누른 키 코드 → (미선택)입력까지 대기키 입력 → (미선택) · 입력까지 대기위 키 코드 중 하나가 변수에 기록됩니다.",
+   "key-input-processing-preview-target": "누른 키 코드 → (미선택)",
+   "key-input-processing-preview-wait": "입력까지 대기"
+  },
+  "testidCount": 20,
+  "controlCount": 5
+ },
+ "m2-068-change-tileset": {
+  "testids": [
+   "change-tileset-command-body",
+   "change-tileset-intent",
+   "change-tileset-preview",
+   "change-tileset-select",
+   "change-tileset-select-card",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "change-tileset-select": "select{}"
+  },
+  "selectOptions": {
+   "change-tileset-select": [
+    "",
+    "easyrpg_chipset_combined_town",
+    "easyrpg_chipset_dungeon",
+    "easyrpg_chipset_interior",
+    "easyrpg_chipset_ship",
+    "easyrpg_chipset_world",
+    "easyrpg_chipset_retro_dungeon",
+    "easyrpg_chipset_retro_exterior",
+    "easyrpg_chipset_retro_house",
+    "easyrpg_chipset_retro_world",
+    "modern_exteriors_nocturne",
+    "scarloxy_chipset_grassland",
+    "scarloxy_chipset_wilds",
+    "scarloxy_chipset_indoor"
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 10,
+   "optgroup": 1,
+   "option": 14,
+   "p": 3,
+   "select": 1,
+   "span": 4
+  },
+  "tagByTestid": {
+   "change-tileset-command-body": "div",
+   "change-tileset-intent": "div",
+   "change-tileset-preview": "div",
+   "change-tileset-select": "select",
+   "change-tileset-select-card": "span",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-tileset-intent": "맵 그림 세트이 맵의 바닥·벽 그림을 다른 세트로 바꿉니다.",
+   "change-tileset-preview": "맵 그림 세트 → (미선택)이 맵의 바닥·벽 그림을 다른 세트로 바꿉니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 6,
+  "controlCount": 1
+ },
+ "m2-069-change-parallax-back": {
+  "testids": [
+   "change-parallax-back-command-body",
+   "change-parallax-back-intent",
+   "change-parallax-back-preview",
+   "change-parallax-back-preview-empty",
+   "change-parallax-back-preview-image",
+   "change-parallax-back-resource-picker",
+   "change-parallax-back-resource-select",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-inline",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-parallax-preview",
+   "actor-m2-parallax-preview-empty",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "actor-m2-preview-stage",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "small"
+  ],
+  "controls": {
+   "change-parallax-back-resource-picker": "button{}",
+   "change-parallax-back-resource-select": "select{}"
+  },
+  "selectOptions": {
+   "change-parallax-back-resource-select": [
+    "",
+    "cc0-jetrel-ale",
+    "cc0-jetrel-antidote-green",
+    "cc0-jetrel-antidote-plus",
+    "easyrpg-backdrop-cosmos1",
+    "easyrpg-backdrop-dawn1",
+    "easyrpg-backdrop-dawn2"
+   ]
+  },
+  "labels": [
+   "그림 고르기…"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 12,
+   "option": 7,
+   "p": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "change-parallax-back-command-body": "div",
+   "change-parallax-back-intent": "div",
+   "change-parallax-back-preview": "div",
+   "change-parallax-back-preview-empty": "p",
+   "change-parallax-back-preview-image": "div",
+   "change-parallax-back-resource-picker": "button",
+   "change-parallax-back-resource-select": "select",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-parallax-back-intent": "먼 배경 변경맵 뒤에 깔리는 먼 풍경을 바꿉니다.",
+   "change-parallax-back-preview": "먼 배경을 선택하면 여기에 표시됩니다.먼 배경 → (선택 없음)맵 원경(parallax) 이미지를 교체합니다.",
+   "change-parallax-back-preview-empty": "먼 배경을 선택하면 여기에 표시됩니다.",
+   "change-parallax-back-preview-image": "먼 배경을 선택하면 여기에 표시됩니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 8,
+  "controlCount": 2
+ },
+ "m2-070-set-encounter-rate": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "set-encounter-rate-command-body",
+   "set-encounter-rate-intent",
+   "set-encounter-rate-number-field",
+   "set-encounter-rate-preview",
+   "set-encounter-rate-value-input",
+   "set-encounter-rate-value-source",
+   "set-encounter-rate-value-source-segment-number",
+   "set-encounter-rate-value-source-segment-variable",
+   "set-encounter-rate-value-variable",
+   "set-encounter-rate-variable-field"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "btn",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected",
+   "small"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{hidden}",
+   "set-encounter-rate-value-input": "input[number]{}",
+   "set-encounter-rate-value-source": "select{hidden}",
+   "set-encounter-rate-value-source-segment-number": "button{}",
+   "set-encounter-rate-value-source-segment-variable": "button{}",
+   "set-encounter-rate-value-variable>select#0": "select{hidden}"
+  },
+  "selectOptions": {
+   "set-encounter-rate-value-source": [
+    "number",
+    "variable"
+   ],
+   "set-encounter-rate-value-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "변수",
+   "숫자"
+  ],
+  "tags": {
+   "button": 3,
+   "div": 14,
+   "input": 1,
+   "option": 23,
+   "p": 3,
+   "select": 2,
+   "span": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "set-encounter-rate-command-body": "div",
+   "set-encounter-rate-intent": "div",
+   "set-encounter-rate-number-field": "div",
+   "set-encounter-rate-preview": "div",
+   "set-encounter-rate-value-input": "input",
+   "set-encounter-rate-value-source": "select",
+   "set-encounter-rate-value-source-segment-number": "button",
+   "set-encounter-rate-value-source-segment-variable": "button",
+   "set-encounter-rate-value-variable": "span",
+   "set-encounter-rate-variable-field": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "set-encounter-rate-intent": "랜덤 전투 빈도맵에서 적이 얼마나 자주 나타나는지 정합니다.",
+   "set-encounter-rate-preview": "전투 빈도 = #이면 랜덤 전투 없음. 값이 클수록 전투가 잦습니다."
+  },
+  "testidCount": 12,
+  "controlCount": 6
+ },
+ "m2-071-change-tile": {
+  "testids": [
+   "change-tile-m2-command-body",
+   "change-tile-m2-intent",
+   "change-tile-m2-layer-input",
+   "change-tile-m2-map-select",
+   "change-tile-m2-map-select-card",
+   "change-tile-m2-preview",
+   "change-tile-m2-tile-id-input",
+   "change-tile-m2-x-input",
+   "change-tile-m2-y-input",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "change-tile-m2-layer-input": "input[text]{}",
+   "change-tile-m2-map-select": "select{}",
+   "change-tile-m2-tile-id-input": "input[number]{}",
+   "change-tile-m2-x-input": "input[number]{}",
+   "change-tile-m2-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "change-tile-m2-map-select": [
+    "",
+    "map_blank_start"
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 18,
+   "input": 4,
+   "option": 2,
+   "p": 3,
+   "select": 1,
+   "span": 4
+  },
+  "tagByTestid": {
+   "change-tile-m2-command-body": "div",
+   "change-tile-m2-intent": "div",
+   "change-tile-m2-layer-input": "input",
+   "change-tile-m2-map-select": "select",
+   "change-tile-m2-map-select-card": "span",
+   "change-tile-m2-preview": "div",
+   "change-tile-m2-tile-id-input": "input",
+   "change-tile-m2-x-input": "input",
+   "change-tile-m2-y-input": "input",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-tile-m2-intent": "타일 변경맵 한 칸의 바닥이나 덧그림을 바꿉니다.",
+   "change-tile-m2-preview": "타일 변경 · (맵 미선택) (#, #) → ## / lower지정 좌표의 맵 타일을 교체합니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 10,
+  "controlCount": 5
+ },
+ "m2-072-set-teleportation-point": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-072-set-teleportation-point",
+   "m2-command-operation-option-select",
+   "m2-command-target-input",
+   "m2-command-value-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ]
+  },
+  "labels": [
+   "값",
+   "누구에게",
+   "어떻게"
+  ],
+  "tags": {
+   "div": 8,
+   "input": 2,
+   "label": 3,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-072-set-teleportation-point": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-input": "input",
+   "m2-command-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 3
+ },
+ "m2-073-teleportation-on-off": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-073-teleportation-on-off",
+   "m2-command-enabled-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-enabled-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-enabled-option-select": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "상태"
+  ],
+  "tags": {
+   "div": 6,
+   "label": 1,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-073-teleportation-on-off": "div",
+   "m2-command-enabled-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-074-set-escape-location": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-074-set-escape-location",
+   "m2-command-mapId-record-select",
+   "m2-command-mapId-record-selected-name",
+   "m2-command-target-input",
+   "m2-command-x-input",
+   "m2-command-y-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-mapId-record-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-x-input": "input[number]{}",
+   "m2-command-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-mapId-record-select": [
+    "",
+    "map_blank_start"
+   ]
+  },
+  "labels": [
+   "X",
+   "Y",
+   "맵",
+   "어디에"
+  ],
+  "tags": {
+   "div": 11,
+   "input": 3,
+   "label": 4,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-074-set-escape-location": "div",
+   "m2-command-mapId-record-select": "select",
+   "m2-command-mapId-record-selected-name": "div",
+   "m2-command-target-input": "input",
+   "m2-command-x-input": "input",
+   "m2-command-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 4
+ },
+ "m2-075-change-escape-access": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-075-change-escape-access",
+   "m2-command-enabled-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-enabled-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-enabled-option-select": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "상태"
+  ],
+  "tags": {
+   "div": 6,
+   "label": 1,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-075-change-escape-access": "div",
+   "m2-command-enabled-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-077-change-save-access": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-077-change-save-access",
+   "m2-command-enabled-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-enabled-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-enabled-option-select": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "상태"
+  ],
+  "tags": {
+   "div": 6,
+   "label": 1,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-077-change-save-access": "div",
+   "m2-command-enabled-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-078-open-menu-screen": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-078-open-menu-screen"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "m2-command-body"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 6
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-078-open-menu-screen": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 2,
+  "controlCount": 0
+ },
+ "m2-079-change-menu-access": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-079-change-menu-access",
+   "m2-command-enabled-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-enabled-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-enabled-option-select": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "상태"
+  ],
+  "tags": {
+   "div": 6,
+   "label": 1,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-079-change-menu-access": "div",
+   "m2-command-enabled-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-085-end-event-processing": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-085-end-event-processing"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "m2-command-body"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 6
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-085-end-event-processing": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 2,
+  "controlCount": 0
+ },
+ "m2-086-erase-event": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-086-erase-event",
+   "m2-command-intent-card",
+   "m2-erase-event-preview",
+   "m2-erase-event-target"
+  ],
+  "classes": [
+   "cream-command-form-head",
+   "m2-command-body",
+   "m2-command-intent",
+   "m2-command-intent-copy",
+   "m2-command-intent-title",
+   "m2-erase-event-body",
+   "m2-erase-event-card",
+   "m2-erase-event-field",
+   "m2-erase-event-label",
+   "m2-erase-event-preview",
+   "m2-erase-event-preview-sub",
+   "m2-erase-event-preview-title",
+   "m2-record-picker"
+  ],
+  "controls": {
+   "m2-erase-event-target": "select{}"
+  },
+  "selectOptions": {
+   "m2-erase-event-target": [
+    ""
+   ]
+  },
+  "labels": [
+   "어떤 이벤트"
+  ],
+  "tags": {
+   "div": 9,
+   "label": 1,
+   "option": 1,
+   "p": 1,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-086-erase-event": "div",
+   "m2-command-intent-card": "div",
+   "m2-erase-event-preview": "div",
+   "m2-erase-event-target": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-intent-card": "플레이 중 이벤트 지우기플레이 화면에서 이벤트를 임시로 숨깁니다. 에디터 맵에서 이벤트 오브젝트를 삭제하는 버튼이 아닙니다.",
+   "m2-erase-event-preview": "이 이벤트 지우기맵을 다시 불러오면 이벤트가 다시 나타납니다."
+  },
+  "testidCount": 5,
+  "controlCount": 1
+ },
+ "m2-088-comment": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-088-comment",
+   "m2-command-color-option-select",
+   "m2-command-comment-textarea"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-color-option-select": "select{}",
+   "m2-command-comment-textarea": "textarea{}"
+  },
+  "selectOptions": {
+   "m2-command-color-option-select": [
+    "green",
+    "yellow",
+    "cyan",
+    "pink",
+    "gray",
+    "white"
+   ]
+  },
+  "labels": [
+   "글자색",
+   "내용"
+  ],
+  "tags": {
+   "div": 7,
+   "label": 2,
+   "option": 6,
+   "select": 1,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-088-comment": "div",
+   "m2-command-color-option-select": "select",
+   "m2-command-comment-textarea": "textarea"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 4,
+  "controlCount": 2
+ },
+ "m2-091-change-actor-class": {
+  "testids": [
+   "change-actor-class-actor-select",
+   "change-actor-class-actor-select-card",
+   "change-actor-class-class-select",
+   "change-actor-class-class-select-card",
+   "change-actor-class-command-body",
+   "change-actor-class-intent",
+   "change-actor-class-preview",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
+  ],
+  "controls": {
+   "change-actor-class-actor-select": "select{}",
+   "change-actor-class-class-select": "select{}"
+  },
+  "selectOptions": {
+   "change-actor-class-actor-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "change-actor-class-class-select": [
+    "",
+    "class_hero",
+    "class_guardian",
+    "class_mage"
+   ]
+  },
+  "labels": [],
+  "tags": {
+   "div": 12,
+   "option": 8,
+   "p": 3,
+   "select": 2,
+   "span": 8
+  },
+  "tagByTestid": {
+   "change-actor-class-actor-select": "select",
+   "change-actor-class-actor-select-card": "span",
+   "change-actor-class-class-select": "select",
+   "change-actor-class-class-select-card": "span",
+   "change-actor-class-command-body": "div",
+   "change-actor-class-intent": "div",
+   "change-actor-class-preview": "div",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-actor-class-intent": "주인공 직업 변경선택한 주인공의 직업을 바꿉니다.",
+   "change-actor-class-preview": "주인공 선택 · (직업 선택)직업이 바뀝니다. 성장과 전투 기술은 새 직업을 따릅니다.",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 8,
+  "controlCount": 2
+ },
+ "m2-092-change-battle-commands": {
+  "testids": [
+   "change-battle-commands-command-body",
+   "change-battle-commands-command-select",
+   "change-battle-commands-intent",
+   "change-battle-commands-operation",
+   "change-battle-commands-preview",
+   "change-battle-commands-target-actor",
+   "change-battle-commands-target-actor-card",
+   "change-battle-commands-target-mode",
+   "change-battle-commands-target-mode-segment-actor",
+   "change-battle-commands-target-mode-segment-party",
+   "event-command-edit-summary"
+  ],
+  "classes": [
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "change-battle-commands-command-body",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "change-battle-commands-command-select": "select{}",
+   "change-battle-commands-operation": "select{}",
+   "change-battle-commands-target-actor": "select{}",
+   "change-battle-commands-target-mode": "select{hidden}",
+   "change-battle-commands-target-mode-segment-actor": "button{}",
+   "change-battle-commands-target-mode-segment-party": "button{}"
+  },
+  "selectOptions": {
+   "change-battle-commands-command-select": [
+    "",
+    "cmd_attack",
+    "cmd_skill",
+    "cmd_defend",
+    "cmd_item",
+    "cmd_escape",
+    "cmd_change"
+   ],
+   "change-battle-commands-operation": [
+    "add",
+    "remove",
+    "set"
+   ],
+   "change-battle-commands-target-actor": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "change-battle-commands-target-mode": [
+    "party",
+    "actor"
+   ]
+  },
+  "labels": [
+   "주인공",
+   "파티 전체"
+  ],
+  "tags": {
+   "button": 2,
+   "div": 14,
+   "option": 16,
+   "p": 2,
+   "select": 4,
+   "span": 5
+  },
+  "tagByTestid": {
+   "change-battle-commands-command-body": "div",
+   "change-battle-commands-command-select": "select",
+   "change-battle-commands-intent": "div",
+   "change-battle-commands-operation": "select",
+   "change-battle-commands-preview": "div",
+   "change-battle-commands-target-actor": "select",
+   "change-battle-commands-target-actor-card": "span",
+   "change-battle-commands-target-mode": "select",
+   "change-battle-commands-target-mode-segment-actor": "button",
+   "change-battle-commands-target-mode-segment-party": "button",
+   "event-command-edit-summary": "div"
+  },
+  "texts": {
+   "change-battle-commands-intent": "전투 명령 변경메뉴에 보이는 전투 명령을 더하거나 빼거나 바꿉니다.",
+   "change-battle-commands-preview": "파티 전체 · 이 값으로 · 커맨드 없음",
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 11,
+  "controlCount": 6
+ },
+ "m2-093-open-load-menu": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-093-open-load-menu"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "m2-command-body"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 6
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-093-open-load-menu": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 2,
+  "controlCount": 0
+ },
+ "m2-094-exit-game": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-094-exit-game"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "m2-command-body"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 6
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-094-exit-game": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 2,
+  "controlCount": 0
+ },
+ "m2-095-toggle-atb-wait-mode": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-095-toggle-atb-wait-mode",
+   "m2-command-enabled-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-enabled-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-enabled-option-select": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "상태"
+  ],
+  "tags": {
+   "div": 6,
+   "label": 1,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-095-toggle-atb-wait-mode": "div",
+   "m2-command-enabled-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-096-toggle-fullscreen-mode": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-096-toggle-fullscreen-mode",
+   "m2-command-enabled-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-enabled-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-enabled-option-select": [
+    "true",
+    "false"
+   ]
+  },
+  "labels": [
+   "상태"
+  ],
+  "tags": {
+   "div": 6,
+   "label": 1,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-096-toggle-fullscreen-mode": "div",
+   "m2-command-enabled-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-097-open-video-options": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-097-open-video-options"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "m2-command-body"
+  ],
+  "controls": {},
+  "selectOptions": {},
+  "labels": [],
+  "tags": {
+   "div": 6
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-097-open-video-options": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 2,
+  "controlCount": 0
+ },
+ "m2-098-change-enemy-hp": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-098-change-enemy-hp",
+   "m2-command-operation-option-select",
+   "m2-command-target-record-select",
+   "m2-command-target-record-selected-name",
+   "m2-command-value-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-record-select": "select{}",
+   "m2-command-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ],
+   "m2-command-target-record-select": [
+    "",
+    "enemy_slime",
+    "enemy_meadow_slime",
+    "enemy_cave_bat"
+   ]
+  },
+  "labels": [
+   "값",
+   "어떻게",
+   "적"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 3,
+   "option": 8,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-098-change-enemy-hp": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-record-select": "select",
+   "m2-command-target-record-selected-name": "div",
+   "m2-command-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 6,
+  "controlCount": 3
+ },
+ "m2-099-change-enemy-mp": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-099-change-enemy-mp",
+   "m2-command-operation-option-select",
+   "m2-command-target-record-select",
+   "m2-command-target-record-selected-name",
+   "m2-command-value-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-record-select": "select{}",
+   "m2-command-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ],
+   "m2-command-target-record-select": [
+    "",
+    "enemy_slime",
+    "enemy_meadow_slime",
+    "enemy_cave_bat"
+   ]
+  },
+  "labels": [
+   "값",
+   "어떻게",
+   "적"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 1,
+   "label": 3,
+   "option": 8,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-099-change-enemy-mp": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-record-select": "select",
+   "m2-command-target-record-selected-name": "div",
+   "m2-command-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 6,
+  "controlCount": 3
+ },
+ "m2-100-change-enemy-state": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-100-change-enemy-state",
+   "m2-command-operation-option-select",
+   "m2-command-target-record-select",
+   "m2-command-target-record-selected-name",
+   "m2-command-value-record-select",
+   "m2-command-value-record-selected-name"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-record-select": "select{}",
+   "m2-command-value-record-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ],
+   "m2-command-target-record-select": [
+    "",
+    "enemy_slime",
+    "enemy_meadow_slime",
+    "enemy_cave_bat"
+   ],
+   "m2-command-value-record-select": [
+    "",
+    "state_poison",
+    "state_sleep",
+    "state_attack_up"
+   ]
+  },
+  "labels": [
+   "상태",
+   "어떻게",
+   "적"
+  ],
+  "tags": {
+   "div": 12,
+   "label": 3,
+   "option": 12,
+   "select": 3
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-100-change-enemy-state": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-record-select": "select",
+   "m2-command-target-record-selected-name": "div",
+   "m2-command-value-record-select": "select",
+   "m2-command-value-record-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 3
+ },
+ "m2-101-enemy-encounter": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-101-enemy-encounter",
+   "m2-command-target-record-select",
+   "m2-command-target-record-selected-name"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-target-record-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-target-record-select": [
+    "",
+    "enemy_slime",
+    "enemy_meadow_slime",
+    "enemy_cave_bat"
+   ]
+  },
+  "labels": [
+   "적"
+  ],
+  "tags": {
+   "div": 8,
+   "label": 1,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-101-enemy-encounter": "div",
+   "m2-command-target-record-select": "select",
+   "m2-command-target-record-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 4,
+  "controlCount": 1
+ },
+ "m2-102-change-battleback": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-102-change-battleback",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-picker",
+   "m2-resource-preview",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-resourceId-picker": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-resourceId-picker": [
+    "",
+    "easyrpg-backdrop-cosmos1",
+    "easyrpg-backdrop-dawn1",
+    "easyrpg-backdrop-dawn2"
+   ]
+  },
+  "labels": [
+   "전투 배경"
+  ],
+  "tags": {
+   "div": 9,
+   "label": 1,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-102-change-battleback": "div",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "그림을 고르세요"
+  },
+  "testidCount": 5,
+  "controlCount": 1
+ },
+ "m2-103-show-animation": {
+  "testids": [
+   "event-command-edit-summary",
+   "show-animation-m2-animation-select",
+   "show-animation-m2-animation-select-card",
+   "show-animation-m2-command-body",
+   "show-animation-m2-event-field",
+   "show-animation-m2-event-select",
+   "show-animation-m2-event-select-card",
+   "show-animation-m2-intent",
+   "show-animation-m2-preview",
+   "show-animation-m2-target-mode",
+   "show-animation-m2-target-mode-segment-event",
+   "show-animation-m2-target-mode-segment-player"
+  ],
+  "classes": [
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-layout",
+   "actor-m2-main",
+   "actor-m2-preview",
+   "actor-m2-preview-line",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "empty",
+   "page3-command-body",
+   "party-member-intent",
+   "party-member-intent-body",
+   "party-member-intent-title",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-record-initial",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "controls": {
+   "show-animation-m2-animation-select": "select{}",
+   "show-animation-m2-event-select": "select{hidden}",
+   "show-animation-m2-target-mode": "select{hidden}",
+   "show-animation-m2-target-mode-segment-event": "button{}",
+   "show-animation-m2-target-mode-segment-player": "button{}"
+  },
+  "selectOptions": {
+   "show-animation-m2-animation-select": [
+    "",
+    "anim_hit",
+    "anim_sword",
+    "anim_arrow"
+   ],
+   "show-animation-m2-event-select": [
+    ""
+   ],
+   "show-animation-m2-target-mode": [
+    "player",
+    "event"
+   ]
+  },
+  "labels": [
+   "이벤트",
+   "주인공"
+  ],
+  "tags": {
+   "button": 2,
+   "div": 14,
+   "option": 7,
+   "p": 3,
+   "select": 3,
+   "span": 9
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "show-animation-m2-animation-select": "select",
+   "show-animation-m2-animation-select-card": "span",
+   "show-animation-m2-command-body": "div",
+   "show-animation-m2-event-field": "div",
+   "show-animation-m2-event-select": "select",
+   "show-animation-m2-event-select-card": "span",
+   "show-animation-m2-intent": "div",
+   "show-animation-m2-preview": "div",
+   "show-animation-m2-target-mode": "select",
+   "show-animation-m2-target-mode-segment-event": "button",
+   "show-animation-m2-target-mode-segment-player": "button"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "show-animation-m2-intent": "애니메이션 표시대상 위에 전투 애니메이션을 재생합니다.",
+   "show-animation-m2-preview": "주인공 · (미선택)전투 애니메이션을 맵에서 재생합니다."
+  },
+  "testidCount": 12,
+  "controlCount": 5
+ },
+ "m2-104-battle-events": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-104-battle-events",
+   "m2-command-note-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-note-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "메모"
+  ],
+  "tags": {
+   "div": 6,
+   "input": 1,
+   "label": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-104-battle-events": "div",
+   "m2-command-note-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-note-input": ""
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-105-abort-battle": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-105-abort-battle",
+   "m2-command-note-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-note-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "메모"
+  ],
+  "tags": {
+   "div": 6,
+   "input": 1,
+   "label": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-105-abort-battle": "div",
+   "m2-command-note-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-note-input": ""
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-106-call-common-event": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-106-call-common-event",
+   "m2-command-note-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-note-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "메모"
+  ],
+  "tags": {
+   "div": 6,
+   "input": 1,
+   "label": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-106-call-common-event": "div",
+   "m2-command-note-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-note-input": ""
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-107-force-escape": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-107-force-escape",
+   "m2-command-note-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-note-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "메모"
+  ],
+  "tags": {
+   "div": 6,
+   "input": 1,
+   "label": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-107-force-escape": "div",
+   "m2-command-note-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-note-input": ""
+  },
+  "testidCount": 3,
+  "controlCount": 1
+ },
+ "m2-108-action-times": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-108-action-times",
+   "m2-command-operation-option-select",
+   "m2-command-target-input",
+   "m2-command-value-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-operation-option-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-operation-option-select": [
+    "set",
+    "add",
+    "remove",
+    "toggle"
+   ]
+  },
+  "labels": [
+   "값",
+   "누구에게",
+   "어떻게"
+  ],
+  "tags": {
+   "div": 8,
+   "input": 2,
+   "label": 3,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-108-action-times": "div",
+   "m2-command-operation-option-select": "select",
+   "m2-command-target-input": "input",
+   "m2-command-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 3
+ },
+ "m2-201-camera-control": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-201-camera-control",
+   "m2-command-durationMs-input",
+   "m2-command-mode-option-select",
+   "m2-command-target-option-select",
+   "m2-command-x-input",
+   "m2-command-y-input",
+   "m2-command-zoom-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-durationMs-input": "input[number]{}",
+   "m2-command-mode-option-select": "select{}",
+   "m2-command-target-option-select": "select{}",
+   "m2-command-x-input": "input[number]{}",
+   "m2-command-y-input": "input[number]{}",
+   "m2-command-zoom-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-mode-option-select": [
+    "panTo",
+    "follow",
+    "zoom",
+    "lock"
+   ],
+   "m2-command-target-option-select": [
+    "player",
+    "this-event",
+    "screen"
+   ]
+  },
+  "labels": [
+   "X",
+   "Y",
+   "누구에게",
+   "동작",
+   "시간(ms)",
+   "줌"
+  ],
+  "tags": {
+   "div": 11,
+   "input": 4,
+   "label": 6,
+   "option": 7,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-201-camera-control": "div",
+   "m2-command-durationMs-input": "input",
+   "m2-command-mode-option-select": "select",
+   "m2-command-target-option-select": "select",
+   "m2-command-x-input": "input",
+   "m2-command-y-input": "input",
+   "m2-command-zoom-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 8,
+  "controlCount": 6
+ },
+ "m2-202-screen-effect": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-202-screen-effect",
+   "m2-command-durationMs-input",
+   "m2-command-durationMs-note",
+   "m2-command-effect-option-select",
+   "m2-command-value-color",
+   "m2-command-value-error",
+   "m2-command-value-input",
+   "m2-command-value-swatch-black",
+   "m2-command-value-swatch-blue",
+   "m2-command-value-swatch-green",
+   "m2-command-value-swatch-purple",
+   "m2-command-value-swatch-red",
+   "m2-command-value-swatch-white",
+   "m2-command-value-swatch-yellow",
+   "m2-screen-effect-duration-fast",
+   "m2-screen-effect-duration-normal",
+   "m2-screen-effect-duration-slow",
+   "m2-screen-effect-intent",
+   "m2-screen-effect-value-field"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title",
+   "m2-field-error",
+   "m2-field-note",
+   "m2-number-field",
+   "m2-screen-color-field",
+   "m2-screen-color-picker",
+   "m2-screen-color-row",
+   "m2-screen-color-swatch",
+   "m2-screen-color-swatches",
+   "m2-screen-effect-duration-chip",
+   "m2-screen-effect-duration-presets",
+   "m2-screen-effect-intent"
+  ],
+  "controls": {
+   "m2-command-durationMs-input": "input[number]{}",
+   "m2-command-effect-option-select": "select{}",
+   "m2-command-value-color": "input[color]{hidden}",
+   "m2-command-value-input": "input[text]{hidden}",
+   "m2-command-value-swatch-black": "button{hidden}",
+   "m2-command-value-swatch-blue": "button{hidden}",
+   "m2-command-value-swatch-green": "button{hidden}",
+   "m2-command-value-swatch-purple": "button{hidden}",
+   "m2-command-value-swatch-red": "button{hidden}",
+   "m2-command-value-swatch-white": "button{hidden}",
+   "m2-command-value-swatch-yellow": "button{hidden}",
+   "m2-screen-effect-duration-fast": "button{}",
+   "m2-screen-effect-duration-normal": "button{}",
+   "m2-screen-effect-duration-slow": "button{}"
+  },
+  "selectOptions": {
+   "m2-command-effect-option-select": [
+    "fadeIn",
+    "fadeOut",
+    "flash",
+    "tint",
+    "weather"
+   ]
+  },
+  "labels": [
+   "값",
+   "검정",
+   "노랑",
+   "느린 1600ms",
+   "보라",
+   "보통 800ms",
+   "빠른 300ms",
+   "빨강",
+   "시간(ms)",
+   "초록",
+   "파랑",
+   "효과",
+   "흰색"
+  ],
+  "tags": {
+   "button": 10,
+   "div": 17,
+   "input": 3,
+   "label": 3,
+   "option": 5,
+   "p": 1,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-202-screen-effect": "div",
+   "m2-command-durationMs-input": "input",
+   "m2-command-durationMs-note": "div",
+   "m2-command-effect-option-select": "select",
+   "m2-command-value-color": "input",
+   "m2-command-value-error": "div",
+   "m2-command-value-input": "input",
+   "m2-command-value-swatch-black": "button",
+   "m2-command-value-swatch-blue": "button",
+   "m2-command-value-swatch-green": "button",
+   "m2-command-value-swatch-purple": "button",
+   "m2-command-value-swatch-red": "button",
+   "m2-command-value-swatch-white": "button",
+   "m2-command-value-swatch-yellow": "button",
+   "m2-screen-effect-duration-fast": "button",
+   "m2-screen-effect-duration-normal": "button",
+   "m2-screen-effect-duration-slow": "button",
+   "m2-screen-effect-intent": "div",
+   "m2-screen-effect-value-field": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-durationMs-note": "적용 범위 #~#",
+   "m2-command-value-error": "",
+   "m2-screen-effect-intent": "페이드 인검게 덮인 화면을 #ms 동안 걷어내며 서서히 밝아진다. 값은 쓰지 않는다."
+  },
+  "testidCount": 20,
+  "controlCount": 14
+ },
+ "m2-203-spawn-event": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-203-spawn-event",
+   "m2-command-eventId-record-select",
+   "m2-command-eventId-record-selected-name",
+   "m2-command-mapId-record-select",
+   "m2-command-mapId-record-selected-name",
+   "m2-command-prefabId-input",
+   "m2-command-x-input",
+   "m2-command-y-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-eventId-record-select": "select{}",
+   "m2-command-mapId-record-select": "select{}",
+   "m2-command-prefabId-input": "input[text]{}",
+   "m2-command-x-input": "input[number]{}",
+   "m2-command-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-eventId-record-select": [
+    ""
+   ],
+   "m2-command-mapId-record-select": [
+    "",
+    "map_blank_start"
+   ]
+  },
+  "labels": [
+   "X",
+   "Y",
+   "맵",
+   "이벤트 ID",
+   "프리팹 ID"
+  ],
+  "tags": {
+   "div": 14,
+   "input": 3,
+   "label": 5,
+   "option": 3,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-203-spawn-event": "div",
+   "m2-command-eventId-record-select": "select",
+   "m2-command-eventId-record-selected-name": "div",
+   "m2-command-mapId-record-select": "select",
+   "m2-command-mapId-record-selected-name": "div",
+   "m2-command-prefabId-input": "input",
+   "m2-command-x-input": "input",
+   "m2-command-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 9,
+  "controlCount": 5
+ },
+ "m2-204-remove-event": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-204-remove-event",
+   "m2-command-eventId-record-select",
+   "m2-command-eventId-record-selected-name"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-record-picker",
+   "m2-record-selected-name"
+  ],
+  "controls": {
+   "m2-command-eventId-record-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-eventId-record-select": [
+    ""
+   ]
+  },
+  "labels": [
+   "이벤트"
+  ],
+  "tags": {
+   "div": 8,
+   "label": 1,
+   "option": 1,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-204-remove-event": "div",
+   "m2-command-eventId-record-select": "select",
+   "m2-command-eventId-record-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 4,
+  "controlCount": 1
+ },
+ "m2-205-pathfind-move": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-205-pathfind-move",
+   "m2-command-speed-input",
+   "m2-command-target-input",
+   "m2-command-wait-checkbox",
+   "m2-command-x-input",
+   "m2-command-y-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-speed-input": "input[number]{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-wait-checkbox": "input[checkbox]{checked}",
+   "m2-command-x-input": "input[number]{}",
+   "m2-command-y-input": "input[number]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "X",
+   "Y",
+   "누구에게",
+   "속도",
+   "완료까지 대기"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 5,
+   "label": 5
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-205-pathfind-move": "div",
+   "m2-command-speed-input": "input",
+   "m2-command-target-input": "input",
+   "m2-command-wait-checkbox": "input",
+   "m2-command-x-input": "input",
+   "m2-command-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 5
+ },
+ "m2-206-wait-until": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-206-wait-until",
+   "m2-command-condition-option-select",
+   "m2-command-target-input",
+   "m2-command-timeoutMs-input",
+   "m2-command-value-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-condition-option-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-timeoutMs-input": "input[number]{}",
+   "m2-command-value-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-condition-option-select": [
+    "switchOn",
+    "switchOff",
+    "variable",
+    "region",
+    "eventIdle"
+   ]
+  },
+  "labels": [
+   "값",
+   "누구에게",
+   "조건",
+   "최대 대기(ms)"
+  ],
+  "tags": {
+   "div": 9,
+   "input": 3,
+   "label": 4,
+   "option": 5,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-206-wait-until": "div",
+   "m2-command-condition-option-select": "select",
+   "m2-command-target-input": "input",
+   "m2-command-timeoutMs-input": "input",
+   "m2-command-value-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 6,
+  "controlCount": 4
+ },
+ "m2-207-region-trigger": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-action-option-select",
+   "m2-command-body-m2-207-region-trigger",
+   "m2-command-eventId-record-select",
+   "m2-command-eventId-record-selected-name",
+   "m2-command-regionId-input",
+   "m2-command-switchId-record-open",
+   "m2-command-switchId-record-select",
+   "m2-command-switchId-record-selected-name"
+  ],
+  "classes": [
+   "btn",
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "field",
+   "m2-command-body",
+   "m2-record-modal-picker",
+   "m2-record-picker",
+   "m2-record-selected-name",
+   "small"
+  ],
+  "controls": {
+   "m2-command-action-option-select": "select{}",
+   "m2-command-eventId-record-select": "select{}",
+   "m2-command-regionId-input": "input[text]{}",
+   "m2-command-switchId-record-open": "button{}",
+   "m2-command-switchId-record-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-action-option-select": [
+    "enter",
+    "exit",
+    "stay"
+   ],
+   "m2-command-eventId-record-select": [
+    ""
+   ],
+   "m2-command-switchId-record-select": [
+    "",
+    "sw_0001",
+    "sw_0002",
+    "sw_0003",
+    "sw_0004",
+    "sw_0005",
+    "sw_0006",
+    "sw_0007",
+    "sw_0008",
+    "sw_0009",
+    "sw_0010",
+    "sw_0011",
+    "sw_0012",
+    "sw_0013",
+    "sw_0014",
+    "sw_0015",
+    "sw_0016",
+    "sw_0017",
+    "sw_0018",
+    "sw_0019",
+    "sw_0020"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "동작",
+   "스위치",
+   "이벤트",
+   "지역 ID"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 13,
+   "input": 1,
+   "label": 4,
+   "option": 25,
+   "select": 3,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-action-option-select": "select",
+   "m2-command-body-m2-207-region-trigger": "div",
+   "m2-command-eventId-record-select": "select",
+   "m2-command-eventId-record-selected-name": "div",
+   "m2-command-regionId-input": "input",
+   "m2-command-switchId-record-open": "button",
+   "m2-command-switchId-record-select": "select",
+   "m2-command-switchId-record-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 9,
+  "controlCount": 5
+ },
+ "m2-208-quest-objective": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-208-quest-objective",
+   "m2-command-objectiveId-input",
+   "m2-command-questId-input",
+   "m2-command-state-option-select",
+   "m2-command-text-textarea"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-objectiveId-input": "input[text]{}",
+   "m2-command-questId-input": "input[text]{}",
+   "m2-command-state-option-select": "select{}",
+   "m2-command-text-textarea": "textarea{}"
+  },
+  "selectOptions": {
+   "m2-command-state-option-select": [
+    "start",
+    "update",
+    "complete",
+    "fail"
+   ]
+  },
+  "labels": [
+   "내용",
+   "목표 ID",
+   "상태",
+   "퀘스트 ID"
+  ],
+  "tags": {
+   "div": 9,
+   "input": 2,
+   "label": 4,
+   "option": 4,
+   "select": 1,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-208-quest-objective": "div",
+   "m2-command-objectiveId-input": "input",
+   "m2-command-questId-input": "input",
+   "m2-command-state-option-select": "select",
+   "m2-command-text-textarea": "textarea"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 6,
+  "controlCount": 4
+ },
+ "m2-210-sound-layer": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-210-sound-layer",
+   "m2-command-channel-option-select",
+   "m2-command-fadeMs-input",
+   "m2-command-resourceId-picker",
+   "m2-command-resourceId-preview",
+   "m2-command-resourceId-selected-name",
+   "m2-command-volume-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-resource-picker",
+   "m2-resource-preview",
+   "m2-resource-selected-name"
+  ],
+  "controls": {
+   "m2-command-channel-option-select": "select{}",
+   "m2-command-fadeMs-input": "input[number]{}",
+   "m2-command-resourceId-picker": "select{}",
+   "m2-command-volume-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-channel-option-select": [
+    "bgm",
+    "bgs",
+    "me",
+    "se",
+    "ambient"
+   ],
+   "m2-command-resourceId-picker": [
+    "",
+    "tex_easyrpg_chipset_combined_town",
+    "tex_easyrpg_chipset_dungeon",
+    "tex_easyrpg_chipset_interior",
+    "tex_easyrpg_charset_actor1",
+    "tex_easyrpg_charset_actor2",
+    "tex_easyrpg_charset_actor3",
+    "cc0-jetrel-ale",
+    "cc0-jetrel-antidote-green",
+    "cc0-jetrel-antidote-plus",
+    "easyrpg-faceset-actor1-00",
+    "easyrpg-faceset-actor1-01",
+    "easyrpg-faceset-actor1-02",
+    "easyrpg-battle-arrow",
+    "easyrpg-battle-blow",
+    "easyrpg-battle-sword1",
+    "easyrpg-battle-weapon-weapon",
+    "easyrpg-game-over-game-over",
+    "easyrpg-monster-hornet",
+    "easyrpg-backdrop-cosmos1",
+    "easyrpg-backdrop-dawn1",
+    "easyrpg-backdrop-dawn2",
+    "easyrpg-system-royal",
+    "easyrpg-system-system",
+    "easyrpg-system-system-a",
+    "easyrpg-system2-system2-a",
+    "easyrpg-system2-system2-b",
+    "easyrpg-system2-system2-c",
+    "easyrpg-title-title1",
+    "easyrpg-title-title2",
+    "easyrpg-title-title3"
+   ]
+  },
+  "labels": [
+   "리소스",
+   "볼륨",
+   "채널",
+   "페이드(ms)"
+  ],
+  "tags": {
+   "div": 12,
+   "input": 2,
+   "label": 4,
+   "option": 36,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-210-sound-layer": "div",
+   "m2-command-channel-option-select": "select",
+   "m2-command-fadeMs-input": "input",
+   "m2-command-resourceId-picker": "select",
+   "m2-command-resourceId-preview": "div",
+   "m2-command-resourceId-selected-name": "div",
+   "m2-command-volume-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-resourceId-preview": "그림을 고르세요"
+  },
+  "testidCount": 8,
+  "controlCount": 4
+ },
+ "m2-211-weighted-branch": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-variable-picker-open",
+   "m2-command-body-m2-211-weighted-branch",
+   "weighted-branch-add-row",
+   "weighted-branch-bar",
+   "weighted-branch-bar-empty",
+   "weighted-branch-guide",
+   "weighted-branch-help",
+   "weighted-branch-index-0",
+   "weighted-branch-index-1",
+   "weighted-branch-label-0",
+   "weighted-branch-label-1",
+   "weighted-branch-legend",
+   "weighted-branch-pct-0",
+   "weighted-branch-pct-1",
+   "weighted-branch-remove-0",
+   "weighted-branch-remove-1",
+   "weighted-branch-result-variable",
+   "weighted-branch-row-0",
+   "weighted-branch-row-1",
+   "weighted-branch-rows",
+   "weighted-branch-summary-live",
+   "weighted-branch-variable-warn",
+   "weighted-branch-weight-0",
+   "weighted-branch-weight-1"
+  ],
+  "classes": [
+   "btn",
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "m2-command-body",
+   "small",
+   "weighted-branch-add",
+   "weighted-branch-bar",
+   "weighted-branch-bar-empty",
+   "weighted-branch-bar-seg",
+   "weighted-branch-command-body",
+   "weighted-branch-field",
+   "weighted-branch-guide",
+   "weighted-branch-index",
+   "weighted-branch-label",
+   "weighted-branch-label-input",
+   "weighted-branch-legend",
+   "weighted-branch-legend-item",
+   "weighted-branch-legend-swatch",
+   "weighted-branch-pct",
+   "weighted-branch-remove",
+   "weighted-branch-row",
+   "weighted-branch-rows",
+   "weighted-branch-summary-live",
+   "weighted-branch-variable-warn",
+   "weighted-branch-weight-input"
+  ],
+  "controls": {
+   "event-variable-picker-open": "button{}",
+   "weighted-branch-add-row": "button{}",
+   "weighted-branch-label-0": "input[text]{}",
+   "weighted-branch-label-1": "input[text]{}",
+   "weighted-branch-remove-0": "button{}",
+   "weighted-branch-remove-1": "button{}",
+   "weighted-branch-result-variable>select#0": "select{}",
+   "weighted-branch-weight-0": "input[number]{}",
+   "weighted-branch-weight-1": "input[number]{}"
+  },
+  "selectOptions": {
+   "weighted-branch-result-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "+ 결과 추가",
+   "×",
+   "결과 목록",
+   "결과 변수",
+   "확률"
+  ],
+  "tags": {
+   "button": 4,
+   "div": 15,
+   "input": 4,
+   "label": 3,
+   "option": 21,
+   "p": 4,
+   "select": 1,
+   "span": 11,
+   "strong": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button",
+   "m2-command-body-m2-211-weighted-branch": "div",
+   "weighted-branch-add-row": "button",
+   "weighted-branch-bar": "div",
+   "weighted-branch-bar-empty": "p",
+   "weighted-branch-guide": "div",
+   "weighted-branch-help": "p",
+   "weighted-branch-index-0": "span",
+   "weighted-branch-index-1": "span",
+   "weighted-branch-label-0": "input",
+   "weighted-branch-label-1": "input",
+   "weighted-branch-legend": "div",
+   "weighted-branch-pct-0": "span",
+   "weighted-branch-pct-1": "span",
+   "weighted-branch-remove-0": "button",
+   "weighted-branch-remove-1": "button",
+   "weighted-branch-result-variable": "span",
+   "weighted-branch-row-0": "div",
+   "weighted-branch-row-1": "div",
+   "weighted-branch-rows": "div",
+   "weighted-branch-summary-live": "div",
+   "weighted-branch-variable-warn": "p",
+   "weighted-branch-weight-0": "input",
+   "weighted-branch-weight-1": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "weighted-branch-summary-live": "성공 #% · 실패 #% → 변수 (미선택)"
+  },
+  "testidCount": 25,
+  "controlCount": 9
+ },
+ "m2-212-cutscene-control": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-action-option-select",
+   "m2-command-body-m2-212-cutscene-control",
+   "m2-command-enabled-checkbox"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-action-option-select": "select{}",
+   "m2-command-enabled-checkbox": "input[checkbox]{checked}"
+  },
+  "selectOptions": {
+   "m2-command-action-option-select": [
+    "lockPlayer",
+    "hideHud",
+    "skipPoint"
+   ]
+  },
+  "labels": [
+   "동작",
+   "상태"
+  ],
+  "tags": {
+   "div": 7,
+   "input": 1,
+   "label": 2,
+   "option": 3,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-action-option-select": "select",
+   "m2-command-body-m2-212-cutscene-control": "div",
+   "m2-command-enabled-checkbox": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 4,
+  "controlCount": 2
+ },
+ "m2-213-checkpoint-save": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-213-checkpoint-save",
+   "m2-command-label-input",
+   "m2-command-restoreOnGameOver-checkbox",
+   "m2-command-slotId-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-label-input": "input[text]{}",
+   "m2-command-restoreOnGameOver-checkbox": "input[checkbox]{checked}",
+   "m2-command-slotId-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "게임오버 시 복귀",
+   "슬롯",
+   "이름"
+  ],
+  "tags": {
+   "div": 8,
+   "input": 3,
+   "label": 3
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-213-checkpoint-save": "div",
+   "m2-command-label-input": "input",
+   "m2-command-restoreOnGameOver-checkbox": "input",
+   "m2-command-slotId-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 3
+ },
+ "m2-214-ui-command": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-214-ui-command",
+   "m2-command-durationMs-input",
+   "m2-command-message-textarea",
+   "m2-command-surface-option-select"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-durationMs-input": "input[number]{}",
+   "m2-command-message-textarea": "textarea{}",
+   "m2-command-surface-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-surface-option-select": [
+    "toast",
+    "hud",
+    "banner",
+    "menuPrompt"
+   ]
+  },
+  "labels": [
+   "메시지",
+   "시간(ms)",
+   "표시 위치"
+  ],
+  "tags": {
+   "div": 8,
+   "input": 1,
+   "label": 3,
+   "option": 4,
+   "select": 1,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-214-ui-command": "div",
+   "m2-command-durationMs-input": "input",
+   "m2-command-message-textarea": "textarea",
+   "m2-command-surface-option-select": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 3
+ },
+ "m2-215-debug-log": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-215-debug-log",
+   "m2-command-level-option-select",
+   "m2-command-message-textarea"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-level-option-select": "select{}",
+   "m2-command-message-textarea": "textarea{}"
+  },
+  "selectOptions": {
+   "m2-command-level-option-select": [
+    "info",
+    "warn",
+    "error"
+   ]
+  },
+  "labels": [
+   "메시지",
+   "수준"
+  ],
+  "tags": {
+   "div": 7,
+   "label": 2,
+   "option": 3,
+   "select": 1,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-215-debug-log": "div",
+   "m2-command-level-option-select": "select",
+   "m2-command-message-textarea": "textarea"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 4,
+  "controlCount": 2
+ },
+ "m2-216-evaluate-expression": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-216-evaluate-expression",
+   "m2-command-expression-textarea",
+   "m2-command-resultVariableId-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-expression-textarea": "textarea{}",
+   "m2-command-resultVariableId-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "결과 변수",
+   "식"
+  ],
+  "tags": {
+   "div": 7,
+   "input": 1,
+   "label": 2,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-216-evaluate-expression": "div",
+   "m2-command-expression-textarea": "textarea",
+   "m2-command-resultVariableId-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 4,
+  "controlCount": 2
+ },
+ "m2-217-data-query": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-217-data-query",
+   "m2-command-query-option-select",
+   "m2-command-target-input",
+   "m2-command-variableId-record-open",
+   "m2-command-variableId-record-select",
+   "m2-command-variableId-record-selected-name"
+  ],
+  "classes": [
+   "btn",
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "field",
+   "m2-command-body",
+   "m2-record-modal-picker",
+   "m2-record-picker",
+   "m2-record-selected-name",
+   "small"
+  ],
+  "controls": {
+   "m2-command-query-option-select": "select{}",
+   "m2-command-target-input": "input[text]{}",
+   "m2-command-variableId-record-open": "button{}",
+   "m2-command-variableId-record-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-query-option-select": [
+    "gold",
+    "itemCount",
+    "playerX",
+    "playerY",
+    "switch",
+    "variable"
+   ],
+   "m2-command-variableId-record-select": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ]
+  },
+  "labels": [
+   "(선택)",
+   "누구에게",
+   "변수",
+   "조회"
+  ],
+  "tags": {
+   "button": 1,
+   "div": 10,
+   "input": 1,
+   "label": 3,
+   "option": 27,
+   "select": 2,
+   "span": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-217-data-query": "div",
+   "m2-command-query-option-select": "select",
+   "m2-command-target-input": "input",
+   "m2-command-variableId-record-open": "button",
+   "m2-command-variableId-record-select": "select",
+   "m2-command-variableId-record-selected-name": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 4
+ }
+}
