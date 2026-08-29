@@ -21,13 +21,24 @@ describe("DB write tools", () => {
     expect(result.data).toEqual(after);
   });
 
-  it("upsert_equipment은 중첩 statBonuses를 반영하고 알 수 없는 필드를 거부한다", () => {
+  it("upsert_equipment은 전투 축과 중첩 statBonuses를 반영하고 알 수 없는 필드를 거부한다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const created = runTool(ctx, "upsert_equipment", {
-      equipment: { id: "equip_test_sword", name: "시험검", slot: "weapon", statBonuses: { attack: 12 } },
+      equipment: {
+        id: "equip_test_sword",
+        name: "시험검",
+        slot: "weapon",
+        accuracy: 83,
+        criticalRate: 17,
+        statBonuses: { attack: 12 },
+      },
     }, { dryRun: false });
     expect(created.ok, JSON.stringify(created.issues)).toBe(true);
-    expect(ctx.project.database.equipment.find((entry) => entry.id === "equip_test_sword")?.statBonuses.attack).toBe(12);
+    expect(ctx.project.database.equipment.find((entry) => entry.id === "equip_test_sword")).toMatchObject({
+      accuracy: 83,
+      criticalRate: 17,
+      statBonuses: { attack: 12 },
+    });
 
     const rejected = runTool(ctx, "upsert_equipment", {
       equipment: { id: "equip_test_sword", statBonuses: { attackPower: 99 } },

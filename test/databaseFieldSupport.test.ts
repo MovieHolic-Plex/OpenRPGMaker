@@ -12,6 +12,8 @@ const EXPECTED_FIELDS = [
   "usageMessage",
   "equipmentProfile",
   "twoHanded",
+  "accuracy",
+  "criticalRate",
   "usableAsItemSkillId",
   "stateInflictIds",
   "stateInflictionChance",
@@ -23,15 +25,17 @@ const EXPECTED_FIELDS = [
 ];
 
 describe("database field support descriptor", () => {
-  it("is the unique exhaustive source for the sixteen-field truth contract", () => {
+  it("is the unique exhaustive source for the eighteen-field truth contract", () => {
     expect(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).toEqual(EXPECTED_FIELDS);
-    expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(16);
+    expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(18);
     expect(DATABASE_FIELD_SUPPORT.filter((entry) => entry.support === "runtime").map((entry) => entry.field)).toEqual([
       "consumptionLimit",
       "usableActorIds",
       "usableClassIds",
       "seedParameterBonuses",
       "twoHanded",
+      "accuracy",
+      "criticalRate",
       "usableAsItemSkillId",
       "stateInflictIds",
       "stateInflictionChance",

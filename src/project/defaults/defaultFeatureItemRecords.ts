@@ -1,6 +1,7 @@
 import { normalizeItemRecord } from "../databaseRecordModel";
-import { normalizeCropRecord } from "../farmModel";
-import type { CropRecord, ItemRecord } from "../types";
+import { normalizeCropRecord } from "@/project/farmModel";
+import type { CropRecord } from "@/project/types";
+import type { ItemRecord } from "../types";
 
 const icon = (slug: string) => `cc0-jetrel-gen2-${slug}`;
 
@@ -35,21 +36,23 @@ export function defaultFeatureItemRecords(): ItemRecord[] {
     featureItem({ id: "item_gen2_rattle_ball", name: "방울 공", type: "special", scope: "none", price: 90, description: "파티 몬스터와 공놀이해 친밀도 18과 경험치 5를 얻습니다.", iconResourceId: icon("rattle-ball"), imageResourceId: icon("rattle-ball"), occasion: "field", consumable: true, careProfile: { kind: "toy", friendshipDelta: 18, expDelta: 5 } }),
     featureItem({ id: "item_gen2_training_frisbee", name: "훈련 원반", type: "special", scope: "none", price: 160, description: "파티 몬스터를 훈련해 경험치 35와 친밀도 12를 더합니다.", iconResourceId: icon("training-frisbee"), imageResourceId: icon("training-frisbee"), occasion: "field", consumable: true, careProfile: { kind: "toy", friendshipDelta: 12, expDelta: 35 } }),
 
-    // 작물 씨앗과 영구 성장 씨앗
+    // 작물 씨앗 — 농사를 켠 프로젝트(농사 데모)의 종자밭에 심는다.
     featureItem({ id: "item_gen2_turnip_seed", name: "순무 씨앗", type: "seed", scope: "none", price: 25, description: "봄 밭에 심으면 이틀 뒤 다시 심을 순무 씨앗 한 봉지를 거둡니다.", iconResourceId: icon("turnip-seed"), imageResourceId: icon("turnip-seed"), occasion: "never", consumable: true }),
     featureItem({ id: "item_gen2_moonbean_seed", name: "달콩 씨앗", type: "seed", scope: "none", price: 45, description: "여름 밭에서 사흘 자라 달콩 씨앗 두 봉지로 불어납니다.", iconResourceId: icon("moonbean-seed"), imageResourceId: icon("moonbean-seed"), occasion: "never", consumable: true }),
     featureItem({ id: "item_gen2_firepepper_seed", name: "불고추 씨앗", type: "seed", scope: "none", price: 55, description: "여름과 가을 밭에서 사흘 뒤 불고추 씨앗 한 봉지를 되찾습니다.", iconResourceId: icon("firepepper-seed"), imageResourceId: icon("firepepper-seed"), occasion: "never", consumable: true }),
     featureItem({ id: "item_gen2_stargrain_seed", name: "별보리 씨앗", type: "seed", scope: "none", price: 40, description: "가을 밭에서 이틀 자라 별보리 씨앗 세 봉지를 수확합니다.", iconResourceId: icon("stargrain-seed"), imageResourceId: icon("stargrain-seed"), occasion: "never", consumable: true }),
+
+    // 영구 성장 씨앗
     featureItem({ id: "item_gen2_might_seed", name: "완력의 씨앗", type: "seed", scope: "ally", price: 420, description: "메뉴에서 선택한 아군의 공격력을 영구히 2 올립니다.", iconResourceId: icon("might-seed"), imageResourceId: icon("might-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 2, defense: 0, mind: 0, agility: 0 } }),
     featureItem({ id: "item_gen2_guard_seed", name: "인내의 씨앗", type: "seed", scope: "ally", price: 420, description: "메뉴에서 선택한 아군의 방어력을 영구히 2 높입니다.", iconResourceId: icon("guard-seed"), imageResourceId: icon("guard-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 0, defense: 2, mind: 0, agility: 0 } }),
     featureItem({ id: "item_gen2_wisdom_seed", name: "지혜의 씨앗", type: "seed", scope: "ally", price: 460, description: "메뉴에서 선택한 아군의 정신력을 영구히 2 더합니다.", iconResourceId: icon("wisdom-seed"), imageResourceId: icon("wisdom-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 0, defense: 0, mind: 2, agility: 0 } }),
     featureItem({ id: "item_gen2_haste_seed", name: "민첩의 씨앗", type: "seed", scope: "ally", price: 460, description: "메뉴에서 선택한 아군의 민첩성을 영구히 2 올립니다.", iconResourceId: icon("haste-seed"), imageResourceId: icon("haste-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 0, defense: 0, mind: 0, agility: 2 } }),
 
     // 이벤트 스위치 기동품
-    featureItem({ id: "item_gen2_sun_relay", name: "태양 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 첫 번째 태양 장치 스위치를 켭니다.", iconResourceId: icon("sun-relay"), imageResourceId: icon("sun-relay"), occasion: "field", consumable: true, switchId: "sw_0001" }),
-    featureItem({ id: "item_gen2_moon_relay", name: "달 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용하면 두 번째 달빛 장치 스위치가 켜집니다.", iconResourceId: icon("moon-relay"), imageResourceId: icon("moon-relay"), occasion: "field", consumable: true, switchId: "sw_0002" }),
-    featureItem({ id: "item_gen2_bridge_relay", name: "교량 기동석", type: "switch", scope: "none", price: 0, description: "메뉴 사용으로 세 번째 교량 제어 스위치를 활성화합니다.", iconResourceId: icon("bridge-relay"), imageResourceId: icon("bridge-relay"), occasion: "field", consumable: true, switchId: "sw_0003" }),
-    featureItem({ id: "item_gen2_seal_relay", name: "봉인 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 소모해 네 번째 봉인 해제 스위치를 작동시킵니다.", iconResourceId: icon("seal-relay"), imageResourceId: icon("seal-relay"), occasion: "field", consumable: true, switchId: "sw_0004" }),
+    featureItem({ id: "item_gen2_sun_relay", name: "태양 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 태양 기동석 전용 스위치를 켭니다.", iconResourceId: icon("sun-relay"), imageResourceId: icon("sun-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_sun_relay" }),
+    featureItem({ id: "item_gen2_moon_relay", name: "달 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 달 기동석 전용 스위치를 켭니다.", iconResourceId: icon("moon-relay"), imageResourceId: icon("moon-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_moon_relay" }),
+    featureItem({ id: "item_gen2_bridge_relay", name: "교량 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 교량 기동석 전용 스위치를 켭니다.", iconResourceId: icon("bridge-relay"), imageResourceId: icon("bridge-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_bridge_relay" }),
+    featureItem({ id: "item_gen2_seal_relay", name: "봉인 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 봉인 기동석 전용 스위치를 켭니다.", iconResourceId: icon("seal-relay"), imageResourceId: icon("seal-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_seal_relay" }),
 
     // 속성 공격과 상태 공격
     featureItem({ id: "item_gen2_frost_vial", name: "서리 유리병", type: "special", scope: "enemy", price: 130, description: "전투에서 적 하나에게 얼음 속성 피해를 주는 병입니다.", iconResourceId: icon("frost-vial"), imageResourceId: icon("frost-vial"), animationId: "anim_magic", occasion: "battle", consumable: true, skillId: "skill_item_frost_vial" }),
@@ -77,18 +80,18 @@ export function defaultFeatureItemRecords(): ItemRecord[] {
   ];
 }
 
+const cropStage = (resourceId: string, frame: number) => ({ resourceId, frame });
+
 /**
- * 새 작물 씨앗이 농사 권위자에서 실제로 심어지도록 잉는 최소 작물 정의다.
- *
- * 기본 DB도 농사 데모도 이걸 싣지 않는다. 농사는 옵트인 시스템이어서 미사용 상트에서
- * 경고가 나고(`systemOptInLint`), 데모 작물은 단계별 스프라이트를 요구하는데(`farmingSprites`)
- * 이 네 종은 아직 전용 아트가 없다. 작가가 농사를 켜는 시점에 이 템플릿을 싣으면 된다.
+ * 위 작물 씨앗이 심어지는 종자밭. 씨앗을 되돌려 주는 밭이라 harvestItemId 가 씨앗과 같다.
+ * 농사는 옵트인이라 기본 DB 는 싣지 않고 농사 데모 레이어가 실어 쓴다. 데모 작물은 단계마다
+ * 스프라이트가 있어야 해서(farmingSprites 계약) 기존 작물 아트를 재사용한다.
  */
 export function defaultFeatureCropRecords(): CropRecord[] {
   return [
-    normalizeCropRecord({ id: "crop_gen2_turnip", name: "순무 종자밭", seedItemId: "item_gen2_turnip_seed", harvestItemId: "item_gen2_turnip_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }], seasons: ["spring"] }),
-    normalizeCropRecord({ id: "crop_gen2_moonbean", name: "달콩 종자밭", seedItemId: "item_gen2_moonbean_seed", harvestItemId: "item_gen2_moonbean_seed", harvestCount: 2, stages: [{ days: 1 }, { days: 1 }, { days: 1 }], seasons: ["summer"] }),
-    normalizeCropRecord({ id: "crop_gen2_firepepper", name: "불고추 종자밭", seedItemId: "item_gen2_firepepper_seed", harvestItemId: "item_gen2_firepepper_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }, { days: 1 }], seasons: ["summer", "fall"] }),
-    normalizeCropRecord({ id: "crop_gen2_stargrain", name: "별보리 종자밭", seedItemId: "item_gen2_stargrain_seed", harvestItemId: "item_gen2_stargrain_seed", harvestCount: 3, stages: [{ days: 1 }, { days: 1 }], seasons: ["fall"] }),
+    normalizeCropRecord({ id: "crop_gen2_turnip", name: "순무 종자밭", seedItemId: "item_gen2_turnip_seed", harvestItemId: "item_gen2_turnip_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }], seasons: ["spring"], graphicStages: [cropStage("farming-crop-potato", 0), cropStage("farming-crop-potato", 1)] }),
+    normalizeCropRecord({ id: "crop_gen2_moonbean", name: "달콩 종자밭", seedItemId: "item_gen2_moonbean_seed", harvestItemId: "item_gen2_moonbean_seed", harvestCount: 2, stages: [{ days: 1 }, { days: 1 }, { days: 1 }], seasons: ["summer"], graphicStages: [cropStage("farming-crop-melon", 0), cropStage("farming-crop-melon", 1), cropStage("farming-crop-melon", 2)] }),
+    normalizeCropRecord({ id: "crop_gen2_firepepper", name: "불고추 종자밭", seedItemId: "item_gen2_firepepper_seed", harvestItemId: "item_gen2_firepepper_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }, { days: 1 }], seasons: ["summer", "fall"], graphicStages: [cropStage("farming-crop-tomato", 0), cropStage("farming-crop-tomato", 1), cropStage("farming-crop-tomato", 2)] }),
+    normalizeCropRecord({ id: "crop_gen2_stargrain", name: "별보리 종자밭", seedItemId: "item_gen2_stargrain_seed", harvestItemId: "item_gen2_stargrain_seed", harvestCount: 3, stages: [{ days: 1 }, { days: 1 }], seasons: ["fall"], graphicStages: [cropStage("farming-crop-corn", 0), cropStage("farming-crop-corn", 1)] }),
   ];
 }
