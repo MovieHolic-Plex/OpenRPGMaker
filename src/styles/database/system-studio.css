@@ -624,7 +624,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
-    background: var(--studio-surface-2) !important;
+    background-color: var(--studio-surface-2) !important;
     border-color: var(--studio-line) !important;
     color: var(--studio-text) !important;
   }
@@ -1312,7 +1312,7 @@
 }
 
 .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
-  background: var(--db-studio-surface) !important;
+  background-color: var(--db-studio-surface) !important;
   border-color: var(--db-studio-border-default) !important;
   color: var(--db-studio-text-1) !important;
 }

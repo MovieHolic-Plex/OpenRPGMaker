@@ -467,7 +467,7 @@
   }
 
   .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(input, select, textarea) {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     color: var(--db-modern-text);
@@ -857,7 +857,7 @@
   }
 
   .database-modal-body :is(.db-system-form, .db-terms-form) :is(input, select, code) {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     box-sizing: border-box;

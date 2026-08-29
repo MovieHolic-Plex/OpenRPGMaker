@@ -151,7 +151,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select) {
-  background: var(--db-studio-surface, var(--db-studio-surface));
+  background-color: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.14));
   border-radius: 6px;
   color: var(--db-studio-text-1, var(--db-studio-text-1));

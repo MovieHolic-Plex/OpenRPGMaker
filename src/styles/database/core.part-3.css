@@ -30,7 +30,7 @@
 .tileset-ai-question-custom-answer,
 .tileset-ai-inline-field input,
 .tileset-ai-inline-field select {
-  background: var(--surface-panel);
+  background-color: var(--surface-panel);
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
