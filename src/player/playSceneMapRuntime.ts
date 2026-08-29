@@ -22,6 +22,7 @@ import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityCo
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
+import { applyStoredCameraState } from "@/player/playSceneCamera";
 import { runCommands } from "@/player/playSceneInterpreter";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { destroyAllCharacterShadows } from "@/player/characterShadow";
@@ -523,7 +524,27 @@ export function refreshRuntimeEntities(scene: PlaySceneContext): void {
   renderEventLayer(scene);
   scene.registerPageMoveRoutes();
   syncScreenEffects(scene);
+  rebindEventFollowCamera(scene);
   void fireAutoTriggers(scene);
+}
+
+/**
+ * 이벤트 스프라이트를 파괴·재생성한 뒤 카메라를 새 객체에 다시 건다.
+ *
+ * 왜 필요한가: renderEventLayer 는 clearEventSprites 로 모든 이벤트 스프라이트를 destroy
+ * 하고 새 객체를 만든다. Phaser 의 Camera.preRender 는 follow 대상의 destroy 여부를 보지
+ * 않고 매 프레임 `follow.x` 를 읽고, destroy 는 x/y 를 지우지 않는다 — 그래서 이벤트를
+ * 따라가던 카메라는 마지막 좌표에 **영구히 얼어붙는다**. refreshRuntimeSurfaces 는
+ * applyStoredCameraState 로 다시 걸지만 이 이벤트 전용 경로에는 그게 없었다.
+ *
+ * 플레이어 추적은 건드리지 않는다: 플레이어 스프라이트는 그대로라 다시 걸 이유가 없고,
+ * startFollow 는 midPoint/scrollX 를 대상 좌표로 하드 설정하므로(Camera.js §startFollow)
+ * 시간표 점검마다 부르면 0.2 러프가 죽고 카메라가 튄다.
+ */
+export function rebindEventFollowCamera(scene: PlaySceneContext): void {
+  const camera = scene.session.camera;
+  if (camera?.mode !== "follow" || camera.target.kind !== "event") return;
+  applyStoredCameraState(scene);
 }
 
 export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {

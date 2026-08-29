@@ -7,14 +7,18 @@
 // 즉 인접 통행 관계는 무향 그래프이고, 연결 성분은 findChasePath 의 도달 가능성과
 // 정확히 일치한다(근사가 아니다). 성분이 다르면 A* 는 반드시 빈 경로를 낸다.
 //
-// 무엇을 안 덮는가: 발자국(footprint)이 1x1 보다 큰 이동. canMoveFootprint 는 이동
-// 방향의 **선행 모서리**만 보므로 폭이 2 이상이면 대칭이 깨진다(오른쪽으로 갈 때는
-// 오른쪽 열, 왼쪽으로 갈 때는 왼쪽 열을 본다). 그래서 pass 가 있는 추격은 이 색인을
-// 쓰지 않고 예전처럼 A* 를 돈다.
+// 무엇을 안 덮는가: **통행 사각이 1x1 보다 큰** 이동. canMoveFootprint 는 이동 방향의
+// 선행 모서리만 보므로 폭이 2 이상이면 대칭이 깨진다(오른쪽으로 갈 때는 오른쪽 열,
+// 왼쪽으로 갈 때는 왼쪽 열을 본다). 판정 기준은 `pass` 인자의 **유무가 아니라 사각 크기**다
+// — 런타임 추격은 1x1 NPC 에도 pass 를 객체로 항상 넘기므로(playSceneAutonomous.ts),
+// 유무로 가르면 모든 추격에서 색인이 죽는다(chaseAi.ts §passIsUnitRect).
 //
-// ── 비용을 어디에 두었는가 (실측 100×100)
+// ── 비용을 어디에 두었는가 (실측 100×100 = 1만 칸)
 // 색인을 만드는 데 2.9ms 다. 그래서 **미리 만들지 않는다** — A* 가 실제로 빈 경로를 낸
 // 뒤에만(이미 6.7ms 를 쓴 뒤) 만들어 둔다. 그 다음부터 같은 질의는 25µs 다.
+// 두 값 모두 맵 면적에 **선형**이다. clampMapSize 상한 256×256(6.5만 칸)이면 빌드 약
+// 19ms, 지문 약 160µs 로 예산을 넘는다 — 그래서 방금 훑은 범위가 면적에 비해 작으면
+// 아예 만들지 않는다(§armTerrainComponents 의 scannedCells).
 // 도달 **가능** 질의는 라벨 두 번 읽기로 끝나 지문 비용을 치르지 않는다 — 낙관적으로 낸
 // "도달 가능" 은 틀려도 호출부가 A* 를 돌려 스스로 바로잡기 때문이다(§terrainMayReach).
 
@@ -86,13 +90,29 @@ export function terrainMayReach(
 }
 
 /**
+ * 색인을 만들 만큼 방금 훑은 범위가 넓은가를 가르는 비율. 방금 탐색이 훑은 칸이
+ * 면적의 1/8 이상이면 만든다.
+ *
+ * 왜 필요한가: 빌드와 지문은 둘 다 **면적**에 선형인데, 방금 치른 탐색은 **자기 성분**에만
+ * 선형이다. 집 안에 갇힌 주민(성분 20칸)이 100×100 맵에서 실패하면 20칸을 훑고 1만 칸을
+ * 짓게 된다 — 색인이 없을 때보다 느려지고, 그 뒤 질의마다 지문 25µs 를 더 낸다.
+ * 넓은 성분에서 실패한 경우(맵 전체가 열려 있고 목표만 벽 안인 그 렉의 원인)에는 방금
+ * 훑은 값이 이미 빌드와 같은 수준이라 즉시 이득이다.
+ */
+const INDEX_SCAN_RATIO = 8;
+
+/**
  * 이 맵의 성분 색인을 만들어 둔다. 전체 탐색이 **이미 실패한 뒤**에 부른다 —
  * 그 시점에는 색인을 만드는 값(2.9ms)이 방금 치른 탐색(6.7ms)보다 싸고, 다음부터 같은
  * 질의가 25µs 로 끝난다. 미리 만들지 않으므로 도달 불가가 없는 맵은 값을 치르지 않는다.
+ *
+ * `scannedCells` 는 방금 실패한 탐색이 닫은 칸 수다. 주면 그 값이 면적에 비해 너무 작을
+ * 때 만들지 않는다(§INDEX_SCAN_RATIO). 생략하면 언제나 만든다.
  */
-export function armTerrainComponents(project: Project, map: GameMap): void {
+export function armTerrainComponents(project: Project, map: GameMap, scannedCells?: number): void {
   const cached = indexByMap.get(map);
   if (cached && validIndex(project, map, cached)) return;
+  if (scannedCells !== undefined && scannedCells * INDEX_SCAN_RATIO < map.width * map.height) return;
   rebuildIndex(project, map);
 }
 
@@ -118,8 +138,9 @@ function sameLabel(
 
 function validIndex(project: Project, map: GameMap, index: ComponentIndex): boolean {
   if (index.width !== map.width || index.height !== map.height) return false;
-  if (index.tileset !== getTileset(project, map)) return false;
-  return index.fingerprint === tileFingerprint(map);
+  const tileset = getTileset(project, map);
+  if (index.tileset !== tileset) return false;
+  return index.fingerprint === passabilityFingerprint(map, tileset);
 }
 
 function rebuildIndex(project: Project, map: GameMap): ComponentIndex | null {
@@ -131,7 +152,7 @@ function rebuildIndex(project: Project, map: GameMap): ComponentIndex | null {
     width: map.width,
     height: map.height,
     tileset,
-    fingerprint: tileFingerprint(map),
+    fingerprint: passabilityFingerprint(map, tileset),
   };
   indexByMap.set(map, built);
   return built;
@@ -189,13 +210,20 @@ function unite(parent: Int32Array, rank: Int32Array, a: number, b: number): void
 }
 
 /**
- * 통행 판정에 들어가는 모든 입력의 32비트 지문 — 하위/상위 타일과 타일 스택. FNV-1a 변형.
+ * 통행 판정에 들어가는 모든 입력의 32비트 지문 — 맵의 하위/상위 타일과 타일 스택,
+ * 그리고 **타일셋의 통행 정의**. FNV-1a 변형.
+ *
+ * 타일셋을 왜 넣는가: identity 비교만으로는 부족하다. `setPassageMark` 는 같은 TilesetDef
+ * 객체의 `passability[tile]` 과 `priority[tile]` 을 **제자리에서** 바꾼다
+ * (tilesetPassage.ts §setPassageMark). 그러면 맵 타일 배열은 그대로이므로 타일만 해싱한
+ * 지문은 낡음을 못 잡고, 색인이 "확정 도달 불가" 를 우겨 벽이 열렸는데 추격을 포기한다.
+ * 타일셋 길이는 맵 면적보다 훨씬 작아 비용은 사실상 그대로다.
  *
  * 스택은 지금 폐기된 개념이라 `topTileInStack` 이 언제나 undefined 를 낸다(스택 루프는
  * 사실상 돌지 않는다). 그래도 `tileAt` 이 스택을 거치므로 지문에 넣어 둔다 — 스택이
  * 되살아나도 캐시가 조용히 낡지 않는다.
  */
-function tileFingerprint(map: GameMap): number {
+function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): number {
   const lower = map.lowerTiles;
   const upper = map.upperTiles;
   let hash = 0x811c9dc5 | 0;
@@ -207,7 +235,29 @@ function tileFingerprint(map: GameMap): number {
   }
   hash = mixStacks(hash, map.lowerTileStacks);
   hash = mixStacks(hash, map.upperTileStacks);
-  return hash | 0;
+  return mixTilesetPassage(hash, tileset) | 0;
+}
+
+/**
+ * 타일셋의 통행 관련 필드만 섞는다 — 4방향 통행 비트와 우선도(★ 판정에 쓰인다,
+ * collision.ts §tilePassability). 그림·이름 같은 통행 무관 필드는 넣지 않는다.
+ */
+function mixTilesetPassage(hash: number, tileset: TilesetDef | null): number {
+  if (!tileset) return hash;
+  let mixed = hash;
+  const flags = tileset.passability;
+  for (let index = 0; index < flags.length; index += 1) {
+    const flag = flags[index];
+    const bits = flag
+      ? (flag.up ? 1 : 0) | (flag.down ? 2 : 0) | (flag.left ? 4 : 0) | (flag.right ? 8 : 0)
+      : 16;
+    mixed = Math.imul(mixed ^ bits, 0x01000193);
+  }
+  const priority = tileset.priority;
+  for (let index = 0; index < priority.length; index += 1) {
+    mixed = Math.imul(mixed ^ (priority[index] === "upper" ? 1 : 0), 0x01000193);
+  }
+  return mixed;
 }
 
 function mixStacks(hash: number, stacks: Record<number, number[]> | undefined): number {

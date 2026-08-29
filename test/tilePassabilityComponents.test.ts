@@ -129,6 +129,42 @@ describe("색인이 있어도 결과가 같다 (무작위 맵 대조)", () => {
     }
   });
 
+  // accept 필터를 **거는** 경로가 실제 호출부(npcSchedules 의 nearestReachableEdge)다.
+  // 필터 없는 대조만 하면, 색인이 후보를 미리 빼는 순서 변화가 accept 와 얽혔을 때를 놓친다.
+  it("accept 필터를 걸어도 색인 없음/있음에서 같은 후보를 낸다", () => {
+    const random = mulberry32(31337);
+    for (let round = 0; round < 24; round += 1) {
+      const map = blankMap(`map_accept_${round}`);
+      const project = projectWith(map);
+      const wallRatio = 0.05 + (round % 8) * 0.07;
+      for (let index = 0; index < map.lowerTiles.length; index += 1) {
+        if (random() < wallRatio) map.lowerTiles[index] = TILE.WATER;
+      }
+      const from = { x: 1, y: 1 };
+      map.lowerTiles[from.y * SIZE + from.x] = TILE.GRASS;
+      // 경계 한 바퀴 — nearestReachableEdge 와 같은 후보 모양.
+      const candidates: ChasePoint[] = [];
+      for (let x = 0; x < SIZE; x += 1) candidates.push({ x, y: 0 }, { x, y: SIZE - 1 });
+      for (let y = 1; y < SIZE - 1; y += 1) candidates.push({ x: 0, y }, { x: SIZE - 1, y });
+      // 후보를 절반쯤 떨어뜨리는 결정적 필터. 낙관 통과가 accept 와 얽히면 여기서 갈린다.
+      const accept = (point: ChasePoint): boolean => (point.x + point.y) % 3 !== 0;
+
+      invalidateTilePassabilityComponents(map);
+      const cold = nearestReachableCandidate(project, map, from, candidates, accept);
+      armTerrainComponents(project, map);
+      const warm = nearestReachableCandidate(project, map, from, candidates, accept);
+
+      expect(warm, `round ${round}: 색인이 accept 후보 선택을 바꿨다`).toEqual(cold);
+      if (cold) {
+        expect(accept(cold), `round ${round}: accept 가 거부한 후보를 골랐다`).toBe(true);
+        expect(
+          referenceReachable(project, map, from, cold),
+          `round ${round}: 도달 불가한 후보를 골랐다`
+        ).toBe(true);
+      }
+    }
+  });
+
   it("nearestReachableCandidate 는 색인 없음/있음에서 같은 후보를 낸다", () => {
     const random = mulberry32(99);
     for (let round = 0; round < 24; round += 1) {

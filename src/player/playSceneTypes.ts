@@ -61,6 +61,12 @@ export type AutonomousMover = {
   chaseHome?: { readonly x: number; readonly y: number };
   /** 액션 전투 상태기계가 선딜/후딜/돌진 중 이동을 억제할 때 세운다. */
   actionFrozen?: boolean;
+  /**
+   * 같은 걸음이 연속으로 막힌 횟수. 순서(sequence) 경로는 절대 방향 배열이라 막힌 걸음을
+   * 소비하면 남은 계획 전부가 한 칸 어긋난다 — 그래서 몇 번은 같은 걸음을 다시 시도한다.
+   * playSceneAutonomous §updateAutonomousNPCs 참조.
+   */
+  blockedSteps?: number;
 };
 
 export type AutonomousMoveTween = {

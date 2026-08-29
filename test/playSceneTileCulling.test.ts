@@ -164,4 +164,21 @@ describe("playSceneTileCulling", () => {
     expect(visibleFar).toEqual([]);
     expect(created.some((image) => image.visible && image.tx <= 22)).toBe(true);
   });
+
+  // 내려간 씬을 놓았는지는 GC 를 강제할 수 없어 단위 테스트로 관찰할 수 없다. 대신
+  // resetCullableTiles 를 부른 뒤 추적이 처음부터 다시 시작되는지(=기억을 실제로 버렸는지)
+  // 확인한다. 씬 종료 시 이 함수를 부르는 것은 PlayScene 의 shutdown/destroy 훅이다.
+  it("resetCullableTiles 뒤에는 추적이 처음부터 다시 시작된다", () => {
+    const host = { name: "씬" };
+    const before = cullTile();
+    trackCullableTile(host, before, 5, 5);
+    resetCullableTiles(host);
+
+    const after = cullTile();
+    trackCullableTile(host, after, 5, 5);
+    syncTileCulling(host, { x: 1000, y: 1000, width: 320, height: 240 });
+
+    expect(after.visible, "새로 추적한 타일이 컬링되지 않았다").toBe(false);
+    expect(before.writes, "버린 타일이 아직 추적 목록에 남아 있다").toBe(0);
+  });
 });

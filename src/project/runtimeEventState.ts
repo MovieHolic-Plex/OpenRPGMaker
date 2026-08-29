@@ -245,6 +245,16 @@ function incomingEventIds(
   return ids;
 }
 
+/**
+ * 이 이벤트가 런타임에서 사라졌는가 — erase(전역) 또는 remove(맵별). forEachRuntimeEventView
+ * 가 순회에서 빼는 두 조건과 **같은 술어**다. 이벤트 순회를 거치지 않고 project.maps 를
+ * 직접 훑는 곳(npcSchedules 등)이 같은 판정을 베끼지 않도록 여기서 한 번만 정의한다.
+ */
+export function runtimeEventGone(session: PlaySessionLike, mapId: string, eventId: string): boolean {
+  if (session.erasedEventIds?.includes(eventId) === true) return true;
+  return session.removedEventIds?.[mapId]?.includes(eventId) === true;
+}
+
 function idSet(ids: readonly string[] | undefined): ReadonlySet<string> | undefined {
   return ids && ids.length > 0 ? new Set(ids) : undefined;
 }
