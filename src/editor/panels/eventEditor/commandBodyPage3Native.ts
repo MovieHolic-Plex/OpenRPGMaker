@@ -1032,6 +1032,7 @@ export function showPictureBody(
     });
     const marker = el("div", {
       class: `page3-preview-picture-marker${url ? "" : " is-missing"}`,
+      dataset: { testid: "show-picture-preview-marker" },
     });
     marker.style.left = `${clampPct((px / 320) * 100)}%`;
     marker.style.top = `${clampPct((py / 240) * 100)}%`;
@@ -1040,7 +1041,9 @@ export function showPictureBody(
     const previewScale = (parseInt(scale.value, 10) || 100) / 100;
     const previewRotation = parseInt(rotation.value, 10) || 0;
     marker.style.transform = `scale(${previewScale}) rotate(${previewRotation}deg)`;
-    marker.style.opacity = String((parseInt(opacity.value, 10) || 0) / 255);
+    // opacity 입력은 퍼센트(0~100)다 — opacityToPercent 가 0~255 를 환산해 넣었고 라벨도 "불투명도(%)".
+    // 255 로 나누면 100% 가 0.39 로 보인다. 런타임(pictureCssOpacity)은 0~255 를 받으므로 단위가 다르다.
+    marker.style.opacity = String(clampPct(parseInt(opacity.value, 10) || 0) / 100);
     if (url) {
       marker.append(
         el("img", {

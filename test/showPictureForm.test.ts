@@ -138,4 +138,24 @@ describe("그림 표시 폼", () => {
     expect(text).toContain("왼쪽 위");
     expect(text).not.toContain("중심 앵커");
   });
+
+  // 회귀: 불투명도 입력칸은 퍼센트(0~100)인데 미리보기가 255 로 나눠,
+  // 100% 로 저작해도 반지가 opacity 0.39 로 보여 게임 화면과 어깃났다.
+  it("미리보기 불투명도는 퍼센트를 그대로 반영한다", () => {
+    const seeded: ShowPicture = { ...BASE, opacity: 255 };
+    const { context } = stagedContext(seeded);
+    const body = renderWithFakeDom(() => showPictureBody(context, seeded));
+
+    expect(findByTestId(body, "show-picture-opacity-input")?.value).toBe("100");
+    expect(Number(findByTestId(body, "show-picture-preview-marker")?.style.opacity)).toBe(1);
+  });
+
+  it("미리보기 불투명도는 입력 변경을 따라간다", () => {
+    const { context } = stagedContext(BASE);
+    const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+
+    change(findByTestId(body, "show-picture-opacity-input"), "50");
+
+    expect(Number(findByTestId(body, "show-picture-preview-marker")?.style.opacity)).toBeCloseTo(0.5, 3);
+  });
 });

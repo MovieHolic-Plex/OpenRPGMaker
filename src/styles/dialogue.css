@@ -18,6 +18,9 @@
   --runtime-dialogue-full-width: 92px;
 }
 
+/* 런타임 z-index 밴드: 픽처 레이어 20 < 티이어 29 / 밴드(미니맵·핸슬롯·존 피들백) 30
+   < 대사창 39 < action-hud 40. 이 값이 없으면 대사창은 z-index auto 로 깔려,
+   인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
 .dialogue-overlay {
   align-items: stretch;
   bottom: 0;
@@ -29,6 +32,7 @@
   pointer-events: none;
   position: absolute;
   right: 0;
+  z-index: 39;
 }
 
 .dialogue-overlay.position-top {

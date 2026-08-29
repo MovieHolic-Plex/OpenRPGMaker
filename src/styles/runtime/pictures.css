@@ -1,6 +1,18 @@
 /* 픽처(그림) 레이어. runtimeDom.syncPictureLayer 가 픽처 번호별 슬롯을 배치한다.
    실제 이미지는 <img class="picture-layer-image">, 미해석 리소스는 텍스트 라벨로 폴백. */
 @layer runtime {
+  /* 슬롯 z-index 는 JS 가 `20 + 픽처번호` 로 인라인 지정한다(pictureZIndex). 레이어에
+     스태킹 컨텍스트가 없으면 그 값이 .play-stage 컨텍스트로 그대로 새어나가, pic20 이상은
+     대사창(39)·HUD(40)를 덮는다. position+z-index 로 컨텍스트를 만들어 픽처 밴드를 20 에
+     묶어 둔다 — 슬롯끼리의 상대 순서는 컨텍스트 안에서 그대로 유지된다.
+     inset:0 이라 좌표계는 .play-stage 와 동일하다(슬롯 left/top 불변). */
+  .picture-layer {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 20;
+  }
+
   .picture-layer-item {
     position: absolute;
     transform-origin: top left;

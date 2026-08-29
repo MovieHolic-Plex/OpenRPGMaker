@@ -348,6 +348,8 @@ export class RuntimeDomOverlay {
   ): void {
     const target = pictureTransformFromState(picture);
     let slot = this.pictureSlots.get(picture.pictureId);
+    // 슬롯이 이 호출에서 처음 만들어졌는지. 첫 표시는 트윈 분기 조건이 다르다(아래 주석).
+    const created = !slot;
     if (!slot) {
       const container = document.createElement("div");
       container.className = "picture-layer-item";
@@ -370,7 +372,19 @@ export class RuntimeDomOverlay {
     this.syncPictureMedia(slot, picture, project);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
-    if (duration > 0 && !pictureTransformsEqual(slot.displayed, target)) {
+    if (created && duration > 0) {
+      // 첫 표시 + 전환 시간 = 페이드인. 새 슬롯은 displayed 가 곧 target 이라
+      // 아래 트윈 조건(displayed !== target)이 항상 거짓이고 duration<=0 분기도 안 타서,
+      // 이 분기가 없으면 applyPictureTransform 이 한 번도 불리지 않는다 —
+      // 픽처가 위치·확대·불투명도 없이 기본 자리에 뜬다.
+      const from: PictureTransform = { ...target, opacity: 0 };
+      slot.from = from;
+      slot.to = target;
+      slot.startedAt = nowMs();
+      slot.durationMs = duration;
+      slot.displayed = from;
+      applyPictureTransform(slot.container, from);
+    } else if (duration > 0 && !pictureTransformsEqual(slot.displayed, target)) {
       slot.from = slot.displayed;
       slot.to = target;
       slot.startedAt = nowMs();
