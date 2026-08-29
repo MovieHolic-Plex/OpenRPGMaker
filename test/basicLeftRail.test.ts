@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderBasicLeftRail, resetBasicLeftRailForTests } from "@/editor/panels/basicLeftRail";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
+import { resetEditorUiModeForTests, setEditorUiMode } from "@/editor/editorUiMode";
+import { uiLabel } from "@/editor/uiCopy";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -116,6 +117,90 @@ describe("basic icon rail", () => {
     });
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")?.textContent).toContain("그림이 없습니다");
+  });
+
+  it("도구·레이어의 단일 선택을 aria-current 로 노출한다 (aria-pressed 아님)", () => {
+    const paint = findByTestId(container as unknown as FakeElement, "tool-paint");
+    const select = findByTestId(container as unknown as FakeElement, "tool-select");
+    expect(paint?.getAttribute("aria-current")).toBe("true");
+    expect(select?.getAttribute("aria-current")).toBeNull();
+    expect(paint?.getAttribute("aria-pressed")).toBeNull();
+    expect(select?.getAttribute("aria-pressed")).toBeNull();
+
+    const lower = findByTestId(container as unknown as FakeElement, "layer-lower");
+    const upper = findByTestId(container as unknown as FakeElement, "layer-upper");
+    expect(lower?.getAttribute("aria-current")).toBe("true");
+    expect(upper?.getAttribute("aria-current")).toBeNull();
+    expect(lower?.getAttribute("aria-pressed")).toBeNull();
+  });
+
+  it("세 레이어 버튼이 서로 다른 글리프를 그린다", () => {
+    const signatures = ["layer-lower", "layer-upper", "layer-event"].map((id) => {
+      const svg = findByTestId(container as unknown as FakeElement, id)?.querySelector("svg");
+      expect(svg, id).toBeTruthy();
+      return (svg as FakeElement).children
+        .map((child) => `${child.tagName}:${JSON.stringify(child.attrs)}`)
+        .join("|");
+    });
+    expect(new Set(signatures).size).toBe(3);
+  });
+
+  it("플라이아웃을 닫으면 포커스가 그것을 연 토글로 돌아온다", () => {
+    click("basic-rail-toggle-tiles");
+    renderBasicLeftRail(container);
+    const closeBtn = findByTestId(container as unknown as FakeElement, "basic-flyout-close") as unknown as HTMLElement | null;
+    expect(closeBtn).toBeTruthy();
+    closeBtn!.focus();
+    closeBtn!.click();
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+    expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "basic-rail-toggle-tiles"));
+  });
+
+  it("모드를 바꿨다 초보로 돌아오면 열지 않은 플라이아웃이 남지 않는다", () => {
+    click("basic-rail-toggle-tiles");
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
+
+    setEditorUiMode("standard", null);
+    setEditorUiMode("beginner", null);
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+  });
+
+  it("쓸 타일이 이미 있으면 칠하기가 방금 닫은 플라이아웃을 다시 열지 않는다", () => {
+    editorState.set({ selectedTile: 0, tool: "select" });
+    renderBasicLeftRail(container);
+    click("basic-rail-toggle-tiles");
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
+    click("basic-rail-toggle-tiles");
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+
+    click("tool-paint");
+    renderBasicLeftRail(container);
+    expect(editorState.get().tool).toBe("paint");
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+  });
+
+  it("타일셋이 없으면 비활성 타일 버튼이 이벤트 레이어가 아니라 실제 원인을 말한다", () => {
+    const project = store.getCurrent();
+    const map = project.maps[project.startMapId];
+    store.replace({
+      ...project,
+      tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => id !== map.tilesetId)),
+    });
+    renderBasicLeftRail(container);
+    const title = findByTestId(container as unknown as FakeElement, "basic-rail-toggle-tiles")?.getAttribute("title");
+    expect(title).toContain(uiLabel("tilesetMissing"));
+    expect(title).not.toContain("이벤트 레이어");
+  });
+
+  it("소비처 없는 data-rail-label 잔해를 더 쓰지 않는다", () => {
+    for (const id of ["tool-paint", "layer-lower", "basic-rail-toggle-tiles", "basic-rail-toggle-maps"]) {
+      expect(findByTestId(container as unknown as FakeElement, id)?.dataset.railLabel, id).toBeUndefined();
+    }
   });
 
   it("맵 토글 → 플라이아웃에 기본 맵 목록 렌더 (전문가 인라인 액션 없음)", () => {

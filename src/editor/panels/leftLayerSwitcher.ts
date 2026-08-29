@@ -59,7 +59,7 @@ export function makeLeftLayerSwitcher(activeLayer: Layer): HTMLElement {
           type: "button",
           title: `${label} (${layer.hotkey}) — ${layer.hint}`,
           "aria-label": `${label} 레이어`,
-          "aria-pressed": String(active),
+          ...(active ? { "aria-current": "true" } : {}),
         },
         dataset: { testid: layer.testId, sidebarLayer: layer.id },
         children: [
