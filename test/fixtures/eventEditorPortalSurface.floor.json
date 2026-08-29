@@ -1,0 +1,128 @@
+{
+ "commandPicker": {
+  "testidCount": 90,
+  "controlCount": 82,
+  "classCount": 27,
+  "rootCount": 1
+ },
+ "commandPickerTab2": {
+  "testidCount": 62,
+  "controlCount": 53,
+  "classCount": 33,
+  "rootCount": 1
+ },
+ "commandPickerTab3": {
+  "testidCount": 117,
+  "controlCount": 94,
+  "classCount": 27,
+  "rootCount": 1
+ },
+ "commandPickerTab4": {
+  "testidCount": 82,
+  "controlCount": 60,
+  "classCount": 27,
+  "rootCount": 1
+ },
+ "commandPickerSearch": {
+  "testidCount": 21,
+  "controlCount": 18,
+  "classCount": 30,
+  "rootCount": 1
+ },
+ "commandPickerSearchInformational": {
+  "testidCount": 15,
+  "controlCount": 10,
+  "classCount": 31,
+  "rootCount": 1
+ },
+ "commandPickerSearchEmpty": {
+  "testidCount": 10,
+  "controlCount": 8,
+  "classCount": 21,
+  "rootCount": 1
+ },
+ "commandPickerFavorites": {
+  "testidCount": 100,
+  "controlCount": 90,
+  "classCount": 31,
+  "rootCount": 1
+ },
+ "commandPickerGrid": {
+  "testidCount": 90,
+  "controlCount": 82,
+  "classCount": 28,
+  "rootCount": 1
+ },
+ "pageMoveRoute": {
+  "testidCount": 78,
+  "controlCount": 76,
+  "classCount": 60,
+  "rootCount": 1
+ },
+ "npcGraphic": {
+  "testidCount": 46,
+  "controlCount": 40,
+  "classCount": 32,
+  "rootCount": 1
+ },
+ "mapPoint": {
+  "testidCount": 6,
+  "controlCount": 8,
+  "classCount": 26,
+  "rootCount": 1
+ },
+ "characterIdPicker": {
+  "testidCount": 11,
+  "controlCount": 8,
+  "classCount": 31,
+  "rootCount": 1
+ },
+ "transferPlayer": {
+  "testidCount": 14,
+  "controlCount": 14,
+  "classCount": 20,
+  "rootCount": 1
+ },
+ "fieldMonsterTemplate": {
+  "testidCount": 12,
+  "controlCount": 11,
+  "classCount": 28,
+  "rootCount": 1
+ },
+ "recordPickerSwitch": {
+  "testidCount": 27,
+  "controlCount": 26,
+  "classCount": 32,
+  "rootCount": 1
+ },
+ "recordPickerItem": {
+  "testidCount": 6,
+  "controlCount": 7,
+  "classCount": 24,
+  "rootCount": 1
+ },
+ "commandEditDialog": {
+  "testidCount": 42,
+  "controlCount": 29,
+  "classCount": 60,
+  "rootCount": 1
+ },
+ "commandListContextMenu": {
+  "testidCount": 9,
+  "controlCount": 8,
+  "classCount": 13,
+  "rootCount": 1
+ },
+ "eventEditorHelp": {
+  "testidCount": 26,
+  "controlCount": 13,
+  "classCount": 25,
+  "rootCount": 1
+ },
+ "characterIdAutocomplete": {
+  "testidCount": 2,
+  "controlCount": 1,
+  "classCount": 5,
+  "rootCount": 1
+ }
+}

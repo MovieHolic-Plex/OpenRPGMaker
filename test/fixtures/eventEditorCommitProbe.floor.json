@@ -1,0 +1,310 @@
+{
+ "text": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "changeFace": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "choices": {
+  "probeCount": 5,
+  "commitCount": 4
+ },
+ "fork": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "wait": {
+  "probeCount": 4,
+  "commitCount": 3
+ },
+ "inputWait": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "inputNumber": {
+  "probeCount": 4,
+  "commitCount": 2
+ },
+ "label": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "gotoLabel": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "loop": {
+  "probeCount": 1,
+  "commitCount": 0
+ },
+ "breakLoop": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "setSwitch": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "setVariable": {
+  "probeCount": 5,
+  "commitCount": 5
+ },
+ "timer": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "advanceTime": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "advanceCropGrowth": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "setTime": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "sleepUntilMorning": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "transfer": {
+  "probeCount": 8,
+  "commitCount": 6
+ },
+ "moveEvent": {
+  "probeCount": 12,
+  "commitCount": 4
+ },
+ "setEventGraphicPattern": {
+  "probeCount": 9,
+  "commitCount": 6
+ },
+ "changeTile": {
+  "probeCount": 5,
+  "commitCount": 5
+ },
+ "callCommonEvent": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "callMapEvent": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "battleProcessing": {
+  "probeCount": 8,
+  "commitCount": 8
+ },
+ "learnSkill": {
+  "probeCount": 5,
+  "commitCount": 4
+ },
+ "changeExp": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "changeLevel": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "changeLifeSkillExp": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "promoteActor": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "changeEquipment": {
+  "probeCount": 4,
+  "commitCount": 3
+ },
+ "changeActorHp": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "changeActorMp": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "recoverAll": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "enterHeroName": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "changeGold": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "changeItem": {
+  "probeCount": 5,
+  "commitCount": 5
+ },
+ "craftRecipe": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "applyItemUpgrade": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "equipTool": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "openChest": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "changeFriendship": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "changeFactionStance": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "getFriendship": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "changeParty": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "giveMonster": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "moveMonster": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "evolveMonster": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "addFollower": {
+  "probeCount": 9,
+  "commitCount": 9
+ },
+ "removeFollower": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "setLighting": {
+  "probeCount": 5,
+  "commitCount": 5
+ },
+ "addLight": {
+  "probeCount": 11,
+  "commitCount": 11
+ },
+ "removeLight": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "setWeather": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "showAnimation": {
+  "probeCount": 6,
+  "commitCount": 6
+ },
+ "showPicture": {
+  "probeCount": 8,
+  "commitCount": 8
+ },
+ "erasePicture": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "playAudio": {
+  "probeCount": 2,
+  "commitCount": 1
+ },
+ "stopAudio": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "playMovie": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
+ "cutsceneControl": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "displayTextSettings": {
+  "probeCount": 4,
+  "commitCount": 4
+ },
+ "shop": {
+  "probeCount": 20,
+  "commitCount": 15
+ },
+ "inn": {
+  "probeCount": 9,
+  "commitCount": 8
+ },
+ "checkpointSave": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "openSaveMenu": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "spawnFieldEnemy": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "despawnFieldEnemy": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "runControl": {
+  "probeCount": 5,
+  "commitCount": 5
+ },
+ "killPlayer": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "triggerEnding": {
+  "probeCount": 1,
+  "commitCount": 1
+ },
+ "gameOver": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "ending": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "returnToTitle": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "setFlag": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "setSelfSwitch": {
+  "probeCount": 0,
+  "commitCount": 0
+ },
+ "m2Command": {
+  "probeCount": 6,
+  "commitCount": 6
+ }
+}

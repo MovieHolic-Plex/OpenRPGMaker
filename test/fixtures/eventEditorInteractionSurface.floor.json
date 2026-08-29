@@ -1,0 +1,464 @@
+{
+ "text": {
+  "probeCount": 4,
+  "reactingCount": 2,
+  "classCount": 49,
+  "initialTestidCount": 37
+ },
+ "changeFace": {
+  "probeCount": 3,
+  "reactingCount": 2,
+  "classCount": 30,
+  "initialTestidCount": 129
+ },
+ "choices": {
+  "probeCount": 5,
+  "reactingCount": 2,
+  "classCount": 19,
+  "initialTestidCount": 10
+ },
+ "fork": {
+  "probeCount": 4,
+  "reactingCount": 1,
+  "classCount": 30,
+  "initialTestidCount": 18
+ },
+ "wait": {
+  "probeCount": 4,
+  "reactingCount": 2,
+  "classCount": 17,
+  "initialTestidCount": 15
+ },
+ "inputWait": {
+  "probeCount": 1,
+  "reactingCount": 1,
+  "classCount": 8,
+  "initialTestidCount": 3
+ },
+ "inputNumber": {
+  "probeCount": 4,
+  "reactingCount": 1,
+  "classCount": 21,
+  "initialTestidCount": 15
+ },
+ "label": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 2,
+  "initialTestidCount": 2
+ },
+ "gotoLabel": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 2,
+  "initialTestidCount": 2
+ },
+ "loop": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 12,
+  "initialTestidCount": 11
+ },
+ "breakLoop": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 2,
+  "initialTestidCount": 2
+ },
+ "setSwitch": {
+  "probeCount": 3,
+  "reactingCount": 2,
+  "classCount": 13,
+  "initialTestidCount": 9
+ },
+ "setVariable": {
+  "probeCount": 5,
+  "reactingCount": 3,
+  "classCount": 23,
+  "initialTestidCount": 22
+ },
+ "timer": {
+  "probeCount": 3,
+  "reactingCount": 0,
+  "classCount": 2,
+  "initialTestidCount": 4
+ },
+ "advanceTime": {
+  "probeCount": 3,
+  "reactingCount": 0,
+  "classCount": 5,
+  "initialTestidCount": 4
+ },
+ "advanceCropGrowth": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 5,
+  "initialTestidCount": 2
+ },
+ "setTime": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 5,
+  "initialTestidCount": 3
+ },
+ "sleepUntilMorning": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 2
+ },
+ "transfer": {
+  "probeCount": 8,
+  "reactingCount": 6,
+  "classCount": 23,
+  "initialTestidCount": 17
+ },
+ "moveEvent": {
+  "probeCount": 12,
+  "reactingCount": 3,
+  "classCount": 45,
+  "initialTestidCount": 68
+ },
+ "setEventGraphicPattern": {
+  "probeCount": 9,
+  "reactingCount": 5,
+  "classCount": 32,
+  "initialTestidCount": 50
+ },
+ "changeTile": {
+  "probeCount": 5,
+  "reactingCount": 3,
+  "classCount": 33,
+  "initialTestidCount": 18
+ },
+ "callCommonEvent": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 2
+ },
+ "callMapEvent": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 2
+ },
+ "battleProcessing": {
+  "probeCount": 8,
+  "reactingCount": 7,
+  "classCount": 48,
+  "initialTestidCount": 31
+ },
+ "learnSkill": {
+  "probeCount": 5,
+  "reactingCount": 5,
+  "classCount": 49,
+  "initialTestidCount": 22
+ },
+ "changeExp": {
+  "probeCount": 3,
+  "reactingCount": 1,
+  "classCount": 29,
+  "initialTestidCount": 12
+ },
+ "changeLevel": {
+  "probeCount": 3,
+  "reactingCount": 1,
+  "classCount": 29,
+  "initialTestidCount": 12
+ },
+ "changeLifeSkillExp": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 1
+ },
+ "promoteActor": {
+  "probeCount": 2,
+  "reactingCount": 2,
+  "classCount": 12,
+  "initialTestidCount": 5
+ },
+ "changeEquipment": {
+  "probeCount": 4,
+  "reactingCount": 4,
+  "classCount": 58,
+  "initialTestidCount": 23
+ },
+ "changeActorHp": {
+  "probeCount": 4,
+  "reactingCount": 1,
+  "classCount": 33,
+  "initialTestidCount": 21
+ },
+ "changeActorMp": {
+  "probeCount": 4,
+  "reactingCount": 1,
+  "classCount": 33,
+  "initialTestidCount": 21
+ },
+ "recoverAll": {
+  "probeCount": 1,
+  "reactingCount": 1,
+  "classCount": 9,
+  "initialTestidCount": 3
+ },
+ "enterHeroName": {
+  "probeCount": 3,
+  "reactingCount": 1,
+  "classCount": 10,
+  "initialTestidCount": 5
+ },
+ "changeGold": {
+  "probeCount": 4,
+  "reactingCount": 2,
+  "classCount": 20,
+  "initialTestidCount": 16
+ },
+ "changeItem": {
+  "probeCount": 5,
+  "reactingCount": 3,
+  "classCount": 27,
+  "initialTestidCount": 18
+ },
+ "craftRecipe": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 10,
+  "initialTestidCount": 3
+ },
+ "applyItemUpgrade": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 10,
+  "initialTestidCount": 3
+ },
+ "equipTool": {
+  "probeCount": 1,
+  "reactingCount": 1,
+  "classCount": 13,
+  "initialTestidCount": 3
+ },
+ "openChest": {
+  "probeCount": 2,
+  "reactingCount": 1,
+  "classCount": 22,
+  "initialTestidCount": 9
+ },
+ "changeFriendship": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 4,
+  "initialTestidCount": 3
+ },
+ "changeFactionStance": {
+  "probeCount": 4,
+  "reactingCount": 0,
+  "classCount": 4,
+  "initialTestidCount": 5
+ },
+ "getFriendship": {
+  "probeCount": 2,
+  "reactingCount": 1,
+  "classCount": 10,
+  "initialTestidCount": 4
+ },
+ "changeParty": {
+  "probeCount": 2,
+  "reactingCount": 1,
+  "classCount": 22,
+  "initialTestidCount": 7
+ },
+ "giveMonster": {
+  "probeCount": 3,
+  "reactingCount": 1,
+  "classCount": 15,
+  "initialTestidCount": 7
+ },
+ "moveMonster": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 8,
+  "initialTestidCount": 5
+ },
+ "evolveMonster": {
+  "probeCount": 2,
+  "reactingCount": 1,
+  "classCount": 12,
+  "initialTestidCount": 4
+ },
+ "addFollower": {
+  "probeCount": 9,
+  "reactingCount": 1,
+  "classCount": 5,
+  "initialTestidCount": 11
+ },
+ "removeFollower": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 4,
+  "initialTestidCount": 4
+ },
+ "setLighting": {
+  "probeCount": 5,
+  "reactingCount": 1,
+  "classCount": 34,
+  "initialTestidCount": 17
+ },
+ "addLight": {
+  "probeCount": 11,
+  "reactingCount": 3,
+  "classCount": 34,
+  "initialTestidCount": 25
+ },
+ "removeLight": {
+  "probeCount": 2,
+  "reactingCount": 1,
+  "classCount": 23,
+  "initialTestidCount": 9
+ },
+ "setWeather": {
+  "probeCount": 4,
+  "reactingCount": 1,
+  "classCount": 36,
+  "initialTestidCount": 22
+ },
+ "showAnimation": {
+  "probeCount": 6,
+  "reactingCount": 3,
+  "classCount": 49,
+  "initialTestidCount": 23
+ },
+ "showPicture": {
+  "probeCount": 8,
+  "reactingCount": 4,
+  "classCount": 34,
+  "initialTestidCount": 22
+ },
+ "erasePicture": {
+  "probeCount": 1,
+  "reactingCount": 1,
+  "classCount": 19,
+  "initialTestidCount": 5
+ },
+ "playAudio": {
+  "probeCount": 2,
+  "reactingCount": 1,
+  "classCount": 19,
+  "initialTestidCount": 14
+ },
+ "stopAudio": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 2
+ },
+ "playMovie": {
+  "probeCount": 3,
+  "reactingCount": 2,
+  "classCount": 36,
+  "initialTestidCount": 16
+ },
+ "cutsceneControl": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 12,
+  "initialTestidCount": 6
+ },
+ "displayTextSettings": {
+  "probeCount": 4,
+  "reactingCount": 0,
+  "classCount": 9,
+  "initialTestidCount": 11
+ },
+ "shop": {
+  "probeCount": 20,
+  "reactingCount": 3,
+  "classCount": 87,
+  "initialTestidCount": 56
+ },
+ "inn": {
+  "probeCount": 9,
+  "reactingCount": 4,
+  "classCount": 32,
+  "initialTestidCount": 24
+ },
+ "checkpointSave": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 3
+ },
+ "openSaveMenu": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 1
+ },
+ "spawnFieldEnemy": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 1
+ },
+ "despawnFieldEnemy": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 1
+ },
+ "runControl": {
+  "probeCount": 5,
+  "reactingCount": 1,
+  "classCount": 3,
+  "initialTestidCount": 7
+ },
+ "killPlayer": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 3
+ },
+ "triggerEnding": {
+  "probeCount": 1,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 3
+ },
+ "gameOver": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 2
+ },
+ "ending": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 1,
+  "initialTestidCount": 3
+ },
+ "returnToTitle": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 3,
+  "initialTestidCount": 2
+ },
+ "setFlag": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 2,
+  "initialTestidCount": 2
+ },
+ "setSelfSwitch": {
+  "probeCount": 0,
+  "reactingCount": 0,
+  "classCount": 7,
+  "initialTestidCount": 7
+ },
+ "m2Command": {
+  "probeCount": 6,
+  "reactingCount": 5,
+  "classCount": 39,
+  "initialTestidCount": 29
+ }
+}

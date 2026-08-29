@@ -1,0 +1,698 @@
+{
+ "m2-014-change-parameters": {
+  "testidCount": 29,
+  "controlCount": 20,
+  "selectOptionCount": 32,
+  "classCount": 36,
+  "labelCount": 14,
+  "textCount": 3
+ },
+ "m2-019-change-state": {
+  "testidCount": 17,
+  "controlCount": 11,
+  "selectOptionCount": 12,
+  "classCount": 30,
+  "labelCount": 7,
+  "textCount": 3
+ },
+ "m2-021-damage-processing": {
+  "testidCount": 25,
+  "controlCount": 17,
+  "selectOptionCount": 31,
+  "classCount": 30,
+  "labelCount": 11,
+  "textCount": 3
+ },
+ "m2-022-change-actor-name": {
+  "testidCount": 7,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 23,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-023-change-actor-nickname": {
+  "testidCount": 7,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 23,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-024-change-actor-graphic": {
+  "testidCount": 8,
+  "controlCount": 3,
+  "selectOptionCount": 8,
+  "classCount": 25,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-025-change-actor-faceset": {
+  "testidCount": 126,
+  "controlCount": 116,
+  "selectOptionCount": 8,
+  "classCount": 31,
+  "labelCount": 1,
+  "textCount": 4
+ },
+ "m2-026-change-vehicle-graphic": {
+  "testidCount": 7,
+  "controlCount": 3,
+  "selectOptionCount": 11,
+  "classCount": 8,
+  "labelCount": 3,
+  "textCount": 2
+ },
+ "m2-027-change-system-bgm": {
+  "testidCount": 6,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 8,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "m2-028-change-system-se": {
+  "testidCount": 6,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 8,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "m2-029-change-system-graphic": {
+  "testidCount": 7,
+  "controlCount": 3,
+  "selectOptionCount": 11,
+  "classCount": 8,
+  "labelCount": 3,
+  "textCount": 2
+ },
+ "m2-030-change-screen-transition": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 4,
+  "classCount": 5,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-036-get-player-location": {
+  "testidCount": 7,
+  "controlCount": 2,
+  "selectOptionCount": 21,
+  "classCount": 21,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-037-move-to-variable-location": {
+  "testidCount": 8,
+  "controlCount": 6,
+  "selectOptionCount": 63,
+  "classCount": 21,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-038-get-on-off-vehicle": {
+  "testidCount": 7,
+  "controlCount": 3,
+  "selectOptionCount": 2,
+  "classCount": 20,
+  "labelCount": 2,
+  "textCount": 3
+ },
+ "m2-039-set-vehicle-location": {
+  "testidCount": 12,
+  "controlCount": 7,
+  "selectOptionCount": 5,
+  "classCount": 25,
+  "labelCount": 3,
+  "textCount": 3
+ },
+ "m2-040-set-event-location": {
+  "testidCount": 10,
+  "controlCount": 4,
+  "selectOptionCount": 3,
+  "classCount": 21,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-041-swap-event-location": {
+  "testidCount": 8,
+  "controlCount": 2,
+  "selectOptionCount": 2,
+  "classCount": 21,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-042-get-terrain-id": {
+  "testidCount": 10,
+  "controlCount": 5,
+  "selectOptionCount": 23,
+  "classCount": 26,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-043-get-event-id": {
+  "testidCount": 10,
+  "controlCount": 5,
+  "selectOptionCount": 23,
+  "classCount": 26,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-044-hide-screen": {
+  "testidCount": 4,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 12,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-045-show-screen": {
+  "testidCount": 4,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 12,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-046-tint-screen": {
+  "testidCount": 17,
+  "controlCount": 10,
+  "selectOptionCount": 0,
+  "classCount": 27,
+  "labelCount": 8,
+  "textCount": 5
+ },
+ "m2-047-flash-screen": {
+  "testidCount": 13,
+  "controlCount": 9,
+  "selectOptionCount": 7,
+  "classCount": 20,
+  "labelCount": 7,
+  "textCount": 3
+ },
+ "m2-048-shake-screen": {
+  "testidCount": 10,
+  "controlCount": 6,
+  "selectOptionCount": 4,
+  "classCount": 20,
+  "labelCount": 4,
+  "textCount": 3
+ },
+ "m2-049-scroll-map": {
+  "testidCount": 18,
+  "controlCount": 14,
+  "selectOptionCount": 9,
+  "classCount": 20,
+  "labelCount": 9,
+  "textCount": 3
+ },
+ "m2-050-set-weather-effects": {
+  "testidCount": 20,
+  "controlCount": 8,
+  "selectOptionCount": 0,
+  "classCount": 32,
+  "labelCount": 5,
+  "textCount": 5
+ },
+ "m2-051-show-picture": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 7,
+  "classCount": 22,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-052-move-picture": {
+  "testidCount": 8,
+  "controlCount": 4,
+  "selectOptionCount": 0,
+  "classCount": 19,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-053-erase-picture": {
+  "testidCount": 5,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 16,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-054-show-animation": {
+  "testidCount": 12,
+  "controlCount": 5,
+  "selectOptionCount": 7,
+  "classCount": 25,
+  "labelCount": 2,
+  "textCount": 3
+ },
+ "m2-055-show-animation": {
+  "testidCount": 12,
+  "controlCount": 5,
+  "selectOptionCount": 7,
+  "classCount": 25,
+  "labelCount": 2,
+  "textCount": 3
+ },
+ "m2-056-flash-event": {
+  "testidCount": 14,
+  "controlCount": 9,
+  "selectOptionCount": 8,
+  "classCount": 25,
+  "labelCount": 7,
+  "textCount": 3
+ },
+ "m2-058-wait-for-all-movement": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "m2-059-stop-all-movement": {
+  "testidCount": 4,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 12,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-063-memorize-current-bgm": {
+  "testidCount": 6,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 8,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "m2-064-play-memorized-bgm": {
+  "testidCount": 6,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 8,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "m2-066-play-movie": {
+  "testidCount": 6,
+  "controlCount": 2,
+  "selectOptionCount": 31,
+  "classCount": 8,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "m2-067-key-input-processing": {
+  "testidCount": 20,
+  "controlCount": 5,
+  "selectOptionCount": 23,
+  "classCount": 32,
+  "labelCount": 3,
+  "textCount": 5
+ },
+ "m2-068-change-tileset": {
+  "testidCount": 6,
+  "controlCount": 1,
+  "selectOptionCount": 14,
+  "classCount": 21,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-069-change-parallax-back": {
+  "testidCount": 8,
+  "controlCount": 2,
+  "selectOptionCount": 7,
+  "classCount": 22,
+  "labelCount": 1,
+  "textCount": 5
+ },
+ "m2-070-set-encounter-rate": {
+  "testidCount": 12,
+  "controlCount": 6,
+  "selectOptionCount": 23,
+  "classCount": 25,
+  "labelCount": 3,
+  "textCount": 3
+ },
+ "m2-071-change-tile": {
+  "testidCount": 10,
+  "controlCount": 5,
+  "selectOptionCount": 2,
+  "classCount": 21,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-072-set-teleportation-point": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 4,
+  "classCount": 5,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-073-teleportation-on-off": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 2,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-074-set-escape-location": {
+  "testidCount": 7,
+  "controlCount": 4,
+  "selectOptionCount": 2,
+  "classCount": 7,
+  "labelCount": 4,
+  "textCount": 1
+ },
+ "m2-075-change-escape-access": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 2,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-077-change-save-access": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 2,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-078-open-menu-screen": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "m2-079-change-menu-access": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 2,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-085-end-event-processing": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "m2-086-erase-event": {
+  "testidCount": 5,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 13,
+  "labelCount": 1,
+  "textCount": 3
+ },
+ "m2-088-comment": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 6,
+  "classCount": 5,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "m2-091-change-actor-class": {
+  "testidCount": 8,
+  "controlCount": 2,
+  "selectOptionCount": 8,
+  "classCount": 20,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "m2-092-change-battle-commands": {
+  "testidCount": 11,
+  "controlCount": 6,
+  "selectOptionCount": 16,
+  "classCount": 21,
+  "labelCount": 2,
+  "textCount": 3
+ },
+ "m2-093-open-load-menu": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "m2-094-exit-game": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "m2-095-toggle-atb-wait-mode": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 2,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-096-toggle-fullscreen-mode": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 2,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-097-open-video-options": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "m2-098-change-enemy-hp": {
+  "testidCount": 6,
+  "controlCount": 3,
+  "selectOptionCount": 8,
+  "classCount": 7,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-099-change-enemy-mp": {
+  "testidCount": 6,
+  "controlCount": 3,
+  "selectOptionCount": 8,
+  "classCount": 7,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-100-change-enemy-state": {
+  "testidCount": 7,
+  "controlCount": 3,
+  "selectOptionCount": 12,
+  "classCount": 7,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-101-enemy-encounter": {
+  "testidCount": 4,
+  "controlCount": 1,
+  "selectOptionCount": 4,
+  "classCount": 7,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-102-change-battleback": {
+  "testidCount": 5,
+  "controlCount": 1,
+  "selectOptionCount": 4,
+  "classCount": 8,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "m2-103-show-animation": {
+  "testidCount": 12,
+  "controlCount": 5,
+  "selectOptionCount": 7,
+  "classCount": 25,
+  "labelCount": 2,
+  "textCount": 3
+ },
+ "m2-104-battle-events": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "m2-105-abort-battle": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "m2-106-call-common-event": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "m2-107-force-escape": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "m2-108-action-times": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 4,
+  "classCount": 5,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-201-camera-control": {
+  "testidCount": 8,
+  "controlCount": 6,
+  "selectOptionCount": 7,
+  "classCount": 5,
+  "labelCount": 6,
+  "textCount": 1
+ },
+ "m2-202-screen-effect": {
+  "testidCount": 20,
+  "controlCount": 14,
+  "selectOptionCount": 5,
+  "classCount": 19,
+  "labelCount": 13,
+  "textCount": 4
+ },
+ "m2-203-spawn-event": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 3,
+  "classCount": 7,
+  "labelCount": 5,
+  "textCount": 1
+ },
+ "m2-204-remove-event": {
+  "testidCount": 4,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 7,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "m2-205-pathfind-move": {
+  "testidCount": 7,
+  "controlCount": 5,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 5,
+  "textCount": 1
+ },
+ "m2-206-wait-until": {
+  "testidCount": 6,
+  "controlCount": 4,
+  "selectOptionCount": 5,
+  "classCount": 5,
+  "labelCount": 4,
+  "textCount": 1
+ },
+ "m2-207-region-trigger": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 25,
+  "classCount": 12,
+  "labelCount": 5,
+  "textCount": 1
+ },
+ "m2-208-quest-objective": {
+  "testidCount": 6,
+  "controlCount": 4,
+  "selectOptionCount": 4,
+  "classCount": 5,
+  "labelCount": 4,
+  "textCount": 1
+ },
+ "m2-210-sound-layer": {
+  "testidCount": 8,
+  "controlCount": 4,
+  "selectOptionCount": 36,
+  "classCount": 8,
+  "labelCount": 4,
+  "textCount": 2
+ },
+ "m2-211-weighted-branch": {
+  "testidCount": 25,
+  "controlCount": 9,
+  "selectOptionCount": 21,
+  "classCount": 29,
+  "labelCount": 6,
+  "textCount": 2
+ },
+ "m2-212-cutscene-control": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 3,
+  "classCount": 5,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "m2-213-checkpoint-save": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-214-ui-command": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 4,
+  "classCount": 5,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "m2-215-debug-log": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 3,
+  "classCount": 5,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "m2-216-evaluate-expression": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "m2-217-data-query": {
+  "testidCount": 7,
+  "controlCount": 4,
+  "selectOptionCount": 27,
+  "classCount": 12,
+  "labelCount": 4,
+  "textCount": 1
+ }
+}

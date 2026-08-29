@@ -10,6 +10,9 @@ dist/
 # 추적된 적이 없어, 명령된 게이트가 명령된 워크플로에서 항상 열화돼 있었다).
 !.omo/gates-baseline.json
 !.omo/css-budget-baseline.json
+# CSS 실사용 클래스 게이트(scripts/check-css-live-classes.mjs)의 기준선. 위와 같은 이유로
+# 추적한다 — 무시되면 새 워크트리에서 게이트가 "기준선 없음"으로 exit 2 가 된다.
+!.omo/css-live-classes-baseline.json
 !.omo/evidence/
 .omo/evidence/*
 !.omo/evidence/event-editor-ux/
@@ -69,6 +72,10 @@ evidence/
 !.omo/evidence/assistant-resize-collapse/**
 !.omo/evidence/bugfix-sweep/
 !.omo/evidence/bugfix-sweep/**
+# 표면 게이트의 실효성 감사 결과(scripts/audit-gate-mutations.mjs). 게이트가 "돈다"가 아니라
+# "실제 소스 결함을 이름으로 지목한다"는 증거라, 게이트 자체와 같이 리뷰돼야 한다.
+!.omo/evidence/event-editor-guard/
+!.omo/evidence/event-editor-guard/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json

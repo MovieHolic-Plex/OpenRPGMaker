@@ -1,0 +1,410 @@
+{
+ "fork:switch": {
+  "testidCount": 18,
+  "controlCount": 5,
+  "selectOptionCount": 39,
+  "classCount": 30,
+  "labelCount": 3,
+  "textCount": 9
+ },
+ "fork:variable": {
+  "testidCount": 19,
+  "controlCount": 6,
+  "selectOptionCount": 43,
+  "classCount": 30,
+  "labelCount": 4,
+  "textCount": 9
+ },
+ "fork:selfSwitch": {
+  "testidCount": 21,
+  "controlCount": 7,
+  "selectOptionCount": 16,
+  "classCount": 30,
+  "labelCount": 6,
+  "textCount": 8
+ },
+ "fork:actor": {
+  "testidCount": 18,
+  "controlCount": 4,
+  "selectOptionCount": 22,
+  "classCount": 31,
+  "labelCount": 3,
+  "textCount": 9
+ },
+ "fork:item": {
+  "testidCount": 18,
+  "controlCount": 4,
+  "selectOptionCount": 22,
+  "classCount": 30,
+  "labelCount": 3,
+  "textCount": 9
+ },
+ "fork:gold": {
+  "testidCount": 16,
+  "controlCount": 4,
+  "selectOptionCount": 22,
+  "classCount": 24,
+  "labelCount": 3,
+  "textCount": 8
+ },
+ "fork:timer": {
+  "testidCount": 18,
+  "controlCount": 5,
+  "selectOptionCount": 18,
+  "classCount": 24,
+  "labelCount": 1,
+  "textCount": 8
+ },
+ "fork:timePhase": {
+  "testidCount": 16,
+  "controlCount": 3,
+  "selectOptionCount": 20,
+  "classCount": 23,
+  "labelCount": 2,
+  "textCount": 8
+ },
+ "fork:season": {
+  "testidCount": 16,
+  "controlCount": 3,
+  "selectOptionCount": 20,
+  "classCount": 23,
+  "labelCount": 2,
+  "textCount": 8
+ },
+ "fork:npcActivity": {
+  "testidCount": 16,
+  "controlCount": 3,
+  "selectOptionCount": 16,
+  "classCount": 23,
+  "labelCount": 2,
+  "textCount": 8
+ },
+ "fork:friendshipAtLeast": {
+  "testidCount": 17,
+  "controlCount": 4,
+  "selectOptionCount": 16,
+  "classCount": 24,
+  "labelCount": 3,
+  "textCount": 8
+ },
+ "fork:battleResult": {
+  "testidCount": 16,
+  "controlCount": 3,
+  "selectOptionCount": 19,
+  "classCount": 24,
+  "labelCount": 2,
+  "textCount": 8
+ },
+ "fork:run": {
+  "testidCount": 17,
+  "controlCount": 4,
+  "selectOptionCount": 22,
+  "classCount": 24,
+  "labelCount": 3,
+  "textCount": 8
+ },
+ "fork:all": {
+  "testidCount": 23,
+  "controlCount": 8,
+  "selectOptionCount": 55,
+  "classCount": 36,
+  "labelCount": 5,
+  "textCount": 10
+ },
+ "fork:any": {
+  "testidCount": 23,
+  "controlCount": 8,
+  "selectOptionCount": 55,
+  "classCount": 36,
+  "labelCount": 5,
+  "textCount": 10
+ },
+ "fork:not": {
+  "testidCount": 19,
+  "controlCount": 6,
+  "selectOptionCount": 55,
+  "classCount": 33,
+  "labelCount": 3,
+  "textCount": 10
+ },
+ "fork:group-all-two": {
+  "testidCount": 30,
+  "controlCount": 14,
+  "selectOptionCount": 98,
+  "classCount": 36,
+  "labelCount": 7,
+  "textCount": 12
+ },
+ "fork:group-any-two": {
+  "testidCount": 27,
+  "controlCount": 12,
+  "selectOptionCount": 77,
+  "classCount": 36,
+  "labelCount": 7,
+  "textCount": 11
+ },
+ "fork:group-all-nested": {
+  "testidCount": 36,
+  "controlCount": 21,
+  "selectOptionCount": 136,
+  "classCount": 41,
+  "labelCount": 9,
+  "textCount": 15
+ },
+ "fork:group-not-nested": {
+  "testidCount": 28,
+  "controlCount": 13,
+  "selectOptionCount": 93,
+  "classCount": 37,
+  "labelCount": 7,
+  "textCount": 12
+ },
+ "fork:run.query=floor": {
+  "testidCount": 18,
+  "controlCount": 5,
+  "selectOptionCount": 26,
+  "classCount": 24,
+  "labelCount": 4,
+  "textCount": 8
+ },
+ "fork:run.query=flag": {
+  "testidCount": 18,
+  "controlCount": 5,
+  "selectOptionCount": 22,
+  "classCount": 24,
+  "labelCount": 4,
+  "textCount": 8
+ },
+ "fork:run.query=result": {
+  "testidCount": 17,
+  "controlCount": 4,
+  "selectOptionCount": 23,
+  "classCount": 24,
+  "labelCount": 3,
+  "textCount": 8
+ },
+ "cutsceneControl:mode=begin": {
+  "testidCount": 6,
+  "controlCount": 4,
+  "selectOptionCount": 2,
+  "classCount": 12,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "cutsceneControl:mode=end": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 2,
+  "classCount": 11,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "runControl:action=start": {
+  "testidCount": 7,
+  "controlCount": 5,
+  "selectOptionCount": 5,
+  "classCount": 3,
+  "labelCount": 5,
+  "textCount": 1
+ },
+ "runControl:action=advance": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 5,
+  "classCount": 3,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "runControl:action=end": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 8,
+  "classCount": 3,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "runControl:action=setFlag": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 7,
+  "classCount": 3,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "runControl:action=resetRoom": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 5,
+  "classCount": 3,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "setSwitch:value=true": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 46,
+  "classCount": 13,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "setSwitch:value=toggle": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 46,
+  "classCount": 13,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "setSwitch:value=var": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 46,
+  "classCount": 14,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "setVariable:value=number": {
+  "testidCount": 22,
+  "controlCount": 14,
+  "selectOptionCount": 49,
+  "classCount": 23,
+  "labelCount": 12,
+  "textCount": 6
+ },
+ "setVariable:value=var": {
+  "testidCount": 22,
+  "controlCount": 14,
+  "selectOptionCount": 49,
+  "classCount": 23,
+  "labelCount": 11,
+  "textCount": 6
+ },
+ "wait:mode=time": {
+  "testidCount": 15,
+  "controlCount": 9,
+  "selectOptionCount": 21,
+  "classCount": 17,
+  "labelCount": 9,
+  "textCount": 2
+ },
+ "wait:mode=variable": {
+  "testidCount": 15,
+  "controlCount": 9,
+  "selectOptionCount": 21,
+  "classCount": 17,
+  "labelCount": 9,
+  "textCount": 2
+ },
+ "battleProcessing:troopSource=fixed": {
+  "testidCount": 31,
+  "controlCount": 20,
+  "selectOptionCount": 13,
+  "classCount": 40,
+  "labelCount": 13,
+  "textCount": 5
+ },
+ "battleProcessing:troopSource=variable": {
+  "testidCount": 32,
+  "controlCount": 21,
+  "selectOptionCount": 11,
+  "classCount": 38,
+  "labelCount": 14,
+  "textCount": 6
+ },
+ "changeActorHp:amountMode=flat": {
+  "testidCount": 21,
+  "controlCount": 16,
+  "selectOptionCount": 9,
+  "classCount": 31,
+  "labelCount": 12,
+  "textCount": 2
+ },
+ "changeActorHp:amountMode=percent": {
+  "testidCount": 21,
+  "controlCount": 16,
+  "selectOptionCount": 9,
+  "classCount": 31,
+  "labelCount": 12,
+  "textCount": 2
+ },
+ "changeGold:amount=number": {
+  "testidCount": 16,
+  "controlCount": 12,
+  "selectOptionCount": 26,
+  "classCount": 20,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "changeGold:amount=var": {
+  "testidCount": 16,
+  "controlCount": 12,
+  "selectOptionCount": 26,
+  "classCount": 20,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "changeItem:amount=number": {
+  "testidCount": 18,
+  "controlCount": 13,
+  "selectOptionCount": 30,
+  "classCount": 25,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "changeItem:amount=var": {
+  "testidCount": 18,
+  "controlCount": 13,
+  "selectOptionCount": 30,
+  "classCount": 25,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "transfer:fade=white": {
+  "testidCount": 17,
+  "controlCount": 12,
+  "selectOptionCount": 0,
+  "classCount": 23,
+  "labelCount": 14,
+  "textCount": 4
+ },
+ "transfer:fade=none": {
+  "testidCount": 17,
+  "controlCount": 12,
+  "selectOptionCount": 0,
+  "classCount": 23,
+  "labelCount": 14,
+  "textCount": 4
+ },
+ "transfer:direction=down": {
+  "testidCount": 17,
+  "controlCount": 12,
+  "selectOptionCount": 0,
+  "classCount": 23,
+  "labelCount": 14,
+  "textCount": 4
+ },
+ "transfer:direction=left": {
+  "testidCount": 17,
+  "controlCount": 12,
+  "selectOptionCount": 0,
+  "classCount": 23,
+  "labelCount": 14,
+  "textCount": 4
+ },
+ "learnSkill:action=learn": {
+  "testidCount": 23,
+  "controlCount": 14,
+  "selectOptionCount": 12,
+  "classCount": 46,
+  "labelCount": 9,
+  "textCount": 2
+ },
+ "learnSkill:action=forget": {
+  "testidCount": 23,
+  "controlCount": 14,
+  "selectOptionCount": 12,
+  "classCount": 46,
+  "labelCount": 9,
+  "textCount": 2
+ }
+}
