@@ -9,6 +9,7 @@ export type EventDraftVaultEntry = {
 
 const vault = new Map<string, EventDraftVaultEntry>();
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
+let persistTimerProjectId: string | null = null;
 const PERSIST_DELAY_MS = 250;
 
 export function eventDraftVaultKey(mapId: MapId, eventId: string): string {
@@ -70,6 +71,7 @@ export function restoreEventDraftVaultEntries(entries: readonly EventDraftVaultE
   if (persistTimer) {
     clearTimeout(persistTimer);
     persistTimer = null;
+    persistTimerProjectId = null;
   }
   vault.clear();
   for (const entry of entries) {
@@ -174,6 +176,7 @@ export function eventDraftVaultStorageKey(projectId = resolveVaultProjectId()): 
 }
 
 export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): void {
+  cancelPendingPersistSupersededBy(projectId);
   const localStorage = browserLocalStorage();
   if (!localStorage) return;
   const key = eventDraftVaultStorageKey(projectId);
@@ -224,10 +227,19 @@ export function loadEventDraftVaultFromLocalStorage(projectId = resolveVaultProj
 export function scheduleEventDraftVaultPersist(projectId = resolveVaultProjectId()): void {
   if (!browserLocalStorage()) return;
   if (persistTimer) clearTimeout(persistTimer);
+  persistTimerProjectId = projectId;
   persistTimer = setTimeout(() => {
     persistTimer = null;
+    persistTimerProjectId = null;
     persistEventDraftVaultNow(projectId);
   }, PERSIST_DELAY_MS);
+}
+
+function cancelPendingPersistSupersededBy(projectId: string): void {
+  if (!persistTimer || persistTimerProjectId !== projectId) return;
+  clearTimeout(persistTimer);
+  persistTimer = null;
+  persistTimerProjectId = null;
 }
 
 function browserLocalStorage(): Storage | null {
@@ -245,6 +257,7 @@ export function _resetEventDraftVaultForTest(): void {
   if (persistTimer) {
     clearTimeout(persistTimer);
     persistTimer = null;
+    persistTimerProjectId = null;
   }
 }
 

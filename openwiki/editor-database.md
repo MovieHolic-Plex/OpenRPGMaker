@@ -208,6 +208,26 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 내보내기·가져오기 진입점: 도구줄 `structure-kit-export`(체크된 행이 있으면 **지금 보이는 그 선택**만, 없으면 앨범 전체) / `structure-kit-import`, 확인창은 `structure-kit-import-list` + `structure-kit-import-confirm`. 다운로드는 `src/util/downloadBlob.ts` 한 곳을 지난다 — anchor 를 DOM 에 붙였다 떼고 `revokeObjectURL` 을 동기 호출하지 않는, `menu.ts` 에서 겪은 3-버그 회피 패턴이다.
 - 커버리지: `test/structureKitRasterModel.test.ts`(칸 계산·페인트·크기조절·부위 CRUD·굽기), `test/structureKitFile.test.ts`(직렬화·검증·`planImport`·origin 보존), `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`(repeatability), `test/downloadBlob.test.ts`, 그리고 브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 3케이스.
 
+## 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
+
+`Condition` 이 `all`/`any`/`not` 을 갖게 된 뒤 런타임 평가기와 일부 검증기는 갱신됐지만
+**참조 스캐너는 갱신되지 않았다.** `src/editor/databaseCommandReferences.ts` 의 두 함수가
+leaf 조건에서 멈추고 `default: return false` 했다:
+
+- `conditionReferencesSwitchVariable` — `switchVariableReferencedInProject` →
+  `databaseReferences.ts:298` `switchVariableReferenceMessage` → `actions.ts:425/457`
+  `deleteSwitch`/`deleteVariable` 는 메시지가 `null` 이면 **삭제한다.**
+- `conditionReferencesDatabase` — 아이템·주인공·적 삭제 가드가 같은 방식으로 눈이 멀었다.
+
+결과: AND/OR/NOT 그룹 안에서만 쓰이는 스위치·변수·아이템이 **경고 없이 삭제되고**, 남은 조건은
+`(session.switches[condition.switchId] ?? false)` (`src/project/io/pageResolution.ts:34`) 로
+판정돼 페이지가 조용히 안 켜진다(값이 `false` 면 반대로 늘 켜진다). 아무것도 던지지 않는다.
+
+두 함수 모두 `all`/`any` 는 `condition.conditions` 로, `not` 은 `condition.condition` 으로
+재귀한다. 형태는 이미 올바르게 재귀하던 형제
+`src/project/io/commandReferenceValidation.ts:116` `collectConditionItemReferenceIds` 에서 가져왔다.
+계약 테스트: `test/databaseReferenceGuards.test.ts` (all 안 스위치 / not 안 변수 / any 안 아이템 +
+참조 없는 스위치는 여전히 삭제되는 회귀 케이스).
 ## '진영' 탭과 몬스터 소속 진영 (2026-08-29)
 
 전투 태도표(`project.factions`)를 사람이 저작하는 화면. 데이터 규약은 `openwiki/runtime-project-schema.md`, 전투 판정은 `openwiki/runtime-action-combat.md` 가 소유한다.

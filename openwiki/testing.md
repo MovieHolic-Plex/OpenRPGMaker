@@ -334,3 +334,37 @@ Evidence expectations:
   페이지 이동은 굴리지 않는다. 그래서 `{ kind: "expect", eventAt: <원래 좌표> }` 는 NPC 가
   실제로 움직이든 안 움직이든 통과한다 — "안 움직인다" 류 회귀를 이 러너로 증명하지 말라.
   단위 레벨은 `test/runtimeEventPageMovement.test.ts`, 실물은 브라우저 Test Play 로 잡는다.
+
+## fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+
+`vitest.config.ts` 는 `environment: "node"` 라서 DOM 전역이 하나도 없다. `test/fakeDom.ts` 의
+`installFakeDom()` 이 주는 것만 존재한다. 그 목록에 **생성자 전역 `Image` 가 빠져 있었다** —
+`HTMLImageElement` 는 `instanceof` 용으로 매핑돼 있었는데(`defineDomGlobal("HTMLImageElement", FakeElement)`)
+`new Image()` 가 쓰는 생성자는 없었다. 실측: 전체 스위트 오류 230건 중 **222건이
+`ReferenceError: Image is not defined`** 였고, 발화점은 `src/editor/panels/chromaKey.ts:110`
+(`getAutoKeyedDataUrl`) **한 곳**, 귀속 파일은 `databaseWorkbench`·`databaseFilterChips`·
+`databaseRecordThumbnails`·`eventEditorTrustLoop` **4개**였다.
+
+핵심은 스텁이 **무엇을 발화하는가**다. `getAutoKeyedDataUrl` 은 `load` 와 `error` 양쪽에서
+resolve 하고 error 분기는 원본 URL 을 캐시·반환한다. 그래서 `FakeImage` 는 `src` 대입 시
+`queueMicrotask` 로 `error` 를 **딱 한 번** 발화한다(`addEventListener` 가 `{ once: true }` 를
+무시하므로 발화 횟수는 스텁이 보장한다). 아무 이벤트도 쏘지 않는 스텁을 넣으면 222건의 rejection 이
+222건의 **무한 pending** 으로 바뀐다 — 오류가 타임아웃으로 옷만 갈아입는 셈이다. 계약 테스트:
+`test/fakeDomImageGlobal.test.ts`.
+
+Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되므로, 이 종류의 누락은
+**비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
+`DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
+
+## bugfix-sweep 실제 표면 하네스 (2026-08-29)
+
+`node scripts/qa-bugfix-sweep-evidence.mjs` 는 **프로젝트의 Vite SSR 모듈 파이프라인**으로
+프로덕션 함수를 끝까지 실행해 관측값을 `.omo/evidence/bugfix-sweep/real-surface.txt` 에 남긴다.
+검사 4건: 프로젝트 교체 후 Ctrl+Z / 묶음 조건 안 스위치의 삭제 가드 / `inputNumber` 만 쓰는 변수의
+prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
+
+왜 vitest 가 아니라 별도 러너인가: 이 네 가지는 **한 흐름으로 이어 태워야** 사용자가 겪는 순서가
+되고, 산출물이 사람이 읽는 증거로 커밋된다. 왜 `npx tsx` 가 아닌가: `supabaseProjectConfig()` 의
+`env` 기본값이 `import.meta.env` 라서 tsx 에서 `undefined` 로 터진다 — Vite 파이프라인을 타면 앱과
+같은 해석 경로가 된다. `createServer` 에 `watch: null` 을 준 이유는 워처가 시스템 inotify 한도를
+넘겨(ENOSPC) 죽었기 때문이다(스위트와 동시에 돌 때 특히).

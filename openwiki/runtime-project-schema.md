@@ -78,3 +78,21 @@ Authored project schema, defaults, validation, migration, references, and persis
 - Authored starts are optional `project.session.farmBuildingPlacements[]` and `project.session.homeDecorationPlacements[]`; runtime uses keyed `PlaySession.farmBuildingPlacements` and `PlaySession.homeDecorationPlacements`. These domains are intentionally separate from P1 `system.farmAnimalBuildings` and legacy single-tile `placeables`.
 - Limits are centralized in `spatialPlacements.ts`: 256 definitions, 16 levels, 1,024 placements, footprint axes <=16 and area <=128, capacity <=9,999. Normalization is bounded, duplicate IDs are first-wins, costs aggregate duplicate item rows without exceeding `ITEM_QUANTITY_MAX`, and orientations are `down|left|right|up`.
 - `shapeDatabaseFields.ts` validates full definitions and `shape.ts` validates authored starts. Old projects with all four fields absent retain the same serialized shape.
+
+## 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+
+`src/project/eventDraftVault.ts` 는 `scheduleEventDraftVaultPersist()` 로 250ms
+(`PERSIST_DELAY_MS`) 디바운스 저장을 걸고, `persistEventDraftVaultNow()` 로 즉시 저장도 한다.
+문제는 즉시 저장이 **대기 중인 타이머를 그대로 두었다**는 것 — `rememberEventDraftVaultEntry()` 가
+디바운스를 건 직후 `persistEventDraftVaultNow()` 를 부르면 즉시 1회 쓰고, 250ms 뒤 **같은 내용을
+한 번 더** 쓴다(`savedAt` 만 갱신된 중복 쓰기). 같은 파일의 `restoreEventDraftVaultEntries()` 와
+`_resetEventDraftVaultForTest()` 는 이미 타이머를 취소하고 있었으므로, 취소는 이 모듈의 기존 규약이다.
+
+지금은 `cancelPendingPersistSupersededBy(projectId)` 가 **projectId 가 일치할 때만** 취소한다.
+무조건 취소하면 다른 프로젝트를 겨냥해 대기 중인 저장을 잃을 수 있다 — 그래서 예약 시점의
+projectId 를 `persistTimerProjectId` 에 함께 들고 있는다.
+
+왜 눈에 걸렸나: `test/transactionalNewRemoteProject.test.ts` 가 localStorage 스냅샷을 바이트
+동일성으로 단언하는데(실제 타이머 사용), 이 중복 쓰기가 단언 앞뒤로 오가며 `savedAt` 만 달라지는
+**경합**을 만들었다. 테스트를 느슨하게 하는 대신 중복 쓰기 자체를 없앴다. 계약 테스트:
+`test/eventDraftVaultPersistDebounce.test.ts`.
