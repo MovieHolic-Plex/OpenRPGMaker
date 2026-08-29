@@ -252,7 +252,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 **저작은 되는데 절대 참이 될 수 없는** 상태였다. 지금은 전투도 소유 이벤트의 활동을 보고,
 `resolveSocialKey` 를 **재사용**한다(두 번째 해석 규칙을 만들지 않는다).
 
-**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 16종 × (만족/불만족) 을 세 평가기에
+**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 17종 × (만족/불만족) 을 세 평가기에
 동일 입력으로 먹여 판정 일치를 단언하고, `Object.keys(CASES)` 를 `CONDITION_KINDS` 와 순서까지
 비교하므로 **종류를 빠뜨리면 실패한다**. 허용 예외 목록(`ALLOWLISTED_DIVERGENCES`)은 현재 **비어 있다** —
 지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라.

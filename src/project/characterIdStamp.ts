@@ -31,7 +31,7 @@ export function eventHasSocialSurface(event: GameEvent): boolean {
 }
 
 function conditionIsSocial(condition: Condition): boolean {
-  return condition.kind === "friendshipAtLeast";
+  return condition.kind === "friendshipAtLeast" || condition.kind === "relationshipAtLeast";
 }
 
 function commandsHaveSocial(commands: readonly Command[] | undefined): boolean {

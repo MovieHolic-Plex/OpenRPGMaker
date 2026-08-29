@@ -151,6 +151,12 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
   if (eventState.timers) {
     for (const [timerId, seconds] of Object.entries(eventState.timers)) session.timers[timerId] = seconds;
   }
+  // 관계 상태: 셀프 스위치와 같은 병합 write-back. 이게 없으면 트룹 페이지의 setRelationship 이
+  // 버려지는 사본만 바꾸고 전투가 끝나면 사라져 troop:"full" 보증이 거짓이 된다.
+  if (eventState.relationships) {
+    session.relationships ??= {};
+    for (const [key, state] of Object.entries(eventState.relationships)) session.relationships[key] = state;
+  }
   // 전투 중 changeEquipment 오버레이 write-back(Step 3d): 시드가 세션 사본이라 액터 단위
   // 병합이 idempotent 하다. 장비 전이의 인벤토리 증감은 아래 inventory 덮어쓰기에 포함된다.
   if (eventState.actorEquipment) {

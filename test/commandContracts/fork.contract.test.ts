@@ -154,6 +154,11 @@ describe("fork 계약", () => {
       (session) => { session.friendship = { npc_fork_gate: 20 }; },
     ],
     [
+      "relationshipAtLeast",
+      { kind: "relationshipAtLeast", npcKey: "npc_fork_gate", state: "dating" },
+      (session) => { session.relationships = { npc_fork_gate: "engaged" }; },
+    ],
+    [
       "battleResult",
       { kind: "battleResult", result: "victory" },
       (session) => { session.battleResult = "victory"; },

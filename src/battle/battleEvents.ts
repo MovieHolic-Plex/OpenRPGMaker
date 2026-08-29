@@ -208,6 +208,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
+      relationships: { ...(options.state.relationships ?? {}) },
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
       actorEquipment: Object.fromEntries(
