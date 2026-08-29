@@ -155,7 +155,11 @@ it("does not advertise movement speed on a stationary event", () => {
     }));
 
     host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
-    host.querySelector<HTMLButtonElement>("[data-testid='event-storyboard-card-0']")?.click();
+    const card = host.querySelector<HTMLElement>("[data-testid='event-storyboard-card-0']");
+    // 스토리 카드는 목록 행과 같은 계약이다: 한 번 = 선택(편집 창 없음), 두 번 = 편집 창.
+    card?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    expect(document.querySelector('[data-testid="event-command-edit-dialog"]')).toBeNull();
+    card?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true }));
 
     const dialog = document.querySelector('[data-testid="event-command-edit-dialog"] [role="dialog"]');
     expect(dialog?.getAttribute("aria-label")).toBe("선택지 표시");

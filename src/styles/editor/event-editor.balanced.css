@@ -2139,4 +2139,191 @@ footer {
     right: auto;
     top: 30px;
   }
+
+/* ============================================================================
+   3뷰 토글(목록/스토리/미리보기) 수정 — 2026-08-29
+
+   측정된 결함과 이 블록이 담당하는 부분:
+    · 스토리 카드가 클릭 대상으로 안 보였다 → hover/focus 표시를 준다.
+    · 스토리에는 순서 변경·삭제 수단이 아예 없었다 → 목록의 `.cmd-actions` 와 같은
+      hover 노출 액션 트랙을 카드/분기 줄 오른쪽에 붙인다.
+    · 카테고리 색 레일이 목록에만 있었다 → 같은 시각 언어의 배지를 카드에 준다.
+    · 검색창과 실제 필터가 어긋났다 → 일치 개수·지우기 버튼으로 상태를 보이게 한다.
+    · 편집 팝오버의 이동/복사가 조용히 죽어 있었다 → 대상 문구 + disabled 로 정직하게.
+   새 색은 만들지 않는다 — 전부 기존 토큰(`--cmdcat-*`, `--control-bg`, `--danger`)이다.
+   ========================================================================= */
+
+/* 스토리 카드 트랙: 번호 · 카테고리 배지 · 종류 · 요약 · 액션 */
+.event-editor .event-storyboard-card {
+  grid-template-columns: 28px auto 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-branch-command {
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-card:hover,
+.event-editor .event-storyboard-branch-command:hover {
+  background: var(--control-bg);
+}
+
+.event-editor .event-storyboard-card:focus-visible,
+.event-editor .event-storyboard-branch-command:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.event-editor .event-storyboard-card-cat {
+  align-items: center;
+  align-self: start;
+  background: color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--blk-cat, var(--text-3)) 28%, var(--border));
+  border-radius: 999px;
+  color: var(--blk-cat, var(--text-3));
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  gap: 3px;
+  height: 20px;
+  justify-content: center;
+  margin-top: 2px;
+  padding: 0 7px;
+  white-space: nowrap;
+}
+
+.event-editor .event-storyboard-card-cat::before { content: attr(data-glyph); }
+.event-editor .event-storyboard-card-cat::after { content: attr(data-label); }
+
+/* 좁은 폭에서는 글리프만 남긴다 — 목록의 `.cmd-cat-icon` 과 같은 규칙. */
+@media (max-width: 1050px) {
+  .event-editor .event-storyboard-card-cat { padding: 0 5px; }
+  .event-editor .event-storyboard-card-cat::after { display: none; }
+}
+
+/* 줄 액션 — 평소 숨기고 hover/선택/포커스에서만. 목록 `.cmd-actions` 와 같은 계약. */
+.event-editor .event-storyboard-row-actions {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.event-editor .event-storyboard-card:hover > .event-storyboard-row-actions,
+.event-editor .event-storyboard-card.is-selected > .event-storyboard-row-actions,
+.event-editor .event-storyboard-card:focus-within > .event-storyboard-row-actions,
+.event-editor .event-storyboard-branch-command:hover > .event-storyboard-row-actions,
+.event-editor .event-storyboard-branch-command.is-selected > .event-storyboard-row-actions,
+.event-editor .event-storyboard-branch-command:focus-within > .event-storyboard-row-actions {
+  opacity: 1;
+}
+
+.event-editor .event-storyboard-row-action {
+  appearance: none;
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  min-height: 24px;
+  min-width: 24px;
+  padding: 0 4px;
+}
+
+.event-editor .event-storyboard-row-action:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.event-editor .event-storyboard-row-action.is-danger:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.event-editor .event-storyboard-row-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor .event-storyboard-row-actions { transition: none; }
+}
+
+/* 검색 — 입력창 하나가 아니라 "입력 + 지우기 + 일치 개수" 한 벌이다. */
+.event-editor .event-editor-command-toolbar > .event-editor-command-search-field {
+  order: 1;
+}
+
+.event-editor .event-editor-command-search-field {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.event-editor .event-editor-command-search:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.event-editor .event-editor-command-search-clear {
+  appearance: none;
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  min-height: 26px;
+  min-width: 26px;
+  padding: 0;
+}
+
+.event-editor .event-editor-command-search-clear:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.event-editor .event-editor-command-search-count {
+  color: var(--text-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-command-search-count[data-state="miss"] {
+  color: var(--danger);
+}
+
+/* 편집 팝오버 — 무엇에 적용되는지 먼저 말한다. */
+.event-editor .event-editor-command-edit-target {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0 0 6px;
+  max-width: 240px;
+}
+
+.event-editor .event-editor-command-edit-target[data-state="empty"] {
+  color: var(--warning);
+}
+
+.event-editor .event-editor-command-tool:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* 편집·도구 팝오버가 스토리 카드 밑으로 깔려서 「위로 이동」 클릭이 카드에 먹혔다.
+   원인은 팝오버가 아니라 툴바다: 03-legend-toolbar.css 가 `position: static` 과 함께 적어 둔
+   (그래서 무해했던) `z-index: 1` 이, mockup.css 가 나중에 `position: relative` 를 주면서 살아나
+   툴바를 쌓임 문맥으로 만든다. 그러면 팝오버의 `z-index: 16` 은 툴바 안에 갇히고, 툴바(1)와
+   카드(1)가 같은 값이라 DOM 에서 뒤에 오는 카드가 이긴다 — 실측: elementFromPoint 가
+   버튼 자리에서 `div.row.event-storyboard-card` 를 반환했고 Playwright 클릭이 타임아웃했다.
+   툴바는 카드와 겹치지 않는 그리드 행에 있으니 쌓임 문맥일 이유가 없다. 문맥을 풀어
+   팝오버가 원래 의도대로 자기 z-index 로 카드 위에 서게 한다. */
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar,
+.event-editor .event-editor-command-toolbar {
+  z-index: auto;
 }

@@ -4,6 +4,7 @@ import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
+import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -54,6 +55,10 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
     resetEditorUiModeForTests("standard");
     clearCommandInspector();
     localStorage.clear();
+    // 보기 모드는 이제 세션에도 있다 — localStorage.clear() 만으로는 안 지워진다.
+    // 이걸 빼면 앞 테스트가 남긴 preview 때문에 아래 「툴바의 미리보기 버튼」 테스트가
+    // 버튼이 아무 일을 안 해도 통과하는 빈 테스트가 된다.
+    resetEventViewSession();
     host = document.createElement("div");
     document.body.append(host);
   });
