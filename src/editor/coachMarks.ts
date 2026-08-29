@@ -37,7 +37,7 @@ export const BASIC_COACH_MARKS: readonly CoachMarkStep[] = [
   },
   {
     id: "ai",
-    title: "감독",
+    title: "조수",
     text: "원하는 걸 그냥 한국어로 부탁하세요. Ctrl+K로 명령·맵·스킬을 검색할 수 있어요. 위쪽 초보/표준/전문가에서 화면 밀도를 바꿀 수 있어요.",
     anchorTestId: "ai-input",
     side: "left",
@@ -46,6 +46,38 @@ export const BASIC_COACH_MARKS: readonly CoachMarkStep[] = [
 
 const CARD_WIDTH = 280;
 const MARGIN = 12;
+
+// 열려 있는 모달/팝오버 표면. 코치 카드는 이 위에 겹치면 안 된다 — 실측(2026-08-30 영역 작업 UI
+// 감사): 표준 모드 웰컴 카드가 영역 작업 팝오버의 좌표 칩·타일셋 칩과 "적용 여부를 선택하세요"
+// 줄을 덮었다. 배치 로직은 AI 채팅 패널 하나만 회피했고 모달의 존재 자체를 몰랐다.
+// 이 저장소의 모달은 모두 `*-backdrop` 클래스를 쓴다 — 속성 선택자로 한 번에 잡는다.
+// 앞의 명시 클래스들은 fakeDom(테스트 DOM)이 `[class*=]` 를 모르기 때문에 함께 둔다.
+const MODAL_SURFACE_SELECTOR = [
+  ".region-task-backdrop",
+  ".database-modal-backdrop",
+  ".event-editor-modal-backdrop",
+  ".command-palette-backdrop",
+  '[class*="backdrop"]',
+  "dialog[open]",
+].join(", ");
+
+/**
+ * 지금 화면에 실측 크기를 가진 모달 표면이 있는가.
+ * 실측이 불가능한 환경(fakeDom 테스트)에서는 false — 기존 노출 동작을 그대로 둔다.
+ */
+function hasOpenModalSurface(): boolean {
+  if (typeof document === "undefined" || typeof document.querySelectorAll !== "function") return false;
+  let surfaces: readonly Element[];
+  try {
+    surfaces = Array.from(document.querySelectorAll(MODAL_SURFACE_SELECTOR));
+  } catch {
+    return false;
+  }
+  return surfaces.some((surface) => {
+    const rect = (surface as HTMLElement).getBoundingClientRect?.();
+    return Boolean(rect && rect.width > 0 && rect.height > 0);
+  });
+}
 
 type CoachMarkPositionInput = {
   readonly side: CoachMarkStep["side"];
@@ -213,13 +245,17 @@ export function maybeStartBasicCoachMarks(storage?: Storage | null): void {
   if (!getEditorChrome().coachMarks) return;
   // Welcome intent boots win the surface — do not start coach marks (and do not mark seen).
   if (shouldSuppressCoachMarksForWelcomeIntent()) return;
+  // 모달이 떠 있으면 그 표면이 주인이다. 보지 않은 것으로 남겨 다음 부팅에 다시 시도한다.
+  if (hasOpenModalSurface()) return;
   const store = resolveStorage(storage);
   if (alreadySeen(store, COACH_MARKS_SEEN_KEY)) return;
   renderStep(0, store);
 }
 
+// 안내는 화면에 실제로 있는 이름만 쓴다. "감독" 은 이 저장소에서 사람(사용자)을 뜻하는 말이고
+// 왼쪽 패널의 접근성 이름은 "조수" 다 — 안내가 없는 이름을 가리키면 어디를 보라는 말인지 알 수 없다.
 export const STANDARD_WELCOME_BODY =
-  "왼쪽 감독에게 한 줄로 부탁하면 맵이 바뀝니다. 타일로 직접 칠하고 싶을 때만 가운데 열을 쓰면 됩니다.";
+  "왼쪽 조수 패널에 한 줄로 부탁하면 맵이 바뀝니다. 직접 칠하고 싶을 때만 가운데 타일 도구를 쓰면 됩니다.";
 
 function placeWelcomeOnCanvas(card: HTMLElement): void {
   const viewportWidth = typeof window !== "undefined" && window.innerWidth ? window.innerWidth : 1280;
@@ -295,6 +331,8 @@ export function maybeStartStandardWelcomeCard(storage?: Storage | null): void {
   if (!getEditorChrome().standardWelcome) return;
   // Welcome intent boots win the surface — do not start (and do not mark seen).
   if (shouldSuppressCoachMarksForWelcomeIntent()) return;
+  // 모달·팝오버가 열려 있으면 띄우지 않는다(카드가 그 본문을 덮었다). 보지 않은 것으로 남긴다.
+  if (hasOpenModalSurface()) return;
   const store = resolveStorage(storage);
   if (alreadySeen(store, STANDARD_WELCOME_SEEN_KEY)) return;
   renderStandardWelcome(store);

@@ -22,7 +22,12 @@ export interface HarnessIssue {
 export interface HarnessCheckpoint {
   readonly id: string;
   readonly label: string;
-  readonly status: "done" | "blocked";
+  /**
+   * done=검사 통과, blocked=검사 실패, pending=아직 결과가 아닌 상태(사람의 결정 대기).
+   * pending 을 따로 둔 이유: "승인 대기" 를 done 으로 두면 통과 체크 표시를 달고 나와
+   * 아직 승인되지 않은 것이 이미 승인된 것처럼 읽혔다.
+   */
+  readonly status: "done" | "blocked" | "pending";
   readonly detail: string;
 }
 
@@ -260,7 +265,8 @@ export function reviewRegionDraft(input: {
     { id: "scope", label: "영역 경계", status: scope.count ? "blocked" : "done", detail: scope.count ? `영역 밖 ${scope.count}건` : "선택 영역 경계 준수" },
     { id: "repair", label: "결정론 수리", status: "done", detail: `${repairs}/${repairLimit}회 사용` },
     { id: "preflight", label: "게임플레이 사전검사", status: blockers.length ? "blocked" : "done", detail: blockers.length ? `차단 ${blockers.length}건` : "통행·전송·이벤트·NPC 검사 통과" },
-    { id: "approval", label: "승인 대기", status: blockers.length ? "blocked" : "done", detail: blockers.length ? "차단 사유를 해결해야 적용 가능" : "적용 또는 버리기 선택" },
+    // 검사 결과가 아니라 사람의 결정 대기 상태다 — pending 으로 두어 통과 체크와 구분한다.
+    { id: "approval", label: "내 결정 대기", status: blockers.length ? "blocked" : "pending", detail: blockers.length ? "차단 사유를 해결해야 적용 가능" : "적용 또는 버리기 선택" },
   ];
   return { project, report: { issues, blockers, checkpoints, metrics, repairLimit } };
 }

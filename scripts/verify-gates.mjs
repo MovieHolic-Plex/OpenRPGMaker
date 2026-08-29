@@ -13,7 +13,8 @@
 //   node scripts/verify-gates.mjs --save-baseline          # 현재 상태를 기준선으로 저장
 //   node scripts/verify-gates.mjs --baseline <path>        # 기준선 대비 회귀만 실패 처리
 //   node scripts/verify-gates.mjs --json                   # 기계 판독용 출력
-//   node scripts/verify-gates.mjs --only typecheck|tests|css   # css 는 수 초, 나머지는 수 분
+//   node scripts/verify-gates.mjs --only typecheck|tests|css|surface
+//                                                          # css 는 수 초, surface 는 수십 초, 나머지는 수 분
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -138,10 +139,38 @@ function cssGate() {
   };
 }
 
+// 표면 스냅샷 게이트 — 이벤트 에디터 폼/M2/셸/커밋/조건 축 + CSS 실사용 클래스.
+//
+// 왜 `tests` 게이트와 별도인가 (실측): `npm test` 는 clean main 에서도 84~86 파일이 빨갛다.
+// 표면 게이트를 그 안에만 두면 사람이 "빨간 게 늘었나"를 눈으로 셀 수 없고, 아래 회귀 판정도
+// "기준선에 없던 파일이 실패"라는 넓은 그물에만 걸린다. 표면 축은 **새로 만든 축이라 항상
+// 초록이어야 하는** 게이트이므로 기준선 관용을 주지 않고 종료 코드를 그대로 본다.
+//
+// css 게이트와 같은 이유로 기준선 대비 비교를 하지 않는다 — 각 축이 자체 기준선 + 하한선
+// 래칫을 이미 갖고 있어서, exit != 0 은 그 자체로 "새 위반"이다.
+function surfaceGate() {
+  const { code, out } = run("node", ["scripts/check-surface-gates.mjs", "--json"]);
+  let parsed = null;
+  try {
+    parsed = JSON.parse(out.slice(out.indexOf("{")));
+  } catch {
+    // JSON 파싱 실패도 게이트 실패다 — 조용히 통과시키면 실행기 고장이 초록으로 보인다.
+  }
+  return {
+    name: "surface",
+    exitCode: code,
+    axes: parsed?.axes ?? [],
+    skippedAxes: parsed?.skippedAxes ?? [],
+    failures: parsed?.failures ?? (code === 0 ? [] : [`check-surface-gates.mjs exit=${code} (출력 파싱 실패)`]),
+    out: (parsed?.out ?? out).trimEnd(),
+  };
+}
+
 const report = { ranAt: new Date().toISOString(), cwd: process.cwd() };
-if (only !== "tests" && only !== "css") report.typecheck = typecheckGate();
-if (only !== "typecheck" && only !== "css") report.tests = testsGate();
-if (only !== "typecheck" && only !== "tests") report.css = cssGate();
+if (only !== "tests" && only !== "css" && only !== "surface") report.typecheck = typecheckGate();
+if (only !== "typecheck" && only !== "css" && only !== "surface") report.tests = testsGate();
+if (only !== "typecheck" && only !== "tests" && only !== "surface") report.css = cssGate();
+if (only !== "typecheck" && only !== "tests" && only !== "css") report.surface = surfaceGate();
 
 if (flag("--save-baseline")) {
   mkdirSync(dirname(baselinePath), { recursive: true });
@@ -150,12 +179,21 @@ if (flag("--save-baseline")) {
   // 더럽혀져 매번 의미 없는 diff 가 생긴다. 실행 시점 진단용으로는 --json 에 그대로 남기고,
   // 저장본에서만 뺀다. `ranAt` 도 같은 이유로 재저장 때마다 바뀌지만, 그건 언제 갱신했는지를
   // 알려주는 유용한 정보라 남긴다.
-  const { cwd: _cwd, css: cssReport, ...rest } = report;
-  // CSS 게이트의 `out` 은 사람이 읽는 콘솔 출력이라 기준선에 넣으면 수백 줄이 쌓인다.
-  // 애초에 CSS 게이트는 기준선 대비 비교를 하지 않으므로 종료 코드만 기록으로 남긴다.
-  const persisted = cssReport
-    ? { ...rest, css: { name: cssReport.name, exitCode: cssReport.exitCode } }
-    : rest;
+  const { cwd: _cwd, css: cssReport, surface: surfaceReport, ...rest } = report;
+  // CSS/표면 게이트의 `out` 은 사람이 읽는 콘솔 출력이라 기준선에 넣으면 수백 줄이 쌓인다.
+  // 애초에 두 게이트는 기준선 대비 비교를 하지 않으므로 종료 코드만 기록으로 남긴다.
+  const persisted = { ...rest };
+  if (cssReport) persisted.css = { name: cssReport.name, exitCode: cssReport.exitCode };
+  // 표면 게이트는 **어떤 축이 돌았는지**를 기록에 남긴다. 축 파일이 개명·삭제되면
+  // check-surface-gates.mjs 가 하드 실패하지만, 선택 축(조건 등)이 조용히 빠지는 것은
+  // 기준선 diff 로만 보인다.
+  if (surfaceReport)
+    persisted.surface = {
+      name: surfaceReport.name,
+      exitCode: surfaceReport.exitCode,
+      axes: surfaceReport.axes,
+      skippedAxes: surfaceReport.skippedAxes,
+    };
   writeFileSync(baselinePath, `${JSON.stringify(persisted, null, 2)}\n`, "utf8");
   console.log(`기준선 저장: ${baselinePath}`);
 }
@@ -184,6 +222,8 @@ if (baseline) {
 // CSS 게이트는 기준선 유무와 무관하게 실패가 곧 회귀다(자체 래칫을 이미 통과한 뒤이므로).
 // 기준선이 있을 때 종료 코드가 regressions 로만 결정되기 때문에 여기서 함께 넣어야 한다.
 for (const failure of report.css?.failures ?? []) regressions.push(`css ${failure}`);
+// 표면 게이트도 같은 이유로 기준선 유무와 무관하게 실패가 곧 회귀다.
+for (const failure of report.surface?.failures ?? []) regressions.push(`surface ${failure}`);
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;
 
@@ -210,6 +250,13 @@ if (asJson) {
       for (const line of gate.out.split("\n")) console.log(`   ${line}`);
     }
   }
+  if (report.surface) {
+    const gate = report.surface;
+    console.log(`surface        exit=${gate.exitCode}  축=${gate.axes.length}` + (gate.skippedAxes.length ? `  미구현축=${gate.skippedAxes.length}` : ""));
+    if (gate.exitCode !== 0 && gate.out) {
+      for (const line of gate.out.split("\n")) console.log(`   ${line}`);
+    }
+  }
   if (baseline) {
     console.log(regressions.length === 0
       ? `\n기준선 대비 회귀 없음 (${baselinePath})`
@@ -226,7 +273,8 @@ if (baseline) process.exit(regressions.length === 0 ? 0 : 1);
 process.exit(
   (report.typecheck?.exitCode ?? 0) === 0 &&
     (report.tests?.exitCode ?? 0) === 0 &&
-    (report.css?.exitCode ?? 0) === 0
+    (report.css?.exitCode ?? 0) === 0 &&
+    (report.surface?.exitCode ?? 0) === 0
     ? 0
     : 1
 );

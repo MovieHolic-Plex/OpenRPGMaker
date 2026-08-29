@@ -16,6 +16,16 @@ const BATTLE_ASSETS = [
   { path: "/assets/generated/starter/hero-02-battle.png", width: 144, height: 384 },
   { path: "/assets/generated/starter/hero-03-battle.png", width: 144, height: 384 },
   { path: "/assets/generated/starter/hero-04-battle.png", width: 144, height: 384 },
+  { path: "/assets/generated/starter/hero-05-battle.png", width: 144, height: 384 },
+  { path: "/assets/generated/starter/hero-06-battle.png", width: 144, height: 384 },
+  // 액터별 뒷모습(2026-08-29). 3×8 전투 시트가 아니라 712×712 통짜다 — 후면 구도 스킨이
+  // 파티 전원에게 `ally-creature-back.png` 한 장을 돌려 쓰던 것을 액터별로 나눈 결과다.
+  { path: "/assets/generated/battle-skins/sprites/hero-01-back.png", width: 712, height: 712 },
+  { path: "/assets/generated/battle-skins/sprites/hero-02-back.png", width: 712, height: 712 },
+  { path: "/assets/generated/battle-skins/sprites/hero-03-back.png", width: 712, height: 712 },
+  { path: "/assets/generated/battle-skins/sprites/hero-04-back.png", width: 712, height: 712 },
+  { path: "/assets/generated/battle-skins/sprites/hero-05-back.png", width: 712, height: 712 },
+  { path: "/assets/generated/battle-skins/sprites/hero-06-back.png", width: 712, height: 712 },
   { path: "/assets/generated/starter/monster-slime-01.png", width: 96, height: 96 },
   { path: "/assets/generated/starter/sylph-hornet-transparent.png", width: 64, height: 64 },
   { path: "/assets/generated/starter/troop-preview-slime.png", width: 96, height: 96 },

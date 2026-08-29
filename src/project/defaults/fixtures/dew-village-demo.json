@@ -39340,7 +39340,7 @@
         "faceResourceId": "easyrpg-faceset-people1-00",
         "characterResourceId": "easyrpg-charset-actor1",
         "characterTransparent": false,
-        "battleCharacterResourceId": "generated-actor-hero-02-battle",
+        "battleCharacterResourceId": "generated-actor-hero-05-battle",
         "critical": {
           "enabled": true,
           "chanceDenominator": 30
@@ -40006,7 +40006,7 @@
         "faceResourceId": "easyrpg-faceset-people2-00",
         "characterResourceId": "easyrpg-charset-actor2",
         "characterTransparent": false,
-        "battleCharacterResourceId": "generated-actor-hero-01-battle",
+        "battleCharacterResourceId": "generated-actor-hero-06-battle",
         "critical": {
           "enabled": true,
           "chanceDenominator": 30

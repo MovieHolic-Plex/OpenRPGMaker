@@ -1,0 +1,790 @@
+{
+ "text": {
+  "probes": {
+   "event-command-text-speaker": "replaceCommand x2 {\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"__p_f0a5ac__\"}",
+   "event-command-text-body": "replaceCommand x2 {\"body\":\"__p_c13fff__\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-emotion": "replaceCommand {\"body\":\"hello\",\"emotion\":\"surprised\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-auto-advance": "replaceCommand {\"autoAdvance\":true,\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "changeFace": {
+  "probes": {
+   "event-command-face-resource": "replaceCommand {\"flipHorizontally\":false,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"__p_a66b5f__\"}",
+   "event-command-face-position": "replaceCommand {\"flipHorizontally\":false,\"kind\":\"changeFace\",\"position\":\"right\",\"resourceId\":\"res1\"}",
+   "event-command-face-flip-horizontal": "replaceCommand {\"flipHorizontally\":true,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"res1\"}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "choices": {
+  "probes": {
+   "event-choice-prompt": "replaceCommand {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}],\"prompt\":\"__p_9fe488__\"}",
+   "event-choice-option-1": "replaceCommand x2 {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"__p_ef6098__\"}]}",
+   "event-choice-cancel-disallow": "replaceCommand {\"cancelBehavior\":\"disallow\",\"cancelBranch\":\"<undefined>\",\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}",
+   "event-choice-cancel-choice1": "radio-uncheck",
+   "event-choice-cancel-branch": "replaceCommand {\"cancelBehavior\":\"branch\",\"cancelBranch\":[],\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}"
+  },
+  "probeCount": 5,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "fork": {
+  "probes": {
+   "event-condition-mode": "replaceCommand {\"condition\":{\"condition\":{\"kind\":\"switch\",\"switchId\":\"\",\"value\":true},\"kind\":\"not\"},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
+   "event-condition-switch-target>select#0": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw_0020\",\"value\":true},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
+   "event-condition-switch-value": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw1\",\"value\":false},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
+   "event-fork-else-enabled": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw1\",\"value\":true},\"kind\":\"fork\",\"then\":[]}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "wait": {
+  "probes": {
+   "event-wait-mode-time": "radio-uncheck",
+   "event-wait-mode-variable": "replaceCommand {\"kind\":\"wait\",\"ms\":100}",
+   "event-wait-seconds": "replaceCommand x2 {\"kind\":\"wait\",\"ms\":7623000}",
+   "event-wait-variable>select#0": "replaceCommand {\"kind\":\"wait\",\"ms\":100}"
+  },
+  "probeCount": 4,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "inputWait": {
+  "probes": {
+   "event-command-input-wait-variable>select#0": "replaceCommand {\"kind\":\"inputWait\",\"variableId\":\"var_0020\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "inputNumber": {
+  "probes": {
+   "input-number-variable>select#0": "replaceCommand {\"digits\":1,\"kind\":\"inputNumber\",\"variableId\":\"var_0020\"}",
+   "input-number-digits": "no-commit",
+   "input-number-prompt": "replaceCommand {\"digits\":1,\"kind\":\"inputNumber\",\"prompt\":\"__p_c7d335__\",\"variableId\":\"var1\"}",
+   "input-number-show-pad": "replaceCommand {\"digits\":1,\"kind\":\"inputNumber\",\"showPad\":true,\"variableId\":\"var1\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 3,
+  "noCommitCount": 1
+ },
+ "label": {
+  "probes": {
+   "event-command-label-name": "replaceCommand {\"kind\":\"label\",\"name\":\"__p_f60b5a__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "gotoLabel": {
+  "probes": {
+   "event-command-goto-label-name": "replaceCommand {\"kind\":\"gotoLabel\",\"name\":\"__p_30413e__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "loop": {
+  "probes": {
+   "event-loop-body-add-kind": "no-commit"
+  },
+  "probeCount": 1,
+  "commitCount": 0,
+  "noCommitCount": 1
+ },
+ "breakLoop": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "setSwitch": {
+  "probes": {
+   "event-command-switch-target>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw_0020\",\"value\":true}",
+   "event-command-switch-value": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw1\",\"value\":{\"id\":\"\",\"kind\":\"var\"}}",
+   "event-command-switch-operand>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw1\",\"value\":true}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "setVariable": {
+  "probes": {
+   "event-command-variable-target>select#0": "replaceCommand {\"kind\":\"setVariable\",\"op\":\"=\",\"value\":1,\"variableId\":\"var_0020\"}",
+   "event-command-variable-op": "replaceCommand {\"kind\":\"setVariable\",\"op\":\"/=\",\"value\":1,\"variableId\":\"var1\"}",
+   "event-command-variable-value-source": "replaceCommand {\"kind\":\"setVariable\",\"op\":\"=\",\"value\":{\"id\":\"\",\"kind\":\"var\"},\"variableId\":\"var1\"}",
+   "event-command-variable-number-value": "replaceCommand {\"kind\":\"setVariable\",\"op\":\"=\",\"value\":7206,\"variableId\":\"var1\"}",
+   "event-command-variable-operand>select#0": "replaceCommand {\"kind\":\"setVariable\",\"op\":\"=\",\"value\":1,\"variableId\":\"var1\"}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
+  "noCommitCount": 0
+ },
+ "timer": {
+  "probes": {
+   "event-command-timer-action": "replaceCommand {\"action\":\"stop\",\"kind\":\"timer\",\"seconds\":5,\"timerId\":\"timer1\"}",
+   "event-command-timer-id": "replaceCommand {\"action\":\"set\",\"kind\":\"timer\",\"seconds\":5,\"timerId\":\"timer2\"}",
+   "event-command-timer-seconds": "replaceCommand {\"action\":\"set\",\"kind\":\"timer\",\"seconds\":7311,\"timerId\":\"timer1\"}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "advanceTime": {
+  "probes": {
+   "advance-time-days-input": "replaceCommand x2 {\"days\":7278,\"kind\":\"advanceTime\",\"minutes\":10}",
+   "advance-time-hours-input": "replaceCommand x2 {\"hours\":7693,\"kind\":\"advanceTime\",\"minutes\":10}",
+   "advance-time-minutes-input": "replaceCommand x2 {\"kind\":\"advanceTime\",\"minutes\":7156}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "advanceCropGrowth": {
+  "probes": {
+   "advance-crop-growth-days-input": "replaceCommand x2 {\"days\":7172,\"kind\":\"advanceCropGrowth\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "setTime": {
+  "probes": {
+   "set-time-hour-input": "replaceCommand x2 {\"hour\":44,\"kind\":\"setTime\",\"minute\":0}",
+   "set-time-minute-input": "replaceCommand x2 {\"hour\":6,\"kind\":\"setTime\",\"minute\":58}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "sleepUntilMorning": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "transfer": {
+  "probes": {
+   "transfer-player-direction-retain": "radio-uncheck",
+   "transfer-player-direction-up": "replaceCommand {\"direction\":\"up\",\"fade\":\"black\",\"kind\":\"transfer\",\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0}",
+   "transfer-player-direction-right": "replaceCommand {\"direction\":\"right\",\"fade\":\"black\",\"kind\":\"transfer\",\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0}",
+   "transfer-player-direction-down": "replaceCommand {\"direction\":\"down\",\"fade\":\"black\",\"kind\":\"transfer\",\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0}",
+   "transfer-player-direction-left": "replaceCommand {\"direction\":\"left\",\"fade\":\"black\",\"kind\":\"transfer\",\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0}",
+   "transfer-player-fade-black": "radio-uncheck",
+   "transfer-player-fade-white": "replaceCommand {\"direction\":\"retain\",\"fade\":\"white\",\"kind\":\"transfer\",\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0}",
+   "transfer-player-fade-none": "replaceCommand {\"direction\":\"retain\",\"fade\":\"none\",\"kind\":\"transfer\",\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0}"
+  },
+  "probeCount": 8,
+  "commitCount": 6,
+  "noCommitCount": 0
+ },
+ "moveEvent": {
+  "probes": {
+   "move-route-target-select": "replaceCommand {\"eventId\":\"@player\",\"kind\":\"moveEvent\",\"route\":{\"moves\":[],\"repeat\":false,\"skippable\":false,\"wait\":false}}",
+   "move-route-event-id-input": "replaceCommand {\"eventId\":\"__p_4cb4fd__\",\"kind\":\"moveEvent\",\"route\":{\"moves\":[],\"repeat\":false,\"skippable\":false,\"wait\":false}}",
+   "move-route-repeat-checkbox": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"moveEvent\",\"route\":{\"moves\":[],\"repeat\":true,\"skippable\":false,\"wait\":false}}",
+   "move-route-wait-checkbox": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"moveEvent\",\"route\":{\"moves\":[],\"repeat\":false,\"skippable\":false,\"wait\":true}}",
+   "move-route-skippable-checkbox": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"moveEvent\",\"route\":{\"moves\":[],\"repeat\":false,\"skippable\":true,\"wait\":false}}",
+   "move-route-switch-id-input": "no-commit",
+   "move-route-graphic-id-input": "no-commit",
+   "move-route-sound-id-input": "no-commit",
+   "move-route-npc-target-map-input": "single-option",
+   "move-route-npc-target-x-input": "no-commit",
+   "move-route-npc-target-y-input": "no-commit",
+   "move-route-npc-target-direction-input": "no-commit",
+   "move-route-hop-dx-input": "no-commit",
+   "move-route-hop-dy-input": "no-commit",
+   "move-route-hop-height-input": "no-commit",
+   "move-route-hop-duration-input": "no-commit"
+  },
+  "probeCount": 16,
+  "commitCount": 5,
+  "noCommitCount": 10
+ },
+ "setEventGraphicPattern": {
+  "probes": {
+   "set-event-graphic-pattern-event-input": "replaceCommand {\"eventId\":\"\",\"kind\":\"setEventGraphicPattern\",\"pattern\":0}",
+   "npc-direction-up>input#0": "radio-uncheck",
+   "npc-direction-left>input#0": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"setEventGraphicPattern\",\"pattern\":36}",
+   "npc-direction-right>input#0": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"setEventGraphicPattern\",\"pattern\":12}",
+   "npc-direction-down>input#0": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"setEventGraphicPattern\",\"pattern\":24}",
+   "npc-pattern-0>input#0": "radio-uncheck",
+   "npc-pattern-1>input#0": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"setEventGraphicPattern\",\"pattern\":1}",
+   "npc-pattern-2>input#0": "replaceCommand {\"eventId\":\"ev1\",\"kind\":\"setEventGraphicPattern\",\"pattern\":2}",
+   "set-event-graphic-pattern-frame-input": "no-commit"
+  },
+  "probeCount": 9,
+  "commitCount": 6,
+  "noCommitCount": 1
+ },
+ "changeTile": {
+  "probes": {
+   "change-tile-map-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map_blank_start\",\"tile\":1,\"x\":0,\"y\":0}",
+   "change-tile-layer-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":0}",
+   "change-tile-x-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":7861,\"y\":0}",
+   "change-tile-y-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":7666}",
+   "change-tile-tile-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":7679,\"x\":0,\"y\":0}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
+  "noCommitCount": 0
+ },
+ "callCommonEvent": {
+  "probes": {
+   "event-command-call-common-event-select": "replaceCommand {\"commonEventId\":\"\",\"kind\":\"callCommonEvent\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "callMapEvent": {
+  "probes": {
+   "event-command-call-map-event-select": "replaceCommand {\"eventId\":\"\",\"kind\":\"callMapEvent\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "battleProcessing": {
+  "probes": {
+   "battle-processing-troop-source": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"variable\",\"troopVariableId\":\"\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-troop-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop_bat_swarm\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-escape-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-lose-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-flow-select": "replaceCommand {\"battleFlow\":\"strict\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-branch-on-result": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":true,\"canEscape\":true,\"canLose\":false,\"defeatBranch\":[],\"escapeBranch\":[],\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":[]}",
+   "battle-processing-escape-checkbox": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-lose-checkbox": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}"
+  },
+  "probeCount": 8,
+  "commitCount": 8,
+  "noCommitCount": 0
+ },
+ "learnSkill": {
+  "probes": {
+   "learn-skill-action-select": "replaceCommand {\"action\":\"forget\",\"actorId\":\"actor1\",\"kind\":\"learnSkill\",\"skillId\":\"\"}",
+   "learn-skill-target-mode": "replaceCommand {\"action\":\"learn\",\"actorId\":\"\",\"kind\":\"learnSkill\",\"skillId\":\"\"}",
+   "learn-skill-actor-select": "replaceCommand {\"action\":\"learn\",\"actorId\":\"actor_mage\",\"kind\":\"learnSkill\",\"skillId\":\"\"}",
+   "learn-skill-search": "no-commit",
+   "learn-skill-skill-select": "replaceCommand x2 {\"action\":\"learn\",\"actorId\":\"actor1\",\"kind\":\"learnSkill\",\"skillId\":\"skill_arcane_bolt\"}"
+  },
+  "probeCount": 5,
+  "commitCount": 4,
+  "noCommitCount": 1
+ },
+ "changeExp": {
+  "probes": {
+   "change-exp-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"+=\"}",
+   "change-exp-op-select": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"-=\"}",
+   "change-exp-amount-input": "replaceCommand {\"actorId\":\"actor1\",\"amount\":7232,\"kind\":\"changeExp\",\"op\":\"+=\"}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "changeLevel": {
+  "probes": {
+   "change-level-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"amount\":1,\"kind\":\"changeLevel\",\"op\":\"+=\"}",
+   "change-level-op-select": "replaceCommand {\"actorId\":\"actor1\",\"amount\":1,\"kind\":\"changeLevel\",\"op\":\"-=\"}",
+   "change-level-amount-input": "replaceCommand {\"actorId\":\"actor1\",\"amount\":7561,\"kind\":\"changeLevel\",\"op\":\"+=\"}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "changeLifeSkillExp": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "promoteActor": {
+  "probes": {
+   "promote-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"failureBranch\":[],\"kind\":\"promoteActor\",\"successBranch\":[],\"toClassId\":\"class1\"}",
+   "promote-class-select": "replaceCommand {\"actorId\":\"actor1\",\"failureBranch\":[],\"kind\":\"promoteActor\",\"successBranch\":[],\"toClassId\":\"class_mage\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "changeEquipment": {
+  "probes": {
+   "change-equipment-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"equipmentId\":\"\",\"kind\":\"changeEquipment\",\"slot\":\"weapon\"}",
+   "change-equipment-slot-select": "replaceCommand {\"actorId\":\"actor1\",\"equipmentId\":\"\",\"kind\":\"changeEquipment\",\"slot\":\"accessory\"}",
+   "change-equipment-search": "no-commit",
+   "change-equipment-equipment-select": "replaceCommand {\"actorId\":\"actor1\",\"equipmentId\":\"equip_scout_dagger\",\"kind\":\"changeEquipment\",\"slot\":\"weapon\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 3,
+  "noCommitCount": 1
+ },
+ "changeActorHp": {
+  "probes": {
+   "change-actor-hp-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"amount\":10,\"kind\":\"changeActorHp\",\"op\":\"+=\"}",
+   "change-actor-hp-op-select": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeActorHp\",\"op\":\"-=\"}",
+   "change-actor-hp-amount-mode": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"amountMode\":\"percent\",\"kind\":\"changeActorHp\",\"op\":\"+=\"}",
+   "change-actor-hp-amount-input": "replaceCommand {\"actorId\":\"actor1\",\"amount\":7874,\"kind\":\"changeActorHp\",\"op\":\"+=\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "changeActorMp": {
+  "probes": {
+   "change-actor-mp-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"amount\":10,\"kind\":\"changeActorMp\",\"op\":\"+=\"}",
+   "change-actor-mp-op-select": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeActorMp\",\"op\":\"-=\"}",
+   "change-actor-mp-amount-mode": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"amountMode\":\"percent\",\"kind\":\"changeActorMp\",\"op\":\"+=\"}",
+   "change-actor-mp-amount-input": "replaceCommand {\"actorId\":\"actor1\",\"amount\":7724,\"kind\":\"changeActorMp\",\"op\":\"+=\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "recoverAll": {
+  "probes": {
+   "recover-all-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"kind\":\"recoverAll\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "enterHeroName": {
+  "probes": {
+   "enter-hero-name-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":false}",
+   "enter-hero-name-max-length": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":7,\"showInitialName\":false}",
+   "enter-hero-name-show-initial": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":true}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "changeGold": {
+  "probes": {
+   "change-gold-op-select": "replaceCommand {\"amount\":10,\"kind\":\"changeGold\",\"op\":\"-=\"}",
+   "change-gold-amount-source": "replaceCommand {\"amount\":{\"id\":\"\",\"kind\":\"var\"},\"kind\":\"changeGold\",\"op\":\"+=\"}",
+   "change-gold-amount-input": "replaceCommand {\"amount\":7752,\"kind\":\"changeGold\",\"op\":\"+=\"}",
+   "change-gold-amount-select": "replaceCommand {\"amount\":{\"id\":\"var_0020\",\"kind\":\"var\"},\"kind\":\"changeGold\",\"op\":\"+=\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "changeItem": {
+  "probes": {
+   "change-item-item-id-picker": "replaceCommand {\"amount\":1,\"itemId\":\"item_ether\",\"kind\":\"changeItem\",\"op\":\"+=\"}",
+   "change-item-op-select": "replaceCommand {\"amount\":1,\"itemId\":\"item1\",\"kind\":\"changeItem\",\"op\":\"-=\"}",
+   "change-item-amount-source": "replaceCommand {\"amount\":{\"id\":\"\",\"kind\":\"var\"},\"itemId\":\"item1\",\"kind\":\"changeItem\",\"op\":\"+=\"}",
+   "change-item-amount-input": "replaceCommand {\"amount\":7254,\"itemId\":\"item1\",\"kind\":\"changeItem\",\"op\":\"+=\"}",
+   "change-item-amount-select": "replaceCommand {\"amount\":{\"id\":\"var_0020\",\"kind\":\"var\"},\"itemId\":\"item1\",\"kind\":\"changeItem\",\"op\":\"+=\"}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
+  "noCommitCount": 0
+ },
+ "craftRecipe": {
+  "probes": {
+   "craft-recipe-select": "replaceCommand {\"kind\":\"craftRecipe\",\"recipeId\":\"\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "applyItemUpgrade": {
+  "probes": {
+   "apply-item-upgrade-select": "replaceCommand {\"kind\":\"applyItemUpgrade\",\"upgradeId\":\"\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "equipTool": {
+  "probes": {
+   "equip-tool-item-select": "replaceCommand {\"itemId\":\"item_ether\",\"kind\":\"equipTool\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "openChest": {
+  "probes": {
+   "open-chest-scope-select": "replaceCommand {\"kind\":\"openChest\"}",
+   "open-chest-id-input": "replaceCommand x2 {\"chestId\":\"__p_8f742f__\",\"kind\":\"openChest\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "changeFriendship": {
+  "probes": {
+   "event-command-friendship-npc-key": "replaceCommand {\"delta\":10,\"kind\":\"changeFriendship\",\"npcKey\":\"__p_80aaef__\"}",
+   "event-command-friendship-delta": "replaceCommand {\"delta\":-970,\"kind\":\"changeFriendship\",\"npcKey\":\"ev1\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "changeFactionStance": {
+  "probes": {
+   "event-command-faction-a": "replaceCommand {\"a\":\"enemy\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
+   "event-command-faction-b": "replaceCommand {\"a\":\"player\",\"b\":\"player\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
+   "event-command-faction-op": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"-=\",\"value\":0}",
+   "event-command-faction-value": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "getFriendship": {
+  "probes": {
+   "event-command-get-friendship-npc-key": "replaceCommand {\"kind\":\"getFriendship\",\"npcKey\":\"__p_d13799__\",\"variableId\":\"var1\"}",
+   ":root>select#0": "replaceCommand {\"kind\":\"getFriendship\",\"npcKey\":\"ev1\",\"variableId\":\"var_0020\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "changeParty": {
+  "probes": {
+   "change-party-actor-select": "replaceCommand {\"action\":\"add\",\"actorId\":\"actor_mage\",\"kind\":\"changeParty\"}",
+   "change-party-action-select": "replaceCommand {\"action\":\"remove\",\"actorId\":\"actor1\",\"kind\":\"changeParty\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "giveMonster": {
+  "probes": {
+   "give-monster-species-select": "replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_cave_bat\"}",
+   "give-monster-level-input": "replaceCommand {\"kind\":\"giveMonster\",\"level\":99,\"nickname\":\"<undefined>\",\"speciesId\":\"species1\"}",
+   "give-monster-nickname-input": "replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"__p_c694cb__\",\"speciesId\":\"species1\"}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "moveMonster": {
+  "probes": {
+   "move-monster-instance-input": "replaceCommand {\"instanceId\":\"__p_6da1c2__\",\"kind\":\"moveMonster\",\"to\":\"party\"}",
+   "move-monster-target-select": "replaceCommand {\"instanceId\":\"monster_1\",\"kind\":\"moveMonster\",\"to\":\"box\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "evolveMonster": {
+  "probes": {
+   "evolve-monster-instance-input": "replaceCommand {\"failureBranch\":[],\"instanceId\":\"__p_b938cc__\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species1\"}",
+   "evolve-monster-species-select": "replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_cave_bat\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "addFollower": {
+  "probes": {
+   "event-command-add-follower-actor-id": "replaceCommand {\"actorId\":\"actor_mage\",\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-name": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"__p_1435ae__\"}",
+   "event-command-add-follower-use-graphic": "replaceCommand {\"actorId\":\"actor1\",\"graphic\":{\"direction\":\"down\",\"pattern\":25,\"transparent\":false},\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-graphic-type": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-graphic-id": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-graphic-direction": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-graphic-character": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-graphic-frame": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"}",
+   "event-command-add-follower-graphic-transparent": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"}"
+  },
+  "probeCount": 9,
+  "commitCount": 9,
+  "noCommitCount": 0
+ },
+ "removeFollower": {
+  "probes": {
+   "event-command-remove-follower-mode": "replaceCommand {\"all\":true,\"kind\":\"removeFollower\"}",
+   "event-command-remove-follower-name": "replaceCommand {\"all\":true,\"kind\":\"removeFollower\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "setLighting": {
+  "probes": {
+   "set-lighting-ambient-slider": "replaceCommand {\"ambient\":0.05,\"color\":\"#000000\",\"kind\":\"setLighting\"}",
+   "set-lighting-ambient-input": "replaceCommand {\"ambient\":1,\"color\":\"#000000\",\"kind\":\"setLighting\"}",
+   "set-lighting-color-picker": "replaceCommand {\"ambient\":1,\"color\":\"#123456\",\"kind\":\"setLighting\"}",
+   "set-lighting-color-input": "replaceCommand {\"ambient\":1,\"color\":\"__p_b22163__\",\"kind\":\"setLighting\"}",
+   "set-lighting-transition-input": "replaceCommand {\"ambient\":1,\"color\":\"#000000\",\"kind\":\"setLighting\",\"transitionMs\":7152}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
+  "noCommitCount": 0
+ },
+ "addLight": {
+  "probes": {
+   "add-light-id-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"__p_50f187__\",\"intensity\":1,\"radius\":4}}",
+   "add-light-anchor-kind-select": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":{\"x\":0,\"y\":0},\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":4}}",
+   "add-light-event-id-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":4}}",
+   "add-light-x-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":4}}",
+   "add-light-y-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":4}}",
+   "add-light-radius-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":7586}}",
+   "add-light-intensity-slider": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"light1\",\"intensity\":0.15,\"radius\":4}}",
+   "add-light-intensity-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"flicker\":true,\"id\":\"light1\",\"intensity\":0.2,\"radius\":4}}",
+   "add-light-color-picker": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"color\":\"#123456\",\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":4}}",
+   "add-light-color-input": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"color\":\"__p_965fe4__\",\"flicker\":true,\"id\":\"light1\",\"intensity\":1,\"radius\":4}}",
+   "add-light-flicker-select": "replaceCommand {\"kind\":\"addLight\",\"source\":{\"at\":\"player\",\"id\":\"light1\",\"intensity\":1,\"radius\":4}}"
+  },
+  "probeCount": 11,
+  "commitCount": 11,
+  "noCommitCount": 0
+ },
+ "removeLight": {
+  "probes": {
+   "remove-light-all-select": "replaceCommand {\"id\":\"\",\"kind\":\"removeLight\"}",
+   "remove-light-id-input": "replaceCommand {\"all\":true,\"kind\":\"removeLight\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "setWeather": {
+  "probes": {
+   "set-weather-kind-select": "replaceCommand {\"intensity\":0.8,\"kind\":\"setWeather\",\"transitionMs\":120,\"weather\":\"fog\"}",
+   "set-weather-intensity-slider": "replaceCommand {\"intensity\":0.85,\"kind\":\"setWeather\",\"transitionMs\":120,\"weather\":\"storm\"}",
+   "set-weather-intensity-input": "replaceCommand {\"intensity\":0.6,\"kind\":\"setWeather\",\"transitionMs\":120,\"weather\":\"storm\"}",
+   "set-weather-transition-input": "replaceCommand {\"intensity\":0.8,\"kind\":\"setWeather\",\"transitionMs\":7149,\"weather\":\"storm\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "showAnimation": {
+  "probes": {
+   "show-animation-target-kind-select": "replaceCommand {\"animationId\":\"anim_hit\",\"kind\":\"showAnimation\",\"target\":{\"x\":0,\"y\":0},\"wait\":true}",
+   "show-animation-event-id-input": "replaceCommand {\"animationId\":\"anim_hit\",\"kind\":\"showAnimation\",\"target\":\"player\",\"wait\":true}",
+   "show-animation-x-input": "replaceCommand {\"animationId\":\"anim_hit\",\"kind\":\"showAnimation\",\"target\":\"player\",\"wait\":true}",
+   "show-animation-y-input": "replaceCommand {\"animationId\":\"anim_hit\",\"kind\":\"showAnimation\",\"target\":\"player\",\"wait\":true}",
+   "show-animation-wait-select": "replaceCommand {\"animationId\":\"anim_hit\",\"kind\":\"showAnimation\",\"target\":\"player\"}",
+   "show-animation-animationId-select": "replaceCommand {\"animationId\":\"anim_arrow\",\"kind\":\"showAnimation\",\"target\":\"player\",\"wait\":true}"
+  },
+  "probeCount": 6,
+  "commitCount": 6,
+  "noCommitCount": 0
+ },
+ "showPicture": {
+  "probes": {
+   "show-picture-id-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"__p_ae851c__\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-resource-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"__p_02e26a__\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-x-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":7343,\"y\":0}",
+   "show-picture-y-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":7801}",
+   "show-picture-scale-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":2000,\"x\":0,\"y\":0}",
+   "show-picture-opacity-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-rotation-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":7664,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-duration-input": "replaceCommand {\"durationMs\":7820,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}"
+  },
+  "probeCount": 8,
+  "commitCount": 8,
+  "noCommitCount": 0
+ },
+ "erasePicture": {
+  "probes": {
+   "erase-picture-id-input": "replaceCommand {\"kind\":\"erasePicture\",\"pictureId\":\"__p_b56e38__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "playAudio": {
+  "probes": {
+   "play-audio-search": "no-commit",
+   "play-audio-resource-select": "replaceCommand {\"kind\":\"playAudio\",\"loop\":false,\"resourceId\":\"easyrpg-sound-wind8\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 1,
+  "noCommitCount": 1
+ },
+ "stopAudio": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "playMovie": {
+  "probes": {
+   "play-movie-wait-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":true}",
+   "play-movie-skippable-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"wait\":true}",
+   "play-movie-resource-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"\",\"skippable\":true,\"wait\":true}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
+ "cutsceneControl": {
+  "probes": {
+   "event-command-cutscene-mode": "replaceCommand {\"kind\":\"cutsceneControl\",\"mode\":\"end\"}",
+   "event-command-cutscene-skippable": "replaceCommand {\"kind\":\"cutsceneControl\",\"mode\":\"begin\",\"skippable\":false}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "displayTextSettings": {
+  "probes": {
+   "event-command-message-format": "replaceCommand {\"allowEventMovementDuringWait\":false,\"format\":\"transparent\",\"kind\":\"displayTextSettings\",\"position\":\"bottom\",\"preventObscuringPlayer\":true}",
+   "event-command-message-position": "replaceCommand {\"allowEventMovementDuringWait\":false,\"format\":\"normal\",\"kind\":\"displayTextSettings\",\"position\":\"center\",\"preventObscuringPlayer\":true}",
+   "event-command-message-prevent-obscuring": "replaceCommand {\"allowEventMovementDuringWait\":false,\"format\":\"normal\",\"kind\":\"displayTextSettings\",\"position\":\"bottom\",\"preventObscuringPlayer\":false}",
+   "event-command-message-allow-movement": "replaceCommand {\"allowEventMovementDuringWait\":true,\"format\":\"normal\",\"kind\":\"displayTextSettings\",\"position\":\"bottom\",\"preventObscuringPlayer\":true}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "shop": {
+  "probes": {
+   "shop-item-type-filter": "no-commit",
+   "shop-item-search": "no-commit",
+   "shop-item-check-item_potion": "replaceCommand {\"itemIds\":[\"item1\",\"item_potion\"],\"kind\":\"shop\"}",
+   "shop-item-check-item_capture_orb": "replaceCommand {\"itemIds\":[\"item1\",\"item_capture_orb\"],\"kind\":\"shop\"}",
+   "shop-item-check-item_ether": "replaceCommand {\"itemIds\":[\"item1\",\"item_ether\"],\"kind\":\"shop\"}",
+   "shop-item-check-equip_sword": "replaceCommand {\"itemIds\":[\"item1\",\"equip_sword\"],\"kind\":\"shop\"}",
+   "shop-item-check-equip_mage_staff": "replaceCommand {\"itemIds\":[\"item1\",\"equip_mage_staff\"],\"kind\":\"shop\"}",
+   "shop-item-check-equip_scout_dagger": "replaceCommand {\"itemIds\":[\"item1\",\"equip_scout_dagger\"],\"kind\":\"shop\"}",
+   "shop-stock-price-override": "disabled",
+   "shop-transaction-branch-row>select#0": "no-commit",
+   "shop-failed-branch-row>select#0": "no-commit",
+   "shop-type-select": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"shopType\":\"sellOnly\"}",
+   "shop-quantity-mode": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"quantityMode\":\"select\"}",
+   "shop-message-type": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"messageType\":\"vip\"}",
+   "shop-merchant-gold": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"merchantGold\":7619}",
+   "shop-branch-on-transaction": "replaceCommand {\"branchOnTransaction\":true,\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"transactionBranch\":[]}",
+   "shop-branch-on-failed-transaction": "replaceCommand {\"branchOnFailedTransaction\":true,\"failedTransactionBranch\":[],\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
+   "shop-serviceKind": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"shopServiceKind\":\"pawn\"}",
+   "shop-investmentLevel": "replaceCommand {\"investmentLevel\":3,\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
+   "shop-mileageRate": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"mileageRate\":0.03}"
+  },
+  "probeCount": 20,
+  "commitCount": 15,
+  "noCommitCount": 4
+ },
+ "inn": {
+  "probes": {
+   "inn-price-input": "replaceCommand x2 {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"<undefined>\",\"price\":7112,\"question\":\"<undefined>\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-note-input": "replaceCommand x2 {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"__p_b84806__\",\"price\":10,\"question\":\"<undefined>\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-question-input": "replaceCommand x2 {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"<undefined>\",\"price\":10,\"question\":\"__p_9a6033__\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-recover-mp": "replaceCommand {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"<undefined>\",\"price\":10,\"question\":\"<undefined>\",\"recoverMp\":false,\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-advance-morning": "replaceCommand {\"advanceToMorning\":true,\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"<undefined>\",\"price\":10,\"question\":\"<undefined>\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-branch-not-enough": "replaceCommand {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":true,\"kind\":\"inn\",\"notEnoughBranch\":[],\"note\":\"<undefined>\",\"price\":10,\"question\":\"<undefined>\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-rest-duration-input": "replaceCommand {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"<undefined>\",\"price\":10,\"question\":\"<undefined>\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":7079,\"wakeDurationMs\":\"<undefined>\"}",
+   "inn-wake-duration-input": "replaceCommand {\"advanceToMorning\":\"<undefined>\",\"branchOnNotEnoughGold\":\"<undefined>\",\"kind\":\"inn\",\"notEnoughBranch\":\"<undefined>\",\"note\":\"<undefined>\",\"price\":10,\"question\":\"<undefined>\",\"recoverMp\":\"<undefined>\",\"restDurationMs\":\"<undefined>\",\"wakeDurationMs\":7014}",
+   "inn-not-enough-branch-controls>select#0": "no-commit"
+  },
+  "probeCount": 9,
+  "commitCount": 8,
+  "noCommitCount": 1
+ },
+ "checkpointSave": {
+  "probes": {
+   "event-command-checkpoint-label": "replaceCommand {\"kind\":\"checkpointSave\",\"label\":\"__p_ce1644__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "openSaveMenu": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "spawnFieldEnemy": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "despawnFieldEnemy": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "runControl": {
+  "probes": {
+   "event-command-run-action": "replaceCommand {\"action\":\"resetRoom\",\"kind\":\"runControl\"}",
+   "event-command-run-seed-auto": "replaceCommand {\"action\":\"start\",\"kind\":\"runControl\",\"startFloor\":1}",
+   "event-command-run-seed": "replaceCommand {\"action\":\"start\",\"kind\":\"runControl\",\"seed\":7089,\"startFloor\":1}",
+   "event-command-run-id": "replaceCommand {\"action\":\"start\",\"kind\":\"runControl\",\"runId\":\"__p_2142bf__\",\"seed\":1,\"startFloor\":1}",
+   "event-command-run-start-floor": "replaceCommand {\"action\":\"start\",\"kind\":\"runControl\",\"seed\":1,\"startFloor\":7170}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
+  "noCommitCount": 0
+ },
+ "killPlayer": {
+  "probes": {
+   "event-command-kill-player-message": "replaceCommand {\"kind\":\"killPlayer\",\"message\":\"__p_f74134__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "triggerEnding": {
+  "probes": {
+   "event-command-trigger-ending-id": "replaceCommand {\"kind\":\"triggerEnding\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "gameOver": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "ending": {
+  "probes": {
+   "ending-title-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"m\",\"title\":\"__p_c3098a__\"}",
+   "ending-message-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"__p_49e463__\",\"title\":\"t\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "returnToTitle": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "setFlag": {
+  "probes": {
+   "event-command-flag-name": "replaceCommand {\"flag\":\"__p_c79184__\",\"kind\":\"setFlag\",\"value\":true}",
+   ":root>select#0": "replaceCommand {\"flag\":\"flag1\",\"kind\":\"setFlag\",\"value\":false}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
+ "setSelfSwitch": {
+  "probes": {},
+  "probeCount": 0,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "m2Command": {
+  "probes": {
+   "change-parameters-target-mode": "replaceCommand {\"commandId\":\"m2-014-change-parameters\",\"fields\":{\"operation\":\"add\",\"parameter\":\"maxHp\",\"target\":\"\",\"value\":1,\"valueSource\":\"number\",\"valueVariableId\":\"\"},\"kind\":\"m2Command\"}",
+   "change-parameters-actor-select": "replaceCommand {\"commandId\":\"m2-014-change-parameters\",\"fields\":{\"operation\":\"add\",\"parameter\":\"maxHp\",\"target\":\"party\",\"value\":1,\"valueSource\":\"number\",\"valueVariableId\":\"\"},\"kind\":\"m2Command\"}",
+   "change-parameters-operation": "replaceCommand {\"commandId\":\"m2-014-change-parameters\",\"fields\":{\"operation\":\"set\",\"parameter\":\"maxHp\",\"target\":\"party\",\"value\":1,\"valueSource\":\"number\",\"valueVariableId\":\"\"},\"kind\":\"m2Command\"}",
+   "change-parameters-value-source": "replaceCommand {\"commandId\":\"m2-014-change-parameters\",\"fields\":{\"operation\":\"add\",\"parameter\":\"maxHp\",\"target\":\"party\",\"value\":1,\"valueSource\":\"variable\",\"valueVariableId\":\"\"},\"kind\":\"m2Command\"}",
+   "change-parameters-value-input": "replaceCommand x2 {\"commandId\":\"m2-014-change-parameters\",\"fields\":{\"operation\":\"add\",\"parameter\":\"maxHp\",\"target\":\"party\",\"value\":7405,\"valueSource\":\"number\",\"valueVariableId\":\"\"},\"kind\":\"m2Command\"}",
+   "change-parameters-value-variable>select#0": "replaceCommand {\"commandId\":\"m2-014-change-parameters\",\"fields\":{\"operation\":\"add\",\"parameter\":\"maxHp\",\"target\":\"party\",\"value\":1,\"valueSource\":\"number\",\"valueVariableId\":\"var_0020\"},\"kind\":\"m2Command\"}"
+  },
+  "probeCount": 6,
+  "commitCount": 6,
+  "noCommitCount": 0
+ }
+}

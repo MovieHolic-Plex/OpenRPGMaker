@@ -9,12 +9,14 @@
 |---|---|
 | `src/util/logger.ts` | 레벨·네임스페이스·링버퍼(1000) 로거. `createLogger(ns)` |
 | `src/project/store.ts` | 계측 초크포인트(`markLocalMutation` → `recordChangeActivity`), `ProjectChangeAnnotation` |
-| `src/editor/editActivityLog.ts` | 편집 행위 감사 로그(링버퍼 500 + localStorage 200 + 디스크 미러) |
+| `src/editor/editActivityLog.ts` | 편집 행위 감사 로그(링버퍼 500 + localStorage 200 + 디스크 미러 + 커밋 첨부 슬라이스) |
 | `src/editor/eventDiffLabel.ts` | `EventDiff` → 사람이 읽는 라벨 + 필드 목록 |
 | `src/editor/editActivityEndpoint.ts` | `EDIT_ACTIVITY_DISK_ENDPOINT = "/__oprn/edit-activity"` |
 | `src/app/errorTrap.ts` | 전역 오류 트랩(`window.onerror` / `unhandledrejection` / 리소스 404) |
 | `vite.config.ts` | dev/preview 미들웨어 — `output/edit-activity/` 로 미러 |
-| `scripts/list-edit-activity.mjs` | `npm run edit:log` (무브라우저 조회 경로) |
+| `src/project/projectCommitLog.ts` | 커밋 경계에서 행위 기록을 잘라 커밋 row 에 싣는다(커서 소유) |
+| `scripts/list-edit-activity.mjs` | `npm run edit:log` (라이브 세션 — 디스크 미러 조회) |
+| `scripts/list-project-commits.mjs` | `npm run commit:log` (저장된 것 — DB 커밋 + 실린 행위 조회) |
 
 ## 계측 초크포인트는 `store.markLocalMutation` 하나다
 
@@ -105,7 +107,7 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 | 담는 것 | **before** 스냅샷(프로젝트 또는 맵 1개) | **after** 를 포함한 변경 사실 |
 | 중복 | dedup — 직전 서명이 같으면 push 안 함, 타이핑은 `recordCoalescedSnapshot` 으로 커밋 1건 | 전량(드래그만 600ms 창에서 병합, 병합 사실도 `mergedCount` 로 남는다) |
 | 상한 | 50건, 대형 스냅샷(10,000셀 이상 또는 맵 12개 초과)은 25건 | 500건 |
-| 수명 | 휘발 — 새로고침에 사라진다 | 영속 — localStorage 200건 + `output/edit-activity/edits.jsonl` |
+| 수명 | 휘발 — 새로고침에 사라진다 | 영속 — localStorage 200건 + `output/edit-activity/edits.jsonl` + **저장할 때마다 DB 커밋 row** |
 | 폐기 | 가능 — `truncateMapEditHistoryFromMarker` 로 잘라낸다 | 불변 — 되돌려도 되돌린 사실이 남는다 |
 | 비용 | 스냅샷당 `structuredClone` 1회 | 엔트리당 객체 1개 push |
 
@@ -151,6 +153,35 @@ cat output/edit-activity/index.json  # CLI 표가 읽는 최근 200건 요약
 편집은 분당 수십 건이라 한 채널에 섞으면 AI 턴이 묻힌다. AI 턴을 조사할 때는 `ai:log`,
 사람 편집을 조사할 때는 `edit:log` 를 본다.
 
+### 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+
+위의 두 채널은 **세션 자산**이다. 링버퍼는 새로고침에 끊기고, 디스크 미러는 워크트리를 바꾸면
+갈리고 배포 환경에는 아예 없다. 그래서 "며칠 전 그 세션에 무슨 행위가 있었나" 를 조사할 수단이
+없었다. 저장 경계마다 행위 기록을 **커밋 row 에 실어** 그 구멍을 메운다.
+
+```bash
+npm run commit:log                  # 커밋 표(최신순) + 커밋별 행위 건수
+npm run commit:log -- --edits       # 커밋마다 그 안의 행위를 펼친다
+npm run commit:log -- --origin ai   # AI 편집이 실린 커밋만 (human|ai|tool|system)
+npm run commit:log -- --map map_x   # 그 맵을 건드린 행위가 실린 커밋만
+npm run commit:log -- 50 --json     # 원본 JSON(에이전트·스크립트용)
+```
+
+경계와 상한 (`takeEditActivitySince`):
+
+| 축 | 값 | 왜 |
+|---|---|---|
+| 실리는 범위 | 지난 커밋 이후(커서) | 커서가 없으면 매 저장에 세션 전체가 반복돼 row 가 계속 커진다 |
+| 개수 상한 | 300건, **최신 쪽**을 남긴다 | 저장 시점에 가까운 행위가 그 저장을 설명한다. 링버퍼·localStorage 와 절단 방향이 같다 |
+| 덩치 상한 | 직렬화 6.4만 자 | 필드 상세가 붙은 엔트리는 최악 40필드 × 400자 — 개수만 막으면 row 가 수 MB 가 된다 |
+| 빠진 몫 | `patch_json.editsOmitted` | 조용히 자르면 "이 저장에는 편집이 3건뿐" 으로 읽힌다. `실린 것 + 빠진 것 = 있었던 것` 이 불변식이다 |
+| 행위 0건 | `edits` 키를 **넣지 않는다** | `edits: []` 를 쓰면 "이 축이 붙기 전 커밋" 과 구분이 안 된다. 리더는 `-` 로 보여준다 |
+
+커서는 원격 기록이 실패해도 전진한다 — 재시도하면 같은 엔트리가 두 커밋에 실린다.
+감사 기록에서 중복은 누락보다 나쁘다(같은 행위가 두 번 있었던 것으로 읽힌다).
+dedup baseline(`lastManualSerialized`)은 정반대로 실패 시 전진하지 않는데, 그쪽은 커밋 자체가
+영구히 사라지는 문제라 보수적으로 잡는 것이 맞다.
+
 ## 로거
 
 ```ts
@@ -178,7 +209,6 @@ log.warn("편집 행위 기록 실패", error);
 
 **아직 마커가 없는 곳 하나 — `clearAll()`(`store.ts:821`).** 이건 `createBlankProject()` 로 `this.current` 를 통째로 갈아치우는 진짜 전체 초기화인데 마커 없이 emit 한다. **오늘은 도달 불가**라서 결함이 아니다 — 참조가 정의 자신, 「새 프로젝트」 메뉴가 이걸 일부러 안 쓰게 됐다는 `menu.ts:728` 의 설명 주석, 그리고 `storeMutationInstrumentation.test.ts:120` 뿐이다. 다만 **누군가 `clearAll()` 을 UI 에 다시 연결하면 이 문서 맨 위의 Ctrl+Z 교차 오염이 조용히 되살아난다.** 그때 `projectSwitch: true` 를 함께 실어야 한다. `mapEditHistory` 가 `store.subscribe` 로 받아 스스로 리셋한다(`installProjectSwitchHistoryReset`, `tileActions.ts` 의 lazy-guard 패턴). **`store.replace()` 자신에 리셋을 걸지 마라** — undo 가 스냅샷을 적용하는 경로가 바로 `store.replace()` 다(`mapEditHistory.ts:122`, `:304`). 교체 호출부마다 리셋을 박는 방식도 기각했다(교체 경로가 4곳 이상이라 이 버그가 생긴 방식을 반복한다). 계약 테스트: `test/mapEditHistoryProjectSwitch.test.ts` |
 | `getCurrent()` 가 라이브 참조를 반환한다 | `return this.readOnlyProjectSnapshot ?? this.current` (`store.ts:552`). `interface Project` 에 `readonly` 0개 | 호출자가 반환값을 직접 고치면 store 를 지나지 않은 변경이 되어 계측·generation·자동저장 전부를 우회한다. 지금은 규율로만 유지된다(`beginReadOnlyProjectSnapshot` 은 런타임 소비자용 임시 창) |
-| `project_changes.patch_json` 이 write-only | 쓰기는 `supabaseProjectSync.ts:993` 1곳, 읽는 프로덕션 코드 0건(테스트 1건) | 원격에 상세 패치를 쌓고 있으나 아무도 읽지 않는다. 읽는 화면을 만들 것인지, 쓰기를 줄일 것인지 결정이 필요하다 |
 | `scope: "assets"` 는 타입에만 있다 | `ProjectChangeDescriptor` 와 `EditActivityScope` 에는 있으나 emit 사이트 0건 | 리소스 매니저·타일셋 메타데이터 편집이 `project`/`system` 으로 뭉쳐 기록된다. 에셋 편집을 이 스코프로 라우팅하거나 타입에서 뺄 것 |
 | `mapEditLocks` 로 편집이 거부된 사건이 기록되지 않는다 `canEditMap()` 거부 지점(`EditScene.ts`, `TilePaintEngine.ts`, `DragOperationHandler.ts`, `actions.ts`, `panels/basicLeftRail.ts`)은 `toast(mapEditLockNotice(...))` 나 조용한 `return` 만 한다 | "칠했는데 아무 일도 안 일어난다" 가 로그·감사 어디에도 안 남는다. 거부는 mutation 이 아니라 초크포인트를 지나지 않으므로 별도로 남겨야 한다 |
 
@@ -203,4 +233,5 @@ done
 
 - 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 5메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).
 - 미러 엔드포인트 계약: `npm test -- test/editActivityEndpoint.test.ts` (상수와 미들웨어 경로가 어긋나면 404 로 조용히 죽는다).
+- 커밋 첨부 계약: `npm test -- test/commitEditActivityAttachment.test.ts` (patch_json 에 실리는지, 커서가 반복을 막는지, 상한이 숫자로 남는지, 리더 CLI 가 같은 키를 읽는지).
 - 위키 변경만 했으면 `npm run openwiki:verify`.

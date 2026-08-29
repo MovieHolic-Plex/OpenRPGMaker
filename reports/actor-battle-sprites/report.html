@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아군 뒷모습 배틀러 작업 보고서</title>
+<style>
+  :root {
+    --bg: #12141a;
+    --card: #1b1e26;
+    --line: #2c313d;
+    --text: #e6e8ee;
+    --dim: #9aa1b0;
+    --good: #6cc98a;
+    --warn: #e0b256;
+    --bad: #e07a72;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.75 "Pretendard", "Malgun Gothic", -apple-system, system-ui, sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 8px; }
+  h2 {
+    font-size: 22px;
+    margin: 64px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  h3 { font-size: 17px; margin: 32px 0 4px; color: var(--dim); font-weight: 600; }
+  p { margin: 12px 0; }
+  .lede { color: var(--dim); font-size: 17px; margin-bottom: 40px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  figure { margin: 24px 0 32px; }
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #0c0e13;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  figcaption { color: var(--dim); font-size: 14px; margin-top: 10px; }
+  .sprites {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin: 24px 0 8px;
+  }
+  .sprites figure { margin: 0; }
+  .sprites img {
+    image-rendering: pixelated;
+    aspect-ratio: 1;
+    object-fit: contain;
+    padding: 6px;
+  }
+  .sprites figcaption { text-align: center; font-size: 13px; margin-top: 6px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0 32px; }
+  .pair figure { margin: 0; }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 2px 9px;
+    border-radius: 99px;
+    vertical-align: 2px;
+    margin-right: 8px;
+  }
+  .t-good { background: rgba(108,201,138,.16); color: var(--good); }
+  .t-warn { background: rgba(224,178,86,.16); color: var(--warn); }
+  .t-bad  { background: rgba(224,122,114,.16); color: var(--bad); }
+  ul { margin: 12px 0; padding-left: 22px; }
+  li { margin: 7px 0; }
+  code {
+    background: #0e1015;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13.5px;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 600; font-size: 13px; letter-spacing: .04em; }
+  td.num { font-family: ui-monospace, monospace; color: var(--dim); }
+  .note { color: var(--dim); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>아군 뒷모습 배틀러 작업 보고서</h1>
+  <p class="lede">전투 화면에서 우리 편 6명이 전부 같은 그림을 쓰고 있었습니다. 이제 각자 자기 뒷모습을 갖습니다.</p>
+
+  <div class="card">
+    <p><strong>세 줄 요약</strong></p>
+    <ul>
+      <li><span class="tag t-good">완료</span>주인공 6명의 뒷모습 그림을 새로 만들고 게임에 연결했습니다.</li>
+      <li><span class="tag t-good">완료</span>실제 게임 화면에서 6명 모두 프레임 안에 온전히 섭니다. 실측 218×210px, 추가 확대 없음.</li>
+      <li><span class="tag t-good">확인</span>관련 테스트 51개 통과. 새로 깨진 건 없습니다.</li>
+    </ul>
+  </div>
+
+  <h2>1. 무엇이 문제였나</h2>
+  <p>
+    전투에서 우리 편은 등을 보이고 섭니다. 그런데 그 뒷모습 그림이 <strong>딱 한 장</strong>밖에 없었습니다.
+    그래서 6명 전원이 똑같은 보라색 생물로 보였습니다. 앞모습은 각자 다른데 뒷모습만 같으니,
+    누가 누군지 구분이 안 됐습니다.
+  </p>
+
+  <figure>
+    <img src="back-view-before-after.png" alt="위쪽 줄은 똑같은 보라색 생물 6개, 아래쪽 줄은 서로 다른 주인공 6명의 뒷모습">
+    <figcaption>
+      위 = 전(前). 6칸 모두 같은 보라색 생물입니다. 아래 = 후(後). 주인공, 수호자, 마도사, 정찰병, 성직자, 궁수가 각각 자기 뒷모습을 가집니다.
+    </figcaption>
+  </figure>
+
+  <h2>2. 새로 만든 그림</h2>
+  <p>
+    6명분 뒷모습을 만들었습니다. 각 그림은 712×712 픽셀이고, 앞모습과 같은 사람으로 보이게
+    머리색, 옷, 무기를 맞췄습니다. 시선도 오른쪽 위(적이 있는 쪽)를 보도록 그림 자체에 넣었습니다.
+  </p>
+
+  <div class="sprites">
+    <figure><img src="../../public/assets/generated/battle-skins/sprites/hero-01-back.png" alt="주인공 뒷모습"><figcaption>hero-01</figcaption></figure>
+    <figure><img src="../../public/assets/generated/battle-skins/sprites/hero-02-back.png" alt="수호자 뒷모습"><figcaption>hero-02</figcaption></figure>
+    <figure><img src="../../public/assets/generated/battle-skins/sprites/hero-03-back.png" alt="마도사 뒷모습"><figcaption>hero-03</figcaption></figure>
+    <figure><img src="../../public/assets/generated/battle-skins/sprites/hero-04-back.png" alt="정찰병 뒷모습"><figcaption>hero-04</figcaption></figure>
+    <figure><img src="../../public/assets/generated/battle-skins/sprites/hero-05-back.png" alt="성직자 뒷모습"><figcaption>hero-05</figcaption></figure>
+    <figure><img src="../../public/assets/generated/battle-skins/sprites/hero-06-back.png" alt="궁수 뒷모습"><figcaption>hero-06</figcaption></figure>
+  </div>
+  <p class="note">그림 파일 위치: <code>public/assets/generated/battle-skins/sprites/hero-0N-back.png</code></p>
+
+  <figure>
+    <img src="back-view-contact.png" alt="6명의 뒷모습을 한 장에 모아 놓은 확인용 시트">
+    <figcaption>확인용 모음 시트. 6명을 나란히 놓고 팔레트와 시선 방향이 서로 어긋나지 않는지 봤습니다.</figcaption>
+  </figure>
+
+  <h2>3. 앞뒤가 같은 사람인지</h2>
+  <p>
+    뒷모습만 예뻐도 소용이 없습니다. 앞모습과 같은 사람으로 보여야 합니다.
+    그래서 앞모습 시트와 나란히 놓고 비교했습니다.
+  </p>
+
+  <figure>
+    <img src="all-heroes-5pose.png" alt="자세 칸마다 자홍색 경계선을 그어 잘림을 확인한 격자">
+    <figcaption>
+      자세 칸이 제대로 잘리는지 확인한 이미지. 칸 경계를 자홍색으로 그었습니다.
+      30칸(6명 × 5자세) 모두 인물이 자기 칸 안에 들어옵니다. 대부분 위아래 경계에 딱 붙어 있어
+      여유가 없지만, 실제로 옆 칸까지 이어지는 곳은 hero-03 한 군데(아래 칸과 2px)뿐입니다.
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="pose-grid.png" alt="주인공 6명의 다섯 자세를 경계선 없이 모아 놓은 시트">
+    <figcaption>
+      같은 30칸을 경계선 없이 본 모음 시트. 뒷모습과 머리색·장비를 맞추는 기준으로 썼습니다.
+      가로가 자세(대기·공격·피격·방어·전투불능), 세로가 인물입니다.
+      원본 파일은 <code>144×384</code>(48px 칸 3열 8행)이고 그중 5칸만 씁니다.
+    </figcaption>
+  </figure>
+
+  <h2>4. 실제 게임 화면</h2>
+  <p>
+    아래 두 장이 같은 자리에서 찍은 전후입니다. 왼쪽이 예전 공용 그림, 오른쪽이 주인공 전용 뒷모습입니다.
+    둘 다 프레임 안에 온전히 들어옵니다.
+  </p>
+
+  <div class="pair">
+    <figure>
+      <img src="../../verify-shots/back-battler-qa/pokemon-fallback-shared.png" alt="예전 화면: 보라색 생물 뒷모습이 필드에 서 있다">
+      <figcaption><strong>전</strong> — 공용 보라색 생물. 6명이 이 한 장을 같이 썼습니다.</figcaption>
+    </figure>
+    <figure>
+      <img src="../../verify-shots/back-battler-qa/pokemon-hero-01.png" alt="지금 화면: 주인공의 뒷모습이 방패와 검을 들고 서 있다">
+      <figcaption><strong>후</strong> — 주인공 전용 뒷모습. 주황 머리, 방패, 검, 발밑 그림자까지 제자리입니다.</figcaption>
+    </figure>
+  </div>
+
+  <div class="card">
+    <p><strong>실측값</strong></p>
+    <p>
+      하네스가 렌더된 요소를 직접 재서 남긴 값입니다. 6명 전원 동일합니다.
+    </p>
+    <p class="num" style="font-family: ui-monospace, monospace; color: var(--good);">
+      box=218×210 &nbsp;·&nbsp; natural=712×712 &nbsp;·&nbsp; transform=none
+    </p>
+    <p>
+      필드에서 보이는 높이는 약 468px이므로 210px 그림은 여유 있게 들어갑니다.
+      <code>transform=none</code>은 노드에 추가 확대가 걸리지 않았다는 뜻입니다.
+    </p>
+    <p class="note">
+      참고 — 이 작업을 처음 검증할 때 쓰던 베이스(404 커밋 이전)에서는 같은 그림이
+      533×515로 그려져 머리만 보였습니다. 대기 애니메이션 키프레임에 옛 <code>scale(2.45)</code>가
+      남아 있었기 때문이고, 그 키프레임은 현재 main 에서 이미 제거됐습니다.
+      이 보고서의 수치는 main 위로 리베이스한 뒤 다시 찍은 것입니다.
+    </p>
+  </div>
+
+  <p>
+    스킨을 바꿔도 같은 코드가 제자리에 그리는지 대조군으로 한 장 더 찍었습니다.
+    같은 인물, 스킨만 RM식으로 바꾼 화면입니다.
+  </p>
+
+  <figure>
+    <img src="../../verify-shots/back-battler-qa/rm2003-hero-01.png" alt="RM식 스킨 전투 화면. 파티와 적이 모두 화면 안에 제 크기로 들어가 있다">
+    <figcaption>
+      대조군 — RM식 스킨. 여기서는 아군이 정면 저작 시트를 쓰고, 노드에
+      <code>scale(1.25)</code>가 걸린 180×180으로 섭니다.
+      스킨마다 크기 규칙이 따로 있다는 뜻이라, 한쪽을 고칠 때 다른 쪽을 같이 재야 합니다.
+      (이 스킨은 정면을 쓰므로 뒷모습 그림은 나오지 않습니다.)
+    </figcaption>
+  </figure>
+
+  <h2>5. 코드에서 바뀐 것</h2>
+  <p>핵심은 "아군 뒷모습을 그릴 때 그 배우 전용 그림이 있으면 그걸 먼저 쓴다"입니다. 없으면 예전 공용 그림으로 돌아갑니다.</p>
+
+  <table>
+    <thead><tr><th>파일</th><th>한 일</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/player/battleFieldDom.ts</code></td><td>배우별 뒷모습 그림을 찾아 붙입니다. 못 찾으면 예전 그림으로 돌아갑니다.</td></tr>
+      <tr><td><code>src/battle/battlePose.ts</code></td><td>자세를 시트의 몇 번째 칸으로 읽을지 정하는 계산.</td></tr>
+      <tr><td><code>src/assets/generatedAssetManifest.ts</code></td><td>새 그림 6장을 자산 목록에 등록.</td></tr>
+      <tr><td><code>defaultDatabasePartyRecords.ts</code></td><td>성직자와 궁수가 남의 시트를 돌려 쓰던 걸 끊고 자기 시트(hero-05/06)를 줬습니다.</td></tr>
+      <tr><td><code>modernNocturneGame.ts</code></td><td>데모가 기본 DB에서 적을 건져 쓰던 방식을 버리고 자기 적 2종을 직접 갖게 했습니다.</td></tr>
+      <tr><td><code>defaultDatabaseBattleRecords.ts</code></td><td>스탯이 규칙적으로 증가하는 더미 적 레코드 231건을 기본 DB에서 제거.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>새로 쓴 테스트</h3>
+  <ul>
+    <li><code>backBattlerGazeContract.test.ts</code> — 뒷모습이 적 방향을 보는지</li>
+    <li><code>battleFieldAllySprite.test.ts</code> — 아군 슬롯이 배우별 그림을 집어오는지</li>
+    <li><code>battlerPoseFrame.test.ts</code> — 자세 칸 계산이 맞는지</li>
+    <li><code>spriteProcess.test.ts</code> — 그림 후처리(배경 제거, 자르기)가 맞는지</li>
+  </ul>
+
+  <h2>6. 남은 문제</h2>
+  <p>
+    세 가지가 남아 있습니다. <strong>모두 이번 작업과 무관하게 main 에서 재현되는 문제</strong>이고,
+    각각 main 을 직접 돌려 확인했습니다.
+  </p>
+
+  <div class="card">
+    <p><span class="tag t-warn">1</span><strong>적 스프라이트가 필드에서 안 보임</strong></p>
+    <p>
+      위 스크린샷의 필드에 적이 없습니다. 위쪽 HP 바에는 "초원 슬라임 1·2"가 떠 있는데
+      그림은 화면에 없습니다. 포켓몬 배치는 적을 오른쪽에 두는데, 그 자리를 오른쪽 파티 상태창이
+      덮고 있습니다. 아군 뒷모습과는 다른 계통(적 배치·패널 겹침)이라 이번 작업에서 건드리지
+      않았습니다. main 기준으로 재현되는 상태입니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <p><span class="tag t-bad">2</span><strong>테스트 3개 실패</strong></p>
+    <p>
+      시작 파티가 4명이어야 하는데 2명으로 나오고, 적 그림 하나(리프링)가 연결되지 않습니다.
+      제 변경을 전부 치우고 원래 코드에서 돌려도 <strong>똑같은 3개가 똑같이 실패</strong>합니다.
+      즉 제가 깨뜨린 게 아닙니다.
+    </p>
+    <ul>
+      <li><code>defaultDatabase.test.ts</code> — 시작 파티 4명 기대, 실제 2명 (2건)</li>
+      <li><code>dbImageMatching.test.ts</code> — 리프링 적 그림 연결 없음 (1건)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <p><span class="tag t-bad">3</span><strong><code>npm run typecheck</code> 실패</strong></p>
+    <p>
+      <code>tsconfig.json</code>이 쓰는 <code>baseUrl</code> 옵션이 지금 TypeScript에서 없어졌습니다(TS5102, TS5090).
+      이것도 원래 코드에서 그대로 재현됩니다. 범위 밖이라 손대지 않았습니다.
+    </p>
+  </div>
+
+  <h2>7. 테스트 결과</h2>
+  <table>
+    <thead><tr><th>항목</th><th>결과</th></tr></thead>
+    <tbody>
+      <tr><td>통과</td><td class="num" style="color:var(--good)">51</td></tr>
+      <tr><td>실패</td><td class="num" style="color:var(--bad)">3 (전부 기존 실패)</td></tr>
+      <tr><td>이번 작업이 새로 깨뜨린 것</td><td class="num" style="color:var(--good)">0</td></tr>
+    </tbody>
+  </table>
+
+  <p class="note" style="margin-top:48px">
+    확인용 화면은 <code>verify-shots/back-battler-qa/</code>, 그림 모음은
+    <code>reports/actor-battle-sprites/</code>에 있습니다. 커밋은 아직 하지 않았습니다.
+  </p>
+
+</div>
+</body>
+</html>

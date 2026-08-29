@@ -15,6 +15,9 @@ import {
 import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import { el } from "@/util/dom";
 
+/** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
+export const CLEAR_CONFIRM_CELLS = 12;
+
 export interface SelectionChipPreset {
   readonly id: string;
   readonly label: string;
@@ -109,16 +112,37 @@ export function renderSelectionActionChips(
     );
   }
 
-  // 지우기
-  bar.append(
-    el("button", {
-      class: "selection-action-chip",
-      text: "지우기",
-      attrs: { type: "button", title: "선택 영역을 빈 칸으로 (Del)" },
-      dataset: { testid: "selection-chip-clear" },
-      on: { click: () => { clearSelectionRegion(selection.mapId); } },
-    }),
-  );
+  // 지우기 — 넓은 영역은 한 번 더 물어본다. 되돌리기가 있어도 48칸이 한 번의 오클릭으로
+  // 사라지면 무엇이 사라졌는지 알아보기 어렵고, 바로 옆이 「복사」라 오클릭 거리가 짧다.
+  const clearCells = Math.max(0, selection.width) * Math.max(0, selection.height);
+  const clearButton = el("button", {
+    class: "selection-action-chip",
+    text: "지우기",
+    attrs: { type: "button", title: "선택 영역을 빈 칸으로 (Del)" },
+    dataset: { testid: "selection-chip-clear" },
+  }) as HTMLButtonElement;
+  let clearArmed = false;
+  let clearArmTimer: ReturnType<typeof setTimeout> | null = null;
+  const disarmClear = (): void => {
+    clearArmed = false;
+    if (clearArmTimer !== null) clearTimeout(clearArmTimer);
+    clearArmTimer = null;
+    clearButton.textContent = "지우기";
+    clearButton.classList?.remove?.("is-armed");
+  };
+  clearButton.addEventListener("click", () => {
+    if (clearCells <= CLEAR_CONFIRM_CELLS || clearArmed) {
+      disarmClear();
+      clearSelectionRegion(selection.mapId);
+      return;
+    }
+    clearArmed = true;
+    clearButton.textContent = `${clearCells}칸 지울까요?`;
+    clearButton.classList?.add?.("is-armed");
+    // 확인 상태로 방치되면 스스로 풀린다 — 다음 클릭이 뜻하지 않게 지우기가 되지 않게.
+    clearArmTimer = setTimeout(disarmClear, 4000);
+  });
+  bar.append(clearButton);
 
   // 구조물로 저장 — 고른 구획을 이 맵의 타일셋 킷으로 학습시킨다(팔레트 스탬프·AI 시공 공용).
   bar.append(
@@ -135,15 +159,19 @@ export function renderSelectionActionChips(
   for (const preset of SELECTION_CHIP_PRESETS) {
     const isAi = preset.id === "ai";
     bar.append(
+      // AI 칩은 이 바의 주 진입점이다 — 아이콘만 두면 무엇을 하는 버튼인지 눈으로 알 수 없어
+      // (title 은 마우스를 올려야 나온다) 스파클 + 글자 라벨을 함께 둔다.
       el("button", {
-        class: "selection-action-chip" + (isAi ? " is-primary is-icon" : ""),
+        class: "selection-action-chip" + (isAi ? " is-primary" : ""),
         attrs: {
           type: "button",
           title: preset.title,
           "aria-label": preset.title,
         },
         dataset: { testid: `selection-chip-${preset.id}` },
-        children: isAi ? [makeAiSparkIcon()] : undefined,
+        children: isAi
+          ? [makeAiSparkIcon(), el("span", { class: "selection-action-chip-text", text: "AI 작업" })]
+          : undefined,
         text: isAi ? undefined : preset.label,
         on: {
           click: (event) => {
