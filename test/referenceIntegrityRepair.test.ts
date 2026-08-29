@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import { projectLint } from "@/project/lint/projectLint";
@@ -67,30 +67,49 @@ describe("project reference integrity", () => {
     expect(commands.some((command) => command.kind === "choices")).toBe(true);
   });
 
-  it("가져오기 참조 검증은 showEmote의 없는 대상 이벤트를 거부하고 현재 이벤트는 허용한다", () => {
+  it("deserialize는 삭제된 showEmote 대상 이벤트를 현재 이벤트로 복구한다", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
-    project.maps[mapId].events = [{
-      id: "ev_emote",
-      x: 1,
-      y: 1,
-      trigger: { kind: "action" },
-      commands: [
-        { kind: "showEmote", target: { eventId: "" }, emote: "heart" },
-        { kind: "showEmote", target: "player", emote: "question" },
-      ],
-    }];
+    project.maps[mapId].events = [
+      {
+        id: "ev_emote",
+        x: 1,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [
+          { kind: "showEmote", target: { eventId: "ev_target" }, emote: "heart" },
+          { kind: "showEmote", target: "player", emote: "question" },
+          { kind: "showEmote", target: { eventId: "ev_deleted" }, emote: "anger" },
+        ],
+      },
+      {
+        id: "ev_target",
+        x: 2,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [],
+      },
+      {
+        id: "ev_deleted",
+        x: 3,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [],
+      },
+    ];
+    const obj = JSON.parse(serialize(project));
+    obj.maps[mapId].events = obj.maps[mapId].events.filter((event: { id: string }) => event.id !== "ev_deleted");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
-    expect(() => deserialize(serialize(project))).not.toThrow();
+    const restored = deserialize(JSON.stringify(obj));
 
-    project.maps[mapId].events[0].commands.push({
-      kind: "showEmote",
-      target: { eventId: "does-not-exist" },
-      emote: "anger",
-    });
-    expect(() => deserialize(serialize(project))).toThrow(
-      /showEmote: 대상 eventId가 존재하지 않습니다: does-not-exist/,
-    );
+    expect(restored.maps[mapId].events[0].commands).toEqual([
+      { kind: "showEmote", target: { eventId: "ev_target" }, emote: "heart" },
+      { kind: "showEmote", target: "player", emote: "question" },
+      { kind: "showEmote", target: { eventId: "" }, emote: "anger" },
+    ]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("없는 이모트 대상 이벤트를 현재 이벤트로 대체 1건"));
+    warn.mockRestore();
   });
 
   it("deserialize는 안전하게 지울 수 있는 dangling DB 참조를 복구한다", () => {

@@ -227,9 +227,6 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
     case "showEmote":
-      if (typeof command.target === "object" && command.target.eventId.trim().length > 0) {
-        assert(context.eventIds.has(command.target.eventId), `showEmote: 대상 eventId가 존재하지 않습니다: ${command.target.eventId}`);
-      }
       return;
     case "shop":
       requireExistingIds("shop: item", command.itemIds, context.itemIds);
