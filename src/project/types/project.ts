@@ -5,6 +5,7 @@ import type {
   Dir,
   FlagName,
   MapId,
+  MonsterInstanceId,
   ResourceProfile,
   SCHEMA_VERSION,
   SwitchDef,
@@ -274,6 +275,10 @@ export interface ProjectSession {
   timers?: Record<string, number>;
   inventory: Record<string, number>;
   partyActorIds: ActorId[];
+  /** Optional authored monster collection seed for new games. */
+  monsterInstances?: Record<MonsterInstanceId, import("@/project/session").MonsterInstance>;
+  monsterParty?: MonsterInstanceId[];
+  monsterBox?: MonsterInstanceId[];
   gold?: number;
   /**
    * 시작 시 세계에 놓인 설치물(바위·나무 등), `mapId:x,y` 키.
