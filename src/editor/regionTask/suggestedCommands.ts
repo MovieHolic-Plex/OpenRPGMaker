@@ -30,6 +30,31 @@ export const SUGGESTED_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
   { id: "festival", icon: "composite", label: "축제 분위기", instruction: "이 광장에 축제 분위기 내게 등불이랑 좌판, 상인들 배치해줘", category: "복합", tilesets: ["outdoor"] },
   { id: "dark-mood", icon: "mood", label: "음산한 조명", instruction: "이 방을 어둡고 음산한 조명으로 바꿔줘", category: "분위기" },
   { id: "encounter-zone", icon: "combat", label: "몬스터 구역", instruction: "이 영역에 들어서면 슬라임이 나오는 인카운터 구역으로 설정해줘", category: "전투" },
+  // 아래 3개는 카테고리를 골랐을 때 칩이 한 개만 남던 빈칸(타일·다듬기·분위기)을 메운다.
+  // 지시문은 이미 다른 경로에서 쓰이는 표현을 그대로 쓴다(입력창 placeholder 의 "침엽수 숲" 등).
+  { id: "conifer-forest", icon: "terrain", label: "침엽수 숲", instruction: "이 영역을 침엽수 숲으로 채워줘", category: "타일", tilesets: ["outdoor"] },
+  { id: "dirt-path", icon: "terrain", label: "흙길", instruction: "이 영역을 가로지르는 흙길을 깔아줘", category: "타일", tilesets: ["outdoor"] },
+  { id: "scatter-rocks", icon: "polish", label: "바위 흩뿌리기", instruction: "이 영역에 바위와 돌무더기를 자연스럽게 흩뿌려줘", category: "다듬기" },
+  { id: "lantern-mood", icon: "mood", label: "등불 분위기", instruction: "이 공간에 등불을 걸어 따뜻하고 밝은 분위기로 만들어줘", category: "분위기" },
+] as const;
+
+/**
+ * 주변 타일을 보고만 뜨는 문맥 추천 명령. 예전에는 regionContextSuggestions 안의 리터럴이라
+ * **카테고리 칩으로는 영영 볼 수 없었다** — 같은 카테고리를 골라도 목록에 없었다.
+ * 카테고리 묶음(regionCommandCategories)과 문맥 추천이 같은 원본을 보게 하려고 여기로 옮겼다.
+ */
+export const CONTEXT_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
+  { id: "dock", icon: "structure", label: "부두", instruction: "물 옆에 나무 부두를 만들어줘", category: "구조물", tilesets: ["outdoor"] },
+  { id: "bridge", icon: "structure", label: "다리", instruction: "이 영역에 다리를 놓아줘", category: "구조물", tilesets: ["outdoor"] },
+  { id: "street-trees", icon: "polish", label: "가로수", instruction: "길을 따라 가로수를 심어줘", category: "다듬기", tilesets: ["outdoor"] },
+  { id: "hunting-ground", icon: "combat", label: "사냥터", instruction: "이 영역을 슬라임이 나오는 사냥터로 만들어줘", category: "전투", tilesets: ["outdoor"] },
+  { id: "campfire", icon: "mood", label: "캠프파이어", instruction: "숲 가장자리에 캠프파이어와 통나무 의자를 만들어줘", category: "구조물", tilesets: ["outdoor"] },
+] as const;
+
+/** 카테고리 칩이 보여 줄 전체 명령 — 정적 코퍼스 + 문맥 전용 명령. */
+export const ALL_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
+  ...SUGGESTED_REGION_COMMANDS,
+  ...CONTEXT_REGION_COMMANDS,
 ] as const;
 
 export interface RegionCommandCategory {
@@ -63,7 +88,7 @@ const CATEGORY_ORDER: readonly { readonly id: string; readonly label: string; re
  */
 export function regionCommandCategories(): RegionCommandCategory[] {
   const byCategory = new Map<string, SuggestedRegionCommand[]>();
-  for (const command of SUGGESTED_REGION_COMMANDS) {
+  for (const command of ALL_REGION_COMMANDS) {
     const bucket = byCategory.get(command.category);
     if (bucket) bucket.push(command);
     else byCategory.set(command.category, [command]);

@@ -16,6 +16,7 @@ import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness/
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import type { RegionRect } from "./clipToRegion";
 import {
+  CONTEXT_REGION_COMMANDS,
   SUGGESTED_REGION_COMMANDS,
   type SuggestedRegionCommand,
   type TilesetCategory,
@@ -96,45 +97,25 @@ function buildContextualPool(
     const found = SUGGESTED_REGION_COMMANDS.find((c) => c.id === id);
     if (found && !pool.some((c) => c.id === id)) pool.push(found);
   };
+  // 문맥 전용 명령은 CONTEXT_REGION_COMMANDS 가 원본이다 — 카테고리 칩도 같은 목록을 본다.
+  const addContext = (id: string): void => {
+    const found = CONTEXT_REGION_COMMANDS.find((c) => c.id === id);
+    if (found && !pool.some((c) => c.id === id)) pool.push(found);
+  };
   // 물 인접: 부두/다리 는 야외 전용(실내/던전엔 부적합).
   if (counts.water >= 3) {
-    pool.push({
-      id: "dock", icon: "structure", label: "부두",
-      instruction: "물 옆에 나무 부두를 만들어줘",
-      category: "구조물",
-      tilesets: ["outdoor"],
-    });
-    pool.push({
-      id: "bridge", icon: "structure", label: "다리",
-      instruction: "이 영역에 다리를 놓아줘",
-      category: "구조물",
-      tilesets: ["outdoor"],
-    });
+    addContext("dock");
+    addContext("bridge");
   }
   // 길 인접: 가로수(야외)/상가
   if (counts.road >= 2) {
-    pool.push({
-      id: "street-trees", icon: "polish", label: "가로수",
-      instruction: "길을 따라 가로수를 심어줘",
-      category: "다듬기",
-      tilesets: ["outdoor"],
-    });
+    addContext("street-trees");
     addById("merchant-npc");
   }
   // 숲 인접: 사냥터/캠프파이어 (야외)
   if (counts.forest >= 3) {
-    pool.push({
-      id: "hunting-ground", icon: "combat", label: "사냥터",
-      instruction: "이 영역을 슬라임이 나오는 사냥터로 만들어줘",
-      category: "전투",
-      tilesets: ["outdoor"],
-    });
-    pool.push({
-      id: "campfire", icon: "mood", label: "캠프파이어",
-      instruction: "숲 가장자리에 캠프파이어와 통나무 의자를 만들어줘",
-      category: "구조물",
-      tilesets: ["outdoor"],
-    });
+    addContext("hunting-ground");
+    addContext("campfire");
   }
   // 건물 인접: 울타리/정원
   if (counts.building >= 2) {

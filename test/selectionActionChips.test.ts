@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   renderSelectionActionChips,
   SELECTION_CHIP_PRESETS,
@@ -11,6 +11,16 @@ import {
 import type { RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import type { TileSelection } from "@/editor/editorState";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+/** clearSelectionRegion 호출 기록 — 확인 단계가 실제로 지우기를 막는지 보려면 호출을 봐야 한다. */
+const clearCalls: string[] = [];
+vi.mock("@/editor/mapClipboard", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/editor/mapClipboard")>();
+  return {
+    ...actual,
+    clearSelectionRegion: (mapId: string) => { clearCalls.push(mapId); },
+  };
+});
 
 const SELECTION: TileSelection = { mapId: "map-1", x: 3, y: 4, width: 5, height: 6 };
 
@@ -46,6 +56,34 @@ describe("renderSelectionActionChips", () => {
     (findByTestId(document.body as unknown as FakeElement, "selection-chip-ai") as unknown as HTMLElement).click();
     expect(calls).toHaveLength(1);
     expect(calls[0]?.mapId).toBe("map-1");
+  });
+});
+
+describe("지우기 확인 (넓은 영역)", () => {
+  let restore: () => void;
+  beforeEach(() => { restore = installFakeDom(); clearCalls.length = 0; });
+  afterEach(() => { restore(); });
+
+  const stub = (() => document.createElement("div")) as never;
+
+  it("48칸 선택은 첫 클릭에 확인으로 바뀌고 지우지 않는다", () => {
+    // 되돌리기가 있어도 8×6 이 한 번의 오클릭으로 사라지면 무엇이 사라졌는지 알아보기 어렵다.
+    const bar = renderSelectionActionChips({ mapId: "map-1", x: 0, y: 0, width: 8, height: 6 }, stub);
+    document.body.append(bar);
+    const button = findByTestId(document.body as unknown as FakeElement, "selection-chip-clear") as unknown as HTMLElement;
+    button.click();
+    expect(clearCalls).toHaveLength(0);
+    expect(button.textContent).toContain("48칸");
+    button.click();
+    expect(clearCalls).toEqual(["map-1"]);
+  });
+
+  it("작은 영역(12칸 이하)은 예전처럼 한 번에 지운다", () => {
+    const bar = renderSelectionActionChips({ mapId: "map-1", x: 0, y: 0, width: 3, height: 4 }, stub);
+    document.body.append(bar);
+    const button = findByTestId(document.body as unknown as FakeElement, "selection-chip-clear") as unknown as HTMLElement;
+    button.click();
+    expect(clearCalls).toEqual(["map-1"]);
   });
 });
 

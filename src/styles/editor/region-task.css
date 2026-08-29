@@ -416,7 +416,14 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-.region-task-partial-host { display: flex; flex-direction: column; gap: var(--space-2); }
+/* 부분 적용은 「고급」 안이 아니라 검토 본문(변경 목록 아래)에 산다 — 위 목록과 시각적으로
+   이어 보이도록 여백만 준다. */
+.region-task-partial-host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
 .region-task-partial-host.hidden { display: none; }
 .region-task-partial-apply.hidden { display: none; }
 
@@ -476,6 +483,15 @@
   flex-direction: column;
   gap: var(--space-2);
   width: 100%;
+}
+
+/* 미리보기 사용법 한 줄 — 「이전」에 올리면 잠깐 비교된다는 것을 화면에서 알린다. */
+.region-task-preview-hint {
+  color: var(--editor-text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  padding-top: var(--space-1);
+  text-align: center;
 }
 
 .region-task-preview-ab-toggle {
@@ -549,9 +565,11 @@
 .region-task-change-cell {
   transition: background-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
+/* 테두리를 1px→2px 로 올린다. 240px 썸네일에서 4칸 변화는 1px 테두리로는 눈에 들어오지 않아
+   「이전 | 이후」 왕복이 유일한 확인 수단이었다. */
 .region-task-change-cell.is-changed {
   background: color-mix(in srgb, var(--accent) 22%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 75%, transparent);
 }
 /* 체크를 푼 덩어리 — 적용되지 않으므로 하이라이트를 걷는다 */
 .region-task-change-cell.is-changed.is-excluded {
@@ -601,11 +619,27 @@
   .region-task-event-marker.is-focus { transform: none; }
 }
 
+/* ── 이 모달이 열려 있는 동안: 지시 입력구는 하나만 살아 있다 ──────────────────
+   실측(2026-08-30 감사): 모달 뒤에 AI 조수 패널의 "한 문장으로 지시" 입력창과 예시 칩이
+   절반 가려진 채 남아 있어, 같은 작업의 입구가 두 개 겹쳐 보였다. 어느 쪽이 유효한지 알 수
+   없다. 모달이 결정 표면을 갖는 동안 조수 쪽 입력 경로는 물러난다(포인터·포커스 차단). */
+body.region-task-modal-open .ai-command-bar,
+body.region-task-modal-open .ai-authoring-examples {
+  filter: saturate(0.6);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 /* ── 추천 카테고리 줄 (Tier 1: Filter Pills) ── */
+/* 가로 스크롤이라는 사실을 보이게 한다. 예전에는 다섯 번째 칩이 경계에서 그냥 잘려
+   "여기가 끝" 처럼 읽혔다 — 오른쪽 끝을 페이드로 흐려 더 있다는 것을 알린다. */
 .region-task-categories {
   display: flex;
   flex-wrap: nowrap;
   gap: var(--space-1);
+  /* 마스크는 알파만 쓴다 — 색 리터럴 없이 currentColor(불투명)로 그린다. */
+  mask-image: linear-gradient(to right, currentColor 0, currentColor calc(100% - 20px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, currentColor 0, currentColor calc(100% - 20px), transparent 100%);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   padding-bottom: 2px;
@@ -676,6 +710,12 @@
   vertical-align: middle;
   width: 14px;
 }
+/* 「전체 추천」으로 돌아가는 칩 — 명령 칩과 같은 줄에 있지만 명령이 아니므로 조용하게. */
+.region-task-suggest-chip.is-reset {
+  background: transparent;
+  color: var(--editor-text-muted);
+}
+.region-task-suggest-chip.is-reset svg { color: var(--editor-text-muted); }
 .region-task-suggest-chip:hover,
 .region-task-suggest-chip:focus-visible {
   background: var(--bg-raised);
@@ -766,13 +806,32 @@
 }
 .region-task-checkpoint.is-done { color: var(--success); }
 .region-task-checkpoint.is-blocked { color: var(--danger); }
+/* 검사 결과가 아니라 사람의 결정 대기 — 통과(초록 체크)와 색·아이콘을 모두 구분한다. */
+.region-task-checkpoint.is-pending { color: var(--editor-text-muted); }
 
+/* 지표는 한 줄 문자열이 아니라 항목 칩이다. 나쁜 값만 색으로 튀게 하고 나머지는 조용히 둔다. */
 .region-task-review-metrics {
   background: transparent;
   color: var(--editor-text-muted);
+  display: flex;
+  flex-wrap: wrap;
   font-size: 11px;
+  gap: var(--space-1);
   line-height: 1.5;
   padding: var(--space-2) var(--space-3);
+}
+.region-task-metric {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+.region-task-metric.is-warn {
+  background: var(--warning-muted);
+  border-color: var(--warning);
+  color: var(--warning);
+  font-weight: 600;
 }
 .region-task-review-metrics.hidden,
 .region-task-blockers.hidden,
@@ -1009,12 +1068,28 @@
   min-width: 0;
 }
 .region-task-direct-summary {
+  align-items: center;
   color: var(--editor-text-muted);
   cursor: pointer;
+  display: flex;
   font: 500 11px/1.4 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-1);
   list-style: none;
   padding: 2px 0;
 }
+/* 접힌 줄이 컨트롤이라는 표시 — 「고급」 줄의 셰브론과 같은 규칙. */
+.region-task-direct-chevron {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  display: inline-block;
+  flex-shrink: 0;
+  height: 6px;
+  transform: rotate(-45deg);
+  transition: transform 140ms ease;
+  width: 6px;
+}
+.region-task-direct-disclosure[open] .region-task-direct-chevron { transform: rotate(45deg); }
 .region-task-direct-summary::-webkit-details-marker { display: none; }
 .region-task-direct-summary:hover { color: var(--editor-text); }
 .region-task-direct-summary:focus-visible {

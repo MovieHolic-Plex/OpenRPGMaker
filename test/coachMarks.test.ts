@@ -224,6 +224,28 @@ describe("표준 모드 웰컴 카드", () => {
     expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
   });
 
+  it("모달이 열려 있으면 띄우지 않고, 본 것으로 기록하지도 않는다", () => {
+    // 실측(2026-08-30 영역 작업 UI 감사): 이 카드가 영역 작업 팝오버의 좌표 칩과
+    // "적용 여부를 선택하세요" 줄을 덮었다. 배치 로직은 AI 패널 하나만 회피했다.
+    const backdrop = new FakeElement("div");
+    backdrop.className = "region-task-backdrop";
+    // fakeDom 의 기본 rect 는 0×0 이라 "열려 있다" 로 보이지 않는다 — 실측값을 준다.
+    backdrop.getBoundingClientRect = () => ({
+      bottom: 400, height: 400, left: 0, right: 380, top: 0, width: 380, x: 0, y: 0, toJSON: () => ({}),
+    }) as DOMRect;
+    document.body.append(backdrop as unknown as HTMLElement);
+
+    maybeStartStandardWelcomeCard(storage);
+
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
+    expect(storage.getItem(STANDARD_WELCOME_SEEN_KEY)).toBeNull();
+
+    // 모달이 닫히면 다음 시도에서 정상적으로 뜬다.
+    backdrop.remove();
+    maybeStartStandardWelcomeCard(storage);
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeTruthy();
+  });
+
   it("localStorage를 쓸 수 없는 환경에서는 예외 없이 띄우지 않는다", () => {
     const throwingStorage = {
       getItem(): string | null {
