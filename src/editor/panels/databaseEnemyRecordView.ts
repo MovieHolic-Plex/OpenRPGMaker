@@ -275,10 +275,17 @@ function factionConsequence(
         || (relation.a === id && relation.b === effectiveId)
       )),
       stance: factionStance(table, effectiveId, id),
-    }))
-    .sort((left, right) => factionRelationshipPriority(left) - factionRelationshipPriority(right));
-  const primaryPeers = peers.slice(0, FACTION_RELATION_PREVIEW_LIMIT);
-  const remainingPeers = peers.slice(FACTION_RELATION_PREVIEW_LIMIT);
+    }));
+  // 실제 전투 대상은 미리보기 제한으로 접지 않는다. 적대 관계끼리는 더 적대적인 순서로,
+  // 비적대 관계만 저작 여부를 우선해 제한된 자리를 사용한다.
+  const hostilePeers = peers
+    .filter((peer) => peer.stance <= -1)
+    .sort((left, right) => left.stance - right.stance);
+  const nonHostilePeers = peers
+    .filter((peer) => peer.stance > -1)
+    .sort((left, right) => Number(right.authored) - Number(left.authored));
+  const primaryPeers = [...hostilePeers, ...nonHostilePeers.slice(0, FACTION_RELATION_PREVIEW_LIMIT)];
+  const remainingPeers = nonHostilePeers.slice(FACTION_RELATION_PREVIEW_LIMIT);
   const missing = source === "dangling";
   const identityName = missing ? "존재하지 않는 진영" : factionName(table, effectiveId);
   const identityId = missing ? (storedId ?? effectiveId) : effectiveId;
@@ -332,11 +339,6 @@ function factionConsequence(
   });
 }
 
-function factionRelationshipPriority(peer: { readonly authored: boolean; readonly stance: number }): number {
-  if (peer.authored) return 0;
-  return peer.stance === 0 ? 2 : 1;
-}
-
 function collapsedFactionRelationships(
   table: ReturnType<typeof resolveFactionTable>,
   effectiveId: string,
@@ -344,8 +346,8 @@ function collapsedFactionRelationships(
 ): HTMLElement {
   const neutralCount = peers.filter((peer) => peer.stance === 0).length;
   const card = sectionCard({
-    title: `나머지 관계 ${peers.length}개`,
-    hint: neutralCount > 0 ? `중립 ${neutralCount}개 포함` : "우선 관계 더 보기",
+    title: `비적대 관계 ${peers.length}개`,
+    hint: neutralCount > 0 ? `중립 ${neutralCount}개 포함` : "우호 관계 더 보기",
     collapsible: true,
     collapsed: true,
     testid: "db-enemy-faction-relationships-more",

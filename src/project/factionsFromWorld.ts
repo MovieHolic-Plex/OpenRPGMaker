@@ -6,9 +6,15 @@
 // `world_<읽을 수 있는 조각>_<안정 해시>`로 바꾼다. 이름은 정체성이 아니다. 같은 이름의 수기 진영은
 // 합치지 않고 경고만 내며, 계산된 ID가 수기 진영과 충돌하면 덮어쓰지 않고 해당 세력을 보류한다.
 //
-// 병합 규칙: 세계관은 빈 칸만 채운다. 스키마에 출처 표식이 없어서 기존 행을 세계관 산출물이라고
-// 증명할 수 없으므로, 기존 정의/관계는 수정·삭제하지 않는다. 같은 값은 이미 반영된 것으로 보고,
-// 다른 값은 conflict로 남긴다. 이 보수적 규칙 덕분에 반복 적용은 멱등이고 수기 전투 데이터가 보존된다.
+// 병합 규칙: 세계관은 빈 칸만 채운다. 구체화한 정의에는 WorldEntity.id 출처를 남겨 전투 ID가 바뀌어도
+// 같은 세계관 세력임을 증명한다. 같은 값은 이미 반영된 것으로 보고, 다른 값은 conflict로 남긴다.
+//
+// 기존 정의에 쓰기가 허용되는 단 하나의 예외: 파생 ID로 짝이 맞고 compatibleExistingDef가 통과해
+// 병합기가 이미 "같은 세력"이라고 단정한 정의에 한해, 이 버전 이전에 구체화된 행도 rename을
+// 버틸 수 있게 worldEntityId 출처만 새로 찍는다(보정). 이름·색·aggression 등 사람이 적어 넣은 값은
+// 여전히 건드리지 않고, 정의 삭제도 여전히 없다. 호환되지 않는 정의는 보정하지 않고 전처럼
+// 보류한다. 보정은 산출물을 바꾸니 diff.defs.changed 에 올려 UI가 "반영할 것 없음"으로 오해하지
+// 않게 한다. 이 보수적 규칙 덕분에 반복 적용은 보정 한 번 이후 멱등이고 수기 전투 데이터가 보존된다.
 
 import {
   DEFAULT_AGGRESSION,
@@ -121,6 +127,7 @@ export function planFactionsFromWorld(
 ): FactionsFromWorldPlan {
   const base = cloneFactions(existing);
   const addedDefs: FactionDef[] = [];
+  const changedDefs: FactionsFromWorldChange<FactionDef>[] = [];
   const addedRelations: FactionRelationDef[] = [];
   const defConflicts: FactionsFromWorldDefConflict[] = [];
   const relationConflicts: FactionsFromWorldRelationConflict[] = [];
@@ -129,14 +136,22 @@ export function planFactionsFromWorld(
   const combatIdOwner = new Map<string, string>();
   const availableByWorldId = new Map<string, string>();
   const existingDefById = new Map(base.defs.map((def) => [def.id, def]));
+  const existingDefByWorldId = new Map(
+    base.defs
+      .filter((def) => def.worldEntityId !== undefined)
+      .map((def) => [def.worldEntityId!, def]),
+  );
   const knownNames = new Map<string, { readonly id: string; readonly name: string }>();
 
   for (const def of base.defs) knownNames.set(normalizeName(def.name), { id: def.id, name: def.name });
 
   const loreFactions = world.entities.filter((entity) => entity.type === "faction");
   for (const entity of loreFactions) {
-    const combatFactionId = combatFactionIdFromWorldEntityId(entity.id);
-    const remapped = combatFactionId !== entity.id;
+    const derivedCombatFactionId = combatFactionIdFromWorldEntityId(entity.id);
+    // 출처가 확인된 정의는 전투 ID를 바꾼 뒤에도 파생 ID보다 먼저 같은 세력으로 취급한다.
+    const originDef = existingDefByWorldId.get(entity.id);
+    const combatFactionId = originDef?.id ?? derivedCombatFactionId;
+    const remapped = derivedCombatFactionId !== entity.id;
     if (remapped) {
       const reserved = RESERVED_IDS.has(entity.id);
       issues.push({
@@ -162,11 +177,16 @@ export function planFactionsFromWorld(
     }
     combatIdOwner.set(combatFactionId, entity.id);
 
-    const existingDef = existingDefById.get(combatFactionId);
-    if (existingDef && !compatibleExistingDef(existingDef, entity)) {
+    const existingDef = originDef ?? existingDefById.get(combatFactionId);
+    if (existingDef && !originDef && !compatibleExistingDef(existingDef, entity)) {
       defConflicts.push({
         existing: { ...existingDef },
-        implied: { id: combatFactionId, name: entity.name, aggression: MATERIALIZED_AGGRESSION },
+        implied: {
+          id: combatFactionId,
+          name: entity.name,
+          aggression: MATERIALIZED_AGGRESSION,
+          worldEntityId: entity.id,
+        },
         worldEntityId: entity.id,
       });
       mapping.push(mappingEntry(entity, combatFactionId, "blocked", remapped));
@@ -194,15 +214,24 @@ export function planFactionsFromWorld(
     }
 
     if (existingDef) {
+      // 구버전이 남긴 출처 없는 구체화 행은 지금 보정해야 다음 rename 에서 중복 진영이 생기지 않는다.
+      if (!originDef && existingDef.worldEntityId === undefined) {
+        const before: FactionDef = { ...existingDef };
+        existingDef.worldEntityId = entity.id;
+        changedDefs.push({ before, after: { ...existingDef } });
+        existingDefByWorldId.set(entity.id, existingDef);
+      }
       mapping.push(mappingEntry(entity, combatFactionId, "existing", remapped));
     } else {
       const def: FactionDef = {
         id: combatFactionId,
         name: entity.name,
         aggression: MATERIALIZED_AGGRESSION,
+        worldEntityId: entity.id,
       };
       addedDefs.push(def);
       existingDefById.set(combatFactionId, def);
+      existingDefByWorldId.set(entity.id, def);
       knownNames.set(normalizeName(entity.name), { id: combatFactionId, name: entity.name });
       mapping.push(mappingEntry(entity, combatFactionId, "added", remapped));
     }
@@ -272,9 +301,9 @@ export function planFactionsFromWorld(
     addedRelations.push(implied);
   }
 
-  const result = resultFactions(base, addedDefs, addedRelations, existing);
+  const result = resultFactions(base, addedDefs, addedRelations, changedDefs, existing);
   const diff: FactionsFromWorldDiff = {
-    defs: { added: addedDefs, changed: [], removed: [], conflicts: defConflicts },
+    defs: { added: addedDefs, changed: changedDefs, removed: [], conflicts: defConflicts },
     relations: { added: addedRelations, changed: [], removed: [], conflicts: relationConflicts },
   };
   return {
@@ -282,7 +311,7 @@ export function planFactionsFromWorld(
     diff,
     issues,
     result,
-    hasChanges: addedDefs.length > 0 || addedRelations.length > 0,
+    hasChanges: addedDefs.length > 0 || addedRelations.length > 0 || changedDefs.length > 0,
   };
 }
 
@@ -314,9 +343,10 @@ function resultFactions(
   base: ProjectFactions,
   addedDefs: readonly FactionDef[],
   addedRelations: readonly FactionRelationDef[],
+  changedDefs: readonly FactionsFromWorldChange<FactionDef>[],
   original: ProjectFactions | undefined,
 ): ProjectFactions | undefined {
-  if (addedDefs.length === 0 && addedRelations.length === 0) {
+  if (addedDefs.length === 0 && addedRelations.length === 0 && changedDefs.length === 0) {
     return original ? cloneFactions(original) : undefined;
   }
   return {

@@ -228,6 +228,36 @@ describe("enemy faction assignment panel", () => {
     expect(findByTestId(host, "db-enemy-faction-color")?.style["--db-enemy-faction-color"]).toBe("#76512d");
   });
 
+  it("keeps all seven authored hostile relationships in the primary list", () => {
+    const project = createBlankProject();
+    project.factions = {
+      defs: Array.from({ length: 7 }, (_, index) => ({
+        id: `faction_${String.fromCharCode(97 + index)}`,
+        name: `진영 ${String.fromCharCode(65 + index)}`,
+      })),
+      relations: [
+        { a: "faction_a", b: "enemy", stance: -1 },
+        ...Array.from({ length: 6 }, (_, index) => ({
+          a: "faction_a",
+          b: `faction_${String.fromCharCode(98 + index)}`,
+          stance: -1 as const,
+        })),
+      ],
+    };
+    project.database.enemies[0]!.factionId = "faction_a";
+    store.replace(project);
+    const host = renderEnemyForm();
+
+    const primary = findByTestId(host, "db-enemy-faction-relationships-primary");
+
+    expect(primary?.querySelectorAll(".db-enemy-faction-stance")).toHaveLength(7);
+    expect(primary?.textContent).toContain("적 -1 · 적");
+    for (const id of ["b", "c", "d", "e", "f", "g"]) {
+      expect(findByTestId(primary ?? host, `db-enemy-faction-stance-faction_${id}`)?.dataset.stance).toBe("-1");
+    }
+    expect(findByTestId(host, "db-enemy-faction-relationships-more")).toBeNull();
+  });
+
   it("bounds peer pills, prioritizes authored relationships, and collapses the neutral remainder", () => {
     const project = createBlankProject();
     project.factions = {
@@ -251,18 +281,18 @@ describe("enemy faction assignment panel", () => {
     const collapsedBody = more?.querySelector(".db-ws-card-body");
     const toggle = more?.querySelector("button");
 
-    expect(primary?.querySelectorAll(".db-enemy-faction-stance")).toHaveLength(6);
+    expect(primary?.querySelectorAll(".db-enemy-faction-stance")).toHaveLength(7);
     expect(primary?.textContent).toContain("경비대 -1 · 적");
     expect(primary?.textContent).toContain("상인회 0 · 중립");
-    expect(more?.textContent).toContain("나머지 관계 4개");
-    expect(more?.textContent).toContain("중립 4개 포함");
-    expect(more?.dataset.neutralCount).toBe("4");
+    expect(more?.textContent).toContain("비적대 관계 3개");
+    expect(more?.textContent).toContain("중립 3개 포함");
+    expect(more?.dataset.neutralCount).toBe("3");
     expect(collapsedBody?.getAttribute("hidden")).toBe("");
-    expect(toggle?.getAttribute("aria-label")).toBe("나머지 관계 4개 펼치기");
+    expect(toggle?.getAttribute("aria-label")).toBe("비적대 관계 3개 펼치기");
     expect(findByTestId(host, "db-enemy-faction-stance-neutral_7")?.textContent).toBe("중립 7 0 · 중립");
 
     toggle?.click();
     expect(collapsedBody?.getAttribute("hidden")).toBeNull();
-    expect(toggle?.getAttribute("aria-label")).toBe("나머지 관계 4개 접기");
+    expect(toggle?.getAttribute("aria-label")).toBe("비적대 관계 3개 접기");
   });
 });

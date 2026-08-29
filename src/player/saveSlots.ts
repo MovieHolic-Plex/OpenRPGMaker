@@ -9,6 +9,7 @@ import {
   type PlaySession,
 } from "@/project/session";
 import { parseFactionStanceOverrides } from "@/project/factionRuntime";
+import { resolveFactionTable } from "@/project/factions";
 import { normalizeItemTransitionState } from "@/project/itemTransitions";
 import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
 import {
@@ -472,7 +473,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.inventory = normalizedItems.inventory;
   session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
-  session.factionStanceOverrides = parseFactionStanceOverrides(snapshot.session.factionStanceOverrides);
+  session.factionStanceOverrides = parseFactionStanceOverrides(
+    snapshot.session.factionStanceOverrides,
+    resolveFactionTable(project.factions),
+  );
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
   session.shopLoyaltySpend = sanitizeEconomyRecord(snapshot.session.shopLoyaltySpend);
   session.shopTradeCounts = sanitizeShopTradeCounts(snapshot.session.shopTradeCounts);
