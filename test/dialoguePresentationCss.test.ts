@@ -145,6 +145,38 @@ describe("대화창 연출 CSS", () => {
     }
   });
 
+  it("스크림은 오버레이가 아니라 자기 엘리먼트에 걸리고 창 밴드 아래에 있다", () => {
+    // 오버레이 안에 두면 화면을 덮을 수 없다 — position-top/bottom 에서 높이가 27% 뿐이다.
+    // 그리고 39(창) 위로 올라가면 스크림이 대사를 덮는다.
+    const scrim = css.slice(css.indexOf(".dialogue-scrim {"));
+    expect(scrim.slice(0, scrim.indexOf("}"))).toContain("z-index: 38");
+    expect(css, "z-index 밴드 주석에 38 이 없다").toMatch(/z-index 밴드[^*]*38/);
+    // 크롭 inset 은 playSurface.css 가 맞춘다 — 목록에서 빠지면 잘려 나가는 띠까지 어두워진다.
+    const surface = readFileSync(resolve(__dirname, "..", "src/styles/runtime/playSurface.css"), "utf8");
+    expect(surface, "playSurface.css 의 크롭 inset 목록에 .dialogue-scrim 이 없다").toContain(
+      ".play-stage > .dialogue-scrim"
+    );
+  });
+
+  it("분노 흔들림은 좌우 여백 하한을 먹지 않는다", () => {
+    // 전폭 상자의 좌우 여백 하한이 16px 이고 test/e2e/dialogue-modern-skin.spec.ts 가 그 값을
+    // 잰다. 흔들림은 phase="shown" 에 걸리므로 그 측정과 시점이 겹칠 수 있다.
+    const shake = keyframeBlocks().get("dialogue-box-shake");
+    expect(shake, "dialogue-box-shake keyframes 가 없다").toBeTruthy();
+    const offsets = [...shake!.matchAll(/translate(?:3d|X)\(\s*(-?\d+(?:\.\d+)?)px/g)].map(([, value]) =>
+      Math.abs(Number.parseFloat(value!))
+    );
+    expect(offsets.length, "흔들림이 좌우로 움직이지 않는다").toBeGreaterThan(0);
+    expect(Math.max(...offsets), `좌우 진폭 ${Math.max(...offsets)}px — 4px 이하로 묶어라.`).toBeLessThanOrEqual(4);
+  });
+
+  it("흔들림은 진입 연출과 같은 규칙을 다투지 않는다", () => {
+    // 진입과 같은 [data-dialogue-phase="enter"] 에 얹으면 둘이 transform 을 다투고,
+    // 세션 중간의 분노 대사는(shown 으로 바로 뜬다) 아예 흔들리지 않는다.
+    const rule = css.slice(css.indexOf('.dialogue-box[data-dialogue-shake="1"]'));
+    expect(rule.slice(0, rule.indexOf("{"))).toContain('[data-dialogue-phase="shown"]');
+  });
+
   it("움직임을 끈 자리에도 창은 뜬다", () => {
     // opacity 만 남기고 이동·신축을 없앤다. 애니메이션을 통째로 none 으로 만들면
     // fill-mode 로 잡혀 있던 opacity 가 풀려 창이 안 보이거나, 반대로 퇴장이 안 끝난다.
@@ -160,5 +192,12 @@ describe("대화창 연출 CSS", () => {
       guard,
       "안전망 선택자가 [data-dialogue-emotion] 을 빼먹었다 — happy·sad 가 안전망을 통과한다."
     ).toContain('[data-dialogue-emotion][data-dialogue-phase="enter"]');
+    // 흔들림·글자·플래시도 안전망이 필요하다. 이 셋은 phase 가 아니라 자기 dataset 으로
+    // 게이트되므로 위의 enter/exit 안전망이 닿지 않는다.
+    expect(guard, "흔들림 안전망이 없다").toContain('[data-dialogue-shake="1"]');
+    expect(guard, "글자 등장 안전망이 없다").toContain(".dialogue-char");
+    expect(guard, "플래시 안전망이 없다").toContain('.dialogue-scrim[data-dialogue-flash="1"]::after');
+    // 스크림 디밍은 남긴다 — 움직임이 아니라 분위기·대비 신호다.
+    expect(guard, "안전망이 스크림 디밍까지 없앴다").not.toContain('[data-dialogue-scrim="on"]');
   });
 });

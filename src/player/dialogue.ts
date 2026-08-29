@@ -131,9 +131,13 @@ export function createDialogueUI(
   host: HTMLElement,
   schedule: DialogueSchedule = defaultDialogueSchedule
 ): DialogueUI {
+  // 스크림은 오버레이의 **형제**여야 한다. 오버레이는 position-top/bottom 에서 높이가
+  // 화면의 27% 뿐이라 그 안에 두면 화면을 덮을 수 없다. z-index 38 — 대사창(39) 아래,
+  // 존 피드백·미니맵(30) 위. 크롭 inset 은 runtime/playSurface.css 가 맞춘다.
+  const scrim = el("div", { class: "dialogue-scrim", attrs: { "aria-hidden": "true" } });
   const overlay = el("div", { class: "dialogue-overlay" });
   applySystemWindowSkinVariable(overlay);
-  host.append(overlay);
+  host.append(scrim, overlay);
 
   // 퇴장 예약. 상자를 즉시 파괴하지 않고 이만큼 미뤄 두기 때문에 퇴장 연출이 재생된다.
   let pendingExit: { readonly cancelTimer: () => void; readonly finish: () => void } | null = null;
@@ -143,6 +147,7 @@ export function createDialogueUI(
   const clearOverlay = (): void => {
     clearChildren(overlay);
     resetOverlay(overlay);
+    resetScrim(scrim);
   };
 
   /**
@@ -166,6 +171,9 @@ export function createDialogueUI(
   const beginExit = (box: HTMLElement, exitMs: number): void => {
     if (pendingExit) return;
     box.dataset.dialoguePhase = "exit";
+    // 스크림도 같이 걷힌다. 다음 대사가 이어지면 takeOverOverlay() 가 같은 tick 에 다시
+    // 켜므로 페인트에는 꺼진 프레임이 나타나지 않는다.
+    delete scrim.dataset.dialogueScrim;
     let settled = false;
     const finish = (): void => {
       if (settled) return;
@@ -198,6 +206,7 @@ export function createDialogueUI(
         reducedMotion: resolveReducedMotion(request.reducedMotion),
       });
       applyDialoguePresentation(box, profile);
+      applyDialogueScrim(scrim, profile, position);
       activeExitMs = profile.exitMs;
       const portraitMode = dialoguePortraitMode(request.face);
       const isPortrait = portraitMode !== "face";
@@ -434,6 +443,7 @@ export function createDialogueUI(
         reducedMotion: resolveReducedMotion(undefined),
       });
       applyDialoguePresentation(choicesWindow, choicesProfile);
+      applyDialogueScrim(scrim, choicesProfile, position);
       activeExitMs = choicesProfile.exitMs;
       const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
       if (request.prompt) {
@@ -779,6 +789,34 @@ function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSett
 
 function resetOverlay(overlay: HTMLElement): void {
   overlay.className = "dialogue-overlay";
+}
+
+function resetScrim(scrim: HTMLElement): void {
+  scrim.className = "dialogue-scrim";
+  delete scrim.dataset.dialogueScrim;
+  delete scrim.dataset.dialogueFlash;
+}
+
+/**
+ * 화면 단위 연출. 스크림은 창이 아니라 **화면**에 걸리므로 상자가 아니라 자기 엘리먼트에
+ * 얹는다. 위치 클래스를 같이 실어 어두워지는 쪽을 창이 있는 쪽으로 맞춘다 —
+ * 창이 위에 있는데 아래를 어둡게 하면 방향이 어긋난 채 화면만 탁해진다.
+ *
+ * 변수는 `dialoguePresentationCssVars` 를 통째로 심는다. 스크림이 쓰는 두 개만 골라
+ * 손으로 다시 쓰면 그게 곧 TS/CSS 이중 기재와 같은 어긋남의 씨앗이 된다.
+ */
+function applyDialogueScrim(
+  scrim: HTMLElement,
+  profile: DialoguePresentationProfile,
+  position: MessageWindowPosition
+): void {
+  scrim.className = `dialogue-scrim position-${position}`;
+  for (const [name, value] of Object.entries(dialoguePresentationCssVars(profile))) {
+    scrim.style.setProperty(name, value);
+  }
+  scrim.dataset.dialogueScrim = "on";
+  if (profile.flash) scrim.dataset.dialogueFlash = "1";
+  else delete scrim.dataset.dialogueFlash;
 }
 
 function resolveReducedMotion(override: boolean | undefined): boolean {

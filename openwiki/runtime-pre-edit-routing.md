@@ -41,6 +41,22 @@
     - 감정별로 변하는 것은 글자 **간격**(`charDelayScale`)이고 한 글자의 페이드 길이는 고정이다 —
       그래서 `--runtime-dialogue-char-ms` 는 이름표 길이와 같은 이유로 TS 가 아니라 `:root` 가 갖는다.
       `\s[n]` 로 명시한 속도는 배율 없이 그대로 이긴다.
+  - **화면 단위 연출은 스크림(`.dialogue-scrim`)이 갖는다.** 이 엘리먼트는 `.dialogue-overlay` 의
+    **형제**로 `.play-stage` 에 붙는다(z-index 38 — 존 피드백 30 위, 창 39 아래). 오버레이 안에 두면
+    화면을 덮을 수 없다 — `position-top`/`bottom` 에서 높이가 화면의 27% 뿐이다. 크롭 inset 은
+    `runtime/playSurface.css` 의 `.play-stage > .dialogue-overlay` 목록에 같이 실어 맞춘다.
+    - 평평한 전면 디밍이 아니라 **창이 있는 쪽으로 몰린 비네트**다. 28% 전면 디밍은 모든 대사에서
+      맵을 통째로 탁하게 만든다. 위치 클래스(`position-top/center/bottom`)를 스크림에도 실어 방향을 맞춘다.
+    - 디밍과 플래시는 각각 `::before`/`::after` 에 둔다. 스크림 자신의 `opacity` 를 애니메이션하면
+      놀람의 플래시가 그 값에 눌려 흐려진다(스크림 페이드와 플래시가 동시에 시작한다).
+    - 흔들림(분노)은 `[data-dialogue-shake="1"][data-dialogue-phase="shown"]` 게이트다. 진입과 같은
+      `phase="enter"` 규칙에 얹으면 둘이 `transform` 을 다투고, **세션 중간의 분노 대사는 진입 없이
+      `shown` 으로 뜨므로 아예 흔들리지 않는다.** 좌우 진폭은 3px 로 묶는다 — 전폭 상자의 좌우 여백
+      하한이 16px 이고 `test/e2e/dialogue-modern-skin.spec.ts` 가 그 값을 잰다.
+      화면 흔들기를 Phaser 카메라(`playSceneMapCommands.ts`)로 하면 DOM 대화창에는 안 먹는다.
+    - `reducedMotion` 은 흔들림·글자 등장·플래시를 없애고 **스크림 디밍은 남긴다** — 움직임이 아니라
+      분위기·대비 신호다. 이 셋은 phase 가 아니라 자기 dataset 으로 게이트되므로 enter/exit 안전망이
+      닿지 않아 미디어쿼리 안전망을 따로 갖는다.
   - `createDialogueUI(host, schedule?)` 의 `schedule` 은 테스트용 타이머 주입 구멍이다
     (`createBattleTransition(host, schedule)` 과 같은 형태).
 - **자율 이동 등록·복귀 (2026-08-27 실측 수정).** 페이지 이동(무작위/접근/추격/사용자 지정/생활)은

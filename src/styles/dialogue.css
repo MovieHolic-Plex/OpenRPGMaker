@@ -35,6 +35,10 @@
      기본 간격 24ms 보다 길어서 4~5 자가 겹쳐 밝아지며 부드러운 선두가 생긴다. */
   --runtime-dialogue-char-ms: 110ms;
 
+  /* 흔들림 길이도 감정에 따라 변하지 않는다 — 흔드느냐 마느냐만 프로파일이 정한다. */
+  --runtime-dialogue-shake-ms: 120ms;
+  --runtime-dialogue-flash-ms: 140ms;
+
   /* 이징은 CSS 만의 것이다 — TS 는 길이만 정하고 곡선은 여기서 고른다. */
   --runtime-dialogue-enter-ease: cubic-bezier(0.16, 0.84, 0.3, 1);
   --runtime-dialogue-enter-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -42,8 +46,8 @@
 }
 
 /* 런타임 z-index 밴드: 픽처 레이어 26 < 타이머 29
-   < 미니맵·핸드 슬롯·존 피드백 30 < 대사창 39 < action-hud 40. 이 값이 없으면 대사창은
-   인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
+   < 미니맵·핸드 슬롯·존 피드백 30 < 대사 스크림 38 < 대사창 39 < action-hud 40. 이 값이 없으면
+   대사창은 인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
 .dialogue-overlay {
   align-items: stretch;
   bottom: 0;
@@ -1003,6 +1007,123 @@
   }
 }
 
+/* === 화면 단위 연출: 스크림과 흔들림 ===
+   스크림은 .dialogue-overlay 의 **형제**다. 오버레이는 position-top/bottom 에서 높이가
+   화면의 27% 뿐이라 그 안에 두면 화면을 덮을 수 없다.
+
+   평평하게 깔지 않고 창이 있는 쪽으로 몰린 비네트를 쓴다. 전면 28% 디밍은 모든 대사에서
+   맵을 통째로 탁하게 만든다 — 대비만 얻고 화면은 잃는다. 그래서 창 쪽이 짙고 반대쪽은
+   완전히 투명하다.
+
+   불투명도와 길이는 dialoguePresentation.ts 가 --dialogue-scrim-* 로 심는다. */
+.dialogue-scrim {
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 38;
+}
+
+/* 디밍과 플래시를 각각 자기 레이어에 둔다. 스크림 자체의 opacity 를 애니메이션하면
+   플래시가 그 값에 눌려 흐려진다(놀람은 스크림 페이드와 플래시가 동시에 시작한다). */
+.dialogue-scrim::before,
+.dialogue-scrim::after {
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.dialogue-scrim::before {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 0%,
+    rgba(0, 0, 0, calc(var(--dialogue-scrim-opacity) * 0.45)) 24%,
+    rgba(0, 0, 0, 0) 56%
+  );
+  opacity: 0;
+  transition: opacity var(--dialogue-scrim-ms) ease;
+}
+
+.dialogue-scrim.position-top::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 0%,
+    rgba(0, 0, 0, calc(var(--dialogue-scrim-opacity) * 0.45)) 24%,
+    rgba(0, 0, 0, 0) 56%
+  );
+}
+
+/* 화면 가운데 창은 가장자리에서 안쪽으로 좁혀 온다. */
+.dialogue-scrim.position-center::before {
+  background: radial-gradient(
+    ellipse 72% 68% at 50% 50%,
+    rgba(0, 0, 0, 0) 38%,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 100%
+  );
+}
+
+.dialogue-scrim[data-dialogue-scrim="on"]::before {
+  opacity: 1;
+}
+
+.dialogue-scrim::after {
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+}
+
+.dialogue-scrim[data-dialogue-flash="1"]::after {
+  animation: dialogue-scrim-flash var(--runtime-dialogue-flash-ms) ease-out both;
+}
+
+@keyframes dialogue-scrim-flash {
+  0% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 분노는 창이 자리잡은 **뒤에** 한 번 튄다. phase="shown" 을 게이트로 쓰면 세션 첫 창은
+   진입 → 흔들림 순서로 이어지고, 세션 중간의 분노 대사는(진입 없이 shown 으로 뜬다)
+   삽입 즉시 흔들린다. 진입 연출과 같은 규칙에 넣으면 둘이 transform 을 다투고
+   세션 중간 대사는 아예 흔들리지 않는다.
+
+   화면 흔들기를 Phaser 카메라(playSceneMapCommands.ts)로 하면 DOM 대화창에는 안 먹는다.
+   좌우 진폭은 3px 로 묶는다 — 전폭 상자의 좌우 여백 하한이 16px 이고
+   test/e2e/dialogue-modern-skin.spec.ts 가 그 값을 잰다. */
+.dialogue-box[data-dialogue-shake="1"][data-dialogue-phase="shown"] {
+  animation: dialogue-box-shake var(--runtime-dialogue-shake-ms) ease-in-out both;
+}
+
+@keyframes dialogue-box-shake {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  22% {
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  48% {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  74% {
+    transform: translate3d(-2px, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes dialogue-box-enter-fade {
   0% {
     opacity: 0;
@@ -1039,5 +1160,13 @@
   .dialogue-box[data-dialogue-emotion][data-dialogue-phase="exit"] {
     animation-name: dialogue-box-exit-fade;
     animation-timing-function: linear;
+  }
+
+  /* 흔들림·글자 등장·플래시는 통째로 없앤다. 스크림 디밍은 남긴다 —
+     움직임이 아니라 분위기·대비 신호다 (src/styles/runtime/juice.css 의 원칙). */
+  .dialogue-box[data-dialogue-shake="1"][data-dialogue-phase="shown"],
+  .dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char,
+  .dialogue-scrim[data-dialogue-flash="1"]::after {
+    animation: none;
   }
 }

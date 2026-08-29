@@ -292,8 +292,11 @@ Evidence expectations:
   를 넣어 둔다. 에디터 테스트플레이는 에디터 CSS 가 같이 로드돼 정상으로 보이므로, **익스포트 플레이어에
   규칙이 실렸는지는 실제 vite 빌드를 돌리는 이 검사만 판정한다.** 이 검사는 `cwd` 기준으로 설정을 읽으므로
   워크트리 안에서 직접 돌려야 한다(위 "워크트리에 `node_modules` 가 없을 때" 참고).
-- 4단계 스크림의 `.play-stage` 크롭 inset 정합은 계산으로 확정할 수 없다 —
-  `npm run qa:runtime -- --scenario dialogue` 의 실측으로만 확인한다.
+- 스크림은 e2e 에서 **의사요소를 직접 읽어야** 보인다. 디밍은 `::before`, 플래시는 `::after` 에 있어서
+  요소 자신의 계산된 스타일에는 아무것도 안 잡힌다 — `getComputedStyle(scrim, "::before")` 를 쓴다.
+  스크림 사각형이 오버레이와 같은 좌·우·아래를 갖는지도 같이 잰다(같은 `playSurface.css` 규칙이 둘의
+  크롭 inset 을 맞춘다). 다만 에디터 Test Play 는 `surfaceScaleMode: "fit"` 이라 `--play-crop-*` 이 0 이다 —
+  **정수 배율에서 실제로 잘리는 화면의 정합은 `npm run qa:runtime -- --scenario dialogue` 로만 확인된다.**
 
 ## 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
 

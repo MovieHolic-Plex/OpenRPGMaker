@@ -359,6 +359,45 @@ describe("dialogue presentation lifecycle", () => {
     dialogue.hide();
   });
 
+  it("스크림은 오버레이의 형제로 살고 창과 함께 켜지고 꺼진다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const { schedule, flush } = manualSchedule();
+    const dialogue = createDialogueUI(host, schedule);
+    const scrim = host.querySelector<HTMLElement>(".dialogue-scrim");
+
+    // 오버레이 안에 있으면 화면을 덮을 수 없다 — position-top/bottom 에서 높이가 27% 뿐이다.
+    expect(scrim?.parentElement).toBe(host);
+    expect(scrim?.nextElementSibling?.className).toBe("dialogue-overlay");
+    expect(scrim?.dataset.dialogueScrim).toBeUndefined();
+
+    const shown = dialogue.showText({ ...textRequest("놀람"), emotion: "surprised" });
+    expect(scrim?.dataset.dialogueScrim).toBe("on");
+    expect(scrim?.dataset.dialogueFlash).toBe("1");
+    expect(scrim?.className).toContain("position-");
+    expect(scrim?.style.getPropertyValue("--dialogue-scrim-opacity")).toBe(
+      String(dialoguePresentationProfile("surprised").scrimOpacity)
+    );
+
+    flush();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
+    // 퇴장이 시작되면 스크림도 같이 걷힌다.
+    expect(scrim?.dataset.dialogueScrim).toBeUndefined();
+
+    // 다음 대사는 놀람이 아니므로 플래시가 남아 있으면 안 된다.
+    const again = dialogue.showText(textRequest("보통"));
+    expect(scrim?.dataset.dialogueScrim).toBe("on");
+    expect(scrim?.dataset.dialogueFlash).toBeUndefined();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await again;
+    dialogue.hide();
+    expect(scrim?.dataset.dialogueScrim).toBeUndefined();
+    expect(scrim?.className).toBe("dialogue-scrim");
+  });
+
   it("reducedMotion 은 움직임을 끄지만 창은 그대로 뜬다", async () => {
     const host = document.createElement("div");
     document.body.append(host);

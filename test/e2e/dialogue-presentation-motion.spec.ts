@@ -31,6 +31,7 @@ test.use({ serviceWorkers: "block" });
 
 const NEUTRAL_BODY = "기본 말투로 말한다.";
 const SAD_BODY = "가라앉은 말투로 말한다.";
+const ANGRY_BODY = "화난 말투로 말한다.";
 const SURPRISED_BODY = "놀란 말투로 말한다.";
 
 type EnterSample = {
@@ -132,6 +133,57 @@ async function readCharReveal(page: Page): Promise<{
   });
 }
 
+/**
+ * 스크림은 자기 엘리먼트라 상자 표본에 안 잡힌다. 디밍·플래시는 각각 ::before/::after 에
+ * 걸려 있어서 요소 자신의 계산된 스타일로는 보이지 않는다 — 의사요소를 직접 읽는다.
+ */
+async function readScrim(page: Page): Promise<{
+  readonly found: boolean;
+  readonly siblingOfOverlay: boolean;
+  readonly zIndex: string;
+  readonly dimOpacity: number;
+  readonly dimImage: string;
+  readonly flashAnimation: string;
+  /** 스크림 사각형이 대사 오버레이와 같은 화면 영역(크롭 보정 포함)을 덮는가. */
+  readonly coversOverlayBand: boolean;
+}> {
+  return page.evaluate(() => {
+    const scrim = document.querySelector<HTMLElement>(".dialogue-scrim");
+    const overlay = document.querySelector<HTMLElement>(".dialogue-overlay");
+    if (!scrim || !overlay) {
+      return {
+        found: false,
+        siblingOfOverlay: false,
+        zIndex: "",
+        dimOpacity: 0,
+        dimImage: "",
+        flashAnimation: "",
+        coversOverlayBand: false,
+      };
+    }
+    const style = getComputedStyle(scrim);
+    const dim = getComputedStyle(scrim, "::before");
+    const flash = getComputedStyle(scrim, "::after");
+    const scrimBox = scrim.getBoundingClientRect();
+    const overlayBox = overlay.getBoundingClientRect();
+    return {
+      found: true,
+      siblingOfOverlay: scrim.parentElement === overlay.parentElement,
+      zIndex: style.zIndex,
+      dimOpacity: Number.parseFloat(dim.opacity),
+      dimImage: dim.backgroundImage,
+      flashAnimation: flash.animationName,
+      // 오버레이는 화면의 27% 띠다. 스크림은 그보다 높고 좌우는 같아야 한다 —
+      // 같은 playSurface.css 규칙이 둘의 크롭 inset 을 맞춘다.
+      coversOverlayBand:
+        scrimBox.height > overlayBox.height &&
+        Math.abs(scrimBox.left - overlayBox.left) < 1 &&
+        Math.abs(scrimBox.right - overlayBox.right) < 1 &&
+        Math.abs(scrimBox.bottom - overlayBox.bottom) < 1,
+    };
+  });
+}
+
 async function bootRuntime(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.addInitScript(() => {
@@ -175,6 +227,16 @@ test("진입 연출이 감정별 keyframe 과 주입된 길이로 실제 재생�
   expect(reveal.gate).toBe("1");
   expect(reveal.animationName).toBe("dialogue-char-enter");
   expect(reveal.animationDuration).toBe("0.11s");
+
+  // 스크림은 오버레이의 형제여야 화면을 덮을 수 있다. 오버레이는 27% 띠뿐이다.
+  const scrim = await readScrim(page);
+  expect(scrim.found, ".dialogue-scrim 이 DOM 에 없다").toBe(true);
+  expect(scrim.siblingOfOverlay).toBe(true);
+  expect(scrim.zIndex, "대사창(39) 위로 올라가면 스크림이 대사를 덮는다").toBe("38");
+  // ::before 가 안 뜨면 --dialogue-scrim-opacity 가 무효거나 게이트가 안 걸린 것이다.
+  expect(scrim.dimOpacity).toBe(1);
+  expect(scrim.dimImage).toContain("gradient");
+  expect(scrim.coversOverlayBand, "스크림이 오버레이와 같은 화면 영역을 안 덮는다").toBe(true);
   await closeMessage(page);
 
   // 슬픔은 오버슈트 없는 느린 곡선을, 놀람은 강한 팝을 쓴다 — 감정이 실제로 갈린다.
@@ -185,10 +247,26 @@ test("진입 연출이 감정별 keyframe 과 주입된 길이로 실제 재생�
   expect(sad.animationDuration).toBe("0.26s");
   await closeMessage(page);
 
+  // 분노는 창이 자리잡은 **뒤에** 흔들린다. 진입과 같은 규칙에 넣으면 transform 을 다투고
+  // 세션 중간 대사(진입 없이 shown 으로 뜬다)는 아예 안 흔들린다.
+  await awaitMessage(page, ANGRY_BODY, "angry");
+  const angryBox = page.getByTestId("dialogue-box");
+  await expect(angryBox).toHaveAttribute("data-dialogue-shake", "1");
+  await expect(angryBox).toHaveAttribute("data-dialogue-phase", "shown");
+  const shake = await angryBox.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { name: style.animationName, duration: style.animationDuration };
+  });
+  expect(shake.name).toBe("dialogue-box-shake");
+  expect(shake.duration).toBe("0.12s");
+  await closeMessage(page);
+
   const surprised = await awaitMessage(page, SURPRISED_BODY, "surprised");
   expect(surprised.emotion).toBe("surprised");
   expect(surprised.animationName).toBe("dialogue-box-enter-pop");
   expect(surprised.animationDuration).toBe("0.16s");
+  // 놀람의 화면 플래시. Phaser 카메라 흔들기는 DOM 대화창에 안 먹으므로 CSS 로 간다.
+  expect((await readScrim(page)).flashAnimation).toBe("dialogue-scrim-flash");
 });
 
 test("reducedMotion 은 움직임을 죽이지만 창은 그대로 뜬다", async ({ page }) => {
@@ -219,6 +297,11 @@ test("reducedMotion 은 움직임을 죽이지만 창은 그대로 뜬다", asyn
   expect(reveal.gate, "reducedMotion 인데 글자 연출 게이트가 심겼다").toBeNull();
   expect(reveal.animationName).toBe("none");
 
+  // 스크림 디밍은 남는다 — 움직임이 아니라 분위기·대비 신호다.
+  const scrim = await readScrim(page);
+  expect(scrim.dimOpacity, "reducedMotion 이 스크림 디밍까지 없앴다").toBe(1);
+  expect(scrim.flashAnimation).toBe("none");
+
   // 감정별 규칙(특이도 0,3,0)이 안전망을 이겨 버리면 여기서 잡힌다.
   await closeMessage(page);
   const sad = await awaitMessage(page, SAD_BODY, "sad");
@@ -237,6 +320,8 @@ function presentationProject(): Project {
       { kind: "text", speaker: "안내", body: NEUTRAL_BODY },
       { kind: "wait", ms: 600 },
       { kind: "text", speaker: "안내", body: SAD_BODY, emotion: "sad" },
+      { kind: "wait", ms: 600 },
+      { kind: "text", speaker: "안내", body: ANGRY_BODY, emotion: "angry" },
       { kind: "wait", ms: 600 },
       { kind: "text", speaker: "안내", body: SURPRISED_BODY, emotion: "surprised" },
       { kind: "wait", ms: 120_000 },
