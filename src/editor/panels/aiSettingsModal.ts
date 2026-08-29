@@ -2,6 +2,12 @@
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
 
 import {
+  fetchChatGptAuthStatus,
+  hasStoredCompanionCredential,
+  isChatGptCompanionResponseError,
+  type ChatGptCompanionUnreachableError,
+} from "@/ai/chatgptOAuthClient";
+import {
   DEFAULT_BASE_URL,
   DEFAULT_LITE_MODEL,
   DEFAULT_MODEL,
@@ -18,6 +24,7 @@ import {
   saveAiFontSize,
   type AiFontSize,
 } from "@/editor/panels/aiPanelLayout";
+import { registerModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
@@ -32,7 +39,13 @@ export type OpenAiSettingsModalOptions = {
   readonly fontRoot?: HTMLElement | null;
 };
 
+let activeAiSettingsClose: (() => void) | null = null;
+
 export function closeAiSettingsModal(): void {
+  if (activeAiSettingsClose) {
+    activeAiSettingsClose();
+    return;
+  }
   document.querySelector("[data-testid='ai-settings-modal']")?.remove();
 }
 
@@ -76,21 +89,18 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
     ],
   });
 
-  const close = (): void => {
+  const close = registerModal(backdrop, () => {
     // 인증 패널은 기기 로그인 폴링 타이머를 들고 있다 — 정리하지 않으면 모달이 닫힌 뒤에도
     // /auth/status 를 3초마다 계속 때린다.
     form.dispose();
     backdrop.remove();
-    document.removeEventListener?.("keydown", onKeyDown);
-  };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
-  };
+    if (activeAiSettingsClose === close) activeAiSettingsClose = null;
+  });
+  activeAiSettingsClose = close;
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener?.("keydown", onKeyDown);
   document.body.append(backdrop);
 
   if (options.focusTarget === "apiKey") form.focusApiKey();
@@ -146,13 +156,11 @@ export function renderAiSettingsForm(options: {
     liteModel.refresh(authMode, next);
     persistAuthMode();
   });
-  const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");
+  const maxTokensDescription = "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 32768이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.";
+  const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
   maxTokens.input.setAttribute("max", "1000000");
-  maxTokens.input.setAttribute(
-    "title",
-    "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산(기본 32768). 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다."
-  );
+  maxTokens.input.setAttribute("title", maxTokensDescription);
 
   const reasoningSelect = el("select", {
     class: "ai-config-select",
@@ -165,11 +173,9 @@ export function renderAiSettingsForm(options: {
     ],
   }) as HTMLSelectElement;
   reasoningSelect.value = config.reasoningEffort ?? "medium";
-  const reasoningRow = el("label", {
-    class: "ai-config-row",
-    attrs: { title: "모델이 답/도구 사용 전에 추론(생각)하는 강도. 끔=추론 안 함." },
-    children: [el("span", { class: "ai-config-label", text: "추론" }), reasoningSelect],
-  });
+  const reasoningDescription = "모델이 답이나 도구 사용 전에 추론하는 강도입니다. 끔을 고르면 별도 추론을 하지 않습니다.";
+  const reasoningRow = settingsRow("추론", reasoningDescription, reasoningSelect);
+  reasoningRow.setAttribute("title", reasoningDescription);
 
   // agentMode(작업 모드): auto = 플래너(작업 분해) 상시, chat = 종래 채팅(모델 이원화 시에만 플래너).
   const agentModeSelect = el("select", {
@@ -182,13 +188,12 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   agentModeSelect.value = config.agentMode ?? "auto";
   agentModeSelect.addEventListener("change", () => persist(false));
-  const agentModeRow = el("label", {
-    class: "ai-config-row",
-    attrs: {
-      title: "자율: AI가 요청을 스스로 작업 계획으로 분해해 진행합니다. 채팅: 종래처럼 대화로 진행합니다(감독·실행 모델이 다를 때만 계획 단계 사용).",
-    },
-    children: [el("span", { class: "ai-config-label", text: "작업 모드" }), agentModeSelect],
-  });
+  const agentModeDescription = "자율 모드는 요청을 작업 계획으로 나누고, 채팅 모드는 대화 중심으로 진행합니다.";
+  const agentModeRow = settingsRow("작업 모드", agentModeDescription, agentModeSelect);
+  agentModeRow.setAttribute(
+    "title",
+    "자율: AI가 요청을 스스로 작업 계획으로 분해해 진행합니다. 채팅: 종래처럼 대화로 진행합니다(감독·실행 모델이 다를 때만 계획 단계 사용).",
+  );
 
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
@@ -200,22 +205,26 @@ export function renderAiSettingsForm(options: {
     ],
   }) as HTMLSelectElement;
   fontSizeSelect.value = loadAiFontSize();
+  const fontSizeDescription = "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다. 바꾸면 즉시 적용되고 저장됩니다.";
+  const fontSizeRow = settingsRow("글자 크기", fontSizeDescription, fontSizeSelect);
+  fontSizeRow.setAttribute("title", fontSizeDescription);
+
+  const savedHint = el("span", {
+    class: "ai-config-saved-hint",
+    text: "변경 사항은 자동으로 저장됩니다.",
+    attrs: { role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-config-saved-hint" },
+  });
+  const savedAtText = (kind: "자동" | "지금"): string => `${kind} 저장됨 · ${new Date().toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
   fontSizeSelect.addEventListener("change", () => {
     const raw = fontSizeSelect.value;
     const size: AiFontSize = raw === "small" || raw === "large" ? raw : "normal";
     saveAiFontSize(size);
     onFontSizeChange(size);
-  });
-  const fontSizeRow = el("label", {
-    class: "ai-config-row",
-    attrs: { title: "채팅 로그·제안 카드·도구 로그의 글자 크기. 즉시 적용되고 저장됩니다." },
-    children: [el("span", { class: "ai-config-label", text: "글자 크기" }), fontSizeSelect],
-  });
-
-  const savedHint = el("span", {
-    class: "ai-config-saved-hint",
-    text: "",
-    dataset: { testid: "ai-config-saved-hint" },
+    savedHint.textContent = savedAtText("자동");
   });
 
   const collect = (): AiConfig => ({
@@ -245,7 +254,7 @@ export function renderAiSettingsForm(options: {
     const liteValid = liteModel.validate(authMode, providerId);
     saveAiConfig(next);
     onSaved(next);
-    savedHint.textContent = "자동 저장됨";
+    savedHint.textContent = savedAtText(showToast ? "지금" : "자동");
     if (!modelValid || !liteValid) {
       toast("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요.", "error");
     } else if (showToast) {
@@ -280,9 +289,64 @@ export function renderAiSettingsForm(options: {
   }
   reasoningSelect.addEventListener("change", () => persist(false));
 
+  const connectionSummary = el("div", {
+    class: "ai-settings-connection-summary",
+    attrs: { role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-settings-connection-summary", tone: "checking" },
+    children: [
+      el("span", { class: "ai-settings-status-mark", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "ai-settings-status-copy", text: "연결 상태를 확인하고 있습니다…" }),
+    ],
+  });
+  const connectionSummaryCopy = connectionSummary.querySelector(".ai-settings-status-copy") as HTMLElement;
+  let connectionCheckGeneration = 0;
+  let disposed = false;
+  const setConnectionSummary = (text: string, tone: "checking" | "ready" | "warning" | "error"): void => {
+    connectionSummary.dataset.tone = tone;
+    connectionSummaryCopy.textContent = text;
+  };
+  const checkConnection = async (): Promise<void> => {
+    const generation = ++connectionCheckGeneration;
+    const checkedProvider = providerId;
+    setConnectionSummary("연결 상태를 확인하고 있습니다…", "checking");
+    try {
+      const auth = await fetchChatGptAuthStatus(checkedProvider);
+      if (disposed || generation !== connectionCheckGeneration || checkedProvider !== providerId) return;
+      if (hasStoredCompanionCredential(auth)) {
+        setConnectionSummary(`연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`, "ready");
+      } else if (auth.env === true) {
+        setConnectionSummary("환경 변수만 있어 에디터 로그인이 필요합니다.", "warning");
+      } else if (auth.expired === true) {
+        setConnectionSummary("로그인이 만료되었습니다. 다시 로그인하세요.", "warning");
+      } else {
+        setConnectionSummary("로그인이 필요합니다.", "warning");
+      }
+    } catch (error) {
+      if (disposed || generation !== connectionCheckGeneration || checkedProvider !== providerId) return;
+      if (isChatGptCompanionResponseError(error)) {
+        setConnectionSummary("연결 서비스가 응답했지만 내부 오류가 났습니다. 개발 서버를 다시 시작해 보세요.", "error");
+        return;
+      }
+      const reason = (error as ChatGptCompanionUnreachableError | undefined)?.reason;
+      setConnectionSummary(
+        reason === "timeout"
+          ? "연결 서비스가 응답하지 않습니다. 개발 서버를 다시 시작해 보세요."
+          : "연결 서비스에 닿지 않습니다. npm run ai:oauth 실행 상태를 확인하세요.",
+        "error",
+      );
+    }
+  };
+  const connectionCheckButton = el("button", {
+    class: "ai-assistant-action ai-settings-check",
+    text: "연결 확인",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-settings-connection-check" },
+    on: { click: () => void checkConnection() },
+  });
+
   const saveButton = el("button", {
-    class: "ai-assistant-action",
-    text: "설정 저장",
+    class: "ai-assistant-action ai-settings-save-now",
+    text: "지금 저장",
     attrs: { type: "button" },
     dataset: { testid: "ai-config-save" },
     on: { click: () => persist(true) },
@@ -292,33 +356,56 @@ export function renderAiSettingsForm(options: {
     class: "ai-config-form ai-settings-form",
     dataset: { testid: "ai-config" },
     children: [
-      authSettings.element,
-      el("details", {
+      el("div", {
+        class: "ai-settings-overview",
+        children: [
+          connectionSummary,
+          connectionCheckButton,
+        ],
+      }),
+      settingsSection(
+        "connection",
+        "연결",
+        "AI 제공자와 로그인 상태를 관리합니다.",
+        [authSettings.element],
+      ),
+      el("div", {
         class: "ai-settings-advanced",
         attrs: { open: "" },
         dataset: { testid: "ai-settings-advanced" },
-        children: [
-          el("summary", { text: "고급 설정" }),
-          el("div", {
-            class: "ai-settings-advanced-body",
-            children: [
-              model.row,
-              liteModel.row,
-              maxTokens.row,
-              reasoningRow,
-              agentModeRow,
-              fontSizeRow,
-            ],
-          }),
-        ],
+        children: [settingsSection(
+          "model",
+          "모델",
+          "계획과 실행에 사용할 모델을 선택합니다.",
+          [model.row, liteModel.row],
+        )],
       }),
-      el("div", { class: "ai-config-actions", children: [saveButton, savedHint] }),
+      settingsSection(
+        "behavior",
+        "동작",
+        "응답 예산과 작업 진행 방식을 조정합니다.",
+        [maxTokens.row, reasoningRow, agentModeRow],
+      ),
+      settingsSection(
+        "display",
+        "표시",
+        "AI 패널의 읽기 환경을 조정합니다.",
+        [fontSizeRow],
+      ),
+      el("div", { class: "ai-config-actions", children: [savedHint, saveButton] }),
     ],
   });
 
+  void checkConnection();
+
   return {
     element: form,
-    dispose: () => authSettings.dispose(),
+    dispose: () => {
+      disposed = true;
+      connectionCheckGeneration += 1;
+      if (autoSaveTimer !== null && typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
+      authSettings.dispose();
+    },
     focusFirstInput: () => authSettings.focus(),
     // focusTarget:"apiKey" 는 이제 **동반 서비스 키 입력**을 뜻한다. 브라우저 보관 키 필드가
     // 사라졌으므로 인증 패널의 focus() 로 넘긴다 — 그쪽이 "지금 키를 넣어야 하는가"를 알고
@@ -328,8 +415,45 @@ export function renderAiSettingsForm(options: {
   };
 }
 
+function settingsSection(
+  id: "connection" | "model" | "behavior" | "display",
+  title: string,
+  description: string,
+  children: readonly HTMLElement[],
+): HTMLElement {
+  return el("section", {
+    class: `ai-settings-section ai-settings-section-${id}`,
+    attrs: { "aria-labelledby": `ai-settings-${id}-title` },
+    dataset: { testid: `ai-settings-section-${id}`, section: id },
+    children: [
+      el("header", {
+        class: "ai-settings-section-header",
+        children: [
+          el("h3", { text: title, attrs: { id: `ai-settings-${id}-title` } }),
+          el("p", { text: description }),
+        ],
+      }),
+      el("div", { class: "ai-settings-section-body", children }),
+    ],
+  });
+}
+
+function settingsRow(label: string, description: string, control: HTMLElement): HTMLElement {
+  return el("label", {
+    class: "ai-config-row",
+    children: [
+      el("span", { class: "ai-config-row-copy", children: [
+        el("span", { class: "ai-config-label", text: label }),
+        el("span", { class: "ai-config-help", text: description }),
+      ] }),
+      el("span", { class: "ai-config-control", children: [control] }),
+    ],
+  });
+}
+
 function textField(
   label: string,
+  description: string,
   value: string,
   testid: string,
   type = "text",
@@ -341,10 +465,7 @@ function textField(
     value,
     dataset: { testid },
   }) as HTMLInputElement;
-  const row = el("label", {
-    class: "ai-config-row",
-    children: [el("span", { class: "ai-config-label", text: label }), input],
-  });
+  const row = settingsRow(label, description, input);
   return { row, input };
 }
 
@@ -426,8 +547,10 @@ function modelField(
   const row = el("label", {
     class: "ai-config-row ai-model-row",
     children: [
-      el("span", { class: "ai-config-label", text: label }),
-      el("span", { class: "ai-model-help", text: "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
+      el("span", { class: "ai-config-row-copy", children: [
+        el("span", { class: "ai-config-label", text: label }),
+        el("span", { class: "ai-model-help ai-config-help", text: "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
+      ] }),
       el("div", { class: "ai-model-control", children: [preset, input] }),
       warning,
     ],

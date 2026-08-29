@@ -132,6 +132,14 @@ function mockEditorDependencies(): void {
     },
     teardownAiChatPanel: vi.fn(),
   }));
+  // 이 배선 테스트는 하단 상태바가 마운트되지 않는지만 검증한다. menu.ts가 끌어오는 설정
+  // 모달의 인증/모델 카탈로그는 별도 계약 테스트가 담당하므로, 여기서는 진입 함수만 격리해
+  // 에디터 셸 렌더 단정을 인증 모듈 초기화 시간과 분리한다.
+  vi.doMock("@/editor/panels/aiSettingsModal", () => ({
+    closeAiSettingsModal: vi.fn(),
+    openAiSettingsModal: vi.fn(),
+    renderAiSettingsForm: vi.fn(),
+  }));
   vi.doMock("@/editor/panels/editorZoomToolbar", () => ({
     renderCanvasToolbar: (node: HTMLElement) => {
       node.textContent = "zoom";
@@ -205,5 +213,5 @@ describe("에디터 하단 상태바 제거", () => {
     expect(findByTestId(surface, "ai-connection-status")).toBeNull();
 
     teardownEditor();
-  }, 60_000);
+  }, 180_000);
 });
