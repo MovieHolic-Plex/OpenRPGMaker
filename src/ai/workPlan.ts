@@ -26,6 +26,7 @@ import {
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
+import { requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 import { getTool } from "@/editor/tools/toolRegistry";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
@@ -62,6 +63,14 @@ export interface WorkPlan {
   currentItemId: string | null;
   /** Planner memo (strategy only; not executed as tools). */
   readonly plannerNote?: string;
+  /**
+   * 이 계획이 손보는 기존 맵 id — 계획을 만든 턴의 `[컨텍스트] 현재 맵` 에서 뽑는다.
+   *
+   * 매 스프린트 생성기 컨텍스트에 `Target map:` 으로 재주입한다. 뷰포트가 null 인 턴(맵 씬 미탑재)
+   * 이나 자율 계속 턴처럼 footer 가 없는 턴에도 대상이 남아야 하기 때문이다
+   * (2026-08-29 modify 진단 근본원인 14). 신규 생성 요청이면 undefined.
+   */
+  readonly targetMapId?: string;
 }
 
 export interface WorkPlanProgressSummary {
@@ -114,12 +123,14 @@ Harness contract:
 6. Prefer 2–4 layers, 1–3 items each, max ~8 items. Each item = one coherent sprint. Simple requests (one village, a few houses, terrain paint) should use action=direct or a 2-layer plan with ≤4 items — do NOT over-decompose.
 7. Every item needs:
    - title (short)
-   - instruction (concrete tools/numbers: author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room, … — 건설 지시는 목표 맵과 정확한 수량을 반드시 명시)
+   - instruction (concrete tools/numbers: 신축=author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space, author_village(target:{kind:"existing",mapId,bounds})** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)
    - doneWhen (acceptance: what must be true when this item is complete)
-   - successTools (tool names that must ALL succeed before the item auto-completes; they must cover **every clause of doneWhen**, not just the first one. If doneWhen also requires painting/decorating/placing after a map is created, list those tools too — e.g. doneWhen "맵이 생성되고 지형이 칠해짐" → ["create_map","fill_region"]. Listing only the creation tool for such an item is a contract violation: the harness completes the item the moment those tools succeed, so the rest of doneWhen never runs. Never list alternatives.)
-8. Typical RPG content layers: meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
+   - successTools (tool names that must ALL succeed before the item auto-completes; they must cover **every clause of doneWhen**, not just the first one. If doneWhen also requires painting/decorating/placing after a map is created, list those tools too — e.g. doneWhen "맵이 생성되고 지형이 칠해짐" → ["create_map","fill_region"]. Modify items list modify tools, never creation tools — e.g. doneWhen "기존 광장 타일이 석재로 교체됨" → ["paint_tiles"], doneWhen "집 2채가 새 위치로 이동됨" → ["move_event"], doneWhen "잘못 깔린 담장이 정리되고 다시 깔림" → ["tile_erase","build_wall"]. Listing only the creation tool for such an item is a contract violation: the harness completes the item the moment those tools succeed, so the rest of doneWhen never runs. Never list alternatives.)
+8. Typical **greenfield** RPG content layers (신규 프로젝트/신규 맵을 만드는 요청에만 해당): meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
+   기존 산출물을 고치는 요청의 레이어는 다르다 — Repair/adjust: survey(get_map_region / find_layout_regions 로 현재 상태 확인) → cleanup(tile_erase) → rebuild in place → verify. 여기에 create_map/author_* new 를 끼워 넣지 마라.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
 10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
+   단, 사용자의 **금지·보존 제약**("새로 만들지 마", "기존 것 유지", "이 맵만")은 축약 예외다 — instruction 에 그대로 남겨라. 축약해서 날리면 생성기가 신축으로 되돌아간다.
 11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
 12. Quest / boss items carry a **verification tool** in successTools — the harness re-checks the artifact and blocks completion without it:
    - 퀘스트/의뢰/스토리 체인 → successTools MUST include ["create_quest","define_quest","verify_quest"]. upsert_event 로 퀘스트를 손으로 조립하지 말 것 — 완주 검증이 불가능해 항목이 완료되지 않는다.
@@ -178,9 +189,23 @@ export function buildOrchestratorUserPayload(input: {
   } else {
     parts.push("## Active WorkPlan\n(none)");
   }
+  // 대상 선택 규칙(2026-08-29 modify 진단 근본원인 5). 플래너 프롬프트에는 "무엇을 대상으로
+  // 삼아라"는 문장이 0건이었고 예시 툴 어휘가 전부 생성계였다. 그래서 "이 마을 담장 고쳐줘"가
+  // create_map/author_village 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
+  // 때까지 항목이 완료되지 않아 신축이 강제됐다.
+  parts.push(TARGET_SELECTION_RULE);
   parts.push("Respond with JSON only.");
   return parts.join("\n\n");
 }
+
+/** 플래너 페이로드에 매 턴 실리는 대상 선택 규칙. */
+export const TARGET_SELECTION_RULE = [
+  "## Target selection (필수)",
+  "- 요청에 신규 생성 표지(새/새로/추가/하나 더/create/new)가 **없으면 기존 산출물을 대상으로 삼는다**.",
+  "- '[컨텍스트] 현재 맵' 또는 'Target map' 에 적힌 맵 id 를 수정 대상으로 쓰고, 각 항목 instruction 에 그 id 를 그대로 적는다.",
+  "- 사용자가 신규 생성을 요구하지 않았다면 create_map / duplicate_map / reset_project / start_interior_room_session 을 계획에 넣지 않는다.",
+  "- 사용자가 '새로 만들지 마'라고 명시했으면 신축 툴은 successTools 에도 넣지 않는다 — 넣으면 그 툴이 성공할 때까지 항목이 완료되지 않아 신축이 강제된다.",
+].join("\n");
 
 /** 파싱 결과 — 실패 시 **어느 검증에서 걸렸는지** 를 문자열로 돌려준다. */
 export type OrchestratorParseResult =
@@ -298,12 +323,15 @@ function pendingClosers(text: string): string | null {
 
 export function workPlanFromOrchestratorDecision(
   decision: Extract<OrchestratorDecision, { action: "new_plan" | "replan" }>,
-  now = new Date()
+  now = new Date(),
+  /** 계획을 만든 턴의 대상 맵 id(`[컨텍스트] 현재 맵`). 신규 생성 요청이면 생략. */
+  targetMapId?: string,
 ): WorkPlan {
   return createWorkPlanFromLayers({
     goal: decision.goal,
     plannerNote: decision.plannerNote,
     layers: decision.layers,
+    targetMapId,
     now,
   });
 }
@@ -339,6 +367,7 @@ function createWorkPlanFromLayers(input: {
       requiresAnyWrite?: boolean;
     }[];
   }[];
+  targetMapId?: string;
   now: Date;
 }): WorkPlan {
   const layers: WorkLayer[] = input.layers.map((layer, li) => ({
@@ -362,6 +391,7 @@ function createWorkPlanFromLayers(input: {
     currentLayerIndex: 0,
     currentItemId: null,
     plannerNote: input.plannerNote,
+    targetMapId: input.targetMapId,
   };
   activateFirstPending(plan);
   return plan;
@@ -511,6 +541,11 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     `Progress: layers ${s.layersDone}/${s.layersTotal}, items ${s.itemsDone}/${s.itemsTotal}`,
   ];
   if (plan.plannerNote) lines.push(`Planner note: ${plan.plannerNote}`);
+  // 뷰포트가 없는 턴에도 대상 맵이 남아야 한다 — 이 줄이 없으면 자율 계속 턴에서 모델이
+  // 대상을 잃고 새 맵을 만드는 쪽으로 샜다(진단 근본원인 14).
+  if (plan.targetMapId) {
+    lines.push(`Target map: ${plan.targetMapId} — 이 계획의 수정 대상. 새 맵을 만들지 말고 이 맵을 편집한다.`);
+  }
   if (s.current) {
     lines.push(`Current layer: ${s.current.layerTitle}`);
     lines.push(`Current item: ${s.current.itemTitle}`);
@@ -530,6 +565,8 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
       "or call complete_work_item only after every listed tool succeeded this turn. " +
       "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
       "do NOT complete a failed item by succeeding a different tool. " +
+      "If the item's premise is wrong (e.g. it prescribes creating a new map but the user asked to fix an " +
+      "existing one), call set_work_plan to correct the plan instead of satisfying the wrong successTools. " +
       "To restructure the remaining plan, call set_work_plan (full replacement). " +
       "Do not claim the full goal is finished while items remain."
   );
@@ -670,7 +707,8 @@ export function canCompleteWorkItem(
     ok: false,
     reason:
       `항목 '${item.title}' 완료 조건 미충족: 필수 successTools 중 ${missing.join(", ")} 성공 기록이 없습니다. ` +
-      `누락된 툴을 성공시키거나 skip_work_item으로 건너뛰세요.`,
+      `누락된 툴을 성공시키거나, 항목 전제가 틀렸다면(예: 사용자가 기존 맵 수정을 요청했는데 항목이 신축을 요구) ` +
+      `set_work_plan으로 계획을 고치거나 skip_work_item으로 건너뛰세요.`,
   };
 }
 
@@ -715,8 +753,19 @@ export function isWorkPlanComplete(plan: WorkPlan): boolean {
   return plan.layers.every((l) => l.items.every((i) => i.status === "done" || i.status === "skipped"));
 }
 
-/** 건설 의도 감지: 마을 → author_village, 집/건물 → author_house. */
+/**
+ * 건설 의도 감지: 마을 → author_village, 집/건물 → author_house.
+ *
+ * **수정 요청이면 아무것도 강제하지 않는다.** 이 함수는 2026-08-23 출력 잘림 사고(플래너 응답이
+ * 잘려 요청 5/6 이 조용히 누락)의 안전망으로 들어왔고, 그때 유실 사례가 전부 신축이었기 때문에
+ * 폴백도 신축으로 고정됐다. 그 결과 실측 사례 — goal = "이 마을 담장이 엉망으로 깔렸어.
+ * **새로 만들지는 말고** 지금 있는 것만 손봐줘."(77자) → `successTools=["author_village"]`,
+ * 그리고 `author_village` 는 houseCount minimum 1 이라 "담장 수정" 항목이 "집 최소 1채 신축"을
+ * 완료 조건으로 갖게 됐다. null 을 돌려주면 `requiresAnyWrite` 경로로 떨어져 "쓰기 툴 하나"로
+ * 완료되므로 특정 생성기 강제가 사라진다.
+ */
 function detectConstructionIntent(goal: string): readonly string[] | null {
+  if (requestLikelyModifiesExisting(goal)) return null;
   if (/마을|도시|정착지|city|town|settlement/i.test(goal)) return ["author_village"];
   if (/집|건물|house/i.test(goal)) return ["author_house"];
   return null;
@@ -731,12 +780,18 @@ export function buildDefaultWorkPlan(goal: string, now = new Date()): WorkPlan {
     genreTools.length > 0
       ? [...genreTools]
       : constructionTools ?? undefined;
+  // 수정 요청이면 폴백 지시문에 신축 금지를 동봉한다 — 폴백은 계획 문장이 goal 그대로라
+  // 대상 규칙이 붙을 자리가 여기밖에 없다.
+  const modifyGuard = requestLikelyModifiesExisting(goal)
+    ? "\n\n[대상 규칙] 기존 맵 수정 요청이다. 컨텍스트의 현재 맵을 대상으로 편집하고 "
+      + "create_map / author_house / author_village(kind:\"new\") / 방 세션 시작을 쓰지 말 것."
+    : "";
   const instruction =
-    genre != null
+    (genre != null
       ? `${templateToolInstruction(genre)}
 
 요청: ${goal.slice(0, 600)}`
-      : goal.slice(0, 800);
+      : goal.slice(0, 800)) + modifyGuard;
   return workPlanFromOrchestratorDecision(
     {
       action: "new_plan",

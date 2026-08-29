@@ -36,7 +36,13 @@ export function resolveContextViewport(options: ContextOptions): MapViewportSnap
 }
 
 // 기본 문자 예산(현행 동작 기준). tokenBudget.calibratedBudgetChars가 실측 usage로 이 값을 재척도한다.
-export const DEFAULT_BUDGET_CHARS = 12000;
+//
+// 12,000 → 13,200 (2026-08-29 modify 진단). 수정/신규 축(대상 선택 규칙·기존 맵 편집 경로)이
+// INTRO·라우팅 표에 들어가면서 조립분이 11,978자 → 13,011자(createEmptyToolProject 실측)가 됐다.
+// 12,000 을 유지하면 그 초과분을 밸런스 상수·리소스 조회·집 키트·클러스터 규칙 섹션을 통째로
+// 버려서 메꾼다 — 수정 축을 넣은 대가로 다른 지침이 조용히 사라지는 교환이라 예산을 올렸다.
+// 섹션 드롭 기구는 그대로 남는다(보정 예산이 좁아지면 여전히 낮은 우선순위부터 버린다).
+export const DEFAULT_BUDGET_CHARS = 13200;
 // 예산 초과 시 잘린 항목 수 노출에 사용.
 export interface ContextBudgetReport {
   readonly usedChars: number;
@@ -54,8 +60,11 @@ const BALANCE_NOTE = [
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵=start_interior_room_session 또는 run_interior_room_pipeline(새 mapId·이름). 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId}+bounds(생략 시 그 맵 전체 재포장) 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵 신규=start_interior_room_session 또는 run_interior_room_pipeline(반드시 새 mapId·이름). 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
+  // 수정/신규 축(2026-08-29 modify 진단). 라우팅 표가 "무엇을 만들 것인가"만 말하고
+  // "만들 것인가 고칠 것인가"를 말하지 않아, "이 침실 좀 고쳐줘"가 신규 시공 경로를 탔다.
+  "**대상 선택(라우팅보다 먼저):** 신규 표지(새/새로/추가/create)가 없으면 기존 산출물이 대상이다. '이/여기/지금'은 아래 현재 맵 요약의 mapId다. 수정 요청에 새 맵을 만들지 말고, '새로 만들지 마'면 create_map/duplicate_map/방 세션 시작을 쓰지 않는다.",
 ].join("\n");
 
 const INTRO = [
@@ -83,12 +92,16 @@ const INTRO = [
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
   "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,",
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
-  "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고",
-  "    start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을 시공하세요",
-  "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
+  "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 마세요.",
+  "    **기존 실내 맵 수정**이면 그 mapId를 대상으로 furnish_interior_space({mapId, roomId})(방 단위 재시공) 또는",
+  "    fill_region/tile_erase/place_props로 직접 편집하세요(대상 맵·방 id는 list_interior_room_sessions).",
+  "    **새 방**일 때만 start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을",
+  "    시공하세요(rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
-  "    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다.",
+  "    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다. **기존 맵도 같습니다** — get_map_region으로 먼저 읽고",
+  "    그 mapId를 고치세요(fill_region/paint_tiles/tile_erase/place_props/move_event/set_map_properties).",
+  "    '고쳐/바꿔/개선/정리/넓혀/옮겨' 요청에 새 맵을 만들어 거기에 짓는 것은 **요청 실패**입니다(지목된 맵이 그대로 남으므로).",
   "13. 잘못 깔린 타일/구조물을 지울 때는 tile_erase(mapId, rect, layer)를 쓰세요(기본 kind=all: 상·하위 EMPTY).",
   "    새 구조물을 찍기 전, 겹치는 이전 실패물이 있으면 먼저 tile_erase로 정리하세요.",
   "    단, '집/구조물의 주변(근처)을 청소'하라는 요청은 그 구조물을 덮지 말고 둘러싼 빈 칸만 정리하는 뜻입니다 —",
@@ -141,17 +154,25 @@ function summarySection(project: Project): string {
   return ["## 프로젝트 요약", "```json", JSON.stringify(result.data, null, 2), "```"].join("\n");
 }
 
-function mapRegionSection(
+/**
+ * 현재 맵 컨텍스트 — **머리(header)와 몸통(detail)을 나눠 돌려준다.**
+ *
+ * header(뷰포트 블록 + `## 현재 맵 요약(이름, mapId, w×h)` 한 줄)는 예산 밖 고정 버지다.
+ * 이것이 사라지면 "이/여기 좀 고쳐줘" 의 대상이 무엇인지 프롬프트에 남지 않는다.
+ * detail(타일·이벤트 JSON)은 예산 안에서 필요하면 잘린다 — 잘려도 get_map_region 으로 다시 읽을 수 있다.
+ */
+function mapRegionSections(
   project: Project,
   mapId: string | undefined,
   viewport: MapViewportSnapshot | null,
-): string {
+): { header: string; detail: string } {
+  const empty = { header: "", detail: "" };
   const id =
     (viewport?.mapId && project.maps[viewport.mapId] ? viewport.mapId : null)
     ?? (mapId && project.maps[mapId] ? mapId : null)
     ?? project.startMapId;
   const map = project.maps[id];
-  if (!map) return "";
+  if (!map) return empty;
   const region = mapRegionForContext(map, viewport?.mapId === map.id ? viewport : null);
   const ctx: ToolContext = { project };
   const result = runTool(ctx, "get_map_region", {
@@ -161,21 +182,22 @@ function mapRegionSection(
     w: region.w,
     h: region.h,
   });
-  if (!result.ok || result.data === undefined) return "";
-  const parts: string[] = [];
+  if (!result.ok || result.data === undefined) return empty;
+  const headerParts: string[] = [];
   if (viewport && viewport.mapId === map.id) {
-    parts.push(formatViewportContextBlock(viewport, map.name));
+    headerParts.push(formatViewportContextBlock(viewport, map.name));
   }
-  parts.push(
-    `## 현재 맵 요약(${map.name}, ${map.width}×${map.height})`,
+  headerParts.push(
+    // mapId 를 헤더에 박는다 — "이/여기" 가 어느 맵인지 모델이 되묻거나 새 맵을 만들지 않게.
+    `## 현재 맵 요약(${map.name}, \`${id}\`, ${map.width}×${map.height}) — 사용자가 지금 보고 있는 맵. "이/여기/지금"은 이 mapId를 뜻하며 수정 요청의 기본 대상이다.`,
     viewport && viewport.mapId === map.id
       ? `뷰포트 중심 (${viewport.centerX},${viewport.centerY}) 주변 (${region.x},${region.y}) ${region.w}×${region.h}. 다른 영역은 get_map_region으로 조회하세요.`
       : "좌상단 일부만 표시(뷰포트 없음). 다른 영역은 get_map_region으로 조회하세요.",
-    "```json",
-    JSON.stringify(result.data, null, 2),
-    "```",
   );
-  return parts.join("\n");
+  return {
+    header: headerParts.join("\n"),
+    detail: ["```json", JSON.stringify(result.data, null, 2), "```"].join("\n"),
+  };
 }
 
 function tileVocabularySection(project: Project, mapId: string | undefined): string {
@@ -194,7 +216,17 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
     }
     if (vocab.groups.length > 0) {
       const byRole = new Map<string, string[]>();
-      for (const group of vocab.groups) {
+      // 사용자가 가르친 그룹(origin=user)을 role 버킷 앞머리로 올린다. 수칙 10 이 이미
+      // "source=user 가 최우선 근거"라고 말하는데, 번들 그룹 뒤에 붙어 있으면 예산 꼬리 잘림에서
+      // 가장 먼저 사라진다 — 사용자가 직접 가르친 재질이 프롬프트에서 없어지는 최악의 순서였다.
+      const userGroupIds = new Set(
+        (tileset.tileGroups ?? []).filter((group) => group.origin === "user").map((group) => group.id),
+      );
+      const orderedGroups = [
+        ...vocab.groups.filter((group) => userGroupIds.has(group.id)),
+        ...vocab.groups.filter((group) => !userGroupIds.has(group.id)),
+      ];
+      for (const group of orderedGroups) {
         const bucket = byRole.get(group.role) ?? [];
         const shape = group.blockSize ?? group.sourceSize;
         const operational = [
@@ -400,21 +432,61 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 예산을 6000자까지 줄이면 INTRO(8000자+) 지점에서 슬라이싱이 끈기고, 색인을 예산 안에 놓으면
   // 그 끈김에 통째 사라진다 — 그러면 모델은 존재하는 기능을 다시 "없다"고 오보한다.
   const budget = options.budgetChars ?? DEFAULT_BUDGET_CHARS;
-  const sections: string[] = [INTRO, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
-  const tileSemantics = tileSemanticsSection(project);
-  if (tileSemantics) sections.push(tileSemantics);
-  const tileVocabulary = tileVocabularySection(project, options.currentMapId);
-  if (tileVocabulary) sections.push(tileVocabulary);
-  const structureKits = structureKitSection(project, options.currentMapId);
-  if (structureKits) sections.push(structureKits);
-  sections.push(houseKitSection());
-  const clusterRulePreferences = clusterRulePreferenceSection(project, options.currentMapId);
-  if (clusterRulePreferences) sections.push(clusterRulePreferences);
   const viewport = resolveContextViewport(options);
-  const mapSection = mapRegionSection(project, options.currentMapId, viewport);
-  if (mapSection) sections.push(mapSection);
+  const mapRegion = mapRegionSections(project, options.currentMapId, viewport);
+  const optional = (id: string, text: string | undefined | null): PromptSection[] =>
+    text ? [{ id, text }] : [];
+  // 표시 순서 그대로. id 는 잘림 고지와 드롭 우선순위에 쓴다.
+  const sections: PromptSection[] = [
+    { id: "intro", text: INTRO },
+    { id: "summary", text: summarySection(project) },
+    { id: "balance", text: BALANCE_NOTE },
+    { id: "resources", text: RESOURCE_HINT },
+    ...optional("tileSemantics", tileSemanticsSection(project)),
+    ...optional("tileVocabulary", tileVocabularySection(project, options.currentMapId)),
+    ...optional("structureKits", structureKitSection(project, options.currentMapId)),
+    { id: "houseKits", text: houseKitSection() },
+    ...optional("clusterRules", clusterRulePreferenceSection(project, options.currentMapId)),
+    ...optional("mapDetail", mapRegion.detail),
+  ];
 
-  let assembled = sections.join("\n\n");
+  // 예산 초과 시 **섹션 단위로 낮은 우선순위부터 버린다**. 이전 구현은 조립 문자열을 꼬리에서
+  // 잘랐고, 현재 맵 요약이 배열 마지막이라 1순위로 사라졌다 — 실측(createBlankProject): 조립분
+  // 12,817자 / 런타임 예산 12,000 에서 맵 요약 부재. 그러면 모델은 지금 그 맵의 타일·이벤트를
+  // 모르는 채로 시작해 조회 툴로 다시 읽거나(라운드 낭비) 새 맵을 만드는 쪽으로 샌다.
+  // intro(수칙)·summary(맵 id 목록)·map(현재 맵)은 마지막까지 지킨다.
+  // 값싼 정적 조언 → 되읽을 수 있는 것 → 되읽을 수 없는 것 순서로 버린다.
+  // 타일 어휘·의미는 **재질 라벨의 유일한 출처**라 가장 늦게 버린다(이것이 없으면 모델은
+  // fill_region/place_props 의 material 을 지어낸다). 현재 맵의 타일·이벤트 JSON은 그보다 먼저
+  // 버린다 — get_map_region 으로 언제든 되읽을 수 있고, 어느 맵이 대상인지 알려주는 header 는
+  // 아래에서 예산 밖으로 고정되므로 여기서 사라지지 않는다.
+  // 타일 어휘·의미는 드롭 대상에서 아예 뺀다 — 통째로 지우면 재질 라벨이 프롬프트에서 사라지지만,
+  // 남겨 두면 마지막 꼬리 잘림에서 앞부분(주요 그룹)만이라도 살아남는다.
+  // structureKits(=사용자가 [등록]으로 저장한 "내 구조물" 다이제스트)를 balance·resources 뒤로
+  // 옮겼다. 위 원칙("값싼 정적 조언 → 되읽을 수 있는 것 → 되읽을 수 없는 것")과 실제 순서가
+  // 어긋나 있었다 — BALANCE_NOTE·RESOURCE_HINT 는 프로젝트와 무관한 고정 조언인데 사용자가
+  // 직접 등록한 킷 목록보다 늦게 버려졌다. 이 다이제스트가 없으면 모델은 그 킷이 존재하는지조차
+  // 몰라 list_structure_kits 를 부를 이유가 없고, 사용자가 등록해 둔 성벽·상점 단면을 무시한 채
+  // 타일을 직접 칠한다(2026-08-29 modify 진단으로 INTRO 가 늘며 실제로 밀려나 드러났다).
+  const dropOrder = [
+    "clusterRules",
+    "houseKits",
+    "balance",
+    "resources",
+    "structureKits",
+    "mapDetail",
+  ];
+  const kept = new Map(sections.map((section) => [section.id, section]));
+  const trimmedSections: string[] = [];
+  const assembledLength = () => [...kept.values()].reduce((sum, s) => sum + s.text.length + 2, -2);
+  for (const id of dropOrder) {
+    if (assembledLength() <= budget) break;
+    if (!kept.has(id)) continue;
+    kept.delete(id);
+    trimmedSections.push(id);
+  }
+
+  let assembled = [...kept.values()].map((section) => section.text).join("\n\n");
   const remaining = budget - assembled.length;
   if (remaining > 200) {
     const style = styleSection(project, remaining - 100);
@@ -422,13 +494,19 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   }
 
   if (assembled.length > budget) {
-    const overflow = assembled.length - budget;
     const trimmed = assembled.length - budget;
     assembled = `${assembled.slice(0, budget)}\n\n[예산 초과: ${trimmed}자 잘림 · 잘린 구간은 조회 툴(get_map_region 등)로 직접 조회하세요. 모델·사용자 모두에게 고지됨]`;
-    void overflow;
   }
+  if (trimmedSections.length > 0) {
+    assembled += `\n\n[예산으로 생략된 섹션: ${trimmedSections.join(", ")} — 필요하면 조회 툴로 직접 확인하세요.]`;
+  }
+  // 대상 맵 머리는 툴 능력 색인과 같은 이유로 예산 밖 고정 버지다 — 이것이 잘리면 "이/여기"가
+  // 어느 맵인지 프롬프트에 남지 않고, 모델이 대상을 되묻거나 새 맵을 만드는 쪽으로 샌다.
+  if (mapRegion.header) assembled += `\n\n${mapRegion.header}`;
   return withCapabilityIndex(assembled);
 }
+
+type PromptSection = { readonly id: string; readonly text: string };
 
 // 색인 삽입 지점: INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
 // 어느 경우도 색인 전부가 남는다(어떤 기능이 존재하는가 = 상세 지침보다 우선하는 정보).

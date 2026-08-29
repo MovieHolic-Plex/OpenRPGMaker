@@ -8,6 +8,7 @@
 //   4. 타일 팔레트 활성(좌측 팔레트 보임 + 타일 레이어 편집) → "tile"
 //   5. 판정 불가/일반          → "map" (기본, 넓게)
 
+import { requestLikelyModifiesExisting, stripContextFooter } from "@/ai/modifyIntent";
 import { editorState } from "@/editor/editorState";
 import type { ToolDomain } from "@/editor/tools";
 
@@ -85,26 +86,65 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
 };
 
 const NEGATION_WORDS = ["말고", "제외", "빼고", "말고서", "아니라"] as const;
-const RESET_WORDS = ["이제맵", "다른작업", "초기화", "그만"] as const;
+/**
+ * "주제 전환" 신호 — 최근 도메인 기억(recentDomains)을 비운다.
+ *
+ * 옛 구현은 `RESET_WORDS = ["이제맵","다른작업","초기화","그만"]` 를 공백·구두점을 전부 제거한
+ * 문자열에 `includes` 로 걸었다. 실측 대조쌍(2026-08-29 modify 진단 근본원인 12):
+ *   "이 맵 상점 재고를 **초기화**해줘" → tile 소실 / "…리셋해줘" → tile 유지
+ *   "**그만**큼 더 넓혀줘" → tile+event 둘 다 소실 / "이만큼 더 넓혀줘" → 유지
+ *   "**다른 작업** 하기 전에 이 벽만 고쳐줘" → event 소실
+ * 공백을 보존하고 앵커를 걸어 부분일치 오탐을 없앤다.
+ */
+const RESET_PATTERNS: readonly RegExp[] = [
+  /^이제 맵/,
+  /^다른 작업/,
+  /프로젝트 초기화/,
+  /처음부터 다시/,
+  /그만하/,
+  /그만해/,
+];
 const RECENT_DOMAIN_TTL = 2;
 const recentDomains = new Map<ToolDomain, number>();
 const activeInfoBySet = new WeakMap<ReadonlySet<ToolDomain>, ActiveToolDomainInfo>();
 
+/**
+ * 안내문에 박힌 툴 이름(snake_case) — 의도 스캔 전에 지운다.
+ *
+ * 아래 정규화는 `_` 를 공백으로 바꾸므로 `evaluate_interior_room` 이 "evaluate interior room" 이
+ * 되고, `INTENT_KEYWORDS.system.strong` 의 "evaluate" 에 걸려 **툴 이름 하나가 system 도메인을
+ * 열었다**. 그러면 핀된 system 툴 3종(reset_project·configure_time_system·evaluate_game_quality)이
+ * 노출 상한(40) 라운드로빈에 끼어들어, 정작 그 도메인을 연 `evaluate_interior_room` 이 밀려났다
+ * (실측: test/regionIntentExposure.test.ts interior 보장 실패). 영역 작업 요청마다 reset_project 가
+ * 손에 잡히던 것도 같은 원인이다 — 2026-08-29 modify 진단의 근본원인 13(폐기 툴 노출)과 같은 계열.
+ *
+ * 툴 이름은 ASCII snake_case 뿐이고 한국어 사용자 발화에는 등장하지 않으므로, 이 토큰을 지워도
+ * 사용자 의도 신호는 잃지 않는다. 사용자가 툴 이름을 직접 적는 경우는 이름 기반 능력 승격
+ * (capabilityEscalation)이 따로 처리한다.
+ */
+const TOOL_NAME_TOKEN_RE = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/g;
+
 function normalizeForIntent(text: string): string {
-  return text
+  // `[컨텍스트]` footer 는 aiChatPanel/runRegionTask 가 붙이는 기계 생성 텍스트인데 사용자 발화와
+  // 같은 문자열로 온다. 걷어내지 않으면 **맵 이름이 도메인 키워드로 오인된다** — 같은
+  // "여기 좀 고쳐줘"가 맵 이름이 "언덕"일 때와 "호숫가 마을"일 때 서로 다른 툴 집합을 열었다
+  // (2026-08-29 modify 진단 실측 A/B). LLM 에 보내는 원문은 footer 를 포함한 그대로 둔다.
+  return stripContextFooter(text)
     .normalize("NFKC")
     .toLowerCase()
+    .replace(TOOL_NAME_TOKEN_RE, " ")
     .replace(/[\s\p{P}\p{S}_]+/gu, " ")
     .trim();
 }
 
-function compactIntentText(text: string): string {
-  return normalizeForIntent(text).replace(/\s+/g, "");
-}
-
 function hasResetTrigger(userMessage: string): boolean {
-  const normalized = compactIntentText(userMessage);
-  return RESET_WORDS.some((word) => normalized.includes(word));
+  // 공백을 보존한 정규화 문자열에 앵커 패턴을 건다(compactIntentText 기반 includes 폐기).
+  const normalized = normalizeForIntent(userMessage);
+  if (!normalized) return false;
+  // 수정 요청은 주제 전환이 아니다 — 진행 중인 작업을 이어 고치는 것이라 도메인 기억을 지우면
+  // 방금 쓰던 tile/event 툴이 노출에서 사라진다.
+  if (requestLikelyModifiesExisting(userMessage)) return false;
+  return RESET_PATTERNS.some((pattern) => pattern.test(normalized));
 }
 
 function addReason(map: Map<ToolDomain, Set<ToolDomainReason>>, domain: ToolDomain, reason: ToolDomainReason): void {
@@ -169,6 +209,15 @@ function findIntentDomains(userMessage: string): {
 
   if (strong.has("battle") && (normalized.includes("적") || normalized.includes("몬스터") || normalized.includes("enemy") || normalized.includes("troop") || normalized.includes("트룹"))) {
     strong.add("database");
+  }
+
+  // 수정 요청은 대상 명사가 없어도 편집 툴이 손에 잡혀야 한다 — 실측: "여기 좀 고쳐줘" 는
+  // tile 도메인이 열리지 않아 tile_erase/fill_region 이 노출에서 빠졌다(진단 근본원인 4).
+  // weak 로 여는 이유: 도메인을 강하게 켜면 상한(40) 트림에서 실제 주제 도메인을 밀어낸다.
+  if (requestLikelyModifiesExisting(userMessage)) {
+    weak.add("tile");
+    weak.add("map");
+    weak.add("event");
   }
 
   for (const domain of strong) weak.delete(domain);

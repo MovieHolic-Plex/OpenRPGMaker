@@ -41,9 +41,14 @@ export interface LlmSolverOptions {
 }
 
 // LLM 툴콜 루프 solver. AssistantSession의 누적 draft(getProposedProject)를 최종 프로젝트로 채점한다.
+// task.contextOptions(현재 열린 맵)를 그대로 넘긴다 — 수정 과제는 "이 맵"이 무엇인지가 과제의 절반이다.
 export function llmSolver(options: LlmSolverOptions): Solver {
   return async (task) => {
-    const session = new AssistantSession(task.initialProject(), { config: options.config, chat: options.chat });
+    const session = new AssistantSession(task.initialProject(), {
+      config: options.config,
+      chat: options.chat,
+      ...(task.contextOptions ? { contextOptions: task.contextOptions } : {}),
+    });
     await session.sendUserMessage(task.prompt);
     return { project: session.getProposedProject(), audit: session.exportAudit() };
   };

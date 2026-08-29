@@ -1,7 +1,37 @@
 // ai/approvalPolicy.ts — deny-by-default single approval boundary
+import type { ChangeSummary } from "@/project/types";
 import type { ProposedCall } from "./assistantSession";
 
 export const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set(["remove_event", "remove_map", "delete_database_record", "delete_resource", "clear_region", "reset_project"]);
+
+/**
+ * 파괴적 재시공을 옵트인으로 요청하는 인자 — 켜져 있으면 이름과 무관하게 파괴 툴이다.
+ * (방 하네스 세션/파이프라인의 `replaceExisting`)
+ */
+const REPLACE_EXISTING_ARG = "replaceExisting";
+
+/**
+ * **결과 기반 파괴성 판정** (2026-08-29 modify 진단 근본원인 9).
+ *
+ * 기존 판정은 툴 **이름 목록**(`DESTRUCTIVE_TOOLS`)뿐이었다. 그래서 "지우고 제대로 다시 놓는다"
+ * (`remove_event` 포함)는 체크박스 재승인 벽에 걸리고, "새 맵을 만들어 거기 짓는다"
+ * (`run_interior_room_pipeline` — 실제로는 기존 맵을 통째로 교체하던 툴)는 마찰 0으로 즉시 적용됐다.
+ * 승인 마찰이 정직한 수정에만 걸린 셈이다.
+ *
+ * 이름 목록은 유지하되, diff 가 소실을 보고하면(맵 제거·이벤트 제거) 이름과 무관하게 파괴로 본다.
+ * 타일 대량 소실은 `ChangeSummary` 가 칠하기/지우기를 구분하지 않아 여기서 판정할 수 없다 —
+ * 그 경로는 `replaceExisting` 옵트인과 방 하네스의 `map-exists` 가드가 막는다.
+ */
+export function isDestructiveOutcome(
+  name: string,
+  args: Record<string, unknown> | undefined,
+  diff: ChangeSummary | undefined,
+): boolean {
+  if (DESTRUCTIVE_TOOLS.has(name)) return true;
+  if (args?.[REPLACE_EXISTING_ARG] === true) return true;
+  if (!diff) return false;
+  return diff.mapsRemoved > 0 || diff.eventsRemoved > 0;
+}
 export const METADATA_ONLY_TOOLS: ReadonlySet<string> = new Set([
   "set_tile_metadata",
   "set_tile_rules",
@@ -42,7 +72,7 @@ export function classifyApproval(calls: readonly ProposedCall[], opts: { autoApp
   if (hasDestructive) {
     return {
       decision: "require_approval",
-      reason: "파괴적 변경(remove/clear)이 포함되어 있어 명시적 승인이 필요합니다.",
+      reason: "파괴적 변경(remove/clear/기존 맵 교체)이 포함되어 있어 명시적 승인이 필요합니다.",
       requiresUserConfirm: true,
       warnings: ["파괴적 작업 포함 — 체크박스 확인 후 재승인이 필요합니다."],
     };

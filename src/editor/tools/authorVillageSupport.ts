@@ -2,6 +2,7 @@ import type { AuthorVillageRequest, ConstructionDiffTotals, ConstructionOutcome,
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { summarizeChanges } from "./changeset";
+import { assertMapIdAvailable } from "./mapHelpers";
 import { ToolError, type ChangeSummary, type ToolExecResult } from "./types";
 import type { VillageBuildDomainArgs, VillageBuildInspection } from "./villageBuilder";
 
@@ -26,9 +27,7 @@ export type VillageFacadeState = {
 };
 
 export function createExactVillageMap(project: Project, target: NewVillageTarget): void {
-  if (project.maps[target.mapId]) {
-    throw new ToolError(`Map already exists: ${target.mapId}`, { code: "map-exists", mapId: target.mapId });
-  }
+  assertMapIdAvailable(project, target.mapId);
   const size = target.width * target.height;
   const map: GameMap = {
     id: target.mapId,

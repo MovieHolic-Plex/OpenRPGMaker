@@ -5,8 +5,10 @@
 // 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
 // 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 "도메인 시드" 병합은 A/B 실측상 아무
 // 효과가 없는 죽은 복잡도로 판정돼 제거했다).
+import { MODIFY_KEYWORDS, requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 
 export type RegionIntentCategory =
+  | "modify"
   | "interior"
   | "structure"
   | "npc-shop"
@@ -17,6 +19,11 @@ export type RegionIntentCategory =
   | "transform";
 
 export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, readonly string[]>> = {
+  // "그것을 만들 것인가 고칠 것인가" 축. 기존 8카테고리는 전부 "무엇을 만들 것인가"(도메인·주제어)
+  // 축이라 수정 어휘가 라우팅에 아무 영향이 없었다 — 실측: routeRegionIntent("이 부분 좀 수정해줘") = []
+  // (가이드 0줄), routeRegionIntent("이 침실 좀 수정해줘") = ["interior"](명사만으로 신규 시공 안내).
+  // 어휘는 modifyIntent.MODIFY_KEYWORDS 단일 소스에서 가져온다.
+  modify: MODIFY_KEYWORDS,
   // 실내/방 맵 — 야외 build_house_kit 과 충돌하므로 structure보다 우선·배타.
   interior: [
     "실내", "인테리어", "실내맵", "실내 맵", "방 맵", "방맵",
@@ -46,6 +53,12 @@ export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, reado
 };
 
 const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
+  modify:
+    "- 수정: 기존 것을 그 자리에서 고치는 작업이다. get_map_region/find_layout_regions로 현재 상태를 먼저 확인한 뒤 "
+    + "tile_erase(잘못 깔린 것 정리) / fill_region / paint_road / mirror_region / move_event / place_props로 "
+    + "**선택 영역 안 기존 것만** 변경하세요. 새 맵·새 방·새 마을 생성 금지 — create_map / duplicate_map / "
+    + "start_interior_room_session / author_village(kind:\"new\")를 쓰지 마세요. 기존 실내 맵을 고치는 것이면 "
+    + "그 맵을 대상으로 furnish_interior_space({mapId, roomId})를 쓰세요.",
   interior:
     "- 실내: 현재 맵/선택 영역에 야외 집을 짓지 마세요. "
     + "start_interior_room_session으로 **새 mapId·요청 이름** 실내 맵을 시공 "
@@ -71,8 +84,10 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
     "- 변형: mirror_region {mapId,x,y,w,h,axis:\"horizontal\"|\"vertical\"}(대칭), tile_erase(비우기), move_event/duplicate_event(이벤트 이동·복제). 상점/가게 철거는 find_layout_regions({mapId, query})로 영역을 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region으로 결과 확인. 영역 상자는 find_layout_regions가 준 rect를 쓰고 비전으로 추측하지 말 것",
 };
 
+// modify 를 interior 앞에 둔다 — 둘이 동시에 걸리면 modify 가이드가 먼저 읽히고,
+// routeRegionIntent 가 interior 의 "새 mapId" 문장을 아예 떨어낸다.
 const CATEGORY_ORDER: readonly RegionIntentCategory[] = [
-  "interior", "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
+  "modify", "interior", "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
 ];
 
 function normalize(text: string): string {
@@ -83,10 +98,17 @@ function normalize(text: string): string {
  * 선택 영역 작업(하드 클립)으로는 이행할 수 없는 요청.
  * 실내 맵·새 맵 생성은 현재 맵 사각형 밖 프로젝트 변경이 본업이라 영역 클립에 담기지 않는다
  * → 채팅 전량 경로로 우회해야 한다(audit 18: create_map 후 "이 영역에서 바뀐 것이 없습니다").
+ *
+ * **수정 요청은 탈출시키지 않는다**(2026-08-29 modify 진단 근본원인 3). 실내 명사 부분일치만으로
+ * 즉시 true 를 돌려주던 탓에 "이 침실 좀 수정해줘" / "침실 가구 배치를 개선해줘" 가 선택 영역을
+ * 폐기하고 일반 채팅으로 우회했다 — 일반 채팅에는 `clipMapCellsToRegion` 하드클립이 없다.
+ * "실내 시공은 영역 밖 작업"이라는 전제는 **새로 만들 때만** 맞다.
  */
 export function isRegionEscapingIntent(instruction: string): boolean {
   const normalized = normalize(instruction);
   if (!normalized) return false;
+  // 수정 요청은 지금 이 맵을 고치는 작업이므로 영역 클립 경로에 남긴다.
+  if (requestLikelyModifiesExisting(instruction)) return false;
   if (REGION_INTENT_KEYWORDS.interior.some((keyword) => normalized.includes(keyword))) return true;
   const newMapPatterns = [
     "새 맵", "새로운 맵", "맵을 만들", "맵 생성", "맵을 생성", "맵 하나", "맵을 하나",
@@ -100,6 +122,13 @@ export function routeRegionIntent(instruction: string): RegionIntentCategory[] {
   const routed = CATEGORY_ORDER.filter((category) =>
     REGION_INTENT_KEYWORDS[category].some((keyword) => normalized.includes(keyword)),
   );
+  const modifies = requestLikelyModifiesExisting(instruction);
+  // 수정 요청이면 신규 시공 가이드(실내 "새 mapId", 야외 구조물 신축)를 떨어낸다.
+  // 그것이 남으면 모델은 두 개의 상반된 지시를 동시에 받는다.
+  if (modifies) {
+    const withoutNewBuild = routed.filter((category) => category !== "interior");
+    return withoutNewBuild.includes("modify") ? withoutNewBuild : ["modify", ...withoutNewBuild];
+  }
   // 실내 요청에 "집"이 들어 있어도 야외 build_house_kit 가이드를 붙이지 않는다.
   if (routed.includes("interior")) {
     return routed.filter((category) => category !== "structure");

@@ -8,7 +8,7 @@ import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
-import { inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
+import { assertMapIdAvailable, inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
 import {
   applyMapGenerationPassage,
   requireMapGenerationProfile,
@@ -165,7 +165,8 @@ const generateMap: ToolDefinition = {
     if (width < 6 || height < 6) throw new ToolError("생성 맵은 최소 6x6 이상이어야 합니다.");
     assertGeneratedMapSize(width, height);
     const id = (args.id as string | undefined) ?? genId("map");
-    if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { mapId: id });
+    // code:"map-exists" 누락으로 이 경로만 감사·게이트에서 다른 실패로 세어졌다(진단 근본원인 15).
+    assertMapIdAvailable(draft, id);
     const rng = mulberry32((args.seed as number | undefined) ?? 1);
     const map = blankThemedMap(
       id,

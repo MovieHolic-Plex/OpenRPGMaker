@@ -5,6 +5,7 @@ import { evaluateCastle, stampCastle, type Rect } from "@/editor/castleKit";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { EVENT_TOOLS } from "./eventTools";
+import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -192,7 +193,7 @@ function createCastleMap(draft: Project, args: Record<string, unknown>, seed: nu
     typeof args.id === "string" && args.id.trim().length > 0
       ? args.id.trim()
       : uniqueId(draft, "map_castle", `${name}_${seed >>> 0}_${width}x${height}`);
-  if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { code: "map-exists", mapId: id });
+  assertMapIdAvailable(draft, id);
   createMapTool.run(draft, { id, name, width, height, border: "none" });
   return id;
 }

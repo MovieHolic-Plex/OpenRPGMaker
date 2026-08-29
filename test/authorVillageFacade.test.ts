@@ -342,6 +342,73 @@ describe("author_village facade", () => {
   });
 });
 
+// bounds 생략 = 타깃 맵 전면 재포장인데 스코프 검사를 통과한다(2026-08-29 modify 진단 근본원인 10).
+// required 로 올리면 정당한 전체 재시공 호출까지 깨지므로, 실제 덮은 범위를 실수치로 알린다.
+describe("author_village bounds 생략 경고", () => {
+  it("기존 맵을 bounds 없이 시공하면 덮은 칸수·비율·bbox 를 경고로 알린다", () => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 4,
+      countPolicy: "exact",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    // 쓰기 툴의 exec.warnings 는 ToolResult.diff.warnings 로 실린다(toolRunner 규약).
+    const warnings = result.diff?.warnings ?? [];
+    const warning = warnings.find((entry) => entry.includes("bounds 를 생략해"));
+    expect(warning, JSON.stringify(warnings)).toBeDefined();
+    expect(warning).toContain("map_existing");
+    expect(warning).toContain("target.bounds");
+    expect(warning).toMatch(/실제 변경 \d+칸\(맵의 \d+%\), bbox \(\d+,\d+\) \d+×\d+/);
+  });
+
+  it("bounds 를 지정하면 그 경고가 붙지 않는다", () => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: { kind: "existing", mapId: "map_existing", bounds: { x: 2, y: 2, w: 40, h: 40 } },
+      houseCount: 4,
+      countPolicy: "exact",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    expect((result.diff?.warnings ?? []).some((entry) => entry.includes("bounds 를 생략해"))).toBe(false);
+  });
+
+  it("신규 맵 타깃에는 그 경고가 붙지 않는다", () => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: {
+        kind: "new",
+        mapId: "map_new_village",
+        name: "새 마을",
+        width: 40,
+        height: 40,
+        plannedMap: { mapId: "map_new_village", width: 40, height: 40 },
+      },
+      houseCount: 3,
+      countPolicy: "exact",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    expect((result.diff?.warnings ?? []).some((entry) => entry.includes("bounds 를 생략해"))).toBe(false);
+  });
+
+  it("스키마 설명이 생략 시 전면 재포장임을 밝힌다", () => {
+    const bounds = AUTHOR_VILLAGE_TOOL.parameters.properties?.target?.properties?.bounds;
+    expect(bounds?.description).toContain("생략하면 그 맵 전체가 재포장 대상");
+  });
+});
+
 describe("author_village settlement scale and winter", () => {
   it("builds a deterministic 100x100 snow city with the requested population", () => {
     const args = {

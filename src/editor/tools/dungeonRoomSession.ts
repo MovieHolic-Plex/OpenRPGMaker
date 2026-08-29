@@ -10,6 +10,7 @@ import {
   runRoomPipeline,
   startRoomSession,
 } from "@/editor/roomHarness/engine";
+import { REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 import type { ToolDefinition, ToolExecResult } from "./types";
 
 const KIT = DUNGEON_ROOM_KIT_ID;
@@ -39,11 +40,12 @@ export const DUNGEON_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         height: { type: "integer", description: "기본 18 (최소 8)" },
         theme: { type: "string", enum: [...DUNGEON_ROOM_THEMES] },
         hazard: { type: "boolean", description: "중앙 위험지형+다리 배치. 기본 true" },
+        replaceExisting: REPLACE_EXISTING_SCHEMA,
       },
-      required: ["theme"],
+      required: ["mapId", "theme"],
     },
-    invalidArgsExample: { theme: "lava" },
-    invalidArgsHint: "theme(lava|stone|ice)을 지정하라.",
+    invalidArgsExample: { mapId: "map_dungeon_lava_1", theme: "lava" },
+    invalidArgsHint: "mapId(새 맵 id)와 theme(lava|stone|ice)을 지정하라. 기존 맵 id 를 넣으면 그 맵이 삭제된다.",
     run(draft, args): ToolExecResult {
       const res = startRoomSession(draft, KIT, args);
       const sessionId = (res.data as { sessionId: string }).sessionId;
@@ -89,10 +91,11 @@ export const DUNGEON_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         theme: { type: "string", enum: [...DUNGEON_ROOM_THEMES] },
         hazard: { type: "boolean", description: "중앙 위험지형+다리 배치. 기본 true" },
         demo: { type: "string", enum: [...DUNGEON_ROOM_THEMES], description: "데모 플랜 사용(테마만 지정)" },
+        replaceExisting: REPLACE_EXISTING_SCHEMA,
       },
     },
-    invalidArgsExample: { theme: "lava" },
-    invalidArgsHint: "theme(lava|stone|ice) 또는 demo(lava|stone|ice)를 지정하라.",
+    invalidArgsExample: { mapId: "map_dungeon_lava_1", theme: "lava" },
+    invalidArgsHint: "mapId(새 맵 id)와 theme(lava|stone|ice) 또는 demo(lava|stone|ice)를 지정하라.",
     run(draft, args): ToolExecResult {
       return runRoomPipeline(draft, KIT, args);
     },

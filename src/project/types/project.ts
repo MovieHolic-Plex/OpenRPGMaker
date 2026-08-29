@@ -79,6 +79,15 @@ export interface GameMap {
    */
   layoutPlan?: MapLayoutPlan;
   /**
+   * 방 하네스(실내 villager-room-v1 / 던전 dungeon-room-v1)가 이 맵을 시공할 때 쓴 플랜 원본.
+   *
+   * 세션(RoomSession)은 에디터 메모리(WeakMap)에만 살고 Project JSON 에 직렬화되지 않는다. 그래서
+   * 프로젝트를 다시 열면 `furnish_interior_space` 처럼 sessionId 를 요구하는 in-place 툴의 진입로가
+   * 사라졌다(2026-08-29 modify 진단 근본원인 8). 플랜을 맵에 남겨 mapId 만으로 세션을 재수립한다.
+   * `plan` 은 킷별 플랜 타입이라 여기서는 JSON 값으로만 다룬다(project → editor 역참조 금지).
+   */
+  roomHarnessPlan?: { kitId: string; plan: unknown };
+  /**
    * 제작자가 맵마다 켜고 끄는 미니맵 설정. optional — 없으면 미니맵 off(기존 맵 호환).
    * v1은 1회 정적 썸네일 + 플레이어 점만 갱신; fogOfWar는 자리만 두고 추후 확장.
    */

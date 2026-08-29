@@ -102,8 +102,9 @@ beforeEach(() => {
     autoApprove: false,
     baseUrl: "https://example.test",
     maxTokens: 1024,
-    model: "gpt-5.6-sol",
-    liteModel: "gpt-5.4-mini",
+    // 제공자 카탈로그에 있는 모델을 쓴다 — loadAiConfig 가 없는 id 를 기본값으로 스냅한다.
+    model: "gemini-3.1-pro",
+    liteModel: "gemini-2.5-flash-lite",
     reasoningEffort: "medium",
   }));
   Object.defineProperty(globalThis, "localStorage", {
@@ -160,7 +161,7 @@ describe("cluster AI modal", () => {
       expect.stringContaining("클러스터 수정"),
       expect.any(Function)
     );
-    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gpt-5.4-mini");
+    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gemini-2.5-flash-lite");
   });
 
   it("accepts proposed changes into the store and rebases the session", async () => {

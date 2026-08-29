@@ -322,6 +322,7 @@ describe("세션 스펙 게이트", () => {
       finalMsg("기존 대사를 수정했습니다."),
     ]);
     const session = new AssistantSession(context.project, { config: CONFIG, chat });
+    const mapsBefore = Object.keys(context.project.maps).sort();
     const events: Array<{ name: string; ok: boolean }> = [];
 
     await session.sendUserMessage("기존 NPC 대사 수정해줘", (event) => {
@@ -331,6 +332,8 @@ describe("세션 스펙 게이트", () => {
     expect(events).toEqual([{ name: "place_npc", ok: true }]);
     const updated = session.getProposedProject().maps.m1?.events.find((event) => event.id === "npc_existing");
     expect(updated).toMatchObject({ x: 4, y: 4 });
+    // 수정 요청은 맵 집합을 건드리지 않는다 — 새 맵이 생겼다면 스펙 게이트가 신축 우회를 허용한 것이다.
+    expect(Object.keys(session.getProposedProject().maps).sort()).toEqual(mapsBefore);
   });
 
   it("겹침 스펙 거부 → 수정 재제출 → 할당 영역 안 빌드 실행", async () => {

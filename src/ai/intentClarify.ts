@@ -5,6 +5,7 @@
 // (조수 스킬 레지스트리 랭킹은 스킬 기능과 함께 제거됐다).
 
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
+import { requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 
 export type IntentClarifyKind = "house-vs-interior";
 
@@ -55,9 +56,18 @@ function includesAny(haystack: string, needles: readonly string[]): boolean {
   return needles.some((needle) => haystack.includes(normalize(needle)));
 }
 
+/**
+ * 건물 명사가 **직업 이름의 일부**로 쓰인 자리 — "여관 주인", "대장간 주인", "상점 점원".
+ * 이건 사람 배치 요청이고 시공 요청이 아니다. 실측: 골든 태스크 inn
+ * ("빈 프로젝트에 마을 맵을 하나 만들고, 15G에 숙박시키는 여관 주인 NPC를 배치해줘")이
+ * "야외 외장이냐 실내 맵이냐"로 되물어져 툴이 한 번도 돌지 않고 턴이 끝났다.
+ */
+const BUILDING_AS_ROLE_RE =
+  /(?:여관|대장간|상점|주점|선술집|가게|방앗간|목장)\s*(?:주인|주민|상인|점원|아저씨|아줌마|누나|형|npc|주방장|마스터)/gu;
+
 /** '수집/편집' 안의 '집' 오탐을 피하면서 집·건물 요청을 잡는다. */
 export function requestMentionsHouseLike(text: string): boolean {
-  const n = normalize(text);
+  const n = normalize(text).replace(BUILDING_AS_ROLE_RE, " ");
   if (!n) return false;
   if (/(?:^| )(?:건물|오두막|여관|대장간|주택|가옥|별장|저택)(?: |$|을|이|에|은|도|한|을|를)/u.test(n)) return true;
   if (/(?:건물|오두막|여관|대장간|주택|가옥|별장|저택).{0,8}(?:만들|지|생성|하나)/u.test(n)) return true;
@@ -126,6 +136,11 @@ export function resolveIntentClarification(text: string): IntentClarifyResult | 
 
   // 던전(dungeon-room-v1) 요청은 집/실내 되묻기 대상이 아니다 — 전용 하네스로 직행.
   if (requestMentionsDungeon(raw)) return null;
+
+  // **수정 요청은 되묻지 않는다.** "이 집 좀 고쳐줘" 에 "야외 외장이냐 실내 맵이냐"를 물으면
+  // 대상이 이미 존재하는데 새로 만들 종류를 고르라는 질문이 된다 — 어느 쪽을 골라도 신규
+  // 시공 경로로 들어간다(2026-08-29 modify 진단 근본원인 4). 고칠 대상은 이미 정해져 있다.
+  if (requestLikelyModifiesExisting(raw)) return null;
 
   const hasInterior = requestMentionsInterior(raw);
   const hasOutdoor = requestMentionsOutdoorHouse(raw);

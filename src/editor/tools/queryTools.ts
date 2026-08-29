@@ -186,8 +186,12 @@ const getMapRegion: ToolDefinition = {
       ? `물 ${water.cellCount}칸 bounds=(${water.x},${water.y}) ${water.w}×${water.h}`
       : "물 0칸";
     return {
-      summary: `${map.name} 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
+      summary: `${map.name}(${map.id}) 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
       data: {
+        // 읽은 맵 id 를 결과에 되돌려준다 — 수정 요청에서 모델이 "무엇을 읽었는지"와 "무엇에 쓸지"를
+        // 다른 맵으로 잘못 잇는 사고를 줄인다(2026-08-29 modify 진단 근본원인 15).
+        mapId: map.id,
+        mapName: map.name,
         grid: rows,
         legend: { "#": "통행 불가/벽", ".": "통행 가능", "~": "물/호수", T: "나무", E: "이벤트" },
         events,

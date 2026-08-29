@@ -3,6 +3,7 @@
 // coverage first, then only low-risk request/count heuristics when there is no spec.
 
 import { affectedRegions, type AffectedRegion, type BuildSpec, type SpecAsset } from "./buildSpec";
+import { requestLikelyModifiesExisting } from "./modifyIntent";
 import type { ChangeSummary } from "@/editor/tools/types";
 
 export const PROPOSAL_COMPLETENESS_WARNING_PREFIX = "⚠ 미이행:";
@@ -112,14 +113,22 @@ function requestLikelyWantsInterior(text: string): boolean {
   return /실내|인테리어|실내맵|방 맵|침실|서재|주방|선술집|\binterior\b/u.test(normalized);
 }
 
-/** 실내 요청인데 야외 집 키트만 쓰거나 create_map만 한 턴을 잡아낸다(audit 18). */
+/**
+ * 실내 **신규** 요청인데 야외 집 키트만 쓰거나 create_map만 한 턴을 잡아낸다(audit 18).
+ *
+ * 수정 요청은 대상에서 뺀다(2026-08-29 modify 진단 근본원인 15). "이 침실 가구 배치를 개선해줘"
+ * 에도 이 경고가 붙어 "새 실내 맵을 시공하세요"라고 지시했고, 그 경고는 자동 완료 게이트를 막아
+ * 모델이 결국 새 맵을 만들도록 밀어붙였다 — 사용자가 본 증상 그 자체다.
+ */
 function interiorCompletenessWarnings(requestText: string, calls: readonly ProposalCompletenessCall[]): string[] {
   if (!requestLikelyWantsInterior(requestText)) return [];
+  if (requestLikelyModifiesExisting(requestText)) return [];
   const okCalls = calls.filter((call) => call.result.ok);
   if (okCalls.some((call) => INTERIOR_ROOM_TOOL_NAMES.has(call.name))) return [];
-  const usedOutdoorHouse = okCalls.some((call) => call.name === "build_house_kit" || call.name === "build_house_lots");
+  const usedOutdoorHouse = okCalls.some((call) =>
+    call.name === "author_house" || call.name === "build_house_kit" || call.name === "build_house_lots");
   if (usedOutdoorHouse) {
-    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 키트(build_house_kit)만 사용했습니다. start_interior_room_session/run_interior_room_pipeline으로 새 실내 맵을 시공하세요.`];
+    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 새 실내 맵이 필요하면 start_interior_room_session/run_interior_room_pipeline(새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
   }
   const onlyEmptyMap =
     okCalls.length > 0
