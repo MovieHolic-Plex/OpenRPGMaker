@@ -1789,3 +1789,354 @@ footer {
 .event-editor .event-custom-select-trigger[data-custom-select-for="event-page-advanced-condition-kind"] {
   min-width: 124px;
 }
+
+/* =========================================================================
+   「NPC와 일정」 레일 그룹 표면 (2026-08-29)
+
+   문제(실측, 1536×1024 / 설정 시트 528px): 일정 행이 **읽을 수 없는 상태**로 출하됐다.
+   `compactLabel()` 이 만드는 `.event-schedule-label` 은 `display:flex` 인데, 그 안의
+   셀렉트는 `customSelect` 가 `.event-custom-select`(width:100%) 로 감싼다. 콘텐츠 폭을
+   요구하지 않는 래퍼가 남은 공간을 전부 먹어 라벨 글자칸이 0 으로 눌리고, 「시간대」
+   「계절」「방향」과 조건 경고문이 한 글자씩 세로로 흘러 서로 겹쳐 그려졌다
+   (event-editor.conditions-grid 가 min-width 로 막아 놓은 것과 같은 함정).
+   NPC 관계 카드 쪽은 `.event-character-id-label-text` 가 `.event-editor-card` 하위에서만
+   스타일을 받아, 카드가 사라진 레일에서는 굵기 없는 본문 글자로 떠 있었다.
+
+   해결: 라벨을 캡션-위/컨트롤-아래 그리드로 세우고(라벨 폭 경쟁 자체를 없앤다),
+   일정 편집기를 헤더+행 카드 구조로 묶는다. 행 번호는 CSS 카운터, 「언제」「어디로」
+   구분은 생성 콘텐츠라 DOM·testid 는 그대로다.
+   ========================================================================= */
+
+/* ── NPC 관계 연결 줄 ─────────────────────────────────────────────────── */
+.event-editor .event-editor-settings-accordion-body .event-character-id-field-inline {
+  align-items: center;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-editor-settings-accordion-body .event-character-id-label-text {
+  color: var(--text-2);
+  font: 700 10.5px/1.2 var(--font-ui);
+  letter-spacing: .04em;
+  min-width: 0;
+}
+
+/* ── 관계 설정 카드 ───────────────────────────────────────────────────── */
+.event-editor .event-editor-settings-accordion-body .event-character-social-extras {
+  margin: 0;
+}
+
+/* 카드 제목이 바로 위 연결 줄과 같은 이름을 반복한다 — 굵기를 낮춰 위계를 만든다. */
+.event-editor .event-character-social-heading > strong {
+  font: 650 12.5px/1.25 var(--font-ui);
+}
+
+/* 「고급 설정」은 details 로 저작됐지만 설정 컬럼이 div 로 바꿔 심는다(content.ts).
+   그래서 `[open]` 을 보는 화살표는 항상 «접힘» 을 가리키면서 본문은 열려 있었다.
+   div 인 경우에만 화살표를 지우고 소제목으로 읽히게 한다. */
+.event-editor div.event-character-social-advanced > summary {
+  color: var(--text-2);
+  cursor: default;
+  font: 700 10.5px/1.2 var(--font-ui);
+  letter-spacing: .04em;
+}
+
+.event-editor div.event-character-social-advanced > summary::after {
+  content: none;
+}
+
+/* 화살표가 빠지면 space-between 이 키 칩을 오른쪽 끝까지 밀어낸다. */
+.event-editor div.event-character-social-advanced > summary {
+  justify-content: flex-start;
+}
+
+/* ── 일정 편집기 셸 ───────────────────────────────────────────────────── */
+.event-editor .event-schedule-editor {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: block;
+  min-width: 0;
+  overflow: clip;
+  padding: 0;
+}
+
+.event-editor .event-schedule-editor[open] {
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+}
+
+.event-editor .event-schedule-summary {
+  align-items: center;
+  background: var(--bg-inset);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 700 12px/1.2 var(--font-ui);
+  gap: 7px;
+  list-style: none;
+  min-width: 0;
+  padding: 9px 12px;
+  transition: background var(--transition-fast);
+}
+
+.event-editor .event-schedule-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-schedule-summary:hover {
+  background: var(--bg-active);
+}
+
+.event-editor .event-schedule-summary::before {
+  color: var(--text-3);
+  content: "▾";
+  font-size: 9px;
+  transition: transform var(--transition-fast);
+}
+
+.event-editor .event-schedule-editor:not([open]) > .event-schedule-summary::before {
+  transform: rotate(-90deg);
+}
+
+.event-editor .event-schedule-editor[open] > .event-schedule-summary {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ── 툴바 / 빈 상태 ───────────────────────────────────────────────────── */
+.event-editor .event-schedule-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.event-editor .event-schedule-help {
+  color: var(--text-2);
+  font: 400 11px/1.45 var(--font-ui);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-toolbar [data-testid="event-schedule-add"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 일정이 하나도 없으면 툴바가 그 자체로 빈 상태 카드가 된다. */
+.event-editor .event-schedule-editor:has(.event-schedule-rows:empty) .event-schedule-toolbar {
+  border: 1px dashed var(--border-default);
+  border-radius: 8px;
+  flex-direction: column;
+  gap: 9px;
+  margin: 10px 12px 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.event-editor .event-schedule-rows:empty {
+  display: none;
+}
+
+/* ── 행 카드 ──────────────────────────────────────────────────────────── */
+.event-editor .event-schedule-rows {
+  counter-reset: event-schedule-row;
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.event-editor .event-schedule-row {
+  align-items: start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  counter-increment: event-schedule-row;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  padding: 32px 12px 12px;
+  position: relative;
+}
+
+.event-editor .event-schedule-row::before {
+  background: var(--accent-muted);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  content: "일정 " counter(event-schedule-row);
+  font: 700 10px/1 var(--font-ui);
+  left: 12px;
+  letter-spacing: .03em;
+  padding: 5px 9px;
+  position: absolute;
+  top: 9px;
+}
+
+.event-editor .event-schedule-row [data-testid^="event-schedule-delete-"] {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--danger);
+  font: 650 10.5px/1 var(--font-ui);
+  padding: 4px 8px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
+.event-editor .event-schedule-row [data-testid^="event-schedule-delete-"]:hover {
+  background: var(--danger-muted);
+  border-color: var(--danger);
+}
+
+/* ── 「언제」 / 「어디로」 블록 ────────────────────────────────────────── */
+.event-editor .event-schedule-condition-grid,
+.event-editor .event-schedule-target-grid {
+  align-items: start;
+  background: var(--bg-inset);
+  border-radius: 7px;
+  display: grid;
+  gap: 8px 10px;
+  min-width: 0;
+  padding: 9px 10px 10px;
+}
+
+.event-editor .event-schedule-condition-grid::before,
+.event-editor .event-schedule-target-grid::before {
+  color: var(--text-2);
+  font: 700 10px/1 var(--font-ui);
+  grid-column: 1 / -1;
+  letter-spacing: .06em;
+}
+
+.event-editor .event-schedule-condition-grid::before {
+  content: "언제";
+}
+
+.event-editor .event-schedule-target-grid::before {
+  content: "어디로";
+}
+
+/* 기본은 1열(레일이 아래로 접히는 좁은 폭). 여러 열은 넓은 시트에서만 켠다 —
+   1열에서 explicit `grid-row` 가 남으면 방향·활동이 같은 칸에 겹친다(실측). */
+.event-editor .event-schedule-condition-grid,
+.event-editor .event-schedule-target-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1321px) {
+  .event-editor .event-schedule-condition-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* 맵 | X | Y  /  활동 | 방향 —
+     자유 입력인 「활동」이 넓은 칸을, 값이 네 개뿐인 「방향」이 좁은 칸을 쓴다. */
+  .event-editor .event-schedule-target-grid {
+    grid-template-columns: minmax(0, 1fr) 72px 72px;
+  }
+
+  /* 방향(4번째)과 활동(5번째)의 자리를 시각적으로 맞바꾼다. */
+  .event-editor .event-schedule-target-grid > .event-schedule-label:nth-child(4) {
+    grid-column: 2 / -1;
+    grid-row: 3;
+  }
+
+  .event-editor .event-schedule-target-grid > .event-schedule-label:nth-child(5) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
+/* ── 라벨: 캡션 위 · 컨트롤 아래 ──────────────────────────────────────── */
+.event-editor .event-schedule-label {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-label > span:first-child {
+  color: var(--text-2);
+  font: 600 10.5px/1.2 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-schedule-label .event-custom-select,
+.event-editor .event-schedule-label .event-custom-select-trigger,
+.event-editor .event-schedule-row select,
+.event-editor .event-schedule-row input[type="text"],
+.event-editor .event-schedule-row input[type="number"] {
+  max-width: none;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-editor .event-schedule-row input[type="text"],
+.event-editor .event-schedule-row input[type="number"] {
+  box-sizing: border-box;
+  font: 500 12px/18px var(--font-ui);
+  padding: 5px 7px;
+}
+
+.event-editor .event-schedule-row input:disabled {
+  color: var(--text-disabled);
+  opacity: .6;
+}
+
+/* 체크박스 + 시작–끝: 체크박스는 고정, 숫자칸이 남은 폭을 나눈다. */
+.event-editor .event-schedule-range {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-range > input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.event-editor .event-schedule-range > span {
+  color: var(--text-3);
+  font: 500 11px/1 var(--font-ui);
+  text-align: center;
+}
+
+/* ── 뒤 일정을 가리는 무조건 행 경고 ──────────────────────────────────── */
+.event-editor .event-schedule-shadow-warning {
+  background: var(--warning-muted);
+  border-left: 3px solid var(--warning);
+  border-radius: 6px;
+  color: var(--warning);
+  font: 600 11px/1.45 var(--font-ui);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+/* 레일이 아래로 접히는 좁은 폭(본문 ~230px) 보정. */
+@media (max-width: 1320px) {
+  /* 230px 안에서는 도움말과 추가 버튼이 한 줄에 못 선다. */
+  .event-editor .event-schedule-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  /* 「일정 N」 배지와 삭제 버튼이 겹치기 직전이므로 삭제를 배지 아래 줄로 내린다. */
+  .event-editor .event-schedule-row {
+    padding-top: 56px;
+  }
+
+  .event-editor .event-schedule-row [data-testid^="event-schedule-delete-"] {
+    left: 10px;
+    right: auto;
+    top: 30px;
+  }
+}
