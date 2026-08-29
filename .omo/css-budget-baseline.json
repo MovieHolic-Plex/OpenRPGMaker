@@ -6,7 +6,7 @@
     "important": 986,
     "undefinedVars": 63,
     "globalRootFiles": 10,
-    "cssFileCount": 261
+    "cssFileCount": 262
   },
   "details": {
     "hexByFile": {
@@ -678,6 +678,7 @@
       "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css",
       "src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css",
       "src/styles/editor/event-editor.part-3/08-inline-validation-badges.css",
+      "src/styles/editor/event-editor.part-3/09-condition-groups.css",
       "src/styles/editor/event-editor.part-4.css",
       "src/styles/editor/event-editor.windowing.css",
       "src/styles/editor/event-marker-tooltip.css",
