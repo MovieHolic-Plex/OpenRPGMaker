@@ -67,6 +67,19 @@
   --radius-s: 6px;
   --radius-m: 10px;
   --radius-l: 14px;
+  --radius-pill: 999px;
+
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --line-height-solid: 1;
+  --line-height-tight: 1.2;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --stroke-1: 1px;
+  --stroke-2: 2px;
+  --color-mix-ratio-subtle: 14%;
 
   --space-1: 4px;
   --space-2: 8px;

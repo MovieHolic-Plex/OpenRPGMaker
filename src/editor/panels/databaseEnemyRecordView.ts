@@ -1,6 +1,6 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { emptyToUndefined, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
@@ -8,12 +8,21 @@ import { openActionContextMenu, openActionDialog } from "@/editor/panels/databas
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import {
+  DEFAULT_ENEMY_FACTION_ID,
+  PLAYER_FACTION_ID,
+  factionColor,
+  factionName,
+  factionStance,
+  resolveFactionTable,
+  stanceBarColor,
+} from "@/project/factions";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
-import { detailHero, emptyState, listToolbar, sectionCard } from "@/editor/panels/databaseWorkspace";
+import { detailHero, emptyState, listToolbar, noticeBar, sectionCard } from "@/editor/panels/databaseWorkspace";
 // JS import 로 넣는다 — 번들 순서상 index.css 의 studio-theme.css 뒤에 오므로,
 // studio-theme 이 남긴 `grid-area: combat !important` 같은 잔재를 !important 남발 없이 이긴다.
 // (databaseUtilityRecordViews.ts 가 modern/utility-records.css 를 넣는 방식과 동일.)
@@ -31,6 +40,16 @@ import {
 
 /** 공격 패턴 표에서 편집 대상 행. 레코드 id → 원본 배열 인덱스(정렬 인덱스가 아니다). */
 const selectedActionIndexes = new Map<string, number>();
+
+const FACTION_STANCE_LABEL = {
+  [-2]: "최악의 적",
+  [-1]: "적",
+  [0]: "중립",
+  [1]: "우호",
+  [2]: "동맹",
+} as const;
+
+const FACTION_RELATION_PREVIEW_LIMIT = 6;
 
 /**
  * 패널 상자. 예전에는 `<fieldset><legend>` 였는데, studio-theme.css 가
@@ -73,7 +92,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
         el("div", {
           class: "db-ws-stack db-enemy-stack",
           children: [
-            enemyCard("이름", "name", identityFields(record, hero.setTitle), { hint: "목록과 전투 로그에 쓰입니다" }),
+            enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender), { hint: "이름·레벨·전투 진영" }),
             enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })]),
             enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
             enemyCard("종족", "species", speciesFields(record, rerender), { hint: "포획해 키우는 몬스터의 원본" }),
@@ -100,10 +119,12 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
   const species = live.speciesId
     ? store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === live.speciesId)
     : undefined;
+  const factionTable = resolveFactionTable(store.getCurrent().factions);
   const tags = [
     `Lv ${live.level ?? 1}`,
     species ? `종족 ${species.name}` : "종족 미설정",
     `행동 ${live.actions.length}개`,
+    enemyFactionHeroTag(factionTable, live.factionId),
     ...(live.flying ? ["비행"] : []),
     ...(live.transparent ? ["투명"] : []),
   ];
@@ -124,7 +145,21 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
   };
 }
 
-function identityFields(record: EnemyRecord, setHeroTitle: (name: string) => void): HTMLElement[] {
+function enemyFactionHeroTag(
+  table: ReturnType<typeof resolveFactionTable>,
+  factionId: string | undefined,
+): string {
+  if (factionId && !table.ids.includes(factionId)) {
+    return `진영 ${factionId} (존재하지 않음 · enemy로 전투)`;
+  }
+  return `진영 ${factionName(table, factionId)}`;
+}
+
+function identityFields(
+  record: EnemyRecord,
+  setHeroTitle: (name: string) => void,
+  rerender: () => void,
+): HTMLElement[] {
   const level = numberField("레벨", "db-field-enemy-level", record.level ?? 1, (value) =>
     updateDatabaseRecord("enemies", record.id, { level: value }),
     { min: 1, max: 99 }
@@ -136,7 +171,220 @@ function identityFields(record: EnemyRecord, setHeroTitle: (name: string) => voi
       setHeroTitle(name);
     }),
     level,
+    ...factionFields(record, rerender),
   ];
+}
+
+function factionFields(record: EnemyRecord, rerender: () => void): HTMLElement[] {
+  const projectFactions = store.getCurrent().factions;
+  const table = resolveFactionTable(projectFactions);
+  const storedId = record.factionId;
+  const dangling = Boolean(storedId && !table.ids.includes(storedId));
+  const effectiveId = dangling ? DEFAULT_ENEMY_FACTION_ID : (storedId ?? DEFAULT_ENEMY_FACTION_ID);
+  const select = el("select", {
+    attrs: { "aria-describedby": "db-enemy-faction-effective" },
+    dataset: { testid: "db-picker-enemy-faction" },
+  }) as HTMLSelectElement;
+  if (dangling && storedId) {
+    // 삭제된 ID를 기본값처럼 보이게 바꾸지 않는다. 선택된 결손 항목을 그대로 두어
+    // 렌더만으로 원본을 고치지 않으면서, 다른 유효 진영을 고르면 명시적으로 복구된다.
+    select.append(el("option", {
+      attrs: { value: storedId, disabled: "" },
+      text: `${storedId} · 존재하지 않는 진영 (enemy로 전투)`,
+    }));
+  }
+  for (const id of table.ids) {
+    const isDefault = id === DEFAULT_ENEMY_FACTION_ID;
+    select.append(el("option", {
+      attrs: { value: id },
+      text: `${factionName(table, id)} (${id})${isDefault ? " · 기본값" : ""}`,
+    }));
+  }
+  select.value = dangling && storedId ? storedId : effectiveId;
+  select.addEventListener("change", () => {
+    // enemy는 "진영 없음"이 아니라 런타임 기본 진영이다. 기본값으로 돌아오면 키를
+    // 지워 레코드를 희소하게 유지하고, 다른 선택만 명시적으로 저작한다.
+    updateDatabaseRecord("enemies", record.id, {
+      factionId: select.value === DEFAULT_ENEMY_FACTION_ID ? undefined : select.value,
+    });
+    rerender();
+  });
+
+  const fields: HTMLElement[] = [
+    field("소속 진영", select),
+    el("p", {
+      class: "db-enemy-faction-clear-hint",
+      text: "적 (enemy) · 기본값을 선택하면 저장된 소속 진영 값이 삭제됩니다.",
+      dataset: { testid: "db-enemy-faction-default-clears" },
+    }),
+    factionConsequence(table, effectiveId, dangling ? "dangling" : storedId === effectiveId ? "authored" : "default", storedId),
+  ];
+  if (dangling && storedId) {
+    const missingNotice = noticeBar({
+      text: `저장된 진영 ID '${storedId}'가 존재하지 않는 진영을 가리킵니다. 런타임에서는 enemy로 전투합니다. 드롭다운에서 다시 지정하거나 저장값을 지우세요.`,
+      tone: "bad",
+      action: {
+        label: "저장값 지우기",
+        testid: "db-enemy-faction-clear-missing",
+        onClick: () => {
+          updateDatabaseRecord("enemies", record.id, { factionId: undefined });
+          rerender();
+        },
+      },
+      testid: "db-enemy-faction-missing",
+    });
+    missingNotice.classList.add("db-enemy-faction-missing");
+    fields.push(missingNotice);
+  }
+  if (table.size === 2) {
+    fields.push(noticeBar({
+      text: "현재 예약 진영만 있습니다. [진영] 탭에서 산적·경비대 같은 진영과 관계를 만드세요.",
+      action: {
+        label: "진영 탭 열기",
+        testid: "db-enemy-open-factions",
+        onClick: () => {
+          const panelRoot = databasePanelRootFrom(select);
+          if (!panelRoot) {
+            toast("진영 탭에서 전투 진영을 먼저 만드세요", "ok");
+            return;
+          }
+          switchDatabaseActiveTab("factions", panelRoot);
+        },
+      },
+      testid: "db-enemy-faction-guide",
+    }));
+  }
+  return fields;
+}
+
+type EnemyFactionSource = "authored" | "default" | "dangling";
+
+function factionConsequence(
+  table: ReturnType<typeof resolveFactionTable>,
+  effectiveId: string,
+  source: EnemyFactionSource,
+  storedId: string | undefined,
+): HTMLElement {
+  const projectFactions = store.getCurrent().factions;
+  const peers = table.ids
+    .filter((id) => id !== effectiveId && id !== PLAYER_FACTION_ID)
+    .map((id) => ({
+      id,
+      authored: (projectFactions?.relations ?? []).some((relation) => (
+        (relation.a === effectiveId && relation.b === id)
+        || (relation.a === id && relation.b === effectiveId)
+      )),
+      stance: factionStance(table, effectiveId, id),
+    }))
+    .sort((left, right) => factionRelationshipPriority(left) - factionRelationshipPriority(right));
+  const primaryPeers = peers.slice(0, FACTION_RELATION_PREVIEW_LIMIT);
+  const remainingPeers = peers.slice(FACTION_RELATION_PREVIEW_LIMIT);
+  const missing = source === "dangling";
+  const identityName = missing ? "존재하지 않는 진영" : factionName(table, effectiveId);
+  const identityId = missing ? (storedId ?? effectiveId) : effectiveId;
+  const sourceText = missing
+    ? "저장됨 · enemy로 전투"
+    : source === "authored" ? "레코드에 저장됨" : "미저장 · enemy로 전투";
+  const swatch = el("span", {
+    class: "db-enemy-faction-swatch",
+    attrs: { role: "img", "aria-label": `${factionName(table, effectiveId)} 런타임 식별 색` },
+    dataset: { testid: "db-enemy-faction-color" },
+  });
+  swatch.style.setProperty("--db-enemy-faction-color", factionColor(table, effectiveId));
+
+  return el("div", {
+    class: `db-enemy-faction-consequence${missing ? " is-missing" : ""}`,
+    attrs: { id: "db-enemy-faction-effective" },
+    dataset: {
+      testid: "db-enemy-faction-effective",
+      effectiveFactionId: effectiveId,
+      ...(missing && storedId ? { storedFactionId: storedId } : {}),
+    },
+    children: [
+      el("div", {
+        class: "db-enemy-faction-identity",
+        children: [
+          swatch,
+          el("span", {
+            class: "db-enemy-faction-name",
+            children: [
+              el("strong", { text: identityName }),
+              el("small", { text: identityId }),
+            ],
+          }),
+          el("span", {
+            class: `db-enemy-faction-source is-${source}`,
+            text: sourceText,
+          }),
+        ],
+      }),
+      factionStanceReadout(table, effectiveId, PLAYER_FACTION_ID, "플레이어 기준"),
+      ...(primaryPeers.length > 0
+        ? [el("div", {
+          class: "db-enemy-faction-relationships",
+          attrs: { "aria-label": "우선 표시된 다른 진영과의 태도" },
+          dataset: { testid: "db-enemy-faction-relationships-primary" },
+          children: primaryPeers.map((peer) => factionStanceReadout(table, effectiveId, peer.id)),
+        })]
+        : []),
+      ...(remainingPeers.length > 0 ? [collapsedFactionRelationships(table, effectiveId, remainingPeers)] : []),
+    ],
+  });
+}
+
+function factionRelationshipPriority(peer: { readonly authored: boolean; readonly stance: number }): number {
+  if (peer.authored) return 0;
+  return peer.stance === 0 ? 2 : 1;
+}
+
+function collapsedFactionRelationships(
+  table: ReturnType<typeof resolveFactionTable>,
+  effectiveId: string,
+  peers: readonly { readonly id: string; readonly stance: number }[],
+): HTMLElement {
+  const neutralCount = peers.filter((peer) => peer.stance === 0).length;
+  const card = sectionCard({
+    title: `나머지 관계 ${peers.length}개`,
+    hint: neutralCount > 0 ? `중립 ${neutralCount}개 포함` : "우선 관계 더 보기",
+    collapsible: true,
+    collapsed: true,
+    testid: "db-enemy-faction-relationships-more",
+    children: [el("div", {
+      class: "db-enemy-faction-relationships",
+      attrs: { "aria-label": "접힌 다른 진영과의 태도" },
+      children: peers.map((peer) => factionStanceReadout(table, effectiveId, peer.id)),
+    })],
+  });
+  card.classList.add("db-enemy-faction-relationships-more");
+  card.dataset.neutralCount = String(neutralCount);
+  return card;
+}
+
+function factionStanceReadout(
+  table: ReturnType<typeof resolveFactionTable>,
+  factionId: string,
+  targetId: string,
+  prefix?: string,
+): HTMLElement {
+  const stance = factionStance(table, factionId, targetId);
+  const label = FACTION_STANCE_LABEL[stance];
+  const readout = el("span", {
+    class: "db-enemy-faction-stance",
+    text: `${prefix ?? factionName(table, targetId)} ${stance} · ${label}`,
+    attrs: { "aria-label": `${prefix ?? factionName(table, targetId)}: ${stance} ${label}` },
+    dataset: {
+      testid: targetId === PLAYER_FACTION_ID ? "db-enemy-faction-stance-player" : `db-enemy-faction-stance-${targetId}`,
+      stance: String(stance),
+    },
+  });
+  // 런타임 HP 바와 같은 세 색을 그대로 써야 저작 화면의 판단이 플레이 화면과 일치한다.
+  // 숫자와 한국어 태도 라벨을 함께 두므로 색만으로 관계를 전달하지 않는다.
+  readout.style.setProperty("--db-enemy-faction-stance-color", cssColor(stanceBarColor(stance)));
+  return readout;
+}
+
+function cssColor(value: number): string {
+  return `#${value.toString(16).padStart(6, "0")}`;
 }
 
 function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[] {

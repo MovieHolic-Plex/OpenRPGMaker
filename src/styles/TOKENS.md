@@ -63,6 +63,12 @@
 | 토큰 | 값 |
 |---|---|
 | `--radius-s / m / l` | 6 / 10 / 14px — 버튼·인풋 / 카드·팝오버 / 모달 |
+| `--radius-pill` | 999px — 칩·필 형태의 완전한 알약 모서리 |
+| `--font-size-xs / sm` | 10 / 12px — 조밀한 보조 정보 / 기본 소형 UI 글자 |
+| `--line-height-solid / tight` | 1 / 1.2 — 한 줄 칩 / 조밀한 여러 줄 텍스트 |
+| `--font-weight-medium / semibold / bold` | 500 / 600 / 700 — 보조 / 강조 / 제목 굵기 |
+| `--stroke-1 / 2` | 1 / 2px — 기본 선 / 내부 강조선 두께 |
+| `--color-mix-ratio-subtle` | 14% — `color-mix()`에서 전경색을 은은하게 섞는 비율(색상 토큰이 아님) |
 | `--space-1..6` | 4 / 8 / 12 / 16 / 24 / 32px |
 | `--shadow-pop` / `--shadow-modal` | `rgba(60, 48, 32, 0.10-0.18)` 웜 low-alpha 스택 |
 | `--focus-ring` | `box-shadow: var(--focus-ring)` 용 (`rgba(74,87,214,0.45)`) / `--focus-outline` = `2px solid var(--accent)` |

@@ -152,6 +152,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("stateRates" in patch && patch.stateRates !== undefined) record.stateRates = patch.stateRates;
   if ("elementRates" in patch && patch.elementRates !== undefined) record.elementRates = patch.elementRates;
   if ("actionProfile" in patch) record.actionProfile = patch.actionProfile;
+  if ("factionId" in patch) record.factionId = patch.factionId;
   database.enemies[index] = normalizeEnemyRecord(record);
 }
 
