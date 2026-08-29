@@ -1949,3 +1949,14 @@ git commit -m "test(footprint): 2x2 골렘 시나리오로 발자국 전 경로�
 - 발자국이 겹칠 때의 우선순위 규칙 — 지금은 `.find` 의 배열 순서가 사실상의 규칙이다. 스펙 §3 은 겹쳐 놓는 것을 허용하는데 어느 쪽이 잡히는지는 정의돼 있지 않다. 다중 타일 저작 UI 가 생기면 즉시 노출된다.
 - `handleAction` 의 `lastActionTargetKey` 가 이벤트 단위에서 타일 단위로 격하됐다 — 우선순위가 낮은 다중 타일 이벤트 하나가 제자리 회전만으로 다시 발동할 수 있다. 역시 다중 타일 저작이 가능해진 뒤에야 닿는다.
 - **움직이는 이벤트 스프라이트의 발자국 중앙 정렬** — 태스크 6 리뷰에서 발견됐다. `footprintSpriteX` 는 `renderEvents` 의 최초 배치에만 걸려 있고, 스프라이트를 *다시* 놓는 경로는 전부 타일 중앙(`characterSpriteX`)으로 되돌린다: `playSceneAutonomous.ts` 의 `updateAutonomousNPCs`·`updateChaseNpc`·`updateActiveNpcMove`, `playSceneActionCombat.ts` 의 `applyKnockback`·`startWindup`·`stepDash`. 폭 2 이상 이벤트가 한 번이라도 움직이면 그 순간 좌표가 튄다. 같은 파일의 데미지 숫자·파티클·텔레그래프·스윙 아크는 타일 중앙이 맞으므로 일괄 치환은 오답이다. `canMoveFootprint` 전환과 같은 작업 묶음이다 — 두 곳 모두 "발자국을 아는 이동" 이라 따로 손대면 두 번 만진다.
+
+### 위 항목들의 실제 범위 — 마감 리뷰에서 좁게 적혀 있음이 드러난 것
+
+목록 자체는 유지하되, 각 항목이 건드려야 하는 자리가 위에 적힌 것보다 넓다. 다음 사람이 착수 규모를 잘못 잡지 않도록 적어 둔다.
+
+- **"필드 스폰 발자국" 은 두 방향이다.** (a) 스폰이 자기 발자국을 갖는 것 — `fieldSpawnEvent`(`src/player/fieldSpawns.ts`)가 합성하는 페이지에 `footprint` 를 싣는 순간 `src/player/playSceneActionCombat.ts` 의 앵커 전용 히트테스트 **여섯 곳**이 동시에 틀린다: 접촉 피해, 플레이어 스윙 아크, 적끼리 점유, 적 스윙 아크 원점, 대시 명중·인접, 투사체 명중. 게다가 `ActionEnemyState`(`actionCombatTypes.ts`)에 footprint 필드가 없어 판정식 교체만으로 안 되고 데이터 모델 변경이 붙는다. 오늘은 합성 페이지에 `footprint` 가 없어 전부 1x1 이라 도달 불가다. (b) 스폰이 **남의** 발자국을 피하는 것 — `occupiedCells`(같은 파일)이 다른 이벤트를 앵커 한 칸으로만 점유 등록해서, 2x2 골렘 몸통 안에 몬스터가 솟는다. (a) 와 방향이 반대라 따로 적어야 한다.
+- **앵커에 고정된 시각 표면이 스프라이트 말고도 있다** — `playSceneCamera.ts`, `playSceneLighting.ts`, `playSceneMapAnimations.ts`, `minimap.ts`. 그리고 `RuntimeEventSnapshot`(`runtimeDom.ts`)에 `footprint`/`scale` 이 없어서 `__oprnDebug` 소비자가 사각을 단정할 **수단 자체가 없다** — `scripts/qa/runtime/golem.scenario.mjs` 가 발자국 좌표를 주석에 손으로 적어야 했던 이유가 이것이다.
+- **저작 시점 lint 가 틀린 조언을 낸다**(목록에 아예 없던 항목, 에디터 UI 와 성격이 다르다) — `src/project/lint/projectLint.ts` 는 앵커 칸의 통행성과 앵커의 4방 이웃만 봐서 통행 불가 타일을 걸친 2x2 가 무경고로 통과하고, 중복 검사 키가 `${event.x},${event.y}` 라 겹친 2x2 두 개를 중복으로 잡지 못한다. `worldGraph/lint.ts`, `aiPreviewGenerator.ts` 도 앵커까지만 도달한다.
+- **테스트 하네스도 앵커 전용이다**(사용자 노출면 없음) — `sceneTestRunner.ts` 의 앵커 맨해튼 거리, `walkthroughRunner.ts` 의 정적 `map.events` 점 일치(footprint 를 볼 수조차 없다), `mapTravelReachability.ts` 의 전이 게이트 한 칸 색인.
+- **에디터 클릭 히트테스트**("겹침 경고 배지" 항목에 사실상 딸려 있으나 명시돼 있지 않다) — `EditScene.ts` 외 약 25곳이 점 비교다. 2x2 의 비앵커 칸을 클릭하면 선택이 아니라 **그 위에 새 이벤트가 생긴다.** 내장 플레이어에서도 같은 문제가 있다: `runtimeDom.ts` 의 이벤트 마커가 앵커에 `TILE_SIZE` 1칸 고정이고 그 마커가 클릭 실행 히트박스다(`pointer-events: auto`).
+- **QA 하네스에 이동 단정 수단이 없다** — `evaluateExpect`(`scripts/lib/runtimeQa.mjs`)가 x/y 를 스칼라 동등으로만 비교해서 대조군의 "움직였다" 를 표현할 수 없다. 그래서 A/B 배제가 자동이 아니라 사람이 매니페스트를 읽는 절차다. 부등 비교를 넣으면 닫히는데, 다른 시나리오가 공유하는 파일이라 1차에서 손대지 않았다.

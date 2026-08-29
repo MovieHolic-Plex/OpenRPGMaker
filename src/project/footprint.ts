@@ -21,14 +21,36 @@ export const CHARACTER_FOOTPRINT_AXIS_MAX = 8;
 export const CHARACTER_SCALE_MIN = 0.25;
 export const CHARACTER_SCALE_MAX = 8;
 
-/** 발밑 앵커 (x,y) 와 크기로 발자국 사각을 만든다. 네 값 모두 포함(inclusive). */
+/**
+ * 발밑 앵커 (x,y) 와 크기로 발자국 사각을 만든다. 네 값 모두 포함(inclusive).
+ *
+ * 축은 1 미만이면 1 로 올린다. 정규화(normalizeCharacterFootprint)는 runtimeEventView
+ * 한 곳에만 있고 이 함수는 원시 CharacterFootprint 를 받으므로, 폭 0 이 그대로
+ * 들어오면 left > right 인 역사각이 되고 파생 함수들의 셀 루프가 0회 돌아
+ * **검사 없이 통과**한다(벽을 지나간다). 통행 판정이 fail-open 하는 것보다
+ * 1x1 로 굳어 막히는 쪽이 안전하므로 여기서 닫는다.
+ */
 export function footprintBounds(x: number, y: number, fp: CharacterFootprint): FootprintRect {
-  const left = x - Math.floor((fp.width - 1) / 2);
+  const width = safeAxis(fp.width);
+  const height = safeAxis(fp.height);
+  const left = x - Math.floor((width - 1) / 2);
   return {
     left,
-    right: left + fp.width - 1,
-    top: y - (fp.height - 1),
+    right: left + width - 1,
+    top: y - (height - 1),
     bottom: y,
+  };
+}
+
+/** 사각 안으로 점을 끌어당긴다 — 밖이면 최근접 모서리 칸, 안이면 그 점 자신. */
+export function nearestCellInRect(
+  rect: FootprintRect,
+  px: number,
+  py: number
+): { readonly x: number; readonly y: number } {
+  return {
+    x: Math.min(rect.right, Math.max(rect.left, px)),
+    y: Math.min(rect.bottom, Math.max(rect.top, py)),
   };
 }
 
@@ -52,8 +74,14 @@ export function footprintContains(
   return rectsOverlap(footprintBounds(x, y, fp), pointRect(px, py));
 }
 
-/** 발자국이 덮는 모든 칸. 판정에는 rectsOverlap 을 쓰고, 이건 순회가 필요할 때만. */
-export function footprintCells(
+/**
+ * 발자국이 덮는 모든 칸. 판정에는 rectsOverlap 을 쓰고, 이건 순회가 필요할 때만.
+ *
+ * ⚠ 이름에 character 가 붙은 이유: spatialPlacements.ts 도 `footprintCells` 를
+ * **export** 하는데 앵커가 좌상단이고 orientation 인자를 받는다. 같은 이름이면
+ * grep 과 자동 import 가 앵커 규약이 반대인 함수를 집어온다.
+ */
+export function characterFootprintCells(
   x: number,
   y: number,
   fp: CharacterFootprint
@@ -80,4 +108,13 @@ export function normalizeCharacterScale(value: unknown): number {
 function clampAxis(value: unknown): number {
   if (typeof value !== "number" || !Number.isSafeInteger(value)) return 1;
   return Math.max(1, Math.min(CHARACTER_FOOTPRINT_AXIS_MAX, value));
+}
+
+/**
+ * 이미 CharacterFootprint 로 타이핑된 값의 축을 최소 1 로 굳힌다.
+ * clampAxis 와 달리 상한을 걸지 않는다 — 정규화를 안 거친 큰 값은 경로탐색이
+ * 느려질 뿐이지만, 1 미만은 통행 판정을 무력화하므로 그것만 막는다.
+ */
+function safeAxis(value: number): number {
+  return Number.isFinite(value) && value >= 1 ? Math.floor(value) : 1;
 }

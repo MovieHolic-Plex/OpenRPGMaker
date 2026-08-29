@@ -57,6 +57,10 @@ const footprint = [
   [GOLEM_X + 1, GOLEM_Y],
 ];
 
+// ⚠ 이 겹침 검사는 기존 이벤트를 **앵커 한 칸**으로만 본다 — 이 브랜치가 걷어내는 바로
+// 그 점 비교다. map_lantern_village 의 이벤트 8개가 전부 1x1 이라 오늘은 정답이지만,
+// 이 픽스처에 다중 타일 이벤트를 하나 더 심는 순간 겹침을 놓친다. 그때는 판정을
+// footprintBounds + rectsOverlap 으로 올려야 한다.
 const collisions = (map.events ?? []).filter((event) =>
   footprint.some(([x, y]) => event.x === x && event.y === y),
 );

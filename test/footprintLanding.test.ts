@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
-import { UNIT_FOOTPRINT, footprintCells } from "@/project/footprint";
+import { UNIT_FOOTPRINT, characterFootprintCells } from "@/project/footprint";
 import { resolveFootprintLanding } from "@/project/footprintLanding";
 import { initialRuntimeEventPositions } from "@/project/runtimeEventState";
 import { isPassable } from "@/project/collision";
@@ -69,7 +69,7 @@ describe("다중 타일 착지", () => {
     setLower(map, 9, 7, TILE.WALL);
     const landed = land(project, map, [], 8, 8, { width: 2, height: 2 });
     expect(landed).not.toEqual({ x: 8, y: 8 });
-    for (const cell of footprintCells(landed.x, landed.y, { width: 2, height: 2 })) {
+    for (const cell of characterFootprintCells(landed.x, landed.y, { width: 2, height: 2 })) {
       expect(isPassable(project, map, cell.x, cell.y), `(${cell.x},${cell.y})`).toBe(true);
     }
     expect(Math.max(Math.abs(landed.x - 8), Math.abs(landed.y - 8))).toBe(1);
@@ -92,11 +92,11 @@ describe("다중 타일 착지", () => {
 
     expect(landed).toEqual({ x: 7, y: 9 });
     // 승자가 실제로 유효해야 한다 — 순서만 맞고 자리가 안 맞으면 의미가 없다.
-    for (const cell of footprintCells(landed.x, landed.y, fp)) {
+    for (const cell of characterFootprintCells(landed.x, landed.y, fp)) {
       expect(isPassable(project, map, cell.x, cell.y), `(${cell.x},${cell.y})`).toBe(true);
     }
     // 행 우선이면 이겼을 칸도 실제로 비어 있어야 이 테스트가 순서를 구분한다.
-    for (const cell of footprintCells(8, 7, fp)) {
+    for (const cell of characterFootprintCells(8, 7, fp)) {
       expect(isPassable(project, map, cell.x, cell.y), `행 우선 후보 (${cell.x},${cell.y})`).toBe(true);
     }
   });
@@ -105,7 +105,7 @@ describe("다중 타일 착지", () => {
     const { project, map } = scene();
     // (0,0) 3x3 의 발자국은 x -1..1 / y -2..0 이라 경계를 벗어난다.
     const landed = land(project, map, [], 0, 0, { width: 3, height: 3 });
-    for (const cell of footprintCells(landed.x, landed.y, { width: 3, height: 3 })) {
+    for (const cell of characterFootprintCells(landed.x, landed.y, { width: 3, height: 3 })) {
       expect(cell.x).toBeGreaterThanOrEqual(0);
       expect(cell.y).toBeGreaterThanOrEqual(0);
     }

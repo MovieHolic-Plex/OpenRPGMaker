@@ -118,8 +118,13 @@ export function isPassable(
  * 발자국 전체가 통과 가능한가. 이동 방향의 **선행 모서리**만 검사한다 —
  * 3x3 이 오른쪽으로 갈 때 새로 밟는 건 오른쪽 열 3칸뿐이고 9칸 전부가 아니다.
  *
- * 1x1 이면 정확히 canMove 1회 호출로 환원된다(= 기존 동작 동일).
  * canMove 와 같이 **인접 한 칸 이동**을 전제한다.
+ *
+ * 1x1 · **직교** 이동이면 정확히 canMove 1회 호출로 환원된다(= 기존 동작 동일).
+ * 대각은 다르다: canMove 는 dx 가 0 이 아니면 가로 방향 하나만 보는데 이쪽은 H·V 두
+ * 경로로 분해하므로, 두 경로가 다 막힌 대각에서 canMove 는 true, 이 함수는 false 다.
+ * 지금 canMove 에 대각을 넘기는 호출부는 없다(chaseAi 는 4방향, canNpcMove·tryStartMove
+ * 는 호출 전에 분해한다). 2차에서 그 자리들을 이 함수로 갈아끼울 때 이 차이를 볼 것.
  */
 export function canMoveFootprint(
   project: Project,

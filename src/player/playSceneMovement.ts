@@ -1,4 +1,5 @@
 import { canMove } from "@/project/collision";
+import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
@@ -369,8 +370,24 @@ function canActionTurn(animationType: EventAnimationType): boolean {
   }
 }
 
+/**
+ * 조사당한 이벤트가 플레이어를 향해 돌 방향.
+ *
+ * 델타를 앵커에서 뽑으면 안 된다 — 발자국이 여러 칸이면 앵커는 최근접 칸이 아니다.
+ * 2x2 앵커 (15,18) 의 발자국은 (15,17)(16,17)(15,18)(16,18) 이고, 플레이어가 (16,19)
+ * 에서 (16,18) 을 조사하면 앵커 델타는 (1,1) 이 된다. facingForDelta 는 |dx| >= |dy|
+ * 에서 가로를 우선하므로 "right" 가 나온다 — 플레이어가 정남향에 있는데 옆을 본다.
+ * 히트테스트는 발자국 사각으로 올라갔으니 그 결과를 쓰는 이 계산도 사각을 봐야 한다.
+ *
+ * 1x1 에서는 사각이 그 칸 자신이라 클램프가 항등이고 기존 동작과 같다.
+ */
 function directionTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): Dir {
-  return facingForDelta(scene.tileX - event.x, scene.tileY - event.y, event.direction ?? "down");
+  const near = nearestCellInRect(
+    footprintBounds(event.x, event.y, event.footprint),
+    scene.tileX,
+    scene.tileY
+  );
+  return facingForDelta(scene.tileX - near.x, scene.tileY - near.y, event.direction ?? "down");
 }
 
 function setActionEventRuntimeDirection(

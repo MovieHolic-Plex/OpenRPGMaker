@@ -3,7 +3,8 @@
 // 스펙 docs/superpowers/specs/2026-08-29-multi-tile-character-footprint-design.md §2.
 
 import { describe, expect, it } from "vitest";
-import { UNIT_FOOTPRINT, pointRect } from "@/project/footprint";
+import { UNIT_FOOTPRINT, footprintBounds, nearestCellInRect, pointRect } from "@/project/footprint";
+import { facingForDelta } from "@/player/playSceneAutonomousRouteDirection";
 import {
   findBlockingEventOverlappingRect,
   findBlockingRuntimeEventAt,
@@ -255,7 +256,16 @@ describe("footprintSpriteX — 발자국 가로 중앙", () => {
   });
 
   it("Y 는 발자국 높이와 무관하게 발밑 칸 하단이다", () => {
-    expect(characterSpriteY(7)).toBe(8 * TILE_SIZE);
+    // 높이를 실제로 바꿔가며 본다. 이전 판은 characterSpriteY(7) 하나만 단정해서
+    // 발자국이 인자로 등장하지 않았고, 이름이 약속한 높이 무관성을 검사하지 않았다.
+    // footprintSpriteY 가 따로 없는 이유가 이것이다: 세로축은 앵커가 이미 그 축의
+    // 끝(하단)이라 가로처럼 보정할 게 없다.
+    for (const height of [1, 2, 3, 8]) {
+      const rect = footprintBounds(7, 7, { width: 2, height });
+      expect(rect.bottom, `높이 ${height} 의 하단은 앵커 행이다`).toBe(7);
+      expect(rect.top, `높이 ${height} 의 상단은 위로 자란다`).toBe(7 - (height - 1));
+      expect(characterSpriteY(rect.bottom), `높이 ${height} 의 스프라이트 Y`).toBe(8 * TILE_SIZE);
+    }
   });
 });
 
@@ -422,5 +432,48 @@ describe("골렘 시나리오 — 2x2 가 길을 막고 어디서든 말이 걸�
     expect(created[0].x, "렌더된 스프라이트 x").toBe(6 * TILE_SIZE);
     expect(created[0].y, "렌더된 스프라이트 y — 발밑 칸 하단").toBe(characterSpriteY(7));
     expect(created[0].scale, "렌더된 스프라이트 배율").toBe(2);
+  });
+});
+
+describe("사각으로 찾은 이벤트를 앵커 점으로 돌려세우지 않는다", () => {
+  // playSceneMovement.directionTowardPlayer 는 정확히 이 합성이다. 히트테스트가
+  // 발자국 사각으로 올라갔으므로 그 결과를 쓰는 방향 계산도 사각을 봐야 한다 —
+  // 앵커 델타를 쓰면 앵커가 최근접 칸이 아닐 때 엉뚱한 쪽을 본다.
+  //
+  // 이 테스트가 실패하려면: 델타를 앵커에서 뽑으면(near 대신 anchor) 첫 단정이
+  // facingForDelta(1, 1) → |dx| >= |dy| 가로 우선 → "right" 로 뒤집힌다.
+  function facingToward(
+    anchorX: number,
+    anchorY: number,
+    footprint: { width: number; height: number },
+    px: number,
+    py: number
+  ): string {
+    const near = nearestCellInRect(footprintBounds(anchorX, anchorY, footprint), px, py);
+    return facingForDelta(px - near.x, py - near.y, "down");
+  }
+
+  const GOLEM = { width: 2, height: 2 }; // 앵커 (15,18) → (15,17)(16,17)(15,18)(16,18)
+
+  it("2x2 의 비앵커 칸 정남향에서는 down 이다", () => {
+    // QA 하네스의 down-alt 프로브가 정확히 이 입력이다.
+    expect(facingToward(15, 18, GOLEM, 16, 19)).toBe("down");
+    expect(facingToward(15, 18, GOLEM, 15, 19), "앵커 칸 정남향").toBe("down");
+  });
+
+  it("2x2 의 나머지 세 면도 사람 눈과 일치한다", () => {
+    expect(facingToward(15, 18, GOLEM, 15, 16), "위").toBe("up");
+    expect(facingToward(15, 18, GOLEM, 16, 16), "위 — 오른쪽 열").toBe("up");
+    expect(facingToward(15, 18, GOLEM, 17, 18), "오른쪽").toBe("right");
+    expect(facingToward(15, 18, GOLEM, 14, 17), "왼쪽 — 위쪽 행").toBe("left");
+  });
+
+  it("1x1 은 기존 동작과 같다", () => {
+    expect(facingToward(5, 7, UNIT_FOOTPRINT, 5, 8)).toBe("down");
+    expect(facingToward(5, 7, UNIT_FOOTPRINT, 5, 6)).toBe("up");
+    expect(facingToward(5, 7, UNIT_FOOTPRINT, 6, 7)).toBe("right");
+    expect(facingToward(5, 7, UNIT_FOOTPRINT, 4, 7)).toBe("left");
+    // 1x1 대각은 예전처럼 가로 우선이다 — 클램프가 항등이라 아무것도 바뀌지 않는다.
+    expect(facingToward(5, 7, UNIT_FOOTPRINT, 6, 8)).toBe("right");
   });
 });

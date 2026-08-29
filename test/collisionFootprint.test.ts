@@ -150,3 +150,31 @@ describe("경계 조건", () => {
     expect(canMoveFootprint(project, map, 5, 5, UNIT_FOOTPRINT, 6, 6)).toBe(false);
   });
 });
+
+describe("비정규 발자국이 벽을 통과하지 않는다", () => {
+  // 검사 없이 통과하는 fail-open 은 통행 판정에서 가장 나쁜 실패 방향이다.
+  // 이 테스트가 실패하려면: footprintBounds 가 축을 1 로 굳히지 않으면 폭 0 의
+  // 선행 모서리가 빈 배열이 되고 아래 단정이 true 로 뒤집힌다.
+  it("폭 0 은 1x1 처럼 막힌다", () => {
+    const { project, map } = scene();
+    setLower(map, 6, 5, TILE.WALL);
+    expect(canMove(project, map, 5, 5, 6, 5), "기준: 1x1 은 막힌다").toBe(false);
+    expect(canMoveFootprint(project, map, 5, 5, { width: 0, height: 0 }, 6, 5)).toBe(false);
+    expect(canMoveFootprint(project, map, 5, 5, { width: 0, height: 3 }, 6, 5)).toBe(false);
+  });
+});
+
+describe("대각에서는 canMove 와 갈린다 — 주석이 약속하는 범위", () => {
+  // canMoveFootprint 의 항등 주장은 **직교 이동 한정**이다. 대각은 H·V 로 분해하므로
+  // 두 경로가 다 막히면 false 인데, canMove 는 dx 가 0 이 아니면 가로만 보고 true 를 낸다.
+  // 지금 canMove 에 대각을 넘기는 호출부는 없지만, 2차가 그 자리들을 갈아끼울 때
+  // 이 차이를 모르고 치환하면 대각 통행이 조용히 좁아진다.
+  it("1x1 대각에서 canMove 는 열고 canMoveFootprint 는 닫는다", () => {
+    const { project, map } = scene();
+    setLower(map, 6, 5, TILE.WALL); // 가로 먼저
+    setLower(map, 5, 6, TILE.WALL); // 세로 먼저
+    expect(canMove(project, map, 5, 5, 6, 6), "canMove 는 가로 한 번만 본다").toBe(true);
+    expect(canMoveFootprint(project, map, 5, 5, UNIT_FOOTPRINT, 6, 6), "이쪽은 두 경로를 본다")
+      .toBe(false);
+  });
+});

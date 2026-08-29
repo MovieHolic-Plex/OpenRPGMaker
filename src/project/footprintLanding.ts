@@ -6,7 +6,7 @@
 // 둘 다 필요로 한다. footprint.ts 는 의존성 없는 순수 프리미티브로 남긴다.
 
 import { inBounds, isPassable } from "./collision";
-import { footprintBounds, footprintCells } from "./footprint";
+import { footprintBounds, characterFootprintCells } from "./footprint";
 import { findBlockingEventOverlappingRect, type RuntimeEventPositions } from "./runtimeEventState";
 import type { CharacterFootprint, GameMap, Project } from "./types";
 import type { PlaySessionLike } from "./sessionRuntimeTypes";
@@ -51,7 +51,7 @@ function footprintFits(
   y: number,
   footprint: CharacterFootprint
 ): boolean {
-  for (const cell of footprintCells(x, y, footprint)) {
+  for (const cell of characterFootprintCells(x, y, footprint)) {
     if (!inBounds(map, cell.x, cell.y)) return false;
     if (!isPassable(project, map, cell.x, cell.y)) return false;
   }
