@@ -15,6 +15,7 @@ const STACK_SELECTORS = [
   ".zone-feedback",
   ".dialogue-overlay",
   ".action-hud",
+  ".picture-layer-item",
 ] as const;
 
 const EXPECTED_BAND = {
@@ -26,6 +27,7 @@ const EXPECTED_BAND = {
   ".zone-feedback": "30",
   ".dialogue-overlay": "39",
   ".action-hud": "40",
+  ".picture-layer-item": "45",
 } as const;
 
 type StackSelector = (typeof STACK_SELECTORS)[number];
@@ -78,9 +80,10 @@ describe("런타임 computed z-index 밴드", () => {
       const layout = document.createElement("div");
       layout.className = "player-layout system-shell";
       layout.dataset.playInputOwner = "keyboard-only";
-      const surface = window.PlaySurfaceLib.createPlaySurface();
+      const surface = (window as unknown as { PlaySurfaceLib: PlaySurfaceLib }).PlaySurfaceLib.createPlaySurface();
       layout.append(surface.viewport);
       document.body.append(layout);
+      surface.sync();
 
       const add = (className: string, testid?: string): HTMLElement => {
         const node = document.createElement("div");
@@ -93,20 +96,23 @@ describe("런타임 computed z-index 밴드", () => {
         const overlay = add(fixture.dialogueOpen ? "dialogue-overlay position-bottom" : "dialogue-overlay");
         if (fixture.dialogueOpen) overlay.textContent = "촌장: 자네가 이 마을에 온 이유를 알고 있네.";
       };
-      const addActionHud = (): void => { add("action-hud"); };
+      const addActionHud = (): void => { add("action-hud", "action-hud"); };
 
       if (fixture.actionHudFirst) addActionHud();
       addDialogue();
       const pictureLayer = add("picture-layer", "picture-layer");
       const pictureItem = document.createElement("div");
       pictureItem.className = "picture-layer-item";
+      pictureItem.dataset.pictureId = "pic25";
+      pictureItem.dataset.testid = "picture-pic25";
       pictureItem.style.zIndex = "45";
       pictureLayer.append(pictureItem);
       add("runtime-timer-hud", "runtime-timer-hud");
       add("runtime-time-hud", "runtime-time-hud");
-      add("minimap-root");
-      add("hand-slot");
-      add("zone-feedback");
+      add("minimap-root is-top-right", "minimap-root");
+      const handSlot = add("hand-slot is-empty", "hand-slot");
+      handSlot.dataset.slot = "0";
+      add("zone-feedback", "zone-feedback");
       if (!fixture.actionHudFirst) addActionHud();
       add("touch-pad");
 
@@ -174,12 +180,21 @@ describe("런타임 computed z-index 밴드", () => {
   });
 
   it("밴드 구성원은 어느 상태에서도 숨겨지지 않는다", () => {
-    const alwaysVisible = STACK_SELECTORS.filter((selector) => selector !== ".hand-slot" && selector !== ".action-hud");
+    const hiddenWhenDialogueOpen: readonly StackSelector[] = [".hand-slot", ".action-hud"];
     for (const stack of [closed, open, reducedMotion, actionHudFirst]) {
-      for (const selector of alwaysVisible) {
-        expect(stack[selector].display).not.toBe("none");
+      for (const selector of STACK_SELECTORS) {
         expect(stack[selector].visibility).toBe("visible");
+        if (stack === closed || !hiddenWhenDialogueOpen.includes(selector)) {
+          expect(stack[selector].display).not.toBe("none");
+        }
       }
+    }
+  });
+
+  it("픽처 슬롯은 레이어 스태킹 컨텍스트 안에서 자기 z-index 를 유지한다", () => {
+    for (const stack of [closed, open, reducedMotion, actionHudFirst]) {
+      expect(stack[".picture-layer-item"].position).toBe("absolute");
+      expect(stack[".picture-layer-item"].zIndex).toBe("45");
     }
   });
 
@@ -202,10 +217,10 @@ const listFiles = async (directory: string): Promise<readonly string[]> => {
   return files.flat();
 };
 
-declare global {
-  interface Window {
-    readonly PlaySurfaceLib: {
-      readonly createPlaySurface: () => { readonly viewport: HTMLElement; readonly stage: HTMLElement };
-    };
-  }
-}
+type PlaySurfaceLib = {
+  readonly createPlaySurface: () => {
+    readonly viewport: HTMLElement;
+    readonly stage: HTMLElement;
+    readonly sync: () => void;
+  };
+};
