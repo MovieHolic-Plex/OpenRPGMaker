@@ -4,9 +4,10 @@
 // 산출물은 draft(Project)에 직접 적용되며, def는 project.quests에 메타로 보존된다.
 // 모든 스위치/변수는 사용 전에 등록되어 projectLint 참조 검증을 통과한다.
 
-import { upsertEventIntoMap } from "@/editor/tools/eventTools";
+import { resolveEventPlacement, upsertEventIntoMap } from "@/editor/tools/eventTools";
 import { ensureNamedSwitch, ensureNamedVariable } from "@/editor/tools/flagHelpers";
 import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
+import { isPassable } from "@/project/collision";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import {
   isValidQuestKey,
@@ -27,6 +28,45 @@ export interface QuestCompileResult {
   readonly eventsCreated: number;
   readonly switchesRegistered: number;
   readonly variablesRegistered: number;
+  /** 통행 가능 착지로 좌표가 바뀐 이벤트 등, 저작자가 알아야 할 비차단 경고. */
+  readonly warnings: readonly string[];
+}
+
+// 컴파일 도중 누적되는 카운터 + 경고 채널.
+interface CompileSink {
+  events: number;
+  variables: number;
+  warnings: string[];
+}
+
+/**
+ * 저작 좌표를 통행 가능 계약에 맞춰 착지시킨다(AI 배치 툴과 동일한 판정 재사용).
+ *
+ * 왜: 컴파일러는 좌표를 그대로 믹어 써서 강 위 퀘스트를 만들면 물 속에 선 NPC와
+ * 절대 밟히지 않는 playerTouch 도달 마커가 나왔다.
+ * - 캐릭터형(기버·대화 NPC·몬스터): kind "character" — 반드시 통행 가능 칸.
+ * - playerTouch/touch 마커(priority !== "same"): steppable — 반드시 통행 가능 칸.
+ * - action 트리거 마커/차단 이벤트: kind "interaction" — 벽 위 허용, 단 도달 가능해야 한다.
+ */
+function placeQuestEvent(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+  options: { kind: "character" | "interaction"; steppable?: boolean; label: string; code: string; eventId: string },
+  sink: CompileSink
+): { x: number; y: number } {
+  const placement = resolveEventPlacement(project, map, x, y, {
+    kind: options.kind,
+    steppable: options.steppable,
+    ignoreEventId: options.eventId,
+    label: options.label,
+    code: options.code,
+  });
+  if (placement.adjusted) {
+    sink.warnings.push(`${options.label} 위치 자동 조정: (${x}, ${y}) → (${placement.x}, ${placement.y})`);
+  }
+  return { x: placement.x, y: placement.y };
 }
 
 export class QuestCompileError extends Error {
@@ -102,7 +142,7 @@ function materializeStep(
   flags: QuestFlagIds,
   step: QuestStep,
   index: number,
-  counters: { events: number; variables: number }
+  counters: CompileSink
 ): void {
   const stepSwitch = flags.stepSwitches[index];
   switch (step.kind) {
@@ -122,7 +162,14 @@ function materializeStep(
         ], graphic);
         const already = page(`${id}_done`, spec.name, [selfSwitchCond("A")], [text("고맙네, 잘 부탁하지.", spec.name)], graphic);
         const idle = page(`${id}_idle`, spec.name, [], [text("...", spec.name)], graphic);
-        upsertEventIntoMap(targetMap, event(id, spec.x, spec.y, "action", [idle, talkNow, already]));
+        // 그래픽을 가진 캐릭터형 NPC — 물·벽 위에 세우면 지형에 박힌다.
+        const at = placeQuestEvent(project, targetMap, spec.x, spec.y, {
+          kind: "character",
+          label: `NPC '${spec.name}'`,
+          code: "quest-talk-npc-impassable",
+          eventId: id,
+        }, counters);
+        upsertEventIntoMap(targetMap, event(id, at.x, at.y, "action", [idle, talkNow, already]));
         counters.events += 1;
       } else {
         // 기존 이벤트에 퀘스트 대화 페이지를 덧붙인다(높은 인덱스가 우선 해석됨).
@@ -169,7 +216,14 @@ function materializeStep(
       ], graphic);
       const cleared = page(`${id}_cleared`, "정리된 자리", [switchCond(stepSwitch)], [], { transparent: true }, { priority: "below" });
       const idle = page(`${id}_idle`, "휴식", [], [text("아직은 조용하다.")], graphic);
-      upsertEventIntoMap(map, event(id, step.at.x, step.at.y, "action", [idle, fight, cleared]));
+      // 몬스터 스프라이트로 길을 막는 캐릭터형 이벤트 — place_battle_blocker와 같은 판정.
+      const at = placeQuestEvent(project, map, step.at.x, step.at.y, {
+        kind: "character",
+        label: "전투 블로커",
+        code: "quest-kill-impassable",
+        eventId: id,
+      }, counters);
+      upsertEventIntoMap(map, event(id, at.x, at.y, "action", [idle, fight, cleared]));
       counters.events += 1;
       break;
     }
@@ -180,7 +234,15 @@ function materializeStep(
         { kind: "setSwitch", switchId: stepSwitch, value: true },
         { kind: "setVariable", variableId: flags.progress, op: "+=", value: 1 },
       ], { transparent: true }, { trigger: "playerTouch", priority: "below" });
-      upsertEventIntoMap(map, event(id, step.x, step.y, "playerTouch", [arrive]));
+      // playerTouch + priority "below" = 플레이어가 그 칸을 밟아야 발동한다 → 반드시 통행 가능 칸.
+      const at = placeQuestEvent(project, map, step.x, step.y, {
+        kind: "interaction",
+        steppable: true,
+        label: "도달 지점",
+        code: "quest-reach-impassable",
+        eventId: id,
+      }, counters);
+      upsertEventIntoMap(map, event(id, at.x, at.y, "playerTouch", [arrive]));
       counters.events += 1;
       break;
     }
@@ -198,7 +260,7 @@ function materializeCollectSource(
   source: CollectSource,
   stepIndex: number,
   sourceIndex: number,
-  counters: { events: number; variables: number }
+  counters: CompileSink
 ): void {
   const map = requireMap(project, source.mapId);
   // count 도달 시 stepSwitch를 세우는 공통 커맨드.
@@ -226,7 +288,14 @@ function materializeCollectSource(
       { kind: "setSelfSwitch", key: "A", value: true },
     ], { transparent: true }, { priority: "below" });
     const empty = page(`${id}_empty`, "빈 자리", [selfSwitchCond("A")], [], { transparent: true }, { priority: "below" });
-    upsertEventIntoMap(map, event(id, source.x, source.y, "action", [look, pick, empty]));
+    // 투명 action 트리거 습득물 — 벽 위(선반·틈) 허용, 대신 인접 칸에서 조사할 수 있어야 한다.
+    const at = placeQuestEvent(project, map, source.x, source.y, {
+      kind: "interaction",
+      label: "수집물",
+      code: "quest-pickup-impassable",
+      eventId: id,
+    }, counters);
+    upsertEventIntoMap(map, event(id, at.x, at.y, "action", [look, pick, empty]));
     counters.events += 1;
   } else {
     // drop: 전투 블로커가 승리 시 아이템 지급 + 카운트.
@@ -249,13 +318,20 @@ function materializeCollectSource(
     ], graphic);
     const cleared = page(`${id}_cleared`, "정리됨", [switchCond(clearSwitch)], [], { transparent: true }, { priority: "below" });
     const idle = page(`${id}_idle`, "휴식", [], [text("조용하다.")], graphic);
-    upsertEventIntoMap(map, event(id, source.x, source.y, "action", [idle, fight, cleared]));
+    // drop 소스도 몬스터 스프라이트가 서 있는 캐릭터형 이벤트다.
+    const at = placeQuestEvent(project, map, source.x, source.y, {
+      kind: "character",
+      label: "드롭 전투",
+      code: "quest-drop-impassable",
+      eventId: id,
+    }, counters);
+    upsertEventIntoMap(map, event(id, at.x, at.y, "action", [idle, fight, cleared]));
     counters.events += 1;
   }
 }
 
 // 기버 NPC의 제안/진행/턴인/완료 페이지를 조립한다.
-function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds): GameEvent {
+function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, sink: CompileSink): GameEvent {
   const isCreate = "create" in def.giver;
   const spec = isCreate ? (def.giver as { create: QuestNpcSpec }).create : null;
   const map = requireMap(project, isCreate ? spec!.mapId : (def.giver as { mapId: string }).mapId);
@@ -297,7 +373,14 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds): 
   const done = page(`${id}_done`, giverName, [switchCond(flags.done)], [text("자네 덕분에 살았어. 정말 고맙네.", giverName)], graphic);
 
   if (isCreate) {
-    const giverEvent = event(id, spec!.x, spec!.y, "action", [proposal, active, done]);
+    // 기버는 말을 걸어야 하는 캐릭터형 NPC — 통행 가능 칸에 서야 한다.
+    const at = placeQuestEvent(project, map, spec!.x, spec!.y, {
+      kind: "character",
+      label: `퀘스트 기버 '${giverName}'`,
+      code: "quest-giver-impassable",
+      eventId: id,
+    }, sink);
+    const giverEvent = event(id, at.x, at.y, "action", [proposal, active, done]);
     upsertEventIntoMap(map, giverEvent);
     return giverEvent;
   }
@@ -314,14 +397,27 @@ function findGiverGraphic(map: GameMap, eventId: string): EventPageGraphic | nul
 }
 
 // 게이트: 특정 단계 완료 전까지 lockedText로 막고, 완료 후 통과 가능(투명·하단).
-function buildGate(project: Project, def: QuestDef, flags: QuestFlagIds, gate: QuestGate, gateIndex: number): void {
+function buildGate(project: Project, def: QuestDef, flags: QuestFlagIds, gate: QuestGate, gateIndex: number, sink: CompileSink): void {
   const map = requireMap(project, gate.mapId);
   const stepSwitch = flags.stepSwitches[gate.requiresStep];
   if (!stepSwitch) throw new QuestCompileError(`gate.requiresStep 범위 오류: ${gate.requiresStep}`);
   const id = `ev_${def.key}_gate${gateIndex}`;
   const locked = page(`${id}_locked`, "잠긴 길", [], [text(gate.lockedText)], { transparent: true }, { trigger: "playerTouch", priority: "same" });
   const open = page(`${id}_open`, "열린 길", [switchCond(stepSwitch)], [], { transparent: true }, { trigger: "playerTouch", priority: "below" });
-  upsertEventIntoMap(map, event(id, gate.x, gate.y, "playerTouch", [locked, open]));
+  // 잠긴 페이지는 priority "same"(차단 이벤트)이다. 플레이어는 이 칸을 밟지 못하고 옆 칸에서
+  // 부딪혀 발동시키므로 계약상 steppable이 아니다 → kind "interaction"(벽 위 허용, 도달 가능만 요구).
+  const at = placeQuestEvent(project, map, gate.x, gate.y, {
+    kind: "interaction",
+    label: "퀘스트 게이트",
+    code: "quest-gate-impassable",
+    eventId: id,
+  }, sink);
+  // 다만 해금 후의 open 페이지는 통과를 전제한다. 최종 칸이 통행 불가면 열려도 지나갈 수 없으니
+  // 좌표는 저작 의도대로 두고 경고로만 알린다.
+  if (!isPassable(project, map, at.x, at.y)) {
+    sink.warnings.push(`퀘스트 게이트가 통행 불가 칸에 있습니다: (${at.x}, ${at.y}) — 해금 후에도 지나갈 수 없습니다.`);
+  }
+  upsertEventIntoMap(map, event(id, at.x, at.y, "playerTouch", [locked, open]));
 }
 
 // QuestDef를 draft에 컴파일한다.
@@ -339,18 +435,18 @@ export function compileQuest(project: Project, def: QuestDef): QuestCompileResul
   }
   let switchesRegistered = 2 + flags.stepSwitches.length;
 
-  const counters = { events: 0, variables: 1 };
+  const counters: CompileSink = { events: 0, variables: 1, warnings: [] };
 
   // 2) 단계별 이벤트/조건 생성.
   def.steps.forEach((step, index) => materializeStep(project, def, flags, step, index, counters));
 
   // 3) 기버 페이지.
-  buildGiverEvent(project, def, flags);
+  buildGiverEvent(project, def, flags, counters);
   counters.events += 1;
 
   // 4) 게이트.
   (def.gates ?? []).forEach((gate, index) => {
-    buildGate(project, def, flags, gate, index);
+    buildGate(project, def, flags, gate, index, counters);
     counters.events += 1;
   });
 
@@ -360,5 +456,11 @@ export function compileQuest(project: Project, def: QuestDef): QuestCompileResul
   // drop 소스가 만든 클리어 스위치까지 대략 반영(정확 카운트는 중요치 않음).
   switchesRegistered += def.steps.filter((step) => step.kind === "collect").reduce((sum, step) => sum + (step.kind === "collect" ? step.sources.filter((s) => s.kind === "drop").length : 0), 0);
 
-  return { flags, eventsCreated: counters.events, switchesRegistered, variablesRegistered: counters.variables };
+  return {
+    flags,
+    eventsCreated: counters.events,
+    switchesRegistered,
+    variablesRegistered: counters.variables,
+    warnings: counters.warnings,
+  };
 }
