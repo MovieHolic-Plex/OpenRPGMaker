@@ -251,14 +251,95 @@ export function appendCondition(context: PageConditionContext, condition: EventP
   });
 }
 
-export function replaceConditionAt(context: PageConditionContext, index: number, condition: EventPageCondition): void {
-  updateEventPage(context.mapId, context.eventId, context.page.id, {
-    conditions: context.page.conditions.map((item, itemIndex) => (itemIndex === index ? condition : item)),
-  });
+/**
+ * 조건 트리 안의 한 노드를 가리키는 경로.
+ *
+ * `[2]` = 페이지 조건 3번째, `[2, 0]` = 그 조건(그룹)의 첫 하위 조건.
+ * 그룹(all/any/not) 편집기가 생기면서 인덱스 하나로는 위치를 못 집는다.
+ */
+export type ConditionPath = readonly number[];
+
+export type GroupCondition = Extract<EventPageCondition, { kind: "all" | "any" | "not" }>;
+
+export function isGroupCondition(condition: EventPageCondition): condition is GroupCondition {
+  return condition.kind === "all" || condition.kind === "any" || condition.kind === "not";
 }
 
-export function removeConditionAt(context: PageConditionContext, index: number): void {
-  updateEventPage(context.mapId, context.eventId, context.page.id, {
-    conditions: context.page.conditions.filter((_, itemIndex) => itemIndex !== index),
-  });
+/** not 은 하위가 한 개(`condition`), all/any 는 배열(`conditions`) — 읽는 쪽에서 통일한다. */
+export function groupChildren(condition: GroupCondition): readonly EventPageCondition[] {
+  return condition.kind === "not" ? [condition.condition] : condition.conditions;
+}
+
+function fallbackLeafCondition(): EventPageCondition {
+  return { kind: "switch", switchId: store.getCurrent().switches[0]?.id ?? "", value: true };
+}
+
+/**
+ * 하위 목록을 갈아끼운 같은 종류의 그룹.
+ *
+ * not 은 하위가 반드시 하나여야 한다 — 비면 스위치 기본 조건을 세운다(비운 not 은
+ * 직렬화도 런타임 평가도 못 한다).
+ */
+export function withGroupChildren(
+  group: GroupCondition,
+  children: readonly EventPageCondition[]
+): GroupCondition {
+  if (group.kind === "not") return { kind: "not", condition: children[0] ?? fallbackLeafCondition() };
+  return { kind: group.kind, conditions: [...children] };
+}
+
+/** 그룹 종류를 바꾸되 하위 조건은 살린다. all↔any 는 그대로, not 은 첫 하위만 유지. */
+export function convertGroupKind(group: GroupCondition, kind: GroupCondition["kind"]): GroupCondition {
+  const children = groupChildren(group);
+  if (kind === "not") return { kind: "not", condition: children[0] ?? fallbackLeafCondition() };
+  return { kind, conditions: [...children] };
+}
+
+function updateNodeAtPath(
+  list: readonly EventPageCondition[],
+  path: ConditionPath,
+  fn: (node: EventPageCondition) => EventPageCondition | null
+): EventPageCondition[] {
+  const [head, ...rest] = path;
+  if (head === undefined || head < 0 || head >= list.length) return [...list];
+  const node = list[head]!;
+  if (rest.length === 0) {
+    const next = fn(node);
+    return next === null
+      ? list.filter((_, index) => index !== head)
+      : list.map((item, index) => (index === head ? next : item));
+  }
+  if (!isGroupCondition(node)) return [...list];
+  const nextChildren = updateNodeAtPath(groupChildren(node), rest, fn);
+  return list.map((item, index) => (index === head ? withGroupChildren(node, nextChildren) : item));
+}
+
+function commitConditions(context: PageConditionContext, conditions: EventPageCondition[]): void {
+  updateEventPage(context.mapId, context.eventId, context.page.id, { conditions });
+}
+
+export function replaceConditionAtPath(
+  context: PageConditionContext,
+  path: ConditionPath,
+  condition: EventPageCondition
+): void {
+  commitConditions(context, updateNodeAtPath(context.page.conditions, path, () => condition));
+}
+
+export function removeConditionAtPath(context: PageConditionContext, path: ConditionPath): void {
+  commitConditions(context, updateNodeAtPath(context.page.conditions, path, () => null));
+}
+
+/** `path` 가 가리키는 그룹의 하위 목록 끝에 조건을 붙인다. 그룹이 아니면 무시. */
+export function appendConditionAtPath(
+  context: PageConditionContext,
+  path: ConditionPath,
+  condition: EventPageCondition
+): void {
+  commitConditions(
+    context,
+    updateNodeAtPath(context.page.conditions, path, (node) =>
+      isGroupCondition(node) ? withGroupChildren(node, [...groupChildren(node), condition]) : node
+    )
+  );
 }

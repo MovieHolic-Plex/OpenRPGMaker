@@ -141,7 +141,7 @@ function renderMapLinkBlock(
   // 연결이 아직 없으면 저작자가 만들어야 하므로 폼을 처음부터 펼쳐 둔다. 그때는 접기 토글을
   // 내지 않는다 — 할 일이 "연결 추가" 하나뿐인데 버튼 두 개는 어느 쪽이 본 행동인지 흐린다.
   const expanded = openEventMapLink.has(openKey) || !existing;
-  const form = renderConnectionForm(mapId, destination, existing, eventPos);
+  const form = renderConnectionForm(mapId, eventId, destination, existing, eventPos);
   form.hidden = !expanded;
 
   const statusChildren: HTMLElement[] = [
@@ -184,6 +184,9 @@ function renderMapLinkBlock(
 
 function renderConnectionForm(
   mapId: MapId,
+  // 화면에는 안 들어가지만 연결 upsert 를 「어느 이벤트를 편집하다 만든 연결」로
+  // 감사 로그에 묶기 위해 받는다 — 맵 연결은 프로젝트 전역이라 이 단서가 없으면 추적이 끊긴다.
+  eventId: string,
   destination: NpcLivingDestination,
   existing: MapConnection | undefined,
   eventPos: { readonly x: number; readonly y: number },

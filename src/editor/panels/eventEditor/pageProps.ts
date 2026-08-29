@@ -640,6 +640,9 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     dataset: { testid: "event-page-overlap-forbidden" },
   }) as HTMLInputElement;
   overlap.checked = page.overlapForbidden ?? true;
+  // 런타임 통행 판정은 `priority === "same" && overlapForbidden` 이다 — 다른 층에서는 이 체크가
+  // 아무 일도 하지 않는다. 살아있는 것처럼 보이게 두면 «켰는데 안 막힌다» 가 된다.
+  overlap.disabled = !overlapForbiddenApplies(page);
   overlap.addEventListener("change", () => {
     updateEventPage(mapId, eventId, page.id, { overlapForbidden: overlap.checked });
   });
@@ -696,19 +699,34 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
         rm2k3Fieldset("시작 방식", trigger, "event-classic-trigger"),
-        rm2k3Fieldset("우선순위", priority, "event-classic-priority"),
         renderEventPageSafetyWarning(page),
       ],
     }),
-    rm2k3Fieldset(
-      "겹침",
-      el("label", {
-        class: "event-overlap-label",
-        attrs: { title: "켜면 다른 추인공·NPC 가 이 칸을 지나갈 수 없습니다" },
-        children: [overlap, el("span", { text: "겹침 금지(같은 칸 통행 차단)" })],
-      }),
-      "event-classic-overlap"
-    ),
+    // 우선순위와 겹침은 한 판정식(`priority === "same" && overlapForbidden`)의 두 반쪽이다.
+    // 예전에는 우선순위가 «언제 보이나요» 그룹, 겹침이 «겹침과 통행» 그룹에 떨어져 있어서
+    // 저작자가 둘의 관계를 볼 수 없었다.
+    el("div", {
+      class: "event-page-behavior-sections",
+      dataset: { testid: "event-page-priority-overlap-stack" },
+      children: [
+        rm2k3Fieldset("우선순위", priority, "event-classic-priority"),
+        rm2k3Fieldset(
+          "겹침",
+          el("div", {
+            class: "event-priority-block",
+            children: [
+              el("label", {
+                class: "event-overlap-label",
+                attrs: { title: "켜면 다른 주인공·NPC 가 이 칸을 지나갈 수 없습니다" },
+                children: [overlap, el("span", { text: "겹침 금지(같은 칸 통행 차단)" })],
+              }),
+              renderOverlapPriorityHint(page),
+            ],
+          }),
+          "event-classic-overlap"
+        ),
+      ],
+    }),
     collapsibleSection({
       title: "움직임",
       testId: "event-classic-movement-section",
@@ -860,7 +878,8 @@ function wrapPageSettingsAsAccordion(
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
-  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
+  // 우선순위는 겹침과 한 판정식이라 memory 그룹이 함께 claim 한다(예전에는 when 그룹이었다).
+  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-priority-overlap-stack'], [data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
   // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
   const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
@@ -868,8 +887,14 @@ function wrapPageSettingsAsAccordion(
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
     // RM 계약상 새 이벤트의 기본 이동은 «정지»다. 그 밖이면 저작자가 고른 값이다.
     { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), authored: page.movement.type !== "fixed", nodes: move },
-    // 기본값은 «겹침 금지»(overlapForbidden !== false). 통행을 허용했다면 손댄 것이다.
-    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), authored: page.overlapForbidden === false, nodes: memory },
+    // 기본값은 «캐릭터와 같은 층 + 겹침 금지». 통행을 허용했거나 층을 옮겼다면 손댄 것이다.
+    {
+      slug: "memory",
+      title: "겹침과 통행",
+      summary: overlapSummary(page),
+      authored: page.overlapForbidden === false || page.priority !== "same",
+      nodes: memory,
+    },
   ].map((group) => ({ ...group, open: group.slug === activeSlug }));
   const rail = el("div", {
     class: "event-editor-settings-accordion",
@@ -916,8 +941,34 @@ function wrapPageSettingsAsAccordion(
 
 const CONDITION_BADGE_LIMIT = 3;
 
+/** 겹침 금지가 실제로 통행을 막는 조건. 런타임 판정식과 같은 자리에서 한 번만 정한다. */
+function overlapForbiddenApplies(page: EventPage): boolean {
+  return page.priority === "same";
+}
+
+/** 우선순위 select 에 실제로 적힌 라벨. 안내문이 화면과 다른 말을 쓰면 안 된다. */
+function priorityOptionLabel(priority: EventPage["priority"]): string {
+  return EVENT_PRIORITY_OPTIONS.find((option) => option.value === priority)?.label ?? priorityLabel(priority);
+}
+
 function overlapSummary(page: EventPage): string {
+  if (!overlapForbiddenApplies(page)) return `${priorityOptionLabel(page.priority)} · 통행 허용`;
   return page.overlapForbidden !== false ? "겹침 금지" : "겹침 허용";
+}
+
+/**
+ * 우선순위가 «같은 층» 이 아닐 때 겹침 체크가 왜 죽어 있는지 말해 준다.
+ * 자리는 항상 잡아 둔다 — 나타났다 사라지면 레일 높이가 튄다.
+ */
+function renderOverlapPriorityHint(page: EventPage): HTMLElement {
+  const applies = overlapForbiddenApplies(page);
+  return el("p", {
+    class: `event-page-overlap-hint${applies ? " is-quiet" : ""}`,
+    dataset: { testid: "event-page-overlap-priority-hint" },
+    text: applies
+      ? "같은 층이므로 이 설정이 통행 판정에 쓰입니다."
+      : `우선순위가 «${priorityOptionLabel(page.priority)}» 라 통행을 막지 않습니다. 막으려면 «캐릭터와 같은 층» 으로 바꾸세요.`,
+  });
 }
 
 function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {
