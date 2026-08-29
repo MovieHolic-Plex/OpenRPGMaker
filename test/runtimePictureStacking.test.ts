@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { chromium, type Browser, type Page } from "playwright";
 import { build } from "vite";
 
-const PLAYER_BUILD_TIMEOUT_MS = 120_000;
+const PLAYER_BUILD_TIMEOUT_MS = 180_000;
 const STACK_SELECTORS = [
   ".picture-layer",
   ".runtime-timer-hud",
@@ -29,101 +29,124 @@ const EXPECTED_BAND = {
 } as const;
 
 type StackSelector = (typeof STACK_SELECTORS)[number];
-type ComputedStack = Record<StackSelector, {
+type ComputedEntry = {
   readonly position: string;
   readonly zIndex: string;
   readonly display: string;
   readonly visibility: string;
-}>;
-
-type DialogueState = { readonly text: string; readonly positionClass: string };
-
-const DIALOGUE_CLOSED: DialogueState = { text: "", positionClass: "" };
-const DIALOGUE_OPEN: DialogueState = {
-  text: "촌장: 자네가 이 마을에 온 이유를 알고 있네.",
-  positionClass: "position-bottom",
 };
+type ComputedStack = Record<StackSelector, ComputedEntry>;
+type FixtureOptions = { readonly dialogueOpen: boolean; readonly actionHudFirst: boolean };
 
-/* 중첩·속성·형제 순서가 프로덕션과 어긋나면 배포된 상태 스코프 규칙이 픽스처에서 발화하지
-   않아 오버라이드를 조용히 통과시킨다. `player.ts:135-137` 은 루트에 data-play-input-owner 를
-   항상 달고, `player.ts:295` 은 대사창을 스테이지에 먼저 붙이며 픽처·하이드는 나중에 지연
-   생성한다 — 즉 `~` 형제 규칙(`runtime/timer.css:37`)이 걸리는 순서는 dialogue → picture 다.
-   열린 대사창은 항상 `position-*` 을 갖는다(`dialogue.ts:667`). */
-const fixtureMarkup = (css: string, dialogue: DialogueState): string => `<style>${css}</style>
-  <div class="player-layout system-shell" data-play-input-owner="keyboard-only">
-    <div class="play-viewport">
-      <div class="play-stage" data-testid="play-stage">
-        <div class="phaser-container"></div>
-        <div class="dialogue-overlay ${dialogue.positionClass}">${dialogue.text}</div>
-        <div class="picture-layer" data-testid="picture-layer">
-          <div class="picture-layer-item" style="z-index: 45"></div>
-        </div>
-        <div class="runtime-timer-hud" data-testid="runtime-timer-hud"></div>
-        <div class="runtime-time-hud" data-testid="runtime-time-hud"></div>
-        <div class="minimap-root"></div>
-        <div class="hand-slot"></div>
-        <div class="zone-feedback"></div>
-        <div class="action-hud"></div>
-        <div class="touch-pad"></div>
-      </div>
-    </div>
-  </div>`;
+const buildLibrary = async (input: string, format: "css" | "iife"): Promise<string> => {
+  const outputDirectory = await mkdtemp(join(tmpdir(), "rpgzzu-picture-stacking-"));
+  try {
+    await build({
+      configFile: false,
+      publicDir: false,
+      root: resolve("."),
+      logLevel: "silent",
+      resolve: { alias: { "@": resolve("src") } },
+      build: {
+        emptyOutDir: true,
+        outDir: outputDirectory,
+        ...(format === "css"
+          ? { rollupOptions: { input: resolve(input) } }
+          : { lib: { entry: resolve(input), formats: ["iife" as const], name: "PlaySurfaceLib", fileName: () => "playSurface.js" } }),
+      },
+    });
+    const extension = format === "css" ? ".css" : ".js";
+    const file = (await listFiles(outputDirectory)).find((candidate) => candidate.endsWith(extension));
+    if (!file) throw new Error(`${input} build did not emit ${extension}`);
+    return await readFile(file, "utf8");
+  } finally {
+    await rm(outputDirectory, { force: true, recursive: true });
+  }
+};
 
 describe("런타임 computed z-index 밴드", () => {
   let browser: Browser;
   let page: Page;
-  let css: string;
   let closed: ComputedStack;
   let open: ComputedStack;
   let reducedMotion: ComputedStack;
+  let actionHudFirst: ComputedStack;
 
-  const measure = async (dialogue: DialogueState): Promise<ComputedStack> => {
-    await page.setContent(fixtureMarkup(css, dialogue));
-    return page.evaluate((selectors) => Object.fromEntries(selectors.map((selector) => {
-      const element = document.querySelector(selector);
-      if (!(element instanceof HTMLElement)) throw new Error(`missing fixture element: ${selector}`);
-      const style = getComputedStyle(element);
-      return [selector, {
-        position: style.position,
-        zIndex: style.zIndex,
-        display: style.display,
-        visibility: style.visibility,
-      }];
-    })) as ComputedStack, STACK_SELECTORS);
-  };
+  const measure = async (options: FixtureOptions): Promise<ComputedStack> => page.evaluate(
+    ({ selectors, fixture }) => {
+      document.body.replaceChildren();
+      const layout = document.createElement("div");
+      layout.className = "player-layout system-shell";
+      layout.dataset.playInputOwner = "keyboard-only";
+      const surface = window.PlaySurfaceLib.createPlaySurface();
+      layout.append(surface.viewport);
+      document.body.append(layout);
+
+      const add = (className: string, testid?: string): HTMLElement => {
+        const node = document.createElement("div");
+        node.className = className;
+        if (testid) node.dataset.testid = testid;
+        surface.stage.append(node);
+        return node;
+      };
+      const addDialogue = (): void => {
+        const overlay = add(fixture.dialogueOpen ? "dialogue-overlay position-bottom" : "dialogue-overlay");
+        if (fixture.dialogueOpen) overlay.textContent = "촌장: 자네가 이 마을에 온 이유를 알고 있네.";
+      };
+      const addActionHud = (): void => { add("action-hud"); };
+
+      if (fixture.actionHudFirst) addActionHud();
+      addDialogue();
+      const pictureLayer = add("picture-layer", "picture-layer");
+      const pictureItem = document.createElement("div");
+      pictureItem.className = "picture-layer-item";
+      pictureItem.style.zIndex = "45";
+      pictureLayer.append(pictureItem);
+      add("runtime-timer-hud", "runtime-timer-hud");
+      add("runtime-time-hud", "runtime-time-hud");
+      add("minimap-root");
+      add("hand-slot");
+      add("zone-feedback");
+      if (!fixture.actionHudFirst) addActionHud();
+      add("touch-pad");
+
+      return Object.fromEntries(selectors.map((selector) => {
+        const element = document.querySelector(selector);
+        if (!(element instanceof HTMLElement)) throw new Error(`missing fixture element: ${selector}`);
+        const style = getComputedStyle(element);
+        return [selector, {
+          position: style.position,
+          zIndex: style.zIndex,
+          display: style.display,
+          visibility: style.visibility,
+        }];
+      })) as ComputedStack;
+    },
+    { selectors: STACK_SELECTORS, fixture: options },
+  );
 
   beforeAll(async () => {
-    const outputDirectory = await mkdtemp(join(tmpdir(), "rpgzzu-picture-stacking-"));
-    try {
-      await build({
-        configFile: false,
-        publicDir: false,
-        root: resolve("."),
-        logLevel: "silent",
-        build: {
-          emptyOutDir: true,
-          outDir: outputDirectory,
-          rollupOptions: { input: resolve("src/player/player.css") },
-        },
-      });
-      const cssFile = (await listFiles(outputDirectory)).find((file) => file.endsWith(".css"));
-      if (!cssFile) throw new Error("player.css build did not emit CSS");
-      css = await readFile(cssFile, "utf8");
-      browser = await chromium.launch({ headless: true });
-      page = await browser.newPage();
-      closed = await measure(DIALOGUE_CLOSED);
-      open = await measure(DIALOGUE_OPEN);
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      reducedMotion = await measure(DIALOGUE_OPEN);
-      await page.emulateMedia({ reducedMotion: "no-preference" });
-    } finally {
-      await rm(outputDirectory, { force: true, recursive: true });
-    }
+    const [css, surfaceScript] = await Promise.all([
+      buildLibrary("src/player/player.css", "css"),
+      buildLibrary("src/player/playSurface.ts", "iife"),
+    ]);
+    browser = await chromium.launch({ headless: true });
+    page = await browser.newPage();
+    await page.setContent(`<style>${css}</style><script>${surfaceScript}</script>`);
+    closed = await measure({ dialogueOpen: false, actionHudFirst: false });
+    open = await measure({ dialogueOpen: true, actionHudFirst: false });
+    actionHudFirst = await measure({ dialogueOpen: true, actionHudFirst: true });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    reducedMotion = await measure({ dialogueOpen: true, actionHudFirst: false });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
   }, PLAYER_BUILD_TIMEOUT_MS);
 
   afterAll(async () => {
     await browser?.close();
   });
+
+  const bandOf = (stack: ComputedStack): Record<string, string> =>
+    Object.fromEntries(STACK_SELECTORS.map((selector) => [selector, stack[selector].zIndex]));
 
   it("picture layer keeps a positioned stacking context below dialogue", () => {
     expect(closed[".picture-layer"].position).toBe("absolute");
@@ -132,26 +155,31 @@ describe("런타임 computed z-index 밴드", () => {
   });
 
   it("resolves the complete shipped band through the player.css import closure", () => {
-    expect(Object.fromEntries(STACK_SELECTORS.map((selector) => [selector, closed[selector].zIndex])))
-      .toEqual(EXPECTED_BAND);
+    expect(bandOf(closed)).toEqual(EXPECTED_BAND);
   });
 
   it("대사창이 열린 상태에서도 밴드가 같다", () => {
-    expect(Object.fromEntries(STACK_SELECTORS.map((selector) => [selector, open[selector].zIndex])))
-      .toEqual(EXPECTED_BAND);
+    expect(bandOf(open)).toEqual(EXPECTED_BAND);
     expect(open[".picture-layer"].position).toBe("absolute");
   });
 
   it("prefers-reduced-motion 에서도 밴드가 같다", () => {
-    expect(Object.fromEntries(STACK_SELECTORS.map((selector) => [selector, reducedMotion[selector].zIndex])))
-      .toEqual(EXPECTED_BAND);
+    expect(bandOf(reducedMotion)).toEqual(EXPECTED_BAND);
     expect(reducedMotion[".picture-layer"].position).toBe("absolute");
   });
 
-  it("픽처 레이어는 어느 상태에서도 숨겨지지 않는다", () => {
-    for (const state of [closed, open, reducedMotion]) {
-      expect(state[".picture-layer"].display).not.toBe("none");
-      expect(state[".picture-layer"].visibility).toBe("visible");
+  it("액션 HUD 가 대사창보다 먼저 붙는 순서에서도 밴드가 같다", () => {
+    expect(bandOf(actionHudFirst)).toEqual(EXPECTED_BAND);
+    expect(actionHudFirst[".picture-layer"].position).toBe("absolute");
+  });
+
+  it("밴드 구성원은 어느 상태에서도 숨겨지지 않는다", () => {
+    const alwaysVisible = STACK_SELECTORS.filter((selector) => selector !== ".hand-slot" && selector !== ".action-hud");
+    for (const stack of [closed, open, reducedMotion, actionHudFirst]) {
+      for (const selector of alwaysVisible) {
+        expect(stack[selector].display).not.toBe("none");
+        expect(stack[selector].visibility).toBe("visible");
+      }
     }
   });
 
@@ -160,6 +188,8 @@ describe("런타임 computed z-index 밴드", () => {
     expect(closed[".hand-slot"].display).not.toBe("none");
     expect(open[".action-hud"].display).toBe("none");
     expect(open[".hand-slot"].display).toBe("none");
+    expect(actionHudFirst[".action-hud"].display).toBe("none");
+    expect(actionHudFirst[".hand-slot"].display).toBe("none");
   });
 });
 
@@ -171,3 +201,11 @@ const listFiles = async (directory: string): Promise<readonly string[]> => {
   }));
   return files.flat();
 };
+
+declare global {
+  interface Window {
+    readonly PlaySurfaceLib: {
+      readonly createPlaySurface: () => { readonly viewport: HTMLElement; readonly stage: HTMLElement };
+    };
+  }
+}
