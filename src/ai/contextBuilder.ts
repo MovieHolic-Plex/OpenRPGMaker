@@ -208,7 +208,7 @@ function mapRegionSection(
   if (!result.ok || result.data === undefined) return empty;
   const headerParts: string[] = [];
   if (viewport && viewport.mapId === map.id) {
-    headerParts.push(formatViewportContextBlock(viewport, map.name));
+    headerParts.push(formatViewportContextBlock(viewport, map.name, project));
   }
   headerParts.push(
     // mapId 를 머리에 박는다 — "이/여기"가 어느 맵인지 모델이 되묻거나 새 맵을 만들지 않게.
