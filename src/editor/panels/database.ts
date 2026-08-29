@@ -27,7 +27,7 @@ import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
-import { uiLabel } from "@/editor/uiCopy";
+import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -121,8 +121,6 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
 const tabOrder: readonly DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((group) => group.tabs)];
 
 const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map(tabFor);
-const COMMON_TAB_IDS: readonly DatabaseTab[] = ["overview", "actors", "items", "enemies", "troops", "system"];
-
 function groupForTab(id: DatabaseTab): DatabaseTabGroup | undefined {
   return TAB_GROUPS.find((group) => group.tabs.includes(id));
 }
@@ -266,16 +264,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
   });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
   const chrome = getEditorChrome();
-  if (chrome.databaseNav === "common") {
-    for (const id of COMMON_TAB_IDS) appendTabButton(header, body, container, tabFor(id));
-
-    const allTabs = el("details", { dataset: { testid: "db-nav-all" } });
-    allTabs.append(el("summary", { text: `모든 ${uiLabel("databaseShort", chrome.jargonStyle)}` }));
-    for (const tab of orderedTabs) {
-      if (!COMMON_TAB_IDS.includes(tab.id)) appendTabButton(allTabs, body, container, tab);
-    }
-    header.append(allTabs);
-  } else if (chrome.databaseNav === "grouped") {
+  if (chrome.databaseNav === "grouped") {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {

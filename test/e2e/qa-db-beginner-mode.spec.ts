@@ -12,16 +12,14 @@ const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const HELP_TOAST = "데이터베이스에서 레코드와 시스템 설정을 조정합니다.";
 
 // Observed beginner common-nav labels (database.ts COMMON_TAB_IDS + uiLabel).
-const BEGINNER_COMMON_LABELS = ["개요", "주인공", "아이템", "몬스터", "적 그룹", "시스템"] as const;
 // uiLabel("databaseShort", "plain") — the only jargon-switched string in database.ts.
-const BEGINNER_NAV_ALL_SUMMARY = "모든 자료";
 // Expert grouped chrome (TAB_GROUPS) — jargonStyle is "technical" but tab ids stay hardcoded.
 const EXPERT_GROUP_LABELS = ["파티", "몬스터", "전투 규칙", "생활", "세계", "시스템"] as const;
 
 test.describe("QA — beginner Database mode", () => {
   test.describe.configure({ timeout: 60_000 });
 
-  test("G1 beginner boot shows exactly the 6 common tabs plus collapsed db-nav-all", async ({ page }) => {
+  test("G1 beginner boot shows the grouped category rail with overview on top", async ({ page }) => {
     const errors = collectConsoleErrors(page);
     await bootDbLane(page, { mode: "beginner" });
 
@@ -32,12 +30,12 @@ test.describe("QA — beginner Database mode", () => {
     const directTabIds = await nav.locator(":scope > .db-tab").evaluateAll((nodes) =>
       nodes.map((node) => (node as HTMLElement).dataset.testid ?? ""),
     );
-    expect(directTabIds).toEqual([...COMMON_DB_TAB_TEST_IDS]);
-
-    const all = page.getByTestId("db-nav-all");
-    await expect(all).toBeVisible();
-    await expect(all).not.toHaveAttribute("open");
-    await expect(all.locator("summary")).toHaveText(BEGINNER_NAV_ALL_SUMMARY);
+    // 초보도 표준과 같은 카테고리 레일을 쓴다 — 평면 노출은 개요 하나뿐이고 예전
+    // 「모든 자료」 접이식(db-nav-all)은 없앴다. 모드마다 찾는 경로가 갈리면 초보가
+    // 배운 자리가 표준에서 통하지 않는다.
+    expect(directTabIds).toEqual(["db-tab-overview"]);
+    await expect(page.getByTestId("db-nav-all")).toHaveCount(0);
+    await expect(nav.locator(".db-tab-group")).not.toHaveCount(0);
     await expect(page.getByTestId("db-tab-elements")).toBeHidden();
     await expect(page.getByTestId("db-tab-switches")).toBeHidden();
     expect(errors).toEqual([]);
@@ -52,7 +50,7 @@ test.describe("QA — beginner Database mode", () => {
     expect(beforeCount).toBe(17);
 
     await switchTabAnyMode(page, ELEMENTS_TAB);
-    await expect(page.getByTestId("db-nav-all")).toHaveAttribute("open", "");
+    await expect(page.getByTestId("db-tab-group-battle")).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByTestId("db-elements-classic")).toBeVisible();
 
     const nextCount = beforeCount + 1;
@@ -86,8 +84,8 @@ test.describe("QA — beginner Database mode", () => {
     await expect(page.getByTestId("db-tab-elements")).toHaveClass(/active/);
     await expect(page.getByTestId("db-elements-classic")).toBeVisible();
     // Common nav rebuilds <details> closed. The persisted hidden tab stays active in
-    // the body; the rail does not auto-expand db-nav-all on reopen.
-    await expect(page.getByTestId("db-nav-all")).not.toHaveAttribute("open");
+    // the body; the rail keeps only the active tab's group open on reopen.
+    await expect(page.getByTestId("db-nav-all")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 
@@ -97,8 +95,9 @@ test.describe("QA — beginner Database mode", () => {
     const beginnerErrors = collectConsoleErrors(beginnerPage);
     await bootDbLane(beginnerPage, { mode: "beginner" });
     const beginnerLabels = await visibleDbNavLabels(beginnerPage);
-    expect(beginnerLabels.slice(0, BEGINNER_COMMON_LABELS.length)).toEqual([...BEGINNER_COMMON_LABELS]);
-    expect(beginnerLabels).toContain(BEGINNER_NAV_ALL_SUMMARY);
+    // 레일 묶음은 두 모드가 같다 — 다른 것은 낱말 스타일(주인공/액터 같은 uiLabel)뿐이다.
+    expect(beginnerLabels).toEqual(expect.arrayContaining([...EXPERT_GROUP_LABELS]));
+    expect(beginnerLabels).not.toContain("모든 자료");
     expect(beginnerLabels).not.toContain("모든 DB");
     expect(beginnerErrors).toEqual([]);
     await beginnerContext.close();
@@ -109,7 +108,6 @@ test.describe("QA — beginner Database mode", () => {
     await bootDbLane(expertPage, { mode: "expert" });
     const expertLabels = await visibleDbNavLabels(expertPage);
     expect(expertLabels).toEqual(expect.arrayContaining([...EXPERT_GROUP_LABELS]));
-    expect(expertLabels).not.toContain(BEGINNER_NAV_ALL_SUMMARY);
     await expect(expertPage.getByTestId("db-nav-all")).toHaveCount(0);
     await expect(expertPage.getByTestId("toolbar-database")).toHaveText("DB");
     expect(expertLabels).not.toEqual(beginnerLabels);

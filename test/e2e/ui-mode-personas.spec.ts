@@ -13,21 +13,6 @@ const LAYOUT_KEYS = [
   "oprn:editor-layout:v4",
   "oprn:editor-layout-version",
 ] as const;
-const COMMON_DB_TABS = [
-  "db-tab-overview",
-  "db-tab-actors",
-  "db-tab-items",
-  "db-tab-enemies",
-  "db-tab-troops",
-  "db-tab-system",
-] as const;
-const PERSONAS = ["beginner", "standard", "expert"] as const;
-const VIEWPORTS = [
-  { width: 1024, height: 768 },
-  { width: 1440, height: 900 },
-] as const;
-
-type Persona = (typeof PERSONAS)[number];
 type Rect = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 
 mkdirSync(EVIDENCE_DIR, { recursive: true });
@@ -128,13 +113,13 @@ async function assertBeginnerContract(page: Page): Promise<void> {
   const directTabIds = await nav.locator(":scope > .db-tab").evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLElement).dataset.testid),
   );
-  expect(directTabIds).toEqual(COMMON_DB_TABS);
+  // 레일은 초보에서도 카테고리 그룹이다 — 평면으로 노출되는 직속 탭은 개요 하나뿐이다.
+  expect(directTabIds).toEqual(["db-tab-overview"]);
 
-  const all = page.getByTestId("db-nav-all");
-  await expect(all).not.toHaveAttribute("open", "");
+  const systemGroup = page.getByTestId("db-tab-group-system");
+  await expect(systemGroup).toBeVisible();
   await expect(page.getByTestId("db-tab-switches")).toBeHidden();
-  await all.locator("summary").click();
-  await expect(all).toHaveAttribute("open", "");
+  await systemGroup.click();
   await expect(page.getByTestId("db-tab-switches")).toBeVisible();
   await page.getByTestId("database-modal-close").click();
   await expect(modal).toBeHidden();

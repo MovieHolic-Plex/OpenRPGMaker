@@ -36,8 +36,9 @@ export type EditorChromeVisibility = {
   readonly statusbarDensity: "beginner" | "full";
   // 아이콘 레일 텍스트 라벨 — persistent: 항상 노출, hover: 호버 시에만.
   readonly railLabels: "persistent" | "hover";
-  // 데이터베이스 낤비게이션 노출 범위 — common: 자주 쓰는 항목, grouped: 그룹별, all: 전체.
-  readonly databaseNav: "common" | "grouped" | "all";
+  // 데이터베이스 내비게이션 노출 범위 — grouped: 카테고리 그룹, all: 전체 평면.
+  // 예전 "common"(자주 쓰는 6개 + 「모든 자료」 접이식)은 없앴다 — 초보도 카테고리로 찾는다.
+  readonly databaseNav: "grouped" | "all";
   // 이벤트 편집 초보용 크롬(단계별 안내) 노출.
   readonly eventBeginnerChrome: boolean;
   // 전반 용어 스타일 — plain: 자료집/바닥/장식, technical: 데이터베이스/하위/상위.
@@ -60,7 +61,7 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
   standardWelcome: false,
   statusbarDensity: "beginner",
   railLabels: "persistent",
-  databaseNav: "common",
+  databaseNav: "grouped",
   eventBeginnerChrome: true,
   jargonStyle: "plain",
 };
