@@ -935,6 +935,9 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   for (const entry of entries) {
     const node = document.createElement("span");
     node.className = `battle-status-icon battle-status-icon-${entry.icon}`;
+    // 글리프는 CSS ::before 에만 있어서 textContent 로는 잡힐 수 없다 — 상태가 실제로 화면에
+    // 배지로 남았는지를 QA 가 집을 수 있도록 배틀러·토큰까지 들어있는 testid 를 단다.
+    node.dataset.testid = `battle-status-${battler.id}-${entry.icon}`;
     node.dataset.statusIcon = entry.icon;
     node.dataset.statusName = entry.name;
     node.setAttribute("role", "img");

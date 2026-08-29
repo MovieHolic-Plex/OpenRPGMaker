@@ -175,6 +175,19 @@
   gap: 3px;
 }
 
+/* 배우 배지는 이웃 스프라이트 아래에 깔렸다. 파티 노드는 서로 거치게 배치되고
+   `.battle-actor` 자신이 filter + z-index 로 쓰택 문맥을 만들어서 자식의 z-index 로는 다음 배우
+   스프라이트 위로 나갈 수 없다(실측: ATK↑ 배지가 마도사 망토 뒤에 가려 한 글자만 보였다).
+   그래서 곹치는 발밑 대슴 **머리 위**에 달아 이웃과 상자가 안 섮이게 한다. */
+.battle-actor > .battle-status-icons {
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
 .battle-status-icon {
   align-items: center;
   background: var(--battle-status-icon-bg, #4a4a4a);

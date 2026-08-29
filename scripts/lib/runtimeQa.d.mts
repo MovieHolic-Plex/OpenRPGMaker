@@ -74,6 +74,16 @@ export type RuntimeQaExpect = {
   readonly battleResult?: "victory" | "defeat" | "escape" | null;
   readonly testidPresent?: readonly string[];
   readonly testidAbsent?: readonly string[];
+  /**
+   * testid → 그 노드에 **화면에 보이는 상태로** 들어 있어야 하는 부분 문자열.
+   * {@link RuntimeQaExpect.testidPresent} 는 DOM 존재만 본다 — 클래식 전투 스킨은 적 HP 목록
+   * 패널을 display:none 으로 숨기므로, 그 축으로 HP 감소를 단정하면 화면에 없는 숫자를 증거로
+   * 삼는다. 이 축은 상자·display·visibility·조상 opacity 를 함께 보고 글자까지 맞춘다.
+   *
+   * 문자열이 벼 `""` 면 "보이기만 하면 된다" 는 뜻이다 — 글리프를 CSS `::before` 로 그리는
+   * 노드(상태 배지 등)는 textContent 가 반드시 비어 있다.
+   */
+  readonly visibleText?: Readonly<Record<string, string>>;
   readonly playerSpriteResourceNonEmpty?: boolean;
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;

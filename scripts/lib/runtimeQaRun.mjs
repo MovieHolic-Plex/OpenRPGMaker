@@ -301,8 +301,11 @@ function readBattlerGeometryInPage() {
  * @param watchedEventIds 발자국 사각을 실어 올 이벤트 id. 시나리오가 이름을 댄 것만 싣는다 —
  *   맵마다 이벤트가 수십 개라 전량은 매니페스트를 노이즈로 덮는다(이 하네스의 목적은
  *   컨텍스트 절약이다).
+ * @param watchedTestids 글자를 **눈에 보이는지까지** 재 올 testid. `testids` 축은 DOM 존재만
+ *   보므로 display:none 안의 노드도 통과한다 — 실제로 전투 적 HP 목록(.battle-enemy-list-panel)이
+ *   숨겨진 스킨에서 `battle-enemy-list-hp-*` 를 단정하면 화면에 없는 숫자를 증거로 삼게 된다.
  */
-async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [] } = {}) {
+async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [] } = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
@@ -347,11 +350,40 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
         };
       })(),
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
+      // 요청받은 testid 만 "보이는 글자" 로 재 온다. 상자·display·visibility·조상 opacity 를 함께
+      // 봐야 한다 — 숨은 조상 하나면 자식의 computed style 은 멀쩡한데 화면에는 아무것도 없다.
+      visibleText: Object.fromEntries(
+        (watched.testids ?? []).map((testid) => {
+          const node = document.querySelector(`[data-testid="${testid}"]`);
+          if (!node) return [testid, null];
+          const rect = node.getBoundingClientRect();
+          let hidden = false;
+          let alpha = 1;
+          for (let cursor = node; cursor && cursor !== document.documentElement; cursor = cursor.parentElement) {
+            const style = getComputedStyle(cursor);
+            if (style.display === "none" || style.visibility === "hidden") hidden = true;
+            alpha *= Number(style.opacity);
+          }
+          const onScreen =
+            rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.bottom > 0
+            && rect.left < window.innerWidth && rect.top < window.innerHeight;
+          return [
+            testid,
+            {
+              text: (node.textContent ?? "").replace(/\s+/g, " ").trim(),
+              visible: !hidden && onScreen && alpha > 0.05,
+              width: Math.round(rect.width),
+              height: Math.round(rect.height),
+              alpha: Number(alpha.toFixed(3)),
+            },
+          ];
+        }),
+      ),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
-  }, watchedEventIds);
+  }, { eventIds: watchedEventIds, testids: watchedTestids });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -493,6 +525,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedEventIds = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.eventRects ?? {}))),
   ];
+  const watchedTestids = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
+  ];
 
   let hooksReady = false;
   const beats = [];
@@ -519,6 +554,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     const observed = await readObserved(page, {
       auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
       watchedEventIds,
+      watchedTestids,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
