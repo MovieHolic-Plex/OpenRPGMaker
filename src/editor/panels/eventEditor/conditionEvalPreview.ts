@@ -1,41 +1,34 @@
 import { el } from "@/util/dom";
 import { evalCondition } from "@/project/session";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
 import type { Condition } from "@/project/types";
-import { commandSummary } from "./commandSummary";
-import { createPreviewSimState } from "./previewSimulation";
+import { createPreviewSimState, previewSessionFromSimState } from "./previewSimulation";
+
+type PreviewVerdict = boolean | undefined;
 
 /**
- * Live TRUE/FALSE evaluation against a session snapshot for author feedback.
- * Uses play-start defaults when no live play session is available.
+ * Live condition evaluation against the editor's play-start simulation.
+ * Conditions that require state produced only during play stay explicitly undetermined.
  */
 export function renderConditionEvalPreview(condition: Condition | undefined): HTMLElement {
-  const simState = createPreviewSimState();
-  const sessionLike = {
-    switches: simState.switches,
-    selfSwitches: simState.selfSwitches,
-    variables: simState.variables,
-    timers: {} as Record<string, number>,
-    gold: simState.gold,
-    inventory: simState.inventory,
-    partyActorIds: simState.partyActorIds,
-    flags: simState.flags,
-    actorVitals: {},
-    currentMapId: "",
-    x: 0,
-    y: 0,
-  };
+  const session = previewSessionFromSimState(createPreviewSimState());
   const hostId = editorState.get().selectedEventId;
-  const ok = evalCondition(sessionLike as never, condition, hostId ?? undefined);
+  const verdict = evaluatePreviewCondition(session, condition, hostId ?? undefined);
   const summary = describeCondition(condition);
+  const determined = verdict !== undefined;
+  const badgeText = determined ? (verdict ? "충족" : "불충족") : "판정 불가";
+  const dataset: Record<string, string> = { testid: "event-condition-eval" };
+  if (determined) dataset.evalOk = verdict ? "true" : "false";
 
   return el("div", {
-    class: `event-condition-eval ${ok ? "is-true" : "is-false"}`,
-    dataset: { testid: "event-condition-eval", evalOk: ok ? "true" : "false" },
+    class: `event-condition-eval ${determined ? (verdict ? "is-true" : "is-false") : "is-undetermined"}`,
+    dataset,
     children: [
       el("div", {
         class: "event-condition-eval-badge",
-        text: ok ? "충족" : "불충족",
+        text: badgeText,
         dataset: { testid: "event-condition-eval-badge" },
       }),
       el("div", {
@@ -46,11 +39,20 @@ export function renderConditionEvalPreview(condition: Condition | undefined): HT
             text: summary,
             dataset: { testid: "event-condition-eval-summary" },
           }),
+          ...(determined
+            ? []
+            : [
+                el("div", {
+                  class: "event-condition-eval-note",
+                  text: "플레이 중 상태가 필요해 여기서는 판정할 수 없습니다.",
+                  dataset: { testid: "event-condition-eval-undetermined" },
+                }),
+              ]),
           el("div", {
             class: "event-condition-eval-note",
             text: hostId
-              ? `시뮬 상태 기준 · 호스트 ${hostId.replace(/^ev_[0-9a-f-]+$/i, "(자동 생성)")}`
-              : "시뮬 상태 기준 · 선택 이벤트 없음(셀프/활동 조건은 보수적으로 평가)",
+              ? `플레이 시작 시뮬 상태 기준 · 호스트 ${hostId.replace(/^ev_[0-9a-f-]+$/i, "(자동 생성)")}`
+              : "플레이 시작 시뮬 상태 기준 · 선택 이벤트 없음(셀프/활동 조건은 판정하지 않음)",
           }),
         ],
       }),
@@ -58,9 +60,150 @@ export function renderConditionEvalPreview(condition: Condition | undefined): HT
   });
 }
 
+function evaluatePreviewCondition(
+  session: PlaySessionLike,
+  condition: Condition | undefined,
+  hostEventId: string | undefined
+): PreviewVerdict {
+  if (!condition) return true;
+  switch (condition.kind) {
+    case "all": {
+      let hasUndetermined = false;
+      for (const child of condition.conditions) {
+        const childVerdict = evaluatePreviewCondition(session, child, hostEventId);
+        if (childVerdict === false) return false;
+        if (childVerdict === undefined) hasUndetermined = true;
+      }
+      return hasUndetermined ? undefined : true;
+    }
+    case "any": {
+      let hasUndetermined = false;
+      for (const child of condition.conditions) {
+        const childVerdict = evaluatePreviewCondition(session, child, hostEventId);
+        if (childVerdict === true) return true;
+        if (childVerdict === undefined) hasUndetermined = true;
+      }
+      return hasUndetermined ? undefined : false;
+    }
+    case "not": {
+      const childVerdict = evaluatePreviewCondition(session, condition.condition, hostEventId);
+      return childVerdict === undefined ? undefined : !childVerdict;
+    }
+    case "selfSwitch":
+      if (!hostEventId) return undefined;
+      break;
+    case "timer":
+      if (!Object.hasOwn(session.timers, condition.timerId)) return undefined;
+      break;
+    case "timePhase":
+    case "season":
+      if (!session.gameTime) return undefined;
+      break;
+    case "npcActivity":
+      if (!hostEventId || !Object.hasOwn(session.npcActivities ?? {}, hostEventId)) return undefined;
+      break;
+    case "friendshipAtLeast": {
+      const npcKey = condition.npcKey?.trim();
+      if (!npcKey || !Object.hasOwn(session.friendship ?? {}, npcKey)) return undefined;
+      break;
+    }
+    case "battleResult":
+      if (session.battleResult === undefined) return undefined;
+      break;
+    case "run":
+      if (session.roguelikeRun === undefined) return undefined;
+      break;
+  }
+  return evalCondition(session, condition, hostEventId);
+}
+
 function describeCondition(condition: Condition | undefined): string {
   if (!condition) return "(조건 없음)";
-  const full = commandSummary({ kind: "fork", condition, then: [] });
-  const sep = full.indexOf(": ");
-  return sep >= 0 ? full.slice(sep + 2) : full;
+  switch (condition.kind) {
+    case "switch":
+      return `${recordName("switch", condition.switchId)} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "variable":
+      return `${recordName("variable", condition.variableId)} ${comparison(condition.op, condition.value)}`;
+    case "selfSwitch":
+      return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "actor":
+      return `${databaseRecordName("actors", condition.actorId)} ${condition.present ? "파티에 있음" : "파티에 없음"}`;
+    case "item":
+      return `${databaseRecordName("items", condition.itemId)} ${condition.present ? "보유 중" : "보유 안 함"}`;
+    case "gold":
+      return `소지금 ${comparison(condition.op, condition.amount)}`;
+    case "timer":
+      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+    case "timePhase":
+      return `시간대 ${timePhaseName(condition.phase)}`;
+    case "season":
+      return `계절 ${seasonName(condition.season)}`;
+    case "npcActivity":
+      return `활동 ${condition.activity || "(없음)"}일 때`;
+    case "friendshipAtLeast":
+      return `${condition.npcKey?.trim() || "이 이벤트"} 호감도 ${condition.value} 이상`;
+    case "battleResult":
+      return `전투 결과 ${battleResultName(condition.result)}일 때`;
+    case "run":
+      return runConditionDescription(condition);
+    case "all":
+      return `(${condition.conditions.map(describeCondition).join(", ") || "조건 없음"}) 모두 맞을 때`;
+    case "any":
+      return `(${condition.conditions.map(describeCondition).join(", ") || "조건 없음"}) 하나라도 맞을 때`;
+    case "not":
+      return `(${describeCondition(condition.condition)}) 아닐 때`;
+  }
+}
+
+function recordName(kind: "switch" | "variable", id: string): string {
+  const records = kind === "switch" ? store.getCurrent().switches : store.getCurrent().variables;
+  const record = records.find((candidate) => candidate.id === id);
+  return record?.name.trim() || id || (kind === "switch" ? "스위치 선택" : "변수 선택");
+}
+
+function databaseRecordName(kind: "actors" | "items", id: string): string {
+  const record = store.getCurrent().database[kind].find((candidate) => candidate.id === id);
+  return record?.name.trim() || id || (kind === "actors" ? "주인공 선택" : "아이템 선택");
+}
+
+function comparison(op: "==" | ">=" | "<=" | ">" | "<" | "!=", value: number): string {
+  switch (op) {
+    case ">=":
+      return `${value} 이상`;
+    case "<=":
+      return `${value} 이하`;
+    case ">":
+      return `${value} 초과`;
+    case "<":
+      return `${value} 미만`;
+    case "==":
+      return `${value}와 같을 때`;
+    case "!=":
+      return `${value}와 다를 때`;
+  }
+}
+
+function timePhaseName(phase: Extract<Condition, { kind: "timePhase" }>["phase"]): string {
+  return { morning: "아침", day: "낮", evening: "저녁", night: "밤" }[phase];
+}
+
+function seasonName(season: Extract<Condition, { kind: "season" }>["season"]): string {
+  return { spring: "봄", summer: "여름", fall: "가을", winter: "겨울" }[season];
+}
+
+function battleResultName(result: Extract<Condition, { kind: "battleResult" }>["result"]): string {
+  return { victory: "승리", defeat: "패배", escape: "도망" }[result];
+}
+
+function runConditionDescription(condition: Extract<Condition, { kind: "run" }>): string {
+  switch (condition.query) {
+    case "active":
+      return `탐험이 ${condition.value === false ? "진행 중이 아닐 때" : "진행 중일 때"}`;
+    case "floor":
+      return `탐험 층 ${comparison(condition.op, condition.value)}`;
+    case "flag":
+      return `탐험 기억 ${condition.flag || "(없음)"} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "result":
+      return `탐험 결과 ${{ completed: "완료", failed: "실패", abandoned: "포기" }[condition.result]}일 때`;
+  }
 }
