@@ -28,9 +28,11 @@ import {
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
 import {
+  clearAgentBlueprint,
   finishAgentBlueprint,
   markAgentBlueprintProgress,
   setAgentBlueprintFromSpec,
+  syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
 import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
@@ -1004,6 +1006,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
+    // 청사진을 세션 스펙에 다시 맞춘다 — set_build_spec 은 계획을 세운 턴에만 오므로(스펙은
+    // 턴 간 유지된다) 이 재동기화가 없으면 두 번째 턴부터 맵에 밑그림이 사라진다.
+    syncAgentBlueprintWithSpec(activeSpecAtTurnStart);
     const ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
       getBaseProject: () => store.getCurrent(),
       getDraftProject: () => session.getProposedProject(),
@@ -1080,7 +1085,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         appendToolLine(event.name, event.result, event.args);
         ghostPreviewUpdater.handleToolCall(event);
         // 청사진 진행 — 이번 호출이 어느 칸을 짓고 있는지로 planned/building/done 을 옮긴다.
-        if (event.result.ok) markAgentBlueprintProgress(event.name, event.args);
+        // 쓰기 여부를 같이 넘긴다: 이 훅은 성공한 **모든** 툴콜에서 발화하므로 읽기 툴
+        // (show_map_region 등)이 그대로 통과하면 확인 호출이 진행을 앞당긴다.
+        if (event.result.ok) markAgentBlueprintProgress(event.name, event.args, { write: isWriteTool(event.name) });
         assistantBubble = null; // 툴 이후 새 assistant 응답은 새 버블.
         reasoningBox = null; // 툴 이후 새 추론은 새 상자.
         currentStreamNodes = [];
@@ -3079,6 +3086,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     unregisterAiAssistantBridge();
     registerAiBootIntentTarget(null);
     clearAgentGhostPreview();
+    // 패널이 사라지면 계획도 화면에 남을 이유가 없다(청사진은 더 이상 고스트에 얹혀 있지 않다).
+    clearAgentBlueprint();
     panel.remove();
   };
 

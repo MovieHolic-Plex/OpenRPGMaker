@@ -8,6 +8,7 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { conversationScopeKey, clearConversations, listConversations, loadConversation, saveConversation } from "@/ai/conversationStore";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
+import { getAgentBlueprintState, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
@@ -227,6 +228,23 @@ describe("새 대화 진입점", () => {
     expect(oldRecord?.entries.some((entry) => "text" in entry && entry.text.includes("새 대화"))).toBe(false);
     expect(oldRecord?.entries.some((entry) => "text" in entry && entry.text.includes("대기 메시지"))).toBe(false);
     expect(newRecord?.entries.some((entry) => "text" in entry && entry.text.includes("이전 대화"))).toBe(false);
+  });
+
+  it("Given a live blueprint When 새 대화 is clicked Then the plan overlay is dropped with the session", () => {
+    // 청사진(맵 위 계획 사각형)의 수명은 세션의 BuildSpec 이다 — 고스트 정리에 얹혀 있지 않으므로
+    // 세션을 버리는 경로(새 대화·대화 복원·프로젝트 전환은 모두 dropSession 을 지난다)가
+    // 직접 지워야 한다. 지우지 않으면 다음 대화 내내 남의 계획이 맵에 떠 있다.
+    const panel = renderPanel();
+    setAgentBlueprintFromSpec({
+      mapId: store.getCurrent().startMapId,
+      assets: [{ id: "site", kind: "clear", x: 0, y: 0, w: 4, h: 4 }],
+    });
+    expect(getAgentBlueprintState().entries).toHaveLength(1);
+
+    findByTestId(panel, "ai-new-chat")?.click();
+
+    expect(getAgentBlueprintState().entries).toEqual([]);
+    expect(getAgentBlueprintState().mapId).toBeNull();
   });
 
   it("Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty", () => {
