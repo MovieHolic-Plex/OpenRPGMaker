@@ -6,6 +6,8 @@ export const TERM_KEYS = [
   "skill",
   "item",
   "capture",
+  "defend",
+  "escape",
   "back",
   "target",
   "shopGreeting",

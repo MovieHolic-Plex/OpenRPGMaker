@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>전투 재미 수정 보고서 — 실제 전투 녹화 (2026-08-29)</title>
+<style>
+  :root{
+    --ink:#141719; --ink-2:#454c54; --ink-3:#79828c;
+    --paper:#f7f8fa; --card:#fff; --line:#e3e7ec;
+    --brand:#2f5bd0; --brand-soft:#eef2fd; --brand-line:#c9d6f5;
+    --code-bg:#151a21; --code-ink:#dfe6ef;
+    --hi:#c62f3d; --mid:#c07a12; --lo:#2f7d4f;
+    --gold:#b07d18;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Malgun Gothic",sans-serif;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 28px 96px}
+  header.hero{background:linear-gradient(155deg,#180f14 0%,#3a1622 46%,#7a2338 100%);color:#fdeef1;padding:54px 0 46px;margin-bottom:40px}
+  header.hero .wrap{padding-bottom:0}
+  header.hero h1{margin:0 0 12px;font-size:34px;letter-spacing:-.5px;line-height:1.32}
+  header.hero p{margin:0;color:#f0cfd7;max-width:78ch}
+  header.hero b{color:#fff}
+  .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px}
+  .meta span{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.19);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;color:#fbe7ec}
+  h2{margin:60px 0 6px;font-size:24px;letter-spacing:-.3px;padding-bottom:10px;border-bottom:2px solid var(--brand-line)}
+  h2 .n{color:var(--brand);font-variant-numeric:tabular-nums;margin-right:10px;font-size:20px}
+  h3{margin:36px 0 10px;font-size:17.5px}
+  h4{margin:22px 0 6px;font-size:15px;color:var(--ink-2)}
+  p{margin:10px 0}
+  .lede{font-size:17px;color:var(--ink-2)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;
+    background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:4px;padding:1px 5px}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;line-height:1.62;margin:14px 0}
+  pre code{background:none;border:0;padding:0;color:inherit;font-size:12.8px}
+  pre .del{color:#ff9d9d} pre .add{color:#9ce6a8} pre .cmt{color:#7d8b9c}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h5{margin:0 0 6px;font-size:13px;color:var(--brand);letter-spacing:.2px}
+  .card p{margin:0;font-size:13.5px;color:var(--ink-2)}
+  .card .big{font-size:26px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2}
+  .card.bad .big{color:var(--hi)} .card.bad h5{color:var(--hi)}
+  figure.shot{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  figure.shot img{display:block;width:100%;height:auto;border-radius:7px;border:1px solid var(--line);background:#07090c}
+  figcaption{margin-top:10px;font-size:13.5px;color:var(--ink-3);line-height:1.6}
+  figcaption b{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid2 figure.shot{margin:0}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid3 figure.shot{margin:0}
+  .grid3 figcaption{font-size:12.5px}
+  @media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#eef1f6;font-size:12.5px;letter-spacing:.3px;color:var(--ink-2);font-weight:700}
+  tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.tight td,table.tight th{padding:6px 11px;font-size:13px}
+  .chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}
+  .chip.hi{background:var(--hi)} .chip.mid{background:var(--mid)} .chip.lo{background:var(--lo)}
+  .chip.ghost{background:#eef1f6;color:var(--ink-2);border:1px solid var(--line)}
+  .note{background:var(--brand-soft);border:1px solid var(--brand-line);border-left:4px solid var(--brand);
+    border-radius:8px;padding:13px 16px;margin:16px 0;font-size:14.5px}
+  .note b{color:var(--brand)}
+  .ok{border-left-color:var(--lo);background:#f0f7f2;border-color:#c9e2d3}
+  .ok b{color:#2b6b45}
+  .warn{border-left-color:var(--mid);background:#fdf6e9;border-color:#eddcb8}
+  .warn b{color:#8f5b0d}
+  .bad{border-left-color:var(--hi);background:#fdecec;border-color:#f4c9c9}
+  .bad b{color:var(--hi)}
+  .path{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--ink-3);word-break:break-all}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:8px 0 0}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:34px}
+  @media (max-width:700px){.toc ol{columns:1}}
+  .toc a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent}
+  .toc a:hover{color:var(--brand);border-bottom-color:var(--brand-line)}
+  .fx{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--hi);border-radius:10px;padding:16px 20px;margin:20px 0}
+  .fx > h3{margin:0 0 8px;font-size:16.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fx .fx-id{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;background:#eef1f6;border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink-2)}
+  .fx dl{margin:10px 0 0;display:grid;grid-template-columns:96px 1fr;gap:6px 14px;font-size:14px}
+  .fx dt{color:var(--ink-3);font-size:12.5px;padding-top:2px}
+  .fx dd{margin:0}
+  .fx.m{border-left-color:var(--mid)} .fx.l{border-left-color:var(--ink-3)}
+  .bar{height:12px;border-radius:6px;background:#eef1f6;overflow:hidden;min-width:120px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#c62f3d,#e2705b)}
+  .tl{position:relative;margin:26px 0 34px;padding-top:26px;border-top:1px solid var(--line)}
+  .tl .track{position:relative;height:52px;background:linear-gradient(90deg,#eef2fd,#f7f8fa);border:1px solid var(--line);border-radius:8px}
+  .tl .ev{position:absolute;top:-22px;transform:translateX(-50%);font-size:11px;color:var(--ink-2);white-space:nowrap}
+  .tl .pin{position:absolute;top:0;bottom:0;width:2px;background:var(--hi)}
+  .tl .seg{position:absolute;top:8px;height:36px;border-radius:6px;font-size:11.5px;color:#fff;
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
+  footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+</style>
+<style>
+  header.hero{background:linear-gradient(155deg,#0d1520 0%,#12303a 46%,#1c6b5a 100%)}
+  header.hero p{color:#cfe9df}
+  header.hero .meta span{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#e6f6ef}
+  figure.shot img.gif{border:1px solid var(--line)}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);margin:22px 0}
+  .ba > div{padding:12px}
+  .ba > div + div{border-left:1px solid var(--line)}
+  .ba h6{margin:0 0 8px;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3)}
+  .ba .before h6{color:var(--hi)} .ba .after h6{color:var(--lo)}
+  .ba img{display:block;width:100%;height:auto;border-radius:7px;border:1px solid var(--line);background:#07090c}
+  .ba p{margin:8px 0 0;font-size:13px;color:var(--ink-2)}
+  @media (max-width:900px){.ba{grid-template-columns:1fr}.ba > div + div{border-left:0;border-top:1px solid var(--line)}}
+  .fx.done{border-left-color:var(--lo)}
+  .num-move{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .num-move .was{color:var(--ink-3);text-decoration:line-through}
+  .num-move .now{color:var(--lo);font-weight:700}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>전투가 재미없던 이유 10가지, 고치고 실제로 녹화했다</h1>
+    <p>2026-08-29 적대적 감사에서 <b>실제로 재본</b> 결함 21건 중, 엔진이 원인인 <b>10건</b>을 고쳤다.
+       고친 뒤에 <b>진짜 전투를 플레이해서 영상으로 녹화</b>하고, 그 영상을 잘라 GIF 로 만들었다.
+       아래 움직이는 그림은 모두 <b>손으로 만든 게 아니라 실제 게임 화면</b>이다.</p>
+    <div class="meta">
+      <span>2026-08-29</span>
+      <span>브랜치 battle-feel-fixes-2026-08-29</span>
+      <span>커밋 ce24fb1f</span>
+      <span>PR #253</span>
+      <span>측정 경로 player.html (출하 경로)</span>
+      <span>GIF 4개 · 스크린샷 12장</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <ol>
+    <li><a href="#one">한 장으로 보는 전/후</a></li>
+    <li><a href="#gif">움직이는 그림 4개</a></li>
+    <li><a href="#sound">소리 — 한 대 때리면 네 번 울렸다</a></li>
+    <li><a href="#anim">연출 — 통상공격에 아무것도 안 나왔다</a></li>
+    <li><a href="#time">시간 — 기다리는 시간이 너무 길었다</a></li>
+    <li><a href="#info">정보 — 적이 얼마나 남았는지 알 수 없었다</a></li>
+    <li><a href="#text">글씨 — 두 번째 줄이 잘려 있었다</a></li>
+    <li><a href="#balance">숫자 — 0 이 나오고 급소는 안 터졌다</a></li>
+    <li><a href="#howto">어떻게 녹화했나</a></li>
+    <li><a href="#honest">정정과 못 한 것</a></li>
+  </ol>
+</div>
+
+<h2 id="one"><span class="n">01</span>한 장으로 보는 전/후</h2>
+<p class="lede">왼쪽이 고치기 전, 오른쪽이 고친 뒤다. 같은 전투, 같은 슬라임, 같은 자리에서 찍었다.</p>
+
+<div class="ba">
+  <div class="before">
+    <h6>고치기 전</h6>
+    <img src="../evidence/battle-feel-audit-2026-08-29/03-command-menu.png" alt="고치기 전 커맨드 메뉴">
+    <p>메뉴가 <b>Attack / Skill / Item</b> 은 영어, <b>방어 / 도주</b> 는 한국어로 섞여 있다.
+       슬라임 위에는 아무 정보도 없다 — 몇 대 더 때려야 죽는지 알 수 없다.</p>
+  </div>
+  <div class="after">
+    <h6>고친 뒤</h6>
+    <img src="../evidence/battle-feel-after-2026-08-29/cutA-004.png" alt="고친 뒤 커맨드 메뉴">
+    <p>메뉴가 <b>공격 · 스킬 · 아이템 · 방어 · 도주</b> 전부 한국어다.
+       한 번 때린 슬라임은 <b>84/220</b> 체력 막대를 계속 보여준다. 화상(BRN) 표시도 붙는다.</p>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card"><h5>한 대 때릴 때 나는 소리</h5><div class="big num-move"><span class="was">4겹</span> → <span class="now">2번</span></div><p>같은 타격에 두 종류 음향 시스템이 동시에 울렸다</p></div>
+  <div class="card"><h5>기다리는 시간</h5><div class="big num-move"><span class="was">2092ms</span> → <span class="now">1365ms</span></div><p>−34%. 게다가 이제 키를 눌러 건너뛸 수 있다</p></div>
+  <div class="card"><h5>통상공격 애니메이션</h5><div class="big num-move"><span class="was">없음</span> → <span class="now">타격</span></div><p>전 구간 아무 효과도 안 떴다</p></div>
+  <div class="card"><h5>급소(크리티컬) 확률</h5><div class="big num-move"><span class="was">4%</span> → <span class="now">10%</span></div><p>25대에 한 번은 못 느낀다</p></div>
+  <div class="card"><h5>피해 0 이 되는 적</h5><div class="big num-move"><span class="was">24종 중 12종</span> → <span class="now">0종</span></div><p>Lv1 주인공을 아무리 때려도 0 이었다</p></div>
+  <div class="card"><h5>맞은 적 체력 표시</h5><div class="big num-move"><span class="was">선택 중만</span> → <span class="now">계속</span></div><p>"한 방 더면 죽는다" 판단이 가능해졌다</p></div>
+</div>
+
+<h2 id="gif">움직이는 그림 4개</h2>
+<p class="lede">Playwright 가 실제 브라우저에서 게임을 플레이한 영상(webm)을 녹화하고,
+   ffmpeg 로 필요한 구간만 잘라 GIF 로 만들었다. 재생 속도는 실제 속도 그대로다.</p>
+
+<figure class="shot">
+  <img class="gif" src="../evidence/battle-feel-after-2026-08-29/gif-01-attack-sequence.gif" alt="공격 한 번의 전체 흐름">
+  <figcaption><b>GIF 1 — 공격 한 번의 전체 흐름 (1.9초).</b>
+    대상을 고르고 확인 키를 누르면 → 주인공이 다가가고 → 맞는 순간 화면이 번쩍하고 멈추고(히트스톱) →
+    <b>-74</b> 숫자가 뜨고 → 슬라임 체력이 <b>84/220</b> 로 줄어들고 → 메시지 두 줄이 다 보인다.
+    소리는 <b>딱 두 번</b>만 난다(칼 휘두르는 소리, 맞는 소리).</figcaption>
+</figure>
+
+<div class="grid2">
+  <figure class="shot">
+    <img class="gif" src="../evidence/battle-feel-after-2026-08-29/gif-04-command-menu.gif" alt="커맨드 메뉴">
+    <figcaption><b>GIF 2 — 커맨드 메뉴.</b> 라벨이 전부 한국어다.
+      전에는 위아래로 출렁이는 숨쉬기 연출이 있었는데 그건 앞선 커밋에서 빼서, 지금은 캐릭터가 가만히 서 있다.</figcaption>
+  </figure>
+  <figure class="shot">
+    <img class="gif" src="../evidence/battle-feel-after-2026-08-29/gif-02-fast-forward.gif" alt="빨리감기">
+    <figcaption><b>GIF 3 — 빨리감기(새 기능).</b> 연출이 흐르는 중에 확인 키를 누르면 남은 재생이 <b>5배</b>로 감긴다.
+      누르고 있는 동안 메시지 창 오른쪽에 <b>▶▶</b> 표시가 뜬다. 반복 전투가 훨씬 덜 지루하다.</figcaption>
+  </figure>
+</div>
+
+<figure class="shot">
+  <img class="gif" src="../evidence/battle-feel-after-2026-08-29/gif-03-finish-and-result.gif" alt="마무리와 결과 화면">
+  <figcaption><b>GIF 4 — 마지막 타격과 결과 화면 (3.6초).</b>
+    막타는 히트스톱이 <b>1.9배</b>로 길어져서 "끝냈다" 는 느낌이 남는다. 쓰러질 때 전용 소리(collapse2)가 붙었고,
+    그 다음 승리 화면으로 넘어간다.</figcaption>
+</figure>
+<h2 id="sound"><span class="n">02</span>소리 — 한 대 때리면 네 번 울렸다</h2>
+
+<p>이 프로젝트에는 전투 소리를 내는 코드가 <b>두 개</b> 있었다. 하나는 미리 녹음된 음원(wav)을 재생하고,
+   다른 하나는 브라우저가 즉석에서 소리를 만들어낸다(신스). 문제는 둘이 <b>서로를 몰랐다</b>는 것이다.
+   한 번 때리면 양쪽이 다 울렸다.</p>
+
+<h4>고치기 전 — 브라우저가 실제로 낸 소리를 가로채서 기록한 것</h4>
+<pre><code>  26ms  sample       Attack1.wav      <span class="cmt">← 칼 휘두르는 소리</span>
+ 592ms  synth-noise  bufferSource     <span class="cmt">← 신스가 만든 잡음</span>
+ 593ms  synth-tone   oscillator       <span class="cmt">← 신스가 만든 톤</span>
+ 594ms  sample       Damage2.wav      <span class="cmt">← 맞는 소리</span>
+        <span class="del">→ 592~594ms 사이에 소리 3개가 겹쳐서 "퍽" 이 아니라 "퍼져적" 처럼 들렸다</span></code></pre>
+
+<h4>고친 뒤 — 같은 방식으로 다시 측정</h4>
+<pre><code>  34ms  sample  Attack1.wav
+ 516ms  sample  Damage2.wav
+        <span class="add">→ 딱 두 번. 타격감이 선명해졌다</span></code></pre>
+
+<div class="note ok"><b>어떻게 고쳤나.</b> 소리를 내는 창구를 <code>playBattleCue()</code> 하나로 합쳤다.
+  순서는 <b>음원 → 대체 음원 → 신스</b>. 음원이 있으면 신스는 아예 울리지 않는다.
+  음원이 빠진 프로젝트에서도 소리가 나긴 하도록 신스는 마지막 안전망으로 남겼다.</div>
+
+<div class="note"><b>덤으로 채운 것.</b> 회복과 전투불능(쓰러짐)에는 아예 소리가 배정돼 있지 않아서 무음이었다.
+  회복은 <code>recovery5</code>, 쓰러짐은 <code>collapse2</code> 를 붙였다. 쓰러지는 소리는 맞는 소리와 안 겹치게 260ms 뒤에 낸다.</div>
+
+<h2 id="anim"><span class="n">03</span>연출 — 통상공격에 아무것도 안 나왔다</h2>
+
+<p>스킬을 쓰면 폭발이나 번개 같은 효과가 뜨는데, <b>그냥 "공격"</b> 을 하면 아무 효과도 안 떴다.
+   전투의 90% 는 그냥 공격이다. 즉 <b>전투 시간의 대부분이 무연출</b>이었다.</p>
+
+<table>
+  <tr><th>측정 항목</th><th>고치기 전</th><th>고친 뒤</th></tr>
+  <tr><td>공격 중 화면에 뜬 애니메이션</td><td class="num">전 구간 <code>null</code></td><td class="num"><code>타격</code></td></tr>
+  <tr><td>프로젝트가 가진 애니메이션 수</td><td class="num">43개</td><td class="num">43개 (그대로)</td></tr>
+</table>
+
+<p>원인은 단순했다. 통상공격의 애니메이션을 찾는 순서가 <b>무기 → 직업 → 액터 → 없으면 포기</b>였다.
+   무기에 애니메이션을 지정하지 않은 프로젝트는 그대로 무연출이 된다.
+   맨 끝에 <b>"그래도 없으면 기본 애니메이션을 쓴다"</b> 한 단계를 붙였다.</p>
+
+<pre><code>  weaponAnimationId
+  ?? classAnimationId
+  ?? actorAnimationId
+<span class="add">  ?? fallbackHitAnimationId()   // 기본 애니메이션 → 없으면 첫 번째 것</span></code></pre>
+
+<div class="note warn"><b>솔직히 말하면.</b> 이 결함은 테스트용 프로젝트 파일이 무기 애니메이션을 안 채워둔 탓도 있었다.
+  하지만 <b>사용자 프로젝트도 똑같이 비어 있을 수 있고</b>, 그때 화면에 아무것도 안 뜨는 건 엔진 잘못이다. 그래서 고쳤다.</div>
+
+<h2 id="time"><span class="n">04</span>시간 — 기다리는 시간이 너무 길었다</h2>
+
+<p>공격 한 번의 흐름은 <b>다가감 → 맞는 순간 → 여운</b> 세 토막이다. 이 시간 배분이 거꾸로였다.</p>
+
+<table>
+  <tr><th>구간</th><th>전</th><th>후</th><th>왜</th></tr>
+  <tr><td>다가감</td><td class="num">550ms</td><td class="num">470ms</td><td>준비 동작은 짧아야 답답하지 않다</td></tr>
+  <tr><td>맞는 순간(히트스톱)</td><td class="num">120ms</td><td class="num">110ms</td><td>기준값. 급소·막타에서 늘어난다</td></tr>
+  <tr><td>여운</td><td class="num">750ms</td><td class="num">430ms</td><td><b>절정보다 여운이 6배 길었다.</b> 여기가 죽은 시간이었다</td></tr>
+  <tr><td>합계(실측)</td><td class="num">2092ms</td><td class="num"><b>1365ms</b></td><td>−34%</td></tr>
+</table>
+
+<h3>행동의 무게에 따라 리듬이 달라진다</h3>
+<p>전에는 <b>급소를 터뜨려도, 빗나가도, 막타를 내도 전부 같은 길이</b>였다. 그래서 모든 턴이 똑같이 느껴졌다.
+   이제 행동을 세 단계로 나눠 시간을 배율로 늘리고 줄인다.</p>
+
+<table class="tight">
+  <tr><th>무게</th><th>언제</th><th>다가감</th><th>히트스톱</th><th>여운</th></tr>
+  <tr><td><span class="chip lo">light</span></td><td>빗나감 · 0 피해 · 회복</td><td class="num">×0.72</td><td class="num">×0 (없음)</td><td class="num">×0.68</td></tr>
+  <tr><td><span class="chip ghost">normal</span></td><td>평범한 타격</td><td class="num">×1</td><td class="num">×1</td><td class="num">×1</td></tr>
+  <tr><td><span class="chip hi">heavy</span></td><td>급소 · 막타</td><td class="num">×1.28</td><td class="num"><b>×1.9</b></td><td class="num">×1.45</td></tr>
+</table>
+
+<div class="note ok"><b>빨리감기를 새로 넣었다.</b> 연출이 흐르는 중에 확인 키나 취소 키를 누르면 남은 재생이 <b>5배</b>로 감긴다.
+  누르는 동안 메시지 창에 <b>▶▶</b> 가 뜬다. 위 <b>GIF 3</b> 에서 실제로 동작하는 걸 볼 수 있다.
+  아무리 연출을 잘 만들어도 100번째 전투에서는 지루하다 — 건너뛸 자유가 있어야 한다.</div>
+
+<div class="note"><b>글자만 뜨는 로그도 읽을 시간을 준다.</b> 전에는 시각 효과가 없는 로그(상태 변화, 대사)가 한 프레임에 스쳐 지나갔다.
+  이제 <b>520ms</b> 머문다.</div>
+<h2 id="info"><span class="n">05</span>정보 — 적이 얼마나 남았는지 알 수 없었다</h2>
+
+<p>고전 rm2003 스킨은 원작 고증을 이유로 <b>적 체력을 대상 선택 중에만</b> 보여줬다.
+   결과적으로 "한 방 더면 죽는다 / 아직 멀었다" 는 판단이 <b>구조적으로 불가능</b>했다.
+   판단할 게 없으면 모든 턴이 같은 무게가 되고, 그게 전투가 지루한 가장 큰 이유였다.</p>
+
+<div class="ba">
+  <div class="before">
+    <h6>고치기 전 — 슬라임 위가 텅 비어 있다</h6>
+    <img src="../evidence/battle-feel-audit-2026-08-29/03-command-menu.png" alt="적 체력이 안 보인다">
+    <p>세 대를 때렸는지 다섯 대를 때렸는지 화면만 봐서는 알 수 없다.</p>
+  </div>
+  <div class="after">
+    <h6>고친 뒤 — 84/220 이 계속 붙어 있다</h6>
+    <img src="../evidence/battle-feel-after-2026-08-29/cutA-001.png" alt="적 체력이 보인다">
+    <p>한 번이라도 때린 적은 남은 체력을 계속 보여준다.
+       <b>아직 안 때린 적은 그대로 감춘다</b> — 정보를 모으는 것도 플레이의 일부다.</p>
+  </div>
+</div>
+
+<h3>피해 0 이 아무 표시도 없이 지나갔다</h3>
+<p>공격이 완전히 막혔을 때(피해 0) 화면에 <b>아무것도</b> 안 떴다. 플레이어는 "입력이 씹혔나?" 하고 헷갈린다.
+   이제 회색 <b>0</b> 팝업이 뜬다. 빗나감은 <b>MISS</b>, 회복은 <b>+N</b>, 피해는 <b>-N</b> 으로 전부 구분된다.</p>
+
+<h3>상태 변화 로그가 내부 코드를 노출했다</h3>
+<pre><code><span class="del">전:  state-poison-01 상태가 되었다</span>
+<span class="add">후:  독이 걸렸다!        / 독이 풀렸다.  / 상태 이상으로 12 피해를 입었다.</span></code></pre>
+<p>데이터베이스에 등록된 <b>상태 이름</b>을 읽어서 쓰고, 한국어 조사(이/가)도 이름에 맞춰 붙인다.</p>
+
+<h2 id="text"><span class="n">06</span>글씨 — 두 번째 줄이 잘려 있었다</h2>
+
+<p>이건 GIF 를 찍다가 발견했다. 처음 녹화한 영상을 보니 <b>"슬라임에게 74 피해!"</b> 의 아래 절반이 잘려 있었다.</p>
+
+<div class="ba">
+  <div class="before">
+    <h6>고치기 전 — 두 번째 줄이 반쯤 잘렸다</h6>
+    <img src="../evidence/battle-feel-after-2026-08-29/before-message-clipped.png" alt="메시지 두 번째 줄 잘림">
+    <p>메시지 창 높이가 <b>44px 로 고정</b>돼 있었다. 브라우저에 물어보니 실제 내용 높이는 <b>54px</b> 였다 —
+       10px 만큼이 잘려나간 것이다.</p>
+  </div>
+  <div class="after">
+    <h6>고친 뒤 — 두 줄이 온전히 보인다</h6>
+    <img src="../evidence/battle-feel-after-2026-08-29/cutA-001.png" alt="메시지 두 줄 정상">
+    <p>한 줄 높이는 최소값으로 남기고, 필요할 때만 늘어나게 했다. 측정값 <b>client 65 / scroll 65</b> — 딱 맞는다.</p>
+  </div>
+</div>
+
+<pre><code>  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-window {
+<span class="del">-   height: 44px;
+-   max-height: 44px;
+-   min-height: 0;</span>
+<span class="add">+   height: auto;
++   max-height: none;
++   min-height: 44px;</span>
+  }</code></pre>
+
+<div class="note ok"><b>이 결함은 이제 자동으로 감시된다.</b> 녹화 테스트가 매번 메시지 창의
+  <code>scrollHeight</code> 와 <code>clientHeight</code> 를 비교하고, 잘리면 테스트가 실패한다.</div>
+
+<h2 id="balance"><span class="n">07</span>숫자 — 0 이 나오고 급소는 안 터졌다</h2>
+
+<h3>기본 적 절반이 주인공에게 정확히 0 을 줬다</h3>
+<p>이 엔진의 기본 피해 계산은 <b>위력 + 공격력/2 − 방어력/2</b> 라는 뺄셈식이다.
+   문제는 방어력이 조금만 높아도 결과가 <b>0 이하로 붕괴</b>한다는 것이다.
+   Lv1 주인공(방어 59) 을 기준으로 재보니 <b>기본 적 24종 중 12종이 정확히 0</b> 을 줬다.
+   적이 때려도 체력이 안 줄면 전투에 긴장이 없다.</p>
+
+<table class="tight">
+  <tr><th>적 방어력</th><th>주인공이 주는 피해 (전)</th></tr>
+  <tr><td class="num">0</td><td class="num">67</td></tr>
+  <tr><td class="num">32</td><td class="num">51</td></tr>
+  <tr><td class="num">64</td><td class="num">35</td></tr>
+  <tr><td class="num">128</td><td class="num">3 <span class="chip hi">붕괴 직전</span></td></tr>
+  <tr><td class="num">200</td><td class="num">0 <span class="chip hi">완전 붕괴</span></td></tr>
+</table>
+
+<p><b>고친 방식:</b> 방어를 적용하기 <b>전</b> 위력의 <b>12.5%</b> 를 하한으로 둔다.
+   방어를 뚫는 공격의 피해는 <b>손대지 않는다</b> — 방어력을 올리는 보람은 그대로 남는다.</p>
+
+<pre><code>  방어력 200 vs 위력 12·공격력 12
+    방어 전 위력 = 12 + 12/2 = 18
+    방어 적용   = 18 - 100 = <span class="del">-82 → 0</span>
+    하한 적용   = <span class="add">floor(18 × 0.125) = 2</span>
+
+  방어력 10 vs 위력 40·공격력 100
+    방어 적용   = 40 + 50 - 5 = <span class="add">85 (하한 11 보다 크므로 그대로)</span></code></pre>
+
+<h3>급소(크리티컬)가 안 보일 만큼 드물었다</h3>
+<table class="tight">
+  <tr><th></th><th>전</th><th>후</th><th>이유</th></tr>
+  <tr><td>확률</td><td class="num">4%</td><td class="num"><b>10%</b></td><td>25대에 한 번은 있는지 없는지 못 느낀다</td></tr>
+  <tr><td>배율</td><td class="num">1.5배</td><td class="num"><b>1.35배</b></td><td>자주 터지는 대신 한 방 맛은 줄인다</td></tr>
+</table>
+<p>확률만 올리면 난이도가 흔들리므로 배율을 같이 내렸다. 대신 급소는 <b>heavy</b> 로 취급돼서
+   히트스톱이 1.9배 길어지고 화면 번쩍임이 강해진다 — <b>숫자보다 연출로</b> 특별함을 표현한다.</p>
+
+<h3>방어 · 도주 라벨을 바꿀 수 없었다</h3>
+<p>"공격 / 스킬 / 아이템" 은 용어 사전에서 바꿀 수 있었는데 <b>"방어 / 도주" 는 코드에 박혀</b> 있었다.
+   그래서 테스트 프로젝트가 앞 세 개만 영어로 바꿨더니 <b>메뉴가 반은 영어, 반은 한국어</b>가 됐다(위 01 절의 왼쪽 사진).
+   <code>defend</code> · <code>escape</code> 를 용어 사전에 넣어서 이제 둘 다 바꿀 수 있다.</p>
+<h2 id="howto"><span class="n">08</span>어떻게 녹화했나</h2>
+
+<p>"고쳤다" 는 말만으로는 못 믿는다. 그래서 <b>사람이 하는 것과 똑같은 방식</b>으로 게임을 플레이하는
+   자동 테스트를 만들고, 그 화면을 영상으로 남겼다.</p>
+
+<ol>
+  <li><b>출하 경로로 들어간다.</b> 에디터의 미리보기가 아니라 실제 플레이어(<code>player.html</code>) 를 띄운다.
+      에디터 화면은 온보딩 안내창이 가로막아서 자동 조작이 안 된다(이건 이 브랜치와 무관하게 원래 그렇다).</li>
+  <li><b>키보드만 쓴다.</b> 출하된 전투는 마우스 클릭을 무시한다. 그래서 방향키와 <code>z</code> · <code>x</code> 만으로
+      맵을 걸어가 적을 만나고, 메뉴를 고르고, 공격한다.</li>
+  <li><b>소리를 가로챈다.</b> <code>window.Audio</code> 와 <code>AudioContext</code> 를 감싸서
+      <b>언제 · 어떤 소리가</b> 울렸는지 밀리초 단위로 기록한다. 위 02 절의 표가 그 기록이다.</li>
+  <li><b>영상으로 녹화한다.</b> Playwright 의 영상 녹화(1024×768 webm) 를 켜고,
+      중요한 순간의 시각을 <code>marks</code> 로 적어둔다.</li>
+  <li><b>GIF 로 자른다.</b> <code>scripts/make-battle-gifs.mjs</code> 가 그 <code>marks</code> 를 읽어
+      ffmpeg 로 필요한 구간만 잘라낸다(2-pass 팔레트로 색 번짐을 줄였다).</li>
+</ol>
+
+<div class="note warn"><b>중요한 시행착오.</b> 처음에는 스크린샷을 연사로 찍어 GIF 를 만들려 했다.
+  그런데 스크린샷 한 장에 <b>340ms</b> 씩 걸려서, 1.4초짜리 연출이 8장으로만 남았다 — 움직임이 뚝뚝 끊긴다.
+  더 나쁜 건 스크린샷을 찍는 동안 게임은 계속 돌아가므로 <b>영상이 늘어져 보인다</b>는 점이었다.
+  그래서 GIF 용 구간은 <b>스크린샷을 한 장도 안 찍고</b> 키 입력과 대기만으로 진행하고,
+  프레임 단위 계측은 <b>그 다음 턴</b>에서 따로 하도록 나눴다.</div>
+
+<h3>영상 자체가 회귀 감시 장치가 됐다</h3>
+<p>녹화 테스트는 다음 5가지를 매번 검사한다. 하나라도 어긋나면 테스트가 빨간불이 된다.</p>
+<table class="tight">
+  <tr><th>검사</th><th>기준</th><th>지금 값</th></tr>
+  <tr><td>타격 소리가 겹치지 않는다</td><td>200ms 이후 소리 ≤ 2건</td><td class="num">2건 <span class="chip lo">통과</span></td></tr>
+  <tr><td>메뉴 라벨에 영어가 섞이지 않는다</td><td>Attack/Skill/Item 없음</td><td class="num">공격·스킬·아이템·방어·도주 <span class="chip lo">통과</span></td></tr>
+  <tr><td>통상공격에 애니메이션이 실린다</td><td>한 프레임이라도 null 아님</td><td class="num">타격 <span class="chip lo">통과</span></td></tr>
+  <tr><td>맞은 적의 체력이 보인다</td><td>노출된 적 1 이상</td><td class="num">84/220 <span class="chip lo">통과</span></td></tr>
+  <tr><td>메시지 창이 글씨를 자르지 않는다</td><td>scroll ≤ client</td><td class="num">65 / 65 <span class="chip lo">통과</span></td></tr>
+</table>
+
+<div class="grid3">
+  <figure class="shot">
+    <img src="../evidence/battle-feel-after-2026-08-29/11-target-select.png" alt="대상 선택">
+    <figcaption><b>대상 선택.</b> 슬라임에 흰 테두리가 잡힌다.</figcaption>
+  </figure>
+  <figure class="shot">
+    <img src="../evidence/battle-feel-after-2026-08-29/cutB-tail.png" alt="빨리감기 직후">
+    <figcaption><b>빨리감기 직후.</b> 남은 연출이 5배로 감긴 뒤 메뉴로 돌아온 상태.</figcaption>
+  </figure>
+  <figure class="shot">
+    <img src="../evidence/battle-feel-after-2026-08-29/90-result.png" alt="결과 화면">
+    <figcaption><b>결과 화면.</b> 마지막 타격 뒤 승리 화면으로 넘어간다.</figcaption>
+  </figure>
+</div>
+
+<h2 id="honest"><span class="n">09</span>정정과 못 한 것</h2>
+
+<h3>지난 보고서에서 내가 틀린 것</h3>
+<div class="note bad"><b>F03 "확인 소리가 두 번 난다" 는 오독이었다.</b>
+  코드를 다시 읽어보니 <code>battleSfx</code> 가 <b>의도적으로</b> 880Hz 톤을 낸 뒤 0.05초 뒤에 1320Hz 톤을 낸다 —
+  두 음으로 된 하나의 효과음이다. 버그가 아니다.</div>
+<div class="note bad"><b>F17 "상태에 지속시간이 없다" 는 절반 틀렸다.</b>
+  <code>battleStates.ts</code> 가 <code>stateTurns</code> 로 턴 수를 세고 있고 자연 회복 확률도 지원한다.
+  정확히 말하면 <b>고정 턴 상한이 없다</b>는 것이지, 지속시간 개념 자체가 없는 게 아니다.</div>
+<div class="note warn"><b>F01 · F12 는 테스트 프로젝트 파일 탓도 있었다.</b>
+  무기 애니메이션이 비어 있었고, 용어를 앞 세 개만 영어로 바꿔놨다.
+  하지만 두 경우 모두 <b>엔진이 그 상황을 못 버티는 게 진짜 문제</b>였고(애니메이션 최종 폴백 없음, 방어·도주 하드코딩),
+  그 부분을 고쳤다.</div>
+
+<h3>일부러 안 한 것</h3>
+<table class="tight">
+  <tr><th>항목</th><th>왜 안 했나</th></tr>
+  <tr><td>속성 상성 데이터(불·물·풀)</td><td>엔진은 이미 지원한다. 데이터를 채우는 건 콘텐츠 저작이라 이 브랜치 범위가 아니다</td></tr>
+  <tr><td>다중 대상 스킬</td><td>같은 이유. 스킬 2개가 전부 단일 대상 피해로만 만들어져 있다</td></tr>
+  <tr><td>보스의 조건부 행동(체력 절반에서 패턴 변경)</td><td>같은 이유. 적 2종 중 조건부 행동을 가진 적이 0종이다</td></tr>
+  <tr><td>전투 BGM</td><td>같은 이유. 음원 배정 문제다</td></tr>
+</table>
+
+<h3>검증 결과 — 통과한 것과 못 돌린 것</h3>
+<table>
+  <tr><th>항목</th><th>결과</th></tr>
+  <tr><td><code>test/battleFeelFixes.test.ts</code> (신규 9건) + <code>battleActiveSlotsEvents</code> (21건)</td><td><span class="chip lo">30/30 통과</span></td></tr>
+  <tr><td><code>test/runtime/_battle-feel-recording.spec.ts</code> (실전투 녹화 + 회귀 가드 5건)</td><td><span class="chip lo">통과</span></td></tr>
+  <tr><td><code>npm run gates:css</code> (CSS 예산 래칫)</td><td><span class="chip lo">회귀 0건</span> · 기준선은 저장하지 않았다</td></tr>
+  <tr><td><code>npm run typecheck:app</code></td><td><span class="chip hi">실행 불가</span> — <code>TS5102: Option 'baseUrl' has been removed</code>.
+      <b>이 브랜치 이전부터</b> 깨져 있다. 타입 검사는 하지 못했다</td></tr>
+  <tr><td><code>test/battleElementAdversarialFixes.test.ts</code></td><td><span class="chip mid">1건 실패</span> —
+      깨끗한 체크아웃(HEAD 7deee326) 에서 <b>똑같이 실패</b>하는 것을 확인했다. 내 회귀가 아니다</td></tr>
+</table>
+
+<div class="note"><b>이 저장소의 테스트는 원래 크게 빨갛다.</b> 손대지 않은 main 에서도 84~85개 파일이 실패한다.
+  그래서 전체 숫자로는 회귀를 판단할 수 없고, <b>내가 건드린 경로의 테스트가 초록인지</b>로 판단했다.</div>
+
+<h2><span class="n">10</span>고친 것 한눈에</h2>
+<table>
+  <tr><th>#</th><th>무엇이 문제였나</th><th>어디를 고쳤나</th></tr>
+  <tr><td class="num">1</td><td>한 대에 소리 4겹</td><td><code>src/player/battleJuice.ts</code> · <code>battleDom.ts</code></td></tr>
+  <tr><td class="num">2</td><td>회복·쓰러짐 무음</td><td><code>src/player/battleJuice.ts</code></td></tr>
+  <tr><td class="num">3</td><td>통상공격 무연출</td><td><code>src/battle/runtime.ts</code></td></tr>
+  <tr><td class="num">4</td><td>여운이 절정보다 6배 길었다</td><td><code>src/player/battleSequencer.ts</code></td></tr>
+  <tr><td class="num">5</td><td>모든 행동이 같은 리듬</td><td><code>src/player/battleActionBeats.ts</code></td></tr>
+  <tr><td class="num">6</td><td>연출을 건너뛸 수 없었다</td><td><code>src/player/battleDom.ts</code></td></tr>
+  <tr><td class="num">7</td><td>맞은 적의 체력이 안 보였다</td><td><code>src/player/battleFieldDom.ts</code> · <code>17-sprint-a-polish.css</code></td></tr>
+  <tr><td class="num">8</td><td>피해 0 이 무표시</td><td><code>src/player/battleSequencer.ts</code> · <code>battleFieldDom.ts</code></td></tr>
+  <tr><td class="num">9</td><td>메시지 두 번째 줄 잘림</td><td><code>src/styles/runtime/battle-skins/_rm2003.css</code></td></tr>
+  <tr><td class="num">10</td><td>상태 로그가 내부 id 노출</td><td><code>src/player/battleSequencer.ts</code></td></tr>
+  <tr><td class="num">11</td><td>뺄셈식 방어가 0 으로 붕괴</td><td><code>src/battle/battleDamage.ts</code></td></tr>
+  <tr><td class="num">12</td><td>급소가 안 보일 만큼 드물었다</td><td><code>src/battle/battleDamage.ts</code></td></tr>
+  <tr><td class="num">13</td><td>방어·도주를 바꿀 수 없었다</td><td><code>src/project/terms.ts</code> 외 3개</td></tr>
+</table>
+
+<footer>
+  <p>브랜치 <code>battle-feel-fixes-2026-08-29</code> · 커밋 <code>ce24fb1f</code> · PR
+     <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/253">#253</a> · 2026-08-29</p>
+  <p class="path">증거 원본: evidence/battle-feel-after-2026-08-29/ (GIF 4개 · PNG 12장 · JSON 5개 · webm 원본)<br>
+     고치기 전 증거: evidence/battle-feel-audit-2026-08-29/<br>
+     이전 감사 보고서: reports/battle-feel-adversarial-audit-2026-08-29.html</p>
+</footer>
+
+</div>
+</body>
+</html>

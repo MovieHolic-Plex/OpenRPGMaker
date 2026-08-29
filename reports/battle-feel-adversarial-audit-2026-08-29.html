@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전투 씬 적대적 감사 — 연출 · 효과음 · 스킬 · 밸런스 · rpg-zzu</title>
+<style>
+  :root{
+    --ink:#141719; --ink-2:#454c54; --ink-3:#79828c;
+    --paper:#f7f8fa; --card:#fff; --line:#e3e7ec;
+    --brand:#2f5bd0; --brand-soft:#eef2fd; --brand-line:#c9d6f5;
+    --code-bg:#151a21; --code-ink:#dfe6ef;
+    --hi:#c62f3d; --mid:#c07a12; --lo:#2f7d4f;
+    --gold:#b07d18;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Malgun Gothic",sans-serif;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 28px 96px}
+  header.hero{background:linear-gradient(155deg,#180f14 0%,#3a1622 46%,#7a2338 100%);color:#fdeef1;padding:54px 0 46px;margin-bottom:40px}
+  header.hero .wrap{padding-bottom:0}
+  header.hero h1{margin:0 0 12px;font-size:34px;letter-spacing:-.5px;line-height:1.32}
+  header.hero p{margin:0;color:#f0cfd7;max-width:78ch}
+  header.hero b{color:#fff}
+  .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px}
+  .meta span{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.19);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;color:#fbe7ec}
+  h2{margin:60px 0 6px;font-size:24px;letter-spacing:-.3px;padding-bottom:10px;border-bottom:2px solid var(--brand-line)}
+  h2 .n{color:var(--brand);font-variant-numeric:tabular-nums;margin-right:10px;font-size:20px}
+  h3{margin:36px 0 10px;font-size:17.5px}
+  h4{margin:22px 0 6px;font-size:15px;color:var(--ink-2)}
+  p{margin:10px 0}
+  .lede{font-size:17px;color:var(--ink-2)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;
+    background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:4px;padding:1px 5px}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;line-height:1.62;margin:14px 0}
+  pre code{background:none;border:0;padding:0;color:inherit;font-size:12.8px}
+  pre .del{color:#ff9d9d} pre .add{color:#9ce6a8} pre .cmt{color:#7d8b9c}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h5{margin:0 0 6px;font-size:13px;color:var(--brand);letter-spacing:.2px}
+  .card p{margin:0;font-size:13.5px;color:var(--ink-2)}
+  .card .big{font-size:26px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2}
+  .card.bad .big{color:var(--hi)} .card.bad h5{color:var(--hi)}
+  figure.shot{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  figure.shot img{display:block;width:100%;height:auto;border-radius:7px;border:1px solid var(--line);background:#07090c}
+  figcaption{margin-top:10px;font-size:13.5px;color:var(--ink-3);line-height:1.6}
+  figcaption b{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid2 figure.shot{margin:0}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid3 figure.shot{margin:0}
+  .grid3 figcaption{font-size:12.5px}
+  @media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#eef1f6;font-size:12.5px;letter-spacing:.3px;color:var(--ink-2);font-weight:700}
+  tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.tight td,table.tight th{padding:6px 11px;font-size:13px}
+  .chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}
+  .chip.hi{background:var(--hi)} .chip.mid{background:var(--mid)} .chip.lo{background:var(--lo)}
+  .chip.ghost{background:#eef1f6;color:var(--ink-2);border:1px solid var(--line)}
+  .note{background:var(--brand-soft);border:1px solid var(--brand-line);border-left:4px solid var(--brand);
+    border-radius:8px;padding:13px 16px;margin:16px 0;font-size:14.5px}
+  .note b{color:var(--brand)}
+  .ok{border-left-color:var(--lo);background:#f0f7f2;border-color:#c9e2d3}
+  .ok b{color:#2b6b45}
+  .warn{border-left-color:var(--mid);background:#fdf6e9;border-color:#eddcb8}
+  .warn b{color:#8f5b0d}
+  .bad{border-left-color:var(--hi);background:#fdecec;border-color:#f4c9c9}
+  .bad b{color:var(--hi)}
+  .path{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--ink-3);word-break:break-all}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:8px 0 0}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:34px}
+  @media (max-width:700px){.toc ol{columns:1}}
+  .toc a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent}
+  .toc a:hover{color:var(--brand);border-bottom-color:var(--brand-line)}
+  .fx{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--hi);border-radius:10px;padding:16px 20px;margin:20px 0}
+  .fx > h3{margin:0 0 8px;font-size:16.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fx .fx-id{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;background:#eef1f6;border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink-2)}
+  .fx dl{margin:10px 0 0;display:grid;grid-template-columns:96px 1fr;gap:6px 14px;font-size:14px}
+  .fx dt{color:var(--ink-3);font-size:12.5px;padding-top:2px}
+  .fx dd{margin:0}
+  .fx.m{border-left-color:var(--mid)} .fx.l{border-left-color:var(--ink-3)}
+  .bar{height:12px;border-radius:6px;background:#eef1f6;overflow:hidden;min-width:120px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#c62f3d,#e2705b)}
+  .tl{position:relative;margin:26px 0 34px;padding-top:26px;border-top:1px solid var(--line)}
+  .tl .track{position:relative;height:52px;background:linear-gradient(90deg,#eef2fd,#f7f8fa);border:1px solid var(--line);border-radius:8px}
+  .tl .ev{position:absolute;top:-22px;transform:translateX(-50%);font-size:11px;color:var(--ink-2);white-space:nowrap}
+  .tl .pin{position:absolute;top:0;bottom:0;width:2px;background:var(--hi)}
+  .tl .seg{position:absolute;top:8px;height:36px;border-radius:6px;font-size:11.5px;color:#fff;
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
+  footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>전투 씬 적대적 감사: 연출은 있는데 &ldquo;게임&rdquo;이 없다</h1>
+    <p class="lede">출하 경로(<code>player.html</code>)로 실전투에 들어가 <b>공격 1회를 고속 촬영</b>하고, 같은 구간의
+    <b>오디오 이벤트를 전부 후킹</b>해서 시각과 나란히 기록했다. 그 위에 기본 프로젝트 콘텐츠 전량(적 221 · 스킬 23 · 종족 120)을
+    수식으로 훑어 밸런스를 재측정했다. 결론은 짧다 — <b>연출 부품은 20종 넘게 붙어 있지만 그 부품들이 전부 &ldquo;똑같은 한 번의 타격&rdquo;에만 쓰이고,
+    플레이어가 내릴 결정은 턴당 1개, 그 결정의 결과는 대부분 &ldquo;한 방에 죽는다&rdquo;다.</b> 아래 수치·화면은 전부 이 워크트리의 현재 코드에서 실측한 것이다.</p>
+    <div class="meta">
+      <span>2026-08-29</span>
+      <span>브랜치 HEAD d7329348</span>
+      <span>출하 런타임 Chromium 1024×768</span>
+      <span>캡처 14장 · 오디오 후킹 실측</span>
+      <span>결함 21건</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <ol>
+    <li><a href="#s1">한눈에</a></li>
+    <li><a href="#s2">어떻게 측정했나</a></li>
+    <li><a href="#s3">공격 1회 필름스트립</a></li>
+    <li><a href="#s4">연출 인벤토리 — 뭐가 있나</a></li>
+    <li><a href="#s5">효과음: 한 방에 4겹</a></li>
+    <li><a href="#s6">전투 씬 결함 11건</a></li>
+    <li><a href="#s7">스킬 · 상태 · 적 AI</a></li>
+    <li><a href="#s8">밸런스: 일방적 학살</a></li>
+    <li><a href="#s9">같은 레포의 ARPG 모드와 대비</a></li>
+    <li><a href="#s10">고칠 순서</a></li>
+  </ol>
+</nav>
+
+<h2 id="s1"><span class="n">01</span>한눈에</h2>
+
+<div class="cards">
+  <div class="card bad"><h5>기본 공격 애니메이션</h5><div class="big">0 프레임</div><p>필름스트립 전 구간 <code>anim=null</code>. 칼을 휘두르는 그림이 존재하지 않는다.</p></div>
+  <div class="card bad"><h5>타격 1회당 효과음</h5><div class="big">4겹</div><p>26ms / 592 / 593 / 594ms. 두 개의 독립 SFX 시스템이 동시 발사.</p></div>
+  <div class="card bad"><h5>입력 1회당 비인터랙티브</h5><div class="big">2.09초</div><p>그 사이 플레이어 입력 없음. 스킵도 없음.</p></div>
+  <div class="card bad"><h5>턴당 플레이어 결정</h5><div class="big">1개</div><p>대상 선택 포함. 콤보 · 타이밍 · 리소스 관리 전부 없음.</p></div>
+  <div class="card bad"><h5>적 HP 표시</h5><div class="big">없음</div><p>남은 체력을 알 방법이 없으니 &ldquo;마무리&rdquo; 판단이 불가능.</p></div>
+  <div class="card bad"><h5>기본 적 24종 중 0 데미지</h5><div class="big">12종</div><p>절반이 주인공을 아예 못 때린다. 위험 없음 = 긴장 없음.</p></div>
+  <div class="card bad"><h5>종족 120종 속성</h5><div class="big">normal 120</div><p>상성 시스템은 코드에만 있고 콘텐츠에 없다.</p></div>
+  <div class="card bad"><h5>조건부 행동을 가진 적</h5><div class="big">0 / 221</div><p>페이즈 전환 · 발광 · 필살기 전조가 전무.</p></div>
+</div>
+
+<div class="note bad"><b>총평.</b> 이 전투는 &ldquo;연출이 부족한&rdquo; 게 아니라 <b>연출이 표현할 게임적 사건이 없다</b>.
+히트스톱 · 플래시 · 넉백 · 셰이크 · 팝업 · 결과 패널까지 전부 구현돼 있는데, 매 턴 벌어지는 사건은 항상 동일한
+&ldquo;공격 → 62 데미지 → 적 사망&rdquo; 하나다. 재미의 병목은 렌더가 아니라 <b>의사결정 · 정보 · 변주</b>다.</div>
+
+<h2 id="s2"><span class="n">02</span>어떻게 측정했나</h2>
+
+<p>에디터 셸 경로는 온보딩 오버레이 때문에 테스트플레이 창을 못 잡는다(<code>test/e2e/battle-hit-feel.spec.ts</code>도 clean 상태에서 동일하게 실패 — 기존 결함).
+그래서 <b>출하 경로</b>로 갔다.</p>
+
+<ul>
+  <li><span class="path">test/runtime/_battle-feel-filmstrip.spec.ts</span> — <code>startPlayerQaServer()</code>로 <code>player.html</code>을 띄우고
+      <code>__OPENRPG_BOOT__</code>로 픽스처 프로젝트를 주입, 시드 7 고정. 저작된 전투 이벤트로 진입해 <b>키보드 전용</b>(<code>z</code>)으로 공격을 확정한다.
+      출하 런타임은 포인터 클릭을 무시하는 계약이라 클릭은 통하지 않는다.</li>
+  <li>오디오는 <code>window.Audio</code>와 <code>AudioContext.prototype.createOscillator / createBufferSource</code>를 프록시해서
+      <code>{t, kind, detail}</code>로 로깅 — <b>샘플 재생과 합성 보이스를 같은 타임라인에 놓고</b> 본다.</li>
+  <li>씬 속성(<code>data-battle-director-step</code>, <code>hit-feel</code>, <code>sequence-busy</code>)과 모션 클래스를 매 샘플마다 읽어 지속시간을 실측.</li>
+  <li>밸런스는 <span class="path">test/e2e/_battle-feel-audit.spec.ts</span>에서 실제 데미지 함수를 호출해 500회 분포를 뽑고,
+      <code>createBlankProject()</code>의 기본 콘텐츠 전량을 훑었다.</li>
+</ul>
+
+<div class="note"><b>산출물.</b> <span class="path">/home/main/.herdr/worktrees/rpg-zzu/4/evidence/battle-feel-audit-2026-08-29/</span>
+— PNG 14장, <code>sequence-filmstrip.json</code>, <code>sequence-audio.json</code>, <code>turns.json</code>, <code>numbers.json</code>, <code>default-content.json</code>.</div>
+
+<h2 id="s3"><span class="n">03</span>공격 1회 필름스트립</h2>
+
+<div class="grid2">
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/03-command-menu.png" alt="커맨드 메뉴">
+<figcaption><b>t=0 · 커맨드.</b> 라벨이 <code>Attack / Skill / Item / 방어 / 도주</code>로 <b>영·한 혼용</b>이다(F12).
+적 슬라임 쪽에는 이름 툴팁만 있고 <b>HP 게이지가 없다</b>(F07) — 몇 대 더 때려야 죽는지 알 수 없다.</figcaption></figure>
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/seq-00.png" alt="acting 프레임">
+<figcaption><b>t=112ms · step=acting.</b> 모션 클래스는 <code>lunge · juice-swing</code>이 붙었지만 주인공 스프라이트는
+커맨드 화면과 <b>같은 포즈·같은 프레임</b>이다. 애니메이션 노드는 <code>anim=null</code>(F01).
+좌하단 1/4 이 <b>빈 검정으로 붕괴</b>했다(F13).</figcaption></figure>
+</div>
+
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/seq-01.png" alt="impact 프레임">
+<figcaption><b>t=655ms · step=impact · hit-feel=true.</b> 이 프레임이 이 전투의 &ldquo;절정&rdquo;이다. 실제로 일어난 일:
+숫자 <code>-62</code>가 뜨고, 적이 <code>knockback</code>으로 오른쪽으로 밀리고, 밝기 필터가 한 번 오르내린다.
+<b>타격 이펙트 그림은 없다.</b> 그리고 팝업이 메시지 박스 위에 겹쳐서 <b>&ldquo;슬라임에게 62 피해!&rdquo; 두 번째 줄이 잘려</b> 있다(F09).
+적 아래 <code>BAN</code> 배지와 흰 선택 프레임도 impact 중에 그대로 남아 있다.</figcaption></figure>
+
+<div class="grid3">
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/seq-02.png" alt="return 프레임">
+<figcaption><b>t=1194ms.</b> <code>return</code> 모션. 팝업은 아직 <code>-62</code> 그대로. 새 정보는 0.</figcaption></figure>
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/seq-03.png" alt="정적 프레임">
+<figcaption><b>t=1617ms.</b> 모션 없음 · 팝업 없음 · 여전히 <code>busy=true</code>. <b>완전 정적인 죽은 시간</b>이 400ms 넘게 흐른다.</figcaption></figure>
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/seq-04.png" alt="커맨드 복귀">
+<figcaption><b>t=2092ms.</b> 드디어 <code>step=command · busy=false</code>. 다음 입력까지 <b>2.09초</b>.</figcaption></figure>
+</div>
+
+<h4>실측 타임라인 (<code>sequence-filmstrip.json</code>)</h4>
+<table class="tight">
+<tr><th>t(ms)</th><th>director step</th><th>hit-feel</th><th>애니메이션</th><th>팝업</th><th>모션 클래스</th></tr>
+<tr><td class="num">112</td><td>acting</td><td>false</td><td><code>null</code></td><td>&mdash;</td><td>lunge, juice-swing</td></tr>
+<tr><td class="num">655</td><td>impact</td><td><b>true</b></td><td><code>null</code></td><td>&minus;62</td><td>knockback, juice-hit, lunge</td></tr>
+<tr><td class="num">1194</td><td>impact</td><td>false</td><td><code>null</code></td><td>&minus;62</td><td>return</td></tr>
+<tr><td class="num">1617</td><td>impact</td><td>false</td><td><code>null</code></td><td>&mdash;</td><td><i>없음</i></td></tr>
+<tr><td class="num">2092</td><td>command</td><td>false</td><td><code>null</code></td><td>&mdash;</td><td><i>없음</i></td></tr>
+</table>
+
+<div class="note warn"><b>주목.</b> hit-feel(히트스톱 + 플래시)이 <code>true</code>인 구간은 <b>샘플 1개 폭</b>이다.
+반면 아무 일도 안 일어나는 <code>impact</code> 후반이 <b>900ms 이상</b>이다. 임팩트 대비 여운의 비율이 거꾸로 잡혀 있다.</div>
+
+<h2 id="s4"><span class="n">04</span>연출 인벤토리 — 뭐가 있나</h2>
+
+<p>&ldquo;다른 연출은 뭐가 있냐&rdquo;는 질문에 대한 전수 목록. 구현은 넉넉하다. 문제는 <b>거의 전부가 기본 공격 한 종류에만 걸린다</b>는 것.</p>
+
+<table>
+<tr><th>분류</th><th>연출</th><th>구현 위치</th><th>실전투에서 보이나</th></tr>
+<tr><td>시퀀스</td><td>3비트 케이던스 approach → impact → recover</td><td><code>battleActionBeats.ts</code></td><td><span class="chip lo">예</span> 단, <b>모든 행동이 동일</b></td></tr>
+<tr><td>시퀀스</td><td>인트로 1200ms · 사망 킬라인 780ms · 리졸브 400ms</td><td><code>battleSequencer.ts</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>모션</td><td>lunge(&minus;56/&minus;72px) · knockback(+28/&minus;32px) · return</td><td><code>05-poses-motion.css</code></td><td><span class="chip mid">예 (translateX 전용)</span></td></tr>
+<tr><td>모션</td><td>juice-swing · juice-hit · juice-defend</td><td><code>15-juice-capture-fx.css</code>, <code>17-sprint-a-polish.css</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>모션</td><td>idle 호흡 (상하 4~6px)</td><td>&mdash;</td><td><span class="chip ghost">제거됨 (732da693)</span></td></tr>
+<tr><td>임팩트</td><td>히트스톱 120ms</td><td><code>battleSequencer.ts</code></td><td><span class="chip mid">예 (1샘플 폭)</span></td></tr>
+<tr><td>임팩트</td><td>필드 플래시 <code>flashBattleField()</code></td><td><code>battleJuice.ts</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>임팩트</td><td>브라이트니스 필터 펄스</td><td><code>05-poses-motion.css</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>임팩트</td><td>데미지 팝업</td><td><code>battleDom.ts</code></td><td><span class="chip mid">예 &mdash; <b>0 데미지는 미표시</b></span></td></tr>
+<tr><td>이펙트</td><td>생성 이펙트 시트 34종 (전부 사운드 포함 · 13종 셰이크)</td><td><code>generatedEffectSheets.json</code></td><td><span class="chip hi">기본 공격엔 미연결</span></td></tr>
+<tr><td>이펙트</td><td>레거시 애니메이션 타격/검격/화살</td><td><code>defaultDatabaseStarterRecords.ts</code></td><td><span class="chip hi"><code>soundResourceId</code> 없음</span></td></tr>
+<tr><td>UI</td><td>ATB 게이지 · 액터 상태 카드 · 커서 하이라이트</td><td><code>battleDom.ts</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>UI</td><td>적 타겟 프레임 · 이름 툴팁</td><td><code>battleDom.ts</code></td><td><span class="chip mid">예 &mdash; <b>HP 게이지 없음</b></span></td></tr>
+<tr><td>결과</td><td>승리 타이틀 스케일 팝 · 문장 펄스 · 보상 카드 순차 공개(450ms) · EXP 게이지 채움(0.9s)</td><td><code>17-sprint-a-polish.css</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>오디오</td><td>RTP 샘플 12종 매핑 (볼륨 0.4)</td><td><code>battleJuice.ts</code></td><td><span class="chip lo">예</span></td></tr>
+<tr><td>오디오</td><td>WebAudio 합성 보이스 11종 (마스터 0.14)</td><td><code>battleSfx.ts</code></td><td><span class="chip hi">예 &mdash; <b>샘플과 중복 발사</b></span></td></tr>
+<tr><td>오디오</td><td>전투 BGM</td><td><code>battleAudio.ts</code></td><td><span class="chip hi">프로젝트 전역 1곡. 보스곡·승리 팡파레 없음</span></td></tr>
+</table>
+
+<div class="note warn"><b>거꾸로 읽으면.</b> 이 표에서 <span class="chip lo">예</span>가 붙은 항목은 대부분 <b>연출 부품</b>이고,
+<span class="chip hi">문제</span>가 붙은 항목은 대부분 <b>사건의 다양성</b>이다. 연출을 더 만드는 투자보다,
+있는 연출을 <b>서로 다른 사건에 배분</b>하는 투자가 회수율이 훨씬 높다.</div>
+
+<h2 id="s5"><span class="n">05</span>효과음: 한 방에 4겹</h2>
+
+<p>공격 확정부터 커맨드 복귀까지 실제로 발사된 오디오 전량이다.</p>
+
+<table class="tight">
+<tr><th>t(ms)</th><th>종류</th><th>소스</th><th>발신 코드</th></tr>
+<tr><td class="num">26</td><td>샘플</td><td><code>Attack1.wav</code></td><td><code>emitBattleJuice("attack-swing")</code> · 볼륨 0.4</td></tr>
+<tr><td class="num">592</td><td>합성 노이즈</td><td><code>createBufferSource</code></td><td><code>playBattleSfx("hit")</code> · 마스터 0.14</td></tr>
+<tr><td class="num">593</td><td>합성 톤</td><td><code>createOscillator</code></td><td><code>playBattleSfx("hit")</code></td></tr>
+<tr><td class="num">594</td><td>샘플</td><td><code>Damage2.wav</code></td><td><code>emitBattleJuice("hit-damage")</code> · 볼륨 0.4</td></tr>
+</table>
+
+<div class="tl">
+  <div class="track">
+    <span class="ev" style="left:1.2%">26ms Attack1.wav</span>
+    <span class="pin" style="left:1.2%"></span>
+    <span class="ev" style="left:28.3%">592~594ms &nbsp;노이즈+톤+Damage2.wav (3겹)</span>
+    <span class="pin" style="left:28.3%"></span>
+    <div class="seg" style="left:0;width:26.3%;background:#5b6b8c">approach 550ms</div>
+    <div class="seg" style="left:26.3%;width:5.8%;background:#c62f3d">hitstop 120</div>
+    <div class="seg" style="left:32.1%;width:35.9%;background:#8f5b0d">impact 750ms</div>
+    <div class="seg" style="left:68%;width:32%;background:#79828c">resolve / 죽은 시간 ~670ms</div>
+  </div>
+</div>
+
+<div class="fx">
+  <h3><span class="fx-id">F02</span> 두 개의 SFX 시스템이 같은 사건에 동시 발사된다 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>battleDom.ts</code> <code>onDamageFeedback</code> 에서 <code>playBattleSfx(...)</code>(216행)와 <code>emitBattleJuice(...)</code>(225행)를 <b>둘 다</b> 호출한다. 승리도 마찬가지(739 + 741행).</dd>
+    <dt>결과</dt><dd>2ms 간격으로 노이즈·톤·샘플이 겹쳐 <b>탁하고 뭉개진 &ldquo;퍽&rdquo;</b>이 된다. 마스터 볼륨 기준도 다르다(0.4 vs 0.14) — 어느 쪽이 &ldquo;정답 크기&rdquo;인지 정의된 적이 없다.</dd>
+    <dt>왜 재미가</dt><dd>타격감의 절반은 오디오 <b>어택 트랜지언트의 선명함</b>이다. 세 소리가 겹치면 트랜지언트가 서로를 마스킹해서 세게 때린 느낌이 오히려 줄어든다.</dd>
+  </dl>
+</div>
+
+<div class="fx">
+  <h3><span class="fx-id">F03</span> 확정 효과음이 한 번의 키 입력에 두 번 난다 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>turns.json</code> 첫 턴: <code>t=22 oscillator</code>가 <b>동일 타임스탬프에 2건</b>. 이어서 <code>t=144 Attack1.wav</code>.</dd>
+    <dt>결과</dt><dd>커서/확정음이 배로 커지고 위상 간섭으로 &ldquo;삐빅&rdquo; 하는 이중음이 된다. 메뉴를 만질 때마다 들리는 소리라 노출 빈도가 가장 높다.</dd>
+  </dl>
+</div>
+
+<div class="fx m">
+  <h3><span class="fx-id">F21</span> 스킬·애니메이션 사운드 커버리지가 반쪽 <span class="chip mid">중</span></h3>
+  <dl>
+    <dt>실측</dt><dd>생성 이펙트 34종은 100% 사운드가 있지만, 레거시 애니메이션 타격/검격/화살은 <code>soundResourceId</code>가 <b>없다</b>. 픽스처 기준 애니메이션 43종 중 사운드 보유 34종.</dd>
+    <dt>결과</dt><dd>어떤 스킬은 소리가 나고 어떤 스킬은 조용하다. 플레이어는 이걸 &ldquo;약한 스킬&rdquo;로 오해한다.</dd>
+  </dl>
+</div>
+
+<h2 id="s6"><span class="n">06</span>전투 씬 결함 11건</h2>
+
+<div class="fx">
+  <h3><span class="fx-id">F01</span> 기본 공격에 이펙트 그림이 아예 없다 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd>필름스트립 5개 샘플 전부 <code>anim=null</code>. 액터에 <code>unarmedAnimationId</code>가 비어 있고 무기 애니메이션도 연결되지 않았다.</dd>
+    <dt>결과</dt><dd>가장 많이 쓰는 행동에 <b>시각 피드백이 숫자와 밀림뿐</b>. 34종 이펙트 시트를 만들어 놓고 기본 공격에 하나도 안 쓴다.</dd>
+    <dt>고치는 값</dt><dd>가장 싸고 가장 크다. 기본 공격에 슬래시 이펙트 1종만 연결해도 체감이 바뀐다.</dd>
+  </dl>
+</div>
+
+<div class="fx">
+  <h3><span class="fx-id">F04</span> 모든 행동이 완전히 같은 3비트를 탄다 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>battleActionBeats.ts</code>가 공격·스킬·아이템·방어 구분 없이 approach 550 / hitstop 120 / impact 750 을 발급. 적은 impact + recover 만.</dd>
+    <dt>결과</dt><dd>&ldquo;약한 잽&rdquo;과 &ldquo;필살기&rdquo;가 <b>같은 리듬·같은 길이</b>다. 위력의 차이를 숫자로만 읽어야 한다.</dd>
+    <dt>왜 재미가</dt><dd>턴제 전투의 쾌감은 케이던스의 대비에서 온다. 대비가 0이면 20턴째엔 스킵 버튼을 찾는다.</dd>
+  </dl>
+</div>
+
+<div class="fx">
+  <h3><span class="fx-id">F05</span> 모션이 <code>translateX</code> 전용 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>05-poses-motion.css</code>의 모션은 수평 이동(lunge &minus;56/&minus;72px, knockback +28/&minus;32px)과 brightness 필터뿐. <b>회전·스케일·스쿼시·포즈 스프라이트 교체가 없다.</b></dd>
+    <dt>결과</dt><dd>seq-00과 03-command-menu를 나란히 놓으면 주인공 포즈가 <b>글자 그대로 동일</b>하다. 공격 중인지 서 있는지 그림만 보고는 구분이 안 된다.</dd>
+  </dl>
+</div>
+
+<div class="fx">
+  <h3><span class="fx-id">F07</span> 적 HP 정보가 0 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd>커맨드/타겟 화면에 적 이름 툴팁만 있고 게이지·숫자·상태 아이콘이 없다.</dd>
+    <dt>왜 재미가</dt><dd>&ldquo;한 방 더면 죽는다&rdquo;는 판단이 불가능하니 <b>모든 턴이 같은 무게</b>가 된다. 아껴둔 필살기를 쓸 타이밍도, 도망칠 타이밍도 계산할 수 없다. 정보 없는 선택은 선택이 아니다.</dd>
+  </dl>
+</div>
+
+<div class="fx">
+  <h3><span class="fx-id">F06</span> 입력 1회당 2.09초 비인터랙티브 · 스킵 없음 <span class="chip hi">치명</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>busy=true</code> 구간 0~2092ms. 이 중 1617~2092ms는 모션·팝업이 전부 사라진 <b>순수 대기</b>.</dd>
+    <dt>결과</dt><dd>30턴 전투면 재생 시간만 1분이다. 처음엔 연출, 세 번째부터는 지연이다.</dd>
+  </dl>
+</div>
+
+<div class="fx m">
+  <h3><span class="fx-id">F08</span> 0 데미지 히트는 화면에 아무 것도 안 뜬다 <span class="chip mid">중</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>battleSequencer.ts</code> <code>feedbackFromTimeline()</code>이 <code>amount === 0</code>이면 <code>undefined</code>를 반환 → 팝업·SFX 없음.</dd>
+    <dt>결과</dt><dd>기본 적 24종 중 <b>12종</b>이 데미지 0이다(§08). 즉 초반 전투의 절반은 적이 때렸는지 안 때렸는지 <b>화면에 흔적이 없다</b>. 버그로 보인다.</dd>
+    <dt>제안</dt><dd>0도 <code>MISS</code>/<code>GUARD</code>/<code>0</code> 중 하나로 <b>반드시</b> 표시. 무피해는 정보이지 무사건이 아니다.</dd>
+  </dl>
+</div>
+
+<div class="fx m">
+  <h3><span class="fx-id">F09</span> 데미지 팝업이 메시지 박스를 가려서 문장이 잘린다 <span class="chip mid">중</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>seq-01.png</code>: &ldquo;슬라임에게 62 피해!&rdquo; 두 번째 줄이 팝업 <code>-62</code>와 타겟 프레임에 덮여 반쯤 잘렸다.</dd>
+    <dt>결과</dt><dd>가장 중요한 한 프레임에서 <b>텍스트와 숫자가 서로를 죽인다</b>.</dd>
+  </dl>
+</div>
+
+<div class="fx m">
+  <h3><span class="fx-id">F13</span> 행동 중 화면의 1/4 이 빈 검정으로 붕괴 <span class="chip mid">중</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>seq-00~04</code>: 커맨드 메뉴가 사라지면 좌하단 영역이 아무것도 없는 검정이 된다(오른쪽 파티 패널만 남음).</dd>
+    <dt>결과</dt><dd>클라이맥스 순간에 화면 밀도가 오히려 <b>떨어진다</b>. 그 자리는 로그·적 상태·다음 행동 예고를 놓기에 딱 좋은 공간이다.</dd>
+  </dl>
+</div>
+
+<div class="fx m">
+  <h3><span class="fx-id">F10</span> 상태 부여 메시지가 내부 id 를 그대로 출력 <span class="chip mid">중</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>battleSequencer.ts</code> <code>timelineDirectorState</code>: <code>`상태가 부여되었다: ${entry.stateId}`</code>.</dd>
+    <dt>결과</dt><dd>플레이어가 <code>state_poison_01</code> 같은 문자열을 읽는다. 상태 시스템이 있다는 사실 자체가 전달되지 않는다.</dd>
+  </dl>
+</div>
+
+<div class="fx m">
+  <h3><span class="fx-id">F11</span> 비시각 타임라인 엔트리는 0ms 로 지나간다 <span class="chip mid">중</span></h3>
+  <dl>
+    <dt>실측</dt><dd>시퀀서가 시각 효과 없는 엔트리에는 지연을 주지 않는다.</dd>
+    <dt>결과</dt><dd>MP 소모 · 상태 해제 · 버프 갱신 같은 메시지가 <b>같은 프레임에 뭉쳐 사라진다</b>. 읽을 수 없는 로그는 없는 로그다.</dd>
+  </dl>
+</div>
+
+<div class="fx l">
+  <h3><span class="fx-id">F12</span> 커맨드 라벨 언어 혼용 <span class="chip ghost">경</span></h3>
+  <dl>
+    <dt>실측</dt><dd><code>03-command-menu.png</code>: <code>Attack / Skill / Item / 방어 / 도주</code>.</dd>
+    <dt>결과</dt><dd>가장 처음 보는 UI 5줄에서 마감 수준이 드러난다.</dd>
+  </dl>
+</div>
+
+<h2 id="s7"><span class="n">07</span>스킬 · 상태 · 적 AI</h2>
+
+<p>스킬은 &ldquo;위력이 다른 공격&rdquo; 이상으로 발전하지 못했다.</p>
+
+<table>
+<tr><th>축</th><th>실측</th><th>판정</th></tr>
+<tr><td>기본 스킬 수</td><td class="num">23종 (damage 11 · healing 5 · support 7)</td><td><span class="chip lo">양은 충분</span></td></tr>
+<tr><td>범위 분포</td><td class="num">enemy 13 · ally 9 · self 1</td><td><span class="chip mid">단일 대상 위주</span></td></tr>
+<tr><td>다중 타겟 스킬</td><td class="num">픽스처 0 / 2</td><td><span class="chip hi">전열·전체기 부재</span></td></tr>
+<tr><td>상태 효과를 주는 스킬</td><td class="num">픽스처 0 / 2</td><td><span class="chip hi">상태 시스템 미사용</span></td></tr>
+<tr><td>상태 지속턴 · 턴 캡</td><td><code>battleStates.ts</code>에 <b>duration 개념 없음</b>. 배수는 이진(on/off), <code>clampStateMultiplier</code> 0.4~2.5</td><td><span class="chip hi">&ldquo;몇 턴 버티기&rdquo; 게임이 성립 불가</span></td></tr>
+<tr><td>속성</td><td>코드는 fire/water/holy/thunder/grass 지원, <b>종족 120/120 이 normal</b>, 각 기술 1개</td><td><span class="chip hi">상성 플레이 불가</span></td></tr>
+<tr><td>크리티컬</td><td class="num">기본 4% × 1.5배 (<code>DEFAULT_SKILL_CRIT_RATE=4</code>, <code>MULT=1.5</code>)</td><td><span class="chip hi">체감 불가</span></td></tr>
+<tr><td>분산</td><td class="num">±10%</td><td><span class="chip mid">평탄</span></td></tr>
+<tr><td>적 AI 조건</td><td><code>always</code> / <code>turn</code> 두 가지뿐. 조건부 행동 보유 적 <b>0 / 221</b></td><td><span class="chip hi">페이즈 · 발광 · 전조 없음</span></td></tr>
+<tr><td>적 행동 선택</td><td><code>enemyDamageUtility</code> = 기대 데미지 + (킬 가능 시 +1000) + (1&minus;hp/maxHp)&times;20</td><td><span class="chip mid">항상 최대 데미지 → 예측 가능</span></td></tr>
+<tr><td>보스 연출</td><td>troop 레코드에 <b>bgm 필드 자체가 없다</b>. 승리 팡파레도 없음</td><td><span class="chip hi">보스가 잡몹과 같은 음악</span></td></tr>
+</table>
+
+<div class="note bad"><b>크리티컬의 구조적 문제.</b> 실측 분포는 일반 56~70, 크리 86~107 로 <b>구간이 겹치지 않는다</b>(overlap=false).
+겹치지 않으면 &ldquo;운 좋게 크게 박혔다&rdquo;가 아니라 &ldquo;다른 등급의 공격이 4% 확률로 나온다&rdquo;가 된다.
+게다가 4%는 25턴에 1번 — <b>대부분의 전투에서 한 번도 못 본다</b>. 연출(전용 SFX·플래시)은 있는데 발동을 안 하니 투자가 회수되지 않는다.</div>
+
+<h2 id="s8"><span class="n">08</span>밸런스: 일방적 학살</h2>
+
+<p><code>createBlankProject()</code> 기본 콘텐츠에서 <b>Lv1 주인공(HP 514 / 공 53 / 방 72, 파티 1인)</b>이 적 24종을 상대한 실측이다.</p>
+
+<table class="tight">
+<tr><th>적</th><th>HP</th><th>주인공 타격</th><th>적 처치 턴</th><th>적 타격</th><th>주인공 사망까지</th></tr>
+<tr><td>슬라임</td><td class="num">15</td><td class="num">77</td><td class="num"><b>1</b></td><td class="num"><b>0</b></td><td><span class="chip lo">∞</span></td></tr>
+<tr><td>초원 슬라임</td><td class="num">20</td><td class="num">76</td><td class="num"><b>1</b></td><td class="num"><b>0</b></td><td><span class="chip lo">∞</span></td></tr>
+<tr><td>동굴 박쥐</td><td class="num">150</td><td class="num">72</td><td class="num">3</td><td class="num"><b>0</b></td><td><span class="chip lo">∞</span></td></tr>
+<tr><td>돌 골렘</td><td class="num">200</td><td class="num">64</td><td class="num">4</td><td class="num"><b>0</b></td><td><span class="chip lo">∞</span></td></tr>
+<tr><td><b>붉은 드래곤</b></td><td class="num"><b>35</b></td><td class="num">75</td><td class="num"><b>1</b></td><td class="num"><b>0</b></td><td><span class="chip lo">∞</span></td></tr>
+<tr><td>좀비</td><td class="num">40</td><td class="num">74</td><td class="num">1</td><td class="num">0</td><td><span class="chip lo">∞</span></td></tr>
+<tr><td>사마귀 / 오크 / 실프 / 레모라 / 스피릿 / 게</td><td class="num">45~70</td><td class="num">73~70</td><td class="num">1</td><td class="num">0</td><td><span class="chip lo">∞</span></td></tr>
+<tr><td>잭 오 랜턴</td><td class="num">75</td><td class="num">70</td><td class="num">2</td><td class="num">3</td><td class="num">172턴</td></tr>
+<tr><td>카벙클</td><td class="num">85</td><td class="num">69</td><td class="num">2</td><td class="num">7</td><td class="num">74턴</td></tr>
+<tr><td>스펙터</td><td class="num">95</td><td class="num">67</td><td class="num">2</td><td class="num">12</td><td class="num">43턴</td></tr>
+<tr><td>마왕의 기사</td><td class="num">100</td><td class="num">67</td><td class="num">2</td><td class="num">13</td><td class="num">40턴</td></tr>
+<tr><td>전갈</td><td class="num">130</td><td class="num">63</td><td class="num">3</td><td class="num">27</td><td class="num">20턴</td></tr>
+</table>
+
+<div class="cards">
+  <div class="card bad"><h5>데미지 0 인 적</h5><div class="big">12 / 24</div><p>첫 12종이 <b>정확히 0</b>을 준다 → F08 때문에 화면에 아무 표시도 안 남는다.</p></div>
+  <div class="card bad"><h5>1턴에 죽는 적</h5><div class="big">12 / 24</div><p>&ldquo;붉은 드래곤&rdquo;(HP 35)도 포함. 이름과 체감이 정반대.</p></div>
+  <div class="card bad"><h5>주인공 사망 최단</h5><div class="big">20턴</div><p>가장 강한 적조차 20턴을 때려야 이긴다. 실질 무적.</p></div>
+  <div class="card bad"><h5>픽스처 TTK</h5><div class="big">1턴</div><p>공 45 vs 파수군 HP 220 이어도 저작 전투는 1턴에 종료.</p></div>
+</div>
+
+<h3>감산 방어식의 붕괴</h3>
+<p><code>battleDamage.ts</code>는 rm2k3 계열 감산식(<code>power + floor(stat/2) - floor(def/2)</code>)이다. 방어력을 올리면 데미지가 <b>선형으로 0에 수렴</b>한다.</p>
+
+<table class="tight">
+<tr><th>적 방어력</th><th>실측 데미지</th><th></th></tr>
+<tr><td class="num">0</td><td class="num">67</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+<tr><td class="num">4</td><td class="num">65</td><td><div class="bar"><i style="width:97%"></i></div></td></tr>
+<tr><td class="num">8</td><td class="num">63</td><td><div class="bar"><i style="width:94%"></i></div></td></tr>
+<tr><td class="num">16</td><td class="num">59</td><td><div class="bar"><i style="width:88%"></i></div></td></tr>
+<tr><td class="num">32</td><td class="num">51</td><td><div class="bar"><i style="width:76%"></i></div></td></tr>
+<tr><td class="num">64</td><td class="num">35</td><td><div class="bar"><i style="width:52%"></i></div></td></tr>
+<tr><td class="num">128</td><td class="num"><b>3</b></td><td><div class="bar"><i style="width:4%"></i></div></td></tr>
+</table>
+
+<div class="note bad"><b>이게 왜 학살로 이어지나.</b> 주인공 기본 방어 <b>72</b>는 이미 곡선의 무너지는 구간에 있다.
+그래서 초반 적 공격력(8~13)은 <code>Math.max(1, ...)</code> 하한에도 못 닿고 0이 된다. 반대로 적 방어는 5~8 이라
+주인공 타격은 상수에 가깝게 70 근처를 유지한다. <b>기본값 세팅 하나로 위험이 완전히 사라진 상태</b>다.
+&ldquo;게임성이 후달린다&rdquo;는 체감의 가장 큰 지분은 연출이 아니라 이 표다.</div>
+
+<h2 id="s9"><span class="n">09</span>같은 레포의 ARPG 모드와 대비</h2>
+
+<p>가혹하게 말하면, <b>이 레포는 이미 좋은 전투를 한 번 만들었다</b> — 다만 다른 모드에서. <code>src/battle/action/</code>에 있는 액션 전투는
+턴제 모드에 없는 것들을 갖고 있다.</p>
+
+<table>
+<tr><th>메커니즘</th><th>ARPG 모드 (<code>src/battle/action/</code>)</th><th>턴제 모드</th></tr>
+<tr><td>경직</td><td><code>stagger.ts</code> 220ms</td><td><span class="chip hi">없음</span></td></tr>
+<tr><td>가드</td><td><code>guard.ts</code> 스태미나 소모 · 최대 90% 감소</td><td><span class="chip mid">방어 = 배수 1회</span></td></tr>
+<tr><td>회피</td><td><code>dodge.ts</code> 무적 프레임</td><td><span class="chip hi">없음</span></td></tr>
+<tr><td>넉백</td><td><code>knockback.ts</code> 물리 반응</td><td><span class="chip mid">CSS translateX</span></td></tr>
+<tr><td>히트스톱</td><td><code>hitstop.ts</code></td><td><span class="chip lo">있음 (120ms)</span></td></tr>
+<tr><td>리소스 관리</td><td>스태미나</td><td><span class="chip mid">MP 만</span></td></tr>
+</table>
+
+<div class="note"><b>시사점.</b> 턴제 모드에 필요한 건 새로운 발명이 아니다. 경직·가드 트레이드오프·리소스 압박이라는
+<b>이미 설계된 개념을 턴제 어휘로 옮기는 것</b>이다. 예: 경직 → 다음 턴 행동 지연, 가드 → 스태미나성 자원 소모,
+회피 무적 프레임 → 1회 무피해 토큰.</div>
+
+<h2 id="s10"><span class="n">10</span>고칠 순서</h2>
+
+<p>비용 대비 체감 순으로 줄 세웠다. 위 3개만 해도 &ldquo;다른 게임&rdquo;이 된다.</p>
+
+<table>
+<tr><th>#</th><th>작업</th><th>대상 결함</th><th>비용</th><th>체감</th></tr>
+<tr><td class="num">1</td><td>중복 SFX 정리 — 사건 1개당 소스 1개. 샘플/합성 중 하나를 폴백으로만 쓰고 볼륨 기준을 통일. 확정음 이중 발사 제거</td><td>F02 F03 F21</td><td><span class="chip lo">낮음</span></td><td><span class="chip hi">매우 큼</span></td></tr>
+<tr><td class="num">2</td><td>기본 공격에 이펙트 애니메이션 연결 (34종 시트 중 1종) + 액터 포즈 프레임 교체</td><td>F01 F05</td><td><span class="chip lo">낮음</span></td><td><span class="chip hi">매우 큼</span></td></tr>
+<tr><td class="num">3</td><td>기본값 밸런스 재조정 — 주인공 방어 72 하향, 적 공격력 상향, 감산식에 하한 비율(예: 최소 공격력의 15%) 도입</td><td>F15 F16</td><td><span class="chip mid">중간</span></td><td><span class="chip hi">매우 큼</span></td></tr>
+<tr><td class="num">4</td><td>적 HP 게이지 + 상태 아이콘을 좌하단 빈 영역에 배치</td><td>F07 F13</td><td><span class="chip lo">낮음</span></td><td><span class="chip hi">큼</span></td></tr>
+<tr><td class="num">5</td><td>행동별 케이던스 분화 — 약공 짧게, 스킬/필살기 길게. 죽은 시간 670ms 삭감 + 스킵 키</td><td>F04 F06</td><td><span class="chip mid">중간</span></td><td><span class="chip hi">큼</span></td></tr>
+<tr><td class="num">6</td><td>0 데미지도 <code>MISS/GUARD/0</code>으로 표시. 팝업과 메시지 박스 레이어 분리</td><td>F08 F09</td><td><span class="chip lo">낮음</span></td><td><span class="chip mid">중간</span></td></tr>
+<tr><td class="num">7</td><td>크리티컬 재설계 — 확률 4%→10% 이상, 배수는 낮추되 구간이 일반과 접하게. 전용 연출 회수율 확보</td><td>F14</td><td><span class="chip lo">낮음</span></td><td><span class="chip mid">중간</span></td></tr>
+<tr><td class="num">8</td><td>상태에 지속턴 도입 + 상태명 표시. 기본 스킬 일부에 상태 부여 붙이기</td><td>F10 F17</td><td><span class="chip mid">중간</span></td><td><span class="chip hi">큼</span></td></tr>
+<tr><td class="num">9</td><td>종족 속성 부여 (120/120 normal 해소) + 다중 타겟 스킬 추가</td><td>F18</td><td><span class="chip mid">중간</span></td><td><span class="chip mid">중간</span></td></tr>
+<tr><td class="num">10</td><td>troop 에 bgm 필드 + 승리 팡파레. 보스 조건부 행동 (HP 50% 이하 발광)</td><td>F19 F20</td><td><span class="chip mid">중간</span></td><td><span class="chip hi">큼</span></td></tr>
+<tr><td class="num">11</td><td>비시각 타임라인 엔트리에 최소 지연 부여 (로그 가독성)</td><td>F11</td><td><span class="chip lo">낮음</span></td><td><span class="chip ghost">작음</span></td></tr>
+<tr><td class="num">12</td><td>커맨드 라벨 한국어 통일</td><td>F12</td><td><span class="chip lo">낮음</span></td><td><span class="chip ghost">작음</span></td></tr>
+</table>
+
+<h3>이번 브랜치에서 이미 처리한 것</h3>
+<figure class="shot"><img src="../evidence/battle-feel-audit-2026-08-29/31-final.png" alt="전투 종료">
+<figcaption><b>idle 호흡 제거 (커밋 732da693 · PR #237).</b> 대기 중 스프라이트가 상하 4px로 움직이던 연출을 걷어냈다.
+포켓몬 스킨에서는 <code>scale(1.28)</code>/<code>scale(2.45)</code>가 곱해져 오프셋이 6px&times;배율로 증폭되고 있었다.
+<code>@keyframes</code> 3종과 전용 <code>prefers-reduced-motion</code> 블록까지 함께 제거. <code>npm run gates:css</code> 통과.</figcaption></figure>
+
+<div class="note warn"><b>검증 정직하게.</b> 배틀 관련 vitest 43개 중 2개(<code>battleDomIncremental</code>, <code>battleElementAdversarialFixes</code>)가 실패하지만
+둘 다 이 변경 전부터 실패하던 기존 결함이다(전자는 <code>test/e2e/battleReferenceProject.ts</code>의 <code>@playwright/test</code> import 문제).
+에디터 셸 필름스트립(테스트 A)은 온보딩 오버레이 때문에 여전히 막혀 있어 <b>출하 경로로 우회해 측정</b>했다 — 즉 이 보고서의 수치는
+에디터가 아니라 <b>플레이어가 실제로 보는 화면</b>에서 나온 것이다.</div>
+
+<footer>
+  <p>측정 스펙: <span class="path">test/runtime/_battle-feel-filmstrip.spec.ts</span> · <span class="path">test/e2e/_battle-feel-audit.spec.ts</span> (둘 다 <code>_</code> 접두 진단용, 기본 스위트 제외)</p>
+  <p>증거: <span class="path">/home/main/.herdr/worktrees/rpg-zzu/4/evidence/battle-feel-audit-2026-08-29/</span></p>
+  <p>rpg-zzu · 브랜치 HEAD d7329348 · 2026-08-29 · Chromium 1024×768 · 실측 캡처 14장</p>
+</footer>
+
+</div>
+</body>
+</html>

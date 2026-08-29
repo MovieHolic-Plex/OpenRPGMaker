@@ -33,6 +33,13 @@ export type WelcomeGenrePreset = {
   readonly thumb: string;
   /** One-line subtitle under the poster label. */
   readonly blurb: string;
+  /**
+   * Poster eyebrow — the title people arrive with ("이브 같은"). Rendered above `posterTitle`
+   * so a long reference label does not wrap into the poster caption.
+   */
+  readonly reference?: string;
+  /** Poster caption. Defaults to `label` when the world quotes no reference. */
+  readonly posterTitle?: string;
   /** Optional narrative/horror template genre for required tools. */
   readonly narrativeHorrorGenre?: NarrativeHorrorGenre;
 };
@@ -104,6 +111,8 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
     tone: "미술관·회랑 탐험 호러 중심. 이상 회화/오브젝트 상호작용, 단서 아이템, 긴장감 있는 짧은 이벤트 루프를 우선한다. 기존 작품 캐릭터/고유명은 쓰지 않는다.",
     thumb: "/assets/generated/welcome/slide-05.png",
     blurb: "미술관 · 단서 · 공포",
+    reference: "이브 같은",
+    posterTitle: "갤러리 호러",
     narrativeHorrorGenre: "ib-gallery",
   },
   {
@@ -114,6 +123,8 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
     tone: "야간 학교 회랑 추적 호러 중심. 숨기/도주 이벤트, 단서 아이템, 위협 실루엣 조우를 우선한다. 기존 작품 캐릭터/고유명은 쓰지 않는다.",
     thumb: "/assets/generated/welcome/slide-06.png",
     blurb: "학교 · 추적 · 공포",
+    reference: "아오오니 같은",
+    posterTitle: "학교 호러",
     narrativeHorrorGenre: "witch-horror",
   },
 ] as const;
@@ -237,76 +248,52 @@ export const WELCOME_INSPIRATION_MINIS: readonly WelcomeInspirationMini[] = [
   },
 ] as const;
 
-export const WELCOME_BLANK_CONFIRM = {
-  title: "새 뼈대로 시작할까요?",
-  message:
-    "선택한 장르로 새 blank 프로젝트를 만들고 AI 생성을 제안합니다. 현재 열려 있는 프로젝트는 이 세션에서 유지되지 않을 수 있습니다(원격 저장본을 덮어쓰지 않도록 메모리 분기로 엽니다).",
-  confirmLabel: "새 뼈대로 시작",
-  cancelLabel: "취소",
-  danger: true,
-} as const;
-
-export const WELCOME_QUICK_PICKS: readonly { readonly label: string; readonly intent: string }[] = [
-  { label: "눈 내리는 마을 + 여관", intent: "눈 내리는 마을 여관에서 단골손님이 머무는 따뜻한 이야기 — 여관주인 NPC와 저녁 컷신" },
-  { label: "숲속 던전 탐험", intent: "숲속 던전 입구에서 시작해 보물상자와 적을 배치한 모험 JRPG" },
-  { label: "추억의 재회 컷신", intent: "오랜 친구와의 재회 컷신 — 대화와 감정 연출 중심, 엔딩 분기 포함" },
-  { label: "항구 시장 하루", intent: "항구 시장과 상점가가 있는 마을 — 상인과 손님 NPC가 하루 일과로 움직이는 생활 시뮬" },
-  { label: "학교 괴담 밤", intent: "밤 학교를 탐험하는 호러 — 숨기와 추격 이벤트, 단서 아이템" },
-  { label: "달빛 호수 마을", intent: "달빛 호수 옆 작은 마을 — 고요한 분위기와 호수 던전" },
+/**
+ * Gallery order. Worlds people already have a title for lead, because that is how the request
+ * arrives ("이브 같은 게임 만들어줘"). Every preset gets one equal-weight poster — variants are no
+ * longer demoted to grey sub-chips under a pack card.
+ */
+const WELCOME_POSTER_ORDER: readonly WelcomeGenrePresetId[] = [
+  "horror-gallery",
+  "school-horror",
+  "monster-collect",
+  "story-cutscene",
+  "adventure-jrpg",
+  "farm-life",
+  "partner-raise",
 ] as const;
 
-/** One production card per canonical pack. Variant prompts stay nested as inspirations. */
-export type DirectorBriefingCard = {
-  readonly id: WelcomeGenrePresetId;
-  readonly packId: GenrePackId;
-  readonly label: string;
-  readonly blurb: string;
-  readonly thumb: string;
-  readonly inspirationPresetIds: readonly WelcomeGenrePresetId[];
+export type WelcomePosterCard = {
+  readonly preset: WelcomeGenrePreset;
+  /** Small line above the title, present only when the world quotes a reference. */
+  readonly reference?: string;
+  readonly title: string;
+  /**
+   * Anchor poster for its official pack, or null for a sibling variant of a pack already anchored.
+   * Exactly one poster per GenrePackId is an anchor, so the five-official-packs DOM gate
+   * (scripts/browser-verify-genre-presets.mts) keeps its exactly-once contract while variants of the
+   * same pack render as peers in the grid.
+   */
+  readonly packAnchor: GenrePackId | null;
 };
 
-export const DIRECTOR_BRIEFING_CARDS: readonly DirectorBriefingCard[] = [
-  {
-    id: "adventure-jrpg",
-    packId: "adventure-jrpg",
-    label: "모험 마을",
-    blurb: "집과 길, 던전 입구",
-    thumb: "/assets/generated/welcome/slide-04.png",
-    inspirationPresetIds: [],
-  },
-  {
-    id: "monster-collect",
-    packId: "monster-collect",
-    label: "몬스터 수집",
-    blurb: "풀숲 조우와 도감",
-    thumb: "/assets/generated/welcome/slide-01.png",
-    inspirationPresetIds: ["partner-raise"],
-  },
-  {
-    id: "horror-gallery",
-    packId: "horror-chase",
-    label: "호러 추격",
-    blurb: "단서와 은신, 추격",
-    thumb: "/assets/generated/welcome/slide-05.png",
-    inspirationPresetIds: ["school-horror"],
-  },
-  {
-    id: "story-cutscene",
-    packId: "story-cutscene",
-    label: "스토리 컷신",
-    blurb: "대화와 선택, 연출",
-    thumb: "/assets/generated/welcome/mini-03-moon.png",
-    inspirationPresetIds: [],
-  },
-  {
-    id: "farm-life",
-    packId: "farm-life",
-    label: "농장 하루",
-    blurb: "밭과 주민, 일상",
-    thumb: "/assets/generated/welcome/slide-03.png",
-    inspirationPresetIds: [],
-  },
-] as const;
+function buildPosterCards(): readonly WelcomePosterCard[] {
+  const anchored = new Set<GenrePackId>();
+  return WELCOME_POSTER_ORDER.map((id) => {
+    const preset = welcomeGenrePresetById(id);
+    if (!preset) throw new Error(`Unknown welcome poster preset: ${id}`);
+    const packAnchor = anchored.has(preset.packId) ? null : preset.packId;
+    if (packAnchor) anchored.add(packAnchor);
+    return {
+      preset,
+      reference: preset.reference,
+      title: preset.posterTitle ?? preset.label,
+      packAnchor,
+    };
+  });
+}
+
+export const WELCOME_POSTER_CARDS: readonly WelcomePosterCard[] = buildPosterCards();
 
 export type WelcomeStarterTemplateId = "snow-village-inn" | "forest-dungeon" | "reunion-cutscene" | "harbor-market";
 
@@ -323,5 +310,22 @@ export const WELCOME_STARTER_TEMPLATES: readonly WelcomeStarterTemplate[] = [
   { id: "forest-dungeon", label: "숲속 던전", blurb: "입구부터 보스까지", thumb: "/assets/generated/welcome/slide-04.png", intent: "숲속 던전 입구부터 보스 방까지 이어지는 짧은 모험 — 보물상자·전투·열쇠 이벤트 포함" },
   { id: "reunion-cutscene", label: "재회 컷신", blurb: "대사와 감정 중심", thumb: "/assets/generated/welcome/mini-03-moon.png", intent: "오랜 친구와의 재회 컷신 — 대화, 회상 연출, 선택지로 갈리는 엔딩" },
   { id: "harbor-market", label: "항구 시장", blurb: "상인과 손님의 하루", thumb: "/assets/generated/welcome/slide-03.png", intent: "항구 시장이 있는 마을 — 상점, 손님 NPC, 낮/밤 일과가 있는 생활 마을" },
+] as const;
+
+/**
+ * Second tier of the gallery — free-text worlds, collapsed until asked for. These entries carry an
+ * `intent` instead of a pack, so they run the same path as typing into the prompt row.
+ */
+export type WelcomeMoreWorld = {
+  readonly id: string;
+  readonly label: string;
+  readonly blurb: string;
+  readonly thumb: string;
+  readonly intent: string;
+};
+
+export const WELCOME_MORE_WORLDS: readonly WelcomeMoreWorld[] = [
+  ...WELCOME_INSPIRATION_MINIS,
+  ...WELCOME_STARTER_TEMPLATES,
 ] as const;
 

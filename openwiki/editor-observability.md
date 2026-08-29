@@ -61,9 +61,40 @@ store.update(
 규칙:
 
 - **`label`** — 사람이 읽는 행위 이름. 스코프·컬렉션은 로그가 알아서 붙이므로 "무엇을 했나"만 쓴다.
-- **`origin`** — 생략하면 `"human"`. AI·툴·시스템 경로는 반드시 명시한다(`"ai"` / `"tool"` / `"system"`). 이게 없으면 AI 변경이 사람 편집으로 오귀속된다.
+- **`origin`** — 생략하면 `"human"`. AI·툴·시스템 경로는 반드시 명시한다(`"ai"` / `"tool"` / `"system"`). 이게 없으면 AI 변경이 사람 편집으로 오귀속된다 — 경로별 값은 아래 [AI 적용 경로](#ai-적용-경로--이쪽이-주-경로다) 표에 있다.
 - **`fields`** — **호출자가 이미 계산해 둔 diff 만** 넘긴다. 초크포인트에서 diff 를 계산하면 페인트 스트로크마다 전 맵 비교가 돌아 그 자체가 새 병목이 된다. 선례는 `eventDraftActions.saveEventDraft` — `commitEventDraft` 가 draft 를 지우기 전에 `eventDraftDiffById` 로 읽어 `describeEventDiff`(라벨) + `eventDiffFields`(필드)로 나눈다.
 - **연속 병합을 의식해라** — 같은 `scope:mapId:collection:label` 이 600ms 안에 연달아 오면 한 엔트리로 합치고 `cellCount` 를 누적, `mergedCount` 를 올린다(100셀 드래그가 100줄이 되지 않게). 라벨에 좌표나 카운터를 박아 매번 다르게 만들면 병합이 깨진다. `fields` 가 붙은 엔트리는 상세가 섞이면 못 읽으므로 병합하지 않는다.
+
+## AI 적용 경로 — 이쪽이 주 경로다
+
+이 프로젝트의 실제 편집은 대부분 채팅/영역 AI 로 이뤄진다. **손편집만 계측하면 계측하지 않은 것과 같다.**
+실측(2026-08-29): 아래 5곳이 전부 descriptor 없이 `store.replace(project)` 를 부르고 있어서
+AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin: "human"` 으로 떨어졌다.
+고치려던 증상이 주 경로에 그대로 남아 있었고, 게다가 AI 작업이 사람 손편집으로 오귀속됐다.
+
+| 경로 | `origin` | 라벨 형태 |
+|---|---|---|
+| `applyToolToStore` — 사람이 에디터에서 툴 직접 실행 | `tool` | `툴 paint_tiles: <요약>` |
+| `applyToolSequenceToStore({ source: "human" })` — 툴 묶음 | `tool` | `툴 묶음: <요약>` |
+| `applyToolSequenceToStore({ source: "agent", agentName })` — 채팅 에이전트 | `ai` | `AI 적용 (claude-opus-5): <요약>` |
+| `applyProposedProject({ source: "agent" })` — 제안 카드 수락 | `ai` | `AI 제안 적용: <요약>` |
+| `applyProposedProject({ source: "agent-milestone" })` — 자율 런 마일스톤 | `ai` | `AI 마일스톤 적용: <요약>` |
+| `applyRegionProjectWithHistory` — 영역 작업 | `ai` | `AI 영역 작업: <지시문>` |
+| 같은 함수의 롤백 분기 | `system` | `AI 영역 작업 롤백: <지시문>` |
+
+규칙 세 가지:
+
+- **`origin` 으로 사람과 AI 를 나눈다.** 사람이 툴을 직접 실행한 것(`tool`)과 에이전트가 실행한 것(`ai`)은
+  같은 함수를 지나므로 `options.source` 로만 구분된다. 새 진입점을 만들면 `source` 를 반드시 넘긴다.
+- **라벨에 에이전트 이름과 지시문을 그대로 싣는다.** "무엇을 시켰더니 이렇게 됐다" 가 조사의 출발점이고,
+  모델을 바꿔 가며 쓰면 어느 에이전트였는지가 단서다.
+- **diff 를 초크포인트에서 새로 계산하지 않는다.** 호출부가 이미 `ChangeSummary` 를 들고 있다
+  (`applyAnnotation()` 이 그걸 `fields` 로 바꾼다). `applyProposedProject` 만 예외적으로
+  `summarizeChanges` 를 부르는데, **`store.replace` 전에** 불러야 한다 — 교체 전 스토어가 필요하고
+  라벨이 그 시점에 확정돼야 한다. 값이 0 인 축은 싣지 않는다(0 이 스무 줄이면 정작 바뀐 축을 못 찾는다).
+
+`test/aiApplyActivityLabels.test.ts` 가 이 계약을 고정하고, 마지막 케이스가
+"AI 경로를 전부 돌려도 `unlabeledEditActivityCount() === 0` 이고 `origin: "human"` 엔트리가 없다" 를 잠근다.
 
 ## 되돌리기 스택과 감사 로그는 다르다
 
@@ -145,7 +176,6 @@ log.warn("편집 행위 기록 실패", error);
 | `getCurrent()` 가 라이브 참조를 반환한다 | `return this.readOnlyProjectSnapshot ?? this.current` (`store.ts:552`). `interface Project` 에 `readonly` 0개 | 호출자가 반환값을 직접 고치면 store 를 지나지 않은 변경이 되어 계측·generation·자동저장 전부를 우회한다. 지금은 규율로만 유지된다(`beginReadOnlyProjectSnapshot` 은 런타임 소비자용 임시 창) |
 | `project_changes.patch_json` 이 write-only | 쓰기는 `supabaseProjectSync.ts:993` 1곳, 읽는 프로덕션 코드 0건(테스트 1건) | 원격에 상세 패치를 쌓고 있으나 아무도 읽지 않는다. 읽는 화면을 만들 것인지, 쓰기를 줄일 것인지 결정이 필요하다 |
 | `scope: "assets"` 는 타입에만 있다 | `ProjectChangeDescriptor` 와 `EditActivityScope` 에는 있으나 emit 사이트 0건 | 리소스 매니저·타일셋 메타데이터 편집이 `project`/`system` 으로 뭉쳐 기록된다. 에셋 편집을 이 스코프로 라우팅하거나 타입에서 뺄 것 |
-| AI 영역 작업이 라벨·origin 없이 store 를 바꾼다 | `applyRegionProjectWithHistory` → `store.replace(project)` (`regionTask/runRegionTask.ts:190`) — `change` 주석 없음, 커밋 로그 row 도 없음 | 감사 로그에 `(라벨 없음: project)` / `origin: "human"` 으로 남고, 커밋 baseline 이 리셋되지 않아 **후속 사람 저장의 diff 에 AI 변경분이 함께 잡힌다**(사람 편집으로 오귀속). 최소 수정은 `{ label, origin: "ai" }` 를 실어 보내는 것 |
 | `mapEditLocks` 로 편집이 거부된 사건이 기록되지 않는다 `canEditMap()` 거부 지점(`EditScene.ts`, `TilePaintEngine.ts`, `DragOperationHandler.ts`, `actions.ts`, `panels/basicLeftRail.ts`)은 `toast(mapEditLockNotice(...))` 나 조용한 `return` 만 한다 | "칠했는데 아무 일도 안 일어난다" 가 로그·감사 어디에도 안 남는다. 거부는 mutation 이 아니라 초크포인트를 지나지 않으므로 별도로 남겨야 한다 |
 
 ```bash

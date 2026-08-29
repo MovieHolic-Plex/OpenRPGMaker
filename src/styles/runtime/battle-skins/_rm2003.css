@@ -718,10 +718,13 @@
   grid-column: 1 / -1;
   grid-row: 1 / -1;
   grid-template-columns: minmax(0, 1fr) 16px;
-  height: 44px;
+  /* 한 줄 높이(44px)로 고정돼 있어서 "○○의 공격!" + "○○에게 74 피해!" 두 줄이 되면
+     두 번째 줄이 잘렸다(실측 scrollHeight 54 > clientHeight 44). 한 줄 높이는 최소치로
+     남기고 필요할 때만 늘어나게 한다. */
+  height: auto;
   left: 16px;
-  max-height: 44px;
-  min-height: 0;
+  max-height: none;
+  min-height: 44px;
   overflow: hidden;
   padding: 0 14px;
   pointer-events: none;
