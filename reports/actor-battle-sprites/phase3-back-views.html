@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Phase 3 — 액터별 뒷모습 배틀러</title>
+<style>
+  :root { color-scheme: light; }
+  body { font: 15px/1.7 -apple-system, "Segoe UI", "Noto Sans KR", sans-serif; margin: 0 auto; max-width: 1100px; padding: 40px 24px 80px; color: #1a1a1f; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 44px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #e3e3e8; }
+  h3 { font-size: 15px; margin: 24px 0 6px; }
+  .sub { color: #6b6b76; margin: 0 0 28px; }
+  img { max-width: 100%; border: 1px solid #e3e3e8; border-radius: 6px; display: block; background: #fff; }
+  figure { margin: 14px 0 6px; }
+  figcaption { color: #6b6b76; font-size: 13px; margin-top: 7px; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; }
+  th, td { border: 1px solid #e3e3e8; padding: 7px 10px; text-align: left; }
+  th { background: #f7f7f9; font-weight: 600; }
+  code { background: #f2f2f5; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  .ok { color: #0a7a34; font-weight: 600; }
+  .bad { color: #b3261e; font-weight: 600; }
+  .note { background: #f7f7f9; border-left: 3px solid #b8b8c2; padding: 12px 16px; margin: 16px 0; }
+  .note.warn { border-left-color: #d99a00; background: #fffaf0; }
+  ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<h1>Phase 3 — 액터별 뒷모습 배틀러</h1>
+<p class="sub">6인의 뒷모습 스프라이트 생성 · 리소스 등록 · 선택 로직. 2026-08-29.</p>
+
+<h2>무엇이 문제였나</h2>
+<p>후면 구도 스킨(포켓몬 등)은 파티 전원에게 <code>ally-creature-back.png</code> <strong>한 장</strong>을 돌려 줬다. 어느 액터를 편성해도 같은 보라색 생물이 뒤통수를 보였다 — 정면 시트로는 6인이 서로 다른 인물인데, 뒤에서 보면 전부 같은 생물이었다.</p>
+
+<figure>
+  <img src="back-view-before-after.png" alt="위: 여섯 칸 모두 같은 공용 스프라이트. 아래: 액터별 뒷모습 여섯 장.">
+  <figcaption><strong>위</strong> — 이전. 6인 전원이 같은 <code>ally-creature-back.png</code>. <strong>아래</strong> — 이후. 액터별 뒷모습.</figcaption>
+</figure>
+
+<h2>인물 일치 검수</h2>
+<p>정면 <code>idle</code> 셀을 384px 로 확대해 세션 작업 폴더에 <code>reference.png</code> 로 깔고, grok 이 그 파일을 파일 읽기 툴로 실제로 열어 보게 했다. 자세는 유지하고 <strong>시점만</strong> 돌린다.</p>
+
+<figure>
+  <img src="back-view-contact.png" alt="위줄 정면 idle 여섯, 아래줄 대응하는 뒷모습 여섯.">
+  <figcaption><strong>위</strong> — 출하된 정면 <code>idle</code> 셀. <strong>아래</strong> — 신규 뒷모습. 좌→우 hero-01 주인공 · hero-02 수호자 · hero-03 마도사 · hero-04 정찰병 · hero-05 성직자 · hero-06 궁수.</figcaption>
+</figure>
+
+<p>여섯 장 전부 얼굴이 보이지 않고, 후면에서만 보이는 디테일이 제대로 들어왔다:</p>
+<ul>
+  <li><strong>hero-01</strong> — 둥근 방패의 <em>안쪽 십자 보강대</em>가 보인다(정면에서는 나무 앞면).</li>
+  <li><strong>hero-02</strong> — 붉은 망토의 뒷면과 카이트 실드의 <em>가죽 끈</em>.</li>
+  <li><strong>hero-03</strong> — 후드의 뾰족한 뒤꼭지와 목덜미로 흐르는 보라 머리.</li>
+  <li><strong>hero-04</strong> — 가죽 머리띠의 <em>매듭</em>이 뒤통수에 있다.</li>
+  <li><strong>hero-05</strong> — 가슴의 금색 태양 문장이 <em>정확히 사라졌다</em>(가슴은 몸에 가려진다).</li>
+  <li><strong>hero-06</strong> — 등의 화살통과 어깨 위로 삐져나온 녹색 깃.</li>
+</ul>
+
+<h2>측정값</h2>
+<table>
+  <tr><th>슬러그</th><th>크기</th><th>채움</th><th>모델이 칠한 배경색</th><th>남은 프린지</th></tr>
+  <tr><td>hero-01</td><td>712×712</td><td>41.1%</td><td>rgb(217,39,217)</td><td class="ok">0</td></tr>
+  <tr><td>hero-02</td><td>712×712</td><td>51.6%</td><td>rgb(245,22,201)</td><td class="ok">0</td></tr>
+  <tr><td>hero-03</td><td>712×712</td><td>35.7%</td><td>rgb(247,52,218)</td><td class="ok">0</td></tr>
+  <tr><td>hero-04</td><td>712×712</td><td>36.4%</td><td>rgb(248,2,249)</td><td class="ok">0</td></tr>
+  <tr><td>hero-05</td><td>712×712</td><td>32.9%</td><td>rgb(237,88,244)</td><td class="ok">0</td></tr>
+  <tr><td>hero-06</td><td>712×712</td><td>42.1%</td><td>rgb(243,155,230)</td><td class="ok">0</td></tr>
+</table>
+<p>"프린지" 는 <strong>그 이미지의 실제 배경색</strong>과 허용 오차(62) 안에 있는 남은 픽셀 수다. 거친 판정식(<code>r&gt;140 &amp;&amp; b&gt;140 &amp;&amp; g&lt;110</code>)으로 재면 마도사가 2134 픽셀 걸리지만 전부 로브·머리의 연보라이고, 실제 배경색 기준으로는 0 이다. 보라색 피사체에 그 판정식을 쓰면 안 된다.</p>
+
+<h2>파이프라인에서 잡은 결함 2건</h2>
+
+<h3>1. 크로마키가 원본 경계에서 멈췄다</h3>
+<p>첫 결과물은 <strong>마젠타 사각 덩어리</strong>였다(채움 93.4%, 마젠타 284,321 픽셀). 원인은 내가 넣은 <code>padWithMagenta()</code> 였다.</p>
+<div class="note">
+<p><code>processSprite</code> 는 배경 기준색을 <strong>테두리 픽셀의 중앙값</strong>에서 뽑는다. 원본 주위에 순수 <code>#FF00FF</code> 띠를 두르면 그 중앙값이 순수 마젠타로 바뀐다. 그런데 모델이 칠한 배경은 <code>rgb(216,39,217)</code> — 순수 마젠타와의 거리가 <strong>67</strong> 로 허용 오차 <strong>62</strong> 를 넘는다. flood fill 이 덧댄 띠만 지우고 원본 경계에서 그대로 멈췄다.</p>
+<p>더 나쁜 건 <strong>게이트가 통과시켰다</strong>는 점이다: 띠 면적만으로 keyed 비율이 25.7% 를 찍었고 하한이 5% 였다(실측 keyed 26% = 띠 362,768 / 전체 1,411,344 와 정확히 일치).</p>
+</div>
+<p>고친 방식은 두 가지다:</p>
+<ul>
+  <li><code>padWithBackground()</code> — 순수 마젠타가 아니라 <strong>같은 <code>sampleBackground()</code> 로 원본에서 뽑은 색</strong>으로 덧댄다. 기준색이 원본과 같게 유지된다.</li>
+  <li><code>MIN_INNER_KEYED</code> (15%) — 띠를 뺀 <strong>원본 영역 안에서</strong> 지워진 비율을 따로 잰다. 성공 컷은 51~72%, 실패 컷은 0.0% 였다.</li>
+</ul>
+<p>이게 우연한 한 장의 문제가 아니었다는 근거 — 모델이 칠하는 마젠타는 매번 다르고, <strong>6장 중 4장</strong>이 순수 마젠타 패딩으로는 실패했을 거리다:</p>
+<table>
+  <tr><th>슬러그</th><th>배경색</th><th>순수 #FF00FF 와 거리</th><th>순수 마젠타로 덧댔다면</th></tr>
+  <tr><td>hero-01</td><td>rgb(217,39,217)</td><td>66.4</td><td class="bad">실패</td></tr>
+  <tr><td>hero-02</td><td>rgb(245,22,201)</td><td>59.2</td><td class="ok">통과</td></tr>
+  <tr><td>hero-03</td><td>rgb(247,52,218)</td><td>64.3</td><td class="bad">실패</td></tr>
+  <tr><td>hero-04</td><td>rgb(248,2,249)</td><td>9.4</td><td class="ok">통과</td></tr>
+  <tr><td>hero-05</td><td>rgb(237,88,244)</td><td>90.5</td><td class="bad">실패</td></tr>
+  <tr><td>hero-06</td><td>rgb(243,155,230)</td><td>157.5</td><td class="bad">실패</td></tr>
+</table>
+
+<h3>2. 뒷모습을 요구했는데 정면이 나왔다</h3>
+<p>첫 시도는 참조 컷을 거의 그대로 베껴 눈·코·입이 다 보이는 정면이 나왔다. 공통 <code>NEGATIVE</code> 에는 "정면 <em>보행</em> 스프라이트 금지" 만 있어서 정면 <em>전투</em> 포즈는 아무것도 막지 않았다. 프롬프트를 구조적으로 고쳤다:</p>
+<ul>
+  <li>시점 요구를 <strong>참조 문단보다 앞에</strong> 한 번, <strong>저장 지시 바로 앞에</strong> 한 번 더 — 처음과 끝이 가장 잘 지켜진다.</li>
+  <li><code>NEGATIVE_BACK</code> — 얼굴·눈·코·입·정면·측면 프로필·가슴 문장을 명시적으로 금지.</li>
+  <li><code>who</code> 가 <strong>정면 기준 서술</strong>임을 알려 카메라를 앞으로 끌어당기지 않게 했다.</li>
+  <li>참조 문구를 "베껴라" 에서 "이 인물의 <strong>뒤로 걸어가서</strong> 보이는 것을 그려라" 로 바꿨다.</li>
+</ul>
+
+<h2>부수적으로 고친 생성기 결함 2건</h2>
+<ul>
+  <li><strong>스탬프 캐시가 출하를 건너뛰었다.</strong> 처리 완료 스탬프가 있으면 <code>public/</code> 에 복사하지 않고 "skip" 만 찍고 끝났다 — 출하 파일이 없거나 낡아도 아무 일도 안 했다. 이제 캐시로 건너뛰어도 <code>publish()</code> 를 반드시 지난다.</li>
+  <li><strong>파이프라인만 고쳐도 3분짜리 생성을 다시 태웠다.</strong> 세션의 <code>raw.png</code> 가 있으면 생성을 건너뛰고 후처리만 다시 돌린다. 덕분에 grok 이 이미지를 저장한 뒤 exit 1 로 죽은 hero-02 를 <strong>재생성 없이</strong> 건졌다.</li>
+</ul>
+
+<h2>선택 로직</h2>
+<p><code>battleFieldDom.ts</code> 의 우선순위는 네 단계다. 위에서 먼저 맞는 것을 쓴다:</p>
+<table>
+  <tr><th>#</th><th>조건</th><th>쓰는 그림</th></tr>
+  <tr><td>1</td><td><code>actor.speciesId</code> 있음</td><td>종족 그래픽(파티 몬스터) — 기존 그대로 최우선</td></tr>
+  <tr><td>2</td><td><code>partyFacing === "front"</code></td><td>저작된 3×8 전투 시트 — 기존 그대로</td></tr>
+  <tr><td>3</td><td><code>partyFacing === "back"</code> + <code>generated-actor-&lt;slug&gt;-back</code> <strong>리졸브 성공</strong></td><td><strong>신규</strong> 액터별 뒷모습</td></tr>
+  <tr><td>4</td><td>나머지</td><td>예전 공용 폴백(<code>ally-creature-back</code> 또는 전사/마법사 교대)</td></tr>
+</table>
+<p>슬러그는 <code>battleCharacterResourceId</code> 에서 유도한다(<code>…hero-03-battle</code> → <code>…hero-03-back</code>). 스키마·에디터·직렬화·픽스처 변경이 0 이다. <strong>id 를 만들었다는 것만으로 쓰지 않는다</strong> — 리졸브까지 성공해야 3단계로 간다. 안 그러면 없는 파일을 <code>src</code> 에 박는다.</p>
+
+<h2>참고 — 정면 시트 30프레임(Phase 1·2 결과)</h2>
+<figure>
+  <img src="pose-grid.png" alt="6행 5열 포즈 그리드.">
+  <figcaption>열 = idle · attack · hit · defend · dead. 행 = hero-01…06. 전부 좌향 측면이고 <code>dead</code> 는 누워서 셀 바닥에 붙는다.</figcaption>
+</figure>
+
+<h2>검증</h2>
+<table>
+  <tr><th>항목</th><th>결과</th></tr>
+  <tr><td><code>test/battleFieldAllySprite.test.ts</code> (신규)</td><td class="ok">7/7 통과</td></tr>
+  <tr><td><code>test/battlerPoseFrame.test.ts</code>, <code>spriteProcess</code>, <code>heroBattleSheetContract</code>, <code>generatedAssetManifest</code>, <code>resourceProfiles</code></td><td class="ok">전부 통과</td></tr>
+  <tr><td>뒷모습 6장 e2e 프로브 계약(712×712 · 네 코너 알파 0 · 가시 픽셀 &gt; 0)</td><td class="ok">로컬에서 6/6 확인</td></tr>
+  <tr><td><code>npm run gates</code> 회귀 판정</td><td class="ok">내 변경 기인 0건</td></tr>
+</table>
+
+<div class="note warn">
+<p><strong>gates 가 보고한 10건은 전부 내 변경 밖이다.</strong> 깨끗한 HEAD 워크트리를 따로 만들어 대조해 확정했다:</p>
+<ul>
+  <li><strong>6건</strong> — 개별 실행하면 통과한다(전체 병렬 실행 간섭).</li>
+  <li><strong>3건</strong>(<code>playerBuild</code>, <code>pageItemCondition</code>, <code>battleDomIncremental</code>) — 깨끗한 HEAD 에서도 <strong>똑같이 실패</strong>한다. <code>battleDomIncremental</code> 은 공유 <code>node_modules</code> 에 <code>@playwright/test</code> 가 없어서 나는 환경 문제다.</li>
+  <li><strong>1건</strong>(<code>stardewDemo</code>) — 깨끗한 HEAD 에서는 <strong>통과</strong>한다. 이 워크트리에 있는 <em>다른 세션의 커밋 안 된</em> 적 로스터 정리(<code>enemy_mine_skel_archer</code> 의 <code>speciesId</code> 제거)가 원인이다.</li>
+</ul>
+<p>typecheck 2건도 내 코드가 아니다 — 설치된 TypeScript 가 이 저장소의 <code>baseUrl</code> 을 더 이상 허용하지 않는 툴체인 문제다(<code>files: 0</code> — 어느 소스 파일에도 귀속되지 않는다).</p>
+<p><code>test/defaultDatabase.test.ts</code> 2건은 <strong>시작 파티 인원</strong>(2 vs 기대 4) 단정이고 HEAD 에 그대로 있다. 내가 더한 성직자·궁수 단정은 그보다 먼저 실행되어 통과한다.</p>
+</div>
+
+<h2>남은 것</h2>
+<ul>
+  <li><strong>포켓몬 스킨 <code>partyMax: 1</code></strong> — 계획서가 명시적으로 범위 밖으로 둔 항목. 뒷모습이 6장 생겨도 선두 1명만 보인다. 올리는 건 스킨 레이아웃·HUD 재설계다.</li>
+  <li><strong>아군 잘림</strong> — 아래 인게임 QA 절 참조. 기존 결함이라 이번 범위에서는 보고만 한다.</li>
+</ul>
+
+<h2>인게임 QA — 실제 전투 화면에서 확인</h2>
+
+<p>
+앞선 판본은 이 절이 <em>"남은 것"</em> 이었다. 공유 <code>node_modules</code> 에 <code>@playwright/test</code> 가
+없어 <code>scripts/runtime-qa.mjs</code> 를 못 돌렸기 때문이다. 캐시에 있는 <strong>브라우저 바이너리를
+<code>playwright-core</code> 로 직접</strong> 몰아서 우회했다(<code>scripts/qa/back-battler-qa.mjs</code>,
+<code>src/qa/backBattlerHarness.ts</code>, <code>qa-back-battler.html</code>). 하네스는 실제 전투 장면을
+띄우고 아군 이미지의 <code>src</code>·박스·<code>computed transform</code>·콘솔 오류를 읽는다.
+</p>
+
+<div class="note bad">
+<p><strong>여기서 내 자신의 결함 1건이 잡혔다 — 여섯 장 전부 적 반대쪽을 보고 있었다.</strong></p>
+<p>
+<code>COMPOSITION_BACK</code> 은 포켓몬 스킨이 아군을 <code>scaleX(-1)</code> 로 미러링한다고 보고
+<em>"적은 좌상단"</em> 이라 지시했다. 그 전제가 틀렸다. 레거시
+<code>18-pokemon-layout-redesign.css:48</code> 의 <code>scaleX(-1)</code> 은
+<code>battle-skins/_battlers.css:32-36</code> 이 같은 요소를 더 구체적인 선택자로 다시 잡아
+<code>transform: none !important</code> 로 <strong>취소</strong>한다. 실측 <code>computed transform</code> 은
+여덟 케이스 전부 <code>none</code> 이었다.
+</p>
+<p>
+그래서 모델은 지시대로 왼쪽을 보게 그렸고 — 적은 우상단에 선다(실측 적 x=766 대 아군 x=125) —
+아군이 <strong>적 등을 돌린</strong> 그림이 출하돼 있었다. 확대해 보면 명백하다: 수호자의 투구
+면갑이 왼쪽, 정찰병의 귀가 왼쪽이었다.
+</p>
+<p>
+<strong>고쳤다.</strong> 프롬프트를 <code>UPPER RIGHT</code> / <code>angled right</code> 로 바로잡고
+근거 주석을 실제 CSS 로 다시 썼다. 그 프롬프트로 여섯 장을 <strong>재생성</strong>했다(자산을 손으로
+뒤집지 않았다 — 프롬프트가 자산의 정본이어야 <code>reprocess</code>·manifest 재현성이 유지된다).
+방향이 다시 뒤집히지 않게 <code>test/backBattlerGazeContract.test.ts</code> 가 프롬프트 문구와
+CSS 의 미러링 취소를 <strong>함께</strong> 단정한다 — 둘 중 하나만 바뀌면 실패한다.
+</p>
+</div>
+
+<p>재생성 후 실제 전투 화면. 앞 일곱 칸이 액터 6인, 마지막이 대조군(예전 공용 스프라이트)이다.
+여섯 명 모두 우측 적을 향한다.</p>
+<p><img src="ingame-field-grid.png" alt="포켓몬 스킨 실제 전투 화면에서 액터 6인의 뒷모습과 대조군"></p>
+
+<h3>같이 확인된 것</h3>
+<table>
+  <tr><th>항목</th><th>실측</th></tr>
+  <tr><td>아군 이미지 요소</td><td><code>&lt;img&gt;</code> · <code>natural 712×712</code> · 박스 533×515 — 6/6 올바른 <code>hero-0N-back.png</code></td></tr>
+  <tr><td><code>computed transform</code></td><td>여덟 케이스 전부 <code>none</code> (미러링 없음 확정)</td></tr>
+  <tr><td>콘솔 오류</td><td>1건 — 첫 페이지 로드에서만 나는 404. 스프라이트는 정상 디코드(<code>natural</code> 값 존재)라 무관하다.</td></tr>
+  <tr><td>대조군</td><td>뒷모습이 없는 액터는 예전 <code>ally-creature-back.png</code>(보라색 생물)로 떨어진다 — 폴백 경로도 살아 있다.</td></tr>
+</table>
+
+<div class="note warn">
+<p><strong>기존 결함: 아군이 필드 밖으로 ~360px 잘린다.</strong> 위 그림에서 여섯 명 다 머리만 보이는 이유다.</p>
+<p>
+아군 이미지 박스가 필드 하단보다 <strong>356~362px</strong> 아래로 내려간다. 이건 내 변경 탓이
+아니다 — 대조군인 <strong>예전 공용 스프라이트도 362px 똑같이</strong> 잘린다. 반면 클래식
+<code>rm2003</code> 정면 경로는 <code>-210px</code> 로 필드 안에 들어온다. 즉 <strong>포켓몬 후면
+경로의 레이아웃 결함</strong>이고, 액터별 분리와 무관하게 이전부터 있었다.
+</p>
+<p>
+이번 범위에서는 고치지 않는다(<code>partyMax</code> 와 같은 이유 — 스킨 레이아웃 재설계 영역이고
+12종 스킨 회귀 위험이 있다). 측정값과 대조군 근거를 남겨 별건으로 둔다.
+</p>
+</div>
+
+</body>
+</html>

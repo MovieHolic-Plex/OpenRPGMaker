@@ -1,0 +1,727 @@
+[
+  {
+    "id": "pokemon-hero-01",
+    "lead": "actor_hero",
+    "skin": "pokemon",
+    "note": "포켓몬 스킨 · 선두 주인공(hero-01) — 뒷모습이 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": "true",
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/hero-01-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 310
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 31
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -4
+      }
+    ],
+    "errors": [
+      "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  {
+    "id": "pokemon-hero-02",
+    "lead": "actor_guardian",
+    "skin": "pokemon",
+    "note": "포켓몬 스킨 · 선두 수호자(hero-02) — 뒷모습이 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": "true",
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/hero-02-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 315
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 33
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -1
+      }
+    ],
+    "errors": []
+  },
+  {
+    "id": "pokemon-hero-03",
+    "lead": "actor_mage",
+    "skin": "pokemon",
+    "note": "포켓몬 스킨 · 선두 마도사(hero-03) — 뒷모습이 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": "true",
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/hero-03-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 315
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 33
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -2
+      }
+    ],
+    "errors": []
+  },
+  {
+    "id": "pokemon-hero-04",
+    "lead": "actor_scout",
+    "skin": "pokemon",
+    "note": "포켓몬 스킨 · 선두 정찰병(hero-04) — 뒷모습이 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": "true",
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/hero-04-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 310
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 30
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -4
+      }
+    ],
+    "errors": []
+  },
+  {
+    "id": "pokemon-hero-05",
+    "lead": "actor_cleric",
+    "skin": "pokemon",
+    "note": "포켓몬 스킨 · 선두 성직자(hero-05) — 뒷모습이 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": "true",
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/hero-05-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 315
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 31
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -4
+      }
+    ],
+    "errors": []
+  },
+  {
+    "id": "pokemon-hero-06",
+    "lead": "actor_ranger",
+    "skin": "pokemon",
+    "note": "포켓몬 스킨 · 선두 궁수(hero-06) — 뒷모습이 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": "true",
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/hero-06-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 314
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 32
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -2
+      }
+    ],
+    "errors": []
+  },
+  {
+    "id": "rm2003-hero-01",
+    "lead": "actor_hero",
+    "skin": "rm2003",
+    "note": "대조 · RM식 정면 — 저작 시트가 그대로 서야 한다",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "classic",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-sprite",
+          "width": "var(--battle-sprite-frame-width, 144px)",
+          "height": "var(--battle-sprite-frame-height, 144px)",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"classic\"][data-battle-skin=\"rm2003\"] .battle-actor[data-authored-battler=\"true\"] .battle-actor-sprite",
+          "width": "var(--battle-sprite-frame-width)",
+          "height": "var(--battle-sprite-frame-height)",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"classic\"][data-battle-skin=\"rm2003\"] .battle-actor[data-authored-battler=\"true\"] .battle-actor-sprite",
+          "width": null,
+          "height": null,
+          "transform": "scale(1.25)"
+        }
+      ],
+      "computedSize": {
+        "width": "96px",
+        "height": "96px",
+        "objectFit": "fill"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 420,
+        "y": 0,
+        "bottom": 420
+      },
+      "partyFacing": "front",
+      "actorBackBattler": null,
+      "monsterBattler": null,
+      "authoredBattler": "true",
+      "kind": "sprite",
+      "src": null,
+      "backgroundImage": "url(\"http://127.0.0.1:39989/assets/generated/starter/hero-01-battle.png\")",
+      "transform": "matrix(1.25, 0, 0, 1.25, 0, 0)",
+      "box": {
+        "w": 180,
+        "h": 180,
+        "x": 742,
+        "y": 30
+      },
+      "naturalSize": null,
+      "complete": null
+    },
+    "enemies": [
+      {
+        "w": 180,
+        "h": 242,
+        "x": 276,
+        "y": -33
+      },
+      {
+        "w": 180,
+        "h": 242,
+        "x": 449,
+        "y": -33
+      }
+    ],
+    "errors": []
+  },
+  {
+    "id": "pokemon-fallback-shared",
+    "lead": "actor_hero",
+    "skin": "pokemon",
+    "note": "대조 · 뒷모습 없음 → 예전 공용 ally-creature-back",
+    "ally": {
+      "found": true,
+      "sceneUiStyle": "pokemon",
+      "matchedRules": [
+        {
+          "selector": ".battle-actor-image",
+          "width": "144px",
+          "height": "144px",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image",
+          "width": "224px",
+          "height": "296px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-image, .battle-scene[data-battle-ui-style=\"pokemon\"] .battle-actor-group .battle-actor-sprite",
+          "width": "205px",
+          "height": "215px",
+          "transform": "scaleX(-1)"
+        },
+        {
+          "selector": ".battle-actor:not(:where([data-battle-skin=\"rm2003\"] *)) .battle-skin-actor-image",
+          "width": "calc(24px * var(--battle-actor-scale, 1))",
+          "height": "calc(32px * var(--battle-actor-scale, 1))",
+          "transform": null
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "calc(26px * var(--battle-actor-scale, 1))",
+          "height": "calc(36px * var(--battle-actor-scale, 1))",
+          "transform": "none"
+        },
+        {
+          "selector": ".battle-scene[data-battle-skin=\"pokemon\"] .battle-actor .battle-skin-actor-image",
+          "width": "145px",
+          "height": "140px",
+          "transform": null
+        }
+      ],
+      "computedSize": {
+        "width": "145px",
+        "height": "140px",
+        "objectFit": "contain"
+      },
+      "fieldBox": {
+        "w": 960,
+        "h": 468,
+        "y": 0,
+        "bottom": 468
+      },
+      "partyFacing": "back",
+      "actorBackBattler": null,
+      "monsterBattler": null,
+      "authoredBattler": null,
+      "kind": "img",
+      "src": "/assets/generated/battle-skins/sprites/ally-creature-back.png",
+      "backgroundImage": null,
+      "transform": "none",
+      "box": {
+        "w": 533,
+        "h": 515,
+        "x": 125,
+        "y": 304
+      },
+      "naturalSize": {
+        "w": 712,
+        "h": 712
+      },
+      "complete": true
+    },
+    "enemies": [
+      {
+        "w": 284,
+        "h": 292,
+        "x": 766,
+        "y": 27
+      },
+      {
+        "w": 284,
+        "h": 292,
+        "x": 593,
+        "y": -7
+      }
+    ],
+    "errors": []
+  }
+]
