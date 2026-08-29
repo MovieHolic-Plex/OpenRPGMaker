@@ -20,13 +20,46 @@ import { isLoopingChannel, volumeGroupForChannel, type AudioVolumeGroup } from "
 
 const DEFAULT_FADE_MS = 600;
 const FADE_TICK_MS = 40;
+// HTMLMediaElement.playbackRate 는 이론상 제한이 없지만 브라우저가 실제로 소리를 내는 범위는
+// 대략 0.25~4 다. 그 밖의 값은 무음이 되어 "고장"으로 보이므로 여기서 클램프한다.
+const MIN_PLAYBACK_RATE = 0.25;
+const MAX_PLAYBACK_RATE = 4;
 const UNLOCK_EVENTS: readonly string[] = ["pointerdown", "keydown", "touchstart"];
+
+// 요청 단위 재생 옵션. 전부 선택적이므로 기존 호출부(playAudioCommand 등)는 그대로 동작한다.
+export interface AudioPlayOptions {
+  // 이 요청의 페이드인 길이(ms). 생략 시 DEFAULT_FADE_MS.
+  readonly fadeInMs?: number;
+  // 재생 속도(템포). 지정하면 엔진 전역 값으로 채택된다.
+  readonly playbackRate?: number;
+  // 스테레오 밸런스(-1 왼쪽 … 1 오른쪽). 지정하면 엔진 전역 값으로 채택된다.
+  readonly pan?: number;
+}
+
+// 브라우저 QA 가 읽는 현재 적용값 스냅숏.
+export interface AudioStateSnapshot {
+  readonly volume: Record<AudioVolumeGroup, number>;
+  readonly playbackRate: number;
+  readonly pan: number;
+  readonly fadeInMs: number;
+}
 
 interface ManagedTrack {
   channel: AudioChannel;
   resourceId: string;
   readonly audio: HTMLAudioElement;
   fadeTimer: number | null;
+  // 진행 중인 페이드의 목표 볼륨. 페이드인 도중에 사용자가 볼륨을 옮기면 이 값을 갱슴해
+  // 페이드가 끝난 뒤 낮은 예전 볼륨으로 되돌아가지 않게 한다(0 = 페이드아웃은 갱슴 대상 아님).
+  fadeTarget: number;
+}
+
+// 값 클램프(NaN 은 기본값으로).
+function clampNumber(value: number, min: number, max: number, fallback: number): number {
+  if (!Number.isFinite(value)) return fallback;
+  if (value < min) return min;
+  if (value > max) return max;
+  return value;
 }
 
 // 페이드 진행 상태(경과 계산용). performance.now 미가용 환경 대비 Date.now 폴백.
@@ -42,8 +75,21 @@ export class AudioEngine {
   private readonly loopTracks: Map<AudioChannel, ManagedTrack> = new Map();
   private readonly oneShots: Set<HTMLAudioElement> = new Set();
   private volumes: Record<AudioVolumeGroup, number> = { bgm: 0.7, se: 0.8 };
+  private playbackRate = 1;
+  private pan = 0;
+  private fadeInMs = DEFAULT_FADE_MS;
   private unlockInstalled = false;
   private readonly warnedMissing: Set<string> = new Set();
+  // WebAudio 팬 그래프는 **지연 생성**한다: pan 이 0 이 아닌 요청이 처음 올 때만 만든다.
+  // AudioContext 가 없거나 createMediaElementSource 가 던지는 환경(jsdom/happy-dom)에서는
+  // 조용히 건너뛰고 값만 보관한다.
+  private audioContext: AudioContext | null = null;
+  private webAudioUnavailable = false;
+  private readonly panners: WeakMap<HTMLAudioElement, StereoPannerNode> = new WeakMap();
+
+  constructor() {
+    this.installStateObservationHook();
+  }
 
   // 사용자 입력 언락 리스너 설치(1회). 브라우저 자동재생 정책 대응.
   installUnlockListeners(): void {
@@ -75,10 +121,19 @@ export class AudioEngine {
 
   setVolume(group: AudioVolumeGroup, volume: number): void {
     this.volumes[group] = clampVolume(volume);
-    // 재생 중인 루프 트랙에 즉시 반영(원샷은 자연 종료).
+    // 재생 중인 트랙에 즉시 반영 — 정지 후 재생을 요구하지 않는다.
     for (const track of this.loopTracks.values()) {
-      if (volumeGroupForChannel(track.channel) === group && track.fadeTimer === null) {
+      if (volumeGroupForChannel(track.channel) !== group) continue;
+      if (track.fadeTimer === null) {
         track.audio.volume = this.targetVolumeFor(track.channel);
+      } else if (track.fadeTarget > 0) {
+        // 페이드인 진행 중 — 도달할 지점만 바꿔 페이드를 깨지 않게 적용한다.
+        track.fadeTarget = this.targetVolumeFor(track.channel);
+      }
+    }
+    if (group === "se") {
+      for (const audio of this.oneShots) {
+        audio.volume = this.volumes.se;
       }
     }
   }
@@ -87,8 +142,52 @@ export class AudioEngine {
     return this.volumes[group];
   }
 
+  // 재생 속도(템포). 재생 중인 모든 요소에 즉시 반영된다.
+  setPlaybackRate(rate: number): void {
+    this.playbackRate = clampNumber(rate, MIN_PLAYBACK_RATE, MAX_PLAYBACK_RATE, 1);
+    for (const audio of this.liveElements()) {
+      audio.playbackRate = this.playbackRate;
+    }
+  }
+
+  getPlaybackRate(): number {
+    return this.playbackRate;
+  }
+
+  // 스테레오 밸런스(-1 왼쪽 … 1 오른쪽). WebAudio 가 없으면 값만 보관한다.
+  setPan(pan: number): void {
+    this.pan = clampNumber(pan, -1, 1, 0);
+    for (const audio of this.liveElements()) {
+      this.applyPan(audio);
+    }
+  }
+
+  getPan(): number {
+    return this.pan;
+  }
+
+  // 다음 재생에 쓸 페이드인 길이(ms). 요청 옵션이 없을 때의 기본값이 된다.
+  setFadeInMs(fadeInMs: number): void {
+    this.fadeInMs = clampNumber(fadeInMs, 0, 60_000, DEFAULT_FADE_MS);
+  }
+
+  // 마지막으로 적용한(또는 다음 재생에 쓸) 페이드인 길이(ms).
+  getFadeInMs(): number {
+    return this.fadeInMs;
+  }
+
+  // 브라우저 QA 훅이 읽는 현재 적용값.
+  audioStateSnapshot(): AudioStateSnapshot {
+    return {
+      volume: { ...this.volumes },
+      playbackRate: this.playbackRate,
+      pan: this.pan,
+      fadeInMs: this.fadeInMs,
+    };
+  }
+
   // playAudio 명령 처리. url 이 이미 해석된 상태로 전달된다.
-  play(channel: AudioChannel, resourceId: string, url: string, loop: boolean): void {
+  play(channel: AudioChannel, resourceId: string, url: string, loop: boolean, options?: AudioPlayOptions): void {
     if (typeof window === "undefined" || typeof Audio === "undefined") return;
     // Browser-QA 관찰 훅: 재생 지시를 받은 리소스를 기록한다(로드/재생 도달 증명).
     if (typeof window !== "undefined") {
@@ -96,7 +195,16 @@ export class AudioEngine {
       if (!Array.isArray(holder.__oprnAudioObserved)) holder.__oprnAudioObserved = [];
       holder.__oprnAudioObserved.push(resourceId);
     }
-    const request: AudioRequest = { channel, resourceId, url, loop };
+    if (options?.playbackRate !== undefined) this.setPlaybackRate(options.playbackRate);
+    if (options?.pan !== undefined) this.setPan(options.pan);
+    const fadeInMs = options?.fadeInMs;
+    const request: AudioRequest = {
+      channel,
+      resourceId,
+      url,
+      loop,
+      ...(fadeInMs === undefined ? {} : { fadeInMs: Math.max(0, fadeInMs) }),
+    };
     const { state, immediate } = requestAudio(this.queue, request);
     this.queue = state;
     if (immediate) this.playNow(immediate);
@@ -132,7 +240,8 @@ export class AudioEngine {
   // 세이브 상태의 루프 채널(BGM/BGS) 재개. 원샷은 복원하지 않는다.
   resumeFromState(
     audio: Partial<Record<AudioChannel, { readonly resourceId: string; readonly loop: boolean }>>,
-    resolve: (resourceId: string) => string | null
+    resolve: (resourceId: string) => string | null,
+    options?: AudioPlayOptions
   ): void {
     for (const channel of ["bgm", "bgs"] as const) {
       const track = audio[channel];
@@ -142,7 +251,7 @@ export class AudioEngine {
         this.warnMissing(track.resourceId);
         continue;
       }
-      this.play(channel, track.resourceId, url, track.loop);
+      this.play(channel, track.resourceId, url, track.loop, options);
     }
   }
 
@@ -156,7 +265,16 @@ export class AudioEngine {
     }
   }
 
+  // 이 요청에 적용할 페이드인 길이. 요청에 없으면 현재 기본값(setFadeInMs 로 바뀔 수 있다).
+  // 적용값은 QA 훅에서 조회 가능하게 보관한다.
+  private resolveFadeInMs(request: AudioRequest): number {
+    const fadeInMs = request.fadeInMs === undefined ? this.fadeInMs : Math.max(0, request.fadeInMs);
+    this.fadeInMs = fadeInMs;
+    return fadeInMs;
+  }
+
   private playLoop(request: AudioRequest): void {
+    const fadeInMs = this.resolveFadeInMs(request);
     const existing = this.loopTracks.get(request.channel);
     // 같은 트랙이 이미 루프 중이면 재시작하지 않는다(RM2K3 동작).
     if (existing && existing.resourceId === request.resourceId) return;
@@ -167,13 +285,20 @@ export class AudioEngine {
     const audio = this.createElement(request.url, true);
     const target = this.targetVolumeFor(request.channel);
     audio.volume = 0;
-    const track: ManagedTrack = { channel: request.channel, resourceId: request.resourceId, audio, fadeTimer: null };
+    const track: ManagedTrack = {
+      channel: request.channel,
+      resourceId: request.resourceId,
+      audio,
+      fadeTimer: null,
+      fadeTarget: target,
+    };
     this.loopTracks.set(request.channel, track);
     this.startPlayback(audio, request.resourceId);
-    this.fadeTo(track, 0, target, DEFAULT_FADE_MS);
+    this.fadeTo(track, 0, target, fadeInMs);
   }
 
   private playOneShot(request: AudioRequest): void {
+    this.resolveFadeInMs(request);
     const audio = this.createElement(request.url, false);
     audio.volume = this.targetVolumeFor(request.channel);
     this.oneShots.add(audio);
@@ -191,7 +316,72 @@ export class AudioEngine {
     const audio = new Audio(url);
     audio.loop = loop;
     audio.preload = "auto";
+    audio.playbackRate = this.playbackRate;
+    this.applyPan(audio);
     return audio;
+  }
+
+  // 재생 중인 모든 요소(루프 트랙 + 원샷).
+  private *liveElements(): Generator<HTMLAudioElement> {
+    for (const track of this.loopTracks.values()) yield track.audio;
+    for (const audio of this.oneShots) yield audio;
+  }
+
+  // 팬 적용. 그래프가 아직 없고 중앙(0)이면 아무것도 만들지 않는다(지연 생성).
+  private applyPan(audio: HTMLAudioElement): void {
+    const existing = this.panners.get(audio);
+    if (existing) {
+      existing.pan.value = this.pan;
+      return;
+    }
+    if (this.pan === 0) return;
+    const panner = this.createPanner(audio);
+    if (panner) panner.pan.value = this.pan;
+  }
+
+  private createPanner(audio: HTMLAudioElement): StereoPannerNode | null {
+    const context = this.ensureAudioContext();
+    if (context === null) return null;
+    try {
+      const source = context.createMediaElementSource(audio);
+      const panner = context.createStereoPanner();
+      source.connect(panner);
+      panner.connect(context.destination);
+      this.panners.set(audio, panner);
+      return panner;
+    } catch {
+      // WebAudio 가 없거나 요소 라우팅이 거부된 환경 — 값만 보관하고 조용히 건너뛴다.
+      this.webAudioUnavailable = true;
+      return null;
+    }
+  }
+
+  private ensureAudioContext(): AudioContext | null {
+    if (this.webAudioUnavailable) return null;
+    if (this.audioContext) return this.audioContext;
+    const Ctor = (globalThis as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
+      .AudioContext ??
+      (globalThis as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (typeof Ctor !== "function") {
+      this.webAudioUnavailable = true;
+      return null;
+    }
+    try {
+      const context = new Ctor();
+      if (context.state === "suspended" && typeof context.resume === "function") void context.resume();
+      this.audioContext = context;
+      return context;
+    } catch {
+      this.webAudioUnavailable = true;
+      return null;
+    }
+  }
+
+  // QA 관찰 훅: `window.__oprnAudioState()` 로 현재 적용값을 읽는다.
+  private installStateObservationHook(): void {
+    if (typeof window === "undefined") return;
+    (window as unknown as { __oprnAudioState?: () => AudioStateSnapshot }).__oprnAudioState = () =>
+      this.audioStateSnapshot();
   }
 
   private startPlayback(audio: HTMLAudioElement, resourceId: string): void {
@@ -225,8 +415,9 @@ export class AudioEngine {
     onComplete?: () => void
   ): void {
     this.clearFade(track);
+    track.fadeTarget = clampVolume(to);
     if (typeof window === "undefined" || durationMs <= 0) {
-      track.audio.volume = clampVolume(to);
+      track.audio.volume = track.fadeTarget;
       onComplete?.();
       return;
     }
@@ -234,10 +425,10 @@ export class AudioEngine {
     track.audio.volume = clampVolume(from);
     track.fadeTimer = window.setInterval(() => {
       const elapsed = nowMs() - startedAt;
-      track.audio.volume = computeFadeVolume(from, to, elapsed, durationMs);
+      track.audio.volume = computeFadeVolume(from, track.fadeTarget, elapsed, durationMs);
       if (isFadeComplete(elapsed, durationMs)) {
         this.clearFade(track);
-        track.audio.volume = clampVolume(to);
+        track.audio.volume = clampVolume(track.fadeTarget);
         onComplete?.();
       }
     }, FADE_TICK_MS);
