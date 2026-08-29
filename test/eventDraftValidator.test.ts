@@ -557,6 +557,27 @@ describe("always-true / always-false condition traps", () => {
     expect(result.canCommit).toBe(true);
   });
 
+  // 페이지 조건의 battleResult 는 다른 이벤트·공통 이벤트가 생산한 결과를 봐도 된다 —
+  // 상위 새 플롬이 자습 이상이 아니다. 프로젝트에 전통 경로가 있는한 증명할 수 없으므로
+  // 경고하지 않는다(무조건 경고는 정상 사용만 쉼지 앉는 소음이 된다).
+  it("does not warn on a page-level battle result when the project has a battle path", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const battler = gameEvent(page({
+      id: "page-battle",
+      commands: [{ kind: "battleProcessing", troopId: "troop_any", canEscape: false, canLose: false }],
+    }));
+    battler.id = "ev_battle_source";
+    const event = gameEvent(page({
+      conditions: [{ kind: "battleResult", result: "victory" }],
+    }));
+    project.maps[mapId].events = [battler, event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+
+    expect(result.issues.filter((issue) => issue.code === "condition.battleResult.no-preceding-battle")).toEqual([]);
+  });
+
   it("warns when a gold comparison can never hold for the 0..GOLD_MAX range", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
