@@ -27,6 +27,11 @@ import {
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
+import {
+  finishAgentBlueprint,
+  markAgentBlueprintProgress,
+  setAgentBlueprintFromSpec,
+} from "@/editor/agentBlueprint";
 import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
@@ -1074,6 +1079,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
         ghostPreviewUpdater.handleToolCall(event);
+        // 청사진 진행 — 이번 호출이 어느 칸을 짓고 있는지로 planned/building/done 을 옮긴다.
+        if (event.result.ok) markAgentBlueprintProgress(event.name, event.args);
         assistantBubble = null; // 툴 이후 새 assistant 응답은 새 버블.
         reasoningBox = null; // 툴 이후 새 추론은 새 상자.
         currentStreamNodes = [];
@@ -1081,6 +1088,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         if (event.name === "set_build_spec" && event.result.ok && event.result.data) {
           const spec = event.result.data as BuildSpec;
           confirmedBuildSpecThisTurn = spec;
+          // 밑그림을 맵에도 깐다 — 지금까지는 이 접힌 텍스트가 계획을 볼 수 있는 유일한 창이었다.
+          setAgentBlueprintFromSpec(spec);
           const title = spec.title ?? spec.mapId;
           const detailLines = [
             ...(spec.buildOrder && spec.buildOrder.length > 0 ? [`건설 순서: ${spec.buildOrder.join(" → ")}`] : []),
@@ -1193,6 +1202,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         clearAgentGhostPreview();
       } else {
         ghostPreviewUpdater.flush();
+        // 마지막까지 building 이던 칸을 끝난 것으로 확정한다 — 다음 툴콜이 없으므로
+        // markAgentBlueprintProgress 가 스스로 내려줄 기회가 없다.
+        finishAgentBlueprint();
       }
       const completenessWarnings = result.stoppedReason === "error"
         ? []

@@ -10,7 +10,14 @@ import {
   TILE_SIZE,
 } from "@/assets/bundled";
 import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
-import { subscribeEditorCameraFocus, type CameraFocusTarget } from "@/editor/editorCameraFocus";
+import {
+  planCameraFocus,
+  subscribeEditorCameraFocus,
+  type CameraFocusTarget,
+  type VisibleTileRect,
+} from "@/editor/editorCameraFocus";
+import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
+import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
 import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
@@ -131,6 +138,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
+  private agentBlueprintLayer: Phaser.GameObjects.Container | null = null;
   private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
   private agentFocusHighlightLayer: Phaser.GameObjects.Container | null = null;
   private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
@@ -141,6 +149,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubAgentFocus: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
+  private unsubAgentBlueprint: (() => void) | null = null;
+  private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
   private isPainting = false;
@@ -232,10 +242,14 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    // 청사진은 계획, 고스트는 실물 초안이다 — 계획이 아래로 깔려야 실물이 그 위에 올라간다.
+    this.agentBlueprintLayer = this.add.container(0, 0);
+    this.agentBlueprintLayer.setDepth(10.2);
     this.agentGhostPreviewLayer = this.add.container(0, 0);
     this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
+    this.agentBlueprintRenderer = new AgentBlueprintRenderer(this, this.agentBlueprintLayer, () => this.mapId());
     this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
     this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
     this.cameraPanController = new CameraPanController(this, {
@@ -271,6 +285,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
+    this.unsubAgentBlueprint = subscribeAgentBlueprint(() => this.renderAgentBlueprint());
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
@@ -315,12 +330,15 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
     this.unsubCameraFocus?.();
+    this.unsubAgentBlueprint?.();
     this.unsubStore = null;
     this.unsubEditor = null;
     this.unsubAgentGhost = null;
     this.unsubAgentFocus = null;
     this.unsubCameraFocus = null;
+    this.unsubAgentBlueprint = null;
     this.clearAgentGhostPreviewLayer();
+    this.clearAgentBlueprintLayer();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
@@ -1369,6 +1387,14 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentGhostPreviewRenderer?.render();
   }
 
+  private renderAgentBlueprint(): void {
+    this.agentBlueprintRenderer?.render();
+  }
+
+  private clearAgentBlueprintLayer(): void {
+    this.agentBlueprintRenderer?.clear();
+  }
+
   private clearAgentGhostPreviewLayer(): void {
     this.agentGhostPreviewRenderer?.clear();
   }
@@ -1390,10 +1416,43 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid || target.mapId !== mid) return;
     const map = store.getCurrent().maps[target.mapId];
     if (!map) return;
-    if (target.tileX < 0 || target.tileY < 0 || target.tileX >= map.width || target.tileY >= map.height) return;
-    const worldX = (target.tileX + 0.5) * TILE_SIZE;
-    const worldY = (target.tileY + 0.5) * TILE_SIZE;
-    this.cameras.main.pan(worldX, worldY, 300, "Cubic.easeOut", true);
+    // 사용자의 손이 화면 위에 있으면 카메라를 빼앗지 않는다. pointerToTile 이 **라이브**
+    // 카메라로 타일을 계산하므로(아래 pointerToTile), 칠하는 중에 카메라가 움직이면 다음
+    // pointermove 가 다른 타일로 떨어져 페인트가 번진다. 취향 문제가 아니라 데이터 손상이다.
+    if (this.isPainting || this.cameraPanController?.active()) return;
+    const plan = planCameraFocus(target, map, this.visibleTileRect());
+    if (!plan) return;
+    const worldX = (plan.tileX + 0.5) * TILE_SIZE;
+    const worldY = (plan.tileY + 0.5) * TILE_SIZE;
+    // 카메라가 움직이면 DOM 마커·선택 팔레트 오버레이·AI 뷰포트 스냅샷이 전부 낡는다.
+    // 손 팬은 onPanMove 에서 이미 이 셋을 되맞추는데 프로그램 팬은 아무것도 하지 않아
+    // 조수가 데려간 화면에서 마커가 엉뚱한 자리에 남고 AI 는 이전 위치를 계속 읽었다.
+    this.cameras.main.pan(worldX, worldY, 300, "Cubic.easeOut", true, () => {
+      this.afterCameraMoved();
+    });
+  }
+
+  /** 프로그램 팬이 끝난 뒤 카메라 좌표에 의존하는 표면을 다시 맞춘다(손 팬의 onPanMove 와 같은 몸). */
+  private afterCameraMoved(): void {
+    this.refreshAgentGhostDomMarkers();
+    this.renderBuildPaletteOverlay();
+    this.publishMapViewport();
+  }
+
+  /**
+   * 지금 실제로 보이는 타일 사각형. scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와 직접
+   * 대응하지 않으므로 렌더가 쓰는 worldView 를 쓴다. 안쪽으로 보수적으로 깎아(ceil/floor)
+   * "다 보인다" 판정이 반 칸 때문에 틀리지 않게 한다.
+   */
+  private visibleTileRect(): VisibleTileRect | null {
+    const view = this.cameras.main?.worldView;
+    if (!view || view.width <= 0 || view.height <= 0) return null;
+    const x0 = Math.ceil(view.x / TILE_SIZE);
+    const y0 = Math.ceil(view.y / TILE_SIZE);
+    const x1 = Math.floor((view.x + view.width) / TILE_SIZE);
+    const y1 = Math.floor((view.y + view.height) / TILE_SIZE);
+    if (x1 <= x0 || y1 <= y0) return null;
+    return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
   }
 
   private renderBuildPaletteOverlay(): void {
