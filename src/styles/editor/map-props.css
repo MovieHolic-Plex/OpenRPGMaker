@@ -30,7 +30,7 @@
 
 .map-props-tab:hover {
   background: var(--hover-bg, rgba(42, 37, 33, 0.06));
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-props-tab.active {
@@ -75,7 +75,7 @@
   border: 1px solid var(--border-color, rgba(42, 37, 33, 0.12));
   border-radius: 4px;
   background: var(--input-bg, #FFFFFF);
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-props-size-row {
@@ -110,7 +110,7 @@
 
 .map-props-hint {
   font-size: 11px;
-  color: var(--text-muted, #6B5F52);
+  color: var(--text-muted);
   margin: 4px 0 0;
 }
 
@@ -128,7 +128,7 @@
   border: 1px solid var(--border-color, rgba(42, 37, 33, 0.12));
   border-radius: 4px;
   background: var(--input-bg, #FFFFFF);
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
   resize: vertical;
 }
 
@@ -161,7 +161,7 @@
   border: 1px solid var(--border-color, rgba(42, 37, 33, 0.12));
   border-radius: 4px;
   background: var(--input-bg, #FFFFFF);
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-encounter-troop-list {
@@ -207,7 +207,7 @@
   border: 1px solid var(--border-color, rgba(42, 37, 33, 0.12));
   border-radius: 4px;
   background: var(--input-bg, #FFFFFF);
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-encounter-weight {
@@ -218,7 +218,7 @@
   border: 1px solid var(--border-color, rgba(42, 37, 33, 0.12));
   border-radius: 4px;
   background: var(--input-bg, #FFFFFF);
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-encounter-share {
@@ -238,13 +238,13 @@
 .map-encounter-advanced > summary {
   cursor: pointer;
   font-size: 11px;
-  color: var(--text-muted, #6B5F52);
+  color: var(--text-muted);
   padding: 2px 0;
 }
 
 .map-encounter-conditions > summary:hover,
 .map-encounter-advanced > summary:hover {
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-encounter-cond-grid {
@@ -266,7 +266,7 @@
 .map-encounter-rect-cell label {
   font-size: 10px;
   font-weight: 600;
-  color: var(--text-muted, #6B5F52);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -281,7 +281,7 @@
   border: 1px solid var(--border-color, rgba(42, 37, 33, 0.12));
   border-radius: 4px;
   background: var(--input-bg, #FFFFFF);
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-encounter-rect-row {
@@ -312,12 +312,12 @@
   font-family: var(--font-mono, monospace);
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-primary, #2A2521);
+  color: var(--text-primary);
 }
 
 .map-spawn-row-meta {
   font-size: 11px;
-  color: var(--text-muted, #6B5F52);
+  color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -328,7 +328,7 @@
 }
 
 .map-spawn-row-warning {
-  color: var(--danger, #C4453A);
+  color: var(--danger);
 }
 
 /* 하위 추가 + 버튼(초보 전용)은 editor/map-panel.modern.css 의 is-basic-flyout 절로
