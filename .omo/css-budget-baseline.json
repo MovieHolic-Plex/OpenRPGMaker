@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-28T18:10:59.150Z",
+  "generatedAt": "2026-08-28T20:38:22.566Z",
   "metrics": {
-    "hexLiterals": 1824,
-    "important": 1023,
+    "hexLiterals": 1817,
+    "important": 981,
     "undefinedVars": 73,
     "globalRootFiles": 10,
     "cssFileCount": 259
@@ -34,7 +34,7 @@
       "src/styles/database/light-theme.css": 24,
       "src/styles/database/modern/troops.css": 5,
       "src/styles/database/record-list-modern.css": 12,
-      "src/styles/database/sidebar.css": 30,
+      "src/styles/database/sidebar.css": 23,
       "src/styles/database/studio-theme.css": 24,
       "src/styles/database/system-studio.css": 14,
       "src/styles/database/tabs-a.part-2.css": 3,
@@ -167,9 +167,9 @@
       "src/styles/database/modern/enemies.css": 1,
       "src/styles/database/modern/weather-animals.css": 1,
       "src/styles/database/play-resolution.css": 1,
-      "src/styles/database/sidebar.css": 81,
+      "src/styles/database/sidebar.css": 41,
       "src/styles/database/studio-theme.css": 115,
-      "src/styles/database/system-studio.css": 244,
+      "src/styles/database/system-studio.css": 242,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 3,
       "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 21,
       "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css": 2,

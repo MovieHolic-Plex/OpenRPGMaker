@@ -16,7 +16,7 @@ const BEGINNER_COMMON_LABELS = ["개요", "주인공", "아이템", "몬스터",
 // uiLabel("databaseShort", "plain") — the only jargon-switched string in database.ts.
 const BEGINNER_NAV_ALL_SUMMARY = "모든 자료";
 // Expert grouped chrome (TAB_GROUPS) — jargonStyle is "technical" but tab ids stay hardcoded.
-const EXPERT_GROUP_LABELS = ["파티", "전투", "수집", "맵", "시스템"] as const;
+const EXPERT_GROUP_LABELS = ["파티", "몬스터", "전투 규칙", "생활", "세계", "시스템"] as const;
 
 test.describe("QA — beginner Database mode", () => {
   test.describe.configure({ timeout: 60_000 });

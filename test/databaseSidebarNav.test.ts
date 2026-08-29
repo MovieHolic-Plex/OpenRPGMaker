@@ -8,8 +8,9 @@ type FakeBrowserGlobals = {
   readonly window: typeof globalThis.window | undefined;
 };
 
-// tabs/tabOrder 레지스트리(database.ts)에 정의된 24개 testid — 그룹 재구성 + 상단 고정
-// '개요' 엔트리(todo 13) 이후에도 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
+// tabs 레지스트리(database.ts)에 정의된 29개 testid — 그룹 재구성 + 상단 고정
+// '개요' 엔트리 이후에도 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
+// 순서는 `TAB_GROUPS` 파생이다(tabOrder 는 더 이상 손으로 쓰지 않는다).
 const EXPECTED_TABS = [
   // 상단 고정 (그룹 밖)
   "db-tab-overview",
@@ -19,16 +20,16 @@ const EXPECTED_TABS = [
   "db-tab-skills",
   "db-tab-items",
   "db-tab-equipment",
-  // 전투·몬스터 — 포획 종족도 이 도메인에 둔다
+  // 몬스터 — 포획 종족도 이 도메인에 둔다
   "db-tab-enemies",
   "db-tab-monster-species",
   "db-tab-troops",
+  // 전투 규칙
   "db-tab-elements",
   "db-tab-states",
   "db-tab-animations",
   "db-tab-battle-screen",
   "db-tab-battle-commands",
-  "db-tab-terrain",
   // 생활
   "db-tab-crops",
   "db-tab-characters",
@@ -37,9 +38,10 @@ const EXPECTED_TABS = [
   "db-tab-farm-animals",
   "db-tab-farm-spatial",
   "db-tab-life-collections",
-  // 맵
+  // 세계 — 지형은 전투 데이터가 아니라 맵 데이터다
   "db-tab-tilesets",
   "db-tab-structure-kits",
+  "db-tab-terrain",
   "db-tab-common-events",
   // 시스템
   "db-tab-system",
@@ -48,7 +50,7 @@ const EXPECTED_TABS = [
   "db-tab-variables",
 ];
 
-const EXPECTED_GROUPS = ["파티", "전투·몬스터", "생활", "맵", "시스템"];
+const EXPECTED_GROUPS = ["파티", "몬스터", "전투 규칙", "생활", "세계", "시스템"];
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
@@ -126,7 +128,12 @@ describe("database sidebar navigation", () => {
       const label = (button.textContent ?? "").trim();
       expect(button.getAttribute("title"), `${button.dataset.testid} title`).toBe(label);
       expect(button.getAttribute("aria-label"), `${button.dataset.testid} aria-label`).toBe(label);
-      expect(button.dataset.short, `${button.dataset.testid} data-short`).toBe(label.slice(0, 1));
+      // 아이콘은 SVG 첫 자식이다 — CSS `content` 글리프도 아니고 `data-short` 한글 첫 글자도 아니다.
+      // <svg> 는 텍스트 노드를 안 가지므로 위의 라벨 계약이 그대로 성립한다.
+      const icon = button.children[0];
+      expect(icon?.tagName.toLowerCase(), `${button.dataset.testid} icon tag`).toBe("svg");
+      expect(icon?.getAttribute("class"), `${button.dataset.testid} icon class`).toBe("db-tab-icon");
+      expect(button.dataset.short, `${button.dataset.testid} data-short`).toBeUndefined();
     }
   });
 

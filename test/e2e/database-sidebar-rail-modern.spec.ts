@@ -12,8 +12,8 @@ test.use({ browserName: "firefox", viewport: { height: 1000, width: 1600 } });
 const OUT = join(process.cwd(), "output", "evidence", "db-rail-modern");
 
 type RailFacts = {
-  readonly activeGlyphContent: string;
-  readonly activeGlyphDisplay: string;
+  readonly activeIconColor: string;
+  readonly activeIconSize: readonly [number, number];
   readonly badgeTexts: readonly string[];
   readonly clientHeight: number;
   readonly groupLefts: readonly number[];
@@ -21,6 +21,7 @@ type RailFacts = {
   readonly groupPositions: readonly string[];
   readonly rowLeft: number;
   readonly scrollHeight: number;
+  readonly tabsWithoutIcon: readonly string[];
   readonly visibleTabCount: number;
 };
 
@@ -42,7 +43,14 @@ test("the rail fits without scrolling and groups collapse", async ({ page }) => 
   await openDatabase(page);
   const facts = await readRailFacts(page);
 
-  expect(facts.groupLabels, "group labels").toEqual(["파티", "전투·몬스터", "생활", "맵", "시스템"]);
+  expect(facts.groupLabels, "group labels").toEqual([
+    "파티",
+    "몬스터",
+    "전투 규칙",
+    "생활",
+    "세계",
+    "시스템",
+  ]);
   expect(
     facts.scrollHeight,
     `rail must fit: scrollHeight ${facts.scrollHeight} vs clientHeight ${facts.clientHeight}`,
@@ -93,14 +101,19 @@ test("count badges never show zero and stay neutral", async ({ page }) => {
 });
 
 test("tabs keep an icon at desktop width", async ({ page }) => {
-  // Break named: the ::before glyph is display:none above 800px, so the rail is a
-  // flat wall of Korean words at the width users actually run.
+  // Break named: a stylesheet hides the rail icon above 800px, so the rail is a flat wall
+  // of Korean words at the width users actually run. 아이콘은 CSS `content` 가 아니라
+  // databaseTabIcons.ts 의 <svg class="db-tab-icon"> 라서 DOM 에서 직접 셀 수 있다.
   await openDatabase(page);
   const facts = await readRailFacts(page);
 
-  expect(facts.activeGlyphDisplay, "active tab glyph display").not.toBe("none");
-  expect(facts.activeGlyphContent, "active tab glyph content").not.toBe("none");
-  expect(facts.activeGlyphContent.replace(/["']/g, "").trim().length, "glyph is not empty").toBeGreaterThan(0);
+  expect(facts.tabsWithoutIcon, "every tab owns an svg.db-tab-icon").toEqual([]);
+  const [width, height] = facts.activeIconSize;
+  expect(width, "active tab icon width").toBeGreaterThanOrEqual(14);
+  expect(height, "active tab icon height").toBeGreaterThanOrEqual(14);
+  // stroke: currentColor — color 가 투명이면 상자만 남고 선이 사라진다.
+  expect(facts.activeIconColor, "active tab icon keeps a visible stroke").not.toBe("rgba(0, 0, 0, 0)");
+  expect(facts.activeIconColor, "active tab icon keeps a visible stroke").not.toBe("transparent");
 });
 
 test("search reaches tabs inside collapsed groups and restores after clearing", async ({ page }) => {
@@ -150,9 +163,14 @@ async function readRailFacts(page: Page): Promise<RailFacts> {
     const badgeTexts = visible
       .map((tab) => tab.dataset.count)
       .filter((count): count is string => typeof count === "string");
+    const activeIcon = active?.querySelector<SVGSVGElement>("svg.db-tab-icon") ?? null;
+    const activeIconBox = activeIcon?.getBoundingClientRect();
     return {
-      activeGlyphContent: active ? getComputedStyle(active, "::before").content : "none",
-      activeGlyphDisplay: active ? getComputedStyle(active, "::before").display : "none",
+      activeIconColor: activeIcon ? getComputedStyle(activeIcon).color : "none",
+      activeIconSize: [
+        Math.round(activeIconBox?.width ?? 0),
+        Math.round(activeIconBox?.height ?? 0),
+      ] as [number, number],
       badgeTexts,
       clientHeight: rail.clientHeight,
       groupLefts: groups.map((group) => Math.round(group.getBoundingClientRect().left)),
@@ -160,6 +178,10 @@ async function readRailFacts(page: Page): Promise<RailFacts> {
       groupPositions: groups.map((group) => getComputedStyle(group).position),
       rowLeft,
       scrollHeight: rail.scrollHeight,
+      // 접힌 탭도 포함해서 센다 — 아이콘은 DOM 이 소유하므로 펼침 상태와 무관하게 있어야 한다.
+      tabsWithoutIcon: tabs
+        .filter((tab) => !tab.querySelector("svg.db-tab-icon"))
+        .map((tab) => tab.dataset.testid ?? "(no testid)"),
       visibleTabCount: visible.length,
     };
   });
