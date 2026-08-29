@@ -718,12 +718,14 @@
   grid-column: 1 / -1;
   grid-row: 1 / -1;
   grid-template-columns: minmax(0, 1fr) 16px;
-  height: 44px;
+  /* 1줄이면 44px 그대로, 2줄 이상이면 늘어난다. 고정 높이(44px)는
+     16px/1.4 두 줄(44.8px)을 담지 못해 둘째 줄이 잘렸다. */
+  height: auto;
   left: 16px;
-  max-height: 44px;
-  min-height: 0;
+  max-height: none;
+  min-height: 44px;
   overflow: hidden;
-  padding: 0 14px;
+  padding: 6px 14px;
   pointer-events: none;
   position: absolute;
   right: 16px;

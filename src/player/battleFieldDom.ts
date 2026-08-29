@@ -878,6 +878,11 @@ function atbBar(gaugeValue: number): HTMLElement {
 }
 
 function stateIconToken(stateId: string): string {
+  // 능력 증감은 `death`/`down` 검사보다 **먼저** 갈라야 한다. `state_attack_down` 은
+  // "down" 을 품고 있어서 아래 폴백 순서로는 붉은 KO 배지로 렌더됐다(공격 하락 = 전투불능).
+  const buff = buffIconToken(stateId);
+  if (buff) return buff;
+  if (stateId.includes("regen")) return "regen";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
@@ -888,6 +893,27 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("confuse") || stateId.includes("charm")) return "confuse";
   if (stateId.includes("death") || stateId.includes("down") || stateId.includes("ko")) return "death";
   return "burst";
+}
+
+/**
+ * 능력 증감 상태의 배지 토큰. 저작 id 의 `attack|defense|agility|magic` + `up|down` 조합만
+ * 읽는다 — 폴백(●)으로 떨어지면 공격 상승·방어 상승·재생이 화면에서 전부 같은 회색 점이 되어
+ * 스크린샷으로 구별할 수 없다.
+ */
+function buffIconToken(stateId: string): string | null {
+  const stat = stateId.includes("attack")
+    ? "atk"
+    : stateId.includes("defense")
+      ? "def"
+      : stateId.includes("agility") || stateId.includes("speed")
+        ? "agi"
+        : stateId.includes("magic")
+          ? "mag"
+          : null;
+  if (!stat) return null;
+  if (stateId.endsWith("_up") || stateId.includes("_up_")) return `${stat}-up`;
+  if (stateId.endsWith("_down") || stateId.includes("_down_")) return `${stat}-down`;
+  return null;
 }
 
 function stateName(stateId: string): string {
