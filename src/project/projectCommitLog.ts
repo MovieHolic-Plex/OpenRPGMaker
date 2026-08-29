@@ -1,9 +1,27 @@
+// project/projectCommitLog.ts
+// 원격 커밋 로그(Supabase project_commits / project_changes) 기록 경로.
+//
+// **왜 `@/editor/tools/changeset` 를 여기서 import 하는가 (순환 검사 근거, 2026-08-29 실측):**
+// diff 계산기(`summarizeChanges`)를 두 번 만들지 않기 위해 원본을 그대로 쓴다. import 그래프를
+// 실제로 넓혀서 확인했다 —
+//   - `editor/tools/changeset.ts` 에서 도달 가능한 모듈 218개 중 `project/projectCommitLog.ts`
+//     도 `project/store.ts` 도 **없다**. 즉 순환이 아니다.
+//   - 무게도 늘지 않는다: `projectCommitLog.ts` 는 이미 `supabaseProjectSync` 경유로
+//     `project/lint/projectLint` 를 끌고 있어 224개를 도달한다. changeset 이 추가로 들여오는
+//     것은 `editor/detachedDraftMemory`(의존 0개)와 타입 전용 `editor/tools/types` 뿐이다.
+//   - `src/project/*` → `src/editor/*` 방향 자체도 선례가 있다
+//     (`project/quest/questCompiler.ts` → `@/editor/tools/eventTools` 등 7개 파일).
+// 그래서 계산 함수를 `src/project/` 로 옮기거나 sink 주입으로 뒤집을 이유가 없었다.
+import { summarizeChanges } from "@/editor/tools/changeset";
+import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
 import { recordProjectCommitToSupabase, type ProjectCommitReviewStatus } from "./supabaseProjectSync";
 import type { ChangeSummary } from "@/project/types";
 import type { Project } from "./types";
+
+const log = createLogger("project-commits");
 
 export type CommitLogInput = {
   readonly project: Project;
@@ -57,31 +75,69 @@ export async function recordProjectCommit(input: CommitLogInput): Promise<Commit
 
 export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
   void recordProjectCommit(input).catch((error) => {
-    console.warn("[projectCommits] record failed:", error);
+    log.warn("커밋 기록 실패", error);
   });
 }
 
-export function recordManualProjectCommitAfterSave(project: Project): void {
+/**
+ * 사람 손편집이 원격 저장에 성공한 직후의 커밋 로그 1건.
+ *
+ * `baseline` 은 **이번 저장 직전에 서버가 갖고 있던** 프로젝트다(store 의 `persistedBaseline`
+ * 을 덮어쓰기 전 값). 이게 있어야 summary 가 실제 변경을 담는다 —
+ * 실측(2026-08-29): 이전 구현은 `systemChanged = true` 만 세워서 타일 3000장을 칠했든
+ * NPC 를 지웠든 원격 summary 가 **항상 "변경 저장: 시스템"** 이었다. 진짜 diff 계산기
+ * (`summarizeChanges`)는 AI 경로만 쓰고 있었다.
+ *
+ * 성능: diff 는 dedup 통과 **후에만** 계산한다. 변경 없는 저장(가장 흔한 경우)은
+ * 기존과 동일하게 `serialize` 한 번으로 끝난다. 실제로 바뀐 저장에서는 이미 돌고 있는
+ * `serialize`(전체 JSON 직렬화)와 같은 자릿수의 비용이 한 번 더 드는 셈이다.
+ *
+ * 알려진 경계: baseline 은 "서버가 마지막으로 받은 것" 이지 "마지막으로 커밋 로그에 남은 것"
+ * 이 아니다. AI 적용(커밋 row 를 따로 남기고 `resetManualProjectCommitBaseline` 만 부른다)
+ * 직후 사람이 추가 편집을 하면 그 사람 커밋의 diff 에 AI 변경분이 함께 잡힌다.
+ * 과대 집계이긴 하지만 "시스템" 한 단어보다는 감사에 쓸 수 있다.
+ */
+export function recordManualProjectCommitAfterSave(project: Project, baseline?: Project | null): void {
   const persistedProject = projectWithoutEventDrafts(project);
   const serialized = serialize(persistedProject);
   if (serialized === lastManualSerialized) return;
-  const diff = manualDiffSummary();
+  // 첫 저장/프로젝트 전환 직후에는 비교 대상이 없다. 기존 동작(systemChanged)으로 떨어뜨리되
+  // summary 가 왜 "시스템" 인지 로그에 남긴다 — 안 남기면 예전 버그와 구분이 안 된다.
+  const diff = baseline ? manualDiffFromBaseline(baseline, persistedProject) : manualDiffSummary();
+  const summary = summaryForDiff(diff);
+  if (!baseline) {
+    log.info("저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다", { summary });
+  } else {
+    log.debug("수동 저장 커밋 diff", { summary });
+  }
   void recordProjectCommitToSupabase({
     project: persistedProject,
     identity: currentHumanEditorIdentity(),
     reviewStatus: "direct",
-    summary: summaryForDiff(diff),
+    summary,
     diff,
     toolNames: [],
     serialized,
   })
     // 커밋 기록 요청이 실패하면(네트워크 오류 등) baseline을 전진시키지 않는다 —
     // 미리 전진시키면 이후 동일 내용 재저장이 dedup에 걸려 그 커밋이 영구히 기록되지 않는다.
-    .then(() => {
-      lastManualSerialized = serialized;
+    //
+    // resolve 됐다고 기록된 것은 아니다. `recordProjectCommitToSupabase` 는 supabase 미설정과
+    // project_commits/project_changes 테이블 누락을 **정상 resolve(not-configured)** 로 돌려준다.
+    // 이전 구현은 `.then()` 에서 kind 를 보지 않아 그 경우에도 baseline 을 전진시켰고,
+    // 나중에 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 그 커밋이 영구히 사라졌다.
+    .then((result) => {
+      if (result.kind === "saved") {
+        lastManualSerialized = serialized;
+        return;
+      }
+      log.warn("수동 저장 커밋이 기록되지 않았다 — dedup baseline 을 전진시키지 않는다", {
+        kind: result.kind,
+        summary,
+      });
     })
     .catch((error) => {
-      console.warn("[projectCommits] manual record failed:", error);
+      log.warn("수동 저장 커밋 기록 실패", error);
     });
 }
 
@@ -137,6 +193,18 @@ export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): Cha
     combined.warnings.push(...diff.warnings);
     return combined;
   }, emptyDiffSummary());
+}
+
+/**
+ * baseline → 저장본 실제 diff.
+ *
+ * baseline 을 한 번 더 `projectWithoutEventDrafts` 로 통과시키는 이유: draft 이벤트가 섞여 있으면
+ * `summarizeChanges` 가 그걸 **이벤트 삭제**로 집계해 "이벤트 삭제 3" 같은 거짓 summary 가 나온다.
+ * store 의 `persistedBaseline` 은 이미 draft 가 없지만, `resetManualProjectCommitBaseline` 이
+ * 라이브 프로젝트를 받는 것과 같은 방어를 여기서도 유지한다.
+ */
+function manualDiffFromBaseline(baseline: Project, saved: Project): ChangeSummary {
+  return summarizeChanges(projectWithoutEventDrafts(baseline), saved);
 }
 
 function manualDiffSummary(): ChangeSummary {

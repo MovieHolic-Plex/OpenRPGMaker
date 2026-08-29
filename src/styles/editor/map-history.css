@@ -161,3 +161,231 @@
   font-size: 12px;
   padding: var(--space-2) 0;
 }
+
+/* ── 되돌리기 / 행위 기록 탭 ──────────────────────────────────────────
+   같은 창 안에 두 자료를 나란히 둔다. 새 CSS 파일을 만들지 않는 이유는
+   CSS 예산 게이트의 cssFileCount 래칫이 파일 수를 고정하기 때문이다. */
+
+.map-history-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.map-history-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  flex: 1 1 auto;
+  font: inherit;
+  font-size: 11px;
+  min-height: 24px;
+  padding: 0 var(--space-2);
+}
+
+.map-history-tab:hover {
+  background: var(--control-bg-hover);
+}
+
+.map-history-tab[aria-selected="true"] {
+  background: var(--control-bg);
+  border-color: var(--editor-line);
+  color: var(--editor-text);
+  font-weight: 700;
+}
+
+/* 접기용 `hidden` 은 author `display` 선언에 특이도로 밀린다(실측: 상점 처리 fold 가
+   전체화면 `display:flex` (0,3,0) 에 밀려 접혀도 그대로 보였다). 아래 두 규칙이
+   그 복구선이다 — `!important` 는 예산 게이트 지표라 특이도로만 이긴다. */
+.map-history-panel .map-history-pane[hidden] {
+  display: none;
+}
+
+.edit-activity .edit-activity-fields[hidden] {
+  display: none;
+}
+
+/* ── 행위 기록 창 ──────────────────────────────────────────────────── */
+
+.edit-activity {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.edit-activity-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.edit-activity-scope,
+.edit-activity-search {
+  background: var(--control-bg);
+  border: 1px solid var(--editor-line);
+  border-radius: 4px;
+  color: var(--editor-text);
+  font: inherit;
+  font-size: 11px;
+  min-height: 24px;
+  min-width: 0;
+  padding: 0 var(--space-1);
+}
+
+.edit-activity-search {
+  flex: 1 1 96px;
+}
+
+.edit-activity-map-only {
+  align-items: center;
+  color: var(--editor-text-muted);
+  display: flex;
+  font-size: 11px;
+  gap: 2px;
+}
+
+.edit-activity-toolbar {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.edit-activity-summary {
+  color: var(--editor-text-muted);
+  flex: 1 1 auto;
+  font-size: 11px;
+}
+
+.edit-activity-action {
+  background: var(--control-bg);
+  border: 1px solid var(--editor-line);
+  border-radius: 4px;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  padding: 2px var(--space-2);
+}
+
+.edit-activity-action:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--editor-line-strong);
+}
+
+/* `flex:1` 이 아니라 max-height 로 스크롤한다 — 이 창은 `<details>` 안에 들어가고,
+   Chromium 의 `::details-content` 익명 블록이 안쪽 flex 아이템을 무력화한다. */
+.edit-activity-list {
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: 0;
+}
+
+.edit-activity-item {
+  border-top: 1px solid var(--editor-line);
+  display: grid;
+  gap: 2px;
+  padding-top: var(--space-1);
+}
+
+.edit-activity-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.edit-activity-item.is-unlabeled .edit-activity-desc {
+  color: var(--editor-text-soft);
+  font-style: italic;
+}
+
+.edit-activity-head {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.edit-activity-time {
+  color: var(--editor-text-soft);
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.edit-activity-desc {
+  flex: 1 1 auto;
+  font-size: 11px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.edit-activity-origin {
+  border: 1px solid var(--editor-line);
+  border-radius: 3px;
+  color: var(--editor-text-muted);
+  flex: 0 0 auto;
+  font-size: 10px;
+  padding: 0 3px;
+}
+
+.edit-activity-origin[data-origin="ai"],
+.edit-activity-origin[data-origin="tool"] {
+  border-color: var(--editor-blue);
+  color: var(--editor-blue);
+}
+
+.edit-activity-fields-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--editor-blue);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  justify-self: start;
+  padding: 0;
+  text-align: left;
+}
+
+.edit-activity-fields {
+  display: grid;
+  gap: 2px;
+  padding-left: var(--space-2);
+}
+
+.edit-activity-field {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 10px;
+  gap: 3px;
+}
+
+.edit-activity-field-path {
+  color: var(--editor-text-muted);
+  font-family: inherit;
+  font-weight: 650;
+}
+
+.edit-activity-field-before {
+  color: var(--editor-text-soft);
+  overflow-wrap: anywhere;
+  text-decoration: line-through;
+}
+
+.edit-activity-field-after {
+  color: var(--editor-text);
+  overflow-wrap: anywhere;
+}
+
+.edit-activity-empty {
+  color: var(--editor-text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+  padding: var(--space-2) 0;
+}

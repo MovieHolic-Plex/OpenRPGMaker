@@ -28,28 +28,35 @@ export function renderPageLivingMovement(mapId: MapId, eventId: string, page: Ev
   const repeat = checkbox(page.movement.living?.repeat ?? false, "event-page-living-repeat");
 
   const applyLiving = () => {
-    updateEventPage(mapId, eventId, page.id, {
-      movement: {
-        ...page.movement,
-        type: "living",
-        living: {
-          destinations: [{
-            mapId: targetMap.value,
-            x: numberValue(targetX),
-            y: numberValue(targetY),
-            direction: targetDirection.value as Dir,
-          }],
-          repeat: repeat.checked,
+    const target = { mapId: targetMap.value, x: numberValue(targetX), y: numberValue(targetY) };
+    updateEventPage(
+      mapId,
+      eventId,
+      page.id,
+      {
+        movement: {
+          ...page.movement,
+          type: "living",
+          living: {
+            destinations: [{
+              ...target,
+              direction: targetDirection.value as Dir,
+            }],
+            repeat: repeat.checked,
+          },
         },
       },
-    });
+      // 기본 라벨은 `페이지 속성 변경: … — 이동` 이라 어디로 가는 동선인지 안 남는다.
+      // 목적지가 이 폼의 전부이므로 라벨에 넣어야 로그만 보고 잘못된 좌표를 찾을 수 있다.
+      `NPC 생활 동선 변경: ${mapLabel(target.mapId)} (${target.x},${target.y})`
+    );
   };
 
   for (const control of [targetMap, targetX, targetY, targetDirection, repeat]) {
     control.addEventListener("change", () => window.setTimeout(applyLiving, 0));
   }
 
-  const connectionPanel = renderConnectionPanel(mapId, destination);
+  const connectionPanel = renderConnectionPanel(mapId, eventId, destination);
   return el("div", {
     class: "event-page-living-route",
     dataset: { testid: "event-page-living-route" },
@@ -70,7 +77,9 @@ export function renderPageLivingMovement(mapId: MapId, eventId: string, page: Ev
   });
 }
 
-function renderConnectionPanel(mapId: MapId, destination: NpcLivingDestination): HTMLElement {
+// eventId 는 화면에 쓰이지 않지만 연결 upsert 를 "어느 이벤트를 편집하다 만든 연결" 로
+// 감사 로그에 묶기 위해 받는다 — 맵 연결은 프로젝트 전역이라 그 단서가 없으면 추적이 끊긴다.
+function renderConnectionPanel(mapId: MapId, eventId: string, destination: NpcLivingDestination): HTMLElement {
   const project = store.getCurrent();
   const existing = (project.mapConnections ?? []).find((connection) =>
     connection.from.mapId === mapId && connection.to.mapId === destination.mapId
@@ -95,7 +104,7 @@ function renderConnectionPanel(mapId: MapId, destination: NpcLivingDestination):
         to: { mapId: targetMap.value, x: numberValue(toX), y: numberValue(toY), direction: "down" },
         playerEnabled: playerEnabled.checked,
         npcEnabled: npcEnabled.checked,
-      }),
+      }, eventId),
     },
   });
 
@@ -120,7 +129,9 @@ function renderConnectionPanel(mapId: MapId, destination: NpcLivingDestination):
   });
 }
 
-function upsertConnection(connection: MapConnection): void {
+function upsertConnection(connection: MapConnection, eventId: string): void {
+  // 갱신인지 추가인지는 mutator 안에서만 알 수 있지만 라벨은 그전에 굳는다 — 먼저 읽어 가른다.
+  const updating = (store.getCurrent().mapConnections ?? []).some((entry) => entry.id === connection.id);
   store.update((project) => {
     project.mapConnections ??= [];
     const existingIndex = project.mapConnections.findIndex((entry) => entry.id === connection.id);
@@ -129,6 +140,13 @@ function upsertConnection(connection: MapConnection): void {
       return;
     }
     project.mapConnections.push(connection);
+  }, {
+    // mapConnections 는 프로젝트 전역이지만, 사용자가 선 자리는 출발 맵의 이벤트 편집기다.
+    // 스코프를 그 맵으로 잡아야 "이 맵에서 무슨 일이 있었나" 조회에 걸린다.
+    scope: "map",
+    mapId: connection.from.mapId,
+    eventId,
+    label: `${updating ? "맵 연결 갱신" : "맵 연결 추가"}: ${connection.name}`,
   });
 }
 

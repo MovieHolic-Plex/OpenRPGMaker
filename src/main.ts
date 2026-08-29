@@ -1,5 +1,10 @@
 // 앱 진입점: store 로드 + 에디터 부팅.
 
+// ⚠ 순서 의존: 전역 오류 트랩이 **가장 먼저** 평가돼야 한다. import 는 호이스팅되므로
+// 아래 무거운 import(@/app/mode → 편집기 모듈 트리) 들의 top-level 평가가 본문보다 앞선다.
+// 그 평가 중에 터지는 예외를 잡으려면 트랩 모듈이 첫 import 여야 한다 —
+// 이 모듈은 import 시점에 스스로 설치한다(근거는 src/app/errorTrap.ts 하단 주석).
+import { installGlobalErrorTrap } from "@/app/errorTrap";
 import "./styles/index.css";
 // ⚠ 순서 의존: 저장 키 마이그레이션이 editorUiMode 보다 **먼저** 평가돼야 한다.
 // editorUiMode 는 import 시점에 localStorage 를 읽는다(ensureHydrated). 자세한 이유는
@@ -12,6 +17,10 @@ import { addEvent } from "@/editor/eventActions";
 import { addEventPage, ensureEventPages } from "@/editor/eventPages";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { store } from "@/project/store";
+
+// 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
+// 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
+installGlobalErrorTrap();
 
 // 개발/테스트 플래그를 URL 파라미터에서 body class로 변환.
 // 각 플래그는 대응하는 CSS 모드(palette compact scroll 등)를 토글한다.
