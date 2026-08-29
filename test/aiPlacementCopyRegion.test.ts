@@ -55,6 +55,34 @@ describe("copy_map_region 이벤트 통행 가능 착지", () => {
     expect(isPassable(project, target, clone!.x, clone!.y)).toBe(true);
   });
 
+  it("실제 place_npc 이벤트를 물 위로 복사하면 통행 가능 칸에 착지시킨다", () => {
+    const { project, target } = fixture();
+    getTool("place_npc")!.run(project, {
+      mapId: SOURCE_MAP_ID,
+      x: 3,
+      y: 3,
+      id: "ev_source_npc",
+      name: "강가 주민",
+      graphic: { query: "people1" },
+      pages: [{ text: "안녕하세요." }],
+    });
+    setLower(target, 9, 9, TILE.WATER);
+
+    const result = getTool("copy_map_region")!.run(project, {
+      from: { mapId: SOURCE_MAP_ID, x: 2, y: 2, w: 3, h: 3 },
+      to: { mapId: TARGET_MAP_ID, x: 8, y: 8 },
+      layers: "upper",
+      withEvents: true,
+    });
+
+    const copiedIds = (result.data as { events: string[] }).events;
+    const clone = target.events.find((event) => event.id === copiedIds[0]);
+    expect(clone).toBeDefined();
+    expect(isPassable(project, target, clone!.x, clone!.y)).toBe(true);
+    expect([clone!.x, clone!.y]).not.toEqual([9, 9]);
+    expect(result.warnings?.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
+  });
+
   it("통행 가능한 평지에서는 모든 이벤트의 상대 좌표를 그대로 보존한다", () => {
     const { project, source, target } = fixture();
     source.events.push(characterEvent("ev_source_left", 3, 4), characterEvent("ev_source_right", 6, 6));

@@ -1693,6 +1693,14 @@ function copyEventWarnings(skipped: readonly CopyEventSkip[], adjusted: readonly
   return warnings;
 }
 
+// 그래픽이 보이거나 자율 이동하는 페이지는 action 트리거여도 문이 아니라 캐릭터다.
+function copyEventIsCharacter(event: GameEvent): boolean {
+  return (event.pages ?? []).some((page) =>
+    (page.graphic.transparent !== true && page.graphic.sprite !== undefined)
+    || page.movement.type !== "fixed"
+  );
+}
+
 // duplicate_event 와 같은 판정: 페이지가 있으면 페이지 trigger/priority를, 없으면 본체 trigger를 읽는다.
 function copyEventIsSteppable(event: GameEvent): boolean {
   const pages = event.pages ?? [];
@@ -1827,7 +1835,7 @@ const copyMapRegion: ToolDefinition = {
         let placement: { x: number; y: number; adjusted: boolean };
         try {
           placement = resolveEventPlacement(draft, target, requestedX, requestedY, {
-            kind: "interaction",
+            kind: copyEventIsCharacter(event) ? "character" : "interaction",
             steppable: copyEventIsSteppable(event),
             ignoreEventId: cloneId,
             label: `복제 이벤트 '${event.id}'`,
@@ -1838,6 +1846,7 @@ const copyMapRegion: ToolDefinition = {
           skippedEvents.push({ eventId: event.id, x: requestedX, y: requestedY });
           continue;
         }
+        // duplicate_event도 같은 캐릭터 판정 약점이 있지만, 단건 사용자 지시인 그 경로와 달리 이 경로는 대량 복제라 여기서 분류한다.
         // duplicate_event 와 같은 규약: 커맨드는 그대로 두고 id·좌표만 새로 잡는다
         // (transfer 목적지를 임의로 다시 배선하면 저자 의도를 조용히 바꾼다).
         const clone: GameEvent = {
