@@ -50,6 +50,9 @@ async function freePort() {
  * player-QA 전용 vite dev 서버를 띄운다.
  * 빈 포트를 직접 잡으므로 동시에 도는 워크트리들과 포트 경합이 없고,
  * 전용 cacheDir 을 쓰므로 공유 node_modules/.vite 를 흔들지 않는다.
+ *
+ * 파일 감시는 vite.player-qa.config.ts 에서 끈다(inotify 한도 포화 방지). 여기서 인라인으로
+ * 넘기면 mergeConfig 가 null 을 삼켜 무효가 된다 — 설정 파일 쪽이 유일한 스위치다.
  */
 export async function startPlayerQaServer(opts = {}) {
   const port = opts.port ?? (await freePort());

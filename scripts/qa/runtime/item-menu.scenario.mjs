@@ -40,7 +40,11 @@ export const itemMenuScenario = {
         { kind: "key", key: "z" },
         { kind: "waitFor", testid: "status-menu-item-item_potion", state: "present" },
       ],
-      expect: { testidPresent: ["main-menu", "status-menu-item-item_potion"] },
+      expect: {
+        testidPresent: ["main-menu", "status-menu-item-item_potion"],
+        // 화면에 보이는 숫자로 단정한다 — 파티 띠의 HP 와 아이템 행의 수량을 함께 본다.
+        visibleText: { "status-menu-party-row-0": "100/514", "status-menu-item-item_potion": "5개" },
+      },
       shot: true,
     },
     {
@@ -55,6 +59,8 @@ export const itemMenuScenario = {
       expect: {
         testidPresent: ["main-menu", "status-menu-item-item_potion"],
         testidAbsent: ["status-menu-item-target-actor_hero"],
+        // HP 는 100 → 150 으로 오르고, 쓴 만큼 수량은 5 → 4 로 줄어야 한다.
+        visibleText: { "status-menu-party-row-0": "150/514", "status-menu-item-item_potion": "4개" },
       },
       shot: true,
     },
@@ -62,7 +68,10 @@ export const itemMenuScenario = {
       id: "mp-before-5-item-list",
       note: "마력약 사용 전 주인공 MP 5/43을 확인한다",
       ops: [{ kind: "key", key: "ArrowDown" }],
-      expect: { testidPresent: ["main-menu", "status-menu-item-item_ether"] },
+      expect: {
+        testidPresent: ["main-menu", "status-menu-item-item_ether"],
+        visibleText: { "status-menu-party-row-0": "5/43", "status-menu-item-item_ether": "5개" },
+      },
       shot: true,
     },
     {
@@ -77,6 +86,11 @@ export const itemMenuScenario = {
       expect: {
         testidPresent: ["main-menu", "status-menu-item-item_ether"],
         testidAbsent: ["status-menu-item-target-actor_hero"],
+        // MP 만 5 → 35 로 오르고 HP 150 은 그대로여야 한다(효과가 엉뚱한 축으로 새지 않는다).
+        visibleText: {
+          "status-menu-party-row-0": "35/43",
+          "status-menu-item-item_ether": "4개",
+        },
       },
       shot: true,
     },
@@ -84,7 +98,13 @@ export const itemMenuScenario = {
       id: "party-hp-before-100-item-list",
       note: "연대의 물약 사용 전 나머지 세 파티원의 HP 100/514를 확인한다",
       ops: [{ kind: "key", key: "ArrowDown", times: 3 }],
-      expect: { testidPresent: ["main-menu", "status-menu-item-item_gen2_party_potion"] },
+      expect: {
+        testidPresent: ["main-menu", "status-menu-item-item_gen2_party_potion"],
+        visibleText: {
+          "status-menu-party-row-1": "100/514",
+          "status-menu-item-item_gen2_party_potion": "5개",
+        },
+      },
       shot: true,
     },
     {
@@ -99,6 +119,14 @@ export const itemMenuScenario = {
       expect: {
         testidPresent: ["main-menu", "status-menu-item-item_gen2_party_potion"],
         testidAbsent: ["status-menu-item-target-actor_hero"],
+        // 한 번 써서 네 명이 모두 오르고, 수량은 4개(1개만) 줄어야 한다.
+        visibleText: {
+          "status-menu-party-row-0": "210/514",
+          "status-menu-party-row-1": "160/514",
+          "status-menu-party-row-2": "160/514",
+          "status-menu-party-row-3": "160/514",
+          "status-menu-item-item_gen2_party_potion": "4개",
+        },
       },
       shot: true,
     },

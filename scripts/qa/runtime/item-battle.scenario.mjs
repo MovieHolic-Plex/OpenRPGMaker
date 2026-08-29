@@ -64,13 +64,27 @@ export const itemBattleScenario = {
       },
     },
     {
-      id: "elemental-before",
-      note: "서리 유리병 대상 선택 — enemy-1 슬라임의 인필드 HUD 가 화면에 18/18 을 띄운다",
+      id: "item-list-before-x5",
+      note: "전투 아이템 목록을 열어 쓰기 전 수량을 화면에서 확인한다 — 서리 유리병 x5, 전투의 묘약 x5",
       ops: [
         { kind: "key", key: "ArrowDown", times: 3 },
         { kind: "key", key: "z" },
         { kind: "waitFor", testid: "actor-item-item_gen2_frost_vial", state: "present" },
         { kind: "key", key: "ArrowDown", times: 5 },
+      ],
+      expect: {
+        testidPresent: ["battle-scene", "actor-item-item_gen2_frost_vial"],
+        visibleText: {
+          "actor-item-item_gen2_frost_vial": "x5",
+          "actor-item-item_gen2_war_draught": "x5",
+        },
+      },
+      shot: true,
+    },
+    {
+      id: "elemental-before",
+      note: "서리 유리병 대상 선택 — enemy-1 슬라임의 인필드 HUD 가 화면에 18/18 을 띄운다",
+      ops: [
         { kind: "key", key: "z" },
         { kind: "waitFor", testid: "battle-target-prompt", state: "present" },
       ],
@@ -135,6 +149,27 @@ export const itemBattleScenario = {
         // 배지의 글리프는 CSS ::before 라 textContent 로는 못 읽는다 — 빈 문자열은 "보이기만
         // 하면 된다" 는 뜻이고, 어떤 상태인지는 testid 의 토큰(atk-up)이 말한다.
         visibleText: { "battle-status-actor_hero-atk-up": "" },
+      },
+      shot: true,
+    },
+    {
+      id: "item-list-after-x4",
+      note: "아이템 목록을 다시 열어 쓴 두 아이템이 x5 에서 x4 로 줄어든 것을 화면에서 확인한다",
+      ops: [
+        { kind: "key", key: "ArrowDown", times: 3 },
+        { kind: "key", key: "z" },
+        { kind: "waitFor", testid: "actor-item-item_gen2_frost_vial", state: "present" },
+        // 목록은 커서를 따라 스크롤한다. 커서가 맨 위면 서리 유리병 줄이 화면 밖으로 밀려
+        // 샷이 주장을 받쳐주지 못한다 — 사용 전 비트와 같은 위치까지 내려 두 줄을 프레임에 넣는다.
+        { kind: "key", key: "ArrowDown", times: 5 },
+      ],
+      expect: {
+        testidPresent: ["battle-scene", "actor-item-item_gen2_frost_vial"],
+        // 쓴 두 개만 x4 로 줄었다. 안 쓴 칸은 사용 전 비트의 x5 샷과 대조한다.
+        visibleText: {
+          "actor-item-item_gen2_frost_vial": "x4",
+          "actor-item-item_gen2_war_draught": "x4",
+        },
       },
       shot: true,
     },

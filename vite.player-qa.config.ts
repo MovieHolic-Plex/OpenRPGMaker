@@ -45,6 +45,11 @@ export default mergeConfig(
       // 조용히 다른 포트로 흐르지 않고 크게 죽인다(남의 워크트리 서버에 붙는 사고 방지).
       strictPort: true,
       open: false,
+      // 파일 감시는 기본으로 끈다. QA 실행 중에는 소스가 바뀌지 않아 HMR 이 필요 없고,
+      // public/assets 의 수만 개 파일을 감시하면 여러 워크트리가 동시에 돌 때 호스트 inotify
+      // 한도를 넘겨 `ENOSPC: System limit for number of file watchers reached` 로 서버 기동
+      // 자체가 실패한다(실측). 사람이 HMR 을 쓰려면 PLAYER_QA_WATCH=1 로 켠다.
+      watch: process.env.PLAYER_QA_WATCH === "1" ? undefined : null,
       fs: { allow: fsAllowRoots() },
     },
   }),
