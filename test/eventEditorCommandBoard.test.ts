@@ -57,19 +57,25 @@ describe("event editor command board", () => {
     host.remove();
   });
 
-  it("promotes the command count and view toggle into the top page header", () => {
+  // 옛 계약: 개수와 뷰 토글을 페이지바의 `event-command-header` 칩에 올렸다. a87ab4fc 가 크롬을
+  // 접으면서 그 헤더를 없앴고(헤더에 짐을 얹으면 상단이 잘렸다), 7a7ce6ae 가 개수의 집을 명령
+  // 칼럼 라벨로 확정했다. 페이지바는 이제 페이지 선택만 갖는다.
+  it("keeps the command count in the commands column label and the view toggle in the canvas", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
 
     const pagebar = host.querySelector<HTMLElement>(".event-editor-pagebar");
-    const header = host.querySelector<HTMLElement>('[data-testid="event-command-header"]');
+    const commandsLabel = host.querySelector<HTMLElement>('[data-testid="event-editor-column-label-commands"]');
+    const count = host.querySelector<HTMLElement>('[data-testid="event-editor-command-count"]');
     const contents = host.querySelector<HTMLElement>('[data-testid="event-script-canvas"]');
 
-    expect(pagebar?.contains(header)).toBe(true);
-    expect(header?.textContent).toContain("이 페이지가 하는 일 · 2개");
+    expect(commandsLabel?.contains(count)).toBe(true);
+    expect(count?.textContent).toBe("2개");
     expect(contents?.querySelector('[data-testid="event-view-toggle-list"]')).toBeTruthy();
     expect(contents?.querySelector('[data-testid="event-view-toggle-storyboard"]')).toBeTruthy();
-    expect(header?.querySelector('[data-testid="event-view-toggle-list"]')).toBeNull();
+    // 페이지바는 개수도 토글도 다시 가져가지 않는다 — 그게 상단 잘림의 원인이었다.
+    expect(pagebar?.querySelector('[data-testid="event-editor-command-count"]')).toBeNull();
+    expect(pagebar?.querySelector('[data-testid="event-view-toggle-list"]')).toBeNull();
     expect(contents?.getAttribute("aria-label")).toBe("이 페이지가 하는 일");
     expect(contents?.querySelector(".event-contents-legend")).toBeNull();
   });
