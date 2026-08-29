@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>조수 띠 재편 — 구현 보고서 (2026-08-29)</title>
+<style>
+  :root {
+    --ink: #0f172a;
+    --ink-2: #475569;
+    --ink-3: #7b8598;
+    --line: #dfe4ec;
+    --bg: #f6f7fa;
+    --card: #ffffff;
+    --accent: #4a57d6;
+    --ok: #17803d;
+    --warn: #b45309;
+    --bad: #be123c;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    margin: 0;
+    padding: 48px 20px 96px;
+  }
+  main { margin: 0 auto; max-width: 1120px; }
+  header.title {
+    border-bottom: 3px solid var(--ink);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+  }
+  h1 { font-size: 32px; letter-spacing: -0.02em; line-height: 1.3; margin: 0 0 12px; }
+  .meta { color: var(--ink-3); font-family: var(--mono); font-size: 13px; line-height: 2; }
+  .meta b { color: var(--ink-2); font-weight: 600; }
+  h2 {
+    border-top: 1px solid var(--line);
+    font-size: 23px;
+    letter-spacing: -0.01em;
+    margin: 56px 0 8px;
+    padding-top: 32px;
+  }
+  h3 { font-size: 17px; margin: 32px 0 8px; }
+  p { margin: 0 0 16px; }
+  .lede { color: var(--ink-2); font-size: 17px; }
+  code {
+    background: #eef0f5;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.86em;
+    padding: 1px 5px;
+  }
+  table {
+    background: var(--card);
+    border-collapse: collapse;
+    border-radius: 8px;
+    font-size: 14px;
+    margin: 20px 0;
+    overflow: hidden;
+    width: 100%;
+  }
+  th, td { border-bottom: 1px solid var(--line); padding: 10px 14px; text-align: left; vertical-align: top; }
+  th { background: #eef0f5; font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.num, th.num { font-family: var(--mono); text-align: right; white-space: nowrap; }
+  .ok { color: var(--ok); font-weight: 600; }
+  .warn { color: var(--warn); font-weight: 600; }
+  .bad { color: var(--bad); font-weight: 600; }
+  .muted { color: var(--ink-3); }
+  .cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 24px 0; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .card .k { color: var(--ink-3); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .card .v { font-family: var(--mono); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; }
+  .card .n { color: var(--ink-3); font-size: 12.5px; line-height: 1.5; }
+  figure {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin: 0;
+    overflow: hidden;
+  }
+  figure img { background: #eceff4; display: block; height: auto; width: 100%; }
+  figcaption { border-top: 1px solid var(--line); color: var(--ink-2); font-size: 13px; padding: 10px 14px; }
+  figcaption b { color: var(--ink); }
+  .shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); margin: 24px 0; }
+  .shots.tight { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  blockquote {
+    background: #fff9ec;
+    border-left: 3px solid var(--warn);
+    border-radius: 0 6px 6px 0;
+    color: #6b4a10;
+    margin: 20px 0;
+    padding: 14px 18px;
+  }
+  blockquote p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 8px; }
+  .path { font-family: var(--mono); font-size: 13px; word-break: break-all; }
+  footer { border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; margin-top: 64px; padding-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+
+<header class="title">
+  <h1>조수 띠 재편 — 구현 보고서</h1>
+  <div class="meta">
+    <b>작성일</b> 2026-08-29<br>
+    <b>브랜치</b> ai-chat &nbsp;·&nbsp; <b>PR</b> #228<br>
+    <b>커밋</b> 392065bb → 40e49013 → 43b57941 → 5a4ff059 &nbsp;(<b>기준</b> b4bc422a)<br>
+    <b>스펙</b> docs/superpowers/specs/2026-08-29-assistant-strip-design.md<br>
+    <b>작성자</b> Claude Opus 5 (Claude Code)
+  </div>
+</header>
+
+<p class="lede">편집기 조수 UI 를 <b>캔버스 우하단에 떠 있는 띠 하나</b>로 바꿨다. 배치 3종(유리·사이드·플로트) × 대기화면 3종 × 접힘이라는 조합을 없애고, 상태를 한 축으로 폈다. 이 문서는 무엇을 어떻게 재서 통과라고 판정했는지를 남긴다.</p>
+
+<div class="cards">
+  <div class="card"><div class="k">상태 클래스</div><div class="v">13 → 5</div><div class="n">도크·온도·접힘 삭제</div></div>
+  <div class="card"><div class="k">CSS</div><div class="v">23 → 12장</div><div class="n">띠 5장 + 남의 화면 7장</div></div>
+  <div class="card"><div class="k">vitest 실패</div><div class="v">199 → 177</div><div class="n">24건 감소, 신규 0건</div></div>
+  <div class="card"><div class="k">게이트 위반</div><div class="v">0건</div><div class="n">기하 10상태 · 대비 8상태</div></div>
+</div>
+
+<h2>1. 왜 바꿨나 — 실제 원인은 "소유자 부재"였다</h2>
+
+<p>구 구현은 <code>position</code> / <code>inset</code> / <code>width</code> / <code>height</code> 네 속성을 CSS 22장에서 도크별로 다시 선언했다. 그래서 <b>"어느 파일이 이기는가" 가 실제 배치를 정하고 있었다.</b> 증상은 두 가지로 나왔다.</p>
+
+<ul>
+  <li><b>600px 공백.</b> 띠가 <code>height: 100%</code> 로 빈 로그를 펼친 결과였다. 표면을 몇 번 바꿨지만 원인은 그대로 남아 살아 있었다(§4 에서 세 자리를 잡는다).</li>
+  <li><b>배타 선택자 경쟁.</b> <code>:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side)…</code> 를 파일마다 다시 쓰다가 어긋났다.</li>
+</ul>
+
+<p>처방은 <b>소유권을 한 곳으로 모으는 것</b>이다. 이제 <code>src/styles/database/assistant/shell.css</code> 하나만 띠의 위치·크기를 갖는다. 상태는 다섯 개고 선택자로 서로 배타적이다.</p>
+
+<table>
+  <thead><tr><th>상태</th><th>클래스</th><th class="num">높이</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td>유휴</td><td class="muted">(없음)</td><td class="num">56px</td><td>입력 1줄. 나머지 슬롯은 문서에서 빠진다</td></tr>
+    <tr><td>자람</td><td><code>is-risen</code></td><td class="num">내용만큼 ≤480px</td><td>높이는 <code>auto</code>, 상한만 걸린다</td></tr>
+    <tr><td>전체 기록</td><td><code>is-history-open</code></td><td class="num">100%</td><td>우측 520px 전면 오버레이</td></tr>
+    <tr><td>턴 결과</td><td><code>is-turn-{running,error,attention}</code></td><td class="num">—</td><td>좌상단 7px 점. 레이아웃을 차지하지 않는다</td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+<p><b>왜 <code>height</code> 를 안 쓰나.</b> <code>height: 100%</code> 가 구 600px 공백의 원인이었다. 내용이 결정하는 높이에 상한만 걸고, 유휴 높이는 <code>:not(.is-risen):not(.is-history-open)</code> 에서 한 줄로 고정한다. <code>position: absolute</code> 이므로 캔버스를 밀어내지 않아 줌·스크롤이 튀지 않는다.</p>
+</blockquote>
+
+<h2>2. 실측 — 상태 3종 × 맵 배경 2종</h2>
+
+<p>반투명 표면의 대비는 뒤가 무엇이냐에 달렸다. 단색 배경만 재면 통과가 무의미하므로 <b>맵 배경 2종</b> 위에서 잰다: 마을(타일이 다채롭다)과 빈 프로젝트(거의 단색). 뷰포트 1600×1000.</p>
+
+<h3>유휴 — 56px 한 줄</h3>
+<div class="shots">
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/village-01-idle-full.png" alt="마을 맵 위 유휴 상태 조수 띠 — 캔버스 우하단에 56px 한 줄">
+    <figcaption><b>마을 배경 · 유휴</b> — 640×56 @ (944,928), 앵커 16/16</figcaption>
+  </figure>
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/blank-01-idle-full.png" alt="빈 프로젝트 위 유휴 상태 조수 띠">
+    <figcaption><b>빈 프로젝트 · 유휴</b> — 같은 기하. 뒤가 단색이어도 대비 17.85:1</figcaption>
+  </figure>
+</div>
+<div class="shots tight">
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/village-01-idle-panel.png" alt="유휴 띠 요소 단독 샷">
+    <figcaption>띠 단독 — 여기서 뒤가 가장 많이 보이므로 대비가 가장 어렵다</figcaption>
+  </figure>
+</div>
+
+<h3>자람 — 내용만큼, 상한 480px</h3>
+<div class="shots">
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/village-02-focus-full.png" alt="입력 포커스로 자란 조수 띠 — 예시 칩 4개가 보인다">
+    <figcaption><b>마을 · 입력 포커스</b> — 640×293. 예시 칩 4개가 한 줄에 들어간다</figcaption>
+  </figure>
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/village-03-risen-full.png" alt="문장을 입력한 상태의 조수 띠">
+    <figcaption><b>마을 · 입력 있음</b> — 640×200. 칩이 물러나고 높이가 줄어든다</figcaption>
+  </figure>
+</div>
+<div class="shots">
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/blank-02-focus-panel.png" alt="자란 띠 단독 샷 — 빈 프로젝트">
+    <figcaption>자람 단독 — 빈화면 안내문 17.85:1 · 예시 라벨 7.58:1 · 예시 칩 7.12:1</figcaption>
+  </figure>
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/blank-03-risen-panel.png" alt="입력 있는 자람 띠 단독 샷">
+    <figcaption>입력 있음 — 전송 버튼이 활성으로 바뀌며 5.46:1</figcaption>
+  </figure>
+</div>
+
+<h3>전체 기록 — 우측 520px 전면 오버레이</h3>
+<div class="shots">
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/village-04-history-full.png" alt="전체 기록 오버레이가 캔버스 우측을 덮은 모습">
+    <figcaption><b>마을 · 전체 기록</b> — 520×951 @ (1080,49), 앵커 0/0. 캔버스 높이를 채운다</figcaption>
+  </figure>
+  <figure>
+    <img src="../verify-shots/assistant-glass/after/blank-04-history-panel.png" alt="빈 기록 오버레이 — 안내문이 보인다">
+    <figcaption><b>빈 기록</b> — <code>.ai-history-empty</code> 안내문. <b>이것이 없어서 951px 흰 판이 열렸다</b>(§4)</figcaption>
+  </figure>
+</div>
+
+<h2>3. 게이트 3종</h2>
+
+<h3>게이트 1 · 기하 — <code>scripts/check-strip-geometry.mjs</code> (신규)</h3>
+
+<p>대비는 다른 스크립트가 본다. 이건 <b>크기와 자리만</b> 본다. 5번만 PNG 를 읽고 나머지는 <code>metrics.json</code> 의 실측 사각형으로 판정한다.</p>
+
+<table>
+  <thead><tr><th>상태</th><th class="num">사각형</th><th class="num">앵커 R/B</th><th class="num">공백 밴드</th><th>판정</th></tr></thead>
+  <tbody>
+    <tr><td>village_idle</td><td class="num">640×56 @944,928</td><td class="num">16/16</td><td class="num">6px</td><td class="ok">OK</td></tr>
+    <tr><td>village_focus</td><td class="num">640×293 @944,692</td><td class="num">16/16</td><td class="num">15px</td><td class="ok">OK</td></tr>
+    <tr><td>village_risen</td><td class="num">640×200 @944,784</td><td class="num">16/16</td><td class="num">18px</td><td class="ok">OK</td></tr>
+    <tr><td>village_history</td><td class="num">520×951 @1080,49</td><td class="num">0/0</td><td class="num">709px <span class="muted">(미판정)</span></td><td class="ok">OK</td></tr>
+    <tr><td>blank_idle</td><td class="num">640×56 @944,928</td><td class="num">16/16</td><td class="num">6px</td><td class="ok">OK</td></tr>
+    <tr><td>blank_focus</td><td class="num">640×293 @944,692</td><td class="num">16/16</td><td class="num">15px</td><td class="ok">OK</td></tr>
+    <tr><td>blank_risen</td><td class="num">640×200 @944,784</td><td class="num">16/16</td><td class="num">18px</td><td class="ok">OK</td></tr>
+    <tr><td>blank_history</td><td class="num">520×951 @1080,49</td><td class="num">0/0</td><td class="num">709px <span class="muted">(미판정)</span></td><td class="ok">OK</td></tr>
+  </tbody>
+</table>
+
+<p>단정 5개: 유휴 56±2px · 자람 ≤480px · 우하단 앵커 16/16 · 좌측 레일(0~73px) 회피 · <b>연속 공백 밴드 ≤40px</b>.</p>
+
+<blockquote>
+<p><b>기록의 709px 밴드는 왜 판정하지 않나.</b> 40px 상한은 <b>띠</b>의 계약이다 — 구 600px 공백은 띠가 <code>height: 100%</code> 로 빈 로그를 펼친 결과였다. 전체 높이 아카이브 화면은 대화가 없으면 아래쪽이 비는 게 정상이고, 문제는 여백이 아니라 <b>설명 없는 여백</b>이다. 그래서 기록에는 대신 <b>"비었으면 안내문이 실제 높이를 갖고 보이는가"</b> 를 단정한다. 재기는 하고 출력만 하는 이유는, 지우면 "기록 밴드가 어떻게 변했나" 를 다음 사람이 다시 재야 하기 때문이다.</p>
+</blockquote>
+
+<h3>게이트 2 · 대비 — <code>scripts/analyze-glass-contrast.mjs</code></h3>
+
+<table>
+  <thead><tr><th>상태</th><th class="num">backdrop-filter</th><th class="num">배경 다양도</th><th>측정 항목</th></tr></thead>
+  <tbody>
+    <tr><td>village_idle</td><td class="num">none</td><td class="num">26</td><td>입력 플레이스홀더 <span class="ok">17.85:1</span> · 전송 버튼 2.37:1 <span class="muted">(면제)</span></td></tr>
+    <tr><td>village_focus</td><td class="num">none</td><td class="num">25</td><td>안내문 <span class="ok">17.85:1</span> · 예시 라벨 <span class="ok">7.58:1</span> · 예시 칩 <span class="ok">7.12:1</span> · 전송 2.37:1 <span class="muted">(면제)</span></td></tr>
+    <tr><td>village_risen</td><td class="num">none</td><td class="num">53</td><td>플레이스홀더 <span class="ok">17.85:1</span> · 전송 버튼 <span class="ok">5.46:1</span></td></tr>
+    <tr><td>village_history</td><td class="num">none</td><td class="num">17</td><td>플레이스홀더 <span class="ok">17.85:1</span> · 전송 2.37:1 <span class="muted">(면제)</span></td></tr>
+    <tr><td>blank_idle</td><td class="num">none</td><td class="num">13</td><td>플레이스홀더 <span class="ok">17.85:1</span> · 전송 2.37:1 <span class="muted">(면제)</span></td></tr>
+    <tr><td>blank_focus</td><td class="num">none</td><td class="num">25</td><td>안내문 <span class="ok">17.85:1</span> · 예시 라벨 <span class="ok">7.58:1</span> · 예시 칩 <span class="ok">7.12:1</span> · 전송 2.37:1 <span class="muted">(면제)</span></td></tr>
+    <tr><td>blank_risen</td><td class="num">none</td><td class="num">31</td><td>플레이스홀더 <span class="ok">17.85:1</span> · 전송 버튼 <span class="ok">5.46:1</span></td></tr>
+    <tr><td>blank_history</td><td class="num">none</td><td class="num">17</td><td>플레이스홀더 <span class="ok">17.85:1</span> · 전송 2.37:1 <span class="muted">(면제)</span></td></tr>
+  </tbody>
+</table>
+
+<p><b>AA 실패 0건, 면제 6건.</b> <code>backdrop-filter</code> 는 8 상태 전부 <code>none</code>(스펙 §2 금지 조항).</p>
+
+<blockquote>
+<p><b>면제 6건은 거짓 양성을 고친 것이다.</b> 전부 전송 버튼이 2.37:1 로 잡힌 것이었고, 원인은 <code>.ai-chat-send:disabled { opacity: 0.45 }</code> 가 <code>rgb(74,87,214)</code> 를 <code>rgb(164,167,191)</code> 로 합성한 결과다. WCAG 1.4.3 은 <b>비활성 컨트롤을 Incidental 로 면제</b>한다. 분석기는 합성된 픽셀만 보므로 <code>disabled</code> / <code>aria-disabled</code> 신호를 계측기에서 같이 실어 보내 판정에서만 뺐다. <b>재는 것은 그대로 뒀다</b> — 지우면 <b>활성</b> 상태가 저대비로 망가지는 회귀를 놓친다. 실제로 <code>*_risen</code> 두 상태에서는 같은 버튼이 활성이 되어 5.46:1 로 판정된다.</p>
+</blockquote>
+
+<h3>게이트 3 · 계측기 — <code>test/e2e/_assistant-glass-shots.spec.ts</code></h3>
+
+<p>도는 축을 <b>도크 3종 → 상태 3종 × 맵 배경 2종</b>으로 바꿨다. 편집기 캔버스가 <b>WebGL</b> 이라 <code>getContext("2d")</code> 가 null 을 돌려주므로(2026-08-28 실측: distinct = −1) 캔버스 픽셀을 JS 로 직접 읽을 수 없다. 그래서 DOM 조건으로만 게이트하고, "뒤가 비어 있지 않은가" 판정은 스크린샷 PNG 를 읽는 분석기가 맡는다.</p>
+
+<h2>4. 게이트가 실제로 잡은 결함 3건</h2>
+
+<p>셋 다 <b>구 600px 공백이 표면만 바꿔 살아 있던 자리</b>다. 밴드 검사가 951px 패널 안에서 377px 짜리 공백을 두 번 잡아낸 것이 시작이었다.</p>
+
+<table>
+  <thead><tr><th class="num">#</th><th>증상</th><th>원인</th><th>처방</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="num">1</td>
+      <td>전체 기록이 대화 없이 열리면 <b>951px 짜리 말 없는 흰 판</b></td>
+      <td>빈 기록 안내문이 아예 없었다</td>
+      <td><code>.ai-history-empty</code> 추가. 가시성은 CSS 가 <code>is-history-open</code> + <code>data-ai-conversation="empty"</code> 로 정한다 — TS 가 <code>hidden</code> 을 직접 만지면 두 곳이 같은 상태를 들고 갈라진다</td>
+    </tr>
+    <tr>
+      <td class="num">2</td>
+      <td>안내문과 컴포저 사이에 공백</td>
+      <td>빈 로그 마운트가 <code>flex: 1</code> 로 남는 높이를 다 먹었다</td>
+      <td><code>[data-ai-conversation="empty"]</code> 에서 <code>flex: 0 0 auto</code></td>
+    </tr>
+    <tr>
+      <td class="num">3</td>
+      <td>기록 패널 높이의 절반이 빈 통</td>
+      <td>기록을 열면 <code>mountLog()</code> 가 로그를 옮기므로 <code>.ai-rising-overlay</code> 의 유일한 자식이 비는데, 기반 규칙이 오버레이에도 <code>flex: 1 1 auto</code> 를 줬다</td>
+      <td>기록에서 오버레이를 문서에서 제외</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+<p><b>고치는 중에 밴드가 나빠졌다(377 → 709px).</b> 오버레이의 <code>flex: 1</code> 을 없애자 두 공백이 하나로 합쳐졌기 때문이다. 되돌리는 대신 스크린샷을 읽어 <b>안내문이 실제로 렌더되고 점선 구분선이 사라진 것</b>을 확인한 뒤, 40px 상한을 그 계약의 실제 대상인 <b>띠 상태에만</b> 한정하고 기록에는 안내문 단정을 넣었다. 숫자를 만족시키려고 자를 옮긴 것이 아니라, 자가 재던 대상이 무엇인지를 바로잡은 것이다.</p>
+</blockquote>
+
+<h2>5. 테스트 — 도크 축을 상태 축으로</h2>
+
+<p>배치 3종·대기화면 3종·접힘이 사라지면서 그것들을 축으로 삼던 테스트가 통째로 의미를 잃었다. <b>죽은 축을 지우는 대신 띠의 축으로 옮겼다.</b></p>
+
+<table>
+  <thead><tr><th>항목</th><th class="num">결과</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td>vitest 전체</td><td class="num">실패 199 → <b>177</b></td><td class="ok">24건 감소, 내 신규 0건</td></tr>
+    <tr><td><code>tsc -p tsconfig.app.json</code></td><td class="num">내 파일 0건</td><td class="muted">남은 2건은 미추적 외부 파일 <code>src/benchmark/flags/report.ts</code></td></tr>
+    <tr><td>기하 게이트</td><td class="num">10 상태 / 위반 0</td><td class="ok">OK</td></tr>
+    <tr><td>대비 게이트</td><td class="num">8 상태 / AA 실패 0</td><td class="ok">면제 6건, backdrop-filter none</td></tr>
+    <tr><td><code>npm run gates:css</code></td><td class="num">5개 검사 신규 0</td><td class="ok">기준선 갱신 저장</td></tr>
+    <tr><td><code>responsive-shell.spec.ts</code></td><td class="num">6 / 6</td><td class="ok">전부 빨간불이었다</td></tr>
+    <tr><td>e2e (적용 · 고스트 · 변경 카드)</td><td class="num">통과</td><td class="ok">기준 워크트리 대조로 분류</td></tr>
+  </tbody>
+</table>
+
+<h3>삭제한 7장 — 도달 불가를 먼저 확인했다</h3>
+
+<p><code>test/aiGlassPanelWidth</code> · <code>aiPanelGlassResize</code> · <code>aiPanelLayoutResponsive</code> · <code>workspaceBarAssistantDock</code> · <code>e2e/_glass-dock-report</code> · <code>e2e/_ux-baseline-shots</code> · <code>e2e/chat-dock-switch</code>.</p>
+
+<table>
+  <thead><tr><th>심볼</th><th class="num">src 참조</th><th>확인</th></tr></thead>
+  <tbody>
+    <tr><td><code>chat-dock-glass</code> / <code>-side</code></td><td class="num">주석 2건</td><td>삭제를 기록한 주석뿐</td></tr>
+    <tr><td><code>chat-dock-float</code></td><td class="num">0</td><td class="ok">도달 불가</td></tr>
+    <tr><td><code>toggle-chat-dock</code></td><td class="num">0</td><td class="ok">도달 불가</td></tr>
+    <tr><td><code>ai-start-screen</code></td><td class="num">0</td><td class="ok">도달 불가</td></tr>
+    <tr><td><code>chatDock</code></td><td class="num">0</td><td class="ok">도달 불가</td></tr>
+    <tr><td><code>is-collapsed</code></td><td class="num">4</td><td class="warn">살려 뒀다 — <code>.ai-turn-group</code> 의 별개 기능(이전 턴 아코디언)</td></tr>
+  </tbody>
+</table>
+
+<h3><code>responsive-shell.spec.ts</code> — 세 축이 겹쳐 있었다</h3>
+
+<ol>
+  <li><b>30s 전역 상한</b>이 편집기 부팅(60~90s)을 못 넘겼다. 예전 판은 <code>editor-layout</code> 이 뜨자마자 끝나는 검사뿐이라 턱걸이로 통과했지만, 띠 기하를 재려면 캔버스가 실제로 마운트돼야 한다.</li>
+  <li><b>로그인 모달을 걷지 않았다.</b> <code>editor-layout</code> 은 모달 뒤에서도 붙어 있어서 통과했고, 캔버스 기하는 그 뒤에나 잡힌다.</li>
+  <li><b>UI 모드 전환이 셸을 다시 그리는 사이에 낀 <code>boundingBox()</code></b> 가 재시도 없이 null 로 떨어졌다. 1024·1440 만 걸리고 1280 은 운으로 통과해 <b>실패가 뷰포트 탓처럼 보였다</b>. 재시도하는 <code>boxOf()</code> 리더로 고쳤다.</li>
+</ol>
+
+<p>레일 상한 <code>56 → 72</code> 는 선행 실패다. 2026-08-18 <code>99b44216</code>("persistent beginner rail labels and 40px targets")가 아이콘 아래 14px 굵은 라벨을 상주시키며 <code>--basic-rail-width</code> 를 72px 로 올렸고, 그때부터 계속 빨간불이었다.</p>
+
+<h3>진단에 시간이 든 두 건 — 둘 다 내 것이 아니었다</h3>
+
+<p><b><code>ai-apply-without-approval.spec.ts</code> 는 내 것이었다.</b> 새로 쓴 <code>assertStripClearsMap</code> 이 캔버스 좌상단 <b>사분면</b>과 교차 0 을 요구했는데, 폭 640px 띠가 우측 16px 에 붙으면 왼쪽 끝이 <code>canvas.right − 656</code> 이라 캔버스가 1312px 보다 좁은 순간 반드시 겹친다. 기본 뷰포트 1280×720 에서 정확히 16px 물렸다. <b>결함이 아니라 자의 눈금이 틀렸던 것</b>이므로, 480px 상한이 실제로 보장하는 <b>1/4 박스</b>(720px 뷰포트에서 띠 윗변 224px vs 박스 아랫변 217px)로 좁히고 우하단 앵커 단정을 함께 넣었다. 이제 이 단정이 깨지는 첫 신호는 <b>높이 상한이 무너지는 것</b>이고, 그게 재고 싶은 회귀다.</p>
+
+<p><b><code>aiChatObservability</code> 고스트 프리뷰는 옆 세션 커밋 때문이었다.</b> 이 테스트의 <code>fetch</code> 스텁이 <b>모든 URL</b> 에 다음 SSE 본문을 돌려줬다. 외부 커밋 <code>f29a95b6</code> 가 Supabase 프록시 모드를 넣으면서 <code>recordSupabaseConversation</code> 이 예전에 <code>not-configured</code> 로 끝나던 자리에서 실제 요청을 보내게 됐고, <code>renderAiChatPanel</code> 이 앞선 패널을 정리하며 그 대화를 저장하므로 <b>클릭 전에</b> 그 왕복이 나가 <code>create_map</code> 툴콜이 담긴 첫 본문을 가져갔다. 채팅 턴은 툴콜 없는 두 번째 본문을 받아 체인지셋 0건 → 고스트 0건으로 끝났다. 스텁을 URL 인식으로 바꾸고, <b>비-LLM 분기가 실제로 갈렸는지</b>를 단정으로 남겨 같은 방식으로 조용히 되돌아가지 못하게 했다.</p>
+
+<p>진단 방식은 둘 다 같다: <code>b4bc422a</code> 기준 워크트리를 따로 띄워 <b>같은 테스트를 양쪽에서 돌려 실패 집합을 대조</b>했다. 개수가 아니라 집합으로 봐야 "내가 만든 것 / 물려받은 것 / 옆 세션 것" 이 갈린다.</p>
+
+<h2>6. 남은 것</h2>
+
+<h3>이 PR 밖 — 옆 세션 소유</h3>
+<ul>
+  <li><b>남은 vitest 실패 2건은 툴 레지스트리 드리프트다.</b> <code>toolCatalog</code>(<code>docs/tool-catalog.md</code> 미동기화)와 <code>regionAiHouseTreeNpc.probe</code>(<code>build_house_kit</code> 를 기대하지만 <code>author_house</code> 로 대체돼 비노출). <code>git diff -S build_house_kit</code> 에 제 변경분은 0건이다.</li>
+  <li><code>f29a95b6</code>(ai-log 런 격리·전송 실패 큐)이 이 브랜치에 섞여 있어 PR 에 포함된다.</li>
+  <li>워크트리에 옆 세션의 미커밋 파일 4개(<code>src/ai/contextBuilder.ts</code>, <code>src/editor/assistantToolMode.ts</code>, <code>src/editor/tools/v3/*</code>)가 있다. 손대지 않았다.</li>
+</ul>
+
+<h3>발견했지만 범위 밖 — 별도 처리 필요</h3>
+<ul>
+  <li><b><code>src/editor/panels/aiConnectionStatus.ts</code> 가 죽어 있다.</b> <code>src/</code> 에서 importer 0개라 <code>ai-connection-status</code> · <code>ai-authoring-entry</code> 가 렌더되지 않고, <code>editor-ai-authoring-entry.spec.ts</code> 는 통과할 수 없다. 하단 바는 <code>d2b46980</code>(2026-08-25, 기준선 이전)에 들어갔다.</li>
+  <li><b>제안 표시 모드 체인이 끝에서 끝까지 죽어 있다.</b> <code>aiProposalCard.ts:518</code> 의 <code>requestedPresentation = "modal"</code> 을 아무 호출자도 덮지 않고, <code>resolveProposalPresentation</code>(<code>aiProposalModal.ts:12</code>)은 유일한 호출자가 인자를 하나만 주므로 항상 <code>"inline"</code> 이다. 결과로 <code>aiProposalCard.ts</code> 749 · 773 · 794 · 798 이 죽은 분기이고 <code>fromReopenPill</code> 은 생산자가 없다.</li>
+</ul>
+
+<h3>병합 전 필요한 일</h3>
+<blockquote>
+<p><b><code>main</code> 이 공통 조상 <code>b4bc422a</code> 보다 223 커밋 앞서 있다.</b> 병합 전 rebase 또는 merge 가 필요하고, 그동안 main 쪽 CSS 작업(PR #223 데이터베이스 탭 레일 재구성, #224 상점 결함 10건)과 충돌할 가능성이 있다. 이 워크트리는 다른 세션과 공유되므로 rebase 는 HEAD 가 움직이지 않는 시점에 해야 한다.</p>
+</blockquote>
+
+<h2>7. 판정 근거 파일</h2>
+
+<table>
+  <thead><tr><th>용도</th><th>경로</th></tr></thead>
+  <tbody>
+    <tr><td>실측 기하 + 표면 토큰</td><td class="path">verify-shots/assistant-glass/after/metrics.json</td></tr>
+    <tr><td>대비 측정 결과</td><td class="path">verify-shots/assistant-glass/after/contrast.json</td></tr>
+    <tr><td>증거 스크린샷 16장</td><td class="path">verify-shots/assistant-glass/after/{village,blank}-0{1..4}-*-{full,panel}.png</td></tr>
+    <tr><td>기하 게이트</td><td class="path">scripts/check-strip-geometry.mjs</td></tr>
+    <tr><td>대비 게이트</td><td class="path">scripts/analyze-glass-contrast.mjs</td></tr>
+    <tr><td>계측기</td><td class="path">test/e2e/_assistant-glass-shots.spec.ts</td></tr>
+    <tr><td>띠 기하 소유 파일</td><td class="path">src/styles/database/assistant/shell.css</td></tr>
+    <tr><td>CSS 예산 기준선</td><td class="path">.omo/css-budget-baseline.json</td></tr>
+  </tbody>
+</table>
+
+<p>게이트 재현:</p>
+<pre style="background:#fff;border:1px solid var(--line);border-radius:8px;font-family:var(--mono);font-size:13px;overflow-x:auto;padding:16px 18px"># 계측 (편집기 부팅 60~90s × 2)
+ASSIST_SHOT_TAG=after DEV_SERVER_PORT=9173 npx playwright test \
+  test/e2e/_assistant-glass-shots.spec.ts --project=chromium
+
+# 판정
+node scripts/check-strip-geometry.mjs   verify-shots/assistant-glass/after
+node scripts/analyze-glass-contrast.mjs verify-shots/assistant-glass/after
+npm run gates:css</pre>
+
+<footer>
+2026-08-29 · 브랜치 <code>ai-chat</code> · PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/228">#228</a> · 마지막 커밋 <code>5a4ff059</code><br>
+작성: Claude Opus 5 (Claude Code)
+</footer>
+
+</main>
+</body>
+</html>
