@@ -90,8 +90,15 @@ import {
   syncMinimapVisibility,
   type MinimapRuntimeState,
 } from "@/player/minimap";
+import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
 
 const PhaserRuntime = getLoadedPhaser();
+const MAX_FAILED_ASSETS = 20;
+
+export type FailedPlayAsset = {
+  readonly key: string;
+  readonly url: string;
+};
 
 export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare tileLayer: Phaser.GameObjects.Container;
@@ -159,6 +166,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   timeTintTransition: import("@/player/playSceneTypes").TimeTintTransition | null = null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container> = new Set();
+  private readonly failedAssetLoads: FailedPlayAsset[] = [];
+
+  get failedAssets(): readonly FailedPlayAsset[] {
+    return this.failedAssetLoads;
+  }
 
   constructor() {
     super({ key: "PlayScene" });
@@ -172,8 +184,33 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       }
     };
     this.load.on("progress", reportProgress);
+    this.load.on("loaderror", (file: Phaser.Loader.File) => {
+      const failure = { key: file.key, url: typeof file.url === "string" ? file.url : file.src };
+      if (this.failedAssetLoads.length >= MAX_FAILED_ASSETS) this.failedAssetLoads.shift();
+      this.failedAssetLoads.push(failure);
+      this.installFailedAssetPlaceholder(failure.key);
+      recordPlayBootDiagnostic({
+        stage: "assets",
+        ok: false,
+        detail: `에셋 로드 실패: ${failure.key} (${failure.url})`,
+      });
+    });
     reportProgress(0);
     loadBundledAssets(this, store.getCurrent());
+  }
+
+  private installFailedAssetPlaceholder(key: string): void {
+    if (this.textures.exists(key)) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 16;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.fillStyle = "#ff00ff";
+    context.fillRect(0, 0, 16, 16);
+    context.fillStyle = "#111111";
+    context.fillRect(0, 0, 8, 8);
+    context.fillRect(8, 8, 8, 8);
+    this.textures.addCanvas(key, canvas);
   }
 
   create(): void {
@@ -187,6 +224,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     const qaInstrumentation = this.game.registry.get("qaInstrumentation") === true;
     const playResolution = resolvePlayResolution(project.system);
+    for (const failure of this.failedAssetLoads) this.installFailedAssetPlaceholder(failure.key);
     registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
     this.tileLayer = this.add.container(0, 0);
