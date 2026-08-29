@@ -101,11 +101,11 @@ for (const size of SIZES) {
           await expect(overflowToggle).toBeVisible();
         }
       } else {
-        // 기본 모드: 아이콘 레일 존재 + 폭 48
+        // 기본 모드: 아이콘 레일 존재 + 폭 72
         const rail = page.locator("[data-testid='basic-left-rail']");
         await expect(rail).toBeVisible();
         const railBox = await rail.boundingBox();
-        expect(railBox && railBox.width).toBeLessThanOrEqual(56);
+        expect(railBox?.width).toBe(72);
       }
 
       await page.screenshot({ path: `test-results/ai-panel-${mode}-${dock}-${size.name}.png` });
