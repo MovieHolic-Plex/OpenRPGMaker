@@ -2,8 +2,11 @@ import { GENERAL_STORE_PRESET_ITEM_IDS } from "@/editor/eventCommands/quickAutho
 import { newCommand } from "@/editor/eventActions";
 import { INN_NOT_ENOUGH_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
+import { SHOP_MESSAGE_LABELS, SHOP_MESSAGE_TYPES, shopGreetingText } from "@/project/shopMessages";
+import { resolveTerms } from "@/project/terms";
 import { el } from "@/util/dom";
-import type { Command, ItemId, ShopMessageType, ShopType } from "@/project/types";
+import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import type { Command, ItemId, Project, ShopMessageType, ShopType } from "@/project/types";
 import type { ItemRecord, ItemType } from "@/project/types/database";
 import { commandKindSelect, selectedOptionValue } from "./dom";
 import { COMMAND_KIND_OPTIONS } from "./options";
@@ -33,11 +36,12 @@ const SHOP_TYPE_OPTIONS: readonly ShopTypeOption[] = [
   { value: "sellOnly", label: "판매 전용", hint: "플레이어만 판매" },
 ];
 
-const SHOP_MESSAGE_OPTIONS: readonly ShopMessageOption[] = [
-  { value: "welcome", label: "인사말" },
-  { value: "business", label: "둘러보기" },
-  { value: "direct", label: "고르기" },
-];
+// 6종 전부 저작 가능하게 한다 — 예전에는 앞의 3종만 드롭다운에 있어서
+// festival/closingSale/vip 는 런타임 문구가 구현돼 있는데도 JSON 을 직접 손대야만 닿았다.
+const SHOP_MESSAGE_OPTIONS: readonly ShopMessageOption[] = SHOP_MESSAGE_TYPES.map((value) => ({
+  value,
+  label: SHOP_MESSAGE_LABELS[value],
+}));
 
 const ITEM_TYPE_LABELS: Record<ItemType, string> = {
   normalGoods: "일반",
@@ -53,8 +57,46 @@ const ITEM_TYPE_LABELS: Record<ItemType, string> = {
   switch: "스위치",
 };
 
+const EQUIPMENT_SLOT_TO_ITEM_TYPE: Readonly<Record<string, ItemType>> = {
+  weapon: "weapon",
+  shield: "shield",
+  armor: "body",
+  helmet: "head",
+  accessory: "accessory",
+};
+
+/**
+ * 상점 자료집 = 아이템 탭 + 장비 탭.
+ *
+ * 예전에는 `database.items` 만 보여줬다. 기본 프로젝트의 items 177개 중 장비 타입은 0개고
+ * 청동검 같은 장비는 전부 `database.equipment` 에 있었으므로, 기본 자료집으로는 무기점을
+ * 만들 수 없었다. 장비 레코드를 카탈로그 표시용 ItemRecord 모양으로 어댑트해서 같은 목록에 얹는다.
+ * 종류 필터에는 무기/방패/갑옷/머리/장신구로 잡힌다.
+ */
+function shopCatalogRecords(project: Project): readonly ItemRecord[] {
+  const seen = new Set(project.database.items.map((item) => item.id));
+  const adapted = project.database.equipment
+    .filter((record) => !seen.has(record.id))
+    .map((record) =>
+      normalizeItemRecord({
+        id: record.id,
+        name: record.name,
+        price: record.price,
+        description: record.description,
+        type: EQUIPMENT_SLOT_TO_ITEM_TYPE[record.slot] ?? "normalGoods",
+        iconResourceId: record.iconResourceId,
+        imageResourceId: record.imageResourceId,
+        scope: "none",
+        occasion: "never",
+        consumable: false,
+      })
+    );
+  return [...project.database.items, ...adapted];
+}
+
 export function shopBody(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const project = store.getCurrent();
+  const catalog = shopCatalogRecords(project);
   const wrap = el("div", {
     class: "commerce-command-body shop-processing-command-body shop-processing-v2 cream-command-form",
     dataset: { testid: "shop-command-body" },
@@ -86,7 +128,7 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
     class: "shop-processing-main",
     children: [
       ...(emptyWarn ? [emptyWarn] : []),
-      shopItemsPanel(context, command, project.database.items),
+      shopItemsPanel(context, command, catalog),
       shopTransactionBranchControls(context, command),
     ],
   });
@@ -97,9 +139,9 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
   });
   try { side.append(shopSabExtraCard(context, command)); } catch {}
   wrap.append(
-    shopToolbar(context, command, project.database.items, headerBadge),
+    shopToolbar(context, command, catalog, headerBadge),
     el("div", { class: "shop-processing-layout", children: [main, side] }),
-    selectedSummary(project.database.items, command.itemIds)
+    selectedSummary(catalog, command.itemIds)
   );
   return wrap;
 }
@@ -750,14 +792,11 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
 }
 
 const SHOP_FAILED_BRANCH_INDEX = SHOP_FAILED_TRANSACTION_BRANCH_INDEX;
-const SHOP_MESSAGE_PREVIEWS: Record<ShopMessageType, string> = {
-  welcome: "어심 오세요! 무엇이 필요하신가요?",
-  business: "무엇이 필요하신가요?",
-  direct: "물건을 고르세요.",
-  festival: "축제 한정 특가! 오늘만 이 가격!",
-  closingSale: "마감 세일 중! 15% 할인!",
-  vip: "VIP 고객님, 특별 혜택을 확인하세요.",
-};
+
+/** 미리보기는 런타임과 같은 함수를 부른다 — 문구를 두 곳에 적으면 반드시 갈라진다. */
+function shopMessagePreview(messageType: ShopMessageType): string {
+  return shopGreetingText(messageType, resolveTerms(store.getCurrent()));
+}
 
 function shopTransactionBranchControls(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const branchSel = commandKindSelect("text");
@@ -816,13 +855,15 @@ function shopMessageSelect(context: CommandEditContext, command: ShopCommand): H
   const select = document.createElement("select");
   select.dataset.testid = "shop-message-type";
   select.className = "commerce-command-input shop-processing-message-select";
-  select.value = messageTypeValue(command);
   for (const option of SHOP_MESSAGE_OPTIONS) {
     const optionNode = document.createElement("option");
     optionNode.value = option.value;
     optionNode.textContent = option.label;
     select.append(optionNode);
   }
+  // option 을 붙인 뒤에 값을 넣어야 반영된다 — 예전에는 append 앞이라 no-op 이었고,
+  // 저장된 messageType 이 무엇이든 드롭다운은 항상 첫 항목("인사말")을 보여줬다.
+  select.value = messageTypeValue(command);
   select.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, {
       ...latestShop(context, command),
@@ -832,10 +873,10 @@ function shopMessageSelect(context: CommandEditContext, command: ShopCommand): H
   const preview = el("p", {
     class: "commerce-command-hint shop-message-preview",
     dataset: { testid: "shop-message-preview" },
-    text: SHOP_MESSAGE_PREVIEWS[messageTypeValue(command)] ?? "",
+    text: shopMessagePreview(messageTypeValue(command)),
   });
   select.addEventListener("change", () => {
-    preview.textContent = SHOP_MESSAGE_PREVIEWS[selectedMessageType(select.value)] ?? "";
+    preview.textContent = shopMessagePreview(selectedMessageType(select.value));
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-message" });
   fieldset.append(el("legend", { text: "메시지 유형" }), select, preview);

@@ -8,6 +8,10 @@ export type RuntimeState = {
   readonly inventory: Record<string, number>;
   readonly partyActorIds: readonly string[];
   readonly actorVitals: Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>;
+  /** 상점 경제 상태. 세이브에는 진작 있었지만 상태 덤프에는 없어서 밖에서 검증할 수 없었다(X-3). */
+  readonly shopLoyaltySpend?: Record<string, number>;
+  readonly shopTradeCounts?: Record<string, { readonly sold: number; readonly bought: number }>;
+  readonly shopMileagePoints?: number;
 };
 
 type DebugState = {
