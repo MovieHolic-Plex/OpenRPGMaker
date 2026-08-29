@@ -20,7 +20,7 @@
 import { PRODUCT_BRAND } from "@/brand";
 import type { ActorParameterCurves, EnemyRecord, ItemRecord, Project, TroopRecord } from "@/project/types";
 import { SCHEMA_VERSION } from "@/project/types";
-import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { dropCropsWithMissingItems, normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults/constants";
 import {
@@ -333,6 +333,8 @@ function skyDatabase(): Project["database"] {
   db.enemies = SKY_ENEMY_SPECS.map((spec) => skyEnemy(spec));
   db.troops = skyTroops();
   db.items = skyItems(db.items);
+  // 좁힌 아이템 목록에 없는 씨앗·수확물을 참조하는 작물 행을 함께 걷어낸다.
+  dropCropsWithMissingItems(db);
 
   // 파티 4명만 남기고 이름·성장 곡선을 이 게임 것으로 덮는다.
   const partyById = new Map(SKY_PARTY.map((member) => [member.id, member]));
