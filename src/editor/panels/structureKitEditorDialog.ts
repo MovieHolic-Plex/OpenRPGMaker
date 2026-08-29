@@ -13,6 +13,15 @@
 // 타일 팔레트로 renderTilePalette() 를 쓰지 않는 이유:
 //   그 함수는 editorState 의 전역 브러시를 바꾼다 — 구조물 편집 중 타일을 고르면
 //   맵 붓까지 같이 바뀐다. 순수 헬퍼 tilesetTileBackgroundStyle 로 격자를 직접 그린다.
+//
+//   (2026-08-30 정정) 그 경고는 renderTilePalette 에만 해당한다. 한 단계 아래
+//   makeGridPalette/makeCustomPalette(panels/tilePaletteGrid.ts)는 순수 인자만 받고
+//   전역을 건드리지 않으므로 원래 쓸 수 있었다. 그래도 계속 자체 격자를 쓰는 이유는 둘이다:
+//     ① 그 팔레트의 칸 크기가 컨테이너 쿼리(--chipset-cell: 100cqi)에 묶여 있어
+//        좌패널 밖에서는 컨테이너를 새로 세워 줘야 한다.
+//     ② makeGridPalette 는 오토타일을 대표 1칸으로 접고 레이어로 걸러서 480칸 중
+//        일부가 사라진다 — 구조물은 지붕 변형 같은 세부 타일이 필요하다.
+//   대신 검색·분류 계산은 맵 팔레트와 같은 출처(panels/tilePaletteFilter.ts)를 쓴다.
 
 import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -29,12 +38,20 @@ import {
   paintCell,
   removePart,
   resizeKit,
+  tileAt,
   updatePart,
   type KitLayer,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
+import {
+  TILE_CATEGORIES,
+  filterTileIndexes,
+  type TileCategoryId,
+} from "@/editor/panels/tilePaletteFilter";
+import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
+import { tileCellsForPaintShape } from "@/editor/tileShapeTools";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
 import { unregisterModal } from "@/editor/ui/modalStack";
@@ -54,13 +71,30 @@ import { el } from "@/util/dom";
 import { randomUuid } from "@/util/id";
 import { toast } from "@/util/toast";
 
-/** 캔버스 영역이 감당하는 최대 폭(px). 다이얼로그 본문 폭에서 팔레트 열을 뺀 값. */
-const CANVAS_VIEWPORT_PX = 520;
+/**
+ * 캔버스 영역이 감당하는 크기(px) — 다이얼로그가 아직 레이아웃되지 않은 첫 렌더와
+ * getBoundingClientRect 가 0 을 주는 환경(유닛 테스트의 FakeDom)용 대체값이다.
+ * 실제로는 매 렌더에서 캔버스 칸의 실측 크기를 쓴다.
+ */
+const CANVAS_FALLBACK_W = 1040;
+const CANVAS_FALLBACK_H = 620;
+
+/** 확대 단계 — 맵 편집기의 줌 스테퍼와 같은 눈금. */
+const ZOOM_STEPS: readonly number[] = [1, 2, 3, 4, 6, 8];
 
 /** 편집기 다이얼로그의 testid — openDialog 가 이 값을 오버레이 dataset 에 그대로 박는다. */
 const EDITOR_DIALOG_TESTID = "structure-kit-editor";
 
-type EditorTool = "paint" | "erase" | "part";
+/**
+ * 도구. 예전에는 paint·erase·part 셋뿐이라 한 칸씩 클릭해야 했고 사각형·채우기·스포이트가
+ * 없었다. 도형 계산은 맵 편집기와 같은 순수 함수(tileShapeTools)를 쓴다.
+ */
+type EditorTool = "paint" | "erase" | "part" | "rect" | "ellipse" | "fill" | "pick";
+
+/** 드래그로 영역을 정하는 도구인가 — 이 도구들은 뗄 때 한 번에 커밋한다. */
+function isDragShapeTool(tool: EditorTool): boolean {
+  return tool === "rect" || tool === "ellipse";
+}
 
 interface EditorSession {
   tilesetId: TilesetId;
@@ -69,6 +103,13 @@ interface EditorSession {
   layer: KitLayer;
   tile: number;
   tab: "shape" | "ai";
+  /** null = 창에 맞춤(자동). 숫자면 사람이 고른 배율. */
+  zoom: number | null;
+  showGrid: boolean;
+  /** 팔레트 검색어·분류 — 맵 팔레트의 모듈 전역과 **분리된** 이 편집기만의 상태다. */
+  search: string;
+  category: TileCategoryId;
+  recent: number[];
   /** AI 메타 폼의 미저장 편집 상태. [초안 수락] 전까지 store 에는 닿지 않는다. */
   draft: StructureKitAiMeta | null;
   /**
@@ -119,6 +160,11 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     layer: "lower",
     tile: TILE.GRASS,
     tab: "shape",
+    zoom: null,
+    showGrid: true,
+    search: "",
+    category: "all",
+    recent: [],
     draft: null,
     requireKit: () => {
       const current = findKit(tilesetId, kitId);
@@ -127,17 +173,51 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     },
   };
 
+  /**
+   * 킷 로컬 되돌리기 스택. mapEditHistory 의 recordProjectSnapshot 을 쓰지 않는 이유는 둘이다:
+   *   ① 스트로크마다 프로젝트 전체를 structuredClone 한다.
+   *   ② DB 모달을 취소하면 truncateMapEditHistoryFromMarker 가 세션 중 스냅샷을 전부
+   *      폐기해서, 편집기 안에서 쌓은 되돌리기 이력도 함께 사라진다.
+   * 킷 하나만 들고 있으면 둘 다 해당하지 않는다.
+   */
+  const past: SectionStructureKitDef[] = [];
+  const future: SectionStructureKitDef[] = [];
+  const HISTORY_LIMIT = 80;
+
+  const pushHistory = (before: SectionStructureKitDef): void => {
+    past.push(before);
+    if (past.length > HISTORY_LIMIT) past.shift();
+    future.length = 0;
+  };
+
+  /** 한 덩어리 편집 — 되돌리기 한 번에 되돌아간다. */
+  const commitKit = (before: SectionStructureKitDef, next: SectionStructureKitDef): void => {
+    if (next === before) return;
+    pushHistory(before);
+    replaceStructureKit(session.tilesetId, next);
+  };
+
   const canvasWrap = el("div", {
     class: "structure-kit-editor-canvas-wrap",
     dataset: { testid: "structure-kit-editor-canvas" },
   });
+  // 캔버스와 정확히 같은 크기의 위치 기준 상자. 격자선·도형 미리보기가 여기에 겹친다.
+  // 좌표 계산도 이 상자를 본다 — canvasWrap 은 스크롤 컨테이너라 캔버스보다 크고
+  // 내용을 가운데 정렬하므로, wrap 기준으로 재면 그 여백만큼 클릭이 밀린다.
+  const canvasStage = el("div", { class: "structure-kit-editor-canvas-stage" });
+  const gridOverlay = el("div", { class: "structure-kit-editor-grid-lines" });
+  const previewOverlay = el("div", { class: "structure-kit-editor-preview" });
+  canvasWrap.replaceChildren(canvasStage);
+
   const tabsWrap = el("div", { class: "structure-kit-editor-tools" });
   const rightWrap = el("div", { class: "structure-kit-editor-right" });
   const toolsWrap = el("div", { class: "structure-kit-editor-tools" });
+  const filterWrap = el("div", { class: "structure-kit-editor-filter" });
   const paletteWrap = el("div", {
     class: "structure-kit-editor-palette",
     dataset: { testid: "structure-kit-editor-palette" },
   });
+  const viewWrap = el("div", { class: "structure-kit-editor-viewbar" });
   const sizeWrap = el("div", { class: "structure-kit-editor-size" });
   const partsWrap = el("div", {
     class: "structure-kit-editor-parts",
@@ -145,27 +225,89 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
   });
   const aiWrap = el("div", { class: "structure-kit-editor-ai" });
 
+  /** 지금 캔버스에 쓰인 배율. 좌표 환산이 렌더와 같은 값을 봐야 한다. */
+  let activeScale = 3;
+
+  /**
+   * 캔버스만 다시 그린다. 칠하기 경로는 이것만 부른다 —
+   * 예전에는 한 칸 칠할 때마다 480개 팔레트 버튼을 재생성하고 팔레트 노드를 재부모해서
+   * 스크롤이 맨 위로 튀었다(맵 팔레트가 preservePaletteViewport 로 3중 복원까지 하는 그 병).
+   */
+  const redrawCanvasOnly = (): void => {
+    const current = session.requireKit();
+    if (!current) return;
+    activeScale = resolveScale(current, session, canvasWrap);
+    drawCanvasStage(canvasStage, gridOverlay, previewOverlay, tileset, current, session, activeScale);
+  };
+
+  const refreshViewBar = (): void => {
+    drawViewBar(viewWrap, session, redraw, {
+      canUndo: past.length > 0,
+      canRedo: future.length > 0,
+      undo,
+      redo,
+      currentScale: activeScale,
+    });
+  };
+
   const redraw = (): void => {
     const current = session.requireKit();
     if (!current) return;
-    drawCanvas(canvasWrap, tileset, current, session);
-    drawSize(sizeWrap, current, redraw, session);
+    redrawCanvasOnly();
+    refreshViewBar();
+    drawSize(sizeWrap, current, redraw, session, commitKit);
     drawTabs(tabsWrap, session, redraw);
+    const showParts = session.tab === "shape";
+    if (showParts) partsWrap.removeAttribute("hidden");
+    else partsWrap.setAttribute("hidden", "");
     if (session.tab === "ai") {
       drawAiTab(aiWrap, current, tileset, session, redraw);
       rightWrap.replaceChildren(tabsWrap, aiWrap);
     } else {
       drawTools(toolsWrap, session, redraw);
+      drawFilterBar(filterWrap, session, () => drawPalette(paletteWrap, tileset, session, redraw));
       drawPalette(paletteWrap, tileset, session, redraw);
-      drawParts(partsWrap, current, session, redraw);
-      rightWrap.replaceChildren(tabsWrap, toolsWrap, paletteWrap, partsWrap);
+      drawParts(partsWrap, current, session, redraw, commitKit);
+      rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap);
     }
   };
 
+  function undo(): void {
+    const previous = past.pop();
+    if (!previous) return;
+    const current = session.requireKit();
+    if (!current) return;
+    future.push(current);
+    replaceStructureKit(session.tilesetId, previous);
+    redraw();
+  }
+
+  function redo(): void {
+    const next = future.pop();
+    if (!next) return;
+    const current = session.requireKit();
+    if (!current) return;
+    past.push(current);
+    replaceStructureKit(session.tilesetId, next);
+    redraw();
+  }
+
   let dragStart: { readonly cx: number; readonly cy: number } | null = null;
+  /** 칠하기 스트로크 시작 시점의 킷 — 뗄 때 이력에 한 번만 밀어 넣는다. */
+  let strokeBefore: SectionStructureKitDef | null = null;
 
   const cellFromEvent = (event: PointerEvent, kit: SectionStructureKitDef) =>
-    cellAtPoint(canvasWrap.getBoundingClientRect(), canvasScale(kit.width), event.clientX, event.clientY, kit);
+    cellAtPoint(canvasStage.getBoundingClientRect(), activeScale, event.clientX, event.clientY, kit);
+
+  /** 한 칸 칠하기. 이미 같은 타일이면 아무것도 하지 않는다 — 드래그 중 헛 렌더를 막는다. */
+  const paintOneCell = (cx: number, cy: number): boolean => {
+    const current = session.requireKit();
+    if (!current) return false;
+    const tile = session.tool === "erase" ? TILE.EMPTY : session.tile;
+    if (tileAt(current, cx, cy, session.layer) === tile) return false;
+    replaceStructureKit(session.tilesetId, paintCell(current, cx, cy, session.layer, tile));
+    return true;
+  };
 
   canvasWrap.addEventListener("pointerdown", (event) => {
     const pointer = event as PointerEvent;
@@ -175,17 +317,64 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     const cell = cellFromEvent(pointer, current);
     if (!cell) return;
 
-    if (session.tool === "part") {
-      dragStart = cell;
-      // 드래그 도중 포인터가 캔버스 밖(도구 줄·팔레트·부위 목록)으로 나가도 pointerup 이
-      // 이 리스너에 도착하도록 캡처한다 — 캡처가 없으면 밖에서 뗀 제스처는 dragStart 를
-      // 영영 못 지우고, 나중에 엉뚱한 pointerup 과 짝지어져 유령 부위를 만든다.
-      if (pointer.pointerId !== undefined) canvasWrap.setPointerCapture(pointer.pointerId);
+    // 스포이트는 드래그 개념이 없다 — 누른 칸의 타일을 붓으로 집고 끝난다.
+    if (session.tool === "pick") {
+      const picked = tileAt(current, cell.cx, cell.cy, session.layer);
+      if (picked === TILE.EMPTY) {
+        toast("빈 칸이라 집을 타일이 없습니다.", "info");
+        return;
+      }
+      session.tile = picked;
+      session.tool = "paint";
+      noteRecentTile(session, picked);
+      redraw();
       return;
     }
-    const tile = session.tool === "erase" ? TILE.EMPTY : session.tile;
-    replaceStructureKit(session.tilesetId, paintCell(current, cell.cx, cell.cy, session.layer, tile));
-    redraw();
+
+    // 이어진 같은 타일 영역을 한 번에 채운다.
+    if (session.tool === "fill") {
+      const filled = fillContiguous(current, cell.cx, cell.cy, session.layer, session.tile);
+      if (filled === current) return;
+      commitKit(current, filled);
+      redraw();
+      return;
+    }
+
+    // 드래그 도중 포인터가 캔버스 밖(도구 줄·팔레트·부위 목록)으로 나가도 pointermove/up 이
+    // 이 리스너에 도착하도록 캡처한다 — 캡처가 없으면 밖에서 뗀 제스처는 dragStart 를
+    // 영영 못 지우고, 나중에 엉뚱한 pointerup 과 짝지어져 유령 부위를 만든다.
+    if (pointer.pointerId !== undefined) canvasWrap.setPointerCapture(pointer.pointerId);
+
+    if (session.tool === "part" || isDragShapeTool(session.tool)) {
+      dragStart = cell;
+      if (isDragShapeTool(session.tool)) drawShapePreview(previewOverlay, cell, cell, session, current, activeScale);
+      return;
+    }
+
+    // 칠하기·지우기: 여기서부터 뗄 때까지가 한 스트로크다.
+    strokeBefore = current;
+    if (paintOneCell(cell.cx, cell.cy)) redrawCanvasOnly();
+  });
+
+  // 예전에는 pointermove 리스너가 아예 없어서 한 칸씩 클릭해야 했다.
+  canvasWrap.addEventListener("pointermove", (event) => {
+    const pointer = event as PointerEvent;
+    const current = session.requireKit();
+    if (!current) return;
+
+    // 도형 미리보기 — 뗄 때 어디가 칠해지는지 끌면서 보여준다.
+    if (dragStart && isDragShapeTool(session.tool)) {
+      const now = cellFromEvent(pointer, current);
+      if (now) drawShapePreview(previewOverlay, dragStart, now, session, current, activeScale);
+      return;
+    }
+    if (!strokeBefore) return;
+    // buttons 를 보는 이유: 캔버스 밖에서 버튼을 뗀 뒤 다시 들어오면 pointerup 을 놓쳐
+    // strokeBefore 가 남아 있을 수 있다. 그때 계속 칠하면 누르지 않은 채로 칠해진다.
+    if (pointer.buttons !== undefined && (pointer.buttons & 1) === 0) return;
+    const cell = cellFromEvent(pointer, current);
+    if (!cell) return;
+    if (paintOneCell(cell.cx, cell.cy)) redrawCanvasOnly();
   });
 
   canvasWrap.addEventListener("pointerup", (event) => {
@@ -194,20 +383,53 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     if (pointer.pointerId !== undefined && canvasWrap.hasPointerCapture(pointer.pointerId)) {
       canvasWrap.releasePointerCapture(pointer.pointerId);
     }
+
+    // 칠하기 스트로크 종료 — 여러 칸을 칠했어도 되돌리기 한 번에 되돌아간다.
+    const before = strokeBefore;
+    strokeBefore = null;
+    if (before) {
+      const after = session.requireKit();
+      if (after && after !== before) {
+        pushHistory(before);
+        // 여기서 full redraw 를 부르면 팔레트 480칸이 재생성돼 스크롤이 맨 위로 튄다.
+        // 스트로크가 바꾼 것은 캔버스와 되돌리기 버튼 상태뿐이므로 그 둘만 갱신한다.
+        redrawCanvasOnly();
+        refreshViewBar();
+      }
+      return;
+    }
+
     // dragStart 는 도구 전환·리사이즈를 거쳐도 여기서 반드시 비운다 — 성공 경로에서만
     // 지우면 도구를 바꾼 채로 뗀 제스처가 dragStart 를 남기고, 나중에 도구를 part 로
     // 되돌린 뒤의 무관한 pointerup 이 그 낡은 시작점으로 유령 부위를 만든다.
     const start = dragStart;
     dragStart = null;
-    if (session.tool !== "part" || !start) return;
+    previewOverlay.replaceChildren();
+    if (!start) return;
     const current = session.requireKit();
     if (!current) return;
     const end = cellFromEvent(pointer, current) ?? start;
+
+    if (isDragShapeTool(session.tool)) {
+      const cells = tileCellsForPaintShape(
+        session.tool === "rect" ? "rect" : "round",
+        { x: start.cx, y: start.cy },
+        { x: end.cx, y: end.cy },
+        { width: current.width, height: current.height },
+      );
+      let next = current;
+      for (const cell of cells) next = paintCell(next, cell.x, cell.y, session.layer, session.tile);
+      commitKit(current, next);
+      redraw();
+      return;
+    }
+
+    if (session.tool !== "part") return;
     const rect = normalizeDragRect(start, end);
     const commit = (kind: StructureKitPartKind): void => {
       const target = session.requireKit();
       if (!target) return;
-      replaceStructureKit(session.tilesetId, addPart(target, rect, kind, `pt_${randomUuid()}`));
+      commitKit(target, addPart(target, rect, kind, `pt_${randomUuid()}`));
       redraw();
     };
     // 예전에는 종류가 언제나 "입구" 로 굳어 창문·간판·자리를 그릴 방법이 아예 없었다.
@@ -220,10 +442,19 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     `${kit.name ?? "구조물"} 편집`,
     [
       el("div", {
-        class: "structure-kit-editor-grid",
+        class: "structure-kit-editor-shell",
         children: [
-          el("div", { class: "structure-kit-editor-left", children: [canvasWrap, sizeWrap] }),
-          rightWrap,
+          el("div", {
+            class: "structure-kit-editor-grid",
+            children: [
+              el("div", {
+                class: "structure-kit-editor-left",
+                children: [canvasWrap, el("div", { class: "structure-kit-editor-underbar", children: [viewWrap, sizeWrap] })],
+              }),
+              rightWrap,
+            ],
+          }),
+          partsWrap,
         ],
       }),
     ],
@@ -242,7 +473,90 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     ? document.querySelector(`[data-testid="${EDITOR_DIALOG_TESTID}"]`)
     : null;
 
+  installEditorShortcuts(overlay, undo, redo);
   redraw();
+  // 다이얼로그가 붙은 다음에 다시 잰다 — 첫 redraw 때는 아직 레이아웃이 없어서 캔버스 칸
+  // 크기가 0 이고 배율이 대체값으로 떨어진다. 캔버스만 갱신하면 보기 줄의 "맞춤 (n x)"
+  // 표시가 그 대체값에 머물러 실제 배율과 어긋나므로 둘을 함께 다시 그린다.
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => {
+      redrawCanvasOnly();
+      refreshViewBar();
+    });
+  }
+}
+
+/**
+ * 편집기 안에서의 Ctrl+Z / Ctrl+Shift+Z(=Ctrl+Y).
+ * document 에 붙이는 이유: 다이얼로그 안에 포커스가 없으면(배경 클릭 직후 등)
+ * 오버레이까지 키 이벤트가 올라오지 않는다. 대신 오버레이가 DOM 에서 사라지면
+ * 스스로 떼어낸다 — 백드롭 클릭·Escape 처럼 우리 콜백을 거치지 않는 닫기 경로가 있어
+ * 닫기 훅에만 의존하면 리스너가 샌다.
+ *
+ * 문서 레벨 Ctrl+Z(databaseModal)는 편집기가 열려 있으면 무시하도록 이미 막아 두었다.
+ */
+function installEditorShortcuts(overlay: Element | null, undo: () => void, redo: () => void): void {
+  if (!overlay || typeof document === "undefined") return;
+  const onKey = (event: KeyboardEvent): void => {
+    if (!overlay.isConnected) {
+      document.removeEventListener("keydown", onKey, true);
+      return;
+    }
+    if (!(event.ctrlKey || event.metaKey)) return;
+    const key = event.key.toLowerCase();
+    if (key === "z" && !event.shiftKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      undo();
+      return;
+    }
+    if ((key === "z" && event.shiftKey) || key === "y") {
+      event.preventDefault();
+      event.stopPropagation();
+      redo();
+    }
+  };
+  document.addEventListener("keydown", onKey, true);
+}
+
+/** 최근 쓴 타일 — 팔레트의 "최근" 분류가 이걸 본다. 맵 팔레트와 분리된 이 편집기만의 목록이다. */
+function noteRecentTile(session: EditorSession, tile: number): void {
+  const existing = session.recent.indexOf(tile);
+  if (existing >= 0) session.recent.splice(existing, 1);
+  session.recent.unshift(tile);
+  if (session.recent.length > 18) session.recent.length = 18;
+}
+
+/**
+ * 이어진 같은 타일 영역을 채운다(4방향).
+ * mapHelpers.floodFillCells 를 쓰지 않은 이유: 그 함수는 GameMap 을 받고 lowerTiles 만
+ * 보므로 덧그림 레이어를 채울 수 없다. 킷은 두 레이어를 모두 채워야 한다.
+ */
+function fillContiguous(
+  kit: SectionStructureKitDef,
+  cx: number,
+  cy: number,
+  layer: KitLayer,
+  tile: number,
+): SectionStructureKitDef {
+  const target = tileAt(kit, cx, cy, layer);
+  if (target === tile) return kit;
+  let next = kit;
+  const seen = new Set<number>();
+  const pending: [number, number][] = [[cx, cy]];
+  while (pending.length > 0) {
+    const point = pending.pop();
+    if (!point) break;
+    const [x, y] = point;
+    if (x < 0 || y < 0 || x >= kit.width || y >= kit.height) continue;
+    const key = y * kit.width + x;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (tileAt(next, x, y, layer) !== target) continue;
+    next = paintCell(next, x, y, layer, tile);
+    pending.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  return next;
 }
 
 /** 시작점 선택 — 빈 칸이냐, 집 한 채냐. 집 갈래는 combined_town 앨범에서만 열린다. */
@@ -318,10 +632,33 @@ export function openNewStructureKitDialog(tilesetId: TilesetId, onCreated: (kitI
   );
 }
 
-/** 폭에 맞춘 배율. 9×8 킷은 scale 3(432px)이 나온다. */
-export function canvasScale(widthTiles: number): number {
-  const raw = Math.floor(CANVAS_VIEWPORT_PX / (Math.max(1, widthTiles) * TILE_SIZE));
-  return Math.min(4, Math.max(1, raw));
+function clampScale(value: number): number {
+  if (!Number.isFinite(value)) return 1;
+  return Math.min(8, Math.max(1, Math.floor(value)));
+}
+
+/**
+ * 주어진 공간에 맞는 배율.
+ *
+ * 예전 canvasScale 은 **폭만** 봤다. 그래서 3×64 처럼 세로로 긴 킷이면 배율 4 가 잡혀
+ * 캔버스가 192×4096px 이 되어 다이얼로그를 세로로 뚫었다. 두 축 중 작은 쪽을 쓴다.
+ */
+export function fitScale(widthTiles: number, heightTiles: number, availW: number, availH: number): number {
+  const byWidth = Math.floor(availW / (Math.max(1, widthTiles) * TILE_SIZE));
+  const byHeight = Math.floor(availH / (Math.max(1, heightTiles) * TILE_SIZE));
+  return clampScale(Math.min(byWidth, byHeight));
+}
+
+/** 사람이 배율을 골랐으면 그것, 아니면 캔버스 칸 실측에 맞춘 값. */
+function resolveScale(kit: SectionStructureKitDef, session: EditorSession, wrap: HTMLElement): number {
+  if (session.zoom !== null) return clampScale(session.zoom);
+  const rect = typeof wrap.getBoundingClientRect === "function"
+    ? wrap.getBoundingClientRect()
+    : { width: 0, height: 0 };
+  // 레이아웃 전(첫 렌더)·FakeDom 에서는 0 이 나온다 — 그때만 대체값을 쓴다.
+  const availW = (rect.width || CANVAS_FALLBACK_W) - 10;
+  const availH = (rect.height || CANVAS_FALLBACK_H) - 10;
+  return fitScale(kit.width, kit.height, availW, availH);
 }
 
 function findKit(tilesetId: TilesetId, kitId: string): SectionStructureKitDef | undefined {
@@ -441,13 +778,26 @@ export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
   };
 }
 
-function drawCanvas(
-  host: HTMLElement,
+/**
+ * 캔버스 + 격자선 + 도형 미리보기.
+ *
+ * backgroundTile 을 null(어두운 바탕)로 두는 것은 의도다. 인스펙터 미리보기는 잔디 받침을
+ * 깔아 "맵에 놓으면 이렇게 보인다"를 보여주지만, 편집기에서는 **빈 칸과 잔디를 칠한 칸이
+ * 구별돼야** 한다. 빈 칸은 찍을 때 투명하게 남는 칸이라 뜻이 다르다.
+ *
+ * 격자선을 캔버스에 직접 긋지 않는 이유: renderTileCellsToCanvas 는 캔버스를 즉시 돌려주고
+ * 타일 그림판 이미지가 로드되는 프레임에 내용을 그린다(kitRender.ts:135-150). 지금 그으면
+ * 그 비동기 렌더가 배경부터 다시 칠하면서 지워 버린다. 그래서 위에 겹치는 층으로 둔다.
+ */
+function drawCanvasStage(
+  stage: HTMLElement,
+  gridOverlay: HTMLElement,
+  previewOverlay: HTMLElement,
   tileset: TilesetDef,
   kit: SectionStructureKitDef,
   session: EditorSession,
+  scale: number,
 ): void {
-  const scale = canvasScale(kit.width);
   const cells = [];
   for (let y = 0; y < kit.height; y += 1) {
     for (let x = 0; x < kit.width; x += 1) {
@@ -465,34 +815,153 @@ function drawCanvas(
     scale,
     backgroundTile: null,
   });
-  canvas.className = `structure-kit-editor-canvas layer-${session.layer}`;
-  host.replaceChildren(canvas);
+  canvas.className = "structure-kit-editor-canvas";
+  const cellPx = TILE_SIZE * scale;
+  stage.setAttribute("style", `width:${kit.width * cellPx}px;height:${kit.height * cellPx}px`);
+  gridOverlay.setAttribute("style", `--structure-kit-cell:${cellPx}px`);
+  // 지금 어느 레이어를 칠하는지 — 예전에는 캔버스에 layer-lower/layer-upper 클래스를
+  // 붙였지만 그 클래스에 CSS 정의가 없어서 시각 신호가 0 이었다(죽은 클래스).
+  stage.dataset.layer = session.layer;
+  stage.replaceChildren(...(session.showGrid ? [canvas, gridOverlay, previewOverlay] : [canvas, previewOverlay]));
 }
 
+/** 드래그 중 어디가 칠해질지 미리 보여준다. 맵 편집기의 고스트와 같은 역할. */
+function drawShapePreview(
+  host: HTMLElement,
+  start: { readonly cx: number; readonly cy: number },
+  end: { readonly cx: number; readonly cy: number },
+  session: EditorSession,
+  kit: SectionStructureKitDef,
+  scale: number,
+): void {
+  const cells = tileCellsForPaintShape(
+    session.tool === "rect" ? "rect" : "round",
+    { x: start.cx, y: start.cy },
+    { x: end.cx, y: end.cy },
+    { width: kit.width, height: kit.height },
+  );
+  const cellPx = TILE_SIZE * scale;
+  host.replaceChildren(
+    ...cells.map((cell) =>
+      el("div", {
+        class: "structure-kit-editor-preview-cell",
+        attrs: {
+          style: `left:${cell.x * cellPx}px;top:${cell.y * cellPx}px;width:${cellPx}px;height:${cellPx}px`,
+        },
+      }),
+    ),
+  );
+}
+
+/** 팔레트 한 칸의 픽셀 크기 — CSS 의 .structure-kit-editor-swatch 와 같은 값이어야 한다. */
+const SWATCH_PX = 26;
+
+/**
+ * 타일 팔레트. 480칸을 **전부** 유지한다 — 구조물은 지붕 변형처럼 세부 타일이 필요해서
+ * 맵 팔레트처럼 오토타일을 대표 1칸으로 접으면 만들 수 없는 구조물이 생긴다.
+ * 검색·분류에 걸리지 않은 칸은 숨기지 않고 흐리게만 한다: 칸의 위치가 원본 시트의 좌표라
+ * 숨기면 "어디쯤 타일"인지 감각이 깨진다(맵 편집기의 커스텀 아틀라스와 같은 판단).
+ *
+ * 제목(title)에 한글 라벨을 넣는다 — 예전에는 타일 번호 문자열뿐이었다.
+ */
 function drawPalette(
   host: HTMLElement,
   tileset: TilesetDef,
   session: EditorSession,
   redraw: () => void,
 ): void {
-  const swatches = [];
+  // 480칸을 재생성하면 스크롤 위치가 사라진다. 다시 그리는 경로가 여럿(도구 전환·타일 선택·
+  // 레이어 전환)이라 호출부마다 챙기지 않고 여기서 한 번에 복원한다.
+  const scrollTop = host.scrollTop;
+  const visible = new Set(
+    filterTileIndexes(tileset, {
+      category: session.category,
+      query: session.search,
+      recent: session.recent,
+    }),
+  );
+  const swatches: HTMLElement[] = [];
   for (let tile = 0; tile < tileset.count; tile += 1) {
+    // 고른 타일은 필터에 안 걸려도 항상 선명해야 한다 — 아니면 "선택 중"인 칸이 흐려진다.
+    const dimmed = !visible.has(tile) && session.tile !== tile;
     swatches.push(
       el("button", {
-        class: `structure-kit-editor-swatch${tile === session.tile ? " active" : ""}`,
-        attrs: { type: "button", style: tilesetTileBackgroundStyle(tileset, tile, 20), title: String(tile) },
+        class: `structure-kit-editor-swatch${tile === session.tile ? " active" : ""}${dimmed ? " is-filtered-out" : ""}`,
+        attrs: {
+          type: "button",
+          style: tilesetTileBackgroundStyle(tileset, tile, SWATCH_PX),
+          title: tileDisplayLabelForIndex(tile),
+        },
         dataset: { testid: `structure-kit-editor-tile-${tile}` },
         on: {
           click: () => {
             session.tile = tile;
-            session.tool = "paint";
+            // 도구가 지우기·스포이트·부위였으면 칠하기로 돌린다. 사각형·타원·채우기는
+            // 타일만 바꿔 그 도구를 계속 쓰게 둔다 — 맵 편집기와 같은 감각이다.
+            if (session.tool === "erase" || session.tool === "pick" || session.tool === "part") {
+              session.tool = "paint";
+            }
+            noteRecentTile(session, tile);
             redraw();
           },
         },
       }),
     );
   }
+  if (visible.size === 0) {
+    swatches.push(
+      el("div", {
+        class: "structure-kit-editor-palette-empty",
+        text: "조건에 맞는 타일이 없습니다.",
+        dataset: { testid: "structure-kit-editor-palette-empty" },
+      }),
+    );
+  }
   host.replaceChildren(...swatches);
+  if (scrollTop > 0) host.scrollTop = scrollTop;
+}
+
+/**
+ * 팔레트 위 검색창 + 분류칩. 분류 목록과 필터 계산은 맵 팔레트와 같은 출처
+ * (panels/tilePaletteFilter.ts)를 쓴다 — 규칙이 두 곳에서 갈라지지 않게.
+ *
+ * 팔레트만 다시 그리는 콜백(redrawPalette)을 받는 이유: 검색어를 한 글자 칠 때마다
+ * 전체를 재렌더하면 입력 포커스와 커서 위치가 날아간다.
+ */
+function drawFilterBar(host: HTMLElement, session: EditorSession, redrawPalette: () => void): void {
+  const search = el("input", {
+    class: "structure-kit-editor-search",
+    attrs: { type: "search", placeholder: "번호·이름·태그로 타일 찾기" },
+    value: session.search,
+    dataset: { testid: "structure-kit-editor-search" },
+    on: {
+      input: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLInputElement)) return;
+        session.search = target.value;
+        redrawPalette();
+      },
+    },
+  });
+
+  const chips = TILE_CATEGORIES.map((category) =>
+    el("button", {
+      class: `structure-kit-editor-chip${session.category === category.id ? " active" : ""}`,
+      attrs: { type: "button" },
+      text: category.label,
+      dataset: { testid: `structure-kit-editor-category-${category.id}` },
+      on: {
+        click: () => {
+          session.category = category.id;
+          // 칩은 활성 표시가 바뀌어야 하니 이 줄도 다시 그린다.
+          drawFilterBar(host, session, redrawPalette);
+          redrawPalette();
+        },
+      },
+    }),
+  );
+
+  host.replaceChildren(search, el("div", { class: "structure-kit-editor-chips", children: chips }));
 }
 
 function drawTabs(host: HTMLElement, session: EditorSession, redraw: () => void): void {
@@ -511,26 +980,164 @@ function drawTabs(host: HTMLElement, session: EditorSession, redraw: () => void)
   );
 }
 
+/**
+ * 도구 목록. 예전에는 칠하기·지우기 둘뿐이라 사각형·채우기·스포이트가 없었다.
+ * 레이어 이름은 맵 편집기와 같은 어휘로 통일했다 — 하층/상층 → 바닥/덧그림.
+ * (testid 는 lower/upper 를 그대로 유지한다. 바꾸면 기존 테스트가 깨진다.)
+ */
+const TOOL_BUTTONS: readonly {
+  readonly tool: EditorTool;
+  readonly label: string;
+  readonly icon: SvgIconName;
+  readonly testid: string;
+}[] = [
+  { tool: "paint", label: "칠하기", icon: "brush", testid: "structure-kit-editor-tool-paint" },
+  { tool: "erase", label: "지우기", icon: "eraser", testid: "structure-kit-editor-tool-erase" },
+  { tool: "rect", label: "사각형", icon: "rect", testid: "structure-kit-editor-tool-rect" },
+  { tool: "ellipse", label: "타원", icon: "round", testid: "structure-kit-editor-tool-ellipse" },
+  { tool: "fill", label: "이어진 곳 채우기", icon: "fill", testid: "structure-kit-editor-tool-fill" },
+  { tool: "pick", label: "스포이트", icon: "eyedropper", testid: "structure-kit-editor-tool-pick" },
+  { tool: "part", label: "부위 그리기", icon: "select", testid: "structure-kit-editor-tool-part" },
+];
+
 function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void): void {
-  const button = (label: string, testid: string, active: boolean, onClick: () => void): HTMLElement =>
+  // 아이콘은 맵 편집기의 SVG 팩토리를 그대로 쓴다 — 유니코드 글리프는 폰트에 따라
+  // 안 그려지거나 뭉개져서 무슨 도구인지 알 수 없었다. (makeTileToolbar 자체는 부르지
+  // 않는다: installToolbarBadgeRefresh 가 모듈 전역을 마지막 호출자로 덮어써서
+  // 맵 팔레트의 자동 갱신이 이 편집기로 샌다.)
+  const toolButton = (entry: (typeof TOOL_BUTTONS)[number]): HTMLElement =>
     el("button", {
-      class: `btn small${active ? " primary" : ""}`,
+      class: `btn small structure-kit-editor-tool${session.tool === entry.tool ? " primary" : ""}`,
+      attrs: { type: "button", title: entry.label, "aria-label": entry.label },
+      children: [makeSvgIcon(entry.icon)],
+      dataset: { testid: entry.testid },
+      on: { click: () => { session.tool = entry.tool; redraw(); } },
+    });
+
+  const layerButton = (label: string, testid: string, layer: KitLayer): HTMLElement =>
+    el("button", {
+      class: `btn small structure-kit-editor-layer-btn${session.layer === layer ? " primary" : ""}`,
       attrs: { type: "button" },
       text: label,
       dataset: { testid },
-      on: { click: () => { onClick(); redraw(); } },
+      on: { click: () => { session.layer = layer; redraw(); } },
     });
 
   host.replaceChildren(
-    button("칠하기", "structure-kit-editor-tool-paint", session.tool === "paint", () => { session.tool = "paint"; }),
-    button("지우기", "structure-kit-editor-tool-erase", session.tool === "erase", () => { session.tool = "erase"; }),
-    button("하층", "structure-kit-editor-layer-lower", session.layer === "lower", () => { session.layer = "lower"; }),
-    button("상층", "structure-kit-editor-layer-upper", session.layer === "upper", () => { session.layer = "upper"; }),
-    button("부위 그리기", "structure-kit-editor-tool-part", session.tool === "part", () => { session.tool = "part"; }),
+    el("div", { class: "structure-kit-editor-tool-row", children: TOOL_BUTTONS.map(toolButton) }),
+    el("div", {
+      class: "structure-kit-editor-tool-row",
+      children: [
+        layerButton("바닥", "structure-kit-editor-layer-lower", "lower"),
+        layerButton("덧그림", "structure-kit-editor-layer-upper", "upper"),
+      ],
+    }),
   );
 }
 
-function drawSize(host: HTMLElement, kit: SectionStructureKitDef, redraw: () => void, session: EditorSession): void {
+/** 캔버스 아래 보기 줄 — 되돌리기 · 확대 · 격자. */
+function drawViewBar(
+  host: HTMLElement,
+  session: EditorSession,
+  redraw: () => void,
+  history: {
+    readonly canUndo: boolean;
+    readonly canRedo: boolean;
+    readonly undo: () => void;
+    readonly redo: () => void;
+    /** 지금 캔버스에 실제로 쓰인 배율 — "맞춤" 에서 확대/축소의 기준점. */
+    readonly currentScale: number;
+  },
+): void {
+  const iconButton = (
+    body: Node | string,
+    label: string,
+    testid: string,
+    enabled: boolean,
+    onClick: () => void,
+    extraClass = "",
+  ): HTMLElement =>
+    el("button", {
+      class: `btn small${extraClass ? ` ${extraClass}` : ""}`,
+      attrs: enabled
+        ? { type: "button", title: label, "aria-label": label }
+        : { type: "button", title: label, "aria-label": label, disabled: "" },
+      children: [body],
+      dataset: { testid },
+      on: { click: () => { if (enabled) onClick(); } },
+    });
+
+  const zoomLabel = session.zoom === null ? `맞춤 (${history.currentScale}x)` : `${session.zoom}x`;
+  /**
+   * 한 단계 확대/축소. "맞춤" 상태에서는 **지금 실제로 쓰이는 배율**을 기준으로 삼는다 —
+   * 고정 인덱스에서 출발하면 맞춤이 5x 인데 [+] 를 눌러 3x 로 줄어드는 일이 생긴다.
+   */
+  const stepZoom = (direction: 1 | -1): void => {
+    const base = session.zoom ?? history.currentScale;
+    const next = direction > 0
+      ? ZOOM_STEPS.find((step) => step > base)
+      : [...ZOOM_STEPS].reverse().find((step) => step < base);
+    if (next === undefined) return;
+    session.zoom = next;
+    redraw();
+  };
+
+  host.replaceChildren(
+    el("div", {
+      class: "structure-kit-editor-viewbar-group",
+      children: [
+        iconButton(makeSvgIcon("undo"), "되돌리기 (Ctrl+Z)", "structure-kit-editor-undo", history.canUndo, history.undo),
+        // redo 아이콘이 따로 없어서 undo 를 좌우 반전해 쓴다(CSS).
+        iconButton(
+          makeSvgIcon("undo"),
+          "다시하기 (Ctrl+Shift+Z)",
+          "structure-kit-editor-redo",
+          history.canRedo,
+          history.redo,
+          "structure-kit-editor-redo-icon",
+        ),
+      ],
+    }),
+    el("div", { class: "structure-kit-editor-viewbar-sep" }),
+    el("div", {
+      class: "structure-kit-editor-viewbar-group",
+      children: [
+        iconButton("−", "축소", "structure-kit-editor-zoom-out", true, () => stepZoom(-1)),
+        el("span", {
+          class: "structure-kit-editor-zoom-value",
+          text: zoomLabel,
+          dataset: { testid: "structure-kit-editor-zoom-value" },
+        }),
+        iconButton("+", "확대", "structure-kit-editor-zoom-in", true, () => stepZoom(1)),
+        el("button", {
+          class: "btn small",
+          attrs: { type: "button" },
+          text: "맞춤",
+          dataset: { testid: "structure-kit-editor-zoom-fit" },
+          on: { click: () => { session.zoom = null; redraw(); } },
+        }),
+      ],
+    }),
+    el("div", { class: "structure-kit-editor-viewbar-sep" }),
+    el("button", {
+      class: `btn small${session.showGrid ? " primary" : ""}`,
+      attrs: { type: "button" },
+      text: "격자",
+      dataset: { testid: "structure-kit-editor-grid-toggle" },
+      on: { click: () => { session.showGrid = !session.showGrid; redraw(); } },
+    }),
+  );
+}
+
+type CommitKit = (before: SectionStructureKitDef, next: SectionStructureKitDef) => void;
+
+function drawSize(
+  host: HTMLElement,
+  kit: SectionStructureKitDef,
+  redraw: () => void,
+  session: EditorSession,
+  commitKit: CommitKit,
+): void {
   const field = (
     label: string,
     testid: string,
@@ -553,7 +1160,8 @@ function drawSize(host: HTMLElement, kit: SectionStructureKitDef, redraw: () => 
               if (!current) return;
               const next = apply(Number(target.value));
               const result = resizeKit(current, next.width, next.height);
-              replaceStructureKit(session.tilesetId, result.kit);
+              // 크기 변경도 되돌릴 수 있어야 한다 — 부위가 잘리는 편집이라 특히.
+              commitKit(current, result.kit);
               if (result.clamped > 0 || result.dropped > 0) {
                 // 조용히 지우지 않는다 — 사용자가 입구가 사라진 걸 나중에야 알게 하면 안 된다.
                 const parts = [
@@ -664,6 +1272,7 @@ function drawParts(
   kit: SectionStructureKitDef,
   session: EditorSession,
   redraw: () => void,
+  commitKit: CommitKit,
 ): void {
   const parts = kit.parts ?? [];
   const rows: HTMLElement[] = [
@@ -690,7 +1299,7 @@ function drawParts(
                 ...(current.parts ?? []).filter((part) => part.kind !== "entrance"),
                 ...estimated,
               ];
-              replaceStructureKit(session.tilesetId, { ...current, parts: merged });
+              commitKit(current, { ...current, parts: merged });
               toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
               redraw();
             },
@@ -709,35 +1318,35 @@ function drawParts(
     );
   }
 
-  parts.forEach((part, index) => {
-    rows.push(
-      el("div", {
-        class: "structure-kit-editor-part-row",
-        children: [
-          el("span", { class: "structure-kit-editor-part-index", text: String(index + 1) }),
-          el("span", { class: "structure-kit-editor-part-kind", text: partKindLabel(part.kind) }),
-          el("span", {
-            class: "structure-kit-editor-part-range",
-            text: `(${part.dx},${part.dy}) ${part.w}×${part.h}`,
-          }),
-          partActionButton("✎", "부위 편집", `structure-kit-editor-part-edit-${part.id}`, (event) => {
-            openPartKindMenu(pointFromButtonEvent(event), part.kind, (kind) => {
-              const current = session.requireKit();
-              if (!current) return;
-              replaceStructureKit(session.tilesetId, updatePart(current, part.id, { kind }));
-              redraw();
-            });
-          }),
-          partActionButton("✕", "부위 삭제", `structure-kit-editor-part-delete-${part.id}`, () => {
+  // 부위 목록은 이제 폭 전체를 쓰므로 칩처럼 가로로 흐른다 — 세로는 캔버스에 양보한다.
+  const chips = parts.map((part, index) =>
+    el("div", {
+      class: "structure-kit-editor-part-row",
+      children: [
+        el("span", { class: "structure-kit-editor-part-index", text: String(index + 1) }),
+        el("span", { class: "structure-kit-editor-part-kind", text: partKindLabel(part.kind) }),
+        el("span", {
+          class: "structure-kit-editor-part-range",
+          text: `(${part.dx},${part.dy}) ${part.w}×${part.h}`,
+        }),
+        partActionButton("✎", "부위 편집", `structure-kit-editor-part-edit-${part.id}`, (event) => {
+          openPartKindMenu(pointFromButtonEvent(event), part.kind, (kind) => {
             const current = session.requireKit();
             if (!current) return;
-            replaceStructureKit(session.tilesetId, removePart(current, part.id));
+            commitKit(current, updatePart(current, part.id, { kind }));
             redraw();
-          }),
-        ],
-      }),
-    );
-  });
+          });
+        }),
+        partActionButton("✕", "부위 삭제", `structure-kit-editor-part-delete-${part.id}`, () => {
+          const current = session.requireKit();
+          if (!current) return;
+          commitKit(current, removePart(current, part.id));
+          redraw();
+        }),
+      ],
+    }),
+  );
+  if (chips.length > 0) rows.push(el("div", { class: "structure-kit-editor-parts-list", children: chips }));
 
   host.replaceChildren(...rows);
 }
