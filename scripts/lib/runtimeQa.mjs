@@ -366,6 +366,27 @@ export function evaluateExpect(expected, observed) {
     if (testids.includes(testid)) failures.push(`testid 잔존: ${testid}`);
   }
 
+  // 보이는 글자 단정 — testidPresent 는 DOM 존재만 본다. 숨은 패널(display:none) 속 숫자도
+  // 통과하므로 "HP 가 18/18 → 0/18 로 줄었다" 를 그 축으로 적으면 화면에 없는 값을 증거로
+  // 삼게 된다(실측: 클래식 스킨은 .battle-enemy-list-panel 을 display:none 으로 숨긴다).
+  for (const [testid, wanted] of Object.entries(expected.visibleText ?? {})) {
+    const seen = observed.visibleText?.[testid];
+    if (!seen) {
+      failures.push(`visibleText: ${testid} 노드가 DOM 에 없다(기대 "${wanted}")`);
+      continue;
+    }
+    if (!seen.visible) {
+      failures.push(
+        `visibleText: ${testid} 가 화면에 없다(${seen.width}×${seen.height}, alpha ${seen.alpha})`
+          + ` — 텍스트는 "${seen.text}"`,
+      );
+      continue;
+    }
+    if (!seen.text.includes(wanted)) {
+      failures.push(`visibleText: ${testid} 기대 "${wanted}" 포함, 실제 "${seen.text}"`);
+    }
+  }
+
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {
     failures.push("playerSprite: 리소스 ID 가 비어 있다(스프라이트 누락)");
   }
