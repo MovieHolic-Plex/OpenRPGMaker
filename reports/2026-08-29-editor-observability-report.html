@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026-08-29 편집기 관측성 구축 — 편집 행위 기록과 조용한 실패</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel-2: #1e222b;
+    --line: #2a2f3a;
+    --text: #e6e8ee;
+    --muted: #9aa3b2;
+    --soft: #6b7280;
+    --red: #f2555a;
+    --green: #3fbf7f;
+    --blue: #5aa9f8;
+    --amber: #e8b339;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text); margin: 0;
+    font: 15px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 40px; }
+  h1 { font-size: 30px; line-height: 1.35; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 14px; }
+  .sub code { font-family: var(--mono); font-size: 12px; }
+  h2 {
+    font-size: 20px; margin: 48px 0 16px; padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  h2:first-of-type { border-top: 0; padding-top: 0; }
+  h3 { font-size: 15px; margin: 28px 0 10px; color: var(--text); }
+  p { margin: 0 0 14px; }
+  ul { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  code {
+    font-family: var(--mono); font-size: 12.5px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 4px; padding: 1px 5px;
+  }
+  pre {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px 18px; overflow-x: auto; font-family: var(--mono);
+    font-size: 12.5px; line-height: 1.65; margin: 0 0 18px;
+  }
+  pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top;
+  }
+  th { background: var(--panel-2); font-weight: 650; color: var(--muted); font-size: 12.5px; }
+  td code { font-size: 11.5px; }
+  figure { margin: 0 0 26px; }
+  figure img {
+    max-width: 100%; display: block; border: 1px solid var(--line);
+    border-radius: 8px; background: #fff;
+  }
+  figcaption { color: var(--muted); font-size: 12.5px; margin-top: 9px; }
+  .lede {
+    background: var(--panel); border: 1px solid var(--line);
+    border-left: 3px solid var(--blue); border-radius: 8px;
+    padding: 18px 20px; margin: 0 0 32px;
+  }
+  .lede p:last-child { margin-bottom: 0; }
+  .note {
+    background: var(--panel); border: 1px solid var(--line);
+    border-left: 3px solid var(--amber); border-radius: 8px;
+    padding: 14px 18px; margin: 0 0 22px; font-size: 14px;
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 780px) { .grid2 { grid-template-columns: 1fr; } }
+  .pass { color: var(--green); font-weight: 650; }
+  .fail { color: var(--red); font-weight: 650; }
+  .dim { color: var(--soft); }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 26px; }
+  @media (max-width: 780px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+  .metric {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .metric .v { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .metric .k { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  footer {
+    margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line);
+    color: var(--soft); font-size: 12.5px;
+  }
+  footer code { font-size: 11.5px; }
+  a { color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>편집기 관측성 구축 — 편집 행위 기록과 조용한 실패</h1>
+  <div class="sub">
+    2026-08-29 · 브랜치 <code>debug</code> · 베이스 <code>0a861677</code> ·
+    커밋 <code>46fe8f56</code>, <code>671b1d1c</code> ·
+    PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/238">#238</a>
+  </div>
+</header>
+
+<div class="lede">
+  <p><strong>문제.</strong> NPC 를 고쳐도 기록에는 <code>이벤트 편집</code> 한 줄만, 그것도 어떤 NPC 인지 없이 남았다. 디버깅이 사실상 불가능했다.</p>
+  <p><strong>원인.</strong> 인프라가 없던 게 아니라 배선이 끊겨 있었다. <code>saveEventDraft</code> 는 이미 <code>event.pages[0].name: "페이지 1" → "촌장"</code> 수준의 필드 경로 diff 를 계산해 돌려주고 있었고, <strong>유일한 호출자가 그 반환값을 버렸다.</strong> 되돌리기 라벨은 상수 <code>"이벤트 편집"</code> 이었다.</p>
+  <p><strong>결과.</strong> 같은 시나리오가 이제 7건으로 남고, 적용 기록이 NPC 이름 · <code>eventId</code> · 전체 필드 경로를 담는다.</p>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="v">84</div><div class="k">신규·변경 테스트 통과 (9 파일)</div></div>
+  <div class="metric"><div class="v">275</div><div class="k">한 곳에서 계측된 mutation 호출부</div></div>
+  <div class="metric"><div class="v">0</div><div class="k">CSS 예산 5지표 증감</div></div>
+  <div class="metric"><div class="v">0</div><div class="k">내 diff 경로의 회귀</div></div>
+</div>
+
+<h2>1. 계측 초크포인트</h2>
+
+<p>상태를 바꾸는 5개 store 메서드가 전부 <code>markLocalMutation</code> 을 지난다. 호출자가 모두 <code>store.ts</code> 안에 있으므로, 여기 한 곳에 감사 기록을 걸어 <strong>275개 mutation 호출부를 외부 파일 수정 없이</strong> 계측했다.</p>
+
+<table>
+  <tr><th>메서드</th><th>기본 라벨</th><th>비고</th></tr>
+  <tr><td><code>update</code></td><td class="dim">호출자 지정</td><td>244개 호출부의 진입점</td></tr>
+  <tr><td><code>updateMap</code></td><td class="dim">호출자 지정</td><td><code>cells</code> 로 셀 수까지 남는다</td></tr>
+  <tr><td><code>replace</code></td><td class="dim">호출자 지정</td><td>되돌리기 / AI 적용 / 원격 병합</td></tr>
+  <tr><td><code>clearAll</code></td><td><code>전체 초기화</code></td><td></td></tr>
+  <tr><td><code>restoreEventDraftFromVault</code></td><td><code>드래프트 금고 복원</code></td><td><code>origin: "system"</code></td></tr>
+</table>
+
+<p>그 성질 자체를 <code>test/storeMutationInstrumentation.test.ts</code> 가 <strong>구조로</strong> 고정한다. 새 메서드가 <code>this.current</code> 를 직접 갈아치우고 초크포인트를 건너뛰면 그 경로의 편집은 <em>조용히</em> 기록에서 사라지는데, 조용한 유실은 관측 도구에서 가장 나쁜 실패 양식이다 — 있다고 믿고 안 보게 된다. 실제로 이 테스트를 처음 돌렸을 때 내가 짐작한 메서드 명단이 틀렸음을 잡아냈다(<code>adoptProject</code>, <code>reloadFromRemote</code> 등 원격 로드 경로 4곳).</p>
+
+<h3>성능 계약</h3>
+<p><strong>초크포인트에서 diff 를 계산하지 않는다.</strong> 페인트 스트로크마다 전 맵 비교가 돌면 그게 새 병목이다. 필드 상세는 호출자가 이미 계산해 둔 것(이벤트 편집기의 <code>EventDiff</code>)만 싣는다.</p>
+<p><strong>드래그 병합.</strong> 같은 라벨을 600ms 창에서 합치고 셀 수를 누적한다. 12칸 드래그가 12줄이 되면 로그가 스트로크 노이즈로 덮인다. 단 필드 상세가 붙은 엔트리는 병합하지 않는다 — 그 정보가 병합으로 뭉개지면 안 된다.</p>
+
+<h2>2. 조용한 실패 세 곳</h2>
+
+<table>
+  <tr><th style="width:26%">공백</th><th style="width:40%">실측</th><th>조치</th></tr>
+  <tr>
+    <td><code>store.emit</code> 리스너 격리 없음</td>
+    <td>리스너 1개의 예외가 <strong>나머지 13개를 죽였다.</strong> 화면 절반이 갱신을 멈춰도 원인 표시가 없다.</td>
+    <td>리스너별 <code>try/catch</code> + 어느 스코프·라벨에서 터졌는지 기록</td>
+  </tr>
+  <tr>
+    <td>전역 오류 트랩 0건</td>
+    <td><code>window.onerror</code> / <code>unhandledrejection</code> 핸들러가 하나도 없었다. <code>EditScene.ts</code> 1,606줄에 <code>try/catch</code> 0건 — 편집 캔버스가 검게 죽어도 어디에도 안 남았다.</td>
+    <td><code>src/app/errorTrap.ts</code>. <code>preventDefault</code> 는 부르지 않아 브라우저 기본 리포팅을 살린다. 리소스 404 는 레벨을 낮춰 분리하고, 같은 서명 폭주는 3초 창에서 접는다</td>
+  </tr>
+  <tr>
+    <td>저장 실패 칩의 호출자 0건</td>
+    <td><code>renderDbConnectionStatus</code> 는 CSS 8종까지 <strong>만들어져 있는데</strong> 하단 상태바 은퇴 때 호스트를 잃었다. <code>subscribeAutoSave</code> 구독자도 1곳뿐 — 오토세이브가 계속 실패해도 아무도 몰랐다.</td>
+    <td>톱바 트레일링에 재마운트 + 구독. 칩을 새로 만들지 않고 기존 것을 되살렸다</td>
+  </tr>
+</table>
+
+<figure>
+  <img src="/home/main/.herdr/worktrees/rpg-zzu/debug/verify-shots/save-status/04-topbar-error.png" alt="톱바에 저장 실패 칩이 표시된 상태">
+  <figcaption>실제 오토세이브 실패. dev 서버 + Playwright 로 <code>/rest/v1/**</code> 의 <strong>쓰기만</strong> 차단해 만들었다(DB 에 쓰기 없음). <code>온라인 저장 · 저장 실패 · 다시 시도 1회 · [다시 저장]</code> — 메뉴바와 클래식 툴바는 무손상.</figcaption>
+</figure>
+
+<div class="note">
+  <p><strong>표시 정책이 필요했던 이유.</strong> 칩 폭이 실측 281px 이라 <code>pending</code>/<code>saving</code> 을 다 띄우면 타일 한 칸 칠할 때마다 떴다 사라지며 옆 <code>테스트</code>·<code>AI 설정</code> 버튼이 좌우로 튄다. 그래서 <code>error</code> 만 노출한다. 단 실패 에피소드가 시작된 뒤의 <code>saving</code> 은 붙잡아 둔다 — <code>다시 저장</code> 직후 칩이 사라졌다 빨갛게 돌아오면 결과를 오해한다.</p>
+</div>
+
+<h2>3. 수동 저장 커밋 summary</h2>
+
+<p><code>manualDiffSummary()</code> 가 <code>systemChanged = true</code> 만 세웠다. 그래서 타일 3000장을 칠했든 NPC 를 지웠든 사람 손편집의 Supabase 커밋 요약은 <strong>항상</strong> <code>"변경 저장: 시스템"</code> 이었다 — 원격 감사 기록이 사실상 무용지물이었다.</p>
+
+<p>진짜 diff 계산기는 이미 있었다. <code>summarizeChanges(before, after)</code> 가 타일·이벤트·맵·DB 컬렉션·타일셋·스위치·변수·세계관·엔딩을 전부 비교하는데, <strong>쓰는 건 AI 경로뿐이었다.</strong> 비대칭의 뿌리가 여기다 — 감사 파이프라인이 AI 쪽에서만 자랐다.</p>
+
+<p>함께 고친 버그: dedup baseline 이 <code>not-configured</code>(Supabase 미설정 / 테이블 누락)에서도 전진해, 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 <strong>그 커밋이 영구히 기록되지 않았다.</strong></p>
+
+<h2>4. 되돌리기 스택과 감사 로그는 분리를 유지한다</h2>
+
+<p>합치자는 유혹이 있지만 요구가 정반대다.</p>
+
+<table>
+  <tr><th></th><th>되돌리기 스택</th><th>감사 로그</th></tr>
+  <tr><td>담는 것</td><td>변경 <em>전</em> 스냅샷</td><td>변경 <em>후</em> 사실 + 필드 경로</td></tr>
+  <tr><td>중복</td><td>dedup 필요</td><td>전량 보존</td></tr>
+  <tr><td>상한</td><td>50건</td><td>500건 (영속 200)</td></tr>
+  <tr><td>수명</td><td>새로고침에 소멸</td><td>새로고침 후에도 남는다</td></tr>
+  <tr><td>되돌린 뒤</td><td>사라진다</td><td>남는다 — 되돌렸다는 사실도 기록이다</td></tr>
+</table>
+
+<p>그래서 모달 드래프트 편집(<code>eventPages.ts</code> 등)에는 <strong>전역 스냅샷을 넣지 않았다.</strong> 넣으면 모달의 취소/폐기 의미(<code>truncateMapEditHistoryFromMarker</code>)와 충돌하고, 50칸 스택이 커맨드 한 줄 고치는 데 절반이 찬다. 대신 라벨만 붙였다 — 관측은 얻고 undo 동작은 건드리지 않는다.</p>
+
+<h2>5. 검증</h2>
+
+<h3>라이브 편집기에서 사용자 시나리오 재현</h3>
+<p>NPC 생성 → 이름 <code>촌장</code> → 대사 추가 → 적용. 브라우저에서 실제로 돌렸다.</p>
+
+<pre><code>[map] 이벤트 편집: 촌장 — pages[0].commands[0], pages[0].name
+        ↳ event.pages[0].commands[0]
+        ↳ event.pages[0].name
+[map] 대사 설정
+[map] 페이지 속성 변경: 페이지 1 — 이름
+[map] 이벤트 편집 시작: 페이지 1 (system)
+[map] 이벤트 생성: 페이지 1
+[map] 이벤트 생성 (7,7)</code></pre>
+
+<table>
+  <tr><th>확인 항목</th><th>결과</th></tr>
+  <tr><td>관측 표면 4종 노출 (<code>__oprnEditActivity</code> / <code>__oprnLogs</code> / <code>__oprnErrors</code> / <code>__oprnUnlabeledEditCount</code>)</td><td class="pass">통과</td></tr>
+  <tr><td>적용 기록에 NPC 이름 <code>촌장</code></td><td class="pass">통과</td></tr>
+  <tr><td>적용 기록에 <code>eventId</code></td><td class="pass">통과</td></tr>
+  <tr><td>이름 · 커맨드 필드 경로 둘 다</td><td class="pass">통과</td></tr>
+  <tr><td>타일 12칸 드래그 → 1 엔트리 (<code>cellCount 12</code>)</td><td class="pass">통과</td></tr>
+  <tr><td>콘솔 오류 없음</td><td class="pass">통과</td></tr>
+  <tr><td>디스크 미러 + <code>npm run edit:log</code> 도달</td><td class="pass">통과</td></tr>
+</table>
+
+<figure>
+  <img src="/home/main/.herdr/worktrees/rpg-zzu/debug/verify-shots/edit-activity/03-activity-fields.png" alt="행위 기록 패널에서 필드 상세를 펼친 화면">
+  <figcaption>도구막대 <code>⋯</code> → 작업 기록 → <strong>행위 기록</strong> 탭. <code>기록 7건</code>, 범위 필터·검색, 필드 펼침에 <code>event.pages[0].name 페이지 1 → 촌장</code> 이 before/after 로 보인다.</figcaption>
+</figure>
+
+<h3>게이트</h3>
+<table>
+  <tr><th>게이트</th><th>결과</th></tr>
+  <tr><td>신규·변경 테스트 9 파일</td><td class="pass">84건 통과</td></tr>
+  <tr><td><code>tsc --noEmit -p tsconfig.app.json</code></td><td class="pass">exit 0</td></tr>
+  <tr><td><code>npm run gates:css</code></td><td class="pass">5지표 증감 0, graph orphan 0</td></tr>
+  <tr><td><code>npm run openwiki:verify</code></td><td class="pass"><code>ok: true</code></td></tr>
+  <tr><td>내 diff 경로의 타입 오류</td><td class="pass">0건</td></tr>
+</table>
+
+<div class="note">
+  <p><strong>기존 실패 3건은 회귀가 아니다.</strong> <code>mapEditCommands</code> 2건(<code>expected 263 to be 319</code> — 타일셋 데이터 기대값)과 <code>modeTransitions</code> 1건(<code>node.dataset</code> undefined — 플레이어 렌더 경로)이 실패한다. 베이스라인 <code>0a861677</code> 을 분리 워크트리에 뽑아 대조했고 <strong>동일한 3건이 동일한 메시지로</strong> 실패했다. 이 레포는 clean main 에서도 84~85 파일이 실패하므로 전체 숫자가 아니라 내 diff 안의 경로로 판단한다.</p>
+</div>
+
+<h2>6. 디버깅 표면</h2>
+
+<div class="grid2">
+<div>
+<h3>콘솔</h3>
+<pre><code>__oprnEditActivity()          // 편집 행위 (최신순)
+__oprnEditActivityText()      // 붙여넣기용 텍스트
+__oprnUnlabeledEditCount()    // 라벨 없는 mutation 수
+__oprnLogs({minLevel:"warn"}) // 로거 링버퍼
+__oprnErrors()                // 잡힌 예외/거부
+__oprnSetLogLevel("debug")</code></pre>
+</div>
+<div>
+<h3>디스크 · CLI</h3>
+<pre><code>output/edit-activity/edits.jsonl
+output/edit-activity/index.json
+npm run edit:log
+npm run edit:log -- --scope map --limit 50
+
+# AI 경로는 별도 채널
+output/ai-activity/ · npm run ai:log</code></pre>
+</div>
+</div>
+
+<p>채널을 나눈 이유: 편집 엔트리는 스트로크 단위로 분당 수십 건인데 AI 턴은 분당 1건 수준이다. 한 파일에 섞으면 <code>scripts/list-ai-activity.mjs</code> 가 읽는 <code>activity.jsonl</code> 이 편집 노이즈로 덮인다.</p>
+
+<h3>UI</h3>
+<p>도구막대 <code>⋯</code> → 작업 기록 → <strong>행위 기록</strong> 탭. 되돌리기 탭은 기존 동작·testid 그대로다.</p>
+
+<h2>7. 남은 공백</h2>
+
+<p><code>openwiki/editor-observability.md</code> 에 7건을 실측 근거와 함께 표로 남겼다. 이번 범위 밖이지만 같은 뿌리에서 나온 것들이다.</p>
+
+<table>
+  <tr><th style="width:34%">공백</th><th>내용</th></tr>
+  <tr><td>되돌리기 스냅샷 없는 21개 파일</td><td>store 를 바꾸면서 undo 스냅샷을 남기지 않는다. 손으로 관리하면 썩으므로 구조 테스트로 고정하는 것이 후속 과제</td></tr>
+  <tr><td><code>resetMapEditHistory()</code> 호출 0건</td><td>프로젝트 전환 후 Ctrl+Z 가 <strong>이전 프로젝트</strong>를 되살린다</td></tr>
+  <tr><td>AI 영역 작업의 오귀속</td><td><code>runRegionTask.ts:190</code> 의 <code>store.replace(project)</code> 가 라벨도 baseline 리셋도 없어, AI 변경분이 다음 사람 저장 diff 에 섞인다</td></tr>
+  <tr><td><code>patch_json</code> write-only</td><td>쓰기는 있고 읽는 프로덕션 코드가 0건</td></tr>
+  <tr><td><code>scope: "assets"</code> 데드</td><td>타입에만 있고 emit 사이트 0건</td></tr>
+  <tr><td><code>getCurrent()</code> 라이브 참조</td><td><code>interface Project</code> 에 <code>readonly</code> 0개 — 규율로만 유지된다</td></tr>
+  <tr><td>행위 기록 창의 호스트가 좁다</td><td>⋯ 오버플로 드롭다운 배경이 약 310px 라 긴 라벨 행이 배경 밖으로 나가 겹쳐 그려진다. <code>min-width</code> 로 넓히는 쪽은 레이아웃만 늘고 배경이 안 따라와 겹침이 커지는 것을 실측 확인 — 더 넉넉한 호스트로 옮기는 것이 맞는 수정. 기록 자체는 잘리지 않는다</td></tr>
+</table>
+
+<h2>8. 변경 규모</h2>
+
+<table>
+  <tr><th>구분</th><th>파일</th></tr>
+  <tr><td>신규 — 기반</td><td><code>src/util/logger.ts</code>, <code>src/app/errorTrap.ts</code></td></tr>
+  <tr><td>신규 — 행위 로그</td><td><code>src/editor/editActivityLog.ts</code>, <code>editActivityEndpoint.ts</code>, <code>eventDiffLabel.ts</code>, <code>panels/editActivityPanel.ts</code></td></tr>
+  <tr><td>변경 — 초크포인트</td><td><code>src/project/store.ts</code>, <code>projectCommitLog.ts</code></td></tr>
+  <tr><td>변경 — 라벨 배선</td><td><code>eventDraftActions.ts</code>, <code>eventPages.ts</code>, <code>eventActions.ts</code>, <code>panels/eventEditor/pageNpcLiving.ts</code></td></tr>
+  <tr><td>변경 — UI</td><td><code>panels/menu.ts</code>, <code>panels/mapHistoryPanel.ts</code>, <code>panels/dbConnectionStatus.ts</code>, <code>styles/editor/map-history.css</code></td></tr>
+  <tr><td>변경 — 인프라</td><td><code>vite.config.ts</code>, <code>scripts/list-edit-activity.mjs</code>, <code>src/main.ts</code>, <code>package.json</code></td></tr>
+  <tr><td>문서</td><td><code>openwiki/editor-observability.md</code>, <code>PROJECT_WIKI.md</code>, <code>editor-pre-edit-routing.md</code>, <code>AGENTS.md</code></td></tr>
+  <tr><td>테스트</td><td>신규 8 + 변경 1</td></tr>
+</table>
+
+<p>합계 41 파일, <code>+4,625 / -145</code> (캡처 PNG 10장 포함).</p>
+
+<footer>
+  <div>보고서 절대 경로: <code>/home/main/.herdr/worktrees/rpg-zzu/debug/reports/2026-08-29-editor-observability-report.html</code></div>
+  <div>워크트리: <code>/home/main/.herdr/worktrees/rpg-zzu/debug</code> · 브랜치 <code>debug</code> · 베이스 <code>0a861677</code></div>
+  <div>커밋: <code>46fe8f56</code> (기능), <code>671b1d1c</code> (캡처) · PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/238">#238</a></div>
+  <div>캡처 원본: <code>verify-shots/save-status/</code>, <code>verify-shots/edit-activity/</code></div>
+</footer>
+
+</div>
+</body>
+</html>
